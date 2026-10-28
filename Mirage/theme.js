@@ -37,6 +37,9 @@
       grain: "Film grain", grainHint: "Fine noise over the background",
       calm: "Calm mode", calmHint: "Stops all background animations",
       blur: "Glass blur (real glass only)", bright: "Background brightness",
+      vizSection: "Visualizer", vizSectionHint: "Look of the visualizer in immersive mode – changes apply live",
+      viz_bars: "Bars", viz_wave: "Wave", viz_dots: "Dots", vizBars: "Number of bars", vizHeight: "Height", vizSmooth: "Smoothness",
+      vizGlow: "Glow", vizRings: "Rings on the beat", vizMirror: "Mirrored", vizSpin: "Slow rotation",
       scheme: "Colour scheme", schemeHint: "Switches instantly – Mirage follows the cover live",
       glass: "Real glass", glassHint: "Blurs live behind every panel – looks richer, costs a lot of performance",
       c_shuffle: "Shuffle (S)", c_repeat: "Repeat (R)", c_like: "Like (L)", c_mute: "Mute", c_full: "Full screen (F)", c_volume: "Volume (↑ ↓)",
@@ -59,6 +62,9 @@
       grain: "Filmkorn", grainHint: "Feines Rauschen über dem Hintergrund",
       calm: "Ruhiger Modus", calmHint: "Hält alle Hintergrund-Animationen an",
       blur: "Glas-Unschärfe (nur echtes Glas)", bright: "Helligkeit des Hintergrunds",
+      vizSection: "Visualizer", vizSectionHint: "Aussehen des Visualizers im Immersiv-Modus – wirkt sofort",
+      viz_bars: "Balken", viz_wave: "Welle", viz_dots: "Punkte", vizBars: "Anzahl Balken", vizHeight: "Höhe", vizSmooth: "Weichheit",
+      vizGlow: "Leuchten", vizRings: "Ringe im Takt", vizMirror: "Gespiegelt", vizSpin: "Langsame Drehung",
       scheme: "Farbschema", schemeHint: "Wechselt sofort – Mirage folgt live dem Cover",
       glass: "Echtes Glas", glassHint: "Verwischt live hinter jeder Fläche – edler, kostet aber viel Leistung",
       c_shuffle: "Zufallswiedergabe (S)", c_repeat: "Wiederholen (R)", c_like: "Liken (L)", c_mute: "Stumm", c_full: "Vollbild (F)", c_volume: "Lautstärke (↑ ↓)",
@@ -281,6 +287,14 @@
     blur: 28,
     bright: 100,
     imMode: "cover",
+    vizStyle: "bars",
+    vizBars: 120,
+    vizHeight: 100,
+    vizSmooth: 6,
+    vizGlow: true,
+    vizRings: true,
+    vizMirror: true,
+    vizSpin: false,
     scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
   };
   let cfg = { ...DEFAULTS };
@@ -980,7 +994,8 @@
     let el = null, raf = 0, lastText = 0, coverToken = 0;
     let q = {};
     let lyr = null, lyrUri = "", active = -2;
-    const vals = new Float32Array(120);
+    let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0;
+    const pit = new Float32Array(12);
     const vizRect = { n: 0, r: null };
     let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
 
@@ -1230,6 +1245,14 @@
 
     function drawViz(pos, now) {
       if (!vw) sizeCanvas();
+      const N = cfg.vizBars;
+      if (vals.length !== N) {
+        vals = new Float32Array(N);
+        targets = new Float32Array(N);
+      }
+      // zeitbasiert: gleich weich bei 60, 120 oder 144 Hz
+      const dt = Math.min(0.05, lastVizT ? (now - lastVizT) / 1000 : 0.016);
+      lastVizT = now;
       const ctx = vctx;
       ctx.clearRect(0, 0, vw, vh);
       const dpr = vw / innerWidth;
@@ -1237,74 +1260,131 @@
       const r = vizRect.r;
       const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
       const R = (r.width / 2) * dpr + 16 * dpr;
-      const N = vals.length, half = N / 2;
       const sec = pos / 1000;
       const playing = S.Player.isPlaying();
-      let b = 0;
+      let b = 0, havePitch = false, loud = 0.5;
 
-      let pitches = null, loud = 0.5;
       if (audio.data) {
-        const si = seek(audio.data.segs, sec, "t");
-        const sg = audio.data.segs[Math.max(si, 0)];
-        if (sg) {
-          pitches = sg.p;
-          loud = clamp((sg.l + 38) / 38, 0, 1);
+        // zwischen aktuellem und nächstem Abschnitt weich überblenden statt springen
+        const segs = audio.data.segs;
+        const si = Math.max(seek(segs, sec, "t"), 0);
+        const s0 = segs[si], s1 = segs[si + 1] || s0;
+        if (s0 && s0.p.length === 12) {
+          const f = clamp((sec - s0.t) / Math.max(0.01, s1.t - s0.t), 0, 1);
+          const e = f * f * (3 - 2 * f);
+          for (let k = 0; k < 12; k++) pit[k] = s0.p[k] + ((s1.p[k] ?? s0.p[k]) - s0.p[k]) * e;
+          loud = clamp((s0.l + (s1.l - s0.l) * e + 38) / 38, 0, 1);
+          havePitch = true;
         }
         b = beat.read(sec);
         const bi = seek(audio.data.beats, sec, "t");
         if (bi !== lastBeatIdx && bi >= 0 && playing) {
           lastBeatIdx = bi;
-          rings.push({ r: R, a: 0.7 * clamp(audio.data.beats[bi].c + 0.3, 0, 1) });
+          if (cfg.vizRings) rings.push({ r: R, a: 0.6 * clamp(audio.data.beats[bi].c + 0.3, 0, 1) });
         }
       }
+
+      const mirror = cfg.vizMirror;
+      const span = mirror ? N / 2 : N;
       const tt = now / 1000;
       for (let i = 0; i < N; i++) {
-        const m = i < half ? i : N - 1 - i; // spiegeln: links = rechts
-        let target;
-        if (pitches?.length === 12) {
-          const f = (m / half) * 11;
+        const m = mirror ? (i < span ? i : N - 1 - i) : i;
+        let t;
+        if (havePitch) {
+          const f = (m / span) * 11;
           const lo = Math.floor(f), hi = Math.min(11, lo + 1);
-          const p = pitches[lo] + (pitches[hi] - pitches[lo]) * (f - lo);
-          target = (0.12 + p * 0.88) * (0.35 + loud * 0.65) + b * 0.25;
+          const p = pit[lo] + (pit[hi] - pit[lo]) * (f - lo);
+          t = (0.12 + p * 0.88) * (0.35 + loud * 0.65) + b * 0.22;
         } else {
           // ohne Taktdaten: ruhiges, organisches Wogen
-          target = 0.28 + 0.22 * Math.sin(m * 0.33 + tt * 2.1) * Math.sin(m * 0.09 - tt * 1.3) + 0.12 * Math.sin(tt * 3 + m * 0.7);
+          t = 0.28 + 0.22 * Math.sin(m * 0.33 + tt * 2.1) * Math.sin(m * 0.09 - tt * 1.3) + 0.12 * Math.sin(tt * 3 + m * 0.7);
         }
-        if (!playing) target *= 0.25;
-        vals[i] += (target - vals[i]) * 0.22;
+        targets[i] = playing ? t : t * 0.25;
+      }
+      // Nachbarn glätten (weiche Kurve statt Zacken), schnell hoch, langsam runter
+      const k = cfg.vizSmooth;
+      const rise = 1 - Math.exp(-dt * (32 - 2.6 * k));
+      const fall = 1 - Math.exp(-dt * (16 - 1.3 * k));
+      for (let i = 0; i < N; i++) {
+        const t = (targets[(i - 1 + N) % N] + 2 * targets[i] + targets[(i + 1) % N]) / 4;
+        vals[i] += (t - vals[i]) * (t > vals[i] ? rise : fall);
       }
       if (cfg.calm) return;
 
       const pal = palette();
-      const maxLen = Math.min(vw, vh) * 0.11;
+      const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
+      const maxLen = Math.min(vw, vh) * 0.11 * (cfg.vizHeight / 100);
+      const rot = cfg.vizSpin ? tt * 0.06 : 0;
       ctx.globalCompositeOperation = "lighter";
       ctx.lineCap = "round";
+      ctx.lineJoin = "round";
       const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-      glow.addColorStop(0, `rgba(${pal[0].join(",")},${0.18 + b * 0.25})`);
+      glow.addColorStop(0, rgba(pal[0], 0.16 + b * 0.22));
       glow.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, vw, vh);
+      ctx.fillRect(cx - R * 3, cy - R * 3, R * 6, R * 6);
 
-      for (let pass = 0; pass < 2; pass++) {
-        ctx.lineWidth = (pass ? 3 : 9) * dpr;
-        for (let i = 0; i < N; i++) {
-          const ang = (i / N) * Math.PI * 2 - Math.PI / 2;
-          const len = 4 * dpr + vals[i] * maxLen;
-          const c = pal[i % 3 === 0 ? 2 : i % 2 ? 0 : 1];
-          ctx.strokeStyle = `rgba(${c.join(",")},${pass ? 0.95 : 0.16})`;
-          const cos = Math.cos(ang), sin = Math.sin(ang);
-          ctx.beginPath();
-          ctx.moveTo(cx + cos * R, cy + sin * R);
-          ctx.lineTo(cx + cos * (R + len), cy + sin * (R + len));
+      const ang = (i) => (i / N) * Math.PI * 2 - Math.PI / 2 + rot;
+      const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
+
+      if (cfg.vizStyle === "wave") {
+        // geschlossene, weiche Kurve durch alle Spitzen
+        ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const j = i % N, nx = (i + 1) % N;
+          const x0 = cx + Math.cos(ang(j)) * tip(j), y0 = cy + Math.sin(ang(j)) * tip(j);
+          const x1 = cx + Math.cos(ang(nx)) * tip(nx), y1 = cy + Math.sin(ang(nx)) * tip(nx);
+          const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+          if (i === 0) ctx.moveTo(mx, my);
+          else ctx.quadraticCurveTo(x0, y0, mx, my);
+        }
+        ctx.closePath();
+        ctx.fillStyle = rgba(pal[0], 0.16);
+        ctx.fill();
+        if (cfg.vizGlow) {
+          ctx.lineWidth = 10 * dpr;
+          ctx.strokeStyle = rgba(pal[1], 0.14);
           ctx.stroke();
         }
+        ctx.lineWidth = 2.5 * dpr;
+        ctx.strokeStyle = rgba(pal[2], 0.95);
+        ctx.stroke();
+      } else {
+        // Balken bzw. Punkte: pro Farbe EIN Pfad statt einer Linie pro Balken
+        const groups = [[], [], []];
+        for (let i = 0; i < N; i++) groups[i % 3 === 0 ? 2 : i % 2 ? 0 : 1].push(i);
+        const passes = cfg.vizStyle === "bars" && cfg.vizGlow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
+        for (const [w, al] of passes) {
+          ctx.lineWidth = w * dpr;
+          groups.forEach((idx, gi) => {
+            ctx.beginPath();
+            for (const i of idx) {
+              const c = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
+              if (cfg.vizStyle === "dots") {
+                ctx.moveTo(cx + c * e + 3 * dpr, cy + sn * e);
+                ctx.arc(cx + c * e, cy + sn * e, 3 * dpr, 0, Math.PI * 2);
+              } else {
+                ctx.moveTo(cx + c * R, cy + sn * R);
+                ctx.lineTo(cx + c * e, cy + sn * e);
+              }
+            }
+            if (cfg.vizStyle === "dots") {
+              ctx.fillStyle = rgba(pal[gi], al);
+              ctx.fill();
+            } else {
+              ctx.strokeStyle = rgba(pal[gi], al);
+              ctx.stroke();
+            }
+          });
+        }
       }
+
       ctx.lineWidth = 2 * dpr;
       rings = rings.filter((g) => g.a > 0.02);
       for (const g of rings) {
-        g.r += 5 * dpr;
-        g.a *= 0.955;
-        ctx.strokeStyle = `rgba(${pal[2].join(",")},${g.a})`;
+        g.r += 300 * dt * dpr;
+        g.a *= Math.exp(-dt * 2.8);
+        ctx.strokeStyle = rgba(pal[2], g.a);
         ctx.beginPath();
         ctx.arc(cx, cy, g.r, 0, Math.PI * 2);
         ctx.stroke();
@@ -1477,6 +1557,61 @@
         save();
         if (key === "blur") root.style.setProperty("--m-blur", cfg.blur + "px");
         else root.style.setProperty("--m-bright", String(cfg.bright / 100));
+      };
+      box.append(row);
+    }
+    // ---- Visualizer
+    const vh = document.createElement("div");
+    vh.className = "m-schemes-head";
+    vh.innerHTML = "<b></b><small></small>";
+    vh.querySelector("b").textContent = t("vizSection");
+    vh.querySelector("small").textContent = t("vizSectionHint");
+    box.append(vh);
+    const seg = document.createElement("div");
+    seg.className = "m-seg";
+    for (const st of ["bars", "wave", "dots"]) {
+      const bt = document.createElement("button");
+      bt.type = "button";
+      bt.textContent = t("viz_" + st);
+      bt.setAttribute("aria-pressed", String(cfg.vizStyle === st));
+      bt.onclick = () => {
+        cfg.vizStyle = st;
+        save();
+        seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === bt)));
+      };
+      seg.append(bt);
+    }
+    box.append(seg);
+    for (const [key, min, max, step, unit] of [
+      ["vizBars", 48, 180, 12, ""],
+      ["vizHeight", 50, 200, 10, "%"],
+      ["vizSmooth", 1, 10, 1, ""],
+    ]) {
+      const row = document.createElement("label");
+      row.className = "m-row";
+      row.innerHTML = `<span><b></b><small></small></span><input type="range">`;
+      row.querySelector("b").textContent = t(key);
+      const hint = row.querySelector("small");
+      const rg = row.querySelector("input");
+      Object.assign(rg, { min, max, step, value: cfg[key] });
+      hint.textContent = cfg[key] + unit;
+      rg.oninput = () => {
+        cfg[key] = Number(rg.value);
+        hint.textContent = rg.value + unit;
+        save();
+      };
+      box.append(row);
+    }
+    for (const key of ["vizGlow", "vizRings", "vizMirror", "vizSpin"]) {
+      const row = document.createElement("label");
+      row.className = "m-row";
+      row.innerHTML = `<span><b></b></span><input type="checkbox">`;
+      row.querySelector("b").textContent = t(key);
+      const cb = row.querySelector("input");
+      cb.checked = !!cfg[key];
+      cb.onchange = () => {
+        cfg[key] = cb.checked;
+        save();
       };
       box.append(row);
     }

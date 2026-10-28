@@ -2133,3 +2133,29 @@ html.mirage-calm .Root *::before,
 html.mirage-calm .Root *::after {
   animation-play-state: paused !important;
 }
+
+/* Visualizer-Stilwahl in den Mirage-Einstellungen */
+.mirage-settings .m-seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  margin: 6px 0 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--m-line);
+  width: fit-content;
+}
+.mirage-settings .m-seg button {
+  border: 0;
+  background: none;
+  color: var(--spice-subtext);
+  font: 600 13px var(--m-font);
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: color 0.3s, background 0.3s;
+}
+.mirage-settings .m-seg button[aria-pressed="true"] {
+  color: #0b0a12;
+  background: var(--m-a);
+}
