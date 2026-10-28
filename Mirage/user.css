@@ -2032,3 +2032,45 @@ html[data-m-page="artist"] h2 {
     filter: hue-rotate(360deg);
   }
 }
+
+/* ==========================================================================
+   HELLER DESIGN-SATZ → DUNKEL
+   Spotify rendert Bestätigungsdialoge („Löschen?“ usw.) mit encore-light-theme.
+   ========================================================================== */
+.encore-light-theme,
+.encore-light-theme .encore-base-set,
+.encore-light-theme .encore-inverted-light-set {
+  --background-base: rgba(var(--spice-rgb-main), 0.96) !important;
+  --background-highlight: rgba(255, 255, 255, 0.08) !important;
+  --background-press: rgba(255, 255, 255, 0.04) !important;
+  --background-elevated-base: rgba(var(--spice-rgb-main), 0.96) !important;
+  --background-elevated-highlight: rgba(var(--m-a-rgb), 0.16) !important;
+  --background-tinted-base: rgba(255, 255, 255, 0.07) !important;
+  --background-tinted-highlight: rgba(255, 255, 255, 0.11) !important;
+  --text-base: var(--spice-text) !important;
+  --text-subdued: var(--spice-subtext) !important;
+  --text-bright-accent: var(--m-c) !important;
+  --essential-base: var(--spice-text) !important;
+  --essential-subdued: var(--spice-subtext) !important;
+  --decorative-base: var(--spice-text) !important;
+  --decorative-subdued: var(--m-line) !important;
+  color: var(--spice-text) !important;
+}
+[role="dialog"].encore-light-theme,
+[role="alertdialog"],
+.encore-light-theme[role="dialog"] > div,
+.main-confirmDialog-container {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(var(--m-a-rgb), 0.16), transparent 55%),
+    rgba(var(--spice-rgb-main), 0.96) !important;
+  border: 1px solid var(--m-line-strong) !important;
+  border-radius: 22px !important;
+  color: var(--spice-text) !important;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 80px -30px rgba(var(--m-a-rgb), 0.5) !important;
+}
+.encore-light-theme h1,
+.encore-light-theme h2,
+[role="alertdialog"] h1,
+.main-confirmDialog-container h1 {
+  color: var(--spice-text) !important;
+}

@@ -250,7 +250,7 @@
     const sc = SCHEMES[name];
     if (!sc) return (schemeSheet.textContent = "");
     schemeSheet.textContent =
-      ":root{" + Object.entries(sc).map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + "}";
+      "html:root{" + Object.entries(sc).map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + "}";
   }
   const schemePalette = () => {
     const sc = SCHEMES[cfg.scheme] || SCHEMES.Mirage;
@@ -439,7 +439,7 @@
     current = next;
     const [a, b, c] = next.map((x) => x.join(","));
     varSheet.textContent =
-      `:root{--m-a:rgb(${a});--m-a-rgb:${a};--m-b:rgb(${b});--m-b-rgb:${b};--m-c:rgb(${c});--m-c-rgb:${c};` +
+      `html:root{--m-a:rgb(${a});--m-a-rgb:${a};--m-b:rgb(${b});--m-b-rgb:${b};--m-c:rgb(${c});--m-c-rgb:${c};` +
       `--spice-button:rgb(${a});--spice-rgb-button:${a};--spice-button-active:rgb(${c});--spice-rgb-button-active:${c}}`;
     dust.recolor(next);
     bridge.sendTrack();
@@ -754,7 +754,8 @@
       if (el.offsetWidth < minW || el.offsetHeight < 40 || el.classList.contains("m-tint")) continue;
       if (el.closest(".main-card-card, [data-encore-id='card'], [role='row']")) continue;
       const cs = getComputedStyle(el);
-      if (cs.backgroundImage.includes("url(")) continue;
+      // echte Fotos (Künstlerbild usw.) bleiben; Spotifys Rausch-Textur über der Farbe nicht
+      if (/url\(["']?https?:/.test(cs.backgroundImage)) continue;
       const m = /rgba?\(([^)]+)\)/.exec(cs.backgroundColor);
       const alpha = m ? Number(m[1].split(",")[3] ?? 1) : 0;
       if (alpha >= 0.3) el.classList.add("m-tint");
