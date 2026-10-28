@@ -33,6 +33,7 @@
       grain: "Film grain", grainHint: "Fine noise over the background",
       calm: "Calm mode", calmHint: "Stops all background animations",
       blur: "Glass blur (real glass only)", bright: "Background brightness",
+      scheme: "Colour scheme", schemeHint: "Switches instantly – Mirage follows the cover live",
       glass: "Real glass", glassHint: "Blurs live behind every panel – looks richer, costs a lot of performance",
       c_shuffle: "Shuffle (S)", c_repeat: "Repeat (R)", c_like: "Like (L)", c_mute: "Mute", c_full: "Full screen (F)", c_volume: "Volume (↑ ↓)",
       tip: "Immersive mode: Ctrl + Shift + M or the circle button at the top. Inside: 1 · 2 · 3 view, Space play, ← → seek, ↑ ↓ volume, L like, S shuffle, R repeat, F full screen.",
@@ -54,6 +55,7 @@
       grain: "Filmkorn", grainHint: "Feines Rauschen über dem Hintergrund",
       calm: "Ruhiger Modus", calmHint: "Hält alle Hintergrund-Animationen an",
       blur: "Glas-Unschärfe (nur echtes Glas)", bright: "Helligkeit des Hintergrunds",
+      scheme: "Farbschema", schemeHint: "Wechselt sofort – Mirage folgt live dem Cover",
       glass: "Echtes Glas", glassHint: "Verwischt live hinter jeder Fläche – edler, kostet aber viel Leistung",
       c_shuffle: "Zufallswiedergabe (S)", c_repeat: "Wiederholen (R)", c_like: "Liken (L)", c_mute: "Stumm", c_full: "Vollbild (F)", c_volume: "Lautstärke (↑ ↓)",
       tip: "Immersiv-Modus: Strg + Umschalt + M oder der Kreis-Knopf oben. Darin: 1 · 2 · 3 Ansicht, Leertaste Wiedergabe, ← → spulen, ↑ ↓ Lautstärke, L liken, S Zufall, R Wiederholen, F Vollbild.",
@@ -237,6 +239,24 @@
   })();
   const t = (k) => I18N[LANG][k] ?? I18N.en[k] ?? k;
 
+  /* ---------------------------------------------------------------- Farbschemata */
+  // Aus color.ini übernommen: so lässt sich das Schema live wechseln, ohne "spicetify apply".
+  const SCHEMES = {"Mirage":{"text":"F5F3FF","subtext":"B9B4CC","main":"07060C","main-elevated":"12101C","highlight":"1C1929","highlight-elevated":"262236","sidebar":"0B0A12","player":"0B0A12","card":"14121E","shadow":"000000","selected-row":"E9E4FF","button":"B69CFF","button-active":"D4C6FF","button-disabled":"4A4560","tab-active":"2A2540","notification":"7C5CFF","notification-error":"FF5C7A","misc":"8A85A0"},"Obsidian":{"text":"F2F2F2","subtext":"A8A8A8","main":"050505","main-elevated":"101010","highlight":"1A1A1A","highlight-elevated":"242424","sidebar":"090909","player":"090909","card":"121212","shadow":"000000","selected-row":"FFFFFF","button":"E8E8E8","button-active":"FFFFFF","button-disabled":"444444","tab-active":"262626","notification":"3A3A3A","notification-error":"FF4D4D","misc":"7A7A7A"},"Sakura":{"text":"FFF2F6","subtext":"D9B3C1","main":"0E070B","main-elevated":"1A0E15","highlight":"26141E","highlight-elevated":"331B28","sidebar":"12090E","player":"12090E","card":"1C0F17","shadow":"000000","selected-row":"FFD6E4","button":"FF8FB8","button-active":"FFB8D2","button-disabled":"5C3A48","tab-active":"3A1F2D","notification":"E0507F","notification-error":"FF5C5C","misc":"A07C8C"},"Abyss":{"text":"EAFBFF","subtext":"9CC3CF","main":"03090C","main-elevated":"081419","highlight":"0E1E25","highlight-elevated":"152A33","sidebar":"050D11","player":"050D11","card":"0A171D","shadow":"000000","selected-row":"C9F6FF","button":"4FE3FF","button-active":"9AF0FF","button-disabled":"2C4A55","tab-active":"15303A","notification":"1AA6C2","notification-error":"FF6B6B","misc":"6E929E"},"Ember":{"text":"FFF6EE","subtext":"D6B8A0","main":"0C0705","main-elevated":"18100B","highlight":"241811","highlight-elevated":"302016","sidebar":"100A07","player":"100A07","card":"1A110C","shadow":"000000","selected-row":"FFE2C7","button":"FF9F45","button-active":"FFC48A","button-disabled":"5A4232","tab-active":"3A2516","notification":"E06A1A","notification-error":"FF4D5E","misc":"A08670"}};
+  const hexRgb = (h) => [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const schemeSheet = document.createElement("style");
+  schemeSheet.id = "mirage-scheme";
+  document.head.append(schemeSheet);
+  function applyScheme(name) {
+    const sc = SCHEMES[name];
+    if (!sc) return (schemeSheet.textContent = "");
+    schemeSheet.textContent =
+      ":root{" + Object.entries(sc).map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + "}";
+  }
+  const schemePalette = () => {
+    const sc = SCHEMES[cfg.scheme] || SCHEMES.Mirage;
+    return [hexRgb(sc.button), hexRgb(sc.notification), hexRgb(sc["button-active"])];
+  };
+
   /* ---------------------------------------------------------------- Einstellungen */
   const KEY = "mirage:settings";
   const schemeIsDynamic = !S.Config?.color_scheme || /mirage/i.test(S.Config.color_scheme);
@@ -255,6 +275,7 @@
     blur: 28,
     bright: 100,
     imMode: "cover",
+    scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
   };
   let cfg = { ...DEFAULTS };
   try {
@@ -267,6 +288,7 @@
   };
 
   function applySettings() {
+    applyScheme(cfg.scheme);
     root.classList.toggle("mirage-vinyl", cfg.vinyl);
     root.classList.toggle("mirage-no-tilt", !cfg.tilt);
     root.classList.toggle("mirage-no-grain", !cfg.grain);
@@ -405,7 +427,7 @@
 
   const FALLBACK = [[182, 156, 255], [124, 92, 255], [230, 222, 255]];
   let current = null;
-  const palette = () => current || FALLBACK;
+  const palette = () => current || schemePalette();
 
   // Farben in EINEM Schritt über ein eigenes <style> setzen: eine einzige Stilberechnung
   // statt vieler Zwischenstufen – das war die Ursache für das Flackern beim Songwechsel.
@@ -536,7 +558,7 @@
       return s;
     }
     function recolor(cols) {
-      sprites = [...(cols || FALLBACK), [255, 255, 255]].map(sprite);
+      sprites = [...(cols || schemePalette()), [255, 255, 255]].map(sprite);
     }
     function resize() {
       w = cv.width = Math.round(innerWidth * 0.75);
@@ -704,9 +726,46 @@
       enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
     }, 70);
   }
+  // Seitentyp aus der Adresse (/user/…, /artist/…, /playlist/…) – unabhängig von Spotifys Klassennamen
+  function markPage(loc) {
+    const path = (loc || S.Platform.History.location || {}).pathname || "";
+    root.dataset.mPage = path.split("/")[1] || "home";
+  }
   try {
-    S.Platform.History.listen(pageEnter);
+    S.Platform.History.listen((loc) => {
+      markPage(loc);
+      pageEnter();
+    });
+    markPage();
   } catch {}
+
+  /* ---------------------------------------------------------------- Farbflächen zähmen */
+  // Spotify färbt Kopfbereiche per Inline-Farbe (leere Playlist = grau). Klassennamen wechseln
+  // ständig, darum erkennen wir große, bildlose Farbflächen im Hauptbereich am Stil selbst.
+  let tintQueued = false;
+  function tameTints() {
+    tintQueued = false;
+    const mv = document.querySelector(".Root__main-view");
+    if (!mv) return;
+    const minW = mv.clientWidth * 0.55;
+    mv.querySelectorAll('[style*="background"]').forEach((el) => {
+      if (el.classList.contains("m-tint") || el.closest(".main-card-card, [data-encore-id='card'], [role='row'], img")) return;
+      const st = el.getAttribute("style") || "";
+      if (st.includes("url(") || !/background(-color)?\s*:|--background-color/.test(st)) return;
+      if (el.offsetWidth >= minW && el.offsetHeight >= 40) el.classList.add("m-tint");
+    });
+  }
+  const queueTints = () => {
+    if (tintQueued) return;
+    tintQueued = true;
+    setTimeout(() => requestAnimationFrame(tameTints), 120);
+  };
+  (function watchTints() {
+    const mv = document.querySelector(".Root__main-view");
+    if (!mv) return setTimeout(watchTints, 500);
+    new MutationObserver(queueTints).observe(mv, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
+    queueTints();
+  })();
 
   /* ---------------------------------------------------------------- Herz-Explosion */
   function burst(x, y) {
@@ -1223,6 +1282,37 @@
   function openSettings() {
     const box = document.createElement("div");
     box.className = "mirage-settings";
+    const pick = document.createElement("div");
+    pick.className = "m-schemes";
+    const head = document.createElement("div");
+    head.className = "m-schemes-head";
+    head.innerHTML = "<b></b><small></small>";
+    head.querySelector("b").textContent = t("scheme");
+    head.querySelector("small").textContent = t("schemeHint");
+    box.append(head, pick);
+    for (const [name, sc] of Object.entries(SCHEMES)) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "m-scheme";
+      b.setAttribute("aria-pressed", String(cfg.scheme === name));
+      b.style.setProperty("--s-main", "#" + sc.main);
+      b.style.setProperty("--s-a", "#" + sc.button);
+      b.style.setProperty("--s-b", "#" + sc.notification);
+      b.style.setProperty("--s-c", "#" + sc["button-active"]);
+      b.innerHTML = `<span class="m-sw${name === "Mirage" ? " is-live" : ""}"><i></i><i></i><i></i></span><span></span>`;
+      b.lastChild.textContent = name;
+      b.onclick = () => {
+        cfg.scheme = name;
+        cfg.dynamic = name === "Mirage";
+        save();
+        applySettings();
+        cfg.dynamic ? onSong(false) : clearColors();
+        pick.querySelectorAll(".m-scheme").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        const dyn = box.querySelector("input[data-key=dynamic]");
+        if (dyn) dyn.checked = cfg.dynamic;
+      };
+      pick.append(b);
+    }
     for (const key of ["dynamic", "particles", "beat", "cascade", "vinyl", "tilt", "burst", "overlay", "grain", "glass", "calm"]) {
       const row = document.createElement("label");
       row.className = "m-row";
@@ -1230,6 +1320,7 @@
       row.querySelector("b").textContent = t(key);
       row.querySelector("small").textContent = t(key + "Hint");
       const cb = row.querySelector("input");
+      cb.dataset.key = key;
       cb.checked = !!cfg[key];
       cb.onchange = () => {
         cfg[key] = cb.checked;

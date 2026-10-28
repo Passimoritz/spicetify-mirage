@@ -343,8 +343,8 @@ body {
 [data-encore-id="card"]:hover::before {
   opacity: 1;
 }
-.main-card-card img,
-[data-encore-id="card"] img {
+.main-card-card img:not([class*="ircular"]),
+[data-encore-id="card"] img:not([class*="ircular"]) {
   border-radius: 12px !important;
   transition: transform 0.6s var(--m-ease);
 }
@@ -1645,5 +1645,407 @@ html.mirage-im-open .Root * {
 @media (max-width: 900px) {
   #mirage-immersive .m-im-extras {
     justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   SPOTIFYS FARBFLÄCHEN (theme.js markiert sie mit .m-tint)
+   Statt grauer/bunter Blöcke ein feiner Schleier in der Akzentfarbe.
+   ========================================================================== */
+.m-tint {
+  background-color: transparent !important;
+  background-image: linear-gradient(180deg, rgba(var(--m-a-rgb), 0.18), rgba(var(--m-a-rgb), 0.04) 70%, transparent) !important;
+}
+
+/* ==========================================================================
+   SEITENTITEL ÜBERALL (theme.js setzt data-m-page nach der Adresse)
+   ========================================================================== */
+.Root__main-view h1 {
+  font-weight: 800 !important;
+  letter-spacing: -0.035em !important;
+  background: linear-gradient(100deg, #fff 35%, var(--m-c) 70%, var(--m-a));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.06em;
+}
+
+/* ==========================================================================
+   PROFILE (eigene + fremde)
+   ========================================================================== */
+html[data-m-page="user"] .main-entityHeader-image,
+html[data-m-page="user"] [data-testid="entity-image"],
+html[data-m-page="user"] .main-entityHeader-imagePlaceholder {
+  border-radius: 50% !important;
+  animation: m-avatar 5s ease-in-out infinite !important;
+  box-shadow:
+    0 0 0 4px rgba(var(--spice-rgb-main), 0.9),
+    0 0 0 7px rgba(var(--m-a-rgb), 0.9),
+    0 0 50px 4px rgba(var(--m-a-rgb), 0.55),
+    0 40px 90px -30px rgba(var(--m-b-rgb), 0.9) !important;
+}
+@keyframes m-avatar {
+  50% {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow:
+      0 0 0 4px rgba(var(--spice-rgb-main), 0.9),
+      0 0 0 7px rgba(var(--m-c-rgb), 0.95),
+      0 0 70px 10px rgba(var(--m-a-rgb), 0.65),
+      0 46px 100px -30px rgba(var(--m-b-rgb), 0.95);
+  }
+}
+html[data-m-page="user"] .main-entityHeader-headerText,
+html[data-m-page="user"] .main-entityHeader-metaData {
+  position: relative;
+}
+html[data-m-page="user"] h1 {
+  font-size: clamp(48px, 7vw, 110px) !important;
+  filter: drop-shadow(0 10px 40px rgba(var(--m-a-rgb), 0.35));
+}
+/* Profilwerte (Playlists · Follower · Folge ich) als Glas-Kapsel */
+html[data-m-page="user"] .main-entityHeader-metaData a,
+html[data-m-page="user"] .main-entityHeader-metaData span {
+  transition: color 0.3s;
+}
+html[data-m-page="user"] .main-entityHeader-metaData a:hover {
+  color: var(--m-c) !important;
+}
+
+/* Runde Bilder (Profile, Künstler, Follower) bleiben rund – mit Leuchtring */
+.main-card-card:has([class*="ircular"]) img,
+[data-encore-id="card"]:has([class*="ircular"]) img,
+html[data-m-page="user"] section [data-encore-id="card"] img {
+  border-radius: 50% !important;
+}
+.main-card-card:has([class*="ircular"]) img,
+[data-encore-id="card"]:has([class*="ircular"]) img {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.4s var(--m-ease), transform 0.6s var(--m-ease);
+}
+.main-card-card:has([class*="ircular"]):hover img,
+[data-encore-id="card"]:has([class*="ircular"]):hover img {
+  box-shadow:
+    0 0 0 3px rgba(var(--m-a-rgb), 0.9),
+    0 0 30px 2px rgba(var(--m-a-rgb), 0.55);
+}
+
+/* ==========================================================================
+   KÜNSTLERSEITEN
+   ========================================================================== */
+html[data-m-page="artist"] .main-entityHeader-withBackgroundImage,
+html[data-m-page="artist"] [data-testid="artist-entity-header"] {
+  position: relative;
+  overflow: hidden;
+}
+/* Bild läuft unten weich in die Seite aus, mit Lichtkante in Coverfarbe */
+html[data-m-page="artist"] .main-entityHeader-withBackgroundImage::after,
+html[data-m-page="artist"] [data-testid="artist-entity-header"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 35%, rgba(var(--spice-rgb-main), 0.55) 75%, rgba(var(--spice-rgb-main), 0.92)),
+    radial-gradient(70% 60% at 15% 100%, rgba(var(--m-a-rgb), 0.35), transparent 70%);
+}
+html[data-m-page="artist"] h1 {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(56px, 9vw, 150px) !important;
+  line-height: 0.92 !important;
+  letter-spacing: -0.05em !important;
+  filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 40px rgba(var(--m-a-rgb), 0.35));
+}
+html[data-m-page="artist"] .main-entityHeader-headerText,
+html[data-m-page="artist"] .main-entityHeader-detailsText,
+html[data-m-page="artist"] .main-entityHeader-headerText > * {
+  position: relative;
+  z-index: 2;
+}
+/* „Verifiziert“ und Hörerzahl als Glas-Kapseln */
+html[data-m-page="artist"] .main-entityHeader-headerText > span:first-child,
+html[data-m-page="artist"] .main-entityHeader-detailsText {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff !important;
+  letter-spacing: 0.02em !important;
+  text-transform: none !important;
+  font-family: var(--m-font) !important;
+  font-size: 13px !important;
+}
+html[data-m-page="artist"] .main-entityHeader-detailsText {
+  margin-top: 10px;
+  font-family: var(--m-mono) !important;
+  font-size: 12px !important;
+}
+/* Beliebt-Liste: große Nummern, die leuchten */
+html[data-m-page="artist"] [role="grid"] [aria-colindex="1"] {
+  font-family: var(--m-mono) !important;
+  font-size: 15px !important;
+  color: rgba(var(--m-c-rgb), 0.75) !important;
+}
+html[data-m-page="artist"] [role="row"]:hover [aria-colindex="1"] {
+  color: var(--m-c) !important;
+  text-shadow: 0 0 14px rgba(var(--m-a-rgb), 0.9);
+}
+/* Künstler-Tipp + Abschnitte als Glaskarten */
+html[data-m-page="artist"] section {
+  border-radius: 22px;
+}
+html[data-m-page="artist"] [data-testid="artist-pick"],
+html[data-m-page="artist"] .artist-artistOverview-artistPick {
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--m-line);
+  transition: background 0.3s, box-shadow 0.4s var(--m-ease);
+}
+html[data-m-page="artist"] [data-testid="artist-pick"]:hover,
+html[data-m-page="artist"] .artist-artistOverview-artistPick:hover {
+  background: rgba(var(--m-a-rgb), 0.1);
+  box-shadow: 0 20px 50px -24px rgba(var(--m-a-rgb), 0.8);
+}
+html[data-m-page="artist"] h2 {
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* ==========================================================================
+   DIALOGE & BEARBEITEN-OBERFLÄCHEN
+   ========================================================================== */
+.GenericModal,
+[role="dialog"][aria-modal="true"] {
+  animation: m-modal-in 0.45s var(--m-spring) both;
+}
+@keyframes m-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+}
+.GenericModal > div,
+.main-trackCreditsModal-container,
+[data-testid="playlist-edit-details-modal"] {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(var(--m-a-rgb), 0.16), transparent 55%),
+    radial-gradient(120% 80% at 100% 100%, rgba(var(--m-b-rgb), 0.12), transparent 55%),
+    rgba(var(--spice-rgb-main), 0.95) !important;
+  border: 1px solid var(--m-line-strong) !important;
+  border-radius: 22px !important;
+  box-shadow:
+    0 40px 100px -30px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(var(--m-a-rgb), 0.15),
+    0 0 80px -30px rgba(var(--m-a-rgb), 0.5) !important;
+}
+[role="dialog"] h1,
+.GenericModal h1 {
+  font-size: 26px !important;
+}
+[role="dialog"] header button,
+.main-playlistEditDetailsModal-closeBtn {
+  border-radius: 50% !important;
+  transition: transform 0.4s var(--m-spring), background 0.3s !important;
+}
+[role="dialog"] header button:hover,
+.main-playlistEditDetailsModal-closeBtn:hover {
+  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Eingabefelder in Dialogen + im Hauptbereich */
+[role="dialog"] input[type="text"],
+[role="dialog"] input:not([type]),
+[role="dialog"] textarea,
+.GenericModal input[type="text"],
+.GenericModal textarea,
+.Root__main-view input[type="text"],
+.Root__main-view input[type="search"],
+.Root__main-view [role="searchbox"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--m-line-strong) !important;
+  border-radius: 14px !important;
+  color: var(--spice-text) !important;
+  box-shadow: none !important;
+  transition:
+    border-color 0.3s var(--m-ease),
+    box-shadow 0.3s var(--m-ease),
+    background 0.3s var(--m-ease) !important;
+}
+[role="dialog"] input:hover,
+[role="dialog"] textarea:hover,
+.Root__main-view input[type="text"]:hover,
+.Root__main-view [role="searchbox"]:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+[role="dialog"] input:focus,
+[role="dialog"] textarea:focus,
+.GenericModal input:focus,
+.GenericModal textarea:focus,
+.Root__main-view input[type="text"]:focus,
+.Root__main-view input[type="search"]:focus,
+.Root__main-view [role="searchbox"]:focus {
+  outline: none !important;
+  border-color: rgba(var(--m-a-rgb), 0.8) !important;
+  background: rgba(var(--m-a-rgb), 0.08) !important;
+  box-shadow:
+    0 0 0 4px rgba(var(--m-a-rgb), 0.18),
+    0 12px 36px -14px rgba(var(--m-a-rgb), 0.7) !important;
+}
+[role="dialog"] textarea,
+.GenericModal textarea {
+  resize: none;
+}
+[role="dialog"] ::placeholder,
+.Root__main-view ::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Cover-Wahl im Bearbeiten-Dialog */
+[role="dialog"] [data-testid="cover-art-image"],
+[role="dialog"] .main-playlistEditDetailsModal-albumCover,
+[role="dialog"] .main-editImageButton-image {
+  border-radius: 16px !important;
+  box-shadow:
+    0 20px 50px -18px rgba(var(--m-a-rgb), 0.8),
+    0 0 0 1px var(--m-line-strong) !important;
+  transition: transform 0.45s var(--m-spring), box-shadow 0.45s var(--m-ease);
+}
+[role="dialog"] .main-editImageButton-image:hover,
+[role="dialog"] .main-playlistEditDetailsModal-albumCover:hover {
+  transform: scale(1.03) rotate(-0.6deg);
+  box-shadow:
+    0 26px 60px -16px rgba(var(--m-a-rgb), 0.95),
+    0 0 0 2px rgba(var(--m-c-rgb), 0.7) !important;
+}
+.main-editImageButton-overlay {
+  background: linear-gradient(160deg, rgba(var(--m-b-rgb), 0.55), rgba(0, 0, 0, 0.65)) !important;
+  border-radius: inherit;
+}
+
+/* Knöpfe: Hauptknopf in Coverfarbe, Nebenknöpfe als Glas-Kapsel */
+[data-encore-id="buttonPrimary"] > span:first-child {
+  background: linear-gradient(135deg, var(--m-c), var(--m-a) 60%, var(--m-b)) !important;
+  color: #0b0a12 !important;
+  box-shadow: 0 12px 30px -10px rgba(var(--m-a-rgb), 0.85) !important;
+  transition: transform 0.35s var(--m-spring), box-shadow 0.35s var(--m-ease) !important;
+}
+[data-encore-id="buttonPrimary"]:hover > span:first-child {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 16px 40px -10px rgba(var(--m-a-rgb), 1) !important;
+}
+[data-encore-id="buttonSecondary"] {
+  border-radius: 999px !important;
+  border-color: var(--m-line-strong) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, transform 0.35s var(--m-spring) !important;
+}
+[data-encore-id="buttonSecondary"]:hover {
+  border-color: rgba(var(--m-a-rgb), 0.8) !important;
+  background: rgba(var(--m-a-rgb), 0.1) !important;
+  box-shadow: 0 10px 28px -12px rgba(var(--m-a-rgb), 0.8);
+  transform: translateY(-1px);
+}
+.Root__main-view [data-encore-id="buttonTertiary"] {
+  border-radius: 999px !important;
+  transition: background 0.3s, color 0.3s !important;
+}
+.Root__main-view [data-encore-id="buttonTertiary"]:hover {
+  background: rgba(var(--m-a-rgb), 0.14) !important;
+  color: var(--m-c) !important;
+}
+
+/* Schalter + Auswahllisten (Spotify-Einstellungen, Dialoge) */
+.x-toggle-input:checked ~ .x-toggle-indicatorWrapper {
+  background: linear-gradient(135deg, var(--m-c), var(--m-a)) !important;
+  box-shadow: 0 0 16px -2px rgba(var(--m-a-rgb), 0.8);
+}
+.main-dropDown-dropDown,
+.x-settings-container select,
+[role="dialog"] select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--m-line-strong) !important;
+  border-radius: 12px !important;
+  color: var(--spice-text) !important;
+}
+
+/* Platzhalter-Cover einer leeren Playlist */
+.main-entityHeader-imagePlaceholder {
+  color: var(--m-c) !important;
+  background:
+    radial-gradient(80% 80% at 30% 20%, rgba(var(--m-a-rgb), 0.45), transparent 60%),
+    radial-gradient(80% 80% at 80% 90%, rgba(var(--m-b-rgb), 0.4), transparent 60%),
+    rgba(var(--spice-rgb-main), 0.8) !important;
+}
+
+/* ==========================================================================
+   FARBSCHEMA-AUSWAHL in den Mirage-Einstellungen
+   ========================================================================== */
+.mirage-settings .m-schemes-head {
+  padding: 4px 4px 0;
+}
+.mirage-settings .m-schemes-head b {
+  display: block;
+  font-weight: 600;
+  color: var(--spice-text);
+}
+.mirage-settings .m-schemes-head small {
+  color: var(--spice-subtext);
+}
+.mirage-settings .m-schemes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+.mirage-settings .m-scheme {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 10px 6px 8px;
+  border: 1px solid var(--m-line);
+  border-radius: 14px;
+  background: var(--s-main);
+  color: var(--spice-subtext);
+  font: 600 12px var(--m-font);
+  cursor: pointer;
+  transition: transform 0.35s var(--m-spring), border-color 0.3s, box-shadow 0.3s;
+}
+.mirage-settings .m-scheme:hover {
+  transform: translateY(-2px);
+}
+.mirage-settings .m-scheme[aria-pressed="true"] {
+  color: #fff;
+  border-color: var(--s-a);
+  box-shadow: 0 10px 26px -12px var(--s-a), inset 0 0 0 1px var(--s-a);
+}
+.mirage-settings .m-sw {
+  display: flex;
+  gap: 3px;
+}
+.mirage-settings .m-sw i {
+  width: 14px;
+  height: 26px;
+  border-radius: 5px;
+  background: var(--s-a);
+}
+.mirage-settings .m-sw i:nth-child(2) {
+  background: var(--s-b);
+}
+.mirage-settings .m-sw i:nth-child(3) {
+  background: var(--s-c);
+}
+.mirage-settings .m-sw.is-live i {
+  animation: m-live 6s linear infinite;
+}
+@keyframes m-live {
+  to {
+    filter: hue-rotate(360deg);
   }
 }
