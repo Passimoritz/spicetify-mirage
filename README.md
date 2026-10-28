@@ -24,6 +24,23 @@
 
 **Mirage** turns Spotify into frosted glass with the music living behind it. Every song repaints the interface in the colours of its album art, the cover drifts slowly behind the panels as soft light, and – when Spotify provides beat data – the whole background breathes on the beat.
 
+## 📸 Real screenshots
+
+<p align="center">
+  <img src="assets/shots/playlist.png" alt="Mirage on a playlist page" width="100%">
+</p>
+<table>
+  <tr>
+    <td width="50%"><img src="assets/shots/album.png" alt="Mirage on an album page"></td>
+    <td width="50%"><img src="assets/shots/visualizer.png" alt="Immersive mode – visualizer on the beat"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Album page – the header melts into the glass, no hard colour block</sub></td>
+    <td align="center"><sub>Immersive visualizer, coloured live from the cover and pulsing on the beat</sub></td>
+  </tr>
+</table>
+<sub>Taken from a real Spotify install. Personal library and friends' names/pictures are pixelated.</sub>
+
 ## ✦ Highlights
 
 <table>
@@ -160,6 +177,8 @@ flowchart LR
 ```
 
 - **Performance first:** colours change in a single style update, the background haze is a pre-shrunk image blurred once and only rotated, and the background pauses while immersive mode covers it. Real glass (live blur behind every panel) is optional.
+- **Built against the real Spotify DOM:** current Spotify builds renamed `.Root__main-view` & co. to `#main-view` / `#Desktop_LeftSidebar_Id`; Mirage targets both. Header colour blocks (incl. `::after` gradients and `oklch()` colours) are detected by their computed style, not by class names that change every release.
+- **Diagnostics:** with the overlay running, the theme can send a layout report (element sizes, classes, colours – no content) to `%APPDATA%\Mirage Overlay\dom-report.json`, so styling bugs can be fixed from facts instead of guesses.
 - **Privacy:** no own server, no tracking. Lyrics and beat data come from Spotify itself; fonts load from Google Fonts.
 - **Accessibility:** respects *reduce motion*, visible focus rings, readable contrast on every palette.
 

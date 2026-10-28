@@ -116,6 +116,7 @@
   .m-slide .ov { transform: translate(calc(var(--fx) * 5), calc(var(--fy) * 5)); transition-timing-function: var(--ease); }
   .m-fade .ov { transform: scale(.96); filter: blur(12px); }
 
+  .ov:not(.in) *, .ov:not(.in)::before { animation-play-state: paused !important; }
   @media (prefers-reduced-motion: reduce) {
     .ov, .ov * { transition-duration: .01ms !important; animation: none !important; }
   }
@@ -142,6 +143,7 @@
   const $ = (id) => document.getElementById(id);
   const stage = $("stage"), ov = $("ov");
   const PLAY = '<path d="M7 4v16l13-8z"/>', PAUSE = '<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>';
+  let gen = 0, ticking = false;
   let cfg = null, track = null, recvAt = 0, hideT = 0, openT = 0, hovered = false, visible = false;
 
   function applyCfg(c) {
@@ -186,6 +188,8 @@
 
   function open(reason, text) {
     clearTimeout(hideT); clearTimeout(openT);
+    gen++;
+    if (!ticking) { ticking = true; requestAnimationFrame(tick); }
     if (reason !== "update") $("kick").textContent = text[reason] || text.nowPlaying;
     if (!$("kick").textContent) $("kick").textContent = text.nowPlaying;
     visible = true;
@@ -203,10 +207,17 @@
   }
   function close() {
     clearTimeout(openT);
+    // Generation: kommt währenddessen eine neue Ansage, brechen die alten Schritte ab
+    const g = gen;
     ov.classList.remove("open");
     setTimeout(() => {
+      if (g !== gen) return;
       ov.classList.remove("in");
-      setTimeout(() => { visible = false; if (!ov.classList.contains("in")) mirage.send("done"); }, 520);
+      setTimeout(() => {
+        if (g !== gen) return;
+        visible = false;
+        mirage.send("done");
+      }, 520);
     }, cfg.style === "island" ? 380 : 0);
   }
 
@@ -219,13 +230,15 @@
   ov.addEventListener("mouseleave", () => { hovered = false; mirage.send("hover", false); });
   ov.querySelectorAll(".ctl button").forEach((b) => b.addEventListener("click", () => mirage.send("cmd", b.dataset.c)));
 
-  (function tick() {
+  // läuft nur, solange etwas sichtbar ist
+  function tick() {
+    if (!visible) { ticking = false; return; }
     requestAnimationFrame(tick);
-    if (!visible || !track?.duration) return;
+    if (!track?.duration) return;
     const pos = track.progress + (track.playing ? performance.now() - recvAt : 0);
     $("pgb").style.width = Math.min(100, (pos / track.duration) * 100) + "%";
     if (cfg.showTime) { const f = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }; const txt = f(Math.min(pos, track.duration)) + " / " + f(track.duration); if ($("tm").textContent !== txt) $("tm").textContent = txt; }
-  })();
+  }
 </script>
 </body>
 </html>

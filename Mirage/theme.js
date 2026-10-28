@@ -12,6 +12,10 @@
   window.__mirage = true;
 
   const root = document.documentElement;
+  // Fehler sammeln – gehen mit dem Diagnosebericht an die Overlay-App
+  const errors = [];
+  addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
+  addEventListener("unhandledrejection", (e) => errors.length < 30 && errors.push("promise: " + String(e.reason)));
 
   /* ---------------------------------------------------------------- Sprachen */
   // Fehlt eine Übersetzung, gilt Englisch – so funktioniert das Theme in jeder Sprache.
@@ -248,9 +252,11 @@
   document.head.append(schemeSheet);
   function applyScheme(name) {
     const sc = SCHEMES[name];
-    if (!sc) return (schemeSheet.textContent = "");
-    schemeSheet.textContent =
-      "html:root{" + Object.entries(sc).map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + "}";
+    const css = sc
+      ? "html:root{" + Object.entries(sc).map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + "}"
+      : "";
+    // nur schreiben, wenn sich etwas ändert – jedes Neuschreiben berechnet ganz Spotify neu
+    if (schemeSheet.textContent !== css) schemeSheet.textContent = css;
   }
   const schemePalette = () => {
     const sc = SCHEMES[cfg.scheme] || SCHEMES.Mirage;
@@ -279,7 +285,12 @@
   };
   let cfg = { ...DEFAULTS };
   try {
-    cfg = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
+    const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    if ("scheme" in saved && saved.schemeCfg !== (S.Config?.color_scheme || "")) {
+      delete saved.scheme;
+      delete saved.dynamic;
+    }
+    cfg = { ...DEFAULTS, ...saved };
   } catch {}
   const save = () => {
     try {
@@ -296,7 +307,7 @@
     root.classList.toggle("mirage-glass", cfg.glass);
     root.style.setProperty("--m-blur", cfg.blur + "px");
     root.style.setProperty("--m-bright", String(cfg.bright / 100));
-    cfg.particles ? dust.start() : dust.stop();
+    cfg.particles && !cfg.calm ? dust.start() : dust.stop();
     beat.sync();
     cfg.overlay ? bridge.connect() : bridge.close();
   }
@@ -401,8 +412,11 @@
   }
 
   // Ein Durchgang: Farben + kleines Hintergrundbild (verkleinert = billig zu verwischen)
+  // was beim letzten Farbauszug passiert ist – geht mit dem Diagnosebericht mit
+  const colorDiag = {};
   async function analyse(url, uri) {
     const img = await loadImage(url, true);
+    Object.assign(colorDiag, { url: url.slice(0, 60), img: !!img, err: "", via: "" });
     let colors = null, haze = null;
     if (img) {
       try {
@@ -412,7 +426,10 @@
         x.drawImage(img, 0, 0, 64, 64);
         colors = quantize(x.getImageData(0, 0, 64, 64).data);
         haze = c.toDataURL("image/jpeg", 0.85);
-      } catch {}
+        colorDiag.via = colors ? "canvas" : "canvas-leer";
+      } catch (e) {
+        colorDiag.err = String(e && e.message);
+      }
     }
     if (!colors) {
       try {
@@ -420,7 +437,10 @@
         const a = hex2rgb(ex.VIBRANT) || hex2rgb(ex.PROMINENT);
         const b = hex2rgb(ex.DARK_VIBRANT) || hex2rgb(ex.DESATURATED);
         if (a) colors = shape([a, b]);
-      } catch {}
+        if (a) colorDiag.via = "extractor";
+      } catch (e) {
+        colorDiag.err += " | extractor: " + String(e && e.message);
+      }
     }
     return { colors, haze };
   }
@@ -490,7 +510,10 @@
     if (!uri || audio.uri === uri) return;
     audio.uri = uri;
     audio.data = null;
-    if (!uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") return;
+    if (!uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
+      beat.sync();
+      return;
+    }
     try {
       const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]);
       if (audio.uri === uri && d?.beats?.length) {
@@ -629,10 +652,16 @@
       } catch {
         return schedule();
       }
-      ws.onopen = () => sendTrack();
-      ws.onclose = () => { ws = null; schedule(); };
+      const sock = ws;
+      ws.onopen = () => ws === sock && sendTrack();
+      ws.onclose = () => {
+        if (ws !== sock) return;
+        ws = null;
+        schedule();
+      };
       ws.onerror = () => {};
       ws.onmessage = (e) => {
+        if (ws !== sock) return;
         let m;
         try { m = JSON.parse(e.data); } catch { return; }
         if (m.type !== "cmd") return;
@@ -640,6 +669,10 @@
         else if (m.cmd === "next") S.Player.next();
         else if (m.cmd === "prev") S.Player.back();
         else if (m.cmd === "hello") sendTrack();
+        else if (m.cmd === "report") {
+          send({ type: "debug-start", hidden: document.hidden });
+          domReport();
+        }
       };
     }
     function schedule() {
@@ -673,7 +706,8 @@
         })
       );
     }
-    return { connect, close, sendTrack };
+    const send = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
+    return { connect, close, sendTrack, send };
   })();
 
   /* ---------------------------------------------------------------- Karten: Licht + Neigung */
@@ -712,7 +746,7 @@
   let enterTimer = 0;
   function pageEnter() {
     if (!cfg.cascade || cfg.calm) return;
-    const mv = document.querySelector(".Root__main-view");
+    const mv = document.querySelector(".Root__main-view, #main-view");
     if (!mv) return;
     mv.classList.remove("m-enter");
     setTimeout(() => {
@@ -726,6 +760,63 @@
       enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
     }, 70);
   }
+  // Diagnose: große farbige Flächen der aktuellen Seite (inkl. ::before/::after) an die
+  // Overlay-App melden; sie schreibt sie lokal nach dom-report.json. Nur Aufbau, keine Inhalte.
+  function domReport() {
+    try {
+      domReportInner();
+    } catch (e) {
+      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
+    }
+  }
+  function domReportInner() {
+    // Grobstruktur: 4 Ebenen ab <body> mit Klassen, testids und Größe
+    const tree = [];
+    (function walk(el, depth) {
+      if (depth > 4 || tree.length > 160) return;
+      for (const c of el.children) {
+        const r = c.getBoundingClientRect();
+        tree.push(`${"  ".repeat(depth)}${c.tagName.toLowerCase()}${c.id ? "#" + c.id : ""} .${String(c.className?.baseVal ?? c.className).slice(0, 120)} [${c.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
+        walk(c, depth + 1);
+      }
+    })(document.body, 0);
+    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(".Root__main-view, #main-view"), tree });
+    const mv = document.querySelector(".Root__main-view, #main-view") || document.querySelector("main") || document.body;
+    const out = [];
+    const minW = mv.clientWidth * 0.4;
+    for (const el of mv.querySelectorAll("*")) {
+      if (out.length >= 80) break;
+      if (el.offsetWidth < minW || el.offsetHeight < 30) continue;
+      const r = el.getBoundingClientRect();
+      if (r.top > innerHeight) continue;
+      const cs = getComputedStyle(el);
+      const pseudo = ["::before", "::after"]
+        .map((p) => {
+          const c = getComputedStyle(el, p);
+          return c.content !== "none" && (c.backgroundColor !== "rgba(0, 0, 0, 0)" || c.backgroundImage !== "none")
+            ? `${p} ${c.backgroundColor} ${c.backgroundImage.slice(0, 160)} op=${c.opacity}`
+            : "";
+        })
+        .filter(Boolean);
+      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
+      out.push({
+        tag: el.tagName,
+        cls: String(el.className?.baseVal ?? el.className).slice(0, 200),
+        testid: el.dataset?.testid || "",
+        style: (el.getAttribute("style") || "").slice(0, 300),
+        bg: cs.backgroundColor,
+        img: cs.backgroundImage.slice(0, 200),
+        opacity: cs.opacity,
+        tint: el.classList.contains("m-tint"),
+        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
+        pseudo,
+      });
+    }
+    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
+      main: getComputedStyle(root).getPropertyValue("--spice-main"), a: getComputedStyle(root).getPropertyValue("--m-a"), dynamic: cfg.dynamic, scheme: cfg.scheme, current, colorDiag,
+    } });
+  }
+
   // Seitentyp aus der Adresse (/user/…, /artist/…, /playlist/…) – unabhängig von Spotifys Klassennamen
   function markPage(loc) {
     const path = (loc || S.Platform.History.location || {}).pathname || "";
@@ -743,35 +834,59 @@
   // Spotify färbt Kopfbereiche per Inline-Farbe (leere Playlist = grau). Klassennamen wechseln
   // ständig, darum erkennen wir große, bildlose Farbflächen im Hauptbereich am Stil selbst.
   let tintQueued = false;
+  // Deckkraft einer berechneten Farbe – Spotify liefert rgb()/rgba() UND oklch(… / a)
+  function alphaOf(c) {
+    if (!c || c === "transparent") return 0;
+    const slash = /\/\s*([\d.]+)(%?)\s*\)$/.exec(c);
+    if (slash) return Number(slash[1]) / (slash[2] ? 100 : 1);
+    const rgba = /^rgba\(([^)]+)\)$/.exec(c);
+    if (rgba) return Number(rgba[1].split(",")[3]);
+    return 1;
+  }
   function tameTints() {
     tintQueued = false;
-    const mv = document.querySelector(".Root__main-view");
+    if (root.classList.contains("mirage-im-open")) return;
+    const mv = document.querySelector(".Root__main-view, #main-view");
     if (!mv) return;
     const minW = mv.clientWidth * 0.55;
     // Nach der tatsächlich berechneten Farbe gehen: egal ob Spotify sie inline, per Klasse
     // oder per Variable setzt – große, deckende, bildlose Flächen werden durchsichtig.
     for (const el of mv.querySelectorAll("div, section, header")) {
-      if (el.offsetWidth < minW || el.offsetHeight < 40 || el.classList.contains("m-tint")) continue;
-      if (el.closest(".main-card-card, [data-encore-id='card'], [role='row']")) continue;
+      if (el.classList.contains("m-tint") || el.offsetWidth < minW || el.offsetHeight < 40) continue;
+      if (el.closest(".main-card-card, [data-encore-id='card'], [role='row'], [role='grid'], [data-testid='background-image'], .main-entityHeader-background")) continue;
       const cs = getComputedStyle(el);
       // echte Fotos (Künstlerbild usw.) bleiben; Spotifys Rausch-Textur über der Farbe nicht
       if (/url\(["']?https?:/.test(cs.backgroundImage)) continue;
-      const m = /rgba?\(([^)]+)\)/.exec(cs.backgroundColor);
-      const alpha = m ? Number(m[1].split(",")[3] ?? 1) : 0;
+      // dunkle Schrift heißt: Fläche ist absichtlich hell (z. B. Hinweis-Banner) – nicht anfassen
+      const tc = /rgba?\(([^)]+)\)/.exec(cs.color);
+      if (tc) {
+        const [cr, cg, cb] = tc[1].split(",").map(Number);
+        if (cr * 0.3 + cg * 0.59 + cb * 0.11 < 90) continue;
+      }
+      const alpha = alphaOf(cs.backgroundColor);
+      // Spotify malt Kopf-Farbverläufe oft in ::before/::after
+      for (const p of ["::before", "::after"]) {
+        const ps = getComputedStyle(el, p);
+        if (ps.content !== "none" && (alphaOf(ps.backgroundColor) >= 0.3 || ps.backgroundImage.includes("gradient("))) {
+          el.classList.add("m-tint-pseudo");
+        }
+      }
       // Spotify zeichnet Kopf-Farben auch als Verlauf (z. B. rot-zu-schwarz) – auch die weg
-      const gradient = cs.backgroundImage.includes("gradient(") && !el.matches("[class*=mirage], [class*=m-im]");
-      if (alpha >= 0.3 || gradient) el.classList.add("m-tint");
+      const gradient = cs.backgroundImage.includes("gradient(");
+      if (alpha >= 0.3) el.classList.add("m-tint");
+      if (gradient) el.classList.add("m-tint", "m-tint-img");
     }
   }
   const queueTints = () => {
     if (tintQueued) return;
     tintQueued = true;
-    setTimeout(() => requestAnimationFrame(tameTints), 120);
+    (window.requestIdleCallback || setTimeout)(tameTints, { timeout: 500 });
   };
   (function watchTints() {
-    const mv = document.querySelector(".Root__main-view");
+    const mv = document.querySelector(".Root__main-view, #main-view");
     if (!mv) return setTimeout(watchTints, 500);
-    new MutationObserver(queueTints).observe(mv, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
+    // nur neue/entfernte Elemente – Stil-Änderungen (Hover, Neigung, Scrollen) lösen nichts aus
+    new MutationObserver(queueTints).observe(mv, { subtree: true, childList: true });
     queueTints();
   })();
 
@@ -833,7 +948,7 @@
           lines: L.lines.map((l) => ({ t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "♪" })),
         }
       : null;
-    lyricCache.set(uri, out);
+    if (body) lyricCache.set(uri, out);
     return out;
   }
 
@@ -866,6 +981,7 @@
     let q = {};
     let lyr = null, lyrUri = "", active = -2;
     const vals = new Float32Array(120);
+    const vizRect = { n: 0, r: null };
     let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
 
     function build() {
@@ -948,7 +1064,10 @@
       q.like.onclick = (e) => {
         const was = !!S.Player.getHeart?.();
         S.Player.toggleHeart();
-        if (!was && cfg.burst && !cfg.calm) burst(e.clientX, e.clientY);
+        if (!was && cfg.burst && !cfg.calm) {
+          const r = q.like.getBoundingClientRect();
+          burst(e.clientX || r.left + r.width / 2, e.clientY || r.top + r.height / 2);
+        }
         setTimeout(syncState, 200);
       };
       q.mute.onclick = () => { S.Player.toggleMute(); setTimeout(syncState, 120); };
@@ -964,7 +1083,7 @@
       };
       q.inner.addEventListener("click", (e) => {
         const line = e.target.closest(".m-im-line");
-        if (line && lyr?.synced) S.Player.seek(Number(line.dataset.t) + 1);
+        if (line && lyr?.synced) S.Player.seek(Math.max(Number(line.dataset.t), 2));
       });
       el.addEventListener("pointermove", (e) => {
         if (cfg.calm) return;
@@ -1114,7 +1233,8 @@
       const ctx = vctx;
       ctx.clearRect(0, 0, vw, vh);
       const dpr = vw / innerWidth;
-      const r = q.wrap.getBoundingClientRect();
+      if (!vizRect.r || vizRect.n++ % 30 === 0) vizRect.r = q.wrap.getBoundingClientRect();
+      const r = vizRect.r;
       const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
       const R = (r.width / 2) * dpr + 16 * dpr;
       const N = vals.length, half = N / 2;
@@ -1249,7 +1369,7 @@
     }
     const isOpen = () => !!el?.classList.contains("is-on");
     const playState = () => el && (q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play);
-    const seekBy = (ms) => S.Player.seek(clamp((S.Player.getProgress?.() || 0) + ms, 0, S.Player.getDuration?.() || 0));
+    const seekBy = (ms) => S.Player.seek(clamp((S.Player.getProgress?.() || 0) + ms, 2, S.Player.getDuration?.() || 2));
     const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
     return {
       open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
@@ -1311,6 +1431,7 @@
       b.lastChild.textContent = name;
       b.onclick = () => {
         cfg.scheme = name;
+        cfg.schemeCfg = S.Config?.color_scheme || "";
         cfg.dynamic = name === "Mirage";
         save();
         applySettings();
@@ -1354,7 +1475,8 @@
         cfg[key] = Number(r.value);
         hint.textContent = r.value + " " + unit;
         save();
-        applySettings();
+        if (key === "blur") root.style.setProperty("--m-blur", cfg.blur + "px");
+        else root.style.setProperty("--m-bright", String(cfg.bright / 100));
       };
       box.append(row);
     }
@@ -1365,9 +1487,12 @@
     S.PopupModal.display({ title: "Mirage", content: box });
   }
 
-  try {
-    new S.Menu.Item(t("menu"), false, openSettings, "brightness").register();
-  } catch {}
+  (function addMenu() {
+    if (!S.Menu?.Item) return setTimeout(addMenu, 500);
+    try {
+      new S.Menu.Item(t("menu"), false, openSettings, "brightness").register();
+    } catch {}
+  })();
   (function addTopbar() {
     if (!S.Topbar?.Button) return setTimeout(addTopbar, 500);
     try {

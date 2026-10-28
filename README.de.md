@@ -24,6 +24,23 @@
 
 **Mirage** macht aus Spotify mattes Glas, hinter dem die Musik lebt. Jeder Song färbt die Oberfläche in den Farben seines Covers, das Cover treibt als weiches Licht langsam hinter den Flächen, und wenn Spotify Taktdaten liefert, atmet der ganze Hintergrund im Beat.
 
+## 📸 Echte Screenshots
+
+<p align="center">
+  <img src="assets/shots/playlist.png" alt="Mirage auf einer Playlist-Seite" width="100%">
+</p>
+<table>
+  <tr>
+    <td width="50%"><img src="assets/shots/album.png" alt="Mirage auf einer Albumseite"></td>
+    <td width="50%"><img src="assets/shots/visualizer.png" alt="Immersiv-Modus – Visualizer im Takt"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Albumseite – der Kopf geht weich ins Glas über, kein harter Farbblock</sub></td>
+    <td align="center"><sub>Immersiver Visualizer, live in den Coverfarben und im Takt</sub></td>
+  </tr>
+</table>
+<sub>Aufgenommen in einem echten Spotify. Eigene Bibliothek sowie Namen und Bilder von Freunden sind verpixelt.</sub>
+
 ## ✦ Highlights
 
 <table>
@@ -148,6 +165,8 @@ flowchart LR
 ```
 
 - **Leistung zuerst:** Farben wechseln in einem einzigen Schritt, der Hintergrund ist ein verkleinertes Bild, das einmal verwischt und nur noch gedreht wird, und er pausiert, solange der Immersiv-Modus ihn verdeckt. Echtes Glas (Live-Unschärfe hinter jeder Fläche) ist optional.
+- **Gegen das echte Spotify gebaut:** Aktuelle Spotify-Versionen haben `.Root__main-view` & Co. in `#main-view` / `#Desktop_LeftSidebar_Id` umbenannt; Mirage spricht beide an. Farbblöcke im Kopf (auch `::after`-Verläufe und `oklch()`-Farben) erkennt Mirage am berechneten Stil statt an Klassennamen, die sich bei jedem Update ändern.
+- **Diagnose:** Läuft das Overlay, kann das Theme einen Aufbau-Bericht (Größen, Klassen, Farben – keine Inhalte) nach `%APPDATA%\Mirage Overlay\dom-report.json` schicken. So werden Darstellungsfehler nach Fakten behoben statt geraten.
 - **Datenschutz:** kein eigener Server, kein Tracking. Liedtext und Taktdaten kommen von Spotify selbst, Schriften von Google Fonts.
 - **Barrierefreiheit:** beachtet „Bewegung reduzieren“, sichtbare Fokusrahmen, lesbarer Kontrast in jeder Palette.
 

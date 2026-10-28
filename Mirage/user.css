@@ -67,13 +67,13 @@ body {
 }
 .Root,
 .Root__top-container,
-.Root__main-view,
+:is(.Root__main-view, #main-view),
 .main-view-container,
 .main-view-container__scroll-node,
 .main-view-container__scroll-node-child,
 .main-view-container__scroll-node-child-spacer,
-.Root__nav-bar,
-.Root__right-sidebar,
+:is(.Root__nav-bar, #Desktop_LeftSidebar_Id),
+:is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)),
 .Root__now-playing-bar,
 .Root__globalNav,
 .main-globalNav-searchSection {
@@ -82,11 +82,11 @@ body {
 }
 
 /* Die Hauptflächen werden zu schwebenden Glasplatten */
-.Root__nav-bar > nav,
-.Root__nav-bar > div,
-.Root__main-view,
-.Root__right-sidebar > div,
-.Root__right-sidebar > aside {
+:is(.Root__nav-bar, #Desktop_LeftSidebar_Id) > nav,
+:is(.Root__nav-bar, #Desktop_LeftSidebar_Id) > div,
+:is(.Root__main-view, #main-view),
+:is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)) > div:not(.LayoutResizer__resize-bar),
+:is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)) > aside {
   background: var(--m-glass) !important;
   backdrop-filter: blur(var(--m-blur)) saturate(1.5);
   -webkit-backdrop-filter: blur(var(--m-blur)) saturate(1.5);
@@ -97,7 +97,7 @@ body {
     0 24px 60px -30px rgba(0, 0, 0, 0.8);
   overflow: hidden;
 }
-.Root__main-view {
+:is(.Root__main-view, #main-view) {
   position: relative;
 }
 
@@ -481,8 +481,8 @@ html.mirage-no-tilt [data-encore-id="card"] {
   pointer-events: none;
 }
 @keyframes m-seam {
-  from { left: 5%; right: 25%; }
-  to { left: 25%; right: 5%; }
+  from { transform: translateX(-10%) scaleX(0.8); }
+  to { transform: translateX(10%) scaleX(0.8); }
 }
 
 /* Play/Pause: leuchtender Kern mit rotierendem Ring */
@@ -1060,7 +1060,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   initial-value: 0deg;
 }
 /* Ein Lichtfunke kreist langsam um den Rand der Hauptfläche */
-.Root__main-view::before {
+:is(.Root__main-view, #main-view)::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1659,13 +1659,22 @@ html.mirage-im-open .Root * {
    Statt grauer/bunter Blöcke ein feiner Schleier in der Akzentfarbe.
    ========================================================================== */
 .m-tint {
-  background: transparent !important;
+  background-color: transparent !important;
+}
+.m-tint-img {
+  background-image: none !important;
+}
+/* Spotifys Farbverlauf im Pseudoelement → weicher, neutraler Übergang in den Hintergrund */
+.m-tint-pseudo::before,
+.m-tint-pseudo::after {
+  background-color: transparent !important;
+  background-image: linear-gradient(180deg, transparent 0%, rgba(var(--spice-rgb-main), 0.35) 100%) !important;
 }
 
 /* ==========================================================================
    SEITENTITEL ÜBERALL (theme.js setzt data-m-page nach der Adresse)
    ========================================================================== */
-.Root__main-view h1 {
+:is(.Root__main-view, #main-view) h1 {
   font-weight: 800 !important;
   letter-spacing: -0.035em !important;
   background: linear-gradient(100deg, #fff 35%, var(--m-c) 70%, var(--m-a));
@@ -1691,7 +1700,7 @@ html[data-m-page="user"] .main-entityHeader-headerText,
 html[data-m-page="user"] .main-entityHeader-metaData {
   position: relative;
 }
-html[data-m-page="user"] .Root__main-view h1 {
+html[data-m-page="user"] :is(.Root__main-view, #main-view) h1 {
   font-size: clamp(40px, 5.5vw, 88px) !important;
 }
 /* Profilwerte (Playlists · Follower · Folge ich) als Glas-Kapsel */
@@ -1739,7 +1748,7 @@ html[data-m-page="artist"] [data-testid="artist-entity-header"]::after {
     linear-gradient(180deg, transparent 35%, rgba(var(--spice-rgb-main), 0.55) 75%, rgba(var(--spice-rgb-main), 0.92)),
     radial-gradient(70% 60% at 15% 100%, rgba(var(--m-a-rgb), 0.35), transparent 70%);
 }
-html[data-m-page="artist"] .Root__main-view h1 {
+html[data-m-page="artist"] :is(.Root__main-view, #main-view) h1 {
   position: relative;
   z-index: 2;
   font-size: clamp(48px, 7vw, 112px) !important;
@@ -1753,8 +1762,7 @@ html[data-m-page="artist"] .main-entityHeader-headerText > * {
   position: relative;
   z-index: 2;
 }
-/* „Verifiziert“ und Hörerzahl als Glas-Kapseln */
-html[data-m-page="artist"] .main-entityHeader-headerText > span:first-child,
+/* Hörerzahl als Glas-Kapsel (der erste span umschließt hier den Namen – nicht anfassen) */
 html[data-m-page="artist"] .main-entityHeader-detailsText {
   display: inline-flex !important;
   align-items: center;
@@ -1855,9 +1863,9 @@ html[data-m-page="artist"] h2 {
 [role="dialog"] textarea,
 .GenericModal input[type="text"],
 .GenericModal textarea,
-.Root__main-view input[type="text"],
-.Root__main-view input[type="search"],
-.Root__main-view [role="searchbox"] {
+:is(.Root__main-view, #main-view) input[type="text"],
+:is(.Root__main-view, #main-view) input[type="search"],
+:is(.Root__main-view, #main-view) [role="searchbox"] {
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid var(--m-line-strong) !important;
   border-radius: 14px !important;
@@ -1870,17 +1878,17 @@ html[data-m-page="artist"] h2 {
 }
 [role="dialog"] input:hover,
 [role="dialog"] textarea:hover,
-.Root__main-view input[type="text"]:hover,
-.Root__main-view [role="searchbox"]:hover {
+:is(.Root__main-view, #main-view) input[type="text"]:hover,
+:is(.Root__main-view, #main-view) [role="searchbox"]:hover {
   background: rgba(255, 255, 255, 0.08) !important;
 }
 [role="dialog"] input:focus,
 [role="dialog"] textarea:focus,
 .GenericModal input:focus,
 .GenericModal textarea:focus,
-.Root__main-view input[type="text"]:focus,
-.Root__main-view input[type="search"]:focus,
-.Root__main-view [role="searchbox"]:focus {
+:is(.Root__main-view, #main-view) input[type="text"]:focus,
+:is(.Root__main-view, #main-view) input[type="search"]:focus,
+:is(.Root__main-view, #main-view) [role="searchbox"]:focus {
   outline: none !important;
   border-color: rgba(var(--m-a-rgb), 0.8) !important;
   background: rgba(var(--m-a-rgb), 0.08) !important;
@@ -1893,7 +1901,7 @@ html[data-m-page="artist"] h2 {
   resize: none;
 }
 [role="dialog"] ::placeholder,
-.Root__main-view ::placeholder {
+:is(.Root__main-view, #main-view) ::placeholder {
   color: rgba(255, 255, 255, 0.4) !important;
 }
 
@@ -1942,11 +1950,11 @@ html[data-m-page="artist"] h2 {
   box-shadow: 0 10px 28px -12px rgba(var(--m-a-rgb), 0.8);
   transform: translateY(-1px);
 }
-.Root__main-view [data-encore-id="buttonTertiary"] {
+:is(.Root__main-view, #main-view) [data-encore-id="buttonTertiary"] {
   border-radius: 999px !important;
   transition: background 0.3s, color 0.3s !important;
 }
-.Root__main-view [data-encore-id="buttonTertiary"]:hover {
+:is(.Root__main-view, #main-view) [data-encore-id="buttonTertiary"]:hover {
   background: rgba(var(--m-a-rgb), 0.14) !important;
   color: var(--m-c) !important;
 }
@@ -2077,61 +2085,31 @@ html[data-m-page="artist"] h2 {
 }
 /* ==========================================================================
    SPOTIFY-GRÜN → MIRAGE-AKZENT
-   Farbsatz „bright accent“ und fest eingetragenes Grün (#1ed760 / #1db954)
+   Nur an Knöpfen und kleinen Symbolen – NIE an Containern: Spotify legt sein
+   Grün auch als Variable in ganze Seitenbereiche, die sonst mit eingefärbt würden.
    ========================================================================== */
-.encore-bright-accent-set,
-.encore-dark-theme .encore-bright-accent-set {
+:is(button, a, span).encore-bright-accent-set,
+button .encore-bright-accent-set {
   --background-base: var(--m-a) !important;
   --background-highlight: var(--m-c) !important;
   --background-press: var(--m-b) !important;
-  --background-elevated-base: var(--m-a) !important;
   --text-base: #0b0a12 !important;
   --essential-base: #0b0a12 !important;
-}
-/* Pin vor angehefteten Playlists in der Bibliothek: Symbol in Akzentfarbe, keine Fläche */
-.Root__nav-bar .encore-bright-accent-set,
-.Root__nav-bar [data-testid*="pin" i],
-.Root__nav-bar [aria-label*="pin" i],
-.main-yourLibraryX-listItem .encore-bright-accent-set {
-  background: transparent !important;
-  background-color: transparent !important;
-  color: var(--m-c) !important;
-  --background-base: transparent !important;
-}
-.Root__nav-bar .encore-bright-accent-set svg,
-.Root__nav-bar [data-testid*="pin" i] svg,
-.main-yourLibraryX-listItem .encore-bright-accent-set svg {
-  fill: var(--m-c) !important;
-  color: var(--m-c) !important;
-  filter: drop-shadow(0 0 6px rgba(var(--m-a-rgb), 0.7));
-}
-.Root__nav-bar [style*="1ed760" i],
-.Root__nav-bar [style*="1db954" i],
-.Root__nav-bar [style*="rgb(30, 215, 96)"],
-.Root__nav-bar [style*="rgb(29, 185, 84)"] {
-  background-color: transparent !important;
-  color: var(--m-c) !important;
-  fill: var(--m-c) !important;
 }
 .encore-dark-theme {
   --essential-positive: var(--m-a) !important;
   --text-positive: var(--m-c) !important;
 }
-/* Titelzeilen ausgenommen: dort sind Farben Daten (z. B. Tonart-Felder im Mix) */
-[style*="1ed760" i]:not([role="row"] *),
-[style*="1db954" i]:not([role="row"] *),
-[style*="rgb(30, 215, 96)"]:not([role="row"] *),
-[style*="rgb(29, 185, 84)"]:not([role="row"] *) {
-  background-color: var(--m-a) !important;
-  border-color: var(--m-a) !important;
-}
-[fill="#1ed760" i],
-[fill="#1db954" i] {
+svg [fill="#1ed760" i],
+svg [fill="#1db954" i] {
   fill: var(--m-a) !important;
 }
-[stroke="#1ed760" i],
-[stroke="#1db954" i] {
-  stroke: var(--m-a) !important;
+/* Pin vor angehefteten Playlists in der Bibliothek */
+:is(.Root__nav-bar, #Desktop_LeftSidebar_Id) svg.encore-bright-accent-set,
+:is(.Root__nav-bar, #Desktop_LeftSidebar_Id) .encore-bright-accent-set svg {
+  fill: var(--m-c) !important;
+  color: var(--m-c) !important;
+  background: transparent !important;
 }
 
 .encore-light-theme h1,
@@ -2139,4 +2117,19 @@ html[data-m-page="artist"] h2 {
 [role="alertdialog"] h1,
 .main-confirmDialog-container h1 {
   color: var(--spice-text) !important;
+}
+
+/* ==========================================================================
+   LEISTUNG: Pausen
+   ========================================================================== */
+/* Nichts läuft → Hintergrund steht still */
+html:not(.mirage-playing) #mirage-stage * {
+  animation-play-state: paused !important;
+}
+/* Ruhiger Modus hält wirklich alles an */
+html.mirage-calm #mirage-stage *,
+html.mirage-calm .Root *,
+html.mirage-calm .Root *::before,
+html.mirage-calm .Root *::after {
+  animation-play-state: paused !important;
 }

@@ -55,7 +55,7 @@ function save() {
 }
 
 let overlay = null, settingsWin = null, tray = null;
-let track = null, lastPlaying = null;
+let track = null, lastPlaying = null, lastShow = 0;
 let t = make("en");
 const clients = new Set();
 
@@ -98,6 +98,7 @@ function announce(reason, force) {
   if (!overlay || !track) return;
   if (!force && (cfg.mode === "off" || inQuiet())) return;
   position();
+  lastShow = Date.now();
   overlay.webContents.send("show", payload(reason));
   overlay.showInactive();
   overlay.setAlwaysOnTop(true, "screen-saver");
@@ -129,16 +130,27 @@ function startServer() {
     host: "127.0.0.1",
     port: PORT,
     // nur Spotify (xpui) oder lokale Programme ohne Browser-Herkunft
-    verifyClient: ({ origin }) => !origin || /spotify|^file:|^app:/i.test(origin),
+    verifyClient: ({ origin }) => !origin || /^https:\/\/xpui\.app\.spotify\.com$/i.test(origin),
+    maxPayload: 1024 * 1024,
   });
   wss.on("connection", (ws) => {
     clients.add(ws);
     settingsWin?.webContents.send("status", status());
     ws.send(JSON.stringify({ type: "cmd", cmd: "hello" }));
+    ws.send(JSON.stringify({ type: "cmd", cmd: "report" }));
     ws.on("message", (raw) => {
+      if (process.env.MIRAGE_LOG) {
+        try { fs.appendFileSync(path.join(app.getPath("userData"), "msg-log.txt"), `${new Date().toISOString()} ${String(raw).length} ${String(raw).slice(0, 120)}\n`); } catch {}
+      }
       let m;
       try { m = JSON.parse(raw); } catch { return; }
       if (m.type === "track") onTrack(m);
+      // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
+      else if (m.type === "debug") {
+        try {
+          fs.writeFileSync(path.join(app.getPath("userData"), `dom-report${m.phase ? "-" + m.phase : ""}.json`), JSON.stringify(m, null, 1));
+        } catch {}
+      }
     });
     ws.on("close", () => {
       clients.delete(ws);
@@ -167,7 +179,7 @@ function createOverlay() {
     hasShadow: false,
     alwaysOnTop: true,
     backgroundColor: "#00000000",
-    webPreferences: { preload: path.join(__dirname, "preload.js"), backgroundThrottling: false },
+    webPreferences: { preload: path.join(__dirname, "preload.js") },
   });
   overlay.setIgnoreMouseEvents(true, { forward: true });
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
@@ -294,7 +306,8 @@ ipcMain.on("set", (_e, patch) => update(patch));
 ipcMain.on("preview", preview);
 ipcMain.on("cmd", (_e, c) => command(c));
 ipcMain.on("hover", (_e, on) => overlay?.setIgnoreMouseEvents(!on, { forward: true }));
-ipcMain.on("done", () => cfg.mode !== "always" && overlay?.hide());
+// ein „fertig“ kurz nach einer neuen Ansage stammt noch von der alten – ignorieren
+ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 && overlay?.hide());
 
 /* ------------------------------------------------------------------ Start */
 app.on("second-instance", openSettings);
