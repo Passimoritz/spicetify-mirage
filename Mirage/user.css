@@ -2068,6 +2068,39 @@ html[data-m-page="artist"] h2 {
   color: var(--spice-text) !important;
   box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 80px -30px rgba(var(--m-a-rgb), 0.5) !important;
 }
+/* ==========================================================================
+   SPOTIFY-GRÜN → MIRAGE-AKZENT
+   Farbsatz „bright accent“ und fest eingetragenes Grün (#1ed760 / #1db954)
+   ========================================================================== */
+.encore-bright-accent-set,
+.encore-dark-theme .encore-bright-accent-set {
+  --background-base: var(--m-a) !important;
+  --background-highlight: var(--m-c) !important;
+  --background-press: var(--m-b) !important;
+  --background-elevated-base: var(--m-a) !important;
+  --text-base: #0b0a12 !important;
+  --essential-base: #0b0a12 !important;
+}
+.encore-dark-theme {
+  --essential-positive: var(--m-a) !important;
+  --text-positive: var(--m-c) !important;
+}
+[style*="1ed760" i],
+[style*="1db954" i],
+[style*="rgb(30, 215, 96)"],
+[style*="rgb(29, 185, 84)"] {
+  background-color: var(--m-a) !important;
+  border-color: var(--m-a) !important;
+}
+[fill="#1ed760" i],
+[fill="#1db954" i] {
+  fill: var(--m-a) !important;
+}
+[stroke="#1ed760" i],
+[stroke="#1db954" i] {
+  stroke: var(--m-a) !important;
+}
+
 .encore-light-theme h1,
 .encore-light-theme h2,
 [role="alertdialog"] h1,
