@@ -748,12 +748,17 @@
     const mv = document.querySelector(".Root__main-view");
     if (!mv) return;
     const minW = mv.clientWidth * 0.55;
-    mv.querySelectorAll('[style*="background"]').forEach((el) => {
-      if (el.classList.contains("m-tint") || el.closest(".main-card-card, [data-encore-id='card'], [role='row'], img")) return;
-      const st = el.getAttribute("style") || "";
-      if (st.includes("url(") || !/background(-color)?\s*:|--background-color/.test(st)) return;
-      if (el.offsetWidth >= minW && el.offsetHeight >= 40) el.classList.add("m-tint");
-    });
+    // Nach der tatsächlich berechneten Farbe gehen: egal ob Spotify sie inline, per Klasse
+    // oder per Variable setzt – große, deckende, bildlose Flächen werden durchsichtig.
+    for (const el of mv.querySelectorAll("div, section, header")) {
+      if (el.offsetWidth < minW || el.offsetHeight < 40 || el.classList.contains("m-tint")) continue;
+      if (el.closest(".main-card-card, [data-encore-id='card'], [role='row']")) continue;
+      const cs = getComputedStyle(el);
+      if (cs.backgroundImage.includes("url(")) continue;
+      const m = /rgba?\(([^)]+)\)/.exec(cs.backgroundColor);
+      const alpha = m ? Number(m[1].split(",")[3] ?? 1) : 0;
+      if (alpha >= 0.3) el.classList.add("m-tint");
+    }
   }
   const queueTints = () => {
     if (tintQueued) return;

@@ -1201,9 +1201,8 @@ html.mirage-beat #mirage-stage .m-pulse {
 .main-entityHeader-container {
   min-height: 340px;
 }
-.main-entityHeader-image,
-[data-testid="entity-image"] {
-  animation: m-levitate 7s ease-in-out infinite;
+.main-entityHeader-imagePlaceholder {
+  box-shadow: none !important;
 }
 @keyframes m-levitate {
   50% {
@@ -1653,8 +1652,7 @@ html.mirage-im-open .Root * {
    Statt grauer/bunter Blöcke ein feiner Schleier in der Akzentfarbe.
    ========================================================================== */
 .m-tint {
-  background-color: transparent !important;
-  background-image: linear-gradient(180deg, rgba(var(--m-a-rgb), 0.18), rgba(var(--m-a-rgb), 0.04) 70%, transparent) !important;
+  background: transparent !important;
 }
 
 /* ==========================================================================
@@ -1678,30 +1676,16 @@ html[data-m-page="user"] .main-entityHeader-image,
 html[data-m-page="user"] [data-testid="entity-image"],
 html[data-m-page="user"] .main-entityHeader-imagePlaceholder {
   border-radius: 50% !important;
-  animation: m-avatar 5s ease-in-out infinite !important;
   box-shadow:
-    0 0 0 4px rgba(var(--spice-rgb-main), 0.9),
-    0 0 0 7px rgba(var(--m-a-rgb), 0.9),
-    0 0 50px 4px rgba(var(--m-a-rgb), 0.55),
-    0 40px 90px -30px rgba(var(--m-b-rgb), 0.9) !important;
-}
-@keyframes m-avatar {
-  50% {
-    transform: translateY(-6px) scale(1.015);
-    box-shadow:
-      0 0 0 4px rgba(var(--spice-rgb-main), 0.9),
-      0 0 0 7px rgba(var(--m-c-rgb), 0.95),
-      0 0 70px 10px rgba(var(--m-a-rgb), 0.65),
-      0 46px 100px -30px rgba(var(--m-b-rgb), 0.95);
-  }
+    0 0 0 2px rgba(var(--m-a-rgb), 0.45),
+    0 24px 70px -18px rgba(var(--m-a-rgb), 0.6) !important;
 }
 html[data-m-page="user"] .main-entityHeader-headerText,
 html[data-m-page="user"] .main-entityHeader-metaData {
   position: relative;
 }
-html[data-m-page="user"] h1 {
-  font-size: clamp(48px, 7vw, 110px) !important;
-  filter: drop-shadow(0 10px 40px rgba(var(--m-a-rgb), 0.35));
+html[data-m-page="user"] .Root__main-view h1 {
+  font-size: clamp(40px, 5.5vw, 88px) !important;
 }
 /* Profilwerte (Playlists · Follower · Folge ich) als Glas-Kapsel */
 html[data-m-page="user"] .main-entityHeader-metaData a,
@@ -1714,8 +1698,7 @@ html[data-m-page="user"] .main-entityHeader-metaData a:hover {
 
 /* Runde Bilder (Profile, Künstler, Follower) bleiben rund – mit Leuchtring */
 .main-card-card:has([class*="ircular"]) img,
-[data-encore-id="card"]:has([class*="ircular"]) img,
-html[data-m-page="user"] section [data-encore-id="card"] img {
+[data-encore-id="card"]:has([class*="ircular"]) img {
   border-radius: 50% !important;
 }
 .main-card-card:has([class*="ircular"]) img,
@@ -1749,13 +1732,13 @@ html[data-m-page="artist"] [data-testid="artist-entity-header"]::after {
     linear-gradient(180deg, transparent 35%, rgba(var(--spice-rgb-main), 0.55) 75%, rgba(var(--spice-rgb-main), 0.92)),
     radial-gradient(70% 60% at 15% 100%, rgba(var(--m-a-rgb), 0.35), transparent 70%);
 }
-html[data-m-page="artist"] h1 {
+html[data-m-page="artist"] .Root__main-view h1 {
   position: relative;
   z-index: 2;
-  font-size: clamp(56px, 9vw, 150px) !important;
+  font-size: clamp(48px, 7vw, 112px) !important;
   line-height: 0.92 !important;
   letter-spacing: -0.05em !important;
-  filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 40px rgba(var(--m-a-rgb), 0.35));
+  filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.55));
 }
 html[data-m-page="artist"] .main-entityHeader-headerText,
 html[data-m-page="artist"] .main-entityHeader-detailsText,
