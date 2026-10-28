@@ -1225,9 +1225,16 @@ html.mirage-beat #mirage-stage .m-pulse {
   margin-top: 10px;
   padding: 6px 14px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.06);
+  width: fit-content !important;
+  max-width: 100%;
+  align-self: flex-start;
+  background: rgba(0, 0, 0, 0.28) !important;
   border: 1px solid var(--m-line);
-  backdrop-filter: blur(16px);
+  --background-base: transparent !important;
+  --background-tinted-base: transparent !important;
+}
+.main-entityHeader-metaData * {
+  background-color: transparent;
 }
 /* Künstlerseite: Bild bleibt sichtbar und zoomt ganz langsam */
 .main-entityHeader-withBackgroundImage .main-entityHeader-background,
@@ -1914,7 +1921,7 @@ html[data-m-page="artist"] h2 {
 
 /* Knöpfe: Hauptknopf in Coverfarbe, Nebenknöpfe als Glas-Kapsel */
 [data-encore-id="buttonPrimary"] > span:first-child {
-  background: linear-gradient(135deg, var(--m-c), var(--m-a) 60%, var(--m-b)) !important;
+  background: var(--m-a) !important;
   color: #0b0a12 !important;
   box-shadow: 0 12px 30px -10px rgba(var(--m-a-rgb), 0.85) !important;
   transition: transform 0.35s var(--m-spring), box-shadow 0.35s var(--m-ease) !important;
@@ -2110,10 +2117,11 @@ html[data-m-page="artist"] h2 {
   --essential-positive: var(--m-a) !important;
   --text-positive: var(--m-c) !important;
 }
-[style*="1ed760" i],
-[style*="1db954" i],
-[style*="rgb(30, 215, 96)"],
-[style*="rgb(29, 185, 84)"] {
+/* Titelzeilen ausgenommen: dort sind Farben Daten (z. B. Tonart-Felder im Mix) */
+[style*="1ed760" i]:not([role="row"] *),
+[style*="1db954" i]:not([role="row"] *),
+[style*="rgb(30, 215, 96)"]:not([role="row"] *),
+[style*="rgb(29, 185, 84)"]:not([role="row"] *) {
   background-color: var(--m-a) !important;
   border-color: var(--m-a) !important;
 }

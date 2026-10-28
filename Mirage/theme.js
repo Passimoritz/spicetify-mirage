@@ -758,7 +758,9 @@
       if (/url\(["']?https?:/.test(cs.backgroundImage)) continue;
       const m = /rgba?\(([^)]+)\)/.exec(cs.backgroundColor);
       const alpha = m ? Number(m[1].split(",")[3] ?? 1) : 0;
-      if (alpha >= 0.3) el.classList.add("m-tint");
+      // Spotify zeichnet Kopf-Farben auch als Verlauf (z. B. rot-zu-schwarz) – auch die weg
+      const gradient = cs.backgroundImage.includes("gradient(") && !el.matches("[class*=mirage], [class*=m-im]");
+      if (alpha >= 0.3 || gradient) el.classList.add("m-tint");
     }
   }
   const queueTints = () => {
