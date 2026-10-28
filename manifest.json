@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Mirage",
+    "description": "A living glass theme: the whole UI takes on the colours of the album art, the cover drifts behind the panels, the background pulses on the beat – plus an immersive mode with synced lyrics, a visualizer and full controls.",
+    "preview": "assets/preview.png",
+    "readme": "README.md",
+    "usercss": "Mirage/user.css",
+    "schemes": "Mirage/color.ini",
+    "include": ["https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/Mirage/theme.js"],
+    "authors": [{ "name": "Passimoritz", "url": "https://github.com/Passimoritz" }],
+    "tags": ["dynamic", "glass", "animated", "lyrics", "visualizer", "immersive"]
+  }
+]

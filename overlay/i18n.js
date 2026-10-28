@@ -1,0 +1,156 @@
+// Texte der Overlay-App. Fehlt ein Schlüssel, gilt Englisch.
+(function (root) {
+  const I18N = {
+    en: {
+      title: "Mirage Overlay", connected: "Connected to Spotify", waiting: "Waiting for Spotify – is the Mirage theme active?",
+      secWhen: "When", secWhere: "Where", secLook: "Look", secMore: "More",
+      mode: "Show", modeSong: "On song change", modeAlways: "Always (mini player)", modeOff: "Off",
+      duration: "Duration", onPlayPause: "Also on play / pause", onPlayPauseHint: "Short notice when you pause or resume",
+      quiet: "Quiet hours", quietHint: "No announcements during this time", from: "from", to: "to",
+      screen: "Screen", primary: "Main screen", cursor: "Where the mouse is", screenN: "Screen",
+      position: "Position", offset: "Distance from edge",
+      style: "Style", stIsland: "Island", stCard: "Card", stBanner: "Banner", stMinimal: "Minimal",
+      motion: "Animation", mSpring: "Springy", mSlide: "Slide", mFade: "Fade",
+      size: "Size", opacity: "Opacity",
+      interactive: "Controls on hover", interactiveHint: "Previous, play/pause and next appear when you point at it",
+      progress: "Progress bar", progressHint: "Thin line that shows the song position",
+      autostart: "Start with Windows", autostartHint: "The overlay starts quietly in the tray",
+      preview: "Show preview", settings: "Settings …", test: "Test announcement", quit: "Quit",
+      nowPlaying: "Now playing", paused: "Paused", resumed: "Playing again",
+      background: "Background", bgCover: "From cover", bgDark: "Dark", bgLight: "Light",
+      glow: "Glow", roundness: "Roundness", showKicker: "Heading", showKickerHint: "Small line such as “Now playing” above the title",
+      showAlbum: "Show album", showTime: "Show time",
+    },
+    de: {
+      title: "Mirage Overlay", connected: "Mit Spotify verbunden", waiting: "Warte auf Spotify – ist das Mirage-Theme aktiv?",
+      secWhen: "Wann", secWhere: "Wo", secLook: "Aussehen", secMore: "Mehr",
+      mode: "Anzeigen", modeSong: "Bei Songwechsel", modeAlways: "Immer (Mini-Player)", modeOff: "Aus",
+      duration: "Dauer", onPlayPause: "Auch bei Wiedergabe / Pause", onPlayPauseHint: "Kurzer Hinweis, wenn du pausierst oder weiterspielst",
+      quiet: "Ruhezeiten", quietHint: "In dieser Zeit keine Ansagen", from: "von", to: "bis",
+      screen: "Bildschirm", primary: "Hauptbildschirm", cursor: "Wo die Maus ist", screenN: "Bildschirm",
+      position: "Position", offset: "Abstand zum Rand",
+      style: "Stil", stIsland: "Insel", stCard: "Karte", stBanner: "Banner", stMinimal: "Minimal",
+      motion: "Animation", mSpring: "Federnd", mSlide: "Gleiten", mFade: "Überblenden",
+      size: "Größe", opacity: "Deckkraft",
+      interactive: "Steuerung beim Überfahren", interactiveHint: "Zurück, Wiedergabe/Pause und Weiter erscheinen, wenn du darauf zeigst",
+      progress: "Fortschrittsbalken", progressHint: "Dünne Linie mit der Position im Song",
+      autostart: "Mit Windows starten", autostartHint: "Das Overlay startet still im Infobereich",
+      preview: "Vorschau zeigen", settings: "Einstellungen …", test: "Testansage", quit: "Beenden",
+      nowPlaying: "Jetzt läuft", paused: "Pausiert", resumed: "Läuft wieder",
+      background: "Hintergrund", bgCover: "Aus dem Cover", bgDark: "Dunkel", bgLight: "Hell",
+      glow: "Leuchten", roundness: "Rundung", showKicker: "Überschrift", showKickerHint: "Kleine Zeile wie „Jetzt läuft“ über dem Titel",
+      showAlbum: "Album zeigen", showTime: "Zeit zeigen",
+    },
+    fr: {
+      connected: "Connecté à Spotify", waiting: "En attente de Spotify – le thème Mirage est-il actif ?",
+      secWhen: "Quand", secWhere: "Où", secLook: "Apparence", secMore: "Plus",
+      mode: "Afficher", modeSong: "Au changement de titre", modeAlways: "Toujours (mini-lecteur)", modeOff: "Désactivé",
+      duration: "Durée", onPlayPause: "Aussi en lecture / pause", quiet: "Heures calmes", from: "de", to: "à",
+      screen: "Écran", primary: "Écran principal", cursor: "Là où est la souris", screenN: "Écran",
+      position: "Position", offset: "Distance au bord", style: "Style", stIsland: "Île", stCard: "Carte", stBanner: "Bannière", stMinimal: "Minimal",
+      motion: "Animation", mSpring: "Rebond", mSlide: "Glisser", mFade: "Fondu", size: "Taille", opacity: "Opacité",
+      interactive: "Commandes au survol", progress: "Barre de progression", autostart: "Démarrer avec Windows",
+      preview: "Aperçu", settings: "Réglages …", test: "Annonce test", quit: "Quitter",
+      nowPlaying: "En cours", paused: "En pause", resumed: "Reprise",
+    },
+    es: {
+      connected: "Conectado a Spotify", waiting: "Esperando a Spotify – ¿está activo el tema Mirage?",
+      secWhen: "Cuándo", secWhere: "Dónde", secLook: "Aspecto", secMore: "Más",
+      mode: "Mostrar", modeSong: "Al cambiar de canción", modeAlways: "Siempre (minirreproductor)", modeOff: "Apagado",
+      duration: "Duración", onPlayPause: "También al reproducir / pausar", quiet: "Horas de silencio", from: "de", to: "a",
+      screen: "Pantalla", primary: "Pantalla principal", cursor: "Donde está el ratón", screenN: "Pantalla",
+      position: "Posición", offset: "Distancia al borde", style: "Estilo", stIsland: "Isla", stCard: "Tarjeta", stBanner: "Banner", stMinimal: "Mínimo",
+      motion: "Animación", mSpring: "Rebote", mSlide: "Deslizar", mFade: "Fundido", size: "Tamaño", opacity: "Opacidad",
+      interactive: "Controles al pasar el ratón", progress: "Barra de progreso", autostart: "Iniciar con Windows",
+      preview: "Vista previa", settings: "Ajustes …", test: "Anuncio de prueba", quit: "Salir",
+      nowPlaying: "Sonando", paused: "En pausa", resumed: "Sonando de nuevo",
+    },
+    it: {
+      connected: "Connesso a Spotify", waiting: "In attesa di Spotify – il tema Mirage è attivo?",
+      secWhen: "Quando", secWhere: "Dove", secLook: "Aspetto", secMore: "Altro",
+      mode: "Mostra", modeSong: "Al cambio brano", modeAlways: "Sempre (mini player)", modeOff: "Spento",
+      duration: "Durata", onPlayPause: "Anche su play / pausa", quiet: "Ore di silenzio", from: "dalle", to: "alle",
+      screen: "Schermo", primary: "Schermo principale", cursor: "Dov'è il mouse", screenN: "Schermo",
+      position: "Posizione", offset: "Distanza dal bordo", style: "Stile", stIsland: "Isola", stCard: "Scheda", stBanner: "Banner", stMinimal: "Minimale",
+      motion: "Animazione", mSpring: "Elastica", mSlide: "Scorrimento", mFade: "Dissolvenza", size: "Dimensione", opacity: "Opacità",
+      interactive: "Controlli al passaggio", progress: "Barra di avanzamento", autostart: "Avvia con Windows",
+      preview: "Anteprima", settings: "Impostazioni …", test: "Annuncio di prova", quit: "Esci",
+      nowPlaying: "In riproduzione", paused: "In pausa", resumed: "Di nuovo in riproduzione",
+    },
+    pt: {
+      connected: "Conectado ao Spotify", waiting: "Aguardando o Spotify – o tema Mirage está ativo?",
+      secWhen: "Quando", secWhere: "Onde", secLook: "Aparência", secMore: "Mais",
+      mode: "Mostrar", modeSong: "Ao trocar de música", modeAlways: "Sempre (miniplayer)", modeOff: "Desligado",
+      duration: "Duração", onPlayPause: "Também ao tocar / pausar", quiet: "Horário silencioso", from: "das", to: "às",
+      screen: "Tela", primary: "Tela principal", cursor: "Onde está o mouse", screenN: "Tela",
+      position: "Posição", offset: "Distância da borda", style: "Estilo", stIsland: "Ilha", stCard: "Cartão", stBanner: "Banner", stMinimal: "Mínimo",
+      motion: "Animação", mSpring: "Elástica", mSlide: "Deslizar", mFade: "Esmaecer", size: "Tamanho", opacity: "Opacidade",
+      interactive: "Controles ao passar o mouse", progress: "Barra de progresso", autostart: "Iniciar com o Windows",
+      preview: "Pré-visualizar", settings: "Configurações …", test: "Anúncio de teste", quit: "Sair",
+      nowPlaying: "Tocando agora", paused: "Pausado", resumed: "Tocando de novo",
+    },
+    nl: {
+      connected: "Verbonden met Spotify", waiting: "Wachten op Spotify – is het Mirage-thema actief?",
+      secWhen: "Wanneer", secWhere: "Waar", secLook: "Uiterlijk", secMore: "Meer",
+      mode: "Tonen", modeSong: "Bij nummerwissel", modeAlways: "Altijd (minispeler)", modeOff: "Uit",
+      duration: "Duur", quiet: "Stille uren", from: "van", to: "tot", screen: "Scherm", primary: "Hoofdscherm", cursor: "Waar de muis is", screenN: "Scherm",
+      position: "Positie", style: "Stijl", size: "Grootte", preview: "Voorbeeld", settings: "Instellingen …", quit: "Afsluiten",
+      nowPlaying: "Nu speelt", paused: "Gepauzeerd", resumed: "Speelt weer",
+    },
+    pl: {
+      connected: "Połączono ze Spotify", waiting: "Czekam na Spotify – czy motyw Mirage jest aktywny?",
+      secWhen: "Kiedy", secWhere: "Gdzie", secLook: "Wygląd", secMore: "Więcej",
+      mode: "Pokazuj", modeSong: "Przy zmianie utworu", modeAlways: "Zawsze (mini odtwarzacz)", modeOff: "Wyłączone",
+      duration: "Czas", quiet: "Godziny ciszy", from: "od", to: "do", screen: "Ekran", primary: "Ekran główny", cursor: "Tam, gdzie mysz", screenN: "Ekran",
+      position: "Pozycja", style: "Styl", size: "Rozmiar", preview: "Podgląd", settings: "Ustawienia …", quit: "Zakończ",
+      nowPlaying: "Teraz gra", paused: "Wstrzymano", resumed: "Gra dalej",
+    },
+    tr: {
+      connected: "Spotify'a bağlı", waiting: "Spotify bekleniyor – Mirage teması etkin mi?",
+      secWhen: "Ne zaman", secWhere: "Nerede", secLook: "Görünüm", secMore: "Daha fazla",
+      mode: "Göster", modeSong: "Şarkı değişince", modeAlways: "Her zaman (mini oynatıcı)", modeOff: "Kapalı",
+      screen: "Ekran", primary: "Ana ekran", cursor: "Farenin olduğu yer", screenN: "Ekran", position: "Konum", style: "Stil", size: "Boyut",
+      preview: "Önizleme", settings: "Ayarlar …", quit: "Çık", nowPlaying: "Şimdi çalıyor", paused: "Duraklatıldı", resumed: "Yeniden çalıyor",
+    },
+    ru: {
+      connected: "Подключено к Spotify", waiting: "Ожидание Spotify – тема Mirage включена?",
+      secWhen: "Когда", secWhere: "Где", secLook: "Вид", secMore: "Ещё",
+      mode: "Показывать", modeSong: "При смене трека", modeAlways: "Всегда (мини-плеер)", modeOff: "Выкл.",
+      screen: "Экран", primary: "Основной экран", cursor: "Где курсор", screenN: "Экран", position: "Положение", style: "Стиль", size: "Размер",
+      preview: "Предпросмотр", settings: "Настройки …", quit: "Выход", nowPlaying: "Сейчас играет", paused: "Пауза", resumed: "Снова играет",
+    },
+    ja: {
+      connected: "Spotify に接続済み", waiting: "Spotify を待っています – Mirage テーマは有効ですか？",
+      secWhen: "タイミング", secWhere: "場所", secLook: "見た目", secMore: "その他",
+      mode: "表示", modeSong: "曲が変わったとき", modeAlways: "常に (ミニプレーヤー)", modeOff: "オフ",
+      screen: "画面", primary: "メイン画面", cursor: "マウスのある画面", screenN: "画面", position: "位置", style: "スタイル", size: "サイズ",
+      preview: "プレビュー", settings: "設定 …", quit: "終了", nowPlaying: "再生中", paused: "一時停止", resumed: "再生再開",
+    },
+    ko: {
+      connected: "Spotify에 연결됨", waiting: "Spotify 대기 중 – Mirage 테마가 켜져 있나요?",
+      secWhen: "언제", secWhere: "어디에", secLook: "모양", secMore: "더 보기",
+      mode: "표시", modeSong: "곡이 바뀔 때", modeAlways: "항상 (미니 플레이어)", modeOff: "끔",
+      screen: "화면", primary: "기본 화면", cursor: "마우스가 있는 화면", screenN: "화면", position: "위치", style: "스타일", size: "크기",
+      preview: "미리 보기", settings: "설정 …", quit: "종료", nowPlaying: "지금 재생 중", paused: "일시정지됨", resumed: "다시 재생",
+    },
+    zh: {
+      connected: "已连接 Spotify", waiting: "正在等待 Spotify – Mirage 主题是否已启用？",
+      secWhen: "何时", secWhere: "位置", secLook: "外观", secMore: "更多",
+      mode: "显示", modeSong: "切歌时", modeAlways: "始终 (迷你播放器)", modeOff: "关闭",
+      screen: "屏幕", primary: "主屏幕", cursor: "鼠标所在屏幕", screenN: "屏幕", position: "位置", style: "样式", size: "大小",
+      preview: "预览", settings: "设置 …", quit: "退出", nowPlaying: "正在播放", paused: "已暂停", resumed: "继续播放",
+    },
+  };
+  function pick(locale) {
+    const l = String(locale || "en").toLowerCase();
+    return I18N[l] ? l : I18N[l.split(/[-_]/)[0]] ? l.split(/[-_]/)[0] : "en";
+  }
+  function make(locale) {
+    const lang = pick(locale);
+    const t = (k) => I18N[lang][k] ?? I18N.en[k] ?? k;
+    t.lang = lang;
+    return t;
+  }
+  if (typeof module !== "undefined") module.exports = { make };
+  else root.MirageI18n = { make };
+})(this);

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="250" viewBox="0 0 1280 250" role="img" aria-label="Colour schemes: Mirage, Obsidian, Sakura, Abyss, Ember">
+  <defs>
+    <linearGradient id="dyn" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#b69cff"><animate attributeName="stop-color" values="#b69cff;#ff8fb8;#4fe3ff;#ff9f45;#b69cff" dur="10s" repeatCount="indefinite"/></stop>
+      <stop offset="1" stop-color="#7c5cff"><animate attributeName="stop-color" values="#7c5cff;#e0507f;#1aa6c2;#e06a1a;#7c5cff" dur="10s" repeatCount="indefinite"/></stop>
+    </linearGradient>
+    <style>
+      .n { font: 700 22px "Segoe UI", "Helvetica Neue", Arial, sans-serif; fill: #f5f3ff; }
+      .s { font: 500 12px Consolas, Menlo, monospace; fill: #b9b4cc; letter-spacing: 2px; }
+    </style>
+  </defs>
+  <rect width="1280" height="250" rx="24" fill="#07060c"/>
+  <!-- Mirage (dynamisch) -->
+  <g transform="translate(24 24)">
+    <rect width="232" height="202" rx="18" fill="#12101c" stroke="#fff" stroke-opacity=".1"/>
+    <rect x="16" y="16" width="200" height="96" rx="12" fill="url(#dyn)"/>
+    <text x="16" y="150" class="n">Mirage</text><text x="16" y="176" class="s">LIVE · FROM COVER</text>
+  </g>
+  <g transform="translate(272 24)">
+    <rect width="232" height="202" rx="18" fill="#101010" stroke="#fff" stroke-opacity=".1"/>
+    <rect x="16" y="16" width="62" height="96" rx="10" fill="#050505" stroke="#fff" stroke-opacity=".15"/>
+    <rect x="85" y="16" width="62" height="96" rx="10" fill="#3a3a3a"/>
+    <rect x="154" y="16" width="62" height="96" rx="10" fill="#e8e8e8"/>
+    <text x="16" y="150" class="n">Obsidian</text><text x="16" y="176" class="s">MONOCHROME</text>
+  </g>
+  <g transform="translate(520 24)">
+    <rect width="232" height="202" rx="18" fill="#1a0e15" stroke="#fff" stroke-opacity=".1"/>
+    <rect x="16" y="16" width="62" height="96" rx="10" fill="#0e070b" stroke="#fff" stroke-opacity=".15"/>
+    <rect x="85" y="16" width="62" height="96" rx="10" fill="#e0507f"/>
+    <rect x="154" y="16" width="62" height="96" rx="10" fill="#ff8fb8"/>
+    <text x="16" y="150" class="n">Sakura</text><text x="16" y="176" class="s">BLOSSOM PINK</text>
+  </g>
+  <g transform="translate(768 24)">
+    <rect width="232" height="202" rx="18" fill="#081419" stroke="#fff" stroke-opacity=".1"/>
+    <rect x="16" y="16" width="62" height="96" rx="10" fill="#03090c" stroke="#fff" stroke-opacity=".15"/>
+    <rect x="85" y="16" width="62" height="96" rx="10" fill="#1aa6c2"/>
+    <rect x="154" y="16" width="62" height="96" rx="10" fill="#4fe3ff"/>
+    <text x="16" y="150" class="n">Abyss</text><text x="16" y="176" class="s">DEEP SEA CYAN</text>
+  </g>
+  <g transform="translate(1016 24)">
+    <rect width="240" height="202" rx="18" fill="#18100b" stroke="#fff" stroke-opacity=".1"/>
+    <rect x="16" y="16" width="64" height="96" rx="10" fill="#0c0705" stroke="#fff" stroke-opacity=".15"/>
+    <rect x="88" y="16" width="64" height="96" rx="10" fill="#e06a1a"/>
+    <rect x="160" y="16" width="64" height="96" rx="10" fill="#ff9f45"/>
+    <text x="16" y="150" class="n">Ember</text><text x="16" y="176" class="s">GLOWING AMBER</text>
+  </g>
+</svg>

@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root {
+    --a: rgb(182,156,255); --b: rgb(124,92,255); --c: rgb(230,222,255);
+    --ease: cubic-bezier(.22,1,.36,1); --spring: cubic-bezier(.34,1.56,.64,1);
+    --font: "Outfit", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
+  body { font-family: var(--font); color: #fff; -webkit-font-smoothing: antialiased; }
+
+  .stage { position: absolute; inset: 0; display: flex; padding: 18px; box-sizing: border-box;
+           opacity: var(--op, 1); }
+  .ov { zoom: var(--s, 1); }
+  .stage.v-top { align-items: flex-start; } .stage.v-middle { align-items: center; } .stage.v-bottom { align-items: flex-end; }
+  .stage.h-left { justify-content: flex-start; } .stage.h-center { justify-content: center; } .stage.h-right { justify-content: flex-end; }
+
+  /* ---------- gemeinsamer Aufbau ---------- */
+  .ov { position: relative; display: flex; align-items: center; gap: 14px; overflow: hidden; box-sizing: border-box;
+        opacity: 0; pointer-events: auto;
+        transition: opacity .45s var(--ease), transform .7s var(--spring), filter .5s var(--ease),
+                    width .7s var(--spring), height .7s var(--spring), border-radius .7s var(--spring), padding .7s var(--spring); }
+  .ov.in { opacity: 1; transform: none !important; filter: none !important; }
+  .bg { position: absolute; inset: 0; z-index: 0; }
+  .bg img { position: absolute; inset: -30%; width: 160%; height: 160%; object-fit: cover; filter: blur(28px) saturate(1.8) brightness(.55); opacity: 0; transition: opacity .6s; }
+  .bg img.ok { opacity: 1; }
+  .bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(8,6,14,.72), rgba(8,6,14,.45)); }
+  .cv { position: relative; z-index: 1; flex: none; object-fit: cover; background: linear-gradient(135deg, var(--c), var(--a) 55%, var(--b));
+        transition: all .7s var(--spring); }
+  .tx { position: relative; z-index: 1; min-width: 0; flex: 1; }
+  .kick { font: 500 10px/1 var(--mono); letter-spacing: .28em; text-transform: uppercase; color: var(--c); margin-bottom: 6px; }
+  .ti { font-weight: 700; font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .al { font-size: 12px; color: rgba(255,255,255,.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; display: none; }
+  .show-album .al { display: block; }
+  .tm { font: 500 10px var(--mono); color: rgba(255,255,255,.55); margin-top: 4px; display: none; }
+  .show-time .tm { display: block; }
+  .no-kicker .kick { display: none !important; }
+  .ar { font-size: 13px; color: rgba(255,255,255,.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .side { position: relative; z-index: 1; flex: none; display: grid; place-items: center; }
+  .side > * { grid-area: 1 / 1; }
+  .interactive .side { min-width: 98px; }
+  .eq { display: flex; gap: 3px; align-items: flex-end; height: 18px; transition: opacity .3s; }
+  .eq i { width: 3px; border-radius: 2px; background: linear-gradient(to top, var(--a), var(--c)); animation: eq .9s ease-in-out infinite alternate; }
+  .eq i:nth-child(2) { animation-delay: -.3s; } .eq i:nth-child(3) { animation-delay: -.6s; } .eq i:nth-child(4) { animation-delay: -.15s; }
+  .paused .eq i { animation-play-state: paused; height: 4px; }
+  @keyframes eq { from { height: 3px; } to { height: 18px; } }
+  .ctl { position: static; display: flex; gap: 4px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .ctl button { width: 30px; height: 30px; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+                color: #fff; background: rgba(255,255,255,.12); transition: transform .3s var(--spring), background .2s; }
+  .ctl button:hover { transform: scale(1.12); background: rgba(255,255,255,.22); }
+  .ctl button.pp { color: #0b0a12; background: linear-gradient(135deg, var(--c), var(--a)); }
+  .ctl svg { width: 14px; height: 14px; fill: currentColor; }
+  .interactive .ov:hover .ctl { opacity: 1; pointer-events: auto; }
+  .interactive .ov:hover .eq { opacity: 0; }
+  .pg { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; z-index: 2; background: rgba(255,255,255,.1); }
+  .pg b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--b), var(--a), var(--c)); box-shadow: 0 0 10px var(--a); }
+  .no-progress .pg { display: none; }
+
+  /* ---------- Stil: Insel ---------- */
+  .ov { box-shadow: 0 22px 60px -18px color-mix(in srgb, var(--a) var(--glow, 80%), transparent), 0 0 0 1px rgba(255,255,255,.1) !important; }
+  .st-island .ov { height: 38px; width: 160px; padding: 0 8px; border-radius: calc(19px * var(--round, 1)); background: #000; }
+  .st-island .bg { display: none; }
+  .st-island .cv { width: 24px; height: 24px; border-radius: 50%; }
+  .st-island .tx { opacity: 0; transform: translateY(6px); transition: all .5s var(--ease) .12s; }
+  .st-island .kick { display: none; }
+  .st-island .ov.open { width: 460px; height: 76px; padding: 0 14px 0 10px; border-radius: calc(38px * var(--round, 1)); }
+  .st-island .ov.open .cv { width: 56px; height: 56px; border-radius: 16px; }
+  .st-island .ov.open .tx { opacity: 1; transform: none; }
+  .st-island .pg { left: 24px; right: 24px; bottom: 6px; height: 2px; border-radius: 2px; overflow: hidden; }
+
+  /* ---------- Stil: Karte ---------- */
+  .st-card .ov { width: 420px; height: 116px; padding: 14px 14px 14px 14px; border-radius: calc(24px * var(--round, 1));
+                 box-shadow: 0 30px 70px -25px color-mix(in srgb, var(--a) 85%, transparent), 0 0 0 1px rgba(255,255,255,.12); }
+  .st-card .ov::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; z-index: 3; pointer-events: none;
+                         background: linear-gradient(130deg, var(--c), transparent 35%, transparent 65%, var(--a));
+                         -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; }
+  .st-card .cv { width: 88px; height: 88px; border-radius: calc(16px * var(--round, 1)); box-shadow: 0 12px 30px -10px rgba(0,0,0,.8); }
+  .st-card .ti { font-size: 18px; }
+
+  /* ---------- Stil: Banner ---------- */
+  .st-banner .ov { width: 560px; height: 78px; padding: 0 14px 0 0; border-radius: calc(18px * var(--round, 1));
+                   box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--a) 85%, transparent), 0 0 0 1px rgba(255,255,255,.1); }
+  .st-banner .ov::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 3;
+                           background: linear-gradient(90deg, transparent, var(--c), var(--a), var(--b), transparent);
+                           background-size: 200% 100%; animation: sweep 4s linear infinite; }
+  @keyframes sweep { to { background-position: 200% 0; } }
+  .st-banner .cv { width: 78px; height: 78px; border-radius: 0; }
+  .st-banner .kick { margin-bottom: 4px; }
+  .st-banner .ti { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+
+  /* ---------- Stil: Minimal ---------- */
+  .st-minimal .ov { padding: 4px 6px; gap: 10px; background: none; }
+  .st-minimal .bg, .st-minimal .cv, .st-minimal .pg { display: none; }
+  .st-minimal .ti { font-size: 22px; font-weight: 800; text-shadow: 0 2px 18px rgba(0,0,0,.9), 0 0 30px color-mix(in srgb, var(--a) 70%, transparent); }
+  .st-minimal .ar { font-size: 14px; text-shadow: 0 2px 12px rgba(0,0,0,.9); }
+  .st-minimal .kick { text-shadow: 0 1px 8px rgba(0,0,0,.9); }
+
+  .bg-dark .bg img { display: none; }
+  .bg-dark .bg::after { background: rgba(12,10,20,.94); }
+  .bg-light .bg img { display: none; }
+  .bg-light .bg::after { background: rgba(250,248,255,.95); }
+  .bg-light .ov { color: #15121f; }
+  .bg-light.st-island .ov { background: #fff; }
+  .bg-light .ar, .bg-light .al, .bg-light .tm { color: rgba(21,18,31,.65); }
+  .bg-light .kick { color: var(--b); }
+  .bg-light .ctl button { color: #15121f; background: rgba(0,0,0,.08); }
+  .bg-light.st-minimal .ti, .bg-light.st-minimal .ar { color: #fff; }
+
+  /* ---------- Bewegung ---------- */
+  .m-spring .ov { transform: translate(var(--fx), var(--fy)) scale(.7); }
+  .m-slide .ov { transform: translate(calc(var(--fx) * 5), calc(var(--fy) * 5)); transition-timing-function: var(--ease); }
+  .m-fade .ov { transform: scale(.96); filter: blur(12px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ov, .ov * { transition-duration: .01ms !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="ov" id="ov">
+    <div class="bg"><img id="bgimg" alt=""></div>
+    <img class="cv" id="cv" alt="">
+    <div class="tx"><div class="kick" id="kick"></div><div class="ti" id="ti"></div><div class="ar" id="ar"></div><div class="al" id="al"></div><div class="tm" id="tm"></div></div>
+    <div class="side">
+      <div class="eq"><i></i><i></i><i></i><i></i></div>
+      <div class="ctl">
+        <button data-c="prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg></button>
+        <button data-c="toggle" class="pp" aria-label="Play/Pause"><svg viewBox="0 0 24 24" id="ppi"><path d="M7 4v16l13-8z"/></svg></button>
+        <button data-c="next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg></button>
+      </div>
+    </div>
+    <div class="pg"><b id="pgb"></b></div>
+  </div>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage"), ov = $("ov");
+  const PLAY = '<path d="M7 4v16l13-8z"/>', PAUSE = '<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>';
+  let cfg = null, track = null, recvAt = 0, hideT = 0, openT = 0, hovered = false, visible = false;
+
+  function applyCfg(c) {
+    cfg = c;
+    const [v, h] = c.anchor.split("-");
+    stage.className = `stage v-${v} h-${h} st-${c.style} m-${c.motion}` +
+      (c.interactive ? " interactive" : "") + (c.progress ? "" : " no-progress") +
+      (c.showKicker ? "" : " no-kicker") + (c.showAlbum ? " show-album" : "") + (c.showTime ? " show-time" : "") + ` bg-${c.background}`;
+    stage.style.setProperty("--glow", c.glow + "%");
+    stage.style.setProperty("--round", c.roundness / 100);
+    stage.style.setProperty("--op", c.opacity / 100);
+    stage.style.setProperty("--s", c.scale / 100);
+    // Startversatz zeigt vom Bildschirmrand weg, an dem das Overlay sitzt
+    stage.style.setProperty("--fy", v === "top" ? "-24px" : v === "bottom" ? "24px" : "0px");
+    stage.style.setProperty("--fx", h === "left" ? "-24px" : h === "right" ? "24px" : "0px");
+  }
+
+  function setTrack(t) {
+    track = t;
+    recvAt = performance.now();
+    $("ti").textContent = t.title || "";
+    $("ar").textContent = t.artist || "";
+    $("al").textContent = t.album || "";
+    const cols = t.colors || [];
+    ["--a", "--b", "--c"].forEach((k, i) => cols[i] && document.documentElement.style.setProperty(k, cols[i]));
+    $("ppi").innerHTML = t.playing ? PAUSE : PLAY;
+    ov.classList.toggle("paused", !t.playing);
+    stage.classList.toggle("paused", !t.playing);
+    const src = t.cover || "";
+    if ($("cv").dataset.src !== src) {
+      $("cv").dataset.src = src;
+      if (src) {
+        const img = new Image();
+        img.onload = () => { $("cv").src = src; $("bgimg").src = src; $("bgimg").classList.add("ok"); };
+        img.src = src;
+      } else {
+        $("cv").removeAttribute("src");
+        $("bgimg").classList.remove("ok");
+      }
+    }
+  }
+
+  function open(reason, text) {
+    clearTimeout(hideT); clearTimeout(openT);
+    if (reason !== "update") $("kick").textContent = text[reason] || text.nowPlaying;
+    if (!$("kick").textContent) $("kick").textContent = text.nowPlaying;
+    visible = true;
+    requestAnimationFrame(() => {
+      ov.classList.add("in");
+      if (cfg.style === "island") openT = setTimeout(() => ov.classList.add("open"), 140);
+      else ov.classList.add("open");
+    });
+    schedule();
+  }
+  function schedule() {
+    clearTimeout(hideT);
+    if (cfg.mode === "always") return;
+    hideT = setTimeout(() => (hovered ? schedule() : close()), cfg.duration * 1000);
+  }
+  function close() {
+    clearTimeout(openT);
+    ov.classList.remove("open");
+    setTimeout(() => {
+      ov.classList.remove("in");
+      setTimeout(() => { visible = false; if (!ov.classList.contains("in")) mirage.send("done"); }, 520);
+    }, cfg.style === "island" ? 380 : 0);
+  }
+
+  mirage.on("show", ({ track: t, cfg: c, reason, text }) => { applyCfg(c); setTrack(t); open(reason, text); });
+  mirage.on("update", ({ track: t, cfg: c }) => { applyCfg(c); setTrack(t); });
+  mirage.on("config", (c) => { applyCfg(c); if (visible) schedule(); });
+  mirage.on("hideNow", () => visible && close());
+
+  ov.addEventListener("mouseenter", () => { hovered = true; cfg?.interactive && mirage.send("hover", true); });
+  ov.addEventListener("mouseleave", () => { hovered = false; mirage.send("hover", false); });
+  ov.querySelectorAll(".ctl button").forEach((b) => b.addEventListener("click", () => mirage.send("cmd", b.dataset.c)));
+
+  (function tick() {
+    requestAnimationFrame(tick);
+    if (!visible || !track?.duration) return;
+    const pos = track.progress + (track.playing ? performance.now() - recvAt : 0);
+    $("pgb").style.width = Math.min(100, (pos / track.duration) * 100) + "%";
+    if (cfg.showTime) { const f = (ms) => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }; const txt = f(Math.min(pos, track.duration)) + " / " + f(track.duration); if ($("tm").textContent !== txt) $("tm").textContent = txt; }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-label="Mirage Overlay styles: Island, Card, Banner, Minimal – on any screen">
+  <defs>
+    <filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="50"/></filter>
+    <linearGradient id="cv" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#e6deff"/><stop offset=".55" stop-color="#b69cff"/><stop offset="1" stop-color="#7c5cff"/></linearGradient>
+    <linearGradient id="line" x1="0" x2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset=".5" stop-color="#b69cff"/><stop offset="1" stop-color="#e6deff"/></linearGradient>
+    <style>.t{font:700 15px "Segoe UI","Helvetica Neue",Arial,sans-serif;fill:#fff}.a{font:13px "Segoe UI","Helvetica Neue",Arial,sans-serif;fill:#cfc9e6}.k{font:500 9px Consolas,Menlo,monospace;letter-spacing:2.5px;fill:#e6deff}.lbl{font:600 16px "Segoe UI","Helvetica Neue",Arial,sans-serif;fill:#b9b4cc}</style>
+  </defs>
+  <rect width="1280" height="360" rx="24" fill="#05040a"/>
+  <!-- angedeuteter Desktop mit zwei Bildschirmen -->
+  <rect x="24" y="24" width="760" height="312" rx="16" fill="#0e1220" stroke="#fff" stroke-opacity=".08"/>
+  <rect x="800" y="64" width="456" height="272" rx="16" fill="#0e1220" stroke="#fff" stroke-opacity=".08"/>
+  <circle cx="300" cy="260" r="160" fill="#1aa6c2" opacity=".25" filter="url(#b)"/>
+  <circle cx="1060" cy="140" r="140" fill="#e0507f" opacity=".25" filter="url(#b)"/>
+  <text x="44" y="320" class="lbl">1 ★</text><text x="820" y="320" class="lbl">2</text>
+
+  <!-- Insel (oben Mitte, Bildschirm 1) -->
+  <g transform="translate(214 44)">
+    <rect width="380" height="64" rx="32" fill="#000" stroke="#fff" stroke-opacity=".1">
+      <animate attributeName="width" values="140;380;380;380;140" keyTimes="0;.15;.5;.85;1" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="x" values="120;0;0;0;120" keyTimes="0;.15;.5;.85;1" dur="6s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="8" y="8" width="48" height="48" rx="14" fill="url(#cv)"/>
+    <text x="70" y="30" class="t">Midnight Mirage</text>
+    <text x="70" y="48" class="a">Aurora Lights</text>
+    <g fill="url(#line)">
+      <rect x="338" y="24" width="4" height="16" rx="2"><animate attributeName="height" values="4;16;4" dur=".9s" repeatCount="indefinite"/></rect>
+      <rect x="346" y="24" width="4" height="16" rx="2"><animate attributeName="height" values="16;5;16" dur=".8s" repeatCount="indefinite"/></rect>
+      <rect x="354" y="24" width="4" height="16" rx="2"><animate attributeName="height" values="8;16;8" dur="1.1s" repeatCount="indefinite"/></rect>
+    </g>
+  </g>
+  <text x="404" y="134" text-anchor="middle" class="lbl">Island</text>
+
+  <!-- Karte (unten rechts, Bildschirm 1) -->
+  <g transform="translate(396 186)">
+    <rect width="364" height="104" rx="22" fill="#1b1430" stroke="#b69cff" stroke-opacity=".55"/>
+    <rect x="12" y="12" width="80" height="80" rx="14" fill="url(#cv)"/>
+    <text x="108" y="38" class="k">NOW PLAYING</text>
+    <text x="108" y="60" class="t">Midnight Mirage</text>
+    <text x="108" y="78" class="a">Aurora Lights</text>
+    <rect x="0" y="100" width="364" height="3" fill="#fff" fill-opacity=".1"/>
+    <rect x="0" y="100" width="120" height="3" fill="url(#line)"><animate attributeName="width" values="20;364;20" dur="10s" repeatCount="indefinite"/></rect>
+  </g>
+  <text x="578" y="314" text-anchor="middle" class="lbl">Card</text>
+
+  <!-- Banner (oben, Bildschirm 2) -->
+  <g transform="translate(828 92)">
+    <rect width="400" height="70" rx="16" fill="#140f22" stroke="#fff" stroke-opacity=".1"/>
+    <rect width="400" height="2" fill="url(#line)"/>
+    <rect width="70" height="70" rx="0" fill="url(#cv)"/>
+    <text x="86" y="31" class="k">NOW PLAYING</text>
+    <text x="86" y="53" class="t" font-size="17">Midnight Mirage · Aurora Lights</text>
+  </g>
+  <text x="1028" y="186" text-anchor="middle" class="lbl">Banner</text>
+
+  <!-- Minimal (unten links, Bildschirm 2) -->
+  <g transform="translate(840 230)">
+    <text class="k" y="0">NOW PLAYING</text>
+    <text y="28" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-weight="800" font-size="24" fill="#fff">♪ Midnight Mirage</text>
+    <text y="50" class="a">Aurora Lights</text>
+  </g>
+  <text x="1150" y="272" text-anchor="middle" class="lbl">Minimal</text>
+</svg>

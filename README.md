@@ -1,0 +1,168 @@
+<p align="center">
+  <img src="assets/hero.svg" alt="Mirage – a living Spicetify theme" width="100%">
+</p>
+
+<p align="center">
+  <a href="#-install"><img alt="Spicetify" src="https://img.shields.io/badge/Spicetify-2.40%2B-b69cff?style=for-the-badge&labelColor=12101c"></a>
+  <img alt="Languages" src="https://img.shields.io/badge/languages-14-7c5cff?style=for-the-badge&labelColor=12101c">
+  <img alt="Overlay" src="https://img.shields.io/badge/overlay-Windows-4fe3ff?style=for-the-badge&labelColor=12101c">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-e6deff?style=for-the-badge&labelColor=12101c">
+</p>
+
+<p align="center">
+  <b>English</b> · <a href="README.de.md">Deutsch</a>
+  <br><br>
+  <a href="#-highlights">Highlights</a> ·
+  <a href="#-immersive-mode">Immersive mode</a> ·
+  <a href="#-mirage-overlay">Overlay</a> ·
+  <a href="#-colour-schemes">Schemes</a> ·
+  <a href="#-install">Install</a> ·
+  <a href="#-settings--shortcuts">Shortcuts</a>
+</p>
+
+---
+
+**Mirage** turns Spotify into frosted glass with the music living behind it. Every song repaints the interface in the colours of its album art, the cover drifts slowly behind the panels as soft light, and – when Spotify provides beat data – the whole background breathes on the beat.
+
+## ✦ Highlights
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>🎨 Colours from the cover</h3>
+      Accent, buttons, progress bar, titles and selection take on the song's palette – picked so text stays readable on dark glass.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🌫️ Living background</h3>
+      The album art drifts behind the UI as a slow, blurred haze, with aurora bands, floating light dust and film grain on top.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🥁 On the beat</h3>
+      With Spotify's beat data the background, light dust and visualizer pulse in time. Without it, Mirage falls back to a calm ambient motion.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <h3>🃏 3D cards</h3>
+      Cards tilt towards the pointer, with a light cone and a glowing edge that follow the mouse.
+    </td>
+    <td valign="top">
+      <h3>✨ Page animations</h3>
+      Pages blur in, grids cascade, track rows glide in one after another. The playing row glows in a flowing colour stream.
+    </td>
+    <td valign="top">
+      <h3>💿 Vinyl & details</h3>
+      The cover in the player turns into a spinning record, the play button gets a rotating halo, liking a song sets off a heart burst.
+    </td>
+  </tr>
+</table>
+
+## ◐ Immersive mode
+
+Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> or the circle button in the top bar. Three views morph into each other:
+
+<p align="center"><img src="assets/immersive.svg" alt="Immersive mode: Cover, Lyrics, Visualizer" width="100%"></p>
+
+| View | What you get |
+|---|---|
+| **Cover** | Huge cover that tilts with the mouse, title in a colour gradient, progress, full controls |
+| **Lyrics** | Spotify's synced lyrics, the current line lit up and centred – click any line to jump there |
+| **Visualizer** | Radial spectrum around the round cover, beat rings – driven by Spotify's audio analysis when available, otherwise ambient |
+
+Controls: shuffle, previous, play/pause, next, repeat (incl. repeat one), like, volume + mute, full screen.
+
+## ◎ Mirage Overlay
+
+A small companion app that shows song changes **outside of Spotify** – above every window, on the screen you choose. The theme talks to it locally (`127.0.0.1:47321`), nothing leaves your computer.
+
+<p align="center"><img src="assets/overlay.svg" alt="Overlay styles: Island, Card, Banner, Minimal" width="100%"></p>
+
+- **When:** on every song change, permanently as a mini player, or off · optionally on play/pause · quiet hours (e.g. 22:00–07:00)
+- **Where:** main screen, the screen with the mouse, or any screen picked on a map of your displays · 9 anchor positions · fine offset
+- **How:** Island, Card, Banner or Minimal · springy, slide or fade · background from cover / dark / light · glow, roundness, size, opacity · heading, album, time, progress bar
+- **Controls on hover:** previous · play/pause · next, right inside the overlay
+- Lives in the tray, starts with Windows if you like, follows the language Spotify uses
+
+## ◑ Colour schemes
+
+<p align="center"><img src="assets/schemes.svg" alt="Colour schemes" width="100%"></p>
+
+`Mirage` follows the cover live. The other four are fixed palettes for a calmer look.
+
+## ⬇ Install
+
+### Spicetify Marketplace
+
+Open **Marketplace → Themes**, search for **Mirage**, install. Done.
+
+> The Marketplace only lists **public** repositories with the topic `spicetify-themes`.
+
+### Manually (Windows)
+
+```powershell
+git clone https://github.com/Passimoritz/spicetify-mirage
+cd spicetify-mirage
+powershell -ExecutionPolicy Bypass -File install.ps1            # theme only
+powershell -ExecutionPolicy Bypass -File install.ps1 -Overlay   # theme + overlay app
+```
+
+Pick a scheme with `-Scheme Obsidian` (or `Sakura`, `Abyss`, `Ember`).
+
+<details>
+<summary>macOS / Linux / by hand</summary>
+
+```bash
+cp -r Mirage "$(dirname "$(spicetify -c)")/Themes/"
+spicetify config current_theme Mirage color_scheme Mirage inject_css 1 replace_colors 1 inject_theme_js 1
+spicetify apply
+```
+
+The overlay app is Electron-based: `cd overlay && npm install && npm start`.
+</details>
+
+### Uninstall
+
+```bash
+spicetify config current_theme marketplace
+spicetify apply
+```
+
+## ⌨ Settings & shortcuts
+
+Profile menu → **Mirage settings**: colours from the cover, light dust, beat background, page animations, vinyl, 3D cards, heart burst, overlay link, film grain, real glass, calm mode, blur and brightness.
+
+| Where | Key | Action |
+|---|---|---|
+| anywhere | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> | open / close immersive mode |
+| immersive | <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> | cover · lyrics · visualizer |
+| immersive | <kbd>Space</kbd> | play / pause |
+| immersive | <kbd>←</kbd> <kbd>→</kbd> | seek 5 s |
+| immersive | <kbd>↑</kbd> <kbd>↓</kbd> | volume |
+| immersive | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>F</kbd> | like · shuffle · repeat · full screen |
+| immersive | <kbd>N</kbd> <kbd>P</kbd> | next · previous |
+| immersive | <kbd>Esc</kbd> | leave full screen / close |
+
+## 🌍 Languages
+
+English, Deutsch, Français, Español, Italiano, Português, Nederlands, Polski, Türkçe, Русский, Українська, 日本語, 한국어 and 中文 – any other language falls back to English. Mirage finds Spotify's controls by language-independent markers, so it works no matter which language Spotify is set to.
+
+## ⚙ How it works
+
+```mermaid
+flowchart LR
+  A[Album art] -->|sample 64×64| B(theme.js)
+  B -->|palette| C[CSS variables<br/>--m-a / --m-b / --m-c]
+  B -->|tiny haze image| D[Background layers]
+  E[Spotify beat data] --> B
+  F[Spotify lyrics] --> G[Immersive mode]
+  B --> G
+  B <-->|WebSocket 127.0.0.1:47321| H[Mirage Overlay]
+```
+
+- **Performance first:** colours change in a single style update, the background haze is a pre-shrunk image blurred once and only rotated, and the background pauses while immersive mode covers it. Real glass (live blur behind every panel) is optional.
+- **Privacy:** no own server, no tracking. Lyrics and beat data come from Spotify itself; fonts load from Google Fonts.
+- **Accessibility:** respects *reduce motion*, visible focus rings, readable contrast on every palette.
+
+## License
+
+MIT © Passimoritz

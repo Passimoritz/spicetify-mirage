@@ -1,0 +1,279 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'">
+<title>Mirage Overlay</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root {
+    --bg: #07060c; --text: #f5f3ff; --sub: #b9b4cc; --line: rgba(255,255,255,.08); --glass: rgba(255,255,255,.04);
+    --a: #b69cff; --b: #7c5cff; --c: #e6deff;
+    --ease: cubic-bezier(.22,1,.36,1); --spring: cubic-bezier(.34,1.56,.64,1);
+    --font: "Outfit", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font: 15px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
+  body::before { content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+    background: radial-gradient(40% 35% at 15% 10%, color-mix(in srgb, var(--a) 35%, transparent), transparent 70%),
+                radial-gradient(35% 40% at 90% 30%, color-mix(in srgb, var(--b) 30%, transparent), transparent 70%),
+                radial-gradient(45% 35% at 50% 100%, color-mix(in srgb, var(--c) 18%, transparent), transparent 70%);
+    filter: blur(30px); animation: drift 26s var(--ease) infinite alternate; }
+  @keyframes drift { to { transform: translate(3%, 2%) rotate(4deg) scale(1.08); } }
+  header { position: sticky; top: 0; z-index: 5; height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 160px 0 20px;
+           -webkit-app-region: drag; background: rgba(7,6,12,.6); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); }
+  header .logo { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--a); box-shadow: 0 0 14px var(--a); }
+  header h1 { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .02em; }
+  .status { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--sub);
+            padding: 5px 12px; border-radius: 99px; background: var(--glass); border: 1px solid var(--line); -webkit-app-region: no-drag; }
+  .status i { width: 8px; height: 8px; border-radius: 50%; background: #ff6b81; box-shadow: 0 0 10px #ff6b81; }
+  .status.on i { background: #5cf2b0; box-shadow: 0 0 10px #5cf2b0; animation: blink 2s infinite; }
+  @keyframes blink { 50% { opacity: .45; } }
+  main { max-width: 820px; margin: 0 auto; padding: 22px 22px 120px; display: grid; gap: 18px; }
+
+  .now { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line); }
+  .now img, .now .ph { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; background: linear-gradient(135deg, var(--c), var(--a), var(--b)); flex: none; }
+  .now .k { font: 500 10px var(--mono); letter-spacing: .26em; text-transform: uppercase; color: var(--c); }
+  .now b { display: block; font-size: 18px; margin-top: 4px; }
+  .now span { color: var(--sub); }
+  .now button { margin-left: auto; }
+
+  section { padding: 20px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line); }
+  section > h2 { margin: 0 0 16px; font: 500 11px var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--c); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; padding-top: 0; }
+  .row > div:first-child { min-width: 0; }
+  .row b { display: block; font-weight: 600; }
+  .row small { color: var(--sub); }
+
+  .seg { display: inline-flex; flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: 99px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
+  .seg button { border: 0; background: none; color: var(--sub); font: 600 13px var(--font); padding: 8px 14px; border-radius: 99px; cursor: pointer; transition: all .35s var(--spring); }
+  .seg button[aria-pressed="true"] { color: #0b0a12; background: linear-gradient(135deg, var(--c), var(--a)); box-shadow: 0 6px 20px -6px var(--a); }
+
+  .toggle { appearance: none; width: 46px; height: 26px; border-radius: 99px; background: rgba(255,255,255,.16); position: relative; cursor: pointer; flex: none; transition: background .3s; margin: 0; }
+  .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .35s var(--spring); }
+  .toggle:checked { background: linear-gradient(135deg, var(--c), var(--a)); }
+  .toggle:checked::after { transform: translateX(20px); }
+  input[type=range] { accent-color: var(--a); width: 200px; }
+  input[type=time] { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; font: 14px var(--font); color-scheme: dark; }
+  .val { font: 500 12px var(--mono); color: var(--sub); min-width: 52px; text-align: right; display: inline-block; }
+  :focus-visible { outline: 2px solid var(--c); outline-offset: 2px; }
+
+  /* Bildschirmkarte */
+  .screens { position: relative; height: 170px; margin: 6px 0 14px; }
+  .screen { position: absolute; display: grid; place-items: center; border-radius: 10px; cursor: pointer; border: 1px solid rgba(255,255,255,.18);
+            background: rgba(255,255,255,.05); color: var(--sub); font: 700 22px var(--font); transition: all .35s var(--spring); }
+  .screen small { position: absolute; bottom: 6px; font: 500 10px var(--mono); }
+  .screen:hover { background: rgba(255,255,255,.1); }
+  .screen[aria-pressed="true"] { color: #0b0a12; border-color: transparent; background: linear-gradient(135deg, var(--c), var(--a)); box-shadow: 0 14px 40px -12px var(--a); }
+  .screen[aria-pressed="true"] small { color: rgba(11,10,18,.7); }
+
+  /* Positions-Raster */
+  .grid9 { display: grid; grid-template-columns: repeat(3, 34px); grid-template-rows: repeat(3, 24px); gap: 5px; padding: 8px; border-radius: 12px;
+           background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .grid9 button { border: 1px solid rgba(255,255,255,.14); border-radius: 6px; background: rgba(255,255,255,.04); cursor: pointer; transition: all .3s var(--spring); }
+  .grid9 button:hover { background: rgba(255,255,255,.12); }
+  .grid9 button[aria-pressed="true"] { background: linear-gradient(135deg, var(--c), var(--a)); border-color: transparent; transform: scale(1.08); }
+
+  /* Stil-Karten */
+  .styles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sty { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.03); padding: 14px 10px 10px; cursor: pointer; color: var(--sub);
+         font: 600 13px var(--font); display: grid; gap: 10px; justify-items: center; transition: all .35s var(--spring); }
+  .sty:hover { transform: translateY(-2px); background: rgba(255,255,255,.07); }
+  .sty[aria-pressed="true"] { color: var(--text); border-color: var(--a); box-shadow: 0 12px 30px -14px var(--a), inset 0 0 0 1px var(--a); }
+  .mini { height: 40px; width: 100%; display: grid; place-items: center; }
+  .mini .island { width: 92px; height: 26px; border-radius: 99px; background: #000; display: flex; align-items: center; gap: 6px; padding: 0 4px; box-shadow: 0 6px 16px -6px var(--a); }
+  .mini .dot { width: 18px; height: 18px; border-radius: 6px; background: linear-gradient(135deg, var(--c), var(--a), var(--b)); flex: none; }
+  .mini .ln { height: 5px; border-radius: 3px; background: rgba(255,255,255,.5); flex: 1; }
+  .mini .card { width: 96px; height: 38px; border-radius: 10px; background: linear-gradient(120deg, #251d3a, #120f1d); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+  .mini .card .dot { width: 26px; height: 26px; }
+  .mini .banner { width: 100%; height: 26px; border-radius: 7px; background: #120f1d; border-top: 2px solid var(--a); display: flex; align-items: center; gap: 6px; padding-right: 6px; overflow: hidden; }
+  .mini .banner .dot { width: 26px; height: 26px; border-radius: 0; }
+  .mini .minimal { font: 800 13px var(--font); color: #fff; text-shadow: 0 0 12px var(--a); }
+
+  .btn { border: 0; border-radius: 99px; padding: 11px 20px; font: 700 14px var(--font); cursor: pointer; color: #0b0a12;
+         background: linear-gradient(135deg, var(--c), var(--a) 60%, var(--b)); box-shadow: 0 12px 30px -10px var(--a); transition: transform .35s var(--spring); }
+  .btn:hover { transform: translateY(-2px) scale(1.03); }
+  .fab { position: fixed; right: 24px; bottom: 22px; z-index: 6; }
+  .hidden { display: none !important; }
+  @media (max-width: 720px) { .styles { grid-template-columns: repeat(2, 1fr); } .row { flex-wrap: wrap; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="logo" aria-hidden="true"></span>
+  <h1 data-t="title"></h1>
+  <span class="status" id="status"><i></i><span id="statusText"></span></span>
+</header>
+<main>
+  <div class="now" id="now">
+    <div class="ph" id="nowImgPh"></div><img id="nowImg" class="hidden" alt="">
+    <div><div class="k" data-t="nowPlaying"></div><b id="nowTitle">—</b><span id="nowArtist"></span></div>
+    <button class="btn" id="previewBtn" data-t="preview"></button>
+  </div>
+
+  <section>
+    <h2 data-t="secWhen"></h2>
+    <div class="row"><div><b data-t="mode"></b></div>
+      <div class="seg" data-key="mode">
+        <button data-v="song" data-t="modeSong"></button><button data-v="always" data-t="modeAlways"></button><button data-v="off" data-t="modeOff"></button>
+      </div></div>
+    <div class="row"><div><b data-t="duration"></b></div>
+      <div><input type="range" min="2" max="20" step="1" data-key="duration"><span class="val" data-unit="s" data-for="duration"></span></div></div>
+    <div class="row"><div><b data-t="onPlayPause"></b><small data-t="onPlayPauseHint"></small></div><input type="checkbox" class="toggle" data-key="onPlayPause"></div>
+    <div class="row"><div><b data-t="quiet"></b><small data-t="quietHint"></small></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span data-t="from"></span><input type="time" data-key="quietFrom"><span data-t="to"></span><input type="time" data-key="quietTo">
+        <input type="checkbox" class="toggle" data-key="quietOn">
+      </div></div>
+  </section>
+
+  <section>
+    <h2 data-t="secWhere"></h2>
+    <div class="row"><div><b data-t="screen"></b></div>
+      <div class="seg" data-key="display" id="displayModes">
+        <button data-v="primary" data-t="primary"></button><button data-v="cursor" data-t="cursor"></button>
+      </div></div>
+    <div class="screens" id="screens"></div>
+    <div class="row"><div><b data-t="position"></b></div><div class="grid9" id="grid9"></div></div>
+    <div class="row"><div><b data-t="offset"></b></div>
+      <div style="display:grid;gap:6px">
+        <div>↔ <input type="range" min="-400" max="400" step="2" data-key="offsetX"><span class="val" data-unit="px" data-for="offsetX"></span></div>
+        <div>↕ <input type="range" min="0" max="400" step="2" data-key="offsetY"><span class="val" data-unit="px" data-for="offsetY"></span></div>
+      </div></div>
+  </section>
+
+  <section>
+    <h2 data-t="secLook"></h2>
+    <div class="styles" data-key="style">
+      <button class="sty" data-v="island"><span class="mini"><span class="island"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stIsland"></span></button>
+      <button class="sty" data-v="card"><span class="mini"><span class="card"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stCard"></span></button>
+      <button class="sty" data-v="banner"><span class="mini"><span class="banner"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stBanner"></span></button>
+      <button class="sty" data-v="minimal"><span class="mini"><span class="minimal">♪ Aa</span></span><span data-t="stMinimal"></span></button>
+    </div>
+    <div class="row" style="margin-top:12px"><div><b data-t="motion"></b></div>
+      <div class="seg" data-key="motion"><button data-v="spring" data-t="mSpring"></button><button data-v="slide" data-t="mSlide"></button><button data-v="fade" data-t="mFade"></button></div></div>
+    <div class="row"><div><b data-t="size"></b></div>
+      <div><input type="range" min="60" max="160" step="5" data-key="scale"><span class="val" data-unit="%" data-for="scale"></span></div></div>
+    <div class="row"><div><b data-t="background"></b></div>
+      <div class="seg" data-key="background"><button data-v="cover" data-t="bgCover"></button><button data-v="dark" data-t="bgDark"></button><button data-v="light" data-t="bgLight"></button></div></div>
+    <div class="row"><div><b data-t="glow"></b></div>
+      <div><input type="range" min="0" max="100" step="5" data-key="glow"><span class="val" data-unit="%" data-for="glow"></span></div></div>
+    <div class="row"><div><b data-t="roundness"></b></div>
+      <div><input type="range" min="0" max="100" step="5" data-key="roundness"><span class="val" data-unit="%" data-for="roundness"></span></div></div>
+    <div class="row"><div><b data-t="opacity"></b></div>
+      <div><input type="range" min="30" max="100" step="5" data-key="opacity"><span class="val" data-unit="%" data-for="opacity"></span></div></div>
+  </section>
+
+  <section>
+    <h2 data-t="secMore"></h2>
+    <div class="row"><div><b data-t="interactive"></b><small data-t="interactiveHint"></small></div><input type="checkbox" class="toggle" data-key="interactive"></div>
+    <div class="row"><div><b data-t="showKicker"></b><small data-t="showKickerHint"></small></div><input type="checkbox" class="toggle" data-key="showKicker"></div>
+    <div class="row"><div><b data-t="showAlbum"></b></div><input type="checkbox" class="toggle" data-key="showAlbum"></div>
+    <div class="row"><div><b data-t="showTime"></b></div><input type="checkbox" class="toggle" data-key="showTime"></div>
+    <div class="row"><div><b data-t="progress"></b><small data-t="progressHint"></small></div><input type="checkbox" class="toggle" data-key="progress"></div>
+    <div class="row"><div><b data-t="autostart"></b><small data-t="autostartHint"></small></div><input type="checkbox" class="toggle" data-key="autostart"></div>
+  </section>
+</main>
+<script src="i18n.js"></script>
+<script>
+  let cfg = {}, t = MirageI18n.make("en"), previewT = 0;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  function translate() {
+    document.documentElement.lang = t.lang;
+    $$("[data-t]").forEach((el) => (el.textContent = t(el.dataset.t)));
+    $$(".screen").forEach((el) => (el.title = `${t("screenN")} ${el.dataset.n}`));
+  }
+
+  function set(patch, preview = true) {
+    Object.assign(cfg, patch);
+    mirage.send("set", patch);
+    render();
+    // nach Änderungen zur Kontrolle eine Vorschau zeigen (gedrosselt)
+    if (preview) { clearTimeout(previewT); previewT = setTimeout(() => mirage.send("preview"), 450); }
+  }
+
+  function render() {
+    $$("[data-key]").forEach((el) => {
+      const k = el.dataset.key, v = cfg[k];
+      if (el.classList.contains("seg") || el.classList.contains("styles"))
+        $$("button[data-v]", el).forEach((b) => b.setAttribute("aria-pressed", String(String(v) === b.dataset.v)));
+      else if (el.type === "checkbox") el.checked = !!v;
+      else if (document.activeElement !== el) el.value = v;
+    });
+    $$(".val").forEach((s) => (s.textContent = cfg[s.dataset.for] + " " + s.dataset.unit));
+    $$(".screen").forEach((s) => s.setAttribute("aria-pressed", String(cfg.display === s.dataset.id)));
+    $$("#grid9 button").forEach((b) => b.setAttribute("aria-pressed", String(cfg.anchor === b.dataset.v)));
+  }
+
+  function buildScreens(displays) {
+    const box = $("#screens");
+    box.textContent = "";
+    if (!displays.length) return;
+    const minX = Math.min(...displays.map((d) => d.bounds.x)), minY = Math.min(...displays.map((d) => d.bounds.y));
+    const maxX = Math.max(...displays.map((d) => d.bounds.x + d.bounds.width)), maxY = Math.max(...displays.map((d) => d.bounds.y + d.bounds.height));
+    const W = box.clientWidth || 700, H = box.clientHeight;
+    const k = Math.min(W / (maxX - minX), H / (maxY - minY)) * 0.96;
+    const offX = (W - (maxX - minX) * k) / 2, offY = (H - (maxY - minY) * k) / 2;
+    for (const d of displays) {
+      const b = document.createElement("button");
+      b.className = "screen";
+      b.dataset.id = d.id;
+      b.dataset.n = d.n;
+      Object.assign(b.style, {
+        left: offX + (d.bounds.x - minX) * k + 3 + "px", top: offY + (d.bounds.y - minY) * k + 3 + "px",
+        width: d.bounds.width * k - 6 + "px", height: d.bounds.height * k - 6 + "px",
+      });
+      b.innerHTML = `<span>${d.n}${d.primary ? " ★" : ""}</span><small>${d.bounds.width}×${d.bounds.height}</small>`;
+      b.onclick = () => set({ display: d.id });
+      box.append(b);
+    }
+  }
+
+  function showStatus(s) {
+    $("#status").classList.toggle("on", s.connected);
+    $("#statusText").textContent = s.connected ? t("connected") : t("waiting");
+    const tr = s.track;
+    $("#nowTitle").textContent = tr?.title || "—";
+    $("#nowArtist").textContent = tr?.artist || "";
+    if (tr?.cover) { $("#nowImg").src = tr.cover; $("#nowImg").classList.remove("hidden"); $("#nowImgPh").classList.add("hidden"); }
+    const cols = tr?.colors || [];
+    ["--a", "--b", "--c"].forEach((v, i) => cols[i] && document.documentElement.style.setProperty(v, cols[i]));
+  }
+
+  // Raster für die Position
+  for (const v of ["top", "middle", "bottom"]) for (const h of ["left", "center", "right"]) {
+    const b = document.createElement("button");
+    b.dataset.v = `${v}-${h}`;
+    b.setAttribute("aria-label", `${v} ${h}`);
+    b.onclick = () => set({ anchor: b.dataset.v });
+    $("#grid9").append(b);
+  }
+  $$(".seg, .styles").forEach((g) => $$("button[data-v]", g).forEach((b) => (b.onclick = () => set({ [g.dataset.key]: b.dataset.v }))));
+  $$("input[data-key]").forEach((el) => {
+    const k = el.dataset.key;
+    el.addEventListener(el.type === "range" ? "input" : "change", () =>
+      set({ [k]: el.type === "checkbox" ? el.checked : el.type === "range" ? Number(el.value) : el.value }, k !== "autostart"));
+  });
+  $("#previewBtn").onclick = () => mirage.send("preview");
+
+  mirage.on("status", showStatus);
+  mirage.on("cfg", (c) => { cfg = c; render(); });
+  mirage.on("lang", (l) => { t = MirageI18n.make(l); translate(); });
+
+  mirage.get().then((s) => {
+    cfg = s.cfg;
+    t = MirageI18n.make(s.lang);
+    buildScreens(s.displays);
+    translate();
+    render();
+    showStatus(s.status);
+    addEventListener("resize", () => { buildScreens(s.displays); translate(); render(); });
+  });
+</script>
+</body>
+</html>
