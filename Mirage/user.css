@@ -2081,6 +2081,31 @@ html[data-m-page="artist"] h2 {
   --text-base: #0b0a12 !important;
   --essential-base: #0b0a12 !important;
 }
+/* Pin vor angehefteten Playlists in der Bibliothek: Symbol in Akzentfarbe, keine Fläche */
+.Root__nav-bar .encore-bright-accent-set,
+.Root__nav-bar [data-testid*="pin" i],
+.Root__nav-bar [aria-label*="pin" i],
+.main-yourLibraryX-listItem .encore-bright-accent-set {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--m-c) !important;
+  --background-base: transparent !important;
+}
+.Root__nav-bar .encore-bright-accent-set svg,
+.Root__nav-bar [data-testid*="pin" i] svg,
+.main-yourLibraryX-listItem .encore-bright-accent-set svg {
+  fill: var(--m-c) !important;
+  color: var(--m-c) !important;
+  filter: drop-shadow(0 0 6px rgba(var(--m-a-rgb), 0.7));
+}
+.Root__nav-bar [style*="1ed760" i],
+.Root__nav-bar [style*="1db954" i],
+.Root__nav-bar [style*="rgb(30, 215, 96)"],
+.Root__nav-bar [style*="rgb(29, 185, 84)"] {
+  background-color: transparent !important;
+  color: var(--m-c) !important;
+  fill: var(--m-c) !important;
+}
 .encore-dark-theme {
   --essential-positive: var(--m-a) !important;
   --text-positive: var(--m-c) !important;
