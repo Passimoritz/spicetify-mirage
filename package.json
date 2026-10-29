@@ -1,6 +1,6 @@
 {
   "name": "spicetify-mirage",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Mirage – a living glass theme for Spicetify. Tooling for building Mirage/theme.js from src/.",
   "license": "MIT",

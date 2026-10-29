@@ -104,7 +104,7 @@ const bridge = (() => {
     );
   }
   const send = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
-  return { connect, close, sendTrack, send };
+  return { connect, close, sendTrack, send, connected: () => ws?.readyState === 1 };
 })();
 
 export { bridge };

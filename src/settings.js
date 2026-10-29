@@ -38,6 +38,16 @@ function refreshColors() {
   setTimeout(recheckAll, 600);
 }
 
+// Schema wählen – auch von der Mirage-App aus (window.Mirage.setScheme)
+function selectScheme(name) {
+  if (!SCHEMES[name]) return;
+  cfg.scheme = name;
+  cfg.schemeCfg = S.Config?.color_scheme || "";
+  cfg.dynamic = name === "Mirage";
+  save();
+  refreshColors();
+}
+
 /* ---------------------------------------------------------------- Bausteine */
 // teure Effekte tragen ein ⚡ – so sieht man, was man für mehr Akku abschaltet
 const COSTLY = new Set(["glass", "particles", "beat", "tilt", "canvas"]);
@@ -165,11 +175,7 @@ function render(box) {
     b.innerHTML = `<span class="m-sw${name === "Mirage" ? " is-live" : ""}"><i></i><i></i><i></i></span><span></span>`;
     b.lastChild.textContent = name;
     b.onclick = () => {
-      cfg.scheme = name;
-      cfg.schemeCfg = S.Config?.color_scheme || "";
-      cfg.dynamic = name === "Mirage";
-      save();
-      refreshColors();
+      selectScheme(name);
       render(box);
     };
     if (!BUILT_IN.includes(name)) {
@@ -385,4 +391,4 @@ function welcome() {
   }, 5000);
 }
 
-export { applySettings, openSettings, welcome };
+export { applySettings, openSettings, welcome, selectScheme };

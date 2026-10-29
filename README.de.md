@@ -104,6 +104,12 @@ Eine kleine Begleit-App, die Songwechsel **außerhalb von Spotify** anzeigt – 
 - **Steuerung beim Überfahren:** Zurück · Wiedergabe/Pause · Weiter direkt im Overlay
 - Läuft im Infobereich, startet auf Wunsch mit Windows und spricht die Sprache, die Spotify nutzt
 
+## ◈ Mirage App
+
+Eine eigene Seite in Spotifys Seitenleiste: Farbschemata per Klick, deine Woche in Farben, Schnellaktionen, Overlay-Status und die Reparatur nach Spotify-Updates. Zu finden unter **Marketplace → Apps**; der Windows-Installer richtet sie automatisch mit ein – Details in der [App-README](MirageApp/README.md).
+
+<p align="center"><img src="assets/app-preview.png" alt="Mirage App" width="100%"></p>
+
 ## ◑ Farbschemata
 
 <p align="center"><img src="assets/schemes.svg" alt="Farbschemata" width="100%"></p>

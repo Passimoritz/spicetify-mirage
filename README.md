@@ -104,6 +104,12 @@ A small companion app that shows song changes **outside of Spotify** – above e
 - **Controls on hover:** previous · play/pause · next, right inside the overlay
 - Lives in the tray, starts with Windows if you like, follows the language Spotify uses
 
+## ◈ Mirage App
+
+A page in Spotify's sidebar: colour schemes in one click, your week in colours, quick actions, Overlay status and the repair after Spotify updates. Listed in **Marketplace → Apps**; the Windows installer sets it up automatically – details in the [app README](MirageApp/README.md).
+
+<p align="center"><img src="assets/app-preview.png" alt="Mirage App" width="100%"></p>
+
 ## ◑ Colour schemes
 
 <p align="center"><img src="assets/schemes.svg" alt="Colour schemes" width="100%"></p>

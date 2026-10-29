@@ -1,11 +1,12 @@
 # Mirage - installer for Windows
-#   powershell -ExecutionPolicy Bypass -File install.ps1 [-Scheme Mirage|Obsidian|Sakura|Abyss|Ember] [-Overlay]
+#   powershell -ExecutionPolicy Bypass -File install.ps1 [-Scheme Mirage|Obsidian|Sakura|Abyss|Ember|Pearl] [-Overlay] [-NoApp]
 #
 # NOTE: keep this file pure ASCII. Windows PowerShell 5.1 reads scripts without a BOM
 # as ANSI, so characters like an en dash or umlauts break the parser.
 param(
   [string]$Scheme = "Mirage",
-  [switch]$Overlay
+  [switch]$Overlay,
+  [switch]$NoApp
 )
 $ErrorActionPreference = "Stop"
 
@@ -24,13 +25,23 @@ New-Item -ItemType Directory -Force $dest | Out-Null
 Copy-Item (Join-Path $PSScriptRoot "Mirage\*") $dest -Force
 Write-Host "Theme copied to $dest" -ForegroundColor Green
 
-# 2) activate and apply
+# 2) Mirage App (custom app: own page in Spotify's sidebar)
+if (-not $NoApp) {
+  $appDest = Join-Path $env:APPDATA "spicetify\CustomApps\mirage"
+  New-Item -ItemType Directory -Force $appDest | Out-Null
+  Copy-Item (Join-Path $PSScriptRoot "MirageApp\*") $appDest -Force -Exclude README.md
+  $apps = (spicetify config custom_apps) -join " "
+  if ($apps -notmatch "mirage") { spicetify config custom_apps mirage | Out-Null }
+  Write-Host "Mirage App copied to $appDest" -ForegroundColor Green
+}
+
+# 3) activate and apply
 spicetify config current_theme Mirage color_scheme $Scheme inject_css 1 replace_colors 1 inject_theme_js 1
 if ($LASTEXITCODE -ne 0) { Fail "spicetify config failed" }
 spicetify apply
 if ($LASTEXITCODE -ne 0) { Fail "spicetify apply failed" }
 
-# 3) optional: overlay app (needs Node.js)
+# 4) optional: overlay app (needs Node.js)
 if ($Overlay) {
   if (-not (Get-Command npm.cmd -ErrorAction SilentlyContinue)) {
     Fail "Node.js/npm not found - install Node.js from https://nodejs.org, then run again with -Overlay"
