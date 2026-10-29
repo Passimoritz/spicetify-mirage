@@ -1,0 +1,40 @@
+name: "✨ Feature request"
+description: Suggest an idea, a new colour scheme, setting or effect for Mirage.
+title: "[Idea] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like?
+      description: Describe the idea and the problem it solves. Mockups or screenshots are welcome.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Theme look (CSS)
+        - Theme behaviour (JS)
+        - Immersive mode (cover / lyrics / visualizer)
+        - Mirage Overlay app
+        - Colour schemes
+        - Translations
+        - Performance
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+    validations:
+      required: false
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to try implementing this myself (see CONTRIBUTING.md).
+          required: false

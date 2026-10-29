@@ -7,7 +7,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "start:hidden": "electron . --hidden",
+    "start:no-gpu": "electron . --no-gpu",
+    "check": "node --check main.js && node --check preload.js && node --check i18n.js"
   },
   "dependencies": {
     "ws": "^8.18.0"

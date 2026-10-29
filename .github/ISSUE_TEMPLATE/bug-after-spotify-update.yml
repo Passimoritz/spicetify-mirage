@@ -1,0 +1,77 @@
+name: "🐞 Something broke after a Spotify update"
+description: Mirage looks or behaves wrong – most often right after Spotify updated itself.
+title: "[Bug] "
+labels: ["bug", "spotify-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Spotify renames its classes and layout regularly, so the exact versions help a lot.
+        Before you open the issue, please run `spicetify backup apply` (or `spicetify restore backup apply`) once – that fixes most problems right after an update.
+  - type: input
+    id: spotify-version
+    attributes:
+      label: Spotify version
+      description: Spotify → Help → About Spotify (or `spicetify -v` shows it as well).
+      placeholder: "1.2.52.442"
+    validations:
+      required: true
+  - type: input
+    id: spicetify-version
+    attributes:
+      label: Spicetify version
+      description: Output of `spicetify -v`.
+      placeholder: "2.40.0"
+    validations:
+      required: true
+  - type: input
+    id: mirage-version
+    attributes:
+      label: Mirage version
+      description: Shown in Profile menu → Mirage settings, or the Git tag / Marketplace version you installed.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: what-broke
+    attributes:
+      label: What broke?
+      description: Which page or element looks wrong, and what did you expect instead? Steps to reproduce if it is about behaviour.
+      placeholder: |
+        On album pages the header shows a solid colour block again instead of melting into the glass.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag & drop an image here. Please pixelate personal data (library, friends' names).
+    validations:
+      required: false
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics from Mirage settings
+      description: Profile menu → Mirage settings → copy the diagnostics text and paste it here. It contains element sizes, classes and colours – no personal content.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I ran `spicetify backup apply` / `spicetify apply` after the Spotify update.
+          required: false
+        - label: I searched existing issues and did not find this one.
+          required: true

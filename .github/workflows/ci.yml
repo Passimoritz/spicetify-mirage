@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (ESLint on src/, Stylelint on Mirage/user.css)
+        run: npm run lint
+
+      - name: Build and verify committed Mirage/theme.js
+        run: |
+          if [ -d src ]; then
+            npm run check
+          else
+            echo "src/ does not exist yet – skipping build check."
+          fi
+
+      - name: Validate manifest.json
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, existsSync } from "node:fs";
+
+          let manifest;
+          try {
+            manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
+          } catch (err) {
+            console.error(`manifest.json is not valid JSON: ${err.message}`);
+            process.exit(1);
+          }
+
+          const entries = Array.isArray(manifest) ? manifest : [manifest];
+          const RAW = /^https:\/\/raw\.githubusercontent\.com\/[^/]+\/[^/]+\/[^/]+\/(.+)$/;
+          let failed = false;
+
+          const checkPath = (name, field, ref) => {
+            if (typeof ref !== "string" || !ref) return;
+            let path = ref;
+            if (/^https?:\/\//.test(ref)) {
+              const m = ref.match(RAW);
+              if (!m) {
+                console.log(`- ${name}.${field}: external URL, not checked (${ref})`);
+                return;
+              }
+              path = m[1];
+            }
+            if (existsSync(path)) {
+              console.log(`✓ ${name}.${field}: ${path}`);
+            } else {
+              console.error(`✗ ${name}.${field}: ${path} does not exist`);
+              failed = true;
+            }
+          };
+
+          for (const entry of entries) {
+            const name = entry.name ?? "(unnamed)";
+            for (const field of ["preview", "readme", "usercss", "schemes"]) {
+              checkPath(name, field, entry[field]);
+            }
+            for (const [i, ref] of (entry.include ?? []).entries()) {
+              checkPath(name, `include[${i}]`, ref);
+            }
+          }
+
+          if (failed) process.exit(1);
+          JS

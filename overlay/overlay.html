@@ -100,6 +100,41 @@
   .st-minimal .ar { font-size: 14px; text-shadow: 0 2px 12px rgba(0,0,0,.9); }
   .st-minimal .kick { text-shadow: 0 1px 8px rgba(0,0,0,.9); }
 
+  /* ---------- Stil: Songtext ---------- */
+  .ly, .vz { display: none; }
+  .st-lyrics .ov { width: 520px; height: 84px; padding: 0 18px 0 14px; border-radius: calc(26px * var(--round, 1)); }
+  /* Steuerung belegt erst beim Überfahren Platz, sonst gehört die Breite dem Songtext */
+  .st-lyrics .eq { display: none; }
+  .st-lyrics .side { min-width: 0 !important; width: 0; overflow: hidden; transition: width .5s var(--spring); }
+  .interactive.st-lyrics .ov:hover .side { width: 98px; }
+  .st-lyrics .cv { width: 54px; height: 54px; border-radius: calc(14px * var(--round, 1)); box-shadow: 0 10px 26px -10px rgba(0,0,0,.8); }
+  .st-lyrics .ov:not(.ly-none) :is(.kick, .ti, .ar, .al, .tm) { display: none; }
+  .st-lyrics .ov:not(.ly-none) .ly { display: grid; }
+  .lyl { grid-area: 1 / 1; min-width: 0; opacity: 0; transform: translateY(10px); filter: blur(6px);
+         transition: opacity .5s var(--ease), transform .7s var(--ease), filter .5s var(--ease); }
+  .lyl.on { opacity: 1; transform: none; filter: none; }
+  .lyl.out { transform: translateY(-10px); }
+  .lyl .cur { font-weight: 800; font-size: 20px; line-height: 1.25; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+              text-shadow: 0 0 26px color-mix(in srgb, var(--a) 55%, transparent); }
+  .lyl .cur.gap { color: var(--c); animation: breathe 1.6s ease-in-out infinite alternate; }
+  @keyframes breathe { from { opacity: .35; } to { opacity: 1; } }
+  .lyl .nx { font-size: 13px; color: rgba(255,255,255,.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+  /* ohne Songtext: Titel und Interpret wie bei Minimal */
+  .st-lyrics .ov.ly-none .ti { font-size: 20px; font-weight: 800; text-shadow: 0 0 26px color-mix(in srgb, var(--a) 55%, transparent); }
+
+  /* ---------- Stil: Visualizer ---------- */
+  .st-visualizer .ov { width: 172px; height: 46px; padding: 0 12px 0 8px; gap: 10px; border-radius: calc(23px * var(--round, 1)); background: #000; }
+  .st-visualizer .bg, .st-visualizer .tx, .st-visualizer .eq { display: none; }
+  .st-visualizer .cv { width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 14px -2px color-mix(in srgb, var(--a) 70%, transparent); }
+  .st-visualizer .vz { display: flex; flex: 1; align-items: center; justify-content: center; gap: 5px; height: 28px; position: relative; z-index: 1; transition: opacity .3s; }
+  .vz i { width: 5px; height: 100%; border-radius: 3px; transform: scaleY(.12); will-change: transform;
+          background: linear-gradient(to top, var(--b), var(--a) 55%, var(--c));
+          box-shadow: 0 0 10px -1px color-mix(in srgb, var(--a) 70%, transparent); }
+  .st-visualizer .side { position: absolute; right: 8px; top: 0; bottom: 0; min-width: 0; }
+  .interactive.st-visualizer .ov:hover .vz { opacity: 0; }
+  .st-visualizer .ctl button { width: 28px; height: 28px; }
+  .st-visualizer .pg { left: 22px; right: 22px; bottom: 4px; height: 2px; border-radius: 2px; overflow: hidden; }
+
   .bg-dark .bg img { display: none; }
   .bg-dark .bg::after { background: rgba(12,10,20,.94); }
   .bg-light .bg img { display: none; }
@@ -110,6 +145,9 @@
   .bg-light .kick { color: var(--b); }
   .bg-light .ctl button { color: #15121f; background: rgba(0,0,0,.08); }
   .bg-light.st-minimal .ti, .bg-light.st-minimal .ar { color: #fff; }
+  .bg-light .lyl .nx { color: rgba(21,18,31,.5); }
+  .bg-light .lyl .cur.gap { color: var(--b); }
+  .bg-light.st-visualizer .ov { background: #fff; }
 
   /* ---------- Bewegung ---------- */
   .m-spring .ov { transform: translate(var(--fx), var(--fy)) scale(.7); }
@@ -127,7 +165,9 @@
   <div class="ov" id="ov">
     <div class="bg"><img id="bgimg" alt=""></div>
     <img class="cv" id="cv" alt="">
-    <div class="tx"><div class="kick" id="kick"></div><div class="ti" id="ti"></div><div class="ar" id="ar"></div><div class="al" id="al"></div><div class="tm" id="tm"></div></div>
+    <div class="tx"><div class="kick" id="kick"></div><div class="ti" id="ti"></div><div class="ar" id="ar"></div><div class="al" id="al"></div><div class="tm" id="tm"></div>
+      <div class="ly" id="ly"><div class="lyl"><div class="cur"></div><div class="nx"></div></div><div class="lyl"><div class="cur"></div><div class="nx"></div></div></div></div>
+    <div class="vz" id="vz"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="side">
       <div class="eq"><i></i><i></i><i></i><i></i></div>
       <div class="ctl">
@@ -162,6 +202,8 @@
   }
 
   function setTrack(t) {
+    if (t.uri !== track?.uri) resetLyrics(t);
+    else if (!lyr.has) showLine(t.title || "", t.artist || "");
     track = t;
     recvAt = performance.now();
     $("ti").textContent = t.title || "";
@@ -221,19 +263,78 @@
     }, cfg.style === "island" ? 380 : 0);
   }
 
-  mirage.on("show", ({ track: t, cfg: c, reason, text }) => { applyCfg(c); setTrack(t); open(reason, text); });
-  mirage.on("update", ({ track: t, cfg: c }) => { applyCfg(c); setTrack(t); });
+  /* ---------- Songtext: zwei gestapelte Ebenen, die neue Zeile blendet über die alte ---------- */
+  const lyls = [...ov.querySelectorAll(".lyl")];
+  let lyr = { uri: null, has: false, layer: 0, key: null }, lyT = 0;
+  function showLine(cur, next) {
+    const key = cur + "\n" + next;
+    if (key === lyr.key) return;
+    lyr.key = key;
+    const old = lyls[lyr.layer], nw = lyls[(lyr.layer ^= 1)];
+    nw.querySelector(".cur").textContent = cur || "♪";
+    nw.querySelector(".cur").classList.toggle("gap", !cur); // instrumentale Pause
+    nw.querySelector(".nx").textContent = next;
+    old.classList.replace("on", "out");
+    // neue Ebene ohne Übergang nach unten setzen, damit sie von dort hereingleitet
+    nw.style.transition = "none";
+    nw.classList.remove("out", "on");
+    void nw.offsetWidth;
+    nw.style.transition = "";
+    nw.classList.add("on");
+  }
+  function resetLyrics(t) {
+    clearTimeout(lyT);
+    lyr.uri = t.uri;
+    lyr.has = false;
+    ov.classList.remove("ly-none");
+    showLine(t.title || "", t.artist || "");
+    // kommt binnen 3 s kein Songtext, bleibt es bei Titel und Interpret
+    lyT = setTimeout(() => !lyr.has && lyr.uri === t.uri && ov.classList.add("ly-none"), 3000);
+  }
+  function applyLyric(l) {
+    if (!l || !track || (l.uri && track.uri && l.uri !== track.uri)) return;
+    if (l.text || l.next) { lyr.has = true; ov.classList.remove("ly-none"); }
+    if (lyr.has) showLine(l.text || "", l.next || "");
+  }
+
+  /* ---------- Visualizer: Pegel geglättet, ohne Pegel ruhige Sinuswellen ---------- */
+  const bars = [...ov.querySelectorAll(".vz i")], level = new Array(8).fill(0), lv = new Array(8).fill(0);
+  let levelAt = -1e9;
+  function vizFrame(now) {
+    if (cfg.style !== "visualizer") return;
+    const live = now - levelAt < 600, s = now / 1000;
+    for (let i = 0; i < 8; i++) {
+      const target = !track?.playing ? 0.04
+        : live ? level[i]
+        : 0.26 + 0.16 * Math.sin(s * (1.2 + i * 0.13) + i * 0.9) + 0.07 * Math.sin(s * 2.9 + i * 2.3);
+      // schnell hoch, langsam zurück – wirkt wie ein echter Pegel
+      lv[i] += (target - lv[i]) * (target > lv[i] ? 0.4 : 0.12);
+      bars[i].style.transform = `scaleY(${(0.12 + 0.88 * Math.max(0, Math.min(1, lv[i]))).toFixed(3)})`;
+    }
+  }
+
+  mirage.on("show", ({ track: t, cfg: c, reason, text, lyric }) => { applyCfg(c); setTrack(t); applyLyric(lyric); open(reason, text); });
+  mirage.on("update", ({ track: t, cfg: c, lyric }) => { applyCfg(c); setTrack(t); applyLyric(lyric); });
   mirage.on("config", (c) => { applyCfg(c); if (visible) schedule(); });
   mirage.on("hideNow", () => visible && close());
+  mirage.on("lyric", applyLyric);
+  mirage.on("level", (b) => { b.forEach((x, i) => (level[i] = x)); levelAt = performance.now(); });
 
   ov.addEventListener("mouseenter", () => { hovered = true; cfg?.interactive && mirage.send("hover", true); });
   ov.addEventListener("mouseleave", () => { hovered = false; mirage.send("hover", false); });
   ov.querySelectorAll(".ctl button").forEach((b) => b.addEventListener("click", () => mirage.send("cmd", b.dataset.c)));
+  // Linux: Hauptprozess meldet die Mausposition, weil dort keine Mausereignisse durchgereicht werden
+  mirage.on("pointer", (p) => {
+    const over = !!p && ov.contains(document.elementFromPoint(p.x, p.y));
+    if (over && !hovered && cfg?.interactive) { hovered = true; mirage.send("hover", true); }
+    else if (!p && hovered) { hovered = false; mirage.send("hover", false); }
+  });
 
   // läuft nur, solange etwas sichtbar ist
   function tick() {
     if (!visible) { ticking = false; return; }
     requestAnimationFrame(tick);
+    vizFrame(performance.now());
     if (!track?.duration) return;
     const pos = track.progress + (track.playing ? performance.now() - recvAt : 0);
     $("pgb").style.width = Math.min(100, (pos / track.duration) * 100) + "%";

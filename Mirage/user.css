@@ -166,7 +166,7 @@ body {
   transition:
     opacity 2.2s var(--m-ease),
     transform 2.2s var(--m-ease);
-  will-change: transform, opacity;
+  /* will-change nur während der Überblendung (Klasse is-fading aus stage.js) – dauerhaft hielte es Grafikspeicher fest */
   contain: strict;
 }
 #mirage-stage .m-art.is-on {
@@ -179,14 +179,19 @@ body {
   background-image: var(--img);
   background-size: cover;
   background-position: center;
-  /* Unschärfe am selben Element wie die Drehung: der Browser rastert einmal und dreht nur noch */
-  filter: blur(60px) saturate(1.8) brightness(calc(0.62 * var(--m-bright, 1)));
-  will-change: transform;
+  /* Das Bild kommt fertig aus color.js: weichgezeichnet, gesättigt und abgedunkelt (64 px, einmal
+     pro Cover). Früher rechnete die Grafikkarte das in JEDEM Bild live auf einer Fläche von
+     1,8 × 1,8 Fenstergrößen – blur(60px), später saturate/brightness. Ein Filter kommt nur noch
+     dazu, wenn jemand die Helligkeit verstellt (Klasse mirage-bright-adjust). */
   animation: m-drift 70s linear infinite;
 }
+html.mirage-bright-adjust #mirage-stage .m-art i {
+  filter: brightness(var(--m-bright, 1));
+}
+/* zweite Ebene: im Preset „Voll“ als Licht-Mischung, sonst normal deckend (spart eine eigene
+   Mischfläche über dem ganzen Fenster in jedem Bild) */
 #mirage-stage .m-art i + i {
-  mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.32;
   animation: m-drift 95s linear infinite reverse;
   transform-origin: 30% 70%;
 }
@@ -205,13 +210,13 @@ body {
 /* Aurora-Bänder in den Coverfarben */
 #mirage-stage .m-aurora {
   position: absolute;
-  inset: -20%;
+  inset: -12%;
+  opacity: 0.55;
   background:
     radial-gradient(40% 35% at 20% 30%, rgba(var(--m-a-rgb), 0.55), transparent 70%),
     radial-gradient(35% 40% at 80% 20%, rgba(var(--m-b-rgb), 0.45), transparent 70%),
     radial-gradient(45% 35% at 60% 85%, rgba(var(--m-c-rgb), 0.35), transparent 70%);
-  filter: blur(40px);
-  mix-blend-mode: soft-light;
+  /* die Verläufe laufen schon weich aus: blur(40px) pro Bild war reine Rechenzeit */
   animation: m-aurora 28s var(--m-ease) infinite alternate;
 }
 @keyframes m-aurora {
@@ -252,13 +257,13 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  mix-blend-mode: screen;
 }
 
 /* Filmkorn + Vignette: macht aus Verlauf „Material“ */
 #mirage-stage .m-grain {
   position: absolute;
-  inset: -50%;
+  /* steht still – muss nicht größer sein als das Fenster */
+  inset: 0;
   opacity: 0.07;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
@@ -699,10 +704,14 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   transform: translateX(-3px);
 }
 #mirage-immersive .m-im-tabs {
-  position: relative;
+  /* fest auf die Fenstermitte, nicht zwischen die Nachbarn: links und rechts liegen
+     unterschiedlich breite Knöpfe, und die Leiste lässt rechts Platz für Spotifys Fensterknöpfe */
+  position: absolute;
+  left: calc(50vw - 64px);
+  transform: translateX(-50%);
   display: flex;
   gap: 2px;
-  margin: 0 auto;
+  margin: 0;
   padding: 4px;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.07);
@@ -1122,11 +1131,11 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   }
 }
 
-/* Hintergrund im Takt (theme.js setzt --beat, wenn Spotify Taktdaten liefert) */
+/* Hintergrund im Takt: Ruhezustand – den Impuls pro Schlag spielt audio.js als Web-Animation ab */
 html.mirage-beat #mirage-stage .m-pulse {
   animation: none;
-  opacity: calc(0.4 + var(--beat, 0) * 0.6);
-  transform: scale(calc(1 + var(--beat, 0) * 0.07));
+  opacity: 0.4;
+  transform: none;
   transition: none;
 }
 
@@ -1565,7 +1574,8 @@ html.mirage-im-open .Root * {
   background-image: var(--img);
   background-size: cover;
   background-position: center;
-  filter: blur(70px) saturate(1.7) brightness(0.5);
+  /* schon vorgezeichnet weich: ein leichter Rest-Blur glättet nur noch die Hochskalierung */
+  filter: blur(18px) saturate(1.4) brightness(0.5);
   transform: scale(1.1);
   transition: background-image 1.2s var(--m-ease);
 }
@@ -1602,9 +1612,37 @@ html.mirage-im-open .Root * {
   color: #fff;
   background: rgba(255, 255, 255, 0.1);
 }
-#mirage-immersive .m-im-sm.is-on {
-  color: var(--m-c);
-  filter: drop-shadow(0 0 8px rgba(var(--m-a-rgb), 0.9));
+/* Ein / Aus muss auf einen Blick erkennbar sein – nicht nur über einen Farbton:
+   aus = gedämpftes Icon, an = getönte Fläche + leuchtendes Icon + Punkt darunter (wie bei Spotify) */
+#mirage-immersive :is(.m-im-controls, .m-im-extras) .m-im-sm {
+  position: relative;
+  color: rgba(255, 255, 255, 0.55);
+}
+#mirage-immersive :is(.m-im-controls, .m-im-extras) .m-im-sm:is(.is-on, [aria-pressed="true"]) {
+  color: #fff;
+  background: rgba(var(--m-a-rgb), 0.28);
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--m-c-rgb), 0.55),
+    0 0 18px -2px rgba(var(--m-a-rgb), 0.75);
+}
+#mirage-immersive :is(.m-im-controls, .m-im-extras) .m-im-sm:is(.is-on, [aria-pressed="true"])::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--m-c);
+  box-shadow: 0 0 6px var(--m-c);
+}
+/* Smart Shuffle: stärker als normales Zufall – Verlauf statt Tönung */
+#mirage-immersive .m-im-shuffle.is-smart {
+  background: linear-gradient(135deg, rgba(var(--m-c-rgb), 0.45), rgba(var(--m-a-rgb), 0.45)) !important;
+}
+#mirage-immersive .m-im-like.is-on {
+  color: var(--m-c) !important;
 }
 #mirage-immersive .m-im-extras {
   display: flex;
@@ -1973,6 +2011,45 @@ html[data-m-page="artist"] h2 {
   color: var(--spice-text) !important;
 }
 
+/* ==========================================================================
+   LESBARKEIT nativer Bedienelemente
+   Aufgeklappte Auswahllisten, Datumsfelder, Autofill und Scrollbalken malt das
+   Betriebssystem selbst – in seinen eigenen Farben. Ohne color-scheme hält es die
+   Seite für hell und malt helle Listen, auf die Mirage dann helle Schrift setzt
+   (unlesbar). color-scheme sagt dem System, wie die Seite aussieht; die festen
+   Farben darunter gelten für jede Auswahlliste in Spotify, egal unter welchem Namen.
+   ========================================================================== */
+:root {
+  color-scheme: dark;
+}
+html.mirage-light {
+  color-scheme: light;
+}
+select option,
+select optgroup,
+datalist option {
+  background-color: var(--spice-main-elevated) !important;
+  color: var(--spice-text) !important;
+}
+select option:checked,
+select option:hover {
+  background-color: rgba(var(--m-a-rgb), 0.35) !important;
+  color: var(--spice-text) !important;
+}
+select option:disabled {
+  color: var(--spice-subtext) !important;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--spice-subtext) !important;
+  opacity: 0.85;
+}
+/* Autofill färbt Felder sonst hellgelb mit dunkler Schrift */
+input:-webkit-autofill {
+  -webkit-text-fill-color: var(--spice-text) !important;
+  box-shadow: 0 0 0 100px var(--spice-main-elevated) inset !important;
+}
+
 /* Platzhalter-Cover einer leeren Playlist */
 .main-entityHeader-imagePlaceholder {
   color: var(--m-c) !important;
@@ -2158,4 +2235,521 @@ html.mirage-calm .Root *::after {
 .mirage-settings .m-seg button[aria-pressed="true"] {
   color: #0b0a12;
   background: var(--m-a);
+}
+
+/* ==========================================================================
+   LESBARKEITS-WÄCHTER (readability.js)
+   Elemente, deren Schrift auf ihrem echten Hintergrund unter 3 : 1 Kontrast fällt.
+   ========================================================================== */
+.m-readable.m-readable-light {
+  color: var(--spice-text) !important;
+}
+.m-readable.m-readable-dark {
+  color: #1d1a2b !important;
+}
+
+/* ==========================================================================
+   LEISTUNG: Presets, verdecktes Fenster, sicherer Modus
+   ========================================================================== */
+#mirage-stage .m-art.is-fading {
+  will-change: transform, opacity;
+}
+/* minimiert oder ganz verdeckt: auch die CSS-Animationen anhalten */
+html.mirage-hidden #mirage-stage *,
+html.mirage-hidden #mirage-immersive * {
+  animation-play-state: paused !important;
+}
+/* Preset „Leicht“: nur eine Hintergrundebene, Aurora ohne Weichzeichner, kein Puls */
+html.mirage-lite #mirage-stage .m-art i + i,
+html.mirage-lite #mirage-stage .m-pulse {
+  display: none;
+}
+html.mirage-lite #mirage-stage .m-aurora {
+  filter: none;
+  animation: none;
+}
+/* Spotify hat seinen Aufbau geändert: nur Farben, keine Bühne über unbekannten Flächen */
+html.mirage-safe #mirage-stage {
+  display: none;
+}
+
+/* ==========================================================================
+   HELLES SCHEMA (Pearl und eigene helle Schemata)
+   ========================================================================== */
+html.mirage-light {
+  --m-line: rgba(29, 26, 43, 0.09);
+  --m-line-strong: rgba(29, 26, 43, 0.18);
+}
+html.mirage-light #mirage-stage .m-art i {
+  /* hell und gesättigt kommt das Bild schon aus color.js */
+  opacity: 0.55;
+}
+html.mirage-light #mirage-stage .m-aurora {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+html.mirage-light #mirage-stage .m-vignette {
+  opacity: 0.2;
+}
+html.mirage-light .mirage-settings .m-row,
+html.mirage-light .mirage-settings .m-seg {
+  background: rgba(29, 26, 43, 0.045);
+}
+html.mirage-light .mirage-settings input[type="checkbox"] {
+  background: rgba(29, 26, 43, 0.2);
+}
+html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
+  color: #fff;
+}
+
+/* ==========================================================================
+   TASTATUR: sichtbarer Fokus in allem, was Mirage selbst baut
+   ========================================================================== */
+:is(#mirage-immersive, .mirage-settings, .mirage-welcome) :focus-visible {
+  outline: 2px solid var(--m-c) !important;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   IMMERSIV: Liedtext-Größe, Übersetzung, Canvas, Teilen, Tastenhilfe
+   ========================================================================== */
+#mirage-immersive .m-im-line {
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1));
+  margin-bottom: calc(0.5em * var(--m-lyr-gap, 1));
+}
+#mirage-immersive .m-im-tr {
+  display: block;
+  margin-top: 0.25em;
+  font-size: 0.52em;
+  font-weight: 500;
+  line-height: 1.3;
+  opacity: 0.72;
+}
+#mirage-immersive .m-im-lyrics-note.is-small {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 2em;
+}
+#mirage-immersive .m-im-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.2s var(--m-ease);
+}
+#mirage-immersive .m-im-canvas.is-on {
+  opacity: 0.5;
+}
+#mirage-immersive .m-im-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+#mirage-immersive .m-im-help {
+  font: 700 16px var(--m-font);
+}
+#mirage-immersive .m-im-keys {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+#mirage-immersive .m-im-keys[hidden] {
+  display: none;
+}
+#mirage-immersive .m-im-keys-box {
+  display: grid;
+  gap: 10px;
+  min-width: 340px;
+  padding: 26px 30px;
+  border-radius: 22px;
+  background: rgba(var(--spice-rgb-main), 0.92);
+  border: 1px solid var(--m-line-strong);
+  color: var(--spice-text);
+  font: 500 15px var(--m-font);
+}
+#mirage-immersive .m-im-keys-box b {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+#mirage-immersive .m-im-keys-box div {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+#mirage-immersive .m-im-keys-box kbd {
+  justify-self: start;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--m-line-strong);
+  font: 600 12px var(--m-mono);
+}
+
+/* ==========================================================================
+   EINSTELLUNGEN: Gruppen, Knöpfe, Schema-Baukasten
+   ========================================================================== */
+.mirage-settings {
+  min-width: min(560px, 80vw);
+}
+.mirage-settings .m-group {
+  border-radius: 14px;
+  border: 1px solid var(--m-line);
+  padding: 4px 10px 8px;
+}
+.mirage-settings .m-group > summary {
+  cursor: pointer;
+  padding: 10px 4px;
+  font: 700 15px var(--m-font);
+  color: var(--spice-text);
+  list-style: none;
+}
+.mirage-settings .m-group > summary::before {
+  content: "›";
+  display: inline-block;
+  width: 1.1em;
+  transition: transform 0.25s var(--m-ease);
+}
+.mirage-settings .m-group[open] > summary::before {
+  transform: rotate(90deg);
+}
+.mirage-settings .m-group > :not(summary) {
+  margin-top: 6px;
+}
+.mirage-settings .m-cost {
+  font-style: normal;
+  font-size: 12px;
+  opacity: 0.8;
+}
+.mirage-settings .m-note {
+  color: var(--spice-subtext);
+  padding: 2px 4px;
+}
+.mirage-settings .m-version {
+  opacity: 0.6;
+  font-family: var(--m-mono);
+}
+.mirage-settings .m-actions,
+.mirage-welcome .m-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0;
+}
+.mirage-settings .m-btn,
+.mirage-welcome .m-btn {
+  border: 1px solid var(--m-line-strong);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--spice-text);
+  font: 600 13px var(--m-font);
+  padding: 8px 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+}
+.mirage-settings .m-btn:hover,
+.mirage-welcome .m-btn:hover {
+  background: rgba(var(--m-a-rgb), 0.16);
+  border-color: rgba(var(--m-a-rgb), 0.5);
+}
+.mirage-settings .m-btn.is-primary,
+.mirage-welcome .m-btn.is-primary {
+  background: var(--m-a);
+  border-color: transparent;
+  color: var(--spice-main);
+}
+.mirage-settings .m-btn.is-danger {
+  color: var(--spice-notification-error);
+}
+.mirage-settings .m-text {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--m-line-strong);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--spice-text);
+  font: 500 13px var(--m-font);
+}
+.mirage-settings .m-builder {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.mirage-settings .m-color {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  font: 500 12px var(--m-font);
+  color: var(--spice-subtext);
+  cursor: pointer;
+}
+.mirage-settings .m-color input {
+  width: 48px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--m-line-strong);
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+}
+.mirage-settings .m-scheme {
+  position: relative;
+}
+.mirage-settings .m-scheme-del {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 16px;
+  opacity: 0.6;
+}
+.mirage-settings .m-scheme-del:hover {
+  opacity: 1;
+}
+.mirage-settings .m-seg {
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   WILLKOMMEN (einmal beim ersten Start)
+   ========================================================================== */
+.mirage-welcome {
+  position: fixed;
+  right: 24px;
+  bottom: 112px;
+  z-index: 9999;
+  display: grid;
+  gap: 6px;
+  max-width: 360px;
+  padding: 18px 20px 12px;
+  border-radius: 20px;
+  background: rgba(var(--spice-rgb-main), 0.94);
+  border: 1px solid var(--m-line-strong);
+  box-shadow: 0 20px 60px -20px rgba(var(--m-b-rgb), 0.7);
+  color: var(--spice-text);
+  font: 500 14px/1.45 var(--m-font);
+  animation: m-welcome 0.6s var(--m-spring) both;
+  transition: opacity 0.6s, transform 0.6s;
+}
+.mirage-welcome b {
+  font-size: 16px;
+}
+.mirage-welcome .m-close {
+  margin-left: auto;
+}
+.mirage-welcome.is-gone {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+@keyframes m-welcome {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+}
+
+/* ==========================================================================
+   IMMERSIV: Smart Shuffle, Seitenleiste (Als Nächstes, Geräte, Schlaf-Timer)
+   ========================================================================== */
+#mirage-immersive .m-im-shuffle.is-smart {
+  color: var(--m-c);
+  filter: drop-shadow(0 0 8px rgba(var(--m-a-rgb), 0.8));
+}
+#mirage-immersive .m-im-title,
+#mirage-immersive .m-im-artist {
+  cursor: pointer;
+}
+#mirage-immersive .m-im-title:hover,
+#mirage-immersive .m-im-artist:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+#mirage-immersive .m-im-side {
+  position: absolute;
+  top: 84px;
+  right: 24px;
+  bottom: 24px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  width: min(340px, 86vw);
+  border-radius: 22px;
+  background: rgba(var(--spice-rgb-main), 0.86);
+  border: 1px solid var(--m-line-strong);
+  color: var(--spice-text);
+  overflow: hidden;
+  animation: m-side-in 0.4s var(--m-ease) both;
+}
+#mirage-immersive .m-im-side[hidden] {
+  display: none;
+}
+@keyframes m-side-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+#mirage-immersive .m-im-side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 8px;
+  font: 700 17px var(--m-font);
+}
+#mirage-immersive .m-im-side-body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 6px 10px 14px;
+  overflow-y: auto;
+}
+#mirage-immersive .m-im-side-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: 500 14px var(--m-font);
+  cursor: pointer;
+}
+#mirage-immersive .m-im-side-item:disabled {
+  cursor: default;
+}
+#mirage-immersive .m-im-side-item:not(:disabled):hover {
+  background: rgba(var(--m-a-rgb), 0.14);
+}
+#mirage-immersive .m-im-side-item.is-on {
+  background: rgba(var(--m-a-rgb), 0.2);
+}
+#mirage-immersive .m-im-side-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex: none;
+}
+#mirage-immersive .m-im-side-item span {
+  display: grid;
+  min-width: 0;
+}
+#mirage-immersive .m-im-side-item b,
+#mirage-immersive .m-im-side-item small {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#mirage-immersive .m-im-side-item small {
+  color: var(--spice-subtext);
+}
+#mirage-immersive .m-im-actions button,
+#mirage-immersive .m-im-side-x {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--m-line-strong);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--spice-text);
+  cursor: pointer;
+  transition: background 0.25s, transform 0.25s var(--m-spring);
+}
+#mirage-immersive .m-im-actions button:hover,
+#mirage-immersive .m-im-side-x:hover {
+  background: rgba(var(--m-a-rgb), 0.2);
+  transform: scale(1.06);
+}
+#mirage-immersive .m-im-actions svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ==========================================================================
+   LEISTUNG: Nichts läuft oder Fenster verdeckt → auch die Dauer-Animationen
+   außerhalb der Bühne anhalten (Naht der Leiste, Play-Halo, Ken-Burns, schwebendes
+   Cover, Farbstrom der spielenden Zeile). Vorher liefen sie pausiert endlos weiter.
+   ========================================================================== */
+html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-bar"]::before,
+html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="action-bar-row"] [data-testid="play-button"]::before,
+html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="background-image"],
+html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-view"] [data-testid="cover-art-image"],
+html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow:has(.main-trackList-playing),
+html.mirage-hidden .main-coverSlotCollapsed-container img,
+html.mirage-hidden [data-testid="control-button-playpause"]::after {
+  animation-play-state: paused !important;
+}
+
+/* Preset „Voll“: die teuren Licht-Mischungen zurück (eigene Mischflächen über dem ganzen Fenster) */
+html.mirage-rich #mirage-stage .m-art i + i {
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+html.mirage-rich #mirage-stage .m-aurora {
+  opacity: 1;
+  mix-blend-mode: soft-light;
+}
+
+
+/* ==========================================================================
+   LEISTUNG: Umgebungs-Animationen mit 24 Bildern pro Sekunde
+   Jede Bewegung hinter Spotifys halbtransparenter Oberfläche zwingt Spotify, die GANZE
+   Oberfläche darüber neu zusammenzusetzen – 60-mal pro Sekunde. Langsame Bewegungen
+   (Drift über 70 s, Aurora über 28 s …) sehen mit 24 Bildern genauso aus, kosten aber
+   nur 40 %. steps(n) = Dauer × 24.
+   ========================================================================== */
+#mirage-stage {
+  contain: strict;
+  isolation: isolate;
+  will-change: transform;
+}
+#mirage-stage .m-art i {
+  animation-timing-function: steps(1680) !important;
+}
+#mirage-stage .m-art i + i {
+  animation-timing-function: steps(2280) !important;
+}
+#mirage-stage .m-aurora {
+  animation-timing-function: steps(672) !important;
+}
+.mirage-playing #mirage-stage .m-pulse {
+  animation-timing-function: steps(100) !important;
+}
+[data-testid="background-image"] {
+  animation-timing-function: steps(816) !important;
+}
+[data-testid="now-playing-view"] [data-testid="cover-art-image"] {
+  animation-timing-function: steps(192) !important;
+}
+[data-testid="now-playing-bar"]::before,
+.main-trackList-trackListRow:has(.main-trackList-playing) {
+  animation-timing-function: steps(144) !important;
+}
+[data-testid="action-bar-row"] [data-testid="play-button"]::before {
+  animation-timing-function: steps(62) !important;
+}
+.mirage-playing [data-testid="control-button-playpause"]::after {
+  animation-timing-function: steps(77) !important;
+}
+html.mirage-vinyl .main-coverSlotCollapsed-container img {
+  animation-timing-function: steps(144) !important;
+}
+/* Spotifys Oberfläche als eigene Grafikebene: bewegt sich der Hintergrund, wird sie nur
+   noch darübergelegt statt in jedem Bild neu gezeichnet. opacity statt transform, weil
+   transform eingebettete Menüs/Tooltips (position: fixed) verschieben würde. */
+.Root__top-container {
+  will-change: opacity;
 }

@@ -20,6 +20,9 @@
       background: "Background", bgCover: "From cover", bgDark: "Dark", bgLight: "Light",
       glow: "Glow", roundness: "Roundness", showKicker: "Heading", showKickerHint: "Small line such as “Now playing” above the title",
       showAlbum: "Show album", showTime: "Show time",
+      stLyrics: "Lyrics", stLyricsHint: "The current synced lyric line, the next one dimmed below – songs without lyrics show title and artist",
+      stViz: "Visualizer", stVizHint: "Small capsule with bars that move to the music",
+      autostartOther: "Start with the computer", autostartHintOther: "The overlay starts quietly in the background",
     },
     de: {
       title: "Mirage Overlay", connected: "Mit Spotify verbunden", waiting: "Warte auf Spotify – ist das Mirage-Theme aktiv?",
@@ -40,6 +43,9 @@
       background: "Hintergrund", bgCover: "Aus dem Cover", bgDark: "Dunkel", bgLight: "Hell",
       glow: "Leuchten", roundness: "Rundung", showKicker: "Überschrift", showKickerHint: "Kleine Zeile wie „Jetzt läuft“ über dem Titel",
       showAlbum: "Album zeigen", showTime: "Zeit zeigen",
+      stLyrics: "Songtext", stLyricsHint: "Die aktuelle synchronisierte Songtextzeile, darunter gedimmt die nächste – Songs ohne Text zeigen Titel und Interpret",
+      stViz: "Visualizer", stVizHint: "Kleine Kapsel mit Balken, die sich zur Musik bewegen",
+      autostartOther: "Mit dem Computer starten", autostartHintOther: "Das Overlay startet still im Hintergrund",
     },
     fr: {
       connected: "Connecté à Spotify", waiting: "En attente de Spotify – le thème Mirage est-il actif ?",
@@ -52,6 +58,9 @@
       interactive: "Commandes au survol", progress: "Barre de progression", autostart: "Démarrer avec Windows",
       preview: "Aperçu", settings: "Réglages …", test: "Annonce test", quit: "Quitter",
       nowPlaying: "En cours", paused: "En pause", resumed: "Reprise",
+      stLyrics: "Paroles", stLyricsHint: "La ligne de paroles synchronisée en cours, la suivante en retrait dessous – sans paroles, le titre et l'artiste s'affichent",
+      stViz: "Visualiseur", stVizHint: "Petite capsule avec des barres qui bougent au rythme de la musique",
+      autostartOther: "Démarrer avec l'ordinateur",
     },
     es: {
       connected: "Conectado a Spotify", waiting: "Esperando a Spotify – ¿está activo el tema Mirage?",
@@ -64,6 +73,9 @@
       interactive: "Controles al pasar el ratón", progress: "Barra de progreso", autostart: "Iniciar con Windows",
       preview: "Vista previa", settings: "Ajustes …", test: "Anuncio de prueba", quit: "Salir",
       nowPlaying: "Sonando", paused: "En pausa", resumed: "Sonando de nuevo",
+      stLyrics: "Letra", stLyricsHint: "La línea actual de la letra sincronizada y, atenuada debajo, la siguiente; sin letra se muestran el título y el artista",
+      stViz: "Visualizador", stVizHint: "Pequeña cápsula con barras que se mueven con la música",
+      autostartOther: "Iniciar con el ordenador",
     },
     it: {
       connected: "Connesso a Spotify", waiting: "In attesa di Spotify – il tema Mirage è attivo?",
@@ -76,6 +88,9 @@
       interactive: "Controlli al passaggio", progress: "Barra di avanzamento", autostart: "Avvia con Windows",
       preview: "Anteprima", settings: "Impostazioni …", test: "Annuncio di prova", quit: "Esci",
       nowPlaying: "In riproduzione", paused: "In pausa", resumed: "Di nuovo in riproduzione",
+      stLyrics: "Testo", stLyricsHint: "La riga del testo sincronizzato in corso, sotto e più tenue la successiva – senza testo compaiono titolo e artista",
+      stViz: "Visualizzatore", stVizHint: "Piccola capsula con barre che si muovono a ritmo di musica",
+      autostartOther: "Avvia con il computer",
     },
     pt: {
       connected: "Conectado ao Spotify", waiting: "Aguardando o Spotify – o tema Mirage está ativo?",
@@ -88,6 +103,9 @@
       interactive: "Controles ao passar o mouse", progress: "Barra de progresso", autostart: "Iniciar com o Windows",
       preview: "Pré-visualizar", settings: "Configurações …", test: "Anúncio de teste", quit: "Sair",
       nowPlaying: "Tocando agora", paused: "Pausado", resumed: "Tocando de novo",
+      stLyrics: "Letra", stLyricsHint: "A linha atual da letra sincronizada, com a próxima mais apagada embaixo – sem letra, aparecem título e artista",
+      stViz: "Visualizador", stVizHint: "Pequena cápsula com barras que se movem com a música",
+      autostartOther: "Iniciar com o computador",
     },
     nl: {
       connected: "Verbonden met Spotify", waiting: "Wachten op Spotify – is het Mirage-thema actief?",
@@ -96,6 +114,8 @@
       duration: "Duur", quiet: "Stille uren", from: "van", to: "tot", screen: "Scherm", primary: "Hoofdscherm", cursor: "Waar de muis is", screenN: "Scherm",
       position: "Positie", style: "Stijl", size: "Grootte", preview: "Voorbeeld", settings: "Instellingen …", quit: "Afsluiten",
       nowPlaying: "Nu speelt", paused: "Gepauzeerd", resumed: "Speelt weer",
+      stLyrics: "Songtekst", stLyricsHint: "De huidige gesynchroniseerde songtekstregel, de volgende gedimd eronder – zonder songtekst verschijnen titel en artiest",
+      stViz: "Visualizer", stVizHint: "Kleine capsule met balkjes die meebewegen op de muziek",
     },
     pl: {
       connected: "Połączono ze Spotify", waiting: "Czekam na Spotify – czy motyw Mirage jest aktywny?",
@@ -104,6 +124,8 @@
       duration: "Czas", quiet: "Godziny ciszy", from: "od", to: "do", screen: "Ekran", primary: "Ekran główny", cursor: "Tam, gdzie mysz", screenN: "Ekran",
       position: "Pozycja", style: "Styl", size: "Rozmiar", preview: "Podgląd", settings: "Ustawienia …", quit: "Zakończ",
       nowPlaying: "Teraz gra", paused: "Wstrzymano", resumed: "Gra dalej",
+      stLyrics: "Tekst", stLyricsHint: "Bieżąca zsynchronizowana linijka tekstu, pod nią przygaszona następna – bez tekstu widać tytuł i wykonawcę",
+      stViz: "Wizualizer", stVizHint: "Mała kapsułka ze słupkami, które poruszają się w rytm muzyki",
     },
     tr: {
       connected: "Spotify'a bağlı", waiting: "Spotify bekleniyor – Mirage teması etkin mi?",
@@ -111,6 +133,8 @@
       mode: "Göster", modeSong: "Şarkı değişince", modeAlways: "Her zaman (mini oynatıcı)", modeOff: "Kapalı",
       screen: "Ekran", primary: "Ana ekran", cursor: "Farenin olduğu yer", screenN: "Ekran", position: "Konum", style: "Stil", size: "Boyut",
       preview: "Önizleme", settings: "Ayarlar …", quit: "Çık", nowPlaying: "Şimdi çalıyor", paused: "Duraklatıldı", resumed: "Yeniden çalıyor",
+      stLyrics: "Şarkı sözü", stLyricsHint: "Senkronize şarkı sözünün geçerli satırı, altında soluk olarak sonraki – sözü olmayan şarkılarda şarkı adı ve sanatçı görünür",
+      stViz: "Görselleştirici", stVizHint: "Müzikle birlikte hareket eden çubuklu küçük kapsül",
     },
     ru: {
       connected: "Подключено к Spotify", waiting: "Ожидание Spotify – тема Mirage включена?",
@@ -118,6 +142,8 @@
       mode: "Показывать", modeSong: "При смене трека", modeAlways: "Всегда (мини-плеер)", modeOff: "Выкл.",
       screen: "Экран", primary: "Основной экран", cursor: "Где курсор", screenN: "Экран", position: "Положение", style: "Стиль", size: "Размер",
       preview: "Предпросмотр", settings: "Настройки …", quit: "Выход", nowPlaying: "Сейчас играет", paused: "Пауза", resumed: "Снова играет",
+      stLyrics: "Текст песни", stLyricsHint: "Текущая синхронизированная строка текста, под ней бледнее следующая – если текста нет, показываются название и исполнитель",
+      stViz: "Визуализатор", stVizHint: "Маленькая капсула с полосками, которые двигаются под музыку",
     },
     ja: {
       connected: "Spotify に接続済み", waiting: "Spotify を待っています – Mirage テーマは有効ですか？",
@@ -125,6 +151,8 @@
       mode: "表示", modeSong: "曲が変わったとき", modeAlways: "常に (ミニプレーヤー)", modeOff: "オフ",
       screen: "画面", primary: "メイン画面", cursor: "マウスのある画面", screenN: "画面", position: "位置", style: "スタイル", size: "サイズ",
       preview: "プレビュー", settings: "設定 …", quit: "終了", nowPlaying: "再生中", paused: "一時停止", resumed: "再生再開",
+      stLyrics: "歌詞", stLyricsHint: "同期歌詞の現在の行と、その下に薄く次の行 – 歌詞のない曲ではタイトルとアーティストを表示",
+      stViz: "ビジュアライザー", stVizHint: "音楽に合わせてバーが動く小さなカプセル",
     },
     ko: {
       connected: "Spotify에 연결됨", waiting: "Spotify 대기 중 – Mirage 테마가 켜져 있나요?",
@@ -132,6 +160,8 @@
       mode: "표시", modeSong: "곡이 바뀔 때", modeAlways: "항상 (미니 플레이어)", modeOff: "끔",
       screen: "화면", primary: "기본 화면", cursor: "마우스가 있는 화면", screenN: "화면", position: "위치", style: "스타일", size: "크기",
       preview: "미리 보기", settings: "설정 …", quit: "종료", nowPlaying: "지금 재생 중", paused: "일시정지됨", resumed: "다시 재생",
+      stLyrics: "가사", stLyricsHint: "현재 싱크 가사 줄과 그 아래 흐리게 다음 줄 – 가사가 없는 곡은 제목과 아티스트를 표시",
+      stViz: "비주얼라이저", stVizHint: "음악에 맞춰 막대가 움직이는 작은 캡슐",
     },
     zh: {
       connected: "已连接 Spotify", waiting: "正在等待 Spotify – Mirage 主题是否已启用？",
@@ -139,6 +169,8 @@
       mode: "显示", modeSong: "切歌时", modeAlways: "始终 (迷你播放器)", modeOff: "关闭",
       screen: "屏幕", primary: "主屏幕", cursor: "鼠标所在屏幕", screenN: "屏幕", position: "位置", style: "样式", size: "大小",
       preview: "预览", settings: "设置 …", quit: "退出", nowPlaying: "正在播放", paused: "已暂停", resumed: "继续播放",
+      stLyrics: "歌词", stLyricsHint: "当前同步歌词行，下方淡色显示下一行 – 没有歌词的歌曲显示歌名和歌手",
+      stViz: "可视化", stVizHint: "随音乐跳动的小胶囊频谱条",
     },
   };
   function pick(locale) {

@@ -77,7 +77,7 @@
   .grid9 button[aria-pressed="true"] { background: linear-gradient(135deg, var(--c), var(--a)); border-color: transparent; transform: scale(1.08); }
 
   /* Stil-Karten */
-  .styles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .sty { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.03); padding: 14px 10px 10px; cursor: pointer; color: var(--sub);
          font: 600 13px var(--font); display: grid; gap: 10px; justify-items: center; transition: all .35s var(--spring); }
   .sty:hover { transform: translateY(-2px); background: rgba(255,255,255,.07); }
@@ -91,6 +91,19 @@
   .mini .banner { width: 100%; height: 26px; border-radius: 7px; background: #120f1d; border-top: 2px solid var(--a); display: flex; align-items: center; gap: 6px; padding-right: 6px; overflow: hidden; }
   .mini .banner .dot { width: 26px; height: 26px; border-radius: 0; }
   .mini .minimal { font: 800 13px var(--font); color: #fff; text-shadow: 0 0 12px var(--a); }
+  .mini .lyrics { width: 100px; height: 34px; border-radius: 10px; background: linear-gradient(120deg, #251d3a, #120f1d); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+  .mini .lyrics .dot { width: 22px; height: 22px; }
+  .mini .lyrics .lns { flex: 1; display: grid; gap: 4px; }
+  .mini .lyrics .ln:first-child { height: 6px; background: #fff; box-shadow: 0 0 8px var(--a); }
+  .mini .lyrics .ln:last-child { width: 70%; background: rgba(255,255,255,.3); }
+  .mini .viz { width: 70px; height: 24px; border-radius: 99px; background: #000; display: flex; align-items: center; gap: 3px; padding: 0 6px 0 3px; box-shadow: 0 6px 16px -6px var(--a); }
+  .mini .viz .dot { width: 18px; height: 18px; border-radius: 50%; margin-right: 3px; }
+  .mini .viz i { width: 3px; height: 14px; border-radius: 2px; background: linear-gradient(to top, var(--b), var(--a), var(--c)); animation: vz 1s ease-in-out infinite alternate; }
+  .mini .viz i:nth-child(odd) { animation-delay: -.4s; } .mini .viz i:nth-child(3n) { animation-delay: -.7s; }
+  @keyframes vz { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+  .styleHint { margin: 10px 2px 0; color: var(--sub); font-size: 13px; min-height: 1.45em; }
+  /* macOS: Ampelknöpfe links, keine eingeblendeten Fensterknöpfe rechts */
+  .mac header { padding: 0 20px 0 84px; }
 
   .btn { border: 0; border-radius: 99px; padding: 11px 20px; font: 700 14px var(--font); cursor: pointer; color: #0b0a12;
          background: linear-gradient(135deg, var(--c), var(--a) 60%, var(--b)); box-shadow: 0 12px 30px -10px var(--a); transition: transform .35s var(--spring); }
@@ -152,7 +165,10 @@
       <button class="sty" data-v="card"><span class="mini"><span class="card"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stCard"></span></button>
       <button class="sty" data-v="banner"><span class="mini"><span class="banner"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stBanner"></span></button>
       <button class="sty" data-v="minimal"><span class="mini"><span class="minimal">♪ Aa</span></span><span data-t="stMinimal"></span></button>
+      <button class="sty" data-v="lyrics"><span class="mini"><span class="lyrics"><span class="dot"></span><span class="lns"><span class="ln"></span><span class="ln"></span></span></span></span><span data-t="stLyrics"></span></button>
+      <button class="sty" data-v="visualizer"><span class="mini"><span class="viz"><span class="dot"></span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span data-t="stViz"></span></button>
     </div>
+    <div class="styleHint" id="styleHint"></div>
     <div class="row" style="margin-top:12px"><div><b data-t="motion"></b></div>
       <div class="seg" data-key="motion"><button data-v="spring" data-t="mSpring"></button><button data-v="slide" data-t="mSlide"></button><button data-v="fade" data-t="mFade"></button></div></div>
     <div class="row"><div><b data-t="size"></b></div>
@@ -174,7 +190,7 @@
     <div class="row"><div><b data-t="showAlbum"></b></div><input type="checkbox" class="toggle" data-key="showAlbum"></div>
     <div class="row"><div><b data-t="showTime"></b></div><input type="checkbox" class="toggle" data-key="showTime"></div>
     <div class="row"><div><b data-t="progress"></b><small data-t="progressHint"></small></div><input type="checkbox" class="toggle" data-key="progress"></div>
-    <div class="row"><div><b data-t="autostart"></b><small data-t="autostartHint"></small></div><input type="checkbox" class="toggle" data-key="autostart"></div>
+    <div class="row"><div><b data-t="autostart" id="autostartLabel"></b><small data-t="autostartHint" id="autostartHint"></small></div><input type="checkbox" class="toggle" data-key="autostart"></div>
   </section>
 </main>
 <script src="i18n.js"></script>
@@ -208,6 +224,9 @@
     $$(".val").forEach((s) => (s.textContent = cfg[s.dataset.for] + " " + s.dataset.unit));
     $$(".screen").forEach((s) => s.setAttribute("aria-pressed", String(cfg.display === s.dataset.id)));
     $$("#grid9 button").forEach((b) => b.setAttribute("aria-pressed", String(cfg.anchor === b.dataset.v)));
+    // kurze Beschreibung für Stile, die mehr brauchen als den Songwechsel
+    const hint = { lyrics: "stLyricsHint", visualizer: "stVizHint" }[cfg.style];
+    $("#styleHint").textContent = hint ? t(hint) : "";
   }
 
   function buildScreens(displays) {
@@ -245,6 +264,13 @@
     ["--a", "--b", "--c"].forEach((v, i) => cols[i] && document.documentElement.style.setProperty(v, cols[i]));
   }
 
+  // macOS/Linux: Autostart heißt dort nicht „mit Windows“
+  if (mirage.platform !== "win32") {
+    $("#autostartLabel").dataset.t = "autostartOther";
+    $("#autostartHint").dataset.t = "autostartHintOther";
+  }
+  document.documentElement.classList.toggle("mac", mirage.platform === "darwin");
+
   // Raster für die Position
   for (const v of ["top", "middle", "bottom"]) for (const h of ["left", "center", "right"]) {
     const b = document.createElement("button");
@@ -263,7 +289,7 @@
 
   mirage.on("status", showStatus);
   mirage.on("cfg", (c) => { cfg = c; render(); });
-  mirage.on("lang", (l) => { t = MirageI18n.make(l); translate(); });
+  mirage.on("lang", (l) => { t = MirageI18n.make(l); translate(); render(); });
 
   mirage.get().then((s) => {
     cfg = s.cfg;

@@ -17,12 +17,16 @@
   <a href="#-mirage-overlay">Overlay</a> ·
   <a href="#-colour-schemes">Schemes</a> ·
   <a href="#-install">Install</a> ·
-  <a href="#-settings--shortcuts">Shortcuts</a>
+  <a href="#-fix-after-a-spotify-update">Fix after updates</a> ·
+  <a href="#-settings--shortcuts">Shortcuts</a> ·
+  <a href="https://github.com/Passimoritz/spicetify-mirage/discussions">Discussions</a>
 </p>
 
 ---
 
 **Mirage** turns Spotify into frosted glass with the music living behind it. Every song repaints the interface in the colours of its album art, the cover drifts slowly behind the panels as soft light, and – when Spotify provides beat data – the whole background breathes on the beat.
+
+<p align="center"><a href="https://passimoritz.github.io/spicetify-mirage/"><b>▶ Try it in your browser</b></a> – no install, click a cover and watch the interface recolour.</p>
 
 ## 📸 Real screenshots
 
@@ -144,6 +148,44 @@ spicetify config current_theme marketplace
 spicetify apply
 ```
 
+## 🛠 Fix after a Spotify update
+
+Spotify updates itself quietly every few weeks and overwrites the files Spicetify patched. You notice it like this:
+
+- Spotify suddenly looks like normal Spotify again – no Mirage, no Marketplace, no extensions
+- `spicetify apply` stops with *"backup version mismatch"*, *"Spotify version and backup version are mismatched"* or *"Cannot find xpui.spa"*
+- Spotify shows a black or white window right after starting
+
+Nothing is broken – Spicetify just has to re-patch the new Spotify version.
+
+### One click (Windows)
+
+<a href="https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/fix-spicetify.cmd"><b>⬇ Download fix-spicetify.cmd</b></a> · <sub><a href="tools/fix-spicetify.cmd">view the source first</a></sub>
+
+Double-click it after every Spotify update. It closes Spotify, updates Spicetify, throws away the outdated backup, makes a fresh one from the new Spotify, applies Mirage and your extensions again and starts Spotify. Your settings, theme and Marketplace items are kept.
+
+> Windows may warn because the file comes from the internet: **More info → Run anyway**. It is a plain text script – you can open it in Notepad and read every line.
+
+It is built to keep working: it only uses commands every Spicetify 2.x knows (`upgrade`, `restore`, `backup`, `apply`, `clear`), finds Spicetify even when it is missing from `PATH`, works with and without admin rights and tells you if you use the Microsoft Store version of Spotify (Spicetify cannot patch that one – install Spotify from spotify.com instead).
+
+### By hand (Windows, macOS, Linux)
+
+```bash
+spicetify upgrade
+spicetify restore backup apply
+```
+
+Still not working? Clear the old backup and try again:
+
+```bash
+spicetify clear
+spicetify backup apply
+```
+
+### When a brand-new Spotify version is not supported yet
+
+Right after a big Spotify release, Spicetify sometimes needs a few days to catch up – `apply` then fails even after the steps above. Wait for the next [Spicetify release](https://github.com/spicetify/cli/releases) and run the fix again: it pulls the new Spicetify automatically. If something in Mirage looks off after an update, open an issue with the [bug form for Spotify updates](https://github.com/Passimoritz/spicetify-mirage/issues/new/choose) – it asks for exactly the versions needed to fix it quickly.
+
 ## ⌨ Settings & shortcuts
 
 Profile menu → **Mirage settings**: colours from the cover, light dust, beat background, page animations, vinyl, 3D cards, heart burst, overlay link, film grain, real glass, calm mode, blur and brightness.
@@ -158,6 +200,32 @@ Profile menu → **Mirage settings**: colours from the cover, light dust, beat b
 | immersive | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>F</kbd> | like · shuffle · repeat · full screen |
 | immersive | <kbd>N</kbd> <kbd>P</kbd> | next · previous |
 | immersive | <kbd>Esc</kbd> | leave full screen / close |
+
+## ⚡ Performance
+
+Mirage is built to look alive without eating your CPU. Upcoming **performance presets** in Mirage settings let you pick how much of it you want:
+
+| Preset | What you get |
+|---|---|
+| **Full** | Everything on – real glass with live blur behind every panel, light dust, beat background, 3D cards |
+| **Balanced** | The full look with lighter effects – the sweet spot for most PCs |
+| **Light** | Swaps live glass blur for translucent panels and thins out the background – for laptops and older GPUs |
+
+- **Automatic step-down:** if the first seconds after start run below ~45 fps, Mirage drops to the next lighter preset by itself.
+- **Pauses when hidden:** effects stop while Spotify is minimised, so nothing runs in the background.
+- **Calm mode follows your system:** with *reduce motion* turned on in your OS, Mirage starts in calm mode.
+
+### Mirage vs. a typical static theme
+
+| | Mirage | Typical static theme |
+|---|:---:|:---:|
+| Colours follow the album cover | ✓ | ✗ fixed |
+| Living background | ✓ | ✗ |
+| Beat-synced motion | ✓ | ✗ |
+| Immersive lyrics + visualizer | ✓ | ✗ |
+| Desktop overlay | ✓ | ✗ |
+| Performance presets | ✓ | ✗ |
+| 14 languages | ✓ | ✗ fixed |
 
 ## 🌍 Languages
 

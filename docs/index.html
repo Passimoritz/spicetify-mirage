@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mirage – a living Spicetify theme</title>
+  <meta name="description" content="Mirage turns Spotify into frosted glass, and every song repaints the interface in the colours of its album art. Try the interactive demo.">
+  <meta name="theme-color" content="#07060c">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://passimoritz.github.io/spicetify-mirage/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Mirage for Spicetify">
+  <meta property="og:title" content="Mirage – a living Spicetify theme">
+  <meta property="og:description" content="Spotify becomes frosted glass, and every song repaints the UI in its album colours. Interactive demo, right in your browser.">
+  <meta property="og:url" content="https://passimoritz.github.io/spicetify-mirage/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/assets/preview.png">
+  <meta property="og:image:alt" content="Spotify with the Mirage theme: frosted-glass panels over a blurred album cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mirage – a living Spicetify theme">
+  <meta name="twitter:description" content="Spotify becomes frosted glass, and every song repaints the UI in its album colours.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/assets/preview.png">
+  <meta name="twitter:image:alt" content="Spotify with the Mirage theme: frosted-glass panels over a blurred album cover">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e6deff'/%3E%3Cstop offset='.55' stop-color='%23b69cff'/%3E%3Cstop offset='1' stop-color='%237c5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='28' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2307060c'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <!-- The living background: one blurred cover layer, aurora, beat pulse, light dust, grain -->
+  <div class="stage" aria-hidden="true">
+    <canvas class="haze" width="48" height="48"></canvas>
+    <div class="aurora"></div>
+    <div class="pulse"></div>
+    <canvas class="dust"></canvas>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <a class="skip" href="#demo">Skip to the demo</a>
+
+  <header class="hero">
+    <p class="eyebrow">Spicetify theme</p>
+    <h1 class="hero-title">Mirage <span class="dash">–</span> <span class="grad">a living Spicetify theme</span></h1>
+    <p class="hero-lede">Spotify becomes frosted glass, and every song repaints the interface in the colours of its album art.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/Passimoritz/spicetify-mirage#-install">Install via Spicetify Marketplace</a>
+      <a class="btn btn-ghost" href="https://github.com/Passimoritz/spicetify-mirage">
+        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <main id="demo" class="demo" tabindex="-1">
+    <section class="controls" aria-label="Demo controls">
+      <div class="control-block">
+        <h2 class="control-label" id="covers-label">Play a cover</h2>
+        <div class="cover-strip" role="group" aria-labelledby="covers-label" data-covers></div>
+      </div>
+      <div class="control-row">
+        <fieldset class="schemes">
+          <legend class="control-label">Colour scheme</legend>
+          <div class="scheme-options" data-schemes></div>
+        </fieldset>
+        <div class="palette-readout" aria-live="off">
+          <span class="control-label" data-palette-label>Extracted from the cover</span>
+          <div class="swatches" data-swatches></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The mini Spotify window -->
+    <div class="app" role="region" aria-label="Spotify with the Mirage theme (demo)">
+      <div class="app-titlebar" aria-hidden="true">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="nav-arrows"><span class="circle">&#8249;</span><span class="circle">&#8250;</span></span>
+        <span class="search-pill">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg>
+          What do you want to play?
+        </span>
+        <span class="avatar">M</span>
+      </div>
+
+      <nav class="app-sidebar glass" aria-label="Your Library">
+        <ul class="side-nav" aria-hidden="true">
+          <li class="is-active"><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 3 2 11h3v9h5v-6h4v6h5v-9h3z"/></svg>Home</li>
+          <li><svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></svg>Search</li>
+        </ul>
+        <h2 class="side-heading">Your Library</h2>
+        <ul class="library" data-library></ul>
+      </nav>
+
+      <section class="app-main glass" aria-label="Playlist">
+        <div class="entity-header">
+          <div class="art-wrap">
+            <div class="vinyl" aria-hidden="true"><img alt="" data-cur-img></div>
+            <img class="entity-art" alt="" data-cur-img data-cur-alt>
+          </div>
+          <div class="entity-meta">
+            <span class="entity-type">Playlist</span>
+            <h2 class="entity-title">Mirage Mix</h2>
+            <p class="entity-sub">Now playing <strong data-cur-title></strong> · <span data-cur-artist></span></p>
+            <p class="entity-info">Passimoritz · 6 songs · generated covers</p>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="big-play" type="button" data-toggle aria-label="Pause">
+            <svg class="i-play" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+          </button>
+          <button class="icon-btn" type="button" data-like aria-pressed="false" aria-label="Like this song">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2 0 3.6 1.1 5.3 3 1.7-1.9 3.3-3 5.3-3 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>
+          </button>
+        </div>
+
+        <div class="tracklist">
+          <div class="tl-head" aria-hidden="true">
+            <span class="c-num">#</span>
+            <span>Title</span>
+            <span class="c-album">Album</span>
+            <span class="c-dur">Time</span>
+          </div>
+          <div class="tl-body" data-tracks role="group" aria-label="Songs"></div>
+        </div>
+      </section>
+
+      <footer class="app-player glass" aria-label="Player">
+        <div class="np">
+          <img class="np-art" alt="" data-cur-img>
+          <div class="np-text">
+            <span class="np-title" data-cur-title></span>
+            <span class="np-artist" data-cur-artist></span>
+          </div>
+        </div>
+        <div class="transport">
+          <div class="transport-buttons">
+            <button class="icon-btn small" type="button" data-prev aria-label="Previous song">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6 5h2v14H6zm3.5 7L19 5v14z"/></svg>
+            </button>
+            <button class="play-btn" type="button" data-toggle aria-label="Pause">
+              <svg class="i-play" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l13-7.5z"/></svg>
+              <svg class="i-pause" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+            </button>
+            <button class="icon-btn small" type="button" data-next aria-label="Next song">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16 5h2v14h-2zM5 5l9.5 7L5 19z"/></svg>
+            </button>
+          </div>
+          <div class="progress-row">
+            <span class="time" data-pos>0:00</span>
+            <div class="progress" role="slider" tabindex="0" aria-label="Song position" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-valuetext="0:00" data-progress>
+              <div class="progress-fill" data-fill></div>
+            </div>
+            <span class="time" data-dur>0:00</span>
+          </div>
+        </div>
+        <div class="extras" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+          <span class="volume"><i></i></span>
+        </div>
+      </footer>
+    </div>
+    <p class="demo-note">No audio plays here – the progress bar and the 120&nbsp;BPM beat are simulated. All covers are abstract art generated in your browser.</p>
+  </main>
+
+  <section class="features" aria-labelledby="features-title">
+    <h2 id="features-title" class="section-title">What Mirage does</h2>
+    <div class="cards">
+      <article class="card glass">
+        <span class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.8-.5-1.2-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5C21 6.4 17 3 12 3zM6.5 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+        </span>
+        <h3>Colours from the cover</h3>
+        <p>Accent, buttons, progress bar, titles and selection take on the song's palette – picked so text stays readable on dark glass.</p>
+      </article>
+      <article class="card glass">
+        <span class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M3 8h11a3 3 0 1 0-3-3h2a1 1 0 1 1 1 1H3zm0 4h16a3 3 0 1 1-3 3h2a1 1 0 1 0 1-1H3zm0 4h7a2 2 0 1 1-2 2H6a4 4 0 1 0 4-4H3z"/></svg>
+        </span>
+        <h3>Living background</h3>
+        <p>The album art drifts behind the UI as a slow, blurred haze, with aurora bands, floating light dust and film grain on top.</p>
+      </article>
+      <article class="card glass">
+        <span class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M2 13h3l2-6 3 12 3-15 3 12 2-3h4v2h-3l-3 5-2-8-3 14-3-12-1 3H2z"/></svg>
+        </span>
+        <h3>On the beat</h3>
+        <p>With Spotify's beat data the background, light dust and visualizer pulse in time. Without it, Mirage falls back to a calm ambient motion.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="install" aria-labelledby="install-title">
+    <h2 id="install-title" class="section-title">Install</h2>
+    <div class="install-grid">
+      <div class="install-block glass">
+        <h3>Spicetify Marketplace</h3>
+        <p>Open <strong>Marketplace → Themes</strong>, search for <strong>Mirage</strong>, install. Done.</p>
+      </div>
+      <div class="install-block glass">
+        <h3>Manually (Windows)</h3>
+        <div class="code">
+          <button class="copy" type="button" data-copy="code-win">Copy</button>
+<pre id="code-win"><code>git clone https://github.com/Passimoritz/spicetify-mirage
+cd spicetify-mirage
+powershell -ExecutionPolicy Bypass -File install.ps1            # theme only
+powershell -ExecutionPolicy Bypass -File install.ps1 -Overlay   # theme + overlay app</code></pre>
+        </div>
+        <p class="hint">Pick a scheme with <code>-Scheme Obsidian</code> (or <code>Sakura</code>, <code>Abyss</code>, <code>Ember</code>).</p>
+        <details>
+          <summary>macOS / Linux / by hand</summary>
+          <div class="code">
+            <button class="copy" type="button" data-copy="code-unix">Copy</button>
+<pre id="code-unix"><code>cp -r Mirage "$(dirname "$(spicetify -c)")/Themes/"
+spicetify config current_theme Mirage color_scheme Mirage inject_css 1 replace_colors 1 inject_theme_js 1
+spicetify apply</code></pre>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>MIT © Passimoritz · <a href="https://github.com/Passimoritz/spicetify-mirage">Source on GitHub</a> · Not affiliated with Spotify.</p>
+  </footer>
+
+  <p class="sr-only" aria-live="polite" data-announce></p>
+  <script src="demo.js" defer></script>
+</body>
+</html>
