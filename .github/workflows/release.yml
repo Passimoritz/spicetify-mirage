@@ -41,3 +41,42 @@ jobs:
           body_path: RELEASE_NOTES.md
           # README links to releases/latest/download/fix-spicetify.cmd
           files: tools/fix-spicetify.cmd
+
+  # Mirage Overlay als fertige Installer: Windows (.exe), macOS (.dmg, universal), Linux (.AppImage, .deb).
+  # Jedes System baut auf seinem eigenen Runner; die Dateien landen am Release, den der Job oben anlegt.
+  overlay:
+    needs: release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+            files: overlay/dist/Mirage-Overlay-Setup.exe
+          - os: macos-latest
+            target: --mac
+            files: overlay/dist/Mirage-Overlay.dmg
+          - os: ubuntu-latest
+            target: --linux
+            files: |
+              overlay/dist/Mirage-Overlay.AppImage
+              overlay/dist/Mirage-Overlay.deb
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: overlay
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Build installer
+        run: npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          # unsigniert bauen (kein Zertifikat hinterlegt)
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.files }}

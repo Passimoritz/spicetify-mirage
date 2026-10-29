@@ -5,7 +5,7 @@
 <p align="center">
   <a href="#-install"><img alt="Spicetify" src="https://img.shields.io/badge/Spicetify-2.40%2B-b69cff?style=for-the-badge&labelColor=12101c"></a>
   <img alt="Languages" src="https://img.shields.io/badge/languages-14-7c5cff?style=for-the-badge&labelColor=12101c">
-  <img alt="Overlay" src="https://img.shields.io/badge/overlay-Windows-4fe3ff?style=for-the-badge&labelColor=12101c">
+  <img alt="Overlay" src="https://img.shields.io/badge/overlay-Windows%20·%20macOS%20·%20Linux-4fe3ff?style=for-the-badge&labelColor=12101c">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-e6deff?style=for-the-badge&labelColor=12101c">
 </p>
 
@@ -102,7 +102,18 @@ A small companion app that shows song changes **outside of Spotify** – above e
 - **Where:** main screen, the screen with the mouse, or any screen picked on a map of your displays · 9 anchor positions · fine offset
 - **How:** Island, Card, Banner or Minimal · springy, slide or fade · background from cover / dark / light · glow, roundness, size, opacity · heading, album, time, progress bar
 - **Controls on hover:** previous · play/pause · next, right inside the overlay
-- Lives in the tray, starts with Windows if you like, follows the language Spotify uses
+- Lives in the tray, starts with your computer if you like (Windows, macOS, Linux), follows the language Spotify uses
+
+### Install the Overlay
+
+| Windows | macOS | Linux |
+|:-:|:-:|:-:|
+| [**⬇ Mirage-Overlay-Setup.exe**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay-Setup.exe) | [**⬇ Mirage-Overlay.dmg**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.dmg) | [**⬇ AppImage**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.AppImage) · [**⬇ .deb**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.deb) |
+| Double-click – done. Starts right away and lives in the tray. | Open the .dmg and drag Mirage Overlay to *Applications*. | AppImage: make it executable and start it. .deb: `sudo apt install ./Mirage-Overlay.deb` |
+
+The Mirage settings in Spotify have the same button: **Profile menu → Mirage settings → Overlay → Download the Overlay app** – it picks the right file for your system and shows whether the overlay is connected.
+
+> **First start:** the installers aren't code-signed yet, so the system asks once. Windows: *More info → Run anyway*. macOS: right-click the app → *Open* → *Open*.
 
 ## ◈ Mirage App
 
@@ -144,7 +155,7 @@ spicetify config current_theme Mirage color_scheme Mirage inject_css 1 replace_c
 spicetify apply
 ```
 
-The overlay app is Electron-based: `cd overlay && npm install && npm start`.
+The overlay: use the [installers](#install-the-overlay) above, or from source `cd overlay && npm install && npm start`.
 </details>
 
 ### Uninstall

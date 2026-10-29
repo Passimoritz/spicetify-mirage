@@ -396,7 +396,7 @@ function setAutostart(on) {
 Type=Application
 Name=Mirage Overlay
 Comment=Song announcements for the Mirage Spicetify theme
-Exec=${[process.execPath, ...launchArgs()].map(q).join(" ")}
+Exec=${[process.env.APPIMAGE || process.execPath, ...launchArgs()].map(q).join(" ")}
 Terminal=false
 NoDisplay=true
 X-GNOME-Autostart-enabled=true

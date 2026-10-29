@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.1.1" : "dev";
+      VERSION = true ? "1.2.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -360,7 +360,11 @@
           timerTrack: "End of this song",
           timerOff: "Off",
           timerLeft: "{m} min left",
-          k_queue: "Up next"
+          k_queue: "Up next",
+          overlayDownload: "Download the Overlay app",
+          overlayAllDownloads: "All downloads",
+          overlayConnected: "\u25CF Overlay connected",
+          overlayMissing: "\u25CB Overlay not running \u2013 install it with the button below, then start it once"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -519,7 +523,11 @@
           timerTrack: "Ende dieses Songs",
           timerOff: "Aus",
           timerLeft: "noch {m} min",
-          k_queue: "Als N\xE4chstes"
+          k_queue: "Als N\xE4chstes",
+          overlayDownload: "Overlay-App herunterladen",
+          overlayAllDownloads: "Alle Downloads",
+          overlayConnected: "\u25CF Overlay verbunden",
+          overlayMissing: "\u25CB Overlay l\xE4uft nicht \u2013 mit dem Knopf unten installieren und einmal starten"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -3425,7 +3433,15 @@
       })
     );
     kids.push(group(t("g_builder"), false, builder, nameIn, bActions, codeIn));
-    kids.push(group(t("g_overlay"), false, toggle("overlay")));
+    const os = String(S.Platform?.operatingSystem || navigator.platform || "").toLowerCase();
+    const file = /win/.test(os) ? "Mirage-Overlay-Setup.exe" : /mac|osx|darwin/.test(os) ? "Mirage-Overlay.dmg" : "Mirage-Overlay.AppImage";
+    const ovState = el("small", "m-note", t(bridge.connected() ? "overlayConnected" : "overlayMissing"));
+    const ovRow = el("div", "m-actions");
+    ovRow.append(
+      button(t("overlayDownload"), () => window.open(`https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/${file}`, "_blank"), "is-primary"),
+      button(t("overlayAllDownloads"), () => window.open("https://github.com/Passimoritz/spicetify-mirage/releases/latest", "_blank"))
+    );
+    kids.push(group(t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
     const foot = el("div", "m-actions");
     const dataIn = el("input", "m-text");
     dataIn.placeholder = t("settingsCodeHint");

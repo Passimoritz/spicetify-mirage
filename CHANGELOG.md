@@ -10,6 +10,18 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.2.0] – 2026-10-29
+
+### Added
+
+- **Mirage Overlay installers** for every system, built automatically for each release: `Mirage-Overlay-Setup.exe` (Windows, one click), `Mirage-Overlay.dmg` (macOS, universal), `Mirage-Overlay.AppImage` and `.deb` (Linux) – no git or Node.js needed any more.
+- Mirage settings → Overlay: shows whether the overlay is connected and downloads the right installer for your system.
+- App icon for the overlay.
+
+### Fixed
+
+- Linux AppImage: "start with the computer" now points at the AppImage file instead of its temporary mount.
+
 ## [1.1.1] – 2026-10-29
 
 ### Fixed
@@ -61,7 +73,8 @@ First public release.
 - **Robust against Spotify updates** – all Spotify selectors in one place, health check with safe mode, `tools/fix-spicetify.cmd` to repair Spicetify after a Spotify update.
 - **Web demo** on GitHub Pages and source split into modules under `src/` (bundled with esbuild), CI with ESLint and Stylelint.
 
-[Unreleased]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Passimoritz/spicetify-mirage/releases/tag/v1.0.0

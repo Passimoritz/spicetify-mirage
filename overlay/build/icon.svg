@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a1b66"/><stop offset=".55" stop-color="#12101c"/><stop offset="1" stop-color="#07060c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".3" cy=".25" r=".8">
+      <stop offset="0" stop-color="#b69cff" stop-opacity=".55"/><stop offset=".6" stop-color="#7c5cff" stop-opacity=".12"/><stop offset="1" stop-color="#7c5cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6deff"/><stop offset=".5" stop-color="#b69cff"/><stop offset="1" stop-color="#ff8fb8"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="208" fill="url(#bg)"/>
+  <rect x="64" y="64" width="896" height="896" rx="208" fill="url(#glow)"/>
+  <rect x="64.5" y="64.5" width="895" height="895" rx="207.5" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="3"/>
+  <circle cx="512" cy="512" r="250" fill="none" stroke="url(#ring)" stroke-width="56"/>
+  <path d="M512 352 A160 160 0 0 1 672 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"/>
+  <circle cx="512" cy="512" r="54" fill="#fff" fill-opacity=".92"/>
+</svg>

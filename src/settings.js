@@ -320,7 +320,16 @@ function render(box) {
   );
   kids.push(group(t("g_builder"), false, builder, nameIn, bActions, codeIn));
 
-  kids.push(group(t("g_overlay"), false, toggle("overlay")));
+  // ---- Overlay: Status + passender Installer für dieses System
+  const os = String(S.Platform?.operatingSystem || navigator.platform || "").toLowerCase();
+  const file = /win/.test(os) ? "Mirage-Overlay-Setup.exe" : /mac|osx|darwin/.test(os) ? "Mirage-Overlay.dmg" : "Mirage-Overlay.AppImage";
+  const ovState = el("small", "m-note", t(bridge.connected() ? "overlayConnected" : "overlayMissing"));
+  const ovRow = el("div", "m-actions");
+  ovRow.append(
+    button(t("overlayDownload"), () => window.open(`https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/${file}`, "_blank"), "is-primary"),
+    button(t("overlayAllDownloads"), () => window.open("https://github.com/Passimoritz/spicetify-mirage/releases/latest", "_blank"))
+  );
+  kids.push(group(t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
 
   // ---- Teilen, Sichern, Hilfe
   const foot = el("div", "m-actions");

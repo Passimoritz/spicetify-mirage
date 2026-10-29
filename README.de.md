@@ -102,7 +102,18 @@ Eine kleine Begleit-App, die Songwechsel **außerhalb von Spotify** anzeigt – 
 - **Wo:** Hauptbildschirm, der Bildschirm mit der Maus oder jeder Bildschirm direkt auf einer Karte deiner Monitore · 9 Positionen · Feinabstand
 - **Wie:** Insel, Karte, Banner oder Minimal · federnd, gleitend oder überblendend · Hintergrund aus dem Cover / dunkel / hell · Leuchten, Rundung, Größe, Deckkraft · Überschrift, Album, Zeit, Fortschrittsbalken
 - **Steuerung beim Überfahren:** Zurück · Wiedergabe/Pause · Weiter direkt im Overlay
-- Läuft im Infobereich, startet auf Wunsch mit Windows und spricht die Sprache, die Spotify nutzt
+- Läuft im Infobereich, startet auf Wunsch mit dem Rechner (Windows, macOS, Linux) und spricht die Sprache, die Spotify nutzt
+
+### Overlay installieren
+
+| Windows | macOS | Linux |
+|:-:|:-:|:-:|
+| [**⬇ Mirage-Overlay-Setup.exe**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay-Setup.exe) | [**⬇ Mirage-Overlay.dmg**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.dmg) | [**⬇ AppImage**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.AppImage) · [**⬇ .deb**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.deb) |
+| Doppelklick – fertig. Startet sofort und sitzt im Infobereich. | .dmg öffnen und Mirage Overlay nach *Programme* ziehen. | AppImage: ausführbar machen und starten. .deb: `sudo apt install ./Mirage-Overlay.deb` |
+
+Denselben Knopf gibt es in Spotify: **Profilmenü → Mirage-Einstellungen → Overlay → Overlay-App herunterladen** – er wählt die passende Datei für dein System und zeigt, ob das Overlay verbunden ist.
+
+> **Erster Start:** Die Installer sind noch nicht signiert, darum fragt das System einmal nach. Windows: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick auf die App → *Öffnen* → *Öffnen*.
 
 ## ◈ Mirage App
 

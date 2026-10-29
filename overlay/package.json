@@ -1,7 +1,7 @@
 {
   "name": "mirage-overlay",
   "productName": "Mirage Overlay",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Song announcements for the Mirage Spicetify theme outside of Spotify – on any screen, above every window.",
   "main": "main.js",
   "private": true,
@@ -10,12 +10,95 @@
     "start": "electron .",
     "start:hidden": "electron . --hidden",
     "start:no-gpu": "electron . --no-gpu",
-    "check": "node --check main.js && node --check preload.js && node --check i18n.js"
+    "check": "node --check main.js && node --check preload.js && node --check i18n.js",
+    "dist": "electron-builder --publish never"
   },
   "dependencies": {
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "electron": "^33.2.0"
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "homepage": "https://github.com/Passimoritz/spicetify-mirage",
+  "author": {
+    "name": "Passimoritz",
+    "email": "passimoritz@users.noreply.github.com"
+  },
+  "build": {
+    "appId": "com.passimoritz.mirage-overlay",
+    "productName": "Mirage Overlay",
+    "copyright": "MIT License · Passimoritz",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "overlay.html",
+      "settings.html",
+      "i18n.js",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "Mirage-Overlay-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Mirage Overlay",
+      "deleteAppDataOnUninstall": false
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.music",
+      "artifactName": "Mirage-Overlay.${ext}",
+      "identity": null,
+      "extendInfo": {
+        "LSUIElement": true
+      }
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "AudioVideo",
+      "artifactName": "Mirage-Overlay.${ext}",
+      "maintainer": "Passimoritz <passimoritz@users.noreply.github.com>",
+      "synopsis": "Song announcements for the Mirage Spicetify theme"
+    }
   }
 }
