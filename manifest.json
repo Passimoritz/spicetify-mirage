@@ -23,23 +23,5 @@
       "visualizer",
       "immersive"
     ]
-  },
-  {
-    "name": "Mirage App",
-    "description": "Companion page for the Mirage theme: colour schemes in one click, your week in colours, quick actions (immersive mode, share cards), Mirage Overlay status and the one-click repair after Spotify updates.",
-    "preview": "assets/app-preview.png",
-    "readme": "MirageApp/README.md",
-    "authors": [
-      {
-        "name": "Passimoritz",
-        "url": "https://github.com/Passimoritz"
-      }
-    ],
-    "tags": [
-      "mirage",
-      "theme companion",
-      "stats",
-      "overlay"
-    ]
   }
 ]

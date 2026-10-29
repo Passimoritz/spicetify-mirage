@@ -115,12 +115,6 @@ The Mirage settings in Spotify have the same button: **Profile menu → Mirage s
 
 > **First start:** the installers aren't code-signed yet, so the system asks once. Windows: *More info → Run anyway*. macOS: right-click the app → *Open* → *Open*.
 
-## ◈ Mirage App
-
-A page in Spotify's sidebar: colour schemes in one click, your week in colours, quick actions, Overlay status and the repair after Spotify updates. Listed in **Marketplace → Apps**; the Windows installer sets it up automatically – details in the [app README](MirageApp/README.md).
-
-<p align="center"><img src="assets/app-preview.png" alt="Mirage App" width="100%"></p>
-
 ## ◑ Colour schemes
 
 <p align="center"><img src="assets/schemes.svg" alt="Colour schemes" width="100%"></p>

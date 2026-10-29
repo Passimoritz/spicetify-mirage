@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.2.1] – 2026-10-29
+
+### Removed
+
+- The Mirage App (dashboard page in Spotify's sidebar) and its Marketplace listing – the theme settings and the Overlay cover everything it showed.
+
 ## [1.2.0] – 2026-10-29
 
 ### Added
@@ -73,7 +79,8 @@ First public release.
 - **Robust against Spotify updates** – all Spotify selectors in one place, health check with safe mode, `tools/fix-spicetify.cmd` to repair Spicetify after a Spotify update.
 - **Web demo** on GitHub Pages and source split into modules under `src/` (bundled with esbuild), CI with ESLint and Stylelint.
 
-[Unreleased]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.0.0...v1.1.0

@@ -38,7 +38,7 @@ function refreshColors() {
   setTimeout(recheckAll, 600);
 }
 
-// Schema wählen – auch von der Mirage-App aus (window.Mirage.setScheme)
+// Schema wählen
 function selectScheme(name) {
   if (!SCHEMES[name]) return;
   cfg.scheme = name;
@@ -400,4 +400,4 @@ function welcome() {
   }, 5000);
 }
 
-export { applySettings, openSettings, welcome, selectScheme };
+export { applySettings, openSettings, welcome };

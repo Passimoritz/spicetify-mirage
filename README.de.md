@@ -115,12 +115,6 @@ Denselben Knopf gibt es in Spotify: **Profilmenü → Mirage-Einstellungen → O
 
 > **Erster Start:** Die Installer sind noch nicht signiert, darum fragt das System einmal nach. Windows: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick auf die App → *Öffnen* → *Öffnen*.
 
-## ◈ Mirage App
-
-Eine eigene Seite in Spotifys Seitenleiste: Farbschemata per Klick, deine Woche in Farben, Schnellaktionen, Overlay-Status und die Reparatur nach Spotify-Updates. Zu finden unter **Marketplace → Apps**; der Windows-Installer richtet sie automatisch mit ein – Details in der [App-README](MirageApp/README.md).
-
-<p align="center"><img src="assets/app-preview.png" alt="Mirage App" width="100%"></p>
-
 ## ◑ Farbschemata
 
 <p align="center"><img src="assets/schemes.svg" alt="Farbschemata" width="100%"></p>
