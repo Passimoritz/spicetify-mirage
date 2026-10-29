@@ -30,6 +30,11 @@ if (LINUX) {
 const PORT = 47321;
 const BASE_W = 600;
 const BASE_H = 240;
+// Rand rund um die Karte, damit ihr Schatten nie am Fensterrand abgeschnitten wird
+// (die Schatten reichen bis ~75 px nach unten und ~45 px zur Seite). Das Fenster wird um diesen
+// Rand größer und so verschoben, dass die Karte selbst genau dort bleibt, wo sie vorher war.
+// Muss zu --shadow in overlay.html passen.
+const SHADOW = 90;
 const DEFAULTS = {
   mode: "song", // song | always | off
   duration: 6,
@@ -89,10 +94,12 @@ function pickDisplay() {
 function position() {
   const wa = pickDisplay().workArea;
   const s = cfg.scale / 100;
-  const W = Math.round(BASE_W * s), H = Math.round(BASE_H * s);
+  const M = Math.round(SHADOW * s);
+  const W = Math.round(BASE_W * s) + 2 * M, H = Math.round(BASE_H * s) + 2 * M;
   const [v, h] = cfg.anchor.split("-");
-  const x = h === "left" ? wa.x + cfg.offsetX : h === "right" ? wa.x + wa.width - W - cfg.offsetX : wa.x + (wa.width - W) / 2 + cfg.offsetX;
-  const y = v === "top" ? wa.y + cfg.offsetY : v === "bottom" ? wa.y + wa.height - H - cfg.offsetY : wa.y + (wa.height - H) / 2 + cfg.offsetY;
+  // am Rand verankert: der Schattenrand darf über den Arbeitsbereich hinausragen, die Karte nicht
+  const x = h === "left" ? wa.x + cfg.offsetX - M : h === "right" ? wa.x + wa.width - W - cfg.offsetX + M : wa.x + (wa.width - W) / 2 + cfg.offsetX;
+  const y = v === "top" ? wa.y + cfg.offsetY - M : v === "bottom" ? wa.y + wa.height - H - cfg.offsetY + M : wa.y + (wa.height - H) / 2 + cfg.offsetY;
   overlay.setBounds({ x: Math.round(x), y: Math.round(y), width: W, height: H });
 }
 
@@ -233,8 +240,8 @@ function resubscribe() {
 /* ------------------------------------------------------------------ Fenster */
 function createOverlay() {
   overlay = new BrowserWindow({
-    width: BASE_W,
-    height: BASE_H,
+    width: BASE_W + 2 * SHADOW,
+    height: BASE_H + 2 * SHADOW,
     show: false,
     frame: false,
     transparent: true,

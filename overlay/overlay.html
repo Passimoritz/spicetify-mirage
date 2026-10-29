@@ -14,7 +14,8 @@
   html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; user-select: none; }
   body { font-family: var(--font); color: #fff; -webkit-font-smoothing: antialiased; }
 
-  .stage { position: absolute; inset: 0; display: flex; padding: 18px; box-sizing: border-box;
+  /* --shadow: freier Rand für die Schatten (wie SHADOW in main.js), wächst mit der Größe mit */
+  .stage { --shadow: calc(90px * var(--s, 1)); position: absolute; inset: 0; display: flex; padding: calc(var(--shadow) + 18px); box-sizing: border-box;
            opacity: var(--op, 1); }
   .ov { zoom: var(--s, 1); }
   .stage.v-top { align-items: flex-start; } .stage.v-middle { align-items: center; } .stage.v-bottom { align-items: flex-end; }
