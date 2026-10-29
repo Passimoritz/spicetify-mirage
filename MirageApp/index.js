@@ -49,7 +49,8 @@ const lang = (() => {
   try { l = Spicetify.Locale?.getLocale?.() || navigator.language || "en"; } catch {}
   return String(l).toLowerCase().startsWith("de") ? "de" : "en";
 })();
-const t = (k) => TEXT[lang][k] ?? TEXT.en[k] ?? k;
+// nicht „t“: Spicetify packt den Code in eine Funktion mit den Parametern e, t, n
+const say = (k) => TEXT[lang][k] ?? TEXT.en[k] ?? k;
 
 const STYLE = `
 .mirage-app{--g:rgba(255,255,255,.05);--l:rgba(255,255,255,.09);max-width:1180px;margin:0 auto;padding:32px 32px 64px;font-family:var(--m-font,"Segoe UI",system-ui,sans-serif);color:var(--spice-text)}
@@ -116,21 +117,21 @@ function Week({ M }) {
   return h(
     "div",
     { className: "card" },
-    h("h2", null, t("week")),
+    h("h2", null, say("week")),
     w.n
       ? h(
           Spicetify.React.Fragment,
           null,
           h("div", { className: "stats" },
-            h("div", null, h("div", { className: "big" }, w.n), h("div", { className: "small" }, t("songs"))),
-            h("div", null, h("div", { className: "big" }, Math.round(w.ms / 60000)), h("div", { className: "small" }, t("minutes")))),
+            h("div", null, h("div", { className: "big" }, w.n), h("div", { className: "small" }, say("songs"))),
+            h("div", null, h("div", { className: "big" }, Math.round(w.ms / 60000)), h("div", { className: "small" }, say("minutes")))),
           h("div", { className: "hues", "aria-hidden": true },
             hues.map(([v, i]) => h("i", { key: i, style: { width: (v / total) * 100 + "%", background: `hsl(${i * 30 + 15} 75% 60%)` } }))),
-          h("div", { className: "small" }, t("topArtists")),
+          h("div", { className: "small" }, say("topArtists")),
           h("ol", null, top.map(([a, n]) => h("li", { key: a }, `${a} · ${n}×`))),
-          h("div", { className: "btns", style: { marginTop: 16 } }, h("button", { className: "btn", onClick: () => M.shareWeek() }, t("shareWeek")))
+          h("div", { className: "btns", style: { marginTop: 16 } }, h("button", { className: "btn", onClick: () => M.shareWeek() }, say("shareWeek")))
         )
-      : h("p", { className: "muted" }, t("weekEmpty"))
+      : h("p", { className: "muted" }, say("weekEmpty"))
   );
 }
 
@@ -149,16 +150,16 @@ function MirageApp() {
     h(
       "section",
       { className: "hero" },
-      h("div", { className: "kicker" }, t("kicker") + (M ? ` · v${M.version}` : "")),
+      h("div", { className: "kicker" }, say("kicker") + (M ? ` · v${M.version}` : "")),
       h("h1", null, "Mirage"),
-      h("p", { className: "tagline" }, t("tagline")),
+      h("p", { className: "tagline" }, say("tagline")),
       h(
         "div",
         { className: "chips" },
-        h(Chip, { state: M ? "on" : "warn", label: M ? t("themeOn") : t("themeOff") }),
-        M && h(Chip, { state: ov.connected ? "on" : ov.enabled ? "warn" : "", label: ov.connected ? t("overlayOn") : ov.enabled ? t("overlayOff") : t("overlayDisabled") })
+        h(Chip, { state: M ? "on" : "warn", label: M ? say("themeOn") : say("themeOff") }),
+        M && h(Chip, { state: ov.connected ? "on" : ov.enabled ? "warn" : "", label: ov.connected ? say("overlayOn") : ov.enabled ? say("overlayOff") : say("overlayDisabled") })
       ),
-      safe && h("div", { className: "safe" }, t("safe"))
+      safe && h("div", { className: "safe" }, say("safe"))
     ),
     h(
       "div",
@@ -167,20 +168,20 @@ function MirageApp() {
         ? h(
             "div",
             { className: "card" },
-            h("h2", null, t("actions")),
+            h("h2", null, say("actions")),
             h("p", { className: "muted" }, "Ctrl + Shift + M"),
             h("div", { className: "btns" },
-              h("button", { className: "btn primary", onClick: () => M.openImmersive() }, t("immersive")),
-              h("button", { className: "btn", onClick: () => M.openSettings() }, t("settings")),
-              h("button", { className: "btn", onClick: () => M.shareNow() }, t("shareNow")))
+              h("button", { className: "btn primary", onClick: () => M.openImmersive() }, say("immersive")),
+              h("button", { className: "btn", onClick: () => M.openSettings() }, say("settings")),
+              h("button", { className: "btn", onClick: () => M.shareNow() }, say("shareNow")))
           )
-        : h("div", { className: "card" }, h("h2", null, t("notActive")), h("p", { className: "muted" }, t("notActiveHow")), h("div", { className: "btns" }, link(REPO + "#-install", t("overlayGuide"), true))),
+        : h("div", { className: "card" }, h("h2", null, say("notActive")), h("p", { className: "muted" }, say("notActiveHow")), h("div", { className: "btns" }, link(REPO + "#-install", say("overlayGuide"), true))),
       M &&
         h(
           "div",
           { className: "card" },
-          h("h2", null, t("schemes")),
-          h("p", { className: "muted" }, t("schemesHint")),
+          h("h2", null, say("schemes")),
+          h("p", { className: "muted" }, say("schemesHint")),
           h("div", { className: "schemes" },
             M.schemes().map((s) =>
               h("button", { key: s.name, className: "scheme", "aria-pressed": String(s.active), style: { "--s-main": "#" + s.main, "--s-a": "#" + s.a, color: ink(s.main) }, onClick: () => M.setScheme(s.name) },
@@ -191,27 +192,27 @@ function MirageApp() {
       h(
         "div",
         { className: "card" },
-        h("h2", null, t("overlay")),
-        h("p", { className: "muted" }, t("overlayText") + " " + t("overlayHow")),
-        h("div", { className: "btns" }, link(REPO + "#-mirage-overlay", t("overlayGuide"), true), link(REPO + "/releases/latest", t("releases")))
+        h("h2", null, say("overlay")),
+        h("p", { className: "muted" }, say("overlayText") + " " + say("overlayHow")),
+        h("div", { className: "btns" }, link(REPO + "#-mirage-overlay", say("overlayGuide"), true), link(REPO + "/releases/latest", say("releases")))
       ),
       h(
         "div",
         { className: "card" },
-        h("h2", null, t("fix")),
-        h("p", { className: "muted" }, t("fixText")),
+        h("h2", null, say("fix")),
+        h("p", { className: "muted" }, say("fixText")),
         h("div", { className: "btns" },
-          link(REPO + "/releases/latest/download/fix-spicetify.cmd", t("fixDownload"), true),
-          link(REPO + (lang === "de" ? "/blob/main/README.de.md#-reparieren-nach-einem-spotify-update" : "#-fix-after-a-spotify-update"), t("fixGuide")))
+          link(REPO + "/releases/latest/download/fix-spicetify.cmd", say("fixDownload"), true),
+          link(REPO + (lang === "de" ? "/blob/main/README.de.md#-reparieren-nach-einem-spotify-update" : "#-fix-after-a-spotify-update"), say("fixGuide")))
       ),
       h(
         "div",
         { className: "card" },
-        h("h2", null, t("links")),
+        h("h2", null, say("links")),
         h("div", { className: "btns" },
-          link(REPO, t("github")),
-          link(REPO + "/discussions", t("discussions")),
-          link(REPO + "/issues/new/choose", t("bug")),
+          link(REPO, say("github")),
+          link(REPO + "/discussions", say("discussions")),
+          link(REPO + "/issues/new/choose", say("bug")),
           M &&
             h("button", {
               className: "btn",
@@ -222,7 +223,7 @@ function MirageApp() {
                   setTimeout(() => setCopied(false), 2000);
                 } catch {}
               },
-            }, copied ? t("copied") : t("diag")))
+            }, copied ? say("copied") : say("diag")))
       )
     )
   );

@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.1.1] – 2026-10-29
+
+### Fixed
+
+- Mirage App did not open: a helper named `t` clashed with the parameters Spicetify wraps custom-app code in (`e, t, n`), so the page failed to load and the top-bar button led nowhere.
+
 ## [1.1.0] – 2026-10-29
 
 ### Added
@@ -55,6 +61,7 @@ First public release.
 - **Robust against Spotify updates** – all Spotify selectors in one place, health check with safe mode, `tools/fix-spicetify.cmd` to repair Spicetify after a Spotify update.
 - **Web demo** on GitHub Pages and source split into modules under `src/` (bundled with esbuild), CI with ESLint and Stylelint.
 
-[Unreleased]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Passimoritz/spicetify-mirage/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Passimoritz/spicetify-mirage/releases/tag/v1.0.0
