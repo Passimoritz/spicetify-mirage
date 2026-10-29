@@ -246,7 +246,7 @@ flowchart LR
 - **Leistung zuerst:** Farben wechseln in einem einzigen Schritt, der Hintergrund ist ein verkleinertes Bild, das einmal verwischt und nur noch gedreht wird, und er pausiert, solange der Immersiv-Modus ihn verdeckt. Echtes Glas (Live-Unschärfe hinter jeder Fläche) ist optional.
 - **Gegen das echte Spotify gebaut:** Aktuelle Spotify-Versionen haben `.Root__main-view` & Co. in `#main-view` / `#Desktop_LeftSidebar_Id` umbenannt; Mirage spricht beide an. Farbblöcke im Kopf (auch `::after`-Verläufe und `oklch()`-Farben) erkennt Mirage am berechneten Stil statt an Klassennamen, die sich bei jedem Update ändern.
 - **Diagnose:** Läuft das Overlay, kann das Theme einen Aufbau-Bericht (Größen, Klassen, Farben – keine Inhalte) nach `%APPDATA%\Mirage Overlay\dom-report.json` schicken. So werden Darstellungsfehler nach Fakten behoben statt geraten.
-- **Datenschutz:** kein eigener Server, kein Tracking. Liedtext und Taktdaten kommen von Spotify selbst, Schriften von Google Fonts.
+- **Datenschutz:** kein eigener Server, kein Tracking. Liedtext und Taktdaten kommen von Spotify selbst; hat Spotify keinen Liedtext, gehen nur Titel, Künstler, Album und Länge an [LRCLIB](https://lrclib.net) (abschaltbar); Schriften von Google Fonts.
 - **Barrierefreiheit:** beachtet „Bewegung reduzieren“, sichtbare Fokusrahmen, lesbarer Kontrast in jeder Palette.
 
 ## Lizenz

@@ -10,6 +10,17 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.2.3] – 2026-10-29
+
+### Added
+
+- Lyrics from the web: if Spotify has no lyrics for a song, Mirage looks them up on [LRCLIB](https://lrclib.net), a free lyrics database. Time-synced lyrics are preferred, plain text is the fallback, and local files get lyrics too. Only the title, artist, album and length are sent. It is on by default and can be turned off with "Search lyrics online" in the immersive settings. The overlay's lyrics style benefits as well.
+- Immersive mode: a proper view when there are no lyrics, in the colours of the cover, with buttons to show the visualizer or search the web. Instrumental tracks get their own calm variant.
+
+### Fixed
+
+- Immersive mode: the translation could show up twice under a line when the view and the song changed at the same moment.
+
 ## [1.2.2] – 2026-10-29
 
 ### Fixed

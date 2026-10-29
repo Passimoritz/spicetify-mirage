@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.2.2" : "dev";
+      VERSION = true ? "1.2.3" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -247,7 +247,17 @@
           overlayDownload: "Download the Overlay app",
           overlayAllDownloads: "All downloads",
           overlayConnected: "\u25CF Overlay connected",
-          overlayMissing: "\u25CB Overlay not running \u2013 install it with the button below, then start it once"
+          overlayMissing: "\u25CB Overlay not running \u2013 install it with the button below, then start it once",
+          onlineLyrics: "Search lyrics online",
+          onlineLyricsHint: "If Spotify has none, Mirage asks LRCLIB \u2013 only title, artist, album and length are sent",
+          emptyTitle: "No lyrics for this song",
+          emptyText: "Neither Spotify nor LRCLIB has lyrics for it yet.",
+          emptyTextOff: "Spotify has none. Turn on \u201CSearch lyrics online\u201D in the settings to look further.",
+          instrTitle: "Instrumental",
+          instrText: "No words \u2013 just let the music play.",
+          showViz: "Show visualizer",
+          searchWeb: "Search the web",
+          lyrSource: "Lyrics from {s}"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -410,7 +420,17 @@
           overlayDownload: "Overlay-App herunterladen",
           overlayAllDownloads: "Alle Downloads",
           overlayConnected: "\u25CF Overlay verbunden",
-          overlayMissing: "\u25CB Overlay l\xE4uft nicht \u2013 mit dem Knopf unten installieren und einmal starten"
+          overlayMissing: "\u25CB Overlay l\xE4uft nicht \u2013 mit dem Knopf unten installieren und einmal starten",
+          onlineLyrics: "Liedtext online suchen",
+          onlineLyricsHint: "Hat Spotify keinen, fragt Mirage bei LRCLIB \u2013 daf\xFCr gehen nur Titel, K\xFCnstler, Album und L\xE4nge raus",
+          emptyTitle: "Kein Liedtext f\xFCr diesen Song",
+          emptyText: "Weder Spotify noch LRCLIB haben ihn bisher.",
+          emptyTextOff: "Spotify hat keinen. Schalte in den Einstellungen \u201ELiedtext online suchen\u201C ein, um weiter zu suchen.",
+          instrTitle: "Instrumental",
+          instrText: "Keine Worte \u2013 einfach die Musik laufen lassen.",
+          showViz: "Visualizer zeigen",
+          searchWeb: "Im Netz suchen",
+          lyrSource: "Liedtext von {s}"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -932,6 +952,7 @@
         lyrSize: 100,
         lyrGap: 100,
         translate: false,
+        onlineLyrics: true,
         canvas: true,
         freeze: false,
         pinned: {},
@@ -1138,13 +1159,53 @@
     }
   });
 
+  // src/player.js
+  function currentItem() {
+    return S.Player.data?.item || S.Player.data?.track || null;
+  }
+  function covers(item) {
+    const m = item?.metadata || {};
+    const imgs = item?.images || [];
+    const domImg = document.querySelector(SEL.nowPlayingCover)?.src;
+    const big = toHttp(m.image_xlarge_url || m.image_large_url || imgs[0]?.url);
+    const small = toHttp(m.image_url || m.image_small_url || imgs[imgs.length - 1]?.url) || domImg || big;
+    return { small, big: big || small };
+  }
+  function titleOf(item) {
+    return item?.metadata?.title || item?.name || "";
+  }
+  function artistOf(item) {
+    const m = item?.metadata || {};
+    if (m.artist_name) {
+      const more = Object.keys(m).filter((k) => /^artist_name:\d+$/.test(k)).map((k) => m[k]);
+      return [m.artist_name, ...more].join(", ");
+    }
+    return (item?.artists || []).map((a) => a.name).join(", ");
+  }
+  var toHttp;
+  var init_player = __esm({
+    "src/player.js"() {
+      init_selectors();
+      init_core();
+      toHttp = (u) => u && u.startsWith("spotify:image:") ? "https://i.scdn.co/image/" + u.slice(14) : u || "";
+    }
+  });
+
   // src/lyrics.js
   function getLyrics(uri) {
-    if (!uri?.startsWith("spotify:track:")) return Promise.resolve(null);
-    if (!lyricCache.has(uri)) lyricCache.set(uri, fetchLyrics(uri));
-    return lyricCache.get(uri);
+    if (!/^spotify:(track|local):/.test(uri || "")) return Promise.resolve(null);
+    const key = uri + (cfg.onlineLyrics ? "|web" : "");
+    if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri));
+    return lyricCache.get(key);
   }
   async function fetchLyrics(uri) {
+    const item = currentItem();
+    const meta = item?.uri === uri ? songMeta(item) : null;
+    const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
+    if (own || !cfg.onlineLyrics || !meta) return own;
+    return fetchLrclib(meta);
+  }
+  async function fetchSpotify(uri) {
     const id = uri.split(":")[2];
     const url = `https://spclient.wg.spotify.com/color-lyrics/v2/track/${id}?format=json&vocalRemoval=false&market=from_token`;
     let body = null;
@@ -1160,8 +1221,56 @@
     return L?.lines?.length ? {
       synced: L.syncType === "LINE_SYNCED",
       lang: L.language || "",
+      source: "spotify",
       lines: L.lines.map((l) => ({ t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "\u266A" }))
     } : null;
+  }
+  function songMeta(item) {
+    const m = item.metadata || {};
+    const ms = Number(m.duration) || Number(item.duration?.milliseconds) || Number(S.Player.data?.duration) || 0;
+    return {
+      title: titleOf(item),
+      artist: m.artist_name || artistOf(item).split(", ")[0] || "",
+      album: m.album_title || item.album?.name || "",
+      sec: Math.round(ms / 1e3)
+    };
+  }
+  async function lrclib(path) {
+    try {
+      const res = await fetch(LRCLIB + path, { headers: { "Lrclib-Client": "mirage (https://github.com/Passimoritz/spicetify-mirage)" } });
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null;
+    }
+  }
+  async function fetchLrclib(meta) {
+    if (!meta.title || !meta.artist) return null;
+    const qs = (o) => Object.entries(o).filter(([, v]) => v).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+    const title = cleanTitle(meta.title) || meta.title;
+    let hit = meta.sec ? await lrclib("get?" + qs({ track_name: title, artist_name: meta.artist, album_name: meta.album, duration: meta.sec })) : null;
+    if (!hit?.syncedLyrics && !hit?.plainLyrics && !hit?.instrumental) {
+      const list = await lrclib("search?" + qs({ track_name: title, artist_name: meta.artist }));
+      const fits = (Array.isArray(list) ? list : []).filter((x) => !meta.sec || Math.abs((x.duration || 0) - meta.sec) <= 4);
+      fits.sort((a, b) => !!b.syncedLyrics - !!a.syncedLyrics || Math.abs(a.duration - meta.sec) - Math.abs(b.duration - meta.sec));
+      hit = fits[0] || null;
+    }
+    if (!hit) return null;
+    if (hit.instrumental) return { synced: false, lang: "", source: "lrclib", instrumental: true, lines: [] };
+    const synced = parseLrc(hit.syncedLyrics || "");
+    if (synced.length) return { synced: true, lang: "", source: "lrclib", lines: synced };
+    const plain = (hit.plainLyrics || "").split(/\r?\n/).map((x) => x.trim());
+    while (plain.length && !plain[plain.length - 1]) plain.pop();
+    return plain.length ? { synced: false, lang: "", source: "lrclib", lines: plain.map((text) => ({ t: 0, text: text || "\u266A" })) } : null;
+  }
+  function parseLrc(lrc) {
+    const out = [];
+    for (const row of lrc.split(/\r?\n/)) {
+      const marks = [...row.matchAll(/\[(\d+):(\d+(?:[.:]\d+)?)\]/g)];
+      if (!marks.length) continue;
+      const text = row.slice(marks[marks.length - 1].index + marks[marks.length - 1][0].length).trim() || "\u266A";
+      for (const m of marks) out.push({ t: Math.round((Number(m[1]) * 60 + Number(m[2].replace(":", "."))) * 1e3), text });
+    }
+    return out.sort((a, b) => a.t - b.t);
   }
   async function translateLines(uri, lyr, target) {
     if (!lyr?.lines?.length) return null;
@@ -1202,45 +1311,17 @@
     canvasCache.set(uri, url);
     return url;
   }
-  var lyricCache, trCache, canvasCache;
+  var lyricCache, cleanTitle, LRCLIB, trCache, canvasCache;
   var init_lyrics = __esm({
     "src/lyrics.js"() {
       init_core();
+      init_config();
+      init_player();
       lyricCache = lru(60);
+      cleanTitle = (s) => s.replace(/\s+-\s+.*(remaster|version|edit|live|mix|mono|stereo).*$/i, "").replace(/\s*[([](feat|ft|with)\.?\s[^)\]]*[)\]]/gi, "").trim();
+      LRCLIB = "https://lrclib.net/api/";
       trCache = lru(40);
       canvasCache = lru(60);
-    }
-  });
-
-  // src/player.js
-  function currentItem() {
-    return S.Player.data?.item || S.Player.data?.track || null;
-  }
-  function covers(item) {
-    const m = item?.metadata || {};
-    const imgs = item?.images || [];
-    const domImg = document.querySelector(SEL.nowPlayingCover)?.src;
-    const big = toHttp(m.image_xlarge_url || m.image_large_url || imgs[0]?.url);
-    const small = toHttp(m.image_url || m.image_small_url || imgs[imgs.length - 1]?.url) || domImg || big;
-    return { small, big: big || small };
-  }
-  function titleOf(item) {
-    return item?.metadata?.title || item?.name || "";
-  }
-  function artistOf(item) {
-    const m = item?.metadata || {};
-    if (m.artist_name) {
-      const more = Object.keys(m).filter((k) => /^artist_name:\d+$/.test(k)).map((k) => m[k]);
-      return [m.artist_name, ...more].join(", ");
-    }
-    return (item?.artists || []).map((a) => a.name).join(", ");
-  }
-  var toHttp;
-  var init_player = __esm({
-    "src/player.js"() {
-      init_selectors();
-      init_core();
-      toHttp = (u) => u && u.startsWith("spotify:image:") ? "https://i.scdn.co/image/" + u.slice(14) : u || "";
     }
   });
 
@@ -1873,9 +1954,36 @@
           const m = el2.dataset.mode;
           q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : t("now");
         }
+        let lyrToken = 0;
+        function emptyLyrics(instrumental) {
+          const item = currentItem();
+          const box = document.createElement("div");
+          box.className = "m-im-empty" + (instrumental ? " is-instrumental" : "");
+          box.innerHTML = '<div class="m-im-empty-icon" aria-hidden="true">' + (instrumental ? "<i></i><i></i><i></i><i></i><i></i>" : '<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>') + '</div><b></b><p></p><div class="m-im-empty-actions"></div>';
+          box.querySelector("b").textContent = t(instrumental ? "instrTitle" : "emptyTitle");
+          box.querySelector("p").textContent = t(instrumental ? "instrText" : cfg.onlineLyrics ? "emptyText" : "emptyTextOff");
+          const actions = box.querySelector(".m-im-empty-actions");
+          const viz = document.createElement("button");
+          viz.type = "button";
+          viz.className = "m-im-empty-btn is-primary";
+          viz.textContent = t("showViz");
+          viz.onclick = () => setMode("viz", true);
+          actions.append(viz);
+          if (!instrumental && item) {
+            const web = document.createElement("a");
+            web.className = "m-im-empty-btn";
+            web.textContent = t("searchWeb");
+            web.target = "_blank";
+            web.rel = "noopener";
+            web.href = "https://www.google.com/search?q=" + encodeURIComponent(`${titleOf(item)} ${artistOf(item).split(", ")[0]} lyrics`);
+            actions.append(web);
+          }
+          return box;
+        }
         async function loadLyrics() {
           const uri = currentItem()?.uri || "";
           if (uri === lyrUri && lyr !== void 0) return;
+          const token = ++lyrToken;
           lyrUri = uri;
           lyr = void 0;
           q.inner.style.transform = "";
@@ -1883,13 +1991,12 @@
           q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
           q.inner.firstChild.textContent = t("loading");
           const got = await getLyrics(uri);
-          if (lyrUri !== uri) return;
+          if (token !== lyrToken) return;
           lyr = got;
           active = -2;
           q.inner.textContent = "";
-          if (!got) {
-            q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
-            q.inner.firstChild.textContent = t("noLyrics");
+          if (!got || got.instrumental) {
+            q.inner.append(emptyLyrics(!!got));
             return;
           }
           q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -1907,13 +2014,19 @@
             d.textContent = l.text;
             frag.append(d);
           }
+          if (got.source === "lrclib") {
+            const src = document.createElement("div");
+            src.className = "m-im-lyrics-src";
+            src.textContent = t("lyrSource").replace("{s}", "LRCLIB");
+            frag.append(src);
+          }
           q.inner.append(frag);
           if (cfg.translate) {
             const tr = await translateLines(uri, got, LANG);
-            if (lyrUri !== uri || !tr) return;
+            if (token !== lyrToken || !tr) return;
             const lines = q.inner.querySelectorAll(".m-im-line");
             tr.forEach((text, i) => {
-              if (!text || !lines[i] || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
+              if (!text || !lines[i] || lines[i].querySelector(".m-im-tr") || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
               const d = document.createElement("span");
               d.className = "m-im-tr";
               d.textContent = text;
@@ -3361,6 +3474,7 @@
         false,
         range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
         range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
+        toggle("onlineLyrics", () => immersive.reloadLyrics()),
         toggle("translate", () => immersive.reloadLyrics()),
         toggle("canvas", () => immersive.refresh()),
         head(t("vizSection"), t("vizSectionHint")),

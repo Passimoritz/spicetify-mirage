@@ -50,6 +50,7 @@ const DEFAULTS = {
   lyrSize: 100,
   lyrGap: 100,
   translate: false,
+  onlineLyrics: true,
   canvas: true,
   freeze: false,
   pinned: {},

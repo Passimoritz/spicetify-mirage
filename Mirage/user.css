@@ -2753,3 +2753,125 @@ html.mirage-vinyl .main-coverSlotCollapsed-container img {
 .Root__top-container {
   will-change: opacity;
 }
+
+/* ---------- Immersiv: kein Liedtext / Instrumental ---------- */
+/* der Text-Container hat sonst keine Höhe – dann klebte die Fläche oben im ausgeblendeten Rand */
+#mirage-immersive .m-im-lyrics-inner:has(> .m-im-empty) {
+  height: 100%;
+}
+#mirage-immersive .m-im-empty {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  max-width: 34em;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  animation: m-im-empty-in 0.7s var(--m-ease) both;
+}
+@keyframes m-im-empty-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-50% + 14px));
+  }
+}
+#mirage-immersive .m-im-empty-icon {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 6px;
+  border-radius: 20px;
+  background: rgba(var(--m-a-rgb), 0.16);
+  border: 1px solid rgba(var(--m-a-rgb), 0.3);
+  box-shadow: 0 10px 40px rgba(var(--m-a-rgb), 0.25);
+  color: rgb(var(--m-a-rgb));
+  padding-bottom: 18px;
+  box-sizing: border-box;
+}
+#mirage-immersive .m-im-empty-icon svg {
+  width: 30px;
+  height: 30px;
+  margin: auto;
+  fill: currentColor;
+}
+#mirage-immersive .m-im-empty:not(.is-instrumental) .m-im-empty-icon {
+  padding: 0;
+}
+/* Instrumental: fünf Balken, die sanft atmen */
+#mirage-immersive .m-im-empty-icon i {
+  width: 5px;
+  height: 26px;
+  border-radius: 3px;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: m-im-eq 1.3s ease-in-out infinite alternate;
+}
+#mirage-immersive .m-im-empty-icon i:nth-child(2) { animation-delay: -0.4s; }
+#mirage-immersive .m-im-empty-icon i:nth-child(3) { animation-delay: -0.9s; }
+#mirage-immersive .m-im-empty-icon i:nth-child(4) { animation-delay: -0.2s; }
+#mirage-immersive .m-im-empty-icon i:nth-child(5) { animation-delay: -0.7s; }
+@keyframes m-im-eq {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+html.mirage-calm #mirage-immersive .m-im-empty-icon i,
+html.mirage-calm #mirage-immersive .m-im-empty {
+  animation: none;
+}
+#mirage-immersive .m-im-empty b {
+  font: 800 clamp(26px, 2.8vw, 44px)/1.1 var(--m-font);
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+#mirage-immersive .m-im-empty p {
+  margin: 0;
+  font: 500 clamp(15px, 1.2vw, 18px)/1.45 var(--m-font);
+  color: rgba(255, 255, 255, 0.72);
+}
+#mirage-immersive .m-im-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+#mirage-immersive .m-im-empty-btn {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: 700 14px var(--m-font);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s var(--m-spring);
+}
+#mirage-immersive .m-im-empty-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+/* Weiß statt Akzentfarbe: bleibt bei jedem Cover lesbar, der Schein trägt die Farbe */
+#mirage-immersive .m-im-empty-btn.is-primary {
+  border-color: transparent;
+  background: #fff;
+  color: #0b0a12;
+  box-shadow: 0 6px 24px rgba(var(--m-a-rgb), 0.45);
+}
+#mirage-immersive .m-im-empty-btn.is-primary:hover {
+  background: #fff;
+}
+#mirage-immersive .m-im-empty-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#mirage-immersive .m-im-lyrics-src {
+  margin: 1.5em 0 30vh;
+  font: 600 13px var(--m-font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}

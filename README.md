@@ -258,7 +258,7 @@ flowchart LR
 - **Performance first:** colours change in a single style update, the background haze is a pre-shrunk image blurred once and only rotated, and the background pauses while immersive mode covers it. Real glass (live blur behind every panel) is optional.
 - **Built against the real Spotify DOM:** current Spotify builds renamed `.Root__main-view` & co. to `#main-view` / `#Desktop_LeftSidebar_Id`; Mirage targets both. Header colour blocks (incl. `::after` gradients and `oklch()` colours) are detected by their computed style, not by class names that change every release.
 - **Diagnostics:** with the overlay running, the theme can send a layout report (element sizes, classes, colours – no content) to `%APPDATA%\Mirage Overlay\dom-report.json`, so styling bugs can be fixed from facts instead of guesses.
-- **Privacy:** no own server, no tracking. Lyrics and beat data come from Spotify itself; fonts load from Google Fonts.
+- **Privacy:** no own server, no tracking. Lyrics and beat data come from Spotify itself; if Spotify has no lyrics, only title, artist, album and length go to [LRCLIB](https://lrclib.net) (can be turned off); fonts load from Google Fonts.
 - **Accessibility:** respects *reduce motion*, visible focus rings, readable contrast on every palette.
 
 ## License

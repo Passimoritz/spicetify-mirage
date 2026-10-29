@@ -254,6 +254,7 @@ function render(box) {
       false,
       range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
       range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
+      toggle("onlineLyrics", () => immersive.reloadLyrics()),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("canvas", () => immersive.refresh()),
       head(t("vizSection"), t("vizSectionHint")),

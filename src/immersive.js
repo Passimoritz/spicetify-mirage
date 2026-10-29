@@ -289,9 +289,44 @@ const immersive = (() => {
     q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : t("now");
   }
 
+  // Jeder Ladevorgang bekommt eine Nummer; nur der neueste darf schreiben. Sonst hängen zwei
+  // gleichzeitige Aufrufe für denselben Song (Ansicht wechseln + Songwechsel) beide ihre
+  // Übersetzung an – die stand dann doppelt da.
+  let lyrToken = 0;
+  // Kein Text (oder ein Instrumental): statt einer nackten Zeile eine ruhige Fläche in den
+  // Cover-Farben, mit dem naheliegenden nächsten Schritt
+  function emptyLyrics(instrumental) {
+    const item = currentItem();
+    const box = document.createElement("div");
+    box.className = "m-im-empty" + (instrumental ? " is-instrumental" : "");
+    box.innerHTML =
+      '<div class="m-im-empty-icon" aria-hidden="true">' +
+      (instrumental ? "<i></i><i></i><i></i><i></i><i></i>" : '<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>') +
+      '</div><b></b><p></p><div class="m-im-empty-actions"></div>';
+    box.querySelector("b").textContent = t(instrumental ? "instrTitle" : "emptyTitle");
+    box.querySelector("p").textContent = t(instrumental ? "instrText" : cfg.onlineLyrics ? "emptyText" : "emptyTextOff");
+    const actions = box.querySelector(".m-im-empty-actions");
+    const viz = document.createElement("button");
+    viz.type = "button";
+    viz.className = "m-im-empty-btn is-primary";
+    viz.textContent = t("showViz");
+    viz.onclick = () => setMode("viz", true);
+    actions.append(viz);
+    if (!instrumental && item) {
+      const web = document.createElement("a");
+      web.className = "m-im-empty-btn";
+      web.textContent = t("searchWeb");
+      web.target = "_blank";
+      web.rel = "noopener";
+      web.href = "https://www.google.com/search?q=" + encodeURIComponent(`${titleOf(item)} ${artistOf(item).split(", ")[0]} lyrics`);
+      actions.append(web);
+    }
+    return box;
+  }
   async function loadLyrics() {
     const uri = currentItem()?.uri || "";
     if (uri === lyrUri && lyr !== undefined) return;
+    const token = ++lyrToken;
     lyrUri = uri;
     lyr = undefined;
     q.inner.style.transform = "";
@@ -299,13 +334,12 @@ const immersive = (() => {
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
     const got = await getLyrics(uri);
-    if (lyrUri !== uri) return;
+    if (token !== lyrToken) return;
     lyr = got;
     active = -2;
     q.inner.textContent = "";
-    if (!got) {
-      q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
-      q.inner.firstChild.textContent = t("noLyrics");
+    if (!got || got.instrumental) {
+      q.inner.append(emptyLyrics(!!got));
       return;
     }
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -323,13 +357,19 @@ const immersive = (() => {
       d.textContent = l.text;
       frag.append(d);
     }
+    if (got.source === "lrclib") {
+      const src = document.createElement("div");
+      src.className = "m-im-lyrics-src";
+      src.textContent = t("lyrSource").replace("{s}", "LRCLIB");
+      frag.append(src);
+    }
     q.inner.append(frag);
     if (cfg.translate) {
       const tr = await translateLines(uri, got, LANG);
-      if (lyrUri !== uri || !tr) return;
+      if (token !== lyrToken || !tr) return;
       const lines = q.inner.querySelectorAll(".m-im-line");
       tr.forEach((text, i) => {
-        if (!text || !lines[i] || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
+        if (!text || !lines[i] || lines[i].querySelector(".m-im-tr") || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
         const d = document.createElement("span");
         d.className = "m-im-tr";
         d.textContent = text;
