@@ -815,6 +815,11 @@ app.whenReady().then(() => {
   watchCss();
   watchFullscreen();
   scheduleUpdates();
+  // Autostart bei jedem Start neu eintragen: nach einem Update, einer Neuinstallation oder dem Wechsel
+  // von der Entwickler- zur installierten Version zeigt der Eintrag sonst noch auf den alten Pfad
+  if (cfg.autostart) {
+    try { setAutostart(true); } catch {}
+  }
   screen.on("display-removed", () => overlay?.isVisible() && position());
   screen.on("display-metrics-changed", () => overlay?.isVisible() && position());
   // Beim ersten Start (oder ohne Autostart-Aufruf) gleich die Einstellungen zeigen
