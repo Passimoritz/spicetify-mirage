@@ -3114,6 +3114,25 @@ html.mirage-vinyl .main-coverSlotCollapsed-container img {
     transform: translateY(calc(-50% + 14px));
   }
 }
+/* Party: alles steht in einer Spalte in der Mitte – dann auch die Fläche (sonst klebte sie links) */
+#mirage-immersive[data-mode="party"] .m-im-empty {
+  left: 50%;
+  width: max-content;
+  max-width: min(34em, 100%);
+  transform: translate(-50%, -50%);
+  align-items: center;
+  text-align: center;
+  animation-name: m-im-empty-in-mid;
+}
+#mirage-immersive[data-mode="party"] .m-im-empty-actions {
+  justify-content: center;
+}
+@keyframes m-im-empty-in-mid {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px));
+  }
+}
 #mirage-immersive .m-im-empty-icon {
   display: flex;
   align-items: flex-end;
