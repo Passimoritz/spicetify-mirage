@@ -160,6 +160,7 @@
     .ov, .ov * { transition-duration: .01ms !important; animation: none !important; }
   }
 </style>
+<style id="custom"></style>
 </head>
 <body>
 <div class="stage" id="stage">
@@ -319,6 +320,8 @@
   mirage.on("config", (c) => { applyCfg(c); if (visible) schedule(); });
   mirage.on("hideNow", () => visible && close());
   mirage.on("lyric", applyLyric);
+  // eigenes CSS aus custom.css im Einstellungsordner (leer = nichts)
+  mirage.on("css", (s) => ($("custom").textContent = s || ""));
   mirage.on("level", (b) => { b.forEach((x, i) => (level[i] = x)); levelAt = performance.now(); });
 
   ov.addEventListener("mouseenter", () => { hovered = true; cfg?.interactive && mirage.send("hover", true); });

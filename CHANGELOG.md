@@ -10,6 +10,21 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.3.0] – 2026-10-30
+
+### Added
+
+- Immersive mode: karaoke word by word. In the current line each word fills up while it is sung. With Spotify's syllable timing it is exact; otherwise Mirage estimates it from the line timing. Switch: "Karaoke word by word".
+- Immersive mode: "Choose version" button in the lyrics view. It lists all LRCLIB matches for the song (time-synced first, closest length first), and the choice is remembered per song. "Automatic" goes back to Spotify first. This also works when Spotify has only unsynced lyrics.
+- Font choice in the settings (Colours): Outfit, Jakarta, Manrope, Sora, Lexend, Nunito or the system font, for all of Spotify.
+- Sleep timer fades out: the volume goes down slowly over the last minutes (last 20 s for "end of song") and comes back after pausing.
+- "Your month in colours": a share card for the last 30 days with songs, minutes, active days, cover colours, listening time per day, top artists and top songs.
+- Mirage Overlay: volume bar at the bottom of the screen when you change the volume in Spotify.
+- Mirage Overlay: quiet while a game, video or presentation runs fullscreen. Windows uses the system's own fullscreen signal; Linux (X11) checks the active window. Not available on macOS.
+- Mirage Overlay: your own style. "Open CSS file" creates `custom.css` in the settings folder; it overrides the built-in look and changes show right away.
+- Mirage Overlay: streaming mode for OBS. `http://127.0.0.1:47322/` as a browser source shows the same overlay with a transparent background. Only reachable from your own computer.
+- Mirage Overlay: updates itself. It checks GitHub at start and every 6 hours and asks before restarting. Windows installs silently, the AppImage replaces itself; on macOS and .deb it opens the download page.
+
 ## [1.2.3] – 2026-10-29
 
 ### Added

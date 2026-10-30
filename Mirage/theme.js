@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.2.3" : "dev";
+      VERSION = true ? "1.3.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -257,7 +257,31 @@
           instrText: "No words \u2013 just let the music play.",
           showViz: "Show visualizer",
           searchWeb: "Search the web",
-          lyrSource: "Lyrics from {s}"
+          lyrPick: "Choose version",
+          lyrPicked: "chosen",
+          lyrNone: "No lyrics",
+          lyrAuto: "Automatic",
+          lyrAutoHint: "Spotify first, then the best LRCLIB match",
+          lyrNoVersions: "LRCLIB has no other versions of this song",
+          lyrSynced: "time-synced",
+          lyrPlain: "plain text",
+          karaoke: "Karaoke word by word",
+          karaokeHint: "Words light up one after another \u2013 exact with Spotify syllable timing, otherwise estimated",
+          font: "Font",
+          fontHint: "Applies to all of Spotify",
+          font_outfit: "Outfit",
+          font_jakarta: "Jakarta",
+          font_manrope: "Manrope",
+          font_sora: "Sora",
+          font_lexend: "Lexend",
+          font_nunito: "Nunito",
+          font_system: "System",
+          shareMonth: "Your month in colours",
+          monthKicker: "Mirage \xB7 last 30 days",
+          monthTitle: "Your month in colours",
+          monthDays: "days",
+          monthDaily: "Listening time per day",
+          monthSongs: "Top songs"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -430,7 +454,31 @@
           instrText: "Keine Worte \u2013 einfach die Musik laufen lassen.",
           showViz: "Visualizer zeigen",
           searchWeb: "Im Netz suchen",
-          lyrSource: "Liedtext von {s}"
+          lyrPick: "Fassung w\xE4hlen",
+          lyrPicked: "gew\xE4hlt",
+          lyrNone: "Kein Liedtext",
+          lyrAuto: "Automatisch",
+          lyrAutoHint: "Erst Spotify, dann der beste LRCLIB-Treffer",
+          lyrNoVersions: "LRCLIB hat keine weiteren Fassungen dieses Songs",
+          lyrSynced: "zeitgenau",
+          lyrPlain: "nur Text",
+          karaoke: "Karaoke Wort f\xFCr Wort",
+          karaokeHint: "W\xF6rter leuchten nacheinander auf \u2013 mit Spotify-Silbenzeiten genau, sonst gesch\xE4tzt",
+          font: "Schrift",
+          fontHint: "Gilt f\xFCr ganz Spotify",
+          font_outfit: "Outfit",
+          font_jakarta: "Jakarta",
+          font_manrope: "Manrope",
+          font_sora: "Sora",
+          font_lexend: "Lexend",
+          font_nunito: "Nunito",
+          font_system: "System",
+          shareMonth: "Dein Monat in Farben",
+          monthKicker: "Mirage \xB7 letzte 30 Tage",
+          monthTitle: "Dein Monat in Farben",
+          monthDays: "Tage",
+          monthDaily: "H\xF6rzeit pro Tag",
+          monthSongs: "Top-Songs"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -953,6 +1001,9 @@
         lyrGap: 100,
         translate: false,
         onlineLyrics: true,
+        karaoke: true,
+        font: "outfit",
+        lyricPicks: {},
         canvas: true,
         freeze: false,
         pinned: {},
@@ -1194,13 +1245,20 @@
   // src/lyrics.js
   function getLyrics(uri) {
     if (!/^spotify:(track|local):/.test(uri || "")) return Promise.resolve(null);
-    const key = uri + (cfg.onlineLyrics ? "|web" : "");
-    if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri));
+    const pick = cfg.onlineLyrics ? cfg.lyricPicks?.[uri] || "" : "";
+    const key = uri + (cfg.onlineLyrics ? "|web" : "") + "|" + pick;
+    if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri, pick));
     return lyricCache.get(key);
   }
-  async function fetchLyrics(uri) {
+  async function fetchLyrics(uri, pick) {
     const item = currentItem();
-    const meta = item?.uri === uri ? songMeta(item) : null;
+    const meta = item?.uri === uri ? songMeta(item) : metaCache.get(uri) || null;
+    if (meta) metaCache.set(uri, meta);
+    if (pick) {
+      const hit = await lrclib("get/" + encodeURIComponent(pick));
+      const got = hit && fromHit(hit);
+      if (got) return got;
+    }
     const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
     if (own || !cfg.onlineLyrics || !meta) return own;
     return fetchLrclib(meta);
@@ -1219,10 +1277,16 @@
     }
     const L = body?.lyrics;
     return L?.lines?.length ? {
-      synced: L.syncType === "LINE_SYNCED",
+      // SYLLABLE_SYNCED ist genauso zeitgenau, liefert aber zusätzlich Silbenzeiten (für Karaoke)
+      synced: L.syncType === "LINE_SYNCED" || L.syncType === "SYLLABLE_SYNCED",
       lang: L.language || "",
       source: "spotify",
-      lines: L.lines.map((l) => ({ t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "\u266A" }))
+      lines: L.lines.map((l) => {
+        const line = { t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "\u266A" };
+        const syl = (l.syllables || []).filter((x) => x && x.startTimeMs != null && Number(x.numChars) > 0);
+        if (syl.length) line.syl = syl.map((x) => ({ t: Number(x.startTimeMs), n: Number(x.numChars) }));
+        return line;
+      })
     } : null;
   }
   function songMeta(item) {
@@ -1254,13 +1318,35 @@
       fits.sort((a, b) => !!b.syncedLyrics - !!a.syncedLyrics || Math.abs(a.duration - meta.sec) - Math.abs(b.duration - meta.sec));
       hit = fits[0] || null;
     }
-    if (!hit) return null;
-    if (hit.instrumental) return { synced: false, lang: "", source: "lrclib", instrumental: true, lines: [] };
+    return hit ? fromHit(hit) : null;
+  }
+  function fromHit(hit) {
+    const base = { lang: "", source: "lrclib", lrcId: hit.id };
+    if (hit.instrumental) return { ...base, synced: false, instrumental: true, lines: [] };
     const synced = parseLrc(hit.syncedLyrics || "");
-    if (synced.length) return { synced: true, lang: "", source: "lrclib", lines: synced };
+    if (synced.length) return { ...base, synced: true, lines: synced };
     const plain = (hit.plainLyrics || "").split(/\r?\n/).map((x) => x.trim());
     while (plain.length && !plain[plain.length - 1]) plain.pop();
-    return plain.length ? { synced: false, lang: "", source: "lrclib", lines: plain.map((text) => ({ t: 0, text: text || "\u266A" })) } : null;
+    return plain.length ? { ...base, synced: false, lines: plain.map((text) => ({ t: 0, text: text || "\u266A" })) } : null;
+  }
+  async function lyricVersions(uri) {
+    const meta = metaCache.get(uri) || (currentItem()?.uri === uri ? songMeta(currentItem()) : null);
+    if (!meta?.title) return [];
+    const title = cleanTitle(meta.title) || meta.title;
+    const q = (o) => Object.entries(o).filter(([, v]) => v).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+    let list = await lrclib("search?" + q({ track_name: title, artist_name: meta.artist }));
+    if (!Array.isArray(list) || !list.length) list = await lrclib("search?" + q({ q: `${title} ${meta.artist}` }));
+    const diff = (x) => meta.sec ? Math.abs((x.duration || 0) - meta.sec) : 0;
+    return (Array.isArray(list) ? list : []).filter((x) => x.syncedLyrics || x.plainLyrics || x.instrumental).sort((a, b) => !!b.syncedLyrics - !!a.syncedLyrics || diff(a) - diff(b)).slice(0, 12).map((x) => ({ id: x.id, title: x.trackName, artist: x.artistName, album: x.albumName, sec: Math.round(x.duration || 0), synced: !!x.syncedLyrics, instrumental: !!x.instrumental }));
+  }
+  function pickLyrics(uri, id) {
+    const picks = { ...cfg.lyricPicks || {} };
+    delete picks[uri];
+    if (id) picks[uri] = String(id);
+    const keys = Object.keys(picks);
+    for (const k of keys.slice(0, Math.max(0, keys.length - 200))) delete picks[k];
+    cfg.lyricPicks = picks;
+    save();
   }
   function parseLrc(lrc) {
     const out = [];
@@ -1311,13 +1397,14 @@
     canvasCache.set(uri, url);
     return url;
   }
-  var lyricCache, cleanTitle, LRCLIB, trCache, canvasCache;
+  var lyricCache, metaCache, cleanTitle, LRCLIB, trCache, canvasCache;
   var init_lyrics = __esm({
     "src/lyrics.js"() {
       init_core();
       init_config();
       init_player();
       lyricCache = lru(60);
+      metaCache = lru(60);
       cleanTitle = (s) => s.replace(/\s+-\s+.*(remaster|version|edit|live|mix|mono|stereo).*$/i, "").replace(/\s*[([](feat|ft|with)\.?\s[^)\]]*[)\]]/gi, "").trim();
       LRCLIB = "https://lrclib.net/api/";
       trCache = lru(40);
@@ -1445,6 +1532,8 @@
     d.ms += Number(item.duration?.milliseconds || item.metadata?.duration || S.Player.getDuration?.() || 0);
     const artist = (artistOf(item) || "").split(",")[0].trim();
     if (artist) d.artists[artist] = (d.artists[artist] || 0) + 1;
+    const song = titleOf(item) + (artist ? " \xB7 " + artist : "");
+    if (titleOf(item)) (d.tracks ||= {})[song] = (d.tracks[song] || 0) + 1;
     if (colors?.[0]) d.hues[Math.floor(rgb2hsl(colors[0])[0] / 30) % 12]++;
     d.schemes[cfg.scheme] = (d.schemes[cfg.scheme] || 0) + 1;
     for (const k of Object.keys(all).sort().slice(0, -35)) delete all[k];
@@ -1453,14 +1542,17 @@
     } catch {
     }
   }
-  function week() {
+  function period(days) {
     const all = loadStats();
-    const from = new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10);
-    const sum = { n: 0, ms: 0, artists: {}, hues: Array(12).fill(0), schemes: {} };
+    const from = new Date(Date.now() - (days - 1) * 864e5).toISOString().slice(0, 10);
+    const sum = { n: 0, ms: 0, artists: {}, tracks: {}, hues: Array(12).fill(0), schemes: {}, active: 0, daily: [] };
+    for (let i = days - 1; i >= 0; i--) sum.daily.push((all[new Date(Date.now() - i * 864e5).toISOString().slice(0, 10)]?.ms || 0) / 6e4);
     for (const [day, d] of Object.entries(all)) {
       if (day < from) continue;
       sum.n += d.n;
       sum.ms += d.ms;
+      if (d.n) sum.active++;
+      for (const [s, v] of Object.entries(d.tracks || {})) sum.tracks[s] = (sum.tracks[s] || 0) + v;
       for (const [a, v] of Object.entries(d.artists)) sum.artists[a] = (sum.artists[a] || 0) + v;
       d.hues.forEach((v, i) => sum.hues[i] += v);
       for (const [s, v] of Object.entries(d.schemes || {})) sum.schemes[s] = (sum.schemes[s] || 0) + v;
@@ -1539,7 +1631,87 @@
     watermark(x);
     deliver(cv, "mirage-week.png");
   }
-  var W, H, css, FONT, STATS, today, lastRecorded;
+  async function monthCard() {
+    const m = period(30);
+    const hueRank = m.hues.map((v, i) => [v, i]).filter(([v]) => v > 0).sort((a, b) => b[0] - a[0]);
+    const pal = hueRank.length ? hueRank.slice(0, 3).map(([, i]) => hsl2rgb([i * 30 + 15, 0.75, 0.62])) : palette();
+    while (pal.length < 3) pal.push(pal[0]);
+    const [cv, x] = canvas();
+    backdrop(x, pal, null);
+    x.textAlign = "left";
+    x.fillStyle = css(pal[0]);
+    x.font = `600 30px ${FONT}`;
+    x.fillText(t("monthKicker").toUpperCase(), 90, 160);
+    x.fillStyle = "#fff";
+    x.font = `800 88px ${FONT}`;
+    x.fillText(t("monthTitle"), 84, 262);
+    const big = [[String(m.n), t("weekSongs")], [String(Math.round(m.ms / 6e4)), t("weekMinutes")], [String(m.active), t("monthDays")]];
+    big.forEach(([v, label], i) => {
+      const X2 = 90 + i * 310;
+      x.fillStyle = "#fff";
+      x.font = `800 100px ${FONT}`;
+      x.fillText(v, X2, 420);
+      x.fillStyle = "rgba(255,255,255,0.65)";
+      x.font = `500 32px ${FONT}`;
+      x.fillText(label, X2, 466);
+    });
+    x.fillStyle = "rgba(255,255,255,0.65)";
+    x.font = `500 30px ${FONT}`;
+    x.fillText(t("weekColours"), 90, 562);
+    const total = hueRank.reduce((s, [v]) => s + v, 0) || 1;
+    let X = 90;
+    for (const [v, i] of hueRank) {
+      const wdt = (W - 180) * v / total;
+      x.fillStyle = css(hsl2rgb([i * 30 + 15, 0.75, 0.62]));
+      rounded(x, X, 586, Math.max(wdt - 6, 6), 70, 16);
+      x.fill();
+      X += wdt;
+    }
+    if (!hueRank.length) {
+      x.fillStyle = "rgba(255,255,255,0.12)";
+      rounded(x, 90, 586, W - 180, 70, 16);
+      x.fill();
+    }
+    x.fillStyle = "rgba(255,255,255,0.65)";
+    x.fillText(t("monthDaily"), 90, 742);
+    const peak = Math.max(...m.daily, 1), bw = (W - 180) / m.daily.length;
+    m.daily.forEach((v, i) => {
+      const h = v ? Math.max(8, v / peak * 130) : 4;
+      x.fillStyle = v ? css(pal[i % 3 === 2 ? 1 : 0], 0.9) : "rgba(255,255,255,0.14)";
+      rounded(x, 90 + i * bw + 2, 900 - h, bw - 4, h, 5);
+      x.fill();
+    });
+    const cols = [[t("weekArtists"), Object.entries(m.artists)], [t("monthSongs"), Object.entries(m.tracks)]];
+    cols.forEach(([label, list], c) => {
+      const CX = 90 + c * 470;
+      x.fillStyle = "rgba(255,255,255,0.65)";
+      x.font = `500 30px ${FONT}`;
+      x.fillText(label, CX, 990);
+      const top = list.sort((a, b) => b[1] - a[1]).slice(0, 3);
+      top.forEach(([name, n], i) => {
+        const Y = 1060 + i * 72;
+        x.fillStyle = css(pal[i % 3]);
+        x.font = `800 38px ${FONT}`;
+        x.fillText(String(i + 1), CX, Y);
+        x.fillStyle = "#fff";
+        x.font = `700 38px ${FONT}`;
+        x.fillText(fit(x, name.split(" \xB7 ")[0], 290), CX + 46, Y);
+        x.fillStyle = "rgba(255,255,255,0.55)";
+        x.font = `500 26px ${FONT}`;
+        x.textAlign = "right";
+        x.fillText(`${n}\xD7`, CX + 420, Y);
+        x.textAlign = "left";
+      });
+      if (!top.length) {
+        x.fillStyle = "rgba(255,255,255,0.6)";
+        x.font = `500 32px ${FONT}`;
+        x.fillText(t("weekEmpty").split(" \u2013 ")[0], CX, 1060);
+      }
+    });
+    watermark(x);
+    deliver(cv, "mirage-month.png");
+  }
+  var W, H, css, FONT, STATS, today, lastRecorded, week;
   var init_share = __esm({
     "src/share.js"() {
       init_core();
@@ -1554,6 +1726,7 @@
       STATS = "mirage:stats";
       today = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
       lastRecorded = "";
+      week = () => period(7);
     }
   });
 
@@ -1618,20 +1791,59 @@
     } catch {
     }
   }
+  function restoreVolume() {
+    if (fadeFrom == null) return;
+    const v = fadeFrom;
+    fadeFrom = null;
+    try {
+      S.Player.setVolume(v);
+    } catch {
+    }
+  }
+  function stopSleep() {
+    S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
+    clearInterval(fadeTick);
+    setTimeout(restoreVolume, 900);
+  }
+  function fadeStep() {
+    let left, span;
+    if (sleepAt) {
+      left = sleepAt - Date.now();
+      span = Math.min(12e4, sleepTotal * 0.3);
+    } else if (sleepEndOfTrack) {
+      left = (S.Player.getDuration?.() || 0) - (S.Player.getProgress?.() || 0);
+      span = 2e4;
+    } else return;
+    if (!S.Player.isPlaying() || left > span || left <= 0) return;
+    if (fadeFrom == null) fadeFrom = S.Player.getVolume?.() ?? 1;
+    try {
+      S.Player.setVolume(Math.max(0.02, fadeFrom * (left / span)));
+    } catch {
+    }
+  }
   function setSleep(minutes) {
     clearTimeout(sleepTimer);
+    clearInterval(fadeTick);
+    restoreVolume();
     sleepAt = 0;
     sleepEndOfTrack = false;
     if (minutes === "track") {
       sleepEndOfTrack = true;
+      fadeTick = setInterval(fadeStep, 500);
       return;
     }
     if (!minutes) return;
-    sleepAt = Date.now() + minutes * 6e4;
+    sleepTotal = minutes * 6e4;
+    sleepAt = Date.now() + sleepTotal;
+    fadeTick = setInterval(fadeStep, 500);
     sleepTimer = setTimeout(() => {
       sleepAt = 0;
-      if (S.Player.isPlaying()) S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
-    }, minutes * 6e4);
+      if (S.Player.isPlaying()) stopSleep();
+      else {
+        clearInterval(fadeTick);
+        restoreVolume();
+      }
+    }, sleepTotal);
   }
   function go(uri) {
     const [, type, id] = String(uri || "").split(":");
@@ -1639,7 +1851,7 @@
     S.Platform?.History?.push?.(`/${type}/${id}`);
     return true;
   }
-  var api, playerState, MODE, contextUri, nativeButton, lastMode, connect, canConnect, sleepTimer, sleepAt, sleepEndOfTrack, sleepState, albumOf, artistUriOf;
+  var api, playerState, MODE, contextUri, nativeButton, lastMode, connect, canConnect, sleepTimer, sleepAt, sleepEndOfTrack, sleepTotal, fadeTick, fadeFrom, isFading, sleepState, albumOf, artistUriOf;
   var init_controls = __esm({
     "src/controls.js"() {
       init_core();
@@ -1654,11 +1866,15 @@
       sleepTimer = 0;
       sleepAt = 0;
       sleepEndOfTrack = false;
+      sleepTotal = 0;
+      fadeTick = 0;
+      fadeFrom = null;
       S.Player.addEventListener?.("songchange", () => {
         if (!sleepEndOfTrack) return;
         sleepEndOfTrack = false;
-        S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
+        stopSleep();
       });
+      isFading = () => fadeFrom != null;
       sleepState = () => sleepEndOfTrack ? "track" : sleepAt ? Math.max(1, Math.round((sleepAt - Date.now()) / 6e4)) : 0;
       albumOf = (item) => item?.album?.uri || item?.metadata?.album_uri || "";
       artistUriOf = (item) => item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
@@ -1762,6 +1978,7 @@
         </div>
       </div>
       <div class="m-im-lyrics"><div class="m-im-lyrics-inner"></div></div>
+      <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
       <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">\xD7</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
           document.body.append(el2);
@@ -1789,6 +2006,7 @@
             play: el2.querySelector(".m-im-play"),
             lyrics: el2.querySelector(".m-im-lyrics"),
             inner: el2.querySelector(".m-im-lyrics-inner"),
+            lyrsrc: el2.querySelector(".m-im-lyrsrc"),
             ind: el2.querySelector(".m-im-ind"),
             canvas: el2.querySelector(".m-im-viz"),
             bg: el2.querySelector(".m-im-bg"),
@@ -1800,6 +2018,8 @@
             full: el2.querySelector(".m-im-full")
           };
           vctx = q.canvas.getContext("2d");
+          q.lyrsrc.querySelector("b").textContent = t("lyrPick");
+          q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
           q.video = el2.querySelector(".m-im-canvas");
           q.keys = el2.querySelector(".m-im-keys");
           const share = el2.querySelector(".m-im-share"), help = el2.querySelector(".m-im-help");
@@ -1980,6 +2200,64 @@
           }
           return box;
         }
+        let words = [];
+        function wordTimes(lines, i) {
+          const l = lines[i];
+          const parts = l.text.split(/\s+/).filter(Boolean);
+          const next = lines[i + 1]?.t ?? l.t + 6e3;
+          if (l.syl?.length) {
+            const marks = [];
+            let c = 0;
+            l.syl.forEach((s, k) => {
+              marks.push({ from: c, to: c + s.n, a: s.t, b: l.syl[k + 1]?.t ?? Math.min(next, s.t + 900) });
+              c += s.n;
+            });
+            let pos = 0;
+            return parts.map((w) => {
+              const from = l.text.indexOf(w, pos);
+              pos = from + w.length;
+              const hit = marks.filter((m) => m.to > from && m.from < pos);
+              return hit.length ? { text: w, a: hit[0].a, b: hit[hit.length - 1].b } : { text: w, a: l.t, b: l.t + 1 };
+            });
+          }
+          const chars = parts.reduce((n, w) => n + w.length + 2, 0);
+          const span = Math.max(300, Math.min(next - l.t - 150, Math.max(1100, chars * 85)));
+          let at = l.t;
+          return parts.map((w) => {
+            const d = span * (w.length + 2) / chars;
+            const out = { text: w, a: at, b: at + d };
+            at += d;
+            return out;
+          });
+        }
+        function showSource(got) {
+          const picked = !!cfg.lyricPicks?.[lyrUri];
+          q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri);
+          q.lyrsrc.querySelector("span").textContent = got ? (got.source === "lrclib" ? "LRCLIB" : "Spotify") + (picked ? " \xB7 " + t("lyrPicked") : "") : t("lyrNone");
+        }
+        async function showVersions(body, item) {
+          const uri = lyrUri;
+          item(t("loading"));
+          const list = await lyricVersions(uri);
+          if (side !== "versions" || uri !== lyrUri) return;
+          body.textContent = "";
+          const cur = lyr?.lrcId ? String(lyr.lrcId) : "";
+          const pickedId = cfg.lyricPicks?.[uri] || "";
+          const choose = (id) => {
+            pickLyrics(uri, id);
+            lyrUri = "";
+            loadLyrics();
+            showSide(null);
+          };
+          item(t("lyrAuto"), t("lyrAutoHint"), null, pickedId ? () => choose("") : null, !pickedId);
+          if (!list.length) return item(t("lyrNoVersions"));
+          for (const v of list) {
+            const kind = v.instrumental ? t("instrTitle") : v.synced ? t("lyrSynced") : t("lyrPlain");
+            const sub = [v.album, v.sec ? fmt(v.sec * 1e3) : "", kind].filter(Boolean).join(" \xB7 ");
+            const on = String(v.id) === (pickedId || cur);
+            item(`${v.title} \u2013 ${v.artist}`, sub, null, on ? null : () => choose(v.id), on);
+          }
+        }
         async function loadLyrics() {
           const uri = currentItem()?.uri || "";
           if (uri === lyrUri && lyr !== void 0) return;
@@ -1988,6 +2266,9 @@
           lyr = void 0;
           q.inner.style.transform = "";
           q.lyrics.classList.remove("is-unsynced");
+          el2.classList.remove("is-karaoke");
+          q.lyrsrc.hidden = true;
+          words = [];
           q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
           q.inner.firstChild.textContent = t("loading");
           const got = await getLyrics(uri);
@@ -1995,10 +2276,13 @@
           lyr = got;
           active = -2;
           q.inner.textContent = "";
+          showSource(got);
           if (!got || got.instrumental) {
             q.inner.append(emptyLyrics(!!got));
             return;
           }
+          const karaoke = cfg.karaoke && got.synced;
+          el2.classList.toggle("is-karaoke", karaoke);
           q.lyrics.classList.toggle("is-unsynced", !got.synced);
           const frag = document.createDocumentFragment();
           if (!got.synced) {
@@ -2007,19 +2291,26 @@
             note.textContent = t("unsynced");
             frag.append(note);
           }
-          for (const l of got.lines) {
+          got.lines.forEach((l, i) => {
             const d = document.createElement("div");
             d.className = "m-im-line";
             d.dataset.t = l.t;
-            d.textContent = l.text;
+            if (karaoke && l.text !== "\u266A") {
+              const box = document.createElement("span");
+              box.className = "m-im-words";
+              const list = [];
+              for (const w of wordTimes(got.lines, i)) {
+                const s = document.createElement("span");
+                s.className = "m-w";
+                s.textContent = w.text;
+                box.append(s, " ");
+                list.push({ el: s, a: w.a, b: w.b, p: -1 });
+              }
+              d.append(box);
+              words[i] = list;
+            } else d.textContent = l.text;
             frag.append(d);
-          }
-          if (got.source === "lrclib") {
-            const src = document.createElement("div");
-            src.className = "m-im-lyrics-src";
-            src.textContent = t("lyrSource").replace("{s}", "LRCLIB");
-            frag.append(src);
-          }
+          });
           q.inner.append(frag);
           if (cfg.translate) {
             const tr = await translateLines(uri, got, LANG);
@@ -2051,6 +2342,16 @@
             if (cur) {
               const y = q.lyrics.clientHeight * 0.42 - (cur.offsetTop + cur.offsetHeight / 2);
               q.inner.style.transform = `translateY(${y}px)`;
+            }
+          }
+          const ws = i >= 0 && words[i];
+          if (ws) {
+            for (const w of ws) {
+              const p = Math.round(clamp((pos - w.a) / (w.b - w.a), 0, 1) * 50) / 50;
+              if (p !== w.p) {
+                w.p = p;
+                w.el.style.setProperty("--p", p);
+              }
             }
           }
         }
@@ -2287,7 +2588,7 @@
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
-          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer" }[kind]);
+          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick" }[kind]);
           const body = q.sideBody;
           body.textContent = "";
           const item = (label, sub, img, onClick, on) => {
@@ -2326,6 +2627,8 @@
               await transfer(d.id);
               setTimeout(() => showSide("devices"), 800);
             }, d.active);
+          } else if (kind === "versions") {
+            showVersions(body, item);
           } else if (kind === "timer") {
             const now = sleepState();
             for (const [v, label] of [[15, "15 min"], [30, "30 min"], [45, "45 min"], [60, "60 min"], ["track", t("timerTrack")], [0, t("timerOff")]]) {
@@ -2517,15 +2820,15 @@
           p.a = 0.25 + Math.random() * 0.6;
           p.k = Math.floor(Math.random() * 4);
         }
-        function haze(img, alpha, period, dir, ox, oy, op) {
+        function haze(img, alpha, period2, dir, ox, oy, op) {
           if (!img || alpha <= 0) return;
           const D = Math.max(W2, H2) * 1.8;
-          const k = 1.15 + 0.2 * tri(clock / period);
+          const k = 1.15 + 0.2 * tri(clock / period2);
           ctx.save();
           ctx.globalCompositeOperation = op;
           ctx.globalAlpha = alpha;
           ctx.translate(ox, oy);
-          ctx.rotate(dir * (clock / period) * TAU);
+          ctx.rotate(dir * (clock / period2) * TAU);
           ctx.scale(k, k);
           ctx.drawImage(img, W2 / 2 - ox - D / 2, H2 / 2 - oy - D / 2, D, D);
           ctx.restore();
@@ -2799,6 +3102,7 @@
       init_color();
       init_player();
       init_pages();
+      init_controls();
       bridge = /* @__PURE__ */ (() => {
         const ADDR = "ws://127.0.0.1:47321";
         let ws = null, retry = 0, wanted = false;
@@ -2811,10 +3115,15 @@
             return schedule3();
           }
           const sock = ws;
-          ws.onopen = () => ws === sock && sendTrack();
+          ws.onopen = () => {
+            if (ws !== sock) return;
+            sendTrack();
+            watchVolume(true);
+          };
           ws.onclose = () => {
             if (ws !== sock) return;
             ws = null;
+            watchVolume(false);
             setTopics([]);
             schedule3();
           };
@@ -2848,11 +3157,26 @@
           wanted = false;
           clearTimeout(retry);
           setTopics([]);
+          watchVolume(false);
           try {
             ws?.close();
           } catch {
           }
           ws = null;
+        }
+        let volTimer = 0, lastVol = null;
+        function watchVolume(on) {
+          clearInterval(volTimer);
+          lastVol = null;
+          if (!on) return;
+          volTimer = setInterval(() => {
+            const v = S.Player.getVolume?.();
+            if (typeof v !== "number") return;
+            const muted = !!S.Player.getMute?.();
+            const key = Math.round(v * 100) + (muted ? "m" : "");
+            if (lastVol !== null && key !== lastVol && !isFading()) send({ type: "volume", value: v, muted });
+            lastVol = key;
+          }, 250);
         }
         let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, lastLine = "";
         function setTopics(list) {
@@ -3261,6 +3585,43 @@
     }
   });
 
+  // src/fonts.js
+  function load(keys) {
+    const fam = keys.map((k) => FONTS[k]?.[1]).filter((f) => f && !loaded.has(f));
+    if (!fam.length) return;
+    fam.forEach((f) => loaded.add(f));
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?" + fam.map((f) => `family=${f}:wght@400;500;600;700;800`).join("&") + "&display=swap";
+    document.head.append(link);
+  }
+  function applyFont() {
+    const k = FONTS[cfg.font] ? cfg.font : "outfit";
+    load([k]);
+    if (k === "outfit") root.style.removeProperty("--m-font");
+    else root.style.setProperty("--m-font", stackOf(k));
+  }
+  var FONTS, STACK, loaded, stackOf, preloadFonts;
+  var init_fonts = __esm({
+    "src/fonts.js"() {
+      init_core();
+      init_config();
+      FONTS = {
+        outfit: ["Outfit", ""],
+        jakarta: ["Plus Jakarta Sans", "Plus+Jakarta+Sans"],
+        manrope: ["Manrope", "Manrope"],
+        sora: ["Sora", "Sora"],
+        lexend: ["Lexend", "Lexend"],
+        nunito: ["Nunito", "Nunito"],
+        system: ["", ""]
+      };
+      STACK = '"Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif';
+      loaded = /* @__PURE__ */ new Set();
+      stackOf = (k) => FONTS[k]?.[0] ? `"${FONTS[k][0]}", ${STACK}` : STACK;
+      preloadFonts = () => load(Object.keys(FONTS));
+    }
+  });
+
   // src/settings.js
   function applySettings() {
     applyScheme(effectiveScheme());
@@ -3278,6 +3639,7 @@
     beat.sync();
     cfg.overlay ? bridge.connect() : bridge.close();
     immersive.styleLyrics();
+    applyFont();
   }
   function refreshColors() {
     applySettings();
@@ -3443,7 +3805,14 @@
       );
     }
     if (tools.childElementCount) kids.push(tools);
-    kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors)));
+    preloadFonts();
+    const fontSeg = seg(Object.keys(FONTS).map((k) => [k, t("font_" + k)]), FONTS[cfg.font] ? cfg.font : "outfit", (k) => {
+      cfg.font = k;
+      save();
+      applyFont();
+    });
+    Object.keys(FONTS).forEach((k, i) => fontSeg.children[i].style.fontFamily = stackOf(k));
+    kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg));
     kids.push(
       group(
         t("g_background"),
@@ -3475,6 +3844,7 @@
         range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
         range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
         toggle("onlineLyrics", () => immersive.reloadLyrics()),
+        toggle("karaoke", () => immersive.reloadLyrics()),
         toggle("translate", () => immersive.reloadLyrics()),
         toggle("canvas", () => immersive.refresh()),
         head(t("vizSection"), t("vizSectionHint")),
@@ -3562,6 +3932,7 @@
     foot.append(
       button(t("shareNow"), () => nowPlayingCard()),
       button(t("shareWeek"), () => weekCard()),
+      button(t("shareMonth"), () => monthCard()),
       button(t("exportSettings"), async () => {
         const code = encode("MIRAGE-SETTINGS:", cfg);
         try {
@@ -3652,6 +4023,7 @@
       init_readability();
       init_selectors();
       init_share();
+      init_fonts();
       COSTLY = /* @__PURE__ */ new Set(["glass", "particles", "beat", "tilt", "canvas"]);
       el = (tag, cls, text) => {
         const e = document.createElement(tag);

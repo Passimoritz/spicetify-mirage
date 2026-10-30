@@ -110,6 +110,10 @@
   .btn:hover { transform: translateY(-2px) scale(1.03); }
   .fab { position: fixed; right: 24px; bottom: 22px; z-index: 6; }
   .hidden { display: none !important; }
+  .row[hidden] { display: none; }
+  .row .btn { flex: none; padding: 8px 16px; font-size: 13px; box-shadow: none; }
+  .btn:disabled { opacity: .5; cursor: default; transform: none; }
+  .obsUrl code { font: 500 13px var(--mono); color: var(--c); user-select: all; padding: 6px 10px; border-radius: 8px; background: var(--glass); border: 1px solid var(--line); }
   @media (max-width: 720px) { .styles { grid-template-columns: repeat(2, 1fr); } .row { flex-wrap: wrap; } }
   @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition-duration: .01ms !important; } }
 </style>
@@ -192,6 +196,17 @@
     <div class="row"><div><b data-t="progress"></b><small data-t="progressHint"></small></div><input type="checkbox" class="toggle" data-key="progress"></div>
     <div class="row"><div><b data-t="autostart" id="autostartLabel"></b><small data-t="autostartHint" id="autostartHint"></small></div><input type="checkbox" class="toggle" data-key="autostart"></div>
   </section>
+
+  <section>
+    <h2 data-t="secExtras"></h2>
+    <div class="row"><div><b data-t="volumeOsd"></b><small data-t="volumeOsdHint"></small></div><input type="checkbox" class="toggle" data-key="volumeOsd"></div>
+    <div class="row" id="fsRow"><div><b data-t="fullscreenQuiet"></b><small data-t="fullscreenQuietHint"></small></div><input type="checkbox" class="toggle" data-key="fullscreenQuiet"></div>
+    <div class="row"><div><b data-t="customCss"></b><small data-t="customCssHint"></small></div><button type="button" class="btn" id="cssBtn" data-t="openCss"></button></div>
+    <div class="row"><div><b data-t="obs"></b><small id="obsHint"></small></div><input type="checkbox" class="toggle" data-key="obs"></div>
+    <div class="row obsUrl" id="obsUrlRow" hidden><div><code id="obsUrl"></code></div><button type="button" class="btn" id="obsCopy" data-t="copy"></button></div>
+    <div class="row" id="updRow"><div><b data-t="autoUpdate"></b><small id="updText"></small></div>
+      <div style="display:flex;gap:10px;align-items:center"><button type="button" class="btn" id="updBtn"></button><input type="checkbox" class="toggle" data-key="autoUpdate"></div></div>
+  </section>
 </main>
 <script src="i18n.js"></script>
 <script>
@@ -227,6 +242,22 @@
     // kurze Beschreibung für Stile, die mehr brauchen als den Songwechsel
     const hint = { lyrics: "stLyricsHint", visualizer: "stVizHint" }[cfg.style];
     $("#styleHint").textContent = hint ? t(hint) : "";
+    // OBS: empfohlene Größe der Browserquelle = Fenstergröße des Overlays bei dieser Skalierung
+    const s = (cfg.scale || 100) / 100;
+    $("#obsHint").textContent = t("obsHint").replace("{w}", Math.round(780 * s)).replace("{h}", Math.round(420 * s));
+    $("#obsUrlRow").hidden = !cfg.obs;
+    renderUpd();
+  }
+
+  // Update-Zeile: Text und Knopf je nach Stand
+  let upd = { state: "idle" }, version = "", canUpdate = false;
+  function renderUpd() {
+    const v = upd.version || version;
+    const text = { checking: t("updChecking"), current: t("upToDate").replace("{v}", version), available: t("updateAvail").replace("{v}", v),
+      loading: t("updateLoading"), ready: t("updateAvail").replace("{v}", v), failed: t("updateFailed") }[upd.state] || t("autoUpdateHint");
+    $("#updText").textContent = text + (upd.state === "available" && !canUpdate ? " · " + t("updatePageHint") : "");
+    $("#updBtn").textContent = upd.state === "available" || upd.state === "ready" ? (canUpdate ? t("updateInstall").replace("{v}", v) : t("updatePage")) : t("checkNow");
+    $("#updBtn").disabled = upd.state === "checking" || upd.state === "loading";
   }
 
   function buildScreens(displays) {
@@ -286,6 +317,16 @@
       set({ [k]: el.type === "checkbox" ? el.checked : el.type === "range" ? Number(el.value) : el.value }, k !== "autostart"));
   });
   $("#previewBtn").onclick = () => mirage.send("preview");
+  $("#cssBtn").onclick = () => mirage.send("openCss");
+  $("#updBtn").onclick = () => mirage.send("checkUpdate");
+  $("#obsCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText($("#obsUrl").textContent); $("#obsCopy").textContent = t("copied"); }
+    catch { getSelection().selectAllChildren($("#obsUrl")); }
+    setTimeout(() => ($("#obsCopy").textContent = t("copy")), 1600);
+  };
+  // MAC: Vollbild anderer Apps lässt sich dort nicht abfragen
+  if (mirage.platform === "darwin") $("#fsRow").hidden = true;
+  mirage.on("upd", (u) => { upd = u; renderUpd(); });
 
   mirage.on("status", showStatus);
   mirage.on("cfg", (c) => { cfg = c; render(); });
@@ -294,6 +335,10 @@
   mirage.get().then((s) => {
     cfg = s.cfg;
     t = MirageI18n.make(s.lang);
+    upd = s.upd || upd;
+    version = s.version || "";
+    canUpdate = !!s.canUpdate;
+    $("#obsUrl").textContent = s.obsUrl || "";
     buildScreens(s.displays);
     translate();
     render();

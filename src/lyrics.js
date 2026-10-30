@@ -1,5 +1,5 @@
 import { S, lru } from "./core.js";
-import { cfg } from "./config.js";
+import { cfg, save } from "./config.js";
 import { currentItem, titleOf, artistOf } from "./player.js";
 
 /* ---------------------------------------------------------------- Liedtext */
@@ -8,15 +8,24 @@ import { currentItem, titleOf, artistOf } from "./player.js";
 const lyricCache = lru(60);
 function getLyrics(uri) {
   if (!/^spotify:(track|local):/.test(uri || "")) return Promise.resolve(null);
-  // Schalter im Schlüssel: wer die Online-Suche umschaltet, bekommt sofort das passende Ergebnis
-  const key = uri + (cfg.onlineLyrics ? "|web" : "");
-  if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri));
+  // Schalter und gewählte Fassung im Schlüssel: wer umschaltet, bekommt sofort das passende Ergebnis
+  const pick = cfg.onlineLyrics ? cfg.lyricPicks?.[uri] || "" : "";
+  const key = uri + (cfg.onlineLyrics ? "|web" : "") + "|" + pick;
+  if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri, pick));
   return lyricCache.get(key);
 }
-async function fetchLyrics(uri) {
+// Song-Daten je Song, damit „Fassung wählen“ später noch weiß, wonach es suchen soll
+const metaCache = lru(60);
+async function fetchLyrics(uri, pick) {
   // Song-Daten jetzt festhalten – bis die Spotify-Antwort da ist, kann schon der nächste laufen
   const item = currentItem();
-  const meta = item?.uri === uri ? songMeta(item) : null;
+  const meta = item?.uri === uri ? songMeta(item) : metaCache.get(uri) || null;
+  if (meta) metaCache.set(uri, meta);
+  if (pick) {
+    const hit = await lrclib("get/" + encodeURIComponent(pick));
+    const got = hit && fromHit(hit);
+    if (got) return got;
+  }
   const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
   if (own || !cfg.onlineLyrics || !meta) return own;
   return fetchLrclib(meta);
@@ -33,10 +42,16 @@ async function fetchSpotify(uri) {
   const L = body?.lyrics;
   return L?.lines?.length
     ? {
-        synced: L.syncType === "LINE_SYNCED",
+        // SYLLABLE_SYNCED ist genauso zeitgenau, liefert aber zusätzlich Silbenzeiten (für Karaoke)
+        synced: L.syncType === "LINE_SYNCED" || L.syncType === "SYLLABLE_SYNCED",
         lang: L.language || "",
         source: "spotify",
-        lines: L.lines.map((l) => ({ t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "♪" })),
+        lines: L.lines.map((l) => {
+          const line = { t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "♪" };
+          const syl = (l.syllables || []).filter((x) => x && x.startTimeMs != null && Number(x.numChars) > 0);
+          if (syl.length) line.syl = syl.map((x) => ({ t: Number(x.startTimeMs), n: Number(x.numChars) }));
+          return line;
+        }),
       }
     : null;
 }
@@ -78,13 +93,44 @@ async function fetchLrclib(meta) {
     fits.sort((a, b) => !!b.syncedLyrics - !!a.syncedLyrics || Math.abs(a.duration - meta.sec) - Math.abs(b.duration - meta.sec));
     hit = fits[0] || null;
   }
-  if (!hit) return null;
-  if (hit.instrumental) return { synced: false, lang: "", source: "lrclib", instrumental: true, lines: [] };
+  return hit ? fromHit(hit) : null;
+}
+function fromHit(hit) {
+  const base = { lang: "", source: "lrclib", lrcId: hit.id };
+  if (hit.instrumental) return { ...base, synced: false, instrumental: true, lines: [] };
   const synced = parseLrc(hit.syncedLyrics || "");
-  if (synced.length) return { synced: true, lang: "", source: "lrclib", lines: synced };
+  if (synced.length) return { ...base, synced: true, lines: synced };
   const plain = (hit.plainLyrics || "").split(/\r?\n/).map((x) => x.trim());
   while (plain.length && !plain[plain.length - 1]) plain.pop();
-  return plain.length ? { synced: false, lang: "", source: "lrclib", lines: plain.map((text) => ({ t: 0, text: text || "♪" })) } : null;
+  return plain.length ? { ...base, synced: false, lines: plain.map((text) => ({ t: 0, text: text || "♪" })) } : null;
+}
+
+/* ---- Fassung wählen */
+// Alle LRCLIB-Treffer zum Song, passendste Länge und zeitgenaue Texte zuerst
+async function lyricVersions(uri) {
+  const meta = metaCache.get(uri) || (currentItem()?.uri === uri ? songMeta(currentItem()) : null);
+  if (!meta?.title) return [];
+  const title = cleanTitle(meta.title) || meta.title;
+  const q = (o) => Object.entries(o).filter(([, v]) => v).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+  let list = await lrclib("search?" + q({ track_name: title, artist_name: meta.artist }));
+  if (!Array.isArray(list) || !list.length) list = await lrclib("search?" + q({ q: `${title} ${meta.artist}` }));
+  const diff = (x) => (meta.sec ? Math.abs((x.duration || 0) - meta.sec) : 0);
+  return (Array.isArray(list) ? list : [])
+    .filter((x) => x.syncedLyrics || x.plainLyrics || x.instrumental)
+    .sort((a, b) => !!b.syncedLyrics - !!a.syncedLyrics || diff(a) - diff(b))
+    .slice(0, 12)
+    .map((x) => ({ id: x.id, title: x.trackName, artist: x.artistName, album: x.albumName, sec: Math.round(x.duration || 0), synced: !!x.syncedLyrics, instrumental: !!x.instrumental }));
+}
+// id = LRCLIB-Eintrag, leer = wieder automatisch (Spotify zuerst)
+function pickLyrics(uri, id) {
+  const picks = { ...(cfg.lyricPicks || {}) };
+  delete picks[uri];
+  if (id) picks[uri] = String(id);
+  // nur die letzten 200 Wahlen behalten
+  const keys = Object.keys(picks);
+  for (const k of keys.slice(0, Math.max(0, keys.length - 200))) delete picks[k];
+  cfg.lyricPicks = picks;
+  save();
 }
 // „[01:02.34] Text“ – eine Zeile darf mehrere Zeitmarken tragen (Refrain)
 function parseLrc(lrc) {
@@ -146,4 +192,4 @@ async function getCanvas(uri) {
   return url;
 }
 
-export { getLyrics, translateLines, getCanvas };
+export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas };

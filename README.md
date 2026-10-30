@@ -87,7 +87,7 @@ Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> or the circle button in 
 | View | What you get |
 |---|---|
 | **Cover** | Huge cover that tilts with the mouse, title in a colour gradient, progress, full controls |
-| **Lyrics** | Spotify's synced lyrics, the current line lit up and centred – click any line to jump there |
+| **Lyrics** | Synced lyrics, the current line lit up and centred, karaoke word by word – click any line to jump there. No lyrics at Spotify? Mirage looks on [LRCLIB](https://lrclib.net), and *Choose version* picks another match |
 | **Visualizer** | Radial spectrum around the round cover, beat rings – driven by Spotify's audio analysis when available, otherwise ambient |
 
 Controls: shuffle, previous, play/pause, next, repeat (incl. repeat one), like, volume + mute, full screen.
@@ -102,6 +102,7 @@ A small companion app that shows song changes **outside of Spotify** – above e
 - **Where:** main screen, the screen with the mouse, or any screen picked on a map of your displays · 9 anchor positions · fine offset
 - **How:** Island, Card, Banner or Minimal · springy, slide or fade · background from cover / dark / light · glow, roundness, size, opacity · heading, album, time, progress bar
 - **Controls on hover:** previous · play/pause · next, right inside the overlay
+- **Extras:** volume bar when you change the volume · quiet while a game or video runs fullscreen (Windows, Linux) · your own look via `custom.css` · streaming mode as an OBS browser source (`http://127.0.0.1:47322/`) · updates itself from GitHub (Windows, AppImage)
 - Lives in the tray, starts with your computer if you like (Windows, macOS, Linux), follows the language Spotify uses
 
 ### Install the Overlay

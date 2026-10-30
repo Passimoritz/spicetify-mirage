@@ -11,7 +11,8 @@ import { currentItem } from "./player.js";
 import { PRESET_KEYS, applyPreset, detectPreset } from "./perf.js";
 import { recheckAll } from "./readability.js";
 import { diagnostics } from "./selectors.js";
-import { nowPlayingCard, weekCard } from "./share.js";
+import { nowPlayingCard, weekCard, monthCard } from "./share.js";
+import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -30,6 +31,7 @@ function applySettings() {
   beat.sync();
   cfg.overlay ? bridge.connect() : bridge.close();
   immersive.styleLyrics();
+  applyFont();
 }
 // nach jeder Farb- oder Schemaänderung: Farben neu holen und Lesbarkeit neu prüfen
 function refreshColors() {
@@ -227,7 +229,14 @@ function render(box) {
   if (tools.childElementCount) kids.push(tools);
 
   // ---- Gruppen
-  kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors)));
+  preloadFonts();
+  const fontSeg = seg(Object.keys(FONTS).map((k) => [k, t("font_" + k)]), FONTS[cfg.font] ? cfg.font : "outfit", (k) => {
+    cfg.font = k;
+    save();
+    applyFont();
+  });
+  Object.keys(FONTS).forEach((k, i) => (fontSeg.children[i].style.fontFamily = stackOf(k)));
+  kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg));
   kids.push(
     group(
       t("g_background"),
@@ -255,6 +264,7 @@ function render(box) {
       range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
       range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
       toggle("onlineLyrics", () => immersive.reloadLyrics()),
+      toggle("karaoke", () => immersive.reloadLyrics()),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("canvas", () => immersive.refresh()),
       head(t("vizSection"), t("vizSectionHint")),
@@ -339,6 +349,7 @@ function render(box) {
   foot.append(
     button(t("shareNow"), () => nowPlayingCard()),
     button(t("shareWeek"), () => weekCard()),
+    button(t("shareMonth"), () => monthCard()),
     button(t("exportSettings"), async () => {
       const code = encode("MIRAGE-SETTINGS:", cfg);
       try { await navigator.clipboard.writeText(code); notify(t("copied")); } catch { dataIn.value = code; }

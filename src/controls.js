@@ -88,28 +88,66 @@ async function transfer(id) {
 }
 
 /* ---- Schlaf-Timer */
-let sleepTimer = 0, sleepAt = 0, sleepEndOfTrack = false;
+// In den letzten Minuten (bei „Ende des Songs“: den letzten 20 s) dreht Mirage die Lautstärke
+// langsam herunter; nach dem Anhalten kommt die alte Lautstärke zurück, damit es morgen nicht still ist.
+let sleepTimer = 0, sleepAt = 0, sleepEndOfTrack = false, sleepTotal = 0;
+let fadeTick = 0, fadeFrom = null;
+function restoreVolume() {
+  if (fadeFrom == null) return;
+  const v = fadeFrom;
+  fadeFrom = null;
+  try { S.Player.setVolume(v); } catch {}
+}
+function stopSleep() {
+  S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
+  clearInterval(fadeTick);
+  // erst nach dem Anhalten zurückdrehen, sonst springt der Ton kurz hoch
+  setTimeout(restoreVolume, 900);
+}
+function fadeStep() {
+  let left, span;
+  if (sleepAt) {
+    left = sleepAt - Date.now();
+    span = Math.min(120000, sleepTotal * 0.3);
+  } else if (sleepEndOfTrack) {
+    left = (S.Player.getDuration?.() || 0) - (S.Player.getProgress?.() || 0);
+    span = 20000;
+  } else return;
+  if (!S.Player.isPlaying() || left > span || left <= 0) return;
+  if (fadeFrom == null) fadeFrom = S.Player.getVolume?.() ?? 1;
+  try { S.Player.setVolume(Math.max(0.02, fadeFrom * (left / span))); } catch {}
+}
 function setSleep(minutes) {
   clearTimeout(sleepTimer);
+  clearInterval(fadeTick);
+  restoreVolume();
   sleepAt = 0;
   sleepEndOfTrack = false;
   if (minutes === "track") {
     sleepEndOfTrack = true;
+    fadeTick = setInterval(fadeStep, 500);
     return;
   }
   if (!minutes) return;
-  sleepAt = Date.now() + minutes * 60000;
+  sleepTotal = minutes * 60000;
+  sleepAt = Date.now() + sleepTotal;
+  fadeTick = setInterval(fadeStep, 500);
   sleepTimer = setTimeout(() => {
     sleepAt = 0;
-    if (S.Player.isPlaying()) S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
-  }, minutes * 60000);
+    if (S.Player.isPlaying()) stopSleep();
+    else {
+      clearInterval(fadeTick);
+      restoreVolume();
+    }
+  }, sleepTotal);
 }
 // „Ende des Songs“: beim nächsten Songwechsel anhalten
 S.Player.addEventListener?.("songchange", () => {
   if (!sleepEndOfTrack) return;
   sleepEndOfTrack = false;
-  S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
+  stopSleep();
 });
+const isFading = () => fadeFrom != null;
 const sleepState = () => (sleepEndOfTrack ? "track" : sleepAt ? Math.max(1, Math.round((sleepAt - Date.now()) / 60000)) : 0);
 
 /* ---- Zu Album / Künstler springen */
@@ -122,4 +160,4 @@ function go(uri) {
 const albumOf = (item) => item?.album?.uri || item?.metadata?.album_uri || "";
 const artistUriOf = (item) => item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
 
-export { shuffleState, cycleShuffle, smartSupported, upNext, devices, canConnect, transfer, setSleep, sleepState, go, albumOf, artistUriOf };
+export { shuffleState, cycleShuffle, smartSupported, upNext, devices, canConnect, transfer, setSleep, sleepState, isFading, go, albumOf, artistUriOf };

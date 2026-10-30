@@ -5,6 +5,7 @@ import { LANG } from "./i18n.js";
 import { palette } from "./color.js";
 import { currentItem, covers, titleOf, artistOf } from "./player.js";
 import { domReport } from "./pages.js";
+import { isFading } from "./controls.js";
 
 /* ---------------------------------------------------------------- Brücke zur Overlay-App */
 // Die Mirage-Overlay-App lauscht lokal; ohne App versucht das Theme es still alle 5 s erneut.
@@ -20,10 +21,15 @@ const bridge = (() => {
       return schedule();
     }
     const sock = ws;
-    ws.onopen = () => ws === sock && sendTrack();
+    ws.onopen = () => {
+      if (ws !== sock) return;
+      sendTrack();
+      watchVolume(true);
+    };
     ws.onclose = () => {
       if (ws !== sock) return;
       ws = null;
+      watchVolume(false);
       setTopics([]);
       schedule();
     };
@@ -52,8 +58,26 @@ const bridge = (() => {
     wanted = false;
     clearTimeout(retry);
     setTopics([]);
+    watchVolume(false);
     try { ws?.close(); } catch {}
     ws = null;
+  }
+
+  // Lautstärke: Spotify meldet Änderungen nicht, also leise nachsehen (nur solange die App verbunden ist).
+  // Während der Schlaf-Timer ausblendet, nichts senden – sonst stünde die Leiste minutenlang da.
+  let volTimer = 0, lastVol = null;
+  function watchVolume(on) {
+    clearInterval(volTimer);
+    lastVol = null;
+    if (!on) return;
+    volTimer = setInterval(() => {
+      const v = S.Player.getVolume?.();
+      if (typeof v !== "number") return;
+      const muted = !!S.Player.getMute?.();
+      const key = Math.round(v * 100) + (muted ? "m" : "");
+      if (lastVol !== null && key !== lastVol && !isFading()) send({ type: "volume", value: v, muted });
+      lastVol = key;
+    }, 250);
   }
 
   // Liedzeile und Pegel nur, wenn der Overlay-Stil sie braucht (Stil „Lyrics“ / „Visualizer“)

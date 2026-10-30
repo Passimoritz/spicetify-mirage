@@ -87,7 +87,7 @@
 | Ansicht | Was du bekommst |
 |---|---|
 | **Cover** | Riesiges Cover, das sich mit der Maus neigt, Titel im Farbverlauf, Fortschritt, volle Steuerung |
-| **Liedtext** | Spotifys synchronisierter Liedtext, die aktuelle Zeile leuchtet in der Mitte – Klick auf eine Zeile springt dorthin |
+| **Liedtext** | Synchronisierter Liedtext, die aktuelle Zeile leuchtet in der Mitte, Karaoke Wort für Wort – Klick auf eine Zeile springt dorthin. Hat Spotify keinen, sucht Mirage bei [LRCLIB](https://lrclib.net), und *Fassung wählen* nimmt einen anderen Treffer |
 | **Visualizer** | Kreisförmiges Spektrum um das runde Cover, Ringe auf jedem Schlag – mit Spotifys Audioanalyse, sonst ruhige Bewegung |
 
 Steuerung: Zufall, Zurück, Wiedergabe/Pause, Weiter, Wiederholen (auch einen Song), Liken, Lautstärke + Stumm, Vollbild.
@@ -102,6 +102,7 @@ Eine kleine Begleit-App, die Songwechsel **außerhalb von Spotify** anzeigt – 
 - **Wo:** Hauptbildschirm, der Bildschirm mit der Maus oder jeder Bildschirm direkt auf einer Karte deiner Monitore · 9 Positionen · Feinabstand
 - **Wie:** Insel, Karte, Banner oder Minimal · federnd, gleitend oder überblendend · Hintergrund aus dem Cover / dunkel / hell · Leuchten, Rundung, Größe, Deckkraft · Überschrift, Album, Zeit, Fortschrittsbalken
 - **Steuerung beim Überfahren:** Zurück · Wiedergabe/Pause · Weiter direkt im Overlay
+- **Extras:** Lautstärke-Leiste beim Ändern der Lautstärke · ruhig, solange ein Spiel oder Video im Vollbild läuft (Windows, Linux) · eigenes Aussehen per `custom.css` · Streaming-Modus als OBS-Browserquelle (`http://127.0.0.1:47322/`) · aktualisiert sich selbst von GitHub (Windows, AppImage)
 - Läuft im Infobereich, startet auf Wunsch mit dem Rechner (Windows, macOS, Linux) und spricht die Sprache, die Spotify nutzt
 
 ### Overlay installieren

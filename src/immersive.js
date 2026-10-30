@@ -6,7 +6,7 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, translateLines, getCanvas } from "./lyrics.js";
+import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas } from "./lyrics.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard } from "./share.js";
 import * as ctl from "./controls.js";
@@ -95,6 +95,7 @@ const immersive = (() => {
         </div>
       </div>
       <div class="m-im-lyrics"><div class="m-im-lyrics-inner"></div></div>
+      <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
       <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">×</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
     document.body.append(el);
@@ -122,6 +123,7 @@ const immersive = (() => {
       play: el.querySelector(".m-im-play"),
       lyrics: el.querySelector(".m-im-lyrics"),
       inner: el.querySelector(".m-im-lyrics-inner"),
+      lyrsrc: el.querySelector(".m-im-lyrsrc"),
       ind: el.querySelector(".m-im-ind"),
       canvas: el.querySelector(".m-im-viz"),
       bg: el.querySelector(".m-im-bg"),
@@ -133,6 +135,8 @@ const immersive = (() => {
       full: el.querySelector(".m-im-full"),
     };
     vctx = q.canvas.getContext("2d");
+    q.lyrsrc.querySelector("b").textContent = t("lyrPick");
+    q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
     q.video = el.querySelector(".m-im-canvas");
     q.keys = el.querySelector(".m-im-keys");
     const share = el.querySelector(".m-im-share"), help = el.querySelector(".m-im-help");
@@ -323,6 +327,69 @@ const immersive = (() => {
     }
     return box;
   }
+  // Wortzeiten einer Zeile. Liefert Spotify Silbenzeiten, gelten die; sonst wird geschätzt:
+  // die Zeile dauert bis zur nächsten (höchstens so lange, wie man sie ungefähr singt),
+  // jedes Wort bekommt einen Anteil nach seiner Länge.
+  let words = [];
+  function wordTimes(lines, i) {
+    const l = lines[i];
+    const parts = l.text.split(/\s+/).filter(Boolean);
+    const next = lines[i + 1]?.t ?? l.t + 6000;
+    if (l.syl?.length) {
+      // Silben → Zeichenpositionen, dann je Wort Anfang der ersten und Ende der letzten Silbe
+      const marks = [];
+      let c = 0;
+      l.syl.forEach((s, k) => {
+        marks.push({ from: c, to: c + s.n, a: s.t, b: l.syl[k + 1]?.t ?? Math.min(next, s.t + 900) });
+        c += s.n;
+      });
+      let pos = 0;
+      return parts.map((w) => {
+        const from = l.text.indexOf(w, pos);
+        pos = from + w.length;
+        const hit = marks.filter((m) => m.to > from && m.from < pos);
+        return hit.length ? { text: w, a: hit[0].a, b: hit[hit.length - 1].b } : { text: w, a: l.t, b: l.t + 1 };
+      });
+    }
+    const chars = parts.reduce((n, w) => n + w.length + 2, 0);
+    const span = Math.max(300, Math.min(next - l.t - 150, Math.max(1100, chars * 85)));
+    let at = l.t;
+    return parts.map((w) => {
+      const d = (span * (w.length + 2)) / chars;
+      const out = { text: w, a: at, b: at + d };
+      at += d;
+      return out;
+    });
+  }
+  // Knopf unten rechts: woher der Text kommt, und eine andere Fassung wählen
+  function showSource(got) {
+    const picked = !!cfg.lyricPicks?.[lyrUri];
+    q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri);
+    q.lyrsrc.querySelector("span").textContent = got ? (got.source === "lrclib" ? "LRCLIB" : "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
+  }
+  async function showVersions(body, item) {
+    const uri = lyrUri;
+    item(t("loading"));
+    const list = await lyricVersions(uri);
+    if (side !== "versions" || uri !== lyrUri) return;
+    body.textContent = "";
+    const cur = lyr?.lrcId ? String(lyr.lrcId) : "";
+    const pickedId = cfg.lyricPicks?.[uri] || "";
+    const choose = (id) => {
+      pickLyrics(uri, id);
+      lyrUri = "";
+      loadLyrics();
+      showSide(null);
+    };
+    item(t("lyrAuto"), t("lyrAutoHint"), null, pickedId ? () => choose("") : null, !pickedId);
+    if (!list.length) return item(t("lyrNoVersions"));
+    for (const v of list) {
+      const kind = v.instrumental ? t("instrTitle") : v.synced ? t("lyrSynced") : t("lyrPlain");
+      const sub = [v.album, v.sec ? fmt(v.sec * 1000) : "", kind].filter(Boolean).join(" · ");
+      const on = String(v.id) === (pickedId || cur);
+      item(`${v.title} – ${v.artist}`, sub, null, on ? null : () => choose(v.id), on);
+    }
+  }
   async function loadLyrics() {
     const uri = currentItem()?.uri || "";
     if (uri === lyrUri && lyr !== undefined) return;
@@ -331,6 +398,9 @@ const immersive = (() => {
     lyr = undefined;
     q.inner.style.transform = "";
     q.lyrics.classList.remove("is-unsynced");
+    el.classList.remove("is-karaoke");
+    q.lyrsrc.hidden = true;
+    words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
     const got = await getLyrics(uri);
@@ -338,10 +408,13 @@ const immersive = (() => {
     lyr = got;
     active = -2;
     q.inner.textContent = "";
+    showSource(got);
     if (!got || got.instrumental) {
       q.inner.append(emptyLyrics(!!got));
       return;
     }
+    const karaoke = cfg.karaoke && got.synced;
+    el.classList.toggle("is-karaoke", karaoke);
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
     const frag = document.createDocumentFragment();
     if (!got.synced) {
@@ -350,19 +423,26 @@ const immersive = (() => {
       note.textContent = t("unsynced");
       frag.append(note);
     }
-    for (const l of got.lines) {
+    got.lines.forEach((l, i) => {
       const d = document.createElement("div");
       d.className = "m-im-line";
       d.dataset.t = l.t;
-      d.textContent = l.text;
+      if (karaoke && l.text !== "♪") {
+        const box = document.createElement("span");
+        box.className = "m-im-words";
+        const list = [];
+        for (const w of wordTimes(got.lines, i)) {
+          const s = document.createElement("span");
+          s.className = "m-w";
+          s.textContent = w.text;
+          box.append(s, " ");
+          list.push({ el: s, a: w.a, b: w.b, p: -1 });
+        }
+        d.append(box);
+        words[i] = list;
+      } else d.textContent = l.text;
       frag.append(d);
-    }
-    if (got.source === "lrclib") {
-      const src = document.createElement("div");
-      src.className = "m-im-lyrics-src";
-      src.textContent = t("lyrSource").replace("{s}", "LRCLIB");
-      frag.append(src);
-    }
+    });
     q.inner.append(frag);
     if (cfg.translate) {
       const tr = await translateLines(uri, got, LANG);
@@ -395,6 +475,17 @@ const immersive = (() => {
       if (cur) {
         const y = q.lyrics.clientHeight * 0.42 - (cur.offsetTop + cur.offsetHeight / 2);
         q.inner.style.transform = `translateY(${y}px)`;
+      }
+    }
+    // Karaoke: nur die Wörter der aktuellen Zeile, und nur wenn sich ihr Stand sichtbar ändert
+    const ws = i >= 0 && words[i];
+    if (ws) {
+      for (const w of ws) {
+        const p = Math.round(clamp((pos - w.a) / (w.b - w.a), 0, 1) * 50) / 50;
+        if (p !== w.p) {
+          w.p = p;
+          w.el.style.setProperty("--p", p);
+        }
       }
     }
   }
@@ -652,7 +743,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -688,6 +779,8 @@ const immersive = (() => {
       const list = ctl.devices();
       if (!list.length) return item(t("devicesNone"));
       for (const d of list) item(d.name, d.active ? t("deviceActive") : d.type, null, d.active ? null : async () => { await ctl.transfer(d.id); setTimeout(() => showSide("devices"), 800); }, d.active);
+    } else if (kind === "versions") {
+      showVersions(body, item);
     } else if (kind === "timer") {
       const now = ctl.sleepState();
       for (const [v, label] of [[15, "15 min"], [30, "30 min"], [45, "45 min"], [60, "60 min"], ["track", t("timerTrack")], [0, t("timerOff")]]) {
