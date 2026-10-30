@@ -42,6 +42,14 @@ jobs:
           # README links to releases/latest/download/fix-spicetify.cmd
           files: tools/fix-spicetify.cmd
 
+      # Marketplace lädt das Theme über jsDelivr (…/gh/<user>/<repo>@main/…), das Branch-Dateien bis zu
+      # 12 Stunden zwischenspeichert. Ohne Leeren bekämen Nutzer die neue Version erst Stunden später.
+      - name: Purge jsDelivr cache for Marketplace
+        run: |
+          for f in Mirage/theme.js Mirage/user.css Mirage/color.ini manifest.json; do
+            curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/$f" > /dev/null && echo "purged $f" || echo "purge failed for $f"
+          done
+
   # Mirage Overlay als fertige Installer: Windows (.exe), macOS (.dmg, universal), Linux (.AppImage, .deb).
   # Jedes System baut auf seinem eigenen Runner; die Dateien landen am Release, den der Job oben anlegt.
   overlay:
