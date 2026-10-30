@@ -1,7 +1,7 @@
 import { S, root, clamp, seek, fmt, loadImage } from "./core.js";
 import { t } from "./i18n.js";
 import { cfg, save } from "./config.js";
-import { palette } from "./color.js";
+import { palette, rgb2hsl, hsl2rgb } from "./color.js";
 import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
@@ -642,7 +642,7 @@ const immersive = (() => {
     if (px) {
       const P = px.P;
       Object.assign(V, {
-        style: P.style, mirror: P.mirror, spin: P.spin, glow: true, rings: true, ring: P.ring,
+        mirror: P.mirror, spin: P.spin, glow: true, rings: true, ring: P.ring,
         height: V.height * P.height * (1 + px.drop * 0.35),
         pulse: P.pulse * px.lvl * (1 + px.drop * 0.6),
       });
@@ -697,7 +697,7 @@ const immersive = (() => {
     }
     if (cfg.calm) return;
 
-    const pal = palette();
+    const pal = px ? vivid(palette()) : palette();
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
     const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
@@ -716,7 +716,8 @@ const immersive = (() => {
     const ang = (i) => (i / N) * Math.PI * 2 - Math.PI / 2 + rot;
     const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
 
-    if (V.style === "bottom") {
+    if (px) drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang);
+    else if (V.style === "bottom") {
       // Balken am unteren Rand über die ganze Breite
       const bw = vw / N, base = vh - 8 * dpr;
       for (let gi = 0; gi < 3; gi++) {
@@ -835,6 +836,95 @@ const immersive = (() => {
     }
   }
   let lastPulse = "", lastFlashCol = -1;
+
+  // Party-Farben: kräftig statt der oft gedeckten Coverfarben. Graue Cover bekommen Mirage-Töne.
+  let vividKey = "", vividPal = null;
+  function vivid(pal) {
+    const key = pal.map((c) => c.join(",")).join("|");
+    if (key === vividKey) return vividPal;
+    vividKey = key;
+    const hsl = pal.map(rgb2hsl);
+    const grey = hsl.every(([, s]) => s < 0.12);
+    vividPal = hsl.map(([h, s, l], i) => hsl2rgb([grey ? [275, 195, 320][i] : h, Math.max(s, 0.72), clamp(l, 0.56, 0.7)]));
+    return vividPal;
+  }
+
+  // Party-Kranz: Balken im Farbverlauf rund ums Cover (12 Farbstufen = 12 Pfade), darüber eine feine
+  // Lichtlinie und Funken, die bei jedem Schlag vom Cover wegfliegen
+  let sparks = [];
+  function drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang) {
+    const P = px.P;
+    const mixC = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));
+    const colAt = (u) => {
+      const x = (u * 3) % 3, i = Math.floor(x);
+      return mixC(pal[i], pal[(i + 1) % 3], x - i);
+    };
+    const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
+    const STEPS = 12;
+    const w = P.thick * dpr * (1 + px.drop * 0.35);
+    for (const [lw, al] of [[w * 3.2, 0.16], [w, 0.95]]) {
+      ctx.lineWidth = lw;
+      for (let k = 0; k < STEPS; k++) {
+        ctx.beginPath();
+        for (let i = Math.floor((k / STEPS) * N); i < Math.floor(((k + 1) / STEPS) * N); i++) {
+          const c = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
+          ctx.moveTo(cx + c * (R + 2 * dpr), cy + sn * (R + 2 * dpr));
+          ctx.lineTo(cx + c * e, cy + sn * e);
+        }
+        ctx.strokeStyle = rgba(colAt((k + 0.5) / STEPS), al);
+        ctx.stroke();
+      }
+    }
+    if (P.halo) {
+      // weiche Linie knapp über den Spitzen – Glanz statt gefüllter Fläche
+      ctx.beginPath();
+      for (let i = 0; i <= N; i++) {
+        const j = i % N, nx = (i + 1) % N;
+        const r0 = tip(j) + 10 * dpr, r1 = tip(nx) + 10 * dpr;
+        const x0 = cx + Math.cos(ang(j)) * r0, y0 = cy + Math.sin(ang(j)) * r0;
+        const x1 = cx + Math.cos(ang(nx)) * r1, y1 = cy + Math.sin(ang(nx)) * r1;
+        const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+        i ? ctx.quadraticCurveTo(x0, y0, mx, my) : ctx.moveTo(mx, my);
+      }
+      ctx.closePath();
+      ctx.lineWidth = 7 * dpr;
+      ctx.strokeStyle = rgba(pal[1], 0.1 + px.drop * 0.08);
+      ctx.stroke();
+      ctx.lineWidth = 1.4 * dpr;
+      ctx.strokeStyle = `rgba(255,255,255,${0.32 + px.drop * 0.3})`;
+      ctx.stroke();
+    }
+    if (P.bottom) {
+      // Bass: flache Balken am unteren Rand, in den Farben des Kranzes
+      const n = 64, bw = vw / n, base = vh;
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const h = (4 + vals[Math.floor((i / n) * N)] * 90 * (1 + px.drop)) * dpr;
+        ctx.rect(i * bw + bw * 0.2, base - h, bw * 0.6, h);
+      }
+      const g = ctx.createLinearGradient(0, 0, vw, 0);
+      pal.forEach((c, i) => g.addColorStop(i / 2, rgba(c, 0.45)));
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+    // Funken: Anzahl je Profil und Stärke, mehr im Drop; höchstens 260 gleichzeitig
+    if (px.hit && sparks.length < 260) {
+      const n = Math.round(P.sparks * px.lvl * (1 + px.drop));
+      for (let k = 0; k < n; k++) {
+        const a = Math.random() * Math.PI * 2;
+        sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.6), life: 1, c: colAt(a / (Math.PI * 2)) });
+      }
+    }
+    sparks = sparks.filter((p) => (p.life -= dt * 1.15) > 0);
+    for (const p of sparks) {
+      p.r += p.v * dt;
+      p.v *= Math.exp(-dt * 1.6);
+      ctx.fillStyle = rgba(p.c, p.life * 0.9);
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
 
   function frame(now) {
     raf = requestAnimationFrame(frame);

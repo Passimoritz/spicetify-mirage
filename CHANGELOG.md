@@ -10,8 +10,15 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.4.1] – 2026-10-30
+
+### Changed
+
+- Party mode has its own visualizer: a fine ring of bars in a colour gradient around the cover, a glowing line over the tips instead of the filled wave, and sparks that fly off the cover on the beat (more in drops). Colours are boosted to be vivid; grey covers get Mirage tones. Bass songs add low bars along the bottom edge.
+
 ### Fixed
 
+- Mix mode: the progress bar and times are centred under the title on wide windows.
 - Overlay app: "Start with Windows" is re-registered at every start, so the entry follows the app after an update, a reinstall or a switch from a development copy.
 
 ## [1.4.0] – 2026-10-30

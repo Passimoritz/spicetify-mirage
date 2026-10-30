@@ -1127,6 +1127,12 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="mix"] .m-im-bar {
   margin-top: 2.5vh;
 }
+/* Leiste und Zeiten mittig wie Titel und Knöpfe – auf breiten Fenstern ist die Spalte breiter als die Leiste */
+#mirage-immersive:is([data-mode="mix"], [data-mode="party"]) :is(.m-im-bar, .m-im-time) {
+  width: min(560px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
 
 /* ---------- Ansicht: Party – groß, mittig, im Takt ---------- */
 #mirage-immersive[data-mode="party"] {

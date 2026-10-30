@@ -7,12 +7,14 @@ import { audio } from "./audio.js";
 // Lautheit der Taktanalyse. Das Profil legt Visualizer-Stil, Puls, Wackeln, Ringe und Lichtblitze fest.
 // Blitze sind weiche Farbflächen (keine weißen Stroboskop-Blitze) und kommen höchstens einmal pro Takt
 // bzw. alle zwei Schläge – also unter drei pro Sekunde. „Weniger Bewegung“ im System schaltet sie ab.
+// thick = Balkenstärke, halo = feine Lichtlinie über den Spitzen, sparks = Funken je Schlag,
+// bottom = zusätzliche Bassbalken am unteren Rand
 const PROFILES = {
-  rave: { style: "bars", mirror: true, spin: true, height: 1.55, pulse: 0.09, shake: 0, flash: "bar", ring: 1, glow: 1 },
-  bass: { style: "bottom", mirror: false, spin: false, height: 1.8, pulse: 0.12, shake: 7, flash: "bar", ring: 2, glow: 0.8 },
-  rock: { style: "wave", mirror: true, spin: false, height: 1.6, pulse: 0.08, shake: 10, flash: "beat", ring: 2, glow: 1 },
-  pop: { style: "particles", mirror: true, spin: true, height: 1.45, pulse: 0.07, shake: 0, flash: "bar", ring: 1, glow: 1 },
-  chill: { style: "wave", mirror: true, spin: true, height: 1.1, pulse: 0.035, shake: 0, flash: "", ring: 4, glow: 0.6 },
+  rave: { mirror: true, spin: true, height: 1.5, pulse: 0.09, shake: 0, flash: "bar", ring: 1, thick: 2.6, halo: true, sparks: 10, bottom: false },
+  bass: { mirror: true, spin: false, height: 1.35, pulse: 0.12, shake: 6, flash: "bar", ring: 2, thick: 4.2, halo: false, sparks: 6, bottom: true },
+  rock: { mirror: true, spin: false, height: 1.5, pulse: 0.08, shake: 8, flash: "beat", ring: 2, thick: 3.4, halo: true, sparks: 14, bottom: false },
+  pop: { mirror: true, spin: true, height: 1.4, pulse: 0.07, shake: 0, flash: "bar", ring: 1, thick: 2.4, halo: true, sparks: 18, bottom: false },
+  chill: { mirror: true, spin: true, height: 1.1, pulse: 0.035, shake: 0, flash: "", ring: 4, thick: 2, halo: true, sparks: 3, bottom: false },
 };
 const PROFILE_KEYS = Object.keys(PROFILES);
 // Reihenfolge zählt: „dance pop“ ist eher Pop als Rave, „pop punk“ eher Rock
