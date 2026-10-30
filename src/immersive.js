@@ -11,6 +11,8 @@ import { LANG } from "./i18n.js";
 import { nowPlayingCard } from "./share.js";
 import * as ctl from "./controls.js";
 import { currentItem, covers, titleOf, artistOf } from "./player.js";
+import { party } from "./party.js";
+import { jamMembers } from "./jam.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -40,7 +42,12 @@ const MODES = [
   ["cover", "tabCover"],
   ["lyrics", "tabLyrics"],
   ["viz", "tabViz"],
+  ["mix", "tabMix"],
+  ["party", "tabParty"],
 ];
+// Mix = Cover + Liedtext + Visualizer zugleich; Party = alles größer, im Takt, je nach Genre/Tempo
+const LYR = new Set(["lyrics", "mix", "party"]);
+const VIZ = new Set(["viz", "mix", "party"]);
 
 const immersive = (() => {
   let el = null, raf = 0, lastText = 0, coverToken = 0;
@@ -58,6 +65,8 @@ const immersive = (() => {
     el.setAttribute("aria-label", t("dialog"));
     el.innerHTML = `
       <div class="m-im-bg" aria-hidden="true"><i></i><i></i><video class="m-im-canvas" muted loop playsinline preload="none"></video></div>
+      <div class="m-im-flash" aria-hidden="true"></div>
+      <div class="m-im-jam" hidden></div>
       <canvas class="m-im-viz"></canvas>
       <div class="m-im-drag" aria-hidden="true"></div>
       <div class="m-im-top">
@@ -132,6 +141,8 @@ const immersive = (() => {
       trbtn: el.querySelector(".m-im-trbtn"),
       ind: el.querySelector(".m-im-ind"),
       canvas: el.querySelector(".m-im-viz"),
+      flash: el.querySelector(".m-im-flash"),
+      jam: el.querySelector(".m-im-jam"),
       bg: el.querySelector(".m-im-bg"),
       shuffle: el.querySelector(".m-im-shuffle"),
       repeat: el.querySelector(".m-im-repeat"),
@@ -312,7 +323,10 @@ const immersive = (() => {
       el.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
       placeIndicator();
       updateKicker();
-      if (mode === "lyrics") loadLyrics();
+      if (LYR.has(mode)) loadLyrics();
+      if (mode === "party") party.prepare(currentItem()).then(updateKicker);
+      else resetParty();
+      sizeCanvas();
       active = -2;
     };
     if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
@@ -327,7 +341,58 @@ const immersive = (() => {
   function updateKicker() {
     if (!el) return;
     const m = el.dataset.mode;
-    q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : t("now");
+    if (m === "party") {
+      // „Party · Rave · 128 BPM“ – zeigt, welches Profil gerade greift
+      const p = party.info;
+      q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? p.bpm + " BPM" : ""].filter(Boolean).join(" · ");
+      return;
+    }
+    q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : m === "mix" ? t("tabMix") : t("now");
+  }
+  // Party-Effekte (Farbfläche, Wackeln) zurücknehmen, wenn eine andere Ansicht kommt
+  let partyFx = false;
+  function resetParty() {
+    if (!partyFx) return;
+    partyFx = false;
+    q.flash.style.opacity = "0";
+    q.wrap.style.translate = "";
+  }
+
+  // Jam: Profilbilder schweben links und rechts am Rand; du mit Akzentring, der Host mit kleinem Punkt.
+  // Neu gebaut wird nur, wenn sich die Runde ändert.
+  let lastJam = -1e9, jamKey = "";
+  async function showJam() {
+    const list = cfg.partyJam ? await jamMembers() : [];
+    const key = list.map((m) => m.id + m.img).join("|");
+    if (key === jamKey) return;
+    jamKey = key;
+    q.jam.textContent = "";
+    q.jam.hidden = !list.length;
+    const shown = list.slice(0, 10);
+    shown.forEach((m, i) => {
+      const left = i % 2 === 0, row = i >> 1, rows = Math.ceil(shown.length / 2);
+      const f = document.createElement("figure");
+      f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "");
+      // etwas versetzt statt in Reih und Glied: wirkt schwebend
+      f.style.cssText = `--i:${i};left:${left ? 4 + (row % 2) * 3 : 89 - (row % 2) * 3}%;top:${20 + ((row + 0.5) / rows) * 56}%`;
+      const pic = document.createElement(m.img ? "img" : "span");
+      if (m.img) {
+        pic.src = m.img;
+        pic.alt = "";
+        pic.referrerPolicy = "no-referrer";
+      } else pic.textContent = (m.name || "?").trim().charAt(0).toUpperCase();
+      const cap = document.createElement("figcaption");
+      cap.textContent = m.me ? t("jamYou") : m.name;
+      f.append(pic, cap);
+      q.jam.append(f);
+    });
+    if (list.length > shown.length) {
+      const more = document.createElement("figure");
+      more.className = "m-jam-p is-more";
+      more.style.cssText = "--i:10;left:89%;top:86%";
+      more.textContent = "+" + (list.length - shown.length);
+      q.jam.append(more);
+    }
   }
 
   // Jeder Ladevorgang bekommt eine Nummer; nur der neueste darf schreiben. Sonst hängen zwei
@@ -569,6 +634,19 @@ const immersive = (() => {
     const sec = pos / 1000;
     const playing = S.Player.isPlaying();
     let b = 0, havePitch = false, loud = 0.5;
+    // Stil aus den Einstellungen; im Mix keine Linie quer durch den Liedtext, im Party-Modus das Song-Profil
+    const mode = el.dataset.mode;
+    const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
+    if (mode === "mix" && V.style === "line") V.style = "wave";
+    const px = mode === "party" ? party.step(sec, dt, playing) : null;
+    if (px) {
+      const P = px.P;
+      Object.assign(V, {
+        style: P.style, mirror: P.mirror, spin: P.spin, glow: true, rings: true, ring: P.ring,
+        height: V.height * P.height * (1 + px.drop * 0.35),
+        pulse: P.pulse * px.lvl * (1 + px.drop * 0.6),
+      });
+    }
 
     if (audio.data) {
       // zwischen aktuellem und nächstem Abschnitt weich überblenden statt springen
@@ -586,11 +664,13 @@ const immersive = (() => {
       const bi = seek(audio.data.beats, sec, "t");
       if (bi !== lastBeatIdx && bi >= 0 && playing) {
         lastBeatIdx = bi;
-        if (cfg.vizRings) rings.push({ r: R, a: 0.6 * clamp(audio.data.beats[bi].c + 0.3, 0, 1) });
+        const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
+        // Party: dickere, hellere Ringe – je nach Profil auf jedem, jedem 2. oder 4. Schlag
+        if (V.rings && bi % V.ring === 0) rings.push(px ? { r: R, a: (0.7 + px.drop * 0.3) * c, w: 3 + px.drop * 4 } : { r: R, a: 0.6 * c, w: 2 });
       }
     }
 
-    const mirror = cfg.vizMirror;
+    const mirror = V.mirror;
     const span = mirror ? N / 2 : N;
     const tt = now / 1000;
     for (let i = 0; i < N; i++) {
@@ -619,13 +699,14 @@ const immersive = (() => {
 
     const pal = palette();
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-    const maxLen = Math.min(vw, vh) * 0.11 * (cfg.vizHeight / 100);
-    const rot = cfg.vizSpin ? tt * 0.06 : 0;
+    // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
+    const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
+    const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
     ctx.globalCompositeOperation = "lighter";
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-    glow.addColorStop(0, rgba(pal[0], 0.16 + b * 0.22));
+    glow.addColorStop(0, rgba(pal[0], (0.16 + b * 0.22) * (px ? 1.6 + px.drop : 1)));
     glow.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = glow;
     // nur so groß wie der Schein reicht – außerhalb ist der Verlauf ohnehin durchsichtig
@@ -635,22 +716,22 @@ const immersive = (() => {
     const ang = (i) => (i / N) * Math.PI * 2 - Math.PI / 2 + rot;
     const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
 
-    if (cfg.vizStyle === "bottom") {
+    if (V.style === "bottom") {
       // Balken am unteren Rand über die ganze Breite
       const bw = vw / N, base = vh - 8 * dpr;
       for (let gi = 0; gi < 3; gi++) {
         ctx.fillStyle = rgba(pal[gi], 0.85);
         ctx.beginPath();
         for (let i = gi; i < N; i += 3) {
-          const h = 6 * dpr + vals[i] * vh * 0.32 * (cfg.vizHeight / 100);
+          const h = 6 * dpr + vals[i] * vh * 0.32 * V.height;
           ctx.rect(i * bw + bw * 0.15, base - h, bw * 0.7, h);
         }
         ctx.fill();
       }
-    } else if (cfg.vizStyle === "line") {
+    } else if (V.style === "line") {
       // Wellenlinie quer durch das Bild, oben und unten gespiegelt
       const mid = cy;
-      for (const [w, col, al] of [[10, pal[1], cfg.vizGlow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
+      for (const [w, col, al] of [[10, pal[1], V.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
         if (!al) continue;
         ctx.lineWidth = w * dpr;
         ctx.strokeStyle = rgba(col, al);
@@ -663,7 +744,7 @@ const immersive = (() => {
           ctx.stroke();
         }
       }
-    } else if (cfg.vizStyle === "particles") {
+    } else if (V.style === "particles") {
       // Lichtpunkte, die um das Cover kreisen und mit der Musik nach außen schweben
       for (let i = 0; i < N; i++) {
         const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
@@ -673,7 +754,7 @@ const immersive = (() => {
         ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r, 0, Math.PI * 2);
         ctx.fill();
       }
-    } else if (cfg.vizStyle === "wave") {
+    } else if (V.style === "wave") {
       // geschlossene, weiche Kurve durch alle Spitzen
       ctx.beginPath();
       for (let i = 0; i <= N; i++) {
@@ -687,7 +768,7 @@ const immersive = (() => {
       ctx.closePath();
       ctx.fillStyle = rgba(pal[0], 0.16);
       ctx.fill();
-      if (cfg.vizGlow) {
+      if (V.glow) {
         ctx.lineWidth = 10 * dpr;
         ctx.strokeStyle = rgba(pal[1], 0.14);
         ctx.stroke();
@@ -699,14 +780,14 @@ const immersive = (() => {
       // Balken bzw. Punkte: pro Farbe EIN Pfad statt einer Linie pro Balken
       const groups = [[], [], []];
       for (let i = 0; i < N; i++) groups[i % 3 === 0 ? 2 : i % 2 ? 0 : 1].push(i);
-      const passes = cfg.vizStyle === "bars" && cfg.vizGlow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
+      const passes = V.style === "bars" && V.glow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
       for (const [w, al] of passes) {
         ctx.lineWidth = w * dpr;
         groups.forEach((idx, gi) => {
           ctx.beginPath();
           for (const i of idx) {
             const c = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-            if (cfg.vizStyle === "dots") {
+            if (V.style === "dots") {
               ctx.moveTo(cx + c * e + 3 * dpr, cy + sn * e);
               ctx.arc(cx + c * e, cy + sn * e, 3 * dpr, 0, Math.PI * 2);
             } else {
@@ -714,7 +795,7 @@ const immersive = (() => {
               ctx.lineTo(cx + c * e, cy + sn * e);
             }
           }
-          if (cfg.vizStyle === "dots") {
+          if (V.style === "dots") {
             ctx.fillStyle = rgba(pal[gi], al);
             ctx.fill();
           } else {
@@ -725,11 +806,11 @@ const immersive = (() => {
       }
     }
 
-    ctx.lineWidth = 2 * dpr;
     rings = rings.filter((g) => g.a > 0.02);
     for (const g of rings) {
       g.r += 300 * dt * dpr;
       g.a *= Math.exp(-dt * 2.8);
+      ctx.lineWidth = (g.w || 2) * dpr;
       ctx.strokeStyle = rgba(pal[2], g.a);
       ctx.beginPath();
       ctx.arc(cx, cy, g.r, 0, Math.PI * 2);
@@ -737,10 +818,23 @@ const immersive = (() => {
     }
     ctx.globalCompositeOperation = "source-over";
     // Puls direkt als scale (eigene Grafikebene), nur bei sichtbarer Änderung
-    const pulse = (1 + b * 0.035).toFixed(3);
+    const pulse = (1 + b * V.pulse).toFixed(3);
     if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
+    if (px) {
+      // Farbfläche: nur Deckkraft und (beim Takt) Farbe ändern – beides ohne Neu-Layout
+      partyFx = true;
+      const op = (px.flash * 0.42).toFixed(2);
+      if (q.flash.style.opacity !== op) q.flash.style.opacity = op;
+      if (px.flashCol !== lastFlashCol) {
+        lastFlashCol = px.flashCol;
+        const c = pal[px.flashCol];
+        q.flash.style.background = `radial-gradient(70% 60% at 50% 45%, rgba(${c[0]},${c[1]},${c[2]},0.9), rgba(${c[0]},${c[1]},${c[2]},0) 72%)`;
+      }
+      const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
+      if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
+    }
   }
-  let lastPulse = "";
+  let lastPulse = "", lastFlashCol = -1;
 
   function frame(now) {
     raf = requestAnimationFrame(frame);
@@ -755,9 +849,14 @@ const immersive = (() => {
       syncState();
     }
     const mode = el.dataset.mode;
-    if (mode === "lyrics") drawLyrics(pos);
-    if (mode === "viz") drawViz(pos, now);
-    else if (lastPulse) {
+    if (LYR.has(mode)) drawLyrics(pos);
+    if (VIZ.has(mode)) drawViz(pos, now);
+    // Jam-Leute alle 3 s nachsehen (wer kommt, wer geht) – nur im Party-Modus
+    if (mode === "party" && now - lastJam > 3000) {
+      lastJam = now;
+      showJam();
+    }
+    if (!VIZ.has(mode) && lastPulse) {
       q.wrap.style.scale = "";
       lastPulse = "";
     }
@@ -778,7 +877,7 @@ const immersive = (() => {
     q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
   }
   // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 2 3", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["Esc", "k_close"], ["?", "keysTitle"]];
   function toggleKeys(force) {
     if (!q.keys) return;
     const show = force ?? q.keys.hidden;
@@ -869,7 +968,8 @@ const immersive = (() => {
     lastBeatIdx = -1;
     rings = [];
     updateKicker();
-    if (el.dataset.mode === "lyrics") loadLyrics();
+    if (LYR.has(el.dataset.mode)) loadLyrics();
+    if (el.dataset.mode === "party") party.prepare(item).then(updateKicker);
   }
 
   function open() {
@@ -906,7 +1006,7 @@ const immersive = (() => {
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
-    seekBy, volBy, toggleFull, toggleKeys, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && el.dataset.mode === "lyrics" && loadLyrics(); }, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
   };
 })();
 

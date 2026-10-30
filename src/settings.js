@@ -13,6 +13,7 @@ import { recheckAll } from "./readability.js";
 import { diagnostics } from "./selectors.js";
 import { nowPlayingCard, weekCard, monthCard } from "./share.js";
 import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
+import { PROFILE_KEYS } from "./party.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -278,7 +279,21 @@ function render(box) {
       toggle("vizGlow", () => {}),
       toggle("vizRings", () => {}),
       toggle("vizMirror", () => {}),
-      toggle("vizSpin", () => {})
+      toggle("vizSpin", () => {}),
+      // Party-Modus: Profil automatisch (Genre/Tempo) oder fest, Stärke, weiche Farbblitze
+      head(t("partySection"), t("partySectionHint")),
+      seg([["auto", t("party_auto")], ...PROFILE_KEYS.map((k) => [k, t("party_" + k)])], cfg.partyStyle, (k) => {
+        cfg.partyStyle = k;
+        save();
+        immersive.refresh();
+      }),
+      el("small", "m-note", t("partyLevel")),
+      seg([[1, t("partyLevel1")], [2, t("partyLevel2")], [3, t("partyLevel3")]], cfg.partyLevel, (k) => {
+        cfg.partyLevel = k;
+        save();
+      }),
+      toggle("partyFlash", () => {}),
+      toggle("partyJam", () => {})
     )
   );
 

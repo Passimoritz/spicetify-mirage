@@ -89,6 +89,8 @@ Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> or the circle button in 
 | **Cover** | Huge cover that tilts with the mouse, title in a colour gradient, progress, full controls |
 | **Lyrics** | Synced lyrics, the current line lit up and centred, karaoke word by word – click any line to jump there. No lyrics at Spotify? Mirage looks on [LRCLIB](https://lrclib.net), and *Choose version* picks another match |
 | **Visualizer** | Radial spectrum around the round cover, beat rings – driven by Spotify's audio analysis when available, otherwise ambient |
+| **Mix** | All three at once: round cover with the visualizer ring, synced lyrics beside it, full controls |
+| **Party** | Bigger and on the beat: the profile follows the artist's genre and the tempo (Rave, Bass, Rock, Pop, Chill), with a pulsing cover, beat rings, soft colour washes and a boost on loud drops. In a Spotify Jam, everyone's profile picture floats at the edges. Style, intensity, flashes and Jam guests in the settings |
 
 Controls: shuffle, previous, play/pause, next, repeat (incl. repeat one), like, volume + mute, full screen.
 
@@ -205,7 +207,7 @@ Profile menu → **Mirage settings**: colours from the cover, light dust, beat b
 | Where | Key | Action |
 |---|---|---|
 | anywhere | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> | open / close immersive mode |
-| immersive | <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> | cover · lyrics · visualizer |
+| immersive | <kbd>1</kbd> … <kbd>5</kbd> | cover · lyrics · visualizer · mix · party |
 | immersive | <kbd>Space</kbd> | play / pause |
 | immersive | <kbd>←</kbd> <kbd>→</kbd> | seek 5 s |
 | immersive | <kbd>↑</kbd> <kbd>↓</kbd> | volume |

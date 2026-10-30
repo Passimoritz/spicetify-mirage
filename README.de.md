@@ -89,6 +89,8 @@
 | **Cover** | Riesiges Cover, das sich mit der Maus neigt, Titel im Farbverlauf, Fortschritt, volle Steuerung |
 | **Liedtext** | Synchronisierter Liedtext, die aktuelle Zeile leuchtet in der Mitte, Karaoke Wort für Wort – Klick auf eine Zeile springt dorthin. Hat Spotify keinen, sucht Mirage bei [LRCLIB](https://lrclib.net), und *Fassung wählen* nimmt einen anderen Treffer |
 | **Visualizer** | Kreisförmiges Spektrum um das runde Cover, Ringe auf jedem Schlag – mit Spotifys Audioanalyse, sonst ruhige Bewegung |
+| **Mix** | Alles zugleich: rundes Cover im Visualizer-Kranz, daneben der Liedtext, volle Steuerung |
+| **Party** | Größer und im Takt: Das Profil richtet sich nach Genre und Tempo (Rave, Bass, Rock, Pop, Chill) – pulsierendes Cover, Ringe, weiche Farbflächen und ein Schub bei lauten Drops. Im Spotify-Jam schweben die Profilbilder aller Teilnehmer am Rand. Stil, Stärke, Blitze und Jam-Gäste in den Einstellungen |
 
 Steuerung: Zufall, Zurück, Wiedergabe/Pause, Weiter, Wiederholen (auch einen Song), Liken, Lautstärke + Stumm, Vollbild.
 
@@ -193,7 +195,7 @@ Profilmenü → **Mirage-Einstellungen**: Farben aus dem Cover, Lichtstaub, Hint
 | Wo | Taste | Aktion |
 |---|---|---|
 | überall | <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> | Immersiv-Modus öffnen / schließen |
-| immersiv | <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> | Cover · Liedtext · Visualizer |
+| immersiv | <kbd>1</kbd> … <kbd>5</kbd> | Cover · Liedtext · Visualizer · Mix · Party |
 | immersiv | <kbd>Leertaste</kbd> | Wiedergabe / Pause |
 | immersiv | <kbd>←</kbd> <kbd>→</kbd> | 5 s spulen |
 | immersiv | <kbd>↑</kbd> <kbd>↓</kbd> | Lautstärke |

@@ -23,7 +23,7 @@ window.addEventListener("keydown", (e) => {
       KeyP: () => S.Player.back(),
     };
     if (e.key === "?") return immersive.toggleKeys();
-    if (/^Digit[123]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
+    if (/^Digit[1-5]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
     else if (keys[e.code] && !(e.code === "Space" && e.target.closest?.("button"))) {
       e.preventDefault();
       e.stopPropagation();

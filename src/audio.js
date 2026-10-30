@@ -16,9 +16,19 @@ async function loadAudio(uri) {
   try {
     const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]);
     if (audio.uri === uri && d?.beats?.length) {
+      const segs = (d.segments || []).map((s) => ({ t: s.start, l: s.loudness_max, p: s.pitches || [] }));
+      // Tempo (Spotify-Analyse, sonst aus den Schlagabständen) und mittlere Lautheit des Songs –
+      // der Party-Modus wählt daraus Stärke und Takt seiner Effekte und erkennt laute „Drops“
+      const gaps = d.beats.slice(1, 200).map((b, i) => b.start - d.beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
+      const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
+      const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
       audio.data = {
         beats: d.beats.map((b) => ({ t: b.start, c: b.confidence ?? 1 })),
-        segs: (d.segments || []).map((s) => ({ t: s.start, l: s.loudness_max, p: s.pitches || [] })),
+        bars: (d.bars || []).map((b) => ({ t: b.start })),
+        segs,
+        bpm: Math.round(bpm),
+        loud: Number(d.track?.loudness) || avg,
+        avg,
       };
       audioCache.set(uri, audio.data);
     }

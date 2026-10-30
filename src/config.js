@@ -70,6 +70,10 @@ const DEFAULTS = {
   vizRings: true,
   vizMirror: true,
   vizSpin: false,
+  partyStyle: "auto",
+  partyLevel: 2,
+  partyFlash: true,
+  partyJam: true,
   scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
 };
 let cfg = { ...DEFAULTS };

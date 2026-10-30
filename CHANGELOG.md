@@ -10,6 +10,20 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.4.0] – 2026-10-30
+
+### Added
+
+- Immersive mode "Mix" (key 4): cover, lyrics and visualizer at once. A round cover sits in the visualizer ring with the synced lyrics beside it, and all controls stay. Lyrics and visualizer settings apply here too.
+- Immersive mode "Party" (key 5): bigger and on the beat. Each song gets a profile from the artist's genres, or from tempo and loudness when Spotify knows no genre: Rave, Bass, Rock, Pop or Chill. The profile sets the visualizer style, how strongly the cover pulses or shakes, how often rings appear, and soft colour washes per bar. Loud drops push everything further, and very fast songs run in half time. The current lyric line is shown large in the middle, and the kicker shows e.g. "Party · Rave · 128 BPM".
+- Party mode shows who is in your Spotify Jam: everyone's profile picture (you too, with an accent ring; the host with a small dot) floats softly at the edges and updates as people join or leave. Can be switched off ("Show Jam guests").
+- Settings → Immersive: party style (automatic or fixed), intensity (soft, normal, max) and colour flashes on or off. The flashes are coloured washes, not white strobes, never more than a few per second, and they stay off with the system's "reduce motion" setting.
+- Share image "Now playing": with the scannable Spotify Code in a glass capsule under the title. Point the Spotify camera at it to open the song directly.
+
+### Changed
+
+- Keys 1–5 switch the immersive views; the shortcut help and README list the new modes.
+
 ## [1.3.1] – 2026-10-30
 
 ### Added

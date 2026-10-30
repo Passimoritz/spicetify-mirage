@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.3.1" : "dev";
+      VERSION = true ? "1.4.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -179,7 +179,7 @@
           k_play: "Play / pause",
           k_seek: "Seek 5 s",
           k_vol: "Volume",
-          k_view: "Cover \xB7 lyrics \xB7 visualizer",
+          k_view: "Cover \xB7 lyrics \xB7 visualizer \xB7 mix \xB7 party",
           k_like: "Like",
           k_shuffle: "Shuffle",
           k_repeat: "Repeat",
@@ -284,7 +284,27 @@
           monthSongs: "Top songs",
           trToggle: "Translation",
           trShow: "Show translation",
-          trHide: "Hide translation"
+          trHide: "Hide translation",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mix",
+          tabParty: "Party",
+          party_auto: "Auto",
+          party_bass: "Bass",
+          party_chill: "Chill",
+          partySection: "Party mode",
+          partySectionHint: "Auto picks a style for each song from the artist's genres, tempo and loudness",
+          partyLevel: "Intensity",
+          partyLevel1: "Soft",
+          partyLevel2: "Normal",
+          partyLevel3: "Max",
+          partyFlash: "Colour flashes",
+          partyFlashHint: "Soft colour washes on the beat, never more than a few per second. Off with reduced motion",
+          scanCode: "Scan in Spotify",
+          partyJam: "Show Jam guests",
+          partyJamHint: "During a Spotify Jam, the profile pictures of everyone in it (you too) float at the edges",
+          jamYou: "You"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -379,7 +399,7 @@
           k_play: "Wiedergabe / Pause",
           k_seek: "5 s spulen",
           k_vol: "Lautst\xE4rke",
-          k_view: "Cover \xB7 Liedtext \xB7 Visualizer",
+          k_view: "Cover \xB7 Liedtext \xB7 Visualizer \xB7 Mix \xB7 Party",
           k_like: "Liken",
           k_shuffle: "Zufall",
           k_repeat: "Wiederholen",
@@ -484,7 +504,27 @@
           monthSongs: "Top-Songs",
           trToggle: "\xDCbersetzung",
           trShow: "\xDCbersetzung einblenden",
-          trHide: "\xDCbersetzung ausblenden"
+          trHide: "\xDCbersetzung ausblenden",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mix",
+          tabParty: "Party",
+          party_auto: "Auto",
+          party_bass: "Bass",
+          party_chill: "Chill",
+          partySection: "Party-Modus",
+          partySectionHint: "Auto w\xE4hlt pro Song einen Stil aus Genre, Tempo und Lautheit",
+          partyLevel: "St\xE4rke",
+          partyLevel1: "Sanft",
+          partyLevel2: "Normal",
+          partyLevel3: "Maximal",
+          partyFlash: "Farbblitze",
+          partyFlashHint: "Weiche Farbfl\xE4chen im Takt, h\xF6chstens wenige pro Sekunde. Aus bei \u201EWeniger Bewegung\u201C",
+          scanCode: "In Spotify scannen",
+          partyJam: "Jam-G\xE4ste zeigen",
+          partyJamHint: "L\xE4uft ein Spotify-Jam, schweben die Profilbilder aller Teilnehmer (auch deins) am Rand",
+          jamYou: "Du"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -579,7 +619,7 @@
           k_play: "Lecture / pause",
           k_seek: "Avancer/reculer de 5 s",
           k_vol: "Volume",
-          k_view: "Pochette \xB7 paroles \xB7 visualiseur",
+          k_view: "Pochette \xB7 paroles \xB7 visualiseur \xB7 Mix \xB7 F\xEAte",
           k_like: "J'aime",
           k_shuffle: "Al\xE9atoire",
           k_repeat: "R\xE9p\xE9ter",
@@ -684,7 +724,27 @@
           monthSongs: "Top titres",
           trToggle: "Traduction",
           trShow: "Afficher la traduction",
-          trHide: "Masquer la traduction"
+          trHide: "Masquer la traduction",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mix",
+          tabParty: "F\xEAte",
+          party_auto: "Auto",
+          party_bass: "Basses",
+          party_chill: "Chill",
+          partySection: "Mode f\xEAte",
+          partySectionHint: "Auto choisit un style par titre selon le genre, le tempo et le volume",
+          partyLevel: "Intensit\xE9",
+          partyLevel1: "Douce",
+          partyLevel2: "Normale",
+          partyLevel3: "Max",
+          partyFlash: "Flashs de couleur",
+          partyFlashHint: "Douces vagues de couleur en rythme, jamais plus de quelques-unes par seconde. D\xE9sactiv\xE9 avec \xAB r\xE9duire les animations \xBB",
+          scanCode: "Scanner dans Spotify",
+          partyJam: "Afficher les invit\xE9s du Jam",
+          partyJamHint: "Pendant un Jam Spotify, les photos de profil de tous les participants (toi aussi) flottent sur les bords",
+          jamYou: "Toi"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -779,7 +839,7 @@
           k_play: "Reproducir / pausar",
           k_seek: "Saltar 5 s",
           k_vol: "Volumen",
-          k_view: "Portada \xB7 letra \xB7 visualizador",
+          k_view: "Portada \xB7 letra \xB7 visualizador \xB7 Mezcla \xB7 Fiesta",
           k_like: "Me gusta",
           k_shuffle: "Aleatorio",
           k_repeat: "Repetir",
@@ -884,7 +944,27 @@
           monthSongs: "Canciones top",
           trToggle: "Traducci\xF3n",
           trShow: "Mostrar traducci\xF3n",
-          trHide: "Ocultar traducci\xF3n"
+          trHide: "Ocultar traducci\xF3n",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mezcla",
+          tabParty: "Fiesta",
+          party_auto: "Auto",
+          party_bass: "Bajos",
+          party_chill: "Chill",
+          partySection: "Modo fiesta",
+          partySectionHint: "Auto elige un estilo por canci\xF3n seg\xFAn el g\xE9nero, el tempo y el volumen",
+          partyLevel: "Intensidad",
+          partyLevel1: "Suave",
+          partyLevel2: "Normal",
+          partyLevel3: "M\xE1x.",
+          partyFlash: "Destellos de color",
+          partyFlashHint: "Suaves r\xE1fagas de color al ritmo, nunca m\xE1s de unas pocas por segundo. Desactivado con \xABreducir movimiento\xBB",
+          scanCode: "Escanear en Spotify",
+          partyJam: "Mostrar invitados del Jam",
+          partyJamHint: "Durante un Jam de Spotify, las fotos de perfil de todos los participantes (t\xFA tambi\xE9n) flotan en los bordes",
+          jamYou: "T\xFA"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -979,7 +1059,7 @@
           k_play: "Riproduci / pausa",
           k_seek: "Salta di 5 s",
           k_vol: "Volume",
-          k_view: "Copertina \xB7 testo \xB7 visualizzatore",
+          k_view: "Copertina \xB7 testo \xB7 visualizzatore \xB7 Mix \xB7 Festa",
           k_like: "Mi piace",
           k_shuffle: "Casuale",
           k_repeat: "Ripeti",
@@ -1084,7 +1164,27 @@
           monthSongs: "Brani top",
           trToggle: "Traduzione",
           trShow: "Mostra traduzione",
-          trHide: "Nascondi traduzione"
+          trHide: "Nascondi traduzione",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mix",
+          tabParty: "Festa",
+          party_auto: "Auto",
+          party_bass: "Bassi",
+          party_chill: "Chill",
+          partySection: "Modalit\xE0 festa",
+          partySectionHint: "Auto sceglie uno stile per ogni brano in base a genere, tempo e volume",
+          partyLevel: "Intensit\xE0",
+          partyLevel1: "Leggera",
+          partyLevel2: "Normale",
+          partyLevel3: "Max",
+          partyFlash: "Lampi di colore",
+          partyFlashHint: "Morbide ondate di colore a tempo, mai pi\xF9 di poche al secondo. Disattivati con \xABriduci movimento\xBB",
+          scanCode: "Scansiona in Spotify",
+          partyJam: "Mostra gli ospiti del Jam",
+          partyJamHint: "Durante un Jam di Spotify, le foto profilo di tutti i partecipanti (anche la tua) fluttuano ai bordi",
+          jamYou: "Tu"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1179,7 +1279,7 @@
           k_play: "Tocar / pausar",
           k_seek: "Pular 5 s",
           k_vol: "Volume",
-          k_view: "Capa \xB7 letra \xB7 visualizador",
+          k_view: "Capa \xB7 letra \xB7 visualizador \xB7 Mix \xB7 Festa",
           k_like: "Curtir",
           k_shuffle: "Aleat\xF3rio",
           k_repeat: "Repetir",
@@ -1284,7 +1384,27 @@
           monthSongs: "M\xFAsicas mais tocadas",
           trToggle: "Tradu\xE7\xE3o",
           trShow: "Mostrar tradu\xE7\xE3o",
-          trHide: "Ocultar tradu\xE7\xE3o"
+          trHide: "Ocultar tradu\xE7\xE3o",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mix",
+          tabParty: "Festa",
+          party_auto: "Auto",
+          party_bass: "Grave",
+          party_chill: "Chill",
+          partySection: "Modo festa",
+          partySectionHint: "Auto escolhe um estilo por m\xFAsica a partir do g\xEAnero, do andamento e do volume",
+          partyLevel: "Intensidade",
+          partyLevel1: "Suave",
+          partyLevel2: "Normal",
+          partyLevel3: "M\xE1x.",
+          partyFlash: "Flashes de cor",
+          partyFlashHint: "Ondas suaves de cor no ritmo, nunca mais que algumas por segundo. Desligado com \u201Creduzir movimento\u201D",
+          scanCode: "Escanear no Spotify",
+          partyJam: "Mostrar convidados do Jam",
+          partyJamHint: "Durante um Jam do Spotify, as fotos de perfil de todos os participantes (a sua tamb\xE9m) flutuam nas bordas",
+          jamYou: "Voc\xEA"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1379,7 +1499,7 @@
           k_play: "Afspelen / pauzeren",
           k_seek: "5 s spoelen",
           k_vol: "Volume",
-          k_view: "Hoes \xB7 songtekst \xB7 visualizer",
+          k_view: "Hoes \xB7 songtekst \xB7 visualizer \xB7 Mix \xB7 Feest",
           k_like: "Liken",
           k_shuffle: "Shuffle",
           k_repeat: "Herhalen",
@@ -1484,7 +1604,27 @@
           monthSongs: "Topnummers",
           trToggle: "Vertaling",
           trShow: "Vertaling tonen",
-          trHide: "Vertaling verbergen"
+          trHide: "Vertaling verbergen",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Mix",
+          tabParty: "Feest",
+          party_auto: "Auto",
+          party_bass: "Bas",
+          party_chill: "Chill",
+          partySection: "Feestmodus",
+          partySectionHint: "Auto kiest per nummer een stijl op basis van genre, tempo en volume",
+          partyLevel: "Intensiteit",
+          partyLevel1: "Zacht",
+          partyLevel2: "Normaal",
+          partyLevel3: "Max",
+          partyFlash: "Kleurflitsen",
+          partyFlashHint: "Zachte kleurgolven op de beat, nooit meer dan een paar per seconde. Uit bij \u2018minder beweging\u2019",
+          scanCode: "Scan in Spotify",
+          partyJam: "Jam-gasten tonen",
+          partyJamHint: "Tijdens een Spotify Jam zweven de profielfoto's van alle deelnemers (ook die van jou) langs de randen",
+          jamYou: "Jij"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -1579,7 +1719,7 @@
           k_play: "Odtw\xF3rz / pauza",
           k_seek: "Przewi\u0144 o 5 s",
           k_vol: "G\u0142o\u015Bno\u015B\u0107",
-          k_view: "Ok\u0142adka \xB7 tekst \xB7 wizualizator",
+          k_view: "Ok\u0142adka \xB7 tekst \xB7 wizualizator \xB7 Miks \xB7 Impreza",
           k_like: "Polub",
           k_shuffle: "Losowo",
           k_repeat: "Powtarzaj",
@@ -1684,7 +1824,27 @@
           monthSongs: "Top utwory",
           trToggle: "T\u0142umaczenie",
           trShow: "Poka\u017C t\u0142umaczenie",
-          trHide: "Ukryj t\u0142umaczenie"
+          trHide: "Ukryj t\u0142umaczenie",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Miks",
+          tabParty: "Impreza",
+          party_auto: "Auto",
+          party_bass: "Bas",
+          party_chill: "Chill",
+          partySection: "Tryb imprezy",
+          partySectionHint: "Auto dobiera styl do ka\u017Cdego utworu wed\u0142ug gatunku, tempa i g\u0142o\u015Bno\u015Bci",
+          partyLevel: "Intensywno\u015B\u0107",
+          partyLevel1: "\u0141agodna",
+          partyLevel2: "Normalna",
+          partyLevel3: "Maks.",
+          partyFlash: "B\u0142yski koloru",
+          partyFlashHint: "\u0141agodne fale koloru w rytm, najwy\u017Cej kilka na sekund\u0119. Wy\u0142\u0105czone przy \u201Eograniczeniu ruchu\u201D",
+          scanCode: "Zeskanuj w Spotify",
+          partyJam: "Poka\u017C go\u015Bci Jamu",
+          partyJamHint: "Podczas Jamu w Spotify zdj\u0119cia profilowe wszystkich uczestnik\xF3w (tak\u017Ce twoje) unosz\u0105 si\u0119 przy kraw\u0119dziach",
+          jamYou: "Ty"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -1779,7 +1939,7 @@
           k_play: "Oynat / duraklat",
           k_seek: "5 sn sar",
           k_vol: "Ses",
-          k_view: "Kapak \xB7 s\xF6zler \xB7 g\xF6rselle\u015Ftirici",
+          k_view: "Kapak \xB7 s\xF6zler \xB7 g\xF6rselle\u015Ftirici \xB7 Kar\u0131\u015F\u0131k \xB7 Parti",
           k_like: "Be\u011Fen",
           k_shuffle: "Kar\u0131\u015F\u0131k",
           k_repeat: "Tekrarla",
@@ -1884,7 +2044,27 @@
           monthSongs: "En iyi \u015Fark\u0131lar",
           trToggle: "\xC7eviri",
           trShow: "\xC7eviriyi g\xF6ster",
-          trHide: "\xC7eviriyi gizle"
+          trHide: "\xC7eviriyi gizle",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "Kar\u0131\u015F\u0131k",
+          tabParty: "Parti",
+          party_auto: "Otomatik",
+          party_bass: "Bas",
+          party_chill: "Sakin",
+          partySection: "Parti modu",
+          partySectionHint: "Otomatik, her \u015Fark\u0131 i\xE7in t\xFCre, tempoya ve ses d\xFCzeyine g\xF6re bir stil se\xE7er",
+          partyLevel: "Yo\u011Funluk",
+          partyLevel1: "Hafif",
+          partyLevel2: "Normal",
+          partyLevel3: "Maksimum",
+          partyFlash: "Renk fla\u015Flar\u0131",
+          partyFlashHint: "Ritimle yumu\u015Fak renk dalgalar\u0131, saniyede en fazla birka\xE7 tane. Hareketi azalt a\xE7\u0131kken kapal\u0131",
+          scanCode: "Spotify'da tara",
+          partyJam: "Jam konuklar\u0131n\u0131 g\xF6ster",
+          partyJamHint: "Spotify Jam s\u0131ras\u0131nda t\xFCm kat\u0131l\u0131mc\u0131lar\u0131n (senin de) profil foto\u011Fraflar\u0131 kenarlarda s\xFCz\xFCl\xFCr",
+          jamYou: "Sen"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -1979,7 +2159,7 @@
           k_play: "\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435 / \u043F\u0430\u0443\u0437\u0430",
           k_seek: "\u041F\u0435\u0440\u0435\u043C\u043E\u0442\u043A\u0430 \u043D\u0430 5 \u0441",
           k_vol: "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C",
-          k_view: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440",
+          k_view: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440 \xB7 \u041C\u0438\u043A\u0441 \xB7 \u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
           k_like: "\u041D\u0440\u0430\u0432\u0438\u0442\u0441\u044F",
           k_shuffle: "\u041F\u0435\u0440\u0435\u043C\u0435\u0448\u0430\u0442\u044C",
           k_repeat: "\u041F\u043E\u0432\u0442\u043E\u0440",
@@ -2084,7 +2264,27 @@
           monthSongs: "\u0422\u043E\u043F \u043F\u0435\u0441\u0435\u043D",
           trToggle: "\u041F\u0435\u0440\u0435\u0432\u043E\u0434",
           trShow: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434",
-          trHide: "\u0421\u043A\u0440\u044B\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434"
+          trHide: "\u0421\u043A\u0440\u044B\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "\u041C\u0438\u043A\u0441",
+          tabParty: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
+          party_auto: "\u0410\u0432\u0442\u043E",
+          party_bass: "\u0411\u0430\u0441",
+          party_chill: "\u0427\u0438\u043B\u043B",
+          partySection: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          partySectionHint: "\xAB\u0410\u0432\u0442\u043E\xBB \u043F\u043E\u0434\u0431\u0438\u0440\u0430\u0435\u0442 \u0441\u0442\u0438\u043B\u044C \u0434\u043B\u044F \u043A\u0430\u0436\u0434\u043E\u0439 \u043F\u0435\u0441\u043D\u0438 \u043F\u043E \u0436\u0430\u043D\u0440\u0443, \u0442\u0435\u043C\u043F\u0443 \u0438 \u0433\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u0438",
+          partyLevel: "\u0418\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u043E\u0441\u0442\u044C",
+          partyLevel1: "\u041C\u044F\u0433\u043A\u043E",
+          partyLevel2: "\u041E\u0431\u044B\u0447\u043D\u043E",
+          partyLevel3: "\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C",
+          partyFlash: "\u0426\u0432\u0435\u0442\u043E\u0432\u044B\u0435 \u0432\u0441\u043F\u044B\u0448\u043A\u0438",
+          partyFlashHint: "\u041C\u044F\u0433\u043A\u0438\u0435 \u0446\u0432\u0435\u0442\u043E\u0432\u044B\u0435 \u0432\u043E\u043B\u043D\u044B \u0432 \u0442\u0430\u043A\u0442, \u043D\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u0438\u0445 \u0432 \u0441\u0435\u043A\u0443\u043D\u0434\u0443. \u041E\u0442\u043A\u043B\u044E\u0447\u0435\u043D\u044B \u043F\u0440\u0438 \xAB\u0443\u043C\u0435\u043D\u044C\u0448\u0435\u043D\u0438\u0438 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F\xBB",
+          scanCode: "\u0421\u043A\u0430\u043D\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0432 Spotify",
+          partyJam: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u0433\u043E\u0441\u0442\u0435\u0439 Jam",
+          partyJamHint: "\u0412\u043E \u0432\u0440\u0435\u043C\u044F Jam \u0432 Spotify \u0444\u043E\u0442\u043E \u043F\u0440\u043E\u0444\u0438\u043B\u0435\u0439 \u0432\u0441\u0435\u0445 \u0443\u0447\u0430\u0441\u0442\u043D\u0438\u043A\u043E\u0432 (\u0438 \u0442\u0432\u043E\u0451) \u043F\u043B\u0430\u0432\u0430\u044E\u0442 \u043F\u043E \u043A\u0440\u0430\u044F\u043C",
+          jamYou: "\u0422\u044B"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -2179,7 +2379,7 @@
           k_play: "\u0412\u0456\u0434\u0442\u0432\u043E\u0440\u0435\u043D\u043D\u044F / \u043F\u0430\u0443\u0437\u0430",
           k_seek: "\u041F\u0435\u0440\u0435\u043C\u043E\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u043D\u0430 5 \u0441",
           k_vol: "\u0413\u0443\u0447\u043D\u0456\u0441\u0442\u044C",
-          k_view: "\u041E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440",
+          k_view: "\u041E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440 \xB7 \u041C\u0456\u043A\u0441 \xB7 \u0412\u0435\u0447\u0456\u0440\u043A\u0430",
           k_like: "\u041F\u043E\u0434\u043E\u0431\u0430\u0454\u0442\u044C\u0441\u044F",
           k_shuffle: "\u041F\u0435\u0440\u0435\u043C\u0456\u0448\u0430\u0442\u0438",
           k_repeat: "\u041F\u043E\u0432\u0442\u043E\u0440",
@@ -2284,7 +2484,27 @@
           monthSongs: "\u0422\u043E\u043F \u043F\u0456\u0441\u0435\u043D\u044C",
           trToggle: "\u041F\u0435\u0440\u0435\u043A\u043B\u0430\u0434",
           trShow: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u0430\u0434",
-          trHide: "\u0421\u0445\u043E\u0432\u0430\u0442\u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u0430\u0434"
+          trHide: "\u0421\u0445\u043E\u0432\u0430\u0442\u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u0430\u0434",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "\u041C\u0456\u043A\u0441",
+          tabParty: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430",
+          party_auto: "\u0410\u0432\u0442\u043E",
+          party_bass: "\u0411\u0430\u0441",
+          party_chill: "\u0427\u0438\u043B",
+          partySection: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          partySectionHint: "\xAB\u0410\u0432\u0442\u043E\xBB \u0434\u043E\u0431\u0438\u0440\u0430\u0454 \u0441\u0442\u0438\u043B\u044C \u0434\u043B\u044F \u043A\u043E\u0436\u043D\u043E\u0457 \u043F\u0456\u0441\u043D\u0456 \u0437\u0430 \u0436\u0430\u043D\u0440\u043E\u043C, \u0442\u0435\u043C\u043F\u043E\u043C \u0456 \u0433\u0443\u0447\u043D\u0456\u0441\u0442\u044E",
+          partyLevel: "\u0406\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u0456\u0441\u0442\u044C",
+          partyLevel1: "\u041C'\u044F\u043A\u043E",
+          partyLevel2: "\u0417\u0432\u0438\u0447\u0430\u0439\u043D\u043E",
+          partyLevel3: "\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C",
+          partyFlash: "\u041A\u043E\u043B\u044C\u043E\u0440\u043E\u0432\u0456 \u0441\u043F\u0430\u043B\u0430\u0445\u0438",
+          partyFlashHint: "\u041C'\u044F\u043A\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u043E\u0432\u0456 \u0445\u0432\u0438\u043B\u0456 \u0432 \u0442\u0430\u043A\u0442, \u043D\u0435 \u0431\u0456\u043B\u044C\u0448\u0435 \u043A\u0456\u043B\u044C\u043A\u043E\u0445 \u043D\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443. \u0412\u0438\u043C\u043A\u043D\u0435\u043D\u0456 \u043F\u0440\u0438 \xAB\u0437\u043C\u0435\u043D\u0448\u0435\u043D\u043D\u0456 \u0440\u0443\u0445\u0443\xBB",
+          scanCode: "\u0421\u043A\u0430\u043D\u0443\u0432\u0430\u0442\u0438 \u0432 Spotify",
+          partyJam: "\u041F\u043E\u043A\u0430\u0437\u0443\u0432\u0430\u0442\u0438 \u0433\u043E\u0441\u0442\u0435\u0439 Jam",
+          partyJamHint: "\u041F\u0456\u0434 \u0447\u0430\u0441 Jam \u0443 Spotify \u0444\u043E\u0442\u043E \u043F\u0440\u043E\u0444\u0456\u043B\u0456\u0432 \u0443\u0441\u0456\u0445 \u0443\u0447\u0430\u0441\u043D\u0438\u043A\u0456\u0432 (\u0456 \u0442\u0432\u043E\u0454) \u043F\u043B\u0438\u0432\u0443\u0442\u044C \u043A\u0440\u0430\u044F\u043C\u0438",
+          jamYou: "\u0422\u0438"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -2379,7 +2599,7 @@
           k_play: "\u518D\u751F / \u4E00\u6642\u505C\u6B62",
           k_seek: "5 \u79D2\u30B7\u30FC\u30AF",
           k_vol: "\u97F3\u91CF",
-          k_view: "\u30B8\u30E3\u30B1\u30C3\u30C8 \xB7 \u6B4C\u8A5E \xB7 \u30D3\u30B8\u30E5\u30A2\u30E9\u30A4\u30B6\u30FC",
+          k_view: "\u30B8\u30E3\u30B1\u30C3\u30C8 \xB7 \u6B4C\u8A5E \xB7 \u30D3\u30B8\u30E5\u30A2\u30E9\u30A4\u30B6\u30FC \xB7 \u30DF\u30C3\u30AF\u30B9 \xB7 \u30D1\u30FC\u30C6\u30A3\u30FC",
           k_like: "\u3044\u3044\u306D",
           k_shuffle: "\u30B7\u30E3\u30C3\u30D5\u30EB",
           k_repeat: "\u30EA\u30D4\u30FC\u30C8",
@@ -2484,7 +2704,27 @@
           monthSongs: "\u30C8\u30C3\u30D7\u30BD\u30F3\u30B0",
           trToggle: "\u7FFB\u8A33",
           trShow: "\u7FFB\u8A33\u3092\u8868\u793A",
-          trHide: "\u7FFB\u8A33\u3092\u975E\u8868\u793A"
+          trHide: "\u7FFB\u8A33\u3092\u975E\u8868\u793A",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "\u30DF\u30C3\u30AF\u30B9",
+          tabParty: "\u30D1\u30FC\u30C6\u30A3\u30FC",
+          party_auto: "\u81EA\u52D5",
+          party_bass: "\u30D9\u30FC\u30B9",
+          party_chill: "\u30C1\u30EB",
+          partySection: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
+          partySectionHint: "\u81EA\u52D5\u3067\u306F\u30B8\u30E3\u30F3\u30EB\u30FB\u30C6\u30F3\u30DD\u30FB\u97F3\u91CF\u304B\u3089\u66F2\u3054\u3068\u306B\u30B9\u30BF\u30A4\u30EB\u3092\u9078\u3073\u307E\u3059",
+          partyLevel: "\u5F37\u3055",
+          partyLevel1: "\u63A7\u3048\u3081",
+          partyLevel2: "\u6A19\u6E96",
+          partyLevel3: "\u6700\u5927",
+          partyFlash: "\u30AB\u30E9\u30FC\u30D5\u30E9\u30C3\u30B7\u30E5",
+          partyFlashHint: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u305F\u3084\u308F\u3089\u304B\u306A\u8272\u306E\u6CE2\u30021\u79D2\u306B\u6570\u56DE\u307E\u3067\u3002\u300C\u8996\u5DEE\u52B9\u679C\u3092\u6E1B\u3089\u3059\u300D\u3067\u30AA\u30D5",
+          scanCode: "Spotify\u3067\u30B9\u30AD\u30E3\u30F3",
+          partyJam: "Jam\u306E\u53C2\u52A0\u8005\u3092\u8868\u793A",
+          partyJamHint: "Spotify Jam\u4E2D\u306F\u3001\u53C2\u52A0\u8005\u5168\u54E1\uFF08\u3042\u306A\u305F\u3082\uFF09\u306E\u30D7\u30ED\u30D5\u30A3\u30FC\u30EB\u753B\u50CF\u304C\u753B\u9762\u306E\u7AEF\u306B\u6D6E\u304B\u3073\u307E\u3059",
+          jamYou: "\u3042\u306A\u305F"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -2579,7 +2819,7 @@
           k_play: "\uC7AC\uC0DD / \uC77C\uC2DC\uC815\uC9C0",
           k_seek: "5\uCD08 \uD0D0\uC0C9",
           k_vol: "\uBCFC\uB968",
-          k_view: "\uCEE4\uBC84 \xB7 \uAC00\uC0AC \xB7 \uBE44\uC8FC\uC5BC\uB77C\uC774\uC800",
+          k_view: "\uCEE4\uBC84 \xB7 \uAC00\uC0AC \xB7 \uBE44\uC8FC\uC5BC\uB77C\uC774\uC800 \xB7 \uBBF9\uC2A4 \xB7 \uD30C\uD2F0",
           k_like: "\uC88B\uC544\uC694",
           k_shuffle: "\uC154\uD50C",
           k_repeat: "\uBC18\uBCF5",
@@ -2684,7 +2924,27 @@
           monthSongs: "\uC778\uAE30 \uACE1",
           trToggle: "\uBC88\uC5ED",
           trShow: "\uBC88\uC5ED \uD45C\uC2DC",
-          trHide: "\uBC88\uC5ED \uC228\uAE30\uAE30"
+          trHide: "\uBC88\uC5ED \uC228\uAE30\uAE30",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "\uBBF9\uC2A4",
+          tabParty: "\uD30C\uD2F0",
+          party_auto: "\uC790\uB3D9",
+          party_bass: "\uBCA0\uC774\uC2A4",
+          party_chill: "\uCE60",
+          partySection: "\uD30C\uD2F0 \uBAA8\uB4DC",
+          partySectionHint: "\uC790\uB3D9\uC740 \uC7A5\uB974, \uD15C\uD3EC, \uC74C\uB7C9\uC5D0 \uB530\uB77C \uACE1\uB9C8\uB2E4 \uC2A4\uD0C0\uC77C\uC744 \uACE0\uB985\uB2C8\uB2E4",
+          partyLevel: "\uAC15\uB3C4",
+          partyLevel1: "\uBD80\uB4DC\uB7FD\uAC8C",
+          partyLevel2: "\uBCF4\uD1B5",
+          partyLevel3: "\uCD5C\uB300",
+          partyFlash: "\uCEEC\uB7EC \uD50C\uB798\uC2DC",
+          partyFlashHint: "\uBE44\uD2B8\uC5D0 \uB9DE\uCD98 \uBD80\uB4DC\uB7EC\uC6B4 \uC0C9 \uBB3C\uACB0, \uCD08\uB2F9 \uBA87 \uBC88 \uC774\uD558. \uB3D9\uC791 \uC904\uC774\uAE30\uB97C \uCF1C\uBA74 \uAEBC\uC9D1\uB2C8\uB2E4",
+          scanCode: "Spotify\uC5D0\uC11C \uC2A4\uCE94",
+          partyJam: "Jam \uCC38\uC5EC\uC790 \uD45C\uC2DC",
+          partyJamHint: "Spotify Jam \uC911\uC5D0\uB294 \uBAA8\uB4E0 \uCC38\uC5EC\uC790(\uB098 \uD3EC\uD568)\uC758 \uD504\uB85C\uD544 \uC0AC\uC9C4\uC774 \uAC00\uC7A5\uC790\uB9AC\uC5D0 \uB5A0 \uC788\uC2B5\uB2C8\uB2E4",
+          jamYou: "\uB098"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -2779,7 +3039,7 @@
           k_play: "\u64AD\u653E / \u6682\u505C",
           k_seek: "\u5FEB\u8FDB/\u5FEB\u9000 5 \u79D2",
           k_vol: "\u97F3\u91CF",
-          k_view: "\u5C01\u9762 \xB7 \u6B4C\u8BCD \xB7 \u53EF\u89C6\u5316",
+          k_view: "\u5C01\u9762 \xB7 \u6B4C\u8BCD \xB7 \u53EF\u89C6\u5316 \xB7 \u6DF7\u5408 \xB7 \u6D3E\u5BF9",
           k_like: "\u559C\u6B22",
           k_shuffle: "\u968F\u673A\u64AD\u653E",
           k_repeat: "\u91CD\u590D",
@@ -2884,7 +3144,27 @@
           monthSongs: "\u70ED\u95E8\u6B4C\u66F2",
           trToggle: "\u7FFB\u8BD1",
           trShow: "\u663E\u793A\u7FFB\u8BD1",
-          trHide: "\u9690\u85CF\u7FFB\u8BD1"
+          trHide: "\u9690\u85CF\u7FFB\u8BD1",
+          party_rave: "Rave",
+          party_rock: "Rock",
+          party_pop: "Pop",
+          tabMix: "\u6DF7\u5408",
+          tabParty: "\u6D3E\u5BF9",
+          party_auto: "\u81EA\u52A8",
+          party_bass: "\u4F4E\u97F3",
+          party_chill: "\u653E\u677E",
+          partySection: "\u6D3E\u5BF9\u6A21\u5F0F",
+          partySectionHint: "\u81EA\u52A8\u6A21\u5F0F\u4F1A\u6839\u636E\u6D41\u6D3E\u3001\u8282\u594F\u548C\u54CD\u5EA6\u4E3A\u6BCF\u9996\u6B4C\u9009\u62E9\u98CE\u683C",
+          partyLevel: "\u5F3A\u5EA6",
+          partyLevel1: "\u67D4\u548C",
+          partyLevel2: "\u6807\u51C6",
+          partyLevel3: "\u6700\u5F3A",
+          partyFlash: "\u8272\u5F69\u95EA\u5149",
+          partyFlashHint: "\u968F\u8282\u62CD\u51FA\u73B0\u7684\u67D4\u548C\u8272\u5F69\uFF0C\u6BCF\u79D2\u6700\u591A\u51E0\u6B21\u3002\u5F00\u542F\u201C\u51CF\u5F31\u52A8\u6001\u6548\u679C\u201D\u65F6\u5173\u95ED",
+          scanCode: "\u5728 Spotify \u4E2D\u626B\u63CF",
+          partyJam: "\u663E\u793A Jam \u6210\u5458",
+          partyJamHint: "Spotify Jam \u8FDB\u884C\u65F6\uFF0C\u6240\u6709\u6210\u5458\uFF08\u5305\u62EC\u4F60\uFF09\u7684\u5934\u50CF\u4F1A\u5728\u8FB9\u7F18\u8F7B\u8F7B\u6F02\u6D6E",
+          jamYou: "\u4F60"
         }
       };
       LANG = (() => {
@@ -2999,6 +3279,10 @@
         vizRings: true,
         vizMirror: true,
         vizSpin: false,
+        partyStyle: "auto",
+        partyLevel: 2,
+        partyFlash: true,
+        partyJam: true,
         scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage"
       };
       cfg = { ...DEFAULTS };
@@ -3033,9 +3317,17 @@
     try {
       const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8e3))]);
       if (audio.uri === uri && d?.beats?.length) {
+        const segs = (d.segments || []).map((s) => ({ t: s.start, l: s.loudness_max, p: s.pitches || [] }));
+        const gaps = d.beats.slice(1, 200).map((b, i) => b.start - d.beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
+        const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
+        const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
         audio.data = {
           beats: d.beats.map((b) => ({ t: b.start, c: b.confidence ?? 1 })),
-          segs: (d.segments || []).map((s) => ({ t: s.start, l: s.loudness_max, p: s.pitches || [] }))
+          bars: (d.bars || []).map((b) => ({ t: b.start })),
+          segs,
+          bpm: Math.round(bpm),
+          loud: Number(d.track?.loudness) || avg,
+          avg
         };
         audioCache.set(uri, audio.data);
       }
@@ -3453,15 +3745,33 @@
     } catch {
     }
   }
+  async function spotifyCode(uri) {
+    if (!/^spotify:(track|episode|album|playlist|artist|show):/.test(uri || "")) return null;
+    try {
+      const res = await fetch(`https://scannables.scdn.co/uri/plain/svg/000000/white/640/${uri}`);
+      if (!res.ok) return null;
+      let svg = await res.text();
+      if (!/<svg/.test(svg)) return null;
+      svg = svg.replace(/(<rect x="0" y="0"[^>]*?)fill="#000000"/, '$1fill="none"');
+      const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+      try {
+        return await loadImage(url);
+      } finally {
+        setTimeout(() => URL.revokeObjectURL(url), 5e3);
+      }
+    } catch {
+      return null;
+    }
+  }
   async function nowPlayingCard() {
     const item = currentItem();
     if (!item) return;
     const c = covers(item);
-    const img = await loadImage(c.big || c.small, true);
+    const [img, code] = await Promise.all([loadImage(c.big || c.small, true), spotifyCode(item.uri)]);
     const pal = palette();
     const [cv, x] = canvas();
     backdrop(x, pal, img);
-    const size = 760, X = (W - size) / 2, Y = 150;
+    const size = code ? 660 : 760, X = (W - size) / 2, Y = code ? 110 : 150;
     x.save();
     x.shadowColor = css(pal[1], 0.55);
     x.shadowBlur = 90;
@@ -3489,9 +3799,28 @@
     x.fillText(fit(x, artistOf(item), W - 160), W / 2, Y + size + 230);
     const bar = x.createLinearGradient(240, 0, W - 240, 0);
     pal.forEach((p, i) => bar.addColorStop(i / 2, css(p)));
-    rounded(x, 240, Y + size + 270, W - 480, 10, 5);
-    x.fillStyle = bar;
-    x.fill();
+    if (code) {
+      const cw = 520, ch = 130, cx = (W - cw) / 2, cy = Y + size + 278;
+      x.save();
+      x.shadowColor = css(pal[0], 0.45);
+      x.shadowBlur = 50;
+      rounded(x, cx, cy, cw, ch, ch / 2);
+      x.fillStyle = "rgba(8,7,14,0.62)";
+      x.fill();
+      x.restore();
+      rounded(x, cx, cy, cw, ch, ch / 2);
+      x.lineWidth = 2.5;
+      x.strokeStyle = bar;
+      x.stroke();
+      x.drawImage(code, cx + 56, cy + 14, 408, 102);
+      x.fillStyle = "rgba(255,255,255,0.5)";
+      x.font = `600 22px ${FONT}`;
+      x.fillText(t("scanCode").toUpperCase(), W / 2, cy + ch + 44);
+    } else {
+      rounded(x, 240, Y + size + 270, W - 480, 10, 5);
+      x.fillStyle = bar;
+      x.fill();
+    }
     watermark(x);
     deliver(cv, "mirage-now-playing.png");
   }
@@ -3860,8 +4189,163 @@
     }
   });
 
+  // src/party.js
+  async function artistGenres(item) {
+    const uri = item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
+    const id = uri.split(":")[2];
+    if (!id) return [];
+    if (genreCache.has(id)) return genreCache.get(id);
+    const job = (async () => {
+      try {
+        const a = await S.CosmosAsync.get(`https://api.spotify.com/v1/artists/${id}`);
+        return Array.isArray(a?.genres) ? a.genres.map((g) => String(g).toLowerCase()) : [];
+      } catch {
+        return [];
+      }
+    })();
+    genreCache.set(id, job);
+    return job;
+  }
+  function pickProfile(genres, bpm, loud) {
+    const text = genres.join(" | ");
+    for (const [k, re] of GENRES) if (re.test(text)) return { key: k, why: genres[0] || "" };
+    const energy = clamp((loud + 16) / 12, 0, 1);
+    if (energy < 0.35 || bpm && bpm < 80) return { key: "chill", why: "" };
+    if (bpm >= 118 && bpm <= 135 && energy > 0.6) return { key: "rave", why: "" };
+    if (bpm >= 80 && bpm < 105) return { key: "bass", why: "" };
+    if (bpm > 140 && energy > 0.7) return { key: "rock", why: "" };
+    return { key: "pop", why: "" };
+  }
+  var PROFILES, PROFILE_KEYS, GENRES, genreCache, party;
+  var init_party = __esm({
+    "src/party.js"() {
+      init_core();
+      init_config();
+      init_audio();
+      PROFILES = {
+        rave: { style: "bars", mirror: true, spin: true, height: 1.55, pulse: 0.09, shake: 0, flash: "bar", ring: 1, glow: 1 },
+        bass: { style: "bottom", mirror: false, spin: false, height: 1.8, pulse: 0.12, shake: 7, flash: "bar", ring: 2, glow: 0.8 },
+        rock: { style: "wave", mirror: true, spin: false, height: 1.6, pulse: 0.08, shake: 10, flash: "beat", ring: 2, glow: 1 },
+        pop: { style: "particles", mirror: true, spin: true, height: 1.45, pulse: 0.07, shake: 0, flash: "bar", ring: 1, glow: 1 },
+        chill: { style: "wave", mirror: true, spin: true, height: 1.1, pulse: 0.035, shake: 0, flash: "", ring: 4, glow: 0.6 }
+      };
+      PROFILE_KEYS = Object.keys(PROFILES);
+      GENRES = [
+        ["chill", /lo-?fi|chill|ambient|acoustic|jazz|classical|piano|folk|soul|r&b|rnb|bossa|sleep|meditation|singer-songwriter|soundtrack|orchestra/],
+        ["rock", /rock|metal|punk|grunge|core\b|emo|hardcore|garage/],
+        ["bass", /hip ?hop|rap|trap|drill|grime|phonk|reggaeton|dancehall|afro|urbano|boom bap|gangsta/],
+        ["rave", /edm|house|techno|trance|dubstep|drum and bass|dnb|electro|hardstyle|rave|bass music|garage house|big room|psytrance|eurodance/],
+        ["pop", /pop|dance|disco|funk|latin|k-pop|schlager|indie/]
+      ];
+      genreCache = lru(100);
+      party = /* @__PURE__ */ (() => {
+        let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
+        let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, drop = 0;
+        const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
+        async function prepare(item) {
+          const u = item?.uri || "";
+          if (u + "|" + cfg.partyStyle === picked) return info;
+          picked = u + "|" + cfg.partyStyle;
+          uri = u;
+          const my = ++token;
+          lastBeat = lastBar = -1;
+          const genres = cfg.partyStyle === "auto" ? await artistGenres(item) : [];
+          if (my !== token) return info;
+          const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
+          const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
+          const auto = pickProfile(genres, bpm, loud);
+          info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm };
+          return info;
+        }
+        function refine() {
+          if (!audio.data || audio.uri !== uri) return;
+          if (info.bpm !== audio.data.bpm) {
+            info.bpm = audio.data.bpm;
+            if (cfg.partyStyle === "auto" && !info.why) info.key = pickProfile([], info.bpm, audio.data.loud).key;
+          }
+        }
+        function step(sec, dt, playing) {
+          refine();
+          const P = PROFILES[info.key];
+          const lvl = [0.6, 1, 1.45][clamp(cfg.partyLevel, 1, 3) - 1];
+          const d = audio.uri === uri ? audio.data : null;
+          let hit = false, barHit = false, conf = 0.8;
+          if (d && playing) {
+            const bi = seek(d.beats, sec, "t");
+            const every = info.bpm > 145 ? 2 : 1;
+            if (bi >= 0 && bi !== lastBeat) {
+              lastBeat = bi;
+              if (bi % every === 0) {
+                hit = true;
+                conf = clamp(d.beats[bi].c + 0.3, 0, 1);
+              }
+            }
+            const ba = d.bars?.length ? seek(d.bars, sec, "t") : Math.floor(Math.max(bi, 0) / 4);
+            if (ba >= 0 && ba !== lastBar) {
+              lastBar = ba;
+              barHit = true;
+            }
+            const s = d.segs[Math.max(seek(d.segs, sec, "t"), 0)];
+            const target = s ? clamp((s.l - d.avg - 1.5) / 5, 0, 1) : 0;
+            drop += (target - drop) * (1 - Math.exp(-dt * (target > drop ? 6 : 1.2)));
+          } else drop *= Math.exp(-dt * 2);
+          const fx = !calm();
+          const strong = P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
+          if (fx && cfg.partyFlash && strong) {
+            flash = Math.min(1, 0.55 + drop * 0.45) * lvl;
+            flashCol = (flashCol + 1) % 3;
+          }
+          flash *= Math.exp(-dt * 5.5);
+          if (fx && P.shake && hit) shake = P.shake * lvl * (0.6 + drop * 0.6) * conf;
+          shake *= Math.exp(-dt * 14);
+          return { P, lvl, hit, barHit, conf, drop, flash, flashCol, shake: fx ? shake : 0 };
+        }
+        return { prepare, step, get info() {
+          return info;
+        }, PROFILES, PROFILE_KEYS };
+      })();
+    }
+  });
+
+  // src/jam.js
+  async function myself() {
+    if (me) return me;
+    try {
+      const u = await S.Platform?.UserAPI?.getUser?.();
+      if (u) me = { username: u.username || "", name: u.displayName || u.username || "", img: u.images?.[0]?.url || u.avatarUrl || "" };
+    } catch {
+    }
+    return me;
+  }
+  async function jamMembers() {
+    let s = null;
+    try {
+      s = S.Platform?.SocialConnectAPI?.getCurrentSession?.() || null;
+    } catch {
+    }
+    const list = (s?.sessionMembers || []).filter((m) => m && !m.isAnonymous);
+    if (!list.length) return [];
+    const self = await myself();
+    const out = list.map((m) => ({
+      id: String(m.id || m.username || m.displayName),
+      name: m.displayName || m.username || "",
+      img: m.largeImageUrl || m.imageUrl || "",
+      me: !!self && !!m.username && m.username === self.username,
+      host: !!s.sessionOwnerId && m.id === s.sessionOwnerId
+    }));
+    if (self && !out.some((m) => m.me)) out.unshift({ id: "me", name: self.name, img: self.img, me: true, host: !!s.isSessionOwner });
+    return out.length > 1 ? out : [];
+  }
+  var me;
+  var init_jam = __esm({
+    "src/jam.js"() {
+      init_core();
+      me = null;
+    }
+  });
+
   // src/immersive.js
-  var ICON, MODES, immersive;
+  var ICON, MODES, LYR, VIZ, immersive;
   var init_immersive = __esm({
     "src/immersive.js"() {
       init_core();
@@ -3877,6 +4361,8 @@
       init_share();
       init_controls();
       init_player();
+      init_party();
+      init_jam();
       ICON = {
         prev: '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg>',
         next: '<svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg>',
@@ -3903,8 +4389,12 @@
       MODES = [
         ["cover", "tabCover"],
         ["lyrics", "tabLyrics"],
-        ["viz", "tabViz"]
+        ["viz", "tabViz"],
+        ["mix", "tabMix"],
+        ["party", "tabParty"]
       ];
+      LYR = /* @__PURE__ */ new Set(["lyrics", "mix", "party"]);
+      VIZ = /* @__PURE__ */ new Set(["viz", "mix", "party"]);
       immersive = (() => {
         let el2 = null, raf = 0, lastText = 0, coverToken = 0;
         let q = {};
@@ -3920,6 +4410,8 @@
           el2.setAttribute("aria-label", t("dialog"));
           el2.innerHTML = `
       <div class="m-im-bg" aria-hidden="true"><i></i><i></i><video class="m-im-canvas" muted loop playsinline preload="none"></video></div>
+      <div class="m-im-flash" aria-hidden="true"></div>
+      <div class="m-im-jam" hidden></div>
       <canvas class="m-im-viz"></canvas>
       <div class="m-im-drag" aria-hidden="true"></div>
       <div class="m-im-top">
@@ -3994,6 +4486,8 @@
             trbtn: el2.querySelector(".m-im-trbtn"),
             ind: el2.querySelector(".m-im-ind"),
             canvas: el2.querySelector(".m-im-viz"),
+            flash: el2.querySelector(".m-im-flash"),
+            jam: el2.querySelector(".m-im-jam"),
             bg: el2.querySelector(".m-im-bg"),
             shuffle: el2.querySelector(".m-im-shuffle"),
             repeat: el2.querySelector(".m-im-repeat"),
@@ -4170,7 +4664,10 @@
             el2.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
             placeIndicator();
             updateKicker();
-            if (mode === "lyrics") loadLyrics();
+            if (LYR.has(mode)) loadLyrics();
+            if (mode === "party") party.prepare(currentItem()).then(updateKicker);
+            else resetParty();
+            sizeCanvas();
             active = -2;
           };
           if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
@@ -4184,7 +4681,52 @@
         function updateKicker() {
           if (!el2) return;
           const m = el2.dataset.mode;
-          q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : t("now");
+          if (m === "party") {
+            const p = party.info;
+            q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? p.bpm + " BPM" : ""].filter(Boolean).join(" \xB7 ");
+            return;
+          }
+          q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : m === "mix" ? t("tabMix") : t("now");
+        }
+        let partyFx = false;
+        function resetParty() {
+          if (!partyFx) return;
+          partyFx = false;
+          q.flash.style.opacity = "0";
+          q.wrap.style.translate = "";
+        }
+        let lastJam = -1e9, jamKey = "";
+        async function showJam() {
+          const list = cfg.partyJam ? await jamMembers() : [];
+          const key = list.map((m) => m.id + m.img).join("|");
+          if (key === jamKey) return;
+          jamKey = key;
+          q.jam.textContent = "";
+          q.jam.hidden = !list.length;
+          const shown = list.slice(0, 10);
+          shown.forEach((m, i) => {
+            const left = i % 2 === 0, row = i >> 1, rows = Math.ceil(shown.length / 2);
+            const f = document.createElement("figure");
+            f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "");
+            f.style.cssText = `--i:${i};left:${left ? 4 + row % 2 * 3 : 89 - row % 2 * 3}%;top:${20 + (row + 0.5) / rows * 56}%`;
+            const pic = document.createElement(m.img ? "img" : "span");
+            if (m.img) {
+              pic.src = m.img;
+              pic.alt = "";
+              pic.referrerPolicy = "no-referrer";
+            } else pic.textContent = (m.name || "?").trim().charAt(0).toUpperCase();
+            const cap = document.createElement("figcaption");
+            cap.textContent = m.me ? t("jamYou") : m.name;
+            f.append(pic, cap);
+            q.jam.append(f);
+          });
+          if (list.length > shown.length) {
+            const more = document.createElement("figure");
+            more.className = "m-jam-p is-more";
+            more.style.cssText = "--i:10;left:89%;top:86%";
+            more.textContent = "+" + (list.length - shown.length);
+            q.jam.append(more);
+          }
         }
         let lyrToken = 0;
         function emptyLyrics(instrumental) {
@@ -4404,6 +4946,23 @@
           const sec = pos / 1e3;
           const playing = S.Player.isPlaying();
           let b = 0, havePitch = false, loud = 0.5;
+          const mode = el2.dataset.mode;
+          const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
+          if (mode === "mix" && V.style === "line") V.style = "wave";
+          const px = mode === "party" ? party.step(sec, dt, playing) : null;
+          if (px) {
+            const P = px.P;
+            Object.assign(V, {
+              style: P.style,
+              mirror: P.mirror,
+              spin: P.spin,
+              glow: true,
+              rings: true,
+              ring: P.ring,
+              height: V.height * P.height * (1 + px.drop * 0.35),
+              pulse: P.pulse * px.lvl * (1 + px.drop * 0.6)
+            });
+          }
           if (audio.data) {
             const segs = audio.data.segs;
             const si = Math.max(seek(segs, sec, "t"), 0);
@@ -4419,10 +4978,11 @@
             const bi = seek(audio.data.beats, sec, "t");
             if (bi !== lastBeatIdx && bi >= 0 && playing) {
               lastBeatIdx = bi;
-              if (cfg.vizRings) rings.push({ r: R, a: 0.6 * clamp(audio.data.beats[bi].c + 0.3, 0, 1) });
+              const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
+              if (V.rings && bi % V.ring === 0) rings.push(px ? { r: R, a: (0.7 + px.drop * 0.3) * c, w: 3 + px.drop * 4 } : { r: R, a: 0.6 * c, w: 2 });
             }
           }
-          const mirror = cfg.vizMirror;
+          const mirror = V.mirror;
           const span = mirror ? N / 2 : N;
           const tt = now / 1e3;
           for (let i = 0; i < N; i++) {
@@ -4448,33 +5008,33 @@
           if (cfg.calm) return;
           const pal = palette();
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-          const maxLen = Math.min(vw, vh) * 0.11 * (cfg.vizHeight / 100);
-          const rot = cfg.vizSpin ? tt * 0.06 : 0;
+          const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
+          const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
           ctx.globalCompositeOperation = "lighter";
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
           const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-          glow.addColorStop(0, rgba2(pal[0], 0.16 + b * 0.22));
+          glow.addColorStop(0, rgba2(pal[0], (0.16 + b * 0.22) * (px ? 1.6 + px.drop : 1)));
           glow.addColorStop(1, "rgba(0,0,0,0)");
           ctx.fillStyle = glow;
           const gr = R + maxLen * 1.2;
           ctx.fillRect(cx - gr, cy - gr, gr * 2, gr * 2);
           const ang = (i) => i / N * Math.PI * 2 - Math.PI / 2 + rot;
           const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
-          if (cfg.vizStyle === "bottom") {
+          if (V.style === "bottom") {
             const bw = vw / N, base = vh - 8 * dpr;
             for (let gi = 0; gi < 3; gi++) {
               ctx.fillStyle = rgba2(pal[gi], 0.85);
               ctx.beginPath();
               for (let i = gi; i < N; i += 3) {
-                const h = 6 * dpr + vals[i] * vh * 0.32 * (cfg.vizHeight / 100);
+                const h = 6 * dpr + vals[i] * vh * 0.32 * V.height;
                 ctx.rect(i * bw + bw * 0.15, base - h, bw * 0.7, h);
               }
               ctx.fill();
             }
-          } else if (cfg.vizStyle === "line") {
+          } else if (V.style === "line") {
             const mid = cy;
-            for (const [w, col, al] of [[10, pal[1], cfg.vizGlow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
+            for (const [w, col, al] of [[10, pal[1], V.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
               if (!al) continue;
               ctx.lineWidth = w * dpr;
               ctx.strokeStyle = rgba2(col, al);
@@ -4487,7 +5047,7 @@
                 ctx.stroke();
               }
             }
-          } else if (cfg.vizStyle === "particles") {
+          } else if (V.style === "particles") {
             for (let i = 0; i < N; i++) {
               const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
               const r2 = (1.5 + vals[i] * 4) * dpr;
@@ -4496,7 +5056,7 @@
               ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r2, 0, Math.PI * 2);
               ctx.fill();
             }
-          } else if (cfg.vizStyle === "wave") {
+          } else if (V.style === "wave") {
             ctx.beginPath();
             for (let i = 0; i <= N; i++) {
               const j = i % N, nx = (i + 1) % N;
@@ -4509,7 +5069,7 @@
             ctx.closePath();
             ctx.fillStyle = rgba2(pal[0], 0.16);
             ctx.fill();
-            if (cfg.vizGlow) {
+            if (V.glow) {
               ctx.lineWidth = 10 * dpr;
               ctx.strokeStyle = rgba2(pal[1], 0.14);
               ctx.stroke();
@@ -4520,14 +5080,14 @@
           } else {
             const groups = [[], [], []];
             for (let i = 0; i < N; i++) groups[i % 3 === 0 ? 2 : i % 2 ? 0 : 1].push(i);
-            const passes = cfg.vizStyle === "bars" && cfg.vizGlow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
+            const passes = V.style === "bars" && V.glow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
             for (const [w, al] of passes) {
               ctx.lineWidth = w * dpr;
               groups.forEach((idx, gi) => {
                 ctx.beginPath();
                 for (const i of idx) {
                   const c = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-                  if (cfg.vizStyle === "dots") {
+                  if (V.style === "dots") {
                     ctx.moveTo(cx + c * e + 3 * dpr, cy + sn * e);
                     ctx.arc(cx + c * e, cy + sn * e, 3 * dpr, 0, Math.PI * 2);
                   } else {
@@ -4535,7 +5095,7 @@
                     ctx.lineTo(cx + c * e, cy + sn * e);
                   }
                 }
-                if (cfg.vizStyle === "dots") {
+                if (V.style === "dots") {
                   ctx.fillStyle = rgba2(pal[gi], al);
                   ctx.fill();
                 } else {
@@ -4545,21 +5105,33 @@
               });
             }
           }
-          ctx.lineWidth = 2 * dpr;
           rings = rings.filter((g) => g.a > 0.02);
           for (const g of rings) {
             g.r += 300 * dt * dpr;
             g.a *= Math.exp(-dt * 2.8);
+            ctx.lineWidth = (g.w || 2) * dpr;
             ctx.strokeStyle = rgba2(pal[2], g.a);
             ctx.beginPath();
             ctx.arc(cx, cy, g.r, 0, Math.PI * 2);
             ctx.stroke();
           }
           ctx.globalCompositeOperation = "source-over";
-          const pulse = (1 + b * 0.035).toFixed(3);
+          const pulse = (1 + b * V.pulse).toFixed(3);
           if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
+          if (px) {
+            partyFx = true;
+            const op = (px.flash * 0.42).toFixed(2);
+            if (q.flash.style.opacity !== op) q.flash.style.opacity = op;
+            if (px.flashCol !== lastFlashCol) {
+              lastFlashCol = px.flashCol;
+              const c = pal[px.flashCol];
+              q.flash.style.background = `radial-gradient(70% 60% at 50% 45%, rgba(${c[0]},${c[1]},${c[2]},0.9), rgba(${c[0]},${c[1]},${c[2]},0) 72%)`;
+            }
+            const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
+            if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
+          }
         }
-        let lastPulse = "";
+        let lastPulse = "", lastFlashCol = -1;
         function frame(now) {
           raf = requestAnimationFrame(frame);
           const pos = S.Player.getProgress?.() || 0;
@@ -4572,9 +5144,13 @@
             syncState();
           }
           const mode = el2.dataset.mode;
-          if (mode === "lyrics") drawLyrics(pos);
-          if (mode === "viz") drawViz(pos, now);
-          else if (lastPulse) {
+          if (LYR.has(mode)) drawLyrics(pos);
+          if (VIZ.has(mode)) drawViz(pos, now);
+          if (mode === "party" && now - lastJam > 3e3) {
+            lastJam = now;
+            showJam();
+          }
+          if (!VIZ.has(mode) && lastPulse) {
             q.wrap.style.scale = "";
             lastPulse = "";
           }
@@ -4593,7 +5169,7 @@
           if (q.video.src !== url) q.video.src = url;
           q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
         }
-        const KEYS = [["Space", "k_play"], ["\u2190 \u2192", "k_seek"], ["\u2191 \u2193", "k_vol"], ["1 2 3", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["Esc", "k_close"], ["?", "keysTitle"]];
+        const KEYS = [["Space", "k_play"], ["\u2190 \u2192", "k_seek"], ["\u2191 \u2193", "k_vol"], ["1 \u2013 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["Esc", "k_close"], ["?", "keysTitle"]];
         function toggleKeys(force) {
           if (!q.keys) return;
           const show = force ?? q.keys.hidden;
@@ -4688,7 +5264,8 @@
           lastBeatIdx = -1;
           rings = [];
           updateKicker();
-          if (el2.dataset.mode === "lyrics") loadLyrics();
+          if (LYR.has(el2.dataset.mode)) loadLyrics();
+          if (el2.dataset.mode === "party") party.prepare(item).then(updateKicker);
         }
         function open() {
           if (!el2) build();
@@ -4742,7 +5319,7 @@
           styleLyrics: () => el2 && styleLyrics(),
           reloadLyrics: () => {
             lyrUri = "";
-            el2 && el2.dataset.mode === "lyrics" && loadLyrics();
+            el2 && LYR.has(el2.dataset.mode) && loadLyrics();
           },
           like: () => q.like?.click(),
           shuffle: () => q.shuffle?.click(),
@@ -5913,6 +6490,22 @@
         toggle("vizMirror", () => {
         }),
         toggle("vizSpin", () => {
+        }),
+        // Party-Modus: Profil automatisch (Genre/Tempo) oder fest, Stärke, weiche Farbblitze
+        head(t("partySection"), t("partySectionHint")),
+        seg([["auto", t("party_auto")], ...PROFILE_KEYS.map((k) => [k, t("party_" + k)])], cfg.partyStyle, (k) => {
+          cfg.partyStyle = k;
+          save();
+          immersive.refresh();
+        }),
+        el("small", "m-note", t("partyLevel")),
+        seg([[1, t("partyLevel1")], [2, t("partyLevel2")], [3, t("partyLevel3")]], cfg.partyLevel, (k) => {
+          cfg.partyLevel = k;
+          save();
+        }),
+        toggle("partyFlash", () => {
+        }),
+        toggle("partyJam", () => {
         })
       )
     );
@@ -6075,6 +6668,7 @@
       init_selectors();
       init_share();
       init_fonts();
+      init_party();
       COSTLY = /* @__PURE__ */ new Set(["glass", "particles", "beat", "tilt", "canvas"]);
       el = (tag, cls, text) => {
         const e = document.createElement(tag);
@@ -6278,7 +6872,7 @@
             KeyP: () => S.Player.back()
           };
           if (e.key === "?") return immersive.toggleKeys();
-          if (/^Digit[123]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
+          if (/^Digit[1-5]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
           else if (keys[e.code] && !(e.code === "Space" && e.target.closest?.("button"))) {
             e.preventDefault();
             e.stopPropagation();

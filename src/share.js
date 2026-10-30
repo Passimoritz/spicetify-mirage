@@ -74,15 +74,38 @@ async function deliver(c, name) {
   } catch {}
 }
 
+// Spotify-Code (die scannbaren Balken): Spotify liefert ihn als SVG mit CORS-Freigabe. Den schwarzen
+// Hintergrund machen wir durchsichtig – so sitzt der Code auf der Glasfläche der Karte.
+// Die Balken bleiben weiß: so scannt jede Kamera zuverlässig.
+async function spotifyCode(uri) {
+  if (!/^spotify:(track|episode|album|playlist|artist|show):/.test(uri || "")) return null;
+  try {
+    const res = await fetch(`https://scannables.scdn.co/uri/plain/svg/000000/white/640/${uri}`);
+    if (!res.ok) return null;
+    let svg = await res.text();
+    if (!/<svg/.test(svg)) return null;
+    svg = svg.replace(/(<rect x="0" y="0"[^>]*?)fill="#000000"/, '$1fill="none"');
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    try {
+      return await loadImage(url);
+    } finally {
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+  } catch {
+    return null;
+  }
+}
+
 async function nowPlayingCard() {
   const item = currentItem();
   if (!item) return;
   const c = covers(item);
-  const img = await loadImage(c.big || c.small, true);
+  const [img, code] = await Promise.all([loadImage(c.big || c.small, true), spotifyCode(item.uri)]);
   const pal = palette();
   const [cv, x] = canvas();
   backdrop(x, pal, img);
-  const size = 760, X = (W - size) / 2, Y = 150;
+  // mit Code etwas kleineres Cover, damit unten Platz für die Code-Kapsel bleibt
+  const size = code ? 660 : 760, X = (W - size) / 2, Y = code ? 110 : 150;
   x.save();
   x.shadowColor = css(pal[1], 0.55);
   x.shadowBlur = 90;
@@ -108,12 +131,33 @@ async function nowPlayingCard() {
   x.fillStyle = "rgba(255,255,255,0.72)";
   x.font = `500 38px ${FONT}`;
   x.fillText(fit(x, artistOf(item), W - 160), W / 2, Y + size + 230);
-  // Farbleiste: die drei Leitfarben des Songs
   const bar = x.createLinearGradient(240, 0, W - 240, 0);
   pal.forEach((p, i) => bar.addColorStop(i / 2, css(p)));
-  rounded(x, 240, Y + size + 270, W - 480, 10, 5);
-  x.fillStyle = bar;
-  x.fill();
+  if (code) {
+    // Glas-Kapsel mit feinem Rand in den Songfarben, darin der Code und ein kleiner Hinweis
+    const cw = 520, ch = 130, cx = (W - cw) / 2, cy = Y + size + 278;
+    x.save();
+    x.shadowColor = css(pal[0], 0.45);
+    x.shadowBlur = 50;
+    rounded(x, cx, cy, cw, ch, ch / 2);
+    x.fillStyle = "rgba(8,7,14,0.62)";
+    x.fill();
+    x.restore();
+    rounded(x, cx, cy, cw, ch, ch / 2);
+    x.lineWidth = 2.5;
+    x.strokeStyle = bar;
+    x.stroke();
+    // SVG 400 × 100: links das Spotify-Zeichen, rechts die Balken
+    x.drawImage(code, cx + 56, cy + 14, 408, 102);
+    x.fillStyle = "rgba(255,255,255,0.5)";
+    x.font = `600 22px ${FONT}`;
+    x.fillText(t("scanCode").toUpperCase(), W / 2, cy + ch + 44);
+  } else {
+    // ohne Code (lokale Datei, offline): Farbleiste mit den drei Leitfarben des Songs
+    rounded(x, 240, Y + size + 270, W - 480, 10, 5);
+    x.fillStyle = bar;
+    x.fill();
+  }
   watermark(x);
   deliver(cv, "mirage-now-playing.png");
 }

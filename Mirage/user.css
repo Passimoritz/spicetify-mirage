@@ -792,7 +792,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   opacity: 0;
   transition: opacity 0.9s var(--m-ease);
 }
-#mirage-immersive[data-mode="viz"] .m-im-viz {
+#mirage-immersive:is([data-mode="viz"], [data-mode="mix"], [data-mode="party"]) .m-im-viz {
   opacity: 1;
 }
 
@@ -985,7 +985,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="lyrics"] .m-im-bar {
   margin-top: 3vh;
 }
-#mirage-immersive[data-mode="lyrics"] .m-im-lyrics {
+#mirage-immersive:is([data-mode="lyrics"], [data-mode="mix"], [data-mode="party"]) .m-im-lyrics {
   display: block;
 }
 #mirage-immersive .m-im-lyrics-inner {
@@ -1087,6 +1087,229 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 }
 #mirage-immersive[data-mode="viz"] .m-im-controls {
   justify-content: center;
+}
+
+/* ---------- Ansicht: Mix – rundes Cover mit Visualizer-Kranz links, Liedtext rechts ---------- */
+#mirage-immersive[data-mode="mix"] {
+  grid-template-columns: minmax(300px, 0.8fr) 1.2fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "cover lyrics"
+    "meta lyrics";
+  align-items: start;
+  row-gap: 9vh;
+  column-gap: 5vw;
+}
+#mirage-immersive[data-mode="mix"] .m-im-cover-wrap {
+  justify-self: center;
+  align-self: end;
+  /* klein genug, dass der Kranz aus Balken Platz hat */
+  width: min(19vw, 27vh);
+  margin-top: 6vh;
+}
+#mirage-immersive[data-mode="mix"] .m-im-cover {
+  border-radius: 50%;
+  box-shadow:
+    0 0 110px -12px rgba(var(--m-a-rgb), 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+#mirage-immersive[data-mode="mix"] .m-im-meta {
+  text-align: center;
+}
+#mirage-immersive[data-mode="mix"] .m-im-title {
+  margin-top: 10px;
+  font-size: clamp(22px, 2.3vw, 38px);
+  -webkit-line-clamp: 2;
+}
+#mirage-immersive[data-mode="mix"] :is(.m-im-controls, .m-im-extras) {
+  justify-content: center;
+}
+#mirage-immersive[data-mode="mix"] .m-im-bar {
+  margin-top: 2.5vh;
+}
+
+/* ---------- Ansicht: Party – groß, mittig, im Takt ---------- */
+#mirage-immersive[data-mode="party"] {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "cover"
+    "lyrics"
+    "meta";
+  justify-items: center;
+  text-align: center;
+  row-gap: 1vh;
+  padding-top: 11vh;
+  padding-bottom: 3vh;
+}
+/* Rand ober- und unterhalb = Länge des Balkenkranzes (≈ 0,45 × Coverbreite), damit nichts überlappt */
+#mirage-immersive[data-mode="party"] .m-im-cover-wrap {
+  --w: min(17vw, 23vh);
+  justify-self: center;
+  width: var(--w);
+  margin: calc(var(--w) * 0.45) 0;
+}
+#mirage-immersive[data-mode="party"] .m-im-time {
+  display: none;
+}
+#mirage-immersive[data-mode="party"] .m-im-cover {
+  border-radius: 50%;
+  box-shadow:
+    0 0 160px 0 rgba(var(--m-a-rgb), 0.9),
+    0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics {
+  width: min(1100px, 86vw);
+  margin: 0;
+  padding: 0;
+  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+}
+#mirage-immersive[data-mode="party"] .m-im-line {
+  padding: 0 4%;
+  transform-origin: center;
+  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1));
+  opacity: calc(0.55 - var(--d, 0) * 0.2);
+}
+#mirage-immersive[data-mode="party"] .m-im-line.is-active {
+  opacity: 1;
+  transform: scale(1.12);
+  text-shadow:
+    0 0 34px rgba(var(--m-a-rgb), 0.85),
+    0 0 90px rgba(var(--m-c-rgb), 0.45);
+}
+/* Party zeigt nur Titel, Künstler, Fortschritt und die Hauptknöpfe – leise, bis man darüberfährt */
+#mirage-immersive[data-mode="party"] .m-im-meta {
+  width: min(640px, 80vw);
+  opacity: 0.6;
+  transition: opacity 0.4s;
+}
+#mirage-immersive[data-mode="party"] .m-im-meta:hover,
+#mirage-immersive[data-mode="party"] .m-im-meta:focus-within {
+  opacity: 1;
+}
+#mirage-immersive[data-mode="party"] .m-im-title {
+  margin: 6px 0 2px;
+  font-size: clamp(20px, 1.9vw, 30px);
+  -webkit-line-clamp: 1;
+}
+#mirage-immersive[data-mode="party"] .m-im-kicker {
+  color: #fff;
+  text-shadow: 0 0 14px rgba(var(--m-a-rgb), 0.9);
+}
+#mirage-immersive[data-mode="party"] :is(.m-im-controls, .m-im-extras) {
+  justify-content: center;
+}
+#mirage-immersive[data-mode="party"] .m-im-extras,
+#mirage-immersive[data-mode="party"] .m-im-lyrics-note.is-small {
+  display: none;
+}
+#mirage-immersive[data-mode="party"] .m-im-bar {
+  margin-top: 1.5vh;
+}
+/* weiche Farbfläche im Takt (Deckkraft setzt immersive.js); liegt über dem Hintergrund, unter dem Inhalt */
+#mirage-immersive .m-im-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+#mirage-immersive:not([data-mode="party"]) .m-im-flash {
+  display: none;
+}
+
+/* Jam-Gäste: schweben leise an den Rändern, unter den Bedienelementen */
+#mirage-immersive .m-im-jam {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+#mirage-immersive:not([data-mode="party"]) .m-im-jam,
+#mirage-immersive .m-im-jam[hidden] {
+  display: none;
+}
+#mirage-immersive .m-jam-p {
+  position: absolute;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 92px;
+  opacity: 0;
+  animation:
+    m-jam-in 0.9s var(--m-ease) calc(var(--i) * 0.12s) forwards,
+    m-jam-float calc(7s + var(--i) * 0.9s) ease-in-out calc(var(--i) * -1.7s) infinite;
+}
+#mirage-immersive .m-jam-p :is(img, span) {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  font: 700 22px var(--m-font);
+  color: #fff;
+  background: linear-gradient(135deg, rgba(var(--m-a-rgb), 0.55), rgba(var(--m-c-rgb), 0.35));
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 10px 30px -8px rgba(0, 0, 0, 0.7),
+    0 0 26px -6px rgba(var(--m-a-rgb), 0.7);
+}
+#mirage-immersive .m-jam-p.is-me :is(img, span) {
+  box-shadow:
+    0 0 0 2.5px var(--m-a),
+    0 10px 30px -8px rgba(0, 0, 0, 0.7),
+    0 0 30px -2px rgba(var(--m-a-rgb), 0.9);
+}
+#mirage-immersive .m-jam-p figcaption {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  font: 600 11.5px var(--m-font);
+  color: rgba(255, 255, 255, 0.82);
+}
+/* Host: kleiner leuchtender Punkt am Bild */
+#mirage-immersive .m-jam-p.is-host::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 18px);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--m-c);
+  box-shadow: 0 0 0 2px #07060c, 0 0 10px var(--m-c);
+}
+#mirage-immersive .m-jam-p.is-more {
+  font: 700 15px var(--m-font);
+  color: rgba(255, 255, 255, 0.7);
+}
+@keyframes m-jam-in {
+  to { opacity: 0.88; }
+}
+@keyframes m-jam-float {
+  0%,
+  100% { transform: translate(0, 0); }
+  33% { transform: translate(6px, -14px); }
+  66% { transform: translate(-5px, 8px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #mirage-immersive .m-im-flash {
+    display: none;
+  }
+  #mirage-immersive .m-jam-p {
+    animation: m-jam-in 0.6s ease forwards;
+  }
 }
 
 /* Ansichtswechsel morpht (View Transitions) */
@@ -2987,7 +3210,7 @@ html.mirage-calm #mirage-immersive .m-im-empty {
   align-items: center;
   gap: 8px;
 }
-#mirage-immersive:not([data-mode="lyrics"]) .m-im-lyrbar {
+#mirage-immersive:not([data-mode="lyrics"], [data-mode="mix"]) .m-im-lyrbar {
   display: none;
 }
 /* bewusst leiser als der Fassungs-Knopf: kein Rahmen, erst beim Darüberfahren deutlich */
