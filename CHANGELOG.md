@@ -10,6 +10,10 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Fixed
+
+- Overlay app: "Start with Windows" is re-registered at every start, so the entry follows the app after an update, a reinstall or a switch from a development copy.
+
 ## [1.4.0] – 2026-10-30
 
 ### Added
