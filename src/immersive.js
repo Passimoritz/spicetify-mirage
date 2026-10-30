@@ -20,6 +20,7 @@ const ICON = {
   pause: '<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>',
   orb: '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/><path d="M8 4.2a3.8 3.8 0 0 1 3.8 3.8h-1.3A2.5 2.5 0 0 0 8 5.5z"/></svg>',
   back: '<svg viewBox="0 0 24 24"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>',
+  translate: '<svg viewBox="0 0 24 24"><path d="M12.9 15.1 10.4 12.6l.1-.1A17.4 17.4 0 0 0 14.1 6H17V4h-7V2H8v2H1v2h11.2A15.7 15.7 0 0 1 9 11.4 15.6 15.6 0 0 1 6.7 8h-2a17.6 17.6 0 0 0 2.9 4.5l-5.1 5L4 19l5-5 3.1 3.1zM18.5 10h-2L12 22h2l1.1-3h4.8l1.1 3h2zm-2.6 7 1.6-4.3 1.6 4.3z"/></svg>',
   shuffle: '<svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4V8h-2.6l-2.2 2.6-1.3-1.5L13.4 6H17zM3 6h4.6l9.8 11H17v-3l4 4-4 4v-3h-.6L6.7 8H3zm0 10h3.7l2.2-2.6 1.3 1.5L7.6 18H3z"/></svg>',
   repeat: '<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z"/></svg>',
   repeatOne: '<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2zm-4-2V9h-1l-2 1v1h1.5v4z"/></svg>',
@@ -56,8 +57,9 @@ const immersive = (() => {
     el.setAttribute("role", "dialog");
     el.setAttribute("aria-label", t("dialog"));
     el.innerHTML = `
-      <div class="m-im-bg" aria-hidden="true"><i></i><video class="m-im-canvas" muted loop playsinline preload="none"></video></div>
+      <div class="m-im-bg" aria-hidden="true"><i></i><i></i><video class="m-im-canvas" muted loop playsinline preload="none"></video></div>
       <canvas class="m-im-viz"></canvas>
+      <div class="m-im-drag" aria-hidden="true"></div>
       <div class="m-im-top">
         <button class="m-im-close" type="button">${ICON.back}<span class="m-l"></span><kbd>ESC</kbd></button>
         <div class="m-im-tabs" role="tablist"><span class="m-im-ind"></span>
@@ -95,7 +97,10 @@ const immersive = (() => {
         </div>
       </div>
       <div class="m-im-lyrics"><div class="m-im-lyrics-inner"></div></div>
-      <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
+      <div class="m-im-lyrbar">
+        <button type="button" class="m-im-trbtn" hidden aria-pressed="false">${ICON.translate}<span></span><i aria-hidden="true"></i></button>
+        <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
+      </div>
       <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">×</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
     document.body.append(el);
@@ -124,6 +129,7 @@ const immersive = (() => {
       lyrics: el.querySelector(".m-im-lyrics"),
       inner: el.querySelector(".m-im-lyrics-inner"),
       lyrsrc: el.querySelector(".m-im-lyrsrc"),
+      trbtn: el.querySelector(".m-im-trbtn"),
       ind: el.querySelector(".m-im-ind"),
       canvas: el.querySelector(".m-im-viz"),
       bg: el.querySelector(".m-im-bg"),
@@ -137,6 +143,18 @@ const immersive = (() => {
     vctx = q.canvas.getContext("2d");
     q.lyrsrc.querySelector("b").textContent = t("lyrPick");
     q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
+    q.trbtn.querySelector("span").textContent = t("trToggle");
+    q.trbtn.onclick = () => {
+      // ein Klick schaltet die Einstellung „Liedtext übersetzen“ – gilt also auch für den nächsten Song
+      cfg.translate = !cfg.translate;
+      save();
+      showTrBtn();
+      if (cfg.translate) addTranslations(lyrToken);
+      else {
+        q.inner.querySelectorAll(".m-im-tr").forEach((n) => n.remove());
+        active = -2;
+      }
+    };
     q.video = el.querySelector(".m-im-canvas");
     q.keys = el.querySelector(".m-im-keys");
     const share = el.querySelector(".m-im-share"), help = el.querySelector(".m-im-help");
@@ -248,13 +266,32 @@ const immersive = (() => {
     setTimeout(syncState, 300);
   }
   // Ruhender Hintergrund aus dem Cover – ersetzt das teure Live-Verwischen der ganzen Seite
+  let hazeSrc = "";
   function setHaze(src) {
-    if (el && src) q.bg.style.setProperty("--img", `url("${src}")`);
+    if (!el || !src || src === hazeSrc) return;
+    hazeSrc = src;
+    // neues Bild in die verdeckte Ebene, erst wenn es geladen ist überblenden
+    const [a, b] = q.bg.querySelectorAll("i");
+    const front = a.classList.contains("is-on") ? a : b.classList.contains("is-on") ? b : null;
+    const back = front === a ? b : a;
+    const img = new Image();
+    img.onload = img.onerror = () => {
+      if (hazeSrc !== src) return;
+      back.style.backgroundImage = `url("${src}")`;
+      requestAnimationFrame(() => {
+        back.classList.add("is-on");
+        front?.classList.remove("is-on");
+      });
+    };
+    img.src = src;
   }
 
   function sizeCanvas() {
     if (!q.canvas) return;
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    // höchstens ~3 Mio. Pixel: auf großen/hochauflösenden Bildschirmen wäre die volle Dichte ein
+    // Vielfaches davon – jedes Bild neu zeichnen ruckelt dann. Die leuchtenden Linien bleiben trotzdem scharf genug.
+    const budget = Math.sqrt(3e6 / Math.max(1, innerWidth * innerHeight));
+    const dpr = Math.max(0.6, Math.min(devicePixelRatio || 1, 1.5, budget));
     vw = q.canvas.width = Math.round(innerWidth * dpr);
     vh = q.canvas.height = Math.round(innerHeight * dpr);
   }
@@ -396,10 +433,15 @@ const immersive = (() => {
     const token = ++lyrToken;
     lyrUri = uri;
     lyr = undefined;
+    // ohne Gleitfahrt nach oben zurücksetzen – sonst rutscht der alte Text 0,8 s quer durchs Bild
+    q.inner.style.transition = "none";
     q.inner.style.transform = "";
+    void q.inner.offsetHeight;
+    q.inner.style.transition = "";
     q.lyrics.classList.remove("is-unsynced");
     el.classList.remove("is-karaoke");
     q.lyrsrc.hidden = true;
+    q.trbtn.hidden = true;
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
@@ -408,6 +450,10 @@ const immersive = (() => {
     lyr = got;
     active = -2;
     q.inner.textContent = "";
+    // neuer Text blendet weich ein (Animation neu starten)
+    q.inner.classList.remove("is-in");
+    void q.inner.offsetWidth;
+    q.inner.classList.add("is-in");
     showSource(got);
     if (!got || got.instrumental) {
       q.inner.append(emptyLyrics(!!got));
@@ -444,19 +490,32 @@ const immersive = (() => {
       frag.append(d);
     });
     q.inner.append(frag);
-    if (cfg.translate) {
-      const tr = await translateLines(uri, got, LANG);
-      if (token !== lyrToken || !tr) return;
-      const lines = q.inner.querySelectorAll(".m-im-line");
-      tr.forEach((text, i) => {
-        if (!text || !lines[i] || lines[i].querySelector(".m-im-tr") || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
-        const d = document.createElement("span");
-        d.className = "m-im-tr";
-        d.textContent = text;
-        lines[i].append(d);
-      });
-      active = -2;
-    }
+    showTrBtn();
+    if (cfg.translate) addTranslations(token);
+  }
+  // Übersetzung unter die Zeilen hängen; der Token verwirft Antworten zu einem älteren Song
+  async function addTranslations(token) {
+    const uri = lyrUri, got = lyr;
+    if (!got?.lines?.length || got.instrumental) return;
+    const tr = await translateLines(uri, got, LANG);
+    if (token !== lyrToken || !tr || !cfg.translate) return;
+    const lines = q.inner.querySelectorAll(".m-im-line");
+    tr.forEach((text, i) => {
+      if (!text || !lines[i] || lines[i].querySelector(".m-im-tr") || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
+      const d = document.createElement("span");
+      d.className = "m-im-tr";
+      d.textContent = text;
+      lines[i].append(d);
+    });
+    active = -2;
+  }
+  // Knopf nur, wenn es etwas zu übersetzen gibt (Text da, Sprache nicht schon die eigene)
+  function showTrBtn() {
+    const lang = (lyr?.lang || "").slice(0, 2).toLowerCase();
+    q.trbtn.hidden = !lyr?.lines?.length || lyr.instrumental || lang === LANG;
+    q.trbtn.classList.toggle("is-on", !!cfg.translate);
+    q.trbtn.setAttribute("aria-pressed", String(!!cfg.translate));
+    q.trbtn.title = t(cfg.translate ? "trHide" : "trShow");
   }
 
   function drawLyrics(pos) {
@@ -569,7 +628,9 @@ const immersive = (() => {
     glow.addColorStop(0, rgba(pal[0], 0.16 + b * 0.22));
     glow.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = glow;
-    ctx.fillRect(cx - R * 3, cy - R * 3, R * 6, R * 6);
+    // nur so groß wie der Schein reicht – außerhalb ist der Verlauf ohnehin durchsichtig
+    const gr = R + maxLen * 1.2;
+    ctx.fillRect(cx - gr, cy - gr, gr * 2, gr * 2);
 
     const ang = (i) => (i / N) * Math.PI * 2 - Math.PI / 2 + rot;
     const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
@@ -675,14 +736,18 @@ const immersive = (() => {
       ctx.stroke();
     }
     ctx.globalCompositeOperation = "source-over";
-    q.wrap.style.setProperty("--pulse", (1 + b * 0.035).toFixed(4));
+    // Puls direkt als scale (eigene Grafikebene), nur bei sichtbarer Änderung
+    const pulse = (1 + b * 0.035).toFixed(3);
+    if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
   }
+  let lastPulse = "";
 
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const pos = S.Player.getProgress?.() || 0;
     const dur = S.Player.getDuration?.() || 0;
-    q.fill.style.width = (dur ? (pos / dur) * 100 : 0) + "%";
+    // scaleX statt width: kein Neu-Layout in jedem Bild
+    q.fill.style.transform = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
     if (now - lastText > 250) {
       lastText = now;
       q.pos.textContent = fmt(pos);
@@ -692,7 +757,10 @@ const immersive = (() => {
     const mode = el.dataset.mode;
     if (mode === "lyrics") drawLyrics(pos);
     if (mode === "viz") drawViz(pos, now);
-    else if (q.wrap.style.getPropertyValue("--pulse")) q.wrap.style.removeProperty("--pulse");
+    else if (lastPulse) {
+      q.wrap.style.scale = "";
+      lastPulse = "";
+    }
   }
 
   let canvasToken = 0;

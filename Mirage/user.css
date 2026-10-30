@@ -110,9 +110,13 @@ body {
   opacity: 0.22 !important;
   mix-blend-mode: screen;
 }
+/* Kleiner Kopf beim Scrollen (Playlist-Name + Play): Spotify blendet ihn selbst ein (Deckkraft).
+   Statt seiner Coverfarbe eine fast deckende dunkle Glasleiste – Inhalt darunter scheint nicht durch */
 .main-topBar-background {
-  background: transparent !important;
-  opacity: 0 !important;
+  background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.16), transparent 70%), rgba(var(--spice-rgb-main), 0.94) !important;
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border-bottom: 1px solid var(--m-line);
 }
 
 /* Riesige Titel mit Verlauf aus den Coverfarben */
@@ -446,7 +450,24 @@ html.mirage-no-tilt [data-encore-id="card"] {
 }
 .main-trackList-trackListHeader {
   background: transparent !important;
-  backdrop-filter: blur(16px);
+}
+/* angeheftet (unter dem kleinen Kopf): deckend wie dieser, sonst laufen die Titel sichtbar durch */
+.main-trackList-trackListHeader.main-trackList-trackListHeaderStuck {
+  background: rgba(var(--spice-rgb-main), 0.94) !important;
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border-bottom: 1px solid var(--m-line);
+}
+
+/* Suchvorschläge unter dem Suchfeld oben: eigene, fast deckende Glasplatte */
+.main-globalNav-searchSection [role="listbox"],
+[role="listbox"]:is(#search-dropdown, [id*="search"][id$="dropdown"], [id*="searches"][id*="dropdown"]) {
+  background: linear-gradient(160deg, rgba(var(--m-a-rgb), 0.1), transparent 45%), rgba(var(--spice-rgb-main), 0.97) !important;
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  border: 1px solid var(--m-line);
+  border-radius: 16px !important;
+  box-shadow: 0 28px 70px -18px rgba(0, 0, 0, 0.85), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;
 }
 
 /* ==========================================================================
@@ -675,6 +696,20 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   visibility: visible;
 }
 
+/* Die Ebene deckt Spotifys Titelleiste zu: oben ein Streifen zum Verschieben des Fensters
+   (auch auf andere Bildschirme, Doppelklick maximiert). Knöpfe darin bleiben klickbar. */
+#mirage-immersive.is-on .m-im-drag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 3;
+  -webkit-app-region: drag;
+}
+#mirage-immersive.is-on .m-im-top {
+  -webkit-app-region: drag;
+}
 /* Kopfzeile: links Zurück, Mitte Ansichten – rechts bleibt frei für die Fensterknöpfe */
 #mirage-immersive .m-im-top {
   position: absolute;
@@ -770,8 +805,11 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   width: min(40vw, 60vh);
   aspect-ratio: 1;
   perspective: 1200px;
-  scale: var(--pulse, 1);
   view-transition-name: m-cover;
+}
+/* im Visualizer pulsiert das Cover (scale aus immersive.js): eigene Ebene, kein Neuzeichnen */
+#mirage-immersive[data-mode="viz"] .m-im-cover-wrap {
+  will-change: scale;
 }
 #mirage-immersive .m-im-cover {
   position: relative;
@@ -858,7 +896,10 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 }
 #mirage-immersive .m-im-fill {
   height: 100%;
-  width: 0;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--m-b), var(--m-a), var(--m-c));
   box-shadow: 0 0 20px rgba(var(--m-a-rgb), 0.9);
@@ -916,6 +957,9 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   min-width: 0;
   height: 100%;
   overflow: hidden;
+  /* etwas Luft links, damit der Schein der aktiven Zeile nicht am Rand abreißt */
+  padding-left: 14px;
+  margin-left: -14px;
   -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 80%, transparent);
   mask-image: linear-gradient(transparent, #000 16%, #000 80%, transparent);
 }
@@ -949,12 +993,24 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   transition: transform 0.8s var(--m-ease);
   will-change: transform;
 }
+#mirage-immersive .m-im-lyrics-inner.is-in {
+  animation: m-lyr-in 0.5s var(--m-ease) both;
+}
+@keyframes m-lyr-in {
+  /* nur Deckkraft: ein Weichzeichner über die ganze Textfläche wäre teuer */
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 #mirage-immersive .m-im-line {
   margin: 0 0 0.5em;
   font: 800 clamp(24px, 3vw, 48px)/1.16 var(--m-font);
   letter-spacing: -0.03em;
   color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
+  /* Platz rechts für die Vergrößerung der aktiven Zeile (scale 1.05 von links) samt Schein –
+     sonst schneidet der Rand lange Zeilen ab */
+  padding-right: 9%;
+  overflow-wrap: anywhere;
   transform-origin: left center;
   opacity: calc(1 - var(--d, 0) * 0.13);
   transition:
@@ -1525,6 +1581,44 @@ html.mirage-calm .main-entityHeader-title h1 {
 html.mirage-no-grain #mirage-stage .m-grain {
   display: none;
 }
+
+/* Immersiv-Knopf oben: Akzent-Kugel mit leichtem Schein statt grauem Symbol */
+.m-orb-btn {
+  position: relative;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.42), transparent 55%),
+    linear-gradient(135deg, var(--m-a), var(--m-c)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 16px -2px var(--m-a);
+  transition: transform 0.35s var(--m-spring), box-shadow 0.35s;
+}
+.m-orb-btn svg {
+  fill: currentColor !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+.m-orb-btn::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid var(--m-a);
+  opacity: 0;
+  animation: m-orb-ring 3.6s ease-out infinite;
+  pointer-events: none;
+}
+.m-orb-btn:hover {
+  transform: scale(1.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 24px 0 var(--m-a);
+}
+.m-orb-btn:active {
+  transform: scale(0.95);
+}
+@keyframes m-orb-ring {
+  0% { opacity: 0.55; transform: scale(0.9); }
+  60%, 100% { opacity: 0; transform: scale(1.35); }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1577,7 +1671,14 @@ html.mirage-im-open .Root * {
   /* schon vorgezeichnet weich: ein leichter Rest-Blur glättet nur noch die Hochskalierung */
   filter: blur(18px) saturate(1.4) brightness(0.5);
   transform: scale(1.1);
-  transition: background-image 1.2s var(--m-ease);
+  /* zwei Ebenen, die sich per Deckkraft abwechseln: der Weichzeichner wird je Bild nur einmal
+     berechnet und dann nur noch überblendet (vorher: bei jedem Songwechsel 1,2 s lang jedes Bild neu) */
+  opacity: 0;
+  will-change: opacity;
+  transition: opacity 1.2s var(--m-ease);
+}
+#mirage-immersive .m-im-bg i.is-on {
+  opacity: 1;
 }
 #mirage-immersive .m-im-bg::after {
   content: "";
@@ -2869,11 +2970,68 @@ html.mirage-calm #mirage-immersive .m-im-empty {
   outline-offset: 2px;
 }
 /* ---------- Immersiv: Quelle / Fassung wählen ---------- */
-#mirage-immersive .m-im-lyrsrc {
+/* unten rechts: Übersetzung an/aus und Fassung wählen, nebeneinander */
+#mirage-immersive .m-im-lyrbar {
   position: absolute;
   right: max(28px, env(safe-area-inset-right, 0px));
   bottom: 26px;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#mirage-immersive:not([data-mode="lyrics"]) .m-im-lyrbar {
+  display: none;
+}
+/* bewusst leiser als der Fassungs-Knopf: kein Rahmen, erst beim Darüberfahren deutlich */
+#mirage-immersive .m-im-trbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 33px;
+  padding: 0 12px 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font: 600 11px var(--m-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+#mirage-immersive .m-im-trbtn svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+/* kleiner Punkt als Schalterstand: leer = aus, Akzent mit Schein = an */
+#mirage-immersive .m-im-trbtn i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+  transition: background 0.25s, box-shadow 0.25s;
+}
+#mirage-immersive .m-im-trbtn.is-on {
+  color: rgba(255, 255, 255, 0.82);
+}
+#mirage-immersive .m-im-trbtn.is-on i {
+  background: var(--m-a);
+  box-shadow: 0 0 8px var(--m-a);
+}
+#mirage-immersive .m-im-trbtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+#mirage-immersive .m-im-trbtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#mirage-immersive .m-im-trbtn[hidden] {
+  display: none;
+}
+#mirage-immersive .m-im-lyrsrc {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2904,8 +3062,7 @@ html.mirage-calm #mirage-immersive .m-im-empty {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
-#mirage-immersive .m-im-lyrsrc[hidden],
-#mirage-immersive:not([data-mode="lyrics"]) .m-im-lyrsrc {
+#mirage-immersive .m-im-lyrsrc[hidden] {
   display: none;
 }
 

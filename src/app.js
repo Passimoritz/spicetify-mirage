@@ -22,7 +22,9 @@ import "./selectors.js";
 (function addTopbar() {
   if (!S.Topbar?.Button) return setTimeout(addTopbar, 500);
   try {
-    new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
+    const b = new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
+    // eigene Klasse: der Knopf bekommt in user.css die Akzentfarbe statt Spotifys Grau
+    b.element?.classList.add("m-orb-btn");
   } catch {}
 })();
 

@@ -1,4 +1,4 @@
-import { S, seek } from "./core.js";
+import { S, seek, VERSION } from "./core.js";
 import { getLyrics } from "./lyrics.js";
 import { bands } from "./audio.js";
 import { LANG } from "./i18n.js";
@@ -45,7 +45,10 @@ const bridge = (() => {
       else if (m.cmd === "hello") sendTrack();
       else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
       else if (m.cmd === "report") {
-        send({ type: "debug-start", hidden: document.hidden });
+        // Version und Lautstärke-Quellen mitschicken: so lässt sich aus dem Bericht ablesen, was läuft
+        send({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
+          api: typeof S.Player.getVolume?.(), pb: typeof S.Platform?.PlaybackAPI?._volume, read: readVolume(),
+        } });
         domReport();
       }
     };
@@ -66,14 +69,26 @@ const bridge = (() => {
   // Lautstärke: Spotify meldet Änderungen nicht, also leise nachsehen (nur solange die App verbunden ist).
   // Während der Schlaf-Timer ausblendet, nichts senden – sonst stünde die Leiste minutenlang da.
   let volTimer = 0, lastVol = null;
+  // Je nach Spotify-Version liefert getVolume() nichts – dann Spotifys PlaybackAPI, zuletzt der Regler selbst
+  const num = (v) => (typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null);
+  function readVolume() {
+    let v = num(S.Player.getVolume?.());
+    if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
+    if (v === null) {
+      const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
+      const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
+      if (m) v = num(Number(m[1]) / 100);
+    }
+    return v;
+  }
   function watchVolume(on) {
     clearInterval(volTimer);
     lastVol = null;
     if (!on) return;
     volTimer = setInterval(() => {
-      const v = S.Player.getVolume?.();
-      if (typeof v !== "number") return;
-      const muted = !!S.Player.getMute?.();
+      const v = readVolume();
+      if (v === null) return;
+      const muted = !!S.Player.getMute?.() || v === 0;
       const key = Math.round(v * 100) + (muted ? "m" : "");
       if (lastVol !== null && key !== lastVol && !isFading()) send({ type: "volume", value: v, muted });
       lastVol = key;

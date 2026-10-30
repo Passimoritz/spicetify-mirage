@@ -194,6 +194,11 @@ function onLevel(m) {
 }
 
 /* ------------------------------------------------------------------ Verbindung zu Spotify */
+// Fehlersuche: mit MIRAGE_LOG=1 landet jede Nachricht und jede Entscheidung in msg-log.txt
+function dlog(text) {
+  if (!process.env.MIRAGE_LOG) return;
+  try { fs.appendFileSync(path.join(app.getPath("userData"), "msg-log.txt"), `${new Date().toISOString()} ${text}\n`); } catch {}
+}
 function startServer() {
   const wss = new WebSocketServer({
     host: "127.0.0.1",
@@ -210,9 +215,7 @@ function startServer() {
     // Liedtext/Pegel nur anfordern, wenn der gewählte Stil sie anzeigt
     if (topics().length) ws.send(JSON.stringify({ type: "cmd", cmd: "subscribe", topics: topics() }));
     ws.on("message", (raw) => {
-      if (process.env.MIRAGE_LOG) {
-        try { fs.appendFileSync(path.join(app.getPath("userData"), "msg-log.txt"), `${new Date().toISOString()} ${String(raw).length} ${String(raw).slice(0, 120)}\n`); } catch {}
-      }
+      dlog(`${String(raw).length} ${String(raw).slice(0, 160)}`);
       let m;
       try { m = JSON.parse(raw); } catch { return; }
       if (m.type === "track") onTrack(m);
@@ -448,7 +451,7 @@ function startedHidden() {
 const VOL_W = 300, VOL_H = 64, VOL_M = 40;
 let volWin = null, volT = 0;
 function showVolume(m) {
-  if (!cfg.volumeOsd || cfg.mode === "off" || busy) return;
+  if (!cfg.volumeOsd || cfg.mode === "off" || busy) return dlog(`volume skipped osd=${cfg.volumeOsd} mode=${cfg.mode} busy=${busy}`);
   const value = Math.max(0, Math.min(1, Number(m.value) || 0));
   if (!volWin) {
     volWin = new BrowserWindow({
@@ -487,6 +490,7 @@ let busy = false, busyProc = null, busyT = 0;
 function setBusy(on) {
   if (on === busy) return;
   busy = on;
+  dlog(`busy ${busy}`);
   if (busy) {
     hideOverlay();
     volWin?.hide();

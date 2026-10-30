@@ -10,6 +10,25 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.3.1] – 2026-10-30
+
+### Added
+
+- Immersive lyrics: a "Translation" switch next to "Choose version" shows or hides the translation with one click.
+- All 14 languages are now complete in the theme and the overlay app. Before, French, Spanish, Italian, Portuguese, Dutch, Polish, Turkish, Russian, Ukrainian, Japanese, Korean and Chinese fell back to English for most newer texts.
+
+### Changed
+
+- The immersive button in the top bar is easier to find: an accent-coloured orb with a soft glow.
+
+### Fixed
+
+- Immersive mode: the Spotify window can be dragged again (also onto another screen) from the strip along the top; double-click maximises it.
+- Volume display in the overlay app: Mirage now also reads the volume from Spotify's playback API or the volume slider when `getVolume()` returns nothing, which happens in some Spotify versions.
+- The active lyric line no longer gets cut off on the right when it grows.
+- Search suggestions under the search field and the small playlist header that appears when scrolling are no longer see-through.
+- Smoother immersive mode: the visualizer draws at a capped resolution on large screens, the background crossfades without recomputing its blur, the progress bar and cover pulse no longer trigger layout every frame, and lyrics fade in instead of sliding across on a song change.
+
 ## [1.3.0] – 2026-10-30
 
 ### Added
