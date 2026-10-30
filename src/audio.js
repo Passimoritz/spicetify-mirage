@@ -15,16 +15,25 @@ async function loadAudio(uri) {
   }
   try {
     const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]);
-    if (audio.uri === uri && d?.beats?.length) {
-      const segs = (d.segments || []).map((s) => ({ t: s.start, l: s.loudness_max, p: s.pitches || [] }));
+    // Analysedaten sind nicht immer vollständig: fehlende oder kaputte Werte ersetzen, sonst
+    // schleicht sich NaN in den Visualizer und er bleibt bis zum Neuladen leer
+    const num = (v, fb) => (Number.isFinite(v) ? v : fb);
+    const ok = (x) => Number.isFinite(x?.start);
+    const beats = (d?.beats || []).filter(ok);
+    if (audio.uri === uri && beats.length) {
+      const segs = (d.segments || []).filter(ok).map((s) => ({
+        t: s.start,
+        l: num(s.loudness_max, -20),
+        p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
+      }));
       // Tempo (Spotify-Analyse, sonst aus den Schlagabständen) und mittlere Lautheit des Songs –
       // der Party-Modus wählt daraus Stärke und Takt seiner Effekte und erkennt laute „Drops“
-      const gaps = d.beats.slice(1, 200).map((b, i) => b.start - d.beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
+      const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
       const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
       const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
       audio.data = {
-        beats: d.beats.map((b) => ({ t: b.start, c: b.confidence ?? 1 })),
-        bars: (d.bars || []).map((b) => ({ t: b.start })),
+        beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
+        bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
         segs,
         bpm: Math.round(bpm),
         loud: Number(d.track?.loudness) || avg,

@@ -616,8 +616,10 @@ const immersive = (() => {
 
   function drawViz(pos, now) {
     if (!vw) sizeCanvas();
+    // minimiert bzw. 0 px breit: nichts zu zeichnen (sonst wird dpr = 0/0 und der Verlauf wirft)
+    if (!vw || !vh || !innerWidth) return;
     const N = cfg.vizBars;
-    if (vals.length !== N) {
+    if (vals.length !== N || !Number.isFinite(vals[0])) {
       vals = new Float32Array(N);
       targets = new Float32Array(N);
     }
@@ -685,6 +687,7 @@ const immersive = (() => {
         // ohne Taktdaten: ruhiges, organisches Wogen
         t = 0.28 + 0.22 * Math.sin(m * 0.33 + tt * 2.1) * Math.sin(m * 0.09 - tt * 1.3) + 0.12 * Math.sin(tt * 3 + m * 0.7);
       }
+      if (!Number.isFinite(t)) t = 0.2;
       targets[i] = playing ? t : t * 0.25;
     }
     // Nachbarn glätten (weiche Kurve statt Zacken), schnell hoch, langsam runter
@@ -835,7 +838,18 @@ const immersive = (() => {
       if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
     }
   }
-  let lastPulse = "", lastFlashCol = -1;
+  let lastPulse = "", lastFlashCol = -1, vizErr = null;
+  function vizReset() {
+    vals = new Float32Array(0);
+    rings = [];
+    sparks = [];
+    vizRect.r = null;
+    lastVizT = 0;
+    vw = 0;
+    try {
+      vctx.globalCompositeOperation = "source-over";
+    } catch {}
+  }
 
   // Party-Farben: kräftig statt der oft gedeckten Coverfarben. Graue Cover bekommen Mirage-Töne.
   let vividKey = "", vividPal = null;
@@ -940,7 +954,16 @@ const immersive = (() => {
     }
     const mode = el.dataset.mode;
     if (LYR.has(mode)) drawLyrics(pos);
-    if (VIZ.has(mode)) drawViz(pos, now);
+    if (VIZ.has(mode)) {
+      // ein Fehler in einem Bild darf den Visualizer nicht dauerhaft lahmlegen: Zustand zurücksetzen,
+      // das nächste Bild fängt sauber neu an
+      try {
+        drawViz(pos, now);
+      } catch (e) {
+        vizReset();
+        if (!vizErr) console.warn("[Mirage] Visualizer:", (vizErr = e));
+      }
+    }
     // Jam-Leute alle 3 s nachsehen (wer kommt, wer geht) – nur im Party-Modus
     if (mode === "party" && now - lastJam > 3000) {
       lastJam = now;

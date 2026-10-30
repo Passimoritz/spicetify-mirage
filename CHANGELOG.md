@@ -10,6 +10,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.4.2] – 2026-10-30
+
+### Fixed
+
+- The visualizer no longer goes blank or freezes on some songs: incomplete Spotify analysis data (missing loudness, pitches or beat confidence) used to spread NaN values and stop Party mode from drawing at all. Bad values are now replaced, and a failed frame resets the visualizer instead of breaking it until reload.
+- No more errors while Spotify is minimized (the canvas was 0 px wide).
+
 ## [1.4.1] – 2026-10-30
 
 ### Changed

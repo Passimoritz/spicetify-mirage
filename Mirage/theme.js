@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.4.1" : "dev";
+      VERSION = true ? "1.4.2" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -3316,14 +3316,21 @@
     }
     try {
       const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8e3))]);
-      if (audio.uri === uri && d?.beats?.length) {
-        const segs = (d.segments || []).map((s) => ({ t: s.start, l: s.loudness_max, p: s.pitches || [] }));
-        const gaps = d.beats.slice(1, 200).map((b, i) => b.start - d.beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
+      const num = (v, fb) => Number.isFinite(v) ? v : fb;
+      const ok = (x) => Number.isFinite(x?.start);
+      const beats = (d?.beats || []).filter(ok);
+      if (audio.uri === uri && beats.length) {
+        const segs = (d.segments || []).filter(ok).map((s) => ({
+          t: s.start,
+          l: num(s.loudness_max, -20),
+          p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : []
+        }));
+        const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
         const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
         const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
         audio.data = {
-          beats: d.beats.map((b) => ({ t: b.start, c: b.confidence ?? 1 })),
-          bars: (d.bars || []).map((b) => ({ t: b.start })),
+          beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
+          bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
           segs,
           bpm: Math.round(bpm),
           loud: Number(d.track?.loudness) || avg,
@@ -4289,6 +4296,7 @@
             const target = s ? clamp((s.l - d.avg - 1.5) / 5, 0, 1) : 0;
             drop += (target - drop) * (1 - Math.exp(-dt * (target > drop ? 6 : 1.2)));
           } else drop *= Math.exp(-dt * 2);
+          if (!Number.isFinite(drop)) drop = 0;
           const fx = !calm();
           const strong = P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
           if (fx && cfg.partyFlash && strong) {
@@ -4929,8 +4937,9 @@
         }
         function drawViz(pos, now) {
           if (!vw) sizeCanvas();
+          if (!vw || !vh || !innerWidth) return;
           const N = cfg.vizBars;
-          if (vals.length !== N) {
+          if (vals.length !== N || !Number.isFinite(vals[0])) {
             vals = new Float32Array(N);
             targets = new Float32Array(N);
           }
@@ -4995,6 +5004,7 @@
             } else {
               t2 = 0.28 + 0.22 * Math.sin(m * 0.33 + tt * 2.1) * Math.sin(m * 0.09 - tt * 1.3) + 0.12 * Math.sin(tt * 3 + m * 0.7);
             }
+            if (!Number.isFinite(t2)) t2 = 0.2;
             targets[i] = playing ? t2 : t2 * 0.25;
           }
           const k = cfg.vizSmooth;
@@ -5131,7 +5141,19 @@
             if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
           }
         }
-        let lastPulse = "", lastFlashCol = -1;
+        let lastPulse = "", lastFlashCol = -1, vizErr = null;
+        function vizReset() {
+          vals = new Float32Array(0);
+          rings = [];
+          sparks = [];
+          vizRect.r = null;
+          lastVizT = 0;
+          vw = 0;
+          try {
+            vctx.globalCompositeOperation = "source-over";
+          } catch {
+          }
+        }
         let vividKey = "", vividPal = null;
         function vivid(pal) {
           const key = pal.map((c) => c.join(",")).join("|");
@@ -5226,7 +5248,14 @@
           }
           const mode = el2.dataset.mode;
           if (LYR.has(mode)) drawLyrics(pos);
-          if (VIZ.has(mode)) drawViz(pos, now);
+          if (VIZ.has(mode)) {
+            try {
+              drawViz(pos, now);
+            } catch (e) {
+              vizReset();
+              if (!vizErr) console.warn("[Mirage] Visualizer:", vizErr = e);
+            }
+          }
           if (mode === "party" && now - lastJam > 3e3) {
             lastJam = now;
             showJam();

@@ -114,6 +114,7 @@ const party = (() => {
       const target = s ? clamp((s.l - d.avg - 1.5) / 5, 0, 1) : 0;
       drop += (target - drop) * (1 - Math.exp(-dt * (target > drop ? 6 : 1.2)));
     } else drop *= Math.exp(-dt * 2);
+    if (!Number.isFinite(drop)) drop = 0;
 
     const fx = !calm();
     const strong = P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
