@@ -618,6 +618,15 @@ const immersive = (() => {
     if (!vw) sizeCanvas();
     // minimiert bzw. 0 px breit: nichts zu zeichnen (sonst wird dpr = 0/0 und der Verlauf wirft)
     if (!vw || !vh || !innerWidth) return;
+    // Unter hoher Grafiklast (Spiel im Vordergrund, Treiber-Neustart) kann Chromium die Zeichenfläche
+    // verlieren: dann bleibt der Canvas leer, ganz ohne Fehlermeldung. Kommt sie nicht binnen 1 s
+    // von selbst zurück, mit einem frischen Canvas neu anfangen.
+    if (vctx.isContextLost?.()) {
+      if (!lostSince) lostSince = now;
+      else if (now - lostSince > 1000) freshCanvas();
+      return;
+    }
+    lostSince = 0;
     const N = cfg.vizBars;
     if (vals.length !== N || !Number.isFinite(vals[0])) {
       vals = new Float32Array(N);
@@ -838,7 +847,15 @@ const immersive = (() => {
       if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
     }
   }
-  let lastPulse = "", lastFlashCol = -1, vizErr = null;
+  let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0;
+  function freshCanvas() {
+    const n = q.canvas.cloneNode(false);
+    q.canvas.replaceWith(n);
+    q.canvas = n;
+    vctx = n.getContext("2d");
+    lostSince = 0;
+    vizReset();
+  }
   function vizReset() {
     vals = new Float32Array(0);
     rings = [];

@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.4.3" : "dev";
+      VERSION = true ? "1.4.4" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -4938,6 +4938,12 @@
         function drawViz(pos, now) {
           if (!vw) sizeCanvas();
           if (!vw || !vh || !innerWidth) return;
+          if (vctx.isContextLost?.()) {
+            if (!lostSince) lostSince = now;
+            else if (now - lostSince > 1e3) freshCanvas();
+            return;
+          }
+          lostSince = 0;
           const N = cfg.vizBars;
           if (vals.length !== N || !Number.isFinite(vals[0])) {
             vals = new Float32Array(N);
@@ -5141,7 +5147,15 @@
             if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
           }
         }
-        let lastPulse = "", lastFlashCol = -1, vizErr = null;
+        let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0;
+        function freshCanvas() {
+          const n = q.canvas.cloneNode(false);
+          q.canvas.replaceWith(n);
+          q.canvas = n;
+          vctx = n.getContext("2d");
+          lostSince = 0;
+          vizReset();
+        }
         function vizReset() {
           vals = new Float32Array(0);
           rings = [];

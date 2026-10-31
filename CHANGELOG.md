@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.4.4] – 2026-10-31
+
+### Fixed
+
+- The visualizer recovers by itself when Chromium drops its drawing surface. This can happen under heavy GPU load, for example with a game in the foreground. The canvas used to stay empty without any error until Spotify was reloaded. If the surface does not come back within a second, Mirage now starts over with a fresh canvas.
+
 ## [1.4.3] – 2026-10-31
 
 ### Fixed
