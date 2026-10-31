@@ -1,7 +1,7 @@
 {
   "name": "mirage-overlay",
   "productName": "Mirage Overlay",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Song announcements for the Mirage Spicetify theme outside of Spotify – on any screen, above every window.",
   "main": "main.js",
   "private": true,

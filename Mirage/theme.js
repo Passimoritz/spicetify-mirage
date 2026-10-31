@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.4.2" : "dev";
+      VERSION = true ? "1.4.3" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -3425,7 +3425,7 @@
         nowPlayingBar: ".Root__now-playing-bar, [data-testid='now-playing-bar'], footer",
         nowPlayingCover: ".main-nowPlayingWidget-coverArt img, [data-testid='CoverSlotCollapsed__container'] img, .main-coverSlotCollapsed-container img",
         likeButton: '[data-testid="add-button"], [data-testid="like-button"], [data-testid="heart-button"]',
-        tintSkip: ".main-card-card, [data-encore-id='card'], [role='row'], [role='grid'], [data-testid='background-image'], .main-entityHeader-background"
+        tintSkip: ".main-card-card, [data-encore-id='card'], [role='row'], [role='grid'], [data-testid='background-image'], .main-entityHeader-background, .main-topBar-background, [data-m-stuck], [role='listbox']"
       };
       CRITICAL = ["mainView", "nowPlayingBar"];
       spotifyVersion = String(S.Platform?.version || S.Config?.spotify_version || "").split(".").slice(0, 4).join(".");
@@ -6922,7 +6922,22 @@
     full = true;
     schedule2();
   }
-  var CANDIDATE, pending3, queued3, full, lastRun;
+  function findSticky() {
+    const row = document.querySelector(`:is(${SEL.mainView}) [role="grid"] [role="row"][aria-rowindex="1"]`);
+    for (let e = row; e && e !== document.body; e = e.parentElement) {
+      if (getComputedStyle(e).position === "sticky") return e;
+    }
+    return null;
+  }
+  function markSticky() {
+    stickyQueued = false;
+    if (!stickyEl?.isConnected) stickyEl = findSticky();
+    if (!stickyEl) return;
+    const grid = stickyEl.closest('[role="grid"]') || stickyEl.parentElement;
+    const stuck = stickyEl.getBoundingClientRect().top - grid.getBoundingClientRect().top > 2;
+    if (stuck !== stickyEl.hasAttribute("data-m-stuck")) stickyEl.toggleAttribute("data-m-stuck", stuck);
+  }
+  var CANDIDATE, pending3, queued3, full, lastRun, stickyEl, stickyQueued, stickySettle;
   var init_tints = __esm({
     "src/tints.js"() {
       init_selectors();
@@ -6952,6 +6967,20 @@
         } catch {
         }
       })();
+      stickyEl = null;
+      stickyQueued = false;
+      stickySettle = 0;
+      document.addEventListener(
+        "scroll",
+        () => {
+          clearTimeout(stickySettle);
+          stickySettle = setTimeout(markSticky, 160);
+          if (stickyQueued) return;
+          stickyQueued = true;
+          requestAnimationFrame(markSticky);
+        },
+        { capture: true, passive: true }
+      );
     }
   });
 

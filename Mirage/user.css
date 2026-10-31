@@ -112,10 +112,11 @@ body {
 }
 /* Kleiner Kopf beim Scrollen (Playlist-Name + Play): Spotify blendet ihn selbst ein (Deckkraft).
    Statt seiner Coverfarbe eine fast deckende dunkle Glasleiste – Inhalt darunter scheint nicht durch */
-.main-topBar-background {
-  background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.16), transparent 70%), rgba(var(--spice-rgb-main), 0.94) !important;
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+/* doppelte Klasse: muss auch gegen .m-tint gewinnen, falls die Fläche schon markiert wurde */
+.main-topBar-background.main-topBar-background {
+  background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.16), transparent 70%), rgba(var(--spice-rgb-main), 0.96) !important;
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
   border-bottom: 1px solid var(--m-line);
 }
 
@@ -452,19 +453,23 @@ html.mirage-no-tilt [data-encore-id="card"] {
   background: transparent !important;
 }
 /* angeheftet (unter dem kleinen Kopf): deckend wie dieser, sonst laufen die Titel sichtbar durch */
-.main-trackList-trackListHeader.main-trackList-trackListHeaderStuck {
-  background: rgba(var(--spice-rgb-main), 0.94) !important;
-  backdrop-filter: blur(24px) saturate(1.4);
-  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+/* theme.js markiert ihn zusätzlich mit data-m-stuck – Spotifys neue Klassennamen kennt Spicetify nicht */
+.main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
+[data-m-stuck][data-m-stuck] {
+  background: rgba(var(--spice-rgb-main), 0.96) !important;
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
   border-bottom: 1px solid var(--m-line);
 }
 
-/* Suchvorschläge unter dem Suchfeld oben: eigene, fast deckende Glasplatte */
+/* Suchvorschläge unter dem Suchfeld oben: eigene, deckende Glasplatte über allem im Hauptbereich */
 .main-globalNav-searchSection [role="listbox"],
 [role="listbox"]:is(#search-dropdown, [id*="search"][id$="dropdown"], [id*="searches"][id*="dropdown"]) {
-  background: linear-gradient(160deg, rgba(var(--m-a-rgb), 0.1), transparent 45%), rgba(var(--spice-rgb-main), 0.97) !important;
-  backdrop-filter: blur(28px) saturate(1.4);
-  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  background: linear-gradient(160deg, rgba(var(--m-a-rgb), 0.1), transparent 45%), rgb(var(--spice-rgb-main)) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 100 !important;
+  isolation: isolate;
   border: 1px solid var(--m-line);
   border-radius: 16px !important;
   box-shadow: 0 28px 70px -18px rgba(0, 0, 0, 0.85), 0 1px 0 0 rgba(255, 255, 255, 0.06) inset;

@@ -15,7 +15,9 @@ const SEL = {
     ".main-nowPlayingWidget-coverArt img, [data-testid='CoverSlotCollapsed__container'] img, .main-coverSlotCollapsed-container img",
   likeButton: '[data-testid="add-button"], [data-testid="like-button"], [data-testid="heart-button"]',
   tintSkip:
-    ".main-card-card, [data-encore-id='card'], [role='row'], [role='grid'], [data-testid='background-image'], .main-entityHeader-background",
+    ".main-card-card, [data-encore-id='card'], [role='row'], [role='grid'], [data-testid='background-image'], .main-entityHeader-background, " +
+    // eigene deckende Glasflächen (kleiner Kopf, angehefteter Spaltenkopf, Suchvorschläge) nie durchsichtig machen
+    ".main-topBar-background, [data-m-stuck], [role='listbox']",
 };
 // ohne diese Teile sieht Mirage halb kaputt aus – dann lieber sauber auf Grundfarben zurück
 const CRITICAL = ["mainView", "nowPlayingBar"];

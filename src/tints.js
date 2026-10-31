@@ -110,3 +110,38 @@ function scanAll() {
     });
   } catch {}
 })();
+
+/* ---------------------------------------------------------------- angehefteter Spaltenkopf */
+// Spotify vergibt dem angehefteten Kopf („# Titel Album …“) neue Klassennamen, die Spicetifys
+// Klassen-Liste nicht kennt – die CSS-Regel greift dann nie und die Titel laufen sichtbar durch.
+// Darum am Aufbau erkennen: das sticky-Element um die erste Kopfzeile der Liste. Ein data-Attribut
+// statt Klasse, weil React className bei jedem Neuzeichnen überschreibt.
+let stickyEl = null, stickyQueued = false, stickySettle = 0;
+function findSticky() {
+  const row = document.querySelector(`:is(${SEL.mainView}) [role="grid"] [role="row"][aria-rowindex="1"]`);
+  for (let e = row; e && e !== document.body; e = e.parentElement) {
+    if (getComputedStyle(e).position === "sticky") return e;
+  }
+  return null;
+}
+function markSticky() {
+  stickyQueued = false;
+  if (!stickyEl?.isConnected) stickyEl = findSticky();
+  if (!stickyEl) return;
+  const grid = stickyEl.closest('[role="grid"]') || stickyEl.parentElement;
+  // angeheftet = der Kopf ist gegenüber dem Anfang der Liste nach unten gewandert
+  const stuck = stickyEl.getBoundingClientRect().top - grid.getBoundingClientRect().top > 2;
+  if (stuck !== stickyEl.hasAttribute("data-m-stuck")) stickyEl.toggleAttribute("data-m-stuck", stuck);
+}
+document.addEventListener(
+  "scroll",
+  () => {
+    // nach dem letzten Scrollen noch einmal nachmessen – beim schnellen Hochscrollen ist das letzte Bild manchmal zu früh
+    clearTimeout(stickySettle);
+    stickySettle = setTimeout(markSticky, 160);
+    if (stickyQueued) return;
+    stickyQueued = true;
+    requestAnimationFrame(markSticky);
+  },
+  { capture: true, passive: true },
+);

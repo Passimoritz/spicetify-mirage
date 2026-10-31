@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.4.3] – 2026-10-31
+
+### Fixed
+
+- Search suggestions, the small playlist header that appears while scrolling and the pinned column header ("# Title Album …") are readable again. Mirage's own colour-surface cleanup had been turning them transparent, and the pinned column header uses new Spotify class names that Spicetify does not know. It is now recognised by its structure. The search dropdown is fully opaque and stays above the page content.
+
 ## [1.4.2] – 2026-10-30
 
 ### Fixed
