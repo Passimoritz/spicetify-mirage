@@ -10,6 +10,16 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.4.5] – 2026-11-01
+
+### Changed
+
+- The Immersive button now sits directly left of the bell (What's New) at the top right. It is a glass orb in the cover colours with a sheen that sweeps across it every few seconds and a softly breathing glow. The glow is off in calm mode.
+
+### Fixed
+
+- The Immersive button no longer disappears at random. Mirage now places its own button and puts it back whenever Spotify rebuilds the top bar. Only when there is no bell does it fall back to the Spicetify top bar button.
+
 ## [1.4.4] – 2026-10-31
 
 ### Fixed

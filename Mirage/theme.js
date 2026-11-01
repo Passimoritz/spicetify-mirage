@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.4.4" : "dev";
+      VERSION = true ? "1.4.5" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -7062,12 +7062,48 @@
         }
       })();
       (function addTopbar() {
-        if (!S.Topbar?.Button) return setTimeout(addTopbar, 500);
-        try {
-          const b = new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
-          b.element?.classList.add("m-orb-btn");
-        } catch {
-        }
+        const BELL = '[data-testid="whats-new-feed-button"], .main-globalNav-contentRight .main-actionButtons button:not(.m-orb-btn):not([data-testid="user-widget-link"])';
+        const btn = document.createElement("button");
+        btn.className = "m-orb-btn";
+        btn.type = "button";
+        btn.title = t("immersive");
+        btn.setAttribute("aria-label", t("immersive"));
+        btn.innerHTML = `<span class="m-orb-shine" aria-hidden="true"></span>${ICON.orb}`;
+        btn.addEventListener("click", () => immersive.toggle());
+        const slot = (bell) => {
+          let n = bell;
+          while (n.parentElement && n.parentElement.childElementCount === 1 && n.parentElement !== document.body) n = n.parentElement;
+          return n;
+        };
+        const place = () => {
+          const bell = document.querySelector(BELL);
+          if (!bell) return false;
+          const s = slot(bell);
+          if (btn.nextElementSibling !== s) s.before(btn);
+          return true;
+        };
+        let fallback = null, seen = false;
+        const t0 = Date.now();
+        (function keep() {
+          if (place()) {
+            seen = true;
+            if (fallback) {
+              try {
+                fallback.deregister?.();
+              } catch {
+              }
+              fallback.element?.remove();
+              fallback = null;
+            }
+          } else if (!seen && !fallback && Date.now() - t0 > 15e3 && S.Topbar?.Button) {
+            try {
+              fallback = new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
+              fallback.element?.classList.add("m-orb-btn");
+            } catch {
+            }
+          }
+          setTimeout(keep, btn.isConnected ? 1e3 : 300);
+        })();
       })();
       S.Player.addEventListener("songchange", () => onSong(true));
       S.Player.addEventListener("onplaypause", onPlayPause);

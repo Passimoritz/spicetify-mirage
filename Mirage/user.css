@@ -1816,49 +1816,113 @@ html.mirage-no-grain #mirage-stage .m-grain {
   display: none;
 }
 
-/* Immersiv-Knopf oben: Akzent-Kugel mit leichtem Schein statt grauem Symbol */
+/* Immersiv-Knopf links neben der Glocke: Glaskugel in den Coverfarben. Ein Lichtstreif zieht alle
+   paar Sekunden darüber, ein weicher Hof atmet leise – beides nur transform/opacity (keine Neuberechnung) */
 .m-orb-btn {
   position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
   width: 32px !important;
   height: 32px !important;
+  padding: 0;
+  border: 0;
   border-radius: 50% !important;
   color: #fff !important;
-  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.42), transparent 55%),
-    linear-gradient(135deg, var(--m-a), var(--m-c)) !important;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 16px -2px var(--m-a);
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 46%),
+    radial-gradient(circle at 70% 85%, rgba(var(--m-c-rgb), 0.55), transparent 60%),
+    linear-gradient(140deg, var(--m-a), var(--m-b)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 4px 14px -4px rgba(var(--m-a-rgb), 0.9);
   transition: transform 0.35s var(--m-spring), box-shadow 0.35s;
+  isolation: isolate;
 }
 .m-orb-btn svg {
+  position: relative;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
   fill: currentColor !important;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
+/* Lichtstreif: wandert schräg über die Kugel, dann Pause */
+.m-orb-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.m-orb-shine::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.85) 50%, transparent);
+  transform: translateX(-140%) skewX(-18deg);
+  animation: m-orb-sheen 5.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+/* weicher Hof in der Akzentfarbe */
 .m-orb-btn::after {
   content: "";
   position: absolute;
-  inset: -3px;
+  inset: -6px;
+  z-index: -1;
   border-radius: 50%;
-  border: 1.5px solid var(--m-a);
-  opacity: 0;
-  animation: m-orb-ring 3.6s ease-out infinite;
+  background: radial-gradient(circle, rgba(var(--m-a-rgb), 0.55), transparent 68%);
+  opacity: 0.45;
+  animation: m-orb-glow 3.2s ease-in-out infinite;
   pointer-events: none;
 }
 .m-orb-btn:hover {
-  transform: scale(1.1);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 24px 0 var(--m-a);
+  transform: scale(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.24),
+    0 6px 20px -4px rgba(var(--m-a-rgb), 1);
+}
+.m-orb-btn:hover .m-orb-shine::before {
+  animation-duration: 1.6s;
 }
 .m-orb-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
-@keyframes m-orb-ring {
-  0% {
-    opacity: 0.55;
-    transform: scale(0.9);
+.m-orb-btn:focus-visible {
+  outline: 2px solid var(--m-c);
+  outline-offset: 3px;
+}
+@keyframes m-orb-sheen {
+  0%,
+  62% {
+    transform: translateX(-140%) skewX(-18deg);
   }
-  60%,
   100% {
-    opacity: 0;
-    transform: scale(1.35);
+    transform: translateX(260%) skewX(-18deg);
   }
+}
+@keyframes m-orb-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
+html.mirage-calm .m-orb-shine::before,
+html.mirage-calm .m-orb-btn::after {
+  animation: none;
 }
 @media (prefers-reduced-motion: reduce) {
   *,
