@@ -10,6 +10,22 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.5.1] – 2026-11-02
+
+### Changed
+
+- **Party mode follows the song.** Mirage now maps every track in advance from Spotify's analysis: an energy curve on a quarter-second grid (centred, so it rises exactly where the song gets louder), drops placed on their beat, build-ups seen up to four seconds ahead, quiet breaks, major or minor per section and how bright the sound is. Build-ups speed the beams up and make them shimmer at double tempo, breaks dim everything down, the drop hits all at once (flash, camera kick, three rings, a burst of sparks), minor sections turn the colours deeper and cooler.
+- **Each genre has its own light language and accent pattern.** Rave: four on the floor, the one strongest, crossing spotlights from the bottom corners. Bass: heavy 1 and 3 with a long tail, light welling up from the floor. Rock: the snare on 2 and 4 hits, warm hard spots from above, shake instead of sway. Pop: every beat springs, colour sweeps that wander through the palette. Chill: only the one, long breathing, wide soft light shafts, hardly any beams. The beat envelope is now computed from the exact beat time, not from the moment it was noticed.
+- Stage light (formerly "light beams") starts at *Normal*. The cover pulse, the bar wreath, rings and sparks all scale with the song's energy; sparks follow the brightness of the sound.
+
+### Fixed
+
+- Lyrics in immersive mode are no longer cut off at the left or right edge. The active line grows into reserved space that is derived from its scale, and the lyrics area has bleed room on both sides for the glow – in Lyrics, Mix and Party, at any window size and lyrics size.
+
+### Removed
+
+- Confetti.
+
 ## [1.5.0] – 2026-11-02
 
 ### Added

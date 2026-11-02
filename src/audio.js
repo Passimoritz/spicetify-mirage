@@ -25,6 +25,8 @@ async function loadAudio(uri) {
         t: s.start,
         l: num(s.loudness_max, -20),
         p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
+        // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
+        b: num(s.timbre?.[1], 0),
       }));
       // Tempo (Spotify-Analyse, sonst aus den Schlagabständen) und mittlere Lautheit des Songs –
       // der Party-Modus wählt daraus Stärke und Takt seiner Effekte und erkennt laute „Drops“
@@ -34,6 +36,8 @@ async function loadAudio(uri) {
       audio.data = {
         beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
         bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
+        // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
+        sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12) })),
         segs,
         bpm: Math.round(bpm),
         loud: Number(d.track?.loudness) || avg,

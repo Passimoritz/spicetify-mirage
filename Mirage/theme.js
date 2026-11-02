@@ -28,11 +28,11 @@
       has: (k) => m.has(k)
     };
   }
-  function seek(arr, at, key) {
+  function seek(arr, at2, key) {
     let lo = 0, hi = arr.length - 1, r = -1;
     while (lo <= hi) {
       const m = lo + hi >> 1;
-      if (arr[m][key] <= at) {
+      if (arr[m][key] <= at2) {
         r = m;
         lo = m + 1;
       } else hi = m - 1;
@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.5.0" : "dev";
+      VERSION = true ? "1.5.1" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -294,7 +294,7 @@
           party_bass: "Bass",
           party_chill: "Chill",
           partySection: "Party mode",
-          partySectionHint: "Auto picks a style for each song from the artist's genres, tempo and loudness",
+          partySectionHint: "Auto picks the light language from the genre \u2013 and the lights follow the song itself: build-ups, drops, quiet breaks, major or minor",
           partyLevel: "Intensity",
           partyLevel1: "Soft",
           partyLevel2: "Normal",
@@ -307,10 +307,10 @@
           jamYou: "You",
           partyLevel4: "Extreme",
           partyLevel5: "Insane",
-          partyLasers: "Light beams",
-          partyLasersHint: "From \u201CExtreme\u201D: beams of light fan out from the cover and jump on every bar",
+          partyLasers: "Stage light",
+          partyLasersHint: "Spotlights in the genre's style \u2013 crossing beams for rave, hard spots from above for rock, light from the floor for bass. From \u201CExtreme\u201D also beams from the cover",
           partyZoom: "Camera kicks",
-          partyZoomHint: "From \u201CExtreme\u201D: the whole picture punches in on the beat",
+          partyZoomHint: "From \u201CMax\u201D: the lyric springs on the accented beats and the cover sways (pop, bass, chill). From \u201CExtreme\u201D: the whole picture punches in",
           partyIdle: "Hide controls when idle",
           partyIdleHint: "After a few seconds without the mouse, the controls fade out and everything glides to the centre",
           c_addTo: "Add to playlist",
@@ -531,7 +531,7 @@
           party_bass: "Bass",
           party_chill: "Chill",
           partySection: "Party-Modus",
-          partySectionHint: "Auto w\xE4hlt pro Song einen Stil aus Genre, Tempo und Lautheit",
+          partySectionHint: "Auto w\xE4hlt die Lichtsprache nach Genre \u2013 und das Licht folgt dem Song selbst: Aufbau, Drop, ruhige Breaks, Dur oder Moll",
           partyLevel: "St\xE4rke",
           partyLevel1: "Sanft",
           partyLevel2: "Normal",
@@ -544,10 +544,10 @@
           jamYou: "Du",
           partyLevel4: "Extrem",
           partyLevel5: "Wahnsinn",
-          partyLasers: "Lichtstrahlen",
-          partyLasersHint: "Ab \u201EExtrem\u201C: Lichtf\xE4cher strahlen aus dem Cover und springen mit jedem Takt",
+          partyLasers: "B\xFChnenlicht",
+          partyLasersHint: "Scheinwerfer im Stil des Genres \u2013 kreuzende Kegel bei Rave, harte Spots von oben bei Rock, Licht vom Boden bei Bass. Ab \u201EExtrem\u201C zus\xE4tzlich Strahlen aus dem Cover",
           partyZoom: "Kamera-St\xF6\xDFe",
-          partyZoomHint: "Ab \u201EExtrem\u201C: das ganze Bild zoomt im Takt kurz heran",
+          partyZoomHint: "Ab \u201EMaximal\u201C: die Liedzeile federt auf den betonten Schl\xE4gen, das Cover pendelt (Pop, Bass, Chill). Ab \u201EExtrem\u201C: das ganze Bild zoomt heran",
           partyIdle: "Bedienung bei Ruhe ausblenden",
           partyIdleHint: "Nach ein paar Sekunden ohne Maus verschwinden die Kn\xF6pfe und alles gleitet zur Mitte",
           c_addTo: "Zu Playlist hinzuf\xFCgen",
@@ -768,7 +768,7 @@
           party_bass: "Basses",
           party_chill: "Chill",
           partySection: "Mode f\xEAte",
-          partySectionHint: "Auto choisit un style par titre selon le genre, le tempo et le volume",
+          partySectionHint: "Auto choisit le langage lumineux selon le genre \u2013 et la lumi\xE8re suit le morceau : mont\xE9es, drops, breaks calmes, majeur ou mineur",
           partyLevel: "Intensit\xE9",
           partyLevel1: "Douce",
           partyLevel2: "Normale",
@@ -781,10 +781,10 @@
           jamYou: "Toi",
           partyLevel4: "Extr\xEAme",
           partyLevel5: "D\xE9mentiel",
-          partyLasers: "Faisceaux lumineux",
-          partyLasersHint: "D\xE8s \xAB Extr\xEAme \xBB : des faisceaux jaillissent de la pochette et sautent \xE0 chaque mesure",
+          partyLasers: "Lumi\xE8re de sc\xE8ne",
+          partyLasersHint: "Projecteurs dans le style du genre \u2013 faisceaux crois\xE9s pour la rave, spots durs d'en haut pour le rock, lumi\xE8re du sol pour le bass. D\xE8s \xAB Extr\xEAme \xBB, aussi des faisceaux depuis la pochette",
           partyZoom: "Coups de cam\xE9ra",
-          partyZoomHint: "D\xE8s \xAB Extr\xEAme \xBB : toute l'image zoome bri\xE8vement sur le temps",
+          partyZoomHint: "D\xE8s \xAB Max \xBB : la ligne rebondit sur les temps forts et la pochette se balance (pop, bass, chill). D\xE8s \xAB Extr\xEAme \xBB : toute l'image zoome",
           partyIdle: "Masquer les commandes au repos",
           partyIdleHint: "Apr\xE8s quelques secondes sans souris, les commandes s'effacent et tout glisse vers le centre",
           c_addTo: "Ajouter \xE0 une playlist",
@@ -1005,7 +1005,7 @@
           party_bass: "Bajos",
           party_chill: "Chill",
           partySection: "Modo fiesta",
-          partySectionHint: "Auto elige un estilo por canci\xF3n seg\xFAn el g\xE9nero, el tempo y el volumen",
+          partySectionHint: "Auto elige el lenguaje de luces seg\xFAn el g\xE9nero \u2013 y la luz sigue a la canci\xF3n: subidas, drops, pausas tranquilas, mayor o menor",
           partyLevel: "Intensidad",
           partyLevel1: "Suave",
           partyLevel2: "Normal",
@@ -1018,10 +1018,10 @@
           jamYou: "T\xFA",
           partyLevel4: "Extremo",
           partyLevel5: "Locura",
-          partyLasers: "Haces de luz",
-          partyLasersHint: "Desde \xABExtremo\xBB: haces de luz salen de la portada y saltan en cada comp\xE1s",
+          partyLasers: "Luz de escenario",
+          partyLasersHint: "Focos al estilo del g\xE9nero \u2013 haces cruzados en rave, focos duros desde arriba en rock, luz desde el suelo en bass. Desde \xABExtremo\xBB, tambi\xE9n haces desde la portada",
           partyZoom: "Golpes de c\xE1mara",
-          partyZoomHint: "Desde \xABExtremo\xBB: toda la imagen hace zoom al ritmo",
+          partyZoomHint: "Desde \xABM\xE1x.\xBB: la l\xEDnea rebota en los tiempos fuertes y la portada se balancea (pop, bass, chill). Desde \xABExtremo\xBB: toda la imagen hace zoom",
           partyIdle: "Ocultar controles en reposo",
           partyIdleHint: "Tras unos segundos sin rat\xF3n, los controles se desvanecen y todo se desliza al centro",
           c_addTo: "A\xF1adir a playlist",
@@ -1242,7 +1242,7 @@
           party_bass: "Bassi",
           party_chill: "Chill",
           partySection: "Modalit\xE0 festa",
-          partySectionHint: "Auto sceglie uno stile per ogni brano in base a genere, tempo e volume",
+          partySectionHint: "Auto sceglie il linguaggio delle luci dal genere \u2013 e la luce segue il brano: crescendo, drop, pause tranquille, maggiore o minore",
           partyLevel: "Intensit\xE0",
           partyLevel1: "Leggera",
           partyLevel2: "Normale",
@@ -1255,10 +1255,10 @@
           jamYou: "Tu",
           partyLevel4: "Estremo",
           partyLevel5: "Follia",
-          partyLasers: "Fasci di luce",
-          partyLasersHint: "Da \xABEstremo\xBB: fasci di luce partono dalla copertina e saltano a ogni battuta",
+          partyLasers: "Luci di scena",
+          partyLasersHint: "Fari nello stile del genere \u2013 fasci incrociati per la rave, spot duri dall'alto per il rock, luce dal pavimento per il bass. Da \xABEstremo\xBB anche fasci dalla copertina",
           partyZoom: "Colpi di camera",
-          partyZoomHint: "Da \xABEstremo\xBB: l'intera immagine zooma a tempo",
+          partyZoomHint: "Da \xABMax\xBB: la riga rimbalza sui tempi forti e la copertina oscilla (pop, bass, chill). Da \xABEstremo\xBB: l'intera immagine zooma",
           partyIdle: "Nascondi i comandi a riposo",
           partyIdleHint: "Dopo qualche secondo senza mouse i comandi svaniscono e tutto scivola al centro",
           c_addTo: "Aggiungi a playlist",
@@ -1479,7 +1479,7 @@
           party_bass: "Grave",
           party_chill: "Chill",
           partySection: "Modo festa",
-          partySectionHint: "Auto escolhe um estilo por m\xFAsica a partir do g\xEAnero, do andamento e do volume",
+          partySectionHint: "Auto escolhe a linguagem de luz pelo g\xEAnero \u2013 e a luz segue a m\xFAsica: subidas, drops, pausas calmas, maior ou menor",
           partyLevel: "Intensidade",
           partyLevel1: "Suave",
           partyLevel2: "Normal",
@@ -1492,10 +1492,10 @@
           jamYou: "Voc\xEA",
           partyLevel4: "Extremo",
           partyLevel5: "Insano",
-          partyLasers: "Feixes de luz",
-          partyLasersHint: "A partir de \xABExtremo\xBB: feixes de luz saem da capa e saltam a cada compasso",
+          partyLasers: "Luz de palco",
+          partyLasersHint: "Holofotes no estilo do g\xEAnero \u2013 feixes cruzados no rave, spots duros de cima no rock, luz do ch\xE3o no bass. A partir de \xABExtremo\xBB, tamb\xE9m feixes da capa",
           partyZoom: "Golpes de c\xE2mera",
-          partyZoomHint: "A partir de \xABExtremo\xBB: a imagem inteira d\xE1 zoom no ritmo",
+          partyZoomHint: "A partir de \xABM\xE1x.\xBB: a linha quica nos tempos fortes e a capa balan\xE7a (pop, bass, chill). A partir de \xABExtremo\xBB: a imagem inteira d\xE1 zoom",
           partyIdle: "Ocultar controles em repouso",
           partyIdleHint: "Ap\xF3s alguns segundos sem o mouse, os controles somem e tudo desliza para o centro",
           c_addTo: "Adicionar \xE0 playlist",
@@ -1716,7 +1716,7 @@
           party_bass: "Bas",
           party_chill: "Chill",
           partySection: "Feestmodus",
-          partySectionHint: "Auto kiest per nummer een stijl op basis van genre, tempo en volume",
+          partySectionHint: "Auto kiest de lichttaal op genre \u2013 en het licht volgt het nummer zelf: opbouw, drops, rustige breaks, majeur of mineur",
           partyLevel: "Intensiteit",
           partyLevel1: "Zacht",
           partyLevel2: "Normaal",
@@ -1729,10 +1729,10 @@
           jamYou: "Jij",
           partyLevel4: "Extreem",
           partyLevel5: "Waanzin",
-          partyLasers: "Lichtbundels",
-          partyLasersHint: "Vanaf \u2018Extreem\u2019: lichtbundels stralen uit de hoes en springen bij elke maat",
+          partyLasers: "Podiumlicht",
+          partyLasersHint: "Spots in de stijl van het genre \u2013 kruisende bundels bij rave, harde spots van boven bij rock, licht vanaf de vloer bij bass. Vanaf \u2018Extreem\u2019 ook bundels uit de hoes",
           partyZoom: "Camerastoten",
-          partyZoomHint: "Vanaf \u2018Extreem\u2019: het hele beeld zoomt kort in op de beat",
+          partyZoomHint: "Vanaf \u2018Max\u2019: de regel veert op de beklemtoonde tellen en de hoes wiegt (pop, bass, chill). Vanaf \u2018Extreem\u2019: het hele beeld zoomt in",
           partyIdle: "Bediening verbergen in rust",
           partyIdleHint: "Na een paar seconden zonder muis verdwijnen de knoppen en schuift alles naar het midden",
           c_addTo: "Aan playlist toevoegen",
@@ -1953,7 +1953,7 @@
           party_bass: "Bas",
           party_chill: "Chill",
           partySection: "Tryb imprezy",
-          partySectionHint: "Auto dobiera styl do ka\u017Cdego utworu wed\u0142ug gatunku, tempa i g\u0142o\u015Bno\u015Bci",
+          partySectionHint: "Auto dobiera j\u0119zyk \u015Bwiate\u0142 do gatunku \u2013 a \u015Bwiat\u0142o pod\u0105\u017Ca za utworem: narastanie, dropy, spokojne przerwy, dur lub moll",
           partyLevel: "Intensywno\u015B\u0107",
           partyLevel1: "\u0141agodna",
           partyLevel2: "Normalna",
@@ -1966,10 +1966,10 @@
           jamYou: "Ty",
           partyLevel4: "Ekstremalny",
           partyLevel5: "Szale\u0144stwo",
-          partyLasers: "Wi\u0105zki \u015Bwiat\u0142a",
-          partyLasersHint: "Od \u201EEkstremalny\u201D: wi\u0105zki \u015Bwiat\u0142a wychodz\u0105 z ok\u0142adki i skacz\u0105 co takt",
+          partyLasers: "\u015Awiat\u0142o sceniczne",
+          partyLasersHint: "Reflektory w stylu gatunku \u2013 krzy\u017Cuj\u0105ce si\u0119 wi\u0105zki przy rave, ostre spoty z g\xF3ry przy rocku, \u015Bwiat\u0142o od pod\u0142ogi przy bassie. Od \u201EEkstremalny\u201D tak\u017Ce wi\u0105zki z ok\u0142adki",
           partyZoom: "Uderzenia kamery",
-          partyZoomHint: "Od \u201EEkstremalny\u201D: ca\u0142y obraz kr\xF3tko przybli\u017Ca si\u0119 w rytm",
+          partyZoomHint: "Od \u201EMaks.\u201D: linijka spr\u0119\u017Cynuje na akcentach, a ok\u0142adka si\u0119 ko\u0142ysze (pop, bass, chill). Od \u201EEkstremalny\u201D: ca\u0142y obraz si\u0119 przybli\u017Ca",
           partyIdle: "Ukrywaj sterowanie w spoczynku",
           partyIdleHint: "Po kilku sekundach bez myszy przyciski znikaj\u0105, a wszystko p\u0142ynnie przesuwa si\u0119 do \u015Brodka",
           c_addTo: "Dodaj do playlisty",
@@ -2190,7 +2190,7 @@
           party_bass: "Bas",
           party_chill: "Sakin",
           partySection: "Parti modu",
-          partySectionHint: "Otomatik, her \u015Fark\u0131 i\xE7in t\xFCre, tempoya ve ses d\xFCzeyine g\xF6re bir stil se\xE7er",
+          partySectionHint: "Auto \u0131\u015F\u0131k dilini t\xFCre g\xF6re se\xE7er \u2013 ve \u0131\u015F\u0131k \u015Fark\u0131n\u0131n kendisini izler: y\xFCkseli\u015Fler, droplar, sakin aralar, maj\xF6r ya da min\xF6r",
           partyLevel: "Yo\u011Funluk",
           partyLevel1: "Hafif",
           partyLevel2: "Normal",
@@ -2203,10 +2203,10 @@
           jamYou: "Sen",
           partyLevel4: "Ekstrem",
           partyLevel5: "\xC7\u0131lg\u0131n",
-          partyLasers: "I\u015F\u0131k h\xFCzmeleri",
-          partyLasersHint: "\u201CEkstrem\u201Dden itibaren: kapaktan \u0131\u015F\u0131k h\xFCzmeleri yay\u0131l\u0131r ve her \xF6l\xE7\xFCde s\u0131\xE7rar",
+          partyLasers: "Sahne \u0131\u015F\u0131\u011F\u0131",
+          partyLasersHint: "T\xFCr\xFCn tarz\u0131nda spotlar \u2013 rave'de kesi\u015Fen h\xFCzmeler, rock'ta yukar\u0131dan sert spotlar, bass'ta yerden y\xFCkselen \u0131\u015F\u0131k. \u201CEkstrem\u201Dden itibaren kapaktan h\xFCzmeler de",
           partyZoom: "Kamera vuru\u015Flar\u0131",
-          partyZoomHint: "\u201CEkstrem\u201Dden itibaren: t\xFCm g\xF6r\xFCnt\xFC ritimle k\u0131sa bir an yak\u0131nla\u015F\u0131r",
+          partyZoomHint: "\u201CMaksimum\u201Ddan itibaren: sat\u0131r vurgulu vuru\u015Flarda yaylan\u0131r, kapak sallan\u0131r (pop, bass, chill). \u201CEkstrem\u201Dden itibaren: t\xFCm g\xF6r\xFCnt\xFC yak\u0131nla\u015F\u0131r",
           partyIdle: "Bo\u015Ftayken kontrolleri gizle",
           partyIdleHint: "Fare birka\xE7 saniye hareket etmezse kontroller kaybolur ve her \u015Fey ortaya kayar",
           c_addTo: "\xC7alma listesine ekle",
@@ -2427,7 +2427,7 @@
           party_bass: "\u0411\u0430\u0441",
           party_chill: "\u0427\u0438\u043B\u043B",
           partySection: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
-          partySectionHint: "\xAB\u0410\u0432\u0442\u043E\xBB \u043F\u043E\u0434\u0431\u0438\u0440\u0430\u0435\u0442 \u0441\u0442\u0438\u043B\u044C \u0434\u043B\u044F \u043A\u0430\u0436\u0434\u043E\u0439 \u043F\u0435\u0441\u043D\u0438 \u043F\u043E \u0436\u0430\u043D\u0440\u0443, \u0442\u0435\u043C\u043F\u0443 \u0438 \u0433\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u0438",
+          partySectionHint: "\u0410\u0432\u0442\u043E \u043F\u043E\u0434\u0431\u0438\u0440\u0430\u0435\u0442 \u0441\u0432\u0435\u0442\u043E\u0432\u043E\u0439 \u044F\u0437\u044B\u043A \u043F\u043E \u0436\u0430\u043D\u0440\u0443 \u2013 \u0430 \u0441\u0432\u0435\u0442 \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u0437\u0430 \u0441\u0430\u043C\u0438\u043C \u0442\u0440\u0435\u043A\u043E\u043C: \u043D\u0430\u0440\u0430\u0441\u0442\u0430\u043D\u0438\u044F, \u0434\u0440\u043E\u043F\u044B, \u0442\u0438\u0445\u0438\u0435 \u043F\u0430\u0443\u0437\u044B, \u043C\u0430\u0436\u043E\u0440 \u0438\u043B\u0438 \u043C\u0438\u043D\u043E\u0440",
           partyLevel: "\u0418\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u043E\u0441\u0442\u044C",
           partyLevel1: "\u041C\u044F\u0433\u043A\u043E",
           partyLevel2: "\u041E\u0431\u044B\u0447\u043D\u043E",
@@ -2440,10 +2440,10 @@
           jamYou: "\u0422\u044B",
           partyLevel4: "\u042D\u043A\u0441\u0442\u0440\u0438\u043C",
           partyLevel5: "\u0411\u0435\u0437\u0443\u043C\u0438\u0435",
-          partyLasers: "\u041B\u0443\u0447\u0438 \u0441\u0432\u0435\u0442\u0430",
-          partyLasersHint: "\u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0438\u0437 \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0431\u044C\u044E\u0442 \u043B\u0443\u0447\u0438 \u0441\u0432\u0435\u0442\u0430 \u0438 \u043F\u0440\u044B\u0433\u0430\u044E\u0442 \u043D\u0430 \u043A\u0430\u0436\u0434\u043E\u043C \u0442\u0430\u043A\u0442\u0435",
+          partyLasers: "\u0421\u0446\u0435\u043D\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0441\u0432\u0435\u0442",
+          partyLasersHint: "\u041F\u0440\u043E\u0436\u0435\u043A\u0442\u043E\u0440\u044B \u0432 \u0441\u0442\u0438\u043B\u0435 \u0436\u0430\u043D\u0440\u0430 \u2013 \u0441\u043A\u0440\u0435\u0449\u0451\u043D\u043D\u044B\u0435 \u043B\u0443\u0447\u0438 \u0434\u043B\u044F \u0440\u0435\u0439\u0432\u0430, \u0436\u0451\u0441\u0442\u043A\u0438\u0435 \u0441\u043F\u043E\u0442\u044B \u0441\u0432\u0435\u0440\u0445\u0443 \u0434\u043B\u044F \u0440\u043E\u043A\u0430, \u0441\u0432\u0435\u0442 \u043E\u0442 \u043F\u043E\u043B\u0430 \u0434\u043B\u044F \u0431\u0430\u0441\u0430. \u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB \u0435\u0449\u0451 \u0438 \u043B\u0443\u0447\u0438 \u0438\u0437 \u043E\u0431\u043B\u043E\u0436\u043A\u0438",
           partyZoom: "\u0423\u0434\u0430\u0440\u044B \u043A\u0430\u043C\u0435\u0440\u044B",
-          partyZoomHint: "\u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0432\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043D\u0430 \u043C\u0438\u0433 \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F \u0432 \u0442\u0430\u043A\u0442",
+          partyZoomHint: "\u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C\xBB: \u0441\u0442\u0440\u043E\u043A\u0430 \u043F\u0440\u0443\u0436\u0438\u043D\u0438\u0442 \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u044B\u0445 \u0434\u043E\u043B\u044F\u0445, \u043E\u0431\u043B\u043E\u0436\u043A\u0430 \u043F\u043E\u043A\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F (\u043F\u043E\u043F, \u0431\u0430\u0441, \u0447\u0438\u043B\u043B). \u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0432\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F",
           partyIdle: "\u0421\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0432 \u043F\u043E\u043A\u043E\u0435",
           partyIdleHint: "\u0427\u0435\u0440\u0435\u0437 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0441\u0435\u043A\u0443\u043D\u0434 \u0431\u0435\u0437 \u043C\u044B\u0448\u0438 \u043A\u043D\u043E\u043F\u043A\u0438 \u0438\u0441\u0447\u0435\u0437\u0430\u044E\u0442, \u0430 \u0432\u0441\u0451 \u043F\u043B\u0430\u0432\u043D\u043E \u0441\u043C\u0435\u0449\u0430\u0435\u0442\u0441\u044F \u043A \u0446\u0435\u043D\u0442\u0440\u0443",
           c_addTo: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442",
@@ -2664,7 +2664,7 @@
           party_bass: "\u0411\u0430\u0441",
           party_chill: "\u0427\u0438\u043B",
           partySection: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
-          partySectionHint: "\xAB\u0410\u0432\u0442\u043E\xBB \u0434\u043E\u0431\u0438\u0440\u0430\u0454 \u0441\u0442\u0438\u043B\u044C \u0434\u043B\u044F \u043A\u043E\u0436\u043D\u043E\u0457 \u043F\u0456\u0441\u043D\u0456 \u0437\u0430 \u0436\u0430\u043D\u0440\u043E\u043C, \u0442\u0435\u043C\u043F\u043E\u043C \u0456 \u0433\u0443\u0447\u043D\u0456\u0441\u0442\u044E",
+          partySectionHint: "\u0410\u0432\u0442\u043E \u043F\u0456\u0434\u0431\u0438\u0440\u0430\u0454 \u0441\u0432\u0456\u0442\u043B\u043E\u0432\u0443 \u043C\u043E\u0432\u0443 \u0437\u0430 \u0436\u0430\u043D\u0440\u043E\u043C \u2013 \u0430 \u0441\u0432\u0456\u0442\u043B\u043E \u0441\u0442\u0435\u0436\u0438\u0442\u044C \u0437\u0430 \u0441\u0430\u043C\u0438\u043C \u0442\u0440\u0435\u043A\u043E\u043C: \u043D\u0430\u0440\u043E\u0441\u0442\u0430\u043D\u043D\u044F, \u0434\u0440\u043E\u043F\u0438, \u0442\u0438\u0445\u0456 \u043F\u0430\u0443\u0437\u0438, \u043C\u0430\u0436\u043E\u0440 \u0447\u0438 \u043C\u0456\u043D\u043E\u0440",
           partyLevel: "\u0406\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u0456\u0441\u0442\u044C",
           partyLevel1: "\u041C'\u044F\u043A\u043E",
           partyLevel2: "\u0417\u0432\u0438\u0447\u0430\u0439\u043D\u043E",
@@ -2677,10 +2677,10 @@
           jamYou: "\u0422\u0438",
           partyLevel4: "\u0415\u043A\u0441\u0442\u0440\u0438\u043C",
           partyLevel5: "\u0411\u043E\u0436\u0435\u0432\u0456\u043B\u043B\u044F",
-          partyLasers: "\u041F\u0440\u043E\u043C\u0435\u043D\u0456 \u0441\u0432\u0456\u0442\u043B\u0430",
-          partyLasersHint: "\u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438 \u0431'\u044E\u0442\u044C \u043F\u0440\u043E\u043C\u0435\u043D\u0456 \u0441\u0432\u0456\u0442\u043B\u0430 \u0439 \u0441\u0442\u0440\u0438\u0431\u0430\u044E\u0442\u044C \u043D\u0430 \u043A\u043E\u0436\u043D\u043E\u043C\u0443 \u0442\u0430\u043A\u0442\u0456",
+          partyLasers: "\u0421\u0446\u0435\u043D\u0456\u0447\u043D\u0435 \u0441\u0432\u0456\u0442\u043B\u043E",
+          partyLasersHint: "\u041F\u0440\u043E\u0436\u0435\u043A\u0442\u043E\u0440\u0438 \u0432 \u0441\u0442\u0438\u043B\u0456 \u0436\u0430\u043D\u0440\u0443 \u2013 \u0441\u0445\u0440\u0435\u0449\u0435\u043D\u0456 \u043F\u0440\u043E\u043C\u0435\u043D\u0456 \u0434\u043B\u044F \u0440\u0435\u0439\u0432\u0443, \u0436\u043E\u0440\u0441\u0442\u043A\u0456 \u0441\u043F\u043E\u0442\u0438 \u0437\u0433\u043E\u0440\u0438 \u0434\u043B\u044F \u0440\u043E\u043A\u0443, \u0441\u0432\u0456\u0442\u043B\u043E \u0432\u0456\u0434 \u043F\u0456\u0434\u043B\u043E\u0433\u0438 \u0434\u043B\u044F \u0431\u0430\u0441\u0443. \u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB \u0449\u0435 \u0439 \u043F\u0440\u043E\u043C\u0435\u043D\u0456 \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438",
           partyZoom: "\u0423\u0434\u0430\u0440\u0438 \u043A\u0430\u043C\u0435\u0440\u0438",
-          partyZoomHint: "\u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0443\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043D\u0430 \u043C\u0438\u0442\u044C \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F \u0432 \u0442\u0430\u043A\u0442",
+          partyZoomHint: "\u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C\xBB: \u0440\u044F\u0434\u043E\u043A \u043F\u0440\u0443\u0436\u0438\u043D\u0438\u0442\u044C \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u0438\u0445 \u0434\u043E\u043B\u044F\u0445, \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430 \u0433\u043E\u0439\u0434\u0430\u0454\u0442\u044C\u0441\u044F (\u043F\u043E\u043F, \u0431\u0430\u0441, \u0447\u0438\u043B). \u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0443\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F",
           partyIdle: "\u0425\u043E\u0432\u0430\u0442\u0438 \u043A\u0435\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0432 \u0441\u043F\u043E\u043A\u043E\u0457",
           partyIdleHint: "\u0427\u0435\u0440\u0435\u0437 \u043A\u0456\u043B\u044C\u043A\u0430 \u0441\u0435\u043A\u0443\u043D\u0434 \u0431\u0435\u0437 \u043C\u0438\u0448\u0456 \u043A\u043D\u043E\u043F\u043A\u0438 \u0437\u043D\u0438\u043A\u0430\u044E\u0442\u044C, \u0430 \u0432\u0441\u0435 \u043F\u043B\u0430\u0432\u043D\u043E \u0437\u0441\u0443\u0432\u0430\u0454\u0442\u044C\u0441\u044F \u0434\u043E \u0446\u0435\u043D\u0442\u0440\u0443",
           c_addTo: "\u0414\u043E\u0434\u0430\u0442\u0438 \u0434\u043E \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0430",
@@ -2901,7 +2901,7 @@
           party_bass: "\u30D9\u30FC\u30B9",
           party_chill: "\u30C1\u30EB",
           partySection: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
-          partySectionHint: "\u81EA\u52D5\u3067\u306F\u30B8\u30E3\u30F3\u30EB\u30FB\u30C6\u30F3\u30DD\u30FB\u97F3\u91CF\u304B\u3089\u66F2\u3054\u3068\u306B\u30B9\u30BF\u30A4\u30EB\u3092\u9078\u3073\u307E\u3059",
+          partySectionHint: "\u81EA\u52D5\u306F\u30B8\u30E3\u30F3\u30EB\u304B\u3089\u7167\u660E\u30B9\u30BF\u30A4\u30EB\u3092\u9078\u3073\u3001\u7167\u660E\u306F\u66F2\u305D\u306E\u3082\u306E\u306B\u5408\u308F\u305B\u307E\u3059\uFF1A\u76DB\u308A\u4E0A\u304C\u308A\u3001\u30C9\u30ED\u30C3\u30D7\u3001\u9759\u304B\u306A\u30D6\u30EC\u30A4\u30AF\u3001\u9577\u8ABF\u30FB\u77ED\u8ABF",
           partyLevel: "\u5F37\u3055",
           partyLevel1: "\u63A7\u3048\u3081",
           partyLevel2: "\u6A19\u6E96",
@@ -2914,10 +2914,10 @@
           jamYou: "\u3042\u306A\u305F",
           partyLevel4: "\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0",
           partyLevel5: "\u72C2\u4E71",
-          partyLasers: "\u5149\u306E\u30D3\u30FC\u30E0",
-          partyLasersHint: "\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\uFF1A\u30B8\u30E3\u30B1\u30C3\u30C8\u304B\u3089\u5149\u306E\u30D3\u30FC\u30E0\u304C\u5E83\u304C\u308A\u3001\u5C0F\u7BC0\u3054\u3068\u306B\u8DF3\u306D\u307E\u3059",
+          partyLasers: "\u30B9\u30C6\u30FC\u30B8\u7167\u660E",
+          partyLasersHint: "\u30B8\u30E3\u30F3\u30EB\u306B\u5408\u308F\u305B\u305F\u30B9\u30DD\u30C3\u30C8\u30E9\u30A4\u30C8 \u2013 \u30EC\u30A4\u30D6\u306F\u4EA4\u5DEE\u3059\u308B\u30D3\u30FC\u30E0\u3001\u30ED\u30C3\u30AF\u306F\u4E0A\u304B\u3089\u306E\u5F37\u3044\u30B9\u30DD\u30C3\u30C8\u3001\u30D9\u30FC\u30B9\u306F\u5E8A\u304B\u3089\u306E\u5149\u3002\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\u306F\u30B8\u30E3\u30B1\u30C3\u30C8\u304B\u3089\u306E\u30D3\u30FC\u30E0\u3082",
           partyZoom: "\u30AB\u30E1\u30E9\u306E\u885D\u6483",
-          partyZoomHint: "\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\uFF1A\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u753B\u9762\u5168\u4F53\u304C\u4E00\u77AC\u30BA\u30FC\u30E0\u3057\u307E\u3059",
+          partyZoomHint: "\u300C\u6700\u5927\u300D\u4EE5\u4E0A\uFF1A\u6B4C\u8A5E\u304C\u5F37\u62CD\u3067\u5F3E\u307F\u3001\u30B8\u30E3\u30B1\u30C3\u30C8\u304C\u63FA\u308C\u307E\u3059\uFF08\u30DD\u30C3\u30D7\u30FB\u30D9\u30FC\u30B9\u30FB\u30C1\u30EB\uFF09\u3002\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\uFF1A\u753B\u9762\u5168\u4F53\u304C\u30BA\u30FC\u30E0",
           partyIdle: "\u64CD\u4F5C\u3057\u306A\u3044\u3068\u304D\u306F\u30DC\u30BF\u30F3\u3092\u96A0\u3059",
           partyIdleHint: "\u30DE\u30A6\u30B9\u3092\u6570\u79D2\u52D5\u304B\u3055\u306A\u3044\u3068\u30DC\u30BF\u30F3\u304C\u6D88\u3048\u3001\u3059\u3079\u3066\u304C\u4E2D\u592E\u3078\u306A\u3081\u3089\u304B\u306B\u5BC4\u308A\u307E\u3059",
           c_addTo: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u8FFD\u52A0",
@@ -3138,7 +3138,7 @@
           party_bass: "\uBCA0\uC774\uC2A4",
           party_chill: "\uCE60",
           partySection: "\uD30C\uD2F0 \uBAA8\uB4DC",
-          partySectionHint: "\uC790\uB3D9\uC740 \uC7A5\uB974, \uD15C\uD3EC, \uC74C\uB7C9\uC5D0 \uB530\uB77C \uACE1\uB9C8\uB2E4 \uC2A4\uD0C0\uC77C\uC744 \uACE0\uB985\uB2C8\uB2E4",
+          partySectionHint: "\uC790\uB3D9\uC740 \uC7A5\uB974\uC5D0 \uB9DE\uB294 \uC870\uBA85 \uC2A4\uD0C0\uC77C\uC744 \uACE0\uB974\uACE0, \uC870\uBA85\uC740 \uACE1 \uC790\uCCB4\uB97C \uB530\uB77C\uAC00\uC694: \uBE4C\uB4DC\uC5C5, \uB4DC\uB86D, \uC870\uC6A9\uD55C \uBE0C\uB808\uC774\uD06C, \uC7A5\uC870\xB7\uB2E8\uC870",
           partyLevel: "\uAC15\uB3C4",
           partyLevel1: "\uBD80\uB4DC\uB7FD\uAC8C",
           partyLevel2: "\uBCF4\uD1B5",
@@ -3151,10 +3151,10 @@
           jamYou: "\uB098",
           partyLevel4: "\uC775\uC2A4\uD2B8\uB9BC",
           partyLevel5: "\uAD11\uB780",
-          partyLasers: "\uBE5B\uC904\uAE30",
-          partyLasersHint: "\u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uCEE4\uBC84\uC5D0\uC11C \uBE5B\uC904\uAE30\uAC00 \uD37C\uC9C0\uACE0 \uB9C8\uB514\uB9C8\uB2E4 \uD280\uC5B4\uC694",
+          partyLasers: "\uBB34\uB300 \uC870\uBA85",
+          partyLasersHint: "\uC7A5\uB974 \uC2A4\uD0C0\uC77C\uC758 \uC2A4\uD3EC\uD2B8\uB77C\uC774\uD2B8 \u2013 \uB808\uC774\uBE0C\uB294 \uAD50\uCC28\uD558\uB294 \uBE54, \uB85D\uC740 \uC704\uC5D0\uC11C \uB0B4\uB9AC\uAF42\uB294 \uC2A4\uD3FF, \uBCA0\uC774\uC2A4\uB294 \uBC14\uB2E5\uC5D0\uC11C \uC62C\uB77C\uC624\uB294 \uBE5B. \u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130\uB294 \uCEE4\uBC84\uC5D0\uC11C \uB098\uC624\uB294 \uBE5B\uC904\uAE30\uB3C4",
           partyZoom: "\uCE74\uBA54\uB77C \uCDA9\uACA9",
-          partyZoomHint: "\u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uD654\uBA74 \uC804\uCCB4\uAC00 \uC21C\uAC04 \uD655\uB300\uB3FC\uC694",
+          partyZoomHint: "\u2018\uCD5C\uB300\u2019\uBD80\uD130: \uAC00\uC0AC\uAC00 \uAC15\uBC15\uC5D0 \uD280\uACE0 \uCEE4\uBC84\uAC00 \uD754\uB4E4\uB824\uC694(\uD31D\xB7\uBCA0\uC774\uC2A4\xB7\uCE60). \u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uD654\uBA74 \uC804\uCCB4\uAC00 \uD655\uB300\uB3FC\uC694",
           partyIdle: "\uAC00\uB9CC\uD788 \uC788\uC73C\uBA74 \uCEE8\uD2B8\uB864 \uC228\uAE30\uAE30",
           partyIdleHint: "\uB9C8\uC6B0\uC2A4\uB97C \uBA87 \uCD08 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC73C\uBA74 \uBC84\uD2BC\uC774 \uC0AC\uB77C\uC9C0\uACE0 \uBAA8\uB4E0 \uAC8C \uAC00\uC6B4\uB370\uB85C \uBD80\uB4DC\uB7FD\uAC8C \uBAA8\uC5EC\uC694",
           c_addTo: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0 \uCD94\uAC00",
@@ -3375,7 +3375,7 @@
           party_bass: "\u4F4E\u97F3",
           party_chill: "\u653E\u677E",
           partySection: "\u6D3E\u5BF9\u6A21\u5F0F",
-          partySectionHint: "\u81EA\u52A8\u6A21\u5F0F\u4F1A\u6839\u636E\u6D41\u6D3E\u3001\u8282\u594F\u548C\u54CD\u5EA6\u4E3A\u6BCF\u9996\u6B4C\u9009\u62E9\u98CE\u683C",
+          partySectionHint: "\u81EA\u52A8\u4F1A\u6309\u66F2\u98CE\u9009\u62E9\u706F\u5149\u8BED\u8A00 \u2013 \u706F\u5149\u968F\u6B4C\u66F2\u672C\u8EAB\u53D8\u5316\uFF1A\u94FA\u57AB\u3001\u9AD8\u6F6E\u3001\u5B89\u9759\u7684\u95F4\u594F\u3001\u5927\u8C03\u6216\u5C0F\u8C03",
           partyLevel: "\u5F3A\u5EA6",
           partyLevel1: "\u67D4\u548C",
           partyLevel2: "\u6807\u51C6",
@@ -3388,10 +3388,10 @@
           jamYou: "\u4F60",
           partyLevel4: "\u6781\u9650",
           partyLevel5: "\u75AF\u72C2",
-          partyLasers: "\u5149\u675F",
-          partyLasersHint: "\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u5149\u675F\u4ECE\u5C01\u9762\u6563\u5C04\u800C\u51FA\uFF0C\u6BCF\u5C0F\u8282\u8DF3\u52A8\u4E00\u6B21",
+          partyLasers: "\u821E\u53F0\u706F\u5149",
+          partyLasersHint: "\u6309\u66F2\u98CE\u6253\u706F \u2013 \u7535\u97F3\u662F\u4EA4\u53C9\u5149\u675F\uFF0C\u6447\u6EDA\u662F\u4ECE\u4E0A\u65B9\u6253\u4E0B\u7684\u786C\u5149\uFF0C\u4F4E\u97F3\u662F\u4ECE\u5730\u9762\u6D8C\u8D77\u7684\u5149\u3002\u4ECE\u201C\u6781\u9650\u201D\u8D77\u8FD8\u4F1A\u4ECE\u5C01\u9762\u5C04\u51FA\u5149\u675F",
           partyZoom: "\u955C\u5934\u51B2\u51FB",
-          partyZoomHint: "\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u6574\u4E2A\u753B\u9762\u968F\u8282\u62CD\u77AC\u95F4\u62C9\u8FD1",
+          partyZoomHint: "\u4ECE\u201C\u6700\u5F3A\u201D\u8D77\uFF1A\u6B4C\u8BCD\u5728\u91CD\u62CD\u4E0A\u5F39\u8DF3\uFF0C\u5C01\u9762\u968F\u4E4B\u6447\u6446\uFF08\u6D41\u884C\u3001\u4F4E\u97F3\u3001\u8F7B\u677E\uFF09\u3002\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u6574\u4E2A\u753B\u9762\u62C9\u8FD1",
           partyIdle: "\u9759\u6B62\u65F6\u9690\u85CF\u63A7\u4EF6",
           partyIdleHint: "\u9F20\u6807\u51E0\u79D2\u4E0D\u52A8\u540E\u6309\u94AE\u6DE1\u51FA\uFF0C\u4E00\u5207\u5E73\u6ED1\u79FB\u5230\u4E2D\u592E",
           c_addTo: "\u6DFB\u52A0\u5230\u6B4C\u5355",
@@ -3565,7 +3565,9 @@
         const segs = (d.segments || []).filter(ok).map((s) => ({
           t: s.start,
           l: num(s.loudness_max, -20),
-          p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : []
+          p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
+          // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
+          b: num(s.timbre?.[1], 0)
         }));
         const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
         const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
@@ -3573,6 +3575,8 @@
         audio.data = {
           beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
           bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
+          // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
+          sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12) })),
           segs,
           bpm: Math.round(bpm),
           loud: Number(d.track?.loudness) || avg,
@@ -4548,18 +4552,163 @@
     if (bpm > 140 && energy > 0.7) return { key: "rock", why: "" };
     return { key: "pop", why: "" };
   }
-  var PROFILES, PROFILE_KEYS, GENRES, genreCache, party;
+  function songMap(d) {
+    if (mapCache.has(d)) return mapCache.get(d);
+    const segs = d.segs || [];
+    const end = segs.length ? segs[segs.length - 1].t + 2 : 0;
+    const n = Math.max(1, Math.ceil(end / STEP));
+    const raw = new Float32Array(n).fill(-60), rb = new Float32Array(n);
+    for (const s of segs) {
+      const i = Math.min(n - 1, Math.floor(s.t / STEP));
+      if (s.l > raw[i]) raw[i] = s.l;
+      rb[i] = Math.max(rb[i], s.b || 0);
+    }
+    for (let i = 1; i < n; i++) {
+      if (raw[i] <= -60) raw[i] = raw[i - 1];
+      if (!rb[i]) rb[i] = rb[i - 1];
+    }
+    const sm = (a, w) => {
+      const o = new Float32Array(n), h = w >> 1;
+      for (let i = 0; i < n; i++) {
+        let acc = 0, c = 0;
+        for (let k = Math.max(0, i - h); k <= Math.min(n - 1, i + h); k++, c++) acc += a[k];
+        o[i] = acc / c;
+      }
+      return o;
+    };
+    const E = sm(raw, 6), B = sm(rb, 6);
+    const hi = pct(E, 0.95), p10 = pct(E, 0.1), lo = Math.min(p10, hi - 8);
+    const bhi = pct(B, 0.95), blo = Math.min(pct(B, 0.1), bhi - 20);
+    const energy = E.map((v) => clamp((v - lo) / (hi - lo), 0, 1));
+    const bright = B.map((v) => clamp((v - blo) / (bhi - blo), 0, 1));
+    const drops = [];
+    for (let i = 16; i < n - 4; i++) {
+      let before = 1;
+      for (let k = i - 16; k < i - 2; k++) before = Math.min(before, energy[k]);
+      const after = (energy[i] + energy[i + 2] + energy[i + 4]) / 3;
+      if (after > 0.72 && after - before > 0.38 && (!drops.length || i * STEP - drops[drops.length - 1] > 8)) {
+        let j = i, best = -1e9;
+        for (let k = Math.max(1, i - 6); k <= Math.min(n - 1, i + 6); k++) {
+          const jump = raw[k] - raw[k - 1];
+          if (jump > best) [best, j] = [jump, k];
+        }
+        const tj = j * STEP, bi = seek(d.beats, tj, "t");
+        const b0 = d.beats[bi]?.t ?? tj, b1 = d.beats[bi + 1]?.t ?? b0;
+        drops.push(Math.abs(b1 - tj) < Math.abs(b0 - tj) ? b1 : b0);
+        i += 32;
+      }
+    }
+    const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [] };
+    mapCache.set(d, m);
+    return m;
+  }
+  var PROFILES, PROFILE_KEYS, GENRES, genreCache, STEP, pct, mapCache, at, party;
   var init_party = __esm({
     "src/party.js"() {
       init_core();
       init_config();
       init_audio();
       PROFILES = {
-        rave: { mirror: true, spin: true, height: 1.5, pulse: 0.09, shake: 0, flash: "bar", ring: 1, thick: 2.6, halo: true, sparks: 10, bottom: false },
-        bass: { mirror: true, spin: false, height: 1.35, pulse: 0.12, shake: 6, flash: "bar", ring: 2, thick: 4.2, halo: false, sparks: 6, bottom: true },
-        rock: { mirror: true, spin: false, height: 1.5, pulse: 0.08, shake: 8, flash: "beat", ring: 2, thick: 3.4, halo: true, sparks: 14, bottom: false },
-        pop: { mirror: true, spin: true, height: 1.4, pulse: 0.07, shake: 0, flash: "bar", ring: 1, thick: 2.4, halo: true, sparks: 18, bottom: false },
-        chill: { mirror: true, spin: true, height: 1.1, pulse: 0.035, shake: 0, flash: "", ring: 4, thick: 2, halo: true, sparks: 3, bottom: false }
+        // vier auf den Boden, Eins am stärksten, Strahlen kreuzen sich, im Aufbau immer schneller
+        rave: {
+          decay: 7,
+          beams: 1,
+          accent: [1, 0.75, 0.85, 0.75],
+          flashOn: "down",
+          spot: "cross",
+          spinRate: 0.5,
+          sway: false,
+          shake: 0,
+          mirror: true,
+          spin: true,
+          height: 1.5,
+          pulse: 0.09,
+          ring: 1,
+          thick: 2.6,
+          halo: true,
+          sparks: 10,
+          bottom: false
+        },
+        // schwere 1 und 3, langer Bass-Nachhall, Licht wächst vom Boden
+        bass: {
+          decay: 3.6,
+          beams: 0.8,
+          accent: [1, 0.3, 0.85, 0.35],
+          flashOn: "down-hi",
+          spot: "floor",
+          spinRate: 0.12,
+          sway: true,
+          shake: 6,
+          mirror: true,
+          spin: false,
+          height: 1.35,
+          pulse: 0.12,
+          ring: 2,
+          thick: 4.2,
+          halo: false,
+          sparks: 6,
+          bottom: true
+        },
+        // Backbeat: die Snare auf 2 und 4 knallt, Licht von oben wie auf einer Bühne
+        rock: {
+          decay: 9,
+          beams: 0.9,
+          accent: [0.6, 1, 0.55, 1],
+          flashOn: "back",
+          spot: "top",
+          spinRate: 0.2,
+          sway: false,
+          shake: 8,
+          mirror: true,
+          spin: false,
+          height: 1.5,
+          pulse: 0.08,
+          ring: 2,
+          thick: 3.4,
+          halo: true,
+          sparks: 14,
+          bottom: false
+        },
+        // jeder Schlag federt, Farben wandern, weiche Schwenks
+        pop: {
+          decay: 6,
+          beams: 1,
+          accent: [1, 0.7, 0.85, 0.7],
+          flashOn: "down",
+          spot: "pan",
+          spinRate: 0.3,
+          sway: true,
+          shake: 0,
+          mirror: true,
+          spin: true,
+          height: 1.4,
+          pulse: 0.07,
+          ring: 1,
+          thick: 2.4,
+          halo: true,
+          sparks: 18,
+          bottom: false
+        },
+        // atmet mit dem Takt statt zu schlagen: nur die Eins, langes Ausklingen, sanfte Lichtbahnen
+        chill: {
+          decay: 2.2,
+          beams: 0.35,
+          accent: [1, 0.25, 0.45, 0.25],
+          flashOn: "",
+          spot: "soft",
+          spinRate: 0.08,
+          sway: true,
+          shake: 0,
+          mirror: true,
+          spin: true,
+          height: 1.1,
+          pulse: 0.035,
+          ring: 4,
+          thick: 2,
+          halo: true,
+          sparks: 3,
+          bottom: false
+        }
       };
       PROFILE_KEYS = Object.keys(PROFILES);
       GENRES = [
@@ -4570,9 +4719,22 @@
         ["pop", /pop|dance|disco|funk|latin|k-pop|schlager|indie/]
       ];
       genreCache = lru(100);
-      party = /* @__PURE__ */ (() => {
+      STEP = 0.25;
+      pct = (arr, p) => {
+        const s = Float32Array.from(arr).sort();
+        return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0;
+      };
+      mapCache = lru(30);
+      at = (arr, sec) => {
+        const f = sec / STEP, i = Math.floor(f);
+        if (i < 0) return arr[0] || 0;
+        if (i >= arr.length - 1) return arr[arr.length - 1] || 0;
+        return arr[i] + (arr[i + 1] - arr[i]) * (f - i);
+      };
+      party = (() => {
         let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
-        let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, drop = 0, kick = 0, beam = 0, spin = 0;
+        let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
+        let sway = 1, lastSec = 0, dropGlow = 0, lastFlashAt = -1e9, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
         const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
         async function prepare(item) {
           const u = item?.uri || "";
@@ -4581,6 +4743,7 @@
           uri = u;
           const my = ++token;
           lastBeat = lastBar = -1;
+          dropGlow = 0;
           const genres = cfg.partyStyle === "auto" ? await artistGenres(item) : [];
           if (my !== token) return info;
           const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
@@ -4601,46 +4764,124 @@
           const P = PROFILES[info.key];
           const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
           const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
+          const fx = !calm();
           const d = audio.uri === uri ? audio.data : null;
-          let hit = false, barHit = false, conf = 0.8;
-          if (d && playing) {
+          clock += dt;
+          const ease2 = (k) => 1 - Math.exp(-dt * k);
+          let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false;
+          let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
+          if (d && d.segs?.length) {
+            const M = songMap(d);
+            energy = at(M.energy, sec);
+            bright = at(M.bright, sec);
+            let ahead = 0;
+            for (let s = 1; s <= 4; s += 0.5) ahead = Math.max(ahead, at(M.energy, sec + s));
+            build = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
+            low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
+            const sx = M.sections[Math.max(seek(M.sections, sec, "t"), 0)];
+            minor = sx ? sx.mode === 0 : false;
+            if (playing && sec >= lastSec && sec - lastSec < 0.5) {
+              for (const t2 of M.drops) if (t2 > lastSec && t2 <= sec + 0.02) dropHit = true;
+            }
+          }
+          lastSec = sec;
+          smooth.e += (energy - smooth.e) * ease2(energy > smooth.e ? 9 : 2);
+          smooth.b += (build - smooth.b) * ease2(build > smooth.b ? 2 : 6);
+          smooth.k += (low * (1 - build) - smooth.k) * ease2(1.5);
+          smooth.br += (bright - smooth.br) * ease2(2);
+          if (dropHit) {
+            smooth.e = Math.max(smooth.e, 0.9);
+            smooth.k = 0;
+            smooth.b = 0;
+          }
+          if (d && playing && d.beats?.length) {
             const bi = seek(d.beats, sec, "t");
-            const every = info.bpm > 145 ? 2 : 1;
-            if (bi >= 0 && bi !== lastBeat) {
-              lastBeat = bi;
-              if (bi % every === 0) {
-                hit = true;
-                conf = clamp(d.beats[bi].c + 0.3, 0, 1);
+            if (bi >= 0) {
+              const since = sec - d.beats[bi].t;
+              const ba = d.bars?.length ? seek(d.bars, sec, "t") : -1;
+              const barStart = ba >= 0 ? seek(d.beats, d.bars[ba].t + 0.05, "t") : bi - bi % 4;
+              inBar = ((bi - barStart) % 4 + 4) % 4;
+              const half = info.bpm > 150;
+              const strength = P.accent[half ? inBar & 2 : inBar] ?? 0.6;
+              beatEnv = strength * Math.exp(-since * P.decay * (half ? 0.6 : 1));
+              conf = clamp(d.beats[bi].c + 0.3, 0, 1);
+              if (bi !== lastBeat) {
+                lastBeat = bi;
+                hit = !half || inBar % 2 === 0;
+              }
+              if (ba >= 0 && ba !== lastBar) {
+                lastBar = ba;
+                barHit = true;
               }
             }
-            const ba = d.bars?.length ? seek(d.bars, sec, "t") : Math.floor(Math.max(bi, 0) / 4);
-            if (ba >= 0 && ba !== lastBar) {
-              lastBar = ba;
-              barHit = true;
-            }
-            const s = d.segs[Math.max(seek(d.segs, sec, "t"), 0)];
-            const target = s ? clamp((s.l - d.avg - 1.5) / 5, 0, 1) : 0;
-            drop += (target - drop) * (1 - Math.exp(-dt * (target > drop ? 6 : 1.2)));
-          } else drop *= Math.exp(-dt * 2);
-          if (!Number.isFinite(drop)) drop = 0;
-          const fx = !calm();
-          const flashOn = level >= 5 && P.flash ? hit : P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
-          if (fx && cfg.partyFlash && flashOn) {
-            flash = Math.min(1, (0.55 + drop * 0.45) * lvl);
+          }
+          if (dropHit) dropGlow = 1;
+          dropGlow *= Math.exp(-dt * 0.55);
+          const I = clamp(0.22 + smooth.e * 0.78 + dropGlow * 0.35 + smooth.b * 0.2 - smooth.k * 0.35, 0.08, 1.35);
+          const accent = beatEnv * (0.45 + 0.55 * I);
+          const strong = hit && beatEnv > 0.55;
+          let flashOn = false;
+          if (P.flashOn === "down") flashOn = hit && inBar === 0;
+          else if (P.flashOn === "back") flashOn = hit && (inBar === 1 || inBar === 3);
+          else if (P.flashOn === "down-hi") flashOn = hit && inBar === 0 && smooth.e > 0.65;
+          if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
+          if (smooth.k > 0.5) flashOn = false;
+          if (fx && cfg.partyFlash && (flashOn || dropHit) && clock - lastFlashAt > 0.34) {
+            lastFlashAt = clock;
+            flash = Math.min(1, (dropHit ? 1 : 0.35 + 0.5 * I) * Math.min(lvl, 1.6));
             flashCol = (flashCol + 1) % 3;
           }
-          flash *= Math.exp(-dt * 5.5);
-          if (fx && P.shake && hit) shake = P.shake * lvl * (0.6 + drop * 0.6) * conf;
+          flash *= Math.exp(-dt * (P.decay * 0.8));
+          if (fx && P.shake && strong) shake = P.shake * lvl * (0.35 + 0.65 * I) * conf;
           shake *= Math.exp(-dt * 14);
-          if (fx && hit && level >= 4 && cfg.partyZoom) kick = Math.min(1, (0.55 + drop * 0.6) * conf * (level - 3));
+          if (fx && cfg.partyZoom && level >= 4 && strong) kick = Math.min(1, (0.3 + 0.7 * I) * beatEnv * (level - 3));
+          if (fx && cfg.partyZoom && dropHit) kick = 1;
           kick *= Math.exp(-dt * 9);
-          if (hit) beam = 1;
-          beam *= Math.exp(-dt * 4);
-          spin += dt * (0.18 + drop * 0.5) * (fx ? 1 : 0);
-          if (barHit && fx) spin += 0.7 + Math.random() * 0.8;
+          spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0);
+          if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
           const lasers = fx && cfg.partyLasers && level >= 4 ? level >= 5 ? 12 : 6 : 0;
-          return { P, lvl, level, hit, barHit, conf, drop, flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, beam, spin, lasers };
+          const beamVis = clamp(smooth.e * 1.25 + dropGlow - smooth.k, 0, 1.2);
+          if (hit && P.sway) sway = -sway;
+          const out = {
+            P,
+            key: info.key,
+            level,
+            lvl,
+            fx,
+            hit,
+            barHit,
+            inBar,
+            conf,
+            energy: smooth.e,
+            build: smooth.b,
+            low: smooth.k,
+            bright: smooth.br,
+            minor,
+            I,
+            beat: beatEnv,
+            accent,
+            beam: accent,
+            drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)),
+            dropHit,
+            flash,
+            flashCol,
+            shake: fx ? shake : 0,
+            kick: fx ? kick : 0,
+            spin,
+            lasers,
+            beamVis,
+            sway
+          };
+          if (DEBUG) window.__mirageParty = { ...out, P: info.key, map: d ? songMap(d) : null, sec };
+          return out;
         }
+        const DEBUG = (() => {
+          try {
+            return localStorage.getItem("mirage:debug") === "1";
+          } catch {
+            return false;
+          }
+        })();
         return { prepare, step, get info() {
           return info;
         }, PROFILES, PROFILE_KEYS };
@@ -5079,6 +5320,8 @@
           q.flash.style.opacity = "0";
           q.wrap.style.translate = "";
           q.canvas.style.scale = q.bg.style.scale = lastKick = "";
+          q.wrap.style.rotate = lastRot = "";
+          if (activeEl) activeEl.style.scale = lastBounce = "";
         }
         let lastJam = -1e9, jamKey = "";
         async function showJam() {
@@ -5161,11 +5404,11 @@
           }
           const chars = parts.reduce((n, w) => n + w.length + 2, 0);
           const span = Math.max(300, Math.min(next - l.t - 150, Math.max(1100, chars * 85)));
-          let at = l.t;
+          let at2 = l.t;
           return parts.map((w) => {
             const d = span * (w.length + 2) / chars;
-            const out = { text: w, a: at, b: at + d };
-            at += d;
+            const out = { text: w, a: at2, b: at2 + d };
+            at2 += d;
             return out;
           });
         }
@@ -5289,6 +5532,9 @@
           const i = seek(lyr.lines, pos, "t");
           if (i !== active) {
             active = i;
+            if (activeEl) activeEl.style.scale = "";
+            activeEl = lines[i] || null;
+            lastBounce = "";
             for (let k = 0; k < lines.length; k++) {
               const ln = lines[k];
               ln.classList.toggle("is-active", k === i);
@@ -5354,8 +5600,9 @@
               glow: true,
               rings: true,
               ring: P.ring,
-              height: V.height * P.height * (1 + px.drop * 0.35),
-              pulse: P.pulse * px.lvl * (1 + px.drop * 0.6)
+              // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll
+              height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2),
+              pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I)
             });
           }
           if (audio.data) {
@@ -5369,12 +5616,14 @@
               loud = clamp((s0.l + (s1.l - s0.l) * e + 38) / 38, 0, 1);
               havePitch = true;
             }
-            b = beat.read(sec);
+            b = px ? px.accent : beat.read(sec);
             const bi = seek(audio.data.beats, sec, "t");
             if (bi !== lastBeatIdx && bi >= 0 && playing) {
               lastBeatIdx = bi;
               const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
-              if (V.rings && bi % V.ring === 0) rings.push(px ? { r: R, a: (0.7 + px.drop * 0.3) * c, w: 3 + px.drop * 4 } : { r: R, a: 0.6 * c, w: 2 });
+              if (px) {
+                if (V.rings && px.beat > 0.5 && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
+              } else if (V.rings && bi % V.ring === 0) rings.push({ r: R, a: 0.6 * c, w: 2 });
             }
           }
           const mirror = V.mirror;
@@ -5402,7 +5651,7 @@
             vals[i] += (t2 - vals[i]) * (t2 > vals[i] ? rise : fall);
           }
           if (cfg.calm) return;
-          const pal = px ? vivid(palette()) : palette();
+          const pal = px ? vivid(palette(), px.minor) : palette();
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
           const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
           const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
@@ -5410,7 +5659,7 @@
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
           const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-          glow.addColorStop(0, rgba2(pal[0], (0.16 + b * 0.22) * (px ? 1.6 + px.drop : 1)));
+          glow.addColorStop(0, rgba2(pal[0], (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : 1)));
           glow.addColorStop(1, "rgba(0,0,0,0)");
           ctx.fillStyle = glow;
           const gr = R + maxLen * 1.2;
@@ -5526,6 +5775,11 @@
             }
             const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
             if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
+            const move = px.fx && cfg.partyZoom && px.level >= 3;
+            const bo = move && activeEl ? (1 + px.accent * px.accent * 0.04).toFixed(3) : "";
+            if (bo !== lastBounce && activeEl) activeEl.style.scale = lastBounce = bo;
+            const rot2 = move && px.P.sway ? (px.sway * px.accent * (px.level >= 5 ? 4 : 2.5)).toFixed(2) + "deg" : "";
+            if (rot2 !== lastRot) q.wrap.style.rotate = lastRot = rot2;
             const kz = px.kick > 0.02 ? (1 + px.kick * 0.04).toFixed(3) : "";
             if (kz !== lastKick) {
               lastKick = kz;
@@ -5535,6 +5789,7 @@
           }
         }
         let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+        let activeEl = null, lastBounce = "", lastRot = "";
         function freshCanvas() {
           const n = q.canvas.cloneNode(false);
           q.canvas.replaceWith(n);
@@ -5556,14 +5811,75 @@
           }
         }
         let vividKey = "", vividPal = null;
-        function vivid(pal) {
-          const key = pal.map((c) => c.join(",")).join("|");
+        function vivid(pal, minor) {
+          const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "");
           if (key === vividKey) return vividPal;
           vividKey = key;
           const hsl = pal.map(rgb2hsl);
           const grey = hsl.every(([, s]) => s < 0.12);
-          vividPal = hsl.map(([h, s, l], i) => hsl2rgb([grey ? [275, 195, 320][i] : h, Math.max(s, 0.72), clamp(l, 0.56, 0.7)]));
+          vividPal = hsl.map(([h, s, l], i) => {
+            const hue = grey ? [275, 195, 320][i] : h;
+            return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
+          });
           return vividPal;
+        }
+        function drawStage(ctx, pal, px, rgba2) {
+          const t2 = performance.now() / 1e3, far = Math.hypot(vw, vh) * 1.1;
+          const beat2 = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
+          const cone = (sx, sy, a, wd, c, al, reach = far) => {
+            const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
+            g.addColorStop(0, rgba2(c, al));
+            g.addColorStop(0.5, rgba2(c, al * 0.35));
+            g.addColorStop(1, rgba2(c, 0));
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);
+            ctx.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);
+            ctx.closePath();
+            ctx.fill();
+          };
+          switch (px.P.spot) {
+            case "cross": {
+              const sp = 0.6 + px.energy * 0.8 + px.build * 3;
+              const al = (0.05 + beat2 * 0.2 + px.drop * 0.12) * vis;
+              for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {
+                cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t2 * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);
+              }
+              break;
+            }
+            case "top": {
+              const al = (0.06 + beat2 * 0.26) * vis;
+              const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));
+              for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {
+                cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t2 * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);
+              }
+              break;
+            }
+            case "floor": {
+              const al = (0.12 + beat2 * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
+              const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + beat2 * 0.25));
+              g.addColorStop(0, rgba2(pal[0], al));
+              g.addColorStop(0.6, rgba2(pal[1], al * 0.35));
+              g.addColorStop(1, rgba2(pal[1], 0));
+              ctx.fillStyle = g;
+              ctx.fillRect(0, vh * 0.3, vw, vh * 0.7);
+              break;
+            }
+            case "pan": {
+              const al = (0.05 + beat2 * 0.14 + px.drop * 0.1) * vis;
+              for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {
+                cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t2 * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t2 / 4)) % 3], al);
+              }
+              break;
+            }
+            default: {
+              const al = (0.035 + beat2 * 0.05) * (0.6 + px.I * 0.4);
+              for (let k = 0; k < 3; k++) {
+                cone(vw * (0.2 + 0.3 * k) + Math.sin(t2 * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t2 * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);
+              }
+            }
+          }
         }
         let sparks = [];
         function drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang) {
@@ -5574,10 +5890,12 @@
             return mixC(pal[i], pal[(i + 1) % 3], x - i);
           };
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-          if (px.lasers) {
+          if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba2);
+          if (px.lasers && px.beamVis > 0.02) {
             const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
-            const al = 0.12 + px.beam * 0.42 + px.drop * 0.3;
-            const wd = 0.012 + px.beam * 0.016 + px.drop * 0.01;
+            const riser = px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin(performance.now() / 1e3 * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
+            const al = (0.1 + px.accent * 0.4 + px.drop * 0.3) * px.beamVis * riser * (P.beams ?? 1);
+            const wd = (0.012 + px.accent * 0.016 + px.drop * 0.012) * (1 - px.build * 0.5);
             for (let k = 0; k < n; k++) {
               const side2 = k % 2 ? -1 : 1;
               const a = side2 * (px.spin + Math.floor(k / 2) * (Math.PI * 2 / half)) - Math.PI / 2;
@@ -5596,8 +5914,8 @@
             }
           }
           const STEPS = 12;
-          const w = P.thick * dpr * (1 + px.drop * 0.35);
-          for (const [lw, al] of [[w * 3.2, 0.16], [w, 0.95]]) {
+          const w = P.thick * dpr * (0.75 + 0.4 * px.I) * (1 + px.drop * 0.3);
+          for (const [lw, al] of [[w * 3.2, 0.1 + 0.1 * px.I], [w, 0.95]]) {
             ctx.lineWidth = lw;
             for (let k = 0; k < STEPS; k++) {
               ctx.beginPath();
@@ -5622,17 +5940,17 @@
             }
             ctx.closePath();
             ctx.lineWidth = 7 * dpr;
-            ctx.strokeStyle = rgba2(pal[1], 0.1 + px.drop * 0.08);
+            ctx.strokeStyle = rgba2(pal[1], 0.06 + 0.08 * px.I);
             ctx.stroke();
             ctx.lineWidth = 1.4 * dpr;
-            ctx.strokeStyle = `rgba(255,255,255,${0.32 + px.drop * 0.3})`;
+            ctx.strokeStyle = `rgba(255,255,255,${(0.18 + px.bright * 0.25 + px.drop * 0.3).toFixed(2)})`;
             ctx.stroke();
           }
           if (P.bottom) {
             const n = 64, bw = vw / n, base = vh;
             ctx.beginPath();
             for (let i = 0; i < n; i++) {
-              const h = (4 + vals[Math.floor(i / n * N)] * 90 * (1 + px.drop)) * dpr;
+              const h = (4 + vals[Math.floor(i / n * N)] * 90 * (0.5 + px.I * 0.6) * (1 + px.drop)) * dpr;
               ctx.rect(i * bw + bw * 0.2, base - h, bw * 0.6, h);
             }
             const g = ctx.createLinearGradient(0, 0, vw, 0);
@@ -5640,13 +5958,16 @@
             ctx.fillStyle = g;
             ctx.fill();
           }
-          if (px.hit && sparks.length < 160 + px.level * 60) {
-            const n = Math.round(P.sparks * px.lvl * (1 + px.drop));
+          if (sparks.length < 160 + px.level * 60) {
+            let n = 0;
+            if (px.hit && px.beat > 0.5 && px.low < 0.5) n = Math.round(P.sparks * px.lvl * (0.35 + px.bright * 0.9) * (0.5 + px.I * 0.5));
+            if (px.dropHit) n += Math.round(50 * Math.min(px.lvl, 2));
             for (let k = 0; k < n; k++) {
               const a = Math.random() * Math.PI * 2;
-              sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.6), life: 1, c: colAt(a / (Math.PI * 2)) });
+              sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
             }
           }
+          if (px.dropHit) for (let k = 0; k < 3; k++) rings.push({ r: R - k * 46 * dpr, a: 0.95 - k * 0.2, w: 7 - k * 2 });
           sparks = sparks.filter((p) => (p.life -= dt * 1.15) > 0);
           for (const p of sparks) {
             p.r += p.v * dt;

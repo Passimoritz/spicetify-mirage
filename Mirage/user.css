@@ -962,9 +962,14 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  /* etwas Luft links, damit der Schein der aktiven Zeile nicht am Rand abreißt */
-  padding-left: 14px;
-  margin-left: -14px;
+  /* Beschnitt-Reserve links und rechts: die Fläche ragt um --m-bleed über die Textspalte hinaus
+     (Innenabstand + gleich großer negativer Rand), damit Vergrößerung und Schein der aktiven Zeile
+     nie am Rand abreißen – die Textspalte selbst bleibt, wo sie war */
+  --m-bleed: 56px;
+  padding-left: var(--m-bleed);
+  padding-right: var(--m-bleed);
+  margin-left: calc(-1 * var(--m-bleed));
+  margin-right: calc(-1 * var(--m-bleed));
   -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 80%, transparent);
   mask-image: linear-gradient(transparent, #000 16%, #000 80%, transparent);
 }
@@ -1012,9 +1017,10 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   letter-spacing: -0.03em;
   color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
-  /* Platz rechts für die Vergrößerung der aktiven Zeile (scale 1.05 von links) samt Schein –
-     sonst schneidet der Rand lange Zeilen ab */
-  padding-right: 9%;
+  /* --m-act = Vergrößerung der aktiven Zeile. Jede Zeile bricht so viel schmaler um, wie sie aktiv
+     wächst (mal 1,4 für das Nachfedern der Feder-Kurve) – vergrößert passt sie damit immer in die Spalte */
+  --m-act: 1.05;
+  padding-right: calc((var(--m-act) - 1) * 140%);
   overflow-wrap: anywhere;
   transform-origin: left center;
   opacity: calc(1 - var(--d, 0) * 0.13);
@@ -1034,7 +1040,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive .m-im-line.is-active {
   color: #fff;
   text-shadow: 0 0 28px rgba(var(--m-a-rgb), 0.55);
-  transform: scale(1.05);
+  transform: scale(var(--m-act));
   opacity: 1;
 }
 #mirage-immersive .m-im-lyrics.is-unsynced {
@@ -1169,22 +1175,27 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
     0 0 160px 0 rgba(var(--m-a-rgb), 0.9),
     0 0 0 2px rgba(255, 255, 255, 0.2);
 }
+/* volle Breite als Beschnitt-Fläche; die Textspalte (höchstens 1100 px) entsteht über den Innenabstand –
+   so hat der große Schein der aktiven Zeile links und rechts immer Platz */
 #mirage-immersive[data-mode="party"] .m-im-lyrics {
-  width: min(1100px, 86vw);
+  width: auto;
+  justify-self: stretch;
   margin: 0;
-  padding: 0;
+  padding: 0 max(var(--m-bleed), calc((100% - min(1100px, 86vw)) / 2));
   -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
   mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
 }
 #mirage-immersive[data-mode="party"] .m-im-line {
-  padding: 0 4%;
+  --m-act: 1.12;
+  /* wächst von der Mitte aus: je Seite die Hälfte der Vergrößerung (mit Nachfedern) */
+  padding: 0 calc((var(--m-act) - 1) * 70%);
   transform-origin: center;
   font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1));
   opacity: calc(0.55 - var(--d, 0) * 0.2);
 }
 #mirage-immersive[data-mode="party"] .m-im-line.is-active {
   opacity: 1;
-  transform: scale(1.12);
+  transform: scale(var(--m-act));
   text-shadow:
     0 0 34px rgba(var(--m-a-rgb), 0.85),
     0 0 90px rgba(var(--m-c-rgb), 0.45);

@@ -408,6 +408,8 @@ const immersive = (() => {
     q.flash.style.opacity = "0";
     q.wrap.style.translate = "";
     q.canvas.style.scale = q.bg.style.scale = lastKick = "";
+    q.wrap.style.rotate = lastRot = "";
+    if (activeEl) activeEl.style.scale = lastBounce = "";
   }
 
   // Jam: Profilbilder schweben links und rechts am Rand; du mit Akzentring, der Host mit kleinem Punkt.
@@ -641,6 +643,10 @@ const immersive = (() => {
     const i = seek(lyr.lines, pos, "t");
     if (i !== active) {
       active = i;
+      // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben
+      if (activeEl) activeEl.style.scale = "";
+      activeEl = lines[i] || null;
+      lastBounce = "";
       for (let k = 0; k < lines.length; k++) {
         const ln = lines[k];
         ln.classList.toggle("is-active", k === i);
@@ -711,8 +717,9 @@ const immersive = (() => {
       const P = px.P;
       Object.assign(V, {
         mirror: P.mirror, spin: P.spin, glow: true, rings: true, ring: P.ring,
-        height: V.height * P.height * (1 + px.drop * 0.35),
-        pulse: P.pulse * px.lvl * (1 + px.drop * 0.6),
+        // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll
+        height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2),
+        pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I),
       });
     }
 
@@ -728,13 +735,16 @@ const immersive = (() => {
         loud = clamp((s0.l + (s1.l - s0.l) * e + 38) / 38, 0, 1);
         havePitch = true;
       }
-      b = beat.read(sec);
+      // Party: der Puls folgt dem Betonungsmuster des Genres (vier auf den Boden, 1 und 3, Backbeat …)
+      b = px ? px.accent : beat.read(sec);
       const bi = seek(audio.data.beats, sec, "t");
       if (bi !== lastBeatIdx && bi >= 0 && playing) {
         lastBeatIdx = bi;
         const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
-        // Party: dickere, hellere Ringe – je nach Profil auf jedem, jedem 2. oder 4. Schlag
-        if (V.rings && bi % V.ring === 0) rings.push(px ? { r: R, a: (0.7 + px.drop * 0.3) * c, w: 3 + px.drop * 4 } : { r: R, a: 0.6 * c, w: 2 });
+        // Party: Ringe nur auf betonten Schlägen, kräftiger je mehr Energie; im Break keine
+        if (px) {
+          if (V.rings && px.beat > 0.5 && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
+        } else if (V.rings && bi % V.ring === 0) rings.push({ r: R, a: 0.6 * c, w: 2 });
       }
     }
 
@@ -766,7 +776,7 @@ const immersive = (() => {
     }
     if (cfg.calm) return;
 
-    const pal = px ? vivid(palette()) : palette();
+    const pal = px ? vivid(palette(), px.minor) : palette();
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
     const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
@@ -775,7 +785,7 @@ const immersive = (() => {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-    glow.addColorStop(0, rgba(pal[0], (0.16 + b * 0.22) * (px ? 1.6 + px.drop : 1)));
+    glow.addColorStop(0, rgba(pal[0], (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : 1)));
     glow.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = glow;
     // nur so groß wie der Schein reicht – außerhalb ist der Verlauf ohnehin durchsichtig
@@ -902,6 +912,13 @@ const immersive = (() => {
       }
       const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
       if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
+      // ab „Max“: aktive Liedzeile federt auf den betonten Schlägen; Pop, Bass und Chill lassen das Cover
+      // dazu pendeln (Rock wackelt stattdessen, Rave bleibt stehen und lässt das Licht arbeiten)
+      const move = px.fx && cfg.partyZoom && px.level >= 3;
+      const bo = move && activeEl ? (1 + px.accent * px.accent * 0.04).toFixed(3) : "";
+      if (bo !== lastBounce && activeEl) activeEl.style.scale = lastBounce = bo;
+      const rot = move && px.P.sway ? (px.sway * px.accent * (px.level >= 5 ? 4 : 2.5)).toFixed(2) + "deg" : "";
+      if (rot !== lastRot) q.wrap.style.rotate = lastRot = rot;
       // Kamera-Stoß: Visualizer und Hintergrund zoomen kurz mit (nur scale – eigene Grafikebenen)
       const kz = px.kick > 0.02 ? (1 + px.kick * 0.04).toFixed(3) : "";
       if (kz !== lastKick) {
@@ -912,6 +929,7 @@ const immersive = (() => {
     }
   }
   let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+  let activeEl = null, lastBounce = "", lastRot = "";
   function freshCanvas() {
     const n = q.canvas.cloneNode(false);
     q.canvas.replaceWith(n);
@@ -933,19 +951,88 @@ const immersive = (() => {
   }
 
   // Party-Farben: kräftig statt der oft gedeckten Coverfarben. Graue Cover bekommen Mirage-Töne.
+  // Moll macht das Licht tiefer und kühler, Dur heller – die Farben folgen der Stimmung des Abschnitts.
   let vividKey = "", vividPal = null;
-  function vivid(pal) {
-    const key = pal.map((c) => c.join(",")).join("|");
+  function vivid(pal, minor) {
+    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "");
     if (key === vividKey) return vividPal;
     vividKey = key;
     const hsl = pal.map(rgb2hsl);
     const grey = hsl.every(([, s]) => s < 0.12);
-    vividPal = hsl.map(([h, s, l], i) => hsl2rgb([grey ? [275, 195, 320][i] : h, Math.max(s, 0.72), clamp(l, 0.56, 0.7)]));
+    vividPal = hsl.map(([h, s, l], i) => {
+      const hue = grey ? [275, 195, 320][i] : h;
+      return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
+    });
     return vividPal;
   }
 
+  // Bühnenlicht: jedes Genre hat seine eigene Lichtsprache. Alles mit „lighter“ – Licht addiert sich wie echtes.
+  function drawStage(ctx, pal, px, rgba) {
+    const t = performance.now() / 1000, far = Math.hypot(vw, vh) * 1.1;
+    const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
+    const cone = (sx, sy, a, wd, c, al, reach = far) => {
+      const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
+      g.addColorStop(0, rgba(c, al));
+      g.addColorStop(0.5, rgba(c, al * 0.35));
+      g.addColorStop(1, rgba(c, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);
+      ctx.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);
+      ctx.closePath();
+      ctx.fill();
+    };
+    switch (px.P.spot) {
+      case "cross": {
+        // Rave: zwei Kegel aus den unteren Ecken kreuzen sich – im Aufbau immer schneller, beim Drop weit offen
+        const sp = 0.6 + px.energy * 0.8 + px.build * 3;
+        const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;
+        for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {
+          cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);
+        }
+        break;
+      }
+      case "top": {
+        // Rock: harte, warmweiße Bühnenspots von oben – die Snare auf 2 und 4 reißt sie auf
+        const al = (0.06 + beat * 0.26) * vis;
+        const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));
+        for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {
+          cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);
+        }
+        break;
+      }
+      case "floor": {
+        // Bass: Licht quillt vom Boden hoch, schwer auf 1 und 3, mit langem Nachhall
+        const al = (0.12 + beat * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
+        const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + beat * 0.25));
+        g.addColorStop(0, rgba(pal[0], al));
+        g.addColorStop(0.6, rgba(pal[1], al * 0.35));
+        g.addColorStop(1, rgba(pal[1], 0));
+        ctx.fillStyle = g;
+        ctx.fillRect(0, vh * 0.3, vw, vh * 0.7);
+        break;
+      }
+      case "pan": {
+        // Pop: weiche Schwenks, die Farben wandern alle vier Sekunden weiter
+        const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;
+        for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {
+          cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);
+        }
+        break;
+      }
+      default: {
+        // Chill: breite, sehr weiche Lichtbahnen von oben, die langsam wandern
+        const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);
+        for (let k = 0; k < 3; k++) {
+          cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);
+        }
+      }
+    }
+  }
+
   // Party-Kranz: Balken im Farbverlauf rund ums Cover (12 Farbstufen = 12 Pfade), darüber eine feine
-  // Lichtlinie und Funken, die bei jedem Schlag vom Cover wegfliegen
+  // Lichtlinie und Funken, die auf betonten Schlägen vom Cover wegfliegen
   let sparks = [];
   function drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang) {
     const P = px.P;
@@ -955,12 +1042,14 @@ const immersive = (() => {
       return mixC(pal[i], pal[(i + 1) % 3], x - i);
     };
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-    // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover, die im Takt aufleuchten und
-    // pro Takt springen. Unter den Balken, damit der Kranz klar bleibt.
-    if (px.lasers) {
+    if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba);
+    // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
+    // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
+    if (px.lasers && px.beamVis > 0.02) {
       const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
-      const al = 0.12 + px.beam * 0.42 + px.drop * 0.3;
-      const wd = 0.012 + px.beam * 0.016 + px.drop * 0.01;
+      const riser = px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin((performance.now() / 1000) * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
+      const al = (0.1 + px.accent * 0.4 + px.drop * 0.3) * px.beamVis * riser * (P.beams ?? 1);
+      const wd = (0.012 + px.accent * 0.016 + px.drop * 0.012) * (1 - px.build * 0.5);
       for (let k = 0; k < n; k++) {
         const side = k % 2 ? -1 : 1;
         const a = side * (px.spin + Math.floor(k / 2) * ((Math.PI * 2) / half)) - Math.PI / 2;
@@ -979,8 +1068,8 @@ const immersive = (() => {
       }
     }
     const STEPS = 12;
-    const w = P.thick * dpr * (1 + px.drop * 0.35);
-    for (const [lw, al] of [[w * 3.2, 0.16], [w, 0.95]]) {
+    const w = P.thick * dpr * (0.75 + 0.4 * px.I) * (1 + px.drop * 0.3);
+    for (const [lw, al] of [[w * 3.2, 0.1 + 0.1 * px.I], [w, 0.95]]) {
       ctx.lineWidth = lw;
       for (let k = 0; k < STEPS; k++) {
         ctx.beginPath();
@@ -994,7 +1083,7 @@ const immersive = (() => {
       }
     }
     if (P.halo) {
-      // weiche Linie knapp über den Spitzen – Glanz statt gefüllter Fläche
+      // weiche Linie knapp über den Spitzen – Glanz statt gefüllter Fläche, heller bei hellem Klang
       ctx.beginPath();
       for (let i = 0; i <= N; i++) {
         const j = i % N, nx = (i + 1) % N;
@@ -1006,10 +1095,10 @@ const immersive = (() => {
       }
       ctx.closePath();
       ctx.lineWidth = 7 * dpr;
-      ctx.strokeStyle = rgba(pal[1], 0.1 + px.drop * 0.08);
+      ctx.strokeStyle = rgba(pal[1], 0.06 + 0.08 * px.I);
       ctx.stroke();
       ctx.lineWidth = 1.4 * dpr;
-      ctx.strokeStyle = `rgba(255,255,255,${0.32 + px.drop * 0.3})`;
+      ctx.strokeStyle = `rgba(255,255,255,${(0.18 + px.bright * 0.25 + px.drop * 0.3).toFixed(2)})`;
       ctx.stroke();
     }
     if (P.bottom) {
@@ -1017,7 +1106,7 @@ const immersive = (() => {
       const n = 64, bw = vw / n, base = vh;
       ctx.beginPath();
       for (let i = 0; i < n; i++) {
-        const h = (4 + vals[Math.floor((i / n) * N)] * 90 * (1 + px.drop)) * dpr;
+        const h = (4 + vals[Math.floor((i / n) * N)] * 90 * (0.5 + px.I * 0.6) * (1 + px.drop)) * dpr;
         ctx.rect(i * bw + bw * 0.2, base - h, bw * 0.6, h);
       }
       const g = ctx.createLinearGradient(0, 0, vw, 0);
@@ -1025,14 +1114,18 @@ const immersive = (() => {
       ctx.fillStyle = g;
       ctx.fill();
     }
-    // Funken: Anzahl je Profil und Stärke, mehr im Drop; höchstens 260 gleichzeitig
-    if (px.hit && sparks.length < 160 + px.level * 60) {
-      const n = Math.round(P.sparks * px.lvl * (1 + px.drop));
+    // Funken: auf betonten Schlägen, mehr bei hellem Klang (Becken, Synths), beim Drop ein großer Schwall
+    if (sparks.length < 160 + px.level * 60) {
+      let n = 0;
+      if (px.hit && px.beat > 0.5 && px.low < 0.5) n = Math.round(P.sparks * px.lvl * (0.35 + px.bright * 0.9) * (0.5 + px.I * 0.5));
+      if (px.dropHit) n += Math.round(50 * Math.min(px.lvl, 2));
       for (let k = 0; k < n; k++) {
         const a = Math.random() * Math.PI * 2;
-        sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.6), life: 1, c: colAt(a / (Math.PI * 2)) });
+        sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
       }
     }
+    // Drop: drei Ringe hintereinander
+    if (px.dropHit) for (let k = 0; k < 3; k++) rings.push({ r: R - k * 46 * dpr, a: 0.95 - k * 0.2, w: 7 - k * 2 });
     sparks = sparks.filter((p) => (p.life -= dt * 1.15) > 0);
     for (const p of sparks) {
       p.r += p.v * dt;
