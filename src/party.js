@@ -383,8 +383,9 @@ const party = (() => {
     const ease = (k) => 1 - Math.exp(-dt * k);
 
     // --- wo im Song: Energie jetzt, gleich, Aufbau, Break, Drop, Dur/Moll, Helligkeit
-    let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0;
+    let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0;
     let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
+    let beatPhase = 0, beatIdx = -1;
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
     if (d && d.segs?.length) {
       const M = songMap(d);
@@ -399,6 +400,14 @@ const party = (() => {
       low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
       // jeder neue Abschnitt (Strophe, Refrain, Bridge …) ist eine neue „Szene“: andere Farbfolge, andere Drehrichtung
       scene = Math.max(seek(M.sections, sec, "t"), 0);
+      // Lichtregie: wie weit ist der nächste Drop entfernt, wie lang ist der Song
+      for (const tD of M.drops) {
+        if (tD > sec) {
+          toDrop = tD - sec;
+          break;
+        }
+      }
+      songLen = M.energy.length * STEP;
       const sx = M.sections[scene];
       minor = sx ? sx.mode === 0 : false;
       // Drop genau auf seinem Schlag (vorberechnet) – nicht erst, wenn die Lautheit schon da ist
@@ -447,6 +456,10 @@ const party = (() => {
       const bi = seek(d.beats, sec, "t");
       if (bi >= 0) {
         const since = sec - d.beats[bi].t;
+        // Schlagphase 0..1 (0 = genau auf dem Schlag) – das Publikum bewegt sich danach, nie zu früh oder zu spät
+        const per = Math.max(0.2, (d.beats[bi + 1]?.t ?? d.beats[bi].t + 60 / (info.bpm || 120)) - d.beats[bi].t);
+        beatPhase = clamp(since / per, 0, 1);
+        beatIdx = bi;
         const ba = d.bars?.length ? seek(d.bars, sec, "t") : -1;
         const barStart = ba >= 0 ? seek(d.beats, d.bars[ba].t + 0.05, "t") : bi - (bi % 4);
         inBar = (((bi - barStart) % 4) + 4) % 4;
@@ -509,6 +522,12 @@ const party = (() => {
       P, key: info.key, level, lvl, fx, hit, barHit, inBar, conf,
       energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I, scene,
       kickEnv, snareEnv, hatEnv, tone, pitch, kickHit, snareHit, hatHit,
+      phase: beatPhase, beatIdx,
+      // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
+      toDrop,
+      tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
+      blackout: !!cfg.partyDirector && toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95,
+      finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
       flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
     };

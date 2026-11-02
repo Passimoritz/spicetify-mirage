@@ -13,7 +13,7 @@ import { cfg } from "./config.js";
 // Die Mirage-Overlay-App lauscht lokal; ohne App versucht das Theme es still alle 5 s erneut.
 const bridge = (() => {
   const ADDR = "ws://127.0.0.1:47321";
-  let ws = null, retry = 0, wanted = false;
+  let ws = null, retry = 0, wanted = false, liveInfo = null;
   function connect() {
     wanted = true;
     if (ws && ws.readyState <= 1) return;
@@ -27,10 +27,13 @@ const bridge = (() => {
       if (ws !== sock) return;
       sendTrack();
       watchVolume(true);
+      if (cfg.partyLive) send({ type: "live", on: true });
     };
     ws.onclose = () => {
       if (ws !== sock) return;
       ws = null;
+      liveInfo = null;
+      window.dispatchEvent(new Event("mirage:live"));
       watchVolume(false);
       setTopics([]);
       schedule();
@@ -40,6 +43,12 @@ const bridge = (() => {
       if (ws !== sock) return;
       let m;
       try { m = JSON.parse(e.data); } catch { return; }
+      // Live-Link: Adresse und QR-Code der Handy-Seite
+      if (m.type === "live-info") {
+        liveInfo = m.url ? { url: String(m.url), qr: String(m.qr || "") } : null;
+        window.dispatchEvent(new Event("mirage:live"));
+        return;
+      }
       if (m.type !== "cmd") return;
       if (m.cmd === "toggle") S.Player.togglePlay();
       else if (m.cmd === "next") S.Player.next();
@@ -112,8 +121,8 @@ const bridge = (() => {
   // Kantenlicht der Overlay-App: der Lichtzustand des Party-Modus, nur solange er wirklich läuft
   function pushParty() {
     const L = party.live;
-    if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
-    send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette() });
+    if ((!cfg.partyEdge && !cfg.partyLive) || !L || performance.now() - L.at > 400 || document.hidden) return;
+    send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
   }
   async function pushLyric() {
     const uri = currentItem()?.uri || "";
@@ -153,7 +162,13 @@ const bridge = (() => {
     );
   }
   const send = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
-  return { connect, close, sendTrack, send, connected: () => ws?.readyState === 1 };
+  // Live-Link ein/aus: die Overlay-App startet bzw. beendet die Handy-Seite im WLAN
+  function setLive(on) {
+    liveInfo = null;
+    window.dispatchEvent(new Event("mirage:live"));
+    send({ type: "live", on: !!on });
+  }
+  return { connect, close, sendTrack, send, setLive, live: () => liveInfo, connected: () => ws?.readyState === 1 };
 })();
 
 export { bridge };

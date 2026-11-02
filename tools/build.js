@@ -15,6 +15,21 @@ const options = {
   logLevel: "info",
 };
 
+// Die Party-Location läuft in einem eigenen Thread: ihr Code wird vorab gebündelt und als Text eingebettet
+// (das Theme ist eine einzige Datei – der Thread entsteht daraus zur Laufzeit als Blob)
+function workerSource() {
+  const r = esbuild.buildSync({
+    entryPoints: [path.join(__dirname, "..", "src", "venue-worker.js")],
+    bundle: true,
+    format: "iife",
+    target: "chrome120",
+    write: false,
+    legalComments: "none",
+  });
+  return r.outputFiles[0].text;
+}
+options.define.__VENUE_WORKER__ = JSON.stringify(workerSource());
+
 if (process.argv.includes("--watch")) {
   esbuild.context(options).then((ctx) => ctx.watch());
 } else {

@@ -87,6 +87,22 @@ const DEFAULTS = {
   partyScreen: true,
   partyEdge: true,
   partyRecap: true,
+  // Location: auto (nach Genre), club, festival, stadium, home
+  partyVenue: "auto",
+  // Lichtregie, Melodie-Laser, Zeitlupe vor dem Drop, DJ-Übergänge, 30 fps in ruhigen Stellen
+  partyDirector: true,
+  partyMelody: true,
+  partySlowmo: true,
+  partyDJ: true,
+  partyQuietFps: true,
+  // Mix: Visualizer reagiert auf Kick, Snare, Hi-Hats
+  mixInstruments: true,
+  // Energiesparen: auto (im Akkubetrieb), on, off
+  eco: "auto",
+  // Handys im selben WLAN leuchten mit (über die Overlay-App) – bewusst aus, bis man es will
+  partyLive: false,
+  // Knopf für einen 10-Sekunden-Clip
+  partyClip: true,
   // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
   partyLasers: true,
   partyZoom: true,

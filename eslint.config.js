@@ -16,6 +16,7 @@ module.exports = [
       globals: {
         ...globals.browser,
         Spicetify: "readonly",
+        __VENUE_WORKER__: "readonly",
       },
     },
     rules: {

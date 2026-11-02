@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.8.0" : "dev";
+      VERSION = true ? "1.9.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -365,7 +365,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country & Folk"
+          party_country: "Country & Folk",
+          partyDirector: "Light director",
+          partyDirectorHint: "Calm before the storm: the light holds back before the drop, goes dark on the last beat \u2013 then the drop hits. The final chorus gets everything",
+          partyMelody: "Melody lasers",
+          partyMelodyHint: "Two thin lasers from the cover follow the pitch of the melody",
+          partySlowmo: "Slow motion before the drop",
+          partySlowmoHint: "Sparks, rings and the crowd freeze for half a second right before the drop",
+          partyDJ: "DJ transitions",
+          partyDJHint: "On a song change the old colours stay until the first beat, then blend into the new ones over four beats",
+          partyQuietFps: "30 fps in quiet parts",
+          partyQuietFpsHint: "Quiet intros and breaks run at 30 frames per second \u2013 looks the same, saves power",
+          partyClip: "Clip button",
+          partyClipHint: "Records 10 seconds of the visualizer with cover and lyrics as a silent video (WebM)",
+          partyLive: "Live link for phones",
+          partyLiveHint: "Phones on the same Wi-Fi light up with the beat \u2013 scan the QR code. Needs the Mirage Overlay app; Windows may ask once to allow it on the private network",
+          mixInstruments: "Mix reacts to instruments",
+          mixInstrumentsHint: "In Mix mode the pulse and rings follow the real kick, not just the beat grid",
+          partyVenue: "Venue",
+          venue_auto: "By genre",
+          venue_club: "Club",
+          venue_festival: "Festival",
+          venue_stadium: "Stadium",
+          venue_home: "Living room",
+          eco: "Energy saving",
+          eco_auto: "On battery",
+          eco_on: "Always",
+          eco_off: "Off",
+          liveBtn: "Live link for phones",
+          liveTitle: "Light up phones",
+          liveHint: "Scan with a phone on the same Wi-Fi and put it face up \u2013 it flashes along with the party",
+          liveCopy: "Copy link",
+          clipBtn: "Record a 10-second clip",
+          clipSaved: "Clip saved"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -646,7 +678,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country & Folk"
+          party_country: "Country & Folk",
+          partyDirector: "Lichtregie",
+          partyDirectorHint: "Ruhe vor dem Sturm: vor dem Drop h\xE4lt sich das Licht zur\xFCck, auf dem letzten Schlag wird es dunkel \u2013 dann schl\xE4gt der Drop ein. Im letzten Refrain gibt das Licht alles",
+          partyMelody: "Melodie-Laser",
+          partyMelodyHint: "Zwei d\xFCnne Laser aus dem Cover folgen der Tonh\xF6he der Melodie",
+          partySlowmo: "Zeitlupe vor dem Drop",
+          partySlowmoHint: "Funken, Ringe und Publikum erstarren eine halbe Sekunde lang direkt vor dem Drop",
+          partyDJ: "DJ-\xDCberg\xE4nge",
+          partyDJHint: "Beim Songwechsel bleiben die alten Farben bis zum ersten Schlag und gehen dann \xFCber vier Schl\xE4ge in die neuen \xFCber",
+          partyQuietFps: "30 fps in ruhigen Stellen",
+          partyQuietFpsHint: "Ruhige Intros und Breaks laufen mit 30 Bildern pro Sekunde \u2013 sieht gleich aus, spart Strom",
+          partyClip: "Clip-Knopf",
+          partyClipHint: "Nimmt 10 Sekunden Visualizer mit Cover und Liedtext als stummes Video auf (WebM)",
+          partyLive: "Live-Link f\xFCrs Handy",
+          partyLiveHint: "Handys im selben WLAN leuchten im Takt mit \u2013 QR-Code scannen. Braucht die Mirage-Overlay-App; Windows fragt evtl. einmal, ob sie im privaten Netzwerk erreichbar sein darf",
+          mixInstruments: "Mix reagiert auf Instrumente",
+          mixInstrumentsHint: "Im Mix-Modus folgen Puls und Ringe der echten Kick, nicht nur dem Taktraster",
+          partyVenue: "Location",
+          venue_auto: "Nach Genre",
+          venue_club: "Club",
+          venue_festival: "Festival",
+          venue_stadium: "Stadion",
+          venue_home: "Wohnzimmer",
+          eco: "Energiesparen",
+          eco_auto: "Im Akkubetrieb",
+          eco_on: "Immer",
+          eco_off: "Aus",
+          liveBtn: "Live-Link f\xFCrs Handy",
+          liveTitle: "Handys mitleuchten lassen",
+          liveHint: "Mit einem Handy im selben WLAN scannen und mit dem Display nach oben hinlegen \u2013 es blitzt mit der Party mit",
+          liveCopy: "Link kopieren",
+          clipBtn: "10-Sekunden-Clip aufnehmen",
+          clipSaved: "Clip gespeichert"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -927,7 +991,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country & Folk"
+          party_country: "Country & Folk",
+          partyDirector: "R\xE9gie lumi\xE8re",
+          partyDirectorHint: "Le calme avant la temp\xEAte : la lumi\xE8re se retient avant le drop, s'\xE9teint sur le dernier temps \u2013 puis le drop frappe. Le dernier refrain re\xE7oit tout",
+          partyMelody: "Lasers m\xE9lodie",
+          partyMelodyHint: "Deux fins lasers partant de la pochette suivent la hauteur de la m\xE9lodie",
+          partySlowmo: "Ralenti avant le drop",
+          partySlowmoHint: "\xC9tincelles, anneaux et public se figent une demi-seconde juste avant le drop",
+          partyDJ: "Transitions DJ",
+          partyDJHint: "Au changement de titre, les anciennes couleurs restent jusqu'au premier temps, puis passent aux nouvelles en quatre temps",
+          partyQuietFps: "30 i/s dans les passages calmes",
+          partyQuietFpsHint: "Les intros et breaks calmes tournent \xE0 30 images par seconde \u2013 m\xEAme rendu, moins d'\xE9nergie",
+          partyClip: "Bouton clip",
+          partyClipHint: "Enregistre 10 secondes du visualiseur avec pochette et paroles en vid\xE9o muette (WebM)",
+          partyLive: "Lien live pour t\xE9l\xE9phones",
+          partyLiveHint: "Les t\xE9l\xE9phones sur le m\xEAme Wi-Fi s'allument au rythme \u2013 scannez le QR code. N\xE9cessite l'app Mirage Overlay ; Windows peut demander une fois l'acc\xE8s au r\xE9seau priv\xE9",
+          mixInstruments: "Le mix r\xE9agit aux instruments",
+          mixInstrumentsHint: "En mode Mix, le pouls et les anneaux suivent la vraie grosse caisse, pas seulement la grille rythmique",
+          partyVenue: "Lieu",
+          venue_auto: "Selon le genre",
+          venue_club: "Club",
+          venue_festival: "Festival",
+          venue_stadium: "Stade",
+          venue_home: "Salon",
+          eco: "\xC9conomie d'\xE9nergie",
+          eco_auto: "Sur batterie",
+          eco_on: "Toujours",
+          eco_off: "D\xE9sactiv\xE9e",
+          liveBtn: "Lien live pour t\xE9l\xE9phones",
+          liveTitle: "Allumer les t\xE9l\xE9phones",
+          liveHint: "Scannez avec un t\xE9l\xE9phone sur le m\xEAme Wi-Fi et posez-le \xE9cran vers le haut \u2013 il clignote avec la f\xEAte",
+          liveCopy: "Copier le lien",
+          clipBtn: "Enregistrer un clip de 10 secondes",
+          clipSaved: "Clip enregistr\xE9"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1208,7 +1304,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country y Folk"
+          party_country: "Country y Folk",
+          partyDirector: "Direcci\xF3n de luces",
+          partyDirectorHint: "La calma antes de la tormenta: la luz se contiene antes del drop, se apaga en el \xFAltimo tiempo y entonces llega el drop. El \xFAltimo estribillo lo da todo",
+          partyMelody: "L\xE1seres de melod\xEDa",
+          partyMelodyHint: "Dos l\xE1seres finos desde la portada siguen la altura de la melod\xEDa",
+          partySlowmo: "C\xE1mara lenta antes del drop",
+          partySlowmoHint: "Chispas, anillos y p\xFAblico se congelan medio segundo justo antes del drop",
+          partyDJ: "Transiciones de DJ",
+          partyDJHint: "Al cambiar de canci\xF3n, los colores anteriores se quedan hasta el primer tiempo y luego pasan a los nuevos en cuatro tiempos",
+          partyQuietFps: "30 fps en partes tranquilas",
+          partyQuietFpsHint: "Las intros y pausas tranquilas van a 30 fotogramas por segundo: se ve igual y ahorra energ\xEDa",
+          partyClip: "Bot\xF3n de clip",
+          partyClipHint: "Graba 10 segundos del visualizador con portada y letra como v\xEDdeo sin sonido (WebM)",
+          partyLive: "Enlace en vivo para m\xF3viles",
+          partyLiveHint: "Los m\xF3viles en la misma Wi-Fi se iluminan al ritmo: escanea el c\xF3digo QR. Requiere la app Mirage Overlay; Windows puede pedir una vez permiso para la red privada",
+          mixInstruments: "Mix reacciona a los instrumentos",
+          mixInstrumentsHint: "En el modo Mix, el pulso y los anillos siguen el bombo real, no solo la rejilla de tiempos",
+          partyVenue: "Lugar",
+          venue_auto: "Seg\xFAn el g\xE9nero",
+          venue_club: "Club",
+          venue_festival: "Festival",
+          venue_stadium: "Estadio",
+          venue_home: "Sal\xF3n",
+          eco: "Ahorro de energ\xEDa",
+          eco_auto: "Con bater\xEDa",
+          eco_on: "Siempre",
+          eco_off: "Desactivado",
+          liveBtn: "Enlace en vivo para m\xF3viles",
+          liveTitle: "Iluminar m\xF3viles",
+          liveHint: "Escanea con un m\xF3vil en la misma Wi-Fi y d\xE9jalo con la pantalla hacia arriba: destella con la fiesta",
+          liveCopy: "Copiar enlace",
+          clipBtn: "Grabar un clip de 10 segundos",
+          clipSaved: "Clip guardado"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1489,7 +1617,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country e Folk"
+          party_country: "Country e Folk",
+          partyDirector: "Regia luci",
+          partyDirectorHint: "La calma prima della tempesta: la luce si trattiene prima del drop, si spegne sull'ultimo battito, poi arriva il drop. L'ultimo ritornello d\xE0 tutto",
+          partyMelody: "Laser melodia",
+          partyMelodyHint: "Due laser sottili dalla copertina seguono l'altezza della melodia",
+          partySlowmo: "Rallenty prima del drop",
+          partySlowmoHint: "Scintille, anelli e pubblico si fermano mezzo secondo subito prima del drop",
+          partyDJ: "Transizioni DJ",
+          partyDJHint: "Al cambio brano i vecchi colori restano fino al primo battito, poi sfumano nei nuovi in quattro battiti",
+          partyQuietFps: "30 fps nei passaggi calmi",
+          partyQuietFpsHint: "Intro e break calmi girano a 30 fotogrammi al secondo: stesso aspetto, meno consumo",
+          partyClip: "Pulsante clip",
+          partyClipHint: "Registra 10 secondi del visualizzatore con copertina e testo come video muto (WebM)",
+          partyLive: "Link live per telefoni",
+          partyLiveHint: "I telefoni sulla stessa Wi-Fi si illuminano a tempo: scansiona il codice QR. Serve l'app Mirage Overlay; Windows potrebbe chiedere una volta l'accesso alla rete privata",
+          mixInstruments: "Il mix reagisce agli strumenti",
+          mixInstrumentsHint: "In modalit\xE0 Mix pulsazione e anelli seguono la vera cassa, non solo la griglia ritmica",
+          partyVenue: "Location",
+          venue_auto: "In base al genere",
+          venue_club: "Club",
+          venue_festival: "Festival",
+          venue_stadium: "Stadio",
+          venue_home: "Soggiorno",
+          eco: "Risparmio energetico",
+          eco_auto: "A batteria",
+          eco_on: "Sempre",
+          eco_off: "Disattivato",
+          liveBtn: "Link live per telefoni",
+          liveTitle: "Accendi i telefoni",
+          liveHint: "Scansiona con un telefono sulla stessa Wi-Fi e appoggialo con lo schermo in su: lampeggia con la festa",
+          liveCopy: "Copia link",
+          clipBtn: "Registra una clip di 10 secondi",
+          clipSaved: "Clip salvata"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1770,7 +1930,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country e Folk"
+          party_country: "Country e Folk",
+          partyDirector: "Dire\xE7\xE3o de luz",
+          partyDirectorHint: "A calma antes da tempestade: a luz se cont\xE9m antes do drop, apaga no \xFAltimo tempo e ent\xE3o o drop explode. O \xFAltimo refr\xE3o recebe tudo",
+          partyMelody: "Lasers da melodia",
+          partyMelodyHint: "Dois lasers finos saindo da capa seguem a altura da melodia",
+          partySlowmo: "C\xE2mera lenta antes do drop",
+          partySlowmoHint: "Fa\xEDscas, an\xE9is e p\xFAblico congelam por meio segundo logo antes do drop",
+          partyDJ: "Transi\xE7\xF5es de DJ",
+          partyDJHint: "Na troca de m\xFAsica as cores antigas ficam at\xE9 o primeiro tempo e depois passam para as novas em quatro tempos",
+          partyQuietFps: "30 fps em partes calmas",
+          partyQuietFpsHint: "Intros e pausas calmas rodam a 30 quadros por segundo \u2013 mesma apar\xEAncia, menos energia",
+          partyClip: "Bot\xE3o de clipe",
+          partyClipHint: "Grava 10 segundos do visualizador com capa e letra como v\xEDdeo sem som (WebM)",
+          partyLive: "Link ao vivo para celulares",
+          partyLiveHint: "Celulares na mesma Wi-Fi acendem no ritmo \u2013 escaneie o QR code. Requer o app Mirage Overlay; o Windows pode pedir uma vez acesso \xE0 rede privada",
+          mixInstruments: "Mix reage aos instrumentos",
+          mixInstrumentsHint: "No modo Mix, o pulso e os an\xE9is seguem o bumbo real, n\xE3o s\xF3 a grade de tempos",
+          partyVenue: "Local",
+          venue_auto: "Pelo g\xEAnero",
+          venue_club: "Clube",
+          venue_festival: "Festival",
+          venue_stadium: "Est\xE1dio",
+          venue_home: "Sala de estar",
+          eco: "Economia de energia",
+          eco_auto: "Na bateria",
+          eco_on: "Sempre",
+          eco_off: "Desligada",
+          liveBtn: "Link ao vivo para celulares",
+          liveTitle: "Acender os celulares",
+          liveHint: "Escaneie com um celular na mesma Wi-Fi e deixe-o com a tela para cima \u2013 ele pisca com a festa",
+          liveCopy: "Copiar link",
+          clipBtn: "Gravar um clipe de 10 segundos",
+          clipSaved: "Clipe salvo"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -2051,7 +2243,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country & Folk"
+          party_country: "Country & Folk",
+          partyDirector: "Lichtregie",
+          partyDirectorHint: "Stilte voor de storm: voor de drop houdt het licht zich in, op de laatste tel wordt het donker \u2013 dan slaat de drop in. Het laatste refrein krijgt alles",
+          partyMelody: "Melodielasers",
+          partyMelodyHint: "Twee dunne lasers vanuit de cover volgen de toonhoogte van de melodie",
+          partySlowmo: "Slow motion voor de drop",
+          partySlowmoHint: "Vonken, ringen en publiek bevriezen een halve seconde vlak voor de drop",
+          partyDJ: "DJ-overgangen",
+          partyDJHint: "Bij een nieuw nummer blijven de oude kleuren tot de eerste tel en gaan dan in vier tellen over in de nieuwe",
+          partyQuietFps: "30 fps in rustige stukken",
+          partyQuietFpsHint: "Rustige intro's en breaks lopen op 30 beelden per seconde \u2013 ziet er hetzelfde uit, bespaart stroom",
+          partyClip: "Clipknop",
+          partyClipHint: "Neemt 10 seconden visualizer met cover en songtekst op als stille video (WebM)",
+          partyLive: "Livelink voor telefoons",
+          partyLiveHint: "Telefoons op hetzelfde wifi lichten mee op de beat \u2013 scan de QR-code. Vereist de Mirage Overlay-app; Windows vraagt misschien \xE9\xE9n keer om toegang tot het priv\xE9netwerk",
+          mixInstruments: "Mix reageert op instrumenten",
+          mixInstrumentsHint: "In Mix-modus volgen puls en ringen de echte kick, niet alleen het maatraster",
+          partyVenue: "Locatie",
+          venue_auto: "Op genre",
+          venue_club: "Club",
+          venue_festival: "Festival",
+          venue_stadium: "Stadion",
+          venue_home: "Woonkamer",
+          eco: "Energie besparen",
+          eco_auto: "Op accu",
+          eco_on: "Altijd",
+          eco_off: "Uit",
+          liveBtn: "Livelink voor telefoons",
+          liveTitle: "Telefoons laten meelichten",
+          liveHint: "Scan met een telefoon op hetzelfde wifi en leg hem met het scherm omhoog \u2013 hij flitst mee met het feest",
+          liveCopy: "Link kopi\xEBren",
+          clipBtn: "Clip van 10 seconden opnemen",
+          clipSaved: "Clip opgeslagen"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2332,7 +2556,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Jazz",
-          party_country: "Country i Folk"
+          party_country: "Country i Folk",
+          partyDirector: "Re\u017Cyseria \u015Bwiate\u0142",
+          partyDirectorHint: "Cisza przed burz\u0105: przed dropem \u015Bwiat\u0142o si\u0119 wstrzymuje, na ostatnim uderzeniu ga\u015Bnie \u2013 i wtedy uderza drop. Ostatni refren dostaje wszystko",
+          partyMelody: "Lasery melodii",
+          partyMelodyHint: "Dwa cienkie lasery z ok\u0142adki pod\u0105\u017Caj\u0105 za wysoko\u015Bci\u0105 melodii",
+          partySlowmo: "Zwolnienie przed dropem",
+          partySlowmoHint: "Iskry, pier\u015Bcienie i publiczno\u015B\u0107 zamieraj\u0105 na p\xF3\u0142 sekundy tu\u017C przed dropem",
+          partyDJ: "Przej\u015Bcia DJ-skie",
+          partyDJHint: "Przy zmianie utworu stare kolory zostaj\u0105 do pierwszego uderzenia, a potem przez cztery uderzenia przechodz\u0105 w nowe",
+          partyQuietFps: "30 kl./s w cichych fragmentach",
+          partyQuietFpsHint: "Ciche intra i przerwy dzia\u0142aj\u0105 w 30 klatkach na sekund\u0119 \u2013 wygl\u0105da tak samo, oszcz\u0119dza energi\u0119",
+          partyClip: "Przycisk klipu",
+          partyClipHint: "Nagrywa 10 sekund wizualizera z ok\u0142adk\u0105 i tekstem jako niemy film (WebM)",
+          partyLive: "Link na \u017Cywo dla telefon\xF3w",
+          partyLiveHint: "Telefony w tej samej sieci Wi-Fi \u015Bwiec\u0105 w rytm \u2013 zeskanuj kod QR. Wymaga aplikacji Mirage Overlay; Windows mo\u017Ce raz zapyta\u0107 o dost\u0119p do sieci prywatnej",
+          mixInstruments: "Mix reaguje na instrumenty",
+          mixInstrumentsHint: "W trybie Mix puls i pier\u015Bcienie pod\u0105\u017Caj\u0105 za prawdziw\u0105 stop\u0105, nie tylko za siatk\u0105 takt\xF3w",
+          partyVenue: "Miejsce",
+          venue_auto: "Wg gatunku",
+          venue_club: "Klub",
+          venue_festival: "Festiwal",
+          venue_stadium: "Stadion",
+          venue_home: "Salon",
+          eco: "Oszcz\u0119dzanie energii",
+          eco_auto: "Na baterii",
+          eco_on: "Zawsze",
+          eco_off: "Wy\u0142\u0105czone",
+          liveBtn: "Link na \u017Cywo dla telefon\xF3w",
+          liveTitle: "Roz\u015Bwietl telefony",
+          liveHint: "Zeskanuj telefonem w tej samej sieci Wi-Fi i po\u0142\xF3\u017C go ekranem do g\xF3ry \u2013 miga razem z imprez\u0105",
+          liveCopy: "Kopiuj link",
+          clipBtn: "Nagraj 10-sekundowy klip",
+          clipSaved: "Klip zapisany"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2613,7 +2869,39 @@
           party_hardstyle: "Hardstyle",
           party_afro: "Afrobeats",
           party_jazz: "Caz",
-          party_country: "Country ve Folk"
+          party_country: "Country ve Folk",
+          partyDirector: "I\u015F\u0131k y\xF6netimi",
+          partyDirectorHint: "F\u0131rt\u0131na \xF6ncesi sessizlik: drop'tan \xF6nce \u0131\u015F\u0131k geri \xE7ekilir, son vuru\u015Fta karar\u0131r \u2013 sonra drop patlar. Son nakarat her \u015Feyi al\u0131r",
+          partyMelody: "Melodi lazerleri",
+          partyMelodyHint: "Kapaktan \xE7\u0131kan iki ince lazer melodinin perdesini takip eder",
+          partySlowmo: "Drop \xF6ncesi a\u011F\u0131r \xE7ekim",
+          partySlowmoHint: "K\u0131v\u0131lc\u0131mlar, halkalar ve kalabal\u0131k drop'tan hemen \xF6nce yar\u0131m saniye donar",
+          partyDJ: "DJ ge\xE7i\u015Fleri",
+          partyDJHint: "\u015Eark\u0131 de\u011Fi\u015Fince eski renkler ilk vuru\u015Fa kadar kal\u0131r, sonra d\xF6rt vuru\u015Fta yenilerine ge\xE7er",
+          partyQuietFps: "Sakin yerlerde 30 fps",
+          partyQuietFpsHint: "Sakin giri\u015Fler ve aralar saniyede 30 karede \xE7al\u0131\u015F\u0131r \u2013 ayn\u0131 g\xF6r\xFCn\xFCr, enerji tasarrufu sa\u011Flar",
+          partyClip: "Klip d\xFC\u011Fmesi",
+          partyClipHint: "G\xF6rselle\u015Ftiricinin 10 saniyesini kapak ve s\xF6zlerle sessiz video olarak kaydeder (WebM)",
+          partyLive: "Telefonlar i\xE7in canl\u0131 ba\u011Flant\u0131",
+          partyLiveHint: "Ayn\u0131 Wi-Fi'deki telefonlar ritimle yanar \u2013 QR kodunu tara. Mirage Overlay uygulamas\u0131 gerekir; Windows \xF6zel a\u011F eri\u015Fimi i\xE7in bir kez sorabilir",
+          mixInstruments: "Mix enstr\xFCmanlara tepki verir",
+          mixInstrumentsHint: "Mix modunda nab\u0131z ve halkalar yaln\u0131zca vuru\u015F \u0131zgaras\u0131n\u0131 de\u011Fil ger\xE7ek bas davulu takip eder",
+          partyVenue: "Mek\xE2n",
+          venue_auto: "T\xFCre g\xF6re",
+          venue_club: "Kul\xFCp",
+          venue_festival: "Festival",
+          venue_stadium: "Stadyum",
+          venue_home: "Oturma odas\u0131",
+          eco: "Enerji tasarrufu",
+          eco_auto: "Pildeyken",
+          eco_on: "Her zaman",
+          eco_off: "Kapal\u0131",
+          liveBtn: "Telefonlar i\xE7in canl\u0131 ba\u011Flant\u0131",
+          liveTitle: "Telefonlar\u0131 yak",
+          liveHint: "Ayn\u0131 Wi-Fi'deki bir telefonla tara ve ekran\u0131 yukar\u0131 gelecek \u015Fekilde koy \u2013 partiyle birlikte yan\u0131p s\xF6ner",
+          liveCopy: "Ba\u011Flant\u0131y\u0131 kopyala",
+          clipBtn: "10 saniyelik klip kaydet",
+          clipSaved: "Klip kaydedildi"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2894,7 +3182,39 @@
           party_hardstyle: "\u0425\u0430\u0440\u0434\u0441\u0442\u0430\u0439\u043B",
           party_afro: "\u0410\u0444\u0440\u043E\u0431\u0438\u0442\u0441",
           party_jazz: "\u0414\u0436\u0430\u0437",
-          party_country: "\u041A\u0430\u043D\u0442\u0440\u0438 \u0438 \u0444\u043E\u043B\u043A"
+          party_country: "\u041A\u0430\u043D\u0442\u0440\u0438 \u0438 \u0444\u043E\u043B\u043A",
+          partyDirector: "\u0421\u0432\u0435\u0442\u043E\u0432\u0430\u044F \u0440\u0435\u0436\u0438\u0441\u0441\u0443\u0440\u0430",
+          partyDirectorHint: "\u0417\u0430\u0442\u0438\u0448\u044C\u0435 \u043F\u0435\u0440\u0435\u0434 \u0431\u0443\u0440\u0435\u0439: \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C \u0441\u0432\u0435\u0442 \u0441\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442\u0441\u044F, \u043D\u0430 \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u0439 \u0434\u043E\u043B\u0435 \u0433\u0430\u0441\u043D\u0435\u0442 \u2013 \u0438 \u0442\u0443\u0442 \u0431\u044C\u0451\u0442 \u0434\u0440\u043E\u043F. \u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0439 \u043F\u0440\u0438\u043F\u0435\u0432 \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u0442 \u0432\u0441\u0451",
+          partyMelody: "\u041B\u0430\u0437\u0435\u0440\u044B \u043C\u0435\u043B\u043E\u0434\u0438\u0438",
+          partyMelodyHint: "\u0414\u0432\u0430 \u0442\u043E\u043D\u043A\u0438\u0445 \u043B\u0430\u0437\u0435\u0440\u0430 \u0438\u0437 \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u0432\u044B\u0441\u043E\u0442\u043E\u0439 \u043C\u0435\u043B\u043E\u0434\u0438\u0438",
+          partySlowmo: "\u0417\u0430\u043C\u0435\u0434\u043B\u0435\u043D\u0438\u0435 \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C",
+          partySlowmoHint: "\u0418\u0441\u043A\u0440\u044B, \u043A\u043E\u043B\u044C\u0446\u0430 \u0438 \u0442\u043E\u043B\u043F\u0430 \u0437\u0430\u043C\u0438\u0440\u0430\u044E\u0442 \u043D\u0430 \u043F\u043E\u043B\u0441\u0435\u043A\u0443\u043D\u0434\u044B \u043F\u0440\u044F\u043C\u043E \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C",
+          partyDJ: "DJ-\u043F\u0435\u0440\u0435\u0445\u043E\u0434\u044B",
+          partyDJHint: "\u041F\u0440\u0438 \u0441\u043C\u0435\u043D\u0435 \u0442\u0440\u0435\u043A\u0430 \u0441\u0442\u0430\u0440\u044B\u0435 \u0446\u0432\u0435\u0442\u0430 \u0434\u0435\u0440\u0436\u0430\u0442\u0441\u044F \u0434\u043E \u043F\u0435\u0440\u0432\u043E\u0439 \u0434\u043E\u043B\u0438, \u0430 \u0437\u0430\u0442\u0435\u043C \u0437\u0430 \u0447\u0435\u0442\u044B\u0440\u0435 \u0434\u043E\u043B\u0438 \u043F\u0435\u0440\u0435\u0445\u043E\u0434\u044F\u0442 \u0432 \u043D\u043E\u0432\u044B\u0435",
+          partyQuietFps: "30 \u043A\u0430\u0434\u0440\u043E\u0432/\u0441 \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0435\u0441\u0442\u0430\u0445",
+          partyQuietFpsHint: "\u0422\u0438\u0445\u0438\u0435 \u0432\u0441\u0442\u0443\u043F\u043B\u0435\u043D\u0438\u044F \u0438 \u043F\u0430\u0443\u0437\u044B \u0438\u0434\u0443\u0442 \u0441 30 \u043A\u0430\u0434\u0440\u0430\u043C\u0438 \u0432 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u044B\u0433\u043B\u044F\u0434\u0438\u0442 \u0442\u0430\u043A \u0436\u0435, \u044D\u043A\u043E\u043D\u043E\u043C\u0438\u0442 \u044D\u043D\u0435\u0440\u0433\u0438\u044E",
+          partyClip: "\u041A\u043D\u043E\u043F\u043A\u0430 \u043A\u043B\u0438\u043F\u0430",
+          partyClipHint: "\u0417\u0430\u043F\u0438\u0441\u044B\u0432\u0430\u0435\u0442 10 \u0441\u0435\u043A\u0443\u043D\u0434 \u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440\u0430 \u0441 \u043E\u0431\u043B\u043E\u0436\u043A\u043E\u0439 \u0438 \u0442\u0435\u043A\u0441\u0442\u043E\u043C \u043A\u0430\u043A \u0431\u0435\u0437\u0437\u0432\u0443\u0447\u043D\u043E\u0435 \u0432\u0438\u0434\u0435\u043E (WebM)",
+          partyLive: "\u0416\u0438\u0432\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430 \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
+          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u044B \u0432 \u0442\u043E\u0439 \u0436\u0435 Wi-Fi \u0441\u0435\u0442\u0438 \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u043E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u041D\u0443\u0436\u043D\u043E \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay; Windows \u043C\u043E\u0436\u0435\u0442 \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u0441\u043F\u0440\u043E\u0441\u0438\u0442\u044C \u0434\u043E\u0441\u0442\u0443\u043F \u043A \u0447\u0430\u0441\u0442\u043D\u043E\u0439 \u0441\u0435\u0442\u0438",
+          mixInstruments: "\u041C\u0438\u043A\u0441 \u0440\u0435\u0430\u0433\u0438\u0440\u0443\u0435\u0442 \u043D\u0430 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B",
+          mixInstrumentsHint: "\u0412 \u0440\u0435\u0436\u0438\u043C\u0435 \xAB\u041C\u0438\u043A\u0441\xBB \u043F\u0443\u043B\u044C\u0441 \u0438 \u043A\u043E\u043B\u044C\u0446\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0439 \u0431\u043E\u0447\u043A\u043E\u0439, \u0430 \u043D\u0435 \u0442\u043E\u043B\u044C\u043A\u043E \u0437\u0430 \u0441\u0435\u0442\u043A\u043E\u0439 \u0434\u043E\u043B\u0435\u0439",
+          partyVenue: "\u041F\u043B\u043E\u0449\u0430\u0434\u043A\u0430",
+          venue_auto: "\u041F\u043E \u0436\u0430\u043D\u0440\u0443",
+          venue_club: "\u041A\u043B\u0443\u0431",
+          venue_festival: "\u0424\u0435\u0441\u0442\u0438\u0432\u0430\u043B\u044C",
+          venue_stadium: "\u0421\u0442\u0430\u0434\u0438\u043E\u043D",
+          venue_home: "\u0413\u043E\u0441\u0442\u0438\u043D\u0430\u044F",
+          eco: "\u042D\u043D\u0435\u0440\u0433\u043E\u0441\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u0438\u0435",
+          eco_auto: "\u041E\u0442 \u0431\u0430\u0442\u0430\u0440\u0435\u0438",
+          eco_on: "\u0412\u0441\u0435\u0433\u0434\u0430",
+          eco_off: "\u0412\u044B\u043A\u043B.",
+          liveBtn: "\u0416\u0438\u0432\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430 \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
+          liveTitle: "\u0417\u0430\u0436\u0435\u0447\u044C \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u044B",
+          liveHint: "\u041E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0432 \u0442\u043E\u0439 \u0436\u0435 Wi-Fi \u0441\u0435\u0442\u0438 \u0438 \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435 \u044D\u043A\u0440\u0430\u043D\u043E\u043C \u0432\u0432\u0435\u0440\u0445 \u2013 \u043E\u043D \u043C\u0438\u0433\u0430\u0435\u0442 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u043E\u0439",
+          liveCopy: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0441\u0441\u044B\u043B\u043A\u0443",
+          clipBtn: "\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u044C 10-\u0441\u0435\u043A\u0443\u043D\u0434\u043D\u044B\u0439 \u043A\u043B\u0438\u043F",
+          clipSaved: "\u041A\u043B\u0438\u043F \u0441\u043E\u0445\u0440\u0430\u043D\u0451\u043D"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -3175,7 +3495,39 @@
           party_hardstyle: "\u0425\u0430\u0440\u0434\u0441\u0442\u0430\u0439\u043B",
           party_afro: "\u0410\u0444\u0440\u043E\u0431\u0456\u0442\u0441",
           party_jazz: "\u0414\u0436\u0430\u0437",
-          party_country: "\u041A\u0430\u043D\u0442\u0440\u0456 \u0439 \u0444\u043E\u043B\u043A"
+          party_country: "\u041A\u0430\u043D\u0442\u0440\u0456 \u0439 \u0444\u043E\u043B\u043A",
+          partyDirector: "\u0421\u0432\u0456\u0442\u043B\u043E\u0432\u0430 \u0440\u0435\u0436\u0438\u0441\u0443\u0440\u0430",
+          partyDirectorHint: "\u0422\u0438\u0448\u0430 \u043F\u0435\u0440\u0435\u0434 \u0431\u0443\u0440\u0435\u044E: \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C \u0441\u0432\u0456\u0442\u043B\u043E \u0441\u0442\u0440\u0438\u043C\u0443\u0454\u0442\u044C\u0441\u044F, \u043D\u0430 \u043E\u0441\u0442\u0430\u043D\u043D\u0456\u0439 \u0434\u043E\u043B\u0456 \u0433\u0430\u0441\u043D\u0435 \u2013 \u0456 \u0442\u043E\u0434\u0456 \u0431'\u0454 \u0434\u0440\u043E\u043F. \u041E\u0441\u0442\u0430\u043D\u043D\u0456\u0439 \u043F\u0440\u0438\u0441\u043F\u0456\u0432 \u043E\u0442\u0440\u0438\u043C\u0443\u0454 \u0432\u0441\u0435",
+          partyMelody: "\u041B\u0430\u0437\u0435\u0440\u0438 \u043C\u0435\u043B\u043E\u0434\u0456\u0457",
+          partyMelodyHint: "\u0414\u0432\u0430 \u0442\u043E\u043D\u043A\u0456 \u043B\u0430\u0437\u0435\u0440\u0438 \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438 \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u0432\u0438\u0441\u043E\u0442\u043E\u044E \u043C\u0435\u043B\u043E\u0434\u0456\u0457",
+          partySlowmo: "\u0423\u043F\u043E\u0432\u0456\u043B\u044C\u043D\u0435\u043D\u043D\u044F \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C",
+          partySlowmoHint: "\u0406\u0441\u043A\u0440\u0438, \u043A\u0456\u043B\u044C\u0446\u044F \u0439 \u043D\u0430\u0442\u043E\u0432\u043F \u0437\u0430\u0432\u043C\u0438\u0440\u0430\u044E\u0442\u044C \u043D\u0430 \u043F\u0456\u0432 \u0441\u0435\u043A\u0443\u043D\u0434\u0438 \u043F\u0440\u043E\u0441\u0442\u043E \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C",
+          partyDJ: "DJ-\u043F\u0435\u0440\u0435\u0445\u043E\u0434\u0438",
+          partyDJHint: "\u041F\u0456\u0434 \u0447\u0430\u0441 \u0437\u043C\u0456\u043D\u0438 \u0442\u0440\u0435\u043A\u0443 \u0441\u0442\u0430\u0440\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u0438 \u0442\u0440\u0438\u043C\u0430\u044E\u0442\u044C\u0441\u044F \u0434\u043E \u043F\u0435\u0440\u0448\u043E\u0457 \u0434\u043E\u043B\u0456, \u0430 \u043F\u043E\u0442\u0456\u043C \u0437\u0430 \u0447\u043E\u0442\u0438\u0440\u0438 \u0434\u043E\u043B\u0456 \u043F\u0435\u0440\u0435\u0445\u043E\u0434\u044F\u0442\u044C \u0443 \u043D\u043E\u0432\u0456",
+          partyQuietFps: "30 \u043A\u0430\u0434\u0440\u0456\u0432/\u0441 \u0443 \u0442\u0438\u0445\u0438\u0445 \u043C\u0456\u0441\u0446\u044F\u0445",
+          partyQuietFpsHint: "\u0422\u0438\u0445\u0456 \u0432\u0441\u0442\u0443\u043F\u0438 \u0439 \u043F\u0430\u0443\u0437\u0438 \u0439\u0434\u0443\u0442\u044C \u0456\u0437 30 \u043A\u0430\u0434\u0440\u0430\u043C\u0438 \u043D\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u0438\u0433\u043B\u044F\u0434\u0430\u0454 \u0442\u0430\u043A \u0441\u0430\u043C\u043E, \u0437\u0430\u043E\u0449\u0430\u0434\u0436\u0443\u0454 \u0435\u043D\u0435\u0440\u0433\u0456\u044E",
+          partyClip: "\u041A\u043D\u043E\u043F\u043A\u0430 \u043A\u043B\u0456\u043F\u0443",
+          partyClipHint: "\u0417\u0430\u043F\u0438\u0441\u0443\u0454 10 \u0441\u0435\u043A\u0443\u043D\u0434 \u0432\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440\u0430 \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u043E\u044E \u0439 \u0442\u0435\u043A\u0441\u0442\u043E\u043C \u044F\u043A \u0431\u0435\u0437\u0437\u0432\u0443\u0447\u043D\u0435 \u0432\u0456\u0434\u0435\u043E (WebM)",
+          partyLive: "\u0416\u0438\u0432\u0435 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
+          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u0438 \u0432 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 Wi-Fi \u043C\u0435\u0440\u0435\u0436\u0456 \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u0432\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u041F\u043E\u0442\u0440\u0456\u0431\u0435\u043D \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay; Windows \u043C\u043E\u0436\u0435 \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u0437\u0430\u043F\u0438\u0442\u0430\u0442\u0438 \u0434\u043E\u0441\u0442\u0443\u043F \u0434\u043E \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0457 \u043C\u0435\u0440\u0435\u0436\u0456",
+          mixInstruments: "\u041C\u0456\u043A\u0441 \u0440\u0435\u0430\u0433\u0443\u0454 \u043D\u0430 \u0456\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0438",
+          mixInstrumentsHint: "\u0423 \u0440\u0435\u0436\u0438\u043C\u0456 \xAB\u041C\u0456\u043A\u0441\xBB \u043F\u0443\u043B\u044C\u0441 \u0456 \u043A\u0456\u043B\u044C\u0446\u044F \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u0441\u043F\u0440\u0430\u0432\u0436\u043D\u044C\u043E\u044E \u0431\u043E\u0447\u043A\u043E\u044E, \u0430 \u043D\u0435 \u043B\u0438\u0448\u0435 \u0437\u0430 \u0441\u0456\u0442\u043A\u043E\u044E \u0434\u043E\u043B\u044C",
+          partyVenue: "\u041C\u0430\u0439\u0434\u0430\u043D\u0447\u0438\u043A",
+          venue_auto: "\u0417\u0430 \u0436\u0430\u043D\u0440\u043E\u043C",
+          venue_club: "\u041A\u043B\u0443\u0431",
+          venue_festival: "\u0424\u0435\u0441\u0442\u0438\u0432\u0430\u043B\u044C",
+          venue_stadium: "\u0421\u0442\u0430\u0434\u0456\u043E\u043D",
+          venue_home: "\u0412\u0456\u0442\u0430\u043B\u044C\u043D\u044F",
+          eco: "\u0415\u043D\u0435\u0440\u0433\u043E\u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043D\u044F",
+          eco_auto: "\u0412\u0456\u0434 \u0431\u0430\u0442\u0430\u0440\u0435\u0457",
+          eco_on: "\u0417\u0430\u0432\u0436\u0434\u0438",
+          eco_off: "\u0412\u0438\u043C\u043A.",
+          liveBtn: "\u0416\u0438\u0432\u0435 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
+          liveTitle: "\u0417\u0430\u0441\u0432\u0456\u0442\u0438\u0442\u0438 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0438",
+          liveHint: "\u0412\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0443 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 Wi-Fi \u043C\u0435\u0440\u0435\u0436\u0456 \u0439 \u043F\u043E\u043A\u043B\u0430\u0434\u0456\u0442\u044C \u0435\u043A\u0440\u0430\u043D\u043E\u043C \u0434\u043E\u0433\u043E\u0440\u0438 \u2013 \u0432\u0456\u043D \u0431\u043B\u0438\u043C\u0430\u0454 \u0440\u0430\u0437\u043E\u043C \u0456\u0437 \u0432\u0435\u0447\u0456\u0440\u043A\u043E\u044E",
+          liveCopy: "\u041A\u043E\u043F\u0456\u044E\u0432\u0430\u0442\u0438 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F",
+          clipBtn: "\u0417\u0430\u043F\u0438\u0441\u0430\u0442\u0438 10-\u0441\u0435\u043A\u0443\u043D\u0434\u043D\u0438\u0439 \u043A\u043B\u0456\u043F",
+          clipSaved: "\u041A\u043B\u0456\u043F \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -3456,7 +3808,39 @@
           party_hardstyle: "\u30CF\u30FC\u30C9\u30B9\u30BF\u30A4\u30EB",
           party_afro: "\u30A2\u30D5\u30ED\u30D3\u30FC\u30C4",
           party_jazz: "\u30B8\u30E3\u30BA",
-          party_country: "\u30AB\u30F3\u30C8\u30EA\u30FC\uFF06\u30D5\u30A9\u30FC\u30AF"
+          party_country: "\u30AB\u30F3\u30C8\u30EA\u30FC\uFF06\u30D5\u30A9\u30FC\u30AF",
+          partyDirector: "\u7167\u660E\u6F14\u51FA",
+          partyDirectorHint: "\u5D50\u306E\u524D\u306E\u9759\u3051\u3055\uFF1A\u30C9\u30ED\u30C3\u30D7\u524D\u306F\u5149\u3092\u6291\u3048\u3001\u6700\u5F8C\u306E\u62CD\u3067\u6697\u8EE2\u3001\u305D\u3057\u3066\u30C9\u30ED\u30C3\u30D7\u304C\u70B8\u88C2\u3002\u6700\u5F8C\u306E\u30B5\u30D3\u306F\u5168\u958B",
+          partyMelody: "\u30E1\u30ED\u30C7\u30A3\u30FC\u30EC\u30FC\u30B6\u30FC",
+          partyMelodyHint: "\u30AB\u30D0\u30FC\u304B\u3089\u4F38\u3073\u308B2\u672C\u306E\u7D30\u3044\u30EC\u30FC\u30B6\u30FC\u304C\u30E1\u30ED\u30C7\u30A3\u30FC\u306E\u97F3\u7A0B\u3092\u8FFD\u3044\u307E\u3059",
+          partySlowmo: "\u30C9\u30ED\u30C3\u30D7\u524D\u306E\u30B9\u30ED\u30FC\u30E2\u30FC\u30B7\u30E7\u30F3",
+          partySlowmoHint: "\u30C9\u30ED\u30C3\u30D7\u76F4\u524D\u306E0.5\u79D2\u3001\u706B\u82B1\u30FB\u30EA\u30F3\u30B0\u30FB\u89B3\u5BA2\u304C\u6B62\u307E\u308A\u307E\u3059",
+          partyDJ: "DJ\u30C8\u30E9\u30F3\u30B8\u30B7\u30E7\u30F3",
+          partyDJHint: "\u66F2\u304C\u5909\u308F\u308B\u3068\u3001\u6700\u521D\u306E\u62CD\u307E\u3067\u524D\u306E\u8272\u304C\u6B8B\u308A\u3001\u305D\u306E\u5F8C4\u62CD\u304B\u3051\u3066\u65B0\u3057\u3044\u8272\u306B\u5909\u308F\u308A\u307E\u3059",
+          partyQuietFps: "\u9759\u304B\u306A\u90E8\u5206\u306F30fps",
+          partyQuietFpsHint: "\u9759\u304B\u306A\u30A4\u30F3\u30C8\u30ED\u3084\u30D6\u30EC\u30A4\u30AF\u306F\u6BCE\u79D230\u30D5\u30EC\u30FC\u30E0\u3067\u63CF\u753B \u2014 \u898B\u305F\u76EE\u306F\u540C\u3058\u3067\u7701\u96FB\u529B",
+          partyClip: "\u30AF\u30EA\u30C3\u30D7\u30DC\u30BF\u30F3",
+          partyClipHint: "\u30AB\u30D0\u30FC\u3068\u6B4C\u8A5E\u5165\u308A\u306E\u30D3\u30B8\u30E5\u30A2\u30E9\u30A4\u30B6\u30FC\u309210\u79D2\u9593\u3001\u7121\u97F3\u52D5\u753B\uFF08WebM\uFF09\u3067\u9332\u753B\u3057\u307E\u3059",
+          partyLive: "\u30B9\u30DE\u30DB\u7528\u30E9\u30A4\u30D6\u30EA\u30F3\u30AF",
+          partyLiveHint: "\u540C\u3058Wi-Fi\u306E\u30B9\u30DE\u30DB\u304C\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u5149\u308A\u307E\u3059 \u2014 QR\u30B3\u30FC\u30C9\u3092\u8AAD\u307F\u53D6\u3063\u3066\u304F\u3060\u3055\u3044\u3002Mirage Overlay\u30A2\u30D7\u30EA\u304C\u5FC5\u8981\u3067\u3059\u3002Windows\u304C\u30D7\u30E9\u30A4\u30D9\u30FC\u30C8\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u3078\u306E\u30A2\u30AF\u30BB\u30B9\u3092\u4E00\u5EA6\u78BA\u8A8D\u3059\u308B\u5834\u5408\u304C\u3042\u308A\u307E\u3059",
+          mixInstruments: "\u30DF\u30C3\u30AF\u30B9\u304C\u697D\u5668\u306B\u53CD\u5FDC",
+          mixInstrumentsHint: "\u30DF\u30C3\u30AF\u30B9\u30E2\u30FC\u30C9\u3067\u3001\u30D1\u30EB\u30B9\u3068\u30EA\u30F3\u30B0\u304C\u62CD\u306E\u30B0\u30EA\u30C3\u30C9\u3060\u3051\u3067\u306A\u304F\u5B9F\u969B\u306E\u30AD\u30C3\u30AF\u306B\u5408\u308F\u305B\u3066\u52D5\u304D\u307E\u3059",
+          partyVenue: "\u4F1A\u5834",
+          venue_auto: "\u30B8\u30E3\u30F3\u30EB\u5225",
+          venue_club: "\u30AF\u30E9\u30D6",
+          venue_festival: "\u30D5\u30A7\u30B9",
+          venue_stadium: "\u30B9\u30BF\u30B8\u30A2\u30E0",
+          venue_home: "\u30EA\u30D3\u30F3\u30B0",
+          eco: "\u7701\u96FB\u529B",
+          eco_auto: "\u30D0\u30C3\u30C6\u30EA\u30FC\u6642",
+          eco_on: "\u5E38\u306B",
+          eco_off: "\u30AA\u30D5",
+          liveBtn: "\u30B9\u30DE\u30DB\u7528\u30E9\u30A4\u30D6\u30EA\u30F3\u30AF",
+          liveTitle: "\u30B9\u30DE\u30DB\u3082\u5149\u3089\u305B\u308B",
+          liveHint: "\u540C\u3058Wi-Fi\u306E\u30B9\u30DE\u30DB\u3067\u8AAD\u307F\u53D6\u308A\u3001\u753B\u9762\u3092\u4E0A\u306B\u3057\u3066\u7F6E\u304F\u3068\u30D1\u30FC\u30C6\u30A3\u30FC\u306B\u5408\u308F\u305B\u3066\u5149\u308A\u307E\u3059",
+          liveCopy: "\u30EA\u30F3\u30AF\u3092\u30B3\u30D4\u30FC",
+          clipBtn: "10\u79D2\u30AF\u30EA\u30C3\u30D7\u3092\u9332\u753B",
+          clipSaved: "\u30AF\u30EA\u30C3\u30D7\u3092\u4FDD\u5B58\u3057\u307E\u3057\u305F"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -3737,7 +4121,39 @@
           party_hardstyle: "\uD558\uB4DC\uC2A4\uD0C0\uC77C",
           party_afro: "\uC544\uD504\uB85C\uBE44\uCE20",
           party_jazz: "\uC7AC\uC988",
-          party_country: "\uCEE8\uD2B8\uB9AC & \uD3EC\uD06C"
+          party_country: "\uCEE8\uD2B8\uB9AC & \uD3EC\uD06C",
+          partyDirector: "\uC870\uBA85 \uC5F0\uCD9C",
+          partyDirectorHint: "\uD3ED\uD48D \uC804\uC758 \uACE0\uC694: \uB4DC\uB86D \uC804\uC5D0\uB294 \uBE5B\uC744 \uC544\uB07C\uACE0, \uB9C8\uC9C0\uB9C9 \uBC15\uC5D0\uC11C \uC554\uC804\uB41C \uB4A4 \uB4DC\uB86D\uC774 \uD130\uC9D1\uB2C8\uB2E4. \uB9C8\uC9C0\uB9C9 \uD6C4\uB834\uC740 \uC804\uBD80 \uC3DF\uC544\uB0C5\uB2C8\uB2E4",
+          partyMelody: "\uBA5C\uB85C\uB514 \uB808\uC774\uC800",
+          partyMelodyHint: "\uCEE4\uBC84\uC5D0\uC11C \uBED7\uC740 \uAC00\uB294 \uB808\uC774\uC800 \uB450 \uC904\uC774 \uBA5C\uB85C\uB514\uC758 \uC74C\uB192\uC774\uB97C \uB530\uB77C\uAC11\uB2C8\uB2E4",
+          partySlowmo: "\uB4DC\uB86D \uC9C1\uC804 \uC2AC\uB85C \uBAA8\uC158",
+          partySlowmoHint: "\uB4DC\uB86D \uBC14\uB85C \uC804 0.5\uCD08 \uB3D9\uC548 \uBD88\uAF43, \uB9C1, \uAD00\uAC1D\uC774 \uBA48\uCDA5\uB2C8\uB2E4",
+          partyDJ: "DJ \uC804\uD658",
+          partyDJHint: "\uACE1\uC774 \uBC14\uB00C\uBA74 \uCCAB \uBC15\uAE4C\uC9C0 \uC774\uC804 \uC0C9\uC774 \uB0A8\uACE0, \uC774\uD6C4 \uB124 \uBC15\uC5D0 \uAC78\uCCD0 \uC0C8 \uC0C9\uC73C\uB85C \uBC14\uB01D\uB2C8\uB2E4",
+          partyQuietFps: "\uC870\uC6A9\uD55C \uAD6C\uAC04 30fps",
+          partyQuietFpsHint: "\uC870\uC6A9\uD55C \uC778\uD2B8\uB85C\uC640 \uBE0C\uB808\uC774\uD06C\uB294 \uCD08\uB2F9 30\uD504\uB808\uC784\uC73C\uB85C \u2014 \uB611\uAC19\uC544 \uBCF4\uC774\uACE0 \uC804\uB825\uC740 \uC544\uB08D\uB2C8\uB2E4",
+          partyClip: "\uD074\uB9BD \uBC84\uD2BC",
+          partyClipHint: "\uCEE4\uBC84\uC640 \uAC00\uC0AC\uAC00 \uB2F4\uAE34 \uBE44\uC8FC\uC5BC\uB77C\uC774\uC800 10\uCD08\uB97C \uBB34\uC74C \uB3D9\uC601\uC0C1(WebM)\uC73C\uB85C \uB179\uD654\uD569\uB2C8\uB2E4",
+          partyLive: "\uD734\uB300\uD3F0\uC6A9 \uB77C\uC774\uBE0C \uB9C1\uD06C",
+          partyLiveHint: "\uAC19\uC740 Wi-Fi\uC758 \uD734\uB300\uD3F0\uC774 \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB0A9\uB2C8\uB2E4 \u2014 QR \uCF54\uB4DC\uB97C \uC2A4\uCE94\uD558\uC138\uC694. Mirage Overlay \uC571\uC774 \uD544\uC694\uD558\uBA70, Windows\uAC00 \uC0AC\uC124 \uB124\uD2B8\uC6CC\uD06C \uC811\uADFC\uC744 \uD55C \uBC88 \uBB3C\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4",
+          mixInstruments: "\uBBF9\uC2A4\uAC00 \uC545\uAE30\uC5D0 \uBC18\uC751",
+          mixInstrumentsHint: "\uBBF9\uC2A4 \uBAA8\uB4DC\uC5D0\uC11C \uD384\uC2A4\uC640 \uB9C1\uC774 \uBC15\uC790 \uACA9\uC790\uB9CC\uC774 \uC544\uB2C8\uB77C \uC2E4\uC81C \uD0A5\uC744 \uB530\uB77C\uAC11\uB2C8\uB2E4",
+          partyVenue: "\uC7A5\uC18C",
+          venue_auto: "\uC7A5\uB974\uBCC4",
+          venue_club: "\uD074\uB7FD",
+          venue_festival: "\uD398\uC2A4\uD2F0\uBC8C",
+          venue_stadium: "\uC2A4\uD0C0\uB514\uC6C0",
+          venue_home: "\uAC70\uC2E4",
+          eco: "\uC808\uC804",
+          eco_auto: "\uBC30\uD130\uB9AC \uC0AC\uC6A9 \uC2DC",
+          eco_on: "\uD56D\uC0C1",
+          eco_off: "\uB044\uAE30",
+          liveBtn: "\uD734\uB300\uD3F0\uC6A9 \uB77C\uC774\uBE0C \uB9C1\uD06C",
+          liveTitle: "\uD734\uB300\uD3F0\uB3C4 \uBE5B\uB098\uAC8C",
+          liveHint: "\uAC19\uC740 Wi-Fi\uC758 \uD734\uB300\uD3F0\uC73C\uB85C \uC2A4\uCE94\uD558\uACE0 \uD654\uBA74\uC744 \uC704\uB85C \uB450\uC138\uC694 \u2014 \uD30C\uD2F0\uC5D0 \uB9DE\uCDB0 \uAE5C\uBC15\uC785\uB2C8\uB2E4",
+          liveCopy: "\uB9C1\uD06C \uBCF5\uC0AC",
+          clipBtn: "10\uCD08 \uD074\uB9BD \uB179\uD654",
+          clipSaved: "\uD074\uB9BD\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -4018,7 +4434,39 @@
           party_hardstyle: "\u786C\u6D3E\u821E\u66F2",
           party_afro: "\u975E\u6D32\u8282\u62CD",
           party_jazz: "\u7235\u58EB",
-          party_country: "\u4E61\u6751\u4E0E\u6C11\u8C23"
+          party_country: "\u4E61\u6751\u4E0E\u6C11\u8C23",
+          partyDirector: "\u706F\u5149\u5BFC\u6F14",
+          partyDirectorHint: "\u66B4\u98CE\u96E8\u524D\u7684\u5B81\u9759\uFF1Adrop \u524D\u706F\u5149\u6536\u655B\uFF0C\u6700\u540E\u4E00\u62CD\u7184\u706D\u2014\u2014\u7136\u540E drop \u7206\u53D1\u3002\u6700\u540E\u4E00\u6BB5\u526F\u6B4C\u5168\u529B\u4EE5\u8D74",
+          partyMelody: "\u65CB\u5F8B\u6FC0\u5149",
+          partyMelodyHint: "\u5C01\u9762\u5C04\u51FA\u7684\u4E24\u9053\u7EC6\u6FC0\u5149\u8DDF\u968F\u65CB\u5F8B\u7684\u97F3\u9AD8",
+          partySlowmo: "Drop \u524D\u6162\u52A8\u4F5C",
+          partySlowmoHint: "\u5728 drop \u4E4B\u524D\u7684\u534A\u79D2\uFF0C\u706B\u82B1\u3001\u5149\u73AF\u548C\u4EBA\u7FA4\u5B9A\u683C",
+          partyDJ: "DJ \u8FC7\u6E21",
+          partyDJHint: "\u5207\u6B4C\u65F6\u65E7\u989C\u8272\u4FDD\u7559\u5230\u7B2C\u4E00\u62CD\uFF0C\u7136\u540E\u5728\u56DB\u62CD\u5185\u8FC7\u6E21\u5230\u65B0\u989C\u8272",
+          partyQuietFps: "\u5B89\u9759\u6BB5\u843D 30 \u5E27",
+          partyQuietFpsHint: "\u5B89\u9759\u7684\u524D\u594F\u548C\u95F4\u594F\u4EE5\u6BCF\u79D2 30 \u5E27\u8FD0\u884C\u2014\u2014\u770B\u8D77\u6765\u4E00\u6837\uFF0C\u66F4\u7701\u7535",
+          partyClip: "\u7247\u6BB5\u6309\u94AE",
+          partyClipHint: "\u5C06\u5E26\u5C01\u9762\u548C\u6B4C\u8BCD\u7684\u53EF\u89C6\u5316\u6548\u679C\u5F55\u5236 10 \u79D2\u65E0\u58F0\u89C6\u9891\uFF08WebM\uFF09",
+          partyLive: "\u624B\u673A\u5B9E\u65F6\u94FE\u63A5",
+          partyLiveHint: "\u540C\u4E00 Wi-Fi \u4E0B\u7684\u624B\u673A\u968F\u8282\u62CD\u53D1\u5149\u2014\u2014\u626B\u63CF\u4E8C\u7EF4\u7801\u5373\u53EF\u3002\u9700\u8981 Mirage Overlay \u5E94\u7528\uFF1BWindows \u53EF\u80FD\u4F1A\u8BE2\u95EE\u4E00\u6B21\u662F\u5426\u5141\u8BB8\u8BBF\u95EE\u4E13\u7528\u7F51\u7EDC",
+          mixInstruments: "\u6DF7\u5408\u6A21\u5F0F\u54CD\u5E94\u4E50\u5668",
+          mixInstrumentsHint: "\u5728\u6DF7\u5408\u6A21\u5F0F\u4E0B\uFF0C\u8109\u51B2\u548C\u5149\u73AF\u8DDF\u968F\u771F\u5B9E\u7684\u5E95\u9F13\uFF0C\u800C\u4E0D\u4EC5\u662F\u8282\u62CD\u7F51\u683C",
+          partyVenue: "\u573A\u5730",
+          venue_auto: "\u6309\u66F2\u98CE",
+          venue_club: "\u591C\u5E97",
+          venue_festival: "\u97F3\u4E50\u8282",
+          venue_stadium: "\u4F53\u80B2\u573A",
+          venue_home: "\u5BA2\u5385",
+          eco: "\u8282\u80FD",
+          eco_auto: "\u4F7F\u7528\u7535\u6C60\u65F6",
+          eco_on: "\u59CB\u7EC8",
+          eco_off: "\u5173\u95ED",
+          liveBtn: "\u624B\u673A\u5B9E\u65F6\u94FE\u63A5",
+          liveTitle: "\u8BA9\u624B\u673A\u4E00\u8D77\u4EAE",
+          liveHint: "\u7528\u540C\u4E00 Wi-Fi \u4E0B\u7684\u624B\u673A\u626B\u63CF\uFF0C\u5C4F\u5E55\u671D\u4E0A\u653E\u597D\u2014\u2014\u5B83\u4F1A\u968F\u6D3E\u5BF9\u4E00\u8D77\u95EA\u70C1",
+          liveCopy: "\u590D\u5236\u94FE\u63A5",
+          clipBtn: "\u5F55\u5236 10 \u79D2\u7247\u6BB5",
+          clipSaved: "\u7247\u6BB5\u5DF2\u4FDD\u5B58"
         }
       };
       LANG = (() => {
@@ -4150,6 +4598,22 @@
         partyScreen: true,
         partyEdge: true,
         partyRecap: true,
+        // Location: auto (nach Genre), club, festival, stadium, home
+        partyVenue: "auto",
+        // Lichtregie, Melodie-Laser, Zeitlupe vor dem Drop, DJ-Übergänge, 30 fps in ruhigen Stellen
+        partyDirector: true,
+        partyMelody: true,
+        partySlowmo: true,
+        partyDJ: true,
+        partyQuietFps: true,
+        // Mix: Visualizer reagiert auf Kick, Snare, Hi-Hats
+        mixInstruments: true,
+        // Energiesparen: auto (im Akkubetrieb), on, off
+        eco: "auto",
+        // Handys im selben WLAN leuchten mit (über die Overlay-App) – bewusst aus, bis man es will
+        partyLive: false,
+        // Knopf für einen 10-Sekunden-Clip
+        partyClip: true,
         // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
         partyLasers: true,
         partyZoom: true,
@@ -6160,8 +6624,9 @@
           const d = audio.uri === uri ? audio.data : null;
           clock += dt;
           const ease2 = (k) => 1 - Math.exp(-dt * k);
-          let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0;
+          let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0;
           let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
+          let beatPhase = 0, beatIdx = -1;
           let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
           if (d && d.segs?.length) {
             const M = songMap(d);
@@ -6172,6 +6637,13 @@
             build = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
             low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
             scene = Math.max(seek(M.sections, sec, "t"), 0);
+            for (const tD of M.drops) {
+              if (tD > sec) {
+                toDrop = tD - sec;
+                break;
+              }
+            }
+            songLen = M.energy.length * STEP;
             const sx = M.sections[scene];
             minor = sx ? sx.mode === 0 : false;
             if (playing && sec >= lastSec && sec - lastSec < 0.5) {
@@ -6215,6 +6687,9 @@
             const bi = seek(d.beats, sec, "t");
             if (bi >= 0) {
               const since = sec - d.beats[bi].t;
+              const per = Math.max(0.2, (d.beats[bi + 1]?.t ?? d.beats[bi].t + 60 / (info.bpm || 120)) - d.beats[bi].t);
+              beatPhase = clamp(since / per, 0, 1);
+              beatIdx = bi;
               const ba = d.bars?.length ? seek(d.bars, sec, "t") : -1;
               const barStart = ba >= 0 ? seek(d.beats, d.bars[ba].t + 0.05, "t") : bi - bi % 4;
               inBar = ((bi - barStart) % 4 + 4) % 4;
@@ -6285,6 +6760,13 @@
             kickHit,
             snareHit,
             hatHit,
+            phase: beatPhase,
+            beatIdx,
+            // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
+            toDrop,
+            tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
+            blackout: !!cfg.partyDirector && toDrop > 0.02 && toDrop < 60 / (info.bpm || 120) * 0.95,
+            finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
             beat: beatEnv,
             accent,
             beam: accent,
@@ -6353,6 +6835,738 @@
     }
   });
 
+  // src/venue.js
+  function createVenue(makeCanvas) {
+    let vw = 0, vh = 0;
+    const glowSprites = /* @__PURE__ */ new Map();
+    function glowSprite(c) {
+      const k = c.join(",");
+      if (!glowSprites.has(k)) {
+        if (glowSprites.size > 24) glowSprites.clear();
+        const cv = makeCanvas(48, 48);
+        cv.width = cv.height = 48;
+        const x = cv.getContext("2d");
+        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
+        g.addColorStop(0, "rgba(255,255,255,1)");
+        g.addColorStop(0.22, `rgba(${k},0.75)`);
+        g.addColorStop(1, `rgba(${k},0)`);
+        x.fillStyle = g;
+        x.fillRect(0, 0, 48, 48);
+        glowSprites.set(k, cv);
+      }
+      return glowSprites.get(k);
+    }
+    let disco = null, tunnel = [];
+    function drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {
+      const t2 = st.t, far = Math.hypot(vw, vh) * 1.1;
+      const beat2 = px.accent, vis = clamp2(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
+      const kickL = Math.max(beat2, px.kickEnv), snareL = Math.max(beat2 * 0.8, px.snareEnv), hatL = Math.max(beat2 * 0.6, px.hatEnv);
+      const cone = (sx, sy, a, wd, c, al, reach = far) => {
+        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
+        g.addColorStop(0, rgba2(c, al));
+        g.addColorStop(0.5, rgba2(c, al * 0.35));
+        g.addColorStop(1, rgba2(c, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);
+        ctx.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);
+        ctx.closePath();
+        ctx.fill();
+      };
+      switch (px.P.spot) {
+        case "cross": {
+          const sp = 0.6 + px.energy * 0.8 + px.build * 3;
+          const al = (0.05 + beat2 * 0.2 + px.drop * 0.12) * vis;
+          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {
+            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t2 * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);
+          }
+          break;
+        }
+        case "top": {
+          const al = (0.06 + snareL * 0.3) * vis;
+          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));
+          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {
+            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t2 * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);
+          }
+          break;
+        }
+        case "floor": {
+          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
+          const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));
+          g.addColorStop(0, rgba2(pal[0], al));
+          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));
+          g.addColorStop(1, rgba2(pal[1], 0));
+          ctx.fillStyle = g;
+          ctx.fillRect(0, vh * 0.3, vw, vh * 0.7);
+          break;
+        }
+        case "pan": {
+          const al = (0.05 + beat2 * 0.14 + px.drop * 0.1) * vis;
+          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {
+            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t2 * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t2 / 4)) % 3], al);
+          }
+          break;
+        }
+        case "scan": {
+          const bps = (st.bpm || 125) / 60;
+          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;
+          for (let k = 0; k < 2; k++) {
+            const y = (t2 * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;
+            const band = vh * (0.16 + 0.06 * px.energy);
+            const g = ctx.createLinearGradient(0, y - band, 0, y + band);
+            g.addColorStop(0, rgba2(pal[k], 0));
+            g.addColorStop(0.5, rgba2(pal[k], al));
+            g.addColorStop(1, rgba2(pal[k], 0));
+            ctx.fillStyle = g;
+            ctx.fillRect(0, y - band, vw, band * 2);
+          }
+          break;
+        }
+        case "disco": {
+          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));
+          const rot = t2 * 0.32 + px.spin * 0.08;
+          disco.forEach((d, i) => {
+            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);
+            if (face <= 0.05) return;
+            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
+            const tw = 0.5 + 0.5 * Math.sin(t2 * 4.5 + d.tw);
+            ctx.globalAlpha = clamp2(face * (0.22 + Math.max(beat2 * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
+            const r = (12 + d.s * 13 + beat2 * 16) * dpr;
+            ctx.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
+          });
+          ctx.globalAlpha = 1;
+          break;
+        }
+        case "aurora": {
+          for (let k = 0; k < 3; k++) {
+            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;
+            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);
+            const al = (0.05 + px.I * 0.1 + beat2 * 0.08 + px.drop * 0.1) * vis;
+            const wave = (i, off) => Math.sin(i * 0.45 + t2 * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t2 * 0.3) * amp * 0.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 24; i++) i ? ctx.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx.moveTo(0, base + wave(0, 0));
+            for (let i = 24; i >= 0; i--) ctx.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);
+            ctx.closePath();
+            const g = ctx.createLinearGradient(0, base - amp, 0, base + thick + amp);
+            g.addColorStop(0, rgba2(pal[k], 0));
+            g.addColorStop(0.5, rgba2(pal[k], al));
+            g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));
+            ctx.fillStyle = g;
+            ctx.fill();
+          }
+          break;
+        }
+        case "tunnel": {
+          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });
+          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);
+          for (const f of tunnel) {
+            f.s *= Math.exp(dt * 1.7);
+            const r = R * f.s, w = (10 + f.s * 6) * dpr;
+            const g = ctx.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);
+            g.addColorStop(0, rgba2(pal[f.c], 0));
+            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));
+            g.addColorStop(1, rgba2(pal[f.c], 0));
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r + w, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          break;
+        }
+        default: {
+          const al = (0.035 + beat2 * 0.05) * (0.6 + px.I * 0.4);
+          for (let k = 0; k < 3; k++) {
+            cone(vw * (0.2 + 0.3 * k) + Math.sin(t2 * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t2 * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);
+          }
+        }
+      }
+    }
+    const VENUES = {
+      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },
+      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },
+      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },
+      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" }
+    };
+    const AUTO_VENUE = {
+      techno: "club",
+      house: "club",
+      dnb: "club",
+      bass: "club",
+      disco: "club",
+      jazz: "club",
+      rave: "festival",
+      trance: "festival",
+      hardstyle: "festival",
+      reggae: "festival",
+      afro: "festival",
+      rock: "stadium",
+      metal: "stadium",
+      punk: "stadium",
+      pop: "stadium",
+      kpop: "stadium",
+      latin: "stadium",
+      country: "stadium",
+      chill: "home",
+      classical: "home"
+    };
+    function drawDecor(ctx, v, px, pal, rgba2, dpr, st) {
+      const t2 = st.t, beat2 = Math.max(px.accent, px.kickEnv * px.energy);
+      if (v.decor === "club") {
+        const g = ctx.createLinearGradient(0, 0, 0, vh * 0.22);
+        g.addColorStop(0, rgba2(pal[0], (0.08 + beat2 * 0.14).toFixed(3)));
+        g.addColorStop(1, rgba2(pal[0], 0));
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, vw, vh * 0.22);
+      } else if (v.decor === "towers") {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(6,4,14,0.85)";
+        for (const x of [vw * 0.06, vw * 0.94]) {
+          ctx.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);
+          ctx.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);
+        }
+        ctx.globalCompositeOperation = "lighter";
+        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {
+          const r = (60 + beat2 * 70) * dpr;
+          ctx.globalAlpha = clamp2(0.35 + beat2 * 0.6, 0, 1);
+          ctx.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+      } else if (v.decor === "stands") {
+        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));
+        for (const s1 of stands) {
+          const tw = 0.5 + 0.5 * Math.sin(t2 * 2 + s1.ph);
+          ctx.globalAlpha = clamp2((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);
+          const r = 5 * dpr;
+          ctx.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+        for (const x of [vw * 0.1, vw * 0.9]) {
+          const g = ctx.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);
+          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat2 * 0.08).toFixed(3)})`);
+          g.addColorStop(1, "rgba(255,250,235,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);
+        }
+      } else if (v.decor === "fairy") {
+        for (let k = 0; k <= 26; k++) {
+          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));
+          const tw = 0.55 + 0.45 * Math.sin(t2 * 1.6 + k * 1.7);
+          ctx.globalAlpha = clamp2((0.3 + beat2 * 0.35) * tw, 0, 1);
+          const r = (9 + beat2 * 6) * dpr;
+          ctx.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+      }
+    }
+    let stands = null;
+    const MOVES = {
+      rave: "jump",
+      trance: "wave",
+      hardstyle: "jump",
+      dnb: "jump",
+      techno: "pump",
+      house: "bounce",
+      rock: "bang",
+      metal: "bang",
+      punk: "jump",
+      bass: "nod",
+      pop: "clap",
+      kpop: "clap",
+      disco: "clap",
+      country: "clap",
+      latin: "bounce",
+      afro: "bounce",
+      reggae: "skank",
+      chill: "sway",
+      jazz: "sway",
+      classical: "sway"
+    };
+    const mood = { x: 0 };
+    function crowdMood(px, dt, hype) {
+      const target = clamp2(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);
+      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));
+      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
+      return mood.x;
+    }
+    const hash = (a, b) => {
+      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
+      return x - Math.floor(x);
+    };
+    let crowd = null;
+    function makeCrowd(u, v) {
+      const people = [];
+      let id = 0;
+      for (const [row, scale, gap] of v.rows) {
+        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {
+          const r = Math.random;
+          people.push({
+            id: id++,
+            x,
+            row,
+            s: scale * (0.88 + r() * 0.26),
+            ph: r() * 6.3,
+            up: r(),
+            hand: r() < 0.5 ? -1 : 1,
+            hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",
+            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",
+            arm: 0
+          });
+        }
+      }
+      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };
+    }
+    const bodySprites = /* @__PURE__ */ new Map();
+    function bodySprite(p, u, pal) {
+      const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
+      let sp = bodySprites.get(key);
+      if (sp) return sp;
+      if (bodySprites.size > 40) bodySprites.clear();
+      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);
+      const c = makeCanvas(w, h);
+      c.width = w;
+      c.height = h;
+      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;
+      x.fillStyle = FILL[p.row];
+      x.beginPath();
+      x.moveTo(cx0 - 20 * S1, y + 18 * S1);
+      x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
+      x.lineTo(hx + 5 * S1, y - 50 * S1);
+      x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);
+      x.closePath();
+      x.fill();
+      const c2 = pal[p.row === 0 ? 2 : 1];
+      x.lineWidth = Math.max(1, 1.6 * S1);
+      x.lineCap = "round";
+      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;
+      x.beginPath();
+      x.moveTo(cx0 - 19 * S1, y - 30 * S1);
+      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
+      x.stroke();
+      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));
+      hc.width = Math.ceil(34 * S1);
+      hc.height = Math.ceil(40 * S1);
+      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;
+      hxx.fillStyle = FILL[p.row];
+      hxx.beginPath();
+      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);
+      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);
+      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);
+      hxx.fill();
+      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);
+      hxx.lineWidth = Math.max(1, 1.6 * S1);
+      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;
+      hxx.beginPath();
+      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);
+      hxx.stroke();
+      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };
+      bodySprites.set(key, sp);
+      return sp;
+    }
+    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
+    function drawCrowd(ctx, px, pal, dpr, rgba2, dt, st, v) {
+      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
+      if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);
+      if (!crowd.people.length) return;
+      const X = crowdMood(px, dt, st.hype), t2 = st.t;
+      const style = MOVES[px.key] || "clap";
+      const half = st.bpm > 150;
+      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t2 * (st.bpm / 60));
+      const phi = clamp2(px.phase ?? 0, 0, 1);
+      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;
+      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;
+      const down = Math.exp(-phi * 6);
+      if (X > 0.65 && t2 > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t2, t2 + 20 + Math.random() * 10];
+      const waveX = crowd.wave >= 0 ? (t2 - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;
+      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;
+      if ((st.hype || px.drop > 0.5) && X > 0.6 && t2 > crowd.liftUntil) {
+        const front = crowd.people.filter((p) => p.row === 0 && p.x > vw * 0.15 && p.x < vw * 0.85);
+        crowd.lift = front[Math.floor(Math.random() * front.length)]?.id ?? -1;
+        crowd.liftUntil = t2 + 9;
+      }
+      if (t2 > crowd.liftUntil + 0.01 && !(st.hype || px.drop > 0.5)) crowd.lift = -1;
+      const hz = 260 * u, haze = ctx.createLinearGradient(0, vh, 0, vh - hz);
+      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));
+      haze.addColorStop(1, rgba2(pal[1], 0));
+      ctx.fillStyle = haze;
+      ctx.fillRect(0, vh - hz, vw, hz);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
+      let curRow = null;
+      const strokeRow = (row) => {
+        ctx.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];
+        ctx.strokeStyle = FILL[row];
+        ctx.stroke(arms[row]);
+        arms[row] = new Path2D();
+      };
+      for (const p of crowd.people) {
+        if (p.row !== curRow) {
+          if (curRow != null) strokeRow(curRow);
+          curRow = p.row;
+        }
+        if (p.row > st.quality) continue;
+        const s1 = p.s * u, me2 = clamp2(X + (p.up - 0.5) * 0.3, 0, 1);
+        const inWave = Math.abs(p.x - waveX) < 90 * u;
+        let lift = 0;
+        const jumps = (style === "jump" || style === "bounce" || style === "pump") && me2 > 0.72 && hash(p.id, bar) < 0.45 + (me2 - 0.72) * 2;
+        if (jumps || inWave || px.drop > 0.6 && me2 > 0.6) lift = (16 + me2 * 22) * s1 * 4 * cyc * (1 - cyc);
+        else if (style === "bounce" && me2 > 0.3) lift = 6 * s1 * me2 * Math.sin(Math.PI * phi);
+        else if (style === "skank" && me2 > 0.25) lift = 7 * s1 * me2 * Math.exp(-((phi - 0.5) ** 2) * 40);
+        else if (me2 > 0.35) lift = 2.5 * s1 * me2 * Math.sin(Math.PI * phi);
+        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me2) * 4) * s1;
+        const base = vh + 8 * u, y = base - lift, x = p.x + sway;
+        const nodAmp = style === "bang" ? me2 > 0.5 ? 9 : 4 : style === "nod" ? 6 : me2 > 0.3 ? 3 : 1;
+        const nod = nodAmp * s1 * down * (0.4 + me2 * 0.6);
+        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
+        const lifted = p.id === crowd.lift;
+        const yy = lifted ? y - 58 * s1 : y;
+        ctx.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);
+        ctx.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);
+        const wantUp = lifted || inWave || me2 > 0.55 && p.up < me2 + 0.1 && style !== "sway" && style !== "nod" ? 1 : p.gadget && me2 < 0.5 ? 0.8 : style === "clap" && me2 > 0.3 ? 0.75 : 0;
+        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
+        const arm = arms[p.row];
+        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
+        for (const side of [-1, 1]) {
+          const sx = x + side * 15 * s1, sy = yy - 42 * s1;
+          const a = side === p.hand ? p.arm : p.arm * (me2 > 0.6 || style === "clap" || lifted ? 1 : 0.35);
+          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;
+          if (a > 0.02) {
+            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;
+            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;
+            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];
+            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me2 > 0.55) uy -= 14 * s1 * down;
+            hxA += (sx + ux - hxA) * a;
+            hyA += (sy + uy - hyA) * a;
+          }
+          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);
+          arm.moveTo(sx, sy);
+          arm.quadraticCurveTo(ex, ey, hxA, hyA);
+          if (side === p.hand && p.gadget && a > 0.5 && (me2 < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);
+        }
+        if (p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });
+      }
+      if (curRow != null) strokeRow(curRow);
+      ctx.globalCompositeOperation = "lighter";
+      for (const [gx, gy, kind, s1, row] of glows) {
+        const r = (kind === "phone" ? 16 : 13 + Math.sin(t2 * 13 + gx) * 2) * s1;
+        ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25);
+        ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
+      }
+      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);
+      for (const f of crowd.flashes) {
+        const r = 34 * f.s;
+        ctx.globalAlpha = f.a;
+        ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+    function stageCam(ctx, st) {
+      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);
+      if (st.cam.s === 1 && !dx && !dy) return;
+      ctx.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);
+    }
+    function draw(ctx, st) {
+      vw = st.vw;
+      vh = st.vh;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.clearRect(0, 0, vw, vh);
+      if (!st.stage && !st.crowd) return;
+      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
+      const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineCap = "round";
+      stageCam(ctx, st);
+      if (st.stage) {
+        drawStage(ctx, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
+        drawDecor(ctx, v, st.px, st.pal, rgba2, st.dpr, st);
+      }
+      if (st.crowd) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba2, st.dt, st, v);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = "source-over";
+    }
+    return { draw, glowSprite };
+  }
+  var clamp2;
+  var init_venue = __esm({
+    "src/venue.js"() {
+      clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));
+    }
+  });
+
+  // src/pages.js
+  function pageEnter() {
+    if (!cfg.cascade || cfg.calm) return;
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv) return;
+    mv.classList.remove("m-enter");
+    setTimeout(() => {
+      mv.querySelectorAll(SEL.grid).forEach(
+        (g) => [...g.children].slice(0, 24).forEach((c, i) => c.style.setProperty("--m-i", i))
+      );
+      [...mv.querySelectorAll(SEL.rows)].slice(0, 26).forEach((r, i) => r.style.setProperty("--m-i", i));
+      void mv.offsetWidth;
+      mv.classList.add("m-enter");
+      clearTimeout(enterTimer);
+      enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
+    }, 70);
+  }
+  function domReport() {
+    try {
+      domReportInner();
+    } catch (e) {
+      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
+    }
+  }
+  function domReportInner() {
+    const tree = [];
+    (function walk(el2, depth) {
+      if (depth > 4 || tree.length > 160) return;
+      for (const c of el2.children) {
+        const r = c.getBoundingClientRect();
+        tree.push(`${"  ".repeat(depth)}${c.tagName.toLowerCase()}${c.id ? "#" + c.id : ""} .${String(c.className?.baseVal ?? c.className).slice(0, 120)} [${c.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
+        walk(c, depth + 1);
+      }
+    })(document.body, 0);
+    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(SEL.mainView), tree });
+    const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
+    const out = [];
+    const minW = mv.clientWidth * 0.4;
+    for (const el2 of mv.querySelectorAll("*")) {
+      if (out.length >= 80) break;
+      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
+      const r = el2.getBoundingClientRect();
+      if (r.top > innerHeight) continue;
+      const cs = getComputedStyle(el2);
+      const pseudo = ["::before", "::after"].map((p) => {
+        const c = getComputedStyle(el2, p);
+        return c.content !== "none" && (c.backgroundColor !== "rgba(0, 0, 0, 0)" || c.backgroundImage !== "none") ? `${p} ${c.backgroundColor} ${c.backgroundImage.slice(0, 160)} op=${c.opacity}` : "";
+      }).filter(Boolean);
+      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
+      out.push({
+        tag: el2.tagName,
+        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
+        testid: el2.dataset?.testid || "",
+        style: (el2.getAttribute("style") || "").slice(0, 300),
+        bg: cs.backgroundColor,
+        img: cs.backgroundImage.slice(0, 200),
+        opacity: cs.opacity,
+        tint: el2.classList.contains("m-tint"),
+        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
+        pseudo
+      });
+    }
+    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
+      main: getComputedStyle(root).getPropertyValue("--spice-main"),
+      a: getComputedStyle(root).getPropertyValue("--m-a"),
+      dynamic: cfg.dynamic,
+      scheme: cfg.scheme,
+      current,
+      colorDiag
+    } });
+  }
+  function markPage(loc) {
+    const path = (loc || S.Platform.History.location || {}).pathname || "";
+    root.dataset.mPage = path.split("/")[1] || "home";
+  }
+  var enterTimer;
+  var init_pages = __esm({
+    "src/pages.js"() {
+      init_selectors();
+      init_core();
+      init_config();
+      init_color();
+      init_bridge();
+      enterTimer = 0;
+      try {
+        S.Platform.History.listen((loc) => {
+          markPage(loc);
+          pageEnter();
+        });
+        markPage();
+      } catch {
+      }
+    }
+  });
+
+  // src/bridge.js
+  var bridge;
+  var init_bridge = __esm({
+    "src/bridge.js"() {
+      init_core();
+      init_lyrics();
+      init_audio();
+      init_i18n();
+      init_color();
+      init_player();
+      init_pages();
+      init_controls();
+      init_party();
+      init_config();
+      bridge = /* @__PURE__ */ (() => {
+        const ADDR = "ws://127.0.0.1:47321";
+        let ws = null, retry = 0, wanted = false, liveInfo = null;
+        function connect2() {
+          wanted = true;
+          if (ws && ws.readyState <= 1) return;
+          try {
+            ws = new WebSocket(ADDR);
+          } catch {
+            return schedule3();
+          }
+          const sock = ws;
+          ws.onopen = () => {
+            if (ws !== sock) return;
+            sendTrack();
+            watchVolume(true);
+            if (cfg.partyLive) send({ type: "live", on: true });
+          };
+          ws.onclose = () => {
+            if (ws !== sock) return;
+            ws = null;
+            liveInfo = null;
+            window.dispatchEvent(new Event("mirage:live"));
+            watchVolume(false);
+            setTopics([]);
+            schedule3();
+          };
+          ws.onerror = () => {
+          };
+          ws.onmessage = (e) => {
+            if (ws !== sock) return;
+            let m;
+            try {
+              m = JSON.parse(e.data);
+            } catch {
+              return;
+            }
+            if (m.type === "live-info") {
+              liveInfo = m.url ? { url: String(m.url), qr: String(m.qr || "") } : null;
+              window.dispatchEvent(new Event("mirage:live"));
+              return;
+            }
+            if (m.type !== "cmd") return;
+            if (m.cmd === "toggle") S.Player.togglePlay();
+            else if (m.cmd === "next") S.Player.next();
+            else if (m.cmd === "prev") S.Player.back();
+            else if (m.cmd === "hello") sendTrack();
+            else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
+            else if (m.cmd === "report") {
+              send({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
+                api: typeof S.Player.getVolume?.(),
+                pb: typeof S.Platform?.PlaybackAPI?._volume,
+                read: readVolume()
+              } });
+              domReport();
+            }
+          };
+        }
+        function schedule3() {
+          clearTimeout(retry);
+          if (wanted) retry = setTimeout(connect2, 5e3);
+        }
+        function close() {
+          wanted = false;
+          clearTimeout(retry);
+          setTopics([]);
+          watchVolume(false);
+          try {
+            ws?.close();
+          } catch {
+          }
+          ws = null;
+        }
+        let volTimer = 0, lastVol = null;
+        const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
+        function readVolume() {
+          let v = num(S.Player.getVolume?.());
+          if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
+          if (v === null) {
+            const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
+            const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
+            if (m) v = num(Number(m[1]) / 100);
+          }
+          return v;
+        }
+        function watchVolume(on) {
+          clearInterval(volTimer);
+          lastVol = null;
+          if (!on) return;
+          volTimer = setInterval(() => {
+            const v = readVolume();
+            if (v === null) return;
+            const muted = !!S.Player.getMute?.() || v === 0;
+            const key = Math.round(v * 100) + (muted ? "m" : "");
+            if (lastVol !== null && key !== lastVol && !isFading()) send({ type: "volume", value: v, muted });
+            lastVol = key;
+          }, 250);
+        }
+        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
+        function setTopics(list) {
+          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
+          clearInterval(lyricTimer);
+          clearInterval(levelTimer);
+          clearInterval(partyTimer);
+          lastLine = "";
+          if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
+          if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
+          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
+        }
+        function pushParty() {
+          const L = party.live;
+          if (!cfg.partyEdge && !cfg.partyLive || !L || performance.now() - L.at > 400 || document.hidden) return;
+          send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
+        }
+        async function pushLyric() {
+          const uri = currentItem()?.uri || "";
+          const lyr = await getLyrics(uri);
+          const lines = lyr?.synced ? lyr.lines : null;
+          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
+          const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
+          const key = uri + "|" + i;
+          if (key === lastLine) return;
+          lastLine = key;
+          send({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
+        }
+        function pushLevel() {
+          if (!S.Player.isPlaying()) return;
+          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
+          if (b) send({ type: "level", bands: b });
+        }
+        function sendTrack(changed) {
+          const item = currentItem();
+          if (!item || ws?.readyState !== 1) return;
+          const c = covers(item);
+          ws.send(
+            JSON.stringify({
+              type: "track",
+              changed: !!changed,
+              uri: item.uri,
+              title: titleOf(item),
+              artist: artistOf(item),
+              album: item.album?.name || item.metadata?.album_title || "",
+              cover: c.big || c.small,
+              colors: palette().map((x) => `rgb(${x.join(",")})`),
+              duration: S.Player.getDuration?.() || 0,
+              progress: S.Player.getProgress?.() || 0,
+              playing: !!S.Player.isPlaying(),
+              lang: LANG
+            })
+          );
+        }
+        const send = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
+        function setLive(on) {
+          liveInfo = null;
+          window.dispatchEvent(new Event("mirage:live"));
+          send({ type: "live", on: !!on });
+        }
+        return { connect: connect2, close, sendTrack, send, setLive, live: () => liveInfo, connected: () => ws?.readyState === 1 };
+      })();
+    }
+  });
+
   // src/immersive.js
   var ICON, MODES, LYR, VIZ, immersive;
   var init_immersive = __esm({
@@ -6372,6 +7586,8 @@
       init_player();
       init_party();
       init_jam();
+      init_venue();
+      init_bridge();
       ICON = {
         prev: '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg>',
         next: '<svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg>',
@@ -6397,6 +7613,8 @@
         add: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>',
         recap: '<svg viewBox="0 0 24 24"><path d="M4 20V10h3v10zm6 0V4h3v16zm6 0v-7h3v7z"/></svg>',
         screen: '<svg viewBox="0 0 24 24"><path d="M2 4h14v10H2zm2 2v6h10V6zm16-2h2v14H8v-2h12zM6 16h6v2H6z"/></svg>',
+        live: '<svg viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5zm5 14.2a1 1 0 1 0 0 .01z"/></svg>',
+        clip: '<svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3l4-3v12l-4-3v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
         sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>'
       };
       MODES = [
@@ -6425,6 +7643,7 @@
       <div class="m-im-bg" aria-hidden="true"><i></i><i></i><video class="m-im-canvas" muted loop playsinline preload="none"></video></div>
       <div class="m-im-flash" aria-hidden="true"></div>
       <div class="m-im-jam" hidden></div>
+      <canvas class="m-im-venue" aria-hidden="true"></canvas>
       <canvas class="m-im-viz"></canvas>
       <div class="m-im-drag" aria-hidden="true"></div>
       <div class="m-im-top">
@@ -6435,6 +7654,8 @@
         <div class="m-im-actions">
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
+          <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
+          <button type="button" class="m-im-sm m-im-clip" hidden>${ICON.clip}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
@@ -6504,6 +7725,7 @@
             trbtn: el2.querySelector(".m-im-trbtn"),
             ind: el2.querySelector(".m-im-ind"),
             canvas: el2.querySelector(".m-im-viz"),
+            venueEl: el2.querySelector(".m-im-venue"),
             flash: el2.querySelector(".m-im-flash"),
             jam: el2.querySelector(".m-im-jam"),
             bg: el2.querySelector(".m-im-bg"),
@@ -6519,6 +7741,8 @@
             meta: el2.querySelector(".m-im-meta"),
             recap: el2.querySelector(".m-im-recap"),
             screen: el2.querySelector(".m-im-screen"),
+            live: el2.querySelector(".m-im-live"),
+            clip: el2.querySelector(".m-im-clip"),
             fs: el2.querySelector(".m-im-fs")
           };
           vctx = q.canvas.getContext("2d");
@@ -6531,6 +7755,11 @@
           q.recap.onclick = () => partyRecapCard(recap);
           q.screen.title = q.screen.ariaLabel = t("toScreen");
           q.screen.onclick = toScreen;
+          q.live.title = q.live.ariaLabel = t("liveBtn");
+          q.live.onclick = toggleLiveCard;
+          q.clip.title = q.clip.ariaLabel = t("clipBtn");
+          q.clip.onclick = recordClip;
+          window.addEventListener("mirage:live", showExtras);
           q.fs.onclick = toggleFull;
           q.fs.hidden = !canFull();
           document.addEventListener("fullscreenchange", syncFull);
@@ -6759,6 +7988,7 @@
             placeIndicator();
             updateKicker();
             if (LYR.has(mode)) loadLyrics();
+            if (mode === "mix") party.prepare(currentItem());
             if (mode === "party") party.prepare(currentItem()).then((info) => {
               updateKicker();
               noteRecap(currentItem(), info);
@@ -6805,6 +8035,7 @@
           motes = [];
           blend = null;
           party.live = null;
+          venueClear();
         }
         let lastJam = -1e9, jamKey = "";
         async function showJam() {
@@ -7117,7 +8348,10 @@
           const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
           if (mode === "mix" && V.style === "line") V.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing) : null;
+          const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
           if (px) partyExtras(px, now, dt, R, dpr);
+          quietNow = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
+          if (px && ecoOn()) quality.level = Math.min(quality.level, 1);
           if (px) {
             const P = px.P;
             Object.assign(V, {
@@ -7142,7 +8376,8 @@
               loud = clamp((s0.l + (s1.l - s0.l) * e + 38) / 38, 0, 1);
               havePitch = true;
             }
-            b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : beat.read(sec);
+            b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : mixInst ? Math.max(beat.read(sec), mixInst.kickEnv * 0.7 * (0.4 + 0.6 * mixInst.energy)) : beat.read(sec);
+            if (mixInst?.kickHit && mixInst.energy > 0.5 && V.rings) rings.push({ r: R, a: 0.45 * mixInst.energy, w: 2 });
             const bi = seek(audio.data.beats, sec, "t");
             if (bi !== lastBeatIdx && bi >= 0 && playing) {
               lastBeatIdx = bi;
@@ -7179,7 +8414,11 @@
             vals[i] += (t2 - vals[i]) * (t2 > vals[i] ? rise : fall);
           }
           if (cfg.calm) return;
-          const pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1) : palette();
+          let pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1) : palette();
+          if (px && blend?.from) {
+            const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / (4 * 6e4 / (party.info.bpm || 120)), 0, 1);
+            if (f < 1) pal = pal.map((c, i) => c.map((v, k2) => Math.round(blend.from[i][k2] + (v - blend.from[i][k2]) * f)));
+          }
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
           const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
           const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
@@ -7194,7 +8433,10 @@
           ctx.fillRect(cx - gr, cy - gr, gr * 2, gr * 2);
           const ang = (i) => i / N * Math.PI * 2 - Math.PI / 2 + rot;
           const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
-          if (px) drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang);
+          const beatLen = 60 / (party.info.bpm || 120);
+          const slowFrom = cfg.partyDirector ? beatLen : 0;
+          const slow = px && cfg.partySlowmo && px.fx && px.toDrop > slowFrom && px.toDrop < slowFrom + 0.55;
+          if (px) drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, slow ? dt * 0.2 : dt, px, tip, ang);
           else if (V.style === "bottom") {
             const bw = vw / N, base = vh - 8 * dpr;
             for (let gi = 0; gi < 3; gi++) {
@@ -7334,7 +8576,6 @@
           vals = new Float32Array(0);
           rings = [];
           sparks = [];
-          tunnel = [];
           vizRect.r = null;
           lastVizT = 0;
           vw = 0;
@@ -7360,155 +8601,6 @@
           });
           return vividPal;
         }
-        const glowSprites = /* @__PURE__ */ new Map();
-        function glowSprite(c) {
-          const k = c.join(",");
-          if (!glowSprites.has(k)) {
-            if (glowSprites.size > 24) glowSprites.clear();
-            const cv = document.createElement("canvas");
-            cv.width = cv.height = 48;
-            const x = cv.getContext("2d");
-            const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
-            g.addColorStop(0, "rgba(255,255,255,1)");
-            g.addColorStop(0.22, `rgba(${k},0.75)`);
-            g.addColorStop(1, `rgba(${k},0)`);
-            x.fillStyle = g;
-            x.fillRect(0, 0, 48, 48);
-            glowSprites.set(k, cv);
-          }
-          return glowSprites.get(k);
-        }
-        let disco = null, tunnel = [];
-        function drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt) {
-          const t2 = performance.now() / 1e3, far = Math.hypot(vw, vh) * 1.1;
-          const beat2 = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
-          const kickL = Math.max(beat2, px.kickEnv), snareL = Math.max(beat2 * 0.8, px.snareEnv), hatL = Math.max(beat2 * 0.6, px.hatEnv);
-          const cone = (sx, sy, a, wd, c, al, reach = far) => {
-            const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
-            g.addColorStop(0, rgba2(c, al));
-            g.addColorStop(0.5, rgba2(c, al * 0.35));
-            g.addColorStop(1, rgba2(c, 0));
-            ctx.fillStyle = g;
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);
-            ctx.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);
-            ctx.closePath();
-            ctx.fill();
-          };
-          switch (px.P.spot) {
-            case "cross": {
-              const sp = 0.6 + px.energy * 0.8 + px.build * 3;
-              const al = (0.05 + beat2 * 0.2 + px.drop * 0.12) * vis;
-              for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {
-                cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t2 * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);
-              }
-              break;
-            }
-            case "top": {
-              const al = (0.06 + snareL * 0.3) * vis;
-              const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));
-              for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {
-                cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t2 * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);
-              }
-              break;
-            }
-            case "floor": {
-              const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
-              const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));
-              g.addColorStop(0, rgba2(pal[0], al));
-              g.addColorStop(0.6, rgba2(pal[1], al * 0.35));
-              g.addColorStop(1, rgba2(pal[1], 0));
-              ctx.fillStyle = g;
-              ctx.fillRect(0, vh * 0.3, vw, vh * 0.7);
-              break;
-            }
-            case "pan": {
-              const al = (0.05 + beat2 * 0.14 + px.drop * 0.1) * vis;
-              for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {
-                cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t2 * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t2 / 4)) % 3], al);
-              }
-              break;
-            }
-            case "scan": {
-              const bps = (party.info.bpm || 125) / 60;
-              const al = (0.07 + hatL * 0.45 + px.drop * 0.2) * vis;
-              const line = (x0, y0, x1, y1, c, a) => {
-                for (const [lw, f] of [[24 * dpr, 0.22], [2.2 * dpr, 1]]) {
-                  ctx.lineWidth = lw;
-                  ctx.strokeStyle = rgba2(c, a * f);
-                  ctx.beginPath();
-                  ctx.moveTo(x0, y0);
-                  ctx.lineTo(x1, y1);
-                  ctx.stroke();
-                }
-              };
-              for (let k = 0; k < 3; k++) {
-                const y = (t2 * bps * 0.25 + k / 3 + px.scene * 0.17) % 1 * vh;
-                line(0, y, vw, y, pal[k], al);
-              }
-              const x = t2 * bps / 4 % 1;
-              line(x * vw, 0, x * vw, vh, pal[2], al * (0.4 + px.energy * 0.6));
-              break;
-            }
-            case "disco": {
-              disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));
-              const rot = t2 * 0.32 + px.spin * 0.08;
-              disco.forEach((d, i) => {
-                const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);
-                if (face <= 0.05) return;
-                const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
-                const tw = 0.5 + 0.5 * Math.sin(t2 * 4.5 + d.tw);
-                ctx.globalAlpha = clamp(face * (0.22 + Math.max(beat2 * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
-                const r = (12 + d.s * 13 + beat2 * 16) * dpr;
-                ctx.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
-              });
-              ctx.globalAlpha = 1;
-              break;
-            }
-            case "aurora": {
-              for (let k = 0; k < 3; k++) {
-                const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;
-                const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);
-                const al = (0.05 + px.I * 0.1 + beat2 * 0.08 + px.drop * 0.1) * vis;
-                const wave = (i, off) => Math.sin(i * 0.45 + t2 * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t2 * 0.3) * amp * 0.6;
-                ctx.beginPath();
-                for (let i = 0; i <= 24; i++) i ? ctx.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx.moveTo(0, base + wave(0, 0));
-                for (let i = 24; i >= 0; i--) ctx.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);
-                ctx.closePath();
-                const g = ctx.createLinearGradient(0, base - amp, 0, base + thick + amp);
-                g.addColorStop(0, rgba2(pal[k], 0));
-                g.addColorStop(0.5, rgba2(pal[k], al));
-                g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));
-                ctx.fillStyle = g;
-                ctx.fill();
-              }
-              break;
-            }
-            case "tunnel": {
-              if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.45 + 0.55 * px.accent, c: tunnel.length % 3, r: px.spin * 0.15 });
-              tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.5)) > 0.02 && f.s < 10);
-              for (const f of tunnel) {
-                f.s *= Math.exp(dt * 1.9);
-                const h = R * f.s, c = Math.cos(f.r), sn = Math.sin(f.r);
-                ctx.setTransform(c, sn, -sn, c, cx, cy);
-                ctx.lineWidth = (1.5 + f.s * 0.9) * dpr;
-                ctx.strokeStyle = rgba2(pal[f.c], f.a * vis * 0.85);
-                ctx.beginPath();
-                ctx.roundRect(-h, -h, h * 2, h * 2, h * 0.18);
-                ctx.stroke();
-              }
-              ctx.setTransform(1, 0, 0, 1, 0, 0);
-              break;
-            }
-            default: {
-              const al = (0.035 + beat2 * 0.05) * (0.6 + px.I * 0.4);
-              for (let k = 0; k < 3; k++) {
-                cone(vw * (0.2 + 0.3 * k) + Math.sin(t2 * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t2 * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);
-              }
-            }
-          }
-        }
         let sparks = [];
         function drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang) {
           const P = px.P;
@@ -7519,11 +8611,47 @@
             return mixC(pal[i], pal[(i + 1) % 3], x - i);
           };
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-          if (px.fx && cfg.partyLasers && px.level >= 2) {
-            stageCam(ctx, dpr);
-            drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt);
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-          }
+          venueFrame({
+            t: performance.now() / 1e3,
+            dt,
+            vw,
+            vh,
+            dpr,
+            pal,
+            cx,
+            cy,
+            R,
+            px: {
+              key: px.key,
+              P: { spot: P.spot },
+              accent: px.accent,
+              kickEnv: px.kickEnv,
+              snareEnv: px.snareEnv,
+              hatEnv: px.hatEnv,
+              beat: px.beat,
+              hit: px.hit,
+              energy: px.energy,
+              build: px.build,
+              low: px.low,
+              drop: px.drop,
+              dropHit: px.dropHit,
+              I: px.I,
+              spin: px.spin,
+              level: px.level,
+              scene: px.scene,
+              inBar: px.inBar,
+              phase: px.phase,
+              beatIdx: px.beatIdx
+            },
+            cam: { s: cam.s, x: cam.x, y: cam.y },
+            dep: { x: depth.x, y: depth.y, on: !!depth.key },
+            quality: quality.level,
+            hype: hypeOn,
+            bpm: party.info.bpm || 120,
+            stage: px.fx && cfg.partyLasers && px.level >= 2,
+            crowd: cfg.partyCrowd && px.fx,
+            venue: cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : ""
+          });
           if (px.lasers && px.beamVis > 0.02) {
             const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
             const riser = px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin(performance.now() / 1e3 * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
@@ -7546,6 +8674,7 @@
               ctx.fill();
             }
           }
+          if (cfg.partyMelody && px.fx && px.level >= 2) drawMelody(ctx, cx, cy, R, dpr, dt, px, rgba2, colAt);
           const STEPS = 12;
           const w = P.thick * dpr * (0.75 + 0.4 * px.I) * (1 + px.drop * 0.3);
           for (const [lw, al] of [[w * 3.2, 0.1 + 0.1 * px.I], [w, 0.95]]) {
@@ -7579,7 +8708,7 @@
             ctx.strokeStyle = `rgba(255,255,255,${(0.18 + px.bright * 0.25 + px.drop * 0.3).toFixed(2)})`;
             ctx.stroke();
           }
-          if (P.bottom) {
+          if (P.bottom && !cfg.partyCrowd) {
             const n = 64, bw = vw / n, base = vh;
             ctx.beginPath();
             for (let i = 0; i < n; i++) {
@@ -7612,13 +8741,91 @@
             ctx.fill();
           }
           drawMotes(ctx, dt, dpr, pal);
-          if (cfg.partyCrowd && px.fx) {
-            stageCam(ctx, dpr);
-            drawCrowd(ctx, px, pal, dpr, rgba2, dt);
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+        const melody = { a: 0, trail: [] };
+        function drawMelody(ctx, cx, cy, R, dpr, dt, px, rgba2, colAt) {
+          const on = px.pitch >= 0 && px.tone > 0.35 && px.low < 0.6;
+          const target = on ? px.pitch * 7 % 12 / 11 * 2 - 1 : melody.a * 0.98;
+          melody.a += (target - melody.a) * (1 - Math.exp(-dt * 7));
+          melody.trail.unshift(melody.a);
+          if (melody.trail.length > 10) melody.trail.length = 10;
+          const strength = (on ? 0.25 + px.tone * 0.6 : 0.1) * (0.4 + px.energy * 0.6);
+          if (strength < 0.05) return;
+          const far = Math.hypot(vw, vh);
+          melody.trail.forEach((a, i) => {
+            const al = strength * (1 - i / 10) ** 2;
+            const spread = 0.35 + (a + 1) * 0.55;
+            for (const side2 of [-1, 1]) {
+              const ang = -Math.PI / 2 + side2 * spread;
+              const c = colAt(0.15 + i * 0.03 + (side2 > 0 ? 0.5 : 0));
+              const x0 = cx + Math.cos(ang) * R, y0 = cy + Math.sin(ang) * R, x1 = cx + Math.cos(ang) * far, y1 = cy + Math.sin(ang) * far;
+              for (const [lw, f] of [[9 * dpr, 0.18], [1.6 * dpr, 1]]) {
+                ctx.lineWidth = lw;
+                ctx.strokeStyle = rgba2(i ? c : c.map((v) => (v + 255) / 2), (al * f).toFixed(3));
+                ctx.beginPath();
+                ctx.moveTo(x0, y0);
+                ctx.lineTo(x1, y1);
+                ctx.stroke();
+              }
+            }
+          });
+        }
+        const venueLocal = createVenue((w, h) => {
+          const c = document.createElement("canvas");
+          c.width = w;
+          c.height = h;
+          return c;
+        });
+        const glowSprite = venueLocal.glowSprite;
+        let venueWorker = null, venueCtx = null, venueOn = false;
+        function venueInit() {
+          if (venueWorker || venueCtx) return;
+          try {
+            if (q.venueEl.transferControlToOffscreen && window.Worker) {
+              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/venue.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba(c, al));\n        g.addColorStop(0.5, rgba(c, al * 0.35));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba(pal[0], al));\n          g.addColorStop(0.6, rgba(pal[1], al * 0.35));\n          g.addColorStop(1, rgba(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba(pal[k], 0));\n            g.addColorStop(0.5, rgba(pal[k], al));\n            g.addColorStop(1, rgba(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba(pal[k], 0));\n            g.addColorStop(0.5, rgba(pal[k], al));\n            g.addColorStop(1, rgba(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba(pal[f.c], 0));\n            g.addColorStop(0.5, rgba(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" }\n    };\n    const AUTO_VENUE = {\n      techno: "club",\n      house: "club",\n      dnb: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "club",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "festival",\n      afro: "festival",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "stadium",\n      pop: "stadium",\n      kpop: "stadium",\n      latin: "stadium",\n      country: "stadium",\n      chill: "home",\n      classical: "home"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let stands = null;\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway"\n    };\n    const mood = { x: 0 };\n    function crowdMood(px, dt, hype) {\n      const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null;\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 40) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      x.moveTo(cx0 - 20 * S1, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba, dt, st, v) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = MOVES[px.key] || "clap";\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const phi = clamp(px.phase ?? 0, 0, 1);\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      if ((st.hype || px.drop > 0.5) && X > 0.6 && t > crowd.liftUntil) {\n        const front = crowd.people.filter((p) => p.row === 0 && p.x > vw * 0.15 && p.x < vw * 0.85);\n        crowd.lift = front[Math.floor(Math.random() * front.length)]?.id ?? -1;\n        crowd.liftUntil = t + 9;\n      }\n      if (t > crowd.liftUntil + 0.01 && !(st.hype || px.drop > 0.5)) crowd.lift = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      const strokeRow = (row) => {\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) strokeRow(curRow);\n          curRow = p.row;\n        }\n        if (p.row > st.quality) continue;\n        const s1 = p.s * u, me = clamp(X + (p.up - 0.5) * 0.3, 0, 1);\n        const inWave = Math.abs(p.x - waveX) < 90 * u;\n        let lift = 0;\n        const jumps = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2;\n        if (jumps || inWave || px.drop > 0.6 && me > 0.6) lift = (16 + me * 22) * s1 * 4 * cyc * (1 - cyc);\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        const yy = lifted ? y - 58 * s1 : y;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const wantUp = lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && p.gadget && a > 0.5 && (me < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);\n        }\n        if (p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });\n      }\n      if (curRow != null) strokeRow(curRow);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const [gx, gy, kind, s1, row] of glows) {\n        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n        ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25);\n        ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n      }\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      for (const f of crowd.flashes) {\n        const r = 34 * f.s;\n        ctx2.globalAlpha = f.a;\n        ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      ctx2.clearRect(0, 0, vw, vh);\n      if (!st.stage && !st.crowd) return;\n      const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        drawDecor(ctx2, v, st.px, st.pal, rgba, st.dpr, st);\n      }\n      if (st.crowd) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba, st.dt, st, v);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      if (m.grab) createImageBitmap(canvas).then((b) => self.postMessage({ type: "bitmap", b }, [b]), () => {\n      });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
+              const w = new Worker(url);
+              const off = q.venueEl.transferControlToOffscreen();
+              w.postMessage({ type: "init", canvas: off }, [off]);
+              w.onerror = () => venueFallback();
+              w.onmessage = (e) => {
+                if (e.data?.type !== "bitmap") return;
+                venueBitmap?.close();
+                venueBitmap = e.data.b;
+              };
+              venueWorker = w;
+              return;
+            }
+          } catch {
+          }
+          venueFallback();
+        }
+        function venueFallback() {
+          try {
+            venueWorker?.terminate();
+          } catch {
+          }
+          venueWorker = null;
+          const n = q.venueEl.cloneNode(false);
+          q.venueEl.replaceWith(n);
+          q.venueEl = n;
+          venueCtx = n.getContext("2d");
+        }
+        function venueFrame(st) {
+          venueInit();
+          venueOn = true;
+          if (venueWorker) venueWorker.postMessage({ type: "frame", st, grab: clip.on });
+          else if (venueCtx) {
+            if (q.venueEl.width !== st.vw || q.venueEl.height !== st.vh) [q.venueEl.width, q.venueEl.height] = [st.vw, st.vh];
+            venueLocal.draw(venueCtx, st);
           }
         }
-        let blend = null, motes = [], crowd = null, hype = /* @__PURE__ */ new Set(), hypeOn = false;
+        function venueClear() {
+          if (!venueOn) return;
+          venueOn = false;
+          if (venueWorker) venueWorker.postMessage({ type: "clear" });
+          else venueCtx?.clearRect(0, 0, q.venueEl.width, q.venueEl.height);
+        }
+        let blend = null, motes = [], hype = /* @__PURE__ */ new Set(), hypeOn = false;
         const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
         const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };
         function tuneQuality(dt) {
@@ -7635,6 +8842,23 @@
           tuneQuality(dt);
           px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
           px.ambient = clamp(0.04 + px.kickEnv * 0.2 * px.I + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
+          if (px.blackout) {
+            px.I *= 0.06;
+            px.accent *= 0.05;
+            px.kickEnv *= 0.1;
+            px.beamVis = 0;
+            px.flash = 0;
+            px.ambient = 0;
+          } else if (px.tension) {
+            px.I *= 1 - 0.45 * px.tension;
+            px.build = Math.max(px.build, px.tension);
+            px.ambient *= 1 - 0.6 * px.tension;
+          }
+          if (px.finale) {
+            px.I = Math.min(1.35, px.I + 0.2);
+            px.beamVis = Math.min(1.2, px.beamVis + 0.25);
+            px.lasers = Math.round(px.lasers * 1.5);
+          }
           if (quality.level < 2) {
             px.lasers = Math.round(px.lasers / 2);
             px.lvl = Math.min(px.lvl, 1.6);
@@ -7644,6 +8868,7 @@
             if (blend.waiting && (px.hit && age > 0.25 || age > 4)) {
               blend.waiting = false;
               blend.glow = 1;
+              blend.hitAt = now;
               rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
             }
             const dim = blend.waiting ? clamp(1 - age * 1.5, 0.3, 1) : 1;
@@ -7653,7 +8878,7 @@
             if (!blend.waiting) {
               blend.glow *= Math.exp(-dt * 2.5);
               px.flash = Math.max(px.flash, blend.glow * 0.55);
-              if (blend.glow < 0.02) blend = null;
+              if (blend.glow < 0.02 && (!blend.from || now - blend.hitAt > 4 * 6e4 / (party.info.bpm || 120))) blend = null;
             }
           }
           if (hypeOn) {
@@ -7714,11 +8939,6 @@
           party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
         }
         const toLocal = (x, y) => [x, y];
-        function stageCam(ctx, dpr) {
-          const dx = cam.x + (depth.key ? depth.x * 34 : 0), dy = cam.y + (depth.key ? depth.y * 14 : 0);
-          if (cam.s === 1 && !dx && !dy) return;
-          ctx.setTransform(cam.s, 0, 0, cam.s, (1 - cam.s) * vw / 2 + dx * dpr, (1 - cam.s) * vh / 2 + dy * dpr);
-        }
         function drawMotes(ctx, dt, dpr) {
           if (!motes.length) return;
           motes = motes.filter((m) => (m.life -= dt * 0.7) > 0);
@@ -7733,152 +8953,20 @@
           }
           ctx.globalAlpha = 1;
         }
-        const mood = { x: 0, phase: 0 };
-        function crowdMood(px, dt) {
-          const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hypeOn && px.energy > 0.45 ? 0.12 : 0), 0, 1);
-          mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));
-          if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
-          return mood.x;
+        let lastDraw = 0, onBattery = false, quietNow = false;
+        try {
+          navigator.getBattery?.().then((b) => {
+            const upd = () => onBattery = !b.charging;
+            upd();
+            b.addEventListener("chargingchange", upd);
+          });
+        } catch {
         }
-        function makeCrowd(u) {
-          const people = [];
-          for (const [row, scale, gap] of [[2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]]) {
-            for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {
-              const r = Math.random;
-              people.push({
-                x,
-                row,
-                s: scale * (0.88 + r() * 0.26),
-                ph: r() * 6.3,
-                // eigene Schwelle und Reaktionszeit: nicht alle machen dasselbe im selben Moment
-                up: r(),
-                lag: r() * 0.12,
-                hand: r() < 0.5 ? -1 : 1,
-                hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",
-                gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",
-                arm: 0,
-                armL: 0,
-                vy: 0,
-                y: 0,
-                nextJump: 0
-              });
-            }
-          }
-          return { w: vw, people };
-        }
-        const bodySprites = /* @__PURE__ */ new Map();
-        function bodySprite(p, u, pal) {
-          const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
-          let sp = bodySprites.get(key);
-          if (sp) return sp;
-          if (bodySprites.size > 40) bodySprites.clear();
-          const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);
-          const c = document.createElement("canvas");
-          c.width = w;
-          c.height = h;
-          const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0, hy = y - 64 * S1;
-          x.fillStyle = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"][p.row];
-          x.beginPath();
-          x.ellipse(hx, hy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);
-          if (p.hair === "curl") x.arc(hx, hy - 3 * S1, 12 * S1, 0, Math.PI * 2);
-          if (p.hair === "bun") x.arc(hx + 2 * S1, hy - 13 * S1, 5 * S1, 0, Math.PI * 2);
-          x.moveTo(cx0 - 20 * S1, y + 18 * S1);
-          x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
-          x.lineTo(hx + 5 * S1, y - 50 * S1);
-          x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);
-          x.closePath();
-          x.fill();
-          if (p.hair === "cap") x.fillRect(hx - 2 * S1, hy - 9 * S1, 15 * S1 * p.hand, 3 * S1);
-          const c2 = pal[p.row === 0 ? 2 : 1];
-          x.lineWidth = Math.max(1, 1.6 * S1);
-          x.lineCap = "round";
-          x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;
-          x.beginPath();
-          x.ellipse(hx, hy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);
-          x.moveTo(cx0 - 19 * S1, y - 30 * S1);
-          x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
-          x.stroke();
-          sp = { c, w, h, ax: cx0, ay: y, S1 };
-          bodySprites.set(key, sp);
-          return sp;
-        }
-        function drawCrowd(ctx, px, pal, dpr, rgba2, dt) {
-          const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
-          if (!crowd || crowd.w !== vw) crowd = makeCrowd(u);
-          const X = crowdMood(px, dt);
-          const t2 = performance.now() / 1e3, bps = (party.info.bpm || 120) / 60;
-          const calmSong = px.key === "chill" || px.minor && X < 0.3;
-          const haze = ctx.createLinearGradient(0, vh, 0, vh - 260 * u);
-          haze.addColorStop(0, rgba2(pal[1], (0.1 + 0.18 * X).toFixed(3)));
-          haze.addColorStop(1, rgba2(pal[1], 0));
-          ctx.fillStyle = haze;
-          ctx.fillRect(0, vh - 260 * u, vw, 260 * u);
-          ctx.globalCompositeOperation = "source-over";
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
-          const fill = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
-          const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
-          let curRow = null;
-          const strokeRow = (row) => {
-            ctx.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];
-            ctx.strokeStyle = fill[row];
-            ctx.stroke(arms[row]);
-          };
-          for (const p of crowd.people) {
-            if (p.row !== curRow) {
-              if (curRow != null) strokeRow(curRow);
-              curRow = p.row;
-            }
-            const s1 = p.s * u, base = vh + 8 * u;
-            const me2 = clamp(X + (p.up - 0.5) * 0.3, 0, 1);
-            if (px.hit && me2 > 0.74 && px.beat > 0.5 && p.y === 0 && Math.random() < 0.55 + (me2 - 0.74) * 1.5) p.nextJump = t2 + p.lag;
-            if (p.nextJump && t2 >= p.nextJump) {
-              p.vy = -(150 + me2 * 140) * s1;
-              p.nextJump = 0;
-            }
-            if (p.vy || p.y) {
-              p.vy += 1400 * s1 * dt;
-              p.y = Math.min(0, p.y + p.vy * dt);
-              if (p.y === 0) p.vy = 0;
-            }
-            const bob = me2 > 0.3 ? px.accent * 4 * s1 * me2 : 0;
-            const sway = Math.sin(t2 * bps * Math.PI * (me2 > 0.3 ? 1 : 0.5) + p.ph) * (2 + (1 - me2) * 3) * s1;
-            const y = base + p.y + bob, hx = p.x + sway;
-            const wantUp = me2 > 0.55 && p.up < me2 + 0.1 ? 1 : p.gadget && me2 < 0.5 ? 0.8 : 0;
-            p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 4));
-            if (p.row > quality.level) continue;
-            const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
-            ctx.drawImage(sp.c, hx - sp.ax * k1, y - sp.ay * k1, sp.w * k1, sp.h * k1);
-            const arm = arms[p.row];
-            for (const side2 of [-1, 1]) {
-              const sx = p.x + side2 * 15 * s1, sy = y - 42 * s1;
-              const a = side2 === p.hand ? p.arm : p.arm * (me2 > 0.62 ? 1 : 0.35);
-              let hxA = sx + side2 * 6 * s1, hyA = y + 2 * s1;
-              if (a > 0.02) {
-                let ux = side2 * (10 + 8 * Math.sin(t2 * bps * Math.PI + p.ph)) * s1, uy = -48 * s1;
-                if (me2 > 0.62 && hypeOn) ux = side2 * 16 * s1 + Math.sin(t2 * bps * Math.PI * 0.5 + p.ph) * 14 * s1;
-                if (me2 > 0.45 && me2 < 0.8 && px.P.flashOn === "back") ux *= 1 - px.snareEnv * 0.9;
-                if (side2 === p.hand && me2 > 0.6) uy -= px.kickEnv * 12 * s1 * me2;
-                hxA += (sx + ux - hxA) * a;
-                hyA += (sy + uy - hyA) * a;
-              }
-              const ex = (sx + hxA) / 2 + side2 * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);
-              arm.moveTo(sx, sy);
-              arm.quadraticCurveTo(ex, ey, hxA, hyA);
-              if (side2 === p.hand && p.gadget && a > 0.5 && (me2 < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);
-            }
-          }
-          if (curRow != null) strokeRow(curRow);
-          ctx.globalCompositeOperation = "lighter";
-          for (const [x, y, kind, s1, row] of glows) {
-            const r = (kind === "phone" ? 16 : 13 + Math.sin(t2 * 13 + x) * 2) * s1;
-            ctx.globalAlpha = (calmSong || kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25);
-            ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), x - r, y - r, r * 2, r * 2);
-          }
-          ctx.globalAlpha = 1;
-        }
+        const ecoOn = () => cfg.eco === "on" || cfg.eco === "auto" && onBattery;
         function frame(now) {
           raf = requestAnimationFrame(frame);
+          if ((ecoOn() || quietNow && cfg.partyQuietFps) && now - lastDraw < 1e3 / 31) return;
+          lastDraw = now;
           const pos = S.Player.getProgress?.() || 0;
           const dur = S.Player.getDuration?.() || 0;
           const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
@@ -7907,6 +8995,121 @@
             q.wrap.style.scale = "";
             lastPulse = "";
           }
+          if (clip.on) clipFrame(now);
+        }
+        const clip = { on: false };
+        let venueBitmap = null;
+        const CLIP_MS = 1e4;
+        async function recordClip() {
+          if (clip.on || !window.MediaRecorder || !q.canvas.captureStream) return;
+          const type = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find((m) => MediaRecorder.isTypeSupported(m));
+          if (!type) return;
+          const box = el2.getBoundingClientRect();
+          const W2 = Math.min(1920, Math.round(box.width * Math.min(2, window.devicePixelRatio || 1))) & ~1;
+          const H2 = Math.round(W2 * box.height / box.width) & ~1;
+          const cv = document.createElement("canvas");
+          [cv.width, cv.height] = [W2, H2];
+          const item = currentItem();
+          const c = covers(item);
+          const cover = await loadImage(c.big || c.small, true).catch(() => null);
+          const back = document.createElement("canvas");
+          [back.width, back.height] = [W2, H2];
+          const bx = back.getContext("2d");
+          bx.fillStyle = "#07060c";
+          bx.fillRect(0, 0, W2, H2);
+          if (cover) {
+            bx.filter = "blur(60px) saturate(1.6) brightness(0.45)";
+            bx.drawImage(cover, -W2 * 0.1, -H2 * 0.1 - (W2 - H2) / 2, W2 * 1.2, W2 * 1.2);
+            bx.filter = "none";
+          }
+          const rec = new MediaRecorder(cv.captureStream(30), { mimeType: type, videoBitsPerSecond: 8e6 });
+          const chunks = [];
+          rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+          rec.onstop = () => {
+            clip.on = false;
+            q.clip.classList.remove("is-rec");
+            q.clip.style.removeProperty("--p");
+            venueBitmap?.close();
+            venueBitmap = null;
+            showExtras();
+            if (!chunks.length) return;
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob(chunks, { type: "video/webm" }));
+            a.download = `mirage-${(titleOf(item) || "clip").replace(/[^\p{L}\p{N}]+/gu, "-").slice(0, 40)}.webm`;
+            document.body.append(a);
+            a.click();
+            setTimeout(() => {
+              URL.revokeObjectURL(a.href);
+              a.remove();
+            }, 4e3);
+            try {
+              S.showNotification?.(t("clipSaved"), false, 4e3);
+            } catch {
+            }
+          };
+          Object.assign(clip, { on: true, t0: performance.now(), cv, x: cv.getContext("2d"), back, cover, rec });
+          q.clip.classList.add("is-rec");
+          rec.start(500);
+          setTimeout(() => rec.state !== "inactive" && rec.stop(), CLIP_MS);
+        }
+        function clipFrame(now) {
+          const { x, cv } = clip;
+          const W2 = cv.width, H2 = cv.height;
+          const box = el2.getBoundingClientRect();
+          if (!box.width) return;
+          const s = W2 / box.width;
+          q.clip.style.setProperty("--p", String(clamp((now - clip.t0) / CLIP_MS, 0, 1)));
+          x.drawImage(clip.back, 0, 0);
+          if (venueWorker && venueBitmap) x.drawImage(venueBitmap, 0, 0, W2, H2);
+          else if (!venueWorker && venueOn) x.drawImage(q.venueEl, 0, 0, W2, H2);
+          x.drawImage(q.canvas, 0, 0, W2, H2);
+          const fl = +(el2.querySelector(".m-im-flash")?.style.opacity || 0);
+          if (fl > 0.01) {
+            x.fillStyle = `rgba(255,255,255,${(fl * 0.6).toFixed(3)})`;
+            x.fillRect(0, 0, W2, H2);
+          }
+          const coverEl = el2.querySelector(".m-im-cover");
+          const cr = coverEl?.getBoundingClientRect();
+          if (clip.cover && cr?.width) {
+            const br = getComputedStyle(coverEl).borderTopLeftRadius;
+            const rad = Math.min(cr.width / 2, br.endsWith("%") ? cr.width * parseFloat(br) / 100 : parseFloat(br) || 14);
+            x.save();
+            x.beginPath();
+            x.roundRect?.((cr.left - box.left) * s, (cr.top - box.top) * s, cr.width * s, cr.height * s, rad * s);
+            x.clip();
+            x.drawImage(clip.cover, (cr.left - box.left) * s, (cr.top - box.top) * s, cr.width * s, cr.height * s);
+            x.restore();
+          }
+          x.shadowColor = "rgba(0,0,0,0.55)";
+          x.shadowBlur = 14 * s;
+          x.textBaseline = "middle";
+          for (const [sel, a] of [[".m-im-title", 1], [".m-im-artist", 0.72], [".m-im-line.is-active", 1]]) {
+            const n = el2.querySelector(sel);
+            const text = n?.textContent.replace(/\s+/g, " ").trim();
+            const r = n?.getBoundingClientRect();
+            if (!text || !r?.width) continue;
+            const cs = getComputedStyle(n);
+            const size = parseFloat(cs.fontSize) * s;
+            x.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+            x.fillStyle = `rgba(255,255,255,${a})`;
+            const align = cs.textAlign === "center" ? "center" : cs.textAlign === "right" || cs.textAlign === "end" ? "right" : "left";
+            x.textAlign = align;
+            const X = ((align === "center" ? r.left + r.width / 2 : align === "right" ? r.right : r.left) - box.left) * s;
+            const lines = [];
+            for (const w of text.split(" ")) {
+              const tryLine = lines.length ? lines[lines.length - 1] + " " + w : w;
+              if (lines.length && x.measureText(tryLine).width > r.width * s * 1.02) lines.push(w);
+              else lines[Math.max(0, lines.length - 1)] = tryLine;
+            }
+            const lh = size * 1.18;
+            const y0 = (r.top + r.height / 2 - box.top) * s - (lines.length - 1) * lh / 2;
+            lines.forEach((ln, i) => x.fillText(ln, X, y0 + i * lh));
+          }
+          x.shadowBlur = 0;
+          x.font = `700 ${13 * s}px "Outfit", "Segoe UI", sans-serif`;
+          x.fillStyle = "rgba(255,255,255,0.5)";
+          x.textAlign = "right";
+          x.fillText("MIRAGE", W2 - 22 * s, H2 - 22 * s);
         }
         let canvasToken = 0;
         async function setCanvas(item) {
@@ -8071,7 +9274,7 @@
           updateKicker();
           if (LYR.has(el2.dataset.mode)) loadLyrics();
           if (el2.dataset.mode === "party") {
-            if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0 };
+            if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0, from: cfg.partyDJ && vividPal ? vividPal.map((c) => c.slice()) : null, hitAt: 0 };
             party.prepare(item).then((info) => {
               updateKicker();
               noteRecap(item, info);
@@ -8093,6 +9296,38 @@
           const party2 = el2.dataset.mode === "party";
           q.recap.hidden = !(party2 && cfg.partyRecap && recap.songs.length >= 3);
           q.screen.hidden = !(party2 && cfg.partyScreen && "getScreenDetails" in window);
+          q.live.hidden = !(party2 && cfg.partyLive && bridge.live());
+          if (q.live.hidden) el2.querySelector(".m-im-livecard")?.remove();
+          q.clip.hidden = !(cfg.partyClip && VIZ.has(el2.dataset.mode) && window.MediaRecorder && q.canvas.captureStream) && !clip.on;
+        }
+        function toggleLiveCard() {
+          const old = el2.querySelector(".m-im-livecard");
+          if (old) return old.remove();
+          const info = bridge.live();
+          if (!info) return;
+          const card = document.createElement("div");
+          card.className = "m-im-livecard";
+          if (info.qr) {
+            const img = new Image();
+            img.alt = "";
+            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+            card.append(img);
+          }
+          const b = document.createElement("b");
+          b.textContent = t("liveTitle");
+          const p = document.createElement("p");
+          p.textContent = t("liveHint");
+          const u = document.createElement("code");
+          u.textContent = info.url;
+          u.title = t("liveCopy");
+          u.onclick = (e) => {
+            e.stopPropagation();
+            navigator.clipboard?.writeText(info.url).catch(() => {
+            });
+          };
+          card.append(b, p, u);
+          card.onclick = () => card.remove();
+          el2.append(card);
         }
         async function toScreen() {
           try {
@@ -8443,264 +9678,6 @@
           wake();
         });
         return { start, stop, recolor, pause, wake };
-      })();
-    }
-  });
-
-  // src/pages.js
-  function pageEnter() {
-    if (!cfg.cascade || cfg.calm) return;
-    const mv = document.querySelector(SEL.mainView);
-    if (!mv) return;
-    mv.classList.remove("m-enter");
-    setTimeout(() => {
-      mv.querySelectorAll(SEL.grid).forEach(
-        (g) => [...g.children].slice(0, 24).forEach((c, i) => c.style.setProperty("--m-i", i))
-      );
-      [...mv.querySelectorAll(SEL.rows)].slice(0, 26).forEach((r, i) => r.style.setProperty("--m-i", i));
-      void mv.offsetWidth;
-      mv.classList.add("m-enter");
-      clearTimeout(enterTimer);
-      enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
-    }, 70);
-  }
-  function domReport() {
-    try {
-      domReportInner();
-    } catch (e) {
-      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
-    }
-  }
-  function domReportInner() {
-    const tree = [];
-    (function walk(el2, depth) {
-      if (depth > 4 || tree.length > 160) return;
-      for (const c of el2.children) {
-        const r = c.getBoundingClientRect();
-        tree.push(`${"  ".repeat(depth)}${c.tagName.toLowerCase()}${c.id ? "#" + c.id : ""} .${String(c.className?.baseVal ?? c.className).slice(0, 120)} [${c.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
-        walk(c, depth + 1);
-      }
-    })(document.body, 0);
-    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(SEL.mainView), tree });
-    const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
-    const out = [];
-    const minW = mv.clientWidth * 0.4;
-    for (const el2 of mv.querySelectorAll("*")) {
-      if (out.length >= 80) break;
-      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
-      const r = el2.getBoundingClientRect();
-      if (r.top > innerHeight) continue;
-      const cs = getComputedStyle(el2);
-      const pseudo = ["::before", "::after"].map((p) => {
-        const c = getComputedStyle(el2, p);
-        return c.content !== "none" && (c.backgroundColor !== "rgba(0, 0, 0, 0)" || c.backgroundImage !== "none") ? `${p} ${c.backgroundColor} ${c.backgroundImage.slice(0, 160)} op=${c.opacity}` : "";
-      }).filter(Boolean);
-      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
-      out.push({
-        tag: el2.tagName,
-        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
-        testid: el2.dataset?.testid || "",
-        style: (el2.getAttribute("style") || "").slice(0, 300),
-        bg: cs.backgroundColor,
-        img: cs.backgroundImage.slice(0, 200),
-        opacity: cs.opacity,
-        tint: el2.classList.contains("m-tint"),
-        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
-        pseudo
-      });
-    }
-    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
-      main: getComputedStyle(root).getPropertyValue("--spice-main"),
-      a: getComputedStyle(root).getPropertyValue("--m-a"),
-      dynamic: cfg.dynamic,
-      scheme: cfg.scheme,
-      current,
-      colorDiag
-    } });
-  }
-  function markPage(loc) {
-    const path = (loc || S.Platform.History.location || {}).pathname || "";
-    root.dataset.mPage = path.split("/")[1] || "home";
-  }
-  var enterTimer;
-  var init_pages = __esm({
-    "src/pages.js"() {
-      init_selectors();
-      init_core();
-      init_config();
-      init_color();
-      init_bridge();
-      enterTimer = 0;
-      try {
-        S.Platform.History.listen((loc) => {
-          markPage(loc);
-          pageEnter();
-        });
-        markPage();
-      } catch {
-      }
-    }
-  });
-
-  // src/bridge.js
-  var bridge;
-  var init_bridge = __esm({
-    "src/bridge.js"() {
-      init_core();
-      init_lyrics();
-      init_audio();
-      init_i18n();
-      init_color();
-      init_player();
-      init_pages();
-      init_controls();
-      init_party();
-      init_config();
-      bridge = /* @__PURE__ */ (() => {
-        const ADDR = "ws://127.0.0.1:47321";
-        let ws = null, retry = 0, wanted = false;
-        function connect2() {
-          wanted = true;
-          if (ws && ws.readyState <= 1) return;
-          try {
-            ws = new WebSocket(ADDR);
-          } catch {
-            return schedule3();
-          }
-          const sock = ws;
-          ws.onopen = () => {
-            if (ws !== sock) return;
-            sendTrack();
-            watchVolume(true);
-          };
-          ws.onclose = () => {
-            if (ws !== sock) return;
-            ws = null;
-            watchVolume(false);
-            setTopics([]);
-            schedule3();
-          };
-          ws.onerror = () => {
-          };
-          ws.onmessage = (e) => {
-            if (ws !== sock) return;
-            let m;
-            try {
-              m = JSON.parse(e.data);
-            } catch {
-              return;
-            }
-            if (m.type !== "cmd") return;
-            if (m.cmd === "toggle") S.Player.togglePlay();
-            else if (m.cmd === "next") S.Player.next();
-            else if (m.cmd === "prev") S.Player.back();
-            else if (m.cmd === "hello") sendTrack();
-            else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
-            else if (m.cmd === "report") {
-              send({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
-                api: typeof S.Player.getVolume?.(),
-                pb: typeof S.Platform?.PlaybackAPI?._volume,
-                read: readVolume()
-              } });
-              domReport();
-            }
-          };
-        }
-        function schedule3() {
-          clearTimeout(retry);
-          if (wanted) retry = setTimeout(connect2, 5e3);
-        }
-        function close() {
-          wanted = false;
-          clearTimeout(retry);
-          setTopics([]);
-          watchVolume(false);
-          try {
-            ws?.close();
-          } catch {
-          }
-          ws = null;
-        }
-        let volTimer = 0, lastVol = null;
-        const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
-        function readVolume() {
-          let v = num(S.Player.getVolume?.());
-          if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
-          if (v === null) {
-            const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
-            const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
-            if (m) v = num(Number(m[1]) / 100);
-          }
-          return v;
-        }
-        function watchVolume(on) {
-          clearInterval(volTimer);
-          lastVol = null;
-          if (!on) return;
-          volTimer = setInterval(() => {
-            const v = readVolume();
-            if (v === null) return;
-            const muted = !!S.Player.getMute?.() || v === 0;
-            const key = Math.round(v * 100) + (muted ? "m" : "");
-            if (lastVol !== null && key !== lastVol && !isFading()) send({ type: "volume", value: v, muted });
-            lastVol = key;
-          }, 250);
-        }
-        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
-        function setTopics(list) {
-          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
-          clearInterval(lyricTimer);
-          clearInterval(levelTimer);
-          clearInterval(partyTimer);
-          lastLine = "";
-          if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
-          if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
-          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
-        }
-        function pushParty() {
-          const L = party.live;
-          if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
-          send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette() });
-        }
-        async function pushLyric() {
-          const uri = currentItem()?.uri || "";
-          const lyr = await getLyrics(uri);
-          const lines = lyr?.synced ? lyr.lines : null;
-          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
-          const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
-          const key = uri + "|" + i;
-          if (key === lastLine) return;
-          lastLine = key;
-          send({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
-        }
-        function pushLevel() {
-          if (!S.Player.isPlaying()) return;
-          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
-          if (b) send({ type: "level", bands: b });
-        }
-        function sendTrack(changed) {
-          const item = currentItem();
-          if (!item || ws?.readyState !== 1) return;
-          const c = covers(item);
-          ws.send(
-            JSON.stringify({
-              type: "track",
-              changed: !!changed,
-              uri: item.uri,
-              title: titleOf(item),
-              artist: artistOf(item),
-              album: item.album?.name || item.metadata?.album_title || "",
-              cover: c.big || c.small,
-              colors: palette().map((x) => `rgb(${x.join(",")})`),
-              duration: S.Player.getDuration?.() || 0,
-              progress: S.Player.getProgress?.() || 0,
-              playing: !!S.Player.isPlaying(),
-              lang: LANG
-            })
-          );
-        }
-        const send = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
-        return { connect: connect2, close, sendTrack, send, connected: () => ws?.readyState === 1 };
       })();
     }
   });
@@ -9320,7 +10297,21 @@
         range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
       )
     );
-    kids.push(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf")));
+    kids.push(group(
+      t("g_motion"),
+      false,
+      toggle("cascade"),
+      toggle("vinyl"),
+      toggle("tilt"),
+      toggle("burst"),
+      toggle("calm"),
+      toggle("autoPerf"),
+      el("small", "m-note", t("eco")),
+      seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
+        cfg.eco = k;
+        save();
+      })
+    ));
     const viz = [
       ["bars", t("viz_bars")],
       ["wave", t("viz_wave")],
@@ -9355,6 +10346,8 @@
         }),
         toggle("vizSpin", () => {
         }),
+        toggle("mixInstruments", () => {
+        }),
         // Party-Modus: Profil automatisch (Genre/Tempo) oder fest, Stärke, weiche Farbblitze
         head(t("partySection"), t("partySectionHint")),
         seg([["auto", t("party_auto")], ...PROFILE_KEYS.map((k) => [k, t("party_" + k)])], cfg.partyStyle, (k) => {
@@ -9387,6 +10380,23 @@
         }),
         toggle("partyCrowd", () => {
         }),
+        el("small", "m-note", t("partyVenue")),
+        seg(["auto", "club", "festival", "stadium", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+          cfg.partyVenue = k;
+          save();
+        }),
+        toggle("partyDirector", () => {
+        }),
+        toggle("partyMelody", () => {
+        }),
+        toggle("partySlowmo", () => {
+        }),
+        toggle("partyDJ", () => {
+        }),
+        toggle("partyQuietFps", () => {
+        }),
+        toggle("partyClip", () => immersive.refresh()),
+        toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
         toggle("partyJamLight", () => {
         }),
         toggle("partyScreen", () => immersive.refresh()),

@@ -10,6 +10,28 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.9.0] – 2026-11-02
+
+### Added
+
+- **Light director.** Party mode now stages the drop: the light holds back as it approaches, goes dark on the last beat before it, and then everything hits at once. The final chorus gets extra light and more lasers.
+- **Melody lasers.** Two thin, mirrored lasers from the cover follow the pitch of the melody, with a short glowing trail.
+- **Slow motion before the drop.** Sparks, rings, light particles and the crowd freeze for half a second right before the drop.
+- **DJ transitions.** On a song change the old colours hold until the first beat and then blend into the new ones over four beats.
+- **Venues.** Club, festival, stadium or living room – each with its own decor, haze and crowd size, picked by genre or fixed in the settings.
+- **A crowd that dances in time.** The crowd is locked to the beat phase: jumps land on the beat, heads nod or bang, hands clap on 2 and 4, people sway or skank depending on the genre. Every now and then a wave runs through the crowd, someone is lifted onto shoulders, and the drop sets off camera flashes.
+- **Live link for phones.** With the overlay app running, phones on the same Wi-Fi scan a QR code and flash along with the party as extra lights. The page only receives light colours and the song title and is protected by a random key in its address. Off by default.
+- **10-second clip.** A button in immersive mode records the visualizer with venue, cover, title and the current lyric line as a silent WebM video.
+- **Mix mode reacts to instruments.** The pulse and rings follow the real kick drum, not just the beat grid.
+- **Energy saving.** On battery (or always) everything runs at 30 fps with lighter detail; quiet intros and breaks in party mode run at 30 fps as well.
+- Settings for all of the above, in all 14 languages.
+
+### Changed
+
+- **Stage and crowd are drawn in a background thread** (OffscreenCanvas), so lyrics and controls stay smooth; where that isn't possible, they are drawn in the main window as before.
+- The techno scanner and the drum & bass tunnel no longer form a grid: hard lines and square frames are replaced by soft light bands and soft light rings.
+- The READMEs are rewritten from scratch: shorter, with install first, a dedicated party section, performance, privacy and an FAQ.
+
 ## [1.8.0] – 2026-11-02
 
 ### Added

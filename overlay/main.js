@@ -176,6 +176,7 @@ function onTrack(msg) {
   }
   const prev = track;
   track = msg;
+  if (prev?.uri !== msg.uri) liveSend("track", liteTrack());
   const playChanged = lastPlaying !== null && lastPlaying !== msg.playing;
   lastPlaying = msg.playing;
   settingsWin?.webContents.send("status", status());
@@ -224,6 +225,7 @@ function startServer() {
       else if (m.type === "level") onLevel(m);
       else if (m.type === "volume") showVolume(m);
       else if (m.type === "party") onParty(m);
+      else if (m.type === "live") onLive(m, ws);
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
       else if (m.type === "debug") {
         try {
@@ -248,7 +250,8 @@ const status = () => ({ connected: clients.size > 0, track });
 
 // Abo beim Theme: nur bei Stilen mit Liedtext/Pegel und nicht, wenn das Overlay aus ist
 // „party“ = Kantenlicht im Party-Modus (das Theme schickt nur, solange Party läuft und es eingeschaltet ist)
-const topics = () => (cfg.mode === "off" ? [] : [...(STYLE_TOPICS[cfg.style] || []), "party"]);
+// „party“ auch, solange Handys per Live-Link mitleuchten
+const topics = () => (cfg.mode === "off" ? (live ? ["party"] : []) : [...(STYLE_TOPICS[cfg.style] || []), "party"]);
 let subscribed = "[]";
 function resubscribe() {
   const now = JSON.stringify(topics());
@@ -511,7 +514,8 @@ function makeEdges() {
   });
 }
 function onParty(m) {
-  if (cfg.mode === "off" || busy || cfg.edge === false) return;
+  liveSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal });
+  if (m.edge === false || cfg.mode === "off" || busy || cfg.edge === false) return;
   if (!edges) makeEdges();
   for (const w of edges || []) {
     if (w.isDestroyed()) continue;
@@ -694,6 +698,71 @@ function stopObs() {
   obsServer = null;
 }
 const obsUrl = () => `http://127.0.0.1:${OBS_PORT}/`;
+
+/* ------------------------------------------------------------------ Mirage Live (Handys im WLAN) */
+// Auf Wunsch des Themes (Einstellung „Live-Link“): eine kleine Seite im lokalen Netz, die Handys per QR-Code
+// öffnen. Sie bekommt nur den Lichtzustand und den Songtitel – keine Befehle, kein Zugriff auf Spotify.
+// Der Zufallsschlüssel in der Adresse hält Fremde im selben WLAN draußen.
+const LIVE_PORT = Number(process.env.MIRAGE_LIVE_PORT) || 47323;
+let live = null;
+function lanAddress() {
+  const all = Object.values(os.networkInterfaces()).flat().filter((a) => a && a.family === "IPv4" && !a.internal);
+  const pick = all.find((a) => /^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(a.address)) || all[0];
+  return pick?.address || "127.0.0.1";
+}
+const liteTrack = () => (track ? { title: track.title, artist: track.artist, cover: track.cover } : null);
+function liveSend(ch, data) {
+  if (!live?.clients.size) return;
+  const msg = JSON.stringify({ ch, data });
+  for (const c of live.clients) if (c.readyState === 1) c.send(msg);
+}
+function startLive() {
+  if (live) return Promise.resolve(live);
+  return new Promise((resolve) => {
+    const token = require("crypto").randomBytes(8).toString("hex");
+    const keyOk = (url) => new URL(url || "/", "http://x").searchParams.get("k") === token;
+    const server = http.createServer((req, res) => {
+      if (new URL(req.url || "/", "http://x").pathname === "/" && keyOk(req.url)) {
+        let html = "";
+        try { html = fs.readFileSync(path.join(__dirname, "live.html"), "utf8"); } catch {}
+        res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" });
+        return res.end(html);
+      }
+      res.writeHead(404);
+      res.end();
+    });
+    const clients = new Set();
+    const wss = new WebSocketServer({ server, path: "/feed", maxPayload: 1024, verifyClient: ({ req }) => keyOk(req.url) });
+    wss.on("connection", (ws) => {
+      clients.add(ws);
+      ws.on("close", () => clients.delete(ws));
+      if (track) ws.send(JSON.stringify({ ch: "track", data: liteTrack() }));
+    });
+    wss.on("error", () => {});
+    server.on("error", () => resolve(null));
+    // Windows fragt beim ersten Mal, ob die App im privaten Netzwerk erreichbar sein darf
+    server.listen(LIVE_PORT, "0.0.0.0", async () => {
+      const url = `http://${lanAddress()}:${LIVE_PORT}/?k=${token}`;
+      let qr = "";
+      try { qr = await require("qrcode").toString(url, { type: "svg", margin: 1 }); } catch {}
+      live = { server, clients, url, qr };
+      resolve(live);
+    });
+  });
+}
+function stopLive() {
+  if (!live) return;
+  for (const c of live.clients) c.close();
+  live.server.close();
+  live = null;
+}
+async function onLive(m, ws) {
+  if (m.on) {
+    const l = await startLive();
+    if (ws.readyState === 1) ws.send(JSON.stringify({ type: "live-info", url: l?.url || "", qr: l?.qr || "" }));
+  } else stopLive();
+  resubscribe();
+}
 
 /* ------------------------------------------------------------------ Updates */
 // Fragt GitHub nach der neuesten Version. WIN: Installer laden, fragen, still installieren und neu

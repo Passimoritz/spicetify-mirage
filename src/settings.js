@@ -254,7 +254,12 @@ function render(box) {
       range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
     )
   );
-  kids.push(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf")));
+  kids.push(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf"),
+    el("small", "m-note", t("eco")),
+    seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
+      cfg.eco = k;
+      save();
+    })));
   const viz = [
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
     ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")],
@@ -281,6 +286,7 @@ function render(box) {
       toggle("vizRings", () => {}),
       toggle("vizMirror", () => {}),
       toggle("vizSpin", () => {}),
+      toggle("mixInstruments", () => {}),
       // Party-Modus: Profil automatisch (Genre/Tempo) oder fest, Stärke, weiche Farbblitze
       head(t("partySection"), t("partySectionHint")),
       seg([["auto", t("party_auto")], ...PROFILE_KEYS.map((k) => [k, t("party_" + k)])], cfg.partyStyle, (k) => {
@@ -304,6 +310,18 @@ function render(box) {
       toggle("partyCamera", () => {}),
       toggle("partyShatter", () => {}),
       toggle("partyCrowd", () => {}),
+      el("small", "m-note", t("partyVenue")),
+      seg(["auto", "club", "festival", "stadium", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+        cfg.partyVenue = k;
+        save();
+      }),
+      toggle("partyDirector", () => {}),
+      toggle("partyMelody", () => {}),
+      toggle("partySlowmo", () => {}),
+      toggle("partyDJ", () => {}),
+      toggle("partyQuietFps", () => {}),
+      toggle("partyClip", () => immersive.refresh()),
+      toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
       toggle("partyJamLight", () => {}),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),
