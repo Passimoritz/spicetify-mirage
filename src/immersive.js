@@ -261,6 +261,13 @@ const immersive = (() => {
     });
     addEventListener("resize", sizeCanvas);
     document.addEventListener("keydown", () => isOpen() && wake(), true);
+    // Taktdaten kamen später (Wiederholung oder Schätzung): Anzeige und Party-Profil nachziehen
+    document.addEventListener("mirage:audio", () => {
+      if (!isOpen()) return;
+      lastBeatIdx = -1;
+      if (el.dataset.mode === "party") party.prepare(currentItem()).then(updateKicker);
+      else updateKicker();
+    });
   }
 
   // Erst das kleine (meist schon geladene) Cover zeigen, dann scharf überblenden
@@ -439,7 +446,8 @@ const immersive = (() => {
     if (m === "party") {
       // „Party · Rave · 128 BPM“ – zeigt, welches Profil gerade greift
       const p = party.info;
-      q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? p.bpm + " BPM" : ""].filter(Boolean).join(" · ");
+      // „≈“: Tempo nur geschätzt (Spotify hat keine Taktanalyse, siehe estimate.js)
+      q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? (audio.data?.synthetic ? "≈ " : "") + p.bpm + " BPM" : ""].filter(Boolean).join(" · ");
       return;
     }
     q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : m === "mix" ? t("tabMix") : t("now");
@@ -822,8 +830,8 @@ const immersive = (() => {
       const P = px.P;
       Object.assign(V, {
         mirror: P.mirror, spin: P.spin, glow: true, rings: true, ring: P.ring,
-        // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll
-        height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2),
+        // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll – die Kick drückt ihn raus
+        height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
         pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I),
       });
     }
@@ -849,7 +857,7 @@ const immersive = (() => {
         const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
         // Party: Ringe nur auf betonten Schlägen, kräftiger je mehr Energie; im Break keine
         if (px) {
-          if (V.rings && px.beat > 0.5 && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
+          if (V.rings && (px.beat > 0.5 || (px.kickHit && px.energy > 0.55)) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
         } else if (V.rings && bi % V.ring === 0) rings.push({ r: R, a: 0.6 * c, w: 2 });
       }
     }
@@ -1012,7 +1020,7 @@ const immersive = (() => {
     if (px) {
       // Farbfläche: nur Deckkraft und (beim Takt) Farbe ändern – beides ohne Neu-Layout
       partyFx = true;
-      const op = (px.flash * 0.42).toFixed(2);
+      const op = Math.max(px.flash * 0.42, px.ambient || 0).toFixed(2);
       if (q.flash.style.opacity !== op) q.flash.style.opacity = op;
       if (px.flashCol !== lastFlashCol) {
         lastFlashCol = px.flashCol;
@@ -1035,7 +1043,7 @@ const immersive = (() => {
         q.canvas.style.scale = kz;
       }
       // Hintergrund: Kamera-Zoom und Kamera-Stoß zusammen
-      const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1)).toFixed(3);
+      const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1) * (1 + px.kickEnv * 0.014 * px.energy)).toFixed(3);
       if (bz !== lastBgZ) {
         lastBgZ = bz;
         q.bg.style.scale = bz === "1.000" ? "" : bz;
@@ -1068,7 +1076,7 @@ const immersive = (() => {
   // Party-Farben: kräftig statt der oft gedeckten Coverfarben. Graue Cover bekommen Mirage-Töne.
   // Moll macht das Licht tiefer und kühler, Dur heller – die Farben folgen der Stimmung des Abschnitts.
   let vividKey = "", vividPal = null;
-  const TINT = { cool: 205, warm: 28, hot: 4 };
+  const TINT = { cool: 205, warm: 28, hot: 4, pink: 325, gold: 44, jungle: 130 };
   // Farbton ein Stück Richtung Ziel drehen (kürzester Weg auf dem Farbkreis)
   const toward = (h, target, f) => (h + ((((target - h) % 360) + 540) % 360 - 180) * f + 360) % 360;
   function vivid(pal, minor, tint, pitch = -1) {
@@ -1362,7 +1370,7 @@ const immersive = (() => {
       ctx.fill();
     }
     drawMotes(ctx, dt, dpr, pal);
-    if (cfg.partyCrowd && px.fx && quality.level > 0) {
+    if (cfg.partyCrowd && px.fx) {
       stageCam(ctx, dpr);
       drawCrowd(ctx, px, pal, dpr, rgba, dt);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1379,16 +1387,21 @@ const immersive = (() => {
   const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };
   function tuneQuality(dt) {
     quality.ema += (dt - quality.ema) * 0.05;
-    if (quality.ema > 1 / 48) {
+    // erst bei deutlich unter 40 Bildern/s über 4 s eine Stufe runter, schon nach 5 s flüssig wieder hoch
+    if (quality.ema > 1 / 40) {
       quality.fast = 0;
-      if ((quality.slow += dt) > 2 && quality.level > 0) [quality.level, quality.slow] = [quality.level - 1, 0];
-    } else if (quality.ema < 1 / 57) {
+      if ((quality.slow += dt) > 4 && quality.level > 0) [quality.level, quality.slow] = [quality.level - 1, 0];
+    } else if (quality.ema < 1 / 52) {
       quality.slow = 0;
-      if ((quality.fast += dt) > 10 && quality.level < 2) [quality.level, quality.fast] = [quality.level + 1, 0];
+      if ((quality.fast += dt) > 5 && quality.level < 2) [quality.level, quality.fast] = [quality.level + 1, 0];
     }
   }
   function partyExtras(px, now, dt, R, dpr) {
     tuneQuality(dt);
+    // die echte Kick (aus der Klangfarbe) treibt Strahlen, Scheinwerfer, Kranz und Puls – je mehr Energie, desto mehr
+    px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
+    // Hintergrund atmet mit: Kick, Energie, Refrain und Drop heben die Farbfläche (nur Deckkraft – billig)
+    px.ambient = clamp(0.04 + px.kickEnv * 0.2 * px.I + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
     if (quality.level < 2) {
       px.lasers = Math.round(px.lasers / 2);
       px.lvl = Math.min(px.lvl, 1.6);
@@ -1467,7 +1480,8 @@ const immersive = (() => {
         depth.key = k;
         q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
         q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
-        q.canvas.style.transform = `perspective(1600px) rotateY(${(depth.x * 7).toFixed(2)}deg) rotateX(${(-depth.y * 5).toFixed(2)}deg)`;
+        // das Licht-Canvas wird NICHT gekippt (sonst schwenkt eine Bildecke ein und das Publikum fehlt dort) –
+        // Bühnenlicht und Publikum verschieben sich stattdessen in der Bühnen-Kamera (stageCam)
       }
     } else if (depth.key) {
       depth.key = "";
@@ -1479,8 +1493,9 @@ const immersive = (() => {
   const toLocal = (x, y) => [x, y];
   // Bühnen-Kamera für Canvas-Ebenen (Scheinwerfer, Publikum): um die Bildmitte zoomen und schweben
   function stageCam(ctx, dpr) {
-    if (cam.s === 1 && !cam.x && !cam.y) return;
-    ctx.setTransform(cam.s, 0, 0, cam.s, ((1 - cam.s) * vw) / 2 + cam.x * dpr, ((1 - cam.s) * vh) / 2 + cam.y * dpr);
+    const dx = cam.x + (depth.key ? depth.x * 34 : 0), dy = cam.y + (depth.key ? depth.y * 14 : 0);
+    if (cam.s === 1 && !dx && !dy) return;
+    ctx.setTransform(cam.s, 0, 0, cam.s, ((1 - cam.s) * vw) / 2 + dx * dpr, ((1 - cam.s) * vh) / 2 + dy * dpr);
   }
   function drawMotes(ctx, dt, dpr) {
     if (!motes.length) return;
@@ -1513,7 +1528,7 @@ const immersive = (() => {
     const people = [];
     // hinten klein, blass und dicht – vorne groß und fast schwarz
     for (const [row, scale, gap] of [[2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]]) {
-      for (let x = -30 * u; x < vw + 40 * u; x += gap * u * (0.8 + Math.random() * 0.45)) {
+      for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {
         const r = Math.random;
         people.push({
           x, row, s: scale * (0.88 + r() * 0.26), ph: r() * 6.3,
@@ -1615,7 +1630,8 @@ const immersive = (() => {
       // Armhaltung weich der Stimmung nachführen: 0 = unten, 1 = hoch
       const wantUp = me > 0.55 && p.up < me + 0.1 ? 1 : p.gadget && me < 0.5 ? 0.8 : 0;
       p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 4));
-      if (p.row === 2 && quality.level < 2) continue;
+      // weniger Leistung: erst die hinterste, dann die mittlere Reihe weglassen – die vorderste bleibt immer
+      if (p.row > quality.level) continue;
       const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
       ctx.drawImage(sp.c, hx - sp.ax * k1, y - sp.ay * k1, sp.w * k1, sp.h * k1);
       // Arme mit Ellbogen: Faust auf der Kick, Klatschen auf der Snare, Winken im Refrain, Handy/Feuerzeug in ruhigen Stellen

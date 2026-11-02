@@ -10,6 +10,23 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.8.0] – 2026-11-02
+
+### Added
+
+- **Beat data for songs Spotify has no analysis for.** Many (especially newer) songs come without Spotify's beat analysis, so the visualizer and party mode had no beat. Mirage now builds an estimate in the same format: the tempo from Spotify's audio features or Deezer, and otherwise – and for the exact position of the beat – from the synced lyrics. Word times give a fine grid, line starts are matched to their power-of-two family (one line = 8 beats is the usual case). The chorus counts as louder, instrumental gaps as quieter, and kick, snare and hi-hats sit on the grid. The party label shows "≈ 125 BPM" for an estimate; if Spotify's real analysis arrives later, it takes over.
+- **Nine more party genres:** disco & funk (disco ball in gold), K-pop (pink, fast sweeps), reggae & dancehall (one drop on 2 and 4, light from the floor), classical & film music (large, slow golden light, no flashes), punk (fast backbeat, hard spots), hardstyle (every kick hits – tunnel, red), afrobeats, jazz & blues (warm club light), country & folk (warm spots, clapping on 2 and 4).
+- **F11** toggles full screen in immersive mode.
+
+### Changed
+
+- **Party reacts more and the background moves with it.** The real kick drives beams, spotlights, the bar wreath and rings, scaled by the song's energy so quiet parts stay calm. The background breathes with kick, energy, chorus and drop, and energetic four-on-the-floor songs get a colour wash on the kick.
+
+### Fixed
+
+- The crowd no longer disappears after a few seconds: the automatic quality control reacts much more gently and only ever drops the back rows, never the whole crowd.
+- No more missing corner or tilted crowd at the bottom: the light canvas is no longer tilted for 3D depth (stage light and crowd shift in the stage camera instead), and the crowd is laid out wider than the screen.
+
 ## [1.7.1] – 2026-11-02
 
 ### Added

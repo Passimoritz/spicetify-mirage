@@ -54,6 +54,9 @@ const I18N = {
     recapBtn: "Party recap", toScreen: "Party on another screen", recapTitle: "Your party recap", recapDrops: "drops",
     recapGenres: "Genre mix", recapPeak: "Loudest drop",
     fullOff: "Exit full screen",
+    party_disco: "Disco & Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Classical",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country & Folk",
   },
   de: {
     menu: "Mirage-Einstellungen", immersive: "Mirage Immersiv-Modus", back: "Zurück", dialog: "Mirage Immersiv-Modus",
@@ -106,6 +109,9 @@ const I18N = {
     recapBtn: "Party-Rückblick", toScreen: "Party auf anderem Bildschirm", recapTitle: "Dein Party-Rückblick", recapDrops: "Drops",
     recapGenres: "Genre-Mischung", recapPeak: "Lautester Drop",
     fullOff: "Vollbild beenden",
+    party_disco: "Disco & Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Klassik",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country & Folk",
   },
   fr: {
     menu: "Réglages Mirage", immersive: "Mode immersif Mirage", back: "Retour", dialog: "Mode immersif Mirage",
@@ -187,6 +193,9 @@ const I18N = {
     recapBtn: "Récap de la fête", toScreen: "Fête sur un autre écran", recapTitle: "Ton récap de la fête", recapDrops: "drops",
     recapGenres: "Mélange de genres", recapPeak: "Drop le plus fort",
     fullOff: "Quitter le plein écran",
+    party_disco: "Disco & Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Classique",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country & Folk",
   },
   es: {
     menu: "Ajustes de Mirage", immersive: "Modo inmersivo Mirage", back: "Volver", dialog: "Modo inmersivo Mirage",
@@ -268,6 +277,9 @@ const I18N = {
     recapBtn: "Resumen de la fiesta", toScreen: "Fiesta en otra pantalla", recapTitle: "Tu resumen de la fiesta", recapDrops: "drops",
     recapGenres: "Mezcla de géneros", recapPeak: "Drop más fuerte",
     fullOff: "Salir de pantalla completa",
+    party_disco: "Disco y Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Clásica",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country y Folk",
   },
   it: {
     menu: "Impostazioni Mirage", immersive: "Modalità immersiva Mirage", back: "Indietro", dialog: "Modalità immersiva Mirage",
@@ -349,6 +361,9 @@ const I18N = {
     recapBtn: "Riepilogo della festa", toScreen: "Festa su un altro schermo", recapTitle: "Il tuo riepilogo della festa", recapDrops: "drop",
     recapGenres: "Mix di generi", recapPeak: "Drop più forte",
     fullOff: "Esci da schermo intero",
+    party_disco: "Disco e Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Classica",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country e Folk",
   },
   pt: {
     menu: "Configurações do Mirage", immersive: "Modo imersivo Mirage", back: "Voltar", dialog: "Modo imersivo Mirage",
@@ -430,6 +445,9 @@ const I18N = {
     recapBtn: "Resumo da festa", toScreen: "Festa em outra tela", recapTitle: "Seu resumo da festa", recapDrops: "drops",
     recapGenres: "Mistura de gêneros", recapPeak: "Drop mais forte",
     fullOff: "Sair da tela cheia",
+    party_disco: "Disco e Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Clássica",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country e Folk",
   },
   nl: {
     menu: "Mirage-instellingen", immersive: "Mirage meeslepende modus", back: "Terug", dialog: "Mirage meeslepende modus",
@@ -511,6 +529,9 @@ const I18N = {
     recapBtn: "Feestoverzicht", toScreen: "Feest op ander scherm", recapTitle: "Jouw feestoverzicht", recapDrops: "drops",
     recapGenres: "Genremix", recapPeak: "Hardste drop",
     fullOff: "Volledig scherm sluiten",
+    party_disco: "Disco & Funk", party_kpop: "K-pop", party_reggae: "Reggae", party_classical: "Klassiek",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country & Folk",
   },
   pl: {
     menu: "Ustawienia Mirage", immersive: "Tryb immersyjny Mirage", back: "Wstecz", dialog: "Tryb immersyjny Mirage",
@@ -592,6 +613,9 @@ const I18N = {
     recapBtn: "Podsumowanie imprezy", toScreen: "Impreza na innym ekranie", recapTitle: "Twoje podsumowanie imprezy", recapDrops: "dropy",
     recapGenres: "Mieszanka gatunków", recapPeak: "Najgłośniejszy drop",
     fullOff: "Zamknij pełny ekran",
+    party_disco: "Disco i Funk", party_kpop: "K-pop", party_reggae: "Reggae", party_classical: "Klasyka",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Jazz",
+    party_country: "Country i Folk",
   },
   tr: {
     menu: "Mirage ayarları", immersive: "Mirage sürükleyici mod", back: "Geri", dialog: "Mirage sürükleyici mod",
@@ -667,6 +691,9 @@ const I18N = {
     recapBtn: "Parti özeti", toScreen: "Partiyi başka ekranda aç", recapTitle: "Parti özetin", recapDrops: "drop",
     recapGenres: "Tür karışımı", recapPeak: "En güçlü drop",
     fullOff: "Tam ekrandan çık",
+    party_disco: "Disko ve Funk", party_kpop: "K-Pop", party_reggae: "Reggae", party_classical: "Klasik",
+    party_punk: "Punk", party_hardstyle: "Hardstyle", party_afro: "Afrobeats", party_jazz: "Caz",
+    party_country: "Country ve Folk",
   },
   ru: {
     menu: "Настройки Mirage", immersive: "Режим погружения Mirage", back: "Назад", dialog: "Режим погружения Mirage",
@@ -742,6 +769,9 @@ const I18N = {
     recapBtn: "Итоги вечеринки", toScreen: "Вечеринка на другом экране", recapTitle: "Итоги твоей вечеринки", recapDrops: "дропов",
     recapGenres: "Смесь жанров", recapPeak: "Самый громкий дроп",
     fullOff: "Выйти из полноэкранного режима",
+    party_disco: "Диско и фанк", party_kpop: "K-pop", party_reggae: "Регги", party_classical: "Классика",
+    party_punk: "Панк", party_hardstyle: "Хардстайл", party_afro: "Афробитс", party_jazz: "Джаз",
+    party_country: "Кантри и фолк",
   },
   uk: {
     menu: "Налаштування Mirage", immersive: "Режим занурення Mirage", back: "Назад",
@@ -817,6 +847,9 @@ const I18N = {
     recapBtn: "Підсумки вечірки", toScreen: "Вечірка на іншому екрані", recapTitle: "Підсумки твоєї вечірки", recapDrops: "дропів",
     recapGenres: "Суміш жанрів", recapPeak: "Найгучніший дроп",
     fullOff: "Вийти з повноекранного режиму",
+    party_disco: "Диско і фанк", party_kpop: "K-pop", party_reggae: "Реггі", party_classical: "Класика",
+    party_punk: "Панк", party_hardstyle: "Хардстайл", party_afro: "Афробітс", party_jazz: "Джаз",
+    party_country: "Кантрі й фолк",
   },
   ja: {
     menu: "Mirage の設定", immersive: "Mirage イマーシブモード", back: "戻る", dialog: "Mirage イマーシブモード",
@@ -892,6 +925,9 @@ const I18N = {
     recapBtn: "パーティーの振り返り", toScreen: "別の画面でパーティー", recapTitle: "パーティーの振り返り", recapDrops: "ドロップ",
     recapGenres: "ジャンルの割合", recapPeak: "いちばん大きなドロップ",
     fullOff: "全画面を終了",
+    party_disco: "ディスコ＆ファンク", party_kpop: "K-POP", party_reggae: "レゲエ", party_classical: "クラシック",
+    party_punk: "パンク", party_hardstyle: "ハードスタイル", party_afro: "アフロビーツ", party_jazz: "ジャズ",
+    party_country: "カントリー＆フォーク",
   },
   ko: {
     menu: "Mirage 설정", immersive: "Mirage 몰입 모드", back: "뒤로", dialog: "Mirage 몰입 모드",
@@ -967,6 +1003,9 @@ const I18N = {
     recapBtn: "파티 요약", toScreen: "다른 화면에서 파티", recapTitle: "나의 파티 요약", recapDrops: "드롭",
     recapGenres: "장르 비율", recapPeak: "가장 강한 드롭",
     fullOff: "전체 화면 종료",
+    party_disco: "디스코 & 펑크", party_kpop: "K-팝", party_reggae: "레게", party_classical: "클래식",
+    party_punk: "펑크 록", party_hardstyle: "하드스타일", party_afro: "아프로비츠", party_jazz: "재즈",
+    party_country: "컨트리 & 포크",
   },
   zh: {
     menu: "Mirage 设置", immersive: "Mirage 沉浸模式", back: "返回", dialog: "Mirage 沉浸模式",
@@ -1042,6 +1081,9 @@ const I18N = {
     recapBtn: "派对回顾", toScreen: "在其他屏幕开派对", recapTitle: "你的派对回顾", recapDrops: "次高潮",
     recapGenres: "曲风比例", recapPeak: "最强的高潮",
     fullOff: "退出全屏",
+    party_disco: "迪斯科与放克", party_kpop: "K-Pop", party_reggae: "雷鬼", party_classical: "古典",
+    party_punk: "朋克", party_hardstyle: "硬派舞曲", party_afro: "非洲节拍", party_jazz: "爵士",
+    party_country: "乡村与民谣",
   },
 };
 const LANG = (() => {

@@ -1,5 +1,6 @@
 import { S, root, clamp, seek, lru } from "./core.js";
 import { cfg } from "./config.js";
+import { estimateAnalysis } from "./estimate.js";
 
 /* ---------------------------------------------------------------- Taktdaten */
 const audio = { uri: "", data: null };
@@ -9,11 +10,23 @@ async function loadAudio(uri) {
   if (!uri || audio.uri === uri) return;
   audio.uri = uri;
   audio.data = audioCache.get(uri) || null;
-  if (audio.data || !uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
+  // eine gemerkte Schätzung reicht nicht: Spotify trotzdem noch einmal fragen
+  if ((audio.data && !audio.data.synthetic) || !uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
     beat.sync();
     return;
   }
-  await fetchAnalysis(uri, 0);
+  await fetchAnalysis(uri, audio.data ? RETRY.length : 0);
+}
+// neue Taktdaten da (echt oder geschätzt): Anzeige und Party nachziehen
+const announce = () => document.dispatchEvent(new Event("mirage:audio"));
+// Spotify hat keine Analyse: Ersatz aus Tempo-Quellen und Liedtext bauen (siehe estimate.js)
+async function fallback(uri) {
+  const est = await estimateAnalysis(uri).catch(() => null);
+  if (!est || audio.uri !== uri || (audio.data && !audio.data.synthetic)) return;
+  audio.data = est;
+  audioCache.set(uri, est);
+  beat.sync();
+  announce();
 }
 // Spotify liefert die Analyse manchmal nicht (Zeitüberschreitung, Anfragelimit). Früher blieb der Song
 // dann ganz ohne Taktdaten und die Welle lief „ins Blaue“ – jetzt noch dreimal nachfragen, solange er läuft.
@@ -55,11 +68,14 @@ async function fetchAnalysis(uri, attempt) {
       };
       audioCache.set(uri, audio.data);
       got = true;
+      announce();
     }
   } catch {}
   beat.sync();
+  // gleich beim ersten Fehlschlag die Schätzung starten – die Wiederholungen laufen weiter und ersetzen sie
+  if (!got && audio.uri === uri && attempt === 0) fallback(uri);
   if (!got && audio.uri === uri && attempt < RETRY.length) {
-    setTimeout(() => audio.uri === uri && !audio.data && fetchAnalysis(uri, attempt + 1), RETRY[attempt]);
+    setTimeout(() => audio.uri === uri && (!audio.data || audio.data.synthetic) && fetchAnalysis(uri, attempt + 1), RETRY[attempt]);
   }
 }
 

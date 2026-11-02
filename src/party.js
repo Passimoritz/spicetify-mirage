@@ -49,16 +49,52 @@ const PROFILES = {
   // Latin / Reggaeton: Dembow-Betonung, warme Schwenks, das Cover tanzt mit
   latin: { decay: 5, beams: 0.6, accent: [1, 0.55, 0.75, 0.9], flashOn: "down", spot: "pan", spinRate: 0.25, sway: true, shake: 0, tint: "warm",
     mirror: true, spin: true, height: 1.4, pulse: 0.09, ring: 2, thick: 2.8, halo: true, sparks: 16, bottom: false },
+  // Disco/Funk: Discokugel, warmes Gold, jeder Schlag federt
+  disco: { decay: 6, beams: 0.7, accent: [1, 0.8, 0.9, 0.8], flashOn: "down", spot: "disco", spinRate: 0.3, sway: true, shake: 0, tint: "gold",
+    mirror: true, spin: true, height: 1.35, pulse: 0.09, ring: 1, thick: 2.6, halo: true, sparks: 16, bottom: false },
+  // K-Pop/J-Pop: knallige Pink-Töne, schnelle Schwenks, viel Funkeln
+  kpop: { decay: 7, beams: 1, accent: [1, 0.7, 0.9, 0.7], flashOn: "down", spot: "pan", spinRate: 0.45, sway: true, shake: 0, tint: "pink",
+    mirror: true, spin: true, height: 1.45, pulse: 0.09, ring: 1, thick: 2.4, halo: true, sparks: 22, bottom: false },
+  // Reggae/Dancehall: Betonung auf 2 und 4 (One Drop), warmes Grün, Licht vom Boden, wiegend
+  reggae: { decay: 4, beams: 0.5, accent: [0.5, 1, 0.55, 1], flashOn: "", spot: "floor", spinRate: 0.12, sway: true, shake: 0, tint: "jungle",
+    mirror: true, spin: false, height: 1.25, pulse: 0.07, ring: 2, thick: 3.2, halo: true, sparks: 8, bottom: true },
+  // Klassik/Filmmusik: großes, langsames Licht in Gold, keine Blitze
+  classical: { decay: 1.6, beams: 0.25, accent: [1, 0.3, 0.5, 0.3], flashOn: "", spot: "soft", spinRate: 0.06, sway: false, shake: 0, tint: "gold",
+    mirror: true, spin: true, height: 1.1, pulse: 0.03, ring: 4, thick: 1.8, halo: true, sparks: 4, bottom: false },
+  // Punk: schneller Backbeat, harte Spots, viel Wackeln
+  punk: { decay: 12, beams: 0.8, accent: [0.7, 1, 0.7, 1], flashOn: "back", spot: "top", spinRate: 0.25, sway: false, shake: 9, tint: "hot",
+    mirror: true, spin: false, height: 1.55, pulse: 0.1, ring: 1, thick: 3.4, halo: false, sparks: 20, bottom: false },
+  // Hardstyle: jede Kick ein Schlag ins Gesicht – Tunnel, Rot, harte Stöße
+  hardstyle: { decay: 12, beams: 1.1, accent: [1, 0.95, 1, 0.95], flashOn: "down", spot: "tunnel", spinRate: 0.7, sway: false, shake: 7, tint: "hot",
+    mirror: true, spin: true, height: 1.6, pulse: 0.12, ring: 1, thick: 3, halo: true, sparks: 14, bottom: true },
+  // Afrobeats/Amapiano: lockerer Groove, warme Schwenks, das Cover tanzt
+  afro: { decay: 5, beams: 0.6, accent: [1, 0.6, 0.8, 0.9], flashOn: "down", spot: "pan", spinRate: 0.25, sway: true, shake: 0, tint: "warm",
+    mirror: true, spin: true, height: 1.35, pulse: 0.09, ring: 2, thick: 2.8, halo: true, sparks: 14, bottom: true },
+  // Jazz/Blues: warmes Clublicht, das langsam atmet
+  jazz: { decay: 3, beams: 0.3, accent: [1, 0.5, 0.7, 0.5], flashOn: "", spot: "soft", spinRate: 0.1, sway: true, shake: 0, tint: "gold",
+    mirror: true, spin: true, height: 1.15, pulse: 0.05, ring: 3, thick: 2.2, halo: true, sparks: 6, bottom: false },
+  // Country/Folk: warme Bühnenspots von oben, Händeklatschen auf 2 und 4
+  country: { decay: 6, beams: 0.4, accent: [1, 0.7, 0.85, 0.7], flashOn: "back", spot: "top", spinRate: 0.15, sway: true, shake: 0, tint: "gold",
+    mirror: true, spin: false, height: 1.3, pulse: 0.06, ring: 2, thick: 2.6, halo: true, sparks: 8, bottom: false },
 };
 const PROFILE_KEYS = Object.keys(PROFILES);
 // Genaue Spielarten zuerst – gelten für Spotify- und Apple-Genres gleichermaßen
 const SPECIFIC = [
   ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
+  ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
   ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
   ["techno", /techno|minimal|industrial/],
   ["trance", /trance|psytrance|uplifting/],
-  ["house", /house|nu disco|garage house/],
+  ["punk", /punk|post-hardcore|\bemo\b|hardcore/],
+  ["kpop", /k-?pop|j-?pop|c-?pop|idol/],
+  ["afro", /afrobeat|afro ?pop|amapiano|afroswing|afro ?fusion/],
+  ["house", /house|garage house/],
+  ["disco", /disco|funk|boogie/],
+  ["reggae", /reggae|dancehall|\bdub\b|\bska\b/],
   ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/],
+  ["classical", /classical|orchestra|soundtrack|\bscore\b|cinematic|opera|baroque|film/],
+  ["jazz", /jazz|swing|bebop|bossa|blues/],
+  ["country", /country|americana|bluegrass|folk/],
 ];
 // Reihenfolge zählt: „dance pop“ ist eher Pop als Rave, „pop punk“ eher Rock
 const GENRES = [
@@ -443,6 +479,8 @@ const party = (() => {
     else if (P.flashOn === "back") flashOn = snareHit || (hit && (inBar === 1 || inBar === 3) && snareEnv < 0.2);
     else if (P.flashOn === "down-hi") flashOn = hit && inBar === 0 && smooth.e > 0.65;
     if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
+    // hohe Energie: auch die Kick färbt (gerade Genres), damit es in Refrain und Drop richtig pumpt
+    if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62) flashOn = true;
     if (smooth.k > 0.5) flashOn = false;
     if (fx && cfg.partyFlash && (flashOn || dropHit) && clock - lastFlashAt > 0.34) {
       lastFlashAt = clock;

@@ -18,6 +18,7 @@ window.addEventListener("keydown", (e) => {
       KeyS: () => immersive.shuffle(),
       KeyR: () => immersive.repeat(),
       KeyF: () => immersive.toggleFull(),
+      F11: () => immersive.toggleFull(),
       KeyQ: () => immersive.toggleQueue(),
       KeyN: () => S.Player.next(),
       KeyP: () => S.Player.back(),

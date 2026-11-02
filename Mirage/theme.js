@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.7.1" : "dev";
+      VERSION = true ? "1.8.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -356,7 +356,16 @@
           recapDrops: "drops",
           recapGenres: "Genre mix",
           recapPeak: "Loudest drop",
-          fullOff: "Exit full screen"
+          fullOff: "Exit full screen",
+          party_disco: "Disco & Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Classical",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country & Folk"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -628,7 +637,16 @@
           recapDrops: "Drops",
           recapGenres: "Genre-Mischung",
           recapPeak: "Lautester Drop",
-          fullOff: "Vollbild beenden"
+          fullOff: "Vollbild beenden",
+          party_disco: "Disco & Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Klassik",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country & Folk"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -900,7 +918,16 @@
           recapDrops: "drops",
           recapGenres: "M\xE9lange de genres",
           recapPeak: "Drop le plus fort",
-          fullOff: "Quitter le plein \xE9cran"
+          fullOff: "Quitter le plein \xE9cran",
+          party_disco: "Disco & Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Classique",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country & Folk"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1172,7 +1199,16 @@
           recapDrops: "drops",
           recapGenres: "Mezcla de g\xE9neros",
           recapPeak: "Drop m\xE1s fuerte",
-          fullOff: "Salir de pantalla completa"
+          fullOff: "Salir de pantalla completa",
+          party_disco: "Disco y Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Cl\xE1sica",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country y Folk"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1444,7 +1480,16 @@
           recapDrops: "drop",
           recapGenres: "Mix di generi",
           recapPeak: "Drop pi\xF9 forte",
-          fullOff: "Esci da schermo intero"
+          fullOff: "Esci da schermo intero",
+          party_disco: "Disco e Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Classica",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country e Folk"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1716,7 +1761,16 @@
           recapDrops: "drops",
           recapGenres: "Mistura de g\xEAneros",
           recapPeak: "Drop mais forte",
-          fullOff: "Sair da tela cheia"
+          fullOff: "Sair da tela cheia",
+          party_disco: "Disco e Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Cl\xE1ssica",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country e Folk"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1988,7 +2042,16 @@
           recapDrops: "drops",
           recapGenres: "Genremix",
           recapPeak: "Hardste drop",
-          fullOff: "Volledig scherm sluiten"
+          fullOff: "Volledig scherm sluiten",
+          party_disco: "Disco & Funk",
+          party_kpop: "K-pop",
+          party_reggae: "Reggae",
+          party_classical: "Klassiek",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country & Folk"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2260,7 +2323,16 @@
           recapDrops: "dropy",
           recapGenres: "Mieszanka gatunk\xF3w",
           recapPeak: "Najg\u0142o\u015Bniejszy drop",
-          fullOff: "Zamknij pe\u0142ny ekran"
+          fullOff: "Zamknij pe\u0142ny ekran",
+          party_disco: "Disco i Funk",
+          party_kpop: "K-pop",
+          party_reggae: "Reggae",
+          party_classical: "Klasyka",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Jazz",
+          party_country: "Country i Folk"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2532,7 +2604,16 @@
           recapDrops: "drop",
           recapGenres: "T\xFCr kar\u0131\u015F\u0131m\u0131",
           recapPeak: "En g\xFC\xE7l\xFC drop",
-          fullOff: "Tam ekrandan \xE7\u0131k"
+          fullOff: "Tam ekrandan \xE7\u0131k",
+          party_disco: "Disko ve Funk",
+          party_kpop: "K-Pop",
+          party_reggae: "Reggae",
+          party_classical: "Klasik",
+          party_punk: "Punk",
+          party_hardstyle: "Hardstyle",
+          party_afro: "Afrobeats",
+          party_jazz: "Caz",
+          party_country: "Country ve Folk"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2804,7 +2885,16 @@
           recapDrops: "\u0434\u0440\u043E\u043F\u043E\u0432",
           recapGenres: "\u0421\u043C\u0435\u0441\u044C \u0436\u0430\u043D\u0440\u043E\u0432",
           recapPeak: "\u0421\u0430\u043C\u044B\u0439 \u0433\u0440\u043E\u043C\u043A\u0438\u0439 \u0434\u0440\u043E\u043F",
-          fullOff: "\u0412\u044B\u0439\u0442\u0438 \u0438\u0437 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0430"
+          fullOff: "\u0412\u044B\u0439\u0442\u0438 \u0438\u0437 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0430",
+          party_disco: "\u0414\u0438\u0441\u043A\u043E \u0438 \u0444\u0430\u043D\u043A",
+          party_kpop: "K-pop",
+          party_reggae: "\u0420\u0435\u0433\u0433\u0438",
+          party_classical: "\u041A\u043B\u0430\u0441\u0441\u0438\u043A\u0430",
+          party_punk: "\u041F\u0430\u043D\u043A",
+          party_hardstyle: "\u0425\u0430\u0440\u0434\u0441\u0442\u0430\u0439\u043B",
+          party_afro: "\u0410\u0444\u0440\u043E\u0431\u0438\u0442\u0441",
+          party_jazz: "\u0414\u0436\u0430\u0437",
+          party_country: "\u041A\u0430\u043D\u0442\u0440\u0438 \u0438 \u0444\u043E\u043B\u043A"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -3076,7 +3166,16 @@
           recapDrops: "\u0434\u0440\u043E\u043F\u0456\u0432",
           recapGenres: "\u0421\u0443\u043C\u0456\u0448 \u0436\u0430\u043D\u0440\u0456\u0432",
           recapPeak: "\u041D\u0430\u0439\u0433\u0443\u0447\u043D\u0456\u0448\u0438\u0439 \u0434\u0440\u043E\u043F",
-          fullOff: "\u0412\u0438\u0439\u0442\u0438 \u0437 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0443"
+          fullOff: "\u0412\u0438\u0439\u0442\u0438 \u0437 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0443",
+          party_disco: "\u0414\u0438\u0441\u043A\u043E \u0456 \u0444\u0430\u043D\u043A",
+          party_kpop: "K-pop",
+          party_reggae: "\u0420\u0435\u0433\u0433\u0456",
+          party_classical: "\u041A\u043B\u0430\u0441\u0438\u043A\u0430",
+          party_punk: "\u041F\u0430\u043D\u043A",
+          party_hardstyle: "\u0425\u0430\u0440\u0434\u0441\u0442\u0430\u0439\u043B",
+          party_afro: "\u0410\u0444\u0440\u043E\u0431\u0456\u0442\u0441",
+          party_jazz: "\u0414\u0436\u0430\u0437",
+          party_country: "\u041A\u0430\u043D\u0442\u0440\u0456 \u0439 \u0444\u043E\u043B\u043A"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -3348,7 +3447,16 @@
           recapDrops: "\u30C9\u30ED\u30C3\u30D7",
           recapGenres: "\u30B8\u30E3\u30F3\u30EB\u306E\u5272\u5408",
           recapPeak: "\u3044\u3061\u3070\u3093\u5927\u304D\u306A\u30C9\u30ED\u30C3\u30D7",
-          fullOff: "\u5168\u753B\u9762\u3092\u7D42\u4E86"
+          fullOff: "\u5168\u753B\u9762\u3092\u7D42\u4E86",
+          party_disco: "\u30C7\u30A3\u30B9\u30B3\uFF06\u30D5\u30A1\u30F3\u30AF",
+          party_kpop: "K-POP",
+          party_reggae: "\u30EC\u30B2\u30A8",
+          party_classical: "\u30AF\u30E9\u30B7\u30C3\u30AF",
+          party_punk: "\u30D1\u30F3\u30AF",
+          party_hardstyle: "\u30CF\u30FC\u30C9\u30B9\u30BF\u30A4\u30EB",
+          party_afro: "\u30A2\u30D5\u30ED\u30D3\u30FC\u30C4",
+          party_jazz: "\u30B8\u30E3\u30BA",
+          party_country: "\u30AB\u30F3\u30C8\u30EA\u30FC\uFF06\u30D5\u30A9\u30FC\u30AF"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -3620,7 +3728,16 @@
           recapDrops: "\uB4DC\uB86D",
           recapGenres: "\uC7A5\uB974 \uBE44\uC728",
           recapPeak: "\uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D",
-          fullOff: "\uC804\uCCB4 \uD654\uBA74 \uC885\uB8CC"
+          fullOff: "\uC804\uCCB4 \uD654\uBA74 \uC885\uB8CC",
+          party_disco: "\uB514\uC2A4\uCF54 & \uD391\uD06C",
+          party_kpop: "K-\uD31D",
+          party_reggae: "\uB808\uAC8C",
+          party_classical: "\uD074\uB798\uC2DD",
+          party_punk: "\uD391\uD06C \uB85D",
+          party_hardstyle: "\uD558\uB4DC\uC2A4\uD0C0\uC77C",
+          party_afro: "\uC544\uD504\uB85C\uBE44\uCE20",
+          party_jazz: "\uC7AC\uC988",
+          party_country: "\uCEE8\uD2B8\uB9AC & \uD3EC\uD06C"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -3892,7 +4009,16 @@
           recapDrops: "\u6B21\u9AD8\u6F6E",
           recapGenres: "\u66F2\u98CE\u6BD4\u4F8B",
           recapPeak: "\u6700\u5F3A\u7684\u9AD8\u6F6E",
-          fullOff: "\u9000\u51FA\u5168\u5C4F"
+          fullOff: "\u9000\u51FA\u5168\u5C4F",
+          party_disco: "\u8FEA\u65AF\u79D1\u4E0E\u653E\u514B",
+          party_kpop: "K-Pop",
+          party_reggae: "\u96F7\u9B3C",
+          party_classical: "\u53E4\u5178",
+          party_punk: "\u670B\u514B",
+          party_hardstyle: "\u786C\u6D3E\u821E\u66F2",
+          party_afro: "\u975E\u6D32\u8282\u62CD",
+          party_jazz: "\u7235\u58EB",
+          party_country: "\u4E61\u6751\u4E0E\u6C11\u8C23"
         }
       };
       LANG = (() => {
@@ -4050,103 +4176,6 @@
     }
   });
 
-  // src/audio.js
-  async function loadAudio(uri) {
-    if (!uri || audio.uri === uri) return;
-    audio.uri = uri;
-    audio.data = audioCache.get(uri) || null;
-    if (audio.data || !uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
-      beat.sync();
-      return;
-    }
-    await fetchAnalysis(uri, 0);
-  }
-  async function fetchAnalysis(uri, attempt) {
-    let got = false;
-    try {
-      const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8e3))]);
-      const num = (v, fb) => Number.isFinite(v) ? v : fb;
-      const ok = (x) => Number.isFinite(x?.start);
-      const beats = (d?.beats || []).filter(ok);
-      if (audio.uri === uri && beats.length) {
-        const segs = (d.segments || []).filter(ok).map((s) => ({
-          t: s.start,
-          l: num(s.loudness_max, -20),
-          p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
-          // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
-          b: num(s.timbre?.[1], 0),
-          // timbre[2] = Flachheit (rauschig wie Snare/Clap/Becken), timbre[3] = Anschlag (hart wie Kick/Snare)
-          f: num(s.timbre?.[2], 0),
-          k: num(s.timbre?.[3], 0)
-        }));
-        const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
-        const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
-        const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
-        audio.data = {
-          beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
-          bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
-          // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
-          sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12) })),
-          segs,
-          bpm: Math.round(bpm),
-          loud: Number(d.track?.loudness) || avg,
-          avg
-        };
-        audioCache.set(uri, audio.data);
-        got = true;
-      }
-    } catch {
-    }
-    beat.sync();
-    if (!got && audio.uri === uri && attempt < RETRY.length) {
-      setTimeout(() => audio.uri === uri && !audio.data && fetchAnalysis(uri, attempt + 1), RETRY[attempt]);
-    }
-  }
-  function bands(sec) {
-    const segs = audio.data?.segs;
-    if (!segs?.length) return null;
-    const s = segs[Math.max(seek(segs, sec, "t"), 0)];
-    if (!s || s.p.length !== 12) return null;
-    const loud = clamp((s.l + 38) / 38, 0, 1);
-    const b = beat.read(sec);
-    const out = [];
-    for (let i = 0; i < 8; i++) {
-      const f = i / 7 * 11, lo = Math.floor(f), hi = Math.min(11, lo + 1);
-      const p = s.p[lo] + (s.p[hi] - s.p[lo]) * (f - lo);
-      out.push(Number(clamp((0.1 + p * 0.9) * (0.35 + loud * 0.65) + b * 0.2, 0, 1).toFixed(3)));
-    }
-    return out;
-  }
-  var audio, audioCache, RETRY, beat;
-  var init_audio = __esm({
-    "src/audio.js"() {
-      init_core();
-      init_config();
-      audio = { uri: "", data: null };
-      audioCache = lru(50);
-      RETRY = [3e3, 8e3, 2e4];
-      beat = /* @__PURE__ */ (() => {
-        let on = false;
-        function read(sec) {
-          const bs = audio.data?.beats;
-          if (!bs) return 0;
-          const i = seek(bs, sec, "t");
-          if (i < 0) return 0;
-          const since = sec - bs[i].t;
-          return Math.pow(clamp(1 - since / 0.32, 0, 1), 2) * clamp(0.4 + bs[i].c, 0, 1);
-        }
-        const now = () => (S.Player.getProgress?.() || 0) / 1e3;
-        function sync() {
-          on = cfg.beat && !cfg.calm && !!audio.data && root.classList.contains("mirage-playing");
-          root.classList.toggle("mirage-beat", on);
-        }
-        return { sync, read, get level() {
-          return on ? read(now()) : 0;
-        } };
-      })();
-    }
-  });
-
   // src/selectors.js
   function checkHealth() {
     health.missing = Object.keys(SEL).filter((k) => !document.querySelector(SEL[k]));
@@ -4202,50 +4231,6 @@
         `scheme: ${root.dataset.mScheme || "?"} \xB7 page: ${root.dataset.mPage || "?"}`,
         `ua: ${navigator.userAgent.replace(/.*(Chrome\/[\d.]+).*/, "$1")}`
       ].join("\n");
-    }
-  });
-
-  // src/burst.js
-  function burst(x, y) {
-    const box = document.createElement("div");
-    box.className = "m-burst";
-    box.style.left = x + "px";
-    box.style.top = y + "px";
-    box.append(document.createElement("b"));
-    const cols = palette().map((c) => `rgb(${c.join(",")})`);
-    for (let i = 0; i < 16; i++) {
-      const s = document.createElement("i");
-      const ang = i / 16 * Math.PI * 2 + Math.random() * 0.3;
-      const dist = 36 + Math.random() * 54;
-      if (i % 3 === 0) {
-        s.className = "h";
-        s.textContent = "\u2665";
-      }
-      s.style.setProperty("--c", cols[i % cols.length]);
-      s.style.setProperty("--tx", Math.cos(ang) * dist + "px");
-      s.style.setProperty("--ty", Math.sin(ang) * dist - 10 + "px");
-      s.style.setProperty("--r", Math.round((Math.random() - 0.5) * 120) + "deg");
-      box.append(s);
-    }
-    document.body.append(box);
-    setTimeout(() => box.remove(), 1100);
-  }
-  var init_burst = __esm({
-    "src/burst.js"() {
-      init_selectors();
-      init_config();
-      init_color();
-      document.addEventListener(
-        "click",
-        (e) => {
-          if (!cfg.burst || cfg.calm) return;
-          const b = e.target.closest?.(SEL.likeButton);
-          if (!b) return;
-          const { clientX: x, clientY: y } = e;
-          setTimeout(() => b.getAttribute("aria-checked") !== "false" && burst(x, y), 220);
-        },
-        true
-      );
     }
   });
 
@@ -4545,6 +4530,307 @@
       trCache = lru(40);
       canvasCache = lru(60);
       SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
+    }
+  });
+
+  // src/estimate.js
+  async function cosmos(url) {
+    try {
+      const r = await S.CosmosAsync.get(url);
+      return typeof r === "string" ? JSON.parse(r) : r;
+    } catch {
+      return null;
+    }
+  }
+  async function spotifyFeatures(id) {
+    for (const url of [`https://spclient.wg.spotify.com/audio-attributes/v1/audio-features/${id}`, `https://api.spotify.com/v1/audio-features/${id}`]) {
+      const f = await within2(cosmos(url), 4e3);
+      if (Number(f?.tempo) > 40) return { bpm: Number(f.tempo), loud: Number(f.loudness) || -8, energy: Number(f.energy) || 0.6, key: Number.isFinite(f.key) ? f.key : -1, mode: Number.isFinite(f.mode) ? f.mode : 1 };
+    }
+    return null;
+  }
+  async function deezerBpm(item) {
+    if (!cfg.partyOnline) return null;
+    const artist = item?.metadata?.artist_name || item?.artists?.[0]?.name || "";
+    const title = titleOf(item).replace(/\s+-\s+.*$/, "").replace(/\s*[([].*?[)\]]/g, "");
+    if (!artist || !title) return null;
+    const res = await within2(cosmos(`https://api.deezer.com/search?q=${encodeURIComponent(`artist:"${artist}" track:"${title}"`)}&limit=3`), 4e3);
+    const hit = res?.data?.[0];
+    if (!hit?.id) return null;
+    const t2 = await within2(cosmos(`https://api.deezer.com/track/${hit.id}`), 4e3);
+    return Number(t2?.bpm) > 40 ? { bpm: Number(t2.bpm), loud: Number(t2.gain) || -8 } : null;
+  }
+  function fitGrid(on, P) {
+    let x = 0, y = 0;
+    for (const t2 of on) {
+      const a = t2 % P / P * Math.PI * 2;
+      x += Math.cos(a);
+      y += Math.sin(a);
+    }
+    const R = Math.hypot(x, y) / on.length;
+    return { R, phase: (Math.atan2(y, x) / (Math.PI * 2) + 1) % 1 * P };
+  }
+  function tempoFromOnsets(on, hint) {
+    let best = null;
+    for (let bpm = 60; bpm <= 190; bpm += 0.5) {
+      const P = 60 / bpm;
+      const { R, phase } = fitGrid(on, P);
+      const prior = Math.exp(-(((bpm - 118) / 45) ** 2) * 0.5) * (hint ? Math.max(0.35, Math.exp(-(((bpm - hint) / 4) ** 2))) : 1);
+      const score = R * (0.6 + 0.4 * prior);
+      if (!best || score > best.score) best = { bpm, phase, R, score };
+    }
+    return best;
+  }
+  function tempoFromLines(on, hint) {
+    const fits = [];
+    let top = 0;
+    for (let L2 = 1.2; L2 <= 12; L2 += 5e-3) {
+      const { R } = fitGrid(on, L2);
+      fits.push([L2, R]);
+      top = Math.max(top, R);
+    }
+    if (!top) return null;
+    const L = fits.filter(([, R]) => R >= top * 0.97).pop()[0];
+    const family = [8, 4, 16, 2, 32].map((k) => 60 * k / L).filter((b) => b >= 70 && b <= 170);
+    if (!family.length) return null;
+    const near = hint && family.find((b) => Math.abs(b / hint - 1) < 0.04);
+    const bpm = near || (hint && top < 0.6 ? hint : family[0]);
+    const best = { R: top };
+    return { bpm, R: best.R, phase: fitGrid(on, 60 / bpm).phase };
+  }
+  async function estimateAnalysis(uri) {
+    const id = uri.split(":")[2];
+    const item = currentItem()?.uri === uri ? currentItem() : null;
+    const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || S.Player.getDuration?.() || 0) / 1e3 || 210;
+    const [feat, lyr] = await Promise.all([spotifyFeatures(id), within2(getLyrics(uri), 9e3)]);
+    const dz = feat ? null : await deezerBpm(item);
+    const hint = feat?.bpm || dz?.bpm || 0;
+    const lines = lyr?.synced ? lyr.lines.filter((l) => l.text && l.text !== "\u266A") : [];
+    const words = lines.flatMap((l) => (l.words || []).map((w) => w.t / 1e3));
+    const on = words.length > 30 ? words : lines.map((l) => l.t / 1e3);
+    let bpm = hint, phase = 0, conf = 0.5;
+    if (on.length >= 8 && on !== words) {
+      const fit2 = tempoFromLines(on, hint);
+      if (fit2) [bpm, phase, conf] = [fit2.bpm, fit2.phase, clamp(fit2.R * 1.2, 0.3, 0.9)];
+    } else if (on.length >= 8) {
+      const fit2 = tempoFromOnsets(on, hint);
+      const use = hint && fit2.R < 0.4 ? hint : fit2.bpm;
+      if (fit2.R > 0.25 || !hint) [bpm, phase, conf] = [use, fitGrid(on, 60 / use).phase, clamp(fit2.R * 1.4, 0.3, 0.95)];
+      else phase = fitGrid(on, 60 / hint).phase;
+    }
+    if (!bpm) return null;
+    while (bpm > 165) bpm /= 2;
+    while (bpm < 70) bpm *= 2;
+    const P = 60 / bpm;
+    const beats = [];
+    for (let t2 = phase; t2 < dur; t2 += P) beats.push({ t: t2, c: conf });
+    if (beats.length < 8) return null;
+    const votes = [0, 0, 0, 0];
+    for (const l of lines) votes[Math.round((l.t / 1e3 - phase) / P) & 3]++;
+    const one = votes.indexOf(Math.max(...votes));
+    const bars = beats.filter((_, i) => (i - one) % 4 === 0).map((b) => ({ t: b.t }));
+    const key = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+    const seen = /* @__PURE__ */ new Map();
+    for (const l of lines) seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1);
+    const hook = lines.filter((l) => seen.get(key(l.text)) >= 2).map((l) => l.t / 1e3);
+    const sung = lines.map((l) => l.t / 1e3);
+    const near = (arr, t2, r) => arr.some((x) => Math.abs(x - t2) < r);
+    const base = feat?.loud ?? dz?.loud ?? -8;
+    const energy = feat?.energy ?? 0.65;
+    const chroma = Array.from({ length: 12 }, (_, k) => {
+      if (!feat || feat.key < 0) return 0.3 + 0.2 * Math.sin(k);
+      const d = (k - feat.key + 12) % 12;
+      return d === 0 ? 1 : d === 7 ? 0.8 : d === (feat.mode ? 4 : 3) ? 0.7 : 0.15;
+    });
+    const segs = [];
+    for (let i = 0; i < beats.length * 2; i++) {
+      const t2 = phase + i * (P / 2), beatI = i >> 1, inBar = ((beatI - one) % 4 + 4) % 4, off = i & 1;
+      if (t2 >= dur) break;
+      const lyrical = near(sung, t2, 6), chorus = near(hook, t2, 5);
+      const lvl = base - (lyrical ? 0 : sung.length ? 7 : 2) + (chorus ? 2.5 : 0) - (t2 < 4 || t2 > dur - 6 ? 6 : 0);
+      const kick = !off && (inBar === 0 || inBar === 2), snare = !off && (inBar === 1 || inBar === 3);
+      segs.push({
+        t: t2,
+        l: lvl + (kick ? 1.5 : snare ? 1 : -3) * energy,
+        p: chroma.map((v, k) => clamp(v * (0.75 + 0.25 * Math.sin(i * 0.7 + k)), 0, 1)),
+        b: off ? 95 : kick ? 25 : 60,
+        f: snare ? 60 : off ? 35 : 10,
+        k: kick ? 95 : snare ? 80 : 15
+      });
+    }
+    const avg = segs.reduce((n, s) => n + s.l, 0) / segs.length;
+    return {
+      beats,
+      bars,
+      segs,
+      avg,
+      bpm: Math.round(bpm),
+      loud: base,
+      sections: [{ t: 0, mode: feat?.mode ?? 1, l: base }],
+      synthetic: true
+    };
+  }
+  var within2;
+  var init_estimate = __esm({
+    "src/estimate.js"() {
+      init_core();
+      init_config();
+      init_lyrics();
+      init_player();
+      within2 = (p, ms) => Promise.race([p.catch(() => null), new Promise((r) => setTimeout(() => r(null), ms))]);
+    }
+  });
+
+  // src/audio.js
+  async function loadAudio(uri) {
+    if (!uri || audio.uri === uri) return;
+    audio.uri = uri;
+    audio.data = audioCache.get(uri) || null;
+    if (audio.data && !audio.data.synthetic || !uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
+      beat.sync();
+      return;
+    }
+    await fetchAnalysis(uri, audio.data ? RETRY.length : 0);
+  }
+  async function fallback(uri) {
+    const est = await estimateAnalysis(uri).catch(() => null);
+    if (!est || audio.uri !== uri || audio.data && !audio.data.synthetic) return;
+    audio.data = est;
+    audioCache.set(uri, est);
+    beat.sync();
+    announce();
+  }
+  async function fetchAnalysis(uri, attempt) {
+    let got = false;
+    try {
+      const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8e3))]);
+      const num = (v, fb) => Number.isFinite(v) ? v : fb;
+      const ok = (x) => Number.isFinite(x?.start);
+      const beats = (d?.beats || []).filter(ok);
+      if (audio.uri === uri && beats.length) {
+        const segs = (d.segments || []).filter(ok).map((s) => ({
+          t: s.start,
+          l: num(s.loudness_max, -20),
+          p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
+          // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
+          b: num(s.timbre?.[1], 0),
+          // timbre[2] = Flachheit (rauschig wie Snare/Clap/Becken), timbre[3] = Anschlag (hart wie Kick/Snare)
+          f: num(s.timbre?.[2], 0),
+          k: num(s.timbre?.[3], 0)
+        }));
+        const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
+        const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
+        const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
+        audio.data = {
+          beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
+          bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
+          // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
+          sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12) })),
+          segs,
+          bpm: Math.round(bpm),
+          loud: Number(d.track?.loudness) || avg,
+          avg
+        };
+        audioCache.set(uri, audio.data);
+        got = true;
+        announce();
+      }
+    } catch {
+    }
+    beat.sync();
+    if (!got && audio.uri === uri && attempt === 0) fallback(uri);
+    if (!got && audio.uri === uri && attempt < RETRY.length) {
+      setTimeout(() => audio.uri === uri && (!audio.data || audio.data.synthetic) && fetchAnalysis(uri, attempt + 1), RETRY[attempt]);
+    }
+  }
+  function bands(sec) {
+    const segs = audio.data?.segs;
+    if (!segs?.length) return null;
+    const s = segs[Math.max(seek(segs, sec, "t"), 0)];
+    if (!s || s.p.length !== 12) return null;
+    const loud = clamp((s.l + 38) / 38, 0, 1);
+    const b = beat.read(sec);
+    const out = [];
+    for (let i = 0; i < 8; i++) {
+      const f = i / 7 * 11, lo = Math.floor(f), hi = Math.min(11, lo + 1);
+      const p = s.p[lo] + (s.p[hi] - s.p[lo]) * (f - lo);
+      out.push(Number(clamp((0.1 + p * 0.9) * (0.35 + loud * 0.65) + b * 0.2, 0, 1).toFixed(3)));
+    }
+    return out;
+  }
+  var audio, audioCache, announce, RETRY, beat;
+  var init_audio = __esm({
+    "src/audio.js"() {
+      init_core();
+      init_config();
+      init_estimate();
+      audio = { uri: "", data: null };
+      audioCache = lru(50);
+      announce = () => document.dispatchEvent(new Event("mirage:audio"));
+      RETRY = [3e3, 8e3, 2e4];
+      beat = /* @__PURE__ */ (() => {
+        let on = false;
+        function read(sec) {
+          const bs = audio.data?.beats;
+          if (!bs) return 0;
+          const i = seek(bs, sec, "t");
+          if (i < 0) return 0;
+          const since = sec - bs[i].t;
+          return Math.pow(clamp(1 - since / 0.32, 0, 1), 2) * clamp(0.4 + bs[i].c, 0, 1);
+        }
+        const now = () => (S.Player.getProgress?.() || 0) / 1e3;
+        function sync() {
+          on = cfg.beat && !cfg.calm && !!audio.data && root.classList.contains("mirage-playing");
+          root.classList.toggle("mirage-beat", on);
+        }
+        return { sync, read, get level() {
+          return on ? read(now()) : 0;
+        } };
+      })();
+    }
+  });
+
+  // src/burst.js
+  function burst(x, y) {
+    const box = document.createElement("div");
+    box.className = "m-burst";
+    box.style.left = x + "px";
+    box.style.top = y + "px";
+    box.append(document.createElement("b"));
+    const cols = palette().map((c) => `rgb(${c.join(",")})`);
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement("i");
+      const ang = i / 16 * Math.PI * 2 + Math.random() * 0.3;
+      const dist = 36 + Math.random() * 54;
+      if (i % 3 === 0) {
+        s.className = "h";
+        s.textContent = "\u2665";
+      }
+      s.style.setProperty("--c", cols[i % cols.length]);
+      s.style.setProperty("--tx", Math.cos(ang) * dist + "px");
+      s.style.setProperty("--ty", Math.sin(ang) * dist - 10 + "px");
+      s.style.setProperty("--r", Math.round((Math.random() - 0.5) * 120) + "deg");
+      box.append(s);
+    }
+    document.body.append(box);
+    setTimeout(() => box.remove(), 1100);
+  }
+  var init_burst = __esm({
+    "src/burst.js"() {
+      init_selectors();
+      init_config();
+      init_color();
+      document.addEventListener(
+        "click",
+        (e) => {
+          if (!cfg.burst || cfg.calm) return;
+          const b = e.target.closest?.(SEL.likeButton);
+          if (!b) return;
+          const { clientX: x, clientY: y } = e;
+          setTimeout(() => b.getAttribute("aria-checked") !== "false" && burst(x, y), 220);
+        },
+        true
+      );
     }
   });
 
@@ -4981,7 +5267,16 @@
         trance: [110, 140, 255],
         dnb: [170, 255, 90],
         metal: [220, 30, 60],
-        latin: [255, 120, 95]
+        latin: [255, 120, 95],
+        disco: [255, 215, 110],
+        kpop: [255, 90, 200],
+        reggae: [80, 200, 110],
+        classical: [235, 205, 140],
+        punk: [255, 70, 40],
+        hardstyle: [255, 40, 90],
+        afro: [255, 160, 70],
+        jazz: [200, 150, 90],
+        country: [215, 170, 100]
       };
     }
   });
@@ -5585,16 +5880,214 @@
           halo: true,
           sparks: 16,
           bottom: false
+        },
+        // Disco/Funk: Discokugel, warmes Gold, jeder Schlag federt
+        disco: {
+          decay: 6,
+          beams: 0.7,
+          accent: [1, 0.8, 0.9, 0.8],
+          flashOn: "down",
+          spot: "disco",
+          spinRate: 0.3,
+          sway: true,
+          shake: 0,
+          tint: "gold",
+          mirror: true,
+          spin: true,
+          height: 1.35,
+          pulse: 0.09,
+          ring: 1,
+          thick: 2.6,
+          halo: true,
+          sparks: 16,
+          bottom: false
+        },
+        // K-Pop/J-Pop: knallige Pink-Töne, schnelle Schwenks, viel Funkeln
+        kpop: {
+          decay: 7,
+          beams: 1,
+          accent: [1, 0.7, 0.9, 0.7],
+          flashOn: "down",
+          spot: "pan",
+          spinRate: 0.45,
+          sway: true,
+          shake: 0,
+          tint: "pink",
+          mirror: true,
+          spin: true,
+          height: 1.45,
+          pulse: 0.09,
+          ring: 1,
+          thick: 2.4,
+          halo: true,
+          sparks: 22,
+          bottom: false
+        },
+        // Reggae/Dancehall: Betonung auf 2 und 4 (One Drop), warmes Grün, Licht vom Boden, wiegend
+        reggae: {
+          decay: 4,
+          beams: 0.5,
+          accent: [0.5, 1, 0.55, 1],
+          flashOn: "",
+          spot: "floor",
+          spinRate: 0.12,
+          sway: true,
+          shake: 0,
+          tint: "jungle",
+          mirror: true,
+          spin: false,
+          height: 1.25,
+          pulse: 0.07,
+          ring: 2,
+          thick: 3.2,
+          halo: true,
+          sparks: 8,
+          bottom: true
+        },
+        // Klassik/Filmmusik: großes, langsames Licht in Gold, keine Blitze
+        classical: {
+          decay: 1.6,
+          beams: 0.25,
+          accent: [1, 0.3, 0.5, 0.3],
+          flashOn: "",
+          spot: "soft",
+          spinRate: 0.06,
+          sway: false,
+          shake: 0,
+          tint: "gold",
+          mirror: true,
+          spin: true,
+          height: 1.1,
+          pulse: 0.03,
+          ring: 4,
+          thick: 1.8,
+          halo: true,
+          sparks: 4,
+          bottom: false
+        },
+        // Punk: schneller Backbeat, harte Spots, viel Wackeln
+        punk: {
+          decay: 12,
+          beams: 0.8,
+          accent: [0.7, 1, 0.7, 1],
+          flashOn: "back",
+          spot: "top",
+          spinRate: 0.25,
+          sway: false,
+          shake: 9,
+          tint: "hot",
+          mirror: true,
+          spin: false,
+          height: 1.55,
+          pulse: 0.1,
+          ring: 1,
+          thick: 3.4,
+          halo: false,
+          sparks: 20,
+          bottom: false
+        },
+        // Hardstyle: jede Kick ein Schlag ins Gesicht – Tunnel, Rot, harte Stöße
+        hardstyle: {
+          decay: 12,
+          beams: 1.1,
+          accent: [1, 0.95, 1, 0.95],
+          flashOn: "down",
+          spot: "tunnel",
+          spinRate: 0.7,
+          sway: false,
+          shake: 7,
+          tint: "hot",
+          mirror: true,
+          spin: true,
+          height: 1.6,
+          pulse: 0.12,
+          ring: 1,
+          thick: 3,
+          halo: true,
+          sparks: 14,
+          bottom: true
+        },
+        // Afrobeats/Amapiano: lockerer Groove, warme Schwenks, das Cover tanzt
+        afro: {
+          decay: 5,
+          beams: 0.6,
+          accent: [1, 0.6, 0.8, 0.9],
+          flashOn: "down",
+          spot: "pan",
+          spinRate: 0.25,
+          sway: true,
+          shake: 0,
+          tint: "warm",
+          mirror: true,
+          spin: true,
+          height: 1.35,
+          pulse: 0.09,
+          ring: 2,
+          thick: 2.8,
+          halo: true,
+          sparks: 14,
+          bottom: true
+        },
+        // Jazz/Blues: warmes Clublicht, das langsam atmet
+        jazz: {
+          decay: 3,
+          beams: 0.3,
+          accent: [1, 0.5, 0.7, 0.5],
+          flashOn: "",
+          spot: "soft",
+          spinRate: 0.1,
+          sway: true,
+          shake: 0,
+          tint: "gold",
+          mirror: true,
+          spin: true,
+          height: 1.15,
+          pulse: 0.05,
+          ring: 3,
+          thick: 2.2,
+          halo: true,
+          sparks: 6,
+          bottom: false
+        },
+        // Country/Folk: warme Bühnenspots von oben, Händeklatschen auf 2 und 4
+        country: {
+          decay: 6,
+          beams: 0.4,
+          accent: [1, 0.7, 0.85, 0.7],
+          flashOn: "back",
+          spot: "top",
+          spinRate: 0.15,
+          sway: true,
+          shake: 0,
+          tint: "gold",
+          mirror: true,
+          spin: false,
+          height: 1.3,
+          pulse: 0.06,
+          ring: 2,
+          thick: 2.6,
+          halo: true,
+          sparks: 8,
+          bottom: false
         }
       };
       PROFILE_KEYS = Object.keys(PROFILES);
       SPECIFIC = [
         ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
+        ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
         ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
         ["techno", /techno|minimal|industrial/],
         ["trance", /trance|psytrance|uplifting/],
-        ["house", /house|nu disco|garage house/],
-        ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/]
+        ["punk", /punk|post-hardcore|\bemo\b|hardcore/],
+        ["kpop", /k-?pop|j-?pop|c-?pop|idol/],
+        ["afro", /afrobeat|afro ?pop|amapiano|afroswing|afro ?fusion/],
+        ["house", /house|garage house/],
+        ["disco", /disco|funk|boogie/],
+        ["reggae", /reggae|dancehall|\bdub\b|\bska\b/],
+        ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/],
+        ["classical", /classical|orchestra|soundtrack|\bscore\b|cinematic|opera|baroque|film/],
+        ["jazz", /jazz|swing|bebop|bossa|blues/],
+        ["country", /country|americana|bluegrass|folk/]
       ];
       GENRES = [
         ["chill", /lo-?fi|chill|ambient|acoustic|jazz|classical|piano|folk|soul|r&b|rnb|bossa|sleep|meditation|singer-songwriter|soundtrack|orchestra/],
@@ -5749,6 +6242,7 @@
           else if (P.flashOn === "back") flashOn = snareHit || hit && (inBar === 1 || inBar === 3) && snareEnv < 0.2;
           else if (P.flashOn === "down-hi") flashOn = hit && inBar === 0 && smooth.e > 0.65;
           if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
+          if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62) flashOn = true;
           if (smooth.k > 0.5) flashOn = false;
           if (fx && cfg.partyFlash && (flashOn || dropHit) && clock - lastFlashAt > 0.34) {
             lastFlashAt = clock;
@@ -6125,6 +6619,12 @@
           });
           addEventListener("resize", sizeCanvas);
           document.addEventListener("keydown", () => isOpen() && wake(), true);
+          document.addEventListener("mirage:audio", () => {
+            if (!isOpen()) return;
+            lastBeatIdx = -1;
+            if (el2.dataset.mode === "party") party.prepare(currentItem()).then(updateKicker);
+            else updateKicker();
+          });
         }
         async function setCover(item) {
           const token = ++coverToken;
@@ -6282,7 +6782,7 @@
           const m = el2.dataset.mode;
           if (m === "party") {
             const p = party.info;
-            q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? p.bpm + " BPM" : ""].filter(Boolean).join(" \xB7 ");
+            q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? (audio.data?.synthetic ? "\u2248 " : "") + p.bpm + " BPM" : ""].filter(Boolean).join(" \xB7 ");
             return;
           }
           q.kicker.textContent = m === "viz" ? t(audio.data ? "vizBeat" : "vizAmbient") : m === "lyrics" ? t("lyrics") : m === "mix" ? t("tabMix") : t("now");
@@ -6626,8 +7126,8 @@
               glow: true,
               rings: true,
               ring: P.ring,
-              // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll
-              height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2),
+              // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll – die Kick drückt ihn raus
+              height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
               pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I)
             });
           }
@@ -6648,7 +7148,7 @@
               lastBeatIdx = bi;
               const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
               if (px) {
-                if (V.rings && px.beat > 0.5 && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
+                if (V.rings && (px.beat > 0.5 || px.kickHit && px.energy > 0.55) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
               } else if (V.rings && bi % V.ring === 0) rings.push({ r: R, a: 0.6 * c, w: 2 });
             }
           }
@@ -6794,7 +7294,7 @@
           if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
           if (px) {
             partyFx = true;
-            const op = (px.flash * 0.42).toFixed(2);
+            const op = Math.max(px.flash * 0.42, px.ambient || 0).toFixed(2);
             if (q.flash.style.opacity !== op) q.flash.style.opacity = op;
             if (px.flashCol !== lastFlashCol) {
               lastFlashCol = px.flashCol;
@@ -6813,7 +7313,7 @@
               lastKick = kz;
               q.canvas.style.scale = kz;
             }
-            const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1)).toFixed(3);
+            const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1) * (1 + px.kickEnv * 0.014 * px.energy)).toFixed(3);
             if (bz !== lastBgZ) {
               lastBgZ = bz;
               q.bg.style.scale = bz === "1.000" ? "" : bz;
@@ -6844,7 +7344,7 @@
           }
         }
         let vividKey = "", vividPal = null;
-        const TINT = { cool: 205, warm: 28, hot: 4 };
+        const TINT = { cool: 205, warm: 28, hot: 4, pink: 325, gold: 44, jungle: 130 };
         const toward = (h, target, f) => (h + (((target - h) % 360 + 540) % 360 - 180) * f + 360) % 360;
         function vivid(pal, minor, tint, pitch = -1) {
           const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch;
@@ -7112,7 +7612,7 @@
             ctx.fill();
           }
           drawMotes(ctx, dt, dpr, pal);
-          if (cfg.partyCrowd && px.fx && quality.level > 0) {
+          if (cfg.partyCrowd && px.fx) {
             stageCam(ctx, dpr);
             drawCrowd(ctx, px, pal, dpr, rgba2, dt);
             ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -7123,16 +7623,18 @@
         const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };
         function tuneQuality(dt) {
           quality.ema += (dt - quality.ema) * 0.05;
-          if (quality.ema > 1 / 48) {
+          if (quality.ema > 1 / 40) {
             quality.fast = 0;
-            if ((quality.slow += dt) > 2 && quality.level > 0) [quality.level, quality.slow] = [quality.level - 1, 0];
-          } else if (quality.ema < 1 / 57) {
+            if ((quality.slow += dt) > 4 && quality.level > 0) [quality.level, quality.slow] = [quality.level - 1, 0];
+          } else if (quality.ema < 1 / 52) {
             quality.slow = 0;
-            if ((quality.fast += dt) > 10 && quality.level < 2) [quality.level, quality.fast] = [quality.level + 1, 0];
+            if ((quality.fast += dt) > 5 && quality.level < 2) [quality.level, quality.fast] = [quality.level + 1, 0];
           }
         }
         function partyExtras(px, now, dt, R, dpr) {
           tuneQuality(dt);
+          px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
+          px.ambient = clamp(0.04 + px.kickEnv * 0.2 * px.I + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
           if (quality.level < 2) {
             px.lasers = Math.round(px.lasers / 2);
             px.lvl = Math.min(px.lvl, 1.6);
@@ -7204,7 +7706,6 @@
               depth.key = k;
               q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
               q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
-              q.canvas.style.transform = `perspective(1600px) rotateY(${(depth.x * 7).toFixed(2)}deg) rotateX(${(-depth.y * 5).toFixed(2)}deg)`;
             }
           } else if (depth.key) {
             depth.key = "";
@@ -7214,8 +7715,9 @@
         }
         const toLocal = (x, y) => [x, y];
         function stageCam(ctx, dpr) {
-          if (cam.s === 1 && !cam.x && !cam.y) return;
-          ctx.setTransform(cam.s, 0, 0, cam.s, (1 - cam.s) * vw / 2 + cam.x * dpr, (1 - cam.s) * vh / 2 + cam.y * dpr);
+          const dx = cam.x + (depth.key ? depth.x * 34 : 0), dy = cam.y + (depth.key ? depth.y * 14 : 0);
+          if (cam.s === 1 && !dx && !dy) return;
+          ctx.setTransform(cam.s, 0, 0, cam.s, (1 - cam.s) * vw / 2 + dx * dpr, (1 - cam.s) * vh / 2 + dy * dpr);
         }
         function drawMotes(ctx, dt, dpr) {
           if (!motes.length) return;
@@ -7241,7 +7743,7 @@
         function makeCrowd(u) {
           const people = [];
           for (const [row, scale, gap] of [[2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]]) {
-            for (let x = -30 * u; x < vw + 40 * u; x += gap * u * (0.8 + Math.random() * 0.45)) {
+            for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {
               const r = Math.random;
               people.push({
                 x,
@@ -7344,7 +7846,7 @@
             const y = base + p.y + bob, hx = p.x + sway;
             const wantUp = me2 > 0.55 && p.up < me2 + 0.1 ? 1 : p.gadget && me2 < 0.5 ? 0.8 : 0;
             p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 4));
-            if (p.row === 2 && quality.level < 2) continue;
+            if (p.row > quality.level) continue;
             const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
             ctx.drawImage(sp.c, hx - sp.ax * k1, y - sp.ay * k1, sp.w * k1, sp.h * k1);
             const arm = arms[p.row];
@@ -9282,6 +9784,7 @@
             KeyS: () => immersive.shuffle(),
             KeyR: () => immersive.repeat(),
             KeyF: () => immersive.toggleFull(),
+            F11: () => immersive.toggleFull(),
             KeyQ: () => immersive.toggleQueue(),
             KeyN: () => S.Player.next(),
             KeyP: () => S.Player.back()
@@ -9344,23 +9847,23 @@
           if (btn.nextElementSibling !== s) s.before(btn);
           return true;
         };
-        let fallback = null, seen = false;
+        let fallback2 = null, seen = false;
         const t0 = Date.now();
         (function keep() {
           if (place()) {
             seen = true;
-            if (fallback) {
+            if (fallback2) {
               try {
-                fallback.deregister?.();
+                fallback2.deregister?.();
               } catch {
               }
-              fallback.element?.remove();
-              fallback = null;
+              fallback2.element?.remove();
+              fallback2 = null;
             }
-          } else if (!seen && !fallback && Date.now() - t0 > 15e3 && S.Topbar?.Button) {
+          } else if (!seen && !fallback2 && Date.now() - t0 > 15e3 && S.Topbar?.Button) {
             try {
-              fallback = new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
-              fallback.element?.classList.add("m-orb-btn");
+              fallback2 = new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
+              fallback2.element?.classList.add("m-orb-btn");
             } catch {
             }
           }

@@ -299,6 +299,8 @@ async function weekCard() {
 const GENRE_COL = {
   rave: [168, 110, 255], bass: [255, 140, 60], rock: [240, 70, 70], pop: [255, 105, 190], chill: [70, 210, 200], techno: [80, 200, 255],
   house: [255, 200, 70], trance: [110, 140, 255], dnb: [170, 255, 90], metal: [220, 30, 60], latin: [255, 120, 95],
+  disco: [255, 215, 110], kpop: [255, 90, 200], reggae: [80, 200, 110], classical: [235, 205, 140], punk: [255, 70, 40],
+  hardstyle: [255, 40, 90], afro: [255, 160, 70], jazz: [200, 150, 90], country: [215, 170, 100],
 };
 async function partyRecapCard(r) {
   const songs = r?.songs || [];
