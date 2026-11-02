@@ -28,8 +28,18 @@ async function fetchLyrics(uri, pick) {
   }
   const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
   if (own || !cfg.onlineLyrics || !meta) return own;
-  return fetchLrclib(meta);
+  // der Reihe nach: LRCLIB → NetEase (viele zeitgenaue Texte, gerade für internationale Musik)
+  // → lyrics.ovh (nur einfacher Text). Ein zeitgenauer Treffer gewinnt vor einem einfachen.
+  let plain = null;
+  for (const src of [fetchLrclib, fetchNetease, fetchOvh]) {
+    const got = await within(src(meta), 7000);
+    if (got?.synced || got?.instrumental) return got;
+    if (got && !plain) plain = got;
+  }
+  return plain;
 }
+// Quelle hängt? Nach ms aufgeben statt den Liedtext ewig auf „Lädt“ zu lassen
+const within = (p, ms) => Promise.race([p.catch(() => null), new Promise((r) => setTimeout(() => r(null), ms))]);
 async function fetchSpotify(uri) {
   const id = uri.split(":")[2];
   const url = `https://spclient.wg.spotify.com/color-lyrics/v2/track/${id}?format=json&vocalRemoval=false&market=from_token`;
@@ -103,6 +113,55 @@ function fromHit(hit) {
   const plain = (hit.plainLyrics || "").split(/\r?\n/).map((x) => x.trim());
   while (plain.length && !plain[plain.length - 1]) plain.pop();
   return plain.length ? { ...base, synced: false, lines: plain.map((text) => ({ t: 0, text: text || "♪" })) } : null;
+}
+
+/* ---- NetEase Cloud Music */
+// Über Spotifys eigene Netzwerkschicht (CosmosAsync): music.163.com erlaubt keine Browser-Anfragen
+// von fremden Seiten. Raus gehen nur Titel und Künstler.
+const NE = "https://music.163.com/api/";
+async function netease(path) {
+  try {
+    const r = await S.CosmosAsync.get(NE + path);
+    return typeof r === "string" ? JSON.parse(r) : r;
+  } catch {
+    return null;
+  }
+}
+// Mitwirkenden-Zeilen am Anfang („作词 : …“, „Composer: …“) sind kein Liedtext
+const CREDIT = /^(作词|作曲|编曲|制作|混音|母带|和声|吉他|贝斯|鼓|录音|监制|出品|lyricist|lyrics|composer|arranger|producer|mixed|mastered)\s*[:：]/i;
+const norm = (s) => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+async function fetchNetease(meta) {
+  if (!meta.title || !meta.artist) return null;
+  const title = cleanTitle(meta.title) || meta.title;
+  const res = await netease(`search/get?s=${encodeURIComponent(title + " " + meta.artist)}&type=1&limit=10`);
+  const songs = res?.result?.songs || [];
+  const a = norm(meta.artist), tt = norm(title);
+  // passender Künstler und Titel, Länge höchstens 4 s daneben
+  const fit = songs
+    .filter((s) => (s.artists || []).some((x) => norm(x.name).includes(a) || a.includes(norm(x.name))) && (norm(s.name).includes(tt) || tt.includes(norm(s.name))))
+    .filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1000 - meta.sec) <= 4)
+    .sort((x, y) => Math.abs((x.duration || 0) / 1000 - meta.sec) - Math.abs((y.duration || 0) / 1000 - meta.sec))[0];
+  if (!fit) return null;
+  const lyr = await netease(`song/lyric?id=${fit.id}&lv=-1&kv=-1&tv=-1`);
+  if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
+  const lines = parseLrc(lyr?.lrc?.lyric || "").filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+  return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
+}
+
+/* ---- lyrics.ovh: nur einfacher Text, aber riesige Sammlung */
+async function fetchOvh(meta) {
+  if (!meta.title || !meta.artist) return null;
+  try {
+    const title = cleanTitle(meta.title) || meta.title;
+    const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(meta.artist)}/${encodeURIComponent(title)}`);
+    const text = res.ok ? (await res.json())?.lyrics || "" : "";
+    const plain = text.replace(/^Paroles de la chanson.*\r?\n/i, "").split(/\r?\n/).map((x) => x.trim());
+    while (plain.length && !plain[0]) plain.shift();
+    while (plain.length && !plain[plain.length - 1]) plain.pop();
+    return plain.length > 2 ? { lang: "", source: "ovh", synced: false, lines: plain.map((t) => ({ t: 0, text: t || "♪" })) } : null;
+  } catch {
+    return null;
+  }
 }
 
 /* ---- Fassung wählen */
@@ -192,4 +251,7 @@ async function getCanvas(uri) {
   return url;
 }
 
-export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas };
+// Anzeigename der Quelle (Knopf „Fassung wählen“, Overlay)
+const SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
+
+export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME };

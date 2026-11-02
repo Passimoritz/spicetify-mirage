@@ -1,11 +1,11 @@
-import { S, root } from "./core.js";
+import { S, root, loadImage } from "./core.js";
 import { cfg, applyScheme } from "./config.js";
 import { analyse, setColors, clearColors, current } from "./color.js";
 import { showHaze } from "./stage.js";
 import { loadAudio, beat } from "./audio.js";
 import { bridge } from "./bridge.js";
 import { immersive } from "./immersive.js";
-import { currentItem, covers } from "./player.js";
+import { currentItem, covers, toHttp } from "./player.js";
 import { record } from "./share.js";
 import { dust } from "./dust.js";
 
@@ -42,6 +42,7 @@ async function onSong(isChange, attempt = 0) {
   if (token !== songToken) return;
   showHaze(haze || c.big);
   record(item, colors || current);
+  prefetchNext();
   if (!dynamic) return clearColors();
   // „Farben einfrieren“: die jetzigen bleiben, egal was läuft
   if (cfg.freeze && current) return;
@@ -50,6 +51,23 @@ async function onSong(isChange, attempt = 0) {
   else if (colors) setColors(colors);
   // fast farbloses Cover: lieber die Schemafarben als ein graues Spotify
   else clearColors();
+}
+// Nächsten Song schon vorbereiten: Cover laden, Farben und Hintergrund berechnen (alles gemerkt).
+// Beim Wechsel sind Cover und Farben dann sofort da statt nach dem Download nachzurutschen.
+let prefetched = "";
+function prefetchNext() {
+  const next = (S.Queue?.nextTracks || []).map((x) => x.contextTrack || x).find((x) => x?.uri?.startsWith("spotify:track:"));
+  if (!next || next.uri === prefetched) return;
+  prefetched = next.uri;
+  const m = next.metadata || {};
+  const big = toHttp(m.image_xlarge_url || m.image_large_url || m.image_url);
+  const small = toHttp(m.image_url || m.image_small_url);
+  if (!big) return;
+  (window.requestIdleCallback || setTimeout)(() => {
+    loadImage(big);
+    if (small && small !== big) loadImage(small);
+    analyse(big, next.uri).catch(() => {});
+  }, { timeout: 4000 });
 }
 function onPlayPause() {
   root.classList.toggle("mirage-playing", !!S.Player.isPlaying());

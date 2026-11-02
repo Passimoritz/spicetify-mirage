@@ -1232,6 +1232,109 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   display: none;
 }
 
+/* Party-Ruhemodus: Maus ruht → Kopfzeile, Knöpfe und Liedtext-Leiste blenden aus,
+   Cover, Liedtext und Titel rücken um die frei gewordene Höhe (--m-idle-shift) weich nach unten */
+#mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-controls, .m-im-lyrbar) {
+  transition:
+    opacity 0.5s var(--m-ease),
+    transform 0.7s var(--m-ease);
+}
+#mirage-immersive[data-mode="party"] :is(.m-im-cover-wrap, .m-im-lyrics, .m-im-meta) {
+  transition: transform 0.9s var(--m-ease);
+}
+#mirage-immersive[data-mode="party"].is-idle {
+  cursor: none;
+}
+#mirage-immersive[data-mode="party"].is-idle :is(.m-im-top, .m-im-controls, .m-im-lyrbar) {
+  opacity: 0;
+  pointer-events: none;
+}
+#mirage-immersive[data-mode="party"].is-idle .m-im-top {
+  transform: translateY(-12px);
+}
+#mirage-immersive[data-mode="party"].is-idle .m-im-lyrbar {
+  transform: translateY(12px);
+}
+#mirage-immersive[data-mode="party"].is-idle .m-im-meta {
+  transform: translateY(var(--m-idle-shift, 80px));
+}
+#mirage-immersive[data-mode="party"].is-idle :is(.m-im-cover-wrap, .m-im-lyrics) {
+  transform: translateY(calc(var(--m-idle-shift, 80px) / 2));
+}
+html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-controls, .m-im-lyrbar, .m-im-cover-wrap, .m-im-lyrics, .m-im-meta) {
+  transition-duration: 0.01s;
+}
+
+/* Smart Shuffle hat den Song eingestreut: kleines Funkel-Etikett über dem Titel */
+#mirage-immersive .m-im-smartpick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  margin: 8px 0 2px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  font: 700 11px/1 var(--m-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(120deg, rgba(var(--m-a-rgb), 0.45), rgba(var(--m-b-rgb), 0.35));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 4px 16px -6px rgba(var(--m-a-rgb), 0.9);
+  animation: m-smart-in 0.6s var(--m-spring) both;
+}
+#mirage-immersive .m-im-smartpick[hidden] {
+  display: none;
+}
+#mirage-immersive .m-im-smartpick svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+}
+#mirage-immersive:is([data-mode="mix"], [data-mode="party"]) .m-im-smartpick {
+  margin-left: auto;
+  margin-right: auto;
+}
+@keyframes m-smart-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+}
+
+/* Suchfeld über der Playlist-Liste */
+#mirage-immersive .m-im-side-find {
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(var(--spice-rgb-main), 0.92);
+  color: #fff;
+  font: 500 14px var(--m-font);
+  outline: none;
+}
+#mirage-immersive .m-im-side-find:focus {
+  border-color: rgba(var(--m-a-rgb), 0.8);
+  box-shadow: 0 0 0 3px rgba(var(--m-a-rgb), 0.25);
+}
+#mirage-immersive .m-im-side-item[hidden] {
+  display: none;
+}
+#mirage-immersive .m-im-side-item.is-busy {
+  opacity: 0.55;
+  cursor: progress;
+}
+#mirage-immersive .m-im-side-item img {
+  object-fit: cover;
+}
+
 /* Jam-Gäste: schweben leise an den Rändern, unter den Bedienelementen */
 #mirage-immersive .m-im-jam {
   position: absolute;

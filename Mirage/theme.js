@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.4.5" : "dev";
+      VERSION = true ? "1.5.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -249,9 +249,9 @@
           overlayConnected: "\u25CF Overlay connected",
           overlayMissing: "\u25CB Overlay not running \u2013 install it with the button below, then start it once",
           onlineLyrics: "Search lyrics online",
-          onlineLyricsHint: "If Spotify has none, Mirage asks LRCLIB \u2013 only title, artist, album and length are sent",
+          onlineLyricsHint: "If Spotify has none, Mirage asks LRCLIB, NetEase and lyrics.ovh \u2013 only title, artist, album and length are sent",
           emptyTitle: "No lyrics for this song",
-          emptyText: "Neither Spotify nor LRCLIB has lyrics for it yet.",
+          emptyText: "None of the lyrics sources has it yet.",
           emptyTextOff: "Spotify has none. Turn on \u201CSearch lyrics online\u201D in the settings to look further.",
           instrTitle: "Instrumental",
           instrText: "No words \u2013 just let the music play.",
@@ -261,7 +261,7 @@
           lyrPicked: "chosen",
           lyrNone: "No lyrics",
           lyrAuto: "Automatic",
-          lyrAutoHint: "Spotify first, then the best LRCLIB match",
+          lyrAutoHint: "Spotify first, then LRCLIB, NetEase and lyrics.ovh",
           lyrNoVersions: "LRCLIB has no other versions of this song",
           lyrSynced: "time-synced",
           lyrPlain: "plain text",
@@ -304,7 +304,24 @@
           scanCode: "Scan in Spotify",
           partyJam: "Show Jam guests",
           partyJamHint: "During a Spotify Jam, the profile pictures of everyone in it (you too) float at the edges",
-          jamYou: "You"
+          jamYou: "You",
+          partyLevel4: "Extreme",
+          partyLevel5: "Insane",
+          partyLasers: "Light beams",
+          partyLasersHint: "From \u201CExtreme\u201D: beams of light fan out from the cover and jump on every bar",
+          partyZoom: "Camera kicks",
+          partyZoomHint: "From \u201CExtreme\u201D: the whole picture punches in on the beat",
+          partyIdle: "Hide controls when idle",
+          partyIdleHint: "After a few seconds without the mouse, the controls fade out and everything glides to the centre",
+          c_addTo: "Add to playlist",
+          plFind: "Search playlists",
+          plAdded: "Added",
+          plDup: "Already in this playlist",
+          plFail: "Couldn't add it",
+          plNone: "No playlists you can add to",
+          plNoTrack: "Only songs can be added to playlists",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Added by Smart Shuffle"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -469,9 +486,9 @@
           overlayConnected: "\u25CF Overlay verbunden",
           overlayMissing: "\u25CB Overlay l\xE4uft nicht \u2013 mit dem Knopf unten installieren und einmal starten",
           onlineLyrics: "Liedtext online suchen",
-          onlineLyricsHint: "Hat Spotify keinen, fragt Mirage bei LRCLIB \u2013 daf\xFCr gehen nur Titel, K\xFCnstler, Album und L\xE4nge raus",
+          onlineLyricsHint: "Hat Spotify keinen, fragt Mirage bei LRCLIB, NetEase und lyrics.ovh \u2013 daf\xFCr gehen nur Titel, K\xFCnstler, Album und L\xE4nge raus",
           emptyTitle: "Kein Liedtext f\xFCr diesen Song",
-          emptyText: "Weder Spotify noch LRCLIB haben ihn bisher.",
+          emptyText: "Keine der Liedtext-Quellen hat ihn bisher.",
           emptyTextOff: "Spotify hat keinen. Schalte in den Einstellungen \u201ELiedtext online suchen\u201C ein, um weiter zu suchen.",
           instrTitle: "Instrumental",
           instrText: "Keine Worte \u2013 einfach die Musik laufen lassen.",
@@ -481,7 +498,7 @@
           lyrPicked: "gew\xE4hlt",
           lyrNone: "Kein Liedtext",
           lyrAuto: "Automatisch",
-          lyrAutoHint: "Erst Spotify, dann der beste LRCLIB-Treffer",
+          lyrAutoHint: "Erst Spotify, dann LRCLIB, NetEase und lyrics.ovh",
           lyrNoVersions: "LRCLIB hat keine weiteren Fassungen dieses Songs",
           lyrSynced: "zeitgenau",
           lyrPlain: "nur Text",
@@ -524,7 +541,24 @@
           scanCode: "In Spotify scannen",
           partyJam: "Jam-G\xE4ste zeigen",
           partyJamHint: "L\xE4uft ein Spotify-Jam, schweben die Profilbilder aller Teilnehmer (auch deins) am Rand",
-          jamYou: "Du"
+          jamYou: "Du",
+          partyLevel4: "Extrem",
+          partyLevel5: "Wahnsinn",
+          partyLasers: "Lichtstrahlen",
+          partyLasersHint: "Ab \u201EExtrem\u201C: Lichtf\xE4cher strahlen aus dem Cover und springen mit jedem Takt",
+          partyZoom: "Kamera-St\xF6\xDFe",
+          partyZoomHint: "Ab \u201EExtrem\u201C: das ganze Bild zoomt im Takt kurz heran",
+          partyIdle: "Bedienung bei Ruhe ausblenden",
+          partyIdleHint: "Nach ein paar Sekunden ohne Maus verschwinden die Kn\xF6pfe und alles gleitet zur Mitte",
+          c_addTo: "Zu Playlist hinzuf\xFCgen",
+          plFind: "Playlists durchsuchen",
+          plAdded: "Hinzugef\xFCgt",
+          plDup: "Schon in dieser Playlist",
+          plFail: "Ging leider nicht",
+          plNone: "Keine Playlist, in die du hinzuf\xFCgen kannst",
+          plNoTrack: "Nur Songs lassen sich zu Playlists hinzuf\xFCgen",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Von Smart Shuffle eingestreut"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -689,9 +723,9 @@
           overlayConnected: "\u25CF Overlay connect\xE9",
           overlayMissing: "\u25CB Overlay inactif \u2013 installe-le avec le bouton ci-dessous, puis lance-le une fois",
           onlineLyrics: "Chercher les paroles en ligne",
-          onlineLyricsHint: "Si Spotify n'en a pas, Mirage interroge LRCLIB \u2013 seuls le titre, l'artiste, l'album et la dur\xE9e sont envoy\xE9s",
+          onlineLyricsHint: "Si Spotify n'en a pas, Mirage interroge LRCLIB, NetEase et lyrics.ovh \u2013 seuls le titre, l'artiste, l'album et la dur\xE9e sont envoy\xE9s",
           emptyTitle: "Pas de paroles pour ce titre",
-          emptyText: "Ni Spotify ni LRCLIB n'ont encore de paroles pour ce titre.",
+          emptyText: "Aucune source de paroles ne l'a encore.",
           emptyTextOff: "Spotify n'en a pas. Active \xAB Chercher les paroles en ligne \xBB dans les r\xE9glages pour aller plus loin.",
           instrTitle: "Instrumental",
           instrText: "Pas de paroles \u2013 laisse simplement la musique jouer.",
@@ -701,7 +735,7 @@
           lyrPicked: "choisie",
           lyrNone: "Pas de paroles",
           lyrAuto: "Automatique",
-          lyrAutoHint: "D'abord Spotify, puis le meilleur r\xE9sultat LRCLIB",
+          lyrAutoHint: "D'abord Spotify, puis LRCLIB, NetEase et lyrics.ovh",
           lyrNoVersions: "LRCLIB n'a pas d'autre version de ce titre",
           lyrSynced: "synchronis\xE9es",
           lyrPlain: "texte seul",
@@ -744,7 +778,24 @@
           scanCode: "Scanner dans Spotify",
           partyJam: "Afficher les invit\xE9s du Jam",
           partyJamHint: "Pendant un Jam Spotify, les photos de profil de tous les participants (toi aussi) flottent sur les bords",
-          jamYou: "Toi"
+          jamYou: "Toi",
+          partyLevel4: "Extr\xEAme",
+          partyLevel5: "D\xE9mentiel",
+          partyLasers: "Faisceaux lumineux",
+          partyLasersHint: "D\xE8s \xAB Extr\xEAme \xBB : des faisceaux jaillissent de la pochette et sautent \xE0 chaque mesure",
+          partyZoom: "Coups de cam\xE9ra",
+          partyZoomHint: "D\xE8s \xAB Extr\xEAme \xBB : toute l'image zoome bri\xE8vement sur le temps",
+          partyIdle: "Masquer les commandes au repos",
+          partyIdleHint: "Apr\xE8s quelques secondes sans souris, les commandes s'effacent et tout glisse vers le centre",
+          c_addTo: "Ajouter \xE0 une playlist",
+          plFind: "Rechercher des playlists",
+          plAdded: "Ajout\xE9",
+          plDup: "D\xE9j\xE0 dans cette playlist",
+          plFail: "Impossible d'ajouter",
+          plNone: "Aucune playlist modifiable",
+          plNoTrack: "Seuls les titres peuvent \xEAtre ajout\xE9s aux playlists",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Ajout\xE9 par Smart Shuffle"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -909,9 +960,9 @@
           overlayConnected: "\u25CF Overlay conectado",
           overlayMissing: "\u25CB Overlay no est\xE1 en marcha \u2013 inst\xE1lalo con el bot\xF3n de abajo y \xE1brelo una vez",
           onlineLyrics: "Buscar letras en l\xEDnea",
-          onlineLyricsHint: "Si Spotify no tiene, Mirage consulta LRCLIB \u2013 solo se env\xEDan t\xEDtulo, artista, \xE1lbum y duraci\xF3n",
+          onlineLyricsHint: "Si Spotify no tiene, Mirage pregunta a LRCLIB, NetEase y lyrics.ovh \u2013 solo se env\xEDan t\xEDtulo, artista, \xE1lbum y duraci\xF3n",
           emptyTitle: "No hay letra para esta canci\xF3n",
-          emptyText: "Ni Spotify ni LRCLIB tienen todav\xEDa su letra.",
+          emptyText: "Ninguna fuente de letras la tiene todav\xEDa.",
           emptyTextOff: "Spotify no tiene. Activa \xABBuscar letras en l\xEDnea\xBB en los ajustes para buscar m\xE1s.",
           instrTitle: "Instrumental",
           instrText: "Sin palabras \u2013 deja que suene la m\xFAsica.",
@@ -921,7 +972,7 @@
           lyrPicked: "elegida",
           lyrNone: "Sin letra",
           lyrAuto: "Autom\xE1tico",
-          lyrAutoHint: "Primero Spotify, luego el mejor resultado de LRCLIB",
+          lyrAutoHint: "Primero Spotify, luego LRCLIB, NetEase y lyrics.ovh",
           lyrNoVersions: "LRCLIB no tiene otras versiones de esta canci\xF3n",
           lyrSynced: "sincronizada",
           lyrPlain: "solo texto",
@@ -964,7 +1015,24 @@
           scanCode: "Escanear en Spotify",
           partyJam: "Mostrar invitados del Jam",
           partyJamHint: "Durante un Jam de Spotify, las fotos de perfil de todos los participantes (t\xFA tambi\xE9n) flotan en los bordes",
-          jamYou: "T\xFA"
+          jamYou: "T\xFA",
+          partyLevel4: "Extremo",
+          partyLevel5: "Locura",
+          partyLasers: "Haces de luz",
+          partyLasersHint: "Desde \xABExtremo\xBB: haces de luz salen de la portada y saltan en cada comp\xE1s",
+          partyZoom: "Golpes de c\xE1mara",
+          partyZoomHint: "Desde \xABExtremo\xBB: toda la imagen hace zoom al ritmo",
+          partyIdle: "Ocultar controles en reposo",
+          partyIdleHint: "Tras unos segundos sin rat\xF3n, los controles se desvanecen y todo se desliza al centro",
+          c_addTo: "A\xF1adir a playlist",
+          plFind: "Buscar playlists",
+          plAdded: "A\xF1adida",
+          plDup: "Ya est\xE1 en esta playlist",
+          plFail: "No se pudo a\xF1adir",
+          plNone: "No hay playlists a las que puedas a\xF1adir",
+          plNoTrack: "Solo se pueden a\xF1adir canciones a playlists",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "A\xF1adida por Smart Shuffle"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1129,9 +1197,9 @@
           overlayConnected: "\u25CF Overlay connesso",
           overlayMissing: "\u25CB Overlay non in esecuzione \u2013 installalo con il pulsante qui sotto e avvialo una volta",
           onlineLyrics: "Cerca testi online",
-          onlineLyricsHint: "Se Spotify non ne ha, Mirage chiede a LRCLIB \u2013 vengono inviati solo titolo, artista, album e durata",
+          onlineLyricsHint: "Se Spotify non ce l'ha, Mirage chiede a LRCLIB, NetEase e lyrics.ovh \u2013 vengono inviati solo titolo, artista, album e durata",
           emptyTitle: "Nessun testo per questo brano",
-          emptyText: "N\xE9 Spotify n\xE9 LRCLIB hanno ancora il testo.",
+          emptyText: "Nessuna fonte di testi lo ha ancora.",
           emptyTextOff: "Spotify non ne ha. Attiva \u201CCerca testi online\u201D nelle impostazioni per cercare oltre.",
           instrTitle: "Strumentale",
           instrText: "Niente parole \u2013 lascia suonare la musica.",
@@ -1141,7 +1209,7 @@
           lyrPicked: "scelta",
           lyrNone: "Nessun testo",
           lyrAuto: "Automatico",
-          lyrAutoHint: "Prima Spotify, poi il miglior risultato di LRCLIB",
+          lyrAutoHint: "Prima Spotify, poi LRCLIB, NetEase e lyrics.ovh",
           lyrNoVersions: "LRCLIB non ha altre versioni di questo brano",
           lyrSynced: "sincronizzato",
           lyrPlain: "solo testo",
@@ -1184,7 +1252,24 @@
           scanCode: "Scansiona in Spotify",
           partyJam: "Mostra gli ospiti del Jam",
           partyJamHint: "Durante un Jam di Spotify, le foto profilo di tutti i partecipanti (anche la tua) fluttuano ai bordi",
-          jamYou: "Tu"
+          jamYou: "Tu",
+          partyLevel4: "Estremo",
+          partyLevel5: "Follia",
+          partyLasers: "Fasci di luce",
+          partyLasersHint: "Da \xABEstremo\xBB: fasci di luce partono dalla copertina e saltano a ogni battuta",
+          partyZoom: "Colpi di camera",
+          partyZoomHint: "Da \xABEstremo\xBB: l'intera immagine zooma a tempo",
+          partyIdle: "Nascondi i comandi a riposo",
+          partyIdleHint: "Dopo qualche secondo senza mouse i comandi svaniscono e tutto scivola al centro",
+          c_addTo: "Aggiungi a playlist",
+          plFind: "Cerca playlist",
+          plAdded: "Aggiunto",
+          plDup: "Gi\xE0 in questa playlist",
+          plFail: "Impossibile aggiungere",
+          plNone: "Nessuna playlist a cui aggiungere",
+          plNoTrack: "Solo i brani possono essere aggiunti alle playlist",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Aggiunto da Smart Shuffle"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1349,9 +1434,9 @@
           overlayConnected: "\u25CF Overlay conectado",
           overlayMissing: "\u25CB Overlay n\xE3o est\xE1 rodando \u2013 instale com o bot\xE3o abaixo e abra uma vez",
           onlineLyrics: "Buscar letras online",
-          onlineLyricsHint: "Se o Spotify n\xE3o tiver, o Mirage consulta o LRCLIB \u2013 s\xF3 t\xEDtulo, artista, \xE1lbum e dura\xE7\xE3o s\xE3o enviados",
+          onlineLyricsHint: "Se o Spotify n\xE3o tiver, o Mirage pergunta ao LRCLIB, NetEase e lyrics.ovh \u2013 s\xF3 t\xEDtulo, artista, \xE1lbum e dura\xE7\xE3o s\xE3o enviados",
           emptyTitle: "Sem letra para esta m\xFAsica",
-          emptyText: "Nem o Spotify nem o LRCLIB t\xEAm a letra ainda.",
+          emptyText: "Nenhuma fonte de letras tem ainda.",
           emptyTextOff: "O Spotify n\xE3o tem. Ative \u201CBuscar letras online\u201D nas configura\xE7\xF5es para procurar mais.",
           instrTitle: "Instrumental",
           instrText: "Sem palavras \u2013 s\xF3 deixe a m\xFAsica tocar.",
@@ -1361,7 +1446,7 @@
           lyrPicked: "escolhida",
           lyrNone: "Sem letra",
           lyrAuto: "Autom\xE1tico",
-          lyrAutoHint: "Primeiro o Spotify, depois o melhor resultado do LRCLIB",
+          lyrAutoHint: "Primeiro Spotify, depois LRCLIB, NetEase e lyrics.ovh",
           lyrNoVersions: "O LRCLIB n\xE3o tem outras vers\xF5es desta m\xFAsica",
           lyrSynced: "sincronizada",
           lyrPlain: "s\xF3 texto",
@@ -1404,7 +1489,24 @@
           scanCode: "Escanear no Spotify",
           partyJam: "Mostrar convidados do Jam",
           partyJamHint: "Durante um Jam do Spotify, as fotos de perfil de todos os participantes (a sua tamb\xE9m) flutuam nas bordas",
-          jamYou: "Voc\xEA"
+          jamYou: "Voc\xEA",
+          partyLevel4: "Extremo",
+          partyLevel5: "Insano",
+          partyLasers: "Feixes de luz",
+          partyLasersHint: "A partir de \xABExtremo\xBB: feixes de luz saem da capa e saltam a cada compasso",
+          partyZoom: "Golpes de c\xE2mera",
+          partyZoomHint: "A partir de \xABExtremo\xBB: a imagem inteira d\xE1 zoom no ritmo",
+          partyIdle: "Ocultar controles em repouso",
+          partyIdleHint: "Ap\xF3s alguns segundos sem o mouse, os controles somem e tudo desliza para o centro",
+          c_addTo: "Adicionar \xE0 playlist",
+          plFind: "Buscar playlists",
+          plAdded: "Adicionada",
+          plDup: "J\xE1 est\xE1 nesta playlist",
+          plFail: "N\xE3o foi poss\xEDvel adicionar",
+          plNone: "Nenhuma playlist em que voc\xEA possa adicionar",
+          plNoTrack: "S\xF3 m\xFAsicas podem ser adicionadas a playlists",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Adicionada pelo Smart Shuffle"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1569,9 +1671,9 @@
           overlayConnected: "\u25CF Overlay verbonden",
           overlayMissing: "\u25CB Overlay draait niet \u2013 installeer hem met de knop hieronder en start hem \xE9\xE9n keer",
           onlineLyrics: "Songteksten online zoeken",
-          onlineLyricsHint: "Heeft Spotify er geen, dan vraagt Mirage het aan LRCLIB \u2013 alleen titel, artiest, album en duur worden verstuurd",
+          onlineLyricsHint: "Heeft Spotify niets, dan vraagt Mirage het aan LRCLIB, NetEase en lyrics.ovh \u2013 alleen titel, artiest, album en duur worden verstuurd",
           emptyTitle: "Geen songtekst voor dit nummer",
-          emptyText: "Spotify noch LRCLIB heeft er al een songtekst voor.",
+          emptyText: "Geen van de songtekstbronnen heeft hem nog.",
           emptyTextOff: "Spotify heeft er geen. Zet \u2018Songteksten online zoeken\u2019 aan in de instellingen om verder te zoeken.",
           instrTitle: "Instrumentaal",
           instrText: "Geen woorden \u2013 laat de muziek gewoon spelen.",
@@ -1581,7 +1683,7 @@
           lyrPicked: "gekozen",
           lyrNone: "Geen songtekst",
           lyrAuto: "Automatisch",
-          lyrAutoHint: "Eerst Spotify, dan de beste treffer van LRCLIB",
+          lyrAutoHint: "Eerst Spotify, dan LRCLIB, NetEase en lyrics.ovh",
           lyrNoVersions: "LRCLIB heeft geen andere versies van dit nummer",
           lyrSynced: "gesynchroniseerd",
           lyrPlain: "alleen tekst",
@@ -1624,7 +1726,24 @@
           scanCode: "Scan in Spotify",
           partyJam: "Jam-gasten tonen",
           partyJamHint: "Tijdens een Spotify Jam zweven de profielfoto's van alle deelnemers (ook die van jou) langs de randen",
-          jamYou: "Jij"
+          jamYou: "Jij",
+          partyLevel4: "Extreem",
+          partyLevel5: "Waanzin",
+          partyLasers: "Lichtbundels",
+          partyLasersHint: "Vanaf \u2018Extreem\u2019: lichtbundels stralen uit de hoes en springen bij elke maat",
+          partyZoom: "Camerastoten",
+          partyZoomHint: "Vanaf \u2018Extreem\u2019: het hele beeld zoomt kort in op de beat",
+          partyIdle: "Bediening verbergen in rust",
+          partyIdleHint: "Na een paar seconden zonder muis verdwijnen de knoppen en schuift alles naar het midden",
+          c_addTo: "Aan playlist toevoegen",
+          plFind: "Playlists zoeken",
+          plAdded: "Toegevoegd",
+          plDup: "Staat al in deze playlist",
+          plFail: "Toevoegen lukte niet",
+          plNone: "Geen playlists waaraan je kunt toevoegen",
+          plNoTrack: "Alleen nummers kunnen aan playlists worden toegevoegd",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Toegevoegd door Smart Shuffle"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -1789,9 +1908,9 @@
           overlayConnected: "\u25CF Overlay po\u0142\u0105czony",
           overlayMissing: "\u25CB Overlay nie dzia\u0142a \u2013 zainstaluj go przyciskiem poni\u017Cej i uruchom raz",
           onlineLyrics: "Szukaj tekst\xF3w online",
-          onlineLyricsHint: "Je\u015Bli Spotify go nie ma, Mirage pyta LRCLIB \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142, wykonawca, album i d\u0142ugo\u015B\u0107",
+          onlineLyricsHint: "Je\u015Bli Spotify go nie ma, Mirage pyta LRCLIB, NetEase i lyrics.ovh \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142, wykonawca, album i d\u0142ugo\u015B\u0107",
           emptyTitle: "Brak tekstu dla tego utworu",
-          emptyText: "Ani Spotify, ani LRCLIB nie maj\u0105 jeszcze tego tekstu.",
+          emptyText: "\u017Badne \u017Ar\xF3d\u0142o tekst\xF3w jeszcze go nie ma.",
           emptyTextOff: "Spotify go nie ma. W\u0142\u0105cz \u201ESzukaj tekst\xF3w online\u201D w ustawieniach, aby szuka\u0107 dalej.",
           instrTitle: "Instrumentalny",
           instrText: "Bez s\u0142\xF3w \u2013 po prostu s\u0142uchaj muzyki.",
@@ -1801,7 +1920,7 @@
           lyrPicked: "wybrana",
           lyrNone: "Brak tekstu",
           lyrAuto: "Automatycznie",
-          lyrAutoHint: "Najpierw Spotify, potem najlepsze trafienie z LRCLIB",
+          lyrAutoHint: "Najpierw Spotify, potem LRCLIB, NetEase i lyrics.ovh",
           lyrNoVersions: "LRCLIB nie ma innych wersji tego utworu",
           lyrSynced: "zsynchronizowany",
           lyrPlain: "sam tekst",
@@ -1844,7 +1963,24 @@
           scanCode: "Zeskanuj w Spotify",
           partyJam: "Poka\u017C go\u015Bci Jamu",
           partyJamHint: "Podczas Jamu w Spotify zdj\u0119cia profilowe wszystkich uczestnik\xF3w (tak\u017Ce twoje) unosz\u0105 si\u0119 przy kraw\u0119dziach",
-          jamYou: "Ty"
+          jamYou: "Ty",
+          partyLevel4: "Ekstremalny",
+          partyLevel5: "Szale\u0144stwo",
+          partyLasers: "Wi\u0105zki \u015Bwiat\u0142a",
+          partyLasersHint: "Od \u201EEkstremalny\u201D: wi\u0105zki \u015Bwiat\u0142a wychodz\u0105 z ok\u0142adki i skacz\u0105 co takt",
+          partyZoom: "Uderzenia kamery",
+          partyZoomHint: "Od \u201EEkstremalny\u201D: ca\u0142y obraz kr\xF3tko przybli\u017Ca si\u0119 w rytm",
+          partyIdle: "Ukrywaj sterowanie w spoczynku",
+          partyIdleHint: "Po kilku sekundach bez myszy przyciski znikaj\u0105, a wszystko p\u0142ynnie przesuwa si\u0119 do \u015Brodka",
+          c_addTo: "Dodaj do playlisty",
+          plFind: "Szukaj playlist",
+          plAdded: "Dodano",
+          plDup: "Ju\u017C jest na tej playli\u015Bcie",
+          plFail: "Nie uda\u0142o si\u0119 doda\u0107",
+          plNone: "Brak playlist, do kt\xF3rych mo\u017Cesz dodawa\u0107",
+          plNoTrack: "Do playlist mo\u017Cna dodawa\u0107 tylko utwory",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Dodane przez Smart Shuffle"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2009,9 +2145,9 @@
           overlayConnected: "\u25CF Overlay ba\u011Fl\u0131",
           overlayMissing: "\u25CB Overlay \xE7al\u0131\u015Fm\u0131yor \u2013 a\u015Fa\u011F\u0131daki d\xFC\u011Fmeyle kur, sonra bir kez ba\u015Flat",
           onlineLyrics: "S\xF6zleri \xE7evrimi\xE7i ara",
-          onlineLyricsHint: "Spotify'da yoksa Mirage LRCLIB'e sorar \u2013 yaln\u0131zca ba\u015Fl\u0131k, sanat\xE7\u0131, alb\xFCm ve s\xFCre g\xF6nderilir",
+          onlineLyricsHint: "Spotify'da yoksa Mirage LRCLIB, NetEase ve lyrics.ovh'a sorar \u2013 yaln\u0131zca \u015Fark\u0131 ad\u0131, sanat\xE7\u0131, alb\xFCm ve s\xFCre g\xF6nderilir",
           emptyTitle: "Bu \u015Fark\u0131 i\xE7in s\xF6z yok",
-          emptyText: "Ne Spotify'da ne de LRCLIB'de hen\xFCz s\xF6zleri var.",
+          emptyText: "\u015Eark\u0131 s\xF6z\xFC kaynaklar\u0131n\u0131n hi\xE7birinde hen\xFCz yok.",
           emptyTextOff: "Spotify'da yok. Daha fazla aramak i\xE7in ayarlarda \u201CS\xF6zleri \xE7evrimi\xE7i ara\u201Dy\u0131 a\xE7.",
           instrTitle: "Enstr\xFCmantal",
           instrText: "S\xF6z yok \u2013 m\xFCzi\u011Fin keyfini \xE7\u0131kar.",
@@ -2021,7 +2157,7 @@
           lyrPicked: "se\xE7ildi",
           lyrNone: "S\xF6z yok",
           lyrAuto: "Otomatik",
-          lyrAutoHint: "\xD6nce Spotify, sonra en iyi LRCLIB e\u015Fle\u015Fmesi",
+          lyrAutoHint: "\xD6nce Spotify, sonra LRCLIB, NetEase ve lyrics.ovh",
           lyrNoVersions: "LRCLIB'de bu \u015Fark\u0131n\u0131n ba\u015Fka s\xFCr\xFCm\xFC yok",
           lyrSynced: "zamanl\u0131",
           lyrPlain: "d\xFCz metin",
@@ -2064,7 +2200,24 @@
           scanCode: "Spotify'da tara",
           partyJam: "Jam konuklar\u0131n\u0131 g\xF6ster",
           partyJamHint: "Spotify Jam s\u0131ras\u0131nda t\xFCm kat\u0131l\u0131mc\u0131lar\u0131n (senin de) profil foto\u011Fraflar\u0131 kenarlarda s\xFCz\xFCl\xFCr",
-          jamYou: "Sen"
+          jamYou: "Sen",
+          partyLevel4: "Ekstrem",
+          partyLevel5: "\xC7\u0131lg\u0131n",
+          partyLasers: "I\u015F\u0131k h\xFCzmeleri",
+          partyLasersHint: "\u201CEkstrem\u201Dden itibaren: kapaktan \u0131\u015F\u0131k h\xFCzmeleri yay\u0131l\u0131r ve her \xF6l\xE7\xFCde s\u0131\xE7rar",
+          partyZoom: "Kamera vuru\u015Flar\u0131",
+          partyZoomHint: "\u201CEkstrem\u201Dden itibaren: t\xFCm g\xF6r\xFCnt\xFC ritimle k\u0131sa bir an yak\u0131nla\u015F\u0131r",
+          partyIdle: "Bo\u015Ftayken kontrolleri gizle",
+          partyIdleHint: "Fare birka\xE7 saniye hareket etmezse kontroller kaybolur ve her \u015Fey ortaya kayar",
+          c_addTo: "\xC7alma listesine ekle",
+          plFind: "\xC7alma listesi ara",
+          plAdded: "Eklendi",
+          plDup: "Zaten bu listede",
+          plFail: "Eklenemedi",
+          plNone: "Ekleyebilece\u011Fin \xE7alma listesi yok",
+          plNoTrack: "\xC7alma listelerine yaln\u0131zca \u015Fark\u0131lar eklenebilir",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Smart Shuffle taraf\u0131ndan eklendi"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2229,9 +2382,9 @@
           overlayConnected: "\u25CF Overlay \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0451\u043D",
           overlayMissing: "\u25CB Overlay \u043D\u0435 \u0437\u0430\u043F\u0443\u0449\u0435\u043D \u2013 \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438 \u0435\u0433\u043E \u043A\u043D\u043E\u043F\u043A\u043E\u0439 \u043D\u0438\u0436\u0435 \u0438 \u0437\u0430\u043F\u0443\u0441\u0442\u0438 \u043E\u0434\u0438\u043D \u0440\u0430\u0437",
           onlineLyrics: "\u0418\u0441\u043A\u0430\u0442\u044C \u0442\u0435\u043A\u0441\u0442\u044B \u043E\u043D\u043B\u0430\u0439\u043D",
-          onlineLyricsHint: "\u0415\u0441\u043B\u0438 \u0443 Spotify \u043D\u0435\u0442 \u0442\u0435\u043A\u0441\u0442\u0430, Mirage \u0441\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 LRCLIB \u2013 \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435, \u0438\u0441\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C, \u0430\u043B\u044C\u0431\u043E\u043C \u0438 \u0434\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C",
+          onlineLyricsHint: "\u0415\u0441\u043B\u0438 \u0443 Spotify \u043D\u0435\u0442 \u0442\u0435\u043A\u0441\u0442\u0430, Mirage \u0441\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 LRCLIB, NetEase \u0438 lyrics.ovh \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435, \u0438\u0441\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C, \u0430\u043B\u044C\u0431\u043E\u043C \u0438 \u0434\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C",
           emptyTitle: "\u041D\u0435\u0442 \u0442\u0435\u043A\u0441\u0442\u0430 \u0434\u043B\u044F \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438",
-          emptyText: "\u041D\u0438 \u0443 Spotify, \u043D\u0438 \u0443 LRCLIB \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0442\u0435\u043A\u0441\u0442\u0430.",
+          emptyText: "\u041D\u0438 \u0432 \u043E\u0434\u043D\u043E\u043C \u0438\u0437 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u043E\u0432 \u0442\u0435\u043A\u0441\u0442\u043E\u0432 \u0435\u0433\u043E \u043F\u043E\u043A\u0430 \u043D\u0435\u0442.",
           emptyTextOff: "\u0423 Spotify \u0442\u0435\u043A\u0441\u0442\u0430 \u043D\u0435\u0442. \u0412\u043A\u043B\u044E\u0447\u0438 \xAB\u0418\u0441\u043A\u0430\u0442\u044C \u0442\u0435\u043A\u0441\u0442\u044B \u043E\u043D\u043B\u0430\u0439\u043D\xBB \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445, \u0447\u0442\u043E\u0431\u044B \u0438\u0441\u043A\u0430\u0442\u044C \u0434\u0430\u043B\u044C\u0448\u0435.",
           instrTitle: "\u0418\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0430\u043B",
           instrText: "\u0411\u0435\u0437 \u0441\u043B\u043E\u0432 \u2013 \u043F\u0440\u043E\u0441\u0442\u043E \u043D\u0430\u0441\u043B\u0430\u0436\u0434\u0430\u0439\u0441\u044F \u043C\u0443\u0437\u044B\u043A\u043E\u0439.",
@@ -2241,7 +2394,7 @@
           lyrPicked: "\u0432\u044B\u0431\u0440\u0430\u043D\u043E",
           lyrNone: "\u0411\u0435\u0437 \u0442\u0435\u043A\u0441\u0442\u0430",
           lyrAuto: "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438",
-          lyrAutoHint: "\u0421\u043D\u0430\u0447\u0430\u043B\u0430 Spotify, \u0437\u0430\u0442\u0435\u043C \u043B\u0443\u0447\u0448\u0435\u0435 \u0441\u043E\u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0435 \u0438\u0437 LRCLIB",
+          lyrAutoHint: "\u0421\u043D\u0430\u0447\u0430\u043B\u0430 Spotify, \u0437\u0430\u0442\u0435\u043C LRCLIB, NetEase \u0438 lyrics.ovh",
           lyrNoVersions: "\u0412 LRCLIB \u043D\u0435\u0442 \u0434\u0440\u0443\u0433\u0438\u0445 \u0432\u0435\u0440\u0441\u0438\u0439 \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438",
           lyrSynced: "\u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D",
           lyrPlain: "\u0442\u043E\u043B\u044C\u043A\u043E \u0442\u0435\u043A\u0441\u0442",
@@ -2284,7 +2437,24 @@
           scanCode: "\u0421\u043A\u0430\u043D\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0432 Spotify",
           partyJam: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u0433\u043E\u0441\u0442\u0435\u0439 Jam",
           partyJamHint: "\u0412\u043E \u0432\u0440\u0435\u043C\u044F Jam \u0432 Spotify \u0444\u043E\u0442\u043E \u043F\u0440\u043E\u0444\u0438\u043B\u0435\u0439 \u0432\u0441\u0435\u0445 \u0443\u0447\u0430\u0441\u0442\u043D\u0438\u043A\u043E\u0432 (\u0438 \u0442\u0432\u043E\u0451) \u043F\u043B\u0430\u0432\u0430\u044E\u0442 \u043F\u043E \u043A\u0440\u0430\u044F\u043C",
-          jamYou: "\u0422\u044B"
+          jamYou: "\u0422\u044B",
+          partyLevel4: "\u042D\u043A\u0441\u0442\u0440\u0438\u043C",
+          partyLevel5: "\u0411\u0435\u0437\u0443\u043C\u0438\u0435",
+          partyLasers: "\u041B\u0443\u0447\u0438 \u0441\u0432\u0435\u0442\u0430",
+          partyLasersHint: "\u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0438\u0437 \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0431\u044C\u044E\u0442 \u043B\u0443\u0447\u0438 \u0441\u0432\u0435\u0442\u0430 \u0438 \u043F\u0440\u044B\u0433\u0430\u044E\u0442 \u043D\u0430 \u043A\u0430\u0436\u0434\u043E\u043C \u0442\u0430\u043A\u0442\u0435",
+          partyZoom: "\u0423\u0434\u0430\u0440\u044B \u043A\u0430\u043C\u0435\u0440\u044B",
+          partyZoomHint: "\u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0432\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043D\u0430 \u043C\u0438\u0433 \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F \u0432 \u0442\u0430\u043A\u0442",
+          partyIdle: "\u0421\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0432 \u043F\u043E\u043A\u043E\u0435",
+          partyIdleHint: "\u0427\u0435\u0440\u0435\u0437 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0441\u0435\u043A\u0443\u043D\u0434 \u0431\u0435\u0437 \u043C\u044B\u0448\u0438 \u043A\u043D\u043E\u043F\u043A\u0438 \u0438\u0441\u0447\u0435\u0437\u0430\u044E\u0442, \u0430 \u0432\u0441\u0451 \u043F\u043B\u0430\u0432\u043D\u043E \u0441\u043C\u0435\u0449\u0430\u0435\u0442\u0441\u044F \u043A \u0446\u0435\u043D\u0442\u0440\u0443",
+          c_addTo: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442",
+          plFind: "\u041F\u043E\u0438\u0441\u043A \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u043E\u0432",
+          plAdded: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u043E",
+          plDup: "\u0423\u0436\u0435 \u0432 \u044D\u0442\u043E\u043C \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0435",
+          plFail: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C",
+          plNone: "\u041D\u0435\u0442 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u043E\u0432, \u0432 \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043C\u043E\u0436\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u043B\u044F\u0442\u044C",
+          plNoTrack: "\u0412 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u044B \u043C\u043E\u0436\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u043B\u044F\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u0440\u0435\u043A\u0438",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0438\u0435\u0439 Smart Shuffle"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -2449,9 +2619,9 @@
           overlayConnected: "\u25CF Overlay \u043F\u0456\u0434'\u0454\u0434\u043D\u0430\u043D\u043E",
           overlayMissing: "\u25CB Overlay \u043D\u0435 \u0437\u0430\u043F\u0443\u0449\u0435\u043D\u043E \u2013 \u0432\u0441\u0442\u0430\u043D\u043E\u0432\u0438 \u0439\u043E\u0433\u043E \u043A\u043D\u043E\u043F\u043A\u043E\u044E \u043D\u0438\u0436\u0447\u0435 \u0439 \u0437\u0430\u043F\u0443\u0441\u0442\u0438 \u043E\u0434\u0438\u043D \u0440\u0430\u0437",
           onlineLyrics: "\u0428\u0443\u043A\u0430\u0442\u0438 \u0442\u0435\u043A\u0441\u0442\u0438 \u043E\u043D\u043B\u0430\u0439\u043D",
-          onlineLyricsHint: "\u042F\u043A\u0449\u043E \u0432 Spotify \u043D\u0435\u043C\u0430\u0454 \u0442\u0435\u043A\u0441\u0442\u0443, Mirage \u0437\u0430\u043F\u0438\u0442\u0443\u0454 LRCLIB \u2013 \u043D\u0430\u0434\u0441\u0438\u043B\u0430\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u043D\u0430\u0437\u0432\u0430, \u0432\u0438\u043A\u043E\u043D\u0430\u0432\u0435\u0446\u044C, \u0430\u043B\u044C\u0431\u043E\u043C \u0456 \u0442\u0440\u0438\u0432\u0430\u043B\u0456\u0441\u0442\u044C",
+          onlineLyricsHint: "\u042F\u043A\u0449\u043E \u0432 Spotify \u043D\u0435\u043C\u0430\u0454 \u0442\u0435\u043A\u0441\u0442\u0443, Mirage \u043F\u0438\u0442\u0430\u0454 LRCLIB, NetEase \u0456 lyrics.ovh \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u043D\u0430\u0437\u0432\u0430, \u0432\u0438\u043A\u043E\u043D\u0430\u0432\u0435\u0446\u044C, \u0430\u043B\u044C\u0431\u043E\u043C \u0456 \u0442\u0440\u0438\u0432\u0430\u043B\u0456\u0441\u0442\u044C",
           emptyTitle: "\u041D\u0435\u043C\u0430\u0454 \u0442\u0435\u043A\u0441\u0442\u0443 \u0434\u043B\u044F \u0446\u0456\u0454\u0457 \u043F\u0456\u0441\u043D\u0456",
-          emptyText: "\u041D\u0456 \u0432 Spotify, \u043D\u0456 \u0432 LRCLIB \u043F\u043E\u043A\u0438 \u043D\u0435\u043C\u0430\u0454 \u0442\u0435\u043A\u0441\u0442\u0443.",
+          emptyText: "\u0416\u043E\u0434\u043D\u0435 \u0437 \u0434\u0436\u0435\u0440\u0435\u043B \u0442\u0435\u043A\u0441\u0442\u0456\u0432 \u0439\u043E\u0433\u043E \u0449\u0435 \u043D\u0435 \u043C\u0430\u0454.",
           emptyTextOff: "\u0423 Spotify \u0442\u0435\u043A\u0441\u0442\u0443 \u043D\u0435\u043C\u0430\u0454. \u0423\u0432\u0456\u043C\u043A\u043D\u0438 \xAB\u0428\u0443\u043A\u0430\u0442\u0438 \u0442\u0435\u043A\u0441\u0442\u0438 \u043E\u043D\u043B\u0430\u0439\u043D\xBB \u0443 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F\u0445, \u0449\u043E\u0431 \u0448\u0443\u043A\u0430\u0442\u0438 \u0434\u0430\u043B\u0456.",
           instrTitle: "\u0406\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0430\u043B",
           instrText: "\u0411\u0435\u0437 \u0441\u043B\u0456\u0432 \u2013 \u043F\u0440\u043E\u0441\u0442\u043E \u043D\u0430\u0441\u043E\u043B\u043E\u0434\u0436\u0443\u0439\u0441\u044F \u043C\u0443\u0437\u0438\u043A\u043E\u044E.",
@@ -2461,7 +2631,7 @@
           lyrPicked: "\u0432\u0438\u0431\u0440\u0430\u043D\u043E",
           lyrNone: "\u0411\u0435\u0437 \u0442\u0435\u043A\u0441\u0442\u0443",
           lyrAuto: "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E",
-          lyrAutoHint: "\u0421\u043F\u0435\u0440\u0448\u0443 Spotify, \u043F\u043E\u0442\u0456\u043C \u043D\u0430\u0439\u043A\u0440\u0430\u0449\u0438\u0439 \u0437\u0431\u0456\u0433 \u0456\u0437 LRCLIB",
+          lyrAutoHint: "\u0421\u043F\u0435\u0440\u0448\u0443 Spotify, \u043F\u043E\u0442\u0456\u043C LRCLIB, NetEase \u0456 lyrics.ovh",
           lyrNoVersions: "\u0423 LRCLIB \u043D\u0435\u043C\u0430\u0454 \u0456\u043D\u0448\u0438\u0445 \u0432\u0435\u0440\u0441\u0456\u0439 \u0446\u0456\u0454\u0457 \u043F\u0456\u0441\u043D\u0456",
           lyrSynced: "\u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0456\u0437\u043E\u0432\u0430\u043D\u043E",
           lyrPlain: "\u043B\u0438\u0448\u0435 \u0442\u0435\u043A\u0441\u0442",
@@ -2504,7 +2674,24 @@
           scanCode: "\u0421\u043A\u0430\u043D\u0443\u0432\u0430\u0442\u0438 \u0432 Spotify",
           partyJam: "\u041F\u043E\u043A\u0430\u0437\u0443\u0432\u0430\u0442\u0438 \u0433\u043E\u0441\u0442\u0435\u0439 Jam",
           partyJamHint: "\u041F\u0456\u0434 \u0447\u0430\u0441 Jam \u0443 Spotify \u0444\u043E\u0442\u043E \u043F\u0440\u043E\u0444\u0456\u043B\u0456\u0432 \u0443\u0441\u0456\u0445 \u0443\u0447\u0430\u0441\u043D\u0438\u043A\u0456\u0432 (\u0456 \u0442\u0432\u043E\u0454) \u043F\u043B\u0438\u0432\u0443\u0442\u044C \u043A\u0440\u0430\u044F\u043C\u0438",
-          jamYou: "\u0422\u0438"
+          jamYou: "\u0422\u0438",
+          partyLevel4: "\u0415\u043A\u0441\u0442\u0440\u0438\u043C",
+          partyLevel5: "\u0411\u043E\u0436\u0435\u0432\u0456\u043B\u043B\u044F",
+          partyLasers: "\u041F\u0440\u043E\u043C\u0435\u043D\u0456 \u0441\u0432\u0456\u0442\u043B\u0430",
+          partyLasersHint: "\u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438 \u0431'\u044E\u0442\u044C \u043F\u0440\u043E\u043C\u0435\u043D\u0456 \u0441\u0432\u0456\u0442\u043B\u0430 \u0439 \u0441\u0442\u0440\u0438\u0431\u0430\u044E\u0442\u044C \u043D\u0430 \u043A\u043E\u0436\u043D\u043E\u043C\u0443 \u0442\u0430\u043A\u0442\u0456",
+          partyZoom: "\u0423\u0434\u0430\u0440\u0438 \u043A\u0430\u043C\u0435\u0440\u0438",
+          partyZoomHint: "\u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0443\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043D\u0430 \u043C\u0438\u0442\u044C \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F \u0432 \u0442\u0430\u043A\u0442",
+          partyIdle: "\u0425\u043E\u0432\u0430\u0442\u0438 \u043A\u0435\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0432 \u0441\u043F\u043E\u043A\u043E\u0457",
+          partyIdleHint: "\u0427\u0435\u0440\u0435\u0437 \u043A\u0456\u043B\u044C\u043A\u0430 \u0441\u0435\u043A\u0443\u043D\u0434 \u0431\u0435\u0437 \u043C\u0438\u0448\u0456 \u043A\u043D\u043E\u043F\u043A\u0438 \u0437\u043D\u0438\u043A\u0430\u044E\u0442\u044C, \u0430 \u0432\u0441\u0435 \u043F\u043B\u0430\u0432\u043D\u043E \u0437\u0441\u0443\u0432\u0430\u0454\u0442\u044C\u0441\u044F \u0434\u043E \u0446\u0435\u043D\u0442\u0440\u0443",
+          c_addTo: "\u0414\u043E\u0434\u0430\u0442\u0438 \u0434\u043E \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0430",
+          plFind: "\u041F\u043E\u0448\u0443\u043A \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432",
+          plAdded: "\u0414\u043E\u0434\u0430\u043D\u043E",
+          plDup: "\u0423\u0436\u0435 \u0432 \u0446\u044C\u043E\u043C\u0443 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456",
+          plFail: "\u041D\u0435 \u0432\u0434\u0430\u043B\u043E\u0441\u044F \u0434\u043E\u0434\u0430\u0442\u0438",
+          plNone: "\u041D\u0435\u043C\u0430\u0454 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432, \u0434\u043E \u044F\u043A\u0438\u0445 \u043C\u043E\u0436\u043D\u0430 \u0434\u043E\u0434\u0430\u0432\u0430\u0442\u0438",
+          plNoTrack: "\u0414\u043E \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432 \u043C\u043E\u0436\u043D\u0430 \u0434\u043E\u0434\u0430\u0432\u0430\u0442\u0438 \u043B\u0438\u0448\u0435 \u0442\u0440\u0435\u043A\u0438",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "\u0414\u043E\u0434\u0430\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0456\u0454\u044E Smart Shuffle"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -2669,9 +2856,9 @@
           overlayConnected: "\u25CF Overlay \u306B\u63A5\u7D9A\u6E08\u307F",
           overlayMissing: "\u25CB Overlay \u304C\u8D77\u52D5\u3057\u3066\u3044\u307E\u305B\u3093 \u2013 \u4E0B\u306E\u30DC\u30BF\u30F3\u304B\u3089\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u3057\u3001\u4E00\u5EA6\u8D77\u52D5\u3057\u3066\u304F\u3060\u3055\u3044",
           onlineLyrics: "\u30AA\u30F3\u30E9\u30A4\u30F3\u3067\u6B4C\u8A5E\u3092\u691C\u7D22",
-          onlineLyricsHint: "Spotify \u306B\u6B4C\u8A5E\u304C\u306A\u3044\u5834\u5408\u3001Mirage \u304C LRCLIB \u306B\u554F\u3044\u5408\u308F\u305B\u307E\u3059 \u2013 \u9001\u4FE1\u3055\u308C\u308B\u306E\u306F\u30BF\u30A4\u30C8\u30EB\u3001\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u3001\u30A2\u30EB\u30D0\u30E0\u3001\u9577\u3055\u306E\u307F",
+          onlineLyricsHint: "Spotify \u306B\u6B4C\u8A5E\u304C\u306A\u3044\u5834\u5408\u3001Mirage \u306F LRCLIB\u30FBNetEase\u30FBlyrics.ovh \u306B\u554F\u3044\u5408\u308F\u305B\u307E\u3059 \u2013 \u9001\u4FE1\u3055\u308C\u308B\u306E\u306F\u66F2\u540D\u30FB\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u30FB\u30A2\u30EB\u30D0\u30E0\u30FB\u9577\u3055\u3060\u3051\u3067\u3059",
           emptyTitle: "\u3053\u306E\u66F2\u306E\u6B4C\u8A5E\u306F\u3042\u308A\u307E\u305B\u3093",
-          emptyText: "Spotify \u306B\u3082 LRCLIB \u306B\u3082\u307E\u3060\u6B4C\u8A5E\u304C\u3042\u308A\u307E\u305B\u3093\u3002",
+          emptyText: "\u3069\u306E\u6B4C\u8A5E\u30BD\u30FC\u30B9\u306B\u3082\u307E\u3060\u3042\u308A\u307E\u305B\u3093\u3002",
           emptyTextOff: "Spotify \u306B\u306F\u6B4C\u8A5E\u304C\u3042\u308A\u307E\u305B\u3093\u3002\u8A2D\u5B9A\u3067\u300C\u30AA\u30F3\u30E9\u30A4\u30F3\u3067\u6B4C\u8A5E\u3092\u691C\u7D22\u300D\u3092\u30AA\u30F3\u306B\u3059\u308B\u3068\u3001\u3055\u3089\u306B\u63A2\u305B\u307E\u3059\u3002",
           instrTitle: "\u30A4\u30F3\u30B9\u30C8\u30A5\u30EB\u30E1\u30F3\u30BF\u30EB",
           instrText: "\u6B4C\u8A5E\u306F\u3042\u308A\u307E\u305B\u3093 \u2013 \u97F3\u697D\u3092\u305D\u306E\u307E\u307E\u697D\u3057\u3093\u3067\u304F\u3060\u3055\u3044\u3002",
@@ -2681,7 +2868,7 @@
           lyrPicked: "\u9078\u629E\u6E08\u307F",
           lyrNone: "\u6B4C\u8A5E\u306A\u3057",
           lyrAuto: "\u81EA\u52D5",
-          lyrAutoHint: "\u307E\u305A Spotify\u3001\u6B21\u306B LRCLIB \u306E\u6700\u9069\u306A\u5019\u88DC",
+          lyrAutoHint: "\u307E\u305A Spotify\u3001\u6B21\u306B LRCLIB\u30FBNetEase\u30FBlyrics.ovh",
           lyrNoVersions: "LRCLIB \u306B\u306F\u3053\u306E\u66F2\u306E\u4ED6\u306E\u30D0\u30FC\u30B8\u30E7\u30F3\u304C\u3042\u308A\u307E\u305B\u3093",
           lyrSynced: "\u6642\u9593\u540C\u671F",
           lyrPlain: "\u30C6\u30AD\u30B9\u30C8\u306E\u307F",
@@ -2724,7 +2911,24 @@
           scanCode: "Spotify\u3067\u30B9\u30AD\u30E3\u30F3",
           partyJam: "Jam\u306E\u53C2\u52A0\u8005\u3092\u8868\u793A",
           partyJamHint: "Spotify Jam\u4E2D\u306F\u3001\u53C2\u52A0\u8005\u5168\u54E1\uFF08\u3042\u306A\u305F\u3082\uFF09\u306E\u30D7\u30ED\u30D5\u30A3\u30FC\u30EB\u753B\u50CF\u304C\u753B\u9762\u306E\u7AEF\u306B\u6D6E\u304B\u3073\u307E\u3059",
-          jamYou: "\u3042\u306A\u305F"
+          jamYou: "\u3042\u306A\u305F",
+          partyLevel4: "\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0",
+          partyLevel5: "\u72C2\u4E71",
+          partyLasers: "\u5149\u306E\u30D3\u30FC\u30E0",
+          partyLasersHint: "\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\uFF1A\u30B8\u30E3\u30B1\u30C3\u30C8\u304B\u3089\u5149\u306E\u30D3\u30FC\u30E0\u304C\u5E83\u304C\u308A\u3001\u5C0F\u7BC0\u3054\u3068\u306B\u8DF3\u306D\u307E\u3059",
+          partyZoom: "\u30AB\u30E1\u30E9\u306E\u885D\u6483",
+          partyZoomHint: "\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\uFF1A\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u753B\u9762\u5168\u4F53\u304C\u4E00\u77AC\u30BA\u30FC\u30E0\u3057\u307E\u3059",
+          partyIdle: "\u64CD\u4F5C\u3057\u306A\u3044\u3068\u304D\u306F\u30DC\u30BF\u30F3\u3092\u96A0\u3059",
+          partyIdleHint: "\u30DE\u30A6\u30B9\u3092\u6570\u79D2\u52D5\u304B\u3055\u306A\u3044\u3068\u30DC\u30BF\u30F3\u304C\u6D88\u3048\u3001\u3059\u3079\u3066\u304C\u4E2D\u592E\u3078\u306A\u3081\u3089\u304B\u306B\u5BC4\u308A\u307E\u3059",
+          c_addTo: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u8FFD\u52A0",
+          plFind: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u3092\u691C\u7D22",
+          plAdded: "\u8FFD\u52A0\u3057\u307E\u3057\u305F",
+          plDup: "\u3059\u3067\u306B\u3053\u306E\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u3042\u308A\u307E\u3059",
+          plFail: "\u8FFD\u52A0\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F",
+          plNone: "\u8FFD\u52A0\u3067\u304D\u308B\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u304C\u3042\u308A\u307E\u305B\u3093",
+          plNoTrack: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u8FFD\u52A0\u3067\u304D\u308B\u306E\u306F\u66F2\u3060\u3051\u3067\u3059",
+          smartPick: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB",
+          smartPickHint: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB\u304C\u8FFD\u52A0\u3057\u305F\u66F2"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -2889,9 +3093,9 @@
           overlayConnected: "\u25CF Overlay \uC5F0\uACB0\uB428",
           overlayMissing: "\u25CB Overlay\uAC00 \uC2E4\uD589 \uC911\uC774 \uC544\uB2D9\uB2C8\uB2E4 \u2013 \uC544\uB798 \uBC84\uD2BC\uC73C\uB85C \uC124\uCE58\uD55C \uB4A4 \uD55C \uBC88 \uC2E4\uD589\uD558\uC138\uC694",
           onlineLyrics: "\uC628\uB77C\uC778\uC5D0\uC11C \uAC00\uC0AC \uCC3E\uAE30",
-          onlineLyricsHint: "Spotify\uC5D0 \uAC00\uC0AC\uAC00 \uC5C6\uC73C\uBA74 Mirage\uAC00 LRCLIB\uC5D0 \uC694\uCCAD\uD569\uB2C8\uB2E4 \u2013 \uC81C\uBAA9, \uC544\uD2F0\uC2A4\uD2B8, \uC568\uBC94, \uAE38\uC774\uB9CC \uC804\uC1A1\uB429\uB2C8\uB2E4",
+          onlineLyricsHint: "Spotify\uC5D0 \uAC00\uC0AC\uAC00 \uC5C6\uC73C\uBA74 Mirage\uAC00 LRCLIB, NetEase, lyrics.ovh\uC5D0 \uBB3C\uC5B4\uBD10\uC694 \u2013 \uC81C\uBAA9, \uC544\uD2F0\uC2A4\uD2B8, \uC568\uBC94, \uAE38\uC774\uB9CC \uC804\uC1A1\uB3FC\uC694",
           emptyTitle: "\uC774 \uACE1\uC758 \uAC00\uC0AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
-          emptyText: "Spotify\uC640 LRCLIB \uBAA8\uB450 \uC544\uC9C1 \uAC00\uC0AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.",
+          emptyText: "\uC544\uC9C1 \uC5B4\uB5A4 \uAC00\uC0AC \uC18C\uC2A4\uC5D0\uB3C4 \uC5C6\uC5B4\uC694.",
           emptyTextOff: "Spotify\uC5D0 \uAC00\uC0AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. \uC124\uC815\uC5D0\uC11C \u201C\uC628\uB77C\uC778\uC5D0\uC11C \uAC00\uC0AC \uCC3E\uAE30\u201D\uB97C \uCF1C\uBA74 \uB354 \uCC3E\uC544\uBD05\uB2C8\uB2E4.",
           instrTitle: "\uC5F0\uC8FC\uACE1",
           instrText: "\uAC00\uC0AC\uAC00 \uC5C6\uC5B4\uC694 \u2013 \uC74C\uC545\uC744 \uADF8\uB300\uB85C \uC990\uAE30\uC138\uC694.",
@@ -2901,7 +3105,7 @@
           lyrPicked: "\uC120\uD0DD\uB428",
           lyrNone: "\uAC00\uC0AC \uC5C6\uC74C",
           lyrAuto: "\uC790\uB3D9",
-          lyrAutoHint: "\uBA3C\uC800 Spotify, \uADF8\uB2E4\uC74C LRCLIB\uC758 \uAC00\uC7A5 \uC798 \uB9DE\uB294 \uACB0\uACFC",
+          lyrAutoHint: "\uBA3C\uC800 Spotify, \uADF8\uB2E4\uC74C LRCLIB, NetEase, lyrics.ovh",
           lyrNoVersions: "LRCLIB\uC5D0 \uC774 \uACE1\uC758 \uB2E4\uB978 \uBC84\uC804\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
           lyrSynced: "\uC2DC\uAC04 \uB3D9\uAE30\uD654",
           lyrPlain: "\uD14D\uC2A4\uD2B8\uB9CC",
@@ -2944,7 +3148,24 @@
           scanCode: "Spotify\uC5D0\uC11C \uC2A4\uCE94",
           partyJam: "Jam \uCC38\uC5EC\uC790 \uD45C\uC2DC",
           partyJamHint: "Spotify Jam \uC911\uC5D0\uB294 \uBAA8\uB4E0 \uCC38\uC5EC\uC790(\uB098 \uD3EC\uD568)\uC758 \uD504\uB85C\uD544 \uC0AC\uC9C4\uC774 \uAC00\uC7A5\uC790\uB9AC\uC5D0 \uB5A0 \uC788\uC2B5\uB2C8\uB2E4",
-          jamYou: "\uB098"
+          jamYou: "\uB098",
+          partyLevel4: "\uC775\uC2A4\uD2B8\uB9BC",
+          partyLevel5: "\uAD11\uB780",
+          partyLasers: "\uBE5B\uC904\uAE30",
+          partyLasersHint: "\u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uCEE4\uBC84\uC5D0\uC11C \uBE5B\uC904\uAE30\uAC00 \uD37C\uC9C0\uACE0 \uB9C8\uB514\uB9C8\uB2E4 \uD280\uC5B4\uC694",
+          partyZoom: "\uCE74\uBA54\uB77C \uCDA9\uACA9",
+          partyZoomHint: "\u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uD654\uBA74 \uC804\uCCB4\uAC00 \uC21C\uAC04 \uD655\uB300\uB3FC\uC694",
+          partyIdle: "\uAC00\uB9CC\uD788 \uC788\uC73C\uBA74 \uCEE8\uD2B8\uB864 \uC228\uAE30\uAE30",
+          partyIdleHint: "\uB9C8\uC6B0\uC2A4\uB97C \uBA87 \uCD08 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC73C\uBA74 \uBC84\uD2BC\uC774 \uC0AC\uB77C\uC9C0\uACE0 \uBAA8\uB4E0 \uAC8C \uAC00\uC6B4\uB370\uB85C \uBD80\uB4DC\uB7FD\uAC8C \uBAA8\uC5EC\uC694",
+          c_addTo: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0 \uCD94\uAC00",
+          plFind: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8 \uAC80\uC0C9",
+          plAdded: "\uCD94\uAC00\uB428",
+          plDup: "\uC774\uBBF8 \uC774 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uC5B4\uC694",
+          plFail: "\uCD94\uAC00\uD558\uC9C0 \uBABB\uD588\uC5B4\uC694",
+          plNone: "\uCD94\uAC00\uD560 \uC218 \uC788\uB294 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uAC00 \uC5C6\uC5B4\uC694",
+          plNoTrack: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0\uB294 \uACE1\uB9CC \uCD94\uAC00\uD560 \uC218 \uC788\uC5B4\uC694",
+          smartPick: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C",
+          smartPickHint: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C\uC774 \uCD94\uAC00\uD55C \uACE1"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -3109,9 +3330,9 @@
           overlayConnected: "\u25CF Overlay \u5DF2\u8FDE\u63A5",
           overlayMissing: "\u25CB Overlay \u672A\u8FD0\u884C \u2013 \u7528\u4E0B\u65B9\u6309\u94AE\u5B89\u88C5\uFF0C\u7136\u540E\u542F\u52A8\u4E00\u6B21",
           onlineLyrics: "\u5728\u7EBF\u641C\u7D22\u6B4C\u8BCD",
-          onlineLyricsHint: "\u5982\u679C Spotify \u6CA1\u6709\u6B4C\u8BCD\uFF0CMirage \u4F1A\u67E5\u8BE2 LRCLIB \u2013 \u53EA\u53D1\u9001\u6807\u9898\u3001\u827A\u4EBA\u3001\u4E13\u8F91\u548C\u65F6\u957F",
+          onlineLyricsHint: "\u5982\u679C Spotify \u6CA1\u6709\u6B4C\u8BCD\uFF0CMirage \u4F1A\u67E5\u8BE2 LRCLIB\u3001\u7F51\u6613\u4E91\u97F3\u4E50\u548C lyrics.ovh \u2013 \u53EA\u53D1\u9001\u6B4C\u540D\u3001\u827A\u4EBA\u3001\u4E13\u8F91\u548C\u65F6\u957F",
           emptyTitle: "\u8FD9\u9996\u6B4C\u6CA1\u6709\u6B4C\u8BCD",
-          emptyText: "Spotify \u548C LRCLIB \u76EE\u524D\u90FD\u6CA1\u6709\u8FD9\u9996\u6B4C\u7684\u6B4C\u8BCD\u3002",
+          emptyText: "\u6240\u6709\u6B4C\u8BCD\u6765\u6E90\u90FD\u8FD8\u6CA1\u6709\u8FD9\u9996\u6B4C\u7684\u6B4C\u8BCD\u3002",
           emptyTextOff: "Spotify \u6CA1\u6709\u6B4C\u8BCD\u3002\u5728\u8BBE\u7F6E\u4E2D\u6253\u5F00\u201C\u5728\u7EBF\u641C\u7D22\u6B4C\u8BCD\u201D\u4EE5\u8FDB\u4E00\u6B65\u67E5\u627E\u3002",
           instrTitle: "\u7EAF\u97F3\u4E50",
           instrText: "\u6CA1\u6709\u6B4C\u8BCD \u2013 \u5C3D\u60C5\u4EAB\u53D7\u97F3\u4E50\u5427\u3002",
@@ -3121,7 +3342,7 @@
           lyrPicked: "\u5DF2\u9009\u62E9",
           lyrNone: "\u65E0\u6B4C\u8BCD",
           lyrAuto: "\u81EA\u52A8",
-          lyrAutoHint: "\u5148\u7528 Spotify\uFF0C\u518D\u7528 LRCLIB \u7684\u6700\u4F73\u5339\u914D",
+          lyrAutoHint: "\u5148 Spotify\uFF0C\u7136\u540E LRCLIB\u3001\u7F51\u6613\u4E91\u97F3\u4E50\u548C lyrics.ovh",
           lyrNoVersions: "LRCLIB \u6CA1\u6709\u8FD9\u9996\u6B4C\u7684\u5176\u4ED6\u7248\u672C",
           lyrSynced: "\u65F6\u95F4\u540C\u6B65",
           lyrPlain: "\u7EAF\u6587\u672C",
@@ -3164,7 +3385,24 @@
           scanCode: "\u5728 Spotify \u4E2D\u626B\u63CF",
           partyJam: "\u663E\u793A Jam \u6210\u5458",
           partyJamHint: "Spotify Jam \u8FDB\u884C\u65F6\uFF0C\u6240\u6709\u6210\u5458\uFF08\u5305\u62EC\u4F60\uFF09\u7684\u5934\u50CF\u4F1A\u5728\u8FB9\u7F18\u8F7B\u8F7B\u6F02\u6D6E",
-          jamYou: "\u4F60"
+          jamYou: "\u4F60",
+          partyLevel4: "\u6781\u9650",
+          partyLevel5: "\u75AF\u72C2",
+          partyLasers: "\u5149\u675F",
+          partyLasersHint: "\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u5149\u675F\u4ECE\u5C01\u9762\u6563\u5C04\u800C\u51FA\uFF0C\u6BCF\u5C0F\u8282\u8DF3\u52A8\u4E00\u6B21",
+          partyZoom: "\u955C\u5934\u51B2\u51FB",
+          partyZoomHint: "\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u6574\u4E2A\u753B\u9762\u968F\u8282\u62CD\u77AC\u95F4\u62C9\u8FD1",
+          partyIdle: "\u9759\u6B62\u65F6\u9690\u85CF\u63A7\u4EF6",
+          partyIdleHint: "\u9F20\u6807\u51E0\u79D2\u4E0D\u52A8\u540E\u6309\u94AE\u6DE1\u51FA\uFF0C\u4E00\u5207\u5E73\u6ED1\u79FB\u5230\u4E2D\u592E",
+          c_addTo: "\u6DFB\u52A0\u5230\u6B4C\u5355",
+          plFind: "\u641C\u7D22\u6B4C\u5355",
+          plAdded: "\u5DF2\u6DFB\u52A0",
+          plDup: "\u5DF2\u5728\u6B64\u6B4C\u5355\u4E2D",
+          plFail: "\u65E0\u6CD5\u6DFB\u52A0",
+          plNone: "\u6CA1\u6709\u53EF\u6DFB\u52A0\u7684\u6B4C\u5355",
+          plNoTrack: "\u53EA\u6709\u6B4C\u66F2\u53EF\u4EE5\u6DFB\u52A0\u5230\u6B4C\u5355",
+          smartPick: "\u667A\u80FD\u968F\u673A\u64AD\u653E",
+          smartPickHint: "\u7531\u667A\u80FD\u968F\u673A\u64AD\u653E\u52A0\u5165"
         }
       };
       LANG = (() => {
@@ -3283,6 +3521,10 @@
         partyLevel: 2,
         partyFlash: true,
         partyJam: true,
+        // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
+        partyLasers: true,
+        partyZoom: true,
+        partyIdle: true,
         scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage"
       };
       cfg = { ...DEFAULTS };
@@ -3539,7 +3781,13 @@
     }
     const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
     if (own || !cfg.onlineLyrics || !meta) return own;
-    return fetchLrclib(meta);
+    let plain = null;
+    for (const src of [fetchLrclib, fetchNetease, fetchOvh]) {
+      const got = await within(src(meta), 7e3);
+      if (got?.synced || got?.instrumental) return got;
+      if (got && !plain) plain = got;
+    }
+    return plain;
   }
   async function fetchSpotify(uri) {
     const id = uri.split(":")[2];
@@ -3606,6 +3854,41 @@
     const plain = (hit.plainLyrics || "").split(/\r?\n/).map((x) => x.trim());
     while (plain.length && !plain[plain.length - 1]) plain.pop();
     return plain.length ? { ...base, synced: false, lines: plain.map((text) => ({ t: 0, text: text || "\u266A" })) } : null;
+  }
+  async function netease(path) {
+    try {
+      const r = await S.CosmosAsync.get(NE + path);
+      return typeof r === "string" ? JSON.parse(r) : r;
+    } catch {
+      return null;
+    }
+  }
+  async function fetchNetease(meta) {
+    if (!meta.title || !meta.artist) return null;
+    const title = cleanTitle(meta.title) || meta.title;
+    const res = await netease(`search/get?s=${encodeURIComponent(title + " " + meta.artist)}&type=1&limit=10`);
+    const songs = res?.result?.songs || [];
+    const a = norm(meta.artist), tt = norm(title);
+    const fit2 = songs.filter((s) => (s.artists || []).some((x) => norm(x.name).includes(a) || a.includes(norm(x.name))) && (norm(s.name).includes(tt) || tt.includes(norm(s.name)))).filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1e3 - meta.sec) <= 4).sort((x, y) => Math.abs((x.duration || 0) / 1e3 - meta.sec) - Math.abs((y.duration || 0) / 1e3 - meta.sec))[0];
+    if (!fit2) return null;
+    const lyr = await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1`);
+    if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
+    const lines = parseLrc(lyr?.lrc?.lyric || "").filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+    return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
+  }
+  async function fetchOvh(meta) {
+    if (!meta.title || !meta.artist) return null;
+    try {
+      const title = cleanTitle(meta.title) || meta.title;
+      const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(meta.artist)}/${encodeURIComponent(title)}`);
+      const text = res.ok ? (await res.json())?.lyrics || "" : "";
+      const plain = text.replace(/^Paroles de la chanson.*\r?\n/i, "").split(/\r?\n/).map((x) => x.trim());
+      while (plain.length && !plain[0]) plain.shift();
+      while (plain.length && !plain[plain.length - 1]) plain.pop();
+      return plain.length > 2 ? { lang: "", source: "ovh", synced: false, lines: plain.map((t2) => ({ t: 0, text: t2 || "\u266A" })) } : null;
+    } catch {
+      return null;
+    }
   }
   async function lyricVersions(uri) {
     const meta = metaCache.get(uri) || (currentItem()?.uri === uri ? songMeta(currentItem()) : null);
@@ -3675,7 +3958,7 @@
     canvasCache.set(uri, url);
     return url;
   }
-  var lyricCache, metaCache, cleanTitle, LRCLIB, trCache, canvasCache;
+  var lyricCache, metaCache, within, cleanTitle, LRCLIB, NE, CREDIT, norm, trCache, canvasCache, SOURCE_NAME;
   var init_lyrics = __esm({
     "src/lyrics.js"() {
       init_core();
@@ -3683,10 +3966,15 @@
       init_player();
       lyricCache = lru(60);
       metaCache = lru(60);
+      within = (p, ms) => Promise.race([p.catch(() => null), new Promise((r) => setTimeout(() => r(null), ms))]);
       cleanTitle = (s) => s.replace(/\s+-\s+.*(remaster|version|edit|live|mix|mono|stereo).*$/i, "").replace(/\s*[([](feat|ft|with)\.?\s[^)\]]*[)\]]/gi, "").trim();
       LRCLIB = "https://lrclib.net/api/";
+      NE = "https://music.163.com/api/";
+      CREDIT = /^(作词|作曲|编曲|制作|混音|母带|和声|吉他|贝斯|鼓|录音|监制|出品|lyricist|lyrics|composer|arranger|producer|mixed|mastered)\s*[:：]/i;
+      norm = (s) => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
       trCache = lru(40);
       canvasCache = lru(60);
+      SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
     }
   });
 
@@ -4166,7 +4454,42 @@
     S.Platform?.History?.push?.(`/${type}/${id}`);
     return true;
   }
-  var api, playerState, MODE, contextUri, nativeButton, lastMode, connect, canConnect, sleepTimer, sleepAt, sleepEndOfTrack, sleepTotal, fadeTick, fadeFrom, isFading, sleepState, albumOf, artistUriOf;
+  async function playlists() {
+    const R = S.Platform?.RootlistAPI;
+    if (typeof R?.getContents !== "function") return [];
+    let root2;
+    try {
+      root2 = await R.getContents();
+    } catch {
+      return [];
+    }
+    const out = [];
+    const walk = (items, folder) => {
+      for (const x of items || []) {
+        if (x?.type === "folder") walk(x.items, x.name);
+        else if (x?.type === "playlist" && x.uri && (x.canAdd ?? x.isOwnedBySelf ?? x.isCollaborative ?? true)) {
+          out.push({ uri: x.uri, name: x.name || "", folder: folder || "", image: x.images?.[0]?.url || "" });
+        }
+      }
+    };
+    walk(root2?.items);
+    return out;
+  }
+  async function addToPlaylist(playlistUri, trackUri) {
+    const P = S.Platform?.PlaylistAPI;
+    try {
+      const have = await P.getContents?.(playlistUri, { limit: 5e3 });
+      if (have?.items?.some((i) => i?.uri === trackUri)) return "dup";
+    } catch {
+    }
+    try {
+      await P.add(playlistUri, [trackUri], { after: "end" });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  var api, playerState, MODE, contextUri, nativeButton, lastMode, connect, canConnect, sleepTimer, sleepAt, sleepEndOfTrack, sleepTotal, fadeTick, fadeFrom, isFading, sleepState, albumOf, artistUriOf, canAddTo, isSmartPick;
   var init_controls = __esm({
     "src/controls.js"() {
       init_core();
@@ -4193,6 +4516,8 @@
       sleepState = () => sleepEndOfTrack ? "track" : sleepAt ? Math.max(1, Math.round((sleepAt - Date.now()) / 6e4)) : 0;
       albumOf = (item) => item?.album?.uri || item?.metadata?.album_uri || "";
       artistUriOf = (item) => item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
+      canAddTo = () => typeof S.Platform?.PlaylistAPI?.add === "function" && typeof S.Platform?.RootlistAPI?.getContents === "function";
+      isSmartPick = (item) => item?.metadata?.provider === "enhanced_recommendation" && item?.provider !== "queue";
     }
   });
 
@@ -4247,7 +4572,7 @@
       genreCache = lru(100);
       party = /* @__PURE__ */ (() => {
         let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
-        let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, drop = 0;
+        let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, drop = 0, kick = 0, beam = 0, spin = 0;
         const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
         async function prepare(item) {
           const u = item?.uri || "";
@@ -4274,7 +4599,8 @@
         function step(sec, dt, playing) {
           refine();
           const P = PROFILES[info.key];
-          const lvl = [0.6, 1, 1.45][clamp(cfg.partyLevel, 1, 3) - 1];
+          const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
+          const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
           const d = audio.uri === uri ? audio.data : null;
           let hit = false, barHit = false, conf = 0.8;
           if (d && playing) {
@@ -4298,15 +4624,22 @@
           } else drop *= Math.exp(-dt * 2);
           if (!Number.isFinite(drop)) drop = 0;
           const fx = !calm();
-          const strong = P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
-          if (fx && cfg.partyFlash && strong) {
-            flash = Math.min(1, 0.55 + drop * 0.45) * lvl;
+          const flashOn = level >= 5 && P.flash ? hit : P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
+          if (fx && cfg.partyFlash && flashOn) {
+            flash = Math.min(1, (0.55 + drop * 0.45) * lvl);
             flashCol = (flashCol + 1) % 3;
           }
           flash *= Math.exp(-dt * 5.5);
           if (fx && P.shake && hit) shake = P.shake * lvl * (0.6 + drop * 0.6) * conf;
           shake *= Math.exp(-dt * 14);
-          return { P, lvl, hit, barHit, conf, drop, flash, flashCol, shake: fx ? shake : 0 };
+          if (fx && hit && level >= 4 && cfg.partyZoom) kick = Math.min(1, (0.55 + drop * 0.6) * conf * (level - 3));
+          kick *= Math.exp(-dt * 9);
+          if (hit) beam = 1;
+          beam *= Math.exp(-dt * 4);
+          spin += dt * (0.18 + drop * 0.5) * (fx ? 1 : 0);
+          if (barHit && fx) spin += 0.7 + Math.random() * 0.8;
+          const lasers = fx && cfg.partyLasers && level >= 4 ? level >= 5 ? 12 : 6 : 0;
+          return { P, lvl, level, hit, barHit, conf, drop, flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, beam, spin, lasers };
         }
         return { prepare, step, get info() {
           return info;
@@ -4392,7 +4725,9 @@
         vol: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
         mute: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>',
         full: '<svg viewBox="0 0 24 24"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg>',
-        fullOff: '<svg viewBox="0 0 24 24"><path d="M8 3v5H3v2h7V3zm8 0h-2v7h7V8h-5zM3 16h5v5h2v-7H3zm11 5h2v-5h5v-2h-7z"/></svg>'
+        fullOff: '<svg viewBox="0 0 24 24"><path d="M8 3v5H3v2h7V3zm8 0h-2v7h7V8h-5zM3 16h5v5h2v-7H3zm11 5h2v-5h5v-2h-7z"/></svg>',
+        add: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>',
+        sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>'
       };
       MODES = [
         ["cover", "tabCover"],
@@ -4435,6 +4770,7 @@
       <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""></div></div>
       <div class="m-im-meta">
         <div class="m-im-kicker"></div>
+        <div class="m-im-smartpick" hidden>${ICON.sparkle}<span></span></div>
         <div class="m-im-title"></div>
         <div class="m-im-artist"></div>
         <div class="m-im-bar" role="slider" tabindex="0"><div class="m-im-fill"></div></div>
@@ -4448,6 +4784,7 @@
         </div>
         <div class="m-im-extras">
           <button type="button" class="m-im-sm m-im-like">${ICON.heart}</button>
+          <button type="button" class="m-im-sm m-im-addto">${ICON.add}</button>
           <div class="m-im-vol">
             <button type="button" class="m-im-sm m-im-mute">${ICON.vol}</button>
             <input type="range" class="m-im-volume" min="0" max="100" step="1">
@@ -4502,9 +4839,20 @@
             like: el2.querySelector(".m-im-like"),
             mute: el2.querySelector(".m-im-mute"),
             volume: el2.querySelector(".m-im-volume"),
-            full: el2.querySelector(".m-im-full")
+            full: el2.querySelector(".m-im-full"),
+            addto: el2.querySelector(".m-im-addto"),
+            smart: el2.querySelector(".m-im-smartpick"),
+            controls: el2.querySelector(".m-im-controls")
           };
           vctx = q.canvas.getContext("2d");
+          q.smart.querySelector("span").textContent = t("smartPick");
+          q.smart.title = t("smartPickHint");
+          q.addto.title = t("c_addTo");
+          q.addto.setAttribute("aria-label", t("c_addTo"));
+          q.addto.onclick = () => showSide(side === "playlists" ? null : "playlists");
+          if (!canAddTo()) q.addto.hidden = true;
+          for (const ev of ["pointermove", "pointerdown", "wheel"]) el2.addEventListener(ev, wake, { passive: true });
+          q.wrap.addEventListener("transitionend", () => vizRect.r = null);
           q.lyrsrc.querySelector("b").textContent = t("lyrPick");
           q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
           q.trbtn.querySelector("span").textContent = t("trToggle");
@@ -4583,6 +4931,7 @@
             q.cover.style.setProperty("--gy", (50 + y * 80).toFixed(1) + "%");
           });
           addEventListener("resize", sizeCanvas);
+          document.addEventListener("keydown", () => isOpen() && wake(), true);
         }
         async function setCover(item) {
           const token = ++coverToken;
@@ -4597,8 +4946,16 @@
             back.classList.add("is-on");
             front.classList.remove("is-on");
           };
-          if (c.small) show(await loadImage(c.small));
-          if (c.big && c.big !== c.small) show(await loadImage(c.big));
+          const big = c.big && c.big !== c.small ? loadImage(c.big) : null;
+          let sharp = false;
+          big?.then((img) => {
+            sharp = !!img;
+            show(img);
+          });
+          if (c.small) {
+            const img = await loadImage(c.small);
+            if (!sharp) show(img);
+          }
         }
         function syncState() {
           if (!el2) return;
@@ -4657,6 +5014,24 @@
           vw = q.canvas.width = Math.round(innerWidth * dpr);
           vh = q.canvas.height = Math.round(innerHeight * dpr);
         }
+        let idleT = 0, vizMoveUntil = 0;
+        function wake() {
+          clearTimeout(idleT);
+          if (el2.classList.contains("is-idle")) {
+            el2.classList.remove("is-idle");
+            vizMoveUntil = performance.now() + 1e3;
+          }
+          if (cfg.partyIdle && el2.dataset.mode === "party" && isOpen()) idleT = setTimeout(goIdle, 2600);
+        }
+        function goIdle() {
+          if (!isOpen() || el2.dataset.mode !== "party" || side || !q.keys.hidden || el2.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
+            idleT = setTimeout(goIdle, 2600);
+            return;
+          }
+          el2.style.setProperty("--m-idle-shift", Math.round(q.controls.offsetHeight + 10) + "px");
+          el2.classList.add("is-idle");
+          vizMoveUntil = performance.now() + 1e3;
+        }
         function placeIndicator() {
           const b = el2.querySelector(`.m-im-tabs button[data-mode="${cfg.imMode}"]`);
           if (!b) return;
@@ -4677,6 +5052,7 @@
             else resetParty();
             sizeCanvas();
             active = -2;
+            wake();
           };
           if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
             try {
@@ -4702,6 +5078,7 @@
           partyFx = false;
           q.flash.style.opacity = "0";
           q.wrap.style.translate = "";
+          q.canvas.style.scale = q.bg.style.scale = lastKick = "";
         }
         let lastJam = -1e9, jamKey = "";
         async function showJam() {
@@ -4795,7 +5172,7 @@
         function showSource(got) {
           const picked = !!cfg.lyricPicks?.[lyrUri];
           q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri);
-          q.lyrsrc.querySelector("span").textContent = got ? (got.source === "lrclib" ? "LRCLIB" : "Spotify") + (picked ? " \xB7 " + t("lyrPicked") : "") : t("lyrNone");
+          q.lyrsrc.querySelector("span").textContent = got ? (SOURCE_NAME[got.source] || "Spotify") + (picked ? " \xB7 " + t("lyrPicked") : "") : t("lyrNone");
         }
         async function showVersions(body, item) {
           const uri = lyrUri;
@@ -4954,7 +5331,11 @@
           const ctx = vctx;
           ctx.clearRect(0, 0, vw, vh);
           const dpr = vw / innerWidth;
-          if (!vizRect.r || vizRect.n++ % 30 === 0) vizRect.r = q.wrap.getBoundingClientRect();
+          if (!vizRect.r || vizRect.n++ % 30 === 0 || now < vizMoveUntil) {
+            vizRect.r = q.wrap.getBoundingClientRect();
+            const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
+            if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
+          }
           const r = vizRect.r;
           const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
           const R = r.width / 2 * dpr + 16 * dpr;
@@ -5145,9 +5526,15 @@
             }
             const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
             if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
+            const kz = px.kick > 0.02 ? (1 + px.kick * 0.04).toFixed(3) : "";
+            if (kz !== lastKick) {
+              lastKick = kz;
+              q.canvas.style.scale = kz;
+              q.bg.style.scale = kz ? (1 + px.kick * 0.06).toFixed(3) : "";
+            }
           }
         }
-        let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0;
+        let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
         function freshCanvas() {
           const n = q.canvas.cloneNode(false);
           q.canvas.replaceWith(n);
@@ -5187,6 +5574,27 @@
             return mixC(pal[i], pal[(i + 1) % 3], x - i);
           };
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
+          if (px.lasers) {
+            const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
+            const al = 0.12 + px.beam * 0.42 + px.drop * 0.3;
+            const wd = 0.012 + px.beam * 0.016 + px.drop * 0.01;
+            for (let k = 0; k < n; k++) {
+              const side2 = k % 2 ? -1 : 1;
+              const a = side2 * (px.spin + Math.floor(k / 2) * (Math.PI * 2 / half)) - Math.PI / 2;
+              const c = colAt(k / n);
+              const g = ctx.createLinearGradient(cx, cy, cx + Math.cos(a) * far * 0.7, cy + Math.sin(a) * far * 0.7);
+              g.addColorStop(0, rgba2(c, al));
+              g.addColorStop(0.45, rgba2(c, al * 0.35));
+              g.addColorStop(1, rgba2(c, 0));
+              ctx.fillStyle = g;
+              ctx.beginPath();
+              ctx.moveTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+              ctx.lineTo(cx + Math.cos(a - wd) * far, cy + Math.sin(a - wd) * far);
+              ctx.lineTo(cx + Math.cos(a + wd) * far, cy + Math.sin(a + wd) * far);
+              ctx.closePath();
+              ctx.fill();
+            }
+          }
           const STEPS = 12;
           const w = P.thick * dpr * (1 + px.drop * 0.35);
           for (const [lw, al] of [[w * 3.2, 0.16], [w, 0.95]]) {
@@ -5232,7 +5640,7 @@
             ctx.fillStyle = g;
             ctx.fill();
           }
-          if (px.hit && sparks.length < 260) {
+          if (px.hit && sparks.length < 160 + px.level * 60) {
             const n = Math.round(P.sparks * px.lvl * (1 + px.drop));
             for (let k = 0; k < n; k++) {
               const a = Math.random() * Math.PI * 2;
@@ -5253,7 +5661,8 @@
           raf = requestAnimationFrame(frame);
           const pos = S.Player.getProgress?.() || 0;
           const dur = S.Player.getDuration?.() || 0;
-          q.fill.style.transform = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
+          const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
+          if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
           if (now - lastText > 250) {
             lastText = now;
             q.pos.textContent = fmt(pos);
@@ -5324,7 +5733,7 @@
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
-          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick" }[kind]);
+          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo" }[kind]);
           const body = q.sideBody;
           body.textContent = "";
           const item = (label, sub, img, onClick, on) => {
@@ -5365,6 +5774,8 @@
             }, d.active);
           } else if (kind === "versions") {
             showVersions(body, item);
+          } else if (kind === "playlists") {
+            showPlaylists(body, item);
           } else if (kind === "timer") {
             const now = sleepState();
             for (const [v, label] of [[15, "15 min"], [30, "30 min"], [45, "45 min"], [60, "60 min"], ["track", t("timerTrack")], [0, t("timerOff")]]) {
@@ -5376,6 +5787,54 @@
             }
           }
         }
+        async function showPlaylists(body, item) {
+          const track = currentItem()?.uri || "";
+          if (!/^spotify:(track|episode|local):/.test(track)) return item(t("plNoTrack"));
+          item(t("loading"));
+          const list = await playlists();
+          if (side !== "playlists") return;
+          body.textContent = "";
+          if (!list.length) return item(t("plNone"));
+          const recent = cfg.plRecent || [];
+          const rank = (p) => recent.includes(p.uri) ? recent.indexOf(p.uri) : 99;
+          list.sort((a, b) => rank(a) - rank(b));
+          const find = document.createElement("input");
+          find.type = "search";
+          find.className = "m-im-side-find";
+          find.placeholder = t("plFind");
+          find.setAttribute("aria-label", t("plFind"));
+          body.append(find);
+          const rows = [];
+          for (const p of list) {
+            item(p.name, p.folder, p.image, null);
+            const b = body.lastElementChild;
+            b.disabled = false;
+            b.dataset.name = (p.name + " " + p.folder).toLowerCase();
+            b.onclick = async () => {
+              if (b.classList.contains("is-busy")) return;
+              b.classList.add("is-busy");
+              const res = await addToPlaylist(p.uri, track);
+              b.classList.remove("is-busy");
+              const small = b.querySelector("small") || b.querySelector("span").appendChild(document.createElement("small"));
+              small.textContent = res === true ? "\u2713 " + t("plAdded") : res === "dup" ? t("plDup") : t("plFail");
+              b.classList.toggle("is-on", res === true || res === "dup");
+              if (res === true) {
+                cfg.plRecent = [p.uri, ...recent.filter((u) => u !== p.uri)].slice(0, 8);
+                save();
+                if (cfg.burst && !cfg.calm) {
+                  const r = b.getBoundingClientRect();
+                  burst(r.left + 28, r.top + r.height / 2);
+                }
+              }
+            };
+            rows.push(b);
+          }
+          find.oninput = () => {
+            const s = find.value.trim().toLowerCase();
+            for (const r of rows) r.hidden = !!s && !r.dataset.name.includes(s);
+          };
+          find.focus();
+        }
         function refresh() {
           if (!el2) return;
           if (side === "queue") setTimeout(() => side === "queue" && showSide("queue"), 600);
@@ -5384,6 +5843,8 @@
           setCanvas(item);
           q.title.textContent = titleOf(item) || t("nothing");
           q.artist.textContent = artistOf(item);
+          q.smart.hidden = !isSmartPick(item);
+          if (side === "playlists") showSide("playlists");
           q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
           lastBeatIdx = -1;
           rings = [];
@@ -5414,6 +5875,8 @@
           q.video?.pause();
           toggleKeys(false);
           showSide(null);
+          clearTimeout(idleT);
+          el2.classList.remove("is-idle");
           dust.pause(false);
           cancelAnimationFrame(raf);
           if (document.fullscreenElement) document.exitFullscreen?.();
@@ -6160,12 +6623,28 @@
     if (token !== songToken) return;
     showHaze(haze || c.big);
     record(item, colors || current);
+    prefetchNext();
     if (!dynamic) return clearColors();
     if (cfg.freeze && current) return;
     const pinned = cfg.pinned?.[albumUri(item)];
     if (pinned) setColors(pinned);
     else if (colors) setColors(colors);
     else clearColors();
+  }
+  function prefetchNext() {
+    const next = (S.Queue?.nextTracks || []).map((x) => x.contextTrack || x).find((x) => x?.uri?.startsWith("spotify:track:"));
+    if (!next || next.uri === prefetched) return;
+    prefetched = next.uri;
+    const m = next.metadata || {};
+    const big = toHttp(m.image_xlarge_url || m.image_large_url || m.image_url);
+    const small = toHttp(m.image_url || m.image_small_url);
+    if (!big) return;
+    (window.requestIdleCallback || setTimeout)(() => {
+      loadImage(big);
+      if (small && small !== big) loadImage(small);
+      analyse(big, next.uri).catch(() => {
+      });
+    }, { timeout: 4e3 });
   }
   function onPlayPause() {
     root.classList.toggle("mirage-playing", !!S.Player.isPlaying());
@@ -6174,7 +6653,7 @@
     beat.sync();
     bridge.sendTrack(false);
   }
-  var contextUri2, albumUri, lastUri, songToken;
+  var contextUri2, albumUri, lastUri, songToken, prefetched;
   var init_song = __esm({
     "src/song.js"() {
       init_core();
@@ -6191,6 +6670,7 @@
       albumUri = (item) => item?.album?.uri || item?.metadata?.album_uri || "";
       lastUri = "";
       songToken = 0;
+      prefetched = "";
     }
   });
 
@@ -6623,11 +7103,17 @@
           immersive.refresh();
         }),
         el("small", "m-note", t("partyLevel")),
-        seg([[1, t("partyLevel1")], [2, t("partyLevel2")], [3, t("partyLevel3")]], cfg.partyLevel, (k) => {
+        seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
           cfg.partyLevel = k;
           save();
         }),
         toggle("partyFlash", () => {
+        }),
+        toggle("partyLasers", () => {
+        }),
+        toggle("partyZoom", () => {
+        }),
+        toggle("partyIdle", () => {
         }),
         toggle("partyJam", () => {
         })
@@ -7008,7 +7494,7 @@
           e.preventDefault();
           immersive.toggle();
         } else if (immersive.isOpen()) {
-          if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input[type=text], textarea")) return;
+          if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input:not([type=range]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable]")) return;
           const keys = {
             Escape: () => document.fullscreenElement ? document.exitFullscreen() : immersive.close(),
             Space: () => S.Player.togglePlay(),

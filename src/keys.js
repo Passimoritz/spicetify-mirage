@@ -6,7 +6,7 @@ window.addEventListener("keydown", (e) => {
     e.preventDefault();
     immersive.toggle();
   } else if (immersive.isOpen()) {
-    if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input[type=text], textarea")) return;
+    if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input:not([type=range]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable]")) return;
     const keys = {
       Escape: () => (document.fullscreenElement ? document.exitFullscreen() : immersive.close()),
       Space: () => S.Player.togglePlay(),

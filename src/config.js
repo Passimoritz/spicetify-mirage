@@ -74,6 +74,10 @@ const DEFAULTS = {
   partyLevel: 2,
   partyFlash: true,
   partyJam: true,
+  // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
+  partyLasers: true,
+  partyZoom: true,
+  partyIdle: true,
   scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
 };
 let cfg = { ...DEFAULTS };

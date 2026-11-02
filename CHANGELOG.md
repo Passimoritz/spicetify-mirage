@@ -10,6 +10,22 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.5.0] – 2026-11-02
+
+### Added
+
+- **Party mode, much harder.** Five levels: Light, Normal, Max, Extreme and Insane. From *Extreme* on, mirrored light beams fan out of the cover, flare on the beat and jump on every bar, and camera kicks briefly punch the whole picture in. *Insane* doubles the beams and flashes on every beat (still under three flashes per second; off with reduced motion). New switches for light beams and camera kicks.
+- **Auto-hide in party mode.** After a few seconds without mouse or keyboard, the top bar, the controls and the lyrics bar fade out, and cover, lyrics and title glide down to the centre. Moving the mouse brings everything back. Can be turned off in the settings.
+- **Add to playlist in immersive mode.** A new button next to the heart opens your own and collaborative playlists (folders included), with search and the most recently used first. It notices when a song is already in the playlist.
+- **Smart Shuffle tag.** A sparkle chip above the title shows when Smart Shuffle added the song.
+- **More lyrics sources.** After Spotify and LRCLIB, Mirage now also asks NetEase (synced) and lyrics.ovh (plain text). Each source gives up after 7 seconds instead of keeping the lyrics on "Loading", and a synced hit wins over plain text.
+
+### Changed
+
+- The next song's cover, colours and background are prepared in advance, so they appear right away when the song changes instead of loading in afterwards. The small and large cover in immersive mode now load in parallel.
+- The progress bar is only redrawn when its value changes.
+- Shortcuts no longer fire while typing in any text field in immersive mode.
+
 ## [1.4.5] – 2026-11-01
 
 ### Changed

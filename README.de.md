@@ -87,10 +87,10 @@
 | Ansicht | Was du bekommst |
 |---|---|
 | **Cover** | Riesiges Cover, das sich mit der Maus neigt, Titel im Farbverlauf, Fortschritt, volle Steuerung |
-| **Liedtext** | Synchronisierter Liedtext, die aktuelle Zeile leuchtet in der Mitte, Karaoke Wort für Wort – Klick auf eine Zeile springt dorthin. Hat Spotify keinen, sucht Mirage bei [LRCLIB](https://lrclib.net), und *Fassung wählen* nimmt einen anderen Treffer |
+| **Liedtext** | Synchronisierter Liedtext, die aktuelle Zeile leuchtet in der Mitte, Karaoke Wort für Wort – Klick auf eine Zeile springt dorthin. Hat Spotify keinen, sucht Mirage bei [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh, und *Fassung wählen* nimmt einen anderen Treffer |
 | **Visualizer** | Kreisförmiges Spektrum um das runde Cover, Ringe auf jedem Schlag – mit Spotifys Audioanalyse, sonst ruhige Bewegung |
 | **Mix** | Alles zugleich: rundes Cover im Visualizer-Kranz, daneben der Liedtext, volle Steuerung |
-| **Party** | Größer und im Takt: Das Profil richtet sich nach Genre und Tempo (Rave, Bass, Rock, Pop, Chill) – pulsierendes Cover, Ringe, weiche Farbflächen und ein Schub bei lauten Drops. Im Spotify-Jam schweben die Profilbilder aller Teilnehmer am Rand. Stil, Stärke, Blitze und Jam-Gäste in den Einstellungen |
+| **Party** | Größer und im Takt: Das Profil richtet sich nach Genre und Tempo (Rave, Bass, Rock, Pop, Chill) – pulsierendes Cover, Ringe, weiche Farbflächen und ein Schub bei lauten Drops. Im Spotify-Jam schweben die Profilbilder aller Teilnehmer am Rand. Fünf Stufen bis *Wahnsinn* – ab *Extrem* strahlen Lichtfächer aus dem Cover und das ganze Bild zoomt im Takt heran. Ruht die Maus, blenden die Knöpfe aus und alles gleitet zur Mitte. Stil, Stärke, Blitze, Lichtstrahlen, Kamera-Stöße, Ausblenden und Jam-Gäste in den Einstellungen |
 
 Steuerung: Zufall, Zurück, Wiedergabe/Pause, Weiter, Wiederholen (auch einen Song), Liken, Lautstärke + Stumm, Vollbild.
 
@@ -249,7 +249,7 @@ flowchart LR
 - **Leistung zuerst:** Farben wechseln in einem einzigen Schritt, der Hintergrund ist ein verkleinertes Bild, das einmal verwischt und nur noch gedreht wird, und er pausiert, solange der Immersiv-Modus ihn verdeckt. Echtes Glas (Live-Unschärfe hinter jeder Fläche) ist optional.
 - **Gegen das echte Spotify gebaut:** Aktuelle Spotify-Versionen haben `.Root__main-view` & Co. in `#main-view` / `#Desktop_LeftSidebar_Id` umbenannt; Mirage spricht beide an. Farbblöcke im Kopf (auch `::after`-Verläufe und `oklch()`-Farben) erkennt Mirage am berechneten Stil statt an Klassennamen, die sich bei jedem Update ändern.
 - **Diagnose:** Läuft das Overlay, kann das Theme einen Aufbau-Bericht (Größen, Klassen, Farben – keine Inhalte) nach `%APPDATA%\Mirage Overlay\dom-report.json` schicken. So werden Darstellungsfehler nach Fakten behoben statt geraten.
-- **Datenschutz:** kein eigener Server, kein Tracking. Liedtext und Taktdaten kommen von Spotify selbst; hat Spotify keinen Liedtext, gehen nur Titel, Künstler, Album und Länge an [LRCLIB](https://lrclib.net) (abschaltbar); Schriften von Google Fonts.
+- **Datenschutz:** kein eigener Server, kein Tracking. Liedtext und Taktdaten kommen von Spotify selbst; hat Spotify keinen Liedtext, gehen nur Titel, Künstler, Album und Länge an [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh (abschaltbar); Schriften von Google Fonts.
 - **Barrierefreiheit:** beachtet „Bewegung reduzieren“, sichtbare Fokusrahmen, lesbarer Kontrast in jeder Palette.
 
 ## Lizenz

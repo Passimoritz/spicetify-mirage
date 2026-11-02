@@ -6,7 +6,7 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas } from "./lyrics.js";
+import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME } from "./lyrics.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard } from "./share.js";
 import * as ctl from "./controls.js";
@@ -37,6 +37,8 @@ const ICON = {
   mute: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>',
   full: '<svg viewBox="0 0 24 24"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg>',
   fullOff: '<svg viewBox="0 0 24 24"><path d="M8 3v5H3v2h7V3zm8 0h-2v7h7V8h-5zM3 16h5v5h2v-7H3zm11 5h2v-5h5v-2h-7z"/></svg>',
+  add: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>',
+  sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>',
 };
 const MODES = [
   ["cover", "tabCover"],
@@ -82,6 +84,7 @@ const immersive = (() => {
       <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""></div></div>
       <div class="m-im-meta">
         <div class="m-im-kicker"></div>
+        <div class="m-im-smartpick" hidden>${ICON.sparkle}<span></span></div>
         <div class="m-im-title"></div>
         <div class="m-im-artist"></div>
         <div class="m-im-bar" role="slider" tabindex="0"><div class="m-im-fill"></div></div>
@@ -95,6 +98,7 @@ const immersive = (() => {
         </div>
         <div class="m-im-extras">
           <button type="button" class="m-im-sm m-im-like">${ICON.heart}</button>
+          <button type="button" class="m-im-sm m-im-addto">${ICON.add}</button>
           <div class="m-im-vol">
             <button type="button" class="m-im-sm m-im-mute">${ICON.vol}</button>
             <input type="range" class="m-im-volume" min="0" max="100" step="1">
@@ -150,8 +154,21 @@ const immersive = (() => {
       mute: el.querySelector(".m-im-mute"),
       volume: el.querySelector(".m-im-volume"),
       full: el.querySelector(".m-im-full"),
+      addto: el.querySelector(".m-im-addto"),
+      smart: el.querySelector(".m-im-smartpick"),
+      controls: el.querySelector(".m-im-controls"),
     };
     vctx = q.canvas.getContext("2d");
+    q.smart.querySelector("span").textContent = t("smartPick");
+    q.smart.title = t("smartPickHint");
+    q.addto.title = t("c_addTo");
+    q.addto.setAttribute("aria-label", t("c_addTo"));
+    q.addto.onclick = () => showSide(side === "playlists" ? null : "playlists");
+    if (!ctl.canAddTo()) q.addto.hidden = true;
+    // Party: ruht die Maus, blendet die Bedienung aus und alles rückt weich zusammen
+    for (const ev of ["pointermove", "pointerdown", "wheel"]) el.addEventListener(ev, wake, { passive: true });
+    // Cover fertig verschoben: Visualizer neu ausmessen
+    q.wrap.addEventListener("transitionend", () => (vizRect.r = null));
     q.lyrsrc.querySelector("b").textContent = t("lyrPick");
     q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
     q.trbtn.querySelector("span").textContent = t("trToggle");
@@ -223,6 +240,7 @@ const immersive = (() => {
       q.cover.style.setProperty("--gy", (50 + y * 80).toFixed(1) + "%");
     });
     addEventListener("resize", sizeCanvas);
+    document.addEventListener("keydown", () => isOpen() && wake(), true);
   }
 
   // Erst das kleine (meist schon geladene) Cover zeigen, dann scharf überblenden
@@ -239,8 +257,17 @@ const immersive = (() => {
       back.classList.add("is-on");
       front.classList.remove("is-on");
     };
-    if (c.small) show(await loadImage(c.small));
-    if (c.big && c.big !== c.small) show(await loadImage(c.big));
+    // beide gleichzeitig anfordern: ist das große schon da (vorgeladen), kommt es ohne Umweg
+    const big = c.big && c.big !== c.small ? loadImage(c.big) : null;
+    let sharp = false;
+    big?.then((img) => {
+      sharp = !!img;
+      show(img);
+    });
+    if (c.small) {
+      const img = await loadImage(c.small);
+      if (!sharp) show(img);
+    }
   }
 
   // Schalterzustände aus Spotify lesen (Zufall, Wiederholen, Like, Lautstärke)
@@ -307,6 +334,29 @@ const immersive = (() => {
     vh = q.canvas.height = Math.round(innerHeight * dpr);
   }
 
+  // Ruhemodus (Party): nach 2,6 s ohne Maus/Taste verschwinden Kopfzeile, Knöpfe und Liedtext-Leiste,
+  // Cover, Liedtext und Titel rücken um die frei gewordene Höhe nach unten zur Mitte.
+  let idleT = 0, vizMoveUntil = 0;
+  function wake() {
+    clearTimeout(idleT);
+    if (el.classList.contains("is-idle")) {
+      el.classList.remove("is-idle");
+      vizMoveUntil = performance.now() + 1000;
+    }
+    if (cfg.partyIdle && el.dataset.mode === "party" && isOpen()) idleT = setTimeout(goIdle, 2600);
+  }
+  function goIdle() {
+    // nicht, solange eine Seitenleiste oder die Tastenhilfe offen ist oder die Maus auf der Bedienung ruht
+    if (!isOpen() || el.dataset.mode !== "party" || side || !q.keys.hidden || el.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
+      idleT = setTimeout(goIdle, 2600);
+      return;
+    }
+    el.style.setProperty("--m-idle-shift", Math.round(q.controls.offsetHeight + 10) + "px");
+    el.classList.add("is-idle");
+    // der Visualizer folgt dem wandernden Cover Bild für Bild
+    vizMoveUntil = performance.now() + 1000;
+  }
+
   function placeIndicator() {
     const b = el.querySelector(`.m-im-tabs button[data-mode="${cfg.imMode}"]`);
     if (!b) return;
@@ -328,6 +378,7 @@ const immersive = (() => {
       else resetParty();
       sizeCanvas();
       active = -2;
+      wake();
     };
     if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
       try {
@@ -356,6 +407,7 @@ const immersive = (() => {
     partyFx = false;
     q.flash.style.opacity = "0";
     q.wrap.style.translate = "";
+    q.canvas.style.scale = q.bg.style.scale = lastKick = "";
   }
 
   // Jam: Profilbilder schweben links und rechts am Rand; du mit Akzentring, der Host mit kleinem Punkt.
@@ -467,7 +519,7 @@ const immersive = (() => {
   function showSource(got) {
     const picked = !!cfg.lyricPicks?.[lyrUri];
     q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri);
-    q.lyrsrc.querySelector("span").textContent = got ? (got.source === "lrclib" ? "LRCLIB" : "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
+    q.lyrsrc.querySelector("span").textContent = got ? (SOURCE_NAME[got.source] || "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
   }
   async function showVersions(body, item) {
     const uri = lyrUri;
@@ -638,7 +690,12 @@ const immersive = (() => {
     const ctx = vctx;
     ctx.clearRect(0, 0, vw, vh);
     const dpr = vw / innerWidth;
-    if (!vizRect.r || vizRect.n++ % 30 === 0) vizRect.r = q.wrap.getBoundingClientRect();
+    if (!vizRect.r || vizRect.n++ % 30 === 0 || now < vizMoveUntil) {
+      vizRect.r = q.wrap.getBoundingClientRect();
+      // Kamera-Stoß zoomt den Canvas um die Cover-Mitte, nicht um die Bildschirmmitte
+      const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
+      if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
+    }
     const r = vizRect.r;
     const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
     const R = (r.width / 2) * dpr + 16 * dpr;
@@ -845,9 +902,16 @@ const immersive = (() => {
       }
       const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
       if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
+      // Kamera-Stoß: Visualizer und Hintergrund zoomen kurz mit (nur scale – eigene Grafikebenen)
+      const kz = px.kick > 0.02 ? (1 + px.kick * 0.04).toFixed(3) : "";
+      if (kz !== lastKick) {
+        lastKick = kz;
+        q.canvas.style.scale = kz;
+        q.bg.style.scale = kz ? (1 + px.kick * 0.06).toFixed(3) : "";
+      }
     }
   }
-  let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0;
+  let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
   function freshCanvas() {
     const n = q.canvas.cloneNode(false);
     q.canvas.replaceWith(n);
@@ -891,6 +955,29 @@ const immersive = (() => {
       return mixC(pal[i], pal[(i + 1) % 3], x - i);
     };
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
+    // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover, die im Takt aufleuchten und
+    // pro Takt springen. Unter den Balken, damit der Kranz klar bleibt.
+    if (px.lasers) {
+      const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
+      const al = 0.12 + px.beam * 0.42 + px.drop * 0.3;
+      const wd = 0.012 + px.beam * 0.016 + px.drop * 0.01;
+      for (let k = 0; k < n; k++) {
+        const side = k % 2 ? -1 : 1;
+        const a = side * (px.spin + Math.floor(k / 2) * ((Math.PI * 2) / half)) - Math.PI / 2;
+        const c = colAt(k / n);
+        const g = ctx.createLinearGradient(cx, cy, cx + Math.cos(a) * far * 0.7, cy + Math.sin(a) * far * 0.7);
+        g.addColorStop(0, rgba(c, al));
+        g.addColorStop(0.45, rgba(c, al * 0.35));
+        g.addColorStop(1, rgba(c, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+        ctx.lineTo(cx + Math.cos(a - wd) * far, cy + Math.sin(a - wd) * far);
+        ctx.lineTo(cx + Math.cos(a + wd) * far, cy + Math.sin(a + wd) * far);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
     const STEPS = 12;
     const w = P.thick * dpr * (1 + px.drop * 0.35);
     for (const [lw, al] of [[w * 3.2, 0.16], [w, 0.95]]) {
@@ -939,7 +1026,7 @@ const immersive = (() => {
       ctx.fill();
     }
     // Funken: Anzahl je Profil und Stärke, mehr im Drop; höchstens 260 gleichzeitig
-    if (px.hit && sparks.length < 260) {
+    if (px.hit && sparks.length < 160 + px.level * 60) {
       const n = Math.round(P.sparks * px.lvl * (1 + px.drop));
       for (let k = 0; k < n; k++) {
         const a = Math.random() * Math.PI * 2;
@@ -962,7 +1049,8 @@ const immersive = (() => {
     const pos = S.Player.getProgress?.() || 0;
     const dur = S.Player.getDuration?.() || 0;
     // scaleX statt width: kein Neu-Layout in jedem Bild
-    q.fill.style.transform = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
+    const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
+    if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
     if (now - lastText > 250) {
       lastText = now;
       q.pos.textContent = fmt(pos);
@@ -1040,7 +1128,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -1078,12 +1166,64 @@ const immersive = (() => {
       for (const d of list) item(d.name, d.active ? t("deviceActive") : d.type, null, d.active ? null : async () => { await ctl.transfer(d.id); setTimeout(() => showSide("devices"), 800); }, d.active);
     } else if (kind === "versions") {
       showVersions(body, item);
+    } else if (kind === "playlists") {
+      showPlaylists(body, item);
     } else if (kind === "timer") {
       const now = ctl.sleepState();
       for (const [v, label] of [[15, "15 min"], [30, "30 min"], [45, "45 min"], [60, "60 min"], ["track", t("timerTrack")], [0, t("timerOff")]]) {
         item(label, now && (now === v || (v !== "track" && v && now !== "track" && now <= v && now > v - 15)) ? t("timerLeft").replace("{m}", now === "track" ? "♪" : now) : "", null, () => { ctl.setSleep(v); showSide("timer"); syncState(); }, now === v);
       }
     }
+  }
+
+  // Zu einer Playlist hinzufügen: Suchfeld oben, darunter die eigenen Playlists (zuletzt genutzte zuerst)
+  async function showPlaylists(body, item) {
+    const track = currentItem()?.uri || "";
+    if (!/^spotify:(track|episode|local):/.test(track)) return item(t("plNoTrack"));
+    item(t("loading"));
+    const list = await ctl.playlists();
+    if (side !== "playlists") return;
+    body.textContent = "";
+    if (!list.length) return item(t("plNone"));
+    const recent = cfg.plRecent || [];
+    const rank = (p) => (recent.includes(p.uri) ? recent.indexOf(p.uri) : 99);
+    list.sort((a, b) => rank(a) - rank(b));
+    const find = document.createElement("input");
+    find.type = "search";
+    find.className = "m-im-side-find";
+    find.placeholder = t("plFind");
+    find.setAttribute("aria-label", t("plFind"));
+    body.append(find);
+    const rows = [];
+    for (const p of list) {
+      item(p.name, p.folder, p.image, null);
+      const b = body.lastElementChild;
+      b.disabled = false;
+      b.dataset.name = (p.name + " " + p.folder).toLowerCase();
+      b.onclick = async () => {
+        if (b.classList.contains("is-busy")) return;
+        b.classList.add("is-busy");
+        const res = await ctl.addToPlaylist(p.uri, track);
+        b.classList.remove("is-busy");
+        const small = b.querySelector("small") || b.querySelector("span").appendChild(document.createElement("small"));
+        small.textContent = res === true ? "✓ " + t("plAdded") : res === "dup" ? t("plDup") : t("plFail");
+        b.classList.toggle("is-on", res === true || res === "dup");
+        if (res === true) {
+          cfg.plRecent = [p.uri, ...recent.filter((u) => u !== p.uri)].slice(0, 8);
+          save();
+          if (cfg.burst && !cfg.calm) {
+            const r = b.getBoundingClientRect();
+            burst(r.left + 28, r.top + r.height / 2);
+          }
+        }
+      };
+      rows.push(b);
+    }
+    find.oninput = () => {
+      const s = find.value.trim().toLowerCase();
+      for (const r of rows) r.hidden = !!s && !r.dataset.name.includes(s);
+    };
+    find.focus();
   }
 
   function refresh() {
@@ -1094,6 +1234,8 @@ const immersive = (() => {
     setCanvas(item);
     q.title.textContent = titleOf(item) || t("nothing");
     q.artist.textContent = artistOf(item);
+    q.smart.hidden = !ctl.isSmartPick(item);
+    if (side === "playlists") showSide("playlists");
     q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
     rings = [];
@@ -1126,6 +1268,8 @@ const immersive = (() => {
     q.video?.pause();
     toggleKeys(false);
     showSide(null);
+    clearTimeout(idleT);
+    el.classList.remove("is-idle");
     dust.pause(false);
     cancelAnimationFrame(raf);
     if (document.fullscreenElement) document.exitFullscreen?.();

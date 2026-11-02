@@ -288,11 +288,14 @@ function render(box) {
         immersive.refresh();
       }),
       el("small", "m-note", t("partyLevel")),
-      seg([[1, t("partyLevel1")], [2, t("partyLevel2")], [3, t("partyLevel3")]], cfg.partyLevel, (k) => {
+      seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
         cfg.partyLevel = k;
         save();
       }),
       toggle("partyFlash", () => {}),
+      toggle("partyLasers", () => {}),
+      toggle("partyZoom", () => {}),
+      toggle("partyIdle", () => {}),
       toggle("partyJam", () => {})
     )
   );

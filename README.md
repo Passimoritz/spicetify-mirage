@@ -87,10 +87,10 @@ Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> or the circle button in 
 | View | What you get |
 |---|---|
 | **Cover** | Huge cover that tilts with the mouse, title in a colour gradient, progress, full controls |
-| **Lyrics** | Synced lyrics, the current line lit up and centred, karaoke word by word – click any line to jump there. No lyrics at Spotify? Mirage looks on [LRCLIB](https://lrclib.net), and *Choose version* picks another match |
+| **Lyrics** | Synced lyrics, the current line lit up and centred, karaoke word by word – click any line to jump there. No lyrics at Spotify? Mirage looks on [LRCLIB](https://lrclib.net), NetEase and lyrics.ovh, and *Choose version* picks another match |
 | **Visualizer** | Radial spectrum around the round cover, beat rings – driven by Spotify's audio analysis when available, otherwise ambient |
 | **Mix** | All three at once: round cover with the visualizer ring, synced lyrics beside it, full controls |
-| **Party** | Bigger and on the beat: the profile follows the artist's genre and the tempo (Rave, Bass, Rock, Pop, Chill), with a pulsing cover, beat rings, soft colour washes and a boost on loud drops. In a Spotify Jam, everyone's profile picture floats at the edges. Style, intensity, flashes and Jam guests in the settings |
+| **Party** | Bigger and on the beat: the profile follows the artist's genre and the tempo (Rave, Bass, Rock, Pop, Chill), with a pulsing cover, beat rings, soft colour washes and a boost on loud drops. In a Spotify Jam, everyone's profile picture floats at the edges. Five intensity levels up to *Insane* – from *Extreme* on, light beams fan out of the cover and the whole picture punches in on the beat. When the mouse rests, the controls fade out and everything glides to the centre. Style, intensity, flashes, beams, camera kicks, auto-hide and Jam guests in the settings |
 
 Controls: shuffle, previous, play/pause, next, repeat (incl. repeat one), like, volume + mute, full screen.
 
@@ -261,7 +261,7 @@ flowchart LR
 - **Performance first:** colours change in a single style update, the background haze is a pre-shrunk image blurred once and only rotated, and the background pauses while immersive mode covers it. Real glass (live blur behind every panel) is optional.
 - **Built against the real Spotify DOM:** current Spotify builds renamed `.Root__main-view` & co. to `#main-view` / `#Desktop_LeftSidebar_Id`; Mirage targets both. Header colour blocks (incl. `::after` gradients and `oklch()` colours) are detected by their computed style, not by class names that change every release.
 - **Diagnostics:** with the overlay running, the theme can send a layout report (element sizes, classes, colours – no content) to `%APPDATA%\Mirage Overlay\dom-report.json`, so styling bugs can be fixed from facts instead of guesses.
-- **Privacy:** no own server, no tracking. Lyrics and beat data come from Spotify itself; if Spotify has no lyrics, only title, artist, album and length go to [LRCLIB](https://lrclib.net) (can be turned off); fonts load from Google Fonts.
+- **Privacy:** no own server, no tracking. Lyrics and beat data come from Spotify itself; if Spotify has no lyrics, only title, artist, album and length go to [LRCLIB](https://lrclib.net), NetEase and lyrics.ovh (can be turned off); fonts load from Google Fonts.
 - **Accessibility:** respects *reduce motion*, visible focus rings, readable contrast on every palette.
 
 ## License

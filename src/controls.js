@@ -160,4 +160,45 @@ function go(uri) {
 const albumOf = (item) => item?.album?.uri || item?.metadata?.album_uri || "";
 const artistUriOf = (item) => item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
 
-export { shuffleState, cycleShuffle, smartSupported, upNext, devices, canConnect, transfer, setSleep, sleepState, isFading, go, albumOf, artistUriOf };
+/* ---- Zu einer Playlist hinzufügen */
+// Eigene und gemeinsame Playlists aus der Bibliothek (Ordner aufgeklappt), in die man schreiben darf
+async function playlists() {
+  const R = S.Platform?.RootlistAPI;
+  if (typeof R?.getContents !== "function") return [];
+  let root;
+  try {
+    root = await R.getContents();
+  } catch {
+    return [];
+  }
+  const out = [];
+  const walk = (items, folder) => {
+    for (const x of items || []) {
+      if (x?.type === "folder") walk(x.items, x.name);
+      else if (x?.type === "playlist" && x.uri && (x.canAdd ?? x.isOwnedBySelf ?? x.isCollaborative ?? true)) {
+        out.push({ uri: x.uri, name: x.name || "", folder: folder || "", image: x.images?.[0]?.url || "" });
+      }
+    }
+  };
+  walk(root?.items);
+  return out;
+}
+const canAddTo = () => typeof S.Platform?.PlaylistAPI?.add === "function" && typeof S.Platform?.RootlistAPI?.getContents === "function";
+// true = hinzugefügt, "dup" = war schon drin, false = ging nicht
+async function addToPlaylist(playlistUri, trackUri) {
+  const P = S.Platform?.PlaylistAPI;
+  try {
+    const have = await P.getContents?.(playlistUri, { limit: 5000 });
+    if (have?.items?.some((i) => i?.uri === trackUri)) return "dup";
+  } catch {}
+  try {
+    await P.add(playlistUri, [trackUri], { after: "end" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+// Smart Shuffle hat diesen Song eingestreut (Spotify zeigt dafür ein Funkeln) – nicht, wenn man ihn selbst eingereiht hat
+const isSmartPick = (item) => item?.metadata?.provider === "enhanced_recommendation" && item?.provider !== "queue";
+
+export { shuffleState, cycleShuffle, smartSupported, upNext, devices, canConnect, transfer, setSleep, sleepState, isFading, go, albumOf, artistUriOf, playlists, canAddTo, addToPlaylist, isSmartPick };

@@ -58,7 +58,7 @@ function pickProfile(genres, bpm, loud) {
 
 const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
-  let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, drop = 0;
+  let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, drop = 0, kick = 0, beam = 0, spin = 0;
   const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   async function prepare(item) {
@@ -90,7 +90,10 @@ const party = (() => {
   function step(sec, dt, playing) {
     refine();
     const P = PROFILES[info.key];
-    const lvl = [0.6, 1, 1.45][clamp(cfg.partyLevel, 1, 3) - 1];
+    // Stufen: Leicht · Normal · Max · Extrem · Wahnsinn – ab „Extrem“ kommen Lichtstrahlen und
+    // Kamera-Stöße dazu, bei „Wahnsinn“ doppelt so viele Strahlen und Blitz auf jedem Schlag
+    const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
+    const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
     const d = audio.uri === uri ? audio.data : null;
     let hit = false, barHit = false, conf = 0.8;
     if (d && playing) {
@@ -117,15 +120,25 @@ const party = (() => {
     if (!Number.isFinite(drop)) drop = 0;
 
     const fx = !calm();
-    const strong = P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
-    if (fx && cfg.partyFlash && strong) {
-      flash = Math.min(1, 0.55 + drop * 0.45) * lvl;
+    // Blitze bleiben unter drei pro Sekunde: „jeder Schlag“ nur bei „Wahnsinn“, schnelle Songs
+    // haben oben schon Halftime (every = 2)
+    const flashOn = level >= 5 && P.flash ? hit : P.flash === "beat" ? hit && lastBeat % 2 === 0 : P.flash === "bar" ? barHit : false;
+    if (fx && cfg.partyFlash && flashOn) {
+      flash = Math.min(1, (0.55 + drop * 0.45) * lvl);
       flashCol = (flashCol + 1) % 3;
     }
     flash *= Math.exp(-dt * 5.5);
     if (fx && P.shake && hit) shake = P.shake * lvl * (0.6 + drop * 0.6) * conf;
     shake *= Math.exp(-dt * 14);
-    return { P, lvl, hit, barHit, conf, drop, flash, flashCol, shake: fx ? shake : 0 };
+    // Kamera-Stoß: das ganze Bild zoomt kurz auf den Schlag; Strahlen leuchten auf und springen pro Takt
+    if (fx && hit && level >= 4 && cfg.partyZoom) kick = Math.min(1, (0.55 + drop * 0.6) * conf * (level - 3));
+    kick *= Math.exp(-dt * 9);
+    if (hit) beam = 1;
+    beam *= Math.exp(-dt * 4);
+    spin += dt * (0.18 + drop * 0.5) * (fx ? 1 : 0);
+    if (barHit && fx) spin += 0.7 + Math.random() * 0.8;
+    const lasers = fx && cfg.partyLasers && level >= 4 ? (level >= 5 ? 12 : 6) : 0;
+    return { P, lvl, level, hit, barHit, conf, drop, flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, beam, spin, lasers };
   }
 
   return { prepare, step, get info() { return info; }, PROFILES, PROFILE_KEYS };
