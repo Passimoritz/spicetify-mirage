@@ -770,8 +770,11 @@ const immersive = (() => {
     const k = cfg.vizSmooth;
     const rise = 1 - Math.exp(-dt * (32 - 2.6 * k));
     const fall = 1 - Math.exp(-dt * (16 - 1.3 * k));
+    // Welle: breiter glätten (5 Nachbarn) – eine geschlossene Kurve durch 150 Spitzen zeigt sonst jedes kleine Zittern
+    const wide = V.style === "wave";
     for (let i = 0; i < N; i++) {
-      const t = (targets[(i - 1 + N) % N] + 2 * targets[i] + targets[(i + 1) % N]) / 4;
+      const a = (j) => targets[(i + j + N) % N];
+      const t = wide ? (a(-2) + 2 * a(-1) + 3 * a(0) + 2 * a(1) + a(2)) / 9 : (a(-1) + 2 * a(0) + a(1)) / 4;
       vals[i] += (t - vals[i]) * (t > vals[i] ? rise : fall);
     }
     if (cfg.calm) return;

@@ -60,16 +60,90 @@ async function artistGenres(item) {
   return job;
 }
 
-// Profil aus Genres; ohne Treffer aus Tempo + Lautheit
-function pickProfile(genres, bpm, loud) {
-  const text = genres.join(" | ");
-  for (const [k, re] of GENRES) if (re.test(text)) return { key: k, why: genres[0] || "" };
+/* ---- Genre je Song aus der iTunes-Suche */
+// Spotifys Künstler-Genres kommen oft leer oder gar nicht (Anfragelimit) – dann blieb nur das Tempo und
+// fast alles wurde „Pop“. Apples Suche kennt zu fast jedem Song ein Genre („Alternative“, „Dance“,
+// „Hip-Hop/Rap“ …), ohne Konto. Raus gehen nur Titel und Künstler; abschaltbar („Genre online nachschlagen“).
+const APPLE = [
+  // R&B vor Soul: „R&B/Soul“ (The Weeknd, SZA) groovt eher wie Pop als dass es chillt
+  ["pop", /r&b/],
+  ["rave", /dance|electronic|electronica|house|techno|trance|dubstep|drum ?(&|and) ?bass|hardstyle|edm|club/],
+  ["bass", /hip-?hop|rap|trap|urbano|reggaeton|dancehall|afro|grime|drill/],
+  ["rock", /rock|alternative|metal|punk|grunge|hardcore|emo|indie(?! ?pop)/],
+  ["chill", /soul|singer|songwriter|jazz|classical|ambient|soundtrack|folk|acoustic|new age|easy listening|lo-?fi|blues|country|piano|instrumental/],
+  ["pop", /pop|schlager|disco|funk|latin|world|reggae/],
+];
+const appleCache = lru(200);
+const norm = (s) => String(s || "").toLowerCase().normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, "");
+const bareTitle = (s) => String(s || "").replace(/\s+-\s+.*$/, "").replace(/\s*[([].*?[)\]]/g, "").trim();
+async function appleGenre(item) {
+  const uri = item?.uri || "";
+  const title = bareTitle(item?.metadata?.title || item?.name);
+  const artist = item?.metadata?.artist_name || item?.artists?.[0]?.name || "";
+  if (!cfg.partyOnline || !uri.startsWith("spotify:track:") || !title || !artist) return "";
+  if (appleCache.has(uri)) return appleCache.get(uri);
+  // erst im eigenen Land suchen (deutscher Rap steht nicht unbedingt im US-Katalog), dann in den USA
+  const region = (navigator.languages || [navigator.language]).map((l) => String(l).split("-")[1]).find((r) => /^[A-Z]{2}$/i.test(r || ""));
+  const countries = [...new Set([region || "DE", "US"].map((c) => c.toUpperCase()))];
+  const job = (async () => {
+    for (const country of countries) {
+      const g = await appleSearch(title, artist, country);
+      if (g) return g;
+    }
+    return "";
+  })();
+  appleCache.set(uri, job);
+  return job;
+}
+async function appleSearch(title, artist, country) {
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 5000);
+    const res = await fetch(`https://itunes.apple.com/search?media=music&entity=song&limit=10&country=${country}&term=${encodeURIComponent(title + " " + artist)}`, { signal: ctl.signal });
+    clearTimeout(timer);
+    const list = res.ok ? (await res.json())?.results || [] : [];
+    const a = norm(artist), tt = norm(title);
+    // nur Treffer vom selben Künstler; gleicher Titel zählt doppelt – das häufigste Genre gewinnt
+    const votes = {};
+    for (const r of list) {
+      const ra = norm(r.artistName);
+      if (!ra || !(ra.includes(a) || a.includes(ra)) || !r.primaryGenreName) continue;
+      const w = norm(bareTitle(r.trackName)) === tt ? 2 : 1;
+      votes[r.primaryGenreName] = (votes[r.primaryGenreName] || 0) + w;
+    }
+    return Object.entries(votes).sort((x, y) => y[1] - x[1])[0]?.[0] || "";
+  } catch {
+    return "";
+  }
+}
+
+// Profil aus allen Hinweisen: Apple-Genre des Songs (3 Punkte), Spotify-Genres des Künstlers (2 für das
+// erste, 1 für weitere) und der Klang selbst – Tempo und Lautheit (1). Die meisten Punkte gewinnen.
+function pickProfile(genres, bpm, loud, apple = "") {
+  const score = {}, add = (k, n) => (score[k] = (score[k] || 0) + n);
+  let why = "";
+  const g = apple.toLowerCase();
+  const am = APPLE.find(([, re]) => re.test(g));
+  if (am) {
+    // „Electronic“ kann auch Ambient sein: langsam oder leise gemischt → Chill statt Rave
+    const calmMix = (bpm && bpm < 95) || loud < -14;
+    add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
+    why = apple;
+  }
+  genres.slice(0, 4).forEach((x, i) => {
+    const m = GENRES.find(([, re]) => re.test(x));
+    if (m) {
+      add(m[0], i === 0 ? 2 : 1);
+      why ||= x;
+    }
+  });
   const energy = clamp((loud + 16) / 12, 0, 1);
-  if (energy < 0.35 || (bpm && bpm < 80)) return { key: "chill", why: "" };
-  if (bpm >= 118 && bpm <= 135 && energy > 0.6) return { key: "rave", why: "" };
-  if (bpm >= 80 && bpm < 105) return { key: "bass", why: "" };
-  if (bpm > 140 && energy > 0.7) return { key: "rock", why: "" };
-  return { key: "pop", why: "" };
+  if (energy < 0.35 || (bpm && bpm < 80)) add("chill", 1);
+  else if (bpm >= 118 && bpm <= 135 && energy > 0.6) add("rave", 1);
+  else if (bpm >= 80 && bpm < 105) add("bass", 1);
+  else if (bpm > 140 && energy > 0.7) add("rock", 1);
+  const best = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
+  return { key: best ? best[0] : "pop", why };
 }
 
 /* ---- Song-Karte */
@@ -153,18 +227,20 @@ const party = (() => {
   async function prepare(item) {
     const u = item?.uri || "";
     // Song + gewählter Stil: wer in den Einstellungen umstellt, bekommt sofort das neue Profil
-    if (u + "|" + cfg.partyStyle === picked) return info;
-    picked = u + "|" + cfg.partyStyle;
+    const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
+    if (pk === picked) return info;
+    picked = pk;
     uri = u;
     const my = ++token;
     lastBeat = lastBar = -1;
     dropGlow = 0;
-    const genres = cfg.partyStyle === "auto" ? await artistGenres(item) : [];
+    // beide Quellen gleichzeitig fragen
+    const [genres, apple] = cfg.partyStyle === "auto" ? await Promise.all([artistGenres(item), appleGenre(item)]) : [[], ""];
     if (my !== token) return info;
     const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
     const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
-    const auto = pickProfile(genres, bpm, loud);
-    info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm };
+    const auto = pickProfile(genres, bpm, loud, apple);
+    info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm, genres, apple };
     return info;
   }
   // Taktdaten kommen oft erst nach dem Songwechsel: dann Tempo nachtragen und ggf. neu wählen
@@ -172,7 +248,7 @@ const party = (() => {
     if (!audio.data || audio.uri !== uri) return;
     if (info.bpm !== audio.data.bpm) {
       info.bpm = audio.data.bpm;
-      if (cfg.partyStyle === "auto" && !info.why) info.key = pickProfile([], info.bpm, audio.data.loud).key;
+      if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "").key;
     }
   }
 

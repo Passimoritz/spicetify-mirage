@@ -10,6 +10,14 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.5.2] – 2026-11-02
+
+### Fixed
+
+- **Party genre detection.** Spotify's artist genres often come back empty or rate-limited, and then only the tempo was left – so most songs ended up as "Pop". Mirage now also asks Apple's iTunes search for the song's own genre (first in your country's store, then the US) and weighs all hints: the song's Apple genre, the artist's Spotify genres and the sound itself. Alternative and indie bands get Rock, hip-hop gets Bass, dance and electronic get Rave, slow or quiet "electronic" counts as Chill, R&B springs like Pop. Only title and artist are sent; new switch "Look up genre online".
+- The visualizer wave plays the song again when Spotify's beat analysis fails the first time: Mirage retries after 3, 8 and 20 seconds instead of running the whole song without beat data. The wave is also smoothed over five neighbours, so the closed curve no longer jitters.
+- In party mode, the "No lyrics" notice now fades out with the controls when the mouse rests.
+
 ## [1.5.1] – 2026-11-02
 
 ### Changed

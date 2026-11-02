@@ -1256,9 +1256,13 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="party"].is-idle {
   cursor: none;
 }
-#mirage-immersive[data-mode="party"].is-idle :is(.m-im-top, .m-im-controls, .m-im-lyrbar) {
+#mirage-immersive[data-mode="party"].is-idle :is(.m-im-top, .m-im-controls, .m-im-lyrbar, .m-im-empty) {
   opacity: 0;
   pointer-events: none;
+}
+/* „Kein Liedtext“ blendet mit der Bedienung aus und wieder ein */
+#mirage-immersive[data-mode="party"] .m-im-empty {
+  transition: opacity 0.5s var(--m-ease);
 }
 #mirage-immersive[data-mode="party"].is-idle .m-im-top {
   transform: translateY(-12px);

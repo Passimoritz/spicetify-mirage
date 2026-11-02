@@ -43,7 +43,7 @@ const I18N = {
     c_addTo: "Add to playlist", plFind: "Search playlists", plAdded: "Added", plDup: "Already in this playlist",
     plFail: "Couldn't add it", plNone: "No playlists you can add to", plNoTrack: "Only songs can be added to playlists", smartPick: "Smart Shuffle",
     smartPickHint: "Added by Smart Shuffle",
-    
+    partyOnline: "Look up genre online", partyOnlineHint: "Asks Apple's iTunes search for the song's genre, so rave, rock or hip-hop isn't mistaken for pop – only title and artist are sent",
   },
   de: {
     menu: "Mirage-Einstellungen", immersive: "Mirage Immersiv-Modus", back: "Zurück", dialog: "Mirage Immersiv-Modus",
@@ -85,7 +85,7 @@ const I18N = {
     c_addTo: "Zu Playlist hinzufügen", plFind: "Playlists durchsuchen", plAdded: "Hinzugefügt", plDup: "Schon in dieser Playlist",
     plFail: "Ging leider nicht", plNone: "Keine Playlist, in die du hinzufügen kannst", plNoTrack: "Nur Songs lassen sich zu Playlists hinzufügen", smartPick: "Smart Shuffle",
     smartPickHint: "Von Smart Shuffle eingestreut",
-    
+    partyOnline: "Genre online nachschlagen", partyOnlineHint: "Fragt die iTunes-Suche von Apple nach dem Genre des Songs, damit Rave, Rock oder Hip-Hop nicht als Pop gelten – dafür gehen nur Titel und Künstler raus",
   },
   fr: {
     menu: "Réglages Mirage", immersive: "Mode immersif Mirage", back: "Retour", dialog: "Mode immersif Mirage",
@@ -156,7 +156,7 @@ const I18N = {
     c_addTo: "Ajouter à une playlist", plFind: "Rechercher des playlists", plAdded: "Ajouté", plDup: "Déjà dans cette playlist",
     plFail: "Impossible d'ajouter", plNone: "Aucune playlist modifiable", plNoTrack: "Seuls les titres peuvent être ajoutés aux playlists", smartPick: "Smart Shuffle",
     smartPickHint: "Ajouté par Smart Shuffle",
-    
+    partyOnline: "Chercher le genre en ligne", partyOnlineHint: "Demande le genre du morceau à la recherche iTunes d'Apple, pour que rave, rock ou hip-hop ne passent pas pour de la pop – seuls le titre et l'artiste sont envoyés",
   },
   es: {
     menu: "Ajustes de Mirage", immersive: "Modo inmersivo Mirage", back: "Volver", dialog: "Modo inmersivo Mirage",
@@ -227,7 +227,7 @@ const I18N = {
     c_addTo: "Añadir a playlist", plFind: "Buscar playlists", plAdded: "Añadida", plDup: "Ya está en esta playlist",
     plFail: "No se pudo añadir", plNone: "No hay playlists a las que puedas añadir", plNoTrack: "Solo se pueden añadir canciones a playlists", smartPick: "Smart Shuffle",
     smartPickHint: "Añadida por Smart Shuffle",
-    
+    partyOnline: "Buscar el género en línea", partyOnlineHint: "Pregunta a la búsqueda de iTunes de Apple el género de la canción, para que rave, rock o hip-hop no se tomen por pop – solo se envían título y artista",
   },
   it: {
     menu: "Impostazioni Mirage", immersive: "Modalità immersiva Mirage", back: "Indietro", dialog: "Modalità immersiva Mirage",
@@ -298,7 +298,7 @@ const I18N = {
     c_addTo: "Aggiungi a playlist", plFind: "Cerca playlist", plAdded: "Aggiunto", plDup: "Già in questa playlist",
     plFail: "Impossibile aggiungere", plNone: "Nessuna playlist a cui aggiungere", plNoTrack: "Solo i brani possono essere aggiunti alle playlist", smartPick: "Smart Shuffle",
     smartPickHint: "Aggiunto da Smart Shuffle",
-    
+    partyOnline: "Cerca il genere online", partyOnlineHint: "Chiede alla ricerca iTunes di Apple il genere del brano, così rave, rock o hip-hop non vengono scambiati per pop – vengono inviati solo titolo e artista",
   },
   pt: {
     menu: "Configurações do Mirage", immersive: "Modo imersivo Mirage", back: "Voltar", dialog: "Modo imersivo Mirage",
@@ -369,7 +369,7 @@ const I18N = {
     c_addTo: "Adicionar à playlist", plFind: "Buscar playlists", plAdded: "Adicionada", plDup: "Já está nesta playlist",
     plFail: "Não foi possível adicionar", plNone: "Nenhuma playlist em que você possa adicionar", plNoTrack: "Só músicas podem ser adicionadas a playlists", smartPick: "Smart Shuffle",
     smartPickHint: "Adicionada pelo Smart Shuffle",
-    
+    partyOnline: "Buscar o gênero online", partyOnlineHint: "Pergunta à busca do iTunes da Apple o gênero da música, para que rave, rock ou hip-hop não sejam tomados por pop – só título e artista são enviados",
   },
   nl: {
     menu: "Mirage-instellingen", immersive: "Mirage meeslepende modus", back: "Terug", dialog: "Mirage meeslepende modus",
@@ -440,7 +440,7 @@ const I18N = {
     c_addTo: "Aan playlist toevoegen", plFind: "Playlists zoeken", plAdded: "Toegevoegd", plDup: "Staat al in deze playlist",
     plFail: "Toevoegen lukte niet", plNone: "Geen playlists waaraan je kunt toevoegen", plNoTrack: "Alleen nummers kunnen aan playlists worden toegevoegd", smartPick: "Smart Shuffle",
     smartPickHint: "Toegevoegd door Smart Shuffle",
-    
+    partyOnline: "Genre online opzoeken", partyOnlineHint: "Vraagt Apples iTunes-zoekfunctie naar het genre van het nummer, zodat rave, rock of hiphop niet als pop gelden – alleen titel en artiest worden verstuurd",
   },
   pl: {
     menu: "Ustawienia Mirage", immersive: "Tryb immersyjny Mirage", back: "Wstecz", dialog: "Tryb immersyjny Mirage",
@@ -511,7 +511,7 @@ const I18N = {
     c_addTo: "Dodaj do playlisty", plFind: "Szukaj playlist", plAdded: "Dodano", plDup: "Już jest na tej playliście",
     plFail: "Nie udało się dodać", plNone: "Brak playlist, do których możesz dodawać", plNoTrack: "Do playlist można dodawać tylko utwory", smartPick: "Smart Shuffle",
     smartPickHint: "Dodane przez Smart Shuffle",
-    
+    partyOnline: "Sprawdzaj gatunek online", partyOnlineHint: "Pyta wyszukiwarkę iTunes Apple o gatunek utworu, żeby rave, rock czy hip-hop nie były brane za pop – wysyłane są tylko tytuł i wykonawca",
   },
   tr: {
     menu: "Mirage ayarları", immersive: "Mirage sürükleyici mod", back: "Geri", dialog: "Mirage sürükleyici mod",
@@ -576,7 +576,7 @@ const I18N = {
     c_addTo: "Çalma listesine ekle", plFind: "Çalma listesi ara", plAdded: "Eklendi", plDup: "Zaten bu listede",
     plFail: "Eklenemedi", plNone: "Ekleyebileceğin çalma listesi yok", plNoTrack: "Çalma listelerine yalnızca şarkılar eklenebilir", smartPick: "Smart Shuffle",
     smartPickHint: "Smart Shuffle tarafından eklendi",
-    
+    partyOnline: "Türü çevrimiçi bul", partyOnlineHint: "Şarkının türünü Apple'ın iTunes aramasına sorar; böylece rave, rock ya da hip-hop pop sanılmaz – yalnızca şarkı adı ve sanatçı gönderilir",
   },
   ru: {
     menu: "Настройки Mirage", immersive: "Режим погружения Mirage", back: "Назад", dialog: "Режим погружения Mirage",
@@ -641,7 +641,7 @@ const I18N = {
     c_addTo: "Добавить в плейлист", plFind: "Поиск плейлистов", plAdded: "Добавлено", plDup: "Уже в этом плейлисте",
     plFail: "Не удалось добавить", plNone: "Нет плейлистов, в которые можно добавлять", plNoTrack: "В плейлисты можно добавлять только треки", smartPick: "Smart Shuffle",
     smartPickHint: "Добавлено функцией Smart Shuffle",
-    
+    partyOnline: "Узнавать жанр онлайн", partyOnlineHint: "Спрашивает жанр трека у поиска iTunes от Apple, чтобы рейв, рок или хип-хоп не принимались за поп – передаются только название и исполнитель",
   },
   uk: {
     menu: "Налаштування Mirage", immersive: "Режим занурення Mirage", back: "Назад",
@@ -706,7 +706,7 @@ const I18N = {
     c_addTo: "Додати до плейлиста", plFind: "Пошук плейлистів", plAdded: "Додано", plDup: "Уже в цьому плейлисті",
     plFail: "Не вдалося додати", plNone: "Немає плейлистів, до яких можна додавати", plNoTrack: "До плейлистів можна додавати лише треки", smartPick: "Smart Shuffle",
     smartPickHint: "Додано функцією Smart Shuffle",
-    
+    partyOnline: "Дізнаватися жанр онлайн", partyOnlineHint: "Питає жанр треку в пошуку iTunes від Apple, щоб рейв, рок чи хіп-хоп не вважалися попом – передаються лише назва й виконавець",
   },
   ja: {
     menu: "Mirage の設定", immersive: "Mirage イマーシブモード", back: "戻る", dialog: "Mirage イマーシブモード",
@@ -771,7 +771,7 @@ const I18N = {
     c_addTo: "プレイリストに追加", plFind: "プレイリストを検索", plAdded: "追加しました", plDup: "すでにこのプレイリストにあります",
     plFail: "追加できませんでした", plNone: "追加できるプレイリストがありません", plNoTrack: "プレイリストに追加できるのは曲だけです", smartPick: "スマートシャッフル",
     smartPickHint: "スマートシャッフルが追加した曲",
-    
+    partyOnline: "ジャンルをオンラインで調べる", partyOnlineHint: "Apple の iTunes 検索で曲のジャンルを調べ、レイブやロック、ヒップホップがポップと判定されないようにします – 送信するのは曲名とアーティストだけです",
   },
   ko: {
     menu: "Mirage 설정", immersive: "Mirage 몰입 모드", back: "뒤로", dialog: "Mirage 몰입 모드",
@@ -836,7 +836,7 @@ const I18N = {
     c_addTo: "플레이리스트에 추가", plFind: "플레이리스트 검색", plAdded: "추가됨", plDup: "이미 이 플레이리스트에 있어요",
     plFail: "추가하지 못했어요", plNone: "추가할 수 있는 플레이리스트가 없어요", plNoTrack: "플레이리스트에는 곡만 추가할 수 있어요", smartPick: "스마트 셔플",
     smartPickHint: "스마트 셔플이 추가한 곡",
-    
+    partyOnline: "장르 온라인 조회", partyOnlineHint: "Apple iTunes 검색에 곡의 장르를 물어봐서 레이브·록·힙합이 팝으로 잘못 잡히지 않게 해요 – 제목과 아티스트만 전송돼요",
   },
   zh: {
     menu: "Mirage 设置", immersive: "Mirage 沉浸模式", back: "返回", dialog: "Mirage 沉浸模式",
@@ -901,7 +901,7 @@ const I18N = {
     c_addTo: "添加到歌单", plFind: "搜索歌单", plAdded: "已添加", plDup: "已在此歌单中",
     plFail: "无法添加", plNone: "没有可添加的歌单", plNoTrack: "只有歌曲可以添加到歌单", smartPick: "智能随机播放",
     smartPickHint: "由智能随机播放加入",
-    
+    partyOnline: "在线查询曲风", partyOnlineHint: "向 Apple 的 iTunes 搜索查询歌曲曲风，避免电音、摇滚或嘻哈被误判为流行 – 只发送歌名和艺人",
   },
 };
 const LANG = (() => {

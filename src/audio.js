@@ -13,6 +13,13 @@ async function loadAudio(uri) {
     beat.sync();
     return;
   }
+  await fetchAnalysis(uri, 0);
+}
+// Spotify liefert die Analyse manchmal nicht (Zeitüberschreitung, Anfragelimit). Früher blieb der Song
+// dann ganz ohne Taktdaten und die Welle lief „ins Blaue“ – jetzt noch dreimal nachfragen, solange er läuft.
+const RETRY = [3000, 8000, 20000];
+async function fetchAnalysis(uri, attempt) {
+  let got = false;
   try {
     const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]);
     // Analysedaten sind nicht immer vollständig: fehlende oder kaputte Werte ersetzen, sonst
@@ -44,9 +51,13 @@ async function loadAudio(uri) {
         avg,
       };
       audioCache.set(uri, audio.data);
+      got = true;
     }
   } catch {}
   beat.sync();
+  if (!got && audio.uri === uri && attempt < RETRY.length) {
+    setTimeout(() => audio.uri === uri && !audio.data && fetchAnalysis(uri, attempt + 1), RETRY[attempt]);
+  }
 }
 
 // 8 Bänder 0..1 für die Overlay-App (Tonhöhen-Verteilung × Lautstärke + Schlag)

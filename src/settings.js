@@ -296,6 +296,7 @@ function render(box) {
       toggle("partyLasers", () => {}),
       toggle("partyZoom", () => {}),
       toggle("partyIdle", () => {}),
+      toggle("partyOnline", () => immersive.refresh()),
       toggle("partyJam", () => {})
     )
   );

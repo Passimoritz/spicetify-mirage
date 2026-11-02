@@ -74,6 +74,8 @@ const DEFAULTS = {
   partyLevel: 2,
   partyFlash: true,
   partyJam: true,
+  // Genre je Song über die iTunes-Suche (nur Titel + Künstler)
+  partyOnline: true,
   // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
   partyLasers: true,
   partyZoom: true,

@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.5.1" : "dev";
+      VERSION = true ? "1.5.2" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -321,7 +321,9 @@
           plNone: "No playlists you can add to",
           plNoTrack: "Only songs can be added to playlists",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Added by Smart Shuffle"
+          smartPickHint: "Added by Smart Shuffle",
+          partyOnline: "Look up genre online",
+          partyOnlineHint: "Asks Apple's iTunes search for the song's genre, so rave, rock or hip-hop isn't mistaken for pop \u2013 only title and artist are sent"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -558,7 +560,9 @@
           plNone: "Keine Playlist, in die du hinzuf\xFCgen kannst",
           plNoTrack: "Nur Songs lassen sich zu Playlists hinzuf\xFCgen",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Von Smart Shuffle eingestreut"
+          smartPickHint: "Von Smart Shuffle eingestreut",
+          partyOnline: "Genre online nachschlagen",
+          partyOnlineHint: "Fragt die iTunes-Suche von Apple nach dem Genre des Songs, damit Rave, Rock oder Hip-Hop nicht als Pop gelten \u2013 daf\xFCr gehen nur Titel und K\xFCnstler raus"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -795,7 +799,9 @@
           plNone: "Aucune playlist modifiable",
           plNoTrack: "Seuls les titres peuvent \xEAtre ajout\xE9s aux playlists",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Ajout\xE9 par Smart Shuffle"
+          smartPickHint: "Ajout\xE9 par Smart Shuffle",
+          partyOnline: "Chercher le genre en ligne",
+          partyOnlineHint: "Demande le genre du morceau \xE0 la recherche iTunes d'Apple, pour que rave, rock ou hip-hop ne passent pas pour de la pop \u2013 seuls le titre et l'artiste sont envoy\xE9s"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1032,7 +1038,9 @@
           plNone: "No hay playlists a las que puedas a\xF1adir",
           plNoTrack: "Solo se pueden a\xF1adir canciones a playlists",
           smartPick: "Smart Shuffle",
-          smartPickHint: "A\xF1adida por Smart Shuffle"
+          smartPickHint: "A\xF1adida por Smart Shuffle",
+          partyOnline: "Buscar el g\xE9nero en l\xEDnea",
+          partyOnlineHint: "Pregunta a la b\xFAsqueda de iTunes de Apple el g\xE9nero de la canci\xF3n, para que rave, rock o hip-hop no se tomen por pop \u2013 solo se env\xEDan t\xEDtulo y artista"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1269,7 +1277,9 @@
           plNone: "Nessuna playlist a cui aggiungere",
           plNoTrack: "Solo i brani possono essere aggiunti alle playlist",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Aggiunto da Smart Shuffle"
+          smartPickHint: "Aggiunto da Smart Shuffle",
+          partyOnline: "Cerca il genere online",
+          partyOnlineHint: "Chiede alla ricerca iTunes di Apple il genere del brano, cos\xEC rave, rock o hip-hop non vengono scambiati per pop \u2013 vengono inviati solo titolo e artista"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1506,7 +1516,9 @@
           plNone: "Nenhuma playlist em que voc\xEA possa adicionar",
           plNoTrack: "S\xF3 m\xFAsicas podem ser adicionadas a playlists",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Adicionada pelo Smart Shuffle"
+          smartPickHint: "Adicionada pelo Smart Shuffle",
+          partyOnline: "Buscar o g\xEAnero online",
+          partyOnlineHint: "Pergunta \xE0 busca do iTunes da Apple o g\xEAnero da m\xFAsica, para que rave, rock ou hip-hop n\xE3o sejam tomados por pop \u2013 s\xF3 t\xEDtulo e artista s\xE3o enviados"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1743,7 +1755,9 @@
           plNone: "Geen playlists waaraan je kunt toevoegen",
           plNoTrack: "Alleen nummers kunnen aan playlists worden toegevoegd",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Toegevoegd door Smart Shuffle"
+          smartPickHint: "Toegevoegd door Smart Shuffle",
+          partyOnline: "Genre online opzoeken",
+          partyOnlineHint: "Vraagt Apples iTunes-zoekfunctie naar het genre van het nummer, zodat rave, rock of hiphop niet als pop gelden \u2013 alleen titel en artiest worden verstuurd"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -1980,7 +1994,9 @@
           plNone: "Brak playlist, do kt\xF3rych mo\u017Cesz dodawa\u0107",
           plNoTrack: "Do playlist mo\u017Cna dodawa\u0107 tylko utwory",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Dodane przez Smart Shuffle"
+          smartPickHint: "Dodane przez Smart Shuffle",
+          partyOnline: "Sprawdzaj gatunek online",
+          partyOnlineHint: "Pyta wyszukiwark\u0119 iTunes Apple o gatunek utworu, \u017Ceby rave, rock czy hip-hop nie by\u0142y brane za pop \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142 i wykonawca"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2217,7 +2233,9 @@
           plNone: "Ekleyebilece\u011Fin \xE7alma listesi yok",
           plNoTrack: "\xC7alma listelerine yaln\u0131zca \u015Fark\u0131lar eklenebilir",
           smartPick: "Smart Shuffle",
-          smartPickHint: "Smart Shuffle taraf\u0131ndan eklendi"
+          smartPickHint: "Smart Shuffle taraf\u0131ndan eklendi",
+          partyOnline: "T\xFCr\xFC \xE7evrimi\xE7i bul",
+          partyOnlineHint: "\u015Eark\u0131n\u0131n t\xFCr\xFCn\xFC Apple'\u0131n iTunes aramas\u0131na sorar; b\xF6ylece rave, rock ya da hip-hop pop san\u0131lmaz \u2013 yaln\u0131zca \u015Fark\u0131 ad\u0131 ve sanat\xE7\u0131 g\xF6nderilir"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2454,7 +2472,9 @@
           plNone: "\u041D\u0435\u0442 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u043E\u0432, \u0432 \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043C\u043E\u0436\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u043B\u044F\u0442\u044C",
           plNoTrack: "\u0412 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u044B \u043C\u043E\u0436\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u043B\u044F\u0442\u044C \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u0440\u0435\u043A\u0438",
           smartPick: "Smart Shuffle",
-          smartPickHint: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0438\u0435\u0439 Smart Shuffle"
+          smartPickHint: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0438\u0435\u0439 Smart Shuffle",
+          partyOnline: "\u0423\u0437\u043D\u0430\u0432\u0430\u0442\u044C \u0436\u0430\u043D\u0440 \u043E\u043D\u043B\u0430\u0439\u043D",
+          partyOnlineHint: "\u0421\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 \u0436\u0430\u043D\u0440 \u0442\u0440\u0435\u043A\u0430 \u0443 \u043F\u043E\u0438\u0441\u043A\u0430 iTunes \u043E\u0442 Apple, \u0447\u0442\u043E\u0431\u044B \u0440\u0435\u0439\u0432, \u0440\u043E\u043A \u0438\u043B\u0438 \u0445\u0438\u043F-\u0445\u043E\u043F \u043D\u0435 \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u043B\u0438\u0441\u044C \u0437\u0430 \u043F\u043E\u043F \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0438\u0441\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -2691,7 +2711,9 @@
           plNone: "\u041D\u0435\u043C\u0430\u0454 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432, \u0434\u043E \u044F\u043A\u0438\u0445 \u043C\u043E\u0436\u043D\u0430 \u0434\u043E\u0434\u0430\u0432\u0430\u0442\u0438",
           plNoTrack: "\u0414\u043E \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432 \u043C\u043E\u0436\u043D\u0430 \u0434\u043E\u0434\u0430\u0432\u0430\u0442\u0438 \u043B\u0438\u0448\u0435 \u0442\u0440\u0435\u043A\u0438",
           smartPick: "Smart Shuffle",
-          smartPickHint: "\u0414\u043E\u0434\u0430\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0456\u0454\u044E Smart Shuffle"
+          smartPickHint: "\u0414\u043E\u0434\u0430\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0456\u0454\u044E Smart Shuffle",
+          partyOnline: "\u0414\u0456\u0437\u043D\u0430\u0432\u0430\u0442\u0438\u0441\u044F \u0436\u0430\u043D\u0440 \u043E\u043D\u043B\u0430\u0439\u043D",
+          partyOnlineHint: "\u041F\u0438\u0442\u0430\u0454 \u0436\u0430\u043D\u0440 \u0442\u0440\u0435\u043A\u0443 \u0432 \u043F\u043E\u0448\u0443\u043A\u0443 iTunes \u0432\u0456\u0434 Apple, \u0449\u043E\u0431 \u0440\u0435\u0439\u0432, \u0440\u043E\u043A \u0447\u0438 \u0445\u0456\u043F-\u0445\u043E\u043F \u043D\u0435 \u0432\u0432\u0430\u0436\u0430\u043B\u0438\u0441\u044F \u043F\u043E\u043F\u043E\u043C \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u043D\u0430\u0437\u0432\u0430 \u0439 \u0432\u0438\u043A\u043E\u043D\u0430\u0432\u0435\u0446\u044C"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -2928,7 +2950,9 @@
           plNone: "\u8FFD\u52A0\u3067\u304D\u308B\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u304C\u3042\u308A\u307E\u305B\u3093",
           plNoTrack: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u8FFD\u52A0\u3067\u304D\u308B\u306E\u306F\u66F2\u3060\u3051\u3067\u3059",
           smartPick: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB",
-          smartPickHint: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB\u304C\u8FFD\u52A0\u3057\u305F\u66F2"
+          smartPickHint: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB\u304C\u8FFD\u52A0\u3057\u305F\u66F2",
+          partyOnline: "\u30B8\u30E3\u30F3\u30EB\u3092\u30AA\u30F3\u30E9\u30A4\u30F3\u3067\u8ABF\u3079\u308B",
+          partyOnlineHint: "Apple \u306E iTunes \u691C\u7D22\u3067\u66F2\u306E\u30B8\u30E3\u30F3\u30EB\u3092\u8ABF\u3079\u3001\u30EC\u30A4\u30D6\u3084\u30ED\u30C3\u30AF\u3001\u30D2\u30C3\u30D7\u30DB\u30C3\u30D7\u304C\u30DD\u30C3\u30D7\u3068\u5224\u5B9A\u3055\u308C\u306A\u3044\u3088\u3046\u306B\u3057\u307E\u3059 \u2013 \u9001\u4FE1\u3059\u308B\u306E\u306F\u66F2\u540D\u3068\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u3060\u3051\u3067\u3059"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -3165,7 +3189,9 @@
           plNone: "\uCD94\uAC00\uD560 \uC218 \uC788\uB294 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uAC00 \uC5C6\uC5B4\uC694",
           plNoTrack: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0\uB294 \uACE1\uB9CC \uCD94\uAC00\uD560 \uC218 \uC788\uC5B4\uC694",
           smartPick: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C",
-          smartPickHint: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C\uC774 \uCD94\uAC00\uD55C \uACE1"
+          smartPickHint: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C\uC774 \uCD94\uAC00\uD55C \uACE1",
+          partyOnline: "\uC7A5\uB974 \uC628\uB77C\uC778 \uC870\uD68C",
+          partyOnlineHint: "Apple iTunes \uAC80\uC0C9\uC5D0 \uACE1\uC758 \uC7A5\uB974\uB97C \uBB3C\uC5B4\uBD10\uC11C \uB808\uC774\uBE0C\xB7\uB85D\xB7\uD799\uD569\uC774 \uD31D\uC73C\uB85C \uC798\uBABB \uC7A1\uD788\uC9C0 \uC54A\uAC8C \uD574\uC694 \u2013 \uC81C\uBAA9\uACFC \uC544\uD2F0\uC2A4\uD2B8\uB9CC \uC804\uC1A1\uB3FC\uC694"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -3402,7 +3428,9 @@
           plNone: "\u6CA1\u6709\u53EF\u6DFB\u52A0\u7684\u6B4C\u5355",
           plNoTrack: "\u53EA\u6709\u6B4C\u66F2\u53EF\u4EE5\u6DFB\u52A0\u5230\u6B4C\u5355",
           smartPick: "\u667A\u80FD\u968F\u673A\u64AD\u653E",
-          smartPickHint: "\u7531\u667A\u80FD\u968F\u673A\u64AD\u653E\u52A0\u5165"
+          smartPickHint: "\u7531\u667A\u80FD\u968F\u673A\u64AD\u653E\u52A0\u5165",
+          partyOnline: "\u5728\u7EBF\u67E5\u8BE2\u66F2\u98CE",
+          partyOnlineHint: "\u5411 Apple \u7684 iTunes \u641C\u7D22\u67E5\u8BE2\u6B4C\u66F2\u66F2\u98CE\uFF0C\u907F\u514D\u7535\u97F3\u3001\u6447\u6EDA\u6216\u563B\u54C8\u88AB\u8BEF\u5224\u4E3A\u6D41\u884C \u2013 \u53EA\u53D1\u9001\u6B4C\u540D\u548C\u827A\u4EBA"
         }
       };
       LANG = (() => {
@@ -3521,6 +3549,8 @@
         partyLevel: 2,
         partyFlash: true,
         partyJam: true,
+        // Genre je Song über die iTunes-Suche (nur Titel + Künstler)
+        partyOnline: true,
         // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
         partyLasers: true,
         partyZoom: true,
@@ -3556,6 +3586,10 @@
       beat.sync();
       return;
     }
+    await fetchAnalysis(uri, 0);
+  }
+  async function fetchAnalysis(uri, attempt) {
+    let got = false;
     try {
       const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8e3))]);
       const num = (v, fb) => Number.isFinite(v) ? v : fb;
@@ -3583,10 +3617,14 @@
           avg
         };
         audioCache.set(uri, audio.data);
+        got = true;
       }
     } catch {
     }
     beat.sync();
+    if (!got && audio.uri === uri && attempt < RETRY.length) {
+      setTimeout(() => audio.uri === uri && !audio.data && fetchAnalysis(uri, attempt + 1), RETRY[attempt]);
+    }
   }
   function bands(sec) {
     const segs = audio.data?.segs;
@@ -3603,13 +3641,14 @@
     }
     return out;
   }
-  var audio, audioCache, beat;
+  var audio, audioCache, RETRY, beat;
   var init_audio = __esm({
     "src/audio.js"() {
       init_core();
       init_config();
       audio = { uri: "", data: null };
       audioCache = lru(50);
+      RETRY = [3e3, 8e3, 2e4];
       beat = /* @__PURE__ */ (() => {
         let on = false;
         function read(sec) {
@@ -4542,15 +4581,68 @@
     genreCache.set(id, job);
     return job;
   }
-  function pickProfile(genres, bpm, loud) {
-    const text = genres.join(" | ");
-    for (const [k, re] of GENRES) if (re.test(text)) return { key: k, why: genres[0] || "" };
+  async function appleGenre(item) {
+    const uri = item?.uri || "";
+    const title = bareTitle(item?.metadata?.title || item?.name);
+    const artist = item?.metadata?.artist_name || item?.artists?.[0]?.name || "";
+    if (!cfg.partyOnline || !uri.startsWith("spotify:track:") || !title || !artist) return "";
+    if (appleCache.has(uri)) return appleCache.get(uri);
+    const region = (navigator.languages || [navigator.language]).map((l) => String(l).split("-")[1]).find((r) => /^[A-Z]{2}$/i.test(r || ""));
+    const countries = [...new Set([region || "DE", "US"].map((c) => c.toUpperCase()))];
+    const job = (async () => {
+      for (const country of countries) {
+        const g = await appleSearch(title, artist, country);
+        if (g) return g;
+      }
+      return "";
+    })();
+    appleCache.set(uri, job);
+    return job;
+  }
+  async function appleSearch(title, artist, country) {
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 5e3);
+      const res = await fetch(`https://itunes.apple.com/search?media=music&entity=song&limit=10&country=${country}&term=${encodeURIComponent(title + " " + artist)}`, { signal: ctl.signal });
+      clearTimeout(timer);
+      const list = res.ok ? (await res.json())?.results || [] : [];
+      const a = norm2(artist), tt = norm2(title);
+      const votes = {};
+      for (const r of list) {
+        const ra = norm2(r.artistName);
+        if (!ra || !(ra.includes(a) || a.includes(ra)) || !r.primaryGenreName) continue;
+        const w = norm2(bareTitle(r.trackName)) === tt ? 2 : 1;
+        votes[r.primaryGenreName] = (votes[r.primaryGenreName] || 0) + w;
+      }
+      return Object.entries(votes).sort((x, y) => y[1] - x[1])[0]?.[0] || "";
+    } catch {
+      return "";
+    }
+  }
+  function pickProfile(genres, bpm, loud, apple = "") {
+    const score = {}, add = (k, n) => score[k] = (score[k] || 0) + n;
+    let why = "";
+    const g = apple.toLowerCase();
+    const am = APPLE.find(([, re]) => re.test(g));
+    if (am) {
+      const calmMix = bpm && bpm < 95 || loud < -14;
+      add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
+      why = apple;
+    }
+    genres.slice(0, 4).forEach((x, i) => {
+      const m = GENRES.find(([, re]) => re.test(x));
+      if (m) {
+        add(m[0], i === 0 ? 2 : 1);
+        why ||= x;
+      }
+    });
     const energy = clamp((loud + 16) / 12, 0, 1);
-    if (energy < 0.35 || bpm && bpm < 80) return { key: "chill", why: "" };
-    if (bpm >= 118 && bpm <= 135 && energy > 0.6) return { key: "rave", why: "" };
-    if (bpm >= 80 && bpm < 105) return { key: "bass", why: "" };
-    if (bpm > 140 && energy > 0.7) return { key: "rock", why: "" };
-    return { key: "pop", why: "" };
+    if (energy < 0.35 || bpm && bpm < 80) add("chill", 1);
+    else if (bpm >= 118 && bpm <= 135 && energy > 0.6) add("rave", 1);
+    else if (bpm >= 80 && bpm < 105) add("bass", 1);
+    else if (bpm > 140 && energy > 0.7) add("rock", 1);
+    const best = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
+    return { key: best ? best[0] : "pop", why };
   }
   function songMap(d) {
     if (mapCache.has(d)) return mapCache.get(d);
@@ -4602,7 +4694,7 @@
     mapCache.set(d, m);
     return m;
   }
-  var PROFILES, PROFILE_KEYS, GENRES, genreCache, STEP, pct, mapCache, at, party;
+  var PROFILES, PROFILE_KEYS, GENRES, genreCache, APPLE, appleCache, norm2, bareTitle, STEP, pct, mapCache, at, party;
   var init_party = __esm({
     "src/party.js"() {
       init_core();
@@ -4719,6 +4811,18 @@
         ["pop", /pop|dance|disco|funk|latin|k-pop|schlager|indie/]
       ];
       genreCache = lru(100);
+      APPLE = [
+        // R&B vor Soul: „R&B/Soul“ (The Weeknd, SZA) groovt eher wie Pop als dass es chillt
+        ["pop", /r&b/],
+        ["rave", /dance|electronic|electronica|house|techno|trance|dubstep|drum ?(&|and) ?bass|hardstyle|edm|club/],
+        ["bass", /hip-?hop|rap|trap|urbano|reggaeton|dancehall|afro|grime|drill/],
+        ["rock", /rock|alternative|metal|punk|grunge|hardcore|emo|indie(?! ?pop)/],
+        ["chill", /soul|singer|songwriter|jazz|classical|ambient|soundtrack|folk|acoustic|new age|easy listening|lo-?fi|blues|country|piano|instrumental/],
+        ["pop", /pop|schlager|disco|funk|latin|world|reggae/]
+      ];
+      appleCache = lru(200);
+      norm2 = (s) => String(s || "").toLowerCase().normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, "");
+      bareTitle = (s) => String(s || "").replace(/\s+-\s+.*$/, "").replace(/\s*[([].*?[)\]]/g, "").trim();
       STEP = 0.25;
       pct = (arr, p) => {
         const s = Float32Array.from(arr).sort();
@@ -4738,25 +4842,26 @@
         const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
         async function prepare(item) {
           const u = item?.uri || "";
-          if (u + "|" + cfg.partyStyle === picked) return info;
-          picked = u + "|" + cfg.partyStyle;
+          const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
+          if (pk === picked) return info;
+          picked = pk;
           uri = u;
           const my = ++token;
           lastBeat = lastBar = -1;
           dropGlow = 0;
-          const genres = cfg.partyStyle === "auto" ? await artistGenres(item) : [];
+          const [genres, apple] = cfg.partyStyle === "auto" ? await Promise.all([artistGenres(item), appleGenre(item)]) : [[], ""];
           if (my !== token) return info;
           const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
           const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
-          const auto = pickProfile(genres, bpm, loud);
-          info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm };
+          const auto = pickProfile(genres, bpm, loud, apple);
+          info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm, genres, apple };
           return info;
         }
         function refine() {
           if (!audio.data || audio.uri !== uri) return;
           if (info.bpm !== audio.data.bpm) {
             info.bpm = audio.data.bpm;
-            if (cfg.partyStyle === "auto" && !info.why) info.key = pickProfile([], info.bpm, audio.data.loud).key;
+            if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "").key;
           }
         }
         function step(sec, dt, playing) {
@@ -5646,8 +5751,10 @@
           const k = cfg.vizSmooth;
           const rise = 1 - Math.exp(-dt * (32 - 2.6 * k));
           const fall = 1 - Math.exp(-dt * (16 - 1.3 * k));
+          const wide = V.style === "wave";
           for (let i = 0; i < N; i++) {
-            const t2 = (targets[(i - 1 + N) % N] + 2 * targets[i] + targets[(i + 1) % N]) / 4;
+            const a = (j) => targets[(i + j + N) % N];
+            const t2 = wide ? (a(-2) + 2 * a(-1) + 3 * a(0) + 2 * a(1) + a(2)) / 9 : (a(-1) + 2 * a(0) + a(1)) / 4;
             vals[i] += (t2 - vals[i]) * (t2 > vals[i] ? rise : fall);
           }
           if (cfg.calm) return;
@@ -7436,6 +7543,7 @@
         }),
         toggle("partyIdle", () => {
         }),
+        toggle("partyOnline", () => immersive.refresh()),
         toggle("partyJam", () => {
         })
       )
