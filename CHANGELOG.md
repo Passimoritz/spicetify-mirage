@@ -10,6 +10,21 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.7.1] – 2026-11-02
+
+### Added
+
+- **Full screen button in immersive mode**, always in the top bar (also in party mode). Like Spotify's own full screen, the immersive view itself goes full screen, without Spotify's title bar.
+- **Automatic quality in party mode:** below about 48 frames per second, Mirage turns expensive details down by itself (back row of the crowd, half the beams, then crowd, camera and depth) and back up once it runs smoothly again.
+
+### Changed
+
+- **Crowd, redone.** Three rows with depth, arms with elbows, different heads (curls, buns, caps), backlit edges and haze above the heads. Everything the crowd does now follows one slow mood that comes only from the song – energy curve, build-up, drop and break – so nobody goes wild in a quiet part and nobody stands still in the drop. Calm: swaying, phone lights and lighters. Medium: nodding on the beat, clapping on the snare. High: hands up, fist pumps on the kick, waving in the chorus. Peak: real jumps with gravity, each person slightly offset. Bodies are pre-drawn images and the arms of a row are one stroke, which keeps it cheap.
+
+### Fixed
+
+- The top controls in immersive mode no longer slide partly out of view, and no strips of Spotify's title bar show through at the top: camera rides now move only the stage (background, spotlights, crowd) instead of the whole immersive window – cover, lyrics and controls stay put. This also makes mix mode much faster.
+
 ## [1.7.0] – 2026-11-02
 
 ### Added

@@ -2132,7 +2132,8 @@ html.mirage-im-open .Root * {
    ========================================================================== */
 #mirage-immersive .m-im-bg {
   position: absolute;
-  inset: 0;
+  /* Überstand: Kamerafahrt und Kamera-Stoß bewegen den Hintergrund – sein Rand bleibt immer außerhalb */
+  inset: -4%;
   overflow: hidden;
   pointer-events: none;
 }

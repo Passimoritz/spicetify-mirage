@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.7.0" : "dev";
+      VERSION = true ? "1.7.1" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -355,7 +355,8 @@
           recapTitle: "Your party recap",
           recapDrops: "drops",
           recapGenres: "Genre mix",
-          recapPeak: "Loudest drop"
+          recapPeak: "Loudest drop",
+          fullOff: "Exit full screen"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -626,7 +627,8 @@
           recapTitle: "Dein Party-R\xFCckblick",
           recapDrops: "Drops",
           recapGenres: "Genre-Mischung",
-          recapPeak: "Lautester Drop"
+          recapPeak: "Lautester Drop",
+          fullOff: "Vollbild beenden"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -897,7 +899,8 @@
           recapTitle: "Ton r\xE9cap de la f\xEAte",
           recapDrops: "drops",
           recapGenres: "M\xE9lange de genres",
-          recapPeak: "Drop le plus fort"
+          recapPeak: "Drop le plus fort",
+          fullOff: "Quitter le plein \xE9cran"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1168,7 +1171,8 @@
           recapTitle: "Tu resumen de la fiesta",
           recapDrops: "drops",
           recapGenres: "Mezcla de g\xE9neros",
-          recapPeak: "Drop m\xE1s fuerte"
+          recapPeak: "Drop m\xE1s fuerte",
+          fullOff: "Salir de pantalla completa"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1439,7 +1443,8 @@
           recapTitle: "Il tuo riepilogo della festa",
           recapDrops: "drop",
           recapGenres: "Mix di generi",
-          recapPeak: "Drop pi\xF9 forte"
+          recapPeak: "Drop pi\xF9 forte",
+          fullOff: "Esci da schermo intero"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1710,7 +1715,8 @@
           recapTitle: "Seu resumo da festa",
           recapDrops: "drops",
           recapGenres: "Mistura de g\xEAneros",
-          recapPeak: "Drop mais forte"
+          recapPeak: "Drop mais forte",
+          fullOff: "Sair da tela cheia"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1981,7 +1987,8 @@
           recapTitle: "Jouw feestoverzicht",
           recapDrops: "drops",
           recapGenres: "Genremix",
-          recapPeak: "Hardste drop"
+          recapPeak: "Hardste drop",
+          fullOff: "Volledig scherm sluiten"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2252,7 +2259,8 @@
           recapTitle: "Twoje podsumowanie imprezy",
           recapDrops: "dropy",
           recapGenres: "Mieszanka gatunk\xF3w",
-          recapPeak: "Najg\u0142o\u015Bniejszy drop"
+          recapPeak: "Najg\u0142o\u015Bniejszy drop",
+          fullOff: "Zamknij pe\u0142ny ekran"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2523,7 +2531,8 @@
           recapTitle: "Parti \xF6zetin",
           recapDrops: "drop",
           recapGenres: "T\xFCr kar\u0131\u015F\u0131m\u0131",
-          recapPeak: "En g\xFC\xE7l\xFC drop"
+          recapPeak: "En g\xFC\xE7l\xFC drop",
+          fullOff: "Tam ekrandan \xE7\u0131k"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2794,7 +2803,8 @@
           recapTitle: "\u0418\u0442\u043E\u0433\u0438 \u0442\u0432\u043E\u0435\u0439 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           recapDrops: "\u0434\u0440\u043E\u043F\u043E\u0432",
           recapGenres: "\u0421\u043C\u0435\u0441\u044C \u0436\u0430\u043D\u0440\u043E\u0432",
-          recapPeak: "\u0421\u0430\u043C\u044B\u0439 \u0433\u0440\u043E\u043C\u043A\u0438\u0439 \u0434\u0440\u043E\u043F"
+          recapPeak: "\u0421\u0430\u043C\u044B\u0439 \u0433\u0440\u043E\u043C\u043A\u0438\u0439 \u0434\u0440\u043E\u043F",
+          fullOff: "\u0412\u044B\u0439\u0442\u0438 \u0438\u0437 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0430"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -3065,7 +3075,8 @@
           recapTitle: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0442\u0432\u043E\u0454\u0457 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           recapDrops: "\u0434\u0440\u043E\u043F\u0456\u0432",
           recapGenres: "\u0421\u0443\u043C\u0456\u0448 \u0436\u0430\u043D\u0440\u0456\u0432",
-          recapPeak: "\u041D\u0430\u0439\u0433\u0443\u0447\u043D\u0456\u0448\u0438\u0439 \u0434\u0440\u043E\u043F"
+          recapPeak: "\u041D\u0430\u0439\u0433\u0443\u0447\u043D\u0456\u0448\u0438\u0439 \u0434\u0440\u043E\u043F",
+          fullOff: "\u0412\u0438\u0439\u0442\u0438 \u0437 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0443"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -3336,7 +3347,8 @@
           recapTitle: "\u30D1\u30FC\u30C6\u30A3\u30FC\u306E\u632F\u308A\u8FD4\u308A",
           recapDrops: "\u30C9\u30ED\u30C3\u30D7",
           recapGenres: "\u30B8\u30E3\u30F3\u30EB\u306E\u5272\u5408",
-          recapPeak: "\u3044\u3061\u3070\u3093\u5927\u304D\u306A\u30C9\u30ED\u30C3\u30D7"
+          recapPeak: "\u3044\u3061\u3070\u3093\u5927\u304D\u306A\u30C9\u30ED\u30C3\u30D7",
+          fullOff: "\u5168\u753B\u9762\u3092\u7D42\u4E86"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -3607,7 +3619,8 @@
           recapTitle: "\uB098\uC758 \uD30C\uD2F0 \uC694\uC57D",
           recapDrops: "\uB4DC\uB86D",
           recapGenres: "\uC7A5\uB974 \uBE44\uC728",
-          recapPeak: "\uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D"
+          recapPeak: "\uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D",
+          fullOff: "\uC804\uCCB4 \uD654\uBA74 \uC885\uB8CC"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -3878,7 +3891,8 @@
           recapTitle: "\u4F60\u7684\u6D3E\u5BF9\u56DE\u987E",
           recapDrops: "\u6B21\u9AD8\u6F6E",
           recapGenres: "\u66F2\u98CE\u6BD4\u4F8B",
-          recapPeak: "\u6700\u5F3A\u7684\u9AD8\u6F6E"
+          recapPeak: "\u6700\u5F3A\u7684\u9AD8\u6F6E",
+          fullOff: "\u9000\u51FA\u5168\u5C4F"
         }
       };
       LANG = (() => {
@@ -5928,6 +5942,7 @@
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
+          <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
         </div>
       </div>
@@ -6009,7 +6024,8 @@
             controls: el2.querySelector(".m-im-controls"),
             meta: el2.querySelector(".m-im-meta"),
             recap: el2.querySelector(".m-im-recap"),
-            screen: el2.querySelector(".m-im-screen")
+            screen: el2.querySelector(".m-im-screen"),
+            fs: el2.querySelector(".m-im-fs")
           };
           vctx = q.canvas.getContext("2d");
           q.smart.querySelector("span").textContent = t("smartPick");
@@ -6021,6 +6037,9 @@
           q.recap.onclick = () => partyRecapCard(recap);
           q.screen.title = q.screen.ariaLabel = t("toScreen");
           q.screen.onclick = toScreen;
+          q.fs.onclick = toggleFull;
+          q.fs.hidden = !canFull();
+          document.addEventListener("fullscreenchange", syncFull);
           if (!canAddTo()) q.addto.hidden = true;
           for (const ev of ["pointermove", "pointerdown", "wheel"]) el2.addEventListener(ev, wake, { passive: true });
           q.wrap.addEventListener("transitionend", () => vizRect.r = null);
@@ -6155,13 +6174,31 @@
           q.mute.innerHTML = muted ? ICON.mute : ICON.vol;
           if (document.activeElement !== q.volume) q.volume.value = Math.round((muted ? 0 : P.getVolume?.() ?? 1) * 100);
           q.volume.style.setProperty("--v", q.volume.value + "%");
-          q.full.innerHTML = document.fullscreenElement ? ICON.fullOff : ICON.full;
+          syncFull();
         }
-        function toggleFull() {
-          if (document.fullscreenElement) document.exitFullscreen?.();
-          else document.documentElement.requestFullscreen?.().catch(() => {
-          });
+        const canFull = () => !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+        async function toggleFull() {
+          try {
+            if (document.fullscreenElement || document.webkitFullscreenElement) await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+            else if (el2.requestFullscreen) await el2.requestFullscreen({ navigationUI: "hide" });
+            else el2.webkitRequestFullscreen?.();
+          } catch {
+            try {
+              await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+            } catch {
+            }
+          }
           setTimeout(syncState, 300);
+        }
+        function syncFull() {
+          if (!el2) return;
+          const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+          for (const b of [q.full, q.fs]) {
+            if (!b) continue;
+            b.innerHTML = on ? ICON.fullOff : ICON.full;
+            b.title = b.ariaLabel = t(on ? "fullOff" : "c_full");
+          }
+          el2.classList.toggle("is-full", on);
         }
         let hazeSrc = "";
         function setHaze(src) {
@@ -6260,7 +6297,8 @@
           q.wrap.style.rotate = lastRot = "";
           if (activeEl) activeEl.style.scale = lastBounce = "";
           activeEl?.classList.remove("is-hype");
-          el2.style.scale = el2.style.translate = "";
+          q.bg.style.translate = "";
+          lastBgZ = "";
           q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
           Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
           depth.key = "";
@@ -6569,9 +6607,7 @@
             const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
             if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
           }
-          const r0 = vizRect.r, s0 = cam.s || 1, ox = innerWidth / 2, oy = innerHeight / 2;
-          const r = s0 === 1 && !cam.x && !cam.y ? r0 : { left: ox + (r0.left - ox - cam.x) / s0, top: oy + (r0.top - oy - cam.y) / s0, width: r0.width / s0, height: r0.height / s0 };
-          if (s0 !== 1 && vizRect.n % 4 === 0) vizRect.r = q.wrap.getBoundingClientRect();
+          const r = vizRect.r;
           const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
           const R = r.width / 2 * dpr + 16 * dpr;
           const sec = pos / 1e3;
@@ -6598,12 +6634,12 @@
           if (audio.data) {
             const segs = audio.data.segs;
             const si = Math.max(seek(segs, sec, "t"), 0);
-            const s02 = segs[si], s1 = segs[si + 1] || s02;
-            if (s02 && s02.p.length === 12) {
-              const f = clamp((sec - s02.t) / Math.max(0.01, s1.t - s02.t), 0, 1);
+            const s0 = segs[si], s1 = segs[si + 1] || s0;
+            if (s0 && s0.p.length === 12) {
+              const f = clamp((sec - s0.t) / Math.max(0.01, s1.t - s0.t), 0, 1);
               const e = f * f * (3 - 2 * f);
-              for (let k2 = 0; k2 < 12; k2++) pit[k2] = s02.p[k2] + ((s1.p[k2] ?? s02.p[k2]) - s02.p[k2]) * e;
-              loud = clamp((s02.l + (s1.l - s02.l) * e + 38) / 38, 0, 1);
+              for (let k2 = 0; k2 < 12; k2++) pit[k2] = s0.p[k2] + ((s1.p[k2] ?? s0.p[k2]) - s0.p[k2]) * e;
+              loud = clamp((s0.l + (s1.l - s0.l) * e + 38) / 38, 0, 1);
               havePitch = true;
             }
             b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : beat.read(sec);
@@ -6776,12 +6812,16 @@
             if (kz !== lastKick) {
               lastKick = kz;
               q.canvas.style.scale = kz;
-              q.bg.style.scale = kz ? (1 + px.kick * 0.06).toFixed(3) : "";
+            }
+            const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1)).toFixed(3);
+            if (bz !== lastBgZ) {
+              lastBgZ = bz;
+              q.bg.style.scale = bz === "1.000" ? "" : bz;
             }
           }
         }
         let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
-        let activeEl = null, lastBounce = "", lastRot = "";
+        let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "";
         function freshCanvas() {
           const n = q.canvas.cloneNode(false);
           q.canvas.replaceWith(n);
@@ -6979,7 +7019,11 @@
             return mixC(pal[i], pal[(i + 1) % 3], x - i);
           };
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-          if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt);
+          if (px.fx && cfg.partyLasers && px.level >= 2) {
+            stageCam(ctx, dpr);
+            drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+          }
           if (px.lasers && px.beamVis > 0.02) {
             const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
             const riser = px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin(performance.now() / 1e3 * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
@@ -7068,11 +7112,31 @@
             ctx.fill();
           }
           drawMotes(ctx, dt, dpr, pal);
-          if (cfg.partyCrowd && px.fx) drawCrowd(ctx, px, pal, dpr, rgba2);
+          if (cfg.partyCrowd && px.fx && quality.level > 0) {
+            stageCam(ctx, dpr);
+            drawCrowd(ctx, px, pal, dpr, rgba2, dt);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+          }
         }
         let blend = null, motes = [], crowd = null, hype = /* @__PURE__ */ new Set(), hypeOn = false;
         const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
+        const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };
+        function tuneQuality(dt) {
+          quality.ema += (dt - quality.ema) * 0.05;
+          if (quality.ema > 1 / 48) {
+            quality.fast = 0;
+            if ((quality.slow += dt) > 2 && quality.level > 0) [quality.level, quality.slow] = [quality.level - 1, 0];
+          } else if (quality.ema < 1 / 57) {
+            quality.slow = 0;
+            if ((quality.fast += dt) > 10 && quality.level < 2) [quality.level, quality.fast] = [quality.level + 1, 0];
+          }
+        }
         function partyExtras(px, now, dt, R, dpr) {
+          tuneQuality(dt);
+          if (quality.level < 2) {
+            px.lasers = Math.round(px.lasers / 2);
+            px.lvl = Math.min(px.lvl, 1.6);
+          }
           if (blend) {
             const age = (now - blend.t0) / 1e3;
             if (blend.waiting && (px.hit && age > 0.25 || age > 4)) {
@@ -7114,24 +7178,23 @@
               if (motes.length > 600) break;
             }
           }
-          if (cfg.partyCamera && px.fx) {
+          if (cfg.partyCamera && px.fx && quality.level > 0) {
             const t2 = now / 1e3;
             const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
             cam.s += (target - cam.s) * (1 - Math.exp(-dt * 1.2));
             if (px.dropHit) cam.s += 0.03;
             cam.x = Math.sin(t2 * 0.05) * innerWidth * 8e-3 * (0.5 + px.energy);
             cam.y = Math.cos(t2 * 0.037) * innerHeight * 6e-3 * (0.5 + px.energy);
-            const k = `${cam.s.toFixed(4)}|${cam.x.toFixed(1)}|${cam.y.toFixed(1)}`;
+            const k = `${cam.x.toFixed(0)}|${cam.y.toFixed(0)}`;
             if (k !== cam.key) {
               cam.key = k;
-              el2.style.scale = cam.s.toFixed(4);
-              el2.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
+              q.bg.style.translate = `${cam.x.toFixed(0)}px ${cam.y.toFixed(0)}px`;
             }
-          } else if (cam.key) {
+          } else if (cam.key || cam.s !== 1) {
             Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
-            el2.style.scale = el2.style.translate = "";
+            q.bg.style.translate = "";
           }
-          if (cfg.partyDepth && px.fx) {
+          if (cfg.partyDepth && px.fx && quality.level > 0) {
             const t2 = now / 1e3, idle = now - depth.at > 2500;
             const tx = idle ? Math.sin(t2 * 0.21) * 0.25 : depth.tx, ty = idle ? Math.cos(t2 * 0.17) * 0.18 : depth.ty;
             depth.x += (tx - depth.x) * (1 - Math.exp(-dt * 3));
@@ -7149,9 +7212,10 @@
           }
           party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
         }
-        function toLocal(x, y) {
-          const s1 = cam.s || 1, ox = innerWidth / 2, oy = innerHeight / 2;
-          return [ox + (x - ox - cam.x) / s1, oy + (y - oy - cam.y) / s1];
+        const toLocal = (x, y) => [x, y];
+        function stageCam(ctx, dpr) {
+          if (cam.s === 1 && !cam.x && !cam.y) return;
+          ctx.setTransform(cam.s, 0, 0, cam.s, (1 - cam.s) * vw / 2 + cam.x * dpr, (1 - cam.s) * vh / 2 + cam.y * dpr);
         }
         function drawMotes(ctx, dt, dpr) {
           if (!motes.length) return;
@@ -7167,48 +7231,149 @@
           }
           ctx.globalAlpha = 1;
         }
-        function drawCrowd(ctx, px, pal, dpr, rgba2) {
-          const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
-          if (!crowd || crowd.w !== vw) {
-            const people = [];
-            for (const row of [1, 0]) {
-              for (let x = -20 * u; x < vw + 40 * u; x += (row ? 34 : 42) * u * (0.85 + Math.random() * 0.4)) {
-                people.push({ x, row, s: (row ? 0.82 : 1.05) * (0.88 + Math.random() * 0.3), ph: Math.random() * 6.3, up: Math.random() });
-              }
+        const mood = { x: 0, phase: 0 };
+        function crowdMood(px, dt) {
+          const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hypeOn && px.energy > 0.45 ? 0.12 : 0), 0, 1);
+          mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));
+          if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
+          return mood.x;
+        }
+        function makeCrowd(u) {
+          const people = [];
+          for (const [row, scale, gap] of [[2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]]) {
+            for (let x = -30 * u; x < vw + 40 * u; x += gap * u * (0.8 + Math.random() * 0.45)) {
+              const r = Math.random;
+              people.push({
+                x,
+                row,
+                s: scale * (0.88 + r() * 0.26),
+                ph: r() * 6.3,
+                // eigene Schwelle und Reaktionszeit: nicht alle machen dasselbe im selben Moment
+                up: r(),
+                lag: r() * 0.12,
+                hand: r() < 0.5 ? -1 : 1,
+                hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",
+                gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",
+                arm: 0,
+                armL: 0,
+                vy: 0,
+                y: 0,
+                nextJump: 0
+              });
             }
-            crowd = { w: vw, people };
           }
+          return { w: vw, people };
+        }
+        const bodySprites = /* @__PURE__ */ new Map();
+        function bodySprite(p, u, pal) {
+          const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
+          let sp = bodySprites.get(key);
+          if (sp) return sp;
+          if (bodySprites.size > 40) bodySprites.clear();
+          const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);
+          const c = document.createElement("canvas");
+          c.width = w;
+          c.height = h;
+          const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0, hy = y - 64 * S1;
+          x.fillStyle = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"][p.row];
+          x.beginPath();
+          x.ellipse(hx, hy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);
+          if (p.hair === "curl") x.arc(hx, hy - 3 * S1, 12 * S1, 0, Math.PI * 2);
+          if (p.hair === "bun") x.arc(hx + 2 * S1, hy - 13 * S1, 5 * S1, 0, Math.PI * 2);
+          x.moveTo(cx0 - 20 * S1, y + 18 * S1);
+          x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
+          x.lineTo(hx + 5 * S1, y - 50 * S1);
+          x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);
+          x.closePath();
+          x.fill();
+          if (p.hair === "cap") x.fillRect(hx - 2 * S1, hy - 9 * S1, 15 * S1 * p.hand, 3 * S1);
+          const c2 = pal[p.row === 0 ? 2 : 1];
+          x.lineWidth = Math.max(1, 1.6 * S1);
+          x.lineCap = "round";
+          x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;
+          x.beginPath();
+          x.ellipse(hx, hy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);
+          x.moveTo(cx0 - 19 * S1, y - 30 * S1);
+          x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
+          x.stroke();
+          sp = { c, w, h, ax: cx0, ay: y, S1 };
+          bodySprites.set(key, sp);
+          return sp;
+        }
+        function drawCrowd(ctx, px, pal, dpr, rgba2, dt) {
+          const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
+          if (!crowd || crowd.w !== vw) crowd = makeCrowd(u);
+          const X = crowdMood(px, dt);
           const t2 = performance.now() / 1e3, bps = (party.info.bpm || 120) / 60;
-          const raise = clamp(px.energy * 1.2 - 0.35 + (hypeOn ? 0.4 : 0) + px.drop * 0.6, 0, 1);
+          const calmSong = px.key === "chill" || px.minor && X < 0.3;
+          const haze = ctx.createLinearGradient(0, vh, 0, vh - 260 * u);
+          haze.addColorStop(0, rgba2(pal[1], (0.1 + 0.18 * X).toFixed(3)));
+          haze.addColorStop(1, rgba2(pal[1], 0));
+          ctx.fillStyle = haze;
+          ctx.fillRect(0, vh - 260 * u, vw, 260 * u);
           ctx.globalCompositeOperation = "source-over";
           ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          const fill = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
+          const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
+          let curRow = null;
+          const strokeRow = (row) => {
+            ctx.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];
+            ctx.strokeStyle = fill[row];
+            ctx.stroke(arms[row]);
+          };
           for (const p of crowd.people) {
-            const s1 = p.s * u, base = vh + 6 * u;
-            const jump = (px.kickEnv * 5 + (px.drop > 0.35 || hypeOn ? px.accent * 16 : 0)) * s1 * (0.6 + 0.4 * Math.sin(p.ph * 3));
-            const y = base - jump, hx = p.x + Math.sin(t2 * bps * Math.PI + p.ph) * 2 * s1;
-            ctx.fillStyle = p.row ? "rgba(10,7,20,0.78)" : "rgba(4,3,10,0.95)";
-            ctx.strokeStyle = ctx.fillStyle;
-            ctx.beginPath();
-            ctx.arc(hx, y - 62 * s1, 10 * s1, 0, Math.PI * 2);
-            ctx.roundRect(p.x - 16 * s1, y - 48 * s1, 32 * s1, 60 * s1, 13 * s1);
-            ctx.fill();
-            ctx.lineWidth = 7 * s1;
-            const upArm = p.up < raise;
-            for (const side2 of [-1, 1]) {
-              const swing = Math.sin(t2 * bps * Math.PI + p.ph + side2) * 6 * s1;
-              ctx.beginPath();
-              ctx.moveTo(p.x + side2 * 13 * s1, y - 40 * s1);
-              if (upArm) ctx.lineTo(p.x + side2 * (20 * s1) + swing, y - 88 * s1 - px.accent * 6 * s1);
-              else ctx.lineTo(p.x + side2 * 19 * s1, y - 8 * s1);
-              ctx.stroke();
+            if (p.row !== curRow) {
+              if (curRow != null) strokeRow(curRow);
+              curRow = p.row;
             }
-            ctx.lineWidth = 1.4 * dpr;
-            ctx.strokeStyle = rgba2(pal[p.row ? 1 : 2], (0.18 + px.I * 0.3).toFixed(2));
-            ctx.beginPath();
-            ctx.arc(hx, y - 62 * s1, 10 * s1, Math.PI * 1.05, Math.PI * 1.95);
-            ctx.stroke();
+            const s1 = p.s * u, base = vh + 8 * u;
+            const me2 = clamp(X + (p.up - 0.5) * 0.3, 0, 1);
+            if (px.hit && me2 > 0.74 && px.beat > 0.5 && p.y === 0 && Math.random() < 0.55 + (me2 - 0.74) * 1.5) p.nextJump = t2 + p.lag;
+            if (p.nextJump && t2 >= p.nextJump) {
+              p.vy = -(150 + me2 * 140) * s1;
+              p.nextJump = 0;
+            }
+            if (p.vy || p.y) {
+              p.vy += 1400 * s1 * dt;
+              p.y = Math.min(0, p.y + p.vy * dt);
+              if (p.y === 0) p.vy = 0;
+            }
+            const bob = me2 > 0.3 ? px.accent * 4 * s1 * me2 : 0;
+            const sway = Math.sin(t2 * bps * Math.PI * (me2 > 0.3 ? 1 : 0.5) + p.ph) * (2 + (1 - me2) * 3) * s1;
+            const y = base + p.y + bob, hx = p.x + sway;
+            const wantUp = me2 > 0.55 && p.up < me2 + 0.1 ? 1 : p.gadget && me2 < 0.5 ? 0.8 : 0;
+            p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 4));
+            if (p.row === 2 && quality.level < 2) continue;
+            const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
+            ctx.drawImage(sp.c, hx - sp.ax * k1, y - sp.ay * k1, sp.w * k1, sp.h * k1);
+            const arm = arms[p.row];
+            for (const side2 of [-1, 1]) {
+              const sx = p.x + side2 * 15 * s1, sy = y - 42 * s1;
+              const a = side2 === p.hand ? p.arm : p.arm * (me2 > 0.62 ? 1 : 0.35);
+              let hxA = sx + side2 * 6 * s1, hyA = y + 2 * s1;
+              if (a > 0.02) {
+                let ux = side2 * (10 + 8 * Math.sin(t2 * bps * Math.PI + p.ph)) * s1, uy = -48 * s1;
+                if (me2 > 0.62 && hypeOn) ux = side2 * 16 * s1 + Math.sin(t2 * bps * Math.PI * 0.5 + p.ph) * 14 * s1;
+                if (me2 > 0.45 && me2 < 0.8 && px.P.flashOn === "back") ux *= 1 - px.snareEnv * 0.9;
+                if (side2 === p.hand && me2 > 0.6) uy -= px.kickEnv * 12 * s1 * me2;
+                hxA += (sx + ux - hxA) * a;
+                hyA += (sy + uy - hyA) * a;
+              }
+              const ex = (sx + hxA) / 2 + side2 * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);
+              arm.moveTo(sx, sy);
+              arm.quadraticCurveTo(ex, ey, hxA, hyA);
+              if (side2 === p.hand && p.gadget && a > 0.5 && (me2 < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);
+            }
           }
+          if (curRow != null) strokeRow(curRow);
           ctx.globalCompositeOperation = "lighter";
+          for (const [x, y, kind, s1, row] of glows) {
+            const r = (kind === "phone" ? 16 : 13 + Math.sin(t2 * 13 + x) * 2) * s1;
+            ctx.globalAlpha = (calmSong || kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25);
+            ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), x - r, y - r, r * 2, r * 2);
+          }
+          ctx.globalAlpha = 1;
         }
         function frame(now) {
           raf = requestAnimationFrame(frame);

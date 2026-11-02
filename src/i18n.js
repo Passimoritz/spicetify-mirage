@@ -53,6 +53,7 @@ const I18N = {
     partyRecap: "Party recap", partyRecapHint: "After three songs a button appears for a shareable picture: songs, minutes, drops, genre mix and the loudest drop", partyEdge: "Edge light (overlay app)", partyEdgeHint: "The Mirage Overlay app makes the edges of your screen glow to the beat while party mode runs – hidden in full-screen games",
     recapBtn: "Party recap", toScreen: "Party on another screen", recapTitle: "Your party recap", recapDrops: "drops",
     recapGenres: "Genre mix", recapPeak: "Loudest drop",
+    fullOff: "Exit full screen",
   },
   de: {
     menu: "Mirage-Einstellungen", immersive: "Mirage Immersiv-Modus", back: "Zurück", dialog: "Mirage Immersiv-Modus",
@@ -104,6 +105,7 @@ const I18N = {
     partyRecap: "Party-Rückblick", partyRecapHint: "Nach drei Songs erscheint ein Knopf für ein teilbares Bild: Songs, Minuten, Drops, Genre-Mischung und der lauteste Drop", partyEdge: "Kantenlicht (Overlay-App)", partyEdgeHint: "Die Mirage-Overlay-App lässt die Ränder deines Bildschirms im Takt glühen, solange Party läuft – in Vollbild-Spielen aus",
     recapBtn: "Party-Rückblick", toScreen: "Party auf anderem Bildschirm", recapTitle: "Dein Party-Rückblick", recapDrops: "Drops",
     recapGenres: "Genre-Mischung", recapPeak: "Lautester Drop",
+    fullOff: "Vollbild beenden",
   },
   fr: {
     menu: "Réglages Mirage", immersive: "Mode immersif Mirage", back: "Retour", dialog: "Mode immersif Mirage",
@@ -184,6 +186,7 @@ const I18N = {
     partyRecap: "Récap de la fête", partyRecapHint: "Après trois titres, un bouton propose une image à partager : titres, minutes, drops, mélange de genres et le drop le plus fort", partyEdge: "Lumière des bords (app overlay)", partyEdgeHint: "L'app Mirage Overlay fait briller les bords de l'écran en rythme pendant le mode fête – masqué en jeu plein écran",
     recapBtn: "Récap de la fête", toScreen: "Fête sur un autre écran", recapTitle: "Ton récap de la fête", recapDrops: "drops",
     recapGenres: "Mélange de genres", recapPeak: "Drop le plus fort",
+    fullOff: "Quitter le plein écran",
   },
   es: {
     menu: "Ajustes de Mirage", immersive: "Modo inmersivo Mirage", back: "Volver", dialog: "Modo inmersivo Mirage",
@@ -264,6 +267,7 @@ const I18N = {
     partyRecap: "Resumen de la fiesta", partyRecapHint: "Tras tres canciones aparece un botón para una imagen compartible: canciones, minutos, drops, mezcla de géneros y el drop más fuerte", partyEdge: "Luz de bordes (app overlay)", partyEdgeHint: "La app Mirage Overlay hace brillar los bordes de la pantalla al ritmo mientras dura la fiesta; se oculta en juegos a pantalla completa",
     recapBtn: "Resumen de la fiesta", toScreen: "Fiesta en otra pantalla", recapTitle: "Tu resumen de la fiesta", recapDrops: "drops",
     recapGenres: "Mezcla de géneros", recapPeak: "Drop más fuerte",
+    fullOff: "Salir de pantalla completa",
   },
   it: {
     menu: "Impostazioni Mirage", immersive: "Modalità immersiva Mirage", back: "Indietro", dialog: "Modalità immersiva Mirage",
@@ -344,6 +348,7 @@ const I18N = {
     partyRecap: "Riepilogo della festa", partyRecapHint: "Dopo tre brani compare un pulsante per un'immagine da condividere: brani, minuti, drop, mix di generi e il drop più forte", partyEdge: "Luce dei bordi (app overlay)", partyEdgeHint: "L'app Mirage Overlay fa brillare i bordi dello schermo a tempo durante la festa – nascosta nei giochi a schermo intero",
     recapBtn: "Riepilogo della festa", toScreen: "Festa su un altro schermo", recapTitle: "Il tuo riepilogo della festa", recapDrops: "drop",
     recapGenres: "Mix di generi", recapPeak: "Drop più forte",
+    fullOff: "Esci da schermo intero",
   },
   pt: {
     menu: "Configurações do Mirage", immersive: "Modo imersivo Mirage", back: "Voltar", dialog: "Modo imersivo Mirage",
@@ -424,6 +429,7 @@ const I18N = {
     partyRecap: "Resumo da festa", partyRecapHint: "Depois de três músicas aparece um botão para uma imagem compartilhável: músicas, minutos, drops, mistura de gêneros e o drop mais forte", partyEdge: "Luz nas bordas (app overlay)", partyEdgeHint: "O app Mirage Overlay faz as bordas da tela brilharem no ritmo enquanto a festa roda – oculto em jogos em tela cheia",
     recapBtn: "Resumo da festa", toScreen: "Festa em outra tela", recapTitle: "Seu resumo da festa", recapDrops: "drops",
     recapGenres: "Mistura de gêneros", recapPeak: "Drop mais forte",
+    fullOff: "Sair da tela cheia",
   },
   nl: {
     menu: "Mirage-instellingen", immersive: "Mirage meeslepende modus", back: "Terug", dialog: "Mirage meeslepende modus",
@@ -504,6 +510,7 @@ const I18N = {
     partyRecap: "Feestoverzicht", partyRecapHint: "Na drie nummers verschijnt een knop voor een deelbaar beeld: nummers, minuten, drops, genremix en de hardste drop", partyEdge: "Randlicht (overlay-app)", partyEdgeHint: "De Mirage Overlay-app laat de randen van je scherm in de maat gloeien zolang de feestmodus loopt – verborgen in schermvullende games",
     recapBtn: "Feestoverzicht", toScreen: "Feest op ander scherm", recapTitle: "Jouw feestoverzicht", recapDrops: "drops",
     recapGenres: "Genremix", recapPeak: "Hardste drop",
+    fullOff: "Volledig scherm sluiten",
   },
   pl: {
     menu: "Ustawienia Mirage", immersive: "Tryb immersyjny Mirage", back: "Wstecz", dialog: "Tryb immersyjny Mirage",
@@ -584,6 +591,7 @@ const I18N = {
     partyRecap: "Podsumowanie imprezy", partyRecapHint: "Po trzech utworach pojawia się przycisk do obrazka do udostępnienia: utwory, minuty, dropy, mieszanka gatunków i najgłośniejszy drop", partyEdge: "Światło krawędzi (aplikacja overlay)", partyEdgeHint: "Aplikacja Mirage Overlay rozświetla krawędzie ekranu w rytm, gdy trwa impreza – ukryte w grach pełnoekranowych",
     recapBtn: "Podsumowanie imprezy", toScreen: "Impreza na innym ekranie", recapTitle: "Twoje podsumowanie imprezy", recapDrops: "dropy",
     recapGenres: "Mieszanka gatunków", recapPeak: "Najgłośniejszy drop",
+    fullOff: "Zamknij pełny ekran",
   },
   tr: {
     menu: "Mirage ayarları", immersive: "Mirage sürükleyici mod", back: "Geri", dialog: "Mirage sürükleyici mod",
@@ -658,6 +666,7 @@ const I18N = {
     partyRecap: "Parti özeti", partyRecapHint: "Üç şarkıdan sonra paylaşılabilir bir görsel için düğme çıkar: şarkılar, dakikalar, droplar, tür karışımı ve en güçlü drop", partyEdge: "Kenar ışığı (overlay uygulaması)", partyEdgeHint: "Mirage Overlay uygulaması parti modu sürerken ekran kenarlarını ritimle parlatır – tam ekran oyunlarda gizli",
     recapBtn: "Parti özeti", toScreen: "Partiyi başka ekranda aç", recapTitle: "Parti özetin", recapDrops: "drop",
     recapGenres: "Tür karışımı", recapPeak: "En güçlü drop",
+    fullOff: "Tam ekrandan çık",
   },
   ru: {
     menu: "Настройки Mirage", immersive: "Режим погружения Mirage", back: "Назад", dialog: "Режим погружения Mirage",
@@ -732,6 +741,7 @@ const I18N = {
     partyRecap: "Итоги вечеринки", partyRecapHint: "После трёх треков появляется кнопка для картинки: треки, минуты, дропы, смесь жанров и самый громкий дроп", partyEdge: "Свет по краям (оверлей)", partyEdgeHint: "Приложение Mirage Overlay подсвечивает края экрана в такт, пока идёт вечеринка – скрыто в полноэкранных играх",
     recapBtn: "Итоги вечеринки", toScreen: "Вечеринка на другом экране", recapTitle: "Итоги твоей вечеринки", recapDrops: "дропов",
     recapGenres: "Смесь жанров", recapPeak: "Самый громкий дроп",
+    fullOff: "Выйти из полноэкранного режима",
   },
   uk: {
     menu: "Налаштування Mirage", immersive: "Режим занурення Mirage", back: "Назад",
@@ -806,6 +816,7 @@ const I18N = {
     partyRecap: "Підсумки вечірки", partyRecapHint: "Після трьох треків з'являється кнопка для картинки: треки, хвилини, дропи, суміш жанрів і найгучніший дроп", partyEdge: "Світло по краях (оверлей)", partyEdgeHint: "Застосунок Mirage Overlay підсвічує краї екрана в такт, поки триває вечірка – приховано в повноекранних іграх",
     recapBtn: "Підсумки вечірки", toScreen: "Вечірка на іншому екрані", recapTitle: "Підсумки твоєї вечірки", recapDrops: "дропів",
     recapGenres: "Суміш жанрів", recapPeak: "Найгучніший дроп",
+    fullOff: "Вийти з повноекранного режиму",
   },
   ja: {
     menu: "Mirage の設定", immersive: "Mirage イマーシブモード", back: "戻る", dialog: "Mirage イマーシブモード",
@@ -880,6 +891,7 @@ const I18N = {
     partyRecap: "パーティーの振り返り", partyRecapHint: "3 曲を過ぎると共有用画像のボタンが出ます：曲数、分数、ドロップ、ジャンルの割合、いちばん大きなドロップ", partyEdge: "画面の縁の光（オーバーレイアプリ）", partyEdgeHint: "パーティーモード中、Mirage Overlay アプリが画面の縁をビートに合わせて光らせます – 全画面ゲーム中は非表示",
     recapBtn: "パーティーの振り返り", toScreen: "別の画面でパーティー", recapTitle: "パーティーの振り返り", recapDrops: "ドロップ",
     recapGenres: "ジャンルの割合", recapPeak: "いちばん大きなドロップ",
+    fullOff: "全画面を終了",
   },
   ko: {
     menu: "Mirage 설정", immersive: "Mirage 몰입 모드", back: "뒤로", dialog: "Mirage 몰입 모드",
@@ -954,6 +966,7 @@ const I18N = {
     partyRecap: "파티 요약", partyRecapHint: "세 곡이 지나면 공유용 이미지 버튼이 나타나요: 곡 수, 시간, 드롭, 장르 비율, 가장 강한 드롭", partyEdge: "가장자리 조명(오버레이 앱)", partyEdgeHint: "파티 모드 동안 Mirage Overlay 앱이 화면 가장자리를 비트에 맞춰 빛나게 해요 – 전체 화면 게임에서는 숨겨요",
     recapBtn: "파티 요약", toScreen: "다른 화면에서 파티", recapTitle: "나의 파티 요약", recapDrops: "드롭",
     recapGenres: "장르 비율", recapPeak: "가장 강한 드롭",
+    fullOff: "전체 화면 종료",
   },
   zh: {
     menu: "Mirage 设置", immersive: "Mirage 沉浸模式", back: "返回", dialog: "Mirage 沉浸模式",
@@ -1028,6 +1041,7 @@ const I18N = {
     partyRecap: "派对回顾", partyRecapHint: "播放三首后出现按钮，生成可分享的图片：歌曲数、分钟、高潮次数、曲风比例和最强的高潮", partyEdge: "边缘灯光（叠加层应用）", partyEdgeHint: "派对模式运行时，Mirage Overlay 应用让屏幕边缘随节拍发光 – 全屏游戏时隐藏",
     recapBtn: "派对回顾", toScreen: "在其他屏幕开派对", recapTitle: "你的派对回顾", recapDrops: "次高潮",
     recapGenres: "曲风比例", recapPeak: "最强的高潮",
+    fullOff: "退出全屏",
   },
 };
 const LANG = (() => {
