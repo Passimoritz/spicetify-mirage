@@ -215,13 +215,15 @@ function startServer() {
     // Liedtext/Pegel nur anfordern, wenn der gewählte Stil sie anzeigt
     if (topics().length) ws.send(JSON.stringify({ type: "cmd", cmd: "subscribe", topics: topics() }));
     ws.on("message", (raw) => {
-      dlog(`${String(raw).length} ${String(raw).slice(0, 160)}`);
+      // Party-Lichtzustand kommt 30× pro Sekunde – nicht ins Protokoll
+      if (!String(raw).startsWith('{"type":"party"')) dlog(`${String(raw).length} ${String(raw).slice(0, 160)}`);
       let m;
       try { m = JSON.parse(raw); } catch { return; }
       if (m.type === "track") onTrack(m);
       else if (m.type === "lyric") onLyric(m);
       else if (m.type === "level") onLevel(m);
       else if (m.type === "volume") showVolume(m);
+      else if (m.type === "party") onParty(m);
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
       else if (m.type === "debug") {
         try {
@@ -245,7 +247,8 @@ function command(cmd) {
 const status = () => ({ connected: clients.size > 0, track });
 
 // Abo beim Theme: nur bei Stilen mit Liedtext/Pegel und nicht, wenn das Overlay aus ist
-const topics = () => (cfg.mode === "off" ? [] : STYLE_TOPICS[cfg.style] || []);
+// „party“ = Kantenlicht im Party-Modus (das Theme schickt nur, solange Party läuft und es eingeschaltet ist)
+const topics = () => (cfg.mode === "off" ? [] : [...(STYLE_TOPICS[cfg.style] || []), "party"]);
 let subscribed = "[]";
 function resubscribe() {
   const now = JSON.stringify(topics());
@@ -481,6 +484,56 @@ function showVolume(m) {
 }
 ipcMain.on("volDone", () => volWin?.hide());
 
+/* ------------------------------------------------------------------ Kantenlicht (Party-Modus) */
+// Vier schmale, durchsichtige Streifen an den Rändern des Bildschirms glühen im Takt des Party-Modus.
+// Bewusst Streifen statt eines Fensters über allem: Spotify selbst bleibt unverdeckt. Klicks gehen durch.
+const EDGE = 70;
+let edges = null, edgeT = 0;
+function makeEdges() {
+  const b = pickDisplay().bounds;
+  const rects = {
+    top: { x: b.x, y: b.y, width: b.width, height: EDGE },
+    bottom: { x: b.x, y: b.y + b.height - EDGE, width: b.width, height: EDGE },
+    left: { x: b.x, y: b.y + EDGE, width: EDGE, height: b.height - 2 * EDGE },
+    right: { x: b.x + b.width - EDGE, y: b.y + EDGE, width: EDGE, height: b.height - 2 * EDGE },
+  };
+  edges = Object.entries(rects).map(([side, r]) => {
+    const w = new BrowserWindow({
+      ...r, show: false, frame: false, transparent: true, resizable: false, movable: false, focusable: false,
+      skipTaskbar: true, hasShadow: false, alwaysOnTop: true, backgroundColor: "#00000000", ...(MAC ? { type: "panel" } : {}),
+      webPreferences: { preload: path.join(__dirname, "preload.js"), backgroundThrottling: false },
+    });
+    w.setIgnoreMouseEvents(true);
+    w.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    w.loadFile("edge.html", { hash: side });
+    w.on("closed", () => (edges = null));
+    return w;
+  });
+}
+function onParty(m) {
+  if (cfg.mode === "off" || busy || cfg.edge === false) return;
+  if (!edges) makeEdges();
+  for (const w of edges || []) {
+    if (w.isDestroyed()) continue;
+    if (!w.isVisible() && !w.webContents.isLoading()) {
+      w.showInactive();
+      w.setAlwaysOnTop(true, "screen-saver");
+    }
+    w.webContents.send("party", m);
+  }
+  // kommt nichts mehr (Party beendet, Spotify zu), sanft ausblenden
+  clearTimeout(edgeT);
+  edgeT = setTimeout(hideEdges, 1200);
+}
+function hideEdges() {
+  clearTimeout(edgeT);
+  for (const w of edges || []) {
+    if (w.isDestroyed()) continue;
+    w.webContents.send("partyOff");
+    setTimeout(() => !w.isDestroyed() && w.hide(), 300);
+  }
+}
+
 /* ------------------------------------------------------------------ Ruhig bei Vollbild */
 // WIN: Windows meldet selbst, wann ein Programm im Vollbild läuft (dieselbe Abfrage, mit der es
 // seine eigenen Benachrichtigungen zurückhält) – ein kleines PowerShell-Skript fragt sie alle 1,5 s ab.
@@ -494,6 +547,7 @@ function setBusy(on) {
   if (busy) {
     hideOverlay();
     volWin?.hide();
+    hideEdges();
   } else if (cfg.mode === "always" && track) announce("update");
 }
 const PS_BUSY = `Add-Type -Namespace M -Name Q -MemberDefinition '[DllImport("shell32.dll")] public static extern int SHQueryUserNotificationState(out int s);'

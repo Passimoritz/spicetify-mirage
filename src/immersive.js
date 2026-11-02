@@ -8,7 +8,7 @@ import { dust } from "./dust.js";
 import { burst } from "./burst.js";
 import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME } from "./lyrics.js";
 import { LANG } from "./i18n.js";
-import { nowPlayingCard } from "./share.js";
+import { nowPlayingCard, partyRecapCard } from "./share.js";
 import * as ctl from "./controls.js";
 import { currentItem, covers, titleOf, artistOf } from "./player.js";
 import { party } from "./party.js";
@@ -38,6 +38,8 @@ const ICON = {
   full: '<svg viewBox="0 0 24 24"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg>',
   fullOff: '<svg viewBox="0 0 24 24"><path d="M8 3v5H3v2h7V3zm8 0h-2v7h7V8h-5zM3 16h5v5h2v-7H3zm11 5h2v-5h5v-2h-7z"/></svg>',
   add: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>',
+  recap: '<svg viewBox="0 0 24 24"><path d="M4 20V10h3v10zm6 0V4h3v16zm6 0v-7h3v7z"/></svg>',
+  screen: '<svg viewBox="0 0 24 24"><path d="M2 4h14v10H2zm2 2v6h10V6zm16-2h2v14H8v-2h12zM6 16h6v2H6z"/></svg>',
   sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>',
 };
 const MODES = [
@@ -77,6 +79,8 @@ const immersive = (() => {
           ${MODES.map(([k], i) => `<button type="button" role="tab" data-mode="${k}" title="${i + 1}"></button>`).join("")}
         </div>
         <div class="m-im-actions">
+          <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
+          <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
         </div>
@@ -157,6 +161,9 @@ const immersive = (() => {
       addto: el.querySelector(".m-im-addto"),
       smart: el.querySelector(".m-im-smartpick"),
       controls: el.querySelector(".m-im-controls"),
+      meta: el.querySelector(".m-im-meta"),
+      recap: el.querySelector(".m-im-recap"),
+      screen: el.querySelector(".m-im-screen"),
     };
     vctx = q.canvas.getContext("2d");
     q.smart.querySelector("span").textContent = t("smartPick");
@@ -164,6 +171,11 @@ const immersive = (() => {
     q.addto.title = t("c_addTo");
     q.addto.setAttribute("aria-label", t("c_addTo"));
     q.addto.onclick = () => showSide(side === "playlists" ? null : "playlists");
+    // Party-Rückblick und zweiter Bildschirm (Party im Vollbild auf einem anderen Monitor/Fernseher)
+    q.recap.title = q.recap.ariaLabel = t("recapBtn");
+    q.recap.onclick = () => partyRecapCard(recap);
+    q.screen.title = q.screen.ariaLabel = t("toScreen");
+    q.screen.onclick = toScreen;
     if (!ctl.canAddTo()) q.addto.hidden = true;
     // Party: ruht die Maus, blendet die Bedienung aus und alles rückt weich zusammen
     for (const ev of ["pointermove", "pointerdown", "wheel"]) el.addEventListener(ev, wake, { passive: true });
@@ -234,6 +246,9 @@ const immersive = (() => {
     el.addEventListener("pointermove", (e) => {
       if (cfg.calm) return;
       const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+      depth.tx = x;
+      depth.ty = y;
+      depth.at = performance.now();
       q.cover.style.setProperty("--iry", (x * 18).toFixed(2) + "deg");
       q.cover.style.setProperty("--irx", (-y * 14).toFixed(2) + "deg");
       q.cover.style.setProperty("--gx", (50 + x * 80).toFixed(1) + "%");
@@ -374,8 +389,12 @@ const immersive = (() => {
       placeIndicator();
       updateKicker();
       if (LYR.has(mode)) loadLyrics();
-      if (mode === "party") party.prepare(currentItem()).then(updateKicker);
+      if (mode === "party") party.prepare(currentItem()).then((info) => {
+        updateKicker();
+        noteRecap(currentItem(), info);
+      });
       else resetParty();
+      showExtras();
       sizeCanvas();
       active = -2;
       wake();
@@ -410,6 +429,14 @@ const immersive = (() => {
     q.canvas.style.scale = q.bg.style.scale = lastKick = "";
     q.wrap.style.rotate = lastRot = "";
     if (activeEl) activeEl.style.scale = lastBounce = "";
+    activeEl?.classList.remove("is-hype");
+    el.style.scale = el.style.translate = "";
+    q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
+    Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
+    depth.key = "";
+    motes = [];
+    blend = null;
+    party.live = null;
   }
 
   // Jam: Profilbilder schweben links und rechts am Rand; du mit Akzentring, der Host mit kleinem Punkt.
@@ -417,7 +444,11 @@ const immersive = (() => {
   let lastJam = -1e9, jamKey = "";
   async function showJam() {
     const list = cfg.partyJam ? await jamMembers() : [];
-    const key = list.map((m) => m.id + m.img).join("|");
+    // wer hat den laufenden Song gewünscht? (soweit Spotify es im Song vermerkt)
+    const meta = currentItem()?.metadata || {};
+    const by = Object.entries(meta).filter(([k]) => /added_?by|queued_?by|contributor/i.test(k)).map(([, v]) => String(v).toLowerCase());
+    for (const m of list) m.dj = by.some((v) => v && (v === String(m.id).toLowerCase() || v === String(m.name).toLowerCase() || v.includes(String(m.id).toLowerCase())));
+    const key = list.map((m) => m.id + m.img + (m.dj ? "*" : "")).join("|") + cfg.partyJamLight;
     if (key === jamKey) return;
     jamKey = key;
     q.jam.textContent = "";
@@ -426,7 +457,11 @@ const immersive = (() => {
     shown.forEach((m, i) => {
       const left = i % 2 === 0, row = i >> 1, rows = Math.ceil(shown.length / 2);
       const f = document.createElement("figure");
-      f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "");
+      f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "") + (cfg.partyJamLight && m.dj ? " is-dj" : "");
+      if (cfg.partyJamLight) {
+        const c = (vividPal || palette())[i % 3];
+        f.style.setProperty("--jc", `rgb(${c.join(",")})`);
+      }
       // etwas versetzt statt in Reih und Glied: wirkt schwebend
       f.style.cssText = `--i:${i};left:${left ? 4 + (row % 2) * 3 : 89 - (row % 2) * 3}%;top:${20 + ((row + 0.5) / rows) * 56}%`;
       const pic = document.createElement(m.img ? "img" : "span");
@@ -596,6 +631,12 @@ const immersive = (() => {
     const got = await getLyrics(uri);
     if (token !== lyrToken) return;
     lyr = got;
+    // Hype-Zeilen: der Refrain (Zeilen, die sich wiederholen) und Aufforderungen ans Publikum
+    hype = new Set();
+    const HYPE = /\b(drop|jump|hands? up|put your hands|everybody|let'?s go|come on|party|dance|scream|shout|louder|higher|alle zusammen|hände hoch|springen|los geht'?s|vamos|arriba|salta|dale|allez|levez|sautez|давай)\b/i;
+    const seen = new Map(), key = (x) => x.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+    (got?.lines || []).forEach((l) => key(l.text).length > 6 && seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1));
+    (got?.lines || []).forEach((l, i) => (seen.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
     active = -2;
     q.inner.textContent = "";
     // neuer Text blendet weich ein (Animation neu starten)
@@ -629,6 +670,7 @@ const immersive = (() => {
           const s = document.createElement("span");
           s.className = "m-w";
           s.textContent = w.text;
+          s.style.setProperty("--wi", list.length);
           box.append(s);
           if (w.sp !== false) box.append(" ");
           list.push({ el: s, a: w.a, b: w.b, p: -1 });
@@ -676,8 +718,11 @@ const immersive = (() => {
       active = i;
       // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben
       if (activeEl) activeEl.style.scale = "";
+      activeEl?.classList.remove("is-hype");
       activeEl = lines[i] || null;
       lastBounce = "";
+      hypeOn = !!activeEl && cfg.partyHype && el.dataset.mode === "party" && hype.has(i);
+      activeEl?.classList.toggle("is-hype", hypeOn);
       // erst jetzt sind die Taktdaten sicher geladen: geschätzte Wörter auf die Ton-Einsätze legen
       if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6000);
       for (let k = 0; k < lines.length; k++) {
@@ -735,7 +780,10 @@ const immersive = (() => {
       const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
       if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
     }
-    const r = vizRect.r;
+    // Kamerafahrt verschiebt/zoomt das ganze Fenster: Cover-Lage in Fenster-Koordinaten zurückrechnen
+    const r0 = vizRect.r, s0 = cam.s || 1, ox = innerWidth / 2, oy = innerHeight / 2;
+    const r = s0 === 1 && !cam.x && !cam.y ? r0 : { left: ox + (r0.left - ox - cam.x) / s0, top: oy + (r0.top - oy - cam.y) / s0, width: r0.width / s0, height: r0.height / s0 };
+    if (s0 !== 1 && vizRect.n % 4 === 0) vizRect.r = q.wrap.getBoundingClientRect();
     const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
     const R = (r.width / 2) * dpr + 16 * dpr;
     const sec = pos / 1000;
@@ -746,6 +794,7 @@ const immersive = (() => {
     const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
     if (mode === "mix" && V.style === "line") V.style = "wave";
     const px = mode === "party" ? party.step(sec, dt, playing) : null;
+    if (px) partyExtras(px, now, dt, R, dpr);
     if (px) {
       const P = px.P;
       Object.assign(V, {
@@ -769,7 +818,8 @@ const immersive = (() => {
         havePitch = true;
       }
       // Party: der Puls folgt dem Betonungsmuster des Genres (vier auf den Boden, 1 und 3, Backbeat …)
-      b = px ? px.accent : beat.read(sec);
+      // Party: der Puls sitzt auf der echten Kick (aus der Klangfarbe), das Taktraster füllt Lücken
+      b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : beat.read(sec);
       const bi = seek(audio.data.beats, sec, "t");
       if (bi !== lastBeatIdx && bi >= 0 && playing) {
         lastBeatIdx = bi;
@@ -812,7 +862,7 @@ const immersive = (() => {
     }
     if (cfg.calm) return;
 
-    const pal = px ? vivid(palette(), px.minor, px.P.tint) : palette();
+    const pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1) : palette();
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
     const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
@@ -993,8 +1043,8 @@ const immersive = (() => {
   const TINT = { cool: 205, warm: 28, hot: 4 };
   // Farbton ein Stück Richtung Ziel drehen (kürzester Weg auf dem Farbkreis)
   const toward = (h, target, f) => (h + ((((target - h) % 360) + 540) % 360 - 180) * f + 360) % 360;
-  function vivid(pal, minor, tint) {
-    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "");
+  function vivid(pal, minor, tint, pitch = -1) {
+    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch;
     if (key === vividKey) return vividPal;
     vividKey = key;
     const hsl = pal.map(rgb2hsl);
@@ -1002,6 +1052,8 @@ const immersive = (() => {
     vividPal = hsl.map(([h, s, l], i) => {
       let hue = grey ? [275, 195, 320][i] : h;
       if (TINT[tint] != null) hue = toward(hue, TINT[tint] + (i - 1) * 22, 0.45);
+      // Melodie: die Tonklasse färbt das Akzentlicht (Quintenzirkel – verwandte Töne liegen nah beieinander)
+      if (pitch >= 0) hue = toward(hue, ((pitch * 7) % 12) * 30, i === 2 ? 0.35 : 0.1);
       return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
     });
     return vividPal;
@@ -1031,6 +1083,8 @@ const immersive = (() => {
   function drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt) {
     const t = performance.now() / 1000, far = Math.hypot(vw, vh) * 1.1;
     const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
+    // was welches Licht treibt: Boden = Kick, Spots von oben = Snare, Glitzern/Scanner = Hi-Hats
+    const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);
     const cone = (sx, sy, a, wd, c, al, reach = far) => {
       const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
       g.addColorStop(0, rgba(c, al));
@@ -1056,7 +1110,7 @@ const immersive = (() => {
       }
       case "top": {
         // Rock: harte, warmweiße Bühnenspots von oben – die Snare auf 2 und 4 reißt sie auf
-        const al = (0.06 + beat * 0.26) * vis;
+        const al = (0.06 + snareL * 0.3) * vis;
         const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));
         for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {
           cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);
@@ -1065,8 +1119,8 @@ const immersive = (() => {
       }
       case "floor": {
         // Bass: Licht quillt vom Boden hoch, schwer auf 1 und 3, mit langem Nachhall
-        const al = (0.12 + beat * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
-        const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + beat * 0.25));
+        const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
+        const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));
         g.addColorStop(0, rgba(pal[0], al));
         g.addColorStop(0.6, rgba(pal[1], al * 0.35));
         g.addColorStop(1, rgba(pal[1], 0));
@@ -1086,7 +1140,7 @@ const immersive = (() => {
         // Techno: Scanner – waagerechte Lichtbahnen fahren im Tempo über das Bild und gleißen auf dem Schlag auf,
         // dazu ein senkrechter Scanner, der jeden Takt einmal von links nach rechts zieht
         const bps = (party.info.bpm || 125) / 60;
-        const al = (0.07 + beat * 0.45 + px.drop * 0.2) * vis;
+        const al = (0.07 + hatL * 0.45 + px.drop * 0.2) * vis;
         const line = (x0, y0, x1, y1, c, a) => {
           for (const [lw, f] of [[24 * dpr, 0.22], [2.2 * dpr, 1]]) {
             ctx.lineWidth = lw;
@@ -1114,7 +1168,7 @@ const immersive = (() => {
           if (face <= 0.05) return;
           const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
           const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);
-          ctx.globalAlpha = clamp(face * (0.22 + beat * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
+          ctx.globalAlpha = clamp(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
           const r = (12 + d.s * 13 + beat * 16) * dpr;
           ctx.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
         });
@@ -1257,6 +1311,8 @@ const immersive = (() => {
       let n = 0;
       if (px.hit && px.beat > 0.5 && px.low < 0.5) n = Math.round(P.sparks * px.lvl * (0.35 + px.bright * 0.9) * (0.5 + px.I * 0.5));
       if (px.dropHit) n += Math.round(50 * Math.min(px.lvl, 2));
+      // Hi-Hats und Becken: ein paar feine Funken genau auf dem Klang
+      if (px.hatHit && px.low < 0.6) n += Math.round(1 + px.bright * 4);
       for (let k = 0; k < n; k++) {
         const a = Math.random() * Math.PI * 2;
         sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
@@ -1273,6 +1329,161 @@ const immersive = (() => {
       ctx.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
       ctx.fill();
     }
+    drawMotes(ctx, dt, dpr, pal);
+    if (cfg.partyCrowd && px.fx) drawCrowd(ctx, px, pal, dpr, rgba);
+  }
+
+  /* ---------------------------------------------------------------- Party-Erweiterungen */
+  let blend = null, motes = [], crowd = null, hype = new Set(), hypeOn = false;
+  const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
+  // pro Bild, vor dem Zeichnen: Übergang, Hype, Kamera, 3D-Tiefe, Liedtext-Funken, Live-Zustand fürs Overlay
+  function partyExtras(px, now, dt, R, dpr) {
+    // Übergang zwischen Songs: abdimmen, bis der erste Schlag des neuen Songs kommt (höchstens 4 s)
+    if (blend) {
+      const age = (now - blend.t0) / 1000;
+      if (blend.waiting && ((px.hit && age > 0.25) || age > 4)) {
+        blend.waiting = false;
+        blend.glow = 1;
+        rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
+      }
+      const dim = blend.waiting ? clamp(1 - age * 1.5, 0.3, 1) : 1;
+      px.I *= dim;
+      px.accent *= dim;
+      px.beamVis *= dim;
+      if (!blend.waiting) {
+        blend.glow *= Math.exp(-dt * 2.5);
+        px.flash = Math.max(px.flash, blend.glow * 0.55);
+        if (blend.glow < 0.02) blend = null;
+      }
+    }
+    // Hype-Zeile: alles eine Spur heller und stärker
+    if (hypeOn) {
+      px.I = Math.min(1.35, px.I + 0.15);
+      px.beamVis = Math.min(1.2, px.beamVis + 0.2);
+    }
+    if (px.dropHit) {
+      recap.drops++;
+      recap.peak = { title: q.title.textContent, artist: q.artist.textContent };
+    }
+    // Liedtext-Funken: beim Drop zerfällt die aktive Zeile in Lichtteilchen, die in die Strahlen fliegen
+    if (px.dropHit && cfg.partyShatter && px.fx && activeEl) {
+      activeEl.classList.remove("is-burst");
+      void activeEl.offsetWidth;
+      activeEl.classList.add("is-burst");
+      const pal3 = vividPal || palette();
+      const words3 = activeEl.querySelectorAll(".m-w");
+      for (const w of words3.length ? words3 : [activeEl]) {
+        const b = w.getBoundingClientRect();
+        for (let k = 0; k < Math.min(14, 3 + b.width / 14); k++) {
+          const x = b.left + Math.random() * b.width, y = b.top + Math.random() * b.height;
+          const [lx, ly] = toLocal(x, y);
+          motes.push({ x: lx * dpr, y: ly * dpr, vx: (Math.random() - 0.5) * 420 * dpr, vy: -(120 + Math.random() * 420) * dpr, life: 1, c: pal3[k % 3] });
+        }
+        if (motes.length > 600) break;
+      }
+    }
+    // Kamerafahrt: in ruhigen Stellen weit, mit der Energie näher, beim Drop ein kurzer Ruck; langsames Schweben
+    if (cfg.partyCamera && px.fx) {
+      const t = now / 1000;
+      const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
+      cam.s += (target - cam.s) * (1 - Math.exp(-dt * 1.2));
+      if (px.dropHit) cam.s += 0.03;
+      cam.x = Math.sin(t * 0.05) * innerWidth * 0.008 * (0.5 + px.energy);
+      cam.y = Math.cos(t * 0.037) * innerHeight * 0.006 * (0.5 + px.energy);
+      const k = `${cam.s.toFixed(4)}|${cam.x.toFixed(1)}|${cam.y.toFixed(1)}`;
+      if (k !== cam.key) {
+        cam.key = k;
+        el.style.scale = cam.s.toFixed(4);
+        el.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
+      }
+    } else if (cam.key) {
+      Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
+      el.style.scale = el.style.translate = "";
+    }
+    // 3D-Tiefe: Liedtext, Titel und Licht liegen auf verschiedenen Ebenen; ohne Maus schwebt die Szene leise
+    if (cfg.partyDepth && px.fx) {
+      const t = now / 1000, idle = now - depth.at > 2500;
+      const tx = idle ? Math.sin(t * 0.21) * 0.25 : depth.tx, ty = idle ? Math.cos(t * 0.17) * 0.18 : depth.ty;
+      depth.x += (tx - depth.x) * (1 - Math.exp(-dt * 3));
+      depth.y += (ty - depth.y) * (1 - Math.exp(-dt * 3));
+      const k = `${depth.x.toFixed(3)}|${depth.y.toFixed(3)}`;
+      if (k !== depth.key) {
+        depth.key = k;
+        q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
+        q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
+        q.canvas.style.transform = `perspective(1600px) rotateY(${(depth.x * 7).toFixed(2)}deg) rotateX(${(-depth.y * 5).toFixed(2)}deg)`;
+      }
+    } else if (depth.key) {
+      depth.key = "";
+      q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
+    }
+    // fürs Overlay (Kantenlicht): der aktuelle Lichtzustand
+    party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
+  }
+  // Fenster- in Zeichenkoordinaten (die Kamerafahrt verschiebt/zoomt das ganze Fenster)
+  function toLocal(x, y) {
+    const s1 = cam.s || 1, ox = innerWidth / 2, oy = innerHeight / 2;
+    return [ox + (x - ox - cam.x) / s1, oy + (y - oy - cam.y) / s1];
+  }
+  function drawMotes(ctx, dt, dpr) {
+    if (!motes.length) return;
+    motes = motes.filter((m) => (m.life -= dt * 0.7) > 0);
+    for (const m of motes) {
+      m.vx *= Math.exp(-dt * 1.2);
+      m.vy = m.vy * Math.exp(-dt * 1.2) - 40 * dpr * dt;
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      const r = (6 + m.life * 10) * dpr;
+      ctx.globalAlpha = clamp(m.life * 1.2, 0, 1);
+      ctx.drawImage(glowSprite(m.c), m.x - r, m.y - r, r * 2, r * 2);
+    }
+    ctx.globalAlpha = 1;
+  }
+  // Publikum: Silhouetten vor der Bühne, Arme hoch mit der Energie, Springen auf Kick und Drop – Gegenlicht als Rand
+  function drawCrowd(ctx, px, pal, dpr, rgba) {
+    const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
+    if (!crowd || crowd.w !== vw) {
+      const people = [];
+      for (const row of [1, 0]) {
+        for (let x = -20 * u; x < vw + 40 * u; x += (row ? 34 : 42) * u * (0.85 + Math.random() * 0.4)) {
+          people.push({ x, row, s: (row ? 0.82 : 1.05) * (0.88 + Math.random() * 0.3), ph: Math.random() * 6.3, up: Math.random() });
+        }
+      }
+      crowd = { w: vw, people };
+    }
+    const t = performance.now() / 1000, bps = (party.info.bpm || 120) / 60;
+    const raise = clamp(px.energy * 1.2 - 0.35 + (hypeOn ? 0.4 : 0) + px.drop * 0.6, 0, 1);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.lineCap = "round";
+    for (const p of crowd.people) {
+      const s1 = p.s * u, base = vh + 6 * u;
+      const jump = (px.kickEnv * 5 + (px.drop > 0.35 || hypeOn ? px.accent * 16 : 0)) * s1 * (0.6 + 0.4 * Math.sin(p.ph * 3));
+      const y = base - jump, hx = p.x + Math.sin(t * bps * Math.PI + p.ph) * 2 * s1;
+      ctx.fillStyle = p.row ? "rgba(10,7,20,0.78)" : "rgba(4,3,10,0.95)";
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.beginPath();
+      ctx.arc(hx, y - 62 * s1, 10 * s1, 0, Math.PI * 2);
+      ctx.roundRect(p.x - 16 * s1, y - 48 * s1, 32 * s1, 60 * s1, 13 * s1);
+      ctx.fill();
+      // Arme: hoch und im Takt wiegend, wenn der Song es hergibt
+      ctx.lineWidth = 7 * s1;
+      const upArm = p.up < raise;
+      for (const side of [-1, 1]) {
+        const swing = Math.sin(t * bps * Math.PI + p.ph + side) * 6 * s1;
+        ctx.beginPath();
+        ctx.moveTo(p.x + side * 13 * s1, y - 40 * s1);
+        if (upArm) ctx.lineTo(p.x + side * (20 * s1) + swing, y - 88 * s1 - px.accent * 6 * s1);
+        else ctx.lineTo(p.x + side * 19 * s1, y - 8 * s1);
+        ctx.stroke();
+      }
+      // Gegenlicht: feiner farbiger Rand am Kopf
+      ctx.lineWidth = 1.4 * dpr;
+      ctx.strokeStyle = rgba(pal[p.row ? 1 : 2], (0.18 + px.I * 0.3).toFixed(2));
+      ctx.beginPath();
+      ctx.arc(hx, y - 62 * s1, 10 * s1, Math.PI * 1.05, Math.PI * 1.95);
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = "lighter";
   }
 
   function frame(now) {
@@ -1472,7 +1683,41 @@ const immersive = (() => {
     rings = [];
     updateKicker();
     if (LYR.has(el.dataset.mode)) loadLyrics();
-    if (el.dataset.mode === "party") party.prepare(item).then(updateKicker);
+    if (el.dataset.mode === "party") {
+      // Übergang: das Licht des alten Songs dimmt ab und springt auf dem ersten Schlag des neuen wieder an
+      if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0 };
+      party.prepare(item).then((info) => {
+        updateKicker();
+        noteRecap(item, info);
+      });
+    }
+    showExtras();
+  }
+
+  /* ---- Party-Rückblick: was lief, welche Genres, Tempo-Spanne, der lauteste Drop */
+  const recap = { start: 0, songs: [], drops: 0, peak: null };
+  function noteRecap(item, info) {
+    if (!cfg.partyRecap || !item?.uri) return;
+    if (!recap.start || Date.now() - recap.last > 3600e3) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null });
+    recap.last = Date.now();
+    if (recap.songs.some((x) => x.uri === item.uri)) return;
+    recap.songs.push({ uri: item.uri, title: titleOf(item), artist: artistOf(item), key: info?.key || "pop", bpm: info?.bpm || 0, img: covers(item).big || covers(item).small });
+    showExtras();
+  }
+  function showExtras() {
+    if (!el) return;
+    const party = el.dataset.mode === "party";
+    q.recap.hidden = !(party && cfg.partyRecap && recap.songs.length >= 3);
+    q.screen.hidden = !(party && cfg.partyScreen && "getScreenDetails" in window);
+  }
+  // Party als Vollbild auf einem anderen Bildschirm (Chromium-Fensterverwaltung; fragt einmal um Erlaubnis)
+  async function toScreen() {
+    try {
+      const d = await window.getScreenDetails();
+      const other = d.screens.find((x) => x !== d.currentScreen) || d.currentScreen;
+      await document.documentElement.requestFullscreen({ screen: other });
+      setTimeout(syncState, 300);
+    } catch {}
   }
 
   function open() {

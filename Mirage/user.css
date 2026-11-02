@@ -1423,6 +1423,57 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
   font: 700 15px var(--m-font);
   color: rgba(255, 255, 255, 0.7);
 }
+/* Jam-Licht: jede Person trägt eine eigene Farbe; wer den laufenden Song gewünscht hat, legt gerade auf */
+#mirage-immersive .m-jam-p[style*="--jc"] :is(img, span) {
+  box-shadow:
+    0 0 0 2.5px var(--jc),
+    0 10px 30px -8px rgba(0, 0, 0, 0.7),
+    0 0 26px -4px var(--jc);
+}
+#mirage-immersive .m-jam-p.is-dj :is(img, span) {
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px var(--jc, var(--m-a)),
+    0 0 40px 4px var(--jc, var(--m-a));
+  transition: transform 0.6s var(--m-spring), box-shadow 0.6s;
+}
+#mirage-immersive .m-jam-p.is-dj figcaption::before {
+  content: "♪ ";
+  color: var(--jc, var(--m-c));
+}
+
+/* Hype-Zeile (Refrain, „Hands up“ …): kräftiger Schein, die Wörter ploppen nacheinander auf */
+#mirage-immersive[data-mode="party"] .m-im-line.is-hype.is-active {
+  text-shadow:
+    0 0 40px rgba(var(--m-a-rgb), 1),
+    0 0 110px rgba(var(--m-c-rgb), 0.7);
+}
+#mirage-immersive[data-mode="party"] .m-im-line.is-hype.is-active .m-w {
+  display: inline-block;
+  animation: m-hype-pop 0.55s var(--m-spring) both;
+  animation-delay: calc(var(--wi, 0) * 55ms);
+}
+@keyframes m-hype-pop {
+  from {
+    opacity: 0.3;
+    transform: translateY(0.35em) scale(0.7);
+  }
+}
+/* Liedtext-Funken: beim Drop gleißt die Zeile auf und zerstiebt – der Canvas lässt die Teilchen fliegen */
+#mirage-immersive[data-mode="party"] .m-im-line.is-burst {
+  animation: m-line-burst 0.75s var(--m-ease);
+}
+@keyframes m-line-burst {
+  25% {
+    filter: blur(6px) brightness(2);
+    opacity: 0.25;
+  }
+}
+html.mirage-calm #mirage-immersive .m-im-line:is(.is-hype, .is-burst),
+html.mirage-calm #mirage-immersive .m-im-line.is-hype .m-w {
+  animation: none;
+}
 @keyframes m-jam-in {
   to { opacity: 0.88; }
 }

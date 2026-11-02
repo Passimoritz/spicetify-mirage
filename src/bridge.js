@@ -6,6 +6,8 @@ import { palette } from "./color.js";
 import { currentItem, covers, titleOf, artistOf } from "./player.js";
 import { domReport } from "./pages.js";
 import { isFading } from "./controls.js";
+import { party } from "./party.js";
+import { cfg } from "./config.js";
 
 /* ---------------------------------------------------------------- Brücke zur Overlay-App */
 // Die Mirage-Overlay-App lauscht lokal; ohne App versucht das Theme es still alle 5 s erneut.
@@ -96,14 +98,22 @@ const bridge = (() => {
   }
 
   // Liedzeile und Pegel nur, wenn der Overlay-Stil sie braucht (Stil „Lyrics“ / „Visualizer“)
-  let topics = new Set(), lyricTimer = 0, levelTimer = 0, lastLine = "";
+  let topics = new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
   function setTopics(list) {
-    topics = new Set(list.filter((x) => x === "lyric" || x === "level"));
+    topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
     clearInterval(lyricTimer);
     clearInterval(levelTimer);
+    clearInterval(partyTimer);
     lastLine = "";
     if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
     if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
+    if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
+  }
+  // Kantenlicht der Overlay-App: der Lichtzustand des Party-Modus, nur solange er wirklich läuft
+  function pushParty() {
+    const L = party.live;
+    if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
+    send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette() });
   }
   async function pushLyric() {
     const uri = currentItem()?.uri || "";

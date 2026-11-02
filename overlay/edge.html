@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Kantenlicht: ein Streifen am Bildschirmrand, der im Takt des Party-Modus glüht (Seite steht im #hash) -->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; }
+  #glow {
+    position: fixed;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s linear;
+    will-change: opacity;
+  }
+</style>
+</head>
+<body>
+<div id="glow"></div>
+<script>
+  const side = (location.hash || "#top").slice(1);
+  const dir = { top: "to bottom", bottom: "to top", left: "to right", right: "to left" }[side] || "to bottom";
+  const glow = document.getElementById("glow");
+  let lastCol = "";
+  window.mirage.on("party", (m) => {
+    const pal = Array.isArray(m.pal) && m.pal.length ? m.pal : [[182, 156, 255], [124, 92, 255], [230, 222, 255]];
+    // oben/unten die erste und dritte Farbe, links/rechts die zweite – die Kanten wechseln mit dem Song
+    const c = pal[{ top: 0, bottom: 2, left: 1, right: 1 }[side] ?? 0] || pal[0];
+    const col = `linear-gradient(${dir}, rgba(${c.join(",")},0.95), rgba(${c.join(",")},0.35) 35%, rgba(${c.join(",")},0) 100%)`;
+    if (col !== lastCol) glow.style.background = lastCol = col;
+    const a = Math.min(1, 0.1 + (m.k || 0) * 0.5 + (m.a || 0) * 0.25 + (m.d || 0) * 0.3) * (0.45 + (m.e || 0) * 0.55);
+    glow.style.opacity = a.toFixed(3);
+  });
+  window.mirage.on("partyOff", () => (glow.style.opacity = "0"));
+</script>
+</body>
+</html>

@@ -34,6 +34,9 @@ async function fetchAnalysis(uri, attempt) {
         p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
         // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
         b: num(s.timbre?.[1], 0),
+        // timbre[2] = Flachheit (rauschig wie Snare/Clap/Becken), timbre[3] = Anschlag (hart wie Kick/Snare)
+        f: num(s.timbre?.[2], 0),
+        k: num(s.timbre?.[3], 0),
       }));
       // Tempo (Spotify-Analyse, sonst aus den Schlagabständen) und mittlere Lautheit des Songs –
       // der Party-Modus wählt daraus Stärke und Takt seiner Effekte und erkennt laute „Drops“

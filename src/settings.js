@@ -298,6 +298,16 @@ function render(box) {
       toggle("partyZoom", () => {}),
       toggle("partyIdle", () => {}),
       toggle("partyOnline", () => immersive.refresh()),
+      toggle("partyBlend", () => {}),
+      toggle("partyHype", () => immersive.reloadLyrics()),
+      toggle("partyDepth", () => {}),
+      toggle("partyCamera", () => {}),
+      toggle("partyShatter", () => {}),
+      toggle("partyCrowd", () => {}),
+      toggle("partyJamLight", () => {}),
+      toggle("partyScreen", () => immersive.refresh()),
+      toggle("partyRecap", () => immersive.refresh()),
+      toggle("partyEdge", () => {}),
       toggle("partyJam", () => {})
     )
   );

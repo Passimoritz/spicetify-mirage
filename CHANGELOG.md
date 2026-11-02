@@ -10,6 +10,23 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.7.0] – 2026-11-02
+
+### Added
+
+- **The light follows the instruments.** From the timbre of every segment in Spotify's analysis, Mirage now finds the kick (hard, dark attack), snare and clap (hard, noisy), hi-hats and cymbals (very bright) and the melody (one clear pitch). The kick drives the cover pulse and the floor light, the snare the spots and – for rock and metal – the flashes, the hi-hats the sparkle of disco ball, scanners and fine sparks, and the melody's pitch tints the accent light (circle of fifths, so related keys stay close).
+- **Party extensions, each with its own switch:**
+  - *Beat-synced transitions:* between songs the light dims and comes back on the first beat of the next one.
+  - *Hype lines:* choruses (repeated lines) and crowd calls ("hands up", "jump", "vamos" …) glow stronger and their words pop in one by one.
+  - *3D depth:* lyrics, title and light sit on different layers and follow the mouse; without the mouse the scene floats.
+  - *Camera rides:* the whole scene slowly zooms and drifts with the energy, with a jolt on the drop.
+  - *Lyrics burst:* on the drop the current line flares up and bursts into light particles.
+  - *Crowd:* silhouettes in front of the stage raise their hands with the energy and jump on the kick and the drop.
+  - *Jam colours:* every Jam guest gets a colour ring; whoever added the current song is highlighted as the DJ when Spotify notes it.
+  - *Second screen:* a button puts party mode full screen on another monitor or TV (where the system allows it).
+  - *Party recap:* after three songs, a button creates a shareable picture with songs, minutes, drops, genre mix, BPM range and the loudest drop.
+  - *Edge light:* the Mirage Overlay app (1.7.0) makes the screen edges glow to the beat while party mode runs, hidden during full-screen games.
+
 ## [1.6.1] – 2026-11-02
 
 ### Fixed

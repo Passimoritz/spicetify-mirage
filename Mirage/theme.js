@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.6.1" : "dev";
+      VERSION = true ? "1.7.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -329,7 +329,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latin"
+          party_latin: "Latin",
+          partyBlend: "Beat-synced transitions",
+          partyBlendHint: "Between songs the light dims down and comes back on the first beat of the next one",
+          partyHype: "Hype lines",
+          partyHypeHint: "Choruses and crowd calls (\u201Chands up\u201D, \u201Cjump\u201D \u2026) glow stronger and their words pop in one by one",
+          partyDepth: "3D depth",
+          partyDepthHint: "Lyrics, title and light sit on different layers and follow the mouse \u2013 without the mouse the scene floats gently",
+          partyCamera: "Camera rides",
+          partyCameraHint: "The whole scene slowly zooms and drifts: wide in quiet parts, closer with the energy, a jolt on the drop",
+          partyShatter: "Lyrics burst",
+          partyShatterHint: "On the drop the current line flares up and bursts into particles of light",
+          partyCrowd: "Crowd",
+          partyCrowdHint: "Silhouettes in front of the stage raise their hands with the energy and jump on the kick and the drop",
+          partyJamLight: "Jam colours",
+          partyJamLightHint: "In a Spotify Jam everyone gets a colour; whoever added the current song lights up as the DJ (if Spotify notes it)",
+          partyScreen: "Second screen button",
+          partyScreenHint: "Shows a button that puts party mode full screen on another monitor or TV",
+          partyRecap: "Party recap",
+          partyRecapHint: "After three songs a button appears for a shareable picture: songs, minutes, drops, genre mix and the loudest drop",
+          partyEdge: "Edge light (overlay app)",
+          partyEdgeHint: "The Mirage Overlay app makes the edges of your screen glow to the beat while party mode runs \u2013 hidden in full-screen games",
+          recapBtn: "Party recap",
+          toScreen: "Party on another screen",
+          recapTitle: "Your party recap",
+          recapDrops: "drops",
+          recapGenres: "Genre mix",
+          recapPeak: "Loudest drop"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -574,7 +600,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latin"
+          party_latin: "Latin",
+          partyBlend: "\xDCberg\xE4nge im Takt",
+          partyBlendHint: "Zwischen zwei Songs dimmt das Licht ab und springt auf dem ersten Schlag des n\xE4chsten wieder an",
+          partyHype: "Hype-Zeilen",
+          partyHypeHint: "Refrains und Aufrufe ans Publikum (\u201EH\xE4nde hoch\u201C, \u201Ejump\u201C \u2026) leuchten st\xE4rker, ihre W\xF6rter ploppen nacheinander auf",
+          partyDepth: "3D-Tiefe",
+          partyDepthHint: "Liedtext, Titel und Licht liegen auf verschiedenen Ebenen und folgen der Maus \u2013 ohne Maus schwebt die Szene leise",
+          partyCamera: "Kamerafahrten",
+          partyCameraHint: "Die ganze Szene zoomt und schwebt langsam: weit in ruhigen Stellen, n\xE4her mit der Energie, ein Ruck beim Drop",
+          partyShatter: "Liedtext-Funken",
+          partyShatterHint: "Beim Drop glei\xDFt die aktuelle Zeile auf und zerstiebt in Lichtteilchen",
+          partyCrowd: "Publikum",
+          partyCrowdHint: "Silhouetten vor der B\xFChne heben mit der Energie die Arme und springen auf Kick und Drop",
+          partyJamLight: "Jam-Farben",
+          partyJamLightHint: "Im Spotify-Jam bekommt jede Person eine Farbe; wer den laufenden Song gew\xFCnscht hat, leuchtet als DJ (wenn Spotify es vermerkt)",
+          partyScreen: "Knopf f\xFCr zweiten Bildschirm",
+          partyScreenHint: "Zeigt einen Knopf, der den Party-Modus im Vollbild auf einen anderen Monitor oder Fernseher legt",
+          partyRecap: "Party-R\xFCckblick",
+          partyRecapHint: "Nach drei Songs erscheint ein Knopf f\xFCr ein teilbares Bild: Songs, Minuten, Drops, Genre-Mischung und der lauteste Drop",
+          partyEdge: "Kantenlicht (Overlay-App)",
+          partyEdgeHint: "Die Mirage-Overlay-App l\xE4sst die R\xE4nder deines Bildschirms im Takt gl\xFChen, solange Party l\xE4uft \u2013 in Vollbild-Spielen aus",
+          recapBtn: "Party-R\xFCckblick",
+          toScreen: "Party auf anderem Bildschirm",
+          recapTitle: "Dein Party-R\xFCckblick",
+          recapDrops: "Drops",
+          recapGenres: "Genre-Mischung",
+          recapPeak: "Lautester Drop"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -819,7 +871,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latino"
+          party_latin: "Latino",
+          partyBlend: "Transitions en rythme",
+          partyBlendHint: "Entre deux titres, la lumi\xE8re baisse puis revient sur le premier temps du suivant",
+          partyHype: "Lignes hype",
+          partyHypeHint: "Refrains et appels au public (\xAB hands up \xBB, \xAB jump \xBB\u2026) brillent plus fort et leurs mots apparaissent un \xE0 un",
+          partyDepth: "Profondeur 3D",
+          partyDepthHint: "Paroles, titre et lumi\xE8re sont sur des plans diff\xE9rents et suivent la souris \u2013 sans souris, la sc\xE8ne flotte doucement",
+          partyCamera: "Mouvements de cam\xE9ra",
+          partyCameraHint: "Toute la sc\xE8ne zoome et glisse lentement : large au calme, plus proche avec l'\xE9nergie, un \xE0-coup au drop",
+          partyShatter: "\xC9clats de paroles",
+          partyShatterHint: "Au drop, la ligne en cours s'embrase et \xE9clate en particules de lumi\xE8re",
+          partyCrowd: "Public",
+          partyCrowdHint: "Des silhouettes devant la sc\xE8ne l\xE8vent les bras avec l'\xE9nergie et sautent sur le kick et le drop",
+          partyJamLight: "Couleurs du Jam",
+          partyJamLightHint: "Dans un Jam Spotify, chacun a sa couleur ; celui qui a ajout\xE9 le titre en cours brille comme DJ (si Spotify le note)",
+          partyScreen: "Bouton second \xE9cran",
+          partyScreenHint: "Affiche un bouton qui met le mode f\xEAte en plein \xE9cran sur un autre moniteur ou une TV",
+          partyRecap: "R\xE9cap de la f\xEAte",
+          partyRecapHint: "Apr\xE8s trois titres, un bouton propose une image \xE0 partager : titres, minutes, drops, m\xE9lange de genres et le drop le plus fort",
+          partyEdge: "Lumi\xE8re des bords (app overlay)",
+          partyEdgeHint: "L'app Mirage Overlay fait briller les bords de l'\xE9cran en rythme pendant le mode f\xEAte \u2013 masqu\xE9 en jeu plein \xE9cran",
+          recapBtn: "R\xE9cap de la f\xEAte",
+          toScreen: "F\xEAte sur un autre \xE9cran",
+          recapTitle: "Ton r\xE9cap de la f\xEAte",
+          recapDrops: "drops",
+          recapGenres: "M\xE9lange de genres",
+          recapPeak: "Drop le plus fort"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1064,7 +1142,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latino"
+          party_latin: "Latino",
+          partyBlend: "Transiciones al ritmo",
+          partyBlendHint: "Entre canciones la luz baja y vuelve en el primer golpe de la siguiente",
+          partyHype: "L\xEDneas hype",
+          partyHypeHint: "Estribillos y llamadas al p\xFAblico (\xABhands up\xBB, \xABjump\xBB\u2026) brillan m\xE1s y sus palabras aparecen una a una",
+          partyDepth: "Profundidad 3D",
+          partyDepthHint: "Letra, t\xEDtulo y luz est\xE1n en capas distintas y siguen al rat\xF3n; sin rat\xF3n, la escena flota suavemente",
+          partyCamera: "Movimientos de c\xE1mara",
+          partyCameraHint: "Toda la escena hace zoom y se desliza despacio: abierta en lo tranquilo, m\xE1s cerca con la energ\xEDa, un golpe en el drop",
+          partyShatter: "Chispas de letra",
+          partyShatterHint: "En el drop la l\xEDnea actual destella y estalla en part\xEDculas de luz",
+          partyCrowd: "P\xFAblico",
+          partyCrowdHint: "Siluetas frente al escenario levantan los brazos con la energ\xEDa y saltan con el bombo y el drop",
+          partyJamLight: "Colores del Jam",
+          partyJamLightHint: "En un Jam de Spotify cada persona tiene un color; quien a\xF1adi\xF3 la canci\xF3n actual brilla como DJ (si Spotify lo indica)",
+          partyScreen: "Bot\xF3n de segunda pantalla",
+          partyScreenHint: "Muestra un bot\xF3n que pone el modo fiesta a pantalla completa en otro monitor o TV",
+          partyRecap: "Resumen de la fiesta",
+          partyRecapHint: "Tras tres canciones aparece un bot\xF3n para una imagen compartible: canciones, minutos, drops, mezcla de g\xE9neros y el drop m\xE1s fuerte",
+          partyEdge: "Luz de bordes (app overlay)",
+          partyEdgeHint: "La app Mirage Overlay hace brillar los bordes de la pantalla al ritmo mientras dura la fiesta; se oculta en juegos a pantalla completa",
+          recapBtn: "Resumen de la fiesta",
+          toScreen: "Fiesta en otra pantalla",
+          recapTitle: "Tu resumen de la fiesta",
+          recapDrops: "drops",
+          recapGenres: "Mezcla de g\xE9neros",
+          recapPeak: "Drop m\xE1s fuerte"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1309,7 +1413,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latino"
+          party_latin: "Latino",
+          partyBlend: "Transizioni a tempo",
+          partyBlendHint: "Tra un brano e l'altro la luce cala e riparte sul primo battito del successivo",
+          partyHype: "Righe hype",
+          partyHypeHint: "Ritornelli e richiami al pubblico (\xABhands up\xBB, \xABjump\xBB\u2026) brillano di pi\xF9 e le parole compaiono una alla volta",
+          partyDepth: "Profondit\xE0 3D",
+          partyDepthHint: "Testo, titolo e luci stanno su piani diversi e seguono il mouse \u2013 senza mouse la scena fluttua piano",
+          partyCamera: "Movimenti di camera",
+          partyCameraHint: "Tutta la scena zooma e scorre lentamente: larga nelle parti calme, pi\xF9 vicina con l'energia, uno scatto sul drop",
+          partyShatter: "Scintille del testo",
+          partyShatterHint: "Sul drop la riga attuale si accende e si frantuma in particelle di luce",
+          partyCrowd: "Pubblico",
+          partyCrowdHint: "Sagome davanti al palco alzano le braccia con l'energia e saltano su cassa e drop",
+          partyJamLight: "Colori del Jam",
+          partyJamLightHint: "In un Jam di Spotify ognuno ha un colore; chi ha aggiunto il brano in corso si illumina come DJ (se Spotify lo segna)",
+          partyScreen: "Pulsante secondo schermo",
+          partyScreenHint: "Mostra un pulsante che porta la modalit\xE0 festa a schermo intero su un altro monitor o TV",
+          partyRecap: "Riepilogo della festa",
+          partyRecapHint: "Dopo tre brani compare un pulsante per un'immagine da condividere: brani, minuti, drop, mix di generi e il drop pi\xF9 forte",
+          partyEdge: "Luce dei bordi (app overlay)",
+          partyEdgeHint: "L'app Mirage Overlay fa brillare i bordi dello schermo a tempo durante la festa \u2013 nascosta nei giochi a schermo intero",
+          recapBtn: "Riepilogo della festa",
+          toScreen: "Festa su un altro schermo",
+          recapTitle: "Il tuo riepilogo della festa",
+          recapDrops: "drop",
+          recapGenres: "Mix di generi",
+          recapPeak: "Drop pi\xF9 forte"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1554,7 +1684,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latino"
+          party_latin: "Latino",
+          partyBlend: "Transi\xE7\xF5es no ritmo",
+          partyBlendHint: "Entre m\xFAsicas a luz diminui e volta na primeira batida da pr\xF3xima",
+          partyHype: "Linhas hype",
+          partyHypeHint: "Refr\xF5es e chamadas ao p\xFAblico (\xABhands up\xBB, \xABjump\xBB\u2026) brilham mais e as palavras surgem uma a uma",
+          partyDepth: "Profundidade 3D",
+          partyDepthHint: "Letra, t\xEDtulo e luz ficam em camadas diferentes e seguem o mouse \u2013 sem mouse a cena flutua de leve",
+          partyCamera: "Movimentos de c\xE2mera",
+          partyCameraHint: "A cena toda d\xE1 zoom e desliza devagar: aberta nas partes calmas, mais perto com a energia, um tranco no drop",
+          partyShatter: "Fa\xEDscas da letra",
+          partyShatterHint: "No drop a linha atual brilha e se desfaz em part\xEDculas de luz",
+          partyCrowd: "P\xFAblico",
+          partyCrowdHint: "Silhuetas diante do palco levantam os bra\xE7os com a energia e pulam no bumbo e no drop",
+          partyJamLight: "Cores do Jam",
+          partyJamLightHint: "Num Jam do Spotify cada pessoa tem uma cor; quem adicionou a m\xFAsica atual brilha como DJ (se o Spotify registrar)",
+          partyScreen: "Bot\xE3o de segunda tela",
+          partyScreenHint: "Mostra um bot\xE3o que coloca o modo festa em tela cheia em outro monitor ou TV",
+          partyRecap: "Resumo da festa",
+          partyRecapHint: "Depois de tr\xEAs m\xFAsicas aparece um bot\xE3o para uma imagem compartilh\xE1vel: m\xFAsicas, minutos, drops, mistura de g\xEAneros e o drop mais forte",
+          partyEdge: "Luz nas bordas (app overlay)",
+          partyEdgeHint: "O app Mirage Overlay faz as bordas da tela brilharem no ritmo enquanto a festa roda \u2013 oculto em jogos em tela cheia",
+          recapBtn: "Resumo da festa",
+          toScreen: "Festa em outra tela",
+          recapTitle: "Seu resumo da festa",
+          recapDrops: "drops",
+          recapGenres: "Mistura de g\xEAneros",
+          recapPeak: "Drop mais forte"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1799,7 +1955,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latin"
+          party_latin: "Latin",
+          partyBlend: "Overgangen in de maat",
+          partyBlendHint: "Tussen nummers dimt het licht en springt het weer aan op de eerste tel van het volgende",
+          partyHype: "Hype-regels",
+          partyHypeHint: "Refreinen en oproepen aan het publiek (\u2018hands up\u2019, \u2018jump\u2019 \u2026) gloeien sterker en hun woorden ploppen \xE9\xE9n voor \xE9\xE9n op",
+          partyDepth: "3D-diepte",
+          partyDepthHint: "Songtekst, titel en licht liggen op verschillende lagen en volgen de muis \u2013 zonder muis zweeft de sc\xE8ne zacht",
+          partyCamera: "Camerabewegingen",
+          partyCameraHint: "De hele sc\xE8ne zoomt en zweeft langzaam: wijd in rustige stukken, dichterbij met de energie, een ruk bij de drop",
+          partyShatter: "Tekstvonken",
+          partyShatterHint: "Bij de drop licht de huidige regel fel op en spat uiteen in lichtdeeltjes",
+          partyCrowd: "Publiek",
+          partyCrowdHint: "Silhouetten voor het podium steken met de energie hun armen omhoog en springen op kick en drop",
+          partyJamLight: "Jam-kleuren",
+          partyJamLightHint: "In een Spotify Jam krijgt iedereen een kleur; wie het huidige nummer toevoegde, licht op als DJ (als Spotify het noteert)",
+          partyScreen: "Knop voor tweede scherm",
+          partyScreenHint: "Toont een knop die de feestmodus schermvullend op een andere monitor of tv zet",
+          partyRecap: "Feestoverzicht",
+          partyRecapHint: "Na drie nummers verschijnt een knop voor een deelbaar beeld: nummers, minuten, drops, genremix en de hardste drop",
+          partyEdge: "Randlicht (overlay-app)",
+          partyEdgeHint: "De Mirage Overlay-app laat de randen van je scherm in de maat gloeien zolang de feestmodus loopt \u2013 verborgen in schermvullende games",
+          recapBtn: "Feestoverzicht",
+          toScreen: "Feest op ander scherm",
+          recapTitle: "Jouw feestoverzicht",
+          recapDrops: "drops",
+          recapGenres: "Genremix",
+          recapPeak: "Hardste drop"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2044,7 +2226,33 @@
           party_trance: "Trance",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latino"
+          party_latin: "Latino",
+          partyBlend: "Przej\u015Bcia w rytm",
+          partyBlendHint: "Mi\u0119dzy utworami \u015Bwiat\u0142o przygasa i wraca na pierwszym uderzeniu kolejnego",
+          partyHype: "Linijki hype",
+          partyHypeHint: "Refreny i zawo\u0142ania do publiczno\u015Bci (\u201Ehands up\u201D, \u201Ejump\u201D \u2026) \u015Bwiec\u0105 mocniej, a s\u0142owa pojawiaj\u0105 si\u0119 po kolei",
+          partyDepth: "G\u0142\u0119bia 3D",
+          partyDepthHint: "Tekst, tytu\u0142 i \u015Bwiat\u0142o le\u017C\u0105 na r\xF3\u017Cnych warstwach i pod\u0105\u017Caj\u0105 za mysz\u0105 \u2013 bez myszy scena lekko unosi si\u0119",
+          partyCamera: "Jazdy kamery",
+          partyCameraHint: "Ca\u0142a scena powoli si\u0119 przybli\u017Ca i dryfuje: szeroko w spokojnych miejscach, bli\u017Cej z energi\u0105, szarpni\u0119cie przy dropie",
+          partyShatter: "Iskry tekstu",
+          partyShatterHint: "Przy dropie bie\u017C\u0105ca linijka rozb\u0142yska i rozpada si\u0119 na cz\u0105stki \u015Bwiat\u0142a",
+          partyCrowd: "Publiczno\u015B\u0107",
+          partyCrowdHint: "Sylwetki przed scen\u0105 unosz\u0105 r\u0119ce z energi\u0105 i skacz\u0105 na stopie i dropie",
+          partyJamLight: "Kolory Jamu",
+          partyJamLightHint: "W Spotify Jam ka\u017Cdy ma sw\xF3j kolor; kto doda\u0142 bie\u017C\u0105cy utw\xF3r, \u015Bwieci jako DJ (je\u015Bli Spotify to zapisuje)",
+          partyScreen: "Przycisk drugiego ekranu",
+          partyScreenHint: "Pokazuje przycisk, kt\xF3ry przenosi tryb imprezy na pe\u0142ny ekran innego monitora lub telewizora",
+          partyRecap: "Podsumowanie imprezy",
+          partyRecapHint: "Po trzech utworach pojawia si\u0119 przycisk do obrazka do udost\u0119pnienia: utwory, minuty, dropy, mieszanka gatunk\xF3w i najg\u0142o\u015Bniejszy drop",
+          partyEdge: "\u015Awiat\u0142o kraw\u0119dzi (aplikacja overlay)",
+          partyEdgeHint: "Aplikacja Mirage Overlay roz\u015Bwietla kraw\u0119dzie ekranu w rytm, gdy trwa impreza \u2013 ukryte w grach pe\u0142noekranowych",
+          recapBtn: "Podsumowanie imprezy",
+          toScreen: "Impreza na innym ekranie",
+          recapTitle: "Twoje podsumowanie imprezy",
+          recapDrops: "dropy",
+          recapGenres: "Mieszanka gatunk\xF3w",
+          recapPeak: "Najg\u0142o\u015Bniejszy drop"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2289,7 +2497,33 @@
           party_trance: "Trans",
           party_dnb: "Drum & Bass",
           party_metal: "Metal",
-          party_latin: "Latin"
+          party_latin: "Latin",
+          partyBlend: "Ritimle ge\xE7i\u015Fler",
+          partyBlendHint: "\u015Eark\u0131lar aras\u0131nda \u0131\u015F\u0131k k\u0131s\u0131l\u0131r ve bir sonrakinin ilk vuru\u015Funda yeniden yanar",
+          partyHype: "Hype sat\u0131rlar\u0131",
+          partyHypeHint: "Nakaratlar ve seyirciye \xE7a\u011Fr\u0131lar (\u201Chands up\u201D, \u201Cjump\u201D \u2026) daha g\xFC\xE7l\xFC parlar, kelimeleri tek tek belirir",
+          partyDepth: "3D derinlik",
+          partyDepthHint: "\u015Eark\u0131 s\xF6z\xFC, ba\u015Fl\u0131k ve \u0131\u015F\u0131k farkl\u0131 katmanlarda durur ve fareyi izler \u2013 fare yokken sahne hafif\xE7e s\xFCz\xFCl\xFCr",
+          partyCamera: "Kamera hareketleri",
+          partyCameraHint: "T\xFCm sahne yava\u015F\xE7a yak\u0131nla\u015F\u0131p kayar: sakin yerlerde geni\u015F, enerjiyle daha yak\u0131n, dropta bir sars\u0131nt\u0131",
+          partyShatter: "S\xF6z k\u0131v\u0131lc\u0131mlar\u0131",
+          partyShatterHint: "Dropta ge\xE7erli sat\u0131r parlar ve \u0131\u015F\u0131k par\xE7ac\u0131klar\u0131na da\u011F\u0131l\u0131r",
+          partyCrowd: "Seyirci",
+          partyCrowdHint: "Sahnenin \xF6n\xFCndeki sil\xFCetler enerjiyle kollar\u0131n\u0131 kald\u0131r\u0131r, kick ve dropta z\u0131plar",
+          partyJamLight: "Jam renkleri",
+          partyJamLightHint: "Spotify Jam'de herkesin bir rengi olur; \xE7alan \u015Fark\u0131y\u0131 ekleyen DJ olarak parlar (Spotify bunu kaydediyorsa)",
+          partyScreen: "\u0130kinci ekran d\xFC\u011Fmesi",
+          partyScreenHint: "Parti modunu ba\u015Fka bir monit\xF6rde veya TV'de tam ekran a\xE7an bir d\xFC\u011Fme g\xF6sterir",
+          partyRecap: "Parti \xF6zeti",
+          partyRecapHint: "\xDC\xE7 \u015Fark\u0131dan sonra payla\u015F\u0131labilir bir g\xF6rsel i\xE7in d\xFC\u011Fme \xE7\u0131kar: \u015Fark\u0131lar, dakikalar, droplar, t\xFCr kar\u0131\u015F\u0131m\u0131 ve en g\xFC\xE7l\xFC drop",
+          partyEdge: "Kenar \u0131\u015F\u0131\u011F\u0131 (overlay uygulamas\u0131)",
+          partyEdgeHint: "Mirage Overlay uygulamas\u0131 parti modu s\xFCrerken ekran kenarlar\u0131n\u0131 ritimle parlat\u0131r \u2013 tam ekran oyunlarda gizli",
+          recapBtn: "Parti \xF6zeti",
+          toScreen: "Partiyi ba\u015Fka ekranda a\xE7",
+          recapTitle: "Parti \xF6zetin",
+          recapDrops: "drop",
+          recapGenres: "T\xFCr kar\u0131\u015F\u0131m\u0131",
+          recapPeak: "En g\xFC\xE7l\xFC drop"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2534,7 +2768,33 @@
           party_trance: "\u0422\u0440\u0430\u043D\u0441",
           party_dnb: "\u0414\u0440\u0430\u043C-\u043D-\u0431\u0435\u0439\u0441",
           party_metal: "\u041C\u0435\u0442\u0430\u043B",
-          party_latin: "\u041B\u0430\u0442\u0438\u043D\u043E"
+          party_latin: "\u041B\u0430\u0442\u0438\u043D\u043E",
+          partyBlend: "\u041F\u0435\u0440\u0435\u0445\u043E\u0434\u044B \u0432 \u0442\u0430\u043A\u0442",
+          partyBlendHint: "\u041C\u0435\u0436\u0434\u0443 \u0442\u0440\u0435\u043A\u0430\u043C\u0438 \u0441\u0432\u0435\u0442 \u043F\u0440\u0438\u0433\u043B\u0443\u0448\u0430\u0435\u0442\u0441\u044F \u0438 \u0432\u0441\u043F\u044B\u0445\u0438\u0432\u0430\u0435\u0442 \u043D\u0430 \u043F\u0435\u0440\u0432\u043E\u0439 \u0434\u043E\u043B\u0435 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0435\u0433\u043E",
+          partyHype: "\u0425\u0430\u0439\u043F-\u0441\u0442\u0440\u043E\u043A\u0438",
+          partyHypeHint: "\u041F\u0440\u0438\u043F\u0435\u0432\u044B \u0438 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u044F \u043A \u043F\u0443\u0431\u043B\u0438\u043A\u0435 (\xABhands up\xBB, \xABjump\xBB \u2026) \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u044F\u0440\u0447\u0435, \u0430 \u0438\u0445 \u0441\u043B\u043E\u0432\u0430 \u043F\u043E\u044F\u0432\u043B\u044F\u044E\u0442\u0441\u044F \u043F\u043E \u043E\u0434\u043D\u043E\u043C\u0443",
+          partyDepth: "3D-\u0433\u043B\u0443\u0431\u0438\u043D\u0430",
+          partyDepthHint: "\u0422\u0435\u043A\u0441\u0442, \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0441\u0432\u0435\u0442 \u043B\u0435\u0436\u0430\u0442 \u043D\u0430 \u0440\u0430\u0437\u043D\u044B\u0445 \u0441\u043B\u043E\u044F\u0445 \u0438 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u043C\u044B\u0448\u044C\u044E \u2013 \u0431\u0435\u0437 \u043C\u044B\u0448\u0438 \u0441\u0446\u0435\u043D\u0430 \u043F\u043B\u0430\u0432\u043D\u043E \u043F\u0430\u0440\u0438\u0442",
+          partyCamera: "\u0414\u0432\u0438\u0436\u0435\u043D\u0438\u0435 \u043A\u0430\u043C\u0435\u0440\u044B",
+          partyCameraHint: "\u0412\u0441\u044F \u0441\u0446\u0435\u043D\u0430 \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F \u0438 \u043F\u043B\u044B\u0432\u0451\u0442: \u0448\u0438\u0440\u043E\u043A\u043E \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0435\u0441\u0442\u0430\u0445, \u0431\u043B\u0438\u0436\u0435 \u0441 \u044D\u043D\u0435\u0440\u0433\u0438\u0435\u0439, \u0440\u044B\u0432\u043E\u043A \u043D\u0430 \u0434\u0440\u043E\u043F\u0435",
+          partyShatter: "\u0418\u0441\u043A\u0440\u044B \u0442\u0435\u043A\u0441\u0442\u0430",
+          partyShatterHint: "\u041D\u0430 \u0434\u0440\u043E\u043F\u0435 \u0442\u0435\u043A\u0443\u0449\u0430\u044F \u0441\u0442\u0440\u043E\u043A\u0430 \u0432\u0441\u043F\u044B\u0445\u0438\u0432\u0430\u0435\u0442 \u0438 \u0440\u0430\u0441\u0441\u044B\u043F\u0430\u0435\u0442\u0441\u044F \u043D\u0430 \u0447\u0430\u0441\u0442\u0438\u0446\u044B \u0441\u0432\u0435\u0442\u0430",
+          partyCrowd: "\u041F\u0443\u0431\u043B\u0438\u043A\u0430",
+          partyCrowdHint: "\u0421\u0438\u043B\u0443\u044D\u0442\u044B \u043F\u0435\u0440\u0435\u0434 \u0441\u0446\u0435\u043D\u043E\u0439 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442 \u0440\u0443\u043A\u0438 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u044D\u043D\u0435\u0440\u0433\u0438\u0435\u0439 \u0438 \u043F\u0440\u044B\u0433\u0430\u044E\u0442 \u043D\u0430 \u0431\u043E\u0447\u043A\u0435 \u0438 \u0434\u0440\u043E\u043F\u0435",
+          partyJamLight: "\u0426\u0432\u0435\u0442\u0430 Jam",
+          partyJamLightHint: "\u0412 Spotify Jam \u0443 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u0441\u0432\u043E\u0439 \u0446\u0432\u0435\u0442; \u043A\u0442\u043E \u0434\u043E\u0431\u0430\u0432\u0438\u043B \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u0442\u0440\u0435\u043A, \u0441\u0432\u0435\u0442\u0438\u0442\u0441\u044F \u043A\u0430\u043A \u0434\u0438\u0434\u0436\u0435\u0439 (\u0435\u0441\u043B\u0438 Spotify \u044D\u0442\u043E \u043E\u0442\u043C\u0435\u0447\u0430\u0435\u0442)",
+          partyScreen: "\u041A\u043D\u043E\u043F\u043A\u0430 \u0432\u0442\u043E\u0440\u043E\u0433\u043E \u044D\u043A\u0440\u0430\u043D\u0430",
+          partyScreenHint: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u043A\u043D\u043E\u043F\u043A\u0443, \u043A\u043E\u0442\u043E\u0440\u0430\u044F \u043E\u0442\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438 \u043D\u0430 \u0432\u0435\u0441\u044C \u044D\u043A\u0440\u0430\u043D \u0434\u0440\u0443\u0433\u043E\u0433\u043E \u043C\u043E\u043D\u0438\u0442\u043E\u0440\u0430 \u0438\u043B\u0438 \u0422\u0412",
+          partyRecap: "\u0418\u0442\u043E\u0433\u0438 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          partyRecapHint: "\u041F\u043E\u0441\u043B\u0435 \u0442\u0440\u0451\u0445 \u0442\u0440\u0435\u043A\u043E\u0432 \u043F\u043E\u044F\u0432\u043B\u044F\u0435\u0442\u0441\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \u0434\u043B\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0438: \u0442\u0440\u0435\u043A\u0438, \u043C\u0438\u043D\u0443\u0442\u044B, \u0434\u0440\u043E\u043F\u044B, \u0441\u043C\u0435\u0441\u044C \u0436\u0430\u043D\u0440\u043E\u0432 \u0438 \u0441\u0430\u043C\u044B\u0439 \u0433\u0440\u043E\u043C\u043A\u0438\u0439 \u0434\u0440\u043E\u043F",
+          partyEdge: "\u0421\u0432\u0435\u0442 \u043F\u043E \u043A\u0440\u0430\u044F\u043C (\u043E\u0432\u0435\u0440\u043B\u0435\u0439)",
+          partyEdgeHint: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay \u043F\u043E\u0434\u0441\u0432\u0435\u0447\u0438\u0432\u0430\u0435\u0442 \u043A\u0440\u0430\u044F \u044D\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0430 \u0438\u0434\u0451\u0442 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430 \u2013 \u0441\u043A\u0440\u044B\u0442\u043E \u0432 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u044B\u0445 \u0438\u0433\u0440\u0430\u0445",
+          recapBtn: "\u0418\u0442\u043E\u0433\u0438 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          toScreen: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430 \u043D\u0430 \u0434\u0440\u0443\u0433\u043E\u043C \u044D\u043A\u0440\u0430\u043D\u0435",
+          recapTitle: "\u0418\u0442\u043E\u0433\u0438 \u0442\u0432\u043E\u0435\u0439 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          recapDrops: "\u0434\u0440\u043E\u043F\u043E\u0432",
+          recapGenres: "\u0421\u043C\u0435\u0441\u044C \u0436\u0430\u043D\u0440\u043E\u0432",
+          recapPeak: "\u0421\u0430\u043C\u044B\u0439 \u0433\u0440\u043E\u043C\u043A\u0438\u0439 \u0434\u0440\u043E\u043F"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -2779,7 +3039,33 @@
           party_trance: "\u0422\u0440\u0430\u043D\u0441",
           party_dnb: "\u0414\u0440\u0430\u043C-\u043D-\u0431\u0435\u0439\u0441",
           party_metal: "\u041C\u0435\u0442\u0430\u043B",
-          party_latin: "\u041B\u0430\u0442\u0438\u043D\u043E"
+          party_latin: "\u041B\u0430\u0442\u0438\u043D\u043E",
+          partyBlend: "\u041F\u0435\u0440\u0435\u0445\u043E\u0434\u0438 \u0432 \u0442\u0430\u043A\u0442",
+          partyBlendHint: "\u041C\u0456\u0436 \u0442\u0440\u0435\u043A\u0430\u043C\u0438 \u0441\u0432\u0456\u0442\u043B\u043E \u043F\u0440\u0438\u0433\u0430\u0441\u0430\u0454 \u0456 \u0441\u043F\u0430\u043B\u0430\u0445\u0443\u0454 \u043D\u0430 \u043F\u0435\u0440\u0448\u0456\u0439 \u0434\u043E\u043B\u0456 \u043D\u0430\u0441\u0442\u0443\u043F\u043D\u043E\u0433\u043E",
+          partyHype: "\u0425\u0430\u0439\u043F-\u0440\u044F\u0434\u043A\u0438",
+          partyHypeHint: "\u041F\u0440\u0438\u0441\u043F\u0456\u0432\u0438 \u0439 \u0437\u0430\u043A\u043B\u0438\u043A\u0438 \u0434\u043E \u043F\u0443\u0431\u043B\u0456\u043A\u0438 (\xABhands up\xBB, \xABjump\xBB \u2026) \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u044F\u0441\u043A\u0440\u0430\u0432\u0456\u0448\u0435, \u0430 \u0457\u0445\u043D\u0456 \u0441\u043B\u043E\u0432\u0430 \u0437'\u044F\u0432\u043B\u044F\u044E\u0442\u044C\u0441\u044F \u043F\u043E \u043E\u0434\u043D\u043E\u043C\u0443",
+          partyDepth: "3D-\u0433\u043B\u0438\u0431\u0438\u043D\u0430",
+          partyDepthHint: "\u0422\u0435\u043A\u0441\u0442, \u043D\u0430\u0437\u0432\u0430 \u0456 \u0441\u0432\u0456\u0442\u043B\u043E \u043B\u0435\u0436\u0430\u0442\u044C \u043D\u0430 \u0440\u0456\u0437\u043D\u0438\u0445 \u0448\u0430\u0440\u0430\u0445 \u0456 \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u043C\u0438\u0448\u0435\u044E \u2013 \u0431\u0435\u0437 \u043C\u0438\u0448\u0456 \u0441\u0446\u0435\u043D\u0430 \u043F\u043B\u0430\u0432\u043D\u043E \u0448\u0438\u0440\u044F\u0454",
+          partyCamera: "\u0420\u0443\u0445 \u043A\u0430\u043C\u0435\u0440\u0438",
+          partyCameraHint: "\u0423\u0441\u044F \u0441\u0446\u0435\u043D\u0430 \u043F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F \u0439 \u043F\u043B\u0438\u0432\u0435: \u0448\u0438\u0440\u043E\u043A\u043E \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0456\u0441\u0446\u044F\u0445, \u0431\u043B\u0438\u0436\u0447\u0435 \u0437 \u0435\u043D\u0435\u0440\u0433\u0456\u0454\u044E, \u0440\u0438\u0432\u043E\u043A \u043D\u0430 \u0434\u0440\u043E\u043F\u0456",
+          partyShatter: "\u0406\u0441\u043A\u0440\u0438 \u0442\u0435\u043A\u0441\u0442\u0443",
+          partyShatterHint: "\u041D\u0430 \u0434\u0440\u043E\u043F\u0456 \u043F\u043E\u0442\u043E\u0447\u043D\u0438\u0439 \u0440\u044F\u0434\u043E\u043A \u0441\u043F\u0430\u043B\u0430\u0445\u0443\u0454 \u0456 \u0440\u043E\u0437\u0441\u0438\u043F\u0430\u0454\u0442\u044C\u0441\u044F \u043D\u0430 \u0447\u0430\u0441\u0442\u0438\u043D\u043A\u0438 \u0441\u0432\u0456\u0442\u043B\u0430",
+          partyCrowd: "\u041F\u0443\u0431\u043B\u0456\u043A\u0430",
+          partyCrowdHint: "\u0421\u0438\u043B\u0443\u0435\u0442\u0438 \u043F\u0435\u0440\u0435\u0434 \u0441\u0446\u0435\u043D\u043E\u044E \u043F\u0456\u0434\u043D\u0456\u043C\u0430\u044E\u0442\u044C \u0440\u0443\u043A\u0438 \u0440\u0430\u0437\u043E\u043C \u0437 \u0435\u043D\u0435\u0440\u0433\u0456\u0454\u044E \u0456 \u0441\u0442\u0440\u0438\u0431\u0430\u044E\u0442\u044C \u043D\u0430 \u0431\u043E\u0447\u0446\u0456 \u0439 \u0434\u0440\u043E\u043F\u0456",
+          partyJamLight: "\u041A\u043E\u043B\u044C\u043E\u0440\u0438 Jam",
+          partyJamLightHint: "\u0423 Spotify Jam \u043A\u043E\u0436\u0435\u043D \u043C\u0430\u0454 \u0441\u0432\u0456\u0439 \u043A\u043E\u043B\u0456\u0440; \u0445\u0442\u043E \u0434\u043E\u0434\u0430\u0432 \u043F\u043E\u0442\u043E\u0447\u043D\u0438\u0439 \u0442\u0440\u0435\u043A, \u0441\u0432\u0456\u0442\u0438\u0442\u044C\u0441\u044F \u044F\u043A \u0434\u0456\u0434\u0436\u0435\u0439 (\u044F\u043A\u0449\u043E Spotify \u0446\u0435 \u043F\u043E\u0437\u043D\u0430\u0447\u0430\u0454)",
+          partyScreen: "\u041A\u043D\u043E\u043F\u043A\u0430 \u0434\u0440\u0443\u0433\u043E\u0433\u043E \u0435\u043A\u0440\u0430\u043D\u0430",
+          partyScreenHint: "\u041F\u043E\u043A\u0430\u0437\u0443\u0454 \u043A\u043D\u043E\u043F\u043A\u0443, \u0449\u043E \u0432\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u0454 \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438 \u043D\u0430 \u0432\u0435\u0441\u044C \u0435\u043A\u0440\u0430\u043D \u0456\u043D\u0448\u043E\u0433\u043E \u043C\u043E\u043D\u0456\u0442\u043E\u0440\u0430 \u0447\u0438 \u0422\u0411",
+          partyRecap: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          partyRecapHint: "\u041F\u0456\u0441\u043B\u044F \u0442\u0440\u044C\u043E\u0445 \u0442\u0440\u0435\u043A\u0456\u0432 \u0437'\u044F\u0432\u043B\u044F\u0454\u0442\u044C\u0441\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \u0434\u043B\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0438: \u0442\u0440\u0435\u043A\u0438, \u0445\u0432\u0438\u043B\u0438\u043D\u0438, \u0434\u0440\u043E\u043F\u0438, \u0441\u0443\u043C\u0456\u0448 \u0436\u0430\u043D\u0440\u0456\u0432 \u0456 \u043D\u0430\u0439\u0433\u0443\u0447\u043D\u0456\u0448\u0438\u0439 \u0434\u0440\u043E\u043F",
+          partyEdge: "\u0421\u0432\u0456\u0442\u043B\u043E \u043F\u043E \u043A\u0440\u0430\u044F\u0445 (\u043E\u0432\u0435\u0440\u043B\u0435\u0439)",
+          partyEdgeHint: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay \u043F\u0456\u0434\u0441\u0432\u0456\u0447\u0443\u0454 \u043A\u0440\u0430\u0457 \u0435\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0438 \u0442\u0440\u0438\u0432\u0430\u0454 \u0432\u0435\u0447\u0456\u0440\u043A\u0430 \u2013 \u043F\u0440\u0438\u0445\u043E\u0432\u0430\u043D\u043E \u0432 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u0438\u0445 \u0456\u0433\u0440\u0430\u0445",
+          recapBtn: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          toScreen: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430 \u043D\u0430 \u0456\u043D\u0448\u043E\u043C\u0443 \u0435\u043A\u0440\u0430\u043D\u0456",
+          recapTitle: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0442\u0432\u043E\u0454\u0457 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          recapDrops: "\u0434\u0440\u043E\u043F\u0456\u0432",
+          recapGenres: "\u0421\u0443\u043C\u0456\u0448 \u0436\u0430\u043D\u0440\u0456\u0432",
+          recapPeak: "\u041D\u0430\u0439\u0433\u0443\u0447\u043D\u0456\u0448\u0438\u0439 \u0434\u0440\u043E\u043F"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -3024,7 +3310,33 @@
           party_trance: "\u30C8\u30E9\u30F3\u30B9",
           party_dnb: "\u30C9\u30E9\u30E0\u30F3\u30D9\u30FC\u30B9",
           party_metal: "\u30E1\u30BF\u30EB",
-          party_latin: "\u30E9\u30C6\u30F3"
+          party_latin: "\u30E9\u30C6\u30F3",
+          partyBlend: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u305F\u5207\u308A\u66FF\u3048",
+          partyBlendHint: "\u66F2\u306E\u5408\u9593\u306B\u7167\u660E\u304C\u843D\u3061\u3001\u6B21\u306E\u66F2\u306E\u6700\u521D\u306E\u62CD\u3067\u307E\u305F\u70B9\u304D\u307E\u3059",
+          partyHype: "\u30CF\u30A4\u30D7\u30E9\u30A4\u30F3",
+          partyHypeHint: "\u30B5\u30D3\u3084\u89B3\u5BA2\u3078\u306E\u30B3\u30FC\u30EB\uFF08\u201Chands up\u201D\u201Cjump\u201D\u306A\u3069\uFF09\u304C\u3088\u308A\u5F37\u304F\u5149\u308A\u3001\u5358\u8A9E\u304C\u4E00\u3064\u305A\u3064\u5F3E\u3051\u3066\u73FE\u308C\u307E\u3059",
+          partyDepth: "3D \u306E\u5965\u884C\u304D",
+          partyDepthHint: "\u6B4C\u8A5E\u30FB\u30BF\u30A4\u30C8\u30EB\u30FB\u5149\u304C\u5225\u3005\u306E\u5C64\u306B\u3042\u308A\u3001\u30DE\u30A6\u30B9\u306B\u8FFD\u5F93\u3057\u307E\u3059 \u2013 \u30DE\u30A6\u30B9\u304C\u306A\u3051\u308C\u3070\u30B7\u30FC\u30F3\u304C\u3086\u3063\u304F\u308A\u6F02\u3044\u307E\u3059",
+          partyCamera: "\u30AB\u30E1\u30E9\u30EF\u30FC\u30AF",
+          partyCameraHint: "\u30B7\u30FC\u30F3\u5168\u4F53\u304C\u3086\u3063\u304F\u308A\u30BA\u30FC\u30E0\u3057\u3066\u6F02\u3044\u307E\u3059\uFF1A\u9759\u304B\u306A\u6240\u306F\u5F15\u304D\u3001\u30A8\u30CD\u30EB\u30AE\u30FC\u3067\u5BC4\u308A\u3001\u30C9\u30ED\u30C3\u30D7\u3067\u3050\u3063\u3068\u52D5\u304D\u307E\u3059",
+          partyShatter: "\u6B4C\u8A5E\u306E\u706B\u82B1",
+          partyShatterHint: "\u30C9\u30ED\u30C3\u30D7\u3067\u4ECA\u306E\u6B4C\u8A5E\u304C\u8F1D\u304D\u3001\u5149\u306E\u7C92\u306B\u306A\u3063\u3066\u98DB\u3073\u6563\u308A\u307E\u3059",
+          partyCrowd: "\u89B3\u5BA2",
+          partyCrowdHint: "\u30B9\u30C6\u30FC\u30B8\u524D\u306E\u30B7\u30EB\u30A8\u30C3\u30C8\u304C\u30A8\u30CD\u30EB\u30AE\u30FC\u306B\u5408\u308F\u305B\u3066\u624B\u3092\u6319\u3052\u3001\u30AD\u30C3\u30AF\u3068\u30C9\u30ED\u30C3\u30D7\u3067\u8DF3\u306D\u307E\u3059",
+          partyJamLight: "Jam \u306E\u30AB\u30E9\u30FC",
+          partyJamLightHint: "Spotify \u306E Jam \u3067\u306F\u4E00\u4EBA\u305A\u3064\u8272\u304C\u4ED8\u304D\u3001\u4ECA\u306E\u66F2\u3092\u8FFD\u52A0\u3057\u305F\u4EBA\u304C DJ \u3068\u3057\u3066\u5149\u308A\u307E\u3059\uFF08Spotify \u304C\u8A18\u9332\u3057\u3066\u3044\u308B\u5834\u5408\uFF09",
+          partyScreen: "\u30BB\u30AB\u30F3\u30C9\u30B9\u30AF\u30EA\u30FC\u30F3\u306E\u30DC\u30BF\u30F3",
+          partyScreenHint: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9\u3092\u5225\u306E\u30E2\u30CB\u30BF\u30FC\u3084\u30C6\u30EC\u30D3\u3067\u5168\u753B\u9762\u306B\u3059\u308B\u30DC\u30BF\u30F3\u3092\u8868\u793A\u3057\u307E\u3059",
+          partyRecap: "\u30D1\u30FC\u30C6\u30A3\u30FC\u306E\u632F\u308A\u8FD4\u308A",
+          partyRecapHint: "3 \u66F2\u3092\u904E\u304E\u308B\u3068\u5171\u6709\u7528\u753B\u50CF\u306E\u30DC\u30BF\u30F3\u304C\u51FA\u307E\u3059\uFF1A\u66F2\u6570\u3001\u5206\u6570\u3001\u30C9\u30ED\u30C3\u30D7\u3001\u30B8\u30E3\u30F3\u30EB\u306E\u5272\u5408\u3001\u3044\u3061\u3070\u3093\u5927\u304D\u306A\u30C9\u30ED\u30C3\u30D7",
+          partyEdge: "\u753B\u9762\u306E\u7E01\u306E\u5149\uFF08\u30AA\u30FC\u30D0\u30FC\u30EC\u30A4\u30A2\u30D7\u30EA\uFF09",
+          partyEdgeHint: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9\u4E2D\u3001Mirage Overlay \u30A2\u30D7\u30EA\u304C\u753B\u9762\u306E\u7E01\u3092\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u5149\u3089\u305B\u307E\u3059 \u2013 \u5168\u753B\u9762\u30B2\u30FC\u30E0\u4E2D\u306F\u975E\u8868\u793A",
+          recapBtn: "\u30D1\u30FC\u30C6\u30A3\u30FC\u306E\u632F\u308A\u8FD4\u308A",
+          toScreen: "\u5225\u306E\u753B\u9762\u3067\u30D1\u30FC\u30C6\u30A3\u30FC",
+          recapTitle: "\u30D1\u30FC\u30C6\u30A3\u30FC\u306E\u632F\u308A\u8FD4\u308A",
+          recapDrops: "\u30C9\u30ED\u30C3\u30D7",
+          recapGenres: "\u30B8\u30E3\u30F3\u30EB\u306E\u5272\u5408",
+          recapPeak: "\u3044\u3061\u3070\u3093\u5927\u304D\u306A\u30C9\u30ED\u30C3\u30D7"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -3269,7 +3581,33 @@
           party_trance: "\uD2B8\uB79C\uC2A4",
           party_dnb: "\uB4DC\uB7FC\uC564\uBCA0\uC774\uC2A4",
           party_metal: "\uBA54\uD0C8",
-          party_latin: "\uB77C\uD2F4"
+          party_latin: "\uB77C\uD2F4",
+          partyBlend: "\uBE44\uD2B8\uC5D0 \uB9DE\uCD98 \uC804\uD658",
+          partyBlendHint: "\uACE1 \uC0AC\uC774\uC5D0 \uC870\uBA85\uC774 \uC5B4\uB450\uC6CC\uC84C\uB2E4\uAC00 \uB2E4\uC74C \uACE1\uC758 \uCCAB \uBC15\uC5D0 \uB2E4\uC2DC \uCF1C\uC838\uC694",
+          partyHype: "\uD558\uC774\uD504 \uB77C\uC778",
+          partyHypeHint: "\uD6C4\uB834\uACFC \uAD00\uAC1D \uD638\uC751(\u201Chands up\u201D, \u201Cjump\u201D \u2026)\uC774 \uB354 \uAC15\uD558\uAC8C \uBE5B\uB098\uACE0 \uB2E8\uC5B4\uAC00 \uD558\uB098\uC529 \uD280\uC5B4\uB098\uC640\uC694",
+          partyDepth: "3D \uAE4A\uC774",
+          partyDepthHint: "\uAC00\uC0AC, \uC81C\uBAA9, \uBE5B\uC774 \uC11C\uB85C \uB2E4\uB978 \uCE35\uC5D0 \uC788\uACE0 \uB9C8\uC6B0\uC2A4\uB97C \uB530\uB77C\uC640\uC694 \u2013 \uB9C8\uC6B0\uC2A4\uAC00 \uC5C6\uC73C\uBA74 \uC7A5\uBA74\uC774 \uC0B4\uBA70\uC2DC \uB5A0\uB2E4\uB140\uC694",
+          partyCamera: "\uCE74\uBA54\uB77C \uBB34\uBE59",
+          partyCameraHint: "\uC7A5\uBA74 \uC804\uCCB4\uAC00 \uCC9C\uCC9C\uD788 \uD655\uB300\uB418\uBA70 \uD758\uB7EC\uAC00\uC694: \uC870\uC6A9\uD560 \uB550 \uB113\uAC8C, \uC5D0\uB108\uC9C0\uAC00 \uC624\uB974\uBA74 \uAC00\uAE5D\uAC8C, \uB4DC\uB86D\uC5D0 \uD55C \uBC88 \uCFF5",
+          partyShatter: "\uAC00\uC0AC \uBD88\uAF43",
+          partyShatterHint: "\uB4DC\uB86D \uB54C \uD604\uC7AC \uAC00\uC0AC\uAC00 \uBC88\uCA4D\uC774\uBA70 \uBE5B \uC785\uC790\uB85C \uD769\uC5B4\uC838\uC694",
+          partyCrowd: "\uAD00\uAC1D",
+          partyCrowdHint: "\uBB34\uB300 \uC55E \uC2E4\uB8E8\uC5E3\uC774 \uC5D0\uB108\uC9C0\uC5D0 \uB9DE\uCDB0 \uC190\uC744 \uB4E4\uACE0 \uD0A5\uACFC \uB4DC\uB86D\uC5D0 \uB6F0\uC5B4\uC694",
+          partyJamLight: "\uC7BC \uC0C9\uC0C1",
+          partyJamLightHint: "Spotify \uC7BC\uC5D0\uC11C \uBAA8\uB450\uC5D0\uAC8C \uC0C9\uC774 \uC0DD\uAE30\uACE0, \uC9C0\uAE08 \uACE1\uC744 \uCD94\uAC00\uD55C \uC0AC\uB78C\uC774 DJ\uB85C \uBE5B\uB098\uC694(Spotify\uAC00 \uAE30\uB85D\uD558\uB294 \uACBD\uC6B0)",
+          partyScreen: "\uB450 \uBC88\uC9F8 \uD654\uBA74 \uBC84\uD2BC",
+          partyScreenHint: "\uD30C\uD2F0 \uBAA8\uB4DC\uB97C \uB2E4\uB978 \uBAA8\uB2C8\uD130\uB098 TV\uC5D0 \uC804\uCCB4 \uD654\uBA74\uC73C\uB85C \uB744\uC6B0\uB294 \uBC84\uD2BC\uC744 \uBCF4\uC5EC \uC918\uC694",
+          partyRecap: "\uD30C\uD2F0 \uC694\uC57D",
+          partyRecapHint: "\uC138 \uACE1\uC774 \uC9C0\uB098\uBA74 \uACF5\uC720\uC6A9 \uC774\uBBF8\uC9C0 \uBC84\uD2BC\uC774 \uB098\uD0C0\uB098\uC694: \uACE1 \uC218, \uC2DC\uAC04, \uB4DC\uB86D, \uC7A5\uB974 \uBE44\uC728, \uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D",
+          partyEdge: "\uAC00\uC7A5\uC790\uB9AC \uC870\uBA85(\uC624\uBC84\uB808\uC774 \uC571)",
+          partyEdgeHint: "\uD30C\uD2F0 \uBAA8\uB4DC \uB3D9\uC548 Mirage Overlay \uC571\uC774 \uD654\uBA74 \uAC00\uC7A5\uC790\uB9AC\uB97C \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB098\uAC8C \uD574\uC694 \u2013 \uC804\uCCB4 \uD654\uBA74 \uAC8C\uC784\uC5D0\uC11C\uB294 \uC228\uACA8\uC694",
+          recapBtn: "\uD30C\uD2F0 \uC694\uC57D",
+          toScreen: "\uB2E4\uB978 \uD654\uBA74\uC5D0\uC11C \uD30C\uD2F0",
+          recapTitle: "\uB098\uC758 \uD30C\uD2F0 \uC694\uC57D",
+          recapDrops: "\uB4DC\uB86D",
+          recapGenres: "\uC7A5\uB974 \uBE44\uC728",
+          recapPeak: "\uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -3514,7 +3852,33 @@
           party_trance: "\u8FF7\u5E7B\u821E\u66F2",
           party_dnb: "\u9F13\u6253\u8D1D\u65AF",
           party_metal: "\u91D1\u5C5E",
-          party_latin: "\u62C9\u4E01"
+          party_latin: "\u62C9\u4E01",
+          partyBlend: "\u8E29\u70B9\u8FC7\u6E21",
+          partyBlendHint: "\u6B4C\u66F2\u4E4B\u95F4\u706F\u5149\u6697\u4E0B\uFF0C\u5728\u4E0B\u4E00\u9996\u7684\u7B2C\u4E00\u62CD\u91CD\u65B0\u4EAE\u8D77",
+          partyHype: "\u9AD8\u71C3\u6B4C\u8BCD",
+          partyHypeHint: "\u526F\u6B4C\u548C\u5BF9\u89C2\u4F17\u7684\u547C\u558A\uFF08\u201Chands up\u201D\u201Cjump\u201D\u7B49\uFF09\u66F4\u4EAE\uFF0C\u6B4C\u8BCD\u9010\u8BCD\u5F39\u51FA",
+          partyDepth: "3D \u7EB5\u6DF1",
+          partyDepthHint: "\u6B4C\u8BCD\u3001\u6807\u9898\u548C\u706F\u5149\u4F4D\u4E8E\u4E0D\u540C\u56FE\u5C42\u5E76\u8DDF\u968F\u9F20\u6807 \u2013 \u6CA1\u6709\u9F20\u6807\u65F6\u753B\u9762\u8F7B\u8F7B\u6F02\u6D6E",
+          partyCamera: "\u955C\u5934\u8FD0\u52A8",
+          partyCameraHint: "\u6574\u4E2A\u753B\u9762\u7F13\u6162\u7F29\u653E\u6F02\u79FB\uFF1A\u5B89\u9759\u5904\u62C9\u8FDC\uFF0C\u80FD\u91CF\u9AD8\u65F6\u63A8\u8FD1\uFF0C\u9AD8\u6F6E\u65F6\u4E00\u9707",
+          partyShatter: "\u6B4C\u8BCD\u706B\u82B1",
+          partyShatterHint: "\u9AD8\u6F6E\u65F6\u5F53\u524D\u6B4C\u8BCD\u95EA\u4EAE\u5E76\u788E\u6210\u5149\u7C92",
+          partyCrowd: "\u89C2\u4F17",
+          partyCrowdHint: "\u821E\u53F0\u524D\u7684\u526A\u5F71\u968F\u80FD\u91CF\u4E3E\u8D77\u53CC\u624B\uFF0C\u5728\u5E95\u9F13\u548C\u9AD8\u6F6E\u65F6\u8DF3\u8D77",
+          partyJamLight: "Jam \u989C\u8272",
+          partyJamLightHint: "\u5728 Spotify Jam \u4E2D\u6BCF\u4EBA\u4E00\u79CD\u989C\u8272\uFF1B\u6DFB\u52A0\u5F53\u524D\u6B4C\u66F2\u7684\u4EBA\u4F5C\u4E3A DJ \u53D1\u5149\uFF08\u82E5 Spotify \u6709\u8BB0\u5F55\uFF09",
+          partyScreen: "\u7B2C\u4E8C\u5C4F\u5E55\u6309\u94AE",
+          partyScreenHint: "\u663E\u793A\u4E00\u4E2A\u6309\u94AE\uFF0C\u628A\u6D3E\u5BF9\u6A21\u5F0F\u5168\u5C4F\u653E\u5230\u53E6\u4E00\u53F0\u663E\u793A\u5668\u6216\u7535\u89C6\u4E0A",
+          partyRecap: "\u6D3E\u5BF9\u56DE\u987E",
+          partyRecapHint: "\u64AD\u653E\u4E09\u9996\u540E\u51FA\u73B0\u6309\u94AE\uFF0C\u751F\u6210\u53EF\u5206\u4EAB\u7684\u56FE\u7247\uFF1A\u6B4C\u66F2\u6570\u3001\u5206\u949F\u3001\u9AD8\u6F6E\u6B21\u6570\u3001\u66F2\u98CE\u6BD4\u4F8B\u548C\u6700\u5F3A\u7684\u9AD8\u6F6E",
+          partyEdge: "\u8FB9\u7F18\u706F\u5149\uFF08\u53E0\u52A0\u5C42\u5E94\u7528\uFF09",
+          partyEdgeHint: "\u6D3E\u5BF9\u6A21\u5F0F\u8FD0\u884C\u65F6\uFF0CMirage Overlay \u5E94\u7528\u8BA9\u5C4F\u5E55\u8FB9\u7F18\u968F\u8282\u62CD\u53D1\u5149 \u2013 \u5168\u5C4F\u6E38\u620F\u65F6\u9690\u85CF",
+          recapBtn: "\u6D3E\u5BF9\u56DE\u987E",
+          toScreen: "\u5728\u5176\u4ED6\u5C4F\u5E55\u5F00\u6D3E\u5BF9",
+          recapTitle: "\u4F60\u7684\u6D3E\u5BF9\u56DE\u987E",
+          recapDrops: "\u6B21\u9AD8\u6F6E",
+          recapGenres: "\u66F2\u98CE\u6BD4\u4F8B",
+          recapPeak: "\u6700\u5F3A\u7684\u9AD8\u6F6E"
         }
       };
       LANG = (() => {
@@ -3635,6 +3999,17 @@
         partyJam: true,
         // Genre je Song über die iTunes-Suche (nur Titel + Künstler)
         partyOnline: true,
+        // Party-Erweiterungen, alle einzeln abschaltbar
+        partyBlend: true,
+        partyHype: true,
+        partyDepth: true,
+        partyShatter: true,
+        partyCamera: true,
+        partyCrowd: true,
+        partyJamLight: true,
+        partyScreen: true,
+        partyEdge: true,
+        partyRecap: true,
         // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
         partyLasers: true,
         partyZoom: true,
@@ -3685,7 +4060,10 @@
           l: num(s.loudness_max, -20),
           p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
           // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
-          b: num(s.timbre?.[1], 0)
+          b: num(s.timbre?.[1], 0),
+          // timbre[2] = Flachheit (rauschig wie Snare/Clap/Becken), timbre[3] = Anschlag (hart wie Kick/Snare)
+          f: num(s.timbre?.[2], 0),
+          k: num(s.timbre?.[3], 0)
         }));
         const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
         const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
@@ -4412,6 +4790,76 @@
     watermark(x);
     deliver(cv, "mirage-week.png");
   }
+  async function partyRecapCard(r) {
+    const songs = r?.songs || [];
+    if (!songs.length) return;
+    const pal = palette();
+    const [cv, x] = canvas();
+    backdrop(x, pal, songs[0].img ? await loadImage(songs[0].img, true) : null);
+    x.textAlign = "left";
+    x.fillStyle = css(pal[0]);
+    x.font = `600 30px ${FONT}`;
+    x.fillText(`PARTY \xB7 ${new Date(r.start).toLocaleDateString()}`.toUpperCase(), 90, 170);
+    x.fillStyle = "#fff";
+    x.font = `800 92px ${FONT}`;
+    x.fillText(t("recapTitle"), 84, 280);
+    const mins = Math.max(1, Math.round((Date.now() - r.start) / 6e4));
+    [[String(songs.length), t("weekSongs")], [String(mins), t("weekMinutes")], [String(r.drops || 0), t("recapDrops")]].forEach(([v, label], i) => {
+      const X2 = 90 + i * 320;
+      x.fillStyle = "#fff";
+      x.font = `800 110px ${FONT}`;
+      x.fillText(v, X2, 450);
+      x.fillStyle = "rgba(255,255,255,0.65)";
+      x.font = `500 32px ${FONT}`;
+      x.fillText(label, X2, 500);
+    });
+    const count = {};
+    for (const s of songs) count[s.key] = (count[s.key] || 0) + 1;
+    const mix = Object.entries(count).sort((a, b) => b[1] - a[1]);
+    x.fillStyle = "rgba(255,255,255,0.65)";
+    x.font = `500 32px ${FONT}`;
+    x.fillText(t("recapGenres"), 90, 610);
+    let X = 90;
+    for (const [k, n] of mix) {
+      const w = (W - 180) * n / songs.length;
+      x.fillStyle = css(GENRE_COL[k] || pal[0]);
+      rounded(x, X, 640, Math.max(w - 6, 6), 80, 18);
+      x.fill();
+      if (w > 150) {
+        x.fillStyle = "#0b0a12";
+        x.font = `700 30px ${FONT}`;
+        x.fillText(fit(x, t("party_" + k), w - 40), X + 22, 692);
+      }
+      X += w;
+    }
+    const bpms = songs.map((s) => s.bpm).filter(Boolean);
+    x.fillStyle = "#fff";
+    x.font = `700 40px ${FONT}`;
+    if (bpms.length) x.fillText(`${Math.min(...bpms)}\u2013${Math.max(...bpms)} BPM`, 90, 800);
+    if (r.peak) {
+      x.fillStyle = "rgba(255,255,255,0.65)";
+      x.font = `500 30px ${FONT}`;
+      x.fillText(t("recapPeak"), 90, 860);
+      x.fillStyle = "#fff";
+      x.font = `700 40px ${FONT}`;
+      x.fillText(fit(x, `${r.peak.title} \u2013 ${r.peak.artist}`, W - 180), 90, 910);
+    }
+    songs.slice(0, 7).forEach((s, i) => {
+      const Y = 1e3 + i * 40;
+      x.fillStyle = css(GENRE_COL[s.key] || pal[i % 3]);
+      rounded(x, 90, Y - 22, 10, 26, 5);
+      x.fill();
+      x.fillStyle = "rgba(255,255,255,0.85)";
+      x.font = `600 28px ${FONT}`;
+      x.fillText(fit(x, `${s.title} \u2013 ${s.artist}`, W - 420), 116, Y);
+      x.fillStyle = "rgba(255,255,255,0.5)";
+      x.textAlign = "right";
+      x.fillText(t("party_" + s.key), W - 90, Y);
+      x.textAlign = "left";
+    });
+    watermark(x);
+    deliver(cv, "mirage-party.png");
+  }
   async function monthCard() {
     const m = period(30);
     const hueRank = m.hues.map((v, i) => [v, i]).filter(([v]) => v > 0).sort((a, b) => b[0] - a[0]);
@@ -4492,7 +4940,7 @@
     watermark(x);
     deliver(cv, "mirage-month.png");
   }
-  var W, H, css, FONT, STATS, today, lastRecorded, week;
+  var W, H, css, FONT, STATS, today, lastRecorded, week, GENRE_COL;
   var init_share = __esm({
     "src/share.js"() {
       init_core();
@@ -4508,6 +4956,19 @@
       today = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
       lastRecorded = "";
       week = () => period(7);
+      GENRE_COL = {
+        rave: [168, 110, 255],
+        bass: [255, 140, 60],
+        rock: [240, 70, 70],
+        pop: [255, 105, 190],
+        chill: [70, 210, 200],
+        techno: [80, 200, 255],
+        house: [255, 200, 70],
+        trance: [110, 140, 255],
+        dnb: [170, 255, 90],
+        metal: [220, 30, 60],
+        latin: [255, 120, 95]
+      };
     }
   });
 
@@ -4842,7 +5303,40 @@
         i += 32;
       }
     }
-    const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [] };
+    const rank = (vals) => {
+      const sorted = Float32Array.from(vals).sort();
+      return (v) => {
+        let lo2 = 0, hi2 = sorted.length;
+        while (lo2 < hi2) {
+          const mid = lo2 + hi2 >> 1;
+          if (sorted[mid] < v) lo2 = mid + 1;
+          else hi2 = mid;
+        }
+        return sorted.length ? lo2 / sorted.length : 0;
+      };
+    };
+    const rA = rank(segs.map((x) => x.k || 0)), rF = rank(segs.map((x) => x.f || 0)), rB = rank(segs.map((x) => x.b || 0));
+    const kicks = [], snares = [], hats = [];
+    const tonal = new Float32Array(n), pc = new Uint8Array(n);
+    segs.forEach((x, i) => {
+      const rise = x.l - (segs[i - 1]?.l ?? -60), a = rA(x.k || 0), f = rF(x.f || 0), b = rB(x.b || 0);
+      const loudEnough = x.l > hi - 16;
+      if (loudEnough && (a > 0.72 || rise > 6) && b < 0.5) kicks.push(x.t);
+      else if (loudEnough && a > 0.65 && f > 0.62 && b >= 0.4) snares.push(x.t);
+      if (b > 0.82 && rise < 4 && x.l > hi - 22) hats.push(x.t);
+      if (x.p.length === 12) {
+        let sum = 0, mx = 0, arg = 0;
+        x.p.forEach((v, k) => {
+          sum += v;
+          if (v > mx) [mx, arg] = [v, k];
+        });
+        const bin = Math.min(n - 1, Math.floor(x.t / STEP));
+        const clarity = sum ? clamp((mx / sum * 12 - 1.6) / 2.4, 0, 1) : 0;
+        if (clarity >= tonal[bin]) [tonal[bin], pc[bin]] = [clarity, arg];
+      }
+    });
+    for (let i = 1; i < n; i++) if (!tonal[i]) [tonal[i], pc[i]] = [tonal[i - 1] * 0.9, pc[i - 1]];
+    const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc };
     mapCache.set(d, m);
     return m;
   }
@@ -5123,6 +5617,7 @@
       party = (() => {
         let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
         let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
+        const inst = { k: -1, s: -1, h: -1 };
         let sway = 1, lastSec = 0, dropGlow = 0, lastFlashAt = -1e9, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
         const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
         async function prepare(item) {
@@ -5160,6 +5655,7 @@
           const ease2 = (k) => 1 - Math.exp(-dt * k);
           let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0;
           let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
+          let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
           if (d && d.segs?.length) {
             const M = songMap(d);
             energy = at(M.energy, sec);
@@ -5174,6 +5670,29 @@
             if (playing && sec >= lastSec && sec - lastSec < 0.5) {
               for (const t2 of M.drops) if (t2 > lastSec && t2 <= sec + 0.02) dropHit = true;
             }
+          }
+          if (d && d.segs?.length && playing) {
+            const M = songMap(d);
+            const since = (arr) => {
+              let lo = 0, hi2 = arr.length;
+              while (lo < hi2) {
+                const mid = lo + hi2 >> 1;
+                if (arr[mid] <= sec) lo = mid + 1;
+                else hi2 = mid;
+              }
+              return lo ? [sec - arr[lo - 1], lo - 1] : [9, -1];
+            };
+            const [ks, ki] = since(M.kicks), [ss, si] = since(M.snares), [hs, hi3] = since(M.hats);
+            kickEnv = Math.exp(-ks * 7);
+            snareEnv = Math.exp(-ss * 9);
+            hatEnv = Math.exp(-hs * 16);
+            kickHit = ki !== inst.k && ks < 0.12;
+            snareHit = si !== inst.s && ss < 0.12;
+            hatHit = hi3 !== inst.h && hs < 0.08;
+            [inst.k, inst.s, inst.h] = [ki, si, hi3];
+            const bin = Math.max(0, Math.min(M.tonal.length - 1, Math.floor(sec / STEP)));
+            tone = M.tonal[bin];
+            pitch = tone > 0.35 ? M.pc[bin] : -1;
           }
           lastSec = sec;
           smooth.e += (energy - smooth.e) * ease2(energy > smooth.e ? 9 : 2);
@@ -5213,7 +5732,7 @@
           const strong = hit && beatEnv > 0.55;
           let flashOn = false;
           if (P.flashOn === "down") flashOn = hit && inBar === 0;
-          else if (P.flashOn === "back") flashOn = hit && (inBar === 1 || inBar === 3);
+          else if (P.flashOn === "back") flashOn = snareHit || hit && (inBar === 1 || inBar === 3) && snareEnv < 0.2;
           else if (P.flashOn === "down-hi") flashOn = hit && inBar === 0 && smooth.e > 0.65;
           if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
           if (smooth.k > 0.5) flashOn = false;
@@ -5250,6 +5769,14 @@
             minor,
             I,
             scene,
+            kickEnv,
+            snareEnv,
+            hatEnv,
+            tone,
+            pitch,
+            kickHit,
+            snareHit,
+            hatHit,
             beat: beatEnv,
             accent,
             beam: accent,
@@ -5360,6 +5887,8 @@
         full: '<svg viewBox="0 0 24 24"><path d="M5 5h5V3H3v7h2zm9-2v2h5v5h2V3zm5 16h-5v2h7v-7h-2zM5 14H3v7h7v-2H5z"/></svg>',
         fullOff: '<svg viewBox="0 0 24 24"><path d="M8 3v5H3v2h7V3zm8 0h-2v7h7V8h-5zM3 16h5v5h2v-7H3zm11 5h2v-5h5v-2h-7z"/></svg>',
         add: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v4h4v2h-4v4h-2v-4H7v-2h4V7z"/></svg>',
+        recap: '<svg viewBox="0 0 24 24"><path d="M4 20V10h3v10zm6 0V4h3v16zm6 0v-7h3v7z"/></svg>',
+        screen: '<svg viewBox="0 0 24 24"><path d="M2 4h14v10H2zm2 2v6h10V6zm16-2h2v14H8v-2h12zM6 16h6v2H6z"/></svg>',
         sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>'
       };
       MODES = [
@@ -5396,6 +5925,8 @@
           ${MODES.map(([k], i) => `<button type="button" role="tab" data-mode="${k}" title="${i + 1}"></button>`).join("")}
         </div>
         <div class="m-im-actions">
+          <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
+          <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
         </div>
@@ -5475,7 +6006,10 @@
             full: el2.querySelector(".m-im-full"),
             addto: el2.querySelector(".m-im-addto"),
             smart: el2.querySelector(".m-im-smartpick"),
-            controls: el2.querySelector(".m-im-controls")
+            controls: el2.querySelector(".m-im-controls"),
+            meta: el2.querySelector(".m-im-meta"),
+            recap: el2.querySelector(".m-im-recap"),
+            screen: el2.querySelector(".m-im-screen")
           };
           vctx = q.canvas.getContext("2d");
           q.smart.querySelector("span").textContent = t("smartPick");
@@ -5483,6 +6017,10 @@
           q.addto.title = t("c_addTo");
           q.addto.setAttribute("aria-label", t("c_addTo"));
           q.addto.onclick = () => showSide(side === "playlists" ? null : "playlists");
+          q.recap.title = q.recap.ariaLabel = t("recapBtn");
+          q.recap.onclick = () => partyRecapCard(recap);
+          q.screen.title = q.screen.ariaLabel = t("toScreen");
+          q.screen.onclick = toScreen;
           if (!canAddTo()) q.addto.hidden = true;
           for (const ev of ["pointermove", "pointerdown", "wheel"]) el2.addEventListener(ev, wake, { passive: true });
           q.wrap.addEventListener("transitionend", () => vizRect.r = null);
@@ -5558,6 +6096,9 @@
           el2.addEventListener("pointermove", (e) => {
             if (cfg.calm) return;
             const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+            depth.tx = x;
+            depth.ty = y;
+            depth.at = performance.now();
             q.cover.style.setProperty("--iry", (x * 18).toFixed(2) + "deg");
             q.cover.style.setProperty("--irx", (-y * 14).toFixed(2) + "deg");
             q.cover.style.setProperty("--gx", (50 + x * 80).toFixed(1) + "%");
@@ -5681,8 +6222,12 @@
             placeIndicator();
             updateKicker();
             if (LYR.has(mode)) loadLyrics();
-            if (mode === "party") party.prepare(currentItem()).then(updateKicker);
+            if (mode === "party") party.prepare(currentItem()).then((info) => {
+              updateKicker();
+              noteRecap(currentItem(), info);
+            });
             else resetParty();
+            showExtras();
             sizeCanvas();
             active = -2;
             wake();
@@ -5714,11 +6259,22 @@
           q.canvas.style.scale = q.bg.style.scale = lastKick = "";
           q.wrap.style.rotate = lastRot = "";
           if (activeEl) activeEl.style.scale = lastBounce = "";
+          activeEl?.classList.remove("is-hype");
+          el2.style.scale = el2.style.translate = "";
+          q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
+          Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
+          depth.key = "";
+          motes = [];
+          blend = null;
+          party.live = null;
         }
         let lastJam = -1e9, jamKey = "";
         async function showJam() {
           const list = cfg.partyJam ? await jamMembers() : [];
-          const key = list.map((m) => m.id + m.img).join("|");
+          const meta = currentItem()?.metadata || {};
+          const by = Object.entries(meta).filter(([k]) => /added_?by|queued_?by|contributor/i.test(k)).map(([, v]) => String(v).toLowerCase());
+          for (const m of list) m.dj = by.some((v) => v && (v === String(m.id).toLowerCase() || v === String(m.name).toLowerCase() || v.includes(String(m.id).toLowerCase())));
+          const key = list.map((m) => m.id + m.img + (m.dj ? "*" : "")).join("|") + cfg.partyJamLight;
           if (key === jamKey) return;
           jamKey = key;
           q.jam.textContent = "";
@@ -5727,7 +6283,11 @@
           shown.forEach((m, i) => {
             const left = i % 2 === 0, row = i >> 1, rows = Math.ceil(shown.length / 2);
             const f = document.createElement("figure");
-            f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "");
+            f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "") + (cfg.partyJamLight && m.dj ? " is-dj" : "");
+            if (cfg.partyJamLight) {
+              const c = (vividPal || palette())[i % 3];
+              f.style.setProperty("--jc", `rgb(${c.join(",")})`);
+            }
             f.style.cssText = `--i:${i};left:${left ? 4 + row % 2 * 3 : 89 - row % 2 * 3}%;top:${20 + (row + 0.5) / rows * 56}%`;
             const pic = document.createElement(m.img ? "img" : "span");
             if (m.img) {
@@ -5875,6 +6435,11 @@
           const got = await getLyrics(uri);
           if (token !== lyrToken) return;
           lyr = got;
+          hype = /* @__PURE__ */ new Set();
+          const HYPE = /\b(drop|jump|hands? up|put your hands|everybody|let'?s go|come on|party|dance|scream|shout|louder|higher|alle zusammen|hände hoch|springen|los geht'?s|vamos|arriba|salta|dale|allez|levez|sautez|давай)\b/i;
+          const seen = /* @__PURE__ */ new Map(), key = (x) => x.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+          (got?.lines || []).forEach((l) => key(l.text).length > 6 && seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1));
+          (got?.lines || []).forEach((l, i) => (seen.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
           active = -2;
           q.inner.textContent = "";
           q.inner.classList.remove("is-in");
@@ -5907,6 +6472,7 @@
                 const s = document.createElement("span");
                 s.className = "m-w";
                 s.textContent = w.text;
+                s.style.setProperty("--wi", list.length);
                 box.append(s);
                 if (w.sp !== false) box.append(" ");
                 list.push({ el: s, a: w.a, b: w.b, p: -1 });
@@ -5950,8 +6516,11 @@
           if (i !== active) {
             active = i;
             if (activeEl) activeEl.style.scale = "";
+            activeEl?.classList.remove("is-hype");
             activeEl = lines[i] || null;
             lastBounce = "";
+            hypeOn = !!activeEl && cfg.partyHype && el2.dataset.mode === "party" && hype.has(i);
+            activeEl?.classList.toggle("is-hype", hypeOn);
             if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6e3);
             for (let k = 0; k < lines.length; k++) {
               const ln = lines[k];
@@ -6000,7 +6569,9 @@
             const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
             if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
           }
-          const r = vizRect.r;
+          const r0 = vizRect.r, s0 = cam.s || 1, ox = innerWidth / 2, oy = innerHeight / 2;
+          const r = s0 === 1 && !cam.x && !cam.y ? r0 : { left: ox + (r0.left - ox - cam.x) / s0, top: oy + (r0.top - oy - cam.y) / s0, width: r0.width / s0, height: r0.height / s0 };
+          if (s0 !== 1 && vizRect.n % 4 === 0) vizRect.r = q.wrap.getBoundingClientRect();
           const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
           const R = r.width / 2 * dpr + 16 * dpr;
           const sec = pos / 1e3;
@@ -6010,6 +6581,7 @@
           const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
           if (mode === "mix" && V.style === "line") V.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing) : null;
+          if (px) partyExtras(px, now, dt, R, dpr);
           if (px) {
             const P = px.P;
             Object.assign(V, {
@@ -6026,15 +6598,15 @@
           if (audio.data) {
             const segs = audio.data.segs;
             const si = Math.max(seek(segs, sec, "t"), 0);
-            const s0 = segs[si], s1 = segs[si + 1] || s0;
-            if (s0 && s0.p.length === 12) {
-              const f = clamp((sec - s0.t) / Math.max(0.01, s1.t - s0.t), 0, 1);
+            const s02 = segs[si], s1 = segs[si + 1] || s02;
+            if (s02 && s02.p.length === 12) {
+              const f = clamp((sec - s02.t) / Math.max(0.01, s1.t - s02.t), 0, 1);
               const e = f * f * (3 - 2 * f);
-              for (let k2 = 0; k2 < 12; k2++) pit[k2] = s0.p[k2] + ((s1.p[k2] ?? s0.p[k2]) - s0.p[k2]) * e;
-              loud = clamp((s0.l + (s1.l - s0.l) * e + 38) / 38, 0, 1);
+              for (let k2 = 0; k2 < 12; k2++) pit[k2] = s02.p[k2] + ((s1.p[k2] ?? s02.p[k2]) - s02.p[k2]) * e;
+              loud = clamp((s02.l + (s1.l - s02.l) * e + 38) / 38, 0, 1);
               havePitch = true;
             }
-            b = px ? px.accent : beat.read(sec);
+            b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : beat.read(sec);
             const bi = seek(audio.data.beats, sec, "t");
             if (bi !== lastBeatIdx && bi >= 0 && playing) {
               lastBeatIdx = bi;
@@ -6071,7 +6643,7 @@
             vals[i] += (t2 - vals[i]) * (t2 > vals[i] ? rise : fall);
           }
           if (cfg.calm) return;
-          const pal = px ? vivid(palette(), px.minor, px.P.tint) : palette();
+          const pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1) : palette();
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
           const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
           const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
@@ -6234,8 +6806,8 @@
         let vividKey = "", vividPal = null;
         const TINT = { cool: 205, warm: 28, hot: 4 };
         const toward = (h, target, f) => (h + (((target - h) % 360 + 540) % 360 - 180) * f + 360) % 360;
-        function vivid(pal, minor, tint) {
-          const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "");
+        function vivid(pal, minor, tint, pitch = -1) {
+          const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch;
           if (key === vividKey) return vividPal;
           vividKey = key;
           const hsl = pal.map(rgb2hsl);
@@ -6243,6 +6815,7 @@
           vividPal = hsl.map(([h, s, l], i) => {
             let hue = grey ? [275, 195, 320][i] : h;
             if (TINT[tint] != null) hue = toward(hue, TINT[tint] + (i - 1) * 22, 0.45);
+            if (pitch >= 0) hue = toward(hue, pitch * 7 % 12 * 30, i === 2 ? 0.35 : 0.1);
             return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
           });
           return vividPal;
@@ -6269,6 +6842,7 @@
         function drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt) {
           const t2 = performance.now() / 1e3, far = Math.hypot(vw, vh) * 1.1;
           const beat2 = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
+          const kickL = Math.max(beat2, px.kickEnv), snareL = Math.max(beat2 * 0.8, px.snareEnv), hatL = Math.max(beat2 * 0.6, px.hatEnv);
           const cone = (sx, sy, a, wd, c, al, reach = far) => {
             const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
             g.addColorStop(0, rgba2(c, al));
@@ -6292,7 +6866,7 @@
               break;
             }
             case "top": {
-              const al = (0.06 + beat2 * 0.26) * vis;
+              const al = (0.06 + snareL * 0.3) * vis;
               const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));
               for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {
                 cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t2 * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);
@@ -6300,8 +6874,8 @@
               break;
             }
             case "floor": {
-              const al = (0.12 + beat2 * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
-              const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + beat2 * 0.25));
+              const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
+              const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));
               g.addColorStop(0, rgba2(pal[0], al));
               g.addColorStop(0.6, rgba2(pal[1], al * 0.35));
               g.addColorStop(1, rgba2(pal[1], 0));
@@ -6318,7 +6892,7 @@
             }
             case "scan": {
               const bps = (party.info.bpm || 125) / 60;
-              const al = (0.07 + beat2 * 0.45 + px.drop * 0.2) * vis;
+              const al = (0.07 + hatL * 0.45 + px.drop * 0.2) * vis;
               const line = (x0, y0, x1, y1, c, a) => {
                 for (const [lw, f] of [[24 * dpr, 0.22], [2.2 * dpr, 1]]) {
                   ctx.lineWidth = lw;
@@ -6345,7 +6919,7 @@
                 if (face <= 0.05) return;
                 const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
                 const tw = 0.5 + 0.5 * Math.sin(t2 * 4.5 + d.tw);
-                ctx.globalAlpha = clamp(face * (0.22 + beat2 * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
+                ctx.globalAlpha = clamp(face * (0.22 + Math.max(beat2 * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
                 const r = (12 + d.s * 13 + beat2 * 16) * dpr;
                 ctx.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
               });
@@ -6477,6 +7051,7 @@
             let n = 0;
             if (px.hit && px.beat > 0.5 && px.low < 0.5) n = Math.round(P.sparks * px.lvl * (0.35 + px.bright * 0.9) * (0.5 + px.I * 0.5));
             if (px.dropHit) n += Math.round(50 * Math.min(px.lvl, 2));
+            if (px.hatHit && px.low < 0.6) n += Math.round(1 + px.bright * 4);
             for (let k = 0; k < n; k++) {
               const a = Math.random() * Math.PI * 2;
               sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
@@ -6492,6 +7067,148 @@
             ctx.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
             ctx.fill();
           }
+          drawMotes(ctx, dt, dpr, pal);
+          if (cfg.partyCrowd && px.fx) drawCrowd(ctx, px, pal, dpr, rgba2);
+        }
+        let blend = null, motes = [], crowd = null, hype = /* @__PURE__ */ new Set(), hypeOn = false;
+        const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
+        function partyExtras(px, now, dt, R, dpr) {
+          if (blend) {
+            const age = (now - blend.t0) / 1e3;
+            if (blend.waiting && (px.hit && age > 0.25 || age > 4)) {
+              blend.waiting = false;
+              blend.glow = 1;
+              rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
+            }
+            const dim = blend.waiting ? clamp(1 - age * 1.5, 0.3, 1) : 1;
+            px.I *= dim;
+            px.accent *= dim;
+            px.beamVis *= dim;
+            if (!blend.waiting) {
+              blend.glow *= Math.exp(-dt * 2.5);
+              px.flash = Math.max(px.flash, blend.glow * 0.55);
+              if (blend.glow < 0.02) blend = null;
+            }
+          }
+          if (hypeOn) {
+            px.I = Math.min(1.35, px.I + 0.15);
+            px.beamVis = Math.min(1.2, px.beamVis + 0.2);
+          }
+          if (px.dropHit) {
+            recap.drops++;
+            recap.peak = { title: q.title.textContent, artist: q.artist.textContent };
+          }
+          if (px.dropHit && cfg.partyShatter && px.fx && activeEl) {
+            activeEl.classList.remove("is-burst");
+            void activeEl.offsetWidth;
+            activeEl.classList.add("is-burst");
+            const pal3 = vividPal || palette();
+            const words3 = activeEl.querySelectorAll(".m-w");
+            for (const w of words3.length ? words3 : [activeEl]) {
+              const b = w.getBoundingClientRect();
+              for (let k = 0; k < Math.min(14, 3 + b.width / 14); k++) {
+                const x = b.left + Math.random() * b.width, y = b.top + Math.random() * b.height;
+                const [lx, ly] = toLocal(x, y);
+                motes.push({ x: lx * dpr, y: ly * dpr, vx: (Math.random() - 0.5) * 420 * dpr, vy: -(120 + Math.random() * 420) * dpr, life: 1, c: pal3[k % 3] });
+              }
+              if (motes.length > 600) break;
+            }
+          }
+          if (cfg.partyCamera && px.fx) {
+            const t2 = now / 1e3;
+            const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
+            cam.s += (target - cam.s) * (1 - Math.exp(-dt * 1.2));
+            if (px.dropHit) cam.s += 0.03;
+            cam.x = Math.sin(t2 * 0.05) * innerWidth * 8e-3 * (0.5 + px.energy);
+            cam.y = Math.cos(t2 * 0.037) * innerHeight * 6e-3 * (0.5 + px.energy);
+            const k = `${cam.s.toFixed(4)}|${cam.x.toFixed(1)}|${cam.y.toFixed(1)}`;
+            if (k !== cam.key) {
+              cam.key = k;
+              el2.style.scale = cam.s.toFixed(4);
+              el2.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
+            }
+          } else if (cam.key) {
+            Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
+            el2.style.scale = el2.style.translate = "";
+          }
+          if (cfg.partyDepth && px.fx) {
+            const t2 = now / 1e3, idle = now - depth.at > 2500;
+            const tx = idle ? Math.sin(t2 * 0.21) * 0.25 : depth.tx, ty = idle ? Math.cos(t2 * 0.17) * 0.18 : depth.ty;
+            depth.x += (tx - depth.x) * (1 - Math.exp(-dt * 3));
+            depth.y += (ty - depth.y) * (1 - Math.exp(-dt * 3));
+            const k = `${depth.x.toFixed(3)}|${depth.y.toFixed(3)}`;
+            if (k !== depth.key) {
+              depth.key = k;
+              q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
+              q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
+              q.canvas.style.transform = `perspective(1600px) rotateY(${(depth.x * 7).toFixed(2)}deg) rotateX(${(-depth.y * 5).toFixed(2)}deg)`;
+            }
+          } else if (depth.key) {
+            depth.key = "";
+            q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
+          }
+          party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
+        }
+        function toLocal(x, y) {
+          const s1 = cam.s || 1, ox = innerWidth / 2, oy = innerHeight / 2;
+          return [ox + (x - ox - cam.x) / s1, oy + (y - oy - cam.y) / s1];
+        }
+        function drawMotes(ctx, dt, dpr) {
+          if (!motes.length) return;
+          motes = motes.filter((m) => (m.life -= dt * 0.7) > 0);
+          for (const m of motes) {
+            m.vx *= Math.exp(-dt * 1.2);
+            m.vy = m.vy * Math.exp(-dt * 1.2) - 40 * dpr * dt;
+            m.x += m.vx * dt;
+            m.y += m.vy * dt;
+            const r = (6 + m.life * 10) * dpr;
+            ctx.globalAlpha = clamp(m.life * 1.2, 0, 1);
+            ctx.drawImage(glowSprite(m.c), m.x - r, m.y - r, r * 2, r * 2);
+          }
+          ctx.globalAlpha = 1;
+        }
+        function drawCrowd(ctx, px, pal, dpr, rgba2) {
+          const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
+          if (!crowd || crowd.w !== vw) {
+            const people = [];
+            for (const row of [1, 0]) {
+              for (let x = -20 * u; x < vw + 40 * u; x += (row ? 34 : 42) * u * (0.85 + Math.random() * 0.4)) {
+                people.push({ x, row, s: (row ? 0.82 : 1.05) * (0.88 + Math.random() * 0.3), ph: Math.random() * 6.3, up: Math.random() });
+              }
+            }
+            crowd = { w: vw, people };
+          }
+          const t2 = performance.now() / 1e3, bps = (party.info.bpm || 120) / 60;
+          const raise = clamp(px.energy * 1.2 - 0.35 + (hypeOn ? 0.4 : 0) + px.drop * 0.6, 0, 1);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.lineCap = "round";
+          for (const p of crowd.people) {
+            const s1 = p.s * u, base = vh + 6 * u;
+            const jump = (px.kickEnv * 5 + (px.drop > 0.35 || hypeOn ? px.accent * 16 : 0)) * s1 * (0.6 + 0.4 * Math.sin(p.ph * 3));
+            const y = base - jump, hx = p.x + Math.sin(t2 * bps * Math.PI + p.ph) * 2 * s1;
+            ctx.fillStyle = p.row ? "rgba(10,7,20,0.78)" : "rgba(4,3,10,0.95)";
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.beginPath();
+            ctx.arc(hx, y - 62 * s1, 10 * s1, 0, Math.PI * 2);
+            ctx.roundRect(p.x - 16 * s1, y - 48 * s1, 32 * s1, 60 * s1, 13 * s1);
+            ctx.fill();
+            ctx.lineWidth = 7 * s1;
+            const upArm = p.up < raise;
+            for (const side2 of [-1, 1]) {
+              const swing = Math.sin(t2 * bps * Math.PI + p.ph + side2) * 6 * s1;
+              ctx.beginPath();
+              ctx.moveTo(p.x + side2 * 13 * s1, y - 40 * s1);
+              if (upArm) ctx.lineTo(p.x + side2 * (20 * s1) + swing, y - 88 * s1 - px.accent * 6 * s1);
+              else ctx.lineTo(p.x + side2 * 19 * s1, y - 8 * s1);
+              ctx.stroke();
+            }
+            ctx.lineWidth = 1.4 * dpr;
+            ctx.strokeStyle = rgba2(pal[p.row ? 1 : 2], (0.18 + px.I * 0.3).toFixed(2));
+            ctx.beginPath();
+            ctx.arc(hx, y - 62 * s1, 10 * s1, Math.PI * 1.05, Math.PI * 1.95);
+            ctx.stroke();
+          }
+          ctx.globalCompositeOperation = "lighter";
         }
         function frame(now) {
           raf = requestAnimationFrame(frame);
@@ -6686,7 +7403,38 @@
           rings = [];
           updateKicker();
           if (LYR.has(el2.dataset.mode)) loadLyrics();
-          if (el2.dataset.mode === "party") party.prepare(item).then(updateKicker);
+          if (el2.dataset.mode === "party") {
+            if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0 };
+            party.prepare(item).then((info) => {
+              updateKicker();
+              noteRecap(item, info);
+            });
+          }
+          showExtras();
+        }
+        const recap = { start: 0, songs: [], drops: 0, peak: null };
+        function noteRecap(item, info) {
+          if (!cfg.partyRecap || !item?.uri) return;
+          if (!recap.start || Date.now() - recap.last > 36e5) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null });
+          recap.last = Date.now();
+          if (recap.songs.some((x) => x.uri === item.uri)) return;
+          recap.songs.push({ uri: item.uri, title: titleOf(item), artist: artistOf(item), key: info?.key || "pop", bpm: info?.bpm || 0, img: covers(item).big || covers(item).small });
+          showExtras();
+        }
+        function showExtras() {
+          if (!el2) return;
+          const party2 = el2.dataset.mode === "party";
+          q.recap.hidden = !(party2 && cfg.partyRecap && recap.songs.length >= 3);
+          q.screen.hidden = !(party2 && cfg.partyScreen && "getScreenDetails" in window);
+        }
+        async function toScreen() {
+          try {
+            const d = await window.getScreenDetails();
+            const other = d.screens.find((x) => x !== d.currentScreen) || d.currentScreen;
+            await document.documentElement.requestFullscreen({ screen: other });
+            setTimeout(syncState, 300);
+          } catch {
+          }
         }
         function open() {
           if (!el2) build();
@@ -7139,6 +7887,8 @@
       init_player();
       init_pages();
       init_controls();
+      init_party();
+      init_config();
       bridge = /* @__PURE__ */ (() => {
         const ADDR = "ws://127.0.0.1:47321";
         let ws = null, retry = 0, wanted = false;
@@ -7229,14 +7979,21 @@
             lastVol = key;
           }, 250);
         }
-        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, lastLine = "";
+        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
         function setTopics(list) {
-          topics = new Set(list.filter((x) => x === "lyric" || x === "level"));
+          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
           clearInterval(lyricTimer);
           clearInterval(levelTimer);
+          clearInterval(partyTimer);
           lastLine = "";
           if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
           if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
+          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
+        }
+        function pushParty() {
+          const L = party.live;
+          if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
+          send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette() });
         }
         async function pushLyric() {
           const uri = currentItem()?.uri || "";
@@ -7952,6 +8709,23 @@
         toggle("partyIdle", () => {
         }),
         toggle("partyOnline", () => immersive.refresh()),
+        toggle("partyBlend", () => {
+        }),
+        toggle("partyHype", () => immersive.reloadLyrics()),
+        toggle("partyDepth", () => {
+        }),
+        toggle("partyCamera", () => {
+        }),
+        toggle("partyShatter", () => {
+        }),
+        toggle("partyCrowd", () => {
+        }),
+        toggle("partyJamLight", () => {
+        }),
+        toggle("partyScreen", () => immersive.refresh()),
+        toggle("partyRecap", () => immersive.refresh()),
+        toggle("partyEdge", () => {
+        }),
         toggle("partyJam", () => {
         })
       )

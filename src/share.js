@@ -293,6 +293,87 @@ async function weekCard() {
   deliver(cv, "mirage-week.png");
 }
 
+/* ---------------------------------------------------------------- Party-Rückblick */
+// Nach einer Party-Sitzung: wie viele Songs und Minuten, wie viele Drops, die Genre-Mischung als Balken,
+// die Tempo-Spanne, der lauteste Drop und die Songs der Nacht
+const GENRE_COL = {
+  rave: [168, 110, 255], bass: [255, 140, 60], rock: [240, 70, 70], pop: [255, 105, 190], chill: [70, 210, 200], techno: [80, 200, 255],
+  house: [255, 200, 70], trance: [110, 140, 255], dnb: [170, 255, 90], metal: [220, 30, 60], latin: [255, 120, 95],
+};
+async function partyRecapCard(r) {
+  const songs = r?.songs || [];
+  if (!songs.length) return;
+  const pal = palette();
+  const [cv, x] = canvas();
+  backdrop(x, pal, songs[0].img ? await loadImage(songs[0].img, true) : null);
+  x.textAlign = "left";
+  x.fillStyle = css(pal[0]);
+  x.font = `600 30px ${FONT}`;
+  x.fillText(`PARTY · ${new Date(r.start).toLocaleDateString()}`.toUpperCase(), 90, 170);
+  x.fillStyle = "#fff";
+  x.font = `800 92px ${FONT}`;
+  x.fillText(t("recapTitle"), 84, 280);
+  const mins = Math.max(1, Math.round((Date.now() - r.start) / 60000));
+  [[String(songs.length), t("weekSongs")], [String(mins), t("weekMinutes")], [String(r.drops || 0), t("recapDrops")]].forEach(([v, label], i) => {
+    const X = 90 + i * 320;
+    x.fillStyle = "#fff";
+    x.font = `800 110px ${FONT}`;
+    x.fillText(v, X, 450);
+    x.fillStyle = "rgba(255,255,255,0.65)";
+    x.font = `500 32px ${FONT}`;
+    x.fillText(label, X, 500);
+  });
+  // Genre-Mischung: Breite = Anteil der Songs
+  const count = {};
+  for (const s of songs) count[s.key] = (count[s.key] || 0) + 1;
+  const mix = Object.entries(count).sort((a, b) => b[1] - a[1]);
+  x.fillStyle = "rgba(255,255,255,0.65)";
+  x.font = `500 32px ${FONT}`;
+  x.fillText(t("recapGenres"), 90, 610);
+  let X = 90;
+  for (const [k, n] of mix) {
+    const w = ((W - 180) * n) / songs.length;
+    x.fillStyle = css(GENRE_COL[k] || pal[0]);
+    rounded(x, X, 640, Math.max(w - 6, 6), 80, 18);
+    x.fill();
+    if (w > 150) {
+      x.fillStyle = "#0b0a12";
+      x.font = `700 30px ${FONT}`;
+      x.fillText(fit(x, t("party_" + k), w - 40), X + 22, 692);
+    }
+    X += w;
+  }
+  // Tempo-Spanne und lautester Drop
+  const bpms = songs.map((s) => s.bpm).filter(Boolean);
+  x.fillStyle = "#fff";
+  x.font = `700 40px ${FONT}`;
+  if (bpms.length) x.fillText(`${Math.min(...bpms)}–${Math.max(...bpms)} BPM`, 90, 800);
+  if (r.peak) {
+    x.fillStyle = "rgba(255,255,255,0.65)";
+    x.font = `500 30px ${FONT}`;
+    x.fillText(t("recapPeak"), 90, 860);
+    x.fillStyle = "#fff";
+    x.font = `700 40px ${FONT}`;
+    x.fillText(fit(x, `${r.peak.title} – ${r.peak.artist}`, W - 180), 90, 910);
+  }
+  // die Songs der Nacht (die ersten sieben)
+  songs.slice(0, 7).forEach((s, i) => {
+    const Y = 1000 + i * 40;
+    x.fillStyle = css(GENRE_COL[s.key] || pal[i % 3]);
+    rounded(x, 90, Y - 22, 10, 26, 5);
+    x.fill();
+    x.fillStyle = "rgba(255,255,255,0.85)";
+    x.font = `600 28px ${FONT}`;
+    x.fillText(fit(x, `${s.title} – ${s.artist}`, W - 420), 116, Y);
+    x.fillStyle = "rgba(255,255,255,0.5)";
+    x.textAlign = "right";
+    x.fillText(t("party_" + s.key), W - 90, Y);
+    x.textAlign = "left";
+  });
+  watermark(x);
+  deliver(cv, "mirage-party.png");
+}
+
 /* ---------------------------------------------------------------- Monat in Farben */
 // Wie die Wochenkarte, für 30 Tage: Hörzeit pro Tag als Balken, Top-Künstler und Top-Songs nebeneinander
 async function monthCard() {
@@ -379,4 +460,4 @@ async function monthCard() {
   deliver(cv, "mirage-month.png");
 }
 
-export { nowPlayingCard, weekCard, monthCard, record, week, period };
+export { nowPlayingCard, weekCard, monthCard, partyRecapCard, record, week, period };

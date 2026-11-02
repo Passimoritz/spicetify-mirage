@@ -253,7 +253,43 @@ function songMap(d) {
     }
   }
   // „dynamisch“ = der Song hat wirklich leise Stellen (Breaks gibt es nur dann)
-  const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [] };
+  // --- Instrumente aus Spotifys Klangfarbe je Segment, auf den Song selbst bezogen (Rang 0..1):
+  // Kick = harter Einsatz, dunkel, lauter als davor · Snare/Clap = harter Einsatz, rauschig ·
+  // Hi-Hat/Becken = sehr hell und eher leise · Melodie = klare Tonhöhe (ein Ton dominiert die 12 Tonklassen)
+  const rank = (vals) => {
+    const sorted = Float32Array.from(vals).sort();
+    return (v) => {
+      let lo = 0, hi2 = sorted.length;
+      while (lo < hi2) {
+        const mid = (lo + hi2) >> 1;
+        if (sorted[mid] < v) lo = mid + 1;
+        else hi2 = mid;
+      }
+      return sorted.length ? lo / sorted.length : 0;
+    };
+  };
+  const rA = rank(segs.map((x) => x.k || 0)), rF = rank(segs.map((x) => x.f || 0)), rB = rank(segs.map((x) => x.b || 0));
+  const kicks = [], snares = [], hats = [];
+  const tonal = new Float32Array(n), pc = new Uint8Array(n);
+  segs.forEach((x, i) => {
+    const rise = x.l - (segs[i - 1]?.l ?? -60), a = rA(x.k || 0), f = rF(x.f || 0), b = rB(x.b || 0);
+    const loudEnough = x.l > hi - 16;
+    if (loudEnough && (a > 0.72 || rise > 6) && b < 0.5) kicks.push(x.t);
+    else if (loudEnough && a > 0.65 && f > 0.62 && b >= 0.4) snares.push(x.t);
+    if (b > 0.82 && rise < 4 && x.l > hi - 22) hats.push(x.t);
+    if (x.p.length === 12) {
+      let sum = 0, mx = 0, arg = 0;
+      x.p.forEach((v, k) => {
+        sum += v;
+        if (v > mx) [mx, arg] = [v, k];
+      });
+      const bin = Math.min(n - 1, Math.floor(x.t / STEP));
+      const clarity = sum ? clamp(((mx / sum) * 12 - 1.6) / 2.4, 0, 1) : 0;
+      if (clarity >= tonal[bin]) [tonal[bin], pc[bin]] = [clarity, arg];
+    }
+  });
+  for (let i = 1; i < n; i++) if (!tonal[i]) [tonal[i], pc[i]] = [tonal[i - 1] * 0.9, pc[i - 1]];
+  const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc };
   mapCache.set(d, m);
   return m;
 }
@@ -267,6 +303,7 @@ const at = (arr, sec) => {
 const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
+  const inst = { k: -1, s: -1, h: -1 };
   let sway = 1, lastSec = 0, dropGlow = 0, lastFlashAt = -1e9, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
   const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -312,6 +349,7 @@ const party = (() => {
     // --- wo im Song: Energie jetzt, gleich, Aufbau, Break, Drop, Dur/Moll, Helligkeit
     let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0;
     let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
+    let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
     if (d && d.segs?.length) {
       const M = songMap(d);
       energy = at(M.energy, sec);
@@ -330,6 +368,30 @@ const party = (() => {
       // Drop genau auf seinem Schlag (vorberechnet) – nicht erst, wenn die Lautheit schon da ist
       // (nicht nach einem Sprung im Song – nur bei normalem Weiterlaufen)
       if (playing && sec >= lastSec && sec - lastSec < 0.5) for (const t of M.drops) if (t > lastSec && t <= sec + 0.02) dropHit = true;
+    }
+    // Instrumente: Zeit seit dem letzten Treffer je Spur → kurze Hüllkurven, die genau auf dem Klang sitzen
+    if (d && d.segs?.length && playing) {
+      const M = songMap(d);
+      const since = (arr) => {
+        let lo = 0, hi2 = arr.length;
+        while (lo < hi2) {
+          const mid = (lo + hi2) >> 1;
+          if (arr[mid] <= sec) lo = mid + 1;
+          else hi2 = mid;
+        }
+        return lo ? [sec - arr[lo - 1], lo - 1] : [9, -1];
+      };
+      const [ks, ki] = since(M.kicks), [ss, si] = since(M.snares), [hs, hi3] = since(M.hats);
+      kickEnv = Math.exp(-ks * 7);
+      snareEnv = Math.exp(-ss * 9);
+      hatEnv = Math.exp(-hs * 16);
+      kickHit = ki !== inst.k && ks < 0.12;
+      snareHit = si !== inst.s && ss < 0.12;
+      hatHit = hi3 !== inst.h && hs < 0.08;
+      [inst.k, inst.s, inst.h] = [ki, si, hi3];
+      const bin = Math.max(0, Math.min(M.tonal.length - 1, Math.floor(sec / STEP)));
+      tone = M.tonal[bin];
+      pitch = tone > 0.35 ? M.pc[bin] : -1;
     }
     lastSec = sec;
     // schnell hoch, langsam runter – und beim Drop sofort voll: der Moment muss sitzen
@@ -378,7 +440,7 @@ const party = (() => {
     const strong = hit && beatEnv > 0.55;
     let flashOn = false;
     if (P.flashOn === "down") flashOn = hit && inBar === 0;
-    else if (P.flashOn === "back") flashOn = hit && (inBar === 1 || inBar === 3);
+    else if (P.flashOn === "back") flashOn = snareHit || (hit && (inBar === 1 || inBar === 3) && snareEnv < 0.2);
     else if (P.flashOn === "down-hi") flashOn = hit && inBar === 0 && smooth.e > 0.65;
     if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
     if (smooth.k > 0.5) flashOn = false;
@@ -408,6 +470,7 @@ const party = (() => {
     const out = {
       P, key: info.key, level, lvl, fx, hit, barHit, inBar, conf,
       energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I, scene,
+      kickEnv, snareEnv, hatEnv, tone, pitch, kickHit, snareHit, hatHit,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
       flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
     };
