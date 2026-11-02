@@ -109,7 +109,8 @@ function range(key, min, max, step, unit, after) {
   return row;
 }
 function seg(options, value, onPick) {
-  const s = el("div", "m-seg");
+  // viele Wahlmöglichkeiten (Party-Stile): umbrechen statt aus dem Fenster zu laufen
+  const s = el("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
   for (const [k, label] of options) {
     const b = el("button", "", label);
     b.type = "button";

@@ -10,6 +10,19 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.6.0] – 2026-11-02
+
+### Added
+
+- **Six new party genres, each with its own light language.** Techno: light scanners sweep across the picture in tempo and flare on the beat, cool colours. House: a disco ball throws light points that turn slowly and flash on the beat, warm colours. Trance: aurora ribbons wave over the top half and rise during build-ups. Drum & bass: kick and snare at half tempo, a light tunnel shoots out of the cover on every hit. Metal: the snare on 2 and 4 tears everything open, red-hot spots from above, heavy shake and sparks. Latin: dembow accent, warm sweeps, the cover dances along.
+- **Finer genre detection.** Exact styles (techno, house, trance, drum & bass, metal, reggaeton/latin …) are recognised in Apple's and Spotify's genres before the broad families. Plain "dance/electronic" is split by tempo and key: 160 BPM and up is drum & bass, minor at 118–150 BPM is techno, 132–150 BPM trance, 118–131 BPM house.
+- **More variety across a song.** Every new section (verse, chorus, bridge …) shifts the colour order of wreath, beams and sparks and turns the rotation the other way.
+- Colour moods per genre: cool for techno and drum & bass, warm for house and latin, hot for metal.
+
+### Changed
+
+- The party style picker in the settings wraps onto several rows.
+
 ## [1.5.2] – 2026-11-02
 
 ### Fixed

@@ -779,7 +779,7 @@ const immersive = (() => {
     }
     if (cfg.calm) return;
 
-    const pal = px ? vivid(palette(), px.minor) : palette();
+    const pal = px ? vivid(palette(), px.minor, px.P.tint) : palette();
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
     const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
@@ -945,6 +945,7 @@ const immersive = (() => {
     vals = new Float32Array(0);
     rings = [];
     sparks = [];
+    tunnel = [];
     vizRect.r = null;
     lastVizT = 0;
     vw = 0;
@@ -956,21 +957,45 @@ const immersive = (() => {
   // Party-Farben: kräftig statt der oft gedeckten Coverfarben. Graue Cover bekommen Mirage-Töne.
   // Moll macht das Licht tiefer und kühler, Dur heller – die Farben folgen der Stimmung des Abschnitts.
   let vividKey = "", vividPal = null;
-  function vivid(pal, minor) {
-    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "");
+  const TINT = { cool: 205, warm: 28, hot: 4 };
+  // Farbton ein Stück Richtung Ziel drehen (kürzester Weg auf dem Farbkreis)
+  const toward = (h, target, f) => (h + ((((target - h) % 360) + 540) % 360 - 180) * f + 360) % 360;
+  function vivid(pal, minor, tint) {
+    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "");
     if (key === vividKey) return vividPal;
     vividKey = key;
     const hsl = pal.map(rgb2hsl);
     const grey = hsl.every(([, s]) => s < 0.12);
     vividPal = hsl.map(([h, s, l], i) => {
-      const hue = grey ? [275, 195, 320][i] : h;
+      let hue = grey ? [275, 195, 320][i] : h;
+      if (TINT[tint] != null) hue = toward(hue, TINT[tint] + (i - 1) * 22, 0.45);
       return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
     });
     return vividPal;
   }
 
   // Bühnenlicht: jedes Genre hat seine eigene Lichtsprache. Alles mit „lighter“ – Licht addiert sich wie echtes.
-  function drawStage(ctx, pal, px, rgba) {
+  // Leuchtpunkt-Bild je Farbe, einmal gerendert: 90 Discokugel-Punkte kosten dann nur drawImage
+  const glowSprites = new Map();
+  function glowSprite(c) {
+    const k = c.join(",");
+    if (!glowSprites.has(k)) {
+      if (glowSprites.size > 24) glowSprites.clear();
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = 48;
+      const x = cv.getContext("2d");
+      const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
+      g.addColorStop(0, "rgba(255,255,255,1)");
+      g.addColorStop(0.22, `rgba(${k},0.75)`);
+      g.addColorStop(1, `rgba(${k},0)`);
+      x.fillStyle = g;
+      x.fillRect(0, 0, 48, 48);
+      glowSprites.set(k, cv);
+    }
+    return glowSprites.get(k);
+  }
+  let disco = null, tunnel = [];
+  function drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt) {
     const t = performance.now() / 1000, far = Math.hypot(vw, vh) * 1.1;
     const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
     const cone = (sx, sy, a, wd, c, al, reach = far) => {
@@ -1024,6 +1049,82 @@ const immersive = (() => {
         }
         break;
       }
+      case "scan": {
+        // Techno: Scanner – waagerechte Lichtbahnen fahren im Tempo über das Bild und gleißen auf dem Schlag auf,
+        // dazu ein senkrechter Scanner, der jeden Takt einmal von links nach rechts zieht
+        const bps = (party.info.bpm || 125) / 60;
+        const al = (0.07 + beat * 0.45 + px.drop * 0.2) * vis;
+        const line = (x0, y0, x1, y1, c, a) => {
+          for (const [lw, f] of [[24 * dpr, 0.22], [2.2 * dpr, 1]]) {
+            ctx.lineWidth = lw;
+            ctx.strokeStyle = rgba(c, a * f);
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.stroke();
+          }
+        };
+        for (let k = 0; k < 3; k++) {
+          const y = ((t * bps * 0.25 + k / 3 + px.scene * 0.17) % 1) * vh;
+          line(0, y, vw, y, pal[k], al);
+        }
+        const x = ((t * bps) / 4) % 1;
+        line(x * vw, 0, x * vw, vh, pal[2], al * (0.4 + px.energy * 0.6));
+        break;
+      }
+      case "disco": {
+        // House: Discokugel – Lichtpunkte drehen sich langsam über das Bild und blitzen auf dem Schlag auf
+        disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));
+        const rot = t * 0.32 + px.spin * 0.08;
+        disco.forEach((d, i) => {
+          const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);
+          if (face <= 0.05) return;
+          const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
+          const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);
+          ctx.globalAlpha = clamp(face * (0.22 + beat * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
+          const r = (12 + d.s * 13 + beat * 16) * dpr;
+          ctx.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
+        });
+        ctx.globalAlpha = 1;
+        break;
+      }
+      case "aurora": {
+        // Trance: Polarlicht – drei weiche Bänder wehen über die obere Bildhälfte; im Aufbau steigen sie auf
+        for (let k = 0; k < 3; k++) {
+          const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;
+          const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);
+          const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;
+          const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;
+          ctx.beginPath();
+          for (let i = 0; i <= 24; i++) i ? ctx.lineTo((i / 24) * vw, base + wave(i, 0)) : ctx.moveTo(0, base + wave(0, 0));
+          for (let i = 24; i >= 0; i--) ctx.lineTo((i / 24) * vw, base + thick + wave(i, 0.6) * 0.8);
+          ctx.closePath();
+          const g = ctx.createLinearGradient(0, base - amp, 0, base + thick + amp);
+          g.addColorStop(0, rgba(pal[k], 0));
+          g.addColorStop(0.5, rgba(pal[k], al));
+          g.addColorStop(1, rgba(pal[(k + 1) % 3], 0));
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+        break;
+      }
+      case "tunnel": {
+        // Drum & Bass: auf jedem Treffer schießt ein Lichtrahmen aus dem Cover nach außen – ein Tunnel im Takt
+        if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.45 + 0.55 * px.accent, c: tunnel.length % 3, r: px.spin * 0.15 });
+        tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.5)) > 0.02 && f.s < 10);
+        for (const f of tunnel) {
+          f.s *= Math.exp(dt * 1.9);
+          const h = R * f.s, c = Math.cos(f.r), sn = Math.sin(f.r);
+          ctx.setTransform(c, sn, -sn, c, cx, cy);
+          ctx.lineWidth = (1.5 + f.s * 0.9) * dpr;
+          ctx.strokeStyle = rgba(pal[f.c], f.a * vis * 0.85);
+          ctx.beginPath();
+          ctx.roundRect(-h, -h, h * 2, h * 2, h * 0.18);
+          ctx.stroke();
+        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        break;
+      }
       default: {
         // Chill: breite, sehr weiche Lichtbahnen von oben, die langsam wandern
         const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);
@@ -1040,12 +1141,13 @@ const immersive = (() => {
   function drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang) {
     const P = px.P;
     const mixC = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));
+    const off = (px.scene * 0.37) % 1;
     const colAt = (u) => {
-      const x = (u * 3) % 3, i = Math.floor(x);
+      const x = (((u + off) % 1) * 3) % 3, i = Math.floor(x);
       return mixC(pal[i], pal[(i + 1) % 3], x - i);
     };
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-    if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba);
+    if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt);
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
     if (px.lasers && px.beamVis > 0.02) {

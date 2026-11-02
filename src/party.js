@@ -31,13 +31,40 @@ const PROFILES = {
   // atmet mit dem Takt statt zu schlagen: nur die Eins, langes Ausklingen, sanfte Lichtbahnen
   chill: { decay: 2.2, beams: 0.35, accent: [1, 0.25, 0.45, 0.25], flashOn: "", spot: "soft", spinRate: 0.08, sway: true, shake: 0,
     mirror: true, spin: true, height: 1.1, pulse: 0.035, ring: 4, thick: 2, halo: true, sparks: 3, bottom: false },
+  // Techno: hart und gerade, kühle Töne, Scanner-Lichtbahnen fahren im Takt über das Bild
+  techno: { decay: 9, beams: 1, accent: [1, 0.85, 0.95, 0.85], flashOn: "down", spot: "scan", spinRate: 0.35, sway: false, shake: 0, tint: "cool",
+    mirror: true, spin: false, height: 1.45, pulse: 0.07, ring: 1, thick: 2, halo: false, sparks: 4, bottom: false },
+  // House: warmer Groove, eine Discokugel wirft Lichtpunkte, die auf dem Schlag aufblitzen
+  house: { decay: 5.5, beams: 0.7, accent: [1, 0.6, 0.9, 0.6], flashOn: "down", spot: "disco", spinRate: 0.25, sway: true, shake: 0, tint: "warm",
+    mirror: true, spin: true, height: 1.35, pulse: 0.08, ring: 2, thick: 2.6, halo: true, sparks: 12, bottom: false },
+  // Trance: euphorisch, lange Aufbauten, Polarlicht-Bänder über dem Bild
+  trance: { decay: 4.5, beams: 1.1, accent: [1, 0.7, 0.85, 0.7], flashOn: "down", spot: "aurora", spinRate: 0.4, sway: false, shake: 0,
+    mirror: true, spin: true, height: 1.55, pulse: 0.08, ring: 1, thick: 2.2, halo: true, sparks: 14, bottom: false },
+  // Drum & Bass: schnell, Kick und Snare im halben Tempo, ein Lichttunnel schießt auf jeden Treffer heraus
+  dnb: { decay: 10, beams: 0.9, accent: [1, 0.5, 1, 0.5], flashOn: "down", spot: "tunnel", spinRate: 0.6, sway: false, shake: 5, tint: "cool",
+    mirror: true, spin: true, height: 1.5, pulse: 0.1, ring: 1, thick: 2.4, halo: true, sparks: 10, bottom: false },
+  // Metal: Snare auf 2 und 4 reißt alles auf, heißes Rot-Weiß von oben, viel Wackeln und Funken
+  metal: { decay: 11, beams: 0.8, accent: [0.8, 1, 0.8, 1], flashOn: "back", spot: "top", spinRate: 0.15, sway: false, shake: 11, tint: "hot",
+    mirror: true, spin: false, height: 1.6, pulse: 0.1, ring: 2, thick: 3.8, halo: false, sparks: 22, bottom: false },
+  // Latin / Reggaeton: Dembow-Betonung, warme Schwenks, das Cover tanzt mit
+  latin: { decay: 5, beams: 0.6, accent: [1, 0.55, 0.75, 0.9], flashOn: "down", spot: "pan", spinRate: 0.25, sway: true, shake: 0, tint: "warm",
+    mirror: true, spin: true, height: 1.4, pulse: 0.09, ring: 2, thick: 2.8, halo: true, sparks: 16, bottom: false },
 };
 const PROFILE_KEYS = Object.keys(PROFILES);
+// Genaue Spielarten zuerst – gelten für Spotify- und Apple-Genres gleichermaßen
+const SPECIFIC = [
+  ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
+  ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
+  ["techno", /techno|minimal|industrial/],
+  ["trance", /trance|psytrance|uplifting/],
+  ["house", /house|nu disco|garage house/],
+  ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/],
+];
 // Reihenfolge zählt: „dance pop“ ist eher Pop als Rave, „pop punk“ eher Rock
 const GENRES = [
   ["chill", /lo-?fi|chill|ambient|acoustic|jazz|classical|piano|folk|soul|r&b|rnb|bossa|sleep|meditation|singer-songwriter|soundtrack|orchestra/],
   ["rock", /rock|metal|punk|grunge|core\b|emo|hardcore|garage/],
-  ["bass", /hip ?hop|rap|trap|drill|grime|phonk|reggaeton|dancehall|afro|urbano|boom bap|gangsta/],
+  ["bass", /hip ?hop|rap|trap|drill|grime|phonk|dancehall|afro|boom bap|gangsta/],
   ["rave", /edm|house|techno|trance|dubstep|drum and bass|dnb|electro|hardstyle|rave|bass music|garage house|big room|psytrance|eurodance/],
   ["pop", /pop|dance|disco|funk|latin|k-pop|schlager|indie/],
 ];
@@ -119,11 +146,11 @@ async function appleSearch(title, artist, country) {
 
 // Profil aus allen Hinweisen: Apple-Genre des Songs (3 Punkte), Spotify-Genres des Künstlers (2 für das
 // erste, 1 für weitere) und der Klang selbst – Tempo und Lautheit (1). Die meisten Punkte gewinnen.
-function pickProfile(genres, bpm, loud, apple = "") {
+function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
   const score = {}, add = (k, n) => (score[k] = (score[k] || 0) + n);
   let why = "";
   const g = apple.toLowerCase();
-  const am = APPLE.find(([, re]) => re.test(g));
+  const am = SPECIFIC.find(([, re]) => re.test(g)) || APPLE.find(([, re]) => re.test(g));
   if (am) {
     // „Electronic“ kann auch Ambient sein: langsam oder leise gemischt → Chill statt Rave
     const calmMix = (bpm && bpm < 95) || loud < -14;
@@ -131,7 +158,7 @@ function pickProfile(genres, bpm, loud, apple = "") {
     why = apple;
   }
   genres.slice(0, 4).forEach((x, i) => {
-    const m = GENRES.find(([, re]) => re.test(x));
+    const m = SPECIFIC.find(([, re]) => re.test(x)) || GENRES.find(([, re]) => re.test(x));
     if (m) {
       add(m[0], i === 0 ? 2 : 1);
       why ||= x;
@@ -143,7 +170,26 @@ function pickProfile(genres, bpm, loud, apple = "") {
   else if (bpm >= 80 && bpm < 105) add("bass", 1);
   else if (bpm > 140 && energy > 0.7) add("rock", 1);
   const best = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
-  return { key: best ? best[0] : "pop", why };
+  let key = best ? best[0] : "pop";
+  // nur „Dance“/„Electronic“ ohne genauere Angabe: Tempo und Moll-Anteil entscheiden die Spielart
+  if (key === "rave" && bpm) {
+    if (bpm >= 160) key = "dnb";
+    else if (bpm >= 132 && bpm <= 150) key = minor > 0.6 ? "techno" : "trance";
+    else if (bpm >= 118 && bpm < 132) key = minor > 0.6 ? "techno" : "house";
+  }
+  return { key, why };
+}
+// Anteil der Song-Zeit in Moll (0..1) aus den Abschnitten der Analyse
+function minorShare(d) {
+  const sx = d?.sections || [];
+  if (!sx.length) return 0;
+  let m = 0, all = 0;
+  sx.forEach((x, i) => {
+    const len = (sx[i + 1]?.t ?? x.t + 20) - x.t;
+    all += len;
+    if (x.mode === 0) m += len;
+  });
+  return all ? m / all : 0;
 }
 
 /* ---- Song-Karte */
@@ -239,7 +285,7 @@ const party = (() => {
     if (my !== token) return info;
     const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
     const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
-    const auto = pickProfile(genres, bpm, loud, apple);
+    const auto = pickProfile(genres, bpm, loud, apple, audio.uri === u ? minorShare(audio.data) : 0);
     info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm, genres, apple };
     return info;
   }
@@ -248,7 +294,7 @@ const party = (() => {
     if (!audio.data || audio.uri !== uri) return;
     if (info.bpm !== audio.data.bpm) {
       info.bpm = audio.data.bpm;
-      if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "").key;
+      if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "", minorShare(audio.data)).key;
     }
   }
 
@@ -264,7 +310,7 @@ const party = (() => {
     const ease = (k) => 1 - Math.exp(-dt * k);
 
     // --- wo im Song: Energie jetzt, gleich, Aufbau, Break, Drop, Dur/Moll, Helligkeit
-    let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false;
+    let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0;
     let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
     if (d && d.segs?.length) {
       const M = songMap(d);
@@ -277,7 +323,9 @@ const party = (() => {
       build = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
       // Break: ruhige Stelle in einem Song, der sonst laut wird
       low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
-      const sx = M.sections[Math.max(seek(M.sections, sec, "t"), 0)];
+      // jeder neue Abschnitt (Strophe, Refrain, Bridge …) ist eine neue „Szene“: andere Farbfolge, andere Drehrichtung
+      scene = Math.max(seek(M.sections, sec, "t"), 0);
+      const sx = M.sections[scene];
       minor = sx ? sx.mode === 0 : false;
       // Drop genau auf seinem Schlag (vorberechnet) – nicht erst, wenn die Lautheit schon da ist
       // (nicht nach einem Sprung im Song – nur bei normalem Weiterlaufen)
@@ -349,7 +397,8 @@ const party = (() => {
     kick *= Math.exp(-dt * 9);
 
     // --- Strahlen: drehen mit der Energie, im Aufbau immer schneller, springen bei Rave pro Takt
-    spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0);
+    // Drehrichtung wechselt mit jeder Szene
+    spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
     if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
     const lasers = fx && cfg.partyLasers && level >= 4 ? (level >= 5 ? 12 : 6) : 0;
     // im Break blenden Strahlen aus, im Aufbau ziehen sie sich zusammen
@@ -358,7 +407,7 @@ const party = (() => {
 
     const out = {
       P, key: info.key, level, lvl, fx, hit, barHit, inBar, conf,
-      energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I,
+      energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I, scene,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
       flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
     };

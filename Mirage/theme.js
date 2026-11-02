@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.5.2" : "dev";
+      VERSION = true ? "1.6.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -323,7 +323,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Added by Smart Shuffle",
           partyOnline: "Look up genre online",
-          partyOnlineHint: "Asks Apple's iTunes search for the song's genre, so rave, rock or hip-hop isn't mistaken for pop \u2013 only title and artist are sent"
+          partyOnlineHint: "Asks Apple's iTunes search for the song's genre, so rave, rock or hip-hop isn't mistaken for pop \u2013 only title and artist are sent",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latin"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -562,7 +568,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Von Smart Shuffle eingestreut",
           partyOnline: "Genre online nachschlagen",
-          partyOnlineHint: "Fragt die iTunes-Suche von Apple nach dem Genre des Songs, damit Rave, Rock oder Hip-Hop nicht als Pop gelten \u2013 daf\xFCr gehen nur Titel und K\xFCnstler raus"
+          partyOnlineHint: "Fragt die iTunes-Suche von Apple nach dem Genre des Songs, damit Rave, Rock oder Hip-Hop nicht als Pop gelten \u2013 daf\xFCr gehen nur Titel und K\xFCnstler raus",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latin"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -801,7 +813,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Ajout\xE9 par Smart Shuffle",
           partyOnline: "Chercher le genre en ligne",
-          partyOnlineHint: "Demande le genre du morceau \xE0 la recherche iTunes d'Apple, pour que rave, rock ou hip-hop ne passent pas pour de la pop \u2013 seuls le titre et l'artiste sont envoy\xE9s"
+          partyOnlineHint: "Demande le genre du morceau \xE0 la recherche iTunes d'Apple, pour que rave, rock ou hip-hop ne passent pas pour de la pop \u2013 seuls le titre et l'artiste sont envoy\xE9s",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latino"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1040,7 +1058,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "A\xF1adida por Smart Shuffle",
           partyOnline: "Buscar el g\xE9nero en l\xEDnea",
-          partyOnlineHint: "Pregunta a la b\xFAsqueda de iTunes de Apple el g\xE9nero de la canci\xF3n, para que rave, rock o hip-hop no se tomen por pop \u2013 solo se env\xEDan t\xEDtulo y artista"
+          partyOnlineHint: "Pregunta a la b\xFAsqueda de iTunes de Apple el g\xE9nero de la canci\xF3n, para que rave, rock o hip-hop no se tomen por pop \u2013 solo se env\xEDan t\xEDtulo y artista",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latino"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1279,7 +1303,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Aggiunto da Smart Shuffle",
           partyOnline: "Cerca il genere online",
-          partyOnlineHint: "Chiede alla ricerca iTunes di Apple il genere del brano, cos\xEC rave, rock o hip-hop non vengono scambiati per pop \u2013 vengono inviati solo titolo e artista"
+          partyOnlineHint: "Chiede alla ricerca iTunes di Apple il genere del brano, cos\xEC rave, rock o hip-hop non vengono scambiati per pop \u2013 vengono inviati solo titolo e artista",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latino"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1518,7 +1548,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Adicionada pelo Smart Shuffle",
           partyOnline: "Buscar o g\xEAnero online",
-          partyOnlineHint: "Pergunta \xE0 busca do iTunes da Apple o g\xEAnero da m\xFAsica, para que rave, rock ou hip-hop n\xE3o sejam tomados por pop \u2013 s\xF3 t\xEDtulo e artista s\xE3o enviados"
+          partyOnlineHint: "Pergunta \xE0 busca do iTunes da Apple o g\xEAnero da m\xFAsica, para que rave, rock ou hip-hop n\xE3o sejam tomados por pop \u2013 s\xF3 t\xEDtulo e artista s\xE3o enviados",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latino"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -1757,7 +1793,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Toegevoegd door Smart Shuffle",
           partyOnline: "Genre online opzoeken",
-          partyOnlineHint: "Vraagt Apples iTunes-zoekfunctie naar het genre van het nummer, zodat rave, rock of hiphop niet als pop gelden \u2013 alleen titel en artiest worden verstuurd"
+          partyOnlineHint: "Vraagt Apples iTunes-zoekfunctie naar het genre van het nummer, zodat rave, rock of hiphop niet als pop gelden \u2013 alleen titel en artiest worden verstuurd",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latin"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -1996,7 +2038,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Dodane przez Smart Shuffle",
           partyOnline: "Sprawdzaj gatunek online",
-          partyOnlineHint: "Pyta wyszukiwark\u0119 iTunes Apple o gatunek utworu, \u017Ceby rave, rock czy hip-hop nie by\u0142y brane za pop \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142 i wykonawca"
+          partyOnlineHint: "Pyta wyszukiwark\u0119 iTunes Apple o gatunek utworu, \u017Ceby rave, rock czy hip-hop nie by\u0142y brane za pop \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142 i wykonawca",
+          party_techno: "Techno",
+          party_house: "House",
+          party_trance: "Trance",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latino"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2235,7 +2283,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Smart Shuffle taraf\u0131ndan eklendi",
           partyOnline: "T\xFCr\xFC \xE7evrimi\xE7i bul",
-          partyOnlineHint: "\u015Eark\u0131n\u0131n t\xFCr\xFCn\xFC Apple'\u0131n iTunes aramas\u0131na sorar; b\xF6ylece rave, rock ya da hip-hop pop san\u0131lmaz \u2013 yaln\u0131zca \u015Fark\u0131 ad\u0131 ve sanat\xE7\u0131 g\xF6nderilir"
+          partyOnlineHint: "\u015Eark\u0131n\u0131n t\xFCr\xFCn\xFC Apple'\u0131n iTunes aramas\u0131na sorar; b\xF6ylece rave, rock ya da hip-hop pop san\u0131lmaz \u2013 yaln\u0131zca \u015Fark\u0131 ad\u0131 ve sanat\xE7\u0131 g\xF6nderilir",
+          party_techno: "Tekno",
+          party_house: "House",
+          party_trance: "Trans",
+          party_dnb: "Drum & Bass",
+          party_metal: "Metal",
+          party_latin: "Latin"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -2474,7 +2528,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0438\u0435\u0439 Smart Shuffle",
           partyOnline: "\u0423\u0437\u043D\u0430\u0432\u0430\u0442\u044C \u0436\u0430\u043D\u0440 \u043E\u043D\u043B\u0430\u0439\u043D",
-          partyOnlineHint: "\u0421\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 \u0436\u0430\u043D\u0440 \u0442\u0440\u0435\u043A\u0430 \u0443 \u043F\u043E\u0438\u0441\u043A\u0430 iTunes \u043E\u0442 Apple, \u0447\u0442\u043E\u0431\u044B \u0440\u0435\u0439\u0432, \u0440\u043E\u043A \u0438\u043B\u0438 \u0445\u0438\u043F-\u0445\u043E\u043F \u043D\u0435 \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u043B\u0438\u0441\u044C \u0437\u0430 \u043F\u043E\u043F \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0438\u0441\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C"
+          partyOnlineHint: "\u0421\u043F\u0440\u0430\u0448\u0438\u0432\u0430\u0435\u0442 \u0436\u0430\u043D\u0440 \u0442\u0440\u0435\u043A\u0430 \u0443 \u043F\u043E\u0438\u0441\u043A\u0430 iTunes \u043E\u0442 Apple, \u0447\u0442\u043E\u0431\u044B \u0440\u0435\u0439\u0432, \u0440\u043E\u043A \u0438\u043B\u0438 \u0445\u0438\u043F-\u0445\u043E\u043F \u043D\u0435 \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u043B\u0438\u0441\u044C \u0437\u0430 \u043F\u043E\u043F \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0438\u0441\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C",
+          party_techno: "\u0422\u0435\u0445\u043D\u043E",
+          party_house: "\u0425\u0430\u0443\u0441",
+          party_trance: "\u0422\u0440\u0430\u043D\u0441",
+          party_dnb: "\u0414\u0440\u0430\u043C-\u043D-\u0431\u0435\u0439\u0441",
+          party_metal: "\u041C\u0435\u0442\u0430\u043B",
+          party_latin: "\u041B\u0430\u0442\u0438\u043D\u043E"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -2713,7 +2773,13 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "\u0414\u043E\u0434\u0430\u043D\u043E \u0444\u0443\u043D\u043A\u0446\u0456\u0454\u044E Smart Shuffle",
           partyOnline: "\u0414\u0456\u0437\u043D\u0430\u0432\u0430\u0442\u0438\u0441\u044F \u0436\u0430\u043D\u0440 \u043E\u043D\u043B\u0430\u0439\u043D",
-          partyOnlineHint: "\u041F\u0438\u0442\u0430\u0454 \u0436\u0430\u043D\u0440 \u0442\u0440\u0435\u043A\u0443 \u0432 \u043F\u043E\u0448\u0443\u043A\u0443 iTunes \u0432\u0456\u0434 Apple, \u0449\u043E\u0431 \u0440\u0435\u0439\u0432, \u0440\u043E\u043A \u0447\u0438 \u0445\u0456\u043F-\u0445\u043E\u043F \u043D\u0435 \u0432\u0432\u0430\u0436\u0430\u043B\u0438\u0441\u044F \u043F\u043E\u043F\u043E\u043C \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u043D\u0430\u0437\u0432\u0430 \u0439 \u0432\u0438\u043A\u043E\u043D\u0430\u0432\u0435\u0446\u044C"
+          partyOnlineHint: "\u041F\u0438\u0442\u0430\u0454 \u0436\u0430\u043D\u0440 \u0442\u0440\u0435\u043A\u0443 \u0432 \u043F\u043E\u0448\u0443\u043A\u0443 iTunes \u0432\u0456\u0434 Apple, \u0449\u043E\u0431 \u0440\u0435\u0439\u0432, \u0440\u043E\u043A \u0447\u0438 \u0445\u0456\u043F-\u0445\u043E\u043F \u043D\u0435 \u0432\u0432\u0430\u0436\u0430\u043B\u0438\u0441\u044F \u043F\u043E\u043F\u043E\u043C \u2013 \u043F\u0435\u0440\u0435\u0434\u0430\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u043D\u0430\u0437\u0432\u0430 \u0439 \u0432\u0438\u043A\u043E\u043D\u0430\u0432\u0435\u0446\u044C",
+          party_techno: "\u0422\u0435\u0445\u043D\u043E",
+          party_house: "\u0425\u0430\u0443\u0441",
+          party_trance: "\u0422\u0440\u0430\u043D\u0441",
+          party_dnb: "\u0414\u0440\u0430\u043C-\u043D-\u0431\u0435\u0439\u0441",
+          party_metal: "\u041C\u0435\u0442\u0430\u043B",
+          party_latin: "\u041B\u0430\u0442\u0438\u043D\u043E"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -2952,7 +3018,13 @@
           smartPick: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB",
           smartPickHint: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB\u304C\u8FFD\u52A0\u3057\u305F\u66F2",
           partyOnline: "\u30B8\u30E3\u30F3\u30EB\u3092\u30AA\u30F3\u30E9\u30A4\u30F3\u3067\u8ABF\u3079\u308B",
-          partyOnlineHint: "Apple \u306E iTunes \u691C\u7D22\u3067\u66F2\u306E\u30B8\u30E3\u30F3\u30EB\u3092\u8ABF\u3079\u3001\u30EC\u30A4\u30D6\u3084\u30ED\u30C3\u30AF\u3001\u30D2\u30C3\u30D7\u30DB\u30C3\u30D7\u304C\u30DD\u30C3\u30D7\u3068\u5224\u5B9A\u3055\u308C\u306A\u3044\u3088\u3046\u306B\u3057\u307E\u3059 \u2013 \u9001\u4FE1\u3059\u308B\u306E\u306F\u66F2\u540D\u3068\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u3060\u3051\u3067\u3059"
+          partyOnlineHint: "Apple \u306E iTunes \u691C\u7D22\u3067\u66F2\u306E\u30B8\u30E3\u30F3\u30EB\u3092\u8ABF\u3079\u3001\u30EC\u30A4\u30D6\u3084\u30ED\u30C3\u30AF\u3001\u30D2\u30C3\u30D7\u30DB\u30C3\u30D7\u304C\u30DD\u30C3\u30D7\u3068\u5224\u5B9A\u3055\u308C\u306A\u3044\u3088\u3046\u306B\u3057\u307E\u3059 \u2013 \u9001\u4FE1\u3059\u308B\u306E\u306F\u66F2\u540D\u3068\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u3060\u3051\u3067\u3059",
+          party_techno: "\u30C6\u30AF\u30CE",
+          party_house: "\u30CF\u30A6\u30B9",
+          party_trance: "\u30C8\u30E9\u30F3\u30B9",
+          party_dnb: "\u30C9\u30E9\u30E0\u30F3\u30D9\u30FC\u30B9",
+          party_metal: "\u30E1\u30BF\u30EB",
+          party_latin: "\u30E9\u30C6\u30F3"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -3191,7 +3263,13 @@
           smartPick: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C",
           smartPickHint: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C\uC774 \uCD94\uAC00\uD55C \uACE1",
           partyOnline: "\uC7A5\uB974 \uC628\uB77C\uC778 \uC870\uD68C",
-          partyOnlineHint: "Apple iTunes \uAC80\uC0C9\uC5D0 \uACE1\uC758 \uC7A5\uB974\uB97C \uBB3C\uC5B4\uBD10\uC11C \uB808\uC774\uBE0C\xB7\uB85D\xB7\uD799\uD569\uC774 \uD31D\uC73C\uB85C \uC798\uBABB \uC7A1\uD788\uC9C0 \uC54A\uAC8C \uD574\uC694 \u2013 \uC81C\uBAA9\uACFC \uC544\uD2F0\uC2A4\uD2B8\uB9CC \uC804\uC1A1\uB3FC\uC694"
+          partyOnlineHint: "Apple iTunes \uAC80\uC0C9\uC5D0 \uACE1\uC758 \uC7A5\uB974\uB97C \uBB3C\uC5B4\uBD10\uC11C \uB808\uC774\uBE0C\xB7\uB85D\xB7\uD799\uD569\uC774 \uD31D\uC73C\uB85C \uC798\uBABB \uC7A1\uD788\uC9C0 \uC54A\uAC8C \uD574\uC694 \u2013 \uC81C\uBAA9\uACFC \uC544\uD2F0\uC2A4\uD2B8\uB9CC \uC804\uC1A1\uB3FC\uC694",
+          party_techno: "\uD14C\uD06C\uB178",
+          party_house: "\uD558\uC6B0\uC2A4",
+          party_trance: "\uD2B8\uB79C\uC2A4",
+          party_dnb: "\uB4DC\uB7FC\uC564\uBCA0\uC774\uC2A4",
+          party_metal: "\uBA54\uD0C8",
+          party_latin: "\uB77C\uD2F4"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -3430,7 +3508,13 @@
           smartPick: "\u667A\u80FD\u968F\u673A\u64AD\u653E",
           smartPickHint: "\u7531\u667A\u80FD\u968F\u673A\u64AD\u653E\u52A0\u5165",
           partyOnline: "\u5728\u7EBF\u67E5\u8BE2\u66F2\u98CE",
-          partyOnlineHint: "\u5411 Apple \u7684 iTunes \u641C\u7D22\u67E5\u8BE2\u6B4C\u66F2\u66F2\u98CE\uFF0C\u907F\u514D\u7535\u97F3\u3001\u6447\u6EDA\u6216\u563B\u54C8\u88AB\u8BEF\u5224\u4E3A\u6D41\u884C \u2013 \u53EA\u53D1\u9001\u6B4C\u540D\u548C\u827A\u4EBA"
+          partyOnlineHint: "\u5411 Apple \u7684 iTunes \u641C\u7D22\u67E5\u8BE2\u6B4C\u66F2\u66F2\u98CE\uFF0C\u907F\u514D\u7535\u97F3\u3001\u6447\u6EDA\u6216\u563B\u54C8\u88AB\u8BEF\u5224\u4E3A\u6D41\u884C \u2013 \u53EA\u53D1\u9001\u6B4C\u540D\u548C\u827A\u4EBA",
+          party_techno: "\u79D1\u6280\u821E\u66F2",
+          party_house: "\u6D69\u5BA4",
+          party_trance: "\u8FF7\u5E7B\u821E\u66F2",
+          party_dnb: "\u9F13\u6253\u8D1D\u65AF",
+          party_metal: "\u91D1\u5C5E",
+          party_latin: "\u62C9\u4E01"
         }
       };
       LANG = (() => {
@@ -4619,18 +4703,18 @@
       return "";
     }
   }
-  function pickProfile(genres, bpm, loud, apple = "") {
+  function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
     const score = {}, add = (k, n) => score[k] = (score[k] || 0) + n;
     let why = "";
     const g = apple.toLowerCase();
-    const am = APPLE.find(([, re]) => re.test(g));
+    const am = SPECIFIC.find(([, re]) => re.test(g)) || APPLE.find(([, re]) => re.test(g));
     if (am) {
       const calmMix = bpm && bpm < 95 || loud < -14;
       add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
       why = apple;
     }
     genres.slice(0, 4).forEach((x, i) => {
-      const m = GENRES.find(([, re]) => re.test(x));
+      const m = SPECIFIC.find(([, re]) => re.test(x)) || GENRES.find(([, re]) => re.test(x));
       if (m) {
         add(m[0], i === 0 ? 2 : 1);
         why ||= x;
@@ -4642,7 +4726,24 @@
     else if (bpm >= 80 && bpm < 105) add("bass", 1);
     else if (bpm > 140 && energy > 0.7) add("rock", 1);
     const best = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
-    return { key: best ? best[0] : "pop", why };
+    let key = best ? best[0] : "pop";
+    if (key === "rave" && bpm) {
+      if (bpm >= 160) key = "dnb";
+      else if (bpm >= 132 && bpm <= 150) key = minor > 0.6 ? "techno" : "trance";
+      else if (bpm >= 118 && bpm < 132) key = minor > 0.6 ? "techno" : "house";
+    }
+    return { key, why };
+  }
+  function minorShare(d) {
+    const sx = d?.sections || [];
+    if (!sx.length) return 0;
+    let m = 0, all = 0;
+    sx.forEach((x, i) => {
+      const len = (sx[i + 1]?.t ?? x.t + 20) - x.t;
+      all += len;
+      if (x.mode === 0) m += len;
+    });
+    return all ? m / all : 0;
   }
   function songMap(d) {
     if (mapCache.has(d)) return mapCache.get(d);
@@ -4694,7 +4795,7 @@
     mapCache.set(d, m);
     return m;
   }
-  var PROFILES, PROFILE_KEYS, GENRES, genreCache, APPLE, appleCache, norm2, bareTitle, STEP, pct, mapCache, at, party;
+  var PROFILES, PROFILE_KEYS, SPECIFIC, GENRES, genreCache, APPLE, appleCache, norm2, bareTitle, STEP, pct, mapCache, at, party;
   var init_party = __esm({
     "src/party.js"() {
       init_core();
@@ -4800,13 +4901,146 @@
           halo: true,
           sparks: 3,
           bottom: false
+        },
+        // Techno: hart und gerade, kühle Töne, Scanner-Lichtbahnen fahren im Takt über das Bild
+        techno: {
+          decay: 9,
+          beams: 1,
+          accent: [1, 0.85, 0.95, 0.85],
+          flashOn: "down",
+          spot: "scan",
+          spinRate: 0.35,
+          sway: false,
+          shake: 0,
+          tint: "cool",
+          mirror: true,
+          spin: false,
+          height: 1.45,
+          pulse: 0.07,
+          ring: 1,
+          thick: 2,
+          halo: false,
+          sparks: 4,
+          bottom: false
+        },
+        // House: warmer Groove, eine Discokugel wirft Lichtpunkte, die auf dem Schlag aufblitzen
+        house: {
+          decay: 5.5,
+          beams: 0.7,
+          accent: [1, 0.6, 0.9, 0.6],
+          flashOn: "down",
+          spot: "disco",
+          spinRate: 0.25,
+          sway: true,
+          shake: 0,
+          tint: "warm",
+          mirror: true,
+          spin: true,
+          height: 1.35,
+          pulse: 0.08,
+          ring: 2,
+          thick: 2.6,
+          halo: true,
+          sparks: 12,
+          bottom: false
+        },
+        // Trance: euphorisch, lange Aufbauten, Polarlicht-Bänder über dem Bild
+        trance: {
+          decay: 4.5,
+          beams: 1.1,
+          accent: [1, 0.7, 0.85, 0.7],
+          flashOn: "down",
+          spot: "aurora",
+          spinRate: 0.4,
+          sway: false,
+          shake: 0,
+          mirror: true,
+          spin: true,
+          height: 1.55,
+          pulse: 0.08,
+          ring: 1,
+          thick: 2.2,
+          halo: true,
+          sparks: 14,
+          bottom: false
+        },
+        // Drum & Bass: schnell, Kick und Snare im halben Tempo, ein Lichttunnel schießt auf jeden Treffer heraus
+        dnb: {
+          decay: 10,
+          beams: 0.9,
+          accent: [1, 0.5, 1, 0.5],
+          flashOn: "down",
+          spot: "tunnel",
+          spinRate: 0.6,
+          sway: false,
+          shake: 5,
+          tint: "cool",
+          mirror: true,
+          spin: true,
+          height: 1.5,
+          pulse: 0.1,
+          ring: 1,
+          thick: 2.4,
+          halo: true,
+          sparks: 10,
+          bottom: false
+        },
+        // Metal: Snare auf 2 und 4 reißt alles auf, heißes Rot-Weiß von oben, viel Wackeln und Funken
+        metal: {
+          decay: 11,
+          beams: 0.8,
+          accent: [0.8, 1, 0.8, 1],
+          flashOn: "back",
+          spot: "top",
+          spinRate: 0.15,
+          sway: false,
+          shake: 11,
+          tint: "hot",
+          mirror: true,
+          spin: false,
+          height: 1.6,
+          pulse: 0.1,
+          ring: 2,
+          thick: 3.8,
+          halo: false,
+          sparks: 22,
+          bottom: false
+        },
+        // Latin / Reggaeton: Dembow-Betonung, warme Schwenks, das Cover tanzt mit
+        latin: {
+          decay: 5,
+          beams: 0.6,
+          accent: [1, 0.55, 0.75, 0.9],
+          flashOn: "down",
+          spot: "pan",
+          spinRate: 0.25,
+          sway: true,
+          shake: 0,
+          tint: "warm",
+          mirror: true,
+          spin: true,
+          height: 1.4,
+          pulse: 0.09,
+          ring: 2,
+          thick: 2.8,
+          halo: true,
+          sparks: 16,
+          bottom: false
         }
       };
       PROFILE_KEYS = Object.keys(PROFILES);
+      SPECIFIC = [
+        ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
+        ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
+        ["techno", /techno|minimal|industrial/],
+        ["trance", /trance|psytrance|uplifting/],
+        ["house", /house|nu disco|garage house/],
+        ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/]
+      ];
       GENRES = [
         ["chill", /lo-?fi|chill|ambient|acoustic|jazz|classical|piano|folk|soul|r&b|rnb|bossa|sleep|meditation|singer-songwriter|soundtrack|orchestra/],
         ["rock", /rock|metal|punk|grunge|core\b|emo|hardcore|garage/],
-        ["bass", /hip ?hop|rap|trap|drill|grime|phonk|reggaeton|dancehall|afro|urbano|boom bap|gangsta/],
+        ["bass", /hip ?hop|rap|trap|drill|grime|phonk|dancehall|afro|boom bap|gangsta/],
         ["rave", /edm|house|techno|trance|dubstep|drum and bass|dnb|electro|hardstyle|rave|bass music|garage house|big room|psytrance|eurodance/],
         ["pop", /pop|dance|disco|funk|latin|k-pop|schlager|indie/]
       ];
@@ -4853,7 +5087,7 @@
           if (my !== token) return info;
           const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
           const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
-          const auto = pickProfile(genres, bpm, loud, apple);
+          const auto = pickProfile(genres, bpm, loud, apple, audio.uri === u ? minorShare(audio.data) : 0);
           info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm, genres, apple };
           return info;
         }
@@ -4861,7 +5095,7 @@
           if (!audio.data || audio.uri !== uri) return;
           if (info.bpm !== audio.data.bpm) {
             info.bpm = audio.data.bpm;
-            if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "").key;
+            if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "", minorShare(audio.data)).key;
           }
         }
         function step(sec, dt, playing) {
@@ -4873,7 +5107,7 @@
           const d = audio.uri === uri ? audio.data : null;
           clock += dt;
           const ease2 = (k) => 1 - Math.exp(-dt * k);
-          let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false;
+          let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0;
           let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
           if (d && d.segs?.length) {
             const M = songMap(d);
@@ -4883,7 +5117,8 @@
             for (let s = 1; s <= 4; s += 0.5) ahead = Math.max(ahead, at(M.energy, sec + s));
             build = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
             low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
-            const sx = M.sections[Math.max(seek(M.sections, sec, "t"), 0)];
+            scene = Math.max(seek(M.sections, sec, "t"), 0);
+            const sx = M.sections[scene];
             minor = sx ? sx.mode === 0 : false;
             if (playing && sec >= lastSec && sec - lastSec < 0.5) {
               for (const t2 of M.drops) if (t2 > lastSec && t2 <= sec + 0.02) dropHit = true;
@@ -4942,7 +5177,7 @@
           if (fx && cfg.partyZoom && level >= 4 && strong) kick = Math.min(1, (0.3 + 0.7 * I) * beatEnv * (level - 3));
           if (fx && cfg.partyZoom && dropHit) kick = 1;
           kick *= Math.exp(-dt * 9);
-          spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0);
+          spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
           if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
           const lasers = fx && cfg.partyLasers && level >= 4 ? level >= 5 ? 12 : 6 : 0;
           const beamVis = clamp(smooth.e * 1.25 + dropGlow - smooth.k, 0, 1.2);
@@ -4963,6 +5198,7 @@
             bright: smooth.br,
             minor,
             I,
+            scene,
             beat: beatEnv,
             accent,
             beam: accent,
@@ -5758,7 +5994,7 @@
             vals[i] += (t2 - vals[i]) * (t2 > vals[i] ? rise : fall);
           }
           if (cfg.calm) return;
-          const pal = px ? vivid(palette(), px.minor) : palette();
+          const pal = px ? vivid(palette(), px.minor, px.P.tint) : palette();
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
           const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
           const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
@@ -5909,6 +6145,7 @@
           vals = new Float32Array(0);
           rings = [];
           sparks = [];
+          tunnel = [];
           vizRect.r = null;
           lastVizT = 0;
           vw = 0;
@@ -5918,19 +6155,41 @@
           }
         }
         let vividKey = "", vividPal = null;
-        function vivid(pal, minor) {
-          const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "");
+        const TINT = { cool: 205, warm: 28, hot: 4 };
+        const toward = (h, target, f) => (h + (((target - h) % 360 + 540) % 360 - 180) * f + 360) % 360;
+        function vivid(pal, minor, tint) {
+          const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "");
           if (key === vividKey) return vividPal;
           vividKey = key;
           const hsl = pal.map(rgb2hsl);
           const grey = hsl.every(([, s]) => s < 0.12);
           vividPal = hsl.map(([h, s, l], i) => {
-            const hue = grey ? [275, 195, 320][i] : h;
+            let hue = grey ? [275, 195, 320][i] : h;
+            if (TINT[tint] != null) hue = toward(hue, TINT[tint] + (i - 1) * 22, 0.45);
             return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
           });
           return vividPal;
         }
-        function drawStage(ctx, pal, px, rgba2) {
+        const glowSprites = /* @__PURE__ */ new Map();
+        function glowSprite(c) {
+          const k = c.join(",");
+          if (!glowSprites.has(k)) {
+            if (glowSprites.size > 24) glowSprites.clear();
+            const cv = document.createElement("canvas");
+            cv.width = cv.height = 48;
+            const x = cv.getContext("2d");
+            const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
+            g.addColorStop(0, "rgba(255,255,255,1)");
+            g.addColorStop(0.22, `rgba(${k},0.75)`);
+            g.addColorStop(1, `rgba(${k},0)`);
+            x.fillStyle = g;
+            x.fillRect(0, 0, 48, 48);
+            glowSprites.set(k, cv);
+          }
+          return glowSprites.get(k);
+        }
+        let disco = null, tunnel = [];
+        function drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt) {
           const t2 = performance.now() / 1e3, far = Math.hypot(vw, vh) * 1.1;
           const beat2 = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6);
           const cone = (sx, sy, a, wd, c, al, reach = far) => {
@@ -5980,6 +6239,77 @@
               }
               break;
             }
+            case "scan": {
+              const bps = (party.info.bpm || 125) / 60;
+              const al = (0.07 + beat2 * 0.45 + px.drop * 0.2) * vis;
+              const line = (x0, y0, x1, y1, c, a) => {
+                for (const [lw, f] of [[24 * dpr, 0.22], [2.2 * dpr, 1]]) {
+                  ctx.lineWidth = lw;
+                  ctx.strokeStyle = rgba2(c, a * f);
+                  ctx.beginPath();
+                  ctx.moveTo(x0, y0);
+                  ctx.lineTo(x1, y1);
+                  ctx.stroke();
+                }
+              };
+              for (let k = 0; k < 3; k++) {
+                const y = (t2 * bps * 0.25 + k / 3 + px.scene * 0.17) % 1 * vh;
+                line(0, y, vw, y, pal[k], al);
+              }
+              const x = t2 * bps / 4 % 1;
+              line(x * vw, 0, x * vw, vh, pal[2], al * (0.4 + px.energy * 0.6));
+              break;
+            }
+            case "disco": {
+              disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));
+              const rot = t2 * 0.32 + px.spin * 0.08;
+              disco.forEach((d, i) => {
+                const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);
+                if (face <= 0.05) return;
+                const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
+                const tw = 0.5 + 0.5 * Math.sin(t2 * 4.5 + d.tw);
+                ctx.globalAlpha = clamp(face * (0.22 + beat2 * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
+                const r = (12 + d.s * 13 + beat2 * 16) * dpr;
+                ctx.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
+              });
+              ctx.globalAlpha = 1;
+              break;
+            }
+            case "aurora": {
+              for (let k = 0; k < 3; k++) {
+                const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;
+                const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);
+                const al = (0.05 + px.I * 0.1 + beat2 * 0.08 + px.drop * 0.1) * vis;
+                const wave = (i, off) => Math.sin(i * 0.45 + t2 * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t2 * 0.3) * amp * 0.6;
+                ctx.beginPath();
+                for (let i = 0; i <= 24; i++) i ? ctx.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx.moveTo(0, base + wave(0, 0));
+                for (let i = 24; i >= 0; i--) ctx.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);
+                ctx.closePath();
+                const g = ctx.createLinearGradient(0, base - amp, 0, base + thick + amp);
+                g.addColorStop(0, rgba2(pal[k], 0));
+                g.addColorStop(0.5, rgba2(pal[k], al));
+                g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));
+                ctx.fillStyle = g;
+                ctx.fill();
+              }
+              break;
+            }
+            case "tunnel": {
+              if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.45 + 0.55 * px.accent, c: tunnel.length % 3, r: px.spin * 0.15 });
+              tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.5)) > 0.02 && f.s < 10);
+              for (const f of tunnel) {
+                f.s *= Math.exp(dt * 1.9);
+                const h = R * f.s, c = Math.cos(f.r), sn = Math.sin(f.r);
+                ctx.setTransform(c, sn, -sn, c, cx, cy);
+                ctx.lineWidth = (1.5 + f.s * 0.9) * dpr;
+                ctx.strokeStyle = rgba2(pal[f.c], f.a * vis * 0.85);
+                ctx.beginPath();
+                ctx.roundRect(-h, -h, h * 2, h * 2, h * 0.18);
+                ctx.stroke();
+              }
+              ctx.setTransform(1, 0, 0, 1, 0, 0);
+              break;
+            }
             default: {
               const al = (0.035 + beat2 * 0.05) * (0.6 + px.I * 0.4);
               for (let k = 0; k < 3; k++) {
@@ -5992,12 +6322,13 @@
         function drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, dt, px, tip, ang) {
           const P = px.P;
           const mixC = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));
+          const off = px.scene * 0.37 % 1;
           const colAt = (u) => {
-            const x = u * 3 % 3, i = Math.floor(x);
+            const x = (u + off) % 1 * 3 % 3, i = Math.floor(x);
             return mixC(pal[i], pal[(i + 1) % 3], x - i);
           };
           const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-          if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba2);
+          if (px.fx && cfg.partyLasers && px.level >= 2) drawStage(ctx, pal, px, rgba2, cx, cy, R, dpr, dt);
           if (px.lasers && px.beamVis > 0.02) {
             const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
             const riser = px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin(performance.now() / 1e3 * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
@@ -7363,7 +7694,7 @@
     return row;
   }
   function seg(options, value, onPick) {
-    const s = el("div", "m-seg");
+    const s = el("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
     for (const [k, label] of options) {
       const b = el("button", "", label);
       b.type = "button";
