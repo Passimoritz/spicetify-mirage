@@ -10,6 +10,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.9.1] – 2026-11-02
+
+### Fixed
+
+- **No more floating crowd.** Bodies now reach far below the bottom edge, so people who jump, sit on someone's shoulders or move with the stage camera no longer hover in the air as cut-off torsos.
+- **The crowd fades out on pause** and comes back when the music plays again – dancing to silence looked wrong.
+
 ## [1.9.0] – 2026-11-02
 
 ### Added

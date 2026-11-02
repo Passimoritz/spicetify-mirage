@@ -1149,7 +1149,7 @@ const immersive = (() => {
       },
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: party.info.bpm || 120,
-      stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx,
+      stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !S.Player.isPlaying(),
       venue: cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : "",
     });
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau

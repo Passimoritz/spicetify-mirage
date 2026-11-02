@@ -260,7 +260,7 @@ function createVenue(makeCanvas) {
     const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
     return x - Math.floor(x);
   };
-  let crowd = null;
+  let crowd = null, crowdA = 0;
   function makeCrowd(u, v) {
     const people = [];
     let id = 0;
@@ -326,7 +326,7 @@ function createVenue(makeCanvas) {
     return sp;
   }
   const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
-  function drawCrowd(ctx, px, pal, dpr, rgba, dt, st, v) {
+  function drawCrowd(ctx, px, pal, dpr, rgba, dt, st, v, A) {
     const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
     if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);
     if (!crowd.people.length) return;
@@ -357,6 +357,7 @@ function createVenue(makeCanvas) {
     ctx.fillStyle = haze;
     ctx.fillRect(0, vh - hz, vw, hz);
     ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = A;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
@@ -392,6 +393,10 @@ function createVenue(makeCanvas) {
       const lifted = p.id === crowd.lift;
       const yy = lifted ? y - 58 * s1 : y;
       ctx.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);
+      // Körper bis weit unter den Bildrand verlängern: beim Springen, auf den Schultern und bei
+      // Kamerafahrten schwebt sonst ein abgeschnittener Oberkörper in der Luft
+      ctx.fillStyle = FILL[p.row];
+      ctx.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));
       ctx.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);
       // --- Arme: hoch mit der Stimmung, Faust auf der Kick, Klatschen auf 2 und 4, Winken, Handys
       const wantUp = lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
@@ -416,19 +421,19 @@ function createVenue(makeCanvas) {
         if (side === p.hand && p.gadget && a > 0.5 && (me < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);
       }
       // Kamerablitze aus der Menge: in der Spitze öfter
-      if (p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1 });
+      if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1 });
     }
     if (curRow != null) strokeRow(curRow);
     ctx.globalCompositeOperation = "lighter";
     for (const [gx, gy, kind, s1, row] of glows) {
       const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;
-      ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25);
+      ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A;
       ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
     }
     crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);
     for (const f of crowd.flashes) {
       const r = 34 * f.s;
-      ctx.globalAlpha = f.a;
+      ctx.globalAlpha = f.a * A;
       ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
     }
     ctx.globalAlpha = 1;
@@ -446,7 +451,9 @@ function createVenue(makeCanvas) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1;
     ctx.clearRect(0, 0, vw, vh);
-    if (!st.stage && !st.crowd) return;
+    // Pause: das Publikum blendet weich aus (stillstehend tanzen sähe falsch aus) und kommt mit der Musik zurück
+    crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));
+    if (!st.stage && crowdA < 0.01) return;
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];
     ctx.globalCompositeOperation = "lighter";
@@ -456,7 +463,7 @@ function createVenue(makeCanvas) {
       drawStage(ctx, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
       drawDecor(ctx, v, st.px, st.pal, rgba, st.dpr, st);
     }
-    if (st.crowd) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v);
+    if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = "source-over";
   }
