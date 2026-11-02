@@ -120,7 +120,16 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**. Jeder Eff
 
 <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> oder der Kreis-Knopf oben in der Leiste. Fünf Ansichten gehen ineinander über (Tasten <kbd>1</kbd>–<kbd>5</kbd>):
 
-<p align="center"><img src="assets/immersive.svg" alt="Ansichten des Immersiv-Modus" width="100%"></p>
+<table>
+  <tr>
+    <td width="50%"><img src="assets/shots/lyrics-de.jpg" alt="Liedtext – Karaoke Wort für Wort"></td>
+    <td width="50%"><img src="assets/shots/mix-de.jpg" alt="Mix – Cover, Visualizer-Kranz und Liedtext"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Liedtext – Karaoke Wort für Wort</sub></td>
+    <td align="center"><sub>Mix – Cover, Visualizer-Kranz und Liedtext</sub></td>
+  </tr>
+</table>
 
 | Ansicht | Was du bekommst |
 |---|---|
@@ -135,6 +144,18 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**. Jeder Eff
 Vollbild per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>. Ruht die Maus, blenden die Bedienelemente aus.
 
 ## 🎉 Party-Modus
+
+<p align="center"><img src="assets/shots/party-festival-de.jpg" alt="Party-Modus auf dem Festival: Lichtstrahlen, Türme und ein Publikum mit erhobenen Händen" width="100%"></p>
+<table>
+  <tr>
+    <td width="50%"><img src="assets/shots/party-club-de.jpg" alt="Party-Modus im Club mit Discokugel"></td>
+    <td width="50%"><img src="assets/shots/visualizer.png" alt="Visualizer"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>House im Club – Discokugel, Publikum im Takt</sub></td>
+    <td align="center"><sub>Visualizer-Ansicht</sub></td>
+  </tr>
+</table>
 
 Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten, Drops (auf ihren Schlag gelegt), Breaks, Dur oder Moll und wo Kick, Snare und Hi-Hats sitzen. Nach dieser Karte wird das Licht inszeniert – es reagiert auf das, was kommt, nicht nur auf das, was gerade laut ist.
 

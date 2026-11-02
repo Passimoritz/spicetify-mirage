@@ -53,7 +53,7 @@
       <rect x="140" y="238" width="60" height="7" rx="3.5" fill-opacity=".25"/>
     </g>
     <text x="330" y="205" font-family="Segoe UI Variable Display, Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="128" font-weight="800" letter-spacing="-6" fill="url(#title)">Mirage</text>
-    <text x="336" y="252" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="21" fill="#e9e4ff" fill-opacity=".85">A living Spicetify theme · glass · cover colours · lyrics · visualizer</text>
+    <text x="336" y="252" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="21" fill="#e9e4ff" fill-opacity=".85">A living Spicetify theme · cover colours · lyrics · visualizer · party</text>
     <text x="338" y="92" font-family="Consolas, Menlo, monospace" font-size="14" letter-spacing="5" fill="#e6deff" fill-opacity=".8">SPICETIFY THEME</text>
     <g transform="translate(1118 178)">
       <circle r="78" fill="#120f1d" stroke="#b69cff" stroke-opacity=".5" stroke-width="2"/>

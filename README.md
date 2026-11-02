@@ -120,7 +120,16 @@ Everything is set up in **Profile menu → Mirage settings**. Every effect descr
 
 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> or the circle button in the top bar. Five views morph into each other (keys <kbd>1</kbd>–<kbd>5</kbd>):
 
-<p align="center"><img src="assets/immersive.svg" alt="Immersive mode views" width="100%"></p>
+<table>
+  <tr>
+    <td width="50%"><img src="assets/shots/lyrics.jpg" alt="Lyrics – karaoke word by word"></td>
+    <td width="50%"><img src="assets/shots/mix.jpg" alt="Mix – cover, visualizer ring and lyrics"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Lyrics – karaoke word by word</sub></td>
+    <td align="center"><sub>Mix – cover, visualizer ring and lyrics</sub></td>
+  </tr>
+</table>
 
 | View | What you get |
 |---|---|
@@ -135,6 +144,18 @@ Everything is set up in **Profile menu → Mirage settings**. Every effect descr
 Full screen with the button, <kbd>F</kbd> or <kbd>F11</kbd>. When the mouse rests, the controls fade out.
 
 ## 🎉 Party mode
+
+<p align="center"><img src="assets/shots/party-festival.jpg" alt="Party mode at a festival: light beams, towers and a crowd with raised hands" width="100%"></p>
+<table>
+  <tr>
+    <td width="50%"><img src="assets/shots/party-club.jpg" alt="Party mode in the club with a disco ball"></td>
+    <td width="50%"><img src="assets/shots/visualizer.png" alt="Visualizer"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>House in the club – disco ball, crowd on the beat</sub></td>
+    <td align="center"><sub>Visualizer view</sub></td>
+  </tr>
+</table>
 
 Party mode reads the whole song before it plays: energy curve, build-ups, drops (placed on their beat), breaks, major or minor, and where kick, snare and hi-hats hit. The light is directed from that map, so it reacts to what is coming, not just to what is loud.
 
