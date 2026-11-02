@@ -10,6 +10,15 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.6.1] – 2026-11-02
+
+### Fixed
+
+- **Karaoke word by word follows the singing.** Without Spotify syllable times, the words used to be spread evenly over the whole time until the next line – after a pause or a held note they ran far ahead. Now:
+  - NetEase word-exact lyrics (YRC) and Enhanced LRC from LRCLIB are used with their real word times.
+  - When Spotify only has line times, Mirage takes NetEase's word-exact version of the same song – only if the text matches.
+  - Otherwise the words are estimated at singing pace instead of being stretched over the pause, and when the line becomes active their starts snap to the note onsets in Spotify's analysis.
+
 ## [1.6.0] – 2026-11-02
 
 ### Added

@@ -10,7 +10,7 @@ function getLyrics(uri) {
   if (!/^spotify:(track|local):/.test(uri || "")) return Promise.resolve(null);
   // Schalter und gewählte Fassung im Schlüssel: wer umschaltet, bekommt sofort das passende Ergebnis
   const pick = cfg.onlineLyrics ? cfg.lyricPicks?.[uri] || "" : "";
-  const key = uri + (cfg.onlineLyrics ? "|web" : "") + "|" + pick;
+  const key = uri + (cfg.onlineLyrics ? "|web" : "") + (cfg.karaoke ? "|k" : "") + "|" + pick;
   if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri, pick));
   return lyricCache.get(key);
 }
@@ -27,6 +27,11 @@ async function fetchLyrics(uri, pick) {
     if (got) return got;
   }
   const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
+  if (own?.synced && cfg.karaoke && cfg.onlineLyrics && meta && !own.lines.some((l) => l.syl)) {
+    // Karaoke braucht Wortzeiten: hat NetEase den GLEICHEN Text wortgenau, nimmt Mirage diese Fassung
+    const ne = await within(fetchNetease(meta), 6000);
+    if (ne?.wordSynced && sameLyrics(own, ne)) return { ...ne, lang: own.lang };
+  }
   if (own || !cfg.onlineLyrics || !meta) return own;
   // der Reihe nach: LRCLIB → NetEase (viele zeitgenaue Texte, gerade für internationale Musik)
   // → lyrics.ovh (nur einfacher Text). Ein zeitgenauer Treffer gewinnt vor einem einfachen.
@@ -37,6 +42,16 @@ async function fetchLyrics(uri, pick) {
     if (got && !plain) plain = got;
   }
   return plain;
+}
+// Gleicher Text? Wörter der ersten Zeilen vergleichen und Zeilenzahl ähnlich – sonst wäre es eine andere Fassung
+function sameLyrics(a, b) {
+  const words = (x) => new Set(x.lines.filter((l) => l.text !== "♪").slice(0, 12).flatMap((l) => l.text.toLowerCase().split(/[^\p{L}\p{N}']+/u)).filter((w) => w.length > 1));
+  const wa = words(a), wb = words(b);
+  if (!wa.size || !wb.size) return false;
+  let hit = 0;
+  for (const w of wa) if (wb.has(w)) hit++;
+  const na = a.lines.filter((l) => l.text !== "♪").length, nb = b.lines.filter((l) => l.text !== "♪").length;
+  return hit / wa.size > 0.6 && nb / na > 0.7 && nb / na < 1.45;
 }
 // Quelle hängt? Nach ms aufgeben statt den Liedtext ewig auf „Lädt“ zu lassen
 const within = (p, ms) => Promise.race([p.catch(() => null), new Promise((r) => setTimeout(() => r(null), ms))]);
@@ -142,10 +157,42 @@ async function fetchNetease(meta) {
     .filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1000 - meta.sec) <= 4)
     .sort((x, y) => Math.abs((x.duration || 0) / 1000 - meta.sec) - Math.abs((y.duration || 0) / 1000 - meta.sec))[0];
   if (!fit) return null;
-  const lyr = await netease(`song/lyric?id=${fit.id}&lv=-1&kv=-1&tv=-1`);
+  const lyr = (await netease(`song/lyric/v1?id=${fit.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`)) || (await netease(`song/lyric?id=${fit.id}&lv=-1&kv=-1&tv=-1`));
   if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
-  const lines = parseLrc(lyr?.lrc?.lyric || "").filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+  const clean = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+  const lines = clean(parseLrc(lyr?.lrc?.lyric || ""));
+  // YRC = jedes Wort mit eigener Zeit; nur nehmen, wenn sie den Song wirklich abdeckt
+  const yrc = clean(parseYrc(lyr?.yrc?.lyric || ""));
+  if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc };
   return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
+}
+// NetEase-YRC: „[Start,Dauer](Start,Dauer,0)Wort (Start,Dauer,0)Wort …“ – Zeilen mit „{…}“ sind Mitwirkende
+function parseYrc(text) {
+  const out = [];
+  for (const row of text.split(/\r?\n/)) {
+    const head = /^\[(\d+),(\d+)\]/.exec(row);
+    if (!head) continue;
+    const words = [];
+    for (const m of row.slice(head[0].length).matchAll(/\((\d+),(\d+),\d+\)([^(]*)/g)) {
+      if (!m[3]) continue;
+      words.push({ t: Number(m[1]), d: Number(m[2]), raw: m[3] });
+    }
+    if (!words.length) continue;
+    out.push(wordLine(Number(head[1]), words));
+  }
+  return out.sort((a, b) => a.t - b.t);
+}
+// Wörter zu einer Zeile: Leerzeichen nur, wo der Text eines hat – oder zwischen zwei lateinischen Wörtern,
+// die NetEase manchmal ohne Abstand liefert („how(…)to“). Chinesisch/Japanisch bleibt ohne Abstände.
+function wordLine(t, words) {
+  const latin = /[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\d]/u;
+  const list = words.map((w, i) => {
+    const txt = w.raw.trim();
+    const next = words[i + 1]?.raw.trim() || "";
+    const sp = i < words.length - 1 && (/\s$/.test(w.raw) || /^\s/.test(words[i + 1].raw) || (latin.test(txt.slice(-1)) && latin.test(next.charAt(0))));
+    return { t: w.t, d: w.d, text: txt, sp };
+  }).filter((w) => w.text);
+  return { t, text: list.map((w) => w.text + (w.sp ? " " : "")).join("").trim() || "♪", words: list };
 }
 
 /* ---- lyrics.ovh: nur einfacher Text, aber riesige Sammlung */
@@ -192,10 +239,21 @@ function pickLyrics(uri, id) {
   save();
 }
 // „[01:02.34] Text“ – eine Zeile darf mehrere Zeitmarken tragen (Refrain)
+const lrcMs = (m, sec) => Math.round((Number(m) * 60 + Number(String(sec).replace(":", "."))) * 1000);
 function parseLrc(lrc) {
   const out = [];
   for (const row of lrc.split(/\r?\n/)) {
     const marks = [...row.matchAll(/\[(\d+):(\d+(?:[.:]\d+)?)\]/g)];
+    // Enhanced LRC: Wortzeiten in spitzen Klammern
+    if (marks.length === 1 && /<\d+:\d+(?:\.\d+)?>/.test(row)) {
+      const body = row.slice(marks[0].index + marks[0][0].length);
+      const parts = [...body.matchAll(/<(\d+):(\d+(?:\.\d+)?)>([^<]*)/g)].map((m) => ({ t: lrcMs(m[1], m[2]), raw: m[3] }));
+      const words = parts.filter((w) => w.raw.trim()).map((w, i, a) => ({ ...w, d: Math.max(80, (a[i + 1]?.t ?? w.t + 600) - w.t) }));
+      if (words.length) {
+        out.push(wordLine(lrcMs(marks[0][1], marks[0][2]), words));
+        continue;
+      }
+    }
     if (!marks.length) continue;
     const text = row.slice(marks[marks.length - 1].index + marks[marks.length - 1][0].length).trim() || "♪";
     for (const m of marks) out.push({ t: Math.round((Number(m[1]) * 60 + Number(m[2].replace(":", "."))) * 1000), text });

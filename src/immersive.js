@@ -489,8 +489,10 @@ const immersive = (() => {
   let words = [];
   function wordTimes(lines, i) {
     const l = lines[i];
-    const parts = l.text.split(/\s+/).filter(Boolean);
     const next = lines[i + 1]?.t ?? l.t + 6000;
+    // echte Wortzeiten (NetEase-YRC, Enhanced LRC): genau so, wie gesungen wird
+    if (l.words?.length) return l.words.map((w) => ({ text: w.text, a: w.t, b: w.t + Math.max(60, w.d), sp: w.sp }));
+    const parts = l.text.split(/\s+/).filter(Boolean);
     if (l.syl?.length) {
       // Silben → Zeichenpositionen, dann je Wort Anfang der ersten und Ende der letzten Silbe
       const marks = [];
@@ -507,15 +509,42 @@ const immersive = (() => {
         return hit.length ? { text: w, a: hit[0].a, b: hit[hit.length - 1].b } : { text: w, a: l.t, b: l.t + 1 };
       });
     }
+    // geschätzt: im Gesangstempo (≈ 75 ms je Zeichen) statt über die ganze Pause bis zur nächsten Zeile;
+    // beim Aktivwerden legt snapWords die Wortanfänge zusätzlich auf die Ton-Einsätze der Analyse
     const chars = parts.reduce((n, w) => n + w.length + 2, 0);
-    const span = Math.max(300, Math.min(next - l.t - 150, Math.max(1100, chars * 85)));
+    const span = Math.max(300, Math.min(next - l.t - 150, Math.max(900, chars * 75)));
     let at = l.t;
     return parts.map((w) => {
       const d = (span * (w.length + 2)) / chars;
-      const out = { text: w, a: at, b: at + d };
+      const out = { text: w, a: at, b: at + d, est: true };
       at += d;
       return out;
     });
+  }
+  // Geschätzte Wortanfänge auf Ton-Einsätze legen: ein gesungenes Wort beginnt fast immer mit einer Note,
+  // und Spotify kennt jeden Einsatz (Segment-Anfänge). Je Wort der nächste Einsatz in ±250 ms, der Reihe nach.
+  function snapWords(list, t0, t1) {
+    list.snapped = true;
+    const segs = audio.data?.segs;
+    if (!segs?.length || audio.uri !== lyrUri) return;
+    const on = [];
+    for (let k = Math.max(seek(segs, t0 / 1000 - 0.3, "t"), 0); k < segs.length && segs[k].t * 1000 < t1; k++) {
+      if (segs[k].l > -30) on.push(segs[k].t * 1000);
+    }
+    if (on.length < Math.max(2, list.length * 0.5)) return;
+    let prev = t0 - 300;
+    for (const w of list) {
+      let best = null, bd = 251;
+      for (const o of on) {
+        const dd = Math.abs(o - w.a);
+        if (o > prev + 60 && dd < bd) [best, bd] = [o, dd];
+      }
+      if (best != null) w.a = best;
+      if (w.a <= prev) w.a = prev + 60;
+      prev = w.a;
+    }
+    // Ende eines Worts = Anfang des nächsten; das letzte behält seine Länge
+    list.forEach((w, k) => (w.b = list[k + 1] ? Math.max(w.a + 60, list[k + 1].a) : Math.max(w.a + 200, w.b)));
   }
   // Knopf unten rechts: woher der Text kommt, und eine andere Fassung wählen
   function showSource(got) {
@@ -600,8 +629,10 @@ const immersive = (() => {
           const s = document.createElement("span");
           s.className = "m-w";
           s.textContent = w.text;
-          box.append(s, " ");
+          box.append(s);
+          if (w.sp !== false) box.append(" ");
           list.push({ el: s, a: w.a, b: w.b, p: -1 });
+          if (w.est) list.est = true;
         }
         d.append(box);
         words[i] = list;
@@ -647,6 +678,8 @@ const immersive = (() => {
       if (activeEl) activeEl.style.scale = "";
       activeEl = lines[i] || null;
       lastBounce = "";
+      // erst jetzt sind die Taktdaten sicher geladen: geschätzte Wörter auf die Ton-Einsätze legen
+      if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6000);
       for (let k = 0; k < lines.length; k++) {
         const ln = lines[k];
         ln.classList.toggle("is-active", k === i);

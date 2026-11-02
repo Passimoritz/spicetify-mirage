@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.6.0" : "dev";
+      VERSION = true ? "1.6.1" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -3893,7 +3893,7 @@
   function getLyrics(uri) {
     if (!/^spotify:(track|local):/.test(uri || "")) return Promise.resolve(null);
     const pick = cfg.onlineLyrics ? cfg.lyricPicks?.[uri] || "" : "";
-    const key = uri + (cfg.onlineLyrics ? "|web" : "") + "|" + pick;
+    const key = uri + (cfg.onlineLyrics ? "|web" : "") + (cfg.karaoke ? "|k" : "") + "|" + pick;
     if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri, pick));
     return lyricCache.get(key);
   }
@@ -3907,6 +3907,10 @@
       if (got) return got;
     }
     const own = uri.startsWith("spotify:track:") ? await fetchSpotify(uri) : null;
+    if (own?.synced && cfg.karaoke && cfg.onlineLyrics && meta && !own.lines.some((l) => l.syl)) {
+      const ne = await within(fetchNetease(meta), 6e3);
+      if (ne?.wordSynced && sameLyrics(own, ne)) return { ...ne, lang: own.lang };
+    }
     if (own || !cfg.onlineLyrics || !meta) return own;
     let plain = null;
     for (const src of [fetchLrclib, fetchNetease, fetchOvh]) {
@@ -3915,6 +3919,15 @@
       if (got && !plain) plain = got;
     }
     return plain;
+  }
+  function sameLyrics(a, b) {
+    const words = (x) => new Set(x.lines.filter((l) => l.text !== "\u266A").slice(0, 12).flatMap((l) => l.text.toLowerCase().split(/[^\p{L}\p{N}']+/u)).filter((w) => w.length > 1));
+    const wa = words(a), wb = words(b);
+    if (!wa.size || !wb.size) return false;
+    let hit = 0;
+    for (const w of wa) if (wb.has(w)) hit++;
+    const na = a.lines.filter((l) => l.text !== "\u266A").length, nb = b.lines.filter((l) => l.text !== "\u266A").length;
+    return hit / wa.size > 0.6 && nb / na > 0.7 && nb / na < 1.45;
   }
   async function fetchSpotify(uri) {
     const id = uri.split(":")[2];
@@ -3998,10 +4011,38 @@
     const a = norm(meta.artist), tt = norm(title);
     const fit2 = songs.filter((s) => (s.artists || []).some((x) => norm(x.name).includes(a) || a.includes(norm(x.name))) && (norm(s.name).includes(tt) || tt.includes(norm(s.name)))).filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1e3 - meta.sec) <= 4).sort((x, y) => Math.abs((x.duration || 0) / 1e3 - meta.sec) - Math.abs((y.duration || 0) / 1e3 - meta.sec))[0];
     if (!fit2) return null;
-    const lyr = await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1`);
+    const lyr = await netease(`song/lyric/v1?id=${fit2.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`) || await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1`);
     if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
-    const lines = parseLrc(lyr?.lrc?.lyric || "").filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+    const clean = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+    const lines = clean(parseLrc(lyr?.lrc?.lyric || ""));
+    const yrc = clean(parseYrc(lyr?.yrc?.lyric || ""));
+    if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc };
     return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
+  }
+  function parseYrc(text) {
+    const out = [];
+    for (const row of text.split(/\r?\n/)) {
+      const head2 = /^\[(\d+),(\d+)\]/.exec(row);
+      if (!head2) continue;
+      const words = [];
+      for (const m of row.slice(head2[0].length).matchAll(/\((\d+),(\d+),\d+\)([^(]*)/g)) {
+        if (!m[3]) continue;
+        words.push({ t: Number(m[1]), d: Number(m[2]), raw: m[3] });
+      }
+      if (!words.length) continue;
+      out.push(wordLine(Number(head2[1]), words));
+    }
+    return out.sort((a, b) => a.t - b.t);
+  }
+  function wordLine(t2, words) {
+    const latin = /[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\d]/u;
+    const list = words.map((w, i) => {
+      const txt = w.raw.trim();
+      const next = words[i + 1]?.raw.trim() || "";
+      const sp = i < words.length - 1 && (/\s$/.test(w.raw) || /^\s/.test(words[i + 1].raw) || latin.test(txt.slice(-1)) && latin.test(next.charAt(0)));
+      return { t: w.t, d: w.d, text: txt, sp };
+    }).filter((w) => w.text);
+    return { t: t2, text: list.map((w) => w.text + (w.sp ? " " : "")).join("").trim() || "\u266A", words: list };
   }
   async function fetchOvh(meta) {
     if (!meta.title || !meta.artist) return null;
@@ -4040,6 +4081,15 @@
     const out = [];
     for (const row of lrc.split(/\r?\n/)) {
       const marks = [...row.matchAll(/\[(\d+):(\d+(?:[.:]\d+)?)\]/g)];
+      if (marks.length === 1 && /<\d+:\d+(?:\.\d+)?>/.test(row)) {
+        const body = row.slice(marks[0].index + marks[0][0].length);
+        const parts = [...body.matchAll(/<(\d+):(\d+(?:\.\d+)?)>([^<]*)/g)].map((m) => ({ t: lrcMs(m[1], m[2]), raw: m[3] }));
+        const words = parts.filter((w) => w.raw.trim()).map((w, i, a) => ({ ...w, d: Math.max(80, (a[i + 1]?.t ?? w.t + 600) - w.t) }));
+        if (words.length) {
+          out.push(wordLine(lrcMs(marks[0][1], marks[0][2]), words));
+          continue;
+        }
+      }
       if (!marks.length) continue;
       const text = row.slice(marks[marks.length - 1].index + marks[marks.length - 1][0].length).trim() || "\u266A";
       for (const m of marks) out.push({ t: Math.round((Number(m[1]) * 60 + Number(m[2].replace(":", "."))) * 1e3), text });
@@ -4085,7 +4135,7 @@
     canvasCache.set(uri, url);
     return url;
   }
-  var lyricCache, metaCache, within, cleanTitle, LRCLIB, NE, CREDIT, norm, trCache, canvasCache, SOURCE_NAME;
+  var lyricCache, metaCache, within, cleanTitle, LRCLIB, NE, CREDIT, norm, lrcMs, trCache, canvasCache, SOURCE_NAME;
   var init_lyrics = __esm({
     "src/lyrics.js"() {
       init_core();
@@ -4099,6 +4149,7 @@
       NE = "https://music.163.com/api/";
       CREDIT = /^(作词|作曲|编曲|制作|混音|母带|和声|吉他|贝斯|鼓|录音|监制|出品|lyricist|lyrics|composer|arranger|producer|mixed|mastered)\s*[:：]/i;
       norm = (s) => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+      lrcMs = (m, sec) => Math.round((Number(m) * 60 + Number(String(sec).replace(":", "."))) * 1e3);
       trCache = lru(40);
       canvasCache = lru(60);
       SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
@@ -5726,8 +5777,9 @@
         let words = [];
         function wordTimes(lines, i) {
           const l = lines[i];
-          const parts = l.text.split(/\s+/).filter(Boolean);
           const next = lines[i + 1]?.t ?? l.t + 6e3;
+          if (l.words?.length) return l.words.map((w) => ({ text: w.text, a: w.t, b: w.t + Math.max(60, w.d), sp: w.sp }));
+          const parts = l.text.split(/\s+/).filter(Boolean);
           if (l.syl?.length) {
             const marks = [];
             let c = 0;
@@ -5744,14 +5796,36 @@
             });
           }
           const chars = parts.reduce((n, w) => n + w.length + 2, 0);
-          const span = Math.max(300, Math.min(next - l.t - 150, Math.max(1100, chars * 85)));
+          const span = Math.max(300, Math.min(next - l.t - 150, Math.max(900, chars * 75)));
           let at2 = l.t;
           return parts.map((w) => {
             const d = span * (w.length + 2) / chars;
-            const out = { text: w, a: at2, b: at2 + d };
+            const out = { text: w, a: at2, b: at2 + d, est: true };
             at2 += d;
             return out;
           });
+        }
+        function snapWords(list, t0, t1) {
+          list.snapped = true;
+          const segs = audio.data?.segs;
+          if (!segs?.length || audio.uri !== lyrUri) return;
+          const on = [];
+          for (let k = Math.max(seek(segs, t0 / 1e3 - 0.3, "t"), 0); k < segs.length && segs[k].t * 1e3 < t1; k++) {
+            if (segs[k].l > -30) on.push(segs[k].t * 1e3);
+          }
+          if (on.length < Math.max(2, list.length * 0.5)) return;
+          let prev = t0 - 300;
+          for (const w of list) {
+            let best = null, bd = 251;
+            for (const o of on) {
+              const dd = Math.abs(o - w.a);
+              if (o > prev + 60 && dd < bd) [best, bd] = [o, dd];
+            }
+            if (best != null) w.a = best;
+            if (w.a <= prev) w.a = prev + 60;
+            prev = w.a;
+          }
+          list.forEach((w, k) => w.b = list[k + 1] ? Math.max(w.a + 60, list[k + 1].a) : Math.max(w.a + 200, w.b));
         }
         function showSource(got) {
           const picked = !!cfg.lyricPicks?.[lyrUri];
@@ -5833,8 +5907,10 @@
                 const s = document.createElement("span");
                 s.className = "m-w";
                 s.textContent = w.text;
-                box.append(s, " ");
+                box.append(s);
+                if (w.sp !== false) box.append(" ");
                 list.push({ el: s, a: w.a, b: w.b, p: -1 });
+                if (w.est) list.est = true;
               }
               d.append(box);
               words[i] = list;
@@ -5876,6 +5952,7 @@
             if (activeEl) activeEl.style.scale = "";
             activeEl = lines[i] || null;
             lastBounce = "";
+            if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6e3);
             for (let k = 0; k < lines.length; k++) {
               const ln = lines[k];
               ln.classList.toggle("is-active", k === i);
