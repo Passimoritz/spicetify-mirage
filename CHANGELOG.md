@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.12.1] – 2026-11-03
+
+### Fixed
+
+- **Live link: the phone page opens in Chrome.** Chrome first tries every http address over https; the phone server answered that attempt with an error and Chrome got stuck on "ERR_TOO_MANY_RETRIES". The server now recognises the encrypted attempt by its first byte and closes it at once, so Chrome falls back to http and the page opens.
+
 ## [1.12.0] – 2026-11-03
 
 ### Added

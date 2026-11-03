@@ -768,13 +768,29 @@ function startLive() {
       if (track) ws.send(JSON.stringify({ ch: "track", data: liteTrack() }));
     });
     wss.on("error", () => {});
-    server.on("error", () => resolve(null));
+    // Davor ein kleiner Pförtner: Chrome versucht jede http-Adresse zuerst verschlüsselt (https). Käme das
+    // beim HTTP-Server an, antwortete er mit einem Fehler – Chrome bliebe dann bei „ERR_TOO_MANY_RETRIES“
+    // hängen. Ein TLS-Verbindungsaufbau beginnt immer mit dem Byte 0x16: solche Verbindungen sofort
+    // schließen, dann weicht Chrome sauber auf http aus. Alles andere geht an den HTTP-Server weiter.
+    const front = require("net").createServer((sock) => {
+      sock.on("error", () => {});
+      sock.setTimeout(15000, () => sock.destroy());
+      sock.once("data", (buf) => {
+        if (buf[0] === 0x16) return sock.destroy();
+        sock.setTimeout(0);
+        sock.pause();
+        sock.unshift(buf);
+        server.emit("connection", sock);
+        sock.resume();
+      });
+    });
+    front.on("error", () => resolve(null));
     // Windows fragt beim ersten Mal, ob die App im privaten Netzwerk erreichbar sein darf
-    server.listen(LIVE_PORT, "0.0.0.0", async () => {
+    front.listen(LIVE_PORT, "0.0.0.0", async () => {
       const url = `http://${lanAddress()}:${LIVE_PORT}/?k=${token}`;
       let qr = "";
       try { qr = await require("qrcode").toString(url, { type: "svg", margin: 1 }); } catch {}
-      live = { server, clients, url, qr };
+      live = { server, front, clients, url, qr };
       resolve(live);
     });
   });
@@ -782,6 +798,7 @@ function startLive() {
 function stopLive() {
   if (!live) return;
   for (const c of live.clients) c.close();
+  live.front.close();
   live.server.close();
   live = null;
 }
