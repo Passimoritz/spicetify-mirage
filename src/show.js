@@ -6,7 +6,7 @@
 // · Instrumente (nur von den Credits bestätigt): Fanfaren-Strahlen für Bläser, Rauchschwaden fürs Saxofon,
 //   Blitze für die E-Gitarre, Lichttasten fürs Klavier (folgen den gespielten Tönen), Seidenbänder für
 //   Streicher, ein Lichtschein von oben für den Chor.
-// · Spaß: Wasserbälle über der Menge, ein Crowdsurfer in der Spitze.
+// · Spaß: Wasserbälle über der Menge.
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const RIG = {
   house: ["wave", "chase"], deephouse: ["wave"], techhouse: ["chase", "cross"], garage: ["wave", "chase"], disco: ["wave", "fan"],
@@ -290,8 +290,8 @@ function createShow(glowSprite) {
     ctx.globalAlpha = 1;
   }
 
-  /* ---- Spaß: Wasserbälle und Crowdsurfer (vor dem Publikum) */
-  const fun = { balls: [], next: 6, surf: null, nextSurf: 20 };
+  /* ---- Spaß: Wasserbälle über der Menge (vor dem Publikum) */
+  const fun = { balls: [], next: 6 };
   function drawFun(ctx, st, v, px, pal, dpr) {
     vw = st.vw;
     vh = st.vh;
@@ -328,47 +328,6 @@ function createShow(glowSprite) {
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
       ctx.fill();
-    }
-    // Crowdsurfer: in der Spitze trägt die Menge jemanden quer durchs Bild
-    if (v.decor !== "fairy" && !fun.surf && t > fun.nextSurf && (px.drop > 0.5 || (st.hype && px.energy > 0.8))) {
-      const dir = Math.random() < 0.5 ? 1 : -1;
-      fun.surf = { t0: t, dir, s: (0.9 + Math.random() * 0.2) * Math.max(0.75, vh / (950 * dpr)) };
-      fun.nextSurf = t + 45 + Math.random() * 30;
-    }
-    if (fun.surf) {
-      const S = fun.surf, p = (t - S.t0) / 9;
-      if (p > 1 || p < 0) fun.surf = null;
-      else {
-        const s = S.s * dpr, span = vw + 160 * s;
-        const x = S.dir > 0 ? -80 * s + p * span : vw + 80 * s - p * span, y = vh * 0.87 + Math.sin(t * 6) * 3 * s;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.scale(S.dir, 1);
-        ctx.rotate(Math.sin(t * 3) * 0.06);
-        ctx.fillStyle = "rgba(4,3,10,0.96)";
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 36 * s, 9 * s, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(42 * s, -4 * s, 9 * s, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "rgba(4,3,10,0.96)";
-        ctx.lineCap = "round";
-        ctx.lineWidth = 5 * s;
-        ctx.beginPath();
-        ctx.moveTo(26 * s, -6 * s);
-        ctx.lineTo(34 * s + Math.sin(t * 5) * 4 * s, -30 * s);
-        ctx.moveTo(-30 * s, -2 * s);
-        ctx.lineTo(-44 * s, -14 * s);
-        ctx.stroke();
-        // Lichtsaum oben: die Bühne beleuchtet ihn
-        ctx.strokeStyle = rgba(pal[0], 0.55);
-        ctx.lineWidth = 1.5 * s;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 36 * s, 9 * s, 0, Math.PI * 1.1, Math.PI * 1.9);
-        ctx.stroke();
-        ctx.restore();
-      }
     }
   }
 

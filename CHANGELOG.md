@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.12.2] – 2026-11-03
+
+### Removed
+
+- The person lifted onto someone's shoulders and the crowd-surfer – both hovered above the crowd and looked out of place. The crowd now stays on the ground; beach balls stay.
+
 ## [1.12.1] – 2026-11-03
 
 ### Fixed

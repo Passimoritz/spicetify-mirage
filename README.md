@@ -170,7 +170,7 @@ Party mode reads the whole song before it plays: energy curve, build-ups, drops 
 - **Slow motion** – sparks, rings and the crowd freeze for half a second right before the drop.
 - **DJ transitions** – on a song change the old colours hold until the first beat, then blend over four beats.
 
-**A crowd and a venue.** Silhouettes in front of the stage move with the genre – they jump and land on the beat, nod, headbang, clap on 2 and 4, sway – start a wave every now and then, lift someone onto their shoulders, fire camera flashes on the drop, bounce beach balls around and pass a crowd-surfer across the room. The venue follows the genre – club, warehouse, festival, stadium, beach or living room – or is fixed in the settings.
+**A crowd and a venue.** Silhouettes in front of the stage move with the genre – they jump and land on the beat, nod, headbang, clap on 2 and 4, sway – start a wave every now and then, fire camera flashes on the drop and bounce beach balls around. The venue follows the genre – club, warehouse, festival, stadium, beach or living room – or is fixed in the settings.
 
 **Stage effects where they belong.** CO2 jets shoot up on the drop in electronic music, pyro flames burn for rock, metal and punk, fireworks go up in the final chorus at the stadium and the festival, and hard techno, hardstyle and rave drops get a strobe (from *Extreme* on, never faster than one flash per beat).
 

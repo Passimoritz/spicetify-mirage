@@ -170,7 +170,7 @@ Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten,
 - **Zeitlupe** – Funken, Ringe und Publikum erstarren eine halbe Sekunde direkt vor dem Drop.
 - **DJ-Übergänge** – beim Songwechsel bleiben die alten Farben bis zum ersten Schlag und gehen dann über vier Schläge in die neuen über.
 
-**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle, nehmen jemanden auf die Schultern, zücken beim Drop die Handykameras, spielen sich Wasserbälle zu und tragen einen Crowdsurfer durch den Saal. Die Location richtet sich nach dem Genre – Club, Lagerhalle, Festival, Stadion, Strand oder Wohnzimmer – oder wird in den Einstellungen festgelegt.
+**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle, zücken beim Drop die Handykameras und spielen sich Wasserbälle zu. Die Location richtet sich nach dem Genre – Club, Lagerhalle, Festival, Stadion, Strand oder Wohnzimmer – oder wird in den Einstellungen festgelegt.
 
 **Bühneneffekte, wo sie hingehören.** Beim Drop in elektronischer Musik schießen CO2-Fontänen hoch, bei Rock, Metal und Punk lodern Pyro-Flammen, im letzten Refrain steigt im Stadion und auf dem Festival Feuerwerk auf, und harte Techno-, Hardstyle- und Rave-Drops bekommen ein Stroboskop (ab *Extrem*, nie schneller als ein Blitz pro Schlag).
 

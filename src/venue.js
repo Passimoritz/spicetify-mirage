@@ -509,13 +509,6 @@ function createVenue(makeCanvas) {
     if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];
     const waveX = crowd.wave >= 0 ? ((t - crowd.wave) / ((8 * 60) / st.bpm)) * vw * 1.3 - vw * 0.15 : -1e9;
     if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;
-    // auf die Schultern: im Refrain oder beim Drop wird jemand vorne hochgehoben
-    if ((st.hype || px.drop > 0.5) && X > 0.6 && t > crowd.liftUntil) {
-      const front = crowd.people.filter((p) => p.row === 0 && p.x > vw * 0.15 && p.x < vw * 0.85);
-      crowd.lift = front[Math.floor(Math.random() * front.length)]?.id ?? -1;
-      crowd.liftUntil = t + 9;
-    }
-    if (t > crowd.liftUntil + 0.01 && !(st.hype || px.drop > 0.5)) crowd.lift = -1;
     // Dunst über der Menge
     const hz = 260 * u, haze = ctx.createLinearGradient(0, vh, 0, vh - hz);
     haze.addColorStop(0, rgba(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));
