@@ -10,6 +10,17 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.13.1] – 2026-11-03
+
+### Changed
+
+- **A new look for the phone page.** Guests now see a glass card with the song, artist and tempo, a glowing orb that shows whether the party is live, soft colour clouds, rings on every beat and a flash on the drop. Old messages left on the relay are ignored, so a phone never shows a past party.
+- **New README** in English and German, with short clips of party mode, every immersive view, the venues, the instrument effects and the phone page.
+
+### Fixed
+
+- Notes in the Mirage settings sit on their own line again instead of squeezing next to the switch.
+
 ## [1.13.0] – 2026-11-03
 
 ### Changed
