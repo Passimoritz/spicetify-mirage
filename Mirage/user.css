@@ -1425,54 +1425,57 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  width: 92px;
+  gap: 4px;
+  width: 76px;
+  translate: -50% -50%;
   opacity: 0;
   animation:
-    m-jam-in 0.9s var(--m-ease) calc(var(--i) * 0.12s) forwards,
-    m-jam-float calc(7s + var(--i) * 0.9s) ease-in-out calc(var(--i) * -1.7s) infinite;
+    m-jam-in 1.2s var(--m-ease) calc(var(--i) * 0.15s) forwards,
+    m-jam-float calc(9s + var(--i) * 1.1s) ease-in-out calc(var(--i) * -2.3s) infinite;
 }
+/* klein, im Bühnenlicht: farbiger Lichtsaum, wippt mit der Kick */
 #mirage-immersive .m-jam-p :is(img, span) {
-  width: 58px;
-  height: 58px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   object-fit: cover;
   display: grid;
   place-items: center;
-  font: 700 22px var(--m-font);
+  font: 700 15px var(--m-font);
   color: #fff;
   background: linear-gradient(135deg, rgba(var(--m-a-rgb), 0.55), rgba(var(--m-c-rgb), 0.35));
   box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.22),
-    0 10px 30px -8px rgba(0, 0, 0, 0.7),
-    0 0 26px -6px rgba(var(--m-a-rgb), 0.7);
+    0 0 0 1.5px rgba(255, 255, 255, 0.28),
+    0 6px 18px -6px rgba(0, 0, 0, 0.8),
+    0 0 18px -4px rgba(var(--m-a-rgb), 0.8);
+  translate: 0 calc(var(--jk, 0) * -7px);
+  scale: calc(1 + var(--jk, 0) * 0.07);
+  transition: translate 0.09s ease-out, scale 0.09s ease-out;
 }
 #mirage-immersive .m-jam-p.is-me :is(img, span) {
   box-shadow:
-    0 0 0 2.5px var(--m-a),
-    0 10px 30px -8px rgba(0, 0, 0, 0.7),
-    0 0 30px -2px rgba(var(--m-a-rgb), 0.9);
+    0 0 0 2px var(--m-a),
+    0 6px 18px -6px rgba(0, 0, 0, 0.8),
+    0 0 22px -2px rgba(var(--m-a-rgb), 0.9);
 }
 #mirage-immersive .m-jam-p figcaption {
   max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  padding: 3px 9px;
+  padding: 1px 7px;
   border-radius: 99px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-  font: 600 11.5px var(--m-font);
-  color: rgba(255, 255, 255, 0.82);
+  background: rgba(0, 0, 0, 0.28);
+  font: 600 10px var(--m-font);
+  color: rgba(255, 255, 255, 0.72);
 }
-/* Host: kleiner leuchtender Punkt am Bild */
 #mirage-immersive .m-jam-p.is-host::after {
   content: "";
   position: absolute;
-  top: 2px;
-  left: calc(50% + 18px);
-  width: 11px;
-  height: 11px;
+  top: 0;
+  left: calc(50% + 11px);
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--m-c);
   box-shadow: 0 0 0 2px #07060c, 0 0 10px var(--m-c);
@@ -1484,17 +1487,17 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
 /* Jam-Licht: jede Person trägt eine eigene Farbe; wer den laufenden Song gewünscht hat, legt gerade auf */
 #mirage-immersive .m-jam-p[style*="--jc"] :is(img, span) {
   box-shadow:
-    0 0 0 2.5px var(--jc),
-    0 10px 30px -8px rgba(0, 0, 0, 0.7),
-    0 0 26px -4px var(--jc);
+    0 0 0 2px var(--jc),
+    0 6px 18px -6px rgba(0, 0, 0, 0.8),
+    0 0 20px -3px var(--jc);
 }
 #mirage-immersive .m-jam-p.is-dj :is(img, span) {
-  transform: scale(1.18);
+  transform: scale(1.2);
   box-shadow:
-    0 0 0 3px #fff,
-    0 0 0 6px var(--jc, var(--m-a)),
-    0 0 40px 4px var(--jc, var(--m-a));
-  transition: transform 0.6s var(--m-spring), box-shadow 0.6s;
+    0 0 0 2px #fff,
+    0 0 0 4px var(--jc, var(--m-a)),
+    0 0 28px 2px var(--jc, var(--m-a));
+  transition: transform 0.6s var(--m-spring), box-shadow 0.6s, translate 0.09s ease-out, scale 0.09s ease-out;
 }
 #mirage-immersive .m-jam-p.is-dj figcaption::before {
   content: "♪ ";
@@ -1538,8 +1541,8 @@ html.mirage-calm #mirage-immersive .m-im-line.is-hype .m-w {
 @keyframes m-jam-float {
   0%,
   100% { transform: translate(0, 0); }
-  33% { transform: translate(6px, -14px); }
-  66% { transform: translate(-5px, 8px); }
+  33% { transform: translate(3px, -5px); }
+  66% { transform: translate(-3px, 3px); }
 }
 @media (prefers-reduced-motion: reduce) {
   #mirage-immersive .m-im-flash {
@@ -3466,6 +3469,35 @@ html.mirage-vinyl .main-coverSlotCollapsed-container img {
   from {
     opacity: 0;
     transform: translateY(calc(-50% + 14px));
+  }
+}
+/* Party ohne Liedtext: Titel und Interpret rücken direkt unter das Cover, darunter der Hinweis –
+   die Bühne sitzt als Ganzes mittig, statt dass der Titel ganz unten über dem Publikum klebt */
+#mirage-immersive[data-mode="party"]:has(.m-im-lyrics-inner > .m-im-empty) {
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "cover"
+    "meta"
+    "lyrics";
+  align-content: center;
+  padding-top: 4vh;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics:has(.m-im-empty) {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics-inner > .m-im-empty {
+  position: relative;
+  top: auto;
+  left: auto;
+  margin: 1vh auto 0;
+  transform: none;
+  animation-name: m-im-empty-up;
+}
+@keyframes m-im-empty-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
 }
 /* Party: alles steht in einer Spalte in der Mitte – dann auch die Fläche (sonst klebte sie links) */

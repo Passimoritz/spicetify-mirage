@@ -507,17 +507,17 @@ const immersive = (() => {
     jamKey = key;
     q.jam.textContent = "";
     q.jam.hidden = !list.length;
-    const shown = list.slice(0, 10);
+    // klein unten im Publikum, links und rechts der Mitte (dort stehen Titel und Knöpfe), leicht versetzt
+    const SPOTS = [20, 80, 12, 88, 4, 96, 28, 72];
+    const shown = list.slice(0, SPOTS.length);
     shown.forEach((m, i) => {
-      const left = i % 2 === 0, row = i >> 1, rows = Math.ceil(shown.length / 2);
       const f = document.createElement("figure");
       f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "") + (cfg.partyJamLight && m.dj ? " is-dj" : "");
+      f.style.cssText = `--i:${i};left:${SPOTS[i]}%;top:${i % 4 < 2 ? 87 : 84}%`;
       if (cfg.partyJamLight) {
         const c = (vividPal || palette())[i % 3];
         f.style.setProperty("--jc", `rgb(${c.join(",")})`);
       }
-      // etwas versetzt statt in Reih und Glied: wirkt schwebend
-      f.style.cssText = `--i:${i};left:${left ? 4 + (row % 2) * 3 : 89 - (row % 2) * 3}%;top:${20 + ((row + 0.5) / rows) * 56}%`;
       const pic = document.createElement(m.img ? "img" : "span");
       if (m.img) {
         pic.src = m.img;
@@ -532,7 +532,7 @@ const immersive = (() => {
     if (list.length > shown.length) {
       const more = document.createElement("figure");
       more.className = "m-jam-p is-more";
-      more.style.cssText = "--i:10;left:89%;top:86%";
+      more.style.cssText = "--i:9;left:96%;top:70%";
       more.textContent = "+" + (list.length - shown.length);
       q.jam.append(more);
     }
@@ -1386,8 +1386,14 @@ const immersive = (() => {
       if ((quality.fast += dt) > 5 && quality.level < 2) [quality.level, quality.fast] = [quality.level + 1, 0];
     }
   }
+  let lastJk = "";
   function partyExtras(px, now, dt, R, dpr) {
     tuneQuality(dt);
+    // Jam-Gäste wippen mit der Kick (eine CSS-Variable, die Bewegung macht der Browser)
+    if (!q.jam.hidden) {
+      const jk = (px.kickEnv * (0.35 + 0.65 * px.energy) * (1 - px.low * 0.8)).toFixed(2);
+      if (jk !== lastJk) q.jam.style.setProperty("--jk", (lastJk = jk));
+    }
     // die echte Kick (aus der Klangfarbe) treibt Strahlen, Scheinwerfer, Kranz und Puls – je mehr Energie, desto mehr
     px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
     // Hintergrund atmet mit: Kick, Energie, Refrain und Drop heben die Farbfläche (nur Deckkraft – billig)

@@ -10,6 +10,17 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.11.1] – 2026-11-03
+
+### Changed
+
+- **Jam guests are part of the party now:** smaller profile pictures stand among the crowd at the bottom (left and right of the title), glow in their Jam colour, float gently and bounce with the kick.
+- **No lyrics, no gap:** without lyrics, title and artist in party mode sit directly under the cover instead of at the very bottom above the crowd.
+
+### Fixed
+
+- The personal Jam colours were overwritten when the guests were placed, so everyone looked the same; each guest now keeps their colour.
+
 ## [1.11.0] – 2026-11-03
 
 ### Added
