@@ -4,8 +4,8 @@
 
 <p align="center">
   <a href="#-installation"><img alt="Spicetify" src="https://img.shields.io/badge/Spicetify-2.40%2B-b69cff?style=for-the-badge&labelColor=12101c"></a>
-  <img alt="Sprachen" src="https://img.shields.io/badge/Sprachen-14-7c5cff?style=for-the-badge&labelColor=12101c">
-  <img alt="Overlay" src="https://img.shields.io/badge/Overlay-Windows%20·%20macOS%20·%20Linux-4fe3ff?style=for-the-badge&labelColor=12101c">
+  <a href="https://github.com/Passimoritz/spicetify-mirage/releases/latest"><img alt="Version" src="https://img.shields.io/github/v/release/Passimoritz/spicetify-mirage?style=for-the-badge&labelColor=12101c&color=7c5cff&label=Version"></a>
+  <img alt="Sprachen" src="https://img.shields.io/badge/Sprachen-14-4fe3ff?style=for-the-badge&labelColor=12101c">
   <img alt="Lizenz" src="https://img.shields.io/badge/Lizenz-MIT-e6deff?style=for-the-badge&labelColor=12101c">
 </p>
 
@@ -13,41 +13,46 @@
   <a href="README.md">English</a> · <b>Deutsch</b>
   <br><br>
   <a href="#-installation">Installation</a> ·
-  <a href="#-was-es-kann">Funktionen</a> ·
+  <a href="#-das-theme">Theme</a> ·
   <a href="#-immersiv-modus">Immersiv</a> ·
   <a href="#-party-modus">Party</a> ·
+  <a href="#-live-link-fürs-handy">Handys</a> ·
   <a href="#-mirage-overlay">Overlay</a> ·
-  <a href="#-reparieren-nach-einem-spotify-update">Reparieren nach Updates</a> ·
-  <a href="#-tasten">Tasten</a> ·
+  <a href="#-einstellungen--leistung">Einstellungen</a> ·
   <a href="#-häufige-fragen">FAQ</a>
 </p>
 
 ---
 
-**Mirage macht aus Spotify mattes Glas, hinter dem die Musik lebt.** Jeder Song färbt die Oberfläche in den Farben seines Covers, das Cover treibt als weiches Licht hinter den Flächen, und der Hintergrund atmet im Takt. Mit <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> wird Spotify zur Vollbild-Bühne – Liedtext, Visualizer oder eine Party-Lichtshow, die weiß, wo der Drop kommt.
-
-<p align="center"><a href="https://passimoritz.github.io/spicetify-mirage/"><b>▶ Im Browser ausprobieren</b></a> – ohne Installation: Cover anklicken und zusehen, wie sich die Oberfläche umfärbt.</p>
+<h3 align="center">Spotify als mattes Glas, hinter dem die Musik lebt.<br>Und einen Tastendruck entfernt: eine Vollbild-Bühne mit Karaoke, Visualizer und einer Party-Lichtshow, die weiß, wo der Drop kommt.</h3>
 
 <p align="center">
-  <img src="assets/shots/playlist.png" alt="Mirage auf einer Playlist-Seite" width="100%">
+  <img src="assets/clips/edm.webp" alt="Party-Modus: EDM auf dem Festival – Moving Heads, Strahlen und ein Publikum, das beim Drop springt" width="100%">
 </p>
+
+<p align="center"><a href="https://passimoritz.github.io/spicetify-mirage/"><b>▶ Farben im Browser ausprobieren</b></a> – ohne Installation.</p>
+
+## ✦ Auf einen Blick
+
 <table>
   <tr>
-    <td width="50%"><img src="assets/shots/album.png" alt="Mirage auf einer Albumseite"></td>
-    <td width="50%"><img src="assets/shots/visualizer.png" alt="Immersiv-Modus – Visualizer im Takt"></td>
+    <td width="33%" valign="top"><h3>🎨 Farben aus dem Cover</h3>Jeder Song färbt Spotify in der Palette seines Covers – lesbar auf dunklem Glas, mit dem Cover als Schleier hinter den Flächen.</td>
+    <td width="33%" valign="top"><h3>🎤 Karaoke & Visualizer</h3>Vollbild-Liedtext, der sich Silbe für Silbe füllt, ein Visualizer im Takt und ein Mix aus beidem.</td>
+    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>48 Stile, sechs Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
   </tr>
   <tr>
-    <td align="center"><sub>Albumseite – der Kopfbereich verschmilzt mit dem Glas</sub></td>
-    <td align="center"><sub>Immersiver Visualizer, live in den Farben des Covers</sub></td>
+    <td valign="top"><h3>🎺 Instrumente</h3>Bestätigen die Credits Trompete, Saxofon, Gitarre, Klavier, Streicher oder Chor, bekommt das Instrument einen eigenen Effekt.</td>
+    <td valign="top"><h3>📱 Handys leuchten mit</h3>Gäste scannen einen QR-Code und ihre Handys blitzen im Takt – in jedem Netz, Ende-zu-Ende verschlüsselt.</td>
+    <td valign="top"><h3>◎ Außerhalb von Spotify</h3>Die Overlay-App kündigt Songs über allen Fenstern an, mit Kantenlicht und OBS-Quelle.</td>
   </tr>
 </table>
-<sub>Echte Spotify-Installation. Eigene Bibliothek und Namen von Freunden sind verpixelt.</sub>
 
 ## ⬇ Installation
 
 **Marketplace (am einfachsten):** **Marketplace → Themes** öffnen, nach **Mirage** suchen, installieren. Fertig.
 
-**Windows per Skript:**
+<details>
+<summary><b>Windows per Skript</b></summary>
 
 ```powershell
 git clone https://github.com/Passimoritz/spicetify-mirage
@@ -57,6 +62,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1 -Overlay   # Theme + Overla
 ```
 
 Mit `-Scheme Obsidian` (oder `Sakura`, `Abyss`, `Ember`) gibt es ein festes Farbschema.
+</details>
 
 <details>
 <summary><b>macOS / Linux / von Hand</b></summary>
@@ -77,139 +83,190 @@ spicetify apply
 ```
 </details>
 
-Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**. Jeder Effekt, der hier beschrieben ist, lässt sich dort abschalten.
+Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder Effekt unten hat dort seinen eigenen Schalter.
 
-## ✦ Was es kann
+## 🎨 Das Theme
 
+<p align="center"><img src="assets/shots/playlist.png" alt="Mirage auf einer Playlist-Seite" width="100%"></p>
 <table>
   <tr>
-    <td width="33%" valign="top">
-      <h3>🎨 Farben aus dem Cover</h3>
-      Akzent, Knöpfe, Fortschrittsbalken und Auswahl übernehmen die Palette des Songs – so abgestimmt, dass Text auf dunklem Glas lesbar bleibt.
-    </td>
-    <td width="33%" valign="top">
-      <h3>🌫️ Lebendiger Hintergrund</h3>
-      Das Cover treibt als langsamer Schleier hinter der Oberfläche, darüber Polarlicht-Bänder, Lichtstaub und Filmkorn.
-    </td>
-    <td width="33%" valign="top">
-      <h3>🥁 Im Takt</h3>
-      Mit Spotifys Taktdaten pulsieren Hintergrund und Lichtstaub im Beat. Fehlen sie, schätzt Mirage das Tempo selbst.
-    </td>
+    <td width="50%"><img src="assets/shots/album.png" alt="Mirage auf einer Albumseite"></td>
+    <td width="50%"><img src="assets/shots/visualizer.png" alt="Immersiver Visualizer"></td>
   </tr>
   <tr>
-    <td valign="top">
-      <h3>🃏 3D-Karten</h3>
-      Karten neigen sich zum Mauszeiger, mit Lichtkegel und leuchtender Kante, die der Maus folgen.
-    </td>
-    <td valign="top">
-      <h3>✨ Bewegte Seiten</h3>
-      Seiten blenden weich ein, Raster und Titelzeilen gleiten nacheinander herein; die laufende Zeile leuchtet.
-    </td>
-    <td valign="top">
-      <h3>💿 Kleinigkeiten</h3>
-      Das Cover im Player dreht sich wie eine Schallplatte, der Play-Knopf bekommt einen Lichtkranz, ein Like löst einen Herzregen aus.
-    </td>
+    <td align="center"><sub>Albumseite – der Kopfbereich verschmilzt mit dem Glas</sub></td>
+    <td align="center"><sub>Visualizer, live in den Farben des Covers</sub></td>
   </tr>
 </table>
+<sub>Echte Spotify-Installation; eigene Bibliothek und Namen von Freunden sind verpixelt.</sub>
 
-**Farbschemata:** `Mirage` folgt live dem Cover; `Obsidian`, `Sakura`, `Abyss` und `Ember` sind feste Paletten für einen ruhigeren Look, und in den Einstellungen gibt es einen Baukasten für eigene.
+- **Farben aus dem Cover** – Akzent, Knöpfe, Fortschrittsbalken und Auswahl übernehmen die Palette des Songs, auf Kontrast abgestimmt.
+- **Lebendiger Hintergrund** – das Cover treibt als langsamer Schleier mit Polarlicht-Bändern, Lichtstaub und Filmkorn und atmet im Takt.
+- **Bewegung** – Seiten blenden weich ein, Raster gleiten nacheinander herein, Karten neigen sich zum Mauszeiger, das Player-Cover dreht sich wie eine Schallplatte, ein Like löst einen Herzregen aus.
+- **Farbschemata** – `Mirage` folgt live dem Cover; `Obsidian`, `Sakura`, `Abyss` und `Ember` sind ruhige feste Paletten, und es gibt einen Baukasten für eigene.
 
 <p align="center"><img src="assets/schemes.svg" alt="Farbschemata" width="100%"></p>
 
 ## ◐ Immersiv-Modus
 
-<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> oder der Kreis-Knopf oben in der Leiste. Fünf Ansichten gehen ineinander über (Tasten <kbd>1</kbd>–<kbd>5</kbd>):
+<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> (oder der Kreis-Knopf oben in der Leiste) macht Spotify zur Vollbild-Bühne mit fünf Ansichten, die ineinander übergehen – umschalten mit <kbd>1</kbd>–<kbd>5</kbd>.
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/shots/lyrics-de.jpg" alt="Liedtext – Karaoke Wort für Wort"></td>
-    <td width="50%"><img src="assets/shots/mix-de.jpg" alt="Mix – Cover, Visualizer-Kranz und Liedtext"></td>
+    <td width="33%"><img src="assets/shots/mode-cover.jpg" alt="Cover-Ansicht"></td>
+    <td width="33%"><img src="assets/shots/mode-lyrics.jpg" alt="Liedtext-Ansicht"></td>
+    <td width="33%"><img src="assets/shots/mode-viz.jpg" alt="Visualizer-Ansicht"></td>
   </tr>
   <tr>
-    <td align="center"><sub>Liedtext – Karaoke Wort für Wort</sub></td>
-    <td align="center"><sub>Mix – Cover, Visualizer-Kranz und Liedtext</sub></td>
+    <td align="center"><b>Cover</b><br><sub>neigt sich mit der Maus, alle Bedienelemente</sub></td>
+    <td align="center"><b>Liedtext</b><br><sub>synchrones Karaoke, Klick auf eine Zeile springt</sub></td>
+    <td align="center"><b>Visualizer</b><br><sub>Kreis-Spektrum, Ringe im Takt</sub></td>
+  </tr>
+  <tr>
+    <td><img src="assets/shots/mode-mix.jpg" alt="Mix-Ansicht"></td>
+    <td><img src="assets/shots/mode-party.jpg" alt="Party-Ansicht"></td>
+    <td><img src="assets/clips/karaoke.webp" alt="Karaoke, das sich Silbe für Silbe füllt"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Mix</b><br><sub>Visualizer-Kranz und Liedtext zugleich</sub></td>
+    <td align="center"><b>Party</b><br><sub>die Lichtshow – siehe unten</sub></td>
+    <td align="center"><b>Karaoke</b><br><sub>Buchstaben füllen sich Silbe für Silbe</sub></td>
   </tr>
 </table>
 
-| Ansicht | Was du bekommst |
-|---|---|
-| **Cover** | Riesiges Cover, das sich mit der Maus neigt, Titel im Farbverlauf, alle Bedienelemente |
-| **Liedtext** | Synchroner Liedtext, Karaoke Wort für Wort, Klick auf eine Zeile springt dorthin, Übersetzung auf Wunsch |
-| **Visualizer** | Kreisförmiges Spektrum um das Cover mit Ringen im Takt |
-| **Mix** | Cover, Visualizer-Kranz und Liedtext zugleich – der Puls folgt der echten Kick |
-| **Party** | Eine Lichtshow, gebaut für den Song – [siehe unten](#-party-modus) |
-
-**Karaoke auf die Silbe:** Wortzeiten von Spotify oder NetEase gelten genau so; sonst zerlegt Mirage jedes Wort in Silben und legt jede auf einen gesungenen Einsatz der Analyse, und Liedtexte aus anderen Quellen werden automatisch auf den Song ausgerichtet. **Kein Liedtext bei Spotify?** Mirage sucht bei [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh; *Fassung wählen* nimmt einen anderen Treffer. **Keine Taktdaten?** Mirage holt Tempo und Energie aus Spotifys Audio-Merkmalen oder von Deezer und schätzt den Takt aus dem Timing des Liedtexts – oben steht dann *≈ 128 BPM*.
-
-Vollbild per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>. Ruht die Maus, blenden die Bedienelemente aus.
+- **Karaoke auf die Silbe** – Wortzeiten von Spotify oder NetEase gelten genau so; sonst zerlegt Mirage jedes Wort in Silben und legt jede auf einen gesungenen Einsatz der Analyse. Liedtexte aus anderen Quellen werden automatisch auf den Song ausgerichtet.
+- **Liedtext, wenn Spotify keinen hat** – Mirage sucht bei [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh; *Fassung wählen* nimmt einen anderen Treffer, und auf Wunsch steht eine Übersetzung unter jeder Zeile.
+- **Ein Takt auch ohne Spotifys Analyse** – Tempo und Energie kommen aus Spotifys Audio-Merkmalen oder von Deezer, der Takt aus dem Timing des Liedtexts (oben steht dann *≈ 128 BPM*).
+- **Synchron zu dem, was du hörst** – eine ruhige Song-Uhr glättet Spotifys Position; sechsmal <kbd>T</kbd> im Takt misst Licht, Publikum und Liedtext auf deine Lautsprecher ein.
+- **Vollbild** per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>; ruht die Maus, blenden die Bedienelemente aus.
 
 ## 🎉 Party-Modus
 
-<p align="center"><img src="assets/shots/party-festival-de.jpg" alt="Party-Modus auf dem Festival: Lichtstrahlen, Türme und ein Publikum mit erhobenen Händen" width="100%"></p>
 <table>
   <tr>
-    <td width="50%"><img src="assets/shots/party-club-de.jpg" alt="Party-Modus im Club mit Discokugel"></td>
-    <td width="50%"><img src="assets/shots/visualizer.png" alt="Visualizer"></td>
+    <td width="50%"><img src="assets/clips/rock.webp" alt="Rock im Stadion: Pyro beim Drop, headbangendes Publikum"></td>
+    <td width="50%"><img src="assets/clips/techno.webp" alt="Techno in der Lagerhalle: Lauflichter, Laserfläche, Stroboskop"></td>
   </tr>
   <tr>
-    <td align="center"><sub>House im Club – Discokugel, Publikum im Takt</sub></td>
-    <td align="center"><sub>Visualizer-Ansicht</sub></td>
+    <td align="center"><sub><b>Rock · Stadion</b> – Spots von oben, Pyro beim Drop, das Publikum headbangt</sub></td>
+    <td align="center"><sub><b>Techno · Lagerhalle</b> – Lauflichter, Laserfläche, Stroboskop beim harten Drop</sub></td>
+  </tr>
+  <tr>
+    <td><img src="assets/clips/house.webp" alt="House im Club mit Jam-Gästen im Publikum"></td>
+    <td><img src="assets/clips/finale.webp" alt="Letzter Refrain im Stadion mit Feuerwerk"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>House · Club</b> – Discokugel, Lichtwellen, Jam-Gäste im Publikum</sub></td>
+    <td align="center"><sub><b>Pop · Stadion</b> – der letzte Refrain bekommt alles</sub></td>
   </tr>
 </table>
+<sub>Clips und Standbilder sind mit dem echten Theme aufgenommen, mit ausgedachten Demo-Songs und Jam-Gästen.</sub>
 
-Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten, Drops (auf ihren Schlag gelegt), Breaks, Dur oder Moll und wo Kick, Snare und Hi-Hats sitzen. Nach dieser Karte wird das Licht inszeniert – es reagiert auf das, was kommt, nicht nur auf das, was gerade laut ist.
+Der Party-Modus liest den ganzen Song, bevor er läuft – Energiekurve, Aufbauten, Drops auf ihrem Schlag, Breaks, Dur oder Moll und wo Kick, Snare und Hi-Hats sitzen – und inszeniert das Licht nach dieser Karte. Er reagiert auf das, was *kommt*, nicht nur auf das, was gerade laut ist.
 
-**48 Stile, jeder mit eigener Lichtsprache.** Rave bekommt sich kreuzende Strahlen, Techno weiche Scanner-Bänder, House eine Discokugel, Trance Polarlicht-Bänder, Drum & Bass einen Tunnel aus Lichtringen, Hip-Hop Licht vom Boden, Rock harte Spots von oben, Metal glühend rote, Latin warme Schwenks, Pop federnde Farbe, Chill langsam atmendes Licht. Dazu: EDM & Big Room, Deep House, Tech House, Psytrance, Dubstep, UK Garage, Hardstyle, Eurodance, Synthwave, Hyperpop · Trap, Drill, Phonk, R&B, Soul & Funk, Afro, Reggae · Alternative, Indie, Punk, Metal, Blues · K-Pop, Disco, Schlager, Ballade, Gospel, Country · Reggaeton, Salsa & Tropical, Brasilianisch, Flamenco, Bollywood, Arabisch · Ambient, Jazz, Klassik, Film & Epik. Der Stil kommt aus Apples iTunes-Suche, Spotifys Künstler-Genres und dem Klang selbst – oder du wählst ihn in den Einstellungen, nach Familien sortiert.
+### 48 Stile
 
-**Es folgt den Instrumenten.** Die Kick treibt Puls und Bodenlicht, die Snare Spots und Blitze, die Hi-Hats das Funkeln; zwei dünne *Melodie-Laser* folgen der Tonhöhe der Melodie. Bestätigen die Credits des Songs (Spotify, MusicBrainz) **Trompete, Saxofon, E-Gitarre, Klavier, Streicher oder Chor**, bekommt das Instrument seinen eigenen Moment, wo es im Klang hervortritt: goldene Fanfaren-Strahlen, aufsteigender Rauch, Blitze von der Traverse, Lichttasten, die den Tönen folgen, fließende Seidenbänder, ein Lichtschein von oben. Ohne Credit kein Effekt – geraten wird nichts.
+Der Stil kommt aus Apples iTunes-Genre, Spotifys Künstler-Genres und dem Klang selbst – oder du wählst ihn in den Einstellungen. Jeder Stil hat eigene Lichtsprache, Publikumsbewegungen, Location und Effekte: Rave bekommt sich kreuzende Strahlen, Techno weiche Scanner-Bänder, House eine Discokugel, Trance Polarlicht-Bänder, Drum & Bass einen Tunnel aus Lichtringen, Hip-Hop Licht vom Boden, Rock harte Spots von oben, Chill langsam atmendes Licht.
 
-**Ein echtes Lichtrig.** Moving Heads an einer Traverse über der Bühne bewegen sich in Mustern passend zum Genre – Wellen bei House, Lauflichter bei Techno, Fächer bei EDM, alle aufs Cover bei Hip-Hop und Rock –, dazu Blinder bei großen Schlägen und beim Drop eine Laserfläche über der Menge. Ruhige Songs bekommen stattdessen weiches Bokeh.
+<details>
+<summary><b>Alle 48 Stile</b></summary>
 
-**Es inszeniert Momente.**
-- **Lichtregie** – Ruhe vor dem Sturm: vor dem Drop hält sich das Licht zurück, auf dem letzten Schlag wird es dunkel, dann schlägt alles auf einmal ein. Der letzte Refrain bekommt am meisten.
-- **Zeitlupe** – Funken, Ringe und Publikum erstarren eine halbe Sekunde direkt vor dem Drop.
-- **DJ-Übergänge** – beim Songwechsel bleiben die alten Farben bis zum ersten Schlag und gehen dann über vier Schläge in die neuen über.
-
-**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle und zücken beim Drop die Handykameras. Die Location richtet sich nach dem Genre – Club, Lagerhalle, Festival, Stadion, Strand oder Wohnzimmer – oder wird in den Einstellungen festgelegt.
-
-**Bühneneffekte, wo sie hingehören.** Beim Drop in elektronischer Musik schießen CO2-Fontänen hoch, bei Rock, Metal und Punk lodern Pyro-Flammen, im letzten Refrain steigt im Stadion und auf dem Festival Feuerwerk auf, und harte Techno-, Hardstyle- und Rave-Drops bekommen ein Stroboskop (ab *Extrem*, nie schneller als ein Blitz pro Schlag).
-
-**Fünf Stärken** von *Sanft* bis *Wahnsinn*. Dazu, jeweils abschaltbar: Hype-Zeilen für Refrains und Mitsing-Rufe, 3D-Tiefe, Kamerafahrten, Liedtext-Funken beim Drop, Jam-Farben für alle in einem Spotify-Jam und sich selbst ausblendende Bedienelemente.
-
-**Noch mehr:**
-
-| | |
+| Familie | Stile |
 |---|---|
-| 📱 **Live-Link** | Handys scannen einen QR-Code und blitzen als zusätzliche Lichter im Takt mit – in jedem Netz, Ende-zu-Ende verschlüsselt, nur solange der Party-Modus läuft, ohne App |
-| 🖥️ **Zweiter Bildschirm** | Legt den Party-Modus im Vollbild auf einen Fernseher oder anderen Monitor |
-| 🌈 **Kantenlicht** | Die Overlay-App lässt die Ränder deines Desktops im Takt leuchten |
-| 📊 **Party-Rückblick** | Eine teilbare Karte der Nacht: Songs, Genre-Mischung, Tempo-Spanne, der größte Drop |
+| Elektronisch | Rave · EDM & Big Room · House · Deep House · Tech House · Techno · Trance · Psytrance · Drum & Bass · Dubstep · UK Garage · Hardstyle · Eurodance · Synthwave · Hyperpop |
+| Hip-Hop & R&B | Hip-Hop · Trap · Drill · Phonk · R&B · Soul & Funk · Afro · Reggae |
+| Rock | Rock · Alternative · Indie · Punk · Metal · Blues |
+| Pop | Pop · K-Pop · Disco · Schlager · Ballade · Gospel · Country |
+| Latin & Welt | Latin · Reggaeton · Salsa & Tropical · Brasilianisch · Flamenco · Bollywood · Arabisch |
+| Ruhig & klassisch | Chill · Ambient · Jazz · Klassik · Film & Epik |
+</details>
+
+### Sechs Locations
+
+<p align="center"><img src="assets/shots/venues-de.jpg" alt="Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer" width="100%"></p>
+
+Die Location richtet sich nach dem Stil oder wird in den Einstellungen festgelegt. Das Publikum hängt am Takt: Sprünge landen auf dem Schlag, Köpfe nicken oder bangen, Hände klatschen auf 2 und 4, ab und zu rollt eine La-Ola-Welle durch, und beim Drop blitzen die Handykameras.
+
+### Licht, Effekte und Momente
+
+- **Lichtrig** – Moving Heads an einer Traverse bewegen sich in Mustern passend zum Genre: Wellen bei House, Lauflichter bei Techno, Fächer bei EDM, alle aufs Cover bei Hip-Hop und Rock. Blinder zünden bei großen Schlägen, beim Drop spannt sich eine Laserfläche über die Menge; ruhige Songs bekommen stattdessen weiches Bokeh.
+- **Folgt den Instrumenten** – die Kick treibt Puls und Bodenlicht, die Snare die Spots, die Hi-Hats das Funkeln; zwei dünne *Melodie-Laser* folgen der Tonhöhe der Melodie.
+- **Bühneneffekte, wo sie hingehören** – CO2-Fontänen bei elektronischer Musik, Pyro bei Rock, Metal und Punk, Feuerwerk im letzten Refrain, Stroboskop bei harten Drops (ab *Extrem*, nie mehr als ein Blitz pro Schlag).
+- **Lichtregie** – vor dem Drop hält sich das Licht zurück, auf dem letzten Schlag wird es dunkel, dann schlägt alles auf einmal ein. Eine Zeitlupe friert die halbe Sekunde davor ein, und DJ-Übergänge blenden beim Songwechsel die Farben über vier Schläge.
+- **Fünf Stärken** von *Sanft* bis *Wahnsinn*, dazu Hype-Zeilen für Refrains, 3D-Tiefe, Kamerafahrten und Liedtext, der beim Drop in Licht zerplatzt.
+
+### 🎺 Instrumente
+
+<p align="center"><img src="assets/shots/instruments-de.jpg" alt="Effekte für Bläser, Saxofon, E-Gitarre, Klavier, Streicher und Chor" width="100%"></p>
+
+Bestätigen die **Credits** des Songs (Spotify, sonst MusicBrainz) ein Instrument, bekommt es seinen eigenen Moment, wo es im Klang hervortritt: goldene Fanfaren-Strahlen, aufsteigender Rauch, Blitze von der Traverse, Lichttasten, die den Tönen folgen, fließende Seidenbänder, ein Lichtschein von oben. Ohne Credit kein Effekt – geraten wird nichts, und höchstens zwei Instrumente zeigen sich gleichzeitig.
+
+### Jam & Extras
+
+- **Spotify Jam** – alle im Jam stehen als kleines, farbiges Gesicht im Publikum und wippen zur Kick; wer den laufenden Song hinzugefügt hat, leuchtet als DJ.
+- **Zweiter Bildschirm** – der Party-Modus im Vollbild auf einem Fernseher oder anderen Monitor.
+- **Kantenlicht** – die Overlay-App lässt die Ränder deines Desktops im Takt leuchten.
+- **Party-Rückblick** – eine teilbare Karte der Nacht: Songs, Genre-Mischung, Tempo-Spanne, der größte Drop.
+
+## 📱 Live-Link fürs Handy
+
+<p align="center"><img src="assets/shots/phone-de.png" alt="Die Handy-Seite, wartend und live" width="70%"></p>
+
+**Live-Link** in den Party-Einstellungen einschalten, im Party-Modus den Handy-Knopf drücken und die Gäste den QR-Code scannen lassen. Ihre Handys werden zu zusätzlichen Lichtern: die Farben des Songs, ein Ring auf jedem Schlag, ein Blitz beim Drop – im Vollbild, der Bildschirm bleibt an.
+
+- **Jedes Netz, keine App** – WLAN oder mobile Daten; die Seite kommt von GitHub Pages.
+- **Nur für alle mit dem QR-Code** – Kanal und Schlüssel sind 128-Bit-Zufallswerte, die nur im QR-Link hinter dem `#` stehen, und dieser Teil geht nie an einen Server. Die Nachrichten sind Ende-zu-Ende verschlüsselt und authentifiziert (AES-GCM): Der Relay sieht nur Zufallsbytes, und niemand kann mitlesen oder etwas einschleusen.
+- **Nur solange du feierst** – das Theme sendet nur im Party-Modus; danach zeigt die Seite *Party beendet*, und 10 Minuten später verfällt der Code. Die nächste Party bekommt einen neuen.
+
+## ⚙ Einstellungen & Leistung
+
+<details>
+<summary><b>Party-Einstellungen ansehen</b></summary>
+<p align="center"><img src="assets/shots/settings-de.jpg" alt="Party-Einstellungen: Stil, Stärke, Location, Licht und Effekte" width="80%"></p>
+</details>
+
+- **Voreinstellungen** – *Voll*, *Ausgewogen*, *Leicht* und *Ruhig*. *Ausgewogen* zeichnet den Immersiv-Modus mit höchstens 60 fps (auf 120/144-Hz-Bildschirmen die halbe Arbeit), *Leicht* mit 30 fps und rund 40 % weniger Pixeln. Laufen die ersten Sekunden unter ~45 fps, schaltet Mirage selbst eine Stufe herunter.
+- **Party passt sich an** – Bühne und Publikum werden in einem Hintergrund-Thread gezeichnet, der sich nie aufstaut, eine Qualitätsregelung blendet hintere Reihen aus, bevor Bilder ausfallen, und ruhige Intros und Breaks laufen mit 30 fps.
+- **Energiesparen** – im Akkubetrieb (oder immer) läuft alles mit 30 fps und leichteren Details. Effekte pausieren, solange Spotify verdeckt ist, und Mirage startet ruhig, wenn dein System weniger Bewegung wünscht.
 
 ## ◎ Mirage Overlay
 
-Eine kleine Begleit-App, die Songwechsel **außerhalb von Spotify** zeigt – über allen Fenstern, auf dem Bildschirm deiner Wahl. Das Theme spricht lokal mit ihr (`127.0.0.1:47321`).
-
 <p align="center"><img src="assets/overlay.svg" alt="Overlay-Stile: Insel, Karte, Banner, Minimal" width="100%"></p>
+
+Eine kleine Begleit-App, die Songs **außerhalb von Spotify** ankündigt – über allen Fenstern, auf dem Bildschirm deiner Wahl. Das Theme spricht nur auf deinem eigenen Rechner mit ihr (`127.0.0.1`).
 
 | Windows | macOS | Linux |
 |:-:|:-:|:-:|
 | [**⬇ Mirage-Overlay-Setup.exe**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay-Setup.exe) | [**⬇ Mirage-Overlay.dmg**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.dmg) | [**⬇ AppImage**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.AppImage) · [**⬇ .deb**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.deb) |
-| Doppelklick – startet und wohnt im Infobereich | In *Programme* ziehen | AppImage ausführbar machen, oder `sudo apt install ./Mirage-Overlay.deb` |
+| Doppelklick – wohnt im Infobereich | In *Programme* ziehen | Ausführbar machen, oder `sudo apt install ./Mirage-Overlay.deb` |
 
 Oder in Spotify: **Mirage-Einstellungen → Overlay → Overlay-App herunterladen** (nimmt die passende Datei und zeigt, ob die App verbunden ist).
 
-- **Wann:** bei jedem Songwechsel, dauerhaft als Mini-Player oder aus · bei Play/Pause · Ruhezeiten
-- **Wo:** Hauptbildschirm, Bildschirm mit der Maus oder jeder Bildschirm auf einer Karte deiner Displays · 9 Positionen · Feinversatz
-- **Wie:** Insel, Karte, Banner oder Minimal · federnd, gleitend oder blendend · Leuchten, Rundung, Größe, Deckkraft · Steuerung beim Drüberfahren
-- **Extras:** Lautstärke-Leiste · bleibt still, solange ein Spiel oder Video im Vollbild läuft · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`) · Kantenlicht für den Party-Modus · aktualisiert sich selbst (Windows, AppImage)
+- **Wann** – bei jedem Songwechsel, dauerhaft als Mini-Player oder aus · bei Play/Pause · Ruhezeiten
+- **Wo** – Hauptbildschirm, Bildschirm mit der Maus oder jeder Bildschirm · 9 Positionen · Feinversatz
+- **Wie** – Insel, Karte, Banner oder Minimal · federnd, gleitend oder blendend · Leuchten, Rundung, Größe, Deckkraft · Steuerung beim Drüberfahren
+- **Extras** – Lautstärke-Leiste · bleibt still bei Spielen und Videos im Vollbild · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`) · Kantenlicht für den Party-Modus · aktualisiert sich selbst
 
-> **Code-Signatur:** Der Windows-Installer wird gerade für die kostenlose Signatur durch die SignPath Foundation eingerichtet – siehe [Code signing policy](CODE_SIGNING.md). Solange er unsigniert ist, blockiert ihn Windows' *Smart App Control*, und beim ersten Start fragt das System einmal nach. Windows: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick → *Öffnen* → *Öffnen*. Beim Einschalten des Live-Links fragt Windows einmal, ob die App im privaten Netzwerk erreichbar sein darf.
+> **Code-Signatur:** Der Windows-Installer wird gerade für die kostenlose Signatur durch die SignPath Foundation eingerichtet – siehe [Code signing policy](CODE_SIGNING.md). Solange er unsigniert ist, kann Windows' *Smart App Control* ihn blockieren, und SmartScreen fragt einmal nach: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick → *Öffnen* → *Öffnen*.
+
+## ⌨ Tasten
+
+| Wo | Taste | Aktion |
+|---|---|---|
+| überall | <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> | Immersiv-Modus öffnen / schließen |
+| immersiv | <kbd>1</kbd> … <kbd>5</kbd> | Cover · Liedtext · Visualizer · Mix · Party |
+| immersiv | <kbd>Leertaste</kbd> · <kbd>N</kbd> <kbd>P</kbd> | Play / Pause · nächster · vorheriger Song |
+| immersiv | <kbd>←</kbd> <kbd>→</kbd> · <kbd>↑</kbd> <kbd>↓</kbd> | 5 s spulen · Lautstärke |
+| immersiv | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | Like · Zufall · Wiederholen · Warteschlange |
+| immersiv | <kbd>F</kbd> / <kbd>F11</kbd> | Vollbild |
+| immersiv | <kbd>T</kbd> (6×, im Takt) | Licht, Publikum und Liedtext auf das Gehörte einmessen |
+| immersiv | <kbd>?</kbd> · <kbd>Esc</kbd> | alle Tasten · schließen |
 
 ## 🛠 Reparieren nach einem Spotify-Update
 
-Spotify aktualisiert sich alle paar Wochen und überschreibt, was Spicetify angepasst hat. Woran man es merkt: Spotify sieht wieder aus wie normales Spotify, `spicetify apply` meldet einen *backup version mismatch* oder *Cannot find xpui.spa*, oder das Fenster bleibt schwarz. Kaputt ist nichts – Spicetify muss nur neu anpassen.
+Spotify aktualisiert sich alle paar Wochen und überschreibt, was Spicetify angepasst hat. Dann sieht Spotify wieder normal aus, `spicetify apply` meldet einen *backup version mismatch* oder *Cannot find xpui.spa*, oder das Fenster bleibt schwarz. Kaputt ist nichts – Spicetify muss nur neu anpassen.
 
-**Ein Klick (Windows):** <a href="https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/fix-spicetify.cmd"><b>⬇ fix-spicetify.cmd</b></a> · <sub><a href="tools/fix-spicetify.cmd">Quelltext lesen</a></sub> – schließt Spotify, aktualisiert Spicetify, legt ein frisches Backup an, wendet Mirage und deine Erweiterungen wieder an und startet Spotify neu. Einstellungen und Marketplace-Inhalte bleiben erhalten. (Windows warnt evtl.: *Weitere Informationen → Trotzdem ausführen* – es ist ein reines Text-Skript.)
+**Ein Klick (Windows):** <a href="https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/fix-spicetify.cmd"><b>⬇ fix-spicetify.cmd</b></a> · <sub><a href="tools/fix-spicetify.cmd">Quelltext lesen</a></sub> – schließt Spotify, aktualisiert Spicetify, legt ein frisches Backup an, wendet Mirage und deine Erweiterungen wieder an und startet Spotify neu. Einstellungen und Marketplace-Inhalte bleiben erhalten.
 
 **Von Hand (alle Systeme):**
 
@@ -218,34 +275,15 @@ spicetify upgrade
 spicetify restore backup apply
 ```
 
-Klappt es immer noch nicht? `spicetify clear` und danach `spicetify backup apply`. Direkt nach einer großen Spotify-Version braucht Spicetify manchmal ein paar Tage – auf die nächste [Spicetify-Version](https://github.com/spicetify/cli/releases) warten und die Reparatur erneut starten. Sieht Mirage selbst falsch aus, hilft das [Fehlerformular für Spotify-Updates](https://github.com/Passimoritz/spicetify-mirage/issues/new/choose).
-
-## ⌨ Tasten
-
-| Wo | Taste | Aktion |
-|---|---|---|
-| überall | <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> | Immersiv-Modus öffnen / schließen |
-| immersiv | <kbd>1</kbd> … <kbd>5</kbd> | Cover · Liedtext · Visualizer · Mix · Party |
-| immersiv | <kbd>Leertaste</kbd> | Play / Pause |
-| immersiv | <kbd>←</kbd> <kbd>→</kbd> · <kbd>↑</kbd> <kbd>↓</kbd> | 5 s spulen · Lautstärke |
-| immersiv | <kbd>N</kbd> <kbd>P</kbd> | nächster · vorheriger Song |
-| immersiv | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | Like · Zufall · Wiederholen · Warteschlange |
-| immersiv | <kbd>F</kbd> / <kbd>F11</kbd> | Vollbild |
-| immersiv | <kbd>T</kbd> (6×, im Takt) | Licht, Publikum und Liedtext auf das Gehörte einmessen |
-| immersiv | <kbd>?</kbd> · <kbd>Esc</kbd> | alle Tasten · schließen |
-
-## ⚡ Leistung
-
-Mirage soll lebendig aussehen, ohne den Rechner aufzufressen.
-
-- **Voreinstellungen:** *Voll*, *Ausgewogen*, *Leicht* und *Ruhig* in den Einstellungen. *Ausgewogen* zeichnet den Immersiv-Modus mit höchstens 60 fps (auf 120/144-Hz-Bildschirmen die halbe Arbeit) und etwas weniger Pixeln, *Leicht* mit 30 fps, rund 40 % weniger Pixeln und weniger Details. Laufen die ersten Sekunden unter ~45 fps, schaltet Mirage selbst eine Stufe herunter.
-- **Party passt sich an:** Bühne und Publikum werden in einem Hintergrund-Thread gezeichnet, der sich nie aufstaut, eine Qualitätsregelung blendet hintere Reihen aus, bevor Bilder ausfallen, und ruhige Intros und Breaks laufen mit 30 fps.
-- **Energiesparen:** im Akkubetrieb (oder auf Wunsch immer) läuft alles mit 30 fps und leichteren Details.
-- **Pausiert im Hintergrund** und startet im ruhigen Modus, wenn dein System weniger Bewegung wünscht.
+Klappt es immer noch nicht? `spicetify clear`, danach `spicetify backup apply`. Direkt nach einer großen Spotify-Version braucht Spicetify manchmal ein paar Tage – auf die nächste [Spicetify-Version](https://github.com/spicetify/cli/releases) warten. Sieht Mirage selbst falsch aus, hilft das [Fehlerformular für Spotify-Updates](https://github.com/Passimoritz/spicetify-mirage/issues/new/choose).
 
 ## 🔒 Datenschutz
 
-Kein eigener Server, kein Tracking, kein Konto. Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify. Nur wenn Spotify nichts hat: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh, Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche, die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz – alles abschaltbar. Die Overlay-App lauscht nur auf deinem eigenen Rechner. Der Live-Link (standardmäßig aus) schickt Lichtfarben, Tempo und den Songtitel Ende-zu-Ende verschlüsselt (AES-GCM) über einen öffentlichen Relay (HiveMQ); Kanal und Schlüssel stehen nur im QR-Code hinter dem „#“, und dieser Teil geht nie an einen Server – der Relay sieht nur Zufallsbytes auf einem Zufallskanal. Gesendet wird nur, solange der Party-Modus läuft, 10 Minuten danach verfällt der Code. Schriften kommen von Google Fonts.
+- **Kein eigener Server, kein Tracking, kein Konto.** Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify.
+- **Nur wenn Spotify nichts hat** – und alles abschaltbar: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh; Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche; die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz.
+- **Live-Link** (standardmäßig aus) – Lichtfarben, Tempo und Songtitel, Ende-zu-Ende verschlüsselt über einen öffentlichen Relay (HiveMQ). Der Schlüssel verlässt nie den QR-Code.
+- **Overlay-App** – lauscht nur auf deinem eigenen Rechner und fragt bei GitHub nach Updates (abschaltbar). Details in der [Code signing policy](CODE_SIGNING.md#privacy-policy).
+- Schriften kommen von Google Fonts.
 
 ## ❓ Häufige Fragen
 
@@ -256,36 +294,40 @@ Kein eigener Server, kein Tracking, kein Konto. Liedtext, Taktdaten, Audio-Merkm
 </details>
 
 <details>
-<summary><b>Der Party-Modus erkennt das falsche Genre.</b></summary>
+<summary><b>Der Party-Modus wählt den falschen Stil.</b></summary>
 
-Den Stil in **Mirage-Einstellungen → Party-Modus** von Hand wählen, oder bei *Auto* bleiben und *Genre online nachschlagen* einschalten.
+Den Stil unter **Mirage-Einstellungen → Party-Modus → Stil** von Hand wählen, oder bei *Auto* bleiben und *Genre online nachschlagen* einschalten.
 </details>
 
 <details>
-<summary><b>Die Handy-Seite öffnet sich nicht.</b></summary>
+<summary><b>Licht und Liedtext sind etwas zu früh oder zu spät.</b></summary>
 
-Das Handy braucht nur Internet – WLAN oder mobile Daten, keine App. Die Seite zeigt „warte auf den Party-Modus“, bis in Spotify der Party-Modus läuft, und „Party beendet“, wenn du ihn verlässt; 10 Minuten später verfällt der QR-Code, und die nächste Party zeigt einen neuen. Bleibt sie bei „Keine Verbindung“, blockiert vielleicht eine Firewall oder ein Werbeblocker auf dem Handy den Relay (`broker.hivemq.com`).
+Im Immersiv-Modus sechsmal <kbd>T</kbd> im Takt drücken – Mirage misst die Verzögerung deiner Lautsprecher (Bluetooth bringt etwas mit) – oder den Sync-Versatz in den Einstellungen setzen.
+</details>
+
+<details>
+<summary><b>Die Handy-Seite bleibt bei „Keine Verbindung“.</b></summary>
+
+Das Handy braucht Internet (WLAN oder mobile Daten). Eine Firewall, ein VPN oder ein Werbeblocker auf dem Handy blockiert vielleicht den Relay `broker.hivemq.com`. Bis in Spotify der Party-Modus läuft, zeigt die Seite „warte auf den Party-Modus“.
 </details>
 
 <details>
 <summary><b>Das ist mir zu viel / mein Laptop wird warm.</b></summary>
 
-Voreinstellung *Leicht* oder *Ruhig* wählen, Energiesparen auf *Immer* stellen oder die Party-Stärke senken. Jeder Effekt hat seinen eigenen Schalter.
+Voreinstellung *Leicht* oder *Ruhig* wählen, Energiesparen auf *Immer* stellen oder die Party-Stärke senken – jeder Effekt hat seinen eigenen Schalter.
 </details>
 
-## ⚙ Unter der Haube
+## 🧩 Unter der Haube
 
 ```mermaid
 flowchart LR
-  A[Cover] -->|Probe 64×64| B(theme.js)
-  B -->|Palette| C[CSS-Variablen]
-  B -->|Schleierbild| D[Hintergrund]
+  A[Cover] -->|Palette| B(theme.js)
   E[Taktdaten / Schätzung] --> B
   F[Liedtext] --> G[Immersiv-Modus]
   B --> G
   G -->|Zustand| W[Bühne + Publikum im Worker]
   B <-->|WebSocket, lokal| H[Mirage Overlay]
-  B -->|verschlüsselter Relay| P[Handys]
+  G -->|AES-GCM über Relay| P[Handys]
 ```
 
 - Farben wechseln in einem einzigen Stil-Update; der Hintergrundschleier ist ein vorab verkleinertes Bild, einmal weichgezeichnet und nur noch gedreht.

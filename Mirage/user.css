@@ -3070,6 +3070,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   opacity: 0.8;
 }
 .mirage-settings .m-note {
+  display: block;
   color: var(--spice-subtext);
   padding: 2px 4px;
 }
