@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
@@ -32,6 +33,7 @@ jobs:
             echo "No section for [$VERSION] found in CHANGELOG.md" >&2
             exit 1
           fi
+          printf '\n---\n[Code signing policy](https://github.com/%s/blob/main/CODE_SIGNING.md)\n' "$GITHUB_REPOSITORY" >> RELEASE_NOTES.md
           cat RELEASE_NOTES.md
 
       - name: Create GitHub release
@@ -50,17 +52,97 @@ jobs:
             curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/$f" > /dev/null && echo "purged $f" || echo "purge failed for $f"
           done
 
-  # Mirage Overlay als fertige Installer: Windows (.exe), macOS (.dmg, universal), Linux (.AppImage, .deb).
-  # Jedes System baut auf seinem eigenen Runner; die Dateien landen am Release, den der Job oben anlegt.
+  # Windows-Installer. Mit hinterlegtem SignPath-Zugang (siehe CODE_SIGNING.md) wird signiert, und zwar
+  # zweistufig, weil Windows (Smart App Control) jede einzelne Programmdatei geprüft haben will:
+  #   1. App-Ordner bauen → alle .exe/.dll/.node darin bei SignPath signieren lassen
+  #   2. aus dem signierten Ordner den Installer bauen → den Installer signieren lassen
+  # Ohne SignPath-Zugang entsteht wie bisher ein unsignierter Installer.
+  overlay-windows:
+    needs: release
+    runs-on: windows-latest
+    env:
+      SIGN: ${{ secrets.SIGNPATH_API_TOKEN != '' && vars.SIGNPATH_ORGANIZATION_ID != '' }}
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    defaults:
+      run:
+        working-directory: overlay
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+
+      - name: Build app folder
+        run: npx electron-builder --win --dir --publish never
+
+      - name: Upload app folder for signing
+        if: env.SIGN == 'true'
+        id: app-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-unsigned
+          path: overlay/dist/win-unpacked
+      - name: Sign program files (SignPath)
+        if: env.SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG || 'mirage-overlay' }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG || 'release-signing' }}
+          artifact-configuration-slug: app
+          github-artifact-id: ${{ steps.app-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: overlay/dist/win-signed
+      - name: Use signed app folder
+        if: env.SIGN == 'true'
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force dist/win-unpacked
+          Move-Item dist/win-signed dist/win-unpacked
+
+      - name: Build installer
+        run: npx electron-builder --win nsis --prepackaged dist/win-unpacked --publish never
+
+      - name: Upload installer for signing
+        if: env.SIGN == 'true'
+        id: setup-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-unsigned
+          path: overlay/dist/Mirage-Overlay-Setup.exe
+      - name: Sign installer (SignPath)
+        if: env.SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG || 'mirage-overlay' }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG || 'release-signing' }}
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.setup-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: overlay/dist/setup-signed
+      - name: Use signed installer
+        if: env.SIGN == 'true'
+        shell: pwsh
+        run: Move-Item -Force dist/setup-signed/Mirage-Overlay-Setup.exe dist/Mirage-Overlay-Setup.exe
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: overlay/dist/Mirage-Overlay-Setup.exe
+
+  # macOS (.dmg, universal) und Linux (.AppImage, .deb) – unsigniert
   overlay:
     needs: release
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
-            target: --win
-            files: overlay/dist/Mirage-Overlay-Setup.exe
           - os: macos-latest
             target: --mac
             files: overlay/dist/Mirage-Overlay.dmg

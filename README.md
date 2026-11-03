@@ -203,7 +203,7 @@ Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (pic
 - **How:** Island, Card, Banner or Minimal · springy, slide or fade · glow, roundness, size, opacity · controls on hover
 - **Extras:** volume bar · stays quiet while a game or video runs full screen · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`) · edge light and live link for party mode · updates itself (Windows, AppImage)
 
-> **First start:** the installers aren't code-signed yet. Windows: *More info → Run anyway*. macOS: right-click → *Open* → *Open*. When you turn on the live link, Windows asks once whether the app may be reached on your private network.
+> **Code signing:** the Windows installer is being set up for free signing by the SignPath Foundation – see the [code signing policy](CODE_SIGNING.md). Until it is signed, Windows *Smart App Control* blocks it, and on first start the system asks once. Windows: *More info → Run anyway*. macOS: right-click → *Open* → *Open*. When you turn on the live link, Windows asks once whether the app may be reached on your private network.
 
 ## 🛠 Fix after a Spotify update
 

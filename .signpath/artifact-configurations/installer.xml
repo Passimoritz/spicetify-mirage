@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mirage Overlay, step 2: the NSIS installer built from the signed app folder.
+     Paste into SignPath → Project "mirage-overlay" → Artifact Configurations → slug "installer". -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <zip-file>
+    <pe-file path="Mirage-Overlay-Setup.exe">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>
