@@ -392,7 +392,6 @@ function render(box) {
       toggle("partyDepth", () => {}),
       head(t("ps_crowd")),
       toggle("partyCrowd", () => {}),
-      toggle("partyFun", () => {}),
       toggle("partyJamLight", () => {}),
       toggle("partyJam", () => {}),
       head(t("ps_extras")),

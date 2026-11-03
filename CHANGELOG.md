@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.12.3] – 2026-11-03
+
+### Removed
+
+- The beach balls over the crowd, and with them the *Fun moments* switch.
+
 ## [1.12.2] – 2026-11-03
 
 ### Removed

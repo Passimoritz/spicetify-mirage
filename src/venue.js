@@ -651,7 +651,6 @@ function createVenue(makeCanvas) {
     if (st.inst) show.drawInst(ctx, st, st.px, st.pal, st.dpr);
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
-    if (st.fun && crowdA > 0.5) show.drawFun(ctx, st, v, st.px, st.pal, st.dpr);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = "source-over";
   }

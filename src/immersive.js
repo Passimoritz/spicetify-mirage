@@ -1264,7 +1264,6 @@ const immersive = (() => {
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
       rig: cfg.partyRig && px.fx && px.level >= 2 && !lightMode(),
-      fun: cfg.partyFun && px.fx,
       flash: cfg.partyFlash && px.fx,
       inst: curInst,
       strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,

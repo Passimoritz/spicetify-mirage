@@ -1,12 +1,11 @@
 /* ---------------------------------------------------------------- Show-Ebene der Party-Location */
-// Läuft wie venue.js auch im Hintergrund-Thread. Drei Teile:
+// Läuft wie venue.js auch im Hintergrund-Thread. Zwei Teile:
 // · Lichtrig: Moving Heads an einer Traverse, deren Muster zum Genre passen (Welle bei House, Lauflicht bei
 //   Techno, Fächer bei EDM, alle aufs Cover bei Hip-Hop und Rock), Blinder auf großen Schlägen, Laserfläche
 //   über der Menge im Drop, für ruhige Musik stattdessen weiches Bokeh.
 // · Instrumente (nur von den Credits bestätigt): Fanfaren-Strahlen für Bläser, Rauchschwaden fürs Saxofon,
 //   Blitze für die E-Gitarre, Lichttasten fürs Klavier (folgen den gespielten Tönen), Seidenbänder für
 //   Streicher, ein Lichtschein von oben für den Chor.
-// · Spaß: Wasserbälle über der Menge.
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const RIG = {
   house: ["wave", "chase"], deephouse: ["wave"], techhouse: ["chase", "cross"], garage: ["wave", "chase"], disco: ["wave", "fan"],
@@ -20,7 +19,6 @@ const RIG = {
 const BLIND = new Set(["rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);
 const SHEET = new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);
 const CALM = new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues"]);
-const FUN = new Set(["pop", "schlager", "edm", "house", "deephouse", "reggae", "latin", "reggaeton", "salsa", "brazil", "afro", "eurodance", "kpop", "disco", "rave", "bollywood", "garage"]);
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 
@@ -290,48 +288,7 @@ function createShow(glowSprite) {
     ctx.globalAlpha = 1;
   }
 
-  /* ---- Spaß: Wasserbälle über der Menge (vor dem Publikum) */
-  const fun = { balls: [], next: 6 };
-  function drawFun(ctx, st, v, px, pal, dpr) {
-    vw = st.vw;
-    vh = st.vh;
-    const t = st.t, dt = st.dt, big = v.decor === "towers" || v.decor === "stands" || v.decor === "beach";
-    const top = vh * 0.86;
-    if (big && FUN.has(px.key) && fun.balls.length < 2 && px.energy > 0.6 && t > fun.next) {
-      fun.balls.push({ x: vw * (0.1 + Math.random() * 0.8), y: vh * 0.9, vx: (Math.random() - 0.5) * vw * 0.05, vy: -vh * 0.9, r: (16 + Math.random() * 8) * dpr, rot: 0, end: t + 25 + Math.random() * 15, c: Math.floor(Math.random() * 3) });
-      fun.next = t + 12 + Math.random() * 14;
-    }
-    fun.balls = fun.balls.filter((b) => b.x > -b.r * 2 && b.x < vw + b.r * 2 && b.y < vh + b.r * 2);
-    ctx.globalCompositeOperation = "source-over";
-    for (const b of fun.balls) {
-      b.vy += vh * 1.3 * dt;
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      b.rot += (b.vx * dt) / b.r;
-      // die Menge schlägt den Ball wieder hoch – solange die Party läuft
-      if (b.y > top && b.vy > 0 && t < b.end && !px.blackout) {
-        b.vy = -vh * (0.75 + Math.random() * 0.35 + px.kickEnv * 0.2);
-        b.vx += (Math.random() - 0.5) * vw * 0.04;
-      }
-      for (let k = 0; k < 6; k++) {
-        ctx.fillStyle = k % 2 ? "rgba(245,245,250,0.95)" : rgba(pal[(b.c + (k >> 1)) % 3], 0.95);
-        ctx.beginPath();
-        ctx.moveTo(b.x, b.y);
-        ctx.arc(b.x, b.y, b.r, b.rot + (k * Math.PI) / 3, b.rot + ((k + 1) * Math.PI) / 3);
-        ctx.closePath();
-        ctx.fill();
-      }
-      const g = ctx.createRadialGradient(b.x - b.r * 0.35, b.y - b.r * 0.4, b.r * 0.1, b.x, b.y, b.r);
-      g.addColorStop(0, "rgba(255,255,255,0.35)");
-      g.addColorStop(1, "rgba(0,0,0,0.35)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  return { drawRig, drawInst, drawFun };
+  return { drawRig, drawInst };
 }
 
 export { createShow };
