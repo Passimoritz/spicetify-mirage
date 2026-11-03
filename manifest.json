@@ -1,7 +1,7 @@
 [
   {
     "name": "Mirage",
-    "description": "A living glass theme: the whole UI takes on the colours of the album art, the cover drifts behind the panels, the background pulses on the beat – plus an immersive mode with synced lyrics, a visualizer and full controls.",
+    "description": "A living glass theme: the UI takes on the colours of the album art, the cover drifts behind the panels and the background pulses on the beat – plus an immersive mode with karaoke lyrics, a visualizer and a party light show that knows the song: 48 styles, a crowd, venues, moving heads, stage effects and instrument moments.",
     "preview": "assets/preview.png",
     "readme": "README.md",
     "usercss": "Mirage/user.css",
@@ -21,7 +21,8 @@
       "animated",
       "lyrics",
       "visualizer",
-      "immersive"
+      "immersive",
+      "party"
     ]
   }
 ]
