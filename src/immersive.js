@@ -43,7 +43,6 @@ const ICON = {
   recap: '<svg viewBox="0 0 24 24"><path d="M4 20V10h3v10zm6 0V4h3v16zm6 0v-7h3v7z"/></svg>',
   screen: '<svg viewBox="0 0 24 24"><path d="M2 4h14v10H2zm2 2v6h10V6zm16-2h2v14H8v-2h12zM6 16h6v2H6z"/></svg>',
   live: '<svg viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5zm5 14.2a1 1 0 1 0 0 .01z"/></svg>',
-  clip: '<svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3l4-3v12l-4-3v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
   sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>',
 };
 const MODES = [
@@ -87,7 +86,6 @@ const immersive = (() => {
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
-          <button type="button" class="m-im-sm m-im-clip" hidden>${ICON.clip}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
@@ -174,7 +172,6 @@ const immersive = (() => {
       recap: el.querySelector(".m-im-recap"),
       screen: el.querySelector(".m-im-screen"),
       live: el.querySelector(".m-im-live"),
-      clip: el.querySelector(".m-im-clip"),
       fs: el.querySelector(".m-im-fs"),
     };
     vctx = q.canvas.getContext("2d");
@@ -190,8 +187,6 @@ const immersive = (() => {
     q.screen.onclick = toScreen;
     q.live.title = q.live.ariaLabel = t("liveBtn");
     q.live.onclick = toggleLiveCard;
-    q.clip.title = q.clip.ariaLabel = t("clipBtn");
-    q.clip.onclick = recordClip;
     window.addEventListener("mirage:live", showExtras);
     q.fs.onclick = toggleFull;
     q.fs.hidden = !canFull();
@@ -386,12 +381,19 @@ const immersive = (() => {
     img.src = src;
   }
 
+  // Leicht-Preset oder Energiesparen fest an: weniger Pixel, 30 Bilder/s, weniger Details
+  const lightMode = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
+  const sizeKeyNow = () => `${cfg.preset}|${cfg.lite}|${cfg.eco}`;
+  let sizeKey = "";
   function sizeCanvas() {
     if (!q.canvas) return;
     // höchstens ~3 Mio. Pixel: auf großen/hochauflösenden Bildschirmen wäre die volle Dichte ein
     // Vielfaches davon – jedes Bild neu zeichnen ruckelt dann. Die leuchtenden Linien bleiben trotzdem scharf genug.
-    const budget = Math.sqrt(3e6 / Math.max(1, innerWidth * innerHeight));
-    const dpr = Math.max(0.6, Math.min(devicePixelRatio || 1, 1.5, budget));
+    // je leichter das Preset, desto weniger Pixel: Leicht/Energiesparen ~1,2 Mio., Ausgewogen ~2 Mio.
+    const [pixels, cap] = lightMode() ? [1.2e6, 1] : cfg.preset === "balanced" ? [2e6, 1.25] : [3e6, 1.5];
+    const budget = Math.sqrt(pixels / Math.max(1, innerWidth * innerHeight));
+    const dpr = Math.max(0.5, Math.min(devicePixelRatio || 1, cap, budget));
+    sizeKey = sizeKeyNow();
     vw = q.canvas.width = Math.round(innerWidth * dpr);
     vh = q.canvas.height = Math.round(innerHeight * dpr);
   }
@@ -847,7 +849,7 @@ const immersive = (() => {
     if (px) partyExtras(px, now, dt, R, dpr);
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
     quietNow = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
-    if (px && ecoOn()) quality.level = Math.min(quality.level, 1);
+    if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
     if (px) {
       const P = px.P;
       Object.assign(V, {
@@ -1146,7 +1148,11 @@ const immersive = (() => {
         key: px.key, P: { spot: P.spot }, accent: px.accent, kickEnv: px.kickEnv, snareEnv: px.snareEnv, hatEnv: px.hatEnv,
         beat: px.beat, hit: px.hit, energy: px.energy, build: px.build, low: px.low, drop: px.drop, dropHit: px.dropHit,
         I: px.I, spin: px.spin, level: px.level, scene: px.scene, inBar: px.inBar, phase: px.phase, beatIdx: px.beatIdx,
+        finale: !!px.finale, blackout: !!px.blackout,
       },
+      // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
+      fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
+      strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !S.Player.isPlaying(),
@@ -1290,7 +1296,8 @@ const immersive = (() => {
     return c;
   });
   const glowSprite = venueLocal.glowSprite;
-  let venueWorker = null, venueCtx = null, venueOn = false;
+  let venueWorker = null, venueCtx = null, venueOn = false, venueBusy = false, venueSentAt = 0, venueDt = 0;
+  const venueHold = { dropHit: false, hit: false };
   function venueInit() {
     if (venueWorker || venueCtx) return;
     try {
@@ -1301,9 +1308,7 @@ const immersive = (() => {
         w.postMessage({ type: "init", canvas: off }, [off]);
         w.onerror = () => venueFallback();
         w.onmessage = (e) => {
-          if (e.data?.type !== "bitmap") return;
-          venueBitmap?.close();
-          venueBitmap = e.data.b;
+          if (e.data?.type === "done") venueBusy = false;
         };
         venueWorker = w;
         return;
@@ -1325,8 +1330,28 @@ const immersive = (() => {
   function venueFrame(st) {
     venueInit();
     venueOn = true;
-    if (venueWorker) venueWorker.postMessage({ type: "frame", st, grab: clip.on });
-    else if (venueCtx) {
+    // Der Thread zeichnet noch? Dann dieses Bild auslassen und die Zeit fürs nächste aufheben –
+    // ein Rückstau ließe Publikum und Licht hinterherhinken und ruckweise aufholen
+    venueDt = Math.min(0.1, venueDt + st.dt);
+    // einmalige Signale (Drop, Treffer) gehen beim Auslassen nicht verloren
+    venueHold.dropHit ||= !!st.px.dropHit;
+    venueHold.hit ||= !!st.px.hit;
+    if (venueWorker) {
+      const now = performance.now();
+      if (venueBusy && now - venueSentAt < 250) return;
+      st.dt = venueDt;
+      venueDt = 0;
+      Object.assign(st.px, venueHold);
+      venueHold.dropHit = venueHold.hit = false;
+      venueBusy = true;
+      venueSentAt = now;
+      venueWorker.postMessage({ type: "frame", st });
+      return;
+    }
+    st.dt = venueDt;
+    venueDt = 0;
+    venueHold.dropHit = venueHold.hit = false;
+    if (venueCtx) {
       if (q.venueEl.width !== st.vw || q.venueEl.height !== st.vh) [q.venueEl.width, q.venueEl.height] = [st.vw, st.vh];
       venueLocal.draw(venueCtx, st);
     }
@@ -1499,8 +1524,13 @@ const immersive = (() => {
   const ecoOn = () => cfg.eco === "on" || (cfg.eco === "auto" && onBattery);
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    if ((ecoOn() || (quietNow && cfg.partyQuietFps)) && now - lastDraw < 1000 / 31) return;
+    // Bildrate je nach Preset: Leicht/Energiesparen/ruhige Party-Stellen 30, Ausgewogen höchstens 60
+    // (auf 120/144-Hz-Bildschirmen halbiert das die Arbeit), Voll so schnell wie der Bildschirm.
+    // 3 ms Spielraum, damit ein leicht zu früh kommendes Bild nicht ausfällt.
+    const fpsCap = ecoOn() || lightMode() || (quietNow && cfg.partyQuietFps) ? 30 : cfg.preset === "balanced" ? 60 : 0;
+    if (fpsCap && now - lastDraw < 1000 / fpsCap - 3) return;
     lastDraw = now;
+    if (sizeKey !== sizeKeyNow()) sizeCanvas();
     const pos = S.Player.getProgress?.() || 0;
     const dur = S.Player.getDuration?.() || 0;
     // scaleX statt width: kein Neu-Layout in jedem Bild
@@ -1533,127 +1563,6 @@ const immersive = (() => {
       q.wrap.style.scale = "";
       lastPulse = "";
     }
-    if (clip.on) clipFrame(now);
-  }
-
-  /* ---- 10-Sekunden-Clip: Hintergrund, Location, Visualizer, Cover und Liedzeile als stummes Video */
-  const clip = { on: false };
-  let venueBitmap = null;
-  const CLIP_MS = 10000;
-  async function recordClip() {
-    if (clip.on || !window.MediaRecorder || !q.canvas.captureStream) return;
-    const type = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find((m) => MediaRecorder.isTypeSupported(m));
-    if (!type) return;
-    const box = el.getBoundingClientRect();
-    const W = Math.min(1920, Math.round(box.width * Math.min(2, window.devicePixelRatio || 1))) & ~1;
-    const H = Math.round((W * box.height) / box.width) & ~1;
-    const cv = document.createElement("canvas");
-    [cv.width, cv.height] = [W, H];
-    const item = currentItem();
-    const c = covers(item);
-    // Cover mit CORS laden, sonst wäre das Video „verunreinigt“ und ließe sich nicht speichern
-    const cover = await loadImage(c.big || c.small, true).catch(() => null);
-    // Hintergrund einmal vorab: unscharfes Cover in den Songfarben
-    const back = document.createElement("canvas");
-    [back.width, back.height] = [W, H];
-    const bx = back.getContext("2d");
-    bx.fillStyle = "#07060c";
-    bx.fillRect(0, 0, W, H);
-    if (cover) {
-      bx.filter = "blur(60px) saturate(1.6) brightness(0.45)";
-      bx.drawImage(cover, -W * 0.1, -H * 0.1 - (W - H) / 2, W * 1.2, W * 1.2);
-      bx.filter = "none";
-    }
-    const rec = new MediaRecorder(cv.captureStream(30), { mimeType: type, videoBitsPerSecond: 8e6 });
-    const chunks = [];
-    rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
-    rec.onstop = () => {
-      clip.on = false;
-      q.clip.classList.remove("is-rec");
-      q.clip.style.removeProperty("--p");
-      venueBitmap?.close();
-      venueBitmap = null;
-      showExtras();
-      if (!chunks.length) return;
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob(chunks, { type: "video/webm" }));
-      a.download = `mirage-${(titleOf(item) || "clip").replace(/[^\p{L}\p{N}]+/gu, "-").slice(0, 40)}.webm`;
-      document.body.append(a);
-      a.click();
-      setTimeout(() => {
-        URL.revokeObjectURL(a.href);
-        a.remove();
-      }, 4000);
-      try {
-        S.showNotification?.(t("clipSaved"), false, 4000);
-      } catch {}
-    };
-    Object.assign(clip, { on: true, t0: performance.now(), cv, x: cv.getContext("2d"), back, cover, rec });
-    q.clip.classList.add("is-rec");
-    rec.start(500);
-    setTimeout(() => rec.state !== "inactive" && rec.stop(), CLIP_MS);
-  }
-  function clipFrame(now) {
-    const { x, cv } = clip;
-    const W = cv.width, H = cv.height;
-    const box = el.getBoundingClientRect();
-    if (!box.width) return;
-    const s = W / box.width;
-    q.clip.style.setProperty("--p", String(clamp((now - clip.t0) / CLIP_MS, 0, 1)));
-    x.drawImage(clip.back, 0, 0);
-    if (venueWorker && venueBitmap) x.drawImage(venueBitmap, 0, 0, W, H);
-    else if (!venueWorker && venueOn) x.drawImage(q.venueEl, 0, 0, W, H);
-    x.drawImage(q.canvas, 0, 0, W, H);
-    const fl = +(el.querySelector(".m-im-flash")?.style.opacity || 0);
-    if (fl > 0.01) {
-      x.fillStyle = `rgba(255,255,255,${(fl * 0.6).toFixed(3)})`;
-      x.fillRect(0, 0, W, H);
-    }
-    const coverEl = el.querySelector(".m-im-cover");
-    const cr = coverEl?.getBoundingClientRect();
-    if (clip.cover && cr?.width) {
-      // Rundung wie auf dem Bildschirm (im Party-Modus ist das Cover oft ein Kreis)
-      const br = getComputedStyle(coverEl).borderTopLeftRadius;
-      const rad = Math.min(cr.width / 2, br.endsWith("%") ? (cr.width * parseFloat(br)) / 100 : parseFloat(br) || 14);
-      x.save();
-      x.beginPath();
-      x.roundRect?.((cr.left - box.left) * s, (cr.top - box.top) * s, cr.width * s, cr.height * s, rad * s);
-      x.clip();
-      x.drawImage(clip.cover, (cr.left - box.left) * s, (cr.top - box.top) * s, cr.width * s, cr.height * s);
-      x.restore();
-    }
-    // Titel, Interpret und die aktuelle Liedzeile – mit derselben Schrift an derselben Stelle
-    x.shadowColor = "rgba(0,0,0,0.55)";
-    x.shadowBlur = 14 * s;
-    x.textBaseline = "middle";
-    for (const [sel, a] of [[".m-im-title", 1], [".m-im-artist", 0.72], [".m-im-line.is-active", 1]]) {
-      const n = el.querySelector(sel);
-      const text = n?.textContent.replace(/\s+/g, " ").trim();
-      const r = n?.getBoundingClientRect();
-      if (!text || !r?.width) continue;
-      const cs = getComputedStyle(n);
-      const size = parseFloat(cs.fontSize) * s;
-      x.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
-      x.fillStyle = `rgba(255,255,255,${a})`;
-      const align = cs.textAlign === "center" ? "center" : cs.textAlign === "right" || cs.textAlign === "end" ? "right" : "left";
-      x.textAlign = align;
-      const X = ((align === "center" ? r.left + r.width / 2 : align === "right" ? r.right : r.left) - box.left) * s;
-      // umbrechen wie auf dem Bildschirm
-      const lines = [];
-      for (const w of text.split(" ")) {
-        const tryLine = lines.length ? lines[lines.length - 1] + " " + w : w;
-        if (lines.length && x.measureText(tryLine).width > r.width * s * 1.02) lines.push(w);
-        else lines[Math.max(0, lines.length - 1)] = tryLine;
-      }
-      const lh = size * 1.18;
-      const y0 = (r.top + r.height / 2 - box.top) * s - ((lines.length - 1) * lh) / 2;
-      lines.forEach((ln, i) => x.fillText(ln, X, y0 + i * lh));
-    }
-    x.shadowBlur = 0;
-    x.font = `700 ${13 * s}px "Outfit", "Segoe UI", sans-serif`;
-    x.fillStyle = "rgba(255,255,255,0.5)";
-    x.textAlign = "right";
-    x.fillText("MIRAGE", W - 22 * s, H - 22 * s);
   }
 
   let canvasToken = 0;
@@ -1843,18 +1752,28 @@ const immersive = (() => {
     const party = el.dataset.mode === "party";
     q.recap.hidden = !(party && cfg.partyRecap && recap.songs.length >= 3);
     q.screen.hidden = !(party && cfg.partyScreen && "getScreenDetails" in window);
-    q.live.hidden = !(party && cfg.partyLive && bridge.live());
+    q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
-    q.clip.hidden = !(cfg.partyClip && VIZ.has(el.dataset.mode) && window.MediaRecorder && q.canvas.captureStream) && !clip.on;
   }
   // Live-Link: QR-Code und Adresse der Handy-Seite (die Overlay-App stellt sie im WLAN bereit)
   function toggleLiveCard() {
     const old = el.querySelector(".m-im-livecard");
     if (old) return old.remove();
     const info = bridge.live();
-    if (!info) return;
     const card = document.createElement("div");
     card.className = "m-im-livecard";
+    // keine Antwort von der Overlay-App: nicht verbunden oder eine alte Version – das sagen statt nichts zu tun
+    if (!info) {
+      bridge.setLive(true);
+      const b = document.createElement("b");
+      b.textContent = t("liveTitle");
+      const p = document.createElement("p");
+      p.textContent = t(bridge.connected() ? "liveOld" : "liveMissing");
+      card.append(b, p);
+      card.onclick = () => card.remove();
+      el.append(card);
+      return;
+    }
     if (info.qr) {
       const img = new Image();
       img.alt = "";
@@ -1872,7 +1791,9 @@ const immersive = (() => {
       e.stopPropagation();
       navigator.clipboard?.writeText(info.url).catch(() => {});
     };
-    card.append(b, p, u);
+    const fw = document.createElement("small");
+    fw.textContent = t("liveFirewall");
+    card.append(b, p, u, fw);
     card.onclick = () => card.remove();
     el.append(card);
   }

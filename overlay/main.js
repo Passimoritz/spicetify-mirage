@@ -7,7 +7,7 @@ const fs = require("fs");
 const os = require("os");
 const http = require("http");
 const { spawn } = require("child_process");
-const { WebSocketServer } = require("ws");
+const { WebSocketServer, WebSocket } = require("ws");
 const { make } = require("./i18n");
 
 const WIN = process.platform === "win32";
@@ -226,6 +226,8 @@ function startServer() {
       else if (m.type === "volume") showVolume(m);
       else if (m.type === "party") onParty(m);
       else if (m.type === "live") onLive(m, ws);
+      // eine neuere Mirage Overlay will den Port: diese (ältere) Kopie macht Platz
+      else if (m.type === "yield" && newer(String(m.version || ""), app.getVersion())) app.exit(0);
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
       else if (m.type === "debug") {
         try {
@@ -238,7 +240,34 @@ function startServer() {
       settingsWin?.webContents.send("status", status());
     });
   });
-  wss.on("error", () => {});
+  wss.on("listening", () => (portTries = 0));
+  wss.on("error", (e) => {
+    if (e?.code === "EADDRINUSE") portBusy();
+  });
+}
+// Port belegt – meist läuft noch eine andere Mirage Overlay (z. B. eine alte Kopie aus einem anderen Ordner).
+// Ist sie älter, bitten wir sie zu gehen; kennt sie das nicht, einmal Bescheid geben. Alle 4 s neu versuchen.
+let portTries = 0;
+function portBusy() {
+  portTries++;
+  try {
+    const c = new WebSocket(`ws://127.0.0.1:${PORT}`);
+    c.on("open", () => {
+      c.send(JSON.stringify({ type: "yield", version: app.getVersion() }));
+      setTimeout(() => c.close(), 300);
+    });
+    c.on("error", () => {});
+  } catch {}
+  if (portTries === 3 && Notification.isSupported()) {
+    const de = /^de/i.test(t.lang || app.getLocale());
+    new Notification({
+      title: "Mirage Overlay",
+      body: de
+        ? "Eine andere (alte) Mirage Overlay belegt die Verbindung zu Spotify. Bitte beende sie – z. B. im Task-Manager „electron.exe“ aus einem alten Mirage-Ordner."
+        : "Another (old) Mirage Overlay holds the connection to Spotify. Please close it – e.g. 'electron.exe' from an old Mirage folder in Task Manager.",
+    }).show();
+  }
+  setTimeout(startServer, 4000);
 }
 function send(msg) {
   for (const ws of clients) if (ws.readyState === 1) ws.send(JSON.stringify(msg));

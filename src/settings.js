@@ -311,16 +311,17 @@ function render(box) {
       toggle("partyShatter", () => {}),
       toggle("partyCrowd", () => {}),
       el("small", "m-note", t("partyVenue")),
-      seg(["auto", "club", "festival", "stadium", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+      seg(["auto", "club", "warehouse", "festival", "stadium", "beach", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
         cfg.partyVenue = k;
         save();
       }),
+      toggle("partyFx", () => {}),
+      toggle("partyStrobe", () => {}),
       toggle("partyDirector", () => {}),
       toggle("partyMelody", () => {}),
       toggle("partySlowmo", () => {}),
       toggle("partyDJ", () => {}),
       toggle("partyQuietFps", () => {}),
-      toggle("partyClip", () => immersive.refresh()),
       toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
       toggle("partyJamLight", () => {}),
       toggle("partyScreen", () => immersive.refresh()),

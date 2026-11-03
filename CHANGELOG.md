@@ -10,6 +10,28 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.10.0] – 2026-11-03
+
+### Added
+
+- **Stage effects where they make sense:** CO2 jets on the drop and at the peak of electronic music, pyro flames for rock, metal, punk and hardstyle, fireworks in the final chorus at the stadium and the festival. Switchable as *Stage effects*.
+- **Strobe on hard drops** for techno, hardstyle, rave, drum & bass and bass – only from *Extreme* on, only with flashes enabled, and never more than one flash per beat.
+- **Two new venues:** a warehouse (concrete pillars, bare lamps swinging on the kick) for techno and drum & bass, and a beach (sunset over the sea, palms swaying in time) for latin, reggae and afro.
+- **The overlay app takes over from older copies of itself.** If an old Mirage Overlay (for example from an old download folder) still holds the connection to Spotify, a newer version asks it to quit; a copy too old to understand that is pointed out with a notification.
+
+### Changed
+
+- **Better performance in every preset.** *Balanced* draws immersive mode at up to 60 fps (half the work on 120/144 Hz screens) with slightly fewer pixels; *Light* and energy saving at 30 fps with about 40 % fewer pixels and less party detail; *Full* stays at the full refresh rate.
+- **Live link:** the phone button is always shown when the live link is on. If the overlay app doesn't answer, the card says why (not running, or an old version) instead of staying empty, and it explains the firewall setting for public networks.
+
+### Fixed
+
+- **The crowd no longer stutters.** The background thread no longer builds up a backlog of frames (it gets the next frame only when the last one is drawn, and one-off signals like the drop are kept until then). Whether someone jumps is decided at the start of each jump, so no one snaps in or out of a jump mid-air; the wave rolls through as a smooth swell; lifting someone onto shoulders glides; back rows fade instead of popping when the quality control steps down.
+
+### Removed
+
+- The 10-second clip button and its setting.
+
 ## [1.9.1] – 2026-11-02
 
 ### Fixed

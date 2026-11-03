@@ -174,12 +174,14 @@ function createVenue(makeCanvas) {
     festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },
     stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },
     home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },
+    warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },
+    beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach" },
   };
   // „Automatisch“: der Ort passt zum Genre
   const AUTO_VENUE = {
-    techno: "club", house: "club", dnb: "club", bass: "club", disco: "club", jazz: "club",
-    rave: "festival", trance: "festival", hardstyle: "festival", reggae: "festival", afro: "festival",
-    rock: "stadium", metal: "stadium", punk: "stadium", pop: "stadium", kpop: "stadium", latin: "stadium", country: "stadium",
+    techno: "warehouse", dnb: "warehouse", house: "club", bass: "club", disco: "club", jazz: "club",
+    rave: "festival", trance: "festival", hardstyle: "festival", reggae: "beach", afro: "beach", latin: "beach",
+    rock: "stadium", metal: "stadium", punk: "stadium", pop: "stadium", kpop: "stadium", country: "stadium",
     chill: "home", classical: "home",
   };
   function drawDecor(ctx, v, px, pal, rgba, dpr, st) {
@@ -223,6 +225,64 @@ function createVenue(makeCanvas) {
         ctx.fillStyle = g;
         ctx.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);
       }
+    } else if (v.decor === "warehouse") {
+      // Lagerhalle: Betonpfeiler im Dunst, dazwischen nackte Lampen, die auf der Kick schaukeln und aufglühen
+      ctx.globalCompositeOperation = "source-over";
+      for (const f of [0.04, 0.27, 0.73, 0.96]) {
+        const g = ctx.createLinearGradient(0, 0, 0, vh);
+        g.addColorStop(0, "rgba(5,4,10,0.55)");
+        g.addColorStop(0.75, "rgba(5,4,10,0.3)");
+        g.addColorStop(1, "rgba(5,4,10,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);
+      }
+      ctx.globalCompositeOperation = "lighter";
+      for (let k = 0; k < 5; k++) {
+        const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);
+        const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));
+        ctx.strokeStyle = "rgba(255,255,255,0.08)";
+        ctx.lineWidth = dpr;
+        ctx.beginPath();
+        ctx.moveTo(vw * (0.19 + k * 0.155), 0);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        const r = (22 + beat * 40) * dpr;
+        ctx.globalAlpha = clamp(0.35 + beat * 0.65, 0, 1);
+        ctx.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    } else if (v.decor === "beach") {
+      // Strand: Abendrot über dem Meer am Horizont, Palmen links und rechts wiegen sich im Takt
+      const g = ctx.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);
+      g.addColorStop(0, "rgba(255,120,60,0)");
+      g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);
+      g.addColorStop(1, "rgba(255,90,90,0.04)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, vh * 0.45, vw, vh * 0.3);
+      ctx.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;
+      ctx.fillRect(0, vh * 0.72, vw, 2 * dpr);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(5,4,10,0.9)";
+      for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {
+        const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;
+        const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;
+        ctx.beginPath();
+        ctx.moveTo(bx - 9 * dpr, vh);
+        ctx.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);
+        ctx.lineTo(tx + 6 * dpr, ty + 4 * dpr);
+        ctx.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);
+        ctx.fill();
+        for (let k = 0; k < 6; k++) {
+          const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;
+          ctx.beginPath();
+          ctx.moveTo(tx, ty);
+          ctx.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);
+          ctx.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);
+          ctx.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);
+          ctx.fill();
+        }
+      }
+      ctx.globalCompositeOperation = "lighter";
     } else if (v.decor === "fairy") {
       // Wohnzimmer: eine Lichterkette hängt oben durchs Bild und glimmt im Takt
       for (let k = 0; k <= 26; k++) {
@@ -236,6 +296,99 @@ function createVenue(makeCanvas) {
     }
   }
   let stands = null;
+
+  /* ---------------------------------------------------------------- Bühneneffekte */
+  // Nur wo sie hingehören: CO2-Fontänen bei elektronischer Musik, Pyro-Flammen bei Rock/Metal/Punk/Hardstyle,
+  // Feuerwerk im letzten Refrain im Stadion und auf dem Festival, Stroboskop bei harten Drops (höchstens einmal
+  // pro Schlag – also nie schneller als ~3 Blitze/s). Ausgelöst vom Drop und, in der Spitze, vom Taktanfang.
+  const CO2 = new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco"]);
+  const PYRO = new Set(["rock", "metal", "punk", "hardstyle"]);
+  const STROBE = new Set(["techno", "hardstyle", "rave", "dnb", "bass"]);
+  const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };
+  function drawFx(ctx, st, v, px, pal, dpr) {
+    const dt = st.dt, key = px.key;
+    const big = v.decor === "towers" || v.decor === "stands";
+    const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;
+    if (newBeat) fx.beat = px.beatIdx;
+    const barStart = newBeat && px.inBar === 0;
+    if (barStart) fx.bar++;
+    if (st.fx && !px.blackout && v.decor !== "fairy") {
+      // Drop: immer. Danach und in der Spitze eines Refrains: auf jedem zweiten Taktanfang, nicht jedes Mal
+      const peak = px.drop > 0.3 || (px.energy > 0.85 && px.build < 0.15) || px.finale;
+      const fire = px.dropHit || (barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7);
+      if (fire && CO2.has(key)) {
+        const n = big ? 6 : 4;
+        for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + (0.76 * k) / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });
+      }
+      if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });
+      // Feuerwerk: im letzten Refrain auf fast jedem Taktanfang ein bis zwei Raketen
+      if (px.finale && big && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
+        for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });
+      }
+      if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;
+    }
+    ctx.globalCompositeOperation = "lighter";
+    // CO2: weiße Säule schießt in 0,25 s hoch und verweht dann über eine Sekunde
+    fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);
+    for (const j of fx.jets) {
+      const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);
+      const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;
+      const g = ctx.createLinearGradient(0, top, 0, vh);
+      g.addColorStop(0, "rgba(220,230,255,0)");
+      g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);
+      g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(j.x - 8 * dpr, vh);
+      ctx.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);
+      ctx.lineTo(j.x + w, top);
+      ctx.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);
+      ctx.fill();
+    }
+    // Pyro: flackernde Flammensäule aus warmen Leuchtpunkten, dazu Hitzeschein am Boden
+    fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);
+    for (const f of fx.flames) {
+      const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);
+      for (let k = 0; k < 9; k++) {
+        const y = vh - (h * k) / 8, r = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);
+        ctx.globalAlpha = clamp(life * (0.9 - k * 0.07), 0, 1);
+        ctx.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r + (Math.random() - 0.5) * 10 * dpr, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = life * 0.5;
+      const r = vh * 0.3;
+      ctx.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);
+    }
+    ctx.globalAlpha = 1;
+    // Feuerwerk: Rakete steigt, platzt in Funken der Songfarben, die sinken und verglühen
+    fx.rockets = fx.rockets.filter((r) => {
+      r.vy += vh * 1.1 * dt;
+      r.y += r.vy * dt;
+      ctx.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);
+      if (r.vy < -vh * 0.12) return true;
+      for (let k = 0; k < 56; k++) {
+        const a = (k / 56) * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);
+        fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });
+      }
+      return false;
+    });
+    fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);
+    for (const s of fx.sparks) {
+      s.vy += vh * 0.25 * dt;
+      s.vx *= 1 - dt * 0.8;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      const r = 9 * dpr;
+      ctx.globalAlpha = s.a;
+      ctx.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);
+    }
+    ctx.globalAlpha = 1;
+    // Stroboskop: kurzer weißer Blitz, der in ~0,1 s verlischt
+    if (fx.strobe > 0.02) {
+      ctx.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;
+      ctx.fillRect(0, 0, vw, vh);
+      fx.strobe *= Math.exp(-dt * 28);
+    }
+  }
 
   /* ---------------------------------------------------------------- Publikum */
   // Jede Bewegung ist an die Schlagphase gekoppelt (0 = genau auf dem Schlag): Sprünge LANDEN auf dem Schlag,
@@ -261,6 +414,7 @@ function createVenue(makeCanvas) {
     return x - Math.floor(x);
   };
   let crowd = null, crowdA = 0;
+  const rowA = [1, 1, 1];
   function makeCrowd(u, v) {
     const people = [];
     let id = 0;
@@ -362,7 +516,10 @@ function createVenue(makeCanvas) {
     ctx.lineJoin = "round";
     const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
     let curRow = null;
+    // Qualitätsstufe: hintere Reihen blenden weich aus und ein, statt schlagartig zu verschwinden
+    for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));
     const strokeRow = (row) => {
+      ctx.globalAlpha = A * rowA[row];
       ctx.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];
       ctx.strokeStyle = FILL[row];
       ctx.stroke(arms[row]);
@@ -373,13 +530,22 @@ function createVenue(makeCanvas) {
         if (curRow != null) strokeRow(curRow);
         curRow = p.row;
       }
-      if (p.row > st.quality) continue;
+      const ra = rowA[p.row];
+      if (ra < 0.02) continue;
+      ctx.globalAlpha = A * ra;
       const s1 = p.s * u, me = clamp(X + (p.up - 0.5) * 0.3, 0, 1);
-      const inWave = Math.abs(p.x - waveX) < 90 * u;
-      // --- Körper: springen / wippen / skanken – alles phasenstarr
-      let lift = 0;
-      const jumps = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2;
-      if (jumps || inWave || (px.drop > 0.6 && me > 0.6)) lift = (16 + me * 22) * s1 * 4 * cyc * (1 - cyc); // landet auf dem Schlag
+      // La-Ola: weicher Buckel, der durch die Reihe läuft (statt an/aus mitten im Sprung)
+      const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;
+      const inWave = wave > 0.35;
+      // --- Körper: springen / wippen / skanken – alles phasenstarr. Ob jemand springt, steht zu Beginn jedes
+      // Sprungs fest – ändert sich die Stimmung mitten in der Luft, wird der Sprung trotzdem zu Ende gesprungen
+      const cycN = half ? beatN >> 1 : beatN;
+      if (p.cyc !== cycN) {
+        p.cyc = cycN;
+        p.jmp = ((style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2) || (px.drop > 0.6 && me > 0.6);
+      }
+      let lift = wave * (14 + me * 18) * s1;
+      if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc)); // landet auf dem Schlag
       else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);
       else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);
       else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);
@@ -391,7 +557,8 @@ function createVenue(makeCanvas) {
       const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
       // auf den Schultern: dieselbe Person sitzt eine Etage höher und reißt die Arme hoch
       const lifted = p.id === crowd.lift;
-      const yy = lifted ? y - 58 * s1 : y;
+      p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4)); // weich hoch auf die Schultern
+      const yy = y - 58 * s1 * p.sh;
       ctx.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);
       // Körper bis weit unter den Bildrand verlängern: beim Springen, auf den Schultern und bei
       // Kamerafahrten schwebt sonst ein abgeschnittener Oberkörper in der Luft
@@ -427,7 +594,7 @@ function createVenue(makeCanvas) {
     ctx.globalCompositeOperation = "lighter";
     for (const [gx, gy, kind, s1, row] of glows) {
       const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;
-      ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A;
+      ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];
       ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
     }
     crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);
@@ -463,6 +630,7 @@ function createVenue(makeCanvas) {
       drawStage(ctx, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
       drawDecor(ctx, v, st.px, st.pal, rgba, st.dpr, st);
     }
+    drawFx(ctx, st, v, st.px, st.pal, st.dpr);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = "source-over";

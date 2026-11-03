@@ -168,7 +168,9 @@ Party mode reads the whole song before it plays: energy curve, build-ups, drops 
 - **Slow motion** – sparks, rings and the crowd freeze for half a second right before the drop.
 - **DJ transitions** – on a song change the old colours hold until the first beat, then blend over four beats.
 
-**A crowd and a venue.** Silhouettes in front of the stage move with the genre – they jump and land on the beat, nod, headbang, clap on 2 and 4, sway – start a wave every now and then, lift someone onto their shoulders and fire camera flashes on the drop. The venue follows the genre (club, festival, stadium or living room) or is fixed in the settings.
+**A crowd and a venue.** Silhouettes in front of the stage move with the genre – they jump and land on the beat, nod, headbang, clap on 2 and 4, sway – start a wave every now and then, lift someone onto their shoulders and fire camera flashes on the drop. The venue follows the genre – club, warehouse, festival, stadium, beach or living room – or is fixed in the settings.
+
+**Stage effects where they belong.** CO2 jets shoot up on the drop in electronic music, pyro flames burn for rock, metal and punk, fireworks go up in the final chorus at the stadium and the festival, and hard techno, hardstyle and rave drops get a strobe (from *Extreme* on, never faster than one flash per beat).
 
 **Five intensity levels** from *Soft* to *Insane*. On top, each switchable: hype lines for choruses and crowd calls, 3D depth, camera rides, lyrics bursting into light on the drop, Jam colours for everyone in a Spotify Jam, and auto-hiding controls.
 
@@ -176,7 +178,6 @@ Party mode reads the whole song before it plays: energy curve, build-ups, drops 
 
 | | |
 |---|---|
-| 🎬 **10-second clip** | Records the visualizer with cover and lyric line as a silent WebM video – ready to share |
 | 📱 **Live link** | Phones on the same Wi-Fi scan a QR code and flash along as extra lights (needs the overlay app) |
 | 🖥️ **Second screen** | Puts party mode full screen on a TV or another monitor |
 | 🌈 **Edge light** | The overlay app makes the edges of your desktop glow with the beat |
@@ -234,8 +235,8 @@ Still broken? `spicetify clear` and then `spicetify backup apply`. Right after a
 
 Mirage is built to look alive without eating your CPU.
 
-- **Presets:** *Full*, *Balanced*, *Light* and *Calm* in the settings. If the first seconds run below ~45 fps, Mirage steps down by itself.
-- **Party mode adapts:** the stage and crowd are drawn in a background thread, a quality governor thins details before frames drop, and quiet intros and breaks run at 30 fps.
+- **Presets:** *Full*, *Balanced*, *Light* and *Calm* in the settings. *Balanced* draws immersive mode at up to 60 fps (half the work on 120/144 Hz screens) with slightly fewer pixels, *Light* at 30 fps with about 40 % fewer pixels and less detail. If the first seconds run below ~45 fps, Mirage steps down by itself.
+- **Party mode adapts:** the stage and crowd are drawn in a background thread that never builds up a backlog, a quality governor fades out back rows before frames drop, and quiet intros and breaks run at 30 fps.
 - **Energy saving:** on battery (or always, if you like) everything runs at 30 fps with lighter detail.
 - **Pauses when hidden**, and starts in calm mode when your system asks for reduced motion.
 
@@ -260,7 +261,7 @@ Pick the style by hand in **Mirage settings → Party mode**, or keep *Auto* and
 <details>
 <summary><b>The phone page does not open.</b></summary>
 
-Phone and PC must be on the same Wi-Fi (not a guest network), the overlay app must be running, and Windows must have been allowed to let it through on the private network. Turn the live link off and on in the settings to get a fresh QR code.
+Phone and PC must be on the same Wi-Fi (not a guest network), the overlay app (1.10 or newer) must be running, and Windows must let *Mirage Overlay* through its firewall – for public networks too, if your network is set to public. If an old copy of the overlay is still running (for example from an old download folder), close it; newer versions take over from older ones by themselves. Turn the live link off and on in the settings to get a fresh QR code.
 </details>
 
 <details>

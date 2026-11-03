@@ -101,8 +101,9 @@ const DEFAULTS = {
   eco: "auto",
   // Handys im selben WLAN leuchten mit (über die Overlay-App) – bewusst aus, bis man es will
   partyLive: false,
-  // Knopf für einen 10-Sekunden-Clip
-  partyClip: true,
+  // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop bei harten Drops
+  partyFx: true,
+  partyStrobe: true,
   // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
   partyLasers: true,
   partyZoom: true,

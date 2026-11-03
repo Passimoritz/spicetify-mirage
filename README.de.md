@@ -168,7 +168,9 @@ Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten,
 - **Zeitlupe** – Funken, Ringe und Publikum erstarren eine halbe Sekunde direkt vor dem Drop.
 - **DJ-Übergänge** – beim Songwechsel bleiben die alten Farben bis zum ersten Schlag und gehen dann über vier Schläge in die neuen über.
 
-**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle, nehmen jemanden auf die Schultern und zücken beim Drop die Handykameras. Die Location richtet sich nach dem Genre (Club, Festival, Stadion oder Wohnzimmer) oder wird in den Einstellungen festgelegt.
+**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle, nehmen jemanden auf die Schultern und zücken beim Drop die Handykameras. Die Location richtet sich nach dem Genre – Club, Lagerhalle, Festival, Stadion, Strand oder Wohnzimmer – oder wird in den Einstellungen festgelegt.
+
+**Bühneneffekte, wo sie hingehören.** Beim Drop in elektronischer Musik schießen CO2-Fontänen hoch, bei Rock, Metal und Punk lodern Pyro-Flammen, im letzten Refrain steigt im Stadion und auf dem Festival Feuerwerk auf, und harte Techno-, Hardstyle- und Rave-Drops bekommen ein Stroboskop (ab *Extrem*, nie schneller als ein Blitz pro Schlag).
 
 **Fünf Stärken** von *Sanft* bis *Wahnsinn*. Dazu, jeweils abschaltbar: Hype-Zeilen für Refrains und Mitsing-Rufe, 3D-Tiefe, Kamerafahrten, Liedtext-Funken beim Drop, Jam-Farben für alle in einem Spotify-Jam und sich selbst ausblendende Bedienelemente.
 
@@ -176,7 +178,6 @@ Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten,
 
 | | |
 |---|---|
-| 🎬 **10-Sekunden-Clip** | Nimmt den Visualizer mit Cover und Liedzeile als stummes WebM-Video auf – fertig zum Teilen |
 | 📱 **Live-Link** | Handys im selben WLAN scannen einen QR-Code und blitzen als zusätzliche Lichter mit (braucht die Overlay-App) |
 | 🖥️ **Zweiter Bildschirm** | Legt den Party-Modus im Vollbild auf einen Fernseher oder anderen Monitor |
 | 🌈 **Kantenlicht** | Die Overlay-App lässt die Ränder deines Desktops im Takt leuchten |
@@ -234,8 +235,8 @@ Klappt es immer noch nicht? `spicetify clear` und danach `spicetify backup apply
 
 Mirage soll lebendig aussehen, ohne den Rechner aufzufressen.
 
-- **Voreinstellungen:** *Voll*, *Ausgewogen*, *Leicht* und *Ruhig* in den Einstellungen. Laufen die ersten Sekunden unter ~45 fps, schaltet Mirage selbst eine Stufe herunter.
-- **Party passt sich an:** Bühne und Publikum werden in einem Hintergrund-Thread gezeichnet, eine Qualitätsregelung dünnt Details aus, bevor Bilder ausfallen, und ruhige Intros und Breaks laufen mit 30 fps.
+- **Voreinstellungen:** *Voll*, *Ausgewogen*, *Leicht* und *Ruhig* in den Einstellungen. *Ausgewogen* zeichnet den Immersiv-Modus mit höchstens 60 fps (auf 120/144-Hz-Bildschirmen die halbe Arbeit) und etwas weniger Pixeln, *Leicht* mit 30 fps, rund 40 % weniger Pixeln und weniger Details. Laufen die ersten Sekunden unter ~45 fps, schaltet Mirage selbst eine Stufe herunter.
+- **Party passt sich an:** Bühne und Publikum werden in einem Hintergrund-Thread gezeichnet, der sich nie aufstaut, eine Qualitätsregelung blendet hintere Reihen aus, bevor Bilder ausfallen, und ruhige Intros und Breaks laufen mit 30 fps.
 - **Energiesparen:** im Akkubetrieb (oder auf Wunsch immer) läuft alles mit 30 fps und leichteren Details.
 - **Pausiert im Hintergrund** und startet im ruhigen Modus, wenn dein System weniger Bewegung wünscht.
 
@@ -260,7 +261,7 @@ Den Stil in **Mirage-Einstellungen → Party-Modus** von Hand wählen, oder bei 
 <details>
 <summary><b>Die Handy-Seite öffnet sich nicht.</b></summary>
 
-Handy und PC müssen im selben WLAN sein (kein Gästenetz), die Overlay-App muss laufen, und Windows muss sie im privaten Netzwerk durchgelassen haben. Live-Link in den Einstellungen aus- und wieder einschalten gibt einen frischen QR-Code.
+Handy und PC müssen im selben WLAN sein (kein Gästenetz), die Overlay-App (1.10 oder neuer) muss laufen, und Windows muss *Mirage Overlay* durch die Firewall lassen – auch für öffentliche Netzwerke, wenn dein Netzwerk so eingestellt ist. Läuft noch eine alte Kopie der Overlay-App (z. B. aus einem alten Download-Ordner), beende sie; neuere Versionen übernehmen von älteren von selbst. Live-Link in den Einstellungen aus- und wieder einschalten gibt einen frischen QR-Code.
 </details>
 
 <details>

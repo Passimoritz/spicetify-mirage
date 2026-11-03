@@ -16,7 +16,7 @@ self.onmessage = (e) => {
       canvas.height = m.st.vh;
     }
     venue.draw(ctx, m.st);
-    // für den 10-Sekunden-Clip: eine Kopie des Bildes zurück ins Hauptfenster
-    if (m.grab) createImageBitmap(canvas).then((b) => self.postMessage({ type: "bitmap", b }, [b]), () => {});
+    // fertig: erst jetzt schickt das Hauptfenster das nächste Bild (sonst stauen sich Bilder und es hakt)
+    self.postMessage({ type: "done" });
   } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
 };

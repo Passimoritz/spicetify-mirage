@@ -789,11 +789,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 
 /* Visualizer-Leinwand */
 /* Party-Location (Bühnenlicht, Dekor, Publikum) liegt als eigenes Canvas unter dem Visualizer */
-/* Clip-Knopf: während der Aufnahme rot mit Fortschrittsring */
-#mirage-immersive .m-im-clip.is-rec {
-  color: #fff;
-  background: conic-gradient(rgb(255 70 90) calc(var(--p, 0) * 360deg), rgb(255 70 90 / 0.25) 0);
-}
 /* Live-Link: QR-Karte über dem Party-Modus */
 #mirage-immersive .m-im-livecard {
   position: absolute;
@@ -826,6 +821,11 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   margin: 0;
   font-size: 13px;
   opacity: 0.75;
+}
+#mirage-immersive .m-im-livecard small {
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0.55;
 }
 #mirage-immersive .m-im-livecard code {
   max-width: 100%;
