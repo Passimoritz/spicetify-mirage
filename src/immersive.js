@@ -490,6 +490,7 @@ const immersive = (() => {
     blend = null;
     party.live = null;
     venueClear();
+    el?.querySelector(".m-im-livecard")?.remove();
   }
 
   // Jam: Profilbilder schweben links und rechts am Rand; du mit Akzentring, der Host mit kleinem Punkt.
@@ -1050,7 +1051,10 @@ const immersive = (() => {
     }
     ctx.globalCompositeOperation = "source-over";
     // Puls direkt als scale (eigene Grafikebene), nur bei sichtbarer Änderung
-    const pulse = (1 + b * V.pulse).toFixed(3);
+    // Puls federt: schneller Anstieg (~35 ms), weiches Abklingen – kein hartes Springen von Bild zu Bild
+    const want = 1 + b * V.pulse;
+    pulseS += (want - pulseS) * (1 - Math.exp(-dt * (want > pulseS ? 30 : 9)));
+    const pulse = pulseS.toFixed(4);
     if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
     if (px) {
       // Farbfläche: nur Deckkraft und (beim Takt) Farbe ändern – beides ohne Neu-Layout
@@ -1085,7 +1089,7 @@ const immersive = (() => {
       }
     }
   }
-  let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+  let pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
   let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "";
   function freshCanvas() {
     const n = q.canvas.cloneNode(false);
@@ -1460,19 +1464,24 @@ const immersive = (() => {
     if (cfg.partyCamera && px.fx && quality.level > 0) {
       const t = now / 1000;
       const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
-      cam.s += (target - cam.s) * (1 - Math.exp(-dt * 1.2));
-      if (px.dropHit) cam.s += 0.03;
+      // Grundzoom gleitet; der Ruck beim Drop ist ein kurzer, gefederter Stoß statt eines Sprungs
+      cam.b = (cam.b ?? 1) + (target - (cam.b ?? 1)) * (1 - Math.exp(-dt * 1.2));
+      if (px.dropHit) cam.kick = 0.035;
+      cam.kick = (cam.kick || 0) * Math.exp(-dt * 2.5);
+      cam.kv = (cam.kv || 0) + (cam.kick - (cam.kv || 0)) * (1 - Math.exp(-dt * 16));
+      cam.s = cam.b + cam.kv;
       cam.x = Math.sin(t * 0.05) * innerWidth * 0.008 * (0.5 + px.energy);
       cam.y = Math.cos(t * 0.037) * innerHeight * 0.006 * (0.5 + px.energy);
       // nur die Bühne bewegt sich (Hintergrund hier, Licht und Publikum im Canvas) – Cover, Liedtext
       // und Bedienung bleiben stehen: nichts rutscht aus dem Bild, kein Spotify-Rand blitzt durch
-      const k = `${cam.x.toFixed(0)}|${cam.y.toFixed(0)}`;
+      // auf Zehntelpixel: ganze Pixel ließen das langsame Schweben sichtbar stufen
+      const k = `${cam.x.toFixed(1)}|${cam.y.toFixed(1)}`;
       if (k !== cam.key) {
         cam.key = k;
-        q.bg.style.translate = `${cam.x.toFixed(0)}px ${cam.y.toFixed(0)}px`;
+        q.bg.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
       }
     } else if (cam.key || cam.s !== 1) {
-      Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
+      Object.assign(cam, { s: 1, b: 1, kick: 0, kv: 0, x: 0, y: 0, key: "" });
       q.bg.style.translate = "";
     }
     // 3D-Tiefe: Liedtext, Titel und Licht liegen auf verschiedenen Ebenen; ohne Maus schwebt die Szene leise

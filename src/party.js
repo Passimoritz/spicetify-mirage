@@ -77,9 +77,71 @@ const PROFILES = {
   country: { decay: 6, beams: 0.4, accent: [1, 0.7, 0.85, 0.7], flashOn: "back", spot: "top", spinRate: 0.15, sway: true, shake: 0, tint: "gold",
     mirror: true, spin: false, height: 1.3, pulse: 0.06, ring: 2, thick: 2.6, halo: true, sparks: 8, bottom: false },
 };
+// Weitere Spielarten: jeweils eine verwandte Lichtsprache, abgewandelt, wo sich die Musik anders anfühlt
+const like = (base, o) => ({ ...PROFILES[base], ...o });
+Object.assign(PROFILES, {
+  // Elektronisch
+  edm: like("rave", { beams: 1.25, spinRate: 0.55, height: 1.6, sparks: 14 }), // Big Room: Festival-Strahlen, riesige Drops
+  deephouse: like("house", { decay: 3.8, beams: 0.45, spinRate: 0.15, tint: "cool", pulse: 0.06, sparks: 8 }), // tief und weich
+  techhouse: like("house", { decay: 7.5, spot: "scan", spinRate: 0.3, beams: 0.85, sparks: 8 }), // House-Groove, Techno-Scanner
+  psytrance: like("trance", { decay: 8, spinRate: 0.7, tint: "jungle", accent: [1, 0.8, 0.9, 0.8], pulse: 0.09, sparks: 18 }),
+  dubstep: like("bass", { decay: 5, beams: 1, accent: [1, 0.2, 1, 0.3], flashOn: "down", tint: "cool", shake: 10, spinRate: 0.2, height: 1.65, pulse: 0.13, thick: 4.6, sparks: 10 }), // halbes Tempo, schwere Wobbles
+  garage: like("house", { decay: 6, accent: [1, 0.4, 0.8, 0.7], spot: "pan", tint: "cool", sparks: 10 }), // 2-Step: versetzte Schläge
+  eurodance: like("rave", { tint: "pink", spinRate: 0.45, sway: true, sparks: 16 }),
+  synthwave: like("trance", { decay: 4, spot: "scan", tint: "pink", spinRate: 0.2, beams: 0.8, sway: true, sparks: 6 }), // 80er-Neon
+  hyperpop: like("kpop", { decay: 9, spinRate: 0.7, sparks: 28, shake: 3, pulse: 0.11 }),
+  // Hip-Hop & R&B
+  trap: like("bass", { decay: 3, accent: [1, 0.3, 0.6, 0.45], tint: "cool", shake: 7, pulse: 0.13, sparks: 8 }), // 808 lang, Hi-Hats funkeln
+  drill: like("bass", { decay: 4.5, accent: [1, 0.45, 0.85, 0.5], spot: "top", tint: "cool", shake: 5, beams: 0.7, sway: false }),
+  phonk: like("bass", { decay: 6, accent: [1, 0.6, 0.9, 0.6], spot: "scan", tint: "hot", shake: 6, spinRate: 0.3, sparks: 10 }),
+  rnb: like("pop", { decay: 3.2, accent: [1, 0.35, 0.8, 0.5], flashOn: "", spot: "soft", tint: "warm", beams: 0.5, spinRate: 0.12, pulse: 0.05, sparks: 8 }),
+  soul: like("country", { decay: 4, accent: [0.8, 1, 0.8, 1], tint: "gold", beams: 0.5, sparks: 10 }), // Backbeat, warmes Bühnenlicht
+  // Rock
+  indie: like("pop", { accent: [0.8, 1, 0.7, 1], flashOn: "back", spinRate: 0.2, beams: 0.7, shake: 2 }),
+  alternative: like("rock", { decay: 8, shake: 6, beams: 0.85, tint: "cool", sparks: 12 }),
+  blues: like("jazz", { decay: 3.4, accent: [0.7, 1, 0.7, 1], spot: "top", tint: "warm", sparks: 5 }),
+  // Pop
+  schlager: like("pop", { accent: [1, 0.85, 0.95, 0.85], flashOn: "back", tint: "gold", spinRate: 0.3, sparks: 20 }), // Klatschen auf 2 und 4
+  ballad: like("chill", { decay: 1.8, beams: 0.4, spot: "top", tint: "warm", spinRate: 0.05, sparks: 4 }), // Feuerzeuge hoch
+  gospel: like("country", { decay: 4, accent: [0.8, 1, 0.8, 1], tint: "gold", beams: 0.6, sparks: 14 }),
+  // Latin & Welt
+  reggaeton: like("latin", { decay: 5.5, accent: [1, 0.4, 0.7, 1], spot: "floor", tint: "hot", shake: 3, bottom: true, sparks: 14 }), // Dembow
+  salsa: like("latin", { decay: 6, accent: [1, 0.7, 0.8, 0.9], spinRate: 0.35, sparks: 18 }),
+  brazil: like("latin", { accent: [1, 0.8, 0.9, 0.8], spot: "floor", tint: "jungle", spinRate: 0.35, sparks: 16 }),
+  flamenco: like("latin", { decay: 8, accent: [1, 0.6, 0.9, 0.6], flashOn: "back", spot: "top", tint: "hot", sway: false, shake: 3, sparks: 12 }),
+  bollywood: like("kpop", { tint: "gold", spinRate: 0.35, sparks: 22 }),
+  arabic: like("trance", { decay: 4, spot: "aurora", tint: "gold", spinRate: 0.25, sway: true, beams: 0.7, sparks: 10 }),
+  // Ruhig
+  ambient: like("chill", { decay: 1.2, beams: 0.15, spot: "aurora", spinRate: 0.04, pulse: 0.02, tint: "cool", sparks: 2 }),
+  cinematic: like("classical", { decay: 2.4, beams: 0.7, spot: "aurora", spinRate: 0.1, tint: "cool", height: 1.3, pulse: 0.05, sparks: 8 }),
+});
+// Für die Auswahl in den Einstellungen: nach Musikfamilie geordnet
+const FAMILIES = {
+  electronic: ["rave", "edm", "house", "deephouse", "techhouse", "techno", "trance", "psytrance", "dnb", "dubstep", "garage", "hardstyle", "eurodance", "synthwave", "hyperpop"],
+  urban: ["bass", "trap", "drill", "phonk", "rnb", "soul", "afro", "reggae"],
+  rock: ["rock", "alternative", "indie", "punk", "metal", "blues"],
+  pop: ["pop", "kpop", "disco", "schlager", "ballad", "gospel", "country"],
+  world: ["latin", "reggaeton", "salsa", "brazil", "flamenco", "bollywood", "arabic"],
+  calm: ["chill", "ambient", "jazz", "classical", "cinematic"],
+};
 const PROFILE_KEYS = Object.keys(PROFILES);
 // Genaue Spielarten zuerst – gelten für Spotify- und Apple-Genres gleichermaßen
 const SPECIFIC = [
+  ["dubstep", /dubstep|riddim|brostep/],
+  ["phonk", /phonk/],
+  ["drill", /\bdrill\b/],
+  ["reggaeton", /reggaeton|latin trap|trap latino|urbano latino|dembow|perreo/],
+  ["trap", /\btrap\b/],
+  ["psytrance", /psytrance|psy-trance|\bgoa\b|psychedelic trance|full ?on/],
+  ["techhouse", /tech ?house/],
+  ["deephouse", /deep house|melodic house|afro house|organic house|tropical house|lo-?fi house/],
+  ["garage", /uk garage|\bukg\b|2-?step|speed garage|bassline|grime/],
+  ["edm", /\bedm\b|big room|electro house|progressive house|future house|brazilian bass/],
+  ["synthwave", /synthwave|retrowave|outrun|darkwave|vaporwave|chillwave|new wave|synth-?pop/],
+  ["eurodance", /eurodance|euro ?dance|italo|euro ?house|hands ?up|eurobeat/],
+  ["hyperpop", /hyperpop|digicore|glitchcore|nightcore/],
+  ["ambient", /ambient|drone|new age|meditation|sleep|healing/],
+  ["brazil", /samba|pagode|forr[oó]|\bax[eé]\b|baile funk|funk carioca|sertanejo|\bmpb\b|bossa|brazil|brasil/],
   ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
   ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
   ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
@@ -89,12 +151,25 @@ const SPECIFIC = [
   ["kpop", /k-?pop|j-?pop|c-?pop|idol/],
   ["afro", /afrobeat|afro ?pop|amapiano|afroswing|afro ?fusion/],
   ["house", /house|garage house/],
+  ["schlager", /schlager|discofox|ballermann|apr[eè]s|stimmung|volksmusik|volkst[uü]mlich|oktoberfest|deutschpop/],
   ["disco", /disco|funk|boogie/],
+  ["gospel", /gospel|worship|christian|\bccm\b|choir|praise/],
+  ["rnb", /r&b|\brnb\b|neo ?soul|new jack|contemporary r/],
+  ["soul", /soul|motown/],
+  ["blues", /blues/],
   ["reggae", /reggae|dancehall|\bdub\b|\bska\b/],
-  ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/],
-  ["classical", /classical|orchestra|soundtrack|\bscore\b|cinematic|opera|baroque|film/],
-  ["jazz", /jazz|swing|bebop|bossa|blues/],
+  ["salsa", /salsa|bachata|merengue|cumbia|tropical|vallenato|tango|mariachi|ranchera|banda|norte[nñ]o|corrido|regional mexican/],
+  ["flamenco", /flamenco|rumba|spanish guitar|sevillanas/],
+  ["bollywood", /bollywood|filmi|bhangra|desi|punjabi|indian|tamil|telugu|hindi/],
+  ["arabic", /arab|khaleeji|\bra[iï]\b|dabke|turkish|middle east|persian|mizrahi/],
+  ["latin", /urbano|latin|moombah/],
+  ["cinematic", /soundtrack|\bscore\b|cinematic|\bepic\b|trailer|video game|film/],
+  ["classical", /classical|orchestra|opera|baroque/],
+  ["jazz", /jazz|swing|bebop/],
+  ["ballad", /ballad|soft rock/],
   ["country", /country|americana|bluegrass|folk/],
+  ["indie", /indie|bedroom pop|shoegaze|dream pop/],
+  ["alternative", /alternative|grunge|post-rock|post-punk|britpop|garage rock/],
 ];
 // Reihenfolge zählt: „dance pop“ ist eher Pop als Rave, „pop punk“ eher Rock
 const GENRES = [
@@ -543,7 +618,7 @@ const party = (() => {
     }
   })();
 
-  return { prepare, step, get info() { return info; }, PROFILES, PROFILE_KEYS };
+  return { prepare, step, get info() { return info; }, PROFILES, PROFILE_KEYS, FAMILIES };
 })();
 
-export { party, PROFILE_KEYS };
+export { party, PROFILE_KEYS, FAMILIES };

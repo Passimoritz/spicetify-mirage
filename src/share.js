@@ -301,6 +301,12 @@ const GENRE_COL = {
   house: [255, 200, 70], trance: [110, 140, 255], dnb: [170, 255, 90], metal: [220, 30, 60], latin: [255, 120, 95],
   disco: [255, 215, 110], kpop: [255, 90, 200], reggae: [80, 200, 110], classical: [235, 205, 140], punk: [255, 70, 40],
   hardstyle: [255, 40, 90], afro: [255, 160, 70], jazz: [200, 150, 90], country: [215, 170, 100],
+  edm: [140, 120, 255], deephouse: [90, 170, 230], techhouse: [255, 170, 90], psytrance: [120, 255, 140], dubstep: [90, 230, 255],
+  garage: [110, 200, 255], eurodance: [255, 110, 220], synthwave: [255, 90, 200], hyperpop: [255, 140, 240], trap: [130, 150, 255],
+  drill: [120, 140, 200], phonk: [255, 80, 80], rnb: [230, 130, 170], soul: [240, 180, 90], indie: [250, 170, 140], alternative: [150, 170, 210],
+  blues: [80, 120, 230], schlager: [255, 205, 80], ballad: [255, 190, 150], gospel: [255, 220, 140], reggaeton: [255, 100, 70],
+  salsa: [255, 130, 70], brazil: [90, 220, 110], flamenco: [230, 50, 60], bollywood: [255, 170, 40], arabic: [230, 190, 110],
+  ambient: [120, 190, 220], cinematic: [150, 170, 230],
 };
 async function partyRecapCard(r) {
   const songs = r?.songs || [];

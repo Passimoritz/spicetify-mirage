@@ -183,6 +183,11 @@ function createVenue(makeCanvas) {
     rave: "festival", trance: "festival", hardstyle: "festival", reggae: "beach", afro: "beach", latin: "beach",
     rock: "stadium", metal: "stadium", punk: "stadium", pop: "stadium", kpop: "stadium", country: "stadium",
     chill: "home", classical: "home",
+    edm: "festival", deephouse: "beach", techhouse: "warehouse", psytrance: "festival", dubstep: "festival", garage: "club",
+    eurodance: "club", synthwave: "club", hyperpop: "club", trap: "club", drill: "warehouse", phonk: "warehouse", rnb: "club",
+    soul: "club", indie: "festival", alternative: "stadium", blues: "club", schlager: "festival", ballad: "stadium", gospel: "stadium",
+    reggaeton: "club", salsa: "beach", brazil: "beach", flamenco: "club", bollywood: "stadium", arabic: "festival", ambient: "home",
+    cinematic: "stadium",
   };
   function drawDecor(ctx, v, px, pal, rgba, dpr, st) {
     const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);
@@ -301,9 +306,9 @@ function createVenue(makeCanvas) {
   // Nur wo sie hingehören: CO2-Fontänen bei elektronischer Musik, Pyro-Flammen bei Rock/Metal/Punk/Hardstyle,
   // Feuerwerk im letzten Refrain im Stadion und auf dem Festival, Stroboskop bei harten Drops (höchstens einmal
   // pro Schlag – also nie schneller als ~3 Blitze/s). Ausgelöst vom Drop und, in der Spitze, vom Taktanfang.
-  const CO2 = new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco"]);
-  const PYRO = new Set(["rock", "metal", "punk", "hardstyle"]);
-  const STROBE = new Set(["techno", "hardstyle", "rave", "dnb", "bass"]);
+  const CO2 = new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
+  const PYRO = new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
+  const STROBE = new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
   const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };
   function drawFx(ctx, st, v, px, pal, dpr) {
     const dt = st.dt, key = px.key;
@@ -400,6 +405,10 @@ function createVenue(makeCanvas) {
     rave: "jump", trance: "wave", hardstyle: "jump", dnb: "jump", techno: "pump", house: "bounce",
     rock: "bang", metal: "bang", punk: "jump", bass: "nod", pop: "clap", kpop: "clap", disco: "clap", country: "clap",
     latin: "bounce", afro: "bounce", reggae: "skank", chill: "sway", jazz: "sway", classical: "sway",
+    edm: "jump", deephouse: "bounce", techhouse: "pump", psytrance: "jump", dubstep: "bang", garage: "bounce", eurodance: "jump",
+    synthwave: "nod", hyperpop: "jump", trap: "bounce", drill: "nod", phonk: "pump", rnb: "sway", soul: "clap", indie: "bounce",
+    alternative: "bang", blues: "sway", schlager: "clap", ballad: "sway", gospel: "clap", reggaeton: "bounce", salsa: "bounce",
+    brazil: "bounce", flamenco: "clap", bollywood: "bounce", arabic: "clap", ambient: "sway", cinematic: "sway",
   };
   const mood = { x: 0 };
   function crowdMood(px, dt, hype) {
@@ -516,6 +525,18 @@ function createVenue(makeCanvas) {
     ctx.lineJoin = "round";
     const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
     let curRow = null;
+    // Gegenlicht: ein Streifen leuchtender Dunst hinter den Köpfen, der mit Kick und Drop aufglüht
+    {
+      const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;
+      const g = ctx.createLinearGradient(0, top, 0, vh);
+      g.addColorStop(0, rgba(pal[0], 0));
+      g.addColorStop(0.55, rgba(pal[0], glow.toFixed(3)));
+      g.addColorStop(1, rgba(pal[1], (glow * 0.6).toFixed(3)));
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = g;
+      ctx.fillRect(0, top, vw, vh - top);
+      ctx.globalCompositeOperation = "source-over";
+    }
     // Qualitätsstufe: hintere Reihen blenden weich aus und ein, statt schlagartig zu verschwinden
     for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));
     const strokeRow = (row) => {

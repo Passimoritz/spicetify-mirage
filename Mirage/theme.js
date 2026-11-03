@@ -65,7 +65,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.10.0" : "dev";
+      VERSION = true ? "1.11.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -291,7 +291,7 @@
           tabMix: "Mix",
           tabParty: "Party",
           party_auto: "Auto",
-          party_bass: "Bass",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Party mode",
           partySectionHint: "Auto picks the light language from the genre \u2013 and the lights follow the song itself: build-ups, drops, quiet breaks, major or minor",
@@ -402,7 +402,48 @@
           venue_beach: "Beach",
           liveMissing: "The Mirage Overlay app is not connected. Start it (version 1.10 or newer) \u2013 then the QR code appears here.",
           liveOld: "No answer from the Overlay app \u2013 it is probably an old version. Update it, and close any old copy (e.g. 'electron.exe' from an old Mirage folder).",
-          liveFirewall: "Phone can't open it? It must be on the same Wi-Fi, and Windows must allow 'Mirage Overlay' \u2013 also for public networks if yours is set to public."
+          liveFirewall: "Phone can't open it? It must be on the same Wi-Fi, and Windows must allow 'Mirage Overlay' \u2013 also for public networks if yours is set to public.",
+          g_party: "Party mode",
+          ps_light: "Light & effects",
+          ps_moments: "Moments",
+          ps_crowd: "Crowd & Jam",
+          ps_extras: "Extras & sharing",
+          fam_electronic: "Electronic",
+          fam_urban: "Hip-Hop & R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latin & world",
+          fam_calm: "Calm & classical",
+          liveWait: "Waiting for the Overlay app \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternative",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Ballad",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "Brazilian",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arabic",
+          party_ambient: "Ambient",
+          party_cinematic: "Film & Epic",
+          ps_style: "Style"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -609,7 +650,7 @@
           tabMix: "Mix",
           tabParty: "Party",
           party_auto: "Auto",
-          party_bass: "Bass",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Party-Modus",
           partySectionHint: "Auto w\xE4hlt die Lichtsprache nach Genre \u2013 und das Licht folgt dem Song selbst: Aufbau, Drop, ruhige Breaks, Dur oder Moll",
@@ -720,7 +761,48 @@
           venue_beach: "Strand",
           liveMissing: "Die Mirage-Overlay-App ist nicht verbunden. Starte sie (Version 1.10 oder neuer) \u2013 dann erscheint hier der QR-Code.",
           liveOld: "Keine Antwort von der Overlay-App \u2013 vermutlich eine alte Version. Aktualisiere sie und beende alte Kopien (z. B. \u201Eelectron.exe\u201C aus einem alten Mirage-Ordner).",
-          liveFirewall: "Handy kommt nicht drauf? Es muss im selben WLAN sein, und Windows muss \u201EMirage Overlay\u201C erlauben \u2013 auch f\xFCr \xF6ffentliche Netzwerke, wenn deins so eingestellt ist."
+          liveFirewall: "Handy kommt nicht drauf? Es muss im selben WLAN sein, und Windows muss \u201EMirage Overlay\u201C erlauben \u2013 auch f\xFCr \xF6ffentliche Netzwerke, wenn deins so eingestellt ist.",
+          g_party: "Party-Modus",
+          ps_light: "Licht & Effekte",
+          ps_moments: "Momente",
+          ps_crowd: "Publikum & Jam",
+          ps_extras: "Extras & Teilen",
+          fam_electronic: "Elektronisch",
+          fam_urban: "Hip-Hop & R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latin & Welt",
+          fam_calm: "Ruhig & klassisch",
+          liveWait: "Warte auf die Overlay-App \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternative",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Ballade",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "Brasilianisch",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arabisch",
+          party_ambient: "Ambient",
+          party_cinematic: "Film & Epik",
+          ps_style: "Stil"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -927,7 +1009,7 @@
           tabMix: "Mix",
           tabParty: "F\xEAte",
           party_auto: "Auto",
-          party_bass: "Basses",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Mode f\xEAte",
           partySectionHint: "Auto choisit le langage lumineux selon le genre \u2013 et la lumi\xE8re suit le morceau : mont\xE9es, drops, breaks calmes, majeur ou mineur",
@@ -1038,7 +1120,48 @@
           venue_beach: "Plage",
           liveMissing: "L'app Mirage Overlay n'est pas connect\xE9e. Lancez-la (version 1.10 ou plus) \u2013 le QR code appara\xEEtra ici.",
           liveOld: "Pas de r\xE9ponse de l'app Overlay \u2013 sans doute une ancienne version. Mettez-la \xE0 jour et fermez les anciennes copies (p. ex. \xAB electron.exe \xBB d'un vieux dossier Mirage).",
-          liveFirewall: "Le t\xE9l\xE9phone n'y acc\xE8de pas ? Il doit \xEAtre sur le m\xEAme Wi-Fi, et Windows doit autoriser \xAB Mirage Overlay \xBB \u2013 aussi pour les r\xE9seaux publics si le v\xF4tre l'est."
+          liveFirewall: "Le t\xE9l\xE9phone n'y acc\xE8de pas ? Il doit \xEAtre sur le m\xEAme Wi-Fi, et Windows doit autoriser \xAB Mirage Overlay \xBB \u2013 aussi pour les r\xE9seaux publics si le v\xF4tre l'est.",
+          g_party: "Mode f\xEAte",
+          ps_light: "Lumi\xE8re & effets",
+          ps_moments: "Moments",
+          ps_crowd: "Public & Jam",
+          ps_extras: "Extras & partage",
+          fam_electronic: "\xC9lectro",
+          fam_urban: "Hip-hop & R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latino & monde",
+          fam_calm: "Calme & classique",
+          liveWait: "En attente de l'app Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternatif",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Ballade",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & tropical",
+          party_brazil: "Br\xE9silien",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arabe",
+          party_ambient: "Ambient",
+          party_cinematic: "Film & \xE9pique",
+          ps_style: "Style"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1245,7 +1368,7 @@
           tabMix: "Mezcla",
           tabParty: "Fiesta",
           party_auto: "Auto",
-          party_bass: "Bajos",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Modo fiesta",
           partySectionHint: "Auto elige el lenguaje de luces seg\xFAn el g\xE9nero \u2013 y la luz sigue a la canci\xF3n: subidas, drops, pausas tranquilas, mayor o menor",
@@ -1356,7 +1479,48 @@
           venue_beach: "Playa",
           liveMissing: "La app Mirage Overlay no est\xE1 conectada. In\xEDciala (versi\xF3n 1.10 o superior) y aparecer\xE1 aqu\xED el c\xF3digo QR.",
           liveOld: "Sin respuesta de la app Overlay: probablemente es una versi\xF3n antigua. Actual\xEDzala y cierra copias antiguas (p. ej. \xABelectron.exe\xBB de una carpeta vieja de Mirage).",
-          liveFirewall: "\xBFEl m\xF3vil no abre la p\xE1gina? Debe estar en la misma Wi-Fi y Windows debe permitir \xABMirage Overlay\xBB, tambi\xE9n en redes p\xFAblicas si la tuya lo es."
+          liveFirewall: "\xBFEl m\xF3vil no abre la p\xE1gina? Debe estar en la misma Wi-Fi y Windows debe permitir \xABMirage Overlay\xBB, tambi\xE9n en redes p\xFAblicas si la tuya lo es.",
+          g_party: "Modo fiesta",
+          ps_light: "Luz y efectos",
+          ps_moments: "Momentos",
+          ps_crowd: "P\xFAblico y Jam",
+          ps_extras: "Extras y compartir",
+          fam_electronic: "Electr\xF3nica",
+          fam_urban: "Hip-hop y R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latino y mundo",
+          fam_calm: "Tranquila y cl\xE1sica",
+          liveWait: "Esperando a la app Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternativo",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Balada",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa y tropical",
+          party_brazil: "Brasile\xF1o",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "\xC1rabe",
+          party_ambient: "Ambient",
+          party_cinematic: "Cine y \xE9pico",
+          ps_style: "Estilo"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1563,7 +1727,7 @@
           tabMix: "Mix",
           tabParty: "Festa",
           party_auto: "Auto",
-          party_bass: "Bassi",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Modalit\xE0 festa",
           partySectionHint: "Auto sceglie il linguaggio delle luci dal genere \u2013 e la luce segue il brano: crescendo, drop, pause tranquille, maggiore o minore",
@@ -1674,7 +1838,48 @@
           venue_beach: "Spiaggia",
           liveMissing: "L'app Mirage Overlay non \xE8 connessa. Avviala (versione 1.10 o successiva) \u2013 qui apparir\xE0 il codice QR.",
           liveOld: "Nessuna risposta dall'app Overlay \u2013 probabilmente \xE8 una versione vecchia. Aggiornala e chiudi le copie vecchie (ad es. \xABelectron.exe\xBB da una vecchia cartella Mirage).",
-          liveFirewall: "Il telefono non riesce ad aprirla? Deve essere sulla stessa Wi-Fi e Windows deve consentire \xABMirage Overlay\xBB, anche per le reti pubbliche se la tua lo \xE8."
+          liveFirewall: "Il telefono non riesce ad aprirla? Deve essere sulla stessa Wi-Fi e Windows deve consentire \xABMirage Overlay\xBB, anche per le reti pubbliche se la tua lo \xE8.",
+          g_party: "Modalit\xE0 festa",
+          ps_light: "Luci ed effetti",
+          ps_moments: "Momenti",
+          ps_crowd: "Pubblico e Jam",
+          ps_extras: "Extra e condivisione",
+          fam_electronic: "Elettronica",
+          fam_urban: "Hip-hop e R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latino e mondo",
+          fam_calm: "Calma e classica",
+          liveWait: "In attesa dell'app Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternative",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Ballata",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa e tropical",
+          party_brazil: "Brasiliano",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arabo",
+          party_ambient: "Ambient",
+          party_cinematic: "Film ed epica",
+          ps_style: "Stile"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1881,7 +2086,7 @@
           tabMix: "Mix",
           tabParty: "Festa",
           party_auto: "Auto",
-          party_bass: "Grave",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Modo festa",
           partySectionHint: "Auto escolhe a linguagem de luz pelo g\xEAnero \u2013 e a luz segue a m\xFAsica: subidas, drops, pausas calmas, maior ou menor",
@@ -1992,7 +2197,48 @@
           venue_beach: "Praia",
           liveMissing: "O app Mirage Overlay n\xE3o est\xE1 conectado. Inicie-o (vers\xE3o 1.10 ou mais nova) \u2013 o QR code aparece aqui.",
           liveOld: "Sem resposta do app Overlay \u2013 provavelmente uma vers\xE3o antiga. Atualize-o e feche c\xF3pias antigas (p. ex. \xABelectron.exe\xBB de uma pasta antiga do Mirage).",
-          liveFirewall: "O celular n\xE3o abre? Ele precisa estar na mesma Wi-Fi, e o Windows precisa permitir o \xABMirage Overlay\xBB \u2013 tamb\xE9m em redes p\xFAblicas, se a sua for p\xFAblica."
+          liveFirewall: "O celular n\xE3o abre? Ele precisa estar na mesma Wi-Fi, e o Windows precisa permitir o \xABMirage Overlay\xBB \u2013 tamb\xE9m em redes p\xFAblicas, se a sua for p\xFAblica.",
+          g_party: "Modo festa",
+          ps_light: "Luz e efeitos",
+          ps_moments: "Momentos",
+          ps_crowd: "P\xFAblico e Jam",
+          ps_extras: "Extras e partilha",
+          fam_electronic: "Eletr\xF4nica",
+          fam_urban: "Hip-hop e R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latina e mundo",
+          fam_calm: "Calma e cl\xE1ssica",
+          liveWait: "Aguardando o app Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternativo",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Balada",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa e tropical",
+          party_brazil: "Brasileiro",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "\xC1rabe",
+          party_ambient: "Ambient",
+          party_cinematic: "Filme e \xE9pico",
+          ps_style: "Estilo"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -2199,7 +2445,7 @@
           tabMix: "Mix",
           tabParty: "Feest",
           party_auto: "Auto",
-          party_bass: "Bas",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Feestmodus",
           partySectionHint: "Auto kiest de lichttaal op genre \u2013 en het licht volgt het nummer zelf: opbouw, drops, rustige breaks, majeur of mineur",
@@ -2310,7 +2556,48 @@
           venue_beach: "Strand",
           liveMissing: "De Mirage Overlay-app is niet verbonden. Start hem (versie 1.10 of nieuwer) \u2013 dan verschijnt hier de QR-code.",
           liveOld: "Geen antwoord van de Overlay-app \u2013 waarschijnlijk een oude versie. Werk hem bij en sluit oude kopie\xEBn (bijv. 'electron.exe' uit een oude Mirage-map).",
-          liveFirewall: "Telefoon komt er niet op? Hij moet op hetzelfde wifi zitten en Windows moet 'Mirage Overlay' toestaan \u2013 ook voor openbare netwerken als het jouwe zo staat."
+          liveFirewall: "Telefoon komt er niet op? Hij moet op hetzelfde wifi zitten en Windows moet 'Mirage Overlay' toestaan \u2013 ook voor openbare netwerken als het jouwe zo staat.",
+          g_party: "Feestmodus",
+          ps_light: "Licht & effecten",
+          ps_moments: "Momenten",
+          ps_crowd: "Publiek & Jam",
+          ps_extras: "Extra's & delen",
+          fam_electronic: "Elektronisch",
+          fam_urban: "Hiphop & R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latin & wereld",
+          fam_calm: "Rustig & klassiek",
+          liveWait: "Wachten op de Overlay-app \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternatief",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Ballad",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "Braziliaans",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arabisch",
+          party_ambient: "Ambient",
+          party_cinematic: "Film & episch",
+          ps_style: "Stijl"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2517,7 +2804,7 @@
           tabMix: "Miks",
           tabParty: "Impreza",
           party_auto: "Auto",
-          party_bass: "Bas",
+          party_bass: "Hip-Hop",
           party_chill: "Chill",
           partySection: "Tryb imprezy",
           partySectionHint: "Auto dobiera j\u0119zyk \u015Bwiate\u0142 do gatunku \u2013 a \u015Bwiat\u0142o pod\u0105\u017Ca za utworem: narastanie, dropy, spokojne przerwy, dur lub moll",
@@ -2628,7 +2915,48 @@
           venue_beach: "Pla\u017Ca",
           liveMissing: "Aplikacja Mirage Overlay nie jest po\u0142\u0105czona. Uruchom j\u0105 (wersja 1.10 lub nowsza) \u2013 wtedy pojawi si\u0119 tu kod QR.",
           liveOld: "Brak odpowiedzi aplikacji Overlay \u2013 pewnie to stara wersja. Zaktualizuj j\u0105 i zamknij stare kopie (np. \u201Eelectron.exe\u201D ze starego folderu Mirage).",
-          liveFirewall: "Telefon nie mo\u017Ce otworzy\u0107 strony? Musi by\u0107 w tej samej sieci Wi-Fi, a Windows musi zezwoli\u0107 na \u201EMirage Overlay\u201D \u2013 tak\u017Ce w sieciach publicznych, je\u015Bli twoja tak jest ustawiona."
+          liveFirewall: "Telefon nie mo\u017Ce otworzy\u0107 strony? Musi by\u0107 w tej samej sieci Wi-Fi, a Windows musi zezwoli\u0107 na \u201EMirage Overlay\u201D \u2013 tak\u017Ce w sieciach publicznych, je\u015Bli twoja tak jest ustawiona.",
+          g_party: "Tryb imprezy",
+          ps_light: "\u015Awiat\u0142o i efekty",
+          ps_moments: "Momenty",
+          ps_crowd: "Publiczno\u015B\u0107 i Jam",
+          ps_extras: "Dodatki i udost\u0119pnianie",
+          fam_electronic: "Elektronika",
+          fam_urban: "Hip-hop i R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latino i \u015Bwiat",
+          fam_calm: "Spokojna i klasyczna",
+          liveWait: "Czekam na aplikacj\u0119 Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternatywa",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Ballada",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "Brazylijska",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arabska",
+          party_ambient: "Ambient",
+          party_cinematic: "Film i epika",
+          ps_style: "Styl"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -2835,7 +3163,7 @@
           tabMix: "Kar\u0131\u015F\u0131k",
           tabParty: "Parti",
           party_auto: "Otomatik",
-          party_bass: "Bas",
+          party_bass: "Hip-Hop",
           party_chill: "Sakin",
           partySection: "Parti modu",
           partySectionHint: "Auto \u0131\u015F\u0131k dilini t\xFCre g\xF6re se\xE7er \u2013 ve \u0131\u015F\u0131k \u015Fark\u0131n\u0131n kendisini izler: y\xFCkseli\u015Fler, droplar, sakin aralar, maj\xF6r ya da min\xF6r",
@@ -2946,7 +3274,48 @@
           venue_beach: "Plaj",
           liveMissing: "Mirage Overlay uygulamas\u0131 ba\u011Fl\u0131 de\u011Fil. Ba\u015Flat (s\xFCr\xFCm 1.10 veya \xFCst\xFC) \u2013 QR kodu burada g\xF6r\xFCnecek.",
           liveOld: "Overlay uygulamas\u0131ndan yan\u0131t yok \u2013 muhtemelen eski bir s\xFCr\xFCm. G\xFCncelle ve eski kopyalar\u0131 kapat (\xF6r. eski bir Mirage klas\xF6r\xFCndeki 'electron.exe').",
-          liveFirewall: "Telefon a\xE7am\u0131yor mu? Ayn\u0131 Wi-Fi'de olmal\u0131 ve Windows 'Mirage Overlay'e izin vermeli \u2013 a\u011F\u0131n genel olarak ayarl\u0131ysa genel a\u011Flar i\xE7in de."
+          liveFirewall: "Telefon a\xE7am\u0131yor mu? Ayn\u0131 Wi-Fi'de olmal\u0131 ve Windows 'Mirage Overlay'e izin vermeli \u2013 a\u011F\u0131n genel olarak ayarl\u0131ysa genel a\u011Flar i\xE7in de.",
+          g_party: "Parti modu",
+          ps_light: "I\u015F\u0131k ve efektler",
+          ps_moments: "Anlar",
+          ps_crowd: "Kalabal\u0131k ve Jam",
+          ps_extras: "Ekstralar ve payla\u015F\u0131m",
+          fam_electronic: "Elektronik",
+          fam_urban: "Hip-hop ve R&B",
+          fam_rock: "Rock",
+          fam_pop: "Pop",
+          fam_world: "Latin ve d\xFCnya",
+          fam_calm: "Sakin ve klasik",
+          liveWait: "Overlay uygulamas\u0131 bekleniyor \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "Soul & Funk",
+          party_indie: "Indie",
+          party_alternative: "Alternatif",
+          party_blues: "Blues",
+          party_schlager: "Schlager",
+          party_ballad: "Balad",
+          party_gospel: "Gospel",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "Brezilya",
+          party_flamenco: "Flamenco",
+          party_bollywood: "Bollywood",
+          party_arabic: "Arap",
+          party_ambient: "Ambient",
+          party_cinematic: "Film & epik",
+          ps_style: "Stil"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -3153,7 +3522,7 @@
           tabMix: "\u041C\u0438\u043A\u0441",
           tabParty: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
           party_auto: "\u0410\u0432\u0442\u043E",
-          party_bass: "\u0411\u0430\u0441",
+          party_bass: "\u0425\u0438\u043F-\u0445\u043E\u043F",
           party_chill: "\u0427\u0438\u043B\u043B",
           partySection: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           partySectionHint: "\u0410\u0432\u0442\u043E \u043F\u043E\u0434\u0431\u0438\u0440\u0430\u0435\u0442 \u0441\u0432\u0435\u0442\u043E\u0432\u043E\u0439 \u044F\u0437\u044B\u043A \u043F\u043E \u0436\u0430\u043D\u0440\u0443 \u2013 \u0430 \u0441\u0432\u0435\u0442 \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u0437\u0430 \u0441\u0430\u043C\u0438\u043C \u0442\u0440\u0435\u043A\u043E\u043C: \u043D\u0430\u0440\u0430\u0441\u0442\u0430\u043D\u0438\u044F, \u0434\u0440\u043E\u043F\u044B, \u0442\u0438\u0445\u0438\u0435 \u043F\u0430\u0443\u0437\u044B, \u043C\u0430\u0436\u043E\u0440 \u0438\u043B\u0438 \u043C\u0438\u043D\u043E\u0440",
@@ -3264,7 +3633,48 @@
           venue_beach: "\u041F\u043B\u044F\u0436",
           liveMissing: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay \u043D\u0435 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043E. \u0417\u0430\u043F\u0443\u0441\u0442\u0438\u0442\u0435 \u0435\u0433\u043E (\u0432\u0435\u0440\u0441\u0438\u044F 1.10 \u0438\u043B\u0438 \u043D\u043E\u0432\u0435\u0435) \u2013 \u0437\u0434\u0435\u0441\u044C \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F QR-\u043A\u043E\u0434.",
           liveOld: "\u041D\u0435\u0442 \u043E\u0442\u0432\u0435\u0442\u0430 \u043E\u0442 Overlay \u2013 \u0432\u0435\u0440\u043E\u044F\u0442\u043D\u043E, \u044D\u0442\u043E \u0441\u0442\u0430\u0440\u0430\u044F \u0432\u0435\u0440\u0441\u0438\u044F. \u041E\u0431\u043D\u043E\u0432\u0438\u0442\u0435 \u0435\u0451 \u0438 \u0437\u0430\u043A\u0440\u043E\u0439\u0442\u0435 \u0441\u0442\u0430\u0440\u044B\u0435 \u043A\u043E\u043F\u0438\u0438 (\u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440, \xABelectron.exe\xBB \u0438\u0437 \u0441\u0442\u0430\u0440\u043E\u0439 \u043F\u0430\u043F\u043A\u0438 Mirage).",
-          liveFirewall: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435 \u043E\u0442\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443? \u041E\u043D \u0434\u043E\u043B\u0436\u0435\u043D \u0431\u044B\u0442\u044C \u0432 \u0442\u043E\u0439 \u0436\u0435 \u0441\u0435\u0442\u0438 Wi-Fi, \u0430 Windows \u0434\u043E\u043B\u0436\u043D\u0430 \u0440\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044C \xABMirage Overlay\xBB \u2013 \u0438 \u0434\u043B\u044F \u043E\u0431\u0449\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0445 \u0441\u0435\u0442\u0435\u0439, \u0435\u0441\u043B\u0438 \u0432\u0430\u0448\u0430 \u0442\u0430\u043A \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0430."
+          liveFirewall: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435 \u043E\u0442\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443? \u041E\u043D \u0434\u043E\u043B\u0436\u0435\u043D \u0431\u044B\u0442\u044C \u0432 \u0442\u043E\u0439 \u0436\u0435 \u0441\u0435\u0442\u0438 Wi-Fi, \u0430 Windows \u0434\u043E\u043B\u0436\u043D\u0430 \u0440\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044C \xABMirage Overlay\xBB \u2013 \u0438 \u0434\u043B\u044F \u043E\u0431\u0449\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0445 \u0441\u0435\u0442\u0435\u0439, \u0435\u0441\u043B\u0438 \u0432\u0430\u0448\u0430 \u0442\u0430\u043A \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0430.",
+          g_party: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          ps_light: "\u0421\u0432\u0435\u0442 \u0438 \u044D\u0444\u0444\u0435\u043A\u0442\u044B",
+          ps_moments: "\u041C\u043E\u043C\u0435\u043D\u0442\u044B",
+          ps_crowd: "\u041F\u0443\u0431\u043B\u0438\u043A\u0430 \u0438 Jam",
+          ps_extras: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0438 \u043F\u043E\u0434\u0435\u043B\u0438\u0442\u044C\u0441\u044F",
+          fam_electronic: "\u042D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0438\u043A\u0430",
+          fam_urban: "\u0425\u0438\u043F-\u0445\u043E\u043F \u0438 R&B",
+          fam_rock: "\u0420\u043E\u043A",
+          fam_pop: "\u041F\u043E\u043F",
+          fam_world: "\u041B\u0430\u0442\u0438\u043D\u043E \u0438 \u043C\u0438\u0440",
+          fam_calm: "\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u0430\u044F \u0438 \u043A\u043B\u0430\u0441\u0441\u0438\u043A\u0430",
+          liveWait: "\u041E\u0436\u0438\u0434\u0430\u043D\u0438\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "\u0421\u043E\u0443\u043B \u0438 \u0444\u0430\u043D\u043A",
+          party_indie: "\u0418\u043D\u0434\u0438",
+          party_alternative: "\u0410\u043B\u044C\u0442\u0435\u0440\u043D\u0430\u0442\u0438\u0432\u0430",
+          party_blues: "\u0411\u043B\u044E\u0437",
+          party_schlager: "\u0428\u043B\u044F\u0433\u0435\u0440",
+          party_ballad: "\u0411\u0430\u043B\u043B\u0430\u0434\u0430",
+          party_gospel: "\u0413\u043E\u0441\u043F\u0435\u043B",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "\u0411\u0440\u0430\u0437\u0438\u043B\u044C\u0441\u043A\u0430\u044F",
+          party_flamenco: "\u0424\u043B\u0430\u043C\u0435\u043D\u043A\u043E",
+          party_bollywood: "\u0411\u043E\u043B\u043B\u0438\u0432\u0443\u0434",
+          party_arabic: "\u0410\u0440\u0430\u0431\u0441\u043A\u0430\u044F",
+          party_ambient: "\u042D\u043C\u0431\u0438\u0435\u043D\u0442",
+          party_cinematic: "\u041A\u0438\u043D\u043E \u0438 \u044D\u043F\u0438\u043A",
+          ps_style: "\u0421\u0442\u0438\u043B\u044C"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -3471,7 +3881,7 @@
           tabMix: "\u041C\u0456\u043A\u0441",
           tabParty: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430",
           party_auto: "\u0410\u0432\u0442\u043E",
-          party_bass: "\u0411\u0430\u0441",
+          party_bass: "\u0425\u0456\u043F-\u0445\u043E\u043F",
           party_chill: "\u0427\u0438\u043B",
           partySection: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           partySectionHint: "\u0410\u0432\u0442\u043E \u043F\u0456\u0434\u0431\u0438\u0440\u0430\u0454 \u0441\u0432\u0456\u0442\u043B\u043E\u0432\u0443 \u043C\u043E\u0432\u0443 \u0437\u0430 \u0436\u0430\u043D\u0440\u043E\u043C \u2013 \u0430 \u0441\u0432\u0456\u0442\u043B\u043E \u0441\u0442\u0435\u0436\u0438\u0442\u044C \u0437\u0430 \u0441\u0430\u043C\u0438\u043C \u0442\u0440\u0435\u043A\u043E\u043C: \u043D\u0430\u0440\u043E\u0441\u0442\u0430\u043D\u043D\u044F, \u0434\u0440\u043E\u043F\u0438, \u0442\u0438\u0445\u0456 \u043F\u0430\u0443\u0437\u0438, \u043C\u0430\u0436\u043E\u0440 \u0447\u0438 \u043C\u0456\u043D\u043E\u0440",
@@ -3582,7 +3992,48 @@
           venue_beach: "\u041F\u043B\u044F\u0436",
           liveMissing: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay \u043D\u0435 \u043F\u0456\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043E. \u0417\u0430\u043F\u0443\u0441\u0442\u0456\u0442\u044C \u0439\u043E\u0433\u043E (\u0432\u0435\u0440\u0441\u0456\u044F 1.10 \u0430\u0431\u043E \u043D\u043E\u0432\u0456\u0448\u0430) \u2013 \u0442\u0443\u0442 \u0437'\u044F\u0432\u0438\u0442\u044C\u0441\u044F QR-\u043A\u043E\u0434.",
           liveOld: "\u041D\u0435\u043C\u0430\u0454 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u0456 \u0432\u0456\u0434 Overlay \u2013 \u043C\u0430\u0431\u0443\u0442\u044C, \u0446\u0435 \u0441\u0442\u0430\u0440\u0430 \u0432\u0435\u0440\u0441\u0456\u044F. \u041E\u043D\u043E\u0432\u0456\u0442\u044C \u0457\u0457 \u0439 \u0437\u0430\u043A\u0440\u0438\u0439\u0442\u0435 \u0441\u0442\u0430\u0440\u0456 \u043A\u043E\u043F\u0456\u0457 (\u043D\u0430\u043F\u0440\u0438\u043A\u043B\u0430\u0434, \xABelectron.exe\xBB \u0437\u0456 \u0441\u0442\u0430\u0440\u043E\u0457 \u0442\u0435\u043A\u0438 Mirage).",
-          liveFirewall: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435 \u0432\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u0454 \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0443? \u0412\u0456\u043D \u043C\u0430\u0454 \u0431\u0443\u0442\u0438 \u0432 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456 Wi-Fi, \u0430 Windows \u043C\u0430\u0454 \u0434\u043E\u0437\u0432\u043E\u043B\u0438\u0442\u0438 \xABMirage Overlay\xBB \u2013 \u0456 \u0434\u043B\u044F \u0437\u0430\u0433\u0430\u043B\u044C\u043D\u043E\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0438\u0445 \u043C\u0435\u0440\u0435\u0436, \u044F\u043A\u0449\u043E \u0432\u0430\u0448\u0430 \u0442\u0430\u043A \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0430\u043D\u0430."
+          liveFirewall: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435 \u0432\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u0454 \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0443? \u0412\u0456\u043D \u043C\u0430\u0454 \u0431\u0443\u0442\u0438 \u0432 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456 Wi-Fi, \u0430 Windows \u043C\u0430\u0454 \u0434\u043E\u0437\u0432\u043E\u043B\u0438\u0442\u0438 \xABMirage Overlay\xBB \u2013 \u0456 \u0434\u043B\u044F \u0437\u0430\u0433\u0430\u043B\u044C\u043D\u043E\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0438\u0445 \u043C\u0435\u0440\u0435\u0436, \u044F\u043A\u0449\u043E \u0432\u0430\u0448\u0430 \u0442\u0430\u043A \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0430\u043D\u0430.",
+          g_party: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          ps_light: "\u0421\u0432\u0456\u0442\u043B\u043E \u0439 \u0435\u0444\u0435\u043A\u0442\u0438",
+          ps_moments: "\u041C\u043E\u043C\u0435\u043D\u0442\u0438",
+          ps_crowd: "\u041F\u0443\u0431\u043B\u0456\u043A\u0430 \u0439 Jam",
+          ps_extras: "\u0414\u043E\u0434\u0430\u0442\u043A\u043E\u0432\u043E \u0439 \u043F\u043E\u0448\u0438\u0440\u0435\u043D\u043D\u044F",
+          fam_electronic: "\u0415\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0456\u043A\u0430",
+          fam_urban: "\u0425\u0456\u043F-\u0445\u043E\u043F \u0456 R&B",
+          fam_rock: "\u0420\u043E\u043A",
+          fam_pop: "\u041F\u043E\u043F",
+          fam_world: "\u041B\u0430\u0442\u0438\u043D\u043E \u0439 \u0441\u0432\u0456\u0442",
+          fam_calm: "\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u0430 \u0439 \u043A\u043B\u0430\u0441\u0438\u043A\u0430",
+          liveWait: "\u041E\u0447\u0456\u043A\u0443\u0432\u0430\u043D\u043D\u044F \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043A\u0443 Overlay \u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "\u0421\u043E\u0443\u043B \u0456 \u0444\u0430\u043D\u043A",
+          party_indie: "\u0406\u043D\u0434\u0456",
+          party_alternative: "\u0410\u043B\u044C\u0442\u0435\u0440\u043D\u0430\u0442\u0438\u0432\u0430",
+          party_blues: "\u0411\u043B\u044E\u0437",
+          party_schlager: "\u0428\u043B\u044F\u0433\u0435\u0440",
+          party_ballad: "\u0411\u0430\u043B\u0430\u0434\u0430",
+          party_gospel: "\u0413\u043E\u0441\u043F\u0435\u043B",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "Salsa & Tropical",
+          party_brazil: "\u0411\u0440\u0430\u0437\u0438\u043B\u044C\u0441\u044C\u043A\u0430",
+          party_flamenco: "\u0424\u043B\u0430\u043C\u0435\u043D\u043A\u043E",
+          party_bollywood: "\u0411\u043E\u043B\u043B\u0456\u0432\u0443\u0434",
+          party_arabic: "\u0410\u0440\u0430\u0431\u0441\u044C\u043A\u0430",
+          party_ambient: "\u0415\u043C\u0431\u0456\u0454\u043D\u0442",
+          party_cinematic: "\u041A\u0456\u043D\u043E \u0439 \u0435\u043F\u0456\u043A",
+          ps_style: "\u0421\u0442\u0438\u043B\u044C"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -3789,7 +4240,7 @@
           tabMix: "\u30DF\u30C3\u30AF\u30B9",
           tabParty: "\u30D1\u30FC\u30C6\u30A3\u30FC",
           party_auto: "\u81EA\u52D5",
-          party_bass: "\u30D9\u30FC\u30B9",
+          party_bass: "\u30D2\u30C3\u30D7\u30DB\u30C3\u30D7",
           party_chill: "\u30C1\u30EB",
           partySection: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
           partySectionHint: "\u81EA\u52D5\u306F\u30B8\u30E3\u30F3\u30EB\u304B\u3089\u7167\u660E\u30B9\u30BF\u30A4\u30EB\u3092\u9078\u3073\u3001\u7167\u660E\u306F\u66F2\u305D\u306E\u3082\u306E\u306B\u5408\u308F\u305B\u307E\u3059\uFF1A\u76DB\u308A\u4E0A\u304C\u308A\u3001\u30C9\u30ED\u30C3\u30D7\u3001\u9759\u304B\u306A\u30D6\u30EC\u30A4\u30AF\u3001\u9577\u8ABF\u30FB\u77ED\u8ABF",
@@ -3900,7 +4351,48 @@
           venue_beach: "\u30D3\u30FC\u30C1",
           liveMissing: "Mirage Overlay\u30A2\u30D7\u30EA\u304C\u63A5\u7D9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002\u8D77\u52D5\u3059\u308B\u3068\uFF08\u30D0\u30FC\u30B8\u30E7\u30F31.10\u4EE5\u964D\uFF09\u3053\u3053\u306BQR\u30B3\u30FC\u30C9\u304C\u8868\u793A\u3055\u308C\u307E\u3059\u3002",
           liveOld: "Overlay\u30A2\u30D7\u30EA\u304B\u3089\u5FDC\u7B54\u304C\u3042\u308A\u307E\u305B\u3093 \u2014 \u53E4\u3044\u30D0\u30FC\u30B8\u30E7\u30F3\u306E\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002\u66F4\u65B0\u3057\u3001\u53E4\u3044\u30B3\u30D4\u30FC\uFF08\u53E4\u3044Mirage\u30D5\u30A9\u30EB\u30C0\u30FC\u306E\u300Celectron.exe\u300D\u306A\u3069\uFF09\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
-          liveFirewall: "\u30B9\u30DE\u30DB\u3067\u958B\u3051\u306A\u3044\u5834\u5408\uFF1A\u540C\u3058Wi-Fi\u306B\u63A5\u7D9A\u3057\u3001Windows\u3067\u300CMirage Overlay\u300D\u3092\u8A31\u53EF\u3057\u3066\u304F\u3060\u3055\u3044\uFF08\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u304C\u30D1\u30D6\u30EA\u30C3\u30AF\u306A\u3089\u30D1\u30D6\u30EA\u30C3\u30AF\u3067\u3082\uFF09\u3002"
+          liveFirewall: "\u30B9\u30DE\u30DB\u3067\u958B\u3051\u306A\u3044\u5834\u5408\uFF1A\u540C\u3058Wi-Fi\u306B\u63A5\u7D9A\u3057\u3001Windows\u3067\u300CMirage Overlay\u300D\u3092\u8A31\u53EF\u3057\u3066\u304F\u3060\u3055\u3044\uFF08\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u304C\u30D1\u30D6\u30EA\u30C3\u30AF\u306A\u3089\u30D1\u30D6\u30EA\u30C3\u30AF\u3067\u3082\uFF09\u3002",
+          g_party: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
+          ps_light: "\u7167\u660E\u3068\u30A8\u30D5\u30A7\u30AF\u30C8",
+          ps_moments: "\u6F14\u51FA",
+          ps_crowd: "\u89B3\u5BA2\u3068Jam",
+          ps_extras: "\u305D\u306E\u4ED6\u30FB\u5171\u6709",
+          fam_electronic: "\u30A8\u30EC\u30AF\u30C8\u30ED\u30CB\u30C3\u30AF",
+          fam_urban: "\u30D2\u30C3\u30D7\u30DB\u30C3\u30D7\u30FBR&B",
+          fam_rock: "\u30ED\u30C3\u30AF",
+          fam_pop: "\u30DD\u30C3\u30D7",
+          fam_world: "\u30E9\u30C6\u30F3\u30FB\u30EF\u30FC\u30EB\u30C9",
+          fam_calm: "\u7A4F\u3084\u304B\u30FB\u30AF\u30E9\u30B7\u30C3\u30AF",
+          liveWait: "Overlay\u30A2\u30D7\u30EA\u3092\u5F85\u3063\u3066\u3044\u307E\u3059\u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "\u30BD\u30A6\u30EB\u30FB\u30D5\u30A1\u30F3\u30AF",
+          party_indie: "\u30A4\u30F3\u30C7\u30A3\u30FC",
+          party_alternative: "\u30AA\u30EB\u30BF\u30CA\u30C6\u30A3\u30D6",
+          party_blues: "\u30D6\u30EB\u30FC\u30B9",
+          party_schlager: "\u30B7\u30E5\u30E9\u30FC\u30AC\u30FC",
+          party_ballad: "\u30D0\u30E9\u30FC\u30C9",
+          party_gospel: "\u30B4\u30B9\u30DA\u30EB",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "\u30B5\u30EB\u30B5\u30FB\u30C8\u30ED\u30D4\u30AB\u30EB",
+          party_brazil: "\u30D6\u30E9\u30B8\u30EB",
+          party_flamenco: "\u30D5\u30E9\u30E1\u30F3\u30B3",
+          party_bollywood: "\u30DC\u30EA\u30A6\u30C3\u30C9",
+          party_arabic: "\u30A2\u30E9\u30D6",
+          party_ambient: "\u30A2\u30F3\u30D3\u30A8\u30F3\u30C8",
+          party_cinematic: "\u6620\u753B\u30FB\u30A8\u30D4\u30C3\u30AF",
+          ps_style: "\u30B9\u30BF\u30A4\u30EB"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -4107,7 +4599,7 @@
           tabMix: "\uBBF9\uC2A4",
           tabParty: "\uD30C\uD2F0",
           party_auto: "\uC790\uB3D9",
-          party_bass: "\uBCA0\uC774\uC2A4",
+          party_bass: "\uD799\uD569",
           party_chill: "\uCE60",
           partySection: "\uD30C\uD2F0 \uBAA8\uB4DC",
           partySectionHint: "\uC790\uB3D9\uC740 \uC7A5\uB974\uC5D0 \uB9DE\uB294 \uC870\uBA85 \uC2A4\uD0C0\uC77C\uC744 \uACE0\uB974\uACE0, \uC870\uBA85\uC740 \uACE1 \uC790\uCCB4\uB97C \uB530\uB77C\uAC00\uC694: \uBE4C\uB4DC\uC5C5, \uB4DC\uB86D, \uC870\uC6A9\uD55C \uBE0C\uB808\uC774\uD06C, \uC7A5\uC870\xB7\uB2E8\uC870",
@@ -4218,7 +4710,48 @@
           venue_beach: "\uD574\uBCC0",
           liveMissing: "Mirage Overlay \uC571\uC774 \uC5F0\uACB0\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC2E4\uD589\uD558\uBA74(\uBC84\uC804 1.10 \uC774\uC0C1) \uC5EC\uAE30\uC5D0 QR \uCF54\uB4DC\uAC00 \uB098\uD0C0\uB0A9\uB2C8\uB2E4.",
           liveOld: "Overlay \uC571\uC758 \uC751\uB2F5\uC774 \uC5C6\uC2B5\uB2C8\uB2E4 \u2014 \uC624\uB798\uB41C \uBC84\uC804\uC77C \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC5C5\uB370\uC774\uD2B8\uD558\uACE0 \uC624\uB798\uB41C \uC0AC\uBCF8(\uC608: \uC624\uB798\uB41C Mirage \uD3F4\uB354\uC758 'electron.exe')\uC744 \uC885\uB8CC\uD558\uC138\uC694.",
-          liveFirewall: "\uD734\uB300\uD3F0\uC5D0\uC11C \uC5F4\uB9AC\uC9C0 \uC54A\uB098\uC694? \uAC19\uC740 Wi-Fi\uC5D0 \uC788\uC5B4\uC57C \uD558\uACE0, Windows\uAC00 'Mirage Overlay'\uB97C \uD5C8\uC6A9\uD574\uC57C \uD569\uB2C8\uB2E4 \u2014 \uB124\uD2B8\uC6CC\uD06C\uAC00 \uACF5\uC6A9\uC774\uBA74 \uACF5\uC6A9 \uB124\uD2B8\uC6CC\uD06C\uC5D0\uB3C4."
+          liveFirewall: "\uD734\uB300\uD3F0\uC5D0\uC11C \uC5F4\uB9AC\uC9C0 \uC54A\uB098\uC694? \uAC19\uC740 Wi-Fi\uC5D0 \uC788\uC5B4\uC57C \uD558\uACE0, Windows\uAC00 'Mirage Overlay'\uB97C \uD5C8\uC6A9\uD574\uC57C \uD569\uB2C8\uB2E4 \u2014 \uB124\uD2B8\uC6CC\uD06C\uAC00 \uACF5\uC6A9\uC774\uBA74 \uACF5\uC6A9 \uB124\uD2B8\uC6CC\uD06C\uC5D0\uB3C4.",
+          g_party: "\uD30C\uD2F0 \uBAA8\uB4DC",
+          ps_light: "\uC870\uBA85 & \uD6A8\uACFC",
+          ps_moments: "\uC21C\uAC04",
+          ps_crowd: "\uAD00\uAC1D & Jam",
+          ps_extras: "\uCD94\uAC00 \uAE30\uB2A5 & \uACF5\uC720",
+          fam_electronic: "\uC77C\uB809\uD2B8\uB85C\uB2C9",
+          fam_urban: "\uD799\uD569 & R&B",
+          fam_rock: "\uB85D",
+          fam_pop: "\uD31D",
+          fam_world: "\uB77C\uD2F4 & \uC6D4\uB4DC",
+          fam_calm: "\uCC28\uBD84\uD568 & \uD074\uB798\uC2DD",
+          liveWait: "Overlay \uC571\uC744 \uAE30\uB2E4\uB9AC\uB294 \uC911\u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "\uC18C\uC6B8 & \uD391\uD06C",
+          party_indie: "\uC778\uB514",
+          party_alternative: "\uC5BC\uD130\uB108\uD2F0\uBE0C",
+          party_blues: "\uBE14\uB8E8\uC2A4",
+          party_schlager: "\uC290\uB77C\uAC70",
+          party_ballad: "\uBC1C\uB77C\uB4DC",
+          party_gospel: "\uAC00\uC2A4\uD3A0",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "\uC0B4\uC0AC & \uD2B8\uB85C\uD53C\uCEEC",
+          party_brazil: "\uBE0C\uB77C\uC9C8",
+          party_flamenco: "\uD50C\uB77C\uBA69\uCF54",
+          party_bollywood: "\uBCFC\uB9AC\uC6B0\uB4DC",
+          party_arabic: "\uC544\uB78D",
+          party_ambient: "\uC570\uBE44\uC5B8\uD2B8",
+          party_cinematic: "\uC601\uD654 & \uC5D0\uD53D",
+          ps_style: "\uC2A4\uD0C0\uC77C"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -4425,7 +4958,7 @@
           tabMix: "\u6DF7\u5408",
           tabParty: "\u6D3E\u5BF9",
           party_auto: "\u81EA\u52A8",
-          party_bass: "\u4F4E\u97F3",
+          party_bass: "\u563B\u54C8",
           party_chill: "\u653E\u677E",
           partySection: "\u6D3E\u5BF9\u6A21\u5F0F",
           partySectionHint: "\u81EA\u52A8\u4F1A\u6309\u66F2\u98CE\u9009\u62E9\u706F\u5149\u8BED\u8A00 \u2013 \u706F\u5149\u968F\u6B4C\u66F2\u672C\u8EAB\u53D8\u5316\uFF1A\u94FA\u57AB\u3001\u9AD8\u6F6E\u3001\u5B89\u9759\u7684\u95F4\u594F\u3001\u5927\u8C03\u6216\u5C0F\u8C03",
@@ -4536,7 +5069,48 @@
           venue_beach: "\u6D77\u6EE9",
           liveMissing: "Mirage Overlay \u5E94\u7528\u672A\u8FDE\u63A5\u3002\u542F\u52A8\u5B83\uFF081.10 \u6216\u66F4\u65B0\u7248\u672C\uFF09\u540E\uFF0C\u8FD9\u91CC\u4F1A\u663E\u793A\u4E8C\u7EF4\u7801\u3002",
           liveOld: "Overlay \u5E94\u7528\u6CA1\u6709\u54CD\u5E94\u2014\u2014\u53EF\u80FD\u662F\u65E7\u7248\u672C\u3002\u8BF7\u66F4\u65B0\uFF0C\u5E76\u5173\u95ED\u65E7\u526F\u672C\uFF08\u4F8B\u5982\u65E7 Mirage \u6587\u4EF6\u5939\u4E2D\u7684\u300Celectron.exe\u300D\uFF09\u3002",
-          liveFirewall: "\u624B\u673A\u6253\u4E0D\u5F00\uFF1F\u624B\u673A\u5FC5\u987B\u5728\u540C\u4E00 Wi-Fi\uFF0C\u4E14 Windows \u9700\u5141\u8BB8\u300CMirage Overlay\u300D\u2014\u2014\u5982\u679C\u4F60\u7684\u7F51\u7EDC\u8BBE\u4E3A\u516C\u7528\uFF0C\u4E5F\u8981\u5141\u8BB8\u516C\u7528\u7F51\u7EDC\u3002"
+          liveFirewall: "\u624B\u673A\u6253\u4E0D\u5F00\uFF1F\u624B\u673A\u5FC5\u987B\u5728\u540C\u4E00 Wi-Fi\uFF0C\u4E14 Windows \u9700\u5141\u8BB8\u300CMirage Overlay\u300D\u2014\u2014\u5982\u679C\u4F60\u7684\u7F51\u7EDC\u8BBE\u4E3A\u516C\u7528\uFF0C\u4E5F\u8981\u5141\u8BB8\u516C\u7528\u7F51\u7EDC\u3002",
+          g_party: "\u6D3E\u5BF9\u6A21\u5F0F",
+          ps_light: "\u706F\u5149\u4E0E\u7279\u6548",
+          ps_moments: "\u9AD8\u5149\u65F6\u523B",
+          ps_crowd: "\u89C2\u4F17\u4E0E Jam",
+          ps_extras: "\u9644\u52A0\u4E0E\u5206\u4EAB",
+          fam_electronic: "\u7535\u5B50",
+          fam_urban: "\u563B\u54C8\u4E0E R&B",
+          fam_rock: "\u6447\u6EDA",
+          fam_pop: "\u6D41\u884C",
+          fam_world: "\u62C9\u4E01\u4E0E\u4E16\u754C",
+          fam_calm: "\u5B89\u9759\u4E0E\u53E4\u5178",
+          liveWait: "\u6B63\u5728\u7B49\u5F85 Overlay \u5E94\u7528\u2026",
+          party_edm: "EDM & Big Room",
+          party_deephouse: "Deep House",
+          party_techhouse: "Tech House",
+          party_psytrance: "Psytrance",
+          party_dubstep: "Dubstep",
+          party_garage: "UK Garage",
+          party_eurodance: "Eurodance",
+          party_synthwave: "Synthwave",
+          party_hyperpop: "Hyperpop",
+          party_trap: "Trap",
+          party_drill: "Drill",
+          party_phonk: "Phonk",
+          party_rnb: "R&B",
+          party_soul: "\u7075\u9B42\u4E0E\u653E\u514B",
+          party_indie: "\u72EC\u7ACB",
+          party_alternative: "\u53E6\u7C7B",
+          party_blues: "\u5E03\u9C81\u65AF",
+          party_schlager: "\u5FB7\u56FD\u6D41\u884C",
+          party_ballad: "\u6292\u60C5\u6B4C",
+          party_gospel: "\u798F\u97F3",
+          party_reggaeton: "Reggaeton",
+          party_salsa: "\u8428\u5C14\u8428\u4E0E\u70ED\u5E26",
+          party_brazil: "\u5DF4\u897F\u97F3\u4E50",
+          party_flamenco: "\u5F17\u62C9\u95E8\u6208",
+          party_bollywood: "\u5B9D\u83B1\u575E",
+          party_arabic: "\u963F\u62C9\u4F2F",
+          party_ambient: "\u6C1B\u56F4",
+          party_cinematic: "\u7535\u5F71\u4E0E\u53F2\u8BD7",
+          ps_style: "\u98CE\u683C"
         }
       };
       LANG = (() => {
@@ -5811,7 +6385,35 @@
         hardstyle: [255, 40, 90],
         afro: [255, 160, 70],
         jazz: [200, 150, 90],
-        country: [215, 170, 100]
+        country: [215, 170, 100],
+        edm: [140, 120, 255],
+        deephouse: [90, 170, 230],
+        techhouse: [255, 170, 90],
+        psytrance: [120, 255, 140],
+        dubstep: [90, 230, 255],
+        garage: [110, 200, 255],
+        eurodance: [255, 110, 220],
+        synthwave: [255, 90, 200],
+        hyperpop: [255, 140, 240],
+        trap: [130, 150, 255],
+        drill: [120, 140, 200],
+        phonk: [255, 80, 80],
+        rnb: [230, 130, 170],
+        soul: [240, 180, 90],
+        indie: [250, 170, 140],
+        alternative: [150, 170, 210],
+        blues: [80, 120, 230],
+        schlager: [255, 205, 80],
+        ballad: [255, 190, 150],
+        gospel: [255, 220, 140],
+        reggaeton: [255, 100, 70],
+        salsa: [255, 130, 70],
+        brazil: [90, 220, 110],
+        flamenco: [230, 50, 60],
+        bollywood: [255, 170, 40],
+        arabic: [230, 190, 110],
+        ambient: [120, 190, 220],
+        cinematic: [150, 170, 230]
       };
     }
   });
@@ -6184,7 +6786,7 @@
     mapCache.set(d, m);
     return m;
   }
-  var PROFILES, PROFILE_KEYS, SPECIFIC, GENRES, genreCache, APPLE, appleCache, norm2, bareTitle, STEP, pct, mapCache, at, party;
+  var PROFILES, like, FAMILIES, PROFILE_KEYS, SPECIFIC, GENRES, genreCache, APPLE, appleCache, norm2, bareTitle, STEP, pct, mapCache, at, party;
   var init_party = __esm({
     "src/party.js"() {
       init_core();
@@ -6606,8 +7208,79 @@
           bottom: false
         }
       };
+      like = (base, o) => ({ ...PROFILES[base], ...o });
+      Object.assign(PROFILES, {
+        // Elektronisch
+        edm: like("rave", { beams: 1.25, spinRate: 0.55, height: 1.6, sparks: 14 }),
+        // Big Room: Festival-Strahlen, riesige Drops
+        deephouse: like("house", { decay: 3.8, beams: 0.45, spinRate: 0.15, tint: "cool", pulse: 0.06, sparks: 8 }),
+        // tief und weich
+        techhouse: like("house", { decay: 7.5, spot: "scan", spinRate: 0.3, beams: 0.85, sparks: 8 }),
+        // House-Groove, Techno-Scanner
+        psytrance: like("trance", { decay: 8, spinRate: 0.7, tint: "jungle", accent: [1, 0.8, 0.9, 0.8], pulse: 0.09, sparks: 18 }),
+        dubstep: like("bass", { decay: 5, beams: 1, accent: [1, 0.2, 1, 0.3], flashOn: "down", tint: "cool", shake: 10, spinRate: 0.2, height: 1.65, pulse: 0.13, thick: 4.6, sparks: 10 }),
+        // halbes Tempo, schwere Wobbles
+        garage: like("house", { decay: 6, accent: [1, 0.4, 0.8, 0.7], spot: "pan", tint: "cool", sparks: 10 }),
+        // 2-Step: versetzte Schläge
+        eurodance: like("rave", { tint: "pink", spinRate: 0.45, sway: true, sparks: 16 }),
+        synthwave: like("trance", { decay: 4, spot: "scan", tint: "pink", spinRate: 0.2, beams: 0.8, sway: true, sparks: 6 }),
+        // 80er-Neon
+        hyperpop: like("kpop", { decay: 9, spinRate: 0.7, sparks: 28, shake: 3, pulse: 0.11 }),
+        // Hip-Hop & R&B
+        trap: like("bass", { decay: 3, accent: [1, 0.3, 0.6, 0.45], tint: "cool", shake: 7, pulse: 0.13, sparks: 8 }),
+        // 808 lang, Hi-Hats funkeln
+        drill: like("bass", { decay: 4.5, accent: [1, 0.45, 0.85, 0.5], spot: "top", tint: "cool", shake: 5, beams: 0.7, sway: false }),
+        phonk: like("bass", { decay: 6, accent: [1, 0.6, 0.9, 0.6], spot: "scan", tint: "hot", shake: 6, spinRate: 0.3, sparks: 10 }),
+        rnb: like("pop", { decay: 3.2, accent: [1, 0.35, 0.8, 0.5], flashOn: "", spot: "soft", tint: "warm", beams: 0.5, spinRate: 0.12, pulse: 0.05, sparks: 8 }),
+        soul: like("country", { decay: 4, accent: [0.8, 1, 0.8, 1], tint: "gold", beams: 0.5, sparks: 10 }),
+        // Backbeat, warmes Bühnenlicht
+        // Rock
+        indie: like("pop", { accent: [0.8, 1, 0.7, 1], flashOn: "back", spinRate: 0.2, beams: 0.7, shake: 2 }),
+        alternative: like("rock", { decay: 8, shake: 6, beams: 0.85, tint: "cool", sparks: 12 }),
+        blues: like("jazz", { decay: 3.4, accent: [0.7, 1, 0.7, 1], spot: "top", tint: "warm", sparks: 5 }),
+        // Pop
+        schlager: like("pop", { accent: [1, 0.85, 0.95, 0.85], flashOn: "back", tint: "gold", spinRate: 0.3, sparks: 20 }),
+        // Klatschen auf 2 und 4
+        ballad: like("chill", { decay: 1.8, beams: 0.4, spot: "top", tint: "warm", spinRate: 0.05, sparks: 4 }),
+        // Feuerzeuge hoch
+        gospel: like("country", { decay: 4, accent: [0.8, 1, 0.8, 1], tint: "gold", beams: 0.6, sparks: 14 }),
+        // Latin & Welt
+        reggaeton: like("latin", { decay: 5.5, accent: [1, 0.4, 0.7, 1], spot: "floor", tint: "hot", shake: 3, bottom: true, sparks: 14 }),
+        // Dembow
+        salsa: like("latin", { decay: 6, accent: [1, 0.7, 0.8, 0.9], spinRate: 0.35, sparks: 18 }),
+        brazil: like("latin", { accent: [1, 0.8, 0.9, 0.8], spot: "floor", tint: "jungle", spinRate: 0.35, sparks: 16 }),
+        flamenco: like("latin", { decay: 8, accent: [1, 0.6, 0.9, 0.6], flashOn: "back", spot: "top", tint: "hot", sway: false, shake: 3, sparks: 12 }),
+        bollywood: like("kpop", { tint: "gold", spinRate: 0.35, sparks: 22 }),
+        arabic: like("trance", { decay: 4, spot: "aurora", tint: "gold", spinRate: 0.25, sway: true, beams: 0.7, sparks: 10 }),
+        // Ruhig
+        ambient: like("chill", { decay: 1.2, beams: 0.15, spot: "aurora", spinRate: 0.04, pulse: 0.02, tint: "cool", sparks: 2 }),
+        cinematic: like("classical", { decay: 2.4, beams: 0.7, spot: "aurora", spinRate: 0.1, tint: "cool", height: 1.3, pulse: 0.05, sparks: 8 })
+      });
+      FAMILIES = {
+        electronic: ["rave", "edm", "house", "deephouse", "techhouse", "techno", "trance", "psytrance", "dnb", "dubstep", "garage", "hardstyle", "eurodance", "synthwave", "hyperpop"],
+        urban: ["bass", "trap", "drill", "phonk", "rnb", "soul", "afro", "reggae"],
+        rock: ["rock", "alternative", "indie", "punk", "metal", "blues"],
+        pop: ["pop", "kpop", "disco", "schlager", "ballad", "gospel", "country"],
+        world: ["latin", "reggaeton", "salsa", "brazil", "flamenco", "bollywood", "arabic"],
+        calm: ["chill", "ambient", "jazz", "classical", "cinematic"]
+      };
       PROFILE_KEYS = Object.keys(PROFILES);
       SPECIFIC = [
+        ["dubstep", /dubstep|riddim|brostep/],
+        ["phonk", /phonk/],
+        ["drill", /\bdrill\b/],
+        ["reggaeton", /reggaeton|latin trap|trap latino|urbano latino|dembow|perreo/],
+        ["trap", /\btrap\b/],
+        ["psytrance", /psytrance|psy-trance|\bgoa\b|psychedelic trance|full ?on/],
+        ["techhouse", /tech ?house/],
+        ["deephouse", /deep house|melodic house|afro house|organic house|tropical house|lo-?fi house/],
+        ["garage", /uk garage|\bukg\b|2-?step|speed garage|bassline|grime/],
+        ["edm", /\bedm\b|big room|electro house|progressive house|future house|brazilian bass/],
+        ["synthwave", /synthwave|retrowave|outrun|darkwave|vaporwave|chillwave|new wave|synth-?pop/],
+        ["eurodance", /eurodance|euro ?dance|italo|euro ?house|hands ?up|eurobeat/],
+        ["hyperpop", /hyperpop|digicore|glitchcore|nightcore/],
+        ["ambient", /ambient|drone|new age|meditation|sleep|healing/],
+        ["brazil", /samba|pagode|forr[oó]|\bax[eé]\b|baile funk|funk carioca|sertanejo|\bmpb\b|bossa|brazil|brasil/],
         ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
         ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
         ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
@@ -6617,12 +7290,25 @@
         ["kpop", /k-?pop|j-?pop|c-?pop|idol/],
         ["afro", /afrobeat|afro ?pop|amapiano|afroswing|afro ?fusion/],
         ["house", /house|garage house/],
+        ["schlager", /schlager|discofox|ballermann|apr[eè]s|stimmung|volksmusik|volkst[uü]mlich|oktoberfest|deutschpop/],
         ["disco", /disco|funk|boogie/],
+        ["gospel", /gospel|worship|christian|\bccm\b|choir|praise/],
+        ["rnb", /r&b|\brnb\b|neo ?soul|new jack|contemporary r/],
+        ["soul", /soul|motown/],
+        ["blues", /blues/],
         ["reggae", /reggae|dancehall|\bdub\b|\bska\b/],
-        ["latin", /reggaeton|urbano|latin|dembow|bachata|salsa|cumbia|moombah|baile funk|corrido/],
-        ["classical", /classical|orchestra|soundtrack|\bscore\b|cinematic|opera|baroque|film/],
-        ["jazz", /jazz|swing|bebop|bossa|blues/],
-        ["country", /country|americana|bluegrass|folk/]
+        ["salsa", /salsa|bachata|merengue|cumbia|tropical|vallenato|tango|mariachi|ranchera|banda|norte[nñ]o|corrido|regional mexican/],
+        ["flamenco", /flamenco|rumba|spanish guitar|sevillanas/],
+        ["bollywood", /bollywood|filmi|bhangra|desi|punjabi|indian|tamil|telugu|hindi/],
+        ["arabic", /arab|khaleeji|\bra[iï]\b|dabke|turkish|middle east|persian|mizrahi/],
+        ["latin", /urbano|latin|moombah/],
+        ["cinematic", /soundtrack|\bscore\b|cinematic|\bepic\b|trailer|video game|film/],
+        ["classical", /classical|orchestra|opera|baroque/],
+        ["jazz", /jazz|swing|bebop/],
+        ["ballad", /ballad|soft rock/],
+        ["country", /country|americana|bluegrass|folk/],
+        ["indie", /indie|bedroom pop|shoegaze|dream pop/],
+        ["alternative", /alternative|grunge|post-rock|post-punk|britpop|garage rock/]
       ];
       GENRES = [
         ["chill", /lo-?fi|chill|ambient|acoustic|jazz|classical|piano|folk|soul|r&b|rnb|bossa|sleep|meditation|singer-songwriter|soundtrack|orchestra/],
@@ -6864,7 +7550,7 @@
         })();
         return { prepare, step, get info() {
           return info;
-        }, PROFILES, PROFILE_KEYS };
+        }, PROFILES, PROFILE_KEYS, FAMILIES };
       })();
     }
   });
@@ -7081,7 +7767,35 @@
       kpop: "stadium",
       country: "stadium",
       chill: "home",
-      classical: "home"
+      classical: "home",
+      edm: "festival",
+      deephouse: "beach",
+      techhouse: "warehouse",
+      psytrance: "festival",
+      dubstep: "festival",
+      garage: "club",
+      eurodance: "club",
+      synthwave: "club",
+      hyperpop: "club",
+      trap: "club",
+      drill: "warehouse",
+      phonk: "warehouse",
+      rnb: "club",
+      soul: "club",
+      indie: "festival",
+      alternative: "stadium",
+      blues: "club",
+      schlager: "festival",
+      ballad: "stadium",
+      gospel: "stadium",
+      reggaeton: "club",
+      salsa: "beach",
+      brazil: "beach",
+      flamenco: "club",
+      bollywood: "stadium",
+      arabic: "festival",
+      ambient: "home",
+      cinematic: "stadium"
     };
     function drawDecor(ctx, v, px, pal, rgba2, dpr, st) {
       const t2 = st.t, beat2 = Math.max(px.accent, px.kickEnv * px.energy);
@@ -7189,9 +7903,9 @@
       }
     }
     let stands = null;
-    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco"]);
-    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle"]);
-    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass"]);
+    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
+    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
+    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
     const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };
     function drawFx(ctx, st, v, px, pal, dpr) {
       const dt = st.dt, key = px.key;
@@ -7291,7 +8005,35 @@
       reggae: "skank",
       chill: "sway",
       jazz: "sway",
-      classical: "sway"
+      classical: "sway",
+      edm: "jump",
+      deephouse: "bounce",
+      techhouse: "pump",
+      psytrance: "jump",
+      dubstep: "bang",
+      garage: "bounce",
+      eurodance: "jump",
+      synthwave: "nod",
+      hyperpop: "jump",
+      trap: "bounce",
+      drill: "nod",
+      phonk: "pump",
+      rnb: "sway",
+      soul: "clap",
+      indie: "bounce",
+      alternative: "bang",
+      blues: "sway",
+      schlager: "clap",
+      ballad: "sway",
+      gospel: "clap",
+      reggaeton: "bounce",
+      salsa: "bounce",
+      brazil: "bounce",
+      flamenco: "clap",
+      bollywood: "bounce",
+      arabic: "clap",
+      ambient: "sway",
+      cinematic: "sway"
     };
     const mood = { x: 0 };
     function crowdMood(px, dt, hype) {
@@ -7408,6 +8150,17 @@
       ctx.lineJoin = "round";
       const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
       let curRow = null;
+      {
+        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;
+        const g = ctx.createLinearGradient(0, top, 0, vh);
+        g.addColorStop(0, rgba2(pal[0], 0));
+        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));
+        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));
+        ctx.globalCompositeOperation = "lighter";
+        ctx.fillStyle = g;
+        ctx.fillRect(0, top, vw, vh - top);
+        ctx.globalCompositeOperation = "source-over";
+      }
       for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));
       const strokeRow = (row) => {
         ctx.globalAlpha = A * rowA[row];
@@ -8263,6 +9016,7 @@
           blend = null;
           party.live = null;
           venueClear();
+          el2?.querySelector(".m-im-livecard")?.remove();
         }
         let lastJam = -1e9, jamKey = "";
         async function showJam() {
@@ -8759,7 +9513,9 @@
             ctx.stroke();
           }
           ctx.globalCompositeOperation = "source-over";
-          const pulse = (1 + b * V.pulse).toFixed(3);
+          const want = 1 + b * V.pulse;
+          pulseS += (want - pulseS) * (1 - Math.exp(-dt * (want > pulseS ? 30 : 9)));
+          const pulse = pulseS.toFixed(4);
           if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
           if (px) {
             partyFx = true;
@@ -8789,7 +9545,7 @@
             }
           }
         }
-        let lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+        let pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
         let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "";
         function freshCanvas() {
           const n = q.canvas.cloneNode(false);
@@ -9016,7 +9772,7 @@
           if (venueWorker || venueCtx) return;
           try {
             if (q.venueEl.transferControlToOffscreen && window.Worker) {
-              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/venue.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba(c, al));\n        g.addColorStop(0.5, rgba(c, al * 0.35));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba(pal[0], al));\n          g.addColorStop(0.6, rgba(pal[1], al * 0.35));\n          g.addColorStop(1, rgba(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba(pal[k], 0));\n            g.addColorStop(0.5, rgba(pal[k], al));\n            g.addColorStop(1, rgba(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba(pal[k], 0));\n            g.addColorStop(0.5, rgba(pal[k], al));\n            g.addColorStop(1, rgba(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba(pal[f.c], 0));\n            g.addColorStop(0.5, rgba(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach" }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "club",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "stadium",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "stadium",\n      chill: "home",\n      classical: "home"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let stands = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass"]);\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barStart = newBeat && px.inBar === 0;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && v.decor !== "fairy") {\n        const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && big && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway"\n    };\n    const mood = { x: 0 };\n    function crowdMood(px, dt, hype) {\n      const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 40) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      x.moveTo(cx0 - 20 * S1, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = MOVES[px.key] || "clap";\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const phi = clamp(px.phase ?? 0, 0, 1);\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      if ((st.hype || px.drop > 0.5) && X > 0.6 && t > crowd.liftUntil) {\n        const front = crowd.people.filter((p) => p.row === 0 && p.x > vw * 0.15 && p.x < vw * 0.85);\n        crowd.lift = front[Math.floor(Math.random() * front.length)]?.id ?? -1;\n        crowd.liftUntil = t + 9;\n      }\n      if (t > crowd.liftUntil + 0.01 && !(st.hype || px.drop > 0.5)) crowd.lift = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const strokeRow = (row) => {\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) strokeRow(curRow);\n          curRow = p.row;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const cycN = half ? beatN >> 1 : beatN;\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc));\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.fillStyle = FILL[p.row];\n        ctx2.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const wantUp = lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && p.gadget && a > 0.5 && (me < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);\n        }\n        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });\n      }\n      if (curRow != null) strokeRow(curRow);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const [gx, gy, kind, s1, row] of glows) {\n        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n        ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];\n        ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n      }\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      for (const f of crowd.flashes) {\n        const r = 34 * f.s;\n        ctx2.globalAlpha = f.a * A;\n        ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        drawDecor(ctx2, v, st.px, st.pal, rgba, st.dpr, st);\n      }\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
+              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/venue.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba(c, al));\n        g.addColorStop(0.5, rgba(c, al * 0.35));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba(pal[0], al));\n          g.addColorStop(0.6, rgba(pal[1], al * 0.35));\n          g.addColorStop(1, rgba(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba(pal[k], 0));\n            g.addColorStop(0.5, rgba(pal[k], al));\n            g.addColorStop(1, rgba(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba(pal[k], 0));\n            g.addColorStop(0.5, rgba(pal[k], al));\n            g.addColorStop(1, rgba(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba(pal[f.c], 0));\n            g.addColorStop(0.5, rgba(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach" }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "club",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "stadium",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "stadium",\n      chill: "home",\n      classical: "home",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "festival",\n      dubstep: "festival",\n      garage: "club",\n      eurodance: "club",\n      synthwave: "club",\n      hyperpop: "club",\n      trap: "club",\n      drill: "warehouse",\n      phonk: "warehouse",\n      rnb: "club",\n      soul: "club",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "club",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "stadium",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "stadium"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let stands = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barStart = newBeat && px.inBar === 0;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && v.decor !== "fairy") {\n        const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && big && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway",\n      edm: "jump",\n      deephouse: "bounce",\n      techhouse: "pump",\n      psytrance: "jump",\n      dubstep: "bang",\n      garage: "bounce",\n      eurodance: "jump",\n      synthwave: "nod",\n      hyperpop: "jump",\n      trap: "bounce",\n      drill: "nod",\n      phonk: "pump",\n      rnb: "sway",\n      soul: "clap",\n      indie: "bounce",\n      alternative: "bang",\n      blues: "sway",\n      schlager: "clap",\n      ballad: "sway",\n      gospel: "clap",\n      reggaeton: "bounce",\n      salsa: "bounce",\n      brazil: "bounce",\n      flamenco: "clap",\n      bollywood: "bounce",\n      arabic: "clap",\n      ambient: "sway",\n      cinematic: "sway"\n    };\n    const mood = { x: 0 };\n    function crowdMood(px, dt, hype) {\n      const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 40) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      x.moveTo(cx0 - 20 * S1, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = MOVES[px.key] || "clap";\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const phi = clamp(px.phase ?? 0, 0, 1);\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      if ((st.hype || px.drop > 0.5) && X > 0.6 && t > crowd.liftUntil) {\n        const front = crowd.people.filter((p) => p.row === 0 && p.x > vw * 0.15 && p.x < vw * 0.85);\n        crowd.lift = front[Math.floor(Math.random() * front.length)]?.id ?? -1;\n        crowd.liftUntil = t + 9;\n      }\n      if (t > crowd.liftUntil + 0.01 && !(st.hype || px.drop > 0.5)) crowd.lift = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba(pal[0], 0));\n        g.addColorStop(0.55, rgba(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const strokeRow = (row) => {\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) strokeRow(curRow);\n          curRow = p.row;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const cycN = half ? beatN >> 1 : beatN;\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc));\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.fillStyle = FILL[p.row];\n        ctx2.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const wantUp = lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && p.gadget && a > 0.5 && (me < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);\n        }\n        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });\n      }\n      if (curRow != null) strokeRow(curRow);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const [gx, gy, kind, s1, row] of glows) {\n        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n        ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];\n        ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n      }\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      for (const f of crowd.flashes) {\n        const r = 34 * f.s;\n        ctx2.globalAlpha = f.a * A;\n        ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        drawDecor(ctx2, v, st.px, st.pal, rgba, st.dpr, st);\n      }\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
               const w = new Worker(url);
               const off = q.venueEl.transferControlToOffscreen();
               w.postMessage({ type: "init", canvas: off }, [off]);
@@ -9157,17 +9913,20 @@
           if (cfg.partyCamera && px.fx && quality.level > 0) {
             const t2 = now / 1e3;
             const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
-            cam.s += (target - cam.s) * (1 - Math.exp(-dt * 1.2));
-            if (px.dropHit) cam.s += 0.03;
+            cam.b = (cam.b ?? 1) + (target - (cam.b ?? 1)) * (1 - Math.exp(-dt * 1.2));
+            if (px.dropHit) cam.kick = 0.035;
+            cam.kick = (cam.kick || 0) * Math.exp(-dt * 2.5);
+            cam.kv = (cam.kv || 0) + (cam.kick - (cam.kv || 0)) * (1 - Math.exp(-dt * 16));
+            cam.s = cam.b + cam.kv;
             cam.x = Math.sin(t2 * 0.05) * innerWidth * 8e-3 * (0.5 + px.energy);
             cam.y = Math.cos(t2 * 0.037) * innerHeight * 6e-3 * (0.5 + px.energy);
-            const k = `${cam.x.toFixed(0)}|${cam.y.toFixed(0)}`;
+            const k = `${cam.x.toFixed(1)}|${cam.y.toFixed(1)}`;
             if (k !== cam.key) {
               cam.key = k;
-              q.bg.style.translate = `${cam.x.toFixed(0)}px ${cam.y.toFixed(0)}px`;
+              q.bg.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
             }
           } else if (cam.key || cam.s !== 1) {
-            Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
+            Object.assign(cam, { s: 1, b: 1, kick: 0, kv: 0, x: 0, y: 0, key: "" });
             q.bg.style.translate = "";
           }
           if (cfg.partyDepth && px.fx && quality.level > 0) {
@@ -10332,6 +11091,62 @@
     }
     return s;
   }
+  function select(groups, value, onPick) {
+    const s = el("select", "m-select");
+    for (const [label, opts] of groups) {
+      let parent = s;
+      if (label) {
+        parent = el("optgroup");
+        parent.label = label;
+        s.append(parent);
+      }
+      for (const [k, text] of opts) {
+        const o = el("option", "", text);
+        o.value = k;
+        o.selected = k === value;
+        parent.append(o);
+      }
+    }
+    s.onchange = () => onPick(s.value);
+    return s;
+  }
+  function livePanel() {
+    const box = el("div", "m-live");
+    let waited = false;
+    const draw = () => {
+      if (box.dataset.seen && !box.isConnected) return window.removeEventListener("mirage:live", draw);
+      box.dataset.seen = "1";
+      box.replaceChildren();
+      box.hidden = !cfg.partyLive;
+      if (!cfg.partyLive) return;
+      const info = bridge.live();
+      if (info?.qr) {
+        const img = new Image();
+        img.alt = "";
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+        box.append(img);
+      }
+      const txt = el("div");
+      if (info) {
+        const code = el("code", "", info.url);
+        code.title = t("liveCopy");
+        code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {
+        });
+        txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveFirewall")));
+      } else txt.append(el("small", "", t(!bridge.connected() ? "liveMissing" : waited ? "liveOld" : "liveWait")));
+      box.append(txt);
+    };
+    window.addEventListener("mirage:live", draw);
+    if (cfg.partyLive && !bridge.live()) {
+      bridge.setLive(true);
+      setTimeout(() => {
+        waited = true;
+        draw();
+      }, 4e3);
+    }
+    draw();
+    return box;
+  }
   function group(title, open, ...children) {
     const d = el("details", "m-group");
     d.open = open;
@@ -10494,66 +11309,80 @@
         toggle("vizSpin", () => {
         }),
         toggle("mixInstruments", () => {
-        }),
-        // Party-Modus: Profil automatisch (Genre/Tempo) oder fest, Stärke, weiche Farbblitze
-        head(t("partySection"), t("partySectionHint")),
-        seg([["auto", t("party_auto")], ...PROFILE_KEYS.map((k) => [k, t("party_" + k)])], cfg.partyStyle, (k) => {
-          cfg.partyStyle = k;
-          save();
-          immersive.refresh();
-        }),
+        })
+      )
+    );
+    kids.push(
+      group(
+        t("g_party"),
+        false,
+        head(t("ps_style"), t("partySectionHint")),
+        select(
+          [["", [["auto", t("party_auto")]]], ...Object.entries(FAMILIES).map(([f, keys]) => [t("fam_" + f), keys.map((k) => [k, t("party_" + k)])])],
+          cfg.partyStyle,
+          (k) => {
+            cfg.partyStyle = k;
+            save();
+            immersive.refresh();
+          }
+        ),
         el("small", "m-note", t("partyLevel")),
         seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
           cfg.partyLevel = k;
           save();
-        }),
-        toggle("partyFlash", () => {
-        }),
-        toggle("partyLasers", () => {
-        }),
-        toggle("partyZoom", () => {
-        }),
-        toggle("partyIdle", () => {
-        }),
-        toggle("partyOnline", () => immersive.refresh()),
-        toggle("partyBlend", () => {
-        }),
-        toggle("partyHype", () => immersive.reloadLyrics()),
-        toggle("partyDepth", () => {
-        }),
-        toggle("partyCamera", () => {
-        }),
-        toggle("partyShatter", () => {
-        }),
-        toggle("partyCrowd", () => {
         }),
         el("small", "m-note", t("partyVenue")),
         seg(["auto", "club", "warehouse", "festival", "stadium", "beach", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
           cfg.partyVenue = k;
           save();
         }),
+        head(t("ps_light")),
+        toggle("partyFlash", () => {
+        }),
+        toggle("partyLasers", () => {
+        }),
+        toggle("partyMelody", () => {
+        }),
         toggle("partyFx", () => {
         }),
         toggle("partyStrobe", () => {
         }),
-        toggle("partyDirector", () => {
+        toggle("partyZoom", () => {
         }),
-        toggle("partyMelody", () => {
+        toggle("partyBlend", () => {
+        }),
+        head(t("ps_moments")),
+        toggle("partyDirector", () => {
         }),
         toggle("partySlowmo", () => {
         }),
         toggle("partyDJ", () => {
         }),
-        toggle("partyQuietFps", () => {
+        toggle("partyHype", () => immersive.reloadLyrics()),
+        toggle("partyShatter", () => {
         }),
-        toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
+        toggle("partyCamera", () => {
+        }),
+        toggle("partyDepth", () => {
+        }),
+        head(t("ps_crowd")),
+        toggle("partyCrowd", () => {
+        }),
         toggle("partyJamLight", () => {
         }),
+        toggle("partyJam", () => {
+        }),
+        head(t("ps_extras")),
+        toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
+        livePanel(),
         toggle("partyScreen", () => immersive.refresh()),
         toggle("partyRecap", () => immersive.refresh()),
         toggle("partyEdge", () => {
         }),
-        toggle("partyJam", () => {
+        toggle("partyOnline", () => immersive.refresh()),
+        toggle("partyIdle", () => {
+        }),
+        toggle("partyQuietFps", () => {
         })
       )
     );

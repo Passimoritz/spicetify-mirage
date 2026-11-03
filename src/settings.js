@@ -13,7 +13,7 @@ import { recheckAll } from "./readability.js";
 import { diagnostics } from "./selectors.js";
 import { nowPlayingCard, weekCard, monthCard } from "./share.js";
 import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
-import { PROFILE_KEYS } from "./party.js";
+import { FAMILIES } from "./party.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -122,6 +122,63 @@ function seg(options, value, onPick) {
     s.append(b);
   }
   return s;
+}
+// Auswahlliste mit Gruppen (für die vielen Party-Stile – Knöpfe wären eine Wand)
+function select(groups, value, onPick) {
+  const s = el("select", "m-select");
+  for (const [label, opts] of groups) {
+    let parent = s;
+    if (label) {
+      parent = el("optgroup");
+      parent.label = label;
+      s.append(parent);
+    }
+    for (const [k, text] of opts) {
+      const o = el("option", "", text);
+      o.value = k;
+      o.selected = k === value;
+      parent.append(o);
+    }
+  }
+  s.onchange = () => onPick(s.value);
+  return s;
+}
+// Live-Link: QR-Code und Adresse direkt unter dem Schalter – sobald er an ist, sieht man, ob es klappt
+function livePanel() {
+  const box = el("div", "m-live");
+  let waited = false;
+  const draw = () => {
+    if (box.dataset.seen && !box.isConnected) return window.removeEventListener("mirage:live", draw);
+    box.dataset.seen = "1";
+    box.replaceChildren();
+    box.hidden = !cfg.partyLive;
+    if (!cfg.partyLive) return;
+    const info = bridge.live();
+    if (info?.qr) {
+      const img = new Image();
+      img.alt = "";
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      box.append(img);
+    }
+    const txt = el("div");
+    if (info) {
+      const code = el("code", "", info.url);
+      code.title = t("liveCopy");
+      code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
+      txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveFirewall")));
+    } else txt.append(el("small", "", t(!bridge.connected() ? "liveMissing" : waited ? "liveOld" : "liveWait")));
+    box.append(txt);
+  };
+  window.addEventListener("mirage:live", draw);
+  if (cfg.partyLive && !bridge.live()) {
+    bridge.setLive(true);
+    setTimeout(() => {
+      waited = true;
+      draw();
+    }, 4000);
+  }
+  draw();
+  return box;
 }
 function group(title, open, ...children) {
   const d = el("details", "m-group");
@@ -286,48 +343,63 @@ function render(box) {
       toggle("vizRings", () => {}),
       toggle("vizMirror", () => {}),
       toggle("vizSpin", () => {}),
-      toggle("mixInstruments", () => {}),
-      // Party-Modus: Profil automatisch (Genre/Tempo) oder fest, Stärke, weiche Farbblitze
-      head(t("partySection"), t("partySectionHint")),
-      seg([["auto", t("party_auto")], ...PROFILE_KEYS.map((k) => [k, t("party_" + k)])], cfg.partyStyle, (k) => {
-        cfg.partyStyle = k;
-        save();
-        immersive.refresh();
-      }),
+      toggle("mixInstruments", () => {})
+    )
+  );
+  // ---- Party-Modus: eine eigene Gruppe, darin nach Thema geordnet
+  kids.push(
+    group(
+      t("g_party"),
+      false,
+      head(t("ps_style"), t("partySectionHint")),
+      select(
+        [["", [["auto", t("party_auto")]]], ...Object.entries(FAMILIES).map(([f, keys]) => [t("fam_" + f), keys.map((k) => [k, t("party_" + k)])])],
+        cfg.partyStyle,
+        (k) => {
+          cfg.partyStyle = k;
+          save();
+          immersive.refresh();
+        }
+      ),
       el("small", "m-note", t("partyLevel")),
       seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
         cfg.partyLevel = k;
         save();
       }),
-      toggle("partyFlash", () => {}),
-      toggle("partyLasers", () => {}),
-      toggle("partyZoom", () => {}),
-      toggle("partyIdle", () => {}),
-      toggle("partyOnline", () => immersive.refresh()),
-      toggle("partyBlend", () => {}),
-      toggle("partyHype", () => immersive.reloadLyrics()),
-      toggle("partyDepth", () => {}),
-      toggle("partyCamera", () => {}),
-      toggle("partyShatter", () => {}),
-      toggle("partyCrowd", () => {}),
       el("small", "m-note", t("partyVenue")),
       seg(["auto", "club", "warehouse", "festival", "stadium", "beach", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
         cfg.partyVenue = k;
         save();
       }),
+      head(t("ps_light")),
+      toggle("partyFlash", () => {}),
+      toggle("partyLasers", () => {}),
+      toggle("partyMelody", () => {}),
       toggle("partyFx", () => {}),
       toggle("partyStrobe", () => {}),
+      toggle("partyZoom", () => {}),
+      toggle("partyBlend", () => {}),
+      head(t("ps_moments")),
       toggle("partyDirector", () => {}),
-      toggle("partyMelody", () => {}),
       toggle("partySlowmo", () => {}),
       toggle("partyDJ", () => {}),
-      toggle("partyQuietFps", () => {}),
-      toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
+      toggle("partyHype", () => immersive.reloadLyrics()),
+      toggle("partyShatter", () => {}),
+      toggle("partyCamera", () => {}),
+      toggle("partyDepth", () => {}),
+      head(t("ps_crowd")),
+      toggle("partyCrowd", () => {}),
       toggle("partyJamLight", () => {}),
+      toggle("partyJam", () => {}),
+      head(t("ps_extras")),
+      toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
+      livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),
       toggle("partyEdge", () => {}),
-      toggle("partyJam", () => {})
+      toggle("partyOnline", () => immersive.refresh()),
+      toggle("partyIdle", () => {}),
+      toggle("partyQuietFps", () => {})
     )
   );
 

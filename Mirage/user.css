@@ -3116,6 +3116,58 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   color: var(--spice-text);
   font: 500 13px var(--m-font);
 }
+.mirage-settings .m-select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--m-line-strong);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--spice-text);
+  font: 600 13px var(--m-font);
+  cursor: pointer;
+}
+.mirage-settings .m-select option,
+.mirage-settings .m-select optgroup {
+  background: #15131f;
+  color: #fff;
+}
+/* Live-Link: QR-Code direkt in den Einstellungen */
+.mirage-settings .m-live {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 2px 0 8px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--m-line-strong);
+  background: rgba(255, 255, 255, 0.04);
+}
+.mirage-settings .m-live[hidden] {
+  display: none;
+}
+.mirage-settings .m-live img {
+  flex: none;
+  width: 120px;
+  height: 120px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #fff;
+  image-rendering: pixelated;
+}
+.mirage-settings .m-live div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.mirage-settings .m-live code {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  cursor: copy;
+}
+.mirage-settings .m-live .m-dim {
+  opacity: 0.6;
+}
 .mirage-settings .m-builder {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

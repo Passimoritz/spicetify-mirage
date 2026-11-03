@@ -10,6 +10,24 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.11.0] – 2026-11-03
+
+### Added
+
+- **28 more party styles – 48 in total.** EDM & Big Room, Deep House, Tech House, Psytrance, Dubstep, UK Garage, Eurodance, Synthwave, Hyperpop, Trap, Drill, Phonk, R&B, Soul & Funk, Indie, Alternative, Blues, Schlager, Ballad, Gospel, Reggaeton, Salsa & Tropical, Brazilian, Flamenco, Bollywood, Arabic, Ambient and Film & Epic. Each has its own light language, crowd moves, venue and stage effects, and is recognised from Spotify's artist genres and Apple's genre names.
+- **The live link shows its QR code right in the settings**, under the switch – with a clear status while the overlay app answers, or why it doesn't.
+
+### Changed
+
+- **Tidier settings:** party mode has its own group with sections for style, light & effects, moments, crowd & Jam and extras. The style is chosen from a list sorted by music family instead of a wall of 48 buttons.
+- **Smoother party mode:** the cover pulse springs instead of jumping from frame to frame, the drop's camera punch is a soft spring, and the background drifts on sub-pixels instead of whole-pixel steps.
+- **Prettier crowd:** a band of glowing haze behind the heads lights up with kick and drop, so the silhouettes stand out against the stage light.
+- "Bass" is now called "Hip-Hop".
+
+### Fixed
+
+- A live-link card left open no longer stays behind after leaving immersive mode (the next click would close it instead of opening it).
+
 ## [1.10.0] – 2026-11-03
 
 ### Added
