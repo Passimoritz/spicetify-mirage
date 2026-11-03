@@ -139,7 +139,7 @@ Everything is set up in **Profile menu → Mirage settings**. Every effect descr
 | **Mix** | Cover, visualizer ring and lyrics at once – the pulse follows the real kick drum |
 | **Party** | A light show built for the song – [see below](#-party-mode) |
 
-**No lyrics at Spotify?** Mirage looks on [LRCLIB](https://lrclib.net), NetEase and lyrics.ovh; *Choose version* picks another match. **No beat data?** Mirage borrows tempo and energy from Spotify's audio features or Deezer and estimates the beat from the lyric timing – the kicker then shows *≈ 128 BPM*.
+**Karaoke on the syllable:** word timings from Spotify or NetEase are used as they are; otherwise Mirage splits every word into syllables and places each one on a sung onset of the analysis, and lyrics from other sources are aligned to the song automatically. **No lyrics at Spotify?** Mirage looks on [LRCLIB](https://lrclib.net), NetEase and lyrics.ovh; *Choose version* picks another match. **No beat data?** Mirage borrows tempo and energy from Spotify's audio features or Deezer and estimates the beat from the lyric timing – the kicker then shows *≈ 128 BPM*.
 
 Full screen with the button, <kbd>F</kbd> or <kbd>F11</kbd>. When the mouse rests, the controls fade out.
 
@@ -161,14 +161,16 @@ Party mode reads the whole song before it plays: energy curve, build-ups, drops 
 
 **48 styles, each with its own light language.** Rave gets crossing beams, techno soft scanner bands, house a disco ball, trance aurora ribbons, drum & bass a tunnel of light rings, hip-hop light from the floor, rock hard spots from above, metal red-hot ones, latin warm sweeps, pop springy colour, chill slow breathing light. Beyond that: EDM & Big Room, Deep House, Tech House, Psytrance, Dubstep, UK Garage, Hardstyle, Eurodance, Synthwave, Hyperpop · Trap, Drill, Phonk, R&B, Soul & Funk, Afro, Reggae · Alternative, Indie, Punk, Metal, Blues · K-Pop, Disco, Schlager, Ballad, Gospel, Country · Reggaeton, Salsa & Tropical, Brazilian, Flamenco, Bollywood, Arabic · Ambient, Jazz, Classical, Film & Epic. The style comes from Apple's iTunes search, Spotify's artist genres and the sound itself – or you pick it in the settings, sorted by family.
 
-**It follows the instruments.** The kick drives the pulse and floor light, the snare the spots and flashes, the hi-hats the sparkle; two thin *melody lasers* follow the pitch of the tune.
+**It follows the instruments.** The kick drives the pulse and floor light, the snare the spots and flashes, the hi-hats the sparkle; two thin *melody lasers* follow the pitch of the tune. When the song's credits (Spotify, MusicBrainz) confirm a **trumpet, sax, electric guitar, piano, strings or choir**, that instrument gets its own moment wherever it stands out in the sound: golden fanfare rays, rising smoke, lightning from the truss, keys of light that follow the notes, flowing silk ribbons, a halo from above. No credit, no effect – nothing is guessed.
+
+**A real light rig.** Moving heads on a truss above the stage move in patterns that suit the genre – waves for house, chases for techno, fans for EDM, all on the cover for hip-hop and rock – with blinders on big hits and a laser sheet across the crowd on the drop. Calm songs get soft bokeh instead.
 
 **It directs moments.**
 - **Light director** – calm before the storm: the light holds back before the drop, goes dark on the last beat, then everything hits at once. The final chorus gets the most.
 - **Slow motion** – sparks, rings and the crowd freeze for half a second right before the drop.
 - **DJ transitions** – on a song change the old colours hold until the first beat, then blend over four beats.
 
-**A crowd and a venue.** Silhouettes in front of the stage move with the genre – they jump and land on the beat, nod, headbang, clap on 2 and 4, sway – start a wave every now and then, lift someone onto their shoulders and fire camera flashes on the drop. The venue follows the genre – club, warehouse, festival, stadium, beach or living room – or is fixed in the settings.
+**A crowd and a venue.** Silhouettes in front of the stage move with the genre – they jump and land on the beat, nod, headbang, clap on 2 and 4, sway – start a wave every now and then, lift someone onto their shoulders, fire camera flashes on the drop, bounce beach balls around and pass a crowd-surfer across the room. The venue follows the genre – club, warehouse, festival, stadium, beach or living room – or is fixed in the settings.
 
 **Stage effects where they belong.** CO2 jets shoot up on the drop in electronic music, pyro flames burn for rock, metal and punk, fireworks go up in the final chorus at the stadium and the festival, and hard techno, hardstyle and rave drops get a strobe (from *Extreme* on, never faster than one flash per beat).
 
@@ -229,6 +231,7 @@ Still broken? `spicetify clear` and then `spicetify backup apply`. Right after a
 | immersive | <kbd>N</kbd> <kbd>P</kbd> | next · previous |
 | immersive | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | like · shuffle · repeat · queue |
 | immersive | <kbd>F</kbd> / <kbd>F11</kbd> | full screen |
+| immersive | <kbd>T</kbd> (6×, on the beat) | sync light, crowd and lyrics to what you hear |
 | immersive | <kbd>?</kbd> · <kbd>Esc</kbd> | all shortcuts · close |
 
 ## ⚡ Performance
@@ -242,7 +245,7 @@ Mirage is built to look alive without eating your CPU.
 
 ## 🔒 Privacy
 
-No own server, no tracking, no account. Lyrics, beat data and audio features come from Spotify. Only when Spotify has nothing: title, artist, album and length go to LRCLIB, NetEase and lyrics.ovh for lyrics, and title and artist to Deezer for tempo and to Apple's iTunes search for the party genre – each can be turned off. The overlay listens only on your own computer; the live link (off by default) opens a page on your local network, protected by a random key in its address, that only receives light colours and the song title. Fonts load from Google Fonts.
+No own server, no tracking, no account. Lyrics, beat data, audio features and credits come from Spotify. Only when Spotify has nothing: title, artist, album and length go to LRCLIB, NetEase and lyrics.ovh for lyrics, title and artist to Deezer for tempo and to Apple's iTunes search for the party genre, and the song's ISRC number to MusicBrainz for instrument credits – each can be turned off. The overlay listens only on your own computer; the live link (off by default) opens a page on your local network, protected by a random key in its address, that only receives light colours and the song title. Fonts load from Google Fonts.
 
 ## ❓ FAQ
 

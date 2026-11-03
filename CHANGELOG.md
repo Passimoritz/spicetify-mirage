@@ -10,6 +10,20 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.12.0] – 2026-11-03
+
+### Added
+
+- **Instruments from the credits.** When the song's credits (Spotify, otherwise MusicBrainz via the ISRC number) confirm a trumpet or other brass, sax, electric guitar, piano, strings or choir, that instrument gets its own effect wherever it stands out in the sound: golden fanfare rays and sparks, rising smoke, lightning and crackle along the truss, 24 keys of light that follow the notes being played, flowing silk ribbons, a halo from above. Without a credit there is no instrument effect at all; at most two instruments at a time.
+- **A light rig:** moving heads on a truss above the stage move in genre patterns (waves for house, chases for techno, fans for EDM, all on the cover for hip-hop and rock), blinders fire on big snare hits in the chorus, a laser sheet spans the crowd on the drop, and calm songs get soft bokeh.
+- **Fun moments:** beach balls bounce over the crowd at festivals, stadiums and the beach, and at the peak a crowd-surfer is carried across.
+- **Tap to sync (T):** tap six times on the beat and Mirage measures the offset between picture and sound – globally, or per song when the beat is estimated. Also adjustable in the settings (Sync, ±400 ms).
+
+### Changed
+
+- **No more lag.** Party, visualizer and karaoke run on a steady song clock that smooths out Spotify's jumpy position and leads by the time a frame needs to reach the screen. The cover pulse rises instantly instead of springing up, and the crowd reacts faster to energy changes.
+- **Karaoke on the syllable.** Estimated words are split into syllables, and each syllable is placed on a sung onset of the analysis by an optimal alignment over the whole line; letters fill syllable by syllable (also with Spotify's syllable timings). Lyrics from LRCLIB or NetEase that are shifted against the song are aligned automatically.
+
 ## [1.11.1] – 2026-11-03
 
 ### Changed

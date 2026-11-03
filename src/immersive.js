@@ -15,6 +15,8 @@ import { party } from "./party.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
 import { bridge } from "./bridge.js";
+import { songPos } from "./clock.js";
+import { instruments } from "./instruments.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -595,7 +597,10 @@ const immersive = (() => {
         const from = l.text.indexOf(w, pos);
         pos = from + w.length;
         const hit = marks.filter((m) => m.to > from && m.from < pos);
-        return hit.length ? { text: w, a: hit[0].a, b: hit[hit.length - 1].b } : { text: w, a: l.t, b: l.t + 1 };
+        // Silben mit ihrem Anteil am Wort: die Buchstaben füllen sich Silbe für Silbe, genau wie gesungen
+        const len = Math.max(1, pos - from);
+        const sy = hit.map((m) => ({ a: m.a, f0: clamp((m.from - from) / len, 0, 1), f1: clamp((m.to - from) / len, 0, 1) }));
+        return hit.length ? { text: w, a: hit[0].a, b: hit[hit.length - 1].b, sy } : { text: w, a: l.t, b: l.t + 1 };
       });
     }
     // geschätzt: im Gesangstempo (≈ 75 ms je Zeichen) statt über die ganze Pause bis zur nächsten Zeile;
@@ -610,30 +615,73 @@ const immersive = (() => {
       return out;
     });
   }
-  // Geschätzte Wortanfänge auf Ton-Einsätze legen: ein gesungenes Wort beginnt fast immer mit einer Note,
-  // und Spotify kennt jeden Einsatz (Segment-Anfänge). Je Wort der nächste Einsatz in ±250 ms, der Reihe nach.
+  // Geschätzte Wörter auf den Gesang legen: jedes Wort wird in Silben zerlegt, und jede Silbe bekommt
+  // einen eigenen Ton-Einsatz der Analyse (Segment-Anfang) – per Optimierung über die ganze Zeile, sodass
+  // die Summe der Abweichungen am kleinsten ist (Reihenfolge bleibt, lieber ohne Einsatz als zu weit weg).
+  // Die Buchstaben füllen sich danach Silbe für Silbe.
+  const VOWELS = /[aeiouyäöüáéíóúàèìòùâêîôûãõåæøœıаеёиоуыэюяіїє]+/g;
+  const CJK = /[぀-ヿ㐀-鿿가-힯]/;
+  const syllables = (w) => (CJK.test(w) ? [...w].length : Math.max(1, (w.toLowerCase().match(VOWELS) || []).length));
   function snapWords(list, t0, t1) {
     list.snapped = true;
     const segs = audio.data?.segs;
-    if (!segs?.length || audio.uri !== lyrUri) return;
+    if (!segs?.length || audio.uri !== lyrUri || audio.data.synthetic) return;
     const on = [];
     for (let k = Math.max(seek(segs, t0 / 1000 - 0.3, "t"), 0); k < segs.length && segs[k].t * 1000 < t1; k++) {
-      if (segs[k].l > -30) on.push(segs[k].t * 1000);
+      if (segs[k].l > -30) on.push({ t: segs[k].t * 1000, s: clamp(segs[k].l - (segs[k - 1]?.l ?? -60), 0, 12) });
     }
-    if (on.length < Math.max(2, list.length * 0.5)) return;
-    let prev = t0 - 300;
-    for (const w of list) {
-      let best = null, bd = 251;
-      for (const o of on) {
-        const dd = Math.abs(o - w.a);
-        if (o > prev + 60 && dd < bd) [best, bd] = [o, dd];
+    const sy = [];
+    list.forEach((w, wi) => {
+      const n = syllables(w.text || "");
+      for (let j = 0; j < n; j++) sy.push({ wi, j, n, e: w.a + ((w.b - w.a) * j) / n });
+    });
+    const S = sy.length, O = on.length;
+    if (!S || O < Math.max(2, S * 0.4)) return;
+    // f[k][j]: kleinste Kosten für die ersten k Silben, wenn die Einsätze bis j verbraucht sind
+    const SKIP = 160, MAXD = 350, INF = 1e9;
+    const f = Array.from({ length: S + 1 }, () => new Float64Array(O + 1).fill(INF));
+    const how = Array.from({ length: S + 1 }, () => new Int32Array(O + 1).fill(-2));
+    f[0].fill(0);
+    for (let k = 0; k < S; k++) {
+      for (let j = 0; j < O; j++) if (f[k][j] < f[k][j + 1]) [f[k][j + 1], how[k][j + 1]] = [f[k][j], -3];
+      for (let j = 0; j <= O; j++) {
+        if (f[k][j] >= INF) continue;
+        if (f[k][j] + SKIP < f[k + 1][j]) [f[k + 1][j], how[k + 1][j]] = [f[k][j] + SKIP, -1];
+        if (j < O) {
+          const dd = Math.abs(on[j].t - sy[k].e);
+          if (dd < MAXD) {
+            const c = f[k][j] + dd - 6 * on[j].s;
+            if (c < f[k + 1][j + 1]) [f[k + 1][j + 1], how[k + 1][j + 1]] = [c, j];
+          }
+        }
       }
-      if (best != null) w.a = best;
-      if (w.a <= prev) w.a = prev + 60;
-      prev = w.a;
     }
-    // Ende eines Worts = Anfang des nächsten; das letzte behält seine Länge
-    list.forEach((w, k) => (w.b = list[k + 1] ? Math.max(w.a + 60, list[k + 1].a) : Math.max(w.a + 200, w.b)));
+    let j = 0;
+    for (let x = 1; x <= O; x++) if (f[S][x] < f[S][j]) j = x;
+    for (let k = S; k > 0; ) {
+      const h = how[k][j];
+      if (h === -3) {
+        j--;
+        continue;
+      }
+      if (h >= 0) {
+        sy[k - 1].t = on[h].t;
+        j = h;
+      }
+      k--;
+    }
+    // Reihenfolge absichern, dann Wortanfang = erste Silbe, Silbenanteile für die Buchstaben
+    let prev = t0 - 300;
+    for (const x of sy) {
+      x.t = Math.max(x.t ?? x.e, prev + 50);
+      prev = x.t;
+    }
+    list.forEach((w, wi) => {
+      const mine = sy.filter((x) => x.wi === wi);
+      w.a = mine[0].t;
+      w.sy = mine.map((x) => ({ a: x.t, f0: x.j / x.n, f1: (x.j + 1) / x.n }));
+    });
+    list.forEach((w, k) => (w.b = list[k + 1] ? Math.max(w.sy[w.sy.length - 1].a + 80, list[k + 1].a) : Math.max(w.a + 200, w.b)));
   }
   // Knopf unten rechts: woher der Text kommt, und eine andere Fassung wählen
   function showSource(got) {
@@ -727,7 +775,7 @@ const immersive = (() => {
           s.style.setProperty("--wi", list.length);
           box.append(s);
           if (w.sp !== false) box.append(" ");
-          list.push({ el: s, a: w.a, b: w.b, p: -1 });
+          list.push({ el: s, a: w.a, b: w.b, p: -1, text: w.text, sy: w.sy || null });
           if (w.est) list.est = true;
         }
         d.append(box);
@@ -764,8 +812,65 @@ const immersive = (() => {
     q.trbtn.title = t(cfg.translate ? "trHide" : "trShow");
   }
 
+  // Fortschritt eines Worts 0..1 (Anteil der gefüllten Buchstaben): mit Silbenzeiten stückweise je Silbe
+  function wordProgress(w, pos) {
+    const sy = w.sy;
+    if (!sy?.length) return clamp((pos - w.a) / (w.b - w.a), 0, 1);
+    if (pos < sy[0].a) return 0;
+    let j = 0;
+    while (j + 1 < sy.length && sy[j + 1].a <= pos) j++;
+    const end = sy[j + 1]?.a ?? w.b;
+    const f = clamp((pos - sy[j].a) / Math.max(40, end - sy[j].a), 0, 1);
+    return sy[j].f0 + (sy[j].f1 - sy[j].f0) * f;
+  }
+  // Fremde Liedtexte (LRCLIB, NetEase) stammen oft von einer anderen Fassung: um ein paar hundert ms
+  // verschoben. Einmal je Song: der Versatz, bei dem die Zeilenanfänge am besten auf Gesangs-Einsätze
+  // fallen – übernommen nur, wenn er klar besser passt als gar keiner.
+  function alignLyrics() {
+    if (!lyr?.synced || lyr.aligned || lyr.source === "spotify") return;
+    const d = audio.data;
+    if (!d?.segs?.length || audio.uri !== lyrUri || d.synthetic) return;
+    lyr.aligned = true;
+    const on = [];
+    d.segs.forEach((s, k) => {
+      const jump = s.l - (d.segs[k - 1]?.l ?? -60);
+      if (s.l > -30 && jump > 2) on.push({ t: s.t * 1000, s: Math.min(jump, 12) });
+    });
+    const ts = lyr.lines.filter((l) => l.text !== "♪").map((l) => l.t);
+    if (ts.length < 8 || on.length < 20) return;
+    const score = (off) => {
+      let sum = 0, j = 0;
+      for (const t of ts) {
+        const x = t + off;
+        while (j < on.length && on[j].t < x - 70) j++;
+        let best = 0;
+        for (let k = j; k < on.length && on[k].t <= x + 70; k++) best = Math.max(best, on[k].s);
+        sum += best;
+      }
+      return sum;
+    };
+    const base = score(0);
+    let bestOff = 0, best = base;
+    for (let off = -1500; off <= 1500; off += 20) {
+      const v = score(off);
+      if (v > best) [best, bestOff] = [v, off];
+    }
+    if (!bestOff || best < base * 1.3 || best < ts.length * 1.5) return;
+    for (const l of lyr.lines) {
+      l.t += bestOff;
+      for (const w of l.words || []) w.t += bestOff;
+      for (const s of l.syl || []) s.t += bestOff;
+    }
+    for (const list of words) for (const w of list || []) {
+      w.a += bestOff;
+      w.b += bestOff;
+      for (const s of w.sy || []) s.a += bestOff;
+    }
+  }
+
   function drawLyrics(pos) {
     if (!lyr?.synced) return;
+    alignLyrics();
     const lines = q.inner.children;
     const i = seek(lyr.lines, pos, "t");
     if (i !== active) {
@@ -795,7 +900,7 @@ const immersive = (() => {
     const ws = i >= 0 && words[i];
     if (ws) {
       for (const w of ws) {
-        const p = Math.round(clamp((pos - w.a) / (w.b - w.a), 0, 1) * 50) / 50;
+        const p = Math.round(wordProgress(w, pos) * 100) / 100;
         if (p !== w.p) {
           w.p = p;
           w.el.style.setProperty("--p", p);
@@ -848,6 +953,7 @@ const immersive = (() => {
     // Mix: dieselben Instrumentenspuren wie Party, nur dezent (Puls und Kranz auf der echten Kick)
     const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
     if (px) partyExtras(px, now, dt, R, dpr);
+    curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt) : null;
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
     quietNow = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
     if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
@@ -1052,8 +1158,9 @@ const immersive = (() => {
     ctx.globalCompositeOperation = "source-over";
     // Puls direkt als scale (eigene Grafikebene), nur bei sichtbarer Änderung
     // Puls federt: schneller Anstieg (~35 ms), weiches Abklingen – kein hartes Springen von Bild zu Bild
+    // sofort hoch (sonst hinkt der Puls hinterher), weich wieder ab
     const want = 1 + b * V.pulse;
-    pulseS += (want - pulseS) * (1 - Math.exp(-dt * (want > pulseS ? 30 : 9)));
+    pulseS = want > pulseS ? want : pulseS + (want - pulseS) * (1 - Math.exp(-dt * 9));
     const pulse = pulseS.toFixed(4);
     if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
     if (px) {
@@ -1089,7 +1196,7 @@ const immersive = (() => {
       }
     }
   }
-  let pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+  let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
   let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "";
   function freshCanvas() {
     const n = q.canvas.cloneNode(false);
@@ -1156,6 +1263,10 @@ const immersive = (() => {
       },
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
+      rig: cfg.partyRig && px.fx && px.level >= 2 && !lightMode(),
+      fun: cfg.partyFun && px.fx,
+      flash: cfg.partyFlash && px.fx,
+      inst: curInst,
       strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: party.info.bpm || 120,
@@ -1546,7 +1657,8 @@ const immersive = (() => {
     if (fpsCap && now - lastDraw < 1000 / fpsCap - 3) return;
     lastDraw = now;
     if (sizeKey !== sizeKeyNow()) sizeCanvas();
-    const pos = S.Player.getProgress?.() || 0;
+    // gleichmäßige Songuhr mit Vorlauf (siehe clock.js) – Party, Visualizer und Karaoke laufen danach
+    const pos = songPos(now);
     const dur = S.Player.getDuration?.() || 0;
     // scaleX statt width: kein Neu-Layout in jedem Bild
     const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
@@ -1595,7 +1707,7 @@ const immersive = (() => {
     q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
   }
   // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["Esc", "k_close"], ["?", "keysTitle"]];
   function toggleKeys(force) {
     if (!q.keys) return;
     const show = force ?? q.keys.hidden;

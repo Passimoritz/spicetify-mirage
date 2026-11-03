@@ -2,6 +2,8 @@
 // Bühnenlicht, Dekor und Publikum des Party-Modus – ohne Zugriff auf Spotify oder das Fenster, darum läuft
 // dasselbe Modul im Hintergrund-Thread (eigenes OffscreenCanvas, venue-worker.js) und, wo das nicht geht,
 // im Hauptfenster. Jedes Bild bekommt seinen Zustand als „st“ (Takt, Energie, Farben, Kamera …) mitgeteilt.
+import { createShow } from "./show.js";
+
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 function createVenue(makeCanvas) {
@@ -26,6 +28,7 @@ function createVenue(makeCanvas) {
     }
     return glowSprites.get(k);
   }
+  const show = createShow(glowSprite);
   let disco = null, tunnel = [];
   function drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {
     const t = st.t, far = Math.hypot(vw, vh) * 1.1;
@@ -413,7 +416,7 @@ function createVenue(makeCanvas) {
   const mood = { x: 0 };
   function crowdMood(px, dt, hype) {
     const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);
-    mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 1.6 : 0.7)));
+    mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));
     if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
     return mood.x;
   }
@@ -649,10 +652,13 @@ function createVenue(makeCanvas) {
     stageCam(ctx, st);
     if (st.stage) {
       drawStage(ctx, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
+      show.drawRig(ctx, st, v, st.px, st.pal, st.dpr);
       drawDecor(ctx, v, st.px, st.pal, rgba, st.dpr, st);
     }
+    if (st.inst) show.drawInst(ctx, st, st.px, st.pal, st.dpr);
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
+    if (st.fun && crowdA > 0.5) show.drawFun(ctx, st, v, st.px, st.pal, st.dpr);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = "source-over";
   }

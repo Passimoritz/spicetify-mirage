@@ -79,6 +79,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Brazilian", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arabic", party_ambient: "Ambient", party_cinematic: "Film & Epic",
     ps_style: "Style",
+    partyRig: "Moving heads & blinders", partyRigHint: "A light rig above the stage moves in patterns that suit the genre – waves for house, chases for techno, fans for EDM – with blinders on big hits and a laser sheet on the drop", partyFun: "Fun moments", partyFunHint: "Beach balls bounce over the crowd, and at the peak someone crowd-surfs through the audience",
+    partyInstruments: "Recognise instruments", partyInstrumentsHint: "Trumpets, sax, guitar, piano, strings and choir get their own effects – only when the song's credits confirm the instrument (Spotify, MusicBrainz; the song's ISRC number goes to MusicBrainz)", syncOffset: "Sync (effects & lyrics)", k_tap: "Tap along to the beat (sync)",
+    tapCount: "Keep tapping on the beat … {n}/6", tapDone: "In sync – adjusted by {ms} ms", tapUnsure: "Too uneven – tap steadily on every beat", tapNoBeat: "No beat data for this song yet",
   },
   de: {
     menu: "Mirage-Einstellungen", immersive: "Mirage Immersiv-Modus", back: "Zurück", dialog: "Mirage Immersiv-Modus",
@@ -156,6 +159,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Brasilianisch", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arabisch", party_ambient: "Ambient", party_cinematic: "Film & Epik",
     ps_style: "Stil",
+    partyRig: "Moving Heads & Blinder", partyRigHint: "Ein Lichtrig über der Bühne bewegt sich in Mustern passend zum Genre – Wellen bei House, Lauflichter bei Techno, Fächer bei EDM –, dazu Blinder bei großen Schlägen und eine Laserfläche beim Drop", partyFun: "Spaß-Momente", partyFunHint: "Wasserbälle hüpfen über die Menge, und in der Spitze surft jemand über das Publikum",
+    partyInstruments: "Instrumente erkennen", partyInstrumentsHint: "Trompeten, Saxofon, Gitarre, Klavier, Streicher und Chor bekommen eigene Effekte – nur wenn die Credits des Songs das Instrument bestätigen (Spotify, MusicBrainz; an MusicBrainz geht die ISRC-Nummer des Songs)", syncOffset: "Sync (Effekte & Liedtext)", k_tap: "Im Takt antippen (Sync einmessen)",
+    tapCount: "Weiter im Takt tippen … {n}/6", tapDone: "Im Takt – um {ms} ms nachgestellt", tapUnsure: "Zu ungleichmäßig – tippe gleichmäßig auf jeden Schlag", tapNoBeat: "Für diesen Song gibt es noch keine Taktdaten",
   },
   fr: {
     menu: "Réglages Mirage", immersive: "Mode immersif Mirage", back: "Retour", dialog: "Mode immersif Mirage",
@@ -262,6 +268,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & tropical", party_brazil: "Brésilien", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arabe", party_ambient: "Ambient", party_cinematic: "Film & épique",
     ps_style: "Style",
+    partyRig: "Lyres & blinders", partyRigHint: "Un pont lumière au-dessus de la scène bouge selon le genre – vagues pour la house, chenillards pour la techno, éventails pour l'EDM – avec des blinders sur les gros coups et une nappe laser au drop", partyFun: "Moments fun", partyFunHint: "Des ballons de plage rebondissent sur la foule, et au sommet quelqu'un slamme au-dessus du public",
+    partyInstruments: "Reconnaître les instruments", partyInstrumentsHint: "Trompettes, sax, guitare, piano, cordes et chœur ont leurs propres effets – seulement si les crédits du titre confirment l'instrument (Spotify, MusicBrainz ; l'ISRC du titre est envoyé à MusicBrainz)", syncOffset: "Synchro (effets & paroles)", k_tap: "Taper en rythme (synchro)",
+    tapCount: "Continuez à taper en rythme … {n}/6", tapDone: "Synchro – ajusté de {ms} ms", tapUnsure: "Trop irrégulier – tapez régulièrement sur chaque temps", tapNoBeat: "Pas encore de données rythmiques pour ce titre",
   },
   es: {
     menu: "Ajustes de Mirage", immersive: "Modo inmersivo Mirage", back: "Volver", dialog: "Modo inmersivo Mirage",
@@ -368,6 +377,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa y tropical", party_brazil: "Brasileño", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Árabe", party_ambient: "Ambient", party_cinematic: "Cine y épico",
     ps_style: "Estilo",
+    partyRig: "Cabezas móviles y cegadoras", partyRigHint: "Un rig de luces sobre el escenario se mueve con patrones según el género – olas para house, persecuciones para techno, abanicos para EDM – con cegadoras en los golpes fuertes y una lámina láser en el drop", partyFun: "Momentos divertidos", partyFunHint: "Pelotas de playa rebotan sobre el público y, en el clímax, alguien hace crowd surfing",
+    partyInstruments: "Reconocer instrumentos", partyInstrumentsHint: "Trompetas, saxo, guitarra, piano, cuerdas y coro tienen sus propios efectos – solo si los créditos de la canción confirman el instrumento (Spotify, MusicBrainz; el ISRC de la canción se envía a MusicBrainz)", syncOffset: "Sincronía (efectos y letra)", k_tap: "Marcar el ritmo (sincronizar)",
+    tapCount: "Sigue marcando el ritmo … {n}/6", tapDone: "Sincronizado – ajustado {ms} ms", tapUnsure: "Demasiado irregular – marca cada tiempo de forma constante", tapNoBeat: "Aún no hay datos de ritmo para esta canción",
   },
   it: {
     menu: "Impostazioni Mirage", immersive: "Modalità immersiva Mirage", back: "Indietro", dialog: "Modalità immersiva Mirage",
@@ -474,6 +486,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa e tropical", party_brazil: "Brasiliano", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arabo", party_ambient: "Ambient", party_cinematic: "Film ed epica",
     ps_style: "Stile",
+    partyRig: "Teste mobili e blinder", partyRigHint: "Un rig luci sopra il palco si muove con figure adatte al genere – onde per la house, inseguimenti per la techno, ventagli per l'EDM – con blinder sui colpi forti e una lama laser sul drop", partyFun: "Momenti divertenti", partyFunHint: "Palloni da spiaggia rimbalzano sulla folla e al culmine qualcuno fa crowd surfing",
+    partyInstruments: "Riconosci strumenti", partyInstrumentsHint: "Trombe, sax, chitarra, piano, archi e coro hanno effetti propri – solo se i crediti del brano confermano lo strumento (Spotify, MusicBrainz; a MusicBrainz va il codice ISRC del brano)", syncOffset: "Sincronia (effetti e testo)", k_tap: "Batti a tempo (sincronizza)",
+    tapCount: "Continua a battere a tempo … {n}/6", tapDone: "A tempo – regolato di {ms} ms", tapUnsure: "Troppo irregolare – batti costante su ogni battito", tapNoBeat: "Ancora nessun dato ritmico per questo brano",
   },
   pt: {
     menu: "Configurações do Mirage", immersive: "Modo imersivo Mirage", back: "Voltar", dialog: "Modo imersivo Mirage",
@@ -580,6 +595,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa e tropical", party_brazil: "Brasileiro", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Árabe", party_ambient: "Ambient", party_cinematic: "Filme e épico",
     ps_style: "Estilo",
+    partyRig: "Moving heads e blinders", partyRigHint: "Um rig de luz sobre o palco se move em padrões conforme o gênero – ondas no house, perseguições no techno, leques no EDM – com blinders nas batidas fortes e uma lâmina de laser no drop", partyFun: "Momentos divertidos", partyFunHint: "Bolas de praia quicam sobre o público e, no auge, alguém faz crowd surfing",
+    partyInstruments: "Reconhecer instrumentos", partyInstrumentsHint: "Trompetes, sax, guitarra, piano, cordas e coro ganham efeitos próprios – só quando os créditos da música confirmam o instrumento (Spotify, MusicBrainz; o ISRC da música vai para o MusicBrainz)", syncOffset: "Sincronia (efeitos e letra)", k_tap: "Toque no ritmo (sincronizar)",
+    tapCount: "Continue tocando no ritmo … {n}/6", tapDone: "No ritmo – ajustado em {ms} ms", tapUnsure: "Irregular demais – toque constante em cada batida", tapNoBeat: "Ainda não há dados de ritmo para esta música",
   },
   nl: {
     menu: "Mirage-instellingen", immersive: "Mirage meeslepende modus", back: "Terug", dialog: "Mirage meeslepende modus",
@@ -686,6 +704,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Braziliaans", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arabisch", party_ambient: "Ambient", party_cinematic: "Film & episch",
     ps_style: "Stijl",
+    partyRig: "Moving heads & blinders", partyRigHint: "Een lichtrig boven het podium beweegt in patronen die bij het genre passen – golven bij house, looplichten bij techno, waaiers bij EDM – met blinders bij grote klappen en een laservlak bij de drop", partyFun: "Funmomenten", partyFunHint: "Strandballen stuiteren over het publiek en op het hoogtepunt crowdsurft iemand",
+    partyInstruments: "Instrumenten herkennen", partyInstrumentsHint: "Trompetten, sax, gitaar, piano, strijkers en koor krijgen eigen effecten – alleen als de credits van het nummer het instrument bevestigen (Spotify, MusicBrainz; het ISRC-nummer gaat naar MusicBrainz)", syncOffset: "Sync (effecten & songtekst)", k_tap: "Tik mee op de beat (sync)",
+    tapCount: "Blijf op de beat tikken … {n}/6", tapDone: "In sync – {ms} ms bijgesteld", tapUnsure: "Te onregelmatig – tik gelijkmatig op elke tel", tapNoBeat: "Nog geen beatgegevens voor dit nummer",
   },
   pl: {
     menu: "Ustawienia Mirage", immersive: "Tryb immersyjny Mirage", back: "Wstecz", dialog: "Tryb immersyjny Mirage",
@@ -792,6 +813,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Brazylijska", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arabska", party_ambient: "Ambient", party_cinematic: "Film i epika",
     ps_style: "Styl",
+    partyRig: "Ruchome głowy i blindery", partyRigHint: "Rig świetlny nad sceną porusza się we wzorach pasujących do gatunku – fale przy house, gonitwy przy techno, wachlarze przy EDM – z blinderami przy mocnych uderzeniach i płaszczyzną lasera na dropie", partyFun: "Zabawne momenty", partyFunHint: "Dmuchane piłki skaczą nad tłumem, a w szczycie ktoś surfuje po publiczności",
+    partyInstruments: "Rozpoznawaj instrumenty", partyInstrumentsHint: "Trąbki, saksofon, gitara, fortepian, smyczki i chór mają własne efekty – tylko gdy kredyty utworu potwierdzają instrument (Spotify, MusicBrainz; do MusicBrainz trafia numer ISRC utworu)", syncOffset: "Synchronizacja (efekty i tekst)", k_tap: "Wystukaj rytm (synchronizacja)",
+    tapCount: "Stukaj dalej w rytm … {n}/6", tapDone: "W rytmie – przesunięto o {ms} ms", tapUnsure: "Zbyt nierówno – stukaj równo na każde uderzenie", tapNoBeat: "Brak jeszcze danych o rytmie tego utworu",
   },
   tr: {
     menu: "Mirage ayarları", immersive: "Mirage sürükleyici mod", back: "Geri", dialog: "Mirage sürükleyici mod",
@@ -892,6 +916,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Brezilya", party_flamenco: "Flamenco",
     party_bollywood: "Bollywood", party_arabic: "Arap", party_ambient: "Ambient", party_cinematic: "Film & epik",
     ps_style: "Stil",
+    partyRig: "Hareketli kafalar ve blinder", partyRigHint: "Sahnenin üstündeki ışık riggi türe uygun desenlerle hareket eder – house'ta dalgalar, techno'da kovalamaca, EDM'de yelpazeler – büyük vuruşlarda blinder ve drop'ta lazer düzlemi", partyFun: "Eğlenceli anlar", partyFunHint: "Plaj topları kalabalığın üstünde zıplar, zirvede biri kalabalığın üstünde sörf yapar",
+    partyInstruments: "Enstrümanları tanı", partyInstrumentsHint: "Trompet, saksafon, gitar, piyano, yaylılar ve koro kendi efektlerini alır – yalnızca şarkının künyesi enstrümanı doğruladığında (Spotify, MusicBrainz; şarkının ISRC numarası MusicBrainz'e gider)", syncOffset: "Senkron (efektler ve sözler)", k_tap: "Ritme dokun (senkronla)",
+    tapCount: "Ritme dokunmaya devam et … {n}/6", tapDone: "Ritimde – {ms} ms ayarlandı", tapUnsure: "Çok düzensiz – her vuruşa eşit dokun", tapNoBeat: "Bu şarkı için henüz ritim verisi yok",
   },
   ru: {
     menu: "Настройки Mirage", immersive: "Режим погружения Mirage", back: "Назад", dialog: "Режим погружения Mirage",
@@ -992,6 +1019,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Бразильская", party_flamenco: "Фламенко",
     party_bollywood: "Болливуд", party_arabic: "Арабская", party_ambient: "Эмбиент", party_cinematic: "Кино и эпик",
     ps_style: "Стиль",
+    partyRig: "Вращающиеся головы и блиндеры", partyRigHint: "Световая ферма над сценой движется по рисункам под жанр – волны для хауса, бегущие огни для техно, веера для EDM – с блиндерами на сильных ударах и лазерной плоскостью на дропе", partyFun: "Весёлые моменты", partyFunHint: "Пляжные мячи прыгают над толпой, а на пике кто-то плывёт по рукам публики",
+    partyInstruments: "Распознавать инструменты", partyInstrumentsHint: "Трубы, саксофон, гитара, фортепиано, струнные и хор получают свои эффекты – только если титры песни подтверждают инструмент (Spotify, MusicBrainz; в MusicBrainz уходит ISRC песни)", syncOffset: "Синхронизация (эффекты и текст)", k_tap: "Отстучать ритм (синхронизация)",
+    tapCount: "Стучите дальше в ритм … {n}/6", tapDone: "В ритме – сдвиг {ms} мс", tapUnsure: "Слишком неровно – стучите равномерно на каждую долю", tapNoBeat: "Для этой песни пока нет данных о ритме",
   },
   uk: {
     menu: "Налаштування Mirage", immersive: "Режим занурення Mirage", back: "Назад",
@@ -1092,6 +1122,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "Salsa & Tropical", party_brazil: "Бразильська", party_flamenco: "Фламенко",
     party_bollywood: "Боллівуд", party_arabic: "Арабська", party_ambient: "Ембієнт", party_cinematic: "Кіно й епік",
     ps_style: "Стиль",
+    partyRig: "Рухомі голови й блайндери", partyRigHint: "Світлова ферма над сценою рухається візерунками під жанр – хвилі для хаусу, біжучі вогні для техно, віяла для EDM – з блайндерами на сильних ударах і лазерною площиною на дропі", partyFun: "Веселі моменти", partyFunHint: "Пляжні м'ячі стрибають над натовпом, а на піку хтось пливе по руках публіки",
+    partyInstruments: "Розпізнавати інструменти", partyInstrumentsHint: "Труби, саксофон, гітара, фортепіано, струнні й хор отримують власні ефекти – лише якщо титри пісні підтверджують інструмент (Spotify, MusicBrainz; до MusicBrainz іде ISRC пісні)", syncOffset: "Синхронізація (ефекти й текст)", k_tap: "Відстукати ритм (синхронізація)",
+    tapCount: "Стукайте далі в ритм … {n}/6", tapDone: "У ритмі – зсув {ms} мс", tapUnsure: "Надто нерівно – стукайте рівно на кожну долю", tapNoBeat: "Для цієї пісні ще немає даних про ритм",
   },
   ja: {
     menu: "Mirage の設定", immersive: "Mirage イマーシブモード", back: "戻る", dialog: "Mirage イマーシブモード",
@@ -1192,6 +1225,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "サルサ・トロピカル", party_brazil: "ブラジル", party_flamenco: "フラメンコ",
     party_bollywood: "ボリウッド", party_arabic: "アラブ", party_ambient: "アンビエント", party_cinematic: "映画・エピック",
     ps_style: "スタイル",
+    partyRig: "ムービングヘッド＆ブラインダー", partyRigHint: "ステージ上の照明リグがジャンルに合わせたパターンで動きます – ハウスは波、テクノはチェイス、EDMは扇 – 大きなヒットでブラインダー、ドロップでレーザーシート", partyFun: "お楽しみ演出", partyFunHint: "ビーチボールが観客の上を跳ね、盛り上がりの頂点では誰かがクラウドサーフ",
+    partyInstruments: "楽器を認識", partyInstrumentsHint: "トランペット、サックス、ギター、ピアノ、弦楽器、合唱に専用エフェクト – 曲のクレジットで楽器が確認できた場合のみ（Spotify、MusicBrainz。MusicBrainzには曲のISRC番号が送られます）", syncOffset: "同期（エフェクト・歌詞）", k_tap: "ビートに合わせてタップ（同期）",
+    tapCount: "ビートに合わせてタップを続けて … {n}/6", tapDone: "同期しました – {ms} ms 調整", tapUnsure: "ばらつきが大きすぎます – 各拍に一定のリズムでタップしてください", tapNoBeat: "この曲のビートデータはまだありません",
   },
   ko: {
     menu: "Mirage 설정", immersive: "Mirage 몰입 모드", back: "뒤로", dialog: "Mirage 몰입 모드",
@@ -1292,6 +1328,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "살사 & 트로피컬", party_brazil: "브라질", party_flamenco: "플라멩코",
     party_bollywood: "볼리우드", party_arabic: "아랍", party_ambient: "앰비언트", party_cinematic: "영화 & 에픽",
     ps_style: "스타일",
+    partyRig: "무빙 헤드 & 블라인더", partyRigHint: "무대 위 조명 리그가 장르에 맞는 패턴으로 움직입니다 – 하우스는 물결, 테크노는 체이스, EDM은 부채꼴 – 큰 히트에는 블라인더, 드롭에는 레이저 시트", partyFun: "즐거운 순간", partyFunHint: "비치볼이 관객 위로 튀고, 절정에서는 누군가 크라우드 서핑을 합니다",
+    partyInstruments: "악기 인식", partyInstrumentsHint: "트럼펫, 색소폰, 기타, 피아노, 현악기, 합창에 전용 효과 – 곡의 크레딧이 악기를 확인할 때만 (Spotify, MusicBrainz; MusicBrainz에는 곡의 ISRC 번호가 전송됩니다)", syncOffset: "싱크 (효과 & 가사)", k_tap: "박자에 맞춰 탭 (싱크)",
+    tapCount: "박자에 맞춰 계속 탭하세요 … {n}/6", tapDone: "싱크 완료 – {ms} ms 조정", tapUnsure: "너무 불규칙합니다 – 매 박자마다 일정하게 탭하세요", tapNoBeat: "이 곡에는 아직 박자 데이터가 없습니다",
   },
   zh: {
     menu: "Mirage 设置", immersive: "Mirage 沉浸模式", back: "返回", dialog: "Mirage 沉浸模式",
@@ -1392,6 +1431,9 @@ const I18N = {
     party_reggaeton: "Reggaeton", party_salsa: "萨尔萨与热带", party_brazil: "巴西音乐", party_flamenco: "弗拉门戈",
     party_bollywood: "宝莱坞", party_arabic: "阿拉伯", party_ambient: "氛围", party_cinematic: "电影与史诗",
     ps_style: "风格",
+    partyRig: "摇头灯与观众灯", partyRigHint: "舞台上方的灯光架按曲风变换图案——House 是波浪，Techno 是追光，EDM 是扇形——大鼓点时观众灯闪起，drop 时出现激光平面", partyFun: "欢乐时刻", partyFunHint: "沙滩球在人群上方弹跳，高潮时有人在观众头顶冲浪",
+    partyInstruments: "识别乐器", partyInstrumentsHint: "小号、萨克斯、吉他、钢琴、弦乐和合唱各有专属效果——仅当歌曲署名确认该乐器时（Spotify、MusicBrainz；歌曲的 ISRC 编号会发送给 MusicBrainz）", syncOffset: "同步（特效与歌词）", k_tap: "跟着节拍点按（同步）",
+    tapCount: "继续跟着节拍点按 … {n}/6", tapDone: "已同步——调整了 {ms} 毫秒", tapUnsure: "太不均匀——请在每一拍上均匀点按", tapNoBeat: "这首歌暂时没有节拍数据",
   },
 };
 const LANG = (() => {

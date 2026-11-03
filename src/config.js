@@ -103,6 +103,13 @@ const DEFAULTS = {
   partyLive: false,
   // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop bei harten Drops
   partyFx: true,
+  // Moving Heads, Blinder, Laserfläche · Wasserbälle und Crowdsurfer · Instrumente aus den Credits
+  partyRig: true,
+  partyFun: true,
+  partyInstruments: true,
+  // Versatz zwischen Bild und Ton in ms (Taste T misst ihn ein); je Song für geschätzte Takte
+  syncOffset: 0,
+  syncSongs: {},
   partyStrobe: true,
   // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
   partyLasers: true,

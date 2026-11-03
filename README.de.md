@@ -139,7 +139,7 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**. Jeder Eff
 | **Mix** | Cover, Visualizer-Kranz und Liedtext zugleich – der Puls folgt der echten Kick |
 | **Party** | Eine Lichtshow, gebaut für den Song – [siehe unten](#-party-modus) |
 
-**Kein Liedtext bei Spotify?** Mirage sucht bei [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh; *Fassung wählen* nimmt einen anderen Treffer. **Keine Taktdaten?** Mirage holt Tempo und Energie aus Spotifys Audio-Merkmalen oder von Deezer und schätzt den Takt aus dem Timing des Liedtexts – oben steht dann *≈ 128 BPM*.
+**Karaoke auf die Silbe:** Wortzeiten von Spotify oder NetEase gelten genau so; sonst zerlegt Mirage jedes Wort in Silben und legt jede auf einen gesungenen Einsatz der Analyse, und Liedtexte aus anderen Quellen werden automatisch auf den Song ausgerichtet. **Kein Liedtext bei Spotify?** Mirage sucht bei [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh; *Fassung wählen* nimmt einen anderen Treffer. **Keine Taktdaten?** Mirage holt Tempo und Energie aus Spotifys Audio-Merkmalen oder von Deezer und schätzt den Takt aus dem Timing des Liedtexts – oben steht dann *≈ 128 BPM*.
 
 Vollbild per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>. Ruht die Maus, blenden die Bedienelemente aus.
 
@@ -161,14 +161,16 @@ Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten,
 
 **48 Stile, jeder mit eigener Lichtsprache.** Rave bekommt sich kreuzende Strahlen, Techno weiche Scanner-Bänder, House eine Discokugel, Trance Polarlicht-Bänder, Drum & Bass einen Tunnel aus Lichtringen, Hip-Hop Licht vom Boden, Rock harte Spots von oben, Metal glühend rote, Latin warme Schwenks, Pop federnde Farbe, Chill langsam atmendes Licht. Dazu: EDM & Big Room, Deep House, Tech House, Psytrance, Dubstep, UK Garage, Hardstyle, Eurodance, Synthwave, Hyperpop · Trap, Drill, Phonk, R&B, Soul & Funk, Afro, Reggae · Alternative, Indie, Punk, Metal, Blues · K-Pop, Disco, Schlager, Ballade, Gospel, Country · Reggaeton, Salsa & Tropical, Brasilianisch, Flamenco, Bollywood, Arabisch · Ambient, Jazz, Klassik, Film & Epik. Der Stil kommt aus Apples iTunes-Suche, Spotifys Künstler-Genres und dem Klang selbst – oder du wählst ihn in den Einstellungen, nach Familien sortiert.
 
-**Es folgt den Instrumenten.** Die Kick treibt Puls und Bodenlicht, die Snare Spots und Blitze, die Hi-Hats das Funkeln; zwei dünne *Melodie-Laser* folgen der Tonhöhe der Melodie.
+**Es folgt den Instrumenten.** Die Kick treibt Puls und Bodenlicht, die Snare Spots und Blitze, die Hi-Hats das Funkeln; zwei dünne *Melodie-Laser* folgen der Tonhöhe der Melodie. Bestätigen die Credits des Songs (Spotify, MusicBrainz) **Trompete, Saxofon, E-Gitarre, Klavier, Streicher oder Chor**, bekommt das Instrument seinen eigenen Moment, wo es im Klang hervortritt: goldene Fanfaren-Strahlen, aufsteigender Rauch, Blitze von der Traverse, Lichttasten, die den Tönen folgen, fließende Seidenbänder, ein Lichtschein von oben. Ohne Credit kein Effekt – geraten wird nichts.
+
+**Ein echtes Lichtrig.** Moving Heads an einer Traverse über der Bühne bewegen sich in Mustern passend zum Genre – Wellen bei House, Lauflichter bei Techno, Fächer bei EDM, alle aufs Cover bei Hip-Hop und Rock –, dazu Blinder bei großen Schlägen und beim Drop eine Laserfläche über der Menge. Ruhige Songs bekommen stattdessen weiches Bokeh.
 
 **Es inszeniert Momente.**
 - **Lichtregie** – Ruhe vor dem Sturm: vor dem Drop hält sich das Licht zurück, auf dem letzten Schlag wird es dunkel, dann schlägt alles auf einmal ein. Der letzte Refrain bekommt am meisten.
 - **Zeitlupe** – Funken, Ringe und Publikum erstarren eine halbe Sekunde direkt vor dem Drop.
 - **DJ-Übergänge** – beim Songwechsel bleiben die alten Farben bis zum ersten Schlag und gehen dann über vier Schläge in die neuen über.
 
-**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle, nehmen jemanden auf die Schultern und zücken beim Drop die Handykameras. Die Location richtet sich nach dem Genre – Club, Lagerhalle, Festival, Stadion, Strand oder Wohnzimmer – oder wird in den Einstellungen festgelegt.
+**Ein Publikum und eine Location.** Silhouetten vor der Bühne bewegen sich passend zum Genre – sie springen und landen auf dem Schlag, nicken, headbangen, klatschen auf 2 und 4, schunkeln –, starten ab und zu eine La-Ola-Welle, nehmen jemanden auf die Schultern, zücken beim Drop die Handykameras, spielen sich Wasserbälle zu und tragen einen Crowdsurfer durch den Saal. Die Location richtet sich nach dem Genre – Club, Lagerhalle, Festival, Stadion, Strand oder Wohnzimmer – oder wird in den Einstellungen festgelegt.
 
 **Bühneneffekte, wo sie hingehören.** Beim Drop in elektronischer Musik schießen CO2-Fontänen hoch, bei Rock, Metal und Punk lodern Pyro-Flammen, im letzten Refrain steigt im Stadion und auf dem Festival Feuerwerk auf, und harte Techno-, Hardstyle- und Rave-Drops bekommen ein Stroboskop (ab *Extrem*, nie schneller als ein Blitz pro Schlag).
 
@@ -229,6 +231,7 @@ Klappt es immer noch nicht? `spicetify clear` und danach `spicetify backup apply
 | immersiv | <kbd>N</kbd> <kbd>P</kbd> | nächster · vorheriger Song |
 | immersiv | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | Like · Zufall · Wiederholen · Warteschlange |
 | immersiv | <kbd>F</kbd> / <kbd>F11</kbd> | Vollbild |
+| immersiv | <kbd>T</kbd> (6×, im Takt) | Licht, Publikum und Liedtext auf das Gehörte einmessen |
 | immersiv | <kbd>?</kbd> · <kbd>Esc</kbd> | alle Tasten · schließen |
 
 ## ⚡ Leistung
@@ -242,7 +245,7 @@ Mirage soll lebendig aussehen, ohne den Rechner aufzufressen.
 
 ## 🔒 Datenschutz
 
-Kein eigener Server, kein Tracking, kein Konto. Liedtext, Taktdaten und Audio-Merkmale kommen von Spotify. Nur wenn Spotify nichts hat: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh, Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche – alles abschaltbar. Die Overlay-App lauscht nur auf deinem eigenen Rechner; der Live-Link (standardmäßig aus) öffnet eine Seite im lokalen Netz, geschützt durch einen Zufallsschlüssel in der Adresse, die nur Lichtfarben und den Songtitel bekommt. Schriften kommen von Google Fonts.
+Kein eigener Server, kein Tracking, kein Konto. Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify. Nur wenn Spotify nichts hat: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh, Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche, die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz – alles abschaltbar. Die Overlay-App lauscht nur auf deinem eigenen Rechner; der Live-Link (standardmäßig aus) öffnet eine Seite im lokalen Netz, geschützt durch einen Zufallsschlüssel in der Adresse, die nur Lichtfarben und den Songtitel bekommt. Schriften kommen von Google Fonts.
 
 ## ❓ Häufige Fragen
 
