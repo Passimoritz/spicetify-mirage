@@ -14,9 +14,9 @@ import { currentItem, covers, titleOf, artistOf } from "./player.js";
 import { party } from "./party.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
-import { bridge } from "./bridge.js";
 import { songPos } from "./clock.js";
 import { instruments } from "./instruments.js";
+import { live } from "./live.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -491,6 +491,7 @@ const immersive = (() => {
     motes = [];
     blend = null;
     party.live = null;
+    live.stop();
     venueClear();
     el?.querySelector(".m-im-livecard")?.remove();
   }
@@ -1620,6 +1621,7 @@ const immersive = (() => {
     }
     // fürs Overlay (Kantenlicht): der aktuelle Lichtzustand
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
+    live.feed(px, vividPal || palette(), party.info.bpm);
   }
   const toLocal = (x, y) => [x, y];
   function drawMotes(ctx, dt, dpr) {
@@ -1881,45 +1883,36 @@ const immersive = (() => {
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
   }
-  // Live-Link: QR-Code und Adresse der Handy-Seite (die Overlay-App stellt sie im WLAN bereit)
-  function toggleLiveCard() {
+  // Live-Link: QR-Code und Link der Handy-Seite (verschlüsselt über einen Relay, siehe live.js)
+  async function toggleLiveCard() {
     const old = el.querySelector(".m-im-livecard");
     if (old) return old.remove();
-    const info = bridge.live();
+    const info = await live.prepare().catch(() => null);
     const card = document.createElement("div");
     card.className = "m-im-livecard";
-    // keine Antwort von der Overlay-App: nicht verbunden oder eine alte Version – das sagen statt nichts zu tun
+    const b = document.createElement("b");
+    b.textContent = t("liveTitle");
     if (!info) {
-      bridge.setLive(true);
-      const b = document.createElement("b");
-      b.textContent = t("liveTitle");
       const p = document.createElement("p");
-      p.textContent = t(bridge.connected() ? "liveOld" : "liveMissing");
+      p.textContent = t("liveError");
       card.append(b, p);
-      card.onclick = () => card.remove();
-      el.append(card);
-      return;
-    }
-    if (info.qr) {
+    } else {
       const img = new Image();
       img.alt = "";
       img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
-      card.append(img);
+      const p = document.createElement("p");
+      p.textContent = t("liveHint");
+      const u = document.createElement("code");
+      u.textContent = t("liveCopy");
+      u.title = info.url;
+      u.onclick = (e) => {
+        e.stopPropagation();
+        navigator.clipboard?.writeText(info.url).catch(() => {});
+      };
+      const note = document.createElement("small");
+      note.textContent = t("liveRelay");
+      card.append(img, b, p, u, note);
     }
-    const b = document.createElement("b");
-    b.textContent = t("liveTitle");
-    const p = document.createElement("p");
-    p.textContent = t("liveHint");
-    const u = document.createElement("code");
-    u.textContent = info.url;
-    u.title = t("liveCopy");
-    u.onclick = (e) => {
-      e.stopPropagation();
-      navigator.clipboard?.writeText(info.url).catch(() => {});
-    };
-    const fw = document.createElement("small");
-    fw.textContent = t("liveFirewall");
-    card.append(b, p, u, fw);
     card.onclick = () => card.remove();
     el.append(card);
   }

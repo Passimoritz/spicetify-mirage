@@ -1,5 +1,10 @@
 (() => {
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __esm = (fn, res, err) => function __init() {
     if (err) throw err[0];
     try {
@@ -8,6 +13,29 @@
       throw err = [e], e;
     }
   };
+  var __commonJS = (cb, mod) => function __require() {
+    try {
+      return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+    } catch (e) {
+      throw mod = 0, e;
+    }
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
 
   // src/core.js
   function lru(max) {
@@ -65,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.12.3" : "dev";
+      VERSION = true ? "1.13.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -377,7 +405,7 @@
           partyQuietFps: "30 fps in quiet parts",
           partyQuietFpsHint: "Quiet intros and breaks run at 30 frames per second \u2013 looks the same, saves power",
           partyLive: "Live link for phones",
-          partyLiveHint: "Phones on the same Wi-Fi light up with the beat \u2013 scan the QR code. Needs the Mirage Overlay app; Windows may ask once to allow it on the private network",
+          partyLiveHint: "Phones on any network light up with the beat \u2013 scan the QR code. Encrypted, only reachable with the QR code, and only while party mode is on. No app needed.",
           mixInstruments: "Mix reacts to instruments",
           mixInstrumentsHint: "In Mix mode the pulse and rings follow the real kick, not just the beat grid",
           partyVenue: "Venue",
@@ -392,7 +420,7 @@
           eco_off: "Off",
           liveBtn: "Live link for phones",
           liveTitle: "Light up phones",
-          liveHint: "Scan with a phone on the same Wi-Fi and put it face up \u2013 it flashes along with the party",
+          liveHint: "Scan with your phone and put it face up \u2013 it flashes along with the party",
           liveCopy: "Copy link",
           partyFx: "Stage effects",
           partyFxHint: "CO2 jets for electronic music, pyro flames for rock and metal, fireworks in the final chorus \u2013 on the drop and at the peak",
@@ -400,9 +428,6 @@
           partyStrobeHint: "Techno, hardstyle, rave and drum & bass flash white on the beat during the drop \u2013 from Extreme on, at most one flash per beat",
           venue_warehouse: "Warehouse",
           venue_beach: "Beach",
-          liveMissing: "The Mirage Overlay app is not connected. Start it (version 1.10 or newer) \u2013 then the QR code appears here.",
-          liveOld: "No answer from the Overlay app \u2013 it is probably an old version. Update it, and close any old copy (e.g. 'electron.exe' from an old Mirage folder).",
-          liveFirewall: "Phone can't open it? It must be on the same Wi-Fi, and Windows must allow 'Mirage Overlay' \u2013 also for public networks if yours is set to public.",
           g_party: "Party mode",
           ps_light: "Light & effects",
           ps_moments: "Moments",
@@ -414,7 +439,6 @@
           fam_pop: "Pop",
           fam_world: "Latin & world",
           fam_calm: "Calm & classical",
-          liveWait: "Waiting for the Overlay app \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -453,7 +477,9 @@
           tapCount: "Keep tapping on the beat \u2026 {n}/6",
           tapDone: "In sync \u2013 adjusted by {ms} ms",
           tapUnsure: "Too uneven \u2013 tap steadily on every beat",
-          tapNoBeat: "No beat data for this song yet"
+          tapNoBeat: "No beat data for this song yet",
+          liveRelay: "End-to-end encrypted over a public relay \u2013 only whoever has this QR code can see it. Stops when you leave party mode; after 10 minutes the code expires.",
+          liveError: "No relay reachable \u2013 is the internet connection up?"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -746,7 +772,7 @@
           partyQuietFps: "30 fps in ruhigen Stellen",
           partyQuietFpsHint: "Ruhige Intros und Breaks laufen mit 30 Bildern pro Sekunde \u2013 sieht gleich aus, spart Strom",
           partyLive: "Live-Link f\xFCrs Handy",
-          partyLiveHint: "Handys im selben WLAN leuchten im Takt mit \u2013 QR-Code scannen. Braucht die Mirage-Overlay-App; Windows fragt evtl. einmal, ob sie im privaten Netzwerk erreichbar sein darf",
+          partyLiveHint: "Handys in jedem Netz leuchten im Takt mit \u2013 QR-Code scannen. Verschl\xFCsselt, nur \xFCber den QR-Code erreichbar und nur, solange der Party-Modus l\xE4uft. Keine App n\xF6tig.",
           mixInstruments: "Mix reagiert auf Instrumente",
           mixInstrumentsHint: "Im Mix-Modus folgen Puls und Ringe der echten Kick, nicht nur dem Taktraster",
           partyVenue: "Location",
@@ -761,7 +787,7 @@
           eco_off: "Aus",
           liveBtn: "Live-Link f\xFCrs Handy",
           liveTitle: "Handys mitleuchten lassen",
-          liveHint: "Mit einem Handy im selben WLAN scannen und mit dem Display nach oben hinlegen \u2013 es blitzt mit der Party mit",
+          liveHint: "Mit dem Handy scannen und mit dem Display nach oben hinlegen \u2013 es blitzt mit der Party mit",
           liveCopy: "Link kopieren",
           partyFx: "B\xFChneneffekte",
           partyFxHint: "CO2-Font\xE4nen bei elektronischer Musik, Pyro-Flammen bei Rock und Metal, Feuerwerk im letzten Refrain \u2013 beim Drop und in der Spitze",
@@ -769,9 +795,6 @@
           partyStrobeHint: "Techno, Hardstyle, Rave und Drum & Bass blitzen im Drop wei\xDF im Takt \u2013 ab \u201EExtrem\u201C, h\xF6chstens ein Blitz pro Schlag",
           venue_warehouse: "Lagerhalle",
           venue_beach: "Strand",
-          liveMissing: "Die Mirage-Overlay-App ist nicht verbunden. Starte sie (Version 1.10 oder neuer) \u2013 dann erscheint hier der QR-Code.",
-          liveOld: "Keine Antwort von der Overlay-App \u2013 vermutlich eine alte Version. Aktualisiere sie und beende alte Kopien (z. B. \u201Eelectron.exe\u201C aus einem alten Mirage-Ordner).",
-          liveFirewall: "Handy kommt nicht drauf? Es muss im selben WLAN sein, und Windows muss \u201EMirage Overlay\u201C erlauben \u2013 auch f\xFCr \xF6ffentliche Netzwerke, wenn deins so eingestellt ist.",
           g_party: "Party-Modus",
           ps_light: "Licht & Effekte",
           ps_moments: "Momente",
@@ -783,7 +806,6 @@
           fam_pop: "Pop",
           fam_world: "Latin & Welt",
           fam_calm: "Ruhig & klassisch",
-          liveWait: "Warte auf die Overlay-App \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -822,7 +844,9 @@
           tapCount: "Weiter im Takt tippen \u2026 {n}/6",
           tapDone: "Im Takt \u2013 um {ms} ms nachgestellt",
           tapUnsure: "Zu ungleichm\xE4\xDFig \u2013 tippe gleichm\xE4\xDFig auf jeden Schlag",
-          tapNoBeat: "F\xFCr diesen Song gibt es noch keine Taktdaten"
+          tapNoBeat: "F\xFCr diesen Song gibt es noch keine Taktdaten",
+          liveRelay: "Ende-zu-Ende verschl\xFCsselt \xFCber einen \xF6ffentlichen Relay \u2013 nur wer diesen QR-Code hat, sieht etwas. Endet, wenn du den Party-Modus verl\xE4sst; nach 10 Minuten verf\xE4llt der Code.",
+          liveError: "Kein Relay erreichbar \u2013 steht die Internetverbindung?"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -1115,7 +1139,7 @@
           partyQuietFps: "30 i/s dans les passages calmes",
           partyQuietFpsHint: "Les intros et breaks calmes tournent \xE0 30 images par seconde \u2013 m\xEAme rendu, moins d'\xE9nergie",
           partyLive: "Lien live pour t\xE9l\xE9phones",
-          partyLiveHint: "Les t\xE9l\xE9phones sur le m\xEAme Wi-Fi s'allument au rythme \u2013 scannez le QR code. N\xE9cessite l'app Mirage Overlay ; Windows peut demander une fois l'acc\xE8s au r\xE9seau priv\xE9",
+          partyLiveHint: "Les t\xE9l\xE9phones sur n'importe quel r\xE9seau s'allument au rythme \u2013 scannez le QR code. Chiffr\xE9, accessible uniquement par le QR code et seulement pendant le mode f\xEAte. Aucune app n\xE9cessaire.",
           mixInstruments: "Le mix r\xE9agit aux instruments",
           mixInstrumentsHint: "En mode Mix, le pouls et les anneaux suivent la vraie grosse caisse, pas seulement la grille rythmique",
           partyVenue: "Lieu",
@@ -1130,7 +1154,7 @@
           eco_off: "D\xE9sactiv\xE9e",
           liveBtn: "Lien live pour t\xE9l\xE9phones",
           liveTitle: "Allumer les t\xE9l\xE9phones",
-          liveHint: "Scannez avec un t\xE9l\xE9phone sur le m\xEAme Wi-Fi et posez-le \xE9cran vers le haut \u2013 il clignote avec la f\xEAte",
+          liveHint: "Scannez avec votre t\xE9l\xE9phone et posez-le \xE9cran vers le haut \u2013 il clignote avec la f\xEAte",
           liveCopy: "Copier le lien",
           partyFx: "Effets de sc\xE8ne",
           partyFxHint: "Jets de CO2 pour l'\xE9lectro, flammes pyro pour le rock et le metal, feu d'artifice au dernier refrain \u2013 au drop et au sommet",
@@ -1138,9 +1162,6 @@
           partyStrobeHint: "Techno, hardstyle, rave et drum & bass flashent en blanc sur le temps pendant le drop \u2013 d\xE8s Extr\xEAme, un flash par temps au plus",
           venue_warehouse: "Entrep\xF4t",
           venue_beach: "Plage",
-          liveMissing: "L'app Mirage Overlay n'est pas connect\xE9e. Lancez-la (version 1.10 ou plus) \u2013 le QR code appara\xEEtra ici.",
-          liveOld: "Pas de r\xE9ponse de l'app Overlay \u2013 sans doute une ancienne version. Mettez-la \xE0 jour et fermez les anciennes copies (p. ex. \xAB electron.exe \xBB d'un vieux dossier Mirage).",
-          liveFirewall: "Le t\xE9l\xE9phone n'y acc\xE8de pas ? Il doit \xEAtre sur le m\xEAme Wi-Fi, et Windows doit autoriser \xAB Mirage Overlay \xBB \u2013 aussi pour les r\xE9seaux publics si le v\xF4tre l'est.",
           g_party: "Mode f\xEAte",
           ps_light: "Lumi\xE8re & effets",
           ps_moments: "Moments",
@@ -1152,7 +1173,6 @@
           fam_pop: "Pop",
           fam_world: "Latino & monde",
           fam_calm: "Calme & classique",
-          liveWait: "En attente de l'app Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -1191,7 +1211,9 @@
           tapCount: "Continuez \xE0 taper en rythme \u2026 {n}/6",
           tapDone: "Synchro \u2013 ajust\xE9 de {ms} ms",
           tapUnsure: "Trop irr\xE9gulier \u2013 tapez r\xE9guli\xE8rement sur chaque temps",
-          tapNoBeat: "Pas encore de donn\xE9es rythmiques pour ce titre"
+          tapNoBeat: "Pas encore de donn\xE9es rythmiques pour ce titre",
+          liveRelay: "Chiffr\xE9 de bout en bout via un relais public \u2013 seul qui a ce QR code voit quelque chose. S'arr\xEAte quand vous quittez le mode f\xEAte ; le code expire apr\xE8s 10 minutes.",
+          liveError: "Aucun relais joignable \u2013 la connexion internet fonctionne-t-elle ?"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1484,7 +1506,7 @@
           partyQuietFps: "30 fps en partes tranquilas",
           partyQuietFpsHint: "Las intros y pausas tranquilas van a 30 fotogramas por segundo: se ve igual y ahorra energ\xEDa",
           partyLive: "Enlace en vivo para m\xF3viles",
-          partyLiveHint: "Los m\xF3viles en la misma Wi-Fi se iluminan al ritmo: escanea el c\xF3digo QR. Requiere la app Mirage Overlay; Windows puede pedir una vez permiso para la red privada",
+          partyLiveHint: "Los m\xF3viles en cualquier red se iluminan al ritmo \u2013 escanea el c\xF3digo QR. Cifrado, solo accesible con el c\xF3digo QR y solo mientras el modo fiesta est\xE9 activo. Sin app.",
           mixInstruments: "Mix reacciona a los instrumentos",
           mixInstrumentsHint: "En el modo Mix, el pulso y los anillos siguen el bombo real, no solo la rejilla de tiempos",
           partyVenue: "Lugar",
@@ -1499,7 +1521,7 @@
           eco_off: "Desactivado",
           liveBtn: "Enlace en vivo para m\xF3viles",
           liveTitle: "Iluminar m\xF3viles",
-          liveHint: "Escanea con un m\xF3vil en la misma Wi-Fi y d\xE9jalo con la pantalla hacia arriba: destella con la fiesta",
+          liveHint: "Escanea con el m\xF3vil y d\xE9jalo con la pantalla hacia arriba \u2013 destella con la fiesta",
           liveCopy: "Copiar enlace",
           partyFx: "Efectos de escenario",
           partyFxHint: "Chorros de CO2 en la electr\xF3nica, llamas pirot\xE9cnicas en rock y metal, fuegos artificiales en el \xFAltimo estribillo \u2013 en el drop y en el cl\xEDmax",
@@ -1507,9 +1529,6 @@
           partyStrobeHint: "Techno, hardstyle, rave y drum & bass destellan en blanco a tiempo durante el drop \u2013 desde Extremo, como mucho un destello por tiempo",
           venue_warehouse: "Nave",
           venue_beach: "Playa",
-          liveMissing: "La app Mirage Overlay no est\xE1 conectada. In\xEDciala (versi\xF3n 1.10 o superior) y aparecer\xE1 aqu\xED el c\xF3digo QR.",
-          liveOld: "Sin respuesta de la app Overlay: probablemente es una versi\xF3n antigua. Actual\xEDzala y cierra copias antiguas (p. ej. \xABelectron.exe\xBB de una carpeta vieja de Mirage).",
-          liveFirewall: "\xBFEl m\xF3vil no abre la p\xE1gina? Debe estar en la misma Wi-Fi y Windows debe permitir \xABMirage Overlay\xBB, tambi\xE9n en redes p\xFAblicas si la tuya lo es.",
           g_party: "Modo fiesta",
           ps_light: "Luz y efectos",
           ps_moments: "Momentos",
@@ -1521,7 +1540,6 @@
           fam_pop: "Pop",
           fam_world: "Latino y mundo",
           fam_calm: "Tranquila y cl\xE1sica",
-          liveWait: "Esperando a la app Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -1560,7 +1578,9 @@
           tapCount: "Sigue marcando el ritmo \u2026 {n}/6",
           tapDone: "Sincronizado \u2013 ajustado {ms} ms",
           tapUnsure: "Demasiado irregular \u2013 marca cada tiempo de forma constante",
-          tapNoBeat: "A\xFAn no hay datos de ritmo para esta canci\xF3n"
+          tapNoBeat: "A\xFAn no hay datos de ritmo para esta canci\xF3n",
+          liveRelay: "Cifrado de extremo a extremo mediante un rel\xE9 p\xFAblico \u2013 solo quien tiene este c\xF3digo QR ve algo. Termina al salir del modo fiesta; el c\xF3digo caduca a los 10 minutos.",
+          liveError: "No hay rel\xE9 disponible \u2013 \xBFfunciona la conexi\xF3n a internet?"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1853,7 +1873,7 @@
           partyQuietFps: "30 fps nei passaggi calmi",
           partyQuietFpsHint: "Intro e break calmi girano a 30 fotogrammi al secondo: stesso aspetto, meno consumo",
           partyLive: "Link live per telefoni",
-          partyLiveHint: "I telefoni sulla stessa Wi-Fi si illuminano a tempo: scansiona il codice QR. Serve l'app Mirage Overlay; Windows potrebbe chiedere una volta l'accesso alla rete privata",
+          partyLiveHint: "I telefoni su qualsiasi rete si illuminano a tempo \u2013 scansiona il codice QR. Cifrato, raggiungibile solo col codice QR e solo finch\xE9 la modalit\xE0 festa \xE8 attiva. Nessuna app.",
           mixInstruments: "Il mix reagisce agli strumenti",
           mixInstrumentsHint: "In modalit\xE0 Mix pulsazione e anelli seguono la vera cassa, non solo la griglia ritmica",
           partyVenue: "Location",
@@ -1868,7 +1888,7 @@
           eco_off: "Disattivato",
           liveBtn: "Link live per telefoni",
           liveTitle: "Accendi i telefoni",
-          liveHint: "Scansiona con un telefono sulla stessa Wi-Fi e appoggialo con lo schermo in su: lampeggia con la festa",
+          liveHint: "Scansiona col telefono e appoggialo con lo schermo in su \u2013 lampeggia con la festa",
           liveCopy: "Copia link",
           partyFx: "Effetti di scena",
           partyFxHint: "Getti di CO2 per l'elettronica, fiamme pirotecniche per rock e metal, fuochi d'artificio nell'ultimo ritornello \u2013 sul drop e al culmine",
@@ -1876,9 +1896,6 @@
           partyStrobeHint: "Techno, hardstyle, rave e drum & bass lampeggiano di bianco a tempo durante il drop \u2013 da Estremo, al massimo un lampo per battito",
           venue_warehouse: "Capannone",
           venue_beach: "Spiaggia",
-          liveMissing: "L'app Mirage Overlay non \xE8 connessa. Avviala (versione 1.10 o successiva) \u2013 qui apparir\xE0 il codice QR.",
-          liveOld: "Nessuna risposta dall'app Overlay \u2013 probabilmente \xE8 una versione vecchia. Aggiornala e chiudi le copie vecchie (ad es. \xABelectron.exe\xBB da una vecchia cartella Mirage).",
-          liveFirewall: "Il telefono non riesce ad aprirla? Deve essere sulla stessa Wi-Fi e Windows deve consentire \xABMirage Overlay\xBB, anche per le reti pubbliche se la tua lo \xE8.",
           g_party: "Modalit\xE0 festa",
           ps_light: "Luci ed effetti",
           ps_moments: "Momenti",
@@ -1890,7 +1907,6 @@
           fam_pop: "Pop",
           fam_world: "Latino e mondo",
           fam_calm: "Calma e classica",
-          liveWait: "In attesa dell'app Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -1929,7 +1945,9 @@
           tapCount: "Continua a battere a tempo \u2026 {n}/6",
           tapDone: "A tempo \u2013 regolato di {ms} ms",
           tapUnsure: "Troppo irregolare \u2013 batti costante su ogni battito",
-          tapNoBeat: "Ancora nessun dato ritmico per questo brano"
+          tapNoBeat: "Ancora nessun dato ritmico per questo brano",
+          liveRelay: "Cifrato end-to-end tramite un relay pubblico \u2013 solo chi ha questo codice QR vede qualcosa. Finisce quando esci dalla modalit\xE0 festa; il codice scade dopo 10 minuti.",
+          liveError: "Nessun relay raggiungibile \u2013 la connessione internet funziona?"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -2222,7 +2240,7 @@
           partyQuietFps: "30 fps em partes calmas",
           partyQuietFpsHint: "Intros e pausas calmas rodam a 30 quadros por segundo \u2013 mesma apar\xEAncia, menos energia",
           partyLive: "Link ao vivo para celulares",
-          partyLiveHint: "Celulares na mesma Wi-Fi acendem no ritmo \u2013 escaneie o QR code. Requer o app Mirage Overlay; o Windows pode pedir uma vez acesso \xE0 rede privada",
+          partyLiveHint: "Celulares em qualquer rede acendem no ritmo \u2013 escaneie o QR code. Criptografado, acess\xEDvel s\xF3 pelo QR code e s\xF3 enquanto o modo festa estiver ativo. Sem app.",
           mixInstruments: "Mix reage aos instrumentos",
           mixInstrumentsHint: "No modo Mix, o pulso e os an\xE9is seguem o bumbo real, n\xE3o s\xF3 a grade de tempos",
           partyVenue: "Local",
@@ -2237,7 +2255,7 @@
           eco_off: "Desligada",
           liveBtn: "Link ao vivo para celulares",
           liveTitle: "Acender os celulares",
-          liveHint: "Escaneie com um celular na mesma Wi-Fi e deixe-o com a tela para cima \u2013 ele pisca com a festa",
+          liveHint: "Escaneie com o celular e deixe-o com a tela para cima \u2013 ele pisca com a festa",
           liveCopy: "Copiar link",
           partyFx: "Efeitos de palco",
           partyFxHint: "Jatos de CO2 na m\xFAsica eletr\xF4nica, chamas pirot\xE9cnicas no rock e metal, fogos de artif\xEDcio no \xFAltimo refr\xE3o \u2013 no drop e no auge",
@@ -2245,9 +2263,6 @@
           partyStrobeHint: "Techno, hardstyle, rave e drum & bass piscam em branco no tempo durante o drop \u2013 a partir de Extremo, no m\xE1ximo um flash por tempo",
           venue_warehouse: "Galp\xE3o",
           venue_beach: "Praia",
-          liveMissing: "O app Mirage Overlay n\xE3o est\xE1 conectado. Inicie-o (vers\xE3o 1.10 ou mais nova) \u2013 o QR code aparece aqui.",
-          liveOld: "Sem resposta do app Overlay \u2013 provavelmente uma vers\xE3o antiga. Atualize-o e feche c\xF3pias antigas (p. ex. \xABelectron.exe\xBB de uma pasta antiga do Mirage).",
-          liveFirewall: "O celular n\xE3o abre? Ele precisa estar na mesma Wi-Fi, e o Windows precisa permitir o \xABMirage Overlay\xBB \u2013 tamb\xE9m em redes p\xFAblicas, se a sua for p\xFAblica.",
           g_party: "Modo festa",
           ps_light: "Luz e efeitos",
           ps_moments: "Momentos",
@@ -2259,7 +2274,6 @@
           fam_pop: "Pop",
           fam_world: "Latina e mundo",
           fam_calm: "Calma e cl\xE1ssica",
-          liveWait: "Aguardando o app Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -2298,7 +2312,9 @@
           tapCount: "Continue tocando no ritmo \u2026 {n}/6",
           tapDone: "No ritmo \u2013 ajustado em {ms} ms",
           tapUnsure: "Irregular demais \u2013 toque constante em cada batida",
-          tapNoBeat: "Ainda n\xE3o h\xE1 dados de ritmo para esta m\xFAsica"
+          tapNoBeat: "Ainda n\xE3o h\xE1 dados de ritmo para esta m\xFAsica",
+          liveRelay: "Criptografado de ponta a ponta por um relay p\xFAblico \u2013 s\xF3 quem tem este QR code v\xEA algo. Termina quando voc\xEA sai do modo festa; o c\xF3digo expira ap\xF3s 10 minutos.",
+          liveError: "Nenhum relay dispon\xEDvel \u2013 a internet est\xE1 funcionando?"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -2591,7 +2607,7 @@
           partyQuietFps: "30 fps in rustige stukken",
           partyQuietFpsHint: "Rustige intro's en breaks lopen op 30 beelden per seconde \u2013 ziet er hetzelfde uit, bespaart stroom",
           partyLive: "Livelink voor telefoons",
-          partyLiveHint: "Telefoons op hetzelfde wifi lichten mee op de beat \u2013 scan de QR-code. Vereist de Mirage Overlay-app; Windows vraagt misschien \xE9\xE9n keer om toegang tot het priv\xE9netwerk",
+          partyLiveHint: "Telefoons op elk netwerk lichten mee op de beat \u2013 scan de QR-code. Versleuteld, alleen bereikbaar via de QR-code en alleen zolang de feestmodus aan staat. Geen app nodig.",
           mixInstruments: "Mix reageert op instrumenten",
           mixInstrumentsHint: "In Mix-modus volgen puls en ringen de echte kick, niet alleen het maatraster",
           partyVenue: "Locatie",
@@ -2606,7 +2622,7 @@
           eco_off: "Uit",
           liveBtn: "Livelink voor telefoons",
           liveTitle: "Telefoons laten meelichten",
-          liveHint: "Scan met een telefoon op hetzelfde wifi en leg hem met het scherm omhoog \u2013 hij flitst mee met het feest",
+          liveHint: "Scan met je telefoon en leg hem met het scherm omhoog \u2013 hij flitst mee met het feest",
           liveCopy: "Link kopi\xEBren",
           partyFx: "Podiumeffecten",
           partyFxHint: "CO2-jets bij elektronische muziek, pyro-vlammen bij rock en metal, vuurwerk in het laatste refrein \u2013 op de drop en op het hoogtepunt",
@@ -2614,9 +2630,6 @@
           partyStrobeHint: "Techno, hardstyle, rave en drum & bass flitsen wit op de tel tijdens de drop \u2013 vanaf Extreem, hooguit \xE9\xE9n flits per tel",
           venue_warehouse: "Loods",
           venue_beach: "Strand",
-          liveMissing: "De Mirage Overlay-app is niet verbonden. Start hem (versie 1.10 of nieuwer) \u2013 dan verschijnt hier de QR-code.",
-          liveOld: "Geen antwoord van de Overlay-app \u2013 waarschijnlijk een oude versie. Werk hem bij en sluit oude kopie\xEBn (bijv. 'electron.exe' uit een oude Mirage-map).",
-          liveFirewall: "Telefoon komt er niet op? Hij moet op hetzelfde wifi zitten en Windows moet 'Mirage Overlay' toestaan \u2013 ook voor openbare netwerken als het jouwe zo staat.",
           g_party: "Feestmodus",
           ps_light: "Licht & effecten",
           ps_moments: "Momenten",
@@ -2628,7 +2641,6 @@
           fam_pop: "Pop",
           fam_world: "Latin & wereld",
           fam_calm: "Rustig & klassiek",
-          liveWait: "Wachten op de Overlay-app \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -2667,7 +2679,9 @@
           tapCount: "Blijf op de beat tikken \u2026 {n}/6",
           tapDone: "In sync \u2013 {ms} ms bijgesteld",
           tapUnsure: "Te onregelmatig \u2013 tik gelijkmatig op elke tel",
-          tapNoBeat: "Nog geen beatgegevens voor dit nummer"
+          tapNoBeat: "Nog geen beatgegevens voor dit nummer",
+          liveRelay: "End-to-end versleuteld via een openbare relay \u2013 alleen wie deze QR-code heeft ziet iets. Stopt als je de feestmodus verlaat; na 10 minuten verloopt de code.",
+          liveError: "Geen relay bereikbaar \u2013 werkt de internetverbinding?"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2960,7 +2974,7 @@
           partyQuietFps: "30 kl./s w cichych fragmentach",
           partyQuietFpsHint: "Ciche intra i przerwy dzia\u0142aj\u0105 w 30 klatkach na sekund\u0119 \u2013 wygl\u0105da tak samo, oszcz\u0119dza energi\u0119",
           partyLive: "Link na \u017Cywo dla telefon\xF3w",
-          partyLiveHint: "Telefony w tej samej sieci Wi-Fi \u015Bwiec\u0105 w rytm \u2013 zeskanuj kod QR. Wymaga aplikacji Mirage Overlay; Windows mo\u017Ce raz zapyta\u0107 o dost\u0119p do sieci prywatnej",
+          partyLiveHint: "Telefony w dowolnej sieci \u015Bwiec\u0105 w rytm \u2013 zeskanuj kod QR. Szyfrowane, dost\u0119pne tylko przez kod QR i tylko w trybie imprezy. Bez aplikacji.",
           mixInstruments: "Mix reaguje na instrumenty",
           mixInstrumentsHint: "W trybie Mix puls i pier\u015Bcienie pod\u0105\u017Caj\u0105 za prawdziw\u0105 stop\u0105, nie tylko za siatk\u0105 takt\xF3w",
           partyVenue: "Miejsce",
@@ -2975,7 +2989,7 @@
           eco_off: "Wy\u0142\u0105czone",
           liveBtn: "Link na \u017Cywo dla telefon\xF3w",
           liveTitle: "Roz\u015Bwietl telefony",
-          liveHint: "Zeskanuj telefonem w tej samej sieci Wi-Fi i po\u0142\xF3\u017C go ekranem do g\xF3ry \u2013 miga razem z imprez\u0105",
+          liveHint: "Zeskanuj telefonem i po\u0142\xF3\u017C go ekranem do g\xF3ry \u2013 miga razem z imprez\u0105",
           liveCopy: "Kopiuj link",
           partyFx: "Efekty sceniczne",
           partyFxHint: "Strumienie CO2 przy muzyce elektronicznej, p\u0142omienie pirotechniczne przy rocku i metalu, fajerwerki w ostatnim refrenie \u2013 na dropie i w szczycie",
@@ -2983,9 +2997,6 @@
           partyStrobeHint: "Techno, hardstyle, rave i drum & bass b\u0142yskaj\u0105 na bia\u0142o w rytm podczas dropu \u2013 od poziomu Ekstremalny, najwy\u017Cej jeden b\u0142ysk na uderzenie",
           venue_warehouse: "Hala",
           venue_beach: "Pla\u017Ca",
-          liveMissing: "Aplikacja Mirage Overlay nie jest po\u0142\u0105czona. Uruchom j\u0105 (wersja 1.10 lub nowsza) \u2013 wtedy pojawi si\u0119 tu kod QR.",
-          liveOld: "Brak odpowiedzi aplikacji Overlay \u2013 pewnie to stara wersja. Zaktualizuj j\u0105 i zamknij stare kopie (np. \u201Eelectron.exe\u201D ze starego folderu Mirage).",
-          liveFirewall: "Telefon nie mo\u017Ce otworzy\u0107 strony? Musi by\u0107 w tej samej sieci Wi-Fi, a Windows musi zezwoli\u0107 na \u201EMirage Overlay\u201D \u2013 tak\u017Ce w sieciach publicznych, je\u015Bli twoja tak jest ustawiona.",
           g_party: "Tryb imprezy",
           ps_light: "\u015Awiat\u0142o i efekty",
           ps_moments: "Momenty",
@@ -2997,7 +3008,6 @@
           fam_pop: "Pop",
           fam_world: "Latino i \u015Bwiat",
           fam_calm: "Spokojna i klasyczna",
-          liveWait: "Czekam na aplikacj\u0119 Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -3036,7 +3046,9 @@
           tapCount: "Stukaj dalej w rytm \u2026 {n}/6",
           tapDone: "W rytmie \u2013 przesuni\u0119to o {ms} ms",
           tapUnsure: "Zbyt nier\xF3wno \u2013 stukaj r\xF3wno na ka\u017Cde uderzenie",
-          tapNoBeat: "Brak jeszcze danych o rytmie tego utworu"
+          tapNoBeat: "Brak jeszcze danych o rytmie tego utworu",
+          liveRelay: "Szyfrowanie end-to-end przez publiczny przeka\u017Anik \u2013 tylko posiadacz tego kodu QR co\u015B zobaczy. Ko\u0144czy si\u0119 po wyj\u015Bciu z trybu imprezy; kod wygasa po 10 minutach.",
+          liveError: "Brak dost\u0119pnego przeka\u017Anika \u2013 czy internet dzia\u0142a?"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -3329,7 +3341,7 @@
           partyQuietFps: "Sakin yerlerde 30 fps",
           partyQuietFpsHint: "Sakin giri\u015Fler ve aralar saniyede 30 karede \xE7al\u0131\u015F\u0131r \u2013 ayn\u0131 g\xF6r\xFCn\xFCr, enerji tasarrufu sa\u011Flar",
           partyLive: "Telefonlar i\xE7in canl\u0131 ba\u011Flant\u0131",
-          partyLiveHint: "Ayn\u0131 Wi-Fi'deki telefonlar ritimle yanar \u2013 QR kodunu tara. Mirage Overlay uygulamas\u0131 gerekir; Windows \xF6zel a\u011F eri\u015Fimi i\xE7in bir kez sorabilir",
+          partyLiveHint: "Her a\u011Fdaki telefonlar ritimle yanar \u2013 QR kodunu tara. \u015Eifreli, yaln\u0131zca QR koduyla ve yaln\u0131zca parti modu a\xE7\u0131kken eri\u015Filebilir. Uygulama gerekmez.",
           mixInstruments: "Mix enstr\xFCmanlara tepki verir",
           mixInstrumentsHint: "Mix modunda nab\u0131z ve halkalar yaln\u0131zca vuru\u015F \u0131zgaras\u0131n\u0131 de\u011Fil ger\xE7ek bas davulu takip eder",
           partyVenue: "Mek\xE2n",
@@ -3344,7 +3356,7 @@
           eco_off: "Kapal\u0131",
           liveBtn: "Telefonlar i\xE7in canl\u0131 ba\u011Flant\u0131",
           liveTitle: "Telefonlar\u0131 yak",
-          liveHint: "Ayn\u0131 Wi-Fi'deki bir telefonla tara ve ekran\u0131 yukar\u0131 gelecek \u015Fekilde koy \u2013 partiyle birlikte yan\u0131p s\xF6ner",
+          liveHint: "Telefonla tara ve ekran\u0131 yukar\u0131 gelecek \u015Fekilde koy \u2013 partiyle birlikte yan\u0131p s\xF6ner",
           liveCopy: "Ba\u011Flant\u0131y\u0131 kopyala",
           partyFx: "Sahne efektleri",
           partyFxHint: "Elektronik m\xFCzikte CO2 f\u0131\u015Fk\u0131rtmalar\u0131, rock ve metalde piroteknik alevler, son nakaratta havai fi\u015Fek \u2013 drop'ta ve zirvede",
@@ -3352,9 +3364,6 @@
           partyStrobeHint: "Techno, hardstyle, rave ve drum & bass drop s\u0131ras\u0131nda ritimle beyaz \xE7akar \u2013 A\u015F\u0131r\u0131 seviyesinden itibaren, vuru\u015F ba\u015F\u0131na en fazla bir \xE7akma",
           venue_warehouse: "Depo",
           venue_beach: "Plaj",
-          liveMissing: "Mirage Overlay uygulamas\u0131 ba\u011Fl\u0131 de\u011Fil. Ba\u015Flat (s\xFCr\xFCm 1.10 veya \xFCst\xFC) \u2013 QR kodu burada g\xF6r\xFCnecek.",
-          liveOld: "Overlay uygulamas\u0131ndan yan\u0131t yok \u2013 muhtemelen eski bir s\xFCr\xFCm. G\xFCncelle ve eski kopyalar\u0131 kapat (\xF6r. eski bir Mirage klas\xF6r\xFCndeki 'electron.exe').",
-          liveFirewall: "Telefon a\xE7am\u0131yor mu? Ayn\u0131 Wi-Fi'de olmal\u0131 ve Windows 'Mirage Overlay'e izin vermeli \u2013 a\u011F\u0131n genel olarak ayarl\u0131ysa genel a\u011Flar i\xE7in de.",
           g_party: "Parti modu",
           ps_light: "I\u015F\u0131k ve efektler",
           ps_moments: "Anlar",
@@ -3366,7 +3375,6 @@
           fam_pop: "Pop",
           fam_world: "Latin ve d\xFCnya",
           fam_calm: "Sakin ve klasik",
-          liveWait: "Overlay uygulamas\u0131 bekleniyor \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -3405,7 +3413,9 @@
           tapCount: "Ritme dokunmaya devam et \u2026 {n}/6",
           tapDone: "Ritimde \u2013 {ms} ms ayarland\u0131",
           tapUnsure: "\xC7ok d\xFCzensiz \u2013 her vuru\u015Fa e\u015Fit dokun",
-          tapNoBeat: "Bu \u015Fark\u0131 i\xE7in hen\xFCz ritim verisi yok"
+          tapNoBeat: "Bu \u015Fark\u0131 i\xE7in hen\xFCz ritim verisi yok",
+          liveRelay: "Herkese a\xE7\u0131k bir aktar\u0131c\u0131 \xFCzerinden u\xE7tan uca \u015Fifreli \u2013 yaln\u0131zca bu QR koda sahip olan g\xF6rebilir. Parti modundan \xE7\u0131k\u0131nca biter; kod 10 dakika sonra ge\xE7ersiz olur.",
+          liveError: "Ula\u015F\u0131labilir aktar\u0131c\u0131 yok \u2013 internet ba\u011Flant\u0131s\u0131 \xE7al\u0131\u015F\u0131yor mu?"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -3698,7 +3708,7 @@
           partyQuietFps: "30 \u043A\u0430\u0434\u0440\u043E\u0432/\u0441 \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0435\u0441\u0442\u0430\u0445",
           partyQuietFpsHint: "\u0422\u0438\u0445\u0438\u0435 \u0432\u0441\u0442\u0443\u043F\u043B\u0435\u043D\u0438\u044F \u0438 \u043F\u0430\u0443\u0437\u044B \u0438\u0434\u0443\u0442 \u0441 30 \u043A\u0430\u0434\u0440\u0430\u043C\u0438 \u0432 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u044B\u0433\u043B\u044F\u0434\u0438\u0442 \u0442\u0430\u043A \u0436\u0435, \u044D\u043A\u043E\u043D\u043E\u043C\u0438\u0442 \u044D\u043D\u0435\u0440\u0433\u0438\u044E",
           partyLive: "\u0416\u0438\u0432\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430 \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
-          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u044B \u0432 \u0442\u043E\u0439 \u0436\u0435 Wi-Fi \u0441\u0435\u0442\u0438 \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u043E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u041D\u0443\u0436\u043D\u043E \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay; Windows \u043C\u043E\u0436\u0435\u0442 \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u0441\u043F\u0440\u043E\u0441\u0438\u0442\u044C \u0434\u043E\u0441\u0442\u0443\u043F \u043A \u0447\u0430\u0441\u0442\u043D\u043E\u0439 \u0441\u0435\u0442\u0438",
+          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u044B \u0432 \u043B\u044E\u0431\u043E\u0439 \u0441\u0435\u0442\u0438 \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u043E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u0417\u0430\u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u043E, \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E QR-\u043A\u043E\u0434\u0443 \u0438 \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E\u043A\u0430 \u0432\u043A\u043B\u044E\u0447\u0451\u043D \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438. \u0411\u0435\u0437 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F.",
           mixInstruments: "\u041C\u0438\u043A\u0441 \u0440\u0435\u0430\u0433\u0438\u0440\u0443\u0435\u0442 \u043D\u0430 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B",
           mixInstrumentsHint: "\u0412 \u0440\u0435\u0436\u0438\u043C\u0435 \xAB\u041C\u0438\u043A\u0441\xBB \u043F\u0443\u043B\u044C\u0441 \u0438 \u043A\u043E\u043B\u044C\u0446\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0439 \u0431\u043E\u0447\u043A\u043E\u0439, \u0430 \u043D\u0435 \u0442\u043E\u043B\u044C\u043A\u043E \u0437\u0430 \u0441\u0435\u0442\u043A\u043E\u0439 \u0434\u043E\u043B\u0435\u0439",
           partyVenue: "\u041F\u043B\u043E\u0449\u0430\u0434\u043A\u0430",
@@ -3713,7 +3723,7 @@
           eco_off: "\u0412\u044B\u043A\u043B.",
           liveBtn: "\u0416\u0438\u0432\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430 \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
           liveTitle: "\u0417\u0430\u0436\u0435\u0447\u044C \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u044B",
-          liveHint: "\u041E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0432 \u0442\u043E\u0439 \u0436\u0435 Wi-Fi \u0441\u0435\u0442\u0438 \u0438 \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435 \u044D\u043A\u0440\u0430\u043D\u043E\u043C \u0432\u0432\u0435\u0440\u0445 \u2013 \u043E\u043D \u043C\u0438\u0433\u0430\u0435\u0442 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u043E\u0439",
+          liveHint: "\u041E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0438 \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435 \u044D\u043A\u0440\u0430\u043D\u043E\u043C \u0432\u0432\u0435\u0440\u0445 \u2013 \u043E\u043D \u043C\u0438\u0433\u0430\u0435\u0442 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u043E\u0439",
           liveCopy: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0441\u0441\u044B\u043B\u043A\u0443",
           partyFx: "\u0421\u0446\u0435\u043D\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u044D\u0444\u0444\u0435\u043A\u0442\u044B",
           partyFxHint: "\u0421\u0442\u0440\u0443\u0438 CO2 \u0434\u043B\u044F \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0438\u043A\u0438, \u043F\u0438\u0440\u043E-\u043F\u043B\u0430\u043C\u044F \u0434\u043B\u044F \u0440\u043E\u043A\u0430 \u0438 \u043C\u0435\u0442\u0430\u043B\u0430, \u0444\u0435\u0439\u0435\u0440\u0432\u0435\u0440\u043A \u0432 \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u043C \u043F\u0440\u0438\u043F\u0435\u0432\u0435 \u2013 \u043D\u0430 \u0434\u0440\u043E\u043F\u0435 \u0438 \u043D\u0430 \u043F\u0438\u043A\u0435",
@@ -3721,9 +3731,6 @@
           partyStrobeHint: "\u0422\u0435\u0445\u043D\u043E, \u0445\u0430\u0440\u0434\u0441\u0442\u0430\u0439\u043B, \u0440\u0435\u0439\u0432 \u0438 \u0434\u0440\u0430\u043C-\u043D-\u0431\u0435\u0439\u0441 \u0432\u0441\u043F\u044B\u0445\u0438\u0432\u0430\u044E\u0442 \u0431\u0435\u043B\u044B\u043C \u0432 \u0442\u0430\u043A\u0442 \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u0434\u0440\u043E\u043F\u0430 \u2013 \u0441 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB, \u043D\u0435 \u0447\u0430\u0449\u0435 \u043E\u0434\u043D\u043E\u0439 \u0432\u0441\u043F\u044B\u0448\u043A\u0438 \u043D\u0430 \u0434\u043E\u043B\u044E",
           venue_warehouse: "\u0421\u043A\u043B\u0430\u0434",
           venue_beach: "\u041F\u043B\u044F\u0436",
-          liveMissing: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay \u043D\u0435 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043E. \u0417\u0430\u043F\u0443\u0441\u0442\u0438\u0442\u0435 \u0435\u0433\u043E (\u0432\u0435\u0440\u0441\u0438\u044F 1.10 \u0438\u043B\u0438 \u043D\u043E\u0432\u0435\u0435) \u2013 \u0437\u0434\u0435\u0441\u044C \u043F\u043E\u044F\u0432\u0438\u0442\u0441\u044F QR-\u043A\u043E\u0434.",
-          liveOld: "\u041D\u0435\u0442 \u043E\u0442\u0432\u0435\u0442\u0430 \u043E\u0442 Overlay \u2013 \u0432\u0435\u0440\u043E\u044F\u0442\u043D\u043E, \u044D\u0442\u043E \u0441\u0442\u0430\u0440\u0430\u044F \u0432\u0435\u0440\u0441\u0438\u044F. \u041E\u0431\u043D\u043E\u0432\u0438\u0442\u0435 \u0435\u0451 \u0438 \u0437\u0430\u043A\u0440\u043E\u0439\u0442\u0435 \u0441\u0442\u0430\u0440\u044B\u0435 \u043A\u043E\u043F\u0438\u0438 (\u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440, \xABelectron.exe\xBB \u0438\u0437 \u0441\u0442\u0430\u0440\u043E\u0439 \u043F\u0430\u043F\u043A\u0438 Mirage).",
-          liveFirewall: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435 \u043E\u0442\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443? \u041E\u043D \u0434\u043E\u043B\u0436\u0435\u043D \u0431\u044B\u0442\u044C \u0432 \u0442\u043E\u0439 \u0436\u0435 \u0441\u0435\u0442\u0438 Wi-Fi, \u0430 Windows \u0434\u043E\u043B\u0436\u043D\u0430 \u0440\u0430\u0437\u0440\u0435\u0448\u0438\u0442\u044C \xABMirage Overlay\xBB \u2013 \u0438 \u0434\u043B\u044F \u043E\u0431\u0449\u0435\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0445 \u0441\u0435\u0442\u0435\u0439, \u0435\u0441\u043B\u0438 \u0432\u0430\u0448\u0430 \u0442\u0430\u043A \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0430.",
           g_party: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           ps_light: "\u0421\u0432\u0435\u0442 \u0438 \u044D\u0444\u0444\u0435\u043A\u0442\u044B",
           ps_moments: "\u041C\u043E\u043C\u0435\u043D\u0442\u044B",
@@ -3735,7 +3742,6 @@
           fam_pop: "\u041F\u043E\u043F",
           fam_world: "\u041B\u0430\u0442\u0438\u043D\u043E \u0438 \u043C\u0438\u0440",
           fam_calm: "\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u0430\u044F \u0438 \u043A\u043B\u0430\u0441\u0441\u0438\u043A\u0430",
-          liveWait: "\u041E\u0436\u0438\u0434\u0430\u043D\u0438\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -3774,7 +3780,9 @@
           tapCount: "\u0421\u0442\u0443\u0447\u0438\u0442\u0435 \u0434\u0430\u043B\u044C\u0448\u0435 \u0432 \u0440\u0438\u0442\u043C \u2026 {n}/6",
           tapDone: "\u0412 \u0440\u0438\u0442\u043C\u0435 \u2013 \u0441\u0434\u0432\u0438\u0433 {ms} \u043C\u0441",
           tapUnsure: "\u0421\u043B\u0438\u0448\u043A\u043E\u043C \u043D\u0435\u0440\u043E\u0432\u043D\u043E \u2013 \u0441\u0442\u0443\u0447\u0438\u0442\u0435 \u0440\u0430\u0432\u043D\u043E\u043C\u0435\u0440\u043D\u043E \u043D\u0430 \u043A\u0430\u0436\u0434\u0443\u044E \u0434\u043E\u043B\u044E",
-          tapNoBeat: "\u0414\u043B\u044F \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0434\u0430\u043D\u043D\u044B\u0445 \u043E \u0440\u0438\u0442\u043C\u0435"
+          tapNoBeat: "\u0414\u043B\u044F \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0434\u0430\u043D\u043D\u044B\u0445 \u043E \u0440\u0438\u0442\u043C\u0435",
+          liveRelay: "\u0421\u043A\u0432\u043E\u0437\u043D\u043E\u0435 \u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u0447\u0435\u0440\u0435\u0437 \u043F\u0443\u0431\u043B\u0438\u0447\u043D\u044B\u0439 \u0440\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u2013 \u0432\u0438\u0434\u0438\u0442 \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u043E\u0442, \u0443 \u043A\u043E\u0433\u043E \u0435\u0441\u0442\u044C \u044D\u0442\u043E\u0442 QR-\u043A\u043E\u0434. \u0417\u0430\u043A\u0430\u043D\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u043F\u0440\u0438 \u0432\u044B\u0445\u043E\u0434\u0435 \u0438\u0437 \u0440\u0435\u0436\u0438\u043C\u0430 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438; \u0447\u0435\u0440\u0435\u0437 10 \u043C\u0438\u043D\u0443\u0442 \u043A\u043E\u0434 \u043D\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u0435\u043D.",
+          liveError: "\u0420\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D \u2013 \u0435\u0441\u0442\u044C \u043B\u0438 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u043A \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443?"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -4067,7 +4075,7 @@
           partyQuietFps: "30 \u043A\u0430\u0434\u0440\u0456\u0432/\u0441 \u0443 \u0442\u0438\u0445\u0438\u0445 \u043C\u0456\u0441\u0446\u044F\u0445",
           partyQuietFpsHint: "\u0422\u0438\u0445\u0456 \u0432\u0441\u0442\u0443\u043F\u0438 \u0439 \u043F\u0430\u0443\u0437\u0438 \u0439\u0434\u0443\u0442\u044C \u0456\u0437 30 \u043A\u0430\u0434\u0440\u0430\u043C\u0438 \u043D\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u0438\u0433\u043B\u044F\u0434\u0430\u0454 \u0442\u0430\u043A \u0441\u0430\u043C\u043E, \u0437\u0430\u043E\u0449\u0430\u0434\u0436\u0443\u0454 \u0435\u043D\u0435\u0440\u0433\u0456\u044E",
           partyLive: "\u0416\u0438\u0432\u0435 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
-          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u0438 \u0432 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 Wi-Fi \u043C\u0435\u0440\u0435\u0436\u0456 \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u0432\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u041F\u043E\u0442\u0440\u0456\u0431\u0435\u043D \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay; Windows \u043C\u043E\u0436\u0435 \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u0437\u0430\u043F\u0438\u0442\u0430\u0442\u0438 \u0434\u043E\u0441\u0442\u0443\u043F \u0434\u043E \u043F\u0440\u0438\u0432\u0430\u0442\u043D\u043E\u0457 \u043C\u0435\u0440\u0435\u0436\u0456",
+          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u0438 \u0432 \u0431\u0443\u0434\u044C-\u044F\u043A\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456 \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u0432\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u0417\u0430\u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u043E, \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u043B\u0438\u0448\u0435 \u0437\u0430 QR-\u043A\u043E\u0434\u043E\u043C \u0456 \u043B\u0438\u0448\u0435 \u043F\u043E\u043A\u0438 \u0432\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438. \u0411\u0435\u0437 \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043A\u0443.",
           mixInstruments: "\u041C\u0456\u043A\u0441 \u0440\u0435\u0430\u0433\u0443\u0454 \u043D\u0430 \u0456\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0438",
           mixInstrumentsHint: "\u0423 \u0440\u0435\u0436\u0438\u043C\u0456 \xAB\u041C\u0456\u043A\u0441\xBB \u043F\u0443\u043B\u044C\u0441 \u0456 \u043A\u0456\u043B\u044C\u0446\u044F \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u0441\u043F\u0440\u0430\u0432\u0436\u043D\u044C\u043E\u044E \u0431\u043E\u0447\u043A\u043E\u044E, \u0430 \u043D\u0435 \u043B\u0438\u0448\u0435 \u0437\u0430 \u0441\u0456\u0442\u043A\u043E\u044E \u0434\u043E\u043B\u044C",
           partyVenue: "\u041C\u0430\u0439\u0434\u0430\u043D\u0447\u0438\u043A",
@@ -4082,7 +4090,7 @@
           eco_off: "\u0412\u0438\u043C\u043A.",
           liveBtn: "\u0416\u0438\u0432\u0435 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
           liveTitle: "\u0417\u0430\u0441\u0432\u0456\u0442\u0438\u0442\u0438 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0438",
-          liveHint: "\u0412\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0443 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 Wi-Fi \u043C\u0435\u0440\u0435\u0436\u0456 \u0439 \u043F\u043E\u043A\u043B\u0430\u0434\u0456\u0442\u044C \u0435\u043A\u0440\u0430\u043D\u043E\u043C \u0434\u043E\u0433\u043E\u0440\u0438 \u2013 \u0432\u0456\u043D \u0431\u043B\u0438\u043C\u0430\u0454 \u0440\u0430\u0437\u043E\u043C \u0456\u0437 \u0432\u0435\u0447\u0456\u0440\u043A\u043E\u044E",
+          liveHint: "\u0412\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0456 \u043F\u043E\u043A\u043B\u0430\u0434\u0456\u0442\u044C \u0435\u043A\u0440\u0430\u043D\u043E\u043C \u0434\u043E\u0433\u043E\u0440\u0438 \u2013 \u0432\u0456\u043D \u0431\u043B\u0438\u043C\u0430\u0454 \u0440\u0430\u0437\u043E\u043C \u0456\u0437 \u0432\u0435\u0447\u0456\u0440\u043A\u043E\u044E",
           liveCopy: "\u041A\u043E\u043F\u0456\u044E\u0432\u0430\u0442\u0438 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F",
           partyFx: "\u0421\u0446\u0435\u043D\u0456\u0447\u043D\u0456 \u0435\u0444\u0435\u043A\u0442\u0438",
           partyFxHint: "\u0421\u0442\u0440\u0443\u043C\u0435\u043D\u0456 CO2 \u0434\u043B\u044F \u0435\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0456\u043A\u0438, \u043F\u0456\u0440\u043E-\u043F\u043E\u043B\u0443\u043C'\u044F \u0434\u043B\u044F \u0440\u043E\u043A\u0443 \u0439 \u043C\u0435\u0442\u0430\u043B\u0443, \u0444\u0435\u0454\u0440\u0432\u0435\u0440\u043A \u0432 \u043E\u0441\u0442\u0430\u043D\u043D\u044C\u043E\u043C\u0443 \u043F\u0440\u0438\u0441\u043F\u0456\u0432\u0456 \u2013 \u043D\u0430 \u0434\u0440\u043E\u043F\u0456 \u0439 \u043D\u0430 \u043F\u0456\u043A\u0443",
@@ -4090,9 +4098,6 @@
           partyStrobeHint: "\u0422\u0435\u0445\u043D\u043E, \u0445\u0430\u0440\u0434\u0441\u0442\u0430\u0439\u043B, \u0440\u0435\u0439\u0432 \u0456 \u0434\u0440\u0430\u043C-\u043D-\u0431\u0435\u0439\u0441 \u0441\u043F\u0430\u043B\u0430\u0445\u0443\u044E\u0442\u044C \u0431\u0456\u043B\u0438\u043C \u0443 \u0442\u0430\u043A\u0442 \u043F\u0456\u0434 \u0447\u0430\u0441 \u0434\u0440\u043E\u043F\u0443 \u2013 \u0437 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB, \u043D\u0435 \u0447\u0430\u0441\u0442\u0456\u0448\u0435 \u043E\u0434\u043D\u043E\u0433\u043E \u0441\u043F\u0430\u043B\u0430\u0445\u0443 \u043D\u0430 \u0434\u043E\u043B\u044E",
           venue_warehouse: "\u0421\u043A\u043B\u0430\u0434",
           venue_beach: "\u041F\u043B\u044F\u0436",
-          liveMissing: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay \u043D\u0435 \u043F\u0456\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043E. \u0417\u0430\u043F\u0443\u0441\u0442\u0456\u0442\u044C \u0439\u043E\u0433\u043E (\u0432\u0435\u0440\u0441\u0456\u044F 1.10 \u0430\u0431\u043E \u043D\u043E\u0432\u0456\u0448\u0430) \u2013 \u0442\u0443\u0442 \u0437'\u044F\u0432\u0438\u0442\u044C\u0441\u044F QR-\u043A\u043E\u0434.",
-          liveOld: "\u041D\u0435\u043C\u0430\u0454 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u0456 \u0432\u0456\u0434 Overlay \u2013 \u043C\u0430\u0431\u0443\u0442\u044C, \u0446\u0435 \u0441\u0442\u0430\u0440\u0430 \u0432\u0435\u0440\u0441\u0456\u044F. \u041E\u043D\u043E\u0432\u0456\u0442\u044C \u0457\u0457 \u0439 \u0437\u0430\u043A\u0440\u0438\u0439\u0442\u0435 \u0441\u0442\u0430\u0440\u0456 \u043A\u043E\u043F\u0456\u0457 (\u043D\u0430\u043F\u0440\u0438\u043A\u043B\u0430\u0434, \xABelectron.exe\xBB \u0437\u0456 \u0441\u0442\u0430\u0440\u043E\u0457 \u0442\u0435\u043A\u0438 Mirage).",
-          liveFirewall: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D \u043D\u0435 \u0432\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u0454 \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0443? \u0412\u0456\u043D \u043C\u0430\u0454 \u0431\u0443\u0442\u0438 \u0432 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456 Wi-Fi, \u0430 Windows \u043C\u0430\u0454 \u0434\u043E\u0437\u0432\u043E\u043B\u0438\u0442\u0438 \xABMirage Overlay\xBB \u2013 \u0456 \u0434\u043B\u044F \u0437\u0430\u0433\u0430\u043B\u044C\u043D\u043E\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0438\u0445 \u043C\u0435\u0440\u0435\u0436, \u044F\u043A\u0449\u043E \u0432\u0430\u0448\u0430 \u0442\u0430\u043A \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0430\u043D\u0430.",
           g_party: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           ps_light: "\u0421\u0432\u0456\u0442\u043B\u043E \u0439 \u0435\u0444\u0435\u043A\u0442\u0438",
           ps_moments: "\u041C\u043E\u043C\u0435\u043D\u0442\u0438",
@@ -4104,7 +4109,6 @@
           fam_pop: "\u041F\u043E\u043F",
           fam_world: "\u041B\u0430\u0442\u0438\u043D\u043E \u0439 \u0441\u0432\u0456\u0442",
           fam_calm: "\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u0430 \u0439 \u043A\u043B\u0430\u0441\u0438\u043A\u0430",
-          liveWait: "\u041E\u0447\u0456\u043A\u0443\u0432\u0430\u043D\u043D\u044F \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043A\u0443 Overlay \u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -4143,7 +4147,9 @@
           tapCount: "\u0421\u0442\u0443\u043A\u0430\u0439\u0442\u0435 \u0434\u0430\u043B\u0456 \u0432 \u0440\u0438\u0442\u043C \u2026 {n}/6",
           tapDone: "\u0423 \u0440\u0438\u0442\u043C\u0456 \u2013 \u0437\u0441\u0443\u0432 {ms} \u043C\u0441",
           tapUnsure: "\u041D\u0430\u0434\u0442\u043E \u043D\u0435\u0440\u0456\u0432\u043D\u043E \u2013 \u0441\u0442\u0443\u043A\u0430\u0439\u0442\u0435 \u0440\u0456\u0432\u043D\u043E \u043D\u0430 \u043A\u043E\u0436\u043D\u0443 \u0434\u043E\u043B\u044E",
-          tapNoBeat: "\u0414\u043B\u044F \u0446\u0456\u0454\u0457 \u043F\u0456\u0441\u043D\u0456 \u0449\u0435 \u043D\u0435\u043C\u0430\u0454 \u0434\u0430\u043D\u0438\u0445 \u043F\u0440\u043E \u0440\u0438\u0442\u043C"
+          tapNoBeat: "\u0414\u043B\u044F \u0446\u0456\u0454\u0457 \u043F\u0456\u0441\u043D\u0456 \u0449\u0435 \u043D\u0435\u043C\u0430\u0454 \u0434\u0430\u043D\u0438\u0445 \u043F\u0440\u043E \u0440\u0438\u0442\u043C",
+          liveRelay: "\u041D\u0430\u0441\u043A\u0440\u0456\u0437\u043D\u0435 \u0448\u0438\u0444\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0447\u0435\u0440\u0435\u0437 \u043F\u0443\u0431\u043B\u0456\u0447\u043D\u0438\u0439 \u0440\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u2013 \u0431\u0430\u0447\u0438\u0442\u044C \u043B\u0438\u0448\u0435 \u0442\u043E\u0439, \u0445\u0442\u043E \u043C\u0430\u0454 \u0446\u0435\u0439 QR-\u043A\u043E\u0434. \u0417\u0430\u0432\u0435\u0440\u0448\u0443\u0454\u0442\u044C\u0441\u044F, \u043A\u043E\u043B\u0438 \u0432\u0438 \u0432\u0438\u0445\u043E\u0434\u0438\u0442\u0435 \u0437 \u0440\u0435\u0436\u0438\u043C\u0443 \u0432\u0435\u0447\u0456\u0440\u043A\u0438; \u0447\u0435\u0440\u0435\u0437 10 \u0445\u0432\u0438\u043B\u0438\u043D \u043A\u043E\u0434 \u043D\u0435\u0434\u0456\u0439\u0441\u043D\u0438\u0439.",
+          liveError: "\u0420\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0438\u0439 \u2013 \u0447\u0438 \u0454 \u043F\u0456\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043D\u044F \u0434\u043E \u0456\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443?"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -4436,7 +4442,7 @@
           partyQuietFps: "\u9759\u304B\u306A\u90E8\u5206\u306F30fps",
           partyQuietFpsHint: "\u9759\u304B\u306A\u30A4\u30F3\u30C8\u30ED\u3084\u30D6\u30EC\u30A4\u30AF\u306F\u6BCE\u79D230\u30D5\u30EC\u30FC\u30E0\u3067\u63CF\u753B \u2014 \u898B\u305F\u76EE\u306F\u540C\u3058\u3067\u7701\u96FB\u529B",
           partyLive: "\u30B9\u30DE\u30DB\u7528\u30E9\u30A4\u30D6\u30EA\u30F3\u30AF",
-          partyLiveHint: "\u540C\u3058Wi-Fi\u306E\u30B9\u30DE\u30DB\u304C\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u5149\u308A\u307E\u3059 \u2014 QR\u30B3\u30FC\u30C9\u3092\u8AAD\u307F\u53D6\u3063\u3066\u304F\u3060\u3055\u3044\u3002Mirage Overlay\u30A2\u30D7\u30EA\u304C\u5FC5\u8981\u3067\u3059\u3002Windows\u304C\u30D7\u30E9\u30A4\u30D9\u30FC\u30C8\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u3078\u306E\u30A2\u30AF\u30BB\u30B9\u3092\u4E00\u5EA6\u78BA\u8A8D\u3059\u308B\u5834\u5408\u304C\u3042\u308A\u307E\u3059",
+          partyLiveHint: "\u3069\u306E\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u306E\u30B9\u30DE\u30DB\u3082\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u5149\u308A\u307E\u3059 \u2013 QR\u30B3\u30FC\u30C9\u3092\u8AAD\u307F\u53D6\u3063\u3066\u304F\u3060\u3055\u3044\u3002\u6697\u53F7\u5316\u3055\u308C\u3001QR\u30B3\u30FC\u30C9\u304B\u3089\u306E\u307F\u3001\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9\u4E2D\u3060\u3051\u30A2\u30AF\u30BB\u30B9\u3067\u304D\u307E\u3059\u3002\u30A2\u30D7\u30EA\u4E0D\u8981\u3002",
           mixInstruments: "\u30DF\u30C3\u30AF\u30B9\u304C\u697D\u5668\u306B\u53CD\u5FDC",
           mixInstrumentsHint: "\u30DF\u30C3\u30AF\u30B9\u30E2\u30FC\u30C9\u3067\u3001\u30D1\u30EB\u30B9\u3068\u30EA\u30F3\u30B0\u304C\u62CD\u306E\u30B0\u30EA\u30C3\u30C9\u3060\u3051\u3067\u306A\u304F\u5B9F\u969B\u306E\u30AD\u30C3\u30AF\u306B\u5408\u308F\u305B\u3066\u52D5\u304D\u307E\u3059",
           partyVenue: "\u4F1A\u5834",
@@ -4451,7 +4457,7 @@
           eco_off: "\u30AA\u30D5",
           liveBtn: "\u30B9\u30DE\u30DB\u7528\u30E9\u30A4\u30D6\u30EA\u30F3\u30AF",
           liveTitle: "\u30B9\u30DE\u30DB\u3082\u5149\u3089\u305B\u308B",
-          liveHint: "\u540C\u3058Wi-Fi\u306E\u30B9\u30DE\u30DB\u3067\u8AAD\u307F\u53D6\u308A\u3001\u753B\u9762\u3092\u4E0A\u306B\u3057\u3066\u7F6E\u304F\u3068\u30D1\u30FC\u30C6\u30A3\u30FC\u306B\u5408\u308F\u305B\u3066\u5149\u308A\u307E\u3059",
+          liveHint: "\u30B9\u30DE\u30DB\u3067\u8AAD\u307F\u53D6\u308A\u3001\u753B\u9762\u3092\u4E0A\u306B\u3057\u3066\u7F6E\u304F\u3068\u30D1\u30FC\u30C6\u30A3\u30FC\u306B\u5408\u308F\u305B\u3066\u5149\u308A\u307E\u3059",
           liveCopy: "\u30EA\u30F3\u30AF\u3092\u30B3\u30D4\u30FC",
           partyFx: "\u30B9\u30C6\u30FC\u30B8\u6F14\u51FA",
           partyFxHint: "\u30A8\u30EC\u30AF\u30C8\u30ED\u306B\u306FCO2\u30B8\u30A7\u30C3\u30C8\u3001\u30ED\u30C3\u30AF\u3084\u30E1\u30BF\u30EB\u306B\u306F\u30D1\u30A4\u30ED\u306E\u708E\u3001\u6700\u5F8C\u306E\u30B5\u30D3\u306B\u306F\u82B1\u706B \u2014 \u30C9\u30ED\u30C3\u30D7\u3068\u76DB\u308A\u4E0A\u304C\u308A\u306E\u9802\u70B9\u3067",
@@ -4459,9 +4465,6 @@
           partyStrobeHint: "\u30C6\u30AF\u30CE\u3001\u30CF\u30FC\u30C9\u30B9\u30BF\u30A4\u30EB\u3001\u30EC\u30A4\u30D6\u3001\u30C9\u30E9\u30E0\u30F3\u30D9\u30FC\u30B9\u306E\u30C9\u30ED\u30C3\u30D7\u4E2D\u306B\u62CD\u306B\u5408\u308F\u305B\u3066\u767D\u304F\u5149\u308A\u307E\u3059 \u2014 \u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\u30011\u62CD\u306B\u6700\u59271\u56DE",
           venue_warehouse: "\u5009\u5EAB",
           venue_beach: "\u30D3\u30FC\u30C1",
-          liveMissing: "Mirage Overlay\u30A2\u30D7\u30EA\u304C\u63A5\u7D9A\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u3002\u8D77\u52D5\u3059\u308B\u3068\uFF08\u30D0\u30FC\u30B8\u30E7\u30F31.10\u4EE5\u964D\uFF09\u3053\u3053\u306BQR\u30B3\u30FC\u30C9\u304C\u8868\u793A\u3055\u308C\u307E\u3059\u3002",
-          liveOld: "Overlay\u30A2\u30D7\u30EA\u304B\u3089\u5FDC\u7B54\u304C\u3042\u308A\u307E\u305B\u3093 \u2014 \u53E4\u3044\u30D0\u30FC\u30B8\u30E7\u30F3\u306E\u53EF\u80FD\u6027\u304C\u3042\u308A\u307E\u3059\u3002\u66F4\u65B0\u3057\u3001\u53E4\u3044\u30B3\u30D4\u30FC\uFF08\u53E4\u3044Mirage\u30D5\u30A9\u30EB\u30C0\u30FC\u306E\u300Celectron.exe\u300D\u306A\u3069\uFF09\u3092\u7D42\u4E86\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
-          liveFirewall: "\u30B9\u30DE\u30DB\u3067\u958B\u3051\u306A\u3044\u5834\u5408\uFF1A\u540C\u3058Wi-Fi\u306B\u63A5\u7D9A\u3057\u3001Windows\u3067\u300CMirage Overlay\u300D\u3092\u8A31\u53EF\u3057\u3066\u304F\u3060\u3055\u3044\uFF08\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u304C\u30D1\u30D6\u30EA\u30C3\u30AF\u306A\u3089\u30D1\u30D6\u30EA\u30C3\u30AF\u3067\u3082\uFF09\u3002",
           g_party: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
           ps_light: "\u7167\u660E\u3068\u30A8\u30D5\u30A7\u30AF\u30C8",
           ps_moments: "\u6F14\u51FA",
@@ -4473,7 +4476,6 @@
           fam_pop: "\u30DD\u30C3\u30D7",
           fam_world: "\u30E9\u30C6\u30F3\u30FB\u30EF\u30FC\u30EB\u30C9",
           fam_calm: "\u7A4F\u3084\u304B\u30FB\u30AF\u30E9\u30B7\u30C3\u30AF",
-          liveWait: "Overlay\u30A2\u30D7\u30EA\u3092\u5F85\u3063\u3066\u3044\u307E\u3059\u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -4512,7 +4514,9 @@
           tapCount: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u30BF\u30C3\u30D7\u3092\u7D9A\u3051\u3066 \u2026 {n}/6",
           tapDone: "\u540C\u671F\u3057\u307E\u3057\u305F \u2013 {ms} ms \u8ABF\u6574",
           tapUnsure: "\u3070\u3089\u3064\u304D\u304C\u5927\u304D\u3059\u304E\u307E\u3059 \u2013 \u5404\u62CD\u306B\u4E00\u5B9A\u306E\u30EA\u30BA\u30E0\u3067\u30BF\u30C3\u30D7\u3057\u3066\u304F\u3060\u3055\u3044",
-          tapNoBeat: "\u3053\u306E\u66F2\u306E\u30D3\u30FC\u30C8\u30C7\u30FC\u30BF\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093"
+          tapNoBeat: "\u3053\u306E\u66F2\u306E\u30D3\u30FC\u30C8\u30C7\u30FC\u30BF\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093",
+          liveRelay: "\u516C\u958B\u30EA\u30EC\u30FC\u7D4C\u7531\u3067\u30A8\u30F3\u30C9\u30C4\u30FC\u30A8\u30F3\u30C9\u6697\u53F7\u5316 \u2013 \u3053\u306EQR\u30B3\u30FC\u30C9\u3092\u6301\u3064\u4EBA\u3060\u3051\u304C\u898B\u3089\u308C\u307E\u3059\u3002\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9\u3092\u7D42\u3048\u308B\u3068\u505C\u6B62\u3057\u300110\u5206\u5F8C\u306B\u30B3\u30FC\u30C9\u306F\u7121\u52B9\u306B\u306A\u308A\u307E\u3059\u3002",
+          liveError: "\u30EA\u30EC\u30FC\u306B\u63A5\u7D9A\u3067\u304D\u307E\u305B\u3093 \u2013 \u30A4\u30F3\u30BF\u30FC\u30CD\u30C3\u30C8\u63A5\u7D9A\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -4805,7 +4809,7 @@
           partyQuietFps: "\uC870\uC6A9\uD55C \uAD6C\uAC04 30fps",
           partyQuietFpsHint: "\uC870\uC6A9\uD55C \uC778\uD2B8\uB85C\uC640 \uBE0C\uB808\uC774\uD06C\uB294 \uCD08\uB2F9 30\uD504\uB808\uC784\uC73C\uB85C \u2014 \uB611\uAC19\uC544 \uBCF4\uC774\uACE0 \uC804\uB825\uC740 \uC544\uB08D\uB2C8\uB2E4",
           partyLive: "\uD734\uB300\uD3F0\uC6A9 \uB77C\uC774\uBE0C \uB9C1\uD06C",
-          partyLiveHint: "\uAC19\uC740 Wi-Fi\uC758 \uD734\uB300\uD3F0\uC774 \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB0A9\uB2C8\uB2E4 \u2014 QR \uCF54\uB4DC\uB97C \uC2A4\uCE94\uD558\uC138\uC694. Mirage Overlay \uC571\uC774 \uD544\uC694\uD558\uBA70, Windows\uAC00 \uC0AC\uC124 \uB124\uD2B8\uC6CC\uD06C \uC811\uADFC\uC744 \uD55C \uBC88 \uBB3C\uC744 \uC218 \uC788\uC2B5\uB2C8\uB2E4",
+          partyLiveHint: "\uC5B4\uB5A4 \uB124\uD2B8\uC6CC\uD06C\uC758 \uD734\uB300\uD3F0\uC774\uB4E0 \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB0A9\uB2C8\uB2E4 \u2013 QR \uCF54\uB4DC\uB97C \uC2A4\uCE94\uD558\uC138\uC694. \uC554\uD638\uD654\uB418\uC5B4 QR \uCF54\uB4DC\uB85C\uB9CC, \uD30C\uD2F0 \uBAA8\uB4DC \uC911\uC5D0\uB9CC \uC811\uC18D\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC571\uC774 \uD544\uC694 \uC5C6\uC2B5\uB2C8\uB2E4.",
           mixInstruments: "\uBBF9\uC2A4\uAC00 \uC545\uAE30\uC5D0 \uBC18\uC751",
           mixInstrumentsHint: "\uBBF9\uC2A4 \uBAA8\uB4DC\uC5D0\uC11C \uD384\uC2A4\uC640 \uB9C1\uC774 \uBC15\uC790 \uACA9\uC790\uB9CC\uC774 \uC544\uB2C8\uB77C \uC2E4\uC81C \uD0A5\uC744 \uB530\uB77C\uAC11\uB2C8\uB2E4",
           partyVenue: "\uC7A5\uC18C",
@@ -4820,7 +4824,7 @@
           eco_off: "\uB044\uAE30",
           liveBtn: "\uD734\uB300\uD3F0\uC6A9 \uB77C\uC774\uBE0C \uB9C1\uD06C",
           liveTitle: "\uD734\uB300\uD3F0\uB3C4 \uBE5B\uB098\uAC8C",
-          liveHint: "\uAC19\uC740 Wi-Fi\uC758 \uD734\uB300\uD3F0\uC73C\uB85C \uC2A4\uCE94\uD558\uACE0 \uD654\uBA74\uC744 \uC704\uB85C \uB450\uC138\uC694 \u2014 \uD30C\uD2F0\uC5D0 \uB9DE\uCDB0 \uAE5C\uBC15\uC785\uB2C8\uB2E4",
+          liveHint: "\uD734\uB300\uD3F0\uC73C\uB85C \uC2A4\uCE94\uD558\uACE0 \uD654\uBA74\uC744 \uC704\uB85C \uB450\uC138\uC694 \u2013 \uD30C\uD2F0\uC5D0 \uB9DE\uCDB0 \uAE5C\uBC15\uC785\uB2C8\uB2E4",
           liveCopy: "\uB9C1\uD06C \uBCF5\uC0AC",
           partyFx: "\uBB34\uB300 \uD6A8\uACFC",
           partyFxHint: "\uC77C\uB809\uD2B8\uB85C\uB2C9\uC5D4 CO2 \uBD84\uC0AC, \uB85D\uACFC \uBA54\uD0C8\uC5D4 \uD30C\uC774\uB85C \uBD88\uAF43, \uB9C8\uC9C0\uB9C9 \uD6C4\uB834\uC5D4 \uBD88\uAF43\uB180\uC774 \u2014 \uB4DC\uB86D\uACFC \uC808\uC815\uC5D0\uC11C",
@@ -4828,9 +4832,6 @@
           partyStrobeHint: "\uD14C\uD06C\uB178, \uD558\uB4DC\uC2A4\uD0C0\uC77C, \uB808\uC774\uBE0C, \uB4DC\uB7FC\uC564\uBCA0\uC774\uC2A4\uC758 \uB4DC\uB86D \uC911 \uBC15\uC790\uC5D0 \uB9DE\uCDB0 \uD558\uC597\uAC8C \uBC88\uCA4D\uC785\uB2C8\uB2E4 \u2014 '\uC775\uC2A4\uD2B8\uB9BC'\uBD80\uD130, \uD55C \uBC15\uC5D0 \uCD5C\uB300 \uD55C \uBC88",
           venue_warehouse: "\uCC3D\uACE0",
           venue_beach: "\uD574\uBCC0",
-          liveMissing: "Mirage Overlay \uC571\uC774 \uC5F0\uACB0\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC2E4\uD589\uD558\uBA74(\uBC84\uC804 1.10 \uC774\uC0C1) \uC5EC\uAE30\uC5D0 QR \uCF54\uB4DC\uAC00 \uB098\uD0C0\uB0A9\uB2C8\uB2E4.",
-          liveOld: "Overlay \uC571\uC758 \uC751\uB2F5\uC774 \uC5C6\uC2B5\uB2C8\uB2E4 \u2014 \uC624\uB798\uB41C \uBC84\uC804\uC77C \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC5C5\uB370\uC774\uD2B8\uD558\uACE0 \uC624\uB798\uB41C \uC0AC\uBCF8(\uC608: \uC624\uB798\uB41C Mirage \uD3F4\uB354\uC758 'electron.exe')\uC744 \uC885\uB8CC\uD558\uC138\uC694.",
-          liveFirewall: "\uD734\uB300\uD3F0\uC5D0\uC11C \uC5F4\uB9AC\uC9C0 \uC54A\uB098\uC694? \uAC19\uC740 Wi-Fi\uC5D0 \uC788\uC5B4\uC57C \uD558\uACE0, Windows\uAC00 'Mirage Overlay'\uB97C \uD5C8\uC6A9\uD574\uC57C \uD569\uB2C8\uB2E4 \u2014 \uB124\uD2B8\uC6CC\uD06C\uAC00 \uACF5\uC6A9\uC774\uBA74 \uACF5\uC6A9 \uB124\uD2B8\uC6CC\uD06C\uC5D0\uB3C4.",
           g_party: "\uD30C\uD2F0 \uBAA8\uB4DC",
           ps_light: "\uC870\uBA85 & \uD6A8\uACFC",
           ps_moments: "\uC21C\uAC04",
@@ -4842,7 +4843,6 @@
           fam_pop: "\uD31D",
           fam_world: "\uB77C\uD2F4 & \uC6D4\uB4DC",
           fam_calm: "\uCC28\uBD84\uD568 & \uD074\uB798\uC2DD",
-          liveWait: "Overlay \uC571\uC744 \uAE30\uB2E4\uB9AC\uB294 \uC911\u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -4881,7 +4881,9 @@
           tapCount: "\uBC15\uC790\uC5D0 \uB9DE\uCDB0 \uACC4\uC18D \uD0ED\uD558\uC138\uC694 \u2026 {n}/6",
           tapDone: "\uC2F1\uD06C \uC644\uB8CC \u2013 {ms} ms \uC870\uC815",
           tapUnsure: "\uB108\uBB34 \uBD88\uADDC\uCE59\uD569\uB2C8\uB2E4 \u2013 \uB9E4 \uBC15\uC790\uB9C8\uB2E4 \uC77C\uC815\uD558\uAC8C \uD0ED\uD558\uC138\uC694",
-          tapNoBeat: "\uC774 \uACE1\uC5D0\uB294 \uC544\uC9C1 \uBC15\uC790 \uB370\uC774\uD130\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4"
+          tapNoBeat: "\uC774 \uACE1\uC5D0\uB294 \uC544\uC9C1 \uBC15\uC790 \uB370\uC774\uD130\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
+          liveRelay: "\uACF5\uAC1C \uB9B4\uB808\uC774\uB97C \uD1B5\uD55C \uC885\uB2E8 \uAC04 \uC554\uD638\uD654 \u2013 \uC774 QR \uCF54\uB4DC\uB97C \uAC00\uC9C4 \uC0AC\uB78C\uB9CC \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uD30C\uD2F0 \uBAA8\uB4DC\uB97C \uB098\uAC00\uBA74 \uB05D\uB098\uACE0, 10\uBD84 \uD6C4 \uCF54\uB4DC\uAC00 \uB9CC\uB8CC\uB429\uB2C8\uB2E4.",
+          liveError: "\uC5F0\uACB0 \uAC00\uB2A5\uD55C \uB9B4\uB808\uC774\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4 \u2013 \uC778\uD130\uB137 \uC5F0\uACB0\uC744 \uD655\uC778\uD558\uC138\uC694"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -5174,7 +5176,7 @@
           partyQuietFps: "\u5B89\u9759\u6BB5\u843D 30 \u5E27",
           partyQuietFpsHint: "\u5B89\u9759\u7684\u524D\u594F\u548C\u95F4\u594F\u4EE5\u6BCF\u79D2 30 \u5E27\u8FD0\u884C\u2014\u2014\u770B\u8D77\u6765\u4E00\u6837\uFF0C\u66F4\u7701\u7535",
           partyLive: "\u624B\u673A\u5B9E\u65F6\u94FE\u63A5",
-          partyLiveHint: "\u540C\u4E00 Wi-Fi \u4E0B\u7684\u624B\u673A\u968F\u8282\u62CD\u53D1\u5149\u2014\u2014\u626B\u63CF\u4E8C\u7EF4\u7801\u5373\u53EF\u3002\u9700\u8981 Mirage Overlay \u5E94\u7528\uFF1BWindows \u53EF\u80FD\u4F1A\u8BE2\u95EE\u4E00\u6B21\u662F\u5426\u5141\u8BB8\u8BBF\u95EE\u4E13\u7528\u7F51\u7EDC",
+          partyLiveHint: "\u4EFB\u4F55\u7F51\u7EDC\u4E0B\u7684\u624B\u673A\u90FD\u80FD\u968F\u8282\u62CD\u53D1\u5149\u2014\u2014\u626B\u63CF\u4E8C\u7EF4\u7801\u5373\u53EF\u3002\u52A0\u5BC6\u4F20\u8F93\uFF0C\u53EA\u80FD\u901A\u8FC7\u4E8C\u7EF4\u7801\u8BBF\u95EE\uFF0C\u4E14\u4EC5\u5728\u6D3E\u5BF9\u6A21\u5F0F\u5F00\u542F\u671F\u95F4\u3002\u65E0\u9700\u5E94\u7528\u3002",
           mixInstruments: "\u6DF7\u5408\u6A21\u5F0F\u54CD\u5E94\u4E50\u5668",
           mixInstrumentsHint: "\u5728\u6DF7\u5408\u6A21\u5F0F\u4E0B\uFF0C\u8109\u51B2\u548C\u5149\u73AF\u8DDF\u968F\u771F\u5B9E\u7684\u5E95\u9F13\uFF0C\u800C\u4E0D\u4EC5\u662F\u8282\u62CD\u7F51\u683C",
           partyVenue: "\u573A\u5730",
@@ -5189,7 +5191,7 @@
           eco_off: "\u5173\u95ED",
           liveBtn: "\u624B\u673A\u5B9E\u65F6\u94FE\u63A5",
           liveTitle: "\u8BA9\u624B\u673A\u4E00\u8D77\u4EAE",
-          liveHint: "\u7528\u540C\u4E00 Wi-Fi \u4E0B\u7684\u624B\u673A\u626B\u63CF\uFF0C\u5C4F\u5E55\u671D\u4E0A\u653E\u597D\u2014\u2014\u5B83\u4F1A\u968F\u6D3E\u5BF9\u4E00\u8D77\u95EA\u70C1",
+          liveHint: "\u7528\u624B\u673A\u626B\u63CF\uFF0C\u5C4F\u5E55\u671D\u4E0A\u653E\u597D\u2014\u2014\u5B83\u4F1A\u968F\u6D3E\u5BF9\u4E00\u8D77\u95EA\u70C1",
           liveCopy: "\u590D\u5236\u94FE\u63A5",
           partyFx: "\u821E\u53F0\u7279\u6548",
           partyFxHint: "\u7535\u5B50\u4E50\u914D CO2 \u55B7\u5C04\uFF0C\u6447\u6EDA\u548C\u91D1\u5C5E\u914D\u70DF\u706B\u706B\u7130\uFF0C\u6700\u540E\u4E00\u6BB5\u526F\u6B4C\u653E\u70DF\u82B1\u2014\u2014\u5728 drop \u548C\u9AD8\u6F6E\u65F6",
@@ -5197,9 +5199,6 @@
           partyStrobeHint: "Techno\u3001\u786C\u6D3E\u3001\u9510\u821E\u548C\u9F13\u6253\u8D1D\u65AF\u5728 drop \u65F6\u968F\u8282\u62CD\u95EA\u767D\u5149\u2014\u2014\u4ECE\u300C\u6781\u9650\u300D\u8D77\uFF0C\u6BCF\u62CD\u6700\u591A\u4E00\u6B21",
           venue_warehouse: "\u4ED3\u5E93",
           venue_beach: "\u6D77\u6EE9",
-          liveMissing: "Mirage Overlay \u5E94\u7528\u672A\u8FDE\u63A5\u3002\u542F\u52A8\u5B83\uFF081.10 \u6216\u66F4\u65B0\u7248\u672C\uFF09\u540E\uFF0C\u8FD9\u91CC\u4F1A\u663E\u793A\u4E8C\u7EF4\u7801\u3002",
-          liveOld: "Overlay \u5E94\u7528\u6CA1\u6709\u54CD\u5E94\u2014\u2014\u53EF\u80FD\u662F\u65E7\u7248\u672C\u3002\u8BF7\u66F4\u65B0\uFF0C\u5E76\u5173\u95ED\u65E7\u526F\u672C\uFF08\u4F8B\u5982\u65E7 Mirage \u6587\u4EF6\u5939\u4E2D\u7684\u300Celectron.exe\u300D\uFF09\u3002",
-          liveFirewall: "\u624B\u673A\u6253\u4E0D\u5F00\uFF1F\u624B\u673A\u5FC5\u987B\u5728\u540C\u4E00 Wi-Fi\uFF0C\u4E14 Windows \u9700\u5141\u8BB8\u300CMirage Overlay\u300D\u2014\u2014\u5982\u679C\u4F60\u7684\u7F51\u7EDC\u8BBE\u4E3A\u516C\u7528\uFF0C\u4E5F\u8981\u5141\u8BB8\u516C\u7528\u7F51\u7EDC\u3002",
           g_party: "\u6D3E\u5BF9\u6A21\u5F0F",
           ps_light: "\u706F\u5149\u4E0E\u7279\u6548",
           ps_moments: "\u9AD8\u5149\u65F6\u523B",
@@ -5211,7 +5210,6 @@
           fam_pop: "\u6D41\u884C",
           fam_world: "\u62C9\u4E01\u4E0E\u4E16\u754C",
           fam_calm: "\u5B89\u9759\u4E0E\u53E4\u5178",
-          liveWait: "\u6B63\u5728\u7B49\u5F85 Overlay \u5E94\u7528\u2026",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -5250,7 +5248,9 @@
           tapCount: "\u7EE7\u7EED\u8DDF\u7740\u8282\u62CD\u70B9\u6309 \u2026 {n}/6",
           tapDone: "\u5DF2\u540C\u6B65\u2014\u2014\u8C03\u6574\u4E86 {ms} \u6BEB\u79D2",
           tapUnsure: "\u592A\u4E0D\u5747\u5300\u2014\u2014\u8BF7\u5728\u6BCF\u4E00\u62CD\u4E0A\u5747\u5300\u70B9\u6309",
-          tapNoBeat: "\u8FD9\u9996\u6B4C\u6682\u65F6\u6CA1\u6709\u8282\u62CD\u6570\u636E"
+          tapNoBeat: "\u8FD9\u9996\u6B4C\u6682\u65F6\u6CA1\u6709\u8282\u62CD\u6570\u636E",
+          liveRelay: "\u7ECF\u516C\u5171\u4E2D\u7EE7\u7AEF\u5230\u7AEF\u52A0\u5BC6\u2014\u2014\u53EA\u6709\u62E5\u6709\u6B64\u4E8C\u7EF4\u7801\u7684\u4EBA\u624D\u80FD\u770B\u5230\u3002\u9000\u51FA\u6D3E\u5BF9\u6A21\u5F0F\u5373\u7ED3\u675F\uFF1B10 \u5206\u949F\u540E\u4E8C\u7EF4\u7801\u5931\u6548\u3002",
+          liveError: "\u65E0\u6CD5\u8FDE\u63A5\u4E2D\u7EE7\u2014\u2014\u7F51\u7EDC\u662F\u5426\u6B63\u5E38\uFF1F"
         }
       };
       LANG = (() => {
@@ -7494,7 +7494,7 @@
         const inst = { k: -1, s: -1, h: -1 };
         let sway = 1, lastSec = 0, dropGlow = 0, lastFlashAt = -1e9, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
         const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
-        async function prepare(item) {
+        async function prepare2(item) {
           const u = item?.uri || "";
           const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
           if (pk === picked) return info;
@@ -7694,7 +7694,7 @@
             return false;
           }
         })();
-        return { prepare, step, get info() {
+        return { prepare: prepare2, step, get info() {
           return info;
         }, PROFILES, PROFILE_KEYS, FAMILIES };
       })();
@@ -8726,277 +8726,6 @@
     }
   });
 
-  // src/pages.js
-  function pageEnter() {
-    if (!cfg.cascade || cfg.calm) return;
-    const mv = document.querySelector(SEL.mainView);
-    if (!mv) return;
-    mv.classList.remove("m-enter");
-    setTimeout(() => {
-      mv.querySelectorAll(SEL.grid).forEach(
-        (g) => [...g.children].slice(0, 24).forEach((c2, i) => c2.style.setProperty("--m-i", i))
-      );
-      [...mv.querySelectorAll(SEL.rows)].slice(0, 26).forEach((r, i) => r.style.setProperty("--m-i", i));
-      void mv.offsetWidth;
-      mv.classList.add("m-enter");
-      clearTimeout(enterTimer);
-      enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
-    }, 70);
-  }
-  function domReport() {
-    try {
-      domReportInner();
-    } catch (e) {
-      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
-    }
-  }
-  function domReportInner() {
-    const tree = [];
-    (function walk(el2, depth) {
-      if (depth > 4 || tree.length > 160) return;
-      for (const c2 of el2.children) {
-        const r = c2.getBoundingClientRect();
-        tree.push(`${"  ".repeat(depth)}${c2.tagName.toLowerCase()}${c2.id ? "#" + c2.id : ""} .${String(c2.className?.baseVal ?? c2.className).slice(0, 120)} [${c2.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
-        walk(c2, depth + 1);
-      }
-    })(document.body, 0);
-    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(SEL.mainView), tree });
-    const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
-    const out = [];
-    const minW = mv.clientWidth * 0.4;
-    for (const el2 of mv.querySelectorAll("*")) {
-      if (out.length >= 80) break;
-      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
-      const r = el2.getBoundingClientRect();
-      if (r.top > innerHeight) continue;
-      const cs = getComputedStyle(el2);
-      const pseudo = ["::before", "::after"].map((p) => {
-        const c2 = getComputedStyle(el2, p);
-        return c2.content !== "none" && (c2.backgroundColor !== "rgba(0, 0, 0, 0)" || c2.backgroundImage !== "none") ? `${p} ${c2.backgroundColor} ${c2.backgroundImage.slice(0, 160)} op=${c2.opacity}` : "";
-      }).filter(Boolean);
-      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
-      out.push({
-        tag: el2.tagName,
-        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
-        testid: el2.dataset?.testid || "",
-        style: (el2.getAttribute("style") || "").slice(0, 300),
-        bg: cs.backgroundColor,
-        img: cs.backgroundImage.slice(0, 200),
-        opacity: cs.opacity,
-        tint: el2.classList.contains("m-tint"),
-        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
-        pseudo
-      });
-    }
-    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
-      main: getComputedStyle(root).getPropertyValue("--spice-main"),
-      a: getComputedStyle(root).getPropertyValue("--m-a"),
-      dynamic: cfg.dynamic,
-      scheme: cfg.scheme,
-      current,
-      colorDiag
-    } });
-  }
-  function markPage(loc) {
-    const path = (loc || S.Platform.History.location || {}).pathname || "";
-    root.dataset.mPage = path.split("/")[1] || "home";
-  }
-  var enterTimer;
-  var init_pages = __esm({
-    "src/pages.js"() {
-      init_selectors();
-      init_core();
-      init_config();
-      init_color();
-      init_bridge();
-      enterTimer = 0;
-      try {
-        S.Platform.History.listen((loc) => {
-          markPage(loc);
-          pageEnter();
-        });
-        markPage();
-      } catch {
-      }
-    }
-  });
-
-  // src/bridge.js
-  var bridge;
-  var init_bridge = __esm({
-    "src/bridge.js"() {
-      init_core();
-      init_lyrics();
-      init_audio();
-      init_i18n();
-      init_color();
-      init_player();
-      init_pages();
-      init_controls();
-      init_party();
-      init_config();
-      bridge = /* @__PURE__ */ (() => {
-        const ADDR = "ws://127.0.0.1:47321";
-        let ws = null, retry = 0, wanted = false, liveInfo = null;
-        function connect2() {
-          wanted = true;
-          if (ws && ws.readyState <= 1) return;
-          try {
-            ws = new WebSocket(ADDR);
-          } catch {
-            return schedule3();
-          }
-          const sock = ws;
-          ws.onopen = () => {
-            if (ws !== sock) return;
-            sendTrack();
-            watchVolume(true);
-            if (cfg.partyLive) send({ type: "live", on: true });
-          };
-          ws.onclose = () => {
-            if (ws !== sock) return;
-            ws = null;
-            liveInfo = null;
-            window.dispatchEvent(new Event("mirage:live"));
-            watchVolume(false);
-            setTopics([]);
-            schedule3();
-          };
-          ws.onerror = () => {
-          };
-          ws.onmessage = (e) => {
-            if (ws !== sock) return;
-            let m;
-            try {
-              m = JSON.parse(e.data);
-            } catch {
-              return;
-            }
-            if (m.type === "live-info") {
-              liveInfo = m.url ? { url: String(m.url), qr: String(m.qr || "") } : null;
-              window.dispatchEvent(new Event("mirage:live"));
-              return;
-            }
-            if (m.type !== "cmd") return;
-            if (m.cmd === "toggle") S.Player.togglePlay();
-            else if (m.cmd === "next") S.Player.next();
-            else if (m.cmd === "prev") S.Player.back();
-            else if (m.cmd === "hello") sendTrack();
-            else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
-            else if (m.cmd === "report") {
-              send({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
-                api: typeof S.Player.getVolume?.(),
-                pb: typeof S.Platform?.PlaybackAPI?._volume,
-                read: readVolume()
-              } });
-              domReport();
-            }
-          };
-        }
-        function schedule3() {
-          clearTimeout(retry);
-          if (wanted) retry = setTimeout(connect2, 5e3);
-        }
-        function close() {
-          wanted = false;
-          clearTimeout(retry);
-          setTopics([]);
-          watchVolume(false);
-          try {
-            ws?.close();
-          } catch {
-          }
-          ws = null;
-        }
-        let volTimer = 0, lastVol = null;
-        const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
-        function readVolume() {
-          let v = num(S.Player.getVolume?.());
-          if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
-          if (v === null) {
-            const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
-            const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
-            if (m) v = num(Number(m[1]) / 100);
-          }
-          return v;
-        }
-        function watchVolume(on) {
-          clearInterval(volTimer);
-          lastVol = null;
-          if (!on) return;
-          volTimer = setInterval(() => {
-            const v = readVolume();
-            if (v === null) return;
-            const muted = !!S.Player.getMute?.() || v === 0;
-            const key = Math.round(v * 100) + (muted ? "m" : "");
-            if (lastVol !== null && key !== lastVol && !isFading()) send({ type: "volume", value: v, muted });
-            lastVol = key;
-          }, 250);
-        }
-        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
-        function setTopics(list) {
-          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
-          clearInterval(lyricTimer);
-          clearInterval(levelTimer);
-          clearInterval(partyTimer);
-          lastLine = "";
-          if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
-          if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
-          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
-        }
-        function pushParty() {
-          const L = party.live;
-          if (!cfg.partyEdge && !cfg.partyLive || !L || performance.now() - L.at > 400 || document.hidden) return;
-          send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
-        }
-        async function pushLyric() {
-          const uri = currentItem()?.uri || "";
-          const lyr = await getLyrics(uri);
-          const lines = lyr?.synced ? lyr.lines : null;
-          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
-          const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
-          const key = uri + "|" + i;
-          if (key === lastLine) return;
-          lastLine = key;
-          send({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
-        }
-        function pushLevel() {
-          if (!S.Player.isPlaying()) return;
-          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
-          if (b) send({ type: "level", bands: b });
-        }
-        function sendTrack(changed) {
-          const item = currentItem();
-          if (!item || ws?.readyState !== 1) return;
-          const c2 = covers(item);
-          ws.send(
-            JSON.stringify({
-              type: "track",
-              changed: !!changed,
-              uri: item.uri,
-              title: titleOf(item),
-              artist: artistOf(item),
-              album: item.album?.name || item.metadata?.album_title || "",
-              cover: c2.big || c2.small,
-              colors: palette().map((x) => `rgb(${x.join(",")})`),
-              duration: S.Player.getDuration?.() || 0,
-              progress: S.Player.getProgress?.() || 0,
-              playing: !!S.Player.isPlaying(),
-              lang: LANG
-            })
-          );
-        }
-        const send = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
-        function setLive(on) {
-          liveInfo = null;
-          window.dispatchEvent(new Event("mirage:live"));
-          send({ type: "live", on: !!on });
-        }
-        return { connect: connect2, close, sendTrack, send, setLive, live: () => liveInfo, connected: () => ws?.readyState === 1 };
-      })();
-    }
-  });
-
   // src/clock.js
   function offsetFor(uri) {
     const per = cfg.syncSongs?.[uri];
@@ -9243,6 +8972,2264 @@
     }
   });
 
+  // node_modules/qrcode/lib/can-promise.js
+  var require_can_promise = __commonJS({
+    "node_modules/qrcode/lib/can-promise.js"(exports, module) {
+      module.exports = function() {
+        return typeof Promise === "function" && Promise.prototype && Promise.prototype.then;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/utils.js
+  var require_utils = __commonJS({
+    "node_modules/qrcode/lib/core/utils.js"(exports) {
+      var toSJISFunction;
+      var CODEWORDS_COUNT = [
+        0,
+        // Not used
+        26,
+        44,
+        70,
+        100,
+        134,
+        172,
+        196,
+        242,
+        292,
+        346,
+        404,
+        466,
+        532,
+        581,
+        655,
+        733,
+        815,
+        901,
+        991,
+        1085,
+        1156,
+        1258,
+        1364,
+        1474,
+        1588,
+        1706,
+        1828,
+        1921,
+        2051,
+        2185,
+        2323,
+        2465,
+        2611,
+        2761,
+        2876,
+        3034,
+        3196,
+        3362,
+        3532,
+        3706
+      ];
+      exports.getSymbolSize = function getSymbolSize(version) {
+        if (!version) throw new Error('"version" cannot be null or undefined');
+        if (version < 1 || version > 40) throw new Error('"version" should be in range from 1 to 40');
+        return version * 4 + 17;
+      };
+      exports.getSymbolTotalCodewords = function getSymbolTotalCodewords(version) {
+        return CODEWORDS_COUNT[version];
+      };
+      exports.getBCHDigit = function(data) {
+        let digit = 0;
+        while (data !== 0) {
+          digit++;
+          data >>>= 1;
+        }
+        return digit;
+      };
+      exports.setToSJISFunction = function setToSJISFunction(f) {
+        if (typeof f !== "function") {
+          throw new Error('"toSJISFunc" is not a valid function.');
+        }
+        toSJISFunction = f;
+      };
+      exports.isKanjiModeEnabled = function() {
+        return typeof toSJISFunction !== "undefined";
+      };
+      exports.toSJIS = function toSJIS(kanji) {
+        return toSJISFunction(kanji);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/error-correction-level.js
+  var require_error_correction_level = __commonJS({
+    "node_modules/qrcode/lib/core/error-correction-level.js"(exports) {
+      exports.L = { bit: 1 };
+      exports.M = { bit: 0 };
+      exports.Q = { bit: 3 };
+      exports.H = { bit: 2 };
+      function fromString(string) {
+        if (typeof string !== "string") {
+          throw new Error("Param is not a string");
+        }
+        const lcStr = string.toLowerCase();
+        switch (lcStr) {
+          case "l":
+          case "low":
+            return exports.L;
+          case "m":
+          case "medium":
+            return exports.M;
+          case "q":
+          case "quartile":
+            return exports.Q;
+          case "h":
+          case "high":
+            return exports.H;
+          default:
+            throw new Error("Unknown EC Level: " + string);
+        }
+      }
+      exports.isValid = function isValid(level) {
+        return level && typeof level.bit !== "undefined" && level.bit >= 0 && level.bit < 4;
+      };
+      exports.from = function from(value, defaultValue) {
+        if (exports.isValid(value)) {
+          return value;
+        }
+        try {
+          return fromString(value);
+        } catch (e) {
+          return defaultValue;
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/bit-buffer.js
+  var require_bit_buffer = __commonJS({
+    "node_modules/qrcode/lib/core/bit-buffer.js"(exports, module) {
+      function BitBuffer() {
+        this.buffer = [];
+        this.length = 0;
+      }
+      BitBuffer.prototype = {
+        get: function(index) {
+          const bufIndex = Math.floor(index / 8);
+          return (this.buffer[bufIndex] >>> 7 - index % 8 & 1) === 1;
+        },
+        put: function(num, length) {
+          for (let i = 0; i < length; i++) {
+            this.putBit((num >>> length - i - 1 & 1) === 1);
+          }
+        },
+        getLengthInBits: function() {
+          return this.length;
+        },
+        putBit: function(bit) {
+          const bufIndex = Math.floor(this.length / 8);
+          if (this.buffer.length <= bufIndex) {
+            this.buffer.push(0);
+          }
+          if (bit) {
+            this.buffer[bufIndex] |= 128 >>> this.length % 8;
+          }
+          this.length++;
+        }
+      };
+      module.exports = BitBuffer;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/bit-matrix.js
+  var require_bit_matrix = __commonJS({
+    "node_modules/qrcode/lib/core/bit-matrix.js"(exports, module) {
+      function BitMatrix(size) {
+        if (!size || size < 1) {
+          throw new Error("BitMatrix size must be defined and greater than 0");
+        }
+        this.size = size;
+        this.data = new Uint8Array(size * size);
+        this.reservedBit = new Uint8Array(size * size);
+      }
+      BitMatrix.prototype.set = function(row, col, value, reserved) {
+        const index = row * this.size + col;
+        this.data[index] = value;
+        if (reserved) this.reservedBit[index] = true;
+      };
+      BitMatrix.prototype.get = function(row, col) {
+        return this.data[row * this.size + col];
+      };
+      BitMatrix.prototype.xor = function(row, col, value) {
+        this.data[row * this.size + col] ^= value;
+      };
+      BitMatrix.prototype.isReserved = function(row, col) {
+        return this.reservedBit[row * this.size + col];
+      };
+      module.exports = BitMatrix;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/alignment-pattern.js
+  var require_alignment_pattern = __commonJS({
+    "node_modules/qrcode/lib/core/alignment-pattern.js"(exports) {
+      var getSymbolSize = require_utils().getSymbolSize;
+      exports.getRowColCoords = function getRowColCoords(version) {
+        if (version === 1) return [];
+        const posCount = Math.floor(version / 7) + 2;
+        const size = getSymbolSize(version);
+        const intervals = size === 145 ? 26 : Math.ceil((size - 13) / (2 * posCount - 2)) * 2;
+        const positions = [size - 7];
+        for (let i = 1; i < posCount - 1; i++) {
+          positions[i] = positions[i - 1] - intervals;
+        }
+        positions.push(6);
+        return positions.reverse();
+      };
+      exports.getPositions = function getPositions(version) {
+        const coords = [];
+        const pos = exports.getRowColCoords(version);
+        const posLength = pos.length;
+        for (let i = 0; i < posLength; i++) {
+          for (let j = 0; j < posLength; j++) {
+            if (i === 0 && j === 0 || // top-left
+            i === 0 && j === posLength - 1 || // bottom-left
+            i === posLength - 1 && j === 0) {
+              continue;
+            }
+            coords.push([pos[i], pos[j]]);
+          }
+        }
+        return coords;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/finder-pattern.js
+  var require_finder_pattern = __commonJS({
+    "node_modules/qrcode/lib/core/finder-pattern.js"(exports) {
+      var getSymbolSize = require_utils().getSymbolSize;
+      var FINDER_PATTERN_SIZE = 7;
+      exports.getPositions = function getPositions(version) {
+        const size = getSymbolSize(version);
+        return [
+          // top-left
+          [0, 0],
+          // top-right
+          [size - FINDER_PATTERN_SIZE, 0],
+          // bottom-left
+          [0, size - FINDER_PATTERN_SIZE]
+        ];
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/mask-pattern.js
+  var require_mask_pattern = __commonJS({
+    "node_modules/qrcode/lib/core/mask-pattern.js"(exports) {
+      exports.Patterns = {
+        PATTERN000: 0,
+        PATTERN001: 1,
+        PATTERN010: 2,
+        PATTERN011: 3,
+        PATTERN100: 4,
+        PATTERN101: 5,
+        PATTERN110: 6,
+        PATTERN111: 7
+      };
+      var PenaltyScores = {
+        N1: 3,
+        N2: 3,
+        N3: 40,
+        N4: 10
+      };
+      exports.isValid = function isValid(mask) {
+        return mask != null && mask !== "" && !isNaN(mask) && mask >= 0 && mask <= 7;
+      };
+      exports.from = function from(value) {
+        return exports.isValid(value) ? parseInt(value, 10) : void 0;
+      };
+      exports.getPenaltyN1 = function getPenaltyN1(data) {
+        const size = data.size;
+        let points = 0;
+        let sameCountCol = 0;
+        let sameCountRow = 0;
+        let lastCol = null;
+        let lastRow = null;
+        for (let row = 0; row < size; row++) {
+          sameCountCol = sameCountRow = 0;
+          lastCol = lastRow = null;
+          for (let col = 0; col < size; col++) {
+            let module2 = data.get(row, col);
+            if (module2 === lastCol) {
+              sameCountCol++;
+            } else {
+              if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
+              lastCol = module2;
+              sameCountCol = 1;
+            }
+            module2 = data.get(col, row);
+            if (module2 === lastRow) {
+              sameCountRow++;
+            } else {
+              if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
+              lastRow = module2;
+              sameCountRow = 1;
+            }
+          }
+          if (sameCountCol >= 5) points += PenaltyScores.N1 + (sameCountCol - 5);
+          if (sameCountRow >= 5) points += PenaltyScores.N1 + (sameCountRow - 5);
+        }
+        return points;
+      };
+      exports.getPenaltyN2 = function getPenaltyN2(data) {
+        const size = data.size;
+        let points = 0;
+        for (let row = 0; row < size - 1; row++) {
+          for (let col = 0; col < size - 1; col++) {
+            const last = data.get(row, col) + data.get(row, col + 1) + data.get(row + 1, col) + data.get(row + 1, col + 1);
+            if (last === 4 || last === 0) points++;
+          }
+        }
+        return points * PenaltyScores.N2;
+      };
+      exports.getPenaltyN3 = function getPenaltyN3(data) {
+        const size = data.size;
+        let points = 0;
+        let bitsCol = 0;
+        let bitsRow = 0;
+        for (let row = 0; row < size; row++) {
+          bitsCol = bitsRow = 0;
+          for (let col = 0; col < size; col++) {
+            bitsCol = bitsCol << 1 & 2047 | data.get(row, col);
+            if (col >= 10 && (bitsCol === 1488 || bitsCol === 93)) points++;
+            bitsRow = bitsRow << 1 & 2047 | data.get(col, row);
+            if (col >= 10 && (bitsRow === 1488 || bitsRow === 93)) points++;
+          }
+        }
+        return points * PenaltyScores.N3;
+      };
+      exports.getPenaltyN4 = function getPenaltyN4(data) {
+        let darkCount = 0;
+        const modulesCount = data.data.length;
+        for (let i = 0; i < modulesCount; i++) darkCount += data.data[i];
+        const k = Math.abs(Math.ceil(darkCount * 100 / modulesCount / 5) - 10);
+        return k * PenaltyScores.N4;
+      };
+      function getMaskAt(maskPattern, i, j) {
+        switch (maskPattern) {
+          case exports.Patterns.PATTERN000:
+            return (i + j) % 2 === 0;
+          case exports.Patterns.PATTERN001:
+            return i % 2 === 0;
+          case exports.Patterns.PATTERN010:
+            return j % 3 === 0;
+          case exports.Patterns.PATTERN011:
+            return (i + j) % 3 === 0;
+          case exports.Patterns.PATTERN100:
+            return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
+          case exports.Patterns.PATTERN101:
+            return i * j % 2 + i * j % 3 === 0;
+          case exports.Patterns.PATTERN110:
+            return (i * j % 2 + i * j % 3) % 2 === 0;
+          case exports.Patterns.PATTERN111:
+            return (i * j % 3 + (i + j) % 2) % 2 === 0;
+          default:
+            throw new Error("bad maskPattern:" + maskPattern);
+        }
+      }
+      exports.applyMask = function applyMask(pattern, data) {
+        const size = data.size;
+        for (let col = 0; col < size; col++) {
+          for (let row = 0; row < size; row++) {
+            if (data.isReserved(row, col)) continue;
+            data.xor(row, col, getMaskAt(pattern, row, col));
+          }
+        }
+      };
+      exports.getBestMask = function getBestMask(data, setupFormatFunc) {
+        const numPatterns = Object.keys(exports.Patterns).length;
+        let bestPattern = 0;
+        let lowerPenalty = Infinity;
+        for (let p = 0; p < numPatterns; p++) {
+          setupFormatFunc(p);
+          exports.applyMask(p, data);
+          const penalty = exports.getPenaltyN1(data) + exports.getPenaltyN2(data) + exports.getPenaltyN3(data) + exports.getPenaltyN4(data);
+          exports.applyMask(p, data);
+          if (penalty < lowerPenalty) {
+            lowerPenalty = penalty;
+            bestPattern = p;
+          }
+        }
+        return bestPattern;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/error-correction-code.js
+  var require_error_correction_code = __commonJS({
+    "node_modules/qrcode/lib/core/error-correction-code.js"(exports) {
+      var ECLevel = require_error_correction_level();
+      var EC_BLOCKS_TABLE = [
+        // L  M  Q  H
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        1,
+        2,
+        2,
+        4,
+        1,
+        2,
+        4,
+        4,
+        2,
+        4,
+        4,
+        4,
+        2,
+        4,
+        6,
+        5,
+        2,
+        4,
+        6,
+        6,
+        2,
+        5,
+        8,
+        8,
+        4,
+        5,
+        8,
+        8,
+        4,
+        5,
+        8,
+        11,
+        4,
+        8,
+        10,
+        11,
+        4,
+        9,
+        12,
+        16,
+        4,
+        9,
+        16,
+        16,
+        6,
+        10,
+        12,
+        18,
+        6,
+        10,
+        17,
+        16,
+        6,
+        11,
+        16,
+        19,
+        6,
+        13,
+        18,
+        21,
+        7,
+        14,
+        21,
+        25,
+        8,
+        16,
+        20,
+        25,
+        8,
+        17,
+        23,
+        25,
+        9,
+        17,
+        23,
+        34,
+        9,
+        18,
+        25,
+        30,
+        10,
+        20,
+        27,
+        32,
+        12,
+        21,
+        29,
+        35,
+        12,
+        23,
+        34,
+        37,
+        12,
+        25,
+        34,
+        40,
+        13,
+        26,
+        35,
+        42,
+        14,
+        28,
+        38,
+        45,
+        15,
+        29,
+        40,
+        48,
+        16,
+        31,
+        43,
+        51,
+        17,
+        33,
+        45,
+        54,
+        18,
+        35,
+        48,
+        57,
+        19,
+        37,
+        51,
+        60,
+        19,
+        38,
+        53,
+        63,
+        20,
+        40,
+        56,
+        66,
+        21,
+        43,
+        59,
+        70,
+        22,
+        45,
+        62,
+        74,
+        24,
+        47,
+        65,
+        77,
+        25,
+        49,
+        68,
+        81
+      ];
+      var EC_CODEWORDS_TABLE = [
+        // L  M  Q  H
+        7,
+        10,
+        13,
+        17,
+        10,
+        16,
+        22,
+        28,
+        15,
+        26,
+        36,
+        44,
+        20,
+        36,
+        52,
+        64,
+        26,
+        48,
+        72,
+        88,
+        36,
+        64,
+        96,
+        112,
+        40,
+        72,
+        108,
+        130,
+        48,
+        88,
+        132,
+        156,
+        60,
+        110,
+        160,
+        192,
+        72,
+        130,
+        192,
+        224,
+        80,
+        150,
+        224,
+        264,
+        96,
+        176,
+        260,
+        308,
+        104,
+        198,
+        288,
+        352,
+        120,
+        216,
+        320,
+        384,
+        132,
+        240,
+        360,
+        432,
+        144,
+        280,
+        408,
+        480,
+        168,
+        308,
+        448,
+        532,
+        180,
+        338,
+        504,
+        588,
+        196,
+        364,
+        546,
+        650,
+        224,
+        416,
+        600,
+        700,
+        224,
+        442,
+        644,
+        750,
+        252,
+        476,
+        690,
+        816,
+        270,
+        504,
+        750,
+        900,
+        300,
+        560,
+        810,
+        960,
+        312,
+        588,
+        870,
+        1050,
+        336,
+        644,
+        952,
+        1110,
+        360,
+        700,
+        1020,
+        1200,
+        390,
+        728,
+        1050,
+        1260,
+        420,
+        784,
+        1140,
+        1350,
+        450,
+        812,
+        1200,
+        1440,
+        480,
+        868,
+        1290,
+        1530,
+        510,
+        924,
+        1350,
+        1620,
+        540,
+        980,
+        1440,
+        1710,
+        570,
+        1036,
+        1530,
+        1800,
+        570,
+        1064,
+        1590,
+        1890,
+        600,
+        1120,
+        1680,
+        1980,
+        630,
+        1204,
+        1770,
+        2100,
+        660,
+        1260,
+        1860,
+        2220,
+        720,
+        1316,
+        1950,
+        2310,
+        750,
+        1372,
+        2040,
+        2430
+      ];
+      exports.getBlocksCount = function getBlocksCount(version, errorCorrectionLevel) {
+        switch (errorCorrectionLevel) {
+          case ECLevel.L:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 0];
+          case ECLevel.M:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 1];
+          case ECLevel.Q:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 2];
+          case ECLevel.H:
+            return EC_BLOCKS_TABLE[(version - 1) * 4 + 3];
+          default:
+            return void 0;
+        }
+      };
+      exports.getTotalCodewordsCount = function getTotalCodewordsCount(version, errorCorrectionLevel) {
+        switch (errorCorrectionLevel) {
+          case ECLevel.L:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 0];
+          case ECLevel.M:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 1];
+          case ECLevel.Q:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 2];
+          case ECLevel.H:
+            return EC_CODEWORDS_TABLE[(version - 1) * 4 + 3];
+          default:
+            return void 0;
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/galois-field.js
+  var require_galois_field = __commonJS({
+    "node_modules/qrcode/lib/core/galois-field.js"(exports) {
+      var EXP_TABLE = new Uint8Array(512);
+      var LOG_TABLE = new Uint8Array(256);
+      (function initTables() {
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+          EXP_TABLE[i] = x;
+          LOG_TABLE[x] = i;
+          x <<= 1;
+          if (x & 256) {
+            x ^= 285;
+          }
+        }
+        for (let i = 255; i < 512; i++) {
+          EXP_TABLE[i] = EXP_TABLE[i - 255];
+        }
+      })();
+      exports.log = function log(n) {
+        if (n < 1) throw new Error("log(" + n + ")");
+        return LOG_TABLE[n];
+      };
+      exports.exp = function exp(n) {
+        return EXP_TABLE[n];
+      };
+      exports.mul = function mul(x, y) {
+        if (x === 0 || y === 0) return 0;
+        return EXP_TABLE[LOG_TABLE[x] + LOG_TABLE[y]];
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/polynomial.js
+  var require_polynomial = __commonJS({
+    "node_modules/qrcode/lib/core/polynomial.js"(exports) {
+      var GF = require_galois_field();
+      exports.mul = function mul(p1, p2) {
+        const coeff = new Uint8Array(p1.length + p2.length - 1);
+        for (let i = 0; i < p1.length; i++) {
+          for (let j = 0; j < p2.length; j++) {
+            coeff[i + j] ^= GF.mul(p1[i], p2[j]);
+          }
+        }
+        return coeff;
+      };
+      exports.mod = function mod(divident, divisor) {
+        let result = new Uint8Array(divident);
+        while (result.length - divisor.length >= 0) {
+          const coeff = result[0];
+          for (let i = 0; i < divisor.length; i++) {
+            result[i] ^= GF.mul(divisor[i], coeff);
+          }
+          let offset = 0;
+          while (offset < result.length && result[offset] === 0) offset++;
+          result = result.slice(offset);
+        }
+        return result;
+      };
+      exports.generateECPolynomial = function generateECPolynomial(degree) {
+        let poly = new Uint8Array([1]);
+        for (let i = 0; i < degree; i++) {
+          poly = exports.mul(poly, new Uint8Array([1, GF.exp(i)]));
+        }
+        return poly;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/reed-solomon-encoder.js
+  var require_reed_solomon_encoder = __commonJS({
+    "node_modules/qrcode/lib/core/reed-solomon-encoder.js"(exports, module) {
+      var Polynomial = require_polynomial();
+      function ReedSolomonEncoder(degree) {
+        this.genPoly = void 0;
+        this.degree = degree;
+        if (this.degree) this.initialize(this.degree);
+      }
+      ReedSolomonEncoder.prototype.initialize = function initialize(degree) {
+        this.degree = degree;
+        this.genPoly = Polynomial.generateECPolynomial(this.degree);
+      };
+      ReedSolomonEncoder.prototype.encode = function encode2(data) {
+        if (!this.genPoly) {
+          throw new Error("Encoder not initialized");
+        }
+        const paddedData = new Uint8Array(data.length + this.degree);
+        paddedData.set(data);
+        const remainder = Polynomial.mod(paddedData, this.genPoly);
+        const start = this.degree - remainder.length;
+        if (start > 0) {
+          const buff = new Uint8Array(this.degree);
+          buff.set(remainder, start);
+          return buff;
+        }
+        return remainder;
+      };
+      module.exports = ReedSolomonEncoder;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/version-check.js
+  var require_version_check = __commonJS({
+    "node_modules/qrcode/lib/core/version-check.js"(exports) {
+      exports.isValid = function isValid(version) {
+        return !isNaN(version) && version >= 1 && version <= 40;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/regex.js
+  var require_regex = __commonJS({
+    "node_modules/qrcode/lib/core/regex.js"(exports) {
+      var numeric = "[0-9]+";
+      var alphanumeric = "[A-Z $%*+\\-./:]+";
+      var kanji = "(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";
+      kanji = kanji.replace(/u/g, "\\u");
+      var byte = "(?:(?![A-Z0-9 $%*+\\-./:]|" + kanji + ")(?:.|[\r\n]))+";
+      exports.KANJI = new RegExp(kanji, "g");
+      exports.BYTE_KANJI = new RegExp("[^A-Z0-9 $%*+\\-./:]+", "g");
+      exports.BYTE = new RegExp(byte, "g");
+      exports.NUMERIC = new RegExp(numeric, "g");
+      exports.ALPHANUMERIC = new RegExp(alphanumeric, "g");
+      var TEST_KANJI = new RegExp("^" + kanji + "$");
+      var TEST_NUMERIC = new RegExp("^" + numeric + "$");
+      var TEST_ALPHANUMERIC = new RegExp("^[A-Z0-9 $%*+\\-./:]+$");
+      exports.testKanji = function testKanji(str) {
+        return TEST_KANJI.test(str);
+      };
+      exports.testNumeric = function testNumeric(str) {
+        return TEST_NUMERIC.test(str);
+      };
+      exports.testAlphanumeric = function testAlphanumeric(str) {
+        return TEST_ALPHANUMERIC.test(str);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/mode.js
+  var require_mode = __commonJS({
+    "node_modules/qrcode/lib/core/mode.js"(exports) {
+      var VersionCheck = require_version_check();
+      var Regex = require_regex();
+      exports.NUMERIC = {
+        id: "Numeric",
+        bit: 1 << 0,
+        ccBits: [10, 12, 14]
+      };
+      exports.ALPHANUMERIC = {
+        id: "Alphanumeric",
+        bit: 1 << 1,
+        ccBits: [9, 11, 13]
+      };
+      exports.BYTE = {
+        id: "Byte",
+        bit: 1 << 2,
+        ccBits: [8, 16, 16]
+      };
+      exports.KANJI = {
+        id: "Kanji",
+        bit: 1 << 3,
+        ccBits: [8, 10, 12]
+      };
+      exports.MIXED = {
+        bit: -1
+      };
+      exports.getCharCountIndicator = function getCharCountIndicator(mode, version) {
+        if (!mode.ccBits) throw new Error("Invalid mode: " + mode);
+        if (!VersionCheck.isValid(version)) {
+          throw new Error("Invalid version: " + version);
+        }
+        if (version >= 1 && version < 10) return mode.ccBits[0];
+        else if (version < 27) return mode.ccBits[1];
+        return mode.ccBits[2];
+      };
+      exports.getBestModeForData = function getBestModeForData(dataStr) {
+        if (Regex.testNumeric(dataStr)) return exports.NUMERIC;
+        else if (Regex.testAlphanumeric(dataStr)) return exports.ALPHANUMERIC;
+        else if (Regex.testKanji(dataStr)) return exports.KANJI;
+        else return exports.BYTE;
+      };
+      exports.toString = function toString(mode) {
+        if (mode && mode.id) return mode.id;
+        throw new Error("Invalid mode");
+      };
+      exports.isValid = function isValid(mode) {
+        return mode && mode.bit && mode.ccBits;
+      };
+      function fromString(string) {
+        if (typeof string !== "string") {
+          throw new Error("Param is not a string");
+        }
+        const lcStr = string.toLowerCase();
+        switch (lcStr) {
+          case "numeric":
+            return exports.NUMERIC;
+          case "alphanumeric":
+            return exports.ALPHANUMERIC;
+          case "kanji":
+            return exports.KANJI;
+          case "byte":
+            return exports.BYTE;
+          default:
+            throw new Error("Unknown mode: " + string);
+        }
+      }
+      exports.from = function from(value, defaultValue) {
+        if (exports.isValid(value)) {
+          return value;
+        }
+        try {
+          return fromString(value);
+        } catch (e) {
+          return defaultValue;
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/version.js
+  var require_version = __commonJS({
+    "node_modules/qrcode/lib/core/version.js"(exports) {
+      var Utils = require_utils();
+      var ECCode = require_error_correction_code();
+      var ECLevel = require_error_correction_level();
+      var Mode = require_mode();
+      var VersionCheck = require_version_check();
+      var G18 = 1 << 12 | 1 << 11 | 1 << 10 | 1 << 9 | 1 << 8 | 1 << 5 | 1 << 2 | 1 << 0;
+      var G18_BCH = Utils.getBCHDigit(G18);
+      function getBestVersionForDataLength(mode, length, errorCorrectionLevel) {
+        for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+          if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, mode)) {
+            return currentVersion;
+          }
+        }
+        return void 0;
+      }
+      function getReservedBitsCount(mode, version) {
+        return Mode.getCharCountIndicator(mode, version) + 4;
+      }
+      function getTotalBitsFromDataArray(segments, version) {
+        let totalBits = 0;
+        segments.forEach(function(data) {
+          const reservedBits = getReservedBitsCount(data.mode, version);
+          totalBits += reservedBits + data.getBitsLength();
+        });
+        return totalBits;
+      }
+      function getBestVersionForMixedData(segments, errorCorrectionLevel) {
+        for (let currentVersion = 1; currentVersion <= 40; currentVersion++) {
+          const length = getTotalBitsFromDataArray(segments, currentVersion);
+          if (length <= exports.getCapacity(currentVersion, errorCorrectionLevel, Mode.MIXED)) {
+            return currentVersion;
+          }
+        }
+        return void 0;
+      }
+      exports.from = function from(value, defaultValue) {
+        if (VersionCheck.isValid(value)) {
+          return parseInt(value, 10);
+        }
+        return defaultValue;
+      };
+      exports.getCapacity = function getCapacity(version, errorCorrectionLevel, mode) {
+        if (!VersionCheck.isValid(version)) {
+          throw new Error("Invalid QR Code version");
+        }
+        if (typeof mode === "undefined") mode = Mode.BYTE;
+        const totalCodewords = Utils.getSymbolTotalCodewords(version);
+        const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+        const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8;
+        if (mode === Mode.MIXED) return dataTotalCodewordsBits;
+        const usableBits = dataTotalCodewordsBits - getReservedBitsCount(mode, version);
+        switch (mode) {
+          case Mode.NUMERIC:
+            return Math.floor(usableBits / 10 * 3);
+          case Mode.ALPHANUMERIC:
+            return Math.floor(usableBits / 11 * 2);
+          case Mode.KANJI:
+            return Math.floor(usableBits / 13);
+          case Mode.BYTE:
+          default:
+            return Math.floor(usableBits / 8);
+        }
+      };
+      exports.getBestVersionForData = function getBestVersionForData(data, errorCorrectionLevel) {
+        let seg2;
+        const ecl = ECLevel.from(errorCorrectionLevel, ECLevel.M);
+        if (Array.isArray(data)) {
+          if (data.length > 1) {
+            return getBestVersionForMixedData(data, ecl);
+          }
+          if (data.length === 0) {
+            return 1;
+          }
+          seg2 = data[0];
+        } else {
+          seg2 = data;
+        }
+        return getBestVersionForDataLength(seg2.mode, seg2.getLength(), ecl);
+      };
+      exports.getEncodedBits = function getEncodedBits(version) {
+        if (!VersionCheck.isValid(version) || version < 7) {
+          throw new Error("Invalid QR Code version");
+        }
+        let d = version << 12;
+        while (Utils.getBCHDigit(d) - G18_BCH >= 0) {
+          d ^= G18 << Utils.getBCHDigit(d) - G18_BCH;
+        }
+        return version << 12 | d;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/format-info.js
+  var require_format_info = __commonJS({
+    "node_modules/qrcode/lib/core/format-info.js"(exports) {
+      var Utils = require_utils();
+      var G15 = 1 << 10 | 1 << 8 | 1 << 5 | 1 << 4 | 1 << 2 | 1 << 1 | 1 << 0;
+      var G15_MASK = 1 << 14 | 1 << 12 | 1 << 10 | 1 << 4 | 1 << 1;
+      var G15_BCH = Utils.getBCHDigit(G15);
+      exports.getEncodedBits = function getEncodedBits(errorCorrectionLevel, mask) {
+        const data = errorCorrectionLevel.bit << 3 | mask;
+        let d = data << 10;
+        while (Utils.getBCHDigit(d) - G15_BCH >= 0) {
+          d ^= G15 << Utils.getBCHDigit(d) - G15_BCH;
+        }
+        return (data << 10 | d) ^ G15_MASK;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/numeric-data.js
+  var require_numeric_data = __commonJS({
+    "node_modules/qrcode/lib/core/numeric-data.js"(exports, module) {
+      var Mode = require_mode();
+      function NumericData(data) {
+        this.mode = Mode.NUMERIC;
+        this.data = data.toString();
+      }
+      NumericData.getBitsLength = function getBitsLength(length) {
+        return 10 * Math.floor(length / 3) + (length % 3 ? length % 3 * 3 + 1 : 0);
+      };
+      NumericData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      NumericData.prototype.getBitsLength = function getBitsLength() {
+        return NumericData.getBitsLength(this.data.length);
+      };
+      NumericData.prototype.write = function write(bitBuffer) {
+        let i, group2, value;
+        for (i = 0; i + 3 <= this.data.length; i += 3) {
+          group2 = this.data.substr(i, 3);
+          value = parseInt(group2, 10);
+          bitBuffer.put(value, 10);
+        }
+        const remainingNum = this.data.length - i;
+        if (remainingNum > 0) {
+          group2 = this.data.substr(i);
+          value = parseInt(group2, 10);
+          bitBuffer.put(value, remainingNum * 3 + 1);
+        }
+      };
+      module.exports = NumericData;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/alphanumeric-data.js
+  var require_alphanumeric_data = __commonJS({
+    "node_modules/qrcode/lib/core/alphanumeric-data.js"(exports, module) {
+      var Mode = require_mode();
+      var ALPHA_NUM_CHARS = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z",
+        " ",
+        "$",
+        "%",
+        "*",
+        "+",
+        "-",
+        ".",
+        "/",
+        ":"
+      ];
+      function AlphanumericData(data) {
+        this.mode = Mode.ALPHANUMERIC;
+        this.data = data;
+      }
+      AlphanumericData.getBitsLength = function getBitsLength(length) {
+        return 11 * Math.floor(length / 2) + 6 * (length % 2);
+      };
+      AlphanumericData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      AlphanumericData.prototype.getBitsLength = function getBitsLength() {
+        return AlphanumericData.getBitsLength(this.data.length);
+      };
+      AlphanumericData.prototype.write = function write(bitBuffer) {
+        let i;
+        for (i = 0; i + 2 <= this.data.length; i += 2) {
+          let value = ALPHA_NUM_CHARS.indexOf(this.data[i]) * 45;
+          value += ALPHA_NUM_CHARS.indexOf(this.data[i + 1]);
+          bitBuffer.put(value, 11);
+        }
+        if (this.data.length % 2) {
+          bitBuffer.put(ALPHA_NUM_CHARS.indexOf(this.data[i]), 6);
+        }
+      };
+      module.exports = AlphanumericData;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/byte-data.js
+  var require_byte_data = __commonJS({
+    "node_modules/qrcode/lib/core/byte-data.js"(exports, module) {
+      var Mode = require_mode();
+      function ByteData(data) {
+        this.mode = Mode.BYTE;
+        if (typeof data === "string") {
+          this.data = new TextEncoder().encode(data);
+        } else {
+          this.data = new Uint8Array(data);
+        }
+      }
+      ByteData.getBitsLength = function getBitsLength(length) {
+        return length * 8;
+      };
+      ByteData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      ByteData.prototype.getBitsLength = function getBitsLength() {
+        return ByteData.getBitsLength(this.data.length);
+      };
+      ByteData.prototype.write = function(bitBuffer) {
+        for (let i = 0, l = this.data.length; i < l; i++) {
+          bitBuffer.put(this.data[i], 8);
+        }
+      };
+      module.exports = ByteData;
+    }
+  });
+
+  // node_modules/qrcode/lib/core/kanji-data.js
+  var require_kanji_data = __commonJS({
+    "node_modules/qrcode/lib/core/kanji-data.js"(exports, module) {
+      var Mode = require_mode();
+      var Utils = require_utils();
+      function KanjiData(data) {
+        this.mode = Mode.KANJI;
+        this.data = data;
+      }
+      KanjiData.getBitsLength = function getBitsLength(length) {
+        return length * 13;
+      };
+      KanjiData.prototype.getLength = function getLength() {
+        return this.data.length;
+      };
+      KanjiData.prototype.getBitsLength = function getBitsLength() {
+        return KanjiData.getBitsLength(this.data.length);
+      };
+      KanjiData.prototype.write = function(bitBuffer) {
+        let i;
+        for (i = 0; i < this.data.length; i++) {
+          let value = Utils.toSJIS(this.data[i]);
+          if (value >= 33088 && value <= 40956) {
+            value -= 33088;
+          } else if (value >= 57408 && value <= 60351) {
+            value -= 49472;
+          } else {
+            throw new Error(
+              "Invalid SJIS character: " + this.data[i] + "\nMake sure your charset is UTF-8"
+            );
+          }
+          value = (value >>> 8 & 255) * 192 + (value & 255);
+          bitBuffer.put(value, 13);
+        }
+      };
+      module.exports = KanjiData;
+    }
+  });
+
+  // node_modules/dijkstrajs/dijkstra.js
+  var require_dijkstra = __commonJS({
+    "node_modules/dijkstrajs/dijkstra.js"(exports, module) {
+      "use strict";
+      var dijkstra = {
+        single_source_shortest_paths: function(graph, s, d) {
+          var predecessors = {};
+          var costs = {};
+          costs[s] = 0;
+          var open = dijkstra.PriorityQueue.make();
+          open.push(s, 0);
+          var closest, u, v, cost_of_s_to_u, adjacent_nodes, cost_of_e, cost_of_s_to_u_plus_cost_of_e, cost_of_s_to_v, first_visit;
+          while (!open.empty()) {
+            closest = open.pop();
+            u = closest.value;
+            cost_of_s_to_u = closest.cost;
+            adjacent_nodes = graph[u] || {};
+            for (v in adjacent_nodes) {
+              if (adjacent_nodes.hasOwnProperty(v)) {
+                cost_of_e = adjacent_nodes[v];
+                cost_of_s_to_u_plus_cost_of_e = cost_of_s_to_u + cost_of_e;
+                cost_of_s_to_v = costs[v];
+                first_visit = typeof costs[v] === "undefined";
+                if (first_visit || cost_of_s_to_v > cost_of_s_to_u_plus_cost_of_e) {
+                  costs[v] = cost_of_s_to_u_plus_cost_of_e;
+                  open.push(v, cost_of_s_to_u_plus_cost_of_e);
+                  predecessors[v] = u;
+                }
+              }
+            }
+          }
+          if (typeof d !== "undefined" && typeof costs[d] === "undefined") {
+            var msg = ["Could not find a path from ", s, " to ", d, "."].join("");
+            throw new Error(msg);
+          }
+          return predecessors;
+        },
+        extract_shortest_path_from_predecessor_list: function(predecessors, d) {
+          var nodes = [];
+          var u = d;
+          var predecessor;
+          while (u) {
+            nodes.push(u);
+            predecessor = predecessors[u];
+            u = predecessors[u];
+          }
+          nodes.reverse();
+          return nodes;
+        },
+        find_path: function(graph, s, d) {
+          var predecessors = dijkstra.single_source_shortest_paths(graph, s, d);
+          return dijkstra.extract_shortest_path_from_predecessor_list(
+            predecessors,
+            d
+          );
+        },
+        /**
+         * A very naive priority queue implementation.
+         */
+        PriorityQueue: {
+          make: function(opts) {
+            var T = dijkstra.PriorityQueue, t2 = {}, key;
+            opts = opts || {};
+            for (key in T) {
+              if (T.hasOwnProperty(key)) {
+                t2[key] = T[key];
+              }
+            }
+            t2.queue = [];
+            t2.sorter = opts.sorter || T.default_sorter;
+            return t2;
+          },
+          default_sorter: function(a, b) {
+            return a.cost - b.cost;
+          },
+          /**
+           * Add a new item to the queue and ensure the highest priority element
+           * is at the front of the queue.
+           */
+          push: function(value, cost) {
+            var item = { value, cost };
+            this.queue.push(item);
+            this.queue.sort(this.sorter);
+          },
+          /**
+           * Return the highest priority element in the queue.
+           */
+          pop: function() {
+            return this.queue.shift();
+          },
+          empty: function() {
+            return this.queue.length === 0;
+          }
+        }
+      };
+      if (typeof module !== "undefined") {
+        module.exports = dijkstra;
+      }
+    }
+  });
+
+  // node_modules/qrcode/lib/core/segments.js
+  var require_segments = __commonJS({
+    "node_modules/qrcode/lib/core/segments.js"(exports) {
+      var Mode = require_mode();
+      var NumericData = require_numeric_data();
+      var AlphanumericData = require_alphanumeric_data();
+      var ByteData = require_byte_data();
+      var KanjiData = require_kanji_data();
+      var Regex = require_regex();
+      var Utils = require_utils();
+      var dijkstra = require_dijkstra();
+      function getStringByteLength(str) {
+        return unescape(encodeURIComponent(str)).length;
+      }
+      function getSegments(regex, mode, str) {
+        const segments = [];
+        let result;
+        while ((result = regex.exec(str)) !== null) {
+          segments.push({
+            data: result[0],
+            index: result.index,
+            mode,
+            length: result[0].length
+          });
+        }
+        return segments;
+      }
+      function getSegmentsFromString(dataStr) {
+        const numSegs = getSegments(Regex.NUMERIC, Mode.NUMERIC, dataStr);
+        const alphaNumSegs = getSegments(Regex.ALPHANUMERIC, Mode.ALPHANUMERIC, dataStr);
+        let byteSegs;
+        let kanjiSegs;
+        if (Utils.isKanjiModeEnabled()) {
+          byteSegs = getSegments(Regex.BYTE, Mode.BYTE, dataStr);
+          kanjiSegs = getSegments(Regex.KANJI, Mode.KANJI, dataStr);
+        } else {
+          byteSegs = getSegments(Regex.BYTE_KANJI, Mode.BYTE, dataStr);
+          kanjiSegs = [];
+        }
+        const segs = numSegs.concat(alphaNumSegs, byteSegs, kanjiSegs);
+        return segs.sort(function(s1, s2) {
+          return s1.index - s2.index;
+        }).map(function(obj) {
+          return {
+            data: obj.data,
+            mode: obj.mode,
+            length: obj.length
+          };
+        });
+      }
+      function getSegmentBitsLength(length, mode) {
+        switch (mode) {
+          case Mode.NUMERIC:
+            return NumericData.getBitsLength(length);
+          case Mode.ALPHANUMERIC:
+            return AlphanumericData.getBitsLength(length);
+          case Mode.KANJI:
+            return KanjiData.getBitsLength(length);
+          case Mode.BYTE:
+            return ByteData.getBitsLength(length);
+        }
+      }
+      function mergeSegments(segs) {
+        return segs.reduce(function(acc, curr) {
+          const prevSeg = acc.length - 1 >= 0 ? acc[acc.length - 1] : null;
+          if (prevSeg && prevSeg.mode === curr.mode) {
+            acc[acc.length - 1].data += curr.data;
+            return acc;
+          }
+          acc.push(curr);
+          return acc;
+        }, []);
+      }
+      function buildNodes(segs) {
+        const nodes = [];
+        for (let i = 0; i < segs.length; i++) {
+          const seg2 = segs[i];
+          switch (seg2.mode) {
+            case Mode.NUMERIC:
+              nodes.push([
+                seg2,
+                { data: seg2.data, mode: Mode.ALPHANUMERIC, length: seg2.length },
+                { data: seg2.data, mode: Mode.BYTE, length: seg2.length }
+              ]);
+              break;
+            case Mode.ALPHANUMERIC:
+              nodes.push([
+                seg2,
+                { data: seg2.data, mode: Mode.BYTE, length: seg2.length }
+              ]);
+              break;
+            case Mode.KANJI:
+              nodes.push([
+                seg2,
+                { data: seg2.data, mode: Mode.BYTE, length: getStringByteLength(seg2.data) }
+              ]);
+              break;
+            case Mode.BYTE:
+              nodes.push([
+                { data: seg2.data, mode: Mode.BYTE, length: getStringByteLength(seg2.data) }
+              ]);
+          }
+        }
+        return nodes;
+      }
+      function buildGraph(nodes, version) {
+        const table = {};
+        const graph = { start: {} };
+        let prevNodeIds = ["start"];
+        for (let i = 0; i < nodes.length; i++) {
+          const nodeGroup = nodes[i];
+          const currentNodeIds = [];
+          for (let j = 0; j < nodeGroup.length; j++) {
+            const node = nodeGroup[j];
+            const key = "" + i + j;
+            currentNodeIds.push(key);
+            table[key] = { node, lastCount: 0 };
+            graph[key] = {};
+            for (let n = 0; n < prevNodeIds.length; n++) {
+              const prevNodeId = prevNodeIds[n];
+              if (table[prevNodeId] && table[prevNodeId].node.mode === node.mode) {
+                graph[prevNodeId][key] = getSegmentBitsLength(table[prevNodeId].lastCount + node.length, node.mode) - getSegmentBitsLength(table[prevNodeId].lastCount, node.mode);
+                table[prevNodeId].lastCount += node.length;
+              } else {
+                if (table[prevNodeId]) table[prevNodeId].lastCount = node.length;
+                graph[prevNodeId][key] = getSegmentBitsLength(node.length, node.mode) + 4 + Mode.getCharCountIndicator(node.mode, version);
+              }
+            }
+          }
+          prevNodeIds = currentNodeIds;
+        }
+        for (let n = 0; n < prevNodeIds.length; n++) {
+          graph[prevNodeIds[n]].end = 0;
+        }
+        return { map: graph, table };
+      }
+      function buildSingleSegment(data, modesHint) {
+        let mode;
+        const bestMode = Mode.getBestModeForData(data);
+        mode = Mode.from(modesHint, bestMode);
+        if (mode !== Mode.BYTE && mode.bit < bestMode.bit) {
+          throw new Error('"' + data + '" cannot be encoded with mode ' + Mode.toString(mode) + ".\n Suggested mode is: " + Mode.toString(bestMode));
+        }
+        if (mode === Mode.KANJI && !Utils.isKanjiModeEnabled()) {
+          mode = Mode.BYTE;
+        }
+        switch (mode) {
+          case Mode.NUMERIC:
+            return new NumericData(data);
+          case Mode.ALPHANUMERIC:
+            return new AlphanumericData(data);
+          case Mode.KANJI:
+            return new KanjiData(data);
+          case Mode.BYTE:
+            return new ByteData(data);
+        }
+      }
+      exports.fromArray = function fromArray(array) {
+        return array.reduce(function(acc, seg2) {
+          if (typeof seg2 === "string") {
+            acc.push(buildSingleSegment(seg2, null));
+          } else if (seg2.data) {
+            acc.push(buildSingleSegment(seg2.data, seg2.mode));
+          }
+          return acc;
+        }, []);
+      };
+      exports.fromString = function fromString(data, version) {
+        const segs = getSegmentsFromString(data, Utils.isKanjiModeEnabled());
+        const nodes = buildNodes(segs);
+        const graph = buildGraph(nodes, version);
+        const path = dijkstra.find_path(graph.map, "start", "end");
+        const optimizedSegs = [];
+        for (let i = 1; i < path.length - 1; i++) {
+          optimizedSegs.push(graph.table[path[i]].node);
+        }
+        return exports.fromArray(mergeSegments(optimizedSegs));
+      };
+      exports.rawSplit = function rawSplit(data) {
+        return exports.fromArray(
+          getSegmentsFromString(data, Utils.isKanjiModeEnabled())
+        );
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/core/qrcode.js
+  var require_qrcode = __commonJS({
+    "node_modules/qrcode/lib/core/qrcode.js"(exports) {
+      var Utils = require_utils();
+      var ECLevel = require_error_correction_level();
+      var BitBuffer = require_bit_buffer();
+      var BitMatrix = require_bit_matrix();
+      var AlignmentPattern = require_alignment_pattern();
+      var FinderPattern = require_finder_pattern();
+      var MaskPattern = require_mask_pattern();
+      var ECCode = require_error_correction_code();
+      var ReedSolomonEncoder = require_reed_solomon_encoder();
+      var Version = require_version();
+      var FormatInfo = require_format_info();
+      var Mode = require_mode();
+      var Segments = require_segments();
+      function setupFinderPattern(matrix, version) {
+        const size = matrix.size;
+        const pos = FinderPattern.getPositions(version);
+        for (let i = 0; i < pos.length; i++) {
+          const row = pos[i][0];
+          const col = pos[i][1];
+          for (let r = -1; r <= 7; r++) {
+            if (row + r <= -1 || size <= row + r) continue;
+            for (let c2 = -1; c2 <= 7; c2++) {
+              if (col + c2 <= -1 || size <= col + c2) continue;
+              if (r >= 0 && r <= 6 && (c2 === 0 || c2 === 6) || c2 >= 0 && c2 <= 6 && (r === 0 || r === 6) || r >= 2 && r <= 4 && c2 >= 2 && c2 <= 4) {
+                matrix.set(row + r, col + c2, true, true);
+              } else {
+                matrix.set(row + r, col + c2, false, true);
+              }
+            }
+          }
+        }
+      }
+      function setupTimingPattern(matrix) {
+        const size = matrix.size;
+        for (let r = 8; r < size - 8; r++) {
+          const value = r % 2 === 0;
+          matrix.set(r, 6, value, true);
+          matrix.set(6, r, value, true);
+        }
+      }
+      function setupAlignmentPattern(matrix, version) {
+        const pos = AlignmentPattern.getPositions(version);
+        for (let i = 0; i < pos.length; i++) {
+          const row = pos[i][0];
+          const col = pos[i][1];
+          for (let r = -2; r <= 2; r++) {
+            for (let c2 = -2; c2 <= 2; c2++) {
+              if (r === -2 || r === 2 || c2 === -2 || c2 === 2 || r === 0 && c2 === 0) {
+                matrix.set(row + r, col + c2, true, true);
+              } else {
+                matrix.set(row + r, col + c2, false, true);
+              }
+            }
+          }
+        }
+      }
+      function setupVersionInfo(matrix, version) {
+        const size = matrix.size;
+        const bits = Version.getEncodedBits(version);
+        let row, col, mod;
+        for (let i = 0; i < 18; i++) {
+          row = Math.floor(i / 3);
+          col = i % 3 + size - 8 - 3;
+          mod = (bits >> i & 1) === 1;
+          matrix.set(row, col, mod, true);
+          matrix.set(col, row, mod, true);
+        }
+      }
+      function setupFormatInfo(matrix, errorCorrectionLevel, maskPattern) {
+        const size = matrix.size;
+        const bits = FormatInfo.getEncodedBits(errorCorrectionLevel, maskPattern);
+        let i, mod;
+        for (i = 0; i < 15; i++) {
+          mod = (bits >> i & 1) === 1;
+          if (i < 6) {
+            matrix.set(i, 8, mod, true);
+          } else if (i < 8) {
+            matrix.set(i + 1, 8, mod, true);
+          } else {
+            matrix.set(size - 15 + i, 8, mod, true);
+          }
+          if (i < 8) {
+            matrix.set(8, size - i - 1, mod, true);
+          } else if (i < 9) {
+            matrix.set(8, 15 - i - 1 + 1, mod, true);
+          } else {
+            matrix.set(8, 15 - i - 1, mod, true);
+          }
+        }
+        matrix.set(size - 8, 8, 1, true);
+      }
+      function setupData(matrix, data) {
+        const size = matrix.size;
+        let inc = -1;
+        let row = size - 1;
+        let bitIndex = 7;
+        let byteIndex = 0;
+        for (let col = size - 1; col > 0; col -= 2) {
+          if (col === 6) col--;
+          while (true) {
+            for (let c2 = 0; c2 < 2; c2++) {
+              if (!matrix.isReserved(row, col - c2)) {
+                let dark = false;
+                if (byteIndex < data.length) {
+                  dark = (data[byteIndex] >>> bitIndex & 1) === 1;
+                }
+                matrix.set(row, col - c2, dark);
+                bitIndex--;
+                if (bitIndex === -1) {
+                  byteIndex++;
+                  bitIndex = 7;
+                }
+              }
+            }
+            row += inc;
+            if (row < 0 || size <= row) {
+              row -= inc;
+              inc = -inc;
+              break;
+            }
+          }
+        }
+      }
+      function createData(version, errorCorrectionLevel, segments) {
+        const buffer = new BitBuffer();
+        segments.forEach(function(data) {
+          buffer.put(data.mode.bit, 4);
+          buffer.put(data.getLength(), Mode.getCharCountIndicator(data.mode, version));
+          data.write(buffer);
+        });
+        const totalCodewords = Utils.getSymbolTotalCodewords(version);
+        const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+        const dataTotalCodewordsBits = (totalCodewords - ecTotalCodewords) * 8;
+        if (buffer.getLengthInBits() + 4 <= dataTotalCodewordsBits) {
+          buffer.put(0, 4);
+        }
+        while (buffer.getLengthInBits() % 8 !== 0) {
+          buffer.putBit(0);
+        }
+        const remainingByte = (dataTotalCodewordsBits - buffer.getLengthInBits()) / 8;
+        for (let i = 0; i < remainingByte; i++) {
+          buffer.put(i % 2 ? 17 : 236, 8);
+        }
+        return createCodewords(buffer, version, errorCorrectionLevel);
+      }
+      function createCodewords(bitBuffer, version, errorCorrectionLevel) {
+        const totalCodewords = Utils.getSymbolTotalCodewords(version);
+        const ecTotalCodewords = ECCode.getTotalCodewordsCount(version, errorCorrectionLevel);
+        const dataTotalCodewords = totalCodewords - ecTotalCodewords;
+        const ecTotalBlocks = ECCode.getBlocksCount(version, errorCorrectionLevel);
+        const blocksInGroup2 = totalCodewords % ecTotalBlocks;
+        const blocksInGroup1 = ecTotalBlocks - blocksInGroup2;
+        const totalCodewordsInGroup1 = Math.floor(totalCodewords / ecTotalBlocks);
+        const dataCodewordsInGroup1 = Math.floor(dataTotalCodewords / ecTotalBlocks);
+        const dataCodewordsInGroup2 = dataCodewordsInGroup1 + 1;
+        const ecCount = totalCodewordsInGroup1 - dataCodewordsInGroup1;
+        const rs = new ReedSolomonEncoder(ecCount);
+        let offset = 0;
+        const dcData = new Array(ecTotalBlocks);
+        const ecData = new Array(ecTotalBlocks);
+        let maxDataSize = 0;
+        const buffer = new Uint8Array(bitBuffer.buffer);
+        for (let b = 0; b < ecTotalBlocks; b++) {
+          const dataSize = b < blocksInGroup1 ? dataCodewordsInGroup1 : dataCodewordsInGroup2;
+          dcData[b] = buffer.slice(offset, offset + dataSize);
+          ecData[b] = rs.encode(dcData[b]);
+          offset += dataSize;
+          maxDataSize = Math.max(maxDataSize, dataSize);
+        }
+        const data = new Uint8Array(totalCodewords);
+        let index = 0;
+        let i, r;
+        for (i = 0; i < maxDataSize; i++) {
+          for (r = 0; r < ecTotalBlocks; r++) {
+            if (i < dcData[r].length) {
+              data[index++] = dcData[r][i];
+            }
+          }
+        }
+        for (i = 0; i < ecCount; i++) {
+          for (r = 0; r < ecTotalBlocks; r++) {
+            data[index++] = ecData[r][i];
+          }
+        }
+        return data;
+      }
+      function createSymbol(data, version, errorCorrectionLevel, maskPattern) {
+        let segments;
+        if (Array.isArray(data)) {
+          segments = Segments.fromArray(data);
+        } else if (typeof data === "string") {
+          let estimatedVersion = version;
+          if (!estimatedVersion) {
+            const rawSegments = Segments.rawSplit(data);
+            estimatedVersion = Version.getBestVersionForData(rawSegments, errorCorrectionLevel);
+          }
+          segments = Segments.fromString(data, estimatedVersion || 40);
+        } else {
+          throw new Error("Invalid data");
+        }
+        const bestVersion = Version.getBestVersionForData(segments, errorCorrectionLevel);
+        if (!bestVersion) {
+          throw new Error("The amount of data is too big to be stored in a QR Code");
+        }
+        if (!version) {
+          version = bestVersion;
+        } else if (version < bestVersion) {
+          throw new Error(
+            "\nThe chosen QR Code version cannot contain this amount of data.\nMinimum version required to store current data is: " + bestVersion + ".\n"
+          );
+        }
+        const dataBits = createData(version, errorCorrectionLevel, segments);
+        const moduleCount = Utils.getSymbolSize(version);
+        const modules = new BitMatrix(moduleCount);
+        setupFinderPattern(modules, version);
+        setupTimingPattern(modules);
+        setupAlignmentPattern(modules, version);
+        setupFormatInfo(modules, errorCorrectionLevel, 0);
+        if (version >= 7) {
+          setupVersionInfo(modules, version);
+        }
+        setupData(modules, dataBits);
+        if (isNaN(maskPattern)) {
+          maskPattern = MaskPattern.getBestMask(
+            modules,
+            setupFormatInfo.bind(null, modules, errorCorrectionLevel)
+          );
+        }
+        MaskPattern.applyMask(maskPattern, modules);
+        setupFormatInfo(modules, errorCorrectionLevel, maskPattern);
+        return {
+          modules,
+          version,
+          errorCorrectionLevel,
+          maskPattern,
+          segments
+        };
+      }
+      exports.create = function create(data, options) {
+        if (typeof data === "undefined" || data === "") {
+          throw new Error("No input text");
+        }
+        let errorCorrectionLevel = ECLevel.M;
+        let version;
+        let mask;
+        if (typeof options !== "undefined") {
+          errorCorrectionLevel = ECLevel.from(options.errorCorrectionLevel, ECLevel.M);
+          version = Version.from(options.version);
+          mask = MaskPattern.from(options.maskPattern);
+          if (options.toSJISFunc) {
+            Utils.setToSJISFunction(options.toSJISFunc);
+          }
+        }
+        return createSymbol(data, version, errorCorrectionLevel, mask);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/renderer/utils.js
+  var require_utils2 = __commonJS({
+    "node_modules/qrcode/lib/renderer/utils.js"(exports) {
+      function hex2rgba(hex) {
+        if (typeof hex === "number") {
+          hex = hex.toString();
+        }
+        if (typeof hex !== "string") {
+          throw new Error("Color should be defined as hex string");
+        }
+        let hexCode = hex.slice().replace("#", "").split("");
+        if (hexCode.length < 3 || hexCode.length === 5 || hexCode.length > 8) {
+          throw new Error("Invalid hex color: " + hex);
+        }
+        if (hexCode.length === 3 || hexCode.length === 4) {
+          hexCode = Array.prototype.concat.apply([], hexCode.map(function(c2) {
+            return [c2, c2];
+          }));
+        }
+        if (hexCode.length === 6) hexCode.push("F", "F");
+        const hexValue = parseInt(hexCode.join(""), 16);
+        return {
+          r: hexValue >> 24 & 255,
+          g: hexValue >> 16 & 255,
+          b: hexValue >> 8 & 255,
+          a: hexValue & 255,
+          hex: "#" + hexCode.slice(0, 6).join("")
+        };
+      }
+      exports.getOptions = function getOptions(options) {
+        if (!options) options = {};
+        if (!options.color) options.color = {};
+        const margin = typeof options.margin === "undefined" || options.margin === null || options.margin < 0 ? 4 : options.margin;
+        const width = options.width && options.width >= 21 ? options.width : void 0;
+        const scale = options.scale || 4;
+        return {
+          width,
+          scale: width ? 4 : scale,
+          margin,
+          color: {
+            dark: hex2rgba(options.color.dark || "#000000ff"),
+            light: hex2rgba(options.color.light || "#ffffffff")
+          },
+          type: options.type,
+          rendererOpts: options.rendererOpts || {}
+        };
+      };
+      exports.getScale = function getScale(qrSize, opts) {
+        return opts.width && opts.width >= qrSize + opts.margin * 2 ? opts.width / (qrSize + opts.margin * 2) : opts.scale;
+      };
+      exports.getImageWidth = function getImageWidth(qrSize, opts) {
+        const scale = exports.getScale(qrSize, opts);
+        return Math.floor((qrSize + opts.margin * 2) * scale);
+      };
+      exports.qrToImageData = function qrToImageData(imgData, qr, opts) {
+        const size = qr.modules.size;
+        const data = qr.modules.data;
+        const scale = exports.getScale(size, opts);
+        const symbolSize = Math.floor((size + opts.margin * 2) * scale);
+        const scaledMargin = opts.margin * scale;
+        const palette2 = [opts.color.light, opts.color.dark];
+        for (let i = 0; i < symbolSize; i++) {
+          for (let j = 0; j < symbolSize; j++) {
+            let posDst = (i * symbolSize + j) * 4;
+            let pxColor = opts.color.light;
+            if (i >= scaledMargin && j >= scaledMargin && i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
+              const iSrc = Math.floor((i - scaledMargin) / scale);
+              const jSrc = Math.floor((j - scaledMargin) / scale);
+              pxColor = palette2[data[iSrc * size + jSrc] ? 1 : 0];
+            }
+            imgData[posDst++] = pxColor.r;
+            imgData[posDst++] = pxColor.g;
+            imgData[posDst++] = pxColor.b;
+            imgData[posDst] = pxColor.a;
+          }
+        }
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/renderer/canvas.js
+  var require_canvas = __commonJS({
+    "node_modules/qrcode/lib/renderer/canvas.js"(exports) {
+      var Utils = require_utils2();
+      function clearCanvas(ctx, canvas2, size) {
+        ctx.clearRect(0, 0, canvas2.width, canvas2.height);
+        if (!canvas2.style) canvas2.style = {};
+        canvas2.height = size;
+        canvas2.width = size;
+        canvas2.style.height = size + "px";
+        canvas2.style.width = size + "px";
+      }
+      function getCanvasElement() {
+        try {
+          return document.createElement("canvas");
+        } catch (e) {
+          throw new Error("You need to specify a canvas element");
+        }
+      }
+      exports.render = function render2(qrData, canvas2, options) {
+        let opts = options;
+        let canvasEl = canvas2;
+        if (typeof opts === "undefined" && (!canvas2 || !canvas2.getContext)) {
+          opts = canvas2;
+          canvas2 = void 0;
+        }
+        if (!canvas2) {
+          canvasEl = getCanvasElement();
+        }
+        opts = Utils.getOptions(opts);
+        const size = Utils.getImageWidth(qrData.modules.size, opts);
+        const ctx = canvasEl.getContext("2d");
+        const image = ctx.createImageData(size, size);
+        Utils.qrToImageData(image.data, qrData, opts);
+        clearCanvas(ctx, canvasEl, size);
+        ctx.putImageData(image, 0, 0);
+        return canvasEl;
+      };
+      exports.renderToDataURL = function renderToDataURL(qrData, canvas2, options) {
+        let opts = options;
+        if (typeof opts === "undefined" && (!canvas2 || !canvas2.getContext)) {
+          opts = canvas2;
+          canvas2 = void 0;
+        }
+        if (!opts) opts = {};
+        const canvasEl = exports.render(qrData, canvas2, opts);
+        const type = opts.type || "image/png";
+        const rendererOpts = opts.rendererOpts || {};
+        return canvasEl.toDataURL(type, rendererOpts.quality);
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/renderer/svg-tag.js
+  var require_svg_tag = __commonJS({
+    "node_modules/qrcode/lib/renderer/svg-tag.js"(exports) {
+      var Utils = require_utils2();
+      function getColorAttrib(color, attrib) {
+        const alpha = color.a / 255;
+        const str = attrib + '="' + color.hex + '"';
+        return alpha < 1 ? str + " " + attrib + '-opacity="' + alpha.toFixed(2).slice(1) + '"' : str;
+      }
+      function svgCmd(cmd, x, y) {
+        let str = cmd + x;
+        if (typeof y !== "undefined") str += " " + y;
+        return str;
+      }
+      function qrToPath(data, size, margin) {
+        let path = "";
+        let moveBy = 0;
+        let newRow = false;
+        let lineLength = 0;
+        for (let i = 0; i < data.length; i++) {
+          const col = Math.floor(i % size);
+          const row = Math.floor(i / size);
+          if (!col && !newRow) newRow = true;
+          if (data[i]) {
+            lineLength++;
+            if (!(i > 0 && col > 0 && data[i - 1])) {
+              path += newRow ? svgCmd("M", col + margin, 0.5 + row + margin) : svgCmd("m", moveBy, 0);
+              moveBy = 0;
+              newRow = false;
+            }
+            if (!(col + 1 < size && data[i + 1])) {
+              path += svgCmd("h", lineLength);
+              lineLength = 0;
+            }
+          } else {
+            moveBy++;
+          }
+        }
+        return path;
+      }
+      exports.render = function render2(qrData, options, cb) {
+        const opts = Utils.getOptions(options);
+        const size = qrData.modules.size;
+        const data = qrData.modules.data;
+        const qrcodesize = size + opts.margin * 2;
+        const bg = !opts.color.light.a ? "" : "<path " + getColorAttrib(opts.color.light, "fill") + ' d="M0 0h' + qrcodesize + "v" + qrcodesize + 'H0z"/>';
+        const path = "<path " + getColorAttrib(opts.color.dark, "stroke") + ' d="' + qrToPath(data, size, opts.margin) + '"/>';
+        const viewBox = 'viewBox="0 0 ' + qrcodesize + " " + qrcodesize + '"';
+        const width = !opts.width ? "" : 'width="' + opts.width + '" height="' + opts.width + '" ';
+        const svgTag = '<svg xmlns="http://www.w3.org/2000/svg" ' + width + viewBox + ' shape-rendering="crispEdges">' + bg + path + "</svg>\n";
+        if (typeof cb === "function") {
+          cb(null, svgTag);
+        }
+        return svgTag;
+      };
+    }
+  });
+
+  // node_modules/qrcode/lib/browser.js
+  var require_browser = __commonJS({
+    "node_modules/qrcode/lib/browser.js"(exports) {
+      var canPromise = require_can_promise();
+      var QRCode2 = require_qrcode();
+      var CanvasRenderer = require_canvas();
+      var SvgRenderer = require_svg_tag();
+      function renderCanvas(renderFunc, canvas2, text, opts, cb) {
+        const args = [].slice.call(arguments, 1);
+        const argsNum = args.length;
+        const isLastArgCb = typeof args[argsNum - 1] === "function";
+        if (!isLastArgCb && !canPromise()) {
+          throw new Error("Callback required as last argument");
+        }
+        if (isLastArgCb) {
+          if (argsNum < 2) {
+            throw new Error("Too few arguments provided");
+          }
+          if (argsNum === 2) {
+            cb = text;
+            text = canvas2;
+            canvas2 = opts = void 0;
+          } else if (argsNum === 3) {
+            if (canvas2.getContext && typeof cb === "undefined") {
+              cb = opts;
+              opts = void 0;
+            } else {
+              cb = opts;
+              opts = text;
+              text = canvas2;
+              canvas2 = void 0;
+            }
+          }
+        } else {
+          if (argsNum < 1) {
+            throw new Error("Too few arguments provided");
+          }
+          if (argsNum === 1) {
+            text = canvas2;
+            canvas2 = opts = void 0;
+          } else if (argsNum === 2 && !canvas2.getContext) {
+            opts = text;
+            text = canvas2;
+            canvas2 = void 0;
+          }
+          return new Promise(function(resolve, reject) {
+            try {
+              const data = QRCode2.create(text, opts);
+              resolve(renderFunc(data, canvas2, opts));
+            } catch (e) {
+              reject(e);
+            }
+          });
+        }
+        try {
+          const data = QRCode2.create(text, opts);
+          cb(null, renderFunc(data, canvas2, opts));
+        } catch (e) {
+          cb(e);
+        }
+      }
+      exports.create = QRCode2.create;
+      exports.toCanvas = renderCanvas.bind(null, CanvasRenderer.render);
+      exports.toDataURL = renderCanvas.bind(null, CanvasRenderer.renderToDataURL);
+      exports.toString = renderCanvas.bind(null, function(data, _, opts) {
+        return SvgRenderer.render(data, opts);
+      });
+    }
+  });
+
+  // src/live.js
+  function mqttOpen(url, { onReady, onMessage, onClose }) {
+    const ws = new WebSocket(url, "mqtt");
+    ws.binaryType = "arraybuffer";
+    let buf = new Uint8Array(0), ping = 0;
+    ws.onopen = () => {
+      const id = "mirage-" + Math.random().toString(36).slice(2, 12);
+      ws.send(mqPkt(16, [...mqStr("MQTT"), 4, 2, 0, 60, ...mqStr(id)]));
+    };
+    ws.onmessage = (e) => {
+      const add = new Uint8Array(e.data), nb = new Uint8Array(buf.length + add.length);
+      nb.set(buf);
+      nb.set(add, buf.length);
+      buf = nb;
+      for (; ; ) {
+        if (buf.length < 2) break;
+        let len = 0, mul = 1, i = 1, b;
+        do {
+          if (i >= buf.length) return;
+          b = buf[i++];
+          len += (b & 127) * mul;
+          mul *= 128;
+        } while (b & 128);
+        if (buf.length < i + len) break;
+        const type = buf[0] >> 4, body = buf.subarray(i, i + len);
+        buf = buf.slice(i + len);
+        if (type === 2 && body[1] === 0) {
+          ping = setInterval(() => ws.readyState === 1 && ws.send(new Uint8Array([192, 0])), 3e4);
+          onReady?.(api2);
+        } else if (type === 3) {
+          const tl = body[0] << 8 | body[1];
+          onMessage?.(body.slice(2 + tl));
+        }
+      }
+    };
+    ws.onclose = ws.onerror = () => {
+      clearInterval(ping);
+      if (api2.closed) return;
+      api2.closed = true;
+      onClose?.();
+    };
+    const api2 = {
+      closed: false,
+      publish: (topic, payload, retain) => ws.readyState === 1 && ws.send(mqPkt(48 | (retain ? 1 : 0), [...mqStr(topic), ...payload])),
+      subscribe: (topic) => ws.readyState === 1 && ws.send(mqPkt(130, [0, 1, ...mqStr(topic), 0])),
+      close: () => {
+        api2.closed = true;
+        clearInterval(ping);
+        try {
+          ws.send(new Uint8Array([224, 0]));
+          ws.close();
+        } catch {
+        }
+      }
+    };
+    return api2;
+  }
+  async function prepare() {
+    if (ses && (lastFeed || !offAt || Date.now() - offAt < GRACE)) return ses;
+    const raw = crypto.getRandomValues(new Uint8Array(16)), ch = crypto.getRandomValues(new Uint8Array(16));
+    const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt"]);
+    const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}`;
+    ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await import_qrcode.default.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }) };
+    offAt = 0;
+    emit();
+    return ses;
+  }
+  function connect2() {
+    if (client && !client.closed) return;
+    setStatus("connecting");
+    client = mqttOpen(BROKERS[brokerIx % BROKERS.length], {
+      onReady: () => setStatus("on"),
+      onClose: () => {
+        client = null;
+        setStatus(wanted ? "connecting" : "off");
+        if (wanted) setTimeout(() => wanted && (brokerIx++, connect2()), 3e3);
+      }
+    });
+  }
+  async function send(state, retain) {
+    if (!client || status !== "on" || !ses || sending) return;
+    sending = true;
+    try {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ses.key, te.encode(JSON.stringify(state))));
+      const out = new Uint8Array(12 + ct.length);
+      out.set(iv);
+      out.set(ct, 12);
+      client.publish(ses.topic, out, retain);
+    } catch {
+    }
+    sending = false;
+  }
+  function feed(px, pal, bpm) {
+    if (!cfg.partyLive) return;
+    lastFeed = performance.now();
+    wanted = true;
+    clearTimeout(stopT);
+    stopT = setTimeout(stop, 2500);
+    if (!ses) return void prepare();
+    connect2();
+    if (lastFeed - lastSend < RATE) return;
+    lastSend = lastFeed;
+    const item = currentItem();
+    send({
+      v: 1,
+      on: 1,
+      s: Date.now(),
+      bpm: Math.round(bpm || 120),
+      bi: px.beatIdx,
+      ph: +(px.phase || 0).toFixed(3),
+      e: +px.energy.toFixed(2),
+      k: +px.kickEnv.toFixed(2),
+      d: +px.drop.toFixed(2),
+      b: +px.build.toFixed(2),
+      pal: (pal || []).slice(0, 3).map((c2) => c2.map((v) => Math.round(v))),
+      t: titleOf(item) || "",
+      a: artistOf(item) || ""
+    }, true);
+  }
+  async function stop() {
+    clearTimeout(stopT);
+    if (!wanted) return;
+    wanted = false;
+    lastFeed = 0;
+    offAt = Date.now();
+    await send({ v: 1, on: 0, s: Date.now() }, true);
+    setTimeout(() => {
+      client?.close();
+      client = null;
+      setStatus("off");
+    }, 400);
+  }
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, wanted, emit, setStatus, live;
+  var init_live = __esm({
+    "src/live.js"() {
+      import_qrcode = __toESM(require_browser());
+      init_config();
+      init_player();
+      BROKERS = ["wss://broker.hivemq.com:8884/mqtt", "wss://broker.emqx.io:8084/mqtt"];
+      te = new TextEncoder();
+      mqStr = (s) => {
+        const b = te.encode(s);
+        return [b.length >> 8, b.length & 255, ...b];
+      };
+      mqLen = (n) => {
+        const o = [];
+        do {
+          let d = n % 128;
+          n = Math.floor(n / 128);
+          if (n) d |= 128;
+          o.push(d);
+        } while (n);
+        return o;
+      };
+      mqPkt = (h, body) => new Uint8Array([h, ...mqLen(body.length), ...body]);
+      PAGE = "https://passimoritz.github.io/spicetify-mirage/live/";
+      GRACE = 10 * 6e4;
+      RATE = 125;
+      b64u = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      ses = null;
+      client = null;
+      brokerIx = 0;
+      status = "off";
+      lastSend = 0;
+      lastFeed = 0;
+      offAt = 0;
+      sending = false;
+      stopT = 0;
+      wanted = false;
+      emit = () => window.dispatchEvent(new Event("mirage:live"));
+      setStatus = (s) => {
+        if (s === status) return;
+        status = s;
+        setTimeout(emit);
+      };
+      live = { prepare, feed, stop, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status };
+    }
+  });
+
   // src/immersive.js
   var ICON, MODES, LYR, VIZ, immersive;
   var init_immersive = __esm({
@@ -9263,9 +11250,9 @@
       init_party();
       init_jam();
       init_venue();
-      init_bridge();
       init_clock();
       init_instruments();
+      init_live();
       ICON = {
         prev: '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg>',
         next: '<svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg>',
@@ -9713,6 +11700,7 @@
           motes = [];
           blend = null;
           party.live = null;
+          live.stop();
           venueClear();
           el2?.querySelector(".m-im-livecard")?.remove();
         }
@@ -10746,6 +12734,7 @@
             q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
           }
           party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
+          live.feed(px, vividPal || palette(), party.info.bpm);
         }
         const toLocal = (x, y) => [x, y];
         function drawMotes(ctx, dt, dpr) {
@@ -10995,44 +12984,36 @@
           q.live.hidden = !(party2 && cfg.partyLive);
           if (q.live.hidden) el2.querySelector(".m-im-livecard")?.remove();
         }
-        function toggleLiveCard() {
+        async function toggleLiveCard() {
           const old = el2.querySelector(".m-im-livecard");
           if (old) return old.remove();
-          const info = bridge.live();
+          const info = await live.prepare().catch(() => null);
           const card = document.createElement("div");
           card.className = "m-im-livecard";
+          const b = document.createElement("b");
+          b.textContent = t("liveTitle");
           if (!info) {
-            bridge.setLive(true);
-            const b2 = document.createElement("b");
-            b2.textContent = t("liveTitle");
-            const p2 = document.createElement("p");
-            p2.textContent = t(bridge.connected() ? "liveOld" : "liveMissing");
-            card.append(b2, p2);
-            card.onclick = () => card.remove();
-            el2.append(card);
-            return;
-          }
-          if (info.qr) {
+            const p = document.createElement("p");
+            p.textContent = t("liveError");
+            card.append(b, p);
+          } else {
             const img = new Image();
             img.alt = "";
             img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
-            card.append(img);
+            const p = document.createElement("p");
+            p.textContent = t("liveHint");
+            const u = document.createElement("code");
+            u.textContent = t("liveCopy");
+            u.title = info.url;
+            u.onclick = (e) => {
+              e.stopPropagation();
+              navigator.clipboard?.writeText(info.url).catch(() => {
+              });
+            };
+            const note = document.createElement("small");
+            note.textContent = t("liveRelay");
+            card.append(img, b, p, u, note);
           }
-          const b = document.createElement("b");
-          b.textContent = t("liveTitle");
-          const p = document.createElement("p");
-          p.textContent = t("liveHint");
-          const u = document.createElement("code");
-          u.textContent = info.url;
-          u.title = t("liveCopy");
-          u.onclick = (e) => {
-            e.stopPropagation();
-            navigator.clipboard?.writeText(info.url).catch(() => {
-            });
-          };
-          const fw = document.createElement("small");
-          fw.textContent = t("liveFirewall");
-          card.append(b, p, u, fw);
           card.onclick = () => card.remove();
           el2.append(card);
         }
@@ -11372,7 +13353,7 @@
           aliveUntil = Math.max(aliveUntil, performance.now() + 50);
           wake();
         }
-        function stop() {
+        function stop2() {
           running = false;
           clearTimeout(timer);
           timer = 0;
@@ -11384,7 +13365,265 @@
           aliveUntil = performance.now() + 50;
           wake();
         });
-        return { start, stop, recolor, pause, wake };
+        return { start, stop: stop2, recolor, pause, wake };
+      })();
+    }
+  });
+
+  // src/pages.js
+  function pageEnter() {
+    if (!cfg.cascade || cfg.calm) return;
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv) return;
+    mv.classList.remove("m-enter");
+    setTimeout(() => {
+      mv.querySelectorAll(SEL.grid).forEach(
+        (g) => [...g.children].slice(0, 24).forEach((c2, i) => c2.style.setProperty("--m-i", i))
+      );
+      [...mv.querySelectorAll(SEL.rows)].slice(0, 26).forEach((r, i) => r.style.setProperty("--m-i", i));
+      void mv.offsetWidth;
+      mv.classList.add("m-enter");
+      clearTimeout(enterTimer);
+      enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
+    }, 70);
+  }
+  function domReport() {
+    try {
+      domReportInner();
+    } catch (e) {
+      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
+    }
+  }
+  function domReportInner() {
+    const tree = [];
+    (function walk(el2, depth) {
+      if (depth > 4 || tree.length > 160) return;
+      for (const c2 of el2.children) {
+        const r = c2.getBoundingClientRect();
+        tree.push(`${"  ".repeat(depth)}${c2.tagName.toLowerCase()}${c2.id ? "#" + c2.id : ""} .${String(c2.className?.baseVal ?? c2.className).slice(0, 120)} [${c2.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
+        walk(c2, depth + 1);
+      }
+    })(document.body, 0);
+    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(SEL.mainView), tree });
+    const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
+    const out = [];
+    const minW = mv.clientWidth * 0.4;
+    for (const el2 of mv.querySelectorAll("*")) {
+      if (out.length >= 80) break;
+      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
+      const r = el2.getBoundingClientRect();
+      if (r.top > innerHeight) continue;
+      const cs = getComputedStyle(el2);
+      const pseudo = ["::before", "::after"].map((p) => {
+        const c2 = getComputedStyle(el2, p);
+        return c2.content !== "none" && (c2.backgroundColor !== "rgba(0, 0, 0, 0)" || c2.backgroundImage !== "none") ? `${p} ${c2.backgroundColor} ${c2.backgroundImage.slice(0, 160)} op=${c2.opacity}` : "";
+      }).filter(Boolean);
+      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
+      out.push({
+        tag: el2.tagName,
+        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
+        testid: el2.dataset?.testid || "",
+        style: (el2.getAttribute("style") || "").slice(0, 300),
+        bg: cs.backgroundColor,
+        img: cs.backgroundImage.slice(0, 200),
+        opacity: cs.opacity,
+        tint: el2.classList.contains("m-tint"),
+        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
+        pseudo
+      });
+    }
+    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
+      main: getComputedStyle(root).getPropertyValue("--spice-main"),
+      a: getComputedStyle(root).getPropertyValue("--m-a"),
+      dynamic: cfg.dynamic,
+      scheme: cfg.scheme,
+      current,
+      colorDiag
+    } });
+  }
+  function markPage(loc) {
+    const path = (loc || S.Platform.History.location || {}).pathname || "";
+    root.dataset.mPage = path.split("/")[1] || "home";
+  }
+  var enterTimer;
+  var init_pages = __esm({
+    "src/pages.js"() {
+      init_selectors();
+      init_core();
+      init_config();
+      init_color();
+      init_bridge();
+      enterTimer = 0;
+      try {
+        S.Platform.History.listen((loc) => {
+          markPage(loc);
+          pageEnter();
+        });
+        markPage();
+      } catch {
+      }
+    }
+  });
+
+  // src/bridge.js
+  var bridge;
+  var init_bridge = __esm({
+    "src/bridge.js"() {
+      init_core();
+      init_lyrics();
+      init_audio();
+      init_i18n();
+      init_color();
+      init_player();
+      init_pages();
+      init_controls();
+      init_party();
+      init_config();
+      bridge = /* @__PURE__ */ (() => {
+        const ADDR = "ws://127.0.0.1:47321";
+        let ws = null, retry = 0, wanted2 = false;
+        function connect3() {
+          wanted2 = true;
+          if (ws && ws.readyState <= 1) return;
+          try {
+            ws = new WebSocket(ADDR);
+          } catch {
+            return schedule3();
+          }
+          const sock = ws;
+          ws.onopen = () => {
+            if (ws !== sock) return;
+            sendTrack();
+            watchVolume(true);
+          };
+          ws.onclose = () => {
+            if (ws !== sock) return;
+            ws = null;
+            watchVolume(false);
+            setTopics([]);
+            schedule3();
+          };
+          ws.onerror = () => {
+          };
+          ws.onmessage = (e) => {
+            if (ws !== sock) return;
+            let m;
+            try {
+              m = JSON.parse(e.data);
+            } catch {
+              return;
+            }
+            if (m.type !== "cmd") return;
+            if (m.cmd === "toggle") S.Player.togglePlay();
+            else if (m.cmd === "next") S.Player.next();
+            else if (m.cmd === "prev") S.Player.back();
+            else if (m.cmd === "hello") sendTrack();
+            else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
+            else if (m.cmd === "report") {
+              send2({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
+                api: typeof S.Player.getVolume?.(),
+                pb: typeof S.Platform?.PlaybackAPI?._volume,
+                read: readVolume()
+              } });
+              domReport();
+            }
+          };
+        }
+        function schedule3() {
+          clearTimeout(retry);
+          if (wanted2) retry = setTimeout(connect3, 5e3);
+        }
+        function close() {
+          wanted2 = false;
+          clearTimeout(retry);
+          setTopics([]);
+          watchVolume(false);
+          try {
+            ws?.close();
+          } catch {
+          }
+          ws = null;
+        }
+        let volTimer = 0, lastVol = null;
+        const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
+        function readVolume() {
+          let v = num(S.Player.getVolume?.());
+          if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
+          if (v === null) {
+            const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
+            const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
+            if (m) v = num(Number(m[1]) / 100);
+          }
+          return v;
+        }
+        function watchVolume(on) {
+          clearInterval(volTimer);
+          lastVol = null;
+          if (!on) return;
+          volTimer = setInterval(() => {
+            const v = readVolume();
+            if (v === null) return;
+            const muted = !!S.Player.getMute?.() || v === 0;
+            const key = Math.round(v * 100) + (muted ? "m" : "");
+            if (lastVol !== null && key !== lastVol && !isFading()) send2({ type: "volume", value: v, muted });
+            lastVol = key;
+          }, 250);
+        }
+        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
+        function setTopics(list) {
+          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
+          clearInterval(lyricTimer);
+          clearInterval(levelTimer);
+          clearInterval(partyTimer);
+          lastLine = "";
+          if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
+          if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
+          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
+        }
+        function pushParty() {
+          const L = party.live;
+          if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
+          send2({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
+        }
+        async function pushLyric() {
+          const uri = currentItem()?.uri || "";
+          const lyr = await getLyrics(uri);
+          const lines = lyr?.synced ? lyr.lines : null;
+          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
+          const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
+          const key = uri + "|" + i;
+          if (key === lastLine) return;
+          lastLine = key;
+          send2({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
+        }
+        function pushLevel() {
+          if (!S.Player.isPlaying()) return;
+          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
+          if (b) send2({ type: "level", bands: b });
+        }
+        function sendTrack(changed) {
+          const item = currentItem();
+          if (!item || ws?.readyState !== 1) return;
+          const c2 = covers(item);
+          ws.send(
+            JSON.stringify({
+              type: "track",
+              changed: !!changed,
+              uri: item.uri,
+              title: titleOf(item),
+              artist: artistOf(item),
+              album: item.album?.name || item.metadata?.album_title || "",
+              cover: c2.big || c2.small,
+              colors: palette().map((x) => `rgb(${x.join(",")})`),
+              duration: S.Player.getDuration?.() || 0,
+              progress: S.Player.getProgress?.() || 0,
+              playing: !!S.Player.isPlaying(),
+              lang: LANG
+            })
+          );
+        }
+        const send2 = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
+        return { connect: connect3, close, sendTrack, send: send2, connected: () => ws?.readyState === 1 };
       })();
     }
   });
@@ -11913,38 +14152,26 @@
   }
   function livePanel() {
     const box = el("div", "m-live");
-    let waited = false;
     const draw = () => {
       if (box.dataset.seen && !box.isConnected) return window.removeEventListener("mirage:live", draw);
       box.dataset.seen = "1";
       box.replaceChildren();
       box.hidden = !cfg.partyLive;
-      if (!cfg.partyLive) return;
-      const info = bridge.live();
-      if (info?.qr) {
-        const img = new Image();
-        img.alt = "";
-        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
-        box.append(img);
-      }
+      const info = cfg.partyLive && live.info();
+      if (!info) return;
+      const img = new Image();
+      img.alt = "";
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      const code = el("code", "", t("liveCopy"));
+      code.title = info.url;
+      code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {
+      });
       const txt = el("div");
-      if (info) {
-        const code = el("code", "", info.url);
-        code.title = t("liveCopy");
-        code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {
-        });
-        txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveFirewall")));
-      } else txt.append(el("small", "", t(!bridge.connected() ? "liveMissing" : waited ? "liveOld" : "liveWait")));
-      box.append(txt);
+      txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")));
+      box.append(img, txt);
     };
     window.addEventListener("mirage:live", draw);
-    if (cfg.partyLive && !bridge.live()) {
-      bridge.setLive(true);
-      setTimeout(() => {
-        waited = true;
-        draw();
-      }, 4e3);
-    }
+    if (cfg.partyLive) live.prepare().then(draw, draw);
     draw();
     return box;
   }
@@ -12179,7 +14406,7 @@
         toggle("partyJam", () => {
         }),
         head(t("ps_extras")),
-        toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
+        toggle("partyLive", () => cfg.partyLive && live.prepare()),
         livePanel(),
         toggle("partyScreen", () => immersive.refresh()),
         toggle("partyRecap", () => immersive.refresh()),
@@ -12352,6 +14579,7 @@
       init_share();
       init_fonts();
       init_party();
+      init_live();
       COSTLY = /* @__PURE__ */ new Set(["glass", "particles", "beat", "tilt", "canvas"]);
       el = (tag, cls, text) => {
         const e = document.createElement(tag);

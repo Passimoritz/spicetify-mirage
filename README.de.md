@@ -180,7 +180,7 @@ Der Party-Modus liest den ganzen Song, bevor er läuft: Energiekurve, Aufbauten,
 
 | | |
 |---|---|
-| 📱 **Live-Link** | Handys im selben WLAN scannen einen QR-Code und blitzen als zusätzliche Lichter mit (braucht die Overlay-App) |
+| 📱 **Live-Link** | Handys scannen einen QR-Code und blitzen als zusätzliche Lichter im Takt mit – in jedem Netz, Ende-zu-Ende verschlüsselt, nur solange der Party-Modus läuft, ohne App |
 | 🖥️ **Zweiter Bildschirm** | Legt den Party-Modus im Vollbild auf einen Fernseher oder anderen Monitor |
 | 🌈 **Kantenlicht** | Die Overlay-App lässt die Ränder deines Desktops im Takt leuchten |
 | 📊 **Party-Rückblick** | Eine teilbare Karte der Nacht: Songs, Genre-Mischung, Tempo-Spanne, der größte Drop |
@@ -201,7 +201,7 @@ Oder in Spotify: **Mirage-Einstellungen → Overlay → Overlay-App herunterlade
 - **Wann:** bei jedem Songwechsel, dauerhaft als Mini-Player oder aus · bei Play/Pause · Ruhezeiten
 - **Wo:** Hauptbildschirm, Bildschirm mit der Maus oder jeder Bildschirm auf einer Karte deiner Displays · 9 Positionen · Feinversatz
 - **Wie:** Insel, Karte, Banner oder Minimal · federnd, gleitend oder blendend · Leuchten, Rundung, Größe, Deckkraft · Steuerung beim Drüberfahren
-- **Extras:** Lautstärke-Leiste · bleibt still, solange ein Spiel oder Video im Vollbild läuft · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`) · Kantenlicht und Live-Link für den Party-Modus · aktualisiert sich selbst (Windows, AppImage)
+- **Extras:** Lautstärke-Leiste · bleibt still, solange ein Spiel oder Video im Vollbild läuft · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`) · Kantenlicht für den Party-Modus · aktualisiert sich selbst (Windows, AppImage)
 
 > **Code-Signatur:** Der Windows-Installer wird gerade für die kostenlose Signatur durch die SignPath Foundation eingerichtet – siehe [Code signing policy](CODE_SIGNING.md). Solange er unsigniert ist, blockiert ihn Windows' *Smart App Control*, und beim ersten Start fragt das System einmal nach. Windows: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick → *Öffnen* → *Öffnen*. Beim Einschalten des Live-Links fragt Windows einmal, ob die App im privaten Netzwerk erreichbar sein darf.
 
@@ -245,7 +245,7 @@ Mirage soll lebendig aussehen, ohne den Rechner aufzufressen.
 
 ## 🔒 Datenschutz
 
-Kein eigener Server, kein Tracking, kein Konto. Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify. Nur wenn Spotify nichts hat: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh, Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche, die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz – alles abschaltbar. Die Overlay-App lauscht nur auf deinem eigenen Rechner; der Live-Link (standardmäßig aus) öffnet eine Seite im lokalen Netz, geschützt durch einen Zufallsschlüssel in der Adresse, die nur Lichtfarben und den Songtitel bekommt. Schriften kommen von Google Fonts.
+Kein eigener Server, kein Tracking, kein Konto. Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify. Nur wenn Spotify nichts hat: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh, Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche, die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz – alles abschaltbar. Die Overlay-App lauscht nur auf deinem eigenen Rechner. Der Live-Link (standardmäßig aus) schickt Lichtfarben, Tempo und den Songtitel Ende-zu-Ende verschlüsselt (AES-GCM) über einen öffentlichen Relay (HiveMQ); Kanal und Schlüssel stehen nur im QR-Code hinter dem „#“, und dieser Teil geht nie an einen Server – der Relay sieht nur Zufallsbytes auf einem Zufallskanal. Gesendet wird nur, solange der Party-Modus läuft, 10 Minuten danach verfällt der Code. Schriften kommen von Google Fonts.
 
 ## ❓ Häufige Fragen
 
@@ -264,7 +264,7 @@ Den Stil in **Mirage-Einstellungen → Party-Modus** von Hand wählen, oder bei 
 <details>
 <summary><b>Die Handy-Seite öffnet sich nicht.</b></summary>
 
-Handy und PC müssen im selben WLAN sein (kein Gästenetz), die Overlay-App (1.10 oder neuer) muss laufen, und Windows muss *Mirage Overlay* durch die Firewall lassen – auch für öffentliche Netzwerke, wenn dein Netzwerk so eingestellt ist. Läuft noch eine alte Kopie der Overlay-App (z. B. aus einem alten Download-Ordner), beende sie; neuere Versionen übernehmen von älteren von selbst. Live-Link in den Einstellungen aus- und wieder einschalten gibt einen frischen QR-Code.
+Das Handy braucht nur Internet – WLAN oder mobile Daten, keine App. Die Seite zeigt „warte auf den Party-Modus“, bis in Spotify der Party-Modus läuft, und „Party beendet“, wenn du ihn verlässt; 10 Minuten später verfällt der QR-Code, und die nächste Party zeigt einen neuen. Bleibt sie bei „Keine Verbindung“, blockiert vielleicht eine Firewall oder ein Werbeblocker auf dem Handy den Relay (`broker.hivemq.com`).
 </details>
 
 <details>
@@ -285,7 +285,7 @@ flowchart LR
   B --> G
   G -->|Zustand| W[Bühne + Publikum im Worker]
   B <-->|WebSocket, lokal| H[Mirage Overlay]
-  H -->|WLAN, mit Schlüssel| P[Handys]
+  B -->|verschlüsselter Relay| P[Handys]
 ```
 
 - Farben wechseln in einem einzigen Stil-Update; der Hintergrundschleier ist ein vorab verkleinertes Bild, einmal weichgezeichnet und nur noch gedreht.

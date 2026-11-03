@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.13.0] – 2026-11-03
+
+### Changed
+
+- **The live link works on any network – and only for whoever has the QR code.** The phone page now lives at passimoritz.github.io (real HTTPS, so Chrome no longer runs into "ERR_TOO_MANY_RETRIES"), and the theme sends the light state directly – no overlay app, no home network, no firewall setting. Messages go end-to-end encrypted (AES-GCM) through a public relay (HiveMQ, with a fallback); a random channel and key exist only in the QR link after the "#", which browsers never send to any server, and every message is authenticated, so nobody can read or inject anything. The page runs on Wi-Fi or mobile data, keeps the screen on, works out the beat itself between messages, shows "waiting for party mode" and "party is over", and the code expires 10 minutes after party mode ends.
+
 ## [1.12.3] – 2026-11-03
 
 ### Removed

@@ -14,6 +14,7 @@ import { diagnostics } from "./selectors.js";
 import { nowPlayingCard, weekCard, monthCard } from "./share.js";
 import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
 import { FAMILIES } from "./party.js";
+import { live } from "./live.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -143,40 +144,28 @@ function select(groups, value, onPick) {
   s.onchange = () => onPick(s.value);
   return s;
 }
-// Live-Link: QR-Code und Adresse direkt unter dem Schalter – sobald er an ist, sieht man, ob es klappt
+// Live-Link: QR-Code direkt unter dem Schalter – sobald er an ist
 function livePanel() {
   const box = el("div", "m-live");
-  let waited = false;
   const draw = () => {
     if (box.dataset.seen && !box.isConnected) return window.removeEventListener("mirage:live", draw);
     box.dataset.seen = "1";
     box.replaceChildren();
     box.hidden = !cfg.partyLive;
-    if (!cfg.partyLive) return;
-    const info = bridge.live();
-    if (info?.qr) {
-      const img = new Image();
-      img.alt = "";
-      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
-      box.append(img);
-    }
+    const info = cfg.partyLive && live.info();
+    if (!info) return;
+    const img = new Image();
+    img.alt = "";
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+    const code = el("code", "", t("liveCopy"));
+    code.title = info.url;
+    code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
     const txt = el("div");
-    if (info) {
-      const code = el("code", "", info.url);
-      code.title = t("liveCopy");
-      code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
-      txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveFirewall")));
-    } else txt.append(el("small", "", t(!bridge.connected() ? "liveMissing" : waited ? "liveOld" : "liveWait")));
-    box.append(txt);
+    txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")));
+    box.append(img, txt);
   };
   window.addEventListener("mirage:live", draw);
-  if (cfg.partyLive && !bridge.live()) {
-    bridge.setLive(true);
-    setTimeout(() => {
-      waited = true;
-      draw();
-    }, 4000);
-  }
+  if (cfg.partyLive) live.prepare().then(draw, draw);
   draw();
   return box;
 }
@@ -395,7 +384,7 @@ function render(box) {
       toggle("partyJamLight", () => {}),
       toggle("partyJam", () => {}),
       head(t("ps_extras")),
-      toggle("partyLive", () => bridge.setLive(cfg.partyLive)),
+      toggle("partyLive", () => cfg.partyLive && live.prepare()),
       livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),

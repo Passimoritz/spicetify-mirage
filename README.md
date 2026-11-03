@@ -180,7 +180,7 @@ Party mode reads the whole song before it plays: energy curve, build-ups, drops 
 
 | | |
 |---|---|
-| 📱 **Live link** | Phones on the same Wi-Fi scan a QR code and flash along as extra lights (needs the overlay app) |
+| 📱 **Live link** | Phones scan a QR code and flash along on the beat as extra lights – on any network, end-to-end encrypted, only while party mode runs, no app needed |
 | 🖥️ **Second screen** | Puts party mode full screen on a TV or another monitor |
 | 🌈 **Edge light** | The overlay app makes the edges of your desktop glow with the beat |
 | 📊 **Party recap** | A shareable card of the night: songs, genre mix, tempo range, the biggest drop |
@@ -201,7 +201,7 @@ Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (pic
 - **When:** on every song change, permanently as a mini player, or off · on play/pause · quiet hours
 - **Where:** main screen, the screen with the mouse, or any screen on a map of your displays · 9 positions · fine offset
 - **How:** Island, Card, Banner or Minimal · springy, slide or fade · glow, roundness, size, opacity · controls on hover
-- **Extras:** volume bar · stays quiet while a game or video runs full screen · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`) · edge light and live link for party mode · updates itself (Windows, AppImage)
+- **Extras:** volume bar · stays quiet while a game or video runs full screen · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`) · edge light for party mode · updates itself (Windows, AppImage)
 
 > **Code signing:** the Windows installer is being set up for free signing by the SignPath Foundation – see the [code signing policy](CODE_SIGNING.md). Until it is signed, Windows *Smart App Control* blocks it, and on first start the system asks once. Windows: *More info → Run anyway*. macOS: right-click → *Open* → *Open*. When you turn on the live link, Windows asks once whether the app may be reached on your private network.
 
@@ -245,7 +245,7 @@ Mirage is built to look alive without eating your CPU.
 
 ## 🔒 Privacy
 
-No own server, no tracking, no account. Lyrics, beat data, audio features and credits come from Spotify. Only when Spotify has nothing: title, artist, album and length go to LRCLIB, NetEase and lyrics.ovh for lyrics, title and artist to Deezer for tempo and to Apple's iTunes search for the party genre, and the song's ISRC number to MusicBrainz for instrument credits – each can be turned off. The overlay listens only on your own computer; the live link (off by default) opens a page on your local network, protected by a random key in its address, that only receives light colours and the song title. Fonts load from Google Fonts.
+No own server, no tracking, no account. Lyrics, beat data, audio features and credits come from Spotify. Only when Spotify has nothing: title, artist, album and length go to LRCLIB, NetEase and lyrics.ovh for lyrics, title and artist to Deezer for tempo and to Apple's iTunes search for the party genre, and the song's ISRC number to MusicBrainz for instrument credits – each can be turned off. The overlay listens only on your own computer. The live link (off by default) sends light colours, tempo and the song title end-to-end encrypted (AES-GCM) through a public relay (HiveMQ); channel and key exist only in the QR code, after the “#”, which is never sent to any server – the relay sees only random bytes on a random channel. It sends only while party mode runs, and the code expires 10 minutes after. Fonts load from Google Fonts.
 
 ## ❓ FAQ
 
@@ -264,7 +264,7 @@ Pick the style by hand in **Mirage settings → Party mode**, or keep *Auto* and
 <details>
 <summary><b>The phone page does not open.</b></summary>
 
-Phone and PC must be on the same Wi-Fi (not a guest network), the overlay app (1.10 or newer) must be running, and Windows must let *Mirage Overlay* through its firewall – for public networks too, if your network is set to public. If an old copy of the overlay is still running (for example from an old download folder), close it; newer versions take over from older ones by themselves. Turn the live link off and on in the settings to get a fresh QR code.
+The phone only needs an internet connection – Wi-Fi or mobile data, no app. The page says “waiting for party mode” until party mode runs in Spotify, and “party is over” after you leave it; 10 minutes later the QR code expires and the next party shows a new one. If it stays on “no connection”, a firewall or ad blocker on the phone may be blocking the relay (`broker.hivemq.com`).
 </details>
 
 <details>
@@ -285,7 +285,7 @@ flowchart LR
   B --> G
   G -->|state| W[Stage + crowd worker]
   B <-->|WebSocket, local| H[Mirage Overlay]
-  H -->|Wi-Fi, keyed| P[Phones]
+  B -->|encrypted relay| P[Phones]
 ```
 
 - Colours change in one style update; the background haze is a pre-shrunk image blurred once and only rotated.
