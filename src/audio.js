@@ -60,7 +60,7 @@ async function fetchAnalysis(uri, attempt) {
         beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
         bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
         // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
-        sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12) })),
+        sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12), key: num(s.key, -1), tempo: num(s.tempo, 0), tc: num(s.tempo_confidence, 0) })),
         segs,
         bpm: Math.round(bpm),
         loud: Number(d.track?.loudness) || avg,

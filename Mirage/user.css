@@ -3621,6 +3621,179 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   padding: 6px 10px 14px;
   overflow-y: auto;
 }
+/* Drop-Countdown: große Zahl in der Mitte, springt auf jedem Schlag neu herein */
+#mirage-immersive .m-im-count {
+  position: absolute;
+  inset: 0;
+  z-index: 31;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  font: 800 min(34vh, 28vw) / 1 var(--m-font);
+  color: #fff;
+  text-shadow:
+    0 0 40px rgba(var(--m-a-rgb), 0.9),
+    0 0 120px rgba(var(--m-c-rgb), 0.6);
+  opacity: 0;
+}
+#mirage-immersive .m-im-count.is-on {
+  animation: m-count 0.5s var(--m-ease) both;
+}
+@keyframes m-count {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+}
+/* Pausen-Szene: ruhig, mittig, mit QR-Code für die Handys */
+#mirage-immersive .m-im-pause {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  color: #fff;
+  background: rgb(8 7 14 / 0.72);
+  backdrop-filter: blur(24px) saturate(1.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s var(--m-ease);
+}
+#mirage-immersive .m-im-pause.is-on {
+  opacity: 1;
+}
+#mirage-immersive .m-im-pause b {
+  font: 800 clamp(40px, 6vw, 96px) / 1 var(--m-font);
+  letter-spacing: -0.03em;
+}
+#mirage-immersive .m-im-pause small {
+  font-size: clamp(14px, 1.4vw, 22px);
+  opacity: 0.75;
+}
+#mirage-immersive .m-im-pause-qr {
+  width: min(28vh, 260px);
+  padding: 14px;
+  border-radius: 20px;
+  background: #fff;
+}
+#mirage-immersive .m-im-pause-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Ansage: großes Band oben in der Mitte */
+#mirage-immersive .m-im-annbox {
+  position: absolute;
+  top: 14vh;
+  left: 50%;
+  z-index: 33;
+  max-width: min(1100px, 90vw);
+  padding: 18px 34px;
+  border-radius: 26px;
+  font: 800 clamp(26px, 3.4vw, 58px) / 1.15 var(--m-font);
+  text-align: center;
+  color: #fff;
+  background: rgb(14 12 22 / 0.7);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 24px 80px -20px rgba(var(--m-a-rgb), 0.7);
+  translate: -50% 0;
+  animation: m-ann-in 0.6s var(--m-spring, var(--m-ease)) both;
+  transition: opacity 0.7s, translate 0.7s var(--m-ease);
+}
+#mirage-immersive .m-im-annbox.is-gone {
+  opacity: 0;
+  translate: -50% -20px;
+}
+@keyframes m-ann-in {
+  from {
+    opacity: 0;
+    translate: -50% -24px;
+  }
+}
+/* Abstimmung: Karte unten links mit drei Balken */
+#mirage-immersive .m-im-pollcard {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  z-index: 32;
+  display: grid;
+  gap: 8px;
+  width: min(360px, 40vw);
+  padding: 14px 16px;
+  border-radius: 18px;
+  color: #fff;
+  font: 600 13px var(--m-font);
+  background: rgb(14 12 22 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(16px);
+}
+#mirage-immersive .m-im-pollrow {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.06);
+}
+#mirage-immersive .m-im-pollrow::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--w, 0%);
+  background: rgba(var(--m-a-rgb), 0.45);
+  transition: width 0.6s var(--m-ease);
+}
+#mirage-immersive .m-im-pollrow span,
+#mirage-immersive .m-im-pollrow i {
+  position: relative;
+  font-style: normal;
+}
+#mirage-immersive .m-im-pollrow span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* Reaktionen der Gäste: steigen vom unteren Rand auf und verblassen */
+#mirage-immersive .m-im-react {
+  position: absolute;
+  bottom: 6vh;
+  z-index: 32;
+  font-size: clamp(30px, 3.4vw, 56px);
+  pointer-events: none;
+  animation: m-react 3.4s var(--m-ease) both;
+}
+@keyframes m-react {
+  0% {
+    opacity: 0;
+    transform: translate(0, 20px) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0), -46vh) scale(0.9);
+  }
+}
+#mirage-immersive .m-im-side-note {
+  margin: 4px 10px 8px;
+  font-size: 13px;
+  opacity: 0.7;
+}
 /* Abschnitte in der Seitenleiste (Party auf anderem Bildschirm) */
 #mirage-immersive .m-im-side-sec {
   display: grid;

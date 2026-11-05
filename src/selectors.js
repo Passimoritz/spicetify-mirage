@@ -1,4 +1,4 @@
-import { S, root, VERSION } from "./core.js";
+import { S, root, VERSION, errors } from "./core.js";
 import { t } from "./i18n.js";
 
 /* ---------------------------------------------------------------- Spotify-Selektoren */
@@ -62,6 +62,8 @@ try {
   const raw = JSON.parse(localStorage.getItem(SEEN) || "{}");
   if (raw && typeof raw.found === "object" && !Array.isArray(raw.found)) seenSel = { ...seenSel, ...raw };
 } catch {}
+// Spotify wurde aktualisiert (gespeicherte Version ≠ jetzige): dann früh prüfen und das Ergebnis sagen
+const updated = !!(spotifyVersion && seenSel.v && seenSel.v !== spotifyVersion);
 if (spotifyVersion && seenSel.v !== spotifyVersion) {
   if (seenSel.v && Object.keys(seenSel.found).length) seenSel.prev = seenSel.found;
   seenSel = { ...blank(), v: spotifyVersion, prev: seenSel.prev, told: seenSel.told };
@@ -91,13 +93,24 @@ setTimeout(() => {
   noteFound();
   // verloren: früher gefunden, eine passende Seite wurde besucht, aber jetzt nirgends mehr gefunden
   health.lost = LOOK.filter((k) => (seenSel.prev[k] || []).some((pg) => seenSel.pages.includes(pg)) && !(seenSel.found[k] || []).length);
-  if (!health.lost.length || seenSel.told === spotifyVersion || root.classList.contains("mirage-safe")) return;
+  if (seenSel.told === spotifyVersion || root.classList.contains("mirage-safe")) return;
+  if (!health.lost.length) {
+    // nach einem Update einmal Entwarnung geben – sonst still
+    if (updated) {
+      seenSel.told = spotifyVersion;
+      try {
+        localStorage.setItem(SEEN, JSON.stringify(seenSel));
+        S.showNotification?.(t("updOk").replace("{v}", spotifyVersion || "?"), false, 6000);
+      } catch {}
+    }
+    return;
+  }
   seenSel.told = spotifyVersion;
   try {
     localStorage.setItem(SEEN, JSON.stringify(seenSel));
     S.showNotification?.(t("selLost").replace("{v}", spotifyVersion || "?"), true, 12000);
   } catch {}
-}, 20 * 60e3);
+}, (updated ? 3 : 20) * 60e3);
 
 // Kurztext für Fehlerberichte (Feld „Diagnose“ im Issue-Formular)
 const diagnostics = () =>
@@ -110,6 +123,11 @@ const diagnostics = () =>
     `safe mode: ${root.classList.contains("mirage-safe")}`,
     `scheme: ${root.dataset.mScheme || "?"} · page: ${root.dataset.mPage || "?"}`,
     `ua: ${navigator.userAgent.replace(/.*(Chrome\/[\d.]+).*/, "$1")}`,
+    `errors: ${errors.length ? errors.slice(-5).map((e) => String(e).replace(/(file|https?):\/\/\S+/g, "…").slice(0, 160)).join(" | ") : "none"}`,
   ].join("\n");
+// „Problem melden“: ein vorausgefülltes GitHub-Issue mit der Diagnose (keine persönlichen Daten darin)
+const reportUrl = () =>
+  "https://github.com/Passimoritz/spicetify-mirage/issues/new?" +
+  new URLSearchParams({ template: "bug-after-spotify-update.yml", title: `[Bug] Spotify ${spotifyVersion || "?"} · Mirage ${VERSION}`, diagnostics: diagnostics() }).toString();
 
-export { SEL, health, checkHealth, diagnostics };
+export { SEL, health, checkHealth, diagnostics, reportUrl };

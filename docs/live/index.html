@@ -108,6 +108,36 @@
   .sheet .sub { margin-top: 12px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
   .sheet .close { width: 100%; margin-top: 14px; }
   @media (prefers-reduced-motion: reduce) { .orb, body.on .dot { animation: none; } }
+  /* Reaktionen: eine Reihe Emojis über der Werkzeugleiste */
+  .reacts { position: fixed; left: 50%; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 150px); display: flex; gap: 6px; transform: translate(-50%, 320%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  body.on .reacts { transform: translate(-50%, 0); }
+  body.wish .reacts { opacity: 0; pointer-events: none; }
+  .reacts button { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(10, 8, 20, 0.42); font-size: 22px; line-height: 1;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.15s; }
+  .reacts button:active { transform: scale(0.85); }
+  .fly { position: fixed; bottom: 200px; font-size: 34px; pointer-events: none; animation: fly 1.6s ease-out forwards; }
+  @keyframes fly { to { transform: translate(var(--dx), -45vh) scale(1.4); opacity: 0; } }
+  /* Ansage des Gastgebers und „dein Song kommt gleich“: Band oben */
+  .note { position: fixed; left: 14px; right: 14px; top: max(64px, calc(env(safe-area-inset-top) + 52px)); z-index: 4; padding: 14px 16px; border-radius: 18px;
+    background: rgba(10, 8, 20, 0.7); border: 1px solid rgba(255, 255, 255, 0.16); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    transform: translateY(-160%); transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  .note.show { transform: none; }
+  .note small { display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+  .note b { display: block; margin-top: 4px; font-size: 19px; line-height: 1.25; }
+  /* Abstimmung: drei Songs zur Wahl */
+  .poll { position: fixed; left: 14px; right: 14px; top: 50%; z-index: 3; padding: 14px; border-radius: 22px; background: rgba(10, 8, 20, 0.72); border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transform: translateY(-50%); display: grid; gap: 8px; }
+  .poll[hidden] { display: none; }
+  .poll h3 { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; }
+  .poll button { position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 12px 6px 6px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05); color: #fff; font: inherit; font-size: 14px; font-weight: 650; text-align: left; }
+  .poll button::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: rgba(var(--a), 0.45); transition: width 0.5s; }
+  .poll button > * { position: relative; }
+  .poll button img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+  .poll button span { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .poll button.me { border-color: rgb(var(--c)); }
+  body.wish .poll { display: none; }
+  .sheet .notify { width: 100%; height: 42px; margin-top: 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.16); background: transparent; color: #fff; font: inherit; font-size: 14px; }
   /* gesungenes Wort mit Wortbild: leuchtet kurz in dessen Farbe */
   .lyr .fxw { animation: fxw 2.6s ease-out both; }
   @keyframes fxw { 18% { text-shadow: 0 0 16px rgba(var(--fxc), 0.95), 0 0 46px rgba(var(--fxc), 0.6); } 100% { text-shadow: 0 0 12px rgba(var(--fxc), 0.25); } }
@@ -119,6 +149,9 @@
 <div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p></div>
 <div class="tap" id="tap"></div>
 <div class="lyr" id="lyr" aria-live="polite"><b id="ly"></b><span id="lyn"></span></div>
+<div class="reacts" id="reacts"></div>
+<div class="note" id="note" role="status"><small id="noteK"></small><b id="noteT"></b></div>
+<div class="poll" id="poll" hidden><h3 id="pollH"></h3></div>
 <div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle">
   <div class="top2"><div class="grab"></div><div class="shead"><h2 id="wTitle"></h2><button type="button" class="x" id="wClose">✕</button></div><p class="hint" id="wHint"></p>
@@ -126,6 +159,7 @@
   <ul class="wl res" id="wRes"></ul>
   <p class="msg" id="wMsg" aria-live="polite"></p>
   <div class="name"><input id="wName" maxlength="20" autocomplete="nickname"></div>
+  <button type="button" class="notify" id="wNotify"></button>
   <h3 class="sub" id="wNow"></h3><ul class="wl" id="wList"></ul></div>
 <div class="card"><img class="cov" id="cov" alt="" hidden referrerpolicy="no-referrer" onerror="this.hidden=true"><div class="meta"><b id="title"></b><span id="artist"></span></div><div class="eq"><i></i><i></i><i></i></div><div class="bpm" id="bpm"></div></div>
 <script>
@@ -191,11 +225,18 @@ function mqttOpen(url, { onReady, onMessage, onClose }) {
 
 // Kanal und Schlüssel stehen nur hinter dem „#“ – dieser Teil wird nie an einen Server geschickt
 const de = /^de/i.test(navigator.language || "");
-const T = de
-  ? { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", vibLv: ["aus", "sanft", "normal", "stark"], wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", opt: "optional", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wSlow: "Noch keine Antwort – versuche es erneut …", wDead: "Mirage antwortet nicht. Läuft in Spotify der Party-Modus?", wErr: "Spotify hat gerade nicht geantwortet – gleich noch einmal versuchen.", vibTap: "Einmal antippen, damit das Handy vibrieren darf", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
-      tap: "Antippen für Vollbild · Display bleibt an", wait: ["Verbunden", "Warte auf den Party-Modus in Spotify …"], over: ["Party beendet", "Danke fürs Mitleuchten! Neue Party, neuer QR-Code."], bad: ["Link unvollständig", "Bitte den QR-Code noch einmal scannen."], net: ["Keine Verbindung", "Versuche es erneut … (WLAN oder mobile Daten an?)"], start: ["Mirage Live", "Verbinde …"] }
-  : { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", vibLv: ["off", "gentle", "normal", "strong"], wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", opt: "optional", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wSlow: "No answer yet – trying again …", wDead: "Mirage isn't answering. Is party mode running in Spotify?", wErr: "Spotify didn't answer just now – try again in a moment.", vibTap: "Tap once so the phone may vibrate", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
-      tap: "Tap for full screen · screen stays on", wait: ["Connected", "Waiting for party mode in Spotify …"], over: ["Party's over", "Thanks for lighting up! New party, new QR code."], bad: ["Incomplete link", "Please scan the QR code again."], net: ["No connection", "Retrying … (is Wi-Fi or mobile data on?)"], start: ["Mirage Live", "Connecting …"] };
+// Sprache des Handys: 14 Sprachen wie im Theme (fehlt ein Text, gilt der englische)
+const L = {
+  de: { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", vibLv: ["aus", "sanft", "normal", "stark"], wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", opt: "optional", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wSlow: "Noch keine Antwort – versuche es erneut …", wDead: "Mirage antwortet nicht. Läuft in Spotify der Party-Modus?", wErr: "Spotify hat gerade nicht geantwortet – gleich noch einmal versuchen.", vibTap: "Einmal antippen, damit das Handy vibrieren darf", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
+      tap: "Antippen für Vollbild · Display bleibt an", wait: ["Verbunden", "Warte auf den Party-Modus in Spotify …"], over: ["Party beendet", "Danke fürs Mitleuchten! Neue Party, neuer QR-Code."], bad: ["Link unvollständig", "Bitte den QR-Code noch einmal scannen."], net: ["Keine Verbindung", "Versuche es erneut … (WLAN oder mobile Daten an?)"], start: ["Mirage Live", "Verbinde …"] },
+  en: { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", vibLv: ["off", "gentle", "normal", "strong"], wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", opt: "optional", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wSlow: "No answer yet – trying again …", wDead: "Mirage isn't answering. Is party mode running in Spotify?", wErr: "Spotify didn't answer just now – try again in a moment.", vibTap: "Tap once so the phone may vibrate", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
+      tap: "Tap for full screen · screen stays on", wait: ["Connected", "Waiting for party mode in Spotify …"], over: ["Party's over", "Thanks for lighting up! New party, new QR code."], bad: ["Incomplete link", "Please scan the QR code again."], net: ["No connection", "Retrying … (is Wi-Fi or mobile data on?)"], start: ["Mirage Live", "Connecting …"] },
+};
+const MORE = {"fr": {"lyr": "Paroles", "wish": "＋ Souhait", "vib": "Vibration", "vibLv": ["off", "douce", "normale", "forte"], "wTitle": "Souhaiter un titre", "wHint": "Mirage le cherche sur Spotify. Les autres peuvent voter – c'est la personne aux platines qui décide.", "wName": "Ton prénom", "opt": "facultatif", "wSong": "Chercher sur Spotify …", "wSend": "Souhaiter", "wNow": "Souhaité", "wNone": "Rien trouvé – essaie une autre orthographe ?", "wSearching": "Recherche …", "wSlow": "Pas encore de réponse – on réessaie …", "wDead": "Mirage ne répond pas. Le mode fête est-il lancé dans Spotify ?", "wErr": "Spotify n'a pas répondu à l'instant – réessaie dans un moment.", "vibTap": "Appuie une fois pour autoriser la vibration du téléphone", "wClose": "Fermer", "wSent": "Envoyé ! Il apparaît dans la liste dans un instant.", "wWait": "Un instant – un souhait toutes les 45 secondes.", "wQueued": "✓ dans la file d'attente", "wEmpty": "Aucun souhait pour l'instant – sois le premier !", "wShort": "Saisis un titre.", "tap": "Touche pour le plein écran · l'écran reste allumé", "wait": ["Connecté", "En attente du mode fête dans Spotify …"], "over": ["La fête est finie", "Merci d'avoir brillé avec nous ! Nouvelle fête, nouveau QR code."], "bad": ["Lien incomplet", "Scanne à nouveau le QR code."], "net": ["Pas de connexion", "Nouvel essai … (Wi-Fi ou données mobiles activés ?)"], "start": ["Mirage Live", "Connexion …"], "react": "Réagir", "reacted": "Envoyé", "notify": "Préviens-moi quand mon titre passe", "notifyOn": "Tu seras prévenu·e", "soonTitle": "Ton titre est le prochain !", "soon": "Prochain titre : {s}", "again": ["Connexion perdue", "Reconnexion … tentative {n}"], "announce": "Message de l'hôte", "poll": "Vote pour le prochain titre", "pollDone": "Merci pour ton vote !"}, "es": {"lyr": "Letra", "wish": "＋ Deseo", "vib": "Vibración", "vibLv": ["off", "suave", "normal", "fuerte"], "wTitle": "Pide una canción", "wHint": "Mirage la busca en Spotify. Los demás pueden votar; quien pone la música decide.", "wName": "Tu nombre", "opt": "opcional", "wSong": "Buscar en Spotify …", "wSend": "Pedir", "wNow": "Pedida", "wNone": "No se encontró nada – ¿probamos otra grafía?", "wSearching": "Buscando …", "wSlow": "Aún sin respuesta – reintentando …", "wDead": "Mirage no responde. ¿Está el modo fiesta activo en Spotify?", "wErr": "Spotify no ha respondido ahora – inténtalo de nuevo en un momento.", "vibTap": "Toca una vez para que el móvil pueda vibrar", "wClose": "Cerrar", "wSent": "¡Enviado! Aparecerá en la lista en un momento.", "wWait": "Espera un poco – un deseo cada 45 segundos.", "wQueued": "✓ en la cola", "wEmpty": "Aún no hay deseos – ¡sé el primero!", "wShort": "Escribe un título.", "tap": "Toca para pantalla completa · la pantalla sigue encendida", "wait": ["Conectado", "Esperando el modo fiesta en Spotify …"], "over": ["Se acabó la fiesta", "¡Gracias por brillar con nosotros! Nueva fiesta, nuevo código QR."], "bad": ["Enlace incompleto", "Escanea el código QR otra vez."], "net": ["Sin conexión", "Reintentando … (¿Wi-Fi o datos móviles activados?)"], "start": ["Mirage Live", "Conectando …"], "react": "Reaccionar", "reacted": "Enviado", "notify": "Avísame cuando suene mi canción", "notifyOn": "Recibirás un aviso", "soonTitle": "¡Tu canción es la siguiente!", "soon": "A continuación: {s}", "again": ["Conexión perdida", "Reconectando … intento {n}"], "announce": "Mensaje del anfitrión", "poll": "Vota la próxima canción", "pollDone": "¡Gracias por votar!"}, "it": {"lyr": "Testo", "wish": "＋ Richiesta", "vib": "Vibrazione", "vibLv": ["off", "leggera", "normale", "forte"], "wTitle": "Richiedi una canzone", "wHint": "Mirage la cerca su Spotify. Gli altri possono votare – decide chi gestisce la musica.", "wName": "Il tuo nome", "opt": "facoltativo", "wSong": "Cerca su Spotify …", "wSend": "Richiedi", "wNow": "Richiesta", "wNone": "Non trovato – provi a scriverlo diversamente?", "wSearching": "Cerco …", "wSlow": "Ancora nessuna risposta – riprovo …", "wDead": "Mirage non risponde. La modalità festa è attiva in Spotify?", "wErr": "Spotify non ha risposto proprio ora – riprova tra poco.", "vibTap": "Tocca una volta per far vibrare il telefono", "wClose": "Chiudi", "wSent": "Inviata! Compare nella lista tra un attimo.", "wWait": "Un attimo – una richiesta ogni 45 secondi.", "wQueued": "✓ in coda", "wEmpty": "Ancora nessuna richiesta – sii il primo!", "wShort": "Inserisci un titolo.", "tap": "Tocca per lo schermo intero · lo schermo resta acceso", "wait": ["Connesso", "In attesa della modalità festa in Spotify …"], "over": ["Festa finita", "Grazie per aver brillato con noi! Nuova festa, nuovo codice QR."], "bad": ["Link incompleto", "Inquadra di nuovo il codice QR."], "net": ["Nessuna connessione", "Nuovo tentativo … (Wi-Fi o dati mobili attivi?)"], "start": ["Mirage Live", "Connessione …"], "react": "Reagisci", "reacted": "Inviato", "notify": "Avvisami quando arriva la mia canzone", "notifyOn": "Riceverai un avviso", "soonTitle": "La tua canzone è la prossima!", "soon": "Prossima: {s}", "again": ["Connessione persa", "Riconnessione … tentativo {n}"], "announce": "Messaggio dell'host", "poll": "Vota la prossima canzone", "pollDone": "Grazie per il voto!"}, "pt": {"lyr": "Letra", "wish": "＋ Pedido", "vib": "Vibração", "vibLv": ["desl.", "suave", "normal", "forte"], "wTitle": "Pedir uma música", "wHint": "O Mirage procura-a no Spotify. Os outros podem votar – quem põe a música decide.", "wName": "O teu nome", "opt": "opcional", "wSong": "Pesquisar no Spotify …", "wSend": "Pedir", "wNow": "Pedida", "wNone": "Nada encontrado – tentar outra grafia?", "wSearching": "A pesquisar …", "wSlow": "Ainda sem resposta – a tentar de novo …", "wDead": "O Mirage não responde. O modo festa está ativo no Spotify?", "wErr": "O Spotify não respondeu agora – tenta outra vez daqui a pouco.", "vibTap": "Toca uma vez para o telemóvel poder vibrar", "wClose": "Fechar", "wSent": "Enviado! Aparece na lista daqui a um momento.", "wWait": "Espera um pouco – um pedido a cada 45 segundos.", "wQueued": "✓ na fila", "wEmpty": "Ainda sem pedidos – sê o primeiro!", "wShort": "Escreve um título.", "tap": "Toca para ecrã inteiro · o ecrã fica ligado", "wait": ["Ligado", "À espera do modo festa no Spotify …"], "over": ["A festa acabou", "Obrigado por brilhares connosco! Nova festa, novo código QR."], "bad": ["Link incompleto", "Lê o código QR outra vez."], "net": ["Sem ligação", "A tentar de novo … (Wi-Fi ou dados móveis ligados?)"], "start": ["Mirage Live", "A ligar …"], "react": "Reagir", "reacted": "Enviado", "notify": "Avisa-me quando a minha música tocar", "notifyOn": "Vais receber um aviso", "soonTitle": "A tua música é a próxima!", "soon": "A seguir: {s}", "again": ["Ligação perdida", "A religar … tentativa {n}"], "announce": "Mensagem do anfitrião", "poll": "Vota na próxima música", "pollDone": "Obrigado por votares!"}, "nl": {"lyr": "Songtekst", "wish": "＋ Verzoek", "vib": "Trillen", "vibLv": ["uit", "zacht", "normaal", "sterk"], "wTitle": "Een nummer aanvragen", "wHint": "Mirage zoekt het op Spotify. De anderen kunnen stemmen – wie de muziek doet, beslist.", "wName": "Jouw naam", "opt": "optioneel", "wSong": "Zoeken op Spotify …", "wSend": "Aanvragen", "wNow": "Aangevraagd", "wNone": "Niets gevonden – anders spellen?", "wSearching": "Zoeken …", "wSlow": "Nog geen antwoord – we proberen het opnieuw …", "wDead": "Mirage reageert niet. Staat de feestmodus aan in Spotify?", "wErr": "Spotify reageerde net niet – probeer het zo nog eens.", "vibTap": "Tik één keer zodat je telefoon mag trillen", "wClose": "Sluiten", "wSent": "Verstuurd! Het staat zo in de lijst.", "wWait": "Even wachten – één verzoek per 45 seconden.", "wQueued": "✓ in de wachtrij", "wEmpty": "Nog geen verzoeken – wees de eerste!", "wShort": "Vul een titel in.", "tap": "Tik voor volledig scherm · scherm blijft aan", "wait": ["Verbonden", "Wachten op de feestmodus in Spotify …"], "over": ["Feest afgelopen", "Bedankt voor het meeschitteren! Nieuw feest, nieuwe QR-code."], "bad": ["Link onvolledig", "Scan de QR-code nog een keer."], "net": ["Geen verbinding", "We proberen het opnieuw … (wifi of mobiele data aan?)"], "start": ["Mirage Live", "Verbinden …"], "react": "Reageer", "reacted": "Verstuurd", "notify": "Laat me weten wanneer mijn nummer komt", "notifyOn": "Je krijgt een melding", "soonTitle": "Jouw nummer is de volgende!", "soon": "Hierna: {s}", "again": ["Verbinding verbroken", "Opnieuw verbinden … poging {n}"], "announce": "Bericht van de host", "poll": "Stem op het volgende nummer", "pollDone": "Bedankt voor je stem!"}, "pl": {"lyr": "Tekst", "wish": "＋ Życzenie", "vib": "Wibracje", "vibLv": ["wył.", "delikatne", "normalne", "mocne"], "wTitle": "Zamów piosenkę", "wHint": "Mirage szuka jej w Spotify. Inni mogą głosować – decyduje osoba od muzyki.", "wName": "Twoje imię", "opt": "opcjonalnie", "wSong": "Szukaj w Spotify …", "wSend": "Zamów", "wNow": "Zamówiono", "wNone": "Nic nie znaleziono – spróbuj inaczej napisać?", "wSearching": "Szukam …", "wSlow": "Jeszcze brak odpowiedzi – próbuję ponownie …", "wDead": "Mirage nie odpowiada. Czy tryb imprezy działa w Spotify?", "wErr": "Spotify właśnie nie odpowiedziało – spróbuj za chwilę.", "vibTap": "Dotknij raz, żeby telefon mógł wibrować", "wClose": "Zamknij", "wSent": "Wysłano! Zaraz pojawi się na liście.", "wWait": "Chwila – jedno życzenie na 45 sekund.", "wQueued": "✓ w kolejce", "wEmpty": "Jeszcze nie ma życzeń – bądź pierwszy!", "wShort": "Wpisz tytuł.", "tap": "Dotknij, by włączyć pełny ekran · ekran zostaje włączony", "wait": ["Połączono", "Czekam na tryb imprezy w Spotify …"], "over": ["Impreza skończona", "Dzięki za wspólne świecenie! Nowa impreza, nowy kod QR."], "bad": ["Niepełny link", "Zeskanuj kod QR jeszcze raz."], "net": ["Brak połączenia", "Próbuję ponownie … (Wi-Fi lub dane komórkowe włączone?)"], "start": ["Mirage Live", "Łączenie …"], "react": "Reaguj", "reacted": "Wysłano", "notify": "Powiadom mnie, gdy będzie moja piosenka", "notifyOn": "Dostaniesz powiadomienie", "soonTitle": "Twoja piosenka jest następna!", "soon": "Zaraz: {s}", "again": ["Utracono połączenie", "Łączenie ponownie … próba {n}"], "announce": "Wiadomość od gospodarza", "poll": "Zagłosuj na następną piosenkę", "pollDone": "Dzięki za głos!"}, "tr": {"lyr": "Söz", "wish": "＋ İstek", "vib": "Titreşim", "vibLv": ["kapalı", "hafif", "normal", "güçlü"], "wTitle": "Şarkı iste", "wHint": "Mirage şarkıyı Spotify'da arar. Diğerleri oy verebilir – müziği çalan karar verir.", "wName": "Adın", "opt": "isteğe bağlı", "wSong": "Spotify'da ara …", "wSend": "İste", "wNow": "İstendi", "wNone": "Hiçbir şey bulunamadı – başka yazsan?", "wSearching": "Aranıyor …", "wSlow": "Henüz yanıt yok – tekrar deneniyor …", "wDead": "Mirage yanıt vermiyor. Spotify'da parti modu açık mı?", "wErr": "Spotify şu an yanıt vermedi – birazdan tekrar dene.", "vibTap": "Telefon titreyebilsin diye bir kez dokun", "wClose": "Kapat", "wSent": "Gönderildi! Birazdan listede görünecek.", "wWait": "Biraz bekle – 45 saniyede bir istek.", "wQueued": "✓ sırada", "wEmpty": "Henüz istek yok – ilk sen ol!", "wShort": "Lütfen bir başlık gir.", "tap": "Tam ekran için dokun · ekran açık kalır", "wait": ["Bağlandı", "Spotify'da parti modu bekleniyor …"], "over": ["Parti bitti", "Birlikte parladığın için sağ ol! Yeni parti, yeni QR kodu."], "bad": ["Eksik bağlantı", "Lütfen QR kodunu tekrar tara."], "net": ["Bağlantı yok", "Tekrar deneniyor … (Wi-Fi veya mobil veri açık mı?)"], "start": ["Mirage Live", "Bağlanıyor …"], "react": "Tepki ver", "reacted": "Gönderildi", "notify": "Şarkım gelince haber ver", "notifyOn": "Bildirim alacaksın", "soonTitle": "Sıradaki şarkı senin!", "soon": "Sıradaki: {s}", "again": ["Bağlantı koptu", "Yeniden bağlanıyor … deneme {n}"], "announce": "Ev sahibinden mesaj", "poll": "Sıradaki şarkıya oy ver", "pollDone": "Oy verdiğin için sağ ol!"}, "ru": {"lyr": "Текст", "wish": "＋ Заказ", "vib": "Вибрация", "vibLv": ["выкл.", "слабая", "обычная", "сильная"], "wTitle": "Заказать песню", "wHint": "Mirage найдёт её в Spotify. Остальные могут голосовать – решает тот, кто ведёт музыку.", "wName": "Твоё имя", "opt": "необязательно", "wSong": "Поиск в Spotify …", "wSend": "Заказать", "wNow": "Заказана", "wNone": "Ничего не найдено – попробуй написать иначе?", "wSearching": "Ищем …", "wSlow": "Ответа пока нет – пробуем снова …", "wDead": "Mirage не отвечает. Включён ли режим вечеринки в Spotify?", "wErr": "Spotify только что не ответил – попробуй ещё раз чуть позже.", "vibTap": "Нажми один раз, чтобы телефон мог вибрировать", "wClose": "Закрыть", "wSent": "Отправлено! Скоро появится в списке.", "wWait": "Подожди немного – один заказ раз в 45 секунд.", "wQueued": "✓ в очереди", "wEmpty": "Заказов пока нет – будь первым!", "wShort": "Введи название.", "tap": "Нажми для полного экрана · экран не гаснет", "wait": ["Подключено", "Ждём режим вечеринки в Spotify …"], "over": ["Вечеринка окончена", "Спасибо, что светил с нами! Новая вечеринка – новый QR-код."], "bad": ["Неполная ссылка", "Отсканируй QR-код ещё раз."], "net": ["Нет соединения", "Пробуем снова … (включён Wi-Fi или мобильный интернет?)"], "start": ["Mirage Live", "Подключаемся …"], "react": "Реакция", "reacted": "Отправлено", "notify": "Сообщи, когда пойдёт моя песня", "notifyOn": "Ты получишь уведомление", "soonTitle": "Твоя песня следующая!", "soon": "Далее: {s}", "again": ["Соединение потеряно", "Переподключаемся … попытка {n}"], "announce": "Сообщение от ведущего", "poll": "Голосуй за следующую песню", "pollDone": "Спасибо за голос!"}, "uk": {"lyr": "Текст", "wish": "＋ Замовлення", "vib": "Вібрація", "vibLv": ["вимк.", "легка", "звичайна", "сильна"], "wTitle": "Замовити пісню", "wHint": "Mirage знайде її в Spotify. Інші можуть голосувати – вирішує той, хто веде музику.", "wName": "Твоє ім'я", "opt": "необов'язково", "wSong": "Пошук у Spotify …", "wSend": "Замовити", "wNow": "Замовлено", "wNone": "Нічого не знайдено – спробуй написати інакше?", "wSearching": "Шукаємо …", "wSlow": "Відповіді ще немає – пробуємо знову …", "wDead": "Mirage не відповідає. Чи увімкнено режим вечірки в Spotify?", "wErr": "Spotify щойно не відповів – спробуй ще раз трохи згодом.", "vibTap": "Торкнись один раз, щоб телефон міг вібрувати", "wClose": "Закрити", "wSent": "Надіслано! Скоро з'явиться в списку.", "wWait": "Зачекай трохи – одне замовлення раз на 45 секунд.", "wQueued": "✓ у черзі", "wEmpty": "Замовлень ще немає – будь першим!", "wShort": "Введи назву.", "tap": "Торкнись для повного екрана · екран не гасне", "wait": ["Підключено", "Чекаємо на режим вечірки в Spotify …"], "over": ["Вечірку завершено", "Дякуємо, що сяяв з нами! Нова вечірка – новий QR-код."], "bad": ["Неповне посилання", "Скануй QR-код ще раз."], "net": ["Немає зв'язку", "Пробуємо знову … (увімкнено Wi-Fi чи мобільний інтернет?)"], "start": ["Mirage Live", "Підключаємося …"], "react": "Реакція", "reacted": "Надіслано", "notify": "Повідом, коли гратиме моя пісня", "notifyOn": "Ти отримаєш сповіщення", "soonTitle": "Твоя пісня наступна!", "soon": "Далі: {s}", "again": ["Зв'язок втрачено", "Перепідключаємося … спроба {n}"], "announce": "Повідомлення від ведучого", "poll": "Голосуй за наступну пісню", "pollDone": "Дякуємо за голос!"}, "ja": {"lyr": "歌詞", "wish": "＋ リクエスト", "vib": "バイブ", "vibLv": ["オフ", "弱め", "標準", "強め"], "wTitle": "曲をリクエスト", "wHint": "MirageがSpotifyで探します。みんなで投票もOK。最終的に決めるのは音楽担当の人です。", "wName": "あなたの名前", "opt": "任意", "wSong": "Spotifyで検索 …", "wSend": "リクエスト", "wNow": "リクエスト済み", "wNone": "見つかりませんでした。別の書き方で試してみて", "wSearching": "検索中 …", "wSlow": "まだ応答がありません。もう一度試します …", "wDead": "Mirageが応答しません。SpotifyでパーティーモードはONですか？", "wErr": "Spotifyから応答がありませんでした。少し待ってもう一度どうぞ。", "vibTap": "一度タップすると、スマホが振動できるようになります", "wClose": "閉じる", "wSent": "送信しました！まもなくリストに表示されます。", "wWait": "ちょっと待って。リクエストは45秒に1回までです。", "wQueued": "✓ キューに追加済み", "wEmpty": "まだリクエストはありません。一番乗りどうぞ！", "wShort": "タイトルを入力してください。", "tap": "タップで全画面 · 画面は点灯したまま", "wait": ["接続しました", "Spotifyのパーティーモードを待っています …"], "over": ["パーティー終了", "一緒に盛り上がってくれてありがとう！次のパーティーは新しいQRコードで。"], "bad": ["リンクが不完全です", "QRコードをもう一度読み取ってください。"], "net": ["接続できません", "再試行中 …（Wi-Fiまたはモバイルデータはオンですか？）"], "start": ["Mirage Live", "接続中 …"], "react": "リアクション", "reacted": "送信済み", "notify": "自分の曲が来たら教えて", "notifyOn": "通知します", "soonTitle": "次はあなたの曲です！", "soon": "次の曲：{s}", "again": ["接続が切れました", "再接続中 … {n}回目"], "announce": "ホストからのお知らせ", "poll": "次の曲に投票しよう", "pollDone": "投票ありがとう！"}, "ko": {"lyr": "가사", "wish": "＋ 신청", "vib": "진동", "vibLv": ["끔", "약하게", "보통", "강하게"], "wTitle": "노래 신청", "wHint": "Mirage가 Spotify에서 찾아줘요. 다른 사람들은 투표할 수 있고, 최종 결정은 음악 담당자가 해요.", "wName": "이름", "opt": "선택", "wSong": "Spotify에서 검색 …", "wSend": "신청", "wNow": "신청됨", "wNone": "찾지 못했어요 – 다르게 입력해 볼까요?", "wSearching": "검색 중 …", "wSlow": "아직 응답이 없어요 – 다시 시도 중 …", "wDead": "Mirage가 응답하지 않아요. Spotify에서 파티 모드가 켜져 있나요?", "wErr": "Spotify가 방금 응답하지 않았어요 – 잠시 후 다시 시도해 주세요.", "vibTap": "한 번 탭하면 휴대폰이 진동할 수 있어요", "wClose": "닫기", "wSent": "보냈어요! 곧 목록에 나타나요.", "wWait": "잠깐만요 – 신청은 45초에 한 번이에요.", "wQueued": "✓ 대기열에 추가됨", "wEmpty": "아직 신청이 없어요 – 첫 번째가 되어 보세요!", "wShort": "제목을 입력해 주세요.", "tap": "탭하면 전체 화면 · 화면이 켜진 채로 유지돼요", "wait": ["연결됨", "Spotify에서 파티 모드를 기다리는 중 …"], "over": ["파티 끝", "함께 빛나 줘서 고마워요! 새 파티, 새 QR 코드로 만나요."], "bad": ["링크가 불완전해요", "QR 코드를 다시 스캔해 주세요."], "net": ["연결 없음", "다시 시도하는 중 … (Wi-Fi나 모바일 데이터가 켜져 있나요?)"], "start": ["Mirage Live", "연결 중 …"], "react": "반응", "reacted": "보냄", "notify": "내 곡이 나오면 알려줘", "notifyOn": "알림을 받게 돼요", "soonTitle": "다음은 내 곡이에요!", "soon": "다음 곡: {s}", "again": ["연결이 끊겼어요", "다시 연결 중 … {n}번째 시도"], "announce": "호스트의 메시지", "poll": "다음 곡에 투표하세요", "pollDone": "투표해 줘서 고마워요!"}, "zh": {"lyr": "歌词", "wish": "＋ 点歌", "vib": "振动", "vibLv": ["关", "轻柔", "正常", "强烈"], "wTitle": "点一首歌", "wHint": "Mirage 会在 Spotify 里搜索。其他人可以投票，最终由放音乐的人决定。", "wName": "你的名字", "opt": "可选", "wSong": "在 Spotify 搜索 …", "wSend": "点歌", "wNow": "已点", "wNone": "没找到，换个写法试试？", "wSearching": "搜索中 …", "wSlow": "暂无回应，正在重试 …", "wDead": "Mirage 没有响应。Spotify 里的派对模式开了吗？", "wErr": "Spotify 刚才没有响应，请稍后再试。", "vibTap": "点一下，手机才能振动", "wClose": "关闭", "wSent": "已发送！稍后会出现在列表里。", "wWait": "稍等一下，每 45 秒只能点一首。", "wQueued": "✓ 已加入队列", "wEmpty": "还没有人点歌，来当第一个吧！", "wShort": "请输入歌名。", "tap": "点击进入全屏 · 屏幕保持常亮", "wait": ["已连接", "正在等待 Spotify 的派对模式 …"], "over": ["派对结束", "谢谢你一起点亮现场！新派对，新二维码。"], "bad": ["链接不完整", "请重新扫描二维码。"], "net": ["无网络连接", "正在重试 …（Wi-Fi 或移动数据开了吗？）"], "start": ["Mirage Live", "连接中 …"], "react": "互动", "reacted": "已发送", "notify": "我的歌快到时提醒我", "notifyOn": "你会收到提醒", "soonTitle": "下一首就是你的歌！", "soon": "接下来：{s}", "again": ["连接已断开", "正在重新连接 … 第 {n} 次尝试"], "announce": "来自主持人的消息", "poll": "为下一首歌投票", "pollDone": "谢谢投票！"}, "en": {"react": "React", "reacted": "Sent", "notify": "Tell me when my song comes", "notifyOn": "You'll get a notice", "soonTitle": "Your song is next!", "soon": "Coming up next: {s}", "again": ["Connection lost", "Reconnecting … attempt {n}"], "announce": "Message from the host", "poll": "Vote for the next song", "pollDone": "Thanks for voting!"}, "de": {"react": "Reagieren", "reacted": "Gesendet", "notify": "Sag mir Bescheid, wenn mein Song kommt", "notifyOn": "Du bekommst eine Nachricht", "soonTitle": "Dein Song ist als Nächstes dran!", "soon": "Gleich geht's weiter mit: {s}", "again": ["Verbindung verloren", "Verbinde neu … Versuch {n}"], "announce": "Nachricht vom Host", "poll": "Stimm für den nächsten Song ab", "pollDone": "Danke fürs Abstimmen!"}};
+for (const [k, v] of Object.entries(MORE)) L[k] = { ...(L[k] || {}), ...v };
+const LANG = (navigator.languages || [navigator.language]).map((x) => String(x || "").slice(0, 2).toLowerCase()).find((x) => L[x]) || "en";
+const T = { ...L.en, ...L[LANG] };
+document.documentElement.lang = LANG;
 const $ = (id) => document.getElementById(id);
 const say = ([a, b]) => {
   $("sTitle").textContent = a;
@@ -221,10 +262,20 @@ async function start() {
   // alle Relays zugleich abonnieren: das Theme sendet an den, der bei ihm erreichbar ist
   BROKERS.forEach(open);
 }
-const conns = new Set();
+const conns = new Set(), retryT = {};
+let tries = 0;
+// zurück in der App (Handy war gesperrt): nicht auf den nächsten Versuch warten
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible" || !key || conns.size) return;
+  for (const url of BROKERS) {
+    clearTimeout(retryT[url]);
+    open(url);
+  }
+});
 function open(url) {
   mqttOpen(url, {
     onReady: (c) => {
+      tries = 0;
       conns.add(c);
       c.subscribe(topic);
       c.subscribe(topic + "/r/" + myId);
@@ -233,8 +284,10 @@ function open(url) {
     onMessage: receive,
     onClose: () => {
       for (const c of conns) if (c.closed) conns.delete(c);
-      if (!cur && !ended) say(T.net);
-      setTimeout(() => open(url), 3000);
+      tries++;
+      if (!ended) say(conns.size ? T.wait : [T.again[0], T.again[1].replace("{n}", tries)]);
+      clearTimeout(retryT[url]);
+      retryT[url] = setTimeout(() => open(url), Math.min(15000, 1500 * 2 ** Math.min(tries, 4)));
     },
   });
 }
@@ -280,6 +333,22 @@ async function receive(m) {
   if ($("ly").textContent !== (s.ly || "")) $("ly").textContent = s.ly || "";
   if ($("lyn").textContent !== (s.lyn || "")) $("lyn").textContent = s.lyn || "";
   $("lyr").classList.toggle("has", !!s.ly);
+  if (s.an && s.an.s !== lastAn && Date.now() - skew - s.an.s < 12000) {
+    lastAn = s.an.s;
+    showNote(T.announce, s.an.x, 8000);
+    haptic([[0.8, 60], [0, 80], [0.8, 60]]);
+  }
+  drawPoll(s.poll);
+  // dein Wunsch kommt als Nächstes
+  if (s.nx && myWishes.has(s.nx) && !told.has(s.nx)) {
+    told.add(s.nx);
+    const title = myWishes.get(s.nx);
+    showNote(T.soonTitle, T.soon.replace("{s}", title), 9000);
+    haptic([[0.6, 80], [0, 90], [1, 200]]);
+    if (document.hidden && notifyOn && "Notification" in window && Notification.permission === "granted") {
+      try { new Notification(T.soonTitle, { body: T.soon.replace("{s}", title), tag: "mirage-soon" }); } catch {}
+    }
+  }
   // Wortbild vom PC: einmal abspielen, das Wort in der Zeile aufleuchten lassen
   if (s.fx && s.fx.s !== lastFxAt && Date.now() - skew - s.fx.s < 3500) {
     lastFxAt = s.fx.s;
@@ -429,6 +498,7 @@ async function wish(w, li) {
   const n = $("wName").value.trim();
   if (!(await sendUp({ k: "wish", i: w.i, n }))) return ($("wMsg").textContent = T.net[1]);
   lastWish = Date.now();
+  myWishes.set("spotify:track:" + w.i, w.t || "");
   store("mlName", n);
   li.classList.add("picked");
   $("wMsg").textContent = T.wSent;
@@ -680,6 +750,95 @@ function frame(now) {
   document.body.classList.toggle("loud", live && cur.e > 0.6);
 }
 requestAnimationFrame(frame);
+
+/* ---- Reaktionen, Ansagen, Abstimmung, „dein Song kommt gleich“ */
+let lastAn = 0, notifyOn = store("mlNotify") === "1", noteT = 0, pollId = "", myVote = -1;
+const myWishes = new Map(), told = new Set();
+for (const e of ["🔥", "❤️", "🙌", "😂", "🎉", "👏"]) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = e;
+  b.ariaLabel = T.react + " " + e;
+  b.onclick = async (ev) => {
+    ev.stopPropagation();
+    await sendUp({ k: "react", e });
+    const f = document.createElement("span");
+    f.className = "fly";
+    f.textContent = e;
+    f.style.left = ev.clientX - 17 + "px";
+    f.style.setProperty("--dx", Math.round(Math.random() * 60 - 30) + "px");
+    document.body.append(f);
+    setTimeout(() => f.remove(), 1700);
+    haptic([[0.6, 30]]);
+  };
+  $("reacts").append(b);
+}
+function showNote(k, text, ms) {
+  $("noteK").textContent = k;
+  $("noteT").textContent = text;
+  $("note").classList.add("show");
+  clearTimeout(noteT);
+  noteT = setTimeout(() => $("note").classList.remove("show"), ms);
+}
+function drawPoll(p) {
+  const box = $("poll");
+  if (!p || Date.now() - skew > p.end + 6000) return void (box.hidden = true);
+  if (p.id !== pollId) {
+    pollId = p.id;
+    myVote = -1;
+  }
+  box.hidden = false;
+  const open = Date.now() - skew < p.end, total = p.v.reduce((x, y) => x + y, 0) || 1;
+  $("pollH").textContent = myVote >= 0 || !open ? T.pollDone : T.poll;
+  box.querySelectorAll("button").forEach((b) => b.remove());
+  p.o.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    if (i === myVote) b.className = "me";
+    if (myVote >= 0 || !open) b.style.setProperty("--w", Math.round((p.v[i] / total) * 100) + "%");
+    const img = /^https:\/\/i\.scdn\.co\/image\/\w+$/.test(o.img || "") ? o.img : "";
+    if (img) {
+      const im = document.createElement("img");
+      im.src = img;
+      im.alt = "";
+      im.referrerPolicy = "no-referrer";
+      b.append(im);
+    }
+    const sp = document.createElement("span");
+    sp.textContent = `${o.t} – ${o.a}`;
+    b.append(sp);
+    if (myVote >= 0 || !open) {
+      const n = document.createElement("small");
+      n.textContent = String(p.v[i]);
+      b.append(n);
+    }
+    b.onclick = async (ev) => {
+      ev.stopPropagation();
+      if (myVote >= 0 || !open) return;
+      if (await sendUp({ k: "pvote", p: p.id, o: i })) {
+        myVote = i;
+        haptic([[0.7, 40]]);
+        drawPoll(p);
+      }
+    };
+    box.append(b);
+  });
+}
+// Benachrichtigung, wenn der eigene Wunsch als Nächstes kommt (nur solange diese Seite offen ist)
+function syncNotify() {
+  $("wNotify").hidden = !("Notification" in window);
+  $("wNotify").textContent = (notifyOn ? "✓ " + T.notifyOn : "🔔 " + T.notify);
+}
+$("wNotify").onclick = async (e) => {
+  e.stopPropagation();
+  if (!notifyOn && "Notification" in window && Notification.permission !== "granted") {
+    try { await Notification.requestPermission(); } catch {}
+  }
+  notifyOn = !notifyOn;
+  store("mlNotify", notifyOn ? "1" : "0");
+  syncNotify();
+};
+syncNotify();
 
 /* ---- Wortbilder (wie im Party-Modus, der PC schickt mit, welches Wort gerade ein Bild hat) */
 let wfx = null, fxSt = null, covR = null, covN = 0, lastFxAt = 0;

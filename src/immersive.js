@@ -41,6 +41,9 @@ const ICON = {
   timer: '<svg viewBox="0 0 24 24"><path d="M9 2h6v2H9zm3 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-1 2h2v4.4l3 1.8-1 1.7-4-2.4z"/></svg>',
   film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
   wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
+  confetti: '<svg viewBox="0 0 24 24"><path d="M4 20l5-14 9 9zm4.6-9.5L6.8 16.6l5.6-2.2zM14 3h2v3h-2zm5 3.6 1.4 1.4-2.1 2.1-1.4-1.4zM18 13h3v2h-3zM10.5 4.4l1.4-1 1.2 1.6-1.4 1z"/></svg>',
+  announce: '<svg viewBox="0 0 24 24"><path d="M3 10v4h3l6 4V6l-6 4zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
+  poll: '<svg viewBox="0 0 24 24"><path d="M4 13h3v7H4zm6.5-9h3v16h-3zM17 9h3v11h-3z"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
   heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
   vol: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
@@ -96,6 +99,9 @@ const immersive = (() => {
         </div>
         <div class="m-im-actions">
           <button type="button" class="m-im-sm m-im-cvbtn" hidden aria-pressed="false">${ICON.film}</button>
+          <button type="button" class="m-im-sm m-im-conf" hidden>${ICON.confetti}</button>
+          <button type="button" class="m-im-sm m-im-ann" hidden>${ICON.announce}</button>
+          <button type="button" class="m-im-sm m-im-pollbtn" hidden>${ICON.poll}</button>
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
@@ -188,6 +194,9 @@ const immersive = (() => {
       controls: el.querySelector(".m-im-controls"),
       meta: el.querySelector(".m-im-meta"),
       recap: el.querySelector(".m-im-recap"),
+      conf: el.querySelector(".m-im-conf"),
+      ann: el.querySelector(".m-im-ann"),
+      pollbtn: el.querySelector(".m-im-pollbtn"),
       screen: el.querySelector(".m-im-screen"),
       live: el.querySelector(".m-im-live"),
       fs: el.querySelector(".m-im-fs"),
@@ -200,7 +209,13 @@ const immersive = (() => {
     q.addto.onclick = () => showSide(side === "playlists" ? null : "playlists");
     // Party-Rückblick und zweiter Bildschirm (Party im Vollbild auf einem anderen Monitor/Fernseher)
     q.recap.title = q.recap.ariaLabel = t("recapBtn");
-    q.recap.onclick = () => partyRecapCard(recap);
+    q.recap.onclick = () => showSide(side === "recap" ? null : "recap");
+    q.conf.title = q.conf.ariaLabel = t("confetti");
+    q.conf.onclick = () => confetti();
+    q.ann.title = q.ann.ariaLabel = t("annTitle");
+    q.ann.onclick = () => showSide(side === "announce" ? null : "announce");
+    q.pollbtn.title = q.pollbtn.ariaLabel = t("pollBtn");
+    q.pollbtn.onclick = () => showSide(side === "poll" ? null : "poll");
     q.screen.title = q.screen.ariaLabel = t("toScreen");
     q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
     q.live.title = q.live.ariaLabel = t("liveBtn");
@@ -1278,7 +1293,7 @@ const immersive = (() => {
     }
     if (cfg.calm) return;
 
-    let pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1) : palette();
+    let pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1, px.keyPc) : palette();
     // DJ-Übergang: bis zum ersten Schlag die alten Farben, dann über vier Schläge in die neuen
     if (px && blend?.from) {
       const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / ((4 * 60000) / (party.info.bpm || 120)), 0, 1);
@@ -1501,8 +1516,8 @@ const immersive = (() => {
   const TINT = { cool: 205, warm: 28, hot: 4, pink: 325, gold: 44, jungle: 130 };
   // Farbton ein Stück Richtung Ziel drehen (kürzester Weg auf dem Farbkreis)
   const toward = (h, target, f) => (h + ((((target - h) % 360) + 540) % 360 - 180) * f + 360) % 360;
-  function vivid(pal, minor, tint, pitch = -1) {
-    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch;
+  function vivid(pal, minor, tint, pitch = -1, keyPc = -1) {
+    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch + "k" + keyPc;
     if (key === vividKey) return vividPal;
     vividKey = key;
     const hsl = pal.map(rgb2hsl);
@@ -1512,6 +1527,9 @@ const immersive = (() => {
       if (TINT[tint] != null) hue = toward(hue, TINT[tint] + (i - 1) * 22, 0.45);
       // Melodie: die Tonklasse färbt das Akzentlicht (Quintenzirkel – verwandte Töne liegen nah beieinander)
       if (pitch >= 0) hue = toward(hue, ((pitch * 7) % 12) * 30, i === 2 ? 0.35 : 0.1);
+      // Tonart-Farben: Dur leicht wärmer, Moll leicht kühler, dazu ein Hauch der Tonart (Quintenzirkel)
+      if (keyPc >= 0) hue = toward(hue, ((keyPc * 7) % 12) * 30, 0.08);
+      hue = toward(hue, minor ? 225 : 35, 0.07);
       return minor ? hsl2rgb([(hue + 345) % 360, Math.max(s, 0.66), clamp(l, 0.46, 0.6)]) : hsl2rgb([hue, Math.max(s, 0.74), clamp(l, 0.56, 0.7)]);
     });
     return vividPal;
@@ -1545,9 +1563,13 @@ const immersive = (() => {
       inst: curInst,
       strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
-      quality: quality.level, hype: hypeOn, bpm: party.info.bpm || 120,
+      quality: quality.level, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !S.Player.isPlaying(),
       venue: cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : "",
+      fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
+      drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
+      song: currentItem()?.uri || "",
+      handsUp: moments.hands, flashStorm: moments.storm, confetti: moments.confetti,
     });
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
@@ -1831,6 +1853,7 @@ const immersive = (() => {
         if (blend.glow < 0.02 && (!blend.from || now - blend.hitAt > (4 * 60000) / (party.info.bpm || 120))) blend = null;
       }
     }
+    showMoments(px, now);
     // Hype-Zeile: alles eine Spur heller und stärker
     if (hypeOn) {
       px.I = Math.min(1.35, px.I + 0.15);
@@ -2007,6 +2030,7 @@ const immersive = (() => {
       syncState();
     }
     const mode = el.dataset.mode;
+    pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying(), now);
     if (LYR.has(mode)) drawLyrics(pos);
     if (VIZ.has(mode)) {
       // ein Fehler in einem Bild darf den Visualizer nicht dauerhaft lahmlegen: Zustand zurücksetzen,
@@ -2118,7 +2142,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", announce: "annTitle", poll: "pollBtn", recap: "recapBtn" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2151,6 +2175,9 @@ const immersive = (() => {
       return wishPanel(body);
     }
     if (kind === "screens") return screensPanel(body, item);
+    if (kind === "announce") return announcePanel(body);
+    if (kind === "poll") return pollPanel(body);
+    if (kind === "recap") return recapPanel(body);
     if (kind === "queue") {
       const list = ctl.upNext();
       if (!list.length) return item(t("queueEmpty"));
@@ -2233,6 +2260,9 @@ const immersive = (() => {
     if (side === "playlists") showSide("playlists");
     q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
+    moments.stormDone = false;
+    moments.countN = 0;
+    q.count?.classList.remove("is-on");
     updateKicker();
     if (LYR.has(el.dataset.mode)) loadLyrics();
     if (el.dataset.mode === "party") {
@@ -2260,6 +2290,9 @@ const immersive = (() => {
     if (!el) return;
     const party = el.dataset.mode === "party";
     q.recap.hidden = !(party && cfg.partyRecap && recap.songs.length >= 3);
+    q.conf.hidden = !party || !!cfg.calm;
+    q.ann.hidden = !party;
+    q.pollbtn.hidden = !(party && cfg.partyLive);
     q.screen.hidden = !(party && cfg.partyScreen);
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
@@ -2398,6 +2431,236 @@ const immersive = (() => {
     card.onclick = () => card.remove();
     el.append(card);
   }
+  /* ---- Show-Momente im Party-Modus: Countdown vor dem Drop, Hände hoch und Blitzlicht-Gewitter im Refrain,
+     Konfetti auf Knopfdruck. Die Bühne (venue.js) zeichnet Hände, Blitze und Konfetti; hier wird entschieden, wann. */
+  const moments = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false, countN: 0 };
+  function showMoments(px, now) {
+    const bar = (4 * 60000) / (party.info.bpm || 120);
+    if (hypeOn && !moments.hypeWas && px.energy > 0.45) {
+      if (cfg.partyHandsUp) moments.handsUntil = now + 2 * bar;
+      // Blitzlicht-Gewitter: beim ersten Refrain des Songs, wenn er richtig laut ist
+      if (cfg.partyFlashStorm && !moments.stormDone && px.energy > 0.65) {
+        moments.stormUntil = now + 2600;
+        moments.stormDone = true;
+      }
+    }
+    moments.hypeWas = hypeOn;
+    if (px.dropHit && px.finale && cfg.partyFlashStorm) moments.stormUntil = now + 2600;
+    moments.hands = clamp((moments.handsUntil - now) / 500, 0, 1);
+    moments.storm = clamp((moments.stormUntil - now) / 600, 0, 1);
+    // Countdown: die letzten vier Schläge vor einem Drop zählen groß herunter
+    let n = 0;
+    if (cfg.partyCountdown && px.fx && px.level >= 2 && px.toDrop < 30) {
+      const bl = 60 / (party.info.bpm || 120);
+      const k = Math.ceil(px.toDrop / bl - 0.02);
+      if (px.toDrop > 0.03 && k >= 1 && k <= 4) n = k;
+    }
+    if (n !== moments.countN) {
+      moments.countN = n;
+      if (!q.count) {
+        q.count = document.createElement("div");
+        q.count.className = "m-im-count";
+        q.count.setAttribute("aria-hidden", "true");
+        el.append(q.count);
+      }
+      if (n) {
+        q.count.textContent = String(n);
+        q.count.classList.remove("is-on");
+        void q.count.offsetWidth;
+        q.count.classList.add("is-on");
+      } else q.count.classList.remove("is-on");
+    }
+  }
+  function confetti() {
+    if (!el || el.dataset.mode !== "party" || cfg.calm) return;
+    moments.confetti++;
+  }
+
+  /* ---- Pause: ruhige Szene mit Party-Namen und QR-Code (nach 3 s Stille, verschwindet mit der Musik) */
+  let pausedAt = 0;
+  function pauseScene(on, now) {
+    if (!on) {
+      pausedAt = 0;
+      q.pause?.classList.remove("is-on");
+      return;
+    }
+    if (!pausedAt) pausedAt = now;
+    if (now - pausedAt < 3000 || q.pause?.classList.contains("is-on")) return;
+    if (!q.pause) {
+      q.pause = document.createElement("div");
+      q.pause.className = "m-im-pause";
+      el.append(q.pause);
+    }
+    q.pause.textContent = "";
+    const b = document.createElement("b"), s2 = document.createElement("small");
+    b.textContent = t("pauseTitle");
+    s2.textContent = titleOf(currentItem()) || "";
+    q.pause.append(b, s2);
+    const inf = cfg.partyLive ? live.info() : null;
+    if (inf?.qr) {
+      const qr = document.createElement("div");
+      qr.className = "m-im-pause-qr";
+      qr.innerHTML = inf.qr; // eigenes SVG aus der QR-Bibliothek
+      const hint = document.createElement("small");
+      hint.textContent = t("pauseSub");
+      q.pause.append(qr, hint);
+    }
+    q.pause.classList.add("is-on");
+  }
+
+  /* ---- Ansagen: groß auf dem Party-Bild und auf allen Handys */
+  function announcePanel(body) {
+    const hint = document.createElement("p");
+    hint.className = "m-im-side-note";
+    hint.textContent = t("annHint");
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.maxLength = 120;
+    inp.className = "m-im-side-find";
+    inp.placeholder = t("annPlaceholder");
+    const go = (text) => {
+      const x = String(text || "").trim();
+      if (!x) return inp.focus();
+      showAnnouncement(x);
+      if (cfg.partyLive) live.announce(x);
+      inp.value = "";
+    };
+    inp.onkeydown = (e) => {
+      e.stopPropagation();
+      if (e.key === "Enter") go(inp.value);
+    };
+    body.append(hint, inp);
+    sideBtn(body, t("annSend"), "", () => go(inp.value));
+    for (const k of ["annP1", "annP2", "annP3", "annP4"]) sideBtn(body, t(k), "", () => go(t(k)));
+    setTimeout(() => inp.focus(), 50);
+  }
+  function showAnnouncement(text) {
+    el.querySelector(".m-im-annbox")?.remove();
+    const box = document.createElement("div");
+    box.className = "m-im-annbox";
+    box.setAttribute("role", "status");
+    box.textContent = text;
+    el.append(box);
+    setTimeout(() => box.classList.add("is-gone"), 8000);
+    setTimeout(() => box.remove(), 8800);
+  }
+
+  /* ---- Abstimmung: die nächsten drei Songs zur Wahl, die Handys stimmen 45 s lang ab */
+  let pollTimer = 0;
+  function pollPanel(body) {
+    const p = live.pollState();
+    if (!cfg.partyLive) return void sideBtn(body, t("pollNeedLive"));
+    if (p && Date.now() < p.end) {
+      sideBtn(body, t("pollRun").replace("{s}", Math.ceil((p.end - Date.now()) / 1000)));
+      p.o.forEach((o, i) => sideBtn(body, o.t, `${o.a} · ${p.v[i]} ${t("pollVotes")}`));
+      return;
+    }
+    sideBtn(body, t("pollStart"), "", startPoll);
+  }
+  function startPoll() {
+    const next = ctl.upNext().filter((x) => x.uri?.startsWith("spotify:track:")).slice(0, 3);
+    if (next.length < 2) return S.showNotification?.(t("pollFew"), true, 4000);
+    live.startPoll(next.map((x) => ({ t: x.title, a: x.artist, img: x.image, uri: x.uri })));
+    clearTimeout(pollTimer);
+    pollTimer = setTimeout(endPoll, 45200);
+    showSide("poll");
+    drawPoll();
+  }
+  async function endPoll() {
+    const p = live.pollState();
+    if (!p) return;
+    const best = p.v.indexOf(Math.max(...p.v));
+    const win = p.o[best];
+    // Gewinner kommt in die Warteschlange (spielt damit als Nächstes) – nur wenn jemand abgestimmt hat
+    if (win && Math.max(...p.v) > 0) {
+      try {
+        await S.addToQueue([{ uri: win.uri }]);
+      } catch {}
+      S.showNotification?.(t("pollWin").replace("{t}", win.t), false, 5000);
+    }
+    drawPoll();
+    if (side === "poll") showSide("poll");
+  }
+  // kleine Karte unten links auf dem Party-Bild: die drei Songs mit ihren Stimmen
+  function drawPoll() {
+    const p = live.pollState();
+    let card = el.querySelector(".m-im-pollcard");
+    if (!p || Date.now() > p.end + 6000) return void card?.remove();
+    if (!card) {
+      card = document.createElement("div");
+      card.className = "m-im-pollcard";
+      el.append(card);
+    }
+    const total = p.v.reduce((a, b) => a + b, 0) || 1;
+    card.textContent = "";
+    const h = document.createElement("b");
+    h.textContent = Date.now() < p.end ? t("pollRun").replace("{s}", Math.ceil((p.end - Date.now()) / 1000)) : t("pollEnd");
+    card.append(h);
+    p.o.forEach((o, i) => {
+      const row = document.createElement("div");
+      row.className = "m-im-pollrow";
+      row.style.setProperty("--w", ((p.v[i] / total) * 100).toFixed(0) + "%");
+      const n = document.createElement("span"), c = document.createElement("i");
+      n.textContent = o.t;
+      c.textContent = String(p.v[i]);
+      row.append(n, c);
+      card.append(row);
+    });
+    if (Date.now() < p.end + 6000) setTimeout(drawPoll, 1000);
+  }
+  window.addEventListener("mirage:poll", () => {
+    drawPoll();
+    if (side === "poll") showSide("poll");
+  });
+
+  /* ---- Reaktionen der Gäste: Emojis steigen vom unteren Rand auf */
+  window.addEventListener("mirage:react", (e) => {
+    if (!el || el.dataset.mode !== "party" || el.querySelectorAll(".m-im-react").length > 24) return;
+    const r = document.createElement("span");
+    r.className = "m-im-react";
+    r.textContent = e.detail;
+    r.style.left = 8 + Math.random() * 84 + "%";
+    r.style.setProperty("--dx", (Math.random() * 80 - 40).toFixed(0) + "px");
+    el.append(r);
+    setTimeout(() => r.remove(), 3600);
+  });
+
+  /* ---- Rückblick: Bild, Party-Playlist, Gäste-Ranking */
+  function recapPanel(body) {
+    sideBtn(body, t("recapImage"), `${recap.songs.length} ${t("recapSongs")}`, () => partyRecapCard(recap));
+    sideBtn(body, t("recapPlaylist"), "", savePartyPlaylist);
+    const rank = live.ranking();
+    if (rank.length) {
+      const h = document.createElement("div");
+      h.className = "m-im-side-sec";
+      h.textContent = t("rankTitle");
+      body.append(h);
+      rank.forEach((g, i) => sideBtn(body, `${i + 1}. ${g.n || t("rankGuest")}`, t("rankLine").replace("{w}", g.played).replace("{v}", g.votes)));
+    }
+  }
+  async function savePartyPlaylist() {
+    const uris = recap.songs.map((x) => x.uri).filter((u) => u?.startsWith("spotify:track:"));
+    if (!uris.length) return;
+    const name = `Mirage Party · ${new Date(recap.start || Date.now()).toLocaleDateString()}`;
+    let uri = "";
+    try {
+      uri = await S.Platform?.RootlistAPI?.createPlaylist?.(name, { before: "start" });
+      if (uri) await S.Platform.PlaylistAPI.add(uri, uris, { before: "start" });
+    } catch {
+      uri = "";
+    }
+    // Rückfall: Web-API
+    if (!uri) {
+      try {
+        const me = await S.CosmosAsync.get("https://api.spotify.com/v1/me");
+        const pl = await S.CosmosAsync.post(`https://api.spotify.com/v1/users/${me.id}/playlists`, { name, public: false, description: "Mirage party recap" });
+        await S.CosmosAsync.post(`https://api.spotify.com/v1/playlists/${pl.id}/tracks`, { uris });
+        uri = pl.uri;
+      } catch {}
+    }
+    S.showNotification?.(uri ? t("recapSaved").replace("{n}", name) : t("recapSaveFail"), !uri, 4000);
+  }
+
   /* ---- Party auf anderem Bildschirm. Der PC rechnet die Party, der Fernseher zeigt nur das fertige Bild:
      Chromecast / Google TV / DLNA-Fernseher bekommen es als Videostream von der Overlay-App, Miracast
      (Windows, Win + K) macht den Fernseher zum zweiten Bildschirm, Kabel-Bildschirme gehen direkt.
@@ -2559,7 +2822,7 @@ const immersive = (() => {
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
-    seekBy, volBy, toggleFull, toggleKeys, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, confetti, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
   };
 })();
 

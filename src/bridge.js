@@ -48,7 +48,7 @@ const bridge = (() => {
       else if (m.cmd === "prev") S.Player.back();
       else if (m.cmd === "like") S.Player.toggleHeart?.();
       // Immersiv- und Party-Modus öffnet keys.js (dort ist der Immersiv-Modus bekannt)
-      else if (m.cmd === "immersive" || m.cmd === "party") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
+      else if (m.cmd === "immersive" || m.cmd === "party" || m.cmd === "confetti") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
       else if (m.cmd === "hello") sendTrack();
       else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
       else if (m.cmd === "report") {

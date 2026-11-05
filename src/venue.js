@@ -723,6 +723,11 @@ function createVenue(makeCanvas) {
       confetti(pal, big, st.quality < 1 || v.decor === "fairy");
     }
     if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;
+    // Konfetti-Kanone auf Knopfdruck (Taste C / Knopf oben) – überall außer im Wohnzimmer
+    if (st.confetti && st.confetti !== fx.confManual) {
+      fx.confManual = st.confetti;
+      if (v.decor !== "fairy") confetti(pal, big, st.quality < 1);
+    }
     if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {
       // Drop: immer. Danach und in der Spitze eines Refrains: auf jedem zweiten Taktanfang, nicht jedes Mal
       const peak = px.drop > 0.3 || (px.energy > 0.85 && px.build < 0.15) || px.finale;
@@ -888,19 +893,23 @@ function createVenue(makeCanvas) {
         const r = Math.random;
         people.push({
           id: id++, x, row, s: scale * (0.88 + r() * 0.26), ph: r() * 6.3, up: r(), hand: r() < 0.5 ? -1 : 1,
-          hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",
+          hair: HAIR[Math.floor(r() * HAIR.length)],
+          // Statur in drei Stufen (wenige Stufen = wenige vorgezeichnete Körperbilder)
+          wd: [0.86, 1, 1.15][Math.floor(r() * 3)],
           gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "", arm: 0,
         });
       }
     }
     return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0 };
   }
+  // Frisuren und Kopfbedeckungen: viele verschiedene Silhouetten statt einer Reihe gleicher Köpfe
+  const HAIR = ["", "", "bun", "cap", "curl", "long", "long", "afro", "pony", "beanie", "hat", "short"];
   const bodySprites = new Map();
   function bodySprite(p, u, pal) {
-    const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
+    const key = `${p.row}|${p.hair}|${p.hand}|${p.wd || 1}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
     let sp = bodySprites.get(key);
     if (sp) return sp;
-    if (bodySprites.size > 40) bodySprites.clear();
+    if (bodySprites.size > 90) bodySprites.clear();
     const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);
     const c = makeCanvas(w, h);
     c.width = w;
@@ -909,10 +918,11 @@ function createVenue(makeCanvas) {
     x.fillStyle = FILL[p.row];
     x.beginPath();
     // nur der Körper – den Kopf zeichnet drawCrowd extra, damit er nicken kann
-    x.moveTo(cx0 - 20 * S1, y + 18 * S1);
-    x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
+    const W = p.wd || 1;
+    x.moveTo(cx0 - 20 * S1 * W, y + 18 * S1);
+    x.quadraticCurveTo(cx0 - 22 * S1 * W, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
     x.lineTo(hx + 5 * S1, y - 50 * S1);
-    x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);
+    x.quadraticCurveTo(cx0 + 22 * S1 * W, y - 46 * S1, cx0 + 20 * S1 * W, y + 18 * S1);
     x.closePath();
     x.fill();
     const c2 = pal[p.row === 0 ? 2 : 1];
@@ -933,8 +943,20 @@ function createVenue(makeCanvas) {
     hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);
     if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);
     if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);
+    if (p.hair === "afro") hxx.arc(ox, oy - 4 * S1, 14 * S1, 0, Math.PI * 2);
+    if (p.hair === "pony") hxx.ellipse(ox - p.hand * 10 * S1, oy - 2 * S1, 4 * S1, 8 * S1, p.hand * 0.5, 0, Math.PI * 2);
+    if (p.hair === "beanie") hxx.ellipse(ox, oy - 8 * S1, 10.5 * S1, 8 * S1, 0, Math.PI, Math.PI * 2);
+    if (p.hair === "short") hxx.ellipse(ox, oy - 3 * S1, 10.2 * S1, 10 * S1, 0, Math.PI, Math.PI * 2);
     hxx.fill();
     if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);
+    if (p.hair === "long") {
+      hxx.fillRect(ox - 11 * S1, oy - 4 * S1, 4 * S1, 18 * S1);
+      hxx.fillRect(ox + 7 * S1, oy - 4 * S1, 4 * S1, 18 * S1);
+    }
+    if (p.hair === "hat") {
+      hxx.fillRect(ox - 15 * S1, oy - 10 * S1, 30 * S1, 3 * S1);
+      hxx.fillRect(ox - 8 * S1, oy - 19 * S1, 16 * S1, 10 * S1);
+    }
     hxx.lineWidth = Math.max(1, 1.6 * S1);
     hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;
     hxx.beginPath();
@@ -1058,13 +1080,15 @@ function createVenue(makeCanvas) {
       // im Lichtermeer machen immer mehr mit – wer, steht je Person fest; im Saal bleiben die Hände unten
       const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;
       const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
-      const wantUp = v.seated && !inSea ? 0 : lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
+      // „Hands up“: im Refrain gehen (fast) alle Hände gleichzeitig hoch – beide Arme, als großes V
+      const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;
+      const wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
       p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
       const arm = arms[p.row];
       const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
       for (const side of [-1, 1]) {
         const sx = x + side * 15 * s1, sy = yy - 42 * s1;
-        const a = side === p.hand ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);
+        const a = side === p.hand || allUp ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);
         let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;
         if (a > 0.02) {
           let ux = side * (12 + 6 * Math.sin(((beatN + phi) / 2) * Math.PI + p.ph)) * s1, uy = -50 * s1;
@@ -1072,6 +1096,7 @@ function createVenue(makeCanvas) {
           // Lichtermeer: alle schwenken im selben langsamen Bogen, leicht versetzt von links nach rechts
           if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin(((beatN + phi) / 8) * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];
           if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];
+          if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin(((beatN + phi) / 2) * Math.PI)) * s1, -54 * s1 - 6 * s1 * down];
           if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;
           hxA += (sx + ux - hxA) * a;
           hyA += (sy + uy - hyA) * a;
@@ -1083,6 +1108,8 @@ function createVenue(makeCanvas) {
       }
       // Kamerablitze aus der Menge: in der Spitze öfter
       if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1 });
+      // Blitzlicht-Gewitter (großer Refrain): viele Handys blitzen gleichzeitig
+      else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8 });
     }
     if (curRow != null) strokeRow(curRow);
     ctx.globalCompositeOperation = "lighter";
@@ -1091,11 +1118,68 @@ function createVenue(makeCanvas) {
       ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];
       ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
     }
+    if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);
     crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);
     for (const f of crowd.flashes) {
       const r = 34 * f.s;
       ctx.globalAlpha = f.a * A;
       ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------------------------------------------------------------- Bodennebel */
+  // Langsam wabernde Nebelbänke über dem Boden, hinter der Menge. Die Scheinwerfer färben sie in den
+  // Songfarben, die Kick lässt sie kurz aufglühen. Im Wohnzimmer kein Nebel, in gediegenen Orten nur ein Hauch.
+  const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 0.006 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));
+  function drawFog(ctx, st, v) {
+    if (v.decor === "fairy") return;
+    const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0));
+    ctx.globalCompositeOperation = "lighter";
+    for (const b of fogBanks) {
+      const x = (((b.x + t * b.sp) % 1.3) - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));
+      ctx.globalAlpha = clamp((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);
+      ctx.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------------------------------------------------------------- Drohnen-Lichtshow */
+  // Unter freiem Himmel, einmal pro Song beim ersten großen Drop: 120 Lichtpunkte fliegen von überall
+  // heran, formen ein Herz, einen Stern, einen Kreis oder eine Welle, leuchten im Takt und fliegen wieder auseinander.
+  const drones = { song: "", t: -1, pts: [], shape: 0 };
+  function shapePoint(kind, i, n) {
+    const a = (i / n) * Math.PI * 2;
+    if (kind === 0) return [(16 * Math.sin(a) ** 3) / 17, -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a)) / 17];
+    if (kind === 1) {
+      const k = Math.floor((i / n) * 10), f = (i / n) * 10 - k, r0 = k % 2 ? 0.42 : 1, r1 = k % 2 ? 1 : 0.42;
+      const a0 = (k / 10) * Math.PI * 2 - Math.PI / 2, a1 = ((k + 1) / 10) * Math.PI * 2 - Math.PI / 2;
+      return [Math.cos(a0) * r0 * (1 - f) + Math.cos(a1) * r1 * f, Math.sin(a0) * r0 * (1 - f) + Math.sin(a1) * r1 * f];
+    }
+    if (kind === 2) return [Math.cos(a), Math.sin(a)];
+    return [(i / n) * 2 - 1, Math.sin((i / n) * Math.PI * 4) * 0.35];
+  }
+  function drawDrones(ctx, st) {
+    const px = st.px, t = st.t;
+    if (st.song && st.song !== drones.song && st.drones && px.dropHit && px.energy > 0.7 && !px.blackout) {
+      drones.song = st.song;
+      drones.t = t;
+      drones.shape = Math.floor(Math.random() * 4);
+      drones.pts = Array.from({ length: 120 }, (_, i) => ({ sx: Math.random(), sy: Math.random() * 0.5, i }));
+    }
+    if (drones.t < 0) return;
+    const age = t - drones.t;
+    if (age > 9) return void (drones.t = -1);
+    // heranfliegen 2 s, halten 5 s, auseinander 2 s
+    const f = age < 2 ? age / 2 : age < 7 ? 1 : 1 - (age - 7) / 2, e = f * f * (3 - 2 * f);
+    const cx = vw / 2, cy = vh * 0.2, S = Math.min(vw, vh) * 0.12, beat = Math.max(px.kickEnv || 0, px.accent || 0);
+    ctx.globalCompositeOperation = "lighter";
+    for (const p of drones.pts) {
+      const [qx, qy] = shapePoint(drones.shape, p.i, drones.pts.length);
+      const x = p.sx * vw + (cx + qx * S - p.sx * vw) * e, y = p.sy * vh + (cy + qy * S - p.sy * vh) * e;
+      const c = st.pal[p.i % 3], r = (3 + beat * 2.5) * st.dpr;
+      ctx.globalAlpha = clamp((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t * 6 + p.i)), 0, 1);
+      ctx.drawImage(glowSprite(c.map((x2) => Math.round(x2 + (255 - x2) * 0.5))), x - r * 2, y - r * 2, r * 4, r * 4);
     }
     ctx.globalAlpha = 1;
   }
@@ -1143,6 +1227,8 @@ function createVenue(makeCanvas) {
     }
     if (st.inst) show.drawInst(ctx, st, st.px, st.pal, st.dpr);
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
+    if (st.stage && st.fog) drawFog(ctx, st, v);
+    if (st.stage && v.open) drawDrones(ctx, st);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (vT && vSnap) {

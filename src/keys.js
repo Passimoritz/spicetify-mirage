@@ -6,6 +6,7 @@ import { t } from "./i18n.js";
 // Befehle von außen (Stream Deck über die Overlay-App)
 window.addEventListener("mirage:cmd", (e) => {
   if (e.detail === "immersive") immersive.toggle();
+  else if (e.detail === "confetti") immersive.confetti();
   else if (e.detail === "party") {
     if (!immersive.isOpen()) immersive.open();
     immersive.setMode("party", true);
@@ -34,6 +35,7 @@ window.addEventListener("keydown", (e) => {
       KeyN: () => S.Player.next(),
       KeyP: () => S.Player.back(),
       KeyE: () => immersive.toggleTiming(),
+      KeyC: () => immersive.confetti(),
       // im Takt antippen: misst den Versatz zwischen Bild und Ton ein
       KeyT: () => {
         const r = tapSync();

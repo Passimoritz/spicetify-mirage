@@ -10,7 +10,7 @@ import { onSong, contextUri, albumUri, effectiveScheme } from "./song.js";
 import { currentItem } from "./player.js";
 import { PRESET_KEYS, applyPreset, detectPreset } from "./perf.js";
 import { recheckAll } from "./readability.js";
-import { diagnostics } from "./selectors.js";
+import { diagnostics, reportUrl } from "./selectors.js";
 import { nowPlayingCard, weekCard, monthCard } from "./share.js";
 import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
 import { FAMILIES } from "./party.js";
@@ -434,6 +434,12 @@ function render(box) {
       toggle("partyDJ", () => {}),
       toggle("partyHype", () => immersive.reloadLyrics()),
       toggle("partyWords", () => immersive.reloadLyrics()),
+      toggle("partyCountdown", () => {}),
+      toggle("partyHandsUp", () => {}),
+      toggle("partyFlashStorm", () => {}),
+      toggle("partyFog", () => {}),
+      toggle("partyDrones", () => {}),
+      toggle("partyPause", () => {}),
       toggle("partyShatter", () => {}),
       head(t("ps_crowd")),
       toggle("partyCrowd", () => {}),
@@ -569,6 +575,8 @@ function render(box) {
     button(t("diagnostics"), async () => {
       try { await navigator.clipboard.writeText(diagnostics()); notify(t("copied")); } catch { dataIn.value = diagnostics(); }
     }),
+    // vorausgefülltes Issue auf GitHub: Versionen und Diagnose sind schon eingetragen
+    button(t("reportBug"), () => window.open(reportUrl(), "_blank")),
     button(t("reset"), () => {
       if (!confirm(t("resetConfirm"))) return;
       resetSettings();

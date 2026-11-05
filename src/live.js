@@ -260,8 +260,18 @@ async function seal(obj) {
 }
 const emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage:wishes")));
 const clean = (v, n) => String(v ?? "").replace(/\p{Cc}/gu, " ").trim().slice(0, n);
+// Gäste: wer hat was gewünscht (für das Ranking im Rückblick); Reaktionen und Abstimmung brauchen keine Wünsche
+const guests = new Map(); // Handy-ID → { n, wished, played, votes }
+const guest = (id, n) => {
+  const g = guests.get(id) || { n: "", wished: 0, played: 0, votes: 0 };
+  if (n) g.n = n;
+  guests.set(id, g);
+  return g;
+};
+const lastReact = new Map();
+const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
 async function inbound(m) {
-  if (!cfg.partyWishes || !ses || m.length < 29) return;
+  if (!ses || m.length < 29) return;
   let msg;
   try {
     msg = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: m.slice(0, 12) }, ses.key, m.slice(12))));
@@ -270,6 +280,25 @@ async function inbound(m) {
   }
   const id = clean(msg?.id, 24);
   if (!/^[\w-]{6,24}$/.test(id) || Math.abs(Date.now() - Number(msg.s)) > 600e3 || msg.on != null) return;
+  // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl
+  if (msg.k === "react") {
+    if (!REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
+    lastReact.set(id, Date.now());
+    window.dispatchEvent(new CustomEvent("mirage:react", { detail: msg.e }));
+    return;
+  }
+  // Abstimmung über die nächsten Songs: eine Stimme je Handy und Abstimmung
+  if (msg.k === "pvote") {
+    if (!poll || poll.id !== msg.p || Date.now() > poll.end || poll.by.has(id)) return;
+    const o = Number(msg.o);
+    if (!(o >= 0 && o < poll.o.length)) return;
+    poll.by.add(id);
+    poll.v[o]++;
+    guest(id).votes++;
+    window.dispatchEvent(new Event("mirage:poll"));
+    return;
+  }
+  if (!cfg.partyWishes) return;
   if (msg.k === "vote") {
     const w = wishes.find((x) => x.i === clean(msg.w, 40));
     if (w && !w.v.has(id)) {
@@ -302,7 +331,8 @@ async function inbound(m) {
   const have = wishes.find((x) => x.uri === tr.uri);
   if (have) have.v.add(id);
   else {
-    wishes.push({ ...tr, n: name, v: new Set([id]), st: "open", at: Date.now() });
+    wishes.push({ ...tr, n: name, by: id, v: new Set([id]), st: "open", at: Date.now() });
+    guest(id, name).wished++;
     // voll: der älteste Wunsch mit den wenigsten Stimmen fliegt raus
     const open = wishes.filter((x) => x.st === "open");
     if (open.length > 8) wishes = wishes.filter((x) => x !== open.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
@@ -319,6 +349,7 @@ async function accept(i) {
     return false;
   }
   w.st = "queued";
+  if (w.by) guest(w.by, w.n).played++;
   emitWishes();
   // eine Weile als „angenommen“ auf den Handys sichtbar, dann aus der Liste
   setTimeout(() => {
@@ -341,7 +372,22 @@ const coverUrl = (item) => {
 };
 
 // jedes Bild im Party-Modus: höchstens 8 Nachrichten pro Sekunde; die Handyseite rechnet den Takt selbst weiter
-let lastFx = null;
+let lastFx = null, lastAnn = null, poll = null;
+function announce(text) {
+  lastAnn = { x: String(text || "").slice(0, 120), s: Date.now() };
+}
+// Abstimmung: die nächsten Songs zur Wahl, 45 s lang; danach entscheidet die Mehrheit
+function startPoll(options) {
+  poll = { id: Math.random().toString(36).slice(2, 10), o: options.slice(0, 3).map((x) => ({ t: x.t, a: x.a, img: x.img, uri: x.uri })), v: options.slice(0, 3).map(() => 0), end: Date.now() + 45000, by: new Set() };
+  window.dispatchEvent(new Event("mirage:poll"));
+  return poll;
+}
+const pollState = () => poll;
+const nextUri = () => {
+  const n = (S.Queue?.nextTracks || []).map((x) => x.contextTrack || x).find((x) => x?.uri?.startsWith("spotify:track:"));
+  return n?.uri || "";
+};
+const ranking = () => [...guests.values()].filter((g) => g.n || g.wished || g.votes).sort((a, b) => b.played - a.played || b.wished - a.wished || b.votes - a.votes).slice(0, 10);
 function fx(c, w) {
   lastFx = { c, w: String(w || "").slice(0, 40), s: Date.now() };
 }
@@ -365,6 +411,10 @@ function feed(px, pal, bpm, lyric) {
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
     ly: lyric?.ly || "", lyn: lyric?.lyn || "",
     w: cfg.partyWishes ? wishList() : null,
+    // Ansage des Gastgebers (10 s), laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
+    an: lastAnn && Date.now() - lastAnn.s < 10000 ? lastAnn : null,
+    poll: poll && Date.now() < poll.end + 8000 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
+    nx: nextUri(),
     fx: lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }
@@ -390,4 +440,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, announce, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };

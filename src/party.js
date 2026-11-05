@@ -505,7 +505,7 @@ const party = (() => {
     const ease = (k) => 1 - Math.exp(-dt * k);
 
     // --- wo im Song: Energie jetzt, gleich, Aufbau, Break, Drop, Dur/Moll, Helligkeit
-    let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0;
+    let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0, keyPc = -1, tempoNow = 0;
     let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
     let beatPhase = 0, beatIdx = -1;
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
@@ -532,6 +532,13 @@ const party = (() => {
       songLen = M.energy.length * STEP;
       const sx = M.sections[scene];
       minor = sx ? sx.mode === 0 : false;
+      // Tonart des Abschnitts (färbt das Licht leicht ein) und Tempo-Wechsel: halbes/doppeltes Tempo oder ein
+      // deutlich anderes Tempo im Abschnitt (Breakdown, Bridge) – das Publikum tanzt dann im neuen Tempo
+      keyPc = sx && sx.key >= 0 ? sx.key : -1;
+      if (sx?.tempo > 40 && sx.tc > 0.35 && info.bpm) {
+        const r = sx.tempo / info.bpm;
+        if (Math.abs(r - 0.5) < 0.06 || Math.abs(r - 2) < 0.12 || (Math.abs(r - 1) > 0.1 && Math.abs(r - 1) < 0.45)) tempoNow = sx.tempo;
+      }
       // Drop genau auf seinem Schlag (vorberechnet) – nicht erst, wenn die Lautheit schon da ist
       // (nicht nach einem Sprung im Song – nur bei normalem Weiterlaufen)
       if (playing && sec >= lastSec && sec - lastSec < 0.5) for (const t of M.drops) if (t > lastSec && t <= sec + 0.02) dropHit = true;
@@ -644,7 +651,7 @@ const party = (() => {
       P, key: info.key, level, lvl, fx, hit, barHit, inBar, conf,
       energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I, scene,
       kickEnv, snareEnv, hatEnv, tone, pitch, kickHit, snareHit, hatHit,
-      phase: beatPhase, beatIdx,
+      phase: beatPhase, beatIdx, keyPc, tempo: tempoNow || info.bpm || 120,
       // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
       toDrop,
       tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
