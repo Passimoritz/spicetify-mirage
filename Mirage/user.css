@@ -695,7 +695,8 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   z-index: 3;
   -webkit-app-region: drag;
 }
-#mirage-immersive.is-on .m-im-top {
+#mirage-immersive.is-on .m-im-top,
+#mirage-immersive.is-on .m-im-top :is(.m-im-tabs, .m-im-actions) {
   -webkit-app-region: drag;
 }
 /* Kopfzeile: links Zurück, Mitte Ansichten – rechts bleibt frei für die Fensterknöpfe */

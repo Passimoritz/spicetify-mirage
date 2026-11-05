@@ -141,6 +141,10 @@ const immersive = (() => {
       el.querySelector(".m-im-" + k).title = t("c_" + k);
     }
     el.querySelector(".m-im-volume").setAttribute("aria-label", t("c_volume"));
+    // Verschiebe-Streifen und Kopfzeile ans Ende der Ebene: Electron wertet die Fenster-Regionen in
+    // Dokument-Reihenfolge und ohne overflow-Beschnitt aus – sonst löschten schon gesungene, unsichtbar nach
+    // oben gerollte Liedzeilen den Streifen, und im Party- und Mix-Modus ließ sich das Fenster nicht verschieben
+    el.append(el.querySelector(".m-im-drag"), el.querySelector(".m-im-top"));
     q = {
       cover: el.querySelector(".m-im-cover"),
       imgs: el.querySelectorAll(".m-im-cover img"),

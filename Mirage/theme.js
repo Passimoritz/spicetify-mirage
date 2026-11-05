@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.15.1" : "dev";
+      VERSION = true ? "1.15.2" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -12676,6 +12676,7 @@
             el2.querySelector(".m-im-" + k).title = t("c_" + k);
           }
           el2.querySelector(".m-im-volume").setAttribute("aria-label", t("c_volume"));
+          el2.append(el2.querySelector(".m-im-drag"), el2.querySelector(".m-im-top"));
           q = {
             cover: el2.querySelector(".m-im-cover"),
             imgs: el2.querySelectorAll(".m-im-cover img"),

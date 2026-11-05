@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const http = require("http");
-const { spawn } = require("child_process");
+const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
 const { make } = require("./i18n");
@@ -464,8 +464,18 @@ const launchArgs = () => [...(process.defaultApp ? [path.resolve(__dirname)] : [
 const LAUNCH_AGENT = path.join(os.homedir(), "Library", "LaunchAgents", "com.mirage.overlay.plist");
 const DESKTOP_FILE = path.join(process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config"), "autostart", "mirage-overlay.desktop");
 
+// WIN: den Run-Eintrag selbst schreiben – Electron legte ihn ohne Anführungszeichen an
+// („…\mirage-overlay\Mirage Overlay.exe --hidden“). Mit dem Leerzeichen im Pfad versucht Windows dann zuerst
+// „…\Mirage“ zu starten und findet die App nur manchmal; mit Anführungszeichen immer.
+const RUN_KEY = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+function setAutostartWin(on) {
+  const cmd = [process.execPath, ...launchArgs()].map((a) => (a.startsWith("--") ? a : `"${a}"`)).join(" ");
+  const args = on ? ["add", RUN_KEY, "/v", "Mirage Overlay", "/t", "REG_SZ", "/d", cmd, "/f"] : ["delete", RUN_KEY, "/v", "Mirage Overlay", "/f"];
+  execFile("reg", args, { windowsHide: true }, (e) => e && on && dlog(`autostart: ${e.message}`));
+}
 function setAutostart(on) {
-  if (WIN || (MAC && !process.defaultApp)) {
+  if (WIN) return setAutostartWin(on);
+  if (MAC && !process.defaultApp) {
     // MAC (gepackt): Anmeldeobjekt ohne Argumente – der stille Start wird über wasOpenedAtLogin erkannt
     return app.setLoginItemSettings({ openAtLogin: on, args: launchArgs() });
   }
@@ -507,6 +517,14 @@ function writeOrRemove(target, content) {
       fs.writeFileSync(target, content);
     } else fs.rmSync(target, { force: true });
   } catch {}
+}
+// kleines Start-Protokoll (die letzten 20 Starts): zeigt, ob die App beim Anmelden wirklich gestartet ist
+function logStart() {
+  const f = path.join(app.getPath("userData"), "start-log.txt");
+  let lines = [];
+  try { lines = fs.readFileSync(f, "utf8").split("\n").filter(Boolean); } catch {}
+  lines.push(`${new Date().toISOString()} ${startedHidden() ? "login" : "manual"} ${app.getVersion()}`);
+  try { fs.writeFileSync(f, lines.slice(-20).join("\n") + "\n"); } catch {}
 }
 function startedHidden() {
   if (process.argv.includes("--hidden")) return true;
@@ -1012,6 +1030,7 @@ app.whenReady().then(() => {
   if (cfg.autostart) {
     try { setAutostart(true); } catch {}
   }
+  logStart();
   screen.on("display-removed", () => overlay?.isVisible() && position());
   screen.on("display-metrics-changed", () => overlay?.isVisible() && position());
   // Beim ersten Start (oder ohne Autostart-Aufruf) gleich die Einstellungen zeigen

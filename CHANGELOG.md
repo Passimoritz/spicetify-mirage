@@ -10,6 +10,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.15.2] – 2026-11-05
+
+### Fixed
+
+- **The Spotify window can be moved again in party and mix mode.** Lines that had already been sung scrolled invisibly up under the title bar and cancelled the drag strip there (Electron counts window regions in page order and ignores clipping). The drag strip now comes last, and the gaps between the buttons in the top bar can be grabbed too.
+- **The overlay app now starts with Windows every time.** The startup entry had no quotation marks around a path with a space in it, so Windows found the app only some of the time. The app now writes the entry itself, quoted, and keeps a small start log (`start-log.txt` in its folder) for troubleshooting.
+
 ## [1.15.1] – 2026-11-05
 
 ### Added
