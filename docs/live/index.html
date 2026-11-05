@@ -357,9 +357,11 @@ $("wSong").oninput = () => {
   }
   // schon einmal gesucht: sofort zeigen
   if (hits.has(q.toLowerCase())) return showResults({ r: rid, res: hits.get(q.toLowerCase()), cached: true });
+  // alte Treffer sofort weg – sonst sieht man während der neuen Suche noch die Ergebnisse von eben
+  $("wRes").replaceChildren();
+  $("wMsg").textContent = T.wSearching;
   searchT = setTimeout(() => {
     lastQ = q;
-    $("wMsg").textContent = T.wSearching;
     ask(q, 0);
   }, 250);
 };

@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.15.3" : "dev";
+      VERSION = true ? "1.15.4" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -12325,22 +12325,18 @@
     }
     sending = false;
   }
+  async function gqlTracks(name, q) {
+    const def = S.GraphQL?.Definitions?.[name];
+    if (!def || !S.GraphQL?.Request) return [];
+    const r = await within3(S.GraphQL.Request(def, SEARCH_VARS(q)), 4e3);
+    const sv = r?.data?.searchV2 || {};
+    return [...sv.topResultsV2?.itemsV2 || [], ...sv.tracksV2?.items || []].map((x) => x?.item?.data).filter((d) => d?.uri?.startsWith("spotify:track:")).map(fromGql);
+  }
   async function searchSpotify(q) {
-    const def = S.GraphQL?.Definitions?.searchTracks;
-    if (def && S.GraphQL?.Request) {
+    for (const name of ["searchModalResults", "searchTracks"]) {
       try {
-        const r2 = await within3(S.GraphQL.Request(def, { searchTerm: q, offset: 0, limit: 8, numberOfTopResults: 8, includeAudiobooks: false, includePreReleases: false, includeAuthors: false }), 4e3);
-        const list = (r2?.data?.searchV2?.tracksV2?.items || []).map((x) => x?.item?.data).filter((d) => d?.uri?.startsWith("spotify:track:"));
-        if (list.length) {
-          return list.map((d) => ({
-            id: d.uri.split(":")[2],
-            uri: d.uri,
-            name: d.name,
-            is_playable: d.playability?.playable !== false,
-            artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
-            album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((s) => ({ url: s.url, width: s.width || 0 })) }
-          }));
-        }
+        const list = await gqlTracks(name, q);
+        if (list.length) return list;
       } catch {
       }
     }
@@ -12356,7 +12352,9 @@
       job.next = null;
       let res = [], err = 0;
       try {
-        res = (await searchSpotify(q)).map(remember).filter(Boolean).slice(0, 6).map(({ i, t: t2, a, img }) => ({ i, t: t2, a, img }));
+        const seenName = /* @__PURE__ */ new Set();
+        res = (await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
+        res = res.slice(0, 8).map(({ i, t: t2, a, img }) => ({ i, t: t2, a, img }));
       } catch {
         err = 1;
       }
@@ -12500,7 +12498,7 @@
       emit();
     }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, ID, coverOf, emitWishes, clean, ranked, wishList, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, ranked, wishList, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
@@ -12564,6 +12562,15 @@
       searching = /* @__PURE__ */ new Map();
       tracks = /* @__PURE__ */ new Map();
       within3 = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
+      SEARCH_VARS = (q) => ({ searchTerm: q, offset: 0, limit: 20, numberOfTopResults: 20, includeAudiobooks: false, includeArtistHasConcertsField: false, includePreReleases: false, includeAlbumPreReleases: false, includeAuthors: false, includeEpisodeContentRatingsV2: false });
+      fromGql = (d) => ({
+        id: d.uri.split(":")[2],
+        uri: d.uri,
+        name: d.name,
+        is_playable: d.playability?.playable !== false,
+        artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
+        album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((x) => ({ url: x.url, width: x.width || 0 })) }
+      });
       ID = /^[A-Za-z0-9]{22}$/;
       coverOf = (tr) => {
         const imgs = [...tr?.album?.images || []].sort((a, b) => (a.width || 0) - (b.width || 0));
@@ -14677,7 +14684,28 @@
           } catch {
           }
         }
+        let hiddenAt = 0, ticker = null;
+        function hiddenTick() {
+          if (!document.hidden || !el2 || !isOpen() || el2.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
+          const now = performance.now(), dt = hiddenAt ? Math.min(1, (now - hiddenAt) / 1e3) : 0.25;
+          hiddenAt = now;
+          const pos = songPos(now), px = party.step(pos / 1e3, dt, S.Player.isPlaying());
+          const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
+          const lineAt = (i) => lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "\u266A" && lyr.lines[i]?.text || "";
+          live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
+        }
+        function startTicker() {
+          if (ticker) return;
+          try {
+            const url = URL.createObjectURL(new Blob(["setInterval(() => postMessage(0), 250);"], { type: "text/javascript" }));
+            ticker = new Worker(url);
+            ticker.onmessage = hiddenTick;
+          } catch {
+            ticker = setInterval(hiddenTick, 250);
+          }
+        }
         function open() {
+          startTicker();
           if (!el2) build();
           sizeCanvas();
           setMode(cfg.imMode, false);

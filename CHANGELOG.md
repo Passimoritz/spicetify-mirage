@@ -10,6 +10,14 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.15.4] – 2026-11-05
+
+### Fixed
+
+- **Song search on the phones now works like Spotify's own.** It uses Spotify's quick search (the one behind Ctrl+K), which is always loaded and forgives typos, finds parts of a title and artists on their own – “blindng lihgts” finds *Blinding Lights*, “levitat” finds *Levitating*, “weeknd” finds The Weeknd's songs. Before, the search used a part of Spotify that is only there after you open Spotify's search page, and the web API fallback was throttled by Spotify (error 429) – so it found nothing. Tested end to end with a real Spotify: answers in under a second.
+- **The live link keeps running when Spotify is minimised or behind other windows.** The browser stops drawing then, and after 2.5 s the phones lost their light and the song wishes stopped answering. A tiny background clock now keeps it going while party mode is open.
+- Old results disappear as soon as a new search starts.
+
 ## [1.15.3] – 2026-11-05
 
 ### Fixed

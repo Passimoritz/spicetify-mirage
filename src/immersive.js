@@ -2255,7 +2255,32 @@ const immersive = (() => {
     } catch {}
   }
 
+  // Fenster verdeckt oder minimiert: Chromium hält die Bildschleife an (0 Bilder/s) – ohne das hier gingen nach
+  // 2,5 s Live-Link, Handys und Songwünsche aus, obwohl die Party läuft. Ein winziger Worker gibt den Takt vor
+  // (Worker-Nachrichten werden in verdeckten Fenstern nicht gedrosselt wie Timer); gezeichnet wird nichts.
+  let hiddenAt = 0, ticker = null;
+  function hiddenTick() {
+    if (!document.hidden || !el || !isOpen() || el.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
+    const now = performance.now(), dt = hiddenAt ? Math.min(1, (now - hiddenAt) / 1000) : 0.25;
+    hiddenAt = now;
+    const pos = songPos(now), px = party.step(pos / 1000, dt, S.Player.isPlaying());
+    const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
+    const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
+    live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
+  }
+  function startTicker() {
+    if (ticker) return;
+    try {
+      const url = URL.createObjectURL(new Blob(["setInterval(() => postMessage(0), 250);"], { type: "text/javascript" }));
+      ticker = new Worker(url);
+      ticker.onmessage = hiddenTick;
+    } catch {
+      ticker = setInterval(hiddenTick, 250);
+    }
+  }
+
   function open() {
+    startTicker();
     if (!el) build();
     sizeCanvas();
     setMode(cfg.imMode, false);

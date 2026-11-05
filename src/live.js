@@ -188,20 +188,27 @@ async function send(state, retain) {
 let wishes = [];
 const seen = new Map(), searching = new Map(), tracks = new Map();
 const within = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
-// Suche wie Spotify selbst (GraphQL „searchTracks“ – wird nicht gedrosselt wie die Web-API), sonst Web-API
+// Suche wie Spotify selbst: zuerst Spotifys Schnellsuche (GraphQL „searchModalResults“, Strg+K) – immer geladen,
+// verzeiht Tippfehler, findet Teile von Titel und Interpret. Dann „searchTracks“ (nur da, wenn Spotify seine
+// Suchseite schon geladen hat), zuletzt die Web-API (die Spotify oft mit 429 drosselt).
+const SEARCH_VARS = (q) => ({ searchTerm: q, offset: 0, limit: 20, numberOfTopResults: 20, includeAudiobooks: false, includeArtistHasConcertsField: false, includePreReleases: false, includeAlbumPreReleases: false, includeAuthors: false, includeEpisodeContentRatingsV2: false });
+const fromGql = (d) => ({
+  id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false,
+  artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
+  album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((x) => ({ url: x.url, width: x.width || 0 })) },
+});
+async function gqlTracks(name, q) {
+  const def = S.GraphQL?.Definitions?.[name];
+  if (!def || !S.GraphQL?.Request) return [];
+  const r = await within(S.GraphQL.Request(def, SEARCH_VARS(q)), 4000);
+  const sv = r?.data?.searchV2 || {};
+  return [...(sv.topResultsV2?.itemsV2 || []), ...(sv.tracksV2?.items || [])].map((x) => x?.item?.data).filter((d) => d?.uri?.startsWith("spotify:track:")).map(fromGql);
+}
 async function searchSpotify(q) {
-  const def = S.GraphQL?.Definitions?.searchTracks;
-  if (def && S.GraphQL?.Request) {
+  for (const name of ["searchModalResults", "searchTracks"]) {
     try {
-      const r = await within(S.GraphQL.Request(def, { searchTerm: q, offset: 0, limit: 8, numberOfTopResults: 8, includeAudiobooks: false, includePreReleases: false, includeAuthors: false }), 4000);
-      const list = (r?.data?.searchV2?.tracksV2?.items || []).map((x) => x?.item?.data).filter((d) => d?.uri?.startsWith("spotify:track:"));
-      if (list.length) {
-        return list.map((d) => ({
-          id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false,
-          artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
-          album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((s) => ({ url: s.url, width: s.width || 0 })) },
-        }));
-      }
+      const list = await gqlTracks(name, q);
+      if (list.length) return list;
     } catch {}
   }
   const r = await within(S.CosmosAsync.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=8`), 4000);
@@ -217,7 +224,9 @@ async function runSearch(id) {
     job.next = null;
     let res = [], err = 0;
     try {
-      res = (await searchSpotify(q)).map(remember).filter(Boolean).slice(0, 6).map(({ i, t, a, img }) => ({ i, t, a, img }));
+      const seenName = new Set();
+      res = (await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
+      res = res.slice(0, 8).map(({ i, t, a, img }) => ({ i, t, a, img }));
     } catch {
       err = 1;
     }
