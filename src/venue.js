@@ -187,6 +187,12 @@ function createVenue(makeCanvas) {
     forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },
     hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },
     cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" },
+    // 1.17: Weltall, Neon-Straße, Pub, Skihütte, Wüste
+    space: { rows: [[2, 0.5, 30], [1, 0.76, 40], [0, 1.02, 52]], haze: 0.5, spot: 1.1, decor: "space", open: true },
+    neon: { rows: [[1, 0.78, 36], [0, 1.03, 46]], haze: 1.2, spot: 0.9, decor: "neon" },
+    pub: { rows: [[1, 0.82, 40], [0, 1.06, 52]], haze: 1.4, spot: 0.6, decor: "pub", calm: true },
+    skihut: { rows: [[1, 0.78, 34], [0, 1.03, 44]], haze: 0.9, spot: 0.85, decor: "skihut", open: true },
+    desert: { rows: [[2, 0.52, 30], [1, 0.78, 40], [0, 1.03, 50]], haze: 0.7, spot: 1, decor: "desert", open: true },
   };
   // „Automatisch“: der Ort passt zum Genre
   const AUTO_VENUE = {
@@ -198,7 +204,11 @@ function createVenue(makeCanvas) {
     eurodance: "club", synthwave: "rooftop", hyperpop: "club", trap: "club", drill: "cellar", phonk: "cellar", rnb: "rooftop",
     soul: "jazzbar", indie: "festival", alternative: "stadium", blues: "jazzbar", schlager: "festival", ballad: "stadium", gospel: "cathedral",
     reggaeton: "club", salsa: "beach", brazil: "beach", flamenco: "club", bollywood: "stadium", arabic: "festival", ambient: "home",
-    cinematic: "hall",
+    cinematic: "space",
+    melodictechno: "space", hardtechno: "warehouse", futurebass: "neon", electroswing: "jazzbar", breakbeat: "warehouse",
+    boombap: "rooftop", dancehall: "beach", cloudrap: "neon", hardrock: "stadium", postrock: "space", ska: "pub", emo: "cellar",
+    jpop: "neon", musical: "hall", christmas: "skihut", celtic: "pub", balkan: "pub", amapiano: "beach", lofi: "home",
+    neoclassical: "hall", acoustic: "pub",
   };
   function drawDecor(ctx, v, px, pal, rgba, dpr, st) {
     const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);
@@ -506,9 +516,173 @@ function createVenue(makeCanvas) {
         ctx.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);
       }
       ctx.globalAlpha = 1;
+    } else if (v.decor === "space") {
+      // Weltall: Sternenfeld, das langsam vorbeizieht, oben rechts ein Planet mit leuchtendem Rand,
+      // auf großen Schlägen eine Sternschnuppe
+      stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));
+      for (const s1 of stars) {
+        const x = (((s1.x - t * 0.004 * s1.z) % 1) + 1) % 1, tw = 0.55 + 0.45 * Math.sin(t * (1 + s1.z) + s1.ph);
+        ctx.globalAlpha = clamp(tw * s1.z * (0.45 + px.energy * 0.35 + beat * 0.2), 0, 1);
+        const r = (1.6 + s1.z * 2.4) * dpr;
+        ctx.drawImage(glowSprite(s1.ph > 5 ? pal[2] : [235, 240, 255]), x * vw - r, s1.y * vh - r, r * 2, r * 2);
+      }
+      const pr = Math.min(vw, vh) * 0.32, pxx = vw * 0.86, pyy = -pr * 0.35;
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(6,6,16,0.92)";
+      ctx.beginPath();
+      ctx.arc(pxx, pyy, pr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = "lighter";
+      const rim = ctx.createRadialGradient(pxx, pyy, pr * 0.92, pxx, pyy, pr * 1.18);
+      rim.addColorStop(0, rgba(pal[1], 0));
+      rim.addColorStop(0.35, rgba(pal[1], (0.22 + beat * 0.18).toFixed(3)));
+      rim.addColorStop(1, rgba(pal[1], 0));
+      ctx.fillStyle = rim;
+      ctx.beginPath();
+      ctx.arc(pxx, pyy, pr * 1.18, 0, Math.PI * 2);
+      ctx.fill();
+      if (px.dropHit || (px.hit && px.inBar === 0 && px.energy > 0.7 && Math.random() < 0.35)) shoot = { t0: t, y: 0.08 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.5 };
+      if (shoot) {
+        const f = (t - shoot.t0) / 0.9;
+        if (f > 1) shoot = null;
+        else {
+          const x0 = (shoot.x + f * 0.35) * vw, y0 = (shoot.y + f * 0.18) * vh, len = 140 * dpr;
+          const g = ctx.createLinearGradient(x0, y0, x0 - len, y0 - len * 0.5);
+          g.addColorStop(0, `rgba(255,255,255,${(0.8 * (1 - f)).toFixed(3)})`);
+          g.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 2 * dpr;
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x0 - len, y0 - len * 0.5);
+          ctx.stroke();
+        }
+      }
+    } else if (v.decor === "neon") {
+      // Neon-Straße: Häuserzeilen links und rechts mit senkrechten Leuchtschildern, die im Takt flackern,
+      // und ein nasser Boden, der die Farben spiegelt
+      neonSigns ||= Array.from({ length: 10 }, (_, i) => ({ side: i % 2 ? 1 : -1, d: Math.floor(i / 2) / 5, h: 0.14 + Math.random() * 0.16, y: 0.18 + Math.random() * 0.3, c: i % 3, ph: Math.random() * 6.3 }));
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(5,4,12,0.88)";
+      for (const side of [-1, 1]) {
+        const x0 = side < 0 ? 0 : vw * 0.8;
+        ctx.fillRect(x0, vh * 0.12, vw * 0.2, vh);
+      }
+      ctx.globalCompositeOperation = "lighter";
+      for (const n of neonSigns) {
+        const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;
+        const flick = Math.sin(t * 13 + n.ph) > 0.97 ? 0.3 : 1;
+        const a = clamp((0.35 + beat * 0.5) * flick, 0, 1), c = pal[n.c];
+        ctx.fillStyle = rgba(c, (a * 0.9).toFixed(3));
+        ctx.fillRect(x - 4 * dpr, y, 8 * dpr, h);
+        const r = 26 * dpr;
+        ctx.globalAlpha = a * 0.55;
+        for (let k = 0; k < 3; k++) ctx.drawImage(glowSprite(c), x - r, y + (h * k) / 2 - r, r * 2, r * 2);
+        ctx.globalAlpha = 1;
+      }
+      const wet = ctx.createLinearGradient(0, vh * 0.86, 0, vh);
+      wet.addColorStop(0, rgba(pal[0], 0));
+      wet.addColorStop(1, rgba(pal[0], (0.08 + beat * 0.12).toFixed(3)));
+      ctx.fillStyle = wet;
+      ctx.fillRect(0, vh * 0.86, vw, vh * 0.14);
+    } else if (v.decor === "pub") {
+      // Pub: dunkle Holzbalken unter der Decke, warme Glühbirnen, die leicht pendeln, hinten der Tresen
+      // mit glänzenden Flaschen
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(10,6,4,0.9)";
+      for (let k = 0; k < 4; k++) ctx.fillRect(0, vh * (0.02 + k * 0.045), vw, 7 * dpr);
+      ctx.fillRect(vw * 0.04, vh * 0.8, vw * 0.92, vh * 0.035);
+      ctx.globalCompositeOperation = "lighter";
+      for (let k = 0; k < 7; k++) {
+        const x = vw * (0.1 + k * 0.133), sw = Math.sin(t * 1.1 + k) * 6 * dpr, y = vh * 0.22;
+        ctx.strokeStyle = "rgba(60,40,25,0.5)";
+        ctx.lineWidth = 1.5 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(x, vh * 0.04);
+        ctx.lineTo(x + sw, y);
+        ctx.stroke();
+        ctx.globalAlpha = clamp(0.45 + beat * 0.35, 0, 1);
+        const r = (22 + beat * 10) * dpr;
+        ctx.drawImage(glowSprite([255, 180, 95]), x + sw - r, y - r, r * 2, r * 2);
+        ctx.globalAlpha = 1;
+      }
+      for (let k = 0; k < 24; k++) {
+        const tw = 0.5 + 0.5 * Math.sin(t * 0.9 + k * 2.3);
+        if (tw < 0.4) continue;
+        ctx.globalAlpha = clamp(tw * (0.25 + beat * 0.2), 0, 1);
+        const r = 4 * dpr;
+        ctx.drawImage(glowSprite(k % 4 ? [255, 210, 140] : pal[k % 3]), vw * (0.08 + k * 0.036) - r, vh * 0.79 - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    } else if (v.decor === "skihut") {
+      // Skihütte: verschneite Gipfel im Hintergrund, eine Lichterkette am Dachgiebel, leise fallender Schnee
+      ctx.globalCompositeOperation = "source-over";
+      // Berge nur am Rand und unten (das Cover und der Titel bleiben frei), Schnee als heller Saum am Grat
+      const peaks = [[0, 0.62], [0.1, 0.5], [0.22, 0.66], [0.34, 0.74], [0.5, 0.78], [0.66, 0.73], [0.78, 0.64], [0.9, 0.48], [1, 0.6]];
+      const ridge = new Path2D();
+      ridge.moveTo(0, vh);
+      for (const [x, y] of peaks) ridge.lineTo(vw * x, vh * y);
+      ridge.lineTo(vw, vh);
+      ridge.closePath();
+      ctx.fillStyle = "rgba(14,16,30,0.8)";
+      ctx.fill(ridge);
+      ctx.save();
+      ctx.clip(ridge);
+      const snowG = ctx.createLinearGradient(0, vh * 0.48, 0, vh * 0.7);
+      snowG.addColorStop(0, "rgba(225,232,255,0.22)");
+      snowG.addColorStop(1, "rgba(225,232,255,0)");
+      ctx.fillStyle = snowG;
+      ctx.fillRect(0, vh * 0.45, vw, vh * 0.3);
+      ctx.restore();
+      ctx.globalCompositeOperation = "lighter";
+      for (let k = 0; k <= 20; k++) {
+        const f = k / 20, x = vw * f, y = vh * (0.04 + 0.1 * (1 - Math.abs(f - 0.5) * 2));
+        ctx.globalAlpha = clamp((0.3 + beat * 0.35) * (0.6 + 0.4 * Math.sin(t * 1.5 + k * 1.3)), 0, 1);
+        const r = (9 + beat * 5) * dpr;
+        ctx.drawImage(glowSprite(k % 2 ? [255, 205, 130] : pal[k % 3]), x - r, y - r, r * 2, r * 2);
+      }
+      snow ||= Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), sp: 0.02 + Math.random() * 0.04, ph: Math.random() * 6.3 }));
+      for (const f of snow) {
+        const y = (f.y + t * f.sp) % 1, x = f.x + Math.sin(t * 0.6 + f.ph) * 0.01;
+        ctx.globalAlpha = 0.35 + 0.25 * Math.sin(f.ph + t);
+        const r = 3 * dpr;
+        ctx.drawImage(glowSprite([235, 240, 255]), x * vw - r, y * vh - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    } else if (v.decor === "desert") {
+      // Wüste: Dünen am Horizont, ein großer Mond, Sterne, und ein warmes Feuerglühen hinter der Menge
+      stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));
+      for (const s1 of stars) {
+        if (s1.y > 0.5) continue;
+        ctx.globalAlpha = clamp((0.25 + 0.3 * Math.sin(t * 1.3 + s1.ph)) * s1.z, 0, 1);
+        const r = (1.4 + s1.z * 2) * dpr;
+        ctx.drawImage(glowSprite([255, 240, 220]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);
+      }
+      const mr = Math.min(vw, vh) * 0.09;
+      ctx.globalAlpha = clamp(0.55 + beat * 0.25, 0, 1);
+      ctx.drawImage(glowSprite([255, 225, 180]), vw * 0.2 - mr * 2.4, vh * 0.2 - mr * 2.4, mr * 4.8, mr * 4.8);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(14,8,6,0.85)";
+      for (const [y0, amp, ph] of [[0.76, 0.04, 0], [0.83, 0.03, 2]]) {
+        ctx.beginPath();
+        ctx.moveTo(0, vh);
+        for (let x = 0; x <= 24; x++) ctx.lineTo((vw * x) / 24, vh * (y0 + amp * Math.sin(x * 0.55 + ph)));
+        ctx.lineTo(vw, vh);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "lighter";
+      const fire = ctx.createRadialGradient(vw / 2, vh, 0, vw / 2, vh, vh * 0.45);
+      fire.addColorStop(0, `rgba(255,140,60,${(0.12 + px.kickEnv * 0.1 + px.drop * 0.08).toFixed(3)})`);
+      fire.addColorStop(1, "rgba(255,140,60,0)");
+      ctx.fillStyle = fire;
+      ctx.fillRect(0, vh * 0.55, vw, vh * 0.45);
     }
+    ctx.globalCompositeOperation = "lighter";
   }
-  let stands = null, sky = null, win = null, flies = null;
+  let stands = null, sky = null, win = null, flies = null, stars = null, neonSigns = null, snow = null, shoot = null;
 
   /* ---------------------------------------------------------------- Bühneneffekte */
   // Nur wo sie hingehören: CO2-Fontänen bei elektronischer Musik, Pyro-Flammen bei Rock/Metal/Punk/Hardstyle,
@@ -676,6 +850,9 @@ function createVenue(makeCanvas) {
     rock: "bang", metal: "bang", punk: "jump", bass: "nod", pop: "clap", kpop: "clap", disco: "clap", country: "clap",
     latin: "bounce", afro: "bounce", reggae: "skank", chill: "sway", jazz: "sway", classical: "sway",
     edm: "jump", deephouse: "bounce", techhouse: "pump", psytrance: "jump", dubstep: "bang", garage: "bounce", eurodance: "jump",
+    melodictechno: "pump", hardtechno: "pump", futurebass: "jump", electroswing: "bounce", breakbeat: "bounce", boombap: "nod",
+    dancehall: "bounce", cloudrap: "sway", hardrock: "bang", postrock: "sway", ska: "skank", emo: "jump", jpop: "clap", musical: "clap",
+    christmas: "sway", celtic: "clap", balkan: "jump", amapiano: "bounce", lofi: "sway", neoclassical: "sway", acoustic: "sway",
     synthwave: "nod", hyperpop: "jump", trap: "bounce", drill: "nod", phonk: "pump", rnb: "sway", soul: "clap", indie: "bounce",
     alternative: "bang", blues: "sway", schlager: "clap", ballad: "sway", gospel: "clap", reggaeton: "bounce", salsa: "bounce",
     brazil: "bounce", flamenco: "clap", bollywood: "bounce", arabic: "clap", ambient: "sway", cinematic: "sway",
@@ -683,7 +860,7 @@ function createVenue(makeCanvas) {
   const mood = { x: 0 };
   // Lichtermeer: bei Balladen und ruhigen, getragenen Songs halten im Refrain viele Handys und Feuerzeuge hoch
   // und schwenken sie gemeinsam langsam hin und her (über zwei Takte)
-  const SEA = new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical"]);
+  const SEA = new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);
   const sea = { a: 0 };
   function seaLevel(px, dt, st) {
     const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp((px.energy - 0.32) * 2.2, 0, 1) : 0;
@@ -716,7 +893,7 @@ function createVenue(makeCanvas) {
         });
       }
     }
-    return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };
+    return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0 };
   }
   const bodySprites = new Map();
   function bodySprite(p, u, pal) {
@@ -785,7 +962,18 @@ function createVenue(makeCanvas) {
     // Schlagphase (0 = Schlag): schnelle Songs bewegen sich im halben Tempo
     const half = st.bpm > 150;
     const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));
-    const phi = clamp(px.phase ?? 0, 0, 1);
+    // Takt-Sprung (Songwechsel, neue Analyse): den Versatz aufnehmen und über ~1 s abbauen – sonst zucken alle
+    // Tänzer gleichzeitig in eine neue Haltung
+    const raw = clamp(px.phase ?? 0, 0, 1);
+    if (crowd.lastPh >= 0) {
+      let d = raw - ((crowd.lastPh + (dt || 0) * (st.bpm / 60)) % 1);
+      d -= Math.round(d);
+      if (Math.abs(d) > 0.12) crowd.phOff += d;
+    }
+    crowd.lastPh = raw;
+    crowd.phOff *= Math.exp(-(dt || 0.016) * 3);
+    if (Math.abs(crowd.phOff) < 0.005) crowd.phOff = 0;
+    const phi = (((raw - crowd.phOff) % 1) + 1) % 1;
     const cyc = half ? ((beatN & 1) + phi) / 2 : phi; // 0..1 über einen (bzw. zwei) Schläge
     const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;
     const down = Math.exp(-phi * 6); // kurz nach dem Schlag 1, dann abklingend
@@ -918,17 +1106,33 @@ function createVenue(makeCanvas) {
     if (st.cam.s === 1 && !dx && !dy) return;
     ctx.setTransform(st.cam.s, 0, 0, st.cam.s, ((1 - st.cam.s) * vw) / 2 + dx * st.dpr, ((1 - st.cam.s) * vh) / 2 + dy * st.dpr);
   }
+  // Überblendung zwischen Locations: das letzte Bild der alten bleibt kurz liegen und blendet aus
+  let lastV = null, vSnap = null, vT = 0;
+  const V_FADE = 1.3;
   function draw(ctx, st) {
     vw = st.vw;
     vh = st.vh;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1;
+    const vNext = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];
+    if (lastV && vNext !== lastV && ctx.canvas?.width && crowdA > 0.05) {
+      try {
+        vSnap = vSnap && vSnap.width === ctx.canvas.width && vSnap.height === ctx.canvas.height ? vSnap : makeCanvas(ctx.canvas.width, ctx.canvas.height);
+        vSnap.width = ctx.canvas.width;
+        vSnap.height = ctx.canvas.height;
+        vSnap.getContext("2d").drawImage(ctx.canvas, 0, 0);
+        vT = st.t;
+      } catch {
+        vT = 0;
+      }
+    }
+    lastV = vNext;
     ctx.clearRect(0, 0, vw, vh);
     // Pause: das Publikum blendet weich aus (stillstehend tanzen sähe falsch aus) und kommt mit der Musik zurück
     crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));
     if (!st.stage && crowdA < 0.01) return;
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
-    const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];
+    const v = vNext;
     ctx.globalCompositeOperation = "lighter";
     ctx.lineCap = "round";
     stageCam(ctx, st);
@@ -941,6 +1145,20 @@ function createVenue(makeCanvas) {
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (vT && vSnap) {
+      const f = clamp((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);
+      if (f >= 1) vT = 0;
+      else {
+        // neues Bild anteilig ausblenden, altes darunterlegen
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = `rgba(0,0,0,${(1 - e).toFixed(3)})`;
+        ctx.fillRect(0, 0, vw, vh);
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.globalAlpha = 1 - e;
+        ctx.drawImage(vSnap, 0, 0);
+        ctx.globalAlpha = 1;
+      }
+    }
     ctx.globalCompositeOperation = "source-over";
   }
 

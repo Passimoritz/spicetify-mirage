@@ -218,6 +218,11 @@
     <div class="row lrow" id="hueGroupRow" hidden><div><b data-t="hueRoom"></b></div><select id="hueGroup"></select></div>
     <div class="row"><div><b>WLED</b><small data-t="wledHint"></small></div><input type="checkbox" class="toggle" data-key="wledOn"></div>
     <div class="row lrow"><input type="text" id="wledIp" placeholder="192.168.1.40" autocomplete="off"><input type="number" id="wledLeds" min="1" max="490" step="1"><small data-t="wledLeds"></small></div>
+    <div class="row"><div><b>Govee</b><small id="goveeState" data-t="goveeHint"></small></div><input type="checkbox" class="toggle" data-key="goveeOn"></div>
+    <div class="row lrow"><input type="text" id="goveeIps" placeholder="192.168.1.50, 192.168.1.51" autocomplete="off"><button type="button" class="btn" id="goveeScan" data-t="goveeScan"></button></div>
+    <div class="row"><div><b>Home Assistant</b><small id="haState" data-t="haHint"></small></div><input type="checkbox" class="toggle" data-key="haOn"></div>
+    <div class="row lrow"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false"><input type="password" id="haToken" autocomplete="off" spellcheck="false"><button type="button" class="btn" id="haTest" data-t="haTest"></button></div>
+    <div class="row lrow"><input type="text" id="haEntities" autocomplete="off" spellcheck="false"></div>
     <div class="row"><div><b>OpenRGB</b><small data-t="orgbHint"></small></div><input type="checkbox" class="toggle" data-key="orgbOn"></div>
     <div class="row"><div><b>Razer Chroma</b><small data-t="chromaHint"></small></div><input type="checkbox" class="toggle" data-key="chromaOn"></div>
   </section>
@@ -279,8 +284,10 @@
     $("#obsHint").textContent = t("obsHint").replace("{w}", Math.round(780 * s)).replace("{h}", Math.round(420 * s));
     $("#obsUrlRow").hidden = !cfg.obs;
     $("#obsPartyRow").hidden = !cfg.obs;
-    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
+    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["goveeIps", "goveeIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
     if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
+    $("#haToken").placeholder = cfg.haToken ? t("haTokenSet") : t("haToken");
+    if (!$("#haEntities").placeholder) $("#haEntities").placeholder = t("haEntities");
     renderUpd();
   }
 
@@ -387,6 +394,28 @@
   setText("hueIp", "hueIp");
   setText("wledIp", "wledIp");
   setText("wledLeds", "wledLeds", true);
+  setText("goveeIps", "goveeIps");
+  // Home Assistant: Adresse ohne / am Ende; das Token wird nur gesendet, nie angezeigt
+  $("#haUrl").onchange = () => mirage.send("set", { haUrl: $("#haUrl").value.trim().replace(/\/+$/, "") });
+  $("#haToken").onchange = () => {
+    const v = $("#haToken").value.trim();
+    if (v) mirage.send("set", { haToken: v });
+    $("#haToken").value = "";
+  };
+  setText("haEntities", "haEntities");
+  $("#goveeScan").onclick = async () => {
+    $("#goveeState").textContent = t("goveeSearching");
+    const r = await mirage.invoke("goveeScan");
+    $("#goveeState").textContent = r?.list?.length ? t("goveeFound").replace("{n}", r.list.length) : r?.error === "port" ? t("goveePort") : t("goveeNone");
+  };
+  $("#haTest").onclick = async () => {
+    $("#haState").textContent = t("haTesting");
+    const r = await mirage.invoke("haTest");
+    if (r?.lights) {
+      $("#haState").textContent = t("haOk").replace("{n}", r.lights.length);
+      if (!$("#haEntities").value.trim()) $("#haEntities").placeholder = r.lights.slice(0, 6).map((l) => l.id).join(", ") + (r.lights.length > 6 ? ", …" : "");
+    } else $("#haState").textContent = t({ url: "haBadUrl", token: "haBadToken" }[r?.error] || "haFail");
+  };
   $("#lightBright").oninput = () => mirage.send("set", { lightBright: Number($("#lightBright").value) });
   $("#hueGroup").onchange = () => mirage.send("set", { hueGroup: $("#hueGroup").value });
   $("#hueFind").onclick = async () => {

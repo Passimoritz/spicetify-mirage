@@ -3,7 +3,7 @@
   "Author": "Passimoritz",
   "Description": "Control Spotify with the Mirage theme: play/pause, skip, like, immersive mode and party mode. Needs the Mirage Overlay app running on the same computer.",
   "URL": "https://github.com/Passimoritz/spicetify-mirage",
-  "Version": "1.16.0.0",
+  "Version": "1.17.0.0",
   "SDKVersion": 2,
   "CodePath": "plugin.html",
   "Icon": "images/plugin",

@@ -3234,6 +3234,9 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 #mirage-immersive .m-im-cvid.is-on {
   opacity: 1;
 }
+#mirage-immersive .m-im-cvbtn.is-none {
+  opacity: 0.4;
+}
 #mirage-immersive .m-im-cvbtn[aria-pressed="true"] {
   color: #0b0a12;
   background: var(--m-c);

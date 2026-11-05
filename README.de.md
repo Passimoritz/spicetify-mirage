@@ -38,7 +38,7 @@
   <tr>
     <td width="33%" valign="top"><h3>🎨 Farben aus dem Cover</h3>Jeder Song färbt Spotify in der Palette seines Covers – lesbar auf dunklem Glas, mit dem Cover als Schleier hinter den Flächen.</td>
     <td width="33%" valign="top"><h3>🎤 Karaoke & Visualizer</h3>Vollbild-Liedtext, der sich Silbe für Silbe füllt, ein Visualizer im Takt und ein Mix aus beidem.</td>
-    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>48 Stile, zwölf Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
+    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>69 Stile, siebzehn Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
   </tr>
   <tr>
     <td valign="top"><h3>🎺 Instrumente</h3>Bestätigen die Credits Trompete, Saxofon, Gitarre, Klavier, Streicher oder Chor, bekommt das Instrument einen eigenen Effekt.</td>
@@ -140,7 +140,7 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 - **Synchron zu dem, was du hörst** – eine ruhige Song-Uhr glättet Spotifys Position; sechsmal <kbd>T</kbd> im Takt misst Licht, Publikum und Liedtext auf deine Lautsprecher ein.
 - **Lautschrift** unter koreanischem, japanischem und chinesischem Liedtext, **Duett-Farben** für Zeilen mit Sängernamen und kleiner gesetzter Hintergrundgesang in Klammern.
 - **Timing selbst korrigieren** – <kbd>E</kbd> drücken, dann Enter, sobald die markierte Zeile beginnt; gespeichert je Song.
-- **Canvas-Videos** – hat ein Song eins, spielt der Film-Knopf oben es im Cover ab (und gedämpft hinter dem Liedtext) – je Ansicht einschaltbar, anfangs aus.
+- **Canvas-Videos** – hat ein Song eins, spielt der Film-Knopf oben es im Cover ab (und gedämpft hinter dem Liedtext) – je Ansicht einschaltbar, anfangs aus. Bleibt der Knopf bei jedem Song blass, ist Canvas in deinem Spotify-Konto aus: in der Spotify-Handy-App *Canvas* einschalten (Einstellungen → Wiedergabe).
 - **Vollbild** per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>; ruht die Maus, blenden die Bedienelemente aus.
 
 ## 🎉 Party-Modus
@@ -188,7 +188,7 @@ Der Stil kommt aus Apples iTunes-Genre, Spotifys Künstler-Genres und dem Klang 
 
 <p align="center"><img src="assets/shots/venues-de.jpg" alt="Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer" width="100%"></p>
 
-Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer – dazu Dachterrasse, Kathedrale, Jazz-Bar, Waldbühne, Konzertsaal (das Publikum sitzt) und Gewölbekeller. Die Location richtet sich nach dem Stil oder wird in den Einstellungen festgelegt. Das Publikum hängt am Takt: Sprünge landen auf dem Schlag, Köpfe nicken oder bangen, Hände klatschen auf 2 und 4, ab und zu rollt eine La-Ola-Welle durch, und beim Drop blitzen die Handykameras.
+Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer – dazu Dachterrasse, Kathedrale, Jazz-Bar, Waldbühne, Konzertsaal (das Publikum sitzt), Gewölbekeller, Weltall, Neon-Straße, Pub, Skihütte und Wüstennacht. Wechselt der Stil zwischen zwei Songs, blendet die Location weich über. Die Location richtet sich nach dem Stil oder wird in den Einstellungen festgelegt. Das Publikum hängt am Takt: Sprünge landen auf dem Schlag, Köpfe nicken oder bangen, Hände klatschen auf 2 und 4, ab und zu rollt eine La-Ola-Welle durch, und beim Drop blitzen die Handykameras.
 
 ### Licht, Effekte und Momente
 
@@ -210,7 +210,7 @@ Bestätigen die **Credits** des Songs (Spotify, sonst MusicBrainz) ein Instrumen
 - **Spotify Jam** – alle im Jam stehen als kleines, farbiges Gesicht im Publikum und wippen zur Kick; wer den laufenden Song hinzugefügt hat, leuchtet als DJ.
 - **Zweiter Bildschirm** – der Party-Modus im Vollbild auf einem Fernseher oder anderen Monitor.
 - **Kantenlicht** – die Overlay-App lässt die Ränder deines Desktops im Takt leuchten.
-- **Licht im Raum** – die Overlay-App lässt Philips Hue, WLED-LED-Streifen, OpenRGB und Razer Chroma mitspielen.
+- **Licht im Raum** – die Overlay-App lässt Philips Hue, WLED-LED-Streifen, Govee-Lampen (LAN), alle Lichter aus Home Assistant, OpenRGB und Razer Chroma mitspielen.
 - **Party-Rückblick** – eine teilbare Karte der Nacht: Songs, Genre-Mischung, Tempo-Spanne, der größte Drop.
 
 ## 📱 Live-Link fürs Handy
@@ -259,7 +259,7 @@ scoop install https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/mai
 - **Wo** – Hauptbildschirm, Bildschirm mit der Maus oder jeder Bildschirm · 9 Positionen · Feinversatz
 - **Wie** – Insel, Karte, Banner oder Minimal · federnd, gleitend oder blendend · Leuchten, Rundung, Größe, Deckkraft · Steuerung beim Drüberfahren
 - **Extras** – Lautstärke-Leiste · bleibt still bei Spielen und Videos im Vollbild · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`, Party-Licht unter `/party`) · Kantenlicht für den Party-Modus · zuletzt gespielt · aktualisiert sich selbst
-- **Licht im Raum** – im Party-Modus spielen Philips Hue, WLED, OpenRGB und Razer Chroma mit; eingerichtet in den Overlay-Einstellungen, alles bleibt in deinem Netz
+- **Licht im Raum** – im Party-Modus spielen Philips Hue, WLED, Govee, Home Assistant, OpenRGB und Razer Chroma mit; eingerichtet in den Overlay-Einstellungen, alles bleibt in deinem Netz (das Home-Assistant-Token bleibt in der Einstellungsdatei der Overlay-App)
 - **Stream Deck** – [**⬇ Mirage.streamDeckPlugin**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage.streamDeckPlugin): Play/Pause, springen, liken, Immersiv- und Party-Modus auf Tasten
 
 > **Code-Signatur:** Der Windows-Installer wird gerade für die kostenlose Signatur durch die SignPath Foundation eingerichtet – siehe [Code signing policy](CODE_SIGNING.md). Solange er unsigniert ist, kann Windows' *Smart App Control* ihn blockieren, und SmartScreen fragt einmal nach: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick → *Öffnen* → *Öffnen*.

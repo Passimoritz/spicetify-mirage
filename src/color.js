@@ -143,7 +143,24 @@ async function analyseFresh(url, uri) {
 
 const FALLBACK = [[182, 156, 255], [124, 92, 255], [230, 222, 255]];
 let current = null;
-const palette = () => current || schemePalette();
+// Beim Songwechsel gleiten die Leinwand-Farben über 1,4 s ins neue Cover (CSS hat eigene Übergänge)
+const PAL_FADE = 1400;
+let palFrom = null, palT0 = 0;
+function palette() {
+  const to = current || schemePalette();
+  if (!palFrom) return to;
+  const f = (performance.now() - palT0) / PAL_FADE;
+  if (f >= 1) {
+    palFrom = null;
+    return to;
+  }
+  const e = f * f * (3 - 2 * f);
+  return to.map((c, i) => c.map((v, k) => Math.round(palFrom[i][k] + (v - palFrom[i][k]) * e)));
+}
+function startFade() {
+  palFrom = palette().map((c) => c.slice());
+  palT0 = performance.now();
+}
 
 // Farben in EINEM Schritt über ein eigenes <style> setzen: eine einzige Stilberechnung
 // statt vieler Zwischenstufen – das war die Ursache für das Flackern beim Songwechsel.
@@ -152,6 +169,7 @@ varSheet.id = "mirage-vars";
 document.head.append(varSheet);
 function setColors(next) {
   if (current && next.every((c, i) => c.every((v, j) => Math.abs(v - current[i][j]) < 3))) return;
+  startFade();
   current = next;
   const [a, b, c] = next.map((x) => x.join(","));
   varSheet.textContent =
@@ -161,6 +179,7 @@ function setColors(next) {
   bridge.sendTrack();
 }
 function clearColors() {
+  if (current) startFade();
   current = null;
   varSheet.textContent = "";
   dust.recolor(null);

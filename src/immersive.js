@@ -7,7 +7,7 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME, romajiFor } from "./lyrics.js";
+import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard } from "./share.js";
 import * as ctl from "./controls.js";
@@ -226,8 +226,10 @@ const immersive = (() => {
     q.wishbtn = el.querySelector(".m-im-wishbtn");
     q.wishbtn.onclick = () => showSide(side === "wishes" ? null : "wishes");
     q.cvbtn = el.querySelector(".m-im-cvbtn");
-    q.cvbtn.onclick = () => {
+    q.cvbtn.onclick = async () => {
       const mode = el.dataset.mode;
+      // ohne Canvas erklärt der Knopf, warum: im Spotify-Konto ausgeschaltet oder der Song hat einfach keins
+      if (!canvasUrl) return S.showNotification?.(t((await canvasBlocked()) ? "canvasBlocked" : "canvasNone"), false, 6000);
       cfg.canvasIn = { ...(cfg.canvasIn || {}), [mode]: !cfg.canvasIn?.[mode] };
       save();
       applyCanvas();
@@ -1778,19 +1780,19 @@ const immersive = (() => {
     // Übergang zwischen Songs: abdimmen, bis der erste Schlag des neuen Songs kommt (höchstens 4 s)
     if (blend) {
       const age = (now - blend.t0) / 1000;
-      if (blend.waiting && ((px.hit && age > 0.25) || age > 4)) {
+      if (blend.waiting && ((px.hit && age > 0.35) || age > 2.5)) {
         blend.waiting = false;
         blend.glow = 1;
         blend.hitAt = now;
         rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
       }
-      const dim = blend.waiting ? clamp(1 - age * 1.5, 0.3, 1) : 1;
+      const sm = clamp(age / 0.8, 0, 1), dim = blend.waiting ? 1 - 0.4 * sm * sm * (3 - 2 * sm) : 1;
       px.I *= dim;
       px.accent *= dim;
       px.beamVis *= dim;
       if (!blend.waiting) {
         blend.glow *= Math.exp(-dt * 2.5);
-        px.flash = Math.max(px.flash, blend.glow * 0.55);
+        px.flash = Math.max(px.flash, blend.glow * 0.4);
         if (blend.glow < 0.02 && (!blend.from || now - blend.hitAt > (4 * 60000) / (party.info.bpm || 120))) blend = null;
       }
     }
@@ -2026,11 +2028,14 @@ const immersive = (() => {
   addEventListener("resize", () => requestAnimationFrame(fitTop));
   function applyCanvas() {
     if (!el || !q.cvbtn) return;
-    const mode = el.dataset.mode, can = !!canvasUrl && cfg.canvas && !cfg.calm && CV_MODES.has(mode);
+    // Der Knopf ist in passenden Ansichten immer da (sonst findet man die Funktion nie); ohne Canvas wird er
+    // blass und sagt beim Klick, warum. So springt die Leiste auch nicht bei jedem Songwechsel.
+    const mode = el.dataset.mode, show = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show && !!canvasUrl;
     const on = can && !!cfg.canvasIn?.[mode];
-    q.cvbtn.hidden = !can;
+    q.cvbtn.hidden = !show;
+    q.cvbtn.classList.toggle("is-none", show && !canvasUrl);
     q.cvbtn.setAttribute("aria-pressed", String(on));
-    q.cvbtn.title = q.cvbtn.ariaLabel = t(on ? "canvasOff" : "canvasOn");
+    q.cvbtn.title = q.cvbtn.ariaLabel = t(!canvasUrl ? "canvasNone" : on ? "canvasOff" : "canvasOn");
     el.classList.toggle("has-canvas", on);
     requestAnimationFrame(fitTop);
     playIn(q.cvid, on);
@@ -2184,7 +2189,6 @@ const immersive = (() => {
     if (side === "playlists") showSide("playlists");
     q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
-    rings = [];
     updateKicker();
     if (LYR.has(el.dataset.mode)) loadLyrics();
     if (el.dataset.mode === "party") {

@@ -309,7 +309,8 @@ async function getCanvas(uri) {
     const G = S.GraphQL;
     const def = G?.Definitions?.canvas;
     if (def && G.Request) {
-      const r = await G.Request(def, { uri });
+      // Spotify hat die Variable umbenannt (uri → trackUri): beide mitschicken, dann passt es für alte und neue Versionen
+      const r = await G.Request(def, { trackUri: uri, uri });
       url = r?.data?.trackUnion?.canvas?.url || null;
       if (url && !/\.mp4(\?|$)/.test(url)) url = null; // Bild-Canvas: das Cover reicht
     }
@@ -318,7 +319,21 @@ async function getCanvas(uri) {
   return url;
 }
 
+// Hat das Spotify-Konto Canvas ausgeschaltet (Schalter „Canvas“ in der Spotify-Handy-App, gilt fürs ganze Konto),
+// liefert Spotify für jeden Song „kein Canvas“. Das erkennen wir, damit der Knopf erklären kann, woran es liegt.
+let canvasOff = null;
+async function canvasBlocked() {
+  if (canvasOff !== null) return canvasOff;
+  try {
+    const v = await S.Platform?.ProductStateAPI?.getValues?.();
+    canvasOff = v?.["canvas-disabled"] === "1";
+  } catch {
+    canvasOff = false;
+  }
+  return canvasOff;
+}
+
 // Anzeigename der Quelle (Knopf „Fassung wählen“, Overlay)
 const SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
 
-export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, romajiFor, SOURCE_NAME };
+export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, romajiFor, SOURCE_NAME };

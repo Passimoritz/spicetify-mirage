@@ -115,18 +115,53 @@ Object.assign(PROFILES, {
   ambient: like("chill", { decay: 1.2, beams: 0.15, spot: "aurora", spinRate: 0.04, pulse: 0.02, tint: "cool", sparks: 2 }),
   cinematic: like("classical", { decay: 2.4, beams: 0.7, spot: "aurora", spinRate: 0.1, tint: "cool", height: 1.3, pulse: 0.05, sparks: 8 }),
 });
+// zweiter Schritt: diese bauen auch auf Spielarten von oben auf (edm, schlager, ballad …)
+Object.assign(PROFILES, {
+  // ---- weitere Spielarten (1.17)
+  melodictechno: like("techno", { decay: 6, spot: "aurora", spinRate: 0.25, beams: 0.9, tint: "cool", pulse: 0.06, sparks: 10 }), // Afterhour, weite Flächen
+  hardtechno: like("techno", { decay: 12, accent: [1, 0.95, 1, 0.95], spot: "tunnel", spinRate: 0.55, shake: 6, tint: "hot", sparks: 6 }), // Schranz, Industrial
+  futurebass: like("edm", { decay: 5, spot: "pan", tint: "pink", sway: true, spinRate: 0.35, sparks: 22, pulse: 0.1 }), // Kawaii-Synths, große Akkorde
+  electroswing: like("disco", { decay: 7, accent: [0.8, 1, 0.8, 1], flashOn: "back", tint: "gold", spinRate: 0.3, sparks: 14 }), // Swing auf 2 und 4
+  breakbeat: like("dnb", { decay: 8, accent: [1, 0.55, 0.9, 0.7], spot: "scan", spinRate: 0.4, shake: 4, sparks: 10 }),
+  boombap: like("bass", { decay: 5, accent: [1, 0.5, 1, 0.5], flashOn: "back", spot: "top", tint: "gold", spinRate: 0.1, shake: 4, sparks: 6 }), // alte Schule: Kick und Snare
+  dancehall: like("reggae", { decay: 5.5, accent: [1, 0.5, 0.8, 0.9], flashOn: "down", spot: "floor", tint: "hot", spinRate: 0.2, sparks: 12 }),
+  cloudrap: like("trap", { decay: 2.6, beams: 0.45, spot: "aurora", tint: "pink", shake: 2, spinRate: 0.1, pulse: 0.07, sparks: 6 }), // verhallt, verträumt
+  hardrock: like("rock", { decay: 9, accent: [0.7, 1, 0.65, 1], tint: "gold", shake: 9, beams: 1, sparks: 16 }), // Arena-Rock
+  postrock: like("cinematic", { decay: 3.4, beams: 0.8, spot: "aurora", tint: "cool", spinRate: 0.08, height: 1.45, pulse: 0.07, sparks: 10 }), // langsamer Aufbau, riesige Wellen
+  ska: like("reggae", { decay: 7, accent: [0.6, 1, 0.6, 1], flashOn: "back", spot: "pan", tint: "gold", spinRate: 0.3, sparks: 14 }), // Offbeat, Bläser
+  emo: like("punk", { decay: 9, tint: "cool", shake: 6, beams: 0.75, sparks: 10 }),
+  jpop: like("kpop", { tint: "pink", spinRate: 0.5, sparks: 24, pulse: 0.09 }), // Anime, City-Pop, Vocaloid
+  musical: like("pop", { decay: 4.5, accent: [1, 0.6, 0.8, 0.6], flashOn: "", spot: "top", tint: "gold", beams: 0.6, spinRate: 0.15, sparks: 12 }), // Bühnenspot
+  christmas: like("schlager", { decay: 4, tint: "gold", spot: "soft", spinRate: 0.15, beams: 0.5, sparks: 26, pulse: 0.05 }), // warm, funkelnd
+  celtic: like("country", { decay: 6.5, accent: [1, 0.75, 0.9, 0.75], spot: "pan", tint: "jungle", spinRate: 0.3, sparks: 14 }), // Fiedel, Stampfen
+  balkan: like("latin", { decay: 8, accent: [1, 0.85, 0.95, 0.85], flashOn: "down", spot: "pan", tint: "hot", spinRate: 0.45, shake: 3, sparks: 20 }), // Blaskapelle im Galopp
+  amapiano: like("deephouse", { decay: 4.5, accent: [1, 0.4, 0.7, 0.8], spot: "floor", tint: "warm", spinRate: 0.18, bottom: true, sparks: 10 }), // Log-Drum
+  lofi: like("chill", { decay: 2, beams: 0.2, spot: "soft", tint: "warm", spinRate: 0.05, pulse: 0.03, sparks: 3 }), // Lernmusik: kaum Bewegung
+  neoclassical: like("classical", { decay: 1.8, beams: 0.35, spot: "soft", tint: "cool", spinRate: 0.05, pulse: 0.03, sparks: 4 }), // Klavier, Streicher
+  acoustic: like("ballad", { decay: 2.6, beams: 0.35, spot: "top", tint: "warm", spinRate: 0.06, sparks: 6 }), // Gitarre und Stimme
+});
 // Für die Auswahl in den Einstellungen: nach Musikfamilie geordnet
 const FAMILIES = {
-  electronic: ["rave", "edm", "house", "deephouse", "techhouse", "techno", "trance", "psytrance", "dnb", "dubstep", "garage", "hardstyle", "eurodance", "synthwave", "hyperpop"],
-  urban: ["bass", "trap", "drill", "phonk", "rnb", "soul", "afro", "reggae"],
-  rock: ["rock", "alternative", "indie", "punk", "metal", "blues"],
-  pop: ["pop", "kpop", "disco", "schlager", "ballad", "gospel", "country"],
-  world: ["latin", "reggaeton", "salsa", "brazil", "flamenco", "bollywood", "arabic"],
-  calm: ["chill", "ambient", "jazz", "classical", "cinematic"],
+  electronic: ["rave", "edm", "house", "deephouse", "techhouse", "techno", "melodictechno", "hardtechno", "trance", "psytrance", "dnb", "breakbeat", "dubstep", "futurebass", "garage", "hardstyle", "eurodance", "synthwave", "hyperpop", "electroswing"],
+  urban: ["bass", "boombap", "trap", "cloudrap", "drill", "phonk", "rnb", "soul", "afro", "amapiano", "reggae", "dancehall"],
+  rock: ["rock", "hardrock", "alternative", "indie", "punk", "emo", "ska", "metal", "postrock", "blues"],
+  pop: ["pop", "kpop", "jpop", "disco", "schlager", "ballad", "gospel", "country", "musical", "christmas"],
+  world: ["latin", "reggaeton", "salsa", "brazil", "flamenco", "bollywood", "arabic", "balkan", "celtic"],
+  calm: ["chill", "lofi", "acoustic", "ambient", "jazz", "classical", "neoclassical", "cinematic"],
 };
 const PROFILE_KEYS = Object.keys(PROFILES);
 // Genaue Spielarten zuerst – gelten für Spotify- und Apple-Genres gleichermaßen
 const SPECIFIC = [
+  // zuerst, was alles andere schlägt: Weihnachtslieder bleiben Weihnachtslieder, egal welches Genre
+  ["christmas", /christmas|xmas|holiday|weihnacht|no[eë]l|navidad|natale/],
+  ["futurebass", /future bass|kawaii|melodic dubstep|color bass/],
+  ["electroswing", /electro ?swing/],
+  ["cloudrap", /cloud rap|emo rap|plugg|\brage\b|sad rap/],
+  ["amapiano", /amapiano|gqom|kwaito|3-?step/],
+  ["dancehall", /dancehall|bashment|soca/],
+  ["ska", /\bska\b|ska punk|rocksteady|two-?tone/],
+  ["emo", /\bemo\b|pop punk|screamo|midwest emo/],
+  ["jpop", /j-?pop|j-?rock|anime|city pop|vocaloid|visual kei|shibuya/],
   ["dubstep", /dubstep|riddim|brostep/],
   ["phonk", /phonk/],
   ["drill", /\bdrill\b/],
@@ -145,15 +180,19 @@ const SPECIFIC = [
   ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
   ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
   ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
+  ["hardtechno", /hard ?techno|schranz|industrial techno|hardgroove|acid techno/],
+  ["melodictechno", /melodic techno|afterhours|progressive techno|indie dance|organic techno/],
+  ["breakbeat", /breakbeat|\bbreaks\b|big beat|nu skool/],
   ["techno", /techno|minimal|industrial/],
   ["trance", /trance|psytrance|uplifting/],
   ["punk", /punk|post-hardcore|\bemo\b|hardcore/],
   ["kpop", /k-?pop|j-?pop|c-?pop|idol/],
-  ["afro", /afrobeat|afro ?pop|amapiano|afroswing|afro ?fusion/],
+  ["afro", /afrobeat|afro ?pop|afroswing|afro ?fusion/],
   ["house", /house|garage house/],
   ["schlager", /schlager|discofox|ballermann|apr[eè]s|stimmung|volksmusik|volkst[uü]mlich|oktoberfest|deutschpop/],
   ["disco", /disco|funk|boogie/],
   ["gospel", /gospel|worship|christian|\bccm\b|choir|praise/],
+  ["boombap", /boom ?bap|old school hip hop|golden age|jazz rap|east coast hip hop|conscious hip hop/],
   ["rnb", /r&b|\brnb\b|neo ?soul|new jack|contemporary r/],
   ["soul", /soul|motown/],
   ["blues", /blues/],
@@ -161,11 +200,19 @@ const SPECIFIC = [
   ["salsa", /salsa|bachata|merengue|cumbia|tropical|vallenato|tango|mariachi|ranchera|banda|norte[nñ]o|corrido|regional mexican/],
   ["flamenco", /flamenco|rumba|spanish guitar|sevillanas/],
   ["bollywood", /bollywood|filmi|bhangra|desi|punjabi|indian|tamil|telugu|hindi/],
+  ["balkan", /balkan|gypsy|klezmer|turbo ?folk|manele|brass band|polka|čoček|cocek/],
   ["arabic", /arab|khaleeji|\bra[iï]\b|dabke|turkish|middle east|persian|mizrahi/],
+  ["celtic", /celtic|irish|scottish|shant(y|ies)|bagpipe|folk punk|gaelic/],
+  ["musical", /musical|show ?tunes|broadway|cabaret|west end/],
   ["latin", /urbano|latin|moombah/],
+  ["lofi", /lo-?fi|chillhop|jazzhop|study beats|bedroom beats/],
+  ["neoclassical", /neo-?classical|modern classical|contemporary classical|minimalism|solo piano|\bpiano\b/],
+  ["postrock", /post-?rock|math rock|instrumental rock/],
   ["cinematic", /soundtrack|\bscore\b|cinematic|\bepic\b|trailer|video game|film/],
   ["classical", /classical|orchestra|opera|baroque/],
   ["jazz", /jazz|swing|bebop/],
+  ["hardrock", /hard rock|glam|arena rock|classic rock|heavy rock|southern rock|\baor\b/],
+  ["acoustic", /acoustic|singer-songwriter|unplugged|folk pop|stomp and holler/],
   ["ballad", /ballad|soft rock/],
   ["country", /country|americana|bluegrass|folk/],
   ["indie", /indie|bedroom pop|shoegaze|dream pop/],

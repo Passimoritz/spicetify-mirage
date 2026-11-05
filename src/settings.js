@@ -414,7 +414,7 @@ function render(box) {
         save();
       }),
       el("small", "m-note", t("partyVenue")),
-      seg(["auto", "club", "warehouse", "cellar", "jazzbar", "rooftop", "festival", "forest", "stadium", "beach", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+      seg(["auto", "club", "warehouse", "cellar", "jazzbar", "pub", "neon", "rooftop", "festival", "forest", "desert", "stadium", "beach", "skihut", "space", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
         cfg.partyVenue = k;
         save();
       }),

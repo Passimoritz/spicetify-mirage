@@ -38,7 +38,7 @@
   <tr>
     <td width="33%" valign="top"><h3>🎨 Colours from the cover</h3>Every song repaints Spotify in the palette of its album art – readable on dark glass, with the cover drifting behind the panels.</td>
     <td width="33%" valign="top"><h3>🎤 Karaoke & visualizer</h3>Full-screen lyrics that fill syllable by syllable, a visualizer on the beat, and a mix of both.</td>
-    <td width="33%" valign="top"><h3>🎉 A party that knows the song</h3>48 styles, twelve venues, a crowd, a light rig, stage effects and moments for the drop – read from the song before it plays.</td>
+    <td width="33%" valign="top"><h3>🎉 A party that knows the song</h3>69 styles, seventeen venues, a crowd, a light rig, stage effects and moments for the drop – read from the song before it plays.</td>
   </tr>
   <tr>
     <td valign="top"><h3>🎺 Instruments</h3>When the credits confirm a trumpet, sax, guitar, piano, strings or choir, that instrument gets an effect of its own.</td>
@@ -140,7 +140,7 @@ Everything is set up in **Profile menu → Mirage settings**, and every effect b
 - **In sync with what you hear** – a steady song clock smooths Spotify's position; press <kbd>T</kbd> six times on the beat to calibrate light, crowd and lyrics to your speakers.
 - **Romanization** under Korean, Japanese and Chinese lyrics, **duet colours** for lines with a singer's name, and backing vocals in brackets set smaller.
 - **Fix the timing yourself** – press <kbd>E</kbd>, then Enter whenever the marked line starts; saved per song.
-- **Canvas videos** – when a song has one, the film button at the top plays it inside the cover (and softly behind the lyrics) – switched on per view, off at first.
+- **Canvas videos** – when a song has one, the film button at the top plays it inside the cover (and softly behind the lyrics) – switched on per view, off at first. If the button stays faded for every song, canvas is switched off in your Spotify account: turn on *Canvas* in the Spotify phone app (Settings → Playback).
 - **Full screen** with the button, <kbd>F</kbd> or <kbd>F11</kbd>; when the mouse rests, the controls fade out.
 
 ## 🎉 Party mode
@@ -188,7 +188,7 @@ The style comes from Apple's iTunes genre, Spotify's artist genres and the sound
 
 <p align="center"><img src="assets/shots/venues.jpg" alt="Club, warehouse, festival, stadium, beach and living room" width="100%"></p>
 
-Club, warehouse, festival, stadium, beach and living room – plus rooftop, cathedral, jazz bar, forest stage, concert hall (seated audience) and vaulted cellar. The venue follows the style or is fixed in the settings. The crowd is locked to the beat: jumps land on it, heads nod or bang, hands clap on 2 and 4, a wave rolls through now and then, and camera flashes go off on the drop.
+Club, warehouse, festival, stadium, beach and living room – plus rooftop, cathedral, jazz bar, forest stage, concert hall (seated audience), vaulted cellar, outer space, neon street, pub, ski hut and desert night. When the style changes between songs, the venue cross-fades. The venue follows the style or is fixed in the settings. The crowd is locked to the beat: jumps land on it, heads nod or bang, hands clap on 2 and 4, a wave rolls through now and then, and camera flashes go off on the drop.
 
 ### Light, effects and moments
 
@@ -210,7 +210,7 @@ When the song's **credits** (Spotify, otherwise MusicBrainz) confirm an instrume
 - **Spotify Jam** – everyone in the Jam appears as a small, coloured face in the crowd and bounces on the kick; whoever added the current song lights up as the DJ.
 - **Second screen** – party mode full screen on a TV or another monitor.
 - **Edge light** – the overlay app makes the edges of your desktop glow on the beat.
-- **Light in the room** – the overlay app plays along with Philips Hue, WLED LED strips, OpenRGB and Razer Chroma.
+- **Light in the room** – the overlay app plays along with Philips Hue, WLED LED strips, Govee lamps (LAN), every light in Home Assistant, OpenRGB and Razer Chroma.
 - **Party recap** – a shareable card of the night: songs, genre mix, tempo range, the biggest drop.
 
 ## 📱 Live link for phones
@@ -259,7 +259,7 @@ scoop install https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/mai
 - **Where** – main screen, the screen with the mouse, or any screen · 9 positions · fine offset
 - **How** – Island, Card, Banner or Minimal · springy, slide or fade · glow, roundness, size, opacity · controls on hover
 - **Extras** – volume bar · stays quiet during full-screen games and videos · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`, party light at `/party`) · edge light for party mode · recently played · updates itself
-- **Light in the room** – in party mode Philips Hue, WLED, OpenRGB and Razer Chroma play along; set up in the overlay settings, everything stays in your network
+- **Light in the room** – in party mode Philips Hue, WLED, Govee, Home Assistant, OpenRGB and Razer Chroma play along; set up in the overlay settings, everything stays in your network (the Home Assistant token stays in the overlay app's settings file)
 - **Stream Deck** – [**⬇ Mirage.streamDeckPlugin**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage.streamDeckPlugin): play/pause, skip, like, immersive and party mode on keys
 
 > **Code signing:** the Windows installer is being set up for free signing by the SignPath Foundation – see the [code signing policy](CODE_SIGNING.md). Until it is signed, Windows *Smart App Control* can block it and SmartScreen asks once: *More info → Run anyway*. On macOS: right-click → *Open* → *Open*.

@@ -74,6 +74,8 @@ const DEFAULTS = {
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
   chromaOn: false,
+  goveeOn: false, goveeIps: "",
+  haOn: false, haUrl: "", haToken: "", haEntities: "",
 };
 // welche Zusatzdaten ein Stil vom Theme braucht (Protokoll: cmd "subscribe")
 const STYLE_TOPICS = { lyrics: ["lyric"], visualizer: ["level"] };
@@ -120,7 +122,13 @@ let t = make("en");
 const clients = new Set();
 
 // Alles, was das Overlay-Fenster bekommt, bekommt auch eine offene OBS-Browserquelle
+// Zugangsdaten (Hue-Schlüssel, Home-Assistant-Token) bleiben im Hauptprozess: Overlay und OBS-Quellen
+// bekommen die Einstellungen ohne sie, das Einstellungsfenster nur „gesetzt / nicht gesetzt“
+const SECRET = ["hueUser", "haToken"];
+const publicCfg = (c) => Object.fromEntries(Object.entries(c).filter(([k]) => !SECRET.includes(k)));
+const settingsCfg = (c) => ({ ...c, haToken: c.haToken ? "set" : "" });
 function toOverlay(ch, data) {
+  if (ch === "config") data = publicCfg(data);
   overlay?.webContents.send(ch, data);
   obsSend(ch, data);
 }
@@ -161,7 +169,7 @@ function inQuiet() {
 /* ------------------------------------------------------------------ Anzeigen */
 function payload(reason, sample) {
   return {
-    track, cfg, reason,
+    track, cfg: publicCfg(cfg), reason,
     lyric: sample ? SAMPLE_LYRIC : lyric && lyric.uri === track?.uri ? lyric : null,
     text: { nowPlaying: t("nowPlaying"), paused: t("paused"), resumed: t("resumed") },
   };
@@ -311,7 +319,7 @@ const status = () => ({ connected: clients.size > 0, track });
 // „party“ auch, solange eine OBS-Party-Quelle offen ist
 const topics = () => {
   const list = cfg.mode === "off" ? [] : [...(STYLE_TOPICS[cfg.style] || []), "party"];
-  const room = cfg.hueOn || cfg.wledOn || cfg.orgbOn || cfg.chromaOn;
+  const room = cfg.hueOn || cfg.wledOn || cfg.orgbOn || cfg.chromaOn || cfg.goveeOn || cfg.haOn;
   if ((obsParty.size || room) && !list.includes("party")) list.push("party");
   return list;
 };
@@ -779,7 +787,7 @@ function startObs() {
       });
     }
     ws.send(JSON.stringify({ ch: "css", data: readCss() }));
-    ws.send(JSON.stringify({ ch: "config", data: cfg }));
+    ws.send(JSON.stringify({ ch: "config", data: publicCfg(cfg) }));
     if (track) ws.send(JSON.stringify({ ch: cfg.mode === "always" ? "show" : "update", data: payload("update") }));
     ws.on("close", () => obsClients.delete(ws));
   });
@@ -937,7 +945,7 @@ function update(patch) {
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
   if ("control" in patch) cfg.control === false ? stopControl() : startControl();
-  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser"].some((k) => k in patch)) {
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities"].some((k) => k in patch)) {
     lights.sync();
     resubscribe();
   }
@@ -946,7 +954,7 @@ function update(patch) {
   else if (cfg.mode === "always" && track) announce("update");
   toOverlay("config", cfg);
   if (overlay?.isVisible()) position();
-  settingsWin?.webContents.send("cfg", cfg);
+  settingsWin?.webContents.send("cfg", settingsCfg(cfg));
 }
 const SAMPLE = {
   title: "Midnight Mirage",
@@ -967,7 +975,7 @@ function preview() {
 }
 
 ipcMain.handle("get", () => ({
-  cfg,
+  cfg: settingsCfg(cfg),
   status: status(),
   lang: t.lang,
   version: app.getVersion(),
@@ -998,6 +1006,12 @@ ipcMain.handle("huePair", async (_e, ip) => {
   return r;
 });
 ipcMain.handle("hueGroups", () => lights.hueGroups());
+ipcMain.handle("goveeScan", async () => {
+  const r = await lights.goveeScan();
+  if (r.list?.length) update({ goveeIps: r.list.map((d) => d.ip).join(", "), goveeOn: true });
+  return r;
+});
+ipcMain.handle("haTest", () => lights.haTest());
 ipcMain.on("hover", (_e, on) => overlay?.setIgnoreMouseEvents(!on, { forward: true }));
 // ein „fertig“ kurz nach einer neuen Ansage stammt noch von der alten – ignorieren
 ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 && overlay?.hide());

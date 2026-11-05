@@ -1,6 +1,6 @@
 /* ------------------------------------------------------------------ Licht im Raum */
-// Im Party-Modus spielt echtes Licht mit: Philips Hue, WLED-LED-Streifen, PC-Beleuchtung über OpenRGB und
-// Razer Chroma. Alles läuft im eigenen Netz bzw. auf diesem Rechner; das Theme liefert ~30-mal pro Sekunde
+// Im Party-Modus spielt echtes Licht mit: Philips Hue, WLED-LED-Streifen, Govee (LAN), Home Assistant (alle
+// Lichter im Haus), PC-Beleuchtung über OpenRGB und Razer Chroma. Alles läuft im eigenen Netz bzw. auf diesem Rechner; das Theme liefert ~30-mal pro Sekunde
 // den Lichtzustand (Akzent, Kick, Energie, Drop, drei Songfarben). Jede Lampe bekommt nur so viel, wie sie
 // verträgt: WLED 30 Bilder/s, OpenRGB und Chroma 20/s, Hue höchstens ~8 Befehle/s (die Bridge drosselt sonst).
 const dgram = require("dgram");
@@ -11,7 +11,7 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const scale = (c, f) => c.map((v) => Math.round(clamp(v * f, 0, 255)));
 
 // kleiner JSON-Aufruf über http/https (Hue-Bridge, Razer Chroma, Hue-Suche)
-function call(method, url, body, timeout = 2500) {
+function call(method, url, body, timeout = 2500, headers = {}) {
   return new Promise((resolve) => {
     let u;
     try {
@@ -22,7 +22,7 @@ function call(method, url, body, timeout = 2500) {
     const data = body == null ? null : Buffer.from(JSON.stringify(body));
     const req = (u.protocol === "https:" ? https : http).request(
       u,
-      { method, timeout, headers: { "content-type": "application/json", ...(data ? { "content-length": data.length } : {}) } },
+      { method, timeout, headers: { "content-type": "application/json", ...headers, ...(data ? { "content-length": data.length } : {}) } },
       (res) => {
         let s = "";
         res.on("data", (c) => (s += c));
@@ -41,6 +41,9 @@ function call(method, url, body, timeout = 2500) {
     req.end();
   });
 }
+// Home Assistant: Adresse wie http://homeassistant.local:8123 (ohne Pfad), Token = „langlebiges Zugriffstoken“
+const haBaseOk = (s) => /^https?:\/\/[a-z0-9.-]+(:\d{1,5})?$/i.test(String(s || ""));
+const haTokenOk = (s) => /^[\w.-]{20,600}$/.test(String(s || ""));
 const validIp = (s) => /^(\d{1,3}\.){3}\d{1,3}(:\d{1,5})?$|^[a-z0-9-]+(\.[a-z0-9-]+)*\.local$/i.test(String(s || ""));
 
 // RGB → Hue-Farbort (CIE xy, Gamut der Hue-Lampen grob genug)
@@ -226,9 +229,157 @@ function createLights(getCfg, log = () => {}) {
     },
   };
 
+  /* ---- Govee (LAN-API, in der Govee-App je Gerät „LAN-Steuerung“ einschalten): UDP an Port 4003,
+     Antworten kommen auf 4002. Höchstens ~10 Befehle/s und nur, wenn sich die Farbe sichtbar ändert. */
+  const govee = {
+    sock: null, at: 0, last: "", saved: new Map(), found: new Map(), listening: false,
+    ips() {
+      return String(getCfg().goveeIps || "").split(/[\s,;]+/).filter((x) => /^(\d{1,3}\.){3}\d{1,3}$/.test(x)).slice(0, 16);
+    },
+    open() {
+      if (this.sock) return this.sock;
+      const s = dgram.createSocket({ type: "udp4", reuseAddr: true });
+      s.on("error", () => this.stop());
+      s.on("message", (buf, rinfo) => {
+        let m;
+        try {
+          m = JSON.parse(String(buf))?.msg;
+        } catch {
+          return;
+        }
+        if (m?.cmd === "scan" && m.data?.ip) this.found.set(String(m.data.ip), String(m.data.sku || m.data.device || "Govee"));
+        // Zustand vor der Party, um ihn danach wiederherzustellen
+        if (m?.cmd === "devStatus" && m.data && !this.saved.has(rinfo.address)) this.saved.set(rinfo.address, m.data);
+      });
+      try {
+        s.bind(4002, () => {
+          this.listening = true;
+          try { s.addMembership("239.255.255.250"); } catch {}
+        });
+      } catch {}
+      this.sock = s;
+      return s;
+    },
+    send(ip, cmd, data) {
+      try { this.open().send(Buffer.from(JSON.stringify({ msg: { cmd, data } })), 4003, ip); } catch {}
+    },
+    start() {
+      if (this.sock && this.started) return;
+      this.open();
+      this.started = true;
+      for (const ip of this.ips()) {
+        this.send(ip, "devStatus", {});
+        this.send(ip, "turn", { value: 1 });
+      }
+    },
+    stop() {
+      try { this.sock?.close(); } catch {}
+      this.sock = null;
+      this.started = false;
+      this.listening = false;
+      this.last = "";
+    },
+    frame(now) {
+      if (!this.sock || now - this.at < 100) return;
+      const p = pal(), drop = st?.d > 0.85;
+      let c = p[beat % 3];
+      if (drop) c = c.map((v) => v + (255 - v) * 0.7);
+      const lv = Math.round(level() * 10) / 10, [r, g, b] = scale(c, Math.max(0.15, lv));
+      const key = `${r >> 3},${g >> 3},${b >> 3}`;
+      if (key === this.last) return;
+      this.last = key;
+      this.at = now;
+      for (const ip of this.ips()) this.send(ip, "colorwc", { color: { r, g, b }, colorTemInKelvin: 0 });
+    },
+    restore() {
+      const saved = [...this.saved];
+      this.saved.clear();
+      for (const [ip, s] of saved) {
+        if (s.color && typeof s.color === "object") this.send(ip, "colorwc", { color: s.color, colorTemInKelvin: s.colorTemInKelvin || 0 });
+        if (s.brightness) this.send(ip, "brightness", { value: s.brightness });
+        if (s.onOff === 0) this.send(ip, "turn", { value: 0 });
+      }
+      setTimeout(() => this.stop(), 400);
+    },
+    // Geräte im Netz finden: Rundruf, 2 s auf Antworten warten
+    async scan() {
+      this.found.clear();
+      this.open();
+      for (let i = 0; i < 20 && !this.listening; i++) await new Promise((r) => setTimeout(r, 50));
+      if (!this.listening) return { error: "port" };
+      const msg = Buffer.from(JSON.stringify({ msg: { cmd: "scan", data: { account_topic: "reserve" } } }));
+      for (let i = 0; i < 2; i++) {
+        try { this.sock.send(msg, 4001, "239.255.255.250"); } catch {}
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+      const list = [...this.found].map(([ip, sku]) => ({ ip, sku }));
+      if (!this.started) this.stop();
+      return { list };
+    },
+  };
+
+  /* ---- Home Assistant (REST): alle Lichter im Haus, die HA kennt – auch Zigbee, Matter, MQTT-Lampen.
+     Vor der Party merkt sich HA den Zustand als Szene, danach wird sie wiederhergestellt. Auf jedem Schlag
+     wechselt reihum ein Licht die Farbe (höchstens ~5 Befehle/s, Funklampen vertragen nicht mehr). */
+  const ha = {
+    list: [], next: 0, busy: false, snap: false, loading: false, lastAt: 0,
+    ok() {
+      const c = getCfg();
+      return haBaseOk(c.haUrl) && haTokenOk(c.haToken);
+    },
+    req(method, path, body, timeout = 2500) {
+      const c = getCfg();
+      return call(method, `${c.haUrl}${path}`, body, timeout, { authorization: `Bearer ${c.haToken}` });
+    },
+    async entities() {
+      const want = String(getCfg().haEntities || "").split(/[\s,;]+/).filter((x) => /^light\.[\w-]+$/.test(x));
+      if (want.length) return want.slice(0, 24);
+      const all = await this.req("GET", "/api/states");
+      return Array.isArray(all) ? all.map((s) => s?.entity_id).filter((id) => /^light\.[\w-]+$/.test(id || "")).slice(0, 24) : [];
+    },
+    async load() {
+      if (!this.ok() || this.loading) return;
+      this.loading = true;
+      this.list = await this.entities();
+      if (this.list.length && !this.snap) {
+        await this.req("POST", "/api/services/scene/create", { scene_id: "mirage_before_party", snapshot_entities: this.list });
+        this.snap = true;
+      }
+      this.loading = false;
+    },
+    onBeat() {
+      if (!this.ok()) return;
+      if (!this.list.length) return void this.load();
+      const now = Date.now();
+      if (this.busy || now - this.lastAt < 200) return;
+      this.busy = true;
+      this.lastAt = now;
+      const p = pal(), drop = st?.d > 0.85, id = this.list[this.next++ % this.list.length];
+      const rgb = drop ? [255, 255, 255] : p[this.next % 3];
+      this.req("POST", "/api/services/light/turn_on", { entity_id: id, rgb_color: rgb, brightness: Math.round(40 + 215 * level()), transition: 0.15 }, 1500).finally(() => (this.busy = false));
+    },
+    async restore() {
+      const had = this.snap;
+      this.snap = false;
+      this.list = [];
+      if (had && this.ok()) await this.req("POST", "/api/services/scene/turn_on", { entity_id: "scene.mirage_before_party", transition: 1 });
+    },
+    // Einstellungen: Verbindung prüfen und die Lichter auflisten
+    async test() {
+      if (!haBaseOk(getCfg().haUrl)) return { error: "url" };
+      if (!haTokenOk(getCfg().haToken)) return { error: "token" };
+      const r = await this.req("GET", "/api/", null, 4000);
+      if (!r?.message) return { error: "unreachable" };
+      const all = await this.req("GET", "/api/states", null, 6000);
+      const lights = Array.isArray(all) ? all.filter((s) => /^light\.[\w-]+$/.test(s?.entity_id || "")).map((s) => ({ id: s.entity_id, name: String(s.attributes?.friendly_name || s.entity_id) })) : [];
+      return { lights: lights.slice(0, 60) };
+    },
+  };
+
   let loop = 0;
   function tick() {
     const c = getCfg(), now = Date.now();
+    if (c.goveeOn) govee.frame(now);
     if (c.wledOn) wled.frame(now);
     if (c.orgbOn) orgb.frame(now);
     if (c.chromaOn) chroma.frame(now);
@@ -236,7 +387,7 @@ function createLights(getCfg, log = () => {}) {
   // Party-Zustand vom Theme (über onParty in main.js)
   function feed(m) {
     const c = getCfg();
-    if (!(c.hueOn || c.wledOn || c.orgbOn || c.chromaOn)) return;
+    if (!(c.hueOn || c.wledOn || c.orgbOn || c.chromaOn || c.goveeOn || c.haOn)) return;
     const k = Math.max(+m.k || 0, (+m.a || 0) * 0.8);
     const hit = k > 0.55 && kick < 0.4;
     kick = k > kick ? k : kick * 0.8 + k * 0.2;
@@ -245,7 +396,9 @@ function createLights(getCfg, log = () => {}) {
     if (hit) {
       beat++;
       if (c.hueOn) hue.onBeat();
+      if (c.haOn) ha.onBeat();
     }
+    if (c.goveeOn) govee.start();
     if (c.wledOn) wled.start();
     if (c.orgbOn) orgb.start();
     if (c.chromaOn) chroma.start();
@@ -262,6 +415,8 @@ function createLights(getCfg, log = () => {}) {
     orgb.stop();
     chroma.stop();
     hue.restore();
+    govee.restore();
+    ha.restore();
     log("lights idle");
   }
   // Einstellungen geändert: Abgeschaltetes sofort freigeben
@@ -272,6 +427,9 @@ function createLights(getCfg, log = () => {}) {
     if (!c.chromaOn) chroma.stop();
     if (!c.hueOn) hue.restore();
     else hue.lights = [];
+    if (!c.goveeOn) govee.restore();
+    if (!c.haOn) ha.restore();
+    else ha.list = [];
   }
   const active = () => !!lastAt && Date.now() - lastAt < 2500;
 
@@ -294,7 +452,7 @@ function createLights(getCfg, log = () => {}) {
     return g && typeof g === "object" && !Array.isArray(g) ? Object.entries(g).filter(([, x]) => x?.lights?.length).map(([id, x]) => ({ id, name: String(x.name || id), n: x.lights.length })) : [];
   }
 
-  return { feed, sync, active, stopAll: idle, hueFind, huePair, hueGroups };
+  return { feed, sync, active, stopAll: idle, hueFind, huePair, hueGroups, goveeScan: () => govee.scan(), haTest: () => ha.test() };
 }
 
 module.exports = { createLights, toXy };

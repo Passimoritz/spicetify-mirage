@@ -10,6 +10,25 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.17.0] – 2026-11-05
+
+### Added
+
+- **21 more party styles** – melodic techno, hard techno, future bass, electro swing, breakbeat, boom bap, dancehall, cloud rap, hard rock, post-rock, ska, emo, J-pop & anime, musical, Christmas, Celtic & Irish, Balkan, amapiano, lo-fi, neoclassical and acoustic, each with its own light language, crowd moves and venue.
+- **Five new venues:** outer space (starfield, a glowing planet, shooting stars on big hits), a neon street with flickering signs and a wet floor, a pub with swinging bulbs, a ski hut with snowy peaks and falling snow, and a desert night with dunes, moon and a fire glow.
+- **Govee lamps and strips** in the overlay app – found in your network with one click (switch on “LAN control” in the Govee app); their colour follows the beat, and afterwards they return to how they were.
+- **Home Assistant** in the overlay app – every light Home Assistant knows (Zigbee, Matter, MQTT, Wi-Fi bulbs …) plays along. Enter the address and a long-lived access token; Mirage saves the lights' state as a scene before the party and restores it afterwards. You can limit it to chosen lights.
+
+### Changed
+
+- **Smoother song changes:** the colours glide into the new cover over about a second and a half instead of jumping, a change of venue cross-fades instead of cutting, the crowd catches the new beat gently instead of twitching into a new pose, and the light between two songs only dims a little and for at most 2.5 s – no more dark hole on seamless transitions.
+- **The canvas button is always there** in cover, lyrics, visualizer, mix and party view. Without a canvas it is faded and says why when clicked – the song has none, or canvas is switched off in your Spotify account.
+
+### Fixed
+
+- Canvas videos never appeared: Spotify renamed a field of its canvas query, so every request failed.
+- The Home Assistant token and the Hue key are no longer sent to the overlay window or OBS sources.
+
 ## [1.16.0] – 2026-11-05
 
 ### Added

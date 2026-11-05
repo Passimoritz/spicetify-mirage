@@ -15,10 +15,13 @@ const RIG = {
   alternative: ["point", "wave"], indie: ["wave"], latin: ["wave"], reggaeton: ["wave", "chase"], salsa: ["wave"], brazil: ["wave"], afro: ["wave"],
   bollywood: ["wave", "fan"], arabic: ["wave"], bass: ["point", "chase"], trap: ["point", "chase"], drill: ["point"], phonk: ["chase"],
   soul: ["wave"], gospel: ["fan"], country: ["wave"], reggae: ["wave"], flamenco: ["point"],
+  melodictechno: ["wave", "fan"], hardtechno: ["chase", "cross"], futurebass: ["fan", "wave"], electroswing: ["wave"], breakbeat: ["chase", "point"],
+  boombap: ["point"], dancehall: ["wave", "chase"], hardrock: ["point", "fan"], postrock: ["fan"], ska: ["wave", "chase"], emo: ["point"],
+  jpop: ["chase", "wave"], musical: ["fan"], celtic: ["wave"], balkan: ["chase", "wave"], amapiano: ["wave"],
 };
-const BLIND = new Set(["rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);
+const BLIND = new Set(["hardrock", "hardtechno", "balkan", "rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);
 const SHEET = new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);
-const CALM = new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues"]);
+const CALM = new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues", "lofi", "neoclassical", "acoustic", "cloudrap", "christmas"]);
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 
