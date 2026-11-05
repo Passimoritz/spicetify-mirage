@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'">
+<title>Mirage Cast</title>
+</head>
+<body>
+<script>
+// Nimmt das Spotify-Fenster auf (getDisplayMedia; welches Fenster, entscheidet die Overlay-App) und kodiert es
+// mit dem Grafikchip/Prozessor dieses PCs als Video. Die Stücke gehen an die Overlay-App, die sie an den
+// Fernseher streamt. Nichts wird gespeichert.
+let rec = null, media = null;
+function stop() {
+  try { rec?.state !== "inactive" && rec?.stop(); } catch {}
+  media?.getTracks().forEach((t) => t.stop());
+  rec = null;
+  media = null;
+}
+function pick(kind, audio) {
+  const list = kind === "video/x-matroska"
+    ? [audio ? "video/x-matroska;codecs=avc1,opus" : "video/x-matroska;codecs=avc1", "video/x-matroska;codecs=avc1,pcm", "video/x-matroska"]
+    : [audio ? "video/webm;codecs=vp8,opus" : "video/webm;codecs=vp8", "video/webm"];
+  return list.find((m) => MediaRecorder.isTypeSupported(m)) || "";
+}
+window.cast.onStart(async ({ mime, audio }) => {
+  stop();
+  try {
+    media = await navigator.mediaDevices.getDisplayMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 30 } }, audio: !!audio });
+    const type = pick(mime, audio && media.getAudioTracks().length);
+    if (!type) throw new Error("no encoder for " + mime);
+    rec = new MediaRecorder(media, { mimeType: type, videoBitsPerSecond: 6e6, audioBitsPerSecond: 160e3 });
+    rec.ondataavailable = async (e) => {
+      if (e.data?.size) window.cast.chunk(await e.data.arrayBuffer());
+    };
+    rec.onerror = (e) => window.cast.error(e?.error?.message || "recorder");
+    rec.start(200);
+  } catch (e) {
+    window.cast.error(e?.message || e);
+    stop();
+  }
+});
+window.cast.onStop(stop);
+</script>
+</body>
+</html>

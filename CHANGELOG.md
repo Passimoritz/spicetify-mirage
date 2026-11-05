@@ -10,6 +10,22 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.18.0] – 2026-11-05
+
+### Added
+
+- **Word pictures in party mode** – sung words get a fitting picture: a warm glow and sparks for “fire”, rain for “rain”, little hearts, falling stars, snow, money, petals, a crown, birds, butterflies, fireworks, balloons and about 40 more. Around 65 ideas in 45 languages and almost 20,000 word forms, from English, German and Spanish to Japanese, Korean, Chinese, Hindi (also romanized), Arabic, Turkish, Russian and Swahili. The song’s language is recognised from its lyrics; for other languages the English translation helps. The sung word glows briefly in the picture’s colour. Deliberately subtle: at most one picture per line, pauses in between, never more than two at once – and the crowd always stays clear. On by default, switch off under Party → Word pictures. Phones on the live link show the same pictures.
+- **Party on the TV – rendered on your PC.** “On another screen” now lists TVs in your network: Chromecast, Google TV and Android TV as well as DLNA smart TVs (Samsung, LG, Sony, Philips …). The overlay app records the party in full screen with your PC’s graphics and streams the finished picture to the TV (1080p, 30 fps) – the TV only shows video, it doesn’t compute anything. Only the picture by default; “Send the sound along” puts the PC sound into the stream so picture and sound stay in time on the TV. Windows’ own wireless display (Miracast, Win + K) is one click away too – then the TV is a second screen.
+
+### Changed
+
+- **No more jumping without lyrics:** when a song has no lyrics, title, artist and controls now glide under the cover – once, when it’s clear there’s no text, instead of jumping back and forth twice on every song change.
+- The “On another screen” button is always there in party mode (it used to hide when Windows couldn’t list screens).
+
+### Fixed
+
+- Korean lyrics with particles (별이, 별을 …) were missed by the word recogniser.
+
 ## [1.17.0] – 2026-11-05
 
 ### Added

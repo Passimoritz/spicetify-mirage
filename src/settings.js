@@ -433,6 +433,7 @@ function render(box) {
       toggle("partySlowmo", () => {}),
       toggle("partyDJ", () => {}),
       toggle("partyHype", () => immersive.reloadLyrics()),
+      toggle("partyWords", () => immersive.reloadLyrics()),
       toggle("partyShatter", () => {}),
       head(t("ps_crowd")),
       toggle("partyCrowd", () => {}),

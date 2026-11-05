@@ -18,6 +18,9 @@ import { createVenue } from "./venue.js";
 import { songPos } from "./clock.js";
 import { instruments } from "./instruments.js";
 import { live } from "./live.js";
+import { createWordFx } from "./words.js";
+import { LEX } from "./lexicon.js";
+import { bridge } from "./bridge.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -65,6 +68,10 @@ const immersive = (() => {
   let el = null, raf = 0, lastText = 0, coverToken = 0;
   let q = {};
   let lyr = null, lyrUri = "", active = -2;
+  // Wortbilder: gesungene Begriffe („fire“, „Regen“, „corazón“ …) bekommen im Party-Modus ein passendes Bild
+  // Ausgelöste Bilder gehen auch an den Live-Link: die TV-Ansicht zeigt dasselbe Bild
+  const wordFx = createWordFx(LEX, { onFire: (c, w) => live.fx(c, w) });
+  let wfxGeo = null, wfxAt = 0;
   let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
   const pit = new Float32Array(12);
   const vizRect = { n: 0, r: null };
@@ -195,7 +202,7 @@ const immersive = (() => {
     q.recap.title = q.recap.ariaLabel = t("recapBtn");
     q.recap.onclick = () => partyRecapCard(recap);
     q.screen.title = q.screen.ariaLabel = t("toScreen");
-    q.screen.onclick = toScreen;
+    q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
     q.live.title = q.live.ariaLabel = t("liveBtn");
     q.live.onclick = toggleLiveCard;
     window.addEventListener("mirage:live", showExtras);
@@ -735,6 +742,23 @@ const immersive = (() => {
       item(`${v.title} – ${v.artist}`, sub, null, on ? null : () => choose(v.id), on);
     }
   }
+  // Party ohne Liedtext: Titel und Bedienung rücken unter das Cover. Der Wechsel passiert erst, wenn klar ist,
+  // ob es Text gibt (nicht schon beim Laden – sonst sprang alles bei jedem Songwechsel zweimal hin und her),
+  // und er gleitet: Cover, Titel und Liedtext fliegen von der alten an die neue Stelle (FLIP).
+  function setNoLyr(on) {
+    if (!el || el.classList.contains("is-nolyr") === on) return;
+    const parts = [q.wrap, q.meta, q.lyrics].filter(Boolean);
+    const glide = el.dataset.mode === "party" && !cfg.calm && el.isConnected;
+    const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
+    el.classList.toggle("is-nolyr", on);
+    if (!glide) return;
+    parts.forEach((p, i) => {
+      const a = before[i], b = p.getBoundingClientRect();
+      const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2);
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      p.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }], { duration: 750, easing: "cubic-bezier(0.22, 1, 0.36, 1)", composite: "add" });
+    });
+  }
   async function loadLyrics() {
     const uri = currentItem()?.uri || "";
     if (uri === lyrUri && lyr !== undefined) return;
@@ -769,12 +793,18 @@ const immersive = (() => {
     void q.inner.offsetWidth;
     q.inner.classList.add("is-in");
     showSource(got);
+    setNoLyr(!got || !!got.instrumental || !got.lines?.length);
     if (!got || got.instrumental) {
       q.inner.append(emptyLyrics(!!got));
       return;
     }
     applyTiming(uri, got);
     voices(got);
+    if (cfg.partyWords && got.synced) {
+      wordFx.prepare(uri, got.lines, got.lang);
+      // Sprache ohne eigenes Wörterbuch: einmal die englische Übersetzung holen (nur mit Online-Suche)
+      if (wordFx.needsTranslation() && cfg.onlineLyrics) translateLines(uri, got, "en").then((tr) => token === lyrToken && wordFx.addTranslated(uri, tr)).catch(() => {});
+    } else wordFx.prepare(uri, [], "");
     const karaoke = cfg.karaoke && got.synced;
     el.classList.toggle("is-karaoke", karaoke);
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -1100,6 +1130,10 @@ const immersive = (() => {
       lastBounce = "";
       hypeOn = !!activeEl && cfg.partyHype && el.dataset.mode === "party" && hype.has(i);
       activeEl?.classList.toggle("is-hype", hypeOn);
+      if (i >= 0 && cfg.partyWords && el.dataset.mode === "party" && wordFx.uri === lyrUri) {
+        const ln = lyr.lines[i], wt = words[i]?.length ? words[i].map((w) => ({ text: w.text, a: w.a, b: w.b })) : wordTimes(lyr.lines, i);
+        wordFx.onLine(i, wt, ln.t, lyr.lines[i + 1]?.t ?? ln.t + 6000, activeEl);
+      }
       // erst jetzt sind die Taktdaten sicher geladen: geschätzte Wörter auf die Ton-Einsätze legen
       if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6000);
       for (let k = 0; k < lines.length; k++) {
@@ -1168,6 +1202,7 @@ const immersive = (() => {
     const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
     if (mode === "mix" && V.style === "line") V.style = "wave";
     const px = mode === "party" ? party.step(sec, dt, playing) : null;
+    wfxGeo = px ? { cx, cy, R, dpr, px } : null;
     // Mix: dieselben Instrumentenspuren wie Party, nur dezent (Puls und Kranz auf der echten Kick)
     const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
     if (px) partyExtras(px, now, dt, R, dpr);
@@ -1978,6 +2013,14 @@ const immersive = (() => {
       // das nächste Bild fängt sauber neu an
       try {
         drawViz(pos, now);
+        if (mode === "party" && cfg.partyWords && !cfg.calm && wfxGeo) {
+          const g = wfxGeo, dtw = Math.min(0.12, wfxAt ? (now - wfxAt) / 1000 : 0.016);
+          wfxAt = now;
+          wordFx.draw(vctx, {
+            pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || palette(),
+            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: S.Player.isPlaying(),
+          });
+        }
       } catch (e) {
         vizReset();
         if (!vizErr) console.warn("[Mirage] Visualizer:", (vizErr = e));
@@ -2075,7 +2118,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2107,6 +2150,7 @@ const immersive = (() => {
       el.querySelector(".m-im-wishtoast")?.remove();
       return wishPanel(body);
     }
+    if (kind === "screens") return screensPanel(body, item);
     if (kind === "queue") {
       const list = ctl.upNext();
       if (!list.length) return item(t("queueEmpty"));
@@ -2216,7 +2260,7 @@ const immersive = (() => {
     if (!el) return;
     const party = el.dataset.mode === "party";
     q.recap.hidden = !(party && cfg.partyRecap && recap.songs.length >= 3);
-    q.screen.hidden = !(party && cfg.partyScreen && "getScreenDetails" in window);
+    q.screen.hidden = !(party && cfg.partyScreen);
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
     drawWishes();
@@ -2354,6 +2398,96 @@ const immersive = (() => {
     card.onclick = () => card.remove();
     el.append(card);
   }
+  /* ---- Party auf anderem Bildschirm. Der PC rechnet die Party, der Fernseher zeigt nur das fertige Bild:
+     Chromecast / Google TV / DLNA-Fernseher bekommen es als Videostream von der Overlay-App, Miracast
+     (Windows, Win + K) macht den Fernseher zum zweiten Bildschirm, Kabel-Bildschirme gehen direkt.
+     Ton bleibt am PC – außer „Ton mitschicken“ ist an, dann steckt er im Stream (im Takt mit dem Bild). */
+  let castList = null, castBox = null;
+  const sideHead = (body, text, sub) => {
+    const h = document.createElement("div");
+    h.className = "m-im-side-sec";
+    h.textContent = text;
+    if (sub) {
+      const s2 = document.createElement("small");
+      s2.textContent = sub;
+      h.append(s2);
+    }
+    body.append(h);
+  };
+  function sideBtn(parent, label, sub, onClick, on) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "m-im-side-item" + (on ? " is-on" : "");
+    const txt = document.createElement("span"), l = document.createElement("b");
+    l.textContent = label;
+    txt.append(l);
+    if (sub) {
+      const s2 = document.createElement("small");
+      s2.textContent = sub;
+      txt.append(s2);
+    }
+    b.append(txt);
+    if (onClick) b.onclick = onClick;
+    else b.disabled = true;
+    parent.append(b);
+    return b;
+  }
+  function screensPanel(body) {
+    // 1) Fernseher im Netz (findet und beliefert die Overlay-App)
+    sideHead(body, t("scrCast"), t("scrCastSub"));
+    castBox = document.createElement("div");
+    castBox.className = "m-im-side-group";
+    body.append(castBox);
+    if (!bridge.connected()) sideBtn(castBox, t("scrNoOverlay"), t("scrNoOverlaySub"));
+    else {
+      if (castList) drawCast();
+      else sideBtn(castBox, t("scrSearching"));
+      bridge.send({ type: "castScan" });
+    }
+    // 2) Miracast: Windows’ eigene Funkübertragung
+    if (/Windows/i.test(navigator.userAgent)) {
+      sideHead(body, t("scrMira"), t("scrMiraSub"));
+      sideBtn(body, t("scrMiraBtn"), bridge.connected() ? t("scrMiraBtnSub") : t("scrNoOverlay"), bridge.connected() ? () => bridge.send({ type: "castMiracast" }) : null);
+    }
+    // 3) Bildschirme an diesem PC (auch der Fernseher nach Miracast)
+    if ("getScreenDetails" in window) {
+      sideHead(body, t("scrPc"));
+      sideBtn(body, t("scrPcBtn"), t("scrPcSub"), toScreen);
+    }
+    // 4) Ton
+    sideHead(body, t("scrSound"), t("scrSoundSub"));
+    sideBtn(body, t("scrSoundCast"), cfg.partyCastSound ? t("scrSoundOn") : t("scrSoundOff"), () => {
+      cfg.partyCastSound = !cfg.partyCastSound;
+      save();
+      showSide("screens");
+    }, cfg.partyCastSound);
+  }
+  function drawCast() {
+    if (!castBox?.isConnected) return;
+    castBox.textContent = "";
+    const list = castList || [];
+    if (!list.length) return void sideBtn(castBox, t("scrNone"), t("scrNoneSub"));
+    for (const d of list) {
+      const sub = d.on ? t("scrCasting") : `${d.model}${d.model ? " · " : ""}${d.kind === "dlna" ? "DLNA" : "Google Cast"}`;
+      sideBtn(castBox, d.name, sub, () => (d.on ? bridge.send({ type: "castStop", id: d.id }) : castTo(d)), d.on);
+    }
+  }
+  function castTo(d) {
+    // Vollbild: dann nimmt die Overlay-App die Party in voller Größe auf (bis 1080p, 30 Bilder/s)
+    if (!(document.fullscreenElement || document.webkitFullscreenElement)) toggleFull();
+    S.showNotification?.(t("scrCastGo").replace("{n}", d.name), false, 3000);
+    bridge.send({ type: "castStart", id: d.id, audio: !!cfg.partyCastSound });
+  }
+  window.addEventListener("mirage:cast", (e) => {
+    const m = e.detail || {};
+    if (Array.isArray(m.list)) castList = m.list;
+    if (m.result) {
+      const name = castList?.find((x) => x.id === m.id)?.name || "";
+      const msg = m.result.ok ? t("scrCastOk") : m.result.error === "nowindow" ? t("scrNoWindow") : t("scrCastFail");
+      S.showNotification?.(msg.replace("{n}", name), !m.result.ok, 5000);
+    }
+    if (side === "screens") drawCast();
+  });
   // Party als Vollbild auf einem anderen Bildschirm (Chromium-Fensterverwaltung; fragt einmal um Erlaubnis)
   async function toScreen() {
     try {

@@ -87,6 +87,7 @@ function mqttOpen(url, { onReady, onMessage, onClose }) {
 }
 
 const PAGE = "https://passimoritz.github.io/spicetify-mirage/live/";
+
 const GRACE = 10 * 60e3, RATE = 125;
 const b64u = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 let ses = null, client = null, brokerIx = 0, status = "off", lastSend = 0, lastFeed = 0, offAt = 0, sending = false, stopT = 0, expireT = 0, wanted = false;
@@ -340,6 +341,10 @@ const coverUrl = (item) => {
 };
 
 // jedes Bild im Party-Modus: höchstens 8 Nachrichten pro Sekunde; die Handyseite rechnet den Takt selbst weiter
+let lastFx = null;
+function fx(c, w) {
+  lastFx = { c, w: String(w || "").slice(0, 40), s: Date.now() };
+}
 function feed(px, pal, bpm, lyric) {
   if (!cfg.partyLive) return;
   lastFeed = performance.now();
@@ -360,6 +365,7 @@ function feed(px, pal, bpm, lyric) {
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
     ly: lyric?.ly || "", lyn: lyric?.lyn || "",
     w: cfg.partyWishes ? wishList() : null,
+    fx: lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }
 // Party verlassen: „aus“ melden, Verbindung schließen; nach 10 Minuten gilt der Link nicht mehr
@@ -384,4 +390,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };

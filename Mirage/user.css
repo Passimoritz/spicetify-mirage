@@ -1740,6 +1740,24 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
   }
 }
 /* Liedtext-Funken: beim Drop gleißt die Zeile auf und zerstiebt – der Canvas lässt die Teilchen fliegen */
+/* Wortbilder: das gesungene Wort leuchtet kurz in der Farbe seines Bilds auf */
+#mirage-immersive .m-wfx {
+  animation: m-wfx 2.6s var(--m-ease) both;
+}
+@keyframes m-wfx {
+  0% {
+    text-shadow: none;
+  }
+  18% {
+    text-shadow:
+      0 0 14px rgb(var(--fxc) / 0.95),
+      0 0 38px rgb(var(--fxc) / 0.7),
+      0 0 80px rgb(var(--fxc) / 0.4);
+  }
+  100% {
+    text-shadow: 0 0 12px rgb(var(--fxc) / 0.25);
+  }
+}
 #mirage-immersive[data-mode="party"] .m-im-line.is-burst {
   animation: m-line-burst 0.75s var(--m-ease);
 }
@@ -3603,6 +3621,48 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   padding: 6px 10px 14px;
   overflow-y: auto;
 }
+/* Abschnitte in der Seitenleiste (Party auf anderem Bildschirm) */
+#mirage-immersive .m-im-side-sec {
+  display: grid;
+  gap: 2px;
+  padding: 14px 10px 4px;
+  font: 700 11px var(--m-font);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+#mirage-immersive .m-im-side-sec small {
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.8;
+}
+#mirage-immersive .m-im-side-group {
+  display: grid;
+  gap: 4px;
+}
+/* TV-Code: Adresse klein, Code groß zum Abtippen am Fernseher */
+#mirage-immersive .m-im-tvcode {
+  display: grid;
+  gap: 6px;
+  margin: 4px 0;
+  padding: 14px;
+  border-radius: 16px;
+  text-align: center;
+  background: rgba(var(--m-a-rgb), 0.14);
+  border: 1px solid rgba(var(--m-a-rgb), 0.3);
+}
+#mirage-immersive .m-im-tvcode small {
+  font: 600 13px var(--m-font);
+  opacity: 0.8;
+  user-select: all;
+}
+#mirage-immersive .m-im-tvcode b {
+  font: 800 34px / 1.1 ui-monospace, "Cascadia Mono", monospace;
+  letter-spacing: 0.24em;
+  user-select: all;
+}
 #mirage-immersive .m-im-side-item {
   display: flex;
   align-items: center;
@@ -3785,7 +3845,7 @@ html.mirage-vinyl .main-coverSlotCollapsed-container img {
 }
 /* Party ohne Liedtext: Titel und Interpret rücken direkt unter das Cover, darunter der Hinweis –
    die Bühne sitzt als Ganzes mittig, statt dass der Titel ganz unten über dem Publikum klebt */
-#mirage-immersive[data-mode="party"]:has(.m-im-lyrics-inner > .m-im-empty) {
+#mirage-immersive[data-mode="party"].is-nolyr {
   grid-template-rows: auto auto auto;
   grid-template-areas:
     "cover"
@@ -3793,6 +3853,10 @@ html.mirage-vinyl .main-coverSlotCollapsed-container img {
     "lyrics";
   align-content: center;
   padding-top: 4vh;
+}
+/* ohne Liedtext: etwas Luft zwischen Lichtkranz und Titel (der Kranz ragt bei hoher Stärke weit hinaus) */
+#mirage-immersive[data-mode="party"].is-nolyr .m-im-meta {
+  margin-top: 3vh;
 }
 #mirage-immersive[data-mode="party"] .m-im-lyrics:has(.m-im-empty) {
   -webkit-mask-image: none;

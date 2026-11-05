@@ -30,8 +30,22 @@ function workerSource() {
 }
 options.define.__VENUE_WORKER__ = JSON.stringify(workerSource());
 
+// Wortbilder für die Live-Seite der Handys (GitHub Pages): eigene kleine Datei ohne Wörterbuch
+function buildTvFx() {
+  return esbuild.build({
+    entryPoints: [path.join(__dirname, "..", "src", "tvfx.js")],
+    outfile: path.join(__dirname, "..", "docs", "live", "fx.js"),
+    bundle: true,
+    minify: true,
+    format: "iife",
+    target: "chrome100",
+    legalComments: "none",
+    logLevel: "info",
+  });
+}
+
 if (process.argv.includes("--watch")) {
   esbuild.context(options).then((ctx) => ctx.watch());
 } else {
-  esbuild.build(options).catch(() => process.exit(1));
+  Promise.all([esbuild.build(options), buildTvFx()]).catch(() => process.exit(1));
 }

@@ -140,6 +140,7 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 - **Synchron zu dem, was du hörst** – eine ruhige Song-Uhr glättet Spotifys Position; sechsmal <kbd>T</kbd> im Takt misst Licht, Publikum und Liedtext auf deine Lautsprecher ein.
 - **Lautschrift** unter koreanischem, japanischem und chinesischem Liedtext, **Duett-Farben** für Zeilen mit Sängernamen und kleiner gesetzter Hintergrundgesang in Klammern.
 - **Timing selbst korrigieren** – <kbd>E</kbd> drücken, dann Enter, sobald die markierte Zeile beginnt; gespeichert je Song.
+- **Wortbilder** – im Party-Modus bekommen gesungene Wörter ein dezentes Bild: Funken bei „Feuer“, Regen, Herzen, Sterne, Schnee, Geld, eine Krone … rund 65 Begriffe in 45 Sprachen (knapp 20.000 Wortformen). Höchstens eins pro Zeile, das Publikum bleibt immer frei.
 - **Canvas-Videos** – hat ein Song eins, spielt der Film-Knopf oben es im Cover ab (und gedämpft hinter dem Liedtext) – je Ansicht einschaltbar, anfangs aus. Bleibt der Knopf bei jedem Song blass, ist Canvas in deinem Spotify-Konto aus: in der Spotify-Handy-App *Canvas* einschalten (Einstellungen → Wiedergabe).
 - **Vollbild** per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>; ruht die Maus, blenden die Bedienelemente aus.
 
@@ -210,6 +211,7 @@ Bestätigen die **Credits** des Songs (Spotify, sonst MusicBrainz) ein Instrumen
 - **Spotify Jam** – alle im Jam stehen als kleines, farbiges Gesicht im Publikum und wippen zur Kick; wer den laufenden Song hinzugefügt hat, leuchtet als DJ.
 - **Zweiter Bildschirm** – der Party-Modus im Vollbild auf einem Fernseher oder anderen Monitor.
 - **Kantenlicht** – die Overlay-App lässt die Ränder deines Desktops im Takt leuchten.
+- **Party auf dem Fernseher** – die Overlay-App streamt die Party, die dein PC rechnet, an Chromecast, Google TV und DLNA-Smart-TVs (1080p, auf Wunsch mit Ton); Miracast geht auch.
 - **Licht im Raum** – die Overlay-App lässt Philips Hue, WLED-LED-Streifen, Govee-Lampen (LAN), alle Lichter aus Home Assistant, OpenRGB und Razer Chroma mitspielen.
 - **Party-Rückblick** – eine teilbare Karte der Nacht: Songs, Genre-Mischung, Tempo-Spanne, der größte Drop.
 

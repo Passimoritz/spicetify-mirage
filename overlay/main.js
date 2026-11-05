@@ -9,6 +9,7 @@ const http = require("http");
 const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
+const { createCast } = require("./cast.js");
 const { make } = require("./i18n");
 
 const WIN = process.platform === "win32";
@@ -117,6 +118,9 @@ function save() {
 
 let overlay = null, settingsWin = null, tray = null;
 const lights = createLights(() => cfg, (s) => dlog?.(s));
+// Party auf Fernsehern im Netz (Chromecast, Google TV, DLNA-Fernseher): der PC nimmt das Party-Bild auf und
+// streamt es als Video; gesteuert vom Theme
+const cast = createCast({ log: (s) => dlog?.(s), track: () => track });
 let track = null, lastPlaying = null, lastShow = 0, lyric = null, pointerT = 0;
 let t = make("en");
 const clients = new Set();
@@ -263,6 +267,12 @@ function startServer() {
       else if (m.type === "level") onLevel(m);
       else if (m.type === "volume") showVolume(m);
       else if (m.type === "party") onParty(m);
+      else if (m.type === "castScan") cast.scan().then((list) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", list })));
+      else if (m.type === "castStart") cast.start(String(m.id || ""), { audio: !!m.audio }).then((r) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", id: m.id, result: r, list: cast.list() })));
+      else if (m.type === "castStop") {
+        cast.stop(String(m.id || ""));
+        ws.send(JSON.stringify({ type: "cast", list: cast.list() }));
+      } else if (m.type === "castMiracast") cast.miracast();
       // eine neuere Mirage Overlay will den Port: diese (ältere) Kopie macht Platz
       else if (m.type === "yield" && newer(String(m.version || ""), app.getVersion())) app.exit(0);
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
@@ -1020,7 +1030,10 @@ ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 &
 app.on("second-instance", openSettings);
 app.on("activate", openSettings); // MAC: erneutes Öffnen aus Finder/Launchpad
 app.on("window-all-closed", () => {}); // im Infobereich weiterlaufen
-app.on("before-quit", () => lights.stopAll());
+app.on("before-quit", () => {
+  lights.stopAll();
+  cast.stopAll();
+});
 app.on("before-quit", () => busyProc?.kill());
 app.whenReady().then(() => {
   if (WIN) app.setAppUserModelId("Mirage Overlay");

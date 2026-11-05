@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.17.0" : "dev";
+      VERSION = true ? "1.18.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -362,6 +362,8 @@
           partyBlendHint: "Between songs the light dims down and comes back on the first beat of the next one",
           partyHype: "Hype lines",
           partyHypeHint: "Choruses and crowd calls (\u201Chands up\u201D, \u201Cjump\u201D \u2026) glow stronger and their words pop in one by one",
+          partyWords: "Word pictures",
+          partyWordsHint: "Sung words come alive: flames for \u201Cfire\u201D, rain for \u201Crain\u201D, hearts, stars, snow, money \u2026 in 45 languages \u2013 one picture at a time, never too much",
           partyDepth: "3D depth",
           partyDepthHint: "Lyrics, title and light sit on different layers and follow the mouse \u2013 without the mouse the scene floats gently",
           partyCamera: "Camera rides",
@@ -380,6 +382,30 @@
           partyEdgeHint: "The Mirage Overlay app makes the edges of your screen glow to the beat while party mode runs \u2013 hidden in full-screen games",
           recapBtn: "Party recap",
           toScreen: "Party on another screen",
+          scrCast: "TVs in your network",
+          scrCastSub: "Your PC renders the party, the TV just shows the picture \u2013 Chromecast, Google TV and DLNA TVs",
+          scrNoOverlay: "Overlay app not running",
+          scrSoundOn: "On \u2013 the sound plays on the TV, in time with the picture (turn the PC down)",
+          scrSoundOff: "Off \u2013 only the picture",
+          scrMira: "Windows wireless display (Miracast)",
+          scrMiraSub: "Many Samsung, LG and Android TVs \u2013 the TV becomes a second screen",
+          scrMiraBtn: "Connect a wireless display",
+          scrMiraBtnSub: "Opens Windows\u2019 Cast panel (Win + K) \u2013 then choose \u201CFull screen on the second screen\u201D",
+          scrNoWindow: "Spotify\u2019s window wasn\u2019t found \u2013 is Spotify open and not minimized?",
+          scrNoOverlaySub: "Start the Mirage overlay app to find TVs in your network",
+          scrSearching: "Searching \u2026",
+          scrNone: "No TV found",
+          scrNoneSub: "Is the TV on and in the same network?",
+          scrCasting: "Showing the party \u2013 tap to stop",
+          scrCastGo: "Sending the party to {n} \u2026",
+          scrCastOk: "The party is on {n}",
+          scrCastFail: "{n} didn't take the stream \u2013 is the TV on? Some older TVs can't play live video",
+          scrPc: "This PC",
+          scrPcBtn: "Full screen on the second screen",
+          scrPcSub: "Monitor, projector or TV on a cable",
+          scrSound: "Sound",
+          scrSoundSub: "By default only the picture goes to the TV \u2013 the sound stays on the PC",
+          scrSoundCast: "Send the sound along",
           recapTitle: "Your party recap",
           recapDrops: "drops",
           recapGenres: "Genre mix",
@@ -809,6 +835,8 @@
           partyBlendHint: "Zwischen zwei Songs dimmt das Licht ab und springt auf dem ersten Schlag des n\xE4chsten wieder an",
           partyHype: "Hype-Zeilen",
           partyHypeHint: "Refrains und Aufrufe ans Publikum (\u201EH\xE4nde hoch\u201C, \u201Ejump\u201C \u2026) leuchten st\xE4rker, ihre W\xF6rter ploppen nacheinander auf",
+          partyWords: "Wortbilder",
+          partyWordsHint: "Gesungene W\xF6rter werden lebendig: Flammen bei \u201EFeuer\u201C, Regen bei \u201ERegen\u201C, Herzen, Sterne, Schnee, Geld \u2026 in 45 Sprachen \u2013 immer nur ein Bild, nie zu viel",
           partyDepth: "3D-Tiefe",
           partyDepthHint: "Liedtext, Titel und Licht liegen auf verschiedenen Ebenen und folgen der Maus \u2013 ohne Maus schwebt die Szene leise",
           partyCamera: "Kamerafahrten",
@@ -827,6 +855,30 @@
           partyEdgeHint: "Die Mirage-Overlay-App l\xE4sst die R\xE4nder deines Bildschirms im Takt gl\xFChen, solange Party l\xE4uft \u2013 in Vollbild-Spielen aus",
           recapBtn: "Party-R\xFCckblick",
           toScreen: "Party auf anderem Bildschirm",
+          scrCast: "Fernseher im Netz",
+          scrCastSub: "Dein PC rechnet die Party, der Fernseher zeigt nur das Bild \u2013 Chromecast, Google TV und DLNA-Fernseher",
+          scrNoOverlay: "Overlay-App l\xE4uft nicht",
+          scrSoundOn: "An \u2013 der Ton l\xE4uft auf dem Fernseher, im Takt mit dem Bild (PC leiser stellen)",
+          scrSoundOff: "Aus \u2013 nur das Bild",
+          scrMira: "Windows-Funk\xFCbertragung (Miracast)",
+          scrMiraSub: "Viele Samsung-, LG- und Android-Fernseher \u2013 der Fernseher wird zum zweiten Bildschirm",
+          scrMiraBtn: "Mit Funkbildschirm verbinden",
+          scrMiraBtnSub: "\xD6ffnet Windows\u2019 \xDCbertragen-Leiste (Win + K) \u2013 danach \u201EVollbild auf dem zweiten Bildschirm\u201C",
+          scrNoWindow: "Spotify-Fenster nicht gefunden \u2013 ist Spotify offen und nicht minimiert?",
+          scrNoOverlaySub: "Starte die Mirage-Overlay-App, um Fernseher im Netz zu finden",
+          scrSearching: "Suche \u2026",
+          scrNone: "Kein Fernseher gefunden",
+          scrNoneSub: "Ist der Fernseher an und im selben Netz?",
+          scrCasting: "Zeigt die Party \u2013 tippen zum Beenden",
+          scrCastGo: "Schicke die Party auf {n} \u2026",
+          scrCastOk: "Die Party l\xE4uft auf {n}",
+          scrCastFail: "{n} hat den Stream nicht angenommen \u2013 ist der Fernseher an? Manche \xE4ltere Ger\xE4te k\xF6nnen kein Live-Video",
+          scrPc: "Dieser PC",
+          scrPcBtn: "Vollbild auf dem zweiten Bildschirm",
+          scrPcSub: "Monitor, Beamer oder Fernseher am Kabel",
+          scrSound: "Ton",
+          scrSoundSub: "Standard: nur das Bild geht auf den Fernseher \u2013 der Ton bleibt am PC",
+          scrSoundCast: "Ton mitschicken",
           recapTitle: "Dein Party-R\xFCckblick",
           recapDrops: "Drops",
           recapGenres: "Genre-Mischung",
@@ -1256,6 +1308,8 @@
           partyBlendHint: "Entre deux titres, la lumi\xE8re baisse puis revient sur le premier temps du suivant",
           partyHype: "Lignes hype",
           partyHypeHint: "Refrains et appels au public (\xAB hands up \xBB, \xAB jump \xBB\u2026) brillent plus fort et leurs mots apparaissent un \xE0 un",
+          partyWords: "Mots en images",
+          partyWordsHint: "Les mots chant\xE9s prennent vie : des flammes pour \xAB feu \xBB, la pluie pour \xAB pluie \xBB, des c\u0153urs, des \xE9toiles, de la neige \u2026 en 45 langues \u2013 une image \xE0 la fois, jamais trop",
           partyDepth: "Profondeur 3D",
           partyDepthHint: "Paroles, titre et lumi\xE8re sont sur des plans diff\xE9rents et suivent la souris \u2013 sans souris, la sc\xE8ne flotte doucement",
           partyCamera: "Mouvements de cam\xE9ra",
@@ -1274,6 +1328,30 @@
           partyEdgeHint: "L'app Mirage Overlay fait briller les bords de l'\xE9cran en rythme pendant le mode f\xEAte \u2013 masqu\xE9 en jeu plein \xE9cran",
           recapBtn: "R\xE9cap de la f\xEAte",
           toScreen: "F\xEAte sur un autre \xE9cran",
+          scrCast: "TV de ton r\xE9seau",
+          scrCastSub: "Ton PC calcule la f\xEAte, la TV n\u2019affiche que l\u2019image \u2013 Chromecast, Google TV et TV DLNA",
+          scrNoOverlay: "L\u2019app Overlay n\u2019est pas lanc\xE9e",
+          scrSoundOn: "Activ\xE9 \u2013 le son passe sur la TV, en rythme avec l\u2019image (baisse le PC)",
+          scrSoundOff: "D\xE9sactiv\xE9 \u2013 seulement l\u2019image",
+          scrMira: "Affichage sans fil Windows (Miracast)",
+          scrMiraSub: "Beaucoup de TV Samsung, LG et Android \u2013 la TV devient un second \xE9cran",
+          scrMiraBtn: "Connecter un \xE9cran sans fil",
+          scrMiraBtnSub: "Ouvre le panneau Caster de Windows (Win + K) \u2013 puis \xAB Plein \xE9cran sur le second \xE9cran \xBB",
+          scrNoWindow: "Fen\xEAtre Spotify introuvable \u2013 Spotify est-il ouvert et non r\xE9duit ?",
+          scrNoOverlaySub: "Lance l\u2019app Mirage Overlay pour trouver les TV de ton r\xE9seau",
+          scrSearching: "Recherche \u2026",
+          scrNone: "Aucune TV trouv\xE9e",
+          scrNoneSub: "La TV est-elle allum\xE9e et sur le m\xEAme r\xE9seau ?",
+          scrCasting: "Affiche la f\xEAte \u2013 touche pour arr\xEAter",
+          scrCastGo: "Envoi de la f\xEAte sur {n} \u2026",
+          scrCastOk: "La f\xEAte est sur {n}",
+          scrCastFail: "{n} n\u2019a pas pris le flux \u2013 la TV est-elle allum\xE9e ? Certains anciens mod\xE8les ne lisent pas la vid\xE9o en direct",
+          scrPc: "Ce PC",
+          scrPcBtn: "Plein \xE9cran sur le second \xE9cran",
+          scrPcSub: "\xC9cran, projecteur ou TV par c\xE2ble",
+          scrSound: "Son",
+          scrSoundSub: "Par d\xE9faut, seule l\u2019image va sur la TV \u2013 le son reste sur le PC",
+          scrSoundCast: "Envoyer aussi le son",
           recapTitle: "Ton r\xE9cap de la f\xEAte",
           recapDrops: "drops",
           recapGenres: "M\xE9lange de genres",
@@ -1703,6 +1781,8 @@
           partyBlendHint: "Entre canciones la luz baja y vuelve en el primer tiempo de la siguiente",
           partyHype: "L\xEDneas hype",
           partyHypeHint: "Estribillos y llamadas al p\xFAblico (\xABhands up\xBB, \xABjump\xBB\u2026) brillan m\xE1s y sus palabras aparecen una a una",
+          partyWords: "Palabras en im\xE1genes",
+          partyWordsHint: "Las palabras cantadas cobran vida: llamas con \xABfuego\xBB, lluvia con \xABlluvia\xBB, corazones, estrellas, nieve \u2026 en 45 idiomas, una imagen cada vez, nunca demasiado",
           partyDepth: "Profundidad 3D",
           partyDepthHint: "Letra, t\xEDtulo y luz est\xE1n en capas distintas y siguen al rat\xF3n; sin rat\xF3n, la escena flota suavemente",
           partyCamera: "Movimientos de c\xE1mara",
@@ -1721,6 +1801,30 @@
           partyEdgeHint: "La app Mirage Overlay hace brillar los bordes de la pantalla al ritmo mientras dura la fiesta; se oculta en juegos a pantalla completa",
           recapBtn: "Resumen de la fiesta",
           toScreen: "Fiesta en otra pantalla",
+          scrCast: "Televisores en tu red",
+          scrCastSub: "Tu PC calcula la fiesta y la TV solo muestra la imagen: Chromecast, Google TV y televisores DLNA",
+          scrNoOverlay: "La app Overlay no est\xE1 abierta",
+          scrSoundOn: "Activado: el sonido suena en la TV, a tiempo con la imagen (baja el volumen del PC)",
+          scrSoundOff: "Desactivado: solo la imagen",
+          scrMira: "Pantalla inal\xE1mbrica de Windows (Miracast)",
+          scrMiraSub: "Muchas TV Samsung, LG y Android: la TV pasa a ser una segunda pantalla",
+          scrMiraBtn: "Conectar una pantalla inal\xE1mbrica",
+          scrMiraBtnSub: "Abre el panel Transmitir de Windows (Win + K) y luego \xABPantalla completa en la segunda pantalla\xBB",
+          scrNoWindow: "No se encontr\xF3 la ventana de Spotify: \xBFest\xE1 abierto y sin minimizar?",
+          scrNoOverlaySub: "Abre la app Mirage Overlay para encontrar televisores en tu red",
+          scrSearching: "Buscando \u2026",
+          scrNone: "No se encontr\xF3 ninguna TV",
+          scrNoneSub: "\xBFEst\xE1 la TV encendida y en la misma red?",
+          scrCasting: "Mostrando la fiesta \u2013 toca para parar",
+          scrCastGo: "Enviando la fiesta a {n} \u2026",
+          scrCastOk: "La fiesta est\xE1 en {n}",
+          scrCastFail: "{n} no acept\xF3 la emisi\xF3n: \xBFest\xE1 encendida la TV? Algunos modelos antiguos no reproducen v\xEDdeo en directo",
+          scrPc: "Este PC",
+          scrPcBtn: "Pantalla completa en la segunda pantalla",
+          scrPcSub: "Monitor, proyector o TV por cable",
+          scrSound: "Sonido",
+          scrSoundSub: "Por defecto solo la imagen va a la TV; el sonido se queda en el PC",
+          scrSoundCast: "Enviar tambi\xE9n el sonido",
           recapTitle: "Tu resumen de la fiesta",
           recapDrops: "drops",
           recapGenres: "Mezcla de g\xE9neros",
@@ -2150,6 +2254,8 @@
           partyBlendHint: "Tra un brano e l'altro la luce cala e riparte sul primo battito del successivo",
           partyHype: "Righe hype",
           partyHypeHint: "Ritornelli e richiami al pubblico (\xABhands up\xBB, \xABjump\xBB\u2026) brillano di pi\xF9 e le parole compaiono una alla volta",
+          partyWords: "Parole in immagini",
+          partyWordsHint: "Le parole cantate prendono vita: fiamme per \xABfuoco\xBB, pioggia per \xABpioggia\xBB, cuori, stelle, neve \u2026 in 45 lingue, un\u2019immagine alla volta, mai troppo",
           partyDepth: "Profondit\xE0 3D",
           partyDepthHint: "Testo, titolo e luci stanno su piani diversi e seguono il mouse \u2013 senza mouse la scena fluttua piano",
           partyCamera: "Movimenti di camera",
@@ -2168,6 +2274,30 @@
           partyEdgeHint: "L'app Mirage Overlay fa brillare i bordi dello schermo a tempo durante la festa \u2013 nascosta nei giochi a schermo intero",
           recapBtn: "Riepilogo della festa",
           toScreen: "Festa su un altro schermo",
+          scrCast: "TV nella tua rete",
+          scrCastSub: "Il PC calcola la festa, la TV mostra solo l\u2019immagine: Chromecast, Google TV e TV DLNA",
+          scrNoOverlay: "L\u2019app Overlay non \xE8 avviata",
+          scrSoundOn: "Attivo: l\u2019audio suona sulla TV, a tempo con l\u2019immagine (abbassa il PC)",
+          scrSoundOff: "Disattivo: solo l\u2019immagine",
+          scrMira: "Schermo wireless di Windows (Miracast)",
+          scrMiraSub: "Molte TV Samsung, LG e Android: la TV diventa un secondo schermo",
+          scrMiraBtn: "Collega uno schermo wireless",
+          scrMiraBtnSub: "Apre il pannello Trasmetti di Windows (Win + K), poi \xABSchermo intero sul secondo schermo\xBB",
+          scrNoWindow: "Finestra di Spotify non trovata: Spotify \xE8 aperto e non ridotto a icona?",
+          scrNoOverlaySub: "Avvia l\u2019app Mirage Overlay per trovare le TV nella tua rete",
+          scrSearching: "Ricerca \u2026",
+          scrNone: "Nessuna TV trovata",
+          scrNoneSub: "La TV \xE8 accesa e nella stessa rete?",
+          scrCasting: "Mostra la festa \u2013 tocca per fermare",
+          scrCastGo: "Invio della festa a {n} \u2026",
+          scrCastOk: "La festa \xE8 su {n}",
+          scrCastFail: "{n} non ha accettato lo streaming: la TV \xE8 accesa? Alcuni modelli vecchi non riproducono video dal vivo",
+          scrPc: "Questo PC",
+          scrPcBtn: "Schermo intero sul secondo schermo",
+          scrPcSub: "Monitor, proiettore o TV via cavo",
+          scrSound: "Audio",
+          scrSoundSub: "Di default va sulla TV solo l\u2019immagine; l\u2019audio resta sul PC",
+          scrSoundCast: "Invia anche l\u2019audio",
           recapTitle: "Il tuo riepilogo della festa",
           recapDrops: "drop",
           recapGenres: "Mix di generi",
@@ -2597,6 +2727,8 @@
           partyBlendHint: "Entre m\xFAsicas a luz diminui e volta na primeira batida da pr\xF3xima",
           partyHype: "Linhas hype",
           partyHypeHint: "Refr\xF5es e chamadas ao p\xFAblico (\xABhands up\xBB, \xABjump\xBB\u2026) brilham mais e as palavras surgem uma a uma",
+          partyWords: "Palavras em imagens",
+          partyWordsHint: "As palavras cantadas ganham vida: chamas em \xABfogo\xBB, chuva em \xABchuva\xBB, cora\xE7\xF5es, estrelas, neve \u2026 em 45 l\xEDnguas \u2013 uma imagem de cada vez, nunca demais",
           partyDepth: "Profundidade 3D",
           partyDepthHint: "Letra, t\xEDtulo e luz ficam em camadas diferentes e seguem o mouse \u2013 sem mouse a cena flutua de leve",
           partyCamera: "Movimentos de c\xE2mera",
@@ -2615,6 +2747,30 @@
           partyEdgeHint: "O app Mirage Overlay faz as bordas da tela brilharem no ritmo enquanto a festa roda \u2013 oculto em jogos em tela cheia",
           recapBtn: "Resumo da festa",
           toScreen: "Festa em outra tela",
+          scrCast: "TVs na tua rede",
+          scrCastSub: "O teu PC calcula a festa, a TV s\xF3 mostra a imagem \u2013 Chromecast, Google TV e TVs DLNA",
+          scrNoOverlay: "A app Overlay n\xE3o est\xE1 aberta",
+          scrSoundOn: "Ligado \u2013 o som toca na TV, a tempo com a imagem (baixa o PC)",
+          scrSoundOff: "Desligado \u2013 s\xF3 a imagem",
+          scrMira: "Ecr\xE3 sem fios do Windows (Miracast)",
+          scrMiraSub: "Muitas TVs Samsung, LG e Android \u2013 a TV passa a ser um segundo ecr\xE3",
+          scrMiraBtn: "Ligar um ecr\xE3 sem fios",
+          scrMiraBtnSub: "Abre o painel Transmitir do Windows (Win + K) \u2013 depois \xABEcr\xE3 inteiro no segundo ecr\xE3\xBB",
+          scrNoWindow: "Janela do Spotify n\xE3o encontrada \u2013 o Spotify est\xE1 aberto e n\xE3o minimizado?",
+          scrNoOverlaySub: "Abre a app Mirage Overlay para encontrar TVs na tua rede",
+          scrSearching: "A procurar \u2026",
+          scrNone: "Nenhuma TV encontrada",
+          scrNoneSub: "A TV est\xE1 ligada e na mesma rede?",
+          scrCasting: "A mostrar a festa \u2013 toca para parar",
+          scrCastGo: "A enviar a festa para {n} \u2026",
+          scrCastOk: "A festa est\xE1 em {n}",
+          scrCastFail: "{n} n\xE3o aceitou o stream \u2013 a TV est\xE1 ligada? Alguns modelos antigos n\xE3o reproduzem v\xEDdeo em direto",
+          scrPc: "Este PC",
+          scrPcBtn: "Ecr\xE3 inteiro no segundo ecr\xE3",
+          scrPcSub: "Monitor, projetor ou TV por cabo",
+          scrSound: "Som",
+          scrSoundSub: "Por defeito s\xF3 a imagem vai para a TV \u2013 o som fica no PC",
+          scrSoundCast: "Enviar tamb\xE9m o som",
           recapTitle: "Seu resumo da festa",
           recapDrops: "drops",
           recapGenres: "Mistura de g\xEAneros",
@@ -3044,6 +3200,8 @@
           partyBlendHint: "Tussen nummers dimt het licht en springt het weer aan op de eerste tel van het volgende",
           partyHype: "Hype-regels",
           partyHypeHint: "Refreinen en oproepen aan het publiek (\u2018hands up\u2019, \u2018jump\u2019 \u2026) gloeien sterker en hun woorden ploppen \xE9\xE9n voor \xE9\xE9n op",
+          partyWords: "Woordbeelden",
+          partyWordsHint: "Gezongen woorden komen tot leven: vlammen bij \u2018vuur\u2019, regen bij \u2018regen\u2019, harten, sterren, sneeuw \u2026 in 45 talen \u2013 steeds \xE9\xE9n beeld, nooit te veel",
           partyDepth: "3D-diepte",
           partyDepthHint: "Songtekst, titel en licht liggen op verschillende lagen en volgen de muis \u2013 zonder muis zweeft de sc\xE8ne zacht",
           partyCamera: "Camerabewegingen",
@@ -3062,6 +3220,30 @@
           partyEdgeHint: "De Mirage Overlay-app laat de randen van je scherm in de maat gloeien zolang de feestmodus loopt \u2013 verborgen in schermvullende games",
           recapBtn: "Feestoverzicht",
           toScreen: "Feest op ander scherm",
+          scrCast: "Tv\u2019s in je netwerk",
+          scrCastSub: "Je pc rekent het feest, de tv toont alleen het beeld \u2013 Chromecast, Google TV en DLNA-tv\u2019s",
+          scrNoOverlay: "Overlay-app draait niet",
+          scrSoundOn: "Aan \u2013 het geluid speelt op de tv, in de maat met het beeld (pc zachter zetten)",
+          scrSoundOff: "Uit \u2013 alleen beeld",
+          scrMira: "Draadloos beeldscherm van Windows (Miracast)",
+          scrMiraSub: "Veel Samsung-, LG- en Android-tv\u2019s \u2013 de tv wordt een tweede scherm",
+          scrMiraBtn: "Draadloos beeldscherm verbinden",
+          scrMiraBtnSub: "Opent het Casten-paneel van Windows (Win + K) \u2013 daarna \u2018Volledig scherm op het tweede scherm\u2019",
+          scrNoWindow: "Spotify-venster niet gevonden \u2013 is Spotify open en niet geminimaliseerd?",
+          scrNoOverlaySub: "Start de Mirage Overlay-app om tv\u2019s in je netwerk te vinden",
+          scrSearching: "Zoeken \u2026",
+          scrNone: "Geen tv gevonden",
+          scrNoneSub: "Staat de tv aan en in hetzelfde netwerk?",
+          scrCasting: "Toont het feest \u2013 tik om te stoppen",
+          scrCastGo: "Feest naar {n} sturen \u2026",
+          scrCastOk: "Het feest draait op {n}",
+          scrCastFail: "{n} nam de stream niet aan \u2013 staat de tv aan? Sommige oudere tv\u2019s spelen geen live video",
+          scrPc: "Deze pc",
+          scrPcBtn: "Volledig scherm op het tweede scherm",
+          scrPcSub: "Monitor, beamer of tv via kabel",
+          scrSound: "Geluid",
+          scrSoundSub: "Standaard gaat alleen het beeld naar de tv \u2013 het geluid blijft op de pc",
+          scrSoundCast: "Geluid meesturen",
           recapTitle: "Jouw feestoverzicht",
           recapDrops: "drops",
           recapGenres: "Genremix",
@@ -3491,6 +3673,8 @@
           partyBlendHint: "Mi\u0119dzy utworami \u015Bwiat\u0142o przygasa i wraca na pierwszym uderzeniu kolejnego",
           partyHype: "Linijki hype",
           partyHypeHint: "Refreny i zawo\u0142ania do publiczno\u015Bci (\u201Ehands up\u201D, \u201Ejump\u201D \u2026) \u015Bwiec\u0105 mocniej, a s\u0142owa pojawiaj\u0105 si\u0119 po kolei",
+          partyWords: "S\u0142owa w obrazach",
+          partyWordsHint: "\u015Apiewane s\u0142owa o\u017Cywaj\u0105: p\u0142omienie przy \u201Eogie\u0144\u201D, deszcz przy \u201Edeszcz\u201D, serca, gwiazdy, \u015Bnieg \u2026 w 45 j\u0119zykach \u2013 zawsze jeden obraz, nigdy za du\u017Co",
           partyDepth: "G\u0142\u0119bia 3D",
           partyDepthHint: "Tekst, tytu\u0142 i \u015Bwiat\u0142o le\u017C\u0105 na r\xF3\u017Cnych warstwach i pod\u0105\u017Caj\u0105 za mysz\u0105 \u2013 bez myszy scena lekko unosi si\u0119",
           partyCamera: "Jazdy kamery",
@@ -3509,6 +3693,30 @@
           partyEdgeHint: "Aplikacja Mirage Overlay roz\u015Bwietla kraw\u0119dzie ekranu w rytm, gdy dzia\u0142a tryb imprezy \u2013 ukryte w grach pe\u0142noekranowych",
           recapBtn: "Podsumowanie imprezy",
           toScreen: "Impreza na innym ekranie",
+          scrCast: "Telewizory w sieci",
+          scrCastSub: "Komputer liczy imprez\u0119, telewizor pokazuje tylko obraz \u2013 Chromecast, Google TV i telewizory DLNA",
+          scrNoOverlay: "Aplikacja Overlay nie dzia\u0142a",
+          scrSoundOn: "W\u0142\u0105czone \u2013 d\u017Awi\u0119k gra na telewizorze, w rytm obrazu (przycisz komputer)",
+          scrSoundOff: "Wy\u0142\u0105czone \u2013 tylko obraz",
+          scrMira: "Wy\u015Bwietlacz bezprzewodowy Windows (Miracast)",
+          scrMiraSub: "Wiele telewizor\xF3w Samsung, LG i Android \u2013 telewizor staje si\u0119 drugim ekranem",
+          scrMiraBtn: "Po\u0142\u0105cz z wy\u015Bwietlaczem bezprzewodowym",
+          scrMiraBtnSub: "Otwiera panel Rzutuj w Windows (Win + K) \u2013 potem \u201EPe\u0142ny ekran na drugim ekranie\u201D",
+          scrNoWindow: "Nie znaleziono okna Spotify \u2013 czy Spotify jest otwarte i nie zminimalizowane?",
+          scrNoOverlaySub: "Uruchom aplikacj\u0119 Mirage Overlay, aby znale\u017A\u0107 telewizory w sieci",
+          scrSearching: "Szukam \u2026",
+          scrNone: "Nie znaleziono telewizora",
+          scrNoneSub: "Czy telewizor jest w\u0142\u0105czony i w tej samej sieci?",
+          scrCasting: "Pokazuje imprez\u0119 \u2013 dotknij, by zako\u0144czy\u0107",
+          scrCastGo: "Wysy\u0142am imprez\u0119 na {n} \u2026",
+          scrCastOk: "Impreza jest na {n}",
+          scrCastFail: "{n} nie przyj\u0105\u0142 strumienia \u2013 czy telewizor jest w\u0142\u0105czony? Niekt\xF3re starsze modele nie odtwarzaj\u0105 wideo na \u017Cywo",
+          scrPc: "Ten komputer",
+          scrPcBtn: "Pe\u0142ny ekran na drugim ekranie",
+          scrPcSub: "Monitor, projektor lub telewizor na kablu",
+          scrSound: "D\u017Awi\u0119k",
+          scrSoundSub: "Domy\u015Blnie na telewizor idzie tylko obraz \u2013 d\u017Awi\u0119k zostaje na komputerze",
+          scrSoundCast: "Wysy\u0142aj te\u017C d\u017Awi\u0119k",
           recapTitle: "Twoje podsumowanie imprezy",
           recapDrops: "dropy",
           recapGenres: "Mieszanka gatunk\xF3w",
@@ -3938,6 +4146,8 @@
           partyBlendHint: "\u015Eark\u0131lar aras\u0131nda \u0131\u015F\u0131k k\u0131s\u0131l\u0131r ve bir sonrakinin ilk vuru\u015Funda yeniden yanar",
           partyHype: "Hype sat\u0131rlar\u0131",
           partyHypeHint: "Nakaratlar ve seyirciye \xE7a\u011Fr\u0131lar (\u201Chands up\u201D, \u201Cjump\u201D \u2026) daha g\xFC\xE7l\xFC parlar, kelimeleri tek tek belirir",
+          partyWords: "Kelime g\xF6rselleri",
+          partyWordsHint: "S\xF6ylenen kelimeler canlan\u0131r: \u201Cate\u015F\u201D i\xE7in alevler, \u201Cya\u011Fmur\u201D i\xE7in ya\u011Fmur, kalpler, y\u0131ld\u0131zlar, kar \u2026 45 dilde \u2013 her seferinde tek bir g\xF6rsel, asla fazla de\u011Fil",
           partyDepth: "3D derinlik",
           partyDepthHint: "\u015Eark\u0131 s\xF6z\xFC, ba\u015Fl\u0131k ve \u0131\u015F\u0131k farkl\u0131 katmanlarda durur ve fareyi izler \u2013 fare yokken sahne hafif\xE7e s\xFCz\xFCl\xFCr",
           partyCamera: "Kamera hareketleri",
@@ -3956,6 +4166,30 @@
           partyEdgeHint: "Mirage Overlay uygulamas\u0131 parti modu s\xFCrerken ekran kenarlar\u0131n\u0131 ritimle parlat\u0131r \u2013 tam ekran oyunlarda gizli",
           recapBtn: "Parti \xF6zeti",
           toScreen: "Partiyi ba\u015Fka ekranda a\xE7",
+          scrCast: "A\u011Fdaki TV\u2019ler",
+          scrCastSub: "PC partiyi hesaplar, TV sadece g\xF6r\xFCnt\xFCy\xFC g\xF6sterir \u2013 Chromecast, Google TV ve DLNA TV\u2019ler",
+          scrNoOverlay: "Overlay uygulamas\u0131 \xE7al\u0131\u015Fm\u0131yor",
+          scrSoundOn: "A\xE7\u0131k \u2013 ses TV\u2019de, g\xF6r\xFCnt\xFCyle ayn\u0131 ritimde \xE7alar (PC\u2019nin sesini k\u0131s)",
+          scrSoundOff: "Kapal\u0131 \u2013 yaln\u0131zca g\xF6r\xFCnt\xFC",
+          scrMira: "Windows kablosuz ekran (Miracast)",
+          scrMiraSub: "Bir\xE7ok Samsung, LG ve Android TV \u2013 TV ikinci ekran olur",
+          scrMiraBtn: "Kablosuz ekrana ba\u011Flan",
+          scrMiraBtnSub: "Windows\u2019un Yans\u0131t panelini a\xE7ar (Win + K) \u2013 sonra \u201C\u0130kinci ekranda tam ekran\u201D",
+          scrNoWindow: "Spotify penceresi bulunamad\u0131 \u2013 Spotify a\xE7\u0131k ve simge durumunda de\u011Fil mi?",
+          scrNoOverlaySub: "A\u011Fdaki TV\u2019leri bulmak i\xE7in Mirage Overlay uygulamas\u0131n\u0131 ba\u015Flat",
+          scrSearching: "Aran\u0131yor \u2026",
+          scrNone: "TV bulunamad\u0131",
+          scrNoneSub: "TV a\xE7\u0131k ve ayn\u0131 a\u011Fda m\u0131?",
+          scrCasting: "Partiyi g\xF6steriyor \u2013 durdurmak i\xE7in dokun",
+          scrCastGo: "Parti {n} cihaz\u0131na g\xF6nderiliyor \u2026",
+          scrCastOk: "Parti {n} cihaz\u0131nda",
+          scrCastFail: "{n} yay\u0131n\u0131 almad\u0131 \u2013 TV a\xE7\u0131k m\u0131? Baz\u0131 eski modeller canl\u0131 video oynatamaz",
+          scrPc: "Bu bilgisayar",
+          scrPcBtn: "\u0130kinci ekranda tam ekran",
+          scrPcSub: "Kabloyla ba\u011Fl\u0131 monit\xF6r, projekt\xF6r veya TV",
+          scrSound: "Ses",
+          scrSoundSub: "Varsay\u0131lan olarak TV\u2019ye yaln\u0131zca g\xF6r\xFCnt\xFC gider \u2013 ses PC\u2019de kal\u0131r",
+          scrSoundCast: "Sesi de g\xF6nder",
           recapTitle: "Parti \xF6zetin",
           recapDrops: "drop",
           recapGenres: "T\xFCr kar\u0131\u015F\u0131m\u0131",
@@ -4385,6 +4619,8 @@
           partyBlendHint: "\u041C\u0435\u0436\u0434\u0443 \u0442\u0440\u0435\u043A\u0430\u043C\u0438 \u0441\u0432\u0435\u0442 \u043F\u0440\u0438\u0433\u043B\u0443\u0448\u0430\u0435\u0442\u0441\u044F \u0438 \u0432\u0441\u043F\u044B\u0445\u0438\u0432\u0430\u0435\u0442 \u043D\u0430 \u043F\u0435\u0440\u0432\u043E\u0439 \u0434\u043E\u043B\u0435 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0435\u0433\u043E",
           partyHype: "\u0425\u0430\u0439\u043F-\u0441\u0442\u0440\u043E\u043A\u0438",
           partyHypeHint: "\u041F\u0440\u0438\u043F\u0435\u0432\u044B \u0438 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u0438\u044F \u043A \u043F\u0443\u0431\u043B\u0438\u043A\u0435 (\xABhands up\xBB, \xABjump\xBB \u2026) \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u044F\u0440\u0447\u0435, \u0430 \u0438\u0445 \u0441\u043B\u043E\u0432\u0430 \u043F\u043E\u044F\u0432\u043B\u044F\u044E\u0442\u0441\u044F \u043F\u043E \u043E\u0434\u043D\u043E\u043C\u0443",
+          partyWords: "\u0421\u043B\u043E\u0432\u0430 \u0432 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430\u0445",
+          partyWordsHint: "\u0421\u043F\u0435\u0442\u044B\u0435 \u0441\u043B\u043E\u0432\u0430 \u043E\u0436\u0438\u0432\u0430\u044E\u0442: \u043F\u043B\u0430\u043C\u044F \u043D\u0430 \xAB\u043E\u0433\u043E\u043D\u044C\xBB, \u0434\u043E\u0436\u0434\u044C \u043D\u0430 \xAB\u0434\u043E\u0436\u0434\u044C\xBB, \u0441\u0435\u0440\u0434\u0446\u0430, \u0437\u0432\u0451\u0437\u0434\u044B, \u0441\u043D\u0435\u0433 \u2026 \u043D\u0430 45 \u044F\u0437\u044B\u043A\u0430\u0445 \u2013 \u043F\u043E \u043E\u0434\u043D\u043E\u0439 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0435, \u0431\u0435\u0437 \u043F\u0435\u0440\u0435\u0431\u043E\u0440\u0430",
           partyDepth: "3D-\u0433\u043B\u0443\u0431\u0438\u043D\u0430",
           partyDepthHint: "\u0422\u0435\u043A\u0441\u0442, \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0441\u0432\u0435\u0442 \u043B\u0435\u0436\u0430\u0442 \u043D\u0430 \u0440\u0430\u0437\u043D\u044B\u0445 \u0441\u043B\u043E\u044F\u0445 \u0438 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u043C\u044B\u0448\u044C\u044E \u2013 \u0431\u0435\u0437 \u043C\u044B\u0448\u0438 \u0441\u0446\u0435\u043D\u0430 \u043F\u043B\u0430\u0432\u043D\u043E \u043F\u0430\u0440\u0438\u0442",
           partyCamera: "\u0414\u0432\u0438\u0436\u0435\u043D\u0438\u0435 \u043A\u0430\u043C\u0435\u0440\u044B",
@@ -4403,6 +4639,30 @@
           partyEdgeHint: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay \u043F\u043E\u0434\u0441\u0432\u0435\u0447\u0438\u0432\u0430\u0435\u0442 \u043A\u0440\u0430\u044F \u044D\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0430 \u0432\u043A\u043B\u044E\u0447\u0451\u043D \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438 \u2013 \u0441\u043A\u0440\u044B\u0442\u043E \u0432 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u044B\u0445 \u0438\u0433\u0440\u0430\u0445",
           recapBtn: "\u0418\u0442\u043E\u0433\u0438 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           toScreen: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430 \u043D\u0430 \u0434\u0440\u0443\u0433\u043E\u043C \u044D\u043A\u0440\u0430\u043D\u0435",
+          scrCast: "\u0422\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440\u044B \u0432 \u0441\u0435\u0442\u0438",
+          scrCastSub: "\u041F\u041A \u0441\u0447\u0438\u0442\u0430\u0435\u0442 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0443, \u0442\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440 \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0443 \u2013 Chromecast, Google TV \u0438 DLNA-\u0442\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440\u044B",
+          scrNoOverlay: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Overlay \u043D\u0435 \u0437\u0430\u043F\u0443\u0449\u0435\u043D\u043E",
+          scrSoundOn: "\u0412\u043A\u043B. \u2013 \u0437\u0432\u0443\u043A \u0438\u0433\u0440\u0430\u0435\u0442 \u043D\u0430 \u0422\u0412, \u0432 \u0442\u0430\u043A\u0442 \u0441 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u043E\u0439 (\u0441\u0434\u0435\u043B\u0430\u0439 \u041F\u041A \u0442\u0438\u0448\u0435)",
+          scrSoundOff: "\u0412\u044B\u043A\u043B. \u2013 \u0442\u043E\u043B\u044C\u043A\u043E \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430",
+          scrMira: "\u0411\u0435\u0441\u043F\u0440\u043E\u0432\u043E\u0434\u043D\u043E\u0439 \u0434\u0438\u0441\u043F\u043B\u0435\u0439 Windows (Miracast)",
+          scrMiraSub: "\u041C\u043D\u043E\u0433\u0438\u0435 \u0422\u0412 Samsung, LG \u0438 Android \u2013 \u0442\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440 \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0441\u044F \u0432\u0442\u043E\u0440\u044B\u043C \u044D\u043A\u0440\u0430\u043D\u043E\u043C",
+          scrMiraBtn: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0431\u0435\u0441\u043F\u0440\u043E\u0432\u043E\u0434\u043D\u043E\u0439 \u0434\u0438\u0441\u043F\u043B\u0435\u0439",
+          scrMiraBtnSub: "\u041E\u0442\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u043F\u0430\u043D\u0435\u043B\u044C \xAB\u041F\u0435\u0440\u0435\u0434\u0430\u0442\u044C\xBB Windows (Win + K) \u2013 \u0437\u0430\u0442\u0435\u043C \xAB\u041F\u043E\u043B\u043D\u044B\u0439 \u044D\u043A\u0440\u0430\u043D \u043D\u0430 \u0432\u0442\u043E\u0440\u043E\u043C \u044D\u043A\u0440\u0430\u043D\u0435\xBB",
+          scrNoWindow: "\u041E\u043A\u043D\u043E Spotify \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u2013 Spotify \u043E\u0442\u043A\u0440\u044B\u0442 \u0438 \u043D\u0435 \u0441\u0432\u0451\u0440\u043D\u0443\u0442?",
+          scrNoOverlaySub: "\u0417\u0430\u043F\u0443\u0441\u0442\u0438 Mirage Overlay, \u0447\u0442\u043E\u0431\u044B \u043D\u0430\u0439\u0442\u0438 \u0442\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440\u044B \u0432 \u0441\u0435\u0442\u0438",
+          scrSearching: "\u041F\u043E\u0438\u0441\u043A \u2026",
+          scrNone: "\u0422\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D",
+          scrNoneSub: "\u0422\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440 \u0432\u043A\u043B\u044E\u0447\u0451\u043D \u0438 \u0432 \u0442\u043E\u0439 \u0436\u0435 \u0441\u0435\u0442\u0438?",
+          scrCasting: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0443 \u2013 \u043D\u0430\u0436\u043C\u0438, \u0447\u0442\u043E\u0431\u044B \u043E\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C",
+          scrCastGo: "\u041E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u044E \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0443 \u043D\u0430 {n} \u2026",
+          scrCastOk: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430 \u043D\u0430 {n}",
+          scrCastFail: "{n} \u043D\u0435 \u043F\u0440\u0438\u043D\u044F\u043B \u043F\u043E\u0442\u043E\u043A \u2013 \u0442\u0435\u043B\u0435\u0432\u0438\u0437\u043E\u0440 \u0432\u043A\u043B\u044E\u0447\u0451\u043D? \u041D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0441\u0442\u0430\u0440\u044B\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u043D\u0435 \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u0436\u0438\u0432\u043E\u0435 \u0432\u0438\u0434\u0435\u043E",
+          scrPc: "\u042D\u0442\u043E\u0442 \u041F\u041A",
+          scrPcBtn: "\u041F\u043E\u043B\u043D\u044B\u0439 \u044D\u043A\u0440\u0430\u043D \u043D\u0430 \u0432\u0442\u043E\u0440\u043E\u043C \u044D\u043A\u0440\u0430\u043D\u0435",
+          scrPcSub: "\u041C\u043E\u043D\u0438\u0442\u043E\u0440, \u043F\u0440\u043E\u0435\u043A\u0442\u043E\u0440 \u0438\u043B\u0438 \u0422\u0412 \u043F\u043E \u043A\u0430\u0431\u0435\u043B\u044E",
+          scrSound: "\u0417\u0432\u0443\u043A",
+          scrSoundSub: "\u041F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E \u043D\u0430 \u0422\u0412 \u0438\u0434\u0451\u0442 \u0442\u043E\u043B\u044C\u043A\u043E \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u2013 \u0437\u0432\u0443\u043A \u043E\u0441\u0442\u0430\u0451\u0442\u0441\u044F \u043D\u0430 \u041F\u041A",
+          scrSoundCast: "\u041F\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0442\u044C \u0438 \u0437\u0432\u0443\u043A",
           recapTitle: "\u0418\u0442\u043E\u0433\u0438 \u0442\u0432\u043E\u0435\u0439 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           recapDrops: "\u0434\u0440\u043E\u043F\u043E\u0432",
           recapGenres: "\u0421\u043C\u0435\u0441\u044C \u0436\u0430\u043D\u0440\u043E\u0432",
@@ -4832,6 +5092,8 @@
           partyBlendHint: "\u041C\u0456\u0436 \u0442\u0440\u0435\u043A\u0430\u043C\u0438 \u0441\u0432\u0456\u0442\u043B\u043E \u043F\u0440\u0438\u0433\u0430\u0441\u0430\u0454 \u0456 \u0441\u043F\u0430\u043B\u0430\u0445\u0443\u0454 \u043D\u0430 \u043F\u0435\u0440\u0448\u0456\u0439 \u0434\u043E\u043B\u0456 \u043D\u0430\u0441\u0442\u0443\u043F\u043D\u043E\u0433\u043E",
           partyHype: "\u0425\u0430\u0439\u043F-\u0440\u044F\u0434\u043A\u0438",
           partyHypeHint: "\u041F\u0440\u0438\u0441\u043F\u0456\u0432\u0438 \u0439 \u0437\u0430\u043A\u043B\u0438\u043A\u0438 \u0434\u043E \u043F\u0443\u0431\u043B\u0456\u043A\u0438 (\xABhands up\xBB, \xABjump\xBB \u2026) \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u044F\u0441\u043A\u0440\u0430\u0432\u0456\u0448\u0435, \u0430 \u0457\u0445\u043D\u0456 \u0441\u043B\u043E\u0432\u0430 \u0437'\u044F\u0432\u043B\u044F\u044E\u0442\u044C\u0441\u044F \u043F\u043E \u043E\u0434\u043D\u043E\u043C\u0443",
+          partyWords: "\u0421\u043B\u043E\u0432\u0430 \u0432 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430\u0445",
+          partyWordsHint: "\u0417\u0430\u0441\u043F\u0456\u0432\u0430\u043D\u0456 \u0441\u043B\u043E\u0432\u0430 \u043E\u0436\u0438\u0432\u0430\u044E\u0442\u044C: \u043F\u043E\u043B\u0443\u043C\u2019\u044F \u043D\u0430 \xAB\u0432\u043E\u0433\u043E\u043D\u044C\xBB, \u0434\u043E\u0449 \u043D\u0430 \xAB\u0434\u043E\u0449\xBB, \u0441\u0435\u0440\u0446\u044F, \u0437\u043E\u0440\u0456, \u0441\u043D\u0456\u0433 \u2026 45 \u043C\u043E\u0432\u0430\u043C\u0438 \u2013 \u043F\u043E \u043E\u0434\u043D\u0456\u0439 \u043A\u0430\u0440\u0442\u0438\u043D\u0446\u0456, \u0431\u0435\u0437 \u043F\u0435\u0440\u0435\u0431\u043E\u0440\u0443",
           partyDepth: "3D-\u0433\u043B\u0438\u0431\u0438\u043D\u0430",
           partyDepthHint: "\u0422\u0435\u043A\u0441\u0442, \u043D\u0430\u0437\u0432\u0430 \u0456 \u0441\u0432\u0456\u0442\u043B\u043E \u043B\u0435\u0436\u0430\u0442\u044C \u043D\u0430 \u0440\u0456\u0437\u043D\u0438\u0445 \u0448\u0430\u0440\u0430\u0445 \u0456 \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u043C\u0438\u0448\u0435\u044E \u2013 \u0431\u0435\u0437 \u043C\u0438\u0448\u0456 \u0441\u0446\u0435\u043D\u0430 \u043F\u043B\u0430\u0432\u043D\u043E \u0448\u0438\u0440\u044F\u0454",
           partyCamera: "\u0420\u0443\u0445 \u043A\u0430\u043C\u0435\u0440\u0438",
@@ -4850,6 +5112,30 @@
           partyEdgeHint: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay \u043F\u0456\u0434\u0441\u0432\u0456\u0447\u0443\u0454 \u043A\u0440\u0430\u0457 \u0435\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0438 \u0432\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438 \u2013 \u043F\u0440\u0438\u0445\u043E\u0432\u0430\u043D\u043E \u0432 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u0438\u0445 \u0456\u0433\u0440\u0430\u0445",
           recapBtn: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           toScreen: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430 \u043D\u0430 \u0456\u043D\u0448\u043E\u043C\u0443 \u0435\u043A\u0440\u0430\u043D\u0456",
+          scrCast: "\u0422\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440\u0438 \u0432 \u043C\u0435\u0440\u0435\u0436\u0456",
+          scrCastSub: "\u041F\u041A \u0440\u0430\u0445\u0443\u0454 \u0432\u0435\u0447\u0456\u0440\u043A\u0443, \u0442\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440 \u043B\u0438\u0448\u0435 \u043F\u043E\u043A\u0430\u0437\u0443\u0454 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0443 \u2013 Chromecast, Google TV \u0456 DLNA-\u0442\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440\u0438",
+          scrNoOverlay: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Overlay \u043D\u0435 \u0437\u0430\u043F\u0443\u0449\u0435\u043D\u043E",
+          scrSoundOn: "\u0423\u0432\u0456\u043C\u043A. \u2013 \u0437\u0432\u0443\u043A \u0433\u0440\u0430\u0454 \u043D\u0430 \u0422\u0412, \u0443 \u0442\u0430\u043A\u0442 \u0456\u0437 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u043E\u044E (\u0437\u0440\u043E\u0431\u0438 \u041F\u041A \u0442\u0438\u0445\u0456\u0448\u0435)",
+          scrSoundOff: "\u0412\u0438\u043C\u043A. \u2013 \u043B\u0438\u0448\u0435 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430",
+          scrMira: "\u0411\u0435\u0437\u0434\u0440\u043E\u0442\u043E\u0432\u0438\u0439 \u0434\u0438\u0441\u043F\u043B\u0435\u0439 Windows (Miracast)",
+          scrMiraSub: "\u0411\u0430\u0433\u0430\u0442\u043E \u0422\u0412 Samsung, LG \u0456 Android \u2013 \u0442\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440 \u0441\u0442\u0430\u0454 \u0434\u0440\u0443\u0433\u0438\u043C \u0435\u043A\u0440\u0430\u043D\u043E\u043C",
+          scrMiraBtn: "\u041F\u0456\u0434\u2019\u0454\u0434\u043D\u0430\u0442\u0438 \u0431\u0435\u0437\u0434\u0440\u043E\u0442\u043E\u0432\u0438\u0439 \u0434\u0438\u0441\u043F\u043B\u0435\u0439",
+          scrMiraBtnSub: "\u0412\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u0454 \u043F\u0430\u043D\u0435\u043B\u044C \xAB\u0422\u0440\u0430\u043D\u0441\u043B\u044E\u0432\u0430\u0442\u0438\xBB Windows (Win + K) \u2013 \u043F\u043E\u0442\u0456\u043C \xAB\u041F\u043E\u0432\u043D\u0438\u0439 \u0435\u043A\u0440\u0430\u043D \u043D\u0430 \u0434\u0440\u0443\u0433\u043E\u043C\u0443 \u0435\u043A\u0440\u0430\u043D\u0456\xBB",
+          scrNoWindow: "\u0412\u0456\u043A\u043D\u043E Spotify \u043D\u0435 \u0437\u043D\u0430\u0439\u0434\u0435\u043D\u043E \u2013 Spotify \u0432\u0456\u0434\u043A\u0440\u0438\u0442\u043E \u0439 \u043D\u0435 \u0437\u0433\u043E\u0440\u043D\u0443\u0442\u043E?",
+          scrNoOverlaySub: "\u0417\u0430\u043F\u0443\u0441\u0442\u0438 Mirage Overlay, \u0449\u043E\u0431 \u0437\u043D\u0430\u0439\u0442\u0438 \u0442\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440\u0438 \u0432 \u043C\u0435\u0440\u0435\u0436\u0456",
+          scrSearching: "\u041F\u043E\u0448\u0443\u043A \u2026",
+          scrNone: "\u0422\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440 \u043D\u0435 \u0437\u043D\u0430\u0439\u0434\u0435\u043D\u043E",
+          scrNoneSub: "\u0422\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440 \u0443\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E \u0439 \u0443 \u0442\u0456\u0439 \u0441\u0430\u043C\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456?",
+          scrCasting: "\u041F\u043E\u043A\u0430\u0437\u0443\u0454 \u0432\u0435\u0447\u0456\u0440\u043A\u0443 \u2013 \u0442\u043E\u0440\u043A\u043D\u0438\u0441\u044C, \u0449\u043E\u0431 \u0437\u0443\u043F\u0438\u043D\u0438\u0442\u0438",
+          scrCastGo: "\u041D\u0430\u0434\u0441\u0438\u043B\u0430\u044E \u0432\u0435\u0447\u0456\u0440\u043A\u0443 \u043D\u0430 {n} \u2026",
+          scrCastOk: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430 \u043D\u0430 {n}",
+          scrCastFail: "{n} \u043D\u0435 \u043F\u0440\u0438\u0439\u043D\u044F\u0432 \u043F\u043E\u0442\u0456\u043A \u2013 \u0442\u0435\u043B\u0435\u0432\u0456\u0437\u043E\u0440 \u0443\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E? \u0414\u0435\u044F\u043A\u0456 \u0441\u0442\u0430\u0440\u0456 \u043C\u043E\u0434\u0435\u043B\u0456 \u043D\u0435 \u043F\u043E\u043A\u0430\u0437\u0443\u044E\u0442\u044C \u0436\u0438\u0432\u0435 \u0432\u0456\u0434\u0435\u043E",
+          scrPc: "\u0426\u0435\u0439 \u041F\u041A",
+          scrPcBtn: "\u041F\u043E\u0432\u043D\u0438\u0439 \u0435\u043A\u0440\u0430\u043D \u043D\u0430 \u0434\u0440\u0443\u0433\u043E\u043C\u0443 \u0435\u043A\u0440\u0430\u043D\u0456",
+          scrPcSub: "\u041C\u043E\u043D\u0456\u0442\u043E\u0440, \u043F\u0440\u043E\u0454\u043A\u0442\u043E\u0440 \u0430\u0431\u043E \u0422\u0412 \u0447\u0435\u0440\u0435\u0437 \u043A\u0430\u0431\u0435\u043B\u044C",
+          scrSound: "\u0417\u0432\u0443\u043A",
+          scrSoundSub: "\u0422\u0438\u043F\u043E\u0432\u043E \u043D\u0430 \u0422\u0412 \u0456\u0434\u0435 \u043B\u0438\u0448\u0435 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u2013 \u0437\u0432\u0443\u043A \u043B\u0438\u0448\u0430\u0454\u0442\u044C\u0441\u044F \u043D\u0430 \u041F\u041A",
+          scrSoundCast: "\u041F\u0435\u0440\u0435\u0434\u0430\u0432\u0430\u0442\u0438 \u0439 \u0437\u0432\u0443\u043A",
           recapTitle: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0442\u0432\u043E\u0454\u0457 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           recapDrops: "\u0434\u0440\u043E\u043F\u0456\u0432",
           recapGenres: "\u0421\u0443\u043C\u0456\u0448 \u0436\u0430\u043D\u0440\u0456\u0432",
@@ -5279,6 +5565,8 @@
           partyBlendHint: "\u66F2\u306E\u5408\u9593\u306B\u7167\u660E\u304C\u843D\u3061\u3001\u6B21\u306E\u66F2\u306E\u6700\u521D\u306E\u62CD\u3067\u307E\u305F\u70B9\u304D\u307E\u3059",
           partyHype: "\u30CF\u30A4\u30D7\u30E9\u30A4\u30F3",
           partyHypeHint: "\u30B5\u30D3\u3084\u89B3\u5BA2\u3078\u306E\u30B3\u30FC\u30EB\uFF08\u300Chands up\u300D\u300Cjump\u300D\u306A\u3069\uFF09\u304C\u3088\u308A\u5F37\u304F\u5149\u308A\u3001\u5358\u8A9E\u304C\u4E00\u3064\u305A\u3064\u5F3E\u3051\u3066\u73FE\u308C\u307E\u3059",
+          partyWords: "\u8A00\u8449\u306E\u30D3\u30B8\u30E5\u30A2\u30EB",
+          partyWordsHint: "\u6B4C\u308F\u308C\u305F\u8A00\u8449\u304C\u52D5\u304D\u51FA\u3059\uFF1A\u300C\u706B\u300D\u3067\u708E\u3001\u300C\u96E8\u300D\u3067\u96E8\u3001\u30CF\u30FC\u30C8\u3001\u661F\u3001\u96EA \u2026 45 \u8A00\u8A9E\u306B\u5BFE\u5FDC \u2013 \u4E00\u5EA6\u306B\u3072\u3068\u3064\u3060\u3051\u3001\u3084\u308A\u3059\u304E\u306A\u3044",
           partyDepth: "3D \u306E\u5965\u884C\u304D",
           partyDepthHint: "\u6B4C\u8A5E\u30FB\u30BF\u30A4\u30C8\u30EB\u30FB\u5149\u304C\u5225\u3005\u306E\u5C64\u306B\u3042\u308A\u3001\u30DE\u30A6\u30B9\u306B\u8FFD\u5F93\u3057\u307E\u3059 \u2013 \u30DE\u30A6\u30B9\u304C\u306A\u3051\u308C\u3070\u30B7\u30FC\u30F3\u304C\u3086\u3063\u304F\u308A\u6F02\u3044\u307E\u3059",
           partyCamera: "\u30AB\u30E1\u30E9\u30EF\u30FC\u30AF",
@@ -5297,6 +5585,30 @@
           partyEdgeHint: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9\u4E2D\u3001Mirage Overlay \u30A2\u30D7\u30EA\u304C\u753B\u9762\u306E\u7E01\u3092\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u5149\u3089\u305B\u307E\u3059 \u2013 \u5168\u753B\u9762\u30B2\u30FC\u30E0\u4E2D\u306F\u975E\u8868\u793A",
           recapBtn: "\u30D1\u30FC\u30C6\u30A3\u30FC\u306E\u632F\u308A\u8FD4\u308A",
           toScreen: "\u5225\u306E\u753B\u9762\u3067\u30D1\u30FC\u30C6\u30A3\u30FC",
+          scrCast: "\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u5185\u306E\u30C6\u30EC\u30D3",
+          scrCastSub: "PC \u304C\u30D1\u30FC\u30C6\u30A3\u30FC\u3092\u63CF\u753B\u3057\u3001\u30C6\u30EC\u30D3\u306F\u6620\u50CF\u3092\u6620\u3059\u3060\u3051 \u2013 Chromecast\u3001Google TV\u3001DLNA \u5BFE\u5FDC\u30C6\u30EC\u30D3",
+          scrNoOverlay: "Overlay \u30A2\u30D7\u30EA\u304C\u8D77\u52D5\u3057\u3066\u3044\u307E\u305B\u3093",
+          scrSoundOn: "\u30AA\u30F3 \u2013 \u97F3\u3082\u30C6\u30EC\u30D3\u3067\u6620\u50CF\u3068\u540C\u671F\u3057\u3066\u518D\u751F\uFF08PC \u306E\u97F3\u91CF\u3092\u4E0B\u3052\u3066\u304F\u3060\u3055\u3044\uFF09",
+          scrSoundOff: "\u30AA\u30D5 \u2013 \u6620\u50CF\u306E\u307F",
+          scrMira: "Windows \u306E\u30EF\u30A4\u30E4\u30EC\u30B9\u30C7\u30A3\u30B9\u30D7\u30EC\u30A4\uFF08Miracast\uFF09",
+          scrMiraSub: "\u591A\u304F\u306E Samsung\u3001LG\u3001Android \u30C6\u30EC\u30D3 \u2013 \u30C6\u30EC\u30D3\u304C 2 \u53F0\u76EE\u306E\u753B\u9762\u306B\u306A\u308A\u307E\u3059",
+          scrMiraBtn: "\u30EF\u30A4\u30E4\u30EC\u30B9\u30C7\u30A3\u30B9\u30D7\u30EC\u30A4\u306B\u63A5\u7D9A",
+          scrMiraBtnSub: "Windows \u306E\u30AD\u30E3\u30B9\u30C8 \u30D1\u30CD\u30EB\uFF08Win + K\uFF09\u3092\u958B\u304D\u307E\u3059 \u2013 \u305D\u306E\u5F8C\u300C2 \u53F0\u76EE\u306E\u753B\u9762\u3067\u5168\u753B\u9762\u8868\u793A\u300D",
+          scrNoWindow: "Spotify \u306E\u30A6\u30A3\u30F3\u30C9\u30A6\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093 \u2013 Spotify \u306F\u958B\u3044\u3066\u3044\u3066\u6700\u5C0F\u5316\u3055\u308C\u3066\u3044\u307E\u305B\u3093\u304B\uFF1F",
+          scrNoOverlaySub: "Mirage Overlay \u30A2\u30D7\u30EA\u3092\u8D77\u52D5\u3059\u308B\u3068\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u5185\u306E\u30C6\u30EC\u30D3\u3092\u63A2\u305B\u307E\u3059",
+          scrSearching: "\u691C\u7D22\u4E2D \u2026",
+          scrNone: "\u30C6\u30EC\u30D3\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093",
+          scrNoneSub: "\u30C6\u30EC\u30D3\u306E\u96FB\u6E90\u304C\u5165\u3063\u3066\u3044\u3066\u540C\u3058\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u306B\u3042\u308A\u307E\u3059\u304B\uFF1F",
+          scrCasting: "\u30D1\u30FC\u30C6\u30A3\u30FC\u3092\u8868\u793A\u4E2D \u2013 \u30BF\u30C3\u30D7\u3067\u505C\u6B62",
+          scrCastGo: "{n} \u306B\u30D1\u30FC\u30C6\u30A3\u30FC\u3092\u9001\u4FE1\u4E2D \u2026",
+          scrCastOk: "{n} \u3067\u30D1\u30FC\u30C6\u30A3\u30FC\u4E2D",
+          scrCastFail: "{n} \u304C\u30B9\u30C8\u30EA\u30FC\u30E0\u3092\u53D7\u3051\u4ED8\u3051\u307E\u305B\u3093\u3067\u3057\u305F \u2013 \u30C6\u30EC\u30D3\u306E\u96FB\u6E90\u306F\u5165\u3063\u3066\u3044\u307E\u3059\u304B\uFF1F\u53E4\u3044\u6A5F\u7A2E\u306F\u30E9\u30A4\u30D6\u6620\u50CF\u3092\u518D\u751F\u3067\u304D\u306A\u3044\u3053\u3068\u304C\u3042\u308A\u307E\u3059",
+          scrPc: "\u3053\u306E PC",
+          scrPcBtn: "2 \u53F0\u76EE\u306E\u753B\u9762\u3067\u5168\u753B\u9762\u8868\u793A",
+          scrPcSub: "\u30B1\u30FC\u30D6\u30EB\u3067\u3064\u306A\u3044\u3060\u30E2\u30CB\u30BF\u30FC\u3001\u30D7\u30ED\u30B8\u30A7\u30AF\u30BF\u30FC\u3001\u30C6\u30EC\u30D3",
+          scrSound: "\u97F3",
+          scrSoundSub: "\u6A19\u6E96\u3067\u306F\u6620\u50CF\u3060\u3051\u3092\u30C6\u30EC\u30D3\u3078 \u2013 \u97F3\u306F PC \u306B\u6B8B\u308A\u307E\u3059",
+          scrSoundCast: "\u97F3\u3082\u9001\u308B",
           recapTitle: "\u30D1\u30FC\u30C6\u30A3\u30FC\u306E\u632F\u308A\u8FD4\u308A",
           recapDrops: "\u30C9\u30ED\u30C3\u30D7",
           recapGenres: "\u30B8\u30E3\u30F3\u30EB\u306E\u5272\u5408",
@@ -5726,6 +6038,8 @@
           partyBlendHint: "\uACE1 \uC0AC\uC774\uC5D0 \uC870\uBA85\uC774 \uC5B4\uB450\uC6CC\uC84C\uB2E4\uAC00 \uB2E4\uC74C \uACE1\uC758 \uCCAB \uBC15\uC5D0 \uB2E4\uC2DC \uCF1C\uC9D1\uB2C8\uB2E4",
           partyHype: "\uD558\uC774\uD504 \uB77C\uC778",
           partyHypeHint: "\uD6C4\uB834\uACFC \uAD00\uAC1D \uD638\uC751(\u201Chands up\u201D, \u201Cjump\u201D \u2026)\uC774 \uB354 \uAC15\uD558\uAC8C \uBE5B\uB098\uACE0 \uB2E8\uC5B4\uAC00 \uD558\uB098\uC529 \uD280\uC5B4\uB098\uC635\uB2C8\uB2E4",
+          partyWords: "\uAC00\uC0AC \uBE44\uC8FC\uC5BC",
+          partyWordsHint: "\uBD80\uB978 \uB2E8\uC5B4\uAC00 \uC0B4\uC544\uB0A9\uB2C8\uB2E4: '\uBD88'\uC5D0\uB294 \uBD88\uAF43, '\uBE44'\uC5D0\uB294 \uBE44, \uD558\uD2B8, \uBCC4, \uB208 \u2026 45\uAC1C \uC5B8\uC5B4 \u2013 \uD55C \uBC88\uC5D0 \uD558\uB098\uC529, \uACFC\uD558\uC9C0 \uC54A\uAC8C",
           partyDepth: "3D \uAE4A\uC774",
           partyDepthHint: "\uAC00\uC0AC, \uC81C\uBAA9, \uBE5B\uC774 \uC11C\uB85C \uB2E4\uB978 \uB808\uC774\uC5B4\uC5D0 \uC788\uACE0 \uB9C8\uC6B0\uC2A4\uB97C \uB530\uB77C\uC635\uB2C8\uB2E4 \u2013 \uB9C8\uC6B0\uC2A4\uAC00 \uC5C6\uC73C\uBA74 \uC7A5\uBA74\uC774 \uC0B4\uBA70\uC2DC \uB5A0\uB2E4\uB2D9\uB2C8\uB2E4",
           partyCamera: "\uCE74\uBA54\uB77C \uBB34\uBE59",
@@ -5744,6 +6058,30 @@
           partyEdgeHint: "\uD30C\uD2F0 \uBAA8\uB4DC \uB3D9\uC548 Mirage Overlay \uC571\uC774 \uD654\uBA74 \uAC00\uC7A5\uC790\uB9AC\uB97C \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB098\uAC8C \uD569\uB2C8\uB2E4 \u2013 \uC804\uCCB4 \uD654\uBA74 \uAC8C\uC784\uC5D0\uC11C\uB294 \uC228\uACA8\uC9D1\uB2C8\uB2E4",
           recapBtn: "\uD30C\uD2F0 \uC694\uC57D",
           toScreen: "\uB2E4\uB978 \uD654\uBA74\uC5D0\uC11C \uD30C\uD2F0",
+          scrCast: "\uB124\uD2B8\uC6CC\uD06C\uC758 TV",
+          scrCastSub: "PC\uAC00 \uD30C\uD2F0\uB97C \uADF8\uB9AC\uACE0 TV\uB294 \uD654\uBA74\uB9CC \uBCF4\uC5EC \uC90D\uB2C8\uB2E4 \u2013 Chromecast, Google TV, DLNA TV",
+          scrNoOverlay: "Overlay \uC571\uC774 \uC2E4\uD589 \uC911\uC774 \uC544\uB2D9\uB2C8\uB2E4",
+          scrSoundOn: "\uCF1C\uC9D0 \u2013 \uC18C\uB9AC\uAC00 TV\uC5D0\uC11C \uD654\uBA74\uACFC \uB9DE\uCDB0 \uC7AC\uC0DD\uB429\uB2C8\uB2E4 (PC \uC18C\uB9AC\uB97C \uC904\uC774\uC138\uC694)",
+          scrSoundOff: "\uAEBC\uC9D0 \u2013 \uD654\uBA74\uB9CC",
+          scrMira: "Windows \uBB34\uC120 \uB514\uC2A4\uD50C\uB808\uC774 (Miracast)",
+          scrMiraSub: "\uB9CE\uC740 Samsung, LG, Android TV \u2013 TV\uAC00 \uB450 \uBC88\uC9F8 \uD654\uBA74\uC774 \uB429\uB2C8\uB2E4",
+          scrMiraBtn: "\uBB34\uC120 \uB514\uC2A4\uD50C\uB808\uC774\uC5D0 \uC5F0\uACB0",
+          scrMiraBtnSub: "Windows \uCE90\uC2A4\uD2B8 \uD328\uB110(Win + K)\uC744 \uC5FD\uB2C8\uB2E4 \u2013 \uADF8\uB2E4\uC74C '\uB450 \uBC88\uC9F8 \uD654\uBA74\uC5D0 \uC804\uCCB4 \uD654\uBA74'",
+          scrNoWindow: "Spotify \uCC3D\uC744 \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4 \u2013 Spotify\uAC00 \uC5F4\uB824 \uC788\uACE0 \uCD5C\uC18C\uD654\uB418\uC9C0 \uC54A\uC558\uB098\uC694?",
+          scrNoOverlaySub: "\uB124\uD2B8\uC6CC\uD06C\uC758 TV\uB97C \uCC3E\uC73C\uB824\uBA74 Mirage Overlay \uC571\uC744 \uC2E4\uD589\uD558\uC138\uC694",
+          scrSearching: "\uCC3E\uB294 \uC911 \u2026",
+          scrNone: "TV\uB97C \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4",
+          scrNoneSub: "TV\uAC00 \uCF1C\uC838 \uC788\uACE0 \uAC19\uC740 \uB124\uD2B8\uC6CC\uD06C\uC5D0 \uC788\uB098\uC694?",
+          scrCasting: "\uD30C\uD2F0 \uD45C\uC2DC \uC911 \u2013 \uD0ED\uD558\uBA74 \uC911\uC9C0",
+          scrCastGo: "{n}(\uC73C)\uB85C \uD30C\uD2F0\uB97C \uBCF4\uB0B4\uB294 \uC911 \u2026",
+          scrCastOk: "{n}\uC5D0\uC11C \uD30C\uD2F0 \uC911",
+          scrCastFail: "{n}\uC774(\uAC00) \uC2A4\uD2B8\uB9BC\uC744 \uBC1B\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4 \u2013 TV\uAC00 \uCF1C\uC838 \uC788\uB098\uC694? \uC77C\uBD80 \uAD6C\uD615 TV\uB294 \uB77C\uC774\uBE0C \uC601\uC0C1\uC744 \uC7AC\uC0DD\uD558\uC9C0 \uBABB\uD569\uB2C8\uB2E4",
+          scrPc: "\uC774 PC",
+          scrPcBtn: "\uB450 \uBC88\uC9F8 \uD654\uBA74\uC5D0 \uC804\uCCB4 \uD654\uBA74",
+          scrPcSub: "\uCF00\uC774\uBE14\uB85C \uC5F0\uACB0\uD55C \uBAA8\uB2C8\uD130, \uD504\uB85C\uC81D\uD130, TV",
+          scrSound: "\uC18C\uB9AC",
+          scrSoundSub: "\uAE30\uBCF8\uAC12: TV\uB85C\uB294 \uD654\uBA74\uB9CC \uAC00\uACE0 \uC18C\uB9AC\uB294 PC\uC5D0 \uB0A8\uC2B5\uB2C8\uB2E4",
+          scrSoundCast: "\uC18C\uB9AC\uB3C4 \uBCF4\uB0B4\uAE30",
           recapTitle: "\uB098\uC758 \uD30C\uD2F0 \uC694\uC57D",
           recapDrops: "\uB4DC\uB86D",
           recapGenres: "\uC7A5\uB974 \uBE44\uC728",
@@ -6173,6 +6511,8 @@
           partyBlendHint: "\u6B4C\u66F2\u4E4B\u95F4\u706F\u5149\u6697\u4E0B\uFF0C\u5728\u4E0B\u4E00\u9996\u7684\u7B2C\u4E00\u62CD\u91CD\u65B0\u4EAE\u8D77",
           partyHype: "\u9AD8\u71C3\u6B4C\u8BCD",
           partyHypeHint: "\u526F\u6B4C\u548C\u5BF9\u89C2\u4F17\u7684\u547C\u558A\uFF08\u201Chands up\u201D\u201Cjump\u201D\u7B49\uFF09\u66F4\u4EAE\uFF0C\u6B4C\u8BCD\u9010\u8BCD\u5F39\u51FA",
+          partyWords: "\u6B4C\u8BCD\u753B\u9762",
+          partyWordsHint: "\u5531\u5230\u7684\u8BCD\u4F1A\u6D3B\u8D77\u6765\uFF1A\u5531\u201C\u706B\u201D\u51FA\u73B0\u706B\u7130\uFF0C\u5531\u201C\u96E8\u201D\u5C31\u4E0B\u96E8\uFF0C\u8FD8\u6709\u7231\u5FC3\u3001\u661F\u661F\u3001\u96EA\u82B1 \u2026 \u652F\u6301 45 \u79CD\u8BED\u8A00 \u2013 \u6BCF\u6B21\u53EA\u6709\u4E00\u4E2A\u753B\u9762\uFF0C\u4E0D\u4F1A\u592A\u591A",
           partyDepth: "3D \u7EB5\u6DF1",
           partyDepthHint: "\u6B4C\u8BCD\u3001\u6807\u9898\u548C\u706F\u5149\u4F4D\u4E8E\u4E0D\u540C\u56FE\u5C42\u5E76\u8DDF\u968F\u9F20\u6807 \u2013 \u6CA1\u6709\u9F20\u6807\u65F6\u753B\u9762\u8F7B\u8F7B\u6F02\u6D6E",
           partyCamera: "\u955C\u5934\u8FD0\u52A8",
@@ -6191,6 +6531,30 @@
           partyEdgeHint: "\u6D3E\u5BF9\u6A21\u5F0F\u8FD0\u884C\u65F6\uFF0CMirage Overlay \u5E94\u7528\u8BA9\u5C4F\u5E55\u8FB9\u7F18\u968F\u8282\u62CD\u53D1\u5149 \u2013 \u5168\u5C4F\u6E38\u620F\u65F6\u9690\u85CF",
           recapBtn: "\u6D3E\u5BF9\u56DE\u987E",
           toScreen: "\u5728\u5176\u4ED6\u5C4F\u5E55\u5F00\u6D3E\u5BF9",
+          scrCast: "\u7F51\u7EDC\u4E2D\u7684\u7535\u89C6",
+          scrCastSub: "\u7535\u8111\u8D1F\u8D23\u6E32\u67D3\u6D3E\u5BF9\uFF0C\u7535\u89C6\u53EA\u663E\u793A\u753B\u9762 \u2013 Chromecast\u3001Google TV \u548C DLNA \u7535\u89C6",
+          scrNoOverlay: "Overlay \u5E94\u7528\u672A\u8FD0\u884C",
+          scrSoundOn: "\u5F00 \u2013 \u58F0\u97F3\u5728\u7535\u89C6\u4E0A\u4E0E\u753B\u9762\u540C\u6B65\u64AD\u653E\uFF08\u8BF7\u8C03\u4F4E\u7535\u8111\u97F3\u91CF\uFF09",
+          scrSoundOff: "\u5173 \u2013 \u53EA\u6709\u753B\u9762",
+          scrMira: "Windows \u65E0\u7EBF\u663E\u793A\uFF08Miracast\uFF09",
+          scrMiraSub: "\u5F88\u591A\u4E09\u661F\u3001LG \u548C\u5B89\u5353\u7535\u89C6 \u2013 \u7535\u89C6\u4F1A\u53D8\u6210\u7B2C\u4E8C\u5757\u5C4F\u5E55",
+          scrMiraBtn: "\u8FDE\u63A5\u65E0\u7EBF\u663E\u793A\u5668",
+          scrMiraBtnSub: "\u6253\u5F00 Windows \u6295\u653E\u9762\u677F\uFF08Win + K\uFF09\u2013 \u7136\u540E\u9009\u201C\u5728\u7B2C\u4E8C\u5757\u5C4F\u5E55\u4E0A\u5168\u5C4F\u201D",
+          scrNoWindow: "\u627E\u4E0D\u5230 Spotify \u7A97\u53E3 \u2013 Spotify \u662F\u5426\u5DF2\u6253\u5F00\u4E14\u6CA1\u6709\u6700\u5C0F\u5316\uFF1F",
+          scrNoOverlaySub: "\u542F\u52A8 Mirage Overlay \u5E94\u7528\u4EE5\u67E5\u627E\u7F51\u7EDC\u4E2D\u7684\u7535\u89C6",
+          scrSearching: "\u6B63\u5728\u67E5\u627E \u2026",
+          scrNone: "\u672A\u627E\u5230\u7535\u89C6",
+          scrNoneSub: "\u7535\u89C6\u5DF2\u5F00\u673A\u5E76\u5728\u540C\u4E00\u7F51\u7EDC\u4E2D\u5417\uFF1F",
+          scrCasting: "\u6B63\u5728\u663E\u793A\u6D3E\u5BF9 \u2013 \u70B9\u6309\u505C\u6B62",
+          scrCastGo: "\u6B63\u5728\u628A\u6D3E\u5BF9\u53D1\u9001\u5230 {n} \u2026",
+          scrCastOk: "\u6D3E\u5BF9\u6B63\u5728 {n} \u4E0A\u64AD\u653E",
+          scrCastFail: "{n} \u6CA1\u6709\u63A5\u6536\u89C6\u9891\u6D41 \u2013 \u7535\u89C6\u5F00\u7740\u5417\uFF1F\u90E8\u5206\u65E7\u578B\u53F7\u65E0\u6CD5\u64AD\u653E\u76F4\u64AD\u89C6\u9891",
+          scrPc: "\u8FD9\u53F0\u7535\u8111",
+          scrPcBtn: "\u5728\u7B2C\u4E8C\u5757\u5C4F\u5E55\u4E0A\u5168\u5C4F",
+          scrPcSub: "\u7528\u7EBF\u8FDE\u63A5\u7684\u663E\u793A\u5668\u3001\u6295\u5F71\u4EEA\u6216\u7535\u89C6",
+          scrSound: "\u58F0\u97F3",
+          scrSoundSub: "\u9ED8\u8BA4\u53EA\u628A\u753B\u9762\u53D1\u5230\u7535\u89C6 \u2013 \u58F0\u97F3\u7559\u5728\u7535\u8111\u4E0A",
+          scrSoundCast: "\u540C\u65F6\u53D1\u9001\u58F0\u97F3",
           recapTitle: "\u4F60\u7684\u6D3E\u5BF9\u56DE\u987E",
           recapDrops: "\u6B21 Drop",
           recapGenres: "\u66F2\u98CE\u6BD4\u4F8B",
@@ -6496,6 +6860,8 @@
         // Party-Erweiterungen, alle einzeln abschaltbar
         partyBlend: true,
         partyHype: true,
+        // Wortbilder: gesungene Begriffe bekommen ein passendes Bild (Flammen bei „fire“, Regen bei „Regen“ …)
+        partyWords: true,
         partyDepth: false,
         partyShatter: true,
         partyCamera: false,
@@ -6505,6 +6871,8 @@
         partyCrowd: true,
         partyJamLight: true,
         partyScreen: true,
+        // „Party auf anderem Bildschirm“: Ton per Spotify Connect mit auf den Fernseher schicken
+        partyCastSound: false,
         partyEdge: true,
         partyRecap: true,
         // Location: auto (nach Genre), club, festival, stadium, home
@@ -8970,11 +9338,11 @@
           const P = PROFILES[info.key];
           const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
           const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
-          const fx = !calm();
+          const fx2 = !calm();
           const d = audio.uri === uri ? audio.data : null;
           clock += dt;
           const ease2 = (k) => 1 - Math.exp(-dt * k);
-          let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0;
+          let energy = 0.55, build2 = 0, low2 = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0;
           let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
           let beatPhase = 0, beatIdx = -1;
           let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
@@ -8984,8 +9352,8 @@
             bright = at(M.bright, sec);
             let ahead = 0;
             for (let s = 1; s <= 4; s += 0.5) ahead = Math.max(ahead, at(M.energy, sec + s));
-            build = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
-            low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
+            build2 = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
+            low2 = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
             scene = Math.max(seek(M.sections, sec, "t"), 0);
             for (const tD of M.drops) {
               if (tD > sec) {
@@ -9025,8 +9393,8 @@
           }
           lastSec = sec;
           smooth.e += (energy - smooth.e) * ease2(energy > smooth.e ? 9 : 2);
-          smooth.b += (build - smooth.b) * ease2(build > smooth.b ? 2 : 6);
-          smooth.k += (low * (1 - build) - smooth.k) * ease2(1.5);
+          smooth.b += (build2 - smooth.b) * ease2(build2 > smooth.b ? 2 : 6);
+          smooth.k += (low2 * (1 - build2) - smooth.k) * ease2(1.5);
           smooth.br += (bright - smooth.br) * ease2(2);
           if (dropHit) {
             smooth.e = Math.max(smooth.e, 0.9);
@@ -9069,20 +9437,20 @@
           if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
           if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62) flashOn = true;
           if (smooth.k > 0.5) flashOn = false;
-          if (fx && cfg.partyFlash && (flashOn || dropHit) && clock - lastFlashAt > 0.34) {
+          if (fx2 && cfg.partyFlash && (flashOn || dropHit) && clock - lastFlashAt > 0.34) {
             lastFlashAt = clock;
             flash = Math.min(1, (dropHit ? 1 : 0.35 + 0.5 * I) * Math.min(lvl, 1.6));
             flashCol = (flashCol + 1) % 3;
           }
           flash *= Math.exp(-dt * (P.decay * 0.8));
-          if (fx && P.shake && strong) shake = P.shake * lvl * (0.35 + 0.65 * I) * conf;
+          if (fx2 && P.shake && strong) shake = P.shake * lvl * (0.35 + 0.65 * I) * conf;
           shake *= Math.exp(-dt * 14);
-          if (fx && cfg.partyZoom && level >= 4 && strong) kick = Math.min(1, (0.3 + 0.7 * I) * beatEnv * (level - 3));
-          if (fx && cfg.partyZoom && dropHit) kick = 1;
+          if (fx2 && cfg.partyZoom && level >= 4 && strong) kick = Math.min(1, (0.3 + 0.7 * I) * beatEnv * (level - 3));
+          if (fx2 && cfg.partyZoom && dropHit) kick = 1;
           kick *= Math.exp(-dt * 9);
-          spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
-          if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
-          const lasers = fx && cfg.partyLasers && level >= 4 ? level >= 5 ? 12 : 6 : 0;
+          spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx2 ? 1 : 0) * (scene % 2 ? -1 : 1);
+          if (barHit && fx2 && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
+          const lasers = fx2 && cfg.partyLasers && level >= 4 ? level >= 5 ? 12 : 6 : 0;
           const beamVis = clamp(smooth.e * 1.25 + dropGlow - smooth.k, 0, 1.2);
           if (hit && P.sway) sway = -sway;
           const out = {
@@ -9090,7 +9458,7 @@
             key: info.key,
             level,
             lvl,
-            fx,
+            fx: fx2,
             hit,
             barHit,
             inBar,
@@ -9124,8 +9492,8 @@
             dropHit,
             flash,
             flashCol,
-            shake: fx ? shake : 0,
-            kick: fx ? kick : 0,
+            shake: fx2 ? shake : 0,
+            kick: fx2 ? kick : 0,
             spin,
             lasers,
             beamVis,
@@ -9530,15 +9898,15 @@
     }
     const show = createShow(glowSprite);
     let disco = null, tunnel = [];
-    function drawStage(ctx, pal, px, rgba3, cx, cy, R, dpr, dt, st, v) {
+    function drawStage(ctx, pal, px, rgba4, cx, cy, R, dpr, dt, st, v) {
       const t2 = st.t, far = Math.hypot(vw, vh) * 1.1;
       const beat2 = px.accent, vis = clamp3(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
       const kickL = Math.max(beat2, px.kickEnv), snareL = Math.max(beat2 * 0.8, px.snareEnv), hatL = Math.max(beat2 * 0.6, px.hatEnv);
       const cone = (sx, sy, a, wd, c2, al, reach = far) => {
         const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
-        g.addColorStop(0, rgba3(c2, al));
-        g.addColorStop(0.5, rgba3(c2, al * 0.35));
-        g.addColorStop(1, rgba3(c2, 0));
+        g.addColorStop(0, rgba4(c2, al));
+        g.addColorStop(0.5, rgba4(c2, al * 0.35));
+        g.addColorStop(1, rgba4(c2, 0));
         ctx.fillStyle = g;
         ctx.beginPath();
         ctx.moveTo(sx, sy);
@@ -9567,9 +9935,9 @@
         case "floor": {
           const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
           const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));
-          g.addColorStop(0, rgba3(pal[0], al));
-          g.addColorStop(0.6, rgba3(pal[1], al * 0.35));
-          g.addColorStop(1, rgba3(pal[1], 0));
+          g.addColorStop(0, rgba4(pal[0], al));
+          g.addColorStop(0.6, rgba4(pal[1], al * 0.35));
+          g.addColorStop(1, rgba4(pal[1], 0));
           ctx.fillStyle = g;
           ctx.fillRect(0, vh * 0.3, vw, vh * 0.7);
           break;
@@ -9588,9 +9956,9 @@
             const y = (t2 * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;
             const band = vh * (0.16 + 0.06 * px.energy);
             const g = ctx.createLinearGradient(0, y - band, 0, y + band);
-            g.addColorStop(0, rgba3(pal[k], 0));
-            g.addColorStop(0.5, rgba3(pal[k], al));
-            g.addColorStop(1, rgba3(pal[k], 0));
+            g.addColorStop(0, rgba4(pal[k], 0));
+            g.addColorStop(0.5, rgba4(pal[k], al));
+            g.addColorStop(1, rgba4(pal[k], 0));
             ctx.fillStyle = g;
             ctx.fillRect(0, y - band, vw, band * 2);
           }
@@ -9622,9 +9990,9 @@
             for (let i = 24; i >= 0; i--) ctx.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);
             ctx.closePath();
             const g = ctx.createLinearGradient(0, base - amp, 0, base + thick + amp);
-            g.addColorStop(0, rgba3(pal[k], 0));
-            g.addColorStop(0.5, rgba3(pal[k], al));
-            g.addColorStop(1, rgba3(pal[(k + 1) % 3], 0));
+            g.addColorStop(0, rgba4(pal[k], 0));
+            g.addColorStop(0.5, rgba4(pal[k], al));
+            g.addColorStop(1, rgba4(pal[(k + 1) % 3], 0));
             ctx.fillStyle = g;
             ctx.fill();
           }
@@ -9637,9 +10005,9 @@
             f.s *= Math.exp(dt * 1.7);
             const r = R * f.s, w = (10 + f.s * 6) * dpr;
             const g = ctx.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);
-            g.addColorStop(0, rgba3(pal[f.c], 0));
-            g.addColorStop(0.5, rgba3(pal[f.c], f.a * vis * 0.5));
-            g.addColorStop(1, rgba3(pal[f.c], 0));
+            g.addColorStop(0, rgba4(pal[f.c], 0));
+            g.addColorStop(0.5, rgba4(pal[f.c], f.a * vis * 0.5));
+            g.addColorStop(1, rgba4(pal[f.c], 0));
             ctx.fillStyle = g;
             ctx.beginPath();
             ctx.arc(cx, cy, r + w, 0, Math.PI * 2);
@@ -9748,12 +10116,12 @@
       neoclassical: "hall",
       acoustic: "pub"
     };
-    function drawDecor(ctx, v, px, pal, rgba3, dpr, st) {
+    function drawDecor(ctx, v, px, pal, rgba4, dpr, st) {
       const t2 = st.t, beat2 = Math.max(px.accent, px.kickEnv * px.energy);
       if (v.decor === "club") {
         const g = ctx.createLinearGradient(0, 0, 0, vh * 0.22);
-        g.addColorStop(0, rgba3(pal[0], (0.08 + beat2 * 0.14).toFixed(3)));
-        g.addColorStop(1, rgba3(pal[0], 0));
+        g.addColorStop(0, rgba4(pal[0], (0.08 + beat2 * 0.14).toFixed(3)));
+        g.addColorStop(1, rgba4(pal[0], 0));
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, vw, vh * 0.22);
       } else if (v.decor === "towers") {
@@ -9888,9 +10256,9 @@
         for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {
           const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat2 * 0.1 + px.energy * 0.08;
           const g = ctx.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);
-          g.addColorStop(0, rgba3(pal[0], al.toFixed(3)));
-          g.addColorStop(0.5, rgba3(pal[1], (al * 0.9).toFixed(3)));
-          g.addColorStop(1, rgba3(pal[2], 0));
+          g.addColorStop(0, rgba4(pal[0], al.toFixed(3)));
+          g.addColorStop(0.5, rgba4(pal[1], (al * 0.9).toFixed(3)));
+          g.addColorStop(1, rgba4(pal[2], 0));
           ctx.fillStyle = g;
           ctx.beginPath();
           ctx.moveTo(mid + iw, vh * 0.7);
@@ -10058,9 +10426,9 @@
         ctx.fill();
         ctx.globalCompositeOperation = "lighter";
         const rim = ctx.createRadialGradient(pxx, pyy, pr * 0.92, pxx, pyy, pr * 1.18);
-        rim.addColorStop(0, rgba3(pal[1], 0));
-        rim.addColorStop(0.35, rgba3(pal[1], (0.22 + beat2 * 0.18).toFixed(3)));
-        rim.addColorStop(1, rgba3(pal[1], 0));
+        rim.addColorStop(0, rgba4(pal[1], 0));
+        rim.addColorStop(0.35, rgba4(pal[1], (0.22 + beat2 * 0.18).toFixed(3)));
+        rim.addColorStop(1, rgba4(pal[1], 0));
         ctx.fillStyle = rim;
         ctx.beginPath();
         ctx.arc(pxx, pyy, pr * 1.18, 0, Math.PI * 2);
@@ -10095,7 +10463,7 @@
           const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;
           const flick = Math.sin(t2 * 13 + n.ph) > 0.97 ? 0.3 : 1;
           const a = clamp3((0.35 + beat2 * 0.5) * flick, 0, 1), c2 = pal[n.c];
-          ctx.fillStyle = rgba3(c2, (a * 0.9).toFixed(3));
+          ctx.fillStyle = rgba4(c2, (a * 0.9).toFixed(3));
           ctx.fillRect(x - 4 * dpr, y, 8 * dpr, h);
           const r = 26 * dpr;
           ctx.globalAlpha = a * 0.55;
@@ -10103,8 +10471,8 @@
           ctx.globalAlpha = 1;
         }
         const wet = ctx.createLinearGradient(0, vh * 0.86, 0, vh);
-        wet.addColorStop(0, rgba3(pal[0], 0));
-        wet.addColorStop(1, rgba3(pal[0], (0.08 + beat2 * 0.12).toFixed(3)));
+        wet.addColorStop(0, rgba4(pal[0], 0));
+        wet.addColorStop(1, rgba4(pal[0], (0.08 + beat2 * 0.12).toFixed(3)));
         ctx.fillStyle = wet;
         ctx.fillRect(0, vh * 0.86, vw, vh * 0.14);
       } else if (v.decor === "pub") {
@@ -10202,7 +10570,7 @@
     const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
     const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
     const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
-    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };
+    const fx2 = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };
     const GOLD = [255, 214, 120], WHITE = [255, 255, 255];
     function confetti(pal, big, few) {
       const pop = (c2) => {
@@ -10210,9 +10578,9 @@
         return c2.map((v) => Math.round(clamp3((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));
       };
       const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];
-      for (let k = 0; k < n && fx.confetti.length < 420; k++) {
+      for (let k = 0; k < n && fx2.confetti.length < 420; k++) {
         const side = k % 2 ? 1 : -1;
-        fx.confetti.push({
+        fx2.confetti.push({
           x: vw * (side < 0 ? 0.12 : 0.88),
           y: vh * 0.98,
           vx: -side * vh * (0.12 + Math.random() * 0.45),
@@ -10226,37 +10594,37 @@
           a: 1
         });
       }
-      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });
+      for (let k = 0; k < (few ? 6 : 12); k++) fx2.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });
     }
     function drawFx(ctx, st, v, px, pal, dpr) {
       const dt = st.dt, key = px.key;
       const big = v.decor === "towers" || v.decor === "stands";
-      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;
-      if (newBeat) fx.beat = px.beatIdx;
-      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;
-      if (newBeat) fx.barId = barId;
-      if (barStart) fx.bar++;
-      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {
-        fx.confAt = st.t;
+      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx2.beat;
+      if (newBeat) fx2.beat = px.beatIdx;
+      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx2.barId;
+      if (newBeat) fx2.barId = barId;
+      if (barStart) fx2.bar++;
+      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx2.confAt < 0) && st.t - fx2.confAt > 6) {
+        fx2.confAt = st.t;
         confetti(pal, big, st.quality < 1 || v.decor === "fairy");
       }
-      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;
+      if (!px.finale && st.t - fx2.confAt > 30) fx2.confAt = -99;
       if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {
         const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;
-        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;
+        const fire = px.dropHit || barStart && peak && fx2.bar % 2 === 0 && Math.random() < 0.7;
         if (fire && CO2.has(key)) {
           const n = big ? 6 : 4;
-          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });
+          for (let k = 0; k < n; k++) fx2.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });
         }
-        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });
-        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
-          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });
+        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx2.flames.push({ x: vw * f, t: 0 });
+        if (px.finale && (big || v.open) && barStart && fx2.rockets.length < 4 && Math.random() < 0.85) {
+          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx2.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });
         }
-        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;
+        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx2.strobe = 1;
       }
       ctx.globalCompositeOperation = "lighter";
-      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);
-      for (const j of fx.jets) {
+      fx2.jets = fx2.jets.filter((j) => (j.t += dt) < 1.4);
+      for (const j of fx2.jets) {
         const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);
         const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;
         const g = ctx.createLinearGradient(0, top, 0, vh);
@@ -10271,8 +10639,8 @@
         ctx.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);
         ctx.fill();
       }
-      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);
-      for (const f of fx.flames) {
+      fx2.flames = fx2.flames.filter((f) => (f.t += dt) < 0.9);
+      for (const f of fx2.flames) {
         const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);
         for (let k = 0; k < 9; k++) {
           const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);
@@ -10284,19 +10652,19 @@
         ctx.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);
       }
       ctx.globalAlpha = 1;
-      fx.rockets = fx.rockets.filter((r) => {
+      fx2.rockets = fx2.rockets.filter((r) => {
         r.vy += vh * 1.1 * dt;
         r.y += r.vy * dt;
         ctx.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);
         if (r.vy < -vh * 0.12) return true;
         for (let k = 0; k < 56; k++) {
           const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);
-          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });
+          fx2.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });
         }
         return false;
       });
-      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);
-      for (const s of fx.sparks) {
+      fx2.sparks = fx2.sparks.filter((s) => (s.a -= dt * 0.5) > 0);
+      for (const s of fx2.sparks) {
         s.vy += vh * 0.25 * dt;
         s.vx *= 1 - dt * 0.8;
         s.x += s.vx * dt;
@@ -10306,11 +10674,11 @@
         ctx.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);
       }
       ctx.globalAlpha = 1;
-      fx.confetti = fx.confetti.filter((c2) => c2.y < vh * 1.05 && (c2.a -= dt * 0.07) > 0);
-      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);
-      if (fx.confetti.length || fx.streamers.length) {
+      fx2.confetti = fx2.confetti.filter((c2) => c2.y < vh * 1.05 && (c2.a -= dt * 0.07) > 0);
+      fx2.streamers = fx2.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);
+      if (fx2.confetti.length || fx2.streamers.length) {
         ctx.globalCompositeOperation = "source-over";
-        for (const c2 of fx.confetti) {
+        for (const c2 of fx2.confetti) {
           c2.vy = c2.vy < vh * 0.1 ? c2.vy + vh * 1.4 * dt : vh * 0.1;
           c2.vx *= 1 - dt * 1.6;
           c2.ph += dt * 5;
@@ -10327,7 +10695,7 @@
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.lineWidth = 4 * (vh / 720);
         ctx.lineCap = "round";
-        for (const m of fx.streamers) {
+        for (const m of fx2.streamers) {
           m.y += m.vy * dt;
           m.ph += dt * 2;
           ctx.globalAlpha = clamp3(m.a, 0, 1) * 0.85;
@@ -10342,10 +10710,10 @@
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = "lighter";
       }
-      if (fx.strobe > 0.02) {
-        ctx.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;
+      if (fx2.strobe > 0.02) {
+        ctx.fillStyle = `rgba(255,255,255,${(fx2.strobe * 0.3).toFixed(3)})`;
         ctx.fillRect(0, 0, vw, vh);
-        fx.strobe *= Math.exp(-dt * 28);
+        fx2.strobe *= Math.exp(-dt * 28);
       }
     }
     const MOVES = {
@@ -10509,7 +10877,7 @@
       return sp;
     }
     const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
-    function drawCrowd(ctx, px, pal, dpr, rgba3, dt, st, v, A) {
+    function drawCrowd(ctx, px, pal, dpr, rgba4, dt, st, v, A) {
       const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
       if (crowd && crowd.venue === v && crowd.w !== vw) {
         const f = vw / crowd.w;
@@ -10540,8 +10908,8 @@
       const waveX = crowd.wave >= 0 ? (t2 - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;
       if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;
       const hz = 260 * u, haze = ctx.createLinearGradient(0, vh, 0, vh - hz);
-      haze.addColorStop(0, rgba3(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));
-      haze.addColorStop(1, rgba3(pal[1], 0));
+      haze.addColorStop(0, rgba4(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));
+      haze.addColorStop(1, rgba4(pal[1], 0));
       ctx.fillStyle = haze;
       ctx.fillRect(0, vh - hz, vw, hz);
       ctx.globalCompositeOperation = "source-over";
@@ -10553,9 +10921,9 @@
       {
         const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;
         const g = ctx.createLinearGradient(0, top, 0, vh);
-        g.addColorStop(0, rgba3(pal[0], 0));
-        g.addColorStop(0.55, rgba3(pal[0], glow.toFixed(3)));
-        g.addColorStop(1, rgba3(pal[1], (glow * 0.6).toFixed(3)));
+        g.addColorStop(0, rgba4(pal[0], 0));
+        g.addColorStop(0.55, rgba4(pal[0], glow.toFixed(3)));
+        g.addColorStop(1, rgba4(pal[1], (glow * 0.6).toFixed(3)));
         ctx.globalCompositeOperation = "lighter";
         ctx.fillStyle = g;
         ctx.fillRect(0, top, vw, vh - top);
@@ -10671,19 +11039,19 @@
       ctx.clearRect(0, 0, vw, vh);
       crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));
       if (!st.stage && crowdA < 0.01) return;
-      const rgba3 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
+      const rgba4 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
       const v = vNext;
       ctx.globalCompositeOperation = "lighter";
       ctx.lineCap = "round";
       stageCam(ctx, st);
       if (st.stage) {
-        drawStage(ctx, st.pal, st.px, rgba3, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
+        drawStage(ctx, st.pal, st.px, rgba4, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
         show.drawRig(ctx, st, v, st.px, st.pal, st.dpr);
-        drawDecor(ctx, v, st.px, st.pal, rgba3, st.dpr, st);
+        drawDecor(ctx, v, st.px, st.pal, rgba4, st.dpr, st);
       }
       if (st.inst) show.drawInst(ctx, st, st.px, st.pal, st.dpr);
       drawFx(ctx, st, v, st.px, st.pal, st.dpr);
-      if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba3, st.dt, st, v, crowdA);
+      if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba4, st.dt, st, v, crowdA);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       if (vT && vSnap) {
         const f = clamp3((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);
@@ -13279,6 +13647,9 @@
     wishes = wishes.filter((x) => x.i !== i);
     emitWishes();
   }
+  function fx(c2, w) {
+    lastFx = { c: c2, w: String(w || "").slice(0, 40), s: Date.now() };
+  }
   function feed(px, pal, bpm, lyric) {
     if (!cfg.partyLive) return;
     lastFeed = performance.now();
@@ -13309,7 +13680,8 @@
       // Liedtext zum Mitsingen: aktuelle und nächste Zeile
       ly: lyric?.ly || "",
       lyn: lyric?.lyn || "",
-      w: cfg.partyWishes ? wishList() : null
+      w: cfg.partyWishes ? wishList() : null,
+      fx: lastFx && Date.now() - lastFx.s < 3e3 ? lastFx : null
     }, true);
   }
   async function stop() {
@@ -13331,7 +13703,7 @@
       emit();
     }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, ranked, wishList, coverUrl, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, ranked, wishList, coverUrl, lastFx, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
@@ -13418,7 +13790,4685 @@
         const id = String(raw).replace(/^spotify:image:/, "").replace(/^https:\/\/i\.scdn\.co\/image\//, "");
         return /^[\w]{20,60}$/.test(id) ? "https://i.scdn.co/image/" + id : "";
       };
-      live = { prepare, feed, stop, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
+      lastFx = null;
+      live = { prepare, feed, stop, fx, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
+    }
+  });
+
+  // src/words.js
+  function build() {
+    IDX = {};
+    for (const [lang, d] of Object.entries(LEX)) {
+      const ix = { exact: /* @__PURE__ */ new Map(), phrase: /* @__PURE__ */ new Map(), pre: [], sub: [], stop: /* @__PURE__ */ new Set() };
+      for (const w of String(d.stop || "").split("|")) if (w.trim()) ix.stop.add(low(w.trim()));
+      for (const [c2, forms] of Object.entries(d.c || {})) {
+        if (!FX[c2]) continue;
+        for (let f of String(forms).split("|")) {
+          f = low(f.trim());
+          if (!f) continue;
+          const vars = lang === "vi" ? [f] : [.../* @__PURE__ */ new Set([f, strip(f)])];
+          for (const v of vars) {
+            if (NOSPACE.test(v)) ix.sub.push([v, c2]);
+            else if (v.endsWith("*")) v.length >= 5 && ix.pre.push([v.slice(0, -1), c2]);
+            else if (v.includes(" ")) ix.phrase.set(v, c2);
+            else ix.exact.set(v, c2);
+          }
+        }
+      }
+      ix.sub.sort((a, b) => b[0].length - a[0].length);
+      ix.pre.sort((a, b) => b[0].length - a[0].length);
+      IDX[lang] = ix;
+    }
+    const uses = /* @__PURE__ */ new Map();
+    for (const ix of Object.values(IDX)) for (const w of ix.stop) uses.set(w, (uses.get(w) || 0) + 1);
+    for (const [lang, ix] of Object.entries(IDX)) {
+      for (const w of [...ix.stop]) if ([...w].length < 2 || uses.get(w) > 1 || lang !== "en" && IDX.en?.stop.has(w)) ix.stop.delete(w);
+    }
+    return IDX;
+  }
+  function detect(lines, hint) {
+    const text = lines.map((l) => l.text).join("\n");
+    const langs = /* @__PURE__ */ new Set(["en"]);
+    const hits = {};
+    for (const m of text.matchAll(TOKEN)) {
+      const tk = low(m[0]);
+      for (const [lang, ix] of Object.entries(IDX)) if (ix.stop.has(tk)) hits[lang] = (hits[lang] || 0) + 1;
+    }
+    for (const [re, ls] of SCRIPTS) {
+      if (!re.test(text)) continue;
+      const best = Math.max(0, ...ls.map((l) => hits[l] || 0));
+      ls.filter((l) => best < 3 || (hits[l] || 0) >= best * 0.45).forEach((l) => langs.add(l));
+    }
+    const h = String(hint || "").slice(0, 2).toLowerCase();
+    if (IDX[h]) langs.add(h);
+    const ranked2 = Object.entries(hits).sort((a, b) => b[1] - a[1]);
+    const top = ranked2[0]?.[1] || 0;
+    for (const [lang, n] of ranked2.slice(0, 3)) if (n >= 3 && n >= top * 0.45) langs.add(lang);
+    return { langs: [...langs].filter((l) => IDX[l]), sure: top >= 4 || langs.size > 1 };
+  }
+  function matchLine(text, langs) {
+    if (!IDX) build();
+    const out = [];
+    const lowText = low(text);
+    const toks = [];
+    for (const m of String(text).matchAll(TOKEN)) toks.push({ at: m.index, raw: m[0], w: low(m[0]) });
+    for (const lang of langs) {
+      const ix = IDX[lang];
+      if (!ix) continue;
+      for (let i = 0; i < toks.length; i++) {
+        const t2 = toks[i];
+        for (const n of [3, 2]) {
+          if (i + n > toks.length) continue;
+          const ph = toks.slice(i, i + n).map((x) => x.w).join(" ");
+          const c3 = ix.phrase.get(ph) || lang !== "vi" && ix.phrase.get(strip(ph));
+          const end = toks[i + n - 1].at + toks[i + n - 1].raw.length;
+          if (c3) out.push({ c: c3, at: t2.at, len: end - t2.at, raw: text.slice(t2.at, end) });
+        }
+        let c2 = ix.exact.get(t2.w) || lang !== "vi" && ix.exact.get(strip(t2.w));
+        if (!c2 && t2.w.length >= 5) {
+          const sw = lang === "vi" ? t2.w : strip(t2.w);
+          c2 = ix.pre.find(([p]) => t2.w.startsWith(p) || sw.startsWith(p))?.[1];
+        }
+        if (c2) out.push({ c: c2, at: t2.at, len: t2.raw.length, raw: t2.raw });
+      }
+      if (ix.sub.length && NOSPACE.test(lowText)) {
+        const taken = [];
+        for (const [s, c2] of ix.sub) {
+          let k = lowText.indexOf(s);
+          while (k >= 0) {
+            if (!taken.some(([a, b]) => k < b && k + s.length > a)) {
+              taken.push([k, k + s.length]);
+              out.push({ c: c2, at: k, len: s.length, raw: text.slice(k, k + s.length) });
+            }
+            k = lowText.indexOf(s, k + s.length);
+          }
+        }
+      }
+    }
+    return out;
+  }
+  function heartPath(ctx, x, y, s) {
+    ctx.beginPath();
+    ctx.moveTo(x, y + s * 0.35);
+    ctx.bezierCurveTo(x - s * 1.1, y - s * 0.35, x - s * 0.5, y - s * 1.05, x, y - s * 0.45);
+    ctx.bezierCurveTo(x + s * 0.5, y - s * 1.05, x + s * 1.1, y - s * 0.35, x, y + s * 0.35);
+    ctx.closePath();
+  }
+  function starPath(ctx, x, y, r, pts = 5, inner = 0.45) {
+    ctx.beginPath();
+    for (let i = 0; i < pts * 2; i++) {
+      const a = i * Math.PI / pts - Math.PI / 2, rr = i % 2 ? r * inner : r;
+      ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+    }
+    ctx.closePath();
+  }
+  function createWordFx(lexicon, { onFire } = {}) {
+    if (lexicon && lexicon !== LEX) {
+      LEX = lexicon;
+      IDX = null;
+    }
+    let off = null;
+    let plan = [], queue2 = [], fxs = [], parts = [], lastFire = -1e9, langs = ["en"], sureLang = true, uriNow = "", st0 = {};
+    const cool = /* @__PURE__ */ new Map();
+    let glowSpr = null;
+    function glow() {
+      if (glowSpr) return glowSpr;
+      const c2 = document.createElement("canvas");
+      c2.width = c2.height = 64;
+      const x = c2.getContext("2d"), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, "rgba(255,255,255,1)");
+      g.addColorStop(0.35, "rgba(255,255,255,0.35)");
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      x.fillStyle = g;
+      x.fillRect(0, 0, 64, 64);
+      return glowSpr = c2;
+    }
+    function prepare2(uri, lines, hint) {
+      if (!IDX) build();
+      uriNow = uri;
+      queue2 = [];
+      plan = [];
+      if (!lines?.length) return;
+      const d = detect(lines, hint);
+      langs = d.langs;
+      sureLang = d.sure;
+      plan = lines.map((l) => pick(matchLine(l.text || "", langs)));
+    }
+    function addTranslated(uri, translated) {
+      if (uri !== uriNow || !translated?.length) return;
+      translated.forEach((tr, i) => {
+        if (plan[i] || !tr) return;
+        const m = pick(matchLine(tr, ["en"]));
+        if (m) plan[i] = { ...m, at: -1, raw: "" };
+      });
+    }
+    const needsTranslation = () => !sureLang;
+    function pick(ms) {
+      if (!ms.length) return null;
+      ms.sort((a, b) => FX[b.c].pri - FX[a.c].pri || a.at - b.at);
+      return ms[0];
+    }
+    function onLine(i, wt, lineStart, lineEnd, lineEl) {
+      const m = plan[i];
+      if (!m) return;
+      let at3 = lineStart + (lineEnd - lineStart) * 0.3;
+      if (m.at >= 0 && wt?.length) {
+        let pos = 0;
+        const text = wt.map((w) => w.text).join(" ");
+        for (const w of wt) {
+          const st = text.indexOf(w.text, pos);
+          pos = st + w.text.length;
+          if (m.at < pos) {
+            at3 = w.a + (w.b - w.a) * clamp4((m.at - st) / Math.max(1, w.text.length), 0, 1);
+            break;
+          }
+        }
+      }
+      queue2.push({ at: at3, m, lineEl, line: i });
+    }
+    const GAP = [9e3, 6500, 4500, 3200, 2400];
+    function tryFire(item, now, st) {
+      const spec = FX[item.m.c];
+      const key = spec.fx + (spec.col ? spec.col.join() : "");
+      const gap = GAP[clamp4(st.level | 0, 0, 4)];
+      if (now - lastFire < gap) return false;
+      if (now - (cool.get(key) || -1e9) < (spec.pri <= 1 ? 25e3 : 3e4)) return false;
+      if (fxs.length >= 2) return false;
+      lastFire = now;
+      cool.set(key, now);
+      start(spec, st);
+      highlight(item, spec);
+      onFire?.(item.m.c, item.m.raw || "");
+      return true;
+    }
+    function fire(c2, st) {
+      if (!FX[c2] || fxs.length >= 3) return;
+      st0 = st;
+      start(FX[c2], st);
+    }
+    function highlight(item, spec) {
+      const el2 = item.lineEl, raw = item.m.raw;
+      if (!el2?.isConnected || !raw) return;
+      const col = spec.col || GLOW[spec.fx] || st0.pal?.[0] || [255, 255, 255];
+      const walker = document.createTreeWalker(el2, NodeFilter.SHOW_TEXT);
+      let off2 = 0, node;
+      while (node = walker.nextNode()) {
+        if (node.parentElement?.closest(".m-im-tr, .m-im-rom")) continue;
+        const len = node.data.length;
+        if (item.m.at < off2 + len) {
+          const local = node.data.toLocaleLowerCase().indexOf(raw.toLocaleLowerCase(), Math.max(0, item.m.at - off2 - 2));
+          const host = node.parentElement;
+          if (host?.classList.contains("m-w")) {
+            host.style.setProperty("--fxc", col.join(","));
+            host.classList.remove("m-wfx");
+            void host.offsetWidth;
+            host.classList.add("m-wfx");
+          } else if (local >= 0) {
+            const r = document.createRange();
+            r.setStart(node, local);
+            r.setEnd(node, Math.min(len, local + raw.length));
+            const s = document.createElement("span");
+            s.className = "m-wfx";
+            s.style.setProperty("--fxc", col.join(","));
+            try {
+              r.surroundContents(s);
+            } catch {
+            }
+          }
+          return;
+        }
+        off2 += len;
+      }
+    }
+    function add(n, f) {
+      const room = 220 - parts.length;
+      for (let i = 0; i < Math.min(n, room); i++) parts.push(f(i));
+    }
+    function start(spec, st) {
+      const { w, h, cx, cy, R, dpr } = st;
+      const pal = st.pal || [[255, 255, 255], [200, 200, 255], [255, 200, 255]];
+      const k = (0.7 + 0.15 * clamp4(st.level, 0, 4)) * 0.55;
+      const S2 = dpr || 1, T2 = 3.4;
+      const pickCol = (col) => Array.isArray(col) ? col : col();
+      const fall = (kind, n, col, o = {}) => add(Math.round(n * k), () => ({ kind, x: rnd(0, w), y: rnd(-h * 0.3, -10), vx: rnd(-20, 20) * S2, vy: rnd(60, 140) * S2 * (o.sp || 1), rot: rnd(0, 6.3), vr: rnd(-2, 2), s: rnd(6, 13) * S2 * (o.sz || 1), life: 0, max: rnd(T2, T2 + 1.5), col: pickCol(col) }));
+      const rise = (kind, n, col, o = {}) => add(Math.round(n * k), () => ({ kind, x: o.fromCover ? cx + rnd(-R, R) : rnd(0, w), y: o.fromCover ? cy + rnd(-R * 0.4, R * 0.4) : h + rnd(10, h * 0.2), vx: rnd(-25, 25) * S2, vy: -rnd(50, 130) * S2 * (o.sp || 1), rot: rnd(-0.4, 0.4), vr: rnd(-1, 1), s: rnd(7, 15) * S2 * (o.sz || 1), life: 0, max: rnd(T2 - 0.6, T2 + 1), col: pickCol(col) }));
+      const burst2 = (kind, n, col, o = {}) => add(Math.round(n * k), () => {
+        const a = rnd(0, Math.PI * 2), v = rnd(120, 420) * S2 * (o.sp || 1);
+        return { kind, x: cx + Math.cos(a) * R * 0.9, y: cy + Math.sin(a) * R * 0.9, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 1.6, rot: a, vr: rnd(-2, 2), s: rnd(5, 11) * S2 * (o.sz || 1), life: 0, max: rnd(1.6, 2.6), col: pickCol(col) };
+      });
+      const palC = () => pal[Math.random() * 3 | 0];
+      const fx2 = { name: spec.fx, t: 0, max: T2 + 0.6, col: spec.col, seed: Math.random() };
+      switch (spec.fx) {
+        case "flames":
+        case "hellfire":
+          fx2.max = 3.6;
+          rise("ember", 60, () => spec.fx === "hellfire" ? [255, rnd(30, 90), 20] : [255, rnd(120, 200), rnd(20, 60)], { sz: 0.5, sp: 1.1, fromCover: true });
+          break;
+        case "rain":
+        case "storm":
+          add(Math.round(140 * k), () => ({ kind: "streak", x: rnd(-w * 0.1, w * 1.1), y: rnd(-h, 0), vx: -40 * S2, vy: rnd(900, 1300) * S2, s: rnd(14, 26) * S2, life: 0, max: rnd(2.6, 3.6), col: [170, 200, 255] }));
+          if (spec.fx === "storm") fx2.bolts = [0.2, 1.4];
+          break;
+        case "lightning":
+          fx2.bolts = [0, 0.35];
+          fx2.max = 1.6;
+          break;
+        case "snow":
+        case "christmas":
+          fall("flake", 70, [235, 245, 255], { sp: 0.45 });
+          if (spec.fx === "christmas") burst2("glint", 18, [255, 210, 110]);
+          break;
+        case "frost":
+          fall("flake", 26, [210, 235, 255], { sp: 0.4, sz: 0.8 });
+          break;
+        case "sun":
+        case "beach":
+          fx2.max = 4;
+          if (spec.fx === "beach") fx2.wave = true;
+          break;
+        case "moon":
+          fx2.max = 4.5;
+          break;
+        case "stars":
+          burst2("star", 34, () => mixW2(palC(), 0.6), { sp: 0.8 });
+          break;
+        case "rays":
+          fx2.max = 4;
+          break;
+        case "heaven":
+          fx2.max = 4;
+          fall("feather", 12, [255, 255, 255], { sp: 0.25, sz: 1.6 });
+          break;
+        case "feathers":
+          fx2.rays = true;
+          fall("feather", 18, [255, 250, 240], { sp: 0.25, sz: 1.6 });
+          break;
+        case "night":
+        case "dark":
+          fx2.max = 3.6;
+          break;
+        case "bloom":
+          fx2.max = 1.8;
+          break;
+        case "hearts":
+          rise("heart", 26, () => [255, rnd(50, 110), rnd(110, 160)], { fromCover: true, sz: 1.3 });
+          break;
+        case "love":
+          rise("heart", 14, () => mixW2([255, 90, 150], rnd(0, 0.4)), { fromCover: true, sz: 1.1, sp: 0.7 });
+          break;
+        case "kiss":
+          burst2("heart", 20, () => [255, rnd(80, 140), rnd(170, 220)], { sz: 0.9, sp: 0.6 });
+          break;
+        case "heartbreak":
+          fx2.max = 2.6;
+          break;
+        case "tears":
+          fall("drop", 22, [150, 205, 255], { sp: 1.6, sz: 0.9 });
+          break;
+        case "money":
+          fall("bill", 34, [110, 200, 120], { sp: 0.6, sz: 1.5 });
+          fall("coin", 20, [255, 205, 70], { sp: 1.1 });
+          break;
+        case "gold":
+          burst2("glint", 30, [255, 205, 80]);
+          fx2.col = [255, 190, 60];
+          fx2.tintA = 0.06;
+          break;
+        case "diamond":
+          burst2("glint", 32, () => mixW2([150, 230, 255], rnd(0.2, 0.8)));
+          break;
+        case "crown":
+          fx2.max = 3.4;
+          burst2("glint", 14, [255, 210, 90], { sp: 0.5 });
+          break;
+        case "birds":
+          add(Math.round(9 * k), (i) => ({ kind: "bird", x: -rnd(20, 300) * S2, y: h * rnd(0.12, 0.42), vx: rnd(220, 320) * S2, vy: rnd(-20, 10) * S2, s: rnd(9, 15) * S2, life: 0, max: 5, col: [255, 255, 255], ph: i }));
+          fx2.max = 5;
+          break;
+        case "butterflies":
+          add(Math.round(12 * k), () => ({ kind: "fly", x: cx + rnd(-R, R), y: cy + rnd(-R * 0.3, R * 0.3), vx: rnd(-90, 90) * S2, vy: -rnd(40, 110) * S2, s: rnd(9, 15) * S2, life: 0, max: rnd(3.5, 4.8), col: palC(), ph: rnd(0, 6) }));
+          fx2.max = 4.8;
+          break;
+        case "petals":
+          fall("petal", 50, () => mixW2(palC(), rnd(0.2, 0.5)), { sp: 0.45 });
+          break;
+        case "roses":
+          fall("petal", 50, () => [rnd(190, 255), rnd(20, 60), rnd(50, 90)], { sp: 0.45 });
+          break;
+        case "wave":
+          fx2.max = 4;
+          break;
+        case "bubbles":
+          rise("bubble", 44, [190, 230, 255], { sp: 0.7 });
+          break;
+        case "champagne":
+          rise("bubble", 50, [255, 225, 140], { sp: 0.9, sz: 0.6 });
+          break;
+        case "wind":
+          add(Math.round(40 * k), () => ({ kind: "gust", x: -rnd(0, w * 0.6), y: rnd(h * 0.1, h * 0.9), vx: rnd(700, 1100) * S2, vy: rnd(-30, 30) * S2, s: rnd(60, 160) * S2, life: 0, max: 2.4, col: [255, 255, 255] }));
+          fx2.max = 2.6;
+          break;
+        case "smoke":
+          rise("puff", 26, [210, 210, 230], { sp: 0.35, sz: 4 });
+          fx2.max = 4.4;
+          break;
+        case "sparks":
+          burst2("spark", 60, () => mixW2([120, 200, 255], rnd(0, 0.7)), { sp: 1.4 });
+          fx2.flicker = true;
+          fx2.max = 1.8;
+          break;
+        case "rainbow":
+          fx2.max = 4.5;
+          break;
+        case "fireworks":
+          fx2.rockets = [0, 0.45, 0.9, 1.4].map((d) => ({ d, x: w * rnd(0.15, 0.85), y: h * rnd(0.12, 0.38), done: false }));
+          fx2.max = 3.6;
+          break;
+        case "confetti":
+          add(Math.round(90 * k), () => ({ kind: "conf", x: rnd(0, w), y: rnd(-h * 0.4, -10), vx: rnd(-60, 60) * S2, vy: rnd(120, 220) * S2, rot: rnd(0, 6), vr: rnd(-8, 8), s: rnd(5, 9) * S2, life: 0, max: rnd(3, 4.2), col: Math.random() < 0.5 ? palC() : [rnd(120, 255), rnd(120, 255), rnd(120, 255)] }));
+          break;
+        case "balloons":
+          add(Math.round(14 * k), () => ({ kind: "balloon", x: rnd(w * 0.05, w * 0.95), y: h + rnd(20, 200) * S2, vx: rnd(-15, 15) * S2, vy: -rnd(110, 170) * S2, s: rnd(18, 28) * S2, life: 0, max: 6, col: [rnd(120, 255), rnd(60, 220), rnd(80, 255)], ph: rnd(0, 6) }));
+          fx2.max = 6;
+          break;
+        case "rings":
+        case "jump":
+          fx2.rings = [];
+          fx2.max = spec.fx === "jump" ? 2.6 : 3.4;
+          break;
+        case "bokeh":
+        case "city":
+          add(Math.round(26 * k), () => ({ kind: "bokeh", x: rnd(0, w), y: rnd(h * 0.1, h * 0.9), vx: rnd(-14, 14) * S2, vy: rnd(-12, 6) * S2, s: rnd(20, 60) * S2, life: 0, max: rnd(3.5, 4.5), col: spec.fx === "city" ? [rnd(200, 255), rnd(140, 220), rnd(60, 160)] : mixW2(palC(), 0.3) }));
+          fx2.max = 4.5;
+          break;
+        case "ghosts":
+          add(Math.round(6 * k), () => ({ kind: "ghost", x: rnd(w * 0.1, w * 0.9), y: h * rnd(0.55, 0.95), vx: rnd(-20, 20) * S2, vy: -rnd(40, 80) * S2, s: rnd(26, 40) * S2, life: 0, max: 4.2, col: [220, 230, 255], ph: rnd(0, 6) }));
+          fx2.max = 4.2;
+          break;
+        case "orbit":
+        case "galaxy":
+          fx2.max = 4.2;
+          if (spec.fx === "galaxy") add(Math.round(70 * k), () => ({ kind: "orb", a: rnd(0, 6.3), r: rnd(R * 1.2, R * 3.2), sp: rnd(0.3, 0.9), x: 0, y: 0, s: rnd(1.5, 3.5) * S2, life: 0, max: 4.2, col: mixW2(palC(), rnd(0.3, 0.8)) }));
+          break;
+        case "rocket":
+          fx2.max = 2.8;
+          add(Math.round(30 * k), () => ({ kind: "streak", x: rnd(0, w), y: h + rnd(0, h * 0.5), vx: 0, vy: -rnd(900, 1500) * S2, s: rnd(30, 70) * S2, life: 0, max: 2.2, col: mixW2(palC(), 0.5) }));
+          break;
+        case "clock":
+          fx2.max = 3.6;
+          break;
+        case "speed":
+          fx2.max = 2.6;
+          break;
+        case "notes":
+          rise("note", 22, () => mixW2(palC(), 0.4), { fromCover: true, sz: 1.4, sp: 0.6 });
+          break;
+        case "boom":
+          fx2.max = 1.6;
+          burst2("spark", 40, [255, 220, 160], { sp: 1.6 });
+          break;
+        case "magic":
+          add(Math.round(46 * k), (i) => ({ kind: "orb", a: i / 46 * 6.28, r: R * 1.15, sp: 1.4, grow: R * 0.9, x: 0, y: 0, s: rnd(2, 4) * S2, life: 0, max: 3, col: mixW2([200, 150, 255], rnd(0.2, 0.8)) }));
+          burst2("glint", 16, [230, 200, 255], { sp: 0.6 });
+          fx2.max = 3;
+          break;
+        case "tint":
+          fx2.max = 3.2;
+          fx2.tintA = 0.08;
+          break;
+      }
+      fxs.push(fx2);
+    }
+    function draw(ctx, st) {
+      st0 = st;
+      const now = st.now;
+      if (queue2.length) {
+        queue2 = queue2.filter((q) => {
+          if (st.pos < q.at) return st.pos > q.at - 2e4;
+          if (st.pos - q.at < 1500 && st.playing) tryFire(q, now, st);
+          return false;
+        });
+      }
+      if (!fxs.length && !parts.length) return false;
+      const dt = clamp4(st.dt || 0.016, 0, 0.12), { w, h, cx, cy, dpr } = st, S2 = dpr || 1;
+      const main = ctx;
+      off ||= document.createElement("canvas");
+      if (off.width !== w || off.height !== h) {
+        off.width = w;
+        off.height = h;
+      }
+      ctx = off.getContext("2d");
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      for (const f of fxs) {
+        f.t += dt;
+        const p = f.t / f.max, env = clamp4(Math.min(f.t / 0.35, (f.max - f.t) / 0.8), 0, 1);
+        screen(ctx, f, p, env, st, st.pal, S2);
+      }
+      fxs = fxs.filter((f) => f.t < f.max);
+      ctx.globalCompositeOperation = "lighter";
+      const sp = glow();
+      for (const q of parts) {
+        q.life += dt;
+        if (q.kind === "orb") {
+          q.a += q.sp * dt;
+          const r = q.r + (q.grow ? q.grow * (q.life / q.max) : 0);
+          q.x = cx + Math.cos(q.a) * r;
+          q.y = cy + Math.sin(q.a) * r * 0.42;
+        } else {
+          if (q.drag) {
+            q.vx *= Math.exp(-q.drag * dt);
+            q.vy *= Math.exp(-q.drag * dt);
+            q.vy += 60 * S2 * dt;
+          }
+          if (q.kind === "flake" || q.kind === "petal" || q.kind === "feather" || q.kind === "bill") q.vx += Math.sin(q.life * 2 + q.rot) * 30 * S2 * dt;
+          if (q.kind === "fly") q.vx += Math.sin(q.life * 2.2 + q.ph) * 90 * S2 * dt;
+          if (q.kind === "coin" || q.kind === "drop") q.vy += 220 * S2 * dt;
+          q.x += q.vx * dt;
+          q.y += q.vy * dt;
+        }
+        q.rot += (q.vr || 0) * dt;
+        const a = clamp4(Math.min(q.life / 0.25, (q.max - q.life) / 0.7), 0, 1);
+        if (a > 0) part(ctx, q, a, sp, S2);
+      }
+      parts = parts.filter((q) => q.life < q.max && q.y < h + 300 && q.y > -h && q.x > -w * 0.7 && q.x < w * 1.7);
+      ctx.restore();
+      ctx.globalCompositeOperation = "destination-out";
+      const fade = ctx.createLinearGradient(0, h * 0.6, 0, h * 0.76);
+      fade.addColorStop(0, "rgba(0,0,0,0)");
+      fade.addColorStop(1, "rgba(0,0,0,1)");
+      ctx.fillStyle = fade;
+      ctx.fillRect(0, h * 0.6, w, h * 0.4);
+      ctx.globalCompositeOperation = "source-over";
+      main.save();
+      main.setTransform(1, 0, 0, 1, 0, 0);
+      main.globalCompositeOperation = "source-over";
+      main.globalAlpha = 0.72;
+      main.drawImage(off, 0, 0);
+      main.restore();
+      return true;
+    }
+    function part(ctx, q, a, sp, S2) {
+      const { x, y, s, col } = q;
+      switch (q.kind) {
+        case "ember":
+          ctx.globalAlpha = a * 0.9;
+          ctx.drawImage(sp, x - s * 1.6, y - s * 1.6, s * 3.2, s * 3.2);
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = rgba2(col, a);
+          ctx.beginPath();
+          ctx.arc(x, y, s * 0.35, 0, 6.3);
+          ctx.fill();
+          break;
+        case "streak": {
+          const x2 = x - q.vx * 0.02, y2 = y - q.vy * 0.02 - Math.sign(q.vy || 1) * s;
+          const g = ctx.createLinearGradient(x, y, x2, y2);
+          g.addColorStop(0, rgba2(col, a * 0.55));
+          g.addColorStop(1, rgba2(col, 0));
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 1.4 * S2;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+          break;
+        }
+        case "flake":
+          ctx.strokeStyle = rgba2(col, a * 0.85);
+          ctx.lineWidth = Math.max(1, s * 0.12);
+          ctx.beginPath();
+          for (let i = 0; i < 3; i++) {
+            const an = q.rot + i * Math.PI / 3;
+            ctx.moveTo(x - Math.cos(an) * s * 0.5, y - Math.sin(an) * s * 0.5);
+            ctx.lineTo(x + Math.cos(an) * s * 0.5, y + Math.sin(an) * s * 0.5);
+          }
+          ctx.stroke();
+          break;
+        case "heart":
+          ctx.globalAlpha = a * 0.5;
+          ctx.drawImage(sp, x - s * 2, y - s * 2, s * 4, s * 4);
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = rgba2(col, a * 0.92);
+          heartPath(ctx, x, y, s);
+          ctx.fill();
+          break;
+        case "star":
+          ctx.fillStyle = rgba2(col, a);
+          starPath(ctx, x, y, s, 5, 0.42);
+          ctx.fill();
+          ctx.globalAlpha = a * 0.6;
+          ctx.drawImage(sp, x - s * 2, y - s * 2, s * 4, s * 4);
+          ctx.globalAlpha = 1;
+          break;
+        case "glint": {
+          const tw = 0.5 + 0.5 * Math.sin(q.life * 14 + q.rot * 3);
+          ctx.fillStyle = rgba2(col, a * (0.5 + tw * 0.5));
+          starPath(ctx, x, y, s * (0.8 + tw * 0.6), 4, 0.18);
+          ctx.fill();
+          break;
+        }
+        case "drop":
+          ctx.fillStyle = rgba2(col, a * 0.75);
+          ctx.beginPath();
+          ctx.moveTo(x, y - s);
+          ctx.quadraticCurveTo(x + s * 0.6, y, x, y + s * 0.5);
+          ctx.quadraticCurveTo(x - s * 0.6, y, x, y - s);
+          ctx.fill();
+          break;
+        case "petal":
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(q.rot);
+          ctx.scale(1, 0.55 + 0.45 * Math.sin(q.life * 3 + q.rot));
+          ctx.fillStyle = rgba2(col, a * 0.85);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, s * 0.8, s * 0.45, 0, 0, 6.3);
+          ctx.fill();
+          ctx.restore();
+          break;
+        case "feather":
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(Math.sin(q.life * 1.5 + q.rot) * 0.6);
+          ctx.strokeStyle = rgba2(col, a * 0.8);
+          ctx.lineWidth = Math.max(1, S2);
+          ctx.beginPath();
+          ctx.moveTo(0, -s);
+          ctx.quadraticCurveTo(s * 0.25, 0, 0, s);
+          ctx.stroke();
+          ctx.fillStyle = rgba2(col, a * 0.35);
+          ctx.beginPath();
+          ctx.ellipse(s * 0.1, -s * 0.1, s * 0.32, s * 0.85, 0.15, 0, 6.3);
+          ctx.fill();
+          ctx.restore();
+          break;
+        case "bill":
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(q.rot);
+          ctx.scale(Math.cos(q.life * 4 + q.rot), 1);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = rgba2(col, a * 0.85);
+          ctx.fillRect(-s, -s * 0.5, s * 2, s);
+          ctx.strokeStyle = rgba2([220, 255, 220], a * 0.7);
+          ctx.lineWidth = Math.max(1, S2);
+          ctx.strokeRect(-s * 0.8, -s * 0.32, s * 1.6, s * 0.64);
+          ctx.restore();
+          ctx.globalCompositeOperation = "lighter";
+          break;
+        case "coin":
+          ctx.fillStyle = rgba2(col, a);
+          ctx.beginPath();
+          ctx.ellipse(x, y, s * 0.6 * Math.abs(Math.cos(q.life * 6 + q.rot)) + 1, s * 0.6, 0, 0, 6.3);
+          ctx.fill();
+          ctx.globalAlpha = a * 0.5;
+          ctx.drawImage(sp, x - s * 1.4, y - s * 1.4, s * 2.8, s * 2.8);
+          ctx.globalAlpha = 1;
+          break;
+        case "bird": {
+          const fl = Math.sin(q.life * 9 + q.ph) * 0.6;
+          ctx.strokeStyle = rgba2(col, a * 0.85);
+          ctx.lineWidth = Math.max(1.2, s * 0.16);
+          ctx.beginPath();
+          ctx.moveTo(x - s, y - s * fl);
+          ctx.quadraticCurveTo(x - s * 0.4, y - s * 0.3, x, y);
+          ctx.quadraticCurveTo(x + s * 0.4, y - s * 0.3, x + s, y - s * fl);
+          ctx.stroke();
+          break;
+        }
+        case "fly": {
+          const fl = Math.abs(Math.sin(q.life * 11 + q.ph));
+          ctx.fillStyle = rgba2(mixW2(col, 0.3), a * 0.85);
+          for (const sd of [-1, 1]) {
+            ctx.beginPath();
+            ctx.ellipse(x + sd * s * 0.5 * fl, y - s * 0.15, s * 0.55 * fl + 0.5, s * 0.7, sd * 0.4, 0, 6.3);
+            ctx.ellipse(x + sd * s * 0.35 * fl, y + s * 0.45, s * 0.35 * fl + 0.5, s * 0.4, -sd * 0.3, 0, 6.3);
+            ctx.fill();
+          }
+          break;
+        }
+        case "bubble":
+          ctx.strokeStyle = rgba2(col, a * 0.7);
+          ctx.lineWidth = Math.max(1, s * 0.1);
+          ctx.beginPath();
+          ctx.arc(x + Math.sin(q.life * 3 + q.rot) * 4 * S2, y, s * 0.6, 0, 6.3);
+          ctx.stroke();
+          ctx.fillStyle = rgba2([255, 255, 255], a * 0.5);
+          ctx.beginPath();
+          ctx.arc(x - s * 0.2, y - s * 0.22, s * 0.12, 0, 6.3);
+          ctx.fill();
+          break;
+        case "gust": {
+          const g = ctx.createLinearGradient(x - s, y, x, y);
+          g.addColorStop(0, rgba2(col, 0));
+          g.addColorStop(1, rgba2(col, a * 0.28));
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 1.5 * S2;
+          ctx.beginPath();
+          ctx.moveTo(x - s, y);
+          ctx.quadraticCurveTo(x - s * 0.5, y - 6 * S2, x, y);
+          ctx.stroke();
+          break;
+        }
+        case "puff": {
+          const r = s * (1 + q.life * 0.5);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.globalAlpha = a * 0.16;
+          ctx.drawImage(sp, x - r, y - r, r * 2, r * 2);
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = "lighter";
+          break;
+        }
+        case "spark":
+          ctx.strokeStyle = rgba2(col, a);
+          ctx.lineWidth = 1.6 * S2;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x - q.vx * 0.03, y - q.vy * 0.03);
+          ctx.stroke();
+          break;
+        case "conf":
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(q.rot);
+          ctx.scale(Math.cos(q.life * 5 + q.rot), 1);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = rgba2(col, a * 0.9);
+          ctx.fillRect(-s * 0.5, -s * 0.3, s, s * 0.6);
+          ctx.restore();
+          ctx.globalCompositeOperation = "lighter";
+          break;
+        case "balloon": {
+          const bx = x + Math.sin(q.life * 1.3 + q.ph) * 12 * S2;
+          ctx.globalCompositeOperation = "source-over";
+          ctx.strokeStyle = rgba2([255, 255, 255], a * 0.4);
+          ctx.lineWidth = Math.max(1, S2 * 0.8);
+          ctx.beginPath();
+          ctx.moveTo(bx, y + s * 1.2);
+          ctx.quadraticCurveTo(bx + 6 * S2, y + s * 2, bx, y + s * 2.8);
+          ctx.stroke();
+          const g = ctx.createRadialGradient(bx - s * 0.3, y - s * 0.4, s * 0.1, bx, y, s * 1.2);
+          g.addColorStop(0, rgba2(mixW2(col, 0.6), a * 0.95));
+          g.addColorStop(1, rgba2(col, a * 0.85));
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.ellipse(bx, y, s * 0.9, s * 1.15, 0, 0, 6.3);
+          ctx.fill();
+          ctx.globalCompositeOperation = "lighter";
+          break;
+        }
+        case "bokeh":
+          ctx.globalAlpha = a * 0.22;
+          ctx.fillStyle = rgba2(col, 1);
+          ctx.beginPath();
+          ctx.arc(x, y, s, 0, 6.3);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          break;
+        case "ghost": {
+          const sw = Math.sin(q.life * 2 + q.ph) * 10 * S2;
+          ctx.globalAlpha = a * 0.22;
+          ctx.drawImage(sp, x + sw - s, y - s * 1.4, s * 2, s * 2.8);
+          ctx.globalAlpha = a * 0.5;
+          ctx.fillStyle = "rgba(20,20,40,1)";
+          ctx.globalCompositeOperation = "source-over";
+          for (const ex of [-0.25, 0.25]) {
+            ctx.beginPath();
+            ctx.arc(x + sw + ex * s, y - s * 0.5, s * 0.09, 0, 6.3);
+            ctx.fill();
+          }
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 1;
+          break;
+        }
+        case "orb":
+          ctx.globalAlpha = a;
+          ctx.drawImage(sp, x - s * 2, y - s * 2, s * 4, s * 4);
+          ctx.globalAlpha = 1;
+          break;
+        case "note":
+          ctx.fillStyle = rgba2(col, a * 0.9);
+          ctx.strokeStyle = rgba2(col, a * 0.9);
+          ctx.lineWidth = Math.max(1.4, s * 0.13);
+          ctx.beginPath();
+          ctx.ellipse(x, y, s * 0.42, s * 0.3, -0.4, 0, 6.3);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(x + s * 0.38, y);
+          ctx.lineTo(x + s * 0.38, y - s * 1.3);
+          ctx.quadraticCurveTo(x + s * 0.9, y - s * 1, x + s * 0.8, y - s * 0.55);
+          ctx.stroke();
+          break;
+      }
+    }
+    function screen(ctx, f, p, env, st, pal, S2) {
+      const { w, h, cx, cy, R } = st, t2 = f.t;
+      ctx.globalCompositeOperation = "lighter";
+      switch (f.name) {
+        case "flames":
+        case "hellfire": {
+          const hot = f.name === "hellfire" ? [255, 40, 20] : [255, 130, 40];
+          const fl = 0.75 + 0.25 * Math.sin(t2 * 11) * Math.sin(t2 * 7.3) + 0.2 * (st.beat || 0);
+          const g = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 2.6);
+          g.addColorStop(0, rgba2(hot, 0.32 * env * fl));
+          g.addColorStop(1, rgba2(hot, 0));
+          ctx.fillStyle = g;
+          ctx.fillRect(cx - R * 2.6, cy - R * 2.6, R * 5.2, R * 5.2);
+          break;
+        }
+        case "rain":
+        case "storm":
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = `rgba(10,20,45,${(0.12 * env).toFixed(3)})`;
+          ctx.fillRect(0, 0, w, h);
+          ctx.globalCompositeOperation = "lighter";
+          if (f.bolts) bolts(ctx, f, st, S2);
+          break;
+        case "lightning":
+          bolts(ctx, f, st, S2);
+          break;
+        case "frost": {
+          const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
+          g.addColorStop(0, "rgba(160,220,255,0)");
+          g.addColorStop(1, rgba2([170, 225, 255], 0.32 * env));
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          break;
+        }
+        case "sun":
+        case "beach": {
+          const sx = w * 0.82, sy = h * 0.14, r = Math.min(w, h) * 0.5;
+          const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
+          g.addColorStop(0, rgba2([255, 240, 190], 0.55 * env));
+          g.addColorStop(0.25, rgba2([255, 190, 90], 0.22 * env));
+          g.addColorStop(1, "rgba(255,160,60,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          for (let i = 0; i < 9; i++) {
+            const a = t2 * 0.15 + i / 9 * Math.PI * 2;
+            ctx.strokeStyle = rgba2([255, 220, 150], 0.08 * env);
+            ctx.lineWidth = 22 * S2;
+            ctx.beginPath();
+            ctx.moveTo(sx + Math.cos(a) * r * 0.12, sy + Math.sin(a) * r * 0.12);
+            ctx.lineTo(sx + Math.cos(a) * r * 1.3, sy + Math.sin(a) * r * 1.3);
+            ctx.stroke();
+          }
+          if (f.wave) waves(ctx, t2, env, w, h, [60, 190, 230], S2);
+          break;
+        }
+        case "moon": {
+          const mx = w * 0.16, my = h * 0.17, r = Math.min(w, h) * 0.07;
+          const g = ctx.createRadialGradient(mx, my, r * 0.8, mx, my, r * 4);
+          g.addColorStop(0, rgba2([220, 225, 255], 0.3 * env));
+          g.addColorStop(1, "rgba(200,210,255,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = rgba2([240, 240, 255], 0.85 * env);
+          ctx.beginPath();
+          ctx.arc(mx, my, r, 0, 6.3);
+          ctx.fill();
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = `rgba(14,12,30,${(0.92 * env).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(mx + r * 0.45, my - r * 0.2, r * 0.9, 0, 6.3);
+          ctx.fill();
+          ctx.globalCompositeOperation = "lighter";
+          break;
+        }
+        case "rays":
+        case "heaven":
+        case "feathers": {
+          if (f.name === "feathers" && !f.rays) break;
+          for (let i = 0; i < 7; i++) {
+            const x0 = w * (0.2 + i * 0.1) + Math.sin(t2 * 0.6 + i) * 30 * S2, spread = w * 0.08;
+            const g = ctx.createLinearGradient(x0, 0, x0, h);
+            g.addColorStop(0, rgba2([255, 250, 230], 0.16 * env));
+            g.addColorStop(1, "rgba(255,250,230,0)");
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(x0 - spread * 0.15, 0);
+            ctx.lineTo(x0 + spread * 0.15, 0);
+            ctx.lineTo(x0 + spread, h);
+            ctx.lineTo(x0 - spread, h);
+            ctx.fill();
+          }
+          break;
+        }
+        case "night":
+        case "dark": {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = `rgba(2,2,10,${(0.2 * env).toFixed(3)})`;
+          ctx.fillRect(0, 0, w, h);
+          ctx.globalCompositeOperation = "lighter";
+          if (f.name === "night") {
+            const sp = glow();
+            for (let i = 0; i < 40; i++) {
+              const x = (Math.sin(i * 91.7 + f.seed * 50) + 1) / 2 * w, y = (Math.sin(i * 47.3 + f.seed * 20) + 1) / 2 * h * 0.6;
+              ctx.globalAlpha = clamp4(env * (0.3 + 0.4 * Math.sin(t2 * 3 + i)), 0, 1);
+              const r = (2 + i % 3) * S2;
+              ctx.drawImage(sp, x - r * 2, y - r * 2, r * 4, r * 4);
+            }
+            ctx.globalAlpha = 1;
+          }
+          break;
+        }
+        case "bloom": {
+          const r = Math.max(w, h) * (0.3 + p * 0.5);
+          const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+          g.addColorStop(0, rgba2([255, 255, 255], 0.25 * env * (1 - p)));
+          g.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          break;
+        }
+        case "heartbreak": {
+          const s = R * 0.7, split = clamp4((t2 - 0.7) / 1.4, 0, 1), y0 = cy - R * 1.6 + split * split * h * 0.5;
+          for (const sd of [-1, 1]) {
+            ctx.save();
+            ctx.translate(cx + sd * split * R * 0.9, y0);
+            ctx.rotate(sd * split * 0.6);
+            ctx.beginPath();
+            ctx.rect(sd < 0 ? -s * 1.2 : 0, -s * 1.2, s * 1.2, s * 2.4);
+            ctx.clip();
+            ctx.fillStyle = rgba2([255, 60, 100], 0.85 * env);
+            heartPath(ctx, 0, 0, s);
+            ctx.fill();
+            ctx.restore();
+          }
+          break;
+        }
+        case "gold":
+        case "tint": {
+          const c2 = f.col || [255, 255, 255];
+          const g = ctx.createRadialGradient(cx, cy, R, w / 2, h / 2, Math.max(w, h) * 0.8);
+          g.addColorStop(0, rgba2(c2, (f.tintA || 0.16) * env));
+          g.addColorStop(1, rgba2(c2, (f.tintA || 0.16) * 0.5 * env));
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          break;
+        }
+        case "crown": {
+          const s = R * 0.55, y = cy - R * 1.35 + Math.sin(t2 * 2.4) * 6 * S2 - (1 - env) * 30 * S2;
+          ctx.fillStyle = rgba2([255, 205, 70], 0.9 * env);
+          ctx.beginPath();
+          ctx.moveTo(cx - s, y + s * 0.5);
+          ctx.lineTo(cx - s, y - s * 0.2);
+          ctx.lineTo(cx - s * 0.5, y + s * 0.15);
+          ctx.lineTo(cx, y - s * 0.55);
+          ctx.lineTo(cx + s * 0.5, y + s * 0.15);
+          ctx.lineTo(cx + s, y - s * 0.2);
+          ctx.lineTo(cx + s, y + s * 0.5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.globalAlpha = 0.6 * env;
+          ctx.drawImage(glow(), cx - s * 2, y - s * 1.6, s * 4, s * 3.2);
+          ctx.globalAlpha = 1;
+          break;
+        }
+        case "wave":
+          waves(ctx, t2, env, w, h, mixW2(pal?.[1] || [60, 150, 255], 0.2), S2);
+          break;
+        case "rainbow": {
+          const cols = [[255, 60, 60], [255, 150, 40], [255, 230, 60], [70, 220, 90], [60, 150, 255], [150, 80, 255]];
+          const r0 = R * 1.6, grow = Math.min(1, t2 / 1.1);
+          cols.forEach((c2, i) => {
+            ctx.strokeStyle = rgba2(c2, 0.42 * env);
+            ctx.lineWidth = 9 * S2;
+            ctx.beginPath();
+            ctx.arc(cx, cy + R * 0.6, r0 + i * 10 * S2, Math.PI, Math.PI + Math.PI * grow);
+            ctx.stroke();
+          });
+          break;
+        }
+        case "fireworks":
+          for (const r of f.rockets) {
+            if (r.done || t2 < r.d) continue;
+            r.done = true;
+            const c2 = (pal || [[255, 220, 120]])[Math.random() * 3 | 0];
+            add(40, () => {
+              const a = rnd(0, 6.3), v = rnd(160, 380) * S2;
+              return { kind: "spark", x: r.x, y: r.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 1.8, life: 0, max: rnd(1.2, 1.9), s: 3 * S2, col: mixW2(c2, rnd(0, 0.6)) };
+            });
+          }
+          break;
+        case "rings":
+        case "jump": {
+          const beatIdx = st.beatIdx ?? -1;
+          if (beatIdx !== f.lastBeat && (f.name === "jump" || beatIdx % 2 === 0)) {
+            f.lastBeat = beatIdx;
+            f.rings.push({ r: R, a: f.name === "jump" ? 0.7 : 0.5 });
+          }
+          const dt = st.dt || 0.016;
+          for (const g of f.rings) {
+            g.r += (f.name === "jump" ? 900 : 520) * S2 * dt;
+            g.a *= Math.exp(-dt * 2.4);
+            ctx.strokeStyle = rgba2(pal?.[0] || [255, 255, 255], g.a * env);
+            ctx.lineWidth = 3 * S2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, g.r, 0, 6.3);
+            ctx.stroke();
+          }
+          f.rings = f.rings.filter((g) => g.a > 0.03);
+          break;
+        }
+        case "orbit": {
+          const rx = R * 2.1, ry = R * 0.6, a = t2 * 1.6, tilt = -0.25;
+          ctx.strokeStyle = rgba2(mixW2(pal?.[2] || [200, 220, 255], 0.3), 0.35 * env);
+          ctx.lineWidth = 2 * S2;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, rx, ry, tilt, 0, 6.3);
+          ctx.stroke();
+          const ex = Math.cos(a) * rx, ey = Math.sin(a) * ry;
+          const px0 = cx + ex * Math.cos(tilt) - ey * Math.sin(tilt), py0 = cy + ex * Math.sin(tilt) + ey * Math.cos(tilt);
+          ctx.globalAlpha = env;
+          ctx.drawImage(glow(), px0 - 22 * S2, py0 - 22 * S2, 44 * S2, 44 * S2);
+          ctx.globalAlpha = 1;
+          break;
+        }
+        case "galaxy": {
+          const g = ctx.createRadialGradient(cx, cy, R, cx, cy, R * 3.4);
+          g.addColorStop(0, rgba2(mixW2(pal?.[1] || [120, 90, 255], 0.2), 0.16 * env));
+          g.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+          break;
+        }
+        case "rocket": {
+          const y = h - t2 / f.max * h * 1.3, x = w * 0.5 + Math.sin(f.seed * 9) * w * 0.3;
+          const g = ctx.createLinearGradient(x, y, x, y + h * 0.35);
+          g.addColorStop(0, rgba2([255, 230, 180], 0.7 * env));
+          g.addColorStop(1, "rgba(255,120,40,0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(x - 6 * S2, y);
+          ctx.lineTo(x + 6 * S2, y);
+          ctx.lineTo(x + 18 * S2, y + h * 0.35);
+          ctx.lineTo(x - 18 * S2, y + h * 0.35);
+          ctx.fill();
+          break;
+        }
+        case "clock": {
+          const r = R * 1.45;
+          for (let i = 0; i < 12; i++) {
+            const a = i / 12 * Math.PI * 2 - Math.PI / 2;
+            ctx.strokeStyle = rgba2([255, 255, 255], (i % 3 ? 0.25 : 0.5) * env);
+            ctx.lineWidth = (i % 3 ? 2 : 4) * S2;
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+            ctx.lineTo(cx + Math.cos(a) * (r + 14 * S2), cy + Math.sin(a) * (r + 14 * S2));
+            ctx.stroke();
+          }
+          ctx.strokeStyle = rgba2(pal?.[0] || [255, 255, 255], 0.7 * env);
+          ctx.lineWidth = 3 * S2;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r + 7 * S2, -Math.PI / 2, -Math.PI / 2 + t2 * 2.2);
+          ctx.stroke();
+          break;
+        }
+        case "speed":
+          for (let i = 0; i < 60; i++) {
+            const a = i / 60 * Math.PI * 2 + f.seed * 6, ph = (t2 * 1.6 + i * 37 % 11 / 11) % 1;
+            const r0 = R * 1.3 + ph * Math.max(w, h) * 0.7;
+            ctx.strokeStyle = rgba2([255, 255, 255], 0.22 * env * (1 - ph));
+            ctx.lineWidth = 2 * S2;
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+            ctx.lineTo(cx + Math.cos(a) * (r0 + 80 * S2), cy + Math.sin(a) * (r0 + 80 * S2));
+            ctx.stroke();
+          }
+          break;
+        case "boom": {
+          const r = R + p * Math.max(w, h) * 0.9;
+          ctx.strokeStyle = rgba2([255, 230, 190], 0.6 * (1 - p));
+          ctx.lineWidth = (14 * (1 - p) + 2) * S2;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, 6.3);
+          ctx.stroke();
+          if (t2 < 0.15) {
+            ctx.fillStyle = `rgba(255,240,220,${(0.16 * (1 - t2 / 0.15)).toFixed(3)})`;
+            ctx.fillRect(0, 0, w, h);
+          }
+          break;
+        }
+        case "sparks":
+          if (f.flicker && Math.random() < 0.18) {
+            ctx.fillStyle = `rgba(160,210,255,${(0.12 * env).toFixed(3)})`;
+            ctx.fillRect(0, 0, w, h);
+          }
+          break;
+      }
+      ctx.globalCompositeOperation = "lighter";
+    }
+    function waves(ctx, t2, env, w, h, c2, S2) {
+      const { cx, cy, R } = st0;
+      for (let k = 0; k < 4; k++) {
+        const ph = (t2 * 0.45 + k / 4) % 1, r = R * (1.15 + ph * 1.9);
+        ctx.strokeStyle = rgba2(c2, 0.32 * env * (1 - ph));
+        ctx.lineWidth = 2.5 * S2;
+        ctx.beginPath();
+        for (let i = 0; i <= 72; i++) {
+          const a = i / 72 * Math.PI * 2, rr = r + Math.sin(a * 6 + t2 * 2 + k) * 5 * S2;
+          const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr * 0.9;
+          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      }
+      void w;
+      void h;
+    }
+    function bolts(ctx, f, st, S2) {
+      const { w, h } = st;
+      for (let i = 0; i < f.bolts.length; i++) {
+        const d = f.t - f.bolts[i];
+        if (d < 0 || d > 0.35) continue;
+        const a = 1 - d / 0.35;
+        ctx.fillStyle = `rgba(220,230,255,${(0.14 * a).toFixed(3)})`;
+        ctx.fillRect(0, 0, w, h);
+        f["path" + i] ||= (() => {
+          const pts = [[w * (0.2 + Math.random() * 0.6), 0]];
+          let [x, y] = pts[0];
+          while (y < h * 0.7) {
+            x += rnd(-50, 50) * S2;
+            y += rnd(30, 70) * S2;
+            pts.push([x, y]);
+          }
+          return pts;
+        })();
+        for (const [lw, al] of [[10 * S2, 0.25], [3 * S2, 0.95]]) {
+          ctx.strokeStyle = `rgba(235,240,255,${(al * a).toFixed(3)})`;
+          ctx.lineWidth = lw;
+          ctx.beginPath();
+          f["path" + i].forEach(([x, y], k) => k ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+          ctx.stroke();
+        }
+      }
+    }
+    function reset() {
+      queue2 = [];
+      fxs = [];
+      parts = [];
+    }
+    return { prepare: prepare2, addTranslated, onLine, draw, fire, reset, needsTranslation, get uri() {
+      return uriNow;
+    } };
+  }
+  var LEX, clamp4, rnd, rgba2, mixW2, NOSPACE, TOKEN, strip, low, SCRIPTS, FX, GLOW, IDX;
+  var init_words = __esm({
+    "src/words.js"() {
+      LEX = {};
+      clamp4 = (v, a, b) => Math.min(b, Math.max(a, v));
+      rnd = (a, b) => a + Math.random() * (b - a);
+      rgba2 = (c2, a) => `rgba(${c2[0] | 0},${c2[1] | 0},${c2[2] | 0},${clamp4(a, 0, 1).toFixed(3)})`;
+      mixW2 = (c2, f) => c2.map((v) => v + (255 - v) * f);
+      NOSPACE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Hangul}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
+      TOKEN = /[\p{L}\p{M}\p{N}'’]+/gu;
+      strip = (s) => s.normalize("NFD").replace(new RegExp("\\p{M}", "gu"), "").normalize("NFC");
+      low = (s) => String(s || "").normalize("NFC").toLocaleLowerCase();
+      SCRIPTS = [
+        [new RegExp("\\p{Script=Hangul}", "u"), ["ko"]],
+        [/[\p{Script=Hiragana}\p{Script=Katakana}]/u, ["ja"]],
+        [new RegExp("\\p{Script=Han}", "u"), ["zh", "ja"]],
+        [new RegExp("\\p{Script=Thai}", "u"), ["th"]],
+        [new RegExp("\\p{Script=Hebrew}", "u"), ["he"]],
+        [new RegExp("\\p{Script=Arabic}", "u"), ["ar", "fa", "ur"]],
+        [new RegExp("\\p{Script=Devanagari}", "u"), ["hi"]],
+        [new RegExp("\\p{Script=Bengali}", "u"), ["bn"]],
+        [new RegExp("\\p{Script=Tamil}", "u"), ["ta"]],
+        [new RegExp("\\p{Script=Gurmukhi}", "u"), ["pa"]],
+        [new RegExp("\\p{Script=Greek}", "u"), ["el"]],
+        [new RegExp("\\p{Script=Cyrillic}", "u"), ["ru", "uk", "bg", "sr"]]
+      ];
+      FX = {
+        fire: { fx: "flames", pri: 5 },
+        rain: { fx: "rain", pri: 5 },
+        storm: { fx: "storm", pri: 6 },
+        lightning: { fx: "lightning", pri: 6 },
+        snow: { fx: "snow", pri: 5 },
+        cold: { fx: "frost", pri: 4 },
+        sun: { fx: "sun", pri: 4 },
+        summer: { fx: "sun", pri: 3 },
+        moon: { fx: "moon", pri: 4 },
+        star: { fx: "stars", pri: 4 },
+        sky: { fx: "rays", pri: 2 },
+        heaven: { fx: "heaven", pri: 4 },
+        night: { fx: "night", pri: 2 },
+        dark: { fx: "dark", pri: 2 },
+        light: { fx: "bloom", pri: 2 },
+        heart: { fx: "hearts", pri: 4 },
+        love: { fx: "love", pri: 2 },
+        kiss: { fx: "kiss", pri: 4 },
+        heartbreak: { fx: "heartbreak", pri: 6 },
+        tears: { fx: "tears", pri: 4 },
+        money: { fx: "money", pri: 5 },
+        gold: { fx: "gold", pri: 3 },
+        diamond: { fx: "diamond", pri: 4 },
+        crown: { fx: "crown", pri: 5 },
+        fly: { fx: "birds", pri: 3 },
+        bird: { fx: "birds", pri: 4 },
+        butterfly: { fx: "butterflies", pri: 5 },
+        flower: { fx: "petals", pri: 4 },
+        rose: { fx: "roses", pri: 4 },
+        ocean: { fx: "wave", pri: 4 },
+        water: { fx: "bubbles", pri: 3 },
+        wind: { fx: "wind", pri: 3 },
+        smoke: { fx: "smoke", pri: 4 },
+        electric: { fx: "sparks", pri: 4 },
+        rainbow: { fx: "rainbow", pri: 5 },
+        fireworks: { fx: "fireworks", pri: 6 },
+        party: { fx: "confetti", pri: 3 },
+        birthday: { fx: "balloons", pri: 6 },
+        dance: { fx: "rings", pri: 2 },
+        jump: { fx: "jump", pri: 3 },
+        dream: { fx: "bokeh", pri: 2 },
+        ghost: { fx: "ghosts", pri: 5 },
+        angel: { fx: "feathers", pri: 5 },
+        devil: { fx: "hellfire", pri: 5 },
+        world: { fx: "orbit", pri: 3 },
+        space: { fx: "galaxy", pri: 4 },
+        rocket: { fx: "rocket", pri: 5 },
+        time: { fx: "clock", pri: 2 },
+        drive: { fx: "speed", pri: 3 },
+        city: { fx: "city", pri: 3 },
+        music: { fx: "notes", pri: 2 },
+        sing: { fx: "notes", pri: 2 },
+        boom: { fx: "boom", pri: 5 },
+        champagne: { fx: "champagne", pri: 4 },
+        magic: { fx: "magic", pri: 4 },
+        beach: { fx: "beach", pri: 4 },
+        christmas: { fx: "christmas", pri: 6 },
+        red: { fx: "tint", col: [255, 40, 60], pri: 1 },
+        blue: { fx: "tint", col: [40, 110, 255], pri: 1 },
+        green: { fx: "tint", col: [40, 220, 110], pri: 1 },
+        pink: { fx: "tint", col: [255, 90, 190], pri: 1 },
+        purple: { fx: "tint", col: [160, 70, 255], pri: 1 },
+        white: { fx: "tint", col: [255, 255, 255], pri: 1 },
+        black: { fx: "dark", pri: 1 },
+        silver: { fx: "diamond", pri: 1 }
+      };
+      GLOW = {
+        flames: [255, 140, 40],
+        hellfire: [255, 50, 30],
+        rain: [120, 180, 255],
+        storm: [170, 190, 255],
+        lightning: [220, 230, 255],
+        snow: [220, 240, 255],
+        frost: [160, 220, 255],
+        sun: [255, 210, 90],
+        moon: [230, 230, 255],
+        stars: [255, 240, 180],
+        hearts: [255, 80, 130],
+        love: [255, 110, 160],
+        kiss: [255, 90, 170],
+        heartbreak: [255, 60, 90],
+        tears: [140, 200, 255],
+        money: [120, 230, 120],
+        gold: [255, 200, 60],
+        diamond: [180, 240, 255],
+        crown: [255, 205, 70],
+        petals: [255, 150, 200],
+        roses: [255, 50, 80],
+        wave: [60, 170, 255],
+        bubbles: [140, 220, 255],
+        fireworks: [255, 220, 120],
+        balloons: [255, 120, 180],
+        rainbow: [255, 200, 120],
+        christmas: [255, 70, 70],
+        champagne: [255, 225, 140],
+        magic: [200, 150, 255]
+      };
+      IDX = null;
+    }
+  });
+
+  // src/lexicon/lex-a.json
+  var lex_a_default;
+  var init_lex_a = __esm({
+    "src/lexicon/lex-a.json"() {
+      lex_a_default = {
+        en: {
+          stop: "the|and|you|i'm|you're|don't|my|me|with|what|this|that|your|it's|can't|just|we|they|because|know",
+          c: {
+            fire: "fire|fires|flame|flames|burn|burning|burns|burned|burnt|blaze|blazing|ablaze|on fire|inferno",
+            rain: "rain|raining|rains|rainy|rained|raindrops|downpour",
+            storm: "storm|storms|stormy|thunder|thunderstorm|hurricane|tempest",
+            lightning: "lightning|thunderbolt|lightnin'|lightning strike",
+            snow: "snow|snowing|snowflake|snowflakes|snowfall|snowy",
+            cold: "cold|colder|ice|icy|frozen|freeze|freezing|frost|frosty",
+            sun: "sun|sunshine|sunlight|sunrise|sunset|sunny|sunbeam|sunbeams",
+            summer: "summer|summertime|summers|summer's",
+            moon: "moon|moonlight|moonlit|full moon|moonshine",
+            star: "star|stars|stardust|starlight|starry|shooting star|superstar",
+            sky: "sky|skies|cloud|clouds|cloudy",
+            heaven: "heaven|heavens|heavenly|paradise",
+            night: "night|nights|tonight|midnight|tonite|overnight",
+            dark: "dark|darker|darkest|darkness|shadow|shadows",
+            light: "light|lights|shine|shining|shines|glow|glowing|bright|brighter",
+            heart: "heart|hearts|heartbeat|heart's",
+            love: "love|loving|lovin'|lover|lovers|in love|loved|loves",
+            kiss: "kiss|kisses|kissing|kissed|lips",
+            heartbreak: "heartbreak|heartbroken|broken heart|break my heart|heartache|brokenhearted",
+            tears: "tears|cry|crying|cryin'|cried|cries|teardrops|weep|weeping",
+            money: "money|cash|rich|dollars|dollar|bills|euros|racks|stacks|bucks|wealthy",
+            gold: "gold|golden|gold's",
+            diamond: "diamond|diamonds|jewels|jewelry|bling",
+            crown: "crown|crowned|king|kings|queen|queens",
+            fly: "fly|flying|flyin'|flies|flew|wings|soar|soaring",
+            bird: "bird|birds|birdie|bluebird|songbird",
+            butterfly: "butterfly|butterflies",
+            flower: "flower|flowers|bloom|blooming|blossom|blossoms|daisy|daisies",
+            rose: "rose|roses",
+            ocean: "ocean|oceans|sea|seas|waves|wave|tide",
+            water: "water|waters|river|rivers|swim|swimming",
+            wind: "wind|winds|windy|breeze|blowing|blowin'|blow",
+            smoke: "smoke|smoking|smokin'|smoky",
+            electric: "electric|electricity|energy|electrified|voltage",
+            rainbow: "rainbow|rainbows|colours|colors",
+            fireworks: "fireworks|firework",
+            party: "party|partying|parties|celebrate|celebration|party's",
+            birthday: "birthday|birthdays|happy birthday",
+            dance: "dance|dancing|dancin'|dancer|dances|danced|dancefloor|dance floor",
+            jump: "jump|jumping|jumpin'|jumped|jumps",
+            dream: "dream|dreams|dreaming|dreamin'|dreamer|dreamed|dreamt",
+            ghost: "ghost|ghosts|spirit|spirits|phantom",
+            angel: "angel|angels|angelic",
+            devil: "devil|devils|hell|demon|demons|satan",
+            world: "world|worlds|earth|planet",
+            space: "space|outer space|galaxy|galaxies|universe|cosmos|cosmic",
+            rocket: "rocket|rockets|take off|launch|liftoff|blast off",
+            time: "time|clock|forever|tick tock|times",
+            drive: "drive|driving|drivin'|car|cars|road|highway|speed|fast|ride",
+            city: "city|cities|streets|street|downtown",
+            music: "music|song|songs|melody|beat|beats|rhythm",
+            sing: "sing|singing|singin'|sang|sung|voice|voices",
+            boom: "boom|bang|explode|explosion|bomb|kaboom",
+            champagne: "champagne|cheers|toast|drink|drinks|bottle|bottles",
+            magic: "magic|magical|spell|spells",
+            beach: "beach|island|palm trees|seaside|shore",
+            christmas: "christmas|xmas|santa|sleigh|jingle bells|mistletoe|bells",
+            red: "red|crimson|scarlet",
+            blue: "blue",
+            green: "green|emerald",
+            pink: "pink",
+            purple: "purple|violet|lavender",
+            white: "white|snow white",
+            black: "black|pitch black",
+            silver: "silver|silvery"
+          }
+        },
+        de: {
+          stop: "und|ich|nicht|du|ist|das|der|mich|mir|dich|dir|ein|eine|auch|wir|nur|noch|wenn|kein|bist",
+          c: {
+            fire: "feuer|flamme|flammen|brennen|brennt|brenn|brannte|lodern|lichterloh|feurig|in flammen",
+            rain: "regen|regnet|regnen|regnerisch|regentropfen",
+            storm: "sturm|st\xFCrme|gewitter|donner|orkan|hurrikan|unwetter",
+            lightning: "blitz|blitze|blitzen|blitzt|blitzschlag",
+            snow: "schnee|schneit|schneien|schneeflocke|schneeflocken",
+            cold: "kalt|k\xE4lte|kalte|kalter|kalten|eis|eiskalt|gefroren|frieren|erfroren|frost",
+            sun: "sonne|sonnenschein|sonnenaufgang|sonnenuntergang|sonnenlicht|sonnenstrahl|sonnenstrahlen|sonnig",
+            summer: "sommer|sommers|sommernacht|sommern\xE4chte|sommertag",
+            moon: "mond|mondlicht|mondschein|vollmond",
+            star: "stern|sterne|sternen|sternenstaub|sternschnuppe|sternenhimmel",
+            sky: "himmel|wolke|wolken|wolkenlos",
+            heaven: "paradies|himmelreich|im himmel",
+            night: "nacht|n\xE4chte|heute nacht|heut nacht|mitternacht|nachts",
+            dark: "dunkel|dunkelheit|dunkle|dunklen|dunkler|schatten|finsternis|finster",
+            light: "licht|lichter|leuchten|leuchtet|scheinen|strahlen|glanz|gl\xFChen",
+            heart: "herz|herzen|herzschlag|herzens",
+            love: "liebe|lieben|liebst|liebt|verliebt|geliebt|ich liebe dich|liebling",
+            kiss: "kuss|k\xFCsse|k\xFCssen|k\xFCss|k\xFCsst|lippen",
+            heartbreak: "herzschmerz|gebrochenes herz|liebeskummer|herz gebrochen|brichst mein herz",
+            tears: "tr\xE4nen|tr\xE4ne|weinen|weine|weinst|weint",
+            money: "geld|kohle|cash|reich|euro|dollar|scheine|moneten|knete|kies",
+            gold: "gold|golden|goldene|goldenen|goldener|goldenes",
+            diamond: "diamant|diamanten|juwelen|schmuck",
+            crown: "krone|k\xF6nig|k\xF6nigin|k\xF6nige",
+            fly: "fliegen|fliege|fliegt|flieg|flog|fl\xFCgel",
+            bird: "vogel|v\xF6gel|v\xF6gelein|v\xF6glein",
+            butterfly: "schmetterling|schmetterlinge",
+            flower: "blume|blumen|bl\xFCte|bl\xFCten|bl\xFChen|bl\xFCht",
+            rose: "rose|rosen",
+            ocean: "meer|meere|ozean|wellen|welle",
+            water: "wasser|fluss|fl\xFCsse|schwimmen",
+            wind: "wind|winde|brise|weht|wehen",
+            smoke: "rauch|rauchen|raucht|qualm",
+            electric: "elektrisch|elektrisiert|energie|strom|elektrizit\xE4t",
+            rainbow: "regenbogen|regenbogenfarben|farben|bunt",
+            fireworks: "feuerwerk|feuerwerke",
+            party: "party|partys|feiern|feier|fete|fest",
+            birthday: "geburtstag|geburtstags|happy birthday",
+            dance: "tanzen|tanz|tanzt|tanze|t\xE4nzer|t\xE4nzerin",
+            jump: "springen|spring|springt|sprung|h\xFCpfen",
+            dream: "traum|tr\xE4ume|tr\xE4umen|tr\xE4umst|tr\xE4umt|traumhaft",
+            ghost: "geist|geister|gespenst|gespenster",
+            angel: "engel|engelchen",
+            devil: "teufel|h\xF6lle|d\xE4mon|d\xE4monen",
+            world: "welt|erde|planet",
+            space: "weltall|weltraum|galaxie|universum|kosmos",
+            rocket: "rakete|raketen|abheben|startklar",
+            time: "zeit|uhr|f\xFCr immer|ewig|ewigkeit",
+            drive: "fahren|fahr|f\xE4hrt|auto|stra\xDFe|autobahn|schnell|gas geben|vollgas",
+            city: "stadt|st\xE4dte|stra\xDFen|innenstadt",
+            music: "musik|lied|lieder|song|melodie|beat",
+            sing: "singen|sing|singt|gesang|stimme",
+            boom: "boom|bumm|knall|peng|explodieren|explosion|bombe",
+            champagne: "champagner|sekt|prost|ansto\xDFen|trinken|flasche",
+            magic: "magie|magisch|zauber|zaubern|verzaubert",
+            beach: "strand|insel|palmen",
+            christmas: "weihnachten|weihnacht|weihnachtsmann|christkind|schlitten|glocken",
+            red: "rot|rote|roten|roter|rotes",
+            blue: "blau|blaue|blauen|blauer|blaues",
+            green: "gr\xFCn|gr\xFCne|gr\xFCnen|gr\xFCner|gr\xFCnes",
+            pink: "rosa|pink",
+            purple: "lila|violett",
+            white: "wei\xDFe|wei\xDFen|wei\xDFer|wei\xDFes|schneewei\xDF",
+            black: "schwarz|schwarze|schwarzen|schwarzer|schwarzes",
+            silver: "silber|silbern|silberne|silbernen"
+          }
+        },
+        nl: {
+          stop: "het|een|niet|ik|je|jij|wij|zijn|maar|ook|wat|mijn|dat|voor|naar|nog|dan|ze|geen|jou",
+          c: {
+            fire: "vuur|vlam|vlammen|branden|brand|brandt|in vuur en vlam",
+            rain: "regen|regent|regenen|regendruppels",
+            storm: "storm|stormen|onweer|donder|orkaan",
+            lightning: "bliksem|bliksemt|blikseminslag",
+            snow: "sneeuw|sneeuwt|sneeuwvlok|sneeuwvlokken",
+            cold: "koud|koude|kou|ijs|ijskoud|bevroren|vriezen|vriest",
+            sun: "zon|zonnetje|zonneschijn|zonsopgang|zonsondergang|zonlicht",
+            summer: "zomer|zomers|zomeravond|zomernacht",
+            moon: "maan|maanlicht|volle maan",
+            star: "ster|sterren|sterrenstof|sterretje|sterrenhemel",
+            sky: "lucht|hemel|wolk|wolken",
+            heaven: "paradijs|hemels|in de hemel",
+            night: "nacht|nachten|vannacht|middernacht",
+            dark: "donker|duister|duisternis|schaduw|schaduwen",
+            light: "licht|lichten|schijnen|schijnt|stralen|straalt|glans|gloed",
+            heart: "hart|harten|hartje|hartslag",
+            love: "liefde|liefdes|verliefd|hou van jou|ik hou van|minnaar|beminnen",
+            kiss: "kus|kussen|kusje|kusjes|zoenen|zoen|lippen",
+            heartbreak: "gebroken hart|hartzeer|liefdesverdriet|breekt mijn hart",
+            tears: "tranen|traan|huilen|huil|huilt",
+            money: "geld|poen|rijk|rijke|cash|euro's|dollars|knaken|centen",
+            gold: "goud|gouden",
+            diamond: "diamant|diamanten|juwelen",
+            crown: "kroon|koning|koningin|koningen",
+            fly: "vliegen|vlieg|vliegt|vloog|vleugels",
+            bird: "vogel|vogels|vogeltje",
+            butterfly: "vlinder|vlinders|vlindertje",
+            flower: "bloem|bloemen|bloei|bloeien|bloesem",
+            rose: "roos|rozen",
+            ocean: "oceaan|zee|zee\xEBn|golven|golf",
+            water: "water|rivier|rivieren|zwemmen",
+            wind: "wind|bries|waaien|waait",
+            smoke: "rook|roken|rookt",
+            electric: "elektrisch|elektriciteit|energie|stroom",
+            rainbow: "regenboog|kleuren",
+            fireworks: "vuurwerk",
+            party: "feest|feestje|feesten|vieren|party",
+            birthday: "verjaardag|jarig|gefeliciteerd",
+            dance: "dansen|dans|danst|danser|danseres",
+            jump: "springen|spring|springt|sprong",
+            dream: "droom|dromen|droomt|droomde",
+            ghost: "spook|spoken|geest|geesten",
+            angel: "engel|engelen|engeltje",
+            devil: "duivel|duivels|hel|demon|demonen",
+            world: "wereld|aarde|planeet",
+            space: "heelal|ruimte|universum|kosmos|melkweg",
+            rocket: "raket|raketten|opstijgen",
+            time: "tijd|klok|voor altijd|eeuwig|eeuwigheid",
+            drive: "rijden|rijdt|auto|snelweg|snel|wagen|scheuren",
+            city: "stad|steden|straat|straten|centrum",
+            music: "muziek|lied|liedje|liedjes|melodie|beat",
+            sing: "zingen|zing|zingt|stem",
+            boom: "boem|knal|ontploffen|explosie|bom",
+            champagne: "champagne|proost|drinken|fles|bubbels",
+            magic: "magie|magisch|toverij|betoverd",
+            beach: "strand|eiland|palmbomen",
+            christmas: "kerst|kerstmis|kerstman|slee|klokken",
+            red: "rood|rode",
+            blue: "blauw|blauwe",
+            green: "groen|groene",
+            pink: "roze",
+            purple: "paars|paarse",
+            white: "wit|witte",
+            black: "zwart|zwarte",
+            silver: "zilver|zilveren"
+          }
+        },
+        sv: {
+          stop: "jag|och|inte|det|\xE4r|mig|dig|att|som|p\xE5|vi|min|n\xE4r|bara|aldrig|ingen|hon|han|ska|vill",
+          c: {
+            fire: "eld|elden|eldar|l\xE5ga|l\xE5gor|brinna|brinner|brann|br\xE4nner|i l\xE5gor",
+            rain: "regn|regnet|regnar|regnade",
+            storm: "storm|stormen|stormar|\xE5ska|\xE5skan|orkan",
+            lightning: "blixt|blixten|blixtar|blixtrar",
+            snow: "sn\xF6|sn\xF6n|sn\xF6ar|sn\xF6flinga|sn\xF6flingor",
+            cold: "kall|kallt|kalla|kyla|isen|iskall|frusen|frysa|fryser",
+            sun: "sol|solen|solsken|soluppg\xE5ng|solnedg\xE5ng|solljus",
+            summer: "sommar|sommaren|somrar|sommarnatt|sommarnatten",
+            moon: "m\xE5ne|m\xE5nen|m\xE5nsken",
+            star: "stj\xE4rna|stj\xE4rnan|stj\xE4rnor|stj\xE4rnorna|stj\xE4rnstoft",
+            sky: "himmel|himlen|moln|molnen",
+            heaven: "paradis|paradiset|himmelriket",
+            night: "natt|natten|n\xE4tter|ikv\xE4ll|i natt|midnatt",
+            dark: "m\xF6rk|m\xF6rka|m\xF6rkt|m\xF6rker|m\xF6rkret|skugga|skuggor",
+            light: "ljus|ljuset|lysa|lyser|skina|skiner|gl\xF6d|gl\xF6der|str\xE5la",
+            heart: "hj\xE4rta|hj\xE4rtat|hj\xE4rtan",
+            love: "k\xE4rlek|k\xE4rleken|\xE4lska|\xE4lskar|\xE4lskade|\xE4lskling|k\xE4r|f\xF6r\xE4lskad",
+            kiss: "kyss|kyssa|kyssar|kysste|puss|pussa|l\xE4ppar",
+            heartbreak: "krossat hj\xE4rta|brustet hj\xE4rta|hj\xE4rtesorg|krossar mitt hj\xE4rta",
+            tears: "t\xE5rar|t\xE5r|t\xE5rarna|gr\xE5ta|gr\xE5ter|gr\xE4t",
+            money: "pengar|pengarna|cash|rik|rika|kronor|st\xE5lar|para",
+            gold: "guld|guldet|gyllene",
+            diamond: "diamant|diamanter|juveler",
+            crown: "krona|kronan|kung|kungen|drottning",
+            fly: "flyga|flyger|fl\xF6g|vingar",
+            bird: "f\xE5gel|f\xE5glar|f\xE5glarna|f\xE5geln",
+            butterfly: "fj\xE4ril|fj\xE4rilar|fj\xE4rilen",
+            flower: "blomma|blommor|blommar|blomster",
+            rose: "ros|rosor|rosen",
+            ocean: "hav|havet|ocean|v\xE5gor|v\xE5gorna|v\xE5g",
+            water: "vatten|vattnet|flod|\xE4lv|simma",
+            wind: "vind|vinden|vindar|bl\xE5ser|bris",
+            smoke: "r\xF6k|r\xF6ken|r\xF6ka|r\xF6ker",
+            electric: "elektrisk|elektriskt|energi|str\xF6m",
+            rainbow: "regnb\xE5ge|regnb\xE5gen|f\xE4rger",
+            fireworks: "fyrverkeri|fyrverkerier",
+            party: "fest|festen|party|fira|firar",
+            birthday: "f\xF6delsedag|f\xF6delsedagen|fyller \xE5r|grattis",
+            dance: "dansa|dansar|dans|dansen|dansade",
+            jump: "hoppa|hoppar|hopp",
+            dream: "dr\xF6m|dr\xF6mmen|dr\xF6mmar|dr\xF6mma|dr\xF6mmer",
+            ghost: "sp\xF6ke|sp\xF6ken|ande|anden",
+            angel: "\xE4ngel|\xE4nglar|\xE4ngeln",
+            devil: "dj\xE4vul|dj\xE4vulen|helvete|helvetet|demon",
+            world: "v\xE4rld|v\xE4rlden|jorden|planet",
+            space: "rymden|galax|universum|kosmos",
+            rocket: "raket|raketen|raketer|lyfta",
+            time: "tid|tiden|klocka|klockan|f\xF6r alltid|evigt",
+            drive: "k\xF6ra|k\xF6r|bil|bilen|v\xE4gen|motorv\xE4g|fort|snabbt",
+            city: "stad|staden|gator|gatorna|city",
+            music: "musik|musiken|s\xE5ng|s\xE5ngen|l\xE5ten|melodi",
+            sing: "sjunga|sjunger|sj\xF6ng|r\xF6st|r\xF6sten",
+            boom: "bom|pang|sm\xE4ll|explodera|bomb",
+            champagne: "champagne|sk\xE5l|dricka|flaska",
+            magic: "magi|magisk|magiskt|trolldom",
+            beach: "strand|stranden|\xF6n|palmer",
+            christmas: "jul|julen|tomten|sl\xE4de|bj\xE4llror",
+            red: "r\xF6d|r\xF6tt|r\xF6da",
+            blue: "bl\xE5|bl\xE5tt|bl\xE5a",
+            green: "gr\xF6n|gr\xF6nt|gr\xF6na",
+            pink: "rosa",
+            purple: "lila",
+            white: "vit|vitt|vita",
+            black: "svart|svarta",
+            silver: "silver"
+          }
+        },
+        da: {
+          stop: "jeg|ikke|mig|dig|hvad|aldrig|nu|hvor|bliver|noget|ogs\xE5|lidt|hvis|mine|din|du|og|er|jo|s\xE5dan",
+          c: {
+            fire: "ild|ilden|flamme|flammer|br\xE6nde|br\xE6nder|br\xE6ndte|i flammer",
+            rain: "regn|regnen|regner|regnede",
+            storm: "storm|stormen|torden|orkan",
+            lightning: "lyn|lynet|lynnedslag",
+            snow: "sne|sneen|sner|snefnug",
+            cold: "kold|koldt|kolde|kulde|isen|iskold|frossen|fryser",
+            sun: "sol|solen|solskin|solopgang|solnedgang|sollys",
+            summer: "sommer|sommeren|somre|sommernat",
+            moon: "m\xE5ne|m\xE5nen|m\xE5neskin",
+            star: "stjerne|stjerner|stjernen|stjernerne|stjernest\xF8v",
+            sky: "himmel|himlen|sky|skyer|skyerne",
+            heaven: "paradis|paradiset|himmerige",
+            night: "nat|natten|i nat|n\xE6tter|midnat",
+            dark: "m\xF8rk|m\xF8rke|m\xF8rket|skygge|skygger",
+            light: "lys|lyset|skinne|skinner|str\xE5le|str\xE5ler|gl\xF8de",
+            heart: "hjerte|hjertet|hjerter",
+            love: "k\xE6rlighed|k\xE6rligheden|elske|elsker|elsket|forelsket|k\xE6reste",
+            kiss: "kys|kysse|kysser|kyssede|l\xE6ber",
+            heartbreak: "knust hjerte|knuste hjerte|hjertesorg|knuser mit hjerte",
+            tears: "t\xE5rer|t\xE5re|gr\xE6de|gr\xE6der|gr\xE6d",
+            money: "penge|pengene|kontanter|cash|rig|rige|kroner|gysser",
+            gold: "guld|gylden|gyldne",
+            diamond: "diamant|diamanter|juveler",
+            crown: "krone|kronen|konge|kongen|dronning",
+            fly: "flyve|flyver|fl\xF8j|vinger",
+            bird: "fugl|fugle|fuglen|fuglene",
+            butterfly: "sommerfugl|sommerfugle",
+            flower: "blomst|blomster|blomstre|blomstrer",
+            rose: "rose|roser",
+            ocean: "hav|havet|ocean|b\xF8lger|b\xF8lgerne",
+            water: "vand|vandet|flod|sv\xF8mme",
+            wind: "vind|vinden|bl\xE6se|bl\xE6ser|brise",
+            smoke: "r\xF8g|ryge|ryger",
+            electric: "elektrisk|energi|str\xF8m",
+            rainbow: "regnbue|regnbuen|farver",
+            fireworks: "fyrv\xE6rkeri",
+            party: "fest|festen|party|fejre|fejrer",
+            birthday: "f\xF8dselsdag|f\xF8dselsdagen|tillykke",
+            dance: "danse|danser|dans|dansede",
+            jump: "hoppe|hopper|hop|springe",
+            dream: "dr\xF8m|dr\xF8mme|dr\xF8mmer|dr\xF8mmen",
+            ghost: "sp\xF8gelse|sp\xF8gelser|\xE5nd",
+            angel: "engel|engle|englen",
+            devil: "dj\xE6vel|dj\xE6velen|helvede|d\xE6mon",
+            world: "verden|jorden|planet",
+            space: "rummet|verdensrummet|galakse|universet|kosmos",
+            rocket: "raket|raketten",
+            time: "tid|tiden|klokken|for evigt|evigt",
+            drive: "k\xF8re|k\xF8rer|bil|bilen|vejen|motorvej|hurtigt",
+            city: "byen|gader|gaderne|storbyen",
+            music: "musik|musikken|sang|sangen|melodi",
+            sing: "synge|synger|sang|stemme",
+            boom: "bum|bang|eksplodere|eksplosion|bombe",
+            champagne: "champagne|sk\xE5l|drikke|flaske",
+            magic: "magi|magisk|trylle",
+            beach: "strand|stranden|\xF8en|palmer",
+            christmas: "jul|julen|julemand|julemanden|kane|klokker",
+            red: "r\xF8d|r\xF8dt|r\xF8de",
+            blue: "bl\xE5|bl\xE5t",
+            green: "gr\xF8n|gr\xF8nt|gr\xF8nne",
+            pink: "pink|lyser\xF8d",
+            purple: "lilla|violet",
+            white: "hvid|hvidt|hvide",
+            black: "sort|sorte",
+            silver: "s\xF8lv"
+          }
+        },
+        no: {
+          stop: "jeg|ikke|meg|deg|hva|aldri|n\xE5|hvor|blir|noe|ogs\xE5|litt|hvis|mine|din|du|og|er|v\xE5r|s\xE5nn",
+          c: {
+            fire: "ild|ilden|flamme|flammer|brenne|brenner|brant|i flammer",
+            rain: "regn|regnet|regner",
+            storm: "storm|stormen|torden|orkan",
+            lightning: "lyn|lynet|lynnedslag",
+            snow: "sn\xF8|sn\xF8en|sn\xF8r|sn\xF8fnugg",
+            cold: "kald|kaldt|kalde|kulde|isen|iskald|frossen|fryser",
+            sun: "sol|sola|solen|solskinn|soloppgang|solnedgang|sollys",
+            summer: "sommer|sommeren|somre|sommernatt",
+            moon: "m\xE5ne|m\xE5nen|m\xE5neskinn",
+            star: "stjerne|stjerner|stjerna|stjernen|stjernene|stjernest\xF8v",
+            sky: "himmel|himmelen|himlen|sky|skyer|skyene",
+            heaven: "paradis|paradiset|himmerike",
+            night: "natt|natta|natten|i natt|netter|midnatt",
+            dark: "m\xF8rk|m\xF8rke|m\xF8rket|skygge|skygger",
+            light: "lys|lyset|skinne|skinner|str\xE5le|str\xE5ler|gl\xF8de",
+            heart: "hjerte|hjertet|hjerter",
+            love: "kj\xE6rlighet|kj\xE6rligheten|elske|elsker|elsket|forelsket|kj\xE6reste",
+            kiss: "kyss|kysse|kysser|kysset|lepper",
+            heartbreak: "knust hjerte|knuste hjerte|hjertesorg|knuser hjertet mitt",
+            tears: "t\xE5rer|t\xE5re|gr\xE5te|gr\xE5ter|gr\xE5t",
+            money: "penger|pengene|cash|rik|rike|kroner|spenn",
+            gold: "gull|gyllen|gylne",
+            diamond: "diamant|diamanter|juveler",
+            crown: "krone|kronen|konge|kongen|dronning",
+            fly: "fly|flyr|flyve|fl\xF8y|vinger",
+            bird: "fugl|fugler|fuglen|fuglene",
+            butterfly: "sommerfugl|sommerfugler",
+            flower: "blomst|blomster|blomstre|blomstrer",
+            rose: "rose|roser",
+            ocean: "hav|havet|ocean|b\xF8lger|b\xF8lgene",
+            water: "vann|vannet|elv|elva|sv\xF8mme",
+            wind: "vind|vinden|bl\xE5se|bl\xE5ser|bris",
+            smoke: "r\xF8yk|r\xF8yke|r\xF8yker",
+            electric: "elektrisk|energi|str\xF8m",
+            rainbow: "regnbue|regnbuen|farger",
+            fireworks: "fyrverkeri",
+            party: "fest|festen|party|feire|feirer",
+            birthday: "bursdag|bursdagen|f\xF8dselsdag|gratulerer",
+            dance: "danse|danser|dans|danset",
+            jump: "hoppe|hopper|hopp",
+            dream: "dr\xF8m|dr\xF8mmer|dr\xF8mme|dr\xF8mmen",
+            ghost: "sp\xF8kelse|sp\xF8kelser|\xE5nd",
+            angel: "engel|engler|englene",
+            devil: "djevel|djevelen|helvete|demon",
+            world: "verden|jorda|jorden|planet",
+            space: "verdensrommet|rommet|galakse|universet|kosmos",
+            rocket: "rakett|raketten",
+            time: "tid|tiden|klokka|klokken|for alltid|evig",
+            drive: "kj\xF8re|kj\xF8rer|bil|bilen|veien|motorvei|fort",
+            city: "byen|gater|gatene|storbyen",
+            music: "musikk|musikken|sang|sangen|l\xE5t|l\xE5ta|melodi",
+            sing: "synge|synger|sang|stemme",
+            boom: "bom|pang|smell|eksplodere|eksplosjon|bombe",
+            champagne: "champagne|sk\xE5l|drikke|flaske",
+            magic: "magi|magisk|trylle",
+            beach: "strand|stranda|stranden|\xF8ya|palmer",
+            christmas: "jul|julen|julenissen|nissen|slede|bjeller",
+            red: "r\xF8d|r\xF8dt|r\xF8de",
+            blue: "bl\xE5|bl\xE5tt",
+            green: "gr\xF8nn|gr\xF8nt|gr\xF8nne",
+            pink: "rosa",
+            purple: "lilla",
+            white: "hvit|hvitt|hvite",
+            black: "svart|svarte",
+            silver: "s\xF8lv"
+          }
+        },
+        fr: {
+          stop: "le|la|les|et|je|tu|nous|vous|est|pas|une|des|qui|que|mon|ton|moi|toi|avec|dans",
+          c: {
+            fire: "feu|feux|flamme|flammes|br\xFBle|br\xFBler|br\xFBlant|br\xFBlante|incendie|enflamm\xE9|en feu",
+            rain: "pluie|pluies|pleut|pleuvoir",
+            storm: "orage|orages|temp\xEAte|temp\xEAtes|tonnerre|ouragan",
+            lightning: "\xE9clair|\xE9clairs|foudre",
+            snow: "neige|neiger|flocon|flocons",
+            cold: "froid|froide|froids|glace|glac\xE9|glac\xE9e|gel\xE9|geler|givre",
+            sun: "soleil|soleils|lever du soleil|coucher du soleil|ensoleill\xE9",
+            summer: "l'\xE9t\xE9|cet \xE9t\xE9|en \xE9t\xE9|\xE9t\xE9 indien|estival",
+            moon: "lune|lunes|clair de lune",
+            star: "\xE9toile|\xE9toiles|poussi\xE8re d'\xE9toiles|\xE9toil\xE9",
+            sky: "ciel|cieux|nuage|nuages",
+            heaven: "paradis|au ciel|l'au-del\xE0",
+            night: "nuit|nuits|ce soir|minuit",
+            dark: "sombre|obscurit\xE9|t\xE9n\xE8bres|ombre|ombres",
+            light: "lumi\xE8re|lumi\xE8res|briller|brille|brillant|brillante|\xE9clat|lueur",
+            heart: "c\u0153ur|coeur|c\u0153urs|coeurs",
+            love: "amour|amours|aimer|aime|aimes|amoureux|amoureuse|je t'aime",
+            kiss: "bisou|bisous|baiser|baisers|embrasser|embrasse|l\xE8vres",
+            heartbreak: "c\u0153ur bris\xE9|coeur bris\xE9|chagrin d'amour|brise le c\u0153ur|brise mon c\u0153ur",
+            tears: "larmes|larme|pleurer|pleure|pleures|pleurs",
+            money: "argent|fric|thune|thunes|oseille|riche|riches|billets|euros|dollars|cash|monnaie",
+            gold: "d'or|en or|dor\xE9|dor\xE9e|dor\xE9s|dor\xE9es",
+            diamond: "diamant|diamants|bijoux|joyaux",
+            crown: "couronne|roi|reine|rois|reines",
+            fly: "voler|vole|voles|envoler|envole|ailes",
+            bird: "oiseau|oiseaux",
+            butterfly: "papillon|papillons",
+            flower: "fleur|fleurs|fleurir|fleurit",
+            rose: "rose|roses",
+            ocean: "oc\xE9an|oc\xE9ans|mer|mers|vague|vagues",
+            water: "eau|eaux|rivi\xE8re|fleuve|nager",
+            wind: "vent|vents|brise|souffle|souffler",
+            smoke: "fum\xE9e|fumer|fume|fumes",
+            electric: "\xE9lectrique|\xE9lectricit\xE9|\xE9nergie|\xE9lectris\xE9",
+            rainbow: "arc-en-ciel|arc en ciel|couleurs",
+            fireworks: "feu d'artifice|feux d'artifice|artifice",
+            party: "f\xEAte|f\xEAtes|faire la f\xEAte|soir\xE9e|c\xE9l\xE9brer|f\xEAter",
+            birthday: "anniversaire|joyeux anniversaire",
+            dance: "danse|danser|danses|dansent|dansons|danseur|danseuse",
+            jump: "sauter|saute|sautes|saut",
+            dream: "r\xEAve|r\xEAves|r\xEAver|r\xEAv\xE9",
+            ghost: "fant\xF4me|fant\xF4mes|esprit|esprits",
+            angel: "ange|anges",
+            devil: "diable|enfer|d\xE9mon|d\xE9mons",
+            world: "monde|terre|plan\xE8te",
+            space: "espace|galaxie|univers|cosmos",
+            rocket: "fus\xE9e|fus\xE9es|d\xE9coller|d\xE9collage",
+            time: "temps|horloge|pour toujours|\xE9ternit\xE9|toujours",
+            drive: "conduire|voiture|route|autoroute|vitesse|rouler|bagnole",
+            city: "ville|villes|rue|rues|centre-ville",
+            music: "musique|chanson|chansons|m\xE9lodie|rythme",
+            sing: "chanter|chante|chantes|chantons|voix",
+            boom: "boum|bang|exploser|explose|explosion|bombe",
+            champagne: "champagne|sant\xE9|trinquer|boire|bouteille",
+            magic: "magie|magique|sortil\xE8ge|envo\xFBt\xE9",
+            beach: "plage|plages|\xEEle|palmiers",
+            christmas: "no\xEBl|p\xE8re no\xEBl|tra\xEEneau|clochettes",
+            red: "rouge|rouges",
+            blue: "bleu|bleue|bleus|bleues",
+            green: "vert|verte|verts|vertes",
+            pink: "en rose|rose bonbon|rose p\xE2le",
+            purple: "violet|violette|mauve|pourpre",
+            white: "blanc|blanche|blancs|blanches",
+            black: "noir|noire|noirs|noires",
+            silver: "argent\xE9|argent\xE9e|argent\xE9s|argent\xE9es"
+          }
+        },
+        es: {
+          stop: "el|los|las|y|yo|t\xFA|que|una|mi|te|me|con|para|pero|como|est\xE1|eres|soy|estoy|contigo",
+          c: {
+            fire: "fuego|fuegos|arde|arder|ardiendo|quemar|quema|quemando|incendio|hoguera|en llamas",
+            rain: "lluvia|lluvias|llueve|llover|lloviendo",
+            storm: "tormenta|tormentas|trueno|truenos|hurac\xE1n|tempestad",
+            lightning: "rayo|rayos|rel\xE1mpago|rel\xE1mpagos",
+            snow: "nieve|nieva|nevando|copo de nieve|copos",
+            cold: "fr\xEDo|fr\xEDa|hielo|helado|helada|congelado|congelar",
+            sun: "sol|amanecer|atardecer|soleado|luz del sol",
+            summer: "verano|veranos|veraniego",
+            moon: "luna|lunas|luz de luna",
+            star: "estrella|estrellas|estelar",
+            sky: "cielo|cielos|nube|nubes",
+            heaven: "para\xEDso|para\xEDsos|ed\xE9n",
+            night: "noche|noches|esta noche|medianoche",
+            dark: "oscuro|oscura|oscuridad|sombra|sombras|tinieblas",
+            light: "luz|luces|brillar|brilla|brillo|resplandor|ilumina",
+            heart: "coraz\xF3n|corazones|corazoncito",
+            love: "amor|amores|amar|te amo|te quiero|enamorado|enamorada|amante",
+            kiss: "beso|besos|besar|besarte|b\xE9same|labios",
+            heartbreak: "coraz\xF3n roto|desamor|me rompiste el coraz\xF3n|rompiste mi coraz\xF3n|despecho",
+            tears: "l\xE1grimas|l\xE1grima|llorar|lloro|lloras|llorando",
+            money: "dinero|plata|billete|billetes|d\xF3lares|euros|rico|rica|millones|cash",
+            gold: "oro|dorado|dorada|de oro",
+            diamond: "diamante|diamantes|joyas",
+            crown: "corona|rey|reina|reyes",
+            fly: "volar|vuelo|vuela|volando|alas",
+            bird: "p\xE1jaro|p\xE1jaros|pajarito|ave|aves",
+            butterfly: "mariposa|mariposas",
+            flower: "flor|flores|florecer|florece",
+            rose: "rosa|rosas",
+            ocean: "oc\xE9ano|mar|mares|ola|olas",
+            water: "agua|aguas|r\xEDos|nadar",
+            wind: "viento|vientos|brisa|soplar|sopla",
+            smoke: "humo|fumar|fumando|fumo",
+            electric: "el\xE9ctrico|el\xE9ctrica|electricidad|energ\xEDa",
+            rainbow: "arco\xEDris|arco iris|colores",
+            fireworks: "fuegos artificiales|pirotecnia",
+            party: "fiesta|fiestas|fiestear|celebrar|celebraci\xF3n|parranda|rumba|party",
+            birthday: "cumplea\xF1os|cumple|feliz cumplea\xF1os",
+            dance: "bailar|baila|bailando|baile|bailamos|bailarina|danza|perreo",
+            jump: "saltar|salta|saltando|salto|brincar|brinca",
+            dream: "sue\xF1o|sue\xF1os|so\xF1ar|so\xF1ando|sue\xF1a",
+            ghost: "fantasma|fantasmas|esp\xEDritu|esp\xEDritus",
+            angel: "\xE1ngel|\xE1ngeles|angelito",
+            devil: "diablo|infierno|demonio|demonios",
+            world: "mundo|tierra|planeta",
+            space: "espacio|galaxia|universo|cosmos",
+            rocket: "cohete|despegar|despegue",
+            time: "tiempo|reloj|para siempre|eternidad",
+            drive: "manejar|conducir|carro|coche|carretera|velocidad|r\xE1pido",
+            city: "ciudad|ciudades|calle|calles",
+            music: "m\xFAsica|canci\xF3n|canciones|melod\xEDa|ritmo|beat",
+            sing: "cantar|canta|cantando|canto|voz",
+            boom: "bum|boom|bang|explotar|explota|explosi\xF3n|bomba",
+            champagne: "champ\xE1n|champa\xF1a|champagne|brindar|brindis|botella|beber",
+            magic: "magia|m\xE1gico|m\xE1gica|hechizo",
+            beach: "playa|playas|isla|palmeras",
+            christmas: "navidad|pap\xE1 noel|santa claus|trineo|campanas",
+            red: "rojo|roja|rojos|rojas",
+            blue: "azul|azules",
+            green: "verde|verdes",
+            pink: "rosado|rosada|fucsia|rosa pastel",
+            purple: "morado|morada|violeta|p\xFArpura",
+            white: "blanco|blanca|blancos|blancas",
+            black: "negro|negra|negros|negras",
+            silver: "plateado|plateada|plateados|plateadas"
+          }
+        },
+        it: {
+          stop: "il|lo|gli|io|che|non|una|mi|ti|con|per|ma|come|sono|sei|della|questo|pi\xF9|anche|perch\xE9",
+          c: {
+            fire: "fuoco|fuochi|fiamma|fiamme|bruciare|brucia|bruciando|incendio|ardere|arde",
+            rain: "pioggia|piogge|piove|piovere",
+            storm: "tempesta|temporale|tuono|tuoni|uragano",
+            lightning: "fulmine|fulmini|lampo|lampi|saetta",
+            snow: "neve|nevica|nevicare|fiocco di neve",
+            cold: "freddo|fredda|ghiaccio|ghiacciato|gelo|gelato|congelato",
+            sun: "sole|soli|alba|tramonto|soleggiato|raggio di sole",
+            summer: "estate|estati|estivo|estiva",
+            moon: "luna|lune|chiaro di luna",
+            star: "stella|stelle|stellato|stellata",
+            sky: "cielo|cieli|nuvola|nuvole",
+            heaven: "paradiso|paradisi",
+            night: "notte|notti|stanotte|stasera|mezzanotte",
+            dark: "buio|oscuro|oscura|oscurit\xE0|ombra|ombre|tenebre",
+            light: "luce|luci|brillare|brilla|splendere|splende|bagliore",
+            heart: "cuore|cuori",
+            love: "amore|amori|amare|amo|ti amo|innamorato|innamorata|amante",
+            kiss: "bacio|baci|baciare|baciami|labbra",
+            heartbreak: "cuore spezzato|cuore infranto|mal d'amore|spezzi il cuore",
+            tears: "lacrime|lacrima|piangere|piango|piangi|pianto",
+            money: "soldi|denaro|ricco|ricca|ricchi|euro|dollari|contanti|grana|cash",
+            gold: "oro|d'oro|dorato|dorata",
+            diamond: "diamante|diamanti|gioielli",
+            crown: "corona|il re|regina|regine|reginetta",
+            fly: "volare|volo|vola|voliamo|ali",
+            bird: "uccello|uccelli|uccellino",
+            butterfly: "farfalla|farfalle",
+            flower: "fiore|fiori|fiorire|sbocciare",
+            rose: "rosa|rose",
+            ocean: "oceano|mare|mari|onda|onde",
+            water: "acqua|acque|fiume|fiumi|nuotare",
+            wind: "vento|venti|brezza|soffiare|soffia",
+            smoke: "fumo|fumare|fumando",
+            electric: "elettrico|elettrica|elettricit\xE0|energia",
+            rainbow: "arcobaleno|colori",
+            fireworks: "fuochi d'artificio|fuochi artificiali",
+            party: "festa|feste|festeggiare|party|celebrare",
+            birthday: "compleanno|buon compleanno",
+            dance: "ballare|balla|ballo|ballando|balliamo|danza|ballerina",
+            jump: "saltare|salta|salto|saltando",
+            dream: "sogno|sogni|sognare|sogna|sognando",
+            ghost: "fantasma|fantasmi|spirito|spiriti",
+            angel: "angelo|angeli",
+            devil: "diavolo|inferno|demone|demoni",
+            world: "mondo|terra|pianeta",
+            space: "spazio|galassia|universo|cosmo",
+            rocket: "razzo|decollare|decollo",
+            time: "tempo|orologio|per sempre|eternit\xE0",
+            drive: "guidare|macchina|auto|strada|autostrada|velocit\xE0|veloce",
+            city: "citt\xE0|strade|centro|periferia",
+            music: "musica|canzone|canzoni|melodia|ritmo",
+            sing: "cantare|canta|canto|cantando|voce",
+            boom: "boom|bum|bang|esplodere|esplode|esplosione|bomba",
+            champagne: "champagne|spumante|brindisi|brindare|bere|bottiglia|cin cin",
+            magic: "magia|magico|magica|incantesimo",
+            beach: "spiaggia|spiagge|isola|palme",
+            christmas: "natale|babbo natale|slitta|campane",
+            red: "rosso|rossa|rossi|rosse",
+            blue: "blu|azzurro|azzurra|azzurri",
+            green: "verde|verdi",
+            pink: "rosato|rosata|in rosa|rosa confetto",
+            purple: "viola|porpora|lilla",
+            white: "bianco|bianca|bianchi|bianche",
+            black: "nero|nera|neri|nere",
+            silver: "argento|d'argento|argentato|argentata"
+          }
+        },
+        pt: {
+          stop: "o|os|as|eu|voc\xEA|n\xE3o|uma|meu|minha|com|para|mas|como|estou|isso|t\xE1|seu|n\xF3s|muito|tamb\xE9m",
+          c: {
+            fire: "fogo|fogueira|queimar|queima|queimando|inc\xEAndio|arder|arde|ardendo|em chamas",
+            rain: "chuva|chuvas|chove|chover|chovendo",
+            storm: "tempestade|tempestades|trov\xE3o|trov\xF5es|furac\xE3o|temporal",
+            lightning: "raio|raios|rel\xE2mpago|rel\xE2mpagos",
+            snow: "neve|neva|nevando|floco de neve",
+            cold: "frio|fria|gelo|gelado|gelada|congelado|congelar",
+            sun: "sol|nascer do sol|p\xF4r do sol|amanhecer|ensolarado",
+            summer: "ver\xE3o|ver\xF5es",
+            moon: "lua|luas|luar",
+            star: "estrela|estrelas|estrelado",
+            sky: "c\xE9u|c\xE9us|nuvem|nuvens",
+            heaven: "para\xEDso|para\xEDsos",
+            night: "noite|noites|esta noite|hoje \xE0 noite|meia-noite|madrugada",
+            dark: "escuro|escura|escurid\xE3o|sombra|sombras|trevas",
+            light: "luz|luzes|brilhar|brilha|brilho|iluminar|clar\xE3o",
+            heart: "cora\xE7\xE3o|cora\xE7\xF5es|cora\xE7\xE3ozinho",
+            love: "amor|amores|amar|te amo|apaixonado|apaixonada|paix\xE3o|amante",
+            kiss: "beijo|beijos|beijar|beija|l\xE1bios",
+            heartbreak: "cora\xE7\xE3o partido|cora\xE7\xE3o quebrado|sofr\xEAncia|desilus\xE3o|partiu meu cora\xE7\xE3o",
+            tears: "l\xE1grimas|l\xE1grima|chorar|choro|chorando|chora",
+            money: "dinheiro|grana|rico|rica|ricos|d\xF3lar|d\xF3lares|euros|cash|bufunfa",
+            gold: "ouro|dourado|dourada|de ouro",
+            diamond: "diamante|diamantes|joias|j\xF3ias",
+            crown: "coroa|rei|rainha|reis",
+            fly: "voar|voa|voando|voo|v\xF4o|asas",
+            bird: "p\xE1ssaro|p\xE1ssaros|passarinho|ave|aves",
+            butterfly: "borboleta|borboletas",
+            flower: "flor|flores|florescer|desabrochar",
+            rose: "rosa|rosas",
+            ocean: "oceano|mar|mares|onda|ondas",
+            water: "\xE1gua|\xE1guas|rios|nadar",
+            wind: "vento|ventos|brisa|soprar|sopra",
+            smoke: "fuma\xE7a|fumo|fumar|fumando",
+            electric: "el\xE9trico|el\xE9trica|eletricidade|energia",
+            rainbow: "arco-\xEDris|arco \xEDris|cores",
+            fireworks: "fogos de artif\xEDcio|foguet\xF3rio",
+            party: "festa|festas|balada|celebrar|comemorar|curti\xE7\xE3o",
+            birthday: "anivers\xE1rio|parab\xE9ns",
+            dance: "dan\xE7ar|dan\xE7a|dan\xE7ando|dance|baile|rebolar|dan\xE7arina",
+            jump: "pular|pula|pulando|saltar|salto",
+            dream: "sonho|sonhos|sonhar|sonhando",
+            ghost: "fantasma|fantasmas|esp\xEDrito|esp\xEDritos",
+            angel: "anjo|anjos|anjinho",
+            devil: "diabo|inferno|dem\xF4nio|dem\xF3nio|dem\xF4nios",
+            world: "mundo|terra|planeta",
+            space: "espa\xE7o|gal\xE1xia|universo|cosmos",
+            rocket: "foguete|foguet\xE3o|decolar|descolar",
+            time: "tempo|rel\xF3gio|para sempre|eternidade",
+            drive: "dirigir|conduzir|carro|estrada|rodovia|velocidade|acelera|acelerar",
+            city: "cidade|cidades|rua|ruas|centro",
+            music: "m\xFAsica|can\xE7\xE3o|can\xE7\xF5es|melodia|batida|ritmo",
+            sing: "cantar|canta|canto|cantando|voz",
+            boom: "bum|boom|bang|explodir|explode|explos\xE3o|bomba",
+            champagne: "champanhe|champagne|espumante|brinde|brindar|garrafa|beber",
+            magic: "magia|m\xE1gico|m\xE1gica|feiti\xE7o",
+            beach: "praia|praias|ilha|coqueiros|palmeiras",
+            christmas: "natal|papai noel|pai natal|tren\xF3|sinos",
+            red: "vermelho|vermelha|vermelhos|vermelhas",
+            blue: "azul|azuis",
+            green: "verde|verdes",
+            pink: "cor-de-rosa|cor de rosa|rosado|rosinha",
+            purple: "roxo|roxa|violeta|p\xFArpura|lil\xE1s",
+            white: "branco|branca|brancos|brancas",
+            black: "preto|preta|pretos|pretas|negro|negra",
+            silver: "prata|prateado|prateada"
+          }
+        },
+        ro: {
+          stop: "\u0219i|\u015Fi|eu|nu|este|e\u0219ti|sunt|s\u0103|m\u0103|cu|pentru|dar|cum|meu|mea|t\u0103u|ce|asta|noi|voi",
+          c: {
+            fire: "foc|focul|flac\u0103r\u0103|fl\u0103c\u0103ri|arde|ard|ardem|arz\xE2nd|incendiu",
+            rain: "ploaie|ploaia|plou\u0103|ploi",
+            storm: "furtun\u0103|furtuna|furtuni|tunet|tunete|uragan",
+            lightning: "fulger|fulgere|fulgerul|tr\u0103snet",
+            snow: "z\u0103pad\u0103|z\u0103pada|ninge|ninsoare|fulgi",
+            cold: "frig|rece|ghea\u021B\u0103|ghea\u021Ba|\xEEnghe\u021Bat|\xEEnghe\u021Bat\u0103|\xEEnghe\u021B",
+            sun: "soare|soarele|r\u0103s\u0103rit|r\u0103s\u0103ritul|apus|apusul",
+            summer: "var\u0103|vara|verii",
+            moon: "lun\u0103|luna|lunii|lumina lunii",
+            star: "stea|stele|steaua|stelele",
+            sky: "cer|cerul|ceruri|nor|nori|norii",
+            heaven: "rai|raiul|paradis|paradisul",
+            night: "noapte|noaptea|nop\u021Bi|nop\u021Bile|miezul nop\u021Bii|disear\u0103|ast\u0103-sear\u0103",
+            dark: "\xEEntuneric|\xEEntunericul|\xEEntunecat|umbr\u0103|umbre|bezn\u0103",
+            light: "lumin\u0103|lumina|lumini|luminile|str\u0103lucire|str\u0103luce\u0219te",
+            heart: "inim\u0103|inima|inimi|inimioar\u0103",
+            love: "iubire|iubirea|dragoste|dragostea|iubesc|iube\u0219ti|te iubesc|iubit|iubit\u0103|iubito|iubitule|\xEEndr\u0103gostit",
+            kiss: "s\u0103rut|s\u0103rutul|s\u0103ruturi|s\u0103rut\u0103|pupic|buze|buzele",
+            heartbreak: "inim\u0103 fr\xE2nt\u0103|inima fr\xE2nt\u0103|mi-ai fr\xE2nt inima|suflet r\u0103nit",
+            tears: "lacrimi|lacrim\u0103|pl\xE2ng|pl\xE2nge|pl\xE2ngi|pl\xE2ns",
+            money: "bani|banii|bogat|bogat\u0103|boga\u021Bi|dolari|euro|cash|lei|parale",
+            gold: "aur|aurul|auriu|aurie|de aur",
+            diamond: "diamant|diamante|diamantul|bijuterii",
+            crown: "coroan\u0103|coroana|rege|regele|regin\u0103|regina",
+            fly: "zbor|zbori|zboar\u0103|zbura|zbur\u0103m|aripi|aripile",
+            bird: "pas\u0103re|pas\u0103rea|p\u0103s\u0103ri|p\u0103s\u0103rele",
+            butterfly: "fluture|fluturi|fluturii",
+            flower: "floare|floarea|flori|florile|\xEEnflori",
+            rose: "trandafir|trandafiri|trandafirul|roz\u0103",
+            ocean: "ocean|oceanul|valuri|valurile|m\u0103ri|m\u0103rii",
+            water: "ap\u0103|apa|ape|r\xE2u|r\xE2ul|\xEEnot|\xEEnota",
+            wind: "v\xE2nt|v\xE2ntul|v\xE2nturi|briz\u0103|adiere",
+            smoke: "fum|fumul|fumez|fum\u0103m|fuma",
+            electric: "electric|electric\u0103|electricitate|energie|energia",
+            rainbow: "curcubeu|curcubeul|culori|culorile",
+            fireworks: "artificii|focuri de artificii",
+            party: "petrecere|petrecerea|party|distrac\u021Bie|s\u0103rb\u0103toare|s\u0103rb\u0103torim|chef",
+            birthday: "zi de na\u0219tere|ziua mea|la mul\u021Bi ani|aniversare",
+            dance: "dans|dansul|dansez|dans\u0103m|dansa|danseaz\u0103",
+            jump: "sari|sar|s\u0103rim|s\u0103ri|s\u0103ritur\u0103",
+            dream: "vis|visul|vise|visez|vis\u0103m|visam|visare",
+            ghost: "fantom\u0103|fantome|spirit|spiritul|duh",
+            angel: "\xEEnger|\xEEngeri|\xEEngerul|\xEEngera\u0219",
+            devil: "diavol|diavolul|drac|dracu|iad|iadul|demon",
+            world: "lume|lumea|p\u0103m\xE2nt|p\u0103m\xE2ntul|planet\u0103",
+            space: "spa\u021Biu|spa\u021Biul|galaxie|univers|universul|cosmos",
+            rocket: "rachet\u0103|racheta|decolare|decol\u0103m",
+            time: "timp|timpul|ceas|ceasul|pentru totdeauna|ve\u0219nic|mereu",
+            drive: "conduc|condus|ma\u0219in\u0103|ma\u0219ina|drum|drumul|autostrad\u0103|vitez\u0103|repede",
+            city: "ora\u0219|ora\u0219ul|strad\u0103|str\u0103zi|str\u0103zile",
+            music: "muzic\u0103|muzica|c\xE2ntec|c\xE2ntecul|melodie|melodia|ritm|beat",
+            sing: "c\xE2nt|c\xE2nta|c\xE2nt\u0103|c\xE2nt\u0103m|voce|vocea",
+            boom: "bum|boom|bang|explodeaz\u0103|explozie|bomb\u0103",
+            champagne: "\u0219ampanie|\u0219ampania|noroc|toast|bem|sticl\u0103|sticla",
+            magic: "magie|magia|magic|magic\u0103|vraj\u0103|vraja",
+            beach: "plaj\u0103|plaja|insul\u0103|insula|palmieri",
+            christmas: "cr\u0103ciun|cr\u0103ciunul|mo\u0219 cr\u0103ciun|sanie|clopo\u021Bei",
+            red: "ro\u0219u|ro\u0219ie|ro\u0219ii|ro\u0219ul",
+            blue: "albastru|albastr\u0103|alba\u0219tri|albastre",
+            green: "verde|verzi",
+            pink: "roz",
+            purple: "mov|violet|violet\u0103",
+            white: "alb|alb\u0103|albi|albe",
+            black: "negru|neagr\u0103|negri|negre",
+            silver: "argint|argintiu|argintie|de argint"
+          }
+        },
+        ca: {
+          stop: "els|amb|per\xF2|s\xF3c|ets|meu|meva|teu|teva|aquest|aquesta|perqu\xE8|molt|tamb\xE9|jo|vull|nosaltres|vosaltres|ara|tu",
+          c: {
+            fire: "foc|focs|flama|flames|cremar|crema|cremant|incendi|enc\xE8s",
+            rain: "pluja|pluges|plou|ploure|plovent",
+            storm: "tempesta|tempestes|trons|tronada|hurac\xE0",
+            lightning: "llamp|llamps|llampec|llampecs",
+            snow: "neu|neva|nevant|floc de neu",
+            cold: "fred|freda|gel|gla\xE7|gelat|gelada|congelat",
+            sun: "el sol|al sol|del sol|sota el sol|llum del sol|posta de sol|assolellat",
+            summer: "estiu|estius",
+            moon: "lluna|llunes|clar de lluna",
+            star: "estel|estels|estrella|estrelles",
+            sky: "cel|cels|n\xFAvol|n\xFAvols",
+            heaven: "parad\xEDs|paradisos",
+            night: "nit|nits|aquesta nit|mitjanit",
+            dark: "fosc|fosca|foscor|ombra|ombres|tenebres",
+            light: "llum|llums|brillar|brilla|brillant|resplendor",
+            heart: "cor|cors",
+            love: "amor|amors|estimar|estimo|t'estimo|enamorat|enamorada",
+            kiss: "pet\xF3|petons|besar|llavis",
+            heartbreak: "cor trencat|desamor|trencar el cor",
+            tears: "ll\xE0grimes|ll\xE0grima|plorar|ploro|plores|plorant",
+            money: "diners|ric|rica|rics|euros|d\xF2lars|bitllets|cash",
+            gold: "d'or|daurat|daurada|daurats",
+            diamond: "diamant|diamants|joies",
+            crown: "corona|rei|reina|reis",
+            fly: "volar|vola|volant|ales",
+            bird: "ocell|ocells|ocellet",
+            butterfly: "papallona|papallones",
+            flower: "flor|flors|florir|floreix",
+            rose: "rosa|roses",
+            ocean: "oce\xE0|mar|mars|ona|onades",
+            water: "aigua|aig\xFCes|rius|nedar",
+            wind: "vent|vents|brisa|bufar|bufa",
+            smoke: "fum|fumar|fumant",
+            electric: "el\xE8ctric|el\xE8ctrica|electricitat|energia",
+            rainbow: "arc de sant mart\xED|arc iris|colors",
+            fireworks: "focs artificials|focs d'artifici|castell de focs",
+            party: "festa|festes|celebrar|celebraci\xF3|gresca",
+            birthday: "aniversari|per molts anys",
+            dance: "ballar|balla|ballem|ballant|ball|dansa",
+            jump: "saltar|salta|saltem|salt",
+            dream: "somni|somnis|somiar|somio|somiant",
+            ghost: "fantasma|fantasmes|esperit|esperits",
+            angel: "\xE0ngel|\xE0ngels",
+            devil: "diable|dimoni|dimonis|infern",
+            world: "m\xF3n|terra|planeta",
+            space: "espai|gal\xE0xia|univers|cosmos",
+            rocket: "coet|coets|enlairar",
+            time: "temps|rellotge|per sempre|eternitat",
+            drive: "conduir|cotxe|carretera|autopista|velocitat|r\xE0pid",
+            city: "ciutat|ciutats|carrer|carrers",
+            music: "m\xFAsica|can\xE7\xF3|can\xE7ons|melodia|ritme",
+            sing: "cantar|canta|canto|cantant",
+            boom: "bum|boom|bang|explotar|explosi\xF3|bomba",
+            champagne: "cava|xampany|brindis|brindar|beure|ampolla|salut",
+            magic: "m\xE0gia|m\xE0gic|m\xE0gica|encanteri",
+            beach: "platja|platges|illa|palmeres",
+            christmas: "nadal|pare noel|ti\xF3|campanes|trineu",
+            red: "vermell|vermella|vermells|vermelles|roig",
+            blue: "blau|blava|blaus|blaves",
+            green: "verd|verda|verds|verdes",
+            pink: "rosat|rosada|rosa p\xE0l\xB7lid",
+            purple: "lila|violeta|morat|morada",
+            white: "blanc|blanca|blancs|blanques",
+            black: "negre|negra|negres",
+            silver: "plata|argent|platejat|platejada"
+          }
+        }
+      };
+    }
+  });
+
+  // src/lexicon/lex-b.json
+  var lex_b_default;
+  var init_lex_b = __esm({
+    "src/lexicon/lex-b.json"() {
+      lex_b_default = {
+        pl: {
+          stop: "\u017Ce|si\u0119|jest|ju\u017C|tylko|jestem|jeste\u015B|mnie|dla|gdzie|kiedy|bo|czy|te\u017C|jeszcze|dzi\u015B|chc\u0119|wszystko|nigdy|teraz",
+          c: {
+            fire: "ogie\u0144|ognia|ogniem|ogniu|ognie|p\u0142omie*|p\u0142on\u0119|p\u0142oniesz|p\u0142onie|p\u0142oniemy|p\u0142on\u0105|p\u0142on\u0105\u0107|p\u0142on\u0105cy|sp\u0142on\u0119|\u017Car|\u017Caru",
+            rain: "deszcz*|ulewa|ulewy|ulewie|ulewny|pada deszcz|w deszczu",
+            storm: "burza|burzy|burz\u0119|burz\u0105|burzo|burze|sztorm|sztormu|grzmot|grzmoty|grzmi|huragan*",
+            lightning: "piorun|pioruny|piorunem|pioruna|b\u0142yskawic*|grom|gromy|gromem",
+            snow: "\u015Bnieg|\u015Bniegu|\u015Bniegiem|\u015Bniegi|\u015Bnie\u017C*|p\u0142atki \u015Bniegu|pada \u015Bnieg",
+            cold: "zimno|zimny|zimna|zimne|zimnym|zimnej|ch\u0142\xF3d|ch\u0142odu|ch\u0142odem|l\xF3d|lodu|lodem|lodowy|lodowa|zamarzn\u0119|zamarz\u0142|mr\xF3z|mrozu|mrozem",
+            sun: "s\u0142o\u0144c*|s\u0142oneczko|s\u0142oneczn*|wsch\xF3d s\u0142o\u0144ca|zach\xF3d s\u0142o\u0144ca",
+            summer: "lato|latem|w lecie|tego lata|letni|letnia|letnie|letni\u0105|wakacje|wakacji",
+            moon: "ksi\u0119\u017Cyc*|luna|blask ksi\u0119\u017Cyca",
+            star: "gwiazd*|gwiezdny|gwiezdne|gwiezdny py\u0142",
+            sky: "niebo|nieba|niebem|niebie|chmury|chmur|chmura|chmurami|ob\u0142oki|ob\u0142okach",
+            heaven: "raj|raju|rajem|rajski|rajska|niebiosa|niebios|niebia\u0144ski|niebia\u0144ska",
+            night: "noc|nocy|noc\u0105|nocne|nocny|nocka|nocki|dzi\u015B w nocy|p\xF3\u0142noc|p\xF3\u0142nocy|tej nocy",
+            dark: "ciemno|ciemno\u015B\u0107|ciemno\u015Bci|ciemny|ciemna|ciemne|mrok|mroku|mrokiem|cie\u0144|cienia|cienie|cieniu",
+            light: "\u015Bwiat\u0142o|\u015Bwiat\u0142a|\u015Bwiat\u0142em|\u015Bwietle|\u015Bwieci|\u015Bwiecisz|l\u015Bni|blask|blasku|jasny|jasno|b\u0142yszczy|b\u0142yszczysz",
+            heart: "serce|serca|sercem|sercu|serc|serduszko|serduszka|serducho",
+            love: "kocham|kochasz|kocha|kocha\u0107|kochamy|kochanie|kochana|kochany|mi\u0142o\u015B\u0107|mi\u0142o\u015Bci|mi\u0142o\u015Bci\u0105|zakochany|zakochana|zakochani",
+            kiss: "poca\u0142unek|poca\u0142unki|poca\u0142unku|poca\u0142unk\xF3w|ca\u0142uj*|poca\u0142uj|poca\u0142uj\u0119|usta|ustach|ustami|wargi",
+            heartbreak: "z\u0142amane serce|z\u0142amanym sercem|z\u0142ama\u0142e\u015B mi serce|z\u0142ama\u0142a\u015B mi serce|\u0142amiesz mi serce|serce p\u0119ka|p\u0119kni\u0119te serce|z\u0142amane serca",
+            tears: "\u0142zy|\u0142za|\u0142ez|\u0142zami|p\u0142acz*|p\u0142aka\u0107|p\u0142aka\u0142am|p\u0142aka\u0142em|p\u0142aka\u0142a",
+            money: "pieni\u0105dze|pieni\u0119dzy|pieni\u0105dzach|kasa|kasy|kas\u0119|forsa|forsy|hajs|hajsu|bogaty|bogata|bogactwo|dolary|dolar\xF3w|euro|szmal",
+            gold: "z\u0142oto|z\u0142ota|z\u0142otem|z\u0142ocie|z\u0142oty|z\u0142ote|z\u0142ot\u0105|z\u0142otych",
+            diamond: "diament*|brylant*|klejnot*",
+            crown: "korona|korony|koron\u0119|koron\u0105|kr\xF3l|kr\xF3la|kr\xF3lem|kr\xF3lowa|kr\xF3lowej|kr\xF3low\u0105|kr\xF3lewski|kr\xF3lewna",
+            fly: "lata\u0107|latam|latasz|latamy|lec\u0119|lecisz|lecimy|lecie\u0107|skrzyd*|odlec\u0119|odlatuj\u0119|w powietrzu",
+            bird: "ptak|ptaki|ptaka|ptak\xF3w|ptakiem|ptaszek|ptaszki|ptasi",
+            butterfly: "motyl*",
+            flower: "kwiat*|kwitn*|rozkwita|rozkwit",
+            rose: "r\xF3\u017Ca|r\xF3\u017Ce|r\xF3\u017Cy|r\xF3\u017C\u0119|r\xF3\u017C\u0105|r\xF3\u017Cyczka|r\xF3\u017Cami",
+            ocean: "ocean|oceanu|oceanem|oceany|morze|morza|morzem|morzu|fale|fala|falami|fal",
+            water: "woda|wody|wod\u0119|wod\u0105|wodzie|rzeka|rzeki|rzek\u0119|rzek\u0105|p\u0142ywa\u0107|p\u0142yn\u0119|p\u0142yniesz",
+            wind: "wiatr|wiatru|wiatrem|wietrze|wiaterek|wiatry|bryza|wieje|wiej",
+            smoke: "dym|dymu|dymem|dymy|pal\u0119|pali\u0107|palimy|zapal|jaram|jara\u0107|blant|skr\u0119ta",
+            electric: "elektryczn*|pr\u0105d|pr\u0105du|pr\u0105dem|energia|energii|energi\u0119|napi\u0119cie|iskry|iskra",
+            rainbow: "t\u0119cza|t\u0119czy|t\u0119cz\u0119|t\u0119cz\u0105|t\u0119czowy|t\u0119czowe|kolory|kolor\xF3w|kolorach|barwy",
+            fireworks: "fajerwerk*|sztuczne ognie|sztucznych ogni|petardy",
+            party: "imprez*|balujemy|balanga|\u015Bwi\u0119towa\u0107|\u015Bwi\u0119tujemy|zabawa|zabawy",
+            birthday: "urodzin*|urodzinowy|sto lat|wszystkiego najlepszego",
+            dance: "ta\u0144cz*|taniec|ta\u0144ca|ta\u0144cem|ta\u0144cu|tancerka|tancerz",
+            jump: "skacz*|skocz*|skok|skoki|skaka\u0107|podskocz",
+            dream: "sen|snu|snem|\u015Bnie|sny|sn\xF3w|marzenie|marzenia|marze\u0144|marz\u0119|marzysz|\u015Bni\u0119|\u015Bnisz|\u015Bni\u0107",
+            ghost: "duch|ducha|duchy|duchem|duch\xF3w|zjawa|widmo|upi\xF3r|upiory",
+            angel: "anio\u0142*|aniele|anielski|anielska",
+            devil: "diabe\u0142|diab\u0142a|diab\u0142em|diab\u0142y|piek\u0142o|piek\u0142a|piekle|piek\u0142em|demon|demony|demona|szatan",
+            world: "\u015Bwiat|\u015Bwiata|\u015Bwiatem|\u015Bwiecie|\u015Bwiaty|ziemia|ziemi|ziemi\u0119|planeta|planety",
+            space: "kosmos|kosmosu|kosmosie|kosmiczn*|galaktyk*|wszech\u015Bwiat*",
+            rocket: "rakiet*|odlot|odpalamy",
+            time: "czas|czasu|czasie|zegar|zegara|zegarek|na zawsze|wieczno\u015B\u0107|wieczno\u015Bci",
+            drive: "jad\u0119|jedziesz|jedziemy|jecha\u0107|samoch\xF3d|samochodem|auto|autem|drog\u0105|w drog\u0119|w drodze|autostrada|autostrad\u0105|szybko|szybciej|pr\u0119dko\u015B\u0107|gaz do dechy",
+            city: "miasto|miasta|mie\u015Bcie|miastem|ulice|ulicy|ulicach|ulica|centrum|miejski|miejskie",
+            music: "muzyk*|piosen*|melodia|melodii|melodi\u0119|bit|rytm|rytmie",
+            sing: "\u015Bpiew*|g\u0142os|g\u0142osem|g\u0142osu",
+            boom: "bum|bang|wybuch*|eksplozja|eksplo*|bomba|bomby|bomb\u0119",
+            champagne: "szampan|szampana|szampanem|toast|na zdrowie|pijemy|drink|drinki|butelka|butelki|butelk\u0119|w\xF3dka|w\xF3dki|wino",
+            magic: "magia|magii|magi\u0119|magi\u0105|magiczn*|czar|czary|zakl\u0119cie|czarodziej",
+            beach: "pla\u017Ca|pla\u017Cy|pla\u017C\u0119|pla\u017C\u0105|wyspa|wyspy|wyspie|palmy|palmami|piasek|piasku",
+            christmas: "weso\u0142ych \u015Bwi\u0105t|bo\u017Ce narodzenie|bo\u017Cego narodzenia|miko\u0142aj|miko\u0142aja|sanie|saniami|dzwonki|dzwoneczki|choinka|choinki|wigilia|wigilii",
+            red: "czerwon*|czerwie\u0144|czerwieni",
+            blue: "niebiesk*|b\u0142\u0119kit*",
+            green: "zielon*|ziele\u0144|zieleni",
+            pink: "r\xF3\u017Cow*",
+            purple: "fiolet*|purpur*",
+            white: "bia\u0142y|bia\u0142a|bia\u0142e|bia\u0142ym|bia\u0142\u0105|bia\u0142ych|biel|bieli",
+            black: "czarny|czarna|czarne|czarnym|czarn\u0105|czarnych|czer\u0144|czerni",
+            silver: "srebr*"
+          }
+        },
+        cs: {
+          stop: "jsem|jsi|jsme|jste|nen\xED|\u017Ee|kdy\u017E|proto\u017Ee|pro\u010D|te\u010F|je\u0161t\u011B|jenom|n\u011Bco|v\u0161echno|nikdy|t\u011B|m\u011B|taky|kde|bych",
+          c: {
+            fire: "ohe\u0148|ohn\u011B|ohn\u011Bm|ohni|plamen*|plam\xEDnek|ho\u0159\xEDm|ho\u0159\xED|ho\u0159et|ho\u0159\xEDc\xED|sho\u0159et|sp\xE1lit",
+            rain: "d\xE9\u0161\u0165|de\u0161t\u011B|de\u0161t\u011Bm|de\u0161ti|pr\u0161\xED|pr\u0161et|de\u0161tiv*|lij\xE1k|lij\xE1ku",
+            storm: "bou\u0159e|bou\u0159i|bou\u0159\xED|bou\u0159ka|bou\u0159ky|hrom|hromy|h\u0159m\xED|urag\xE1n|hurik\xE1n|vich\u0159ice",
+            lightning: "blesk*|bl\xFDsk\xE1",
+            snow: "sn\xEDh|sn\u011Bhu|sn\u011Bhem|sn\u011B\u017E\xED|sn\u011B\u017Eit|sn\u011Bhov\xE1 vlo\u010Dka|vlo\u010Dky|vlo\u010Dka|sn\u011Bhov\xE9|sn\u011Bhov\xFD",
+            cold: "zima|zimu|zimy|studen\xFD|studen\xE1|studen\xE9|chlad|chladn\xFD|chladn\xE1|led|ledu|ledem|ledov\xFD|ledov\xE1|zmrzl\xFD|zamrzl\xFD|mr\xE1z|mrazu",
+            sun: "slunc*|slun\xED\u010Dko|slune\u010Dn\xED|slune\u010Dn\xFD|v\xFDchod slunce|z\xE1pad slunce",
+            summer: "l\xE9to|l\xE9t\u011B|v l\xE9t\u011B|letn\xED|pr\xE1zdniny",
+            moon: "luna|luny|lunou|svit m\u011Bs\xEDce|m\u011Bs\xED\u010Dn\xED|m\u011Bs\xED\u010Dek|m\u011Bs\xED\u010Dku|\xFApln\u011Bk",
+            star: "hv\u011Bzd*",
+            sky: "nebe|nebi|nebem|obloha|oblohu|obloze|mraky|mrak|mrak\u016F|oblaka",
+            heaven: "r\xE1j|r\xE1ji|r\xE1jem|rajsk\xFD|nebesa|v nebi|nebesk\xFD|nebesk\xE1",
+            night: "noc|noci|noc\xED|no\u010Dn\xED|dnes v noci|p\u016Flnoc|p\u016Flnoci|noc\xEDch",
+            dark: "tma|tmy|tm\u011B|tmou|temn\xFD|temn\xE1|temn\xE9|temnota|temnoty|st\xEDn|st\xEDny|st\xEDnu|tmav\xFD|tmav\xE1",
+            light: "sv\u011Btlo|sv\u011Btla|sv\u011Btlem|sv\u011Btle|sv\xEDt\xED|sv\xEDt\xEDm|z\xE1\u0159\xEDm|z\xE1\u0159it|z\xE1\u0159iv\xFD|z\xE1\u0159iv\xE1|jasn\xFD|jasn\xE1|lesk",
+            heart: "srdce|srdci|srdcem|srd\xED\u010Dko|srd\xED\u010Dka|srdc\xED",
+            love: "l\xE1ska|l\xE1sky|l\xE1sko|l\xE1sku|l\xE1skou|l\xE1sce|miluju|miluji|miluje\u0161|miluje|milovat|zamilovan\xFD|zamilovan\xE1|mil\xE1\u010Dku|milenec",
+            kiss: "polibek|polibky|polibkem|pusa|pusu|pusinku|l\xEDbat|l\xEDb\xE1m|l\xEDbej|polib|rty|rt\u016F|rtech",
+            heartbreak: "zlomen\xE9 srdce|zlomen\xFDm srdcem|zlomil mi srdce|zlomila mi srdce|l\xE1me\u0161 mi srdce|srdce mi puk\xE1|zlomen\xFD srdce",
+            tears: "slzy|slza|slz|slzami|pl\xE1\u010Du|pl\xE1\u010De\u0161|pl\xE1\u010De|plakat|pl\xE1\u010D|bre\u010D\xEDm|bre\u010Det|bre\u010D\xED\u0161",
+            money: "pen\xEDze|pen\u011Bz|pen\u011Bzi|prachy|prach\u016F|bohat\xFD|bohat\xE1|bohatstv\xED|dolary|dolar\u016F|eura|eur|ke\u0161",
+            gold: "zlato|zlata|zlatem|zlat\xFD|zlat\xE1|zlat\xE9|zlatou",
+            diamond: "diamant*|briliant*|drahokam*|\u0161perky|\u0161perk",
+            crown: "koruna|koruny|korunu|korunou|kr\xE1l|kr\xE1le|kr\xE1lem|kr\xE1li|kr\xE1lovna|kr\xE1lovno|kr\xE1lovsk\xFD",
+            fly: "let\xEDm|let\xED\u0161|let\xED|let\u011Bt|l\xE9tat|l\xE9t\xE1m|l\xEDtat|l\xEDt\xE1m|k\u0159\xEDdla|k\u0159\xEDdel|k\u0159\xEDdly|vzl\xE9tnout",
+            bird: "pt\xE1k|pt\xE1ci|pt\xE1ka|pt\xE1k\u016F|pt\xE1\u010Dek|pt\xE1\u010Dku|pta\u010D\xED|pt\xE1kem",
+            butterfly: "mot\xFDl*",
+            flower: "kv\u011Bt|kv\u011Bty|kv\u011Btin*|kv\xEDtek|kytka|kytky|kytku|rozkv\xE9t\xE1|kvete",
+            rose: "r\u016F\u017Ee|r\u016F\u017E\xED|r\u016F\u017E\xEDm|r\u016F\u017Eemi|r\u016F\u017Ei\u010Dka|r\u016F\u017Ei\u010Dku",
+            ocean: "oce\xE1n|oce\xE1nu|oce\xE1nem|mo\u0159e|mo\u0159em|mo\u0159i|vlny|vlna|vln|vln\xE1ch|p\u0159\xEDboj",
+            water: "voda|vody|vodu|vodou|vod\u011B|\u0159eka|\u0159eky|\u0159eku|\u0159ekou|plavat|plavu|plaveme",
+            wind: "v\xEDtr|v\u011Btru|v\u011Btrem|v\u011Bt\u0159e|v\xE1nek|fouk\xE1|foukat|vichr",
+            smoke: "kou\u0159|kou\u0159e|kou\u0159em|kou\u0159\xEDm|kou\u0159\xED\u0161|kou\u0159it|hul\xEDm|hulit|jointa|cigareta|cigarety|c\xEDgo",
+            electric: "elektri*|elekt\u0159ina|elekt\u0159iny|proud|proudu|energie|energii|jiskry|jiskra|nap\u011Bt\xED",
+            rainbow: "duha|duhy|duhou|duze|duhov\xFD|duhov\xE1|barvy|barev|barv\xE1ch",
+            fireworks: "oh\u0148ostroj*|petardy|rachejtle",
+            party: "p\xE1rty|party|mejdan|pa\u0159ba|pa\u0159it|pa\u0159\xEDme|oslava|oslavy|slavit|slav\xEDme|oslav\xEDme|tancova\u010Dka",
+            birthday: "narozenin*|v\u0161echno nejlep\u0161\xED",
+            dance: "tanec|tance|tancem|tan\u010D\xEDm|tan\u010D\xED\u0161|tan\u010D\xED|tan\u010Dit|tancuj*|tane\u010D*",
+            jump: "sk\xE1\u010Du|sk\xE1\u010De\u0161|sk\xE1\u010De|sk\xE1kat|sko\u010D|sko\u010D\xEDm|sko\u010Dit|skok|skoky|v\xFDskok",
+            dream: "sen|snu|snem|sny|sn\u016F|snech|sn\xEDm|sn\xED\u0161|sn\xEDt|zd\xE1 se mi|sn\u011Bn\xED",
+            ghost: "duch|ducha|duchov\xE9|duchem|p\u0159\xEDzrak|p\u0159\xEDzraky|stra\u0161idlo|fantom",
+            angel: "and\u011Bl*",
+            devil: "\u010F\xE1bel|\u010F\xE1bla|\u010F\xE1blem|\u010Dert|\u010Derta|\u010Derti|peklo|pekla|pekle|peklem|d\xE9mon|d\xE9moni",
+            world: "sv\u011Bt|sv\u011Bta|sv\u011Btem|sv\u011Bt\u011B|sv\u011Bty|zem\u011B|zemi|planeta|planety|planetu",
+            space: "vesm\xEDr*|galaxie|galaxii|kosmos|kosmu|kosmick\xFD",
+            rocket: "raket*|odp\xE1lit|vzlet",
+            time: "\u010Das|\u010Dasu|\u010Dasem|\u010Dase|hodiny|hodinky|nav\u017Edy|v\u011B\u010Dnost|v\u011B\u010Dn\u011B|nav\u011Bky",
+            drive: "jedu|jede\u0161|jedem|jedeme|\u0159\xEDdit|\u0159\xEDd\xEDm|auto|auta|autem|aut\u011B|silnice|silnici|d\xE1lnice|d\xE1lnici|rychle|rychlost|rychleji",
+            city: "m\u011Bsto|m\u011Bsta|m\u011Bstem|m\u011Bst\u011B|ulice|ulici|ulic\xEDch|ulicemi|centrum|velkom\u011Bsto",
+            music: "hudba|hudby|hudbu|hudbou|hudb\u011B|muzika|muziku|p\xEDsni\u010Dka|p\xEDsni\u010Dku|p\xEDsn\u011B|p\xEDse\u0148|melodie|rytmus|beat",
+            sing: "zp\xEDv\xE1m|zp\xEDv\xE1\u0161|zp\xEDv\xE1|zp\xEDvat|zp\xEDv\xE1me|zp\u011Bv|hlas|hlasem|hlasu|zazp\xEDvej",
+            boom: "bum|b\xE1c|v\xFDbuch|v\xFDbuchu|exploze|explodovat|bouchne|bomba|bomby|bombu",
+            champagne: "\u0161ampa\u0148sk\xE9|\u0161ampa\u0148sk\xE9ho|\u0161ampus|p\u0159\xEDpitek|na zdrav\xED|pijem|pijeme|drink|l\xE1hev|fla\u0161ku|fla\u0161ka|v\xEDno|v\xEDna|pivo",
+            magic: "magie|magii|kouzlo|kouzla|kouzlem|kouzel*|\u010Darovat|\u010D\xE1ry|zakl\xEDnadlo|magick\xFD",
+            beach: "pl\xE1\u017E|pl\xE1\u017Ei|pl\xE1\u017Ee|ostrov|ostrova|ostrov\u011B|palmy|palem|p\xEDsek|p\xEDsku",
+            christmas: "v\xE1noc*|v\xE1noce|je\u017E\xED\u0161ek|je\u017E\xED\u0161ka|santa|s\xE1n\u011B|san\u011B|zvonky|zvone\u010Dky|strome\u010Dek",
+            red: "\u010Derven\xFD|\u010Derven\xE1|\u010Derven\xE9|\u010Dervenou|\u010Derven\xFDm|rud\xFD|rud\xE1|rud\xE9",
+            blue: "modr\xFD|modr\xE1|modr\xE9|modrou|modr\xFDm|blankytn\xFD",
+            green: "zelen\xFD|zelen\xE1|zelen\xE9|zelenou|zelen\xFDm|zele\u0148",
+            pink: "r\u016F\u017Eov\xFD|r\u016F\u017Eov\xE1|r\u016F\u017Eov\xE9|r\u016F\u017Eovou|r\u016F\u017Eov\xFDm|r\u016F\u017Eov\u011B",
+            purple: "fialov*|purpurov\xFD|purpurov\xE1",
+            white: "b\xEDl\xFD|b\xEDl\xE1|b\xEDl\xE9|b\xEDlou|b\xEDl\xFDm|b\u011Blost",
+            black: "\u010Dern\xFD|\u010Dern\xE1|\u010Dern\xE9|\u010Dernou|\u010Dern\xFDm|\u010Der\u0148",
+            silver: "st\u0159\xEDbr*"
+          }
+        },
+        sk: {
+          stop: "som|sme|ste|ke\u010F|lebo|pre\u010Do|teraz|e\u0161te|nie\u010Do|v\u0161etko|nikdy|\u0165a|aj|ako|m\u0148a|ve\u013Emi|tvoje|sa|nie|\u017Ee",
+          c: {
+            fire: "ohe\u0148|oh\u0148a|oh\u0148om|ohni|plame\u0148|plamene|plame\u0148om|hor\xEDm|hor\xED|horie\u0165|horiaci|sp\xE1li\u0165|zhorie\u0165",
+            rain: "d\xE1\u017E\u010F|da\u017E\u010Fa|da\u017E\u010Fom|da\u017Edi|pr\u0161\xED|pr\u0161a\u0165|da\u017Ediv\xFD|da\u017Ediv\xE9|lejak",
+            storm: "b\xFArka|b\xFArky|b\xFArku|b\xFArkou|b\xFArok|hrom|hromy|hrm\xED|hurik\xE1n|v\xEDchrica",
+            lightning: "blesk*|bl\xFDska",
+            snow: "sneh|snehu|snehom|sne\u017E\xED|sne\u017Ei\u0165|snehov\xE1 vlo\u010Dka|vlo\u010Dky|vlo\u010Dka|snehov\xE9|snehov\xFD|snehuliak",
+            cold: "zima|zimu|zimy|studen\xFD|studen\xE1|studen\xE9|chlad|chladn\xFD|chladn\xE1|\u013Ead|\u013Eadu|\u013Eadom|\u013Eadov\xFD|\u013Eadov\xE1|zamrznut\xFD|mr\xE1z|mrazu",
+            sun: "slnko|slnka|slnkom|slnku|slnie\u010Dko|slne\u010D*|v\xFDchod slnka|z\xE1pad slnka",
+            summer: "leto|letom|v lete|letn\xFD|letn\xE9|letn\xE1|pr\xE1zdniny",
+            moon: "luna|luny|lunou|mesa\u010Dn\xFD|mesa\u010Dn\xE9|mesia\u010Dik|spln|svit mesiaca",
+            star: "hviezd*",
+            sky: "nebo|neba|nebom|nebi|obloha|oblohu|oblohe|mraky|mrak|oblaky",
+            heaven: "raj|raji|rajom|rajsk\xFD|nebesia|v nebi|nebesk\xFD|nebesk\xE1",
+            night: "noc|noci|nocou|no\u010Dn\xFD|no\u010Dn\xE9|dnes v noci|polnoc|polnoci",
+            dark: "tma|tmy|tme|tmou|temn\xFD|temn\xE1|temnota|tie\u0148|tiene|tie\u0148a|tmav\xFD|tmav\xE1",
+            light: "svetlo|svetla|svetlom|svetle|svieti|svietim|\u017Eiari|\u017Eiarim|\u017Eiari\u0165|jasn\xFD|lesk",
+            heart: "srdce|srdca|srdcom|srdci|s\u0155dc|srdie\u010Dko|srdie\u010Dka",
+            love: "l\xE1ska|l\xE1sky|l\xE1skou|l\xE1sku|l\xE1ske|\u013E\xFAbim|\u013E\xFAbi\u0161|\u013E\xFAbi|\u013E\xFAbi\u0165|milujem|miluje\u0161|miluje|milova\u0165|zamilovan\xFD|zamilovan\xE1|mil\xE1\u010Dik",
+            kiss: "bozk|bozky|bozkom|bozk\xE1va\u0165|bozk\xE1vam|pobozkaj|pusa|pusu|pery|per\xE1ch|pier",
+            heartbreak: "zlomen\xE9 srdce|zlomen\xFDm srdcom|zlomil si mi srdce|zlomila si mi srdce|l\xE1me\u0161 mi srdce|srdce mi puk\xE1",
+            tears: "slzy|slza|s\u013Az|slzami|pla\u010Dem|pla\u010De\u0161|pla\u010De|plaka\u0165|pla\u010D|revem",
+            money: "peniaze|pe\u0148az\xED|peniazmi|prachy|bohat\xFD|bohat\xE1|bohatstvo|dol\xE1re|dol\xE1rov|eur\xE1|eur|ke\u0161",
+            gold: "zlato|zlata|zlatom|zlat\xFD|zlat\xE1|zlat\xE9|zlat\xFA",
+            diamond: "diamant*|briliant*|drahokam*|\u0161perky",
+            crown: "koruna|koruny|korunu|korunou|kr\xE1\u013E|kr\xE1\u013Ea|kr\xE1\u013Eom|kr\xE1\u013Eovn\xE1|kr\xE1\u013Eovn\xFA|kr\xE1\u013Eovsk\xFD",
+            fly: "let\xEDm|let\xED\u0161|let\xED|letie\u0165|lieta\u0165|lietam|kr\xEDdla|kr\xEDdel|kr\xEDdlami|vzlietnu\u0165",
+            bird: "vt\xE1k|vt\xE1ky|vt\xE1ka|vt\xE1kov|vt\xE1\u010Dik|vt\xE1\u010Dky|vt\xE1\u010D\xED",
+            butterfly: "mot\xFD\u013E|mot\xFDle|mot\xFD\u013Ea|mot\xFD\u013Eov|mot\xFDlik|mot\xFDliky",
+            flower: "kvet|kvety|kvetom|kvetin*|kvietok|kvitne|rozkvit\xE1",
+            rose: "ru\u017Ea|ru\u017Ee|ru\u017E\xED|ru\u017Eu|ru\u017Eou|ru\u017Ei\u010Dka",
+            ocean: "oce\xE1n|oce\xE1nu|oce\xE1nom|more|mora|morom|mori|vlny|vlna|v\u013An",
+            water: "voda|vody|vodu|vodou|vode|rieka|rieky|rieku|riekou|pl\xE1va\u0165|pl\xE1vam",
+            wind: "vietor|vetra|vetrom|vetre|v\xE1nok|f\xFAka|f\xFAka\u0165|v\xEDchor",
+            smoke: "dym|dymu|dymom|faj\u010D\xEDm|faj\u010Di\u0165|faj\u010D\xED\u0161|cigareta|cigarety|hul\xEDm|joint",
+            electric: "elektri*|pr\xFAd|pr\xFAdu|energia|energiu|energie|iskry|iskra|nap\xE4tie",
+            rainbow: "d\xFAha|d\xFAhy|d\xFAhou|d\xFAhe|d\xFAhov\xFD|d\xFAhov\xE1|farby|farieb|farb\xE1ch",
+            fireworks: "oh\u0148ostroj*|petardy",
+            party: "p\xE1rty|party|\u017E\xFAr|\u017E\xFArka|\u017E\xFArova\u0165|oslava|oslavy|oslavujeme|oslavova\u0165|z\xE1bava",
+            birthday: "narodenin*|v\u0161etko najlep\u0161ie",
+            dance: "tanec|tanca|tancom|tancuj*|tancova\u0165|tane\u010Dnica|tane\u010Dn\xEDk",
+            jump: "sk\xE1\u010Dem|sk\xE1\u010De\u0161|sk\xE1\u010De|sk\xE1ka\u0165|sko\u010D|sko\u010D\xEDm|sko\u010Di\u0165|skok|skoky",
+            dream: "sen|snu|snom|sny|snov|sn\xEDvam|sn\xEDva\u0161|sn\xEDva|sn\xEDva\u0165",
+            ghost: "duch|ducha|duchovia|duchom|pr\xEDzrak|pr\xEDzraky|stra\u0161idlo",
+            angel: "anjel*",
+            devil: "diabol|diabla|diablom|\u010Dert|\u010Derta|\u010Derti|peklo|pekla|pekle|peklom|d\xE9mon|d\xE9moni",
+            world: "svet|sveta|svetom|svete|svety|zem|zeme|zemi|plan\xE9ta|plan\xE9ty|plan\xE9tu",
+            space: "vesm\xEDr*|galaxia|galaxie|galaxiu|kozmos|kozmick\xFD",
+            rocket: "raket*",
+            time: "\u010Das|\u010Dasu|\u010Dasom|\u010Dase|hodiny|hodinky|nav\u017Edy|ve\u010Dnos\u0165|ve\u010Dne|naveky",
+            drive: "idem autom|jazd\xEDm|jazdi\u0165|\u0161of\xE9rujem|auto|aut\xE1|autom|aute|cesta|cestu|dia\u013Enica|dia\u013Enici|r\xFDchlo|r\xFDchlos\u0165|r\xFDchlej\u0161ie",
+            city: "mesto|mesta|mestom|meste|ulice|ulici|uliciach|ulicami|centrum|ve\u013Ekomesto",
+            music: "hudba|hudby|hudbu|hudbou|hudbe|muzika|pesni\u010Dka|pesni\u010Dku|piese\u0148|piesne|mel\xF3dia|mel\xF3diu|rytmus|beat",
+            sing: "spiev*|hlas|hlasom|hlasu|zaspievaj",
+            boom: "bum|buch|v\xFDbuch|v\xFDbuchu|expl\xF3zia|explodova\u0165|bomba|bomby|bombu|vybuchne",
+            champagne: "\u0161ampansk\xE9|\u0161ampansk\xE9ho|\u0161ampus|pr\xEDpitok|na zdravie|pijeme|drink|f\u013Ea\u0161a|f\u013Ea\u0161u|f\u013Ea\u0161ku|v\xEDno|v\xEDna",
+            magic: "m\xE1gia|m\xE1giu|k\xFAzlo|k\xFAzla|k\xFAzlom|k\xFAzeln\xFD|\u010Darovn\xFD|\u010Darovn\xE1|\u010D\xE1ry|magick\xFD",
+            beach: "pl\xE1\u017E|pl\xE1\u017Ei|pl\xE1\u017Ee|ostrov|ostrova|ostrove|palmy|piesok|piesku",
+            christmas: "vianoc*|vianoce|je\u017Ei\u0161ko|je\u017Ei\u0161ka|santa|sane|zvon\u010Deky|strom\u010Dek",
+            red: "\u010Derven\xFD|\u010Derven\xE1|\u010Derven\xE9|\u010Derven\xFA|\u010Derven\xFDm|rud\xFD|rud\xE1",
+            blue: "modr\xFD|modr\xE1|modr\xE9|modr\xFA|modr\xFDm|belas\xFD|belas\xE1",
+            green: "zelen\xFD|zelen\xE1|zelen\xE9|zelen\xFA|zelen\xFDm|zele\u0148",
+            pink: "ru\u017Eov\xFD|ru\u017Eov\xE1|ru\u017Eov\xE9|ru\u017Eov\xFA|ru\u017Eov\xFDm|ru\u017Eovo",
+            purple: "fialov\xFD|fialov\xE1|fialov\xE9|fialov\xFA|purpurov\xFD",
+            white: "biely|biela|biele|bielu|bielym|beloba",
+            black: "\u010Dierny|\u010Dierna|\u010Dierne|\u010Diernu|\u010Diernym|\u010Der\u0148",
+            silver: "striebr*|strieborn\xFD|strieborn\xE1|strieborn\xE9"
+          }
+        },
+        hr: {
+          stop: "\u0161to|tko|gdje|ovdje|uvijek|nikada|za\u0161to|jer|sam|nisam|smo|ste|kako|samo|ali|sve|tebe|mene|lijepo|vrijeme",
+          c: {
+            fire: "vatra|vatre|vatru|vatrom|vatri|plamen|plamena|plamenom|plamenovi|gorim|gori|gori\u0161|gorjeti|izgorjeti|izgaram|\u017Ear|oganj|ognja",
+            rain: "ki\u0161a|ki\u0161e|ki\u0161u|ki\u0161om|ki\u0161i|ki\u0161ni|ki\u0161no|pljusak|pada ki\u0161a",
+            storm: "oluja|oluje|oluju|olujom|oluji|grmljavina|uragan|nevrijeme|nevera",
+            lightning: "munja|munje|munju|munjom|munjevit|grom|gromovi|bljesak",
+            snow: "snijeg*|pahulja|pahulje|pahuljica|snije\u017Ei|snje\u017Eni|snje\u017Ena",
+            cold: "hladno|hladan|hladna|hladni|hladno\u0107a|led|leda|ledom|ledeno|ledena|ledeni|smrznut|smrznuta|zima|mraz",
+            sun: "sunce|sunca|suncem|suncu|sun\u010Dan*|izlazak sunca|zalazak sunca|suna\u0161ce",
+            summer: "ljeto|ljeta|ljetom|ljetu|ljetni|ljetna|ljetno|ljetovanje",
+            moon: "mjese\u010Din*|luna|lune|pun mjesec|mjesec sja",
+            star: "zvijezd*|zvjezd*",
+            sky: "nebo|neba|nebom|nebu|oblaci|oblak|oblaka|oblacima",
+            heaven: "raj|raja|rajem|raju|rajski|rajska|nebesa|nebeski|nebeska",
+            night: "no\u0107|no\u0107i|no\u0107u|no\u0107as|pono\u0107|pono\u0107i|no\u0107na|no\u0107ni",
+            dark: "mrak|mraka|mraku|tama|tame|tamu|tami|tamno|tamna|sjena|sjene|sjenu|tmina",
+            light: "svjetlo|svjetla|svjetlom|svjetlu|svjetlost|svjetlosti|sjaj|sjaja|sjajem|sjaji|sija\u0161|sija|blista|blista\u0161",
+            heart: "srce|srca|srcem|srcu|srda\u0161ce",
+            love: "ljubav*|volim|voli\u0161|voli|volimo|voljeti|zaljubljen|zaljubljena",
+            kiss: "poljub*|ljubi|ljubim|ljubi\u0161|usne|usnama|usana",
+            heartbreak: "slomljeno srce|slomio si mi srce|slomila si mi srce|srce slomljeno|slomljenog srca|lomi\u0161 mi srce|srce mi puca",
+            tears: "suze|suza|suzama|suzu|pla\u010Dem|pla\u010De\u0161|pla\u010De|plakati|pla\u010D|plakala|plakao",
+            money: "novac|novca|novcem|pare|lova|lovu|lovom|ke\u0161|bogat|bogata|bogatstvo|dolari|dolara|eura|kune",
+            gold: "zlato|zlata|zlatom|zlatu|zlatni|zlatna|zlatno|zlatne",
+            diamond: "dijamant*|brilijant*|dragulj*",
+            crown: "kruna|krune|krunu|krunom|kralj*",
+            fly: "letim|leti\u0161|leti|letimo|letjeti|krila|krilima|krilo|poletjeti|polije\u0107em",
+            bird: "ptica|ptice|pticu|pticom|ptici|pti\u010Dica|pti\u010Dice|pti\u0107",
+            butterfly: "leptir*",
+            flower: "cvijet*|cvije\u0107*|cvjet*|cvate|procvjeta",
+            rose: "ru\u017Ea|ru\u017Ee|ru\u017Eu|ru\u017Eom|ru\u017Ei|ru\u017Eica|ru\u017Eo",
+            ocean: "ocean|oceana|oceanom|more|mora|morem|moru|valovi|val|valova|pu\u010Dina",
+            water: "voda|vode|vodu|vodom|rijeka|rijeke|rijeku|rijekom|plivati|plivam|pliva\u0161",
+            wind: "vjetar|vjetra|vjetrom|vjetru|vjetrovi|povjetarac|pu\u0161e|puhati|bura",
+            smoke: "dim|dima|dimom|pu\u0161im|pu\u0161i\u0161|pu\u0161i|pu\u0161iti|cigareta|cigarete|d\u017Eoint",
+            electric: "elektri*|struja|struje|strujom|energija|energije|energiju|iskre|iskra|napon",
+            rainbow: "dugin|duginih|dugine|boje duge|\u0161arene|\u0161areno|bojama",
+            fireworks: "vatromet*|petarde",
+            party: "zabava|zabave|zabavu|\u017Eurka|\u017Eurke|\u017Eurku|tulum|tuluma|parti|slavimo|slaviti|proslava|proslavu|lumpujemo",
+            birthday: "ro\u0111endan*",
+            dance: "ples|plesa*|plesom|ple\u0161em|ple\u0161e\u0161|ple\u0161e|ple\u0161emo|plesni",
+            jump: "ska\u010Dem|ska\u010De\u0161|ska\u010De|skakati|sko\u010Di|sko\u010Dim|skok|skokovi|ska\u010Demo",
+            dream: "san|sna|snom|snu|snovi|snova|sanja*|snivam",
+            ghost: "duh|duha|duhovi|duhom|sablast|utvara|aveti",
+            angel: "an\u0111el*|an\u0111eo*",
+            devil: "vrag|vraga|vragom|\u0111avo|\u0111avol|\u0111avla|\u0111avolom|pakao|pakla|paklu|paklom|demon|demoni|sotona",
+            world: "svijet|svijeta|svijetu|svijetom|svjetovi|zemlja|zemlje|zemlju|planet|planeta|planetu",
+            space: "svemir*|galaksija|galaksije|galaksiju|kozmos|kosmos|univerzum",
+            rocket: "raketa|rakete|raketu|raketom|raketi|lansiranje|polijetanje",
+            time: "vrijeme|vremena|vremenom|sat|sata|satovi|zauvijek|vje\u010Dno|vje\u010Dnost|vjekovima",
+            drive: "vozim|vozi\u0161|vozi|voziti|vo\u017Enja|auto|auta|autom|autu|cesta|ceste|cestom|autocesta|autoput|brzina|brzinom|brzo|br\u017Ee|gas",
+            city: "grad|grada|gradom|gradu|gradovi|ulice|ulica|ulicama|ulici|centar|centru",
+            music: "muzika|muzike|muziku|glazba|glazbe|glazbu|pjesma|pjesme|pjesmu|pjesmom|melodija|melodije|ritam|ritma|beat",
+            sing: "pjeva*|glas|glasom|glasa",
+            boom: "bum|bam|eksplozija|eksplozije|eksplodira|eksplodirati|bomba|bombe|bombu|prasak",
+            champagne: "\u0161ampanjac|\u0161ampanjca|\u0161ampanjcem|\u017Eivjeli|nazdravimo|zdravica|pijemo|pi\u0107e|pi\u0107a|boca|boce|bocu|vino",
+            magic: "magija|magije|magiju|magijom|magi\u010Dan|magi\u010Dno|magi\u010Dna|\u010Darolij*|\u010Darob*",
+            beach: "pla\u017Ea|pla\u017Ee|pla\u017Eu|pla\u017Ei|otok|otoka|otoku|palme|palmi|pijesak|pijeska|\u017Eal",
+            christmas: "bo\u017Ei\u0107*|djed mraz|djed bo\u017Ei\u0107njak|saonice|zvon\u010Di\u0107i|jelka",
+            red: "crven*",
+            blue: "plav|plava|plavo|plavi|plave|plavom|modro|modra|modri|modre",
+            green: "zelen*",
+            pink: "roza|ru\u017Ei\u010Dast*",
+            purple: "ljubi\u010Dast*",
+            white: "bijel|bijela|bijelo|bijeli|bijele|bijelom|bijelu",
+            black: "crn|crna|crno|crni|crne|crnom|crnu",
+            silver: "srebr*"
+          }
+        },
+        sr: {
+          stop: "\u0161ta|ko|gde|ovde|uvek|nikad|za\u0161to|jer|sam|nisam|smo|ste|kako|samo|ali|sve|lepo|vreme|bi\u0107u|ho\u0107u|\u0448\u0442\u0430|\u043A\u043E|\u0433\u0434\u0435|\u043E\u0432\u0434\u0435|\u0443\u0432\u0435\u043A|\u043D\u0438\u043A\u0430\u0434|\u0437\u0430\u0448\u0442\u043E|\u0458\u0435\u0440|\u0441\u0430\u043C|\u043D\u0438\u0441\u0430\u043C|\u0441\u043C\u043E|\u0441\u0442\u0435|\u043A\u0430\u043A\u043E|\u0441\u0430\u043C\u043E|\u0430\u043B\u0438|\u0441\u0432\u0435|\u043B\u0435\u043F\u043E|\u0432\u0440\u0435\u043C\u0435|\u0431\u0438\u045B\u0443|\u0445\u043E\u045B\u0443",
+          c: {
+            fire: "vatra|vatre|vatru|vatrom|vatri|plamen|plamena|plamenom|gorim|gori|gori\u0161|goreti|izgoreti|izgaram|\u017Ear|oganj|ognja|\u0432\u0430\u0442\u0440\u0430|\u0432\u0430\u0442\u0440\u0435|\u0432\u0430\u0442\u0440\u0443|\u0432\u0430\u0442\u0440\u043E\u043C|\u0432\u0430\u0442\u0440\u0438|\u043F\u043B\u0430\u043C\u0435\u043D|\u043F\u043B\u0430\u043C\u0435\u043D\u0430|\u043F\u043B\u0430\u043C\u0435\u043D\u043E\u043C|\u0433\u043E\u0440\u0438\u043C|\u0433\u043E\u0440\u0438|\u0433\u043E\u0440\u0438\u0448|\u0433\u043E\u0440\u0435\u0442\u0438|\u0438\u0437\u0433\u043E\u0440\u0435\u0442\u0438|\u0438\u0437\u0433\u0430\u0440\u0430\u043C|\u0436\u0430\u0440|\u043E\u0433\u0430\u045A|\u043E\u0433\u045A\u0430",
+            rain: "ki\u0161a|ki\u0161e|ki\u0161u|ki\u0161om|ki\u0161i|ki\u0161ni|ki\u0161no|pljusak|pada ki\u0161a|\u043A\u0438\u0448\u0430|\u043A\u0438\u0448\u0435|\u043A\u0438\u0448\u0443|\u043A\u0438\u0448\u043E\u043C|\u043A\u0438\u0448\u0438|\u043A\u0438\u0448\u043D\u0438|\u043A\u0438\u0448\u043D\u043E|\u043F\u0459\u0443\u0441\u0430\u043A|\u043F\u0430\u0434\u0430 \u043A\u0438\u0448\u0430",
+            storm: "oluja|oluje|oluju|olujom|oluji|grmljavina|uragan|nevreme|\u043E\u043B\u0443\u0458\u0430|\u043E\u043B\u0443\u0458\u0435|\u043E\u043B\u0443\u0458\u0443|\u043E\u043B\u0443\u0458\u043E\u043C|\u043E\u043B\u0443\u0458\u0438|\u0433\u0440\u043C\u0459\u0430\u0432\u0438\u043D\u0430|\u0443\u0440\u0430\u0433\u0430\u043D|\u043D\u0435\u0432\u0440\u0435\u043C\u0435",
+            lightning: "munja|munje|munju|munjom|grom|gromovi|bljesak|\u043C\u0443\u045A\u0430|\u043C\u0443\u045A\u0435|\u043C\u0443\u045A\u0443|\u043C\u0443\u045A\u043E\u043C|\u0433\u0440\u043E\u043C|\u0433\u0440\u043E\u043C\u043E\u0432\u0438|\u0431\u0459\u0435\u0441\u0430\u043A",
+            snow: "sneg|snega|snegom|snegu|pahulja|pahulje|pahuljica|sne\u017Ei|sne\u017Eni|sne\u017Ena|\u0441\u043D\u0435\u0433|\u0441\u043D\u0435\u0433\u0430|\u0441\u043D\u0435\u0433\u043E\u043C|\u0441\u043D\u0435\u0433\u0443|\u043F\u0430\u0445\u0443\u0459\u0430|\u043F\u0430\u0445\u0443\u0459\u0435|\u043F\u0430\u0445\u0443\u0459\u0438\u0446\u0430|\u0441\u043D\u0435\u0436\u0438|\u0441\u043D\u0435\u0436\u043D\u0438|\u0441\u043D\u0435\u0436\u043D\u0430",
+            cold: "hladno|hladan|hladna|hladni|hladno\u0107a|led|leda|ledom|ledeno|ledena|ledeni|smrznut|mraz|zima|\u0445\u043B\u0430\u0434\u043D\u043E|\u0445\u043B\u0430\u0434\u0430\u043D|\u0445\u043B\u0430\u0434\u043D\u0430|\u0445\u043B\u0430\u0434\u043D\u0438|\u0445\u043B\u0430\u0434\u043D\u043E\u045B\u0430|\u043B\u0435\u0434|\u043B\u0435\u0434\u0430|\u043B\u0435\u0434\u043E\u043C|\u043B\u0435\u0434\u0435\u043D\u043E|\u043B\u0435\u0434\u0435\u043D\u0430|\u043B\u0435\u0434\u0435\u043D\u0438|\u0441\u043C\u0440\u0437\u043D\u0443\u0442|\u043C\u0440\u0430\u0437|\u0437\u0438\u043C\u0430",
+            sun: "sunce|sunca|suncem|suncu|sun\u010Dan*|izlazak sunca|zalazak sunca|\u0441\u0443\u043D\u0446\u0435|\u0441\u0443\u043D\u0446\u0430|\u0441\u0443\u043D\u0446\u0435\u043C|\u0441\u0443\u043D\u0446\u0443|\u0441\u0443\u043D\u0447\u0430\u043D*|\u0438\u0437\u043B\u0430\u0437\u0430\u043A \u0441\u0443\u043D\u0446\u0430|\u0437\u0430\u043B\u0430\u0437\u0430\u043A \u0441\u0443\u043D\u0446\u0430",
+            summer: "leto|leta|letos|letnji|letnja|letnje|letovanje|\u043B\u0435\u0442\u043E|\u043B\u0435\u0442\u0430|\u043B\u0435\u0442\u043E\u0441|\u043B\u0435\u0442\u045A\u0438|\u043B\u0435\u0442\u045A\u0430|\u043B\u0435\u0442\u045A\u0435|\u043B\u0435\u0442\u043E\u0432\u0430\u045A\u0435",
+            moon: "mese\u010Din*|luna|lune|pun mesec|mesec sija|\u043C\u0435\u0441\u0435\u0447\u0438\u043D*|\u043B\u0443\u043D\u0430|\u043B\u0443\u043D\u0435|\u043F\u0443\u043D \u043C\u0435\u0441\u0435\u0446|\u043C\u0435\u0441\u0435\u0446 \u0441\u0438\u0458\u0430",
+            star: "zvezd*|\u0437\u0432\u0435\u0437\u0434*",
+            sky: "nebo|neba|nebom|nebu|oblaci|oblak|oblaka|oblacima|\u043D\u0435\u0431\u043E|\u043D\u0435\u0431\u0430|\u043D\u0435\u0431\u043E\u043C|\u043D\u0435\u0431\u0443|\u043E\u0431\u043B\u0430\u0446\u0438|\u043E\u0431\u043B\u0430\u043A|\u043E\u0431\u043B\u0430\u043A\u0430|\u043E\u0431\u043B\u0430\u0446\u0438\u043C\u0430",
+            heaven: "raj|raja|rajem|raju|rajski|rajska|nebesa|nebeski|nebeska|\u0440\u0430\u0458|\u0440\u0430\u0458\u0430|\u0440\u0430\u0458\u0435\u043C|\u0440\u0430\u0458\u0443|\u0440\u0430\u0458\u0441\u043A\u0438|\u0440\u0430\u0458\u0441\u043A\u0430|\u043D\u0435\u0431\u0435\u0441\u0430|\u043D\u0435\u0431\u0435\u0441\u043A\u0438|\u043D\u0435\u0431\u0435\u0441\u043A\u0430",
+            night: "no\u0107|no\u0107i|no\u0107u|no\u0107as|pono\u0107|pono\u0107i|no\u0107na|no\u0107ni|\u043D\u043E\u045B|\u043D\u043E\u045B\u0438|\u043D\u043E\u045B\u0443|\u043D\u043E\u045B\u0430\u0441|\u043F\u043E\u043D\u043E\u045B|\u043F\u043E\u043D\u043E\u045B\u0438|\u043D\u043E\u045B\u043D\u0430|\u043D\u043E\u045B\u043D\u0438",
+            dark: "mrak|mraka|mraku|tama|tame|tamu|tami|tamno|tamna|senka|senke|senku|tmina|\u043C\u0440\u0430\u043A|\u043C\u0440\u0430\u043A\u0430|\u043C\u0440\u0430\u043A\u0443|\u0442\u0430\u043C\u0430|\u0442\u0430\u043C\u0435|\u0442\u0430\u043C\u0443|\u0442\u0430\u043C\u0438|\u0442\u0430\u043C\u043D\u043E|\u0442\u0430\u043C\u043D\u0430|\u0441\u0435\u043D\u043A\u0430|\u0441\u0435\u043D\u043A\u0435|\u0441\u0435\u043D\u043A\u0443|\u0442\u043C\u0438\u043D\u0430",
+            light: "svetlo|svetla|svetlom|svetlu|svetlost|svetlosti|sjaj|sjaja|sjajem|sija|sija\u0161|blista|blista\u0161|\u0441\u0432\u0435\u0442\u043B\u043E|\u0441\u0432\u0435\u0442\u043B\u0430|\u0441\u0432\u0435\u0442\u043B\u043E\u043C|\u0441\u0432\u0435\u0442\u043B\u0443|\u0441\u0432\u0435\u0442\u043B\u043E\u0441\u0442|\u0441\u0432\u0435\u0442\u043B\u043E\u0441\u0442\u0438|\u0441\u0458\u0430\u0458|\u0441\u0458\u0430\u0458\u0430|\u0441\u0458\u0430\u0458\u0435\u043C|\u0441\u0438\u0458\u0430|\u0441\u0438\u0458\u0430\u0448|\u0431\u043B\u0438\u0441\u0442\u0430|\u0431\u043B\u0438\u0441\u0442\u0430\u0448",
+            heart: "srce|srca|srcem|srcu|srda\u0161ce|\u0441\u0440\u0446\u0435|\u0441\u0440\u0446\u0430|\u0441\u0440\u0446\u0435\u043C|\u0441\u0440\u0446\u0443|\u0441\u0440\u0434\u0430\u0448\u0446\u0435",
+            love: "ljubav*|volim|voli\u0161|voli|volimo|voleti|zaljubljen|zaljubljena|\u0459\u0443\u0431\u0430\u0432*|\u0432\u043E\u043B\u0438\u043C|\u0432\u043E\u043B\u0438\u0448|\u0432\u043E\u043B\u0438|\u0432\u043E\u043B\u0438\u043C\u043E|\u0432\u043E\u043B\u0435\u0442\u0438|\u0437\u0430\u0459\u0443\u0431\u0459\u0435\u043D|\u0437\u0430\u0459\u0443\u0431\u0459\u0435\u043D\u0430",
+            kiss: "poljub*|ljubi|ljubim|ljubi\u0161|usne|usnama|usana|\u043F\u043E\u0459\u0443\u0431*|\u0459\u0443\u0431\u0438|\u0459\u0443\u0431\u0438\u043C|\u0459\u0443\u0431\u0438\u0448|\u0443\u0441\u043D\u0435|\u0443\u0441\u043D\u0430\u043C\u0430|\u0443\u0441\u0430\u043D\u0430",
+            heartbreak: "slomljeno srce|slomio si mi srce|slomila si mi srce|slomljenog srca|lomi\u0161 mi srce|srce mi puca|srce mi se slomilo|\u0441\u043B\u043E\u043C\u0459\u0435\u043D\u043E \u0441\u0440\u0446\u0435|\u0441\u043B\u043E\u043C\u0438\u043E \u0441\u0438 \u043C\u0438 \u0441\u0440\u0446\u0435|\u0441\u043B\u043E\u043C\u0438\u043B\u0430 \u0441\u0438 \u043C\u0438 \u0441\u0440\u0446\u0435|\u0441\u043B\u043E\u043C\u0459\u0435\u043D\u043E\u0433 \u0441\u0440\u0446\u0430|\u043B\u043E\u043C\u0438\u0448 \u043C\u0438 \u0441\u0440\u0446\u0435|\u0441\u0440\u0446\u0435 \u043C\u0438 \u043F\u0443\u0446\u0430|\u0441\u0440\u0446\u0435 \u043C\u0438 \u0441\u0435 \u0441\u043B\u043E\u043C\u0438\u043B\u043E",
+            tears: "suze|suza|suzama|suzu|pla\u010Dem|pla\u010De\u0161|pla\u010De|plakati|pla\u010D|plakala|plakao|\u0441\u0443\u0437\u0435|\u0441\u0443\u0437\u0430|\u0441\u0443\u0437\u0430\u043C\u0430|\u0441\u0443\u0437\u0443|\u043F\u043B\u0430\u0447\u0435\u043C|\u043F\u043B\u0430\u0447\u0435\u0448|\u043F\u043B\u0430\u0447\u0435|\u043F\u043B\u0430\u043A\u0430\u0442\u0438|\u043F\u043B\u0430\u0447|\u043F\u043B\u0430\u043A\u0430\u043B\u0430|\u043F\u043B\u0430\u043A\u0430\u043E",
+            money: "novac|novca|novcem|pare|lova|lovu|ke\u0161|bogat|bogata|bogatstvo|dolari|dolara|evra|evro|\u043D\u043E\u0432\u0430\u0446|\u043D\u043E\u0432\u0446\u0430|\u043D\u043E\u0432\u0446\u0435\u043C|\u043F\u0430\u0440\u0435|\u043B\u043E\u0432\u0430|\u043B\u043E\u0432\u0443|\u043A\u0435\u0448|\u0431\u043E\u0433\u0430\u0442|\u0431\u043E\u0433\u0430\u0442\u0430|\u0431\u043E\u0433\u0430\u0442\u0441\u0442\u0432\u043E|\u0434\u043E\u043B\u0430\u0440\u0438|\u0434\u043E\u043B\u0430\u0440\u0430|\u0435\u0432\u0440\u0430|\u0435\u0432\u0440\u043E",
+            gold: "zlato|zlata|zlatom|zlatu|zlatni|zlatna|zlatno|zlatne|\u0437\u043B\u0430\u0442\u043E|\u0437\u043B\u0430\u0442\u0430|\u0437\u043B\u0430\u0442\u043E\u043C|\u0437\u043B\u0430\u0442\u0443|\u0437\u043B\u0430\u0442\u043D\u0438|\u0437\u043B\u0430\u0442\u043D\u0430|\u0437\u043B\u0430\u0442\u043D\u043E|\u0437\u043B\u0430\u0442\u043D\u0435",
+            diamond: "dijamant*|brilijant*|dragulj*|\u0434\u0438\u0458\u0430\u043C\u0430\u043D\u0442*|\u0431\u0440\u0438\u043B\u0438\u0458\u0430\u043D\u0442*|\u0434\u0440\u0430\u0433\u0443\u0459*",
+            crown: "kruna|krune|krunu|krunom|kralj|kralja|kralju|kraljem|kraljica|kraljice|kraljicu|kraljevski|kraljevska|kraljevstvo|\u043A\u0440\u0443\u043D\u0430|\u043A\u0440\u0443\u043D\u0435|\u043A\u0440\u0443\u043D\u0443|\u043A\u0440\u0443\u043D\u043E\u043C|\u043A\u0440\u0430\u0459|\u043A\u0440\u0430\u0459\u0430|\u043A\u0440\u0430\u0459\u0443|\u043A\u0440\u0430\u0459\u0435\u043C|\u043A\u0440\u0430\u0459\u0438\u0446\u0430|\u043A\u0440\u0430\u0459\u0438\u0446\u0435|\u043A\u0440\u0430\u0459\u0438\u0446\u0443|\u043A\u0440\u0430\u0459\u0435\u0432\u0441\u043A\u0438|\u043A\u0440\u0430\u0459\u0435\u0432\u0441\u043A\u0430|\u043A\u0440\u0430\u0459\u0435\u0432\u0441\u0442\u0432\u043E",
+            fly: "letim|leti\u0161|letimo|leteti|krila|krilima|krilo|poleteti|pole\u0107em|\u043B\u0435\u0442\u0438\u043C|\u043B\u0435\u0442\u0438\u0448|\u043B\u0435\u0442\u0438\u043C\u043E|\u043B\u0435\u0442\u0435\u0442\u0438|\u043A\u0440\u0438\u043B\u0430|\u043A\u0440\u0438\u043B\u0438\u043C\u0430|\u043A\u0440\u0438\u043B\u043E|\u043F\u043E\u043B\u0435\u0442\u0435\u0442\u0438|\u043F\u043E\u043B\u0435\u045B\u0435\u043C",
+            bird: "ptica|ptice|pticu|pticom|ptici|pti\u010Dica|pti\u010Dice|\u043F\u0442\u0438\u0446\u0430|\u043F\u0442\u0438\u0446\u0435|\u043F\u0442\u0438\u0446\u0443|\u043F\u0442\u0438\u0446\u043E\u043C|\u043F\u0442\u0438\u0446\u0438|\u043F\u0442\u0438\u0447\u0438\u0446\u0430|\u043F\u0442\u0438\u0447\u0438\u0446\u0435",
+            butterfly: "leptir*|\u043B\u0435\u043F\u0442\u0438\u0440*",
+            flower: "cvet|cveta|cve\u0107e|cve\u0107em|cvetovi|cveti\u0107|procveta|cvetaju|\u0446\u0432\u0435\u0442|\u0446\u0432\u0435\u0442\u0430|\u0446\u0432\u0435\u045B\u0435|\u0446\u0432\u0435\u045B\u0435\u043C|\u0446\u0432\u0435\u0442\u043E\u0432\u0438|\u0446\u0432\u0435\u0442\u0438\u045B|\u043F\u0440\u043E\u0446\u0432\u0435\u0442\u0430|\u0446\u0432\u0435\u0442\u0430\u0458\u0443",
+            rose: "ru\u017Ea|ru\u017Ee|ru\u017Eu|ru\u017Eom|ru\u017Ei|ru\u017Eica|\u0440\u0443\u0436\u0430|\u0440\u0443\u0436\u0435|\u0440\u0443\u0436\u0443|\u0440\u0443\u0436\u043E\u043C|\u0440\u0443\u0436\u0438|\u0440\u0443\u0436\u0438\u0446\u0430",
+            ocean: "okean|okeana|okeanom|more|mora|morem|moru|talasi|talas|talasa|pu\u010Dina|\u043E\u043A\u0435\u0430\u043D|\u043E\u043A\u0435\u0430\u043D\u0430|\u043E\u043A\u0435\u0430\u043D\u043E\u043C|\u043C\u043E\u0440\u0435|\u043C\u043E\u0440\u0430|\u043C\u043E\u0440\u0435\u043C|\u043C\u043E\u0440\u0443|\u0442\u0430\u043B\u0430\u0441\u0438|\u0442\u0430\u043B\u0430\u0441|\u0442\u0430\u043B\u0430\u0441\u0430|\u043F\u0443\u0447\u0438\u043D\u0430",
+            water: "voda|vode|vodu|vodom|reka|reke|reku|rekom|plivati|plivam|\u0432\u043E\u0434\u0430|\u0432\u043E\u0434\u0435|\u0432\u043E\u0434\u0443|\u0432\u043E\u0434\u043E\u043C|\u0440\u0435\u043A\u0430|\u0440\u0435\u043A\u0435|\u0440\u0435\u043A\u0443|\u0440\u0435\u043A\u043E\u043C|\u043F\u043B\u0438\u0432\u0430\u0442\u0438|\u043F\u043B\u0438\u0432\u0430\u043C",
+            wind: "vetar|vetra|vetrom|vetru|vetrovi|povetarac|duva|duvati|ko\u0161ava|\u0432\u0435\u0442\u0430\u0440|\u0432\u0435\u0442\u0440\u0430|\u0432\u0435\u0442\u0440\u043E\u043C|\u0432\u0435\u0442\u0440\u0443|\u0432\u0435\u0442\u0440\u043E\u0432\u0438|\u043F\u043E\u0432\u0435\u0442\u0430\u0440\u0430\u0446|\u0434\u0443\u0432\u0430|\u0434\u0443\u0432\u0430\u0442\u0438|\u043A\u043E\u0448\u0430\u0432\u0430",
+            smoke: "dim|dima|dimom|pu\u0161im|pu\u0161i\u0161|pu\u0161i|pu\u0161iti|cigareta|cigarete|d\u017Eoint|\u0434\u0438\u043C|\u0434\u0438\u043C\u0430|\u0434\u0438\u043C\u043E\u043C|\u043F\u0443\u0448\u0438\u043C|\u043F\u0443\u0448\u0438\u0448|\u043F\u0443\u0448\u0438|\u043F\u0443\u0448\u0438\u0442\u0438|\u0446\u0438\u0433\u0430\u0440\u0435\u0442\u0430|\u0446\u0438\u0433\u0430\u0440\u0435\u0442\u0435|\u045F\u043E\u0438\u043D\u0442",
+            electric: "elektri*|struja|struje|strujom|energija|energije|energiju|iskre|iskra|napon|\u0435\u043B\u0435\u043A\u0442\u0440\u0438*|\u0441\u0442\u0440\u0443\u0458\u0430|\u0441\u0442\u0440\u0443\u0458\u0435|\u0441\u0442\u0440\u0443\u0458\u043E\u043C|\u0435\u043D\u0435\u0440\u0433\u0438\u0458\u0430|\u0435\u043D\u0435\u0440\u0433\u0438\u0458\u0435|\u0435\u043D\u0435\u0440\u0433\u0438\u0458\u0443|\u0438\u0441\u043A\u0440\u0435|\u0438\u0441\u043A\u0440\u0430|\u043D\u0430\u043F\u043E\u043D",
+            rainbow: "dugin|dugine|boje duge|\u0161arene|\u0161areno|bojama|\u0434\u0443\u0433\u0438\u043D|\u0434\u0443\u0433\u0438\u043D\u0435|\u0431\u043E\u0458\u0435 \u0434\u0443\u0433\u0435|\u0448\u0430\u0440\u0435\u043D\u0435|\u0448\u0430\u0440\u0435\u043D\u043E|\u0431\u043E\u0458\u0430\u043C\u0430",
+            fireworks: "vatromet*|petarde|\u0432\u0430\u0442\u0440\u043E\u043C\u0435\u0442*|\u043F\u0435\u0442\u0430\u0440\u0434\u0435",
+            party: "\u017Eurka|\u017Eurke|\u017Eurku|\u017Eurci|zabava|zabave|zabavu|provod|slavimo|slaviti|proslava|lumpujemo|parti|\u0436\u0443\u0440\u043A\u0430|\u0436\u0443\u0440\u043A\u0435|\u0436\u0443\u0440\u043A\u0443|\u0436\u0443\u0440\u0446\u0438|\u0437\u0430\u0431\u0430\u0432\u0430|\u0437\u0430\u0431\u0430\u0432\u0435|\u0437\u0430\u0431\u0430\u0432\u0443|\u043F\u0440\u043E\u0432\u043E\u0434|\u0441\u043B\u0430\u0432\u0438\u043C\u043E|\u0441\u043B\u0430\u0432\u0438\u0442\u0438|\u043F\u0440\u043E\u0441\u043B\u0430\u0432\u0430|\u043B\u0443\u043C\u043F\u0443\u0458\u0435\u043C\u043E|\u043F\u0430\u0440\u0442\u0438",
+            birthday: "ro\u0111endan*|sre\u0107an ro\u0111endan|\u0440\u043E\u0452\u0435\u043D\u0434\u0430\u043D*|\u0441\u0440\u0435\u045B\u0430\u043D \u0440\u043E\u0452\u0435\u043D\u0434\u0430\u043D",
+            dance: "ples|plesa*|plesom|ple\u0161em|ple\u0161e\u0161|ple\u0161e|ple\u0161emo|\u043F\u043B\u0435\u0441|\u043F\u043B\u0435\u0441\u0430*|\u043F\u043B\u0435\u0441\u043E\u043C|\u043F\u043B\u0435\u0448\u0435\u043C|\u043F\u043B\u0435\u0448\u0435\u0448|\u043F\u043B\u0435\u0448\u0435|\u043F\u043B\u0435\u0448\u0435\u043C\u043E",
+            jump: "ska\u010Dem|ska\u010De\u0161|ska\u010De|skakati|sko\u010Di|sko\u010Dim|skok|\u0441\u043A\u0430\u0447\u0435\u043C|\u0441\u043A\u0430\u0447\u0435\u0448|\u0441\u043A\u0430\u0447\u0435|\u0441\u043A\u0430\u043A\u0430\u0442\u0438|\u0441\u043A\u043E\u0447\u0438|\u0441\u043A\u043E\u0447\u0438\u043C|\u0441\u043A\u043E\u043A",
+            dream: "san|sna|snom|snu|snovi|snova|sanjam|sanja\u0161|sanja|sanjati|sanjamo|sanjao|sanjala|sanjar|\u0441\u0430\u043D|\u0441\u043D\u0430|\u0441\u043D\u043E\u043C|\u0441\u043D\u0443|\u0441\u043D\u043E\u0432\u0438|\u0441\u043D\u043E\u0432\u0430|\u0441\u0430\u045A\u0430\u043C|\u0441\u0430\u045A\u0430\u0448|\u0441\u0430\u045A\u0430|\u0441\u0430\u045A\u0430\u0442\u0438|\u0441\u0430\u045A\u0430\u043C\u043E|\u0441\u0430\u045A\u0430\u043E|\u0441\u0430\u045A\u0430\u043B\u0430|\u0441\u0430\u045A\u0430\u0440",
+            ghost: "duh|duha|duhovi|duhom|sablast|utvara|avet|\u0434\u0443\u0445|\u0434\u0443\u0445\u0430|\u0434\u0443\u0445\u043E\u0432\u0438|\u0434\u0443\u0445\u043E\u043C|\u0441\u0430\u0431\u043B\u0430\u0441\u0442|\u0443\u0442\u0432\u0430\u0440\u0430|\u0430\u0432\u0435\u0442",
+            angel: "an\u0111eo*|an\u0111el*|\u0430\u043D\u0452\u0435\u043E*|\u0430\u043D\u0452\u0435\u043B*",
+            devil: "vrag|vraga|\u0111avo|\u0111avola|\u0111avolom|\u0111avole|pakao|pakla|paklu|paklom|demon|demoni|sotona|\u0432\u0440\u0430\u0433|\u0432\u0440\u0430\u0433\u0430|\u0452\u0430\u0432\u043E|\u0452\u0430\u0432\u043E\u043B\u0430|\u0452\u0430\u0432\u043E\u043B\u043E\u043C|\u0452\u0430\u0432\u043E\u043B\u0435|\u043F\u0430\u043A\u0430\u043E|\u043F\u0430\u043A\u043B\u0430|\u043F\u0430\u043A\u043B\u0443|\u043F\u0430\u043A\u043B\u043E\u043C|\u0434\u0435\u043C\u043E\u043D|\u0434\u0435\u043C\u043E\u043D\u0438|\u0441\u043E\u0442\u043E\u043D\u0430",
+            world: "svet|sveta|svetu|svetom|svetovi|zemlja|zemlje|zemlju|planeta|planetu|\u0441\u0432\u0435\u0442|\u0441\u0432\u0435\u0442\u0430|\u0441\u0432\u0435\u0442\u0443|\u0441\u0432\u0435\u0442\u043E\u043C|\u0441\u0432\u0435\u0442\u043E\u0432\u0438|\u0437\u0435\u043C\u0459\u0430|\u0437\u0435\u043C\u0459\u0435|\u0437\u0435\u043C\u0459\u0443|\u043F\u043B\u0430\u043D\u0435\u0442\u0430|\u043F\u043B\u0430\u043D\u0435\u0442\u0443",
+            space: "svemir*|galaksija|galaksije|galaksiju|kosmos|kosmosa|univerzum|\u0441\u0432\u0435\u043C\u0438\u0440*|\u0433\u0430\u043B\u0430\u043A\u0441\u0438\u0458\u0430|\u0433\u0430\u043B\u0430\u043A\u0441\u0438\u0458\u0435|\u0433\u0430\u043B\u0430\u043A\u0441\u0438\u0458\u0443|\u043A\u043E\u0441\u043C\u043E\u0441|\u043A\u043E\u0441\u043C\u043E\u0441\u0430|\u0443\u043D\u0438\u0432\u0435\u0440\u0437\u0443\u043C",
+            rocket: "raketa|rakete|raketu|raketom|raketi|lansiranje|\u0440\u0430\u043A\u0435\u0442\u0430|\u0440\u0430\u043A\u0435\u0442\u0435|\u0440\u0430\u043A\u0435\u0442\u0443|\u0440\u0430\u043A\u0435\u0442\u043E\u043C|\u0440\u0430\u043A\u0435\u0442\u0438|\u043B\u0430\u043D\u0441\u0438\u0440\u0430\u045A\u0435",
+            time: "vreme|vremena|vremenom|sat|sata|satovi|zauvek|ve\u010Dno|ve\u010Dnost|vekovima|\u0432\u0440\u0435\u043C\u0435|\u0432\u0440\u0435\u043C\u0435\u043D\u0430|\u0432\u0440\u0435\u043C\u0435\u043D\u043E\u043C|\u0441\u0430\u0442|\u0441\u0430\u0442\u0430|\u0441\u0430\u0442\u043E\u0432\u0438|\u0437\u0430\u0443\u0432\u0435\u043A|\u0432\u0435\u0447\u043D\u043E|\u0432\u0435\u0447\u043D\u043E\u0441\u0442|\u0432\u0435\u043A\u043E\u0432\u0438\u043C\u0430",
+            drive: "vozim|vozi\u0161|vozi|voziti|vo\u017Enja|auto|kola|kolima|autoput|brzina|brzinom|brzo|br\u017Ee|gas|\u0432\u043E\u0437\u0438\u043C|\u0432\u043E\u0437\u0438\u0448|\u0432\u043E\u0437\u0438|\u0432\u043E\u0437\u0438\u0442\u0438|\u0432\u043E\u0436\u045A\u0430|\u0430\u0443\u0442\u043E|\u043A\u043E\u043B\u0430|\u043A\u043E\u043B\u0438\u043C\u0430|\u0430\u0443\u0442\u043E\u043F\u0443\u0442|\u0431\u0440\u0437\u0438\u043D\u0430|\u0431\u0440\u0437\u0438\u043D\u043E\u043C|\u0431\u0440\u0437\u043E|\u0431\u0440\u0436\u0435|\u0433\u0430\u0441",
+            city: "grad|grada|gradom|gradu|gradovi|ulice|ulica|ulicama|ulici|centar|centru|\u0433\u0440\u0430\u0434|\u0433\u0440\u0430\u0434\u0430|\u0433\u0440\u0430\u0434\u043E\u043C|\u0433\u0440\u0430\u0434\u0443|\u0433\u0440\u0430\u0434\u043E\u0432\u0438|\u0443\u043B\u0438\u0446\u0435|\u0443\u043B\u0438\u0446\u0430|\u0443\u043B\u0438\u0446\u0430\u043C\u0430|\u0443\u043B\u0438\u0446\u0438|\u0446\u0435\u043D\u0442\u0430\u0440|\u0446\u0435\u043D\u0442\u0440\u0443",
+            music: "muzika|muzike|muziku|muzikom|pesma|pesme|pesmu|pesmom|melodija|melodije|ritam|ritma|bit|\u043C\u0443\u0437\u0438\u043A\u0430|\u043C\u0443\u0437\u0438\u043A\u0435|\u043C\u0443\u0437\u0438\u043A\u0443|\u043C\u0443\u0437\u0438\u043A\u043E\u043C|\u043F\u0435\u0441\u043C\u0430|\u043F\u0435\u0441\u043C\u0435|\u043F\u0435\u0441\u043C\u0443|\u043F\u0435\u0441\u043C\u043E\u043C|\u043C\u0435\u043B\u043E\u0434\u0438\u0458\u0430|\u043C\u0435\u043B\u043E\u0434\u0438\u0458\u0435|\u0440\u0438\u0442\u0430\u043C|\u0440\u0438\u0442\u043C\u0430|\u0431\u0438\u0442",
+            sing: "pevam|peva\u0161|peva|pevati|pevamo|peva\u010D|peva\u010Dica|glas|glasom|glasa|\u043F\u0435\u0432\u0430\u043C|\u043F\u0435\u0432\u0430\u0448|\u043F\u0435\u0432\u0430|\u043F\u0435\u0432\u0430\u0442\u0438|\u043F\u0435\u0432\u0430\u043C\u043E|\u043F\u0435\u0432\u0430\u0447|\u043F\u0435\u0432\u0430\u0447\u0438\u0446\u0430|\u0433\u043B\u0430\u0441|\u0433\u043B\u0430\u0441\u043E\u043C|\u0433\u043B\u0430\u0441\u0430",
+            boom: "bum|bam|eksplozija|eksplodira|bomba|bombe|bombu|prasak|\u0431\u0443\u043C|\u0431\u0430\u043C|\u0435\u043A\u0441\u043F\u043B\u043E\u0437\u0438\u0458\u0430|\u0435\u043A\u0441\u043F\u043B\u043E\u0434\u0438\u0440\u0430|\u0431\u043E\u043C\u0431\u0430|\u0431\u043E\u043C\u0431\u0435|\u0431\u043E\u043C\u0431\u0443|\u043F\u0440\u0430\u0441\u0430\u043A",
+            champagne: "\u0161ampanjac|\u0161ampanjca|\u0161ampanjcem|\u017Eiveli|nazdravimo|zdravica|pijemo|pi\u0107e|pi\u0107a|fla\u0161a|fla\u0161e|fla\u0161u|vino|\u0448\u0430\u043C\u043F\u0430\u045A\u0430\u0446|\u0448\u0430\u043C\u043F\u0430\u045A\u0446\u0430|\u0448\u0430\u043C\u043F\u0430\u045A\u0446\u0435\u043C|\u0436\u0438\u0432\u0435\u043B\u0438|\u043D\u0430\u0437\u0434\u0440\u0430\u0432\u0438\u043C\u043E|\u0437\u0434\u0440\u0430\u0432\u0438\u0446\u0430|\u043F\u0438\u0458\u0435\u043C\u043E|\u043F\u0438\u045B\u0435|\u043F\u0438\u045B\u0430|\u0444\u043B\u0430\u0448\u0430|\u0444\u043B\u0430\u0448\u0435|\u0444\u043B\u0430\u0448\u0443|\u0432\u0438\u043D\u043E",
+            magic: "magija|magije|magiju|magijom|magi\u010Dan|magi\u010Dno|\u010Darolij*|\u010Darob*|\u043C\u0430\u0433\u0438\u0458\u0430|\u043C\u0430\u0433\u0438\u0458\u0435|\u043C\u0430\u0433\u0438\u0458\u0443|\u043C\u0430\u0433\u0438\u0458\u043E\u043C|\u043C\u0430\u0433\u0438\u0447\u0430\u043D|\u043C\u0430\u0433\u0438\u0447\u043D\u043E|\u0447\u0430\u0440\u043E\u043B\u0438\u0458*|\u0447\u0430\u0440\u043E\u0431*",
+            beach: "pla\u017Ea|pla\u017Ee|pla\u017Eu|pla\u017Ei|ostrvo|ostrva|ostrvu|palme|palmi|pesak|peska|\u043F\u043B\u0430\u0436\u0430|\u043F\u043B\u0430\u0436\u0435|\u043F\u043B\u0430\u0436\u0443|\u043F\u043B\u0430\u0436\u0438|\u043E\u0441\u0442\u0440\u0432\u043E|\u043E\u0441\u0442\u0440\u0432\u0430|\u043E\u0441\u0442\u0440\u0432\u0443|\u043F\u0430\u043B\u043C\u0435|\u043F\u0430\u043B\u043C\u0438|\u043F\u0435\u0441\u0430\u043A|\u043F\u0435\u0441\u043A\u0430",
+            christmas: "bo\u017Ei\u0107*|deda mraz|sanke|zvon\u010Di\u0107i|jelka|badnje ve\u010De|\u0431\u043E\u0436\u0438\u045B*|\u0434\u0435\u0434\u0430 \u043C\u0440\u0430\u0437|\u0441\u0430\u043D\u043A\u0435|\u0437\u0432\u043E\u043D\u0447\u0438\u045B\u0438|\u0458\u0435\u043B\u043A\u0430|\u0431\u0430\u0434\u045A\u0435 \u0432\u0435\u0447\u0435",
+            red: "crven*|\u0446\u0440\u0432\u0435\u043D*",
+            blue: "plav|plava|plavo|plavi|plave|plavom|modro|modra|modri|\u043F\u043B\u0430\u0432|\u043F\u043B\u0430\u0432\u0430|\u043F\u043B\u0430\u0432\u043E|\u043F\u043B\u0430\u0432\u0438|\u043F\u043B\u0430\u0432\u0435|\u043F\u043B\u0430\u0432\u043E\u043C|\u043C\u043E\u0434\u0440\u043E|\u043C\u043E\u0434\u0440\u0430|\u043C\u043E\u0434\u0440\u0438",
+            green: "zelen*|\u0437\u0435\u043B\u0435\u043D*",
+            pink: "roze|ru\u017Ei\u010Dast*|\u0440\u043E\u0437\u0435|\u0440\u0443\u0436\u0438\u0447\u0430\u0441\u0442*",
+            purple: "ljubi\u010Dast*|\u0459\u0443\u0431\u0438\u0447\u0430\u0441\u0442*",
+            white: "beo|bela|belo|beli|bele|belom|belu|\u0431\u0435\u043E|\u0431\u0435\u043B\u0430|\u0431\u0435\u043B\u043E|\u0431\u0435\u043B\u0438|\u0431\u0435\u043B\u0435|\u0431\u0435\u043B\u043E\u043C|\u0431\u0435\u043B\u0443",
+            black: "crn|crna|crno|crni|crne|crnom|crnu|\u0446\u0440\u043D|\u0446\u0440\u043D\u0430|\u0446\u0440\u043D\u043E|\u0446\u0440\u043D\u0438|\u0446\u0440\u043D\u0435|\u0446\u0440\u043D\u043E\u043C|\u0446\u0440\u043D\u0443",
+            silver: "srebr*|\u0441\u0440\u0435\u0431\u0440*"
+          }
+        },
+        ru: {
+          stop: "\u0447\u0442\u043E|\u044D\u0442\u043E|\u0442\u043E\u043B\u044C\u043A\u043E|\u043A\u043E\u0433\u0434\u0430|\u0435\u0441\u043B\u0438|\u0435\u0449\u0451|\u0441\u0435\u0439\u0447\u0430\u0441|\u0442\u043E\u0436\u0435|\u0447\u0442\u043E\u0431\u044B|\u0437\u0434\u0435\u0441\u044C|\u043C\u0435\u043D\u044F|\u0442\u0435\u0431\u044F|\u043A\u0442\u043E|\u043D\u0435\u0442|\u0432\u0441\u0451|\u0443\u0436\u0435|\u0431\u044B\u043B|\u0431\u044B\u043B\u0430|\u0441\u0435\u0433\u043E\u0434\u043D\u044F|\u0442\u0435\u043F\u0435\u0440\u044C",
+          c: {
+            fire: "\u043E\u0433\u043E\u043D\u044C|\u043E\u0433\u043D\u044F|\u043E\u0433\u043D\u0451\u043C|\u043E\u0433\u043D\u0435\u043C|\u043E\u0433\u043D\u0435|\u043E\u0433\u043D\u0438|\u043F\u043B\u0430\u043C\u044F|\u043F\u043B\u0430\u043C\u0435\u043D\u0438|\u043F\u043B\u0430\u043C\u0435\u043D\u0435\u043C|\u0433\u043E\u0440\u044E|\u0433\u043E\u0440\u0438\u0442|\u0433\u043E\u0440\u0435\u0442\u044C|\u0433\u043E\u0440\u0438\u0448\u044C|\u0433\u043E\u0440\u0438\u043C|\u0441\u0433\u043E\u0440\u0430\u044E|\u0441\u0433\u043E\u0440\u0430\u0442\u044C|\u043F\u043E\u0436\u0430\u0440|\u043F\u043E\u0436\u0430\u0440\u0430",
+            rain: "\u0434\u043E\u0436\u0434\u044C|\u0434\u043E\u0436\u0434\u044F|\u0434\u043E\u0436\u0434\u0451\u043C|\u0434\u043E\u0436\u0434\u0435\u043C|\u0434\u043E\u0436\u0434\u0438|\u0434\u043E\u0436\u0434\u0438\u043A|\u043B\u0438\u0432\u0435\u043D\u044C|\u043B\u0438\u0432\u043D\u044F|\u0434\u043E\u0436\u0434\u043B\u0438\u0432*|\u043F\u043E\u0434 \u0434\u043E\u0436\u0434\u0451\u043C",
+            storm: "\u0448\u0442\u043E\u0440\u043C|\u0448\u0442\u043E\u0440\u043C\u0430|\u0431\u0443\u0440\u044F|\u0431\u0443\u0440\u0438|\u0431\u0443\u0440\u044E|\u0431\u0443\u0440\u0435\u0439|\u0433\u0440\u043E\u0437\u0430|\u0433\u0440\u043E\u0437\u044B|\u0433\u0440\u043E\u0437\u0443|\u0433\u0440\u043E\u0437\u043E\u0439|\u0433\u0440\u043E\u043C|\u0433\u0440\u043E\u043C\u0430|\u0433\u0440\u043E\u043C\u043E\u043C|\u0443\u0440\u0430\u0433\u0430\u043D*",
+            lightning: "\u043C\u043E\u043B\u043D\u0438\u044F|\u043C\u043E\u043B\u043D\u0438\u0438|\u043C\u043E\u043B\u043D\u0438\u044E|\u043C\u043E\u043B\u043D\u0438\u0435\u0439|\u043C\u043E\u043B\u043D\u0438\u0439|\u0440\u0430\u0437\u0440\u044F\u0434 \u043C\u043E\u043B\u043D\u0438\u0438",
+            snow: "\u0441\u043D\u0435\u0433|\u0441\u043D\u0435\u0433\u0430|\u0441\u043D\u0435\u0433\u043E\u043C|\u0441\u043D\u0435\u0433\u0443|\u0441\u043D\u0435\u0436\u0438\u043D\u043A*|\u0441\u043D\u0435\u0436\u043D*|\u0441\u043D\u0435\u0433\u043E\u043F\u0430\u0434",
+            cold: "\u0445\u043E\u043B\u043E\u0434*|\u043B\u0451\u0434|\u043B\u0435\u0434|\u043B\u044C\u0434\u0430|\u043B\u044C\u0434\u043E\u043C|\u043B\u0435\u0434\u044F\u043D*|\u043C\u043E\u0440\u043E\u0437|\u043C\u043E\u0440\u043E\u0437\u0430|\u043C\u043E\u0440\u043E\u0437\u043E\u043C|\u0437\u0430\u043C\u0451\u0440\u0437|\u0437\u0430\u043C\u0435\u0440\u0437\u0430\u044E|\u0437\u0430\u043C\u0451\u0440\u0437\u043B\u0430",
+            sun: "\u0441\u043E\u043B\u043D\u0446*|\u0441\u043E\u043B\u043D\u044B\u0448\u043A\u043E|\u0441\u043E\u043B\u043D\u0435\u0447\u043D*|\u0440\u0430\u0441\u0441\u0432\u0435\u0442|\u0440\u0430\u0441\u0441\u0432\u0435\u0442\u0430|\u0437\u0430\u043A\u0430\u0442|\u0437\u0430\u043A\u0430\u0442\u0430|\u0437\u0430\u043A\u0430\u0442\u0435",
+            summer: "\u043B\u0435\u0442\u043E|\u043B\u0435\u0442\u0430|\u043B\u0435\u0442\u043E\u043C|\u043B\u0435\u0442\u043D\u0438\u0439|\u043B\u0435\u0442\u043D\u044F\u044F|\u043B\u0435\u0442\u043D\u0435\u0435|\u043B\u0435\u0442\u043D\u0438\u0435",
+            moon: "\u043B\u0443\u043D\u0430|\u043B\u0443\u043D\u044B|\u043B\u0443\u043D\u0443|\u043B\u0443\u043D\u043E\u0439|\u043B\u0443\u043D\u0435|\u043B\u0443\u043D\u043D\u044B\u0439|\u043B\u0443\u043D\u043D\u0430\u044F|\u043B\u0443\u043D\u043D\u044B\u0439 \u0441\u0432\u0435\u0442",
+            star: "\u0437\u0432\u0435\u0437\u0434*|\u0437\u0432\u0451\u0437\u0434*",
+            sky: "\u043D\u0435\u0431\u043E|\u043D\u0435\u0431\u0430|\u043D\u0435\u0431\u043E\u043C|\u043D\u0435\u0431\u0435|\u043E\u0431\u043B\u0430\u043A\u0430|\u043E\u0431\u043B\u0430\u043A\u043E|\u043E\u0431\u043B\u0430\u043A\u043E\u0432|\u043E\u0431\u043B\u0430\u043A\u0430\u0445|\u0442\u0443\u0447\u0438|\u0442\u0443\u0447\u0430",
+            heaven: "\u0440\u0430\u0439|\u0440\u0430\u044F|\u0440\u0430\u044E|\u0440\u0430\u0435\u043C|\u0440\u0430\u0439\u0441\u043A\u0438\u0439|\u043D\u0435\u0431\u0435\u0441\u0430|\u043D\u0435\u0431\u0435\u0441|\u043D\u0435\u0431\u0435\u0441\u043D\u044B\u0439|\u043D\u0435\u0431\u0435\u0441\u043D\u0430\u044F",
+            night: "\u043D\u043E\u0447\u044C|\u043D\u043E\u0447\u0438|\u043D\u043E\u0447\u044C\u044E|\u043D\u043E\u0447\u043D\u043E\u0439|\u043D\u043E\u0447\u043D\u0430\u044F|\u043D\u043E\u0447\u043D\u043E\u0435|\u043F\u043E\u043B\u043D\u043E\u0447\u044C|\u043F\u043E\u043B\u043D\u043E\u0447\u0438|\u0441\u0435\u0433\u043E\u0434\u043D\u044F \u043D\u043E\u0447\u044C\u044E",
+            dark: "\u0442\u044C\u043C\u0430|\u0442\u044C\u043C\u044B|\u0442\u044C\u043C\u0443|\u0442\u044C\u043C\u043E\u0439|\u0442\u0435\u043C\u043D\u043E|\u0442\u0435\u043C\u043D\u043E\u0442\u0430|\u0442\u0435\u043C\u043D\u043E\u0442\u0435|\u0442\u0435\u043C\u043D\u043E\u0442\u0443|\u0442\u0451\u043C\u043D\u044B\u0439|\u0442\u0451\u043C\u043D\u0430\u044F|\u0442\u0435\u043C\u043D\u044B\u0439|\u0442\u0435\u043C\u043D\u0430\u044F|\u0442\u0435\u043D\u044C|\u0442\u0435\u043D\u0438|\u0442\u0435\u043D\u044C\u044E",
+            light: "\u0441\u0432\u0435\u0442|\u0441\u0432\u0435\u0442\u0430|\u0441\u0432\u0435\u0442\u043E\u043C|\u0441\u0432\u0435\u0442\u0435|\u0441\u0432\u0435\u0442\u0438\u0442|\u0441\u0432\u0435\u0442\u0438\u0448\u044C|\u0441\u0438\u044F\u0435\u0442|\u0441\u0438\u044F\u043D\u0438\u0435|\u0441\u0438\u044F\u0442\u044C|\u0441\u0438\u044F\u0439|\u0431\u043B\u0435\u0441\u043A|\u044F\u0440\u043A\u043E|\u044F\u0440\u043A\u0438\u0439|\u0441\u0432\u0435\u0442\u043B\u043E",
+            heart: "\u0441\u0435\u0440\u0434\u0446\u0435|\u0441\u0435\u0440\u0434\u0446\u0430|\u0441\u0435\u0440\u0434\u0446\u0435\u043C|\u0441\u0435\u0440\u0434\u0435\u0447\u043A\u043E|\u0441\u0435\u0440\u0434\u0446\u0443|\u0441\u0435\u0440\u0434\u0435\u0446",
+            love: "\u043B\u044E\u0431\u043E\u0432*|\u043B\u044E\u0431\u0432\u0438|\u043B\u044E\u0431\u043B\u044E|\u043B\u044E\u0431\u0438\u0448\u044C|\u043B\u044E\u0431\u0438\u0442|\u043B\u044E\u0431\u0438\u0442\u044C|\u043B\u044E\u0431\u0438\u043C|\u043B\u044E\u0431\u0438\u043C\u0430\u044F|\u043B\u044E\u0431\u0438\u043C\u044B\u0439|\u0432\u043B\u044E\u0431\u043B\u0451\u043D|\u0432\u043B\u044E\u0431\u043B\u0435\u043D\u0430|\u0432\u043B\u044E\u0431\u043B\u0435\u043D",
+            kiss: "\u043F\u043E\u0446\u0435\u043B\u0443*|\u0446\u0435\u043B\u0443\u044E|\u0446\u0435\u043B\u0443\u0435\u0448\u044C|\u0446\u0435\u043B\u043E\u0432\u0430\u0442\u044C|\u0446\u0435\u043B\u0443\u0439|\u0433\u0443\u0431\u044B|\u0433\u0443\u0431\u0430\u043C\u0438|\u0433\u0443\u0431",
+            heartbreak: "\u0440\u0430\u0437\u0431\u0438\u0442\u043E\u0435 \u0441\u0435\u0440\u0434\u0446\u0435|\u0440\u0430\u0437\u0431\u0438\u0442\u044B\u043C \u0441\u0435\u0440\u0434\u0446\u0435\u043C|\u0440\u0430\u0437\u0431\u0438\u043B \u043C\u043D\u0435 \u0441\u0435\u0440\u0434\u0446\u0435|\u0440\u0430\u0437\u0431\u0438\u043B\u0430 \u043C\u043D\u0435 \u0441\u0435\u0440\u0434\u0446\u0435|\u0440\u0430\u0437\u0431\u0438\u0432\u0430\u0435\u0448\u044C \u0441\u0435\u0440\u0434\u0446\u0435|\u0441\u0435\u0440\u0434\u0446\u0435 \u0440\u0430\u0437\u0431\u0438\u0442\u043E|\u0441\u0435\u0440\u0434\u0446\u0435 \u043D\u0430 \u0447\u0430\u0441\u0442\u0438|\u0440\u0430\u0437\u0431\u0438\u0442\u043E\u0433\u043E \u0441\u0435\u0440\u0434\u0446\u0430",
+            tears: "\u0441\u043B\u0451\u0437\u044B|\u0441\u043B\u0435\u0437\u044B|\u0441\u043B\u0451\u0437|\u0441\u043B\u0435\u0437|\u0441\u043B\u0435\u0437\u0430\u043C\u0438|\u0441\u043B\u0435\u0437\u0430|\u0441\u043B\u0435\u0437\u0438\u043D\u043A\u0438|\u043F\u043B\u0430\u0447\u0443|\u043F\u043B\u0430\u0447\u0435\u0448\u044C|\u043F\u043B\u0430\u0447\u0435\u0442|\u043F\u043B\u0430\u043A\u0430\u0442\u044C|\u043F\u043B\u0430\u0447",
+            money: "\u0434\u0435\u043D\u044C\u0433\u0438|\u0434\u0435\u043D\u0435\u0433|\u0434\u0435\u043D\u044C\u0433\u0430\u043C\u0438|\u0431\u0430\u0431\u043A\u0438|\u0431\u0430\u0431\u043B\u0430|\u0431\u0430\u0431\u043B\u043E|\u043A\u044D\u0448|\u0431\u043E\u0433\u0430\u0442\u044B\u0439|\u0431\u043E\u0433\u0430\u0442\u0430\u044F|\u0431\u043E\u0433\u0430\u0442\u0441\u0442\u0432\u043E|\u0434\u043E\u043B\u043B\u0430\u0440\u044B|\u0434\u043E\u043B\u043B\u0430\u0440\u043E\u0432|\u0431\u0430\u043A\u0441\u044B|\u0431\u0430\u043A\u0441|\u0435\u0432\u0440\u043E|\u043A\u0443\u043F\u044E\u0440\u044B",
+            gold: "\u0437\u043E\u043B\u043E\u0442*",
+            diamond: "\u0431\u0440\u0438\u043B\u043B\u0438\u0430\u043D\u0442*|\u0431\u0440\u0438\u043B\u044C\u044F\u043D\u0442*|\u0430\u043B\u043C\u0430\u0437*|\u0434\u0440\u0430\u0433\u043E\u0446\u0435\u043D\u043D*",
+            crown: "\u043A\u043E\u0440\u043E\u043D\u0430|\u043A\u043E\u0440\u043E\u043D\u044B|\u043A\u043E\u0440\u043E\u043D\u0443|\u043A\u043E\u0440\u043E\u043D\u043E\u0439|\u043A\u043E\u0440\u043E\u043B*|\u0446\u0430\u0440\u044C|\u0446\u0430\u0440\u0438\u0446\u0430|\u0446\u0430\u0440\u044F",
+            fly: "\u043B\u0435\u0442\u0435\u0442\u044C|\u043B\u0435\u0447\u0443|\u043B\u0435\u0442\u0438\u0448\u044C|\u043B\u0435\u0442\u0438\u0442|\u043B\u0435\u0442\u0438\u043C|\u043B\u0435\u0442\u0430\u0442\u044C|\u043B\u0435\u0442\u0430\u044E|\u043B\u0435\u0442\u0430\u0435\u0448\u044C|\u043F\u043E\u043B\u0451\u0442|\u043F\u043E\u043B\u0435\u0442|\u043A\u0440\u044B\u043B\u044C\u044F|\u043A\u0440\u044B\u043B\u044C\u0435\u0432|\u043A\u0440\u044B\u043B\u044C\u044F\u043C\u0438",
+            bird: "\u043F\u0442\u0438\u0446\u0430|\u043F\u0442\u0438\u0446\u044B|\u043F\u0442\u0438\u0446\u0443|\u043F\u0442\u0438\u0446\u0435\u0439|\u043F\u0442\u0438\u0446|\u043F\u0442\u0438\u0447\u043A*|\u043F\u0442\u0438\u0447\u0438\u0439",
+            butterfly: "\u0431\u0430\u0431\u043E\u0447*",
+            flower: "\u0446\u0432\u0435\u0442\u043E\u043A|\u0446\u0432\u0435\u0442\u044B|\u0446\u0432\u0435\u0442\u043A\u0430|\u0446\u0432\u0435\u0442\u0430\u043C\u0438|\u0446\u0432\u0435\u0442\u043E\u0447\u0435\u043A|\u0446\u0432\u0435\u0442\u043E\u0447\u043A\u0438|\u0446\u0432\u0435\u0442\u0451\u0442|\u0446\u0432\u0435\u0442\u0443\u0442|\u0440\u0430\u0441\u0446\u0432\u0435\u0442",
+            rose: "\u0440\u043E\u0437\u0430|\u0440\u043E\u0437\u044B|\u0440\u043E\u0437\u0443|\u0440\u043E\u0437\u043E\u0439|\u0440\u043E\u0437|\u0440\u043E\u0437\u043E\u0447\u043A\u0430|\u0440\u043E\u0437\u0430\u043C\u0438",
+            ocean: "\u043E\u043A\u0435\u0430\u043D|\u043E\u043A\u0435\u0430\u043D\u0430|\u043E\u043A\u0435\u0430\u043D\u043E\u043C|\u043E\u043A\u0435\u0430\u043D\u0435|\u043C\u043E\u0440\u0435|\u043C\u043E\u0440\u044F|\u043C\u043E\u0440\u0435\u043C|\u043C\u043E\u0440\u044E|\u0432\u043E\u043B\u043D\u044B|\u0432\u043E\u043B\u043D\u0430|\u0432\u043E\u043B\u043D|\u0432\u043E\u043B\u043D\u0430\u043C\u0438",
+            water: "\u0432\u043E\u0434\u0430|\u0432\u043E\u0434\u044B|\u0432\u043E\u0434\u0443|\u0432\u043E\u0434\u043E\u0439|\u0432\u043E\u0434\u0435|\u0440\u0435\u043A\u0430|\u0440\u0435\u043A\u0438|\u0440\u0435\u043A\u0443|\u0440\u0435\u043A\u043E\u0439|\u043F\u043B\u044B\u0442\u044C|\u043F\u043B\u044B\u0432\u0443|\u043F\u043B\u0430\u0432\u0430\u0442\u044C",
+            wind: "\u0432\u0435\u0442\u0435\u0440|\u0432\u0435\u0442\u0440\u0430|\u0432\u0435\u0442\u0440\u043E\u043C|\u0432\u0435\u0442\u0440\u0443|\u0432\u0435\u0442\u0435\u0440\u043E\u043A|\u0432\u0435\u0442\u0440\u044B|\u0434\u0443\u0435\u0442|\u0431\u0440\u0438\u0437",
+            smoke: "\u0434\u044B\u043C|\u0434\u044B\u043C\u0430|\u0434\u044B\u043C\u043E\u043C|\u0434\u044B\u043C\u0443|\u043A\u0443\u0440\u044E|\u043A\u0443\u0440\u0438\u0448\u044C|\u043A\u0443\u0440\u0438\u0442\u044C|\u043A\u0443\u0440\u0438\u043C|\u0441\u0438\u0433\u0430\u0440\u0435\u0442\u0430|\u0441\u0438\u0433\u0430\u0440\u0435\u0442\u044B|\u0437\u0430\u0442\u044F\u0436\u043A\u0430",
+            electric: "\u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u043A*|\u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432*|\u0442\u043E\u043A|\u0442\u043E\u043A\u0430|\u044D\u043D\u0435\u0440\u0433\u0438\u044F|\u044D\u043D\u0435\u0440\u0433\u0438\u0438|\u044D\u043D\u0435\u0440\u0433\u0438\u044E|\u0438\u0441\u043A\u0440\u044B|\u0438\u0441\u043A\u0440\u0430|\u043D\u0430\u043F\u0440\u044F\u0436\u0435\u043D\u0438\u0435",
+            rainbow: "\u0440\u0430\u0434\u0443\u0433\u0430|\u0440\u0430\u0434\u0443\u0433\u0438|\u0440\u0430\u0434\u0443\u0433\u0443|\u0440\u0430\u0434\u0443\u0433\u043E\u0439|\u0440\u0430\u0434\u0443\u0436\u043D*|\u043A\u0440\u0430\u0441\u043A\u0438|\u043A\u0440\u0430\u0441\u043A\u0430\u043C\u0438",
+            fireworks: "\u0444\u0435\u0439\u0435\u0440\u0432\u0435\u0440\u043A*|\u0441\u0430\u043B\u044E\u0442|\u0441\u0430\u043B\u044E\u0442\u0430|\u0441\u0430\u043B\u044E\u0442\u044B|\u0441\u0430\u043B\u044E\u0442\u043E\u043C",
+            party: "\u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A*|\u0442\u0443\u0441\u043E\u0432*|\u0442\u0443\u0441\u0438\u043C|\u0442\u0443\u0441\u0438\u0442\u044C|\u0442\u0443\u0441\u0430|\u043F\u0430\u0442\u0438|\u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A|\u043F\u0440\u0430\u0437\u0434\u043D\u0438\u043A\u0430|\u043F\u0440\u0430\u0437\u0434\u043D\u043E\u0432\u0430\u0442\u044C|\u043E\u0442\u0440\u044B\u0432\u0430\u0435\u043C\u0441\u044F",
+            birthday: "\u0434\u0435\u043D\u044C \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F|\u0434\u043D\u0451\u043C \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F|\u0434\u043D\u0435\u043C \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F|\u0441 \u0434\u043D\u0451\u043C \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F|\u0434\u043D\u044E\u0445\u0430|\u0434\u043D\u044E\u0445\u0443",
+            dance: "\u0442\u0430\u043D\u0446\u0443*|\u0442\u0430\u043D\u0446\u0435\u0432*|\u0442\u0430\u043D\u0435\u0446|\u0442\u0430\u043D\u0446\u0430|\u0442\u0430\u043D\u0446\u0435\u043C|\u0442\u0430\u043D\u0446\u044B|\u0442\u0430\u043D\u0446\u043E\u0440|\u0442\u0430\u043D\u0446\u043F\u043E\u043B",
+            jump: "\u043F\u0440\u044B\u0433\u0430*|\u043F\u0440\u044B\u0436\u043A*|\u043F\u0440\u044B\u0436\u043E\u043A|\u043F\u0440\u044B\u0433\u043D\u0443\u0442\u044C|\u043F\u0440\u044B\u0433\u043D\u0443",
+            dream: "\u0441\u043E\u043D|\u0441\u043D\u0430|\u0441\u043D\u043E\u043C|\u0441\u043D\u0435|\u0441\u043D\u044B|\u0441\u043D\u043E\u0432|\u043C\u0435\u0447\u0442\u0430*|\u043C\u0435\u0447\u0442\u044B|\u043C\u0435\u0447\u0442\u0443|\u043C\u0435\u0447\u0442\u043E\u0439|\u0441\u043D\u0438\u0442\u0441\u044F|\u0441\u043D\u0438\u0448\u044C\u0441\u044F",
+            ghost: "\u043F\u0440\u0438\u0437\u0440\u0430\u043A*|\u043F\u0440\u0438\u0432\u0438\u0434\u0435\u043D\u0438\u0435|\u043F\u0440\u0438\u0432\u0438\u0434\u0435\u043D\u0438\u044F|\u0434\u0443\u0445|\u0434\u0443\u0445\u0430",
+            angel: "\u0430\u043D\u0433\u0435\u043B*",
+            devil: "\u0434\u044C\u044F\u0432\u043E\u043B*|\u0447\u0451\u0440\u0442|\u0447\u0435\u0440\u0442|\u0447\u0451\u0440\u0442\u0430|\u0430\u0434|\u0430\u0434\u0430|\u0430\u0434\u0443|\u0430\u0434\u043E\u043C|\u0434\u0435\u043C\u043E\u043D|\u0434\u0435\u043C\u043E\u043D\u044B|\u0434\u0435\u043C\u043E\u043D\u0430|\u0431\u0435\u0441|\u0431\u0435\u0441\u044B",
+            world: "\u043C\u0438\u0440|\u043C\u0438\u0440\u0430|\u043C\u0438\u0440\u043E\u043C|\u043C\u0438\u0440\u0435|\u043C\u0438\u0440\u0443|\u0437\u0435\u043C\u043B\u044F|\u0437\u0435\u043C\u043B\u0438|\u0437\u0435\u043C\u043B\u044E|\u0437\u0435\u043C\u043B\u0451\u0439|\u043F\u043B\u0430\u043D\u0435\u0442\u0430|\u043F\u043B\u0430\u043D\u0435\u0442\u044B|\u043F\u043B\u0430\u043D\u0435\u0442\u0443",
+            space: "\u043A\u043E\u0441\u043C\u043E\u0441|\u043A\u043E\u0441\u043C\u043E\u0441\u0430|\u043A\u043E\u0441\u043C\u043E\u0441\u0435|\u043A\u043E\u0441\u043C\u0438\u0447\u0435\u0441\u043A*|\u0433\u0430\u043B\u0430\u043A\u0442\u0438\u043A*|\u0432\u0441\u0435\u043B\u0435\u043D\u043D\u0430\u044F|\u0432\u0441\u0435\u043B\u0435\u043D\u043D\u043E\u0439|\u0432\u0441\u0435\u043B\u0435\u043D\u043D\u0443\u044E",
+            rocket: "\u0440\u0430\u043A\u0435\u0442*|\u0432\u0437\u043B\u0451\u0442|\u0432\u0437\u043B\u0435\u0442|\u0432\u0437\u043B\u0435\u0442\u0430\u044E|\u0432\u0437\u043B\u0435\u0442\u0430\u0435\u043C",
+            time: "\u0432\u0440\u0435\u043C\u044F|\u0432\u0440\u0435\u043C\u0435\u043D\u0438|\u0432\u0440\u0435\u043C\u0435\u043D\u0435\u043C|\u0447\u0430\u0441\u044B|\u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430|\u0432\u0435\u0447\u043D\u043E\u0441\u0442\u044C|\u0432\u0435\u0447\u043D\u043E|\u043D\u0430\u0432\u0435\u0447\u043D\u043E",
+            drive: "\u0435\u0434\u0443|\u0435\u0434\u0435\u0448\u044C|\u0435\u0434\u0435\u043C|\u0435\u0445\u0430\u0442\u044C|\u0433\u043E\u043D\u044E|\u0433\u043E\u043D\u0438\u0448\u044C|\u0433\u043D\u0430\u0442\u044C|\u043C\u0430\u0448\u0438\u043D\u0430|\u043C\u0430\u0448\u0438\u043D\u0435|\u043C\u0430\u0448\u0438\u043D\u0443|\u0442\u0430\u0447\u043A\u0430|\u0442\u0430\u0447\u043A\u0435|\u0442\u0430\u0447\u043A\u0443|\u0434\u043E\u0440\u043E\u0433\u0430|\u0434\u043E\u0440\u043E\u0433\u0435|\u0442\u0440\u0430\u0441\u0441\u0430|\u0442\u0440\u0430\u0441\u0441\u0435|\u0448\u043E\u0441\u0441\u0435|\u0441\u043A\u043E\u0440\u043E\u0441\u0442\u044C|\u0441\u043A\u043E\u0440\u043E\u0441\u0442\u0438|\u0431\u044B\u0441\u0442\u0440\u0435\u0435",
+            city: "\u0433\u043E\u0440\u043E\u0434|\u0433\u043E\u0440\u043E\u0434\u0430|\u0433\u043E\u0440\u043E\u0434\u043E\u043C|\u0433\u043E\u0440\u043E\u0434\u0435|\u0443\u043B\u0438\u0446\u044B|\u0443\u043B\u0438\u0446\u0430|\u0443\u043B\u0438\u0446\u0435|\u0443\u043B\u0438\u0446\u0430\u043C|\u0446\u0435\u043D\u0442\u0440|\u043C\u0435\u0433\u0430\u043F\u043E\u043B\u0438\u0441",
+            music: "\u043C\u0443\u0437\u044B\u043A*|\u043F\u0435\u0441\u043D\u044F|\u043F\u0435\u0441\u043D\u0438|\u043F\u0435\u0441\u043D\u044E|\u043F\u0435\u0441\u043D\u0435\u0439|\u043C\u0435\u043B\u043E\u0434\u0438*|\u0440\u0438\u0442\u043C|\u0431\u0438\u0442",
+            sing: "\u043F\u043E\u044E|\u043F\u043E\u0451\u0448\u044C|\u043F\u043E\u0435\u0448\u044C|\u043F\u043E\u0451\u0442|\u043F\u043E\u0435\u0442|\u043F\u0435\u0442\u044C|\u043F\u043E\u0451\u043C|\u0441\u043F\u043E\u0451\u043C|\u0441\u043F\u043E\u0439|\u0433\u043E\u043B\u043E\u0441|\u0433\u043E\u043B\u043E\u0441\u043E\u043C|\u0433\u043E\u043B\u043E\u0441\u0430",
+            boom: "\u0431\u0443\u043C|\u0431\u0430\u0445|\u0432\u0437\u0440\u044B\u0432*|\u0432\u0437\u043E\u0440\u0432\u0430\u0442\u044C|\u0431\u043E\u043C\u0431\u0430|\u0431\u043E\u043C\u0431\u044B|\u0431\u043E\u043C\u0431\u0443|\u0431\u0430\u0431\u0430\u0445",
+            champagne: "\u0448\u0430\u043C\u043F\u0430\u043D\u0441\u043A*|\u0432\u044B\u043F\u044C\u0435\u043C|\u043F\u044C\u0451\u043C|\u0431\u043E\u043A\u0430\u043B|\u0431\u043E\u043A\u0430\u043B\u044B|\u0442\u043E\u0441\u0442|\u0431\u0443\u0442\u044B\u043B\u043A\u0430|\u0431\u0443\u0442\u044B\u043B\u043A\u0443|\u0431\u0443\u0442\u044B\u043B\u043A\u0438|\u0432\u0438\u043D\u043E|\u0432\u043E\u0434\u043A\u0430",
+            magic: "\u043C\u0430\u0433\u0438\u044F|\u043C\u0430\u0433\u0438\u0438|\u043C\u0430\u0433\u0438\u044E|\u0432\u043E\u043B\u0448\u0435\u0431*|\u0447\u0443\u0434\u043E|\u0447\u0430\u0440\u044B|\u043A\u043E\u043B\u0434\u043E\u0432\u0441\u0442\u0432\u043E|\u043C\u0430\u0433\u0438\u0447\u0435\u0441\u043A*",
+            beach: "\u043F\u043B\u044F\u0436|\u043F\u043B\u044F\u0436\u0435|\u043F\u043B\u044F\u0436\u0430|\u043E\u0441\u0442\u0440\u043E\u0432|\u043E\u0441\u0442\u0440\u043E\u0432\u0430|\u043E\u0441\u0442\u0440\u043E\u0432\u0435|\u043F\u0430\u043B\u044C\u043C\u044B|\u043F\u0430\u043B\u044C\u043C\u0430\u043C\u0438|\u043F\u0435\u0441\u043E\u043A|\u043F\u0435\u0441\u043A\u0435",
+            christmas: "\u0440\u043E\u0436\u0434\u0435\u0441\u0442\u0432*|\u043D\u043E\u0432\u044B\u0439 \u0433\u043E\u0434|\u043D\u043E\u0432\u044B\u043C \u0433\u043E\u0434\u043E\u043C|\u0434\u0435\u0434 \u043C\u043E\u0440\u043E\u0437|\u0441\u0430\u043D\u0442\u0430|\u0441\u0430\u043D\u0438|\u043A\u043E\u043B\u043E\u043A\u043E\u043B\u044C\u0447\u0438\u043A\u0438|\u0451\u043B\u043A\u0430|\u0451\u043B\u043A\u0438|\u0435\u043B\u043A\u0430|\u0441\u043D\u0435\u0433\u0443\u0440\u043E\u0447\u043A\u0430",
+            red: "\u043A\u0440\u0430\u0441\u043D*|\u0430\u043B\u044B\u0439|\u0430\u043B\u0430\u044F|\u0430\u043B\u044B\u0435",
+            blue: "\u0441\u0438\u043D\u0438\u0439|\u0441\u0438\u043D\u044F\u044F|\u0441\u0438\u043D\u0435\u0435|\u0441\u0438\u043D\u0438\u0435|\u0441\u0438\u043D\u0438\u043C|\u0433\u043E\u043B\u0443\u0431\u043E\u0439|\u0433\u043E\u043B\u0443\u0431\u0430\u044F|\u0433\u043E\u043B\u0443\u0431\u044B\u0435|\u0433\u043E\u043B\u0443\u0431\u043E\u0435",
+            green: "\u0437\u0435\u043B\u0451\u043D*|\u0437\u0435\u043B\u0435\u043D*",
+            pink: "\u0440\u043E\u0437\u043E\u0432*",
+            purple: "\u0444\u0438\u043E\u043B\u0435\u0442\u043E\u0432*|\u043B\u0438\u043B\u043E\u0432\u044B\u0439|\u043B\u0438\u043B\u043E\u0432\u0430\u044F|\u043F\u0443\u0440\u043F\u0443\u0440\u043D*|\u0441\u0438\u0440\u0435\u043D\u0435\u0432*",
+            white: "\u0431\u0435\u043B\u044B\u0439|\u0431\u0435\u043B\u0430\u044F|\u0431\u0435\u043B\u043E\u0435|\u0431\u0435\u043B\u044B\u0435|\u0431\u0435\u043B\u044B\u043C|\u0431\u0435\u043B\u043E\u0439|\u0431\u0435\u043B\u043E\u0441\u043D\u0435\u0436\u043D*",
+            black: "\u0447\u0451\u0440\u043D\u044B\u0439|\u0447\u0451\u0440\u043D\u0430\u044F|\u0447\u0451\u0440\u043D\u043E\u0435|\u0447\u0451\u0440\u043D\u044B\u0435|\u0447\u0435\u0440\u043D\u044B\u0439|\u0447\u0435\u0440\u043D\u0430\u044F|\u0447\u0435\u0440\u043D\u044B\u0435|\u0447\u0435\u0440\u043D\u043E\u0435|\u0447\u0451\u0440\u043D\u044B\u043C",
+            silver: "\u0441\u0435\u0440\u0435\u0431\u0440*"
+          }
+        },
+        uk: {
+          stop: "\u0449\u043E|\u0442\u0456\u043B\u044C\u043A\u0438|\u044F\u043A\u0449\u043E|\u0449\u043E\u0431|\u0445\u0442\u043E|\u043D\u0456|\u0454|\u0439|\u0432\u0436\u0435|\u0437\u0430\u0440\u0430\u0437|\u0442\u043E\u0431\u0456|\u043C\u0435\u043D\u0456|\u0434\u0443\u0436\u0435|\u0442\u0430\u043A\u043E\u0436|\u0431\u043E|\u0432\u0456\u0434|\u0457\u0457|\u0441\u044C\u043E\u0433\u043E\u0434\u043D\u0456|\u043D\u0430\u0432\u0456\u0442\u044C|\u0447\u043E\u043C\u0443",
+          c: {
+            fire: "\u0432\u043E\u0433\u043E\u043D\u044C|\u0432\u043E\u0433\u043D\u044E|\u0432\u043E\u0433\u043D\u0435\u043C|\u0432\u043E\u0433\u043D\u0456|\u043F\u043E\u043B\u0443\u043C'\u044F|\u043F\u043E\u043B\u0443\u043C\u02BC\u044F|\u043F\u043E\u043B\u0443\u043C\u044F|\u0433\u043E\u0440\u044E|\u0433\u043E\u0440\u0438\u0442\u044C|\u0433\u043E\u0440\u0456\u0442\u0438|\u0433\u043E\u0440\u0438\u0448|\u043F\u0430\u043B\u0430\u0454|\u043F\u0430\u043B\u0430\u044E|\u043F\u0430\u043B\u0430\u0442\u0438|\u043F\u043E\u0436\u0435\u0436\u0430",
+            rain: "\u0434\u043E\u0449|\u0434\u043E\u0449\u0443|\u0434\u043E\u0449\u0435\u043C|\u0434\u043E\u0449\u0456|\u0434\u043E\u0449\u0438\u043A|\u0437\u043B\u0438\u0432\u0430|\u0437\u043B\u0438\u0432\u0438|\u043F\u0456\u0434 \u0434\u043E\u0449\u0435\u043C|\u0434\u043E\u0449\u043E\u0432*",
+            storm: "\u0448\u0442\u043E\u0440\u043C|\u0448\u0442\u043E\u0440\u043C\u0443|\u0431\u0443\u0440\u044F|\u0431\u0443\u0440\u0456|\u0431\u0443\u0440\u044E|\u0433\u0440\u043E\u0437\u0430|\u0433\u0440\u043E\u0437\u0438|\u0433\u0440\u043E\u0437\u0443|\u0433\u0440\u0456\u043C|\u0433\u0440\u043E\u043C\u0443|\u0443\u0440\u0430\u0433\u0430\u043D*",
+            lightning: "\u0431\u043B\u0438\u0441\u043A\u0430\u0432*",
+            snow: "\u0441\u043D\u0456\u0433|\u0441\u043D\u0456\u0433\u0443|\u0441\u043D\u0456\u0433\u043E\u043C|\u0441\u043D\u0456\u0436\u0438\u043D\u043A*|\u0441\u043D\u0456\u0436\u043D*|\u0441\u043D\u0456\u0433\u043E\u043F\u0430\u0434|\u0441\u043D\u0456\u0436\u043E\u043A",
+            cold: "\u0445\u043E\u043B\u043E\u0434*|\u043B\u0456\u0434|\u043B\u044C\u043E\u0434\u0443|\u043A\u0440\u0438\u0436\u0430\u043D*|\u043C\u043E\u0440\u043E\u0437|\u043C\u043E\u0440\u043E\u0437\u0443|\u0437\u0430\u043C\u0435\u0440\u0437|\u0437\u0430\u043C\u0435\u0440\u0437\u0430\u044E",
+            sun: "\u0441\u043E\u043D\u0446\u0435|\u0441\u043E\u043D\u0446\u044F|\u0441\u043E\u043D\u0446\u0435\u043C|\u0441\u043E\u043D\u0435\u0447\u043A\u043E|\u0441\u043E\u043D\u044F\u0447\u043D*|\u0441\u0432\u0456\u0442\u0430\u043D\u043E\u043A|\u0441\u0432\u0456\u0442\u0430\u043D\u043A\u0443|\u0437\u0430\u0445\u0456\u0434 \u0441\u043E\u043D\u0446\u044F",
+            summer: "\u043B\u0456\u0442\u043E|\u043B\u0456\u0442\u0430|\u043B\u0456\u0442\u043E\u043C|\u0432\u043B\u0456\u0442\u043A\u0443|\u043B\u0456\u0442\u043D\u0456\u0439|\u043B\u0456\u0442\u043D\u044F|\u043B\u0456\u0442\u043D\u0454",
+            moon: "\u043C\u0456\u0441\u044F\u0446\u044C|\u043C\u0456\u0441\u044F\u0446\u044F|\u043C\u0456\u0441\u044F\u0447\u043D*|\u043F\u043E\u0432\u043D\u0438\u0439 \u043C\u0456\u0441\u044F\u0446\u044C",
+            star: "\u0437\u0456\u0440\u043A\u0430|\u0437\u0456\u0440\u043A\u0438|\u0437\u0456\u0440\u043A\u0443|\u0437\u0456\u0440\u043A\u043E\u044E|\u0437\u0456\u0440\u043E\u043A|\u0437\u0456\u0440\u043E\u043D\u044C\u043A\u0430|\u0437\u043E\u0440\u0456|\u0437\u043E\u0440\u044F|\u0437\u043E\u0440\u044F\u043C\u0438|\u0437\u043E\u0440\u044F\u043D*",
+            sky: "\u043D\u0435\u0431\u043E|\u043D\u0435\u0431\u0430|\u043D\u0435\u0431\u043E\u043C|\u043D\u0435\u0431\u0456|\u0445\u043C\u0430\u0440\u0438|\u0445\u043C\u0430\u0440\u0430|\u0445\u043C\u0430\u0440\u0430\u043C\u0438|\u0445\u043C\u0430\u0440",
+            heaven: "\u0440\u0430\u0439|\u0440\u0430\u044E|\u0440\u0430\u0454\u043C|\u0440\u0430\u0439\u0441\u044C\u043A\u0438\u0439|\u043D\u0435\u0431\u0435\u0441\u0430|\u043D\u0435\u0431\u0435\u0441|\u043D\u0435\u0431\u0435\u0441\u043D\u0438\u0439|\u043D\u0435\u0431\u0435\u0441\u043D\u0430",
+            night: "\u043D\u0456\u0447|\u043D\u043E\u0447\u0456|\u0432\u043D\u043E\u0447\u0456|\u043D\u0456\u0447\u043D\u0438\u0439|\u043D\u0456\u0447\u043D\u0430|\u043D\u0456\u0447\u043D\u0435|\u043E\u043F\u0456\u0432\u043D\u043E\u0447\u0456|\u043F\u0456\u0432\u043D\u0456\u0447|\u0446\u0456\u0454\u0457 \u043D\u043E\u0447\u0456",
+            dark: "\u0442\u0435\u043C\u0440\u044F\u0432\u0430|\u0442\u0435\u043C\u0440\u044F\u0432\u0438|\u0442\u0435\u043C\u0440\u044F\u0432\u0443|\u0442\u0435\u043C\u043D\u043E|\u0442\u0435\u043C\u043D\u0438\u0439|\u0442\u0435\u043C\u043D\u0430|\u043F\u0456\u0442\u044C\u043C\u0430|\u0442\u0456\u043D\u044C|\u0442\u0456\u043D\u0456|\u0442\u0456\u043D\u043D\u044E|\u043C\u043E\u0440\u043E\u043A",
+            light: "\u0441\u0432\u0456\u0442\u043B\u043E|\u0441\u0432\u0456\u0442\u043B\u0430|\u0441\u0432\u0456\u0442\u043B\u043E\u043C|\u0441\u0432\u0456\u0442\u0438\u0442\u044C|\u0441\u044F\u0439\u0432\u043E|\u0441\u044F\u0454|\u0441\u044F\u044F\u0442\u0438|\u0441\u044F\u044E|\u044F\u0441\u043A\u0440\u0430\u0432\u043E|\u044F\u0441\u043A\u0440\u0430\u0432\u0438\u0439|\u0431\u043B\u0438\u0441\u043A",
+            heart: "\u0441\u0435\u0440\u0446\u0435|\u0441\u0435\u0440\u0446\u044F|\u0441\u0435\u0440\u0446\u0435\u043C|\u0441\u0435\u0440\u0446\u0456|\u0441\u0435\u0440\u0434\u0435\u0447\u043A\u043E|\u0441\u0435\u0440\u0434\u0435\u043D\u044C\u043A\u043E",
+            love: "\u043A\u043E\u0445\u0430\u043D*|\u043A\u043E\u0445\u0430\u044E|\u043A\u043E\u0445\u0430\u0454\u0448|\u043A\u043E\u0445\u0430\u0442\u0438|\u043B\u044E\u0431\u043E\u0432|\u043B\u044E\u0431\u043E\u0432\u0456|\u043B\u044E\u0431\u043B\u044E|\u043B\u044E\u0431\u0438\u0448|\u0437\u0430\u043A\u043E\u0445\u0430\u043D\u0438\u0439|\u0437\u0430\u043A\u043E\u0445\u0430\u043D\u0430",
+            kiss: "\u043F\u043E\u0446\u0456\u043B\u0443*|\u0446\u0456\u043B\u0443\u044E|\u0446\u0456\u043B\u0443\u0454\u0448|\u0446\u0456\u043B\u0443\u0432\u0430\u0442\u0438|\u0446\u0456\u043B\u0443\u0439|\u0433\u0443\u0431\u0438|\u0432\u0443\u0441\u0442\u0430|\u0432\u0443\u0441\u0442\u0430\u043C\u0438",
+            heartbreak: "\u0440\u043E\u0437\u0431\u0438\u0442\u0435 \u0441\u0435\u0440\u0446\u0435|\u0440\u043E\u0437\u0431\u0438\u0442\u0438\u043C \u0441\u0435\u0440\u0446\u0435\u043C|\u0440\u043E\u0437\u0431\u0438\u0432 \u043C\u0435\u043D\u0456 \u0441\u0435\u0440\u0446\u0435|\u0440\u043E\u0437\u0431\u0438\u043B\u0430 \u043C\u0435\u043D\u0456 \u0441\u0435\u0440\u0446\u0435|\u0441\u0435\u0440\u0446\u0435 \u0440\u043E\u0437\u0431\u0438\u0442\u0435|\u0440\u043E\u0437\u0431\u0438\u0432\u0430\u0454\u0448 \u0441\u0435\u0440\u0446\u0435",
+            tears: "\u0441\u043B\u044C\u043E\u0437\u0438|\u0441\u043B\u0456\u0437|\u0441\u043B\u044C\u043E\u0437\u0430\u043C\u0438|\u0441\u043B\u044C\u043E\u0437\u0430|\u043F\u043B\u0430\u0447\u0443|\u043F\u043B\u0430\u0447\u0435\u0448|\u043F\u043B\u0430\u0447\u0435|\u043F\u043B\u0430\u043A\u0430\u0442\u0438|\u043F\u043B\u0430\u0447|\u0440\u0438\u0434\u0430\u044E",
+            money: "\u0433\u0440\u043E\u0448\u0456|\u0433\u0440\u043E\u0448\u0435\u0439|\u0433\u0440\u043E\u0448\u0438\u043C\u0430|\u0431\u0430\u0431\u043A\u0438|\u0431\u0430\u0431\u043B\u043E|\u043A\u0435\u0448|\u0431\u0430\u0433\u0430\u0442\u0438\u0439|\u0431\u0430\u0433\u0430\u0442\u0430|\u0431\u0430\u0433\u0430\u0442\u0441\u0442\u0432\u043E|\u0434\u043E\u043B\u0430\u0440\u0438|\u0434\u043E\u043B\u0430\u0440\u0456\u0432|\u0454\u0432\u0440\u043E|\u0433\u0440\u0438\u0432\u043D\u0456|\u0433\u0440\u0438\u0432\u0435\u043D\u044C",
+            gold: "\u0437\u043E\u043B\u043E\u0442*",
+            diamond: "\u0434\u0456\u0430\u043C\u0430\u043D\u0442*|\u0431\u0440\u0438\u043B\u044C\u044F\u043D\u0442*|\u0430\u043B\u043C\u0430\u0437*|\u043A\u043E\u0448\u0442\u043E\u0432\u043D\u043E\u0441\u0442*",
+            crown: "\u043A\u043E\u0440\u043E\u043D\u0430|\u043A\u043E\u0440\u043E\u043D\u0438|\u043A\u043E\u0440\u043E\u043D\u0443|\u043A\u043E\u0440\u043E\u043D\u043E\u044E|\u043A\u043E\u0440\u043E\u043B*",
+            fly: "\u043B\u0435\u0447\u0443|\u043B\u0435\u0442\u0438\u0448|\u043B\u0435\u0442\u0438\u0442\u044C|\u043B\u0435\u0442\u0438\u043C\u043E|\u043B\u0435\u0442\u0456\u0442\u0438|\u043B\u0456\u0442\u0430\u0442\u0438|\u043B\u0456\u0442\u0430\u044E|\u043F\u043E\u043B\u0456\u0442|\u043F\u043E\u043B\u044C\u043E\u0442\u0443|\u043A\u0440\u0438\u043B\u0430|\u043A\u0440\u0438\u043B\u0430\u043C\u0438|\u043A\u0440\u0438\u043B",
+            bird: "\u043F\u0442\u0430\u0445|\u043F\u0442\u0430\u0445\u0430|\u043F\u0442\u0430\u0445\u0438|\u043F\u0442\u0430\u0445\u0456\u0432|\u043F\u0442\u0430\u0448\u043A\u0430|\u043F\u0442\u0430\u0448\u043A\u0438|\u043F\u0442\u0430\u0448\u0438\u043D\u0430|\u043F\u0442\u0438\u0446\u044F|\u043F\u0442\u0438\u0446\u0456",
+            butterfly: "\u043C\u0435\u0442\u0435\u043B\u0438\u043A*",
+            flower: "\u043A\u0432\u0456\u0442\u043A\u0430|\u043A\u0432\u0456\u0442\u0438|\u043A\u0432\u0456\u0442\u043A\u0443|\u043A\u0432\u0456\u0442\u0456\u0432|\u043A\u0432\u0456\u0442\u0430\u043C\u0438|\u043A\u0432\u0456\u0442\u043E\u0447\u043A\u0430|\u043A\u0432\u0456\u0442\u043D\u0435|\u0446\u0432\u0456\u0442\u0435|\u0440\u043E\u0437\u043A\u0432\u0456\u0442\u0430\u0454",
+            rose: "\u0442\u0440\u043E\u044F\u043D\u0434*|\u0440\u043E\u0437\u0430|\u0440\u043E\u0437\u0438|\u0440\u043E\u0437\u0443",
+            ocean: "\u043E\u043A\u0435\u0430\u043D|\u043E\u043A\u0435\u0430\u043D\u0443|\u043E\u043A\u0435\u0430\u043D\u043E\u043C|\u043C\u043E\u0440\u0435|\u043C\u043E\u0440\u044F|\u043C\u043E\u0440\u0435\u043C|\u043C\u043E\u0440\u0456|\u0445\u0432\u0438\u043B\u0456|\u0445\u0432\u0438\u043B\u044F|\u0445\u0432\u0438\u043B\u044C|\u0445\u0432\u0438\u043B\u044F\u043C\u0438",
+            water: "\u0432\u043E\u0434\u0430|\u0432\u043E\u0434\u0438|\u0432\u043E\u0434\u0443|\u0432\u043E\u0434\u043E\u044E|\u0432\u043E\u0434\u0456|\u0440\u0456\u0447\u043A\u0430|\u0440\u0456\u0447\u043A\u0438|\u0440\u0456\u043A\u0430|\u0440\u0456\u043A\u0438|\u043F\u043B\u0438\u0441\u0442\u0438|\u043F\u043B\u0438\u0432\u0443|\u043F\u043B\u0430\u0432\u0430\u0442\u0438",
+            wind: "\u0432\u0456\u0442\u0435\u0440|\u0432\u0456\u0442\u0440\u0443|\u0432\u0456\u0442\u0440\u043E\u043C|\u0432\u0456\u0442\u0440\u0456|\u0432\u0456\u0442\u0435\u0440\u0435\u0446\u044C|\u0432\u0456\u0442\u0440\u0438|\u0434\u043C\u0435|\u0431\u0440\u0438\u0437",
+            smoke: "\u0434\u0438\u043C|\u0434\u0438\u043C\u0443|\u0434\u0438\u043C\u043E\u043C|\u043A\u0443\u0440\u044E|\u043A\u0443\u0440\u0438\u0448|\u043A\u0443\u0440\u0438\u0442\u0438|\u0441\u0438\u0433\u0430\u0440\u0435\u0442\u0430|\u0441\u0438\u0433\u0430\u0440\u0435\u0442\u0438|\u0446\u0438\u0433\u0430\u0440\u043A\u0430|\u0437\u0430\u0442\u044F\u0436\u043A\u0430",
+            electric: "\u0435\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u043D*|\u0435\u043B\u0435\u043A\u0442\u0440\u0438\u043A\u0430|\u0441\u0442\u0440\u0443\u043C|\u0441\u0442\u0440\u0443\u043C\u0443|\u0435\u043D\u0435\u0440\u0433\u0456\u044F|\u0435\u043D\u0435\u0440\u0433\u0456\u0457|\u0435\u043D\u0435\u0440\u0433\u0456\u044E|\u0456\u0441\u043A\u0440\u0438|\u0456\u0441\u043A\u0440\u0430|\u043D\u0430\u043F\u0440\u0443\u0433\u0430",
+            rainbow: "\u0432\u0435\u0441\u0435\u043B\u043A*|\u0440\u0430\u0439\u0434\u0443\u0433\u0430|\u0440\u0430\u0439\u0434\u0443\u0433\u0438|\u043A\u043E\u043B\u044C\u043E\u0440\u0438|\u043A\u043E\u043B\u044C\u043E\u0440\u0456\u0432|\u0431\u0430\u0440\u0432\u0438",
+            fireworks: "\u0444\u0435\u0454\u0440\u0432\u0435\u0440\u043A*|\u0441\u0430\u043B\u044E\u0442|\u0441\u0430\u043B\u044E\u0442\u0443|\u0441\u0430\u043B\u044E\u0442\u0438",
+            party: "\u0432\u0435\u0447\u0456\u0440\u043A*|\u0442\u0443\u0441\u043E\u0432\u043A*|\u0442\u0443\u0441\u0438\u0442\u0438|\u043F\u0430\u0442\u0456|\u0441\u0432\u044F\u0442\u043E|\u0441\u0432\u044F\u0442\u043A\u0443\u0432\u0430\u0442\u0438|\u0441\u0432\u044F\u0442\u043A\u0443\u0454\u043C\u043E",
+            birthday: "\u0434\u0435\u043D\u044C \u043D\u0430\u0440\u043E\u0434\u0436\u0435\u043D\u043D\u044F|\u0434\u043D\u0435\u043C \u043D\u0430\u0440\u043E\u0434\u0436\u0435\u043D\u043D\u044F|\u0437 \u0434\u043D\u0435\u043C \u043D\u0430\u0440\u043E\u0434\u0436\u0435\u043D\u043D\u044F|\u0434\u043D\u044E\u0445\u0430",
+            dance: "\u0442\u0430\u043D\u0446\u044E*|\u0442\u0430\u043D\u0446\u0456\u0432*|\u0442\u0430\u043D\u0435\u0446\u044C|\u0442\u0430\u043D\u0446\u0456|\u0442\u0430\u043D\u0446\u043F\u043E\u043B",
+            jump: "\u0441\u0442\u0440\u0438\u0431*",
+            dream: "\u0441\u043E\u043D|\u0441\u043D\u0443|\u0441\u043D\u0438|\u0441\u043D\u0456\u0432|\u043C\u0440\u0456\u044F|\u043C\u0440\u0456\u0457|\u043C\u0440\u0456\u044E|\u043C\u0440\u0456\u0454\u044E|\u043C\u0440\u0456\u044F\u0442\u0438|\u043C\u0440\u0456\u0454\u0448|\u0441\u043D\u0438\u0448\u0441\u044F|\u0441\u043D\u0438\u0442\u044C\u0441\u044F",
+            ghost: "\u043F\u0440\u0438\u0432\u0438\u0434|\u043F\u0440\u0438\u0432\u0438\u0434\u0430|\u043F\u0440\u0438\u0432\u0438\u0434\u0438|\u043F\u0440\u0438\u0432\u0438\u0434\u043E\u043C|\u0434\u0443\u0445|\u0434\u0443\u0445\u0430|\u043F\u0440\u0438\u043C\u0430\u0440\u0430|\u043F\u0440\u0438\u043C\u0430\u0440\u0438",
+            angel: "\u0430\u043D\u0433\u0435\u043B*|\u044F\u043D\u0433\u043E\u043B*",
+            devil: "\u0434\u0438\u044F\u0432\u043E\u043B*|\u0447\u043E\u0440\u0442|\u0447\u043E\u0440\u0442\u0430|\u0431\u0456\u0441|\u0431\u0456\u0441\u0430|\u043F\u0435\u043A\u043B\u043E|\u043F\u0435\u043A\u043B\u0430|\u043F\u0435\u043A\u043B\u0456|\u0434\u0435\u043C\u043E\u043D|\u0434\u0435\u043C\u043E\u043D\u0438",
+            world: "\u0441\u0432\u0456\u0442|\u0441\u0432\u0456\u0442\u0443|\u0441\u0432\u0456\u0442\u043E\u043C|\u0441\u0432\u0456\u0442\u0456|\u0437\u0435\u043C\u043B\u044F|\u0437\u0435\u043C\u043B\u0456|\u0437\u0435\u043C\u043B\u044E|\u043F\u043B\u0430\u043D\u0435\u0442\u0430|\u043F\u043B\u0430\u043D\u0435\u0442\u0438|\u043F\u043B\u0430\u043D\u0435\u0442\u0443",
+            space: "\u043A\u043E\u0441\u043C\u043E\u0441|\u043A\u043E\u0441\u043C\u043E\u0441\u0443|\u043A\u043E\u0441\u043C\u043E\u0441\u0456|\u043A\u043E\u0441\u043C\u0456\u0447\u043D*|\u0433\u0430\u043B\u0430\u043A\u0442\u0438\u043A*|\u0432\u0441\u0435\u0441\u0432\u0456\u0442*",
+            rocket: "\u0440\u0430\u043A\u0435\u0442*|\u0437\u043B\u0456\u0442\u0430\u044E|\u0437\u043B\u0456\u0442\u0430\u0442\u0438|\u0437\u043B\u0456\u0442",
+            time: "\u0447\u0430\u0441|\u0447\u0430\u0441\u0443|\u0433\u043E\u0434\u0438\u043D\u043D\u0438\u043A|\u0433\u043E\u0434\u0438\u043D\u043D\u0438\u043A\u0430|\u043D\u0430\u0437\u0430\u0432\u0436\u0434\u0438|\u0432\u0456\u0447\u043D\u0456\u0441\u0442\u044C|\u0432\u0456\u0447\u043D\u043E|\u043D\u0430\u0432\u0456\u043A\u0438",
+            drive: "\u0457\u0434\u0443|\u0457\u0434\u0435\u0448|\u0457\u0434\u0435\u043C\u043E|\u0457\u0445\u0430\u0442\u0438|\u043C\u0447\u0443|\u043C\u0447\u0430\u0442\u0438|\u043C\u0430\u0448\u0438\u043D\u0430|\u043C\u0430\u0448\u0438\u043D\u0456|\u043C\u0430\u0448\u0438\u043D\u0443|\u0442\u0430\u0447\u043A\u0430|\u0434\u043E\u0440\u043E\u0433\u0430|\u0434\u043E\u0440\u043E\u0433\u043E\u044E|\u0434\u043E\u0440\u043E\u0437\u0456|\u0442\u0440\u0430\u0441\u0430|\u0442\u0440\u0430\u0441\u0456|\u0448\u0432\u0438\u0434\u043A\u0456\u0441\u0442\u044C|\u0448\u0432\u0438\u0434\u0448\u0435|\u0448\u0432\u0438\u0434\u043A\u043E",
+            city: "\u043C\u0456\u0441\u0442\u043E|\u043C\u0456\u0441\u0442\u0430|\u043C\u0456\u0441\u0442\u043E\u043C|\u043C\u0456\u0441\u0442\u0456|\u0432\u0443\u043B\u0438\u0446\u0456|\u0432\u0443\u043B\u0438\u0446\u044F|\u0432\u0443\u043B\u0438\u0446\u044F\u0445|\u0432\u0443\u043B\u0438\u0446\u0435\u044E|\u0446\u0435\u043D\u0442\u0440",
+            music: "\u043C\u0443\u0437\u0438\u043A*|\u043F\u0456\u0441\u043D\u044F|\u043F\u0456\u0441\u043D\u0456|\u043F\u0456\u0441\u043D\u044E|\u043F\u0456\u0441\u043D\u0435\u044E|\u043C\u0435\u043B\u043E\u0434\u0456*|\u0440\u0438\u0442\u043C|\u0431\u0456\u0442",
+            sing: "\u0441\u043F\u0456\u0432\u0430*|\u0437\u0430\u0441\u043F\u0456\u0432\u0430\u0439|\u0433\u043E\u043B\u043E\u0441|\u0433\u043E\u043B\u043E\u0441\u043E\u043C|\u0433\u043E\u043B\u043E\u0441\u0443",
+            boom: "\u0431\u0443\u043C|\u0431\u0430\u0445|\u0432\u0438\u0431\u0443\u0445*|\u0431\u043E\u043C\u0431\u0430|\u0431\u043E\u043C\u0431\u0438|\u0431\u043E\u043C\u0431\u0443",
+            champagne: "\u0448\u0430\u043C\u043F\u0430\u043D\u0441\u044C\u043A*|\u043A\u0435\u043B\u0438\u0445|\u043A\u0435\u043B\u0438\u0445\u0438|\u0442\u043E\u0441\u0442|\u043F'\u0454\u043C\u043E|\u0432\u0438\u043F\u0438\u0439\u043C\u043E|\u043F\u043B\u044F\u0448\u043A\u0430|\u043F\u043B\u044F\u0448\u043A\u0443|\u0432\u0438\u043D\u043E|\u0433\u043E\u0440\u0456\u043B\u043A\u0430|\u0431\u0443\u0434\u044C\u043C\u043E",
+            magic: "\u043C\u0430\u0433\u0456\u044F|\u043C\u0430\u0433\u0456\u0457|\u043C\u0430\u0433\u0456\u044E|\u0447\u0430\u0440\u0438|\u0447\u0430\u0440\u0456\u0432*|\u0447\u0430\u043A\u043B\u0443\u043D\u0441\u0442\u0432\u043E|\u0434\u0438\u0432\u043E|\u043C\u0430\u0433\u0456\u0447\u043D*",
+            beach: "\u043F\u043B\u044F\u0436|\u043F\u043B\u044F\u0436\u0456|\u043F\u043B\u044F\u0436\u0443|\u043E\u0441\u0442\u0440\u0456\u0432|\u043E\u0441\u0442\u0440\u043E\u0432\u0430|\u043E\u0441\u0442\u0440\u043E\u0432\u0456|\u043F\u0430\u043B\u044C\u043C\u0438|\u043F\u0456\u0441\u043E\u043A|\u043F\u0456\u0441\u043A\u0443",
+            christmas: "\u0440\u0456\u0437\u0434\u0432*|\u043D\u043E\u0432\u0438\u0439 \u0440\u0456\u043A|\u0441\u0430\u043D\u0442\u0430|\u043C\u0438\u043A\u043E\u043B\u0430\u0439|\u0441\u0430\u043D\u0438|\u0434\u0437\u0432\u0456\u043D\u043E\u0447\u043A\u0438|\u044F\u043B\u0438\u043D\u043A\u0430|\u044F\u043B\u0438\u043D\u043A\u0438|\u043A\u043E\u043B\u044F\u0434\u043A*|\u043A\u043E\u043B\u044F\u0434\u0430",
+            red: "\u0447\u0435\u0440\u0432\u043E\u043D*",
+            blue: "\u0441\u0438\u043D\u0456\u0439|\u0441\u0438\u043D\u044F|\u0441\u0438\u043D\u0454|\u0441\u0438\u043D\u0456|\u0431\u043B\u0430\u043A\u0438\u0442*|\u0433\u043E\u043B\u0443\u0431\u0438\u0439",
+            green: "\u0437\u0435\u043B\u0435\u043D*",
+            pink: "\u0440\u043E\u0436\u0435\u0432*",
+            purple: "\u0444\u0456\u043E\u043B\u0435\u0442\u043E\u0432*|\u0431\u0443\u0437\u043A\u043E\u0432*|\u043F\u0443\u0440\u043F\u0443\u0440\u043E\u0432*",
+            white: "\u0431\u0456\u043B\u0438\u0439|\u0431\u0456\u043B\u0430|\u0431\u0456\u043B\u0435|\u0431\u0456\u043B\u0456|\u0431\u0456\u043B\u0438\u043C|\u0431\u0456\u043B\u043E\u044E|\u0431\u0456\u043B\u043E\u0441\u043D\u0456\u0436\u043D*",
+            black: "\u0447\u043E\u0440\u043D\u0438\u0439|\u0447\u043E\u0440\u043D\u0430|\u0447\u043E\u0440\u043D\u0435|\u0447\u043E\u0440\u043D\u0456|\u0447\u043E\u0440\u043D\u0438\u043C|\u0447\u043E\u0440\u043D\u043E\u044E",
+            silver: "\u0441\u0440\u0456\u0431\u043B*|\u0441\u0440\u0456\u0431\u043D\u0438\u0439|\u0441\u0440\u0456\u0431\u043D\u0430|\u0441\u0440\u0456\u0431\u043D\u0456|\u0441\u0440\u0456\u0431\u043D\u0435"
+          }
+        },
+        bg: {
+          stop: "\u0441\u044A\u043C|\u0441\u043C\u0435|\u0441\u0442\u0435|\u0441\u0430|\u0449\u0435|\u043B\u0438|\u043A\u0430\u043A\u0432\u043E|\u043A\u043E\u0439|\u0437\u0430\u0449\u043E\u0442\u043E|\u0441\u0435\u0433\u0430|\u043D\u0435\u0449\u043E|\u0432\u0441\u0438\u0447\u043A\u043E|\u043A\u043E\u0433\u0430\u0442\u043E|\u043C\u0435\u043D|\u0442\u0435\u0431|\u0430\u043A\u043E|\u0434\u043D\u0435\u0441|\u0442\u0430\u0437\u0438|\u0442\u043E\u0437\u0438|\u043D\u0435\u043A\u0430",
+          c: {
+            fire: "\u043E\u0433\u044A\u043D|\u043E\u0433\u044A\u043D\u044F|\u043E\u0433\u043D\u044C\u043E\u0432\u0435|\u043E\u0433\u043D\u0435\u043D|\u043E\u0433\u043D\u0435\u043D\u0430|\u043F\u043B\u0430\u043C\u044A\u043A|\u043F\u043B\u0430\u043C\u044A\u0446\u0438|\u043F\u043B\u0430\u043C\u044A\u043A\u0430|\u0433\u043E\u0440\u044F|\u0433\u043E\u0440\u0438\u0448|\u0433\u043E\u0440\u0438\u043C|\u0438\u0437\u0433\u0430\u0440\u044F\u043C|\u0438\u0437\u0433\u0430\u0440\u044F\u0448|\u0438\u0437\u0433\u043E\u0440\u044F|\u043F\u043E\u0436\u0430\u0440",
+            rain: "\u0434\u044A\u0436\u0434|\u0434\u044A\u0436\u0434\u0430|\u0434\u044A\u0436\u0434\u044A\u0442|\u0434\u044A\u0436\u0434\u043E\u0432\u0435|\u0434\u044A\u0436\u0434\u043E\u0432\u043D*|\u0432\u0430\u043B\u0438|\u0432\u0430\u043B\u0435\u0436|\u043F\u043E\u0440\u043E\u0439",
+            storm: "\u0431\u0443\u0440\u044F|\u0431\u0443\u0440\u0438|\u0431\u0443\u0440\u044F\u0442\u0430|\u0433\u0440\u044A\u043C|\u0433\u0440\u044A\u043C\u043E\u0442\u0435\u0432\u0438\u0446*|\u0443\u0440\u0430\u0433\u0430\u043D*|\u0432\u0438\u0445\u044A\u0440",
+            lightning: "\u0441\u0432\u0435\u0442\u043A\u0430\u0432\u0438\u0446*|\u043C\u044A\u043B\u043D\u0438\u044F|\u043C\u044A\u043B\u043D\u0438\u0438|\u043C\u044A\u043B\u043D\u0438\u044F\u0442\u0430",
+            snow: "\u0441\u043D\u044F\u0433|\u0441\u043D\u0435\u0433\u0430|\u0441\u043D\u0435\u0433\u044A\u0442|\u0441\u043D\u0435\u0436\u0438\u043D\u043A*|\u0441\u043D\u0435\u0436\u043D*|\u0441\u043D\u0435\u0433\u043E\u0432\u0430\u043B\u0435\u0436",
+            cold: "\u0441\u0442\u0443\u0434|\u0441\u0442\u0443\u0434\u0430|\u0441\u0442\u0443\u0434\u0435\u043D\u043E|\u0441\u0442\u0443\u0434\u0435\u043D|\u0441\u0442\u0443\u0434\u0435\u043D\u0430|\u0441\u0442\u0443\u0434\u0435\u043D\u0438|\u043B\u0435\u0434|\u043B\u0435\u0434\u0430|\u043B\u0435\u0434\u044A\u0442|\u043B\u0435\u0434\u0435\u043D|\u043B\u0435\u0434\u0435\u043D\u0430|\u043B\u0435\u0434\u0435\u043D\u0438|\u0437\u0430\u043C\u0440\u044A\u0437\u043D\u0430\u043B|\u0437\u0430\u043C\u0440\u044A\u0437\u043D\u0430\u043B\u0430|\u043C\u0440\u0430\u0437",
+            sun: "\u0441\u043B\u044A\u043D\u0446*|\u0441\u043B\u044A\u043D\u0447\u0435\u0432*|\u0438\u0437\u0433\u0440\u0435\u0432|\u0438\u0437\u0433\u0440\u0435\u0432\u0430|\u0437\u0430\u043B\u0435\u0437|\u0437\u0430\u043B\u0435\u0437\u0430|\u0441\u043B\u044A\u043D\u0447\u0438\u0446\u0435",
+            summer: "\u043B\u044F\u0442\u043E|\u043B\u044F\u0442\u043E\u0442\u043E|\u043B\u0435\u0442\u0435\u043D|\u043B\u044F\u0442\u043D\u0430|\u043B\u0435\u0442\u043D\u0438|\u043F\u0440\u0435\u0437 \u043B\u044F\u0442\u043E\u0442\u043E",
+            moon: "\u043B\u0443\u043D\u0430|\u043B\u0443\u043D\u0430\u0442\u0430|\u043B\u0443\u043D\u0435\u043D|\u043B\u0443\u043D\u043D\u0430|\u043B\u0443\u043D\u043D\u0430 \u0441\u0432\u0435\u0442\u043B\u0438\u043D\u0430|\u043C\u0435\u0441\u0435\u0447\u0438\u043D\u0430|\u043C\u0435\u0441\u0435\u0447\u0438\u043D\u0430\u0442\u0430",
+            star: "\u0437\u0432\u0435\u0437\u0434*",
+            sky: "\u043D\u0435\u0431\u0435|\u043D\u0435\u0431\u0435\u0442\u043E|\u043E\u0431\u043B\u0430\u043A|\u043E\u0431\u043B\u0430\u0446\u0438|\u043E\u0431\u043B\u0430\u0446\u0438\u0442\u0435|\u043E\u0431\u043B\u0430\u043A\u0430",
+            heaven: "\u0440\u0430\u0439|\u0440\u0430\u044F|\u0440\u0430\u044F\u0442|\u0440\u0430\u0439\u0441\u043A\u0438|\u0440\u0430\u0439\u0441\u043A\u0430|\u043D\u0435\u0431\u0435\u0441\u0430|\u043D\u0435\u0431\u0435\u0441\u0430\u0442\u0430|\u043D\u0435\u0431\u0435\u0441\u0435\u043D|\u043D\u0435\u0431\u0435\u0441\u043D\u0430",
+            night: "\u043D\u043E\u0449|\u043D\u043E\u0449\u0442\u0430|\u043D\u043E\u0449\u0435\u043C|\u043D\u043E\u0449\u0438|\u043D\u043E\u0449\u0435\u043D|\u043D\u043E\u0449\u043D\u0430|\u0442\u0430\u0437\u0438 \u043D\u043E\u0449|\u043F\u043E\u043B\u0443\u043D\u043E\u0449|\u0441\u0440\u0435\u0434\u043D\u043E\u0449",
+            dark: "\u0442\u044A\u043C\u043D\u043E|\u0442\u044A\u043C\u043D\u0438\u043D\u0430|\u0442\u044A\u043C\u043D\u0438\u043D\u0430\u0442\u0430|\u043C\u0440\u0430\u043A|\u043C\u0440\u0430\u043A\u0430|\u0442\u044A\u043C\u0435\u043D|\u0442\u044A\u043C\u043D\u0430|\u0442\u044A\u043C\u043D\u0438|\u0441\u044F\u043D\u043A\u0430|\u0441\u0435\u043D\u043A\u0438|\u0441\u044F\u043D\u043A\u0430\u0442\u0430",
+            light: "\u0441\u0432\u0435\u0442\u043B\u0438\u043D*|\u0441\u0432\u0435\u0442\u044F|\u0441\u0432\u0435\u0442\u0438\u0448|\u0433\u0440\u0435\u0435|\u0433\u0440\u0435\u0435\u0448|\u0441\u0438\u044F\u0435|\u0441\u0438\u044F\u043D\u0438\u0435|\u0431\u043B\u044F\u0441\u044A\u043A|\u044F\u0440\u043A\u043E|\u044F\u0440\u044A\u043A",
+            heart: "\u0441\u044A\u0440\u0446\u0435|\u0441\u044A\u0440\u0446\u0435\u0442\u043E|\u0441\u044A\u0440\u0446\u0430|\u0441\u044A\u0440\u0446\u0430\u0442\u0430|\u0441\u044A\u0440\u0447\u0438\u0446\u0435|\u0441\u044A\u0440\u0434\u0435\u0447\u043D*",
+            love: "\u043B\u044E\u0431\u043E\u0432|\u043B\u044E\u0431\u043E\u0432\u0442\u0430|\u043B\u044E\u0431\u043E\u0432\u0435\u043D|\u043B\u044E\u0431\u043E\u0432\u043D\u0430|\u043E\u0431\u0438\u0447\u0430*|\u043E\u0431\u0438\u0447|\u043E\u0431\u0438\u0447\u0442\u0430|\u0432\u043B\u044E\u0431\u0435\u043D|\u0432\u043B\u044E\u0431\u0435\u043D\u0430|\u043B\u044E\u0431\u0438\u043C\u0430|\u043B\u044E\u0431\u0438\u043C\u0438",
+            kiss: "\u0446\u0435\u043B\u0443\u0432*|\u0446\u0435\u043B\u0443\u043D\u0438|\u0446\u0435\u043B\u0443\u043D\u0430|\u0443\u0441\u0442\u043D\u0438|\u0443\u0441\u0442\u043D\u0438\u0442\u0435",
+            heartbreak: "\u0440\u0430\u0437\u0431\u0438\u0442\u043E \u0441\u044A\u0440\u0446\u0435|\u0440\u0430\u0437\u0431\u0438 \u043C\u0438 \u0441\u044A\u0440\u0446\u0435\u0442\u043E|\u0440\u0430\u0437\u0431\u0438\u0432\u0430\u0448 \u043C\u0438 \u0441\u044A\u0440\u0446\u0435\u0442\u043E|\u0441\u044A\u0440\u0446\u0435\u0442\u043E \u043C\u0438 \u0435 \u0440\u0430\u0437\u0431\u0438\u0442\u043E|\u0440\u0430\u0437\u0431\u0438\u0442\u043E\u0442\u043E \u0441\u044A\u0440\u0446\u0435|\u0441\u0447\u0443\u043F\u0435\u043D\u043E \u0441\u044A\u0440\u0446\u0435",
+            tears: "\u0441\u044A\u043B\u0437\u0438|\u0441\u044A\u043B\u0437\u0430|\u0441\u044A\u043B\u0437\u0438\u0442\u0435|\u043F\u043B\u0430\u0447\u0430|\u043F\u043B\u0430\u0447\u0435\u0448|\u043F\u043B\u0430\u0447\u0435|\u043F\u043B\u0430\u0447\u0435\u043C|\u043F\u043B\u0430\u0447\u0438|\u0440\u0438\u0434\u0430\u044F",
+            money: "\u043F\u0430\u0440\u0438|\u043F\u0430\u0440\u0438\u0442\u0435|\u043F\u0430\u0447\u043A\u0438|\u043A\u0435\u0448|\u0431\u043E\u0433\u0430\u0442|\u0431\u043E\u0433\u0430\u0442\u0430|\u0431\u043E\u0433\u0430\u0442\u0441\u0442\u0432\u043E|\u0434\u043E\u043B\u0430\u0440\u0438|\u0435\u0432\u0440\u043E|\u043A\u0438\u043D\u0442\u0438|\u043C\u0430\u043D\u0433\u0438\u0437\u0438",
+            gold: "\u0437\u043B\u0430\u0442\u043E|\u0437\u043B\u0430\u0442\u043E\u0442\u043E|\u0437\u043B\u0430\u0442\u0435\u043D|\u0437\u043B\u0430\u0442\u043D\u0430|\u0437\u043B\u0430\u0442\u043D\u0438|\u0437\u043B\u0430\u0442\u043D\u043E",
+            diamond: "\u0434\u0438\u0430\u043C\u0430\u043D\u0442*|\u0431\u0440\u0438\u043B\u044F\u043D\u0442*|\u0431\u0438\u0436\u0443\u0442\u0430|\u0441\u043A\u044A\u043F\u043E\u0446\u0435\u043D\u043D*",
+            crown: "\u043A\u043E\u0440\u043E\u043D\u0430|\u043A\u043E\u0440\u043E\u043D\u0430\u0442\u0430|\u043A\u043E\u0440\u043E\u043D\u0438|\u043A\u0440\u0430\u043B|\u043A\u0440\u0430\u043B\u044F|\u043A\u0440\u0430\u043B\u044F\u0442|\u043A\u0440\u0430\u043B\u0438\u0446\u0430|\u043A\u0440\u0430\u043B\u0438\u0446\u0430\u0442\u0430|\u0446\u0430\u0440\u0438\u0446\u0430|\u0446\u0430\u0440|\u0446\u0430\u0440\u044F",
+            fly: "\u043B\u0435\u0442\u044F|\u043B\u0435\u0442\u0438\u0448|\u043B\u0435\u0442\u0438|\u043B\u0435\u0442\u0438\u043C|\u043B\u0435\u0442\u044F\u0442|\u043F\u043E\u043B\u0435\u0442|\u043F\u043E\u043B\u0435\u0442\u0430|\u043A\u0440\u0438\u043B\u0430|\u043A\u0440\u0438\u043B\u0430\u0442\u0430|\u043A\u0440\u0438\u043B\u0435",
+            bird: "\u043F\u0442\u0438\u0446\u0430|\u043F\u0442\u0438\u0446\u0438|\u043F\u0442\u0438\u0446\u0430\u0442\u0430|\u043F\u0442\u0438\u0447\u0435|\u043F\u0442\u0438\u0447\u043A\u0430|\u043F\u0442\u0438\u0447\u043A\u0438|\u043F\u0442\u0438\u0447\u0438",
+            butterfly: "\u043F\u0435\u043F\u0435\u0440\u0443\u0434*",
+            flower: "\u0446\u0432\u0435\u0442\u0435|\u0446\u0432\u0435\u0442\u044F|\u0446\u0432\u0435\u0442\u044F\u0442\u0430|\u0446\u0432\u0435\u0442\u0435\u0442\u043E|\u0446\u044A\u0444\u0442\u0438|\u0446\u044A\u0444\u0442\u044F\u0442|\u0440\u0430\u0437\u0446\u044A\u0444\u0432\u0430|\u0446\u044A\u0444\u0442\u0435\u0436",
+            rose: "\u0440\u043E\u0437\u0430|\u0440\u043E\u0437\u0438|\u0440\u043E\u0437\u0430\u0442\u0430|\u0440\u043E\u0437\u0438\u0442\u0435|\u0440\u043E\u0437\u0438\u0447\u043A\u0430",
+            ocean: "\u043E\u043A\u0435\u0430\u043D|\u043E\u043A\u0435\u0430\u043D\u0430|\u043E\u043A\u0435\u0430\u043D\u044A\u0442|\u043C\u043E\u0440\u0435|\u043C\u043E\u0440\u0435\u0442\u043E|\u043C\u043E\u0440\u0435\u0442\u0430|\u0432\u044A\u043B\u043D\u0438|\u0432\u044A\u043B\u043D\u0430|\u0432\u044A\u043B\u043D\u0438\u0442\u0435|\u0432\u044A\u043B\u043D\u0430\u0442\u0430",
+            water: "\u0432\u043E\u0434\u0430|\u0432\u043E\u0434\u0430\u0442\u0430|\u0432\u043E\u0434\u0438|\u0432\u043E\u0434\u0438\u0442\u0435|\u0440\u0435\u043A\u0430|\u0440\u0435\u043A\u0430\u0442\u0430|\u0440\u0435\u043A\u0438|\u043F\u043B\u0443\u0432\u0430\u043C|\u043F\u043B\u0443\u0432\u0430\u0448|\u043F\u043B\u0443\u0432\u0430\u043D\u0435",
+            wind: "\u0432\u044F\u0442\u044A\u0440|\u0432\u044F\u0442\u044A\u0440\u0430|\u0432\u0435\u0442\u0440\u043E\u0432\u0435|\u0432\u0435\u0442\u0440\u0435\u0446|\u0431\u0440\u0438\u0437|\u0434\u0443\u0445\u0430|\u0432\u0435\u0435",
+            smoke: "\u0434\u0438\u043C|\u0434\u0438\u043C\u0430|\u0434\u0438\u043C\u044A\u0442|\u043F\u0443\u0448\u0430|\u043F\u0443\u0448\u0438\u0448|\u043F\u0443\u0448\u0438\u043C|\u043F\u0443\u0448\u0435\u043D\u0435|\u0446\u0438\u0433\u0430\u0440\u0430|\u0446\u0438\u0433\u0430\u0440\u0438|\u0446\u0438\u0433\u0430\u0440\u0430\u0442\u0430|\u0434\u0436\u043E\u0439\u043D\u0442",
+            electric: "\u0435\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u043A*|\u0435\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043E|\u0442\u043E\u043A|\u0442\u043E\u043A\u0430|\u0435\u043D\u0435\u0440\u0433\u0438\u044F|\u0435\u043D\u0435\u0440\u0433\u0438\u044F\u0442\u0430|\u0438\u0441\u043A\u0440\u0438|\u0438\u0441\u043A\u0440\u0430|\u043D\u0430\u043F\u0440\u0435\u0436\u0435\u043D\u0438\u0435",
+            rainbow: "\u0434\u044A\u0433\u0430|\u0434\u044A\u0433\u0430\u0442\u0430|\u0434\u044A\u0433\u0438|\u0446\u0432\u0435\u0442\u043E\u0432\u0435|\u0446\u0432\u0435\u0442\u043E\u0432\u0435\u0442\u0435|\u0431\u0430\u0433\u0440\u0438",
+            fireworks: "\u0444\u043E\u0439\u0435\u0440\u0432\u0435\u0440\u043A*|\u0437\u0430\u0440\u044F|\u0437\u0430\u0440\u0438",
+            party: "\u043A\u0443\u043F\u043E\u043D*|\u043A\u0443\u043F\u043E\u043D\u044F\u0441\u0432\u0430\u043C\u0435|\u043F\u0430\u0440\u0442\u0438|\u043F\u0440\u0430\u0437\u043D\u0438\u043A|\u043F\u0440\u0430\u0437\u043D\u0438\u043A\u0430|\u043F\u0440\u0430\u0437\u043D\u0443\u0432\u0430\u043C\u0435|\u043F\u0440\u0430\u0437\u043D\u0443\u0432\u0430\u043C|\u0432\u0435\u0441\u0435\u043B\u0431\u0430",
+            birthday: "\u0440\u043E\u0436\u0434\u0435\u043D \u0434\u0435\u043D|\u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F \u0434\u0435\u043D|\u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F\u0442 \u0434\u0435\u043D|\u0447\u0435\u0441\u0442\u0438\u0442 \u0440\u043E\u0436\u0434\u0435\u043D \u0434\u0435\u043D|\u0440\u043E\u0436\u0434\u0435\u043D\u0438\u043A",
+            dance: "\u0442\u0430\u043D\u0446|\u0442\u0430\u043D\u0446\u0430|\u0442\u0430\u043D\u0446\u044A\u0442|\u0442\u0430\u043D\u0446\u0443\u0432*|\u0442\u0430\u043D\u0446\u044C\u043E\u0440|\u0442\u0430\u043D\u0446\u044C\u043E\u0440\u043A\u0430|\u0442\u0430\u043D\u0446\u0438",
+            jump: "\u0441\u043A\u0430\u0447\u0430*|\u0441\u043A\u043E\u043A|\u0441\u043A\u043E\u043A\u043E\u0432\u0435|\u0441\u043A\u043E\u0447\u0438|\u0441\u043A\u043E\u0447\u0430",
+            dream: "\u0441\u044A\u043D|\u0441\u044A\u043D\u044F|\u0441\u044A\u043D\u044F\u0442|\u0441\u044A\u043D\u0438\u0449\u0430|\u0441\u044A\u043D\u0443\u0432*|\u043C\u0435\u0447\u0442\u0430*|\u043C\u0435\u0447\u0442\u0438",
+            ghost: "\u043F\u0440\u0438\u0437\u0440\u0430\u043A*|\u043F\u0440\u0438\u0437\u0440\u0430\u0446\u0438|\u0434\u0443\u0445|\u0434\u0443\u0445\u0430|\u0434\u0443\u0445\u043E\u0432\u0435|\u043F\u0440\u0438\u0432\u0438\u0434\u0435\u043D\u0438\u0435",
+            angel: "\u0430\u043D\u0433\u0435\u043B*",
+            devil: "\u0434\u044F\u0432\u043E\u043B*|\u0430\u0434|\u0430\u0434\u0430|\u0430\u0434\u044A\u0442|\u043F\u044A\u043A\u044A\u043B|\u0434\u0435\u043C\u043E\u043D|\u0434\u0435\u043C\u043E\u043D\u0438|\u0441\u0430\u0442\u0430\u043D\u0430",
+            world: "\u0441\u0432\u044F\u0442|\u0441\u0432\u0435\u0442\u0430|\u0441\u0432\u0435\u0442\u044A\u0442|\u0441\u0432\u0435\u0442\u043E\u0432\u0435|\u0437\u0435\u043C\u044F|\u0437\u0435\u043C\u044F\u0442\u0430|\u043F\u043B\u0430\u043D\u0435\u0442\u0430|\u043F\u043B\u0430\u043D\u0435\u0442\u0430\u0442\u0430",
+            space: "\u043A\u043E\u0441\u043C\u043E\u0441|\u043A\u043E\u0441\u043C\u043E\u0441\u0430|\u043A\u043E\u0441\u043C\u0438\u0447\u0435\u0441\u043A*|\u0433\u0430\u043B\u0430\u043A\u0442\u0438\u043A*|\u0432\u0441\u0435\u043B\u0435\u043D\u0430|\u0432\u0441\u0435\u043B\u0435\u043D\u0430\u0442\u0430",
+            rocket: "\u0440\u0430\u043A\u0435\u0442*|\u0438\u0437\u043B\u0438\u0442\u0430\u043C|\u0438\u0437\u043B\u0438\u0442\u0430\u043C\u0435",
+            time: "\u0432\u0440\u0435\u043C\u0435|\u0432\u0440\u0435\u043C\u0435\u0442\u043E|\u0447\u0430\u0441\u043E\u0432\u043D\u0438\u043A|\u0447\u0430\u0441\u043E\u0432\u043D\u0438\u043A\u0430|\u0437\u0430\u0432\u0438\u043D\u0430\u0433\u0438|\u0432\u0435\u0447\u043D\u043E\u0441\u0442|\u0432\u0435\u0447\u043D\u043E|\u043D\u0430\u0432\u0435\u043A\u0438",
+            drive: "\u043A\u0430\u0440\u0430\u043C|\u043A\u0430\u0440\u0430\u0448|\u043A\u0430\u0440\u0430\u043C\u0435|\u043A\u043E\u043B\u0430|\u043A\u043E\u043B\u0430\u0442\u0430|\u043A\u043E\u043B\u0438|\u043F\u044A\u0442\u044F|\u043F\u044A\u0442\u044F\u0442|\u043D\u0430 \u043F\u044A\u0442\u044F|\u043C\u0430\u0433\u0438\u0441\u0442\u0440\u0430\u043B\u0430|\u0441\u043A\u043E\u0440\u043E\u0441\u0442|\u0441\u043A\u043E\u0440\u043E\u0441\u0442\u0442\u0430|\u0431\u044A\u0440\u0437\u043E|\u043F\u043E-\u0431\u044A\u0440\u0437\u043E",
+            city: "\u0433\u0440\u0430\u0434|\u0433\u0440\u0430\u0434\u0430|\u0433\u0440\u0430\u0434\u044A\u0442|\u0433\u0440\u0430\u0434\u043E\u0432\u0435|\u0443\u043B\u0438\u0446\u0430|\u0443\u043B\u0438\u0446\u0438|\u0443\u043B\u0438\u0446\u0430\u0442\u0430|\u0443\u043B\u0438\u0446\u0438\u0442\u0435|\u0446\u0435\u043D\u0442\u044A\u0440\u0430",
+            music: "\u043C\u0443\u0437\u0438\u043A\u0430|\u043C\u0443\u0437\u0438\u043A\u0430\u0442\u0430|\u043F\u0435\u0441\u0435\u043D|\u043F\u0435\u0441\u0435\u043D\u0442\u0430|\u043F\u0435\u0441\u043D\u0438|\u043F\u0435\u0441\u043D\u0438\u0442\u0435|\u043C\u0435\u043B\u043E\u0434\u0438*|\u0440\u0438\u0442\u044A\u043C|\u0440\u0438\u0442\u044A\u043C\u0430|\u0431\u0438\u0439\u0442",
+            sing: "\u043F\u0435\u044F|\u043F\u0435\u0435\u0448|\u043F\u0435\u0435|\u043F\u0435\u0435\u043C|\u043F\u0435\u044F\u0442|\u043F\u0435\u0439|\u0437\u0430\u043F\u0435\u0439|\u0433\u043B\u0430\u0441|\u0433\u043B\u0430\u0441\u0430|\u0433\u043B\u0430\u0441\u044A\u0442",
+            boom: "\u0431\u0443\u043C|\u0431\u0430\u043C|\u0432\u0437\u0440\u0438\u0432|\u0432\u0437\u0440\u0438\u0432\u0430|\u0435\u043A\u0441\u043F\u043B\u043E\u0437\u0438\u044F|\u0435\u043A\u0441\u043F\u043B\u043E\u0434\u0438\u0440\u0430|\u0431\u043E\u043C\u0431\u0430|\u0431\u043E\u043C\u0431\u0438|\u0431\u043E\u043C\u0431\u0430\u0442\u0430|\u0438\u0437\u0431\u0443\u0445*",
+            champagne: "\u0448\u0430\u043C\u043F\u0430\u043D\u0441\u043A*|\u043D\u0430\u0437\u0434\u0440\u0430\u0432\u0435|\u0442\u043E\u0441\u0442|\u0447\u0430\u0448\u0430|\u0447\u0430\u0448\u0438|\u043F\u0438\u0435\u043C|\u0431\u0443\u0442\u0438\u043B\u043A\u0430|\u0431\u0443\u0442\u0438\u043B\u043A\u0438|\u0431\u0443\u0442\u0438\u043B\u043A\u0430\u0442\u0430|\u0432\u0438\u043D\u043E|\u0440\u0430\u043A\u0438\u044F|\u0443\u0438\u0441\u043A\u0438",
+            magic: "\u043C\u0430\u0433\u0438\u044F|\u043C\u0430\u0433\u0438\u044F\u0442\u0430|\u043C\u0430\u0433\u0438\u0438|\u043C\u0430\u0433\u0438\u0447\u0435\u0441\u043A*|\u0432\u044A\u043B\u0448\u0435\u0431*|\u0447\u0443\u0434\u043E|\u0437\u0430\u043A\u043B\u0438\u043D\u0430\u043D\u0438\u0435|\u043E\u043C\u0430\u0433\u044C\u043E\u0441\u0430\u043D",
+            beach: "\u043F\u043B\u0430\u0436|\u043F\u043B\u0430\u0436\u0430|\u043F\u043B\u0430\u0436\u044A\u0442|\u043E\u0441\u0442\u0440\u043E\u0432|\u043E\u0441\u0442\u0440\u043E\u0432\u0430|\u043E\u0441\u0442\u0440\u043E\u0432\u044A\u0442|\u043F\u0430\u043B\u043C\u0438|\u043F\u0430\u043B\u043C\u0438\u0442\u0435|\u043F\u044F\u0441\u044A\u043A|\u043F\u044F\u0441\u044A\u043A\u0430",
+            christmas: "\u043A\u043E\u043B\u0435\u0434*|\u0434\u044F\u0434\u043E \u043A\u043E\u043B\u0435\u0434\u0430|\u0448\u0435\u0439\u043D\u0430|\u0437\u0432\u044A\u043D\u0447\u0435\u0442\u0430|\u0435\u043B\u0445\u0430|\u0435\u043B\u0445\u0430\u0442\u0430",
+            red: "\u0447\u0435\u0440\u0432\u0435\u043D*|\u0430\u043B\u0435\u043D\u043E|\u0430\u043B\u0435\u043D\u0430",
+            blue: "\u0441\u0438\u043D\u044F|\u0441\u0438\u043D\u044C\u043E|\u0441\u0438\u043D\u0438|\u0441\u0438\u043D\u0438\u044F|\u0441\u0438\u043D\u044F\u0442\u0430|\u043B\u0430\u0437\u0443\u0440\u0435\u043D|\u043B\u0430\u0437\u0443\u0440\u043D\u0430",
+            green: "\u0437\u0435\u043B\u0435\u043D*",
+            pink: "\u0440\u043E\u0437\u043E\u0432*",
+            purple: "\u043B\u0438\u043B\u0430\u0432|\u043B\u0438\u043B\u0430\u0432\u0430|\u043B\u0438\u043B\u0430\u0432\u043E|\u043B\u0438\u043B\u0430\u0432\u0438|\u0432\u0438\u043E\u043B\u0435\u0442\u043E\u0432*|\u043F\u0443\u0440\u043F\u0443\u0440\u0435\u043D|\u043F\u0443\u0440\u043F\u0443\u0440\u043D\u0430",
+            white: "\u0431\u044F\u043B|\u0431\u044F\u043B\u0430|\u0431\u044F\u043B\u043E|\u0431\u0435\u043B\u0438|\u0431\u0435\u043B\u0438\u044F|\u0431\u044F\u043B\u0430\u0442\u0430|\u0431\u0435\u043B\u043E\u0441\u043D\u0435\u0436\u043D*",
+            black: "\u0447\u0435\u0440\u0435\u043D|\u0447\u0435\u0440\u043D\u0430|\u0447\u0435\u0440\u043D\u043E|\u0447\u0435\u0440\u043D\u0438|\u0447\u0435\u0440\u043D\u0438\u044F|\u0447\u0435\u0440\u043D\u0430\u0442\u0430",
+            silver: "\u0441\u0440\u0435\u0431\u0440*|\u0441\u0440\u0435\u0431\u044A\u0440\u0435\u043D|\u0441\u0440\u0435\u0431\u044A\u0440\u043D\u0430|\u0441\u0440\u0435\u0431\u044A\u0440\u043D\u0438"
+          }
+        },
+        lt: {
+          stop: "a\u0161|mes|j\u016Bs|nes|kai|kod\u0117l|dabar|tik|niekada|mane|tave|man|tau|esu|yra|labai|viskas|nieko|kaip|mano",
+          c: {
+            fire: "ugnis|ugnies|ugn\u012F|ugnimi|liepsn*|degu|dega|degti|deginti|sudegti",
+            rain: "lietus|lietaus|liet\u0173|lietumi|lyja|lijo|lietinga|li\u016Btis",
+            storm: "audra|audros|audr\u0105|audroje|perk\u016Bnija|griaustinis|uraganas|uragano|\u0161tormas",
+            lightning: "\u017Eaibas|\u017Eaibo|\u017Eaibai|\u017Eaibu|\u017Eaib\u0105|\u017Eaibuoja|perk\u016Bnas",
+            snow: "sniegas|sniego|snieg\u0105|sniege|snaig*|sninga|snieguota",
+            cold: "\u0161alta|\u0161altas|\u0161altis|\u0161al\u010Dio|\u0161alt\u0105|ledas|ledo|led\u0105|ledin*|u\u017E\u0161al\u0119s|u\u017E\u0161alusi|speigas",
+            sun: "saul\u0117*|saule|saul\u0117tekis|saul\u0117lydis|saulut\u0117",
+            summer: "vasara|vasaros|vasar\u0105|vasarai|vasari\u0161k*",
+            moon: "m\u0117nul*|m\u0117nesiena|m\u0117nesienos",
+            star: "\u017Evaig\u017Ed*",
+            sky: "dangus|dangaus|dang\u0173|danguje|debes*",
+            heaven: "rojus|rojaus|roj\u0173|rojuje|dangaus karalyst\u0117",
+            night: "naktis|nakties|nakt\u012F|naktyje|naktimis|vidurnakt*|\u0161i\u0105nakt|naktinis|naktin\u0117",
+            dark: "tamsa|tamsos|tams\u0105|tamsoje|tamsus|tamsi|tamsu|\u0161e\u0161\u0117l*",
+            light: "\u0161viesa|\u0161viesos|\u0161vies\u0105|\u0161viesoje|\u0161vie\u010Dia|\u0161viesti|spindi|spind\u0117ti|\u0161viesus|\u0161viesi|\u017E\u0117ri",
+            heart: "\u0161irdis|\u0161irdies|\u0161ird\u012F|\u0161irdyje|\u0161irdim|\u0161irdele|\u0161irdel\u0117|\u0161irdys|\u0161ird\u017Ei\u0173",
+            love: "meil\u0117|meil\u0117s|meil\u0119|meile|myliu|myli|myl\u0117ti|mylim*|\u012Fsimyl\u0117j\u0119s|\u012Fsimyl\u0117jusi",
+            kiss: "bu\u010Din*|bu\u010Diuo*|l\u016Bpos|l\u016Bpas|l\u016Bp\u0173",
+            heartbreak: "sudau\u017Eyta \u0161irdis|sudau\u017Eei mano \u0161ird\u012F|sudau\u017Eyt\u0105 \u0161ird\u012F|\u0161irdis ply\u0161ta|sudu\u017Eusi \u0161irdis|sulau\u017Eyta \u0161irdis",
+            tears: "a\u0161aros|a\u0161ar\u0173|a\u0161ara|a\u0161arom|a\u0161aromis|verkiu|verki|verkia|verkti|rauda",
+            money: "pinig*|turtingas|turtinga|turtai|doleriai|doleri\u0173|eurai|eur\u0173|grynieji",
+            gold: "auksas|aukso|auksu|auks\u0105|auksin*",
+            diamond: "deimant*|brangakmen*",
+            crown: "kar\u016Bna|kar\u016Bnos|kar\u016Bn\u0105|karali*|karali\u0161k*",
+            fly: "skrend*|skristi|skraid*|sparn*",
+            bird: "pauk\u0161t*|pauk\u0161\u010D*",
+            butterfly: "drugel*|pla\u0161tak\u0117|pla\u0161tak\u0117s",
+            flower: "g\u0117l\u0117|g\u0117l\u0117s|g\u0117l\u0119|g\u0117li\u0173|g\u0117l\u0117mis|\u017Eiedas|\u017Eiedai|\u017Eied\u0173|\u017Eydi|\u017Eyd\u0117ti|pra\u017Eysta",
+            rose: "ro\u017E\u0117|ro\u017E\u0117s|ro\u017E\u0119|ro\u017Ei\u0173|ro\u017Eyt\u0117|ro\u017E\u0117mis",
+            ocean: "vandenyn*|j\u016Bra|j\u016Bros|j\u016Br\u0105|j\u016Broje|bangos|banga|bang\u0173",
+            water: "vanduo|vandens|vanden\u012F|vandeniu|up\u0117|up\u0117s|up\u0119|plaukti|plaukiu",
+            wind: "v\u0117jas|v\u0117jo|v\u0117j\u0105|v\u0117ju|v\u0117jyje|v\u0117jai|v\u0117jelis|pu\u010Dia|v\u0117juota",
+            smoke: "d\u016Bmai|d\u016Bm\u0173|d\u016Bmas|r\u016Bkau|r\u016Bkyti|cigaret\u0117|cigaret\u0117s",
+            electric: "elektra|elektros|elektrinis|elektrin\u0117|srov\u0117|srov\u0117s|energija|energijos|energij\u0105|kibirk\u0161t*",
+            rainbow: "vaivoryk*|spalvos|spalv\u0173|spalvomis",
+            fireworks: "fejerverk*|saliutas|saliutai",
+            party: "vakar\u0117l*|\u0161vent\u0117|\u0161vent\u0117s|\u0161v\u0119sti|\u0161ven\u010Diam|t\u016Bsas|t\u016Bsinam|pasilinksminam",
+            birthday: "gimtadien*",
+            dance: "\u0161okis|\u0161okio|\u0161ok\u012F|\u0161okiai|\u0161oku|\u0161oki|\u0161oka|\u0161okti|\u0161okam|\u0161ok\u0117ja|\u0161ok\u0117jas",
+            jump: "\u0161okin\u0117*|\u0161uolis|\u0161uol\u012F|\u0161uoliai|\u0161ok auk\u0161tyn",
+            dream: "sapnas|sapno|sapn\u0105|sapnai|sapnuoju|sapnuoti|svajo*",
+            ghost: "vaiduokl*|\u0161m\u0117kla|\u0161m\u0117klos|dvasia|dvasios",
+            angel: "angel*",
+            devil: "velni*|pragar*|demonas|demonai|\u0161\u0117tonas",
+            world: "pasaul*|\u017Eem\u0117|\u017Eem\u0117s|\u017Eem\u0119|planeta|planetos",
+            space: "kosmosas|kosmoso|kosmose|kosmin*|galaktika|galaktikos|visata|visatos|visatoje",
+            rocket: "raket*|pakilimas",
+            time: "laikas|laik\u0105|laikui|laikrod*|am\u017Einai|am\u017Einyb\u0117",
+            drive: "va\u017Eiuo*|vairuo*|ma\u0161ina|ma\u0161inos|ma\u0161in\u0105|automobilis|kelias|kelio|greitkelis|greitis|greitai|grei\u010Diau",
+            city: "miest*|gatv\u0117s|gatv\u0117|gatv\u0117je|gatv\u0117mis|centras",
+            music: "muzika|muzikos|muzik\u0105|muzikoje|daina|dainos|dain\u0105|dain\u0173|melodija|melodijos|ritmas|ritmu",
+            sing: "dainuo*|daininink\u0117|dainininkas|balsas|bals\u0105|balsu",
+            boom: "bum|bam|sprog*|bomba|bombos|bomb\u0105",
+            champagne: "\u0161ampanas|\u0161ampano|\u0161ampan\u0105|\u012F sveikat\u0105|tostas|geriam|taur\u0117|taur\u0117s|butelis|butelio|vynas|vyno",
+            magic: "magija|magijos|magij\u0105|magi\u0161k*|stebukl*|kerai|burtai",
+            beach: "papl\u016Bdim*|sala|salos|saloje|palm\u0117s|palmi\u0173|sm\u0117lis|sm\u0117lio",
+            christmas: "kal\u0117d*|kal\u0117d\u0173 senelis|rog\u0117s|varpeliai|eglut\u0117|eglut\u0117s",
+            red: "raudon*",
+            blue: "m\u0117lyn*|\u017Eydras|\u017Eydra",
+            green: "\u017Ealias|\u017Ealia|\u017Eali|\u017Ealios|\u017Eali\u0105|\u017Ealiai",
+            pink: "ro\u017Ein*",
+            purple: "violetin*|purpur*",
+            white: "baltas|balta|balti|baltos|balt\u0105|baltai",
+            black: "juodas|juoda|juodi|juodos|juod\u0105|juodai",
+            silver: "sidabr*"
+          }
+        },
+        lv: {
+          stop: "es|tu|vi\u0146\u0161|m\u0113s|un|ka|k\u0101p\u0113c|tagad|tikai|v\u0113l|nekad|mani|tevi|man|tev|esmu|nav|\u013Coti|viss|k\u0101",
+          c: {
+            fire: "uguns|ugun\u012B|ugunis|liesm*|degu|deg|degt|sadegt|kv\u0113lo",
+            rain: "lietus|liet\u016B|lietum|l\u012Bst|lija|lietains|lietaina|lietusg\u0101ze",
+            storm: "v\u0113tra|v\u0113tras|v\u0113tr\u0101|v\u0113tru|negaiss|negaisa|p\u0113rkons|p\u0113rkona|viesu\u013Cv\u0113tra|ork\u0101ns",
+            lightning: "zibens|zibenis|zibe\u0146i|zibe\u0146us|zibsnis|zib\u0161\u0146i",
+            snow: "sniegs|sniega|snieg\u0101|sniegu|sniegp\u0101rsl*|snigt|snieg",
+            cold: "aukst*|ledus|led\u016B|ledains|ledaina|sasalis|sasalusi|sals",
+            sun: "saule|saules|saul\u0113|sauli|saul\u012Bte|saull\u0113kts|saulriets|saulains",
+            summer: "vasara|vasaras|vasar\u0101|vasaru|vasar\u012Bgs",
+            moon: "m\u0113ness|m\u0113nesn\u012Bca|m\u0113nessgaisma|m\u0113ness gaisma|m\u0113nesti\u0146\u0161",
+            star: "zvaigzn*|zvaig\u017E\u0146u",
+            sky: "debesis|debes\u012Bs|debess|debesu|m\u0101ko\u0146*|m\u0101konis",
+            heaven: "parad\u012Bze|parad\u012Bz\u0113|parad\u012Bzes|debesu valst\u012Bba",
+            night: "nakts|nakt\u012B|naktis|naktij|nakti|pusnakts|pusnakt\u012B|\u0161onakt",
+            dark: "tumsa|tums\u0101|tumsas|tum\u0161s|tum\u0161a|tum\u0161ais|\u0113na|\u0113nas|\u0113n\u0101|kr\u0113sla",
+            light: "gaism*|sp\u012Bd|sp\u012Bd\u0113t|mirdz|mirdz\u0113t|spo\u017Es|spo\u017Ea",
+            heart: "sirds|sird\u012B|sirdis|sirsni\u0146a|sirsni\u0146u|sirdij",
+            love: "m\u012Blest*|m\u012Blu|m\u012Bli|m\u012Bl|m\u012Bl\u0113t|m\u012B\u013C\u0101|m\u012B\u013Cais|m\u012Blulis|iem\u012Bl\u0113jies|iem\u012Bl\u0113jusies",
+            kiss: "sk\u016Bpst*|nosk\u016Bpsti|bu\u010Da|bu\u010Das|l\u016Bpas|l\u016Bp\u0101m",
+            heartbreak: "salauzta sirds|salauzi manu sirdi|salauztu sirdi|sirds l\u016Bzt|sirds pl\u012Bst|salauzt\u0101 sirds",
+            tears: "asaras|asaru|asar\u0101m|asara|raudu|raudi|raud|raud\u0101t|raudot",
+            money: "nauda|naudas|naudu|naud\u0101|bag\u0101t*|dol\u0101ri|dol\u0101rus|eiro",
+            gold: "zelts|zelta|zelt\u0101|zeltu|zeltains|zeltaina",
+            diamond: "dimant*|briljant*|d\u0101rgakme\u0146*",
+            crown: "kronis|kroni|kron\u012B|karali*|kara\u013Ca|karalisk*",
+            fly: "lidoj*|lido|lidot|sp\u0101rn*",
+            bird: "putns|putni|putnu|putniem|putni\u0146\u0161|putni\u0146i",
+            butterfly: "tauri\u0146*|taurenis",
+            flower: "zieds|ziedi|ziedu|ziedos|pu\u0137e|pu\u0137es|pu\u0137u|zied|zied\u0113t|uzzied",
+            rose: "roze|rozes|rozi|roz\u0113|roz\u012Bte|ro\u017Eu",
+            ocean: "oke\u0101ns|oke\u0101na|oke\u0101n\u0101|j\u016Bra|j\u016Bras|j\u016Br\u0101|j\u016Bru|vi\u013C\u0146i|vilnis|vi\u013C\u0146os",
+            water: "\u016Bdens|\u016Bden\u012B|\u016Bdeni|upe|upes|up\u0113|peld\u0113t|peldu|peldam",
+            wind: "v\u0113j\u0161|v\u0113ja|v\u0113j\u0101|v\u0113ju|v\u0113ji|v\u0113ji\u0146\u0161|p\u016B\u0161|p\u016Bst|br\u012Bze",
+            smoke: "d\u016Bmi|d\u016Bmu|d\u016Bmos|sm\u0113\u0137\u0113ju|sm\u0113\u0137\u0113t|sm\u0113\u0137\u0113|cigarete|cigaretes|p\u012Bp\u0113ju",
+            electric: "elektr\u012Bba|elektr\u012Bbas|elektrisk*|str\u0101va|str\u0101vu|ener\u0123ija|ener\u0123ijas|ener\u0123iju|dzirksteles|dzirkstele",
+            rainbow: "varav\u012Bksn*|kr\u0101sas|kr\u0101s\u0101s|kr\u0101s\u0101m",
+            fireworks: "sal\u016Bts|sal\u016Btu|sal\u016Bti|ugu\u0146o\u0161an*|feierverk*",
+            party: "ball\u012Bt*|ball\u0113*|svin\u0113t|svinam|sv\u0113tki|sv\u0113tkus|tusi\u0146\u0161",
+            birthday: "dzim\u0161anas diena|dzim\u0161anas dienu|dzim\u0161anas dien\u0101|dzim\u0161anas dienas|dzimene|daudz laimes",
+            dance: "dejo|dejot*|dejoj*|dejosim|deja|dejas|deju|dej\u0101",
+            jump: "lecu|l\u0113kt|l\u0113cam|l\u0113ciens|l\u0113cienu|l\u0113k\u0101|l\u0113k\u0101t",
+            dream: "sapnis|sap\u0146i|sapni|sapn\u012B|sap\u0146os|sap\u0146u|sap\u0146oju|sap\u0146ot|sap\u0146o",
+            ghost: "spoks|spoki|spoku|spokam|gars|gari\u0146\u0161",
+            angel: "e\u0146\u0123el*|e\u0146\u0123e\u013Ci|e\u0146\u0123e\u013Cu",
+            devil: "velns|velni|velnu|velnam|elle|ell\u0113|elles|elli|d\u0113mons|d\u0113moni|s\u0101tans",
+            world: "pasaul*|zeme|zemes|zem\u0113|plan\u0113ta|plan\u0113tas",
+            space: "kosmoss|kosmos\u0101|kosmosa|kosmisk*|galaktika|galaktikas|visums|visum\u0101|visuma",
+            rocket: "ra\u0137ete|ra\u0137etes|ra\u0137eti|ra\u0137et\u0113|pacelties",
+            time: "laiks|laika|laik\u0101|laiku|pulksten*|m\u016B\u017E\u012Bgi|m\u016B\u017E\u012Bba",
+            drive: "braucu|brauc|braukt|braucam|ma\u0161\u012Bna|ma\u0161\u012Bn\u0101|ma\u0161\u012Bnu|auto|ce\u013C\u0161|ce\u013C\u0101|\u0161oseja|\u0101trums|\u0101tri|\u0101tr\u0101k",
+            city: "pils\u0113t*|ielas|iela|iel\u0101s|iel\u0101|centrs",
+            music: "m\u016Bzika|m\u016Bzikas|m\u016Bzik\u0101|m\u016Bziku|dziesm*|melodija|melodiju|ritms|ritm\u0101",
+            sing: "dzied*|balss|balsi|bals\u012B",
+            boom: "bum|bang|spr\u0101dzien*|spr\u0101gst|spr\u0101gt|spridzin*",
+            champagne: "\u0161ampaniet*|\u0161ampanie\u0161a|priek\u0101|tosts|dzeram|dzert|gl\u0101ze|gl\u0101zes|pudele|pudeles|pudeli|v\u012Bns|v\u012Bnu",
+            magic: "ma\u0123ija|ma\u0123ijas|ma\u0123iju|ma\u0123isk*|burv\u012Bba|br\u012Bnums|br\u012Bnumi|burvest\u012Bba|burvju",
+            beach: "pludmal*|sala|sal\u0101|salas|palmas|smiltis|smilt\u012Bs",
+            christmas: "ziemassv\u0113tk*|salavecis|kamanas|zvani\u0146i|egl\u012Bte|egl\u012Btes",
+            red: "sarkan*",
+            blue: "zils|zila|zil\u0101|zilie|zilu|zilas|debeszils",
+            green: "za\u013C\u0161|za\u013Ca|za\u013C\u0101|za\u013Cie|za\u013Cu|za\u013Cas",
+            pink: "roz\u0101|ro\u017Eains|ro\u017Eaina|s\u0101rts|s\u0101rta",
+            purple: "violets|violeta|violet\u0101|violetie|lill\u0101|purpura|purpursarkans",
+            white: "balts|balta|balt\u0101|baltie|baltu|baltas|baltums",
+            black: "melns|melna|meln\u0101|melnie|melnu|melnas",
+            silver: "sudrab*"
+          }
+        },
+        et: {
+          stop: "mina|sina|mind|sind|mulle|sulle|n\xFC\xFCd|veel|k\xF5ik|miks|pole|oled|aga|kui|seda|mis|ning|ikka|t\xE4na|minu",
+          c: {
+            fire: "tulekahju|leek|leegid|leeke|leegis|leegiga|tules|p\xF5len|p\xF5leb|p\xF5lema|p\xF5lev|p\xF5levad|l\xF5ke|l\xF5kke",
+            rain: "vihma*|vihm|sajab vihma|paduvihm",
+            storm: "torm|tormi|tormis|tormiga|tormid|\xE4ike|\xE4ikese|orkaan|orkaani|marutuul",
+            lightning: "v\xE4lk|v\xE4lgu|v\xE4lgud|v\xE4lku|v\xE4lgunool|pikne|piksenool",
+            snow: "lumi|lume|lumes|lund|lumehelbe*|lumehelves|lumine|sajab lund",
+            cold: "k\xFClm|k\xFClma|k\xFClmas|k\xFClmad|j\xE4ine|j\xE4\xE4tunud|j\xE4\xE4k\xFClm|k\xFClmunud|pakane|pakases",
+            sun: "p\xE4ikes*|p\xE4iks*|p\xE4ike|p\xE4ikest",
+            summer: "suvi|suve|suvel|suvine|suve\xF6\xF6|suvised|suvist",
+            moon: "kuu|kuuvalgus|kuuvalguses|t\xE4iskuu|kuusirp|kuupaiste",
+            star: "t\xE4ht|t\xE4hed|t\xE4hte|t\xE4hti|t\xE4htede|t\xE4htedes|t\xE4hes\xE4ra|t\xE4histaevas",
+            sky: "taevas|taeva|taevasse|taevast|taevani|pilved|pilv|pilvede|pilvedes|pilvi",
+            heaven: "paradiis*|taevariik|taevav\xE4ravad",
+            night: "\xF6\xF6|\xF6\xF6d|\xF6\xF6sel|\xF6\xF6l|t\xE4na \xF6\xF6sel|kesk\xF6\xF6|kesk\xF6\xF6l|\xF6ine|\xF6ised",
+            dark: "pime|pimed*|tume|tumedad|tumedus|vari|varjud|varjus",
+            light: "valgus*|s\xE4rab|s\xE4rama|s\xE4ra|hiilgab|helendab|hele|heledad",
+            heart: "s\xFCda|s\xFCdam*|s\xFCdant",
+            love: "armast*|armas|armsam|armunud",
+            kiss: "suudl*|musi|musid|huuled|huuli|huultel",
+            heartbreak: "murtud s\xFCda|murdsid mu s\xFCdame|murtud s\xFCdamega|s\xFCda murdub|s\xFCdamevalu|katkine s\xFCda",
+            tears: "pisar*|nutan|nutad|nutab|nutma|nutt|nuta",
+            money: "raha|rahad|rahaga|rikas|rikkad|rikkus|dollarid|eurod|eurot|pappi",
+            gold: "kuld|kulla|kullast|kuldne|kuldsed|kuldset|kullatud",
+            diamond: "teemant*|teemand*|briljant*|kalliskivi*",
+            crown: "kroon|krooniga|kuning*",
+            fly: "lenda*|lennata|lend|tiivad|tiibu|tiibadel",
+            bird: "lind|linnud|lindu|linnu|lindude|linnuke|linnukesed",
+            butterfly: "liblik*",
+            flower: "lill|lilled|lille|lilli|lillede|\xF5is|\xF5ied|\xF5itseb|\xF5itsema|\xF5itsevad",
+            rose: "roos|roosid|roose|roosi|rooside|roosi\xF5is",
+            ocean: "ookean|ookeani|ookeanis|meri|mere|merre|meres|merel|lained|laine|lainetel|lainete",
+            water: "vesi|vee|vette|vees|veega|j\xF5gi|j\xF5e|j\xF5kke|j\xF5es|ujuma|ujun|ujume",
+            wind: "tuul|tuule|tuules|tuult|tuuled|tuulega|tuuleke|puhub|tuuline",
+            smoke: "suits*|sigaret|sigaretid|pl\xE4ru",
+            electric: "elekter|elektri|elektriline|elektrit|vool|voolu|energia|energiat|s\xE4demed|s\xE4de",
+            rainbow: "vikerkaar*|v\xE4rvid|v\xE4rve|v\xE4rvides",
+            fireworks: "ilutules*",
+            party: "pidu|peo|peol|peole|pidut*|tantsupidu|t\xE4histame|t\xE4histama",
+            birthday: "s\xFCnnip\xE4ev*|palju \xF5nne",
+            dance: "tants*",
+            jump: "h\xFCppa*|h\xFCpe|h\xFCpped",
+            dream: "unistu*|unista*|unen\xE4gu|unen\xE4os|unes|unelm*",
+            ghost: "kummitus|kummitused|kummitust|vaim|vaimud|vaimu|tont|tondid",
+            angel: "ingel|ingli|inglid|inglit|inglike|ingleid",
+            devil: "kurat|kuradi|kuradid|p\xF5rgu|p\xF5rgus|p\xF5rgusse|deemon|deemonid|saatan",
+            world: "maailm*|planeet|planeedil|planeedi",
+            space: "kosmos|kosmose|kosmoses|kosmiline|galaktika|galaktikas|universum*|avakosmos",
+            rocket: "rakett|raketi|raketiga|raketid|stardime",
+            time: "aeg|aega|ajal|ajas|kell|kella|igavesti|igavik|igavene",
+            drive: "s\xF5it|s\xF5itma|s\xF5ita|s\xF5ida*|auto|autoga|autos|teel|maantee|kiirtee|kiirus|kiiresti|kiiremini",
+            city: "linn|linna|linnas|linnad|t\xE4nav*|kesklinn",
+            music: "muusik*|laul|laulu|laulud|meloodia|meloodiat|r\xFCtm|r\xFCtmis|biit",
+            sing: "laula*|h\xE4\xE4l|h\xE4\xE4lt|h\xE4\xE4lega",
+            boom: "pauk|paugu|plahvat*|pomm|pommid|pommi|buum",
+            champagne: "\u0161ampus|\u0161ampanja|\u0161ampanjat|\u0161ampust|terviseks|klaas|klaasid|pudel|pudeli|pudelit|joome|vein|veini",
+            magic: "maagi*|v\xF5lu|v\xF5luv|v\xF5lub|n\xF5idus|v\xF5lukunst|loits",
+            beach: "rand|ranna|rannas|randa|saar|saare|saarel|palmid|palmipuud|liiv|liiva",
+            christmas: "j\xF5ulu*|kelk|kelgud|kellukesed",
+            red: "punane|punas*",
+            blue: "sinine|sinis*|sinitaevas",
+            green: "roheline|roheli*",
+            pink: "roosa|roosat|roosad|roosas",
+            purple: "lilla|lillat|lillad|violetne|violetsed|purpur|purpurne",
+            white: "valge|valget|valged|valgeid|lumivalge",
+            black: "must|musta|musti|mustad|mustas|s\xFCsimust",
+            silver: "h\xF5be|h\xF5beda*"
+          }
+        },
+        fi: {
+          stop: "min\xE4|sin\xE4|m\xE4|s\xE4|ett\xE4|mutta|kun|olen|olet|t\xE4\xE4|nyt|viel\xE4|kaikki|miksi|mua|sua|mulle|sulle|mun|sun",
+          c: {
+            fire: "liekki|liekit|liekeiss\xE4|liekkeihin|liekin|liekehtii|roihu|roihuaa|tulessa|tuleen|tulipalo|polttaa|poltan|palava|palavat",
+            rain: "sade|sateen|sateessa|sadetta|sateeseen|sataa|sadep\xE4iv\xE4|sateinen|vesisade|rankkasade",
+            storm: "myrsky*|ukkonen|ukkosen|ukkosta|hurrikaani",
+            lightning: "salama|salaman|salamat|salamoita|salamana|salamanisku",
+            snow: "lumi|lunta|lumen|lumessa|lumihiutale|lumihiutaleet|lumisade|sataa lunta|luminen",
+            cold: "kylm\xE4|kylm\xE4\xE4|kylm\xE4ss\xE4|kylmyys|j\xE4\xE4t\xE4|j\xE4inen|j\xE4\xE4tynyt|j\xE4\xE4tyy|pakkanen|pakkasessa",
+            sun: "aurink*|auring*",
+            summer: "kes\xE4|kes\xE4n|kes\xE4ll\xE4|kes\xE4\xE4|kes\xE4y\xF6|kes\xE4inen|kes\xE4kuu",
+            moon: "kuu|kuun|kuuta|kuussa|kuunvalo|kuutamo|t\xE4ysikuu|kuutamolla",
+            star: "t\xE4hti|t\xE4hdet|t\xE4hti\xE4|t\xE4htien|t\xE4htitaivas|t\xE4hdenlento|t\xE4hten\xE4",
+            sky: "taivas|taivaa*|taivaita|pilvet|pilvi|pilvi\xE4|pilvien",
+            heaven: "paratiisi*|taivasten",
+            night: "y\xF6|y\xF6n|y\xF6ll\xE4|\xF6isin|\xF6inen|keskiy\xF6|keskiy\xF6ll\xE4|t\xE4n\xE4 y\xF6n\xE4|y\xF6t\xE4",
+            dark: "pime\xE4|pime\xE4ss\xE4|pimey*|synkk\xE4|varjo*|tumma",
+            light: "valo|valoa|valon|valossa|valot|loista*|loisto|hehku|hehkuu|kirkas|kirkkaana|s\xE4ihkyy",
+            heart: "syd\xE4n|syd\xE4m*|syd\xE4nt\xE4",
+            love: "rakkau*|rakast*|rakas|rakkaani|kulta",
+            kiss: "suudel*|suutel*|suukko|suukkoja|huulet|huulilla|huulia",
+            heartbreak: "s\xE4rkynyt syd\xE4n|s\xE4rki syd\xE4meni|s\xE4rjit syd\xE4meni|syd\xE4n s\xE4rkyy|s\xE4rkyneen syd\xE4men|syd\xE4nsuru|s\xE4rkyi syd\xE4n",
+            tears: "kyynel*|itken|itket|itkee|itke\xE4|itku|itkua",
+            money: "raha|rahaa|rahat|rahan|rahalla|rikas|rikkaus|rikkaana|dollarit|euroo|euroja|massii|fyrkkaa",
+            gold: "kultaa|kullan|kultainen|kultaiset|kullattu",
+            diamond: "timant*|jalokivi*",
+            crown: "kruunu*|kuning*|prinsessa",
+            fly: "lent\xE4*|lenn\xE4*|lento|siivet|siipien|siivill\xE4|lentoon",
+            bird: "lintu|linnut|lintua|linnun|lintuja|lintunen|pikkulintu",
+            butterfly: "perhos*|perhonen",
+            flower: "kukka|kukat|kukkia|kukan|kukkaset|kukkanen|kukkii|kukoistaa|kukkien",
+            rose: "ruusu*",
+            ocean: "valtameri|valtameren|meri|meren|merta|meress\xE4|merell\xE4|aallot|aalto|aaltojen",
+            water: "vesi|veden|vett\xE4|vedess\xE4|veteen|joki|joen|jokeen|uida|uimaan",
+            wind: "tuuli|tuulen|tuulta|tuulessa|tuulee|tuulet|tuulahdus|henk\xE4ys",
+            smoke: "savu|savua|savun|savussa|r\xF6\xF6kii|r\xF6\xF6ki\xE4|tupakka|tupakkaa|savuke|polttelen",
+            electric: "s\xE4hk\xF6*|virta|virtaa|energia|energiaa|kipin\xE4t|kipin\xE4",
+            rainbow: "sateenkaar*|v\xE4rit|v\xE4rej\xE4|v\xE4reiss\xE4",
+            fireworks: "ilotulit*",
+            party: "juhla|juhlat|juhlissa|juhlaan|juhli*|bileet|bileiss\xE4|bileisiin|bailaan|bailata|pippalot",
+            birthday: "syntym\xE4p\xE4iv*|syntt\xE4r*|paljon onnea",
+            dance: "tanss*",
+            jump: "hypp\xE4*|hyp\xE4t\xE4|hyppy|hypyn|pomppii|pomppia",
+            dream: "uni|unen|unta|unessa|unet|unelm*|uneksin|haaveet|haave",
+            ghost: "aave|aaveet|aaveena|haamu|haamut|kummitus|kummittelee",
+            angel: "enkel*",
+            devil: "paholai*|piru|pirun|perkele|helvet*|demoni|demonit|saatana",
+            world: "maailm*|maapallo|planeetta|planeetan",
+            space: "avaruu*|galaksi|galaksin|universumi|kosmos|kosminen",
+            rocket: "raket*|laukaisu",
+            time: "aikaa|ajassa|aikamme|kello|kellon|kellot|ikuisesti|ikuisuus|ikuisuuden|ikuinen",
+            drive: "ajetaan|ajellaan|ajelen|auto|autolla|autossa|tie|tiell\xE4|tiet\xE4|moottoritie|vauhti|vauhtia|lujaa|kaasu",
+            city: "kaupun*|kadut|kadulla|kaduilla|katu|keskusta|stadi|stadissa",
+            music: "musiik*|laulu|laulut|laulun|biisi|biisit|biisin|melodia|rytmi|biitti",
+            sing: "laula*|\xE4\xE4ni|\xE4\xE4nen|\xE4\xE4nt\xE4|lauletaan",
+            boom: "pum|bang|r\xE4j\xE4h*|pommi|pommit",
+            champagne: "samppanj*|skool|kippis|malja|maljan|juodaan|juoma|pullo|pulloa|pullon|viini|viini\xE4",
+            magic: "taika|taikaa|taiku*|taianomainen|maaginen|magia|loitsu|lumous|lumoava",
+            beach: "ranta|rannalla|rantaan|hiekkaranta|saari|saarella|saarelle|palmut|palmujen|hiekka|hiekalla",
+            christmas: "joulu*|reki|kulkuset",
+            red: "punai*|puna|punaa",
+            blue: "sinis*|sininen",
+            green: "vihre*",
+            pink: "pinkki|pinkit|vaaleanpunai*|roosa",
+            purple: "violetti|violetit|purppura*|liila|lila",
+            white: "valkoi*|valkea",
+            black: "musta|mustat|mustaa|mustan|mustana|mustaksi",
+            silver: "hopea|hopeaa|hopei*|hopean"
+          }
+        },
+        hu: {
+          stop: "\xE9s|hogy|nem|az|egy|vagy|vagyok|van|csak|m\xE1r|m\xE9g|mert|engem|t\xE9ged|nekem|neked|soha|minden|ezt|azt",
+          c: {
+            fire: "t\u0171z|t\xFCzet|t\u0171zben|t\u0171zzel|t\xFCzem|t\xFCzes|l\xE1ng|l\xE1ngok|l\xE1ngol*|l\xE1ngban|l\xE1ngra|\xE9gek|\xE9gsz|\xE9gni|\xE9g\u0151|\xE9g\xFCnk",
+            rain: "es\u0151|es\u0151t|es\u0151ben|esik az es\u0151|z\xE1por|es\u0151s|es\u0151csepp|es\u0151cseppek",
+            storm: "vihar*|mennyd\xF6rg\xE9s|d\xF6r\xF6g|hurrik\xE1n|zivatar",
+            lightning: "vill\xE1m*",
+            snow: "h\xF3|havat|h\xF3ban|havazik|h\xF3pehely|h\xF3pelyhek|havas|h\xF3es\xE9s",
+            cold: "hideg*|j\xE9g|jeget|j\xE9gben|jeges|fagy|fagyos|megfagy|fagyott",
+            sun: "napf\xE9ny*|naps\xFCt\xE9s*|napfelkelte|naplemente|napsug\xE1r|napsugarak|napsugaras|s\xFCt a nap|napos",
+            summer: "ny\xE1r|nyarat|ny\xE1ron|ny\xE1ri|nyarak",
+            moon: "hold|holdat|holdf\xE9ny*|telihold|holdvil\xE1g",
+            star: "csillag*",
+            sky: "\xE9g|eget|\xE9gen|\xE9gbe|\xE9gbolt|\xE9gre|felh\u0151|felh\u0151k|felh\u0151ket|felh\u0151ben",
+            heaven: "mennyorsz\xE1g*|mennyben|mennyei|\xE9gi",
+            night: "\xE9j|\xE9jjel|\xE9jszak*|\xE9jf\xE9l|\xE9jf\xE9lkor|ma \xE9jjel|\xE9jjeli",
+            dark: "s\xF6t\xE9t*|\xE1rny\xE9k*|hom\xE1ly",
+            light: "f\xE9ny|f\xE9nyt|f\xE9nyben|f\xE9nyes|ragyog*|vil\xE1g\xEDt|csillog|izzik",
+            heart: "sz\xEDv|sz\xEDvem|sz\xEDvet|sz\xEDvbe|sz\xEDvben|sz\xEDved|sz\xEDv\xFCnk|sz\xEDvek|sz\xEDvemet",
+            love: "szerelem|szerelm*|szeretlek|szeretem|szeretsz|szeret|szeretni|im\xE1dlak",
+            kiss: "cs\xF3k|cs\xF3kot|cs\xF3kol|cs\xF3kolj|cs\xF3kolom|cs\xF3kok|ajkak|ajkad|ajkam|puszi|puszit",
+            heartbreak: "\xF6sszet\xF6rt sz\xEDv|\xF6sszet\xF6rted a sz\xEDvem|\xF6sszet\xF6rt a sz\xEDvem|megt\xF6rt sz\xEDv|sz\xEDvem \xF6sszet\xF6rt|t\xF6r\xF6tt sz\xEDv",
+            tears: "k\xF6nny|k\xF6nnyek|k\xF6nnyeim|k\xF6nnyem|k\xF6nnyes|s\xEDrok|s\xEDrsz|s\xEDr|s\xEDrni|s\xEDr\xE1s",
+            money: "p\xE9nz|p\xE9nzt|p\xE9nzem|p\xE9nzed|p\xE9nzzel|gazdag*|doll\xE1r|doll\xE1rok|eur\xF3|l\xF3v\xE9|zs\xE9|k\xE1p\xE9",
+            gold: "arany|aranyat|aranyb\xF3l|aranyban|aranysz\xEDn\u0171|aranyl\xF3",
+            diamond: "gy\xE9m\xE1nt*|\xE9kszer*|brili\xE1ns",
+            crown: "korona|koron\xE1t|koron\xE1val|kir\xE1ly*",
+            fly: "rep\xFCl*|sz\xE1llok|sz\xE1rny*",
+            bird: "mad\xE1r|madar*|mad\xE1rka|mad\xE1rk\xE9nt|mad\xE1rdal",
+            butterfly: "pillang*|lepke|lepk\xE9k|lepk\xE9t",
+            flower: "vir\xE1g*",
+            rose: "r\xF3zsa|r\xF3zs\xE1k|r\xF3zs\xE1t|r\xF3zsasz\xE1l|r\xF3zs\xE1m",
+            ocean: "\xF3ce\xE1n|\xF3ce\xE1nt|\xF3ce\xE1nban|tenger|tengert|tengerben|hull\xE1m*",
+            water: "v\xEDz|vizet|v\xEDzben|v\xEDzbe|foly\xF3|foly\xF3t|foly\xF3ban|\xFAszni|\xFAszom|\xFAszok",
+            wind: "sz\xE9l|szelet|sz\xE9lben|sz\xE9llel|szell\u0151|f\xFAj a sz\xE9l|szelek",
+            smoke: "f\xFCst|f\xFCst\xF6t|f\xFCstben|f\xFCst\xF6l|cigi|cigit|cigaretta|spangli",
+            electric: "elektromos*|\xE1ram|\xE1ramot|energia|energi\xE1t|szikra|szikr\xE1k|fesz\xFClts\xE9g",
+            rainbow: "sziv\xE1rv\xE1ny*|sz\xEDnek|sz\xEDnes|sz\xEDnekben",
+            fireworks: "t\u0171zij\xE1t\xE9k*",
+            party: "buli|bulit|buliba|buliban|buliz*|parti|\xFCnnep|\xFCnnepel*|mulatunk|mulats\xE1g",
+            birthday: "sz\xFClet\xE9snap*|sz\xFClinap*|boldog sz\xFClinapot",
+            dance: "t\xE1nc|t\xE1ncot|t\xE1ncol*|t\xE1ncos|t\xE1ncparkett",
+            jump: "ugrok|ugrasz|ugrik|ugrani|ugr\xE1s|ugr\xE1l*",
+            dream: "\xE1lom|\xE1lmom|\xE1lmok|\xE1lmomban|\xE1lmod*|\xE1lmaim",
+            ghost: "szellem*|k\xEDs\xE9rtet|k\xEDs\xE9rtetek",
+            angel: "angyal*",
+            devil: "\xF6rd\xF6g|\xF6rd\xF6g\xF6t|\xF6rd\xF6gi|pokol|pokolba|pokolban|d\xE9mon|d\xE9monok|s\xE1t\xE1n",
+            world: "vil\xE1g|vil\xE1got|vil\xE1gon|vil\xE1gban|vil\xE1gom|f\xF6ld|f\xF6ldet|f\xF6ld\xF6n|bolyg\xF3|bolyg\xF3t",
+            space: "\u0171r|\u0171rben|vil\xE1g\u0171r|vil\xE1g\u0171rben|galaxis|galaxisok|univerzum|kozmosz|csillagk\xF6zi",
+            rocket: "rak\xE9ta|rak\xE9t\xE1t|rak\xE9t\xE1val|kil\xF6v\xE9s|felsz\xE1ll\xE1s",
+            time: "id\u0151|id\u0151t|id\u0151ben|\xF3ra|\xF3r\xE1k|\xF6r\xF6kk\xE9|\xF6r\xF6kre|\xF6r\xF6kk\xE9val\xF3s\xE1g",
+            drive: "vezetek|vezetni|aut\xF3|aut\xF3t|aut\xF3val|aut\xF3ban|\xFAton|utak|aut\xF3p\xE1lya|sztr\xE1da|sebess\xE9g|gyorsan|gyorsabban|sz\xE1guld*",
+            city: "v\xE1ros*|utca|utc\xE1k|utc\xE1n|utc\xE1kon|belv\xE1ros|nagyv\xE1ros",
+            music: "zene|zen\xE9t|zen\xE9ben|zen\xE9d|dal|dalt|dalok|dallam|dallamot|ritmus|\xFCtem",
+            sing: "\xE9nekel*|\xE9nek|hangom|hangod|dalolok",
+            boom: "bumm|bang|robban*|felrobban|bomba|bomb\xE1t|durr",
+            champagne: "pezsg*|eg\xE9szs\xE9gedre|eg\xE9szs\xE9g\xFCnkre|koccints|koccintunk|igyunk|iszunk|\xFCveg|\xFCveget|bor|bort",
+            magic: "var\xE1zs*|m\xE1gia|m\xE1gikus|b\u0171v\xF6s|b\u0171b\xE1j",
+            beach: "strand|strandon|tengerpart|tengerparton|sziget|szigeten|szigetre|p\xE1lmafa|p\xE1lmaf\xE1k|homok|homokban",
+            christmas: "kar\xE1csony*|mikul\xE1s|t\xE9lap\xF3|sz\xE1nk\xF3|cseng\u0151|csengetty\u0171|feny\u0151fa",
+            red: "piros|pirosat|pirosra|v\xF6r\xF6s|v\xF6r\xF6set|v\xF6r\xF6sre",
+            blue: "k\xE9k|k\xE9ket|k\xE9kben|k\xE9kes|\xE9gsz\xEDnk\xE9k",
+            green: "z\xF6ld|z\xF6ldet|z\xF6ldben|z\xF6ldes",
+            pink: "r\xF3zsasz\xEDn*|pink",
+            purple: "lila|lil\xE1t|b\xEDbor|b\xEDborsz\xEDn|ibolya|ibolyasz\xEDn",
+            white: "feh\xE9r|feh\xE9ret|feh\xE9rben|h\xF3feh\xE9r|feh\xE9rre",
+            black: "fekete|feket\xE9t|feket\xE9ben|feket\xE9re|koromfekete",
+            silver: "ez\xFCst*"
+          }
+        },
+        el: {
+          stop: "\u03BA\u03B1\u03B9|\u03BD\u03B1|\u03B8\u03B1|\u03B4\u03B5\u03BD|\u03BC\u03BF\u03C5|\u03C3\u03BF\u03C5|\u03C0\u03BF\u03C5|\u03B3\u03B9\u03B1|\u03B5\u03AF\u03BD\u03B1\u03B9|\u03B5\u03AF\u03BC\u03B1\u03B9|\u03B5\u03B3\u03CE|\u03B5\u03C3\u03CD|\u03BC\u03B1\u03C2|\u03C3\u03B1\u03C2|\u03CC\u03C4\u03B1\u03BD|\u03BC\u03CC\u03BD\u03BF|\u03CC\u03BB\u03B1|\u03C0\u03BF\u03C4\u03AD|\u03C4\u03CE\u03C1\u03B1|\u03C0\u03AC\u03BB\u03B9",
+          c: {
+            fire: "\u03C6\u03C9\u03C4\u03B9\u03AC|\u03C6\u03C9\u03C4\u03B9\u03AD\u03C2|\u03C6\u03C9\u03C4\u03B9\u03AC\u03C2|\u03C6\u03BB\u03CC\u03B3\u03B1|\u03C6\u03BB\u03CC\u03B3\u03B5\u03C2|\u03BA\u03B1\u03AF\u03B3\u03BF\u03BC\u03B1\u03B9|\u03BA\u03B1\u03AF\u03B5\u03B9|\u03BA\u03B1\u03AF\u03C9|\u03BA\u03B1\u03B9\u03C2|\u03BA\u03B1\u03BC\u03AD\u03BD\u03B7|\u03BA\u03B1\u03BC\u03AD\u03BD\u03BF|\u03C0\u03C5\u03C1\u03BA\u03B1\u03B3\u03B9\u03AC",
+            rain: "\u03B2\u03C1\u03BF\u03C7\u03AE|\u03B2\u03C1\u03BF\u03C7\u03AE\u03C2|\u03B2\u03C1\u03BF\u03C7\u03AD\u03C2|\u03B2\u03C1\u03AD\u03C7\u03B5\u03B9|\u03B2\u03C1\u03BF\u03C7\u03B5\u03C1\u03CC|\u03B2\u03C1\u03BF\u03C7\u03B5\u03C1\u03AE|\u03BC\u03C0\u03CC\u03C1\u03B1|\u03C8\u03B9\u03C7\u03AC\u03BB\u03B1",
+            storm: "\u03BA\u03B1\u03C4\u03B1\u03B9\u03B3\u03AF\u03B4\u03B1|\u03BA\u03B1\u03C4\u03B1\u03B9\u03B3\u03AF\u03B4\u03B5\u03C2|\u03B8\u03CD\u03B5\u03BB\u03BB\u03B1|\u03B8\u03CD\u03B5\u03BB\u03BB\u03B5\u03C2|\u03BC\u03C0\u03BF\u03C5\u03C1\u03AF\u03BD\u03B9|\u03C4\u03C5\u03C6\u03CE\u03BD\u03B1\u03C2|\u03B2\u03C1\u03BF\u03BD\u03C4\u03AE|\u03B2\u03C1\u03BF\u03BD\u03C4\u03AD\u03C2|\u03BC\u03C0\u03BF\u03C5\u03BC\u03C0\u03BF\u03C5\u03BD\u03B7\u03C4\u03CC",
+            lightning: "\u03B1\u03C3\u03C4\u03C1\u03B1\u03C0\u03AE|\u03B1\u03C3\u03C4\u03C1\u03B1\u03C0\u03AD\u03C2|\u03BA\u03B5\u03C1\u03B1\u03C5\u03BD\u03CC\u03C2|\u03BA\u03B5\u03C1\u03B1\u03C5\u03BD\u03CC|\u03BA\u03B5\u03C1\u03B1\u03C5\u03BD\u03BF\u03AF|\u03B1\u03C3\u03C4\u03C1\u03AC\u03C6\u03C4\u03B5\u03B9",
+            snow: "\u03C7\u03B9\u03CC\u03BD\u03B9|\u03C7\u03B9\u03CC\u03BD\u03B9\u03B1|\u03C7\u03B9\u03BF\u03BD\u03AF\u03B6\u03B5\u03B9|\u03C7\u03B9\u03BF\u03BD\u03BF\u03BD\u03B9\u03C6\u03AC\u03B4\u03B1|\u03BD\u03B9\u03C6\u03AC\u03B4\u03B1|\u03BD\u03B9\u03C6\u03AC\u03B4\u03B5\u03C2|\u03C7\u03B9\u03BF\u03BD\u03B9\u03C3\u03BC\u03AD\u03BD\u03BF|\u03C7\u03B9\u03BF\u03BD\u03B9\u03C3\u03BC\u03AD\u03BD\u03B7",
+            cold: "\u03BA\u03C1\u03CD\u03BF|\u03BA\u03C1\u03CD\u03B1|\u03BA\u03C1\u03CD\u03BF\u03C2|\u03C0\u03AC\u03B3\u03BF\u03C2|\u03C0\u03AC\u03B3\u03BF|\u03C0\u03AC\u03B3\u03BF\u03C5|\u03C0\u03B1\u03B3\u03C9\u03BC\u03AD\u03BD\u03B7|\u03C0\u03B1\u03B3\u03C9\u03BC\u03AD\u03BD\u03BF|\u03C0\u03B1\u03B3\u03C9\u03BD\u03B9\u03AC|\u03C0\u03B1\u03B3\u03CE\u03BD\u03C9|\u03C0\u03B1\u03B3\u03CE\u03BD\u03B5\u03B9|\u03C8\u03CD\u03C7\u03C1\u03B1",
+            sun: "\u03AE\u03BB\u03B9\u03BF\u03C2|\u03AE\u03BB\u03B9\u03BF|\u03AE\u03BB\u03B9\u03BF\u03C5|\u03AE\u03BB\u03B9\u03B5|\u03B7\u03BB\u03B9\u03B1\u03C7\u03C4\u03AF\u03B4\u03B1|\u03B7\u03BB\u03B9\u03BF\u03B2\u03B1\u03C3\u03AF\u03BB\u03B5\u03BC\u03B1|\u03B1\u03BD\u03B1\u03C4\u03BF\u03BB\u03AE|\u03BB\u03B9\u03B1\u03BA\u03AC\u03B4\u03B1|\u03B7\u03BB\u03B9\u03CC\u03BB\u03BF\u03C5\u03C3\u03C4\u03BF",
+            summer: "\u03BA\u03B1\u03BB\u03BF\u03BA\u03B1\u03B9\u03C1*|\u03B8\u03AD\u03C1\u03BF\u03C2",
+            moon: "\u03C6\u03B5\u03B3\u03B3\u03B1\u03C1*|\u03C6\u03B5\u03B3\u03B3\u03AC\u03C1\u03B9|\u03C3\u03B5\u03BB\u03AE\u03BD\u03B7|\u03C3\u03B5\u03BB\u03AE\u03BD\u03B7\u03C2|\u03C0\u03B1\u03BD\u03C3\u03AD\u03BB\u03B7\u03BD\u03BF\u03C2",
+            star: "\u03B1\u03C3\u03C4\u03AD\u03C1*|\u03AC\u03C3\u03C4\u03C1\u03BF|\u03AC\u03C3\u03C4\u03C1\u03B1|\u03B1\u03C3\u03C4\u03C1\u03AC\u03BA\u03B9|\u03B1\u03C3\u03C4\u03B5\u03C1\u03CC\u03C3\u03BA\u03BF\u03BD\u03B7",
+            sky: "\u03BF\u03C5\u03C1\u03B1\u03BD\u03CC\u03C2|\u03BF\u03C5\u03C1\u03B1\u03BD\u03CC|\u03BF\u03C5\u03C1\u03B1\u03BD\u03BF\u03CD|\u03BF\u03C5\u03C1\u03B1\u03BD\u03AD|\u03BF\u03C5\u03C1\u03B1\u03BD\u03BF\u03AF|\u03C3\u03CD\u03BD\u03BD\u03B5\u03C6\u03B1|\u03C3\u03CD\u03BD\u03BD\u03B5\u03C6\u03BF|\u03C3\u03C5\u03BD\u03BD\u03B5\u03C6\u03B9\u03AC",
+            heaven: "\u03C0\u03B1\u03C1\u03AC\u03B4\u03B5\u03B9\u03C3*|\u03C0\u03B1\u03C1\u03B1\u03B4\u03B5\u03B9\u03C3*|\u03BF\u03C5\u03C1\u03AC\u03BD\u03B9\u03B1",
+            night: "\u03BD\u03CD\u03C7\u03C4\u03B1|\u03BD\u03CD\u03C7\u03C4\u03B5\u03C2|\u03BD\u03C5\u03C7\u03C4\u03CE\u03BD|\u03BD\u03CD\u03C7\u03C4\u03B1\u03C2|\u03B1\u03C0\u03CC\u03C8\u03B5|\u03BC\u03B5\u03C3\u03AC\u03BD\u03C5\u03C7\u03C4\u03B1|\u03BD\u03C5\u03C7\u03C4\u03B5\u03C1\u03B9\u03BD\u03CC|\u03B2\u03C1\u03AC\u03B4\u03C5|\u03B2\u03C1\u03B1\u03B4\u03B9\u03AC",
+            dark: "\u03C3\u03BA\u03BF\u03C4\u03AC\u03B4\u03B9|\u03C3\u03BA\u03BF\u03C4\u03AC\u03B4\u03B9\u03B1|\u03C3\u03BA\u03BF\u03C4\u03B5\u03B9\u03BD\u03CC|\u03C3\u03BA\u03BF\u03C4\u03B5\u03B9\u03BD\u03AE|\u03C3\u03BA\u03BF\u03C4\u03B5\u03B9\u03BD\u03AC|\u03C3\u03BA\u03B9\u03AC|\u03C3\u03BA\u03B9\u03AD\u03C2|\u03C3\u03BA\u03BF\u03C4\u03B5\u03B9\u03BD\u03B9\u03AC",
+            light: "\u03C6\u03C9\u03C2|\u03C6\u03C9\u03C4\u03CC\u03C2|\u03C6\u03CE\u03C4\u03B1|\u03BB\u03AC\u03BC\u03C0\u03B5\u03B9|\u03BB\u03AC\u03BC\u03C0\u03B5\u03B9\u03C2|\u03BB\u03AC\u03BC\u03C8\u03B7|\u03C6\u03C9\u03C4\u03B5\u03B9\u03BD\u03CC|\u03C6\u03C9\u03C4\u03B5\u03B9\u03BD\u03AE|\u03B1\u03C3\u03C4\u03C1\u03AC\u03C6\u03C4\u03B5\u03B9\u03C2|\u03C6\u03AD\u03B3\u03B3\u03B5\u03B9",
+            heart: "\u03BA\u03B1\u03C1\u03B4\u03B9*|\u03BA\u03B1\u03C1\u03B4\u03BF\u03CD\u03BB\u03B1",
+            love: "\u03B1\u03B3\u03AC\u03C0\u03B7|\u03B1\u03B3\u03AC\u03C0\u03B7\u03C2|\u03B1\u03B3\u03AC\u03C0\u03B5\u03C2|\u03B1\u03B3\u03B1\u03C0\u03CE|\u03B1\u03B3\u03B1\u03C0\u03AC\u03C2|\u03B1\u03B3\u03B1\u03C0\u03AC\u03B5\u03B9|\u03B1\u03B3\u03B1\u03C0\u03B7\u03BC\u03AD\u03BD\u03B7|\u03B1\u03B3\u03B1\u03C0\u03B7\u03BC\u03AD\u03BD\u03B5|\u03AD\u03C1\u03C9\u03C4\u03B1\u03C2|\u03AD\u03C1\u03C9\u03C4\u03B1|\u03B5\u03C1\u03C9\u03C4\u03B5\u03C5*|\u03B5\u03C1\u03C9\u03C4\u03B5\u03CD\u03C4\u03B7\u03BA\u03B1",
+            kiss: "\u03C6\u03B9\u03BB\u03AF|\u03C6\u03B9\u03BB\u03B9\u03AC|\u03C6\u03B9\u03BB\u03AC\u03BA\u03B9|\u03C6\u03AF\u03BB\u03B1 \u03BC\u03B5|\u03C6\u03B9\u03BB\u03AC\u03C9|\u03C6\u03B9\u03BB\u03CE|\u03C7\u03B5\u03AF\u03BB\u03B7|\u03C7\u03B5\u03AF\u03BB\u03B9\u03B1|\u03C7\u03B5\u03B9\u03BB\u03B9\u03AC",
+            heartbreak: "\u03C1\u03B1\u03B3\u03B9\u03C3\u03BC\u03AD\u03BD\u03B7 \u03BA\u03B1\u03C1\u03B4\u03B9\u03AC|\u03C3\u03C0\u03B1\u03C3\u03BC\u03AD\u03BD\u03B7 \u03BA\u03B1\u03C1\u03B4\u03B9\u03AC|\u03BC\u03BF\u03C5 \u03C1\u03AC\u03B3\u03B9\u03C3\u03B5\u03C2 \u03C4\u03B7\u03BD \u03BA\u03B1\u03C1\u03B4\u03B9\u03AC|\u03C1\u03AC\u03B3\u03B9\u03C3\u03B5 \u03B7 \u03BA\u03B1\u03C1\u03B4\u03B9\u03AC|\u03BC\u03BF\u03C5 \u03AD\u03C3\u03C0\u03B1\u03C3\u03B5\u03C2 \u03C4\u03B7\u03BD \u03BA\u03B1\u03C1\u03B4\u03B9\u03AC|\u03C1\u03B1\u03B3\u03B9\u03C3\u03BC\u03AD\u03BD\u03B7 \u03BA\u03B1\u03C1\u03B4\u03B9\u03AC \u03BC\u03BF\u03C5",
+            tears: "\u03B4\u03AC\u03BA\u03C1\u03C5\u03B1|\u03B4\u03AC\u03BA\u03C1\u03C5|\u03B4\u03B1\u03BA\u03C1\u03CD\u03C9\u03BD|\u03BA\u03BB\u03B1\u03AF\u03C9|\u03BA\u03BB\u03B1\u03B9\u03C2|\u03BA\u03BB\u03B1\u03AF\u03B5\u03B9|\u03BA\u03BB\u03AC\u03BC\u03B1|\u03BA\u03BB\u03B1\u03AF\u03BC\u03B5|\u03B4\u03B1\u03BA\u03C1\u03C5\u03C3\u03BC\u03AD\u03BD\u03B1",
+            money: "\u03BB\u03B5\u03C6\u03C4\u03AC|\u03C7\u03C1\u03AE\u03BC\u03B1|\u03C7\u03C1\u03AE\u03BC\u03B1\u03C4\u03B1|\u03C7\u03C1\u03B7\u03BC\u03AC\u03C4\u03C9\u03BD|\u03C6\u03C1\u03AC\u03B3\u03BA\u03B1|\u03C0\u03BB\u03BF\u03CD\u03C3\u03B9\u03BF\u03C2|\u03C0\u03BB\u03BF\u03CD\u03C3\u03B9\u03B1|\u03C0\u03BB\u03BF\u03CD\u03C4\u03B7|\u03B4\u03BF\u03BB\u03AC\u03C1\u03B9\u03B1|\u03B5\u03C5\u03C1\u03CE|\u03BC\u03B5\u03C4\u03C1\u03B7\u03C4\u03AC",
+            gold: "\u03C7\u03C1\u03C5\u03C3\u03CC|\u03C7\u03C1\u03C5\u03C3\u03CC\u03C2|\u03C7\u03C1\u03C5\u03C3\u03AE|\u03C7\u03C1\u03C5\u03C3\u03AC|\u03C7\u03C1\u03C5\u03C3\u03AC\u03C6\u03B9|\u03C7\u03C1\u03C5\u03C3\u03B1\u03C6\u03AD\u03BD\u03B9\u03BF|\u03C7\u03C1\u03C5\u03C3\u03B1\u03C6\u03AF",
+            diamond: "\u03B4\u03B9\u03B1\u03BC\u03B1\u03BD\u03C4*|\u03B4\u03B9\u03B1\u03BC\u03AC\u03BD\u03C4\u03B9|\u03B4\u03B9\u03B1\u03BC\u03AC\u03BD\u03C4\u03B9\u03B1|\u03BA\u03BF\u03C3\u03BC\u03AE\u03BC\u03B1\u03C4\u03B1|\u03C0\u03B5\u03C4\u03C1\u03AC\u03B4\u03B9\u03B1",
+            crown: "\u03C3\u03C4\u03AD\u03BC\u03BC\u03B1|\u03BA\u03BF\u03C1\u03CE\u03BD\u03B1|\u03B2\u03B1\u03C3\u03B9\u03BB*|\u03B2\u03B1\u03C3\u03AF\u03BB\u03B9\u03C3\u03C3\u03B1",
+            fly: "\u03C6\u03C4\u03B5\u03C1\u03AC|\u03C6\u03C4\u03B5\u03C1\u03BF\u03CD\u03B3\u03B5\u03C2|\u03C6\u03C4\u03B5\u03C1\u03BF\u03CD\u03B3\u03B1|\u03C6\u03C4\u03B5\u03C1\u03BF\u03C5\u03B3*|\u03C0\u03B5\u03C4\u03AC\u03C9 \u03C8\u03B7\u03BB\u03AC|\u03C0\u03B5\u03C4\u03AC\u03BC\u03B5 \u03C8\u03B7\u03BB\u03AC|\u03C0\u03C4\u03AE\u03C3\u03B7|\u03C0\u03B5\u03C4\u03CE\u03BD\u03C4\u03B1\u03C2",
+            bird: "\u03C0\u03BF\u03C5\u03BB\u03AF|\u03C0\u03BF\u03C5\u03BB\u03B9\u03AC|\u03C0\u03BF\u03C5\u03BB\u03AC\u03BA\u03B9|\u03C0\u03BF\u03C5\u03BB\u03AC\u03BA\u03B9\u03B1|\u03C0\u03BF\u03C5\u03BB\u03B9\u03BF\u03CD|\u03C0\u03C4\u03B7\u03BD\u03AC",
+            butterfly: "\u03C0\u03B5\u03C4\u03B1\u03BB\u03BF\u03CD\u03B4*|\u03C0\u03B5\u03C4\u03B1\u03BB\u03BF\u03C5\u03B4*",
+            flower: "\u03BB\u03BF\u03C5\u03BB\u03BF\u03C5\u03B4*|\u03BB\u03BF\u03C5\u03BB\u03BF\u03CD\u03B4\u03B9|\u03BB\u03BF\u03C5\u03BB\u03BF\u03CD\u03B4\u03B9\u03B1|\u03B1\u03BD\u03B8\u03CC\u03C2|\u03AC\u03BD\u03B8\u03B7|\u03B1\u03BD\u03B8\u03AF\u03B6\u03B5\u03B9|\u03B1\u03BD\u03B8\u03AF\u03B6\u03C9|\u03BC\u03C0\u03BF\u03C5\u03BC\u03C0\u03BF\u03CD\u03BA\u03B9",
+            rose: "\u03C4\u03C1\u03B9\u03B1\u03BD\u03C4\u03B1\u03C6\u03C5\u03BB\u03BB*|\u03C4\u03C1\u03B9\u03B1\u03BD\u03C4\u03AC\u03C6\u03C5\u03BB\u03BB\u03BF|\u03C4\u03C1\u03B9\u03B1\u03BD\u03C4\u03AC\u03C6\u03C5\u03BB\u03BB\u03B1|\u03C1\u03CC\u03B4\u03BF",
+            ocean: "\u03C9\u03BA\u03B5\u03B1\u03BD\u03CC\u03C2|\u03C9\u03BA\u03B5\u03B1\u03BD\u03CC|\u03B8\u03AC\u03BB\u03B1\u03C3\u03C3*|\u03BA\u03CD\u03BC\u03B1|\u03BA\u03CD\u03BC\u03B1\u03C4\u03B1|\u03BA\u03C5\u03BC\u03AC\u03C4\u03C9\u03BD",
+            water: "\u03BD\u03B5\u03C1\u03CC|\u03BD\u03B5\u03C1\u03AC|\u03BD\u03B5\u03C1\u03BF\u03CD|\u03C0\u03BF\u03C4\u03AC\u03BC\u03B9|\u03C0\u03BF\u03C4\u03AC\u03BC\u03B9\u03B1|\u03C0\u03BF\u03C4\u03B1\u03BC\u03CC\u03C2|\u03BA\u03BF\u03BB\u03C5\u03BC\u03C0*|\u03BA\u03BF\u03BB\u03CD\u03BC\u03C0\u03B9",
+            wind: "\u03AC\u03BD\u03B5\u03BC\u03BF\u03C2|\u03AC\u03BD\u03B5\u03BC\u03BF|\u03B1\u03BD\u03AD\u03BC\u03BF\u03C5|\u03B1\u03AD\u03C1\u03B1\u03C2|\u03B1\u03AD\u03C1\u03B1|\u03B1\u03B5\u03C1\u03AC\u03BA\u03B9|\u03B1\u03CD\u03C1\u03B1|\u03C6\u03C5\u03C3\u03AC\u03B5\u03B9",
+            smoke: "\u03BA\u03B1\u03C0\u03BD\u03CC\u03C2|\u03BA\u03B1\u03C0\u03BD\u03CC|\u03BA\u03B1\u03C0\u03BD\u03AF\u03B6*|\u03C4\u03C3\u03B9\u03B3\u03AC\u03C1\u03BF|\u03C4\u03C3\u03B9\u03B3\u03AC\u03C1\u03B1|\u03C6\u03BF\u03C5\u03BC\u03AC\u03C1\u03C9",
+            electric: "\u03B7\u03BB\u03B5\u03BA\u03C4\u03C1*|\u03C1\u03B5\u03CD\u03BC\u03B1|\u03B5\u03BD\u03AD\u03C1\u03B3\u03B5\u03B9\u03B1|\u03B5\u03BD\u03AD\u03C1\u03B3\u03B5\u03B9\u03B1\u03C2|\u03C3\u03C0\u03AF\u03B8\u03B1|\u03C3\u03C0\u03AF\u03B8\u03B5\u03C2",
+            rainbow: "\u03BF\u03C5\u03C1\u03AC\u03BD\u03B9\u03BF \u03C4\u03CC\u03BE\u03BF|\u03BF\u03C5\u03C1\u03AC\u03BD\u03B9\u03BF\u03C5 \u03C4\u03CC\u03BE\u03BF\u03C5|\u03C7\u03C1\u03CE\u03BC\u03B1\u03C4\u03B1|\u03C7\u03C1\u03CE\u03BC\u03B1|\u03C0\u03BF\u03BB\u03CD\u03C7\u03C1\u03C9\u03BC\u03BF|\u03C0\u03BF\u03BB\u03CD\u03C7\u03C1\u03C9\u03BC\u03B1",
+            fireworks: "\u03C0\u03C5\u03C1\u03BF\u03C4\u03B5\u03C7\u03BD*|\u03B2\u03B5\u03B3\u03B3\u03B1\u03BB\u03B9\u03BA\u03AC",
+            party: "\u03C0\u03AC\u03C1\u03C4\u03B9|\u03B3\u03B9\u03BF\u03C1\u03C4*|\u03B4\u03B9\u03B1\u03C3\u03BA\u03AD\u03B4\u03B1\u03C3\u03B7|\u03BE\u03B5\u03BD\u03CD\u03C7\u03C4\u03B9|\u03B3\u03BB\u03AD\u03BD\u03C4\u03B9|\u03B3\u03BB\u03B5\u03BD\u03C4\u03AC\u03BC\u03B5",
+            birthday: "\u03B3\u03B5\u03BD\u03AD\u03B8\u03BB\u03B9*|\u03B3\u03B5\u03BD\u03B5\u03B8\u03BB\u03AF\u03C9\u03BD|\u03C7\u03C1\u03CC\u03BD\u03B9\u03B1 \u03C0\u03BF\u03BB\u03BB\u03AC",
+            dance: "\u03C7\u03BF\u03C1\u03CC\u03C2|\u03C7\u03BF\u03C1\u03CC|\u03C7\u03BF\u03C1\u03B5\u03C5*|\u03C7\u03BF\u03C1\u03B5\u03CD\u03C9|\u03C7\u03BF\u03C1\u03B5\u03CD\u03B5\u03B9\u03C2|\u03C7\u03BF\u03C1\u03B5\u03CD\u03B5\u03B9|\u03C7\u03BF\u03C1\u03B5\u03CD\u03BF\u03C5\u03BC\u03B5|\u03C7\u03CC\u03C1\u03B5\u03C8\u03B5|\u03C7\u03BF\u03C1\u03B5\u03CD\u03C4\u03C1\u03B9\u03B1",
+            jump: "\u03C7\u03BF\u03C1\u03BF\u03C0\u03B7\u03B4*|\u03C0\u03B7\u03B4\u03AC\u03C9|\u03C0\u03B7\u03B4\u03AC\u03BC\u03B5|\u03C0\u03AE\u03B4\u03B1|\u03AC\u03BB\u03BC\u03B1|\u03B2\u03BF\u03C5\u03C4\u03B9\u03AC",
+            dream: "\u03BF\u03BD\u03B5\u03B9\u03C1*|\u03CC\u03BD\u03B5\u03B9\u03C1\u03BF|\u03CC\u03BD\u03B5\u03B9\u03C1\u03B1",
+            ghost: "\u03C6\u03B1\u03BD\u03C4\u03B1\u03C3\u03BC*|\u03C6\u03AC\u03BD\u03C4\u03B1\u03C3\u03BC\u03B1|\u03C3\u03C4\u03BF\u03B9\u03C7\u03B5\u03B9\u03CC|\u03C3\u03C4\u03BF\u03B9\u03C7\u03B5\u03B9\u03AC|\u03C0\u03BD\u03B5\u03CD\u03BC\u03B1|\u03C0\u03BD\u03B5\u03CD\u03BC\u03B1\u03C4\u03B1",
+            angel: "\u03AC\u03B3\u03B3\u03B5\u03BB\u03BF\u03C2|\u03AC\u03B3\u03B3\u03B5\u03BB\u03B5|\u03AC\u03B3\u03B3\u03B5\u03BB\u03BF|\u03B1\u03B3\u03B3\u03AD\u03BB\u03BF\u03C5|\u03AC\u03B3\u03B3\u03B5\u03BB\u03BF\u03B9|\u03B1\u03B3\u03B3\u03B5\u03BB\u03BF\u03CD\u03B4\u03B9|\u03B1\u03B3\u03B3\u03B5\u03BB\u03B9\u03BA\u03CC",
+            devil: "\u03B4\u03B9\u03AC\u03B2\u03BF\u03BB\u03BF\u03C2|\u03B4\u03B9\u03AC\u03B2\u03BF\u03BB\u03BF|\u03B4\u03B9\u03B1\u03B2\u03CC\u03BB\u03BF\u03C5|\u03BA\u03CC\u03BB\u03B1\u03C3\u03B7|\u03BA\u03CC\u03BB\u03B1\u03C3\u03B7\u03C2|\u03B4\u03B1\u03AF\u03BC\u03BF\u03BD\u03B1\u03C2|\u03B4\u03B1\u03AF\u03BC\u03BF\u03BD\u03B5\u03C2|\u03C3\u03B1\u03C4\u03B1\u03BD\u03AC\u03C2|\u03B4\u03B9\u03B1\u03B2\u03BF\u03BB\u03B9\u03BA\u03CC",
+            world: "\u03BA\u03CC\u03C3\u03BC\u03BF\u03C2|\u03BA\u03CC\u03C3\u03BC\u03BF|\u03BA\u03CC\u03C3\u03BC\u03BF\u03C5|\u03BA\u03CC\u03C3\u03BC\u03B5|\u03B3\u03B7|\u03B3\u03B7\u03C2|\u03C0\u03BB\u03B1\u03BD\u03AE\u03C4\u03B7\u03C2|\u03C0\u03BB\u03B1\u03BD\u03AE\u03C4\u03B7",
+            space: "\u03B4\u03B9\u03AC\u03C3\u03C4\u03B7\u03BC\u03B1|\u03B4\u03B9\u03B1\u03C3\u03C4\u03AE\u03BC\u03B1\u03C4\u03BF\u03C2|\u03B3\u03B1\u03BB\u03B1\u03BE\u03AF\u03B1\u03C2|\u03B3\u03B1\u03BB\u03B1\u03BE\u03AF\u03B1|\u03B3\u03B1\u03BB\u03B1\u03BE\u03AF\u03B5\u03C2|\u03C3\u03CD\u03BC\u03C0\u03B1\u03BD|\u03C3\u03CD\u03BC\u03C0\u03B1\u03BD\u03C4\u03BF\u03C2",
+            rocket: "\u03C0\u03CD\u03C1\u03B1\u03C5\u03BB\u03BF\u03C2|\u03C0\u03CD\u03C1\u03B1\u03C5\u03BB\u03BF|\u03C0\u03C5\u03C1\u03B1\u03CD\u03BB\u03BF\u03C5|\u03C1\u03BF\u03C5\u03BA\u03AD\u03C4\u03B1|\u03B1\u03C0\u03BF\u03B3\u03B5\u03AF\u03C9\u03C3\u03B7|\u03B1\u03C0\u03BF\u03B3\u03B5\u03B9\u03CE\u03BD\u03BF\u03BC\u03B1\u03B9",
+            time: "\u03C7\u03C1\u03CC\u03BD\u03BF\u03C2|\u03C7\u03C1\u03CC\u03BD\u03BF|\u03C7\u03C1\u03CC\u03BD\u03BF\u03C5|\u03CE\u03C1\u03B1|\u03CE\u03C1\u03B5\u03C2|\u03C1\u03BF\u03BB\u03CC\u03B9|\u03B3\u03B9\u03B1 \u03C0\u03AC\u03BD\u03C4\u03B1|\u03C0\u03B1\u03BD\u03C4\u03BF\u03C4\u03B9\u03BD\u03AC|\u03B1\u03B9\u03CE\u03BD\u03B9\u03B1|\u03B1\u03B9\u03C9\u03BD\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1",
+            drive: "\u03BF\u03B4\u03B7\u03B3\u03CE|\u03BF\u03B4\u03B7\u03B3\u03AC\u03C2|\u03BF\u03B4\u03B7\u03B3\u03AC\u03B5\u03B9|\u03B1\u03BC\u03AC\u03BE\u03B9|\u03B1\u03C5\u03C4\u03BF\u03BA\u03AF\u03BD\u03B7\u03C4\u03BF|\u03B4\u03C1\u03CC\u03BC\u03BF\u03C2|\u03B4\u03C1\u03CC\u03BC\u03BF|\u03B4\u03C1\u03CC\u03BC\u03BF\u03C5|\u03BB\u03B5\u03C9\u03C6\u03CC\u03C1\u03BF\u03C2|\u03C4\u03B1\u03C7\u03CD\u03C4\u03B7\u03C4\u03B1|\u03B3\u03C1\u03AE\u03B3\u03BF\u03C1\u03B1|\u03C4\u03C1\u03AD\u03C7\u03C9|\u03C4\u03C1\u03AD\u03C7\u03BF\u03C5\u03BC\u03B5",
+            city: "\u03C0\u03CC\u03BB\u03B7|\u03C0\u03CC\u03BB\u03B7\u03C2|\u03C0\u03CC\u03BB\u03B5\u03B9\u03C2|\u03C0\u03CC\u03BB\u03B5\u03C9\u03BD|\u03B4\u03C1\u03CC\u03BC\u03BF\u03B9|\u03B4\u03C1\u03CC\u03BC\u03BF\u03C5\u03C2|\u03B3\u03B5\u03B9\u03C4\u03BF\u03BD\u03B9\u03AC|\u03BA\u03AD\u03BD\u03C4\u03C1\u03BF",
+            music: "\u03BC\u03BF\u03C5\u03C3\u03B9\u03BA*|\u03C4\u03C1\u03B1\u03B3\u03BF\u03CD\u03B4\u03B9|\u03C4\u03C1\u03B1\u03B3\u03BF\u03CD\u03B4\u03B9\u03B1|\u03C4\u03C1\u03B1\u03B3\u03BF\u03C5\u03B4\u03B9\u03BF\u03CD|\u03BC\u03B5\u03BB\u03C9\u03B4*|\u03C1\u03C5\u03B8\u03BC\u03CC\u03C2|\u03C1\u03C5\u03B8\u03BC\u03CC",
+            sing: "\u03C4\u03C1\u03B1\u03B3\u03BF\u03C5\u03B4\u03AC\u03C9|\u03C4\u03C1\u03B1\u03B3\u03BF\u03C5\u03B4\u03CE|\u03C4\u03C1\u03B1\u03B3\u03BF\u03C5\u03B4\u03AC\u03C2|\u03C4\u03C1\u03B1\u03B3\u03BF\u03C5\u03B4\u03AC\u03B5\u03B9|\u03C4\u03C1\u03B1\u03B3\u03BF\u03C5\u03B4\u03AC\u03BC\u03B5|\u03C4\u03C1\u03B1\u03B3\u03BF\u03CD\u03B4\u03B1|\u03C6\u03C9\u03BD\u03AE|\u03C6\u03C9\u03BD\u03AE\u03C2|\u03C6\u03C9\u03BD\u03AD\u03C2",
+            boom: "\u03BC\u03C0\u03BF\u03C5\u03BC|\u03BC\u03C0\u03B1\u03BC|\u03AD\u03BA\u03C1\u03B7\u03BE\u03B7|\u03B5\u03BA\u03C1\u03AE\u03BE\u03B5\u03B9\u03C2|\u03B5\u03BA\u03C1\u03AE\u03B3\u03BD\u03C5\u03BC\u03B1\u03B9|\u03B2\u03CC\u03BC\u03B2\u03B1|\u03B2\u03CC\u03BC\u03B2\u03B5\u03C2",
+            champagne: "\u03C3\u03B1\u03BC\u03C0\u03AC\u03BD\u03B9*|\u03C3\u03C4\u03B7\u03BD \u03C5\u03B3\u03B5\u03B9\u03AC \u03BC\u03B1\u03C2|\u03B5\u03B9\u03C2 \u03C5\u03B3\u03B5\u03AF\u03B1\u03BD|\u03B3\u03B5\u03B9\u03B1 \u03BC\u03B1\u03C2|\u03C0\u03AF\u03BD\u03BF\u03C5\u03BC\u03B5|\u03C0\u03BF\u03C4\u03CC|\u03C0\u03BF\u03C4\u03AC|\u03BC\u03C0\u03BF\u03C5\u03BA\u03AC\u03BB\u03B9|\u03BC\u03C0\u03BF\u03C5\u03BA\u03AC\u03BB\u03B9\u03B1|\u03BA\u03C1\u03B1\u03C3\u03AF|\u03C4\u03C3\u03BF\u03CD\u03B3\u03BA\u03C1\u03B9\u03C3\u03BC\u03B1",
+            magic: "\u03BC\u03B1\u03B3\u03B5\u03AF\u03B1|\u03BC\u03B1\u03B3\u03B5\u03AF\u03B1\u03C2|\u03BC\u03B1\u03B3\u03B9\u03BA*|\u03BC\u03AC\u03B3\u03B9\u03B1|\u03BE\u03CC\u03C1\u03BA\u03B9|\u03BC\u03B1\u03B3\u03B5\u03BC\u03AD\u03BD\u03B7|\u03BC\u03B1\u03B3\u03B5\u03BC\u03AD\u03BD\u03BF\u03C2",
+            beach: "\u03C0\u03B1\u03C1\u03B1\u03BB\u03AF*|\u03BD\u03B7\u03C3\u03AF|\u03BD\u03B7\u03C3\u03B9\u03AC|\u03BD\u03B7\u03C3\u03B9\u03BF\u03CD|\u03C6\u03BF\u03AF\u03BD\u03B9\u03BA\u03B5\u03C2|\u03AC\u03BC\u03BC\u03BF\u03C2|\u03AC\u03BC\u03BC\u03BF|\u03B1\u03BC\u03BC\u03BF\u03C5\u03B4\u03B9\u03AC",
+            christmas: "\u03C7\u03C1\u03B9\u03C3\u03C4\u03BF\u03C5\u03B3\u03B5\u03BD\u03BD*|\u03C7\u03C1\u03B9\u03C3\u03C4\u03BF\u03CD\u03B3\u03B5\u03BD\u03BD\u03B1|\u03B1\u03B7 \u03B2\u03B1\u03C3\u03AF\u03BB\u03B7\u03C2|\u03AC\u03B3\u03B9\u03BF\u03C2 \u03B2\u03B1\u03C3\u03AF\u03BB\u03B7\u03C2|\u03AD\u03BB\u03BA\u03B7\u03B8\u03C1\u03BF|\u03BA\u03B1\u03BC\u03C0\u03AC\u03BD\u03B5\u03C2|\u03BA\u03B1\u03BC\u03C0\u03B1\u03BD\u03AC\u03BA\u03B9\u03B1|\u03BA\u03AC\u03BB\u03B1\u03BD\u03C4\u03B1|\u03AD\u03BB\u03B1\u03C4\u03BF",
+            red: "\u03BA\u03CC\u03BA\u03BA\u03B9\u03BD*",
+            blue: "\u03BC\u03C0\u03BB\u03B5|\u03B3\u03B1\u03BB\u03AC\u03B6*|\u03B3\u03B1\u03BB\u03B1\u03BD\u03CC|\u03B3\u03B1\u03BB\u03B1\u03BD\u03AE|\u03B3\u03B1\u03BB\u03B1\u03BD\u03AC|\u03BA\u03C5\u03B1\u03BD\u03CC",
+            green: "\u03C0\u03C1\u03B1\u03C3\u03B9\u03BD*|\u03C0\u03C1\u03AC\u03C3\u03B9\u03BD\u03BF|\u03C0\u03C1\u03AC\u03C3\u03B9\u03BD\u03B7|\u03C0\u03C1\u03AC\u03C3\u03B9\u03BD\u03B1|\u03C0\u03C1\u03AC\u03C3\u03B9\u03BD\u03BF\u03C2",
+            pink: "\u03C1\u03BF\u03B6|\u03C1\u03BF\u03B4\u03B1\u03BB\u03CC|\u03C1\u03BF\u03B4\u03B1\u03BB\u03AE|\u03C1\u03BF\u03B4\u03B1\u03BB\u03AC",
+            purple: "\u03BC\u03C9\u03B2|\u03BC\u03BF\u03B2|\u03B2\u03B9\u03BF\u03BB\u03B5\u03C4\u03AF|\u03C0\u03BF\u03C1\u03C6\u03C5\u03C1\u03CC|\u03C0\u03BF\u03C1\u03C6\u03C5\u03C1\u03AE|\u03C0\u03BF\u03C1\u03C6\u03CD\u03C1\u03B1",
+            white: "\u03BB\u03B5\u03C5\u03BA\u03CC|\u03BB\u03B5\u03C5\u03BA\u03AE|\u03BB\u03B5\u03C5\u03BA\u03AC|\u03AC\u03C3\u03C0\u03C1\u03BF|\u03AC\u03C3\u03C0\u03C1\u03B7|\u03AC\u03C3\u03C0\u03C1\u03B1|\u03BA\u03AC\u03C4\u03B1\u03C3\u03C0\u03C1\u03BF",
+            black: "\u03BC\u03B1\u03CD\u03C1\u03BF|\u03BC\u03B1\u03CD\u03C1\u03B7|\u03BC\u03B1\u03CD\u03C1\u03B1|\u03BC\u03B1\u03CD\u03C1\u03BF\u03C2|\u03BC\u03B1\u03CD\u03C1\u03B5\u03C2|\u03BA\u03B1\u03C4\u03AC\u03BC\u03B1\u03C5\u03C1\u03BF",
+            silver: "\u03B1\u03C3\u03AE\u03BC\u03B9|\u03B1\u03C3\u03B7\u03BC\u03AD\u03BD*|\u03B1\u03C3\u03B7\u03BC\u03AF"
+          }
+        },
+        tr: {
+          stop: "ve|bu|ben|sen|ama|\xE7\xFCnk\xFC|gibi|i\xE7in|de\u011Fil|\xE7ok|daha|beni|seni|bana|sana|bile|hi\xE7|\u015Fimdi|art\u0131k|kadar",
+          c: {
+            fire: "ate\u015F|ate\u015Fi|ate\u015Fe|ate\u015Fte|ate\u015Fin|alev|alevler|alevlerin|yan\u0131yor*|yanar\u0131m|yak\u0131yor|yang\u0131n|kor",
+            rain: "ya\u011Fmur*|ya\u011F\u0131yor",
+            storm: "f\u0131rt\u0131na*|g\xF6k g\xFCr\xFClt\xFCs\xFC|kas\u0131rga|kas\u0131rgalar|tufan",
+            lightning: "\u015Fim\u015Fek|\u015Fim\u015Fekler|y\u0131ld\u0131r\u0131m|y\u0131ld\u0131r\u0131mlar",
+            snow: "kar|karlar|karda|kar ya\u011F\u0131yor|kar tanesi|kar taneleri|karl\u0131",
+            cold: "so\u011Fuk|so\u011Fukta|so\u011Fuktan|buz|buzlar|buz gibi|dondum|donmu\u015F|donuyorum|ayaz",
+            sun: "g\xFCne\u015F*|g\xFCn do\u011Fumu|g\xFCn bat\u0131m\u0131",
+            summer: "yaz gecesi|yaz geceleri|yaz g\xFCn\xFC|yaz a\u015Fk\u0131|bu yaz|yazl\u0131k|yaz mevsimi",
+            moon: "dolunay|ay \u0131\u015F\u0131\u011F\u0131|ay \u0131\u015F\u0131\u011F\u0131nda|ay\u0131\u015F\u0131\u011F\u0131|mehtap|mehtapta|hilal",
+            star: "y\u0131ld\u0131z*",
+            sky: "g\xF6ky\xFCz*|g\xF6k|g\xF6klerde|bulut*|sema|semada",
+            heaven: "cennet*",
+            night: "gece|geceler|gecede|geceyi|bu gece|gece yar\u0131s\u0131|geceleri|gecelerce",
+            dark: "karanl\u0131*|karanl\u0131\u011Fa|karanl\u0131\u011F\u0131n|karanl\u0131\u011F\u0131|g\xF6lge*|zifiri",
+            light: "\u0131\u015F\u0131k|\u0131\u015F\u0131\u011F\u0131|\u0131\u015F\u0131\u011F\u0131n|\u0131\u015F\u0131klar|parl\u0131yor|parla|parlak|\u0131\u015F\u0131lda|\u0131\u015F\u0131l \u0131\u015F\u0131l|nur",
+            heart: "kalp|kalbim|kalbin|kalbi|kalbe|kalpler|y\xFCrek|y\xFCre\u011Fim|y\xFCre\u011Fin",
+            love: "a\u015Fk|a\u015Fk\u0131m|a\u015Fk\u0131n|a\u015Fka|a\u015Fk\u0131|a\u015Fktan|seviyor*|sevgi|sevgili*|sevdim|\xE2\u015F\u0131k|a\u015F\u0131k|sevda",
+            kiss: "\xF6p\xFCc\xFCk|\xF6p\xFC\u015F|\xF6perim|\xF6p\xFCyorum|\xF6p\xFCyor|\xF6pmek|dudak*",
+            heartbreak: "k\u0131r\u0131k kalp|kalbimi k\u0131rd\u0131n|kalbim k\u0131r\u0131k|kalbimi k\u0131rma|k\u0131r\u0131lan kalp|y\xFCre\u011Fim yaral\u0131|kalp k\u0131r\u0131kl\u0131\u011F\u0131",
+            tears: "g\xF6zya\u015F*|a\u011Fl\u0131yor*|a\u011Flama|a\u011Flad\u0131m|a\u011Flar\u0131m",
+            money: "para|paralar|paray\u0131|paran|param|zengin*|dolar|dolarlar|euro|nakit|servet",
+            gold: "alt\u0131n|alt\u0131n\u0131|alt\u0131ndan|alt\u0131nlar|alt\u0131n gibi|yald\u0131z",
+            diamond: "elmas*|p\u0131rlanta|m\xFCcevher|m\xFCcevherler",
+            crown: "ta\xE7|tac\u0131|tac\u0131m|kral|kral\u0131|krali\xE7e|krali\xE7esi|krallar|sultan|padi\u015Fah",
+            fly: "u\xE7uyor*|u\xE7mak|u\xE7ar\u0131m|u\xE7al\u0131m|kanat|kanatlar*",
+            bird: "ku\u015F|ku\u015Flar|ku\u015Fu|ku\u015Fun|ku\u015Fum",
+            butterfly: "kelebek|kelebekler|kelebe\u011Fim|kelebe\u011Fi",
+            flower: "\xE7i\xE7ek*|\xE7i\xE7e\u011Fi|\xE7i\xE7e\u011Fim",
+            rose: "g\xFCller|g\xFClleri|g\xFCl\xFCm|k\u0131rm\u0131z\u0131 g\xFCl|g\xFCl bah\xE7esi|goncag\xFCl|bir demet g\xFCl",
+            ocean: "okyanus*|deniz*|dalga*",
+            water: "su|suyu|suya|suda|sular|nehir|nehre|nehirde|\u0131rmak|y\xFCzmek|y\xFCz\xFCyorum",
+            wind: "r\xFCzgar*|r\xFCzg\xE2r*|esinti|meltem|esiyor",
+            smoke: "duman*|sigara|sigaram\u0131|t\xFCt\xFCn",
+            electric: "elektrik*|enerji*|ak\u0131m|k\u0131v\u0131lc\u0131m|k\u0131v\u0131lc\u0131mlar",
+            rainbow: "g\xF6kku\u015Fa\u011F\u0131|g\xF6kku\u015Fa\u011F\u0131n\u0131n|renkler|renkli|rengarenk",
+            fireworks: "havai fi\u015Fek|havai fi\u015Fekler|maytap|fi\u015Fekler",
+            party: "parti|e\u011Flen*|kutla*|c\xFCmb\xFC\u015F",
+            birthday: "do\u011Fum g\xFCn\xFC|do\u011Fum g\xFCn\xFCn|do\u011Fum g\xFCn\xFCm|do\u011Fum g\xFCn\xFCn kutlu olsun|iyi ki do\u011Fdun",
+            dance: "dans|dans\u0131|dans et|dans ediyorum|dans edelim|oynayal\u0131m|oyna oyna|g\xF6bek at|dans\xE7\u0131",
+            jump: "z\u0131pla*|z\u0131pl\u0131*|atla|atl\u0131yorum|s\u0131\xE7ra|s\u0131\xE7r\u0131yorum",
+            dream: "r\xFCya|r\xFCyalar|r\xFCyamda|r\xFCyalar\u0131mda|r\xFCyam|d\xFC\u015Fler|hayal|hayaller|hayalim|hayal et",
+            ghost: "hayalet*|ruh|ruhlar|hortlak",
+            angel: "melek*|mele\u011Fim|mele\u011Fi|mele\u011Fin",
+            devil: "\u015Feytan*|cehenn*|iblis",
+            world: "d\xFCnya*|gezegen|gezegenler|yery\xFCz\xFC",
+            space: "uzay|uzayda|uzaya|galaksi*|evren*|kainat|kozmos",
+            rocket: "roket*|f\u0131rlatma|kalk\u0131\u015F",
+            time: "zaman*|saat|saatler|sonsuza dek|sonsuza kadar|ebediyen|\xF6m\xFCr boyu",
+            drive: "s\xFCr\xFCyorum|s\xFCr\xFC\u015F|araba|arabam|arabada|arabayla|yol|yollar|yollarda|otoban|h\u0131z|h\u0131zl\u0131|h\u0131zla|gaza bas|direksiyon",
+            city: "\u015Fehir|\u015Fehrin|\u015Fehre|\u015Fehirde|\u015Fehrim|sokak|sokaklar|sokakta|sokaklarda|cadde|caddeler",
+            music: "m\xFCzik*|\u015Fark\u0131*|melodi|ritim|na\u011Fme",
+            sing: "\u015Fark\u0131 s\xF6yle|\u015Fark\u0131 s\xF6yl\xFCyorum|s\xF6yl\xFCyorum|ses|sesim|sesin|sesini",
+            boom: "bum|bam|patla*|patl\u0131yor|bomba|bombalar",
+            champagne: "\u015Fampanya*|\u015Ferefe|kadeh|kadehler|i\xE7elim|i\xE7iyoruz|\u015Fi\u015Fe|\u015Fi\u015Feler|rak\u0131|\u015Farap|\u015Farab\u0131",
+            magic: "b\xFCy\xFC|b\xFCy\xFCs\xFC|b\xFCy\xFCl\xFC|b\xFCy\xFCledin|sihir|sihirli|sihirbaz|efsun|t\u0131ls\u0131m",
+            beach: "sahil|sahilde|plaj|plajda|kumsal|kumsalda|ada|adada|adalar|palmiye|palmiyeler|kum",
+            christmas: "noel|noel baba|y\u0131lba\u015F\u0131|y\u0131lba\u015F\u0131nda|k\u0131zak|\xE7anlar|\xE7am a\u011Fac\u0131|yeni y\u0131l",
+            red: "k\u0131rm\u0131z\u0131*|k\u0131z\u0131l|k\u0131pk\u0131rm\u0131z\u0131",
+            blue: "mavi|mavisi|masmavi|lacivert|mavili",
+            green: "ye\u015Fil*|yemye\u015Fil",
+            pink: "pembe|pembesi|pespembe|toz pembe",
+            purple: "mor|moru|mosmor|eflatun|menek\u015Fe",
+            white: "beyaz|beyaz\u0131|bembeyaz|apak",
+            black: "siyah|siyah\u0131|simsiyah|kara|karas\u0131|kapkara",
+            silver: "g\xFCm\xFC\u015F|g\xFCm\xFC\u015Fi|g\xFCm\xFC\u015Ften|g\xFCm\xFC\u015F gibi"
+          }
+        }
+      };
+    }
+  });
+
+  // src/lexicon/lex-c.json
+  var lex_c_default;
+  var init_lex_c = __esm({
+    "src/lexicon/lex-c.json"() {
+      lex_c_default = {
+        ja: {
+          stop: "\u306E|\u306F|\u304C|\u3092|\u306B|\u3066|\u3067|\u3088|\u306D|\u304B\u3089|\u307E\u3067|\u3060\u3051|\u3051\u3069|\u3067\u3082|\u3057\u3066|\u3044\u308B|\u306A\u3044|\u3088\u3046\u306A|\u50D5\u306F|\u541B\u304C",
+          c: {
+            fire: "\u706B|\u708E|\u307B\u306E\u304A|\u71C3\u3048\u308B|\u71C3\u3048\u3066|\u71C3\u3048\u4E0A\u304C|\u71C3\u3084\u3057|\u706B\u82B1|\u30D5\u30A1\u30A4\u30E4\u30FC|\u30D5\u30A1\u30A4\u30A2\u30FC|\u696D\u706B",
+            rain: "\u96E8|\u306B\u308F\u304B\u96E8|\u5915\u7ACB|\u5C0F\u96E8|\u5927\u96E8|\u96E8\u97F3|\u96E8\u7C92|\u30EC\u30A4\u30F3|\u3042\u3081\u3075\u308A|\u96E8\u964D\u308A",
+            storm: "\u5D50|\u3042\u3089\u3057|\u53F0\u98A8|\u30B9\u30C8\u30FC\u30E0|\u96F7\u9CF4|\u66B4\u98A8|\u5439\u304D\u8352\u308C",
+            lightning: "\u7A32\u59BB|\u3044\u306A\u305A\u307E|\u30A4\u30CA\u30BA\u30DE|\u7A32\u5149|\u96F7|\u304B\u307F\u306A\u308A|\u30E9\u30A4\u30C8\u30CB\u30F3\u30B0|\u9583\u5149",
+            snow: "\u96EA|\u7C89\u96EA|\u3053\u306A\u3086\u304D|\u5439\u96EA|\u3075\u3076\u304D|\u30B9\u30CE\u30FC|\u96EA\u306E\u83EF|\u96EA\u666F\u8272",
+            cold: "\u51B7\u305F\u3044|\u3064\u3081\u305F\u3044|\u51CD\u3048|\u51CD\u308B|\u51CD\u308A\u3064|\u51CD\u3066\u3064|\u6C37|\u3053\u304A\u308A|\u5BD2\u3044|\u3055\u3080\u3044|\u30A2\u30A4\u30B9",
+            sun: "\u592A\u967D|\u305F\u3044\u3088\u3046|\u967D\u5C04\u3057|\u65E5\u5DEE\u3057|\u3072\u3056\u3057|\u671D\u65E5|\u5915\u65E5|\u5915\u967D|\u65E5\u306E\u51FA|\u304A\u65E5\u69D8|\u967D\u3060\u307E\u308A|\u30B5\u30F3\u30B7\u30E3\u30A4\u30F3|\u30B5\u30F3\u30BB\u30C3\u30C8",
+            summer: "\u590F|\u771F\u590F|\u30B5\u30DE\u30FC|\u590F\u306E\u65E5|\u590F\u7A7A|\u590F\u796D\u308A|\u590F\u4F11\u307F",
+            moon: "\u6708\u660E\u304B\u308A|\u3064\u304D\u3042\u304B\u308A|\u6708\u5149|\u6E80\u6708|\u4E09\u65E5\u6708|\u6708\u591C|\u6708\u5F71|\u304A\u6708\u69D8|\u30E0\u30FC\u30F3|\u30E0\u30FC\u30F3\u30E9\u30A4\u30C8|\u6708\u304C|\u6708\u306E\u5149",
+            star: "\u661F|\u6D41\u308C\u661F|\u661F\u7A7A|\u661F\u5C51|\u307B\u3057\u304F\u305A|\u661F\u5EA7|\u30B9\u30BF\u30FC\u30C0\u30B9\u30C8|\u30B9\u30BF\u30FC\u30E9\u30A4\u30C8|\u661F\u305F\u3061",
+            sky: "\u5927\u7A7A|\u9752\u7A7A|\u591C\u7A7A|\u7A7A\u3092|\u7A7A\u306B|\u7A7A\u304C|\u7A7A\u306E|\u7A7A\u3078|\u305D\u3089|\u96F2|\u30B9\u30AB\u30A4",
+            heaven: "\u5929\u56FD|\u3066\u3093\u3054\u304F|\u697D\u5712|\u3089\u304F\u3048\u3093|\u30D1\u30E9\u30C0\u30A4\u30B9|\u30D8\u30D6\u30F3|\u30D8\u30F4\u30F3|\u6975\u697D|\u5929\u4E0A",
+            night: "\u591C|\u4ECA\u591C|\u3053\u3093\u3084|\u771F\u591C\u4E2D|\u307E\u3088\u306A\u304B|\u30CA\u30A4\u30C8|\u30DF\u30C3\u30C9\u30CA\u30A4\u30C8|\u4ECA\u5BB5|\u3053\u3088\u3044|\u591C\u66F4\u3051",
+            dark: "\u95C7|\u6697\u95C7|\u304F\u3089\u3084\u307F|\u6697\u3044|\u5F71|\u30C0\u30FC\u30AF|\u30B7\u30E3\u30C9\u30A6|\u6697\u9ED2|\u95C7\u591C",
+            light: "\u5149|\u3072\u304B\u308A|\u8F1D\u304D|\u304B\u304C\u3084\u304D|\u8F1D\u304F|\u304D\u3089\u3081\u304D|\u714C\u3081\u304D|\u307E\u3076\u3057\u3044|\u7729\u3057\u3044|\u30E9\u30A4\u30C8|\u7167\u3089\u3057|\u30B7\u30E3\u30A4\u30F3",
+            heart: "\u5FC3|\u3053\u3053\u308D|\u30CF\u30FC\u30C8|\u80F8|\u3080\u306D|\u5FC3\u81D3|\u9F13\u52D5",
+            love: "\u611B\u3057\u3066|\u611B\u3057|\u611B\u3092|\u611B\u304C|\u611B\u306E|\u604B|\u597D\u304D|\u5927\u597D\u304D|\u30E9\u30D6|\u30E9\u30F4|\u604B\u4EBA|\u611B\u3057\u3066\u308B|\u30A2\u30A4\u30E9\u30D6\u30E6\u30FC",
+            kiss: "\u30AD\u30B9|\u30AD\u30C3\u30B9|\u53E3\u3065\u3051|\u304F\u3061\u3065\u3051|\u53E3\u4ED8\u3051|\u63A5\u543B|\u5507|\u304F\u3061\u3073\u308B",
+            heartbreak: "\u5931\u604B|\u3057\u3064\u308C\u3093|\u50B7\u3064\u3044\u305F|\u5FC3\u304C\u75DB|\u80F8\u304C\u75DB|\u30CF\u30FC\u30C8\u30D6\u30EC\u30A4\u30AF|\u30D6\u30ED\u30FC\u30AF\u30F3\u30CF\u30FC\u30C8|\u5F35\u308A\u88C2\u3051|\u58CA\u308C\u305F\u5FC3",
+            tears: "\u6D99|\u306A\u307F\u3060|\u6CE3\u3044\u3066|\u6CE3\u304F|\u6CE3\u304D|\u6CE3\u304B|\u30C6\u30A3\u30A2\u30FC\u30BA|\u6D99\u304C",
+            money: "\u304A\u91D1|\u304A\u304B\u306D|\u91D1\u6301\u3061|\u30DE\u30CD\u30FC|\u672D\u675F|\u5927\u91D1|\u30BC\u30CB|\u30AB\u30CD",
+            gold: "\u9EC4\u91D1|\u91D1\u8272|\u3053\u304C\u306D|\u30B4\u30FC\u30EB\u30C9|\u30B4\u30FC\u30EB\u30C7\u30F3|\u304D\u3093\u3044\u308D|\u9EC4\u91D1\u8272",
+            diamond: "\u30C0\u30A4\u30E4|\u30C0\u30A4\u30E4\u30E2\u30F3\u30C9|\u5B9D\u77F3|\u307B\u3046\u305B\u304D|\u30B8\u30E5\u30A8\u30EB|\u5B9D\u77F3\u7BB1",
+            crown: "\u738B\u51A0|\u738B\u69D8|\u738B\u5B50|\u5973\u738B|\u738B\u5973|\u30AF\u30A4\u30FC\u30F3|\u30AD\u30F3\u30B0|\u51A0|\u738B\u56FD",
+            fly: "\u98DB\u3076|\u98DB\u3093\u3067|\u98DB\u3079|\u98DB\u3073|\u7FBD\u3070\u305F\u3044|\u306F\u3070\u305F\u3044|\u7FFC|\u3064\u3070\u3055|\u821E\u3044\u4E0A\u304C|\u98DB\u7FD4",
+            bird: "\u9CE5|\u5C0F\u9CE5|\u3053\u3068\u308A|\u9CE5\u305F\u3061|\u30D0\u30FC\u30C9|\u9CE9|\u767D\u9CE5|\u30AB\u30E9\u30B9",
+            butterfly: "\u8776|\u8776\u3005|\u3061\u3087\u3046\u3061\u3087|\u30D0\u30BF\u30D5\u30E9\u30A4|\u30A2\u30B2\u30CF",
+            flower: "\u82B1|\u82B1\u3073\u3089|\u82B1\u675F|\u54B2\u304F|\u54B2\u3044\u3066|\u54B2\u304D|\u30D5\u30E9\u30EF\u30FC|\u685C|\u3055\u304F\u3089",
+            rose: "\u8594\u8587|\u30ED\u30FC\u30BA|\u30D0\u30E9\u306E|\u30D0\u30E9\u3092|\u30D0\u30E9\u304C|\u7D05\u8594\u8587",
+            ocean: "\u6D77|\u3046\u307F|\u5927\u6D77|\u6D77\u539F|\u6CE2|\u30AA\u30FC\u30B7\u30E3\u30F3|\u30DE\u30EA\u30F3|\u6D77\u8FBA",
+            water: "\u6C34|\u307F\u305A|\u5DDD|\u6CB3|\u30A6\u30A9\u30FC\u30BF\u30FC|\u6CF3\u3050|\u6CF3\u3044\u3067|\u6C34\u9762|\u305B\u305B\u3089\u304E",
+            wind: "\u98A8|\u304B\u305C|\u305D\u3088\u98A8|\u30A6\u30A3\u30F3\u30C9|\u30A6\u30A4\u30F3\u30C9|\u5439\u304F|\u5439\u3044\u3066|\u5439\u304D",
+            smoke: "\u7159|\u3051\u3080\u308A|\u7159\u8349|\u30BF\u30D0\u30B3|\u30B9\u30E2\u30FC\u30AF|\u7D2B\u7159",
+            electric: "\u96FB\u6C17|\u3067\u3093\u304D|\u96FB\u6483|\u30A8\u30EC\u30AF\u30C8\u30EA\u30C3\u30AF|\u30A8\u30CA\u30B8\u30FC|\u30A8\u30CD\u30EB\u30AE\u30FC|\u96FB\u6D41|\u30D3\u30EA\u30D3\u30EA|\u611F\u96FB",
+            rainbow: "\u8679|\u306B\u3058\u3044\u308D|\u8679\u8272|\u30EC\u30A4\u30F3\u30DC\u30FC|\u4E03\u8272|\u306A\u306A\u3044\u308D",
+            fireworks: "\u82B1\u706B|\u306F\u306A\u3073|\u6253\u3061\u4E0A\u3052\u82B1\u706B|\u30D5\u30A1\u30A4\u30E4\u30FC\u30EF\u30FC\u30AF\u30B9|\u82B1\u706B\u5927\u4F1A",
+            party: "\u30D1\u30FC\u30C6\u30A3\u30FC|\u30D1\u30FC\u30C6\u30A3|\u5BB4|\u3046\u305F\u3052|\u796D\u308A|\u307E\u3064\u308A|\u304A\u795D\u3044|\u795D\u798F|\u9A12\u3054\u3046|\u30D1\u30EA\u30D4",
+            birthday: "\u8A95\u751F\u65E5|\u305F\u3093\u3058\u3087\u3046\u3073|\u30D0\u30FC\u30B9\u30C7\u30FC|\u30D0\u30FC\u30B9\u30C7\u30A4|\u30CF\u30C3\u30D4\u30FC\u30D0\u30FC\u30B9\u30C7\u30FC",
+            dance: "\u8E0A\u308B|\u8E0A\u3063\u3066|\u8E0A\u308D\u3046|\u8E0A\u308A|\u304A\u3069\u308B|\u304A\u3069\u3063\u3066|\u30C0\u30F3\u30B9|\u821E\u3046|\u30C0\u30F3\u30B5\u30FC|\u30B9\u30C6\u30C3\u30D7",
+            jump: "\u8DF3\u3076|\u8DF3\u3093\u3067|\u8DF3\u306D|\u30B8\u30E3\u30F3\u30D7|\u98DB\u3073\u8DF3\u306D|\u98DB\u3073\u4E0A\u304C|\u8DF3\u3079",
+            dream: "\u5922|\u3086\u3081|\u5922\u898B|\u30C9\u30EA\u30FC\u30E0",
+            ghost: "\u5E7D\u970A|\u3086\u3046\u308C\u3044|\u304A\u3070\u3051|\u304A\u5316\u3051|\u4EA1\u970A|\u30B4\u30FC\u30B9\u30C8|\u9B42|\u305F\u307E\u3057\u3044|\u970A",
+            angel: "\u5929\u4F7F|\u3066\u3093\u3057|\u30A8\u30F3\u30B8\u30A7\u30EB|\u30A8\u30F3\u30BC\u30EB",
+            devil: "\u60AA\u9B54|\u3042\u304F\u307E|\u5730\u7344|\u3058\u3054\u304F|\u30C7\u30D3\u30EB|\u9B3C|\u9B54\u738B|\u30C7\u30FC\u30E2\u30F3",
+            world: "\u4E16\u754C|\u305B\u304B\u3044|\u5730\u7403|\u3061\u304D\u3085\u3046|\u30EF\u30FC\u30EB\u30C9|\u4E16\u306E\u4E2D|\u60D1\u661F",
+            space: "\u5B87\u5B99|\u3046\u3061\u3085\u3046|\u9280\u6CB3|\u304E\u3093\u304C|\u30AE\u30E3\u30E9\u30AF\u30B7\u30FC|\u30B3\u30B9\u30E2|\u30B9\u30DA\u30FC\u30B9|\u30E6\u30CB\u30D0\u30FC\u30B9|\u5929\u306E\u5DDD",
+            rocket: "\u30ED\u30B1\u30C3\u30C8|\u767A\u5C04|\u6253\u3061\u4E0A\u3052|\u98DB\u3073\u7ACB|\u96E2\u9678|\u30D6\u30E9\u30B9\u30C8\u30AA\u30D5",
+            time: "\u6642\u9593|\u3058\u304B\u3093|\u6C38\u9060|\u3048\u3044\u3048\u3093|\u6642\u8A08|\u3068\u3051\u3044|\u30BF\u30A4\u30E0|\u6C38\u4E45|\u3044\u3064\u307E\u3067\u3082|\u6642\u304C",
+            drive: "\u30C9\u30E9\u30A4\u30D6|\u8ECA|\u304F\u308B\u307E|\u9053|\u30CF\u30A4\u30A6\u30A7\u30A4|\u30B9\u30D4\u30FC\u30C9|\u8D70\u308B|\u8D70\u3063\u3066|\u306F\u3057\u308B|\u30A2\u30AF\u30BB\u30EB|\u9AD8\u901F",
+            city: "\u8857|\u90FD\u4F1A|\u3068\u304B\u3044|\u30B7\u30C6\u30A3|\u30B9\u30C8\u30EA\u30FC\u30C8|\u8857\u89D2|\u30CD\u30AA\u30F3|\u90FD\u5E02",
+            music: "\u97F3\u697D|\u304A\u3093\u304C\u304F|\u6B4C|\u30E1\u30ED\u30C7\u30A3|\u30E1\u30ED\u30C7\u30A3\u30FC|\u30DF\u30E5\u30FC\u30B8\u30C3\u30AF|\u30EA\u30BA\u30E0|\u30D3\u30FC\u30C8|\u65CB\u5F8B|\u97F3\u8272",
+            sing: "\u6B4C\u3046|\u6B4C\u3063\u3066|\u6B4C\u304A\u3046|\u3046\u305F\u3046|\u3046\u305F\u3063\u3066|\u6B4C\u58F0|\u58F0|\u30B7\u30F3\u30B0|\u6B4C\u3048",
+            boom: "\u7206\u767A|\u3070\u304F\u306F\u3064|\u7206\u5F3E|\u30D6\u30FC\u30E0|\u30C9\u30AB\u30F3|\u7206\u305C|\u30DC\u30E0|\u7206\u97F3",
+            champagne: "\u30B7\u30E3\u30F3\u30D1\u30F3|\u30B7\u30E3\u30F3\u30D1\u30FC\u30CB\u30E5|\u4E7E\u676F|\u304B\u3093\u3071\u3044|\u9152|\u304A\u9152|\u30EF\u30A4\u30F3|\u30DC\u30C8\u30EB|\u9154\u3063",
+            magic: "\u9B54\u6CD5|\u307E\u307B\u3046|\u30DE\u30B8\u30C3\u30AF|\u546A\u6587|\u9B54\u8853|\u9B54\u5973|\u304A\u307E\u3058\u306A\u3044|\u30DF\u30E9\u30AF\u30EB",
+            beach: "\u7802\u6D5C|\u6D5C\u8FBA|\u30D3\u30FC\u30C1|\u5CF6|\u6D77\u5CB8|\u30E4\u30B7\u306E\u6728|\u6E1A|\u306A\u304E\u3055|\u5357\u306E\u5CF6",
+            christmas: "\u30AF\u30EA\u30B9\u30DE\u30B9|\u30B5\u30F3\u30BF|\u8056\u591C|\u30E1\u30EA\u30FC\u30AF\u30EA\u30B9\u30DE\u30B9|\u30C8\u30CA\u30AB\u30A4|\u30B8\u30F3\u30B0\u30EB|\u9234\u306E\u97F3",
+            red: "\u8D64|\u771F\u3063\u8D64|\u307E\u3063\u304B|\u7D05|\u304F\u308C\u306A\u3044|\u30EC\u30C3\u30C9|\u8D64\u3044",
+            blue: "\u9752\u3044|\u9752\u304F|\u9752\u7A7A|\u30D6\u30EB\u30FC|\u84BC\u3044|\u84BC|\u771F\u3063\u9752|\u3042\u304A\u3044",
+            green: "\u7DD1|\u307F\u3069\u308A|\u30B0\u30EA\u30FC\u30F3|\u7DD1\u8272|\u7FE0",
+            pink: "\u30D4\u30F3\u30AF|\u6843\u8272|\u3082\u3082\u3044\u308D|\u685C\u8272|\u3055\u304F\u3089\u8272",
+            purple: "\u7D2B|\u3080\u3089\u3055\u304D|\u30D1\u30FC\u30D7\u30EB|\u7D2B\u8272|\u30D0\u30A4\u30AA\u30EC\u30C3\u30C8|\u3059\u307F\u308C\u8272",
+            white: "\u767D|\u771F\u3063\u767D|\u307E\u3063\u3057\u308D|\u767D\u3044|\u30DB\u30EF\u30A4\u30C8|\u7D14\u767D",
+            black: "\u9ED2|\u771F\u3063\u9ED2|\u9ED2\u3044|\u30D6\u30E9\u30C3\u30AF|\u6F06\u9ED2",
+            silver: "\u9280\u8272|\u304E\u3093\u3044\u308D|\u30B7\u30EB\u30D0\u30FC|\u767D\u9280|\u9280\u306E"
+          }
+        },
+        ko: {
+          stop: "\uB098\uB294|\uB108\uB294|\uB108\uB97C|\uB098\uB97C|\uC6B0\uB9AC|\uADF8\uB300|\uB0B4\uAC00|\uB124\uAC00|\uC788\uC5B4|\uC5C6\uC5B4|\uD558\uC9C0\uB9CC|\uADF8\uB9AC\uACE0|\uC774\uB807\uAC8C|\uADF8\uB807\uAC8C|\uAC19\uC544|\uC774\uC81C|\uB2E4\uC2DC|\uC815\uB9D0|\uB108\uBB34|\uADF8\uB7F0",
+          c: {
+            fire: "\uBD88\uAF43|\uBD88\uD0C0|\uBD88\uAE38|\uBD88\uD0DC|\uD0C0\uC624\uB974|\uD0C0\uC62C\uB77C|\uD30C\uC774\uC5B4|\uD654\uC5FC|\uBD88\uC774\uC57C|\uBD88\uC744 \uC9C8\uB7EC",
+            rain: "\uBE44\uAC00|\uBE57\uBB3C|\uBE57\uC18C\uB9AC|\uBE57\uC18D|\uC18C\uB098\uAE30|\uC7A5\uB9DB\uBE44|\uB808\uC778|\uBE44\uCC98\uB7FC|\uB0B4\uB9AC\uB294 \uBE44|\uBE57\uBC29\uC6B8",
+            storm: "\uD3ED\uD48D|\uD0DC\uD48D|\uCC9C\uB465|\uC2A4\uD1B0|\uD3ED\uD48D\uC6B0|\uD5C8\uB9AC\uCF00\uC778|\uBE44\uBC14\uB78C",
+            lightning: "\uBC88\uAC1C|\uBC88\uAC2F\uBD88|\uBCBC\uB77D|\uB77C\uC774\uD2B8\uB2DD|\uC12C\uAD11",
+            snow: "\uB208\uC774 \uB0B4|\uB208\uC1A1\uC774|\uD568\uBC15\uB208|\uB208\uAF43|\uCCAB\uB208|\uB208\uC0AC\uB78C|\uC2A4\uB178\uC6B0|\uB208\uBCF4\uB77C|\uD558\uC580 \uB208",
+            cold: "\uCC28\uAC00\uC6B4|\uCC28\uAC00\uC6CC|\uC5BC\uC74C|\uC5BC\uC5B4|\uC5BC\uC5B4\uBD99|\uCD94\uC6CC|\uCD94\uC6B4|\uC544\uC774\uC2A4|\uACA8\uC6B8|\uC2DC\uB9B0",
+            sun: "\uD0DC\uC591|\uD587\uC0B4|\uD587\uBE5B|\uD587\uBCD5|\uD574\uAC00 \uB728|\uC77C\uCD9C|\uB178\uC744|\uC11D\uC591|\uC120\uC0E4\uC778|\uD574\uC9C8\uB158|\uD574\uB3CB\uC774",
+            summer: "\uC5EC\uB984|\uD55C\uC5EC\uB984|\uC378\uBA38|\uC11C\uBA38|\uC5EC\uB984\uBC24",
+            moon: "\uB2EC\uBE5B|\uBCF4\uB984\uB2EC|\uB2EC\uB2D8|\uCD08\uC2B9\uB2EC|\uBB38\uB77C\uC774\uD2B8|\uBC18\uB2EC|\uB2EC\uC774 \uB728|\uC800 \uB2EC",
+            star: "\uBCC4\uBE5B|\uBCC4\uB4E4|\uBCC4\uB625\uBCC4|\uBCC4\uC790\uB9AC|\uC218\uB9CE\uC740 \uBCC4|\uBCC4\uCC98\uB7FC|\uC2A4\uD0C0\uB354\uC2A4\uD2B8|\uBC24\uD558\uB298\uC758 \uBCC4|\uBCC4\uC774|\uBCC4\uC744|\uBCC4\uC740",
+            sky: "\uD558\uB298|\uAD6C\uB984|\uCC3D\uACF5|\uC2A4\uCE74\uC774|\uBA39\uAD6C\uB984|\uD558\uB298 \uC704",
+            heaven: "\uCC9C\uAD6D|\uB099\uC6D0|\uD30C\uB77C\uB2E4\uC774\uC2A4|\uD5E4\uBE10|\uCC9C\uB2F9|\uCC9C\uC0C1",
+            night: "\uBC24|\uC624\uB298 \uBC24|\uC624\uB298\uBC24|\uD55C\uBC24|\uC790\uC815|\uC0C8\uBCBD|\uB098\uC787|\uBBF8\uB4DC\uB098\uC787|\uBC24\uD558\uB298|\uBC24\uC0C8",
+            dark: "\uC5B4\uB460|\uC5B4\uB450\uC6B4|\uADF8\uB9BC\uC790|\uC554\uD751|\uB2E4\uD06C|\uCE84\uCE84|\uAE5C\uAE5C",
+            light: "\uBE5B|\uBE5B\uB098|\uBD88\uBE5B|\uBC18\uC9DD|\uB77C\uC774\uD2B8|\uB208\uBD80\uC2E0|\uD658\uD55C|\uBC1D\uC740",
+            heart: "\uB9C8\uC74C|\uC2EC\uC7A5|\uAC00\uC2B4|\uD558\uD2B8|\uB0B4 \uB9D8|\uB9D8\uC774",
+            love: "\uC0AC\uB791|\uC0AC\uB791\uD574|\uB7EC\uBE0C|\uC5F0\uC778|\uC88B\uC544\uD574|\uB7EC\uBE59|\uC0AC\uB791\uC774",
+            kiss: "\uD0A4\uC2A4|\uC785\uB9DE\uCDA4|\uC785\uC220|\uBF40\uBF40|\uC785\uB9DE\uCDB0",
+            heartbreak: "\uC774\uBCC4|\uC0C1\uCC98|\uC544\uD508 \uB9C8\uC74C|\uCC22\uC5B4|\uBD80\uC11C\uC9C4 \uB9C8\uC74C|\uD558\uD2B8\uBE0C\uB808\uC774\uD06C|\uD5E4\uC5B4\uC838|\uD5E4\uC5B4\uC9C0|\uC544\uD30C",
+            tears: "\uB208\uBB3C|\uC6B8\uC5B4|\uC6B8\uACE0|\uC6B8\uC9C0|\uC6B0\uB294|\uD750\uB290",
+            money: "\uB3C8\uC774|\uB3C8\uC744|\uB3C8\uB2E4\uBC1C|\uBA38\uB2C8|\uD604\uAE08|\uBD80\uC790|\uB2EC\uB7EC|\uC9C0\uD3D0|\uD50C\uB809\uC2A4",
+            gold: "\uD669\uAE08|\uAE08\uBE5B|\uACE8\uB4DC|\uACE8\uB4E0|\uAE08\uC0C9|\uD669\uAE08\uBE5B",
+            diamond: "\uB2E4\uC774\uC544|\uB2E4\uC774\uC544\uBAAC\uB4DC|\uBCF4\uC11D|\uC8FC\uC5BC\uB9AC|\uC96C\uC5BC\uB9AC",
+            crown: "\uC655\uAD00|\uC5EC\uC655|\uD038|\uC655\uC790|\uACF5\uC8FC|\uD06C\uB77C\uC6B4|\uC655\uC774 \uB3FC",
+            fly: "\uB0A0\uC544|\uB0A0\uAC1C|\uB0A0\uAC2F\uC9D3|\uB0A0\uC544\uAC00|\uB0A0\uC544\uC62C\uB77C|\uD50C\uB77C\uC774|\uBE44\uD589",
+            bird: "\uC0C8\uB4E4|\uC791\uC740 \uC0C8|\uD30C\uB791\uC0C8|\uBE44\uB458\uAE30|\uBC84\uB4DC|\uC0C8\uCC98\uB7FC|\uCCA0\uC0C8",
+            butterfly: "\uB098\uBE44|\uBC84\uD130\uD50C\uB77C\uC774|\uB098\uBE44\uCC98\uB7FC",
+            flower: "\uAF43\uC78E|\uAF43\uC1A1\uC774|\uAF43\uAE38|\uBC9A\uAF43|\uAF43\uB2E4\uBC1C|\uD53C\uC5B4\uB098|\uD50C\uB77C\uC6CC|\uAF43\uCC98\uB7FC",
+            rose: "\uC7A5\uBBF8|\uC7A5\uBBF8\uAF43|\uB85C\uC988|\uBE68\uAC04 \uC7A5\uBBF8",
+            ocean: "\uBC14\uB2E4|\uD30C\uB3C4|\uB300\uC591|\uC624\uC158|\uBB3C\uACB0|\uBC14\uB2E4\uCC98\uB7FC",
+            water: "\uBB3C\uC18D|\uAC15\uBB3C|\uD5E4\uC5C4|\uC218\uC601|\uC6CC\uD130|\uC2DC\uB0C7\uBB3C|\uAC15\uAC00",
+            wind: "\uBC14\uB78C|\uC0B0\uB4E4\uBC14\uB78C|\uC708\uB4DC|\uBBF8\uD48D|\uBC14\uB78C\uC774 \uBD88",
+            smoke: "\uC5F0\uAE30|\uB2F4\uBC30|\uC2A4\uBAA8\uD06C|\uB2F4\uBC30 \uC5F0\uAE30",
+            electric: "\uC804\uAE30|\uC804\uC728|\uC9DC\uB9BF|\uC5D0\uB108\uC9C0|\uC77C\uB809\uD2B8\uB9AD|\uC804\uB958|\uAC10\uC804|\uCC0C\uB9BF",
+            rainbow: "\uBB34\uC9C0\uAC1C|\uB808\uC778\uBCF4\uC6B0|\uBB34\uC9C0\uAC2F\uBE5B|\uC77C\uACF1 \uBE5B\uAE54|\uC624\uC0C9",
+            fireworks: "\uBD88\uAF43\uB180\uC774|\uD3ED\uC8FD|\uBD88\uAF43 \uCD95\uC81C|\uD30C\uC774\uC5B4\uC6CC\uD06C",
+            party: "\uD30C\uD2F0|\uCD95\uC81C|\uCD95\uD558|\uC794\uCE58|\uD30C\uD2F0\uD574",
+            birthday: "\uC0DD\uC77C|\uC0DD\uC77C \uCD95\uD558|\uBC84\uC2A4\uB370\uC774|\uC0DD\uC77C\uB0A0|\uD574\uD53C \uBC84\uC2A4\uB370\uC774",
+            dance: "\uCDA4|\uCDA4\uC744|\uCDA4\uCDB0|\uB304\uC2A4|\uCDA4\uCD94|\uB304\uC11C",
+            jump: "\uC810\uD504|\uB6F0\uC5B4|\uB6F0\uC5B4\uC62C\uB77C|\uB192\uC774 \uB6F0|\uB6F0\uC790",
+            dream: "\uAFC8|\uAFC8\uC744|\uAFC8\uC18D|\uAFC8\uAFD4|\uB4DC\uB9BC|\uAFC8\uAC19\uC740",
+            ghost: "\uC720\uB839|\uADC0\uC2E0|\uACE0\uC2A4\uD2B8|\uC601\uD63C|\uD63C\uB839|\uB9DD\uB839",
+            angel: "\uCC9C\uC0AC|\uC5D4\uC824|\uC5D0\uC778\uC808",
+            devil: "\uC545\uB9C8|\uC9C0\uC625|\uB370\uBE4C|\uC545\uB839|\uB9C8\uADC0|\uC0AC\uD0C4",
+            world: "\uC138\uC0C1|\uC138\uACC4|\uC9C0\uAD6C|\uC6D4\uB4DC|\uD589\uC131|\uC628 \uC138\uC0C1",
+            space: "\uC6B0\uC8FC|\uC740\uD558|\uC740\uD558\uC218|\uAC24\uB7ED\uC2DC|\uCF54\uC2A4\uBAA8\uC2A4|\uC2A4\uD398\uC774\uC2A4|\uC720\uB2C8\uBC84\uC2A4",
+            rocket: "\uB85C\uCF13|\uBC1C\uC0AC|\uC774\uB959|\uCE74\uC6B4\uD2B8\uB2E4\uC6B4|\uC6B0\uC8FC\uC120",
+            time: "\uC2DC\uAC04|\uC601\uC6D0|\uC601\uC6D0\uD788|\uC2DC\uACC4|\uD0C0\uC784|\uC21C\uAC04|\uD3C9\uC0DD",
+            drive: "\uB4DC\uB77C\uC774\uBE0C|\uC6B4\uC804|\uC790\uB3D9\uCC28|\uB3C4\uB85C|\uACE0\uC18D\uB3C4\uB85C|\uD558\uC774\uC6E8\uC774|\uC2A4\uD53C\uB4DC|\uC9C8\uC8FC|\uB2EC\uB824",
+            city: "\uB3C4\uC2DC|\uB3C4\uC2EC|\uC2DC\uD2F0|\uC2A4\uD2B8\uB9AC\uD2B8|\uB124\uC628|\uC11C\uC6B8|\uACE8\uBAA9",
+            music: "\uC74C\uC545|\uB178\uB798|\uBA5C\uB85C\uB514|\uBBA4\uC9C1|\uB9AC\uB4EC|\uBE44\uD2B8|\uC120\uC728",
+            sing: "\uB178\uB798\uD574|\uB178\uB798\uD558|\uB178\uB798\uB97C|\uBD80\uB974\uB294|\uBD88\uB7EC|\uBAA9\uC18C\uB9AC|\uC18C\uB9AC\uCCD0",
+            boom: "\uBD90|\uBE75\uC57C|\uD3ED\uBC1C|\uD3ED\uD0C4|\uCF85|\uD130\uC838|\uD130\uD2B8\uB824|\uBC45\uBC45",
+            champagne: "\uC0F4\uD398\uC778|\uAC74\uBC30|\uCD95\uBC30|\uC220\uC794|\uC640\uC778|\uD55C\uC794\uD574",
+            magic: "\uB9C8\uBC95|\uB9E4\uC9C1|\uB9C8\uC220|\uB9C8\uB140|\uC694\uC220",
+            beach: "\uD574\uBCC0|\uBC14\uB2F7\uAC00|\uBAA8\uB798\uC0AC\uC7A5|\uC57C\uC790\uC218|\uD574\uC548|\uBB34\uC778\uB3C4",
+            christmas: "\uD06C\uB9AC\uC2A4\uB9C8\uC2A4|\uC0B0\uD0C0|\uC131\uD0C4|\uBA54\uB9AC \uD06C\uB9AC\uC2A4\uB9C8\uC2A4|\uB8E8\uB3CC\uD504|\uC9D5\uAE00\uBCA8|\uC370\uB9E4|\uCE90\uB7F4",
+            red: "\uBE68\uAC04|\uBE68\uAC15|\uBD89\uC740|\uBE68\uAC1B|\uB808\uB4DC|\uC0C8\uBE68\uAC04",
+            blue: "\uD30C\uB780|\uD30C\uB791|\uD478\uB978|\uBE14\uB8E8|\uC0C8\uD30C\uB780|\uD30C\uB797",
+            green: "\uCD08\uB85D|\uB179\uC0C9|\uD478\uB974\uB978|\uC5F0\uB450|\uCD08\uB85D\uBE5B",
+            pink: "\uD551\uD06C|\uBD84\uD64D|\uBD84\uD64D\uBE5B|\uD551\uD06C\uBE5B",
+            purple: "\uBCF4\uB77C|\uBCF4\uB78F\uBE5B|\uD37C\uD50C|\uC790\uC8FC\uC0C9|\uBC14\uC774\uC62C\uB81B",
+            white: "\uD558\uC580|\uD558\uC597|\uD770|\uC0C8\uD558\uC580|\uD654\uC774\uD2B8|\uC21C\uBC31",
+            black: "\uAC80\uC740|\uAE4C\uB9CC|\uAC80\uC815|\uBE14\uB799|\uC0C8\uAE4C\uB9CC|\uAE4C\uB9E3|\uCE60\uD751",
+            silver: "\uC740\uBE5B|\uC740\uC0C9|\uC2E4\uBC84|\uC740\uBC1C"
+          }
+        },
+        zh: {
+          stop: "\u7684|\u6211|\u4F60|\u662F|\u4E86|\u5728|\u4E0D|\u5417|\u55CE|\u8FD9|\u9019|\u5C31|\u90FD|\u4E5F|\u8BA9|\u8B93|\u4E48|\u9EBC|\u5605|\u5514",
+          c: {
+            fire: "\u706B|\u706B\u7130|\u706B\u5149|\u71C3\u70E7|\u71C3\u71D2|\u70C8\u706B|\u706B\u82B1|\u71C3\u8D77|\u711A\u70E7|\u711A\u71D2|\u70C8\u7130",
+            rain: "\u96E8|\u4E0B\u96E8|\u96E8\u6C34|\u5927\u96E8|\u7EC6\u96E8|\u7D30\u96E8|\u96E8\u5929|\u96E8\u5B63",
+            storm: "\u98CE\u66B4|\u98A8\u66B4|\u66B4\u98CE\u96E8|\u66B4\u98A8\u96E8|\u96F7\u58F0|\u96F7\u8072|\u53F0\u98CE|\u98B1\u98A8|\u72C2\u98CE|\u72C2\u98A8|\u98D3\u98CE|\u98B6\u98A8|\u96F7\u96E8",
+            lightning: "\u95EA\u7535|\u9583\u96FB|\u96F7\u7535|\u96F7\u96FB|\u9739\u96F3|\u9739\u9742|\u7535\u5149|\u96FB\u5149",
+            snow: "\u96EA|\u4E0B\u96EA|\u96EA\u82B1|\u98D8\u96EA|\u98C4\u96EA|\u767D\u96EA|\u5927\u96EA|\u96EA\u5730",
+            cold: "\u51B0|\u51B0\u51B7|\u5BD2\u51B7|\u51B0\u5C01|\u7ED3\u51B0|\u7D50\u51B0|\u51BB\u7ED3|\u51CD\u7D50|\u51B0\u96EA|\u5BD2\u51AC|\u597D\u51B7|\u51B0\u51C9|\u51B0\u6DBC",
+            sun: "\u592A\u9633|\u592A\u967D|\u9633\u5149|\u967D\u5149|\u65E5\u51FA|\u65E5\u843D|\u5915\u9633|\u5915\u967D|\u671D\u9633|\u671D\u967D|\u6668\u5149",
+            summer: "\u590F\u5929|\u590F\u65E5|\u76DB\u590F|\u4EF2\u590F|\u590F\u5B63|\u590F\u591C|\u708E\u590F",
+            moon: "\u6708\u4EAE|\u6708\u5149|\u660E\u6708|\u6EE1\u6708|\u6EFF\u6708|\u6708\u8272|\u6708\u5706|\u6708\u5713|\u5F2F\u6708|\u5F4E\u6708|\u6708\u513F|\u6708\u5152",
+            star: "\u661F\u661F|\u661F\u5149|\u7E41\u661F|\u661F\u7A7A|\u6D41\u661F|\u661F\u8FB0|\u661F\u6CB3|\u661F\u5C18|\u661F\u5875|\u661F\u5EA7",
+            sky: "\u5929\u7A7A|\u84DD\u5929|\u85CD\u5929|\u4E91\u6735|\u96F2\u6735|\u767D\u4E91|\u767D\u96F2|\u4E91\u7AEF|\u96F2\u7AEF|\u82CD\u7A79|\u84BC\u7A79|\u5929\u9645|\u5929\u969B|\u4E4C\u4E91|\u70CF\u96F2",
+            heaven: "\u5929\u5802|\u5929\u56FD|\u5929\u570B|\u4E50\u56ED|\u6A02\u5712|\u6781\u4E50|\u6975\u6A02|\u4ED9\u5883",
+            night: "\u591C|\u591C\u665A|\u4ECA\u591C|\u5348\u591C|\u6DF1\u591C|\u9ED1\u591C|\u591C\u91CC|\u591C\u88E1|\u591C\u8272|\u4ECA\u665A|\u534A\u591C|\u665A\u4E0A",
+            dark: "\u9ED1\u6697|\u9634\u5F71|\u9670\u5F71|\u5F71\u5B50|\u6697\u591C|\u5E7D\u6697|\u9ED1\u5F71|\u660F\u6697",
+            light: "\u5149\u8292|\u5149\u660E|\u95EA\u8000|\u9583\u8000|\u53D1\u5149|\u767C\u5149|\u7167\u4EAE|\u95EA\u4EAE|\u9583\u4EAE|\u5149\u7EBF|\u5149\u7DDA|\u706F\u5149|\u71C8\u5149|\u4EAE\u5149|\u66D9\u5149",
+            heart: "\u5FC3\u8DF3|\u5FC3\u810F|\u5FC3\u81DF|\u5185\u5FC3|\u5167\u5FC3|\u5FC3\u623F|\u5FC3\u4E2D|\u5FC3\u91CC|\u5FC3\u88E1|\u6211\u7684\u5FC3|\u4F60\u7684\u5FC3|\u5FC3\u6249",
+            love: "\u7231|\u611B|\u7231\u60C5|\u611B\u60C5|\u604B\u7231|\u6200\u611B|\u76F8\u7231|\u76F8\u611B|\u7231\u4EBA|\u611B\u4EBA|\u604B\u4EBA|\u6200\u4EBA|\u559C\u6B22|\u559C\u6B61|\u953A\u610F|\u937E\u610F",
+            kiss: "\u543B|\u4EB2\u543B|\u89AA\u543B|\u63A5\u543B|\u5634\u5507|\u53CC\u5507|\u96D9\u5507|\u7EA2\u5507|\u7D05\u5507|\u9999\u543B",
+            heartbreak: "\u5FC3\u788E|\u4F24\u5FC3|\u50B7\u5FC3|\u5FC3\u75DB|\u5931\u604B|\u5931\u6200|\u5206\u624B|\u5FC3\u4F24|\u5FC3\u50B7|\u4F24\u900F|\u50B7\u900F",
+            tears: "\u773C\u6CEA|\u773C\u6DDA|\u6CEA\u6C34|\u6DDA\u6C34|\u6D41\u6CEA|\u6D41\u6DDA|\u54ED\u6CE3|\u6CEA|\u6DDA|\u54ED",
+            money: "\u94B1|\u9322|\u91D1\u94B1|\u91D1\u9322|\u949E\u7968|\u9214\u7968|\u6709\u94B1|\u6709\u9322|\u7F8E\u91D1|\u73B0\u91D1|\u73FE\u91D1|\u8D22\u5BCC|\u8CA1\u5BCC",
+            gold: "\u9EC4\u91D1|\u9EC3\u91D1|\u91D1\u8272|\u91D1\u5149|\u91D1\u9EC4|\u91D1\u9EC3|\u91D1\u707F\u707F|\u91D1\u71E6\u71E6",
+            diamond: "\u94BB\u77F3|\u947D\u77F3|\u5B9D\u77F3|\u5BF6\u77F3|\u73E0\u5B9D|\u73E0\u5BF6|\u94BB\u6212|\u947D\u6212",
+            crown: "\u738B\u51A0|\u7687\u51A0|\u56FD\u738B|\u570B\u738B|\u5973\u738B|\u7687\u540E|\u738B\u5B50|\u516C\u4E3B|\u541B\u738B|\u738B\u8005",
+            fly: "\u98DE|\u98DB|\u98DE\u7FD4|\u98DB\u7FD4|\u7FC5\u8180|\u5C55\u7FC5|\u9AD8\u98DE|\u9AD8\u98DB|\u7FF1\u7FD4",
+            bird: "\u9E1F|\u9CE5|\u5C0F\u9E1F|\u5C0F\u9CE5|\u98DE\u9E1F|\u98DB\u9CE5|\u9E1F\u513F|\u9CE5\u5152|\u5019\u9E1F|\u5019\u9CE5|\u9E3D\u5B50|\u9D3F\u5B50|\u71D5\u5B50",
+            butterfly: "\u8774\u8776|\u5F69\u8776|\u8776",
+            flower: "\u82B1\u6735|\u82B1\u513F|\u82B1\u5152|\u82B1\u5F00|\u82B1\u958B|\u9C9C\u82B1|\u9BAE\u82B1|\u82B1\u74E3|\u5F00\u82B1|\u958B\u82B1|\u7EFD\u653E|\u7DBB\u653E|\u76DB\u5F00|\u76DB\u958B|\u82B1\u6D77",
+            rose: "\u73AB\u7470|\u7EA2\u73AB\u7470|\u7D05\u73AB\u7470|\u8537\u8587|\u8594\u8587",
+            ocean: "\u5927\u6D77|\u6D77\u6D0B|\u6D77\u6D6A|\u6D6A\u82B1|\u6D77\u8FB9|\u6D77\u908A|\u6D77\u6C34|\u6CE2\u6D6A|\u6D6A\u6F6E|\u6C6A\u6D0B",
+            water: "\u6CB3\u6D41|\u6C5F\u6C34|\u6CB3\u6C34|\u6D41\u6C34|\u6EAA\u6C34|\u6E38\u6CF3|\u6F5C\u6C34|\u6F5B\u6C34|\u6E05\u6C34|\u5C0F\u6CB3|\u6C5F\u6CB3",
+            wind: "\u98CE|\u98A8|\u5FAE\u98CE|\u5FAE\u98A8|\u6E05\u98CE|\u6E05\u98A8|\u5439",
+            smoke: "\u70DF|\u7159|\u9999\u70DF|\u9999\u7159|\u70DF\u96FE|\u7159\u9727|\u62BD\u70DF|\u62BD\u7159|\u5438\u70DF|\u5438\u7159|\u70DF\u5708|\u7159\u5708",
+            electric: "\u7535\u6D41|\u96FB\u6D41|\u7535\u529B|\u96FB\u529B|\u89E6\u7535|\u89F8\u96FB|\u80FD\u91CF|\u7535\u51FB|\u96FB\u64CA|\u6765\u7535|\u4F86\u96FB|\u653E\u7535|\u653E\u96FB",
+            rainbow: "\u5F69\u8679|\u4E03\u5F69|\u8679|\u9713\u8679",
+            fireworks: "\u70DF\u82B1|\u7159\u82B1|\u70DF\u706B|\u7159\u706B|\u7130\u706B|\u793C\u82B1|\u79AE\u82B1|\u7206\u7AF9|\u97AD\u70AE",
+            party: "\u6D3E\u5BF9|\u6D3E\u5C0D|\u72C2\u6B22|\u72C2\u6B61|\u5E86\u795D|\u6176\u795D|\u805A\u4F1A|\u805A\u6703|\u5F00\u8DB4|\u958B\u8DB4|\u55E8|\u6B22\u5E86|\u6B61\u6176",
+            birthday: "\u751F\u65E5|\u751F\u65E5\u5FEB\u4E50|\u751F\u65E5\u5FEB\u6A02|\u5BFF\u661F|\u58FD\u661F",
+            dance: "\u821E|\u8DF3\u821E|\u821E\u8E48|\u821E\u6B65|\u8D77\u821E|\u821E\u6C60|\u70ED\u821E|\u71B1\u821E|\u821E\u52A8|\u821E\u52D5|\u821E\u66F2",
+            jump: "\u8DF3\u8DC3|\u8DF3\u8E8D|\u8DF3\u8D77|\u8DF3\u9AD8|\u8E66|\u8DF3\u5427",
+            dream: "\u68A6|\u5922|\u68A6\u60F3|\u5922\u60F3|\u505A\u68A6|\u505A\u5922|\u7F8E\u68A6|\u7F8E\u5922|\u68A6\u4E2D|\u5922\u4E2D|\u68A6\u91CC|\u5922\u88E1",
+            ghost: "\u9B3C|\u5E7D\u7075|\u5E7D\u9748|\u9B3C\u9B42|\u7075\u9B42|\u9748\u9B42|\u9B42|\u4EA1\u7075|\u4EA1\u9748",
+            angel: "\u5929\u4F7F|\u5B89\u742A\u513F|\u5B89\u742A\u5152",
+            devil: "\u9B54\u9B3C|\u6076\u9B54|\u60E1\u9B54|\u5730\u72F1|\u5730\u7344|\u6492\u65E6|\u6076\u9B3C|\u60E1\u9B3C",
+            world: "\u4E16\u754C|\u5168\u4E16\u754C|\u5730\u7403|\u661F\u7403|\u4EBA\u95F4|\u4EBA\u9593|\u5929\u4E0B|\u4E16\u95F4|\u4E16\u9593",
+            space: "\u5B87\u5B99|\u94F6\u6CB3|\u9280\u6CB3|\u592A\u7A7A|\u661F\u7CFB|\u661F\u9645|\u661F\u969B|\u94F6\u6CB3\u7CFB|\u9280\u6CB3\u7CFB",
+            rocket: "\u706B\u7BAD|\u53D1\u5C04|\u767C\u5C04|\u8D77\u98DE|\u8D77\u98DB|\u5347\u7A7A|\u592A\u7A7A\u8239",
+            time: "\u65F6\u95F4|\u6642\u9593|\u6C38\u8FDC|\u6C38\u9060|\u65F6\u5149|\u6642\u5149|\u6C38\u6052|\u6C38\u6046|\u65F6\u949F|\u6642\u9418|\u5C81\u6708|\u6B72\u6708|\u4E00\u8F88\u5B50|\u4E00\u8F29\u5B50",
+            drive: "\u5F00\u8F66|\u958B\u8ECA|\u9A7E\u9A76|\u99D5\u99DB|\u98D9\u8F66|\u98C6\u8ECA|\u516C\u8DEF|\u8DD1\u8F66|\u8DD1\u8ECA|\u6C7D\u8F66|\u6C7D\u8ECA|\u6CB9\u95E8|\u6CB9\u9580|\u515C\u98CE|\u515C\u98A8|\u8F66\u7A97|\u8ECA\u7A97",
+            city: "\u57CE\u5E02|\u8857\u9053|\u8857\u5934|\u8857\u982D|\u90FD\u5E02|\u5927\u8857|\u8857|\u57CE\u91CC|\u57CE\u88E1",
+            music: "\u97F3\u4E50|\u97F3\u6A02|\u6B4C\u66F2|\u65CB\u5F8B|\u8282\u594F|\u7BC0\u594F|\u4E50\u66F2|\u6A02\u66F2|\u97F3\u7B26|\u8282\u62CD|\u7BC0\u62CD|\u6B4C",
+            sing: "\u5531|\u5531\u6B4C|\u6B4C\u5531|\u6B4C\u58F0|\u6B4C\u8072|\u58F0\u97F3|\u8072\u97F3|\u55D3\u97F3|\u9AD8\u6B4C",
+            boom: "\u7206\u70B8|\u70B8\u5F39|\u70B8\u5F48|\u8F70|\u8F5F|\u7830|\u5F15\u7206|\u7206\u53D1|\u7206\u767C|\u8F70\u9686|\u8F5F\u9686|\u70B8\u88C2",
+            champagne: "\u9999\u69DF|\u9999\u6AB3|\u5E72\u676F|\u4E7E\u676F|\u4E3E\u676F|\u8209\u676F|\u7F8E\u9152|\u559D\u9152|\u9152\u676F|\u9189|\u9152",
+            magic: "\u9B54\u6CD5|\u9B54\u529B|\u9B54\u672F|\u9B54\u8853|\u5492\u8BED|\u5492\u8A9E|\u6CD5\u672F|\u6CD5\u8853|\u5947\u8FF9|\u5947\u8E5F|\u795E\u5947",
+            beach: "\u6C99\u6EE9|\u6C99\u7058|\u6D77\u6EE9|\u6D77\u7058|\u5C9B\u5C7F|\u5CF6\u5DBC|\u5C0F\u5C9B|\u5C0F\u5CF6|\u6930\u5B50\u6811|\u6930\u5B50\u6A39|\u6D77\u5CB8|\u6930\u6797",
+            christmas: "\u5723\u8BDE|\u8056\u8A95|\u5723\u8BDE\u8282|\u8056\u8A95\u7BC0|\u5723\u8BDE\u8001\u4EBA|\u8056\u8A95\u8001\u4EBA|\u5E73\u5B89\u591C|\u96EA\u6A47|\u9E8B\u9E7F|\u94C3\u513F\u54CD\u53EE\u5F53|\u9234\u5152\u97FF\u53EE\u5679",
+            red: "\u7EA2|\u7D05|\u7EA2\u8272|\u7D05\u8272|\u9C9C\u7EA2|\u9BAE\u7D05|\u706B\u7EA2|\u706B\u7D05|\u901A\u7EA2|\u901A\u7D05",
+            blue: "\u84DD|\u85CD|\u84DD\u8272|\u85CD\u8272|\u6E5B\u84DD|\u6E5B\u85CD|\u851A\u84DD|\u851A\u85CD",
+            green: "\u7EFF|\u7DA0|\u7EFF\u8272|\u7DA0\u8272|\u7FE0\u7EFF|\u7FE0\u7DA0|\u78A7\u7EFF|\u78A7\u7DA0",
+            pink: "\u7C89\u7EA2|\u7C89\u7D05|\u7C89\u8272|\u6843\u7EA2|\u6843\u7D05",
+            purple: "\u7D2B|\u7D2B\u8272|\u7D2B\u7F57\u5170|\u7D2B\u7F85\u862D|\u6DE1\u7D2B",
+            white: "\u767D\u8272|\u96EA\u767D|\u6D01\u767D|\u6F54\u767D|\u7EAF\u767D|\u7D14\u767D|\u82CD\u767D|\u84BC\u767D",
+            black: "\u9ED1\u8272|\u6F06\u9ED1|\u4E4C\u9ED1|\u70CF\u9ED1|\u9ED1\u53D1|\u9ED1\u9AEE|\u9ED1\u767D",
+            silver: "\u94F6\u8272|\u9280\u8272|\u767D\u94F6|\u767D\u9280|\u94F6\u5149|\u9280\u5149|\u94F6\u767D|\u9280\u767D"
+          }
+        },
+        vi: {
+          stop: "v\xE0|c\u1EE7a|l\xE0|em|anh|nh\u1EEFng|kh\xF4ng|\u0111\u01B0\u1EE3c|n\xE0y|cho|v\u1EDBi|ng\u01B0\u1EDDi|m\u1ED9t|\u0111\xE3|c\u0169ng|nh\u01B0|khi|th\xEC|m\xECnh|nhau",
+          c: {
+            fire: "l\u1EEDa|ng\u1ECDn l\u1EEDa|ch\xE1y|b\xF9ng ch\xE1y|thi\xEAu \u0111\u1ED1t|r\u1EF1c ch\xE1y|\u0111\u1ED1t ch\xE1y|b\u1ED1c ch\xE1y|ch\xE1y b\u1ECFng",
+            rain: "m\u01B0a|c\u01A1n m\u01B0a|m\u01B0a r\u01A1i|gi\u1ECDt m\u01B0a|tr\u1EDDi m\u01B0a|m\u01B0a ng\xE2u|m\u01B0a ph\xF9n|h\u1EA1t m\u01B0a",
+            storm: "b\xE3o|gi\xF4ng|gi\xF4ng b\xE3o|b\xE3o t\u1ED1|s\u1EA5m|s\u1EA5m s\xE9t|c\u01A1n b\xE3o|b\xE3o gi\xF4ng",
+            lightning: "ch\u1EDBp|tia ch\u1EDBp|s\u1EA5m ch\u1EDBp|tia s\xE9t|ch\u1EDBp gi\u1EADt|\xE1nh ch\u1EDBp|s\xE9t \u0111\xE1nh",
+            snow: "tuy\u1EBFt|b\xF4ng tuy\u1EBFt|tuy\u1EBFt r\u01A1i|tuy\u1EBFt tr\u1EAFng|b\u0103ng tuy\u1EBFt",
+            cold: "l\u1EA1nh|b\u0103ng gi\xE1|gi\xE1 l\u1EA1nh|\u0111\xF3ng b\u0103ng|l\u1EA1nh l\u1EBDo|l\u1EA1nh gi\xE1|bu\u1ED1t gi\xE1|gi\xE1 b\u0103ng",
+            sun: "m\u1EB7t tr\u1EDDi|n\u1EAFng|\xE1nh n\u1EAFng|b\xECnh minh|ho\xE0ng h\xF4n|n\u1EAFng v\xE0ng|\xE1nh d\u01B0\u01A1ng|n\u1EAFng mai",
+            summer: "m\xF9a h\xE8|m\xF9a h\u1EA1|ng\xE0y h\xE8|tr\u01B0a h\xE8|h\xE8 v\u1EC1|h\u1EA1 v\u1EC1",
+            moon: "tr\u0103ng|\xE1nh tr\u0103ng|v\u1EA7ng tr\u0103ng|m\u1EB7t tr\u0103ng|tr\u0103ng tr\xF2n|tr\u0103ng s\xE1ng|tr\u0103ng khuy\u1EBFt",
+            star: "ng\xF4i sao|v\xEC sao|sao tr\u1EDDi|\xE1nh sao|sao b\u0103ng|mu\xF4n sao|nh\u1EEFng v\xEC sao",
+            sky: "b\u1EA7u tr\u1EDDi|tr\u1EDDi xanh|m\xE2y|\xE1ng m\xE2y|m\xE2y tr\u1EAFng|tr\u1EDDi cao|\u0111\xE1m m\xE2y|m\xE2y tr\xF4i",
+            heaven: "thi\xEAn \u0111\u01B0\u1EDDng|thi\xEAn \u0111\xE0ng|c\xF5i ti\xEAn|\u0111\u1ECBa \u0111\xE0ng|thi\xEAn gi\u1EDBi",
+            night: "\u0111\xEAm|\u0111\xEAm nay|m\xE0n \u0111\xEAm|n\u1EEDa \u0111\xEAm|\u0111\xEAm khuya|t\u1ED1i nay|\u0111\xEAm \u0111en|\u0111\xEAm d\xE0i",
+            dark: "b\xF3ng t\u1ED1i|t\u0103m t\u1ED1i|u t\u1ED1i|b\xF3ng \u0111\xEAm|t\u1ED1i t\u0103m|m\xE0n t\u1ED1i|b\xF3ng h\xECnh",
+            light: "\xE1nh s\xE1ng|t\u1ECFa s\xE1ng|l\u1EA5p l\xE1nh|r\u1EF1c r\u1EE1|s\xE1ng ng\u1EDDi|\xE1nh \u0111\xE8n|chi\u1EBFu s\xE1ng|lung linh|soi s\xE1ng",
+            heart: "tr\xE1i tim|con tim|tim|nh\u1ECBp tim|tim em|tim anh|t\xE2m h\u1ED3n",
+            love: "y\xEAu|t\xECnh y\xEAu|th\u01B0\u01A1ng|y\xEAu th\u01B0\u01A1ng|ng\u01B0\u1EDDi y\xEAu|y\xEAu em|y\xEAu anh|\xE1i t\xECnh|say \u0111\u1EAFm",
+            kiss: "h\xF4n|n\u1EE5 h\xF4n|m\xF4i|\u0111\xF4i m\xF4i|m\xF4i h\xF4n|h\xF4n nhau|b\u1EDD m\xF4i",
+            heartbreak: "tan v\u1EE1|tr\xE1i tim tan v\u1EE1|chia tay|\u0111au l\xF2ng|tim v\u1EE1|v\u1EE1 tan|tan n\xE1t|chia ly|x\xF3t xa",
+            tears: "n\u01B0\u1EDBc m\u1EAFt|kh\xF3c|gi\u1ECDt l\u1EC7|l\u1EC7 r\u01A1i|r\u01A1i l\u1EC7|kh\xF3c th\u1EA7m|b\u1EADt kh\xF3c|l\u1EC7 nh\xF2a",
+            money: "ti\u1EC1n|ti\u1EC1n b\u1EA1c|gi\xE0u|gi\xE0u c\xF3|\u0111\xF4 la|ti\u1EC1n t\u1EF7|b\u1EA1c ti\u1EC1n",
+            gold: "v\xE0ng|v\xE0ng son|\xE1nh v\xE0ng|d\xE1t v\xE0ng|ho\xE0ng kim|kim tuy\u1EBFn",
+            diamond: "kim c\u01B0\u01A1ng|\u0111\xE1 qu\xFD|ch\xE2u b\xE1u|ng\u1ECDc|nh\u1EABn kim c\u01B0\u01A1ng|trang s\u1EE9c",
+            crown: "v\u01B0\u01A1ng mi\u1EC7n|nh\xE0 vua|n\u1EEF ho\xE0ng|ho\xE0ng t\u1EED|c\xF4ng ch\xFAa|\xF4ng ho\xE0ng|vua",
+            fly: "bay|bay cao|bay l\xEAn|\u0111\xF4i c\xE1nh|tung c\xE1nh|ch\u1EAFp c\xE1nh|bay xa",
+            bird: "chim|c\xE1nh chim|chim non|lo\xE0i chim|chim s\u1EBB|chim \xE9n|b\u1ED3 c\xE2u|c\xE1nh \xE9n",
+            butterfly: "b\u01B0\u1EDBm|c\xE1nh b\u01B0\u1EDBm|con b\u01B0\u1EDBm|b\u01B0\u01A1m b\u01B0\u1EDBm",
+            flower: "hoa|\u0111\xF3a hoa|b\xF4ng hoa|n\u1EDF hoa|hoa n\u1EDF|c\xE1nh hoa|mu\xF4n hoa",
+            rose: "hoa h\u1ED3ng|\u0111\xF3a h\u1ED3ng|b\xF4ng h\u1ED3ng|h\u1ED3ng nhung",
+            ocean: "bi\u1EC3n|\u0111\u1EA1i d\u01B0\u01A1ng|bi\u1EC3n kh\u01A1i|s\xF3ng|con s\xF3ng|s\xF3ng bi\u1EC3n|bi\u1EC3n c\u1EA3",
+            water: "d\xF2ng n\u01B0\u1EDBc|n\u01B0\u1EDBc tr\xF4i|n\u01B0\u1EDBc ch\u1EA3y|d\xF2ng s\xF4ng|s\xF4ng|su\u1ED1i|b\u01A1i|con s\xF4ng",
+            wind: "gi\xF3|c\u01A1n gi\xF3|l\xE0n gi\xF3|gi\xF3 th\u1ED5i|gi\xF3 bay|heo may|th\u1ED5i|gi\xF3 m\xE1t",
+            smoke: "kh\xF3i|kh\xF3i thu\u1ED1c|h\xFAt thu\u1ED1c|l\xE0n kh\xF3i|\u0111i\u1EBFu thu\u1ED1c|kh\xF3i s\u01B0\u01A1ng",
+            electric: "\u0111i\u1EC7n|d\xF2ng \u0111i\u1EC7n|n\u0103ng l\u01B0\u1EE3ng|gi\u1EADt \u0111i\u1EC7n|\u0111i\u1EC7n gi\u1EADt|tia \u0111i\u1EC7n",
+            rainbow: "c\u1EA7u v\u1ED3ng|c\u1EA7u v\xF2ng|s\u1EAFc m\xE0u|b\u1EA3y s\u1EAFc|mu\xF4n m\xE0u",
+            fireworks: "ph\xE1o hoa|ph\xE1o b\xF4ng|b\u1EAFn ph\xE1o hoa|ph\xE1o",
+            party: "ti\u1EC7c|b\u1EEFa ti\u1EC7c|ti\u1EC7c t\xF9ng|\u0103n m\u1EEBng|qu\u1EA9y|l\u1EC5 h\u1ED9i|party|m\u1EDF ti\u1EC7c",
+            birthday: "sinh nh\u1EADt|ch\xFAc m\u1EEBng sinh nh\u1EADt|m\u1EEBng sinh nh\u1EADt|ng\xE0y sinh",
+            dance: "nh\u1EA3y|khi\xEAu v\u0169|nh\u1EA3y m\xFAa|v\u0169 \u0111i\u1EC7u|m\xFAa|\u0111i\u1EC7u nh\u1EA3y|l\u1EAFc l\u01B0|nh\xFAn nh\u1EA3y",
+            jump: "nh\u1EA3y l\xEAn|b\u1EADt nh\u1EA3y|nh\u1EA3y cao|b\u1EADt l\xEAn|nh\u1EA3y v\u1ECDt|tung t\u0103ng",
+            dream: "m\u01A1|gi\u1EA5c m\u01A1|m\u1ED9ng|m\u01A1 \u01B0\u1EDBc|\u01B0\u1EDBc m\u01A1|c\u01A1n m\u01A1|chi\xEAm bao|m\u1ED9ng m\u01A1",
+            ghost: "ma|b\xF3ng ma|h\u1ED3n ma|linh h\u1ED3n|h\u1ED3n|ma qu\xE1i",
+            angel: "thi\xEAn th\u1EA7n|thi\xEAn s\u1EE9|ti\xEAn n\u1EEF|thi\xEAn th\u1EA7n nh\u1ECF",
+            devil: "\xE1c qu\u1EF7|qu\u1EF7|\u0111\u1ECBa ng\u1EE5c|qu\u1EF7 d\u1EEF|ma qu\u1EF7|satan|\xE1c ma",
+            world: "th\u1EBF gi\u1EDBi|tr\xE1i \u0111\u1EA5t|th\u1EBF gian|h\xE0nh tinh|\u0111\u1ECBa c\u1EA7u|nh\xE2n gian|c\xF5i \u0111\u1EDDi",
+            space: "v\u0169 tr\u1EE5|thi\xEAn h\xE0|ng\xE2n h\xE0|kh\xF4ng gian|d\u1EA3i ng\xE2n h\xE0|tinh t\xFA",
+            rocket: "t\xEAn l\u1EEDa|c\u1EA5t c\xE1nh|phi thuy\u1EC1n|t\xE0u v\u0169 tr\u1EE5|ph\xF3ng l\xEAn",
+            time: "th\u1EDDi gian|m\xE3i m\xE3i|\u0111\u1ED3ng h\u1ED3|v\u0129nh vi\u1EC5n|th\u1EDDi kh\u1EAFc|n\u0103m th\xE1ng|gi\xE2y ph\xFAt|mu\xF4n \u0111\u1EDDi",
+            drive: "l\xE1i xe|xe|xa l\u1ED9|t\u1ED1c \u0111\u1ED9|ph\xF3ng xe|cao t\u1ED1c|con \u0111\u01B0\u1EDDng|ch\u1EA1y xe",
+            city: "th\xE0nh ph\u1ED1|ph\u1ED1|\u0111\u01B0\u1EDDng ph\u1ED1|ph\u1ED1 ph\u01B0\u1EDDng|\u0111\xF4 th\u1ECB|g\xF3c ph\u1ED1|s\xE0i g\xF2n|h\xE0 n\u1ED9i",
+            music: "\xE2m nh\u1EA1c|nh\u1EA1c|b\xE0i h\xE1t|giai \u0111i\u1EC7u|nh\u1ECBp \u0111i\u1EC7u|b\u1EA3n nh\u1EA1c|kh\xFAc ca|ti\u1EBFng nh\u1EA1c",
+            sing: "h\xE1t|ca h\xE1t|ti\u1EBFng h\xE1t|gi\u1ECDng h\xE1t|c\u1EA5t ti\u1EBFng|c\xE2u h\xE1t|gi\u1ECDng ca|ca vang",
+            boom: "n\u1ED5|b\xF9ng n\u1ED5|v\u1EE5 n\u1ED5|bom|n\u1ED5 tung|b\xF9m|\u0111\xF9ng",
+            champagne: "s\xE2m panh|s\xE2m banh|c\u1EA1n ly|n\xE2ng ly|r\u01B0\u1EE3u|ly r\u01B0\u1EE3u|c\u1EE5ng ly|say|chai|bia",
+            magic: "ph\xE9p thu\u1EADt|ph\xE9p m\xE0u|ma thu\u1EADt|\u1EA3o thu\u1EADt|th\u1EA7n ch\xFA|ph\xF9 th\u1EE7y|di\u1EC7u k\u1EF3|nhi\u1EC7m m\xE0u",
+            beach: "b\xE3i bi\u1EC3n|b\u1EDD bi\u1EC3n|h\xF2n \u0111\u1EA3o|\u0111\u1EA3o|c\xE1t tr\u1EAFng|h\xE0ng d\u1EEBa|b\u1EDD c\xE1t|c\xE2y d\u1EEBa",
+            christmas: "gi\xE1ng sinh|noel|\xF4ng gi\xE0 noel|chu\xF4ng ng\xE2n|tu\u1EA7n l\u1ED9c|m\xF9a gi\xE1ng sinh|\u0111\xEAm th\xE1nh",
+            red: "\u0111\u1ECF|m\xE0u \u0111\u1ECF|\u0111\u1ECF th\u1EAFm|\u0111\u1ECF r\u1EF1c|son \u0111\u1ECF",
+            blue: "xanh|xanh d\u01B0\u01A1ng|xanh bi\u1EBFc|xanh lam|m\xE0u xanh|xanh th\u1EB3m|xanh ng\u1EAFt",
+            green: "xanh l\xE1|xanh l\u1EE5c|xanh m\u01B0\u1EDBt|xanh non|m\xE0u xanh l\xE1|xanh r\xEC",
+            pink: "h\u1ED3ng|m\xE0u h\u1ED3ng|h\u1ED3ng ph\u1EA5n|h\u1ED3ng h\xE0o|h\u1ED3ng nh\u1EA1t",
+            purple: "t\xEDm|m\xE0u t\xEDm|t\xEDm bi\u1EBFc|t\xEDm than|hoa t\xEDm|t\xEDm ng\u1EAFt",
+            white: "tr\u1EAFng|m\xE0u tr\u1EAFng|tr\u1EAFng tinh|tr\u1EAFng x\xF3a|tinh kh\xF4i|tr\u1EAFng mu\u1ED1t",
+            black: "\u0111en|m\xE0u \u0111en|\u0111en t\u1ED1i|\u0111en l\xE1y|\u0111en huy\u1EC1n|\u0111en k\u1ECBt",
+            silver: "b\u1EA1c|\xE1nh b\u1EA1c|m\xE0u b\u1EA1c|b\u1EA1ch kim|b\xE0ng b\u1EA1c"
+          }
+        },
+        th: {
+          stop: "\u0E17\u0E35\u0E48|\u0E41\u0E25\u0E30|\u0E44\u0E21\u0E48|\u0E02\u0E2D\u0E07|\u0E43\u0E19|\u0E44\u0E14\u0E49|\u0E40\u0E1B\u0E47\u0E19|\u0E08\u0E30|\u0E21\u0E35|\u0E43\u0E2B\u0E49|\u0E01\u0E31\u0E1A|\u0E09\u0E31\u0E19|\u0E40\u0E18\u0E2D|\u0E01\u0E47|\u0E41\u0E25\u0E49\u0E27|\u0E27\u0E48\u0E32|\u0E19\u0E30|\u0E04\u0E23\u0E31\u0E1A|\u0E04\u0E48\u0E30|\u0E40\u0E23\u0E32",
+          c: {
+            fire: "\u0E44\u0E1F|\u0E40\u0E1B\u0E25\u0E27\u0E44\u0E1F|\u0E25\u0E38\u0E01\u0E44\u0E2B\u0E21\u0E49|\u0E44\u0E1F\u0E25\u0E38\u0E01|\u0E40\u0E1C\u0E32\u0E44\u0E2B\u0E21\u0E49|\u0E21\u0E2D\u0E14\u0E44\u0E2B\u0E21\u0E49|\u0E40\u0E1E\u0E25\u0E34\u0E07|\u0E44\u0E1F\u0E23\u0E4C",
+            rain: "\u0E1D\u0E19|\u0E1D\u0E19\u0E15\u0E01|\u0E2A\u0E32\u0E22\u0E1D\u0E19|\u0E40\u0E21\u0E47\u0E14\u0E1D\u0E19|\u0E2B\u0E22\u0E32\u0E14\u0E1D\u0E19|\u0E1D\u0E19\u0E1E\u0E23\u0E33",
+            storm: "\u0E1E\u0E32\u0E22\u0E38|\u0E1F\u0E49\u0E32\u0E23\u0E49\u0E2D\u0E07|\u0E21\u0E23\u0E2A\u0E38\u0E21|\u0E44\u0E15\u0E49\u0E1D\u0E38\u0E48\u0E19|\u0E40\u0E2E\u0E2D\u0E23\u0E34\u0E40\u0E04\u0E19|\u0E25\u0E21\u0E1E\u0E32\u0E22\u0E38",
+            lightning: "\u0E1F\u0E49\u0E32\u0E1C\u0E48\u0E32|\u0E2A\u0E32\u0E22\u0E1F\u0E49\u0E32|\u0E1F\u0E49\u0E32\u0E41\u0E25\u0E1A|\u0E2D\u0E31\u0E2A\u0E19\u0E35|\u0E1F\u0E49\u0E32\u0E04\u0E30\u0E19\u0E2D\u0E07",
+            snow: "\u0E2B\u0E34\u0E21\u0E30|\u0E40\u0E01\u0E25\u0E47\u0E14\u0E2B\u0E34\u0E21\u0E30|\u0E2B\u0E34\u0E21\u0E30\u0E15\u0E01|\u0E1B\u0E38\u0E22\u0E2B\u0E34\u0E21\u0E30",
+            cold: "\u0E2B\u0E19\u0E32\u0E27|\u0E40\u0E22\u0E47\u0E19\u0E0A\u0E32|\u0E19\u0E49\u0E33\u0E41\u0E02\u0E47\u0E07|\u0E40\u0E22\u0E37\u0E2D\u0E01\u0E40\u0E22\u0E47\u0E19|\u0E2B\u0E19\u0E32\u0E27\u0E40\u0E2B\u0E19\u0E47\u0E1A|\u0E41\u0E0A\u0E48\u0E41\u0E02\u0E47\u0E07|\u0E40\u0E2B\u0E19\u0E47\u0E1A\u0E2B\u0E19\u0E32\u0E27|\u0E44\u0E2D\u0E0B\u0E4C",
+            sun: "\u0E14\u0E27\u0E07\u0E2D\u0E32\u0E17\u0E34\u0E15\u0E22\u0E4C|\u0E41\u0E2A\u0E07\u0E41\u0E14\u0E14|\u0E15\u0E30\u0E27\u0E31\u0E19|\u0E41\u0E14\u0E14|\u0E1E\u0E23\u0E30\u0E2D\u0E32\u0E17\u0E34\u0E15\u0E22\u0E4C|\u0E23\u0E38\u0E48\u0E07\u0E2D\u0E23\u0E38\u0E13|\u0E2D\u0E32\u0E17\u0E34\u0E15\u0E22\u0E4C\u0E2D\u0E31\u0E2A\u0E14\u0E07|\u0E41\u0E2A\u0E07\u0E15\u0E30\u0E27\u0E31\u0E19",
+            summer: "\u0E24\u0E14\u0E39\u0E23\u0E49\u0E2D\u0E19|\u0E2B\u0E19\u0E49\u0E32\u0E23\u0E49\u0E2D\u0E19|\u0E0B\u0E31\u0E21\u0E40\u0E21\u0E2D\u0E23\u0E4C",
+            moon: "\u0E14\u0E27\u0E07\u0E08\u0E31\u0E19\u0E17\u0E23\u0E4C|\u0E08\u0E31\u0E19\u0E17\u0E23\u0E4C|\u0E1E\u0E23\u0E30\u0E08\u0E31\u0E19\u0E17\u0E23\u0E4C|\u0E41\u0E2A\u0E07\u0E08\u0E31\u0E19\u0E17\u0E23\u0E4C|\u0E08\u0E31\u0E19\u0E17\u0E23\u0E32|\u0E40\u0E14\u0E37\u0E2D\u0E19\u0E40\u0E1E\u0E47\u0E0D|\u0E14\u0E27\u0E07\u0E40\u0E14\u0E37\u0E2D\u0E19",
+            star: "\u0E14\u0E32\u0E27|\u0E14\u0E27\u0E07\u0E14\u0E32\u0E27|\u0E14\u0E32\u0E27\u0E15\u0E01|\u0E41\u0E2A\u0E07\u0E14\u0E32\u0E27|\u0E14\u0E32\u0E23\u0E32|\u0E2B\u0E21\u0E39\u0E48\u0E14\u0E32\u0E27",
+            sky: "\u0E17\u0E49\u0E2D\u0E07\u0E1F\u0E49\u0E32|\u0E1F\u0E32\u0E01\u0E1F\u0E49\u0E32|\u0E40\u0E21\u0E06|\u0E01\u0E49\u0E2D\u0E19\u0E40\u0E21\u0E06|\u0E19\u0E20\u0E32|\u0E40\u0E27\u0E2B\u0E32|\u0E1B\u0E25\u0E32\u0E22\u0E1F\u0E49\u0E32|\u0E02\u0E2D\u0E1A\u0E1F\u0E49\u0E32",
+            heaven: "\u0E2A\u0E27\u0E23\u0E23\u0E04\u0E4C|\u0E41\u0E14\u0E19\u0E2A\u0E27\u0E23\u0E23\u0E04\u0E4C|\u0E2A\u0E23\u0E27\u0E07\u0E2A\u0E27\u0E23\u0E23\u0E04\u0E4C|\u0E27\u0E34\u0E21\u0E32\u0E19|\u0E1E\u0E32\u0E23\u0E32\u0E44\u0E14\u0E0B\u0E4C",
+            night: "\u0E04\u0E37\u0E19\u0E19\u0E35\u0E49|\u0E04\u0E48\u0E33\u0E04\u0E37\u0E19|\u0E40\u0E17\u0E35\u0E48\u0E22\u0E07\u0E04\u0E37\u0E19|\u0E23\u0E32\u0E15\u0E23\u0E35|\u0E01\u0E25\u0E32\u0E07\u0E04\u0E37\u0E19|\u0E22\u0E32\u0E21\u0E04\u0E48\u0E33|\u0E23\u0E31\u0E15\u0E15\u0E34\u0E01\u0E32\u0E25|\u0E17\u0E31\u0E49\u0E07\u0E04\u0E37\u0E19",
+            dark: "\u0E04\u0E27\u0E32\u0E21\u0E21\u0E37\u0E14|\u0E21\u0E37\u0E14|\u0E21\u0E37\u0E14\u0E21\u0E34\u0E14|\u0E40\u0E07\u0E32|\u0E21\u0E37\u0E14\u0E21\u0E19|\u0E40\u0E07\u0E32\u0E21\u0E37\u0E14",
+            light: "\u0E41\u0E2A\u0E07|\u0E41\u0E2A\u0E07\u0E2A\u0E27\u0E48\u0E32\u0E07|\u0E2A\u0E48\u0E2D\u0E07\u0E41\u0E2A\u0E07|\u0E40\u0E1B\u0E25\u0E48\u0E07\u0E1B\u0E23\u0E30\u0E01\u0E32\u0E22|\u0E1B\u0E23\u0E30\u0E01\u0E32\u0E22|\u0E2A\u0E27\u0E48\u0E32\u0E07|\u0E40\u0E23\u0E37\u0E2D\u0E07\u0E41\u0E2A\u0E07|\u0E41\u0E2A\u0E07\u0E44\u0E1F|\u0E23\u0E30\u0E22\u0E34\u0E1A\u0E23\u0E30\u0E22\u0E31\u0E1A",
+            heart: "\u0E2B\u0E31\u0E27\u0E43\u0E08|\u0E14\u0E27\u0E07\u0E43\u0E08|\u0E43\u0E08\u0E09\u0E31\u0E19|\u0E43\u0E08\u0E40\u0E18\u0E2D|\u0E2E\u0E32\u0E23\u0E4C\u0E17|\u0E2B\u0E17\u0E31\u0E22",
+            love: "\u0E23\u0E31\u0E01|\u0E04\u0E27\u0E32\u0E21\u0E23\u0E31\u0E01|\u0E17\u0E35\u0E48\u0E23\u0E31\u0E01|\u0E04\u0E19\u0E23\u0E31\u0E01|\u0E2B\u0E25\u0E07\u0E23\u0E31\u0E01|\u0E23\u0E31\u0E01\u0E40\u0E18\u0E2D|\u0E40\u0E25\u0E34\u0E1F",
+            kiss: "\u0E08\u0E39\u0E1A|\u0E23\u0E34\u0E21\u0E1D\u0E35\u0E1B\u0E32\u0E01|\u0E2B\u0E2D\u0E21\u0E41\u0E01\u0E49\u0E21|\u0E08\u0E38\u0E21\u0E1E\u0E34\u0E15|\u0E04\u0E34\u0E2A",
+            heartbreak: "\u0E2D\u0E01\u0E2B\u0E31\u0E01|\u0E43\u0E08\u0E2A\u0E25\u0E32\u0E22|\u0E2B\u0E31\u0E27\u0E43\u0E08\u0E2A\u0E25\u0E32\u0E22|\u0E0A\u0E49\u0E33\u0E43\u0E08|\u0E43\u0E08\u0E1E\u0E31\u0E07|\u0E40\u0E08\u0E47\u0E1A\u0E0A\u0E49\u0E33|\u0E41\u0E15\u0E01\u0E2A\u0E25\u0E32\u0E22|\u0E40\u0E2A\u0E35\u0E22\u0E43\u0E08",
+            tears: "\u0E19\u0E49\u0E33\u0E15\u0E32|\u0E23\u0E49\u0E2D\u0E07\u0E44\u0E2B\u0E49|\u0E2B\u0E22\u0E14\u0E19\u0E49\u0E33\u0E15\u0E32|\u0E23\u0E48\u0E33\u0E44\u0E2B\u0E49|\u0E2A\u0E30\u0E2D\u0E37\u0E49\u0E19|\u0E04\u0E23\u0E32\u0E1A\u0E19\u0E49\u0E33\u0E15\u0E32",
+            money: "\u0E40\u0E07\u0E34\u0E19|\u0E40\u0E07\u0E34\u0E19\u0E17\u0E2D\u0E07|\u0E23\u0E48\u0E33\u0E23\u0E27\u0E22|\u0E40\u0E28\u0E23\u0E29\u0E10\u0E35|\u0E14\u0E2D\u0E25\u0E25\u0E32\u0E23\u0E4C|\u0E40\u0E07\u0E34\u0E19\u0E15\u0E23\u0E32|\u0E21\u0E31\u0E48\u0E07\u0E21\u0E35|\u0E23\u0E27\u0E22",
+            gold: "\u0E17\u0E2D\u0E07|\u0E17\u0E2D\u0E07\u0E04\u0E33|\u0E2A\u0E35\u0E17\u0E2D\u0E07|\u0E42\u0E01\u0E25\u0E14\u0E4C|\u0E17\u0E2D\u0E07\u0E04\u0E33\u0E40\u0E1B\u0E25\u0E27",
+            diamond: "\u0E40\u0E1E\u0E0A\u0E23|\u0E2D\u0E31\u0E0D\u0E21\u0E13\u0E35|\u0E44\u0E14\u0E21\u0E2D\u0E19\u0E14\u0E4C|\u0E40\u0E1E\u0E0A\u0E23\u0E1E\u0E25\u0E2D\u0E22|\u0E1B\u0E23\u0E30\u0E01\u0E32\u0E22\u0E40\u0E1E\u0E0A\u0E23",
+            crown: "\u0E21\u0E07\u0E01\u0E38\u0E0E|\u0E23\u0E32\u0E0A\u0E32|\u0E23\u0E32\u0E0A\u0E34\u0E19\u0E35|\u0E01\u0E29\u0E31\u0E15\u0E23\u0E34\u0E22\u0E4C|\u0E40\u0E08\u0E49\u0E32\u0E0A\u0E32\u0E22|\u0E40\u0E08\u0E49\u0E32\u0E2B\u0E0D\u0E34\u0E07|\u0E04\u0E27\u0E35\u0E19",
+            fly: "\u0E1A\u0E34\u0E19|\u0E42\u0E1A\u0E22\u0E1A\u0E34\u0E19|\u0E1B\u0E35\u0E01|\u0E1A\u0E34\u0E19\u0E44\u0E1B|\u0E42\u0E1C\u0E1A\u0E34\u0E19|\u0E17\u0E30\u0E22\u0E32\u0E19|\u0E01\u0E32\u0E07\u0E1B\u0E35\u0E01",
+            bird: "\u0E19\u0E01|\u0E19\u0E01\u0E19\u0E49\u0E2D\u0E22|\u0E27\u0E34\u0E2B\u0E04|\u0E1D\u0E39\u0E07\u0E19\u0E01|\u0E19\u0E01\u0E1E\u0E34\u0E23\u0E32\u0E1A|\u0E1B\u0E31\u0E01\u0E29\u0E32",
+            butterfly: "\u0E1C\u0E35\u0E40\u0E2A\u0E37\u0E49\u0E2D|\u0E1A\u0E31\u0E15\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E1F\u0E25\u0E32\u0E22",
+            flower: "\u0E14\u0E2D\u0E01\u0E44\u0E21\u0E49|\u0E1A\u0E38\u0E1B\u0E1C\u0E32|\u0E1C\u0E25\u0E34\u0E1A\u0E32\u0E19|\u0E40\u0E1A\u0E48\u0E07\u0E1A\u0E32\u0E19|\u0E21\u0E32\u0E25\u0E35|\u0E01\u0E25\u0E35\u0E1A\u0E14\u0E2D\u0E01",
+            rose: "\u0E01\u0E38\u0E2B\u0E25\u0E32\u0E1A|\u0E14\u0E2D\u0E01\u0E01\u0E38\u0E2B\u0E25\u0E32\u0E1A|\u0E42\u0E23\u0E2A",
+            ocean: "\u0E17\u0E30\u0E40\u0E25|\u0E21\u0E2B\u0E32\u0E2A\u0E21\u0E38\u0E17\u0E23|\u0E04\u0E25\u0E37\u0E48\u0E19|\u0E17\u0E49\u0E2D\u0E07\u0E17\u0E30\u0E40\u0E25|\u0E2A\u0E21\u0E38\u0E17\u0E23|\u0E0A\u0E25\u0E18\u0E35|\u0E40\u0E01\u0E25\u0E35\u0E22\u0E27\u0E04\u0E25\u0E37\u0E48\u0E19",
+            water: "\u0E2A\u0E32\u0E22\u0E19\u0E49\u0E33|\u0E41\u0E21\u0E48\u0E19\u0E49\u0E33|\u0E27\u0E48\u0E32\u0E22\u0E19\u0E49\u0E33|\u0E18\u0E32\u0E23\u0E32|\u0E25\u0E33\u0E18\u0E32\u0E23|\u0E19\u0E49\u0E33\u0E44\u0E2B\u0E25",
+            wind: "\u0E2A\u0E32\u0E22\u0E25\u0E21|\u0E25\u0E21\u0E1E\u0E31\u0E14|\u0E25\u0E21\u0E2B\u0E19\u0E32\u0E27|\u0E25\u0E21\u0E40\u0E22\u0E47\u0E19|\u0E1E\u0E31\u0E14\u0E1E\u0E32|\u0E25\u0E21\u0E42\u0E0A\u0E22",
+            smoke: "\u0E04\u0E27\u0E31\u0E19|\u0E04\u0E27\u0E31\u0E19\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48|\u0E1A\u0E38\u0E2B\u0E23\u0E35\u0E48|\u0E2B\u0E21\u0E2D\u0E01\u0E04\u0E27\u0E31\u0E19|\u0E2A\u0E39\u0E1A",
+            electric: "\u0E44\u0E1F\u0E1F\u0E49\u0E32|\u0E1E\u0E25\u0E31\u0E07\u0E07\u0E32\u0E19|\u0E01\u0E23\u0E30\u0E41\u0E2A\u0E44\u0E1F|\u0E44\u0E1F\u0E0A\u0E47\u0E2D\u0E15|\u0E0A\u0E47\u0E2D\u0E15|\u0E2D\u0E34\u0E40\u0E25\u0E47\u0E01\u0E17\u0E23\u0E34\u0E01|\u0E40\u0E2D\u0E40\u0E19\u0E2D\u0E23\u0E4C\u0E08\u0E35\u0E49",
+            rainbow: "\u0E2A\u0E32\u0E22\u0E23\u0E38\u0E49\u0E07|\u0E23\u0E38\u0E49\u0E07|\u0E23\u0E38\u0E49\u0E07\u0E01\u0E34\u0E19\u0E19\u0E49\u0E33|\u0E2B\u0E25\u0E32\u0E01\u0E2A\u0E35|\u0E40\u0E23\u0E19\u0E42\u0E1A\u0E27\u0E4C",
+            fireworks: "\u0E1E\u0E25\u0E38|\u0E14\u0E2D\u0E01\u0E44\u0E21\u0E49\u0E44\u0E1F|\u0E08\u0E38\u0E14\u0E1E\u0E25\u0E38|\u0E44\u0E1F\u0E1E\u0E30\u0E40\u0E19\u0E35\u0E22\u0E07",
+            party: "\u0E1B\u0E32\u0E23\u0E4C\u0E15\u0E35\u0E49|\u0E07\u0E32\u0E19\u0E40\u0E25\u0E35\u0E49\u0E22\u0E07|\u0E09\u0E25\u0E2D\u0E07|\u0E40\u0E09\u0E25\u0E34\u0E21\u0E09\u0E25\u0E2D\u0E07|\u0E2A\u0E31\u0E07\u0E2A\u0E23\u0E23\u0E04\u0E4C|\u0E1B\u0E32\u0E15\u0E35\u0E49",
+            birthday: "\u0E27\u0E31\u0E19\u0E40\u0E01\u0E34\u0E14|\u0E2A\u0E38\u0E02\u0E2A\u0E31\u0E19\u0E15\u0E4C\u0E27\u0E31\u0E19\u0E40\u0E01\u0E34\u0E14|\u0E40\u0E1A\u0E34\u0E23\u0E4C\u0E18\u0E40\u0E14\u0E22\u0E4C|\u0E41\u0E2E\u0E1B\u0E1B\u0E35\u0E49\u0E40\u0E1A\u0E34\u0E23\u0E4C\u0E18\u0E40\u0E14\u0E22\u0E4C",
+            dance: "\u0E40\u0E15\u0E49\u0E19|\u0E40\u0E15\u0E49\u0E19\u0E23\u0E33|\u0E23\u0E48\u0E32\u0E22\u0E23\u0E33|\u0E41\u0E14\u0E19\u0E0B\u0E4C|\u0E02\u0E22\u0E31\u0E1A|\u0E42\u0E22\u0E01",
+            jump: "\u0E01\u0E23\u0E30\u0E42\u0E14\u0E14|\u0E42\u0E14\u0E14|\u0E01\u0E23\u0E30\u0E42\u0E08\u0E19|\u0E08\u0E31\u0E4A\u0E21\u0E1E\u0E4C",
+            dream: "\u0E1D\u0E31\u0E19|\u0E04\u0E27\u0E32\u0E21\u0E1D\u0E31\u0E19|\u0E1D\u0E31\u0E19\u0E14\u0E35|\u0E1D\u0E31\u0E19\u0E23\u0E49\u0E32\u0E22|\u0E14\u0E23\u0E35\u0E21|\u0E43\u0E1D\u0E48\u0E1D\u0E31\u0E19",
+            ghost: "\u0E27\u0E34\u0E0D\u0E0D\u0E32\u0E13|\u0E20\u0E39\u0E15\u0E1C\u0E35|\u0E1C\u0E35\u0E23\u0E49\u0E32\u0E22|\u0E1C\u0E35\u0E2A\u0E32\u0E07|\u0E42\u0E01\u0E2A\u0E15\u0E4C|\u0E14\u0E27\u0E07\u0E27\u0E34\u0E0D\u0E0D\u0E32\u0E13",
+            angel: "\u0E19\u0E32\u0E07\u0E1F\u0E49\u0E32|\u0E40\u0E17\u0E27\u0E14\u0E32|\u0E40\u0E17\u0E1E\u0E18\u0E34\u0E14\u0E32|\u0E41\u0E2D\u0E07\u0E40\u0E08\u0E34\u0E49\u0E25",
+            devil: "\u0E1B\u0E35\u0E28\u0E32\u0E08|\u0E1B\u0E34\u0E28\u0E32\u0E08|\u0E0B\u0E32\u0E15\u0E32\u0E19|\u0E19\u0E23\u0E01|\u0E2D\u0E2A\u0E39\u0E23|\u0E22\u0E21\u0E17\u0E39\u0E15",
+            world: "\u0E42\u0E25\u0E01|\u0E42\u0E25\u0E01\u0E43\u0E1A\u0E19\u0E35\u0E49|\u0E17\u0E31\u0E49\u0E07\u0E42\u0E25\u0E01|\u0E1E\u0E34\u0E20\u0E1E|\u0E14\u0E32\u0E27\u0E40\u0E04\u0E23\u0E32\u0E30\u0E2B\u0E4C|\u0E40\u0E27\u0E34\u0E25\u0E14\u0E4C",
+            space: "\u0E08\u0E31\u0E01\u0E23\u0E27\u0E32\u0E25|\u0E2D\u0E27\u0E01\u0E32\u0E28|\u0E01\u0E32\u0E41\u0E25\u0E47\u0E01\u0E0B\u0E35\u0E48|\u0E17\u0E32\u0E07\u0E0A\u0E49\u0E32\u0E07\u0E40\u0E1C\u0E37\u0E2D\u0E01|\u0E40\u0E2D\u0E01\u0E20\u0E1E|\u0E14\u0E32\u0E23\u0E32\u0E08\u0E31\u0E01\u0E23",
+            rocket: "\u0E08\u0E23\u0E27\u0E14|\u0E1B\u0E25\u0E48\u0E2D\u0E22\u0E08\u0E23\u0E27\u0E14|\u0E22\u0E32\u0E19\u0E2D\u0E27\u0E01\u0E32\u0E28|\u0E23\u0E47\u0E2D\u0E04\u0E40\u0E01\u0E47\u0E15",
+            time: "\u0E40\u0E27\u0E25\u0E32|\u0E19\u0E32\u0E2C\u0E34\u0E01\u0E32|\u0E15\u0E25\u0E2D\u0E14\u0E44\u0E1B|\u0E19\u0E34\u0E23\u0E31\u0E19\u0E14\u0E23\u0E4C|\u0E0A\u0E31\u0E48\u0E27\u0E19\u0E34\u0E23\u0E31\u0E19\u0E14\u0E23\u0E4C|\u0E01\u0E32\u0E25\u0E40\u0E27\u0E25\u0E32|\u0E15\u0E25\u0E2D\u0E14\u0E01\u0E32\u0E25",
+            drive: "\u0E02\u0E31\u0E1A\u0E23\u0E16|\u0E23\u0E16|\u0E16\u0E19\u0E19|\u0E17\u0E32\u0E07\u0E14\u0E48\u0E27\u0E19|\u0E04\u0E27\u0E32\u0E21\u0E40\u0E23\u0E47\u0E27|\u0E44\u0E2E\u0E40\u0E27\u0E22\u0E4C|\u0E0B\u0E34\u0E48\u0E07|\u0E1A\u0E36\u0E48\u0E07",
+            city: "\u0E40\u0E21\u0E37\u0E2D\u0E07|\u0E43\u0E19\u0E40\u0E21\u0E37\u0E2D\u0E07|\u0E21\u0E2B\u0E32\u0E19\u0E04\u0E23|\u0E19\u0E04\u0E23|\u0E15\u0E31\u0E27\u0E40\u0E21\u0E37\u0E2D\u0E07|\u0E01\u0E23\u0E38\u0E07\u0E40\u0E17\u0E1E|\u0E0B\u0E34\u0E15\u0E35\u0E49",
+            music: "\u0E14\u0E19\u0E15\u0E23\u0E35|\u0E40\u0E1E\u0E25\u0E07|\u0E17\u0E33\u0E19\u0E2D\u0E07|\u0E08\u0E31\u0E07\u0E2B\u0E27\u0E30|\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E40\u0E1E\u0E25\u0E07|\u0E1A\u0E17\u0E40\u0E1E\u0E25\u0E07|\u0E21\u0E34\u0E27\u0E2A\u0E34\u0E01|\u0E17\u0E48\u0E27\u0E07\u0E17\u0E33\u0E19\u0E2D\u0E07",
+            sing: "\u0E23\u0E49\u0E2D\u0E07\u0E40\u0E1E\u0E25\u0E07|\u0E02\u0E31\u0E1A\u0E23\u0E49\u0E2D\u0E07|\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E23\u0E49\u0E2D\u0E07|\u0E19\u0E49\u0E33\u0E40\u0E2A\u0E35\u0E22\u0E07|\u0E02\u0E31\u0E1A\u0E02\u0E32\u0E19",
+            boom: "\u0E23\u0E30\u0E40\u0E1A\u0E34\u0E14|\u0E1A\u0E36\u0E49\u0E21|\u0E15\u0E39\u0E21|\u0E1A\u0E39\u0E21|\u0E1B\u0E31\u0E07",
+            champagne: "\u0E41\u0E0A\u0E21\u0E40\u0E1B\u0E0D|\u0E0A\u0E19\u0E41\u0E01\u0E49\u0E27|\u0E44\u0E0A\u0E42\u0E22|\u0E40\u0E2B\u0E25\u0E49\u0E32|\u0E44\u0E27\u0E19\u0E4C|\u0E40\u0E21\u0E32|\u0E02\u0E27\u0E14",
+            magic: "\u0E40\u0E27\u0E17\u0E21\u0E19\u0E15\u0E23\u0E4C|\u0E21\u0E19\u0E15\u0E23\u0E4C|\u0E21\u0E32\u0E22\u0E32\u0E01\u0E25|\u0E04\u0E32\u0E16\u0E32|\u0E40\u0E21\u0E08\u0E34\u0E01|\u0E21\u0E2B\u0E31\u0E28\u0E08\u0E23\u0E23\u0E22\u0E4C|\u0E41\u0E21\u0E48\u0E21\u0E14",
+            beach: "\u0E0A\u0E32\u0E22\u0E2B\u0E32\u0E14|\u0E2B\u0E32\u0E14\u0E17\u0E23\u0E32\u0E22|\u0E0A\u0E32\u0E22\u0E17\u0E30\u0E40\u0E25|\u0E15\u0E49\u0E19\u0E21\u0E30\u0E1E\u0E23\u0E49\u0E32\u0E27|\u0E23\u0E34\u0E21\u0E2B\u0E32\u0E14|\u0E1A\u0E35\u0E0A",
+            christmas: "\u0E04\u0E23\u0E34\u0E2A\u0E15\u0E4C\u0E21\u0E32\u0E2A|\u0E0B\u0E32\u0E19\u0E15\u0E49\u0E32|\u0E0B\u0E32\u0E19\u0E15\u0E32\u0E04\u0E25\u0E2D\u0E2A|\u0E40\u0E21\u0E2D\u0E23\u0E4C\u0E23\u0E35\u0E48\u0E04\u0E23\u0E34\u0E2A\u0E15\u0E4C\u0E21\u0E32\u0E2A|\u0E01\u0E27\u0E32\u0E07\u0E40\u0E23\u0E19\u0E40\u0E14\u0E35\u0E22\u0E23\u0E4C",
+            red: "\u0E2A\u0E35\u0E41\u0E14\u0E07|\u0E41\u0E14\u0E07|\u0E41\u0E14\u0E07\u0E09\u0E32\u0E19|\u0E41\u0E14\u0E07\u0E01\u0E48\u0E33",
+            blue: "\u0E2A\u0E35\u0E1F\u0E49\u0E32|\u0E2A\u0E35\u0E19\u0E49\u0E33\u0E40\u0E07\u0E34\u0E19|\u0E1F\u0E49\u0E32\u0E04\u0E23\u0E32\u0E21|\u0E2A\u0E35\u0E04\u0E23\u0E32\u0E21|\u0E1A\u0E25\u0E39",
+            green: "\u0E2A\u0E35\u0E40\u0E02\u0E35\u0E22\u0E27|\u0E40\u0E02\u0E35\u0E22\u0E27|\u0E40\u0E02\u0E35\u0E22\u0E27\u0E02\u0E08\u0E35|\u0E01\u0E23\u0E35\u0E19",
+            pink: "\u0E2A\u0E35\u0E0A\u0E21\u0E1E\u0E39|\u0E0A\u0E21\u0E1E\u0E39|\u0E1E\u0E34\u0E07\u0E04\u0E4C|\u0E1E\u0E34\u0E49\u0E07\u0E04\u0E4C",
+            purple: "\u0E2A\u0E35\u0E21\u0E48\u0E27\u0E07|\u0E21\u0E48\u0E27\u0E07|\u0E40\u0E1E\u0E2D\u0E23\u0E4C\u0E40\u0E1E\u0E34\u0E25",
+            white: "\u0E2A\u0E35\u0E02\u0E32\u0E27|\u0E02\u0E32\u0E27|\u0E02\u0E32\u0E27\u0E1A\u0E23\u0E34\u0E2A\u0E38\u0E17\u0E18\u0E34\u0E4C|\u0E02\u0E32\u0E27\u0E42\u0E1E\u0E25\u0E19|\u0E44\u0E27\u0E17\u0E4C",
+            black: "\u0E2A\u0E35\u0E14\u0E33|\u0E14\u0E33\u0E21\u0E37\u0E14|\u0E41\u0E1A\u0E25\u0E47\u0E04|\u0E21\u0E37\u0E14\u0E14\u0E33",
+            silver: "\u0E2A\u0E35\u0E40\u0E07\u0E34\u0E19|\u0E40\u0E07\u0E34\u0E19\u0E22\u0E27\u0E07|\u0E0B\u0E34\u0E25\u0E40\u0E27\u0E2D\u0E23\u0E4C"
+          }
+        },
+        id: {
+          stop: "yang|dan|kamu|tidak|nggak|gak|bisa|sudah|aja|saja|banget|karena|kalau|untuk|dengan|tapi|ini|itu|lagi|dong",
+          c: {
+            fire: "api|terbakar|membakar|bakar|kobaran|berkobar|nyala api|membara|bara",
+            rain: "hujan|gerimis|kehujanan|rintik hujan|hujan turun|rinai",
+            storm: "badai|guntur|topan|prahara|angin ribut|badai petir",
+            lightning: "kilat|petir|halilintar|sambaran petir",
+            snow: "salju|bersalju|butiran salju|kepingan salju",
+            cold: "dingin|beku|membeku|kedinginan|dinginnya|es batu",
+            sun: "matahari|mentari|sinar mentari|fajar|senja|terbenam|surya|sang surya",
+            summer: "musim panas|kemarau|musim kemarau|summer",
+            moon: "rembulan|purnama|sinar bulan|cahaya bulan|sang bulan|bulan purnama",
+            star: "bintang|bintang-bintang|gemintang|bintang jatuh|kartika",
+            sky: "langit|awan|cakrawala|langit biru|awan-awan",
+            heaven: "surga|syurga|nirwana|firdaus|kayangan",
+            night: "malam|malam ini|tengah malam|malam-malam|semalam|semalaman",
+            dark: "gelap|kegelapan|bayangan|bayang|kelam|gulita|bayang-bayang",
+            light: "cahaya|terang|bersinar|sinar|bercahaya|menyinari|berkilau|benderang|pelita",
+            heart: "hati|jantung|hatiku|hatimu|jantungku|kalbu|sanubari",
+            love: "cinta*|sayang|kasihku|kekasih|mencinta*|dicinta*|jatuh cinta|kasih sayang",
+            kiss: "cium|ciuman|mencium|kecup|kecupan|bibir|bibirmu|menciummu",
+            heartbreak: "patah hati|sakit hati|hancur hati|hatiku hancur|luka hati|putus cinta|hati yang patah",
+            tears: "air mata|menangis|tangis|tangisan|nangis|air mataku|isak",
+            money: "uang|duit|kaya raya|harta|dolar|fulus|cuan|kekayaan|rupiah",
+            gold: "emas|keemasan|kencana",
+            diamond: "berlian|intan|permata|perhiasan|mutiara",
+            crown: "mahkota|raja|ratu|pangeran|putri|baginda",
+            fly: "terbang|sayap|sayapku|melayang|mengepak|beterbangan|terbanglah",
+            bird: "burung|merpati|camar|burung-burung|elang|kenari",
+            butterfly: "kupu-kupu|rama-rama",
+            flower: "bunga|kembang|mekar|bermekaran|bunga-bunga|kuntum|berbunga",
+            rose: "mawar|bunga mawar|mawar merah",
+            ocean: "laut|lautan|samudra|samudera|ombak|gelombang",
+            water: "sungai|berenang|aliran air|air mengalir|arus sungai|danau|mata air",
+            wind: "angin|semilir|hembusan|berhembus|bayu|angin malam|tiupan",
+            smoke: "asap|merokok|rokok|kepulan asap|berasap",
+            electric: "listrik|energi|setrum|tersetrum|elektrik|getaran",
+            rainbow: "pelangi|warna-warni|bianglala|warna warni",
+            fireworks: "kembang api|petasan|mercon",
+            party: "pesta|berpesta|perayaan|merayakan|rayakan|pesta pora|party|dugem",
+            birthday: "ulang tahun|ultah|hari jadi|selamat ulang tahun|hari lahir",
+            dance: "menari|tari|tarian|berdansa|dansa|joget|bergoyang|goyang|penari",
+            jump: "lompat|melompat|loncat|meloncat|lompatan|berlompatan",
+            dream: "mimpi|bermimpi|impian|mimpiku|impianku|mimpi-mimpi",
+            ghost: "hantu|roh|arwah|jiwa|siluman",
+            angel: "malaikat|bidadari|peri",
+            devil: "setan|iblis|neraka|syaitan|jahanam",
+            world: "dunia|bumi|jagat|semesta|planet|duniaku",
+            space: "angkasa|galaksi|alam semesta|semesta raya|kosmos|antariksa|bima sakti",
+            rocket: "roket|meluncur|lepas landas|peluncuran",
+            time: "waktu|selamanya|jam|abadi|keabadian|detik|selama-lamanya",
+            drive: "mobil|mengemudi|menyetir|jalan raya|kebut|ngebut|kecepatan|jalan tol",
+            city: "kota|jalanan|perkotaan|ibukota|metropolitan|jakarta",
+            music: "musik|lagu|melodi|irama|nada|lantunan|alunan",
+            sing: "bernyanyi|nyanyi|menyanyi|nyanyian|suara|bersenandung|senandung|melantunkan",
+            boom: "ledakan|meledak|bom|dentuman|duar|boom",
+            champagne: "sampanye|bersulang|minum|anggur|botol|mabuk|cheers",
+            magic: "sihir|ajaib|keajaiban|mantra|penyihir|sulap|magis",
+            beach: "pantai|pulau|pasir|nyiur|pohon kelapa|tepi pantai|pesisir",
+            christmas: "natal|sinterklas|santa|lonceng|malam kudus|selamat natal",
+            red: "merah|kemerahan|merah merona|merona",
+            blue: "biru|kebiruan|biru laut|membiru",
+            green: "hijau|kehijauan|menghijau",
+            pink: "merah muda|pink|merah jambu",
+            purple: "ungu|lembayung|violet|keunguan",
+            white: "putih|memutih|seputih",
+            black: "hitam|kehitaman|menghitam|sehitam|legam",
+            silver: "perak|keperakan|silver"
+          }
+        },
+        ms: {
+          stop: "yang|dan|tak|kau|boleh|kerana|sahaja|takkan|dah|nak|pun|bukan|kita|dengan|tetapi|engkau|mahu|sekali|lah|kan",
+          c: {
+            fire: "api|terbakar|membakar|bakar|nyala|marak|membara|bara",
+            rain: "hujan|gerimis|renyai|hujan turun|titisan hujan|rintik",
+            storm: "ribut|badai|taufan|guruh|angin ribut",
+            lightning: "kilat|petir|halilintar|panahan petir",
+            snow: "salji|bersalji|kepingan salji|emping salji",
+            cold: "sejuk|dingin|beku|membeku|kesejukan|ais|dinginnya",
+            sun: "matahari|mentari|suria|fajar|senja|terbenam|sinaran mentari|sang suria",
+            summer: "musim panas|kemarau|summer",
+            moon: "rembulan|purnama|sinar bulan|cahaya bulan|bulan purnama|sang bulan",
+            star: "bintang|bintang-bintang|gemintang|bintang jatuh|kejora",
+            sky: "langit|awan|awanan|cakerawala|awan biru",
+            heaven: "syurga|surga|kayangan|firdaus|nirwana",
+            night: "malam|malam ini|tengah malam|malam-malam|semalaman|malam tadi",
+            dark: "gelap|kegelapan|bayang|bayangan|kelam|gelita|bayang-bayang",
+            light: "cahaya|terang|bersinar|sinar|bercahaya|sinaran|menyinari|berkilau|gemerlap",
+            heart: "hati|jantung|hatiku|hatimu|kalbu|sanubari",
+            love: "cinta*|sayang|kasih|kekasih|mencinta*|jatuh cinta|kasihku",
+            kiss: "cium|ciuman|mencium|kucup|kucupan|bibir|bibirmu",
+            heartbreak: "patah hati|kecewa|hancur hati|luka hati|hati yang luka|putus cinta|merana",
+            tears: "air mata|airmata|menangis|tangis|tangisan|esak|nangis",
+            money: "wang|duit|kaya raya|harta|ringgit|dolar|kekayaan|berduit",
+            gold: "emas|keemasan|kencana",
+            diamond: "berlian|intan|permata|mutiara|delima",
+            crown: "mahkota|raja|ratu|permaisuri|putera|puteri|baginda|sultan",
+            fly: "terbang|sayap|sayapku|melayang|berterbangan|kepak|terbanglah",
+            bird: "burung|merpati|camar|helang|burung-burung|pipit",
+            butterfly: "rama-rama|kupu-kupu|rama rama",
+            flower: "bunga|kembang|mekar|bunga-bunga|kuntum|bermekaran",
+            rose: "mawar|ros|bunga mawar|bunga ros",
+            ocean: "laut|lautan|samudera|ombak|gelombang|segara|samudra",
+            water: "sungai|berenang|aliran air|air mengalir|tasik|arus",
+            wind: "angin|bayu|hembusan|berhembus|semilir|pawana|angin malam",
+            smoke: "asap|merokok|rokok|berasap|kepulan",
+            electric: "elektrik|letrik|renjatan|kejutan elektrik|tenaga elektrik|energi",
+            rainbow: "pelangi|warna-warni|bianglala",
+            fireworks: "bunga api|mercun|percikan bunga api",
+            party: "parti|pesta|berpesta|perayaan|meraikan|raikan|keramaian",
+            birthday: "hari jadi|harijadi|ulang tahun|selamat hari jadi|hari lahir",
+            dance: "menari|tarian|tari|berdansa|dansa|joget|berjoget|bergoyang|penari",
+            jump: "lompat|melompat|loncat|meloncat|lonjak|melonjak",
+            dream: "mimpi|bermimpi|impian|mimpiku|igauan|angan-angan",
+            ghost: "hantu|roh|arwah|jiwa|pontianak",
+            angel: "malaikat|bidadari|pari-pari|peri",
+            devil: "syaitan|iblis|neraka|setan|jahanam",
+            world: "dunia|bumi|alam|jagat|planet|duniaku",
+            space: "angkasa|galaksi|alam semesta|semesta|kosmos|bima sakti|angkasa lepas",
+            rocket: "roket|meluncur|berlepas|pelancaran|lepas landas",
+            time: "masa|waktu|selamanya|jam|abadi|keabadian|saat|detik|selama-lamanya",
+            drive: "kereta|memandu|pandu|lebuh raya|jalan raya|laju|kelajuan|memecut",
+            city: "bandar|kota|jalanan|lorong|metropolitan|kuala lumpur|bandaraya",
+            music: "muzik|lagu|melodi|irama|nada|alunan|rentak",
+            sing: "menyanyi|nyanyi|bernyanyi|nyanyian|suara|bersenandung|dendang|berdendang",
+            boom: "letupan|meletup|bom|dentuman|boom|ledakan|meledak",
+            champagne: "champagne|syampein|bersulang|minum|botol|mabuk|anggur",
+            magic: "sihir|ajaib|keajaiban|mantera|magis|silap mata|ahli sihir",
+            beach: "pantai|pulau|pasir|nyiur|pohon kelapa|tepi pantai|persisiran|pesisir",
+            christmas: "krismas|santa|santa claus|loceng|selamat hari krismas|rusa kutub",
+            red: "merah|kemerahan|merah menyala|merona",
+            blue: "biru|kebiruan|biru laut|membiru",
+            green: "hijau|kehijauan|menghijau",
+            pink: "merah jambu|pink|merah muda",
+            purple: "ungu|lembayung|keunguan|violet",
+            white: "putih|memutih|seputih|putih bersih",
+            black: "hitam|kehitaman|menghitam|sehitam|legam",
+            silver: "perak|keperakan|silver"
+          }
+        },
+        tl: {
+          stop: "ang|ng|mga|sa|ko|mo|ay|na|hindi|ikaw|ako|kita|natin|tayo|lang|pa|ba|kung|naman|siya",
+          c: {
+            fire: "apoy|nag-aapoy|nagliliyab|liyab|alab|nag-aalab|sunog|nasusunog",
+            rain: "ulan|umuulan|patak ng ulan|maulan|bumubuhos|ambon|ulan-ulan",
+            storm: "bagyo|unos|kulog|delubyo|daluyong|bagyong",
+            lightning: "kidlat|lintik|kumikidlat|kulog at kidlat",
+            snow: "niyebe|nyebe|snow",
+            cold: "lamig|malamig|ginaw|giniginaw|yelo|nagyeyelo",
+            sun: "sikat ng araw|sinag ng araw|haring araw|liwayway|bukang-liwayway|takipsilim|dapithapon|paglubog ng araw|pagsikat ng araw",
+            summer: "tag-init|tag-araw|summer|tagaraw|taginit",
+            moon: "buwan|liwanag ng buwan|bilog na buwan|sinag ng buwan|kabilugan ng buwan",
+            star: "bituin|mga bituin|bituing|tala|mga tala",
+            sky: "langit|ulap|kalangitan|alapaap|himpapawid|mga ulap",
+            heaven: "paraiso|paradiso|kaluwalhatian|kaharian ng langit|langit ko",
+            night: "gabi|gabing|hatinggabi|ngayong gabi|magdamag|gabi-gabi",
+            dark: "dilim|madilim|kadiliman|anino|karimlan|dumilim",
+            light: "liwanag|ilaw|kinang|kumikinang|nagniningning|ningning|maliwanag|sinag|kislap|kumikislap",
+            heart: "puso|pusong|puso ko|damdamin|dibdib",
+            love: "mahal|pag-ibig|minamahal|mahal kita|iniibig|sinta|irog|giliw|pagmamahal",
+            kiss: "halik|hinalikan|halikan|humalik|labi|mga labi",
+            heartbreak: "wasak na puso|pusong wasak|sawi|nasaktan|sugatang puso|bigo|durog|dinurog",
+            tears: "luha|umiiyak|iyak|lumuluha|mga luha|luhang|naiiyak",
+            money: "pera|salapi|yaman|mayaman|kayamanan|piso|dolyar|datung",
+            gold: "ginto|ginintuan|gintong|kulay ginto",
+            diamond: "diyamante|brilyante|hiyas|alahas|diamante",
+            crown: "korona|hari|reyna|prinsipe|prinsesa|kaharian",
+            fly: "lumipad|lilipad|lipad|pakpak|lumilipad|paglipad|liparin",
+            bird: "ibon|mga ibon|kalapati|agila|ibong",
+            butterfly: "paru-paro|paruparo|mariposa",
+            flower: "bulaklak|mga bulaklak|namumulaklak|sampaguita|mamukadkad|bumukadkad",
+            rose: "rosas|mga rosas|pulang rosas|rosa",
+            ocean: "dagat|karagatan|alon|mga alon|laot",
+            water: "tubig|ilog|lumangoy|langoy|batis|agos|sapa",
+            wind: "hangin|simoy|simoy ng hangin|ihip|hanging|amihan|habagat",
+            smoke: "usok|naninigarilyo|sigarilyo|yosi|umuusok",
+            electric: "kuryente|enerhiya|kuryenteng|nakukuryente|elektrisidad|boltahe",
+            rainbow: "bahaghari|bahag-hari|kulay-kulay|rainbow",
+            fireworks: "paputok|kuwitis|lusis|fireworks",
+            party: "party|parti|pista|piyesta|handaan|pagdiriwang|magdiwang|kasiyahan|selebrasyon|ipagdiwang",
+            birthday: "kaarawan|maligayang kaarawan|birthday|bertdey",
+            dance: "sayaw|sumayaw|sasayaw|sumasayaw|isayaw|indak|umindak|mananayaw|sayawan",
+            jump: "talon|tumalon|tatalon|lundag|lumundag|tumatalon",
+            dream: "panaginip|pangarap|nangangarap|managinip|pinapangarap",
+            ghost: "multo|kaluluwa|espiritu|ispiritu|aswang|mumu",
+            angel: "anghel|mga anghel|angel",
+            devil: "demonyo|diyablo|impiyerno|satanas|dimonyo",
+            world: "mundo|daigdig|sanlibutan|planeta|mundong|sandaigdigan",
+            space: "kalawakan|uniberso|galaksiya|kosmos|sansinukob|kalawakang",
+            rocket: "rocket|roket|paglunsad|inilunsad|ilunsad",
+            time: "oras|panahon|walang hanggan|habambuhay|magpakailanman|orasan|kailanman|habang-buhay|forever",
+            drive: "magmaneho|nagmamaneho|kotse|sasakyan|kalsada|bilis|mabilis|highway",
+            city: "lungsod|siyudad|syudad|lunsod|kalye|lansangan|maynila",
+            music: "musika|kanta|awit|himig|tugtog|tugtugin|melodiya",
+            sing: "kumanta|kakanta|umawit|aawit|tinig|boses|kantahin|awitin|inaawit",
+            boom: "sabog|pagsabog|sumabog|bomba|boom|putok",
+            champagne: "champagne|tagay|toast|inom|alak|bote|lasing|shampain",
+            magic: "mahika|salamangka|engkanto|mahiwaga|kababalaghan|madyik|gayuma",
+            beach: "dalampasigan|baybayin|isla|buhangin|pulo|niyog|beach|aplaya",
+            christmas: "pasko|paskong|maligayang pasko|santa claus|kampana|simbang gabi|noche buena|parol",
+            red: "pula|pulang|mapula|namumula",
+            blue: "asul|bughaw|kulay asul",
+            green: "berde|luntian|lunti|kulay berde|luntiang",
+            pink: "kulay rosas|kulay-rosas|pink",
+            purple: "lila|lilang|kulay lila|violet|kulay ube",
+            white: "puti|maputi|kulay puti|busilak|puting",
+            black: "itim|maitim|kulay itim|nangingitim",
+            silver: "pilak|kulay pilak|silver"
+          }
+        },
+        hi: {
+          stop: "\u0939\u0948|\u0939\u0948\u0902|\u0915\u093E|\u0915\u0940|\u0915\u0947|\u092E\u0947\u0902|\u0928\u0939\u0940\u0902|\u0924\u0941\u092E|\u092E\u0947\u0930\u0947|\u0924\u0947\u0930\u093E|hai|nahi|nahin|mera|tera|tujhe|mujhe|kyun|bhi|aur",
+          c: {
+            fire: "\u0906\u0917|\u0905\u0917\u094D\u0928\u093F|\u091C\u094D\u0935\u093E\u0932\u093E|\u0936\u094B\u0932\u0947|\u0936\u094B\u0932\u093E|\u0905\u0902\u0917\u093E\u0930|\u091C\u0932\u0924\u0940|aag|agni|jwala|shola|sholay|jalta|jalti|angaar",
+            rain: "\u092C\u093E\u0930\u093F\u0936|\u092C\u0930\u0938\u093E\u0924|\u092C\u093E\u0930\u093F\u0936\u0947\u0902|\u092C\u0930\u0938\u0947|\u0938\u093E\u0935\u0928|\u092C\u0930\u0916\u093E|baarish|barish|barsaat|barsat|barse|sawan|saawan|barkha",
+            storm: "\u0924\u0942\u092B\u093C\u093E\u0928|\u0924\u0942\u092B\u093E\u0928|\u0906\u0901\u0927\u0940|\u0906\u0902\u0927\u0940|toofan|toofaan|tufaan|aandhi",
+            lightning: "\u092C\u093F\u091C\u0932\u0940|\u092C\u093F\u091C\u0932\u093F\u092F\u093E\u0901|\u0926\u093E\u092E\u093F\u0928\u0940|\u0935\u091C\u094D\u0930|bijli|bijliyan|damini",
+            snow: "\u092C\u0930\u094D\u092B|\u092C\u0930\u094D\u092B\u093C|\u092C\u0930\u094D\u092B\u093C\u0940\u0932\u0940|\u0939\u093F\u092E|barf|baraf|barfeeli",
+            cold: "\u0920\u0902\u0921|\u0920\u0902\u0921\u093E|\u0920\u0902\u0921\u0940|\u0938\u0930\u094D\u0926|\u0938\u0930\u094D\u0926\u0940|thand|thanda|thandi|sard|sardi",
+            sun: "\u0938\u0942\u0930\u091C|\u0927\u0942\u092A|\u0938\u0942\u0930\u094D\u092F|\u0938\u0935\u0947\u0930\u093E|\u0938\u0942\u0930\u094D\u092F\u093E\u0938\u094D\u0924|\u0938\u0942\u0930\u094D\u092F\u094B\u0926\u092F|suraj|sooraj|dhoop|dhup|savera|surya",
+            summer: "\u0917\u0930\u094D\u092E\u0940|\u0917\u0930\u094D\u092E\u093F\u092F\u093E\u0901|\u0917\u0930\u094D\u092E\u093F\u092F\u094B\u0902|garmi|garmiyan|garmiyon|summer",
+            moon: "\u091A\u093E\u0901\u0926|\u091A\u093E\u0902\u0926|\u091A\u0902\u0926\u093E|\u091A\u0928\u094D\u0926\u094D\u0930\u092E\u093E|\u091A\u093E\u0902\u0926\u0928\u0940|\u091A\u093E\u0901\u0926\u0928\u0940|\u092E\u093E\u0939\u0924\u093E\u092C|chaand|chand|chanda|chandni|chaandni|mahtaab",
+            star: "\u0924\u093E\u0930\u093E|\u0924\u093E\u0930\u0947|\u0924\u093E\u0930\u094B\u0902|\u0938\u093F\u0924\u093E\u0930\u093E|\u0938\u093F\u0924\u093E\u0930\u0947|\u0938\u093F\u0924\u093E\u0930\u094B\u0902|taare|taaron|sitara|sitare|sitaron",
+            sky: "\u0906\u0938\u092E\u093E\u0928|\u0906\u0938\u092E\u093E\u0902|\u0917\u0917\u0928|\u0905\u092E\u094D\u092C\u0930|\u0905\u0902\u092C\u0930|\u092C\u093E\u0926\u0932|\u092C\u093E\u0926\u0932\u094B\u0902|aasman|aasmaan|asmaan|aasmaa|gagan|ambar",
+            heaven: "\u091C\u0928\u094D\u0928\u0924|\u0938\u094D\u0935\u0930\u094D\u0917|\u092C\u0939\u093F\u0936\u094D\u0924|\u092B\u093C\u093F\u0930\u0926\u094C\u0938|jannat|swarg|firdaus|bahisht",
+            night: "\u0930\u093E\u0924|\u0930\u093E\u0924\u0947\u0902|\u0930\u093E\u0924\u094B\u0902|\u0906\u091C \u0930\u093E\u0924|\u0906\u0927\u0940 \u0930\u093E\u0924|\u0930\u0948\u0928\u093E|raat|raatein|raaton|aaj raat|raina|shab",
+            dark: "\u0905\u0902\u0927\u0947\u0930\u093E|\u0905\u0901\u0927\u0947\u0930\u093E|\u0905\u0902\u0927\u0947\u0930\u0947|\u0905\u0902\u0927\u0915\u093E\u0930|\u0938\u093E\u092F\u093E|\u092A\u0930\u091B\u093E\u0908|andhera|andhere|andheron|saaya|parchhai",
+            light: "\u0930\u094B\u0936\u0928\u0940|\u0909\u091C\u093E\u0932\u093E|\u091A\u092E\u0915|\u0928\u0942\u0930|\u091C\u094D\u092F\u094B\u0924\u093F|\u0930\u094C\u0936\u0928|\u091C\u0917\u092E\u0917|roshni|raushni|ujala|ujaala|chamak|noor|jyoti|roshan|jagmag",
+            heart: "\u0926\u093F\u0932|\u0926\u093F\u0932\u094B\u0902|\u0939\u0943\u0926\u092F|\u091C\u093F\u0917\u0930|\u0915\u0932\u0947\u091C\u093E|dil|dilon|jigar|dil ka|dil se|kaleja",
+            love: "\u092A\u094D\u092F\u093E\u0930|\u092A\u094D\u0930\u0947\u092E|\u0907\u0936\u094D\u0915\u093C|\u0907\u0936\u094D\u0915|\u092E\u094B\u0939\u092C\u094D\u092C\u0924|\u092E\u0941\u0939\u092C\u094D\u092C\u0924|\u091A\u093E\u0939\u0924|\u0906\u0936\u093F\u0915\u093C\u0940|pyaar|pyar|prem|ishq|mohabbat|muhabbat|chahat|aashiqui|aashiq",
+            kiss: "\u091A\u0941\u092E\u094D\u092E\u093E|\u091A\u0941\u0902\u092C\u0928|\u0939\u094B\u0902\u0920|\u0939\u094B\u0902\u0920\u094B\u0902|\u092C\u094B\u0938\u093E|chumma|chumban|honth|honthon|hothon|labon",
+            heartbreak: "\u0926\u093F\u0932 \u091F\u0942\u091F\u093E|\u091F\u0942\u091F\u093E \u0926\u093F\u0932|\u0926\u093F\u0932 \u0924\u094B\u0921\u093C|\u0926\u093F\u0932 \u091F\u0942\u091F|\u092C\u0947\u0935\u092B\u093C\u093E|\u092C\u0947\u0935\u092B\u093E|\u091C\u0941\u0926\u093E\u0908|dil toota|toota dil|dil tod|dil toot|bewafa|judaai|judai",
+            tears: "\u0906\u0901\u0938\u0942|\u0906\u0902\u0938\u0942|\u0905\u0936\u094D\u0915|\u0930\u094B\u0928\u093E|\u0930\u094B\u090F|aansu|ansu|aansoo|ashq|ashk|rona|roye",
+            money: "\u092A\u0948\u0938\u093E|\u092A\u0948\u0938\u0947|\u0926\u094C\u0932\u0924|\u0930\u0941\u092A\u092F\u093E|\u0930\u0941\u092A\u092F\u0947|\u0905\u092E\u0940\u0930|paisa|paise|daulat|rupaiya|rupaye|ameer",
+            gold: "\u0938\u0941\u0928\u0939\u0930\u093E|\u0938\u0941\u0928\u0939\u0930\u0940|\u0938\u0941\u0928\u0939\u0930\u0947|\u0938\u094D\u0935\u0930\u094D\u0923|\u0938\u094B\u0928\u0947 \u0915\u093E|sunehra|sunehri|sunehre|sone ka",
+            diamond: "\u0939\u0940\u0930\u093E|\u0939\u0940\u0930\u0947|\u091C\u0935\u093E\u0939\u0930\u093E\u0924|\u092E\u094B\u0924\u0940|\u0928\u0917\u0940\u0928\u093E|heera|heere|hira|moti|nagina",
+            crown: "\u0924\u093E\u091C|\u092E\u0941\u0915\u0941\u091F|\u0930\u093E\u091C\u093E|\u0930\u093E\u0928\u0940|\u092C\u093E\u0926\u0936\u093E\u0939|\u0936\u0939\u091C\u093C\u093E\u0926\u093E|taj|mukut|raja|rani|baadshah|badshah|shehzada|shahzadi|maharani",
+            fly: "\u0909\u0921\u093C|\u0909\u0921\u093C\u0928\u093E|\u0909\u0921\u093C\u093E\u0928|\u0909\u0921\u093C\u0924\u093E|\u0909\u0921\u093C\u0924\u0940|\u092A\u0902\u0916|\u092A\u0930\u0935\u093E\u091C\u093C|udna|udaan|udta|udti|ud ja|pankh|parwaaz",
+            bird: "\u092A\u0902\u091B\u0940|\u092A\u0930\u093F\u0902\u0926\u093E|\u092A\u0930\u093F\u0902\u0926\u0947|\u091A\u093F\u0921\u093C\u093F\u092F\u093E|\u092A\u0915\u094D\u0937\u0940|panchhi|panchi|parinda|parinde|chidiya|chiraiya",
+            butterfly: "\u0924\u093F\u0924\u0932\u0940|\u0924\u093F\u0924\u0932\u093F\u092F\u093E\u0901|titli|titliyan|titliyaan",
+            flower: "\u092B\u0942\u0932|\u092B\u0942\u0932\u094B\u0902|\u0917\u0941\u0932|\u0915\u0932\u093F\u092F\u093E\u0901|\u0917\u0941\u0932\u0936\u0928|phool|phoolon|gul|kaliyan|gulshan",
+            rose: "\u0917\u0941\u0932\u093E\u092C|\u0917\u0941\u0932\u093E\u092C\u094B\u0902|gulaab|gulab|gulabon",
+            ocean: "\u0938\u092E\u0902\u0926\u0930|\u0938\u092E\u0941\u0902\u0926\u0930|\u0938\u093E\u0917\u0930|\u0932\u0939\u0930\u0947\u0902|\u0932\u0939\u0930|samandar|samundar|sagar|saagar|leher|lehren|lehrein",
+            water: "\u092A\u093E\u0928\u0940|\u0928\u0926\u0940|\u0926\u0930\u093F\u092F\u093E|\u0928\u0940\u0930|paani|pani|nadiya|nadi|dariya|darya|neer",
+            wind: "\u0939\u0935\u093E|\u0939\u0935\u093E\u090F\u0901|\u0939\u0935\u093E\u0913\u0902|\u092A\u0935\u0928|\u092C\u092F\u093E\u0930|\u092A\u0941\u0930\u0935\u093E\u0908|hawa|hawaa|hawayein|hawaon|pawan|pavan|bayaar|purvaiya",
+            smoke: "\u0927\u0941\u0906\u0901|\u0927\u0941\u0906\u0902|\u0927\u0941\u0902\u0906|\u0938\u093F\u0917\u0930\u0947\u091F|dhuaan|dhuan|dhuaa|cigarette|sutta",
+            electric: "\u0915\u0930\u0902\u091F|\u090A\u0930\u094D\u091C\u093E|current|karant|urja|electric",
+            rainbow: "\u0907\u0902\u0926\u094D\u0930\u0927\u0928\u0941\u0937|\u0938\u0924\u0930\u0902\u0917\u0940|\u0930\u0902\u0917 \u092C\u093F\u0930\u0902\u0917\u0947|indradhanush|satrangi|saat rang|rang birange",
+            fireworks: "\u092A\u091F\u093E\u0916\u0947|\u0906\u0924\u093F\u0936\u092C\u093E\u091C\u093C\u0940|\u0906\u0924\u093F\u0936\u092C\u093E\u091C\u0940|\u092B\u0941\u0932\u091D\u0921\u093C\u0940|patakhe|pataakhe|aatishbaazi|atishbazi|phuljhadi",
+            party: "\u092A\u093E\u0930\u094D\u091F\u0940|\u091C\u0936\u094D\u0928|\u0909\u0924\u094D\u0938\u0935|\u092E\u0939\u092B\u093C\u093F\u0932|\u092E\u0939\u092B\u093F\u0932|party|jashn|utsav|mehfil|mehfilon",
+            birthday: "\u091C\u0928\u094D\u092E\u0926\u093F\u0928|\u0938\u093E\u0932\u0917\u093F\u0930\u0939|\u092C\u0930\u094D\u0925\u0921\u0947|janamdin|janmdin|saalgirah|birthday|happy birthday",
+            dance: "\u0928\u093E\u091A|\u0928\u093E\u091A\u0928\u093E|\u0928\u093E\u091A\u0947|\u0928\u093E\u091A\u094B|\u0925\u093F\u0930\u0915|\u0920\u0941\u092E\u0915\u093E|\u0928\u0943\u0924\u094D\u092F|naach|nach|nachna|nache|nacho|naacho|thumka|thirak|nritya",
+            jump: "\u0915\u0942\u0926|\u0915\u0942\u0926\u0928\u093E|\u0909\u091B\u0932|\u0909\u091B\u0932\u0928\u093E|\u091B\u0932\u093E\u0902\u0917|kood|koodna|uchhal|uchal|chhalang",
+            dream: "\u0938\u092A\u0928\u093E|\u0938\u092A\u0928\u0947|\u0938\u092A\u0928\u094B\u0902|\u0916\u093C\u094D\u0935\u093E\u092C|\u0916\u094D\u0935\u093E\u092C|\u0916\u093C\u094D\u0935\u093E\u092C\u094B\u0902|sapna|sapne|sapno|sapnon|khwab|khwaab|khwabon|khwaabon",
+            ghost: "\u092D\u0942\u0924|\u0906\u0924\u094D\u092E\u093E|\u0930\u0942\u0939|\u092A\u094D\u0930\u0947\u0924|\u091A\u0941\u0921\u093C\u0948\u0932|bhoot|aatma|atma|rooh|ruh|pret|chudail",
+            angel: "\u092B\u093C\u0930\u093F\u0936\u094D\u0924\u093E|\u092B\u0930\u093F\u0936\u094D\u0924\u093E|\u092B\u093C\u0930\u093F\u0936\u094D\u0924\u0947|\u092A\u0930\u0940|\u092A\u0930\u093F\u092F\u093E\u0901|farishta|farishte|pari|pariyan|paree",
+            devil: "\u0936\u0948\u0924\u093E\u0928|\u0928\u0930\u0915|\u091C\u0939\u0928\u094D\u0928\u0941\u092E|\u0930\u093E\u0915\u094D\u0937\u0938|\u0926\u093E\u0928\u0935|shaitan|shaitaan|narak|jahannum|rakshas|daanav",
+            world: "\u0926\u0941\u0928\u093F\u092F\u093E|\u091C\u0939\u093E\u0928|\u0938\u0902\u0938\u093E\u0930|\u091C\u0917|\u0927\u0930\u0924\u0940|dunia|duniya|sansaar|sansar|jag|dharti",
+            space: "\u092C\u094D\u0930\u0939\u094D\u092E\u093E\u0902\u0921|\u0905\u0902\u0924\u0930\u093F\u0915\u094D\u0937|\u0906\u0915\u093E\u0936\u0917\u0902\u0917\u093E|\u0915\u093E\u092F\u0928\u093E\u0924|brahmand|antariksh|akashganga|kaynaat|kainaat|galaxy",
+            rocket: "\u0930\u0949\u0915\u0947\u091F|\u0930\u093E\u0915\u0947\u091F|rocket|launch",
+            time: "\u0935\u0915\u093C\u094D\u0924|\u0935\u0915\u094D\u0924|\u0938\u092E\u092F|\u091C\u093C\u092E\u093E\u0928\u093E|\u0939\u092E\u0947\u0936\u093E|\u0918\u0921\u093C\u0940|\u0909\u092E\u094D\u0930 \u092D\u0930|waqt|samay|zamana|zamaana|hamesha|ghadi|umr bhar",
+            drive: "\u0917\u093E\u0921\u093C\u0940|\u0938\u0921\u093C\u0915|\u0938\u0921\u093C\u0915\u094B\u0902|\u0930\u092B\u093C\u094D\u0924\u093E\u0930|\u0930\u092B\u094D\u0924\u093E\u0930|gaadi|gaddi|sadak|sadkon|raftaar|raftar|highway",
+            city: "\u0936\u0939\u0930|\u0936\u0939\u0930\u094B\u0902|\u0917\u0932\u0940|\u0917\u0932\u093F\u092F\u093E\u0901|\u092C\u093E\u091C\u093C\u093E\u0930|shehar|shahar|sheher|gali|galiyan|galiyon|bazaar|mumbai|dilli",
+            music: "\u0938\u0902\u0917\u0940\u0924|\u0917\u093E\u0928\u093E|\u0917\u0940\u0924|\u0927\u0941\u0928|\u0938\u0941\u0930|\u0924\u093E\u0932|\u0928\u0917\u093C\u092E\u093E|sangeet|gaana|gaane|geet|dhun|taal|nagma|naghma",
+            sing: "\u0917\u093E\u090A\u0902|\u0917\u093E\u090A\u0901|\u0917\u093E\u0924\u093E|\u0917\u093E\u0924\u0940|\u0917\u093E\u0913|\u0906\u0935\u093E\u091C\u093C|\u0906\u0935\u093E\u091C|gaaun|gaata|gaati|gaao|aawaaz|awaaz|awaz|aawaz",
+            boom: "\u0927\u092E\u093E\u0915\u093E|\u0927\u092E\u093E\u0915\u0947|\u092C\u092E|\u0927\u0942\u092E|dhamaka|dhamake|bomb|dhoom",
+            champagne: "\u0936\u0948\u092E\u094D\u092A\u0947\u0928|\u091C\u093E\u092E|\u0936\u0930\u093E\u092C|\u092A\u0948\u092E\u093E\u0928\u093E|\u091A\u093F\u092F\u0930\u094D\u0938|\u092C\u094B\u0924\u0932|champagne|jaam|sharaab|sharab|paimana|cheers|daaru|daru|botal",
+            magic: "\u091C\u093E\u0926\u0942|\u091C\u093E\u0926\u0942\u0917\u0930|\u092E\u0902\u0924\u094D\u0930|\u0915\u0930\u093F\u0936\u094D\u092E\u093E|\u0924\u093F\u0932\u093F\u0938\u094D\u092E|jaadu|jadoo|jadu|jaadoo|jaadugar|mantra|karishma|tilism",
+            beach: "\u0938\u092E\u0941\u0926\u094D\u0930 \u0924\u091F|\u0915\u093F\u0928\u093E\u0930\u093E|\u0938\u093E\u0939\u093F\u0932|\u091F\u093E\u092A\u0942|\u0926\u094D\u0935\u0940\u092A|beach|kinara|kinaare|saahil|taapu|tapu|dweep",
+            christmas: "\u0915\u094D\u0930\u093F\u0938\u092E\u0938|\u092C\u0921\u093C\u093E \u0926\u093F\u0928|\u0938\u093E\u0902\u0924\u093E|christmas|santa|krismas",
+            red: "\u0932\u093E\u0932|\u0938\u0941\u0930\u094D\u0916\u093C|\u0938\u0941\u0930\u094D\u0916|\u0932\u093E\u0932\u0940|lal|laal|surkh|laali",
+            blue: "\u0928\u0940\u0932\u093E|\u0928\u0940\u0932\u0940|\u0928\u0940\u0932\u0947|\u0906\u0938\u092E\u093E\u0928\u0940|neela|neeli|neele|aasmani",
+            green: "\u0939\u0930\u093E|\u0939\u0930\u0940|\u0939\u0930\u0947|\u0939\u0930\u093F\u092F\u093E\u0932\u0940|\u0938\u092C\u094D\u091C\u093C|hariyali|sabz|hara bhara",
+            pink: "\u0917\u0941\u0932\u093E\u092C\u0940|gulaabi|gulabi|pink",
+            purple: "\u092C\u0948\u0902\u0917\u0928\u0940|\u091C\u093E\u092E\u0941\u0928\u0940|\u0915\u093E\u0938\u0928\u0940|baingani|jamuni|kasni|purple",
+            white: "\u0938\u092B\u093C\u0947\u0926|\u0938\u092B\u0947\u0926|\u0936\u094D\u0935\u0947\u0924|sufaid|safed|safaid|shwet",
+            black: "\u0915\u093E\u0932\u093E|\u0915\u093E\u0932\u0940|\u0915\u093E\u0932\u0947|\u0938\u094D\u092F\u093E\u0939|kaala|kaali|kaale|siyah",
+            silver: "\u091A\u093E\u0901\u0926\u0940|\u091A\u093E\u0902\u0926\u0940|\u0930\u0941\u092A\u0939\u0932\u093E|\u0930\u0941\u092A\u0939\u0932\u0940|chaandi|chandi|rupehla|rupehli"
+          }
+        },
+        ur: {
+          stop: "\u06C1\u06D2|\u06C1\u06CC\u06BA|\u06A9\u0627|\u06A9\u06CC|\u06A9\u06D2|\u0645\u06CC\u06BA|\u0646\u06C1\u06CC\u06BA|\u062A\u0645|\u0645\u06CC\u0631\u0627|\u062A\u06CC\u0631\u0627|\u0627\u0648\u0631|\u06CC\u06C1|\u0648\u06C1|\u0628\u06BE\u06CC|\u06C1\u0648|hain|tum|mein|yeh|kyun",
+          c: {
+            fire: "\u0622\u06AF|\u0634\u0639\u0644\u06C1|\u0634\u0639\u0644\u06D2|\u0622\u062A\u0634|\u0627\u0646\u06AF\u0627\u0631\u06D2|\u062C\u0644\u062A\u0627|\u062C\u0644\u062A\u06CC|aag|shola|sholay|shole|jalta|jalti|angaare|aatish",
+            rain: "\u0628\u0627\u0631\u0634|\u0628\u0631\u0633\u0627\u062A|\u0628\u0627\u0631\u0634\u06CC\u06BA|\u0633\u0627\u0648\u0646|\u0628\u0631\u0633\u06D2|baarish|barish|barsaat|barsat|saawan|sawan|barse",
+            storm: "\u0637\u0648\u0641\u0627\u0646|\u0622\u0646\u062F\u06BE\u06CC|\u0637\u0648\u0641\u0627\u0646\u0648\u06BA|toofan|toofaan|tufaan|aandhi",
+            lightning: "\u0628\u062C\u0644\u06CC|\u0628\u062C\u0644\u06CC\u0627\u06BA|\u0628\u0631\u0642|bijli|bijliyan|barq",
+            snow: "\u0628\u0631\u0641|\u0628\u0631\u0641\u0628\u0627\u0631\u06CC|\u0628\u0631\u0641\u06CC\u0644\u06CC|barf|baraf|barfbaari|barfeeli",
+            cold: "\u0679\u06BE\u0646\u0688|\u0679\u06BE\u0646\u0688\u0627|\u0679\u06BE\u0646\u0688\u06CC|\u0633\u0631\u062F|\u0633\u0631\u062F\u06CC|\u06CC\u062E|thand|thanda|thandi|sard|sardi|yakh",
+            sun: "\u0633\u0648\u0631\u062C|\u062F\u06BE\u0648\u067E|\u0622\u0641\u062A\u0627\u0628|\u0633\u0648\u06CC\u0631\u0627|suraj|sooraj|dhoop|dhup|aftab|aaftab|savera",
+            summer: "\u06AF\u0631\u0645\u06CC|\u06AF\u0631\u0645\u06CC\u0627\u06BA|garmi|garmiyan",
+            moon: "\u0686\u0627\u0646\u062F|\u0686\u0627\u0646\u062F\u0646\u06CC|\u0645\u06C1\u062A\u0627\u0628|\u0645\u0627\u06C1\u062A\u0627\u0628|\u0642\u0645\u0631|chaand|chand|chandni|mahtaab|mehtab|qamar",
+            star: "\u0633\u062A\u0627\u0631\u06C1|\u0633\u062A\u0627\u0631\u06D2|\u0633\u062A\u0627\u0631\u0648\u06BA|\u062A\u0627\u0631\u06D2|\u062A\u0627\u0631\u0627|sitara|sitare|sitaron|taare|taaron",
+            sky: "\u0622\u0633\u0645\u0627\u0646|\u0622\u0633\u0645\u0627\u06BA|\u0641\u0644\u06A9|\u0628\u0627\u062F\u0644|aasman|aasmaan|asmaan|falak",
+            heaven: "\u062C\u0646\u062A|\u0641\u0631\u062F\u0648\u0633|\u0628\u06C1\u0634\u062A|\u062C\u0646\u062A\u0648\u06BA|jannat|firdaus|bahisht",
+            night: "\u0631\u0627\u062A|\u0631\u0627\u062A\u06CC\u06BA|\u0631\u0627\u062A\u0648\u06BA|\u0622\u062C \u0631\u0627\u062A|\u0634\u0628|\u0622\u062F\u06BE\u06CC \u0631\u0627\u062A|raat|raatein|raaton|aaj raat|shab",
+            dark: "\u0627\u0646\u062F\u06BE\u06CC\u0631\u0627|\u0627\u0646\u062F\u06BE\u06CC\u0631\u06D2|\u062A\u0627\u0631\u06CC\u06A9\u06CC|\u0633\u0627\u06CC\u06C1|\u0633\u0627\u0626\u06D2|\u0638\u0644\u0645\u062A|andhera|andhere|tareeki|saaya|saaye|zulmat",
+            light: "\u0631\u0648\u0634\u0646\u06CC|\u0627\u062C\u0627\u0644\u0627|\u0646\u0648\u0631|\u0686\u0645\u06A9|\u0631\u0648\u0634\u0646|roshni|raushni|ujala|ujaala|noor|chamak|roshan",
+            heart: "\u062F\u0644|\u062F\u0644\u0648\u06BA|\u062C\u06AF\u0631|\u0642\u0644\u0628|dil|dilon|jigar|qalb|dil ka|dil se",
+            love: "\u0645\u062D\u0628\u062A|\u0639\u0634\u0642|\u067E\u06CC\u0627\u0631|\u0686\u0627\u06C1\u062A|\u0627\u0644\u0641\u062A|\u0639\u0627\u0634\u0642|mohabbat|muhabbat|ishq|pyaar|pyar|chahat|ulfat|aashiqui|aashiq",
+            kiss: "\u0628\u0648\u0633\u06C1|\u0686\u0648\u0645\u0646\u0627|\u06C1\u0648\u0646\u0679|\u06C1\u0648\u0646\u0679\u0648\u06BA|\u0644\u0628\u0648\u06BA|bosa|chumna|honth|honthon|labon",
+            heartbreak: "\u062F\u0644 \u0679\u0648\u0679\u0627|\u0679\u0648\u0679\u0627 \u062F\u0644|\u0628\u06D2 \u0648\u0641\u0627|\u0628\u06CC\u0648\u0641\u0627|\u062C\u062F\u0627\u0626\u06CC|\u06C1\u062C\u0631|dil toota|toota dil|dil tod|bewafa|judaai|judai|hijr",
+            tears: "\u0622\u0646\u0633\u0648|\u0627\u0634\u06A9|\u0631\u0648\u0646\u0627|\u0631\u0648\u0626\u06D2|aansu|ansu|aansoo|ashk|ashq|rona|roye",
+            money: "\u067E\u06CC\u0633\u06C1|\u067E\u06CC\u0633\u06D2|\u062F\u0648\u0644\u062A|\u0631\u0648\u067E\u06CC\u06C1|\u0631\u0648\u067E\u06D2|\u0627\u0645\u06CC\u0631|paisa|paise|daulat|rupaya|rupaye|ameer",
+            gold: "\u0633\u0648\u0646\u0627|\u0633\u0646\u06C1\u0631\u0627|\u0633\u0646\u06C1\u0631\u06CC|\u0633\u0646\u06C1\u0631\u06D2|sunehra|sunehri|sunehre",
+            diamond: "\u06C1\u06CC\u0631\u0627|\u06C1\u06CC\u0631\u06D2|\u062C\u0648\u0627\u06C1\u0631|\u0645\u0648\u062A\u06CC|\u0646\u06AF\u06CC\u0646\u06C1|heera|heere|hira|moti|jawahar|nagina",
+            crown: "\u062A\u0627\u062C|\u0628\u0627\u062F\u0634\u0627\u06C1|\u0645\u0644\u06A9\u06C1|\u0634\u06C1\u0632\u0627\u062F\u06C1|\u0634\u06C1\u0632\u0627\u062F\u06CC|\u0633\u0644\u0637\u0627\u0646|taj|baadshah|badshah|malika|shehzada|shehzadi|sultan",
+            fly: "\u0627\u0691\u0646\u0627|\u0627\u0691\u0627\u0646|\u0627\u0691\u062A\u0627|\u0627\u0691\u062A\u06CC|\u067E\u0631\u0648\u0627\u0632|\u067E\u0646\u06A9\u06BE|udna|udaan|udta|udti|parwaaz|parwaz|pankh",
+            bird: "\u067E\u0631\u0646\u062F\u06C1|\u067E\u0631\u0646\u062F\u06D2|\u067E\u0646\u0686\u06BE\u06CC|\u0686\u0691\u06CC\u0627|\u0628\u0644\u0628\u0644|parinda|parinde|panchhi|panchi|chidiya|bulbul",
+            butterfly: "\u062A\u062A\u0644\u06CC|\u062A\u062A\u0644\u06CC\u0627\u06BA|titli|titliyan",
+            flower: "\u067E\u06BE\u0648\u0644|\u067E\u06BE\u0648\u0644\u0648\u06BA|\u06AF\u0644|\u06A9\u0644\u06CC\u0627\u06BA|\u06AF\u0644\u0634\u0646|\u06AF\u0644\u0633\u062A\u0627\u0646|phool|phoolon|gul|gulshan|kaliyan|gulistan",
+            rose: "\u06AF\u0644\u0627\u0628|\u06AF\u0644\u0627\u0628\u0648\u06BA|gulaab|gulab|gulabon",
+            ocean: "\u0633\u0645\u0646\u062F\u0631|\u0633\u0627\u06AF\u0631|\u0644\u06C1\u0631\u06CC\u06BA|\u0644\u06C1\u0631|\u0645\u0648\u062C|samandar|samundar|sagar|leher|lehrein|lehren|mauj",
+            water: "\u067E\u0627\u0646\u06CC|\u062F\u0631\u06CC\u0627|\u0646\u062F\u06CC|\u0622\u0628|\u062A\u06CC\u0631\u0646\u0627|paani|pani|dariya|darya|nadi",
+            wind: "\u06C1\u0648\u0627|\u06C1\u0648\u0627\u0626\u06CC\u06BA|\u06C1\u0648\u0627\u0624\u06BA|\u0646\u0633\u06CC\u0645|\u0635\u0628\u0627|hawa|hawaa|hawayein|hawaon|naseem|baad-e-saba",
+            smoke: "\u062F\u06BE\u0648\u0627\u06BA|\u062F\u06BE\u0648\u0626\u06CC\u06BA|\u0633\u06AF\u0631\u06CC\u0679|dhuaan|dhuan|dhuein|cigarette",
+            electric: "\u06A9\u0631\u0646\u0679|\u062A\u0648\u0627\u0646\u0627\u0626\u06CC|\u0628\u0631\u0642\u06CC|current|tawanai|barqi|electric",
+            rainbow: "\u0642\u0648\u0633 \u0642\u0632\u062D|\u062F\u06BE\u0646\u06A9|\u0633\u062A \u0631\u0646\u06AF\u06CC|qaus-e-qaza|dhanak|satrangi|rang birange",
+            fireworks: "\u0622\u062A\u0634 \u0628\u0627\u0632\u06CC|\u067E\u0679\u0627\u062E\u06D2|\u067E\u06BE\u0644\u062C\u06BE\u0691\u06CC|aatishbaazi|atishbazi|patakhe|phuljhadi",
+            party: "\u067E\u0627\u0631\u0679\u06CC|\u062C\u0634\u0646|\u0645\u062D\u0641\u0644|\u062A\u0642\u0631\u06CC\u0628|party|jashn|mehfil|mehfilon|taqreeb",
+            birthday: "\u0633\u0627\u0644\u06AF\u0631\u06C1|\u06CC\u0648\u0645 \u067E\u06CC\u062F\u0627\u0626\u0634|\u0628\u0631\u062A\u06BE \u0688\u06D2|saalgirah|salgirah|birthday|happy birthday",
+            dance: "\u0646\u0627\u0686|\u0646\u0627\u0686\u0646\u0627|\u0631\u0642\u0635|\u0679\u06BE\u0645\u06A9\u0627|\u062F\u06BE\u0645\u0627\u0644|naach|nach|nachna|nacho|raqs|thumka|dhamaal",
+            jump: "\u06A9\u0648\u062F\u0646\u0627|\u0627\u0686\u06BE\u0644\u0646\u0627|\u0686\u06BE\u0644\u0627\u0646\u06AF|kood|koodna|uchhal|chhalang",
+            dream: "\u062E\u0648\u0627\u0628|\u0633\u067E\u0646\u0627|\u0633\u067E\u0646\u06D2|\u062E\u0648\u0627\u0628\u0648\u06BA|khwab|khwaab|khwabon|khwaabon|sapna|sapne",
+            ghost: "\u0628\u06BE\u0648\u062A|\u0631\u0648\u062D|\u0622\u062A\u0645\u0627|\u0686\u0691\u06CC\u0644|bhoot|rooh|ruh|aatma|jinn|chudail",
+            angel: "\u0641\u0631\u0634\u062A\u06C1|\u0641\u0631\u0634\u062A\u06D2|\u067E\u0631\u06CC|\u067E\u0631\u06CC\u0627\u06BA|\u062D\u0648\u0631|farishta|farishte|pari|pariyan|hoor|hoorein",
+            devil: "\u0634\u06CC\u0637\u0627\u0646|\u062C\u06C1\u0646\u0645|\u062F\u0648\u0632\u062E|\u0627\u0628\u0644\u06CC\u0633|shaitan|shaitaan|jahannum|dozakh|iblees|iblis",
+            world: "\u062F\u0646\u06CC\u0627|\u0632\u0645\u06CC\u0646|\u0639\u0627\u0644\u0645|\u062C\u06C1\u0627\u0646|dunia|duniya|zameen",
+            space: "\u06A9\u0627\u0626\u0646\u0627\u062A|\u06A9\u06C1\u06A9\u0634\u0627\u06BA|\u062E\u0644\u0627|kainaat|kaynaat|kehkashan|kahkashan|khala|galaxy",
+            rocket: "\u0631\u0627\u06A9\u0679|rocket|launch",
+            time: "\u0648\u0642\u062A|\u0632\u0645\u0627\u0646\u06C1|\u06C1\u0645\u06CC\u0634\u06C1|\u06AF\u06BE\u0691\u06CC|\u0644\u0645\u062D\u06C1|\u0644\u0645\u062D\u06D2|waqt|zamana|zamaana|hamesha|ghadi|lamha|lamhe|umr bhar",
+            drive: "\u06AF\u0627\u0691\u06CC|\u0633\u0691\u06A9|\u0633\u0691\u06A9\u0648\u06BA|\u0631\u0641\u062A\u0627\u0631|gaadi|gaddi|sadak|sadkon|raftaar|raftar|highway",
+            city: "\u0634\u06C1\u0631|\u0634\u06C1\u0631\u0648\u06BA|\u06AF\u0644\u06CC|\u06AF\u0644\u06CC\u0627\u06BA|\u0628\u0627\u0632\u0627\u0631|shehar|shahar|sheher|gali|galiyan|galiyon|bazaar|lahore|karachi",
+            music: "\u0645\u0648\u0633\u06CC\u0642\u06CC|\u06AF\u06CC\u062A|\u0646\u063A\u0645\u06C1|\u062F\u06BE\u0646|\u0633\u0627\u0632|mausiqi|moseeqi|gaana|geet|naghma|nagma|dhun|taal|saaz",
+            sing: "\u06AF\u0627\u062A\u0627|\u06AF\u0627\u062A\u06CC|\u06AF\u0627\u0624|\u0622\u0648\u0627\u0632|\u0635\u062F\u0627|gaaun|gaata|gaati|gaao|aawaaz|awaaz|awaz",
+            boom: "\u062F\u06BE\u0645\u0627\u06A9\u06C1|\u062F\u06BE\u0645\u0627\u06A9\u06D2|\u0628\u0645|\u062F\u06BE\u0648\u0645|dhamaka|dhamake|bomb|dhoom",
+            champagne: "\u0634\u06CC\u0645\u067E\u06CC\u0646|\u062C\u0627\u0645|\u0634\u0631\u0627\u0628|\u067E\u06CC\u0645\u0627\u0646\u06C1|\u0633\u0627\u063A\u0631|champagne|jaam|sharaab|sharab|paimana|saaghar|saghar|cheers",
+            magic: "\u062C\u0627\u062F\u0648|\u062C\u0627\u062F\u0648\u06AF\u0631|\u0637\u0644\u0633\u0645|\u06A9\u0631\u0634\u0645\u06C1|jaadu|jadoo|jadu|jaadugar|tilism|karishma",
+            beach: "\u0633\u0627\u062D\u0644|\u06A9\u0646\u0627\u0631\u0627|\u06A9\u0646\u0627\u0631\u06C1|\u062C\u0632\u06CC\u0631\u06C1|sahil|saahil|kinara|kinaare|jazeera|beach",
+            christmas: "\u06A9\u0631\u0633\u0645\u0633|\u0628\u0691\u0627 \u062F\u0646|\u0633\u0627\u0646\u062A\u0627|christmas|krismas|santa",
+            red: "\u0644\u0627\u0644|\u0633\u0631\u062E|\u0633\u0631\u062E\u06CC|laal|lal|surkh|surkhi|laali",
+            blue: "\u0646\u06CC\u0644\u0627|\u0646\u06CC\u0644\u06CC|\u0646\u06CC\u0644\u06D2|\u0622\u0633\u0645\u0627\u0646\u06CC|neela|neeli|neele|aasmani",
+            green: "\u06C1\u0631\u0627|\u06C1\u0631\u06CC|\u06C1\u0631\u06D2|\u0633\u0628\u0632|\u06C1\u0631\u06CC\u0627\u0644\u06CC|sabz|hariyali|hara bhara",
+            pink: "\u06AF\u0644\u0627\u0628\u06CC|gulaabi|gulabi|pink",
+            purple: "\u062C\u0627\u0645\u0646\u06CC|\u0628\u06CC\u0646\u06AF\u0646\u06CC|\u0627\u0631\u063A\u0648\u0627\u0646\u06CC|jamuni|baingani|arghawani|purple",
+            white: "\u0633\u0641\u06CC\u062F|\u0627\u062C\u0644\u0627|sufaid|safed|safaid|ujla|ujli",
+            black: "\u06A9\u0627\u0644\u0627|\u06A9\u0627\u0644\u06CC|\u06A9\u0627\u0644\u06D2|\u0633\u06CC\u0627\u06C1|kaala|kaali|kaale|siyah|siyaah",
+            silver: "\u0686\u0627\u0646\u062F\u06CC|\u0646\u0642\u0631\u0626\u06CC|chaandi|chandi|nuqrai|silver"
+          }
+        },
+        bn: {
+          stop: "\u0986\u09AE\u09BF|\u09A4\u09C1\u09AE\u09BF|\u0986\u09AE\u09BE\u09B0|\u09A4\u09CB\u09AE\u09BE\u09B0|\u09A8\u09BE|\u098F\u0987|\u09B8\u09C7\u0987|\u0995\u09BF|\u0995\u09C7|\u09AF\u09C7|\u0986\u09B0|\u09B9\u09AF\u09BC|\u09B9\u09AC\u09C7|\u099B\u09BF\u09B2|\u0995\u09B0\u09C7|\u09A5\u09C7\u0995\u09C7|\u09A6\u09BF\u09AF\u09BC\u09C7|\u09B6\u09C1\u09A7\u09C1|\u0995\u09CB\u09A8|\u09A4\u09AC\u09C1",
+          c: {
+            fire: "\u0986\u0997\u09C1\u09A8|\u0985\u0997\u09CD\u09A8\u09BF|\u09B6\u09BF\u0996\u09BE|\u099C\u09CD\u09AC\u09B2\u09C7|\u099C\u09CD\u09AC\u09B2\u099B\u09C7|\u09AA\u09C1\u09A1\u09BC\u09C7|\u09AA\u09CB\u09A1\u09BC\u09C7|\u09A6\u09B9\u09A8|\u0985\u09A8\u09B2|\u09B2\u09C7\u09B2\u09BF\u09B9\u09BE\u09A8",
+            rain: "\u09AC\u09C3\u09B7\u09CD\u099F\u09BF|\u09AC\u09B0\u09CD\u09B7\u09BE|\u09AC\u09C3\u09B7\u09CD\u099F\u09BF\u09A4\u09C7|\u09AC\u09BE\u09A6\u09B2|\u09B6\u09CD\u09B0\u09BE\u09AC\u09A3|\u09AC\u09B0\u09BF\u09B7\u09A3|\u09AC\u09C3\u09B7\u09CD\u099F\u09BF\u09B0",
+            storm: "\u099D\u09A1\u09BC|\u099D\u09A1\u09BC\u09C7|\u09A4\u09C1\u09AB\u09BE\u09A8|\u0995\u09BE\u09B2\u09AC\u09C8\u09B6\u09BE\u0996\u09C0|\u0998\u09C2\u09B0\u09CD\u09A3\u09BF\u099D\u09A1\u09BC|\u09AC\u099C\u09CD\u09B0",
+            lightning: "\u09AC\u099C\u09CD\u09B0\u09AA\u09BE\u09A4|\u09AC\u09BF\u099C\u09B2\u09C0|\u09AC\u09BF\u099C\u09C1\u09B2\u09BF|\u09AC\u09BF\u09A6\u09CD\u09AF\u09C1\u09CE \u099A\u09AE\u0995|\u09AC\u099C\u09CD\u09B0\u09C7\u09B0",
+            snow: "\u09A4\u09C1\u09B7\u09BE\u09B0|\u09AC\u09B0\u09AB|\u09A4\u09C1\u09B7\u09BE\u09B0\u09AA\u09BE\u09A4|\u09B9\u09BF\u09AE|\u09AC\u09B0\u09AB\u09C7",
+            cold: "\u09A0\u09BE\u09A8\u09CD\u09A1\u09BE|\u09B6\u09C0\u09A4|\u09B6\u09C0\u09A4\u09B2|\u09B9\u09BF\u09AE\u09B6\u09C0\u09A4\u09B2|\u099C\u09AE\u09C7|\u0995\u09A8\u0995\u09A8\u09C7",
+            sun: "\u09B8\u09C2\u09B0\u09CD\u09AF|\u09B0\u09CB\u09A6|\u09B0\u09CB\u09A6\u09CD\u09A6\u09C1\u09B0|\u09B8\u09C2\u09B0\u09CD\u09AF\u09CB\u09A6\u09AF\u09BC|\u09B8\u09C2\u09B0\u09CD\u09AF\u09BE\u09B8\u09CD\u09A4|\u09B0\u09AC\u09BF|\u09AD\u09CB\u09B0|\u09B8\u09C2\u09B0\u09CD\u09AF\u09C7\u09B0|\u09B0\u09CC\u09A6\u09CD\u09B0|\u09A4\u09AA\u09A8",
+            summer: "\u0997\u09CD\u09B0\u09C0\u09B7\u09CD\u09AE|\u0997\u09B0\u09AE|\u0997\u09B0\u09AE\u0995\u09BE\u09B2|\u0997\u09CD\u09B0\u09C0\u09B7\u09CD\u09AE\u09C7\u09B0|\u09AC\u09C8\u09B6\u09BE\u0996",
+            moon: "\u099A\u09BE\u0981\u09A6|\u099A\u09A8\u09CD\u09A6\u09CD\u09B0|\u099C\u09CD\u09AF\u09CB\u09CE\u09B8\u09CD\u09A8\u09BE|\u099C\u09CB\u099B\u09A8\u09BE|\u099A\u09BE\u0981\u09A6\u09A8\u09BF|\u09AA\u09C2\u09B0\u09CD\u09A3\u09BF\u09AE\u09BE|\u09B6\u09B6\u09C0|\u099A\u09BE\u0981\u09A6\u09C7\u09B0",
+            star: "\u09A8\u0995\u09CD\u09B7\u09A4\u09CD\u09B0|\u09A4\u09BE\u09B0\u0995\u09BE|\u09A4\u09BE\u09B0\u09BE\u09B0 \u0986\u09B2\u09CB|\u09A4\u09BE\u09B0\u09BE\u09A6\u09C7\u09B0|\u09B6\u09C1\u0995\u09A4\u09BE\u09B0\u09BE|\u09A7\u09CD\u09B0\u09C1\u09AC\u09A4\u09BE\u09B0\u09BE|\u09B8\u09A8\u09CD\u09A7\u09CD\u09AF\u09BE\u09A4\u09BE\u09B0\u09BE|\u09A4\u09BE\u09B0\u09BE\u09B0 \u09AE\u09C7\u09B2\u09BE",
+            sky: "\u0986\u0995\u09BE\u09B6|\u0986\u0995\u09BE\u09B6\u09C7|\u0997\u0997\u09A8|\u09AE\u09C7\u0998|\u09AE\u09C7\u0998\u09C7\u09B0|\u09A8\u09C0\u09B2\u09BE\u0995\u09BE\u09B6|\u0985\u09AE\u09CD\u09AC\u09B0|\u0986\u09B8\u09AE\u09BE\u09A8",
+            heaven: "\u09B8\u09CD\u09AC\u09B0\u09CD\u0997|\u099C\u09BE\u09A8\u09CD\u09A8\u09BE\u09A4|\u09AC\u09C7\u09B9\u09C7\u09B6\u09A4|\u09B8\u09CD\u09AC\u09B0\u09CD\u0997\u09C7|\u09B8\u09CD\u09AC\u09B0\u09CD\u0997\u09C0\u09AF\u09BC|\u09A8\u09A8\u09CD\u09A6\u09A8\u0995\u09BE\u09A8\u09A8",
+            night: "\u09B0\u09BE\u09A4|\u09B0\u09BE\u09A4\u09C7|\u09B0\u09BE\u09A4\u09CD\u09B0\u09BF|\u09B0\u099C\u09A8\u09C0|\u09A8\u09BF\u09B6\u09BF|\u09AE\u09BE\u099D\u09B0\u09BE\u09A4|\u09A8\u09BF\u09B6\u09C0\u09A5|\u09B0\u09BE\u09A4\u09C7\u09B0",
+            dark: "\u0985\u09A8\u09CD\u09A7\u0995\u09BE\u09B0|\u0986\u0981\u09A7\u09BE\u09B0|\u0986\u0981\u09A7\u09BE\u09B0\u09C7|\u099B\u09BE\u09AF\u09BC\u09BE|\u0985\u09A8\u09CD\u09A7\u0995\u09BE\u09B0\u09C7|\u09A4\u09BF\u09AE\u09BF\u09B0",
+            light: "\u0986\u09B2\u09CB|\u0986\u09B2\u09CB\u09AF\u09BC|\u0986\u09B2\u09CB\u09B0|\u09A6\u09C0\u09AA\u09CD\u09A4\u09BF|\u099C\u09CD\u09AF\u09CB\u09A4\u09BF|\u0989\u099C\u09CD\u099C\u09CD\u09AC\u09B2|\u099D\u09B2\u09AE\u09B2|\u099C\u09CD\u09AC\u09B2\u099C\u09CD\u09AC\u09B2|\u09B0\u09CB\u09B6\u09A8\u09BE\u0987|\u09AA\u09CD\u09B0\u09A6\u09C0\u09AA",
+            heart: "\u09B9\u09C3\u09A6\u09AF\u09BC|\u09B9\u09C3\u09A6\u09AF\u09BC\u09C7|\u09AC\u09C1\u0995\u09C7|\u09AC\u09C1\u0995\u09C7\u09B0|\u0985\u09A8\u09CD\u09A4\u09B0|\u0985\u09A8\u09CD\u09A4\u09B0\u09C7|\u09B9\u09C3\u09CE\u09AA\u09BF\u09A3\u09CD\u09A1|\u09A6\u09BF\u09B2",
+            love: "\u09AD\u09BE\u09B2\u09CB\u09AC\u09BE\u09B8\u09BE|\u09AD\u09BE\u09B2\u09AC\u09BE\u09B8\u09BE|\u09AD\u09BE\u09B2\u09CB\u09AC\u09BE\u09B8\u09BF|\u09AD\u09BE\u09B2\u09AC\u09BE\u09B8\u09BF|\u09AA\u09CD\u09B0\u09C7\u09AE|\u09AA\u09CD\u09B0\u09C7\u09AE\u09C7|\u09AA\u09CD\u09B0\u09BF\u09AF\u09BC|\u09AA\u09CD\u09B0\u09BF\u09AF\u09BC\u09BE|\u09AD\u09BE\u09B2\u09CB\u09AC\u09C7\u09B8\u09C7|\u09AA\u09CD\u09B0\u09A3\u09AF\u09BC",
+            kiss: "\u099A\u09C1\u09AE\u09C1|\u099A\u09C1\u09AE\u09CD\u09AC\u09A8|\u09A0\u09CB\u0981\u099F|\u09A0\u09CB\u0981\u099F\u09C7|\u0985\u09A7\u09B0|\u099A\u09C1\u09AE\u09C1\u09A4\u09C7",
+            heartbreak: "\u09B9\u09C3\u09A6\u09AF\u09BC \u09AD\u09BE\u0999\u09BE|\u09AD\u09BE\u0999\u09BE \u09AE\u09A8|\u09AE\u09A8 \u09AD\u09BE\u0999\u09BE|\u09AC\u09BF\u099A\u09CD\u099B\u09C7\u09A6|\u09AD\u09BE\u0999\u09BE \u09B9\u09C3\u09A6\u09AF\u09BC|\u09AC\u09BF\u09B0\u09B9|\u09AD\u09C7\u0999\u09C7 \u0997\u09C7\u099B\u09C7",
+            tears: "\u0995\u09BE\u09A8\u09CD\u09A8\u09BE|\u0995\u09BE\u0981\u09A6\u09C7|\u0995\u09BE\u0981\u09A6\u09BF|\u0995\u09BE\u0981\u09A6\u09CB|\u0985\u09B6\u09CD\u09B0\u09C1|\u099A\u09CB\u0996\u09C7\u09B0 \u099C\u09B2|\u0995\u09C7\u0981\u09A6\u09C7|\u0995\u09BE\u0981\u09A6\u099B\u09BF|\u0985\u09B6\u09CD\u09B0\u09C1\u099C\u09B2",
+            money: "\u099F\u09BE\u0995\u09BE|\u09AA\u09AF\u09BC\u09B8\u09BE|\u09A7\u09A8|\u099F\u09BE\u0995\u09BE\u09AA\u09AF\u09BC\u09B8\u09BE|\u09A1\u09B2\u09BE\u09B0|\u09A7\u09A8\u09C0|\u09AC\u09A1\u09BC\u09B2\u09CB\u0995",
+            gold: "\u09B8\u09CB\u09A8\u09BE|\u09B8\u09CB\u09A8\u09BE\u09B2\u09BF|\u09B8\u09CB\u09A8\u09BE\u09B2\u09C0|\u09B8\u09CB\u09A8\u09BE\u09B0|\u09B8\u09CD\u09AC\u09B0\u09CD\u09A3|\u0995\u09BE\u099E\u09CD\u099A\u09A8",
+            diamond: "\u09B9\u09C0\u09B0\u09BE|\u09B9\u09C0\u09B0\u09C7|\u09B9\u09C0\u09B0\u0995|\u09B0\u09A4\u09CD\u09A8|\u09AE\u09A3\u09BF|\u099C\u09B9\u09B0|\u09AE\u09C1\u0995\u09CD\u09A4\u09BE",
+            crown: "\u09AE\u09C1\u0995\u09C1\u099F|\u09B0\u09BE\u099C\u09BE|\u09B0\u09BE\u09A8\u09C0|\u09B0\u09BE\u09A3\u09C0|\u09B0\u09BE\u099C\u0995\u09A8\u09CD\u09AF\u09BE|\u09B0\u09BE\u099C\u0995\u09C1\u09AE\u09BE\u09B0|\u09B8\u09AE\u09CD\u09B0\u09BE\u099F|\u09B0\u09BE\u099C\u09AE\u09C1\u0995\u09C1\u099F",
+            fly: "\u0989\u09A1\u09BC\u09C7|\u0989\u09A1\u09BC\u09A4\u09C7|\u0989\u09A1\u09BC\u09BF|\u0993\u09A1\u09BC\u09BE|\u0989\u09A1\u09BC\u09BE\u09B2|\u09A1\u09BE\u09A8\u09BE|\u09AA\u09BE\u0996\u09A8\u09BE|\u0989\u09A1\u09BC\u099B\u09C7",
+            bird: "\u09AA\u09BE\u0996\u09BF|\u09AA\u09BE\u0996\u09C0|\u09AA\u09BE\u0996\u09BF\u09B0|\u09AA\u09BE\u0996\u09BF\u09B0\u09BE|\u09AC\u09BF\u09B9\u0999\u09CD\u0997|\u0995\u09CB\u0995\u09BF\u09B2|\u09AA\u09BE\u09AF\u09BC\u09B0\u09BE|\u09B6\u09BE\u09B2\u09BF\u0995",
+            butterfly: "\u09AA\u09CD\u09B0\u099C\u09BE\u09AA\u09A4\u09BF|\u09AA\u09CD\u09B0\u099C\u09BE\u09AA\u09A4\u09BF\u09B0",
+            flower: "\u09AB\u09C1\u09B2|\u09AB\u09C1\u09B2\u09C7\u09B0|\u0995\u09C1\u09B8\u09C1\u09AE|\u09AA\u09C1\u09B7\u09CD\u09AA|\u09AB\u09C1\u099F\u09C7\u099B\u09C7|\u0995\u09B2\u09BF|\u09AC\u0995\u09C1\u09B2|\u09B6\u09BF\u0989\u09B2\u09BF",
+            rose: "\u0997\u09CB\u09B2\u09BE\u09AA|\u0997\u09CB\u09B2\u09BE\u09AA\u09C7\u09B0|\u09B2\u09BE\u09B2 \u0997\u09CB\u09B2\u09BE\u09AA",
+            ocean: "\u09B8\u09AE\u09C1\u09A6\u09CD\u09B0|\u09B8\u09BE\u0997\u09B0|\u09A2\u09C7\u0989|\u09B8\u09AE\u09C1\u09A6\u09CD\u09B0\u09C7\u09B0|\u09B8\u09BE\u0997\u09B0\u09C7|\u09A4\u09B0\u0999\u09CD\u0997|\u09B8\u09BF\u09A8\u09CD\u09A7\u09C1|\u09AA\u09BE\u09B0\u09BE\u09AC\u09BE\u09B0",
+            water: "\u099C\u09B2|\u09AA\u09BE\u09A8\u09BF|\u09A8\u09A6\u09C0|\u09A8\u09A6\u09C0\u09B0|\u09B8\u09CD\u09B0\u09CB\u09A4|\u09B8\u09BE\u0981\u09A4\u09BE\u09B0|\u099D\u09B0\u09CD\u09A3\u09BE|\u09AA\u09A6\u09CD\u09AE\u09BE",
+            wind: "\u09B9\u09BE\u0993\u09AF\u09BC\u09BE|\u09AC\u09BE\u09A4\u09BE\u09B8|\u09AC\u09BE\u09A4\u09BE\u09B8\u09C7|\u09B9\u09BE\u0993\u09AF\u09BC\u09BE\u09AF\u09BC|\u09AA\u09AC\u09A8|\u09B8\u09AE\u09C0\u09B0\u09A3|\u09AC\u09BE\u09AF\u09BC\u09C1|\u09A6\u0996\u09BF\u09A8\u09BE",
+            smoke: "\u09A7\u09CB\u0981\u09AF\u09BC\u09BE|\u09B8\u09BF\u0997\u09BE\u09B0\u09C7\u099F|\u09A7\u09C2\u09AE|\u09A7\u09CB\u0981\u09AF\u09BC\u09BE\u09AF\u09BC|\u09A7\u09C2\u09AE\u09AA\u09BE\u09A8",
+            electric: "\u09AC\u09BF\u09A6\u09CD\u09AF\u09C1\u09CE|\u09AC\u09C8\u09A6\u09CD\u09AF\u09C1\u09A4\u09BF\u0995|\u0995\u09BE\u09B0\u09C7\u09A8\u09CD\u099F|\u098F\u09A8\u09BE\u09B0\u09CD\u099C\u09BF|\u09B6\u09BF\u09B9\u09B0\u09A3|\u09AC\u09BF\u09A6\u09CD\u09AF\u09C1\u09A4\u09C7\u09B0",
+            rainbow: "\u09B0\u0982\u09A7\u09A8\u09C1|\u09B0\u09BE\u09AE\u09A7\u09A8\u09C1|\u09B0\u0999\u09A7\u09A8\u09C1|\u09B8\u09BE\u09A4\u09B0\u0999\u09BE|\u09B0\u0999\u09BF\u09A8|\u09B0\u09BE\u09AE\u09A7\u09A8\u09C1\u09B0",
+            fireworks: "\u0986\u09A4\u09B6\u09AC\u09BE\u099C\u09BF|\u0986\u09A4\u09B8\u09AC\u09BE\u099C\u09BF|\u09A4\u09C1\u09AC\u09A1\u09BC\u09BF|\u09AB\u09C1\u09B2\u099D\u09C1\u09B0\u09BF",
+            party: "\u09AA\u09BE\u09B0\u09CD\u099F\u09BF|\u0989\u09CE\u09B8\u09AC|\u0989\u09A6\u09AF\u09BE\u09AA\u09A8|\u0986\u09A8\u09A8\u09CD\u09A6 \u0989\u09CE\u09B8\u09AC|\u09AA\u09BE\u09B0\u09CD\u09AC\u09A3",
+            birthday: "\u099C\u09A8\u09CD\u09AE\u09A6\u09BF\u09A8|\u09B6\u09C1\u09AD \u099C\u09A8\u09CD\u09AE\u09A6\u09BF\u09A8|\u099C\u09A8\u09CD\u09AE\u09A6\u09BF\u09A8\u09C7|\u09AC\u09BE\u09B0\u09CD\u09A5\u09A1\u09C7",
+            dance: "\u09A8\u09BE\u099A|\u09A8\u09BE\u099A\u09C7|\u09A8\u09BE\u099A\u09BF|\u09A8\u09BE\u099A\u09CB|\u09A8\u09C3\u09A4\u09CD\u09AF|\u09A8\u09BE\u099A\u09A4\u09C7|\u09A1\u09BE\u09A8\u09CD\u09B8|\u09A8\u09BE\u099A\u09C7\u09B0",
+            jump: "\u09B2\u09BE\u09AB|\u09B2\u09BE\u09AB\u09BF\u09AF\u09BC\u09C7|\u09B2\u09BE\u09AB\u09BE\u0993|\u099D\u09BE\u0981\u09AA|\u099D\u09BE\u0981\u09AA\u09BF\u09AF\u09BC\u09C7|\u09B2\u09BE\u09AB\u09BE\u0987",
+            dream: "\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8|\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7|\u09B8\u09CD\u09AC\u09AA\u09A8|\u0996\u09CB\u09AF\u09BC\u09BE\u09AC|\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u09C7\u09B0|\u09B8\u09CD\u09AC\u09AA\u09CD\u09A8\u0997\u09C1\u09B2\u09CB",
+            ghost: "\u09AD\u09C2\u09A4|\u0986\u09A4\u09CD\u09AE\u09BE|\u09AA\u09CD\u09B0\u09C7\u09A4|\u09AA\u09C7\u09A4\u09CD\u09A8\u09C0|\u09B0\u09C1\u09B9|\u09AD\u09C2\u09A4\u09C7\u09B0|\u0985\u09B6\u09B0\u09C0\u09B0\u09C0",
+            angel: "\u09AA\u09B0\u09C0|\u09A6\u09C7\u09AC\u09A6\u09C2\u09A4|\u09AB\u09C7\u09B0\u09C7\u09B6\u09A4\u09BE|\u09AA\u09B0\u09C0\u09B0|\u0985\u09AA\u09CD\u09B8\u09B0\u09BE",
+            devil: "\u09B6\u09AF\u09BC\u09A4\u09BE\u09A8|\u09A8\u09B0\u0995|\u09A6\u09BE\u09A8\u09AC|\u09B0\u09BE\u0995\u09CD\u09B7\u09B8|\u0985\u09B8\u09C1\u09B0|\u099C\u09BE\u09B9\u09BE\u09A8\u09CD\u09A8\u09BE\u09AE|\u0987\u09AC\u09B2\u09BF\u09B6",
+            world: "\u09AA\u09C3\u09A5\u09BF\u09AC\u09C0|\u09A6\u09C1\u09A8\u09BF\u09AF\u09BC\u09BE|\u099C\u0997\u09CE|\u09AC\u09BF\u09B6\u09CD\u09AC|\u09AD\u09C1\u09AC\u09A8|\u099C\u0997\u09A4\u09C7|\u09AA\u09C3\u09A5\u09BF\u09AC\u09C0\u09B0",
+            space: "\u09AE\u09B9\u09BE\u0995\u09BE\u09B6|\u09AE\u09B9\u09BE\u09AC\u09BF\u09B6\u09CD\u09AC|\u099B\u09BE\u09AF\u09BC\u09BE\u09AA\u09A5|\u09A8\u09C0\u09B9\u09BE\u09B0\u09BF\u0995\u09BE|\u09AC\u09CD\u09B0\u09B9\u09CD\u09AE\u09BE\u09A3\u09CD\u09A1|\u0997\u09CD\u09AF\u09BE\u09B2\u09BE\u0995\u09CD\u09B8\u09BF|\u0986\u0995\u09BE\u09B6\u0997\u0999\u09CD\u0997\u09BE",
+            rocket: "\u09B0\u0995\u09C7\u099F|\u0989\u09CE\u0995\u09CD\u09B7\u09C7\u09AA\u09A3|\u09B0\u0995\u09C7\u099F\u09C7\u09B0",
+            time: "\u09B8\u09AE\u09AF\u09BC|\u09B8\u09AE\u09AF\u09BC\u09C7\u09B0|\u099A\u09BF\u09B0\u0995\u09BE\u09B2|\u099A\u09BF\u09B0\u09A6\u09BF\u09A8|\u0998\u09A1\u09BC\u09BF|\u0985\u09A8\u09A8\u09CD\u09A4\u0995\u09BE\u09B2|\u09AE\u09C1\u09B9\u09C2\u09B0\u09CD\u09A4|\u0986\u099C\u09C0\u09AC\u09A8",
+            drive: "\u0997\u09BE\u09A1\u09BC\u09BF|\u09B0\u09BE\u09B8\u09CD\u09A4\u09BE|\u09AA\u09A5|\u0997\u09A4\u09BF|\u09B9\u09BE\u0987\u0993\u09AF\u09BC\u09C7|\u0997\u09BE\u09A1\u09BC\u09BF\u09A4\u09C7|\u09B0\u09BE\u099C\u09AA\u09A5|\u09A1\u09CD\u09B0\u09BE\u0987\u09AD",
+            city: "\u09B6\u09B9\u09B0|\u09B6\u09B9\u09B0\u09C7\u09B0|\u09A8\u0997\u09B0|\u09A8\u0997\u09B0\u09C0|\u0997\u09B2\u09BF|\u0995\u09B2\u0995\u09BE\u09A4\u09BE|\u09A2\u09BE\u0995\u09BE",
+            music: "\u0997\u09BE\u09A8|\u09B8\u0982\u0997\u09C0\u09A4|\u09B8\u0999\u09CD\u0997\u09C0\u09A4|\u09B8\u09C1\u09B0|\u099B\u09A8\u09CD\u09A6|\u09A4\u09BE\u09B2|\u0997\u09BE\u09A8\u09C7\u09B0|\u09AE\u09BF\u0989\u099C\u09BF\u0995",
+            sing: "\u0997\u09BE\u0987|\u0997\u09BE\u0993|\u0997\u09C7\u09AF\u09BC\u09C7|\u0997\u09BE\u0987\u09A4\u09C7|\u0995\u09A3\u09CD\u09A0|\u0997\u09BE\u0987\u099B\u09BF|\u09B8\u09C1\u09B0\u09C7",
+            boom: "\u09AC\u09BF\u09B8\u09CD\u09AB\u09CB\u09B0\u09A3|\u09AC\u09CB\u09AE\u09BE|\u09AC\u09C1\u09AE|\u0997\u09B0\u09CD\u099C\u09A8|\u09AC\u09BF\u09B8\u09CD\u09AB\u09CB\u09B0\u09BF\u09A4",
+            champagne: "\u09B6\u09CD\u09AF\u09BE\u09AE\u09CD\u09AA\u09C7\u09A8|\u09AE\u09A6|\u09AA\u09BE\u09A8\u09C0\u09AF\u09BC|\u099A\u09BF\u09AF\u09BC\u09BE\u09B0\u09CD\u09B8|\u09AE\u09BE\u09A4\u09BE\u09B2|\u09AC\u09CB\u09A4\u09B2|\u09B8\u09C1\u09B0\u09BE",
+            magic: "\u099C\u09BE\u09A6\u09C1|\u09AF\u09BE\u09A6\u09C1|\u09AE\u09BE\u09AF\u09BC\u09BE|\u09AE\u09CD\u09AF\u09BE\u099C\u09BF\u0995|\u099C\u09BE\u09A6\u09C1\u0995\u09B0|\u09AE\u09A8\u09CD\u09A4\u09CD\u09B0|\u0987\u09A8\u09CD\u09A6\u09CD\u09B0\u099C\u09BE\u09B2|\u099C\u09BE\u09A6\u09C1\u09B0",
+            beach: "\u09B8\u09C8\u0995\u09A4|\u09B8\u09AE\u09C1\u09A6\u09CD\u09B0\u09A4\u09C0\u09B0|\u09AC\u09BE\u09B2\u09C1\u0995\u09BE\u09AC\u09C7\u09B2\u09BE|\u09A6\u09CD\u09AC\u09C0\u09AA|\u09AC\u09BE\u09B2\u09BF|\u09A8\u09BE\u09B0\u0995\u09C7\u09B2|\u09B8\u09AE\u09C1\u09A6\u09CD\u09B0\u09B8\u09C8\u0995\u09A4",
+            christmas: "\u09AC\u09A1\u09BC\u09A6\u09BF\u09A8|\u0995\u09CD\u09B0\u09BF\u09B8\u09AE\u09BE\u09B8|\u09B8\u09BE\u09A8\u09CD\u09A4\u09BE|\u09B8\u09BE\u09A8\u09CD\u099F\u09BE|\u099C\u09BF\u0999\u09CD\u0997\u09C7\u09B2 \u09AC\u09C7\u09B2",
+            red: "\u09B2\u09BE\u09B2|\u09B0\u0995\u09CD\u09A4\u09BF\u09AE|\u09B2\u09BE\u09B2\u09C7|\u09B0\u09BE\u0999\u09BE|\u099F\u0995\u099F\u0995\u09C7|\u09B0\u0995\u09CD\u09A4\u09B2\u09BE\u09B2",
+            blue: "\u09A8\u09C0\u09B2|\u09A8\u09C0\u09B2\u09C7|\u09A8\u09C0\u09B2\u09BE\u09AD|\u09A8\u09C0\u09B2\u099A\u09C7|\u0986\u09B8\u09AE\u09BE\u09A8\u09BF",
+            green: "\u09B8\u09AC\u09C1\u099C|\u09B6\u09CD\u09AF\u09BE\u09AE\u09B2|\u09B8\u09AC\u09C1\u099C\u09C7|\u09B9\u09B0\u09BF\u09CE",
+            pink: "\u0997\u09CB\u09B2\u09BE\u09AA\u09BF|\u0997\u09CB\u09B2\u09BE\u09AA\u09C0|\u09AA\u09BF\u0982\u0995",
+            purple: "\u09AC\u09C7\u0997\u09C1\u09A8\u09BF|\u09AC\u09C7\u0997\u09C1\u09A8\u09C0|\u09AD\u09BE\u09AF\u09BC\u09CB\u09B2\u09C7\u099F|\u09A8\u09C0\u09B2\u09B2\u09CB\u09B9\u09BF\u09A4",
+            white: "\u09B8\u09BE\u09A6\u09BE|\u09B6\u09CD\u09AC\u09C7\u09A4|\u09B6\u09C1\u09AD\u09CD\u09B0|\u09A7\u09AC\u09B2|\u09B8\u09AB\u09C7\u09A6",
+            black: "\u0995\u09BE\u09B2\u09CB|\u0995\u09BE\u09B2\u09CB\u09AF\u09BC|\u09AE\u09BF\u09B6\u0995\u09BE\u09B2\u09CB|\u0995\u09BE\u09B2\u09CB\u09B0",
+            silver: "\u09B0\u09C1\u09AA\u09BE|\u09B0\u09C1\u09AA\u09BE\u09B2\u09BF|\u09B0\u09C2\u09AA\u09BE\u09B2\u09C0|\u09B0\u09C1\u09AA\u09CB\u09B2\u09BF|\u09B0\u09CC\u09AA\u09CD\u09AF|\u09B0\u09C1\u09AA\u09BE\u09B2\u09C0"
+          }
+        },
+        ta: {
+          stop: "\u0BA8\u0BBE\u0BA9\u0BCD|\u0BA8\u0BC0|\u0B8E\u0BA9\u0BCD|\u0B89\u0BA9\u0BCD|\u0B8E\u0BA9\u0BCD\u0BA9\u0BC8|\u0B89\u0BA9\u0BCD\u0BA9\u0BC8|\u0B87\u0BA8\u0BCD\u0BA4|\u0B85\u0BA8\u0BCD\u0BA4|\u0B92\u0BB0\u0BC1|\u0B87\u0BB2\u0BCD\u0BB2\u0BC8|\u0BB5\u0BC7\u0BA3\u0BCD\u0B9F\u0BC1\u0BAE\u0BCD|\u0BAA\u0BCB\u0BB2|\u0BA4\u0BBE\u0BA9\u0BCD|\u0B8E\u0BA9\u0BCD\u0BA9|\u0BA8\u0BAE\u0BCD|\u0BA8\u0BBE\u0BAE\u0BCD|\u0B89\u0BB3\u0BCD\u0BB3|\u0B87\u0BA4\u0BC1|\u0B85\u0BA4\u0BC1|\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BC1",
+          c: {
+            fire: "\u0BA4\u0BC0|\u0BA8\u0BC6\u0BB0\u0BC1\u0BAA\u0BCD\u0BAA\u0BC1|\u0B85\u0BA9\u0BB2\u0BCD|\u0B8E\u0BB0\u0BBF\u0BAF\u0BC1\u0BAE\u0BCD|\u0B8E\u0BB0\u0BBF\u0B95\u0BBF\u0BB1\u0BA4\u0BC1|\u0BA4\u0BA3\u0BB2\u0BCD|\u0B9C\u0BCD\u0BB5\u0BBE\u0BB2\u0BC8|\u0BA4\u0BC0\u0BAA\u0BCD\u0BAA\u0BCA\u0BB1\u0BBF|\u0B8E\u0BB0\u0BBF\u0BA8\u0BCD\u0BA4\u0BC1",
+            rain: "\u0BAE\u0BB4\u0BC8|\u0BAE\u0BB4\u0BC8\u0BAF\u0BBF\u0BB2\u0BCD|\u0BAE\u0BB4\u0BC8\u0BA4\u0BCD\u0BA4\u0BC1\u0BB3\u0BBF|\u0BAE\u0BB4\u0BC8\u0B95\u0BCD\u0B95\u0BBE\u0BB2\u0BAE\u0BCD|\u0BA4\u0BC2\u0BB1\u0BB2\u0BCD|\u0BAE\u0BBE\u0BB0\u0BBF|\u0BAE\u0BB4\u0BC8\u0BAF\u0BC7",
+            storm: "\u0BAA\u0BC1\u0BAF\u0BB2\u0BCD|\u0B87\u0B9F\u0BBF|\u0B9A\u0BC2\u0BB1\u0BBE\u0BB5\u0BB3\u0BBF|\u0B9A\u0BC2\u0BB1\u0BC8\u0B95\u0BCD\u0B95\u0BBE\u0BB1\u0BCD\u0BB1\u0BC1|\u0BAA\u0BC1\u0BAF\u0BB2\u0BBF\u0BB2\u0BCD",
+            lightning: "\u0BAE\u0BBF\u0BA9\u0BCD\u0BA9\u0BB2\u0BCD|\u0BAE\u0BBF\u0BA9\u0BCD\u0BA9\u0BB2\u0BC7|\u0B87\u0B9F\u0BBF\u0BAE\u0BBF\u0BA9\u0BCD\u0BA9\u0BB2\u0BCD|\u0BAE\u0BBF\u0BA9\u0BCD\u0BA9\u0BB2\u0BBE\u0BAF\u0BCD",
+            snow: "\u0BAA\u0BA9\u0BBF|\u0BAA\u0BA9\u0BBF\u0BAE\u0BB4\u0BC8|\u0BAA\u0BA9\u0BBF\u0BA4\u0BCD\u0BA4\u0BC1\u0BB3\u0BBF|\u0BB5\u0BC6\u0BA3\u0BCD\u0BAA\u0BA9\u0BBF|\u0BAA\u0BA9\u0BBF\u0BAF\u0BBF\u0BB2\u0BCD",
+            cold: "\u0B95\u0BC1\u0BB3\u0BBF\u0BB0\u0BCD|\u0B95\u0BC1\u0BB3\u0BBF\u0BB0\u0BC1\u0BAE\u0BCD|\u0BAA\u0BA9\u0BBF\u0B95\u0BCD\u0B95\u0B9F\u0BCD\u0B9F\u0BBF|\u0B89\u0BB1\u0BC8\u0BA8\u0BCD\u0BA4\u0BC1|\u0B89\u0BB1\u0BC8\u0BAA\u0BA9\u0BBF|\u0B9C\u0BBF\u0BB2\u0BCD|\u0B9A\u0BBF\u0BB2\u0BCD\u0BB2\u0BC6\u0BA9\u0BCD\u0BB1\u0BC1",
+            sun: "\u0B9A\u0BC2\u0BB0\u0BBF\u0BAF\u0BA9\u0BCD|\u0B9A\u0BC2\u0BB0\u0BBF\u0BAF\u0BA9\u0BC7|\u0B95\u0BA4\u0BBF\u0BB0\u0BCD|\u0BB5\u0BC6\u0BAF\u0BBF\u0BB2\u0BCD|\u0B9E\u0BBE\u0BAF\u0BBF\u0BB1\u0BC1|\u0B89\u0BA4\u0BAF\u0BAE\u0BCD|\u0B85\u0BB8\u0BCD\u0BA4\u0BAE\u0BA9\u0BAE\u0BCD|\u0BAA\u0B95\u0BB2\u0BB5\u0BA9\u0BCD|\u0B9A\u0BC2\u0BB0\u0BBF\u0BAF\u0BCB\u0BA4\u0BAF\u0BAE\u0BCD",
+            summer: "\u0B95\u0BCB\u0B9F\u0BC8|\u0BB5\u0BC7\u0BA9\u0BBF\u0BB2\u0BCD|\u0B95\u0BCB\u0B9F\u0BC8\u0B95\u0BBE\u0BB2\u0BAE\u0BCD|\u0BB5\u0BC6\u0BAF\u0BBF\u0BB2\u0BCD \u0B95\u0BBE\u0BB2\u0BAE\u0BCD",
+            moon: "\u0BA8\u0BBF\u0BB2\u0BBE|\u0BA8\u0BBF\u0BB2\u0BB5\u0BC1|\u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0BB0\u0BA9\u0BCD|\u0BA8\u0BBF\u0BB2\u0BB5\u0BC7|\u0BB5\u0BC6\u0BA3\u0BCD\u0BA3\u0BBF\u0BB2\u0BBE|\u0BAA\u0BCC\u0BB0\u0BCD\u0BA3\u0BAE\u0BBF|\u0BA8\u0BBF\u0BB2\u0BBE\u0BB5\u0BC7",
+            star: "\u0BA8\u0B9F\u0BCD\u0B9A\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BAE\u0BCD|\u0BB5\u0BBF\u0BA3\u0BCD\u0BAE\u0BC0\u0BA9\u0BCD|\u0BA4\u0BBE\u0BB0\u0B95\u0BC8|\u0BA8\u0B9F\u0BCD\u0B9A\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0B99\u0BCD\u0B95\u0BB3\u0BCD|\u0BB5\u0BBF\u0BA3\u0BCD\u0BAE\u0BC0\u0BA9\u0BCD\u0B95\u0BB3\u0BCD",
+            sky: "\u0BB5\u0BBE\u0BA9\u0BAE\u0BCD|\u0BB5\u0BBE\u0BA9\u0BCD|\u0B86\u0B95\u0BBE\u0BAF\u0BAE\u0BCD|\u0BAE\u0BC7\u0B95\u0BAE\u0BCD|\u0BAE\u0BC7\u0B95\u0B99\u0BCD\u0B95\u0BB3\u0BCD|\u0BB5\u0BBE\u0BA9\u0BBF\u0BB2\u0BCD|\u0BB5\u0BBF\u0BA3\u0BCD|\u0BAE\u0BC1\u0B95\u0BBF\u0BB2\u0BCD",
+            heaven: "\u0B9A\u0BCA\u0BB0\u0BCD\u0B95\u0BCD\u0B95\u0BAE\u0BCD|\u0B9A\u0BC1\u0BB5\u0BB0\u0BCD\u0B95\u0BCD\u0B95\u0BAE\u0BCD|\u0BB5\u0BC8\u0B95\u0BC1\u0BA3\u0BCD\u0B9F\u0BAE\u0BCD|\u0B9A\u0BCA\u0BB0\u0BCD\u0B95\u0BCD\u0B95\u0BAE\u0BC7|\u0BAA\u0BB0\u0BB2\u0BCB\u0B95\u0BAE\u0BCD",
+            night: "\u0B87\u0BB0\u0BB5\u0BC1|\u0B87\u0BB0\u0BB5\u0BBF\u0BB2\u0BCD|\u0B87\u0BB0\u0BBE\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BBF|\u0BB0\u0BBE\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BBF|\u0BA8\u0BB3\u0BCD\u0BB3\u0BBF\u0BB0\u0BB5\u0BC1|\u0B87\u0BA9\u0BCD\u0BB1\u0BBF\u0BB0\u0BB5\u0BC1|\u0B87\u0BB0\u0BB5\u0BC7",
+            dark: "\u0B87\u0BB0\u0BC1\u0BB3\u0BCD|\u0B87\u0BB0\u0BC1\u0B9F\u0BCD\u0B9F\u0BC1|\u0B87\u0BB0\u0BC1\u0BB3\u0BBF\u0BB2\u0BCD|\u0BA8\u0BBF\u0BB4\u0BB2\u0BCD|\u0B95\u0BBE\u0BB0\u0BBF\u0BB0\u0BC1\u0BB3\u0BCD|\u0B85\u0BA8\u0BCD\u0BA4\u0B95\u0BBE\u0BB0\u0BAE\u0BCD",
+            light: "\u0B92\u0BB3\u0BBF|\u0BB5\u0BC6\u0BB3\u0BBF\u0B9A\u0BCD\u0B9A\u0BAE\u0BCD|\u0BAA\u0BBF\u0BB0\u0B95\u0BBE\u0B9A\u0BAE\u0BCD|\u0B9C\u0BCA\u0BB2\u0BBF\u0B95\u0BCD\u0B95\u0BC1\u0BAE\u0BCD|\u0B92\u0BB3\u0BBF\u0BB0\u0BC1\u0BAE\u0BCD|\u0BA4\u0BC0\u0BAA\u0BAE\u0BCD|\u0BB5\u0BBF\u0BB3\u0B95\u0BCD\u0B95\u0BC1|\u0B9A\u0BC1\u0B9F\u0BB0\u0BCD",
+            heart: "\u0B87\u0BA4\u0BAF\u0BAE\u0BCD|\u0BA8\u0BC6\u0B9E\u0BCD\u0B9A\u0BAE\u0BCD|\u0BA8\u0BC6\u0B9E\u0BCD\u0B9A\u0BC1|\u0BAE\u0BA9\u0B9A\u0BC1|\u0B89\u0BB3\u0BCD\u0BB3\u0BAE\u0BCD|\u0B87\u0BA4\u0BAF\u0BA4\u0BCD\u0BA4\u0BBF\u0BB2\u0BCD|\u0BA8\u0BC6\u0B9E\u0BCD\u0B9A\u0BBF\u0BB2\u0BCD",
+            love: "\u0B95\u0BBE\u0BA4\u0BB2\u0BCD|\u0B85\u0BA9\u0BCD\u0BAA\u0BC1|\u0B95\u0BBE\u0BA4\u0BB2\u0BBF|\u0B95\u0BBE\u0BA4\u0BB2\u0BA9\u0BCD|\u0BA8\u0BC7\u0B9A\u0BAE\u0BCD|\u0B95\u0BBE\u0BA4\u0BB2\u0BC7|\u0BAA\u0BBF\u0BB0\u0BBF\u0BAF\u0BAE\u0BCD|kadhal|kaadhal|anbe",
+            kiss: "\u0BAE\u0BC1\u0BA4\u0BCD\u0BA4\u0BAE\u0BCD|\u0BAE\u0BC1\u0BA4\u0BCD\u0BA4\u0BAE\u0BBF\u0B9F\u0BC1|\u0B87\u0BA4\u0BB4\u0BCD|\u0B89\u0BA4\u0B9F\u0BC1|\u0B87\u0BA4\u0BB4\u0BCD\u0B95\u0BB3\u0BCD|\u0BAE\u0BC1\u0BA4\u0BCD\u0BA4\u0B99\u0BCD\u0B95\u0BB3\u0BCD",
+            heartbreak: "\u0BAE\u0BA9\u0BAE\u0BC1\u0B9F\u0BC8\u0BA8\u0BCD\u0BA4\u0BC1|\u0B89\u0B9F\u0BC8\u0BA8\u0BCD\u0BA4 \u0B87\u0BA4\u0BAF\u0BAE\u0BCD|\u0B87\u0BA4\u0BAF\u0BAE\u0BCD \u0B89\u0B9F\u0BC8\u0BA8\u0BCD\u0BA4\u0BC1|\u0BAA\u0BBF\u0BB0\u0BBF\u0BB5\u0BC1|\u0B95\u0BBE\u0BA4\u0BB2\u0BCD \u0BA4\u0BCB\u0BB2\u0BCD\u0BB5\u0BBF|\u0B9A\u0BCB\u0B95\u0BAE\u0BCD",
+            tears: "\u0B95\u0BA3\u0BCD\u0BA3\u0BC0\u0BB0\u0BCD|\u0B85\u0BB4\u0BC1\u0B95\u0BC8|\u0B85\u0BB4\u0BC1\u0BA4\u0BC7\u0BA9\u0BCD|\u0B85\u0BB4\u0BBE\u0BA4\u0BC7|\u0B85\u0BB4\u0BC1\u0BA4\u0BC1|\u0B95\u0BA3\u0BCD\u0BA3\u0BC0\u0BB0\u0BBF\u0BB2\u0BCD|\u0BB5\u0BBF\u0BB4\u0BBF\u0BA8\u0BC0\u0BB0\u0BCD",
+            money: "\u0BAA\u0BA3\u0BAE\u0BCD|\u0B95\u0BBE\u0B9A\u0BC1|\u0B9A\u0BC6\u0BB2\u0BCD\u0BB5\u0BAE\u0BCD|\u0BA4\u0BC1\u0B9F\u0BCD\u0B9F\u0BC1|\u0B9F\u0BBE\u0BB2\u0BB0\u0BCD|\u0BAA\u0BA3\u0B95\u0BCD\u0B95\u0BBE\u0BB0\u0BA9\u0BCD|\u0BB0\u0BC2\u0BAA\u0BBE\u0BAF\u0BCD",
+            gold: "\u0BA4\u0B99\u0BCD\u0B95\u0BAE\u0BCD|\u0BAA\u0BCA\u0BA9\u0BCD|\u0BAA\u0BCA\u0BA9\u0BCD\u0BA9\u0BBE\u0BA9|\u0BA4\u0B99\u0BCD\u0B95\u0BAE\u0BC7|\u0B95\u0BA9\u0B95\u0BAE\u0BCD",
+            diamond: "\u0BB5\u0BC8\u0BB0\u0BAE\u0BCD|\u0BB5\u0BC8\u0BB0\u0BAE\u0BC7|\u0BB0\u0BA4\u0BCD\u0BA4\u0BBF\u0BA9\u0BAE\u0BCD|\u0BAE\u0BBE\u0BA3\u0BBF\u0B95\u0BCD\u0B95\u0BAE\u0BCD|\u0BAE\u0BC1\u0BA4\u0BCD\u0BA4\u0BC1|\u0BA8\u0B95\u0BC8",
+            crown: "\u0B95\u0BBF\u0BB0\u0BC0\u0B9F\u0BAE\u0BCD|\u0BAE\u0B95\u0BC1\u0B9F\u0BAE\u0BCD|\u0BB0\u0BBE\u0B9C\u0BBE|\u0BB0\u0BBE\u0BA3\u0BBF|\u0B85\u0BB0\u0B9A\u0BA9\u0BCD|\u0B85\u0BB0\u0B9A\u0BBF|\u0B87\u0BB3\u0BB5\u0BB0\u0B9A\u0BBF|\u0BAE\u0BA9\u0BCD\u0BA9\u0BA9\u0BCD",
+            fly: "\u0BAA\u0BB1\u0BA8\u0BCD\u0BA4\u0BC1|\u0BAA\u0BB1\u0B95\u0BCD\u0B95\u0BC1\u0BAE\u0BCD|\u0B9A\u0BBF\u0BB1\u0B95\u0BC1|\u0B9A\u0BBF\u0BB1\u0B95\u0BC1\u0B95\u0BB3\u0BCD|\u0BAA\u0BB1\u0B95\u0BCD\u0B95|\u0B9A\u0BBF\u0BB1\u0B95\u0B9F\u0BBF\u0BA4\u0BCD\u0BA4\u0BC1",
+            bird: "\u0BAA\u0BB1\u0BB5\u0BC8|\u0BAA\u0BB1\u0BB5\u0BC8\u0B95\u0BB3\u0BCD|\u0B95\u0BC1\u0BB0\u0BC1\u0BB5\u0BBF|\u0B95\u0BBF\u0BB3\u0BBF|\u0BAA\u0BC1\u0BB1\u0BBE|\u0B95\u0BC1\u0BAF\u0BBF\u0BB2\u0BCD|\u0BAE\u0BAF\u0BBF\u0BB2\u0BCD",
+            butterfly: "\u0BAA\u0B9F\u0BCD\u0B9F\u0BBE\u0BAE\u0BCD\u0BAA\u0BC2\u0B9A\u0BCD\u0B9A\u0BBF|\u0BB5\u0BA3\u0BCD\u0BA3\u0BA4\u0BCD\u0BA4\u0BC1\u0BAA\u0BCD\u0BAA\u0BC2\u0B9A\u0BCD\u0B9A\u0BBF|\u0BAA\u0B9F\u0BCD\u0B9F\u0BBE\u0BAE\u0BCD\u0BAA\u0BC2\u0B9A\u0BCD\u0B9A\u0BBF\u0BAF\u0BC7",
+            flower: "\u0BAA\u0BC2|\u0BAA\u0BC2\u0B95\u0BCD\u0B95\u0BB3\u0BCD|\u0BAE\u0BB2\u0BB0\u0BCD|\u0BAE\u0BB2\u0BB0\u0BCD\u0B95\u0BB3\u0BCD|\u0BAA\u0BC2\u0BB5\u0BC7|\u0BAE\u0BB2\u0BB0\u0BC7|\u0BAA\u0BC2\u0BA4\u0BCD\u0BA4\u0BC1|\u0BAE\u0BCA\u0B9F\u0BCD\u0B9F\u0BC1",
+            rose: "\u0BB0\u0BCB\u0B9C\u0BBE|\u0BB0\u0BCB\u0B9C\u0BBE\u0BB5\u0BC7|\u0BB0\u0BCB\u0B9C\u0BBE\u0BAA\u0BCD\u0BAA\u0BC2",
+            ocean: "\u0B95\u0B9F\u0BB2\u0BCD|\u0B9A\u0BAE\u0BC1\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BAE\u0BCD|\u0B85\u0BB2\u0BC8|\u0B85\u0BB2\u0BC8\u0B95\u0BB3\u0BCD|\u0B95\u0B9F\u0BB2\u0BBF\u0BB2\u0BCD|\u0B86\u0BB4\u0BBF|\u0B95\u0B9F\u0BB2\u0BC7",
+            water: "\u0BA4\u0BA3\u0BCD\u0BA3\u0BC0\u0BB0\u0BCD|\u0BA8\u0BC0\u0BB0\u0BCD|\u0BA8\u0BA4\u0BBF|\u0BA8\u0BC0\u0B9A\u0BCD\u0B9A\u0BB2\u0BCD|\u0B85\u0BB0\u0BC1\u0BB5\u0BBF|\u0BA8\u0BA4\u0BBF\u0BAF\u0BC7|\u0B93\u0B9F\u0BC8",
+            wind: "\u0B95\u0BBE\u0BB1\u0BCD\u0BB1\u0BC1|\u0BA4\u0BC6\u0BA9\u0BCD\u0BB1\u0BB2\u0BCD|\u0B95\u0BBE\u0BB1\u0BCD\u0BB1\u0BC7|\u0BB5\u0BBE\u0B9F\u0BC8|\u0B95\u0BBE\u0BB1\u0BCD\u0BB1\u0BBF\u0BB2\u0BCD|\u0BAA\u0BC2\u0B99\u0BCD\u0B95\u0BBE\u0BB1\u0BCD\u0BB1\u0BC1",
+            smoke: "\u0BAA\u0BC1\u0B95\u0BC8|\u0B9A\u0BBF\u0B95\u0BB0\u0BC6\u0B9F\u0BCD|\u0BAA\u0BC1\u0B95\u0BC8\u0BAE\u0BC2\u0B9F\u0BCD\u0B9F\u0BAE\u0BCD|\u0BAA\u0BC1\u0B95\u0BC8\u0BAF\u0BBE\u0BAF\u0BCD",
+            electric: "\u0BAE\u0BBF\u0BA9\u0BCD\u0B9A\u0BBE\u0BB0\u0BAE\u0BCD|\u0B86\u0BB1\u0BCD\u0BB1\u0BB2\u0BCD|\u0B9A\u0B95\u0BCD\u0BA4\u0BBF|\u0BAE\u0BBF\u0BA9\u0BCD\u0BA9\u0BCB\u0B9F\u0BCD\u0B9F\u0BAE\u0BCD|\u0B8E\u0BA9\u0BB0\u0BCD\u0B9C\u0BBF",
+            rainbow: "\u0BB5\u0BBE\u0BA9\u0BB5\u0BBF\u0BB2\u0BCD|\u0BB5\u0BBE\u0BA9\u0BB5\u0BBF\u0BB2\u0BCD\u0BB2\u0BC7|\u0B8F\u0BB4\u0BC1 \u0BB5\u0BA3\u0BCD\u0BA3\u0BAE\u0BCD|\u0BB5\u0BA3\u0BCD\u0BA3\u0B99\u0BCD\u0B95\u0BB3\u0BCD",
+            fireworks: "\u0BAA\u0B9F\u0BCD\u0B9F\u0BBE\u0B9A\u0BC1|\u0BB5\u0BBE\u0BA3\u0BB5\u0BC7\u0B9F\u0BBF\u0B95\u0BCD\u0B95\u0BC8|\u0BAE\u0BA4\u0BCD\u0BA4\u0BBE\u0BAA\u0BCD\u0BAA\u0BC1|\u0B9A\u0BB0\u0BB5\u0BC6\u0B9F\u0BBF",
+            party: "\u0BAA\u0BBE\u0BB0\u0BCD\u0B9F\u0BCD\u0B9F\u0BBF|\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BBE\u0B9F\u0BCD\u0B9F\u0BAE\u0BCD|\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BBE\u0B9F\u0BC1|\u0BB5\u0BBF\u0BB0\u0BC1\u0BA8\u0BCD\u0BA4\u0BC1|\u0BA4\u0BBF\u0BB0\u0BC1\u0BB5\u0BBF\u0BB4\u0BBE|\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BBE\u0B9F\u0BC1\u0BB5\u0BCB\u0BAE\u0BCD",
+            birthday: "\u0BAA\u0BBF\u0BB1\u0BA8\u0BCD\u0BA4\u0BA8\u0BBE\u0BB3\u0BCD|\u0BAA\u0BBF\u0BB1\u0BA8\u0BCD\u0BA4 \u0BA8\u0BBE\u0BB3\u0BCD|\u0BAA\u0BB0\u0BCD\u0BA4\u0BCD\u0B9F\u0BC7",
+            dance: "\u0BA8\u0B9F\u0BA9\u0BAE\u0BCD|\u0B86\u0B9F\u0BCD\u0B9F\u0BAE\u0BCD|\u0B86\u0B9F\u0BB2\u0BBE\u0BAE\u0BCD|\u0BA8\u0B9F\u0BA9\u0BAE\u0BBE\u0B9F\u0BC1|\u0B9F\u0BBE\u0BA9\u0BCD\u0BB8\u0BCD|\u0B86\u0B9F\u0BC1\u0BB5\u0BCB\u0BAE\u0BCD|\u0B95\u0BC1\u0BA4\u0BCD\u0BA4\u0BBE\u0B9F\u0BCD\u0B9F\u0BAE\u0BCD",
+            jump: "\u0B95\u0BC1\u0BA4\u0BBF|\u0B95\u0BC1\u0BA4\u0BBF\u0BA4\u0BCD\u0BA4\u0BC1|\u0BA4\u0BBE\u0BB5\u0BBF|\u0BA4\u0BBE\u0BB5\u0BC1|\u0B95\u0BC1\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BC1\u0BAE\u0BCD|\u0B9C\u0BAE\u0BCD\u0BAA\u0BCD",
+            dream: "\u0B95\u0BA9\u0BB5\u0BC1|\u0B95\u0BA9\u0BB5\u0BBF\u0BB2\u0BCD|\u0B95\u0BA9\u0BB5\u0BC7|\u0B95\u0BA9\u0BB5\u0BC1\u0B95\u0BB3\u0BCD|\u0B95\u0BA9\u0BBE|\u0B9A\u0BCA\u0BAA\u0BCD\u0BAA\u0BA9\u0BAE\u0BCD",
+            ghost: "\u0BAA\u0BC7\u0BAF\u0BCD|\u0B86\u0BB5\u0BBF|\u0BAA\u0BBF\u0B9A\u0BBE\u0B9A\u0BC1|\u0B86\u0BA9\u0BCD\u0BAE\u0BBE|\u0BAA\u0BC2\u0BA4\u0BAE\u0BCD|\u0BAA\u0BC7\u0BAF\u0BBE\u0BAF\u0BCD",
+            angel: "\u0BA4\u0BC7\u0BB5\u0BA4\u0BC8|\u0BA4\u0BC7\u0BB5\u0BA4\u0BC8\u0BAF\u0BC7|\u0B8F\u0B9E\u0BCD\u0B9A\u0BB2\u0BCD|\u0BA4\u0BC7\u0BB5\u0BA4\u0BC8\u0B95\u0BB3\u0BCD",
+            devil: "\u0B9A\u0BBE\u0BA4\u0BCD\u0BA4\u0BBE\u0BA9\u0BCD|\u0BA8\u0BB0\u0B95\u0BAE\u0BCD|\u0B85\u0B9A\u0BC1\u0BB0\u0BA9\u0BCD|\u0BB0\u0BBE\u0B9F\u0BCD\u0B9A\u0B9A\u0BA9\u0BCD|\u0BB0\u0BBE\u0B9F\u0BCD\u0B9A\u0B9A\u0BBF|\u0B85\u0BB0\u0B95\u0BCD\u0B95\u0BA9\u0BCD",
+            world: "\u0B89\u0BB2\u0B95\u0BAE\u0BCD|\u0B89\u0BB2\u0B95\u0BBF\u0BB2\u0BCD|\u0BAA\u0BC2\u0BAE\u0BBF|\u0B89\u0BB2\u0B95\u0BC7|\u0BB5\u0BC8\u0BAF\u0BAE\u0BCD|\u0BAA\u0BC1\u0BB5\u0BBF|\u0BAA\u0BC2\u0BB2\u0BCB\u0B95\u0BAE\u0BCD",
+            space: "\u0BAA\u0BBF\u0BB0\u0BAA\u0B9E\u0BCD\u0B9A\u0BAE\u0BCD|\u0B85\u0BA3\u0BCD\u0B9F\u0BAE\u0BCD|\u0BB5\u0BBF\u0BA3\u0BCD\u0BB5\u0BC6\u0BB3\u0BBF|\u0BAA\u0BBE\u0BB2\u0BCD\u0BB5\u0BC6\u0BB3\u0BBF|\u0B85\u0BA3\u0BCD\u0B9F\u0BB5\u0BC6\u0BB3\u0BBF|\u0B95\u0BC7\u0BB2\u0B95\u0BCD\u0BB8\u0BBF",
+            rocket: "\u0BB0\u0BBE\u0B95\u0BCD\u0B95\u0BC6\u0B9F\u0BCD|\u0B8F\u0BB5\u0BC1\u0B95\u0BA3\u0BC8|\u0BB5\u0BBF\u0BA3\u0BCD\u0B95\u0BB2\u0BAE\u0BCD",
+            time: "\u0BA8\u0BC7\u0BB0\u0BAE\u0BCD|\u0B95\u0BBE\u0BB2\u0BAE\u0BCD|\u0B8E\u0BA9\u0BCD\u0BB1\u0BC6\u0BA9\u0BCD\u0BB1\u0BC1\u0BAE\u0BCD|\u0B95\u0B9F\u0BBF\u0B95\u0BBE\u0BB0\u0BAE\u0BCD|\u0BA8\u0BCA\u0B9F\u0BBF|\u0B8E\u0BAA\u0BCD\u0BAA\u0BCB\u0BA4\u0BC1\u0BAE\u0BCD|\u0BAF\u0BC1\u0B95\u0BAE\u0BCD|\u0BA8\u0BBF\u0BAE\u0BBF\u0B9F\u0BAE\u0BCD",
+            drive: "\u0B95\u0BBE\u0BB0\u0BCD|\u0BB5\u0BA3\u0BCD\u0B9F\u0BBF|\u0B9A\u0BBE\u0BB2\u0BC8|\u0BAA\u0BBE\u0BA4\u0BC8|\u0BB5\u0BC7\u0B95\u0BAE\u0BCD|\u0B9F\u0BBF\u0BB0\u0BC8\u0BB5\u0BCD|\u0BA8\u0BC6\u0B9F\u0BC1\u0B9E\u0BCD\u0B9A\u0BBE\u0BB2\u0BC8",
+            city: "\u0BA8\u0B95\u0BB0\u0BAE\u0BCD|\u0BA8\u0B95\u0BB0\u0BBF\u0BB2\u0BCD|\u0BA4\u0BC6\u0BB0\u0BC1|\u0BA4\u0BC6\u0BB0\u0BC1\u0BB5\u0BBF\u0BB2\u0BCD|\u0BB5\u0BC0\u0BA4\u0BBF|\u0B9A\u0BC6\u0BA9\u0BCD\u0BA9\u0BC8|\u0BAA\u0B9F\u0BCD\u0B9F\u0BA3\u0BAE\u0BCD|\u0BAE\u0BBE\u0BA8\u0B95\u0BB0\u0BAE\u0BCD",
+            music: "\u0B87\u0B9A\u0BC8|\u0BAA\u0BBE\u0B9F\u0BB2\u0BCD|\u0BAA\u0BBE\u0B9F\u0BCD\u0B9F\u0BC1|\u0BB0\u0BBE\u0B95\u0BAE\u0BCD|\u0BAE\u0BC6\u0B9F\u0BCD\u0B9F\u0BC1|\u0BA4\u0BBE\u0BB3\u0BAE\u0BCD|\u0B9A\u0B99\u0BCD\u0B95\u0BC0\u0BA4\u0BAE\u0BCD|\u0B87\u0B9A\u0BC8\u0BAF\u0BC7|\u0BAE\u0BBF\u0BAF\u0BC2\u0B9A\u0BBF\u0B95\u0BCD",
+            sing: "\u0BAA\u0BBE\u0B9F\u0BC1|\u0BAA\u0BBE\u0B9F\u0BC1\u0BAE\u0BCD|\u0BAA\u0BBE\u0B9F\u0BBF|\u0BAA\u0BBE\u0B9F\u0BC1\u0BB5\u0BC7\u0BA9\u0BCD|\u0B95\u0BC1\u0BB0\u0BB2\u0BCD|\u0BAA\u0BBE\u0B9F\u0BB2\u0BBE\u0BAE\u0BCD|\u0BAA\u0BBE\u0B9F\u0BC1\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD|\u0B95\u0BBE\u0BA9\u0BAE\u0BCD",
+            boom: "\u0BB5\u0BC6\u0B9F\u0BBF|\u0BB5\u0BC6\u0B9F\u0BBF\u0B95\u0BCD\u0B95\u0BC1\u0BAE\u0BCD|\u0BB5\u0BC6\u0B9F\u0BBF\u0BA4\u0BCD\u0BA4\u0BC1|\u0BAA\u0BC2\u0BAE\u0BCD|\u0B9F\u0BAE\u0BBE\u0BB2\u0BCD",
+            champagne: "\u0BB7\u0BBE\u0BAE\u0BCD\u0BAA\u0BC6\u0BAF\u0BBF\u0BA9\u0BCD|\u0B9A\u0BBF\u0BAF\u0BB0\u0BCD\u0BB8\u0BCD|\u0BAE\u0BA4\u0BC1|\u0BAA\u0BBE\u0B9F\u0BCD\u0B9F\u0BBF\u0BB2\u0BCD|\u0BAA\u0BCB\u0BA4\u0BC8",
+            magic: "\u0BAE\u0BA8\u0BCD\u0BA4\u0BBF\u0BB0\u0BAE\u0BCD|\u0BAE\u0BBE\u0BAF\u0BAE\u0BCD|\u0BAE\u0BBE\u0BAF\u0BBE\u0B9C\u0BBE\u0BB2\u0BAE\u0BCD|\u0B9C\u0BBE\u0BB2\u0BAE\u0BCD|\u0BAE\u0BC7\u0B9C\u0BBF\u0B95\u0BCD|\u0BAE\u0BBE\u0BAF\u0BC8|\u0BAE\u0BA8\u0BCD\u0BA4\u0BBF\u0BB0\u0BB5\u0BBE\u0BA4\u0BBF",
+            beach: "\u0B95\u0B9F\u0BB1\u0BCD\u0B95\u0BB0\u0BC8|\u0BA4\u0BC0\u0BB5\u0BC1|\u0BAE\u0BA3\u0BB2\u0BCD|\u0BA4\u0BC6\u0BA9\u0BCD\u0BA9\u0BC8|\u0B95\u0B9F\u0BB1\u0BCD\u0B95\u0BB0\u0BC8\u0BAF\u0BBF\u0BB2\u0BCD",
+            christmas: "\u0B95\u0BBF\u0BB1\u0BBF\u0BB8\u0BCD\u0BA4\u0BC1\u0BAE\u0BB8\u0BCD|\u0B95\u0BBF\u0BB1\u0BBF\u0BB8\u0BCD\u0BAE\u0BB8\u0BCD|\u0B9A\u0BBE\u0BA3\u0BCD\u0B9F\u0BBE|\u0B9A\u0BBE\u0BA8\u0BCD\u0BA4\u0BBE|\u0B95\u0BBF\u0BB1\u0BBF\u0BB8\u0BCD\u0BA4\u0BC1 \u0BAA\u0BBF\u0BB1\u0BAA\u0BCD\u0BAA\u0BC1",
+            red: "\u0B9A\u0BBF\u0BB5\u0BAA\u0BCD\u0BAA\u0BC1|\u0B9A\u0BBF\u0BB5\u0BA8\u0BCD\u0BA4|\u0B9A\u0BC6\u0BAE\u0BCD\u0BAE\u0BC8|\u0B9A\u0BC6\u0BA8\u0BCD\u0BA8\u0BBF\u0BB1|\u0B9A\u0BBF\u0BB5\u0BAA\u0BCD\u0BAA\u0BBE\u0BAF\u0BCD",
+            blue: "\u0BA8\u0BC0\u0BB2\u0BAE\u0BCD|\u0BA8\u0BC0\u0BB2|\u0BA8\u0BC0\u0BB2\u0BA8\u0BBF\u0BB1|\u0BA8\u0BC0\u0BB2\u0BB5\u0BBE\u0BA9\u0BAE\u0BCD|\u0BAA\u0BCD\u0BB3\u0BC2",
+            green: "\u0BAA\u0B9A\u0BCD\u0B9A\u0BC8|\u0BAA\u0B9A\u0BC1\u0BAE\u0BC8|\u0BAA\u0B9A\u0BCD\u0B9A\u0BC8\u0BA8\u0BBF\u0BB1|\u0BAA\u0B9A\u0BCD\u0B9A\u0BC8\u0BAF\u0BBE\u0BAF\u0BCD",
+            pink: "\u0B87\u0BB3\u0B9E\u0BCD\u0B9A\u0BBF\u0BB5\u0BAA\u0BCD\u0BAA\u0BC1|\u0BAA\u0BBF\u0B99\u0BCD\u0B95\u0BCD|\u0BB0\u0BCB\u0B9C\u0BBE \u0BA8\u0BBF\u0BB1\u0BAE\u0BCD",
+            purple: "\u0B8A\u0BA4\u0BBE|\u0B95\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BBF\u0BAA\u0BCD\u0BAA\u0BC2|\u0B8A\u0BA4\u0BBE \u0BA8\u0BBF\u0BB1\u0BAE\u0BCD|\u0BAA\u0BB0\u0BCD\u0BAA\u0BCD\u0BAA\u0BBF\u0BB3\u0BCD",
+            white: "\u0BB5\u0BC6\u0BB3\u0BCD\u0BB3\u0BC8|\u0BB5\u0BC6\u0BA3\u0BCD\u0BAE\u0BC8|\u0BB5\u0BC6\u0BA3\u0BCD|\u0BB5\u0BC6\u0BA3\u0BCD\u0BA3\u0BBF\u0BB1",
+            black: "\u0B95\u0BB0\u0BC1\u0BAA\u0BCD\u0BAA\u0BC1|\u0B95\u0BB1\u0BC1\u0BAA\u0BCD\u0BAA\u0BC1|\u0B95\u0BB0\u0BC1\u0BAE\u0BC8|\u0B95\u0BB0\u0BBF\u0BAF|\u0B95\u0BB0\u0BC1\u0BA8\u0BBF\u0BB1",
+            silver: "\u0BB5\u0BC6\u0BB3\u0BCD\u0BB3\u0BBF|\u0BB5\u0BC6\u0BB3\u0BCD\u0BB3\u0BBF\u0BAF\u0BBE\u0BAF\u0BCD|\u0BB5\u0BC6\u0BB3\u0BCD\u0BB3\u0BBF\u0BA8\u0BBF\u0BB1|\u0B9A\u0BBF\u0BB2\u0BCD\u0BB5\u0BB0\u0BCD"
+          }
+        },
+        pa: {
+          stop: "\u0A26\u0A3E|\u0A26\u0A40|\u0A26\u0A47|\u0A28\u0A42\u0A70|\u0A2E\u0A48\u0A02|\u0A24\u0A42\u0A70|\u0A35\u0A3F\u0A71\u0A1A|\u0A24\u0A47\u0A30\u0A47|\u0A28\u0A3E\u0A32|\u0A39\u0A48|tenu|menu|sanu|vich|naal|nu|ve|ni|kudi|munde",
+          c: {
+            fire: "\u0A05\u0A71\u0A17|\u0A05\u0A17\u0A28\u0A40|\u0A32\u0A3E\u0A1F|\u0A2C\u0A32\u0A26\u0A40|\u0A05\u0A70\u0A17\u0A3E\u0A30|agg|aag|balda|baldi|angaar",
+            rain: "\u0A2E\u0A40\u0A02\u0A39|\u0A2C\u0A3E\u0A30\u0A3F\u0A38\u0A3C|\u0A2C\u0A30\u0A38\u0A3E\u0A24|\u0A38\u0A3E\u0A35\u0A23|meenh|barish|baarish|barsaat|sawan|saawan",
+            storm: "\u0A24\u0A42\u0A2B\u0A3C\u0A3E\u0A28|\u0A24\u0A42\u0A2B\u0A3E\u0A28|\u0A39\u0A28\u0A47\u0A30\u0A40|toofan|tufaan|toofaan|haneri",
+            lightning: "\u0A2C\u0A3F\u0A1C\u0A32\u0A40|\u0A2C\u0A3F\u0A1C\u0A32\u0A40\u0A06\u0A02|bijli|bijliyan",
+            snow: "\u0A2C\u0A30\u0A2B\u0A3C|\u0A2C\u0A30\u0A2B|barf|baraf|barfaan",
+            cold: "\u0A20\u0A70\u0A22|\u0A20\u0A70\u0A21|\u0A20\u0A70\u0A21\u0A40|\u0A20\u0A70\u0A21\u0A3E|\u0A38\u0A30\u0A26\u0A40|thand|thandi|thanda|sardi",
+            sun: "\u0A38\u0A42\u0A30\u0A1C|\u0A27\u0A41\u0A71\u0A2A|\u0A38\u0A35\u0A47\u0A30\u0A3E|suraj|sooraj|dhupp|dhoop|dhup|savera",
+            summer: "\u0A17\u0A30\u0A2E\u0A40|\u0A17\u0A30\u0A2E\u0A40\u0A06\u0A02|garmi|garmiyan|garmiyaan",
+            moon: "\u0A1A\u0A70\u0A28|\u0A1A\u0A70\u0A26|\u0A1A\u0A70\u0A28\u0A3E|\u0A1A\u0A3E\u0A28\u0A23\u0A40|chann|channa|chand|chanani|chandni",
+            star: "\u0A24\u0A3E\u0A30\u0A3E|\u0A24\u0A3E\u0A30\u0A47|\u0A24\u0A3E\u0A30\u0A3F\u0A06\u0A02|\u0A38\u0A3F\u0A24\u0A3E\u0A30\u0A47|taara|taare|tare|taareyan|sitare|sitara",
+            sky: "\u0A05\u0A38\u0A2E\u0A3E\u0A28|\u0A05\u0A70\u0A2C\u0A30|\u0A2C\u0A71\u0A26\u0A32|\u0A05\u0A70\u0A2C\u0A30\u0A3E\u0A02|asmaan|aasmaan|ambar|ambran|ambraan|baddal",
+            heaven: "\u0A1C\u0A70\u0A28\u0A24|\u0A38\u0A35\u0A30\u0A17|\u0A2C\u0A39\u0A3F\u0A38\u0A3C\u0A24|jannat|swarg|bahisht",
+            night: "\u0A30\u0A3E\u0A24|\u0A30\u0A3E\u0A24\u0A3E\u0A02|\u0A30\u0A3E\u0A24\u0A40\u0A02|\u0A05\u0A71\u0A27\u0A40 \u0A30\u0A3E\u0A24|raat|raatan|raati|raatein|addhi raat",
+            dark: "\u0A39\u0A28\u0A47\u0A30\u0A3E|\u0A39\u0A28\u0A47\u0A30\u0A47|\u0A2A\u0A30\u0A1B\u0A3E\u0A35\u0A3E\u0A02|hanera|hanere|parchhawan|parchhavan",
+            light: "\u0A1A\u0A3E\u0A28\u0A23|\u0A30\u0A4C\u0A38\u0A3C\u0A28\u0A40|\u0A28\u0A42\u0A30|\u0A1A\u0A2E\u0A15|\u0A32\u0A3F\u0A38\u0A3C\u0A15\u0A3E\u0A30\u0A3E|chanan|chaanan|roshni|noor|chamak|lishkara|chamkda|chamkdi",
+            heart: "\u0A26\u0A3F\u0A32|\u0A26\u0A3F\u0A32\u0A3E\u0A02|\u0A1C\u0A3F\u0A17\u0A30|dil|dila|dilan|dilaan|jigar|kaleja",
+            love: "\u0A2A\u0A3F\u0A06\u0A30|\u0A07\u0A38\u0A3C\u0A15|\u0A2E\u0A41\u0A39\u0A71\u0A2C\u0A24|\u0A2A\u0A4D\u0A30\u0A47\u0A2E|pyaar|pyar|piyar|ishq|ishqa|mohabbat|muhabbat|prem",
+            kiss: "\u0A1A\u0A41\u0A70\u0A2E\u0A23|\u0A2C\u0A41\u0A71\u0A32\u0A4D\u0A39|\u0A2C\u0A41\u0A71\u0A32\u0A4D\u0A39\u0A3E\u0A02|chumman|chummi|bullan|hoth",
+            heartbreak: "\u0A26\u0A3F\u0A32 \u0A1F\u0A41\u0A71\u0A1F|\u0A1F\u0A41\u0A71\u0A1F\u0A3F\u0A06 \u0A26\u0A3F\u0A32|\u0A2C\u0A47\u0A35\u0A2B\u0A3C\u0A3E|\u0A1C\u0A41\u0A26\u0A3E\u0A08|\u0A35\u0A3F\u0A1B\u0A4B\u0A5C\u0A3E|dil toot|dil tutt|tutteya dil|bewafa|judaai|vichhoda",
+            tears: "\u0A39\u0A70\u0A1D\u0A42|\u0A05\u0A71\u0A25\u0A30\u0A42|\u0A30\u0A4B\u0A23\u0A3E|\u0A30\u0A4B\u0A02\u0A26\u0A40|hanju|hanjhu|athru|rona|rondi|ronda",
+            money: "\u0A2A\u0A48\u0A38\u0A3E|\u0A2A\u0A48\u0A38\u0A47|\u0A26\u0A4C\u0A32\u0A24|\u0A28\u0A4B\u0A1F\u0A3E\u0A02|paisa|paise|daulat|notan|dollar|dollaran|cash|ameer",
+            gold: "\u0A38\u0A4B\u0A28\u0A3E|\u0A38\u0A41\u0A28\u0A39\u0A3F\u0A30\u0A40|\u0A38\u0A4B\u0A28\u0A47|sona|sone|sunehri|gold",
+            diamond: "\u0A39\u0A40\u0A30\u0A3E|\u0A39\u0A40\u0A30\u0A47|\u0A39\u0A40\u0A30\u0A47\u0A06\u0A02|heera|heere|heereyan|hira|moti",
+            crown: "\u0A24\u0A3E\u0A1C|\u0A30\u0A3E\u0A1C\u0A3E|\u0A30\u0A3E\u0A23\u0A40|\u0A2C\u0A3E\u0A26\u0A38\u0A3C\u0A3E\u0A39|taj|raja|rani|raani|badshah|baadshah",
+            fly: "\u0A09\u0A71\u0A21|\u0A09\u0A21\u0A3E\u0A30\u0A40|\u0A09\u0A71\u0A21\u0A23\u0A3E|\u0A16\u0A70\u0A2D|udd|uddna|udaari|udari|khambh|parwaaz",
+            bird: "\u0A2A\u0A70\u0A1B\u0A40|\u0A1A\u0A3F\u0A5C\u0A40|\u0A1A\u0A3F\u0A5C\u0A40\u0A06\u0A02|\u0A2A\u0A30\u0A3F\u0A70\u0A26\u0A47|\u0A15\u0A2C\u0A42\u0A24\u0A30|panchhi|panchi|chidi|chidiyan|parinde|kabootar",
+            butterfly: "\u0A24\u0A3F\u0A24\u0A32\u0A40|\u0A24\u0A3F\u0A24\u0A32\u0A40\u0A06\u0A02|titli|titliyan|titliyaan",
+            flower: "\u0A2B\u0A41\u0A71\u0A32|\u0A2B\u0A41\u0A71\u0A32\u0A3E\u0A02|\u0A15\u0A32\u0A40|\u0A15\u0A32\u0A40\u0A06\u0A02|phull|phul|phullan|kaliyan",
+            rose: "\u0A17\u0A41\u0A32\u0A3E\u0A2C|gulab|gulaab",
+            ocean: "\u0A38\u0A2E\u0A41\u0A70\u0A26\u0A30|\u0A38\u0A3E\u0A17\u0A30|\u0A32\u0A39\u0A3F\u0A30\u0A3E\u0A02|samundar|samandar|sagar|lehran|lehraan",
+            water: "\u0A2A\u0A3E\u0A23\u0A40|\u0A26\u0A30\u0A3F\u0A06|\u0A28\u0A26\u0A40|\u0A1D\u0A28\u0A3E\u0A02|\u0A1A\u0A28\u0A3E\u0A2C|paani|pani|dariya|darya|nadi|chenab|jhanaa",
+            wind: "\u0A39\u0A35\u0A3E|\u0A39\u0A35\u0A3E\u0A35\u0A3E\u0A02|\u0A2A\u0A4C\u0A23|hawa|hawaa|hawawan|paun|pawan",
+            smoke: "\u0A27\u0A42\u0A70\u0A06\u0A02|\u0A27\u0A42\u0A70\u0A0F\u0A02|\u0A38\u0A3F\u0A17\u0A30\u0A1F|\u0A39\u0A41\u0A71\u0A15\u0A3E|dhuan|dhooan|dhuaan|cigarette|hukka|hookah",
+            electric: "\u0A15\u0A30\u0A70\u0A1F|\u0A0A\u0A30\u0A1C\u0A3E|current|karant|energy|electric",
+            rainbow: "\u0A38\u0A24\u0A30\u0A70\u0A17\u0A40|\u0A2A\u0A40\u0A02\u0A18|satrangi|peengh|rang birange",
+            fireworks: "\u0A2A\u0A1F\u0A3E\u0A15\u0A47|\u0A06\u0A24\u0A3F\u0A38\u0A3C\u0A2C\u0A3E\u0A1C\u0A3C\u0A40|\u0A2B\u0A41\u0A32\u0A1D\u0A5C\u0A40|patake|pataake|atishbaazi|fuljhadi",
+            party: "\u0A2A\u0A3E\u0A30\u0A1F\u0A40|\u0A1C\u0A38\u0A3C\u0A28|\u0A2E\u0A47\u0A32\u0A3E|\u0A2E\u0A39\u0A3F\u0A2B\u0A3C\u0A3F\u0A32|party|jashn|mela|mehfil",
+            birthday: "\u0A1C\u0A28\u0A2E\u0A26\u0A3F\u0A28|\u0A1C\u0A28\u0A2E \u0A26\u0A3F\u0A28|\u0A2C\u0A30\u0A25\u0A21\u0A47|janamdin|birthday|happy birthday",
+            dance: "\u0A28\u0A71\u0A1A|\u0A28\u0A71\u0A1A\u0A23\u0A3E|\u0A2D\u0A70\u0A17\u0A5C\u0A3E|\u0A17\u0A3F\u0A71\u0A27\u0A3E|nach|nachna|nachdi|nachde|bhangra|giddha|thumka|naach",
+            jump: "\u0A1B\u0A3E\u0A32|\u0A15\u0A41\u0A71\u0A26|\u0A1F\u0A71\u0A2A|chhaal|kudd|tapp|jump",
+            dream: "\u0A38\u0A41\u0A2A\u0A28\u0A3E|\u0A38\u0A41\u0A2A\u0A28\u0A47|\u0A16\u0A3C\u0A3E\u0A2C|\u0A16\u0A3E\u0A2C|supna|supne|sapna|sapne|khaab|khwab",
+            ghost: "\u0A2D\u0A42\u0A24|\u0A30\u0A42\u0A39|\u0A06\u0A24\u0A2E\u0A3E|bhoot|rooh|ruh|aatma|chudail",
+            angel: "\u0A2A\u0A30\u0A40|\u0A2A\u0A30\u0A40\u0A06\u0A02|\u0A2B\u0A3C\u0A30\u0A3F\u0A38\u0A3C\u0A24\u0A3E|pari|pariyan|farishta|farishte",
+            devil: "\u0A38\u0A3C\u0A48\u0A24\u0A3E\u0A28|\u0A28\u0A30\u0A15|\u0A1C\u0A39\u0A70\u0A28\u0A2E|shaitan|shaitaan|narak|jahannum",
+            world: "\u0A26\u0A41\u0A28\u0A40\u0A06|\u0A26\u0A41\u0A28\u0A40\u0A06\u0A02|\u0A1C\u0A39\u0A3E\u0A28|\u0A1C\u0A71\u0A17|\u0A27\u0A30\u0A24\u0A40|duniya|dunia|jahan|jagg|dharti",
+            space: "\u0A2C\u0A4D\u0A30\u0A39\u0A3F\u0A2E\u0A70\u0A21|\u0A15\u0A3E\u0A07\u0A28\u0A3E\u0A24|\u0A17\u0A32\u0A48\u0A15\u0A38\u0A40|brahmand|kainaat|kaynaat|galaxy",
+            rocket: "\u0A30\u0A3E\u0A15\u0A1F|\u0A30\u0A3E\u0A15\u0A47\u0A1F|rocket|raket|launch",
+            time: "\u0A35\u0A15\u0A24|\u0A35\u0A47\u0A32\u0A3E|\u0A38\u0A2E\u0A3E\u0A02|\u0A39\u0A2E\u0A47\u0A38\u0A3C\u0A3E|\u0A18\u0A5C\u0A40|\u0A09\u0A2E\u0A30\u0A3E\u0A02|waqt|vela|samaa|hamesha|ghadi|zamana|umraan",
+            drive: "\u0A17\u0A71\u0A21\u0A40|\u0A38\u0A5C\u0A15|\u0A30\u0A2B\u0A3C\u0A24\u0A3E\u0A30|\u0A1C\u0A40\u0A2A|\u0A1F\u0A30\u0A48\u0A15\u0A1F\u0A30|gaddi|gaddiyan|sadak|sadkan|raftaar|jeep|tractor|thar|highway|speed",
+            city: "\u0A38\u0A3C\u0A39\u0A3F\u0A30|\u0A17\u0A32\u0A40|\u0A17\u0A32\u0A40\u0A06\u0A02|\u0A2C\u0A3E\u0A1C\u0A3C\u0A3E\u0A30|shehar|sheher|shahar|gali|galiyan|galiyaan|bazaar|ludhiana|chandigarh",
+            music: "\u0A38\u0A70\u0A17\u0A40\u0A24|\u0A17\u0A40\u0A24|\u0A17\u0A3E\u0A23\u0A3E|\u0A17\u0A3E\u0A23\u0A47|\u0A27\u0A41\u0A28|\u0A22\u0A4B\u0A32|\u0A24\u0A42\u0A70\u0A2C\u0A40|sangeet|geet|gaana|gaane|gana|dhun|beat|tumbi|dhol",
+            sing: "\u0A17\u0A3E\u0A09\u0A23\u0A3E|\u0A17\u0A3E\u0A35\u0A3E\u0A02|\u0A06\u0A35\u0A3E\u0A1C\u0A3C|\u0A05\u0A35\u0A3E\u0A1C\u0A3C|\u0A2C\u0A4B\u0A32\u0A40\u0A06\u0A02|gauna|gaavan|awaaz|aawaz|boliyan",
+            boom: "\u0A27\u0A2E\u0A3E\u0A15\u0A3E|\u0A27\u0A2E\u0A3E\u0A15\u0A47|\u0A2C\u0A70\u0A2C|dhamaka|dhamake|bomb|bamb|boom",
+            champagne: "\u0A38\u0A3C\u0A48\u0A02\u0A2A\u0A47\u0A28|\u0A26\u0A3E\u0A30\u0A42|\u0A38\u0A3C\u0A30\u0A3E\u0A2C|\u0A1C\u0A3E\u0A2E|\u0A2C\u0A4B\u0A24\u0A32|champagne|daaru|daru|sharab|sharaab|jaam|botal|bottle|peg|cheers",
+            magic: "\u0A1C\u0A3E\u0A26\u0A42|\u0A1C\u0A3E\u0A26\u0A42\u0A17\u0A30|jaadu|jadu|jaadoo|jadoo|jaadugar",
+            beach: "\u0A1F\u0A3E\u0A2A\u0A42|\u0A15\u0A3F\u0A28\u0A3E\u0A30\u0A3E|\u0A38\u0A2E\u0A41\u0A70\u0A26\u0A30 \u0A15\u0A70\u0A22\u0A47|beach|kinara|taapu|tapu|island",
+            christmas: "\u0A15\u0A4D\u0A30\u0A3F\u0A38\u0A2E\u0A38|\u0A35\u0A71\u0A21\u0A3E \u0A26\u0A3F\u0A28|\u0A38\u0A3E\u0A02\u0A24\u0A3E|christmas|santa|krismas",
+            red: "\u0A32\u0A3E\u0A32|\u0A38\u0A42\u0A39\u0A3E|\u0A38\u0A42\u0A39\u0A40|lal|laal|suha|soohe|soohi|surkh",
+            blue: "\u0A28\u0A40\u0A32\u0A3E|\u0A28\u0A40\u0A32\u0A40|\u0A28\u0A40\u0A32\u0A47|neela|neeli|neele",
+            green: "\u0A39\u0A30\u0A3E|\u0A39\u0A30\u0A40|\u0A39\u0A30\u0A47|\u0A39\u0A30\u0A3F\u0A06\u0A32\u0A40|hariyali|sabz",
+            pink: "\u0A17\u0A41\u0A32\u0A3E\u0A2C\u0A40|gulabi|gulaabi|pink",
+            purple: "\u0A1C\u0A3E\u0A2E\u0A23\u0A40|\u0A2C\u0A48\u0A02\u0A17\u0A23\u0A40|jamni|jaamni|baingani|purple",
+            white: "\u0A1A\u0A3F\u0A71\u0A1F\u0A3E|\u0A1A\u0A3F\u0A71\u0A1F\u0A40|\u0A1A\u0A3F\u0A71\u0A1F\u0A47|\u0A38\u0A2B\u0A3C\u0A48\u0A26|chitta|chitti|chitte|safed",
+            black: "\u0A15\u0A3E\u0A32\u0A3E|\u0A15\u0A3E\u0A32\u0A40|\u0A15\u0A3E\u0A32\u0A47|kaala|kaali|kaale",
+            silver: "\u0A1A\u0A3E\u0A02\u0A26\u0A40|chandi|chaandi|silver"
+          }
+        },
+        ar: {
+          stop: "\u0641\u064A|\u0645\u0646|\u0639\u0644\u0649|\u0627\u0646\u0627|\u0623\u0646\u0627|\u0627\u0646\u062A|\u0625\u0646\u062A|\u0625\u0646\u062A\u064A|\u064A\u0627|\u0627\u0644\u0644\u064A|\u0645\u0634|\u0645\u0627|\u0644\u0627|\u0647\u0630\u0627|\u062F\u0647|\u062F\u064A|\u0643\u0644|\u0639\u0634\u0627\u0646|\u0628\u0633|\u0644\u064A\u0647",
+          c: {
+            fire: "\u0646\u0627\u0631|\u0627\u0644\u0646\u0627\u0631|\u0646\u064A\u0631\u0627\u0646|\u0644\u0647\u064A\u0628|\u062D\u0631\u064A\u0642|\u064A\u062D\u062A\u0631\u0642|\u0628\u062D\u062A\u0631\u0642|\u0648\u0644\u0639\u062A|\u0627\u0634\u062A\u0639\u0644|naar|el nar|lahib",
+            rain: "\u0645\u0637\u0631|\u0627\u0644\u0645\u0637\u0631|\u0623\u0645\u0637\u0627\u0631|\u0627\u0645\u0637\u0627\u0631|\u0634\u062A\u0627|\u0627\u0644\u0634\u062A\u0627|\u063A\u064A\u062B|matar|shita",
+            storm: "\u0639\u0627\u0635\u0641\u0629|\u0627\u0644\u0639\u0627\u0635\u0641\u0629|\u0625\u0639\u0635\u0627\u0631|\u0627\u0639\u0635\u0627\u0631|\u0631\u0639\u062F|\u0627\u0644\u0631\u0639\u062F|\u0632\u0648\u0628\u0639\u0629|\u0639\u0648\u0627\u0635\u0641|asifa|ra3d",
+            lightning: "\u0628\u0631\u0642|\u0627\u0644\u0628\u0631\u0642|\u0635\u0627\u0639\u0642\u0629|\u0628\u0631\u0648\u0642|bar2|barq",
+            snow: "\u062B\u0644\u062C|\u0627\u0644\u062B\u0644\u062C|\u062A\u0644\u062C|\u0627\u0644\u062A\u0644\u062C|\u062B\u0644\u0648\u062C|talj|thalj",
+            cold: "\u0628\u0631\u062F|\u0627\u0644\u0628\u0631\u062F|\u0628\u0631\u062F\u0627\u0646|\u0628\u0627\u0631\u062F|\u0628\u0627\u0631\u062F\u0629|\u062C\u0644\u064A\u062F|\u0645\u062A\u062C\u0645\u062F|\u0633\u0627\u0642\u0639|bard|bardan|sa2e3",
+            sun: "\u0634\u0645\u0633|\u0627\u0644\u0634\u0645\u0633|\u0634\u0631\u0648\u0642|\u063A\u0631\u0648\u0628|\u0627\u0644\u0634\u0631\u0648\u0642|\u0627\u0644\u063A\u0631\u0648\u0628|shams|el shams",
+            summer: "\u0635\u064A\u0641|\u0627\u0644\u0635\u064A\u0641|\u0635\u064A\u0641\u064A|seif|sayf|el seif|el sayf",
+            moon: "\u0642\u0645\u0631|\u0627\u0644\u0642\u0645\u0631|\u0628\u062F\u0631|\u0647\u0644\u0627\u0644|\u0636\u064A \u0627\u0644\u0642\u0645\u0631|amar|2amar|qamar|el amar",
+            star: "\u0646\u062C\u0645\u0629|\u0646\u062C\u0648\u0645|\u0627\u0644\u0646\u062C\u0648\u0645|\u0646\u062C\u0645|\u0643\u0648\u0643\u0628|najma|nogoom|nujum|negma|nojoom",
+            sky: "\u0633\u0645\u0627|\u0627\u0644\u0633\u0645\u0627|\u0633\u0645\u0627\u0621|\u0627\u0644\u0633\u0645\u0627\u0621|\u063A\u064A\u0648\u0645|\u0633\u062D\u0627\u0628|\u063A\u064A\u0645\u0629|sama|el sama",
+            heaven: "\u062C\u0646\u0629|\u0627\u0644\u062C\u0646\u0629|\u062C\u0646\u0651\u0629|\u0641\u0631\u062F\u0648\u0633|\u0646\u0639\u064A\u0645|janna|jannah|el janna",
+            night: "\u0644\u064A\u0644|\u0627\u0644\u0644\u064A\u0644|\u0644\u064A\u0644\u0629|\u0627\u0644\u0644\u064A\u0644\u0629|\u0644\u064A\u0627\u0644\u064A|\u0627\u0644\u0644\u064A\u0627\u0644\u064A|layl|leil|lail|layali|el leil|ya leil",
+            dark: "\u0638\u0644\u0627\u0645|\u0627\u0644\u0638\u0644\u0627\u0645|\u0639\u062A\u0645\u0629|\u0627\u0644\u0639\u062A\u0645\u0629|\u0636\u0644\u0645\u0629|\u0627\u0644\u0636\u0644\u0645\u0629|\u0638\u0644\u0627\u0644|dalma|zalam|3atme",
+            light: "\u0646\u0648\u0631|\u0627\u0644\u0646\u0648\u0631|\u0636\u064A|\u0636\u0648\u0621|\u0627\u0644\u0636\u0648\u0621|\u0628\u0631\u064A\u0642|\u064A\u0644\u0645\u0639|nour|noor|el nour",
+            heart: "\u0642\u0644\u0628|\u0642\u0644\u0628\u064A|\u0627\u0644\u0642\u0644\u0628|\u0642\u0644\u0648\u0628|\u0641\u0624\u0627\u062F|albi|alby|qalbi|2albi|galbi|qalb|ya albi",
+            love: "\u062D\u0628|\u0627\u0644\u062D\u0628|\u062D\u0628\u064A\u0628\u064A|\u062D\u0628\u064A\u0628\u062A\u064A|\u0628\u062D\u0628\u0643|\u0623\u062D\u0628\u0643|\u0627\u062D\u0628\u0643|\u0639\u0634\u0642|\u063A\u0631\u0627\u0645|\u0647\u0648\u0649|habibi|habibti|hobb|bahebak|ba7ebak|bahebek|ahebak|eshq|gharam",
+            kiss: "\u0628\u0648\u0633\u0629|\u0628\u0648\u0633|\u0628\u0648\u0633\u0646\u064A|\u0634\u0641\u0627\u064A\u0641|\u0634\u0641\u0627\u0647|\u0634\u0641\u062A\u064A\u0646|bosa|bousa|boosa|shafayef",
+            heartbreak: "\u0642\u0644\u0628\u064A \u0645\u0643\u0633\u0648\u0631|\u0643\u0633\u0631\u062A \u0642\u0644\u0628\u064A|\u0645\u0643\u0633\u0648\u0631|\u0627\u0646\u0643\u0633\u0631|\u062C\u0631\u062D\u062A\u0646\u064A|\u0641\u0631\u0627\u0642|\u0627\u0644\u0641\u0631\u0627\u0642|maksour|maksoor|fera2|fura2",
+            tears: "\u062F\u0645\u0648\u0639|\u062F\u0645\u0639\u0629|\u0627\u0644\u062F\u0645\u0648\u0639|\u062F\u0645\u0648\u0639\u064A|\u0628\u0643\u0627\u0621|\u0628\u0628\u0643\u064A|dmou3|dmoo3|demoo3|dam3a",
+            money: "\u0641\u0644\u0648\u0633|\u0645\u0635\u0627\u0631\u064A|\u0627\u0644\u0645\u0627\u0644|\u062F\u0648\u0644\u0627\u0631|\u062F\u0648\u0644\u0627\u0631\u0627\u062A|\u0643\u0627\u0634|fulus|floos|flous|masari|cash",
+            gold: "\u0630\u0647\u0628|\u062F\u0647\u0628|\u0627\u0644\u0630\u0647\u0628|\u0627\u0644\u062F\u0647\u0628|\u0630\u0647\u0628\u064A|\u062F\u0647\u0628\u064A|dahab|thahab|zahab",
+            diamond: "\u0627\u0644\u0645\u0627\u0633|\u0623\u0644\u0645\u0627\u0633|\u0645\u0627\u0633|\u062C\u0648\u0627\u0647\u0631|\u0645\u062C\u0648\u0647\u0631\u0627\u062A|\u0644\u0624\u0644\u0624|almas|jawaher",
+            crown: "\u062A\u0627\u062C|\u0627\u0644\u062A\u0627\u062C|\u0645\u0644\u0643|\u0627\u0644\u0645\u0644\u0643|\u0645\u0644\u0643\u0629|\u0623\u0645\u064A\u0631|\u0627\u0645\u064A\u0631\u0629|\u0633\u0644\u0637\u0627\u0646|taj|malek|malika|amira|sultan",
+            fly: "\u0637\u0627\u064A\u0631|\u0623\u0637\u064A\u0631|\u0627\u0637\u064A\u0631|\u064A\u0637\u064A\u0631|\u0646\u0637\u064A\u0631|\u062C\u0646\u0627\u062D|\u0623\u062C\u0646\u062D\u0629|\u062C\u0646\u0627\u062D\u064A\u0646|\u0637\u064A\u0631\u0627\u0646|tayer|tayra|ateer",
+            bird: "\u0639\u0635\u0641\u0648\u0631|\u0639\u0635\u0627\u0641\u064A\u0631|\u0637\u064A\u0648\u0631|\u0627\u0644\u0637\u064A\u0648\u0631|\u062D\u0645\u0627\u0645\u0629|\u0637\u064A\u0631|\u0639\u0635\u0641\u0648\u0631\u0629|asfour|3asfour",
+            butterfly: "\u0641\u0631\u0627\u0634\u0629|\u0641\u0631\u0627\u0634\u0627\u062A|\u0627\u0644\u0641\u0631\u0627\u0634\u0629|farasha|farashe",
+            flower: "\u0648\u0631\u062F|\u0648\u0631\u062F\u0629|\u0627\u0644\u0648\u0631\u062F|\u0632\u0647\u0631\u0629|\u0632\u0647\u0648\u0631|\u0627\u0632\u0647\u0627\u0631|\u0623\u0632\u0647\u0627\u0631|\u0648\u0631\u0648\u062F|ward|warda|zahra",
+            rose: "\u062C\u0648\u0631\u064A|\u0627\u0644\u062C\u0648\u0631\u064A|\u0648\u0631\u062F \u062C\u0648\u0631\u064A|\u0648\u0631\u062F\u0629 \u062D\u0645\u0631\u0627|\u0648\u0631\u062F \u0627\u062D\u0645\u0631|joury|jouri",
+            ocean: "\u0628\u062D\u0631|\u0627\u0644\u0628\u062D\u0631|\u0628\u062D\u0648\u0631|\u0645\u0648\u062C|\u0627\u0644\u0645\u0648\u062C|\u0623\u0645\u0648\u0627\u062C|\u0627\u0645\u0648\u0627\u062C|\u0645\u062D\u064A\u0637|ba7r|bahr|ba7er|bahar|mawj",
+            water: "\u0645\u064A\u0629|\u0645\u064A\u0647|\u0645\u0627\u0621|\u0627\u0644\u0645\u064A\u0629|\u0646\u0647\u0631|\u0627\u0644\u0646\u0647\u0631|\u0627\u0644\u0646\u064A\u0644|\u0633\u0628\u0627\u062D\u0629|nahr",
+            wind: "\u0631\u064A\u062D|\u0631\u064A\u0627\u062D|\u0627\u0644\u0631\u064A\u062D|\u0647\u0648\u0627|\u0627\u0644\u0647\u0648\u0627|\u0646\u0633\u0645\u0629|\u0646\u0633\u064A\u0645|ri7|reeh",
+            smoke: "\u062F\u062E\u0627\u0646|\u0627\u0644\u062F\u062E\u0627\u0646|\u0633\u064A\u062C\u0627\u0631\u0629|\u0633\u062C\u0627\u0631\u0629|\u0634\u064A\u0634\u0629|\u0623\u0631\u062C\u064A\u0644\u0629|\u0627\u0631\u062C\u064A\u0644\u0629|dokhan|dukhan|shisha|argileh",
+            electric: "\u0643\u0647\u0631\u0628\u0627\u0621|\u0643\u0647\u0631\u0628\u0627|\u0643\u0647\u0631\u0628\u0627\u0626\u064A|\u0637\u0627\u0642\u0629|\u0627\u0644\u0637\u0627\u0642\u0629|\u0634\u062D\u0646\u0629|kahraba|kahrabaa",
+            rainbow: "\u0642\u0648\u0633 \u0642\u0632\u062D|\u0642\u0648\u0633 \u0627\u0644\u0645\u0637\u0631|\u0623\u0644\u0648\u0627\u0646|\u0627\u0644\u0648\u0627\u0646|alwan",
+            fireworks: "\u0623\u0644\u0639\u0627\u0628 \u0646\u0627\u0631\u064A\u0629|\u0627\u0644\u0639\u0627\u0628 \u0646\u0627\u0631\u064A\u0629|\u0627\u0644\u0639\u0627\u0628 \u0646\u0627\u0631\u064A\u0647|\u0623\u0644\u0639\u0627\u0628 \u0646\u0627\u0631\u064A\u0647|\u0645\u0641\u0631\u0642\u0639\u0627\u062A|\u0634\u0645\u0627\u0631\u064A\u062E",
+            party: "\u062D\u0641\u0644\u0629|\u062D\u0641\u0644\u0627\u062A|\u0627\u0644\u062D\u0641\u0644\u0629|\u0633\u0647\u0631\u0629|\u0627\u0644\u0633\u0647\u0631\u0629|\u0627\u062D\u062A\u0641\u0627\u0644|\u0641\u0631\u062D|\u0627\u0644\u0641\u0631\u062D|hafla|sahra|farah|party",
+            birthday: "\u0639\u064A\u062F \u0645\u064A\u0644\u0627\u062F|\u0639\u064A\u062F \u0645\u064A\u0644\u0627\u062F\u0643|\u0645\u064A\u0644\u0627\u062F|\u0633\u0646\u0629 \u062D\u0644\u0648\u0629|happy birthday|eid milad|3eid milad|sana helwa",
+            dance: "\u0631\u0642\u0635|\u0627\u0644\u0631\u0642\u0635|\u0623\u0631\u0642\u0635|\u0627\u0631\u0642\u0635|\u0646\u0631\u0642\u0635|\u0631\u0642\u0635\u0629|\u064A\u0631\u0642\u0635|\u0628\u0631\u0642\u0635|\u062F\u0628\u0643\u0629|\u062F\u0628\u0643\u0647|raqs|ra2s|ar2os|dabke",
+            jump: "\u0646\u0637|\u0646\u0637\u0651|\u0623\u0646\u0637|\u0627\u0646\u0637|\u0642\u0641\u0632|\u064A\u0642\u0641\u0632|\u0627\u0642\u0641\u0632|\u0646\u0637\u0629",
+            dream: "\u062D\u0644\u0645|\u0627\u0644\u062D\u0644\u0645|\u0623\u062D\u0644\u0627\u0645|\u0627\u062D\u0644\u0627\u0645|\u062D\u0644\u0645\u064A|\u0628\u062D\u0644\u0645|7elm|helm|ahlam|a7lam",
+            ghost: "\u0634\u0628\u062D|\u0623\u0634\u0628\u0627\u062D|\u0627\u0634\u0628\u0627\u062D|\u0639\u0641\u0631\u064A\u062A|\u0639\u0641\u0627\u0631\u064A\u062A|shabah",
+            angel: "\u0645\u0644\u0627\u0643|\u0645\u0644\u0627\u064A\u0643\u0629|\u0645\u0644\u0627\u0626\u0643\u0629|\u0627\u0644\u0645\u0644\u0627\u0643|\u0645\u0644\u0627\u0643\u064A|malak|malaak|malaki",
+            devil: "\u0634\u064A\u0637\u0627\u0646|\u0627\u0644\u0634\u064A\u0637\u0627\u0646|\u062C\u0647\u0646\u0645|\u0625\u0628\u0644\u064A\u0633|\u0627\u0628\u0644\u064A\u0633|\u062C\u062D\u064A\u0645|\u0627\u0644\u062C\u062D\u064A\u0645|shaytan|sheitan|shaitan|jahannam",
+            world: "\u062F\u0646\u064A\u0627|\u0627\u0644\u062F\u0646\u064A\u0627|\u0639\u0627\u0644\u0645|\u0627\u0644\u0639\u0627\u0644\u0645|\u0627\u0644\u0623\u0631\u0636|\u0627\u0644\u0627\u0631\u0636|dunya|donya|eldonya|el donya|3alam",
+            space: "\u0627\u0644\u0643\u0648\u0646|\u0641\u0636\u0627\u0621|\u0627\u0644\u0641\u0636\u0627\u0621|\u0645\u062C\u0631\u0629|\u0627\u0644\u0645\u062C\u0631\u0629|\u0643\u0648\u0627\u0643\u0628|\u0627\u0644\u0643\u0648\u0627\u0643\u0628|galaxy",
+            rocket: "\u0635\u0627\u0631\u0648\u062E|\u0635\u0648\u0627\u0631\u064A\u062E|\u0627\u0646\u0637\u0644\u0627\u0642|\u0625\u0637\u0644\u0627\u0642|saroukh|sarookh|rocket",
+            time: "\u0648\u0642\u062A|\u0627\u0644\u0648\u0642\u062A|\u0632\u0645\u0646|\u0627\u0644\u0632\u0645\u0646|\u0632\u0645\u0627\u0646|\u0627\u0644\u0632\u0645\u0627\u0646|\u0633\u0627\u0639\u0629|\u0627\u0644\u0633\u0627\u0639\u0629|\u0644\u0644\u0623\u0628\u062F|\u0644\u0644\u0627\u0628\u062F|\u062F\u0627\u064A\u0645\u0627|zaman|wa2t|waqt|dayman",
+            drive: "\u0633\u064A\u0627\u0631\u0629|\u0639\u0631\u0628\u064A\u062A\u064A|\u0637\u0631\u064A\u0642|\u0627\u0644\u0637\u0631\u064A\u0642|\u0633\u0631\u0639\u0629|\u0627\u0644\u0633\u0631\u0639\u0629|\u0633\u0627\u064A\u0642|sayara|tarik|tari2|sor3a",
+            city: "\u0645\u062F\u064A\u0646\u0629|\u0627\u0644\u0645\u062F\u064A\u0646\u0629|\u0634\u0648\u0627\u0631\u0639|\u0627\u0644\u0634\u0648\u0627\u0631\u0639|\u0634\u0627\u0631\u0639|\u0627\u0644\u0628\u0644\u062F|\u062D\u0627\u0631\u0629|madina|shawarea|share3",
+            music: "\u0645\u0648\u0633\u064A\u0642\u0649|\u0645\u0648\u0633\u064A\u0642\u0627|\u0645\u0632\u064A\u0643\u0627|\u0627\u0644\u0645\u0632\u064A\u0643\u0627|\u0623\u063A\u0646\u064A\u0629|\u0627\u063A\u0646\u064A\u0629|\u0623\u063A\u0627\u0646\u064A|\u0627\u063A\u0627\u0646\u064A|\u0644\u062D\u0646|\u0646\u063A\u0645|\u0625\u064A\u0642\u0627\u0639|music|mazika|oghneya|aghani|la7n",
+            sing: "\u063A\u0646\u0651\u064A|\u0628\u063A\u0646\u064A|\u0623\u063A\u0646\u064A|\u0627\u063A\u0646\u064A|\u0646\u063A\u0646\u064A|\u063A\u0646\u0627\u0621|\u0635\u0648\u062A|\u0635\u0648\u062A\u0643|\u0635\u0648\u062A\u064A|sot|sout|soutak",
+            boom: "\u0627\u0646\u0641\u062C\u0627\u0631|\u0625\u0646\u0641\u062C\u0627\u0631|\u0642\u0646\u0628\u0644\u0629|\u0628\u0648\u0645|\u0627\u0646\u0641\u062C\u0631|\u0637\u0627\u062E|\u062F\u0648\u064A|boom|bomb",
+            champagne: "\u0634\u0645\u0628\u0627\u0646\u064A\u0627|\u0634\u0627\u0645\u0628\u0627\u0646\u064A\u0627|\u0643\u0627\u0633|\u0643\u0627\u0633\u0643|\u0646\u062E\u0628|\u062E\u0645\u0631|\u0633\u0643\u0631\u0627\u0646|\u0645\u0634\u0631\u0648\u0628|champagne|kas|sakran",
+            magic: "\u0633\u062D\u0631|\u0627\u0644\u0633\u062D\u0631|\u0633\u0627\u062D\u0631|\u0633\u0627\u062D\u0631\u0629|\u0633\u062D\u0631\u0646\u064A|\u062A\u0639\u0648\u064A\u0630\u0629|\u0637\u0644\u0633\u0645|se7r|sehr",
+            beach: "\u0634\u0637|\u0627\u0644\u0634\u0637|\u0634\u0627\u0637\u0626|\u0627\u0644\u0634\u0627\u0637\u0626|\u062C\u0632\u064A\u0631\u0629|\u062C\u0632\u0631|\u0631\u0645\u0644|\u0631\u0645\u0644\u0629|\u0646\u062E\u064A\u0644|\u0646\u062E\u0644\u0629|shatt|shate2",
+            christmas: "\u0643\u0631\u064A\u0633\u0645\u0627\u0633|\u0627\u0644\u0643\u0631\u064A\u0633\u0645\u0627\u0633|\u0639\u064A\u062F \u0627\u0644\u0645\u064A\u0644\u0627\u062F|\u0628\u0627\u0628\u0627 \u0646\u0648\u064A\u0644|\u0633\u0627\u0646\u062A\u0627|christmas|baba noel",
+            red: "\u0623\u062D\u0645\u0631|\u0627\u062D\u0645\u0631|\u062D\u0645\u0631\u0627|\u062D\u0645\u0631\u0627\u0621|\u0627\u0644\u0623\u062D\u0645\u0631|ahmar|a7mar|hamra|7amra",
+            blue: "\u0623\u0632\u0631\u0642|\u0627\u0632\u0631\u0642|\u0632\u0631\u0642\u0627|\u0632\u0631\u0642\u0627\u0621|\u0627\u0644\u0623\u0632\u0631\u0642|azra2|azraq|zar2a|zarqa",
+            green: "\u0623\u062E\u0636\u0631|\u0627\u062E\u0636\u0631|\u062E\u0636\u0631\u0627|\u062E\u0636\u0631\u0627\u0621|\u0627\u0644\u0623\u062E\u0636\u0631|akhdar|a5dar|khadra",
+            pink: "\u0648\u0631\u062F\u064A|\u0632\u0647\u0631\u064A|\u0628\u0645\u0628\u064A|\u0628\u064A\u0646\u0643|wardi|zahri|bamby|pink",
+            purple: "\u0628\u0646\u0641\u0633\u062C\u064A|\u0645\u0648\u0641|\u0644\u064A\u0644\u0643\u064A|\u0623\u0631\u062C\u0648\u0627\u0646\u064A|\u0628\u0646\u0641\u0633\u062C|banafsaji|mauve",
+            white: "\u0623\u0628\u064A\u0636|\u0627\u0628\u064A\u0636|\u0628\u064A\u0636\u0627|\u0628\u064A\u0636\u0627\u0621|\u0627\u0644\u0623\u0628\u064A\u0636|abyad|abiad|bayda|beida",
+            black: "\u0623\u0633\u0648\u062F|\u0627\u0633\u0648\u062F|\u0633\u0648\u062F\u0627|\u0633\u0648\u062F\u0627\u0621|\u0627\u0644\u0623\u0633\u0648\u062F|aswad",
+            silver: "\u0641\u0636\u0629|\u0641\u0636\u064A|\u0627\u0644\u0641\u0636\u0629|\u0641\u0636\u064A\u0629|fedda|fadda|faddi"
+          }
+        },
+        fa: {
+          stop: "\u0627\u0633\u062A|\u0631\u0627|\u06A9\u0647|\u0645\u06CC|\u0645\u0646|\u062A\u0648|\u0627\u06CC\u0646|\u0622\u0646|\u0628\u0627|\u0627\u0632|\u0628\u0631\u0627\u06CC|\u0647\u0633\u062A|\u0646\u06CC\u0633\u062A|\u0628\u0648\u062F|\u0686\u0647|\u0686\u0631\u0627|\u0634\u062F|\u06A9\u0646|\u0647\u0645|\u062F\u0627\u0631\u0645",
+          c: {
+            fire: "\u0622\u062A\u0634|\u0622\u062A\u06CC\u0634|\u0634\u0639\u0644\u0647|\u0633\u0648\u062E\u062A\u0646|\u0645\u06CC\u200C\u0633\u0648\u0632\u0645|\u0645\u06CC\u0633\u0648\u0632\u0645|\u0633\u0648\u0632\u0627\u0646|\u0628\u0633\u0648\u0632|atash|atish",
+            rain: "\u0628\u0627\u0631\u0627\u0646|\u0628\u0627\u0631\u0648\u0646|\u0628\u0627\u0631\u0634|\u0628\u0627\u0631\u0627\u0646\u06CC|\u0646\u0645 \u0646\u0645|baran|baroon",
+            storm: "\u0637\u0648\u0641\u0627\u0646|\u062A\u0648\u0641\u0627\u0646|\u0631\u0639\u062F|\u062A\u0646\u062F\u0628\u0627\u062F|\u06AF\u0631\u062F\u0628\u0627\u062F|toofan|tufan",
+            lightning: "\u0635\u0627\u0639\u0642\u0647|\u0622\u0630\u0631\u062E\u0634|\u0628\u0631\u0642|\u0631\u0639\u062F \u0648 \u0628\u0631\u0642",
+            snow: "\u0628\u0631\u0641|\u0628\u0631\u0641\u06CC|\u0628\u0627\u0631\u0634 \u0628\u0631\u0641|\u062F\u0627\u0646\u0647 \u0628\u0631\u0641|barf",
+            cold: "\u0633\u0631\u062F|\u0633\u0631\u0645\u0627|\u06CC\u062E|\u06CC\u062E\u0628\u0646\u062F\u0627\u0646|\u06CC\u062E \u0632\u062F\u0647|\u0633\u0631\u062F\u06CC|sard|sarma|yakh",
+            sun: "\u062E\u0648\u0631\u0634\u06CC\u062F|\u0622\u0641\u062A\u0627\u0628|\u0637\u0644\u0648\u0639|\u063A\u0631\u0648\u0628|\u0622\u0641\u062A\u0627\u0628\u06CC|khorshid|aftab",
+            summer: "\u062A\u0627\u0628\u0633\u062A\u0627\u0646|\u062A\u0627\u0628\u0633\u062A\u0648\u0646|tabestoon|tabestan",
+            moon: "\u0645\u0627\u0647|\u0645\u0647\u062A\u0627\u0628|\u0645\u0627\u0647\u062A\u0627\u0628|\u0642\u0631\u0635 \u0645\u0627\u0647|\u0646\u0648\u0631 \u0645\u0627\u0647|mahtab|maah",
+            star: "\u0633\u062A\u0627\u0631\u0647|\u0633\u062A\u0627\u0631\u0647\u200C\u0647\u0627|\u0633\u062A\u0627\u0631\u0647\u0627|\u0633\u062A\u0627\u0631\u0647 \u0647\u0627|\u0627\u062E\u062A\u0631|setareh|setare",
+            sky: "\u0622\u0633\u0645\u0627\u0646|\u0622\u0633\u0645\u0648\u0646|\u0627\u0628\u0631|\u0627\u0628\u0631\u0647\u0627|\u0641\u0644\u06A9|\u06AF\u0631\u062F\u0648\u0646|aseman|asemoon",
+            heaven: "\u0628\u0647\u0634\u062A|\u0641\u0631\u062F\u0648\u0633|\u062C\u0646\u062A|behesht|ferdows",
+            night: "\u0634\u0628|\u0627\u0645\u0634\u0628|\u0634\u0628\u0647\u0627|\u0634\u0628\u200C\u0647\u0627|\u0646\u06CC\u0645\u0647 \u0634\u0628|\u0646\u06CC\u0645\u0647\u200C\u0634\u0628|\u0634\u0628\u0627\u0646\u0647|shab|emshab",
+            dark: "\u062A\u0627\u0631\u06CC\u06A9\u06CC|\u062A\u0627\u0631\u06CC\u06A9|\u0633\u06CC\u0627\u0647\u06CC|\u0633\u0627\u06CC\u0647|\u0638\u0644\u0645\u062A|tariki|saye",
+            light: "\u0646\u0648\u0631|\u0631\u0648\u0634\u0646\u06CC|\u0631\u0648\u0634\u0646|\u062F\u0631\u062E\u0634\u0627\u0646|\u0645\u06CC\u200C\u062F\u0631\u062E\u0634\u0647|\u062F\u0631\u062E\u0634\u06CC\u062F|noor|roshan|derakhshan",
+            heart: "\u062F\u0644|\u0642\u0644\u0628|\u062F\u0644\u0645|\u062F\u0644\u062A|\u0642\u0644\u0628\u0645|del|delam|ghalb",
+            love: "\u0639\u0634\u0642|\u0639\u0627\u0634\u0642|\u0639\u0627\u0634\u0642\u062A\u0645|\u062F\u0648\u0633\u062A\u062A \u062F\u0627\u0631\u0645|\u062F\u0648\u0633\u062A \u062F\u0627\u0631\u0645|\u0639\u0632\u06CC\u0632\u0645|\u06CC\u0627\u0631|eshgh|eshq|ashegh|asheghetam|azizam|doostet daram",
+            kiss: "\u0628\u0648\u0633\u0647|\u0628\u0648\u0633|\u0628\u0628\u0648\u0633|\u0644\u0628|\u0644\u0628\u0627\u062A|\u0628\u0648\u0633\u06CC\u062F\u0646|boos|boose",
+            heartbreak: "\u062F\u0644 \u0634\u06A9\u0633\u062A\u0647|\u062F\u0644\u0634\u06A9\u0633\u062A\u0647|\u0642\u0644\u0628 \u0634\u06A9\u0633\u062A\u0647|\u062F\u0644\u0645 \u0634\u06A9\u0633\u062A|\u062C\u062F\u0627\u06CC\u06CC|\u0641\u0631\u0627\u0642|del shekaste|jodaei",
+            tears: "\u0627\u0634\u06A9|\u06AF\u0631\u06CC\u0647|\u0627\u0634\u06A9\u0627\u0645|\u06AF\u0631\u06CC\u0647 \u06A9\u0646|\u0627\u0634\u06A9\u0647\u0627\u0645|ashk|gerye|geryeh",
+            money: "\u067E\u0648\u0644|\u062B\u0631\u0648\u062A|\u067E\u0648\u0644\u062F\u0627\u0631|\u062F\u0644\u0627\u0631|\u0627\u0633\u06A9\u0646\u0627\u0633|\u0633\u06A9\u0647|poul|pooldar",
+            gold: "\u0637\u0644\u0627|\u0637\u0644\u0627\u06CC\u06CC|\u0632\u0631|\u0632\u0631\u06CC\u0646|tala|talaei",
+            diamond: "\u0627\u0644\u0645\u0627\u0633|\u062C\u0648\u0627\u0647\u0631|\u06AF\u0648\u0647\u0631|\u06CC\u0627\u0642\u0648\u062A|almas",
+            crown: "\u062A\u0627\u062C|\u067E\u0627\u062F\u0634\u0627\u0647|\u0634\u0627\u0647|\u0645\u0644\u06A9\u0647|\u0634\u0627\u0647\u0632\u0627\u062F\u0647|\u0633\u0644\u0637\u0627\u0646|taj|shah|padeshah",
+            fly: "\u067E\u0631\u0648\u0627\u0632|\u067E\u0631 \u0628\u0632\u0646|\u0628\u0627\u0644|\u0628\u0627\u0644\u200C\u0647\u0627|\u067E\u0631\u0648\u0627\u0632 \u06A9\u0646|parvaz",
+            bird: "\u067E\u0631\u0646\u062F\u0647|\u067E\u0631\u0646\u062F\u0647\u200C\u0647\u0627|\u067E\u0631\u0633\u062A\u0648|\u06A9\u0628\u0648\u062A\u0631|\u0628\u0644\u0628\u0644|\u0642\u0646\u0627\u0631\u06CC|parande|kabootar|bolbol|parastoo",
+            butterfly: "\u067E\u0631\u0648\u0627\u0646\u0647|\u067E\u0631\u0648\u0627\u0646\u0647\u200C\u0647\u0627|parvaneh|parvane",
+            flower: "\u06AF\u0644|\u06AF\u0644\u0647\u0627|\u06AF\u0644\u200C\u0647\u0627|\u0634\u06A9\u0648\u0641\u0647|\u063A\u0646\u0686\u0647|\u06AF\u0644\u0628\u0631\u06AF|gol|golha",
+            rose: "\u06AF\u0644 \u0633\u0631\u062E|\u0631\u0632|\u06AF\u0644 \u0631\u0632|\u06AF\u0644 \u0645\u062D\u0645\u062F\u06CC|\u0646\u0633\u062A\u0631\u0646|gole sorkh",
+            ocean: "\u062F\u0631\u06CC\u0627|\u0627\u0642\u06CC\u0627\u0646\u0648\u0633|\u0645\u0648\u062C|\u0627\u0645\u0648\u0627\u062C|darya|daria|moj",
+            water: "\u0622\u0628|\u0631\u0648\u062F|\u0631\u0648\u062F\u062E\u0627\u0646\u0647|\u0631\u0648\u062F\u062E\u0648\u0646\u0647|\u0634\u0646\u0627|\u0686\u0634\u0645\u0647|rood",
+            wind: "\u0628\u0627\u062F|\u0646\u0633\u06CC\u0645|\u0628\u0627\u062F\u0647\u0627|\u0635\u0628\u0627|baad|nasim",
+            smoke: "\u062F\u0648\u062F|\u0633\u06CC\u06AF\u0627\u0631|\u0642\u0644\u06CC\u0627\u0646|\u0642\u0644\u06CC\u0648\u0646|dood|sigar|ghelyoon",
+            electric: "\u0628\u0631\u0642\u06CC|\u0627\u0646\u0631\u0698\u06CC|\u0627\u0644\u06A9\u062A\u0631\u06CC\u06A9\u06CC|\u062C\u0631\u06CC\u0627\u0646 \u0628\u0631\u0642|enerji",
+            rainbow: "\u0631\u0646\u06AF\u06CC\u0646\u200C\u06A9\u0645\u0627\u0646|\u0631\u0646\u06AF\u06CC\u0646 \u06A9\u0645\u0627\u0646|\u0642\u0648\u0633 \u0642\u0632\u062D|\u0631\u0646\u06AF\u0627\u0631\u0646\u06AF|rangin kaman",
+            fireworks: "\u0622\u062A\u0634\u200C\u0628\u0627\u0632\u06CC|\u0622\u062A\u0634 \u0628\u0627\u0632\u06CC|\u062A\u0631\u0642\u0647|\u0641\u0634\u0641\u0634\u0647|atashbazi",
+            party: "\u0645\u0647\u0645\u0648\u0646\u06CC|\u0645\u0647\u0645\u0627\u0646\u06CC|\u062C\u0634\u0646|\u067E\u0627\u0631\u062A\u06CC|\u0634\u0627\u062F\u06CC|mehmooni|jashn|party",
+            birthday: "\u062A\u0648\u0644\u062F|\u062A\u0648\u0644\u062F\u062A \u0645\u0628\u0627\u0631\u06A9|\u0632\u0627\u062F\u0631\u0648\u0632|tavalod|tavalodet mobarak",
+            dance: "\u0631\u0642\u0635|\u0628\u0631\u0642\u0635|\u0645\u06CC\u200C\u0631\u0642\u0635\u0645|\u0645\u06CC\u0631\u0642\u0635\u0645|\u0631\u0642\u0635\u06CC\u062F\u0646|\u0628\u0646\u062F\u0631\u06CC|raghs|beraghs|raqs",
+            jump: "\u0628\u067E\u0631|\u067E\u0631\u0634|\u062C\u0647\u0634|\u067E\u0631\u06CC\u062F\u0646|bepar",
+            dream: "\u0631\u0648\u06CC\u0627|\u0631\u0624\u06CC\u0627|\u062E\u0648\u0627\u0628|\u062E\u0648\u0627\u0628\u0645|\u0631\u0648\u06CC\u0627\u06CC\u06CC|roya|royaa|khab|khaab",
+            ghost: "\u0631\u0648\u062D|\u0634\u0628\u062D|\u0627\u0631\u0648\u0627\u062D|shabah",
+            angel: "\u0641\u0631\u0634\u062A\u0647|\u0641\u0631\u0634\u062A\u0647\u200C\u0647\u0627|\u0645\u0644\u0627\u0626\u06A9|fereshte|fereshteh",
+            devil: "\u0634\u06CC\u0637\u0627\u0646|\u062C\u0647\u0646\u0645|\u062F\u0648\u0632\u062E|\u0627\u0647\u0631\u06CC\u0645\u0646|\u062F\u06CC\u0648|sheytan|jahanam|ahriman",
+            world: "\u062F\u0646\u06CC\u0627|\u062C\u0647\u0627\u0646|\u0632\u0645\u06CC\u0646|\u06AF\u06CC\u062A\u06CC|\u0639\u0627\u0644\u0645|donya|jahan|zamin",
+            space: "\u06A9\u0647\u06A9\u0634\u0627\u0646|\u06A9\u06CC\u0647\u0627\u0646|\u0641\u0636\u0627|\u06A9\u0627\u0626\u0646\u0627\u062A|\u06A9\u0647\u06A9\u0634\u0648\u0646|kahkeshan|keyhan",
+            rocket: "\u0645\u0648\u0634\u06A9|\u0631\u0627\u06A9\u062A|\u067E\u0631\u062A\u0627\u0628|mooshak",
+            time: "\u0632\u0645\u0627\u0646|\u0648\u0642\u062A|\u0633\u0627\u0639\u062A|\u0647\u0645\u06CC\u0634\u0647|\u062A\u0627 \u0627\u0628\u062F|\u0627\u0628\u062F\u06CC|\u0644\u062D\u0638\u0647|zaman|vaght|hamishe|ta abad",
+            drive: "\u0645\u0627\u0634\u06CC\u0646|\u062C\u0627\u062F\u0647|\u0627\u062A\u0648\u0628\u0627\u0646|\u0633\u0631\u0639\u062A|\u0631\u0627\u0646\u0646\u062F\u06AF\u06CC|mashin|jaade|otoban",
+            city: "\u0634\u0647\u0631|\u062E\u06CC\u0627\u0628\u0648\u0646|\u062E\u06CC\u0627\u0628\u0627\u0646|\u06A9\u0648\u0686\u0647|\u062A\u0647\u0631\u0627\u0646|shahr|khiaboon|koocheh|tehran",
+            music: "\u0645\u0648\u0633\u06CC\u0642\u06CC|\u0622\u0647\u0646\u06AF|\u062A\u0631\u0627\u0646\u0647|\u0645\u0644\u0648\u062F\u06CC|\u0646\u063A\u0645\u0647|\u0631\u06CC\u062A\u0645|ahang|taraneh",
+            sing: "\u0628\u062E\u0648\u0646|\u0628\u062E\u0648\u0627\u0646|\u062E\u0648\u0646\u062F\u0646|\u0622\u0648\u0627\u0632|\u0635\u062F\u0627|\u0635\u062F\u0627\u0645|\u0622\u0648\u0627\u0632\u062E\u0648\u0627\u0646|bekhoon|avaz|seda",
+            boom: "\u0628\u0645\u0628|\u0627\u0646\u0641\u062C\u0627\u0631|\u0628\u0648\u0645|\u062A\u0631\u06A9\u06CC\u062F|\u0645\u0646\u0641\u062C\u0631|bomb|boom|enfejar",
+            champagne: "\u0634\u0627\u0645\u067E\u0627\u06CC\u0646|\u0634\u0631\u0627\u0628|\u0628\u0627\u062F\u0647|\u062C\u0627\u0645|\u0633\u0627\u0642\u06CC|\u067E\u06CC\u06A9|\u0645\u0633\u062A|sharab|saghi",
+            magic: "\u062C\u0627\u062F\u0648|\u0633\u062D\u0631|\u0627\u0641\u0633\u0648\u0646|\u0637\u0644\u0633\u0645|\u062C\u0627\u062F\u0648\u06AF\u0631|jadoo|afsoon",
+            beach: "\u0633\u0627\u062D\u0644|\u062C\u0632\u06CC\u0631\u0647|\u0634\u0646|\u0646\u062E\u0644|\u06A9\u0646\u0627\u0631 \u062F\u0631\u06CC\u0627|sahel|jazire",
+            christmas: "\u06A9\u0631\u06CC\u0633\u0645\u0633|\u0628\u0627\u0628\u0627\u0646\u0648\u0626\u0644|\u0628\u0627\u0628\u0627 \u0646\u0648\u0626\u0644|\u0633\u0627\u0646\u062A\u0627|krismas",
+            red: "\u0642\u0631\u0645\u0632|\u0633\u0631\u062E|\u0633\u0631\u062E\u06CC|ghermez|sorkh",
+            blue: "\u0622\u0628\u06CC|\u0646\u06CC\u0644\u06CC|\u0644\u0627\u062C\u0648\u0631\u062F\u06CC|abi|nili",
+            green: "\u0633\u0628\u0632|\u0633\u0628\u0632\u0647|\u0632\u0645\u0631\u062F\u06CC|sabz",
+            pink: "\u0635\u0648\u0631\u062A\u06CC|surati|soorati",
+            purple: "\u0628\u0646\u0641\u0634|\u0627\u0631\u063A\u0648\u0627\u0646\u06CC|\u06CC\u0627\u0633\u06CC|banafsh|arghavani",
+            white: "\u0633\u0641\u06CC\u062F|\u0633\u067E\u06CC\u062F|sefid|sepid",
+            black: "\u0633\u06CC\u0627\u0647|\u0645\u0634\u06A9\u06CC|siah|siyah|meshki",
+            silver: "\u0646\u0642\u0631\u0647|\u0646\u0642\u0631\u0647\u200C\u0627\u06CC|\u0633\u06CC\u0645\u06CC\u0646|noghre|noghrei"
+          }
+        },
+        he: {
+          stop: "\u05E9\u05DC|\u05D0\u05EA|\u05D0\u05E0\u05D9|\u05D0\u05EA\u05D4|\u05D6\u05D4|\u05DC\u05D0|\u05DB\u05D9|\u05E2\u05DD|\u05E2\u05DC|\u05D0\u05DD|\u05D2\u05DD|\u05E8\u05E7|\u05DB\u05DC|\u05D4\u05D5\u05D0|\u05D4\u05D9\u05D0|\u05D0\u05E0\u05D7\u05E0\u05D5|\u05E9\u05DC\u05D9|\u05E9\u05DC\u05DA|\u05D0\u05D5\u05EA\u05DA|\u05D0\u05D9\u05DA",
+          c: {
+            fire: "\u05D0\u05E9|\u05D4\u05D0\u05E9|\u05D1\u05D5\u05E2\u05E8|\u05D1\u05D5\u05E2\u05E8\u05EA|\u05DC\u05D4\u05D1\u05D4|\u05DC\u05D4\u05D1\u05D5\u05EA|\u05E9\u05D5\u05E8\u05E3|\u05E9\u05E8\u05D9\u05E4\u05D4|\u05D1\u05D5\u05E2\u05E8\u05D9\u05DD",
+            rain: "\u05D2\u05E9\u05DD|\u05D4\u05D2\u05E9\u05DD|\u05D2\u05E9\u05DE\u05D9\u05DD|\u05D9\u05D5\u05E8\u05D3 \u05D2\u05E9\u05DD|\u05D8\u05D9\u05E4\u05D5\u05EA \u05D2\u05E9\u05DD|\u05D2\u05E9\u05D5\u05DD",
+            storm: "\u05E1\u05E2\u05E8\u05D4|\u05D4\u05E1\u05E2\u05E8\u05D4|\u05E1\u05D5\u05E4\u05D4|\u05E8\u05E2\u05DD|\u05E8\u05E2\u05DE\u05D9\u05DD|\u05E1\u05D5\u05E4\u05D5\u05EA|\u05E1\u05E2\u05E8\u05D5\u05EA",
+            lightning: "\u05D1\u05E8\u05E7|\u05D1\u05E8\u05E7\u05D9\u05DD|\u05D4\u05D1\u05E8\u05E7",
+            snow: "\u05E9\u05DC\u05D2|\u05D4\u05E9\u05DC\u05D2|\u05E9\u05DC\u05D2\u05D9\u05DD|\u05E4\u05EA\u05D9\u05EA\u05D9 \u05E9\u05DC\u05D2|\u05DE\u05D5\u05E9\u05DC\u05D2",
+            cold: "\u05E7\u05E8|\u05E7\u05D5\u05E8|\u05D4\u05E7\u05D5\u05E8|\u05E7\u05E8\u05D7|\u05E7\u05E4\u05D5\u05D0|\u05E7\u05D5\u05E4\u05D0|\u05E7\u05E4\u05D5\u05D0\u05D4",
+            sun: "\u05E9\u05DE\u05E9|\u05D4\u05E9\u05DE\u05E9|\u05D6\u05E8\u05D9\u05D7\u05D4|\u05E9\u05E7\u05D9\u05E2\u05D4|\u05D0\u05D5\u05E8 \u05D4\u05E9\u05DE\u05E9",
+            summer: "\u05E7\u05D9\u05E5|\u05D4\u05E7\u05D9\u05E5|\u05D1\u05E7\u05D9\u05E5|\u05E7\u05D9\u05D9\u05E6\u05D9",
+            moon: "\u05D9\u05E8\u05D7|\u05D4\u05D9\u05E8\u05D7|\u05DC\u05D1\u05E0\u05D4|\u05E1\u05D4\u05E8|\u05D0\u05D5\u05E8 \u05D9\u05E8\u05D7|\u05D9\u05E8\u05D7 \u05DE\u05DC\u05D0",
+            star: "\u05DB\u05D5\u05DB\u05D1|\u05DB\u05D5\u05DB\u05D1\u05D9\u05DD|\u05D4\u05DB\u05D5\u05DB\u05D1\u05D9\u05DD|\u05D0\u05D1\u05E7 \u05DB\u05D5\u05DB\u05D1\u05D9\u05DD",
+            sky: "\u05E9\u05DE\u05D9\u05D9\u05DD|\u05E9\u05DE\u05D9\u05DD|\u05D4\u05E9\u05DE\u05D9\u05D9\u05DD|\u05D4\u05E9\u05DE\u05D9\u05DD|\u05E2\u05E0\u05DF|\u05E2\u05E0\u05E0\u05D9\u05DD|\u05E8\u05E7\u05D9\u05E2",
+            heaven: "\u05D2\u05DF \u05E2\u05D3\u05DF|\u05D2\u05DF \u05D4\u05E2\u05D3\u05DF|\u05E2\u05D3\u05DF|\u05DE\u05E8\u05D5\u05DD|\u05D2\u05E0\u05D9 \u05E2\u05D3\u05DF",
+            night: "\u05DC\u05D9\u05DC\u05D4|\u05D4\u05DC\u05D9\u05DC\u05D4|\u05DC\u05D9\u05DC\u05D5\u05EA|\u05D7\u05E6\u05D5\u05EA|\u05D1\u05DC\u05D9\u05DC\u05D4|\u05DC\u05D9\u05DC",
+            dark: "\u05D7\u05D5\u05E9\u05DA|\u05D4\u05D7\u05D5\u05E9\u05DA|\u05D0\u05E4\u05DC|\u05D0\u05E4\u05DC\u05D4|\u05E6\u05DC|\u05E6\u05DC\u05DC\u05D9\u05DD|\u05D7\u05E9\u05D5\u05DA|\u05D7\u05E9\u05DB\u05D4",
+            light: "\u05D0\u05D5\u05E8|\u05D4\u05D0\u05D5\u05E8|\u05D6\u05D5\u05D4\u05E8|\u05E0\u05D5\u05E6\u05E5|\u05DE\u05D0\u05D9\u05E8|\u05DC\u05D4\u05D0\u05D9\u05E8|\u05E7\u05E8\u05DF \u05D0\u05D5\u05E8|\u05D0\u05D5\u05E8\u05D5\u05EA",
+            heart: "\u05DC\u05D1|\u05D4\u05DC\u05D1|\u05DC\u05D9\u05D1\u05D9|\u05DC\u05D1\u05D9|\u05DC\u05D9\u05D1\u05DA|\u05DC\u05D1\u05D1\u05D5\u05EA",
+            love: "\u05D0\u05D4\u05D1\u05D4|\u05D4\u05D0\u05D4\u05D1\u05D4|\u05D0\u05D5\u05D4\u05D1|\u05D0\u05D5\u05D4\u05D1\u05EA|\u05D0\u05D4\u05D5\u05D1|\u05D0\u05D4\u05D5\u05D1\u05D4|\u05D0\u05D5\u05D4\u05D1 \u05D0\u05D5\u05EA\u05DA|\u05DE\u05D0\u05D5\u05D4\u05D1|\u05DE\u05D0\u05D5\u05D4\u05D1\u05EA|\u05D0\u05D4\u05D1\u05EA\u05D9",
+            kiss: "\u05E0\u05E9\u05D9\u05E7\u05D4|\u05E0\u05E9\u05D9\u05E7\u05D5\u05EA|\u05DC\u05E0\u05E9\u05E7|\u05E9\u05E4\u05EA\u05D9\u05D9\u05DD|\u05E9\u05E4\u05EA\u05D9\u05D9\u05DA|\u05EA\u05E0\u05E9\u05E7\u05D9",
+            heartbreak: "\u05DC\u05D1 \u05E9\u05D1\u05D5\u05E8|\u05E9\u05D1\u05E8\u05D5\u05DF \u05DC\u05D1|\u05E9\u05D1\u05E8\u05EA \u05DC\u05D9 \u05D0\u05EA \u05D4\u05DC\u05D1|\u05E0\u05E9\u05D1\u05E8 \u05D4\u05DC\u05D1|\u05DC\u05D1 \u05E0\u05E9\u05D1\u05E8|\u05E4\u05E8\u05D9\u05D3\u05D4|\u05E9\u05D1\u05D5\u05E8",
+            tears: "\u05D3\u05DE\u05E2\u05D5\u05EA|\u05D3\u05DE\u05E2\u05D4|\u05D1\u05D5\u05DB\u05D4|\u05D1\u05DB\u05D9|\u05DC\u05D1\u05DB\u05D5\u05EA|\u05D1\u05D5\u05DB\u05D9\u05DD|\u05D4\u05D3\u05DE\u05E2\u05D5\u05EA",
+            money: "\u05DB\u05E1\u05E3|\u05D4\u05DB\u05E1\u05E3|\u05DE\u05D6\u05D5\u05DE\u05DF|\u05E2\u05E9\u05D9\u05E8|\u05E2\u05E9\u05D9\u05E8\u05D4|\u05D3\u05D5\u05DC\u05E8\u05D9\u05DD|\u05E9\u05D8\u05E8\u05D5\u05EA",
+            gold: "\u05D6\u05D4\u05D1|\u05D4\u05D6\u05D4\u05D1|\u05D6\u05D4\u05D5\u05D1|\u05D6\u05D4\u05D5\u05D1\u05D4|\u05DE\u05D5\u05D6\u05D4\u05D1|\u05E4\u05D6",
+            diamond: "\u05D9\u05D4\u05DC\u05D5\u05DD|\u05D9\u05D4\u05DC\u05D5\u05DE\u05D9\u05DD|\u05EA\u05DB\u05E9\u05D9\u05D8\u05D9\u05DD|\u05D0\u05D1\u05E0\u05D9 \u05D7\u05DF|\u05E4\u05E0\u05D9\u05E0\u05D9\u05DD",
+            crown: "\u05DB\u05EA\u05E8|\u05D4\u05DB\u05EA\u05E8|\u05DE\u05DC\u05DA|\u05DE\u05DC\u05DB\u05D4|\u05D4\u05DE\u05DC\u05DA|\u05D4\u05DE\u05DC\u05DB\u05D4|\u05E0\u05E1\u05D9\u05DA|\u05E0\u05E1\u05D9\u05DB\u05D4",
+            fly: "\u05DC\u05E2\u05D5\u05E3|\u05E2\u05E3|\u05E2\u05E4\u05D4|\u05E2\u05E4\u05D9\u05DD|\u05DB\u05E0\u05E4\u05D9\u05D9\u05DD|\u05DB\u05E0\u05E3|\u05DC\u05D8\u05D5\u05E1|\u05DE\u05DE\u05E8\u05D9\u05D0",
+            bird: "\u05E6\u05D9\u05E4\u05D5\u05E8|\u05E6\u05D9\u05E4\u05D5\u05E8\u05D9\u05DD|\u05D4\u05E6\u05D9\u05E4\u05D5\u05E8\u05D9\u05DD|\u05D9\u05D5\u05E0\u05D4|\u05D9\u05D5\u05E0\u05D9\u05DD",
+            butterfly: "\u05E4\u05E8\u05E4\u05E8|\u05E4\u05E8\u05E4\u05E8\u05D9\u05DD|\u05D4\u05E4\u05E8\u05E4\u05E8\u05D9\u05DD|\u05E4\u05E8\u05E4\u05E8\u05D9\u05DD \u05D1\u05D1\u05D8\u05DF",
+            flower: "\u05E4\u05E8\u05D7|\u05E4\u05E8\u05D7\u05D9\u05DD|\u05D4\u05E4\u05E8\u05D7\u05D9\u05DD|\u05E4\u05E8\u05D9\u05D7\u05D4|\u05E4\u05D5\u05E8\u05D7|\u05E4\u05D5\u05E8\u05D7\u05EA|\u05E0\u05D9\u05E6\u05DF",
+            rose: "\u05D5\u05E8\u05D3|\u05D5\u05E8\u05D3\u05D9\u05DD|\u05D4\u05D5\u05D5\u05E8\u05D3|\u05E9\u05D5\u05E9\u05E0\u05D4|\u05D5\u05E8\u05D3 \u05D0\u05D3\u05D5\u05DD",
+            ocean: "\u05D9\u05DD|\u05D4\u05D9\u05DD|\u05D0\u05D5\u05E7\u05D9\u05D9\u05E0\u05D5\u05E1|\u05D2\u05DC\u05D9\u05DD|\u05D2\u05DC|\u05D4\u05D2\u05DC\u05D9\u05DD",
+            water: "\u05DE\u05D9\u05DD|\u05D4\u05DE\u05D9\u05DD|\u05E0\u05D4\u05E8|\u05E0\u05D4\u05E8\u05D5\u05EA|\u05DC\u05E9\u05D7\u05D5\u05EA|\u05E9\u05D5\u05D7\u05D4|\u05DE\u05E2\u05D9\u05D9\u05DF",
+            wind: "\u05E8\u05D5\u05D7|\u05D4\u05E8\u05D5\u05D7|\u05E8\u05D5\u05D7\u05D5\u05EA|\u05D1\u05E8\u05D9\u05D6\u05D4|\u05DE\u05E9\u05D1|\u05E0\u05D5\u05E9\u05D1\u05EA",
+            smoke: "\u05E2\u05E9\u05DF|\u05D4\u05E2\u05E9\u05DF|\u05DE\u05E2\u05E9\u05DF|\u05E1\u05D9\u05D2\u05E8\u05D9\u05D4|\u05E1\u05D9\u05D2\u05E8\u05D9\u05D5\u05EA|\u05E2\u05D9\u05E9\u05D5\u05DF",
+            electric: "\u05D7\u05E9\u05DE\u05DC|\u05D7\u05E9\u05DE\u05DC\u05D9|\u05D0\u05E0\u05E8\u05D2\u05D9\u05D4|\u05D6\u05E8\u05DD \u05D7\u05E9\u05DE\u05DC\u05D9|\u05DE\u05D7\u05D5\u05E9\u05DE\u05DC",
+            rainbow: "\u05E7\u05E9\u05EA|\u05E7\u05E9\u05EA \u05D1\u05E2\u05E0\u05DF|\u05D4\u05E7\u05E9\u05EA|\u05E6\u05D1\u05E2\u05D5\u05E0\u05D9",
+            fireworks: "\u05D6\u05D9\u05E7\u05D5\u05E7\u05D9\u05DD|\u05D6\u05D9\u05E7\u05D5\u05E7\u05D9\u05DF|\u05D6\u05D9\u05E7\u05D5\u05E7\u05D9 \u05D3\u05D9\u05E0\u05D5\u05E8|\u05D4\u05D6\u05D9\u05E7\u05D5\u05E7\u05D9\u05DD",
+            party: "\u05DE\u05E1\u05D9\u05D1\u05D4|\u05DE\u05E1\u05D9\u05D1\u05D5\u05EA|\u05D4\u05DE\u05E1\u05D9\u05D1\u05D4|\u05D7\u05D2\u05D9\u05D2\u05D4|\u05DC\u05D7\u05D2\u05D5\u05D2|\u05D7\u05D5\u05D2\u05D2\u05D9\u05DD|\u05E0\u05D7\u05D2\u05D5\u05D2|\u05E4\u05D0\u05E8\u05D8\u05D9",
+            birthday: "\u05D9\u05D5\u05DD \u05D4\u05D5\u05DC\u05D3\u05EA|\u05D9\u05D5\u05DE\u05D5\u05DC\u05D3\u05EA|\u05D9\u05D5\u05DD \u05D4\u05D5\u05DC\u05D3\u05EA \u05E9\u05DE\u05D7|\u05D9\u05D5\u05DD \u05D4\u05D4\u05D5\u05DC\u05D3\u05EA",
+            dance: "\u05DC\u05E8\u05E7\u05D5\u05D3|\u05E8\u05D5\u05E7\u05D3|\u05E8\u05D5\u05E7\u05D3\u05EA|\u05E8\u05D5\u05E7\u05D3\u05D9\u05DD|\u05E8\u05D9\u05E7\u05D5\u05D3|\u05E0\u05E8\u05E7\u05D5\u05D3|\u05EA\u05E8\u05E7\u05D3\u05D9|\u05E8\u05E7\u05D3\u05E0\u05D9\u05EA",
+            jump: "\u05DC\u05E7\u05E4\u05D5\u05E5|\u05E7\u05D5\u05E4\u05E5|\u05E7\u05D5\u05E4\u05E6\u05EA|\u05E7\u05D5\u05E4\u05E6\u05D9\u05DD|\u05E7\u05E4\u05D9\u05E6\u05D4|\u05E0\u05E7\u05E4\u05D5\u05E5",
+            dream: "\u05D7\u05DC\u05D5\u05DD|\u05D7\u05DC\u05D5\u05DE\u05D5\u05EA|\u05DC\u05D7\u05DC\u05D5\u05DD|\u05D7\u05D5\u05DC\u05DD|\u05D7\u05D5\u05DC\u05DE\u05EA|\u05D4\u05D7\u05DC\u05D5\u05DD|\u05D7\u05DC\u05DE\u05EA\u05D9",
+            ghost: "\u05E8\u05D5\u05D7 \u05E8\u05E4\u05D0\u05D9\u05DD|\u05E8\u05D5\u05D7\u05D5\u05EA \u05E8\u05E4\u05D0\u05D9\u05DD|\u05E8\u05E4\u05D0\u05D9\u05DD",
+            angel: "\u05DE\u05DC\u05D0\u05DA|\u05DE\u05DC\u05D0\u05DB\u05D9\u05DD|\u05DE\u05DC\u05D0\u05DB\u05D9\u05EA|\u05D4\u05DE\u05DC\u05D0\u05DA|\u05DE\u05DC\u05D0\u05DB\u05D9",
+            devil: "\u05E9\u05D8\u05DF|\u05D4\u05E9\u05D8\u05DF|\u05D2\u05D9\u05D4\u05E0\u05D5\u05DD|\u05D2\u05D4\u05E0\u05D5\u05DD|\u05E9\u05D3\u05D9\u05DD|\u05D4\u05E9\u05D3\u05D9\u05DD",
+            world: "\u05E2\u05D5\u05DC\u05DD|\u05D4\u05E2\u05D5\u05DC\u05DD|\u05DB\u05D3\u05D5\u05E8 \u05D4\u05D0\u05E8\u05E5|\u05EA\u05D1\u05DC",
+            space: "\u05D9\u05E7\u05D5\u05DD|\u05D4\u05D9\u05E7\u05D5\u05DD|\u05D7\u05DC\u05DC|\u05D4\u05D7\u05DC\u05DC|\u05D2\u05DC\u05E7\u05E1\u05D9\u05D4|\u05E7\u05D5\u05E1\u05DE\u05D5\u05E1|\u05E9\u05D1\u05D9\u05DC \u05D4\u05D7\u05DC\u05D1",
+            rocket: "\u05D8\u05D9\u05DC|\u05D8\u05D9\u05DC\u05D9\u05DD|\u05E8\u05E7\u05D8\u05D4|\u05E8\u05E7\u05D8\u05D5\u05EA|\u05D4\u05DE\u05E8\u05D0\u05D4|\u05E9\u05D9\u05D2\u05D5\u05E8",
+            time: "\u05D6\u05DE\u05DF|\u05D4\u05D6\u05DE\u05DF|\u05DC\u05E0\u05E6\u05D7|\u05E0\u05E6\u05D7|\u05E9\u05E2\u05D5\u05DF|\u05EA\u05DE\u05D9\u05D3|\u05E8\u05D2\u05E2",
+            drive: "\u05DE\u05DB\u05D5\u05E0\u05D9\u05EA|\u05D0\u05D5\u05D8\u05D5|\u05DC\u05E0\u05D4\u05D5\u05D2|\u05E0\u05D5\u05D4\u05D2|\u05DB\u05D1\u05D9\u05E9|\u05D4\u05DB\u05D1\u05D9\u05E9|\u05DE\u05D4\u05D9\u05E8\u05D5\u05EA|\u05E0\u05E1\u05D9\u05E2\u05D4",
+            city: "\u05E2\u05D9\u05E8|\u05D4\u05E2\u05D9\u05E8|\u05E8\u05D7\u05D5\u05D1|\u05E8\u05D7\u05D5\u05D1\u05D5\u05EA|\u05EA\u05DC \u05D0\u05D1\u05D9\u05D1|\u05D9\u05E8\u05D5\u05E9\u05DC\u05D9\u05DD|\u05DB\u05E8\u05DA",
+            music: "\u05DE\u05D5\u05D6\u05D9\u05E7\u05D4|\u05DE\u05D5\u05E1\u05D9\u05E7\u05D4|\u05E9\u05D9\u05E8|\u05E9\u05D9\u05E8\u05D9\u05DD|\u05DE\u05E0\u05D2\u05D9\u05E0\u05D4|\u05DC\u05D7\u05DF|\u05E7\u05E6\u05D1|\u05D1\u05D9\u05D8|\u05E6\u05DC\u05D9\u05DC\u05D9\u05DD",
+            sing: "\u05DC\u05E9\u05D9\u05E8|\u05E9\u05E8\u05D9\u05DD|\u05E7\u05D5\u05DC|\u05E7\u05D5\u05DC\u05D5\u05EA|\u05E0\u05E9\u05D9\u05E8|\u05EA\u05E9\u05D9\u05E8\u05D9",
+            boom: "\u05D1\u05D5\u05DD|\u05E4\u05D9\u05E6\u05D5\u05E5|\u05E4\u05E6\u05E6\u05D4|\u05DE\u05EA\u05E4\u05D5\u05E6\u05E5|\u05D4\u05EA\u05E4\u05D5\u05E6\u05E5|\u05E4\u05D9\u05E6\u05D5\u05E6\u05D9\u05DD",
+            champagne: "\u05E9\u05DE\u05E4\u05E0\u05D9\u05D4|\u05DC\u05D7\u05D9\u05D9\u05DD|\u05DB\u05D5\u05E1\u05D9\u05EA|\u05D9\u05D9\u05DF|\u05D1\u05E7\u05D1\u05D5\u05E7|\u05E9\u05D9\u05DB\u05D5\u05E8|\u05E9\u05D9\u05DB\u05D5\u05E8\u05D4|\u05E2\u05E8\u05E7",
+            magic: "\u05E7\u05E1\u05DD|\u05E7\u05E1\u05DE\u05D9\u05DD|\u05DB\u05D9\u05E9\u05D5\u05E3|\u05DE\u05DB\u05E9\u05E4\u05D4|\u05E7\u05D5\u05E1\u05DD|\u05E7\u05E1\u05D5\u05DD|\u05DE\u05DB\u05D5\u05E9\u05E3",
+            beach: "\u05D7\u05D5\u05E3|\u05D4\u05D7\u05D5\u05E3|\u05D7\u05D5\u05E3 \u05D4\u05D9\u05DD|\u05D0\u05D9\u05D9\u05DD|\u05D7\u05D5\u05DC|\u05D3\u05E7\u05DC\u05D9\u05DD|\u05D3\u05E7\u05DC",
+            christmas: "\u05DB\u05E8\u05D9\u05E1\u05DE\u05E1|\u05D7\u05D2 \u05D4\u05DE\u05D5\u05DC\u05D3|\u05E1\u05E0\u05D8\u05D4|\u05E1\u05E0\u05D8\u05D4 \u05E7\u05DC\u05D0\u05D5\u05E1|\u05E4\u05E2\u05DE\u05D5\u05E0\u05D9\u05DD",
+            red: "\u05D0\u05D3\u05D5\u05DD|\u05D0\u05D3\u05D5\u05DE\u05D4|\u05D0\u05D3\u05D5\u05DE\u05D9\u05DD|\u05D4\u05D0\u05D3\u05D5\u05DD|\u05D0\u05E8\u05D2\u05DE\u05DF",
+            blue: "\u05DB\u05D7\u05D5\u05DC|\u05DB\u05D7\u05D5\u05DC\u05D4|\u05DB\u05D7\u05D5\u05DC\u05D9\u05DD|\u05EA\u05DB\u05DC\u05EA|\u05D4\u05DB\u05D7\u05D5\u05DC",
+            green: "\u05D9\u05E8\u05D5\u05E7|\u05D9\u05E8\u05D5\u05E7\u05D4|\u05D9\u05E8\u05D5\u05E7\u05D9\u05DD|\u05D4\u05D9\u05E8\u05D5\u05E7",
+            pink: "\u05D5\u05E8\u05D5\u05D3|\u05D5\u05E8\u05D5\u05D3\u05D4|\u05D5\u05E8\u05D5\u05D3\u05D9\u05DD",
+            purple: "\u05E1\u05D2\u05D5\u05DC|\u05E1\u05D2\u05D5\u05DC\u05D4|\u05E1\u05D2\u05D5\u05DC\u05D9\u05DD",
+            white: "\u05DC\u05D1\u05DF|\u05DC\u05D1\u05E0\u05D4|\u05DC\u05D1\u05E0\u05D9\u05DD|\u05D4\u05DC\u05D1\u05DF|\u05E6\u05D7\u05D5\u05E8",
+            black: "\u05E9\u05D7\u05D5\u05E8|\u05E9\u05D7\u05D5\u05E8\u05D4|\u05E9\u05D7\u05D5\u05E8\u05D9\u05DD|\u05D4\u05E9\u05D7\u05D5\u05E8",
+            silver: "\u05DB\u05E1\u05D5\u05E3|\u05DB\u05E1\u05D5\u05E4\u05D4|\u05DB\u05E1\u05D5\u05E4\u05D9\u05DD|\u05DB\u05E1\u05E4\u05D9\u05EA"
+          }
+        },
+        sw: {
+          stop: "ya|wa|kwa|ni|na|za|mimi|wewe|sisi|yangu|yako|sana|lakini|hii|kama|nini|bado|pia|tena|kwenye",
+          c: {
+            fire: "moto|kuungua|inaungua|miale|mwako|kuchoma|unaungua|ungua",
+            rain: "mvua|mvua inanyesha|kunyesha|manyunyu|inanyesha|masika",
+            storm: "dhoruba|kimbunga|tufani|ngurumo|vimbunga",
+            lightning: "radi|mwanga wa radi|umeme wa radi|kupiga radi",
+            snow: "theluji|theluji inaanguka",
+            cold: "baridi|barafu|kuganda|imeganda|baridi kali",
+            sun: "jua|mwanga wa jua|jua linachomoza|machweo|mawio|alfajiri|jua kali",
+            summer: "kiangazi|majira ya joto|joto",
+            moon: "mwezi|mbalamwezi|mwezi mpevu|mwanga wa mwezi",
+            star: "nyota|nyota zote|vinyota|nyota yangu",
+            sky: "anga|mawingu|wingu|angani",
+            heaven: "mbinguni|peponi|paradiso|mbingu|jannah",
+            night: "usiku|usiku wa leo|usiku huu|usiku wa manane|usiku kucha|leo usiku",
+            dark: "giza|gizani|kivuli|vivuli|kiza",
+            light: "mwanga|nuru|kung'aa|kuangaza|inang'aa|mwangaza|ang'aa",
+            heart: "moyo|moyoni|moyo wangu|mioyo|roho yangu",
+            love: "penzi|mapenzi|nakupenda|upendo|mpenzi|pendo|kupenda|mahaba|huba|nampenda|ninakupenda",
+            kiss: "busu|mabusu|kubusu|nibusu|midomo|mdomo",
+            heartbreak: "moyo umevunjika|kuvunja moyo|umeniumiza|maumivu|nimeumizwa|moyo uliovunjika|huzuni",
+            tears: "machozi|kulia|nalia|analia|chozi|kilio|unalia",
+            money: "pesa|fedha|hela|mapesa|tajiri|dola|noti|mkwanja|ukwasi",
+            gold: "dhahabu|ya dhahabu|kidhahabu",
+            diamond: "almasi|vito|johari|lulu",
+            crown: "taji|mfalme|malkia|mwana mfalme|binti mfalme|ufalme",
+            fly: "kuruka|paa juu|mbawa|bawa|kupaa|naruka|anaruka",
+            bird: "ndege|njiwa|kasuku|ndege wangu|tai angani",
+            butterfly: "kipepeo|vipepeo",
+            flower: "maua|kuchanua|maua mazuri|ua langu",
+            rose: "waridi|ua la waridi|mawaridi",
+            ocean: "bahari|mawimbi|wimbi|baharini|bahari kuu",
+            water: "maji|mto|mito|kuogelea|ziwa|chemchemi",
+            wind: "upepo|upepo mwanana|kuvuma|unavuma",
+            smoke: "moshi|sigara|kuvuta sigara|shisha",
+            electric: "umeme|nishati|shoti|stimu",
+            rainbow: "upinde wa mvua|rangi rangi|upinde",
+            fireworks: "fataki|fashifashi",
+            party: "sherehe|pati|kusherehekea|tusherehekee|bata|shangwe|party",
+            birthday: "siku ya kuzaliwa|birthday|happy birthday|kuzaliwa",
+            dance: "kucheza|cheza|ngoma|densi|dansi|tucheze|kiuno|nicheze",
+            jump: "ruka|ruka ruka|rukaruka|kurukaruka",
+            dream: "ndoto|kuota|naota|ndoto zangu|ndotoni",
+            ghost: "mzimu|mizimu|roho mbaya|jini|majini|pepo",
+            angel: "malaika|malaika wangu",
+            devil: "shetani|shaitani|jehanamu|jahannamu|ibilisi",
+            world: "dunia|ulimwengu|ulimwengu mzima|duniani|sayari",
+            space: "anga za juu|galaksi|anga la juu|ulimwengu wote",
+            rocket: "roketi|chombo cha anga|kurusha roketi",
+            time: "muda|wakati|milele|saa|daima|siku zote|milele na milele",
+            drive: "gari|magari|barabara|kasi|kuendesha|naendesha|spidi|ndinga",
+            city: "mji|jiji|mjini|mitaa|mtaa|nairobi|dar es salaam",
+            music: "muziki|wimbo|nyimbo|mdundo|midundo|bongo flava|taarab",
+            sing: "kuimba|imba|naimba|tuimbe|sauti|sauti yako|waimbaji",
+            boom: "boom|bomu|mlipuko|kulipuka",
+            champagne: "shampeni|champagne|pombe|kunywa|tunywe|chupa|lewa|cheers|mvinyo",
+            magic: "uchawi|mchawi|miujiza|mazingaombwe|hirizi",
+            beach: "ufukwe|ufukweni|pwani|kisiwa|visiwa|mchanga|minazi|mnazi|zanzibar",
+            christmas: "krismasi|krismas|noeli|sikukuu ya krismasi|santa|kengele",
+            red: "nyekundu|wekundu|mwekundu",
+            blue: "bluu|samawati|buluu|blu",
+            green: "kijani|kijani kibichi",
+            pink: "pinki|rangi ya waridi",
+            purple: "zambarau|urujuani",
+            white: "nyeupe|mweupe|weupe|cheupe",
+            black: "nyeusi|mweusi|weusi|cheusi",
+            silver: "silva|rangi ya fedha|ya fedha"
+          }
+        },
+        yo: {
+          stop: "mo|ni|ti|ko|si|fun|naa|ati|\xE0ti|\xE8mi|iwo|\xECw\u1ECD|awa|w\u1ECDn|won|y\xEC\xED|yii|\u1E63e|lati|bayi",
+          c: {
+            fire: "in\xE1|ina|\xECn\xE1|j\xF3n\xE1|jona|\xF2g\xF9\u1E63\u1ECD\u0300|ogusho",
+            rain: "\xF2j\xF2|ojo n ro|ojo ro|\xF2j\xF2 \u0144 r\u1ECD\u0300|\xF2j\xF2 \u0144r\u1ECD\u0300",
+            storm: "\xECj\xEC|iji|\xECj\xEC l\xEDle|iji lile|\xE0r\xE1",
+            lightning: "m\xE0n\xE0m\xE1n\xE1|manamana|s\xE0ng\xF3|sango|shango",
+            snow: "y\xECny\xEDn|yinyin|\xF2j\xF2 d\xEDd\xEC|ojo didi|snow",
+            cold: "\xF2t\xFAt\xF9|otutu|tut\xF9|didi|d\xEDd\xEC",
+            sun: "o\xF2r\xF9n|\xECt\xE0n\u1E63\xE1n o\xF2r\xF9n|itansan|oj\xFAm\u1ECD\u0301|ojumo",
+            summer: "\u1EB9\u0300\u1EB9\u0300r\xF9n|eerun|\xECgb\xE0 \u1EB9\u0300\u1EB9\u0300r\xF9n|igba eerun|summer",
+            moon: "\xF2\u1E63\xF9p\xE1|osupa|o\u1E63upa|\xECm\u1ECD\u0301l\u1EB9\u0300 \xF2\u1E63\xF9p\xE1",
+            star: "\xECr\xE0w\u1ECD\u0300|irawo|iraw\u1ECD",
+            sky: "oj\xFA \u1ECD\u0300run|oju orun|s\xE1nm\xE0|sanma|\xECk\xF9uk\xF9u|aw\u1ECDsanma|awosanma",
+            heaven: "\u1ECD\u0300run|orun|\u1ECDrun|p\xE1r\xE1d\xEDs\xE8|paradise|\u1ECD\u0300run rere|orun rere",
+            night: "\xF2ru|oru|al\u1EB9\u0301|\xF2ru ganjo|oganjo|\u1ECD\u0300g\xE0nj\u1ECD\u0301|l\xE1l\u1EB9\u0301|lale",
+            dark: "\xF2k\xF9nk\xF9n|okunkun|\xF2j\xECji|ojiji|biribiri",
+            light: "\xECm\u1ECD\u0301l\u1EB9\u0300|imole|im\u1ECDl\u1EB9|itanna|\xECt\xE0nn\xE1|didan|d\xEDd\xE1n",
+            heart: "\u1ECDk\xE0n|\u1ECDk\xE0n mi|okan mi|\u1ECDkan mi",
+            love: "\xECf\u1EB9\u0301|ife|if\u1EB9|if\u1EB9 mi|ife mi|n\xEDf\u1EB9\u0300\u1EB9\u0301|nife|mo nife re|ol\xF3l\xF9f\u1EB9\u0301|ololufe|ololuf\u1EB9|ayanfe|\xE0y\xE0nf\u1EB9\u0301",
+            kiss: "f\u1EB9nukonu|fenukonu|\xECf\u1EB9nukonu|ifenukonu|\xE8t\xE8",
+            heartbreak: "\u1ECDk\xE0n b\xE0j\u1EB9\u0301|okan baje|\xECb\xE0n\xFAj\u1EB9\u0301|ibanuje|okan mi baje|\u1ECDk\xE0n mi b\xE0j\u1EB9\u0301|heartbreak",
+            tears: "omij\xE9|omije|\u1EB9k\xFAn|sunk\xFAn|sunkun|\u0144 sunk\xFAn|nsunkun",
+            money: "ow\xF3|owo|ol\xF3w\xF3|olowo|d\u1ECD\u0301l\xE0|dola|naira|owo nla",
+            gold: "w\xFAr\xE0|wura|g\xF3\xF2l\xF9|goolu|gold",
+            diamond: "d\xE1y\xE1m\u1ECD\u0301\u01F9d\xEC|dayamondi|diamond|\xECl\u1EB9\u0300k\u1EB9\u0300|ileke|okuta iyebiye",
+            crown: "ad\xE9|ade|\u1ECDba|oba|ayaba|olori|\u1ECDm\u1ECDba|omoba",
+            fly: "f\xF2|f\xF2 l\u1ECD|fo lo|f\xEDf\xF2|\xECy\u1EB9\u0301 ap\xE1|iy\u1EB9 apa",
+            bird: "\u1EB9y\u1EB9|\u1EB9y\u1EB9l\xE9|eyele|\xE0d\xE0b\xE0|adaba",
+            butterfly: "labal\xE1b\xE1|labalaba",
+            flower: "\xF2d\xF2d\xF3|\xECt\xE0nn\xE1 \xF2d\xF2d\xF3|flower|flowers",
+            rose: "r\xF3s\xEC|rosi|\xF2d\xF2d\xF3 pupa|ododo pupa|rose",
+            ocean: "\xF2kun|okun nla|\xF2kun nla|\xECgb\xEC|igbi|\u1ECD\u0300s\xE0",
+            water: "omi|w\u1EB9\u0300|omi odo|od\xF2",
+            wind: "af\u1EB9\u0301f\u1EB9\u0301|afefe|at\u1EB9\u0301g\xF9n|ategun",
+            smoke: "\xE8\xE9f\xEDn|eefin|siga|mu siga",
+            electric: "in\xE1 m\xE0n\xE0m\xE1n\xE1|ina manamana|agb\xE1ra|agbara|energy|electric",
+            rainbow: "\xF2\u1E63\xF9m\xE0r\xE8|osumare|o\u1E63umare|rainbow",
+            fireworks: "knockout|bangers|fireworks",
+            party: "\xE0r\xEDy\xE1|ariya|ay\u1EB9y\u1EB9|ayeye|faaji|f\xE0\xE1j\xEC|owambe|\xF2w\xE0mb\u1EB9\u0300|party|enjoyment|jaiye|jaye",
+            birthday: "\u1ECDj\u1ECD\u0301 \xECb\xED|ojo ibi|ojoibi|birthday|happy birthday",
+            dance: "j\xF3|ij\xF3|\xECj\xF3|maa jo|m\xE1a j\xF3|jo jo|dance|gbe body",
+            jump: "f\xF2 s\xF3k\xE8|fo soke|f\xEDf\xF2 s\xF3k\xE8|jump",
+            dream: "\xE0l\xE1|ala|l\xE1 \xE0l\xE1|la ala|\xE0l\xE1 mi|ala mi",
+            ghost: "iwin|\u1EB9\u0300m\xED \xF2k\xFA|emi oku|\u1EB9\u0300m\xED|ghost",
+            angel: "\xE1\u0144g\u1EB9\u0301l\xEC|angeli|ang\u1EB9li|angel|malaika|m\xE0l\xE1\xEDk\xE0",
+            devil: "\xE8\u1E63\xF9|esu|eshu|\u1ECD\u0300run \xE0p\xE1\xE0d\xEC|orun apaadi|apaadi|satani|s\xE0t\xE1n\xEC|devil",
+            world: "ay\xE9|aye|\xE0gb\xE1y\xE9|agbaye|il\xE9 ay\xE9|ile aye|world",
+            space: "\xF2fuuruf\xFA|ofurufu|\xE0gb\xE1\xE1l\xE1 ay\xE9|galaxy|universe",
+            rocket: "r\u1ECD\u0301k\u1EB9\u0301\u1EB9\u0300t\xEC|roketi|rocket|takeoff",
+            time: "\xE0k\xF3k\xF2|akoko|\xECgb\xE0|t\xEDt\xED l\xE1\xE9|titi lae|l\xE1\xE9l\xE1\xE9|laelae|aago|\xE0ago|forever",
+            drive: "m\u1ECD\u0301t\xF2|moto|\u1ECDk\u1ECD\u0300|wak\u1ECD\u0300|wako|wa moto|speed",
+            city: "\xECl\xFA|\xECl\xFA nl\xE1|ilu nla|lagos|\xE8k\xF3|eko|\xE0d\xFAgb\xF2|adugbo|street",
+            music: "orin|\xECl\xF9|music|beat|tune|fuji|apala",
+            sing: "k\u1ECDrin|korin|k\u1ECD orin|ko orin|olorin|ak\u1ECDrin|akorin|oh\xF9n",
+            boom: "b\xFA\xF9|boom|b\u1ECD\u0301\u01F9b\xF9|bombu|bugbamu|b\xF9gb\xE0m\xF9|gb\xE0m\xF9|gbamu",
+            champagne: "champagne|shampeni|\u1ECDt\xED|oti|\u1EB9mu|emu|cheers|\xECg\xF2|mu oti",
+            magic: "id\xE1n|idan|o\xF2g\xF9n|oogun|juju|magic|\xE8\xE8d\xEC",
+            beach: "et\xEDkun|etikun|\xE8b\xFAt\xE9|ebute|er\xE9k\xF9\u1E63\xF9|erekusu|beach|iyanr\xECn|iyanrin",
+            christmas: "k\xE9r\xE9s\xECmes\xEC|keresimesi|christmas|baba keresimesi|k\xE9r\xE9s\xEC|santa",
+            red: "pupa|pupa f\xF2\xF2|pupa foo|red",
+            blue: "b\xFAl\xFA\xF9|bulu|blue",
+            green: "ew\xE9|\xE0w\u1ECD\u0300 ew\xE9|awo ewe|green|ewe",
+            pink: "p\xEDnk\xEC|pinki|pink",
+            purple: "el\xE9se \xE0l\xF9k\xF2|aluko|\xE0l\xF9k\xF2|purple",
+            white: "funfun|funfun balau|white",
+            black: "d\xFAd\xFA|dudu|black|dudu biribiri",
+            silver: "f\xE0d\xE1k\xE0|fadaka|silver"
+          }
+        }
+      };
+    }
+  });
+
+  // src/lexicon.js
+  var LEX2;
+  var init_lexicon = __esm({
+    "src/lexicon.js"() {
+      init_lex_a();
+      init_lex_b();
+      init_lex_c();
+      LEX2 = { ...lex_a_default, ...lex_b_default, ...lex_c_default };
+    }
+  });
+
+  // src/pages.js
+  function pageEnter() {
+    if (!cfg.cascade || cfg.calm) return;
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv) return;
+    mv.classList.remove("m-enter");
+    setTimeout(() => {
+      mv.querySelectorAll(SEL.grid).forEach(
+        (g) => [...g.children].slice(0, 24).forEach((c2, i) => c2.style.setProperty("--m-i", i))
+      );
+      [...mv.querySelectorAll(SEL.rows)].slice(0, 26).forEach((r, i) => r.style.setProperty("--m-i", i));
+      void mv.offsetWidth;
+      mv.classList.add("m-enter");
+      clearTimeout(enterTimer);
+      enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
+    }, 70);
+  }
+  function domReport() {
+    try {
+      domReportInner();
+    } catch (e) {
+      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
+    }
+  }
+  function domReportInner() {
+    const tree = [];
+    (function walk(el2, depth) {
+      if (depth > 4 || tree.length > 160) return;
+      for (const c2 of el2.children) {
+        const r = c2.getBoundingClientRect();
+        tree.push(`${"  ".repeat(depth)}${c2.tagName.toLowerCase()}${c2.id ? "#" + c2.id : ""} .${String(c2.className?.baseVal ?? c2.className).slice(0, 120)} [${c2.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
+        walk(c2, depth + 1);
+      }
+    })(document.body, 0);
+    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(SEL.mainView), tree });
+    const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
+    const out = [];
+    const minW = mv.clientWidth * 0.4;
+    for (const el2 of mv.querySelectorAll("*")) {
+      if (out.length >= 80) break;
+      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
+      const r = el2.getBoundingClientRect();
+      if (r.top > innerHeight) continue;
+      const cs = getComputedStyle(el2);
+      const pseudo = ["::before", "::after"].map((p) => {
+        const c2 = getComputedStyle(el2, p);
+        return c2.content !== "none" && (c2.backgroundColor !== "rgba(0, 0, 0, 0)" || c2.backgroundImage !== "none") ? `${p} ${c2.backgroundColor} ${c2.backgroundImage.slice(0, 160)} op=${c2.opacity}` : "";
+      }).filter(Boolean);
+      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
+      out.push({
+        tag: el2.tagName,
+        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
+        testid: el2.dataset?.testid || "",
+        style: (el2.getAttribute("style") || "").slice(0, 300),
+        bg: cs.backgroundColor,
+        img: cs.backgroundImage.slice(0, 200),
+        opacity: cs.opacity,
+        tint: el2.classList.contains("m-tint"),
+        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
+        pseudo
+      });
+    }
+    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
+      main: getComputedStyle(root).getPropertyValue("--spice-main"),
+      a: getComputedStyle(root).getPropertyValue("--m-a"),
+      dynamic: cfg.dynamic,
+      scheme: cfg.scheme,
+      current,
+      colorDiag
+    } });
+  }
+  function markPage(loc) {
+    const path = (loc || S.Platform.History.location || {}).pathname || "";
+    root.dataset.mPage = path.split("/")[1] || "home";
+  }
+  var enterTimer;
+  var init_pages = __esm({
+    "src/pages.js"() {
+      init_selectors();
+      init_core();
+      init_config();
+      init_color();
+      init_bridge();
+      enterTimer = 0;
+      try {
+        S.Platform.History.listen((loc) => {
+          markPage(loc);
+          pageEnter();
+        });
+        markPage();
+      } catch {
+      }
+    }
+  });
+
+  // src/bridge.js
+  var bridge;
+  var init_bridge = __esm({
+    "src/bridge.js"() {
+      init_core();
+      init_lyrics();
+      init_audio();
+      init_i18n();
+      init_color();
+      init_player();
+      init_pages();
+      init_controls();
+      init_party();
+      init_config();
+      bridge = /* @__PURE__ */ (() => {
+        const ADDR = "ws://127.0.0.1:47321";
+        let ws = null, retry = 0, wanted2 = false;
+        function connect3() {
+          wanted2 = true;
+          if (ws && ws.readyState <= 1) return;
+          try {
+            ws = new WebSocket(ADDR);
+          } catch {
+            return schedule3();
+          }
+          const sock = ws;
+          ws.onopen = () => {
+            if (ws !== sock) return;
+            sendTrack();
+            watchVolume(true);
+          };
+          ws.onclose = () => {
+            if (ws !== sock) return;
+            ws = null;
+            watchVolume(false);
+            setTopics([]);
+            schedule3();
+          };
+          ws.onerror = () => {
+          };
+          ws.onmessage = (e) => {
+            if (ws !== sock) return;
+            let m;
+            try {
+              m = JSON.parse(e.data);
+            } catch {
+              return;
+            }
+            if (m.type === "cast") return void window.dispatchEvent(new CustomEvent("mirage:cast", { detail: m }));
+            if (m.type !== "cmd") return;
+            if (m.cmd === "toggle") S.Player.togglePlay();
+            else if (m.cmd === "next") S.Player.next();
+            else if (m.cmd === "prev") S.Player.back();
+            else if (m.cmd === "like") S.Player.toggleHeart?.();
+            else if (m.cmd === "immersive" || m.cmd === "party") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
+            else if (m.cmd === "hello") sendTrack();
+            else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
+            else if (m.cmd === "report") {
+              send2({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
+                api: typeof S.Player.getVolume?.(),
+                pb: typeof S.Platform?.PlaybackAPI?._volume,
+                read: readVolume()
+              } });
+              domReport();
+            }
+          };
+        }
+        function schedule3() {
+          clearTimeout(retry);
+          if (wanted2) retry = setTimeout(connect3, 5e3);
+        }
+        function close() {
+          wanted2 = false;
+          clearTimeout(retry);
+          setTopics([]);
+          watchVolume(false);
+          try {
+            ws?.close();
+          } catch {
+          }
+          ws = null;
+        }
+        let volTimer = 0, lastVol = null;
+        const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
+        function readVolume() {
+          let v = num(S.Player.getVolume?.());
+          if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
+          if (v === null) {
+            const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
+            const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
+            if (m) v = num(Number(m[1]) / 100);
+          }
+          return v;
+        }
+        function watchVolume(on) {
+          clearInterval(volTimer);
+          lastVol = null;
+          if (!on) return;
+          volTimer = setInterval(() => {
+            const v = readVolume();
+            if (v === null) return;
+            const muted = !!S.Player.getMute?.() || v === 0;
+            const key = Math.round(v * 100) + (muted ? "m" : "");
+            if (lastVol !== null && key !== lastVol && !isFading()) send2({ type: "volume", value: v, muted });
+            lastVol = key;
+          }, 250);
+        }
+        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
+        function setTopics(list) {
+          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
+          clearInterval(lyricTimer);
+          clearInterval(levelTimer);
+          clearInterval(partyTimer);
+          lastLine = "";
+          if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
+          if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
+          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
+        }
+        function pushParty() {
+          const L2 = party.live;
+          if (!L2 || performance.now() - L2.at > 400 || document.hidden) return;
+          send2({ type: "party", a: L2.a, k: L2.k, e: L2.e, d: L2.d, pal: L2.pal || palette(), edge: !!cfg.partyEdge });
+        }
+        async function pushLyric() {
+          const uri = currentItem()?.uri || "";
+          const lyr = await getLyrics(uri);
+          const lines = lyr?.synced ? lyr.lines : null;
+          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
+          const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
+          const key = uri + "|" + i;
+          if (key === lastLine) return;
+          lastLine = key;
+          send2({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
+        }
+        function pushLevel() {
+          if (!S.Player.isPlaying()) return;
+          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
+          if (b) send2({ type: "level", bands: b });
+        }
+        function sendTrack(changed) {
+          const item = currentItem();
+          if (!item || ws?.readyState !== 1) return;
+          const c2 = covers(item);
+          ws.send(
+            JSON.stringify({
+              type: "track",
+              changed: !!changed,
+              uri: item.uri,
+              title: titleOf(item),
+              artist: artistOf(item),
+              album: item.album?.name || item.metadata?.album_title || "",
+              cover: c2.big || c2.small,
+              colors: palette().map((x) => `rgb(${x.join(",")})`),
+              duration: S.Player.getDuration?.() || 0,
+              progress: S.Player.getProgress?.() || 0,
+              playing: !!S.Player.isPlaying(),
+              lang: LANG
+            })
+          );
+        }
+        const send2 = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
+        return { connect: connect3, close, sendTrack, send: send2, connected: () => ws?.readyState === 1 };
+      })();
     }
   });
 
@@ -13446,6 +18496,9 @@
       init_clock();
       init_instruments();
       init_live();
+      init_words();
+      init_lexicon();
+      init_bridge();
       ICON = {
         prev: '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg>',
         next: '<svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg>',
@@ -13489,11 +18542,13 @@
         let el2 = null, raf = 0, lastText = 0, coverToken = 0;
         let q = {};
         let lyr = null, lyrUri = "", active = -2;
+        const wordFx = createWordFx(LEX2, { onFire: (c2, w) => live.fx(c2, w) });
+        let wfxGeo = null, wfxAt = 0;
         let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
         const pit = new Float32Array(12);
         const vizRect = { n: 0, r: null };
         let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
-        function build() {
+        function build2() {
           el2 = document.createElement("div");
           el2.id = "mirage-immersive";
           el2.setAttribute("role", "dialog");
@@ -13614,7 +18669,7 @@
           q.recap.title = q.recap.ariaLabel = t("recapBtn");
           q.recap.onclick = () => partyRecapCard(recap);
           q.screen.title = q.screen.ariaLabel = t("toScreen");
-          q.screen.onclick = toScreen;
+          q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
           q.live.title = q.live.ariaLabel = t("liveBtn");
           q.live.onclick = toggleLiveCard;
           window.addEventListener("mirage:live", showExtras);
@@ -14103,6 +19158,20 @@
             item(`${v.title} \u2013 ${v.artist}`, sub, null, on ? null : () => choose(v.id), on);
           }
         }
+        function setNoLyr(on) {
+          if (!el2 || el2.classList.contains("is-nolyr") === on) return;
+          const parts = [q.wrap, q.meta, q.lyrics].filter(Boolean);
+          const glide = el2.dataset.mode === "party" && !cfg.calm && el2.isConnected;
+          const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
+          el2.classList.toggle("is-nolyr", on);
+          if (!glide) return;
+          parts.forEach((p, i) => {
+            const a = before[i], b = p.getBoundingClientRect();
+            const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2);
+            if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+            p.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }], { duration: 750, easing: "cubic-bezier(0.22, 1, 0.36, 1)", composite: "add" });
+          });
+        }
         async function loadLyrics() {
           const uri = currentItem()?.uri || "";
           if (uri === lyrUri && lyr !== void 0) return;
@@ -14134,12 +19203,18 @@
           void q.inner.offsetWidth;
           q.inner.classList.add("is-in");
           showSource(got);
+          setNoLyr(!got || !!got.instrumental || !got.lines?.length);
           if (!got || got.instrumental) {
             q.inner.append(emptyLyrics(!!got));
             return;
           }
           applyTiming(uri, got);
           voices(got);
+          if (cfg.partyWords && got.synced) {
+            wordFx.prepare(uri, got.lines, got.lang);
+            if (wordFx.needsTranslation() && cfg.onlineLyrics) translateLines(uri, got, "en").then((tr) => token === lyrToken && wordFx.addTranslated(uri, tr)).catch(() => {
+            });
+          } else wordFx.prepare(uri, [], "");
           const karaoke = cfg.karaoke && got.synced;
           el2.classList.toggle("is-karaoke", karaoke);
           q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -14446,6 +19521,10 @@
             lastBounce = "";
             hypeOn = !!activeEl && cfg.partyHype && el2.dataset.mode === "party" && hype.has(i);
             activeEl?.classList.toggle("is-hype", hypeOn);
+            if (i >= 0 && cfg.partyWords && el2.dataset.mode === "party" && wordFx.uri === lyrUri) {
+              const ln = lyr.lines[i], wt = words[i]?.length ? words[i].map((w) => ({ text: w.text, a: w.a, b: w.b })) : wordTimes(lyr.lines, i);
+              wordFx.onLine(i, wt, ln.t, lyr.lines[i + 1]?.t ?? ln.t + 6e3, activeEl);
+            }
             if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6e3);
             for (let k = 0; k < lines.length; k++) {
               const ln = lines[k];
@@ -14504,6 +19583,7 @@
           const V2 = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
           if (mode === "mix" && V2.style === "line") V2.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing) : null;
+          wfxGeo = px ? { cx, cy, R, dpr, px } : null;
           const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
           if (px) partyExtras(px, now, dt, R, dpr);
           curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt) : null;
@@ -14576,14 +19656,14 @@
             const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / (4 * 6e4 / (party.info.bpm || 120)), 0, 1);
             if (f < 1) pal = pal.map((c2, i) => c2.map((v, k2) => Math.round(blend.from[i][k2] + (v - blend.from[i][k2]) * f)));
           }
-          const rgba3 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
+          const rgba4 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
           const maxLen = Math.min(vw, vh) * 0.11 * V2.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V2.height)) : 1);
           const rot = V2.spin ? tt * (px ? 0.12 : 0.06) : 0;
           ctx.globalCompositeOperation = "lighter";
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
           const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-          glow.addColorStop(0, rgba3(pal[0], (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : 1)));
+          glow.addColorStop(0, rgba4(pal[0], (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : 1)));
           glow.addColorStop(1, "rgba(0,0,0,0)");
           ctx.fillStyle = glow;
           const gr = R + maxLen * 1.2;
@@ -14597,7 +19677,7 @@
           else if (V2.style === "bottom") {
             const bw = vw / N, base = vh - 8 * dpr;
             for (let gi = 0; gi < 3; gi++) {
-              ctx.fillStyle = rgba3(pal[gi], 0.85);
+              ctx.fillStyle = rgba4(pal[gi], 0.85);
               ctx.beginPath();
               for (let i = gi; i < N; i += 3) {
                 const h = 6 * dpr + vals[i] * vh * 0.32 * V2.height;
@@ -14610,7 +19690,7 @@
             for (const [w, col, al] of [[10, pal[1], V2.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
               if (!al) continue;
               ctx.lineWidth = w * dpr;
-              ctx.strokeStyle = rgba3(col, al);
+              ctx.strokeStyle = rgba4(col, al);
               for (const dir of [-1, 1]) {
                 ctx.beginPath();
                 for (let i = 0; i < N; i++) {
@@ -14624,7 +19704,7 @@
             for (let i = 0; i < N; i++) {
               const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
               const r2 = (1.5 + vals[i] * 4) * dpr;
-              ctx.fillStyle = rgba3(pal[i % 3], 0.35 + vals[i] * 0.6);
+              ctx.fillStyle = rgba4(pal[i % 3], 0.35 + vals[i] * 0.6);
               ctx.beginPath();
               ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r2, 0, Math.PI * 2);
               ctx.fill();
@@ -14641,7 +19721,7 @@
             for (const r2 of tunnel3d) {
               const z = (now - r2.at) / life, d = R * 1.05 + (far - R) * z * z;
               ctx.lineWidth = (1 + z * 5) * dpr;
-              ctx.strokeStyle = rgba3(pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
+              ctx.strokeStyle = rgba4(pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
               ctx.beginPath();
               for (let k2 = 0; k2 <= 48; k2++) {
                 const j = k2 % 48, a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j] * 0.28 * V2.height);
@@ -14661,15 +19741,15 @@
               else ctx.quadraticCurveTo(x0, y0, mx, my);
             }
             ctx.closePath();
-            ctx.fillStyle = rgba3(pal[0], 0.16);
+            ctx.fillStyle = rgba4(pal[0], 0.16);
             ctx.fill();
             if (V2.glow) {
               ctx.lineWidth = 10 * dpr;
-              ctx.strokeStyle = rgba3(pal[1], 0.14);
+              ctx.strokeStyle = rgba4(pal[1], 0.14);
               ctx.stroke();
             }
             ctx.lineWidth = 2.5 * dpr;
-            ctx.strokeStyle = rgba3(pal[2], 0.95);
+            ctx.strokeStyle = rgba4(pal[2], 0.95);
             ctx.stroke();
           } else {
             const groups = [[], [], []];
@@ -14690,10 +19770,10 @@
                   }
                 }
                 if (V2.style === "dots") {
-                  ctx.fillStyle = rgba3(pal[gi], al);
+                  ctx.fillStyle = rgba4(pal[gi], al);
                   ctx.fill();
                 } else {
-                  ctx.strokeStyle = rgba3(pal[gi], al);
+                  ctx.strokeStyle = rgba4(pal[gi], al);
                   ctx.stroke();
                 }
               });
@@ -14704,7 +19784,7 @@
             g.r += 300 * dt * dpr;
             g.a *= Math.exp(-dt * 2.8);
             ctx.lineWidth = (g.w || 2) * dpr;
-            ctx.strokeStyle = rgba3(pal[2], g.a);
+            ctx.strokeStyle = rgba4(pal[2], g.a);
             ctx.beginPath();
             ctx.arc(cx, cy, g.r, 0, Math.PI * 2);
             ctx.stroke();
@@ -14790,7 +19870,7 @@
             const x = (u + off) % 1 * 3 % 3, i = Math.floor(x);
             return mixC(pal[i], pal[(i + 1) % 3], x - i);
           };
-          const rgba3 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
+          const rgba4 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
           venueFrame({
             t: performance.now() / 1e3,
             dt,
@@ -14851,9 +19931,9 @@
               const a = side2 * (px.spin + Math.floor(k / 2) * (Math.PI * 2 / half)) - Math.PI / 2;
               const c2 = colAt(k / n);
               const g = ctx.createLinearGradient(cx, cy, cx + Math.cos(a) * far * 0.7, cy + Math.sin(a) * far * 0.7);
-              g.addColorStop(0, rgba3(c2, al));
-              g.addColorStop(0.45, rgba3(c2, al * 0.35));
-              g.addColorStop(1, rgba3(c2, 0));
+              g.addColorStop(0, rgba4(c2, al));
+              g.addColorStop(0.45, rgba4(c2, al * 0.35));
+              g.addColorStop(1, rgba4(c2, 0));
               ctx.fillStyle = g;
               ctx.beginPath();
               ctx.moveTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
@@ -14863,7 +19943,7 @@
               ctx.fill();
             }
           }
-          if (cfg.partyMelody && px.fx && px.level >= 2) drawMelody(ctx, cx, cy, R, dpr, dt, px, rgba3, colAt);
+          if (cfg.partyMelody && px.fx && px.level >= 2) drawMelody(ctx, cx, cy, R, dpr, dt, px, rgba4, colAt);
           const STEPS = 12;
           const w = P.thick * dpr * (0.75 + 0.4 * px.I) * (1 + px.drop * 0.3);
           for (const [lw, al] of [[w * 3.2, 0.1 + 0.1 * px.I], [w, 0.95]]) {
@@ -14875,7 +19955,7 @@
                 ctx.moveTo(cx + c2 * (R + 2 * dpr), cy + sn * (R + 2 * dpr));
                 ctx.lineTo(cx + c2 * e, cy + sn * e);
               }
-              ctx.strokeStyle = rgba3(colAt((k + 0.5) / STEPS), al);
+              ctx.strokeStyle = rgba4(colAt((k + 0.5) / STEPS), al);
               ctx.stroke();
             }
           }
@@ -14891,7 +19971,7 @@
             }
             ctx.closePath();
             ctx.lineWidth = 7 * dpr;
-            ctx.strokeStyle = rgba3(pal[1], 0.06 + 0.08 * px.I);
+            ctx.strokeStyle = rgba4(pal[1], 0.06 + 0.08 * px.I);
             ctx.stroke();
             ctx.lineWidth = 1.4 * dpr;
             ctx.strokeStyle = `rgba(255,255,255,${(0.18 + px.bright * 0.25 + px.drop * 0.3).toFixed(2)})`;
@@ -14905,7 +19985,7 @@
               ctx.rect(i * bw + bw * 0.2, base - h, bw * 0.6, h);
             }
             const g = ctx.createLinearGradient(0, 0, vw, 0);
-            pal.forEach((c2, i) => g.addColorStop(i / 2, rgba3(c2, 0.45)));
+            pal.forEach((c2, i) => g.addColorStop(i / 2, rgba4(c2, 0.45)));
             ctx.fillStyle = g;
             ctx.fill();
           }
@@ -14924,7 +20004,7 @@
           for (const p of sparks) {
             p.r += p.v * dt;
             p.v *= Math.exp(-dt * 1.6);
-            ctx.fillStyle = rgba3(p.c, p.life * 0.9);
+            ctx.fillStyle = rgba4(p.c, p.life * 0.9);
             ctx.beginPath();
             ctx.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
             ctx.fill();
@@ -14932,7 +20012,7 @@
           drawMotes(ctx, dt, dpr, pal);
         }
         const melody = { a: 0, trail: [] };
-        function drawMelody(ctx, cx, cy, R, dpr, dt, px, rgba3, colAt) {
+        function drawMelody(ctx, cx, cy, R, dpr, dt, px, rgba4, colAt) {
           const on = px.pitch >= 0 && px.tone > 0.35 && px.low < 0.6;
           const target = on ? px.pitch * 7 % 12 / 11 * 2 - 1 : melody.a * 0.98;
           melody.a += (target - melody.a) * (1 - Math.exp(-dt * 7));
@@ -14950,7 +20030,7 @@
               const x0 = cx + Math.cos(ang) * R, y0 = cy + Math.sin(ang) * R, x1 = cx + Math.cos(ang) * far, y1 = cy + Math.sin(ang) * far;
               for (const [lw, f] of [[9 * dpr, 0.18], [1.6 * dpr, 1]]) {
                 ctx.lineWidth = lw;
-                ctx.strokeStyle = rgba3(i ? c2 : c2.map((v) => (v + 255) / 2), (al * f).toFixed(3));
+                ctx.strokeStyle = rgba4(i ? c2 : c2.map((v) => (v + 255) / 2), (al * f).toFixed(3));
                 ctx.beginPath();
                 ctx.moveTo(x0, y0);
                 ctx.lineTo(x1, y1);
@@ -15249,6 +20329,26 @@
           if (VIZ.has(mode)) {
             try {
               drawViz(pos, now);
+              if (mode === "party" && cfg.partyWords && !cfg.calm && wfxGeo) {
+                const g = wfxGeo, dtw = Math.min(0.12, wfxAt ? (now - wfxAt) / 1e3 : 0.016);
+                wfxAt = now;
+                wordFx.draw(vctx, {
+                  pos,
+                  now,
+                  dt: dtw,
+                  w: vw,
+                  h: vh,
+                  dpr: g.dpr,
+                  cx: g.cx,
+                  cy: g.cy,
+                  R: g.R,
+                  pal: vividPal || palette(),
+                  level: cfg.partyLevel ?? 2,
+                  beat: g.px.accent || 0,
+                  beatIdx: g.px.beatIdx,
+                  playing: S.Player.isPlaying()
+                });
+              }
             } catch (e) {
               vizReset();
               if (!vizErr) console.warn("[Mirage] Visualizer:", vizErr = e);
@@ -15335,7 +20435,7 @@
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
-          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle" }[kind]);
+          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen" }[kind]);
           const body = q.sideBody;
           body.textContent = "";
           const item = (label, sub, img, onClick, on) => {
@@ -15367,6 +20467,7 @@
             el2.querySelector(".m-im-wishtoast")?.remove();
             return wishPanel(body);
           }
+          if (kind === "screens") return screensPanel(body, item);
           if (kind === "queue") {
             const list = upNext();
             if (!list.length) return item(t("queueEmpty"));
@@ -15477,7 +20578,7 @@
           if (!el2) return;
           const party2 = el2.dataset.mode === "party";
           q.recap.hidden = !(party2 && cfg.partyRecap && recap.songs.length >= 3);
-          q.screen.hidden = !(party2 && cfg.partyScreen && "getScreenDetails" in window);
+          q.screen.hidden = !(party2 && cfg.partyScreen);
           q.live.hidden = !(party2 && cfg.partyLive);
           if (q.live.hidden) el2.querySelector(".m-im-livecard")?.remove();
           drawWishes();
@@ -15613,6 +20714,87 @@
           card.onclick = () => card.remove();
           el2.append(card);
         }
+        let castList = null, castBox = null;
+        const sideHead = (body, text, sub) => {
+          const h = document.createElement("div");
+          h.className = "m-im-side-sec";
+          h.textContent = text;
+          if (sub) {
+            const s2 = document.createElement("small");
+            s2.textContent = sub;
+            h.append(s2);
+          }
+          body.append(h);
+        };
+        function sideBtn(parent, label, sub, onClick, on) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "m-im-side-item" + (on ? " is-on" : "");
+          const txt = document.createElement("span"), l = document.createElement("b");
+          l.textContent = label;
+          txt.append(l);
+          if (sub) {
+            const s2 = document.createElement("small");
+            s2.textContent = sub;
+            txt.append(s2);
+          }
+          b.append(txt);
+          if (onClick) b.onclick = onClick;
+          else b.disabled = true;
+          parent.append(b);
+          return b;
+        }
+        function screensPanel(body) {
+          sideHead(body, t("scrCast"), t("scrCastSub"));
+          castBox = document.createElement("div");
+          castBox.className = "m-im-side-group";
+          body.append(castBox);
+          if (!bridge.connected()) sideBtn(castBox, t("scrNoOverlay"), t("scrNoOverlaySub"));
+          else {
+            if (castList) drawCast();
+            else sideBtn(castBox, t("scrSearching"));
+            bridge.send({ type: "castScan" });
+          }
+          if (/Windows/i.test(navigator.userAgent)) {
+            sideHead(body, t("scrMira"), t("scrMiraSub"));
+            sideBtn(body, t("scrMiraBtn"), bridge.connected() ? t("scrMiraBtnSub") : t("scrNoOverlay"), bridge.connected() ? () => bridge.send({ type: "castMiracast" }) : null);
+          }
+          if ("getScreenDetails" in window) {
+            sideHead(body, t("scrPc"));
+            sideBtn(body, t("scrPcBtn"), t("scrPcSub"), toScreen);
+          }
+          sideHead(body, t("scrSound"), t("scrSoundSub"));
+          sideBtn(body, t("scrSoundCast"), cfg.partyCastSound ? t("scrSoundOn") : t("scrSoundOff"), () => {
+            cfg.partyCastSound = !cfg.partyCastSound;
+            save();
+            showSide("screens");
+          }, cfg.partyCastSound);
+        }
+        function drawCast() {
+          if (!castBox?.isConnected) return;
+          castBox.textContent = "";
+          const list = castList || [];
+          if (!list.length) return void sideBtn(castBox, t("scrNone"), t("scrNoneSub"));
+          for (const d of list) {
+            const sub = d.on ? t("scrCasting") : `${d.model}${d.model ? " \xB7 " : ""}${d.kind === "dlna" ? "DLNA" : "Google Cast"}`;
+            sideBtn(castBox, d.name, sub, () => d.on ? bridge.send({ type: "castStop", id: d.id }) : castTo(d), d.on);
+          }
+        }
+        function castTo(d) {
+          if (!(document.fullscreenElement || document.webkitFullscreenElement)) toggleFull();
+          S.showNotification?.(t("scrCastGo").replace("{n}", d.name), false, 3e3);
+          bridge.send({ type: "castStart", id: d.id, audio: !!cfg.partyCastSound });
+        }
+        window.addEventListener("mirage:cast", (e) => {
+          const m = e.detail || {};
+          if (Array.isArray(m.list)) castList = m.list;
+          if (m.result) {
+            const name = castList?.find((x) => x.id === m.id)?.name || "";
+            const msg = m.result.ok ? t("scrCastOk") : m.result.error === "nowindow" ? t("scrNoWindow") : t("scrCastFail");
+            S.showNotification?.(msg.replace("{n}", name), !m.result.ok, 5e3);
+          }
+          if (side === "screens") drawCast();
+        });
         async function toScreen() {
           try {
             const d = await window.getScreenDetails();
@@ -15644,7 +20826,7 @@
         }
         function open() {
           startTicker();
-          if (!el2) build();
+          if (!el2) build2();
           sizeCanvas();
           setMode(cfg.imMode, false);
           styleLyrics();
@@ -15731,7 +20913,7 @@
   });
 
   // src/dust.js
-  var SCALE, FADE, fps, TAU, tri, ease, rgba2, dust;
+  var SCALE, FADE, fps, TAU, tri, ease, rgba3, dust;
   var init_dust = __esm({
     "src/dust.js"() {
       init_core();
@@ -15745,7 +20927,7 @@
       TAU = Math.PI * 2;
       tri = (x) => 1 - Math.abs(2 * (x - Math.floor(x)) - 1);
       ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2;
-      rgba2 = (c2, a) => `rgba(${c2[0]},${c2[1]},${c2[2]},${a})`;
+      rgba3 = (c2, a) => `rgba(${c2[0]},${c2[1]},${c2[2]},${a})`;
       dust = (() => {
         const cv = stage.querySelector("canvas");
         const ctx = cv.getContext("2d", { alpha: false });
@@ -15759,9 +20941,9 @@
           s.width = s.height = 32;
           const x = s.getContext("2d");
           const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
-          g.addColorStop(0, rgba2(rgb, 0.9));
-          g.addColorStop(0.25, rgba2(rgb, 0.35));
-          g.addColorStop(1, rgba2(rgb, 0));
+          g.addColorStop(0, rgba3(rgb, 0.9));
+          g.addColorStop(0.25, rgba3(rgb, 0.35));
+          g.addColorStop(1, rgba3(rgb, 0));
           x.fillStyle = g;
           x.fillRect(0, 0, 32, 32);
           return s;
@@ -15831,8 +21013,8 @@
           ctx.translate(cx, cy);
           ctx.scale(rx, ry);
           const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
-          g.addColorStop(0, rgba2(c2, a));
-          g.addColorStop(0.7, rgba2(c2, 0));
+          g.addColorStop(0, rgba3(c2, a));
+          g.addColorStop(0.7, rgba3(c2, 0));
           ctx.fillStyle = g;
           ctx.fillRect(-1, -1, 2, 2);
           ctx.restore();
@@ -15898,7 +21080,7 @@
           const lvl = moving ? beat.level : 0;
           ctx.globalCompositeOperation = "source-over";
           ctx.globalAlpha = 1;
-          ctx.fillStyle = rgba2(base, 1);
+          ctx.fillStyle = rgba3(base, 1);
           ctx.fillRect(0, 0, W2, H2);
           const f = cur2 ? ease(Math.min(1, (now - fadeT0) / FADE)) : 0;
           const bright = cfg.bright / 100;
@@ -15909,7 +21091,7 @@
           }
           if (bright < 1) {
             ctx.globalAlpha = 1 - bright;
-            ctx.fillStyle = rgba2(base, 1);
+            ctx.fillStyle = rgba3(base, 1);
             ctx.fillRect(0, 0, W2, H2);
             ctx.globalAlpha = 1;
           } else if (bright > 1 && cur2) {
@@ -15985,266 +21167,6 @@
           wake();
         });
         return { start, stop: stop2, recolor, pause, wake };
-      })();
-    }
-  });
-
-  // src/pages.js
-  function pageEnter() {
-    if (!cfg.cascade || cfg.calm) return;
-    const mv = document.querySelector(SEL.mainView);
-    if (!mv) return;
-    mv.classList.remove("m-enter");
-    setTimeout(() => {
-      mv.querySelectorAll(SEL.grid).forEach(
-        (g) => [...g.children].slice(0, 24).forEach((c2, i) => c2.style.setProperty("--m-i", i))
-      );
-      [...mv.querySelectorAll(SEL.rows)].slice(0, 26).forEach((r, i) => r.style.setProperty("--m-i", i));
-      void mv.offsetWidth;
-      mv.classList.add("m-enter");
-      clearTimeout(enterTimer);
-      enterTimer = setTimeout(() => mv.classList.remove("m-enter"), 1800);
-    }, 70);
-  }
-  function domReport() {
-    try {
-      domReportInner();
-    } catch (e) {
-      bridge.send({ type: "debug", failed: String(e && e.stack), errors });
-    }
-  }
-  function domReportInner() {
-    const tree = [];
-    (function walk(el2, depth) {
-      if (depth > 4 || tree.length > 160) return;
-      for (const c2 of el2.children) {
-        const r = c2.getBoundingClientRect();
-        tree.push(`${"  ".repeat(depth)}${c2.tagName.toLowerCase()}${c2.id ? "#" + c2.id : ""} .${String(c2.className?.baseVal ?? c2.className).slice(0, 120)} [${c2.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
-        walk(c2, depth + 1);
-      }
-    })(document.body, 0);
-    bridge.send({ type: "debug", phase: "tree", hasMainView: !!document.querySelector(SEL.mainView), tree });
-    const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
-    const out = [];
-    const minW = mv.clientWidth * 0.4;
-    for (const el2 of mv.querySelectorAll("*")) {
-      if (out.length >= 80) break;
-      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
-      const r = el2.getBoundingClientRect();
-      if (r.top > innerHeight) continue;
-      const cs = getComputedStyle(el2);
-      const pseudo = ["::before", "::after"].map((p) => {
-        const c2 = getComputedStyle(el2, p);
-        return c2.content !== "none" && (c2.backgroundColor !== "rgba(0, 0, 0, 0)" || c2.backgroundImage !== "none") ? `${p} ${c2.backgroundColor} ${c2.backgroundImage.slice(0, 160)} op=${c2.opacity}` : "";
-      }).filter(Boolean);
-      if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
-      out.push({
-        tag: el2.tagName,
-        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
-        testid: el2.dataset?.testid || "",
-        style: (el2.getAttribute("style") || "").slice(0, 300),
-        bg: cs.backgroundColor,
-        img: cs.backgroundImage.slice(0, 200),
-        opacity: cs.opacity,
-        tint: el2.classList.contains("m-tint"),
-        rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
-        pseudo
-      });
-    }
-    bridge.send({ type: "debug", page: root.dataset.mPage, url: location.href, report: out, errors, vars: {
-      main: getComputedStyle(root).getPropertyValue("--spice-main"),
-      a: getComputedStyle(root).getPropertyValue("--m-a"),
-      dynamic: cfg.dynamic,
-      scheme: cfg.scheme,
-      current,
-      colorDiag
-    } });
-  }
-  function markPage(loc) {
-    const path = (loc || S.Platform.History.location || {}).pathname || "";
-    root.dataset.mPage = path.split("/")[1] || "home";
-  }
-  var enterTimer;
-  var init_pages = __esm({
-    "src/pages.js"() {
-      init_selectors();
-      init_core();
-      init_config();
-      init_color();
-      init_bridge();
-      enterTimer = 0;
-      try {
-        S.Platform.History.listen((loc) => {
-          markPage(loc);
-          pageEnter();
-        });
-        markPage();
-      } catch {
-      }
-    }
-  });
-
-  // src/bridge.js
-  var bridge;
-  var init_bridge = __esm({
-    "src/bridge.js"() {
-      init_core();
-      init_lyrics();
-      init_audio();
-      init_i18n();
-      init_color();
-      init_player();
-      init_pages();
-      init_controls();
-      init_party();
-      init_config();
-      bridge = /* @__PURE__ */ (() => {
-        const ADDR = "ws://127.0.0.1:47321";
-        let ws = null, retry = 0, wanted2 = false;
-        function connect3() {
-          wanted2 = true;
-          if (ws && ws.readyState <= 1) return;
-          try {
-            ws = new WebSocket(ADDR);
-          } catch {
-            return schedule3();
-          }
-          const sock = ws;
-          ws.onopen = () => {
-            if (ws !== sock) return;
-            sendTrack();
-            watchVolume(true);
-          };
-          ws.onclose = () => {
-            if (ws !== sock) return;
-            ws = null;
-            watchVolume(false);
-            setTopics([]);
-            schedule3();
-          };
-          ws.onerror = () => {
-          };
-          ws.onmessage = (e) => {
-            if (ws !== sock) return;
-            let m;
-            try {
-              m = JSON.parse(e.data);
-            } catch {
-              return;
-            }
-            if (m.type !== "cmd") return;
-            if (m.cmd === "toggle") S.Player.togglePlay();
-            else if (m.cmd === "next") S.Player.next();
-            else if (m.cmd === "prev") S.Player.back();
-            else if (m.cmd === "like") S.Player.toggleHeart?.();
-            else if (m.cmd === "immersive" || m.cmd === "party") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
-            else if (m.cmd === "hello") sendTrack();
-            else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
-            else if (m.cmd === "report") {
-              send2({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
-                api: typeof S.Player.getVolume?.(),
-                pb: typeof S.Platform?.PlaybackAPI?._volume,
-                read: readVolume()
-              } });
-              domReport();
-            }
-          };
-        }
-        function schedule3() {
-          clearTimeout(retry);
-          if (wanted2) retry = setTimeout(connect3, 5e3);
-        }
-        function close() {
-          wanted2 = false;
-          clearTimeout(retry);
-          setTopics([]);
-          watchVolume(false);
-          try {
-            ws?.close();
-          } catch {
-          }
-          ws = null;
-        }
-        let volTimer = 0, lastVol = null;
-        const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
-        function readVolume() {
-          let v = num(S.Player.getVolume?.());
-          if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
-          if (v === null) {
-            const bar = document.querySelector('[data-testid="volume-bar"] [style*="--progress-bar-transform"]');
-            const m = bar && /(-?[\d.]+)%/.exec(bar.style.getPropertyValue("--progress-bar-transform"));
-            if (m) v = num(Number(m[1]) / 100);
-          }
-          return v;
-        }
-        function watchVolume(on) {
-          clearInterval(volTimer);
-          lastVol = null;
-          if (!on) return;
-          volTimer = setInterval(() => {
-            const v = readVolume();
-            if (v === null) return;
-            const muted = !!S.Player.getMute?.() || v === 0;
-            const key = Math.round(v * 100) + (muted ? "m" : "");
-            if (lastVol !== null && key !== lastVol && !isFading()) send2({ type: "volume", value: v, muted });
-            lastVol = key;
-          }, 250);
-        }
-        let topics = /* @__PURE__ */ new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
-        function setTopics(list) {
-          topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
-          clearInterval(lyricTimer);
-          clearInterval(levelTimer);
-          clearInterval(partyTimer);
-          lastLine = "";
-          if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
-          if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
-          if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
-        }
-        function pushParty() {
-          const L2 = party.live;
-          if (!L2 || performance.now() - L2.at > 400 || document.hidden) return;
-          send2({ type: "party", a: L2.a, k: L2.k, e: L2.e, d: L2.d, pal: L2.pal || palette(), edge: !!cfg.partyEdge });
-        }
-        async function pushLyric() {
-          const uri = currentItem()?.uri || "";
-          const lyr = await getLyrics(uri);
-          const lines = lyr?.synced ? lyr.lines : null;
-          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
-          const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
-          const key = uri + "|" + i;
-          if (key === lastLine) return;
-          lastLine = key;
-          send2({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
-        }
-        function pushLevel() {
-          if (!S.Player.isPlaying()) return;
-          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
-          if (b) send2({ type: "level", bands: b });
-        }
-        function sendTrack(changed) {
-          const item = currentItem();
-          if (!item || ws?.readyState !== 1) return;
-          const c2 = covers(item);
-          ws.send(
-            JSON.stringify({
-              type: "track",
-              changed: !!changed,
-              uri: item.uri,
-              title: titleOf(item),
-              artist: artistOf(item),
-              album: item.album?.name || item.metadata?.album_title || "",
-              cover: c2.big || c2.small,
-              colors: palette().map((x) => `rgb(${x.join(",")})`),
-              duration: S.Player.getDuration?.() || 0,
-              progress: S.Player.getProgress?.() || 0,
-              playing: !!S.Player.isPlaying(),
-              lang: LANG
-            })
-          );
-        }
-        const send2 = (obj) => ws?.readyState === 1 && ws.send(JSON.stringify(obj));
-        return { connect: connect3, close, sendTrack, send: send2, connected: () => ws?.readyState === 1 };
       })();
     }
   });
@@ -17081,6 +22003,7 @@
         toggle("partyDJ", () => {
         }),
         toggle("partyHype", () => immersive.reloadLyrics()),
+        toggle("partyWords", () => immersive.reloadLyrics()),
         toggle("partyShatter", () => {
         }),
         head(t("ps_crowd")),
@@ -17409,8 +22332,8 @@
     if (!c2 || c2 === "transparent") return 0;
     const slash = /\/\s*([\d.]+)(%?)\s*\)$/.exec(c2);
     if (slash) return Number(slash[1]) / (slash[2] ? 100 : 1);
-    const rgba3 = /^rgba\(([^)]+)\)$/.exec(c2);
-    if (rgba3) return Number(rgba3[1].split(",")[3]);
+    const rgba4 = /^rgba\(([^)]+)\)$/.exec(c2);
+    if (rgba4) return Number(rgba4[1].split(",")[3]);
     return 1;
   }
   function tame(el2, minW) {

@@ -81,6 +81,8 @@ const DEFAULTS = {
   // Party-Erweiterungen, alle einzeln abschaltbar
   partyBlend: true,
   partyHype: true,
+  // Wortbilder: gesungene Begriffe bekommen ein passendes Bild (Flammen bei „fire“, Regen bei „Regen“ …)
+  partyWords: true,
   partyDepth: false,
   partyShatter: true,
   partyCamera: false,
@@ -90,6 +92,8 @@ const DEFAULTS = {
   partyCrowd: true,
   partyJamLight: true,
   partyScreen: true,
+  // „Party auf anderem Bildschirm“: Ton per Spotify Connect mit auf den Fernseher schicken
+  partyCastSound: false,
   partyEdge: true,
   partyRecap: true,
   // Location: auto (nach Genre), club, festival, stadium, home

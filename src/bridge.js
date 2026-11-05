@@ -40,6 +40,8 @@ const bridge = (() => {
       if (ws !== sock) return;
       let m;
       try { m = JSON.parse(e.data); } catch { return; }
+      // Antworten der Fernseher-Suche (Chromecast / Google TV) an den Party-Modus weitergeben
+      if (m.type === "cast") return void window.dispatchEvent(new CustomEvent("mirage:cast", { detail: m }));
       if (m.type !== "cmd") return;
       if (m.cmd === "toggle") S.Player.togglePlay();
       else if (m.cmd === "next") S.Player.next();

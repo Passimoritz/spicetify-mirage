@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#06050b">
 <meta name="robots" content="noindex">
 <title>Mirage Live</title>
+<script src="fx.js" defer></script>
 <style>
   /* Mirage Live: das Handy als Lichtquelle im Raum. Das Licht malt ein Canvas (drei treibende Lichtquellen
      in den Songfarben, Ringe im Takt, Blitz beim Drop); darüber nur schlanke Glas-Elemente. */
@@ -107,6 +108,9 @@
   .sheet .sub { margin-top: 12px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
   .sheet .close { width: 100%; margin-top: 14px; }
   @media (prefers-reduced-motion: reduce) { .orb, body.on .dot { animation: none; } }
+  /* gesungenes Wort mit Wortbild: leuchtet kurz in dessen Farbe */
+  .lyr .fxw { animation: fxw 2.6s ease-out both; }
+  @keyframes fxw { 18% { text-shadow: 0 0 16px rgba(var(--fxc), 0.95), 0 0 46px rgba(var(--fxc), 0.6); } 100% { text-shadow: 0 0 12px rgba(var(--fxc), 0.25); } }
 </style>
 </head>
 <body>
@@ -276,6 +280,11 @@ async function receive(m) {
   if ($("ly").textContent !== (s.ly || "")) $("ly").textContent = s.ly || "";
   if ($("lyn").textContent !== (s.lyn || "")) $("lyn").textContent = s.lyn || "";
   $("lyr").classList.toggle("has", !!s.ly);
+  // Wortbild vom PC: einmal abspielen, das Wort in der Zeile aufleuchten lassen
+  if (s.fx && s.fx.s !== lastFxAt && Date.now() - skew - s.fx.s < 3500) {
+    lastFxAt = s.fx.s;
+    wordFx(s.fx);
+  }
   // Songwünsche: nur wenn der Gastgeber sie erlaubt
   $("bWish").hidden = !Array.isArray(s.w);
   if (Array.isArray(s.w)) drawWishes(s.w);
@@ -649,6 +658,15 @@ function frame(now) {
     ctx.arc(cx, cy, g.r, 0, Math.PI * 2);
     ctx.stroke();
   }
+  // Wortbilder (fx.js): dieselben Bilder wie im Party-Modus
+  if (wfx) {
+    if (!covR || ++covN % 30 === 0) {
+      const r = $("cov").hidden ? null : $("cov").getBoundingClientRect();
+      covR = r && r.width ? { cx: (r.left + r.width / 2) * dpr, cy: (r.top + r.height / 2) * dpr, R: (r.width / 2) * dpr } : { cx: W / 2, cy: H * 0.45, R: Math.min(W, H) * 0.12 };
+    }
+    fxSt = { now, pos: 0, dt, w: W, h: H, dpr, cx: covR.cx, cy: covR.cy, R: covR.R, pal, level: 2, beat: show.kick, beatIdx: show.beat, playing: true };
+    wfx.draw(ctx, fxSt);
+  }
   // Blitz beim Drop
   if (show.flash > 0.01) {
     ctx.globalCompositeOperation = "source-over";
@@ -662,6 +680,25 @@ function frame(now) {
   document.body.classList.toggle("loud", live && cur.e > 0.6);
 }
 requestAnimationFrame(frame);
+
+/* ---- Wortbilder (wie im Party-Modus, der PC schickt mit, welches Wort gerade ein Bild hat) */
+let wfx = null, fxSt = null, covR = null, covN = 0, lastFxAt = 0;
+addEventListener("load", () => {
+  try { wfx = window.MirageFx?.create() || null; } catch {}
+});
+addEventListener("resize", () => (covR = null));
+function wordFx(f) {
+  if (!wfx || !fxSt) return;
+  wfx.fire(f.c, fxSt);
+  const w = String(f.w || ""), line = $("ly").textContent, at = w ? line.toLocaleLowerCase().indexOf(w.toLocaleLowerCase()) : -1;
+  if (at < 0) return;
+  const col = window.MirageFx.glowOf(f.c) || pal[0];
+  const sp = document.createElement("span");
+  sp.className = "fxw";
+  sp.style.setProperty("--fxc", col.join(","));
+  sp.textContent = line.slice(at, at + w.length);
+  $("ly").replaceChildren(line.slice(0, at), sp, line.slice(at + w.length));
+}
 
 // Antippen: Vollbild und Display anlassen
 let lock = null;
