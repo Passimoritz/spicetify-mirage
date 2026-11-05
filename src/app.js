@@ -11,6 +11,7 @@ import "./tints.js";
 import "./keys.js";
 import "./readability.js";
 import "./selectors.js";
+import "./library.js";
 
 (function addMenu() {
   if (!S.Menu?.Item) return setTimeout(addMenu, 500);

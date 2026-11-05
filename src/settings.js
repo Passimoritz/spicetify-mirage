@@ -15,6 +15,7 @@ import { nowPlayingCard, weekCard, monthCard } from "./share.js";
 import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
 import { FAMILIES } from "./party.js";
 import { live } from "./live.js";
+import { bpm } from "./library.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -510,6 +511,8 @@ function render(box) {
     button(t("overlayDownload"), () => window.open(`https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/${file}`, "_blank"), "is-primary"),
     button(t("overlayAllDownloads"), () => window.open("https://github.com/Passimoritz/spicetify-mirage/releases/latest", "_blank"))
   );
+  // ---- Bibliothek: Tempo/Tonart in Titellisten · Dubletten-Suche sitzt im Rechtsklick-Menü der Playlists
+  kids.push(group(t("g_library"), false, toggle("libBpm", () => bpm.refresh()), el("small", "m-note", t("libDupNote"))));
   kids.push(group(t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
 
   // ---- Teilen, Sichern, Hilfe

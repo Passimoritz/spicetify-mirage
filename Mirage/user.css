@@ -4093,3 +4093,39 @@ html.mirage-calm #mirage-immersive .m-im-empty {
   background-clip: text;
   color: transparent;
 }
+
+/* ==========================================================================
+   BIBLIOTHEK: Tempo/Tonart-Pille und Dubletten-Fenster (library.js)
+   ========================================================================== */
+/* kleine Pille vor Herz und Dauer – flex: none, damit sie in schmalen Spalten nicht zerquetscht wird */
+.m-bpm {
+  flex: none;
+  margin-inline-end: 12px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--m-line-strong, rgba(255, 255, 255, 0.14));
+  background: rgba(var(--m-a-rgb, 255, 255, 255), 0.1);
+  color: var(--spice-subtext);
+  font: 600 11px/1.5 var(--m-font, inherit);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: default;
+}
+[role="row"]:hover .m-bpm {
+  color: var(--spice-text);
+}
+.mirage-settings.m-dups {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.mirage-settings .m-dup small {
+  display: block;
+}
+.mirage-settings .m-dups-head {
+  margin-top: 8px;
+  font-weight: 600;
+}
+.mirage-settings .m-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
