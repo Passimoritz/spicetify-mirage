@@ -268,7 +268,7 @@ const guest = (id, n) => {
   guests.set(id, g);
   return g;
 };
-const lastReact = new Map();
+const lastReact = new Map(), lastGame = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
 async function inbound(m) {
   if (!ses || m.length < 29) return;
@@ -280,6 +280,13 @@ async function inbound(m) {
   }
   const id = clean(msg?.id, 24);
   if (!/^[\w-]{6,24}$/.test(id) || Math.abs(Date.now() - Number(msg.s)) > 600e3 || msg.on != null) return;
+  // Spiele: Antworten und Tipps der Handys (höchstens 10 je Sekunde und Handy)
+  if (msg.k === "gm") {
+    if (Date.now() - (lastGame.get(id) || 0) < 100) return;
+    lastGame.set(id, Date.now());
+    window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
+    return;
+  }
   // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl
   if (msg.k === "react") {
     if (!REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
@@ -372,7 +379,10 @@ const coverUrl = (item) => {
 };
 
 // jedes Bild im Party-Modus: höchstens 8 Nachrichten pro Sekunde; die Handyseite rechnet den Takt selbst weiter
-let lastFx = null, poll = null;
+let lastFx = null, poll = null, game = null, masked = "";
+// Spielstand für die Handys; „mask“ verdeckt, was die Lösung verraten würde (Titel, Cover, Liedtext)
+const setGame = (g) => (game = g);
+const mask = (m) => (masked = m || "");
 // Abstimmung: die nächsten Songs zur Wahl, 45 s lang; danach entscheidet die Mehrheit
 function startPoll(options) {
   poll = { id: Math.random().toString(36).slice(2, 10), o: options.slice(0, 3).map((x) => ({ t: x.t, a: x.a, img: x.img, uri: x.uri })), v: options.slice(0, 3).map(() => 0), end: Date.now() + 45000, by: new Set() };
@@ -403,10 +413,11 @@ function feed(px, pal, bpm, lyric) {
   send({
     v: 1, on: 1, s: Date.now(), bpm: Math.round(bpm || 120), bi: px.beatIdx, ph: +(px.phase || 0).toFixed(3),
     e: +px.energy.toFixed(2), k: +px.kickEnv.toFixed(2), d: +px.drop.toFixed(2), b: +px.build.toFixed(2),
-    pal: (pal || []).slice(0, 3).map((c) => c.map((v) => Math.round(v))), t: titleOf(item) || "", a: artistOf(item) || "",
-    img: coverUrl(item),
+    pal: (pal || []).slice(0, 3).map((c) => c.map((v) => Math.round(v))), t: masked === "all" ? "?" : titleOf(item) || "", a: masked === "all" ? "" : artistOf(item) || "",
+    img: masked === "all" ? "" : coverUrl(item),
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
-    ly: lyric?.ly || "", lyn: lyric?.lyn || "",
+    ly: masked ? "" : lyric?.ly || "", lyn: masked ? "" : lyric?.lyn || "",
+    g: game,
     w: cfg.partyWishes ? wishList() : null,
     // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
     poll: poll && Date.now() < poll.end + 8000 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
@@ -436,4 +447,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };

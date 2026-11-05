@@ -10,6 +10,17 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.21.0] – 2026-11-05
+
+### Added
+
+- **Five party games** – start them with the new game button in party mode. Guests play on their phones through the live link, the big screen shows the game and the scores:
+  - **Who's singing?** The next song starts hidden (title, cover and lyrics are covered) – who names the artist first? Five rounds, fast answers score more.
+  - **Lyric gaps** An upcoming line appears with a missing word; it's solved the moment it's sung. Needs a song with time-synced lyrics.
+  - **Music stop** The music stops suddenly: tap too early or too slowly and you're out, until one is left.
+  - **Dance battle** Two teams shake their phones for 30 seconds (tapping counts too, if a phone has no motion sensor).
+  - **Wheel of fortune** Spins on the big screen and sets something off – confetti, hands up, next song, a new venue, a guest's wish … No phones needed.
+
 ## [1.20.0] – 2026-11-05
 
 ### Added

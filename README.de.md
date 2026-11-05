@@ -141,6 +141,7 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 - **Lautschrift** unter koreanischem, japanischem und chinesischem Liedtext, **Duett-Farben** für Zeilen mit Sängernamen und kleiner gesetzter Hintergrundgesang in Klammern.
 - **Timing selbst korrigieren** – <kbd>E</kbd> drücken, dann Enter, sobald die markierte Zeile beginnt; gespeichert je Song.
 - **Party-Momente** – Hände hoch im Refrain, Blitzlicht-Gewitter, Bodennebel, Drohnen-Lichtshow, Konfetti auf Taste C, Pausen-Szene mit QR-Code und eine Abstimmung der Gäste über die nächsten Songs.
+- **Party-Spiele** – Wer singt hier?, Liedtext-Lücken, Musik-Stopp, Tanz-Battle und ein Glücksrad; die Gäste spielen am Handy, das große Bild zeigt den Punktestand.
 - **DJ-Feld** – Tempo und Tonart des laufenden Songs, die am besten passenden Songs aus der Warteschlange und *Energie halten*, damit die Stimmung nicht abreißt.
 - **Wortbilder** – im Party-Modus bekommen gesungene Wörter ein dezentes Bild: Funken bei „Feuer“, Regen, Herzen, Sterne, Schnee, Geld, eine Krone … rund 65 Begriffe in 45 Sprachen (knapp 20.000 Wortformen). Höchstens eins pro Zeile, das Publikum bleibt immer frei.
 - **Canvas-Videos** – hat ein Song eins, spielt der Film-Knopf oben es im Cover ab (und gedämpft hinter dem Liedtext) – je Ansicht einschaltbar, anfangs aus. Bleibt der Knopf bei jedem Song blass, ist Canvas in deinem Spotify-Konto aus: in der Spotify-Handy-App *Canvas* einschalten (Einstellungen → Wiedergabe).

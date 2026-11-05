@@ -22,6 +22,7 @@ import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
+import { games } from "./games.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -44,6 +45,7 @@ const ICON = {
   wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
   confetti: '<svg viewBox="0 0 24 24"><path d="M4 20l5-14 9 9zm4.6-9.5L6.8 16.6l5.6-2.2zM14 3h2v3h-2zm5 3.6 1.4 1.4-2.1 2.1-1.4-1.4zM18 13h3v2h-3zM10.5 4.4l1.4-1 1.2 1.6-1.4 1z"/></svg>',
   dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
+  game: '<svg viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.7 3.6a2.5 2.5 0 0 1-4.3 1.2L14.6 16H9.4l-2.3 1.8a2.5 2.5 0 0 1-4.3-1.2L2.1 13A5 5 0 0 1 7 7zm0 2a3 3 0 0 0-3 3.6l.8 3.6.5.3 2.5-2.5h7.4l2.5 2.5.5-.3.8-3.6A3 3 0 0 0 17 9zm1 1h2v2h2v2h-2v2H8v-2H6v-2h2zm8 0a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4zm-2 3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
   poll: '<svg viewBox="0 0 24 24"><path d="M4 13h3v7H4zm6.5-9h3v16h-3zM17 9h3v11h-3z"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
   heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
@@ -103,6 +105,7 @@ const immersive = (() => {
           <button type="button" class="m-im-sm m-im-conf" hidden>${ICON.confetti}</button>
           <button type="button" class="m-im-sm m-im-pollbtn" hidden>${ICON.poll}</button>
           <button type="button" class="m-im-sm m-im-djbtn" hidden>${ICON.dj}</button>
+          <button type="button" class="m-im-sm m-im-gamebtn" hidden>${ICON.game}</button>
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
@@ -198,6 +201,7 @@ const immersive = (() => {
       conf: el.querySelector(".m-im-conf"),
       pollbtn: el.querySelector(".m-im-pollbtn"),
       djbtn: el.querySelector(".m-im-djbtn"),
+      gamebtn: el.querySelector(".m-im-gamebtn"),
       screen: el.querySelector(".m-im-screen"),
       live: el.querySelector(".m-im-live"),
       fs: el.querySelector(".m-im-fs"),
@@ -217,6 +221,18 @@ const immersive = (() => {
     q.pollbtn.onclick = () => showSide(side === "poll" ? null : "poll");
     q.djbtn.title = q.djbtn.ariaLabel = t("djTitle");
     q.djbtn.onclick = () => showSide(side === "dj" ? null : "dj");
+    q.gamebtn.title = q.gamebtn.ariaLabel = t("gTitle");
+    q.gamebtn.onclick = () => showSide(side === "games" ? null : "games");
+    games.init({
+      root: () => el,
+      lines: () => (lyr?.synced ? lyr.lines : null),
+      pos: () => songPos(performance.now()),
+      confetti,
+      handsUp: () => (moments.handsUntil = performance.now() + (8 * 60000) / (party.info.bpm || 120)),
+      flashStorm: () => (moments.stormUntil = performance.now() + 2600),
+      venue: () => (moments.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)]),
+      changed: () => side === "games" && showSide("games"),
+    });
     q.screen.title = q.screen.ariaLabel = t("toScreen");
     q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
     q.live.title = q.live.ariaLabel = t("liveBtn");
@@ -1650,7 +1666,7 @@ const immersive = (() => {
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !S.Player.isPlaying(),
-      venue: cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : "",
+      venue: moments.venue || (cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : ""),
       fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
       drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
       song: currentItem()?.uri || "",
@@ -2229,7 +2245,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2263,6 +2279,7 @@ const immersive = (() => {
     }
     if (kind === "screens") return screensPanel(body, item);
     if (kind === "dj") return djPanel(body);
+    if (kind === "games") return gamesPanel(body);
     if (kind === "poll") return pollPanel(body);
     if (kind === "recap") return recapPanel(body);
     if (kind === "queue") {
@@ -2348,6 +2365,7 @@ const immersive = (() => {
     q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
     moments.stormDone = false;
+    moments.venue = "";
     // „Energie halten“: passt der nächste Song gar nicht, zieht Mirage einen passenderen vor
     if (item?.uri && el.dataset.mode === "party") dj.onSong(item.uri).then((m) => m && S.showNotification?.(t("djMoved").replace("{t}", m.title), false, 4000));
     updateKicker();
@@ -2380,6 +2398,8 @@ const immersive = (() => {
     q.conf.hidden = !party || !!cfg.calm;
     q.pollbtn.hidden = !(party && cfg.partyLive);
     q.djbtn.hidden = !party;
+    q.gamebtn.hidden = !party;
+    if (!party) games.stop();
     q.screen.hidden = !(party && cfg.partyScreen);
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
@@ -2571,6 +2591,37 @@ const immersive = (() => {
       q.pause.append(qr, hint);
     }
     q.pause.classList.add("is-on");
+  }
+
+  /* ---- Spiele: auswählen, starten, beenden. Alle außer dem Glücksrad spielen die Gäste auf ihren Handys. */
+  function gamesPanel(body) {
+    const cur = games.active();
+    if (cur) {
+      if (cur === "wheel") sideBtn(body, t("gSpin"), "", () => games.spin());
+      sideBtn(body, t("gEndNow"), "", () => {
+        games.stop();
+        showSide("games");
+      });
+      return;
+    }
+    const note = document.createElement("p");
+    note.className = "m-im-side-note";
+    note.textContent = t("gHint");
+    body.append(note);
+    for (const k of ["quiz", "gap", "stop", "battle", "wheel"]) {
+      sideBtn(body, t({ quiz: "gQuiz", gap: "gGap", stop: "gStop", battle: "gBattle", wheel: "gWheel" }[k]), t({ quiz: "gQuizHint", gap: "gGapHint", stop: "gStopHint", battle: "gBattleHint", wheel: "gWheelHint" }[k]), async () => {
+        // Handy-Spiele brauchen den Live-Link
+        if (k !== "wheel" && !cfg.partyLive) {
+          cfg.partyLive = true;
+          save();
+          showExtras();
+          await live.prepare();
+        }
+        games.start(k);
+        // die Leiste würde die Spielkarte verdecken; beenden geht über denselben Knopf oben
+        showSide(null);
+      });
+    }
   }
 
   /* ---- DJ: Tempo und Tonart des laufenden Songs, dazu die am besten passenden aus der Warteschlange */

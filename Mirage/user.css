@@ -3629,6 +3629,128 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   background: transparent;
   box-shadow: none;
 }
+/* Spiele: Karte oben in der Mitte (das Publikum bleibt frei) */
+#mirage-immersive .m-im-game {
+  position: absolute;
+  top: 9vh;
+  left: 50%;
+  z-index: 33;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(760px, 90vw);
+  padding: 18px 24px;
+  border-radius: 24px;
+  color: #fff;
+  text-align: center;
+  background: rgb(14 12 22 / 0.78);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(20px) saturate(1.4);
+  translate: -50% 0;
+}
+#mirage-immersive .m-g-head {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font: 700 13px var(--m-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+#mirage-immersive .m-g-time {
+  color: rgb(var(--m-c-rgb));
+}
+#mirage-immersive .m-g-big {
+  font: 800 clamp(26px, 3.6vw, 56px) / 1.15 var(--m-font);
+}
+#mirage-immersive .m-g-big.is-hot {
+  color: #ff5a6e;
+}
+#mirage-immersive .m-g-line {
+  font: 700 clamp(20px, 2.6vw, 38px) / 1.25 var(--m-font);
+}
+#mirage-immersive .m-g-sub {
+  font-size: 15px;
+  opacity: 0.8;
+}
+#mirage-immersive .m-g-opts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+#mirage-immersive .m-g-opt {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font: 600 16px var(--m-font);
+  background: rgb(255 255 255 / 0.08);
+}
+#mirage-immersive .m-g-opt.is-right {
+  color: #0b0a12;
+  background: rgb(var(--m-c-rgb));
+}
+#mirage-immersive .m-g-board {
+  display: grid;
+  gap: 3px;
+  font-size: 15px;
+}
+#mirage-immersive .m-g-battle {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  height: 44px;
+}
+#mirage-immersive .m-g-team {
+  display: grid;
+  place-items: center;
+  flex: 1 1 0;
+  border-radius: 12px;
+  font: 700 16px var(--m-font);
+  background: rgba(var(--m-a-rgb), 0.8);
+  transition: flex-grow 0.4s var(--m-ease);
+}
+#mirage-immersive .m-g-team.is-b {
+  background: rgba(var(--m-c-rgb), 0.55);
+}
+/* Glücksrad */
+#mirage-immersive .m-g-pin {
+  width: 0;
+  height: 0;
+  margin-bottom: -18px;
+  z-index: 1;
+  border: 12px solid transparent;
+  border-top: 20px solid #fff;
+}
+#mirage-immersive .m-g-wheel {
+  position: relative;
+  width: min(42vh, 380px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(rgba(var(--m-a-rgb), 0.9) 0 12.5%, rgba(var(--m-c-rgb), 0.7) 0 25%, rgba(var(--m-a-rgb), 0.55) 0 37.5%, rgba(var(--m-c-rgb), 0.45) 0 50%, rgba(var(--m-a-rgb), 0.9) 0 62.5%, rgba(var(--m-c-rgb), 0.7) 0 75%, rgba(var(--m-a-rgb), 0.55) 0 87.5%, rgba(var(--m-c-rgb), 0.45) 0 100%);
+  cursor: pointer;
+  transition: transform 5s cubic-bezier(0.12, 0.8, 0.12, 1);
+}
+#mirage-immersive .m-g-seg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 12px / 1.1 var(--m-font);
+  padding: 0 34%;
+  text-align: center;
+  color: #fff;
+}
+/* verdeckte Runde: nichts darf die Lösung verraten */
+#mirage-immersive.is-quiz :is(.m-im-title, .m-im-artist, .m-im-kicker, .m-im-lyrics) {
+  opacity: 0;
+}
+#mirage-immersive.is-quiz .m-im-cover {
+  filter: blur(36px);
+}
+#mirage-immersive.is-gap .m-im-lyrics {
+  opacity: 0;
+}
 /* Pausen-Szene: ruhig, mittig, mit QR-Code für die Handys */
 #mirage-immersive .m-im-pause {
   position: absolute;
