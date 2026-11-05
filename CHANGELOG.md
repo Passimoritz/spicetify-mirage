@@ -10,6 +10,22 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.20.0] – 2026-11-05
+
+### Added
+
+- **Four new visualizer styles:** Galaxy (spiral arms of light around the cover), Mountains (three ridges made of the spectrum), Oscilloscope (a ring of light swinging in overtones) and Shattered cover (the cover breaks into tiles on the beat and pieces itself back together).
+- **DJ panel in party mode:** shows tempo and key (Camelot) of the current song and which songs in your queue fit best next – by key, tempo and energy – with one click to play them next.
+- **Keep the energy** (off by default): if the next song would break the mood, a better fitting one from the queue moves up, and it's skipped at its old place so nothing plays twice.
+
+### Removed
+
+- The drop countdown and the announcements from 1.19.0 – they added more noise than fun.
+
+### Fixed
+
+- Phone lights, lighters and camera flashes from the back rows shone through the people in front; they're now hidden behind them.
+
 ## [1.19.0] – 2026-11-05
 
 ### Added

@@ -3621,36 +3621,13 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   padding: 6px 10px 14px;
   overflow-y: auto;
 }
-/* Drop-Countdown: große Zahl in der Mitte, springt auf jedem Schlag neu herein */
-#mirage-immersive .m-im-count {
-  position: absolute;
-  inset: 0;
-  z-index: 31;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  font: 800 min(34vh, 28vw) / 1 var(--m-font);
-  color: #fff;
-  text-shadow:
-    0 0 40px rgba(var(--m-a-rgb), 0.9),
-    0 0 120px rgba(var(--m-c-rgb), 0.6);
-  opacity: 0;
+/* Visualizer „zersplittertes Cover“: die Kacheln zeichnet der Canvas – das echte Cover tritt zurück */
+#mirage-immersive.is-shatter .m-im-cover img {
+  opacity: 0 !important;
 }
-#mirage-immersive .m-im-count.is-on {
-  animation: m-count 0.5s var(--m-ease) both;
-}
-@keyframes m-count {
-  0% {
-    opacity: 0;
-    transform: scale(1.6);
-  }
-  30% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0.55;
-    transform: scale(1);
-  }
+#mirage-immersive.is-shatter .m-im-cover {
+  background: transparent;
+  box-shadow: none;
 }
 /* Pausen-Szene: ruhig, mittig, mit QR-Code für die Handys */
 #mirage-immersive .m-im-pause {
@@ -3690,36 +3667,6 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   display: block;
   width: 100%;
   height: auto;
-}
-/* Ansage: großes Band oben in der Mitte */
-#mirage-immersive .m-im-annbox {
-  position: absolute;
-  top: 14vh;
-  left: 50%;
-  z-index: 33;
-  max-width: min(1100px, 90vw);
-  padding: 18px 34px;
-  border-radius: 26px;
-  font: 800 clamp(26px, 3.4vw, 58px) / 1.15 var(--m-font);
-  text-align: center;
-  color: #fff;
-  background: rgb(14 12 22 / 0.7);
-  border: 1px solid rgb(255 255 255 / 0.16);
-  backdrop-filter: blur(18px) saturate(1.4);
-  box-shadow: 0 24px 80px -20px rgba(var(--m-a-rgb), 0.7);
-  translate: -50% 0;
-  animation: m-ann-in 0.6s var(--m-spring, var(--m-ease)) both;
-  transition: opacity 0.7s, translate 0.7s var(--m-ease);
-}
-#mirage-immersive .m-im-annbox.is-gone {
-  opacity: 0;
-  translate: -50% -20px;
-}
-@keyframes m-ann-in {
-  from {
-    opacity: 0;
-    translate: -50% -24px;
-  }
 }
 /* Abstimmung: Karte unten links mit drei Balken */
 #mirage-immersive .m-im-pollcard {

@@ -140,7 +140,8 @@ Everything is set up in **Profile menu → Mirage settings**, and every effect b
 - **In sync with what you hear** – a steady song clock smooths Spotify's position; press <kbd>T</kbd> six times on the beat to calibrate light, crowd and lyrics to your speakers.
 - **Romanization** under Korean, Japanese and Chinese lyrics, **duet colours** for lines with a singer's name, and backing vocals in brackets set smaller.
 - **Fix the timing yourself** – press <kbd>E</kbd>, then Enter whenever the marked line starts; saved per song.
-- **Party moments** – drop countdown, hands up in the chorus, camera flash storm, floor fog, drone light show, confetti on key C, a pause scene with QR code, announcements and a guest vote on the next songs.
+- **Party moments** – hands up in the chorus, camera flash storm, floor fog, drone light show, confetti on key C, a pause scene with QR code and a guest vote on the next songs.
+- **DJ panel** – tempo and key of the current song, the best fitting songs from your queue, and *Keep the energy* to avoid breaks in the mood.
 - **Word pictures** – in party mode sung words get a subtle picture: sparks for “fire”, rain, hearts, stars, snow, money, a crown … around 65 ideas in 45 languages (almost 20,000 word forms). At most one per line, the crowd always stays clear.
 - **Canvas videos** – when a song has one, the film button at the top plays it inside the cover (and softly behind the lyrics) – switched on per view, off at first. If the button stays faded for every song, canvas is switched off in your Spotify account: turn on *Canvas* in the Spotify phone app (Settings → Playback).
 - **Full screen** with the button, <kbd>F</kbd> or <kbd>F11</kbd>; when the mouse rests, the controls fade out.

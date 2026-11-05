@@ -21,6 +21,7 @@ import { live } from "./live.js";
 import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
+import { dj } from "./dj.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -42,7 +43,7 @@ const ICON = {
   film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
   wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
   confetti: '<svg viewBox="0 0 24 24"><path d="M4 20l5-14 9 9zm4.6-9.5L6.8 16.6l5.6-2.2zM14 3h2v3h-2zm5 3.6 1.4 1.4-2.1 2.1-1.4-1.4zM18 13h3v2h-3zM10.5 4.4l1.4-1 1.2 1.6-1.4 1z"/></svg>',
-  announce: '<svg viewBox="0 0 24 24"><path d="M3 10v4h3l6 4V6l-6 4zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
+  dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
   poll: '<svg viewBox="0 0 24 24"><path d="M4 13h3v7H4zm6.5-9h3v16h-3zM17 9h3v11h-3z"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
   heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
@@ -100,8 +101,8 @@ const immersive = (() => {
         <div class="m-im-actions">
           <button type="button" class="m-im-sm m-im-cvbtn" hidden aria-pressed="false">${ICON.film}</button>
           <button type="button" class="m-im-sm m-im-conf" hidden>${ICON.confetti}</button>
-          <button type="button" class="m-im-sm m-im-ann" hidden>${ICON.announce}</button>
           <button type="button" class="m-im-sm m-im-pollbtn" hidden>${ICON.poll}</button>
+          <button type="button" class="m-im-sm m-im-djbtn" hidden>${ICON.dj}</button>
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
@@ -195,8 +196,8 @@ const immersive = (() => {
       meta: el.querySelector(".m-im-meta"),
       recap: el.querySelector(".m-im-recap"),
       conf: el.querySelector(".m-im-conf"),
-      ann: el.querySelector(".m-im-ann"),
       pollbtn: el.querySelector(".m-im-pollbtn"),
+      djbtn: el.querySelector(".m-im-djbtn"),
       screen: el.querySelector(".m-im-screen"),
       live: el.querySelector(".m-im-live"),
       fs: el.querySelector(".m-im-fs"),
@@ -212,10 +213,10 @@ const immersive = (() => {
     q.recap.onclick = () => showSide(side === "recap" ? null : "recap");
     q.conf.title = q.conf.ariaLabel = t("confetti");
     q.conf.onclick = () => confetti();
-    q.ann.title = q.ann.ariaLabel = t("annTitle");
-    q.ann.onclick = () => showSide(side === "announce" ? null : "announce");
     q.pollbtn.title = q.pollbtn.ariaLabel = t("pollBtn");
     q.pollbtn.onclick = () => showSide(side === "poll" ? null : "poll");
+    q.djbtn.title = q.djbtn.ariaLabel = t("djTitle");
+    q.djbtn.onclick = () => showSide(side === "dj" ? null : "dj");
     q.screen.title = q.screen.ariaLabel = t("toScreen");
     q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
     q.live.title = q.live.ariaLabel = t("liveBtn");
@@ -1384,6 +1385,57 @@ const immersive = (() => {
         ctx.closePath();
         ctx.stroke();
       }
+    } else if (V.style === "galaxy") {
+      // Galaxie: drei Spiralarme aus Lichtpunkten drehen sich ums Cover; die Musik schiebt sie nach außen
+      for (let i = 0; i < N; i++) {
+        const arm = i % 3, f = i / N, a = arm * ((Math.PI * 2) / 3) + f * Math.PI * 3 + tt * 0.18;
+        const rr = R * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
+        const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r = (1.2 + vals[i] * 3.2 + (1 - f) * 1.2) * dpr;
+        ctx.fillStyle = rgba(pal[arm], ((0.25 + vals[i] * 0.7) * (0.6 + 0.4 * Math.sin(tt * 3 + i))).toFixed(3));
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (V.style === "mountains") {
+      // Gebirge: drei Bergketten aus dem Spektrum am unteren Rand, hinten blasser, ziehen langsam vorbei
+      for (let k = 2; k >= 0; k--) {
+        const base = vh, hMax = vh * (0.22 + k * 0.07) * V.height, shift = tt * (8 + k * 6);
+        ctx.beginPath();
+        ctx.moveTo(0, base);
+        const steps = 64;
+        for (let s2 = 0; s2 <= steps; s2++) {
+          const x = (s2 / steps) * vw, j = Math.floor(((s2 / steps) * N + shift / 12 + k * 17) % N);
+          const v = (vals[j] + vals[(j + 1) % N] + vals[(j + N - 1) % N]) / 3;
+          ctx.lineTo(x, base - (0.12 + v) * hMax * (0.7 + 0.3 * Math.sin(s2 * 0.5 + k)));
+        }
+        ctx.lineTo(vw, base);
+        ctx.closePath();
+        const g = ctx.createLinearGradient(0, base - hMax * 1.1, 0, base);
+        g.addColorStop(0, rgba(pal[k], (0.5 - k * 0.12).toFixed(2)));
+        g.addColorStop(1, rgba(pal[k], 0.04));
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+    } else if (V.style === "scope") {
+      // Oszilloskop: ein Lichtkreis, der in Obertönen schwingt – jede Spektrumsgruppe eine eigene Welle
+      for (const [w, al] of V.glow ? [[9, 0.12], [2.5, 0.95]] : [[2.5, 0.95]]) {
+        ctx.lineWidth = w * dpr;
+        for (let k = 0; k < 3; k++) {
+          ctx.strokeStyle = rgba(pal[k], (al * (k ? 0.65 : 1)).toFixed(3));
+          ctx.beginPath();
+          for (let s2 = 0; s2 <= 180; s2++) {
+            const a = (s2 / 180) * Math.PI * 2;
+            let off = 0;
+            for (let h = 1; h <= 5; h++) off += vals[Math.floor((h / 6) * N)] * Math.sin(a * (h * 3 + k) + tt * h * (k ? -1 : 1));
+            const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
+            const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+            s2 ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+        }
+      }
+    } else if (V.style === "shatter") {
+      drawShatter(ctx, cx, cy, maxLen, dt, b, dpr, tt);
     } else if (V.style === "wave") {
       // geschlossene, weiche Kurve durch alle Spitzen
       ctx.beginPath();
@@ -1516,6 +1568,39 @@ const immersive = (() => {
   const TINT = { cool: 205, warm: 28, hot: 4, pink: 325, gold: 44, jungle: 130 };
   // Farbton ein Stück Richtung Ziel drehen (kürzester Weg auf dem Farbkreis)
   const toward = (h, target, f) => (h + ((((target - h) % 360) + 540) % 360 - 180) * f + 360) % 360;
+  /* ---- Zersplittertes Cover (Visualizer-Stil „shatter“): das Cover zerfällt im Takt in Kacheln, die nach
+     außen fliegen und sich wieder zusammensetzen. Gezeichnet wird das echte Coverbild Kachel für Kachel. */
+  const shards = { n: 12, amt: 0, last: 0, seed: [] };
+  function drawShatter(ctx, cx, cy, maxLen, dt, b, dpr, tt) {
+    const img = q.wrap.querySelector("img.is-on");
+    if (!img?.complete || !img.naturalWidth || !vizRect.r) return;
+    const n = shards.n;
+    if (shards.seed.length !== n * n) shards.seed = Array.from({ length: n * n }, () => [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1]);
+    // Schlag (Lautheit springt): aufbrechen, dann weich zurück
+    if (b > shards.last + 0.12 && b > 0.35) shards.amt = Math.min(1, shards.amt + 0.55 + b * 0.4);
+    shards.last = b;
+    shards.amt *= Math.exp(-dt * 2.6);
+    const size = vizRect.r.width * dpr, x0 = cx - size / 2, y0 = cy - size / 2, ts = size / n;
+    const sw = img.naturalWidth / n, sh = img.naturalHeight / n, a = shards.amt;
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        const [rx, ry, rr] = shards.seed[i * n + j];
+        const dx = (i + 0.5) / n - 0.5, dy = (j + 0.5) / n - 0.5, dist = Math.hypot(dx, dy) + 0.15;
+        const push = a * maxLen * 1.6 * dist, wob = Math.sin(tt * 2 + i * 1.3 + j) * vals[(i * n + j) % vals.length] * 3 * dpr;
+        const px2 = x0 + i * ts + ts / 2 + (dx / dist) * push + rx * a * 18 * dpr + wob, py2 = y0 + j * ts + ts / 2 + (dy / dist) * push + ry * a * 18 * dpr;
+        ctx.save();
+        ctx.translate(px2, py2);
+        ctx.rotate(rr * a * 0.9);
+        ctx.globalAlpha = 1 - a * 0.25;
+        ctx.drawImage(img, i * sw, j * sh, sw, sh, -ts / 2 - 0.5, -ts / 2 - 0.5, ts + 1, ts + 1);
+        ctx.restore();
+      }
+    }
+    ctx.restore();
+    ctx.globalCompositeOperation = "lighter";
+  }
   function vivid(pal, minor, tint, pitch = -1, keyPc = -1) {
     const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch + "k" + keyPc;
     if (key === vividKey) return vividPal;
@@ -2030,6 +2115,8 @@ const immersive = (() => {
       syncState();
     }
     const mode = el.dataset.mode;
+    const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
+    if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
     pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying(), now);
     if (LYR.has(mode)) drawLyrics(pos);
     if (VIZ.has(mode)) {
@@ -2142,7 +2229,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", announce: "annTitle", poll: "pollBtn", recap: "recapBtn" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2175,7 +2262,7 @@ const immersive = (() => {
       return wishPanel(body);
     }
     if (kind === "screens") return screensPanel(body, item);
-    if (kind === "announce") return announcePanel(body);
+    if (kind === "dj") return djPanel(body);
     if (kind === "poll") return pollPanel(body);
     if (kind === "recap") return recapPanel(body);
     if (kind === "queue") {
@@ -2261,8 +2348,8 @@ const immersive = (() => {
     q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
     moments.stormDone = false;
-    moments.countN = 0;
-    q.count?.classList.remove("is-on");
+    // „Energie halten“: passt der nächste Song gar nicht, zieht Mirage einen passenderen vor
+    if (item?.uri && el.dataset.mode === "party") dj.onSong(item.uri).then((m) => m && S.showNotification?.(t("djMoved").replace("{t}", m.title), false, 4000));
     updateKicker();
     if (LYR.has(el.dataset.mode)) loadLyrics();
     if (el.dataset.mode === "party") {
@@ -2291,8 +2378,8 @@ const immersive = (() => {
     const party = el.dataset.mode === "party";
     q.recap.hidden = !(party && cfg.partyRecap && recap.songs.length >= 3);
     q.conf.hidden = !party || !!cfg.calm;
-    q.ann.hidden = !party;
     q.pollbtn.hidden = !(party && cfg.partyLive);
+    q.djbtn.hidden = !party;
     q.screen.hidden = !(party && cfg.partyScreen);
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
@@ -2431,9 +2518,9 @@ const immersive = (() => {
     card.onclick = () => card.remove();
     el.append(card);
   }
-  /* ---- Show-Momente im Party-Modus: Countdown vor dem Drop, Hände hoch und Blitzlicht-Gewitter im Refrain,
+  /* ---- Show-Momente im Party-Modus: Hände hoch und Blitzlicht-Gewitter im Refrain,
      Konfetti auf Knopfdruck. Die Bühne (venue.js) zeichnet Hände, Blitze und Konfetti; hier wird entschieden, wann. */
-  const moments = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false, countN: 0 };
+  const moments = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false };
   function showMoments(px, now) {
     const bar = (4 * 60000) / (party.info.bpm || 120);
     if (hypeOn && !moments.hypeWas && px.energy > 0.45) {
@@ -2448,28 +2535,6 @@ const immersive = (() => {
     if (px.dropHit && px.finale && cfg.partyFlashStorm) moments.stormUntil = now + 2600;
     moments.hands = clamp((moments.handsUntil - now) / 500, 0, 1);
     moments.storm = clamp((moments.stormUntil - now) / 600, 0, 1);
-    // Countdown: die letzten vier Schläge vor einem Drop zählen groß herunter
-    let n = 0;
-    if (cfg.partyCountdown && px.fx && px.level >= 2 && px.toDrop < 30) {
-      const bl = 60 / (party.info.bpm || 120);
-      const k = Math.ceil(px.toDrop / bl - 0.02);
-      if (px.toDrop > 0.03 && k >= 1 && k <= 4) n = k;
-    }
-    if (n !== moments.countN) {
-      moments.countN = n;
-      if (!q.count) {
-        q.count = document.createElement("div");
-        q.count.className = "m-im-count";
-        q.count.setAttribute("aria-hidden", "true");
-        el.append(q.count);
-      }
-      if (n) {
-        q.count.textContent = String(n);
-        q.count.classList.remove("is-on");
-        void q.count.offsetWidth;
-        q.count.classList.add("is-on");
-      } else q.count.classList.remove("is-on");
-    }
   }
   function confetti() {
     if (!el || el.dataset.mode !== "party" || cfg.calm) return;
@@ -2508,41 +2573,47 @@ const immersive = (() => {
     q.pause.classList.add("is-on");
   }
 
-  /* ---- Ansagen: groß auf dem Party-Bild und auf allen Handys */
-  function announcePanel(body) {
-    const hint = document.createElement("p");
-    hint.className = "m-im-side-note";
-    hint.textContent = t("annHint");
-    const inp = document.createElement("input");
-    inp.type = "text";
-    inp.maxLength = 120;
-    inp.className = "m-im-side-find";
-    inp.placeholder = t("annPlaceholder");
-    const go = (text) => {
-      const x = String(text || "").trim();
-      if (!x) return inp.focus();
-      showAnnouncement(x);
-      if (cfg.partyLive) live.announce(x);
-      inp.value = "";
-    };
-    inp.onkeydown = (e) => {
-      e.stopPropagation();
-      if (e.key === "Enter") go(inp.value);
-    };
-    body.append(hint, inp);
-    sideBtn(body, t("annSend"), "", () => go(inp.value));
-    for (const k of ["annP1", "annP2", "annP3", "annP4"]) sideBtn(body, t(k), "", () => go(t(k)));
-    setTimeout(() => inp.focus(), 50);
-  }
-  function showAnnouncement(text) {
-    el.querySelector(".m-im-annbox")?.remove();
+  /* ---- DJ: Tempo und Tonart des laufenden Songs, dazu die am besten passenden aus der Warteschlange */
+  let djToken = 0;
+  function djPanel(body) {
+    const token = ++djToken, cur = currentItem();
+    sideBtn(body, t("djEnergy"), cfg.djEnergy ? t("djEnergyOn") : t("djEnergyOff"), () => {
+      cfg.djEnergy = !cfg.djEnergy;
+      save();
+      showSide("dj");
+    }, cfg.djEnergy);
+    const head = document.createElement("div");
+    head.className = "m-im-side-sec";
+    head.textContent = t("djNow");
+    body.append(head);
+    const nowRow = sideBtn(body, titleOf(cur) || "–", t("loading"));
+    const sec = document.createElement("div");
+    sec.className = "m-im-side-sec";
+    sec.textContent = t("djNext");
+    const secSub = document.createElement("small");
+    secSub.textContent = t("djNextSub");
+    sec.append(secSub);
+    body.append(sec);
     const box = document.createElement("div");
-    box.className = "m-im-annbox";
-    box.setAttribute("role", "status");
-    box.textContent = text;
-    el.append(box);
-    setTimeout(() => box.classList.add("is-gone"), 8000);
-    setTimeout(() => box.remove(), 8800);
+    box.className = "m-im-side-group";
+    body.append(box);
+    sideBtn(box, t("loading"));
+    const fmtI = (i) => (i ? `${i.cam || "?"} · ${i.bpm} BPM` : "");
+    dj.suggest(cur?.uri, ({ cur: ci, list, done }) => {
+      if (token !== djToken || side !== "dj") return;
+      nowRow.querySelector("small").textContent = ci ? fmtI(ci) : t("djNoData");
+      box.textContent = "";
+      if (!list.length) return void sideBtn(box, done ? t("djNone") : t("loading"));
+      for (const x of list) {
+        sideBtn(box, x.title, `${fmtI(x.info)} · ${t("djFit").replace("{p}", Math.round(x.score * 100))}`, async () => {
+          try {
+            await S.addToQueue([{ uri: x.uri }]);
+            S.showNotification?.(t("djQueued").replace("{t}", x.title), false, 3000);
+          } catch {}
+        });
+      }
+      if (!done) sideBtn(box, t("djMore"));
+    });
   }
 
   /* ---- Abstimmung: die nächsten drei Songs zur Wahl, die Handys stimmen 45 s lang ab */

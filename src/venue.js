@@ -1036,9 +1036,30 @@ function createVenue(makeCanvas) {
       ctx.stroke(arms[row]);
       arms[row] = new Path2D();
     };
+    // Handylichter, Feuerzeuge und Kamerablitze einer Reihe gleich nach ihr zeichnen – die Reihen davor
+    // verdecken sie dann (vorher lagen alle Lichter über allen Köpfen und schienen durch die Leute vorne)
+    const flushLights = (row) => {
+      ctx.globalCompositeOperation = "lighter";
+      for (const [gx, gy, kind, s1, r0] of glows) {
+        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;
+        ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - r0 * 0.25) * A * rowA[r0];
+        ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
+      }
+      glows.length = 0;
+      for (const f of crowd.flashes) {
+        if ((f.row ?? 0) !== row) continue;
+        const r = 34 * f.s;
+        ctx.globalAlpha = f.a * A;
+        ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
+      }
+      ctx.globalCompositeOperation = "source-over";
+    };
     for (const p of crowd.people) {
       if (p.row !== curRow) {
-        if (curRow != null) strokeRow(curRow);
+        if (curRow != null) {
+          strokeRow(curRow);
+          flushLights(curRow);
+        }
         curRow = p.row;
       }
       const ra = rowA[p.row];
@@ -1107,24 +1128,17 @@ function createVenue(makeCanvas) {
         if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);
       }
       // Kamerablitze aus der Menge: in der Spitze öfter
-      if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1 });
+      if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1, row: p.row });
       // Blitzlicht-Gewitter (großer Refrain): viele Handys blitzen gleichzeitig
-      else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8 });
+      else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, row: p.row });
     }
-    if (curRow != null) strokeRow(curRow);
+    if (curRow != null) {
+      strokeRow(curRow);
+      flushLights(curRow);
+    }
     ctx.globalCompositeOperation = "lighter";
-    for (const [gx, gy, kind, s1, row] of glows) {
-      const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;
-      ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];
-      ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
-    }
     if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);
     crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);
-    for (const f of crowd.flashes) {
-      const r = 34 * f.s;
-      ctx.globalAlpha = f.a * A;
-      ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
-    }
     ctx.globalAlpha = 1;
   }
 

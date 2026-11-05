@@ -366,6 +366,7 @@ function render(box) {
   const viz = [
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
     ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
+    ["galaxy", t("viz_galaxy")], ["mountains", t("viz_mountains")], ["scope", t("viz_scope")], ["shatter", t("viz_shatter")],
   ];
   kids.push(
     group(
@@ -435,7 +436,6 @@ function render(box) {
       toggle("partyDJ", () => {}),
       toggle("partyHype", () => immersive.reloadLyrics()),
       toggle("partyWords", () => immersive.reloadLyrics()),
-      toggle("partyCountdown", () => {}),
       toggle("partyHandsUp", () => {}),
       toggle("partyFlashStorm", () => {}),
       toggle("partyFog", () => {}),

@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.19.0" : "dev";
+      VERSION = true ? "1.20.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -605,8 +605,6 @@
           wishFrom: "{n} wishes for",
           wishNew: "New song wish",
           wishAll: "All wishes",
-          partyCountdown: "Drop countdown",
-          partyCountdownHint: "The last four beats before a drop count down big in the middle",
           partyHandsUp: "Hands up",
           partyHandsUpHint: "In the chorus the whole crowd throws both hands in the air",
           partyFlashStorm: "Camera flash storm",
@@ -618,14 +616,6 @@
           partyPause: "Pause scene",
           partyPauseHint: "When the music pauses: a calm scene with the song and the QR code for phones",
           confetti: "Confetti cannon (C)",
-          annTitle: "Announcement",
-          annHint: "Shows big on the party screen and on every phone",
-          annPlaceholder: "Pizza is here!",
-          annSend: "Show it",
-          annP1: "Food is ready!",
-          annP2: "Last song!",
-          annP3: "Happy birthday!",
-          annP4: "Everybody on the dance floor!",
           pauseTitle: "Short break",
           pauseSub: "Scan and join in",
           pollBtn: "Guest vote",
@@ -645,7 +635,24 @@
           rankLine: "{w} wishes played \xB7 {v} votes",
           rankGuest: "Guest",
           reportBug: "Report a problem",
-          updOk: "Spotify {v}: Mirage checked the new version \u2013 everything fits"
+          updOk: "Spotify {v}: Mirage checked the new version \u2013 everything fits",
+          viz_galaxy: "Galaxy",
+          viz_mountains: "Mountains",
+          viz_scope: "Oscilloscope",
+          viz_shatter: "Shattered cover",
+          djTitle: "DJ",
+          djEnergy: "Keep the energy",
+          djEnergyOn: "On \u2013 if the next song breaks the mood, a better fitting one from the queue moves up",
+          djEnergyOff: "Off \u2013 the queue plays as it is",
+          djNow: "Playing now",
+          djNext: "Fits next",
+          djNextSub: "From your queue \u2013 key, tempo and energy",
+          djFit: "fits {p} %",
+          djQueued: "\u201C{t}\u201D plays next",
+          djMoved: "Keeping the energy: \u201C{t}\u201D moved up",
+          djNone: "Nothing in the queue to compare",
+          djNoData: "No tempo or key known for this song",
+          djMore: "Checking more songs \u2026"
         },
         de: {
           g_library: "Bibliothek",
@@ -1138,8 +1145,6 @@
           wishFrom: "{n} w\xFCnscht sich",
           wishNew: "Neuer Songwunsch",
           wishAll: "Alle W\xFCnsche",
-          partyCountdown: "Drop-Countdown",
-          partyCountdownHint: "Die letzten vier Schl\xE4ge vor einem Drop z\xE4hlen gro\xDF in der Mitte herunter",
           partyHandsUp: "H\xE4nde hoch",
           partyHandsUpHint: "Im Refrain rei\xDFt die ganze Menge beide H\xE4nde hoch",
           partyFlashStorm: "Blitzlicht-Gewitter",
@@ -1151,14 +1156,6 @@
           partyPause: "Pausen-Szene",
           partyPauseHint: "Pausiert die Musik: eine ruhige Szene mit dem Song und dem QR-Code f\xFCr die Handys",
           confetti: "Konfetti-Kanone (C)",
-          annTitle: "Ansage",
-          annHint: "Erscheint gro\xDF auf dem Party-Bild und auf jedem Handy",
-          annPlaceholder: "Pizza ist da!",
-          annSend: "Zeigen",
-          annP1: "Essen ist fertig!",
-          annP2: "Letzter Song!",
-          annP3: "Alles Gute zum Geburtstag!",
-          annP4: "Alle auf die Tanzfl\xE4che!",
           pauseTitle: "Kurze Pause",
           pauseSub: "Scannen und mitmachen",
           pollBtn: "Abstimmung",
@@ -1178,7 +1175,24 @@
           rankLine: "{w} W\xFCnsche gespielt \xB7 {v} Stimmen",
           rankGuest: "Gast",
           reportBug: "Problem melden",
-          updOk: "Spotify {v}: Mirage hat die neue Version gepr\xFCft \u2013 alles passt"
+          updOk: "Spotify {v}: Mirage hat die neue Version gepr\xFCft \u2013 alles passt",
+          viz_galaxy: "Galaxie",
+          viz_mountains: "Gebirge",
+          viz_scope: "Oszilloskop",
+          viz_shatter: "Zersplittertes Cover",
+          djTitle: "DJ",
+          djEnergy: "Energie halten",
+          djEnergyOn: "An \u2013 bricht der n\xE4chste Song die Stimmung, r\xFCckt ein passenderer aus der Warteschlange vor",
+          djEnergyOff: "Aus \u2013 die Warteschlange l\xE4uft, wie sie ist",
+          djNow: "L\xE4uft gerade",
+          djNext: "Passt als N\xE4chstes",
+          djNextSub: "Aus deiner Warteschlange \u2013 Tonart, Tempo und Energie",
+          djFit: "passt {p} %",
+          djQueued: "\u201E{t}\u201C kommt als N\xE4chstes",
+          djMoved: "Energie gehalten: \u201E{t}\u201C ist vorger\xFCckt",
+          djNone: "Nichts in der Warteschlange zum Vergleichen",
+          djNoData: "F\xFCr diesen Song sind Tempo und Tonart nicht bekannt",
+          djMore: "Pr\xFCfe weitere Songs \u2026"
         },
         fr: {
           g_library: "Biblioth\xE8que",
@@ -1671,8 +1685,6 @@
           wishFrom: "{n} demande",
           wishNew: "Nouvelle demande",
           wishAll: "Toutes les demandes",
-          partyCountdown: "Compte \xE0 rebours du drop",
-          partyCountdownHint: "Les quatre derniers temps avant un drop d\xE9filent en grand au centre",
           partyHandsUp: "Mains en l'air",
           partyHandsUpHint: "Au refrain, toute la foule l\xE8ve les deux mains",
           partyFlashStorm: "Temp\xEAte de flashs",
@@ -1684,14 +1696,6 @@
           partyPause: "Sc\xE8ne de pause",
           partyPauseHint: "Quand la musique fait une pause : une sc\xE8ne calme avec le titre et le QR code pour les t\xE9l\xE9phones",
           confetti: "Canon \xE0 confettis (C)",
-          annTitle: "Annonce",
-          annHint: "S'affiche en grand sur l'\xE9cran de la f\xEAte et sur chaque t\xE9l\xE9phone",
-          annPlaceholder: "La pizza est arriv\xE9e !",
-          annSend: "Afficher",
-          annP1: "\xC0 table !",
-          annP2: "Dernier titre !",
-          annP3: "Joyeux anniversaire !",
-          annP4: "Tout le monde sur la piste !",
           pauseTitle: "Petite pause",
           pauseSub: "Scanne et participe",
           pollBtn: "Vote des invit\xE9s",
@@ -1711,7 +1715,24 @@
           rankLine: "{w} demandes jou\xE9es \xB7 {v} votes",
           rankGuest: "Invit\xE9",
           reportBug: "Signaler un probl\xE8me",
-          updOk: "Spotify {v} : Mirage a v\xE9rifi\xE9 la nouvelle version \u2013 tout est compatible"
+          updOk: "Spotify {v} : Mirage a v\xE9rifi\xE9 la nouvelle version \u2013 tout est compatible",
+          viz_galaxy: "Galaxie",
+          viz_mountains: "Montagnes",
+          viz_scope: "Oscilloscope",
+          viz_shatter: "Pochette bris\xE9e",
+          djTitle: "DJ",
+          djEnergy: "Garder l'\xE9nergie",
+          djEnergyOn: "Activ\xE9 \u2013 si le prochain titre casse l'ambiance, un titre mieux adapt\xE9 de la file passe devant",
+          djEnergyOff: "D\xE9sactiv\xE9 \u2013 la file se lit telle quelle",
+          djNow: "En cours",
+          djNext: "Va bien ensuite",
+          djNextSub: "Depuis ta file d'attente \u2013 tonalit\xE9, tempo et \xE9nergie",
+          djFit: "convient \xE0 {p} %",
+          djQueued: "\xAB {t} \xBB passe ensuite",
+          djMoved: "\xC9nergie gard\xE9e : \xAB {t} \xBB a \xE9t\xE9 avanc\xE9",
+          djNone: "Rien dans la file \xE0 comparer",
+          djNoData: "Tempo et tonalit\xE9 inconnus pour ce titre",
+          djMore: "Analyse d'autres titres \u2026"
         },
         es: {
           g_library: "Biblioteca",
@@ -2204,8 +2225,6 @@
           wishFrom: "{n} pide",
           wishNew: "Nueva petici\xF3n",
           wishAll: "Todas las peticiones",
-          partyCountdown: "Cuenta atr\xE1s del drop",
-          partyCountdownHint: "Los \xFAltimos cuatro tiempos antes de un drop cuentan atr\xE1s en grande en el centro",
           partyHandsUp: "Manos arriba",
           partyHandsUpHint: "En el estribillo, toda la multitud levanta las dos manos",
           partyFlashStorm: "Tormenta de flashes",
@@ -2217,14 +2236,6 @@
           partyPause: "Escena de pausa",
           partyPauseHint: "Cuando la m\xFAsica se pausa: una escena tranquila con la canci\xF3n y el c\xF3digo QR para los m\xF3viles",
           confetti: "Ca\xF1\xF3n de confeti (C)",
-          annTitle: "Aviso",
-          annHint: "Aparece en grande en la pantalla de la fiesta y en todos los m\xF3viles",
-          annPlaceholder: "\xA1Ha llegado la pizza!",
-          annSend: "Mostrar",
-          annP1: "\xA1La comida est\xE1 lista!",
-          annP2: "\xA1\xDAltima canci\xF3n!",
-          annP3: "\xA1Feliz cumplea\xF1os!",
-          annP4: "\xA1Todos a la pista!",
           pauseTitle: "Pausa breve",
           pauseSub: "Escanea y participa",
           pollBtn: "Votaci\xF3n",
@@ -2244,7 +2255,24 @@
           rankLine: "{w} peticiones reproducidas \xB7 {v} votos",
           rankGuest: "Invitado",
           reportBug: "Informar de un problema",
-          updOk: "Spotify {v}: Mirage ha comprobado la nueva versi\xF3n \u2013 todo encaja"
+          updOk: "Spotify {v}: Mirage ha comprobado la nueva versi\xF3n \u2013 todo encaja",
+          viz_galaxy: "Galaxia",
+          viz_mountains: "Monta\xF1as",
+          viz_scope: "Osciloscopio",
+          viz_shatter: "Portada hecha a\xF1icos",
+          djTitle: "DJ",
+          djEnergy: "Mantener la energ\xEDa",
+          djEnergyOn: "Activado: si la siguiente canci\xF3n rompe el ambiente, una que encaje mejor de la cola pasa delante",
+          djEnergyOff: "Desactivado: la cola suena tal cual",
+          djNow: "Sonando ahora",
+          djNext: "Encaja a continuaci\xF3n",
+          djNextSub: "De tu cola: tono, tempo y energ\xEDa",
+          djFit: "encaja {p} %",
+          djQueued: "\xAB{t}\xBB suena a continuaci\xF3n",
+          djMoved: "Energ\xEDa mantenida: \xAB{t}\xBB ha subido",
+          djNone: "No hay nada en la cola para comparar",
+          djNoData: "No se conoce el tempo ni el tono de esta canci\xF3n",
+          djMore: "Comprobando m\xE1s canciones \u2026"
         },
         it: {
           g_library: "Libreria",
@@ -2737,8 +2765,6 @@
           wishFrom: "{n} chiede",
           wishNew: "Nuova richiesta",
           wishAll: "Tutte le richieste",
-          partyCountdown: "Conto alla rovescia del drop",
-          partyCountdownHint: "Gli ultimi quattro battiti prima di un drop fanno il conto alla rovescia in grande al centro",
           partyHandsUp: "Mani in alto",
           partyHandsUpHint: "Nel ritornello tutta la folla alza entrambe le mani",
           partyFlashStorm: "Tempesta di flash",
@@ -2750,14 +2776,6 @@
           partyPause: "Scena di pausa",
           partyPauseHint: "Quando la musica va in pausa: una scena calma con il brano e il codice QR per i telefoni",
           confetti: "Cannone di coriandoli (C)",
-          annTitle: "Annuncio",
-          annHint: "Appare in grande sullo schermo della festa e su ogni telefono",
-          annPlaceholder: "\xC8 arrivata la pizza!",
-          annSend: "Mostra",
-          annP1: "Si mangia!",
-          annP2: "Ultima canzone!",
-          annP3: "Buon compleanno!",
-          annP4: "Tutti in pista!",
           pauseTitle: "Breve pausa",
           pauseSub: "Scansiona e partecipa",
           pollBtn: "Voto degli ospiti",
@@ -2777,7 +2795,24 @@
           rankLine: "{w} richieste riprodotte \xB7 {v} voti",
           rankGuest: "Ospite",
           reportBug: "Segnala un problema",
-          updOk: "Spotify {v}: Mirage ha controllato la nuova versione \u2013 tutto a posto"
+          updOk: "Spotify {v}: Mirage ha controllato la nuova versione \u2013 tutto a posto",
+          viz_galaxy: "Galassia",
+          viz_mountains: "Montagne",
+          viz_scope: "Oscilloscopio",
+          viz_shatter: "Copertina in frantumi",
+          djTitle: "DJ",
+          djEnergy: "Mantieni l'energia",
+          djEnergyOn: "Attivo: se il brano successivo rompe l'atmosfera, uno pi\xF9 adatto della coda passa avanti",
+          djEnergyOff: "Disattivo: la coda va com'\xE8",
+          djNow: "In riproduzione",
+          djNext: "Ci sta dopo",
+          djNextSub: "Dalla tua coda \u2013 tonalit\xE0, tempo ed energia",
+          djFit: "ci sta al {p} %",
+          djQueued: "\xAB{t}\xBB \xE8 il prossimo",
+          djMoved: "Energia mantenuta: \xAB{t}\xBB \xE8 passato avanti",
+          djNone: "Niente in coda da confrontare",
+          djNoData: "Tempo e tonalit\xE0 di questo brano non sono noti",
+          djMore: "Controllo altri brani \u2026"
         },
         pt: {
           g_library: "Biblioteca",
@@ -3270,8 +3305,6 @@
           wishFrom: "{n} pediu",
           wishNew: "Novo pedido",
           wishAll: "Todos os pedidos",
-          partyCountdown: "Contagem do drop",
-          partyCountdownHint: "Os \xFAltimos quatro tempos antes de um drop contam em grande no centro",
           partyHandsUp: "M\xE3os ao alto",
           partyHandsUpHint: "No refr\xE3o, a multid\xE3o toda levanta as duas m\xE3os",
           partyFlashStorm: "Tempestade de flashes",
@@ -3283,14 +3316,6 @@
           partyPause: "Cena de pausa",
           partyPauseHint: "Quando a m\xFAsica pausa: uma cena calma com a m\xFAsica e o c\xF3digo QR para os telem\xF3veis",
           confetti: "Canh\xE3o de confete (C)",
-          annTitle: "Aviso",
-          annHint: "Aparece em grande no ecr\xE3 da festa e em todos os telem\xF3veis",
-          annPlaceholder: "A pizza chegou!",
-          annSend: "Mostrar",
-          annP1: "A comida est\xE1 pronta!",
-          annP2: "\xDAltima m\xFAsica!",
-          annP3: "Parab\xE9ns!",
-          annP4: "Todos para a pista!",
           pauseTitle: "Pausa curta",
           pauseSub: "Digitaliza e participa",
           pollBtn: "Vota\xE7\xE3o",
@@ -3310,7 +3335,24 @@
           rankLine: "{w} pedidos tocados \xB7 {v} votos",
           rankGuest: "Convidado",
           reportBug: "Reportar um problema",
-          updOk: "Spotify {v}: o Mirage verificou a nova vers\xE3o \u2013 est\xE1 tudo certo"
+          updOk: "Spotify {v}: o Mirage verificou a nova vers\xE3o \u2013 est\xE1 tudo certo",
+          viz_galaxy: "Gal\xE1xia",
+          viz_mountains: "Montanhas",
+          viz_scope: "Oscilosc\xF3pio",
+          viz_shatter: "Capa estilha\xE7ada",
+          djTitle: "DJ",
+          djEnergy: "Manter a energia",
+          djEnergyOn: "Ligado \u2013 se a pr\xF3xima m\xFAsica quebrar o clima, uma mais adequada da fila passa \xE0 frente",
+          djEnergyOff: "Desligado \u2013 a fila toca como est\xE1",
+          djNow: "A tocar agora",
+          djNext: "Combina a seguir",
+          djNextSub: "Da tua fila \u2013 tom, tempo e energia",
+          djFit: "combina {p} %",
+          djQueued: "\u201C{t}\u201D toca a seguir",
+          djMoved: "Energia mantida: \u201C{t}\u201D subiu na fila",
+          djNone: "Nada na fila para comparar",
+          djNoData: "Tempo e tom desta m\xFAsica n\xE3o s\xE3o conhecidos",
+          djMore: "A verificar mais m\xFAsicas \u2026"
         },
         nl: {
           g_library: "Bibliotheek",
@@ -3803,8 +3845,6 @@
           wishFrom: "{n} wil graag",
           wishNew: "Nieuw verzoeknummer",
           wishAll: "Alle verzoeken",
-          partyCountdown: "Drop-aftelling",
-          partyCountdownHint: "De laatste vier tellen voor een drop tellen groot af in het midden",
           partyHandsUp: "Handen omhoog",
           partyHandsUpHint: "In het refrein gooit het hele publiek beide handen in de lucht",
           partyFlashStorm: "Flitsonweer",
@@ -3816,14 +3856,6 @@
           partyPause: "Pauzesc\xE8ne",
           partyPauseHint: "Als de muziek pauzeert: een rustige sc\xE8ne met het nummer en de QR-code voor de telefoons",
           confetti: "Confettikanon (C)",
-          annTitle: "Mededeling",
-          annHint: "Verschijnt groot op het feestscherm en op elke telefoon",
-          annPlaceholder: "De pizza is er!",
-          annSend: "Tonen",
-          annP1: "Het eten is klaar!",
-          annP2: "Laatste nummer!",
-          annP3: "Gefeliciteerd!",
-          annP4: "Iedereen op de dansvloer!",
           pauseTitle: "Korte pauze",
           pauseSub: "Scan en doe mee",
           pollBtn: "Gastenstem",
@@ -3843,7 +3875,24 @@
           rankLine: "{w} verzoeken gespeeld \xB7 {v} stemmen",
           rankGuest: "Gast",
           reportBug: "Probleem melden",
-          updOk: "Spotify {v}: Mirage heeft de nieuwe versie gecontroleerd \u2013 alles past"
+          updOk: "Spotify {v}: Mirage heeft de nieuwe versie gecontroleerd \u2013 alles past",
+          viz_galaxy: "Sterrenstelsel",
+          viz_mountains: "Gebergte",
+          viz_scope: "Oscilloscoop",
+          viz_shatter: "Versplinterde cover",
+          djTitle: "DJ",
+          djEnergy: "Energie behouden",
+          djEnergyOn: "Aan \u2013 als het volgende nummer de sfeer breekt, schuift een beter passend nummer uit de wachtrij op",
+          djEnergyOff: "Uit \u2013 de wachtrij speelt zoals die is",
+          djNow: "Speelt nu",
+          djNext: "Past hierna",
+          djNextSub: "Uit je wachtrij \u2013 toonsoort, tempo en energie",
+          djFit: "past {p} %",
+          djQueued: "\u201E{t}\u201D komt hierna",
+          djMoved: "Energie behouden: \u201E{t}\u201D is opgeschoven",
+          djNone: "Niets in de wachtrij om te vergelijken",
+          djNoData: "Tempo en toonsoort van dit nummer zijn onbekend",
+          djMore: "Meer nummers checken \u2026"
         },
         pl: {
           g_library: "Biblioteka",
@@ -4336,8 +4385,6 @@
           wishFrom: "{n} prosi o",
           wishNew: "Nowa pro\u015Bba",
           wishAll: "Wszystkie pro\u015Bby",
-          partyCountdown: "Odliczanie do dropa",
-          partyCountdownHint: "Ostatnie cztery uderzenia przed dropem odliczaj\u0105 si\u0119 wielkimi cyframi na \u015Brodku",
           partyHandsUp: "R\u0119ce w g\xF3r\u0119",
           partyHandsUpHint: "W refrenie ca\u0142y t\u0142um unosi obie r\u0119ce",
           partyFlashStorm: "Burza fleszy",
@@ -4349,14 +4396,6 @@
           partyPause: "Scena pauzy",
           partyPauseHint: "Gdy muzyka jest wstrzymana: spokojna scena z utworem i kodem QR dla telefon\xF3w",
           confetti: "Armata konfetti (C)",
-          annTitle: "Og\u0142oszenie",
-          annHint: "Pojawia si\u0119 du\u017Cym drukiem na ekranie imprezy i na ka\u017Cdym telefonie",
-          annPlaceholder: "Pizza ju\u017C jest!",
-          annSend: "Poka\u017C",
-          annP1: "Jedzenie gotowe!",
-          annP2: "Ostatni utw\xF3r!",
-          annP3: "Wszystkiego najlepszego!",
-          annP4: "Wszyscy na parkiet!",
           pauseTitle: "Kr\xF3tka przerwa",
           pauseSub: "Zeskanuj i do\u0142\u0105cz",
           pollBtn: "G\u0142osowanie go\u015Bci",
@@ -4376,7 +4415,24 @@
           rankLine: "{w} zagranych \u017Cycze\u0144 \xB7 {v} g\u0142os\xF3w",
           rankGuest: "Go\u015B\u0107",
           reportBug: "Zg\u0142o\u015B problem",
-          updOk: "Spotify {v}: Mirage sprawdzi\u0142 now\u0105 wersj\u0119 \u2013 wszystko pasuje"
+          updOk: "Spotify {v}: Mirage sprawdzi\u0142 now\u0105 wersj\u0119 \u2013 wszystko pasuje",
+          viz_galaxy: "Galaktyka",
+          viz_mountains: "G\xF3ry",
+          viz_scope: "Oscyloskop",
+          viz_shatter: "Rozbita ok\u0142adka",
+          djTitle: "DJ",
+          djEnergy: "Utrzymaj energi\u0119",
+          djEnergyOn: "W\u0142. \u2013 je\u015Bli nast\u0119pny utw\xF3r zepsuje nastr\xF3j, w kolejce wskakuje lepiej pasuj\u0105cy",
+          djEnergyOff: "Wy\u0142. \u2013 kolejka gra tak, jak jest",
+          djNow: "Teraz gra",
+          djNext: "Pasuje jako nast\u0119pny",
+          djNextSub: "Z Twojej kolejki \u2013 tonacja, tempo i energia",
+          djFit: "pasuje w {p} %",
+          djQueued: "\u201E{t}\u201D gra jako nast\u0119pny",
+          djMoved: "Energia utrzymana: \u201E{t}\u201D przesuni\u0119to wy\u017Cej",
+          djNone: "Brak utwor\xF3w w kolejce do por\xF3wnania",
+          djNoData: "Brak danych o tempie i tonacji tego utworu",
+          djMore: "Sprawdzam kolejne utwory \u2026"
         },
         tr: {
           g_library: "Kitapl\u0131k",
@@ -4869,8 +4925,6 @@
           wishFrom: "{n} istiyor",
           wishNew: "Yeni \u015Fark\u0131 iste\u011Fi",
           wishAll: "T\xFCm istekler",
-          partyCountdown: "Drop geri say\u0131m\u0131",
-          partyCountdownHint: "Bir drop'tan \xF6nceki son d\xF6rt vuru\u015F ortada b\xFCy\xFCk b\xFCy\xFCk geriye sayar",
           partyHandsUp: "Eller havaya",
           partyHandsUpHint: "Nakaratta b\xFCt\xFCn kalabal\u0131k iki elini de havaya kald\u0131r\u0131r",
           partyFlashStorm: "Fla\u015F f\u0131rt\u0131nas\u0131",
@@ -4882,14 +4936,6 @@
           partyPause: "Duraklama sahnesi",
           partyPauseHint: "M\xFCzik duraklat\u0131ld\u0131\u011F\u0131nda: \u015Fark\u0131n\u0131n ve telefonlar i\xE7in QR kodunun oldu\u011Fu sakin bir sahne",
           confetti: "Konfeti topu (C)",
-          annTitle: "Duyuru",
-          annHint: "Parti ekran\u0131nda ve her telefonda b\xFCy\xFCk g\xF6r\xFCn\xFCr",
-          annPlaceholder: "Pizza geldi!",
-          annSend: "G\xF6ster",
-          annP1: "Yemek haz\u0131r!",
-          annP2: "Son \u015Fark\u0131!",
-          annP3: "Do\u011Fum g\xFCn\xFCn kutlu olsun!",
-          annP4: "Herkes pistte!",
           pauseTitle: "K\u0131sa mola",
           pauseSub: "Tara ve kat\u0131l",
           pollBtn: "Konuk oylamas\u0131",
@@ -4909,7 +4955,24 @@
           rankLine: "{w} istek \xE7al\u0131nd\u0131 \xB7 {v} oy",
           rankGuest: "Konuk",
           reportBug: "Sorun bildir",
-          updOk: "Spotify {v}: Mirage yeni s\xFCr\xFCm\xFC kontrol etti \u2013 her \u015Fey uyumlu"
+          updOk: "Spotify {v}: Mirage yeni s\xFCr\xFCm\xFC kontrol etti \u2013 her \u015Fey uyumlu",
+          viz_galaxy: "Galaksi",
+          viz_mountains: "Da\u011Flar",
+          viz_scope: "Osiloskop",
+          viz_shatter: "Par\xE7alanan kapak",
+          djTitle: "DJ",
+          djEnergy: "Enerjiyi koru",
+          djEnergyOn: "A\xE7\u0131k \u2013 s\u0131radaki \u015Fark\u0131 havay\u0131 bozacaksa, s\u0131radan daha uygun biri \xF6ne ge\xE7er",
+          djEnergyOff: "Kapal\u0131 \u2013 s\u0131ra oldu\u011Fu gibi \xE7alar",
+          djNow: "\u015Eimdi \xE7al\u0131yor",
+          djNext: "Sonra uyar",
+          djNextSub: "S\u0131randan \u2013 ton, tempo ve enerji",
+          djFit: "%{p} uyuyor",
+          djQueued: "\u201C{t}\u201D s\u0131rada",
+          djMoved: "Enerji korundu: \u201C{t}\u201D \xF6ne al\u0131nd\u0131",
+          djNone: "S\u0131rada kar\u015F\u0131la\u015Ft\u0131racak bir \u015Fey yok",
+          djNoData: "Bu \u015Fark\u0131n\u0131n temposu ve tonu bilinmiyor",
+          djMore: "Daha fazla \u015Fark\u0131 kontrol ediliyor \u2026"
         },
         ru: {
           g_library: "\u041C\u0435\u0434\u0438\u0430\u0442\u0435\u043A\u0430",
@@ -5402,8 +5465,6 @@
           wishFrom: "{n} \u0437\u0430\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442",
           wishNew: "\u041D\u043E\u0432\u044B\u0439 \u0437\u0430\u043A\u0430\u0437 \u043F\u0435\u0441\u043D\u0438",
           wishAll: "\u0412\u0441\u0435 \u0437\u0430\u043A\u0430\u0437\u044B",
-          partyCountdown: "\u041E\u0442\u0441\u0447\u0451\u0442 \u0434\u043E \u0434\u0440\u043E\u043F\u0430",
-          partyCountdownHint: "\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0435 \u0447\u0435\u0442\u044B\u0440\u0435 \u0443\u0434\u0430\u0440\u0430 \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C \u043A\u0440\u0443\u043F\u043D\u043E \u043E\u0442\u0441\u0447\u0438\u0442\u044B\u0432\u0430\u044E\u0442\u0441\u044F \u0432 \u0446\u0435\u043D\u0442\u0440\u0435",
           partyHandsUp: "\u0420\u0443\u043A\u0438 \u0432\u0432\u0435\u0440\u0445",
           partyHandsUpHint: "\u041D\u0430 \u043F\u0440\u0438\u043F\u0435\u0432\u0435 \u0432\u0441\u044F \u0442\u043E\u043B\u043F\u0430 \u0432\u0441\u043A\u0438\u0434\u044B\u0432\u0430\u0435\u0442 \u043E\u0431\u0435 \u0440\u0443\u043A\u0438 \u0432\u0432\u0435\u0440\u0445",
           partyFlashStorm: "\u0428\u0442\u043E\u0440\u043C \u0432\u0441\u043F\u044B\u0448\u0435\u043A",
@@ -5415,14 +5476,6 @@
           partyPause: "\u0421\u0446\u0435\u043D\u0430 \u043F\u0430\u0443\u0437\u044B",
           partyPauseHint: "\u041A\u043E\u0433\u0434\u0430 \u043C\u0443\u0437\u044B\u043A\u0430 \u043D\u0430 \u043F\u0430\u0443\u0437\u0435: \u0441\u043F\u043E\u043A\u043E\u0439\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0441 \u0442\u0440\u0435\u043A\u043E\u043C \u0438 QR-\u043A\u043E\u0434\u043E\u043C \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
           confetti: "\u0425\u043B\u043E\u043F\u0443\u0448\u043A\u0430 \u0441 \u043A\u043E\u043D\u0444\u0435\u0442\u0442\u0438 (C)",
-          annTitle: "\u041E\u0431\u044A\u044F\u0432\u043B\u0435\u043D\u0438\u0435",
-          annHint: "\u041A\u0440\u0443\u043F\u043D\u043E \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442\u0441\u044F \u043D\u0430 \u044D\u043A\u0440\u0430\u043D\u0435 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438 \u0438 \u043D\u0430 \u043A\u0430\u0436\u0434\u043E\u043C \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0435",
-          annPlaceholder: "\u041F\u0438\u0446\u0446\u0430 \u043F\u0440\u0438\u0435\u0445\u0430\u043B\u0430!",
-          annSend: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C",
-          annP1: "\u0415\u0434\u0430 \u0433\u043E\u0442\u043E\u0432\u0430!",
-          annP2: "\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u044F\u044F \u043F\u0435\u0441\u043D\u044F!",
-          annP3: "\u0421 \u0434\u043D\u0451\u043C \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F!",
-          annP4: "\u0412\u0441\u0435 \u043D\u0430 \u0442\u0430\u043D\u0446\u043F\u043E\u043B!",
           pauseTitle: "\u041D\u0435\u0431\u043E\u043B\u044C\u0448\u043E\u0439 \u043F\u0435\u0440\u0435\u0440\u044B\u0432",
           pauseSub: "\u0421\u043A\u0430\u043D\u0438\u0440\u0443\u0439 \u0438 \u043F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0439\u0441\u044F",
           pollBtn: "\u0413\u043E\u043B\u043E\u0441\u043E\u0432\u0430\u043D\u0438\u0435 \u0433\u043E\u0441\u0442\u0435\u0439",
@@ -5442,7 +5495,24 @@
           rankLine: "{w} \u0436\u0435\u043B\u0430\u043D\u0438\u0439 \u0441\u044B\u0433\u0440\u0430\u043D\u043E \xB7 {v} \u0433\u043E\u043B\u043E\u0441\u043E\u0432",
           rankGuest: "\u0413\u043E\u0441\u0442\u044C",
           reportBug: "\u0421\u043E\u043E\u0431\u0449\u0438\u0442\u044C \u043E \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u0435",
-          updOk: "Spotify {v}: Mirage \u043F\u0440\u043E\u0432\u0435\u0440\u0438\u043B \u043D\u043E\u0432\u0443\u044E \u0432\u0435\u0440\u0441\u0438\u044E \u2013 \u0432\u0441\u0451 \u043F\u043E\u0434\u0445\u043E\u0434\u0438\u0442"
+          updOk: "Spotify {v}: Mirage \u043F\u0440\u043E\u0432\u0435\u0440\u0438\u043B \u043D\u043E\u0432\u0443\u044E \u0432\u0435\u0440\u0441\u0438\u044E \u2013 \u0432\u0441\u0451 \u043F\u043E\u0434\u0445\u043E\u0434\u0438\u0442",
+          viz_galaxy: "\u0413\u0430\u043B\u0430\u043A\u0442\u0438\u043A\u0430",
+          viz_mountains: "\u0413\u043E\u0440\u044B",
+          viz_scope: "\u041E\u0441\u0446\u0438\u043B\u043B\u043E\u0433\u0440\u0430\u0444",
+          viz_shatter: "\u0420\u0430\u0437\u0431\u0438\u0442\u0430\u044F \u043E\u0431\u043B\u043E\u0436\u043A\u0430",
+          djTitle: "DJ",
+          djEnergy: "\u0414\u0435\u0440\u0436\u0430\u0442\u044C \u044D\u043D\u0435\u0440\u0433\u0438\u044E",
+          djEnergyOn: "\u0412\u043A\u043B. \u2013 \u0435\u0441\u043B\u0438 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0442\u0440\u0435\u043A \u043B\u043E\u043C\u0430\u0435\u0442 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435, \u0431\u043E\u043B\u0435\u0435 \u043F\u043E\u0434\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0438\u0437 \u043E\u0447\u0435\u0440\u0435\u0434\u0438 \u0432\u044B\u0439\u0434\u0435\u0442 \u0432\u043F\u0435\u0440\u0451\u0434",
+          djEnergyOff: "\u0412\u044B\u043A\u043B. \u2013 \u043E\u0447\u0435\u0440\u0435\u0434\u044C \u0438\u0433\u0440\u0430\u0435\u0442 \u043A\u0430\u043A \u0435\u0441\u0442\u044C",
+          djNow: "\u0418\u0433\u0440\u0430\u0435\u0442 \u0441\u0435\u0439\u0447\u0430\u0441",
+          djNext: "\u041F\u043E\u0434\u043E\u0439\u0434\u0451\u0442 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u043C",
+          djNextSub: "\u0418\u0437 \u0442\u0432\u043E\u0435\u0439 \u043E\u0447\u0435\u0440\u0435\u0434\u0438 \u2013 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C, \u0442\u0435\u043C\u043F \u0438 \u044D\u043D\u0435\u0440\u0433\u0438\u044F",
+          djFit: "\u043F\u043E\u0434\u0445\u043E\u0434\u0438\u0442 \u043D\u0430 {p} %",
+          djQueued: "\xAB{t}\xBB \u0438\u0433\u0440\u0430\u0435\u0442 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u043C",
+          djMoved: "\u042D\u043D\u0435\u0440\u0433\u0438\u044F \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430: \xAB{t}\xBB \u0432\u044B\u0448\u0435\u043B \u0432\u043F\u0435\u0440\u0451\u0434",
+          djNone: "\u0412 \u043E\u0447\u0435\u0440\u0435\u0434\u0438 \u043D\u0435\u0447\u0435\u0433\u043E \u0441\u0440\u0430\u0432\u043D\u0438\u0432\u0430\u0442\u044C",
+          djNoData: "\u0422\u0435\u043C\u043F \u0438 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C \u044D\u0442\u043E\u0433\u043E \u0442\u0440\u0435\u043A\u0430 \u043D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u044B",
+          djMore: "\u041F\u0440\u043E\u0432\u0435\u0440\u044F\u044E \u0434\u0440\u0443\u0433\u0438\u0435 \u0442\u0440\u0435\u043A\u0438 \u2026"
         },
         uk: {
           g_library: "\u041C\u0435\u0434\u0456\u0430\u0442\u0435\u043A\u0430",
@@ -5935,8 +6005,6 @@
           wishFrom: "{n} \u0437\u0430\u043C\u043E\u0432\u043B\u044F\u0454",
           wishNew: "\u041D\u043E\u0432\u0435 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u043F\u0456\u0441\u043D\u0456",
           wishAll: "\u0423\u0441\u0456 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F",
-          partyCountdown: "\u0412\u0456\u0434\u043B\u0456\u043A \u0434\u043E \u0434\u0440\u043E\u043F\u0443",
-          partyCountdownHint: "\u041E\u0441\u0442\u0430\u043D\u043D\u0456 \u0447\u043E\u0442\u0438\u0440\u0438 \u0443\u0434\u0430\u0440\u0438 \u043F\u0435\u0440\u0435\u0434 \u0434\u0440\u043E\u043F\u043E\u043C \u0432\u0435\u043B\u0438\u043A\u0438\u043C\u0438 \u0446\u0438\u0444\u0440\u0430\u043C\u0438 \u0432\u0456\u0434\u043B\u0456\u0447\u0443\u044E\u0442\u044C\u0441\u044F \u043F\u043E\u0441\u0435\u0440\u0435\u0434\u0438\u043D\u0456",
           partyHandsUp: "\u0420\u0443\u043A\u0438 \u0432\u0433\u043E\u0440\u0443",
           partyHandsUpHint: "\u041D\u0430 \u043F\u0440\u0438\u0441\u043F\u0456\u0432\u0456 \u0432\u0435\u0441\u044C \u043D\u0430\u0442\u043E\u0432\u043F \u043F\u0456\u0434\u0456\u0439\u043C\u0430\u0454 \u043E\u0431\u0438\u0434\u0432\u0456 \u0440\u0443\u043A\u0438 \u0432\u0433\u043E\u0440\u0443",
           partyFlashStorm: "\u0411\u0443\u0440\u044F \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432",
@@ -5948,14 +6016,6 @@
           partyPause: "\u0421\u0446\u0435\u043D\u0430 \u043F\u0430\u0443\u0437\u0438",
           partyPauseHint: "\u041A\u043E\u043B\u0438 \u043C\u0443\u0437\u0438\u043A\u0430 \u043D\u0430 \u043F\u0430\u0443\u0437\u0456: \u0441\u043F\u043E\u043A\u0456\u0439\u043D\u0430 \u0441\u0446\u0435\u043D\u0430 \u0437 \u043F\u0456\u0441\u043D\u0435\u044E \u0442\u0430 QR-\u043A\u043E\u0434\u043E\u043C \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
           confetti: "\u0413\u0430\u0440\u043C\u0430\u0442\u0430 \u0437 \u043A\u043E\u043D\u0444\u0435\u0442\u0456 (C)",
-          annTitle: "\u041E\u0433\u043E\u043B\u043E\u0448\u0435\u043D\u043D\u044F",
-          annHint: "\u041F\u043E\u043A\u0430\u0437\u0443\u0454\u0442\u044C\u0441\u044F \u0432\u0435\u043B\u0438\u043A\u0438\u043C \u043D\u0430 \u0435\u043A\u0440\u0430\u043D\u0456 \u0432\u0435\u0447\u0456\u0440\u043A\u0438 \u0442\u0430 \u043D\u0430 \u043A\u043E\u0436\u043D\u043E\u043C\u0443 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456",
-          annPlaceholder: "\u041F\u0456\u0446\u0430 \u043F\u0440\u0438\u0457\u0445\u0430\u043B\u0430!",
-          annSend: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438",
-          annP1: "\u0407\u0436\u0430 \u0433\u043E\u0442\u043E\u0432\u0430!",
-          annP2: "\u041E\u0441\u0442\u0430\u043D\u043D\u044F \u043F\u0456\u0441\u043D\u044F!",
-          annP3: "\u0417 \u0434\u043D\u0435\u043C \u043D\u0430\u0440\u043E\u0434\u0436\u0435\u043D\u043D\u044F!",
-          annP4: "\u0423\u0441\u0456 \u043D\u0430 \u0442\u0430\u043D\u0446\u043F\u043E\u043B!",
           pauseTitle: "\u041A\u043E\u0440\u043E\u0442\u043A\u0430 \u043F\u0435\u0440\u0435\u0440\u0432\u0430",
           pauseSub: "\u0421\u043A\u0430\u043D\u0443\u0439 \u0456 \u043F\u0440\u0438\u0454\u0434\u043D\u0443\u0439\u0441\u044F",
           pollBtn: "\u0413\u043E\u043B\u043E\u0441\u0443\u0432\u0430\u043D\u043D\u044F \u0433\u043E\u0441\u0442\u0435\u0439",
@@ -5975,7 +6035,24 @@
           rankLine: "{w} \u043F\u043E\u0431\u0430\u0436\u0430\u043D\u044C \u0437\u0456\u0433\u0440\u0430\u043D\u043E \xB7 {v} \u0433\u043E\u043B\u043E\u0441\u0456\u0432",
           rankGuest: "\u0413\u0456\u0441\u0442\u044C",
           reportBug: "\u041F\u043E\u0432\u0456\u0434\u043E\u043C\u0438\u0442\u0438 \u043F\u0440\u043E \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u0443",
-          updOk: "Spotify {v}: Mirage \u043F\u0435\u0440\u0435\u0432\u0456\u0440\u0438\u0432 \u043D\u043E\u0432\u0443 \u0432\u0435\u0440\u0441\u0456\u044E \u2013 \u0443\u0441\u0435 \u043F\u0456\u0434\u0445\u043E\u0434\u0438\u0442\u044C"
+          updOk: "Spotify {v}: Mirage \u043F\u0435\u0440\u0435\u0432\u0456\u0440\u0438\u0432 \u043D\u043E\u0432\u0443 \u0432\u0435\u0440\u0441\u0456\u044E \u2013 \u0443\u0441\u0435 \u043F\u0456\u0434\u0445\u043E\u0434\u0438\u0442\u044C",
+          viz_galaxy: "\u0413\u0430\u043B\u0430\u043A\u0442\u0438\u043A\u0430",
+          viz_mountains: "\u0413\u043E\u0440\u0438",
+          viz_scope: "\u041E\u0441\u0446\u0438\u043B\u043E\u0433\u0440\u0430\u0444",
+          viz_shatter: "\u0420\u043E\u0437\u0431\u0438\u0442\u0430 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430",
+          djTitle: "DJ",
+          djEnergy: "\u0422\u0440\u0438\u043C\u0430\u0442\u0438 \u0435\u043D\u0435\u0440\u0433\u0456\u044E",
+          djEnergyOn: "\u0423\u0432\u0456\u043C\u043A. \u2013 \u044F\u043A\u0449\u043E \u043D\u0430\u0441\u0442\u0443\u043F\u043D\u0438\u0439 \u0442\u0440\u0435\u043A \u043B\u0430\u043C\u0430\u0454 \u043D\u0430\u0441\u0442\u0440\u0456\u0439, \u043A\u0440\u0430\u0449\u0438\u0439 \u0437 \u0447\u0435\u0440\u0433\u0438 \u0432\u0438\u0445\u043E\u0434\u0438\u0442\u044C \u0443\u043F\u0435\u0440\u0435\u0434",
+          djEnergyOff: "\u0412\u0438\u043C\u043A. \u2013 \u0447\u0435\u0440\u0433\u0430 \u0433\u0440\u0430\u0454 \u044F\u043A \u0454",
+          djNow: "\u0413\u0440\u0430\u0454 \u0437\u0430\u0440\u0430\u0437",
+          djNext: "\u041F\u0430\u0441\u0443\u0454 \u043D\u0430\u0441\u0442\u0443\u043F\u043D\u0438\u043C",
+          djNextSub: "\u0417 \u0442\u0432\u043E\u0454\u0457 \u0447\u0435\u0440\u0433\u0438 \u2013 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u0456\u0441\u0442\u044C, \u0442\u0435\u043C\u043F \u0456 \u0435\u043D\u0435\u0440\u0433\u0456\u044F",
+          djFit: "\u043F\u0430\u0441\u0443\u0454 \u043D\u0430 {p} %",
+          djQueued: "\xAB{t}\xBB \u0433\u0440\u0430\u0454 \u043D\u0430\u0441\u0442\u0443\u043F\u043D\u0438\u043C",
+          djMoved: "\u0415\u043D\u0435\u0440\u0433\u0456\u044E \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E: \xAB{t}\xBB \u0432\u0438\u0439\u0448\u043E\u0432 \u0443\u043F\u0435\u0440\u0435\u0434",
+          djNone: "\u0423 \u0447\u0435\u0440\u0437\u0456 \u043D\u0456\u0447\u043E\u0433\u043E \u043F\u043E\u0440\u0456\u0432\u043D\u044E\u0432\u0430\u0442\u0438",
+          djNoData: "\u0422\u0435\u043C\u043F \u0456 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u0456\u0441\u0442\u044C \u0446\u044C\u043E\u0433\u043E \u0442\u0440\u0435\u043A\u0443 \u043D\u0435\u0432\u0456\u0434\u043E\u043C\u0456",
+          djMore: "\u041F\u0435\u0440\u0435\u0432\u0456\u0440\u044F\u044E \u0456\u043D\u0448\u0456 \u0442\u0440\u0435\u043A\u0438 \u2026"
         },
         ja: {
           g_library: "\u30E9\u30A4\u30D6\u30E9\u30EA",
@@ -6468,8 +6545,6 @@
           wishFrom: "{n} \u3055\u3093\u306E\u30EA\u30AF\u30A8\u30B9\u30C8",
           wishNew: "\u65B0\u3057\u3044\u30EA\u30AF\u30A8\u30B9\u30C8",
           wishAll: "\u3059\u3079\u3066\u306E\u30EA\u30AF\u30A8\u30B9\u30C8",
-          partyCountdown: "\u30C9\u30ED\u30C3\u30D7\u30AB\u30A6\u30F3\u30C8\u30C0\u30A6\u30F3",
-          partyCountdownHint: "\u30C9\u30ED\u30C3\u30D7\u76F4\u524D\u306E4\u62CD\u304C\u3001\u4E2D\u592E\u306B\u5927\u304D\u304F\u30AB\u30A6\u30F3\u30C8\u30C0\u30A6\u30F3\u3055\u308C\u307E\u3059",
           partyHandsUp: "\u30CF\u30F3\u30BA\u30A2\u30C3\u30D7",
           partyHandsUpHint: "\u30B5\u30D3\u3067\u3001\u307F\u3093\u306A\u304C\u4E21\u624B\u3092\u9AD8\u304F\u7A81\u304D\u4E0A\u3052\u307E\u3059",
           partyFlashStorm: "\u30D5\u30E9\u30C3\u30B7\u30E5\u306E\u5D50",
@@ -6481,14 +6556,6 @@
           partyPause: "\u30DD\u30FC\u30BA\u30B7\u30FC\u30F3",
           partyPauseHint: "\u97F3\u697D\u304C\u4E00\u6642\u505C\u6B62\u3059\u308B\u3068\u3001\u66F2\u3068\u30B9\u30DE\u30DB\u7528\u306EQR\u30B3\u30FC\u30C9\u3092\u8868\u793A\u3059\u308B\u843D\u3061\u7740\u3044\u305F\u30B7\u30FC\u30F3\u306B\u306A\u308A\u307E\u3059",
           confetti: "\u7D19\u5439\u96EA\u30AD\u30E3\u30CE\u30F3 (C)",
-          annTitle: "\u304A\u77E5\u3089\u305B",
-          annHint: "\u30D1\u30FC\u30C6\u30A3\u30FC\u753B\u9762\u3068\u3059\u3079\u3066\u306E\u30B9\u30DE\u30DB\u306B\u5927\u304D\u304F\u8868\u793A\u3055\u308C\u307E\u3059",
-          annPlaceholder: "\u30D4\u30B6\u304C\u5C4A\u3044\u305F\u3088\uFF01",
-          annSend: "\u8868\u793A",
-          annP1: "\u3054\u306F\u3093\u3067\u304D\u305F\u3088\uFF01",
-          annP2: "\u30E9\u30B9\u30C8\u30BD\u30F3\u30B0\uFF01",
-          annP3: "\u304A\u8A95\u751F\u65E5\u304A\u3081\u3067\u3068\u3046\uFF01",
-          annP4: "\u307F\u3093\u306A\u30D5\u30ED\u30A2\u3078\uFF01",
           pauseTitle: "\u3061\u3087\u3063\u3068\u4F11\u61A9",
           pauseSub: "\u30B9\u30AD\u30E3\u30F3\u3057\u3066\u53C2\u52A0\u3057\u3088\u3046",
           pollBtn: "\u30B2\u30B9\u30C8\u6295\u7968",
@@ -6508,7 +6575,24 @@
           rankLine: "\u30EA\u30AF\u30A8\u30B9\u30C8\u518D\u751F {w} \u66F2 \xB7 {v} \u7968",
           rankGuest: "\u30B2\u30B9\u30C8",
           reportBug: "\u554F\u984C\u3092\u5831\u544A",
-          updOk: "Spotify {v}\uFF1AMirage\u304C\u65B0\u30D0\u30FC\u30B8\u30E7\u30F3\u3092\u78BA\u8A8D\u3057\u307E\u3057\u305F \u2013 \u554F\u984C\u3042\u308A\u307E\u305B\u3093"
+          updOk: "Spotify {v}\uFF1AMirage\u304C\u65B0\u30D0\u30FC\u30B8\u30E7\u30F3\u3092\u78BA\u8A8D\u3057\u307E\u3057\u305F \u2013 \u554F\u984C\u3042\u308A\u307E\u305B\u3093",
+          viz_galaxy: "\u30AE\u30E3\u30E9\u30AF\u30B7\u30FC",
+          viz_mountains: "\u5C71\u8108",
+          viz_scope: "\u30AA\u30B7\u30ED\u30B9\u30B3\u30FC\u30D7",
+          viz_shatter: "\u7815\u3051\u308B\u30AB\u30D0\u30FC",
+          djTitle: "DJ",
+          djEnergy: "\u30C6\u30F3\u30B7\u30E7\u30F3\u3092\u30AD\u30FC\u30D7",
+          djEnergyOn: "\u30AA\u30F3 \u2013 \u6B21\u306E\u66F2\u304C\u96F0\u56F2\u6C17\u3092\u58CA\u3057\u305D\u3046\u306A\u3089\u3001\u30AD\u30E5\u30FC\u304B\u3089\u3088\u308A\u30DE\u30C3\u30C1\u3059\u308B\u66F2\u304C\u7E70\u308A\u4E0A\u304C\u308A\u307E\u3059",
+          djEnergyOff: "\u30AA\u30D5 \u2013 \u30AD\u30E5\u30FC\u306F\u305D\u306E\u307E\u307E\u518D\u751F\u3055\u308C\u307E\u3059",
+          djNow: "\u518D\u751F\u4E2D",
+          djNext: "\u6B21\u306B\u3074\u3063\u305F\u308A",
+          djNextSub: "\u30AD\u30E5\u30FC\u304B\u3089 \u2013 \u30AD\u30FC\u3001\u30C6\u30F3\u30DD\u3001\u30A8\u30CD\u30EB\u30AE\u30FC",
+          djFit: "\u30DE\u30C3\u30C1\u5EA6 {p} %",
+          djQueued: "\u6B21\u306F\u300C{t}\u300D",
+          djMoved: "\u30C6\u30F3\u30B7\u30E7\u30F3\u3092\u30AD\u30FC\u30D7:\u300C{t}\u300D\u3092\u7E70\u308A\u4E0A\u3052\u307E\u3057\u305F",
+          djNone: "\u6BD4\u8F03\u3067\u304D\u308B\u66F2\u304C\u30AD\u30E5\u30FC\u306B\u3042\u308A\u307E\u305B\u3093",
+          djNoData: "\u3053\u306E\u66F2\u306E\u30C6\u30F3\u30DD\u3068\u30AD\u30FC\u306F\u4E0D\u660E\u3067\u3059",
+          djMore: "\u307B\u304B\u306E\u66F2\u3092\u30C1\u30A7\u30C3\u30AF\u4E2D \u2026"
         },
         ko: {
           g_library: "\uB77C\uC774\uBE0C\uB7EC\uB9AC",
@@ -7001,8 +7085,6 @@
           wishFrom: "{n} \uB2D8\uC758 \uC2E0\uCCAD\uACE1",
           wishNew: "\uC0C8 \uC2E0\uCCAD\uACE1",
           wishAll: "\uBAA8\uB4E0 \uC2E0\uCCAD\uACE1",
-          partyCountdown: "\uB4DC\uB86D \uCE74\uC6B4\uD2B8\uB2E4\uC6B4",
-          partyCountdownHint: "\uB4DC\uB86D \uC9C1\uC804 \uB9C8\uC9C0\uB9C9 \uB124 \uBC15\uC790\uB97C \uAC00\uC6B4\uB370\uC5D0 \uD06C\uAC8C \uCE74\uC6B4\uD2B8\uB2E4\uC6B4\uD574\uC694",
           partyHandsUp: "\uD578\uC988\uC5C5",
           partyHandsUpHint: "\uD6C4\uB834\uC5D0\uC11C \uBAA8\uB450\uAC00 \uB450 \uC190\uC744 \uBC88\uCA4D \uB4E4\uC5B4\uC694",
           partyFlashStorm: "\uCE74\uBA54\uB77C \uD50C\uB798\uC2DC \uD3ED\uD48D",
@@ -7014,14 +7096,6 @@
           partyPause: "\uC77C\uC2DC\uC815\uC9C0 \uC7A5\uBA74",
           partyPauseHint: "\uC74C\uC545\uC774 \uBA48\uCD94\uBA74 \uB178\uB798\uC640 \uD3F0\uC6A9 QR \uCF54\uB4DC\uAC00 \uC788\uB294 \uCC28\uBD84\uD55C \uC7A5\uBA74\uC774 \uB098\uC640\uC694",
           confetti: "\uCEE8\uD398\uD2F0 \uCE90\uB17C (C)",
-          annTitle: "\uACF5\uC9C0",
-          annHint: "\uD30C\uD2F0 \uD654\uBA74\uACFC \uBAA8\uB4E0 \uD3F0\uC5D0 \uD06C\uAC8C \uD45C\uC2DC\uB3FC\uC694",
-          annPlaceholder: "\uD53C\uC790 \uC654\uC5B4\uC694!",
-          annSend: "\uBCF4\uC5EC\uC8FC\uAE30",
-          annP1: "\uC74C\uC2DD \uB2E4 \uB410\uC5B4\uC694!",
-          annP2: "\uB9C8\uC9C0\uB9C9 \uACE1!",
-          annP3: "\uC0DD\uC77C \uCD95\uD558\uD574\uC694!",
-          annP4: "\uB2E4 \uAC19\uC774 \uB304\uC2A4 \uD50C\uB85C\uC5B4\uB85C!",
           pauseTitle: "\uC7A0\uAE50 \uD734\uC2DD",
           pauseSub: "\uC2A4\uCE94\uD558\uACE0 \uCC38\uC5EC\uD558\uC138\uC694",
           pollBtn: "\uAC8C\uC2A4\uD2B8 \uD22C\uD45C",
@@ -7041,7 +7115,24 @@
           rankLine: "\uC2E0\uCCAD\uACE1 {w}\uACE1 \uC7AC\uC0DD \xB7 {v}\uD45C",
           rankGuest: "\uAC8C\uC2A4\uD2B8",
           reportBug: "\uBB38\uC81C \uC2E0\uACE0",
-          updOk: "Spotify {v}: Mirage\uAC00 \uC0C8 \uBC84\uC804\uC744 \uD655\uC778\uD588\uC5B4\uC694 \u2013 \uBAA8\uB450 \uC798 \uB9DE\uC544\uC694"
+          updOk: "Spotify {v}: Mirage\uAC00 \uC0C8 \uBC84\uC804\uC744 \uD655\uC778\uD588\uC5B4\uC694 \u2013 \uBAA8\uB450 \uC798 \uB9DE\uC544\uC694",
+          viz_galaxy: "\uC740\uD558\uC218",
+          viz_mountains: "\uC0B0\uB9E5",
+          viz_scope: "\uC624\uC2E4\uB85C\uC2A4\uCF54\uD504",
+          viz_shatter: "\uAE68\uC9C0\uB294 \uCEE4\uBC84",
+          djTitle: "DJ",
+          djEnergy: "\uC5D0\uB108\uC9C0 \uC720\uC9C0",
+          djEnergyOn: "\uCF1C\uC9D0 \u2013 \uB2E4\uC74C \uACE1\uC774 \uBD84\uC704\uAE30\uB97C \uAE68\uBA74 \uB300\uAE30\uC5F4\uC5D0\uC11C \uB354 \uC798 \uB9DE\uB294 \uACE1\uC774 \uC55E\uC73C\uB85C \uC640\uC694",
+          djEnergyOff: "\uAEBC\uC9D0 \u2013 \uB300\uAE30\uC5F4\uC774 \uADF8\uB300\uB85C \uC7AC\uC0DD\uB3FC\uC694",
+          djNow: "\uC9C0\uAE08 \uC7AC\uC0DD \uC911",
+          djNext: "\uB2E4\uC74C\uC5D0 \uC5B4\uC6B8\uB824\uC694",
+          djNextSub: "\uB0B4 \uB300\uAE30\uC5F4\uC5D0\uC11C \u2013 \uD0A4, \uD15C\uD3EC, \uC5D0\uB108\uC9C0",
+          djFit: "{p} % \uC5B4\uC6B8\uB9BC",
+          djQueued: "\uB2E4\uC74C \uACE1\uC740 \u201C{t}\u201D",
+          djMoved: "\uC5D0\uB108\uC9C0 \uC720\uC9C0: \u201C{t}\u201D \uACE1\uC774 \uC55E\uC73C\uB85C \uC654\uC5B4\uC694",
+          djNone: "\uBE44\uAD50\uD560 \uACE1\uC774 \uB300\uAE30\uC5F4\uC5D0 \uC5C6\uC5B4\uC694",
+          djNoData: "\uC774 \uACE1\uC758 \uD15C\uD3EC\uC640 \uD0A4\uB97C \uC54C \uC218 \uC5C6\uC5B4\uC694",
+          djMore: "\uB2E4\uB978 \uACE1 \uD655\uC778 \uC911 \u2026"
         },
         zh: {
           g_library: "\u97F3\u4E50\u5E93",
@@ -7534,8 +7625,6 @@
           wishFrom: "{n} \u70B9\u6B4C",
           wishNew: "\u65B0\u7684\u70B9\u6B4C",
           wishAll: "\u5168\u90E8\u70B9\u6B4C",
-          partyCountdown: "Drop \u5012\u8BA1\u65F6",
-          partyCountdownHint: "Drop \u524D\u7684\u6700\u540E\u56DB\u62CD\u4F1A\u5728\u5C4F\u5E55\u4E2D\u592E\u5927\u5B57\u5012\u6570",
           partyHandsUp: "\u4E3E\u8D77\u53CC\u624B",
           partyHandsUpHint: "\u526F\u6B4C\u65F6\uFF0C\u5168\u573A\u89C2\u4F17\u4E00\u8D77\u9AD8\u4E3E\u53CC\u624B",
           partyFlashStorm: "\u95EA\u5149\u706F\u98CE\u66B4",
@@ -7547,14 +7636,6 @@
           partyPause: "\u6682\u505C\u573A\u666F",
           partyPauseHint: "\u97F3\u4E50\u6682\u505C\u65F6\uFF1A\u663E\u793A\u5F53\u524D\u6B4C\u66F2\u548C\u624B\u673A\u626B\u7801\u7528\u4E8C\u7EF4\u7801\u7684\u5B89\u9759\u753B\u9762",
           confetti: "\u5F69\u7EB8\u793C\u70AE (C)",
-          annTitle: "\u516C\u544A",
-          annHint: "\u5728\u6D3E\u5BF9\u5C4F\u5E55\u548C\u6BCF\u90E8\u624B\u673A\u4E0A\u5927\u5B57\u663E\u793A",
-          annPlaceholder: "\u62AB\u8428\u5230\u5566\uFF01",
-          annSend: "\u663E\u793A",
-          annP1: "\u5F00\u996D\u5566\uFF01",
-          annP2: "\u6700\u540E\u4E00\u9996\u6B4C\uFF01",
-          annP3: "\u751F\u65E5\u5FEB\u4E50\uFF01",
-          annP4: "\u5927\u5BB6\u90FD\u5230\u821E\u6C60\u6765\uFF01",
           pauseTitle: "\u77ED\u6682\u4F11\u606F",
           pauseSub: "\u626B\u7801\u52A0\u5165",
           pollBtn: "\u5609\u5BBE\u6295\u7968",
@@ -7574,7 +7655,24 @@
           rankLine: "\u5DF2\u64AD\u653E {w} \u9996\u70B9\u6B4C \xB7 {v} \u7968",
           rankGuest: "\u5609\u5BBE",
           reportBug: "\u62A5\u544A\u95EE\u9898",
-          updOk: "Spotify {v}\uFF1AMirage \u5DF2\u68C0\u67E5\u65B0\u7248\u672C \u2013 \u4E00\u5207\u6B63\u5E38"
+          updOk: "Spotify {v}\uFF1AMirage \u5DF2\u68C0\u67E5\u65B0\u7248\u672C \u2013 \u4E00\u5207\u6B63\u5E38",
+          viz_galaxy: "\u94F6\u6CB3",
+          viz_mountains: "\u5C71\u8109",
+          viz_scope: "\u793A\u6CE2\u5668",
+          viz_shatter: "\u788E\u88C2\u5C01\u9762",
+          djTitle: "DJ",
+          djEnergy: "\u4FDD\u6301\u80FD\u91CF",
+          djEnergyOn: "\u5F00\u542F \u2013 \u5982\u679C\u4E0B\u4E00\u9996\u4F1A\u7834\u574F\u6C1B\u56F4\uFF0C\u961F\u5217\u4E2D\u66F4\u5408\u9002\u7684\u6B4C\u66F2\u4F1A\u63D0\u524D\u64AD\u653E",
+          djEnergyOff: "\u5173\u95ED \u2013 \u961F\u5217\u6309\u539F\u6837\u64AD\u653E",
+          djNow: "\u6B63\u5728\u64AD\u653E",
+          djNext: "\u63A5\u4E0B\u6765\u5F88\u642D",
+          djNextSub: "\u6765\u81EA\u4F60\u7684\u961F\u5217 \u2013 \u8C03\u6027\u3001\u901F\u5EA6\u548C\u80FD\u91CF",
+          djFit: "\u5951\u5408\u5EA6 {p} %",
+          djQueued: "\u63A5\u4E0B\u6765\u64AD\u653E\u201C{t}\u201D",
+          djMoved: "\u4FDD\u6301\u80FD\u91CF\uFF1A\u201C{t}\u201D\u5DF2\u63D0\u524D",
+          djNone: "\u961F\u5217\u4E2D\u6CA1\u6709\u53EF\u6BD4\u8F83\u7684\u6B4C\u66F2",
+          djNoData: "\u8FD9\u9996\u6B4C\u7684\u901F\u5EA6\u548C\u8C03\u6027\u672A\u77E5",
+          djMore: "\u6B63\u5728\u68C0\u67E5\u66F4\u591A\u6B4C\u66F2 \u2026"
         }
       };
       LANG = (() => {
@@ -7702,14 +7800,15 @@
         partyHype: true,
         // Wortbilder: gesungene Begriffe bekommen ein passendes Bild (Flammen bei „fire“, Regen bei „Regen“ …)
         partyWords: true,
-        // Show-Momente: Countdown vor dem Drop, Bodennebel, Drohnen-Lichtshow, Hände hoch im Refrain, Blitzlicht-Gewitter
-        partyCountdown: true,
+        // Show-Momente: Bodennebel, Drohnen-Lichtshow, Hände hoch im Refrain, Blitzlicht-Gewitter
         partyFog: true,
         partyDrones: true,
         partyHandsUp: true,
         partyFlashStorm: true,
         // Musik pausiert: ruhige Szene mit Party-Namen und QR-Code
         partyPause: true,
+        // DJ: passt der nächste Song gar nicht (Tonart, Tempo, Energie), einen passenderen aus der Warteschlange vorziehen
+        djEnergy: false,
         partyDepth: false,
         partyShatter: true,
         partyCamera: false,
@@ -8217,9 +8316,9 @@
     const res = await netease(`search/get?s=${encodeURIComponent(title + " " + meta.artist)}&type=1&limit=10`);
     const songs = res?.result?.songs || [];
     const a = norm(meta.artist), tt = norm(title);
-    const fit2 = songs.filter((s) => (s.artists || []).some((x) => norm(x.name).includes(a) || a.includes(norm(x.name))) && (norm(s.name).includes(tt) || tt.includes(norm(s.name)))).filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1e3 - meta.sec) <= 4).sort((x, y) => Math.abs((x.duration || 0) / 1e3 - meta.sec) - Math.abs((y.duration || 0) / 1e3 - meta.sec))[0];
-    if (!fit2) return null;
-    const lyr = await netease(`song/lyric/v1?id=${fit2.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`) || await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1&rv=-1`);
+    const fit3 = songs.filter((s) => (s.artists || []).some((x) => norm(x.name).includes(a) || a.includes(norm(x.name))) && (norm(s.name).includes(tt) || tt.includes(norm(s.name)))).filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1e3 - meta.sec) <= 4).sort((x, y) => Math.abs((x.duration || 0) / 1e3 - meta.sec) - Math.abs((y.duration || 0) / 1e3 - meta.sec))[0];
+    if (!fit3) return null;
+    const lyr = await netease(`song/lyric/v1?id=${fit3.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`) || await netease(`song/lyric?id=${fit3.id}&lv=-1&kv=-1&tv=-1&rv=-1`);
     if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
     const clean2 = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
     const lines = clean2(parseLrc(lyr?.lrc?.lyric || ""));
@@ -8459,12 +8558,12 @@
     const on = words.length > 30 ? words : lines.map((l) => l.t / 1e3);
     let bpm2 = hint, phase = 0, conf = 0.5;
     if (on.length >= 8 && on !== words) {
-      const fit2 = tempoFromLines(on, hint);
-      if (fit2) [bpm2, phase, conf] = [fit2.bpm, fit2.phase, clamp(fit2.R * 1.2, 0.3, 0.9)];
+      const fit3 = tempoFromLines(on, hint);
+      if (fit3) [bpm2, phase, conf] = [fit3.bpm, fit3.phase, clamp(fit3.R * 1.2, 0.3, 0.9)];
     } else if (on.length >= 8) {
-      const fit2 = tempoFromOnsets(on, hint);
-      const use = hint && fit2.R < 0.4 ? hint : fit2.bpm;
-      if (fit2.R > 0.25 || !hint) [bpm2, phase, conf] = [use, fitGrid(on, 60 / use).phase, clamp(fit2.R * 1.4, 0.3, 0.95)];
+      const fit3 = tempoFromOnsets(on, hint);
+      const use = hint && fit3.R < 0.4 ? hint : fit3.bpm;
+      if (fit3.R > 0.25 || !hint) [bpm2, phase, conf] = [use, fitGrid(on, 60 / use).phase, clamp(fit3.R * 1.4, 0.3, 0.95)];
       else phase = fitGrid(on, 60 / hint).phase;
     }
     if (!bpm2) return null;
@@ -10168,7 +10267,7 @@
         return arr[i] + (arr[i + 1] - arr[i]) * (f - i);
       };
       party = (() => {
-        let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
+        let uri = "", picked = "", info2 = { key: "pop", why: "", bpm: 0 }, token = 0;
         let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
         const inst = { k: -1, s: -1, h: -1 };
         let sway = 1, lastSec = 0, dropGlow = 0, lastFlashAt = -1e9, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
@@ -10176,30 +10275,30 @@
         async function prepare2(item) {
           const u = item?.uri || "";
           const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
-          if (pk === picked) return info;
+          if (pk === picked) return info2;
           picked = pk;
           uri = u;
           const my = ++token;
           lastBeat = lastBar = -1;
           dropGlow = 0;
           const [genres, apple] = cfg.partyStyle === "auto" ? await Promise.all([artistGenres(item), appleGenre(item)]) : [[], ""];
-          if (my !== token) return info;
+          if (my !== token) return info2;
           const bpm2 = audio.uri === u ? audio.data?.bpm || 0 : 0;
           const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
           const auto = pickProfile(genres, bpm2, loud, apple, audio.uri === u ? minorShare(audio.data) : 0);
-          info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm: bpm2, genres, apple };
-          return info;
+          info2 = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm: bpm2, genres, apple };
+          return info2;
         }
         function refine() {
           if (!audio.data || audio.uri !== uri) return;
-          if (info.bpm !== audio.data.bpm) {
-            info.bpm = audio.data.bpm;
-            if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "", minorShare(audio.data)).key;
+          if (info2.bpm !== audio.data.bpm) {
+            info2.bpm = audio.data.bpm;
+            if (cfg.partyStyle === "auto") info2.key = pickProfile(info2.genres || [], info2.bpm, audio.data.loud, info2.apple || "", minorShare(audio.data)).key;
           }
         }
         function step(sec, dt, playing) {
           refine();
-          const P = PROFILES[info.key];
+          const P = PROFILES[info2.key];
           const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
           const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
           const fx2 = !calm();
@@ -10229,8 +10328,8 @@
             const sx = M.sections[scene];
             minor = sx ? sx.mode === 0 : false;
             keyPc = sx && sx.key >= 0 ? sx.key : -1;
-            if (sx?.tempo > 40 && sx.tc > 0.35 && info.bpm) {
-              const r = sx.tempo / info.bpm;
+            if (sx?.tempo > 40 && sx.tc > 0.35 && info2.bpm) {
+              const r = sx.tempo / info2.bpm;
               if (Math.abs(r - 0.5) < 0.06 || Math.abs(r - 2) < 0.12 || Math.abs(r - 1) > 0.1 && Math.abs(r - 1) < 0.45) tempoNow = sx.tempo;
             }
             if (playing && sec >= lastSec && sec - lastSec < 0.5) {
@@ -10274,13 +10373,13 @@
             const bi = seek(d.beats, sec, "t");
             if (bi >= 0) {
               const since = sec - d.beats[bi].t;
-              const per = Math.max(0.2, (d.beats[bi + 1]?.t ?? d.beats[bi].t + 60 / (info.bpm || 120)) - d.beats[bi].t);
+              const per = Math.max(0.2, (d.beats[bi + 1]?.t ?? d.beats[bi].t + 60 / (info2.bpm || 120)) - d.beats[bi].t);
               beatPhase = clamp(since / per, 0, 1);
               beatIdx = bi;
               const ba = d.bars?.length ? seek(d.bars, sec, "t") : -1;
               const barStart = ba >= 0 ? seek(d.beats, d.bars[ba].t + 0.05, "t") : bi - bi % 4;
               inBar = ((bi - barStart) % 4 + 4) % 4;
-              const half = info.bpm > 150;
+              const half = info2.bpm > 150;
               const strength = P.accent[half ? inBar & 2 : inBar] ?? 0.6;
               beatEnv = strength * Math.exp(-since * P.decay * (half ? 0.6 : 1));
               conf = clamp(d.beats[bi].c + 0.3, 0, 1);
@@ -10318,13 +10417,13 @@
           if (fx2 && cfg.partyZoom && dropHit) kick = 1;
           kick *= Math.exp(-dt * 9);
           spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx2 ? 1 : 0) * (scene % 2 ? -1 : 1);
-          if (barHit && fx2 && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
+          if (barHit && fx2 && info2.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
           const lasers = fx2 && cfg.partyLasers && level >= 4 ? level >= 5 ? 12 : 6 : 0;
           const beamVis = clamp(smooth.e * 1.25 + dropGlow - smooth.k, 0, 1.2);
           if (hit && P.sway) sway = -sway;
           const out = {
             P,
-            key: info.key,
+            key: info2.key,
             level,
             lvl,
             fx: fx2,
@@ -10350,11 +10449,11 @@
             phase: beatPhase,
             beatIdx,
             keyPc,
-            tempo: tempoNow || info.bpm || 120,
+            tempo: tempoNow || info2.bpm || 120,
             // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
             toDrop,
-            tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
-            blackout: !!cfg.partyDirector && toDrop > 0.02 && toDrop < 60 / (info.bpm || 120) * 0.95,
+            tension: cfg.partyDirector && toDrop > 60 / (info2.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
+            blackout: !!cfg.partyDirector && toDrop > 0.02 && toDrop < 60 / (info2.bpm || 120) * 0.95,
             finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
             beat: beatEnv,
             accent,
@@ -10370,7 +10469,7 @@
             beamVis,
             sway
           };
-          if (DEBUG) window.__mirageParty = { ...out, P: info.key, map: d ? songMap(d) : null, sec };
+          if (DEBUG) window.__mirageParty = { ...out, P: info2.key, map: d ? songMap(d) : null, sec };
           return out;
         }
         const DEBUG = (() => {
@@ -10381,7 +10480,7 @@
           }
         })();
         return { prepare: prepare2, step, get info() {
-          return info;
+          return info2;
         }, PROFILES, PROFILE_KEYS, FAMILIES };
       })();
     }
@@ -11828,9 +11927,28 @@
         ctx.stroke(arms[row]);
         arms[row] = new Path2D();
       };
+      const flushLights = (row) => {
+        ctx.globalCompositeOperation = "lighter";
+        for (const [gx, gy, kind, s1, r0] of glows) {
+          const r = (kind === "phone" ? 16 : 13 + Math.sin(t2 * 13 + gx) * 2) * s1;
+          ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - r0 * 0.25) * A * rowA[r0];
+          ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
+        }
+        glows.length = 0;
+        for (const f of crowd.flashes) {
+          if ((f.row ?? 0) !== row) continue;
+          const r = 34 * f.s;
+          ctx.globalAlpha = f.a * A;
+          ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
+        }
+        ctx.globalCompositeOperation = "source-over";
+      };
       for (const p of crowd.people) {
         if (p.row !== curRow) {
-          if (curRow != null) strokeRow(curRow);
+          if (curRow != null) {
+            strokeRow(curRow);
+            flushLights(curRow);
+          }
           curRow = p.row;
         }
         const ra = rowA[p.row];
@@ -11887,23 +12005,16 @@
           arm.quadraticCurveTo(ex, ey, hxA, hyA);
           if (side === p.hand && gadget && a > 0.5 && (inSea || me2 < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);
         }
-        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });
-        else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8 });
+        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1, row: p.row });
+        else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, row: p.row });
       }
-      if (curRow != null) strokeRow(curRow);
+      if (curRow != null) {
+        strokeRow(curRow);
+        flushLights(curRow);
+      }
       ctx.globalCompositeOperation = "lighter";
-      for (const [gx, gy, kind, s1, row] of glows) {
-        const r = (kind === "phone" ? 16 : 13 + Math.sin(t2 * 13 + gx) * 2) * s1;
-        ctx.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];
-        ctx.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);
-      }
       if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);
       crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);
-      for (const f of crowd.flashes) {
-        const r = 34 * f.s;
-        ctx.globalAlpha = f.a * A;
-        ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
-      }
       ctx.globalAlpha = 1;
     }
     const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 6e-3 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));
@@ -14610,9 +14721,6 @@
     wishes = wishes.filter((x) => x.i !== i);
     emitWishes();
   }
-  function announce2(text) {
-    lastAnn = { x: String(text || "").slice(0, 120), s: Date.now() };
-  }
   function startPoll(options) {
     poll = { id: Math.random().toString(36).slice(2, 10), o: options.slice(0, 3).map((x) => ({ t: x.t, a: x.a, img: x.img, uri: x.uri })), v: options.slice(0, 3).map(() => 0), end: Date.now() + 45e3, by: /* @__PURE__ */ new Set() };
     window.dispatchEvent(new Event("mirage:poll"));
@@ -14652,8 +14760,7 @@
       ly: lyric?.ly || "",
       lyn: lyric?.lyn || "",
       w: cfg.partyWishes ? wishList() : null,
-      // Ansage des Gastgebers (10 s), laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
-      an: lastAnn && Date.now() - lastAnn.s < 1e4 ? lastAnn : null,
+      // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
       poll: poll && Date.now() < poll.end + 8e3 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
       nx: nextUri(),
       fx: lastFx && Date.now() - lastFx.s < 3e3 ? lastFx : null
@@ -14678,7 +14785,7 @@
       emit();
     }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, guests, guest, lastReact, REACTIONS, ranked, wishList, coverUrl, lastFx, lastAnn, poll, pollState, nextUri, ranking, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, guests, guest, lastReact, REACTIONS, ranked, wishList, coverUrl, lastFx, poll, pollState, nextUri, ranking, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
@@ -14775,7 +14882,6 @@
         return /^[\w]{20,60}$/.test(id) ? "https://i.scdn.co/image/" + id : "";
       };
       lastFx = null;
-      lastAnn = null;
       poll = null;
       pollState = () => poll;
       nextUri = () => {
@@ -14783,7 +14889,7 @@
         return n?.uri || "";
       };
       ranking = () => [...guests.values()].filter((g) => g.n || g.wished || g.votes).sort((a, b) => b.played - a.played || b.wished - a.wished || b.votes - a.votes).slice(0, 10);
-      live = { prepare, feed, stop, fx, announce: announce2, startPoll, pollState, ranking, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
+      live = { prepare, feed, stop, fx, startPoll, pollState, ranking, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
     }
   });
 
@@ -19464,6 +19570,532 @@
     }
   });
 
+  // src/library.js
+  async function loadEditable() {
+    const R = S.Platform?.RootlistAPI;
+    if (typeof R?.getContents !== "function") return;
+    editableAt = Date.now();
+    try {
+      const set = /* @__PURE__ */ new Set();
+      const walk = (items) => {
+        for (const x of items || []) {
+          if (x?.type === "folder") walk(x.items);
+          else if (x?.type === "playlist" && x.uri && (x.isOwnedBySelf || x.isCollaborative || x.canAdd)) set.add(x.uri);
+        }
+      };
+      walk((await R.getContents())?.items);
+      editable = set;
+    } catch {
+    }
+  }
+  function mayEdit(uri) {
+    if (Date.now() - editableAt > 6e4) loadEditable();
+    return !editable || editable.has(uri);
+  }
+  async function loadAll(uri) {
+    const P = PL();
+    if (typeof P?.getContents !== "function") return null;
+    const all = [];
+    const LIMIT = 500;
+    let first = "";
+    for (let page = 0, offset = 0; page < 60; page++) {
+      const r = await P.getContents(uri, { offset, limit: LIMIT });
+      const items = Array.isArray(r?.items) ? r.items : [];
+      if (!items.length || page > 0 && items[0]?.uid && items[0].uid === first) break;
+      if (page === 0) first = items[0]?.uid || "";
+      all.push(...items);
+      offset += items.length;
+      const total = Number(r?.totalLength ?? r?.total);
+      if (items.length < LIMIT || Number.isFinite(total) && all.length >= total) break;
+    }
+    return all;
+  }
+  function norm3(s) {
+    let x = String(s || "").toLowerCase();
+    x = x.replace(/[([][^)\]]*[)\]]/g, (m) => NOISE.test(m) ? " " : m);
+    x = x.replace(/\s[-–]\s.*$/, (m) => NOISE.test(m) ? "" : m);
+    return x.normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
+  }
+  function findDuplicates(items) {
+    const exact = [], maybe = [];
+    const byUri = /* @__PURE__ */ new Map(), byName = /* @__PURE__ */ new Map();
+    items.forEach((it, i) => {
+      const uri = it?.uri;
+      if (!uri) return;
+      const row = { it, pos: i + 1 };
+      if (byUri.has(uri)) {
+        exact.push({ ...row, first: byUri.get(uri).pos });
+        return;
+      }
+      byUri.set(uri, row);
+      const title = norm3(it.name), artist = norm3(artistOf2(it));
+      if (!title || !artist || !/^spotify:(track|local):/.test(uri)) return;
+      const key = title + "|" + artist;
+      const prev = byName.get(key);
+      if (prev && !(durMs(prev.it) && durMs(it) && Math.abs(durMs(prev.it) - durMs(it)) > 45e3)) maybe.push({ ...row, first: prev.pos });
+      else if (!prev) byName.set(key, row);
+    });
+    return { exact, maybe };
+  }
+  async function canEdit(uri) {
+    try {
+      const m = await PL()?.getMetadata?.(uri);
+      const p = m?.permissions;
+      if (p && typeof p.canEdit === "boolean") return { ok: p.canEdit, name: m?.name || "" };
+      return { ok: mayEdit(uri), name: m?.name || "" };
+    } catch {
+      return { ok: mayEdit(uri), name: "" };
+    }
+  }
+  async function removeItems(uri, picked) {
+    const P = PL();
+    if (typeof P?.remove !== "function") return 0;
+    let done = 0;
+    for (let i = 0; i < picked.length; i += 100) {
+      const part = picked.slice(i, i + 100).map((x) => ({ uri: x.it.uri, uid: x.it.uid }));
+      await P.remove(uri, part);
+      done += part.length;
+    }
+    return done;
+  }
+  function dupRow(x, checked2) {
+    const row = el("label", "m-row m-dup");
+    const txt = el("span");
+    txt.append(el("b", "", x.it.name || x.it.uri), el("small", "", [artistOf2(x.it), t("dupPos").replace("{a}", x.pos).replace("{b}", x.first)].filter(Boolean).join(" \xB7 ")));
+    const cb = el("input");
+    cb.type = "checkbox";
+    cb.checked = checked2;
+    cb.disabled = !x.it.uid;
+    row.append(txt, cb);
+    return { row, cb, x };
+  }
+  function showDuplicates(uri, name, found) {
+    const box = el("div", "mirage-settings m-dups");
+    const picks = [];
+    const section = (title, list, checked2) => {
+      if (!list.length) return;
+      box.append(el("small", "m-note m-dups-head", title));
+      for (const x of list) {
+        const r = dupRow(x, checked2);
+        picks.push(r);
+        box.append(r.row);
+      }
+    };
+    section(t("dupExact"), found.exact, true);
+    section(t("dupMaybe"), found.maybe, false);
+    const go2 = el("button", "m-btn is-primary");
+    go2.type = "button";
+    const count = () => picks.filter((p) => p.cb.checked && !p.cb.disabled).length;
+    const label = () => {
+      go2.textContent = t("dupRemove").replace("{n}", count());
+      go2.disabled = !count();
+    };
+    box.addEventListener("change", label);
+    label();
+    go2.onclick = async () => {
+      const picked = picks.filter((p) => p.cb.checked && !p.cb.disabled).map((p) => p.x);
+      if (!picked.length || !confirm(t("dupConfirm").replace("{n}", picked.length).replace("{p}", name || "Playlist"))) return;
+      go2.disabled = true;
+      try {
+        const n = await removeItems(uri, picked);
+        S.PopupModal?.hide?.();
+        notify(n ? t("dupDone").replace("{n}", n) : t("dupFailed"), !n);
+      } catch {
+        go2.disabled = false;
+        notify(t("dupFailed"), true);
+      }
+    };
+    const actions = el("div", "m-actions");
+    actions.append(go2);
+    box.append(actions);
+    S.PopupModal.display({ title: t("dupTitle") + (name ? " \xB7 " + name : ""), content: box, isLarge: true });
+  }
+  async function cleanPlaylist(uri) {
+    if (busy) return;
+    if (typeof PL()?.getContents !== "function" || typeof PL()?.remove !== "function" || !S.PopupModal?.display) return notify(t("dupUnsupported"), true);
+    busy = true;
+    try {
+      const { ok, name } = await canEdit(uri);
+      if (!ok) return notify(t("dupNoEdit"), true);
+      notify(t("dupLoading"));
+      const items = await loadAll(uri);
+      if (!items) return notify(t("dupUnsupported"), true);
+      const found = findDuplicates(items);
+      if (!found.exact.length && !found.maybe.length) return notify(t("dupNone"));
+      showDuplicates(uri, name, found);
+    } catch {
+      notify(t("dupUnsupported"), true);
+    } finally {
+      busy = false;
+    }
+  }
+  function camelot(key, mode) {
+    if (!(key >= 0 && key <= 11)) return "";
+    const k = mode === 1 ? key : (key + 3) % 12;
+    return (k * 7 + 7) % 12 + 1 + (mode === 1 ? "B" : "A");
+  }
+  function remember2(id, v) {
+    cache.delete(id);
+    cache.set(id, v);
+    while (cache.size > CAP) cache.delete(cache.keys().next().value);
+    clearTimeout(saveT);
+    saveT = setTimeout(() => {
+      try {
+        localStorage.setItem(STORE, JSON.stringify(Object.fromEntries(cache)));
+      } catch {
+      }
+    }, 2e3);
+  }
+  function enqueue(id) {
+    if (known(id) || queue.includes(id) || (tries.get(id) || 0) >= 3) return;
+    queue.push(id);
+    pump();
+  }
+  function pump() {
+    clearTimeout(pumpT);
+    const wait = pauseUntil - Date.now();
+    if (wait > 0) {
+      pumpT = setTimeout(pump, wait);
+      return;
+    }
+    while (active < 2 && queue.length && running) {
+      const id = queue.pop();
+      if (known(id)) continue;
+      active++;
+      fetchOne(id).finally(() => {
+        active--;
+        pump();
+      });
+    }
+  }
+  async function fetchOne(id) {
+    if (typeof S.getAudioData !== "function") return;
+    try {
+      const d = await Promise.race([S.getAudioData("spotify:track:" + id), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 1e4))]);
+      const tr = d?.track;
+      const bpm2 = Math.round(Number(tr?.tempo) || 0);
+      const key = Number.isInteger(tr?.key) ? tr.key : -1;
+      remember2(id, [bpm2, key, tr?.mode === 1 ? 1 : 0, DAY()]);
+      fails = 0;
+      paintId(id);
+    } catch (e) {
+      tries.set(id, (tries.get(id) || 0) + 1);
+      fails++;
+      const limited = /429|rate/i.test(String(e?.message || e));
+      pauseUntil = Date.now() + Math.min(6e4, (limited ? 5e3 : 1500) * 2 ** Math.min(fails - 1, 6));
+      if ((tries.get(id) || 0) < 3 && visibleIds().has(id)) queue.unshift(id);
+    }
+  }
+  function paint(row) {
+    const id = rowId(row);
+    row.dataset.mBpmId = id;
+    let pill = row.querySelector(".m-bpm");
+    const v = id && known(id);
+    if (!v || !v[0]) {
+      pill?.remove();
+      if (id && !v) enqueue(id);
+      return;
+    }
+    const cell = endCell(row);
+    if (!cell) return;
+    if (!pill) pill = el("span", "m-bpm");
+    if (pill.parentElement !== cell) cell.prepend(pill);
+    const cam = camelot(v[1], v[2]);
+    pill.textContent = cam ? `${v[0]} \xB7 ${cam}` : String(v[0]);
+    pill.title = [v[0] + " BPM", keyName(v[1], v[2])].filter(Boolean).join(" \xB7 ");
+  }
+  function paintId(id) {
+    for (const row of visible) if (row.isConnected && row.dataset.mBpmId === id) paint(row);
+  }
+  function onIntersect(entries) {
+    for (const e of entries) {
+      const row = e.target;
+      if (e.isIntersecting) {
+        visible.add(row);
+        paint(row);
+      } else {
+        visible.delete(row);
+        if (row.dataset.mBpmId) dequeue(row.dataset.mBpmId);
+      }
+    }
+  }
+  function scan() {
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv || !io) return;
+    for (const row of mv.querySelectorAll(SEL.rows)) {
+      if (!observed.has(row)) {
+        observed.add(row);
+        io.observe(row);
+      } else if (visible.has(row) && row.dataset.mBpmId !== rowId(row)) {
+        paint(row);
+      }
+    }
+    for (const row of visible) if (!row.isConnected) visible.delete(row);
+  }
+  function stop2() {
+    running = false;
+    io?.disconnect();
+    mo?.disconnect();
+    io = mo = null;
+    queue.length = 0;
+    visible.clear();
+    document.querySelectorAll(".m-bpm").forEach((p) => p.remove());
+  }
+  function start() {
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv || typeof IntersectionObserver !== "function" || typeof S.getAudioData !== "function") return;
+    if (!running) {
+      running = true;
+      observed = /* @__PURE__ */ new WeakSet();
+      io = new IntersectionObserver(onIntersect, { rootMargin: "200px 0px" });
+      mo = new MutationObserver(scanSoon);
+      mo.observe(mv, { childList: true, subtree: true, attributes: true, attributeFilter: ["href"] });
+    }
+    scanSoon();
+  }
+  function refresh() {
+    const want = !!cfg.libBpm && PAGES.has(root.dataset.mPage);
+    if (!want) {
+      if (running) stop2();
+      return;
+    }
+    if (running) stop2();
+    start();
+  }
+  var notify, el, PL, isPlaylist, editable, editableAt, NOISE, durMs, artistOf2, busy, NOTES, keyName, STORE, CAP, DAY, cache, saveT, known, queue, tries, active, pauseUntil, fails, pumpT, dequeue, rowId, endCell, visible, visibleIds, running, io, mo, scanT, observed, PAGES, scanSoon, bpm;
+  var init_library = __esm({
+    "src/library.js"() {
+      init_core();
+      init_config();
+      init_i18n();
+      init_selectors();
+      notify = (msg, err) => {
+        try {
+          S.showNotification?.(msg, !!err, 4e3);
+        } catch {
+        }
+      };
+      el = (tag, cls, text) => {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      };
+      PL = () => S.Platform?.PlaylistAPI;
+      isPlaylist = (uri) => {
+        try {
+          if (typeof S.URI?.isPlaylistV1OrV2 === "function") return S.URI.isPlaylistV1OrV2(uri);
+        } catch {
+        }
+        return /^spotify:(user:[^:]+:)?playlist:[A-Za-z0-9]+$/.test(String(uri || ""));
+      };
+      editable = null;
+      editableAt = 0;
+      NOISE = /(feat\.?|ft\.|with |remaster|version|edit\b|mono|stereo|deluxe)/i;
+      durMs = (it) => Number(it?.duration?.milliseconds ?? it?.duration_ms ?? it?.duration) || 0;
+      artistOf2 = (it) => it?.artists?.[0]?.name || it?.artist?.name || "";
+      busy = false;
+      (function addDupMenu(tries2 = 0) {
+        const CM = S.ContextMenu;
+        if (!CM?.Item) return tries2 < 40 && setTimeout(() => addDupMenu(tries2 + 1), 500);
+        try {
+          loadEditable();
+          new CM.Item(
+            t("dupMenu"),
+            (uris) => cleanPlaylist(uris?.[0]),
+            (uris) => Array.isArray(uris) && uris.length === 1 && isPlaylist(uris[0]) && mayEdit(uris[0]),
+            "playlist"
+          ).register();
+        } catch {
+        }
+      })();
+      NOTES = ["C", "C\u266F", "D", "E\u266D", "E", "F", "F\u266F", "G", "A\u266D", "A", "B\u266D", "B"];
+      keyName = (key, mode) => key >= 0 && key <= 11 ? t(mode === 1 ? "libMajor" : "libMinor").replace("{k}", NOTES[key]) : "";
+      STORE = "mirage:bpm";
+      CAP = 4e3;
+      DAY = () => Math.floor(Date.now() / 864e5);
+      cache = /* @__PURE__ */ new Map();
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORE) || "{}");
+        if (raw && typeof raw === "object") {
+          for (const [id, v] of Object.entries(raw).slice(-CAP)) if (Array.isArray(v)) cache.set(id, v);
+        }
+      } catch {
+      }
+      saveT = 0;
+      known = (id) => {
+        const v = cache.get(id);
+        return v && (v[0] > 0 || DAY() - (v[3] || 0) < 30) ? v : null;
+      };
+      queue = [];
+      tries = /* @__PURE__ */ new Map();
+      active = 0;
+      pauseUntil = 0;
+      fails = 0;
+      pumpT = 0;
+      dequeue = (id) => {
+        const i = queue.indexOf(id);
+        if (i >= 0) queue.splice(i, 1);
+      };
+      rowId = (row) => {
+        const a = row.querySelector('a[data-testid="internal-track-link"], a[href*="/track/"]');
+        return /\/track\/([A-Za-z0-9]{22})/.exec(a?.getAttribute("href") || "")?.[1] || "";
+      };
+      endCell = (row) => row.querySelector(".main-trackList-rowSectionEnd") || [...row.querySelectorAll('[role="gridcell"]')].pop();
+      visible = /* @__PURE__ */ new Set();
+      visibleIds = () => new Set([...visible].map((r) => r.dataset.mBpmId).filter(Boolean));
+      running = false;
+      io = null;
+      mo = null;
+      scanT = 0;
+      observed = /* @__PURE__ */ new WeakSet();
+      PAGES = /* @__PURE__ */ new Set(["playlist", "album", "collection"]);
+      scanSoon = () => {
+        if (!scanT) scanT = setTimeout(() => {
+          scanT = 0;
+          scan();
+        }, 250);
+      };
+      try {
+        S.Platform?.History?.listen?.(() => setTimeout(refresh, 300));
+      } catch {
+      }
+      setTimeout(refresh, 1500);
+      bpm = { refresh };
+    }
+  });
+
+  // src/dj.js
+  function remember3(id, v) {
+    cache2.delete(id);
+    cache2.set(id, v);
+    while (cache2.size > CAP2) cache2.delete(cache2.keys().next().value);
+    clearTimeout(saveT2);
+    saveT2 = setTimeout(() => {
+      try {
+        localStorage.setItem(STORE2, JSON.stringify(Object.fromEntries(cache2)));
+      } catch {
+      }
+    }, 2e3);
+  }
+  function info(uri) {
+    const id = idOf(uri);
+    if (!id) return Promise.resolve(null);
+    const have = cache2.get(id);
+    if (have && (have[0] > 0 || DAY2() - (have[4] || 0) < 30)) return Promise.resolve(asInfo(have));
+    const job = chain.then(async () => {
+      const again = cache2.get(id);
+      if (again && again[0] > 0) return asInfo(again);
+      const wait = pauseUntil2 - Date.now();
+      if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      if (typeof S.getAudioData !== "function") return null;
+      try {
+        const d = await Promise.race([S.getAudioData(uri), new Promise((_, no) => setTimeout(() => no(new Error("timeout")), 1e4))]);
+        const tr = d?.track;
+        const v = [Math.round(Number(tr?.tempo) || 0), Number.isInteger(tr?.key) ? tr.key : -1, tr?.mode === 1 ? 1 : 0, Number(tr?.loudness) || -12, DAY2()];
+        remember3(id, v);
+        fails2 = 0;
+        return asInfo(v);
+      } catch (e) {
+        fails2++;
+        pauseUntil2 = Date.now() + Math.min(6e4, (/429|rate/i.test(String(e?.message || e)) ? 5e3 : 1500) * 2 ** Math.min(fails2 - 1, 5));
+        return null;
+      }
+    });
+    chain = job.catch(() => null);
+    return job;
+  }
+  function camDist(a, b) {
+    if (!a || !b) return 3;
+    const na = parseInt(a, 10), nb = parseInt(b, 10), la = a.slice(-1), lb = b.slice(-1);
+    const d = Math.min((na - nb + 12) % 12, (nb - na + 12) % 12);
+    if (d === 0 && la === lb) return 0;
+    if (d === 0) return 1;
+    if (d === 1 && la === lb) return 1;
+    if (d === 2 && la === lb) return 2;
+    return 3;
+  }
+  function fit2(a, b) {
+    if (!a || !b) return 0;
+    const harm = [1, 0.85, 0.45, 0.12][camDist(a.cam, b.cam)];
+    const r = b.bpm / a.bpm, dev = Math.min(Math.abs(r - 1), Math.abs(r * 2 - 1), Math.abs(r / 2 - 1));
+    const tempo = Math.max(0, 1 - dev / 0.08);
+    const dl = b.loud - a.loud, energy = Math.max(0, 1 - Math.abs(dl - 0.5) / 6);
+    return harm * 0.45 + tempo * 0.35 + energy * 0.2;
+  }
+  async function suggest(curUri, onUpdate) {
+    const cur2 = await info(curUri);
+    const list = upcoming(25).filter((x) => x.uri !== curUri);
+    const out = [];
+    for (const x of list) {
+      const i = await info(x.uri);
+      if (i) out.push({ ...x, info: i, score: fit2(cur2, i) });
+      onUpdate?.({ cur: cur2, list: out.slice().sort((a, b) => b.score - a.score).slice(0, 6), done: false });
+    }
+    const best = out.sort((a, b) => b.score - a.score).slice(0, 6);
+    onUpdate?.({ cur: cur2, list: best, done: true });
+    return best;
+  }
+  async function onSong(curUri) {
+    if (!curUri || curUri === lastSong) return null;
+    lastSong = curUri;
+    const st = moved.get(curUri);
+    if (st === "queued") moved.set(curUri, "played");
+    else if (st === "played") {
+      moved.delete(curUri);
+      if (cfg.djEnergy) setTimeout(() => S.Player.next(), 400);
+      return null;
+    }
+    if (!cfg.djEnergy) return null;
+    const cur2 = await info(curUri);
+    const next = upcoming(8);
+    if (!cur2 || next.length < 2) return null;
+    const scored = [];
+    for (const x of next) {
+      const i = await info(x.uri);
+      if (i) scored.push({ ...x, s: fit2(cur2, i) });
+    }
+    const first = scored.find((x) => x.uri === next[0].uri);
+    const best = scored.slice().sort((a, b) => b.s - a.s)[0];
+    if (!best || !first || best.uri === first.uri || best.s < first.s + 0.18 || first.s > 0.62) return null;
+    try {
+      await S.addToQueue([{ uri: best.uri }]);
+      moved.set(best.uri, "queued");
+      return best;
+    } catch {
+      return null;
+    }
+  }
+  var STORE2, CAP2, DAY2, cache2, saveT2, idOf, asInfo, chain, pauseUntil2, fails2, upcoming, moved, lastSong, dj;
+  var init_dj = __esm({
+    "src/dj.js"() {
+      init_core();
+      init_config();
+      init_library();
+      STORE2 = "mirage:dj";
+      CAP2 = 3e3;
+      DAY2 = () => Math.floor(Date.now() / 864e5);
+      cache2 = /* @__PURE__ */ new Map();
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORE2) || "{}");
+        if (raw && typeof raw === "object") {
+          for (const [id, v] of Object.entries(raw).slice(-CAP2)) if (Array.isArray(v)) cache2.set(id, v);
+        }
+      } catch {
+      }
+      saveT2 = 0;
+      idOf = (uri) => String(uri || "").startsWith("spotify:track:") ? uri.slice(14) : "";
+      asInfo = (v) => v && v[0] > 0 ? { bpm: v[0], key: v[1], mode: v[2], loud: v[3], cam: camelot(v[1], v[2]) } : null;
+      chain = Promise.resolve();
+      pauseUntil2 = 0;
+      fails2 = 0;
+      upcoming = (max) => (S.Queue?.nextTracks || []).map((x) => x.contextTrack || x).filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title).slice(0, max).map((x) => ({ uri: x.uri, title: x.metadata.title, artist: x.metadata.artist_name || "", image: (x.metadata.image_url || "").replace("spotify:image:", "https://i.scdn.co/image/") }));
+      moved = /* @__PURE__ */ new Map();
+      lastSong = "";
+      dj = { info, suggest, onSong, fit: fit2 };
+    }
+  });
+
   // src/immersive.js
   var ICON, MODES, LYR, VIZ, immersive;
   var init_immersive = __esm({
@@ -19491,6 +20123,7 @@
       init_words();
       init_lexicon();
       init_bridge();
+      init_dj();
       ICON = {
         prev: '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg>',
         next: '<svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg>',
@@ -19510,7 +20143,7 @@
         film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
         wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
         confetti: '<svg viewBox="0 0 24 24"><path d="M4 20l5-14 9 9zm4.6-9.5L6.8 16.6l5.6-2.2zM14 3h2v3h-2zm5 3.6 1.4 1.4-2.1 2.1-1.4-1.4zM18 13h3v2h-3zM10.5 4.4l1.4-1 1.2 1.6-1.4 1z"/></svg>',
-        announce: '<svg viewBox="0 0 24 24"><path d="M3 10v4h3l6 4V6l-6 4zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
+        dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
         poll: '<svg viewBox="0 0 24 24"><path d="M4 13h3v7H4zm6.5-9h3v16h-3zM17 9h3v11h-3z"/></svg>',
         share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
         heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
@@ -19563,8 +20196,8 @@
         <div class="m-im-actions">
           <button type="button" class="m-im-sm m-im-cvbtn" hidden aria-pressed="false">${ICON.film}</button>
           <button type="button" class="m-im-sm m-im-conf" hidden>${ICON.confetti}</button>
-          <button type="button" class="m-im-sm m-im-ann" hidden>${ICON.announce}</button>
           <button type="button" class="m-im-sm m-im-pollbtn" hidden>${ICON.poll}</button>
+          <button type="button" class="m-im-sm m-im-djbtn" hidden>${ICON.dj}</button>
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
@@ -19655,8 +20288,8 @@
             meta: el3.querySelector(".m-im-meta"),
             recap: el3.querySelector(".m-im-recap"),
             conf: el3.querySelector(".m-im-conf"),
-            ann: el3.querySelector(".m-im-ann"),
             pollbtn: el3.querySelector(".m-im-pollbtn"),
+            djbtn: el3.querySelector(".m-im-djbtn"),
             screen: el3.querySelector(".m-im-screen"),
             live: el3.querySelector(".m-im-live"),
             fs: el3.querySelector(".m-im-fs")
@@ -19671,10 +20304,10 @@
           q.recap.onclick = () => showSide(side === "recap" ? null : "recap");
           q.conf.title = q.conf.ariaLabel = t("confetti");
           q.conf.onclick = () => confetti();
-          q.ann.title = q.ann.ariaLabel = t("annTitle");
-          q.ann.onclick = () => showSide(side === "announce" ? null : "announce");
           q.pollbtn.title = q.pollbtn.ariaLabel = t("pollBtn");
           q.pollbtn.onclick = () => showSide(side === "poll" ? null : "poll");
+          q.djbtn.title = q.djbtn.ariaLabel = t("djTitle");
+          q.djbtn.onclick = () => showSide(side === "dj" ? null : "dj");
           q.screen.title = q.screen.ariaLabel = t("toScreen");
           q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
           q.live.title = q.live.ariaLabel = t("liveBtn");
@@ -19925,9 +20558,9 @@
             updateKicker();
             if (LYR.has(mode)) loadLyrics();
             if (mode === "mix") party.prepare(currentItem());
-            if (mode === "party") party.prepare(currentItem()).then((info) => {
+            if (mode === "party") party.prepare(currentItem()).then((info2) => {
               updateKicker();
-              noteRecap(currentItem(), info);
+              noteRecap(currentItem(), info2);
             });
             else resetParty();
             showExtras();
@@ -20737,6 +21370,54 @@
               ctx.closePath();
               ctx.stroke();
             }
+          } else if (V2.style === "galaxy") {
+            for (let i = 0; i < N; i++) {
+              const arm = i % 3, f = i / N, a = arm * (Math.PI * 2 / 3) + f * Math.PI * 3 + tt * 0.18;
+              const rr = R * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
+              const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r2 = (1.2 + vals[i] * 3.2 + (1 - f) * 1.2) * dpr;
+              ctx.fillStyle = rgba4(pal[arm], ((0.25 + vals[i] * 0.7) * (0.6 + 0.4 * Math.sin(tt * 3 + i))).toFixed(3));
+              ctx.beginPath();
+              ctx.arc(x, y, r2, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          } else if (V2.style === "mountains") {
+            for (let k2 = 2; k2 >= 0; k2--) {
+              const base = vh, hMax = vh * (0.22 + k2 * 0.07) * V2.height, shift = tt * (8 + k2 * 6);
+              ctx.beginPath();
+              ctx.moveTo(0, base);
+              const steps = 64;
+              for (let s2 = 0; s2 <= steps; s2++) {
+                const x = s2 / steps * vw, j = Math.floor((s2 / steps * N + shift / 12 + k2 * 17) % N);
+                const v = (vals[j] + vals[(j + 1) % N] + vals[(j + N - 1) % N]) / 3;
+                ctx.lineTo(x, base - (0.12 + v) * hMax * (0.7 + 0.3 * Math.sin(s2 * 0.5 + k2)));
+              }
+              ctx.lineTo(vw, base);
+              ctx.closePath();
+              const g = ctx.createLinearGradient(0, base - hMax * 1.1, 0, base);
+              g.addColorStop(0, rgba4(pal[k2], (0.5 - k2 * 0.12).toFixed(2)));
+              g.addColorStop(1, rgba4(pal[k2], 0.04));
+              ctx.fillStyle = g;
+              ctx.fill();
+            }
+          } else if (V2.style === "scope") {
+            for (const [w, al] of V2.glow ? [[9, 0.12], [2.5, 0.95]] : [[2.5, 0.95]]) {
+              ctx.lineWidth = w * dpr;
+              for (let k2 = 0; k2 < 3; k2++) {
+                ctx.strokeStyle = rgba4(pal[k2], (al * (k2 ? 0.65 : 1)).toFixed(3));
+                ctx.beginPath();
+                for (let s2 = 0; s2 <= 180; s2++) {
+                  const a = s2 / 180 * Math.PI * 2;
+                  let off = 0;
+                  for (let h = 1; h <= 5; h++) off += vals[Math.floor(h / 6 * N)] * Math.sin(a * (h * 3 + k2) + tt * h * (k2 ? -1 : 1));
+                  const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
+                  const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+                  s2 ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+                }
+                ctx.stroke();
+              }
+            }
+          } else if (V2.style === "shatter") {
+            drawShatter(ctx, cx, cy, maxLen, dt, b, dpr, tt);
           } else if (V2.style === "wave") {
             ctx.beginPath();
             for (let i = 0; i <= N; i++) {
@@ -20854,6 +21535,36 @@
         let vividKey = "", vividPal = null;
         const TINT = { cool: 205, warm: 28, hot: 4, pink: 325, gold: 44, jungle: 130 };
         const toward = (h, target, f) => (h + (((target - h) % 360 + 540) % 360 - 180) * f + 360) % 360;
+        const shards = { n: 12, amt: 0, last: 0, seed: [] };
+        function drawShatter(ctx, cx, cy, maxLen, dt, b, dpr, tt) {
+          const img = q.wrap.querySelector("img.is-on");
+          if (!img?.complete || !img.naturalWidth || !vizRect.r) return;
+          const n = shards.n;
+          if (shards.seed.length !== n * n) shards.seed = Array.from({ length: n * n }, () => [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1]);
+          if (b > shards.last + 0.12 && b > 0.35) shards.amt = Math.min(1, shards.amt + 0.55 + b * 0.4);
+          shards.last = b;
+          shards.amt *= Math.exp(-dt * 2.6);
+          const size = vizRect.r.width * dpr, x0 = cx - size / 2, y0 = cy - size / 2, ts = size / n;
+          const sw = img.naturalWidth / n, sh = img.naturalHeight / n, a = shards.amt;
+          ctx.save();
+          ctx.globalCompositeOperation = "source-over";
+          for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+              const [rx, ry, rr] = shards.seed[i * n + j];
+              const dx = (i + 0.5) / n - 0.5, dy = (j + 0.5) / n - 0.5, dist = Math.hypot(dx, dy) + 0.15;
+              const push = a * maxLen * 1.6 * dist, wob = Math.sin(tt * 2 + i * 1.3 + j) * vals[(i * n + j) % vals.length] * 3 * dpr;
+              const px2 = x0 + i * ts + ts / 2 + dx / dist * push + rx * a * 18 * dpr + wob, py2 = y0 + j * ts + ts / 2 + dy / dist * push + ry * a * 18 * dpr;
+              ctx.save();
+              ctx.translate(px2, py2);
+              ctx.rotate(rr * a * 0.9);
+              ctx.globalAlpha = 1 - a * 0.25;
+              ctx.drawImage(img, i * sw, j * sh, sw, sh, -ts / 2 - 0.5, -ts / 2 - 0.5, ts + 1, ts + 1);
+              ctx.restore();
+            }
+          }
+          ctx.restore();
+          ctx.globalCompositeOperation = "lighter";
+        }
         function vivid(pal, minor, tint, pitch = -1, keyPc = -1) {
           const key = pal.map((c2) => c2.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch + "k" + keyPc;
           if (key === vividKey) return vividPal;
@@ -21067,7 +21778,7 @@
           if (venueWorker || venueCtx) return;
           try {
             if (q.venueEl.transferControlToOffscreen && window.Worker) {
-              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/show.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  var RIG = {\n    house: ["wave", "chase"],\n    deephouse: ["wave"],\n    techhouse: ["chase", "cross"],\n    garage: ["wave", "chase"],\n    disco: ["wave", "fan"],\n    techno: ["chase", "cross", "point"],\n    edm: ["fan", "cross", "wave"],\n    rave: ["fan", "cross"],\n    trance: ["fan", "wave"],\n    psytrance: ["cross", "wave"],\n    hardstyle: ["cross", "fan"],\n    dnb: ["chase", "cross"],\n    dubstep: ["point", "fan"],\n    eurodance: ["wave", "fan"],\n    synthwave: ["wave"],\n    hyperpop: ["chase", "fan"],\n    pop: ["wave", "fan"],\n    kpop: ["chase", "wave"],\n    schlager: ["wave", "fan"],\n    rock: ["point", "fan"],\n    metal: ["point", "fan"],\n    punk: ["point"],\n    alternative: ["point", "wave"],\n    indie: ["wave"],\n    latin: ["wave"],\n    reggaeton: ["wave", "chase"],\n    salsa: ["wave"],\n    brazil: ["wave"],\n    afro: ["wave"],\n    bollywood: ["wave", "fan"],\n    arabic: ["wave"],\n    bass: ["point", "chase"],\n    trap: ["point", "chase"],\n    drill: ["point"],\n    phonk: ["chase"],\n    soul: ["wave"],\n    gospel: ["fan"],\n    country: ["wave"],\n    reggae: ["wave"],\n    flamenco: ["point"],\n    melodictechno: ["wave", "fan"],\n    hardtechno: ["chase", "cross"],\n    futurebass: ["fan", "wave"],\n    electroswing: ["wave"],\n    breakbeat: ["chase", "point"],\n    boombap: ["point"],\n    dancehall: ["wave", "chase"],\n    hardrock: ["point", "fan"],\n    postrock: ["fan"],\n    ska: ["wave", "chase"],\n    emo: ["point"],\n    jpop: ["chase", "wave"],\n    musical: ["fan"],\n    celtic: ["wave"],\n    balkan: ["chase", "wave"],\n    amapiano: ["wave"]\n  };\n  var BLIND = /* @__PURE__ */ new Set(["hardrock", "hardtechno", "balkan", "rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);\n  var SHEET = /* @__PURE__ */ new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);\n  var CALM = /* @__PURE__ */ new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues", "lofi", "neoclassical", "acoustic", "cloudrap", "christmas"]);\n  var rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;\n  var mixW = (c, f) => c.map((v) => v + (255 - v) * f);\n  function createShow(glowSprite) {\n    let vw = 0, vh = 0;\n    const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };\n    const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);\n    function drawRig(ctx2, st, v, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);\n      const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);\n      if (px.dropHit) rig.drop = 1;\n      rig.drop *= Math.exp(-dt * 3);\n      const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;\n      const pats = RIG[key];\n      ctx2.globalCompositeOperation = "lighter";\n      if (n && pats && st.rig) {\n        const blk = Math.floor(bp / 32);\n        if (blk !== rig.blk) {\n          rig.blk = blk;\n          rig.pat = pats[(blk + (px.scene || 0)) % pats.length];\n          rig.col = (rig.col + 1) % 3;\n        }\n        const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(8,6,16,0.7)";\n        ctx2.fillRect(0, y - 3 * dpr, vw, 6 * dpr);\n        ctx2.globalCompositeOperation = "lighter";\n        const lead = Math.floor(bp * 2) % n;\n        for (let i = 0; i < n; i++) {\n          const x = vw * (0.07 + 0.86 * i / (n - 1)), u = i / (n - 1) - 0.5;\n          const toCover = Math.atan2(st.cy - y, st.cx - x);\n          let a = Math.PI / 2;\n          if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin(bp * Math.PI / 4) + rig.drop * 0.6);\n          else if (rig.pat === "wave") a += 0.5 * Math.sin(bp * Math.PI / 2 + i * 0.7);\n          else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin(bp * Math.PI / 4));\n          else if (rig.pat === "chase") a += u * 0.6;\n          else if (rig.pat === "point") a = toCover;\n          a += (toCover - a) * px.build * 0.8;\n          let k = base * (CALM.has(key) ? 0.5 : 1);\n          if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;\n          if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;\n          if (k < 4e-3) continue;\n          const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];\n          const len = vh * 1.2, wd = 0.03 + px.energy * 0.015 + rig.drop * 0.02;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, len);\n          g.addColorStop(0, rgba(c, k * 1.6));\n          g.addColorStop(0.4, rgba(c, k * 0.5));\n          g.addColorStop(1, rgba(c, 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x, y);\n          ctx2.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);\n          ctx2.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);\n          ctx2.closePath();\n          ctx2.fill();\n          const r = (8 + k * 70) * dpr;\n          ctx2.globalAlpha = clamp(k * 5, 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      const sn = px.snareEnv > 0.8;\n      if (st.flash && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale)) rig.blind = 1;\n      rig.sn = sn;\n      rig.blind *= Math.exp(-dt * 7);\n      if (rig.blind > 0.02 && vis > 0) {\n        for (const f of [0.22, 0.42, 0.58, 0.78]) {\n          const r = vh * 0.17 * (0.6 + rig.blind * 0.4);\n          ctx2.globalAlpha = rig.blind * 0.8 * vis;\n          ctx2.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);\n        ctx2.fillRect(0, 0, vw, vh);\n      }\n      const want = SHEET.has(key) && st.rig && !px.blackout && (px.drop > 0.35 || px.energy > 0.88 && px.build < 0.1) ? 1 : 0;\n      rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));\n      if (rig.sheet > 0.02) {\n        const c = mixW(pal[2], 0.35), tilt = Math.sin(bp * Math.PI / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));\n        for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * rig.sheet);\n          ctx2.beginPath();\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 + tilt * vw / 2);\n          ctx2.stroke();\n        }\n        ctx2.lineWidth = dpr;\n        ctx2.strokeStyle = rgba(c, 0.14 * rig.sheet);\n        ctx2.beginPath();\n        for (let k = -4; k <= 4; k++) {\n          const a = k * 0.03 + tilt;\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 - tilt * vw / 2 + Math.tan(a) * vw);\n        }\n        ctx2.stroke();\n      }\n      if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx2, st, px, pal, dpr);\n    }\n    let bokeh = null;\n    function drawBokeh(ctx2, st, px, pal, dpr) {\n      bokeh ||= Array.from({ length: 18 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random(), ph: Math.random() * 6.3, c: Math.floor(Math.random() * 3) }));\n      for (const b of bokeh) {\n        b.y -= st.dt * 0.012 * (0.5 + b.r);\n        if (b.y < -0.1) [b.y, b.x] = [1.1, Math.random()];\n        const r = (18 + b.r * 34) * dpr;\n        ctx2.globalAlpha = clamp((0.05 + 0.08 * px.energy) * (0.6 + 0.4 * Math.sin(st.t * 0.7 + b.ph)), 0, 1);\n        ctx2.drawImage(glowSprite(pal[b.c]), b.x * vw - r, b.y * vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const ins = { sparks: [], bolts: [], keys: new Float32Array(24), lastBolt: 0, kHit: false };\n    function drawInst(ctx2, st, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const I = st.inst, t = st.t, dt = st.dt;\n      if (!I || px.blackout) return;\n      ctx2.globalCompositeOperation = "lighter";\n      if (I.brass > 0.01) {\n        const L = I.brass, gold = [255, 200, 90];\n        for (const side of [-1, 1]) {\n          const ox = side < 0 ? 0 : vw, oy = vh * 0.95;\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);\n            const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            g.addColorStop(0, rgba(gold, 0.22 * L));\n            g.addColorStop(1, rgba(gold, 0));\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = (18 - k * 2) * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(ox, oy);\n            ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            ctx2.stroke();\n          }\n          const r = vh * 0.14 * (0.6 + L * 0.5);\n          ctx2.globalAlpha = L * 0.8;\n          ctx2.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });\n        }\n      }\n      if (I.sax > 0.01) {\n        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);\n        for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {\n          for (let k = 0; k < 3; k++) {\n            ctx2.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);\n            ctx2.lineWidth = (44 - k * 10) * dpr;\n            ctx2.beginPath();\n            for (let s = 0; s <= 20; s++) {\n              const f = s / 20, yy = vh * (0.95 - f * 0.75);\n              const xx = vw * bx + dir * Math.sin(f * 5 + t * (0.8 + k * 0.2) + k) * vw * 0.05 * (0.5 + f);\n              s ? ctx2.lineTo(xx, yy) : ctx2.moveTo(xx, yy);\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.guitar > 0.3) {\n        const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;\n        if (hitNow && !ins.kHit && t - ins.lastBolt > 0.25) {\n          ins.lastBolt = t;\n          const pts = [];\n          const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;\n          const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);\n          for (let s = 0; s <= 10; s++) {\n            const f = s / 10;\n            pts.push([x + (tx - x) * f + (s && s < 10 ? (Math.random() - 0.5) * vw * 0.04 : 0), y + (ty - y) * f]);\n          }\n          ins.bolts.push({ pts, a: 1 });\n        }\n        ins.kHit = hitNow;\n        for (let k = 0; k < 3; k++) {\n          if (Math.random() > dt * 18 * I.guitar) continue;\n          const r = (10 + Math.random() * 16) * dpr;\n          ctx2.globalAlpha = 0.5 + Math.random() * 0.5;\n          ctx2.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);\n      for (const b of ins.bolts) {\n        for (const [lw, c, al] of [[10 * dpr, [140, 170, 255], 0.25], [2.2 * dpr, [235, 245, 255], 0.95]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * b.a * Math.max(I.guitar, 0.3));\n          ctx2.beginPath();\n          b.pts.forEach(([x, y], k) => k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y));\n          ctx2.stroke();\n        }\n      }\n      if (I.piano > 0.01 || ins.keys.some((k) => k > 0.01)) {\n        const ch = I.chroma, w = vw / 24;\n        for (let k = 0; k < 24; k++) {\n          const target = ch ? (ch[k % 12] || 0) * I.piano : 0;\n          ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));\n          const L = ins.keys[k];\n          if (L < 0.02) continue;\n          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;\n          const g = ctx2.createLinearGradient(0, yb - h, 0, yb);\n          g.addColorStop(0, rgba(pal[k % 3], 0));\n          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x, yb - h, w * 0.6, h);\n          const r = w * 0.7;\n          ctx2.globalAlpha = clamp(L * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      if (I.strings > 0.01) {\n        const L = I.strings;\n        for (let k = 0; k < 3; k++) {\n          const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t * 0.6 + k * 1.7) * vh * 0.05;\n          for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {\n            ctx2.lineWidth = lw;\n            ctx2.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);\n            ctx2.beginPath();\n            for (let s = 0; s <= 32; s++) {\n              const x = s / 32 * vw;\n              s ? ctx2.lineTo(x, yy(x)) : ctx2.moveTo(x, yy(x));\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.choir > 0.01) {\n        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;\n        for (let k = 0; k < 9; k++) {\n          const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t * 0.2) * 0.05, len = vh * 1.1;\n          const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));\n          g.addColorStop(1, rgba([255, 245, 225], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = 40 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(ox, oy);\n          ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          ctx2.stroke();\n        }\n      }\n      ins.sparks = ins.sparks.filter((s) => (s.a -= dt * 0.9) > 0);\n      for (const s of ins.sparks) {\n        s.vy += vh * 0.2 * dt;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 6 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    return { drawRig, drawInst };\n  }\n\n  // src/venue.js\n  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    const show = createShow(glowSprite);\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp2(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba2(c, al));\n        g.addColorStop(0.5, rgba2(c, al * 0.35));\n        g.addColorStop(1, rgba2(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba2(pal[0], al));\n          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));\n          g.addColorStop(1, rgba2(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp2(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba2(pal[f.c], 0));\n            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba2(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },\n      // \u201Eopen\u201C: unter freiem Himmel (Feuerwerk erlaubt) \xB7 \u201Ecalm\u201C: drinnen und gediegen \u2013 kein CO2, keine Flammen,\n      // kein Stroboskop, kein Konfetti \xB7 \u201Eseated\u201C: das Publikum sitzt (Konzertsaal) und wiegt sich nur\n      rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },\n      cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },\n      jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },\n      forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },\n      hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },\n      cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" },\n      // 1.17: Weltall, Neon-Stra\xDFe, Pub, Skih\xFCtte, W\xFCste\n      space: { rows: [[2, 0.5, 30], [1, 0.76, 40], [0, 1.02, 52]], haze: 0.5, spot: 1.1, decor: "space", open: true },\n      neon: { rows: [[1, 0.78, 36], [0, 1.03, 46]], haze: 1.2, spot: 0.9, decor: "neon" },\n      pub: { rows: [[1, 0.82, 40], [0, 1.06, 52]], haze: 1.4, spot: 0.6, decor: "pub", calm: true },\n      skihut: { rows: [[1, 0.78, 34], [0, 1.03, 44]], haze: 0.9, spot: 0.85, decor: "skihut", open: true },\n      desert: { rows: [[2, 0.52, 30], [1, 0.78, 40], [0, 1.03, 50]], haze: 0.7, spot: 1, decor: "desert", open: true }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "jazzbar",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "cellar",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "forest",\n      chill: "home",\n      classical: "hall",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "forest",\n      dubstep: "festival",\n      garage: "rooftop",\n      eurodance: "club",\n      synthwave: "rooftop",\n      hyperpop: "club",\n      trap: "club",\n      drill: "cellar",\n      phonk: "cellar",\n      rnb: "rooftop",\n      soul: "jazzbar",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "jazzbar",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "cathedral",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "space",\n      melodictechno: "space",\n      hardtechno: "warehouse",\n      futurebass: "neon",\n      electroswing: "jazzbar",\n      breakbeat: "warehouse",\n      boombap: "rooftop",\n      dancehall: "beach",\n      cloudrap: "neon",\n      hardrock: "stadium",\n      postrock: "space",\n      ska: "pub",\n      emo: "cellar",\n      jpop: "neon",\n      musical: "hall",\n      christmas: "skihut",\n      celtic: "pub",\n      balkan: "pub",\n      amapiano: "beach",\n      lofi: "home",\n      neoclassical: "hall",\n      acoustic: "pub"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba2, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba2(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba2(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp2((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "rooftop") {\n        sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));\n        win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));\n        const hz = vh * 0.8;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,5,14,0.6)";\n        for (const b of sky) ctx2.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);\n        ctx2.globalCompositeOperation = "lighter";\n        for (const w of win) {\n          const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t * 0.7 + w.ph);\n          if (tw < 0.25) continue;\n          const r = 3.2 * dpr;\n          ctx2.globalAlpha = clamp2(tw * (0.35 + beat * 0.25), 0, 1);\n          ctx2.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);\n        }\n        for (let k = 0; k <= 18; k++) {\n          const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.28 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.4 + k * 2.1)), 0, 1);\n          const r = (8 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.75)";\n        ctx2.fillRect(0, vh * 0.84, vw, 3 * dpr);\n        for (let x = 0; x < vw; x += 70 * dpr) ctx2.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "cathedral") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.8)";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;\n          ctx2.beginPath();\n          ctx2.rect(x0, 0, x1 - x0, vh);\n          ctx2.moveTo(mid + iw, vh);\n          ctx2.lineTo(mid + iw, vh * 0.36);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);\n          ctx2.lineTo(mid - iw, vh);\n          ctx2.closePath();\n          ctx2.fill("evenodd");\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat * 0.1 + px.energy * 0.08;\n          const g = ctx2.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);\n          g.addColorStop(0, rgba2(pal[0], al.toFixed(3)));\n          g.addColorStop(0.5, rgba2(pal[1], (al * 0.9).toFixed(3)));\n          g.addColorStop(1, rgba2(pal[2], 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(mid + iw, vh * 0.7);\n          ctx2.lineTo(mid + iw, vh * 0.38);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);\n          ctx2.lineTo(mid - iw, vh * 0.7);\n          ctx2.fill();\n        }\n        for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {\n          const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - k % 3 * 0.018);\n          const r = (7 + Math.sin(t * 9 + k * 3 + side) * 1.6) * dpr;\n          ctx2.globalAlpha = 0.55;\n          ctx2.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "jazzbar") {\n        for (let k = 0; k < 3; k++) {\n          const x = vw * (0.22 + k * 0.28) + Math.sin(t * 0.6 + k) * vw * 0.01, y = vh * (0.16 + k % 2 * 0.03);\n          ctx2.strokeStyle = "rgba(255,255,255,0.07)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.22 + k * 0.28), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, vh * 0.85);\n          g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,190,120,0)");\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x - 8 * dpr, y);\n          ctx2.lineTo(x - vh * 0.22, vh);\n          ctx2.lineTo(x + vh * 0.22, vh);\n          ctx2.lineTo(x + 8 * dpr, y);\n          ctx2.fill();\n          const r = (16 + beat * 8) * dpr;\n          ctx2.globalAlpha = 0.8;\n          ctx2.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 9; k++) {\n          const r = 4 * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + 0.2 * Math.sin(t * 1.2 + k), 0, 1);\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (let k = 0; k < 4; k++) {\n          const x = vw * (0.5 + 0.45 * Math.sin(t * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t * 0.07 + k)), r = vh * 0.35;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, r);\n          g.addColorStop(0, "rgba(200,190,220,0.04)");\n          g.addColorStop(1, "rgba(200,190,220,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - r, y - r, r * 2, r * 2);\n        }\n      } else if (v.decor === "forest") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(4,4,10,0.9)";\n        for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {\n          const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t * 0.4 + bx) * 4 * dpr;\n          const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);\n          ctx2.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);\n          for (let k = 0; k < 5; k++) {\n            const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);\n            ctx2.beginPath();\n            ctx2.moveTo(bx + sx, y0);\n            ctx2.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.closePath();\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 16; k++) {\n          const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.25 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.3 + k * 1.9)), 0, 1);\n          const r = (7 + beat * 4) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);\n        }\n        flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));\n        const hat = px.hatEnv || 0;\n        for (const f of flies) {\n          const x = (f.x + Math.sin(t * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t * f.sp * 0.4 + f.ph) * 0.03) * vh;\n          ctx2.globalAlpha = clamp2((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "hall") {\n        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {\n          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;\n          ctx2.globalCompositeOperation = "source-over";\n          ctx2.fillStyle = "rgba(8,6,16,0.8)";\n          ctx2.fillRect(x0, y, w, vh * 0.05);\n          ctx2.globalCompositeOperation = "lighter";\n          ctx2.globalAlpha = clamp2(0.32 + beat * 0.15, 0, 1);\n          for (let k = 0; k < 6; k++) {\n            const r = 5 * dpr;\n            ctx2.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);\n          }\n          ctx2.globalAlpha = 1;\n        }\n        for (const x of [vw * 0.25, vw * 0.75]) {\n          ctx2.globalAlpha = clamp2(0.5 + px.energy * 0.3, 0, 1);\n          for (let k = 0; k < 8; k++) {\n            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t * 3 + k) * 1.5) * dpr;\n            ctx2.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);\n          }\n          const r = (60 + beat * 30) * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + beat * 0.2, 0, 1);\n          ctx2.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "cellar") {\n        const n = 4;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,10,0.85)";\n        ctx2.beginPath();\n        ctx2.rect(0, 0, vw, vh * 0.32);\n        for (let k = 0; k < n; k++) {\n          const x0 = k / n * vw, x1 = (k + 1) / n * vw;\n          ctx2.moveTo(x1, vh * 0.32);\n          ctx2.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);\n          ctx2.closePath();\n        }\n        ctx2.fill("evenodd");\n        ctx2.strokeStyle = "rgba(255,255,255,0.035)";\n        ctx2.lineWidth = dpr;\n        ctx2.beginPath();\n        for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {\n          ctx2.moveTo(0, y);\n          ctx2.lineTo(vw, y);\n        }\n        ctx2.stroke();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < n; k++) {\n          const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t * 1.1 + k) * 4e-3);\n          const r = (20 + px.kickEnv * 44) * dpr;\n          ctx2.globalAlpha = clamp2(0.4 + px.kickEnv * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "space") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          const x = ((s1.x - t * 4e-3 * s1.z) % 1 + 1) % 1, tw = 0.55 + 0.45 * Math.sin(t * (1 + s1.z) + s1.ph);\n          ctx2.globalAlpha = clamp2(tw * s1.z * (0.45 + px.energy * 0.35 + beat * 0.2), 0, 1);\n          const r = (1.6 + s1.z * 2.4) * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 5 ? pal[2] : [235, 240, 255]), x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const pr = Math.min(vw, vh) * 0.32, pxx = vw * 0.86, pyy = -pr * 0.35;\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,6,16,0.92)";\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr, 0, Math.PI * 2);\n        ctx2.fill();\n        ctx2.globalCompositeOperation = "lighter";\n        const rim = ctx2.createRadialGradient(pxx, pyy, pr * 0.92, pxx, pyy, pr * 1.18);\n        rim.addColorStop(0, rgba2(pal[1], 0));\n        rim.addColorStop(0.35, rgba2(pal[1], (0.22 + beat * 0.18).toFixed(3)));\n        rim.addColorStop(1, rgba2(pal[1], 0));\n        ctx2.fillStyle = rim;\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr * 1.18, 0, Math.PI * 2);\n        ctx2.fill();\n        if (px.dropHit || px.hit && px.inBar === 0 && px.energy > 0.7 && Math.random() < 0.35) shoot = { t0: t, y: 0.08 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.5 };\n        if (shoot) {\n          const f = (t - shoot.t0) / 0.9;\n          if (f > 1) shoot = null;\n          else {\n            const x0 = (shoot.x + f * 0.35) * vw, y0 = (shoot.y + f * 0.18) * vh, len = 140 * dpr;\n            const g = ctx2.createLinearGradient(x0, y0, x0 - len, y0 - len * 0.5);\n            g.addColorStop(0, `rgba(255,255,255,${(0.8 * (1 - f)).toFixed(3)})`);\n            g.addColorStop(1, "rgba(255,255,255,0)");\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = 2 * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(x0, y0);\n            ctx2.lineTo(x0 - len, y0 - len * 0.5);\n            ctx2.stroke();\n          }\n        }\n      } else if (v.decor === "neon") {\n        neonSigns ||= Array.from({ length: 10 }, (_, i) => ({ side: i % 2 ? 1 : -1, d: Math.floor(i / 2) / 5, h: 0.14 + Math.random() * 0.16, y: 0.18 + Math.random() * 0.3, c: i % 3, ph: Math.random() * 6.3 }));\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.88)";\n        for (const side of [-1, 1]) {\n          const x0 = side < 0 ? 0 : vw * 0.8;\n          ctx2.fillRect(x0, vh * 0.12, vw * 0.2, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const n of neonSigns) {\n          const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;\n          const flick = Math.sin(t * 13 + n.ph) > 0.97 ? 0.3 : 1;\n          const a = clamp2((0.35 + beat * 0.5) * flick, 0, 1), c = pal[n.c];\n          ctx2.fillStyle = rgba2(c, (a * 0.9).toFixed(3));\n          ctx2.fillRect(x - 4 * dpr, y, 8 * dpr, h);\n          const r = 26 * dpr;\n          ctx2.globalAlpha = a * 0.55;\n          for (let k = 0; k < 3; k++) ctx2.drawImage(glowSprite(c), x - r, y + h * k / 2 - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        const wet = ctx2.createLinearGradient(0, vh * 0.86, 0, vh);\n        wet.addColorStop(0, rgba2(pal[0], 0));\n        wet.addColorStop(1, rgba2(pal[0], (0.08 + beat * 0.12).toFixed(3)));\n        ctx2.fillStyle = wet;\n        ctx2.fillRect(0, vh * 0.86, vw, vh * 0.14);\n      } else if (v.decor === "pub") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(10,6,4,0.9)";\n        for (let k = 0; k < 4; k++) ctx2.fillRect(0, vh * (0.02 + k * 0.045), vw, 7 * dpr);\n        ctx2.fillRect(vw * 0.04, vh * 0.8, vw * 0.92, vh * 0.035);\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 7; k++) {\n          const x = vw * (0.1 + k * 0.133), sw = Math.sin(t * 1.1 + k) * 6 * dpr, y = vh * 0.22;\n          ctx2.strokeStyle = "rgba(60,40,25,0.5)";\n          ctx2.lineWidth = 1.5 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(x, vh * 0.04);\n          ctx2.lineTo(x + sw, y);\n          ctx2.stroke();\n          ctx2.globalAlpha = clamp2(0.45 + beat * 0.35, 0, 1);\n          const r = (22 + beat * 10) * dpr;\n          ctx2.drawImage(glowSprite([255, 180, 95]), x + sw - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 24; k++) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 0.9 + k * 2.3);\n          if (tw < 0.4) continue;\n          ctx2.globalAlpha = clamp2(tw * (0.25 + beat * 0.2), 0, 1);\n          const r = 4 * dpr;\n          ctx2.drawImage(glowSprite(k % 4 ? [255, 210, 140] : pal[k % 3]), vw * (0.08 + k * 0.036) - r, vh * 0.79 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "skihut") {\n        ctx2.globalCompositeOperation = "source-over";\n        const peaks = [[0, 0.62], [0.1, 0.5], [0.22, 0.66], [0.34, 0.74], [0.5, 0.78], [0.66, 0.73], [0.78, 0.64], [0.9, 0.48], [1, 0.6]];\n        const ridge = new Path2D();\n        ridge.moveTo(0, vh);\n        for (const [x, y] of peaks) ridge.lineTo(vw * x, vh * y);\n        ridge.lineTo(vw, vh);\n        ridge.closePath();\n        ctx2.fillStyle = "rgba(14,16,30,0.8)";\n        ctx2.fill(ridge);\n        ctx2.save();\n        ctx2.clip(ridge);\n        const snowG = ctx2.createLinearGradient(0, vh * 0.48, 0, vh * 0.7);\n        snowG.addColorStop(0, "rgba(225,232,255,0.22)");\n        snowG.addColorStop(1, "rgba(225,232,255,0)");\n        ctx2.fillStyle = snowG;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.restore();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 20; k++) {\n          const f = k / 20, x = vw * f, y = vh * (0.04 + 0.1 * (1 - Math.abs(f - 0.5) * 2));\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * (0.6 + 0.4 * Math.sin(t * 1.5 + k * 1.3)), 0, 1);\n          const r = (9 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 205, 130] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        snow ||= Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), sp: 0.02 + Math.random() * 0.04, ph: Math.random() * 6.3 }));\n        for (const f of snow) {\n          const y = (f.y + t * f.sp) % 1, x = f.x + Math.sin(t * 0.6 + f.ph) * 0.01;\n          ctx2.globalAlpha = 0.35 + 0.25 * Math.sin(f.ph + t);\n          const r = 3 * dpr;\n          ctx2.drawImage(glowSprite([235, 240, 255]), x * vw - r, y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "desert") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          if (s1.y > 0.5) continue;\n          ctx2.globalAlpha = clamp2((0.25 + 0.3 * Math.sin(t * 1.3 + s1.ph)) * s1.z, 0, 1);\n          const r = (1.4 + s1.z * 2) * dpr;\n          ctx2.drawImage(glowSprite([255, 240, 220]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const mr = Math.min(vw, vh) * 0.09;\n        ctx2.globalAlpha = clamp2(0.55 + beat * 0.25, 0, 1);\n        ctx2.drawImage(glowSprite([255, 225, 180]), vw * 0.2 - mr * 2.4, vh * 0.2 - mr * 2.4, mr * 4.8, mr * 4.8);\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(14,8,6,0.85)";\n        for (const [y0, amp, ph] of [[0.76, 0.04, 0], [0.83, 0.03, 2]]) {\n          ctx2.beginPath();\n          ctx2.moveTo(0, vh);\n          for (let x = 0; x <= 24; x++) ctx2.lineTo(vw * x / 24, vh * (y0 + amp * Math.sin(x * 0.55 + ph)));\n          ctx2.lineTo(vw, vh);\n          ctx2.closePath();\n          ctx2.fill();\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        const fire = ctx2.createRadialGradient(vw / 2, vh, 0, vw / 2, vh, vh * 0.45);\n        fire.addColorStop(0, `rgba(255,140,60,${(0.12 + px.kickEnv * 0.1 + px.drop * 0.08).toFixed(3)})`);\n        fire.addColorStop(1, "rgba(255,140,60,0)");\n        ctx2.fillStyle = fire;\n        ctx2.fillRect(0, vh * 0.55, vw, vh * 0.45);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n    }\n    let stands = null, sky = null, win = null, flies = null, stars = null, neonSigns = null, snow = null, shoot = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };\n    const GOLD = [255, 214, 120], WHITE = [255, 255, 255];\n    function confetti(pal, big, few) {\n      const pop = (c) => {\n        const m = Math.max(...c, 1);\n        return c.map((v) => Math.round(clamp2((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));\n      };\n      const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];\n      for (let k = 0; k < n && fx.confetti.length < 420; k++) {\n        const side = k % 2 ? 1 : -1;\n        fx.confetti.push({\n          x: vw * (side < 0 ? 0.12 : 0.88),\n          y: vh * 0.98,\n          vx: -side * vh * (0.12 + Math.random() * 0.45),\n          vy: -vh * (1.25 + Math.random() * 0.6),\n          r: Math.random() * 6.3,\n          vr: (Math.random() - 0.5) * 14,\n          w: (9 + Math.random() * 8) * (vh / 720),\n          h: (5 + Math.random() * 4) * (vh / 720),\n          ph: Math.random() * 6.3,\n          c: cols[k % cols.length],\n          a: 1\n        });\n      }\n      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });\n    }\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;\n      if (newBeat) fx.barId = barId;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {\n        fx.confAt = st.t;\n        confetti(pal, big, st.quality < 1 || v.decor === "fairy");\n      }\n      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;\n      if (st.confetti && st.confetti !== fx.confManual) {\n        fx.confManual = st.confetti;\n        if (v.decor !== "fairy") confetti(pal, big, st.quality < 1);\n      }\n      if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {\n        const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp2(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.confetti = fx.confetti.filter((c) => c.y < vh * 1.05 && (c.a -= dt * 0.07) > 0);\n      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);\n      if (fx.confetti.length || fx.streamers.length) {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const c of fx.confetti) {\n          c.vy = c.vy < vh * 0.1 ? c.vy + vh * 1.4 * dt : vh * 0.1;\n          c.vx *= 1 - dt * 1.6;\n          c.ph += dt * 5;\n          c.r += c.vr * dt;\n          c.x += (c.vx + Math.sin(c.ph) * vh * 0.05) * dt;\n          c.y += c.vy * dt;\n          const flip = Math.abs(Math.cos(c.ph * 1.3)), w = c.w * (0.3 + 0.7 * flip), h = c.h;\n          ctx2.globalAlpha = clamp2(c.a, 0, 1) * (0.55 + 0.45 * flip);\n          ctx2.fillStyle = `rgb(${c.c[0]},${c.c[1]},${c.c[2]})`;\n          const co = Math.cos(c.r), si = Math.sin(c.r);\n          ctx2.setTransform(co, si, -si, co, c.x, c.y);\n          ctx2.fillRect(-w / 2, -h / 2, w, h);\n        }\n        ctx2.setTransform(1, 0, 0, 1, 0, 0);\n        ctx2.lineWidth = 4 * (vh / 720);\n        ctx2.lineCap = "round";\n        for (const m of fx.streamers) {\n          m.y += m.vy * dt;\n          m.ph += dt * 2;\n          ctx2.globalAlpha = clamp2(m.a, 0, 1) * 0.85;\n          ctx2.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;\n          ctx2.beginPath();\n          for (let k = 0; k <= 10; k++) {\n            const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;\n            k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y);\n          }\n          ctx2.stroke();\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "lighter";\n      }\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway",\n      edm: "jump",\n      deephouse: "bounce",\n      techhouse: "pump",\n      psytrance: "jump",\n      dubstep: "bang",\n      garage: "bounce",\n      eurodance: "jump",\n      melodictechno: "pump",\n      hardtechno: "pump",\n      futurebass: "jump",\n      electroswing: "bounce",\n      breakbeat: "bounce",\n      boombap: "nod",\n      dancehall: "bounce",\n      cloudrap: "sway",\n      hardrock: "bang",\n      postrock: "sway",\n      ska: "skank",\n      emo: "jump",\n      jpop: "clap",\n      musical: "clap",\n      christmas: "sway",\n      celtic: "clap",\n      balkan: "jump",\n      amapiano: "bounce",\n      lofi: "sway",\n      neoclassical: "sway",\n      acoustic: "sway",\n      synthwave: "nod",\n      hyperpop: "jump",\n      trap: "bounce",\n      drill: "nod",\n      phonk: "pump",\n      rnb: "sway",\n      soul: "clap",\n      indie: "bounce",\n      alternative: "bang",\n      blues: "sway",\n      schlager: "clap",\n      ballad: "sway",\n      gospel: "clap",\n      reggaeton: "bounce",\n      salsa: "bounce",\n      brazil: "bounce",\n      flamenco: "clap",\n      bollywood: "bounce",\n      arabic: "clap",\n      ambient: "sway",\n      cinematic: "sway"\n    };\n    const mood = { x: 0 };\n    const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);\n    const sea = { a: 0 };\n    function seaLevel(px, dt, st) {\n      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp2((px.energy - 0.32) * 2.2, 0, 1) : 0;\n      sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));\n      return sea.a;\n    }\n    function crowdMood(px, dt, hype) {\n      const target = clamp2(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: HAIR[Math.floor(r() * HAIR.length)],\n            // Statur in drei Stufen (wenige Stufen = wenige vorgezeichnete K\xF6rperbilder)\n            wd: [0.86, 1, 1.15][Math.floor(r() * 3)],\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0 };\n    }\n    const HAIR = ["", "", "bun", "cap", "curl", "long", "long", "afro", "pony", "beanie", "hat", "short"];\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${p.wd || 1}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 90) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      const W = p.wd || 1;\n      x.moveTo(cx0 - 20 * S1 * W, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1 * W, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1 * W, y - 46 * S1, cx0 + 20 * S1 * W, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      if (p.hair === "afro") hxx.arc(ox, oy - 4 * S1, 14 * S1, 0, Math.PI * 2);\n      if (p.hair === "pony") hxx.ellipse(ox - p.hand * 10 * S1, oy - 2 * S1, 4 * S1, 8 * S1, p.hand * 0.5, 0, Math.PI * 2);\n      if (p.hair === "beanie") hxx.ellipse(ox, oy - 8 * S1, 10.5 * S1, 8 * S1, 0, Math.PI, Math.PI * 2);\n      if (p.hair === "short") hxx.ellipse(ox, oy - 3 * S1, 10.2 * S1, 10 * S1, 0, Math.PI, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      if (p.hair === "long") {\n        hxx.fillRect(ox - 11 * S1, oy - 4 * S1, 4 * S1, 18 * S1);\n        hxx.fillRect(ox + 7 * S1, oy - 4 * S1, 4 * S1, 18 * S1);\n      }\n      if (p.hair === "hat") {\n        hxx.fillRect(ox - 15 * S1, oy - 10 * S1, 30 * S1, 3 * S1);\n        hxx.fillRect(ox - 8 * S1, oy - 19 * S1, 16 * S1, 10 * S1);\n      }\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba2, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (crowd && crowd.venue === v && crowd.w !== vw) {\n        const f = vw / crowd.w;\n        for (const p of crowd.people) p.x *= f;\n        crowd.w = vw;\n      }\n      if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = v.seated ? "sway" : MOVES[px.key] || "clap";\n      const SEAa = seaLevel(px, dt, st);\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const raw = clamp2(px.phase ?? 0, 0, 1);\n      if (crowd.lastPh >= 0) {\n        let d = raw - (crowd.lastPh + (dt || 0) * (st.bpm / 60)) % 1;\n        d -= Math.round(d);\n        if (Math.abs(d) > 0.12) crowd.phOff += d;\n      }\n      crowd.lastPh = raw;\n      crowd.phOff *= Math.exp(-(dt || 0.016) * 3);\n      if (Math.abs(crowd.phOff) < 5e-3) crowd.phOff = 0;\n      const phi = ((raw - crowd.phOff) % 1 + 1) % 1;\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba2(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba2(pal[0], 0));\n        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const strokeRow = (row) => {\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) strokeRow(curRow);\n          curRow = p.row;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp2(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const cycN = half ? beatN >> 1 : beatN;\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc));\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.fillStyle = FILL[p.row];\n        ctx2.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;\n        const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;\n        const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;\n        const wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand || allUp ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin((beatN + phi) / 8 * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin((beatN + phi) / 2 * Math.PI)) * s1, -54 * s1 - 6 * s1 * down];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);\n        }\n        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });\n        else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8 });\n      }\n      if (curRow != null) strokeRow(curRow);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const [gx, gy, kind, s1, row] of glows) {\n        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n        ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];\n        ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n      }\n      if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      for (const f of crowd.flashes) {\n        const r = 34 * f.s;\n        ctx2.globalAlpha = f.a * A;\n        ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 6e-3 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));\n    function drawFog(ctx2, st, v) {\n      if (v.decor === "fairy") return;\n      const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0));\n      ctx2.globalCompositeOperation = "lighter";\n      for (const b of fogBanks) {\n        const x = ((b.x + t * b.sp) % 1.3 - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));\n        ctx2.globalAlpha = clamp2((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);\n        ctx2.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const drones = { song: "", t: -1, pts: [], shape: 0 };\n    function shapePoint(kind, i, n) {\n      const a = i / n * Math.PI * 2;\n      if (kind === 0) return [16 * Math.sin(a) ** 3 / 17, -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a)) / 17];\n      if (kind === 1) {\n        const k = Math.floor(i / n * 10), f = i / n * 10 - k, r0 = k % 2 ? 0.42 : 1, r1 = k % 2 ? 1 : 0.42;\n        const a0 = k / 10 * Math.PI * 2 - Math.PI / 2, a1 = (k + 1) / 10 * Math.PI * 2 - Math.PI / 2;\n        return [Math.cos(a0) * r0 * (1 - f) + Math.cos(a1) * r1 * f, Math.sin(a0) * r0 * (1 - f) + Math.sin(a1) * r1 * f];\n      }\n      if (kind === 2) return [Math.cos(a), Math.sin(a)];\n      return [i / n * 2 - 1, Math.sin(i / n * Math.PI * 4) * 0.35];\n    }\n    function drawDrones(ctx2, st) {\n      const px = st.px, t = st.t;\n      if (st.song && st.song !== drones.song && st.drones && px.dropHit && px.energy > 0.7 && !px.blackout) {\n        drones.song = st.song;\n        drones.t = t;\n        drones.shape = Math.floor(Math.random() * 4);\n        drones.pts = Array.from({ length: 120 }, (_, i) => ({ sx: Math.random(), sy: Math.random() * 0.5, i }));\n      }\n      if (drones.t < 0) return;\n      const age = t - drones.t;\n      if (age > 9) return void (drones.t = -1);\n      const f = age < 2 ? age / 2 : age < 7 ? 1 : 1 - (age - 7) / 2, e = f * f * (3 - 2 * f);\n      const cx = vw / 2, cy = vh * 0.2, S = Math.min(vw, vh) * 0.12, beat = Math.max(px.kickEnv || 0, px.accent || 0);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const p of drones.pts) {\n        const [qx, qy] = shapePoint(drones.shape, p.i, drones.pts.length);\n        const x = p.sx * vw + (cx + qx * S - p.sx * vw) * e, y = p.sy * vh + (cy + qy * S - p.sy * vh) * e;\n        const c = st.pal[p.i % 3], r = (3 + beat * 2.5) * st.dpr;\n        ctx2.globalAlpha = clamp2((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t * 6 + p.i)), 0, 1);\n        ctx2.drawImage(glowSprite(c.map((x2) => Math.round(x2 + (255 - x2) * 0.5))), x - r * 2, y - r * 2, r * 4, r * 4);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    let lastV = null, vSnap = null, vT = 0;\n    const V_FADE = 1.3;\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      const vNext = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      if (lastV && vNext !== lastV && ctx2.canvas?.width && crowdA > 0.05) {\n        try {\n          vSnap = vSnap && vSnap.width === ctx2.canvas.width && vSnap.height === ctx2.canvas.height ? vSnap : makeCanvas(ctx2.canvas.width, ctx2.canvas.height);\n          vSnap.width = ctx2.canvas.width;\n          vSnap.height = ctx2.canvas.height;\n          vSnap.getContext("2d").drawImage(ctx2.canvas, 0, 0);\n          vT = st.t;\n        } catch {\n          vT = 0;\n        }\n      }\n      lastV = vNext;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = vNext;\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        show.drawRig(ctx2, st, v, st.px, st.pal, st.dpr);\n        drawDecor(ctx2, v, st.px, st.pal, rgba2, st.dpr, st);\n      }\n      if (st.inst) show.drawInst(ctx2, st, st.px, st.pal, st.dpr);\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (st.stage && st.fog) drawFog(ctx2, st, v);\n      if (st.stage && v.open) drawDrones(ctx2, st);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba2, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      if (vT && vSnap) {\n        const f = clamp2((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);\n        if (f >= 1) vT = 0;\n        else {\n          ctx2.globalCompositeOperation = "destination-out";\n          ctx2.fillStyle = `rgba(0,0,0,${(1 - e).toFixed(3)})`;\n          ctx2.fillRect(0, 0, vw, vh);\n          ctx2.globalCompositeOperation = "destination-over";\n          ctx2.globalAlpha = 1 - e;\n          ctx2.drawImage(vSnap, 0, 0);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
+              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/show.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  var RIG = {\n    house: ["wave", "chase"],\n    deephouse: ["wave"],\n    techhouse: ["chase", "cross"],\n    garage: ["wave", "chase"],\n    disco: ["wave", "fan"],\n    techno: ["chase", "cross", "point"],\n    edm: ["fan", "cross", "wave"],\n    rave: ["fan", "cross"],\n    trance: ["fan", "wave"],\n    psytrance: ["cross", "wave"],\n    hardstyle: ["cross", "fan"],\n    dnb: ["chase", "cross"],\n    dubstep: ["point", "fan"],\n    eurodance: ["wave", "fan"],\n    synthwave: ["wave"],\n    hyperpop: ["chase", "fan"],\n    pop: ["wave", "fan"],\n    kpop: ["chase", "wave"],\n    schlager: ["wave", "fan"],\n    rock: ["point", "fan"],\n    metal: ["point", "fan"],\n    punk: ["point"],\n    alternative: ["point", "wave"],\n    indie: ["wave"],\n    latin: ["wave"],\n    reggaeton: ["wave", "chase"],\n    salsa: ["wave"],\n    brazil: ["wave"],\n    afro: ["wave"],\n    bollywood: ["wave", "fan"],\n    arabic: ["wave"],\n    bass: ["point", "chase"],\n    trap: ["point", "chase"],\n    drill: ["point"],\n    phonk: ["chase"],\n    soul: ["wave"],\n    gospel: ["fan"],\n    country: ["wave"],\n    reggae: ["wave"],\n    flamenco: ["point"],\n    melodictechno: ["wave", "fan"],\n    hardtechno: ["chase", "cross"],\n    futurebass: ["fan", "wave"],\n    electroswing: ["wave"],\n    breakbeat: ["chase", "point"],\n    boombap: ["point"],\n    dancehall: ["wave", "chase"],\n    hardrock: ["point", "fan"],\n    postrock: ["fan"],\n    ska: ["wave", "chase"],\n    emo: ["point"],\n    jpop: ["chase", "wave"],\n    musical: ["fan"],\n    celtic: ["wave"],\n    balkan: ["chase", "wave"],\n    amapiano: ["wave"]\n  };\n  var BLIND = /* @__PURE__ */ new Set(["hardrock", "hardtechno", "balkan", "rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);\n  var SHEET = /* @__PURE__ */ new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);\n  var CALM = /* @__PURE__ */ new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues", "lofi", "neoclassical", "acoustic", "cloudrap", "christmas"]);\n  var rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;\n  var mixW = (c, f) => c.map((v) => v + (255 - v) * f);\n  function createShow(glowSprite) {\n    let vw = 0, vh = 0;\n    const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };\n    const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);\n    function drawRig(ctx2, st, v, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);\n      const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);\n      if (px.dropHit) rig.drop = 1;\n      rig.drop *= Math.exp(-dt * 3);\n      const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;\n      const pats = RIG[key];\n      ctx2.globalCompositeOperation = "lighter";\n      if (n && pats && st.rig) {\n        const blk = Math.floor(bp / 32);\n        if (blk !== rig.blk) {\n          rig.blk = blk;\n          rig.pat = pats[(blk + (px.scene || 0)) % pats.length];\n          rig.col = (rig.col + 1) % 3;\n        }\n        const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(8,6,16,0.7)";\n        ctx2.fillRect(0, y - 3 * dpr, vw, 6 * dpr);\n        ctx2.globalCompositeOperation = "lighter";\n        const lead = Math.floor(bp * 2) % n;\n        for (let i = 0; i < n; i++) {\n          const x = vw * (0.07 + 0.86 * i / (n - 1)), u = i / (n - 1) - 0.5;\n          const toCover = Math.atan2(st.cy - y, st.cx - x);\n          let a = Math.PI / 2;\n          if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin(bp * Math.PI / 4) + rig.drop * 0.6);\n          else if (rig.pat === "wave") a += 0.5 * Math.sin(bp * Math.PI / 2 + i * 0.7);\n          else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin(bp * Math.PI / 4));\n          else if (rig.pat === "chase") a += u * 0.6;\n          else if (rig.pat === "point") a = toCover;\n          a += (toCover - a) * px.build * 0.8;\n          let k = base * (CALM.has(key) ? 0.5 : 1);\n          if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;\n          if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;\n          if (k < 4e-3) continue;\n          const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];\n          const len = vh * 1.2, wd = 0.03 + px.energy * 0.015 + rig.drop * 0.02;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, len);\n          g.addColorStop(0, rgba(c, k * 1.6));\n          g.addColorStop(0.4, rgba(c, k * 0.5));\n          g.addColorStop(1, rgba(c, 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x, y);\n          ctx2.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);\n          ctx2.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);\n          ctx2.closePath();\n          ctx2.fill();\n          const r = (8 + k * 70) * dpr;\n          ctx2.globalAlpha = clamp(k * 5, 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      const sn = px.snareEnv > 0.8;\n      if (st.flash && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale)) rig.blind = 1;\n      rig.sn = sn;\n      rig.blind *= Math.exp(-dt * 7);\n      if (rig.blind > 0.02 && vis > 0) {\n        for (const f of [0.22, 0.42, 0.58, 0.78]) {\n          const r = vh * 0.17 * (0.6 + rig.blind * 0.4);\n          ctx2.globalAlpha = rig.blind * 0.8 * vis;\n          ctx2.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);\n        ctx2.fillRect(0, 0, vw, vh);\n      }\n      const want = SHEET.has(key) && st.rig && !px.blackout && (px.drop > 0.35 || px.energy > 0.88 && px.build < 0.1) ? 1 : 0;\n      rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));\n      if (rig.sheet > 0.02) {\n        const c = mixW(pal[2], 0.35), tilt = Math.sin(bp * Math.PI / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));\n        for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * rig.sheet);\n          ctx2.beginPath();\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 + tilt * vw / 2);\n          ctx2.stroke();\n        }\n        ctx2.lineWidth = dpr;\n        ctx2.strokeStyle = rgba(c, 0.14 * rig.sheet);\n        ctx2.beginPath();\n        for (let k = -4; k <= 4; k++) {\n          const a = k * 0.03 + tilt;\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 - tilt * vw / 2 + Math.tan(a) * vw);\n        }\n        ctx2.stroke();\n      }\n      if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx2, st, px, pal, dpr);\n    }\n    let bokeh = null;\n    function drawBokeh(ctx2, st, px, pal, dpr) {\n      bokeh ||= Array.from({ length: 18 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random(), ph: Math.random() * 6.3, c: Math.floor(Math.random() * 3) }));\n      for (const b of bokeh) {\n        b.y -= st.dt * 0.012 * (0.5 + b.r);\n        if (b.y < -0.1) [b.y, b.x] = [1.1, Math.random()];\n        const r = (18 + b.r * 34) * dpr;\n        ctx2.globalAlpha = clamp((0.05 + 0.08 * px.energy) * (0.6 + 0.4 * Math.sin(st.t * 0.7 + b.ph)), 0, 1);\n        ctx2.drawImage(glowSprite(pal[b.c]), b.x * vw - r, b.y * vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const ins = { sparks: [], bolts: [], keys: new Float32Array(24), lastBolt: 0, kHit: false };\n    function drawInst(ctx2, st, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const I = st.inst, t = st.t, dt = st.dt;\n      if (!I || px.blackout) return;\n      ctx2.globalCompositeOperation = "lighter";\n      if (I.brass > 0.01) {\n        const L = I.brass, gold = [255, 200, 90];\n        for (const side of [-1, 1]) {\n          const ox = side < 0 ? 0 : vw, oy = vh * 0.95;\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);\n            const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            g.addColorStop(0, rgba(gold, 0.22 * L));\n            g.addColorStop(1, rgba(gold, 0));\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = (18 - k * 2) * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(ox, oy);\n            ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            ctx2.stroke();\n          }\n          const r = vh * 0.14 * (0.6 + L * 0.5);\n          ctx2.globalAlpha = L * 0.8;\n          ctx2.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });\n        }\n      }\n      if (I.sax > 0.01) {\n        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);\n        for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {\n          for (let k = 0; k < 3; k++) {\n            ctx2.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);\n            ctx2.lineWidth = (44 - k * 10) * dpr;\n            ctx2.beginPath();\n            for (let s = 0; s <= 20; s++) {\n              const f = s / 20, yy = vh * (0.95 - f * 0.75);\n              const xx = vw * bx + dir * Math.sin(f * 5 + t * (0.8 + k * 0.2) + k) * vw * 0.05 * (0.5 + f);\n              s ? ctx2.lineTo(xx, yy) : ctx2.moveTo(xx, yy);\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.guitar > 0.3) {\n        const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;\n        if (hitNow && !ins.kHit && t - ins.lastBolt > 0.25) {\n          ins.lastBolt = t;\n          const pts = [];\n          const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;\n          const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);\n          for (let s = 0; s <= 10; s++) {\n            const f = s / 10;\n            pts.push([x + (tx - x) * f + (s && s < 10 ? (Math.random() - 0.5) * vw * 0.04 : 0), y + (ty - y) * f]);\n          }\n          ins.bolts.push({ pts, a: 1 });\n        }\n        ins.kHit = hitNow;\n        for (let k = 0; k < 3; k++) {\n          if (Math.random() > dt * 18 * I.guitar) continue;\n          const r = (10 + Math.random() * 16) * dpr;\n          ctx2.globalAlpha = 0.5 + Math.random() * 0.5;\n          ctx2.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);\n      for (const b of ins.bolts) {\n        for (const [lw, c, al] of [[10 * dpr, [140, 170, 255], 0.25], [2.2 * dpr, [235, 245, 255], 0.95]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * b.a * Math.max(I.guitar, 0.3));\n          ctx2.beginPath();\n          b.pts.forEach(([x, y], k) => k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y));\n          ctx2.stroke();\n        }\n      }\n      if (I.piano > 0.01 || ins.keys.some((k) => k > 0.01)) {\n        const ch = I.chroma, w = vw / 24;\n        for (let k = 0; k < 24; k++) {\n          const target = ch ? (ch[k % 12] || 0) * I.piano : 0;\n          ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));\n          const L = ins.keys[k];\n          if (L < 0.02) continue;\n          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;\n          const g = ctx2.createLinearGradient(0, yb - h, 0, yb);\n          g.addColorStop(0, rgba(pal[k % 3], 0));\n          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x, yb - h, w * 0.6, h);\n          const r = w * 0.7;\n          ctx2.globalAlpha = clamp(L * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      if (I.strings > 0.01) {\n        const L = I.strings;\n        for (let k = 0; k < 3; k++) {\n          const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t * 0.6 + k * 1.7) * vh * 0.05;\n          for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {\n            ctx2.lineWidth = lw;\n            ctx2.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);\n            ctx2.beginPath();\n            for (let s = 0; s <= 32; s++) {\n              const x = s / 32 * vw;\n              s ? ctx2.lineTo(x, yy(x)) : ctx2.moveTo(x, yy(x));\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.choir > 0.01) {\n        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;\n        for (let k = 0; k < 9; k++) {\n          const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t * 0.2) * 0.05, len = vh * 1.1;\n          const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));\n          g.addColorStop(1, rgba([255, 245, 225], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = 40 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(ox, oy);\n          ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          ctx2.stroke();\n        }\n      }\n      ins.sparks = ins.sparks.filter((s) => (s.a -= dt * 0.9) > 0);\n      for (const s of ins.sparks) {\n        s.vy += vh * 0.2 * dt;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 6 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    return { drawRig, drawInst };\n  }\n\n  // src/venue.js\n  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    const show = createShow(glowSprite);\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp2(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba2(c, al));\n        g.addColorStop(0.5, rgba2(c, al * 0.35));\n        g.addColorStop(1, rgba2(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba2(pal[0], al));\n          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));\n          g.addColorStop(1, rgba2(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp2(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba2(pal[f.c], 0));\n            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba2(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },\n      // \u201Eopen\u201C: unter freiem Himmel (Feuerwerk erlaubt) \xB7 \u201Ecalm\u201C: drinnen und gediegen \u2013 kein CO2, keine Flammen,\n      // kein Stroboskop, kein Konfetti \xB7 \u201Eseated\u201C: das Publikum sitzt (Konzertsaal) und wiegt sich nur\n      rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },\n      cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },\n      jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },\n      forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },\n      hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },\n      cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" },\n      // 1.17: Weltall, Neon-Stra\xDFe, Pub, Skih\xFCtte, W\xFCste\n      space: { rows: [[2, 0.5, 30], [1, 0.76, 40], [0, 1.02, 52]], haze: 0.5, spot: 1.1, decor: "space", open: true },\n      neon: { rows: [[1, 0.78, 36], [0, 1.03, 46]], haze: 1.2, spot: 0.9, decor: "neon" },\n      pub: { rows: [[1, 0.82, 40], [0, 1.06, 52]], haze: 1.4, spot: 0.6, decor: "pub", calm: true },\n      skihut: { rows: [[1, 0.78, 34], [0, 1.03, 44]], haze: 0.9, spot: 0.85, decor: "skihut", open: true },\n      desert: { rows: [[2, 0.52, 30], [1, 0.78, 40], [0, 1.03, 50]], haze: 0.7, spot: 1, decor: "desert", open: true }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "jazzbar",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "cellar",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "forest",\n      chill: "home",\n      classical: "hall",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "forest",\n      dubstep: "festival",\n      garage: "rooftop",\n      eurodance: "club",\n      synthwave: "rooftop",\n      hyperpop: "club",\n      trap: "club",\n      drill: "cellar",\n      phonk: "cellar",\n      rnb: "rooftop",\n      soul: "jazzbar",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "jazzbar",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "cathedral",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "space",\n      melodictechno: "space",\n      hardtechno: "warehouse",\n      futurebass: "neon",\n      electroswing: "jazzbar",\n      breakbeat: "warehouse",\n      boombap: "rooftop",\n      dancehall: "beach",\n      cloudrap: "neon",\n      hardrock: "stadium",\n      postrock: "space",\n      ska: "pub",\n      emo: "cellar",\n      jpop: "neon",\n      musical: "hall",\n      christmas: "skihut",\n      celtic: "pub",\n      balkan: "pub",\n      amapiano: "beach",\n      lofi: "home",\n      neoclassical: "hall",\n      acoustic: "pub"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba2, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba2(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba2(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp2((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "rooftop") {\n        sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));\n        win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));\n        const hz = vh * 0.8;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,5,14,0.6)";\n        for (const b of sky) ctx2.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);\n        ctx2.globalCompositeOperation = "lighter";\n        for (const w of win) {\n          const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t * 0.7 + w.ph);\n          if (tw < 0.25) continue;\n          const r = 3.2 * dpr;\n          ctx2.globalAlpha = clamp2(tw * (0.35 + beat * 0.25), 0, 1);\n          ctx2.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);\n        }\n        for (let k = 0; k <= 18; k++) {\n          const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.28 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.4 + k * 2.1)), 0, 1);\n          const r = (8 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.75)";\n        ctx2.fillRect(0, vh * 0.84, vw, 3 * dpr);\n        for (let x = 0; x < vw; x += 70 * dpr) ctx2.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "cathedral") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.8)";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;\n          ctx2.beginPath();\n          ctx2.rect(x0, 0, x1 - x0, vh);\n          ctx2.moveTo(mid + iw, vh);\n          ctx2.lineTo(mid + iw, vh * 0.36);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);\n          ctx2.lineTo(mid - iw, vh);\n          ctx2.closePath();\n          ctx2.fill("evenodd");\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat * 0.1 + px.energy * 0.08;\n          const g = ctx2.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);\n          g.addColorStop(0, rgba2(pal[0], al.toFixed(3)));\n          g.addColorStop(0.5, rgba2(pal[1], (al * 0.9).toFixed(3)));\n          g.addColorStop(1, rgba2(pal[2], 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(mid + iw, vh * 0.7);\n          ctx2.lineTo(mid + iw, vh * 0.38);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);\n          ctx2.lineTo(mid - iw, vh * 0.7);\n          ctx2.fill();\n        }\n        for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {\n          const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - k % 3 * 0.018);\n          const r = (7 + Math.sin(t * 9 + k * 3 + side) * 1.6) * dpr;\n          ctx2.globalAlpha = 0.55;\n          ctx2.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "jazzbar") {\n        for (let k = 0; k < 3; k++) {\n          const x = vw * (0.22 + k * 0.28) + Math.sin(t * 0.6 + k) * vw * 0.01, y = vh * (0.16 + k % 2 * 0.03);\n          ctx2.strokeStyle = "rgba(255,255,255,0.07)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.22 + k * 0.28), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, vh * 0.85);\n          g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,190,120,0)");\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x - 8 * dpr, y);\n          ctx2.lineTo(x - vh * 0.22, vh);\n          ctx2.lineTo(x + vh * 0.22, vh);\n          ctx2.lineTo(x + 8 * dpr, y);\n          ctx2.fill();\n          const r = (16 + beat * 8) * dpr;\n          ctx2.globalAlpha = 0.8;\n          ctx2.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 9; k++) {\n          const r = 4 * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + 0.2 * Math.sin(t * 1.2 + k), 0, 1);\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (let k = 0; k < 4; k++) {\n          const x = vw * (0.5 + 0.45 * Math.sin(t * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t * 0.07 + k)), r = vh * 0.35;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, r);\n          g.addColorStop(0, "rgba(200,190,220,0.04)");\n          g.addColorStop(1, "rgba(200,190,220,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - r, y - r, r * 2, r * 2);\n        }\n      } else if (v.decor === "forest") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(4,4,10,0.9)";\n        for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {\n          const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t * 0.4 + bx) * 4 * dpr;\n          const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);\n          ctx2.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);\n          for (let k = 0; k < 5; k++) {\n            const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);\n            ctx2.beginPath();\n            ctx2.moveTo(bx + sx, y0);\n            ctx2.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.closePath();\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 16; k++) {\n          const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.25 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.3 + k * 1.9)), 0, 1);\n          const r = (7 + beat * 4) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);\n        }\n        flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));\n        const hat = px.hatEnv || 0;\n        for (const f of flies) {\n          const x = (f.x + Math.sin(t * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t * f.sp * 0.4 + f.ph) * 0.03) * vh;\n          ctx2.globalAlpha = clamp2((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "hall") {\n        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {\n          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;\n          ctx2.globalCompositeOperation = "source-over";\n          ctx2.fillStyle = "rgba(8,6,16,0.8)";\n          ctx2.fillRect(x0, y, w, vh * 0.05);\n          ctx2.globalCompositeOperation = "lighter";\n          ctx2.globalAlpha = clamp2(0.32 + beat * 0.15, 0, 1);\n          for (let k = 0; k < 6; k++) {\n            const r = 5 * dpr;\n            ctx2.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);\n          }\n          ctx2.globalAlpha = 1;\n        }\n        for (const x of [vw * 0.25, vw * 0.75]) {\n          ctx2.globalAlpha = clamp2(0.5 + px.energy * 0.3, 0, 1);\n          for (let k = 0; k < 8; k++) {\n            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t * 3 + k) * 1.5) * dpr;\n            ctx2.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);\n          }\n          const r = (60 + beat * 30) * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + beat * 0.2, 0, 1);\n          ctx2.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "cellar") {\n        const n = 4;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,10,0.85)";\n        ctx2.beginPath();\n        ctx2.rect(0, 0, vw, vh * 0.32);\n        for (let k = 0; k < n; k++) {\n          const x0 = k / n * vw, x1 = (k + 1) / n * vw;\n          ctx2.moveTo(x1, vh * 0.32);\n          ctx2.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);\n          ctx2.closePath();\n        }\n        ctx2.fill("evenodd");\n        ctx2.strokeStyle = "rgba(255,255,255,0.035)";\n        ctx2.lineWidth = dpr;\n        ctx2.beginPath();\n        for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {\n          ctx2.moveTo(0, y);\n          ctx2.lineTo(vw, y);\n        }\n        ctx2.stroke();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < n; k++) {\n          const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t * 1.1 + k) * 4e-3);\n          const r = (20 + px.kickEnv * 44) * dpr;\n          ctx2.globalAlpha = clamp2(0.4 + px.kickEnv * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "space") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          const x = ((s1.x - t * 4e-3 * s1.z) % 1 + 1) % 1, tw = 0.55 + 0.45 * Math.sin(t * (1 + s1.z) + s1.ph);\n          ctx2.globalAlpha = clamp2(tw * s1.z * (0.45 + px.energy * 0.35 + beat * 0.2), 0, 1);\n          const r = (1.6 + s1.z * 2.4) * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 5 ? pal[2] : [235, 240, 255]), x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const pr = Math.min(vw, vh) * 0.32, pxx = vw * 0.86, pyy = -pr * 0.35;\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,6,16,0.92)";\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr, 0, Math.PI * 2);\n        ctx2.fill();\n        ctx2.globalCompositeOperation = "lighter";\n        const rim = ctx2.createRadialGradient(pxx, pyy, pr * 0.92, pxx, pyy, pr * 1.18);\n        rim.addColorStop(0, rgba2(pal[1], 0));\n        rim.addColorStop(0.35, rgba2(pal[1], (0.22 + beat * 0.18).toFixed(3)));\n        rim.addColorStop(1, rgba2(pal[1], 0));\n        ctx2.fillStyle = rim;\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr * 1.18, 0, Math.PI * 2);\n        ctx2.fill();\n        if (px.dropHit || px.hit && px.inBar === 0 && px.energy > 0.7 && Math.random() < 0.35) shoot = { t0: t, y: 0.08 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.5 };\n        if (shoot) {\n          const f = (t - shoot.t0) / 0.9;\n          if (f > 1) shoot = null;\n          else {\n            const x0 = (shoot.x + f * 0.35) * vw, y0 = (shoot.y + f * 0.18) * vh, len = 140 * dpr;\n            const g = ctx2.createLinearGradient(x0, y0, x0 - len, y0 - len * 0.5);\n            g.addColorStop(0, `rgba(255,255,255,${(0.8 * (1 - f)).toFixed(3)})`);\n            g.addColorStop(1, "rgba(255,255,255,0)");\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = 2 * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(x0, y0);\n            ctx2.lineTo(x0 - len, y0 - len * 0.5);\n            ctx2.stroke();\n          }\n        }\n      } else if (v.decor === "neon") {\n        neonSigns ||= Array.from({ length: 10 }, (_, i) => ({ side: i % 2 ? 1 : -1, d: Math.floor(i / 2) / 5, h: 0.14 + Math.random() * 0.16, y: 0.18 + Math.random() * 0.3, c: i % 3, ph: Math.random() * 6.3 }));\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.88)";\n        for (const side of [-1, 1]) {\n          const x0 = side < 0 ? 0 : vw * 0.8;\n          ctx2.fillRect(x0, vh * 0.12, vw * 0.2, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const n of neonSigns) {\n          const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;\n          const flick = Math.sin(t * 13 + n.ph) > 0.97 ? 0.3 : 1;\n          const a = clamp2((0.35 + beat * 0.5) * flick, 0, 1), c = pal[n.c];\n          ctx2.fillStyle = rgba2(c, (a * 0.9).toFixed(3));\n          ctx2.fillRect(x - 4 * dpr, y, 8 * dpr, h);\n          const r = 26 * dpr;\n          ctx2.globalAlpha = a * 0.55;\n          for (let k = 0; k < 3; k++) ctx2.drawImage(glowSprite(c), x - r, y + h * k / 2 - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        const wet = ctx2.createLinearGradient(0, vh * 0.86, 0, vh);\n        wet.addColorStop(0, rgba2(pal[0], 0));\n        wet.addColorStop(1, rgba2(pal[0], (0.08 + beat * 0.12).toFixed(3)));\n        ctx2.fillStyle = wet;\n        ctx2.fillRect(0, vh * 0.86, vw, vh * 0.14);\n      } else if (v.decor === "pub") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(10,6,4,0.9)";\n        for (let k = 0; k < 4; k++) ctx2.fillRect(0, vh * (0.02 + k * 0.045), vw, 7 * dpr);\n        ctx2.fillRect(vw * 0.04, vh * 0.8, vw * 0.92, vh * 0.035);\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 7; k++) {\n          const x = vw * (0.1 + k * 0.133), sw = Math.sin(t * 1.1 + k) * 6 * dpr, y = vh * 0.22;\n          ctx2.strokeStyle = "rgba(60,40,25,0.5)";\n          ctx2.lineWidth = 1.5 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(x, vh * 0.04);\n          ctx2.lineTo(x + sw, y);\n          ctx2.stroke();\n          ctx2.globalAlpha = clamp2(0.45 + beat * 0.35, 0, 1);\n          const r = (22 + beat * 10) * dpr;\n          ctx2.drawImage(glowSprite([255, 180, 95]), x + sw - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 24; k++) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 0.9 + k * 2.3);\n          if (tw < 0.4) continue;\n          ctx2.globalAlpha = clamp2(tw * (0.25 + beat * 0.2), 0, 1);\n          const r = 4 * dpr;\n          ctx2.drawImage(glowSprite(k % 4 ? [255, 210, 140] : pal[k % 3]), vw * (0.08 + k * 0.036) - r, vh * 0.79 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "skihut") {\n        ctx2.globalCompositeOperation = "source-over";\n        const peaks = [[0, 0.62], [0.1, 0.5], [0.22, 0.66], [0.34, 0.74], [0.5, 0.78], [0.66, 0.73], [0.78, 0.64], [0.9, 0.48], [1, 0.6]];\n        const ridge = new Path2D();\n        ridge.moveTo(0, vh);\n        for (const [x, y] of peaks) ridge.lineTo(vw * x, vh * y);\n        ridge.lineTo(vw, vh);\n        ridge.closePath();\n        ctx2.fillStyle = "rgba(14,16,30,0.8)";\n        ctx2.fill(ridge);\n        ctx2.save();\n        ctx2.clip(ridge);\n        const snowG = ctx2.createLinearGradient(0, vh * 0.48, 0, vh * 0.7);\n        snowG.addColorStop(0, "rgba(225,232,255,0.22)");\n        snowG.addColorStop(1, "rgba(225,232,255,0)");\n        ctx2.fillStyle = snowG;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.restore();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 20; k++) {\n          const f = k / 20, x = vw * f, y = vh * (0.04 + 0.1 * (1 - Math.abs(f - 0.5) * 2));\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * (0.6 + 0.4 * Math.sin(t * 1.5 + k * 1.3)), 0, 1);\n          const r = (9 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 205, 130] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        snow ||= Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), sp: 0.02 + Math.random() * 0.04, ph: Math.random() * 6.3 }));\n        for (const f of snow) {\n          const y = (f.y + t * f.sp) % 1, x = f.x + Math.sin(t * 0.6 + f.ph) * 0.01;\n          ctx2.globalAlpha = 0.35 + 0.25 * Math.sin(f.ph + t);\n          const r = 3 * dpr;\n          ctx2.drawImage(glowSprite([235, 240, 255]), x * vw - r, y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "desert") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          if (s1.y > 0.5) continue;\n          ctx2.globalAlpha = clamp2((0.25 + 0.3 * Math.sin(t * 1.3 + s1.ph)) * s1.z, 0, 1);\n          const r = (1.4 + s1.z * 2) * dpr;\n          ctx2.drawImage(glowSprite([255, 240, 220]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const mr = Math.min(vw, vh) * 0.09;\n        ctx2.globalAlpha = clamp2(0.55 + beat * 0.25, 0, 1);\n        ctx2.drawImage(glowSprite([255, 225, 180]), vw * 0.2 - mr * 2.4, vh * 0.2 - mr * 2.4, mr * 4.8, mr * 4.8);\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(14,8,6,0.85)";\n        for (const [y0, amp, ph] of [[0.76, 0.04, 0], [0.83, 0.03, 2]]) {\n          ctx2.beginPath();\n          ctx2.moveTo(0, vh);\n          for (let x = 0; x <= 24; x++) ctx2.lineTo(vw * x / 24, vh * (y0 + amp * Math.sin(x * 0.55 + ph)));\n          ctx2.lineTo(vw, vh);\n          ctx2.closePath();\n          ctx2.fill();\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        const fire = ctx2.createRadialGradient(vw / 2, vh, 0, vw / 2, vh, vh * 0.45);\n        fire.addColorStop(0, `rgba(255,140,60,${(0.12 + px.kickEnv * 0.1 + px.drop * 0.08).toFixed(3)})`);\n        fire.addColorStop(1, "rgba(255,140,60,0)");\n        ctx2.fillStyle = fire;\n        ctx2.fillRect(0, vh * 0.55, vw, vh * 0.45);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n    }\n    let stands = null, sky = null, win = null, flies = null, stars = null, neonSigns = null, snow = null, shoot = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };\n    const GOLD = [255, 214, 120], WHITE = [255, 255, 255];\n    function confetti(pal, big, few) {\n      const pop = (c) => {\n        const m = Math.max(...c, 1);\n        return c.map((v) => Math.round(clamp2((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));\n      };\n      const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];\n      for (let k = 0; k < n && fx.confetti.length < 420; k++) {\n        const side = k % 2 ? 1 : -1;\n        fx.confetti.push({\n          x: vw * (side < 0 ? 0.12 : 0.88),\n          y: vh * 0.98,\n          vx: -side * vh * (0.12 + Math.random() * 0.45),\n          vy: -vh * (1.25 + Math.random() * 0.6),\n          r: Math.random() * 6.3,\n          vr: (Math.random() - 0.5) * 14,\n          w: (9 + Math.random() * 8) * (vh / 720),\n          h: (5 + Math.random() * 4) * (vh / 720),\n          ph: Math.random() * 6.3,\n          c: cols[k % cols.length],\n          a: 1\n        });\n      }\n      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });\n    }\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;\n      if (newBeat) fx.barId = barId;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {\n        fx.confAt = st.t;\n        confetti(pal, big, st.quality < 1 || v.decor === "fairy");\n      }\n      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;\n      if (st.confetti && st.confetti !== fx.confManual) {\n        fx.confManual = st.confetti;\n        if (v.decor !== "fairy") confetti(pal, big, st.quality < 1);\n      }\n      if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {\n        const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp2(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.confetti = fx.confetti.filter((c) => c.y < vh * 1.05 && (c.a -= dt * 0.07) > 0);\n      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);\n      if (fx.confetti.length || fx.streamers.length) {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const c of fx.confetti) {\n          c.vy = c.vy < vh * 0.1 ? c.vy + vh * 1.4 * dt : vh * 0.1;\n          c.vx *= 1 - dt * 1.6;\n          c.ph += dt * 5;\n          c.r += c.vr * dt;\n          c.x += (c.vx + Math.sin(c.ph) * vh * 0.05) * dt;\n          c.y += c.vy * dt;\n          const flip = Math.abs(Math.cos(c.ph * 1.3)), w = c.w * (0.3 + 0.7 * flip), h = c.h;\n          ctx2.globalAlpha = clamp2(c.a, 0, 1) * (0.55 + 0.45 * flip);\n          ctx2.fillStyle = `rgb(${c.c[0]},${c.c[1]},${c.c[2]})`;\n          const co = Math.cos(c.r), si = Math.sin(c.r);\n          ctx2.setTransform(co, si, -si, co, c.x, c.y);\n          ctx2.fillRect(-w / 2, -h / 2, w, h);\n        }\n        ctx2.setTransform(1, 0, 0, 1, 0, 0);\n        ctx2.lineWidth = 4 * (vh / 720);\n        ctx2.lineCap = "round";\n        for (const m of fx.streamers) {\n          m.y += m.vy * dt;\n          m.ph += dt * 2;\n          ctx2.globalAlpha = clamp2(m.a, 0, 1) * 0.85;\n          ctx2.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;\n          ctx2.beginPath();\n          for (let k = 0; k <= 10; k++) {\n            const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;\n            k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y);\n          }\n          ctx2.stroke();\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "lighter";\n      }\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway",\n      edm: "jump",\n      deephouse: "bounce",\n      techhouse: "pump",\n      psytrance: "jump",\n      dubstep: "bang",\n      garage: "bounce",\n      eurodance: "jump",\n      melodictechno: "pump",\n      hardtechno: "pump",\n      futurebass: "jump",\n      electroswing: "bounce",\n      breakbeat: "bounce",\n      boombap: "nod",\n      dancehall: "bounce",\n      cloudrap: "sway",\n      hardrock: "bang",\n      postrock: "sway",\n      ska: "skank",\n      emo: "jump",\n      jpop: "clap",\n      musical: "clap",\n      christmas: "sway",\n      celtic: "clap",\n      balkan: "jump",\n      amapiano: "bounce",\n      lofi: "sway",\n      neoclassical: "sway",\n      acoustic: "sway",\n      synthwave: "nod",\n      hyperpop: "jump",\n      trap: "bounce",\n      drill: "nod",\n      phonk: "pump",\n      rnb: "sway",\n      soul: "clap",\n      indie: "bounce",\n      alternative: "bang",\n      blues: "sway",\n      schlager: "clap",\n      ballad: "sway",\n      gospel: "clap",\n      reggaeton: "bounce",\n      salsa: "bounce",\n      brazil: "bounce",\n      flamenco: "clap",\n      bollywood: "bounce",\n      arabic: "clap",\n      ambient: "sway",\n      cinematic: "sway"\n    };\n    const mood = { x: 0 };\n    const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);\n    const sea = { a: 0 };\n    function seaLevel(px, dt, st) {\n      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp2((px.energy - 0.32) * 2.2, 0, 1) : 0;\n      sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));\n      return sea.a;\n    }\n    function crowdMood(px, dt, hype) {\n      const target = clamp2(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: HAIR[Math.floor(r() * HAIR.length)],\n            // Statur in drei Stufen (wenige Stufen = wenige vorgezeichnete K\xF6rperbilder)\n            wd: [0.86, 1, 1.15][Math.floor(r() * 3)],\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0 };\n    }\n    const HAIR = ["", "", "bun", "cap", "curl", "long", "long", "afro", "pony", "beanie", "hat", "short"];\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${p.wd || 1}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 90) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      const W = p.wd || 1;\n      x.moveTo(cx0 - 20 * S1 * W, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1 * W, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1 * W, y - 46 * S1, cx0 + 20 * S1 * W, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      if (p.hair === "afro") hxx.arc(ox, oy - 4 * S1, 14 * S1, 0, Math.PI * 2);\n      if (p.hair === "pony") hxx.ellipse(ox - p.hand * 10 * S1, oy - 2 * S1, 4 * S1, 8 * S1, p.hand * 0.5, 0, Math.PI * 2);\n      if (p.hair === "beanie") hxx.ellipse(ox, oy - 8 * S1, 10.5 * S1, 8 * S1, 0, Math.PI, Math.PI * 2);\n      if (p.hair === "short") hxx.ellipse(ox, oy - 3 * S1, 10.2 * S1, 10 * S1, 0, Math.PI, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      if (p.hair === "long") {\n        hxx.fillRect(ox - 11 * S1, oy - 4 * S1, 4 * S1, 18 * S1);\n        hxx.fillRect(ox + 7 * S1, oy - 4 * S1, 4 * S1, 18 * S1);\n      }\n      if (p.hair === "hat") {\n        hxx.fillRect(ox - 15 * S1, oy - 10 * S1, 30 * S1, 3 * S1);\n        hxx.fillRect(ox - 8 * S1, oy - 19 * S1, 16 * S1, 10 * S1);\n      }\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba2, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (crowd && crowd.venue === v && crowd.w !== vw) {\n        const f = vw / crowd.w;\n        for (const p of crowd.people) p.x *= f;\n        crowd.w = vw;\n      }\n      if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = v.seated ? "sway" : MOVES[px.key] || "clap";\n      const SEAa = seaLevel(px, dt, st);\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const raw = clamp2(px.phase ?? 0, 0, 1);\n      if (crowd.lastPh >= 0) {\n        let d = raw - (crowd.lastPh + (dt || 0) * (st.bpm / 60)) % 1;\n        d -= Math.round(d);\n        if (Math.abs(d) > 0.12) crowd.phOff += d;\n      }\n      crowd.lastPh = raw;\n      crowd.phOff *= Math.exp(-(dt || 0.016) * 3);\n      if (Math.abs(crowd.phOff) < 5e-3) crowd.phOff = 0;\n      const phi = ((raw - crowd.phOff) % 1 + 1) % 1;\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba2(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba2(pal[0], 0));\n        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const strokeRow = (row) => {\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      const flushLights = (row) => {\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [gx, gy, kind, s1, r0] of glows) {\n          const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n          ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - r0 * 0.25) * A * rowA[r0];\n          ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n        }\n        glows.length = 0;\n        for (const f of crowd.flashes) {\n          if ((f.row ?? 0) !== row) continue;\n          const r = 34 * f.s;\n          ctx2.globalAlpha = f.a * A;\n          ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n        }\n        ctx2.globalCompositeOperation = "source-over";\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) {\n            strokeRow(curRow);\n            flushLights(curRow);\n          }\n          curRow = p.row;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp2(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const cycN = half ? beatN >> 1 : beatN;\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc));\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.fillStyle = FILL[p.row];\n        ctx2.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;\n        const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;\n        const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;\n        const wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand || allUp ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin((beatN + phi) / 8 * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin((beatN + phi) / 2 * Math.PI)) * s1, -54 * s1 - 6 * s1 * down];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);\n        }\n        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1, row: p.row });\n        else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, row: p.row });\n      }\n      if (curRow != null) {\n        strokeRow(curRow);\n        flushLights(curRow);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      ctx2.globalAlpha = 1;\n    }\n    const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 6e-3 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));\n    function drawFog(ctx2, st, v) {\n      if (v.decor === "fairy") return;\n      const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0));\n      ctx2.globalCompositeOperation = "lighter";\n      for (const b of fogBanks) {\n        const x = ((b.x + t * b.sp) % 1.3 - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));\n        ctx2.globalAlpha = clamp2((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);\n        ctx2.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const drones = { song: "", t: -1, pts: [], shape: 0 };\n    function shapePoint(kind, i, n) {\n      const a = i / n * Math.PI * 2;\n      if (kind === 0) return [16 * Math.sin(a) ** 3 / 17, -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a)) / 17];\n      if (kind === 1) {\n        const k = Math.floor(i / n * 10), f = i / n * 10 - k, r0 = k % 2 ? 0.42 : 1, r1 = k % 2 ? 1 : 0.42;\n        const a0 = k / 10 * Math.PI * 2 - Math.PI / 2, a1 = (k + 1) / 10 * Math.PI * 2 - Math.PI / 2;\n        return [Math.cos(a0) * r0 * (1 - f) + Math.cos(a1) * r1 * f, Math.sin(a0) * r0 * (1 - f) + Math.sin(a1) * r1 * f];\n      }\n      if (kind === 2) return [Math.cos(a), Math.sin(a)];\n      return [i / n * 2 - 1, Math.sin(i / n * Math.PI * 4) * 0.35];\n    }\n    function drawDrones(ctx2, st) {\n      const px = st.px, t = st.t;\n      if (st.song && st.song !== drones.song && st.drones && px.dropHit && px.energy > 0.7 && !px.blackout) {\n        drones.song = st.song;\n        drones.t = t;\n        drones.shape = Math.floor(Math.random() * 4);\n        drones.pts = Array.from({ length: 120 }, (_, i) => ({ sx: Math.random(), sy: Math.random() * 0.5, i }));\n      }\n      if (drones.t < 0) return;\n      const age = t - drones.t;\n      if (age > 9) return void (drones.t = -1);\n      const f = age < 2 ? age / 2 : age < 7 ? 1 : 1 - (age - 7) / 2, e = f * f * (3 - 2 * f);\n      const cx = vw / 2, cy = vh * 0.2, S = Math.min(vw, vh) * 0.12, beat = Math.max(px.kickEnv || 0, px.accent || 0);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const p of drones.pts) {\n        const [qx, qy] = shapePoint(drones.shape, p.i, drones.pts.length);\n        const x = p.sx * vw + (cx + qx * S - p.sx * vw) * e, y = p.sy * vh + (cy + qy * S - p.sy * vh) * e;\n        const c = st.pal[p.i % 3], r = (3 + beat * 2.5) * st.dpr;\n        ctx2.globalAlpha = clamp2((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t * 6 + p.i)), 0, 1);\n        ctx2.drawImage(glowSprite(c.map((x2) => Math.round(x2 + (255 - x2) * 0.5))), x - r * 2, y - r * 2, r * 4, r * 4);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    let lastV = null, vSnap = null, vT = 0;\n    const V_FADE = 1.3;\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      const vNext = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      if (lastV && vNext !== lastV && ctx2.canvas?.width && crowdA > 0.05) {\n        try {\n          vSnap = vSnap && vSnap.width === ctx2.canvas.width && vSnap.height === ctx2.canvas.height ? vSnap : makeCanvas(ctx2.canvas.width, ctx2.canvas.height);\n          vSnap.width = ctx2.canvas.width;\n          vSnap.height = ctx2.canvas.height;\n          vSnap.getContext("2d").drawImage(ctx2.canvas, 0, 0);\n          vT = st.t;\n        } catch {\n          vT = 0;\n        }\n      }\n      lastV = vNext;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = vNext;\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        show.drawRig(ctx2, st, v, st.px, st.pal, st.dpr);\n        drawDecor(ctx2, v, st.px, st.pal, rgba2, st.dpr, st);\n      }\n      if (st.inst) show.drawInst(ctx2, st, st.px, st.pal, st.dpr);\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (st.stage && st.fog) drawFog(ctx2, st, v);\n      if (st.stage && v.open) drawDrones(ctx2, st);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba2, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      if (vT && vSnap) {\n        const f = clamp2((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);\n        if (f >= 1) vT = 0;\n        else {\n          ctx2.globalCompositeOperation = "destination-out";\n          ctx2.fillStyle = `rgba(0,0,0,${(1 - e).toFixed(3)})`;\n          ctx2.fillRect(0, 0, vw, vh);\n          ctx2.globalCompositeOperation = "destination-over";\n          ctx2.globalAlpha = 1 - e;\n          ctx2.drawImage(vSnap, 0, 0);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
               const w = new Worker(url);
               const off = q.venueEl.transferControlToOffscreen();
               w.postMessage({ type: "init", canvas: off }, [off]);
@@ -21341,6 +22052,8 @@
             syncState();
           }
           const mode = el3.dataset.mode;
+          const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
+          if (el3.classList.contains("is-shatter") !== shatterOn) el3.classList.toggle("is-shatter", shatterOn);
           pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying(), now);
           if (LYR.has(mode)) drawLyrics(pos);
           if (VIZ.has(mode)) {
@@ -21452,7 +22165,7 @@
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
-          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", announce: "annTitle", poll: "pollBtn", recap: "recapBtn" }[kind]);
+          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle" }[kind]);
           const body = q.sideBody;
           body.textContent = "";
           const item = (label, sub, img, onClick, on) => {
@@ -21485,7 +22198,7 @@
             return wishPanel(body);
           }
           if (kind === "screens") return screensPanel(body, item);
-          if (kind === "announce") return announcePanel(body);
+          if (kind === "dj") return djPanel(body);
           if (kind === "poll") return pollPanel(body);
           if (kind === "recap") return recapPanel(body);
           if (kind === "queue") {
@@ -21575,26 +22288,25 @@
           q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
           lastBeatIdx = -1;
           moments2.stormDone = false;
-          moments2.countN = 0;
-          q.count?.classList.remove("is-on");
+          if (item?.uri && el3.dataset.mode === "party") dj.onSong(item.uri).then((m) => m && S.showNotification?.(t("djMoved").replace("{t}", m.title), false, 4e3));
           updateKicker();
           if (LYR.has(el3.dataset.mode)) loadLyrics();
           if (el3.dataset.mode === "party") {
             if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0, from: cfg.partyDJ && vividPal ? vividPal.map((c2) => c2.slice()) : null, hitAt: 0 };
-            party.prepare(item).then((info) => {
+            party.prepare(item).then((info2) => {
               updateKicker();
-              noteRecap(item, info);
+              noteRecap(item, info2);
             });
           }
           showExtras();
         }
         const recap = { start: 0, songs: [], drops: 0, peak: null };
-        function noteRecap(item, info) {
+        function noteRecap(item, info2) {
           if (!cfg.partyRecap || !item?.uri) return;
           if (!recap.start || Date.now() - recap.last > 36e5) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null });
           recap.last = Date.now();
           if (recap.songs.some((x) => x.uri === item.uri)) return;
-          recap.songs.push({ uri: item.uri, title: titleOf(item), artist: artistOf(item), key: info?.key || "pop", bpm: info?.bpm || 0, img: covers(item).big || covers(item).small });
+          recap.songs.push({ uri: item.uri, title: titleOf(item), artist: artistOf(item), key: info2?.key || "pop", bpm: info2?.bpm || 0, img: covers(item).big || covers(item).small });
           showExtras();
         }
         function showExtras() {
@@ -21602,8 +22314,8 @@
           const party2 = el3.dataset.mode === "party";
           q.recap.hidden = !(party2 && cfg.partyRecap && recap.songs.length >= 3);
           q.conf.hidden = !party2 || !!cfg.calm;
-          q.ann.hidden = !party2;
           q.pollbtn.hidden = !(party2 && cfg.partyLive);
+          q.djbtn.hidden = !party2;
           q.screen.hidden = !(party2 && cfg.partyScreen);
           q.live.hidden = !(party2 && cfg.partyLive);
           if (q.live.hidden) el3.querySelector(".m-im-livecard")?.remove();
@@ -21710,27 +22422,27 @@
         async function toggleLiveCard() {
           const old = el3.querySelector(".m-im-livecard");
           if (old) return old.remove();
-          const info = await live.prepare().catch(() => null);
+          const info2 = await live.prepare().catch(() => null);
           const card = document.createElement("div");
           card.className = "m-im-livecard";
           const b = document.createElement("b");
           b.textContent = t("liveTitle");
-          if (!info) {
+          if (!info2) {
             const p = document.createElement("p");
             p.textContent = t("liveError");
             card.append(b, p);
           } else {
             const img = new Image();
             img.alt = "";
-            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info2.qr);
             const p = document.createElement("p");
             p.textContent = t("liveHint");
             const u = document.createElement("code");
             u.textContent = t("liveCopy");
-            u.title = info.url;
+            u.title = info2.url;
             u.onclick = (e) => {
               e.stopPropagation();
-              navigator.clipboard?.writeText(info.url).catch(() => {
+              navigator.clipboard?.writeText(info2.url).catch(() => {
               });
             };
             const note = document.createElement("small");
@@ -21740,7 +22452,7 @@
           card.onclick = () => card.remove();
           el3.append(card);
         }
-        const moments2 = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false, countN: 0 };
+        const moments2 = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false };
         function showMoments(px, now) {
           const bar = 4 * 6e4 / (party.info.bpm || 120);
           if (hypeOn && !moments2.hypeWas && px.energy > 0.45) {
@@ -21754,27 +22466,6 @@
           if (px.dropHit && px.finale && cfg.partyFlashStorm) moments2.stormUntil = now + 2600;
           moments2.hands = clamp((moments2.handsUntil - now) / 500, 0, 1);
           moments2.storm = clamp((moments2.stormUntil - now) / 600, 0, 1);
-          let n = 0;
-          if (cfg.partyCountdown && px.fx && px.level >= 2 && px.toDrop < 30) {
-            const bl = 60 / (party.info.bpm || 120);
-            const k = Math.ceil(px.toDrop / bl - 0.02);
-            if (px.toDrop > 0.03 && k >= 1 && k <= 4) n = k;
-          }
-          if (n !== moments2.countN) {
-            moments2.countN = n;
-            if (!q.count) {
-              q.count = document.createElement("div");
-              q.count.className = "m-im-count";
-              q.count.setAttribute("aria-hidden", "true");
-              el3.append(q.count);
-            }
-            if (n) {
-              q.count.textContent = String(n);
-              q.count.classList.remove("is-on");
-              void q.count.offsetWidth;
-              q.count.classList.add("is-on");
-            } else q.count.classList.remove("is-on");
-          }
         }
         function confetti() {
           if (!el3 || el3.dataset.mode !== "party" || cfg.calm) return;
@@ -21810,40 +22501,47 @@
           }
           q.pause.classList.add("is-on");
         }
-        function announcePanel(body) {
-          const hint = document.createElement("p");
-          hint.className = "m-im-side-note";
-          hint.textContent = t("annHint");
-          const inp = document.createElement("input");
-          inp.type = "text";
-          inp.maxLength = 120;
-          inp.className = "m-im-side-find";
-          inp.placeholder = t("annPlaceholder");
-          const go2 = (text) => {
-            const x = String(text || "").trim();
-            if (!x) return inp.focus();
-            showAnnouncement(x);
-            if (cfg.partyLive) live.announce(x);
-            inp.value = "";
-          };
-          inp.onkeydown = (e) => {
-            e.stopPropagation();
-            if (e.key === "Enter") go2(inp.value);
-          };
-          body.append(hint, inp);
-          sideBtn(body, t("annSend"), "", () => go2(inp.value));
-          for (const k of ["annP1", "annP2", "annP3", "annP4"]) sideBtn(body, t(k), "", () => go2(t(k)));
-          setTimeout(() => inp.focus(), 50);
-        }
-        function showAnnouncement(text) {
-          el3.querySelector(".m-im-annbox")?.remove();
+        let djToken = 0;
+        function djPanel(body) {
+          const token = ++djToken, cur2 = currentItem();
+          sideBtn(body, t("djEnergy"), cfg.djEnergy ? t("djEnergyOn") : t("djEnergyOff"), () => {
+            cfg.djEnergy = !cfg.djEnergy;
+            save();
+            showSide("dj");
+          }, cfg.djEnergy);
+          const head2 = document.createElement("div");
+          head2.className = "m-im-side-sec";
+          head2.textContent = t("djNow");
+          body.append(head2);
+          const nowRow = sideBtn(body, titleOf(cur2) || "\u2013", t("loading"));
+          const sec = document.createElement("div");
+          sec.className = "m-im-side-sec";
+          sec.textContent = t("djNext");
+          const secSub = document.createElement("small");
+          secSub.textContent = t("djNextSub");
+          sec.append(secSub);
+          body.append(sec);
           const box = document.createElement("div");
-          box.className = "m-im-annbox";
-          box.setAttribute("role", "status");
-          box.textContent = text;
-          el3.append(box);
-          setTimeout(() => box.classList.add("is-gone"), 8e3);
-          setTimeout(() => box.remove(), 8800);
+          box.className = "m-im-side-group";
+          body.append(box);
+          sideBtn(box, t("loading"));
+          const fmtI = (i) => i ? `${i.cam || "?"} \xB7 ${i.bpm} BPM` : "";
+          dj.suggest(cur2?.uri, ({ cur: ci, list, done }) => {
+            if (token !== djToken || side !== "dj") return;
+            nowRow.querySelector("small").textContent = ci ? fmtI(ci) : t("djNoData");
+            box.textContent = "";
+            if (!list.length) return void sideBtn(box, done ? t("djNone") : t("loading"));
+            for (const x of list) {
+              sideBtn(box, x.title, `${fmtI(x.info)} \xB7 ${t("djFit").replace("{p}", Math.round(x.score * 100))}`, async () => {
+                try {
+                  await S.addToQueue([{ uri: x.uri }]);
+                  S.showNotification?.(t("djQueued").replace("{t}", x.title), false, 3e3);
+                } catch {
+                }
+              });
+            }
+            if (!done) sideBtn(box, t("djMore"));
+          });
         }
         let pollTimer = 0;
         function pollPanel(body) {
@@ -22588,12 +23286,12 @@
   function effectiveScheme() {
     return cfg.playlistSchemes?.[contextUri2()] || cfg.scheme;
   }
-  async function onSong(isChange, attempt = 0) {
+  async function onSong2(isChange, attempt = 0) {
     const token = ++songToken;
     const item = currentItem();
     const c2 = covers(item);
     if (!c2.big && item && attempt < 8) {
-      setTimeout(() => token === songToken && onSong(isChange, attempt + 1), 250);
+      setTimeout(() => token === songToken && onSong2(isChange, attempt + 1), 250);
       return;
     }
     const changed = isChange && item?.uri !== lastUri;
@@ -22755,7 +23453,7 @@
     queued = true;
     (window.requestIdleCallback || setTimeout)(check, { timeout: 1500 });
   }
-  function queue(node) {
+  function queue2(node) {
     if (node?.nodeType !== 1 || checked.has(node)) return;
     if (!node.closest(SCOPES)) {
       const inner = node.querySelector?.(SCOPES);
@@ -22768,7 +23466,7 @@
   function recheckAll() {
     document.querySelectorAll(".m-readable").forEach((el3) => el3.classList.remove("m-readable", "m-readable-dark", "m-readable-light"));
     checked = /* @__PURE__ */ new WeakSet();
-    document.querySelectorAll(SCOPES).forEach(queue);
+    document.querySelectorAll(SCOPES).forEach(queue2);
   }
   var SCOPES, parse, lum2, ratio, hasText, checked, queued, pending2;
   var init_readability = __esm({
@@ -22797,7 +23495,7 @@
       queued = false;
       pending2 = [];
       new MutationObserver((list) => {
-        for (const m of list) for (const n of m.addedNodes) queue(n);
+        for (const m of list) for (const n of m.addedNodes) queue2(n);
       }).observe(document.body, { subtree: true, childList: true });
       setTimeout(recheckAll, 3e3);
     }
@@ -22840,401 +23538,6 @@
     }
   });
 
-  // src/library.js
-  async function loadEditable() {
-    const R = S.Platform?.RootlistAPI;
-    if (typeof R?.getContents !== "function") return;
-    editableAt = Date.now();
-    try {
-      const set = /* @__PURE__ */ new Set();
-      const walk = (items) => {
-        for (const x of items || []) {
-          if (x?.type === "folder") walk(x.items);
-          else if (x?.type === "playlist" && x.uri && (x.isOwnedBySelf || x.isCollaborative || x.canAdd)) set.add(x.uri);
-        }
-      };
-      walk((await R.getContents())?.items);
-      editable = set;
-    } catch {
-    }
-  }
-  function mayEdit(uri) {
-    if (Date.now() - editableAt > 6e4) loadEditable();
-    return !editable || editable.has(uri);
-  }
-  async function loadAll(uri) {
-    const P = PL();
-    if (typeof P?.getContents !== "function") return null;
-    const all = [];
-    const LIMIT = 500;
-    let first = "";
-    for (let page = 0, offset = 0; page < 60; page++) {
-      const r = await P.getContents(uri, { offset, limit: LIMIT });
-      const items = Array.isArray(r?.items) ? r.items : [];
-      if (!items.length || page > 0 && items[0]?.uid && items[0].uid === first) break;
-      if (page === 0) first = items[0]?.uid || "";
-      all.push(...items);
-      offset += items.length;
-      const total = Number(r?.totalLength ?? r?.total);
-      if (items.length < LIMIT || Number.isFinite(total) && all.length >= total) break;
-    }
-    return all;
-  }
-  function norm3(s) {
-    let x = String(s || "").toLowerCase();
-    x = x.replace(/[([][^)\]]*[)\]]/g, (m) => NOISE.test(m) ? " " : m);
-    x = x.replace(/\s[-–]\s.*$/, (m) => NOISE.test(m) ? "" : m);
-    return x.normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
-  }
-  function findDuplicates(items) {
-    const exact = [], maybe = [];
-    const byUri = /* @__PURE__ */ new Map(), byName = /* @__PURE__ */ new Map();
-    items.forEach((it, i) => {
-      const uri = it?.uri;
-      if (!uri) return;
-      const row = { it, pos: i + 1 };
-      if (byUri.has(uri)) {
-        exact.push({ ...row, first: byUri.get(uri).pos });
-        return;
-      }
-      byUri.set(uri, row);
-      const title = norm3(it.name), artist = norm3(artistOf2(it));
-      if (!title || !artist || !/^spotify:(track|local):/.test(uri)) return;
-      const key = title + "|" + artist;
-      const prev = byName.get(key);
-      if (prev && !(durMs(prev.it) && durMs(it) && Math.abs(durMs(prev.it) - durMs(it)) > 45e3)) maybe.push({ ...row, first: prev.pos });
-      else if (!prev) byName.set(key, row);
-    });
-    return { exact, maybe };
-  }
-  async function canEdit(uri) {
-    try {
-      const m = await PL()?.getMetadata?.(uri);
-      const p = m?.permissions;
-      if (p && typeof p.canEdit === "boolean") return { ok: p.canEdit, name: m?.name || "" };
-      return { ok: mayEdit(uri), name: m?.name || "" };
-    } catch {
-      return { ok: mayEdit(uri), name: "" };
-    }
-  }
-  async function removeItems(uri, picked) {
-    const P = PL();
-    if (typeof P?.remove !== "function") return 0;
-    let done = 0;
-    for (let i = 0; i < picked.length; i += 100) {
-      const part = picked.slice(i, i + 100).map((x) => ({ uri: x.it.uri, uid: x.it.uid }));
-      await P.remove(uri, part);
-      done += part.length;
-    }
-    return done;
-  }
-  function dupRow(x, checked2) {
-    const row = el("label", "m-row m-dup");
-    const txt = el("span");
-    txt.append(el("b", "", x.it.name || x.it.uri), el("small", "", [artistOf2(x.it), t("dupPos").replace("{a}", x.pos).replace("{b}", x.first)].filter(Boolean).join(" \xB7 ")));
-    const cb = el("input");
-    cb.type = "checkbox";
-    cb.checked = checked2;
-    cb.disabled = !x.it.uid;
-    row.append(txt, cb);
-    return { row, cb, x };
-  }
-  function showDuplicates(uri, name, found) {
-    const box = el("div", "mirage-settings m-dups");
-    const picks = [];
-    const section = (title, list, checked2) => {
-      if (!list.length) return;
-      box.append(el("small", "m-note m-dups-head", title));
-      for (const x of list) {
-        const r = dupRow(x, checked2);
-        picks.push(r);
-        box.append(r.row);
-      }
-    };
-    section(t("dupExact"), found.exact, true);
-    section(t("dupMaybe"), found.maybe, false);
-    const go2 = el("button", "m-btn is-primary");
-    go2.type = "button";
-    const count = () => picks.filter((p) => p.cb.checked && !p.cb.disabled).length;
-    const label = () => {
-      go2.textContent = t("dupRemove").replace("{n}", count());
-      go2.disabled = !count();
-    };
-    box.addEventListener("change", label);
-    label();
-    go2.onclick = async () => {
-      const picked = picks.filter((p) => p.cb.checked && !p.cb.disabled).map((p) => p.x);
-      if (!picked.length || !confirm(t("dupConfirm").replace("{n}", picked.length).replace("{p}", name || "Playlist"))) return;
-      go2.disabled = true;
-      try {
-        const n = await removeItems(uri, picked);
-        S.PopupModal?.hide?.();
-        notify(n ? t("dupDone").replace("{n}", n) : t("dupFailed"), !n);
-      } catch {
-        go2.disabled = false;
-        notify(t("dupFailed"), true);
-      }
-    };
-    const actions = el("div", "m-actions");
-    actions.append(go2);
-    box.append(actions);
-    S.PopupModal.display({ title: t("dupTitle") + (name ? " \xB7 " + name : ""), content: box, isLarge: true });
-  }
-  async function cleanPlaylist(uri) {
-    if (busy) return;
-    if (typeof PL()?.getContents !== "function" || typeof PL()?.remove !== "function" || !S.PopupModal?.display) return notify(t("dupUnsupported"), true);
-    busy = true;
-    try {
-      const { ok, name } = await canEdit(uri);
-      if (!ok) return notify(t("dupNoEdit"), true);
-      notify(t("dupLoading"));
-      const items = await loadAll(uri);
-      if (!items) return notify(t("dupUnsupported"), true);
-      const found = findDuplicates(items);
-      if (!found.exact.length && !found.maybe.length) return notify(t("dupNone"));
-      showDuplicates(uri, name, found);
-    } catch {
-      notify(t("dupUnsupported"), true);
-    } finally {
-      busy = false;
-    }
-  }
-  function camelot(key, mode) {
-    if (!(key >= 0 && key <= 11)) return "";
-    const k = mode === 1 ? key : (key + 3) % 12;
-    return (k * 7 + 7) % 12 + 1 + (mode === 1 ? "B" : "A");
-  }
-  function remember2(id, v) {
-    cache.delete(id);
-    cache.set(id, v);
-    while (cache.size > CAP) cache.delete(cache.keys().next().value);
-    clearTimeout(saveT);
-    saveT = setTimeout(() => {
-      try {
-        localStorage.setItem(STORE, JSON.stringify(Object.fromEntries(cache)));
-      } catch {
-      }
-    }, 2e3);
-  }
-  function enqueue(id) {
-    if (known(id) || queue2.includes(id) || (tries.get(id) || 0) >= 3) return;
-    queue2.push(id);
-    pump();
-  }
-  function pump() {
-    clearTimeout(pumpT);
-    const wait = pauseUntil - Date.now();
-    if (wait > 0) {
-      pumpT = setTimeout(pump, wait);
-      return;
-    }
-    while (active < 2 && queue2.length && running) {
-      const id = queue2.pop();
-      if (known(id)) continue;
-      active++;
-      fetchOne(id).finally(() => {
-        active--;
-        pump();
-      });
-    }
-  }
-  async function fetchOne(id) {
-    if (typeof S.getAudioData !== "function") return;
-    try {
-      const d = await Promise.race([S.getAudioData("spotify:track:" + id), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 1e4))]);
-      const tr = d?.track;
-      const bpm2 = Math.round(Number(tr?.tempo) || 0);
-      const key = Number.isInteger(tr?.key) ? tr.key : -1;
-      remember2(id, [bpm2, key, tr?.mode === 1 ? 1 : 0, DAY()]);
-      fails = 0;
-      paintId(id);
-    } catch (e) {
-      tries.set(id, (tries.get(id) || 0) + 1);
-      fails++;
-      const limited = /429|rate/i.test(String(e?.message || e));
-      pauseUntil = Date.now() + Math.min(6e4, (limited ? 5e3 : 1500) * 2 ** Math.min(fails - 1, 6));
-      if ((tries.get(id) || 0) < 3 && visibleIds().has(id)) queue2.unshift(id);
-    }
-  }
-  function paint(row) {
-    const id = rowId(row);
-    row.dataset.mBpmId = id;
-    let pill = row.querySelector(".m-bpm");
-    const v = id && known(id);
-    if (!v || !v[0]) {
-      pill?.remove();
-      if (id && !v) enqueue(id);
-      return;
-    }
-    const cell = endCell(row);
-    if (!cell) return;
-    if (!pill) pill = el("span", "m-bpm");
-    if (pill.parentElement !== cell) cell.prepend(pill);
-    const cam = camelot(v[1], v[2]);
-    pill.textContent = cam ? `${v[0]} \xB7 ${cam}` : String(v[0]);
-    pill.title = [v[0] + " BPM", keyName(v[1], v[2])].filter(Boolean).join(" \xB7 ");
-  }
-  function paintId(id) {
-    for (const row of visible) if (row.isConnected && row.dataset.mBpmId === id) paint(row);
-  }
-  function onIntersect(entries) {
-    for (const e of entries) {
-      const row = e.target;
-      if (e.isIntersecting) {
-        visible.add(row);
-        paint(row);
-      } else {
-        visible.delete(row);
-        if (row.dataset.mBpmId) dequeue(row.dataset.mBpmId);
-      }
-    }
-  }
-  function scan() {
-    const mv = document.querySelector(SEL.mainView);
-    if (!mv || !io) return;
-    for (const row of mv.querySelectorAll(SEL.rows)) {
-      if (!observed.has(row)) {
-        observed.add(row);
-        io.observe(row);
-      } else if (visible.has(row) && row.dataset.mBpmId !== rowId(row)) {
-        paint(row);
-      }
-    }
-    for (const row of visible) if (!row.isConnected) visible.delete(row);
-  }
-  function stop2() {
-    running = false;
-    io?.disconnect();
-    mo?.disconnect();
-    io = mo = null;
-    queue2.length = 0;
-    visible.clear();
-    document.querySelectorAll(".m-bpm").forEach((p) => p.remove());
-  }
-  function start() {
-    const mv = document.querySelector(SEL.mainView);
-    if (!mv || typeof IntersectionObserver !== "function" || typeof S.getAudioData !== "function") return;
-    if (!running) {
-      running = true;
-      observed = /* @__PURE__ */ new WeakSet();
-      io = new IntersectionObserver(onIntersect, { rootMargin: "200px 0px" });
-      mo = new MutationObserver(scanSoon);
-      mo.observe(mv, { childList: true, subtree: true, attributes: true, attributeFilter: ["href"] });
-    }
-    scanSoon();
-  }
-  function refresh() {
-    const want = !!cfg.libBpm && PAGES.has(root.dataset.mPage);
-    if (!want) {
-      if (running) stop2();
-      return;
-    }
-    if (running) stop2();
-    start();
-  }
-  var notify, el, PL, isPlaylist, editable, editableAt, NOISE, durMs, artistOf2, busy, NOTES, keyName, STORE, CAP, DAY, cache, saveT, known, queue2, tries, active, pauseUntil, fails, pumpT, dequeue, rowId, endCell, visible, visibleIds, running, io, mo, scanT, observed, PAGES, scanSoon, bpm;
-  var init_library = __esm({
-    "src/library.js"() {
-      init_core();
-      init_config();
-      init_i18n();
-      init_selectors();
-      notify = (msg, err) => {
-        try {
-          S.showNotification?.(msg, !!err, 4e3);
-        } catch {
-        }
-      };
-      el = (tag, cls, text) => {
-        const e = document.createElement(tag);
-        if (cls) e.className = cls;
-        if (text != null) e.textContent = text;
-        return e;
-      };
-      PL = () => S.Platform?.PlaylistAPI;
-      isPlaylist = (uri) => {
-        try {
-          if (typeof S.URI?.isPlaylistV1OrV2 === "function") return S.URI.isPlaylistV1OrV2(uri);
-        } catch {
-        }
-        return /^spotify:(user:[^:]+:)?playlist:[A-Za-z0-9]+$/.test(String(uri || ""));
-      };
-      editable = null;
-      editableAt = 0;
-      NOISE = /(feat\.?|ft\.|with |remaster|version|edit\b|mono|stereo|deluxe)/i;
-      durMs = (it) => Number(it?.duration?.milliseconds ?? it?.duration_ms ?? it?.duration) || 0;
-      artistOf2 = (it) => it?.artists?.[0]?.name || it?.artist?.name || "";
-      busy = false;
-      (function addDupMenu(tries2 = 0) {
-        const CM = S.ContextMenu;
-        if (!CM?.Item) return tries2 < 40 && setTimeout(() => addDupMenu(tries2 + 1), 500);
-        try {
-          loadEditable();
-          new CM.Item(
-            t("dupMenu"),
-            (uris) => cleanPlaylist(uris?.[0]),
-            (uris) => Array.isArray(uris) && uris.length === 1 && isPlaylist(uris[0]) && mayEdit(uris[0]),
-            "playlist"
-          ).register();
-        } catch {
-        }
-      })();
-      NOTES = ["C", "C\u266F", "D", "E\u266D", "E", "F", "F\u266F", "G", "A\u266D", "A", "B\u266D", "B"];
-      keyName = (key, mode) => key >= 0 && key <= 11 ? t(mode === 1 ? "libMajor" : "libMinor").replace("{k}", NOTES[key]) : "";
-      STORE = "mirage:bpm";
-      CAP = 4e3;
-      DAY = () => Math.floor(Date.now() / 864e5);
-      cache = /* @__PURE__ */ new Map();
-      try {
-        const raw = JSON.parse(localStorage.getItem(STORE) || "{}");
-        if (raw && typeof raw === "object") {
-          for (const [id, v] of Object.entries(raw).slice(-CAP)) if (Array.isArray(v)) cache.set(id, v);
-        }
-      } catch {
-      }
-      saveT = 0;
-      known = (id) => {
-        const v = cache.get(id);
-        return v && (v[0] > 0 || DAY() - (v[3] || 0) < 30) ? v : null;
-      };
-      queue2 = [];
-      tries = /* @__PURE__ */ new Map();
-      active = 0;
-      pauseUntil = 0;
-      fails = 0;
-      pumpT = 0;
-      dequeue = (id) => {
-        const i = queue2.indexOf(id);
-        if (i >= 0) queue2.splice(i, 1);
-      };
-      rowId = (row) => {
-        const a = row.querySelector('a[data-testid="internal-track-link"], a[href*="/track/"]');
-        return /\/track\/([A-Za-z0-9]{22})/.exec(a?.getAttribute("href") || "")?.[1] || "";
-      };
-      endCell = (row) => row.querySelector(".main-trackList-rowSectionEnd") || [...row.querySelectorAll('[role="gridcell"]')].pop();
-      visible = /* @__PURE__ */ new Set();
-      visibleIds = () => new Set([...visible].map((r) => r.dataset.mBpmId).filter(Boolean));
-      running = false;
-      io = null;
-      mo = null;
-      scanT = 0;
-      observed = /* @__PURE__ */ new WeakSet();
-      PAGES = /* @__PURE__ */ new Set(["playlist", "album", "collection"]);
-      scanSoon = () => {
-        if (!scanT) scanT = setTimeout(() => {
-          scanT = 0;
-          scan();
-        }, 250);
-      };
-      try {
-        S.Platform?.History?.listen?.(() => setTimeout(refresh, 300));
-      } catch {
-      }
-      setTimeout(refresh, 1500);
-      bpm = { refresh };
-    }
-  });
-
   // src/settings.js
   function applySettings() {
     applyScheme(effectiveScheme());
@@ -23256,7 +23559,7 @@
   }
   function refreshColors() {
     applySettings();
-    onSong(false);
+    onSong2(false);
     setTimeout(recheckAll, 600);
   }
   function selectScheme(name) {
@@ -23361,14 +23664,14 @@
       box.dataset.seen = "1";
       box.replaceChildren();
       box.hidden = !cfg.partyLive;
-      const info = cfg.partyLive && live.info();
-      if (!info) return;
+      const info2 = cfg.partyLive && live.info();
+      if (!info2) return;
       const img = new Image();
       img.alt = "";
-      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info2.qr);
       const code = el2("code", "", t("liveCopy"));
-      code.title = info.url;
-      code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {
+      code.title = info2.url;
+      code.onclick = () => navigator.clipboard?.writeText(info2.url).catch(() => {
       });
       const txt = el2("div");
       txt.append(el2("b", "", t("liveTitle")), el2("small", "", t("liveHint")), code, el2("small", "m-dim", t("liveRelay")));
@@ -23554,7 +23857,11 @@
       ["particles", t("viz_particles")],
       ["line", t("viz_line")],
       ["bottom", t("viz_bottom")],
-      ["tunnel", t("viz_tunnel")]
+      ["tunnel", t("viz_tunnel")],
+      ["galaxy", t("viz_galaxy")],
+      ["mountains", t("viz_mountains")],
+      ["scope", t("viz_scope")],
+      ["shatter", t("viz_shatter")]
     ];
     kids.push(
       group(
@@ -23640,8 +23947,6 @@
         }),
         toggle("partyHype", () => immersive.reloadLyrics()),
         toggle("partyWords", () => immersive.reloadLyrics()),
-        toggle("partyCountdown", () => {
-        }),
         toggle("partyHandsUp", () => {
         }),
         toggle("partyFlashStorm", () => {
@@ -24239,11 +24544,11 @@
           setTimeout(keep, btn.isConnected ? 1e3 : 300);
         })();
       })();
-      S.Player.addEventListener("songchange", () => onSong(true));
+      S.Player.addEventListener("songchange", () => onSong2(true));
       S.Player.addEventListener("onplaypause", onPlayPause);
       applySettings();
       onPlayPause();
-      onSong(false);
+      onSong2(false);
       setTimeout(pageEnter, 400);
       measure(applySettings);
       welcome();

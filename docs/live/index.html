@@ -333,11 +333,6 @@ async function receive(m) {
   if ($("ly").textContent !== (s.ly || "")) $("ly").textContent = s.ly || "";
   if ($("lyn").textContent !== (s.lyn || "")) $("lyn").textContent = s.lyn || "";
   $("lyr").classList.toggle("has", !!s.ly);
-  if (s.an && s.an.s !== lastAn && Date.now() - skew - s.an.s < 12000) {
-    lastAn = s.an.s;
-    showNote(T.announce, s.an.x, 8000);
-    haptic([[0.8, 60], [0, 80], [0.8, 60]]);
-  }
   drawPoll(s.poll);
   // dein Wunsch kommt als Nächstes
   if (s.nx && myWishes.has(s.nx) && !told.has(s.nx)) {
@@ -752,7 +747,7 @@ function frame(now) {
 requestAnimationFrame(frame);
 
 /* ---- Reaktionen, Ansagen, Abstimmung, „dein Song kommt gleich“ */
-let lastAn = 0, notifyOn = store("mlNotify") === "1", noteT = 0, pollId = "", myVote = -1;
+let notifyOn = store("mlNotify") === "1", noteT = 0, pollId = "", myVote = -1;
 const myWishes = new Map(), told = new Set();
 for (const e of ["🔥", "❤️", "🙌", "😂", "🎉", "👏"]) {
   const b = document.createElement("button");

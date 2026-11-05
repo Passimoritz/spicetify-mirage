@@ -140,7 +140,8 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 - **Synchron zu dem, was du hörst** – eine ruhige Song-Uhr glättet Spotifys Position; sechsmal <kbd>T</kbd> im Takt misst Licht, Publikum und Liedtext auf deine Lautsprecher ein.
 - **Lautschrift** unter koreanischem, japanischem und chinesischem Liedtext, **Duett-Farben** für Zeilen mit Sängernamen und kleiner gesetzter Hintergrundgesang in Klammern.
 - **Timing selbst korrigieren** – <kbd>E</kbd> drücken, dann Enter, sobald die markierte Zeile beginnt; gespeichert je Song.
-- **Party-Momente** – Drop-Countdown, Hände hoch im Refrain, Blitzlicht-Gewitter, Bodennebel, Drohnen-Lichtshow, Konfetti auf Taste C, Pausen-Szene mit QR-Code, Ansagen und eine Abstimmung der Gäste über die nächsten Songs.
+- **Party-Momente** – Hände hoch im Refrain, Blitzlicht-Gewitter, Bodennebel, Drohnen-Lichtshow, Konfetti auf Taste C, Pausen-Szene mit QR-Code und eine Abstimmung der Gäste über die nächsten Songs.
+- **DJ-Feld** – Tempo und Tonart des laufenden Songs, die am besten passenden Songs aus der Warteschlange und *Energie halten*, damit die Stimmung nicht abreißt.
 - **Wortbilder** – im Party-Modus bekommen gesungene Wörter ein dezentes Bild: Funken bei „Feuer“, Regen, Herzen, Sterne, Schnee, Geld, eine Krone … rund 65 Begriffe in 45 Sprachen (knapp 20.000 Wortformen). Höchstens eins pro Zeile, das Publikum bleibt immer frei.
 - **Canvas-Videos** – hat ein Song eins, spielt der Film-Knopf oben es im Cover ab (und gedämpft hinter dem Liedtext) – je Ansicht einschaltbar, anfangs aus. Bleibt der Knopf bei jedem Song blass, ist Canvas in deinem Spotify-Konto aus: in der Spotify-Handy-App *Canvas* einschalten (Einstellungen → Wiedergabe).
 - **Vollbild** per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>; ruht die Maus, blenden die Bedienelemente aus.

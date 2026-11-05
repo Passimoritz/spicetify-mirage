@@ -83,14 +83,15 @@ const DEFAULTS = {
   partyHype: true,
   // Wortbilder: gesungene Begriffe bekommen ein passendes Bild (Flammen bei „fire“, Regen bei „Regen“ …)
   partyWords: true,
-  // Show-Momente: Countdown vor dem Drop, Bodennebel, Drohnen-Lichtshow, Hände hoch im Refrain, Blitzlicht-Gewitter
-  partyCountdown: true,
+  // Show-Momente: Bodennebel, Drohnen-Lichtshow, Hände hoch im Refrain, Blitzlicht-Gewitter
   partyFog: true,
   partyDrones: true,
   partyHandsUp: true,
   partyFlashStorm: true,
   // Musik pausiert: ruhige Szene mit Party-Namen und QR-Code
   partyPause: true,
+  // DJ: passt der nächste Song gar nicht (Tonart, Tempo, Energie), einen passenderen aus der Warteschlange vorziehen
+  djEnergy: false,
   partyDepth: false,
   partyShatter: true,
   partyCamera: false,

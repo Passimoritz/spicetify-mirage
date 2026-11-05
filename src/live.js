@@ -372,10 +372,7 @@ const coverUrl = (item) => {
 };
 
 // jedes Bild im Party-Modus: höchstens 8 Nachrichten pro Sekunde; die Handyseite rechnet den Takt selbst weiter
-let lastFx = null, lastAnn = null, poll = null;
-function announce(text) {
-  lastAnn = { x: String(text || "").slice(0, 120), s: Date.now() };
-}
+let lastFx = null, poll = null;
 // Abstimmung: die nächsten Songs zur Wahl, 45 s lang; danach entscheidet die Mehrheit
 function startPoll(options) {
   poll = { id: Math.random().toString(36).slice(2, 10), o: options.slice(0, 3).map((x) => ({ t: x.t, a: x.a, img: x.img, uri: x.uri })), v: options.slice(0, 3).map(() => 0), end: Date.now() + 45000, by: new Set() };
@@ -411,8 +408,7 @@ function feed(px, pal, bpm, lyric) {
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
     ly: lyric?.ly || "", lyn: lyric?.lyn || "",
     w: cfg.partyWishes ? wishList() : null,
-    // Ansage des Gastgebers (10 s), laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
-    an: lastAnn && Date.now() - lastAnn.s < 10000 ? lastAnn : null,
+    // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
     poll: poll && Date.now() < poll.end + 8000 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
     nx: nextUri(),
     fx: lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
@@ -440,4 +436,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, announce, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };
