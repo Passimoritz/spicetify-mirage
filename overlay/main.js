@@ -8,6 +8,7 @@ const os = require("os");
 const http = require("http");
 const { spawn } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
+const { createLights } = require("./lights.js");
 const { make } = require("./i18n");
 
 const WIN = process.platform === "win32";
@@ -66,11 +67,39 @@ const DEFAULTS = {
   fullscreenQuiet: true,
   autoUpdate: true,
   obs: false,
+  control: true,
+  // Licht im Raum (Party-Modus)
+  lightBright: 100,
+  hueOn: false, hueIp: "", hueUser: "", hueGroup: "0",
+  wledOn: false, wledIp: "", wledLeds: 60,
+  orgbOn: false,
+  chromaOn: false,
 };
 // welche Zusatzdaten ein Stil vom Theme braucht (Protokoll: cmd "subscribe")
 const STYLE_TOPICS = { lyrics: ["lyric"], visualizer: ["level"] };
 
 const file = () => path.join(app.getPath("userData"), "settings.json");
+// Verlauf: die letzten 50 Songs (nur Titel, Interpret, Cover, Zeitpunkt) – lokal, für Tray und Einstellungen
+const histFile = () => path.join(app.getPath("userData"), "history.json");
+let history = [];
+function loadHistory() {
+  try {
+    const h = JSON.parse(fs.readFileSync(histFile(), "utf8"));
+    history = Array.isArray(h) ? h.filter((x) => x && typeof x.uri === "string").slice(0, 50) : [];
+  } catch {}
+}
+let histT = 0;
+function remember(tr) {
+  if (!tr?.uri?.startsWith("spotify:track:") || history[0]?.uri === tr.uri) return;
+  history = [{ uri: tr.uri, title: String(tr.title || ""), artist: String(tr.artist || ""), cover: String(tr.cover || ""), at: Date.now() }, ...history.filter((x) => x.uri !== tr.uri)].slice(0, 50);
+  clearTimeout(histT);
+  histT = setTimeout(() => {
+    try { fs.writeFileSync(histFile(), JSON.stringify(history)); } catch {}
+  }, 2000);
+  buildTray();
+  settingsWin?.webContents.send("history", history);
+}
+const openUri = (uri) => /^spotify:track:[A-Za-z0-9]{22}$/.test(uri) && shell.openExternal(uri).catch(() => {});
 let cfg = { ...DEFAULTS };
 function load() {
   try {
@@ -85,6 +114,7 @@ function save() {
 }
 
 let overlay = null, settingsWin = null, tray = null;
+const lights = createLights(() => cfg, (s) => dlog?.(s));
 let track = null, lastPlaying = null, lastShow = 0, lyric = null, pointerT = 0;
 let t = make("en");
 const clients = new Set();
@@ -176,6 +206,7 @@ function onTrack(msg) {
   }
   const prev = track;
   track = msg;
+  if (prev?.uri !== msg.uri) remember(msg);
   const playChanged = lastPlaying !== null && lastPlaying !== msg.playing;
   lastPlaying = msg.playing;
   settingsWin?.webContents.send("status", status());
@@ -277,7 +308,13 @@ const status = () => ({ connected: clients.size > 0, track });
 
 // Abo beim Theme: nur bei Stilen mit Liedtext/Pegel und nicht, wenn das Overlay aus ist
 // „party“ = Kantenlicht im Party-Modus (das Theme schickt nur, solange Party läuft und es eingeschaltet ist)
-const topics = () => (cfg.mode === "off" ? [] : [...(STYLE_TOPICS[cfg.style] || []), "party"]);
+// „party“ auch, solange eine OBS-Party-Quelle offen ist
+const topics = () => {
+  const list = cfg.mode === "off" ? [] : [...(STYLE_TOPICS[cfg.style] || []), "party"];
+  const room = cfg.hueOn || cfg.wledOn || cfg.orgbOn || cfg.chromaOn;
+  if ((obsParty.size || room) && !list.includes("party")) list.push("party");
+  return list;
+};
 let subscribed = "[]";
 function resubscribe() {
   const now = JSON.stringify(topics());
@@ -410,6 +447,7 @@ function buildTray() {
       ...(upd.state === "available" || upd.state === "ready" ? [{ label: t("updateInstall").replace("{v}", upd.version), click: installUpdate }, { type: "separator" }] : []),
       { label: t("settings"), click: openSettings },
       { label: t("test"), click: () => preview() },
+      ...(history.length ? [{ label: t("history"), submenu: history.slice(0, 10).map((h) => ({ label: `${h.title} – ${h.artist}`.slice(0, 70), click: () => openUri(h.uri) })) }] : []),
       { type: "separator" },
       radio("song", t("modeSong")),
       radio("always", t("modeAlways")),
@@ -540,6 +578,8 @@ function makeEdges() {
   });
 }
 function onParty(m) {
+  if (obsParty.size) obsSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal });
+  lights.feed(m);
   if (m.edge === false || cfg.mode === "off" || busy || cfg.edge === false) return;
   if (!edges) makeEdges();
   for (const w of edges || []) {
@@ -664,7 +704,7 @@ function openCss() {
 // dieselben Nachrichten kommen per WebSocket. Nur lokal erreichbar, nur von der eigenen Seite.
 const OBS_PORT = Number(process.env.MIRAGE_OBS_PORT) || 47322;
 let obsServer = null;
-const obsClients = new Set();
+const obsClients = new Set(), obsParty = new Set();
 const OBS_SHIM = `window.mirage = (() => {
   const handlers = {};
   (function connect() {
@@ -691,6 +731,13 @@ function startObs() {
       res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
       return res.end(html);
     }
+    // Party-Licht als eigene Quelle: /party (mit ?bg=0 durchsichtig)
+    if (url === "/party") {
+      let html = "";
+      try { html = fs.readFileSync(path.join(__dirname, "party.html"), "utf8"); } catch {}
+      res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
+      return res.end(html);
+    }
     if (url === "/obs.js") {
       res.writeHead(200, { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-store" });
       return res.end(OBS_SHIM);
@@ -703,8 +750,16 @@ function startObs() {
     path: "/feed",
     verifyClient: ({ origin }) => !origin || origin === `http://127.0.0.1:${OBS_PORT}` || origin === `http://localhost:${OBS_PORT}`,
   });
-  wss.on("connection", (ws) => {
+  wss.on("connection", (ws, req) => {
     obsClients.add(ws);
+    if (/[?&]party=1/.test(req.url || "")) {
+      obsParty.add(ws);
+      resubscribe();
+      ws.on("close", () => {
+        obsParty.delete(ws);
+        resubscribe();
+      });
+    }
     ws.send(JSON.stringify({ ch: "css", data: readCss() }));
     ws.send(JSON.stringify({ ch: "config", data: cfg }));
     if (track) ws.send(JSON.stringify({ ch: cfg.mode === "always" ? "show" : "update", data: payload("update") }));
@@ -723,6 +778,42 @@ function stopObs() {
   obsServer = null;
 }
 const obsUrl = () => `http://127.0.0.1:${OBS_PORT}/`;
+
+/* ------------------------------------------------------------------ Steuerung (Stream Deck) */
+// Kleine lokale Schnittstelle für das Stream-Deck-Plugin: Play/Pause, weiter, zurück, Like, Immersiv, Party.
+// Nur auf diesem Rechner (127.0.0.1) und nur ohne Herkunft einer Webseite – Browser-Seiten senden immer
+// ihre Adresse mit und kommen deshalb nicht hinein.
+const CONTROL_PORT = Number(process.env.MIRAGE_CONTROL_PORT) || 47324;
+const CONTROL_CMDS = new Set(["toggle", "next", "prev", "like", "immersive", "party"]);
+let controlServer = null;
+function startControl() {
+  if (controlServer || cfg.control === false) return;
+  controlServer = http.createServer((_req, res) => {
+    res.writeHead(404);
+    res.end();
+  });
+  const wss = new WebSocketServer({
+    server: controlServer,
+    path: "/control",
+    maxPayload: 256,
+    verifyClient: ({ origin }) => !origin || origin === "null" || origin.startsWith("file://"),
+  });
+  wss.on("connection", (ws) => {
+    ws.send(JSON.stringify({ type: "hello", track: track ? { title: track.title, artist: track.artist, playing: track.playing } : null }));
+    ws.on("message", (raw) => {
+      let m;
+      try { m = JSON.parse(raw); } catch { return; }
+      if (CONTROL_CMDS.has(m?.cmd)) command(m.cmd);
+    });
+  });
+  wss.on("error", () => {});
+  controlServer.on("error", () => (controlServer = null));
+  controlServer.listen(CONTROL_PORT, "127.0.0.1");
+}
+function stopControl() {
+  controlServer?.close();
+  controlServer = null;
+}
 
 /* ------------------------------------------------------------------ Updates */
 // Fragt GitHub nach der neuesten Version. WIN: Installer laden, fragen, still installieren und neu
@@ -827,6 +918,11 @@ function update(patch) {
   if ("style" in patch || "mode" in patch) resubscribe();
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
+  if ("control" in patch) cfg.control === false ? stopControl() : startControl();
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser"].some((k) => k in patch)) {
+    lights.sync();
+    resubscribe();
+  }
   if ("autoUpdate" in patch) scheduleUpdates();
   if (cfg.mode === "off") hideOverlay();
   else if (cfg.mode === "always" && track) announce("update");
@@ -859,6 +955,7 @@ ipcMain.handle("get", () => ({
   version: app.getVersion(),
   upd,
   obsUrl: obsUrl(),
+  history,
   canUpdate: WIN || (LINUX && !!process.env.APPIMAGE),
   displays: screen.getAllDisplays().map((d, i) => ({
     id: String(d.id),
@@ -874,6 +971,15 @@ ipcMain.on("preview", preview);
 ipcMain.on("openCss", openCss);
 ipcMain.on("checkUpdate", () => (upd.state === "available" || upd.state === "ready" ? installUpdate() : checkUpdate(true)));
 ipcMain.on("cmd", (_e, c) => command(c));
+ipcMain.on("openUri", (_e, uri) => openUri(String(uri || "")));
+// Hue einrichten
+ipcMain.handle("hueFind", () => lights.hueFind());
+ipcMain.handle("huePair", async (_e, ip) => {
+  const r = await lights.huePair(String(ip || "").trim());
+  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueOn: true });
+  return r;
+});
+ipcMain.handle("hueGroups", () => lights.hueGroups());
 ipcMain.on("hover", (_e, on) => overlay?.setIgnoreMouseEvents(!on, { forward: true }));
 // ein „fertig“ kurz nach einer neuen Ansage stammt noch von der alten – ignorieren
 ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 && overlay?.hide());
@@ -882,6 +988,7 @@ ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 &
 app.on("second-instance", openSettings);
 app.on("activate", openSettings); // MAC: erneutes Öffnen aus Finder/Launchpad
 app.on("window-all-closed", () => {}); // im Infobereich weiterlaufen
+app.on("before-quit", () => lights.stopAll());
 app.on("before-quit", () => busyProc?.kill());
 app.whenReady().then(() => {
   if (WIN) app.setAppUserModelId("Mirage Overlay");
@@ -895,6 +1002,8 @@ app.whenReady().then(() => {
   buildTray();
   startServer();
   startObs();
+  loadHistory();
+  startControl();
   watchCss();
   watchFullscreen();
   scheduleUpdates();

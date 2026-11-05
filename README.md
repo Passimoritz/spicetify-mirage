@@ -138,6 +138,8 @@ Everything is set up in **Profile menu → Mirage settings**, and every effect b
 - **Lyrics when Spotify has none** – Mirage looks on [LRCLIB](https://lrclib.net), NetEase and lyrics.ovh; *Choose version* picks another match, and an optional translation sits under each line.
 - **A beat even without Spotify's analysis** – tempo and energy come from Spotify's audio features or Deezer, the beat from the lyric timing (the kicker then shows *≈ 128 BPM*).
 - **In sync with what you hear** – a steady song clock smooths Spotify's position; press <kbd>T</kbd> six times on the beat to calibrate light, crowd and lyrics to your speakers.
+- **Romanization** under Korean, Japanese and Chinese lyrics, **duet colours** for lines with a singer's name, and backing vocals in brackets set smaller.
+- **Fix the timing yourself** – press <kbd>E</kbd>, then Enter whenever the marked line starts; saved per song.
 - **Full screen** with the button, <kbd>F</kbd> or <kbd>F11</kbd>; when the mouse rests, the controls fade out.
 
 ## 🎉 Party mode
@@ -208,6 +210,7 @@ When the song's **credits** (Spotify, otherwise MusicBrainz) confirm an instrume
 - **Spotify Jam** – everyone in the Jam appears as a small, coloured face in the crowd and bounces on the kick; whoever added the current song lights up as the DJ.
 - **Second screen** – party mode full screen on a TV or another monitor.
 - **Edge light** – the overlay app makes the edges of your desktop glow on the beat.
+- **Light in the room** – the overlay app plays along with Philips Hue, WLED LED strips, OpenRGB and Razer Chroma.
 - **Party recap** – a shareable card of the night: songs, genre mix, tempo range, the biggest drop.
 
 ## 📱 Live link for phones
@@ -251,7 +254,9 @@ Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (pic
 - **When** – on every song change, permanently as a mini player, or off · on play/pause · quiet hours
 - **Where** – main screen, the screen with the mouse, or any screen · 9 positions · fine offset
 - **How** – Island, Card, Banner or Minimal · springy, slide or fade · glow, roundness, size, opacity · controls on hover
-- **Extras** – volume bar · stays quiet during full-screen games and videos · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`) · edge light for party mode · updates itself
+- **Extras** – volume bar · stays quiet during full-screen games and videos · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`, party light at `/party`) · edge light for party mode · recently played · updates itself
+- **Light in the room** – in party mode Philips Hue, WLED, OpenRGB and Razer Chroma play along; set up in the overlay settings, everything stays in your network
+- **Stream Deck** – [**⬇ Mirage.streamDeckPlugin**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage.streamDeckPlugin): play/pause, skip, like, immersive and party mode on keys
 
 > **Code signing:** the Windows installer is being set up for free signing by the SignPath Foundation – see the [code signing policy](CODE_SIGNING.md). Until it is signed, Windows *Smart App Control* can block it and SmartScreen asks once: *More info → Run anyway*. On macOS: right-click → *Open* → *Open*.
 
@@ -266,6 +271,7 @@ Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (pic
 | immersive | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | like · shuffle · repeat · queue |
 | immersive | <kbd>F</kbd> / <kbd>F11</kbd> | full screen |
 | immersive | <kbd>T</kbd> (6×, on the beat) | sync light, crowd and lyrics to what you hear |
+| lyrics | <kbd>E</kbd> · <kbd>Enter</kbd> | fix the timing: the marked line starts now |
 | immersive | <kbd>?</kbd> · <kbd>Esc</kbd> | all shortcuts · close |
 
 ## 🛠 Fix after a Spotify update
@@ -288,7 +294,8 @@ Still broken? Run `spicetify clear`, then `spicetify backup apply`. Right after 
 - **No own server, no tracking, no account.** Lyrics, beat data, audio features and credits come from Spotify.
 - **Only when Spotify has nothing** – and each can be turned off: title, artist, album and length go to LRCLIB, NetEase and lyrics.ovh for lyrics; title and artist to Deezer for the tempo and to Apple's iTunes search for the party genre; the song's ISRC number to MusicBrainz for instrument credits.
 - **Live link** (off by default) – light colours, tempo and the song title, end-to-end encrypted through a public relay (HiveMQ). The key never leaves the QR code. Guests' song searches are looked up with your Spotify.
-- **Overlay app** – listens only on your own computer and asks GitHub for updates (can be turned off). Details in the [code signing policy](CODE_SIGNING.md#privacy-policy).
+- **Overlay app** – listens only on your own computer and asks GitHub for updates (can be turned off). Room lights are controlled inside your own network; *Find bridge* asks Philips' discovery service (`discovery.meethue.com`) for your bridge's address. Details in the [code signing policy](CODE_SIGNING.md#privacy-policy).
+- **Romanization** (off by default) – Chinese loads the pinyin dictionary from jsdelivr once.
 - Fonts load from Google Fonts.
 
 ## ❓ FAQ

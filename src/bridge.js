@@ -44,6 +44,9 @@ const bridge = (() => {
       if (m.cmd === "toggle") S.Player.togglePlay();
       else if (m.cmd === "next") S.Player.next();
       else if (m.cmd === "prev") S.Player.back();
+      else if (m.cmd === "like") S.Player.toggleHeart?.();
+      // Immersiv- und Party-Modus öffnet keys.js (dort ist der Immersiv-Modus bekannt)
+      else if (m.cmd === "immersive" || m.cmd === "party") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
       else if (m.cmd === "hello") sendTrack();
       else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
       else if (m.cmd === "report") {
@@ -112,7 +115,8 @@ const bridge = (() => {
   // Kantenlicht der Overlay-App: der Lichtzustand des Party-Modus, nur solange er wirklich läuft
   function pushParty() {
     const L = party.live;
-    if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
+    // auch ohne Kantenlicht: die OBS-Party-Quelle der Overlay-App braucht das Licht ebenso
+    if (!L || performance.now() - L.at > 400 || document.hidden) return;
     send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
   }
   async function pushLyric() {

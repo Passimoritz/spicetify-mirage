@@ -9,7 +9,7 @@ This policy covers the Windows installer of the **Mirage Overlay** app (`Mirage-
 - Every release is built automatically by [GitHub Actions](.github/workflows/release.yml) from a tagged commit of this public repository – never on a personal computer.
 - The build first produces the unpacked app; all of its program files (`.exe`, `.dll`, `.node`) are submitted to SignPath for signing. The installer is then built from the signed files and signed itself.
 - SignPath verifies that each artifact comes from this repository and its release workflow. Every signing request is approved by hand before it is signed.
-- Only software developed in this repository is signed. Third-party components shipped with the app (Electron and its libraries, the `ws` package) are open source and are not altered.
+- Only software developed in this repository is signed. Third-party components shipped with the app (Electron and its libraries, the `ws` and `openrgb-sdk` packages) are open source and are not altered.
 
 ## Team
 
@@ -29,5 +29,8 @@ The **Mirage Overlay** app talks to other systems only as follows:
 - **Your Spotify (on this computer):** the app listens on `127.0.0.1` for the Mirage theme, which sends it the current song, lyrics line and light state. Nothing of this leaves the computer.
 - **Updates:** the app asks GitHub (`api.github.com`) for the latest release and, if you confirm, downloads it from GitHub. This can be turned off in the app's settings (*Update automatically*).
 - **OBS browser source (optional):** when switched on, the app serves a page on `127.0.0.1:47322` for streaming software on the same computer.
+- **Stream Deck & remote control (can be turned off):** the app accepts play/pause, skip, like, immersive and party commands on `127.0.0.1:47324`, only from programs on this computer (not from web pages).
+- **Light in the room (optional, off by default):** in party mode the app sends colours to the Philips Hue bridge, WLED strips, OpenRGB and Razer Synapse you set up – all inside your own network or on this computer. *Find bridge* asks `discovery.meethue.com` for the bridge's address; pairing stores the bridge's user name only in the app's settings file.
+- **Recently played:** the last 50 songs (title, artist, cover link) are kept in a file in the app's own folder on this computer.
 
 The **Mirage theme** (inside Spotify) only contacts third parties for features you can switch off, and only with song data: title, artist, album and length to LRCLIB, NetEase and lyrics.ovh for lyrics when Spotify has none; title and artist to Deezer for the tempo and to Apple's iTunes search for the party genre; the song's ISRC number to MusicBrainz for instrument credits. The optional live link for phones (off by default) sends light colours, tempo and the song title end-to-end encrypted through a public relay (HiveMQ); the key exists only in the QR code and never reaches a server, and it only sends while party mode runs. Fonts load from Google Fonts. See the [README](README.md#-privacy) for details.

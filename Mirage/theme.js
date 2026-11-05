@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.14.0" : "dev";
+      VERSION = true ? "1.15.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -496,7 +496,36 @@
           wishQueue: "+ Queue",
           wishDecline: "Decline",
           wishQueued: "\u201C{s}\u201D added to the queue",
-          viz_tunnel: "3D tunnel"
+          viz_tunnel: "3D tunnel",
+          romanize: "Romanization",
+          romanizeHint: "Latin letters under Korean, Japanese and Chinese lyrics \u2013 Japanese from NetEase, Chinese loads a pinyin dictionary from jsdelivr once",
+          k_timing: "Fix lyric timing",
+          timingHint: "Press Enter the moment the marked line starts \xB7 Backspace undo \xB7 Esc done",
+          timingReset: "Reset",
+          timingDone: "Done",
+          timingSaved: "Timing saved for this song",
+          timingCleared: "Timing reset to the original",
+          timingNone: "Timing needs synced lyrics in the lyrics, mix or party view",
+          searchSettings: "Search settings",
+          searchNone: "Nothing matches \u2013 try another word",
+          saveFile: "Save as file",
+          loadFile: "Load from file",
+          fileSaved: "Settings saved to Downloads",
+          fileLoaded: "Settings loaded",
+          tourAgain: "Show the intro again",
+          tourNext: "Next",
+          tourDone: "Let's go",
+          tour1t: "Welcome to Mirage",
+          tour1: "Spotify now takes its colours from every cover \u2013 the background breathes with the beat. Fixed schemes and your own are in the settings.",
+          tour2t: "Immersive mode",
+          tour2: "Ctrl + Shift + M turns Spotify into a full-screen stage: cover, karaoke lyrics, visualizer and mix \u2013 keys 1 to 5.",
+          tour2Try: "Try it",
+          tour3t: "Party mode",
+          tour3: "A light show that knows the song: venue, crowd, light rig and effects for the drop. Guests' phones can join in via QR code.",
+          tour3Try: "Start the party",
+          tour4t: "Everything adjustable",
+          tour4: "Profile menu \u2192 Mirage settings: presets for look and performance, every effect has its own switch \u2013 and a search at the top.",
+          tour4Try: "Open settings"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -880,7 +909,36 @@
           wishQueue: "+ Warteschlange",
           wishDecline: "Ablehnen",
           wishQueued: "\u201E{s}\u201C ist in der Warteschlange",
-          viz_tunnel: "3D-Tunnel"
+          viz_tunnel: "3D-Tunnel",
+          romanize: "Lautschrift",
+          romanizeHint: "Lateinische Buchstaben unter koreanischem, japanischem und chinesischem Liedtext \u2013 Japanisch von NetEase, f\xFCr Chinesisch l\xE4dt einmal ein Pinyin-W\xF6rterbuch von jsdelivr",
+          k_timing: "Liedtext-Timing korrigieren",
+          timingHint: "Enter dr\xFCcken, sobald die markierte Zeile beginnt \xB7 R\xFCcktaste r\xFCckg\xE4ngig \xB7 Esc fertig",
+          timingReset: "Zur\xFCcksetzen",
+          timingDone: "Fertig",
+          timingSaved: "Timing f\xFCr diesen Song gespeichert",
+          timingCleared: "Timing auf das Original zur\xFCckgesetzt",
+          timingNone: "Timing braucht synchronen Liedtext in Liedtext, Mix oder Party",
+          searchSettings: "Einstellungen durchsuchen",
+          searchNone: "Nichts gefunden \u2013 versuch ein anderes Wort",
+          saveFile: "Als Datei sichern",
+          loadFile: "Aus Datei laden",
+          fileSaved: "Einstellungen unter Downloads gespeichert",
+          fileLoaded: "Einstellungen geladen",
+          tourAgain: "Einf\xFChrung noch einmal zeigen",
+          tourNext: "Weiter",
+          tourDone: "Los geht's",
+          tour1t: "Willkommen bei Mirage",
+          tour1: "Spotify nimmt jetzt die Farben jedes Covers an \u2013 der Hintergrund atmet im Takt. Feste Farbschemata und eigene findest du in den Einstellungen.",
+          tour2t: "Immersiv-Modus",
+          tour2: "Strg + Umschalt + M macht Spotify zur Vollbild-B\xFChne: Cover, Karaoke-Liedtext, Visualizer und Mix \u2013 Tasten 1 bis 5.",
+          tour2Try: "Ausprobieren",
+          tour3t: "Party-Modus",
+          tour3: "Eine Lichtshow, die den Song kennt: Location, Publikum, Lichtrig und Effekte f\xFCr den Drop. Per QR-Code machen auch die Handys der G\xE4ste mit.",
+          tour3Try: "Party starten",
+          tour4t: "Alles einstellbar",
+          tour4: "Profilmen\xFC \u2192 Mirage-Einstellungen: Voreinstellungen f\xFCr Aussehen und Leistung, jeder Effekt hat einen eigenen Schalter \u2013 und oben eine Suche.",
+          tour4Try: "Einstellungen \xF6ffnen"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -1264,7 +1322,36 @@
           wishQueue: "+ File",
           wishDecline: "Refuser",
           wishQueued: "\xAB {s} \xBB ajout\xE9 \xE0 la file d'attente",
-          viz_tunnel: "Tunnel 3D"
+          viz_tunnel: "Tunnel 3D",
+          romanize: "Romanisation",
+          romanizeHint: "Lettres latines sous les paroles en cor\xE9en, japonais et chinois \u2013 le japonais vient de NetEase, le chinois charge une fois un dictionnaire pinyin depuis jsdelivr",
+          k_timing: "Corriger le timing des paroles",
+          timingHint: "Appuie sur Entr\xE9e au d\xE9but de la ligne marqu\xE9e \xB7 Retour arri\xE8re annuler \xB7 \xC9chap termin\xE9",
+          timingReset: "R\xE9initialiser",
+          timingDone: "Termin\xE9",
+          timingSaved: "Timing enregistr\xE9 pour ce titre",
+          timingCleared: "Timing r\xE9initialis\xE9",
+          timingNone: "Le timing n\xE9cessite des paroles synchronis\xE9es (vue paroles, mix ou f\xEAte)",
+          searchSettings: "Rechercher dans les r\xE9glages",
+          searchNone: "Aucun r\xE9sultat \u2013 essaie un autre mot",
+          saveFile: "Enregistrer dans un fichier",
+          loadFile: "Charger un fichier",
+          fileSaved: "R\xE9glages enregistr\xE9s dans T\xE9l\xE9chargements",
+          fileLoaded: "R\xE9glages charg\xE9s",
+          tourAgain: "Revoir l'introduction",
+          tourNext: "Suivant",
+          tourDone: "C'est parti",
+          tour1t: "Bienvenue dans Mirage",
+          tour1: "Spotify prend maintenant les couleurs de chaque pochette \u2013 le fond respire au rythme. Les th\xE8mes fixes et les tiens sont dans les r\xE9glages.",
+          tour2t: "Mode immersif",
+          tour2: "Ctrl + Maj + M transforme Spotify en sc\xE8ne plein \xE9cran : pochette, paroles karaok\xE9, visualiseur et mix \u2013 touches 1 \xE0 5.",
+          tour2Try: "Essayer",
+          tour3t: "Mode f\xEAte",
+          tour3: "Un spectacle de lumi\xE8re qui conna\xEEt le titre : lieu, public, \xE9clairage et effets pour le drop. Les t\xE9l\xE9phones des invit\xE9s peuvent participer via QR code.",
+          tour3Try: "Lancer la f\xEAte",
+          tour4t: "Tout est r\xE9glable",
+          tour4: "Menu du profil \u2192 R\xE9glages Mirage : pr\xE9r\xE9glages d'apparence et de performance, chaque effet a son interrupteur \u2013 et une recherche en haut.",
+          tour4Try: "Ouvrir les r\xE9glages"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1648,7 +1735,36 @@
           wishQueue: "+ Cola",
           wishDecline: "Rechazar",
           wishQueued: "\xAB{s}\xBB a\xF1adida a la cola",
-          viz_tunnel: "T\xFAnel 3D"
+          viz_tunnel: "T\xFAnel 3D",
+          romanize: "Romanizaci\xF3n",
+          romanizeHint: "Letras latinas bajo la letra en coreano, japon\xE9s y chino \u2013 el japon\xE9s viene de NetEase, el chino carga una vez un diccionario pinyin de jsdelivr",
+          k_timing: "Corregir el tiempo de la letra",
+          timingHint: "Pulsa Intro cuando empiece la l\xEDnea marcada \xB7 Retroceso deshacer \xB7 Esc listo",
+          timingReset: "Restablecer",
+          timingDone: "Listo",
+          timingSaved: "Tiempo guardado para esta canci\xF3n",
+          timingCleared: "Tiempo restablecido al original",
+          timingNone: "Hace falta letra sincronizada en la vista de letra, mix o fiesta",
+          searchSettings: "Buscar en los ajustes",
+          searchNone: "Nada coincide \u2013 prueba otra palabra",
+          saveFile: "Guardar como archivo",
+          loadFile: "Cargar desde archivo",
+          fileSaved: "Ajustes guardados en Descargas",
+          fileLoaded: "Ajustes cargados",
+          tourAgain: "Ver la introducci\xF3n otra vez",
+          tourNext: "Siguiente",
+          tourDone: "\xA1Vamos!",
+          tour1t: "Bienvenido a Mirage",
+          tour1: "Spotify ahora toma los colores de cada portada \u2013 el fondo respira al ritmo. Los esquemas fijos y los tuyos est\xE1n en los ajustes.",
+          tour2t: "Modo inmersivo",
+          tour2: "Ctrl + May\xFAs + M convierte Spotify en un escenario a pantalla completa: portada, letra karaoke, visualizador y mix \u2013 teclas 1 a 5.",
+          tour2Try: "Probar",
+          tour3t: "Modo fiesta",
+          tour3: "Un espect\xE1culo de luces que conoce la canci\xF3n: lugar, p\xFAblico, iluminaci\xF3n y efectos para el drop. Los m\xF3viles de los invitados se suman con un c\xF3digo QR.",
+          tour3Try: "Empezar la fiesta",
+          tour4t: "Todo ajustable",
+          tour4: "Men\xFA del perfil \u2192 Ajustes de Mirage: preajustes de aspecto y rendimiento, cada efecto tiene su interruptor \u2013 y arriba un buscador.",
+          tour4Try: "Abrir ajustes"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -2032,7 +2148,36 @@
           wishQueue: "+ Coda",
           wishDecline: "Rifiuta",
           wishQueued: "\xAB{s}\xBB aggiunto alla coda",
-          viz_tunnel: "Tunnel 3D"
+          viz_tunnel: "Tunnel 3D",
+          romanize: "Traslitterazione",
+          romanizeHint: "Lettere latine sotto i testi coreani, giapponesi e cinesi \u2013 il giapponese arriva da NetEase, per il cinese si carica una volta un dizionario pinyin da jsdelivr",
+          k_timing: "Correggi i tempi del testo",
+          timingHint: "Premi Invio quando inizia la riga evidenziata \xB7 Backspace annulla \xB7 Esc fine",
+          timingReset: "Ripristina",
+          timingDone: "Fine",
+          timingSaved: "Tempi salvati per questo brano",
+          timingCleared: "Tempi ripristinati all'originale",
+          timingNone: "Servono testi sincronizzati nella vista testo, mix o festa",
+          searchSettings: "Cerca nelle impostazioni",
+          searchNone: "Nessun risultato \u2013 prova un'altra parola",
+          saveFile: "Salva come file",
+          loadFile: "Carica da file",
+          fileSaved: "Impostazioni salvate in Download",
+          fileLoaded: "Impostazioni caricate",
+          tourAgain: "Mostra di nuovo l'introduzione",
+          tourNext: "Avanti",
+          tourDone: "Si parte",
+          tour1t: "Benvenuto in Mirage",
+          tour1: "Spotify ora prende i colori di ogni copertina \u2013 lo sfondo respira a tempo. Gli schemi fissi e i tuoi sono nelle impostazioni.",
+          tour2t: "Modalit\xE0 immersiva",
+          tour2: "Ctrl + Maiusc + M trasforma Spotify in un palco a schermo intero: copertina, testo karaoke, visualizer e mix \u2013 tasti da 1 a 5.",
+          tour2Try: "Prova",
+          tour3t: "Modalit\xE0 festa",
+          tour3: "Uno spettacolo di luci che conosce il brano: location, pubblico, luci ed effetti per il drop. I telefoni degli ospiti partecipano con un codice QR.",
+          tour3Try: "Inizia la festa",
+          tour4t: "Tutto regolabile",
+          tour4: "Menu del profilo \u2192 Impostazioni di Mirage: preset per aspetto e prestazioni, ogni effetto ha il suo interruttore \u2013 e in alto una ricerca.",
+          tour4Try: "Apri le impostazioni"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -2416,7 +2561,36 @@
           wishQueue: "+ Fila",
           wishDecline: "Recusar",
           wishQueued: "\u201C{s}\u201D adicionada \xE0 fila",
-          viz_tunnel: "T\xFAnel 3D"
+          viz_tunnel: "T\xFAnel 3D",
+          romanize: "Romaniza\xE7\xE3o",
+          romanizeHint: "Letras latinas sob letras em coreano, japon\xEAs e chin\xEAs \u2013 o japon\xEAs vem do NetEase, o chin\xEAs carrega uma vez um dicion\xE1rio pinyin do jsdelivr",
+          k_timing: "Corrigir o tempo da letra",
+          timingHint: "Aperte Enter quando a linha marcada come\xE7ar \xB7 Backspace desfaz \xB7 Esc pronto",
+          timingReset: "Redefinir",
+          timingDone: "Pronto",
+          timingSaved: "Tempo salvo para esta m\xFAsica",
+          timingCleared: "Tempo redefinido para o original",
+          timingNone: "\xC9 preciso letra sincronizada na vis\xE3o de letra, mix ou festa",
+          searchSettings: "Pesquisar nas configura\xE7\xF5es",
+          searchNone: "Nada encontrado \u2013 tente outra palavra",
+          saveFile: "Salvar como arquivo",
+          loadFile: "Carregar de arquivo",
+          fileSaved: "Configura\xE7\xF5es salvas em Downloads",
+          fileLoaded: "Configura\xE7\xF5es carregadas",
+          tourAgain: "Mostrar a introdu\xE7\xE3o de novo",
+          tourNext: "Pr\xF3ximo",
+          tourDone: "Vamos l\xE1",
+          tour1t: "Boas-vindas ao Mirage",
+          tour1: "O Spotify agora pega as cores de cada capa \u2013 o fundo respira no ritmo. Esquemas fixos e os seus est\xE3o nas configura\xE7\xF5es.",
+          tour2t: "Modo imersivo",
+          tour2: "Ctrl + Shift + M transforma o Spotify num palco em tela cheia: capa, letra karaok\xEA, visualizador e mix \u2013 teclas 1 a 5.",
+          tour2Try: "Experimentar",
+          tour3t: "Modo festa",
+          tour3: "Um show de luzes que conhece a m\xFAsica: local, p\xFAblico, ilumina\xE7\xE3o e efeitos para o drop. Os celulares dos convidados entram pelo QR code.",
+          tour3Try: "Come\xE7ar a festa",
+          tour4t: "Tudo ajust\xE1vel",
+          tour4: "Menu do perfil \u2192 Configura\xE7\xF5es do Mirage: predefini\xE7\xF5es de apar\xEAncia e desempenho, cada efeito tem seu bot\xE3o \u2013 e uma busca no topo.",
+          tour4Try: "Abrir configura\xE7\xF5es"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -2800,7 +2974,36 @@
           wishQueue: "+ Wachtrij",
           wishDecline: "Weigeren",
           wishQueued: "\u2018{s}\u2019 staat in de wachtrij",
-          viz_tunnel: "3D-tunnel"
+          viz_tunnel: "3D-tunnel",
+          romanize: "Transcriptie",
+          romanizeHint: "Latijnse letters onder Koreaanse, Japanse en Chinese songteksten \u2013 Japans van NetEase, voor Chinees wordt eenmalig een pinyin-woordenboek van jsdelivr geladen",
+          k_timing: "Timing van de songtekst corrigeren",
+          timingHint: "Druk op Enter zodra de gemarkeerde regel begint \xB7 Backspace ongedaan maken \xB7 Esc klaar",
+          timingReset: "Herstellen",
+          timingDone: "Klaar",
+          timingSaved: "Timing opgeslagen voor dit nummer",
+          timingCleared: "Timing hersteld naar het origineel",
+          timingNone: "Timing werkt alleen met gesynchroniseerde songtekst in songtekst, mix of feest",
+          searchSettings: "Instellingen doorzoeken",
+          searchNone: "Niets gevonden \u2013 probeer een ander woord",
+          saveFile: "Opslaan als bestand",
+          loadFile: "Laden uit bestand",
+          fileSaved: "Instellingen opgeslagen in Downloads",
+          fileLoaded: "Instellingen geladen",
+          tourAgain: "Introductie opnieuw tonen",
+          tourNext: "Volgende",
+          tourDone: "Aan de slag",
+          tour1t: "Welkom bij Mirage",
+          tour1: "Spotify neemt nu de kleuren van elke hoes over \u2013 de achtergrond ademt op de beat. Vaste kleurschema's en je eigen vind je in de instellingen.",
+          tour2t: "Immersieve modus",
+          tour2: "Ctrl + Shift + M maakt van Spotify een podium op volledig scherm: hoes, karaoke-songtekst, visualizer en mix \u2013 toetsen 1 tot 5.",
+          tour2Try: "Probeer het",
+          tour3t: "Feestmodus",
+          tour3: "Een lichtshow die het nummer kent: locatie, publiek, lichtrig en effecten voor de drop. Telefoons van gasten doen mee via een QR-code.",
+          tour3Try: "Feest starten",
+          tour4t: "Alles instelbaar",
+          tour4: "Profielmenu \u2192 Mirage-instellingen: voorinstellingen voor uiterlijk en prestaties, elk effect heeft een eigen schakelaar \u2013 en bovenaan een zoekveld.",
+          tour4Try: "Instellingen openen"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -3184,7 +3387,36 @@
           wishQueue: "+ Kolejka",
           wishDecline: "Odrzu\u0107",
           wishQueued: "\u201E{s}\u201D dodano do kolejki",
-          viz_tunnel: "Tunel 3D"
+          viz_tunnel: "Tunel 3D",
+          romanize: "Transkrypcja",
+          romanizeHint: "Litery \u0142aci\u0144skie pod tekstem korea\u0144skim, japo\u0144skim i chi\u0144skim \u2013 japo\u0144ski z NetEase, dla chi\u0144skiego raz \u0142adowany jest s\u0142ownik pinyin z jsdelivr",
+          k_timing: "Popraw synchronizacj\u0119 tekstu",
+          timingHint: "Naci\u015Bnij Enter, gdy zaczyna si\u0119 zaznaczony wers \xB7 Backspace cofnij \xB7 Esc gotowe",
+          timingReset: "Resetuj",
+          timingDone: "Gotowe",
+          timingSaved: "Synchronizacja zapisana dla tego utworu",
+          timingCleared: "Przywr\xF3cono oryginaln\u0105 synchronizacj\u0119",
+          timingNone: "Potrzebny jest zsynchronizowany tekst w widoku tekstu, miksu lub imprezy",
+          searchSettings: "Szukaj w ustawieniach",
+          searchNone: "Nic nie znaleziono \u2013 spr\xF3buj innego s\u0142owa",
+          saveFile: "Zapisz do pliku",
+          loadFile: "Wczytaj z pliku",
+          fileSaved: "Ustawienia zapisane w Pobranych",
+          fileLoaded: "Ustawienia wczytane",
+          tourAgain: "Poka\u017C wprowadzenie jeszcze raz",
+          tourNext: "Dalej",
+          tourDone: "Zaczynamy",
+          tour1t: "Witaj w Mirage",
+          tour1: "Spotify przyjmuje teraz kolory ka\u017Cdej ok\u0142adki \u2013 t\u0142o oddycha w rytm. Sta\u0142e schematy i Twoje w\u0142asne znajdziesz w ustawieniach.",
+          tour2t: "Tryb immersyjny",
+          tour2: "Ctrl + Shift + M zmienia Spotify w pe\u0142noekranow\u0105 scen\u0119: ok\u0142adka, tekst karaoke, wizualizer i miks \u2013 klawisze 1\u20135.",
+          tour2Try: "Wypr\xF3buj",
+          tour3t: "Tryb imprezy",
+          tour3: "Pokaz \u015Bwiate\u0142, kt\xF3ry zna utw\xF3r: miejsce, publiczno\u015B\u0107, o\u015Bwietlenie i efekty na drop. Telefony go\u015Bci do\u0142\u0105czaj\u0105 przez kod QR.",
+          tour3Try: "Zacznij imprez\u0119",
+          tour4t: "Wszystko do ustawienia",
+          tour4: "Menu profilu \u2192 Ustawienia Mirage: ustawienia wst\u0119pne wygl\u0105du i wydajno\u015Bci, ka\u017Cdy efekt ma w\u0142asny prze\u0142\u0105cznik \u2013 a u g\xF3ry wyszukiwark\u0119.",
+          tour4Try: "Otw\xF3rz ustawienia"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -3568,7 +3800,36 @@
           wishQueue: "+ S\u0131ra",
           wishDecline: "Reddet",
           wishQueued: "\u201C{s}\u201D s\u0131raya eklendi",
-          viz_tunnel: "3D t\xFCnel"
+          viz_tunnel: "3D t\xFCnel",
+          romanize: "Latin harfleri",
+          romanizeHint: "Korece, Japonca ve \xC7ince s\xF6zlerin alt\u0131nda Latin harfleri \u2013 Japonca NetEase'den, \xC7ince i\xE7in jsdelivr'dan bir kez pinyin s\xF6zl\xFC\u011F\xFC y\xFCklenir",
+          k_timing: "S\xF6z zamanlamas\u0131n\u0131 d\xFCzelt",
+          timingHint: "\u0130\u015Faretli sat\u0131r ba\u015Flad\u0131\u011F\u0131nda Enter'a bas \xB7 Geri al: Backspace \xB7 Bitir: Esc",
+          timingReset: "S\u0131f\u0131rla",
+          timingDone: "Bitti",
+          timingSaved: "Bu \u015Fark\u0131 i\xE7in zamanlama kaydedildi",
+          timingCleared: "Zamanlama orijinale d\xF6nd\xFCr\xFCld\xFC",
+          timingNone: "Zamanlama i\xE7in \u015Fark\u0131 s\xF6zleri, Mix veya parti g\xF6r\xFCn\xFCm\xFCnde senkron s\xF6z gerekir",
+          searchSettings: "Ayarlarda ara",
+          searchNone: "Sonu\xE7 yok \u2013 ba\u015Fka bir kelime dene",
+          saveFile: "Dosya olarak kaydet",
+          loadFile: "Dosyadan y\xFCkle",
+          fileSaved: "Ayarlar \u0130ndirilenler'e kaydedildi",
+          fileLoaded: "Ayarlar y\xFCklendi",
+          tourAgain: "Tan\u0131t\u0131m\u0131 tekrar g\xF6ster",
+          tourNext: "\u0130leri",
+          tourDone: "Haydi ba\u015Flayal\u0131m",
+          tour1t: "Mirage'a ho\u015F geldin",
+          tour1: "Spotify art\u0131k her kapa\u011F\u0131n renklerini al\u0131yor \u2013 arka plan ritimle nefes al\u0131yor. Sabit renk \u015Femalar\u0131 ve kendi \u015Femalar\u0131n ayarlarda.",
+          tour2t: "S\xFCr\xFCkleyici mod",
+          tour2: "Ctrl + Shift + M, Spotify'\u0131 tam ekran bir sahneye \xE7evirir: kapak, karaoke s\xF6zler, g\xF6rselle\u015Ftirici ve Mix \u2013 1'den 5'e tu\u015Flar.",
+          tour2Try: "Dene",
+          tour3t: "Parti modu",
+          tour3: "\u015Eark\u0131y\u0131 tan\u0131yan bir \u0131\u015F\u0131k \u015Fovu: mek\xE2n, kalabal\u0131k, \u0131\u015F\u0131klar ve drop efektleri. Misafirlerin telefonlar\u0131 QR kodla kat\u0131l\u0131r.",
+          tour3Try: "Partiyi ba\u015Flat",
+          tour4t: "Her \u015Fey ayarlanabilir",
+          tour4: "Profil men\xFCs\xFC \u2192 Mirage ayarlar\u0131: g\xF6r\xFCn\xFCm ve performans haz\u0131r ayarlar\u0131, her efektin kendi d\xFC\u011Fmesi \u2013 ve en \xFCstte arama.",
+          tour4Try: "Ayarlar\u0131 a\xE7"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -3952,7 +4213,36 @@
           wishQueue: "+ \u0412 \u043E\u0447\u0435\u0440\u0435\u0434\u044C",
           wishDecline: "\u041E\u0442\u043A\u043B\u043E\u043D\u0438\u0442\u044C",
           wishQueued: "\xAB{s}\xBB \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0430 \u0432 \u043E\u0447\u0435\u0440\u0435\u0434\u044C",
-          viz_tunnel: "3D-\u0442\u0443\u043D\u043D\u0435\u043B\u044C"
+          viz_tunnel: "3D-\u0442\u0443\u043D\u043D\u0435\u043B\u044C",
+          romanize: "\u0422\u0440\u0430\u043D\u0441\u043B\u0438\u0442\u0435\u0440\u0430\u0446\u0438\u044F",
+          romanizeHint: "\u041B\u0430\u0442\u0438\u043D\u0438\u0446\u0430 \u043F\u043E\u0434 \u043A\u043E\u0440\u0435\u0439\u0441\u043A\u0438\u043C, \u044F\u043F\u043E\u043D\u0441\u043A\u0438\u043C \u0438 \u043A\u0438\u0442\u0430\u0439\u0441\u043A\u0438\u043C \u0442\u0435\u043A\u0441\u0442\u043E\u043C \u2013 \u044F\u043F\u043E\u043D\u0441\u043A\u0438\u0439 \u0438\u0437 NetEase, \u0434\u043B\u044F \u043A\u0438\u0442\u0430\u0439\u0441\u043A\u043E\u0433\u043E \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u0442\u0441\u044F \u0441\u043B\u043E\u0432\u0430\u0440\u044C \u043F\u0438\u043D\u044C\u0438\u043D\u044F \u0441 jsdelivr",
+          k_timing: "\u0418\u0441\u043F\u0440\u0430\u0432\u0438\u0442\u044C \u0442\u0430\u0439\u043C\u0438\u043D\u0433 \u0442\u0435\u043A\u0441\u0442\u0430",
+          timingHint: "\u041D\u0430\u0436\u043C\u0438 Enter, \u043A\u043E\u0433\u0434\u0430 \u043D\u0430\u0447\u043D\u0451\u0442\u0441\u044F \u043E\u0442\u043C\u0435\u0447\u0435\u043D\u043D\u0430\u044F \u0441\u0442\u0440\u043E\u043A\u0430 \xB7 Backspace \u043E\u0442\u043C\u0435\u043D\u0438\u0442\u044C \xB7 Esc \u0433\u043E\u0442\u043E\u0432\u043E",
+          timingReset: "\u0421\u0431\u0440\u043E\u0441\u0438\u0442\u044C",
+          timingDone: "\u0413\u043E\u0442\u043E\u0432\u043E",
+          timingSaved: "\u0422\u0430\u0439\u043C\u0438\u043D\u0433 \u0441\u043E\u0445\u0440\u0430\u043D\u0451\u043D \u0434\u043B\u044F \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438",
+          timingCleared: "\u0422\u0430\u0439\u043C\u0438\u043D\u0433 \u0441\u0431\u0440\u043E\u0448\u0435\u043D \u0434\u043E \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0433\u043E",
+          timingNone: "\u041D\u0443\u0436\u0435\u043D \u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 \u0432 \u0440\u0435\u0436\u0438\u043C\u0435 \u0442\u0435\u043A\u0441\u0442\u0430, \u043C\u0438\u043A\u0441\u0430 \u0438\u043B\u0438 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          searchSettings: "\u041F\u043E\u0438\u0441\u043A \u043F\u043E \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u043C",
+          searchNone: "\u041D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u2013 \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439 \u0434\u0440\u0443\u0433\u043E\u0435 \u0441\u043B\u043E\u0432\u043E",
+          saveFile: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0432 \u0444\u0430\u0439\u043B",
+          loadFile: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0438\u0437 \u0444\u0430\u0439\u043B\u0430",
+          fileSaved: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B \u0432 \xAB\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0438\xBB",
+          fileLoaded: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u044B",
+          tourAgain: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0432\u0441\u0442\u0443\u043F\u043B\u0435\u043D\u0438\u0435 \u0441\u043D\u043E\u0432\u0430",
+          tourNext: "\u0414\u0430\u043B\u0435\u0435",
+          tourDone: "\u041F\u043E\u0435\u0445\u0430\u043B\u0438",
+          tour1t: "\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 Mirage",
+          tour1: "\u0422\u0435\u043F\u0435\u0440\u044C Spotify \u0431\u0435\u0440\u0451\u0442 \u0446\u0432\u0435\u0442\u0430 \u043A\u0430\u0436\u0434\u043E\u0439 \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u2013 \u0444\u043E\u043D \u0434\u044B\u0448\u0438\u0442 \u0432 \u0442\u0430\u043A\u0442. \u0424\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u0438 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u044B\u0435 \u0441\u0445\u0435\u043C\u044B \u2013 \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445.",
+          tour2t: "\u0418\u043C\u043C\u0435\u0440\u0441\u0438\u0432\u043D\u044B\u0439 \u0440\u0435\u0436\u0438\u043C",
+          tour2: "Ctrl + Shift + M \u043F\u0440\u0435\u0432\u0440\u0430\u0449\u0430\u0435\u0442 Spotify \u0432 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u0443\u044E \u0441\u0446\u0435\u043D\u0443: \u043E\u0431\u043B\u043E\u0436\u043A\u0430, \u043A\u0430\u0440\u0430\u043E\u043A\u0435-\u0442\u0435\u043A\u0441\u0442, \u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440 \u0438 \u043C\u0438\u043A\u0441 \u2013 \u043A\u043B\u0430\u0432\u0438\u0448\u0438 1\u20135.",
+          tour2Try: "\u041F\u043E\u043F\u0440\u043E\u0431\u043E\u0432\u0430\u0442\u044C",
+          tour3t: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          tour3: "\u0421\u0432\u0435\u0442\u043E\u0432\u043E\u0435 \u0448\u043E\u0443, \u043A\u043E\u0442\u043E\u0440\u043E\u0435 \u0437\u043D\u0430\u0435\u0442 \u043F\u0435\u0441\u043D\u044E: \u043F\u043B\u043E\u0449\u0430\u0434\u043A\u0430, \u043F\u0443\u0431\u043B\u0438\u043A\u0430, \u0441\u0432\u0435\u0442 \u0438 \u044D\u0444\u0444\u0435\u043A\u0442\u044B \u043D\u0430 \u0434\u0440\u043E\u043F. \u0422\u0435\u043B\u0435\u0444\u043E\u043D\u044B \u0433\u043E\u0441\u0442\u0435\u0439 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0430\u044E\u0442\u0441\u044F \u043F\u043E QR-\u043A\u043E\u0434\u0443.",
+          tour3Try: "\u041D\u0430\u0447\u0430\u0442\u044C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0443",
+          tour4t: "\u0412\u0441\u0451 \u043D\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0435\u0442\u0441\u044F",
+          tour4: "\u041C\u0435\u043D\u044E \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u2192 \u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage: \u043F\u0440\u0435\u0441\u0435\u0442\u044B \u0432\u043D\u0435\u0448\u043D\u0435\u0433\u043E \u0432\u0438\u0434\u0430 \u0438 \u043F\u0440\u043E\u0438\u0437\u0432\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u0438, \u0443 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u044D\u0444\u0444\u0435\u043A\u0442\u0430 \u0441\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0430\u0442\u0435\u043B\u044C \u2013 \u0438 \u043F\u043E\u0438\u0441\u043A \u0441\u0432\u0435\u0440\u0445\u0443.",
+          tour4Try: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -4336,7 +4626,36 @@
           wishQueue: "+ \u0414\u043E \u0447\u0435\u0440\u0433\u0438",
           wishDecline: "\u0412\u0456\u0434\u0445\u0438\u043B\u0438\u0442\u0438",
           wishQueued: "\xAB{s}\xBB \u0434\u043E\u0434\u0430\u043D\u043E \u0434\u043E \u0447\u0435\u0440\u0433\u0438",
-          viz_tunnel: "3D-\u0442\u0443\u043D\u0435\u043B\u044C"
+          viz_tunnel: "3D-\u0442\u0443\u043D\u0435\u043B\u044C",
+          romanize: "\u0422\u0440\u0430\u043D\u0441\u043B\u0456\u0442\u0435\u0440\u0430\u0446\u0456\u044F",
+          romanizeHint: "\u041B\u0430\u0442\u0438\u043D\u0438\u0446\u044F \u043F\u0456\u0434 \u043A\u043E\u0440\u0435\u0439\u0441\u044C\u043A\u0438\u043C, \u044F\u043F\u043E\u043D\u0441\u044C\u043A\u0438\u043C \u0456 \u043A\u0438\u0442\u0430\u0439\u0441\u044C\u043A\u0438\u043C \u0442\u0435\u043A\u0441\u0442\u043E\u043C \u2013 \u044F\u043F\u043E\u043D\u0441\u044C\u043A\u0430 \u0437 NetEase, \u0434\u043B\u044F \u043A\u0438\u0442\u0430\u0439\u0441\u044C\u043A\u043E\u0457 \u043E\u0434\u0438\u043D \u0440\u0430\u0437 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0443\u0454\u0442\u044C\u0441\u044F \u0441\u043B\u043E\u0432\u043D\u0438\u043A \u043F\u0456\u043D\u044C\u0457\u043D\u044E \u0437 jsdelivr",
+          k_timing: "\u0412\u0438\u043F\u0440\u0430\u0432\u0438\u0442\u0438 \u0442\u0430\u0439\u043C\u0456\u043D\u0433 \u0442\u0435\u043A\u0441\u0442\u0443",
+          timingHint: "\u041D\u0430\u0442\u0438\u0441\u043D\u0438 Enter, \u043A\u043E\u043B\u0438 \u043F\u043E\u0447\u043D\u0435\u0442\u044C\u0441\u044F \u043F\u043E\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0439 \u0440\u044F\u0434\u043E\u043A \xB7 Backspace \u0441\u043A\u0430\u0441\u0443\u0432\u0430\u0442\u0438 \xB7 Esc \u0433\u043E\u0442\u043E\u0432\u043E",
+          timingReset: "\u0421\u043A\u0438\u043D\u0443\u0442\u0438",
+          timingDone: "\u0413\u043E\u0442\u043E\u0432\u043E",
+          timingSaved: "\u0422\u0430\u0439\u043C\u0456\u043D\u0433 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E \u0434\u043B\u044F \u0446\u0456\u0454\u0457 \u043F\u0456\u0441\u043D\u0456",
+          timingCleared: "\u0422\u0430\u0439\u043C\u0456\u043D\u0433 \u0441\u043A\u0438\u043D\u0443\u0442\u043E \u0434\u043E \u043F\u043E\u0447\u0430\u0442\u043A\u043E\u0432\u043E\u0433\u043E",
+          timingNone: "\u041F\u043E\u0442\u0440\u0456\u0431\u0435\u043D \u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0456\u0437\u043E\u0432\u0430\u043D\u0438\u0439 \u0442\u0435\u043A\u0441\u0442 \u0443 \u0440\u0435\u0436\u0438\u043C\u0456 \u0442\u0435\u043A\u0441\u0442\u0443, \u043C\u0456\u043A\u0441\u0443 \u0430\u0431\u043E \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          searchSettings: "\u041F\u043E\u0448\u0443\u043A \u0443 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F\u0445",
+          searchNone: "\u041D\u0456\u0447\u043E\u0433\u043E \u043D\u0435 \u0437\u043D\u0430\u0439\u0434\u0435\u043D\u043E \u2013 \u0441\u043F\u0440\u043E\u0431\u0443\u0439 \u0456\u043D\u0448\u0435 \u0441\u043B\u043E\u0432\u043E",
+          saveFile: "\u0417\u0431\u0435\u0440\u0435\u0433\u0442\u0438 \u0443 \u0444\u0430\u0439\u043B",
+          loadFile: "\u0417\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0438\u0442\u0438 \u0437 \u0444\u0430\u0439\u043B\u0443",
+          fileSaved: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E \u0432 \xAB\u0417\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F\xBB",
+          fileLoaded: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043E",
+          tourAgain: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u0432\u0441\u0442\u0443\u043F \u0449\u0435 \u0440\u0430\u0437",
+          tourNext: "\u0414\u0430\u043B\u0456",
+          tourDone: "\u041F\u043E\u0457\u0445\u0430\u043B\u0438",
+          tour1t: "\u041B\u0430\u0441\u043A\u0430\u0432\u043E \u043F\u0440\u043E\u0441\u0438\u043C\u043E \u0434\u043E Mirage",
+          tour1: "\u0422\u0435\u043F\u0435\u0440 Spotify \u0431\u0435\u0440\u0435 \u043A\u043E\u043B\u044C\u043E\u0440\u0438 \u043A\u043E\u0436\u043D\u043E\u0457 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438 \u2013 \u0442\u043B\u043E \u0434\u0438\u0445\u0430\u0454 \u0432 \u0442\u0430\u043A\u0442. \u0424\u0456\u043A\u0441\u043E\u0432\u0430\u043D\u0456 \u0442\u0430 \u0432\u043B\u0430\u0441\u043D\u0456 \u0441\u0445\u0435\u043C\u0438 \u2013 \u0432 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F\u0445.",
+          tour2t: "\u0406\u043C\u0435\u0440\u0441\u0438\u0432\u043D\u0438\u0439 \u0440\u0435\u0436\u0438\u043C",
+          tour2: "Ctrl + Shift + M \u043F\u0435\u0440\u0435\u0442\u0432\u043E\u0440\u044E\u0454 Spotify \u043D\u0430 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u0443 \u0441\u0446\u0435\u043D\u0443: \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430, \u043A\u0430\u0440\u0430\u043E\u043A\u0435-\u0442\u0435\u043A\u0441\u0442, \u0432\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440 \u0456 \u043C\u0456\u043A\u0441 \u2013 \u043A\u043B\u0430\u0432\u0456\u0448\u0456 1\u20135.",
+          tour2Try: "\u0421\u043F\u0440\u043E\u0431\u0443\u0432\u0430\u0442\u0438",
+          tour3t: "\u0420\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          tour3: "\u0421\u0432\u0456\u0442\u043B\u043E\u0432\u0435 \u0448\u043E\u0443, \u044F\u043A\u0435 \u0437\u043D\u0430\u0454 \u043F\u0456\u0441\u043D\u044E: \u043C\u0430\u0439\u0434\u0430\u043D\u0447\u0438\u043A, \u043F\u0443\u0431\u043B\u0456\u043A\u0430, \u0441\u0432\u0456\u0442\u043B\u043E \u0439 \u0435\u0444\u0435\u043A\u0442\u0438 \u043D\u0430 \u0434\u0440\u043E\u043F. \u0422\u0435\u043B\u0435\u0444\u043E\u043D\u0438 \u0433\u043E\u0441\u0442\u0435\u0439 \u043F\u0440\u0438\u0454\u0434\u043D\u0443\u044E\u0442\u044C\u0441\u044F \u0447\u0435\u0440\u0435\u0437 QR-\u043A\u043E\u0434.",
+          tour3Try: "\u041F\u043E\u0447\u0430\u0442\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0443",
+          tour4t: "\u0423\u0441\u0435 \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0443\u0454\u0442\u044C\u0441\u044F",
+          tour4: "\u041C\u0435\u043D\u044E \u043F\u0440\u043E\u0444\u0456\u043B\u044E \u2192 \u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage: \u043F\u0440\u0435\u0441\u0435\u0442\u0438 \u0432\u0438\u0433\u043B\u044F\u0434\u0443 \u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0456, \u0443 \u043A\u043E\u0436\u043D\u043E\u0433\u043E \u0435\u0444\u0435\u043A\u0442\u0443 \u0441\u0432\u0456\u0439 \u043F\u0435\u0440\u0435\u043C\u0438\u043A\u0430\u0447 \u2013 \u0456 \u043F\u043E\u0448\u0443\u043A \u0443\u0433\u043E\u0440\u0456.",
+          tour4Try: "\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -4720,7 +5039,36 @@
           wishQueue: "+ \u30AD\u30E5\u30FC",
           wishDecline: "\u5374\u4E0B",
           wishQueued: "\u300C{s}\u300D\u3092\u30AD\u30E5\u30FC\u306B\u8FFD\u52A0\u3057\u307E\u3057\u305F",
-          viz_tunnel: "3D\u30C8\u30F3\u30CD\u30EB"
+          viz_tunnel: "3D\u30C8\u30F3\u30CD\u30EB",
+          romanize: "\u30ED\u30FC\u30DE\u5B57\u8868\u8A18",
+          romanizeHint: "\u97D3\u56FD\u8A9E\u30FB\u65E5\u672C\u8A9E\u30FB\u4E2D\u56FD\u8A9E\u306E\u6B4C\u8A5E\u306E\u4E0B\u306B\u30E9\u30C6\u30F3\u6587\u5B57\u3092\u8868\u793A\u3057\u307E\u3059\u3002\u65E5\u672C\u8A9E\u306F NetEase \u304B\u3089\u3001\u4E2D\u56FD\u8A9E\u306F\u521D\u56DE\u306E\u307F jsdelivr \u304B\u3089\u30D4\u30F3\u30A4\u30F3\u8F9E\u66F8\u3092\u8AAD\u307F\u8FBC\u307F\u307E\u3059",
+          k_timing: "\u6B4C\u8A5E\u306E\u30BF\u30A4\u30DF\u30F3\u30B0\u3092\u4FEE\u6B63",
+          timingHint: "\u30DE\u30FC\u30AF\u3055\u308C\u305F\u884C\u304C\u59CB\u307E\u3063\u305F\u3089 Enter\u30FBBackspace \u3067\u5143\u306B\u623B\u3059\u30FBEsc \u3067\u5B8C\u4E86",
+          timingReset: "\u30EA\u30BB\u30C3\u30C8",
+          timingDone: "\u5B8C\u4E86",
+          timingSaved: "\u3053\u306E\u66F2\u306E\u30BF\u30A4\u30DF\u30F3\u30B0\u3092\u4FDD\u5B58\u3057\u307E\u3057\u305F",
+          timingCleared: "\u30BF\u30A4\u30DF\u30F3\u30B0\u3092\u5143\u306B\u623B\u3057\u307E\u3057\u305F",
+          timingNone: "\u30BF\u30A4\u30DF\u30F3\u30B0\u4FEE\u6B63\u306B\u306F\u6B4C\u8A5E\u30FBMix\u30FB\u30D1\u30FC\u30C6\u30A3\u30FC\u753B\u9762\u306E\u540C\u671F\u6B4C\u8A5E\u304C\u5FC5\u8981\u3067\u3059",
+          searchSettings: "\u8A2D\u5B9A\u3092\u691C\u7D22",
+          searchNone: "\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3002\u5225\u306E\u8A00\u8449\u3092\u8A66\u3057\u3066\u304F\u3060\u3055\u3044",
+          saveFile: "\u30D5\u30A1\u30A4\u30EB\u306B\u4FDD\u5B58",
+          loadFile: "\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u8AAD\u307F\u8FBC\u3080",
+          fileSaved: "\u8A2D\u5B9A\u3092\u30C0\u30A6\u30F3\u30ED\u30FC\u30C9\u306B\u4FDD\u5B58\u3057\u307E\u3057\u305F",
+          fileLoaded: "\u8A2D\u5B9A\u3092\u8AAD\u307F\u8FBC\u307F\u307E\u3057\u305F",
+          tourAgain: "\u7D39\u4ECB\u3092\u3082\u3046\u4E00\u5EA6\u898B\u308B",
+          tourNext: "\u6B21\u3078",
+          tourDone: "\u306F\u3058\u3081\u308B",
+          tour1t: "Mirage \u3078\u3088\u3046\u3053\u305D",
+          tour1: "Spotify \u304C\u30B8\u30E3\u30B1\u30C3\u30C8\u3054\u3068\u306E\u8272\u306B\u5909\u308F\u308A\u3001\u80CC\u666F\u304C\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u547C\u5438\u3057\u307E\u3059\u3002\u56FA\u5B9A\u306E\u914D\u8272\u3084\u81EA\u4F5C\u306E\u914D\u8272\u306F\u8A2D\u5B9A\u306B\u3042\u308A\u307E\u3059\u3002",
+          tour2t: "\u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9",
+          tour2: "Ctrl + Shift + M \u3067 Spotify \u304C\u5168\u753B\u9762\u30B9\u30C6\u30FC\u30B8\u306B\u3002\u30B8\u30E3\u30B1\u30C3\u30C8\u3001\u30AB\u30E9\u30AA\u30B1\u6B4C\u8A5E\u3001\u30D3\u30B8\u30E5\u30A2\u30E9\u30A4\u30B6\u30FC\u3001Mix \u3092 1\u301C5 \u30AD\u30FC\u3067\u5207\u308A\u66FF\u3048\u307E\u3059\u3002",
+          tour2Try: "\u8A66\u3059",
+          tour3t: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
+          tour3: "\u66F2\u3092\u77E5\u3063\u3066\u3044\u308B\u30E9\u30A4\u30C8\u30B7\u30E7\u30FC\uFF1A\u4F1A\u5834\u3001\u89B3\u5BA2\u3001\u7167\u660E\u3001Drop \u306E\u6F14\u51FA\u3002\u30B2\u30B9\u30C8\u306E\u30B9\u30DE\u30DB\u3082 QR \u30B3\u30FC\u30C9\u3067\u53C2\u52A0\u3067\u304D\u307E\u3059\u3002",
+          tour3Try: "\u30D1\u30FC\u30C6\u30A3\u30FC\u3092\u59CB\u3081\u308B",
+          tour4t: "\u3059\u3079\u3066\u8ABF\u6574\u53EF\u80FD",
+          tour4: "\u30D7\u30ED\u30D5\u30A3\u30FC\u30EB\u30E1\u30CB\u30E5\u30FC \u2192 Mirage \u306E\u8A2D\u5B9A\uFF1A\u898B\u305F\u76EE\u3068\u30D1\u30D5\u30A9\u30FC\u30DE\u30F3\u30B9\u306E\u30D7\u30EA\u30BB\u30C3\u30C8\u3001\u52B9\u679C\u3054\u3068\u306E\u30B9\u30A4\u30C3\u30C1\u3001\u4E0A\u90E8\u306B\u306F\u691C\u7D22\u3082\u3042\u308A\u307E\u3059\u3002",
+          tour4Try: "\u8A2D\u5B9A\u3092\u958B\u304F"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -5104,7 +5452,36 @@
           wishQueue: "+ \uB300\uAE30\uC5F4",
           wishDecline: "\uAC70\uC808",
           wishQueued: "\u2018{s}\u2019\uC744(\uB97C) \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uD588\uC2B5\uB2C8\uB2E4",
-          viz_tunnel: "3D \uD130\uB110"
+          viz_tunnel: "3D \uD130\uB110",
+          romanize: "\uB85C\uB9C8\uC790 \uD45C\uAE30",
+          romanizeHint: "\uD55C\uAD6D\uC5B4\xB7\uC77C\uBCF8\uC5B4\xB7\uC911\uAD6D\uC5B4 \uAC00\uC0AC \uC544\uB798\uC5D0 \uB85C\uB9C8\uC790\uB97C \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uC77C\uBCF8\uC5B4\uB294 NetEase\uC5D0\uC11C, \uC911\uAD6D\uC5B4\uB294 \uCC98\uC74C \uD55C \uBC88 jsdelivr\uC5D0\uC11C \uBCD1\uC74C \uC0AC\uC804\uC744 \uBD88\uB7EC\uC635\uB2C8\uB2E4",
+          k_timing: "\uAC00\uC0AC \uD0C0\uC774\uBC0D \uC218\uC815",
+          timingHint: "\uD45C\uC2DC\uB41C \uC904\uC774 \uC2DC\uC791\uB420 \uB54C Enter \xB7 Backspace \uB418\uB3CC\uB9AC\uAE30 \xB7 Esc \uC644\uB8CC",
+          timingReset: "\uCD08\uAE30\uD654",
+          timingDone: "\uC644\uB8CC",
+          timingSaved: "\uC774 \uACE1\uC758 \uD0C0\uC774\uBC0D\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4",
+          timingCleared: "\uD0C0\uC774\uBC0D\uC744 \uC6D0\uB798\uB300\uB85C \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4",
+          timingNone: "\uD0C0\uC774\uBC0D \uC218\uC815\uC5D0\uB294 \uAC00\uC0AC\xB7Mix\xB7\uD30C\uD2F0 \uD654\uBA74\uC758 \uB3D9\uAE30\uD654 \uAC00\uC0AC\uAC00 \uD544\uC694\uD569\uB2C8\uB2E4",
+          searchSettings: "\uC124\uC815 \uAC80\uC0C9",
+          searchNone: "\uACB0\uACFC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. \uB2E4\uB978 \uB2E8\uC5B4\uB85C \uAC80\uC0C9\uD574 \uBCF4\uC138\uC694",
+          saveFile: "\uD30C\uC77C\uB85C \uC800\uC7A5",
+          loadFile: "\uD30C\uC77C\uC5D0\uC11C \uBD88\uB7EC\uC624\uAE30",
+          fileSaved: "\uC124\uC815\uC744 \uB2E4\uC6B4\uB85C\uB4DC \uD3F4\uB354\uC5D0 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4",
+          fileLoaded: "\uC124\uC815\uC744 \uBD88\uB7EC\uC654\uC2B5\uB2C8\uB2E4",
+          tourAgain: "\uC18C\uAC1C \uB2E4\uC2DC \uBCF4\uAE30",
+          tourNext: "\uB2E4\uC74C",
+          tourDone: "\uC2DC\uC791\uD558\uAE30",
+          tour1t: "Mirage\uC5D0 \uC624\uC2E0 \uAC83\uC744 \uD658\uC601\uD569\uB2C8\uB2E4",
+          tour1: "\uC774\uC81C Spotify\uAC00 \uC568\uBC94 \uCEE4\uBC84\uB9C8\uB2E4 \uC0C9\uC744 \uBC14\uAFB8\uACE0, \uBC30\uACBD\uC774 \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uC228 \uC27D\uB2C8\uB2E4. \uACE0\uC815 \uC0C9 \uAD6C\uC131\uACFC \uC9C1\uC811 \uB9CC\uB4E0 \uAD6C\uC131\uC740 \uC124\uC815\uC5D0 \uC788\uC2B5\uB2C8\uB2E4.",
+          tour2t: "\uBAB0\uC785 \uBAA8\uB4DC",
+          tour2: "Ctrl + Shift + M\uC73C\uB85C Spotify\uAC00 \uC804\uCCB4 \uD654\uBA74 \uBB34\uB300\uAC00 \uB429\uB2C8\uB2E4. \uCEE4\uBC84, \uB178\uB798\uBC29 \uAC00\uC0AC, \uC2DC\uAC01\uD654, Mix\uB97C 1~5 \uD0A4\uB85C \uC804\uD658\uD569\uB2C8\uB2E4.",
+          tour2Try: "\uC0AC\uC6A9\uD574 \uBCF4\uAE30",
+          tour3t: "\uD30C\uD2F0 \uBAA8\uB4DC",
+          tour3: "\uACE1\uC744 \uC544\uB294 \uC870\uBA85 \uC1FC: \uC7A5\uC18C, \uAD00\uAC1D, \uC870\uBA85\uACFC Drop \uD6A8\uACFC. \uAC8C\uC2A4\uD2B8\uC758 \uD734\uB300\uD3F0\uB3C4 QR \uCF54\uB4DC\uB85C \uD568\uAED8\uD569\uB2C8\uB2E4.",
+          tour3Try: "\uD30C\uD2F0 \uC2DC\uC791",
+          tour4t: "\uBAA8\uB450 \uC870\uC815 \uAC00\uB2A5",
+          tour4: "\uD504\uB85C\uD544 \uBA54\uB274 \u2192 Mirage \uC124\uC815: \uBAA8\uC591\uACFC \uC131\uB2A5 \uC0AC\uC804 \uC124\uC815, \uD6A8\uACFC\uB9C8\uB2E4 \uAC1C\uBCC4 \uC2A4\uC704\uCE58, \uB9E8 \uC704\uC5D0\uB294 \uAC80\uC0C9\uB3C4 \uC788\uC2B5\uB2C8\uB2E4.",
+          tour4Try: "\uC124\uC815 \uC5F4\uAE30"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -5488,7 +5865,36 @@
           wishQueue: "+ \u961F\u5217",
           wishDecline: "\u62D2\u7EDD",
           wishQueued: "\u5DF2\u5C06\u201C{s}\u201D\u52A0\u5165\u961F\u5217",
-          viz_tunnel: "3D \u96A7\u9053"
+          viz_tunnel: "3D \u96A7\u9053",
+          romanize: "\u7F57\u9A6C\u97F3",
+          romanizeHint: "\u5728\u97E9\u8BED\u3001\u65E5\u8BED\u548C\u4E2D\u6587\u6B4C\u8BCD\u4E0B\u65B9\u663E\u793A\u62C9\u4E01\u5B57\u6BCD\u2014\u2014\u65E5\u8BED\u6765\u81EA NetEase\uFF0C\u4E2D\u6587\u4F1A\u4ECE jsdelivr \u52A0\u8F7D\u4E00\u6B21\u62FC\u97F3\u8BCD\u5178",
+          k_timing: "\u6821\u6B63\u6B4C\u8BCD\u65F6\u95F4",
+          timingHint: "\u6807\u8BB0\u7684\u884C\u5F00\u59CB\u65F6\u6309 Enter \xB7 Backspace \u64A4\u9500 \xB7 Esc \u5B8C\u6210",
+          timingReset: "\u91CD\u7F6E",
+          timingDone: "\u5B8C\u6210",
+          timingSaved: "\u5DF2\u4FDD\u5B58\u8FD9\u9996\u6B4C\u7684\u65F6\u95F4",
+          timingCleared: "\u5DF2\u6062\u590D\u539F\u59CB\u65F6\u95F4",
+          timingNone: "\u6821\u6B63\u65F6\u95F4\u9700\u8981\u5728\u6B4C\u8BCD\u3001Mix \u6216\u6D3E\u5BF9\u89C6\u56FE\u4E2D\u6709\u540C\u6B65\u6B4C\u8BCD",
+          searchSettings: "\u641C\u7D22\u8BBE\u7F6E",
+          searchNone: "\u6CA1\u6709\u7ED3\u679C\u2014\u2014\u6362\u4E2A\u8BCD\u8BD5\u8BD5",
+          saveFile: "\u4FDD\u5B58\u4E3A\u6587\u4EF6",
+          loadFile: "\u4ECE\u6587\u4EF6\u52A0\u8F7D",
+          fileSaved: "\u8BBE\u7F6E\u5DF2\u4FDD\u5B58\u5230\u4E0B\u8F7D\u6587\u4EF6\u5939",
+          fileLoaded: "\u8BBE\u7F6E\u5DF2\u52A0\u8F7D",
+          tourAgain: "\u518D\u6B21\u663E\u793A\u4ECB\u7ECD",
+          tourNext: "\u4E0B\u4E00\u6B65",
+          tourDone: "\u5F00\u59CB\u5427",
+          tour1t: "\u6B22\u8FCE\u4F7F\u7528 Mirage",
+          tour1: "Spotify \u73B0\u5728\u4F1A\u91C7\u7528\u6BCF\u5F20\u5C01\u9762\u7684\u989C\u8272\uFF0C\u80CC\u666F\u968F\u8282\u62CD\u547C\u5438\u3002\u56FA\u5B9A\u914D\u8272\u548C\u4F60\u81EA\u5DF1\u7684\u914D\u8272\u90FD\u5728\u8BBE\u7F6E\u4E2D\u3002",
+          tour2t: "\u6C89\u6D78\u6A21\u5F0F",
+          tour2: "\u6309 Ctrl + Shift + M\uFF0CSpotify \u53D8\u6210\u5168\u5C4F\u821E\u53F0\uFF1A\u5C01\u9762\u3001\u5361\u62C9 OK \u6B4C\u8BCD\u3001\u53EF\u89C6\u5316\u548C Mix\uFF0C\u7528 1 \u5230 5 \u952E\u5207\u6362\u3002",
+          tour2Try: "\u8BD5\u8BD5\u770B",
+          tour3t: "\u6D3E\u5BF9\u6A21\u5F0F",
+          tour3: "\u61C2\u8FD9\u9996\u6B4C\u7684\u706F\u5149\u79C0\uFF1A\u573A\u5730\u3001\u89C2\u4F17\u3001\u706F\u5149\u548C Drop \u7279\u6548\u3002\u6765\u5BBE\u7684\u624B\u673A\u4E5F\u80FD\u901A\u8FC7\u4E8C\u7EF4\u7801\u52A0\u5165\u3002",
+          tour3Try: "\u5F00\u59CB\u6D3E\u5BF9",
+          tour4t: "\u4E00\u5207\u90FD\u53EF\u8C03",
+          tour4: "\u4E2A\u4EBA\u8D44\u6599\u83DC\u5355 \u2192 Mirage \u8BBE\u7F6E\uFF1A\u5916\u89C2\u548C\u6027\u80FD\u9884\u8BBE\uFF0C\u6BCF\u4E2A\u6548\u679C\u90FD\u6709\u72EC\u7ACB\u5F00\u5173\uFF0C\u9876\u90E8\u8FD8\u6709\u641C\u7D22\u3002",
+          tour4Try: "\u6253\u5F00\u8BBE\u7F6E"
         }
       };
       LANG = (() => {
@@ -5616,6 +6022,7 @@
         partyShatter: true,
         partyCamera: true,
         partyCuts: true,
+        romanize: false,
         partyWishes: true,
         partyCrowd: true,
         partyJamLight: true,
@@ -5668,6 +6075,174 @@
         } catch {
         }
       };
+    }
+  });
+
+  // src/roman.js
+  function scriptOf(lines) {
+    const n = { ko: 0, ja: 0, zh: 0 };
+    for (const l of lines || []) {
+      const s = l.text || "";
+      if (HANGUL.test(s)) n.ko++;
+      else if (KANA.test(s)) n.ja++;
+      else if (HAN.test(s)) n.zh++;
+    }
+    const best = Object.entries(n).sort((a, b) => b[1] - a[1])[0];
+    if (n.ja && n.ja + n.zh >= (lines?.length || 1) * 0.3 && n.ja >= n.ko) return "ja";
+    return best[1] >= (lines?.length || 1) * 0.3 ? best[0] : "";
+  }
+  function hangul(s) {
+    let out = "";
+    for (const ch of s) {
+      const c2 = ch.codePointAt(0) - 44032;
+      if (c2 < 0 || c2 > 11171) {
+        out += ch;
+        continue;
+      }
+      out += L[Math.floor(c2 / 588)] + V[Math.floor(c2 % 588 / 28)] + T[c2 % 28];
+    }
+    return out;
+  }
+  function kana(s) {
+    if (HAN.test(s) || !KANA.test(s)) return "";
+    const h = [...s].map((ch) => ch >= "\u30A1" && ch <= "\u30F6" ? String.fromCodePoint(ch.codePointAt(0) - 96) : ch);
+    let out = "", dbl = false;
+    for (let i = 0; i < h.length; i++) {
+      const ch = h[i], nx = h[i + 1];
+      if (ch === "\u3063") {
+        dbl = true;
+        continue;
+      }
+      if (ch === "\u30FC") {
+        out += out.match(/[aeiou]$/)?.[0] || "";
+        continue;
+      }
+      let r = KR[ch];
+      if (r == null) {
+        out += ch === "\u3000" ? " " : ch;
+        dbl = false;
+        continue;
+      }
+      if (SMALL[nx] && r.endsWith("i") && r.length > 1) {
+        r = /^(sh|ch|j)/.test(r) ? r.slice(0, -1) + SMALL[nx] : r.slice(0, -1) + "y" + SMALL[nx];
+        i++;
+      }
+      if (dbl) r = (r.startsWith("ch") ? "t" : r[0]) + r;
+      dbl = false;
+      out += r;
+    }
+    return out;
+  }
+  async function pinyinLines(texts) {
+    try {
+      pinyinLib ||= import(
+        /* webpackIgnore: true */
+        PINYIN
+      );
+      const { pinyin } = await pinyinLib;
+      return texts.map((s) => HAN.test(s) ? pinyin(s, { toneType: "symbol", type: "string", nonZh: "consecutive" }) : "");
+    } catch {
+      pinyinLib = null;
+      return null;
+    }
+  }
+  var HAN, KANA, HANGUL, L, V, T, KR, SMALL, PINYIN, pinyinLib;
+  var init_roman = __esm({
+    "src/roman.js"() {
+      HAN = new RegExp("\\p{Script=Han}", "u");
+      KANA = /[぀-ヿ]/;
+      HANGUL = /[가-힣]/;
+      L = ["g", "kk", "n", "d", "tt", "r", "m", "b", "pp", "s", "ss", "", "j", "jj", "ch", "k", "t", "p", "h"];
+      V = ["a", "ae", "ya", "yae", "eo", "e", "yeo", "ye", "o", "wa", "wae", "oe", "yo", "u", "wo", "we", "wi", "yu", "eu", "ui", "i"];
+      T = ["", "k", "k", "k", "n", "n", "n", "t", "l", "k", "m", "l", "l", "l", "p", "l", "m", "p", "p", "t", "t", "ng", "t", "t", "k", "t", "p", "t"];
+      KR = {
+        \u3042: "a",
+        \u3044: "i",
+        \u3046: "u",
+        \u3048: "e",
+        \u304A: "o",
+        \u304B: "ka",
+        \u304D: "ki",
+        \u304F: "ku",
+        \u3051: "ke",
+        \u3053: "ko",
+        \u3055: "sa",
+        \u3057: "shi",
+        \u3059: "su",
+        \u305B: "se",
+        \u305D: "so",
+        \u305F: "ta",
+        \u3061: "chi",
+        \u3064: "tsu",
+        \u3066: "te",
+        \u3068: "to",
+        \u306A: "na",
+        \u306B: "ni",
+        \u306C: "nu",
+        \u306D: "ne",
+        \u306E: "no",
+        \u306F: "ha",
+        \u3072: "hi",
+        \u3075: "fu",
+        \u3078: "he",
+        \u307B: "ho",
+        \u307E: "ma",
+        \u307F: "mi",
+        \u3080: "mu",
+        \u3081: "me",
+        \u3082: "mo",
+        \u3084: "ya",
+        \u3086: "yu",
+        \u3088: "yo",
+        \u3089: "ra",
+        \u308A: "ri",
+        \u308B: "ru",
+        \u308C: "re",
+        \u308D: "ro",
+        \u308F: "wa",
+        \u3090: "i",
+        \u3091: "e",
+        \u3092: "o",
+        \u3093: "n",
+        \u304C: "ga",
+        \u304E: "gi",
+        \u3050: "gu",
+        \u3052: "ge",
+        \u3054: "go",
+        \u3056: "za",
+        \u3058: "ji",
+        \u305A: "zu",
+        \u305C: "ze",
+        \u305E: "zo",
+        \u3060: "da",
+        \u3062: "ji",
+        \u3065: "zu",
+        \u3067: "de",
+        \u3069: "do",
+        \u3070: "ba",
+        \u3073: "bi",
+        \u3076: "bu",
+        \u3079: "be",
+        \u307C: "bo",
+        \u3071: "pa",
+        \u3074: "pi",
+        \u3077: "pu",
+        \u307A: "pe",
+        \u307D: "po",
+        \u3094: "vu",
+        \u3041: "a",
+        \u3043: "i",
+        \u3045: "u",
+        \u3047: "e",
+        \u3049: "o",
+        \u3083: "ya",
+        \u3085: "yu",
+        \u3087: "yo",
+        \u308E: "wa"
+      };
+      SMALL = { \u3083: "a", \u3085: "u", \u3087: "o" };
+      PINYIN = "https://cdn.jsdelivr.net/npm/pinyin-pro@3.29.5/+esm";
+      pinyinLib = null;
     }
   });
 
@@ -5862,13 +6437,13 @@
       } catch {
       }
     }
-    const L = body?.lyrics;
-    return L?.lines?.length ? {
+    const L2 = body?.lyrics;
+    return L2?.lines?.length ? {
       // SYLLABLE_SYNCED ist genauso zeitgenau, liefert aber zusätzlich Silbenzeiten (für Karaoke)
-      synced: L.syncType === "LINE_SYNCED" || L.syncType === "SYLLABLE_SYNCED",
-      lang: L.language || "",
+      synced: L2.syncType === "LINE_SYNCED" || L2.syncType === "SYLLABLE_SYNCED",
+      lang: L2.language || "",
       source: "spotify",
-      lines: L.lines.map((l) => {
+      lines: L2.lines.map((l) => {
         const line = { t: Number(l.startTimeMs) || 0, text: (l.words || "").trim() || "\u266A" };
         const syl = (l.syllables || []).filter((x) => x && x.startTimeMs != null && Number(x.numChars) > 0);
         if (syl.length) line.syl = syl.map((x) => ({ t: Number(x.startTimeMs), n: Number(x.numChars) }));
@@ -5932,13 +6507,19 @@
     const a = norm(meta.artist), tt = norm(title);
     const fit2 = songs.filter((s) => (s.artists || []).some((x) => norm(x.name).includes(a) || a.includes(norm(x.name))) && (norm(s.name).includes(tt) || tt.includes(norm(s.name)))).filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1e3 - meta.sec) <= 4).sort((x, y) => Math.abs((x.duration || 0) / 1e3 - meta.sec) - Math.abs((y.duration || 0) / 1e3 - meta.sec))[0];
     if (!fit2) return null;
-    const lyr = await netease(`song/lyric/v1?id=${fit2.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`) || await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1`);
+    const lyr = await netease(`song/lyric/v1?id=${fit2.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`) || await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1&rv=-1`);
     if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
     const clean2 = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
     const lines = clean2(parseLrc(lyr?.lrc?.lyric || ""));
+    const rom = clean2(parseLrc(lyr?.romalrc?.lyric || ""));
     const yrc = clean2(parseYrc(lyr?.yrc?.lyric || ""));
-    if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc };
-    return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
+    if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc, rom };
+    return lines.length ? { lang: "", source: "netease", synced: true, lines, rom } : null;
+  }
+  function romajiFor(item) {
+    const uri = item?.uri || "";
+    if (!romCache.has(uri)) romCache.set(uri, fetchNetease(songMeta(item)).then((r) => r?.rom || [], () => []));
+    return romCache.get(uri);
   }
   function parseYrc(text) {
     const out = [];
@@ -6056,7 +6637,7 @@
     canvasCache.set(uri, url);
     return url;
   }
-  var lyricCache, metaCache, within, cleanTitle, LRCLIB, NE, CREDIT, norm, lrcMs, trCache, canvasCache, SOURCE_NAME;
+  var lyricCache, metaCache, within, cleanTitle, LRCLIB, NE, CREDIT, norm, romCache, lrcMs, trCache, canvasCache, SOURCE_NAME;
   var init_lyrics = __esm({
     "src/lyrics.js"() {
       init_core();
@@ -6070,6 +6651,7 @@
       NE = "https://music.163.com/api/";
       CREDIT = /^(作词|作曲|编曲|制作|混音|母带|和声|吉他|贝斯|鼓|录音|监制|出品|lyricist|lyrics|composer|arranger|producer|mixed|mastered)\s*[:：]/i;
       norm = (s) => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+      romCache = /* @__PURE__ */ new Map();
       lrcMs = (m, sec) => Math.round((Number(m) * 60 + Number(String(sec).replace(":", "."))) * 1e3);
       trCache = lru(40);
       canvasCache = lru(60);
@@ -6128,14 +6710,14 @@
   function tempoFromLines(on, hint) {
     const fits = [];
     let top = 0;
-    for (let L2 = 1.2; L2 <= 12; L2 += 5e-3) {
-      const { R } = fitGrid(on, L2);
-      fits.push([L2, R]);
+    for (let L3 = 1.2; L3 <= 12; L3 += 5e-3) {
+      const { R } = fitGrid(on, L3);
+      fits.push([L3, R]);
       top = Math.max(top, R);
     }
     if (!top) return null;
-    const L = fits.filter(([, R]) => R >= top * 0.97).pop()[0];
-    const family = [8, 4, 16, 2, 32].map((k) => 60 * k / L).filter((b) => b >= 70 && b <= 170);
+    const L2 = fits.filter(([, R]) => R >= top * 0.97).pop()[0];
+    const family = [8, 4, 16, 2, 32].map((k) => 60 * k / L2).filter((b) => b >= 70 && b <= 170);
     if (!family.length) return null;
     const near = hint && family.find((b) => Math.abs(b / hint - 1) < 0.04);
     const bpm = near || (hint && top < 0.6 ? hint : family[0]);
@@ -8146,13 +8728,13 @@
       if (!I || px.blackout) return;
       ctx.globalCompositeOperation = "lighter";
       if (I.brass > 0.01) {
-        const L = I.brass, gold = [255, 200, 90];
+        const L2 = I.brass, gold = [255, 200, 90];
         for (const side of [-1, 1]) {
           const ox = side < 0 ? 0 : vw, oy = vh * 0.95;
           for (let k = 0; k < 6; k++) {
-            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t2 * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);
+            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t2 * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L2);
             const g = ctx.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);
-            g.addColorStop(0, rgba(gold, 0.22 * L));
+            g.addColorStop(0, rgba(gold, 0.22 * L2));
             g.addColorStop(1, rgba(gold, 0));
             ctx.strokeStyle = g;
             ctx.lineWidth = (18 - k * 2) * dpr;
@@ -8161,18 +8743,18 @@
             ctx.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);
             ctx.stroke();
           }
-          const r = vh * 0.14 * (0.6 + L * 0.5);
-          ctx.globalAlpha = L * 0.8;
+          const r = vh * 0.14 * (0.6 + L2 * 0.5);
+          ctx.globalAlpha = L2 * 0.8;
           ctx.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);
           ctx.globalAlpha = 1;
-          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });
+          if (Math.random() < dt * 40 * L2) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });
         }
       }
       if (I.sax > 0.01) {
-        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);
+        const L2 = I.sax, smoke = mixW([190, 110, 255], 0.2);
         for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {
           for (let k = 0; k < 3; k++) {
-            ctx.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);
+            ctx.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L2);
             ctx.lineWidth = (44 - k * 10) * dpr;
             ctx.beginPath();
             for (let s = 0; s <= 20; s++) {
@@ -8221,27 +8803,27 @@
         for (let k = 0; k < 24; k++) {
           const target = ch ? (ch[k % 12] || 0) * I.piano : 0;
           ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));
-          const L = ins.keys[k];
-          if (L < 0.02) continue;
-          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;
+          const L2 = ins.keys[k];
+          if (L2 < 0.02) continue;
+          const h = vh * (0.08 + 0.18 * L2), x = k * w + w * 0.2, yb = vh * 0.84;
           const g = ctx.createLinearGradient(0, yb - h, 0, yb);
           g.addColorStop(0, rgba(pal[k % 3], 0));
-          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));
+          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L2));
           ctx.fillStyle = g;
           ctx.fillRect(x, yb - h, w * 0.6, h);
           const r = w * 0.7;
-          ctx.globalAlpha = clamp2(L * 0.6, 0, 1);
+          ctx.globalAlpha = clamp2(L2 * 0.6, 0, 1);
           ctx.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);
           ctx.globalAlpha = 1;
         }
       }
       if (I.strings > 0.01) {
-        const L = I.strings;
+        const L2 = I.strings;
         for (let k = 0; k < 3; k++) {
           const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t2 * 0.6 + k * 1.7) * vh * 0.05;
           for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {
             ctx.lineWidth = lw;
-            ctx.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);
+            ctx.strokeStyle = rgba(mixW(pal[k], 0.25), al * L2);
             ctx.beginPath();
             for (let s = 0; s <= 32; s++) {
               const x = s / 32 * vw;
@@ -8252,11 +8834,11 @@
         }
       }
       if (I.choir > 0.01) {
-        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;
+        const L2 = I.choir, ox = vw / 2, oy = -vh * 0.1;
         for (let k = 0; k < 9; k++) {
           const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t2 * 0.2) * 0.05, len = vh * 1.1;
           const g = ctx.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);
-          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));
+          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L2));
           g.addColorStop(1, rgba([255, 245, 225], 0));
           ctx.strokeStyle = g;
           ctx.lineWidth = 40 * dpr;
@@ -9442,24 +10024,24 @@
     if (old?.key === key) return old;
     const segs = d.segs;
     const n = Math.ceil((segs[segs.length - 1].t + 2) / STEP2);
-    const B = segs.map((s) => s.b), F = segs.map((s) => s.f), K = segs.map((s) => s.k), L = segs.map((s) => s.l);
+    const B = segs.map((s) => s.b), F = segs.map((s) => s.f), K = segs.map((s) => s.k), L2 = segs.map((s) => s.l);
     const rng = (A) => [pct2(A, 0.1), pct2(A, 0.9)];
-    const [b0, b1] = rng(B), [f0, f1] = rng(F), [k0, k1] = rng(K), [l0, l1] = rng(L);
+    const [b0, b1] = rng(B), [f0, f1] = rng(F), [k0, k1] = rng(K), [l0, l1] = rng(L2);
     const nm = (v, lo, hi) => clamp((v - lo) / (hi - lo || 1), 0, 1);
     const out = { key };
     for (const kind of kinds) out[kind] = new Float32Array(n);
     segs.forEach((s, i) => {
       if (!s.p.length) return;
       const mean = s.p.reduce((a2, v) => a2 + v, 0) / 12;
-      const T = clamp((1 - mean) * 1.3 - 0.15, 0, 1);
+      const T2 = clamp((1 - mean) * 1.3 - 0.15, 0, 1);
       const nb = nm(s.b, b0, b1), nf = nm(s.f, f0, f1), nk = nm(s.k, k0, k1), nl = nm(s.l, l0, l1);
       const sc = {
-        brass: T > 0.55 && nb > 0.6 && nk > 0.45 && nf < 0.5 ? T * nb : 0,
-        sax: T > 0.55 && nb > 0.35 && nb < 0.78 && nf < 0.45 && nk < 0.65 ? T * (1 - Math.abs(nb - 0.56) * 2) : 0,
+        brass: T2 > 0.55 && nb > 0.6 && nk > 0.45 && nf < 0.5 ? T2 * nb : 0,
+        sax: T2 > 0.55 && nb > 0.35 && nb < 0.78 && nf < 0.45 && nk < 0.65 ? T2 * (1 - Math.abs(nb - 0.56) * 2) : 0,
         guitar: nf > 0.55 && nb > 0.55 && nl > 0.6 ? nf * nb : 0,
-        piano: nk > 0.7 && T > 0.45 && nb < 0.78 ? nk * T : 0,
-        strings: T > 0.6 && nk < 0.35 && nf < 0.4 ? T * (1 - nk) : 0,
-        choir: T > 0.5 && nb < 0.45 && nk < 0.4 && nf < 0.5 ? T * (1 - nb) : 0
+        piano: nk > 0.7 && T2 > 0.45 && nb < 0.78 ? nk * T2 : 0,
+        strings: T2 > 0.6 && nk < 0.35 && nf < 0.4 ? T2 * (1 - nk) : 0,
+        choir: T2 > 0.5 && nb < 0.45 && nk < 0.4 && nf < 0.5 ? T2 * (1 - nb) : 0
       };
       const a = Math.floor(s.t / STEP2), e = Math.max(a + 1, Math.floor((segs[i + 1]?.t ?? s.t + 0.3) / STEP2));
       for (const kind of kinds) for (let x = a; x < e && x < n; x++) out[kind][x] = Math.max(out[kind][x], sc[kind]);
@@ -10870,15 +11452,15 @@
          */
         PriorityQueue: {
           make: function(opts) {
-            var T = dijkstra.PriorityQueue, t2 = {}, key;
+            var T2 = dijkstra.PriorityQueue, t2 = {}, key;
             opts = opts || {};
-            for (key in T) {
-              if (T.hasOwnProperty(key)) {
-                t2[key] = T[key];
+            for (key in T2) {
+              if (T2.hasOwnProperty(key)) {
+                t2[key] = T2[key];
               }
             }
             t2.queue = [];
-            t2.sorter = opts.sorter || T.default_sorter;
+            t2.sorter = opts.sorter || T2.default_sorter;
             return t2;
           },
           default_sorter: function(a, b) {
@@ -11957,6 +12539,7 @@
   var init_immersive = __esm({
     "src/immersive.js"() {
       init_core();
+      init_roman();
       init_i18n();
       init_config();
       init_color();
@@ -12650,6 +13233,8 @@
             q.inner.append(emptyLyrics(!!got));
             return;
           }
+          applyTiming(uri, got);
+          voices(got);
           const karaoke = cfg.karaoke && got.synced;
           el2.classList.toggle("is-karaoke", karaoke);
           q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -12664,13 +13249,17 @@
             const d = document.createElement("div");
             d.className = "m-im-line";
             d.dataset.t = l.t;
+            if (l.who) d.dataset.who = l.who;
             if (karaoke && l.text !== "\u266A") {
               const box = document.createElement("span");
               box.className = "m-im-words";
               const list = [];
+              let bg = false;
               for (const w of wordTimes(got.lines, i)) {
                 const s = document.createElement("span");
-                s.className = "m-w";
+                if (/^[(（]/.test(w.text)) bg = true;
+                s.className = bg ? "m-w is-bg" : "m-w";
+                if (/[)）][,.!?…]*$/.test(w.text)) bg = false;
                 s.textContent = w.text;
                 s.style.setProperty("--wi", list.length);
                 box.append(s);
@@ -12680,12 +13269,191 @@
               }
               d.append(box);
               words[i] = list;
-            } else d.textContent = l.text;
+            } else bgSplit(d, l.text);
             frag.append(d);
           });
           q.inner.append(frag);
           showTrBtn();
           if (cfg.translate) addTranslations(token);
+          if (cfg.romanize) addRomaji(token);
+        }
+        function bgSplit(d, text) {
+          const parts = String(text).split(/([(（][^)）]*[)）])/);
+          if (parts.length < 2) return d.textContent = text;
+          for (const p of parts) {
+            if (!p) continue;
+            const s = document.createElement("span");
+            if (/^[(（]/.test(p)) s.className = "is-bg";
+            s.textContent = p;
+            d.append(s);
+          }
+        }
+        function voices(got) {
+          if (got.voices) return;
+          got.voices = true;
+          const TAG = /^\s*(?:\[([^\]]{1,24})\]|\(([^)]{1,24})\)|([\p{Lu}][\p{L} .'&-]{0,22}):)\s*/u;
+          const count = /* @__PURE__ */ new Map();
+          for (const l of got.lines) {
+            const m = !l.words && l.text.match(TAG);
+            const who = m && (m[1] || m[2] || m[3]).trim();
+            if (who) count.set(who.toLowerCase(), (count.get(who.toLowerCase()) || 0) + 1);
+          }
+          const names = [...count].filter(([, n]) => n >= 3).map(([k]) => k);
+          if (names.length < 2) return;
+          let cur2 = "";
+          for (const l of got.lines) {
+            const m = !l.words && l.text.match(TAG);
+            const who = m && (m[1] || m[2] || m[3]).trim().toLowerCase();
+            if (who && names.includes(who)) {
+              cur2 = String(names.indexOf(who) % 3 + 1);
+              l.text = l.text.slice(m[0].length) || "\u266A";
+            } else if (/^(all|alle|both|beide|tous|todos|tutti)$/i.test(who || "")) cur2 = "all";
+            if (cur2) l.who = cur2;
+          }
+        }
+        async function addRomaji(token) {
+          const got = lyr, item = currentItem();
+          if (!got?.lines?.length || got.instrumental) return;
+          const sc = scriptOf(got.lines);
+          if (!sc) return;
+          let rom = null;
+          if (sc === "ko") rom = got.lines.map((l) => hangul(l.text));
+          else if (sc === "zh") rom = await pinyinLines(got.lines.map((l) => l.text));
+          else {
+            const ne = got.rom?.length ? got.rom : await romajiFor(item);
+            rom = got.lines.map((l) => {
+              let best = null;
+              for (const r of ne) if (!best || Math.abs(r.t - l.t) < Math.abs(best.t - l.t)) best = r;
+              return best && Math.abs(best.t - l.t) < 1500 && got.synced ? best.text : kana(l.text);
+            });
+          }
+          if (token !== lyrToken || !rom || !cfg.romanize) return;
+          const lines = q.inner.querySelectorAll(".m-im-line");
+          rom.forEach((text, i) => {
+            if (!text || text === "\u266A" || !lines[i] || lines[i].querySelector(".m-im-rom") || text === got.lines[i].text) return;
+            const d = document.createElement("span");
+            d.className = "m-im-rom";
+            d.textContent = text;
+            lines[i].insertBefore(d, lines[i].querySelector(".m-im-tr"));
+          });
+          active = -2;
+        }
+        const TIMING = "mirage:lyrTiming";
+        const timings = () => {
+          try {
+            return JSON.parse(localStorage.getItem(TIMING) || "{}") || {};
+          } catch {
+            return {};
+          }
+        };
+        function applyTiming(uri, got) {
+          const saved = timings()[uri];
+          if (!saved || got.timed || saved.n !== got.lines.length || !got.synced) return;
+          got.lines.forEach((l, i) => shiftLine(l, saved.t[i] - l.t));
+          got.timed = true;
+        }
+        function shiftLine(l, d) {
+          if (!d || !Number.isFinite(d)) return;
+          l.t0 ??= l.t;
+          l.t += d;
+          for (const w of l.words || []) w.t += d;
+        }
+        let edit = null;
+        function toggleTiming() {
+          if (!el2 || !lyr?.synced || !lyr.lines?.length || !LYR.has(el2.dataset.mode)) return S.showNotification?.(t("timingNone"), true, 2500);
+          if (edit) return finishTiming(true);
+          edit = { i: Math.max(0, active + 1), undo: [] };
+          el2.classList.add("is-timing");
+          const bar = document.createElement("div");
+          bar.className = "m-im-timing";
+          bar.setAttribute("role", "status");
+          const txt = document.createElement("span");
+          txt.textContent = t("timingHint");
+          const reset = document.createElement("button");
+          reset.type = "button";
+          reset.textContent = t("timingReset");
+          reset.onclick = (e) => {
+            e.stopPropagation();
+            resetTiming();
+          };
+          const done = document.createElement("button");
+          done.type = "button";
+          done.textContent = t("timingDone");
+          done.onclick = (e) => {
+            e.stopPropagation();
+            finishTiming(true);
+          };
+          bar.append(txt, reset, done);
+          el2.append(bar);
+          markEdit();
+        }
+        function markEdit() {
+          q.inner.querySelectorAll(".m-im-line.is-next").forEach((x) => x.classList.remove("is-next"));
+          q.inner.querySelectorAll(".m-im-line")[edit?.i]?.classList.add("is-next");
+        }
+        function timingKey(code) {
+          if (!edit) return false;
+          if (code === "Enter" || code === "NumpadEnter") {
+            const l = lyr.lines[edit.i];
+            if (!l) return finishTiming(true), true;
+            const d = Math.round(songPos() - 150) - l.t;
+            edit.undo.push({ i: edit.i, d });
+            for (let k = edit.i; k < lyr.lines.length; k++) shiftLine(lyr.lines[k], d);
+            const prev = lyr.lines[edit.i - 1];
+            if (prev && l.t <= prev.t) shiftLine(l, prev.t + 50 - l.t);
+            q.inner.querySelectorAll(".m-im-line").forEach((x, k) => x.dataset.t = lyr.lines[k]?.t ?? x.dataset.t);
+            edit.i++;
+            active = -2;
+            markEdit();
+            return true;
+          }
+          if (code === "Backspace") {
+            const u = edit.undo.pop();
+            if (u) {
+              for (let k = u.i; k < lyr.lines.length; k++) shiftLine(lyr.lines[k], -u.d);
+              edit.i = u.i;
+              active = -2;
+              markEdit();
+            }
+            return true;
+          }
+          if (code === "Escape") return finishTiming(true), true;
+          return false;
+        }
+        function finishTiming(keep) {
+          if (!edit) return;
+          const changed = edit.undo.length > 0;
+          edit = null;
+          el2.classList.remove("is-timing");
+          el2.querySelector(".m-im-timing")?.remove();
+          markEdit();
+          if (!keep || !changed) return;
+          const all = timings();
+          all[lyrUri] = { n: lyr.lines.length, t: lyr.lines.map((l) => l.t) };
+          const keys = Object.keys(all);
+          for (const k of keys.slice(0, Math.max(0, keys.length - 150))) delete all[k];
+          try {
+            localStorage.setItem(TIMING, JSON.stringify(all));
+          } catch {
+          }
+          S.showNotification?.(t("timingSaved"), false, 2200);
+          lyrUri = "";
+          loadLyrics();
+        }
+        function resetTiming() {
+          const all = timings();
+          delete all[lyrUri];
+          try {
+            localStorage.setItem(TIMING, JSON.stringify(all));
+          } catch {
+          }
+          for (const l of lyr?.lines || []) if (l.t0 != null) shiftLine(l, l.t0 - l.t);
+          if (lyr) lyr.timed = false;
+          edit && (edit.undo = []);
+          finishTiming(false);
+          S.showNotification?.(t("timingCleared"), false, 2200);
+          lyrUri = "";
+          loadLyrics();
         }
         async function addTranslations(token) {
           const uri = lyrUri, got = lyr;
@@ -12828,8 +13596,8 @@
           const playing = S.Player.isPlaying();
           let b = 0, havePitch = false, loud = 0.5;
           const mode = el2.dataset.mode;
-          const V = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
-          if (mode === "mix" && V.style === "line") V.style = "wave";
+          const V2 = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
+          if (mode === "mix" && V2.style === "line") V2.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing) : null;
           const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
           if (px) partyExtras(px, now, dt, R, dpr);
@@ -12838,14 +13606,14 @@
           if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
           if (px) {
             const P = px.P;
-            Object.assign(V, {
+            Object.assign(V2, {
               mirror: P.mirror,
               spin: P.spin,
               glow: true,
               rings: true,
               ring: P.ring,
               // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll – die Kick drückt ihn raus
-              height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
+              height: V2.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
               pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I)
             });
           }
@@ -12861,17 +13629,17 @@
               havePitch = true;
             }
             b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : mixInst ? Math.max(beat.read(sec), mixInst.kickEnv * 0.7 * (0.4 + 0.6 * mixInst.energy)) : beat.read(sec);
-            if (mixInst?.kickHit && mixInst.energy > 0.5 && V.rings) rings.push({ r: R, a: 0.45 * mixInst.energy, w: 2 });
+            if (mixInst?.kickHit && mixInst.energy > 0.5 && V2.rings) rings.push({ r: R, a: 0.45 * mixInst.energy, w: 2 });
             const bi = seek(audio.data.beats, sec, "t");
             if (bi !== lastBeatIdx && bi >= 0 && playing) {
               lastBeatIdx = bi;
               const c2 = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
               if (px) {
-                if (V.rings && (px.beat > 0.5 || px.kickHit && px.energy > 0.55) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c2, w: 2 + 5 * px.accent });
-              } else if (V.rings && bi % V.ring === 0) rings.push({ r: R, a: 0.6 * c2, w: 2 });
+                if (V2.rings && (px.beat > 0.5 || px.kickHit && px.energy > 0.55) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c2, w: 2 + 5 * px.accent });
+              } else if (V2.rings && bi % V2.ring === 0) rings.push({ r: R, a: 0.6 * c2, w: 2 });
             }
           }
-          const mirror = V.mirror;
+          const mirror = V2.mirror;
           const span = mirror ? N / 2 : N;
           const tt = now / 1e3;
           for (let i = 0; i < N; i++) {
@@ -12891,7 +13659,7 @@
           const k = cfg.vizSmooth;
           const rise = 1 - Math.exp(-dt * (32 - 2.6 * k));
           const fall = 1 - Math.exp(-dt * (16 - 1.3 * k));
-          const wide = V.style === "wave";
+          const wide = V2.style === "wave";
           for (let i = 0; i < N; i++) {
             const a = (j) => targets[(i + j + N) % N];
             const t2 = wide ? (a(-2) + 2 * a(-1) + 3 * a(0) + 2 * a(1) + a(2)) / 9 : (a(-1) + 2 * a(0) + a(1)) / 4;
@@ -12904,8 +13672,8 @@
             if (f < 1) pal = pal.map((c2, i) => c2.map((v, k2) => Math.round(blend.from[i][k2] + (v - blend.from[i][k2]) * f)));
           }
           const rgba3 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
-          const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
-          const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
+          const maxLen = Math.min(vw, vh) * 0.11 * V2.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V2.height)) : 1);
+          const rot = V2.spin ? tt * (px ? 0.12 : 0.06) : 0;
           ctx.globalCompositeOperation = "lighter";
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
@@ -12921,20 +13689,20 @@
           const slowFrom = cfg.partyDirector ? beatLen : 0;
           const slow = px && cfg.partySlowmo && px.fx && px.toDrop > slowFrom && px.toDrop < slowFrom + 0.55;
           if (px) drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, slow ? dt * 0.2 : dt, px, tip, ang);
-          else if (V.style === "bottom") {
+          else if (V2.style === "bottom") {
             const bw = vw / N, base = vh - 8 * dpr;
             for (let gi = 0; gi < 3; gi++) {
               ctx.fillStyle = rgba3(pal[gi], 0.85);
               ctx.beginPath();
               for (let i = gi; i < N; i += 3) {
-                const h = 6 * dpr + vals[i] * vh * 0.32 * V.height;
+                const h = 6 * dpr + vals[i] * vh * 0.32 * V2.height;
                 ctx.rect(i * bw + bw * 0.15, base - h, bw * 0.7, h);
               }
               ctx.fill();
             }
-          } else if (V.style === "line") {
+          } else if (V2.style === "line") {
             const mid = cy;
-            for (const [w, col, al] of [[10, pal[1], V.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
+            for (const [w, col, al] of [[10, pal[1], V2.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
               if (!al) continue;
               ctx.lineWidth = w * dpr;
               ctx.strokeStyle = rgba3(col, al);
@@ -12947,7 +13715,7 @@
                 ctx.stroke();
               }
             }
-          } else if (V.style === "particles") {
+          } else if (V2.style === "particles") {
             for (let i = 0; i < N; i++) {
               const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
               const r2 = (1.5 + vals[i] * 4) * dpr;
@@ -12956,7 +13724,7 @@
               ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r2, 0, Math.PI * 2);
               ctx.fill();
             }
-          } else if (V.style === "tunnel") {
+          } else if (V2.style === "tunnel") {
             if (now - tunnelAt > 40) {
               tunnelAt = now;
               const ring = new Float32Array(48);
@@ -12971,13 +13739,13 @@
               ctx.strokeStyle = rgba3(pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
               ctx.beginPath();
               for (let k2 = 0; k2 <= 48; k2++) {
-                const j = k2 % 48, a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j] * 0.28 * V.height);
+                const j = k2 % 48, a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j] * 0.28 * V2.height);
                 k2 ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
               }
               ctx.closePath();
               ctx.stroke();
             }
-          } else if (V.style === "wave") {
+          } else if (V2.style === "wave") {
             ctx.beginPath();
             for (let i = 0; i <= N; i++) {
               const j = i % N, nx = (i + 1) % N;
@@ -12990,7 +13758,7 @@
             ctx.closePath();
             ctx.fillStyle = rgba3(pal[0], 0.16);
             ctx.fill();
-            if (V.glow) {
+            if (V2.glow) {
               ctx.lineWidth = 10 * dpr;
               ctx.strokeStyle = rgba3(pal[1], 0.14);
               ctx.stroke();
@@ -13001,14 +13769,14 @@
           } else {
             const groups = [[], [], []];
             for (let i = 0; i < N; i++) groups[i % 3 === 0 ? 2 : i % 2 ? 0 : 1].push(i);
-            const passes = V.style === "bars" && V.glow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
+            const passes = V2.style === "bars" && V2.glow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
             for (const [w, al] of passes) {
               ctx.lineWidth = w * dpr;
               groups.forEach((idx, gi) => {
                 ctx.beginPath();
                 for (const i of idx) {
                   const c2 = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-                  if (V.style === "dots") {
+                  if (V2.style === "dots") {
                     ctx.moveTo(cx + c2 * e + 3 * dpr, cy + sn * e);
                     ctx.arc(cx + c2 * e, cy + sn * e, 3 * dpr, 0, Math.PI * 2);
                   } else {
@@ -13016,7 +13784,7 @@
                     ctx.lineTo(cx + c2 * e, cy + sn * e);
                   }
                 }
-                if (V.style === "dots") {
+                if (V2.style === "dots") {
                   ctx.fillStyle = rgba3(pal[gi], al);
                   ctx.fill();
                 } else {
@@ -13037,7 +13805,7 @@
             ctx.stroke();
           }
           ctx.globalCompositeOperation = "source-over";
-          const want = 1 + b * V.pulse;
+          const want = 1 + b * V2.pulse;
           pulseS = want > pulseS ? want : pulseS + (want - pulseS) * (1 - Math.exp(-dt * 9));
           const pulse = pulseS.toFixed(4);
           if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
@@ -13580,7 +14348,7 @@
           if (q.video.src !== url) q.video.src = url;
           q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
         }
-        const KEYS = [["Space", "k_play"], ["\u2190 \u2192", "k_seek"], ["\u2191 \u2193", "k_vol"], ["1 \u2013 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["Esc", "k_close"], ["?", "keysTitle"]];
+        const KEYS = [["Space", "k_play"], ["\u2190 \u2192", "k_seek"], ["\u2191 \u2193", "k_vol"], ["1 \u2013 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["Esc", "k_close"], ["?", "keysTitle"]];
         function toggleKeys(force) {
           if (!q.keys) return;
           const show = force ?? q.keys.hidden;
@@ -13897,6 +14665,8 @@
             lyrUri = "";
             el2 && LYR.has(el2.dataset.mode) && loadLyrics();
           },
+          toggleTiming,
+          timingKey,
           like: () => q.like?.click(),
           shuffle: () => q.shuffle?.click(),
           repeat: () => q.repeat?.click()
@@ -14332,6 +15102,8 @@
             if (m.cmd === "toggle") S.Player.togglePlay();
             else if (m.cmd === "next") S.Player.next();
             else if (m.cmd === "prev") S.Player.back();
+            else if (m.cmd === "like") S.Player.toggleHeart?.();
+            else if (m.cmd === "immersive" || m.cmd === "party") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
             else if (m.cmd === "hello") sendTrack();
             else if (m.cmd === "subscribe") setTopics(Array.isArray(m.topics) ? m.topics : []);
             else if (m.cmd === "report") {
@@ -14396,9 +15168,9 @@
           if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
         }
         function pushParty() {
-          const L = party.live;
-          if (!cfg.partyEdge || !L || performance.now() - L.at > 400 || document.hidden) return;
-          send2({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
+          const L2 = party.live;
+          if (!L2 || performance.now() - L2.at > 400 || document.hidden) return;
+          send2({ type: "party", a: L2.a, k: L2.k, e: L2.e, d: L2.d, pal: L2.pal || palette(), edge: !!cfg.partyEdge });
         }
         async function pushLyric() {
           const uri = currentItem()?.uri || "";
@@ -15018,9 +15790,40 @@
     b.onclick = onClick;
     return b;
   }
+  function applySearch(box) {
+    const q = query.trim().toLowerCase();
+    const units = [];
+    for (const parent of [box, ...box.querySelectorAll("details.m-group")]) {
+      let unit = null;
+      for (const c2 of parent.children) {
+        if (c2.matches("summary, .m-search, .m-search-none, .m-version")) continue;
+        if (c2.matches(LABEL) || !unit) units.push(unit = { els: [], parent });
+        unit.els.push(c2);
+      }
+    }
+    const hit = /* @__PURE__ */ new Set();
+    for (const u of units) {
+      const ok = !q || u.els.some((e) => e.textContent.toLowerCase().includes(q));
+      for (const e of u.els) e.classList.toggle("m-hide", !ok);
+      if (ok && q) hit.add(u.parent);
+    }
+    for (const d of box.querySelectorAll("details.m-group")) {
+      d.classList.toggle("m-hide", !!q && !hit.has(d) && !d.querySelector("summary").textContent.toLowerCase().includes(q));
+      if (q && hit.has(d)) d.open = true;
+    }
+    box.querySelector(".m-search-none")?.classList.toggle("m-hide", !q || hit.size > 0 || units.some((u) => u.parent === box && !u.els[0].classList.contains("m-hide")));
+  }
   function render(box) {
     render.again = () => render(box);
     const kids = [];
+    const search = el("input", "m-search");
+    Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
+    search.setAttribute("aria-label", t("searchSettings"));
+    search.oninput = () => {
+      query = search.value;
+      applySearch(box);
+    };
+    kids.push(search, el("small", "m-note m-search-none m-hide", t("searchNone")));
     kids.push(head(t("presetTitle"), t("presetHint")));
     kids.push(
       seg(
@@ -15152,6 +15955,7 @@
         toggle("karaoke", () => immersive.reloadLyrics()),
         range("syncOffset", -400, 400, 10, " ms"),
         toggle("translate", () => immersive.reloadLyrics()),
+        toggle("romanize", () => immersive.reloadLyrics()),
         toggle("canvas", () => immersive.refresh()),
         head(t("vizSection"), t("vizSectionHint")),
         seg(viz, cfg.vizStyle, (k) => {
@@ -15340,6 +16144,40 @@
         refreshColors();
         render(box);
       }),
+      // dieselbe Sicherung als Datei (z. B. für einen zweiten PC)
+      button(t("saveFile"), () => {
+        const a = el("a");
+        a.href = URL.createObjectURL(new Blob([JSON.stringify({ mirage: VERSION, settings: cfg }, null, 2)], { type: "application/json" }));
+        a.download = `mirage-settings-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.json`;
+        document.body.append(a);
+        a.click();
+        setTimeout(() => (URL.revokeObjectURL(a.href), a.remove()), 2e3);
+        notify(t("fileSaved"));
+      }),
+      button(t("loadFile"), () => {
+        const f = el("input");
+        f.type = "file";
+        f.accept = "application/json,.json";
+        f.onchange = async () => {
+          let d = null;
+          try {
+            d = JSON.parse(await f.files[0].text())?.settings;
+          } catch {
+          }
+          if (!d || typeof d !== "object" || Array.isArray(d)) return notify(t("badCode"), true);
+          Object.assign(cfg, d);
+          for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
+          save();
+          refreshColors();
+          render(box);
+          notify(t("fileLoaded"));
+        };
+        f.click();
+      }),
+      button(t("tourAgain"), () => {
+        S.PopupModal?.hide?.();
+        tour();
+      }),
       button(t("diagnostics"), async () => {
         try {
           await navigator.clipboard.writeText(diagnostics());
@@ -15358,8 +16196,11 @@
     kids.push(group(t("g_more"), false, foot, dataIn));
     kids.push(el("small", "m-note", t("tip")), el("small", "m-note m-version", `Mirage ${VERSION}`));
     const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
+    const hadFocus = document.activeElement?.classList.contains("m-search");
     box.replaceChildren(...kids);
     labelControls(box);
+    applySearch(box);
+    if (hadFocus) search.focus();
     box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
   }
   function openSettings() {
@@ -15375,28 +16216,39 @@
     } catch {
       return;
     }
-    setTimeout(() => {
-      const box = el("div", "mirage-welcome");
-      box.setAttribute("role", "status");
-      box.append(el("b", "", t("welcomeTitle")), el("span", "", t("welcomeText")));
+    setTimeout(tour, 5e3);
+  }
+  function tour() {
+    document.querySelector(".mirage-welcome")?.remove();
+    const box = el("div", "mirage-welcome");
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-label", t("welcomeTitle"));
+    let i = 0;
+    const draw = () => {
+      const [tk, k, act] = TOUR[i];
+      const dots = el("div", "m-dots");
+      TOUR.forEach((_, j) => dots.append(el("i", j === i ? "is-on" : "")));
       const row = el("div", "m-actions");
+      if (act) row.append(button(t(k + "Try"), () => {
+        box.remove();
+        act();
+      }));
       row.append(
-        button(t("welcomeImmersive"), () => {
-          box.remove();
-          immersive.open();
-        }, "is-primary"),
-        button(t("menu"), () => {
-          box.remove();
-          openSettings();
-        }),
+        i < TOUR.length - 1 ? button(t("tourNext"), () => {
+          i++;
+          draw();
+        }, "is-primary") : button(t("tourDone"), () => box.remove(), "is-primary"),
         button("\xD7", () => box.remove(), "m-close")
       );
-      box.append(row);
-      document.body.append(box);
-      setTimeout(() => box.isConnected && box.classList.add("is-gone"), 2e4);
-    }, 5e3);
+      const close = row.querySelector(".m-close");
+      close.title = close.ariaLabel = t("k_close");
+      box.replaceChildren(el("small", "m-kick", `${i + 1} / ${TOUR.length}`), el("b", "", t(tk)), el("span", "", t(k)), dots, row);
+      box.querySelector(".is-primary")?.focus();
+    };
+    draw();
+    document.body.append(box);
   }
-  var COSTLY, el, labelN, notify, encode, decode;
+  var COSTLY, el, labelN, notify, encode, decode, query, LABEL, TOUR;
   var init_settings = __esm({
     "src/settings.js"() {
       init_core();
@@ -15440,6 +16292,14 @@
           return null;
         }
       };
+      query = "";
+      LABEL = ".m-row, .m-schemes-head, .m-note";
+      TOUR = [
+        ["tour1t", "tour1"],
+        ["tour2t", "tour2", () => immersive.open()],
+        ["tour3t", "tour3", () => (immersive.open(), immersive.setMode("party", true))],
+        ["tour4t", "tour4", () => openSettings()]
+      ];
     }
   });
 
@@ -15629,6 +16489,13 @@
       init_immersive();
       init_clock();
       init_i18n();
+      window.addEventListener("mirage:cmd", (e) => {
+        if (e.detail === "immersive") immersive.toggle();
+        else if (e.detail === "party") {
+          if (!immersive.isOpen()) immersive.open();
+          immersive.setMode("party", true);
+        }
+      });
       window.addEventListener("keydown", (e) => {
         if (e.ctrlKey && e.shiftKey && e.code === "KeyM") {
           e.preventDefault();
@@ -15650,6 +16517,7 @@
             KeyQ: () => immersive.toggleQueue(),
             KeyN: () => S.Player.next(),
             KeyP: () => S.Player.back(),
+            KeyE: () => immersive.toggleTiming(),
             // im Takt antippen: misst den Versatz zwischen Bild und Ton ein
             KeyT: () => {
               const r = tapSync();
@@ -15660,6 +16528,11 @@
               }
             }
           };
+          if (immersive.timingKey(e.code)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
           if (e.key === "?") return immersive.toggleKeys();
           if (/^Digit[1-5]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
           else if (keys[e.code] && !(e.code === "Space" && e.target.closest?.("button"))) {

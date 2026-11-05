@@ -31,6 +31,8 @@
       upToDate: "Up to date ({v})", updateAvail: "Version {v} is available", updateInstall: "Install update {v}", updateLoading: "Downloading update …",
       updateReady: "Mirage Overlay {v} is downloaded. Restart now to install it?", restartNow: "Restart now", later: "Later",
       updateFailed: "Couldn't reach GitHub – try again later", updateNotifyBody: "Click to install it.", updatePage: "Open download page", updatePageHint: "install it from the download page",
+      history: "Recently played", obsParty: "Party light as its own source (add ?bg=0 for a transparent background):", control: "Stream Deck & remote control", controlHint: "The Mirage Stream Deck plugin can play/pause, skip, like and open immersive or party mode – only from this computer",
+      secLights: "Light in the room", lightsHint: "In party mode real lights join in on the beat – everything stays in your network.", lightBright: "Brightness", hueFind: "Find bridge", huePair: "Pair", hueRoom: "Room", hueSearching: "Searching …", hueFound: "Bridge found – now press the button on the bridge, then Pair", hueNone: "No bridge found – enter its IP address", huePairing: "Pairing …", huePaired: "Paired", hueButton: "Press the round button on the bridge first, then Pair again", hueUnreachable: "Bridge not reachable – check the IP address", wledHint: "LED strips with WLED – enter its IP address", wledLeds: "LEDs", orgbHint: "Keyboard, mouse, RAM, fans – OpenRGB with the SDK server switched on", chromaHint: "Razer devices – Razer Synapse with Chroma",
     },
     de: {
       title: "Mirage Overlay", connected: "Mit Spotify verbunden", waiting: "Warte auf Spotify – ist das Mirage-Theme aktiv?",
@@ -62,6 +64,8 @@
       upToDate: "Aktuell ({v})", updateAvail: "Version {v} ist verfügbar", updateInstall: "Update {v} installieren", updateLoading: "Update wird geladen …",
       updateReady: "Mirage Overlay {v} ist geladen. Jetzt neu starten und installieren?", restartNow: "Jetzt neu starten", later: "Später",
       updateFailed: "GitHub nicht erreichbar – später noch mal versuchen", updateNotifyBody: "Klicken zum Installieren.", updatePage: "Download-Seite öffnen", updatePageHint: "auf der Download-Seite installieren",
+      history: "Zuletzt gespielt", obsParty: "Party-Licht als eigene Quelle (mit ?bg=0 durchsichtig):", control: "Stream Deck & Fernsteuerung", controlHint: "Das Mirage-Plugin für Stream Deck kann abspielen/pausieren, springen, liken und Immersiv- oder Party-Modus öffnen – nur von diesem Rechner",
+      secLights: "Licht im Raum", lightsHint: "Im Party-Modus spielt echtes Licht im Takt mit – alles bleibt in deinem Netz.", lightBright: "Helligkeit", hueFind: "Bridge suchen", huePair: "Koppeln", hueRoom: "Raum", hueSearching: "Suche …", hueFound: "Bridge gefunden – jetzt den Knopf auf der Bridge drücken, dann Koppeln", hueNone: "Keine Bridge gefunden – IP-Adresse eintragen", huePairing: "Kopple …", huePaired: "Gekoppelt", hueButton: "Erst den runden Knopf auf der Bridge drücken, dann noch einmal Koppeln", hueUnreachable: "Bridge nicht erreichbar – IP-Adresse prüfen", wledHint: "LED-Streifen mit WLED – IP-Adresse eintragen", wledLeds: "LEDs", orgbHint: "Tastatur, Maus, RAM, Lüfter – OpenRGB mit eingeschaltetem SDK-Server", chromaHint: "Razer-Geräte – Razer Synapse mit Chroma",
     },
     fr: {
       connected: "Connecté à Spotify", waiting: "En attente de Spotify – le thème Mirage est-il actif ?",
@@ -88,6 +92,8 @@
       updChecking: "Vérification …", upToDate: "À jour ({v})", updateAvail: "La version {v} est disponible", updateInstall: "Installer la mise à jour {v}",
       updateLoading: "Téléchargement de la mise à jour …", updateReady: "Mirage Overlay {v} est téléchargé. Redémarrer maintenant pour l'installer ?", restartNow: "Redémarrer maintenant", later: "Plus tard",
       updateFailed: "Impossible de joindre GitHub – réessaie plus tard", updateNotifyBody: "Clique pour l'installer.", updatePage: "Ouvrir la page de téléchargement", updatePageHint: "installe-la depuis la page de téléchargement",
+      history: "Écoutés récemment", obsParty: "Lumière de fête comme source séparée (ajoute ?bg=0 pour un fond transparent) :", control: "Stream Deck et télécommande", controlHint: "Le plugin Mirage pour Stream Deck peut lire/mettre en pause, passer, aimer et ouvrir le mode immersif ou fête – uniquement depuis cet ordinateur",
+      secLights: "Lumière dans la pièce", lightsHint: "En mode fête, de vraies lumières suivent le rythme – tout reste dans ton réseau.", lightBright: "Luminosité", hueFind: "Chercher le pont", huePair: "Associer", hueRoom: "Pièce", hueSearching: "Recherche …", hueFound: "Pont trouvé – appuie sur le bouton du pont, puis Associer", hueNone: "Aucun pont trouvé – saisis son adresse IP", huePairing: "Association …", huePaired: "Associé", hueButton: "Appuie d'abord sur le bouton rond du pont, puis réessaie", hueUnreachable: "Pont injoignable – vérifie l'adresse IP", wledHint: "Bandes LED avec WLED – saisis son adresse IP", wledLeds: "LED", orgbHint: "Clavier, souris, RAM, ventilateurs – OpenRGB avec le serveur SDK activé", chromaHint: "Appareils Razer – Razer Synapse avec Chroma",
     },
     es: {
       connected: "Conectado a Spotify", waiting: "Esperando a Spotify – ¿está activo el tema Mirage?",
@@ -114,6 +120,8 @@
       updChecking: "Comprobando …", upToDate: "Actualizado ({v})", updateAvail: "La versión {v} está disponible", updateInstall: "Instalar la actualización {v}",
       updateLoading: "Descargando actualización …", updateReady: "Mirage Overlay {v} se ha descargado. ¿Reiniciar ahora para instalarlo?", restartNow: "Reiniciar ahora", later: "Más tarde",
       updateFailed: "No se pudo conectar con GitHub – inténtalo más tarde", updateNotifyBody: "Haz clic para instalarla.", updatePage: "Abrir página de descarga", updatePageHint: "instálala desde la página de descarga",
+      history: "Escuchado recientemente", obsParty: "Luz de fiesta como fuente propia (añade ?bg=0 para fondo transparente):", control: "Stream Deck y control remoto", controlHint: "El plugin de Mirage para Stream Deck puede reproducir/pausar, saltar, dar me gusta y abrir el modo inmersivo o fiesta – solo desde este equipo",
+      secLights: "Luz en la habitación", lightsHint: "En el modo fiesta, luces reales siguen el ritmo – todo queda en tu red.", lightBright: "Brillo", hueFind: "Buscar puente", huePair: "Vincular", hueRoom: "Habitación", hueSearching: "Buscando …", hueFound: "Puente encontrado – pulsa el botón del puente y luego Vincular", hueNone: "No se encontró ningún puente – escribe su IP", huePairing: "Vinculando …", huePaired: "Vinculado", hueButton: "Pulsa primero el botón redondo del puente y vuelve a vincular", hueUnreachable: "Puente inaccesible – revisa la IP", wledHint: "Tiras LED con WLED – escribe su IP", wledLeds: "LED", orgbHint: "Teclado, ratón, RAM, ventiladores – OpenRGB con el servidor SDK activado", chromaHint: "Dispositivos Razer – Razer Synapse con Chroma",
     },
     it: {
       connected: "Connesso a Spotify", waiting: "In attesa di Spotify – il tema Mirage è attivo?",
@@ -140,6 +148,8 @@
       updChecking: "Controllo in corso …", upToDate: "Aggiornato ({v})", updateAvail: "È disponibile la versione {v}", updateInstall: "Installa aggiornamento {v}",
       updateLoading: "Download dell'aggiornamento …", updateReady: "Mirage Overlay {v} è stato scaricato. Riavviare ora per installarlo?", restartNow: "Riavvia ora", later: "Più tardi",
       updateFailed: "Impossibile raggiungere GitHub – riprova più tardi", updateNotifyBody: "Clicca per installarlo.", updatePage: "Apri pagina di download", updatePageHint: "installalo dalla pagina di download",
+      history: "Ascoltati di recente", obsParty: "Luce della festa come sorgente a parte (aggiungi ?bg=0 per lo sfondo trasparente):", control: "Stream Deck e controllo remoto", controlHint: "Il plugin Mirage per Stream Deck può riprodurre/mettere in pausa, saltare, mettere mi piace e aprire la modalità immersiva o festa – solo da questo computer",
+      secLights: "Luce nella stanza", lightsHint: "In modalità festa le luci vere seguono il ritmo – tutto resta nella tua rete.", lightBright: "Luminosità", hueFind: "Cerca bridge", huePair: "Associa", hueRoom: "Stanza", hueSearching: "Ricerca …", hueFound: "Bridge trovato – premi il pulsante sul bridge, poi Associa", hueNone: "Nessun bridge trovato – inserisci l'indirizzo IP", huePairing: "Associazione …", huePaired: "Associato", hueButton: "Premi prima il pulsante rotondo sul bridge, poi riprova", hueUnreachable: "Bridge non raggiungibile – controlla l'IP", wledHint: "Strisce LED con WLED – inserisci l'indirizzo IP", wledLeds: "LED", orgbHint: "Tastiera, mouse, RAM, ventole – OpenRGB con il server SDK attivo", chromaHint: "Dispositivi Razer – Razer Synapse con Chroma",
     },
     pt: {
       connected: "Conectado ao Spotify", waiting: "Aguardando o Spotify – o tema Mirage está ativo?",
@@ -166,6 +176,8 @@
       updChecking: "Verificando …", upToDate: "Atualizado ({v})", updateAvail: "A versão {v} está disponível", updateInstall: "Instalar atualização {v}",
       updateLoading: "Baixando atualização …", updateReady: "O Mirage Overlay {v} foi baixado. Reiniciar agora para instalar?", restartNow: "Reiniciar agora", later: "Mais tarde",
       updateFailed: "Não foi possível acessar o GitHub – tente mais tarde", updateNotifyBody: "Clique para instalar.", updatePage: "Abrir página de download", updatePageHint: "instale pela página de download",
+      history: "Tocadas recentemente", obsParty: "Luz da festa como fonte própria (adicione ?bg=0 para fundo transparente):", control: "Stream Deck e controle remoto", controlHint: "O plugin do Mirage para Stream Deck pode tocar/pausar, pular, curtir e abrir o modo imersivo ou festa – só a partir deste computador",
+      secLights: "Luz no ambiente", lightsHint: "No modo festa, luzes de verdade entram no ritmo – tudo fica na sua rede.", lightBright: "Brilho", hueFind: "Procurar bridge", huePair: "Parear", hueRoom: "Cômodo", hueSearching: "Procurando …", hueFound: "Bridge encontrada – aperte o botão da bridge e depois Parear", hueNone: "Nenhuma bridge encontrada – digite o IP", huePairing: "Pareando …", huePaired: "Pareado", hueButton: "Aperte primeiro o botão redondo da bridge e tente de novo", hueUnreachable: "Bridge inacessível – confira o IP", wledHint: "Fitas de LED com WLED – digite o IP", wledLeds: "LEDs", orgbHint: "Teclado, mouse, RAM, ventoinhas – OpenRGB com o servidor SDK ligado", chromaHint: "Dispositivos Razer – Razer Synapse com Chroma",
     },
     nl: {
       connected: "Verbonden met Spotify", waiting: "Wachten op Spotify – is het Mirage-thema actief?",
@@ -191,6 +203,8 @@
       updChecking: "Controleren …", upToDate: "Up-to-date ({v})", updateAvail: "Versie {v} is beschikbaar", updateInstall: "Update {v} installeren",
       updateLoading: "Update downloaden …", updateReady: "Mirage Overlay {v} is gedownload. Nu herstarten om te installeren?", restartNow: "Nu herstarten", later: "Later",
       updateFailed: "GitHub niet bereikbaar – probeer het later opnieuw", updateNotifyBody: "Klik om te installeren.", updatePage: "Downloadpagina openen", updatePageHint: "installeer hem via de downloadpagina",
+      history: "Onlangs afgespeeld", obsParty: "Feestlicht als eigen bron (met ?bg=0 transparant):", control: "Stream Deck en afstandsbediening", controlHint: "De Mirage-plugin voor Stream Deck kan afspelen/pauzeren, overslaan, liken en de immersieve of feestmodus openen – alleen vanaf deze computer",
+      secLights: "Licht in de kamer", lightsHint: "In de feestmodus doet echt licht mee op de beat – alles blijft in je eigen netwerk.", lightBright: "Helderheid", hueFind: "Bridge zoeken", huePair: "Koppelen", hueRoom: "Ruimte", hueSearching: "Zoeken …", hueFound: "Bridge gevonden – druk nu op de knop van de bridge en daarna op Koppelen", hueNone: "Geen bridge gevonden – vul het IP-adres in", huePairing: "Koppelen …", huePaired: "Gekoppeld", hueButton: "Druk eerst op de ronde knop van de bridge en koppel opnieuw", hueUnreachable: "Bridge niet bereikbaar – controleer het IP-adres", wledHint: "LED-strips met WLED – vul het IP-adres in", wledLeds: "LEDs", orgbHint: "Toetsenbord, muis, RAM, ventilatoren – OpenRGB met ingeschakelde SDK-server", chromaHint: "Razer-apparaten – Razer Synapse met Chroma",
     },
     pl: {
       connected: "Połączono ze Spotify", waiting: "Czekam na Spotify – czy motyw Mirage jest aktywny?",
@@ -216,6 +230,8 @@
       updChecking: "Sprawdzanie …", upToDate: "Aktualna ({v})", updateAvail: "Dostępna jest wersja {v}", updateInstall: "Zainstaluj aktualizację {v}",
       updateLoading: "Pobieranie aktualizacji …", updateReady: "Mirage Overlay {v} został pobrany. Uruchomić ponownie i zainstalować?", restartNow: "Uruchom ponownie", later: "Później",
       updateFailed: "Nie można połączyć się z GitHubem – spróbuj później", updateNotifyBody: "Kliknij, aby zainstalować.", updatePage: "Otwórz stronę pobierania", updatePageHint: "zainstaluj ze strony pobierania",
+      history: "Ostatnio odtwarzane", obsParty: "Światło imprezy jako osobne źródło (z ?bg=0 przezroczyste tło):", control: "Stream Deck i zdalne sterowanie", controlHint: "Wtyczka Mirage do Stream Deck może odtwarzać/pauzować, przewijać, polubić i otwierać tryb immersyjny lub imprezy – tylko z tego komputera",
+      secLights: "Światło w pokoju", lightsHint: "W trybie imprezy prawdziwe światła grają w rytm – wszystko zostaje w Twojej sieci.", lightBright: "Jasność", hueFind: "Szukaj mostka", huePair: "Sparuj", hueRoom: "Pokój", hueSearching: "Szukanie …", hueFound: "Znaleziono mostek – naciśnij przycisk na mostku, a potem Sparuj", hueNone: "Nie znaleziono mostka – wpisz jego adres IP", huePairing: "Parowanie …", huePaired: "Sparowano", hueButton: "Najpierw naciśnij okrągły przycisk na mostku, potem spróbuj ponownie", hueUnreachable: "Mostek niedostępny – sprawdź adres IP", wledHint: "Taśmy LED z WLED – wpisz adres IP", wledLeds: "LED", orgbHint: "Klawiatura, mysz, RAM, wentylatory – OpenRGB z włączonym serwerem SDK", chromaHint: "Urządzenia Razer – Razer Synapse z Chroma",
     },
     tr: {
       connected: "Spotify'a bağlı", waiting: "Spotify bekleniyor – Mirage teması etkin mi?",
@@ -241,6 +257,8 @@
       updChecking: "Denetleniyor …", upToDate: "Güncel ({v})", updateAvail: "{v} sürümü mevcut", updateInstall: "{v} güncellemesini kur",
       updateLoading: "Güncelleme indiriliyor …", updateReady: "Mirage Overlay {v} indirildi. Kurmak için şimdi yeniden başlatılsın mı?", restartNow: "Şimdi yeniden başlat", later: "Daha sonra",
       updateFailed: "GitHub'a ulaşılamadı – daha sonra tekrar dene", updateNotifyBody: "Kurmak için tıkla.", updatePage: "İndirme sayfasını aç", updatePageHint: "indirme sayfasından kur",
+      history: "Son çalınanlar", obsParty: "Parti ışığı ayrı bir kaynak olarak (?bg=0 ile şeffaf arka plan):", control: "Stream Deck ve uzaktan kumanda", controlHint: "Mirage Stream Deck eklentisi oynatıp duraklatabilir, geçebilir, beğenebilir ve sürükleyici ya da parti modunu açabilir – yalnızca bu bilgisayardan",
+      secLights: "Odadaki ışık", lightsHint: "Parti modunda gerçek ışıklar ritme katılır – her şey kendi ağında kalır.", lightBright: "Parlaklık", hueFind: "Köprüyü bul", huePair: "Eşleştir", hueRoom: "Oda", hueSearching: "Aranıyor …", hueFound: "Köprü bulundu – köprüdeki düğmeye bas, sonra Eşleştir", hueNone: "Köprü bulunamadı – IP adresini gir", huePairing: "Eşleştiriliyor …", huePaired: "Eşleştirildi", hueButton: "Önce köprüdeki yuvarlak düğmeye bas, sonra tekrar eşleştir", hueUnreachable: "Köprüye ulaşılamıyor – IP adresini kontrol et", wledHint: "WLED'li LED şeritler – IP adresini gir", wledLeds: "LED", orgbHint: "Klavye, fare, RAM, fanlar – SDK sunucusu açık OpenRGB", chromaHint: "Razer cihazları – Chroma'lı Razer Synapse",
     },
     ru: {
       connected: "Подключено к Spotify", waiting: "Ожидание Spotify – тема Mirage включена?",
@@ -266,6 +284,8 @@
       updChecking: "Проверка …", upToDate: "Актуальная версия ({v})", updateAvail: "Доступна версия {v}", updateInstall: "Установить обновление {v}",
       updateLoading: "Загрузка обновления …", updateReady: "Mirage Overlay {v} загружен. Перезапустить сейчас и установить?", restartNow: "Перезапустить", later: "Позже",
       updateFailed: "Не удалось связаться с GitHub – попробуй позже", updateNotifyBody: "Нажми, чтобы установить.", updatePage: "Открыть страницу загрузки", updatePageHint: "установи со страницы загрузки",
+      history: "Недавно прослушанные", obsParty: "Свет вечеринки как отдельный источник (с ?bg=0 – прозрачный фон):", control: "Stream Deck и дистанционное управление", controlHint: "Плагин Mirage для Stream Deck может включать/ставить на паузу, переключать, лайкать и открывать иммерсивный режим или вечеринку – только с этого компьютера",
+      secLights: "Свет в комнате", lightsHint: "В режиме вечеринки настоящий свет подстраивается под ритм – всё остаётся в твоей сети.", lightBright: "Яркость", hueFind: "Найти мост", huePair: "Связать", hueRoom: "Комната", hueSearching: "Поиск …", hueFound: "Мост найден – нажми кнопку на мосту, затем «Связать»", hueNone: "Мост не найден – введи его IP-адрес", huePairing: "Связываю …", huePaired: "Связано", hueButton: "Сначала нажми круглую кнопку на мосту, затем повтори", hueUnreachable: "Мост недоступен – проверь IP-адрес", wledHint: "Светодиодные ленты с WLED – введи IP-адрес", wledLeds: "светодиодов", orgbHint: "Клавиатура, мышь, ОЗУ, вентиляторы – OpenRGB с включённым SDK-сервером", chromaHint: "Устройства Razer – Razer Synapse с Chroma",
     },
     ja: {
       connected: "Spotify に接続済み", waiting: "Spotify を待っています – Mirage テーマは有効ですか？",
@@ -291,6 +311,8 @@
       updChecking: "確認中 …", upToDate: "最新です ({v})", updateAvail: "バージョン {v} が利用可能です", updateInstall: "アップデート {v} をインストール",
       updateLoading: "アップデートをダウンロード中 …", updateReady: "Mirage Overlay {v} をダウンロードしました。今すぐ再起動してインストールしますか？", restartNow: "今すぐ再起動", later: "後で",
       updateFailed: "GitHub に接続できません – 後でもう一度お試しください", updateNotifyBody: "クリックしてインストール。", updatePage: "ダウンロードページを開く", updatePageHint: "ダウンロードページからインストールしてください",
+      history: "最近再生した曲", obsParty: "パーティーライトを単独のソースに（?bg=0 で背景を透明に）：", control: "Stream Deck とリモート操作", controlHint: "Mirage の Stream Deck プラグインで再生/一時停止、スキップ、お気に入り、イマーシブ・パーティーモードの起動ができます（このパソコンからのみ）",
+      secLights: "部屋のライト", lightsHint: "パーティーモードで本物のライトがビートに合わせて光ります。すべて自宅のネットワーク内で完結します。", lightBright: "明るさ", hueFind: "ブリッジを探す", huePair: "ペアリング", hueRoom: "部屋", hueSearching: "検索中…", hueFound: "ブリッジが見つかりました。ブリッジのボタンを押してからペアリングしてください", hueNone: "ブリッジが見つかりません。IP アドレスを入力してください", huePairing: "ペアリング中…", huePaired: "ペアリング済み", hueButton: "先にブリッジの丸いボタンを押してから、もう一度ペアリングしてください", hueUnreachable: "ブリッジに接続できません。IP アドレスを確認してください", wledHint: "WLED の LED テープ（IP アドレスを入力）", wledLeds: "LED 数", orgbHint: "キーボード、マウス、メモリ、ファン（SDK サーバーを有効にした OpenRGB）", chromaHint: "Razer デバイス（Chroma 対応の Razer Synapse）",
     },
     ko: {
       connected: "Spotify에 연결됨", waiting: "Spotify 대기 중 – Mirage 테마가 켜져 있나요?",
@@ -316,6 +338,8 @@
       updChecking: "확인 중 …", upToDate: "최신 버전 ({v})", updateAvail: "버전 {v}을(를) 사용할 수 있습니다", updateInstall: "업데이트 {v} 설치",
       updateLoading: "업데이트 다운로드 중 …", updateReady: "Mirage Overlay {v}을(를) 다운로드했습니다. 지금 다시 시작해 설치할까요?", restartNow: "지금 다시 시작", later: "나중에",
       updateFailed: "GitHub에 연결할 수 없습니다 – 나중에 다시 시도하세요", updateNotifyBody: "클릭하여 설치하세요.", updatePage: "다운로드 페이지 열기", updatePageHint: "다운로드 페이지에서 설치하세요",
+      history: "최근 재생", obsParty: "파티 조명을 별도 소스로(?bg=0이면 배경 투명):", control: "Stream Deck 및 원격 제어", controlHint: "Mirage Stream Deck 플러그인으로 재생/일시정지, 건너뛰기, 좋아요, 몰입·파티 모드 열기를 할 수 있습니다(이 컴퓨터에서만)",
+      secLights: "방 안의 조명", lightsHint: "파티 모드에서 실제 조명이 비트에 맞춰 빛납니다. 모든 것이 내 네트워크 안에서만 동작합니다.", lightBright: "밝기", hueFind: "브리지 찾기", huePair: "페어링", hueRoom: "방", hueSearching: "찾는 중…", hueFound: "브리지를 찾았습니다. 브리지 버튼을 누른 뒤 페어링하세요", hueNone: "브리지를 찾지 못했습니다. IP 주소를 입력하세요", huePairing: "페어링 중…", huePaired: "페어링됨", hueButton: "먼저 브리지의 둥근 버튼을 누른 뒤 다시 페어링하세요", hueUnreachable: "브리지에 연결할 수 없습니다. IP 주소를 확인하세요", wledHint: "WLED LED 스트립(IP 주소 입력)", wledLeds: "LED 수", orgbHint: "키보드, 마우스, RAM, 팬(SDK 서버를 켠 OpenRGB)", chromaHint: "Razer 기기(Chroma가 있는 Razer Synapse)",
     },
     zh: {
       connected: "已连接 Spotify", waiting: "正在等待 Spotify – Mirage 主题是否已启用？",
@@ -341,6 +365,8 @@
       updChecking: "正在检查 …", upToDate: "已是最新 ({v})", updateAvail: "版本 {v} 可用", updateInstall: "安装更新 {v}",
       updateLoading: "正在下载更新 …", updateReady: "Mirage Overlay {v} 已下载。现在重启并安装吗？", restartNow: "立即重启", later: "稍后",
       updateFailed: "无法连接 GitHub – 请稍后再试", updateNotifyBody: "点击安装。", updatePage: "打开下载页面", updatePageHint: "从下载页面安装",
+      history: "最近播放", obsParty: "派对灯光作为单独来源（加 ?bg=0 为透明背景）：", control: "Stream Deck 与远程控制", controlHint: "Mirage 的 Stream Deck 插件可以播放/暂停、切歌、点赞，并打开沉浸或派对模式——仅限本机",
+      secLights: "房间里的灯光", lightsHint: "派对模式下，真实灯光会随节拍闪动——一切都只在你的网络内。", lightBright: "亮度", hueFind: "查找桥接器", huePair: "配对", hueRoom: "房间", hueSearching: "正在查找…", hueFound: "已找到桥接器——请按下桥接器上的按钮，然后点配对", hueNone: "未找到桥接器——请输入它的 IP 地址", huePairing: "正在配对…", huePaired: "已配对", hueButton: "请先按下桥接器上的圆形按钮，再重新配对", hueUnreachable: "无法连接桥接器——请检查 IP 地址", wledHint: "WLED 灯带——请输入 IP 地址", wledLeds: "LED 数", orgbHint: "键盘、鼠标、内存、风扇——需开启 SDK 服务器的 OpenRGB", chromaHint: "Razer 设备——带 Chroma 的 Razer Synapse",
     },
   };
   function pick(locale) {

@@ -157,14 +157,23 @@ async function fetchNetease(meta) {
     .filter((s) => !meta.sec || !s.duration || Math.abs(s.duration / 1000 - meta.sec) <= 4)
     .sort((x, y) => Math.abs((x.duration || 0) / 1000 - meta.sec) - Math.abs((y.duration || 0) / 1000 - meta.sec))[0];
   if (!fit) return null;
-  const lyr = (await netease(`song/lyric/v1?id=${fit.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`)) || (await netease(`song/lyric?id=${fit.id}&lv=-1&kv=-1&tv=-1`));
+  const lyr = (await netease(`song/lyric/v1?id=${fit.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`)) || (await netease(`song/lyric?id=${fit.id}&lv=-1&kv=-1&tv=-1&rv=-1`));
   if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
   const clean = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
   const lines = clean(parseLrc(lyr?.lrc?.lyric || ""));
+  // Romaji (Lautschrift) gibt es bei NetEase zu vielen japanischen Songs – für die Lautschrift-Zeile
+  const rom = clean(parseLrc(lyr?.romalrc?.lyric || ""));
   // YRC = jedes Wort mit eigener Zeit; nur nehmen, wenn sie den Song wirklich abdeckt
   const yrc = clean(parseYrc(lyr?.yrc?.lyric || ""));
-  if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc };
-  return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
+  if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc, rom };
+  return lines.length ? { lang: "", source: "netease", synced: true, lines, rom } : null;
+}
+// nur die Romaji eines Songs (wenn der Liedtext aus einer anderen Quelle kommt), einmal je Song
+const romCache = new Map();
+function romajiFor(item) {
+  const uri = item?.uri || "";
+  if (!romCache.has(uri)) romCache.set(uri, fetchNetease(songMeta(item)).then((r) => r?.rom || [], () => []));
+  return romCache.get(uri);
 }
 // NetEase-YRC: „[Start,Dauer](Start,Dauer,0)Wort (Start,Dauer,0)Wort …“ – Zeilen mit „{…}“ sind Mitwirkende
 function parseYrc(text) {
@@ -312,4 +321,4 @@ async function getCanvas(uri) {
 // Anzeigename der Quelle (Knopf „Fassung wählen“, Overlay)
 const SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
 
-export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME };
+export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, romajiFor, SOURCE_NAME };

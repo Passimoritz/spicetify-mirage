@@ -1,0 +1,25 @@
+{
+  "Name": "Mirage",
+  "Author": "Passimoritz",
+  "Description": "Control Spotify with the Mirage theme: play/pause, skip, like, immersive mode and party mode. Needs the Mirage Overlay app running on the same computer.",
+  "URL": "https://github.com/Passimoritz/spicetify-mirage",
+  "Version": "1.15.0.0",
+  "SDKVersion": 2,
+  "CodePath": "plugin.html",
+  "Icon": "images/plugin",
+  "Category": "Mirage",
+  "CategoryIcon": "images/category",
+  "Software": { "MinimumVersion": "5.0" },
+  "OS": [
+    { "Platform": "windows", "MinimumVersion": "10" },
+    { "Platform": "mac", "MinimumVersion": "10.14" }
+  ],
+  "Actions": [
+    { "UUID": "com.passimoritz.mirage.toggle", "Name": "Play / Pause", "Tooltip": "Play or pause Spotify", "Icon": "images/toggle", "States": [{ "Image": "images/toggle" }], "SupportedInMultiActions": true },
+    { "UUID": "com.passimoritz.mirage.next", "Name": "Next song", "Tooltip": "Skip to the next song", "Icon": "images/next", "States": [{ "Image": "images/next" }], "SupportedInMultiActions": true },
+    { "UUID": "com.passimoritz.mirage.prev", "Name": "Previous song", "Tooltip": "Back to the previous song", "Icon": "images/prev", "States": [{ "Image": "images/prev" }], "SupportedInMultiActions": true },
+    { "UUID": "com.passimoritz.mirage.like", "Name": "Like", "Tooltip": "Like or unlike the current song", "Icon": "images/like", "States": [{ "Image": "images/like" }], "SupportedInMultiActions": true },
+    { "UUID": "com.passimoritz.mirage.immersive", "Name": "Immersive mode", "Tooltip": "Open or close Mirage's full-screen stage", "Icon": "images/immersive", "States": [{ "Image": "images/immersive" }], "SupportedInMultiActions": true },
+    { "UUID": "com.passimoritz.mirage.party", "Name": "Party mode", "Tooltip": "Start Mirage's party light show", "Icon": "images/party", "States": [{ "Image": "images/party" }], "SupportedInMultiActions": true }
+  ]
+}

@@ -138,6 +138,8 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 - **Liedtext, wenn Spotify keinen hat** – Mirage sucht bei [LRCLIB](https://lrclib.net), NetEase und lyrics.ovh; *Fassung wählen* nimmt einen anderen Treffer, und auf Wunsch steht eine Übersetzung unter jeder Zeile.
 - **Ein Takt auch ohne Spotifys Analyse** – Tempo und Energie kommen aus Spotifys Audio-Merkmalen oder von Deezer, der Takt aus dem Timing des Liedtexts (oben steht dann *≈ 128 BPM*).
 - **Synchron zu dem, was du hörst** – eine ruhige Song-Uhr glättet Spotifys Position; sechsmal <kbd>T</kbd> im Takt misst Licht, Publikum und Liedtext auf deine Lautsprecher ein.
+- **Lautschrift** unter koreanischem, japanischem und chinesischem Liedtext, **Duett-Farben** für Zeilen mit Sängernamen und kleiner gesetzter Hintergrundgesang in Klammern.
+- **Timing selbst korrigieren** – <kbd>E</kbd> drücken, dann Enter, sobald die markierte Zeile beginnt; gespeichert je Song.
 - **Vollbild** per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>; ruht die Maus, blenden die Bedienelemente aus.
 
 ## 🎉 Party-Modus
@@ -208,6 +210,7 @@ Bestätigen die **Credits** des Songs (Spotify, sonst MusicBrainz) ein Instrumen
 - **Spotify Jam** – alle im Jam stehen als kleines, farbiges Gesicht im Publikum und wippen zur Kick; wer den laufenden Song hinzugefügt hat, leuchtet als DJ.
 - **Zweiter Bildschirm** – der Party-Modus im Vollbild auf einem Fernseher oder anderen Monitor.
 - **Kantenlicht** – die Overlay-App lässt die Ränder deines Desktops im Takt leuchten.
+- **Licht im Raum** – die Overlay-App lässt Philips Hue, WLED-LED-Streifen, OpenRGB und Razer Chroma mitspielen.
 - **Party-Rückblick** – eine teilbare Karte der Nacht: Songs, Genre-Mischung, Tempo-Spanne, der größte Drop.
 
 ## 📱 Live-Link fürs Handy
@@ -251,7 +254,9 @@ Oder in Spotify: **Mirage-Einstellungen → Overlay → Overlay-App herunterlade
 - **Wann** – bei jedem Songwechsel, dauerhaft als Mini-Player oder aus · bei Play/Pause · Ruhezeiten
 - **Wo** – Hauptbildschirm, Bildschirm mit der Maus oder jeder Bildschirm · 9 Positionen · Feinversatz
 - **Wie** – Insel, Karte, Banner oder Minimal · federnd, gleitend oder blendend · Leuchten, Rundung, Größe, Deckkraft · Steuerung beim Drüberfahren
-- **Extras** – Lautstärke-Leiste · bleibt still bei Spielen und Videos im Vollbild · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`) · Kantenlicht für den Party-Modus · aktualisiert sich selbst
+- **Extras** – Lautstärke-Leiste · bleibt still bei Spielen und Videos im Vollbild · eigener Look per `custom.css` · OBS-Browserquelle (`http://127.0.0.1:47322/`, Party-Licht unter `/party`) · Kantenlicht für den Party-Modus · zuletzt gespielt · aktualisiert sich selbst
+- **Licht im Raum** – im Party-Modus spielen Philips Hue, WLED, OpenRGB und Razer Chroma mit; eingerichtet in den Overlay-Einstellungen, alles bleibt in deinem Netz
+- **Stream Deck** – [**⬇ Mirage.streamDeckPlugin**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage.streamDeckPlugin): Play/Pause, springen, liken, Immersiv- und Party-Modus auf Tasten
 
 > **Code-Signatur:** Der Windows-Installer wird gerade für die kostenlose Signatur durch die SignPath Foundation eingerichtet – siehe [Code signing policy](CODE_SIGNING.md). Solange er unsigniert ist, kann Windows' *Smart App Control* ihn blockieren, und SmartScreen fragt einmal nach: *Weitere Informationen → Trotzdem ausführen*. macOS: Rechtsklick → *Öffnen* → *Öffnen*.
 
@@ -266,6 +271,7 @@ Oder in Spotify: **Mirage-Einstellungen → Overlay → Overlay-App herunterlade
 | immersiv | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | Like · Zufall · Wiederholen · Warteschlange |
 | immersiv | <kbd>F</kbd> / <kbd>F11</kbd> | Vollbild |
 | immersiv | <kbd>T</kbd> (6×, im Takt) | Licht, Publikum und Liedtext auf das Gehörte einmessen |
+| Liedtext | <kbd>E</kbd> · <kbd>Enter</kbd> | Timing korrigieren: die markierte Zeile beginnt jetzt |
 | immersiv | <kbd>?</kbd> · <kbd>Esc</kbd> | alle Tasten · schließen |
 
 ## 🛠 Reparieren nach einem Spotify-Update
@@ -288,7 +294,8 @@ Klappt es immer noch nicht? `spicetify clear`, danach `spicetify backup apply`. 
 - **Kein eigener Server, kein Tracking, kein Konto.** Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify.
 - **Nur wenn Spotify nichts hat** – und alles abschaltbar: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh; Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche; die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz.
 - **Live-Link** (standardmäßig aus) – Lichtfarben, Tempo und Songtitel, Ende-zu-Ende verschlüsselt über einen öffentlichen Relay (HiveMQ). Der Schlüssel verlässt nie den QR-Code. Die Songsuche der Gäste läuft über dein Spotify.
-- **Overlay-App** – lauscht nur auf deinem eigenen Rechner und fragt bei GitHub nach Updates (abschaltbar). Details in der [Code signing policy](CODE_SIGNING.md#privacy-policy).
+- **Overlay-App** – lauscht nur auf deinem eigenen Rechner und fragt bei GitHub nach Updates (abschaltbar). Das Licht im Raum steuert sie in deinem eigenen Netz; *Bridge suchen* fragt den Suchdienst von Philips (`discovery.meethue.com`) nach der Adresse deiner Bridge. Details in der [Code signing policy](CODE_SIGNING.md#privacy-policy).
+- **Lautschrift** (standardmäßig aus) – für Chinesisch lädt einmal das Pinyin-Wörterbuch von jsdelivr.
 - Schriften kommen von Google Fonts.
 
 ## ❓ Häufige Fragen

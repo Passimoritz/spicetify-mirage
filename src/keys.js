@@ -3,6 +3,15 @@ import { immersive, MODES } from "./immersive.js";
 import { tapSync } from "./clock.js";
 import { t } from "./i18n.js";
 
+// Befehle von außen (Stream Deck über die Overlay-App)
+window.addEventListener("mirage:cmd", (e) => {
+  if (e.detail === "immersive") immersive.toggle();
+  else if (e.detail === "party") {
+    if (!immersive.isOpen()) immersive.open();
+    immersive.setMode("party", true);
+  }
+});
+
 window.addEventListener("keydown", (e) => {
   if (e.ctrlKey && e.shiftKey && e.code === "KeyM") {
     e.preventDefault();
@@ -24,6 +33,7 @@ window.addEventListener("keydown", (e) => {
       KeyQ: () => immersive.toggleQueue(),
       KeyN: () => S.Player.next(),
       KeyP: () => S.Player.back(),
+      KeyE: () => immersive.toggleTiming(),
       // im Takt antippen: misst den Versatz zwischen Bild und Ton ein
       KeyT: () => {
         const r = tapSync();
@@ -33,6 +43,12 @@ window.addEventListener("keydown", (e) => {
         } catch {}
       },
     };
+    // Timing von Hand: Enter, Rücktaste und Esc gehören dann dem Editor
+    if (immersive.timingKey(e.code)) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     if (e.key === "?") return immersive.toggleKeys();
     if (/^Digit[1-5]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
     else if (keys[e.code] && !(e.code === "Space" && e.target.closest?.("button"))) {

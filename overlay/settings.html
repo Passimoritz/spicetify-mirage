@@ -113,6 +113,18 @@
   .row[hidden] { display: none; }
   .row .btn { flex: none; padding: 8px 16px; font-size: 13px; box-shadow: none; }
   .btn:disabled { opacity: .5; cursor: default; transform: none; }
+  .lhint { margin: -4px 0 10px; font-size: 13px; opacity: 0.7; }
+  .lrow { gap: 8px; justify-content: flex-start; }
+  .lrow input[type="text"], .lrow input[type="number"], .lrow select { height: 34px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--glass); color: inherit; font: inherit; }
+  .lrow input[type="text"] { flex: 1; min-width: 0; }
+  .lrow input[type="number"] { width: 84px; }
+  .hist { display: grid; gap: 6px; margin-top: 4px; }
+  .hist button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; border: 0; border-radius: 12px; background: var(--glass); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .hist button:hover { background: var(--line); }
+  .hist img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex: none; }
+  .hist span { min-width: 0; display: grid; }
+  .hist b, .hist small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist small { opacity: 0.65; }
   .obsUrl code { font: 500 13px var(--mono); color: var(--c); user-select: all; padding: 6px 10px; border-radius: 8px; background: var(--glass); border: 1px solid var(--line); }
   @media (max-width: 720px) { .styles { grid-template-columns: repeat(2, 1fr); } .row { flex-wrap: wrap; } }
   @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition-duration: .01ms !important; } }
@@ -198,12 +210,32 @@
   </section>
 
   <section>
+    <h2 data-t="secLights"></h2>
+    <p class="lhint" data-t="lightsHint"></p>
+    <div class="row"><div><b data-t="lightBright"></b></div><input type="range" min="20" max="100" step="5" id="lightBright"></div>
+    <div class="row"><div><b>Philips Hue</b><small id="hueState"></small></div><input type="checkbox" class="toggle" data-key="hueOn"></div>
+    <div class="row lrow"><input type="text" id="hueIp" placeholder="192.168.1.20" inputmode="decimal" autocomplete="off"><button type="button" class="btn" id="hueFind" data-t="hueFind"></button><button type="button" class="btn" id="huePair" data-t="huePair"></button></div>
+    <div class="row lrow" id="hueGroupRow" hidden><div><b data-t="hueRoom"></b></div><select id="hueGroup"></select></div>
+    <div class="row"><div><b>WLED</b><small data-t="wledHint"></small></div><input type="checkbox" class="toggle" data-key="wledOn"></div>
+    <div class="row lrow"><input type="text" id="wledIp" placeholder="192.168.1.40" autocomplete="off"><input type="number" id="wledLeds" min="1" max="490" step="1"><small data-t="wledLeds"></small></div>
+    <div class="row"><div><b>OpenRGB</b><small data-t="orgbHint"></small></div><input type="checkbox" class="toggle" data-key="orgbOn"></div>
+    <div class="row"><div><b>Razer Chroma</b><small data-t="chromaHint"></small></div><input type="checkbox" class="toggle" data-key="chromaOn"></div>
+  </section>
+
+  <section id="histSec" hidden>
+    <h2 data-t="history"></h2>
+    <div class="hist" id="hist"></div>
+  </section>
+
+  <section>
     <h2 data-t="secExtras"></h2>
     <div class="row"><div><b data-t="volumeOsd"></b><small data-t="volumeOsdHint"></small></div><input type="checkbox" class="toggle" data-key="volumeOsd"></div>
     <div class="row" id="fsRow"><div><b data-t="fullscreenQuiet"></b><small data-t="fullscreenQuietHint"></small></div><input type="checkbox" class="toggle" data-key="fullscreenQuiet"></div>
     <div class="row"><div><b data-t="customCss"></b><small data-t="customCssHint"></small></div><button type="button" class="btn" id="cssBtn" data-t="openCss"></button></div>
     <div class="row"><div><b data-t="obs"></b><small id="obsHint"></small></div><input type="checkbox" class="toggle" data-key="obs"></div>
     <div class="row obsUrl" id="obsUrlRow" hidden><div><code id="obsUrl"></code></div><button type="button" class="btn" id="obsCopy" data-t="copy"></button></div>
+    <div class="row obsUrl" id="obsPartyRow" hidden><div><small data-t="obsParty"></small><code id="obsParty"></code></div><button type="button" class="btn" id="obsPartyCopy" data-t="copy"></button></div>
+    <div class="row"><div><b data-t="control"></b><small data-t="controlHint"></small></div><input type="checkbox" class="toggle" data-key="control"></div>
     <div class="row" id="updRow"><div><b data-t="autoUpdate"></b><small id="updText"></small></div>
       <div style="display:flex;gap:10px;align-items:center"><button type="button" class="btn" id="updBtn"></button><input type="checkbox" class="toggle" data-key="autoUpdate"></div></div>
   </section>
@@ -246,6 +278,9 @@
     const s = (cfg.scale || 100) / 100;
     $("#obsHint").textContent = t("obsHint").replace("{w}", Math.round(780 * s)).replace("{h}", Math.round(420 * s));
     $("#obsUrlRow").hidden = !cfg.obs;
+    $("#obsPartyRow").hidden = !cfg.obs;
+    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
+    if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
     renderUpd();
   }
 
@@ -319,6 +354,63 @@
   $("#previewBtn").onclick = () => mirage.send("preview");
   $("#cssBtn").onclick = () => mirage.send("openCss");
   $("#updBtn").onclick = () => mirage.send("checkUpdate");
+  $("#obsPartyCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText($("#obsParty").textContent); $("#obsPartyCopy").textContent = t("copied"); }
+    catch { getSelection().selectAllChildren($("#obsParty")); }
+    setTimeout(() => ($("#obsPartyCopy").textContent = t("copy")), 1600);
+  };
+  // Verlauf: zuletzt gespielte Songs; ein Klick öffnet den Song in Spotify
+  function drawHistory(list) {
+    const box = $("#hist");
+    box.replaceChildren(...(list || []).slice(0, 20).map((h) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      if (/^https:\/\/i\.scdn\.co\//.test(h.cover || "")) {
+        const im = new Image();
+        im.alt = "";
+        im.src = h.cover;
+        b.append(im);
+      }
+      const s = document.createElement("span"), ti = document.createElement("b"), ar = document.createElement("small");
+      ti.textContent = h.title;
+      ar.textContent = `${h.artist} · ${new Date(h.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      s.append(ti, ar);
+      b.append(s);
+      b.onclick = () => mirage.send("openUri", h.uri);
+      return b;
+    }));
+    $("#histSec").hidden = !(list || []).length;
+  }
+  mirage.on("history", drawHistory);
+  // Licht im Raum: Textfelder speichern beim Verlassen, Hue koppeln über den Knopf auf der Bridge
+  const setText = (id, key, num) => ($("#" + id).onchange = () => mirage.send("set", { [key]: num ? Number($("#" + id).value) || 0 : $("#" + id).value.trim() }));
+  setText("hueIp", "hueIp");
+  setText("wledIp", "wledIp");
+  setText("wledLeds", "wledLeds", true);
+  $("#lightBright").oninput = () => mirage.send("set", { lightBright: Number($("#lightBright").value) });
+  $("#hueGroup").onchange = () => mirage.send("set", { hueGroup: $("#hueGroup").value });
+  $("#hueFind").onclick = async () => {
+    $("#hueState").textContent = t("hueSearching");
+    const ips = await mirage.invoke("hueFind");
+    if (ips?.length) {
+      $("#hueIp").value = ips[0];
+      mirage.send("set", { hueIp: ips[0] });
+      $("#hueState").textContent = t("hueFound");
+    } else $("#hueState").textContent = t("hueNone");
+  };
+  $("#huePair").onclick = async () => {
+    $("#hueState").textContent = t("huePairing");
+    const r = await mirage.invoke("huePair", $("#hueIp").value);
+    $("#hueState").textContent = r?.user ? t("huePaired") : r?.error === "button" ? t("hueButton") : t("hueUnreachable");
+    if (r?.user) loadGroups();
+  };
+  async function loadGroups() {
+    const g = await mirage.invoke("hueGroups");
+    if (!g?.length) return;
+    $("#hueGroup").replaceChildren(...g.map((x) => Object.assign(document.createElement("option"), { value: x.id, textContent: `${x.name} (${x.n})`, selected: x.id === cfg.hueGroup })));
+    $("#hueGroupRow").hidden = false;
+    if (!g.some((x) => x.id === cfg.hueGroup)) mirage.send("set", { hueGroup: g[0].id });
+  }
   $("#obsCopy").onclick = async () => {
     try { await navigator.clipboard.writeText($("#obsUrl").textContent); $("#obsCopy").textContent = t("copied"); }
     catch { getSelection().selectAllChildren($("#obsUrl")); }
@@ -339,6 +431,9 @@
     version = s.version || "";
     canUpdate = !!s.canUpdate;
     $("#obsUrl").textContent = s.obsUrl || "";
+    $("#obsParty").textContent = (s.obsUrl || "") + "party";
+    drawHistory(s.history);
+    if (s.cfg?.hueUser) loadGroups();
     buildScreens(s.displays);
     translate();
     render();

@@ -1,4 +1,5 @@
 import { S, root, clamp, seek, fmt, loadImage } from "./core.js";
+import { scriptOf, hangul, kana, pinyinLines } from "./roman.js";
 import { t } from "./i18n.js";
 import { cfg, save } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
@@ -6,7 +7,7 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME } from "./lyrics.js";
+import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard } from "./share.js";
 import * as ctl from "./controls.js";
@@ -751,6 +752,8 @@ const immersive = (() => {
       q.inner.append(emptyLyrics(!!got));
       return;
     }
+    applyTiming(uri, got);
+    voices(got);
     const karaoke = cfg.karaoke && got.synced;
     el.classList.toggle("is-karaoke", karaoke);
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -765,13 +768,18 @@ const immersive = (() => {
       const d = document.createElement("div");
       d.className = "m-im-line";
       d.dataset.t = l.t;
+      if (l.who) d.dataset.who = l.who;
       if (karaoke && l.text !== "♪") {
         const box = document.createElement("span");
         box.className = "m-im-words";
         const list = [];
+        let bg = false;
         for (const w of wordTimes(got.lines, i)) {
           const s = document.createElement("span");
-          s.className = "m-w";
+          // Hintergrundgesang in Klammern: von „(“ bis „)“ leiser und in der Zweitfarbe
+          if (/^[(（]/.test(w.text)) bg = true;
+          s.className = bg ? "m-w is-bg" : "m-w";
+          if (/[)）][,.!?…]*$/.test(w.text)) bg = false;
           s.textContent = w.text;
           s.style.setProperty("--wi", list.length);
           box.append(s);
@@ -781,12 +789,200 @@ const immersive = (() => {
         }
         d.append(box);
         words[i] = list;
-      } else d.textContent = l.text;
+      } else bgSplit(d, l.text);
       frag.append(d);
     });
     q.inner.append(frag);
     showTrBtn();
     if (cfg.translate) addTranslations(token);
+    if (cfg.romanize) addRomaji(token);
+  }
+  // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück
+  function bgSplit(d, text) {
+    const parts = String(text).split(/([(（][^)）]*[)）])/);
+    if (parts.length < 2) return (d.textContent = text);
+    for (const p of parts) {
+      if (!p) continue;
+      const s = document.createElement("span");
+      if (/^[(（]/.test(p)) s.className = "is-bg";
+      s.textContent = p;
+      d.append(s);
+    }
+  }
+  // Duette: steht vor Zeilen ein Name („Name:“ oder „[Name]“) und kommen mindestens zwei Stimmen je dreimal
+  // vor, bekommt jede Stimme ihre Farbe – der Name selbst verschwindet aus der Zeile
+  function voices(got) {
+    if (got.voices) return;
+    got.voices = true;
+    const TAG = /^\s*(?:\[([^\]]{1,24})\]|\(([^)]{1,24})\)|([\p{Lu}][\p{L} .'&-]{0,22}):)\s*/u;
+    const count = new Map();
+    for (const l of got.lines) {
+      const m = !l.words && l.text.match(TAG);
+      const who = m && (m[1] || m[2] || m[3]).trim();
+      if (who) count.set(who.toLowerCase(), (count.get(who.toLowerCase()) || 0) + 1);
+    }
+    const names = [...count].filter(([, n]) => n >= 3).map(([k]) => k);
+    if (names.length < 2) return;
+    let cur = "";
+    for (const l of got.lines) {
+      const m = !l.words && l.text.match(TAG);
+      const who = m && (m[1] || m[2] || m[3]).trim().toLowerCase();
+      if (who && names.includes(who)) {
+        cur = String((names.indexOf(who) % 3) + 1);
+        l.text = l.text.slice(m[0].length) || "♪";
+      } else if (/^(all|alle|both|beide|tous|todos|tutti)$/i.test(who || "")) cur = "all";
+      if (cur) l.who = cur;
+    }
+  }
+  // Lautschrift unter die Zeilen (Koreanisch selbst, Japanisch von NetEase oder aus Kana, Chinesisch per Wörterbuch)
+  async function addRomaji(token) {
+    const got = lyr, item = currentItem();
+    if (!got?.lines?.length || got.instrumental) return;
+    const sc = scriptOf(got.lines);
+    if (!sc) return;
+    let rom = null;
+    if (sc === "ko") rom = got.lines.map((l) => hangul(l.text));
+    else if (sc === "zh") rom = await pinyinLines(got.lines.map((l) => l.text));
+    else {
+      const ne = got.rom?.length ? got.rom : await romajiFor(item);
+      rom = got.lines.map((l) => {
+        // die Romaji-Zeile mit der nächstgelegenen Zeit (höchstens 1,5 s daneben), sonst selbst aus Kana
+        let best = null;
+        for (const r of ne) if (!best || Math.abs(r.t - l.t) < Math.abs(best.t - l.t)) best = r;
+        return best && Math.abs(best.t - l.t) < 1500 && got.synced ? best.text : kana(l.text);
+      });
+    }
+    if (token !== lyrToken || !rom || !cfg.romanize) return;
+    const lines = q.inner.querySelectorAll(".m-im-line");
+    rom.forEach((text, i) => {
+      if (!text || text === "♪" || !lines[i] || lines[i].querySelector(".m-im-rom") || text === got.lines[i].text) return;
+      const d = document.createElement("span");
+      d.className = "m-im-rom";
+      d.textContent = text;
+      lines[i].insertBefore(d, lines[i].querySelector(".m-im-tr"));
+    });
+    active = -2;
+  }
+
+  /* ---- Timing von Hand: im Liedtext E drücken, dann Enter, wenn eine Zeile beginnt (gespeichert je Song) */
+  const TIMING = "mirage:lyrTiming";
+  const timings = () => {
+    try {
+      return JSON.parse(localStorage.getItem(TIMING) || "{}") || {};
+    } catch {
+      return {};
+    }
+  };
+  function applyTiming(uri, got) {
+    const saved = timings()[uri];
+    if (!saved || got.timed || saved.n !== got.lines.length || !got.synced) return;
+    got.lines.forEach((l, i) => shiftLine(l, saved.t[i] - l.t));
+    got.timed = true;
+  }
+  // eine Zeile verschieben – ihre Wortzeiten (Karaoke) gehen mit
+  function shiftLine(l, d) {
+    if (!d || !Number.isFinite(d)) return;
+    l.t0 ??= l.t;
+    l.t += d;
+    for (const w of l.words || []) w.t += d;
+  }
+  let edit = null;
+  function toggleTiming() {
+    if (!el || !lyr?.synced || !lyr.lines?.length || !LYR.has(el.dataset.mode)) return S.showNotification?.(t("timingNone"), true, 2500);
+    if (edit) return finishTiming(true);
+    edit = { i: Math.max(0, active + 1), undo: [] };
+    el.classList.add("is-timing");
+    const bar = document.createElement("div");
+    bar.className = "m-im-timing";
+    bar.setAttribute("role", "status");
+    const txt = document.createElement("span");
+    txt.textContent = t("timingHint");
+    const reset = document.createElement("button");
+    reset.type = "button";
+    reset.textContent = t("timingReset");
+    reset.onclick = (e) => {
+      e.stopPropagation();
+      resetTiming();
+    };
+    const done = document.createElement("button");
+    done.type = "button";
+    done.textContent = t("timingDone");
+    done.onclick = (e) => {
+      e.stopPropagation();
+      finishTiming(true);
+    };
+    bar.append(txt, reset, done);
+    el.append(bar);
+    markEdit();
+  }
+  function markEdit() {
+    q.inner.querySelectorAll(".m-im-line.is-next").forEach((x) => x.classList.remove("is-next"));
+    q.inner.querySelectorAll(".m-im-line")[edit?.i]?.classList.add("is-next");
+  }
+  // Enter: die markierte Zeile beginnt JETZT; die Zeilen danach rücken um denselben Betrag mit
+  function timingKey(code) {
+    if (!edit) return false;
+    if (code === "Enter" || code === "NumpadEnter") {
+      const l = lyr.lines[edit.i];
+      if (!l) return finishTiming(true), true;
+      // Enter kommt mit der Reaktionszeit (~150 ms) nach dem gehörten Einsatz
+      const d = Math.round(songPos() - 150) - l.t;
+      edit.undo.push({ i: edit.i, d });
+      for (let k = edit.i; k < lyr.lines.length; k++) shiftLine(lyr.lines[k], d);
+      const prev = lyr.lines[edit.i - 1];
+      if (prev && l.t <= prev.t) shiftLine(l, prev.t + 50 - l.t);
+      q.inner.querySelectorAll(".m-im-line").forEach((x, k) => (x.dataset.t = lyr.lines[k]?.t ?? x.dataset.t));
+      edit.i++;
+      active = -2;
+      markEdit();
+      return true;
+    }
+    if (code === "Backspace") {
+      const u = edit.undo.pop();
+      if (u) {
+        for (let k = u.i; k < lyr.lines.length; k++) shiftLine(lyr.lines[k], -u.d);
+        edit.i = u.i;
+        active = -2;
+        markEdit();
+      }
+      return true;
+    }
+    if (code === "Escape") return finishTiming(true), true;
+    return false;
+  }
+  function finishTiming(keep) {
+    if (!edit) return;
+    const changed = edit.undo.length > 0;
+    edit = null;
+    el.classList.remove("is-timing");
+    el.querySelector(".m-im-timing")?.remove();
+    markEdit();
+    if (!keep || !changed) return;
+    const all = timings();
+    all[lyrUri] = { n: lyr.lines.length, t: lyr.lines.map((l) => l.t) };
+    // höchstens 150 Songs merken
+    const keys = Object.keys(all);
+    for (const k of keys.slice(0, Math.max(0, keys.length - 150))) delete all[k];
+    try {
+      localStorage.setItem(TIMING, JSON.stringify(all));
+    } catch {}
+    S.showNotification?.(t("timingSaved"), false, 2200);
+    lyrUri = "";
+    loadLyrics();
+  }
+  function resetTiming() {
+    const all = timings();
+    delete all[lyrUri];
+    try {
+      localStorage.setItem(TIMING, JSON.stringify(all));
+    } catch {}
+    for (const l of lyr?.lines || []) if (l.t0 != null) shiftLine(l, l.t0 - l.t);
+    if (lyr) lyr.timed = false;
+    edit && (edit.undo = []);
+    finishTiming(false);
+    S.showNotification?.(t("timingCleared"), false, 2200);
+    lyrUri = "";
+    loadLyrics();
   }
   // Übersetzung unter die Zeilen hängen; der Token verwirft Antworten zu einem älteren Song
   async function addTranslations(token) {
@@ -1763,7 +1959,7 @@ const immersive = (() => {
     q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
   }
   // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["Esc", "k_close"], ["?", "keysTitle"]];
   function toggleKeys(force) {
     if (!q.keys) return;
     const show = force ?? q.keys.hidden;
@@ -2063,7 +2259,7 @@ const immersive = (() => {
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
-    seekBy, volBy, toggleFull, toggleKeys, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
   };
 })();
 

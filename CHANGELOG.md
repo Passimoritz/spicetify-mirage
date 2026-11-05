@@ -10,6 +10,23 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.15.0] – 2026-11-05
+
+### Added
+
+- **Real light in the room.** In party mode the overlay app makes your lights play along: **Philips Hue** (find the bridge, press its button, pick a room – the lamps change colour on the beat in turn and go back to how they were afterwards), **WLED** LED strips (real-time over the network, 30 frames a second), **OpenRGB** (keyboard, mouse, RAM, fans) and **Razer Chroma**. Everything stays in your own network; brightness is adjustable.
+- **Stream Deck plugin:** keys for play/pause, next, previous, like, immersive mode and party mode – double-click *Mirage.streamDeckPlugin* to install. It talks to the overlay app on this computer only.
+- **Party light as an OBS source** (`http://127.0.0.1:47322/party`, `?bg=0` for a transparent background) – for streams.
+- **Recently played** in the overlay app: the last 50 songs in the settings and the tray menu; a click opens the song in Spotify.
+- **Romanization** under Korean, Japanese and Chinese lyrics (off by default): Korean is worked out by Mirage itself, Japanese comes from NetEase, Chinese loads a pinyin dictionary from jsdelivr once.
+- **Fix lyric timing by hand:** press <kbd>E</kbd> in the lyrics, then Enter the moment the marked line starts – the lines after it move along, <kbd>Backspace</kbd> undoes, it's saved per song and can be reset.
+- **Duets and backing vocals:** lines with a singer's name (“Name:” or “[Name]”) get a colour per voice, backing vocals in brackets are smaller and in the second colour.
+- **Search in the settings**, settings **backup as a file**, and a **four-step intro** on first start (can be shown again any time).
+
+### Changed
+
+- The theme sends the party light to the overlay app whenever it asks for it (edge light, OBS party source, room lights), not only with the edge light switched on.
+
 ## [1.14.0] – 2026-11-05
 
 ### Added

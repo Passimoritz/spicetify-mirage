@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Mirage</title></head>
+<body>
+<script>
+// Mirage für Stream Deck: jede Taste schickt einen Befehl an die Mirage-Overlay-App auf diesem Rechner
+// (ws://127.0.0.1:47324/control), die ihn an das Mirage-Theme in Spotify weitergibt. Läuft die App nicht,
+// zeigt die Taste ein Warndreieck.
+const CONTROL = "ws://127.0.0.1:47324/control";
+let sd = null, mirage = null, ready = false;
+function connectMirage() {
+  try {
+    mirage = new WebSocket(CONTROL);
+  } catch {
+    return setTimeout(connectMirage, 5000);
+  }
+  mirage.onopen = () => (ready = true);
+  mirage.onclose = mirage.onerror = () => {
+    ready = false;
+    setTimeout(connectMirage, 5000);
+  };
+}
+// Einstieg, den Stream Deck selbst aufruft
+// eslint-disable-next-line no-unused-vars
+function connectElgatoStreamDeckSocket(port, uuid, registerEvent) {
+  sd = new WebSocket("ws://127.0.0.1:" + port);
+  sd.onopen = () => sd.send(JSON.stringify({ event: registerEvent, uuid }));
+  sd.onmessage = (e) => {
+    let m;
+    try { m = JSON.parse(e.data); } catch { return; }
+    if (m.event !== "keyDown") return;
+    const cmd = String(m.action || "").split(".").pop();
+    if (ready && mirage.readyState === 1) {
+      mirage.send(JSON.stringify({ cmd }));
+      sd.send(JSON.stringify({ event: "showOk", context: m.context }));
+    } else sd.send(JSON.stringify({ event: "showAlert", context: m.context }));
+  };
+  connectMirage();
+}
+</script>
+</body>
+</html>

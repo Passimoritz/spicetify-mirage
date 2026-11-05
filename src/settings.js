@@ -212,9 +212,45 @@ const decode = (prefix, text) => {
 };
 
 /* ---------------------------------------------------------------- Einstellungs-Dialog */
+// Suche in den Einstellungen: zeigt nur passende Schalter, Regler und Auswahlen (mit ihrer Überschrift) und
+// klappt die Gruppen auf, in denen etwas passt. Eine „Einheit“ ist eine Zeile oder eine Beschriftung samt
+// den Bedienelementen bis zur nächsten Beschriftung.
+let query = "";
+const LABEL = ".m-row, .m-schemes-head, .m-note";
+function applySearch(box) {
+  const q = query.trim().toLowerCase();
+  const units = [];
+  for (const parent of [box, ...box.querySelectorAll("details.m-group")]) {
+    let unit = null;
+    for (const c of parent.children) {
+      if (c.matches("summary, .m-search, .m-search-none, .m-version")) continue;
+      if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent }));
+      unit.els.push(c);
+    }
+  }
+  const hit = new Set();
+  for (const u of units) {
+    const ok = !q || u.els.some((e) => e.textContent.toLowerCase().includes(q));
+    for (const e of u.els) e.classList.toggle("m-hide", !ok);
+    if (ok && q) hit.add(u.parent);
+  }
+  for (const d of box.querySelectorAll("details.m-group")) {
+    d.classList.toggle("m-hide", !!q && !hit.has(d) && !d.querySelector("summary").textContent.toLowerCase().includes(q));
+    if (q && hit.has(d)) d.open = true;
+  }
+  box.querySelector(".m-search-none")?.classList.toggle("m-hide", !q || hit.size > 0 || units.some((u) => u.parent === box && !u.els[0].classList.contains("m-hide")));
+}
 function render(box) {
   render.again = () => render(box);
   const kids = [];
+  const search = el("input", "m-search");
+  Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
+  search.setAttribute("aria-label", t("searchSettings"));
+  search.oninput = () => {
+    query = search.value;
+    applySearch(box);
+  };
+  kids.push(search, el("small", "m-note m-search-none m-hide", t("searchNone")));
 
   // ---- Presets
   kids.push(head(t("presetTitle"), t("presetHint")));
@@ -340,6 +376,7 @@ function render(box) {
       toggle("karaoke", () => immersive.reloadLyrics()),
       range("syncOffset", -400, 400, 10, " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
+      toggle("romanize", () => immersive.reloadLyrics()),
       toggle("canvas", () => immersive.refresh()),
       head(t("vizSection"), t("vizSectionHint")),
       seg(viz, cfg.vizStyle, (k) => {
@@ -498,6 +535,39 @@ function render(box) {
       refreshColors();
       render(box);
     }),
+    // dieselbe Sicherung als Datei (z. B. für einen zweiten PC)
+    button(t("saveFile"), () => {
+      const a = el("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify({ mirage: VERSION, settings: cfg }, null, 2)], { type: "application/json" }));
+      a.download = `mirage-settings-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.append(a);
+      a.click();
+      setTimeout(() => (URL.revokeObjectURL(a.href), a.remove()), 2000);
+      notify(t("fileSaved"));
+    }),
+    button(t("loadFile"), () => {
+      const f = el("input");
+      f.type = "file";
+      f.accept = "application/json,.json";
+      f.onchange = async () => {
+        let d = null;
+        try {
+          d = JSON.parse(await f.files[0].text())?.settings;
+        } catch {}
+        if (!d || typeof d !== "object" || Array.isArray(d)) return notify(t("badCode"), true);
+        Object.assign(cfg, d);
+        for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
+        save();
+        refreshColors();
+        render(box);
+        notify(t("fileLoaded"));
+      };
+      f.click();
+    }),
+    button(t("tourAgain"), () => {
+      S.PopupModal?.hide?.();
+      tour();
+    }),
     button(t("diagnostics"), async () => {
       try { await navigator.clipboard.writeText(diagnostics()); notify(t("copied")); } catch { dataIn.value = diagnostics(); }
     }),
@@ -514,8 +584,11 @@ function render(box) {
 
   // offene Gruppen merken, damit ein Neuaufbau nicht alles zuklappt
   const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
+  const hadFocus = document.activeElement?.classList.contains("m-search");
   box.replaceChildren(...kids);
   labelControls(box);
+  applySearch(box);
+  if (hadFocus) search.focus();
   box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
 }
 
@@ -532,20 +605,39 @@ function welcome() {
     if (localStorage.getItem(KEY)) return;
     localStorage.setItem(KEY, VERSION);
   } catch { return; }
-  setTimeout(() => {
-    const box = el("div", "mirage-welcome");
-    box.setAttribute("role", "status");
-    box.append(el("b", "", t("welcomeTitle")), el("span", "", t("welcomeText")));
+  setTimeout(tour, 5000);
+}
+// Einführung beim ersten Start: vier kurze Schritte – Farben, Immersiv-Modus, Party, Einstellungen.
+// Später jederzeit wieder unter „Teilen, sichern & Hilfe“.
+const TOUR = [
+  ["tour1t", "tour1"],
+  ["tour2t", "tour2", () => immersive.open()],
+  ["tour3t", "tour3", () => (immersive.open(), immersive.setMode("party", true))],
+  ["tour4t", "tour4", () => openSettings()],
+];
+function tour() {
+  document.querySelector(".mirage-welcome")?.remove();
+  const box = el("div", "mirage-welcome");
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-label", t("welcomeTitle"));
+  let i = 0;
+  const draw = () => {
+    const [tk, k, act] = TOUR[i];
+    const dots = el("div", "m-dots");
+    TOUR.forEach((_, j) => dots.append(el("i", j === i ? "is-on" : "")));
     const row = el("div", "m-actions");
+    if (act) row.append(button(t(k + "Try"), () => { box.remove(); act(); }));
     row.append(
-      button(t("welcomeImmersive"), () => { box.remove(); immersive.open(); }, "is-primary"),
-      button(t("menu"), () => { box.remove(); openSettings(); }),
+      i < TOUR.length - 1 ? button(t("tourNext"), () => { i++; draw(); }, "is-primary") : button(t("tourDone"), () => box.remove(), "is-primary"),
       button("×", () => box.remove(), "m-close")
     );
-    box.append(row);
-    document.body.append(box);
-    setTimeout(() => box.isConnected && box.classList.add("is-gone"), 20000);
-  }, 5000);
+    const close = row.querySelector(".m-close");
+    close.title = close.ariaLabel = t("k_close");
+    box.replaceChildren(el("small", "m-kick", `${i + 1} / ${TOUR.length}`), el("b", "", t(tk)), el("span", "", t(k)), dots, row);
+    box.querySelector(".is-primary")?.focus();
+  };
+  draw();
+  document.body.append(box);
 }
 
-export { applySettings, openSettings, welcome };
+export { applySettings, openSettings, welcome, tour };
