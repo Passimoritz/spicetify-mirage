@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#06050b">
 <meta name="robots" content="noindex">
 <title>Mirage Live</title>
@@ -25,7 +25,9 @@
     transform: translateY(140%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.6s; }
   body.on .card { transform: none; }
   body.on.loud .card { opacity: 0.55; }
-  .eq { flex: none; display: flex; align-items: flex-end; gap: 3px; height: 26px; width: 26px; }
+  .cov { flex: none; width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); background: rgba(255, 255, 255, 0.08); }
+  .cov[hidden] { display: none; }
+  .eq { flex: none; display: flex; align-items: flex-end; gap: 3px; height: 22px; width: 22px; }
   .eq i { flex: 1; border-radius: 2px; background: rgb(var(--a)); height: 30%; transition: height 0.08s; }
   .eq i:nth-child(2) { background: rgb(var(--b)); }
   .eq i:nth-child(3) { background: rgb(var(--c)); }
@@ -43,14 +45,19 @@
   .state p { max-width: 21em; font-size: 14px; line-height: 1.5; opacity: 0.7; }
   .tap { position: fixed; left: 0; right: 0; bottom: max(28px, env(safe-area-inset-bottom)); text-align: center; font-size: 12px; letter-spacing: 0.06em; opacity: 0.55; transition: opacity 0.5s; }
   body.on .tap, body.armed .tap { opacity: 0; }
-  body.needvib .tap { opacity: 0.95 !important; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 136px); font-weight: 700; }
+  body.needvib .tap { opacity: 1 !important; left: 50%; right: auto; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 156px); transform: translateX(-50%); padding: 8px 14px; border-radius: 99px;
+    background: rgba(var(--a), 0.55); font-weight: 700; white-space: nowrap; }
   /* Werkzeugleiste über der Karte: Liedtext, Wunsch, Vibration */
-  .tools { position: fixed; left: 0; right: 0; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 84px); display: flex; justify-content: center; gap: 10px;
-    transform: translateY(240%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
-  body.on .tools { transform: none; }
-  .tools button { height: 38px; padding: 0 16px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, 0.14); color: #fff; font: inherit; font-size: 13px; font-weight: 650;
-    background: rgba(10, 8, 20, 0.4); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-  .tools button[aria-pressed="true"] { background: rgba(var(--a), 0.55); border-color: rgba(var(--c), 0.6); }
+  .tools { position: fixed; left: 50%; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 96px); display: flex; gap: 4px; padding: 5px; border-radius: 99px;
+    background: rgba(10, 8, 20, 0.42); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    transform: translate(-50%, 260%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  body.on .tools { transform: translate(-50%, 0); }
+  .tools button { display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 15px; border-radius: 99px; border: 0; color: #fff; font: inherit; font-size: 13px; font-weight: 650;
+    background: transparent; white-space: nowrap; transition: background 0.25s, transform 0.15s; }
+  .tools button:active { transform: scale(0.95); }
+  .tools button svg { width: 17px; height: 17px; fill: currentColor; flex: none; }
+  .tools button[aria-pressed="true"] { background: rgba(var(--a), 0.6); }
+  .tools #bWish { background: rgb(var(--c)); color: #0b0a12; }
   .tools button[hidden] { display: none; }
   /* Liedtext zum Mitsingen: groß in der Mitte, die nächste Zeile klein darunter */
   .lyr { position: fixed; left: 20px; right: 20px; top: 50%; transform: translateY(-60%); text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
@@ -58,22 +65,36 @@
   .lyr b { display: block; font-size: clamp(26px, 8.5vw, 46px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.45); }
   .lyr span { display: block; margin-top: 14px; font-size: clamp(15px, 4.4vw, 21px); font-weight: 600; opacity: 0.55; }
   /* Songwünsche: Blatt von unten */
-  .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: 82%; overflow: auto; padding: 18px 16px max(18px, env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0;
-    background: rgba(14, 12, 24, 0.94); border-top: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    transform: translateY(105%); transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  /* über der Bildschirmtastatur: --kb = Tastaturhöhe, --vvh = sichtbare Höhe (visualViewport) */
+  .sheet { position: fixed; left: 0; right: 0; bottom: var(--kb, 0px); max-height: calc(var(--vvh, 100dvh) - max(24px, env(safe-area-inset-top))); overflow: auto; overscroll-behavior: contain;
+    padding: 0 16px max(18px, env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0;
+    background: rgba(14, 12, 24, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.45); transform: translateY(105%); transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1), bottom 0.2s; }
+  .sheet .top2 { position: sticky; top: 0; z-index: 1; padding: 10px 0 10px; background: linear-gradient(rgba(14, 12, 24, 1) 85%, rgba(14, 12, 24, 0)); }
+  .sheet .grab { width: 40px; height: 4px; margin: 0 auto 12px; border-radius: 99px; background: rgba(255, 255, 255, 0.25); }
+  .sheet .shead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .sheet .x { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; color: #fff; font: inherit; font-size: 15px; background: rgba(255, 255, 255, 0.1); }
+  .sheet .field { position: relative; margin-top: 12px; }
+  .sheet .field svg { position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); fill: rgba(255, 255, 255, 0.6); pointer-events: none; }
+  .sheet .field input { padding-left: 42px; margin-bottom: 0; }
+  .sheet .name { margin-top: 14px; }
+  .sheet .name input { height: 40px; font-size: 15px; background: transparent; }
   body.wish .sheet { transform: none; }
   .sheet { z-index: 5; }
   body.wish .card, body.wish .tools, body.wish .lyr { opacity: 0 !important; pointer-events: none; }
-  .sheet h2 { font-size: 18px; margin-bottom: 4px; }
-  .sheet .hint { font-size: 13px; opacity: 0.65; margin-bottom: 14px; }
+  .sheet h2 { font-size: 20px; letter-spacing: -0.01em; }
+  .sheet .hint { font-size: 13px; line-height: 1.45; opacity: 0.65; margin-top: 4px; }
   .sheet input { width: 100%; height: 46px; margin-bottom: 10px; padding: 0 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06);
     color: #fff; font: inherit; font-size: 16px; }
   .sheet .row { display: flex; gap: 10px; }
   .sheet .send { flex: 1; height: 46px; border: 0; border-radius: 14px; font: inherit; font-size: 15px; font-weight: 700; color: #0b0a12; background: rgb(var(--c)); }
   .sheet .close { height: 46px; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: transparent; color: #fff; font: inherit; }
   .sheet .msg { min-height: 20px; margin: 10px 0 4px; font-size: 13px; opacity: 0.8; }
-  .wl { list-style: none; display: grid; gap: 8px; margin-top: 8px; }
-  .wl li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); }
+  /* eine Spalte, die nie breiter als das Blatt wird (sonst schieben lange Titel die Zeile aus dem Bild) */
+  .wl { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 8px; }
+  .wl li { display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 8px; border-radius: 16px; background: rgba(255, 255, 255, 0.05); transition: background 0.2s, transform 0.15s; }
+  .wl li:active { transform: scale(0.98); }
+  .res li .go { color: #0b0a12; background: rgb(var(--c)); border: 0; min-width: 0; padding: 0 14px; font-size: 13px; }
   .wl li div { flex: 1; min-width: 0; }
   .wl b, .wl small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .wl small { font-size: 12px; opacity: 0.6; }
@@ -94,13 +115,15 @@
 <div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p></div>
 <div class="tap" id="tap"></div>
 <div class="lyr" id="lyr" aria-live="polite"><b id="ly"></b><span id="lyn"></span></div>
-<div class="tools"><button type="button" id="bLyr" aria-pressed="true"></button><button type="button" id="bWish" hidden></button><button type="button" id="bVib" aria-pressed="true" hidden></button></div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle"><h2 id="wTitle"></h2><p class="hint" id="wHint"></p>
-  <input id="wName" maxlength="20" autocomplete="nickname"><input id="wSong" type="search" maxlength="80" enterkeyhint="search" autocomplete="off">
+<div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle">
+  <div class="top2"><div class="grab"></div><div class="shead"><h2 id="wTitle"></h2><button type="button" class="x" id="wClose">✕</button></div><p class="hint" id="wHint"></p>
+    <div class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2 9.8 4.5 4.5-1.4 1.4-4.5-4.5z"/></svg><input id="wSong" type="search" maxlength="80" enterkeyhint="search" autocomplete="off"></div></div>
   <ul class="wl res" id="wRes"></ul>
-  <p class="msg" id="wMsg" aria-live="polite"></p><h3 class="sub" id="wNow"></h3><ul class="wl" id="wList"></ul>
-  <div class="row"><button type="button" class="close" id="wClose"></button></div></div>
-<div class="card"><div class="eq"><i></i><i></i><i></i></div><div class="meta"><b id="title"></b><span id="artist"></span></div><div class="bpm" id="bpm"></div></div>
+  <p class="msg" id="wMsg" aria-live="polite"></p>
+  <div class="name"><input id="wName" maxlength="20" autocomplete="nickname"></div>
+  <h3 class="sub" id="wNow"></h3><ul class="wl" id="wList"></ul></div>
+<div class="card"><img class="cov" id="cov" alt="" hidden referrerpolicy="no-referrer" onerror="this.hidden=true"><div class="meta"><b id="title"></b><span id="artist"></span></div><div class="eq"><i></i><i></i><i></i></div><div class="bpm" id="bpm"></div></div>
 <script>
 // Kleinstmöglicher MQTT-3.1.1-Client über WebSocket: verbinden, abonnieren, Ping (wie in src/live.js)
 const BROKERS = ["wss://broker.hivemq.com:8884/mqtt", "wss://broker.emqx.io:8084/mqtt"];
@@ -165,9 +188,9 @@ function mqttOpen(url, { onReady, onMessage, onClose }) {
 // Kanal und Schlüssel stehen nur hinter dem „#“ – dieser Teil wird nie an einen Server geschickt
 const de = /^de/i.test(navigator.language || "");
 const T = de
-  ? { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", vibLv: ["aus", "sanft", "normal", "stark"], wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wSlow: "Noch keine Antwort – versuche es erneut …", wDead: "Mirage antwortet nicht. Läuft in Spotify der Party-Modus?", wErr: "Spotify hat gerade nicht geantwortet – gleich noch einmal versuchen.", vibTap: "Einmal antippen, damit das Handy vibrieren darf", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
+  ? { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", vibLv: ["aus", "sanft", "normal", "stark"], wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", opt: "optional", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wSlow: "Noch keine Antwort – versuche es erneut …", wDead: "Mirage antwortet nicht. Läuft in Spotify der Party-Modus?", wErr: "Spotify hat gerade nicht geantwortet – gleich noch einmal versuchen.", vibTap: "Einmal antippen, damit das Handy vibrieren darf", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
       tap: "Antippen für Vollbild · Display bleibt an", wait: ["Verbunden", "Warte auf den Party-Modus in Spotify …"], over: ["Party beendet", "Danke fürs Mitleuchten! Neue Party, neuer QR-Code."], bad: ["Link unvollständig", "Bitte den QR-Code noch einmal scannen."], net: ["Keine Verbindung", "Versuche es erneut … (WLAN oder mobile Daten an?)"], start: ["Mirage Live", "Verbinde …"] }
-  : { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", vibLv: ["off", "gentle", "normal", "strong"], wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wSlow: "No answer yet – trying again …", wDead: "Mirage isn't answering. Is party mode running in Spotify?", wErr: "Spotify didn't answer just now – try again in a moment.", vibTap: "Tap once so the phone may vibrate", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
+  : { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", vibLv: ["off", "gentle", "normal", "strong"], wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", opt: "optional", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wSlow: "No answer yet – trying again …", wDead: "Mirage isn't answering. Is party mode running in Spotify?", wErr: "Spotify didn't answer just now – try again in a moment.", vibTap: "Tap once so the phone may vibrate", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
       tap: "Tap for full screen · screen stays on", wait: ["Connected", "Waiting for party mode in Spotify …"], over: ["Party's over", "Thanks for lighting up! New party, new QR code."], bad: ["Incomplete link", "Please scan the QR code again."], net: ["No connection", "Retrying … (is Wi-Fi or mobile data on?)"], start: ["Mirage Live", "Connecting …"] };
 const $ = (id) => document.getElementById(id);
 const say = ([a, b]) => {
@@ -244,6 +267,9 @@ async function receive(m) {
     s.pal.forEach((c, i) => document.documentElement.style.setProperty(["--a", "--b", "--c"][i], c.join(",")));
   }
   $("title").textContent = s.t || "";
+  const img = /^https:\/\/i\.scdn\.co\/image\/[\w]+$/.test(s.img || "") ? s.img : "";
+  if ($("cov").getAttribute("src") !== img) img ? ($("cov").src = img) : $("cov").removeAttribute("src");
+  $("cov").hidden = !img;
   $("artist").textContent = s.a || "";
   $("bpm").textContent = s.bpm ? s.bpm + " BPM" : "";
   // Liedtext: aktuelle Zeile groß, nächste klein
@@ -318,6 +344,7 @@ function songRow(w, by) {
     im.alt = "";
     im.loading = "lazy";
     im.referrerPolicy = "no-referrer";
+    im.onerror = () => (im.style.visibility = "hidden");
     im.src = w.img;
     out.push(im);
   }
@@ -377,6 +404,7 @@ function showResults(s) {
     const go = document.createElement("button");
     go.type = "button";
     go.textContent = T.wSend;
+    go.className = "go";
     const pick = () => wish(w, li);
     go.onclick = (e) => {
       e.stopPropagation();
@@ -419,18 +447,32 @@ let vibLvl = navigator.vibrate ? Math.max(0, Math.min(3, Number(store("mlVibLvl"
 const syncTools = () => {
   $("bLyr").setAttribute("aria-pressed", String(showLyr));
   $("bVib").setAttribute("aria-pressed", String(vibLvl > 0));
-  $("bVib").textContent = `${T.vib}: ${T.vibLv[vibLvl]}`;
+  $("bVib").querySelector("span").textContent = T.vibLv[vibLvl];
+  $("bVib").title = $("bVib").ariaLabel = `${T.vib}: ${T.vibLv[vibLvl]}`;
   document.body.classList.toggle("lyrics", showLyr);
 };
-$("bLyr").textContent = T.lyr;
-$("bWish").textContent = T.wish;
+$("bLyr").querySelector("span").textContent = T.lyr;
+$("bWish").querySelector("span").textContent = T.wish.replace(/^\uff0b\s*/, "");
 $("bVib").hidden = !navigator.vibrate;
 $("wTitle").textContent = T.wTitle;
 $("wHint").textContent = T.wHint;
-$("wName").placeholder = T.wName;
+
 $("wSong").placeholder = T.wSong;
 $("wNow").textContent = T.wNow;
-$("wClose").textContent = T.wClose;
+$("wClose").title = $("wClose").ariaLabel = T.wClose;
+$("wName").placeholder = T.wName + " (" + T.opt + ")";
+// Tastatur: Höhe der Tastatur und sichtbare Höhe messen – das Wunsch-Blatt bleibt immer darüber
+const vv = window.visualViewport;
+const fitKb = () => {
+  const h = vv ? vv.height : innerHeight, kb = vv ? Math.max(0, innerHeight - vv.height - vv.offsetTop) : 0;
+  document.documentElement.style.setProperty("--kb", Math.round(kb) + "px");
+  document.documentElement.style.setProperty("--vvh", Math.round(h) + "px");
+};
+vv?.addEventListener("resize", fitKb);
+vv?.addEventListener("scroll", fitKb);
+addEventListener("resize", fitKb);
+fitKb();
+for (const id of ["wSong", "wName"]) $(id).addEventListener("focus", () => setTimeout(() => $(id).scrollIntoView({ block: "nearest", behavior: "smooth" }), 320));
 $("bLyr").onclick = (e) => {
   e.stopPropagation();
   showLyr = !showLyr;

@@ -10,11 +10,23 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
-## [Unreleased]
+## [1.16.0] – 2026-11-05
+
+### Added
+
+- **Canvas videos in immersive mode, per view.** When a song has a canvas, a film button appears at the top – it switches the canvas on for just this view and is off at first. Cover, visualizer, mix and party play it inside the cover (round in mix and party), the lyrics view also lays it softly behind the text.
+- **Song wishes belong to party mode now:** a wish button with a counter in the top bar, the list in the side panel with covers, who wished for it and the votes, and a short notice gliding in when a new wish arrives – also when the controls are hidden.
 
 ### Changed
 
+- **Party mode stays calm:** camera rides, camera cuts and 3D depth are gone – the constant zooming and shifting was more distracting than fun. The camera kicks on accented beats are off for everyone; they can be switched back on in the party settings.
+- **Phone page redesigned:** the current cover in the song card, a toolbar with symbols, and a wish sheet with handle, close button and a search field with a magnifier. The keyboard no longer covers the sheet – it stays above it on every phone.
 - **Richer vibration on the phones.** Websites can only switch the vibration motor on and off – browsers give them no strength setting (only apps get that, and iPhones don't let websites vibrate at all). Mirage now makes strength the way a dimmed LED does: in 16 ms slices the motor is on for only part of the time. Each part of the song feels different: a firm buzz on the downbeat that grows with the energy, light taps on the backbeat in loud parts, ticks that get denser and stronger during a build-up, a swell into a long, full vibration on the drop, and nothing in quiet parts. The vibration button now steps through off, gentle, normal and strong, with a sample buzz each time.
+
+### Fixed
+
+- Buttons in the immersive top bar that should be hidden (party recap, second screen, live link outside party mode) were always shown; when the bar gets full, the view tabs now move left instead of sliding under the buttons.
+- Long song titles in the wish lists pushed the rows wider than the screen.
 
 ## [1.15.4] – 2026-11-05
 

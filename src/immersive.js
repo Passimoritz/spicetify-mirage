@@ -36,6 +36,8 @@ const ICON = {
   queue: '<svg viewBox="0 0 24 24"><path d="M3 5h13v2H3zm0 6h13v2H3zm0 6h8v2H3zm15-3V9h2v5.3a3 3 0 1 1-2 2.7z"/></svg>',
   devices: '<svg viewBox="0 0 24 24"><path d="M4 5h12v2H6v10h4v2H4zm10 4h7v12h-7zm2 2v8h3v-8zm1.5 6.2a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6z"/></svg>',
   timer: '<svg viewBox="0 0 24 24"><path d="M9 2h6v2H9zm3 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-1 2h2v4.4l3 1.8-1 1.7-4-2.4z"/></svg>',
+  film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
+  wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
   heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
   vol: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
@@ -86,15 +88,17 @@ const immersive = (() => {
           ${MODES.map(([k], i) => `<button type="button" role="tab" data-mode="${k}" title="${i + 1}"></button>`).join("")}
         </div>
         <div class="m-im-actions">
+          <button type="button" class="m-im-sm m-im-cvbtn" hidden aria-pressed="false">${ICON.film}</button>
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
+          <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
         </div>
       </div>
-      <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""></div></div>
+      <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""><video class="m-im-cvid" muted loop playsinline preload="none" aria-hidden="true"></video></div></div>
       <div class="m-im-meta">
         <div class="m-im-kicker"></div>
         <div class="m-im-smartpick" hidden>${ICON.sparkle}<span></span></div>
@@ -218,6 +222,16 @@ const immersive = (() => {
       }
     };
     q.video = el.querySelector(".m-im-canvas");
+    q.cvid = el.querySelector(".m-im-cvid");
+    q.wishbtn = el.querySelector(".m-im-wishbtn");
+    q.wishbtn.onclick = () => showSide(side === "wishes" ? null : "wishes");
+    q.cvbtn = el.querySelector(".m-im-cvbtn");
+    q.cvbtn.onclick = () => {
+      const mode = el.dataset.mode;
+      cfg.canvasIn = { ...(cfg.canvasIn || {}), [mode]: !cfg.canvasIn?.[mode] };
+      save();
+      applyCanvas();
+    };
     q.keys = el.querySelector(".m-im-keys");
     const share = el.querySelector(".m-im-share"), help = el.querySelector(".m-im-help");
     share.title = share.ariaLabel = t("share");
@@ -452,6 +466,7 @@ const immersive = (() => {
       });
       else resetParty();
       showExtras();
+      applyCanvas();
       sizeCanvas();
       active = -2;
       wake();
@@ -1412,8 +1427,9 @@ const immersive = (() => {
         lastKick = kz;
         q.canvas.style.scale = kz;
       }
-      // Hintergrund: Kamera-Zoom und Kamera-Stoß zusammen
-      const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1) * (1 + px.kickEnv * 0.014 * px.energy)).toFixed(3);
+      // Hintergrund: Kamera-Zoom und Kamera-Stoß zusammen (kein Pumpen mehr auf jeder Kick – das wirkte wie ein
+      // ständiges Rein- und Rauszoomen)
+      const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1)).toFixed(3);
       if (bz !== lastBgZ) {
         lastBgZ = bz;
         q.bg.style.scale = bz === "1.000" ? "" : bz;
@@ -1976,19 +1992,49 @@ const immersive = (() => {
     }
   }
 
-  let canvasToken = 0;
+  // Canvas (Spotifys kurze Video-Loops): je Ansicht ein- und ausschaltbar über den Film-Knopf oben, anfangs aus.
+  // Cover, Visualizer, Mix und Party zeigen es IM Cover (rund in Mix und Party), der Liedtext dazu gedämpft
+  // im Hintergrund. Gespielt wird nur, was zu sehen ist.
+  const CV_MODES = new Set(["cover", "lyrics", "viz", "mix", "party"]);
+  let canvasToken = 0, canvasUrl = null;
   async function setCanvas(item) {
     const token = ++canvasToken;
+    canvasUrl = null;
+    applyCanvas();
     const url = cfg.canvas && !cfg.calm ? await getCanvas(item?.uri) : null;
-    if (token !== canvasToken || !q.video) return;
-    if (!url) {
-      q.video.classList.remove("is-on");
-      q.video.pause();
-      q.video.removeAttribute("src");
+    if (token !== canvasToken) return;
+    canvasUrl = url;
+    applyCanvas();
+  }
+  function playIn(v, on) {
+    if (!v) return;
+    if (!on) {
+      v.classList.remove("is-on");
+      v.pause();
       return;
     }
-    if (q.video.src !== url) q.video.src = url;
-    q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
+    if (v.getAttribute("src") !== canvasUrl) v.src = canvasUrl;
+    v.play().then(() => v.classList.add("is-on")).catch(() => v.classList.remove("is-on"));
+  }
+  // Kopfzeile: überlappen die Knöpfe rechts die mittigen Ansichten, rücken die Ansichten nach links
+  function fitTop() {
+    if (!el) return;
+    el.classList.remove("tabs-left");
+    const tabs = el.querySelector(".m-im-tabs")?.getBoundingClientRect(), acts = el.querySelector(".m-im-actions")?.getBoundingClientRect();
+    if (tabs && acts && acts.width && acts.left < tabs.right + 12) el.classList.add("tabs-left");
+  }
+  addEventListener("resize", () => requestAnimationFrame(fitTop));
+  function applyCanvas() {
+    if (!el || !q.cvbtn) return;
+    const mode = el.dataset.mode, can = !!canvasUrl && cfg.canvas && !cfg.calm && CV_MODES.has(mode);
+    const on = can && !!cfg.canvasIn?.[mode];
+    q.cvbtn.hidden = !can;
+    q.cvbtn.setAttribute("aria-pressed", String(on));
+    q.cvbtn.title = q.cvbtn.ariaLabel = t(on ? "canvasOff" : "canvasOn");
+    el.classList.toggle("has-canvas", on);
+    requestAnimationFrame(fitTop);
+    playIn(q.cvid, on);
+    playIn(q.video, on && mode === "lyrics");
   }
   // Tastenkürzel-Übersicht (Taste ?)
   const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["Esc", "k_close"], ["?", "keysTitle"]];
@@ -2024,7 +2070,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2052,6 +2098,10 @@ const immersive = (() => {
       else b.disabled = true;
       body.append(b);
     };
+    if (kind === "wishes") {
+      el.querySelector(".m-im-wishtoast")?.remove();
+      return wishPanel(body);
+    }
     if (kind === "queue") {
       const list = ctl.upNext();
       if (!list.length) return item(t("queueEmpty"));
@@ -2167,49 +2217,104 @@ const immersive = (() => {
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
     drawWishes();
   }
-  // Songwünsche der Gäste (Live-Link): oben links, die meistgewünschten zuerst – annehmen = in die Warteschlange
-  function drawWishes() {
-    if (!el) return;
-    const list = el.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open").slice(0, 3) : [];
-    let box = el.querySelector(".m-im-wishes");
-    if (!list.length) return box?.remove();
-    if (!box) {
-      box = document.createElement("div");
-      box.className = "m-im-wishes";
-      box.setAttribute("role", "region");
-      box.setAttribute("aria-label", t("wishTitle"));
-      el.append(box);
+  // Songwünsche der Gäste (Live-Link): ein Knopf oben mit Zahl, die Liste in der Seitenleiste (wie die
+  // Warteschlange), neue Wünsche gleiten kurz oben ein – auch wenn die Bedienung im Party-Modus ausgeblendet ist
+  const seenWish = new Set();
+  const openWishes = () => (el?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : []);
+  const safeImg = (u) => (/^https:\/\/i\.scdn\.co\//.test(u || "") ? u : "");
+  async function takeWish(w, btn) {
+    if (btn) btn.disabled = true;
+    if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
+    else if (btn) btn.disabled = false;
+  }
+  function wishRow(w) {
+    const row = document.createElement("div");
+    row.className = "m-im-wishrow";
+    if (safeImg(w.img)) {
+      const i = new Image();
+      i.alt = "";
+      i.onerror = () => (i.style.visibility = "hidden");
+      i.src = safeImg(w.img);
+      row.append(i);
     }
-    const head = document.createElement("b");
-    head.textContent = t("wishTitle");
-    const rows = list.map((w) => {
-      const row = document.createElement("div");
-      row.className = "m-im-wish";
-      const txt = document.createElement("span");
-      const ti = document.createElement("i");
-      ti.textContent = w.t;
-      const sub = document.createElement("small");
-      sub.textContent = `${w.a}${w.n ? " · " + t("wishBy").replace("{n}", w.n) : ""} · 👍 ${w.v}`;
-      txt.append(ti, sub);
-      const ok = document.createElement("button");
-      ok.type = "button";
-      ok.className = "m-im-wish-ok";
-      ok.textContent = t("wishQueue");
-      ok.onclick = async () => {
-        ok.disabled = true;
-        if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
-        else ok.disabled = false;
-      };
-      const no = document.createElement("button");
-      no.type = "button";
-      no.className = "m-im-wish-no";
-      no.textContent = "✕";
-      no.title = no.ariaLabel = t("wishDecline");
-      no.onclick = () => live.decline(w.i);
-      row.append(txt, ok, no);
-      return row;
-    });
-    box.replaceChildren(head, ...rows);
+    const txt = document.createElement("span");
+    const ti = document.createElement("b"), sub = document.createElement("small");
+    ti.textContent = w.t;
+    sub.textContent = w.a + (w.n ? " · " + t("wishBy").replace("{n}", w.n) : "");
+    txt.append(ti, sub);
+    const votes = document.createElement("i");
+    votes.className = "m-im-votes";
+    votes.textContent = "👍 " + w.v;
+    const ok = document.createElement("button");
+    ok.type = "button";
+    ok.className = "m-im-wish-ok";
+    ok.textContent = t("wishQueue");
+    ok.onclick = () => takeWish(w, ok);
+    const no = document.createElement("button");
+    no.type = "button";
+    no.className = "m-im-wish-no";
+    no.textContent = "✕";
+    no.title = no.ariaLabel = t("wishDecline");
+    no.onclick = () => live.decline(w.i);
+    row.append(txt, votes, ok, no);
+    return row;
+  }
+  function wishPanel(body) {
+    const list = openWishes();
+    if (!list.length) {
+      const e = document.createElement("p");
+      e.className = "m-im-wishempty";
+      e.textContent = t("wishNone");
+      return body.replaceChildren(e);
+    }
+    body.replaceChildren(...list.map(wishRow));
+  }
+  function wishToast(w) {
+    el.querySelector(".m-im-wishtoast")?.remove();
+    const box = document.createElement("div");
+    box.className = "m-im-wishtoast";
+    box.setAttribute("role", "status");
+    if (safeImg(w.img)) {
+      const i = new Image();
+      i.alt = "";
+      i.onerror = () => (i.style.visibility = "hidden");
+      i.src = safeImg(w.img);
+      box.append(i);
+    }
+    const txt = document.createElement("span");
+    const k = document.createElement("small"), ti = document.createElement("b");
+    k.textContent = w.n ? t("wishFrom").replace("{n}", w.n) : t("wishNew");
+    ti.textContent = `${w.t} – ${w.a}`;
+    txt.append(k, ti);
+    const ok = document.createElement("button");
+    ok.type = "button";
+    ok.className = "m-im-wish-ok";
+    ok.textContent = t("wishQueue");
+    ok.onclick = () => takeWish(w, ok).then(() => box.remove());
+    const all = document.createElement("button");
+    all.type = "button";
+    all.className = "m-im-wish-all";
+    all.textContent = t("wishAll");
+    all.onclick = () => {
+      box.remove();
+      showSide("wishes");
+    };
+    box.append(txt, ok, all);
+    el.append(box);
+    setTimeout(() => box.classList.add("is-gone"), 6500);
+    setTimeout(() => box.remove(), 7200);
+  }
+  function drawWishes() {
+    if (!el || !q.wishbtn) return;
+    const list = openWishes();
+    q.wishbtn.hidden = !list.length;
+    q.wishbtn.dataset.n = list.length > 9 ? "9+" : String(list.length);
+    q.wishbtn.title = q.wishbtn.ariaLabel = t("wishTitle") + (list.length ? ` (${list.length})` : "");
+    const fresh = list.find((w) => !seenWish.has(w.i));
+    for (const w of list) seenWish.add(w.i);
+    if (fresh && side !== "wishes") wishToast(fresh);
+    requestAnimationFrame(fitTop);
+    if (side === "wishes") wishPanel(q.sideBody);
   }
   window.addEventListener("mirage:wishes", () => drawWishes());
   // Live-Link: QR-Code und Link der Handy-Seite (verschlüsselt über einen Relay, siehe live.js)

@@ -140,6 +140,7 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 - **Synchron zu dem, was du hörst** – eine ruhige Song-Uhr glättet Spotifys Position; sechsmal <kbd>T</kbd> im Takt misst Licht, Publikum und Liedtext auf deine Lautsprecher ein.
 - **Lautschrift** unter koreanischem, japanischem und chinesischem Liedtext, **Duett-Farben** für Zeilen mit Sängernamen und kleiner gesetzter Hintergrundgesang in Klammern.
 - **Timing selbst korrigieren** – <kbd>E</kbd> drücken, dann Enter, sobald die markierte Zeile beginnt; gespeichert je Song.
+- **Canvas-Videos** – hat ein Song eins, spielt der Film-Knopf oben es im Cover ab (und gedämpft hinter dem Liedtext) – je Ansicht einschaltbar, anfangs aus.
 - **Vollbild** per Knopf, <kbd>F</kbd> oder <kbd>F11</kbd>; ruht die Maus, blenden die Bedienelemente aus.
 
 ## 🎉 Party-Modus
@@ -195,9 +196,8 @@ Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer – dazu Dachterrasse
 - **Folgt den Instrumenten** – die Kick treibt Puls und Bodenlicht, die Snare die Spots, die Hi-Hats das Funkeln; zwei dünne *Melodie-Laser* folgen der Tonhöhe der Melodie.
 - **Bühneneffekte, wo sie hingehören** – CO2-Fontänen bei elektronischer Musik, Pyro bei Rock, Metal und Punk, Feuerwerk, Konfetti-Kanonen und Luftschlangen im letzten Refrain, Stroboskop bei harten Drops (ab *Extrem*, nie mehr als ein Blitz pro Schlag).
 - **Lichtermeer** – bei Balladen, Gospel und Soul heben im Refrain immer mehr Leute Handys und Feuerzeuge und schwenken sie gemeinsam.
-- **Kameraschnitte** – harte Schnitte auf dem Taktanfang zwischen Totale, Nah und Publikum; der Drop schneidet zurück auf die Totale.
 - **Lichtregie** – vor dem Drop hält sich das Licht zurück, auf dem letzten Schlag wird es dunkel, dann schlägt alles auf einmal ein. Eine Zeitlupe friert die halbe Sekunde davor ein, und DJ-Übergänge blenden beim Songwechsel die Farben über vier Schläge.
-- **Fünf Stärken** von *Sanft* bis *Wahnsinn*, dazu Hype-Zeilen für Refrains, 3D-Tiefe, Kamerafahrten und Liedtext, der beim Drop in Licht zerplatzt.
+- **Fünf Stärken** von *Sanft* bis *Wahnsinn*, dazu Hype-Zeilen für Refrains und Liedtext, der beim Drop in Licht zerplatzt. Das Bild selbst bleibt ruhig – kein Zoomen, keine Kamerafahrten.
 
 ### 🎺 Instrumente
 
@@ -220,8 +220,8 @@ Bestätigen die **Credits** des Songs (Spotify, sonst MusicBrainz) ein Instrumen
 **Live-Link** in den Party-Einstellungen einschalten, im Party-Modus den Handy-Knopf drücken und die Gäste den QR-Code scannen lassen. Ihre Handys werden zu zusätzlichen Lichtern: die Farben des Songs, ein Ring auf jedem Schlag, ein Blitz beim Drop – im Vollbild, der Bildschirm bleibt an.
 
 - **Liedtext zum Mitsingen** – die aktuelle Zeile groß in der Mitte, die nächste darunter.
-- **Songwünsche aus Spotify** – Gäste suchen auf dem Handy im echten Spotify-Katalog, wählen einen Song und stimmen über die Wünsche der anderen ab. Du siehst die meistgewünschten im Party-Modus und nimmst sie mit einem Klick in die Warteschlange; von selbst kommt nichts hinein.
-- **Vibration beim Drop** (Android).
+- **Songwünsche aus Spotify** – Gäste suchen wie in Spotify (Tippfehler und Teile von Titeln sind kein Problem), wählen einen Song und stimmen über die Wünsche der anderen ab. Im Party-Modus zeigt eine Zahl neue Wünsche, die Liste liegt in der Seitenleiste, ein Klick nimmt den Song in die Warteschlange; von selbst kommt nichts hinein.
+- **Vibration im Takt** (Android) – ein kräftiger Stoß auf der Eins, leichte Taps auf dem Backbeat, schnellere Ticks im Aufbau, ein langes Anschwellen beim Drop; *sanft*, *normal* oder *stark* am Handy. (Websites dürfen die Motorstärke nicht direkt setzen – Mirage erzeugt sie mit schnellen Pulsen. iPhones lassen Websites nicht vibrieren.)
 
 - **Jedes Netz, keine App** – WLAN oder mobile Daten; die Seite kommt von GitHub Pages.
 - **Nur für alle mit dem QR-Code** – Kanal und Schlüssel sind 128-Bit-Zufallswerte, die nur im QR-Link hinter dem `#` stehen, und dieser Teil geht nie an einen Server. Die Nachrichten sind Ende-zu-Ende verschlüsselt und authentifiziert (AES-GCM): Der Relay sieht nur Zufallsbytes, und niemand kann mitlesen oder etwas einschleusen.

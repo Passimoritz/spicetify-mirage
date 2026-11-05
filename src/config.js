@@ -55,6 +55,8 @@ const DEFAULTS = {
   font: "outfit",
   lyricPicks: {},
   canvas: true,
+  // Canvas je Ansicht – erst an, wenn man es dort mit dem Film-Knopf einschaltet
+  canvasIn: { cover: false, lyrics: false, viz: false, mix: false, party: false },
   freeze: false,
   pinned: {},
   playlistSchemes: {},
@@ -79,10 +81,10 @@ const DEFAULTS = {
   // Party-Erweiterungen, alle einzeln abschaltbar
   partyBlend: true,
   partyHype: true,
-  partyDepth: true,
+  partyDepth: false,
   partyShatter: true,
-  partyCamera: true,
-  partyCuts: true,
+  partyCamera: false,
+  partyCuts: false,
   romanize: false,
   partyWishes: true,
   partyCrowd: true,
@@ -115,7 +117,7 @@ const DEFAULTS = {
   partyStrobe: true,
   // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
   partyLasers: true,
-  partyZoom: true,
+  partyZoom: false,
   partyIdle: true,
   scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
 };
@@ -127,6 +129,10 @@ try {
     delete saved.dynamic;
   }
   cfg = { ...DEFAULTS, ...saved };
+  // Party: Kamerafahrten, Kameraschnitte und 3D-Tiefe sind entfernt (das ständige Zoomen und Verschieben störte),
+  // die Kamera-Stöße einmalig für alle aus – wer sie will, schaltet sie in den Einstellungen wieder ein
+  cfg.partyCamera = cfg.partyCuts = cfg.partyDepth = false;
+  if (!saved.zoomOff1155) Object.assign(cfg, { partyZoom: false, zoomOff1155: true });
 } catch {}
 // eigene Schemata stehen gleichberechtigt neben den mitgelieferten
 for (const [name, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(name)) SCHEMES[name] = sc;

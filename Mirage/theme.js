@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.15.4" : "dev";
+      VERSION = true ? "1.16.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -235,7 +235,7 @@
           translate: "Translate lyrics",
           translateHint: "Shows a translation under each line \u2013 the lines are sent to Google Translate",
           canvas: "Canvas videos",
-          canvasHint: "Spotify's short looping videos behind the cover, where available",
+          canvasHint: "Spotify's short looping videos \u2013 turn them on per view with the film button at the top of immersive mode",
           viz_particles: "Particles",
           viz_line: "Line",
           viz_bottom: "Bottom bars",
@@ -525,7 +525,13 @@
           tour3Try: "Start the party",
           tour4t: "Everything adjustable",
           tour4: "Profile menu \u2192 Mirage settings: presets for look and performance, every effect has its own switch \u2013 and a search at the top.",
-          tour4Try: "Open settings"
+          tour4Try: "Open settings",
+          canvasOn: "Show the canvas video here",
+          canvasOff: "Hide the canvas video",
+          wishNone: "No open wishes right now",
+          wishFrom: "{n} wishes for",
+          wishNew: "New song wish",
+          wishAll: "All wishes"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -648,7 +654,7 @@
           translate: "Liedtext \xFCbersetzen",
           translateHint: "Zeigt unter jeder Zeile eine \xDCbersetzung \u2013 die Zeilen gehen daf\xFCr an Google Translate",
           canvas: "Canvas-Videos",
-          canvasHint: "Spotifys kurze Video-Loops hinter dem Cover, wo vorhanden",
+          canvasHint: "Spotifys kurze Video-Loops \u2013 je Ansicht einschalten mit dem Film-Knopf oben im Immersiv-Modus",
           viz_particles: "Partikel",
           viz_line: "Linie",
           viz_bottom: "Balken unten",
@@ -938,7 +944,13 @@
           tour3Try: "Party starten",
           tour4t: "Alles einstellbar",
           tour4: "Profilmen\xFC \u2192 Mirage-Einstellungen: Voreinstellungen f\xFCr Aussehen und Leistung, jeder Effekt hat einen eigenen Schalter \u2013 und oben eine Suche.",
-          tour4Try: "Einstellungen \xF6ffnen"
+          tour4Try: "Einstellungen \xF6ffnen",
+          canvasOn: "Canvas-Video hier zeigen",
+          canvasOff: "Canvas-Video ausblenden",
+          wishNone: "Gerade keine offenen W\xFCnsche",
+          wishFrom: "{n} w\xFCnscht sich",
+          wishNew: "Neuer Songwunsch",
+          wishAll: "Alle W\xFCnsche"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -1061,7 +1073,7 @@
           translate: "Traduire les paroles",
           translateHint: "Affiche une traduction sous chaque ligne \u2013 les lignes sont envoy\xE9es \xE0 Google Traduction",
           canvas: "Vid\xE9os Canvas",
-          canvasHint: "Les courtes vid\xE9os en boucle de Spotify derri\xE8re la pochette, si disponibles",
+          canvasHint: "Les courtes vid\xE9os en boucle de Spotify \u2013 \xE0 activer par vue avec le bouton film en haut du mode immersif",
           viz_particles: "Particules",
           viz_line: "Ligne",
           viz_bottom: "Barres en bas",
@@ -1351,7 +1363,13 @@
           tour3Try: "Lancer la f\xEAte",
           tour4t: "Tout est r\xE9glable",
           tour4: "Menu du profil \u2192 R\xE9glages Mirage : pr\xE9r\xE9glages d'apparence et de performance, chaque effet a son interrupteur \u2013 et une recherche en haut.",
-          tour4Try: "Ouvrir les r\xE9glages"
+          tour4Try: "Ouvrir les r\xE9glages",
+          canvasOn: "Afficher la vid\xE9o Canvas ici",
+          canvasOff: "Masquer la vid\xE9o Canvas",
+          wishNone: "Aucune demande en attente",
+          wishFrom: "{n} demande",
+          wishNew: "Nouvelle demande",
+          wishAll: "Toutes les demandes"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1474,7 +1492,7 @@
           translate: "Traducir la letra",
           translateHint: "Muestra una traducci\xF3n bajo cada l\xEDnea \u2013 las l\xEDneas se env\xEDan a Google Translate",
           canvas: "V\xEDdeos Canvas",
-          canvasHint: "Los v\xEDdeos cortos en bucle de Spotify detr\xE1s de la portada, cuando los hay",
+          canvasHint: "Los v\xEDdeos cortos en bucle de Spotify \u2013 act\xEDvalos en cada vista con el bot\xF3n de pel\xEDcula arriba en el modo inmersivo",
           viz_particles: "Part\xEDculas",
           viz_line: "L\xEDnea",
           viz_bottom: "Barras abajo",
@@ -1764,7 +1782,13 @@
           tour3Try: "Empezar la fiesta",
           tour4t: "Todo ajustable",
           tour4: "Men\xFA del perfil \u2192 Ajustes de Mirage: preajustes de aspecto y rendimiento, cada efecto tiene su interruptor \u2013 y arriba un buscador.",
-          tour4Try: "Abrir ajustes"
+          tour4Try: "Abrir ajustes",
+          canvasOn: "Mostrar aqu\xED el v\xEDdeo Canvas",
+          canvasOff: "Ocultar el v\xEDdeo Canvas",
+          wishNone: "No hay peticiones pendientes",
+          wishFrom: "{n} pide",
+          wishNew: "Nueva petici\xF3n",
+          wishAll: "Todas las peticiones"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1887,7 +1911,7 @@
           translate: "Traduci il testo",
           translateHint: "Mostra una traduzione sotto ogni riga \u2013 le righe vengono inviate a Google Traduttore",
           canvas: "Video Canvas",
-          canvasHint: "I brevi video in loop di Spotify dietro la copertina, dove disponibili",
+          canvasHint: "I brevi video in loop di Spotify \u2013 attivali per ogni vista con il pulsante pellicola in alto nella modalit\xE0 immersiva",
           viz_particles: "Particelle",
           viz_line: "Linea",
           viz_bottom: "Barre in basso",
@@ -2177,7 +2201,13 @@
           tour3Try: "Inizia la festa",
           tour4t: "Tutto regolabile",
           tour4: "Menu del profilo \u2192 Impostazioni di Mirage: preset per aspetto e prestazioni, ogni effetto ha il suo interruttore \u2013 e in alto una ricerca.",
-          tour4Try: "Apri le impostazioni"
+          tour4Try: "Apri le impostazioni",
+          canvasOn: "Mostra qui il video Canvas",
+          canvasOff: "Nascondi il video Canvas",
+          wishNone: "Nessuna richiesta aperta",
+          wishFrom: "{n} chiede",
+          wishNew: "Nuova richiesta",
+          wishAll: "Tutte le richieste"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -2300,7 +2330,7 @@
           translate: "Traduzir letra",
           translateHint: "Mostra uma tradu\xE7\xE3o abaixo de cada linha \u2013 as linhas s\xE3o enviadas ao Google Tradutor",
           canvas: "V\xEDdeos Canvas",
-          canvasHint: "Os v\xEDdeos curtos em loop do Spotify atr\xE1s da capa, quando dispon\xEDveis",
+          canvasHint: "Os v\xEDdeos curtos em loop do Spotify \u2013 ative por vis\xE3o com o bot\xE3o de filme no topo do modo imersivo",
           viz_particles: "Part\xEDculas",
           viz_line: "Linha",
           viz_bottom: "Barras embaixo",
@@ -2590,7 +2620,13 @@
           tour3Try: "Come\xE7ar a festa",
           tour4t: "Tudo ajust\xE1vel",
           tour4: "Menu do perfil \u2192 Configura\xE7\xF5es do Mirage: predefini\xE7\xF5es de apar\xEAncia e desempenho, cada efeito tem seu bot\xE3o \u2013 e uma busca no topo.",
-          tour4Try: "Abrir configura\xE7\xF5es"
+          tour4Try: "Abrir configura\xE7\xF5es",
+          canvasOn: "Mostrar o v\xEDdeo Canvas aqui",
+          canvasOff: "Ocultar o v\xEDdeo Canvas",
+          wishNone: "Nenhum pedido em aberto",
+          wishFrom: "{n} pediu",
+          wishNew: "Novo pedido",
+          wishAll: "Todos os pedidos"
         },
         nl: {
           menu: "Mirage-instellingen",
@@ -2713,7 +2749,7 @@
           translate: "Songtekst vertalen",
           translateHint: "Toont onder elke regel een vertaling \u2013 de regels worden naar Google Translate gestuurd",
           canvas: "Canvas-video's",
-          canvasHint: "Spotify's korte video-loops achter de hoes, waar beschikbaar",
+          canvasHint: "Spotify's korte video-loops \u2013 per weergave aanzetten met de filmknop bovenin de immersieve modus",
           viz_particles: "Deeltjes",
           viz_line: "Lijn",
           viz_bottom: "Balken onderaan",
@@ -3003,7 +3039,13 @@
           tour3Try: "Feest starten",
           tour4t: "Alles instelbaar",
           tour4: "Profielmenu \u2192 Mirage-instellingen: voorinstellingen voor uiterlijk en prestaties, elk effect heeft een eigen schakelaar \u2013 en bovenaan een zoekveld.",
-          tour4Try: "Instellingen openen"
+          tour4Try: "Instellingen openen",
+          canvasOn: "Canvas-video hier tonen",
+          canvasOff: "Canvas-video verbergen",
+          wishNone: "Geen open verzoeken",
+          wishFrom: "{n} wil graag",
+          wishNew: "Nieuw verzoeknummer",
+          wishAll: "Alle verzoeken"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -3126,7 +3168,7 @@
           translate: "T\u0142umacz tekst",
           translateHint: "Pokazuje t\u0142umaczenie pod ka\u017Cdym wierszem \u2013 wiersze s\u0105 wysy\u0142ane do T\u0142umacza Google",
           canvas: "Filmy Canvas",
-          canvasHint: "Kr\xF3tkie zap\u0119tlone filmy Spotify za ok\u0142adk\u0105, je\u015Bli s\u0105 dost\u0119pne",
+          canvasHint: "Kr\xF3tkie zap\u0119tlone filmy Spotify \u2013 w\u0142\u0105czaj je w ka\u017Cdym widoku przyciskiem z filmem u g\xF3ry trybu immersyjnego",
           viz_particles: "Cz\u0105steczki",
           viz_line: "Linia",
           viz_bottom: "S\u0142upki na dole",
@@ -3416,7 +3458,13 @@
           tour3Try: "Zacznij imprez\u0119",
           tour4t: "Wszystko do ustawienia",
           tour4: "Menu profilu \u2192 Ustawienia Mirage: ustawienia wst\u0119pne wygl\u0105du i wydajno\u015Bci, ka\u017Cdy efekt ma w\u0142asny prze\u0142\u0105cznik \u2013 a u g\xF3ry wyszukiwark\u0119.",
-          tour4Try: "Otw\xF3rz ustawienia"
+          tour4Try: "Otw\xF3rz ustawienia",
+          canvasOn: "Poka\u017C tutaj wideo Canvas",
+          canvasOff: "Ukryj wideo Canvas",
+          wishNone: "Brak otwartych pr\xF3\u015Bb",
+          wishFrom: "{n} prosi o",
+          wishNew: "Nowa pro\u015Bba",
+          wishAll: "Wszystkie pro\u015Bby"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
@@ -3539,7 +3587,7 @@
           translate: "S\xF6zleri \xE7evir",
           translateHint: "Her sat\u0131r\u0131n alt\u0131nda \xE7eviri g\xF6sterir \u2013 sat\u0131rlar Google \xC7eviri'ye g\xF6nderilir",
           canvas: "Canvas videolar\u0131",
-          canvasHint: "Spotify'\u0131n kapak arkas\u0131ndaki k\u0131sa d\xF6ng\xFC videolar\u0131, varsa",
+          canvasHint: "Spotify'\u0131n k\u0131sa d\xF6ng\xFC videolar\u0131 \u2013 s\xFCr\xFCkleyici moddaki film d\xFC\u011Fmesiyle her g\xF6r\xFCn\xFCmde ayr\u0131 a\xE7",
           viz_particles: "Par\xE7ac\u0131klar",
           viz_line: "\xC7izgi",
           viz_bottom: "Alt \xE7ubuklar",
@@ -3829,7 +3877,13 @@
           tour3Try: "Partiyi ba\u015Flat",
           tour4t: "Her \u015Fey ayarlanabilir",
           tour4: "Profil men\xFCs\xFC \u2192 Mirage ayarlar\u0131: g\xF6r\xFCn\xFCm ve performans haz\u0131r ayarlar\u0131, her efektin kendi d\xFC\u011Fmesi \u2013 ve en \xFCstte arama.",
-          tour4Try: "Ayarlar\u0131 a\xE7"
+          tour4Try: "Ayarlar\u0131 a\xE7",
+          canvasOn: "Canvas videosunu burada g\xF6ster",
+          canvasOff: "Canvas videosunu gizle",
+          wishNone: "\u015Eu an a\xE7\u0131k istek yok",
+          wishFrom: "{n} istiyor",
+          wishNew: "Yeni \u015Fark\u0131 iste\u011Fi",
+          wishAll: "T\xFCm istekler"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -3952,7 +4006,7 @@
           translate: "\u041F\u0435\u0440\u0435\u0432\u043E\u0434\u0438\u0442\u044C \u0442\u0435\u043A\u0441\u0442",
           translateHint: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 \u043F\u0435\u0440\u0435\u0432\u043E\u0434 \u043F\u043E\u0434 \u043A\u0430\u0436\u0434\u043E\u0439 \u0441\u0442\u0440\u043E\u043A\u043E\u0439 \u2013 \u0441\u0442\u0440\u043E\u043A\u0438 \u043E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u044E\u0442\u0441\u044F \u0432 Google \u041F\u0435\u0440\u0435\u0432\u043E\u0434\u0447\u0438\u043A",
           canvas: "\u0412\u0438\u0434\u0435\u043E Canvas",
-          canvasHint: "\u041A\u043E\u0440\u043E\u0442\u043A\u0438\u0435 \u0437\u0430\u0446\u0438\u043A\u043B\u0435\u043D\u043D\u044B\u0435 \u0432\u0438\u0434\u0435\u043E Spotify \u0437\u0430 \u043E\u0431\u043B\u043E\u0436\u043A\u043E\u0439, \u0435\u0441\u043B\u0438 \u0435\u0441\u0442\u044C",
+          canvasHint: "\u041A\u043E\u0440\u043E\u0442\u043A\u0438\u0435 \u0437\u0430\u0446\u0438\u043A\u043B\u0435\u043D\u043D\u044B\u0435 \u0432\u0438\u0434\u0435\u043E Spotify \u2013 \u0432\u043A\u043B\u044E\u0447\u0430\u0439 \u0438\u0445 \u0432 \u043A\u0430\u0436\u0434\u043E\u043C \u0432\u0438\u0434\u0435 \u043A\u043D\u043E\u043F\u043A\u043E\u0439 \u0441 \u043F\u043B\u0451\u043D\u043A\u043E\u0439 \u0432\u0432\u0435\u0440\u0445\u0443 \u0438\u043C\u043C\u0435\u0440\u0441\u0438\u0432\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0430",
           viz_particles: "\u0427\u0430\u0441\u0442\u0438\u0446\u044B",
           viz_line: "\u041B\u0438\u043D\u0438\u044F",
           viz_bottom: "\u0421\u0442\u043E\u043B\u0431\u0438\u043A\u0438 \u0441\u043D\u0438\u0437\u0443",
@@ -4242,7 +4296,13 @@
           tour3Try: "\u041D\u0430\u0447\u0430\u0442\u044C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0443",
           tour4t: "\u0412\u0441\u0451 \u043D\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0435\u0442\u0441\u044F",
           tour4: "\u041C\u0435\u043D\u044E \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u2192 \u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage: \u043F\u0440\u0435\u0441\u0435\u0442\u044B \u0432\u043D\u0435\u0448\u043D\u0435\u0433\u043E \u0432\u0438\u0434\u0430 \u0438 \u043F\u0440\u043E\u0438\u0437\u0432\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u0438, \u0443 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u044D\u0444\u0444\u0435\u043A\u0442\u0430 \u0441\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0430\u0442\u0435\u043B\u044C \u2013 \u0438 \u043F\u043E\u0438\u0441\u043A \u0441\u0432\u0435\u0440\u0445\u0443.",
-          tour4Try: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"
+          tour4Try: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",
+          canvasOn: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0437\u0434\u0435\u0441\u044C \u0432\u0438\u0434\u0435\u043E Canvas",
+          canvasOff: "\u0421\u043A\u0440\u044B\u0442\u044C \u0432\u0438\u0434\u0435\u043E Canvas",
+          wishNone: "\u0421\u0435\u0439\u0447\u0430\u0441 \u043D\u0435\u0442 \u0437\u0430\u043A\u0430\u0437\u043E\u0432",
+          wishFrom: "{n} \u0437\u0430\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442",
+          wishNew: "\u041D\u043E\u0432\u044B\u0439 \u0437\u0430\u043A\u0430\u0437 \u043F\u0435\u0441\u043D\u0438",
+          wishAll: "\u0412\u0441\u0435 \u0437\u0430\u043A\u0430\u0437\u044B"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -4365,7 +4425,7 @@
           translate: "\u041F\u0435\u0440\u0435\u043A\u043B\u0430\u0434\u0430\u0442\u0438 \u0442\u0435\u043A\u0441\u0442",
           translateHint: "\u041F\u043E\u043A\u0430\u0437\u0443\u0454 \u043F\u0435\u0440\u0435\u043A\u043B\u0430\u0434 \u043F\u0456\u0434 \u043A\u043E\u0436\u043D\u0438\u043C \u0440\u044F\u0434\u043A\u043E\u043C \u2013 \u0440\u044F\u0434\u043A\u0438 \u043D\u0430\u0434\u0441\u0438\u043B\u0430\u044E\u0442\u044C\u0441\u044F \u0434\u043E Google \u041F\u0435\u0440\u0435\u043A\u043B\u0430\u0434\u0430\u0447\u0430",
           canvas: "\u0412\u0456\u0434\u0435\u043E Canvas",
-          canvasHint: "\u041A\u043E\u0440\u043E\u0442\u043A\u0456 \u0437\u0430\u0446\u0438\u043A\u043B\u0435\u043D\u0456 \u0432\u0456\u0434\u0435\u043E Spotify \u0437\u0430 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u043E\u044E, \u044F\u043A\u0449\u043E \u0454",
+          canvasHint: "\u041A\u043E\u0440\u043E\u0442\u043A\u0456 \u0437\u0430\u0446\u0438\u043A\u043B\u0435\u043D\u0456 \u0432\u0456\u0434\u0435\u043E Spotify \u2013 \u0432\u043C\u0438\u043A\u0430\u0439 \u0457\u0445 \u0443 \u043A\u043E\u0436\u043D\u043E\u043C\u0443 \u0432\u0438\u0433\u043B\u044F\u0434\u0456 \u043A\u043D\u043E\u043F\u043A\u043E\u044E \u0437 \u043F\u043B\u0456\u0432\u043A\u043E\u044E \u0432\u0433\u043E\u0440\u0456 \u0456\u043C\u0435\u0440\u0441\u0438\u0432\u043D\u043E\u0433\u043E \u0440\u0435\u0436\u0438\u043C\u0443",
           viz_particles: "\u0427\u0430\u0441\u0442\u0438\u043D\u043A\u0438",
           viz_line: "\u041B\u0456\u043D\u0456\u044F",
           viz_bottom: "\u0421\u0442\u043E\u0432\u043F\u0447\u0438\u043A\u0438 \u0437\u043D\u0438\u0437\u0443",
@@ -4655,7 +4715,13 @@
           tour3Try: "\u041F\u043E\u0447\u0430\u0442\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0443",
           tour4t: "\u0423\u0441\u0435 \u043D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0443\u0454\u0442\u044C\u0441\u044F",
           tour4: "\u041C\u0435\u043D\u044E \u043F\u0440\u043E\u0444\u0456\u043B\u044E \u2192 \u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage: \u043F\u0440\u0435\u0441\u0435\u0442\u0438 \u0432\u0438\u0433\u043B\u044F\u0434\u0443 \u0439 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0456, \u0443 \u043A\u043E\u0436\u043D\u043E\u0433\u043E \u0435\u0444\u0435\u043A\u0442\u0443 \u0441\u0432\u0456\u0439 \u043F\u0435\u0440\u0435\u043C\u0438\u043A\u0430\u0447 \u2013 \u0456 \u043F\u043E\u0448\u0443\u043A \u0443\u0433\u043E\u0440\u0456.",
-          tour4Try: "\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F"
+          tour4Try: "\u0412\u0456\u0434\u043A\u0440\u0438\u0442\u0438 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F",
+          canvasOn: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u0442\u0443\u0442 \u0432\u0456\u0434\u0435\u043E Canvas",
+          canvasOff: "\u0421\u0445\u043E\u0432\u0430\u0442\u0438 \u0432\u0456\u0434\u0435\u043E Canvas",
+          wishNone: "\u0417\u0430\u0440\u0430\u0437 \u043D\u0435\u043C\u0430\u0454 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u044C",
+          wishFrom: "{n} \u0437\u0430\u043C\u043E\u0432\u043B\u044F\u0454",
+          wishNew: "\u041D\u043E\u0432\u0435 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u043F\u0456\u0441\u043D\u0456",
+          wishAll: "\u0423\u0441\u0456 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -4778,7 +4844,7 @@
           translate: "\u6B4C\u8A5E\u3092\u7FFB\u8A33",
           translateHint: "\u5404\u884C\u306E\u4E0B\u306B\u7FFB\u8A33\u3092\u8868\u793A\u3057\u307E\u3059 \u2013 \u6B4C\u8A5E\u306E\u884C\u306F Google \u7FFB\u8A33\u306B\u9001\u4FE1\u3055\u308C\u307E\u3059",
           canvas: "Canvas \u52D5\u753B",
-          canvasHint: "\u30B8\u30E3\u30B1\u30C3\u30C8\u306E\u80CC\u5F8C\u306B Spotify \u306E\u77ED\u3044\u30EB\u30FC\u30D7\u52D5\u753B\u3092\u8868\u793A\uFF08\u3042\u308B\u5834\u5408\uFF09",
+          canvasHint: "Spotify \u306E\u77ED\u3044\u30EB\u30FC\u30D7\u52D5\u753B\u3002\u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9\u4E0A\u90E8\u306E\u30D5\u30A3\u30EB\u30E0\u30DC\u30BF\u30F3\u3067\u753B\u9762\u3054\u3068\u306B\u30AA\u30F3\u306B\u3057\u307E\u3059",
           viz_particles: "\u30D1\u30FC\u30C6\u30A3\u30AF\u30EB",
           viz_line: "\u30E9\u30A4\u30F3",
           viz_bottom: "\u4E0B\u90E8\u306E\u30D0\u30FC",
@@ -5068,7 +5134,13 @@
           tour3Try: "\u30D1\u30FC\u30C6\u30A3\u30FC\u3092\u59CB\u3081\u308B",
           tour4t: "\u3059\u3079\u3066\u8ABF\u6574\u53EF\u80FD",
           tour4: "\u30D7\u30ED\u30D5\u30A3\u30FC\u30EB\u30E1\u30CB\u30E5\u30FC \u2192 Mirage \u306E\u8A2D\u5B9A\uFF1A\u898B\u305F\u76EE\u3068\u30D1\u30D5\u30A9\u30FC\u30DE\u30F3\u30B9\u306E\u30D7\u30EA\u30BB\u30C3\u30C8\u3001\u52B9\u679C\u3054\u3068\u306E\u30B9\u30A4\u30C3\u30C1\u3001\u4E0A\u90E8\u306B\u306F\u691C\u7D22\u3082\u3042\u308A\u307E\u3059\u3002",
-          tour4Try: "\u8A2D\u5B9A\u3092\u958B\u304F"
+          tour4Try: "\u8A2D\u5B9A\u3092\u958B\u304F",
+          canvasOn: "\u3053\u3053\u306B Canvas \u52D5\u753B\u3092\u8868\u793A",
+          canvasOff: "Canvas \u52D5\u753B\u3092\u975E\u8868\u793A",
+          wishNone: "\u672A\u5BFE\u5FDC\u306E\u30EA\u30AF\u30A8\u30B9\u30C8\u306F\u3042\u308A\u307E\u305B\u3093",
+          wishFrom: "{n} \u3055\u3093\u306E\u30EA\u30AF\u30A8\u30B9\u30C8",
+          wishNew: "\u65B0\u3057\u3044\u30EA\u30AF\u30A8\u30B9\u30C8",
+          wishAll: "\u3059\u3079\u3066\u306E\u30EA\u30AF\u30A8\u30B9\u30C8"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -5191,7 +5263,7 @@
           translate: "\uAC00\uC0AC \uBC88\uC5ED",
           translateHint: "\uAC01 \uC904 \uC544\uB798\uC5D0 \uBC88\uC5ED\uC744 \uD45C\uC2DC\uD569\uB2C8\uB2E4 \u2013 \uAC00\uC0AC \uC904\uC740 Google \uBC88\uC5ED\uC73C\uB85C \uC804\uC1A1\uB429\uB2C8\uB2E4",
           canvas: "Canvas \uB3D9\uC601\uC0C1",
-          canvasHint: "\uCEE4\uBC84 \uB4A4\uC5D0 Spotify\uC758 \uC9E7\uC740 \uBC18\uBCF5 \uB3D9\uC601\uC0C1 \uD45C\uC2DC(\uC788\uB294 \uACBD\uC6B0)",
+          canvasHint: "Spotify\uC758 \uC9E7\uC740 \uBC18\uBCF5 \uC601\uC0C1\uC785\uB2C8\uB2E4. \uBAB0\uC785 \uBAA8\uB4DC \uC704\uCABD\uC758 \uD544\uB984 \uBC84\uD2BC\uC73C\uB85C \uD654\uBA74\uB9C8\uB2E4 \uCF2D\uB2C8\uB2E4",
           viz_particles: "\uC785\uC790",
           viz_line: "\uC120",
           viz_bottom: "\uD558\uB2E8 \uB9C9\uB300",
@@ -5481,7 +5553,13 @@
           tour3Try: "\uD30C\uD2F0 \uC2DC\uC791",
           tour4t: "\uBAA8\uB450 \uC870\uC815 \uAC00\uB2A5",
           tour4: "\uD504\uB85C\uD544 \uBA54\uB274 \u2192 Mirage \uC124\uC815: \uBAA8\uC591\uACFC \uC131\uB2A5 \uC0AC\uC804 \uC124\uC815, \uD6A8\uACFC\uB9C8\uB2E4 \uAC1C\uBCC4 \uC2A4\uC704\uCE58, \uB9E8 \uC704\uC5D0\uB294 \uAC80\uC0C9\uB3C4 \uC788\uC2B5\uB2C8\uB2E4.",
-          tour4Try: "\uC124\uC815 \uC5F4\uAE30"
+          tour4Try: "\uC124\uC815 \uC5F4\uAE30",
+          canvasOn: "\uC5EC\uAE30\uC5D0 Canvas \uC601\uC0C1 \uD45C\uC2DC",
+          canvasOff: "Canvas \uC601\uC0C1 \uC228\uAE30\uAE30",
+          wishNone: "\uB300\uAE30 \uC911\uC778 \uC2E0\uCCAD\uACE1\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
+          wishFrom: "{n} \uB2D8\uC758 \uC2E0\uCCAD\uACE1",
+          wishNew: "\uC0C8 \uC2E0\uCCAD\uACE1",
+          wishAll: "\uBAA8\uB4E0 \uC2E0\uCCAD\uACE1"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -5604,7 +5682,7 @@
           translate: "\u7FFB\u8BD1\u6B4C\u8BCD",
           translateHint: "\u5728\u6BCF\u884C\u4E0B\u65B9\u663E\u793A\u7FFB\u8BD1 \u2013 \u6B4C\u8BCD\u884C\u4F1A\u53D1\u9001\u5230 Google \u7FFB\u8BD1",
           canvas: "Canvas \u89C6\u9891",
-          canvasHint: "\u5728\u5C01\u9762\u540E\u65B9\u64AD\u653E Spotify \u7684\u77ED\u5FAA\u73AF\u89C6\u9891\uFF08\u5982\u6709\uFF09",
+          canvasHint: "Spotify \u7684\u77ED\u5FAA\u73AF\u89C6\u9891\u2014\u2014\u5728\u6C89\u6D78\u6A21\u5F0F\u9876\u90E8\u7528\u80F6\u7247\u6309\u94AE\u6309\u89C6\u56FE\u5F00\u542F",
           viz_particles: "\u7C92\u5B50",
           viz_line: "\u7EBF\u6761",
           viz_bottom: "\u5E95\u90E8\u67F1\u72B6",
@@ -5894,7 +5972,13 @@
           tour3Try: "\u5F00\u59CB\u6D3E\u5BF9",
           tour4t: "\u4E00\u5207\u90FD\u53EF\u8C03",
           tour4: "\u4E2A\u4EBA\u8D44\u6599\u83DC\u5355 \u2192 Mirage \u8BBE\u7F6E\uFF1A\u5916\u89C2\u548C\u6027\u80FD\u9884\u8BBE\uFF0C\u6BCF\u4E2A\u6548\u679C\u90FD\u6709\u72EC\u7ACB\u5F00\u5173\uFF0C\u9876\u90E8\u8FD8\u6709\u641C\u7D22\u3002",
-          tour4Try: "\u6253\u5F00\u8BBE\u7F6E"
+          tour4Try: "\u6253\u5F00\u8BBE\u7F6E",
+          canvasOn: "\u5728\u8FD9\u91CC\u663E\u793A Canvas \u89C6\u9891",
+          canvasOff: "\u9690\u85CF Canvas \u89C6\u9891",
+          wishNone: "\u6682\u65F6\u6CA1\u6709\u5F85\u5904\u7406\u7684\u70B9\u6B4C",
+          wishFrom: "{n} \u70B9\u6B4C",
+          wishNew: "\u65B0\u7684\u70B9\u6B4C",
+          wishAll: "\u5168\u90E8\u70B9\u6B4C"
         }
       };
       LANG = (() => {
@@ -5994,6 +6078,8 @@
         font: "outfit",
         lyricPicks: {},
         canvas: true,
+        // Canvas je Ansicht – erst an, wenn man es dort mit dem Film-Knopf einschaltet
+        canvasIn: { cover: false, lyrics: false, viz: false, mix: false, party: false },
         freeze: false,
         pinned: {},
         playlistSchemes: {},
@@ -6018,10 +6104,10 @@
         // Party-Erweiterungen, alle einzeln abschaltbar
         partyBlend: true,
         partyHype: true,
-        partyDepth: true,
+        partyDepth: false,
         partyShatter: true,
-        partyCamera: true,
-        partyCuts: true,
+        partyCamera: false,
+        partyCuts: false,
         romanize: false,
         partyWishes: true,
         partyCrowd: true,
@@ -6054,7 +6140,7 @@
         partyStrobe: true,
         // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
         partyLasers: true,
-        partyZoom: true,
+        partyZoom: false,
         partyIdle: true,
         scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage"
       };
@@ -6066,6 +6152,8 @@
           delete saved.dynamic;
         }
         cfg = { ...DEFAULTS, ...saved };
+        cfg.partyCamera = cfg.partyCuts = cfg.partyDepth = false;
+        if (!saved.zoomOff1155) Object.assign(cfg, { partyZoom: false, zoomOff1155: true });
       } catch {
       }
       for (const [name, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(name)) SCHEMES[name] = sc;
@@ -12473,6 +12561,7 @@
       pal: (pal || []).slice(0, 3).map((c2) => c2.map((v) => Math.round(v))),
       t: titleOf(item) || "",
       a: artistOf(item) || "",
+      img: coverUrl(item),
       // Liedtext zum Mitsingen: aktuelle und nächste Zeile
       ly: lyric?.ly || "",
       lyn: lyric?.lyn || "",
@@ -12498,7 +12587,7 @@
       emit();
     }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, ranked, wishList, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within3, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, ranked, wishList, coverUrl, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
@@ -12580,6 +12669,11 @@
       clean = (v, n) => String(v ?? "").replace(new RegExp("\\p{Cc}", "gu"), " ").trim().slice(0, n);
       ranked = () => wishes.filter((w) => w.st === "open").sort((a, b) => b.v.size - a.v.size || a.at - b.at);
       wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, v: w.v.size, st: w.st }));
+      coverUrl = (item) => {
+        const m = item?.metadata || {}, raw = m.image_small_url || m.image_url || m.image_large_url || "";
+        const id = String(raw).replace(/^spotify:image:/, "").replace(/^https:\/\/i\.scdn\.co\/image\//, "");
+        return /^[\w]{20,60}$/.test(id) ? "https://i.scdn.co/image/" + id : "";
+      };
       live = { prepare, feed, stop, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
     }
   });
@@ -12624,6 +12718,8 @@
         queue: '<svg viewBox="0 0 24 24"><path d="M3 5h13v2H3zm0 6h13v2H3zm0 6h8v2H3zm15-3V9h2v5.3a3 3 0 1 1-2 2.7z"/></svg>',
         devices: '<svg viewBox="0 0 24 24"><path d="M4 5h12v2H6v10h4v2H4zm10 4h7v12h-7zm2 2v8h3v-8zm1.5 6.2a.8.8 0 1 1 0-1.6.8.8 0 0 1 0 1.6z"/></svg>',
         timer: '<svg viewBox="0 0 24 24"><path d="M9 2h6v2H9zm3 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-1 2h2v4.4l3 1.8-1 1.7-4-2.4z"/></svg>',
+        film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
+        wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
         share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
         heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
         vol: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
@@ -12671,15 +12767,17 @@
           ${MODES.map(([k], i) => `<button type="button" role="tab" data-mode="${k}" title="${i + 1}"></button>`).join("")}
         </div>
         <div class="m-im-actions">
+          <button type="button" class="m-im-sm m-im-cvbtn" hidden aria-pressed="false">${ICON.film}</button>
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
+          <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
         </div>
       </div>
-      <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""></div></div>
+      <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""><video class="m-im-cvid" muted loop playsinline preload="none" aria-hidden="true"></video></div></div>
       <div class="m-im-meta">
         <div class="m-im-kicker"></div>
         <div class="m-im-smartpick" hidden>${ICON.sparkle}<span></span></div>
@@ -12796,6 +12894,16 @@
             }
           };
           q.video = el2.querySelector(".m-im-canvas");
+          q.cvid = el2.querySelector(".m-im-cvid");
+          q.wishbtn = el2.querySelector(".m-im-wishbtn");
+          q.wishbtn.onclick = () => showSide(side === "wishes" ? null : "wishes");
+          q.cvbtn = el2.querySelector(".m-im-cvbtn");
+          q.cvbtn.onclick = () => {
+            const mode = el2.dataset.mode;
+            cfg.canvasIn = { ...cfg.canvasIn || {}, [mode]: !cfg.canvasIn?.[mode] };
+            save();
+            applyCanvas();
+          };
           q.keys = el2.querySelector(".m-im-keys");
           const share = el2.querySelector(".m-im-share"), help = el2.querySelector(".m-im-help");
           share.title = share.ariaLabel = t("share");
@@ -13016,6 +13124,7 @@
             });
             else resetParty();
             showExtras();
+            applyCanvas();
             sizeCanvas();
             active = -2;
             wake();
@@ -13881,7 +13990,7 @@
               lastKick = kz;
               q.canvas.style.scale = kz;
             }
-            const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1) * (1 + px.kickEnv * 0.014 * px.energy)).toFixed(3);
+            const bz = (cam.s * (px.kick > 0.02 ? 1 + px.kick * 0.06 : 1)).toFixed(3);
             if (bz !== lastBgZ) {
               lastBgZ = bz;
               q.bg.style.scale = bz === "1.000" ? "" : bz;
@@ -14409,19 +14518,45 @@
             lastPulse = "";
           }
         }
-        let canvasToken = 0;
+        const CV_MODES = /* @__PURE__ */ new Set(["cover", "lyrics", "viz", "mix", "party"]);
+        let canvasToken = 0, canvasUrl = null;
         async function setCanvas(item) {
           const token = ++canvasToken;
+          canvasUrl = null;
+          applyCanvas();
           const url = cfg.canvas && !cfg.calm ? await getCanvas(item?.uri) : null;
-          if (token !== canvasToken || !q.video) return;
-          if (!url) {
-            q.video.classList.remove("is-on");
-            q.video.pause();
-            q.video.removeAttribute("src");
+          if (token !== canvasToken) return;
+          canvasUrl = url;
+          applyCanvas();
+        }
+        function playIn(v, on) {
+          if (!v) return;
+          if (!on) {
+            v.classList.remove("is-on");
+            v.pause();
             return;
           }
-          if (q.video.src !== url) q.video.src = url;
-          q.video.play().then(() => q.video.classList.add("is-on")).catch(() => q.video.classList.remove("is-on"));
+          if (v.getAttribute("src") !== canvasUrl) v.src = canvasUrl;
+          v.play().then(() => v.classList.add("is-on")).catch(() => v.classList.remove("is-on"));
+        }
+        function fitTop() {
+          if (!el2) return;
+          el2.classList.remove("tabs-left");
+          const tabs = el2.querySelector(".m-im-tabs")?.getBoundingClientRect(), acts = el2.querySelector(".m-im-actions")?.getBoundingClientRect();
+          if (tabs && acts && acts.width && acts.left < tabs.right + 12) el2.classList.add("tabs-left");
+        }
+        addEventListener("resize", () => requestAnimationFrame(fitTop));
+        function applyCanvas() {
+          if (!el2 || !q.cvbtn) return;
+          const mode = el2.dataset.mode, can = !!canvasUrl && cfg.canvas && !cfg.calm && CV_MODES.has(mode);
+          const on = can && !!cfg.canvasIn?.[mode];
+          q.cvbtn.hidden = !can;
+          q.cvbtn.setAttribute("aria-pressed", String(on));
+          q.cvbtn.title = q.cvbtn.ariaLabel = t(on ? "canvasOff" : "canvasOn");
+          el2.classList.toggle("has-canvas", on);
+          requestAnimationFrame(fitTop);
+          playIn(q.cvid, on);
+          playIn(q.video, on && mode === "lyrics");
         }
         const KEYS = [["Space", "k_play"], ["\u2190 \u2192", "k_seek"], ["\u2191 \u2193", "k_vol"], ["1 \u2013 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["Esc", "k_close"], ["?", "keysTitle"]];
         function toggleKeys(force) {
@@ -14454,7 +14589,7 @@
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
-          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo" }[kind]);
+          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle" }[kind]);
           const body = q.sideBody;
           body.textContent = "";
           const item = (label, sub, img, onClick, on) => {
@@ -14482,6 +14617,10 @@
             else b.disabled = true;
             body.append(b);
           };
+          if (kind === "wishes") {
+            el2.querySelector(".m-im-wishtoast")?.remove();
+            return wishPanel(body);
+          }
           if (kind === "queue") {
             const list = upNext();
             if (!list.length) return item(t("queueEmpty"));
@@ -14598,48 +14737,102 @@
           if (q.live.hidden) el2.querySelector(".m-im-livecard")?.remove();
           drawWishes();
         }
-        function drawWishes() {
-          if (!el2) return;
-          const list = el2.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open").slice(0, 3) : [];
-          let box = el2.querySelector(".m-im-wishes");
-          if (!list.length) return box?.remove();
-          if (!box) {
-            box = document.createElement("div");
-            box.className = "m-im-wishes";
-            box.setAttribute("role", "region");
-            box.setAttribute("aria-label", t("wishTitle"));
-            el2.append(box);
+        const seenWish = /* @__PURE__ */ new Set();
+        const openWishes = () => el2?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : [];
+        const safeImg = (u) => /^https:\/\/i\.scdn\.co\//.test(u || "") ? u : "";
+        async function takeWish(w, btn) {
+          if (btn) btn.disabled = true;
+          if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
+          else if (btn) btn.disabled = false;
+        }
+        function wishRow(w) {
+          const row = document.createElement("div");
+          row.className = "m-im-wishrow";
+          if (safeImg(w.img)) {
+            const i = new Image();
+            i.alt = "";
+            i.onerror = () => i.style.visibility = "hidden";
+            i.src = safeImg(w.img);
+            row.append(i);
           }
-          const head2 = document.createElement("b");
-          head2.textContent = t("wishTitle");
-          const rows = list.map((w) => {
-            const row = document.createElement("div");
-            row.className = "m-im-wish";
-            const txt = document.createElement("span");
-            const ti = document.createElement("i");
-            ti.textContent = w.t;
-            const sub = document.createElement("small");
-            sub.textContent = `${w.a}${w.n ? " \xB7 " + t("wishBy").replace("{n}", w.n) : ""} \xB7 \u{1F44D} ${w.v}`;
-            txt.append(ti, sub);
-            const ok = document.createElement("button");
-            ok.type = "button";
-            ok.className = "m-im-wish-ok";
-            ok.textContent = t("wishQueue");
-            ok.onclick = async () => {
-              ok.disabled = true;
-              if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
-              else ok.disabled = false;
-            };
-            const no = document.createElement("button");
-            no.type = "button";
-            no.className = "m-im-wish-no";
-            no.textContent = "\u2715";
-            no.title = no.ariaLabel = t("wishDecline");
-            no.onclick = () => live.decline(w.i);
-            row.append(txt, ok, no);
-            return row;
-          });
-          box.replaceChildren(head2, ...rows);
+          const txt = document.createElement("span");
+          const ti = document.createElement("b"), sub = document.createElement("small");
+          ti.textContent = w.t;
+          sub.textContent = w.a + (w.n ? " \xB7 " + t("wishBy").replace("{n}", w.n) : "");
+          txt.append(ti, sub);
+          const votes = document.createElement("i");
+          votes.className = "m-im-votes";
+          votes.textContent = "\u{1F44D} " + w.v;
+          const ok = document.createElement("button");
+          ok.type = "button";
+          ok.className = "m-im-wish-ok";
+          ok.textContent = t("wishQueue");
+          ok.onclick = () => takeWish(w, ok);
+          const no = document.createElement("button");
+          no.type = "button";
+          no.className = "m-im-wish-no";
+          no.textContent = "\u2715";
+          no.title = no.ariaLabel = t("wishDecline");
+          no.onclick = () => live.decline(w.i);
+          row.append(txt, votes, ok, no);
+          return row;
+        }
+        function wishPanel(body) {
+          const list = openWishes();
+          if (!list.length) {
+            const e = document.createElement("p");
+            e.className = "m-im-wishempty";
+            e.textContent = t("wishNone");
+            return body.replaceChildren(e);
+          }
+          body.replaceChildren(...list.map(wishRow));
+        }
+        function wishToast(w) {
+          el2.querySelector(".m-im-wishtoast")?.remove();
+          const box = document.createElement("div");
+          box.className = "m-im-wishtoast";
+          box.setAttribute("role", "status");
+          if (safeImg(w.img)) {
+            const i = new Image();
+            i.alt = "";
+            i.onerror = () => i.style.visibility = "hidden";
+            i.src = safeImg(w.img);
+            box.append(i);
+          }
+          const txt = document.createElement("span");
+          const k = document.createElement("small"), ti = document.createElement("b");
+          k.textContent = w.n ? t("wishFrom").replace("{n}", w.n) : t("wishNew");
+          ti.textContent = `${w.t} \u2013 ${w.a}`;
+          txt.append(k, ti);
+          const ok = document.createElement("button");
+          ok.type = "button";
+          ok.className = "m-im-wish-ok";
+          ok.textContent = t("wishQueue");
+          ok.onclick = () => takeWish(w, ok).then(() => box.remove());
+          const all = document.createElement("button");
+          all.type = "button";
+          all.className = "m-im-wish-all";
+          all.textContent = t("wishAll");
+          all.onclick = () => {
+            box.remove();
+            showSide("wishes");
+          };
+          box.append(txt, ok, all);
+          el2.append(box);
+          setTimeout(() => box.classList.add("is-gone"), 6500);
+          setTimeout(() => box.remove(), 7200);
+        }
+        function drawWishes() {
+          if (!el2 || !q.wishbtn) return;
+          const list = openWishes();
+          q.wishbtn.hidden = !list.length;
+          q.wishbtn.dataset.n = list.length > 9 ? "9+" : String(list.length);
+          q.wishbtn.title = q.wishbtn.ariaLabel = t("wishTitle") + (list.length ? ` (${list.length})` : "");
+          const fresh = list.find((w) => !seenWish.has(w.i));
+          for (const w of list) seenWish.add(w.i);
+          if (fresh && side !== "wishes") wishToast(fresh);
+          requestAnimationFrame(fitTop);
+          if (side === "wishes") wishPanel(q.sideBody);
         }
         window.addEventListener("mirage:wishes", () => drawWishes());
         async function toggleLiveCard() {
@@ -16125,12 +16318,6 @@
         }),
         toggle("partyHype", () => immersive.reloadLyrics()),
         toggle("partyShatter", () => {
-        }),
-        toggle("partyCamera", () => {
-        }),
-        toggle("partyCuts", () => {
-        }),
-        toggle("partyDepth", () => {
         }),
         head(t("ps_crowd")),
         toggle("partyCrowd", () => {

@@ -140,6 +140,7 @@ Everything is set up in **Profile menu → Mirage settings**, and every effect b
 - **In sync with what you hear** – a steady song clock smooths Spotify's position; press <kbd>T</kbd> six times on the beat to calibrate light, crowd and lyrics to your speakers.
 - **Romanization** under Korean, Japanese and Chinese lyrics, **duet colours** for lines with a singer's name, and backing vocals in brackets set smaller.
 - **Fix the timing yourself** – press <kbd>E</kbd>, then Enter whenever the marked line starts; saved per song.
+- **Canvas videos** – when a song has one, the film button at the top plays it inside the cover (and softly behind the lyrics) – switched on per view, off at first.
 - **Full screen** with the button, <kbd>F</kbd> or <kbd>F11</kbd>; when the mouse rests, the controls fade out.
 
 ## 🎉 Party mode
@@ -195,9 +196,8 @@ Club, warehouse, festival, stadium, beach and living room – plus rooftop, cath
 - **Follows the instruments** – the kick drives the pulse and floor light, the snare the spots, the hi-hats the sparkle; two thin *melody lasers* follow the pitch of the tune.
 - **Stage effects where they belong** – CO2 jets for electronic music, pyro for rock, metal and punk, fireworks, confetti cannons and streamers in the final chorus, a strobe on hard drops (from *Extreme* on, never more than one flash per beat).
 - **Sea of lights** – in ballads, gospel and soul the crowd raises phones and lighters in the chorus and sways them together.
-- **Camera cuts** – hard cuts on the downbeat between wide, close and crowd shots; the drop cuts back to wide.
 - **Light director** – the light holds back before the drop, goes dark on the last beat, then everything hits at once. Slow motion freezes the half second before it, and DJ transitions blend the colours over four beats when the song changes.
-- **Five intensity levels** from *Soft* to *Insane*, plus hype lines for choruses, 3D depth, camera rides and lyrics that burst into light on the drop.
+- **Five intensity levels** from *Soft* to *Insane*, plus hype lines for choruses and lyrics that burst into light on the drop. The picture itself stays still – no zooming or camera moves.
 
 ### 🎺 Instruments
 
@@ -220,8 +220,8 @@ When the song's **credits** (Spotify, otherwise MusicBrainz) confirm an instrume
 Turn on **Live link** in the party settings, press the phone button in party mode and let your guests scan the QR code. Their phones become extra lights: the song's colours, a ring on every beat, a flash on the drop – full screen, with the display kept on.
 
 - **Lyrics to sing along** – the current line big in the middle, the next one below.
-- **Song wishes from Spotify** – guests search the real Spotify catalogue on the phone, pick a song and vote on the others' wishes. You see the top wishes in party mode and add them to the queue with one click; nothing gets in on its own.
-- **Vibration on the drop** (Android).
+- **Song wishes from Spotify** – guests search just like in Spotify (typos and parts of titles are fine), pick a song and vote on the others' wishes. In party mode a counter shows new wishes, the list sits in the side panel, and one click adds a song to the queue; nothing gets in on its own.
+- **Vibration on the beat** (Android) – a firm buzz on the downbeat, light taps on the backbeat, faster ticks in a build-up, a long swell on the drop; *gentle*, *normal* or *strong* on the phone. (Websites can't set the motor's strength directly – Mirage makes it with fast pulses. iPhones don't let websites vibrate.)
 
 - **Any network, no app** – Wi-Fi or mobile data; the page is served from GitHub Pages.
 - **Only for whoever has the QR code** – channel and key are 128-bit random values that exist only in the QR link after the `#`, a part that is never sent to any server. Messages are end-to-end encrypted and authenticated (AES-GCM), so the relay sees only random bytes and nobody can read or inject anything.

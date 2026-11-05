@@ -332,6 +332,13 @@ function decline(i) {
 }
 const wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, v: w.v.size, st: w.st }));
 
+// kleines Cover für die Handykarte (Spotifys Bildserver); „spotify:image:…“ → https-Adresse
+const coverUrl = (item) => {
+  const m = item?.metadata || {}, raw = m.image_small_url || m.image_url || m.image_large_url || "";
+  const id = String(raw).replace(/^spotify:image:/, "").replace(/^https:\/\/i\.scdn\.co\/image\//, "");
+  return /^[\w]{20,60}$/.test(id) ? "https://i.scdn.co/image/" + id : "";
+};
+
 // jedes Bild im Party-Modus: höchstens 8 Nachrichten pro Sekunde; die Handyseite rechnet den Takt selbst weiter
 function feed(px, pal, bpm, lyric) {
   if (!cfg.partyLive) return;
@@ -349,6 +356,7 @@ function feed(px, pal, bpm, lyric) {
     v: 1, on: 1, s: Date.now(), bpm: Math.round(bpm || 120), bi: px.beatIdx, ph: +(px.phase || 0).toFixed(3),
     e: +px.energy.toFixed(2), k: +px.kickEnv.toFixed(2), d: +px.drop.toFixed(2), b: +px.build.toFixed(2),
     pal: (pal || []).slice(0, 3).map((c) => c.map((v) => Math.round(v))), t: titleOf(item) || "", a: artistOf(item) || "",
+    img: coverUrl(item),
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
     ly: lyric?.ly || "", lyn: lyric?.lyn || "",
     w: cfg.partyWishes ? wishList() : null,

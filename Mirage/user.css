@@ -872,61 +872,88 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   outline-offset: 6px;
   border-radius: 8px;
 }
-/* Songwünsche der Gäste: kleine Glaskarte oben links, die meistgewünschten zuerst */
-#mirage-immersive .m-im-wishes {
+/* Songwünsche: Knopf oben mit Zahl */
+#mirage-immersive .m-im-wishbtn {
+  position: relative;
+}
+#mirage-immersive .m-im-wishbtn::after {
+  content: attr(data-n);
   position: absolute;
-  top: 76px;
-  left: 24px;
-  z-index: 29;
+  top: -4px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  font: 700 10px/17px var(--m-font);
+  text-align: center;
+  color: #0b0a12;
+  background: var(--m-c);
+  box-shadow: 0 0 0 2px rgb(10 9 18 / 0.9);
+}
+/* Wünsche in der Seitenleiste: Cover, Titel, wer, Stimmen, annehmen/ablehnen */
+#mirage-immersive .m-im-wishrow {
   display: grid;
-  gap: 8px;
-  width: min(320px, calc(100% - 32px));
-  padding: 14px;
-  border-radius: 18px;
-  color: #fff;
-  background: rgb(14 12 22 / 0.72);
-  border: 1px solid rgb(255 255 255 / 0.12);
-  backdrop-filter: blur(18px);
-  animation: m-wish-in 0.5s var(--m-ease) both;
-}
-@keyframes m-wish-in {
-  from {
-    opacity: 0;
-    translate: 0 -8px;
-  }
-}
-#mirage-immersive .m-im-wishes > b {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-#mirage-immersive .m-im-wish {
-  display: flex;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-areas: "img txt votes" "img act act";
   align-items: center;
-  gap: 8px;
+  column-gap: 10px;
+  row-gap: 6px;
+  padding: 8px;
+  border-radius: 14px;
+  transition: background 0.2s;
 }
-#mirage-immersive .m-im-wish > span {
+#mirage-immersive .m-im-wishrow:hover {
+  background: rgb(255 255 255 / 0.06);
+}
+#mirage-immersive .m-im-wishrow img {
+  grid-area: img;
+  align-self: start;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+#mirage-immersive .m-im-wishrow span {
+  grid-area: txt;
   display: grid;
-  flex: 1;
   min-width: 0;
+  text-align: left;
 }
-#mirage-immersive .m-im-wish i,
-#mirage-immersive .m-im-wish small {
+#mirage-immersive .m-im-wishrow .m-im-votes {
+  grid-area: votes;
+}
+#mirage-immersive .m-im-wishrow .m-im-wish-ok {
+  grid-area: act;
+  justify-self: start;
+}
+#mirage-immersive .m-im-wishrow .m-im-wish-no {
+  grid-area: act;
+  justify-self: end;
+  width: 30px;
+  padding: 0;
+}
+#mirage-immersive .m-im-wishrow b,
+#mirage-immersive .m-im-wishrow small,
+#mirage-immersive .m-im-wishtoast b {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-style: normal;
 }
-#mirage-immersive .m-im-wish i {
-  font-size: 14px;
-  font-weight: 600;
-}
-#mirage-immersive .m-im-wish small {
+#mirage-immersive .m-im-wishrow small {
   font-size: 12px;
   opacity: 0.65;
 }
-#mirage-immersive .m-im-wish button {
+#mirage-immersive .m-im-votes {
+  flex: none;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.08);
+}
+#mirage-immersive :is(.m-im-wishrow, .m-im-wishtoast) button {
   flex: none;
   height: 30px;
   padding: 0 12px;
@@ -935,17 +962,77 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   color: #fff;
   font: inherit;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   background: rgb(255 255 255 / 0.12);
+  transition: transform 0.15s, filter 0.15s;
 }
-#mirage-immersive .m-im-wish .m-im-wish-ok {
+#mirage-immersive :is(.m-im-wishrow, .m-im-wishtoast) button:hover {
+  filter: brightness(1.15);
+}
+#mirage-immersive :is(.m-im-wishrow, .m-im-wishtoast) button:active {
+  transform: scale(0.95);
+}
+#mirage-immersive :is(.m-im-wishrow, .m-im-wishtoast) .m-im-wish-ok {
+  color: #0b0a12;
   background: var(--m-c);
-  color: var(--m-on, #0b0a12);
 }
-#mirage-immersive .m-im-wish .m-im-wish-no {
-  width: 30px;
-  padding: 0;
+
+#mirage-immersive .m-im-wishempty {
+  margin: 12px 8px;
+  font-size: 13px;
+  opacity: 0.65;
+}
+/* neuer Wunsch: gleitet oben in der Mitte ein und nach ein paar Sekunden wieder hinaus */
+#mirage-immersive .m-im-wishtoast {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  z-index: 32;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(560px, calc(100% - 32px));
+  padding: 8px 8px 8px 8px;
+  border-radius: 99px;
+  color: #fff;
+  background: rgb(14 12 22 / 0.78);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 18px 50px -12px rgba(var(--m-a-rgb), 0.55);
+  translate: -50% 0;
+  animation: m-wish-in 0.5s var(--m-spring, var(--m-ease)) both;
+  transition: opacity 0.6s, translate 0.6s var(--m-ease);
+}
+#mirage-immersive .m-im-wishtoast.is-gone {
+  opacity: 0;
+  translate: -50% -16px;
+}
+@keyframes m-wish-in {
+  from {
+    opacity: 0;
+    translate: -50% -16px;
+  }
+}
+#mirage-immersive .m-im-wishtoast img {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+#mirage-immersive .m-im-wishtoast span {
+  display: grid;
+  min-width: 0;
+}
+#mirage-immersive .m-im-wishtoast small {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+#mirage-immersive .m-im-wishtoast b {
+  font-size: 14px;
 }
 #mirage-immersive .m-im-livecard img {
   width: 200px;
@@ -3124,7 +3211,32 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   transition: opacity 1.2s var(--m-ease);
 }
 #mirage-immersive .m-im-canvas.is-on {
-  opacity: 0.5;
+  opacity: 0.42;
+}
+/* Liedtext mit Canvas: das Video liegt gedämpft hinter dem Text, ein Verlauf hält die Zeilen lesbar */
+#mirage-immersive.has-canvas[data-mode="lyrics"] .m-im-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(7 6 12 / 0.15), rgb(7 6 12 / 0.7) 55%, rgb(7 6 12 / 0.85));
+}
+/* Canvas im Cover: blendet weich über das Albumbild, rund in Mix und Party (dort ist das Cover rund) */
+#mirage-immersive .m-im-cvid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.9s var(--m-ease);
+  pointer-events: none;
+}
+#mirage-immersive .m-im-cvid.is-on {
+  opacity: 1;
+}
+#mirage-immersive .m-im-cvbtn[aria-pressed="true"] {
+  color: #0b0a12;
+  background: var(--m-c);
 }
 #mirage-immersive .m-im-actions {
   display: flex;
@@ -3545,6 +3657,15 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   color: var(--spice-text);
   cursor: pointer;
   transition: background 0.25s, transform 0.25s var(--m-spring);
+}
+/* „display: grid“ oben überschrieb das hidden-Attribut: ausgeblendete Knöpfe waren trotzdem zu sehen */
+#mirage-immersive .m-im-actions button[hidden] {
+  display: none;
+}
+/* zu viele Knöpfe für die Mitte: die Ansichten rücken nach links neben „Zurück“ */
+#mirage-immersive.tabs-left .m-im-tabs {
+  left: 150px;
+  transform: none;
 }
 #mirage-immersive .m-im-actions button:hover,
 #mirage-immersive .m-im-side-x:hover {
