@@ -92,6 +92,16 @@ const DEFAULTS = {
   partyPause: true,
   // DJ: passt der nächste Song gar nicht (Tonart, Tempo, Energie), einen passenderen aus der Warteschlange vorziehen
   djEnergy: false,
+  // Party-Spiele: Runden, Zeiten (Sekunden), Bonus für Schnelligkeit, Größe der Karte, Felder des Glücksrads
+  gameRounds: 5,
+  gameAsk: 20,
+  gameJoin: 30,
+  gameDur: 30,
+  gameBreak: 8,
+  gameBonus: true,
+  gameCard: "big",
+  gameWheel: ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"],
+  gameWheelOwn: "",
   partyDepth: false,
   partyShatter: true,
   partyCamera: false,

@@ -22,7 +22,7 @@ import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
-import { games } from "./games.js";
+import { games, GAME_LIST, WHEEL_FIELDS } from "./games.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -47,6 +47,7 @@ const ICON = {
   dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
   game: '<svg viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.7 3.6a2.5 2.5 0 0 1-4.3 1.2L14.6 16H9.4l-2.3 1.8a2.5 2.5 0 0 1-4.3-1.2L2.1 13A5 5 0 0 1 7 7zm0 2a3 3 0 0 0-3 3.6l.8 3.6.5.3 2.5-2.5h7.4l2.5 2.5.5-.3.8-3.6A3 3 0 0 0 17 9zm1 1h2v2h2v2h-2v2H8v-2H6v-2h2zm8 0a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4zm-2 3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
   poll: '<svg viewBox="0 0 24 24"><path d="M4 13h3v7H4zm6.5-9h3v16h-3zM17 9h3v11h-3z"/></svg>',
+  more: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
   heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
   vol: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
@@ -110,6 +111,7 @@ const immersive = (() => {
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
+          <button type="button" class="m-im-sm m-im-menubtn" hidden>${ICON.more}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
@@ -223,6 +225,9 @@ const immersive = (() => {
     q.djbtn.onclick = () => showSide(side === "dj" ? null : "dj");
     q.gamebtn.title = q.gamebtn.ariaLabel = t("gTitle");
     q.gamebtn.onclick = () => showSide(side === "games" ? null : "games");
+    q.menubtn = el.querySelector(".m-im-menubtn");
+    q.menubtn.title = q.menubtn.ariaLabel = t("pmTitle");
+    q.menubtn.onclick = () => showSide(side === "menu" ? null : "menu");
     games.init({
       root: () => el,
       lines: () => (lyr?.synced ? lyr.lines : null),
@@ -230,6 +235,7 @@ const immersive = (() => {
       confetti,
       handsUp: () => (moments.handsUntil = performance.now() + (8 * 60000) / (party.info.bpm || 120)),
       flashStorm: () => (moments.stormUntil = performance.now() + 2600),
+      bpm: () => party.info.bpm,
       venue: () => (moments.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)]),
       changed: () => side === "games" && showSide("games"),
     });
@@ -2202,7 +2208,8 @@ const immersive = (() => {
     // blass und sagt beim Klick, warum. So springt die Leiste auch nicht bei jedem Songwechsel.
     const mode = el.dataset.mode, show = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show && !!canvasUrl;
     const on = can && !!cfg.canvasIn?.[mode];
-    q.cvbtn.hidden = !show;
+    // im Party-Modus liegt der Film im Menü „Mehr“
+    q.cvbtn.hidden = !show || mode === "party";
     q.cvbtn.classList.toggle("is-none", show && !canvasUrl);
     q.cvbtn.setAttribute("aria-pressed", String(on));
     q.cvbtn.title = q.cvbtn.ariaLabel = t(!canvasUrl ? "canvasNone" : on ? "canvasOff" : "canvasOn");
@@ -2245,7 +2252,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2280,6 +2287,7 @@ const immersive = (() => {
     if (kind === "screens") return screensPanel(body, item);
     if (kind === "dj") return djPanel(body);
     if (kind === "games") return gamesPanel(body);
+    if (kind === "menu") return menuPanel(body);
     if (kind === "poll") return pollPanel(body);
     if (kind === "recap") return recapPanel(body);
     if (kind === "queue") {
@@ -2394,13 +2402,12 @@ const immersive = (() => {
   function showExtras() {
     if (!el) return;
     const party = el.dataset.mode === "party";
-    q.recap.hidden = !(party && cfg.partyRecap && recap.songs.length >= 3);
-    q.conf.hidden = !party || !!cfg.calm;
-    q.pollbtn.hidden = !(party && cfg.partyLive);
-    q.djbtn.hidden = !party;
-    q.gamebtn.hidden = !party;
+    // Im Party-Modus bleiben oben nur Spiele, QR-Code, Wünsche und „Mehr“; der Rest liegt im Menü
+    q.recap.hidden = q.conf.hidden = q.pollbtn.hidden = q.djbtn.hidden = q.screen.hidden = true;
+    q.gamebtn.hidden = q.menubtn.hidden = !party;
+    el.querySelector(".m-im-share").hidden = el.querySelector(".m-im-help").hidden = party;
+    el.classList.toggle("is-partyui", party);
     if (!party) games.stop();
-    q.screen.hidden = !(party && cfg.partyScreen);
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
     drawWishes();
@@ -2594,10 +2601,97 @@ const immersive = (() => {
   }
 
   /* ---- Spiele: auswählen, starten, beenden. Alle außer dem Glücksrad spielen die Gäste auf ihren Handys. */
+  // „Mehr“ im Party-Modus: alles, was nicht dauernd gebraucht wird
+  function menuPanel(body) {
+    const go = (kind) => () => showSide(kind);
+    const row = (label, sub, fn) => sideBtn(body, label, sub, fn);
+    row(t("djTitle"), "", go("dj"));
+    if (cfg.partyLive) row(t("pollBtn"), "", go("poll"));
+    if (cfg.partyRecap && recap.songs.length >= 3) row(t("recapBtn"), "", go("recap"));
+    if (!cfg.calm) row(t("confetti"), "", () => { confetti(); showSide(null); });
+    if (cfg.partyScreen) row(t("toScreen"), "", go("screens"));
+    if (cfg.canvas && !cfg.calm) row(q.cvbtn.title || "Canvas", "", () => { q.cvbtn.click(); showSide(null); });
+    if (ctl.canAddTo()) row(t("c_addTo"), "", go("playlists"));
+    row(t("c_devices"), "", go("devices"));
+    row(t("c_timer"), "", go("timer"));
+    row(el.querySelector(".m-im-share").title || "Share", "", () => { showSide(null); nowPlayingCard(); });
+    row(el.querySelector(".m-im-help").title || "?", "", () => { showSide(null); toggleKeys(); });
+  }
+  // Auswahl in Stufen: eine Zeile mit Knöpfen
+  function gameChoice(body, label, key, choices) {
+    const r = document.createElement("div");
+    r.className = "m-g-cfg";
+    const l = document.createElement("span");
+    l.textContent = label;
+    const seg = document.createElement("div");
+    seg.className = "m-g-seg-row";
+    for (const [v, text] of choices) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = text;
+      b.setAttribute("aria-pressed", String(cfg[key] === v));
+      b.onclick = () => {
+        cfg[key] = v;
+        save();
+        const top = q.sideBody.scrollTop;
+        showSide("games");
+        q.sideBody.scrollTop = top;
+      };
+      seg.append(b);
+    }
+    r.append(l, seg);
+    body.append(r);
+  }
+  const secsOf = (list) => list.map((n) => [n, n + " s"]);
+  function gameSettings(body) {
+    gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
+    gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
+    gameChoice(body, t("gSetJoin"), "gameJoin", secsOf([15, 30, 45, 60]));
+    gameChoice(body, t("gSetDur"), "gameDur", secsOf([15, 30, 45, 60]));
+    gameChoice(body, t("gSetBreak"), "gameBreak", secsOf([5, 8, 12, 20]));
+    gameChoice(body, t("gSetBonus"), "gameBonus", [[true, "✓"], [false, "✕"]]);
+    gameChoice(body, t("gSetCard"), "gameCard", [["big", t("gCardBig")], ["small", t("gCardSmall")]]);
+    const head = document.createElement("div");
+    head.className = "m-im-side-sec";
+    head.textContent = t("gSetWheel");
+    body.append(head);
+    const on = new Set(cfg.gameWheel || WHEEL_FIELDS);
+    const chips = document.createElement("div");
+    chips.className = "m-g-seg-row is-wrap";
+    for (const k of WHEEL_FIELDS) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = t(k);
+      b.setAttribute("aria-pressed", String(on.has(k)));
+      b.onclick = () => {
+        if (on.has(k)) on.delete(k);
+        else on.add(k);
+        cfg.gameWheel = [...on];
+        save();
+        b.setAttribute("aria-pressed", String(on.has(k)));
+      };
+      chips.append(b);
+    }
+    body.append(chips);
+    const own = document.createElement("input");
+    own.className = "m-g-own";
+    own.maxLength = 200;
+    own.placeholder = t("gWheelOwn");
+    own.value = cfg.gameWheelOwn || "";
+    own.onkeydown = (e) => e.stopPropagation();
+    own.onchange = () => {
+      cfg.gameWheelOwn = own.value;
+      save();
+    };
+    body.append(own);
+  }
+  let gameCfgOpen = false;
   function gamesPanel(body) {
     const cur = games.active();
     if (cur) {
+      if (games.waiting()) sideBtn(body, t("gStartNow"), "", () => games.beginNow());
       if (cur === "wheel") sideBtn(body, t("gSpin"), "", () => games.spin());
+      else if (!games.waiting()) sideBtn(body, t("gSkip"), "", () => games.skip());
       sideBtn(body, t("gEndNow"), "", () => {
         games.stop();
         showSide("games");
@@ -2608,8 +2702,16 @@ const immersive = (() => {
     note.className = "m-im-side-note";
     note.textContent = t("gHint");
     body.append(note);
-    for (const k of ["quiz", "gap", "stop", "battle", "wheel"]) {
-      sideBtn(body, t({ quiz: "gQuiz", gap: "gGap", stop: "gStop", battle: "gBattle", wheel: "gWheel" }[k]), t({ quiz: "gQuizHint", gap: "gGapHint", stop: "gStopHint", battle: "gBattleHint", wheel: "gWheelHint" }[k]), async () => {
+    let cat = "";
+    for (const { k, cat: c, label, hint, icon } of GAME_LIST) {
+      if (c !== cat) {
+        cat = c;
+        const h = document.createElement("div");
+        h.className = "m-im-side-sec";
+        h.textContent = t(c);
+        body.append(h);
+      }
+      sideBtn(body, `${icon}  ${t(label)}`, t(hint), async () => {
         // Handy-Spiele brauchen den Live-Link
         if (k !== "wheel" && !cfg.partyLive) {
           cfg.partyLive = true;
@@ -2622,6 +2724,12 @@ const immersive = (() => {
         showSide(null);
       });
     }
+    sideBtn(body, "⚙  " + t("gSettings"), "", () => {
+      gameCfgOpen = !gameCfgOpen;
+      showSide("games");
+      q.sideBody.scrollTop = q.sideBody.scrollHeight;
+    }, gameCfgOpen);
+    if (gameCfgOpen) gameSettings(body);
   }
 
   /* ---- DJ: Tempo und Tonart des laufenden Songs, dazu die am besten passenden aus der Warteschlange */

@@ -418,11 +418,12 @@ function feed(px, pal, bpm, lyric) {
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
     ly: masked ? "" : lyric?.ly || "", lyn: masked ? "" : lyric?.lyn || "",
     g: game,
-    w: cfg.partyWishes ? wishList() : null,
+    // ein angenommener Wunsch wäre im verdeckten Quiz die Lösung
+    w: cfg.partyWishes ? wishList().filter((w) => masked !== "all" || w.st !== "queued") : null,
     // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
     poll: poll && Date.now() < poll.end + 8000 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
-    nx: nextUri(),
-    fx: lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
+    nx: masked ? "" : nextUri(),
+    fx: !masked && lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }
 // Party verlassen: „aus“ melden, Verbindung schließen; nach 10 Minuten gilt der Link nicht mehr

@@ -10,6 +10,28 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.22.0] – 2026-11-05
+
+### Added
+
+- **Six more party games, eleven in total:** Name that song, Next line, Beat hit (tap along, the tightest timing wins), Fastest finger, Hot potato (a bomb travels from phone to phone) and Who would most likely …? (guests vote for each other).
+- **Game settings** in the games panel: rounds, time per question, time to join, battle and beat length, break between rounds, bonus for fast answers, large or compact game card, which wheel fields are used, and your own wheel fields.
+- **Lobby for every phone game:** QR code and the names of everyone who joined on the big screen, with a Start now button. Skip round is in the games panel.
+
+### Changed
+
+- **New game design on the big screen and the phones:** the same coloured answer tiles A to D on both, a time bar, round dots, a podium at the end, right-or-wrong feedback with the points you won, and a real colourful wheel of fortune.
+- **Fewer buttons in party mode:** the top row is now games, QR code, wishes, More and full screen. DJ, poll, recap, confetti, other screen, film, add to playlist, devices, timer, share and shortcuts moved into the new More menu.
+- A round ends right away once everyone has answered (Who's singing?, Name that song, Who would most likely).
+
+### Fixed
+
+- **Phone taps got lost:** poll buttons were rebuilt with every message (8 times a second), and every tap tried to enter full screen again. Answers, joins and taps are now sent more than once and are sent late if the phone was offline for a moment.
+- **Hidden songs were revealed on reload or join:** a phone first showed the last message kept by the relay, which could be older than the hidden round. Kept messages now only count if nothing live arrives. Wish lists, next-song info and word effects no longer give away the answer either.
+- A phone whose clock was more than a minute off could not join at all.
+- **Cut-off content on the phone page:** game cards could not be scrolled up to their first lines, long lyrics ran into the buttons, the button rows could be wider than small screens, and landscape mode overlapped.
+- Your answer and your elimination are remembered if you reload the phone page during a round.
+
 ## [1.21.0] – 2026-11-05
 
 ### Added

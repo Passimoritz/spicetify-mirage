@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.21.0" : "dev";
+      VERSION = true ? "1.22.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -688,7 +688,68 @@
           wh5: "Flash storm!",
           wh6: "A guest's wish plays!",
           wh7: "Everybody sing!",
-          wh8: "Everybody dance!"
+          wh8: "Everybody dance!",
+          pmTitle: "More",
+          pmHint: "Party tools",
+          gCatMusic: "Music quiz",
+          gCatQuick: "Fast fingers",
+          gCatParty: "Party",
+          gTitleQ: "Name that song",
+          gTitleQHint: "The next song starts hidden: which title is it?",
+          gNext: "Next line",
+          gNextHint: "Which lyric line comes next? Solved the moment it's sung",
+          gBeat: "Beat hit",
+          gBeatHint: "Tap along to the beat on your phone: the tightest timing wins",
+          gFast: "Fastest finger",
+          gFastHint: "Wait for the signal, then tap. Tap too early and the round is lost",
+          gBomb: "Hot potato",
+          gBombHint: "A bomb travels from phone to phone: pass it on before it blows up",
+          gLikely: "Who would most likely \u2026?",
+          gLikelyHint: "Vote for a guest. Whoever sides with the majority scores",
+          gNextAsk: "What comes next?",
+          gBeatGo: "Tap to the beat!",
+          gFastReady: "Wait for it \u2026",
+          gFastGo: "NOW!",
+          gBombHolder: "{n} has the bomb",
+          gBombBoom: "{n} blew up!",
+          gJoinAny: "Join in on your phone!",
+          gJoinScan: "Scan the code to play",
+          gStartNow: "Start now",
+          gSkip: "Skip round",
+          gAnswered: "{n} answered",
+          gWinner: "Winner",
+          gSettings: "Game settings",
+          gSetRounds: "Rounds",
+          gSetAsk: "Time per question",
+          gSetJoin: "Time to join",
+          gSetDur: "Battle and beat length",
+          gSetBreak: "Break between rounds",
+          gSetBonus: "Bonus for fast answers",
+          gSetCard: "Game card",
+          gCardBig: "Large",
+          gCardSmall: "Compact",
+          gSetWheel: "Wheel fields",
+          gWheelOwn: "Your own fields, separated by commas",
+          gL1: "\u2026 fall asleep at this party first?",
+          gL2: "\u2026 be the last one on the dance floor?",
+          gL3: "\u2026 sing the wrong lyrics at full volume?",
+          gL4: "\u2026 lose their phone tonight?",
+          gL5: "\u2026 order a round for everyone?",
+          gL6: "\u2026 start a conga line?",
+          gL7: "\u2026 dance on a table?",
+          gL8: "\u2026 forget where they live?",
+          gL9: "\u2026 send a message they regret tomorrow?",
+          gL10: "\u2026 become famous one day?",
+          gL11: "\u2026 eat all the snacks?",
+          gL12: "\u2026 cry at a love song?",
+          gL13: "\u2026 talk to a stranger for an hour?",
+          gL14: "\u2026 take over the music without asking?",
+          gL15: "\u2026 turn up two hours late?",
+          gL16: "\u2026 win a dance contest?",
+          gL17: "\u2026 tell the same story three times?",
+          gL18: "\u2026 leave without saying goodbye?",
+          gL19: "\u2026 have the worst dance moves?",
+          gL20: "\u2026 still be going at sunrise?"
         },
         de: {
           g_library: "Bibliothek",
@@ -1264,7 +1325,68 @@
           wh5: "Blitzlicht-Gewitter!",
           wh6: "Ein G\xE4stewunsch l\xE4uft!",
           wh7: "Alle singen!",
-          wh8: "Alle tanzen!"
+          wh8: "Alle tanzen!",
+          pmTitle: "Mehr",
+          pmHint: "Party-Werkzeuge",
+          gCatMusic: "Musik-Quiz",
+          gCatQuick: "Schnelle Finger",
+          gCatParty: "Party",
+          gTitleQ: "Wie hei\xDFt der Song?",
+          gTitleQHint: "Der n\xE4chste Song startet verdeckt: Welcher Titel ist es?",
+          gNext: "N\xE4chste Zeile",
+          gNextHint: "Welche Zeile kommt als N\xE4chstes? Aufgel\xF6st, wenn sie gesungen wird",
+          gBeat: "Beat-Treffer",
+          gBeatHint: "Tippt am Handy im Takt mit: Das beste Timing gewinnt",
+          gFast: "Schnellster Finger",
+          gFastHint: "Warten, bis das Signal kommt, dann tippen. Wer zu fr\xFCh tippt, verliert die Runde",
+          gBomb: "Hei\xDFe Kartoffel",
+          gBombHint: "Eine Bombe wandert von Handy zu Handy: Gib sie weiter, bevor sie hochgeht",
+          gLikely: "Wer w\xFCrde am ehesten \u2026?",
+          gLikelyHint: "Stimmt f\xFCr einen Gast ab. Wer mit der Mehrheit stimmt, bekommt Punkte",
+          gNextAsk: "Wie geht es weiter?",
+          gBeatGo: "Tippt im Takt!",
+          gFastReady: "Warten \u2026",
+          gFastGo: "JETZT!",
+          gBombHolder: "{n} hat die Bombe",
+          gBombBoom: "{n} ist explodiert!",
+          gJoinAny: "Jetzt am Handy mitmachen!",
+          gJoinScan: "Code scannen und mitspielen",
+          gStartNow: "Jetzt starten",
+          gSkip: "Runde \xFCberspringen",
+          gAnswered: "{n} haben geantwortet",
+          gWinner: "Gewinner",
+          gSettings: "Spiel-Einstellungen",
+          gSetRounds: "Runden",
+          gSetAsk: "Zeit pro Frage",
+          gSetJoin: "Zeit zum Beitreten",
+          gSetDur: "Dauer von Battle und Beat",
+          gSetBreak: "Pause zwischen Runden",
+          gSetBonus: "Bonus f\xFCr schnelle Antworten",
+          gSetCard: "Spielkarte",
+          gCardBig: "Gro\xDF",
+          gCardSmall: "Kompakt",
+          gSetWheel: "Felder im Gl\xFCcksrad",
+          gWheelOwn: "Eigene Felder, mit Komma getrennt",
+          gL1: "\u2026 auf dieser Party zuerst einschlafen?",
+          gL2: "\u2026 als Letztes auf der Tanzfl\xE4che stehen?",
+          gL3: "\u2026 den falschen Text in voller Lautst\xE4rke singen?",
+          gL4: "\u2026 heute Abend das Handy verlieren?",
+          gL5: "\u2026 allen eine Runde ausgeben?",
+          gL6: "\u2026 eine Polonaise starten?",
+          gL7: "\u2026 auf dem Tisch tanzen?",
+          gL8: "\u2026 vergessen, wo er oder sie wohnt?",
+          gL9: "\u2026 eine Nachricht schicken, die morgen peinlich ist?",
+          gL10: "\u2026 eines Tages ber\xFChmt werden?",
+          gL11: "\u2026 alle Snacks aufessen?",
+          gL12: "\u2026 bei einem Liebeslied weinen?",
+          gL13: "\u2026 sich eine Stunde lang mit Fremden unterhalten?",
+          gL14: "\u2026 ungefragt die Musik \xFCbernehmen?",
+          gL15: "\u2026 zwei Stunden zu sp\xE4t kommen?",
+          gL16: "\u2026 einen Tanzwettbewerb gewinnen?",
+          gL17: "\u2026 dieselbe Geschichte dreimal erz\xE4hlen?",
+          gL18: "\u2026 gehen, ohne Tsch\xFCss zu sagen?",
+          gL19: "\u2026 die schlimmsten Tanzschritte haben?",
+          gL20: "\u2026 bei Sonnenaufgang noch wach sein?"
         },
         fr: {
           g_library: "Biblioth\xE8que",
@@ -1840,7 +1962,68 @@
           wh5: "Pluie de flashs !",
           wh6: "Le souhait d'un invit\xE9 !",
           wh7: "Tout le monde chante !",
-          wh8: "Tout le monde danse !"
+          wh8: "Tout le monde danse !",
+          pmTitle: "Plus",
+          pmHint: "Outils de soir\xE9e",
+          gCatMusic: "Quiz musical",
+          gCatQuick: "Doigts rapides",
+          gCatParty: "Soir\xE9e",
+          gTitleQ: "Quel est ce titre ?",
+          gTitleQHint: "La prochaine chanson d\xE9marre cach\xE9e : quel est son titre ?",
+          gNext: "Ligne suivante",
+          gNextHint: "Quelle ligne des paroles arrive ? R\xE9solu d\xE8s qu'elle est chant\xE9e",
+          gBeat: "Coup de beat",
+          gBeatHint: "Tapez en rythme sur votre t\xE9l\xE9phone : le timing le plus pr\xE9cis gagne",
+          gFast: "Doigt le plus rapide",
+          gFastHint: "Attendez le signal, puis tapez. Trop t\xF4t et la manche est perdue",
+          gBomb: "Patate chaude",
+          gBombHint: "Une bombe passe de t\xE9l\xE9phone en t\xE9l\xE9phone : refilez-la avant qu'elle explose",
+          gLikely: "Qui serait le plus susceptible de \u2026?",
+          gLikelyHint: "Votez pour un invit\xE9. Qui vote comme la majorit\xE9 marque des points",
+          gNextAsk: "Et apr\xE8s ?",
+          gBeatGo: "Tapez en rythme !",
+          gFastReady: "Attendez \u2026",
+          gFastGo: "MAINTENANT !",
+          gBombHolder: "{n} a la bombe",
+          gBombBoom: "{n} a explos\xE9 !",
+          gJoinAny: "Rejoignez sur votre t\xE9l\xE9phone !",
+          gJoinScan: "Scannez le code pour jouer",
+          gStartNow: "Lancer",
+          gSkip: "Passer la manche",
+          gAnswered: "{n} ont r\xE9pondu",
+          gWinner: "Gagnant",
+          gSettings: "R\xE9glages du jeu",
+          gSetRounds: "Manches",
+          gSetAsk: "Temps par question",
+          gSetJoin: "Temps pour rejoindre",
+          gSetDur: "Dur\xE9e du battle et du beat",
+          gSetBreak: "Pause entre les manches",
+          gSetBonus: "Bonus de rapidit\xE9",
+          gSetCard: "Carte du jeu",
+          gCardBig: "Grande",
+          gCardSmall: "Compacte",
+          gSetWheel: "Cases de la roue",
+          gWheelOwn: "Vos propres cases, s\xE9par\xE9es par des virgules",
+          gL1: "\u2026 s'endormir en premier \xE0 cette soir\xE9e ?",
+          gL2: "\u2026 rester sur la piste de danse jusqu'au bout ?",
+          gL3: "\u2026 chanter les mauvaises paroles \xE0 plein volume ?",
+          gL4: "\u2026 perdre son t\xE9l\xE9phone ce soir ?",
+          gL5: "\u2026 offrir une tourn\xE9e \xE0 tout le monde ?",
+          gL6: "\u2026 lancer une chenille ?",
+          gL7: "\u2026 danser sur une table ?",
+          gL8: "\u2026 oublier o\xF9 est son chez-soi ?",
+          gL9: "\u2026 envoyer un message qu'on regrettera demain ?",
+          gL10: "\u2026 devenir c\xE9l\xE8bre un jour ?",
+          gL11: "\u2026 manger tous les snacks ?",
+          gL12: "\u2026 pleurer sur une chanson d'amour ?",
+          gL13: "\u2026 discuter une heure avec un inconnu ?",
+          gL14: "\u2026 prendre le contr\xF4le de la musique sans demander ?",
+          gL15: "\u2026 arriver avec deux heures de retard ?",
+          gL16: "\u2026 gagner un concours de danse ?",
+          gL17: "\u2026 raconter trois fois la m\xEAme histoire ?",
+          gL18: "\u2026 partir sans dire au revoir ?",
+          gL19: "\u2026 avoir les pires pas de danse ?",
+          gL20: "\u2026 tenir encore debout au lever du soleil ?"
         },
         es: {
           g_library: "Biblioteca",
@@ -2416,7 +2599,68 @@
           wh5: "\xA1Tormenta de flashes!",
           wh6: "\xA1Suena el deseo de un invitado!",
           wh7: "\xA1Todos a cantar!",
-          wh8: "\xA1Todos a bailar!"
+          wh8: "\xA1Todos a bailar!",
+          pmTitle: "M\xE1s",
+          pmHint: "Herramientas de fiesta",
+          gCatMusic: "Quiz musical",
+          gCatQuick: "Dedos r\xE1pidos",
+          gCatParty: "Fiesta",
+          gTitleQ: "\xBFC\xF3mo se llama la canci\xF3n?",
+          gTitleQHint: "La siguiente canci\xF3n empieza oculta: \xBFqu\xE9 t\xEDtulo es?",
+          gNext: "Siguiente l\xEDnea",
+          gNextHint: "\xBFQu\xE9 l\xEDnea de la letra viene ahora? Se resuelve al cantarse",
+          gBeat: "Golpe de beat",
+          gBeatHint: "Toca al ritmo en tu m\xF3vil: gana el mejor timing",
+          gFast: "El dedo m\xE1s r\xE1pido",
+          gFastHint: "Espera la se\xF1al y toca. Si tocas antes, pierdes la ronda",
+          gBomb: "Patata caliente",
+          gBombHint: "Una bomba viaja de m\xF3vil en m\xF3vil: p\xE1sala antes de que explote",
+          gLikely: "\xBFQui\xE9n tiene m\xE1s pinta de \u2026?",
+          gLikelyHint: "Vota a un invitado. Quien vota con la mayor\xEDa suma puntos",
+          gNextAsk: "\xBFQu\xE9 viene despu\xE9s?",
+          gBeatGo: "\xA1Toca al ritmo!",
+          gFastReady: "Espera \u2026",
+          gFastGo: "\xA1YA!",
+          gBombHolder: "{n} tiene la bomba",
+          gBombBoom: "\xA1{n} ha explotado!",
+          gJoinAny: "\xA1\xDAnete desde tu m\xF3vil!",
+          gJoinScan: "Escanea el c\xF3digo y juega",
+          gStartNow: "Empezar ya",
+          gSkip: "Saltar ronda",
+          gAnswered: "{n} han respondido",
+          gWinner: "Ganador",
+          gSettings: "Ajustes del juego",
+          gSetRounds: "Rondas",
+          gSetAsk: "Tiempo por pregunta",
+          gSetJoin: "Tiempo para unirse",
+          gSetDur: "Duraci\xF3n de battle y beat",
+          gSetBreak: "Pausa entre rondas",
+          gSetBonus: "Bonus por rapidez",
+          gSetCard: "Tarjeta del juego",
+          gCardBig: "Grande",
+          gCardSmall: "Compacta",
+          gSetWheel: "Casillas de la ruleta",
+          gWheelOwn: "Tus propias casillas, separadas por comas",
+          gL1: "\u2026 quedarse frito antes que nadie en esta fiesta?",
+          gL2: "\u2026 ser el \xFAltimo en la pista de baile?",
+          gL3: "\u2026 cantar la letra equivocada a todo volumen?",
+          gL4: "\u2026 perder el m\xF3vil esta noche?",
+          gL5: "\u2026 invitar a una ronda a todos?",
+          gL6: "\u2026 montar un trenecito?",
+          gL7: "\u2026 bailar encima de una mesa?",
+          gL8: "\u2026 olvidar d\xF3nde vive?",
+          gL9: "\u2026 mandar un mensaje del que se arrepentir\xE1 ma\xF1ana?",
+          gL10: "\u2026 hacerse viral alg\xFAn d\xEDa?",
+          gL11: "\u2026 comerse todos los snacks?",
+          gL12: "\u2026 llorar con una canci\xF3n de amor?",
+          gL13: "\u2026 hablar una hora con un desconocido?",
+          gL14: "\u2026 adue\xF1arse de la m\xFAsica sin preguntar?",
+          gL15: "\u2026 llegar con dos horas de retraso?",
+          gL16: "\u2026 ganar un concurso de baile?",
+          gL17: "\u2026 contar la misma historia tres veces?",
+          gL18: "\u2026 irse sin despedirse?",
+          gL19: "\u2026 tener los peores pasos de baile?",
+          gL20: "\u2026 seguir de fiesta al amanecer?"
         },
         it: {
           g_library: "Libreria",
@@ -2992,7 +3236,68 @@
           wh5: "Tempesta di flash!",
           wh6: "Parte il desiderio di un ospite!",
           wh7: "Tutti a cantare!",
-          wh8: "Tutti a ballare!"
+          wh8: "Tutti a ballare!",
+          pmTitle: "Altro",
+          pmHint: "Strumenti da festa",
+          gCatMusic: "Quiz musicale",
+          gCatQuick: "Dita veloci",
+          gCatParty: "Festa",
+          gTitleQ: "Che canzone \xE8?",
+          gTitleQHint: "La prossima canzone parte nascosta: che titolo \xE8?",
+          gNext: "Riga successiva",
+          gNextHint: "Quale riga del testo arriva ora? Risolto appena viene cantata",
+          gBeat: "Colpo a tempo",
+          gBeatHint: "Tocca a ritmo sul telefono: vince il timing migliore",
+          gFast: "Dito pi\xF9 veloce",
+          gFastHint: "Aspetta il segnale, poi tocca. Se tocchi troppo presto perdi il round",
+          gBomb: "Patata bollente",
+          gBombHint: "Una bomba passa di telefono in telefono: passala prima che esploda",
+          gLikely: "Chi sarebbe capace di \u2026?",
+          gLikelyHint: "Vota un ospite. Chi vota con la maggioranza fa punti",
+          gNextAsk: "Cosa viene dopo?",
+          gBeatGo: "Tocca a ritmo!",
+          gFastReady: "Aspetta \u2026",
+          gFastGo: "ORA!",
+          gBombHolder: "{n} ha la bomba",
+          gBombBoom: "{n} \xE8 esploso!",
+          gJoinAny: "Unisciti dal telefono!",
+          gJoinScan: "Scansiona il codice per giocare",
+          gStartNow: "Inizia ora",
+          gSkip: "Salta round",
+          gAnswered: "{n} hanno risposto",
+          gWinner: "Vincitore",
+          gSettings: "Impostazioni gioco",
+          gSetRounds: "Round",
+          gSetAsk: "Tempo per domanda",
+          gSetJoin: "Tempo per unirsi",
+          gSetDur: "Durata di battle e beat",
+          gSetBreak: "Pausa tra i round",
+          gSetBonus: "Bonus per le risposte veloci",
+          gSetCard: "Scheda del gioco",
+          gCardBig: "Grande",
+          gCardSmall: "Compatta",
+          gSetWheel: "Caselle della ruota",
+          gWheelOwn: "Le tue caselle, separate da virgole",
+          gL1: "\u2026 addormentarsi prima di tutti a questa festa?",
+          gL2: "\u2026 restare per ultimo in pista?",
+          gL3: "\u2026 cantare le parole sbagliate a tutto volume?",
+          gL4: "\u2026 perdere il telefono stasera?",
+          gL5: "\u2026 offrire un giro a tutti?",
+          gL6: "\u2026 far partire un trenino?",
+          gL7: "\u2026 ballare sul tavolo?",
+          gL8: "\u2026 dimenticare dove abita?",
+          gL9: "\u2026 mandare un messaggio di cui si pentir\xE0 domani?",
+          gL10: "\u2026 diventare una star un giorno?",
+          gL11: "\u2026 mangiarsi tutti gli snack?",
+          gL12: "\u2026 piangere per una canzone d'amore?",
+          gL13: "\u2026 chiacchierare un'ora con uno sconosciuto?",
+          gL14: "\u2026 prendere il controllo della musica senza chiedere?",
+          gL15: "\u2026 arrivare con due ore di ritardo?",
+          gL16: "\u2026 vincere una gara di ballo?",
+          gL17: "\u2026 raccontare la stessa storia tre volte?",
+          gL18: "\u2026 andarsene senza salutare?",
+          gL19: "\u2026 avere i passi di ballo peggiori?",
+          gL20: "\u2026 essere ancora in pista all'alba?"
         },
         pt: {
           g_library: "Biblioteca",
@@ -3568,7 +3873,68 @@
           wh5: "Tempestade de flashes!",
           wh6: "Toca o pedido de um convidado!",
           wh7: "Todos a cantar!",
-          wh8: "Todos a dan\xE7ar!"
+          wh8: "Todos a dan\xE7ar!",
+          pmTitle: "Mais",
+          pmHint: "Ferramentas de festa",
+          gCatMusic: "Quiz musical",
+          gCatQuick: "Dedos r\xE1pidos",
+          gCatParty: "Festa",
+          gTitleQ: "Qual \xE9 a m\xFAsica?",
+          gTitleQHint: "A pr\xF3xima m\xFAsica come\xE7a escondida: qual \xE9 o t\xEDtulo?",
+          gNext: "Pr\xF3xima linha",
+          gNextHint: "Que linha da letra vem agora? Resolvido quando for cantada",
+          gBeat: "Batida certa",
+          gBeatHint: "Toca ao ritmo no telem\xF3vel: ganha o melhor timing",
+          gFast: "Dedo mais r\xE1pido",
+          gFastHint: "Espera pelo sinal e toca. Se tocares cedo demais, perdes a ronda",
+          gBomb: "Batata quente",
+          gBombHint: "Uma bomba passa de telem\xF3vel em telem\xF3vel: passa-a antes que rebente",
+          gLikely: "Quem seria mais capaz de \u2026?",
+          gLikelyHint: "Vota num convidado. Quem votar com a maioria pontua",
+          gNextAsk: "O que vem a seguir?",
+          gBeatGo: "Toca ao ritmo!",
+          gFastReady: "Espera \u2026",
+          gFastGo: "J\xC1!",
+          gBombHolder: "{n} tem a bomba",
+          gBombBoom: "{n} rebentou!",
+          gJoinAny: "Junta-te no telem\xF3vel!",
+          gJoinScan: "Digitaliza o c\xF3digo para jogar",
+          gStartNow: "Come\xE7ar j\xE1",
+          gSkip: "Saltar ronda",
+          gAnswered: "{n} responderam",
+          gWinner: "Vencedor",
+          gSettings: "Defini\xE7\xF5es do jogo",
+          gSetRounds: "Rondas",
+          gSetAsk: "Tempo por pergunta",
+          gSetJoin: "Tempo para entrar",
+          gSetDur: "Dura\xE7\xE3o de battle e beat",
+          gSetBreak: "Pausa entre rondas",
+          gSetBonus: "B\xF3nus por respostas r\xE1pidas",
+          gSetCard: "Cart\xE3o do jogo",
+          gCardBig: "Grande",
+          gCardSmall: "Compacto",
+          gSetWheel: "Campos da roleta",
+          gWheelOwn: "Os teus campos, separados por v\xEDrgulas",
+          gL1: "\u2026 adormecer primeiro nesta festa?",
+          gL2: "\u2026 ser o \xFAltimo na pista de dan\xE7a?",
+          gL3: "\u2026 cantar a letra errada a plenos pulm\xF5es?",
+          gL4: "\u2026 perder o telem\xF3vel esta noite?",
+          gL5: "\u2026 pagar uma ronda a todos?",
+          gL6: "\u2026 come\xE7ar um comboio?",
+          gL7: "\u2026 dan\xE7ar em cima da mesa?",
+          gL8: "\u2026 esquecer-se de onde mora?",
+          gL9: "\u2026 enviar uma mensagem de que se vai arrepender amanh\xE3?",
+          gL10: "\u2026 ter fama um dia?",
+          gL11: "\u2026 comer todos os snacks?",
+          gL12: "\u2026 chorar com uma can\xE7\xE3o de amor?",
+          gL13: "\u2026 falar uma hora com um desconhecido?",
+          gL14: "\u2026 ficar com a m\xFAsica sem pedir?",
+          gL15: "\u2026 chegar com duas horas de atraso?",
+          gL16: "\u2026 ganhar um concurso de dan\xE7a?",
+          gL17: "\u2026 contar a mesma hist\xF3ria tr\xEAs vezes?",
+          gL18: "\u2026 ir-se embora sem se despedir?",
+          gL19: "\u2026 ter os piores passos de dan\xE7a?",
+          gL20: "\u2026 ainda estar de p\xE9 ao nascer do sol?"
         },
         nl: {
           g_library: "Bibliotheek",
@@ -4144,7 +4510,68 @@
           wh5: "Flitsonweer!",
           wh6: "Een gastenwens speelt!",
           wh7: "Iedereen zingt!",
-          wh8: "Iedereen danst!"
+          wh8: "Iedereen danst!",
+          pmTitle: "Meer",
+          pmHint: "Feesttools",
+          gCatMusic: "Muziekquiz",
+          gCatQuick: "Snelle vingers",
+          gCatParty: "Feest",
+          gTitleQ: "Welk nummer is dit?",
+          gTitleQHint: "Het volgende nummer start verborgen: welke titel is het?",
+          gNext: "Volgende regel",
+          gNextHint: "Welke regel komt nu? Opgelost zodra hij gezongen wordt",
+          gBeat: "Beat-raak",
+          gBeatHint: "Tik mee op de beat op je telefoon: de beste timing wint",
+          gFast: "Snelste vinger",
+          gFastHint: "Wacht op het signaal en tik dan. Te vroeg tikken is de ronde kwijt",
+          gBomb: "Hete aardappel",
+          gBombHint: "Een bom reist van telefoon naar telefoon: geef hem door voor hij ontploft",
+          gLikely: "Wie zou het meest waarschijnlijk \u2026?",
+          gLikelyHint: "Stem op een gast. Wie met de meerderheid meestemt, scoort",
+          gNextAsk: "Wat komt er nu?",
+          gBeatGo: "Tik op de beat!",
+          gFastReady: "Wacht even \u2026",
+          gFastGo: "NU!",
+          gBombHolder: "{n} heeft de bom",
+          gBombBoom: "{n} is ontploft!",
+          gJoinAny: "Doe mee op je telefoon!",
+          gJoinScan: "Scan de code en speel mee",
+          gStartNow: "Nu starten",
+          gSkip: "Ronde overslaan",
+          gAnswered: "{n} hebben geantwoord",
+          gWinner: "Winnaar",
+          gSettings: "Spelinstellingen",
+          gSetRounds: "Rondes",
+          gSetAsk: "Tijd per vraag",
+          gSetJoin: "Tijd om mee te doen",
+          gSetDur: "Duur van battle en beat",
+          gSetBreak: "Pauze tussen rondes",
+          gSetBonus: "Bonus voor snelle antwoorden",
+          gSetCard: "Spelkaart",
+          gCardBig: "Groot",
+          gCardSmall: "Compact",
+          gSetWheel: "Vakken van het rad",
+          gWheelOwn: "Je eigen vakken, gescheiden door komma's",
+          gL1: "\u2026 als eerste in slaap vallen op dit feest?",
+          gL2: "\u2026 als laatste op de dansvloer staan?",
+          gL3: "\u2026 de verkeerde tekst op volle sterkte meezingen?",
+          gL4: "\u2026 vanavond zijn of haar telefoon kwijtraken?",
+          gL5: "\u2026 een rondje voor iedereen geven?",
+          gL6: "\u2026 een polonaise starten?",
+          gL7: "\u2026 op een tafel dansen?",
+          gL8: "\u2026 vergeten waar hij of zij woont?",
+          gL9: "\u2026 een bericht sturen waar je morgen spijt van hebt?",
+          gL10: "\u2026 ooit beroemd worden?",
+          gL11: "\u2026 alle snacks opeten?",
+          gL12: "\u2026 huilen bij een liefdesliedje?",
+          gL13: "\u2026 een uur met een vreemde kletsen?",
+          gL14: "\u2026 zonder te vragen de muziek overnemen?",
+          gL15: "\u2026 twee uur te laat komen?",
+          gL16: "\u2026 een danswedstrijd winnen?",
+          gL17: "\u2026 hetzelfde verhaal drie keer vertellen?",
+          gL18: "\u2026 vertrekken zonder gedag te zeggen?",
+          gL19: "\u2026 de slechtste danspasjes hebben?",
+          gL20: "\u2026 bij zonsopgang nog bezig zijn?"
         },
         pl: {
           g_library: "Biblioteka",
@@ -4720,7 +5147,68 @@
           wh5: "Burza fleszy!",
           wh6: "Leci \u017Cyczenie go\u015Bcia!",
           wh7: "Wszyscy \u015Bpiewaj\u0105!",
-          wh8: "Wszyscy ta\u0144cz\u0105!"
+          wh8: "Wszyscy ta\u0144cz\u0105!",
+          pmTitle: "Wi\u0119cej",
+          pmHint: "Narz\u0119dzia imprezowe",
+          gCatMusic: "Quiz muzyczny",
+          gCatQuick: "Szybkie palce",
+          gCatParty: "Impreza",
+          gTitleQ: "Jaki to utw\xF3r?",
+          gTitleQHint: "Nast\u0119pny utw\xF3r startuje ukryty: jaki ma tytu\u0142?",
+          gNext: "Nast\u0119pna linijka",
+          gNextHint: "Jaka linijka tekstu b\u0119dzie teraz? Rozwi\u0105zane, gdy zostanie za\u015Bpiewana",
+          gBeat: "Trafienie w beat",
+          gBeatHint: "Stukaj w rytm na telefonie: wygrywa najlepszy timing",
+          gFast: "Najszybszy palec",
+          gFastHint: "Czekaj na sygna\u0142, potem stuknij. Za wcze\u015Bnie i runda przepad\u0142a",
+          gBomb: "Gor\u0105cy ziemniak",
+          gBombHint: "Bomba w\u0119druje z telefonu na telefon: podaj j\u0105 dalej, zanim wybuchnie",
+          gLikely: "Kto najprawdopodobniej \u2026?",
+          gLikelyHint: "Zag\u0142osuj na go\u015Bcia. Kto g\u0142osuje jak wi\u0119kszo\u015B\u0107, zdobywa punkty",
+          gNextAsk: "Co dalej?",
+          gBeatGo: "Stukaj w rytm!",
+          gFastReady: "Czekaj \u2026",
+          gFastGo: "TERAZ!",
+          gBombHolder: "{n} ma bomb\u0119",
+          gBombBoom: "Bomba wybuch\u0142a u: {n}!",
+          gJoinAny: "Do\u0142\u0105cz na telefonie!",
+          gJoinScan: "Zeskanuj kod i graj",
+          gStartNow: "Start",
+          gSkip: "Pomi\u0144 rund\u0119",
+          gAnswered: "Odpowiedzi: {n}",
+          gWinner: "Zwyci\u0119zca",
+          gSettings: "Ustawienia gry",
+          gSetRounds: "Rundy",
+          gSetAsk: "Czas na pytanie",
+          gSetJoin: "Czas na do\u0142\u0105czenie",
+          gSetDur: "D\u0142ugo\u015B\u0107 battle i beat",
+          gSetBreak: "Przerwa mi\u0119dzy rundami",
+          gSetBonus: "Bonus za szybkie odpowiedzi",
+          gSetCard: "Karta gry",
+          gCardBig: "Du\u017Ca",
+          gCardSmall: "Kompaktowa",
+          gSetWheel: "Pola ko\u0142a",
+          gWheelOwn: "W\u0142asne pola, oddzielone przecinkami",
+          gL1: "\u2026 za\u015Bnie na tej imprezie jako pierwszy?",
+          gL2: "\u2026 zostanie na parkiecie do ko\u0144ca?",
+          gL3: "\u2026 za\u015Bpiewa na ca\u0142y g\u0142os z\u0142y tekst?",
+          gL4: "\u2026 zgubi dzi\u015B telefon?",
+          gL5: "\u2026 postawi wszystkim kolejk\u0119?",
+          gL6: "\u2026 zacznie poci\u0105g?",
+          gL7: "\u2026 zata\u0144czy na stole?",
+          gL8: "\u2026 zapomni, gdzie mieszka?",
+          gL9: "\u2026 wy\u015Ble wiadomo\u015B\u0107, kt\xF3rej jutro po\u017Ca\u0142uje?",
+          gL10: "\u2026 kiedy\u015B zyska s\u0142aw\u0119?",
+          gL11: "\u2026 zje wszystkie przek\u0105ski?",
+          gL12: "\u2026 rozp\u0142acze si\u0119 przy piosence o mi\u0142o\u015Bci?",
+          gL13: "\u2026 pogada godzin\u0119 z nieznajomym?",
+          gL14: "\u2026 przejmie muzyk\u0119 bez pytania?",
+          gL15: "\u2026 sp\xF3\u017Ani si\u0119 dwie godziny?",
+          gL16: "\u2026 wygra konkurs ta\u0144ca?",
+          gL17: "\u2026 opowie t\u0119 sam\u0105 histori\u0119 trzy razy?",
+          gL18: "\u2026 wyjdzie bez po\u017Cegnania?",
+          gL19: "\u2026 ma najgorsze ruchy taneczne?",
+          gL20: "\u2026 b\u0119dzie si\u0119 jeszcze bawi\u0107 o wschodzie s\u0142o\u0144ca?"
         },
         tr: {
           g_library: "Kitapl\u0131k",
@@ -5296,7 +5784,68 @@
           wh5: "Fla\u015F f\u0131rt\u0131nas\u0131!",
           wh6: "Bir konu\u011Fun iste\u011Fi \xE7al\u0131yor!",
           wh7: "Herkes s\xF6ylesin!",
-          wh8: "Herkes dans etsin!"
+          wh8: "Herkes dans etsin!",
+          pmTitle: "Daha fazla",
+          pmHint: "Parti ara\xE7lar\u0131",
+          gCatMusic: "M\xFCzik s\u0131nav\u0131",
+          gCatQuick: "H\u0131zl\u0131 parmaklar",
+          gCatParty: "Parti",
+          gTitleQ: "Bu \u015Fark\u0131 hangisi?",
+          gTitleQHint: "S\u0131radaki \u015Fark\u0131 gizli ba\u015Fl\u0131yor: ba\u015Fl\u0131\u011F\u0131 ne?",
+          gNext: "S\u0131radaki sat\u0131r",
+          gNextHint: "\u015Eark\u0131n\u0131n hangi sat\u0131r\u0131 geliyor? S\xF6ylendi\u011Fi anda \xE7\xF6z\xFCl\xFCr",
+          gBeat: "Ritim vuru\u015Fu",
+          gBeatHint: "Telefonunda ritme g\xF6re dokun: en iyi zamanlama kazan\u0131r",
+          gFast: "En h\u0131zl\u0131 parmak",
+          gFastHint: "Sinyali bekle, sonra dokun. Erken dokunursan tur gider",
+          gBomb: "S\u0131cak patates",
+          gBombHint: "Bir bomba telefondan telefona geziyor: patlamadan \xF6nce ver gitsin",
+          gLikely: "Kim b\xFCy\xFCk ihtimalle \u2026?",
+          gLikelyHint: "Bir misafire oy ver. \xC7o\u011Funlukla ayn\u0131 oyu verenler puan al\u0131r",
+          gNextAsk: "S\u0131rada ne var?",
+          gBeatGo: "Ritme g\xF6re dokun!",
+          gFastReady: "Bekle \u2026",
+          gFastGo: "\u015E\u0130MD\u0130!",
+          gBombHolder: "Bomba {n} ki\u015Fisinde",
+          gBombBoom: "{n} patlad\u0131!",
+          gJoinAny: "Telefonundan kat\u0131l!",
+          gJoinScan: "Oynamak i\xE7in kodu tara",
+          gStartNow: "Hemen ba\u015Fla",
+          gSkip: "Turu atla",
+          gAnswered: "{n} ki\u015Fi yan\u0131tlad\u0131",
+          gWinner: "Kazanan",
+          gSettings: "Oyun ayarlar\u0131",
+          gSetRounds: "Tur say\u0131s\u0131",
+          gSetAsk: "Soru ba\u015F\u0131na s\xFCre",
+          gSetJoin: "Kat\u0131lma s\xFCresi",
+          gSetDur: "Battle ve beat s\xFCresi",
+          gSetBreak: "Turlar aras\u0131 mola",
+          gSetBonus: "H\u0131zl\u0131 yan\u0131t bonusu",
+          gSetCard: "Oyun kart\u0131",
+          gCardBig: "B\xFCy\xFCk",
+          gCardSmall: "Kompakt",
+          gSetWheel: "\xC7ark alanlar\u0131",
+          gWheelOwn: "Kendi alanlar\u0131n, virg\xFClle ay\u0131r",
+          gL1: "\u2026 bu partide ilk uyuyakal\u0131r?",
+          gL2: "\u2026 pistte en son kal\u0131r?",
+          gL3: "\u2026 yanl\u0131\u015F s\xF6zleri ba\u011F\u0131ra ba\u011F\u0131ra s\xF6yler?",
+          gL4: "\u2026 bu gece telefonunu kaybeder?",
+          gL5: "\u2026 herkese i\xE7ki \u0131smarlar?",
+          gL6: "\u2026 tren yapmaya ba\u015Flar?",
+          gL7: "\u2026 masan\u0131n \xFCst\xFCnde dans eder?",
+          gL8: "\u2026 nerede oturdu\u011Funu unutur?",
+          gL9: "\u2026 yar\u0131n pi\u015Fman olaca\u011F\u0131 bir mesaj atar?",
+          gL10: "\u2026 bir g\xFCn \xFCnl\xFC olur?",
+          gL11: "\u2026 b\xFCt\xFCn at\u0131\u015Ft\u0131rmal\u0131klar\u0131 yer?",
+          gL12: "\u2026 bir a\u015Fk \u015Fark\u0131s\u0131nda a\u011Flar?",
+          gL13: "\u2026 bir yabanc\u0131yla bir saat sohbet eder?",
+          gL14: "\u2026 sormadan m\xFCzi\u011Fi ele ge\xE7irir?",
+          gL15: "\u2026 iki saat ge\xE7 gelir?",
+          gL16: "\u2026 dans yar\u0131\u015Fmas\u0131n\u0131 kazan\u0131r?",
+          gL17: "\u2026 ayn\u0131 hik\xE2yeyi \xFC\xE7 kez anlat\u0131r?",
+          gL18: "\u2026 veda etmeden gider?",
+          gL19: "\u2026 en k\xF6t\xFC dans fig\xFCrlerine sahip olur?",
+          gL20: "\u2026 g\xFCn do\u011Farken h\xE2l\xE2 e\u011Fleniyor olur?"
         },
         ru: {
           g_library: "\u041C\u0435\u0434\u0438\u0430\u0442\u0435\u043A\u0430",
@@ -5872,7 +6421,68 @@
           wh5: "\u0428\u0442\u043E\u0440\u043C \u0432\u0441\u043F\u044B\u0448\u0435\u043A!",
           wh6: "\u0418\u0433\u0440\u0430\u0435\u0442 \u0436\u0435\u043B\u0430\u043D\u0438\u0435 \u0433\u043E\u0441\u0442\u044F!",
           wh7: "\u0412\u0441\u0435 \u043F\u043E\u044E\u0442!",
-          wh8: "\u0412\u0441\u0435 \u0442\u0430\u043D\u0446\u0443\u044E\u0442!"
+          wh8: "\u0412\u0441\u0435 \u0442\u0430\u043D\u0446\u0443\u044E\u0442!",
+          pmTitle: "\u0415\u0449\u0451",
+          pmHint: "\u0418\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B \u0434\u043B\u044F \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
+          gCatMusic: "\u041C\u0443\u0437\u044B\u043A\u0430\u043B\u044C\u043D\u0430\u044F \u0432\u0438\u043A\u0442\u043E\u0440\u0438\u043D\u0430",
+          gCatQuick: "\u0411\u044B\u0441\u0442\u0440\u044B\u0435 \u043F\u0430\u043B\u044C\u0446\u044B",
+          gCatParty: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
+          gTitleQ: "\u0427\u0442\u043E \u044D\u0442\u043E \u0437\u0430 \u043F\u0435\u0441\u043D\u044F?",
+          gTitleQHint: "\u0421\u043B\u0435\u0434\u0443\u044E\u0449\u0430\u044F \u043F\u0435\u0441\u043D\u044F \u0441\u0442\u0430\u0440\u0442\u0443\u0435\u0442 \u0441\u043A\u0440\u044B\u0442\u043E\u0439: \u043A\u0430\u043A\u043E\u0435 \u0443 \u043D\u0435\u0451 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435?",
+          gNext: "\u0421\u043B\u0435\u0434\u0443\u044E\u0449\u0430\u044F \u0441\u0442\u0440\u043E\u043A\u0430",
+          gNextHint: "\u041A\u0430\u043A\u0430\u044F \u0441\u0442\u0440\u043E\u043A\u0430 \u0442\u0435\u043A\u0441\u0442\u0430 \u0434\u0430\u043B\u044C\u0448\u0435? \u0420\u0435\u0448\u0430\u0435\u0442\u0441\u044F, \u043A\u0430\u043A \u0442\u043E\u043B\u044C\u043A\u043E \u0435\u0451 \u0441\u043F\u043E\u044E\u0442",
+          gBeat: "\u041F\u043E\u043F\u0430\u0434\u0438 \u0432 \u0431\u0438\u0442",
+          gBeatHint: "\u0421\u0442\u0443\u0447\u0438\u0442\u0435 \u0432 \u0442\u0430\u043A\u0442 \u043D\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0435: \u043F\u043E\u0431\u0435\u0436\u0434\u0430\u0435\u0442 \u043B\u0443\u0447\u0448\u0438\u0439 \u0442\u0430\u0439\u043C\u0438\u043D\u0433",
+          gFast: "\u0421\u0430\u043C\u044B\u0439 \u0431\u044B\u0441\u0442\u0440\u044B\u0439 \u043F\u0430\u043B\u0435\u0446",
+          gFastHint: "\u0416\u0434\u0438\u0442\u0435 \u0441\u0438\u0433\u043D\u0430\u043B\u0430, \u043F\u043E\u0442\u043E\u043C \u0436\u043C\u0438\u0442\u0435. \u041D\u0430\u0436\u043C\u0451\u0442\u0435 \u0440\u0430\u043D\u044C\u0448\u0435, \u0438 \u0440\u0430\u0443\u043D\u0434 \u043F\u043E\u0442\u0435\u0440\u044F\u043D",
+          gBomb: "\u0413\u043E\u0440\u044F\u0447\u0430\u044F \u043A\u0430\u0440\u0442\u043E\u0448\u043A\u0430",
+          gBombHint: "\u0411\u043E\u043C\u0431\u0430 \u0445\u043E\u0434\u0438\u0442 \u043E\u0442 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430 \u043A \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0443: \u043F\u0435\u0440\u0435\u0434\u0430\u0439\u0442\u0435 \u0435\u0451, \u043F\u043E\u043A\u0430 \u043D\u0435 \u0440\u0432\u0430\u043D\u0443\u043B\u0430",
+          gLikely: "\u041A\u0442\u043E \u0441\u043A\u043E\u0440\u0435\u0435 \u0432\u0441\u0435\u0433\u043E \u2026?",
+          gLikelyHint: "\u0413\u043E\u043B\u043E\u0441\u0443\u0439\u0442\u0435 \u0437\u0430 \u0433\u043E\u0441\u0442\u044F. \u041A\u0442\u043E \u043F\u0440\u043E\u0433\u043E\u043B\u043E\u0441\u0443\u0435\u0442 \u043A\u0430\u043A \u0431\u043E\u043B\u044C\u0448\u0438\u043D\u0441\u0442\u0432\u043E, \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u0442 \u043E\u0447\u043A\u0438",
+          gNextAsk: "\u0427\u0442\u043E \u0434\u0430\u043B\u044C\u0448\u0435?",
+          gBeatGo: "\u0416\u043C\u0438 \u0432 \u0442\u0430\u043A\u0442!",
+          gFastReady: "\u0416\u0434\u0438\u0442\u0435 \u2026",
+          gFastGo: "\u0421\u0415\u0419\u0427\u0410\u0421!",
+          gBombHolder: "\u0411\u043E\u043C\u0431\u0430 \u0443 {n}",
+          gBombBoom: "\u0411\u043E\u043C\u0431\u0430 \u0440\u0432\u0430\u043D\u0443\u043B\u0430 \u0443 {n}!",
+          gJoinAny: "\u041F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0439\u0442\u0435\u0441\u044C \u043D\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0435!",
+          gJoinScan: "\u0421\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 \u043A\u043E\u0434 \u0438 \u0438\u0433\u0440\u0430\u0439\u0442\u0435",
+          gStartNow: "\u041D\u0430\u0447\u0430\u0442\u044C",
+          gSkip: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u044C \u0440\u0430\u0443\u043D\u0434",
+          gAnswered: "\u041E\u0442\u0432\u0435\u0442\u0438\u043B\u0438: {n}",
+          gWinner: "\u041F\u043E\u0431\u0435\u0434\u0438\u0442\u0435\u043B\u044C",
+          gSettings: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0438\u0433\u0440\u044B",
+          gSetRounds: "\u0420\u0430\u0443\u043D\u0434\u044B",
+          gSetAsk: "\u0412\u0440\u0435\u043C\u044F \u043D\u0430 \u0432\u043E\u043F\u0440\u043E\u0441",
+          gSetJoin: "\u0412\u0440\u0435\u043C\u044F \u043D\u0430 \u0432\u0445\u043E\u0434",
+          gSetDur: "\u0414\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C \u0431\u0430\u0442\u0442\u043B\u0430 \u0438 \u0431\u0438\u0442\u0430",
+          gSetBreak: "\u041F\u0430\u0443\u0437\u0430 \u043C\u0435\u0436\u0434\u0443 \u0440\u0430\u0443\u043D\u0434\u0430\u043C\u0438",
+          gSetBonus: "\u0411\u043E\u043D\u0443\u0441 \u0437\u0430 \u0431\u044B\u0441\u0442\u0440\u044B\u0435 \u043E\u0442\u0432\u0435\u0442\u044B",
+          gSetCard: "\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0430 \u0438\u0433\u0440\u044B",
+          gCardBig: "\u0411\u043E\u043B\u044C\u0448\u0430\u044F",
+          gCardSmall: "\u041A\u043E\u043C\u043F\u0430\u043A\u0442\u043D\u0430\u044F",
+          gSetWheel: "\u041F\u043E\u043B\u044F \u043A\u043E\u043B\u0435\u0441\u0430",
+          gWheelOwn: "\u0421\u0432\u043E\u0438 \u043F\u043E\u043B\u044F, \u0447\u0435\u0440\u0435\u0437 \u0437\u0430\u043F\u044F\u0442\u0443\u044E",
+          gL1: "\u2026 \u0443\u0441\u043D\u0451\u0442 \u043D\u0430 \u044D\u0442\u043E\u0439 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0435 \u0440\u0430\u043D\u044C\u0448\u0435 \u0432\u0441\u0435\u0445?",
+          gL2: "\u2026 \u0431\u0443\u0434\u0435\u0442 \u0442\u0430\u043D\u0446\u0435\u0432\u0430\u0442\u044C \u043D\u0430 \u0442\u0430\u043D\u0446\u043F\u043E\u043B\u0435 \u0434\u043E\u043B\u044C\u0448\u0435 \u0432\u0441\u0435\u0445?",
+          gL3: "\u2026 \u0432\u043E \u0432\u0435\u0441\u044C \u0433\u043E\u043B\u043E\u0441 \u0441\u043F\u043E\u0451\u0442 \u043D\u0435\u043F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u044B\u0435 \u0441\u043B\u043E\u0432\u0430?",
+          gL4: "\u2026 \u043F\u043E\u0442\u0435\u0440\u044F\u0435\u0442 \u0442\u0435\u043B\u0435\u0444\u043E\u043D \u0441\u0435\u0433\u043E\u0434\u043D\u044F \u0432\u0435\u0447\u0435\u0440\u043E\u043C?",
+          gL5: "\u2026 \u0437\u0430\u043A\u0430\u0436\u0435\u0442 \u0432\u0441\u0435\u043C \u043F\u043E \u043A\u0440\u0443\u0433\u0443?",
+          gL6: "\u2026 \u0437\u0430\u0442\u0435\u0435\u0442 \u043F\u0430\u0440\u043E\u0432\u043E\u0437\u0438\u043A?",
+          gL7: "\u2026 \u0441\u0442\u0430\u043D\u0446\u0443\u0435\u0442 \u043D\u0430 \u0441\u0442\u043E\u043B\u0435?",
+          gL8: "\u2026 \u0437\u0430\u0431\u0443\u0434\u0435\u0442, \u0433\u0434\u0435 \u0436\u0438\u0432\u0451\u0442?",
+          gL9: "\u2026 \u043E\u0442\u043F\u0440\u0430\u0432\u0438\u0442 \u0441\u043E\u043E\u0431\u0449\u0435\u043D\u0438\u0435, \u043E \u043A\u043E\u0442\u043E\u0440\u043E\u043C \u0437\u0430\u0432\u0442\u0440\u0430 \u043F\u043E\u0436\u0430\u043B\u0435\u0435\u0442?",
+          gL10: "\u2026 \u043E\u0434\u043D\u0430\u0436\u0434\u044B \u043F\u0440\u043E\u0441\u043B\u0430\u0432\u0438\u0442\u0441\u044F?",
+          gL11: "\u2026 \u0441\u044A\u0435\u0441\u0442 \u0432\u0441\u0435 \u0437\u0430\u043A\u0443\u0441\u043A\u0438?",
+          gL12: "\u2026 \u0440\u0430\u0441\u043F\u043B\u0430\u0447\u0435\u0442\u0441\u044F \u043F\u043E\u0434 \u043F\u0435\u0441\u043D\u044E \u043E \u043B\u044E\u0431\u0432\u0438?",
+          gL13: "\u2026 \u043F\u0440\u043E\u0431\u043E\u043B\u0442\u0430\u0435\u0442 \u0447\u0430\u0441 \u0441 \u043D\u0435\u0437\u043D\u0430\u043A\u043E\u043C\u0446\u0435\u043C?",
+          gL14: "\u2026 \u0437\u0430\u0445\u0432\u0430\u0442\u0438\u0442 \u043C\u0443\u0437\u044B\u043A\u0443, \u043D\u0435 \u0441\u043F\u0440\u043E\u0441\u0438\u0432?",
+          gL15: "\u2026 \u043E\u043F\u043E\u0437\u0434\u0430\u0435\u0442 \u043D\u0430 \u0434\u0432\u0430 \u0447\u0430\u0441\u0430?",
+          gL16: "\u2026 \u0432\u044B\u0438\u0433\u0440\u0430\u0435\u0442 \u0442\u0430\u043D\u0446\u0435\u0432\u0430\u043B\u044C\u043D\u044B\u0439 \u043A\u043E\u043D\u043A\u0443\u0440\u0441?",
+          gL17: "\u2026 \u0440\u0430\u0441\u0441\u043A\u0430\u0436\u0435\u0442 \u043E\u0434\u043D\u0443 \u0438 \u0442\u0443 \u0436\u0435 \u0438\u0441\u0442\u043E\u0440\u0438\u044E \u0442\u0440\u0438\u0436\u0434\u044B?",
+          gL18: "\u2026 \u0443\u0439\u0434\u0451\u0442, \u043D\u0435 \u043F\u043E\u043F\u0440\u043E\u0449\u0430\u0432\u0448\u0438\u0441\u044C?",
+          gL19: "\u2026 \u0442\u0430\u043D\u0446\u0443\u0435\u0442 \u0445\u0443\u0436\u0435 \u0432\u0441\u0435\u0445?",
+          gL20: "\u2026 \u0432\u0441\u0451 \u0435\u0449\u0451 \u0431\u0443\u0434\u0435\u0442 \u043E\u0442\u0440\u044B\u0432\u0430\u0442\u044C\u0441\u044F \u043D\u0430 \u0440\u0430\u0441\u0441\u0432\u0435\u0442\u0435?"
         },
         uk: {
           g_library: "\u041C\u0435\u0434\u0456\u0430\u0442\u0435\u043A\u0430",
@@ -6448,7 +7058,68 @@
           wh5: "\u0428\u0442\u043E\u0440\u043C \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432!",
           wh6: "\u0413\u0440\u0430\u0454 \u0431\u0430\u0436\u0430\u043D\u043D\u044F \u0433\u043E\u0441\u0442\u044F!",
           wh7: "\u0412\u0441\u0456 \u0441\u043F\u0456\u0432\u0430\u044E\u0442\u044C!",
-          wh8: "\u0412\u0441\u0456 \u0442\u0430\u043D\u0446\u044E\u044E\u0442\u044C!"
+          wh8: "\u0412\u0441\u0456 \u0442\u0430\u043D\u0446\u044E\u044E\u0442\u044C!",
+          pmTitle: "\u0429\u0435",
+          pmHint: "\u0406\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0438 \u0434\u043B\u044F \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
+          gCatMusic: "\u041C\u0443\u0437\u0438\u0447\u043D\u0430 \u0432\u0456\u043A\u0442\u043E\u0440\u0438\u043D\u0430",
+          gCatQuick: "\u0428\u0432\u0438\u0434\u043A\u0456 \u043F\u0430\u043B\u044C\u0446\u0456",
+          gCatParty: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430",
+          gTitleQ: "\u0429\u043E \u0446\u0435 \u0437\u0430 \u043F\u0456\u0441\u043D\u044F?",
+          gTitleQHint: "\u041D\u0430\u0441\u0442\u0443\u043F\u043D\u0430 \u043F\u0456\u0441\u043D\u044F \u0441\u0442\u0430\u0440\u0442\u0443\u0454 \u043F\u0440\u0438\u0445\u043E\u0432\u0430\u043D\u043E\u044E: \u044F\u043A\u0430 \u0432 \u043D\u0435\u0457 \u043D\u0430\u0437\u0432\u0430?",
+          gNext: "\u041D\u0430\u0441\u0442\u0443\u043F\u043D\u0438\u0439 \u0440\u044F\u0434\u043E\u043A",
+          gNextHint: "\u042F\u043A\u0438\u0439 \u0440\u044F\u0434\u043E\u043A \u0442\u0435\u043A\u0441\u0442\u0443 \u0434\u0430\u043B\u0456? \u0420\u043E\u0437\u0432'\u044F\u0437\u0443\u0454\u0442\u044C\u0441\u044F, \u0449\u043E\u0439\u043D\u043E \u0439\u043E\u0433\u043E \u0437\u0430\u0441\u043F\u0456\u0432\u0430\u044E\u0442\u044C",
+          gBeat: "\u0412\u043B\u0443\u0447\u0438 \u0432 \u0431\u0456\u0442",
+          gBeatHint: "\u0422\u0438\u0441\u043D\u0456\u0442\u044C \u0443 \u0442\u0430\u043A\u0442 \u043D\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456: \u043F\u0435\u0440\u0435\u043C\u0430\u0433\u0430\u0454 \u043D\u0430\u0439\u043A\u0440\u0430\u0449\u0438\u0439 \u0442\u0430\u0439\u043C\u0438\u043D\u0433",
+          gFast: "\u041D\u0430\u0439\u0448\u0432\u0438\u0434\u0448\u0438\u0439 \u043F\u0430\u043B\u0435\u0446\u044C",
+          gFastHint: "\u0427\u0435\u043A\u0430\u0439\u0442\u0435 \u043D\u0430 \u0441\u0438\u0433\u043D\u0430\u043B, \u043F\u043E\u0442\u0456\u043C \u0442\u0438\u0441\u043D\u0456\u0442\u044C. \u041D\u0430\u0442\u0438\u0441\u043D\u0435\u0442\u0435 \u0440\u0430\u043D\u0456\u0448\u0435, \u0456 \u0440\u0430\u0443\u043D\u0434 \u0432\u0442\u0440\u0430\u0447\u0435\u043D\u043E",
+          gBomb: "\u0413\u0430\u0440\u044F\u0447\u0430 \u043A\u0430\u0440\u0442\u043E\u043F\u043B\u044F",
+          gBombHint: "\u0411\u043E\u043C\u0431\u0430 \u043C\u0430\u043D\u0434\u0440\u0443\u0454 \u0432\u0456\u0434 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430 \u0434\u043E \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430: \u043F\u0435\u0440\u0435\u0434\u0430\u0439\u0442\u0435 \u0457\u0457, \u043F\u043E\u043A\u0438 \u043D\u0435 \u0432\u0438\u0431\u0443\u0445\u043D\u0443\u043B\u0430",
+          gLikely: "\u0425\u0442\u043E, \u043D\u0430\u0439\u0456\u043C\u043E\u0432\u0456\u0440\u043D\u0456\u0448\u0435, \u2026?",
+          gLikelyHint: "\u0413\u043E\u043B\u043E\u0441\u0443\u0439\u0442\u0435 \u0437\u0430 \u0433\u043E\u0441\u0442\u044F. \u0425\u0442\u043E \u043F\u0440\u043E\u0433\u043E\u043B\u043E\u0441\u0443\u0454 \u044F\u043A \u0431\u0456\u043B\u044C\u0448\u0456\u0441\u0442\u044C, \u043E\u0442\u0440\u0438\u043C\u0443\u0454 \u0431\u0430\u043B\u0438",
+          gNextAsk: "\u0429\u043E \u0434\u0430\u043B\u0456?",
+          gBeatGo: "\u0422\u0438\u0441\u043D\u0438 \u0432 \u0442\u0430\u043A\u0442!",
+          gFastReady: "\u0427\u0435\u043A\u0430\u0439\u0442\u0435 \u2026",
+          gFastGo: "\u0417\u0410\u0420\u0410\u0417!",
+          gBombHolder: "\u0411\u043E\u043C\u0431\u0430 \u0432 {n}",
+          gBombBoom: "\u0411\u043E\u043C\u0431\u0430 \u0432\u0438\u0431\u0443\u0445\u043D\u0443\u043B\u0430 \u0432 {n}!",
+          gJoinAny: "\u041F\u0440\u0438\u0454\u0434\u043D\u0443\u0439\u0442\u0435\u0441\u044C \u043D\u0430 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456!",
+          gJoinScan: "\u0421\u043A\u0430\u043D\u0443\u0439\u0442\u0435 \u043A\u043E\u0434 \u0456 \u0433\u0440\u0430\u0439\u0442\u0435",
+          gStartNow: "\u041F\u043E\u0447\u0430\u0442\u0438",
+          gSkip: "\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u0438 \u0440\u0430\u0443\u043D\u0434",
+          gAnswered: "\u0412\u0456\u0434\u043F\u043E\u0432\u0456\u043B\u0438: {n}",
+          gWinner: "\u041F\u0435\u0440\u0435\u043C\u043E\u0436\u0435\u0446\u044C",
+          gSettings: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u0433\u0440\u0438",
+          gSetRounds: "\u0420\u0430\u0443\u043D\u0434\u0438",
+          gSetAsk: "\u0427\u0430\u0441 \u043D\u0430 \u0437\u0430\u043F\u0438\u0442\u0430\u043D\u043D\u044F",
+          gSetJoin: "\u0427\u0430\u0441 \u043D\u0430 \u043F\u0440\u0438\u0454\u0434\u043D\u0430\u043D\u043D\u044F",
+          gSetDur: "\u0422\u0440\u0438\u0432\u0430\u043B\u0456\u0441\u0442\u044C \u0431\u0430\u0442\u0442\u043B\u0443 \u0442\u0430 \u0431\u0456\u0442\u0443",
+          gSetBreak: "\u041F\u0430\u0443\u0437\u0430 \u043C\u0456\u0436 \u0440\u0430\u0443\u043D\u0434\u0430\u043C\u0438",
+          gSetBonus: "\u0411\u043E\u043D\u0443\u0441 \u0437\u0430 \u0448\u0432\u0438\u0434\u043A\u0456 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u0456",
+          gSetCard: "\u041A\u0430\u0440\u0442\u043A\u0430 \u0433\u0440\u0438",
+          gCardBig: "\u0412\u0435\u043B\u0438\u043A\u0430",
+          gCardSmall: "\u041A\u043E\u043C\u043F\u0430\u043A\u0442\u043D\u0430",
+          gSetWheel: "\u041F\u043E\u043B\u044F \u043A\u043E\u043B\u0435\u0441\u0430",
+          gWheelOwn: "\u0421\u0432\u043E\u0457 \u043F\u043E\u043B\u044F, \u0447\u0435\u0440\u0435\u0437 \u043A\u043E\u043C\u0443",
+          gL1: "\u2026 \u0437\u0430\u0441\u043D\u0435 \u043D\u0430 \u0446\u0456\u0439 \u0432\u0435\u0447\u0456\u0440\u0446\u0456 \u0440\u0430\u043D\u0456\u0448\u0435 \u0437\u0430 \u0432\u0441\u0456\u0445?",
+          gL2: "\u2026 \u0442\u0430\u043D\u0446\u044E\u0432\u0430\u0442\u0438\u043C\u0435 \u043D\u0430 \u0442\u0430\u043D\u0446\u043F\u043E\u043B\u0456 \u043D\u0430\u0439\u0434\u043E\u0432\u0448\u0435?",
+          gL3: "\u2026 \u043D\u0430 \u043F\u043E\u0432\u043D\u0438\u0439 \u0433\u043E\u043B\u043E\u0441 \u043F\u0440\u043E\u0441\u043F\u0456\u0432\u0430\u0454 \u043D\u0435\u043F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u0456 \u0441\u043B\u043E\u0432\u0430?",
+          gL4: "\u2026 \u0437\u0430\u0433\u0443\u0431\u0438\u0442\u044C \u0442\u0435\u043B\u0435\u0444\u043E\u043D \u0441\u044C\u043E\u0433\u043E\u0434\u043D\u0456 \u0432\u0432\u0435\u0447\u0435\u0440\u0456?",
+          gL5: "\u2026 \u0437\u0430\u043C\u043E\u0432\u0438\u0442\u044C \u0443\u0441\u0456\u043C \u043F\u043E \u043A\u043E\u043B\u0443?",
+          gL6: "\u2026 \u0437\u0430\u0442\u0456\u0454 \u043F\u0430\u0440\u043E\u0432\u043E\u0437\u0438\u043A?",
+          gL7: "\u2026 \u0437\u0430\u0442\u0430\u043D\u0446\u044E\u0454 \u043D\u0430 \u0441\u0442\u043E\u043B\u0456?",
+          gL8: "\u2026 \u0437\u0430\u0431\u0443\u0434\u0435, \u0434\u0435 \u0436\u0438\u0432\u0435?",
+          gL9: "\u2026 \u043D\u0430\u0434\u0456\u0448\u043B\u0435 \u043F\u043E\u0432\u0456\u0434\u043E\u043C\u043B\u0435\u043D\u043D\u044F, \u043F\u0440\u043E \u044F\u043A\u0435 \u0437\u0430\u0432\u0442\u0440\u0430 \u043F\u043E\u0448\u043A\u043E\u0434\u0443\u0454?",
+          gL10: "\u2026 \u043A\u043E\u043B\u0438\u0441\u044C \u043F\u0440\u043E\u0441\u043B\u0430\u0432\u0438\u0442\u044C\u0441\u044F?",
+          gL11: "\u2026 \u0437'\u0457\u0441\u0442\u044C \u0443\u0441\u0456 \u0437\u0430\u043A\u0443\u0441\u043A\u0438?",
+          gL12: "\u2026 \u0440\u043E\u0437\u043F\u043B\u0430\u0447\u0435\u0442\u044C\u0441\u044F \u0432\u0456\u0434 \u043F\u0456\u0441\u043D\u0456 \u043F\u0440\u043E \u043A\u043E\u0445\u0430\u043D\u043D\u044F?",
+          gL13: "\u2026 \u043F\u0440\u043E\u0433\u043E\u0432\u043E\u0440\u0438\u0442\u044C \u0433\u043E\u0434\u0438\u043D\u0443 \u0437 \u043D\u0435\u0437\u043D\u0430\u0439\u043E\u043C\u0446\u0435\u043C?",
+          gL14: "\u2026 \u0437\u0430\u0445\u043E\u043F\u0438\u0442\u044C \u043C\u0443\u0437\u0438\u043A\u0443, \u043D\u0435 \u0441\u043F\u0438\u0442\u0430\u0432\u0448\u0438?",
+          gL15: "\u2026 \u0437\u0430\u043F\u0456\u0437\u043D\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u0434\u0432\u0456 \u0433\u043E\u0434\u0438\u043D\u0438?",
+          gL16: "\u2026 \u0432\u0438\u0433\u0440\u0430\u0454 \u0442\u0430\u043D\u0446\u044E\u0432\u0430\u043B\u044C\u043D\u0438\u0439 \u043A\u043E\u043D\u043A\u0443\u0440\u0441?",
+          gL17: "\u2026 \u0440\u043E\u0437\u043F\u043E\u0432\u0456\u0441\u0442\u044C \u043E\u0434\u043D\u0443 \u0439 \u0442\u0443 \u0441\u0430\u043C\u0443 \u0456\u0441\u0442\u043E\u0440\u0456\u044E \u0442\u0440\u0438\u0447\u0456?",
+          gL18: "\u2026 \u043F\u0456\u0434\u0435, \u043D\u0435 \u043F\u043E\u043F\u0440\u043E\u0449\u0430\u0432\u0448\u0438\u0441\u044C?",
+          gL19: "\u2026 \u0442\u0430\u043D\u0446\u044E\u0454 \u043D\u0430\u0439\u0433\u0456\u0440\u0448\u0435?",
+          gL20: "\u2026 \u0449\u0435 \u0433\u0443\u043B\u044F\u0442\u0438\u043C\u0435 \u043D\u0430 \u0441\u0432\u0456\u0442\u0430\u043D\u043A\u0443?"
         },
         ja: {
           g_library: "\u30E9\u30A4\u30D6\u30E9\u30EA",
@@ -7024,7 +7695,68 @@
           wh5: "\u30D5\u30E9\u30C3\u30B7\u30E5\u5D50\uFF01",
           wh6: "\u30B2\u30B9\u30C8\u306E\u30EA\u30AF\u30A8\u30B9\u30C8\u66F2\uFF01",
           wh7: "\u307F\u3093\u306A\u3067\u6B4C\u304A\u3046\uFF01",
-          wh8: "\u307F\u3093\u306A\u3067\u8E0A\u308D\u3046\uFF01"
+          wh8: "\u307F\u3093\u306A\u3067\u8E0A\u308D\u3046\uFF01",
+          pmTitle: "\u3082\u3063\u3068",
+          pmHint: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30C4\u30FC\u30EB",
+          gCatMusic: "\u97F3\u697D\u30AF\u30A4\u30BA",
+          gCatQuick: "\u65E9\u62BC\u3057",
+          gCatParty: "\u30D1\u30FC\u30C6\u30A3\u30FC",
+          gTitleQ: "\u3053\u306E\u66F2\u306F?",
+          gTitleQHint: "\u6B21\u306E\u66F2\u306F\u4F0F\u305B\u305F\u72B6\u614B\u3067\u30B9\u30BF\u30FC\u30C8\u3002\u30BF\u30A4\u30C8\u30EB\u306F\u4F55?",
+          gNext: "\u6B21\u306E\u6B4C\u8A5E",
+          gNextHint: "\u6B21\u306B\u6765\u308B\u6B4C\u8A5E\u306F? \u6B4C\u308F\u308C\u305F\u77AC\u9593\u306B\u6B63\u89E3\u304C\u51FA\u307E\u3059",
+          gBeat: "\u30D3\u30FC\u30C8\u30D2\u30C3\u30C8",
+          gBeatHint: "\u30B9\u30DE\u30DB\u3067\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u30BF\u30C3\u30D7\u3002\u3044\u3061\u3070\u3093\u30D4\u30C3\u30BF\u30EA\u306A\u4EBA\u306E\u52DD\u3061",
+          gFast: "\u6700\u901F\u306E\u6307",
+          gFastHint: "\u5408\u56F3\u3092\u5F85\u3063\u3066\u304B\u3089\u30BF\u30C3\u30D7\u3002\u65E9\u3059\u304E\u308B\u3068\u305D\u306E\u30E9\u30A6\u30F3\u30C9\u306F\u5931\u683C",
+          gBomb: "\u30DB\u30C3\u30C8\u30DD\u30C6\u30C8",
+          gBombHint: "\u7206\u5F3E\u304C\u30B9\u30DE\u30DB\u304B\u3089\u30B9\u30DE\u30DB\u3078\u3002\u7206\u767A\u3059\u308B\u524D\u306B\u56DE\u305D\u3046",
+          gLikely: "\u8AB0\u304C\u4E00\u756A \u2026?",
+          gLikelyHint: "\u30B2\u30B9\u30C8\u306B\u6295\u7968\u3002\u591A\u6570\u6D3E\u3068\u540C\u3058\u306A\u3089\u5F97\u70B9",
+          gNextAsk: "\u6B21\u306F?",
+          gBeatGo: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u3066\u30BF\u30C3\u30D7!",
+          gFastReady: "\u5F85\u3063\u3066 \u2026",
+          gFastGo: "\u4ECA!",
+          gBombHolder: "{n}\u304C\u7206\u5F3E\u3092\u6301\u3063\u3066\u308B",
+          gBombBoom: "{n}\u304C\u7206\u767A!",
+          gJoinAny: "\u30B9\u30DE\u30DB\u3067\u53C2\u52A0\u3057\u3088\u3046!",
+          gJoinScan: "\u30B3\u30FC\u30C9\u3092\u8AAD\u307F\u53D6\u3063\u3066\u53C2\u52A0",
+          gStartNow: "\u4ECA\u3059\u3050\u958B\u59CB",
+          gSkip: "\u30E9\u30A6\u30F3\u30C9\u3092\u30B9\u30AD\u30C3\u30D7",
+          gAnswered: "{n}\u4EBA\u304C\u56DE\u7B54",
+          gWinner: "\u52DD\u8005",
+          gSettings: "\u30B2\u30FC\u30E0\u8A2D\u5B9A",
+          gSetRounds: "\u30E9\u30A6\u30F3\u30C9\u6570",
+          gSetAsk: "1\u554F\u3042\u305F\u308A\u306E\u6642\u9593",
+          gSetJoin: "\u53C2\u52A0\u53D7\u4ED8\u6642\u9593",
+          gSetDur: "\u30D0\u30C8\u30EB\u3068\u30D3\u30FC\u30C8\u306E\u9577\u3055",
+          gSetBreak: "\u30E9\u30A6\u30F3\u30C9\u9593\u306E\u4F11\u61A9",
+          gSetBonus: "\u65E9\u62BC\u3057\u30DC\u30FC\u30CA\u30B9",
+          gSetCard: "\u30B2\u30FC\u30E0\u30AB\u30FC\u30C9",
+          gCardBig: "\u5927",
+          gCardSmall: "\u30B3\u30F3\u30D1\u30AF\u30C8",
+          gSetWheel: "\u30EB\u30FC\u30EC\u30C3\u30C8\u306E\u30DE\u30B9",
+          gWheelOwn: "\u81EA\u5206\u306E\u30DE\u30B9\u3092\u30AB\u30F3\u30DE\u533A\u5207\u308A\u3067",
+          gL1: "\u2026 \u3053\u306E\u30D1\u30FC\u30C6\u30A3\u30FC\u3067\u6700\u521D\u306B\u5BDD\u843D\u3061\u3057\u305D\u3046?",
+          gL2: "\u2026 \u6700\u5F8C\u307E\u3067\u30C0\u30F3\u30B9\u30D5\u30ED\u30A2\u306B\u6B8B\u3063\u3066\u305D\u3046?",
+          gL3: "\u2026 \u9593\u9055\u3063\u305F\u6B4C\u8A5E\u3092\u5927\u58F0\u3067\u6B4C\u3044\u305D\u3046?",
+          gL4: "\u2026 \u4ECA\u591C\u30B9\u30DE\u30DB\u3092\u306A\u304F\u3057\u305D\u3046?",
+          gL5: "\u2026 \u307F\u3093\u306A\u306B\u4E00\u676F\u304A\u3054\u3063\u3066\u304F\u308C\u305D\u3046?",
+          gL6: "\u2026 \u30B3\u30F3\u30AC\u30E9\u30A4\u30F3\u3092\u59CB\u3081\u305D\u3046?",
+          gL7: "\u2026 \u30C6\u30FC\u30D6\u30EB\u306E\u4E0A\u3067\u8E0A\u308A\u305D\u3046?",
+          gL8: "\u2026 \u81EA\u5206\u306E\u5BB6\u306E\u5834\u6240\u3092\u5FD8\u308C\u305D\u3046?",
+          gL9: "\u2026 \u660E\u65E5\u5F8C\u6094\u3059\u308B\u30E1\u30C3\u30BB\u30FC\u30B8\u3092\u9001\u308A\u305D\u3046?",
+          gL10: "\u2026 \u3044\u3064\u304B\u6709\u540D\u306B\u306A\u308A\u305D\u3046?",
+          gL11: "\u2026 \u304A\u83D3\u5B50\u3092\u5168\u90E8\u98DF\u3079\u3061\u3083\u3044\u305D\u3046?",
+          gL12: "\u2026 \u30E9\u30D6\u30BD\u30F3\u30B0\u3067\u6CE3\u304D\u305D\u3046?",
+          gL13: "\u2026 \u77E5\u3089\u306A\u3044\u4EBA\u30681\u6642\u9593\u8A71\u3057\u8FBC\u307F\u305D\u3046?",
+          gL14: "\u2026 \u65AD\u308A\u306A\u3057\u306B\u97F3\u697D\u3092\u4E57\u3063\u53D6\u308A\u305D\u3046?",
+          gL15: "\u2026 2\u6642\u9593\u9045\u523B\u3057\u3066\u304D\u305D\u3046?",
+          gL16: "\u2026 \u30C0\u30F3\u30B9\u30B3\u30F3\u30C6\u30B9\u30C8\u3067\u512A\u52DD\u3057\u305D\u3046?",
+          gL17: "\u2026 \u540C\u3058\u8A71\u30923\u56DE\u3057\u305D\u3046?",
+          gL18: "\u2026 \u6328\u62F6\u305B\u305A\u306B\u5E30\u3063\u3061\u3083\u3044\u305D\u3046?",
+          gL19: "\u2026 \u3044\u3061\u3070\u3093\u5909\u306A\u30C0\u30F3\u30B9\u3092\u3057\u305D\u3046?",
+          gL20: "\u2026 \u671D\u65E5\u304C\u6607\u3063\u3066\u3082\u307E\u3060\u76DB\u308A\u4E0A\u304C\u3063\u3066\u305D\u3046?"
         },
         ko: {
           g_library: "\uB77C\uC774\uBE0C\uB7EC\uB9AC",
@@ -7600,7 +8332,68 @@
           wh5: "\uD50C\uB798\uC2DC \uD3ED\uD48D!",
           wh6: "\uAC8C\uC2A4\uD2B8\uC758 \uC2E0\uCCAD\uACE1 \uC7AC\uC0DD!",
           wh7: "\uB2E4 \uD568\uAED8 \uB178\uB798\uD574!",
-          wh8: "\uB2E4 \uD568\uAED8 \uCDA4\uCDB0!"
+          wh8: "\uB2E4 \uD568\uAED8 \uCDA4\uCDB0!",
+          pmTitle: "\uB354\uBCF4\uAE30",
+          pmHint: "\uD30C\uD2F0 \uB3C4\uAD6C",
+          gCatMusic: "\uC74C\uC545 \uD034\uC988",
+          gCatQuick: "\uBE60\uB978 \uC190\uAC00\uB77D",
+          gCatParty: "\uD30C\uD2F0",
+          gTitleQ: "\uC774 \uB178\uB798 \uC81C\uBAA9\uC740?",
+          gTitleQHint: "\uB2E4\uC74C \uB178\uB798\uB294 \uAC00\uB824\uC9C4 \uCC44\uB85C \uC2DC\uC791\uD574\uC694: \uC81C\uBAA9\uC774 \uBB58\uAE4C\uC694?",
+          gNext: "\uB2E4\uC74C \uAC00\uC0AC",
+          gNextHint: "\uB2E4\uC74C\uC5D0 \uB098\uC62C \uAC00\uC0AC\uB294? \uBD88\uB9AC\uB294 \uC21C\uAC04 \uC815\uB2F5\uC774 \uACF5\uAC1C\uB3FC\uC694",
+          gBeat: "\uBE44\uD2B8 \uD788\uD2B8",
+          gBeatHint: "\uD3F0\uC73C\uB85C \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uD0ED\uD558\uC138\uC694: \uD0C0\uC774\uBC0D\uC774 \uAC00\uC7A5 \uC815\uD655\uD55C \uC0AC\uB78C\uC774 \uC2B9\uB9AC",
+          gFast: "\uAC00\uC7A5 \uBE60\uB978 \uC190\uAC00\uB77D",
+          gFastHint: "\uC2E0\uD638\uB97C \uAE30\uB2E4\uB838\uB2E4\uAC00 \uD0ED\uD558\uC138\uC694. \uB108\uBB34 \uC77C\uCC0D \uB204\uB974\uBA74 \uB77C\uC6B4\uB4DC \uD0C8\uB77D",
+          gBomb: "\uB728\uAC70\uC6B4 \uAC10\uC790",
+          gBombHint: "\uD3ED\uD0C4\uC774 \uD3F0\uC5D0\uC11C \uD3F0\uC73C\uB85C \uC774\uB3D9\uD574\uC694: \uD130\uC9C0\uAE30 \uC804\uC5D0 \uB118\uAE30\uC138\uC694",
+          gLikely: "\uB204\uAC00 \uC81C\uC77C \u2026?",
+          gLikelyHint: "\uAC8C\uC2A4\uD2B8\uC5D0\uAC8C \uD22C\uD45C\uD558\uC138\uC694. \uB2E4\uC218\uC640 \uAC19\uC740 \uD45C\uB97C \uB358\uC9C0\uBA74 \uC810\uC218 \uD68D\uB4DD",
+          gNextAsk: "\uB2E4\uC74C\uC740?",
+          gBeatGo: "\uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uD0ED!",
+          gFastReady: "\uC7A0\uAE50\uB9CC \u2026",
+          gFastGo: "\uC9C0\uAE08!",
+          gBombHolder: "{n}\uB2D8\uC774 \uD3ED\uD0C4\uC744 \uB4E4\uACE0 \uC788\uC5B4\uC694",
+          gBombBoom: "{n}\uB2D8\uC774 \uD130\uC84C\uC5B4\uC694!",
+          gJoinAny: "\uD3F0\uC73C\uB85C \uCC38\uC5EC\uD558\uC138\uC694!",
+          gJoinScan: "\uCF54\uB4DC\uB97C \uC2A4\uCE94\uD558\uACE0 \uCC38\uC5EC",
+          gStartNow: "\uBC14\uB85C \uC2DC\uC791",
+          gSkip: "\uB77C\uC6B4\uB4DC \uAC74\uB108\uB6F0\uAE30",
+          gAnswered: "{n}\uBA85 \uB2F5\uBCC0\uD568",
+          gWinner: "\uC6B0\uC2B9\uC790",
+          gSettings: "\uAC8C\uC784 \uC124\uC815",
+          gSetRounds: "\uB77C\uC6B4\uB4DC \uC218",
+          gSetAsk: "\uC9C8\uBB38\uB2F9 \uC2DC\uAC04",
+          gSetJoin: "\uCC38\uC5EC \uB300\uAE30 \uC2DC\uAC04",
+          gSetDur: "\uBC30\uD2C0 \uBC0F \uBE44\uD2B8 \uAE38\uC774",
+          gSetBreak: "\uB77C\uC6B4\uB4DC \uC0AC\uC774 \uD734\uC2DD",
+          gSetBonus: "\uBE60\uB978 \uB2F5\uBCC0 \uBCF4\uB108\uC2A4",
+          gSetCard: "\uAC8C\uC784 \uCE74\uB4DC",
+          gCardBig: "\uD06C\uAC8C",
+          gCardSmall: "\uAC04\uB2E8\uD788",
+          gSetWheel: "\uB8F0\uB81B \uCE78",
+          gWheelOwn: "\uB098\uB9CC\uC758 \uCE78\uC744 \uC27C\uD45C\uB85C \uAD6C\uBD84",
+          gL1: "\u2026 \uC774 \uD30C\uD2F0\uC5D0\uC11C \uC81C\uC77C \uBA3C\uC800 \uC7A0\uB4E4 \uAC83 \uAC19\uC544?",
+          gL2: "\u2026 \uB304\uC2A4 \uD50C\uB85C\uC5B4\uC5D0 \uB9C8\uC9C0\uB9C9\uAE4C\uC9C0 \uB0A8\uC744 \uAC83 \uAC19\uC544?",
+          gL3: "\u2026 \uD2C0\uB9B0 \uAC00\uC0AC\uB97C \uD070 \uC18C\uB9AC\uB85C \uBD80\uB97C \uAC83 \uAC19\uC544?",
+          gL4: "\u2026 \uC624\uB298 \uBC24 \uD3F0\uC744 \uC783\uC5B4\uBC84\uB9B4 \uAC83 \uAC19\uC544?",
+          gL5: "\u2026 \uBAA8\uB450\uC5D0\uAC8C \uD55C \uC794\uC529 \uC3E0 \uAC83 \uAC19\uC544?",
+          gL6: "\u2026 \uAE30\uCC28\uB180\uC774\uB97C \uC2DC\uC791\uD560 \uAC83 \uAC19\uC544?",
+          gL7: "\u2026 \uD14C\uC774\uBE14 \uC704\uC5D0\uC11C \uCDA4\uCD9C \uAC83 \uAC19\uC544?",
+          gL8: "\u2026 \uC790\uAE30 \uC9D1\uC774 \uC5B4\uB514\uC778\uC9C0 \uC78A\uC744 \uAC83 \uAC19\uC544?",
+          gL9: "\u2026 \uB0B4\uC77C \uD6C4\uD68C\uD560 \uBA54\uC2DC\uC9C0\uB97C \uBCF4\uB0BC \uAC83 \uAC19\uC544?",
+          gL10: "\u2026 \uC5B8\uC820\uAC00 \uC720\uBA85\uD574\uC9C8 \uAC83 \uAC19\uC544?",
+          gL11: "\u2026 \uACFC\uC790\uB97C \uB2E4 \uBA39\uC5B4\uCE58\uC6B8 \uAC83 \uAC19\uC544?",
+          gL12: "\u2026 \uC0AC\uB791 \uB178\uB798\uC5D0 \uC6B8 \uAC83 \uAC19\uC544?",
+          gL13: "\u2026 \uB0AF\uC120 \uC0AC\uB78C\uACFC \uD55C \uC2DC\uAC04 \uB3D9\uC548 \uC218\uB2E4 \uB5A8 \uAC83 \uAC19\uC544?",
+          gL14: "\u2026 \uBB3B\uC9C0\uB3C4 \uC54A\uACE0 \uC74C\uC545\uC744 \uAC00\uB85C\uCC4C \uAC83 \uAC19\uC544?",
+          gL15: "\u2026 \uB450 \uC2DC\uAC04 \uB2A6\uAC8C \uC62C \uAC83 \uAC19\uC544?",
+          gL16: "\u2026 \uB304\uC2A4 \uB300\uD68C\uC5D0\uC11C \uC6B0\uC2B9\uD560 \uAC83 \uAC19\uC544?",
+          gL17: "\u2026 \uAC19\uC740 \uC774\uC57C\uAE30\uB97C \uC138 \uBC88 \uD560 \uAC83 \uAC19\uC544?",
+          gL18: "\u2026 \uC778\uC0AC\uB3C4 \uC5C6\uC774 \uB5A0\uB0A0 \uAC83 \uAC19\uC544?",
+          gL19: "\u2026 \uCDA4 \uC2E4\uB825\uC774 \uC81C\uC77C \uC5C9\uB9DD\uC77C \uAC83 \uAC19\uC544?",
+          gL20: "\u2026 \uD574 \uB730 \uB54C\uAE4C\uC9C0 \uB180\uACE0 \uC788\uC744 \uAC83 \uAC19\uC544?"
         },
         zh: {
           g_library: "\u97F3\u4E50\u5E93",
@@ -8176,7 +8969,68 @@
           wh5: "\u95EA\u5149\u98CE\u66B4\uFF01",
           wh6: "\u64AD\u653E\u5BA2\u4EBA\u7684\u70B9\u6B4C\uFF01",
           wh7: "\u5927\u5BB6\u4E00\u8D77\u5531\uFF01",
-          wh8: "\u5927\u5BB6\u4E00\u8D77\u8DF3\uFF01"
+          wh8: "\u5927\u5BB6\u4E00\u8D77\u8DF3\uFF01",
+          pmTitle: "\u66F4\u591A",
+          pmHint: "\u6D3E\u5BF9\u5DE5\u5177",
+          gCatMusic: "\u97F3\u4E50\u95EE\u7B54",
+          gCatQuick: "\u624B\u901F\u5927\u8D5B",
+          gCatParty: "\u6D3E\u5BF9",
+          gTitleQ: "\u8FD9\u9996\u6B4C\u53EB\u4EC0\u4E48?",
+          gTitleQHint: "\u4E0B\u4E00\u9996\u6B4C\u4F1A\u9690\u85CF\u5F00\u573A:\u5B83\u7684\u6B4C\u540D\u662F\u4EC0\u4E48?",
+          gNext: "\u4E0B\u4E00\u53E5",
+          gNextHint: "\u63A5\u4E0B\u6765\u662F\u54EA\u53E5\u6B4C\u8BCD?\u5531\u5230\u7684\u90A3\u4E00\u523B\u63ED\u6653\u7B54\u6848",
+          gBeat: "\u8282\u62CD\u547D\u4E2D",
+          gBeatHint: "\u5728\u624B\u673A\u4E0A\u8DDF\u7740\u8282\u62CD\u70B9\u6309:\u8282\u594F\u6700\u51C6\u7684\u4EBA\u83B7\u80DC",
+          gFast: "\u6700\u5FEB\u624B\u6307",
+          gFastHint: "\u7B49\u4FE1\u53F7\u51FA\u73B0\u518D\u70B9\u6309\u3002\u70B9\u65E9\u4E86\u5C31\u8F93\u6389\u8FD9\u4E00\u8F6E",
+          gBomb: "\u51FB\u9F13\u4F20\u82B1",
+          gBombHint: "\u70B8\u5F39\u5728\u624B\u673A\u4E4B\u95F4\u4F20\u9012:\u5728\u7206\u70B8\u524D\u8D76\u7D27\u4F20\u51FA\u53BB",
+          gLikely: "\u8C01\u6700\u6709\u53EF\u80FD \u2026?",
+          gLikelyHint: "\u7ED9\u4E00\u4F4D\u5BBE\u5BA2\u6295\u7968\u3002\u548C\u591A\u6570\u4EBA\u6295\u7ED9\u540C\u4E00\u4E2A\u4EBA\u5C31\u5F97\u5206",
+          gNextAsk: "\u63A5\u4E0B\u6765\u662F?",
+          gBeatGo: "\u8DDF\u7740\u8282\u62CD\u70B9!",
+          gFastReady: "\u7B49\u4E00\u4E0B \u2026",
+          gFastGo: "\u73B0\u5728!",
+          gBombHolder: "{n}\u62FF\u7740\u70B8\u5F39",
+          gBombBoom: "{n}\u7206\u70B8\u4E86!",
+          gJoinAny: "\u7528\u624B\u673A\u52A0\u5165\u5427!",
+          gJoinScan: "\u626B\u7801\u5F00\u73A9",
+          gStartNow: "\u7ACB\u5373\u5F00\u59CB",
+          gSkip: "\u8DF3\u8FC7\u672C\u8F6E",
+          gAnswered: "{n}\u4EBA\u5DF2\u56DE\u7B54",
+          gWinner: "\u8D62\u5BB6",
+          gSettings: "\u6E38\u620F\u8BBE\u7F6E",
+          gSetRounds: "\u8F6E\u6570",
+          gSetAsk: "\u6BCF\u9898\u65F6\u95F4",
+          gSetJoin: "\u52A0\u5165\u65F6\u95F4",
+          gSetDur: "\u5BF9\u6218\u548C\u8282\u62CD\u65F6\u957F",
+          gSetBreak: "\u8F6E\u95F4\u4F11\u606F",
+          gSetBonus: "\u5FEB\u901F\u7B54\u9898\u5956\u52B1",
+          gSetCard: "\u6E38\u620F\u5361\u7247",
+          gCardBig: "\u5927",
+          gCardSmall: "\u7D27\u51D1",
+          gSetWheel: "\u8F6C\u76D8\u683C\u5B50",
+          gWheelOwn: "\u81EA\u5B9A\u4E49\u683C\u5B50,\u7528\u9017\u53F7\u5206\u9694",
+          gL1: "\u2026 \u5728\u8FD9\u573A\u6D3E\u5BF9\u4E0A\u7B2C\u4E00\u4E2A\u7761\u7740?",
+          gL2: "\u2026 \u6700\u540E\u4E00\u4E2A\u79BB\u5F00\u821E\u6C60?",
+          gL3: "\u2026 \u5927\u58F0\u5531\u9519\u6B4C\u8BCD?",
+          gL4: "\u2026 \u4ECA\u665A\u5F04\u4E22\u624B\u673A?",
+          gL5: "\u2026 \u8BF7\u5927\u5BB6\u559D\u4E00\u8F6E?",
+          gL6: "\u2026 \u5E26\u5934\u6392\u8D77\u5C0F\u706B\u8F66?",
+          gL7: "\u2026 \u7AD9\u5728\u684C\u5B50\u4E0A\u8DF3\u821E?",
+          gL8: "\u2026 \u5FD8\u8BB0\u81EA\u5DF1\u4F4F\u54EA\u91CC?",
+          gL9: "\u2026 \u53D1\u51FA\u660E\u5929\u5C31\u540E\u6094\u7684\u6D88\u606F?",
+          gL10: "\u2026 \u6709\u4E00\u5929\u6210\u540D?",
+          gL11: "\u2026 \u628A\u96F6\u98DF\u5168\u5403\u5149?",
+          gL12: "\u2026 \u542C\u60C5\u6B4C\u542C\u54ED?",
+          gL13: "\u2026 \u548C\u964C\u751F\u4EBA\u804A\u4E0A\u4E00\u4E2A\u5C0F\u65F6?",
+          gL14: "\u2026 \u4E0D\u6253\u62DB\u547C\u5C31\u62A2\u4E86\u97F3\u4E50?",
+          gL15: "\u2026 \u8FDF\u5230\u4E24\u4E2A\u5C0F\u65F6?",
+          gL16: "\u2026 \u8D62\u5F97\u821E\u8E48\u6BD4\u8D5B?",
+          gL17: "\u2026 \u628A\u540C\u4E00\u4E2A\u6545\u4E8B\u8BB2\u4E09\u904D?",
+          gL18: "\u2026 \u4E0D\u8BF4\u518D\u89C1\u5C31\u8D70\u4E86?",
+          gL19: "\u2026 \u821E\u6B65\u6700\u7CDF\u7CD5?",
+          gL20: "\u2026 \u5230\u65E5\u51FA\u8FD8\u5728\u55E8?"
         }
       };
       LANG = (() => {
@@ -8313,6 +9167,16 @@
         partyPause: true,
         // DJ: passt der nächste Song gar nicht (Tonart, Tempo, Energie), einen passenderen aus der Warteschlange vorziehen
         djEnergy: false,
+        // Party-Spiele: Runden, Zeiten (Sekunden), Bonus für Schnelligkeit, Größe der Karte, Felder des Glücksrads
+        gameRounds: 5,
+        gameAsk: 20,
+        gameJoin: 30,
+        gameDur: 30,
+        gameBreak: 8,
+        gameBonus: true,
+        gameCard: "big",
+        gameWheel: ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"],
+        gameWheelOwn: "",
         partyDepth: false,
         partyShatter: true,
         partyCamera: false,
@@ -8838,16 +9702,16 @@
   }
   function parseYrc(text) {
     const out = [];
-    for (const row of text.split(/\r?\n/)) {
-      const head2 = /^\[(\d+),(\d+)\]/.exec(row);
-      if (!head2) continue;
+    for (const row2 of text.split(/\r?\n/)) {
+      const head3 = /^\[(\d+),(\d+)\]/.exec(row2);
+      if (!head3) continue;
       const words = [];
-      for (const m of row.slice(head2[0].length).matchAll(/\((\d+),(\d+),\d+\)([^(]*)/g)) {
+      for (const m of row2.slice(head3[0].length).matchAll(/\((\d+),(\d+),\d+\)([^(]*)/g)) {
         if (!m[3]) continue;
         words.push({ t: Number(m[1]), d: Number(m[2]), raw: m[3] });
       }
       if (!words.length) continue;
-      out.push(wordLine(Number(head2[1]), words));
+      out.push(wordLine(Number(head3[1]), words));
     }
     return out.sort((a, b) => a.t - b.t);
   }
@@ -8896,10 +9760,10 @@
   }
   function parseLrc(lrc) {
     const out = [];
-    for (const row of lrc.split(/\r?\n/)) {
-      const marks = [...row.matchAll(/\[(\d+):(\d+(?:[.:]\d+)?)\]/g)];
-      if (marks.length === 1 && /<\d+:\d+(?:\.\d+)?>/.test(row)) {
-        const body = row.slice(marks[0].index + marks[0][0].length);
+    for (const row2 of lrc.split(/\r?\n/)) {
+      const marks = [...row2.matchAll(/\[(\d+):(\d+(?:[.:]\d+)?)\]/g)];
+      if (marks.length === 1 && /<\d+:\d+(?:\.\d+)?>/.test(row2)) {
+        const body = row2.slice(marks[0].index + marks[0][0].length);
         const parts = [...body.matchAll(/<(\d+):(\d+(?:\.\d+)?)>([^<]*)/g)].map((m) => ({ t: lrcMs(m[1], m[2]), raw: m[3] }));
         const words = parts.filter((w) => w.raw.trim()).map((w, i, a) => ({ ...w, d: Math.max(80, (a[i + 1]?.t ?? w.t + 600) - w.t) }));
         if (words.length) {
@@ -8908,7 +9772,7 @@
         }
       }
       if (!marks.length) continue;
-      const text = row.slice(marks[marks.length - 1].index + marks[marks.length - 1][0].length).trim() || "\u266A";
+      const text = row2.slice(marks[marks.length - 1].index + marks[marks.length - 1][0].length).trim() || "\u266A";
       for (const m of marks) out.push({ t: Math.round((Number(m[1]) * 60 + Number(m[2].replace(":", "."))) * 1e3), text });
     }
     return out.sort((a, b) => a.t - b.t);
@@ -9437,8 +10301,8 @@
   function record(item, colors) {
     if (!item?.uri || item.uri === lastRecorded || !item.uri.startsWith("spotify:track:")) return;
     lastRecorded = item.uri;
-    const all = loadStats();
-    const d = all[today()] ||= { n: 0, ms: 0, artists: {}, hues: Array(12).fill(0), schemes: {} };
+    const all2 = loadStats();
+    const d = all2[today()] ||= { n: 0, ms: 0, artists: {}, hues: Array(12).fill(0), schemes: {} };
     d.n++;
     d.ms += Number(item.duration?.milliseconds || item.metadata?.duration || S.Player.getDuration?.() || 0);
     const artist = (artistOf(item) || "").split(",")[0].trim();
@@ -9447,18 +10311,18 @@
     if (titleOf(item)) (d.tracks ||= {})[song] = (d.tracks[song] || 0) + 1;
     if (colors?.[0]) d.hues[Math.floor(rgb2hsl(colors[0])[0] / 30) % 12]++;
     d.schemes[cfg.scheme] = (d.schemes[cfg.scheme] || 0) + 1;
-    for (const k of Object.keys(all).sort().slice(0, -35)) delete all[k];
+    for (const k of Object.keys(all2).sort().slice(0, -35)) delete all2[k];
     try {
-      localStorage.setItem(STATS, JSON.stringify(all));
+      localStorage.setItem(STATS, JSON.stringify(all2));
     } catch {
     }
   }
   function period(days) {
-    const all = loadStats();
+    const all2 = loadStats();
     const from = new Date(Date.now() - (days - 1) * 864e5).toISOString().slice(0, 10);
     const sum = { n: 0, ms: 0, artists: {}, tracks: {}, hues: Array(12).fill(0), schemes: {}, active: 0, daily: [] };
-    for (let i = days - 1; i >= 0; i--) sum.daily.push((all[new Date(Date.now() - i * 864e5).toISOString().slice(0, 10)]?.ms || 0) / 6e4);
-    for (const [day, d] of Object.entries(all)) {
+    for (let i = days - 1; i >= 0; i--) sum.daily.push((all2[new Date(Date.now() - i * 864e5).toISOString().slice(0, 10)]?.ms || 0) / 6e4);
+    for (const [day, d] of Object.entries(all2)) {
       if (day < from) continue;
       sum.n += d.n;
       sum.ms += d.ms;
@@ -10059,13 +10923,13 @@
   function minorShare(d) {
     const sx = d?.sections || [];
     if (!sx.length) return 0;
-    let m = 0, all = 0;
+    let m = 0, all2 = 0;
     sx.forEach((x, i) => {
       const len = (sx[i + 1]?.t ?? x.t + 20) - x.t;
-      all += len;
+      all2 += len;
       if (x.mode === 0) m += len;
     });
-    return all ? m / all : 0;
+    return all2 ? m / all2 : 0;
   }
   function songMap(d) {
     if (mapCache.has(d)) return mapCache.get(d);
@@ -10809,7 +11673,7 @@
           const d = audio.uri === uri ? audio.data : null;
           clock += dt;
           const ease2 = (k) => 1 - Math.exp(-dt * k);
-          let energy = 0.55, build2 = 0, low2 = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0, keyPc = -1, tempoNow = 0;
+          let energy = 0.55, build3 = 0, low2 = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0, keyPc = -1, tempoNow = 0;
           let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
           let beatPhase = 0, beatIdx = -1;
           let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
@@ -10819,7 +11683,7 @@
             bright = at(M.bright, sec);
             let ahead = 0;
             for (let s = 1; s <= 4; s += 0.5) ahead = Math.max(ahead, at(M.energy, sec + s));
-            build2 = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
+            build3 = ahead > 0.68 ? clamp((ahead - energy - 0.12) / 0.35, 0, 1) * (1 - dropGlow) : 0;
             low2 = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
             scene = Math.max(seek(M.sections, sec, "t"), 0);
             for (const tD of M.drops) {
@@ -10865,8 +11729,8 @@
           }
           lastSec = sec;
           smooth.e += (energy - smooth.e) * ease2(energy > smooth.e ? 9 : 2);
-          smooth.b += (build2 - smooth.b) * ease2(build2 > smooth.b ? 2 : 6);
-          smooth.k += (low2 * (1 - build2) - smooth.k) * ease2(1.5);
+          smooth.b += (build3 - smooth.b) * ease2(build3 > smooth.b ? 2 : 6);
+          smooth.k += (low2 * (1 - build3) - smooth.k) * ease2(1.5);
           smooth.br += (bright - smooth.br) * ease2(2);
           if (dropHit) {
             smooth.e = Math.max(smooth.e, 0.9);
@@ -12288,13 +13152,13 @@
     function makeCrowd(u, v) {
       const people = [];
       let id = 0;
-      for (const [row, scale, gap] of v.rows) {
+      for (const [row2, scale, gap] of v.rows) {
         for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {
           const r = Math.random;
           people.push({
             id: id++,
             x,
-            row,
+            row: row2,
             s: scale * (0.88 + r() * 0.26),
             ph: r() * 6.3,
             up: r(),
@@ -12424,14 +13288,14 @@
         ctx2.globalCompositeOperation = "source-over";
       }
       for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));
-      const strokeRow = (row) => {
-        ctx2.globalAlpha = A * rowA[row];
-        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];
-        ctx2.strokeStyle = FILL[row];
-        ctx2.stroke(arms[row]);
-        arms[row] = new Path2D();
+      const strokeRow = (row2) => {
+        ctx2.globalAlpha = A * rowA[row2];
+        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row2];
+        ctx2.strokeStyle = FILL[row2];
+        ctx2.stroke(arms[row2]);
+        arms[row2] = new Path2D();
       };
-      const flushLights = (row) => {
+      const flushLights = (row2) => {
         ctx2.globalCompositeOperation = "lighter";
         for (const [gx, gy, kind, s1, r0] of glows) {
           const r = (kind === "phone" ? 16 : 13 + Math.sin(t2 * 13 + gx) * 2) * s1;
@@ -12440,7 +13304,7 @@
         }
         glows.length = 0;
         for (const f of crowd.flashes) {
-          if ((f.row ?? 0) !== row) continue;
+          if ((f.row ?? 0) !== row2) continue;
           const r = 34 * f.s;
           ctx2.globalAlpha = f.a * A;
           ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
@@ -13065,19 +13929,19 @@
         this.data = new Uint8Array(size * size);
         this.reservedBit = new Uint8Array(size * size);
       }
-      BitMatrix.prototype.set = function(row, col, value, reserved) {
-        const index = row * this.size + col;
+      BitMatrix.prototype.set = function(row2, col, value, reserved) {
+        const index = row2 * this.size + col;
         this.data[index] = value;
         if (reserved) this.reservedBit[index] = true;
       };
-      BitMatrix.prototype.get = function(row, col) {
-        return this.data[row * this.size + col];
+      BitMatrix.prototype.get = function(row2, col) {
+        return this.data[row2 * this.size + col];
       };
-      BitMatrix.prototype.xor = function(row, col, value) {
-        this.data[row * this.size + col] ^= value;
+      BitMatrix.prototype.xor = function(row2, col, value) {
+        this.data[row2 * this.size + col] ^= value;
       };
-      BitMatrix.prototype.isReserved = function(row, col) {
-        return this.reservedBit[row * this.size + col];
+      BitMatrix.prototype.isReserved = function(row2, col) {
+        return this.reservedBit[row2 * this.size + col];
       };
       module.exports = BitMatrix;
     }
@@ -13169,11 +14033,11 @@
         let sameCountRow = 0;
         let lastCol = null;
         let lastRow = null;
-        for (let row = 0; row < size; row++) {
+        for (let row2 = 0; row2 < size; row2++) {
           sameCountCol = sameCountRow = 0;
           lastCol = lastRow = null;
           for (let col = 0; col < size; col++) {
-            let module2 = data.get(row, col);
+            let module2 = data.get(row2, col);
             if (module2 === lastCol) {
               sameCountCol++;
             } else {
@@ -13181,7 +14045,7 @@
               lastCol = module2;
               sameCountCol = 1;
             }
-            module2 = data.get(col, row);
+            module2 = data.get(col, row2);
             if (module2 === lastRow) {
               sameCountRow++;
             } else {
@@ -13198,9 +14062,9 @@
       exports.getPenaltyN2 = function getPenaltyN2(data) {
         const size = data.size;
         let points = 0;
-        for (let row = 0; row < size - 1; row++) {
+        for (let row2 = 0; row2 < size - 1; row2++) {
           for (let col = 0; col < size - 1; col++) {
-            const last = data.get(row, col) + data.get(row, col + 1) + data.get(row + 1, col) + data.get(row + 1, col + 1);
+            const last = data.get(row2, col) + data.get(row2, col + 1) + data.get(row2 + 1, col) + data.get(row2 + 1, col + 1);
             if (last === 4 || last === 0) points++;
           }
         }
@@ -13211,12 +14075,12 @@
         let points = 0;
         let bitsCol = 0;
         let bitsRow = 0;
-        for (let row = 0; row < size; row++) {
+        for (let row2 = 0; row2 < size; row2++) {
           bitsCol = bitsRow = 0;
           for (let col = 0; col < size; col++) {
-            bitsCol = bitsCol << 1 & 2047 | data.get(row, col);
+            bitsCol = bitsCol << 1 & 2047 | data.get(row2, col);
             if (col >= 10 && (bitsCol === 1488 || bitsCol === 93)) points++;
-            bitsRow = bitsRow << 1 & 2047 | data.get(col, row);
+            bitsRow = bitsRow << 1 & 2047 | data.get(col, row2);
             if (col >= 10 && (bitsRow === 1488 || bitsRow === 93)) points++;
           }
         }
@@ -13254,9 +14118,9 @@
       exports.applyMask = function applyMask(pattern, data) {
         const size = data.size;
         for (let col = 0; col < size; col++) {
-          for (let row = 0; row < size; row++) {
-            if (data.isReserved(row, col)) continue;
-            data.xor(row, col, getMaskAt(pattern, row, col));
+          for (let row2 = 0; row2 < size; row2++) {
+            if (data.isReserved(row2, col)) continue;
+            data.xor(row2, col, getMaskAt(pattern, row2, col));
           }
         }
       };
@@ -14462,16 +15326,16 @@
         const size = matrix.size;
         const pos = FinderPattern.getPositions(version);
         for (let i = 0; i < pos.length; i++) {
-          const row = pos[i][0];
+          const row2 = pos[i][0];
           const col = pos[i][1];
           for (let r = -1; r <= 7; r++) {
-            if (row + r <= -1 || size <= row + r) continue;
+            if (row2 + r <= -1 || size <= row2 + r) continue;
             for (let c2 = -1; c2 <= 7; c2++) {
               if (col + c2 <= -1 || size <= col + c2) continue;
               if (r >= 0 && r <= 6 && (c2 === 0 || c2 === 6) || c2 >= 0 && c2 <= 6 && (r === 0 || r === 6) || r >= 2 && r <= 4 && c2 >= 2 && c2 <= 4) {
-                matrix.set(row + r, col + c2, true, true);
+                matrix.set(row2 + r, col + c2, true, true);
               } else {
-                matrix.set(row + r, col + c2, false, true);
+                matrix.set(row2 + r, col + c2, false, true);
               }
             }
           }
@@ -14488,14 +15352,14 @@
       function setupAlignmentPattern(matrix, version) {
         const pos = AlignmentPattern.getPositions(version);
         for (let i = 0; i < pos.length; i++) {
-          const row = pos[i][0];
+          const row2 = pos[i][0];
           const col = pos[i][1];
           for (let r = -2; r <= 2; r++) {
             for (let c2 = -2; c2 <= 2; c2++) {
               if (r === -2 || r === 2 || c2 === -2 || c2 === 2 || r === 0 && c2 === 0) {
-                matrix.set(row + r, col + c2, true, true);
+                matrix.set(row2 + r, col + c2, true, true);
               } else {
-                matrix.set(row + r, col + c2, false, true);
+                matrix.set(row2 + r, col + c2, false, true);
               }
             }
           }
@@ -14504,13 +15368,13 @@
       function setupVersionInfo(matrix, version) {
         const size = matrix.size;
         const bits = Version.getEncodedBits(version);
-        let row, col, mod;
+        let row2, col, mod;
         for (let i = 0; i < 18; i++) {
-          row = Math.floor(i / 3);
+          row2 = Math.floor(i / 3);
           col = i % 3 + size - 8 - 3;
           mod = (bits >> i & 1) === 1;
-          matrix.set(row, col, mod, true);
-          matrix.set(col, row, mod, true);
+          matrix.set(row2, col, mod, true);
+          matrix.set(col, row2, mod, true);
         }
       }
       function setupFormatInfo(matrix, errorCorrectionLevel, maskPattern) {
@@ -14539,19 +15403,19 @@
       function setupData(matrix, data) {
         const size = matrix.size;
         let inc = -1;
-        let row = size - 1;
+        let row2 = size - 1;
         let bitIndex = 7;
         let byteIndex = 0;
         for (let col = size - 1; col > 0; col -= 2) {
           if (col === 6) col--;
           while (true) {
             for (let c2 = 0; c2 < 2; c2++) {
-              if (!matrix.isReserved(row, col - c2)) {
+              if (!matrix.isReserved(row2, col - c2)) {
                 let dark = false;
                 if (byteIndex < data.length) {
                   dark = (data[byteIndex] >>> bitIndex & 1) === 1;
                 }
-                matrix.set(row, col - c2, dark);
+                matrix.set(row2, col - c2, dark);
                 bitIndex--;
                 if (bitIndex === -1) {
                   byteIndex++;
@@ -14559,9 +15423,9 @@
                 }
               }
             }
-            row += inc;
-            if (row < 0 || size <= row) {
-              row -= inc;
+            row2 += inc;
+            if (row2 < 0 || size <= row2) {
+              row2 -= inc;
               inc = -inc;
               break;
             }
@@ -14857,12 +15721,12 @@
         let lineLength = 0;
         for (let i = 0; i < data.length; i++) {
           const col = Math.floor(i % size);
-          const row = Math.floor(i / size);
+          const row2 = Math.floor(i / size);
           if (!col && !newRow) newRow = true;
           if (data[i]) {
             lineLength++;
             if (!(i > 0 && col > 0 && data[i - 1])) {
-              path += newRow ? svgCmd("M", col + margin, 0.5 + row + margin) : svgCmd("m", moveBy, 0);
+              path += newRow ? svgCmd("M", col + margin, 0.5 + row2 + margin) : svgCmd("m", moveBy, 0);
               moveBy = 0;
               newRow = false;
             }
@@ -15270,11 +16134,12 @@
       ly: masked ? "" : lyric?.ly || "",
       lyn: masked ? "" : lyric?.lyn || "",
       g: game,
-      w: cfg.partyWishes ? wishList() : null,
+      // ein angenommener Wunsch wäre im verdeckten Quiz die Lösung
+      w: cfg.partyWishes ? wishList().filter((w) => masked !== "all" || w.st !== "queued") : null,
       // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
       poll: poll && Date.now() < poll.end + 8e3 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
-      nx: nextUri(),
-      fx: lastFx && Date.now() - lastFx.s < 3e3 ? lastFx : null
+      nx: masked ? "" : nextUri(),
+      fx: !masked && lastFx && Date.now() - lastFx.s < 3e3 ? lastFx : null
     }, true);
   }
   async function stop() {
@@ -20111,7 +20976,7 @@
   async function loadAll(uri) {
     const P = PL();
     if (typeof P?.getContents !== "function") return null;
-    const all = [];
+    const all2 = [];
     const LIMIT = 500;
     let first = "";
     for (let page = 0, offset = 0; page < 60; page++) {
@@ -20119,12 +20984,12 @@
       const items = Array.isArray(r?.items) ? r.items : [];
       if (!items.length || page > 0 && items[0]?.uid && items[0].uid === first) break;
       if (page === 0) first = items[0]?.uid || "";
-      all.push(...items);
+      all2.push(...items);
       offset += items.length;
       const total = Number(r?.totalLength ?? r?.total);
-      if (items.length < LIMIT || Number.isFinite(total) && all.length >= total) break;
+      if (items.length < LIMIT || Number.isFinite(total) && all2.length >= total) break;
     }
-    return all;
+    return all2;
   }
   function norm3(s) {
     let x = String(s || "").toLowerCase();
@@ -20138,18 +21003,18 @@
     items.forEach((it, i) => {
       const uri = it?.uri;
       if (!uri) return;
-      const row = { it, pos: i + 1 };
+      const row2 = { it, pos: i + 1 };
       if (byUri.has(uri)) {
-        exact.push({ ...row, first: byUri.get(uri).pos });
+        exact.push({ ...row2, first: byUri.get(uri).pos });
         return;
       }
-      byUri.set(uri, row);
+      byUri.set(uri, row2);
       const title = norm3(it.name), artist = norm3(artistOf2(it));
       if (!title || !artist || !/^spotify:(track|local):/.test(uri)) return;
       const key = title + "|" + artist;
       const prev = byName.get(key);
-      if (prev && !(durMs(prev.it) && durMs(it) && Math.abs(durMs(prev.it) - durMs(it)) > 45e3)) maybe.push({ ...row, first: prev.pos });
-      else if (!prev) byName.set(key, row);
+      if (prev && !(durMs(prev.it) && durMs(it) && Math.abs(durMs(prev.it) - durMs(it)) > 45e3)) maybe.push({ ...row2, first: prev.pos });
+      else if (!prev) byName.set(key, row2);
     });
     return { exact, maybe };
   }
@@ -20175,15 +21040,15 @@
     return done;
   }
   function dupRow(x, checked2) {
-    const row = el("label", "m-row m-dup");
+    const row2 = el("label", "m-row m-dup");
     const txt = el("span");
     txt.append(el("b", "", x.it.name || x.it.uri), el("small", "", [artistOf2(x.it), t("dupPos").replace("{a}", x.pos).replace("{b}", x.first)].filter(Boolean).join(" \xB7 ")));
     const cb = el("input");
     cb.type = "checkbox";
     cb.checked = checked2;
     cb.disabled = !x.it.uid;
-    row.append(txt, cb);
-    return { row, cb, x };
+    row2.append(txt, cb);
+    return { row: row2, cb, x };
   }
   function showDuplicates(uri, name, found) {
     const box2 = el("div", "mirage-settings m-dups");
@@ -20302,17 +21167,17 @@
       if ((tries.get(id) || 0) < 3 && visibleIds().has(id)) queue.unshift(id);
     }
   }
-  function paint(row) {
-    const id = rowId(row);
-    row.dataset.mBpmId = id;
-    let pill = row.querySelector(".m-bpm");
+  function paint(row2) {
+    const id = rowId(row2);
+    row2.dataset.mBpmId = id;
+    let pill = row2.querySelector(".m-bpm");
     const v = id && known(id);
     if (!v || !v[0]) {
       pill?.remove();
       if (id && !v) enqueue(id);
       return;
     }
-    const cell = endCell(row);
+    const cell = endCell(row2);
     if (!cell) return;
     if (!pill) pill = el("span", "m-bpm");
     if (pill.parentElement !== cell) cell.prepend(pill);
@@ -20321,32 +21186,32 @@
     pill.title = [v[0] + " BPM", keyName(v[1], v[2])].filter(Boolean).join(" \xB7 ");
   }
   function paintId(id) {
-    for (const row of visible) if (row.isConnected && row.dataset.mBpmId === id) paint(row);
+    for (const row2 of visible) if (row2.isConnected && row2.dataset.mBpmId === id) paint(row2);
   }
   function onIntersect(entries) {
     for (const e of entries) {
-      const row = e.target;
+      const row2 = e.target;
       if (e.isIntersecting) {
-        visible.add(row);
-        paint(row);
+        visible.add(row2);
+        paint(row2);
       } else {
-        visible.delete(row);
-        if (row.dataset.mBpmId) dequeue(row.dataset.mBpmId);
+        visible.delete(row2);
+        if (row2.dataset.mBpmId) dequeue(row2.dataset.mBpmId);
       }
     }
   }
   function scan() {
     const mv = document.querySelector(SEL.mainView);
     if (!mv || !io) return;
-    for (const row of mv.querySelectorAll(SEL.rows)) {
-      if (!observed.has(row)) {
-        observed.add(row);
-        io.observe(row);
-      } else if (visible.has(row) && row.dataset.mBpmId !== rowId(row)) {
-        paint(row);
+    for (const row2 of mv.querySelectorAll(SEL.rows)) {
+      if (!observed.has(row2)) {
+        observed.add(row2);
+        io.observe(row2);
+      } else if (visible.has(row2) && row2.dataset.mBpmId !== rowId(row2)) {
+        paint(row2);
       }
     }
-    for (const row of visible) if (!row.isConnected) visible.delete(row);
+    for (const row2 of visible) if (!row2.isConnected) visible.delete(row2);
   }
   function stop2() {
     running = false;
@@ -20453,11 +21318,11 @@
         const i = queue.indexOf(id);
         if (i >= 0) queue.splice(i, 1);
       };
-      rowId = (row) => {
-        const a = row.querySelector('a[data-testid="internal-track-link"], a[href*="/track/"]');
+      rowId = (row2) => {
+        const a = row2.querySelector('a[data-testid="internal-track-link"], a[href*="/track/"]');
         return /\/track\/([A-Za-z0-9]{22})/.exec(a?.getAttribute("href") || "")?.[1] || "";
       };
-      endCell = (row) => row.querySelector(".main-trackList-rowSectionEnd") || [...row.querySelectorAll('[role="gridcell"]')].pop();
+      endCell = (row2) => row2.querySelector(".main-trackList-rowSectionEnd") || [...row2.querySelectorAll('[role="gridcell"]')].pop();
       visible = /* @__PURE__ */ new Set();
       visibleIds = () => new Set([...visible].map((r) => r.dataset.mBpmId).filter(Boolean));
       running = false;
@@ -20616,7 +21481,7 @@
   function player(id, n) {
     let p = G.players.get(id);
     if (!p) {
-      p = { id, n: "", p: 0, out: false, team: 0, ans: null, e: 0 };
+      p = { id, n: "", p: 0, out: false, team: 0, ans: null, e: 0, early: false };
       G.players.set(id, p);
     }
     const name = clean2(n, 20);
@@ -20624,12 +21489,23 @@
     return p;
   }
   function clearTimers() {
-    G?.timers.forEach(clearTimeout);
-    if (G) G.timers = [];
+    if (!G) return;
+    G.timers.forEach(clearTimeout);
+    G.timers = [];
+    clearInterval(G.tick);
+  }
+  function publish() {
+    const sc = {}, out = [];
+    for (const p of all().slice(0, 40)) {
+      sc[short(p.id)] = Math.round(p.p);
+      if (p.out) out.push(short(p.id));
+    }
+    live.setGame({ ...G.view, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf) });
   }
   function show(view) {
+    if (view.end && !view.dur) view.dur = view.end - Date.now();
     G.view = view;
-    live.setGame({ ...view, k: G.k, top: top() });
+    publish();
     render();
   }
   function hide(on) {
@@ -20640,11 +21516,31 @@
   function start2(kind) {
     if (!ctx) return;
     stop3(true);
-    G = { k: kind, r: 0, players: /* @__PURE__ */ new Map(), view: null, timers: [], used: /* @__PURE__ */ new Set() };
+    G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: /* @__PURE__ */ new Map(), view: null, timers: [], used: /* @__PURE__ */ new Set(), lastFn: null };
+    boxKey = "";
     clearInterval(ticker);
-    ticker = setInterval(() => render(true), 300);
-    ({ quiz: quizRound, gap: gapRound, stop: stopJoin, battle: battleJoin, wheel: wheelIdle }[kind] || (() => {
-    }))();
+    ticker = setInterval(() => render(true), 250);
+    if (kind === "wheel") return wheelIdle();
+    show({ st: "join", end: Date.now() + joinMs() });
+    after(joinMs(), beginNow);
+    ctx.changed?.();
+  }
+  function beginNow() {
+    if (!G || G.view?.st !== "join") return;
+    if (all().length < (MIN[G.k] || 0)) {
+      notify2(t("gNeedPlayers"), true);
+      return stop3();
+    }
+    clearTimers();
+    FIRST[G.k]?.();
+    ctx.changed?.();
+  }
+  function skip() {
+    if (!G) return;
+    if (G.view?.st === "join") return beginNow();
+    const fn = G.lastFn;
+    clearTimers();
+    fn?.();
   }
   function stop3(silent) {
     if (!G) return;
@@ -20656,6 +21552,7 @@
     clearInterval(ticker);
     box?.remove();
     box = null;
+    boxKey = "";
     if (!silent) ctx.changed?.();
   }
   function finish() {
@@ -20664,86 +21561,93 @@
     const list = top();
     show({ st: "end", top: list });
     if (list.length) ctx.confetti?.();
-    after(1e4, () => stop3());
+    after(14e3, () => stop3());
     ctx.changed?.();
   }
-  function quizRound() {
+  function ask(view, ms, onEnd) {
+    for (const p of all()) p.ans = null;
+    G.askedAt = Date.now();
+    G.onAsked = onEnd;
+    show({ st: "ask", r: G.r, of: rounds(), ...view, end: Date.now() + ms });
+    after(ms, onEnd);
+  }
+  function award() {
+    const span = G.view?.dur || askMs(), d = (G.view?.o || []).map(() => 0);
+    for (const p of all()) {
+      if (!p.ans) continue;
+      d[p.ans.v]++;
+      if (p.ans.v === G.right) p.p += 100 + (cfg.gameBonus === false ? 0 : Math.round(100 * Math.max(0, 1 - (p.ans.at - G.askedAt) / span)));
+    }
+    return d;
+  }
+  function songRound() {
     G.r++;
-    if (G.r > ROUNDS) return finish();
+    if (G.r > rounds()) return finish();
+    const field = G.k === "quiz" ? "artist" : "title";
     const list = upcoming2(), next = list[0];
-    const others = shuffle([...new Set(list.slice(1).map((x) => x.artist))].filter((a) => a && a !== next?.artist)).slice(0, 3);
+    const others = shuffle([...new Set(list.slice(1).map((x) => x[field]))].filter((a) => a && a !== next?.[field])).slice(0, 3);
     if (!next || others.length < 3) {
       notify2(t("gNeedQueue"), true);
       return G.r > 1 ? finish() : stop3();
     }
     hide("quiz");
     S.Player.next?.();
-    const o = shuffle([next.artist, ...others]);
-    for (const p of G.players.values()) p.ans = null;
-    G.right = o.indexOf(next.artist);
-    G.askedAt = Date.now();
-    show({ st: "ask", r: G.r, of: ROUNDS, o, end: Date.now() + ASK_MS });
-    after(ASK_MS, () => {
-      award();
+    const o = shuffle([next[field], ...others]);
+    G.right = o.indexOf(next[field]);
+    ask({ o }, askMs(), () => {
+      const d = award();
       hide("");
-      show({ st: "rev", r: G.r, of: ROUNDS, o, right: G.right, title: next.title, artist: next.artist });
-      after(9e3, quizRound);
+      show({ st: "rev", r: G.r, of: rounds(), o, d, right: G.right, title: next.title, artist: next.artist });
+      after(breakMs(), songRound);
     });
   }
-  function award() {
-    const span = G.view?.end ? G.view.end - G.askedAt : ASK_MS;
-    for (const p of G.players.values()) {
-      if (p.ans && p.ans.v === G.right) p.p += 100 + Math.round(100 * Math.max(0, 1 - (p.ans.at - G.askedAt) / span));
-    }
-  }
-  function gapRound() {
+  function lineRound() {
     G.r++;
-    if (G.r > ROUNDS) return finish();
-    askGap(0);
+    if (G.r > rounds()) return finish();
+    askLine(0);
   }
-  function askGap(tries2) {
-    const lines = ctx.lines(), pos = ctx.pos();
-    const pick = (lines || []).find((l, i) => l.t > pos + 7e3 && l.t < pos + 3e4 && !G.used.has(i) && (l.text || "").match(WORD) && (G.used.add(i), true));
-    if (!pick) {
+  function askLine(tries2) {
+    const lines = ctx.lines() || [], pos = ctx.pos(), gap = G.k === "gap";
+    const ahead = Math.max(2e4, askMs() + 6e3);
+    const fits = (l, i2) => l.t > pos + 7e3 && l.t < pos + ahead && !G.used.has(i2) && (gap ? !!gapWord(l.text || "") : i2 > 0 && !!lines[i2 - 1].text?.trim() && (l.text || "").trim().length > 2);
+    const i = lines.findIndex(fits), pick = lines[i];
+    const retry = () => {
       if (tries2 > 8) {
         notify2(t("gNeedLyrics"), true);
         return G.r > 1 ? finish() : stop3();
       }
-      show({ st: "wait", r: G.r, of: ROUNDS });
-      return after(4e3, () => askGap(tries2 + 1));
+      show({ st: "wait", r: G.r, of: rounds() });
+      after(4e3, () => askLine(tries2 + 1));
+    };
+    if (!pick) return retry();
+    let answer, pool, line;
+    if (gap) {
+      const word = gapWord(pick.text);
+      answer = word.toLocaleLowerCase();
+      pool = [...new Set(lines.flatMap((l) => l.text?.match(WORD) || []).map((w) => w.toLocaleLowerCase()))].filter((w) => w !== answer && w.length <= 18);
+      pool = shuffle(pool).sort((a, b) => Math.abs(a.length - answer.length) - Math.abs(b.length - answer.length));
+      line = pick.text.replace(word, "_____");
+    } else {
+      answer = pick.text.trim().slice(0, 70);
+      pool = shuffle([...new Set(lines.map((l) => (l.text || "").trim().slice(0, 70)))].filter((x) => x.length > 2 && x !== answer));
+      line = lines[i - 1].text.trim();
     }
-    const words = pick.text.match(WORD), word = words.sort((a, b) => b.length - a.length)[0];
-    const pool = [...new Set((lines || []).flatMap((l) => (l.text || "").match(WORD) || []).map((w) => w.toLocaleLowerCase()))].filter((w) => w !== word.toLocaleLowerCase());
-    const close = shuffle(pool).sort((a, b) => Math.abs(a.length - word.length) - Math.abs(b.length - word.length)).slice(0, 3);
-    if (close.length < 3) return after(4e3, () => askGap(tries2 + 1));
-    const o = shuffle([word.toLocaleLowerCase(), ...close]);
-    const wait = pick.t - pos;
-    for (const p of G.players.values()) p.ans = null;
-    G.right = o.indexOf(word.toLocaleLowerCase());
-    G.askedAt = Date.now();
+    if (pool.length < 3) return retry();
+    G.used.add(i);
+    const o = shuffle([answer, ...pool.slice(0, 3)]);
+    G.right = o.indexOf(answer);
     hide("gap");
-    show({ st: "ask", r: G.r, of: ROUNDS, o, line: pick.text.replace(word, "_____"), end: Date.now() + wait });
-    after(wait, () => {
-      award();
+    ask({ o, line }, pick.t - pos, () => {
+      const d = award();
       hide("");
-      show({ st: "rev", r: G.r, of: ROUNDS, o, right: G.right, line: pick.text });
-      after(8e3, gapRound);
-    });
-  }
-  function stopJoin() {
-    show({ st: "join", end: Date.now() + 15e3 });
-    after(15e3, () => {
-      if (G.players.size < 2) {
-        notify2(t("gNeedPlayers"), true);
-        return stop3();
-      }
-      stopPlay();
+      show({ st: "rev", r: G.r, of: rounds(), o, d, right: G.right, line: pick.text });
+      after(breakMs(), lineRound);
     });
   }
   function stopPlay() {
     G.r++;
     const left = alive();
-    if (left.length <= 1 || G.r > 8) {
+    if (left.length <= 1 || G.r > 12) {
       S.Player.play?.();
       left.forEach((p) => p.p += 100);
       return finish();
@@ -20758,56 +21662,122 @@
         const now = alive(), none = now.filter((p) => !p.ans);
         if (none.length < now.length) none.forEach((p) => p.out = true);
         if (!none.length) now.sort((a, b) => b.ans.ms - a.ans.ms)[0].out = true;
-        show({ st: "res", r: G.r, left: alive().length, out: [...G.players.values()].filter((p) => p.out).map(nameOf).slice(-4) });
+        show({ st: "res", r: G.r, left: alive().length, gone: all().filter((p) => p.out).map(nameOf).slice(-4) });
         after(3e3, stopPlay);
       });
     });
   }
-  function battleJoin() {
-    show({ st: "join", end: Date.now() + 15e3 });
-    after(15e3, () => {
-      if (G.players.size < 2) {
-        notify2(t("gNeedPlayers"), true);
-        return stop3();
-      }
-      shuffle([...G.players.values()]).forEach((p, i) => p.team = i % 2);
-      G.score = [0, 0];
-      G.end = Date.now() + 3e4;
-      battleTick();
-      after(3e4, () => {
-        clearTimers();
-        const win = G.score[0] === G.score[1] ? -1 : G.score[0] > G.score[1] ? 0 : 1;
-        for (const p of G.players.values()) if (p.team === win || win < 0) p.p += 100;
-        if (win >= 0) ctx.confetti?.();
-        show({ st: "res", a: Math.round(G.score[0]), b: Math.round(G.score[1]), win });
-        after(5e3, finish);
+  function fastRound() {
+    G.r++;
+    if (G.r > rounds()) return finish();
+    for (const p of all()) {
+      p.ans = null;
+      p.early = false;
+    }
+    show({ st: "ready", r: G.r, of: rounds() });
+    after(2500 + Math.random() * 6e3, () => {
+      show({ st: "go", r: G.r, of: rounds(), at: Date.now(), end: Date.now() + 3500 });
+      after(3500, () => {
+        const list = all().filter((p) => p.ans && !p.early).sort((a, b) => a.ans.ms - b.ans.ms);
+        list.forEach((p, i) => p.p += FAST_PTS[i] ?? 10);
+        show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((p) => ({ n: nameOf(p), ms: p.ans.ms })) });
+        after(Math.min(5e3, breakMs()), fastRound);
       });
     });
   }
-  function battleTick() {
-    const size = [0, 0], sum = [0, 0];
-    for (const p of G.players.values()) {
-      size[p.team]++;
-      sum[p.team] += p.e;
+  function battleGo() {
+    shuffle(all()).forEach((p, i) => p.team = i % 2);
+    G.score = [0, 0];
+    G.end = Date.now() + durMs2();
+    const tick = () => {
+      const size = [0, 0], sum = [0, 0];
+      for (const p of all()) {
+        size[p.team]++;
+        sum[p.team] += p.e;
+      }
+      G.score = [0, 1].map((k) => size[k] ? sum[k] / size[k] : 0);
+      const teams = {};
+      for (const p of all()) teams[short(p.id)] = p.team;
+      show({ st: "go", a: Math.round(G.score[0]), b: Math.round(G.score[1]), end: G.end, dur: durMs2(), teams });
+    };
+    tick();
+    G.tick = setInterval(tick, 500);
+    after(durMs2(), () => {
+      clearTimers();
+      const win = G.score[0] === G.score[1] ? -1 : G.score[0] > G.score[1] ? 0 : 1;
+      for (const p of all()) if (p.team === win || win < 0) p.p += 100;
+      if (win >= 0) ctx.confetti?.();
+      show({ st: "res", a: Math.round(G.score[0]), b: Math.round(G.score[1]), win });
+      after(5e3, finish);
+    });
+  }
+  function beatGo() {
+    const end = Date.now() + durMs2();
+    const tick = () => show({ st: "go", end, dur: durMs2(), bpm: Math.round(ctx.bpm?.() || 120) });
+    tick();
+    G.tick = setInterval(tick, 1e3);
+    after(durMs2() + 1500, finish);
+  }
+  function bombRound() {
+    const left = alive();
+    if (left.length <= 1) {
+      left.forEach((p) => p.p += 100);
+      return finish();
     }
-    G.score = [0, 1].map((k) => size[k] ? sum[k] / size[k] : 0);
-    const teams = {};
-    for (const p of G.players.values()) teams[p.id.slice(-6)] = p.team;
-    show({ st: "go", a: Math.round(G.score[0]), b: Math.round(G.score[1]), end: G.end, teams });
-    after(500, battleTick);
+    G.r++;
+    G.holder = left[Math.floor(Math.random() * left.length)];
+    bombShow();
+    after(12e3 + Math.random() * 2e4, () => {
+      const gone = G.holder;
+      gone.out = true;
+      alive().forEach((p) => p.p += 20);
+      ctx.flashStorm?.();
+      show({ st: "res", r: G.r, boom: nameOf(gone), left: alive().length });
+      after(3500, bombRound);
+    });
+  }
+  function bombShow() {
+    G.seq = (G.seq || 0) + 1;
+    show({ st: "go", r: G.r, h: short(G.holder.id), hn: nameOf(G.holder), x: G.seq, left: alive().length });
+  }
+  function likelyRound() {
+    G.r++;
+    if (G.r > rounds()) return finish();
+    const names = shuffle(all()).slice(0, 6);
+    if (names.length < 2) return finish();
+    let i = 1 + Math.floor(Math.random() * 20);
+    while (G.used.has(i) && G.used.size < 20) i = i % 20 + 1;
+    G.used.add(i);
+    const o = names.map(nameOf), q = t("gL" + i);
+    G.right = -1;
+    ask({ o, q }, askMs(), () => {
+      const d = award(), most = Math.max(...d);
+      const right = most > 0 ? d.indexOf(most) : -1;
+      for (const p of all()) if (p.ans && right >= 0 && d[p.ans.v] === most) p.p += 50;
+      show({ st: "rev", r: G.r, of: rounds(), o, d, right, q });
+      after(breakMs(), likelyRound);
+    });
+  }
+  function wheelFields() {
+    const on = WHEEL_FIELDS.filter((k) => (cfg.gameWheel || WHEEL_FIELDS).includes(k)).map((k) => ({ k, text: t(k) }));
+    const own = String(cfg.gameWheelOwn || "").split(",").map((x) => clean2(x, 26)).filter(Boolean).slice(0, 8).map((text) => ({ k: "", text }));
+    const list = [...on, ...own];
+    return list.length >= 2 ? list : WHEEL_FIELDS.map((k) => ({ k, text: t(k) }));
   }
   function wheelIdle() {
+    G.fields = wheelFields();
     show({ st: "idle" });
+    ctx.changed?.();
   }
   function spin() {
     if (!G || G.k !== "wheel" || G.view?.st === "spin") return;
-    const i = Math.floor(Math.random() * WHEEL.length), turns = (G.turns || 0) + 5;
+    const n = G.fields.length, i = Math.floor(Math.random() * n), turns = (G.turns || 0) + 5;
     G.turns = turns;
-    G.angle = turns * 360 - (i + 0.5) * (360 / WHEEL.length);
+    G.angle = turns * 360 - (i + 0.5) * (360 / n);
     show({ st: "spin" });
     after(5200, () => {
-      wheelEffect(WHEEL[i]);
-      show({ st: "res", text: t(WHEEL[i]) });
+      wheelEffect(G.fields[i].k);
+      show({ st: "res", text: G.fields[i].text });
     });
   }
   function wheelEffect(k) {
@@ -20829,86 +21799,238 @@
     if (!box || !box.isConnected) {
       box = div("m-im-game");
       root2.append(box);
+      boxKey = "";
     }
+    box.classList.toggle("is-compact", cfg.gameCard === "small");
     const v = G.view || {};
-    if (tickOnly) {
-      const c2 = box.querySelector(".m-g-time");
-      if (c2 && v.end) c2.textContent = secs(v.end) + " s";
-      return;
-    }
+    const bar = box.querySelector(".m-g-bar i");
+    if (bar) bar.style.width = v.end && v.dur ? Math.max(0, Math.min(100, (v.end - Date.now()) / v.dur * 100)) + "%" : "0";
+    const c2 = box.querySelector(".m-g-time");
+    if (c2) c2.textContent = v.end ? secs(v.end) + " s" : "";
+    if (tickOnly) return;
     if (G.k === "wheel" && box.querySelector(".m-g-wheel")) return drawWheel(v);
+    const key = [G.k, v.st, v.r, v.q, v.line, v.h].join("|");
+    if (key === boxKey) return update(v);
+    boxKey = key;
     box.textContent = "";
+    box.dataset.k = G.k;
     box.dataset.st = v.st || "";
-    const head2 = div("m-g-head", t(LABEL[G.k]));
-    if (v.r && v.of) head2.append(div("m-g-round", `${v.r} / ${v.of}`));
-    if (v.end) head2.append(div("m-g-time", secs(v.end) + " s"));
-    box.append(head2);
-    if (v.st === "end") {
-      box.append(div("m-g-big", t("gEnd")));
-      box.append(board(v.top));
-      return;
+    box.append(head(v));
+    build2(v);
+    update(v);
+  }
+  function head(v) {
+    const h = div("m-g-head");
+    h.append(div("m-g-bar"));
+    h.firstChild.append(document.createElement("i"));
+    h.append(div("m-g-ic", INFO[G.k].icon), div("m-g-name", t(INFO[G.k].label)));
+    if (v.r && v.of) {
+      const dots = div("m-g-dots");
+      for (let i = 1; i <= v.of; i++) dots.append(div(i < v.r ? "is-done" : i === v.r ? "is-now" : ""));
+      h.append(dots);
     }
+    h.append(div("m-g-time", v.end ? secs(v.end) + " s" : ""));
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "m-g-x";
+    x.textContent = "\xD7";
+    x.title = x.ariaLabel = t("gEndNow");
+    x.onclick = (e) => {
+      e.stopPropagation();
+      stop3();
+    };
+    h.append(x);
+    return h;
+  }
+  function build2(v) {
+    if (v.st === "end") return buildEnd(v);
     if (G.k === "wheel") return drawWheel(v, true);
-    if (v.st === "join") {
-      box.append(div("m-g-big", t(G.k === "stop" ? "gStopJoin" : "gBattleJoin")));
-      box.append(div("m-g-sub", t("gPlayers").replace("{n}", G.players.size)));
-    } else if (v.st === "wait") {
-      box.append(div("m-g-sub", t("gWaitLine")));
-    } else if (G.k === "quiz" || G.k === "gap") {
-      if (v.line) box.append(div("m-g-line", v.line));
-      else box.append(div("m-g-big", v.st === "rev" ? `${v.artist} \u2013 ${v.title}` : "?"));
-      const opts = div("m-g-opts");
-      v.o?.forEach((o, i) => opts.append(div("m-g-opt" + (v.st === "rev" && i === v.right ? " is-right" : ""), o)));
-      box.append(opts);
-      if (v.st === "rev") box.append(board(top()));
-    } else if (G.k === "stop") {
-      if (v.st === "play") box.append(div("m-g-big", t("gStopPlay")));
-      if (v.st === "stop") box.append(div("m-g-big is-hot", t("gStopNow")));
-      if (v.st === "res") box.append(div("m-g-sub", (v.out || []).join(" \xB7 ")));
+    if (v.st === "join") return buildJoin();
+    if (v.st === "wait") return box.append(div("m-g-sub", t("gWaitLine")));
+    if (["quiz", "title", "gap", "next", "likely"].includes(G.k)) return buildAsk(v);
+    if (G.k === "stop") {
+      if (v.st === "play") box.append(div("m-g-big m-g-pulse", t("gStopPlay")));
+      if (v.st === "stop") box.append(div("m-g-big is-hot m-g-pop", t("gStopNow")));
+      if (v.st === "res" && v.gone?.length) box.append(div("m-g-sub is-gone", v.gone.join(" \xB7 ")));
       box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? alive().length)));
+    } else if (G.k === "fast") {
+      if (v.st === "ready") box.append(div("m-g-big m-g-pulse", t("gFastReady")));
+      if (v.st === "go") box.append(div("m-g-big is-hot m-g-pop", t("gFastGo")));
+      if (v.st === "res") {
+        const b = div("m-g-board");
+        (v.win || []).forEach((x, i) => b.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i], x.n, x.ms + " ms")));
+        box.append(b);
+      }
     } else if (G.k === "battle") {
-      const a = v.a || 0, b = v.b || 0, sum = a + b || 1;
+      box.append(div("m-g-big", v.st === "res" ? v.win < 0 ? t("gDraw") : t("gTeamWin").replace("{t}", v.win ? "B" : "A") : t("gShake")));
       const bars = div("m-g-battle");
-      const ba = div("m-g-team", `A \xB7 ${a}`), bb = div("m-g-team is-b", `B \xB7 ${b}`);
-      ba.style.flexGrow = String(Math.max(0.15, a / sum));
-      bb.style.flexGrow = String(Math.max(0.15, b / sum));
-      bars.append(ba, bb);
-      box.append(div("m-g-big", v.st === "res" ? v.win < 0 ? t("gDraw") : t("gTeamWin").replace("{t}", v.win ? "B" : "A") : t("gShake")), bars);
+      bars.append(div("m-g-team", "A"), div("m-g-team is-b", "B"));
+      box.append(bars);
+    } else if (G.k === "beat") {
+      const ring = div("m-g-beat");
+      ring.style.setProperty("--beat", (60 / (v.bpm || 120)).toFixed(3) + "s");
+      box.append(ring, div("m-g-big", t("gBeatGo")), div("m-g-board"));
+    } else if (G.k === "bomb") {
+      if (v.st === "go") box.append(div("m-g-bomb", "\u{1F4A3}"), div("m-g-big", t("gBombHolder").replace("{n}", v.hn)));
+      if (v.st === "res") box.append(div("m-g-bomb is-boom", "\u{1F4A5}"), div("m-g-big is-hot", t("gBombBoom").replace("{n}", v.boom)));
+      box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? 0)));
     }
+  }
+  function row(rank, name, val) {
+    const r = div("m-g-row");
+    r.append(div("m-g-rk", rank), div("m-g-nm", name), div("m-g-pt", val));
+    return r;
   }
   function board(list) {
     const d = div("m-g-board");
-    (list || []).forEach((x, i) => d.append(div("m-g-row", `${i + 1}. ${x.n} \xB7 ${x.p}`)));
+    (list || []).slice(0, 5).forEach((x, i) => d.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p))));
     return d;
   }
-  function drawWheel(v, build2) {
-    if (build2) {
-      const w2 = div("m-g-wheel"), n = WHEEL.length;
-      WHEEL.forEach((k, i) => {
-        const l = div("m-g-seg", t(k));
-        l.style.transform = `rotate(${(i + 0.5) * (360 / n)}deg) translateY(-37%)`;
+  function buildJoin() {
+    const wrap = div("m-g-join"), txt = div("m-g-jtxt");
+    const need = async () => {
+      const info2 = live.info() || await live.prepare().catch(() => null);
+      if (!info2 || !wrap.isConnected) return;
+      const img = new Image();
+      img.alt = "";
+      img.className = "m-g-qr";
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info2.qr);
+      wrap.prepend(img);
+    };
+    txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-chips"));
+    const go2 = document.createElement("button");
+    go2.type = "button";
+    go2.className = "m-g-go";
+    go2.textContent = t("gStartNow");
+    go2.onclick = (e) => {
+      e.stopPropagation();
+      beginNow();
+    };
+    txt.append(go2);
+    wrap.append(txt);
+    box.append(wrap);
+    need();
+  }
+  function buildAsk(v) {
+    if (v.q) box.append(div("m-g-line", v.q));
+    else if (v.line) box.append(div("m-g-line", v.line));
+    else if (v.st === "rev") box.append(div("m-g-big", `${v.artist} \u2013 ${v.title}`));
+    else box.append(div("m-g-big m-g-pulse", "?"));
+    const opts = div("m-g-opts" + (v.o?.length > 4 ? " is-many" : ""));
+    const total = (v.d || []).reduce((a, b) => a + b, 0) || 1;
+    v.o?.forEach((o, i) => {
+      const tile = div(`m-g-opt is-t${i}` + (v.st === "rev" ? i === v.right ? " is-right" : " is-dim" : ""));
+      if (v.st === "rev") tile.style.setProperty("--w", Math.round((v.d?.[i] || 0) / total * 100) + "%");
+      tile.append(div("m-g-let", TILES[i]), div("m-g-otx", o));
+      if (v.st === "rev") tile.append(div("m-g-cnt", String(v.d?.[i] || 0)));
+      opts.append(tile);
+    });
+    box.append(opts);
+    if (v.st === "ask") box.append(div("m-g-sub m-g-ans"));
+    if (v.st === "rev" && all().length) box.append(board(top()));
+  }
+  function buildEnd(v) {
+    box.append(div("m-g-big", t("gEnd")));
+    const list = v.top || [];
+    const pod = div("m-g-podium");
+    for (const i of [1, 0, 2]) {
+      const x = list[i];
+      if (!x) continue;
+      const col = div(`m-g-pod is-p${i}`);
+      col.append(div("m-g-medal", ["\u{1F947}", "\u{1F948}", "\u{1F949}"][i]), div("m-g-pname", x.n), div("m-g-ppts", String(x.p)), div("m-g-pbar"));
+      pod.append(col);
+    }
+    if (list.length) box.append(pod);
+    if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
+  }
+  function update(v) {
+    if (v.st === "join") {
+      const chips = box.querySelector(".m-g-chips");
+      if (chips) {
+        const names = all().map(nameOf), now = names.join("|");
+        if (chips.dataset.now !== now) {
+          chips.dataset.now = now;
+          chips.textContent = "";
+          names.slice(0, 16).forEach((n) => chips.append(div("m-g-chip", n)));
+        }
+      }
+    }
+    const a = box.querySelector(".m-g-ans");
+    if (a) a.textContent = t("gAnswered").replace("{n}", all().filter((p) => p.ans).length) + " \xB7 " + t("gPlayers").replace("{n}", all().length);
+    if (G.k === "battle") {
+      const bars = box.querySelectorAll(".m-g-team");
+      if (bars.length) {
+        const x = v.a || 0, y = v.b || 0, sum = x + y || 1;
+        bars[0].textContent = `A \xB7 ${x}`;
+        bars[1].textContent = `B \xB7 ${y}`;
+        bars[0].style.flexGrow = String(Math.max(0.15, x / sum));
+        bars[1].style.flexGrow = String(Math.max(0.15, y / sum));
+      }
+    }
+    if (G.k === "beat") {
+      const b = box.querySelector(".m-g-board");
+      if (b) {
+        b.textContent = "";
+        top().forEach((x, i) => b.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p))));
+      }
+    }
+  }
+  function drawWheel(v, build3) {
+    if (build3) {
+      const f = G.fields, n = f.length, w2 = div("m-g-wheel"), deg = 360 / n;
+      w2.style.background = `conic-gradient(${f.map((_, i) => `${WHEEL_COLORS[i % (n % 6 === 1 ? 5 : 6)]} ${i * deg}deg ${(i + 1) * deg}deg`).join(",")})`;
+      f.forEach((x, i) => {
+        const l = div("m-g-seg");
+        l.style.rotate = `${(i + 0.5) * deg}deg`;
+        l.append(div("m-g-segt", x.text));
         w2.append(l);
       });
+      const hub = div("m-g-hub", "\u{1F3A1}");
       w2.onclick = spin;
-      box.append(div("m-g-pin"), w2, div("m-g-big m-g-wres", ""));
+      const stage2 = div("m-g-wstage");
+      stage2.append(div("m-g-pin"), w2, hub);
+      box.append(stage2, div("m-g-big m-g-wres", ""));
     }
     const w = box.querySelector(".m-g-wheel");
     if (w && G.angle != null) w.style.transform = `rotate(${G.angle}deg)`;
     const res = box.querySelector(".m-g-wres");
     if (res) res.textContent = v.st === "res" ? v.text : v.st === "spin" ? "\u2026" : t("gSpin");
   }
-  var ROUNDS, ASK_MS, ctx, G, box, ticker, shuffle, clean2, notify2, upcoming2, nameOf, top, after, WORD, alive, WHEEL, LABEL, div, secs, games;
+  var GAME_LIST, INFO, WHEEL_FIELDS, MIN, OUT_GAMES, TILES, rounds, askMs, joinMs, durMs2, breakMs, ctx, G, box, ticker, boxKey, shuffle, clean2, notify2, upcoming2, short, nameOf, all, alive, top, after, FIRST, WORD, gapWord, FAST_PTS, div, secs, WHEEL_COLORS, games;
   var init_games = __esm({
     "src/games.js"() {
       init_core();
+      init_config();
       init_i18n();
       init_live();
-      ROUNDS = 5;
-      ASK_MS = 2e4;
+      GAME_LIST = [
+        { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "\u{1F3A4}" },
+        { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint", icon: "\u{1F3B5}" },
+        { k: "gap", cat: "gCatMusic", label: "gGap", hint: "gGapHint", icon: "\u270F\uFE0F" },
+        { k: "next", cat: "gCatMusic", label: "gNext", hint: "gNextHint", icon: "\u{1F4DC}" },
+        { k: "beat", cat: "gCatMusic", label: "gBeat", hint: "gBeatHint", icon: "\u{1F941}" },
+        { k: "stop", cat: "gCatQuick", label: "gStop", hint: "gStopHint", icon: "\u270B" },
+        { k: "fast", cat: "gCatQuick", label: "gFast", hint: "gFastHint", icon: "\u26A1" },
+        { k: "battle", cat: "gCatQuick", label: "gBattle", hint: "gBattleHint", icon: "\u{1F483}" },
+        { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "\u{1F4A3}" },
+        { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "\u{1F914}" },
+        { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "\u{1F3A1}" }
+      ];
+      INFO = Object.fromEntries(GAME_LIST.map((g) => [g.k, g]));
+      WHEEL_FIELDS = ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"];
+      MIN = { stop: 2, fast: 2, beat: 2, battle: 2, bomb: 2, likely: 2 };
+      OUT_GAMES = /* @__PURE__ */ new Set(["stop", "bomb"]);
+      TILES = ["A", "B", "C", "D", "E", "F"];
+      rounds = () => Number(cfg.gameRounds) || 5;
+      askMs = () => (Number(cfg.gameAsk) || 20) * 1e3;
+      joinMs = () => (Number(cfg.gameJoin) || 30) * 1e3;
+      durMs2 = () => (Number(cfg.gameDur) || 30) * 1e3;
+      breakMs = () => (Number(cfg.gameBreak) || 8) * 1e3;
       ctx = null;
       G = null;
       box = null;
       ticker = 0;
+      boxKey = "";
       shuffle = (a) => {
         const x = a.slice();
         for (let i = x.length - 1; i > 0; i--) {
@@ -20920,21 +22042,52 @@
       clean2 = (s, n) => String(s ?? "").replace(new RegExp("\\p{Cc}", "gu"), "").trim().slice(0, n);
       notify2 = (msg, err) => S.showNotification?.(msg, !!err, 4e3);
       upcoming2 = () => (S.Queue?.nextTracks || []).map((x) => x.contextTrack || x).filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title).map((x) => ({ title: x.metadata.title, artist: String(x.metadata.artist_name || "").split(",")[0].trim() }));
+      short = (id) => id.slice(-6);
       nameOf = (p) => p.n || `${t("rankGuest")} ${p.id.slice(-2).toUpperCase()}`;
-      top = () => [...G.players.values()].sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: p.p }));
-      after = (ms, fn) => G.timers.push(setTimeout(() => G && fn(), ms));
+      all = () => [...G.players.values()];
+      alive = () => all().filter((p) => !p.out);
+      top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p) }));
+      after = (ms, fn) => {
+        G.lastFn = fn;
+        G.timers.push(setTimeout(() => G && fn(), ms));
+      };
+      FIRST = {
+        quiz: () => songRound(),
+        title: () => songRound(),
+        gap: () => lineRound(),
+        next: () => lineRound(),
+        stop: () => stopPlay(),
+        fast: () => fastRound(),
+        battle: () => battleGo(),
+        beat: () => beatGo(),
+        bomb: () => bombRound(),
+        likely: () => likelyRound()
+      };
       WORD = /[\p{L}\p{M}'’]{4,}/gu;
-      alive = () => [...G.players.values()].filter((p) => !p.out);
-      WHEEL = ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"];
+      gapWord = (text) => (text.match(WORD) || []).filter((w) => w.length <= 18).sort((a, b) => b.length - a.length)[0];
+      FAST_PTS = [100, 70, 50, 30];
       window.addEventListener("mirage:game", (e) => {
         if (!G) return;
         const m = e.detail, v = G.view;
         if (!m?.id || !v) return;
-        const p = player(m.id, m.n);
-        if (m.a === "join") return render();
-        if ((G.k === "quiz" || G.k === "gap") && m.a === "ans" && v.st === "ask" && m.r === v.r && !p.ans) {
+        const fresh = !G.players.has(m.id), p = player(m.id, m.n);
+        if (fresh && v.st !== "join") {
+          if (OUT_GAMES.has(G.k)) p.out = true;
+          if (G.k === "battle") p.team = all().filter((x) => x.team === 0).length > all().length / 2 ? 1 : 0;
+        }
+        if (m.a === "join") {
+          publish();
+          return render();
+        }
+        if (["quiz", "title", "gap", "next", "likely"].includes(G.k) && m.a === "ans" && v.st === "ask" && m.r === v.r && !p.ans) {
           const val = Number(m.v);
           if (val >= 0 && val < v.o.length) p.ans = { v: val, at: Date.now() };
+          publish();
+          render();
+          if (["quiz", "title", "likely"].includes(G.k) && alive().every((x) => x.ans)) {
+            clearTimers();
+            G.onAsked?.();
+          }
           return;
         }
         if (G.k === "stop") {
@@ -20943,9 +22096,21 @@
           else if (v.st === "stop" && !p.ans) p.ans = { ms: Math.max(0, Math.min(5e3, Number(m.ms) || 5e3)) };
           return;
         }
+        if (G.k === "fast" && m.r === v.r) {
+          if (m.a === "early" && !p.ans) p.early = true;
+          else if (m.a === "tap" && v.st === "go" && !p.ans && !p.early) p.ans = { ms: Math.max(0, Math.min(5e3, Number(m.ms) || 5e3)) };
+          return;
+        }
         if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
+        if (G.k === "beat" && m.a === "sc" && v.st === "go") p.p = Math.max(0, Math.min(9999, Number(m.v) || 0));
+        if (G.k === "bomb" && m.a === "pass" && v.st === "go" && p === G.holder && m.v === G.seq) {
+          const rest = alive().filter((x) => x !== p);
+          if (rest.length) {
+            G.holder = rest[Math.floor(Math.random() * rest.length)];
+            bombShow();
+          }
+        }
       });
-      LABEL = { quiz: "gQuiz", gap: "gGap", stop: "gStop", battle: "gBattle", wheel: "gWheel" };
       div = (cls, text) => {
         const d = document.createElement("div");
         d.className = cls;
@@ -20953,6 +22118,7 @@
         return d;
       };
       secs = (end) => Math.max(0, Math.ceil((end - Date.now()) / 1e3));
+      WHEEL_COLORS = ["#ff5a6e", "#4aa8ff", "#ffc23d", "#4fd68c", "#b583ff", "#ff8f4d"];
       games = {
         init(c2) {
           ctx = c2;
@@ -20960,7 +22126,10 @@
         start: start2,
         stop: stop3,
         spin,
+        beginNow,
+        skip,
         active: () => G?.k || null,
+        waiting: () => G?.view?.st === "join",
         players: () => G?.players.size || 0
       };
     }
@@ -21017,6 +22186,7 @@
         dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
         game: '<svg viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.7 3.6a2.5 2.5 0 0 1-4.3 1.2L14.6 16H9.4l-2.3 1.8a2.5 2.5 0 0 1-4.3-1.2L2.1 13A5 5 0 0 1 7 7zm0 2a3 3 0 0 0-3 3.6l.8 3.6.5.3 2.5-2.5h7.4l2.5 2.5.5-.3.8-3.6A3 3 0 0 0 17 9zm1 1h2v2h2v2h-2v2H8v-2H6v-2h2zm8 0a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4zm-2 3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
         poll: '<svg viewBox="0 0 24 24"><path d="M4 13h3v7H4zm6.5-9h3v16h-3zM17 9h3v11h-3z"/></svg>',
+        more: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/></svg>',
         share: '<svg viewBox="0 0 24 24"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5zM5 13h2v5h10v-5h2v7H5z"/></svg>',
         heartOn: '<svg viewBox="0 0 24 24"><path d="M12 21 10.6 19.7C5.4 15 2 12 2 8.3 2 5.3 4.3 3 7.3 3c1.7 0 3.3.8 4.7 2 1.4-1.2 3-2 4.7-2C19.7 3 22 5.3 22 8.3c0 3.7-3.4 6.7-8.6 11.4z"/></svg>',
         vol: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
@@ -21048,7 +22218,7 @@
         const pit = new Float32Array(12);
         const vizRect = { n: 0, r: null };
         let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
-        function build2() {
+        function build3() {
           el3 = document.createElement("div");
           el3.id = "mirage-immersive";
           el3.setAttribute("role", "dialog");
@@ -21075,6 +22245,7 @@
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
+          <button type="button" class="m-im-sm m-im-menubtn" hidden>${ICON.more}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help">?</button>
@@ -21184,6 +22355,9 @@
           q.djbtn.onclick = () => showSide(side === "dj" ? null : "dj");
           q.gamebtn.title = q.gamebtn.ariaLabel = t("gTitle");
           q.gamebtn.onclick = () => showSide(side === "games" ? null : "games");
+          q.menubtn = el3.querySelector(".m-im-menubtn");
+          q.menubtn.title = q.menubtn.ariaLabel = t("pmTitle");
+          q.menubtn.onclick = () => showSide(side === "menu" ? null : "menu");
           games.init({
             root: () => el3,
             lines: () => lyr?.synced ? lyr.lines : null,
@@ -21191,6 +22365,7 @@
             confetti,
             handsUp: () => moments2.handsUntil = performance.now() + 8 * 6e4 / (party.info.bpm || 120),
             flashStorm: () => moments2.stormUntil = performance.now() + 2600,
+            bpm: () => party.info.bpm,
             venue: () => moments2.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)],
             changed: () => side === "games" && showSide("games")
           });
@@ -21934,12 +23109,12 @@
           el3.querySelector(".m-im-timing")?.remove();
           markEdit();
           if (!keep || !changed) return;
-          const all = timings();
-          all[lyrUri] = { n: lyr.lines.length, t: lyr.lines.map((l) => l.t) };
-          const keys = Object.keys(all);
-          for (const k of keys.slice(0, Math.max(0, keys.length - 150))) delete all[k];
+          const all2 = timings();
+          all2[lyrUri] = { n: lyr.lines.length, t: lyr.lines.map((l) => l.t) };
+          const keys = Object.keys(all2);
+          for (const k of keys.slice(0, Math.max(0, keys.length - 150))) delete all2[k];
           try {
-            localStorage.setItem(TIMING, JSON.stringify(all));
+            localStorage.setItem(TIMING, JSON.stringify(all2));
           } catch {
           }
           S.showNotification?.(t("timingSaved"), false, 2200);
@@ -21947,10 +23122,10 @@
           loadLyrics();
         }
         function resetTiming() {
-          const all = timings();
-          delete all[lyrUri];
+          const all2 = timings();
+          delete all2[lyrUri];
           try {
-            localStorage.setItem(TIMING, JSON.stringify(all));
+            localStorage.setItem(TIMING, JSON.stringify(all2));
           } catch {
           }
           for (const l of lyr?.lines || []) if (l.t0 != null) shiftLine(l, l.t0 - l.t);
@@ -23011,7 +24186,7 @@
           if (!el3 || !q.cvbtn) return;
           const mode = el3.dataset.mode, show2 = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show2 && !!canvasUrl;
           const on = can && !!cfg.canvasIn?.[mode];
-          q.cvbtn.hidden = !show2;
+          q.cvbtn.hidden = !show2 || mode === "party";
           q.cvbtn.classList.toggle("is-none", show2 && !canvasUrl);
           q.cvbtn.setAttribute("aria-pressed", String(on));
           q.cvbtn.title = q.cvbtn.ariaLabel = t(!canvasUrl ? "canvasNone" : on ? "canvasOff" : "canvasOn");
@@ -23031,11 +24206,11 @@
             h.textContent = t("keysTitle");
             box2.append(h);
             for (const [k, label] of KEYS) {
-              const row = document.createElement("div");
-              row.innerHTML = "<kbd></kbd><span></span>";
-              row.firstChild.textContent = k;
-              row.lastChild.textContent = t(label);
-              box2.append(row);
+              const row2 = document.createElement("div");
+              row2.innerHTML = "<kbd></kbd><span></span>";
+              row2.firstChild.textContent = k;
+              row2.lastChild.textContent = t(label);
+              box2.append(row2);
             }
             q.keys.append(box2);
           }
@@ -23051,7 +24226,7 @@
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
-          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle" }[kind]);
+          q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
           const body = q.sideBody;
           body.textContent = "";
           const item = (label, sub, img, onClick, on) => {
@@ -23086,6 +24261,7 @@
           if (kind === "screens") return screensPanel(body, item);
           if (kind === "dj") return djPanel(body);
           if (kind === "games") return gamesPanel(body);
+          if (kind === "menu") return menuPanel(body);
           if (kind === "poll") return pollPanel(body);
           if (kind === "recap") return recapPanel(body);
           if (kind === "queue") {
@@ -23200,13 +24376,11 @@
         function showExtras() {
           if (!el3) return;
           const party2 = el3.dataset.mode === "party";
-          q.recap.hidden = !(party2 && cfg.partyRecap && recap.songs.length >= 3);
-          q.conf.hidden = !party2 || !!cfg.calm;
-          q.pollbtn.hidden = !(party2 && cfg.partyLive);
-          q.djbtn.hidden = !party2;
-          q.gamebtn.hidden = !party2;
+          q.recap.hidden = q.conf.hidden = q.pollbtn.hidden = q.djbtn.hidden = q.screen.hidden = true;
+          q.gamebtn.hidden = q.menubtn.hidden = !party2;
+          el3.querySelector(".m-im-share").hidden = el3.querySelector(".m-im-help").hidden = party2;
+          el3.classList.toggle("is-partyui", party2);
           if (!party2) games.stop();
-          q.screen.hidden = !(party2 && cfg.partyScreen);
           q.live.hidden = !(party2 && cfg.partyLive);
           if (q.live.hidden) el3.querySelector(".m-im-livecard")?.remove();
           drawWishes();
@@ -23220,14 +24394,14 @@
           else if (btn) btn.disabled = false;
         }
         function wishRow(w) {
-          const row = document.createElement("div");
-          row.className = "m-im-wishrow";
+          const row2 = document.createElement("div");
+          row2.className = "m-im-wishrow";
           if (safeImg(w.img)) {
             const i = new Image();
             i.alt = "";
             i.onerror = () => i.style.visibility = "hidden";
             i.src = safeImg(w.img);
-            row.append(i);
+            row2.append(i);
           }
           const txt = document.createElement("span");
           const ti = document.createElement("b"), sub = document.createElement("small");
@@ -23248,8 +24422,8 @@
           no.textContent = "\u2715";
           no.title = no.ariaLabel = t("wishDecline");
           no.onclick = () => live.decline(w.i);
-          row.append(txt, votes, ok, no);
-          return row;
+          row2.append(txt, votes, ok, no);
+          return row2;
         }
         function wishPanel(body) {
           const list = openWishes();
@@ -23283,15 +24457,15 @@
           ok.className = "m-im-wish-ok";
           ok.textContent = t("wishQueue");
           ok.onclick = () => takeWish(w, ok).then(() => box2.remove());
-          const all = document.createElement("button");
-          all.type = "button";
-          all.className = "m-im-wish-all";
-          all.textContent = t("wishAll");
-          all.onclick = () => {
+          const all2 = document.createElement("button");
+          all2.type = "button";
+          all2.className = "m-im-wish-all";
+          all2.textContent = t("wishAll");
+          all2.onclick = () => {
             box2.remove();
             showSide("wishes");
           };
-          box2.append(txt, ok, all);
+          box2.append(txt, ok, all2);
           el3.append(box2);
           setTimeout(() => box2.classList.add("is-gone"), 6500);
           setTimeout(() => box2.remove(), 7200);
@@ -23391,10 +24565,107 @@
           }
           q.pause.classList.add("is-on");
         }
+        function menuPanel(body) {
+          const go2 = (kind) => () => showSide(kind);
+          const row2 = (label, sub, fn) => sideBtn(body, label, sub, fn);
+          row2(t("djTitle"), "", go2("dj"));
+          if (cfg.partyLive) row2(t("pollBtn"), "", go2("poll"));
+          if (cfg.partyRecap && recap.songs.length >= 3) row2(t("recapBtn"), "", go2("recap"));
+          if (!cfg.calm) row2(t("confetti"), "", () => {
+            confetti();
+            showSide(null);
+          });
+          if (cfg.partyScreen) row2(t("toScreen"), "", go2("screens"));
+          if (cfg.canvas && !cfg.calm) row2(q.cvbtn.title || "Canvas", "", () => {
+            q.cvbtn.click();
+            showSide(null);
+          });
+          if (canAddTo()) row2(t("c_addTo"), "", go2("playlists"));
+          row2(t("c_devices"), "", go2("devices"));
+          row2(t("c_timer"), "", go2("timer"));
+          row2(el3.querySelector(".m-im-share").title || "Share", "", () => {
+            showSide(null);
+            nowPlayingCard();
+          });
+          row2(el3.querySelector(".m-im-help").title || "?", "", () => {
+            showSide(null);
+            toggleKeys();
+          });
+        }
+        function gameChoice(body, label, key, choices) {
+          const r = document.createElement("div");
+          r.className = "m-g-cfg";
+          const l = document.createElement("span");
+          l.textContent = label;
+          const seg2 = document.createElement("div");
+          seg2.className = "m-g-seg-row";
+          for (const [v, text] of choices) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = text;
+            b.setAttribute("aria-pressed", String(cfg[key] === v));
+            b.onclick = () => {
+              cfg[key] = v;
+              save();
+              const top2 = q.sideBody.scrollTop;
+              showSide("games");
+              q.sideBody.scrollTop = top2;
+            };
+            seg2.append(b);
+          }
+          r.append(l, seg2);
+          body.append(r);
+        }
+        const secsOf = (list) => list.map((n) => [n, n + " s"]);
+        function gameSettings(body) {
+          gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
+          gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
+          gameChoice(body, t("gSetJoin"), "gameJoin", secsOf([15, 30, 45, 60]));
+          gameChoice(body, t("gSetDur"), "gameDur", secsOf([15, 30, 45, 60]));
+          gameChoice(body, t("gSetBreak"), "gameBreak", secsOf([5, 8, 12, 20]));
+          gameChoice(body, t("gSetBonus"), "gameBonus", [[true, "\u2713"], [false, "\u2715"]]);
+          gameChoice(body, t("gSetCard"), "gameCard", [["big", t("gCardBig")], ["small", t("gCardSmall")]]);
+          const head3 = document.createElement("div");
+          head3.className = "m-im-side-sec";
+          head3.textContent = t("gSetWheel");
+          body.append(head3);
+          const on = new Set(cfg.gameWheel || WHEEL_FIELDS);
+          const chips = document.createElement("div");
+          chips.className = "m-g-seg-row is-wrap";
+          for (const k of WHEEL_FIELDS) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = t(k);
+            b.setAttribute("aria-pressed", String(on.has(k)));
+            b.onclick = () => {
+              if (on.has(k)) on.delete(k);
+              else on.add(k);
+              cfg.gameWheel = [...on];
+              save();
+              b.setAttribute("aria-pressed", String(on.has(k)));
+            };
+            chips.append(b);
+          }
+          body.append(chips);
+          const own = document.createElement("input");
+          own.className = "m-g-own";
+          own.maxLength = 200;
+          own.placeholder = t("gWheelOwn");
+          own.value = cfg.gameWheelOwn || "";
+          own.onkeydown = (e) => e.stopPropagation();
+          own.onchange = () => {
+            cfg.gameWheelOwn = own.value;
+            save();
+          };
+          body.append(own);
+        }
+        let gameCfgOpen = false;
         function gamesPanel(body) {
           const cur2 = games.active();
           if (cur2) {
+            if (games.waiting()) sideBtn(body, t("gStartNow"), "", () => games.beginNow());
             if (cur2 === "wheel") sideBtn(body, t("gSpin"), "", () => games.spin());
+            else if (!games.waiting()) sideBtn(body, t("gSkip"), "", () => games.skip());
             sideBtn(body, t("gEndNow"), "", () => {
               games.stop();
               showSide("games");
@@ -23405,8 +24676,16 @@
           note.className = "m-im-side-note";
           note.textContent = t("gHint");
           body.append(note);
-          for (const k of ["quiz", "gap", "stop", "battle", "wheel"]) {
-            sideBtn(body, t({ quiz: "gQuiz", gap: "gGap", stop: "gStop", battle: "gBattle", wheel: "gWheel" }[k]), t({ quiz: "gQuizHint", gap: "gGapHint", stop: "gStopHint", battle: "gBattleHint", wheel: "gWheelHint" }[k]), async () => {
+          let cat = "";
+          for (const { k, cat: c2, label, hint, icon } of GAME_LIST) {
+            if (c2 !== cat) {
+              cat = c2;
+              const h = document.createElement("div");
+              h.className = "m-im-side-sec";
+              h.textContent = t(c2);
+              body.append(h);
+            }
+            sideBtn(body, `${icon}  ${t(label)}`, t(hint), async () => {
               if (k !== "wheel" && !cfg.partyLive) {
                 cfg.partyLive = true;
                 save();
@@ -23417,6 +24696,12 @@
               showSide(null);
             });
           }
+          sideBtn(body, "\u2699  " + t("gSettings"), "", () => {
+            gameCfgOpen = !gameCfgOpen;
+            showSide("games");
+            q.sideBody.scrollTop = q.sideBody.scrollHeight;
+          }, gameCfgOpen);
+          if (gameCfgOpen) gameSettings(body);
         }
         let djToken = 0;
         function djPanel(body) {
@@ -23426,10 +24711,10 @@
             save();
             showSide("dj");
           }, cfg.djEnergy);
-          const head2 = document.createElement("div");
-          head2.className = "m-im-side-sec";
-          head2.textContent = t("djNow");
-          body.append(head2);
+          const head3 = document.createElement("div");
+          head3.className = "m-im-side-sec";
+          head3.textContent = t("djNow");
+          body.append(head3);
           const nowRow = sideBtn(body, titleOf(cur2) || "\u2013", t("loading"));
           const sec = document.createElement("div");
           sec.className = "m-im-side-sec";
@@ -23510,14 +24795,14 @@
           h.textContent = Date.now() < p.end ? t("pollRun").replace("{s}", Math.ceil((p.end - Date.now()) / 1e3)) : t("pollEnd");
           card.append(h);
           p.o.forEach((o, i) => {
-            const row = document.createElement("div");
-            row.className = "m-im-pollrow";
-            row.style.setProperty("--w", (p.v[i] / total * 100).toFixed(0) + "%");
+            const row2 = document.createElement("div");
+            row2.className = "m-im-pollrow";
+            row2.style.setProperty("--w", (p.v[i] / total * 100).toFixed(0) + "%");
             const n = document.createElement("span"), c2 = document.createElement("i");
             n.textContent = o.t;
             c2.textContent = String(p.v[i]);
-            row.append(n, c2);
-            card.append(row);
+            row2.append(n, c2);
+            card.append(row2);
           });
           if (Date.now() < p.end + 6e3) setTimeout(drawPoll, 1e3);
         }
@@ -23681,7 +24966,7 @@
         }
         function open() {
           startTicker();
-          if (!el3) build2();
+          if (!el3) build3();
           sizeCanvas();
           setMode(cfg.imMode, false);
           styleLyrics();
@@ -24487,14 +25772,14 @@
     save();
     refreshColors();
   }
-  function head(title, hint) {
+  function head2(title, hint) {
     const h = el2("div", "m-schemes-head");
     h.append(el2("b", "", title));
     if (hint) h.append(el2("small", "", hint));
     return h;
   }
   function toggle(key, after2) {
-    const row = el2("label", "m-row");
+    const row2 = el2("label", "m-row");
     const txt = el2("span");
     const b = el2("b", "", t(key));
     if (COSTLY.has(key)) {
@@ -24519,11 +25804,11 @@
       after2 ? after2() : applySettings();
       render2.again?.();
     };
-    row.append(txt, cb);
-    return row;
+    row2.append(txt, cb);
+    return row2;
   }
   function range(key, min, max, step, unit, after2) {
-    const row = el2("label", "m-row");
+    const row2 = el2("label", "m-row");
     const txt = el2("span");
     const hint = el2("small", "", cfg[key] + unit);
     txt.append(el2("b", "", t(key)), hint);
@@ -24537,8 +25822,8 @@
       save();
       after2?.();
     };
-    row.append(txt, r);
-    return row;
+    row2.append(txt, r);
+    return row2;
   }
   function seg(options, value, onPick) {
     const s = el2("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
@@ -24628,7 +25913,7 @@
       let unit = null;
       for (const c2 of parent.children) {
         if (c2.matches("summary, .m-search, .m-search-none, .m-version")) continue;
-        if (c2.matches(LABEL2) || !unit) units.push(unit = { els: [], parent });
+        if (c2.matches(LABEL) || !unit) units.push(unit = { els: [], parent });
         unit.els.push(c2);
       }
     }
@@ -24655,7 +25940,7 @@
       applySearch(box2);
     };
     kids.push(search, el2("small", "m-note m-search-none m-hide", t("searchNone")));
-    kids.push(head(t("presetTitle"), t("presetHint")));
+    kids.push(head2(t("presetTitle"), t("presetHint")));
     kids.push(
       seg(
         [["full", t("preset_full")], ["balanced", t("preset_balanced")], ["light", t("preset_light")], ["calm", t("preset_calm")]],
@@ -24668,7 +25953,7 @@
       )
     );
     if (cfg.preset === "custom") kids.push(el2("small", "m-note", t("presetCustom")));
-    kids.push(head(t("scheme"), t("schemeHint")));
+    kids.push(head2(t("scheme"), t("schemeHint")));
     const pick = el2("div", "m-schemes");
     for (const [name, sc] of Object.entries(SCHEMES)) {
       const b = el2("button", "m-scheme");
@@ -24736,7 +26021,7 @@
       applyFont();
     });
     Object.keys(FONTS).forEach((k, i) => fontSeg.children[i].style.fontFamily = stackOf(k));
-    kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg));
+    kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head2(t("font"), t("fontHint")), fontSeg));
     kids.push(
       group(
         t("g_background"),
@@ -24792,7 +26077,7 @@
         toggle("translate", () => immersive.reloadLyrics()),
         toggle("romanize", () => immersive.reloadLyrics()),
         toggle("canvas", () => immersive.refresh()),
-        head(t("vizSection"), t("vizSectionHint")),
+        head2(t("vizSection"), t("vizSectionHint")),
         seg(viz, cfg.vizStyle, (k) => {
           cfg.vizStyle = k;
           save();
@@ -24816,7 +26101,7 @@
       group(
         t("g_party"),
         false,
-        head(t("ps_style"), t("partySectionHint")),
+        head2(t("ps_style"), t("partySectionHint")),
         select(
           [["", [["auto", t("party_auto")]]], ...Object.entries(FAMILIES).map(([f, keys]) => [t("fam_" + f), keys.map((k) => [k, t("party_" + k)])])],
           cfg.partyStyle,
@@ -24836,7 +26121,7 @@
           cfg.partyVenue = k;
           save();
         }),
-        head(t("ps_light")),
+        head2(t("ps_light")),
         toggle("partyRig", () => {
         }),
         toggle("partyInstruments", () => {
@@ -24855,7 +26140,7 @@
         }),
         toggle("partyBlend", () => {
         }),
-        head(t("ps_moments")),
+        head2(t("ps_moments")),
         toggle("partyDirector", () => {
         }),
         toggle("partySlowmo", () => {
@@ -24876,14 +26161,14 @@
         }),
         toggle("partyShatter", () => {
         }),
-        head(t("ps_crowd")),
+        head2(t("ps_crowd")),
         toggle("partyCrowd", () => {
         }),
         toggle("partyJamLight", () => {
         }),
         toggle("partyJam", () => {
         }),
-        head(t("ps_extras")),
+        head2(t("ps_extras")),
         toggle("partyLive", () => cfg.partyLive && live.prepare()),
         toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
         livePanel(),
@@ -25071,27 +26356,27 @@
       const [tk, k, act] = TOUR[i];
       const dots = el2("div", "m-dots");
       TOUR.forEach((_, j) => dots.append(el2("i", j === i ? "is-on" : "")));
-      const row = el2("div", "m-actions");
-      if (act) row.append(button(t(k + "Try"), () => {
+      const row2 = el2("div", "m-actions");
+      if (act) row2.append(button(t(k + "Try"), () => {
         box2.remove();
         act();
       }));
-      row.append(
+      row2.append(
         i < TOUR.length - 1 ? button(t("tourNext"), () => {
           i++;
           draw();
         }, "is-primary") : button(t("tourDone"), () => box2.remove(), "is-primary"),
         button("\xD7", () => box2.remove(), "m-close")
       );
-      const close = row.querySelector(".m-close");
+      const close = row2.querySelector(".m-close");
       close.title = close.ariaLabel = t("k_close");
-      box2.replaceChildren(el2("small", "m-kick", `${i + 1} / ${TOUR.length}`), el2("b", "", t(tk)), el2("span", "", t(k)), dots, row);
+      box2.replaceChildren(el2("small", "m-kick", `${i + 1} / ${TOUR.length}`), el2("b", "", t(tk)), el2("span", "", t(k)), dots, row2);
       box2.querySelector(".is-primary")?.focus();
     };
     draw();
     document.body.append(box2);
   }
-  var COSTLY, el2, labelN, notify3, encode, decode, query, LABEL2, TOUR;
+  var COSTLY, el2, labelN, notify3, encode, decode, query, LABEL, TOUR;
   var init_settings = __esm({
     "src/settings.js"() {
       init_core();
@@ -25137,7 +26422,7 @@
         }
       };
       query = "";
-      LABEL2 = ".m-row, .m-schemes-head, .m-note";
+      LABEL = ".m-row, .m-schemes-head, .m-note";
       TOUR = [
         ["tour1t", "tour1"],
         ["tour2t", "tour2", () => immersive.open()],
@@ -25265,8 +26550,8 @@
     schedule2();
   }
   function findSticky() {
-    const row = document.querySelector(`:is(${SEL.mainView}) [role="grid"] [role="row"][aria-rowindex="1"]`);
-    for (let e = row; e && e !== document.body; e = e.parentElement) {
+    const row2 = document.querySelector(`:is(${SEL.mainView}) [role="grid"] [role="row"][aria-rowindex="1"]`);
+    for (let e = row2; e && e !== document.body; e = e.parentElement) {
       if (getComputedStyle(e).position === "sticky") return e;
     }
     return null;
