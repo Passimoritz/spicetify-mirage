@@ -1826,9 +1826,10 @@ const immersive = (() => {
           }
         }
       } else shot.i = 0;
-      // Schnitt = sofort; zurück zur Totalen in ruhigen Stellen = weich
+      // Schnitt = schneller, weicher Schwenk (~⅓ s) – ein harter Sprung ließ Publikum und Bühne ruckeln;
+      // zurück zur Totalen in ruhigen Stellen = langsam
       const [ss, sx, sy] = SHOTS[shot.i];
-      const k1 = shot.i ? 1 : 1 - Math.exp(-dt * 1.5);
+      const k1 = 1 - Math.exp(-dt * (shot.i ? 9 : 1.5));
       shot.s += (ss - shot.s) * k1;
       shot.x += (sx - shot.x) * k1;
       shot.y += (sy - shot.y) * k1;
@@ -1851,9 +1852,24 @@ const immersive = (() => {
         q.bg.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
       }
     } else if (cam.key || cam.s !== 1) {
-      Object.assign(cam, { s: 1, b: 1, kick: 0, kv: 0, x: 0, y: 0, key: "" });
-      Object.assign(shot, { i: 0, s: 1, x: 0, y: 0, bars: 0 });
-      q.bg.style.translate = "";
+      // aus (z. B. die Qualitätsregelung schaltet unter Last ab): weich in die Mitte zurück, nicht springen
+      const k = 1 - Math.exp(-dt * 4);
+      cam.b = cam.s += (1 - cam.s) * k;
+      cam.x -= cam.x * k;
+      cam.y -= cam.y * k;
+      cam.kick = cam.kv = 0;
+      shot.i = shot.bars = 0;
+      shot.s += (1 - shot.s) * k;
+      shot.x -= shot.x * k;
+      shot.y -= shot.y * k;
+      if (Math.abs(cam.s - 1) < 0.0008 && Math.abs(cam.x) < 0.2 && Math.abs(cam.y) < 0.2) {
+        Object.assign(cam, { s: 1, b: 1, kick: 0, kv: 0, x: 0, y: 0, key: "" });
+        Object.assign(shot, { i: 0, s: 1, x: 0, y: 0, bars: 0 });
+        q.bg.style.translate = "";
+      } else {
+        cam.key = "out";
+        q.bg.style.translate = `${cam.x.toFixed(1)}px ${cam.y.toFixed(1)}px`;
+      }
     }
     // 3D-Tiefe: Liedtext, Titel und Licht liegen auf verschiedenen Ebenen; ohne Maus schwebt die Szene leise
     if (cfg.partyDepth && px.fx && quality.level > 0) {
@@ -1870,8 +1886,19 @@ const immersive = (() => {
         // Bühnenlicht und Publikum verschieben sich stattdessen in der Bühnen-Kamera (stageCam)
       }
     } else if (depth.key) {
-      depth.key = "";
-      q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
+      // aus: Liedtext und Titel gleiten in die Ruhelage zurück, statt zu springen
+      const k = 1 - Math.exp(-dt * 4);
+      depth.x -= depth.x * k;
+      depth.y -= depth.y * k;
+      if (Math.abs(depth.x) < 0.004 && Math.abs(depth.y) < 0.004) {
+        depth.x = depth.y = 0;
+        depth.key = "";
+        q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
+      } else {
+        depth.key = "out";
+        q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
+        q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
+      }
     }
     // fürs Overlay (Kantenlicht): der aktuelle Lichtzustand
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };

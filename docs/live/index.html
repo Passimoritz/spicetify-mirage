@@ -43,6 +43,7 @@
   .state p { max-width: 21em; font-size: 14px; line-height: 1.5; opacity: 0.7; }
   .tap { position: fixed; left: 0; right: 0; bottom: max(28px, env(safe-area-inset-bottom)); text-align: center; font-size: 12px; letter-spacing: 0.06em; opacity: 0.55; transition: opacity 0.5s; }
   body.on .tap, body.armed .tap { opacity: 0; }
+  body.needvib .tap { opacity: 0.95 !important; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 136px); font-weight: 700; }
   /* Werkzeugleiste über der Karte: Liedtext, Wunsch, Vibration */
   .tools { position: fixed; left: 0; right: 0; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 84px); display: flex; justify-content: center; gap: 10px;
     transform: translateY(240%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
@@ -164,9 +165,9 @@ function mqttOpen(url, { onReady, onMessage, onClose }) {
 // Kanal und Schlüssel stehen nur hinter dem „#“ – dieser Teil wird nie an einen Server geschickt
 const de = /^de/i.test(navigator.language || "");
 const T = de
-  ? { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
+  ? { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wSlow: "Noch keine Antwort – versuche es erneut …", wDead: "Mirage antwortet nicht. Läuft in Spotify der Party-Modus?", wErr: "Spotify hat gerade nicht geantwortet – gleich noch einmal versuchen.", vibTap: "Einmal antippen, damit das Handy vibrieren darf", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
       tap: "Antippen für Vollbild · Display bleibt an", wait: ["Verbunden", "Warte auf den Party-Modus in Spotify …"], over: ["Party beendet", "Danke fürs Mitleuchten! Neue Party, neuer QR-Code."], bad: ["Link unvollständig", "Bitte den QR-Code noch einmal scannen."], net: ["Keine Verbindung", "Versuche es erneut … (WLAN oder mobile Daten an?)"], start: ["Mirage Live", "Verbinde …"] }
-  : { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
+  : { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wSlow: "No answer yet – trying again …", wDead: "Mirage isn't answering. Is party mode running in Spotify?", wErr: "Spotify didn't answer just now – try again in a moment.", vibTap: "Tap once so the phone may vibrate", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
       tap: "Tap for full screen · screen stays on", wait: ["Connected", "Waiting for party mode in Spotify …"], over: ["Party's over", "Thanks for lighting up! New party, new QR code."], bad: ["Incomplete link", "Please scan the QR code again."], net: ["No connection", "Retrying … (is Wi-Fi or mobile data on?)"], start: ["Mirage Live", "Connecting …"] };
 const $ = (id) => document.getElementById(id);
 const say = ([a, b]) => {
@@ -177,6 +178,9 @@ $("tap").textContent = T.tap;
 say(T.start);
 const p = new URLSearchParams(location.hash.slice(1));
 const fromB64 = (s) => Uint8Array.from(atob(String(s || "").replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+let skew = 0, lags = [];
+// Vorlauf: keiner extra – das Theme läuft schon 40 ms vor (Bildschirm), das reicht auch für den Vibrationsmotor
+const LEAD = 0;
 let key = null, topic = "", cur = null, recvAt = 0, ended = false, pal = [[155, 107, 240], [34, 73, 231], [217, 188, 241]];
 async function start() {
   try {
@@ -228,6 +232,13 @@ async function receive(m) {
   ended = false;
   cur = s;
   recvAt = performance.now();
+  // Uhrenabgleich: Laufzeit über den Relay schwankt (50–500 ms). Die kürzeste gemessene „Ankunft minus
+  // Sendezeit“ der letzten 20 s ist die beste Schätzung für den Uhrenunterschied PC ↔ Handy – damit rechnet
+  // das Handy den Takt ab der SENDEZEIT weiter statt ab der (verspäteten) Ankunft.
+  const lag = Date.now() - s.s, at = performance.now();
+  lags.push([at, lag]);
+  while (lags.length && at - lags[0][0] > 20000) lags.shift();
+  skew = Math.min(...lags.map((x) => x[1]));
   if (Array.isArray(s.pal) && s.pal.length === 3) {
     pal = s.pal;
     s.pal.forEach((c, i) => document.documentElement.style.setProperty(["--a", "--b", "--c"][i], c.join(",")));
@@ -319,23 +330,45 @@ function songRow(w, by) {
 }
 $("wName").value = store("mlName") || "";
 // Suche im Spotify-Katalog: kurz nach dem Tippen fragen, nur die Antwort auf die letzte Frage zählt
-let rid = 0, searchT = 0;
+let rid = 0, searchT = 0, waitT = 0, lastQ = "";
+const hits = new Map();
+async function ask(q, tries) {
+  const r = ++rid;
+  clearTimeout(waitT);
+  if (!(await sendUp({ k: "search", q, r }))) return ($("wMsg").textContent = T.net[1]);
+  // kommt in 6 s nichts (Relay hat die Nachricht verloren, Spotify hängt): einmal neu fragen, dann ehrlich sagen
+  waitT = setTimeout(() => {
+    if (r !== rid) return;
+    if (tries < 1) {
+      $("wMsg").textContent = T.wSlow;
+      ask(q, tries + 1);
+    } else $("wMsg").textContent = T.wDead;
+  }, 6000);
+}
 $("wSong").oninput = () => {
   clearTimeout(searchT);
   const q = $("wSong").value.trim();
   if (q.length < 2) {
     $("wRes").replaceChildren();
     $("wMsg").textContent = "";
+    clearTimeout(waitT);
+    rid++;
     return;
   }
-  searchT = setTimeout(async () => {
+  // schon einmal gesucht: sofort zeigen
+  if (hits.has(q.toLowerCase())) return showResults({ r: rid, res: hits.get(q.toLowerCase()), cached: true });
+  searchT = setTimeout(() => {
+    lastQ = q;
     $("wMsg").textContent = T.wSearching;
-    if (!(await sendUp({ k: "search", q, r: ++rid }))) $("wMsg").textContent = T.net[1];
-  }, 380);
+    ask(q, 0);
+  }, 250);
 };
 function showResults(s) {
   if (s.r !== rid) return;
-  $("wMsg").textContent = s.res.length ? "" : T.wNone;
+  clearTimeout(waitT);
+  if (!s.cached && !s.err && lastQ) hits.set(lastQ.toLowerCase(), s.res);
+  if (hits.size > 40) hits.delete(hits.keys().next().value);
+  $("wMsg").textContent = s.err ? T.wErr : s.res.length ? "" : T.wNone;
   $("wRes").replaceChildren(...s.res.map((w) => {
     const li = document.createElement("li");
     li.append(...songRow(w));
@@ -408,6 +441,22 @@ $("bVib").onclick = (e) => {
   syncTools();
 };
 syncTools();
+// Android-Chrome lässt erst vibrieren, wenn die Seite einmal angetippt wurde – bis dahin darum bitten
+const canBuzz = () => !navigator.userActivation || navigator.userActivation.hasBeenActive;
+function buzz(p) {
+  if (!vib || !navigator.vibrate) return;
+  if (!canBuzz()) return void document.body.classList.add("needvib");
+  try { navigator.vibrate(p); } catch {}
+}
+addEventListener("pointerdown", () => {
+  if (!document.body.classList.contains("needvib")) return;
+  document.body.classList.remove("needvib");
+  if (vib) navigator.vibrate?.(30);
+  $("tap").textContent = T.tap;
+}, true);
+new MutationObserver(() => {
+  if (document.body.classList.contains("needvib")) $("tap").textContent = T.vibTap;
+}).observe(document.body, { attributes: true, attributeFilter: ["class"] });
 
 /* ---- Licht: Canvas */
 const cv = $("c"), ctx = cv.getContext("2d");
@@ -437,18 +486,25 @@ function frame(now) {
   // den Takt aus Tempo und Schlagphase selbst weiterrechnen – flüssig, auch wenn Nachrichten zittern
   let kick = 0;
   if (live) {
-    const bp = (cur.bi >= 0 ? cur.bi + cur.ph : 0) + age * (cur.bpm / 60);
+    // Zeit seit dem Senden (nicht seit der Ankunft) – so sitzen Ringe und Vibration auf dem Songbeat
+    const since = Math.max(0, (Date.now() - cur.s - skew) / 1000) + LEAD;
+    const bp = (cur.bi >= 0 ? cur.bi + cur.ph : 0) + since * (cur.bpm / 60);
     const beat = Math.floor(bp), f = bp - beat;
     kick = Math.exp(-f * 6) * (0.35 + 0.65 * cur.e);
     if (beat !== show.beat) {
       if (show.beat >= 0) show.rings.push({ r: 0, a: 0.5 + cur.e * 0.4, c: pal[beat % 3], w: beat % 4 === 0 ? 2.4 : 1.4 });
+      // Vibration im Takt: auf der Eins ein kräftiger Stoß, in lauten Stellen dazu jeder Schlag ganz kurz
+      if (show.beat >= 0 && cur.e > 0.4) {
+        if (beat % 4 === 0) buzz(Math.round(30 + cur.e * 30));
+        else if (cur.e > 0.6) buzz(18);
+      }
       show.beat = beat;
     }
     const d = Math.max(0, cur.d - age * 0.6);
     if (d > 0.85 && show.drop < 0.5) {
       show.flash = 1;
       // Drop: kurz-kurz-lang vibrieren (Android; iPhones können das im Browser nicht)
-      if (vib) navigator.vibrate?.([60, 40, 140]);
+      buzz([80, 50, 220]);
       show.rings.push({ r: 0, a: 1, c: [255, 255, 255], w: 5 });
     }
     show.drop = d;

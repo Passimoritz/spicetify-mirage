@@ -770,7 +770,14 @@ function createVenue(makeCanvas) {
   const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
   function drawCrowd(ctx, px, pal, dpr, rgba, dt, st, v, A) {
     const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
-    if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);
+    // neue Fenster- oder Bildgröße (z. B. die Leistungsstufe wechselt): dieselben Leute, nur mitskaliert –
+    // neu würfeln ließe das ganze Publikum mitten im Song springen. Neu nur bei einer anderen Location.
+    if (crowd && crowd.venue === v && crowd.w !== vw) {
+      const f = vw / crowd.w;
+      for (const p of crowd.people) p.x *= f;
+      crowd.w = vw;
+    }
+    if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);
     if (!crowd.people.length) return;
     const X = crowdMood(px, dt, st.hype), t = st.t;
     const style = v.seated ? "sway" : MOVES[px.key] || "clap";

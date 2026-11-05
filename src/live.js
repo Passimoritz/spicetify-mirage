@@ -186,7 +186,47 @@ async function send(state, retain) {
 // Spotify prüft. Alle Handys sehen die Liste und stimmen ab; in die Warteschlange kommt nur, was du im
 // Party-Modus annimmst. Pro Handy höchstens ein Wunsch alle 45 Sekunden, höchstens 8 offen.
 let wishes = [];
-const seen = new Map(), searched = new Map(), tracks = new Map();
+const seen = new Map(), searching = new Map(), tracks = new Map();
+const within = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
+// Suche wie Spotify selbst (GraphQL „searchTracks“ – wird nicht gedrosselt wie die Web-API), sonst Web-API
+async function searchSpotify(q) {
+  const def = S.GraphQL?.Definitions?.searchTracks;
+  if (def && S.GraphQL?.Request) {
+    try {
+      const r = await within(S.GraphQL.Request(def, { searchTerm: q, offset: 0, limit: 8, numberOfTopResults: 8, includeAudiobooks: false, includePreReleases: false, includeAuthors: false }), 4000);
+      const list = (r?.data?.searchV2?.tracksV2?.items || []).map((x) => x?.item?.data).filter((d) => d?.uri?.startsWith("spotify:track:"));
+      if (list.length) {
+        return list.map((d) => ({
+          id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false,
+          artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
+          album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((s) => ({ url: s.url, width: s.width || 0 })) },
+        }));
+      }
+    } catch {}
+  }
+  const r = await within(S.CosmosAsync.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=8`), 4000);
+  return r?.tracks?.items || [];
+}
+// je Handy höchstens eine Suche gleichzeitig; wer weitertippt, bekommt danach die Antwort auf die LETZTE Eingabe
+async function runSearch(id) {
+  const job = searching.get(id);
+  if (!job || job.busy) return;
+  job.busy = true;
+  while (job.next) {
+    const { q, r } = job.next;
+    job.next = null;
+    let res = [], err = 0;
+    try {
+      res = (await searchSpotify(q)).map(remember).filter(Boolean).slice(0, 6).map(({ i, t, a, img }) => ({ i, t, a, img }));
+    } catch {
+      err = 1;
+    }
+    // immer antworten – auch ohne Treffer oder bei einem Fehler, sonst sucht das Handy ewig
+    if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r, res, err }), false);
+  }
+  job.busy = false;
+  if (searching.size > 50) for (const [k, j] of searching) if (!j.busy) searching.delete(k);
+}
 const ID = /^[A-Za-z0-9]{22}$/;
 // kleinstes Cover ab 64 px (für die Liste auf dem Handy)
 const coverOf = (tr) => {
@@ -219,7 +259,7 @@ async function inbound(m) {
     return;
   }
   const id = clean(msg?.id, 24);
-  if (!/^[\w-]{6,24}$/.test(id) || Math.abs(Date.now() - Number(msg.s)) > 120e3 || msg.on != null) return;
+  if (!/^[\w-]{6,24}$/.test(id) || Math.abs(Date.now() - Number(msg.s)) > 600e3 || msg.on != null) return;
   if (msg.k === "vote") {
     const w = wishes.find((x) => x.i === clean(msg.w, 40));
     if (w && !w.v.has(id)) {
@@ -231,14 +271,10 @@ async function inbound(m) {
   // Suche: höchstens alle 0,6 s je Handy; die Treffer gehen nur an dieses Handy zurück
   if (msg.k === "search") {
     const q = clean(msg.q, 80);
-    if (q.length < 2 || Date.now() - (searched.get(id) || 0) < 600) return;
-    searched.set(id, Date.now());
-    let res = [];
-    try {
-      const r = await S.CosmosAsync.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=6`);
-      res = (r?.tracks?.items || []).map(remember).filter(Boolean).map(({ i, t, a, img }) => ({ i, t, a, img }));
-    } catch {}
-    if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r: Number(msg.r) || 0, res }), false);
+    if (q.length < 2) return;
+    if (!searching.has(id)) searching.set(id, { busy: false, next: null });
+    searching.get(id).next = { q, r: Number(msg.r) || 0 };
+    runSearch(id);
     return;
   }
   if (msg.k !== "wish") return;

@@ -10,6 +10,14 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.15.3] – 2026-11-05
+
+### Fixed
+
+- **Song wishes find songs fast and reliably.** The search now uses the same path as Spotify's own search (instead of the web API, which Spotify often throttles), each phone gets the answer to its *last* input instead of dropped requests while typing, every search is answered – also when nothing is found – and the phone asks again once if the relay loses a message, then says clearly what is wrong. Repeated searches show up instantly.
+- **Phones vibrate on the song's beat.** The phone used to count the beat from when a message *arrived* – the relay delay (50–500 ms, changing all the time) made it late and shaky. It now works out the clock difference to the PC and counts from when the message was *sent*: measured to within a few milliseconds. On top of the drop, it now gives a short buzz on every downbeat (and every beat in loud parts), and asks for a tap first if Android hasn't allowed vibration yet.
+- **Smooth transitions in party mode.** When the PC struggled for a moment, the quality control switched the camera and 3D depth off at once – stage, crowd, title and lyrics jumped back to the centre and later jumped again. They now glide. Camera cuts are a quick, smooth swing instead of a hard jump, and the crowd keeps its places when the picture size changes instead of being shuffled anew.
+
 ## [1.15.2] – 2026-11-05
 
 ### Fixed
