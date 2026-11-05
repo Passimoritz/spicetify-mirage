@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https: data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'">
+<title>Mirage Overlay</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  /* Einrichtungs-Assistent: gleiche Farben und Bausteine wie settings.html, aber als geführte Schritte */
+  :root {
+    --bg: #07060c; --text: #f5f3ff; --sub: #b9b4cc; --line: rgba(255,255,255,.08); --glass: rgba(255,255,255,.04);
+    --a: #b69cff; --b: #7c5cff; --c: #e6deff;
+    --ease: cubic-bezier(.22,1,.36,1); --spring: cubic-bezier(.34,1.56,.64,1);
+    --font: "Outfit", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 15px/1.45 var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  body { display: grid; grid-template-rows: 40px 1fr auto; }
+  body::before { content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+    background: radial-gradient(40% 35% at 15% 10%, color-mix(in srgb, var(--a) 35%, transparent), transparent 70%),
+                radial-gradient(35% 40% at 90% 30%, color-mix(in srgb, var(--b) 30%, transparent), transparent 70%),
+                radial-gradient(45% 35% at 50% 100%, color-mix(in srgb, var(--c) 18%, transparent), transparent 70%);
+    filter: blur(30px); animation: drift 26s var(--ease) infinite alternate; }
+  @keyframes drift { to { transform: translate(3%, 2%) rotate(4deg) scale(1.08); } }
+  header { display: flex; align-items: center; gap: 10px; padding: 0 150px 0 18px; -webkit-app-region: drag; }
+  .mac header { padding: 0 18px 0 84px; }
+  header .logo { width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--a); box-shadow: 0 0 14px var(--a); }
+  header .k { font: 500 10px var(--mono); letter-spacing: .26em; text-transform: uppercase; color: var(--c); }
+  .dots { display: flex; gap: 6px; margin-left: auto; }
+  .dots i { width: 22px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.14); transition: all .4s var(--spring); }
+  .dots i.on { background: linear-gradient(90deg, var(--c), var(--a)); width: 34px; }
+
+  main { position: relative; overflow: hidden; }
+  .step { position: absolute; inset: 0; padding: 10px 30px 0; overflow-y: auto; opacity: 0; transform: translateX(30px); pointer-events: none;
+          transition: opacity .4s var(--ease), transform .55s var(--ease); }
+  .step.on { opacity: 1; transform: none; pointer-events: auto; }
+  .step.past { transform: translateX(-30px); }
+  h1 { margin: 0 0 4px; font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+  h2 { margin: 6px 0 4px; font-size: 20px; font-weight: 700; }
+  p { margin: 0 0 16px; color: var(--sub); }
+  .intro { margin-bottom: 18px; }
+
+  /* Stil-Karten (wie in settings.html) */
+  .styles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sty { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.03); padding: 14px 8px 10px; cursor: pointer; color: var(--sub);
+         font: 600 13px var(--font); display: grid; gap: 10px; justify-items: center; transition: all .35s var(--spring); }
+  .sty:hover { transform: translateY(-2px); background: rgba(255,255,255,.07); }
+  .sty[aria-pressed="true"] { color: var(--text); border-color: var(--a); box-shadow: 0 12px 30px -14px var(--a), inset 0 0 0 1px var(--a); }
+  .mini { height: 40px; width: 100%; display: grid; place-items: center; }
+  .mini .dot { width: 18px; height: 18px; border-radius: 6px; background: linear-gradient(135deg, var(--c), var(--a), var(--b)); flex: none; }
+  .mini .ln { height: 5px; border-radius: 3px; background: rgba(255,255,255,.5); flex: 1; }
+  .mini .island { width: 84px; height: 26px; border-radius: 99px; background: #000; display: flex; align-items: center; gap: 6px; padding: 0 4px; box-shadow: 0 6px 16px -6px var(--a); }
+  .mini .card { width: 88px; height: 38px; border-radius: 10px; background: linear-gradient(120deg, #251d3a, #120f1d); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+  .mini .card .dot { width: 26px; height: 26px; }
+  .mini .banner { width: 100%; height: 26px; border-radius: 7px; background: #120f1d; border-top: 2px solid var(--a); display: flex; align-items: center; gap: 6px; padding-right: 6px; overflow: hidden; }
+  .mini .banner .dot { width: 26px; height: 26px; border-radius: 0; }
+  .mini .minimal { font: 800 13px var(--font); color: #fff; text-shadow: 0 0 12px var(--a); }
+  .mini .lyrics { width: 92px; height: 34px; border-radius: 10px; background: linear-gradient(120deg, #251d3a, #120f1d); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+  .mini .lyrics .dot { width: 22px; height: 22px; }
+  .mini .lyrics .lns { flex: 1; display: grid; gap: 4px; }
+  .mini .lyrics .ln:first-child { height: 6px; background: #fff; box-shadow: 0 0 8px var(--a); }
+  .mini .lyrics .ln:last-child { width: 70%; background: rgba(255,255,255,.3); }
+  .mini .viz { width: 70px; height: 24px; border-radius: 99px; background: #000; display: flex; align-items: center; gap: 3px; padding: 0 6px 0 3px; box-shadow: 0 6px 16px -6px var(--a); }
+  .mini .viz .dot { width: 18px; height: 18px; border-radius: 50%; margin-right: 3px; }
+  .mini .viz i { width: 3px; height: 14px; border-radius: 2px; background: linear-gradient(to top, var(--b), var(--a), var(--c)); animation: vz 1s ease-in-out infinite alternate; }
+  .mini .viz i:nth-child(odd) { animation-delay: -.4s; } .mini .viz i:nth-child(3n) { animation-delay: -.7s; }
+  @keyframes vz { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+  .mini .strip { align-self: end; width: 100%; height: 14px; border-radius: 4px; display: flex; align-items: center; gap: 5px; padding: 0 4px 0 2px; position: relative; overflow: hidden;
+                 background: linear-gradient(90deg, color-mix(in srgb, var(--b) 45%, #120f1d), #120f1d 60%, color-mix(in srgb, var(--a) 30%, #120f1d)); border-top: 1px solid rgba(255,255,255,.3); }
+  .mini .strip .dot { width: 10px; height: 10px; border-radius: 3px; }
+  .mini .strip .ln { height: 3px; }
+  .mini .strip::after { content: ""; position: absolute; left: 0; bottom: 0; width: 45%; height: 1px; background: var(--a); }
+  .mini .bubble { display: flex; align-items: center; }
+  .mini .bubble .dot { width: 30px; height: 30px; border-radius: 50%; position: relative; z-index: 1; box-shadow: 0 0 0 2px var(--a); animation: bub 2.8s ease-out infinite; }
+  .mini .bubble .ln { width: 46px; height: 16px; margin-left: -14px; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--b) 55%, #120f1d), #1c1630); border: 1px solid rgba(255,255,255,.14); }
+  @keyframes bub { from { box-shadow: 0 0 0 2px var(--a), 0 0 0 0 var(--a); } to { box-shadow: 0 0 0 2px var(--a), 0 0 0 8px transparent; } }
+  .styleHint { margin: 12px 2px 0; color: var(--sub); font-size: 13px; min-height: 2.9em; }
+
+  /* Bildschirm und Lage */
+  .seg { display: inline-flex; flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: 99px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
+  .seg button { border: 0; background: none; color: var(--sub); font: 600 13px var(--font); padding: 8px 14px; border-radius: 99px; cursor: pointer; transition: all .35s var(--spring); }
+  .seg button[aria-pressed="true"] { color: #0b0a12; background: linear-gradient(135deg, var(--c), var(--a)); box-shadow: 0 6px 20px -6px var(--a); }
+  .where { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
+  .screens { position: relative; height: 150px; margin-top: 12px; }
+  .screen { position: absolute; display: grid; place-items: center; border-radius: 10px; cursor: pointer; border: 1px solid rgba(255,255,255,.18);
+            background: rgba(255,255,255,.05); color: var(--sub); font: 700 20px var(--font); transition: all .35s var(--spring); }
+  .screen:hover { background: rgba(255,255,255,.1); }
+  .screen[aria-pressed="true"] { color: #0b0a12; border-color: transparent; background: linear-gradient(135deg, var(--c), var(--a)); box-shadow: 0 14px 40px -12px var(--a); }
+  .lbl { display: block; font-weight: 600; margin-bottom: 8px; }
+  .grid9 { display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 30px); gap: 6px; padding: 10px; border-radius: 14px;
+           background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+  .grid9 button { border: 1px solid rgba(255,255,255,.14); border-radius: 7px; background: rgba(255,255,255,.04); cursor: pointer; transition: all .3s var(--spring); }
+  .grid9 button:hover { background: rgba(255,255,255,.12); }
+  .grid9 button[aria-pressed="true"] { background: linear-gradient(135deg, var(--c), var(--a)); border-color: transparent; transform: scale(1.08); }
+
+  /* Schalter */
+  .lights { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .opt { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); cursor: pointer; }
+  .opt b { font-weight: 600; }
+  .opt small { display: block; color: var(--sub); }
+  .toggle { appearance: none; width: 46px; height: 26px; border-radius: 99px; background: rgba(255,255,255,.16); position: relative; cursor: pointer; flex: none; transition: background .3s; margin: 0; }
+  .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .35s var(--spring); }
+  .toggle:checked { background: linear-gradient(135deg, var(--c), var(--a)); }
+  .toggle:checked::after { transform: translateX(20px); }
+  .more { margin-top: 14px; font-size: 13px; }
+  .big { max-width: 420px; }
+
+  footer { display: flex; align-items: center; gap: 10px; padding: 16px 30px 22px; }
+  .btn { border: 0; border-radius: 99px; padding: 11px 22px; font: 700 14px var(--font); cursor: pointer; color: #0b0a12;
+         background: linear-gradient(135deg, var(--c), var(--a) 60%, var(--b)); box-shadow: 0 12px 30px -10px var(--a); transition: transform .35s var(--spring); }
+  .btn:hover { transform: translateY(-2px) scale(1.03); }
+  .btn.ghost { color: var(--text); background: rgba(255,255,255,.07); box-shadow: none; border: 1px solid var(--line); }
+  .link { border: 0; background: none; color: var(--sub); font: 500 13px var(--font); cursor: pointer; padding: 8px 4px; }
+  .link:hover { color: var(--text); }
+  .spacer { flex: 1; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 2px solid var(--c); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="logo" aria-hidden="true"></span>
+  <span class="k" id="stepText"></span>
+  <span class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+</header>
+<main>
+  <section class="step" data-step="1">
+    <div class="intro"><h1 data-t="wzTitle"></h1><p data-t="wzIntro"></p></div>
+    <h2 data-t="wzStyleTitle"></h2>
+    <p data-t="wzStyleText"></p>
+    <div class="styles" data-key="style">
+      <button class="sty" data-v="island"><span class="mini"><span class="island"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stIsland"></span></button>
+      <button class="sty" data-v="card"><span class="mini"><span class="card"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stCard"></span></button>
+      <button class="sty" data-v="banner"><span class="mini"><span class="banner"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stBanner"></span></button>
+      <button class="sty" data-v="minimal"><span class="mini"><span class="minimal">♪ Aa</span></span><span data-t="stMinimal"></span></button>
+      <button class="sty" data-v="lyrics"><span class="mini"><span class="lyrics"><span class="dot"></span><span class="lns"><span class="ln"></span><span class="ln"></span></span></span></span><span data-t="stLyrics"></span></button>
+      <button class="sty" data-v="visualizer"><span class="mini"><span class="viz"><span class="dot"></span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span data-t="stViz"></span></button>
+      <button class="sty" data-v="strip"><span class="mini"><span class="strip"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stStrip"></span></button>
+      <button class="sty" data-v="bubble"><span class="mini"><span class="bubble"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stBubble"></span></button>
+    </div>
+    <div class="styleHint" id="styleHint"></div>
+  </section>
+
+  <section class="step" data-step="2">
+    <h2 data-t="wzWhereTitle"></h2>
+    <p data-t="wzWhereText"></p>
+    <div class="where">
+      <div>
+        <span class="lbl" data-t="screen"></span>
+        <div class="seg" data-key="display"><button data-v="primary" data-t="primary"></button><button data-v="cursor" data-t="cursor"></button></div>
+        <div class="screens" id="screens"></div>
+      </div>
+      <div><span class="lbl" data-t="position"></span><div class="grid9" id="grid9"></div></div>
+    </div>
+  </section>
+
+  <section class="step" data-step="3">
+    <h2 data-t="wzLightTitle"></h2>
+    <p data-t="wzLightText"></p>
+    <div class="lights">
+      <label class="opt"><b>Philips Hue</b><input type="checkbox" class="toggle" data-key="hueOn"></label>
+      <label class="opt"><b>WLED</b><input type="checkbox" class="toggle" data-key="wledOn"></label>
+      <label class="opt"><b>Govee</b><input type="checkbox" class="toggle" data-key="goveeOn"></label>
+      <label class="opt"><b>Home Assistant</b><input type="checkbox" class="toggle" data-key="haOn"></label>
+      <label class="opt"><b>OpenRGB</b><input type="checkbox" class="toggle" data-key="orgbOn"></label>
+      <label class="opt"><b>Razer Chroma</b><input type="checkbox" class="toggle" data-key="chromaOn"></label>
+    </div>
+    <p class="more" data-t="wzLightMore"></p>
+  </section>
+
+  <section class="step" data-step="4">
+    <h2 data-t="wzStartTitle"></h2>
+    <p data-t="wzStartText"></p>
+    <label class="opt big"><span><b data-t="autostart" id="autostartLabel"></b><small data-t="autostartHint" id="autostartHint"></small></span><input type="checkbox" class="toggle" data-key="autostart"></label>
+  </section>
+</main>
+<footer>
+  <button type="button" class="link" id="skip" data-t="wzSkip"></button>
+  <span class="spacer"></span>
+  <button type="button" class="btn ghost" id="back" data-t="wzBack"></button>
+  <button type="button" class="btn" id="next" data-t="wzNext"></button>
+</footer>
+<script src="i18n.js"></script>
+<script>
+  const STEPS = 4;
+  let cfg = {}, t = MirageI18n.make("en"), step = 1, previewT = 0, displays = [];
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  function translate() {
+    document.documentElement.lang = t.lang;
+    $$("[data-t]").forEach((el) => (el.textContent = t(el.dataset.t)));
+    $$(".screen").forEach((el) => (el.title = `${t("screenN")} ${el.dataset.n}`));
+    showStep();
+  }
+
+  // jede Wahl gilt sofort; bei sichtbaren Dingen kurz eine Vorschau (gedrosselt wie in den Einstellungen)
+  function set(patch, preview = true) {
+    Object.assign(cfg, patch);
+    mirage.send("set", patch);
+    render();
+    if (preview) { clearTimeout(previewT); previewT = setTimeout(() => mirage.send("preview"), 450); }
+  }
+
+  function render() {
+    $$("[data-key]").forEach((el) => {
+      const v = cfg[el.dataset.key];
+      if (el.classList.contains("seg") || el.classList.contains("styles"))
+        $$("button[data-v]", el).forEach((b) => b.setAttribute("aria-pressed", String(String(v) === b.dataset.v)));
+      else if (el.type === "checkbox") el.checked = !!v;
+    });
+    $$(".screen").forEach((s) => s.setAttribute("aria-pressed", String(cfg.display === s.dataset.id)));
+    $$("#grid9 button").forEach((b) => b.setAttribute("aria-pressed", String(cfg.anchor === b.dataset.v)));
+    const hint = { lyrics: "stLyricsHint", visualizer: "stVizHint", strip: "stStripHint", bubble: "stBubbleHint" }[cfg.style];
+    $("#styleHint").textContent = hint ? t(hint) : "";
+  }
+
+  function showStep() {
+    $$(".step").forEach((s) => {
+      const n = Number(s.dataset.step);
+      s.classList.toggle("on", n === step);
+      s.classList.toggle("past", n < step);
+      s.setAttribute("aria-hidden", String(n !== step));
+    });
+    $$("#dots i").forEach((d, i) => d.classList.toggle("on", i < step));
+    $("#stepText").textContent = t("wzStep").replace("{n}", step);
+    $("#back").hidden = step === 1;
+    $("#next").textContent = t(step === STEPS ? "wzFinish" : "wzNext");
+    // Bildschirmkarte braucht die echte Breite – erst zeichnen, wenn der Schritt sichtbar ist
+    if (step === 2) buildScreens();
+  }
+  function go(n) {
+    step = Math.max(1, Math.min(STEPS, n));
+    showStep();
+  }
+
+  // verkleinerte Anordnung aller Bildschirme, wie in den Einstellungen
+  function buildScreens() {
+    const box = $("#screens");
+    box.textContent = "";
+    if (!displays.length) return;
+    const minX = Math.min(...displays.map((d) => d.bounds.x)), minY = Math.min(...displays.map((d) => d.bounds.y));
+    const maxX = Math.max(...displays.map((d) => d.bounds.x + d.bounds.width)), maxY = Math.max(...displays.map((d) => d.bounds.y + d.bounds.height));
+    const W = box.clientWidth || 380, H = box.clientHeight || 150;
+    const k = Math.min(W / (maxX - minX), H / (maxY - minY)) * 0.96;
+    const offX = (W - (maxX - minX) * k) / 2, offY = (H - (maxY - minY) * k) / 2;
+    for (const d of displays) {
+      const b = document.createElement("button");
+      b.className = "screen";
+      b.dataset.id = d.id;
+      b.dataset.n = d.n;
+      b.title = `${t("screenN")} ${d.n}`;
+      Object.assign(b.style, {
+        left: offX + (d.bounds.x - minX) * k + 3 + "px", top: offY + (d.bounds.y - minY) * k + 3 + "px",
+        width: d.bounds.width * k - 6 + "px", height: d.bounds.height * k - 6 + "px",
+      });
+      b.textContent = d.n + (d.primary ? " ★" : "");
+      b.onclick = () => set({ display: d.id });
+      box.append(b);
+    }
+    render();
+  }
+
+  // macOS/Linux: Autostart heißt dort nicht „mit Windows“
+  if (mirage.platform !== "win32") {
+    $("#autostartLabel").dataset.t = "autostartOther";
+    $("#autostartHint").dataset.t = "autostartHintOther";
+  }
+  document.documentElement.classList.toggle("mac", mirage.platform === "darwin");
+
+  for (const v of ["top", "middle", "bottom"]) for (const h of ["left", "center", "right"]) {
+    const b = document.createElement("button");
+    b.dataset.v = `${v}-${h}`;
+    b.setAttribute("aria-label", `${v} ${h}`);
+    b.onclick = () => set({ anchor: b.dataset.v });
+    $("#grid9").append(b);
+  }
+  $$(".seg, .styles").forEach((g) => $$("button[data-v]", g).forEach((b) => (b.onclick = () => set({ [g.dataset.key]: b.dataset.v }))));
+  // Licht und Autostart zeigen keine Vorschau – dort gibt es nichts zu sehen
+  $$("input[data-key]").forEach((el) => el.addEventListener("change", () => set({ [el.dataset.key]: el.checked }, false)));
+
+  $("#back").onclick = () => go(step - 1);
+  $("#next").onclick = () => (step === STEPS ? mirage.send("setupDone") : go(step + 1));
+  $("#skip").onclick = () => mirage.send("setupDone");
+
+  mirage.on("cfg", (c) => { cfg = c; render(); });
+  mirage.on("lang", (l) => { t = MirageI18n.make(l); translate(); render(); });
+
+  mirage.get().then((s) => {
+    cfg = s.cfg;
+    t = MirageI18n.make(s.lang);
+    displays = s.displays || [];
+    translate();
+    render();
+  });
+</script>
+</body>
+</html>

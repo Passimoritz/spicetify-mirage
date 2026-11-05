@@ -136,6 +136,58 @@
   .st-visualizer .ctl button { width: 28px; height: 28px; }
   .st-visualizer .pg { left: 22px; right: 22px; bottom: 4px; height: 2px; border-radius: 2px; overflow: hidden; }
 
+  /* ---------- Stil: Mini-Leiste ---------- */
+  /* schmal und eine Zeile hoch, damit sie unten über der Taskleiste nichts Wichtiges verdeckt */
+  .st-strip .ov { width: 560px; height: 44px; padding: 0 10px 0 6px; gap: 10px; border-radius: calc(12px * var(--round, 1)); }
+  .st-strip .ov::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; z-index: 3; pointer-events: none;
+                          background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); }
+  .st-strip.bg-cover .bg img { filter: blur(22px) saturate(2) brightness(.6); }
+  .st-strip.bg-cover .bg::after { background: linear-gradient(90deg, color-mix(in srgb, var(--b) 42%, rgba(10,8,18,.68)), rgba(10,8,18,.5) 55%,
+                                  color-mix(in srgb, var(--a) 32%, rgba(10,8,18,.6))); }
+  .st-strip .cv { width: 32px; height: 32px; border-radius: calc(8px * var(--round, 1)); }
+  .st-strip .tx { display: flex; align-items: baseline; gap: 8px; }
+  .st-strip :is(.kick, .al) { display: none !important; }
+  .st-strip .ti { font-size: 14px; flex: 0 1 auto; min-width: 0; }
+  .st-strip .ar { font-size: 13px; margin: 0; flex: 0 1 auto; min-width: 0; }
+  .st-strip .ar:not(:empty)::before { content: "·"; margin-right: 8px; color: var(--c); }
+  .st-strip .tm { margin: 0 0 0 auto; flex: none; }
+  .interactive.st-strip .side { min-width: 86px; }
+  .st-strip .ctl button { width: 26px; height: 26px; }
+  .st-strip .pg { height: 2px; }
+  /* gleitet unabhängig von der gewählten Bewegung immer vom Bildschirmrand herein und wieder hinaus */
+  .stage.st-strip .ov { transform: translateY(var(--sy, 0)); filter: none; transition-timing-function: var(--ease); }
+  .st-strip.v-bottom { --sy: 180%; } .st-strip.v-top { --sy: -180%; }
+  .stage.st-strip.v-middle .ov { transform: translateX(calc(var(--fx) * 5)) scaleY(.6); }
+
+  /* ---------- Stil: Cover-Blase ---------- */
+  /* Die Karte selbst ist unsichtbar: sichtbar sind nur die runde Blase und die Pille daneben.
+     Die Pille wächst zur Bildschirmmitte hin – rechts verankert also nach links. */
+  .st-bubble .ov { height: 96px; padding: 0; gap: 0; overflow: visible; background: none; box-shadow: none !important; }
+  .st-bubble.h-right .ov { flex-direction: row-reverse; }
+  .st-bubble :is(.bg, .pg, .eq, .kick, .al) { display: none !important; }
+  .st-bubble .cv { width: 96px; height: 96px; border-radius: 50%; z-index: 2; animation: ring 2.8s ease-out infinite; }
+  @keyframes ring {
+    0%   { box-shadow: 0 0 0 3px color-mix(in srgb, var(--a) 90%, transparent), 0 0 0 0 color-mix(in srgb, var(--a) var(--glow, 80%), transparent), 0 14px 34px -10px rgba(0,0,0,.8); }
+    50%  { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 90%, transparent), 0 0 0 9px color-mix(in srgb, var(--b) 30%, transparent), 0 14px 34px -10px rgba(0,0,0,.8); }
+    100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--a) 90%, transparent), 0 0 0 18px transparent, 0 14px 34px -10px rgba(0,0,0,.8); }
+  }
+  .st-bubble .tx { flex: none; z-index: 1; height: 56px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center;
+                   max-width: 0; padding: 0; margin-left: -48px; border-radius: 28px; overflow: hidden; opacity: 0;
+                   background: linear-gradient(90deg, color-mix(in srgb, var(--b) 55%, rgba(10,8,18,.86)), color-mix(in srgb, var(--a) 35%, rgba(10,8,18,.82)));
+                   box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 16px 36px -14px color-mix(in srgb, var(--a) var(--glow, 80%), transparent);
+                   transition: max-width .7s var(--ease), padding .7s var(--ease), opacity .4s var(--ease); }
+  .st-bubble .ov.pill .tx, .interactive.st-bubble .ov:hover .tx { max-width: 340px; padding: 0 22px 0 62px; opacity: 1; }
+  .st-bubble.h-right .tx { margin: 0 -48px 0 0; text-align: right; }
+  .st-bubble.h-right .ov.pill .tx, .interactive.st-bubble.h-right .ov:hover .tx { padding: 0 62px 0 22px; }
+  .st-bubble .ti { font-size: 15px; }
+  .st-bubble .ar { font-size: 12px; }
+  /* Steuerung liegt beim Überfahren direkt auf dem Cover */
+  .st-bubble .side { position: absolute; z-index: 3; left: 0; top: 0; width: 96px; height: 96px; min-width: 0 !important; }
+  .st-bubble.h-right .side { left: auto; right: 0; }
+  .st-bubble .ctl { gap: 2px; }
+  .st-bubble .ctl button { width: 26px; height: 26px; }
+  .interactive.st-bubble .ov:hover .cv { filter: brightness(.55); }
+
   .bg-dark .bg img { display: none; }
   .bg-dark .bg::after { background: rgba(12,10,20,.94); }
   .bg-light .bg img { display: none; }
@@ -149,6 +201,8 @@
   .bg-light .lyl .nx { color: rgba(21,18,31,.5); }
   .bg-light .lyl .cur.gap { color: var(--b); }
   .bg-light.st-visualizer .ov { background: #fff; }
+  .bg-light.st-bubble .tx { background: rgba(250,248,255,.95); }
+  .bg-dark.st-bubble .tx { background: rgba(12,10,20,.94); }
 
   /* ---------- Bewegung ---------- */
   .m-spring .ov { transform: translate(var(--fx), var(--fy)) scale(.7); }
@@ -241,8 +295,21 @@
       ov.classList.add("in");
       if (cfg.style === "island") openT = setTimeout(() => ov.classList.add("open"), 140);
       else ov.classList.add("open");
+      // Cover-Blase: Titel nur bei echten Ansagen kurz herausfahren, nicht bei jeder Fortschrittsmeldung
+      if (cfg.style === "bubble" && reason !== "update") showPill();
     });
     schedule();
+  }
+  // Pille der Cover-Blase: fährt heraus und nach ein paar Sekunden wieder ein (die Blase bleibt)
+  let pillT = 0;
+  function showPill() {
+    clearTimeout(pillT);
+    ov.classList.add("pill");
+    pillT = setTimeout(hidePill, Math.min(4500, Math.max(1600, cfg.duration * 1000 - 900)));
+  }
+  function hidePill() {
+    clearTimeout(pillT);
+    ov.classList.remove("pill");
   }
   function schedule() {
     clearTimeout(hideT);
@@ -254,6 +321,7 @@
     // Generation: kommt währenddessen eine neue Ansage, brechen die alten Schritte ab
     const g = gen;
     ov.classList.remove("open");
+    hidePill();
     setTimeout(() => {
       if (g !== gen) return;
       ov.classList.remove("in");

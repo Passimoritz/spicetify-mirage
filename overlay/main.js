@@ -51,7 +51,7 @@ const DEFAULTS = {
   anchor: "top-center", // top|middle|bottom - left|center|right
   offsetX: 0,
   offsetY: 24,
-  style: "island", // island | card | banner | minimal | lyrics | visualizer
+  style: "island", // island | card | banner | minimal | lyrics | visualizer | strip | bubble
   motion: "spring", // spring | slide | fade
   scale: 100,
   opacity: 100,
@@ -77,9 +77,19 @@ const DEFAULTS = {
   chromaOn: false,
   goveeOn: false, goveeIps: "",
   haOn: false, haUrl: "", haToken: "", haEntities: "",
+  // Einrichtungs-Assistent schon durchlaufen (oder übersprungen)?
+  setupDone: false,
 };
 // welche Zusatzdaten ein Stil vom Theme braucht (Protokoll: cmd "subscribe")
 const STYLE_TOPICS = { lyrics: ["lyric"], visualizer: ["level"] };
+// Auswahlfelder mit festen Werten: ein Import darf nur diese übernehmen, sonst zerfiele z. B. die Lage
+const CHOICES = {
+  mode: ["song", "always", "off"],
+  style: ["island", "card", "banner", "minimal", "lyrics", "visualizer", "strip", "bubble"],
+  motion: ["spring", "slide", "fade"],
+  background: ["cover", "dark", "light"],
+  anchor: ["top", "middle", "bottom"].flatMap((v) => ["left", "center", "right"].map((h) => `${v}-${h}`)),
+};
 
 const file = () => path.join(app.getPath("userData"), "settings.json");
 // Verlauf: die letzten 50 Songs (nur Titel, Interpret, Cover, Zeitpunkt) – lokal, für Tray und Einstellungen
@@ -106,7 +116,10 @@ const openUri = (uri) => /^spotify:track:[A-Za-z0-9]{22}$/.test(uri) && shell.op
 let cfg = { ...DEFAULTS };
 function load() {
   try {
-    cfg = { ...DEFAULTS, ...JSON.parse(fs.readFileSync(file(), "utf8")) };
+    const saved = JSON.parse(fs.readFileSync(file(), "utf8"));
+    // Bestandsnutzer: eine Einstellungsdatei aus der Zeit vor dem Assistenten heißt „längst eingerichtet“
+    if (saved && typeof saved === "object" && !("setupDone" in saved)) saved.setupDone = true;
+    cfg = { ...DEFAULTS, ...saved };
   } catch {}
 }
 function save() {
@@ -116,7 +129,7 @@ function save() {
   } catch {}
 }
 
-let overlay = null, settingsWin = null, tray = null;
+let overlay = null, settingsWin = null, setupWin = null, tray = null;
 const lights = createLights(() => cfg, (s) => dlog?.(s));
 // Party auf Fernsehern im Netz (Chromecast, Google TV, DLNA-Fernseher): der PC nimmt das Party-Bild auf und
 // streamt es als Video; gesteuert vom Theme
@@ -215,6 +228,7 @@ function onTrack(msg) {
     t = make(msg.lang);
     buildTray();
     settingsWin?.webContents.send("lang", msg.lang);
+    setupWin?.webContents.send("lang", msg.lang);
   }
   const prev = track;
   track = msg;
@@ -399,6 +413,38 @@ function openSettings() {
   if (MAC) app.focus({ steal: true });
 }
 
+// Einrichtungs-Assistent: kleines eigenes Fenster beim ersten Start (und auf Wunsch aus dem Tray).
+// Jede Wahl wirkt sofort über „set“ – „fertig“ oder Schließen merkt sich nur noch setupDone.
+function openSetup() {
+  if (setupWin) {
+    setupWin.show();
+    setupWin.focus();
+    if (MAC) app.focus({ steal: true });
+    return;
+  }
+  setupWin = new BrowserWindow({
+    width: 640,
+    height: 600,
+    resizable: false,
+    maximizable: false,
+    title: "Mirage Overlay",
+    backgroundColor: "#07060c",
+    ...(MAC
+      ? { titleBarStyle: "hiddenInset" }
+      : { titleBarStyle: "hidden", titleBarOverlay: { color: "#07060c", symbolColor: "#e9e4ff", height: 40 } }),
+    icon: trayIcon(64),
+    webPreferences: { preload: path.join(__dirname, "preload.js") },
+  });
+  setupWin.setMenu(null);
+  setupWin.loadFile("setup.html");
+  // auch Wegklicken zählt als „übersprungen“ – der Assistent soll sich nicht bei jedem Start aufdrängen
+  setupWin.on("closed", () => {
+    setupWin = null;
+    if (!cfg.setupDone) update({ setupDone: true });
+  });
+  if (MAC) app.focus({ steal: true });
+}
+
 /* ------------------------------------------------------------------ Tray */
 // Symbol wird gezeichnet statt mitgeliefert: leuchtender Ring im Mirage-Violett
 // (MAC: schwarze Vorlage, die macOS selbst hell/dunkel einfärbt)
@@ -465,6 +511,7 @@ function buildTray() {
       ...(upd.state === "available" || upd.state === "ready" ? [{ label: t("updateInstall").replace("{v}", upd.version), click: installUpdate }, { type: "separator" }] : []),
       { label: t("settings"), click: openSettings },
       { label: t("test"), click: () => preview() },
+      { label: t("setupAgain"), click: openSetup },
       ...(history.length ? [{ label: t("history"), submenu: history.slice(0, 10).map((h) => ({ label: `${h.title} – ${h.artist}`.slice(0, 70), click: () => openUri(h.uri) })) }] : []),
       { type: "separator" },
       radio("song", t("modeSong")),
@@ -705,7 +752,7 @@ const CSS_TEMPLATE = `/* Mirage Overlay – eigener Stil / your own style
    Loaded after the built-in style. Just save – the overlay picks it up right away.
 
    Nützliche Selektoren / useful selectors:
-     .ov            die Karte / the card            .stage.st-island / .st-card / .st-banner / .st-lyrics / .st-visualizer / .st-minimal
+     .ov            die Karte / the card            .stage.st-island / .st-card / .st-banner / .st-lyrics / .st-visualizer / .st-minimal / .st-strip / .st-bubble
      #ti #ar #al    Titel, Künstler, Album          #kick   Überschrift / heading      #cv  Cover
      :root { --a; --b; --c }  Farben aus dem Cover / cover colours
 */
@@ -965,6 +1012,63 @@ function update(patch) {
   toOverlay("config", cfg);
   if (overlay?.isVisible()) position();
   settingsWin?.webContents.send("cfg", settingsCfg(cfg));
+  setupWin?.webContents.send("cfg", settingsCfg(cfg));
+}
+
+/* ------------------------------------------------------------------ Einstellungen umziehen */
+// Export/Import als JSON-Datei. Zugangsdaten (SECRET) verlassen den Rechner nie, setupDone gehört zu
+// diesem Rechner. Beim Import zählen nur bekannte Schlüssel mit dem Typ ihres Standardwerts.
+const MOVE_SKIP = [...SECRET, "setupDone"];
+const movable = (k) => Object.hasOwn(DEFAULTS, k) && !MOVE_SKIP.includes(k);
+function exportable() {
+  return Object.fromEntries(Object.entries(cfg).filter(([k]) => movable(k)));
+}
+function validValue(k, v) {
+  const d = DEFAULTS[k];
+  if (typeof v !== typeof d) return false;
+  if (typeof d === "number") return Number.isFinite(v);
+  if (typeof d === "string") return v.length <= 4000 && (!CHOICES[k] || CHOICES[k].includes(v));
+  return typeof d === "boolean";
+}
+function importable(data) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return {};
+  return Object.fromEntries(Object.entries(data).filter(([k, v]) => movable(k) && validValue(k, v)));
+}
+async function exportCfg(win) {
+  const { canceled, filePath } = await dialog.showSaveDialog(win, {
+    title: t("moveExport"),
+    defaultPath: path.join(app.getPath("documents"), "mirage-overlay-settings.json"),
+    filters: [{ name: "JSON", extensions: ["json"] }],
+  });
+  if (canceled || !filePath) return { canceled: true };
+  try {
+    fs.writeFileSync(filePath, JSON.stringify({ app: "mirage-overlay", version: app.getVersion(), settings: exportable() }, null, 2));
+    return { ok: true };
+  } catch {
+    return { error: "io" };
+  }
+}
+async function importCfg(win) {
+  const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+    title: t("moveImport"),
+    properties: ["openFile"],
+    filters: [{ name: "JSON", extensions: ["json"] }],
+  });
+  if (canceled || !filePaths?.[0]) return { canceled: true };
+  let data;
+  try {
+    // Einstellungsdateien sind wenige KB – alles Große ist sicher keine
+    if (fs.statSync(filePaths[0]).size > 1024 * 1024) return { error: "invalid" };
+    data = JSON.parse(fs.readFileSync(filePaths[0], "utf8"));
+  } catch (e) {
+    return { error: e instanceof SyntaxError ? "invalid" : "io" };
+  }
+  // eigenes Exportformat ({ settings: {…} }) oder eine rohe settings.json
+  const patch = importable(data && typeof data.settings === "object" ? data.settings : data);
+  const n = Object.keys(patch).length;
+  if (!n) return { error: "invalid" };
+  update(patch);
+  return { ok: true, n };
 }
 const SAMPLE = {
   title: "Midnight Mirage",
@@ -1022,6 +1126,14 @@ ipcMain.handle("goveeScan", async () => {
   return r;
 });
 ipcMain.handle("haTest", () => lights.haTest());
+// Einstellungen umziehen: der Dialog gehört zum Fenster, das gefragt hat
+ipcMain.handle("exportCfg", (e) => exportCfg(BrowserWindow.fromWebContents(e.sender)));
+ipcMain.handle("importCfg", (e) => importCfg(BrowserWindow.fromWebContents(e.sender)));
+// Assistent fertig oder übersprungen
+ipcMain.on("setupDone", () => {
+  update({ setupDone: true });
+  setupWin?.close();
+});
 ipcMain.on("hover", (_e, on) => overlay?.setIgnoreMouseEvents(!on, { forward: true }));
 // ein „fertig“ kurz nach einer neuen Ansage stammt noch von der alten – ignorieren
 ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 && overlay?.hide());
@@ -1060,6 +1172,7 @@ app.whenReady().then(() => {
   logStart();
   screen.on("display-removed", () => overlay?.isVisible() && position());
   screen.on("display-metrics-changed", () => overlay?.isVisible() && position());
-  // Beim ersten Start (oder ohne Autostart-Aufruf) gleich die Einstellungen zeigen
-  if (!startedHidden()) openSettings();
+  // Beim allerersten Start der Assistent, sonst (ohne Autostart-Aufruf) gleich die Einstellungen
+  if (!cfg.setupDone) openSetup();
+  else if (!startedHidden()) openSettings();
 });
