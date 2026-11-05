@@ -115,6 +115,25 @@
       init_core();
       I18N = {
         en: {
+          g_library: "Library",
+          libBpm: "Tempo & key in track lists",
+          libBpmHint: "Shows BPM and key (Camelot, e.g. 8A) next to the duration on playlist and album pages \u2013 loads Spotify's audio analysis for every visible song",
+          libMajor: "{k} major",
+          libMinor: "{k} minor",
+          libDupNote: "Find duplicates: right-click one of your playlists \u2192 \u201CRemove duplicate songs\u201D",
+          dupMenu: "Remove duplicate songs",
+          dupTitle: "Duplicate songs",
+          dupLoading: "Looking for duplicates \u2026",
+          dupNone: "No duplicates in this playlist",
+          dupExact: "Exact duplicates \u2013 the first one stays",
+          dupMaybe: "Probably the same song (another version)",
+          dupPos: "#{a} \xB7 first at #{b}",
+          dupRemove: "Remove ({n})",
+          dupConfirm: "Remove {n} songs from \u201C{p}\u201D? The first occurrence of each stays.",
+          dupDone: "{n} duplicates removed",
+          dupFailed: "Spotify didn't allow removing them",
+          dupNoEdit: "You can only clean up playlists you can edit",
+          dupUnsupported: "This Spotify version doesn't let Mirage read the playlist",
           menu: "Mirage settings",
           immersive: "Mirage immersive mode",
           back: "Back",
@@ -588,6 +607,25 @@
           wishAll: "All wishes"
         },
         de: {
+          g_library: "Bibliothek",
+          libBpm: "Tempo & Tonart in Titellisten",
+          libBpmHint: "Zeigt BPM und Tonart (Camelot, z. B. 8A) neben der Dauer auf Playlist- und Albumseiten \u2013 l\xE4dt daf\xFCr Spotifys Audioanalyse f\xFCr jeden sichtbaren Song",
+          libMajor: "{k}-Dur",
+          libMinor: "{k}-Moll",
+          libDupNote: "Doppelte finden: Rechtsklick auf eine eigene Playlist \u2192 \u201EDoppelte Songs entfernen\u201C",
+          dupMenu: "Doppelte Songs entfernen",
+          dupTitle: "Doppelte Songs",
+          dupLoading: "Suche doppelte Songs \u2026",
+          dupNone: "Keine doppelten Songs in dieser Playlist",
+          dupExact: "Genau gleich \u2013 der erste bleibt",
+          dupMaybe: "Wahrscheinlich derselbe Song (andere Version)",
+          dupPos: "#{a} \xB7 zuerst bei #{b}",
+          dupRemove: "Entfernen ({n})",
+          dupConfirm: "{n} Songs aus \u201E{p}\u201C entfernen? Das erste Vorkommen bleibt jeweils erhalten.",
+          dupDone: "{n} doppelte Songs entfernt",
+          dupFailed: "Spotify hat das Entfernen nicht erlaubt",
+          dupNoEdit: "Aufr\xE4umen geht nur in Playlists, die du bearbeiten darfst",
+          dupUnsupported: "Diese Spotify-Version l\xE4sst Mirage die Playlist nicht lesen",
           menu: "Mirage-Einstellungen",
           immersive: "Mirage Immersiv-Modus",
           back: "Zur\xFCck",
@@ -1061,6 +1099,25 @@
           wishAll: "Alle W\xFCnsche"
         },
         fr: {
+          g_library: "Biblioth\xE8que",
+          libBpm: "Tempo et tonalit\xE9 dans les listes",
+          libBpmHint: "Affiche le BPM et la tonalit\xE9 (Camelot, p. ex. 8A) \xE0 c\xF4t\xE9 de la dur\xE9e sur les pages de playlists et d'albums \u2013 charge l'analyse audio de Spotify pour chaque titre visible",
+          libMajor: "{k} majeur",
+          libMinor: "{k} mineur",
+          libDupNote: "Trouver les doublons : clic droit sur une de tes playlists \u2192 \xAB Supprimer les titres en double \xBB",
+          dupMenu: "Supprimer les titres en double",
+          dupTitle: "Titres en double",
+          dupLoading: "Recherche des doublons \u2026",
+          dupNone: "Aucun doublon dans cette playlist",
+          dupExact: "Doublons exacts \u2013 le premier reste",
+          dupMaybe: "Probablement le m\xEAme titre (autre version)",
+          dupPos: "n\xB0 {a} \xB7 d'abord au n\xB0 {b}",
+          dupRemove: "Supprimer ({n})",
+          dupConfirm: "Supprimer {n} titres de \xAB {p} \xBB ? La premi\xE8re occurrence de chacun reste.",
+          dupDone: "{n} doublons supprim\xE9s",
+          dupFailed: "Spotify n'a pas autoris\xE9 la suppression",
+          dupNoEdit: "Seules les playlists que tu peux modifier peuvent \xEAtre nettoy\xE9es",
+          dupUnsupported: "Cette version de Spotify ne permet pas \xE0 Mirage de lire la playlist",
           menu: "R\xE9glages Mirage",
           immersive: "Mode immersif Mirage",
           back: "Retour",
@@ -1534,6 +1591,25 @@
           wishAll: "Toutes les demandes"
         },
         es: {
+          g_library: "Biblioteca",
+          libBpm: "Tempo y tonalidad en las listas",
+          libBpmHint: "Muestra los BPM y la tonalidad (Camelot, p. ej. 8A) junto a la duraci\xF3n en las p\xE1ginas de playlists y \xE1lbumes \u2013 carga el an\xE1lisis de audio de Spotify de cada canci\xF3n visible",
+          libMajor: "{k} mayor",
+          libMinor: "{k} menor",
+          libDupNote: "Buscar duplicados: clic derecho en una de tus playlists \u2192 \xABQuitar canciones duplicadas\xBB",
+          dupMenu: "Quitar canciones duplicadas",
+          dupTitle: "Canciones duplicadas",
+          dupLoading: "Buscando duplicados \u2026",
+          dupNone: "No hay duplicados en esta playlist",
+          dupExact: "Duplicados exactos \u2013 la primera se queda",
+          dupMaybe: "Probablemente la misma canci\xF3n (otra versi\xF3n)",
+          dupPos: "n.\xBA {a} \xB7 primero en n.\xBA {b}",
+          dupRemove: "Quitar ({n})",
+          dupConfirm: "\xBFQuitar {n} canciones de \xAB{p}\xBB? La primera aparici\xF3n de cada una se queda.",
+          dupDone: "{n} duplicados quitados",
+          dupFailed: "Spotify no permiti\xF3 quitarlas",
+          dupNoEdit: "Solo puedes limpiar playlists que puedas editar",
+          dupUnsupported: "Esta versi\xF3n de Spotify no deja a Mirage leer la playlist",
           menu: "Ajustes de Mirage",
           immersive: "Modo inmersivo Mirage",
           back: "Volver",
@@ -2007,6 +2083,25 @@
           wishAll: "Todas las peticiones"
         },
         it: {
+          g_library: "Libreria",
+          libBpm: "Tempo e tonalit\xE0 negli elenchi",
+          libBpmHint: "Mostra BPM e tonalit\xE0 (Camelot, es. 8A) accanto alla durata nelle pagine di playlist e album \u2013 carica l'analisi audio di Spotify per ogni brano visibile",
+          libMajor: "{k} maggiore",
+          libMinor: "{k} minore",
+          libDupNote: "Trova i doppioni: clic destro su una tua playlist \u2192 \xABRimuovi brani doppi\xBB",
+          dupMenu: "Rimuovi brani doppi",
+          dupTitle: "Brani doppi",
+          dupLoading: "Cerco i doppioni \u2026",
+          dupNone: "Nessun doppione in questa playlist",
+          dupExact: "Doppioni esatti \u2013 il primo resta",
+          dupMaybe: "Probabilmente lo stesso brano (altra versione)",
+          dupPos: "n. {a} \xB7 prima al n. {b}",
+          dupRemove: "Rimuovi ({n})",
+          dupConfirm: "Rimuovere {n} brani da \xAB{p}\xBB? La prima occorrenza di ciascuno resta.",
+          dupDone: "{n} doppioni rimossi",
+          dupFailed: "Spotify non ha permesso la rimozione",
+          dupNoEdit: "Puoi pulire solo le playlist che puoi modificare",
+          dupUnsupported: "Questa versione di Spotify non permette a Mirage di leggere la playlist",
           menu: "Impostazioni Mirage",
           immersive: "Modalit\xE0 immersiva Mirage",
           back: "Indietro",
@@ -2480,6 +2575,25 @@
           wishAll: "Tutte le richieste"
         },
         pt: {
+          g_library: "Biblioteca",
+          libBpm: "Andamento e tom nas listas",
+          libBpmHint: "Mostra BPM e tom (Camelot, ex. 8A) ao lado da dura\xE7\xE3o nas p\xE1ginas de playlists e \xE1lbuns \u2013 carrega a an\xE1lise de \xE1udio do Spotify para cada m\xFAsica vis\xEDvel",
+          libMajor: "{k} maior",
+          libMinor: "{k} menor",
+          libDupNote: "Encontrar duplicadas: clique com o bot\xE3o direito numa playlist sua \u2192 \u201CRemover m\xFAsicas duplicadas\u201D",
+          dupMenu: "Remover m\xFAsicas duplicadas",
+          dupTitle: "M\xFAsicas duplicadas",
+          dupLoading: "Procurando duplicadas \u2026",
+          dupNone: "Nenhuma duplicada nesta playlist",
+          dupExact: "Duplicadas exatas \u2013 a primeira fica",
+          dupMaybe: "Provavelmente a mesma m\xFAsica (outra vers\xE3o)",
+          dupPos: "n\xBA {a} \xB7 primeiro no n\xBA {b}",
+          dupRemove: "Remover ({n})",
+          dupConfirm: "Remover {n} m\xFAsicas de \u201C{p}\u201D? A primeira ocorr\xEAncia de cada uma fica.",
+          dupDone: "{n} duplicadas removidas",
+          dupFailed: "O Spotify n\xE3o permitiu remover",
+          dupNoEdit: "S\xF3 d\xE1 para limpar playlists que voc\xEA pode editar",
+          dupUnsupported: "Esta vers\xE3o do Spotify n\xE3o deixa o Mirage ler a playlist",
           menu: "Configura\xE7\xF5es do Mirage",
           immersive: "Modo imersivo Mirage",
           back: "Voltar",
@@ -2953,6 +3067,25 @@
           wishAll: "Todos os pedidos"
         },
         nl: {
+          g_library: "Bibliotheek",
+          libBpm: "Tempo & toonsoort in tracklijsten",
+          libBpmHint: "Toont BPM en toonsoort (Camelot, bijv. 8A) naast de duur op playlist- en albumpagina's \u2013 laadt daarvoor Spotify's audioanalyse voor elk zichtbaar nummer",
+          libMajor: "{k} majeur",
+          libMinor: "{k} mineur",
+          libDupNote: "Dubbele vinden: klik met rechts op een eigen playlist \u2192 \u201EDubbele nummers verwijderen\u201D",
+          dupMenu: "Dubbele nummers verwijderen",
+          dupTitle: "Dubbele nummers",
+          dupLoading: "Zoeken naar dubbele nummers \u2026",
+          dupNone: "Geen dubbele nummers in deze playlist",
+          dupExact: "Precies gelijk \u2013 de eerste blijft",
+          dupMaybe: "Waarschijnlijk hetzelfde nummer (andere versie)",
+          dupPos: "#{a} \xB7 eerst op #{b}",
+          dupRemove: "Verwijderen ({n})",
+          dupConfirm: "{n} nummers uit \u201E{p}\u201D verwijderen? De eerste keer dat elk voorkomt blijft staan.",
+          dupDone: "{n} dubbele nummers verwijderd",
+          dupFailed: "Spotify stond het verwijderen niet toe",
+          dupNoEdit: "Opruimen kan alleen in playlists die je mag bewerken",
+          dupUnsupported: "Deze Spotify-versie laat Mirage de playlist niet lezen",
           menu: "Mirage-instellingen",
           immersive: "Mirage immersieve modus",
           back: "Terug",
@@ -3426,6 +3559,25 @@
           wishAll: "Alle verzoeken"
         },
         pl: {
+          g_library: "Biblioteka",
+          libBpm: "Tempo i tonacja na listach utwor\xF3w",
+          libBpmHint: "Pokazuje BPM i tonacj\u0119 (Camelot, np. 8A) obok czasu trwania na stronach playlist i album\xF3w \u2013 pobiera analiz\u0119 audio Spotify dla ka\u017Cdego widocznego utworu",
+          libMajor: "{k}-dur",
+          libMinor: "{k}-moll",
+          libDupNote: "Znajd\u017A duplikaty: kliknij prawym przyciskiem swoj\u0105 playlist\u0119 \u2192 \u201EUsu\u0144 zduplikowane utwory\u201D",
+          dupMenu: "Usu\u0144 zduplikowane utwory",
+          dupTitle: "Zduplikowane utwory",
+          dupLoading: "Szukam duplikat\xF3w \u2026",
+          dupNone: "Brak duplikat\xF3w w tej playli\u015Bcie",
+          dupExact: "Dok\u0142adne duplikaty \u2013 pierwszy zostaje",
+          dupMaybe: "Prawdopodobnie ten sam utw\xF3r (inna wersja)",
+          dupPos: "nr {a} \xB7 najpierw nr {b}",
+          dupRemove: "Usu\u0144 ({n})",
+          dupConfirm: "Usun\u0105\u0107 {n} utwor\xF3w z \u201E{p}\u201D? Pierwsze wyst\u0105pienie ka\u017Cdego zostaje.",
+          dupDone: "Usuni\u0119to duplikaty: {n}",
+          dupFailed: "Spotify nie pozwoli\u0142 ich usun\u0105\u0107",
+          dupNoEdit: "Porz\u0105dkowa\u0107 mo\u017Cna tylko playlisty, kt\xF3re mo\u017Cesz edytowa\u0107",
+          dupUnsupported: "Ta wersja Spotify nie pozwala Mirage odczyta\u0107 playlisty",
           menu: "Ustawienia Mirage",
           immersive: "Tryb immersyjny Mirage",
           back: "Wstecz",
@@ -3899,6 +4051,25 @@
           wishAll: "Wszystkie pro\u015Bby"
         },
         tr: {
+          g_library: "Kitapl\u0131k",
+          libBpm: "Par\xE7a listelerinde tempo ve ton",
+          libBpmHint: "\xC7alma listesi ve alb\xFCm sayfalar\u0131nda s\xFCrenin yan\u0131nda BPM ve tonu (Camelot, \xF6r. 8A) g\xF6sterir \u2013 g\xF6r\xFCnen her \u015Fark\u0131 i\xE7in Spotify'\u0131n ses analizini y\xFCkler",
+          libMajor: "{k} maj\xF6r",
+          libMinor: "{k} min\xF6r",
+          libDupNote: "Tekrarlar\u0131 bul: kendi \xE7alma listelerinden birine sa\u011F t\u0131kla \u2192 \u201ETekrarlanan \u015Fark\u0131lar\u0131 kald\u0131r\u201D",
+          dupMenu: "Tekrarlanan \u015Fark\u0131lar\u0131 kald\u0131r",
+          dupTitle: "Tekrarlanan \u015Fark\u0131lar",
+          dupLoading: "Tekrarlar aran\u0131yor \u2026",
+          dupNone: "Bu \xE7alma listesinde tekrar yok",
+          dupExact: "Birebir tekrarlar \u2013 ilki kal\u0131r",
+          dupMaybe: "Muhtemelen ayn\u0131 \u015Fark\u0131 (ba\u015Fka s\xFCr\xFCm)",
+          dupPos: "#{a} \xB7 ilk kez #{b}",
+          dupRemove: "Kald\u0131r ({n})",
+          dupConfirm: "\u201E{p}\u201D listesinden {n} \u015Fark\u0131 kald\u0131r\u0131ls\u0131n m\u0131? Her birinin ilk ge\xE7ti\u011Fi yer kal\u0131r.",
+          dupDone: "{n} tekrar kald\u0131r\u0131ld\u0131",
+          dupFailed: "Spotify kald\u0131rmaya izin vermedi",
+          dupNoEdit: "Yaln\u0131zca d\xFCzenleyebildi\u011Fin \xE7alma listelerini temizleyebilirsin",
+          dupUnsupported: "Bu Spotify s\xFCr\xFCm\xFC Mirage'\u0131n \xE7alma listesini okumas\u0131na izin vermiyor",
           menu: "Mirage ayarlar\u0131",
           immersive: "Mirage s\xFCr\xFCkleyici modu",
           back: "Geri",
@@ -4372,6 +4543,25 @@
           wishAll: "T\xFCm istekler"
         },
         ru: {
+          g_library: "\u041C\u0435\u0434\u0438\u0430\u0442\u0435\u043A\u0430",
+          libBpm: "\u0422\u0435\u043C\u043F \u0438 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C \u0432 \u0441\u043F\u0438\u0441\u043A\u0430\u0445 \u0442\u0440\u0435\u043A\u043E\u0432",
+          libBpmHint: "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442 BPM \u0438 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C (Camelot, \u043D\u0430\u043F\u0440. 8A) \u0440\u044F\u0434\u043E\u043C \u0441 \u0434\u043B\u0438\u0442\u0435\u043B\u044C\u043D\u043E\u0441\u0442\u044C\u044E \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430\u0445 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u043E\u0432 \u0438 \u0430\u043B\u044C\u0431\u043E\u043C\u043E\u0432 \u2013 \u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u0442 \u0430\u0443\u0434\u0438\u043E\u0430\u043D\u0430\u043B\u0438\u0437 Spotify \u0434\u043B\u044F \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u0432\u0438\u0434\u0438\u043C\u043E\u0433\u043E \u0442\u0440\u0435\u043A\u0430",
+          libMajor: "{k} \u043C\u0430\u0436\u043E\u0440",
+          libMinor: "{k} \u043C\u0438\u043D\u043E\u0440",
+          libDupNote: "\u041D\u0430\u0439\u0442\u0438 \u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0442\u044B: \u043F\u0440\u0430\u0432\u044B\u0439 \u043A\u043B\u0438\u043A \u043F\u043E \u0441\u0432\u043E\u0435\u043C\u0443 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0443 \u2192 \xAB\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u043E\u0432\u0442\u043E\u0440\u044F\u044E\u0449\u0438\u0435\u0441\u044F \u0442\u0440\u0435\u043A\u0438\xBB",
+          dupMenu: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u043E\u0432\u0442\u043E\u0440\u044F\u044E\u0449\u0438\u0435\u0441\u044F \u0442\u0440\u0435\u043A\u0438",
+          dupTitle: "\u041F\u043E\u0432\u0442\u043E\u0440\u044F\u044E\u0449\u0438\u0435\u0441\u044F \u0442\u0440\u0435\u043A\u0438",
+          dupLoading: "\u0418\u0449\u0443 \u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0442\u044B \u2026",
+          dupNone: "\u0412 \u044D\u0442\u043E\u043C \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0435 \u043D\u0435\u0442 \u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0442\u043E\u0432",
+          dupExact: "\u0422\u043E\u0447\u043D\u044B\u0435 \u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0442\u044B \u2013 \u043F\u0435\u0440\u0432\u044B\u0439 \u043E\u0441\u0442\u0430\u0451\u0442\u0441\u044F",
+          dupMaybe: "\u0412\u0435\u0440\u043E\u044F\u0442\u043D\u043E, \u0442\u043E\u0442 \u0436\u0435 \u0442\u0440\u0435\u043A (\u0434\u0440\u0443\u0433\u0430\u044F \u0432\u0435\u0440\u0441\u0438\u044F)",
+          dupPos: "\u2116{a} \xB7 \u0432\u043F\u0435\u0440\u0432\u044B\u0435 \u2116{b}",
+          dupRemove: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C ({n})",
+          dupConfirm: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u0442\u0440\u0435\u043A\u043E\u0432 \u0438\u0437 \xAB{p}\xBB: {n}? \u041F\u0435\u0440\u0432\u043E\u0435 \u0432\u0445\u043E\u0436\u0434\u0435\u043D\u0438\u0435 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u043E\u0441\u0442\u0430\u043D\u0435\u0442\u0441\u044F.",
+          dupDone: "\u0423\u0434\u0430\u043B\u0435\u043D\u043E \u0434\u0443\u0431\u043B\u0438\u043A\u0430\u0442\u043E\u0432: {n}",
+          dupFailed: "Spotify \u043D\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0438\u043B \u0443\u0434\u0430\u043B\u0435\u043D\u0438\u0435",
+          dupNoEdit: "\u041E\u0447\u0438\u0449\u0430\u0442\u044C \u043C\u043E\u0436\u043D\u043E \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u044B, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0442\u044B \u043C\u043E\u0436\u0435\u0448\u044C \u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C",
+          dupUnsupported: "\u042D\u0442\u0430 \u0432\u0435\u0440\u0441\u0438\u044F Spotify \u043D\u0435 \u0434\u0430\u0451\u0442 Mirage \u043F\u0440\u043E\u0447\u0438\u0442\u0430\u0442\u044C \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442",
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
           immersive: "\u0420\u0435\u0436\u0438\u043C \u043F\u043E\u0433\u0440\u0443\u0436\u0435\u043D\u0438\u044F Mirage",
           back: "\u041D\u0430\u0437\u0430\u0434",
@@ -4845,6 +5035,25 @@
           wishAll: "\u0412\u0441\u0435 \u0437\u0430\u043A\u0430\u0437\u044B"
         },
         uk: {
+          g_library: "\u041C\u0435\u0434\u0456\u0430\u0442\u0435\u043A\u0430",
+          libBpm: "\u0422\u0435\u043C\u043F \u0456 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u0456\u0441\u0442\u044C \u0443 \u0441\u043F\u0438\u0441\u043A\u0430\u0445 \u0442\u0440\u0435\u043A\u0456\u0432",
+          libBpmHint: "\u041F\u043E\u043A\u0430\u0437\u0443\u0454 BPM \u0456 \u0442\u043E\u043D\u0430\u043B\u044C\u043D\u0456\u0441\u0442\u044C (Camelot, \u043D\u0430\u043F\u0440. 8A) \u043F\u043E\u0440\u0443\u0447 \u0456\u0437 \u0442\u0440\u0438\u0432\u0430\u043B\u0456\u0441\u0442\u044E \u043D\u0430 \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0430\u0445 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432 \u0456 \u0430\u043B\u044C\u0431\u043E\u043C\u0456\u0432 \u2013 \u0437\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0443\u0454 \u0430\u0443\u0434\u0456\u043E\u0430\u043D\u0430\u043B\u0456\u0437 Spotify \u0434\u043B\u044F \u043A\u043E\u0436\u043D\u043E\u0433\u043E \u0432\u0438\u0434\u0438\u043C\u043E\u0433\u043E \u0442\u0440\u0435\u043A\u0443",
+          libMajor: "{k} \u043C\u0430\u0436\u043E\u0440",
+          libMinor: "{k} \u043C\u0456\u043D\u043E\u0440",
+          libDupNote: "\u0417\u043D\u0430\u0439\u0442\u0438 \u0434\u0443\u0431\u043B\u0456\u043A\u0430\u0442\u0438: \u043F\u0440\u0430\u0432\u0438\u0439 \u043A\u043B\u0456\u043A \u043D\u0430 \u0441\u0432\u043E\u0454\u043C\u0443 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456 \u2192 \xAB\u0412\u0438\u0434\u0430\u043B\u0438\u0442\u0438 \u043F\u043E\u0432\u0442\u043E\u0440\u044E\u0432\u0430\u043D\u0456 \u0442\u0440\u0435\u043A\u0438\xBB",
+          dupMenu: "\u0412\u0438\u0434\u0430\u043B\u0438\u0442\u0438 \u043F\u043E\u0432\u0442\u043E\u0440\u044E\u0432\u0430\u043D\u0456 \u0442\u0440\u0435\u043A\u0438",
+          dupTitle: "\u041F\u043E\u0432\u0442\u043E\u0440\u044E\u0432\u0430\u043D\u0456 \u0442\u0440\u0435\u043A\u0438",
+          dupLoading: "\u0428\u0443\u043A\u0430\u044E \u0434\u0443\u0431\u043B\u0456\u043A\u0430\u0442\u0438 \u2026",
+          dupNone: "\u0423 \u0446\u044C\u043E\u043C\u0443 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456 \u043D\u0435\u043C\u0430\u0454 \u0434\u0443\u0431\u043B\u0456\u043A\u0430\u0442\u0456\u0432",
+          dupExact: "\u0422\u043E\u0447\u043D\u0456 \u0434\u0443\u0431\u043B\u0456\u043A\u0430\u0442\u0438 \u2013 \u043F\u0435\u0440\u0448\u0438\u0439 \u0437\u0430\u043B\u0438\u0448\u0430\u0454\u0442\u044C\u0441\u044F",
+          dupMaybe: "\u0406\u043C\u043E\u0432\u0456\u0440\u043D\u043E, \u0442\u043E\u0439 \u0441\u0430\u043C\u0438\u0439 \u0442\u0440\u0435\u043A (\u0456\u043D\u0448\u0430 \u0432\u0435\u0440\u0441\u0456\u044F)",
+          dupPos: "\u2116{a} \xB7 \u0432\u043F\u0435\u0440\u0448\u0435 \u2116{b}",
+          dupRemove: "\u0412\u0438\u0434\u0430\u043B\u0438\u0442\u0438 ({n})",
+          dupConfirm: "\u0412\u0438\u0434\u0430\u043B\u0438\u0442\u0438 \u0442\u0440\u0435\u043A\u0456\u0432 \u0456\u0437 \xAB{p}\xBB: {n}? \u041F\u0435\u0440\u0448\u0435 \u0432\u0445\u043E\u0434\u0436\u0435\u043D\u043D\u044F \u043A\u043E\u0436\u043D\u043E\u0433\u043E \u0437\u0430\u043B\u0438\u0448\u0438\u0442\u044C\u0441\u044F.",
+          dupDone: "\u0412\u0438\u0434\u0430\u043B\u0435\u043D\u043E \u0434\u0443\u0431\u043B\u0456\u043A\u0430\u0442\u0456\u0432: {n}",
+          dupFailed: "Spotify \u043D\u0435 \u0434\u043E\u0437\u0432\u043E\u043B\u0438\u0432 \u0432\u0438\u0434\u0430\u043B\u0435\u043D\u043D\u044F",
+          dupNoEdit: "\u041E\u0447\u0438\u0449\u0430\u0442\u0438 \u043C\u043E\u0436\u043D\u0430 \u043B\u0438\u0448\u0435 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0438, \u044F\u043A\u0456 \u0442\u0438 \u043C\u043E\u0436\u0435\u0448 \u0440\u0435\u0434\u0430\u0433\u0443\u0432\u0430\u0442\u0438",
+          dupUnsupported: "\u0426\u044F \u0432\u0435\u0440\u0441\u0456\u044F Spotify \u043D\u0435 \u0434\u0430\u0454 Mirage \u043F\u0440\u043E\u0447\u0438\u0442\u0430\u0442\u0438 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442",
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
           immersive: "\u0420\u0435\u0436\u0438\u043C \u0437\u0430\u043D\u0443\u0440\u0435\u043D\u043D\u044F Mirage",
           back: "\u041D\u0430\u0437\u0430\u0434",
@@ -5318,6 +5527,25 @@
           wishAll: "\u0423\u0441\u0456 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F"
         },
         ja: {
+          g_library: "\u30E9\u30A4\u30D6\u30E9\u30EA",
+          libBpm: "\u66F2\u30EA\u30B9\u30C8\u306B\u30C6\u30F3\u30DD\u3068\u30AD\u30FC",
+          libBpmHint: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u3068\u30A2\u30EB\u30D0\u30E0\u306E\u30DA\u30FC\u30B8\u3067\u3001\u518D\u751F\u6642\u9593\u306E\u6A2A\u306B BPM \u3068\u30AD\u30FC\uFF08Camelot\u3001\u4F8B: 8A\uFF09\u3092\u8868\u793A\u3057\u307E\u3059 \u2013 \u8868\u793A\u4E2D\u306E\u5404\u66F2\u306B\u3064\u3044\u3066 Spotify \u306E\u30AA\u30FC\u30C7\u30A3\u30AA\u5206\u6790\u3092\u8AAD\u307F\u8FBC\u307F\u307E\u3059",
+          libMajor: "{k} \u30E1\u30B8\u30E3\u30FC",
+          libMinor: "{k} \u30DE\u30A4\u30CA\u30FC",
+          libDupNote: "\u91CD\u8907\u3092\u63A2\u3059: \u81EA\u5206\u306E\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u3092\u53F3\u30AF\u30EA\u30C3\u30AF \u2192\u300C\u91CD\u8907\u3057\u305F\u66F2\u3092\u524A\u9664\u300D",
+          dupMenu: "\u91CD\u8907\u3057\u305F\u66F2\u3092\u524A\u9664",
+          dupTitle: "\u91CD\u8907\u3057\u305F\u66F2",
+          dupLoading: "\u91CD\u8907\u3092\u63A2\u3057\u3066\u3044\u307E\u3059 \u2026",
+          dupNone: "\u3053\u306E\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u91CD\u8907\u306F\u3042\u308A\u307E\u305B\u3093",
+          dupExact: "\u5B8C\u5168\u306A\u91CD\u8907 \u2013 \u6700\u521D\u306E 1 \u66F2\u306F\u6B8B\u308A\u307E\u3059",
+          dupMaybe: "\u304A\u305D\u3089\u304F\u540C\u3058\u66F2\uFF08\u5225\u30D0\u30FC\u30B8\u30E7\u30F3\uFF09",
+          dupPos: "#{a} \xB7 \u6700\u521D\u306F #{b}",
+          dupRemove: "\u524A\u9664\uFF08{n}\uFF09",
+          dupConfirm: "\u300C{p}\u300D\u304B\u3089 {n} \u66F2\u3092\u524A\u9664\u3057\u307E\u3059\u304B\uFF1F\u305D\u308C\u305E\u308C\u6700\u521D\u306E 1 \u66F2\u306F\u6B8B\u308A\u307E\u3059\u3002",
+          dupDone: "{n} \u66F2\u306E\u91CD\u8907\u3092\u524A\u9664\u3057\u307E\u3057\u305F",
+          dupFailed: "Spotify \u304C\u524A\u9664\u3092\u8A31\u53EF\u3057\u307E\u305B\u3093\u3067\u3057\u305F",
+          dupNoEdit: "\u6574\u7406\u3067\u304D\u308B\u306E\u306F\u7DE8\u96C6\u3067\u304D\u308B\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u3060\u3051\u3067\u3059",
+          dupUnsupported: "\u3053\u306E Spotify \u306E\u30D0\u30FC\u30B8\u30E7\u30F3\u3067\u306F Mirage \u304C\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u3092\u8AAD\u307F\u8FBC\u3081\u307E\u305B\u3093",
           menu: "Mirage \u306E\u8A2D\u5B9A",
           immersive: "Mirage \u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9",
           back: "\u623B\u308B",
@@ -5791,6 +6019,25 @@
           wishAll: "\u3059\u3079\u3066\u306E\u30EA\u30AF\u30A8\u30B9\u30C8"
         },
         ko: {
+          g_library: "\uB77C\uC774\uBE0C\uB7EC\uB9AC",
+          libBpm: "\uD2B8\uB799 \uBAA9\uB85D\uC5D0 \uD15C\uD3EC\uC640 \uD0A4 \uD45C\uC2DC",
+          libBpmHint: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC640 \uC568\uBC94 \uD398\uC774\uC9C0\uC5D0\uC11C \uC7AC\uC0DD \uC2DC\uAC04 \uC606\uC5D0 BPM\uACFC \uD0A4(Camelot, \uC608: 8A)\uB97C \uD45C\uC2DC\uD569\uB2C8\uB2E4 \u2013 \uBCF4\uC774\uB294 \uACE1\uB9C8\uB2E4 Spotify \uC624\uB514\uC624 \uBD84\uC11D\uC744 \uBD88\uB7EC\uC635\uB2C8\uB2E4",
+          libMajor: "{k} \uC7A5\uC870",
+          libMinor: "{k} \uB2E8\uC870",
+          libDupNote: "\uC911\uBCF5 \uCC3E\uAE30: \uB0B4 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uB97C \uB9C8\uC6B0\uC2A4 \uC624\uB978\uCABD \uBC84\uD2BC\uC73C\uB85C \uD074\uB9AD \u2192 '\uC911\uBCF5\uB41C \uACE1 \uC81C\uAC70'",
+          dupMenu: "\uC911\uBCF5\uB41C \uACE1 \uC81C\uAC70",
+          dupTitle: "\uC911\uBCF5\uB41C \uACE1",
+          dupLoading: "\uC911\uBCF5\uC744 \uCC3E\uB294 \uC911 \u2026",
+          dupNone: "\uC774 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0\uB294 \uC911\uBCF5\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
+          dupExact: "\uC644\uC804\uD788 \uAC19\uC740 \uACE1 \u2013 \uCCAB \uBC88\uC9F8 \uACE1\uC740 \uB0A8\uC2B5\uB2C8\uB2E4",
+          dupMaybe: "\uC544\uB9C8 \uAC19\uC740 \uACE1(\uB2E4\uB978 \uBC84\uC804)",
+          dupPos: "#{a} \xB7 \uCC98\uC74C #{b}",
+          dupRemove: "\uC81C\uAC70 ({n})",
+          dupConfirm: "'{p}'\uC5D0\uC11C {n}\uACE1\uC744 \uC81C\uAC70\uD560\uAE4C\uC694? \uAC01 \uACE1\uC758 \uCCAB \uBC88\uC9F8\uB294 \uB0A8\uC2B5\uB2C8\uB2E4.",
+          dupDone: "\uC911\uBCF5 {n}\uACE1\uC744 \uC81C\uAC70\uD588\uC2B5\uB2C8\uB2E4",
+          dupFailed: "Spotify\uAC00 \uC81C\uAC70\uB97C \uD5C8\uC6A9\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4",
+          dupNoEdit: "\uD3B8\uC9D1\uD560 \uC218 \uC788\uB294 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uB9CC \uC815\uB9AC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4",
+          dupUnsupported: "\uC774 Spotify \uBC84\uC804\uC5D0\uC11C\uB294 Mirage\uAC00 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uB97C \uC77D\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4",
           menu: "Mirage \uC124\uC815",
           immersive: "Mirage \uBAB0\uC785 \uBAA8\uB4DC",
           back: "\uB4A4\uB85C",
@@ -6264,6 +6511,25 @@
           wishAll: "\uBAA8\uB4E0 \uC2E0\uCCAD\uACE1"
         },
         zh: {
+          g_library: "\u97F3\u4E50\u5E93",
+          libBpm: "\u66F2\u76EE\u5217\u8868\u4E2D\u663E\u793A\u901F\u5EA6\u548C\u8C03\u6027",
+          libBpmHint: "\u5728\u6B4C\u5355\u548C\u4E13\u8F91\u9875\u9762\u7684\u65F6\u957F\u65C1\u663E\u793A BPM \u548C\u8C03\u6027\uFF08Camelot\uFF0C\u4F8B\u5982 8A\uFF09\u2014\u2014\u4F1A\u4E3A\u6BCF\u9996\u53EF\u89C1\u6B4C\u66F2\u52A0\u8F7D Spotify \u7684\u97F3\u9891\u5206\u6790",
+          libMajor: "{k} \u5927\u8C03",
+          libMinor: "{k} \u5C0F\u8C03",
+          libDupNote: "\u67E5\u627E\u91CD\u590D\uFF1A\u53F3\u952E\u70B9\u51FB\u4F60\u81EA\u5DF1\u7684\u6B4C\u5355 \u2192\u201C\u79FB\u9664\u91CD\u590D\u6B4C\u66F2\u201D",
+          dupMenu: "\u79FB\u9664\u91CD\u590D\u6B4C\u66F2",
+          dupTitle: "\u91CD\u590D\u6B4C\u66F2",
+          dupLoading: "\u6B63\u5728\u67E5\u627E\u91CD\u590D\u6B4C\u66F2 \u2026",
+          dupNone: "\u6B64\u6B4C\u5355\u4E2D\u6CA1\u6709\u91CD\u590D\u6B4C\u66F2",
+          dupExact: "\u5B8C\u5168\u91CD\u590D\u2014\u2014\u4FDD\u7559\u7B2C\u4E00\u9996",
+          dupMaybe: "\u53EF\u80FD\u662F\u540C\u4E00\u9996\u6B4C\uFF08\u5176\u4ED6\u7248\u672C\uFF09",
+          dupPos: "\u7B2C {a} \u9996 \xB7 \u9996\u6B21\u51FA\u73B0\u5728\u7B2C {b} \u9996",
+          dupRemove: "\u79FB\u9664\uFF08{n}\uFF09",
+          dupConfirm: "\u8981\u4ECE\u201C{p}\u201D\u79FB\u9664 {n} \u9996\u6B4C\u66F2\u5417\uFF1F\u6BCF\u9996\u6B4C\u7B2C\u4E00\u6B21\u51FA\u73B0\u7684\u4F4D\u7F6E\u4F1A\u4FDD\u7559\u3002",
+          dupDone: "\u5DF2\u79FB\u9664 {n} \u9996\u91CD\u590D\u6B4C\u66F2",
+          dupFailed: "Spotify \u4E0D\u5141\u8BB8\u79FB\u9664",
+          dupNoEdit: "\u53EA\u80FD\u6574\u7406\u4F60\u6709\u6743\u7F16\u8F91\u7684\u6B4C\u5355",
+          dupUnsupported: "\u6B64\u7248\u672C\u7684 Spotify \u4E0D\u5141\u8BB8 Mirage \u8BFB\u53D6\u6B4C\u5355",
           menu: "Mirage \u8BBE\u7F6E",
           immersive: "Mirage \u6C89\u6D78\u6A21\u5F0F",
           back: "\u8FD4\u56DE",
@@ -6910,6 +7176,8 @@
         partyLasers: true,
         partyZoom: false,
         partyIdle: true,
+        // Tempo und Tonart als Pille in Titellisten – kostet je sichtbarem Song eine Anfrage, darum aus
+        libBpm: false,
         scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage"
       };
       cfg = { ...DEFAULTS };
@@ -7579,12 +7847,12 @@
   }
   function tempoFromOnsets(on, hint) {
     let best = null;
-    for (let bpm = 60; bpm <= 190; bpm += 0.5) {
-      const P = 60 / bpm;
+    for (let bpm2 = 60; bpm2 <= 190; bpm2 += 0.5) {
+      const P = 60 / bpm2;
       const { R, phase } = fitGrid(on, P);
-      const prior = Math.exp(-(((bpm - 118) / 45) ** 2) * 0.5) * (hint ? Math.max(0.35, Math.exp(-(((bpm - hint) / 4) ** 2))) : 1);
+      const prior = Math.exp(-(((bpm2 - 118) / 45) ** 2) * 0.5) * (hint ? Math.max(0.35, Math.exp(-(((bpm2 - hint) / 4) ** 2))) : 1);
       const score = R * (0.6 + 0.4 * prior);
-      if (!best || score > best.score) best = { bpm, phase, R, score };
+      if (!best || score > best.score) best = { bpm: bpm2, phase, R, score };
     }
     return best;
   }
@@ -7601,9 +7869,9 @@
     const family = [8, 4, 16, 2, 32].map((k) => 60 * k / L2).filter((b) => b >= 70 && b <= 170);
     if (!family.length) return null;
     const near = hint && family.find((b) => Math.abs(b / hint - 1) < 0.04);
-    const bpm = near || (hint && top < 0.6 ? hint : family[0]);
+    const bpm2 = near || (hint && top < 0.6 ? hint : family[0]);
     const best = { R: top };
-    return { bpm, R: best.R, phase: fitGrid(on, 60 / bpm).phase };
+    return { bpm: bpm2, R: best.R, phase: fitGrid(on, 60 / bpm2).phase };
   }
   async function estimateAnalysis(uri) {
     const id = uri.split(":")[2];
@@ -7615,20 +7883,20 @@
     const lines = lyr?.synced ? lyr.lines.filter((l) => l.text && l.text !== "\u266A") : [];
     const words = lines.flatMap((l) => (l.words || []).map((w) => w.t / 1e3));
     const on = words.length > 30 ? words : lines.map((l) => l.t / 1e3);
-    let bpm = hint, phase = 0, conf = 0.5;
+    let bpm2 = hint, phase = 0, conf = 0.5;
     if (on.length >= 8 && on !== words) {
       const fit2 = tempoFromLines(on, hint);
-      if (fit2) [bpm, phase, conf] = [fit2.bpm, fit2.phase, clamp(fit2.R * 1.2, 0.3, 0.9)];
+      if (fit2) [bpm2, phase, conf] = [fit2.bpm, fit2.phase, clamp(fit2.R * 1.2, 0.3, 0.9)];
     } else if (on.length >= 8) {
       const fit2 = tempoFromOnsets(on, hint);
       const use = hint && fit2.R < 0.4 ? hint : fit2.bpm;
-      if (fit2.R > 0.25 || !hint) [bpm, phase, conf] = [use, fitGrid(on, 60 / use).phase, clamp(fit2.R * 1.4, 0.3, 0.95)];
+      if (fit2.R > 0.25 || !hint) [bpm2, phase, conf] = [use, fitGrid(on, 60 / use).phase, clamp(fit2.R * 1.4, 0.3, 0.95)];
       else phase = fitGrid(on, 60 / hint).phase;
     }
-    if (!bpm) return null;
-    while (bpm > 165) bpm /= 2;
-    while (bpm < 70) bpm *= 2;
-    const P = 60 / bpm;
+    if (!bpm2) return null;
+    while (bpm2 > 165) bpm2 /= 2;
+    while (bpm2 < 70) bpm2 *= 2;
+    const P = 60 / bpm2;
     const beats = [];
     for (let t2 = phase; t2 < dur; t2 += P) beats.push({ t: t2, c: conf });
     if (beats.length < 8) return null;
@@ -7671,7 +7939,7 @@
       bars,
       segs,
       avg,
-      bpm: Math.round(bpm),
+      bpm: Math.round(bpm2),
       loud: base,
       sections: [{ t: 0, mode: feat?.mode ?? 1, l: base }],
       synthetic: true
@@ -7726,7 +7994,7 @@
           k: num(s.timbre?.[3], 0)
         }));
         const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
-        const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
+        const bpm2 = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
         const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
         audio.data = {
           beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
@@ -7734,7 +8002,7 @@
           // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
           sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12), key: num(s.key, -1), tempo: num(s.tempo, 0), tc: num(s.tempo_confidence, 0) })),
           segs,
-          bpm: Math.round(bpm),
+          bpm: Math.round(bpm2),
           loud: Number(d.track?.loudness) || avg,
           avg
         };
@@ -8348,8 +8616,8 @@
       }
     }
     const P = S.Platform || {};
-    const known = P.ShuffleAPI || P.ContextualShuffleAPI;
-    if (typeof known?.getAvailableShuffleModes === "function") return known;
+    const known2 = P.ShuffleAPI || P.ContextualShuffleAPI;
+    if (typeof known2?.getAvailableShuffleModes === "function") return known2;
     for (const v of Object.values(P)) {
       if (v && typeof v.getAvailableShuffleModes === "function" && typeof v.setShuffle === "function") return v;
     }
@@ -8580,13 +8848,13 @@
       return "";
     }
   }
-  function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
+  function pickProfile(genres, bpm2, loud, apple = "", minor = 0) {
     const score = {}, add = (k, n) => score[k] = (score[k] || 0) + n;
     let why = "";
     const g = apple.toLowerCase();
     const am = SPECIFIC.find(([, re]) => re.test(g)) || APPLE.find(([, re]) => re.test(g));
     if (am) {
-      const calmMix = bpm && bpm < 95 || loud < -14;
+      const calmMix = bpm2 && bpm2 < 95 || loud < -14;
       add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
       why = apple;
     }
@@ -8598,16 +8866,16 @@
       }
     });
     const energy = clamp((loud + 16) / 12, 0, 1);
-    if (energy < 0.35 || bpm && bpm < 80) add("chill", 1);
-    else if (bpm >= 118 && bpm <= 135 && energy > 0.6) add("rave", 1);
-    else if (bpm >= 80 && bpm < 105) add("bass", 1);
-    else if (bpm > 140 && energy > 0.7) add("rock", 1);
+    if (energy < 0.35 || bpm2 && bpm2 < 80) add("chill", 1);
+    else if (bpm2 >= 118 && bpm2 <= 135 && energy > 0.6) add("rave", 1);
+    else if (bpm2 >= 80 && bpm2 < 105) add("bass", 1);
+    else if (bpm2 > 140 && energy > 0.7) add("rock", 1);
     const best = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
     let key = best ? best[0] : "pop";
-    if (key === "rave" && bpm) {
-      if (bpm >= 160) key = "dnb";
-      else if (bpm >= 132 && bpm <= 150) key = minor > 0.6 ? "techno" : "trance";
-      else if (bpm >= 118 && bpm < 132) key = minor > 0.6 ? "techno" : "house";
+    if (key === "rave" && bpm2) {
+      if (bpm2 >= 160) key = "dnb";
+      else if (bpm2 >= 132 && bpm2 <= 150) key = minor > 0.6 ? "techno" : "trance";
+      else if (bpm2 >= 118 && bpm2 < 132) key = minor > 0.6 ? "techno" : "house";
     }
     return { key, why };
   }
@@ -9342,10 +9610,10 @@
           dropGlow = 0;
           const [genres, apple] = cfg.partyStyle === "auto" ? await Promise.all([artistGenres(item), appleGenre(item)]) : [[], ""];
           if (my !== token) return info;
-          const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
+          const bpm2 = audio.uri === u ? audio.data?.bpm || 0 : 0;
           const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
-          const auto = pickProfile(genres, bpm, loud, apple, audio.uri === u ? minorShare(audio.data) : 0);
-          info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm, genres, apple };
+          const auto = pickProfile(genres, bpm2, loud, apple, audio.uri === u ? minorShare(audio.data) : 0);
+          info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm: bpm2, genres, apple };
           return info;
         }
         function refine() {
@@ -11279,9 +11547,9 @@
   }
   function credited(uri) {
     if (!uri?.startsWith("spotify:track:")) return Promise.resolve(/* @__PURE__ */ new Set());
-    const known = store[uri];
-    if (Array.isArray(known)) return Promise.resolve(new Set(known));
-    if (known?.miss && Date.now() - known.miss < RETRY2) return Promise.resolve(/* @__PURE__ */ new Set());
+    const known2 = store[uri];
+    if (Array.isArray(known2)) return Promise.resolve(new Set(known2));
+    if (known2?.miss && Date.now() - known2.miss < RETRY2) return Promise.resolve(/* @__PURE__ */ new Set());
     if (jobs.has(uri)) return jobs.get(uri);
     const job = (async () => {
       const id = uri.split(":")[2], found = /* @__PURE__ */ new Set();
@@ -12272,10 +12540,10 @@
         const paddedData = new Uint8Array(data.length + this.degree);
         paddedData.set(data);
         const remainder = Polynomial.mod(paddedData, this.genPoly);
-        const start = this.degree - remainder.length;
-        if (start > 0) {
+        const start2 = this.degree - remainder.length;
+        if (start2 > 0) {
           const buff = new Uint8Array(this.degree);
-          buff.set(remainder, start);
+          buff.set(remainder, start2);
           return buff;
         }
         return remainder;
@@ -13779,7 +14047,7 @@
   function fx(c2, w) {
     lastFx = { c: c2, w: String(w || "").slice(0, 40), s: Date.now() };
   }
-  function feed(px, pal, bpm, lyric) {
+  function feed(px, pal, bpm2, lyric) {
     if (!cfg.partyLive) return;
     lastFeed = performance.now();
     wanted = true;
@@ -13795,7 +14063,7 @@
       v: 1,
       on: 1,
       s: Date.now(),
-      bpm: Math.round(bpm || 120),
+      bpm: Math.round(bpm2 || 120),
       bi: px.beatIdx,
       ph: +(px.phase || 0).toFixed(3),
       e: +px.energy.toFixed(2),
@@ -14058,7 +14326,7 @@
       IDX = null;
     }
     let off = null;
-    let plan = [], queue2 = [], fxs = [], parts = [], lastFire = -1e9, langs = ["en"], sureLang = true, uriNow = "", st0 = {};
+    let plan = [], queue3 = [], fxs = [], parts = [], lastFire = -1e9, langs = ["en"], sureLang = true, uriNow = "", st0 = {};
     const cool = /* @__PURE__ */ new Map();
     let glowSpr = null;
     function glow() {
@@ -14076,7 +14344,7 @@
     function prepare2(uri, lines, hint) {
       if (!IDX) build();
       uriNow = uri;
-      queue2 = [];
+      queue3 = [];
       plan = [];
       if (!lines?.length) return;
       const d = detect(lines, hint);
@@ -14114,7 +14382,7 @@
           }
         }
       }
-      queue2.push({ at: at3, m, lineEl, line: i });
+      queue3.push({ at: at3, m, lineEl, line: i });
     }
     const GAP = [9e3, 6500, 4500, 3200, 2400];
     function tryFire(item, now, st) {
@@ -14126,7 +14394,7 @@
       if (fxs.length >= 2) return false;
       lastFire = now;
       cool.set(key, now);
-      start(spec, st);
+      start2(spec, st);
       highlight(item, spec);
       onFire?.(item.m.c, item.m.raw || "");
       return true;
@@ -14134,13 +14402,13 @@
     function fire(c2, st) {
       if (!FX[c2] || fxs.length >= 3) return;
       st0 = st;
-      start(FX[c2], st);
+      start2(FX[c2], st);
     }
     function highlight(item, spec) {
-      const el2 = item.lineEl, raw = item.m.raw;
-      if (!el2?.isConnected || !raw) return;
+      const el3 = item.lineEl, raw = item.m.raw;
+      if (!el3?.isConnected || !raw) return;
       const col = spec.col || GLOW[spec.fx] || st0.pal?.[0] || [255, 255, 255];
-      const walker = document.createTreeWalker(el2, NodeFilter.SHOW_TEXT);
+      const walker = document.createTreeWalker(el3, NodeFilter.SHOW_TEXT);
       let off2 = 0, node;
       while (node = walker.nextNode()) {
         if (node.parentElement?.closest(".m-im-tr, .m-im-rom")) continue;
@@ -14174,7 +14442,7 @@
       const room = 220 - parts.length;
       for (let i = 0; i < Math.min(n, room); i++) parts.push(f(i));
     }
-    function start(spec, st) {
+    function start2(spec, st) {
       const { w, h, cx, cy, R, dpr } = st;
       const pal = st.pal || [[255, 255, 255], [200, 200, 255], [255, 200, 255]];
       const k = (0.7 + 0.15 * clamp4(st.level, 0, 4)) * 0.55;
@@ -14372,8 +14640,8 @@
     function draw(ctx, st) {
       st0 = st;
       const now = st.now;
-      if (queue2.length) {
-        queue2 = queue2.filter((q) => {
+      if (queue3.length) {
+        queue3 = queue3.filter((q) => {
           if (st.pos < q.at) return st.pos > q.at - 2e4;
           if (st.pos - q.at < 1500 && st.playing) tryFire(q, now, st);
           return false;
@@ -15037,7 +15305,7 @@
       }
     }
     function reset() {
-      queue2 = [];
+      queue3 = [];
       fxs = [];
       parts = [];
     }
@@ -18387,9 +18655,9 @@
   }
   function domReportInner() {
     const tree = [];
-    (function walk(el2, depth) {
+    (function walk(el3, depth) {
       if (depth > 4 || tree.length > 160) return;
-      for (const c2 of el2.children) {
+      for (const c2 of el3.children) {
         const r = c2.getBoundingClientRect();
         tree.push(`${"  ".repeat(depth)}${c2.tagName.toLowerCase()}${c2.id ? "#" + c2.id : ""} .${String(c2.className?.baseVal ?? c2.className).slice(0, 120)} [${c2.dataset?.testid || ""}] ${r.width | 0}x${r.height | 0}`);
         walk(c2, depth + 1);
@@ -18399,26 +18667,26 @@
     const mv = document.querySelector(SEL.mainView) || document.querySelector("main") || document.body;
     const out = [];
     const minW = mv.clientWidth * 0.4;
-    for (const el2 of mv.querySelectorAll("*")) {
+    for (const el3 of mv.querySelectorAll("*")) {
       if (out.length >= 80) break;
-      if (el2.offsetWidth < minW || el2.offsetHeight < 30) continue;
-      const r = el2.getBoundingClientRect();
+      if (el3.offsetWidth < minW || el3.offsetHeight < 30) continue;
+      const r = el3.getBoundingClientRect();
       if (r.top > innerHeight) continue;
-      const cs = getComputedStyle(el2);
+      const cs = getComputedStyle(el3);
       const pseudo = ["::before", "::after"].map((p) => {
-        const c2 = getComputedStyle(el2, p);
+        const c2 = getComputedStyle(el3, p);
         return c2.content !== "none" && (c2.backgroundColor !== "rgba(0, 0, 0, 0)" || c2.backgroundImage !== "none") ? `${p} ${c2.backgroundColor} ${c2.backgroundImage.slice(0, 160)} op=${c2.opacity}` : "";
       }).filter(Boolean);
       if (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.backgroundImage === "none" && !pseudo.length) continue;
       out.push({
-        tag: el2.tagName,
-        cls: String(el2.className?.baseVal ?? el2.className).slice(0, 200),
-        testid: el2.dataset?.testid || "",
-        style: (el2.getAttribute("style") || "").slice(0, 300),
+        tag: el3.tagName,
+        cls: String(el3.className?.baseVal ?? el3.className).slice(0, 200),
+        testid: el3.dataset?.testid || "",
+        style: (el3.getAttribute("style") || "").slice(0, 300),
         bg: cs.backgroundColor,
         img: cs.backgroundImage.slice(0, 200),
         opacity: cs.opacity,
-        tint: el2.classList.contains("m-tint"),
+        tint: el3.classList.contains("m-tint"),
         rect: [r.left | 0, r.top | 0, r.width | 0, r.height | 0],
         pseudo
       });
@@ -18692,9 +18960,9 @@
       LYR = /* @__PURE__ */ new Set(["lyrics", "mix", "party"]);
       VIZ = /* @__PURE__ */ new Set(["viz", "mix", "party"]);
       immersive = (() => {
-        let el2 = null, raf = 0, lastText = 0, coverToken = 0;
+        let el3 = null, raf = 0, lastText = 0, coverToken = 0;
         let q = {};
-        let lyr = null, lyrUri = "", active = -2;
+        let lyr = null, lyrUri = "", active2 = -2;
         const wordFx = createWordFx(LEX2, { onFire: (c2, w) => live.fx(c2, w) });
         let wfxGeo = null, wfxAt = 0;
         let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
@@ -18702,11 +18970,11 @@
         const vizRect = { n: 0, r: null };
         let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
         function build2() {
-          el2 = document.createElement("div");
-          el2.id = "mirage-immersive";
-          el2.setAttribute("role", "dialog");
-          el2.setAttribute("aria-label", t("dialog"));
-          el2.innerHTML = `
+          el3 = document.createElement("div");
+          el3.id = "mirage-immersive";
+          el3.setAttribute("role", "dialog");
+          el3.setAttribute("aria-label", t("dialog"));
+          el3.innerHTML = `
       <div class="m-im-bg" aria-hidden="true"><i></i><i></i><video class="m-im-canvas" muted loop playsinline preload="none"></video></div>
       <div class="m-im-flash" aria-hidden="true"></div>
       <div class="m-im-jam" hidden></div>
@@ -18767,57 +19035,57 @@
       </div>
       <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">\xD7</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
-          document.body.append(el2);
-          el2.querySelector(".m-im-close .m-l").textContent = t("back");
-          el2.querySelectorAll(".m-im-tabs button").forEach((b, i) => b.textContent = t(MODES[i][1]));
-          el2.querySelector(".m-im-bar").setAttribute("aria-label", t("seek"));
-          el2.querySelector(".m-im-prev").setAttribute("aria-label", t("prev"));
-          el2.querySelector(".m-im-play").setAttribute("aria-label", t("play"));
-          el2.querySelector(".m-im-next").setAttribute("aria-label", t("next"));
+          document.body.append(el3);
+          el3.querySelector(".m-im-close .m-l").textContent = t("back");
+          el3.querySelectorAll(".m-im-tabs button").forEach((b, i) => b.textContent = t(MODES[i][1]));
+          el3.querySelector(".m-im-bar").setAttribute("aria-label", t("seek"));
+          el3.querySelector(".m-im-prev").setAttribute("aria-label", t("prev"));
+          el3.querySelector(".m-im-play").setAttribute("aria-label", t("play"));
+          el3.querySelector(".m-im-next").setAttribute("aria-label", t("next"));
           for (const k of ["shuffle", "repeat", "like", "mute", "full"]) {
-            el2.querySelector(".m-im-" + k).setAttribute("aria-label", t("c_" + k));
-            el2.querySelector(".m-im-" + k).title = t("c_" + k);
+            el3.querySelector(".m-im-" + k).setAttribute("aria-label", t("c_" + k));
+            el3.querySelector(".m-im-" + k).title = t("c_" + k);
           }
-          el2.querySelector(".m-im-volume").setAttribute("aria-label", t("c_volume"));
-          el2.append(el2.querySelector(".m-im-drag"), el2.querySelector(".m-im-top"));
+          el3.querySelector(".m-im-volume").setAttribute("aria-label", t("c_volume"));
+          el3.append(el3.querySelector(".m-im-drag"), el3.querySelector(".m-im-top"));
           q = {
-            cover: el2.querySelector(".m-im-cover"),
-            imgs: el2.querySelectorAll(".m-im-cover img"),
-            wrap: el2.querySelector(".m-im-cover-wrap"),
-            kicker: el2.querySelector(".m-im-kicker"),
-            title: el2.querySelector(".m-im-title"),
-            artist: el2.querySelector(".m-im-artist"),
-            fill: el2.querySelector(".m-im-fill"),
-            pos: el2.querySelector(".m-im-pos"),
-            dur: el2.querySelector(".m-im-dur"),
-            play: el2.querySelector(".m-im-play"),
-            lyrics: el2.querySelector(".m-im-lyrics"),
-            inner: el2.querySelector(".m-im-lyrics-inner"),
-            lyrsrc: el2.querySelector(".m-im-lyrsrc"),
-            trbtn: el2.querySelector(".m-im-trbtn"),
-            ind: el2.querySelector(".m-im-ind"),
-            canvas: el2.querySelector(".m-im-viz"),
-            venueEl: el2.querySelector(".m-im-venue"),
-            flash: el2.querySelector(".m-im-flash"),
-            jam: el2.querySelector(".m-im-jam"),
-            bg: el2.querySelector(".m-im-bg"),
-            shuffle: el2.querySelector(".m-im-shuffle"),
-            repeat: el2.querySelector(".m-im-repeat"),
-            like: el2.querySelector(".m-im-like"),
-            mute: el2.querySelector(".m-im-mute"),
-            volume: el2.querySelector(".m-im-volume"),
-            full: el2.querySelector(".m-im-full"),
-            addto: el2.querySelector(".m-im-addto"),
-            smart: el2.querySelector(".m-im-smartpick"),
-            controls: el2.querySelector(".m-im-controls"),
-            meta: el2.querySelector(".m-im-meta"),
-            recap: el2.querySelector(".m-im-recap"),
-            conf: el2.querySelector(".m-im-conf"),
-            ann: el2.querySelector(".m-im-ann"),
-            pollbtn: el2.querySelector(".m-im-pollbtn"),
-            screen: el2.querySelector(".m-im-screen"),
-            live: el2.querySelector(".m-im-live"),
-            fs: el2.querySelector(".m-im-fs")
+            cover: el3.querySelector(".m-im-cover"),
+            imgs: el3.querySelectorAll(".m-im-cover img"),
+            wrap: el3.querySelector(".m-im-cover-wrap"),
+            kicker: el3.querySelector(".m-im-kicker"),
+            title: el3.querySelector(".m-im-title"),
+            artist: el3.querySelector(".m-im-artist"),
+            fill: el3.querySelector(".m-im-fill"),
+            pos: el3.querySelector(".m-im-pos"),
+            dur: el3.querySelector(".m-im-dur"),
+            play: el3.querySelector(".m-im-play"),
+            lyrics: el3.querySelector(".m-im-lyrics"),
+            inner: el3.querySelector(".m-im-lyrics-inner"),
+            lyrsrc: el3.querySelector(".m-im-lyrsrc"),
+            trbtn: el3.querySelector(".m-im-trbtn"),
+            ind: el3.querySelector(".m-im-ind"),
+            canvas: el3.querySelector(".m-im-viz"),
+            venueEl: el3.querySelector(".m-im-venue"),
+            flash: el3.querySelector(".m-im-flash"),
+            jam: el3.querySelector(".m-im-jam"),
+            bg: el3.querySelector(".m-im-bg"),
+            shuffle: el3.querySelector(".m-im-shuffle"),
+            repeat: el3.querySelector(".m-im-repeat"),
+            like: el3.querySelector(".m-im-like"),
+            mute: el3.querySelector(".m-im-mute"),
+            volume: el3.querySelector(".m-im-volume"),
+            full: el3.querySelector(".m-im-full"),
+            addto: el3.querySelector(".m-im-addto"),
+            smart: el3.querySelector(".m-im-smartpick"),
+            controls: el3.querySelector(".m-im-controls"),
+            meta: el3.querySelector(".m-im-meta"),
+            recap: el3.querySelector(".m-im-recap"),
+            conf: el3.querySelector(".m-im-conf"),
+            ann: el3.querySelector(".m-im-ann"),
+            pollbtn: el3.querySelector(".m-im-pollbtn"),
+            screen: el3.querySelector(".m-im-screen"),
+            live: el3.querySelector(".m-im-live"),
+            fs: el3.querySelector(".m-im-fs")
           };
           vctx = q.canvas.getContext("2d");
           q.smart.querySelector("span").textContent = t("smartPick");
@@ -18842,7 +19110,7 @@
           q.fs.hidden = !canFull();
           document.addEventListener("fullscreenchange", syncFull);
           if (!canAddTo()) q.addto.hidden = true;
-          for (const ev of ["pointermove", "pointerdown", "wheel"]) el2.addEventListener(ev, wake, { passive: true });
+          for (const ev of ["pointermove", "pointerdown", "wheel"]) el3.addEventListener(ev, wake, { passive: true });
           q.wrap.addEventListener("transitionend", () => vizRect.r = null);
           q.lyrsrc.querySelector("b").textContent = t("lyrPick");
           q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
@@ -18854,39 +19122,39 @@
             if (cfg.translate) addTranslations(lyrToken);
             else {
               q.inner.querySelectorAll(".m-im-tr").forEach((n) => n.remove());
-              active = -2;
+              active2 = -2;
             }
           };
-          q.video = el2.querySelector(".m-im-canvas");
-          q.cvid = el2.querySelector(".m-im-cvid");
-          q.wishbtn = el2.querySelector(".m-im-wishbtn");
+          q.video = el3.querySelector(".m-im-canvas");
+          q.cvid = el3.querySelector(".m-im-cvid");
+          q.wishbtn = el3.querySelector(".m-im-wishbtn");
           q.wishbtn.onclick = () => showSide(side === "wishes" ? null : "wishes");
-          q.cvbtn = el2.querySelector(".m-im-cvbtn");
+          q.cvbtn = el3.querySelector(".m-im-cvbtn");
           q.cvbtn.onclick = async () => {
-            const mode = el2.dataset.mode;
+            const mode = el3.dataset.mode;
             if (!canvasUrl) return S.showNotification?.(t(await canvasBlocked() ? "canvasBlocked" : "canvasNone"), false, 6e3);
             cfg.canvasIn = { ...cfg.canvasIn || {}, [mode]: !cfg.canvasIn?.[mode] };
             save();
             applyCanvas();
           };
-          q.keys = el2.querySelector(".m-im-keys");
-          const share = el2.querySelector(".m-im-share"), help = el2.querySelector(".m-im-help");
+          q.keys = el3.querySelector(".m-im-keys");
+          const share = el3.querySelector(".m-im-share"), help = el3.querySelector(".m-im-help");
           share.title = share.ariaLabel = t("share");
           help.title = help.ariaLabel = t("keysTitle");
           share.onclick = () => nowPlayingCard();
           help.onclick = () => toggleKeys();
           q.keys.onclick = () => toggleKeys(false);
-          el2.querySelector(".m-im-close").onclick = close;
+          el3.querySelector(".m-im-close").onclick = close;
           q.shuffle.onclick = async () => {
             await cycleShuffle();
             setTimeout(syncState, 150);
           };
           q.title.onclick = () => go(albumOf(currentItem())) && close();
           q.artist.onclick = () => go(artistUriOf(currentItem())) && close();
-          q.side = el2.querySelector(".m-im-side");
-          q.sideBody = el2.querySelector(".m-im-side-body");
-          el2.querySelector(".m-im-side-x").onclick = () => showSide(null);
-          const qb = el2.querySelector(".m-im-queue-btn"), db = el2.querySelector(".m-im-dev"), tb = el2.querySelector(".m-im-timer");
+          q.side = el3.querySelector(".m-im-side");
+          q.sideBody = el3.querySelector(".m-im-side-body");
+          el3.querySelector(".m-im-side-x").onclick = () => showSide(null);
+          const qb = el3.querySelector(".m-im-queue-btn"), db = el3.querySelector(".m-im-dev"), tb = el3.querySelector(".m-im-timer");
           q.timerBtn = tb;
           for (const [b, k] of [[qb, "c_queue"], [db, "c_devices"], [tb, "c_timer"]]) b.title = b.ariaLabel = t(k);
           qb.onclick = () => showSide(side === "queue" ? null : "queue");
@@ -18912,11 +19180,11 @@
           };
           q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
           q.full.onclick = toggleFull;
-          el2.querySelector(".m-im-prev").onclick = () => S.Player.back();
-          el2.querySelector(".m-im-next").onclick = () => S.Player.next();
+          el3.querySelector(".m-im-prev").onclick = () => S.Player.back();
+          el3.querySelector(".m-im-next").onclick = () => S.Player.next();
           q.play.onclick = () => S.Player.togglePlay();
-          el2.querySelectorAll(".m-im-tabs button").forEach((b) => b.onclick = () => setMode(b.dataset.mode, true));
-          el2.querySelector(".m-im-bar").onclick = (e) => {
+          el3.querySelectorAll(".m-im-tabs button").forEach((b) => b.onclick = () => setMode(b.dataset.mode, true));
+          el3.querySelector(".m-im-bar").onclick = (e) => {
             const r = e.currentTarget.getBoundingClientRect();
             S.Player.seek(clamp((e.clientX - r.left) / r.width, 0, 1));
           };
@@ -18924,7 +19192,7 @@
             const line = e.target.closest(".m-im-line");
             if (line && lyr?.synced) S.Player.seek(Math.max(Number(line.dataset.t), 2));
           });
-          el2.addEventListener("pointermove", (e) => {
+          el3.addEventListener("pointermove", (e) => {
             if (cfg.calm) return;
             const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
             depth.tx = x;
@@ -18940,7 +19208,7 @@
           document.addEventListener("mirage:audio", () => {
             if (!isOpen()) return;
             lastBeatIdx = -1;
-            if (el2.dataset.mode === "party") party.prepare(currentItem()).then(updateKicker);
+            if (el3.dataset.mode === "party") party.prepare(currentItem()).then(updateKicker);
             else updateKicker();
           });
         }
@@ -18969,7 +19237,7 @@
           }
         }
         function syncState() {
-          if (!el2) return;
+          if (!el3) return;
           const P = S.Player;
           const sh = shuffleState();
           q.shuffle.classList.toggle("is-on", sh > 0);
@@ -18998,8 +19266,8 @@
         async function toggleFull() {
           try {
             if (document.fullscreenElement || document.webkitFullscreenElement) await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-            else if (el2.requestFullscreen) await el2.requestFullscreen({ navigationUI: "hide" });
-            else el2.webkitRequestFullscreen?.();
+            else if (el3.requestFullscreen) await el3.requestFullscreen({ navigationUI: "hide" });
+            else el3.webkitRequestFullscreen?.();
           } catch {
             try {
               await document.documentElement.requestFullscreen({ navigationUI: "hide" });
@@ -19009,18 +19277,18 @@
           setTimeout(syncState, 300);
         }
         function syncFull() {
-          if (!el2) return;
+          if (!el3) return;
           const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
           for (const b of [q.full, q.fs]) {
             if (!b) continue;
             b.innerHTML = on ? ICON.fullOff : ICON.full;
             b.title = b.ariaLabel = t(on ? "fullOff" : "c_full");
           }
-          el2.classList.toggle("is-full", on);
+          el3.classList.toggle("is-full", on);
         }
         let hazeSrc = "";
         function setHaze(src) {
-          if (!el2 || !src || src === hazeSrc) return;
+          if (!el3 || !src || src === hazeSrc) return;
           hazeSrc = src;
           const [a, b] = q.bg.querySelectorAll("i");
           const front = a.classList.contains("is-on") ? a : b.classList.contains("is-on") ? b : null;
@@ -19051,23 +19319,23 @@
         let idleT = 0, vizMoveUntil = 0;
         function wake() {
           clearTimeout(idleT);
-          if (el2.classList.contains("is-idle")) {
-            el2.classList.remove("is-idle");
+          if (el3.classList.contains("is-idle")) {
+            el3.classList.remove("is-idle");
             vizMoveUntil = performance.now() + 1e3;
           }
-          if (cfg.partyIdle && el2.dataset.mode === "party" && isOpen()) idleT = setTimeout(goIdle, 2600);
+          if (cfg.partyIdle && el3.dataset.mode === "party" && isOpen()) idleT = setTimeout(goIdle, 2600);
         }
         function goIdle() {
-          if (!isOpen() || el2.dataset.mode !== "party" || side || !q.keys.hidden || el2.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
+          if (!isOpen() || el3.dataset.mode !== "party" || side || !q.keys.hidden || el3.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
             idleT = setTimeout(goIdle, 2600);
             return;
           }
-          el2.style.setProperty("--m-idle-shift", Math.round(q.controls.offsetHeight + 10) + "px");
-          el2.classList.add("is-idle");
+          el3.style.setProperty("--m-idle-shift", Math.round(q.controls.offsetHeight + 10) + "px");
+          el3.classList.add("is-idle");
           vizMoveUntil = performance.now() + 1e3;
         }
         function placeIndicator() {
-          const b = el2.querySelector(`.m-im-tabs button[data-mode="${cfg.imMode}"]`);
+          const b = el3.querySelector(`.m-im-tabs button[data-mode="${cfg.imMode}"]`);
           if (!b) return;
           q.ind.style.width = b.offsetWidth + "px";
           q.ind.style.transform = `translateX(${b.offsetLeft}px)`;
@@ -19077,8 +19345,8 @@
           const apply = () => {
             cfg.imMode = mode;
             save();
-            el2.dataset.mode = mode;
-            el2.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
+            el3.dataset.mode = mode;
+            el3.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
             placeIndicator();
             updateKicker();
             if (LYR.has(mode)) loadLyrics();
@@ -19091,7 +19359,7 @@
             showExtras();
             applyCanvas();
             sizeCanvas();
-            active = -2;
+            active2 = -2;
             wake();
           };
           if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
@@ -19099,12 +19367,12 @@
               document.startViewTransition(apply);
             } catch {
             }
-            setTimeout(() => el2.dataset.mode !== mode && apply(), 400);
+            setTimeout(() => el3.dataset.mode !== mode && apply(), 400);
           } else apply();
         }
         function updateKicker() {
-          if (!el2) return;
-          const m = el2.dataset.mode;
+          if (!el3) return;
+          const m = el3.dataset.mode;
           if (m === "party") {
             const p = party.info;
             q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? (audio.data?.synthetic ? "\u2248 " : "") + p.bpm + " BPM" : ""].filter(Boolean).join(" \xB7 ");
@@ -19132,7 +19400,7 @@
           party.live = null;
           live.stop();
           venueClear();
-          el2?.querySelector(".m-im-livecard")?.remove();
+          el3?.querySelector(".m-im-livecard")?.remove();
         }
         let lastJam = -1e9, jamKey = "";
         async function showJam() {
@@ -19324,11 +19592,11 @@
           }
         }
         function setNoLyr(on) {
-          if (!el2 || el2.classList.contains("is-nolyr") === on) return;
+          if (!el3 || el3.classList.contains("is-nolyr") === on) return;
           const parts = [q.wrap, q.meta, q.lyrics].filter(Boolean);
-          const glide = el2.dataset.mode === "party" && !cfg.calm && el2.isConnected;
+          const glide = el3.dataset.mode === "party" && !cfg.calm && el3.isConnected;
           const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
-          el2.classList.toggle("is-nolyr", on);
+          el3.classList.toggle("is-nolyr", on);
           if (!glide) return;
           parts.forEach((p, i) => {
             const a = before[i], b = p.getBoundingClientRect();
@@ -19348,7 +19616,7 @@
           void q.inner.offsetHeight;
           q.inner.style.transition = "";
           q.lyrics.classList.remove("is-unsynced");
-          el2.classList.remove("is-karaoke");
+          el3.classList.remove("is-karaoke");
           q.lyrsrc.hidden = true;
           q.trbtn.hidden = true;
           words = [];
@@ -19362,7 +19630,7 @@
           const seen2 = /* @__PURE__ */ new Map(), key = (x) => x.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
           (got?.lines || []).forEach((l) => key(l.text).length > 6 && seen2.set(key(l.text), (seen2.get(key(l.text)) || 0) + 1));
           (got?.lines || []).forEach((l, i) => (seen2.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
-          active = -2;
+          active2 = -2;
           q.inner.textContent = "";
           q.inner.classList.remove("is-in");
           void q.inner.offsetWidth;
@@ -19381,7 +19649,7 @@
             });
           } else wordFx.prepare(uri, [], "");
           const karaoke = cfg.karaoke && got.synced;
-          el2.classList.toggle("is-karaoke", karaoke);
+          el3.classList.toggle("is-karaoke", karaoke);
           q.lyrics.classList.toggle("is-unsynced", !got.synced);
           const frag = document.createDocumentFragment();
           if (!got.synced) {
@@ -19481,7 +19749,7 @@
             d.textContent = text;
             lines[i].insertBefore(d, lines[i].querySelector(".m-im-tr"));
           });
-          active = -2;
+          active2 = -2;
         }
         const TIMING = "mirage:lyrTiming";
         const timings = () => {
@@ -19505,10 +19773,10 @@
         }
         let edit = null;
         function toggleTiming() {
-          if (!el2 || !lyr?.synced || !lyr.lines?.length || !LYR.has(el2.dataset.mode)) return S.showNotification?.(t("timingNone"), true, 2500);
+          if (!el3 || !lyr?.synced || !lyr.lines?.length || !LYR.has(el3.dataset.mode)) return S.showNotification?.(t("timingNone"), true, 2500);
           if (edit) return finishTiming(true);
-          edit = { i: Math.max(0, active + 1), undo: [] };
-          el2.classList.add("is-timing");
+          edit = { i: Math.max(0, active2 + 1), undo: [] };
+          el3.classList.add("is-timing");
           const bar = document.createElement("div");
           bar.className = "m-im-timing";
           bar.setAttribute("role", "status");
@@ -19529,7 +19797,7 @@
             finishTiming(true);
           };
           bar.append(txt, reset, done);
-          el2.append(bar);
+          el3.append(bar);
           markEdit();
         }
         function markEdit() {
@@ -19548,7 +19816,7 @@
             if (prev && l.t <= prev.t) shiftLine(l, prev.t + 50 - l.t);
             q.inner.querySelectorAll(".m-im-line").forEach((x, k) => x.dataset.t = lyr.lines[k]?.t ?? x.dataset.t);
             edit.i++;
-            active = -2;
+            active2 = -2;
             markEdit();
             return true;
           }
@@ -19557,7 +19825,7 @@
             if (u) {
               for (let k = u.i; k < lyr.lines.length; k++) shiftLine(lyr.lines[k], -u.d);
               edit.i = u.i;
-              active = -2;
+              active2 = -2;
               markEdit();
             }
             return true;
@@ -19569,8 +19837,8 @@
           if (!edit) return;
           const changed = edit.undo.length > 0;
           edit = null;
-          el2.classList.remove("is-timing");
-          el2.querySelector(".m-im-timing")?.remove();
+          el3.classList.remove("is-timing");
+          el3.querySelector(".m-im-timing")?.remove();
           markEdit();
           if (!keep || !changed) return;
           const all = timings();
@@ -19613,7 +19881,7 @@
             d.textContent = text;
             lines[i].append(d);
           });
-          active = -2;
+          active2 = -2;
         }
         function showTrBtn() {
           const lang = (lyr?.lang || "").slice(0, 2).toLowerCase();
@@ -19678,15 +19946,15 @@
           alignLyrics();
           const lines = q.inner.children;
           const i = seek(lyr.lines, pos, "t");
-          if (i !== active) {
-            active = i;
+          if (i !== active2) {
+            active2 = i;
             if (activeEl) activeEl.style.scale = "";
             activeEl?.classList.remove("is-hype");
             activeEl = lines[i] || null;
             lastBounce = "";
-            hypeOn = !!activeEl && cfg.partyHype && el2.dataset.mode === "party" && hype.has(i);
+            hypeOn = !!activeEl && cfg.partyHype && el3.dataset.mode === "party" && hype.has(i);
             activeEl?.classList.toggle("is-hype", hypeOn);
-            if (i >= 0 && cfg.partyWords && el2.dataset.mode === "party" && wordFx.uri === lyrUri) {
+            if (i >= 0 && cfg.partyWords && el3.dataset.mode === "party" && wordFx.uri === lyrUri) {
               const ln = lyr.lines[i], wt = words[i]?.length ? words[i].map((w) => ({ text: w.text, a: w.a, b: w.b })) : wordTimes(lyr.lines, i);
               wordFx.onLine(i, wt, ln.t, lyr.lines[i + 1]?.t ?? ln.t + 6e3, activeEl);
             }
@@ -19744,7 +20012,7 @@
           const sec = pos / 1e3;
           const playing = S.Player.isPlaying();
           let b = 0, havePitch = false, loud = 0.5;
-          const mode = el2.dataset.mode;
+          const mode = el3.dataset.mode;
           const V2 = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
           if (mode === "mix" && V2.style === "line") V2.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing) : null;
@@ -20455,7 +20723,7 @@
           }
           party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
           const lineAt = (k) => lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "\u266A" && lyr.lines[k]?.text || "";
-          live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
+          live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(active2), lyn: lineAt(active2 + 1) });
         }
         const toLocal = (x, y) => [x, y];
         function drawMotes(ctx, dt, dpr) {
@@ -20498,7 +20766,7 @@
             q.dur.textContent = fmt(dur);
             syncState();
           }
-          const mode = el2.dataset.mode;
+          const mode = el3.dataset.mode;
           pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying(), now);
           if (LYR.has(mode)) drawLyrics(pos);
           if (VIZ.has(mode)) {
@@ -20560,21 +20828,21 @@
           v.play().then(() => v.classList.add("is-on")).catch(() => v.classList.remove("is-on"));
         }
         function fitTop() {
-          if (!el2) return;
-          el2.classList.remove("tabs-left");
-          const tabs = el2.querySelector(".m-im-tabs")?.getBoundingClientRect(), acts = el2.querySelector(".m-im-actions")?.getBoundingClientRect();
-          if (tabs && acts && acts.width && acts.left < tabs.right + 12) el2.classList.add("tabs-left");
+          if (!el3) return;
+          el3.classList.remove("tabs-left");
+          const tabs = el3.querySelector(".m-im-tabs")?.getBoundingClientRect(), acts = el3.querySelector(".m-im-actions")?.getBoundingClientRect();
+          if (tabs && acts && acts.width && acts.left < tabs.right + 12) el3.classList.add("tabs-left");
         }
         addEventListener("resize", () => requestAnimationFrame(fitTop));
         function applyCanvas() {
-          if (!el2 || !q.cvbtn) return;
-          const mode = el2.dataset.mode, show = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show && !!canvasUrl;
+          if (!el3 || !q.cvbtn) return;
+          const mode = el3.dataset.mode, show = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show && !!canvasUrl;
           const on = can && !!cfg.canvasIn?.[mode];
           q.cvbtn.hidden = !show;
           q.cvbtn.classList.toggle("is-none", show && !canvasUrl);
           q.cvbtn.setAttribute("aria-pressed", String(on));
           q.cvbtn.title = q.cvbtn.ariaLabel = t(!canvasUrl ? "canvasNone" : on ? "canvasOff" : "canvasOn");
-          el2.classList.toggle("has-canvas", on);
+          el3.classList.toggle("has-canvas", on);
           requestAnimationFrame(fitTop);
           playIn(q.cvid, on);
           playIn(q.video, on && mode === "lyrics");
@@ -20601,8 +20869,8 @@
           q.keys.hidden = !show;
         }
         function styleLyrics() {
-          el2.style.setProperty("--m-lyr-size", String(cfg.lyrSize / 100));
-          el2.style.setProperty("--m-lyr-gap", String(cfg.lyrGap / 100));
+          el3.style.setProperty("--m-lyr-size", String(cfg.lyrSize / 100));
+          el3.style.setProperty("--m-lyr-gap", String(cfg.lyrGap / 100));
         }
         let side = null;
         function showSide(kind) {
@@ -20639,7 +20907,7 @@
             body.append(b);
           };
           if (kind === "wishes") {
-            el2.querySelector(".m-im-wishtoast")?.remove();
+            el3.querySelector(".m-im-wishtoast")?.remove();
             return wishPanel(body);
           }
           if (kind === "screens") return screensPanel(body, item);
@@ -20720,8 +20988,8 @@
           };
           find.focus();
         }
-        function refresh() {
-          if (!el2) return;
+        function refresh2() {
+          if (!el3) return;
           if (side === "queue") setTimeout(() => side === "queue" && showSide("queue"), 600);
           const item = currentItem();
           setCover(item);
@@ -20736,8 +21004,8 @@
           moments2.countN = 0;
           q.count?.classList.remove("is-on");
           updateKicker();
-          if (LYR.has(el2.dataset.mode)) loadLyrics();
-          if (el2.dataset.mode === "party") {
+          if (LYR.has(el3.dataset.mode)) loadLyrics();
+          if (el3.dataset.mode === "party") {
             if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0, from: cfg.partyDJ && vividPal ? vividPal.map((c2) => c2.slice()) : null, hitAt: 0 };
             party.prepare(item).then((info) => {
               updateKicker();
@@ -20756,19 +21024,19 @@
           showExtras();
         }
         function showExtras() {
-          if (!el2) return;
-          const party2 = el2.dataset.mode === "party";
+          if (!el3) return;
+          const party2 = el3.dataset.mode === "party";
           q.recap.hidden = !(party2 && cfg.partyRecap && recap.songs.length >= 3);
           q.conf.hidden = !party2 || !!cfg.calm;
           q.ann.hidden = !party2;
           q.pollbtn.hidden = !(party2 && cfg.partyLive);
           q.screen.hidden = !(party2 && cfg.partyScreen);
           q.live.hidden = !(party2 && cfg.partyLive);
-          if (q.live.hidden) el2.querySelector(".m-im-livecard")?.remove();
+          if (q.live.hidden) el3.querySelector(".m-im-livecard")?.remove();
           drawWishes();
         }
         const seenWish = /* @__PURE__ */ new Set();
-        const openWishes = () => el2?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : [];
+        const openWishes = () => el3?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : [];
         const safeImg = (u) => /^https:\/\/i\.scdn\.co\//.test(u || "") ? u : "";
         async function takeWish(w, btn) {
           if (btn) btn.disabled = true;
@@ -20818,7 +21086,7 @@
           body.replaceChildren(...list.map(wishRow));
         }
         function wishToast(w) {
-          el2.querySelector(".m-im-wishtoast")?.remove();
+          el3.querySelector(".m-im-wishtoast")?.remove();
           const box = document.createElement("div");
           box.className = "m-im-wishtoast";
           box.setAttribute("role", "status");
@@ -20848,12 +21116,12 @@
             showSide("wishes");
           };
           box.append(txt, ok, all);
-          el2.append(box);
+          el3.append(box);
           setTimeout(() => box.classList.add("is-gone"), 6500);
           setTimeout(() => box.remove(), 7200);
         }
         function drawWishes() {
-          if (!el2 || !q.wishbtn) return;
+          if (!el3 || !q.wishbtn) return;
           const list = openWishes();
           q.wishbtn.hidden = !list.length;
           q.wishbtn.dataset.n = list.length > 9 ? "9+" : String(list.length);
@@ -20866,7 +21134,7 @@
         }
         window.addEventListener("mirage:wishes", () => drawWishes());
         async function toggleLiveCard() {
-          const old = el2.querySelector(".m-im-livecard");
+          const old = el3.querySelector(".m-im-livecard");
           if (old) return old.remove();
           const info = await live.prepare().catch(() => null);
           const card = document.createElement("div");
@@ -20896,7 +21164,7 @@
             card.append(img, b, p, u, note);
           }
           card.onclick = () => card.remove();
-          el2.append(card);
+          el3.append(card);
         }
         const moments2 = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false, countN: 0 };
         function showMoments(px, now) {
@@ -20924,7 +21192,7 @@
               q.count = document.createElement("div");
               q.count.className = "m-im-count";
               q.count.setAttribute("aria-hidden", "true");
-              el2.append(q.count);
+              el3.append(q.count);
             }
             if (n) {
               q.count.textContent = String(n);
@@ -20935,7 +21203,7 @@
           }
         }
         function confetti() {
-          if (!el2 || el2.dataset.mode !== "party" || cfg.calm) return;
+          if (!el3 || el3.dataset.mode !== "party" || cfg.calm) return;
           moments2.confetti++;
         }
         let pausedAt = 0;
@@ -20950,7 +21218,7 @@
           if (!q.pause) {
             q.pause = document.createElement("div");
             q.pause.className = "m-im-pause";
-            el2.append(q.pause);
+            el3.append(q.pause);
           }
           q.pause.textContent = "";
           const b = document.createElement("b"), s2 = document.createElement("small");
@@ -20994,12 +21262,12 @@
           setTimeout(() => inp.focus(), 50);
         }
         function showAnnouncement(text) {
-          el2.querySelector(".m-im-annbox")?.remove();
+          el3.querySelector(".m-im-annbox")?.remove();
           const box = document.createElement("div");
           box.className = "m-im-annbox";
           box.setAttribute("role", "status");
           box.textContent = text;
-          el2.append(box);
+          el3.append(box);
           setTimeout(() => box.classList.add("is-gone"), 8e3);
           setTimeout(() => box.remove(), 8800);
         }
@@ -21040,12 +21308,12 @@
         }
         function drawPoll() {
           const p = live.pollState();
-          let card = el2.querySelector(".m-im-pollcard");
+          let card = el3.querySelector(".m-im-pollcard");
           if (!p || Date.now() > p.end + 6e3) return void card?.remove();
           if (!card) {
             card = document.createElement("div");
             card.className = "m-im-pollcard";
-            el2.append(card);
+            el3.append(card);
           }
           const total = p.v.reduce((a, b) => a + b, 0) || 1;
           card.textContent = "";
@@ -21069,13 +21337,13 @@
           if (side === "poll") showSide("poll");
         });
         window.addEventListener("mirage:react", (e) => {
-          if (!el2 || el2.dataset.mode !== "party" || el2.querySelectorAll(".m-im-react").length > 24) return;
+          if (!el3 || el3.dataset.mode !== "party" || el3.querySelectorAll(".m-im-react").length > 24) return;
           const r = document.createElement("span");
           r.className = "m-im-react";
           r.textContent = e.detail;
           r.style.left = 8 + Math.random() * 84 + "%";
           r.style.setProperty("--dx", (Math.random() * 80 - 40).toFixed(0) + "px");
-          el2.append(r);
+          el3.append(r);
           setTimeout(() => r.remove(), 3600);
         });
         function recapPanel(body) {
@@ -21204,7 +21472,7 @@
         }
         let hiddenAt = 0, ticker = null;
         function hiddenTick() {
-          if (!document.hidden || !el2 || !isOpen() || el2.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
+          if (!document.hidden || !el3 || !isOpen() || el3.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
           const now = performance.now(), dt = hiddenAt ? Math.min(1, (now - hiddenAt) / 1e3) : 0.25;
           hiddenAt = now;
           const pos = songPos(now), px = party.step(pos / 1e3, dt, S.Player.isPlaying());
@@ -21224,14 +21492,14 @@
         }
         function open() {
           startTicker();
-          if (!el2) build2();
+          if (!el3) build2();
           sizeCanvas();
           setMode(cfg.imMode, false);
           styleLyrics();
-          refresh();
+          refresh2();
           setHaze(lastHaze);
           syncState();
-          el2.classList.add("is-on");
+          el3.classList.add("is-on");
           root.classList.add("mirage-im-open");
           dust.pause(true);
           requestAnimationFrame(placeIndicator);
@@ -21240,20 +21508,20 @@
           q.play.focus();
         }
         function close() {
-          if (!el2) return;
-          el2.classList.remove("is-on");
+          if (!el3) return;
+          el3.classList.remove("is-on");
           root.classList.remove("mirage-im-open");
           q.video?.pause();
           toggleKeys(false);
           showSide(null);
           clearTimeout(idleT);
-          el2.classList.remove("is-idle");
+          el3.classList.remove("is-idle");
           dust.pause(false);
           cancelAnimationFrame(raf);
           if (document.fullscreenElement) document.exitFullscreen?.();
         }
-        const isOpen = () => !!el2?.classList.contains("is-on");
-        const playState = () => el2 && (q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play);
+        const isOpen = () => !!el3?.classList.contains("is-on");
+        const playState = () => el3 && (q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play);
         const seekBy = (ms) => S.Player.seek(clamp((S.Player.getProgress?.() || 0) + ms, 2, S.Player.getDuration?.() || 2));
         const volBy = (d) => {
           S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1));
@@ -21264,7 +21532,7 @@
           close,
           toggle: () => isOpen() ? close() : open(),
           isOpen,
-          refresh,
+          refresh: refresh2,
           setMode,
           playState,
           updateKicker,
@@ -21274,11 +21542,11 @@
           toggleFull,
           toggleKeys,
           confetti,
-          toggleQueue: () => el2 && showSide(side === "queue" ? null : "queue"),
-          styleLyrics: () => el2 && styleLyrics(),
+          toggleQueue: () => el3 && showSide(side === "queue" ? null : "queue"),
+          styleLyrics: () => el3 && styleLyrics(),
           reloadLyrics: () => {
             lyrUri = "";
-            el2 && LYR.has(el2.dataset.mode) && loadLyrics();
+            el3 && LYR.has(el3.dataset.mode) && loadLyrics();
           },
           toggleTiming,
           timingKey,
@@ -21331,7 +21599,7 @@
         const cv = stage.querySelector("canvas");
         const ctx = cv.getContext("2d", { alpha: false });
         const vig = document.createElement("canvas");
-        let W2 = 0, H2 = 0, timer = 0, running = false, paused = false, lastT = 0, clock = 0, aliveUntil = 0;
+        let W2 = 0, H2 = 0, timer = 0, running2 = false, paused = false, lastT = 0, clock = 0, aliveUntil = 0;
         let pal = schemePalette(), base = [7, 6, 12], sprites = [];
         let cur2 = null, prev = null, fadeT0 = 0;
         const parts = [];
@@ -21355,7 +21623,7 @@
           pal = cols || schemePalette();
           base = baseColor();
           sprites = [...pal, [255, 255, 255]].map(sprite);
-          if (running && !timer) draw(performance.now());
+          if (running2 && !timer) draw(performance.now());
         }
         function buildVignette() {
           vig.width = W2;
@@ -21504,22 +21772,22 @@
           ctx.drawImage(vig, 0, 0);
           ctx.globalAlpha = 1;
         }
-        function active() {
-          if (!running || paused || document.hidden) return false;
+        function active2() {
+          if (!running2 || paused || document.hidden) return false;
           const moving = root.classList.contains("mirage-playing") && !cfg.calm;
           return moving || performance.now() < aliveUntil;
         }
         function tick() {
           timer = 0;
-          if (!running || document.hidden) return;
+          if (!running2 || document.hidden) return;
           requestAnimationFrame((now) => {
             draw(now);
-            if (active()) timer = setTimeout(tick, 1e3 / fps());
+            if (active2()) timer = setTimeout(tick, 1e3 / fps());
             else lastT = 0;
           });
         }
         function wake() {
-          if (!running || timer) return;
+          if (!running2 || timer) return;
           timer = setTimeout(tick, 0);
         }
         document.addEventListener("visibilitychange", wake);
@@ -21538,9 +21806,9 @@
           paused = on;
           if (!on) wake();
         }
-        function start() {
-          if (!running) {
-            running = true;
+        function start2() {
+          if (!running2) {
+            running2 = true;
             cv.style.display = "";
             resize();
             recolor(current);
@@ -21553,19 +21821,19 @@
           aliveUntil = Math.max(aliveUntil, performance.now() + 50);
           wake();
         }
-        function stop2() {
-          running = false;
+        function stop3() {
+          running2 = false;
           clearTimeout(timer);
           timer = 0;
           cv.style.display = "none";
         }
         addEventListener("resize", () => {
-          if (!running) return;
+          if (!running2) return;
           resize();
           aliveUntil = performance.now() + 50;
           wake();
         });
-        return { start, stop: stop2, recolor, pause, wake };
+        return { start: start2, stop: stop3, recolor, pause, wake };
       })();
     }
   });
@@ -21832,13 +22100,13 @@
   function measure(onDone) {
     if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
     measured = true;
-    let frames = 0, start = 0, hiddenSeen = false;
+    let frames = 0, start2 = 0, hiddenSeen = false;
     const sample = (now) => {
       if (document.hidden) hiddenSeen = true;
-      if (!start) start = now;
+      if (!start2) start2 = now;
       frames++;
-      if (now - start < 5e3) return requestAnimationFrame(sample);
-      const fps2 = frames * 1e3 / (now - start);
+      if (now - start2 < 5e3) return requestAnimationFrame(sample);
+      const fps2 = frames * 1e3 / (now - start2);
       if (hiddenSeen) {
         measured = false;
         return document.addEventListener("visibilitychange", () => !document.hidden && measure(onDone), { once: true });
@@ -21877,9 +22145,9 @@
   });
 
   // src/readability.js
-  function backgroundOf(el2) {
+  function backgroundOf(el3) {
     let depth = 0;
-    for (let n = el2; n && n !== document.documentElement && depth++ < 10; n = n.parentElement) {
+    for (let n = el3; n && n !== document.documentElement && depth++ < 10; n = n.parentElement) {
       const cs = getComputedStyle(n);
       if (cs.backgroundImage !== "none") return null;
       const bg = parse(cs.backgroundColor);
@@ -21887,15 +22155,15 @@
     }
     return null;
   }
-  function checkOne(el2) {
-    checked.add(el2);
-    if (el2.classList.contains("m-readable") || !hasText(el2)) return;
-    const cs = getComputedStyle(el2);
+  function checkOne(el3) {
+    checked.add(el3);
+    if (el3.classList.contains("m-readable") || !hasText(el3)) return;
+    const cs = getComputedStyle(el3);
     const fg = parse(cs.color);
     if (!fg || fg[3] < 0.3 || cs.visibility === "hidden") return;
-    const bg = backgroundOf(el2);
+    const bg = backgroundOf(el3);
     if (!bg || ratio(fg, bg) >= 3) return;
-    el2.classList.add("m-readable", lum2(bg) > 0.4 ? "m-readable-dark" : "m-readable-light");
+    el3.classList.add("m-readable", lum2(bg) > 0.4 ? "m-readable-dark" : "m-readable-light");
   }
   function check(deadline) {
     queued = false;
@@ -21924,7 +22192,7 @@
     schedule();
   }
   function recheckAll() {
-    document.querySelectorAll(".m-readable").forEach((el2) => el2.classList.remove("m-readable", "m-readable-dark", "m-readable-light"));
+    document.querySelectorAll(".m-readable").forEach((el3) => el3.classList.remove("m-readable", "m-readable-dark", "m-readable-light"));
     checked = /* @__PURE__ */ new WeakSet();
     document.querySelectorAll(SCOPES).forEach(queue);
   }
@@ -21947,8 +22215,8 @@
         const [hi, lo] = [lum2(x), lum2(y)].sort((p, q) => q - p);
         return (hi + 0.05) / (lo + 0.05);
       };
-      hasText = (el2) => {
-        for (const c2 of el2.childNodes) if (c2.nodeType === 3 && c2.textContent.trim()) return true;
+      hasText = (el3) => {
+        for (const c2 of el3.childNodes) if (c2.nodeType === 3 && c2.textContent.trim()) return true;
         return false;
       };
       checked = /* @__PURE__ */ new WeakSet();
@@ -21998,6 +22266,401 @@
     }
   });
 
+  // src/library.js
+  async function loadEditable() {
+    const R = S.Platform?.RootlistAPI;
+    if (typeof R?.getContents !== "function") return;
+    editableAt = Date.now();
+    try {
+      const set = /* @__PURE__ */ new Set();
+      const walk = (items) => {
+        for (const x of items || []) {
+          if (x?.type === "folder") walk(x.items);
+          else if (x?.type === "playlist" && x.uri && (x.isOwnedBySelf || x.isCollaborative || x.canAdd)) set.add(x.uri);
+        }
+      };
+      walk((await R.getContents())?.items);
+      editable = set;
+    } catch {
+    }
+  }
+  function mayEdit(uri) {
+    if (Date.now() - editableAt > 6e4) loadEditable();
+    return !editable || editable.has(uri);
+  }
+  async function loadAll(uri) {
+    const P = PL();
+    if (typeof P?.getContents !== "function") return null;
+    const all = [];
+    const LIMIT = 500;
+    let first = "";
+    for (let page = 0, offset = 0; page < 60; page++) {
+      const r = await P.getContents(uri, { offset, limit: LIMIT });
+      const items = Array.isArray(r?.items) ? r.items : [];
+      if (!items.length || page > 0 && items[0]?.uid && items[0].uid === first) break;
+      if (page === 0) first = items[0]?.uid || "";
+      all.push(...items);
+      offset += items.length;
+      const total = Number(r?.totalLength ?? r?.total);
+      if (items.length < LIMIT || Number.isFinite(total) && all.length >= total) break;
+    }
+    return all;
+  }
+  function norm3(s) {
+    let x = String(s || "").toLowerCase();
+    x = x.replace(/[([][^)\]]*[)\]]/g, (m) => NOISE.test(m) ? " " : m);
+    x = x.replace(/\s[-–]\s.*$/, (m) => NOISE.test(m) ? "" : m);
+    return x.normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^\p{L}\p{N}]+/gu, "");
+  }
+  function findDuplicates(items) {
+    const exact = [], maybe = [];
+    const byUri = /* @__PURE__ */ new Map(), byName = /* @__PURE__ */ new Map();
+    items.forEach((it, i) => {
+      const uri = it?.uri;
+      if (!uri) return;
+      const row = { it, pos: i + 1 };
+      if (byUri.has(uri)) {
+        exact.push({ ...row, first: byUri.get(uri).pos });
+        return;
+      }
+      byUri.set(uri, row);
+      const title = norm3(it.name), artist = norm3(artistOf2(it));
+      if (!title || !artist || !/^spotify:(track|local):/.test(uri)) return;
+      const key = title + "|" + artist;
+      const prev = byName.get(key);
+      if (prev && !(durMs(prev.it) && durMs(it) && Math.abs(durMs(prev.it) - durMs(it)) > 45e3)) maybe.push({ ...row, first: prev.pos });
+      else if (!prev) byName.set(key, row);
+    });
+    return { exact, maybe };
+  }
+  async function canEdit(uri) {
+    try {
+      const m = await PL()?.getMetadata?.(uri);
+      const p = m?.permissions;
+      if (p && typeof p.canEdit === "boolean") return { ok: p.canEdit, name: m?.name || "" };
+      return { ok: mayEdit(uri), name: m?.name || "" };
+    } catch {
+      return { ok: mayEdit(uri), name: "" };
+    }
+  }
+  async function removeItems(uri, picked) {
+    const P = PL();
+    if (typeof P?.remove !== "function") return 0;
+    let done = 0;
+    for (let i = 0; i < picked.length; i += 100) {
+      const part = picked.slice(i, i + 100).map((x) => ({ uri: x.it.uri, uid: x.it.uid }));
+      await P.remove(uri, part);
+      done += part.length;
+    }
+    return done;
+  }
+  function dupRow(x, checked2) {
+    const row = el("label", "m-row m-dup");
+    const txt = el("span");
+    txt.append(el("b", "", x.it.name || x.it.uri), el("small", "", [artistOf2(x.it), t("dupPos").replace("{a}", x.pos).replace("{b}", x.first)].filter(Boolean).join(" \xB7 ")));
+    const cb = el("input");
+    cb.type = "checkbox";
+    cb.checked = checked2;
+    cb.disabled = !x.it.uid;
+    row.append(txt, cb);
+    return { row, cb, x };
+  }
+  function showDuplicates(uri, name, found) {
+    const box = el("div", "mirage-settings m-dups");
+    const picks = [];
+    const section = (title, list, checked2) => {
+      if (!list.length) return;
+      box.append(el("small", "m-note m-dups-head", title));
+      for (const x of list) {
+        const r = dupRow(x, checked2);
+        picks.push(r);
+        box.append(r.row);
+      }
+    };
+    section(t("dupExact"), found.exact, true);
+    section(t("dupMaybe"), found.maybe, false);
+    const go2 = el("button", "m-btn is-primary");
+    go2.type = "button";
+    const count = () => picks.filter((p) => p.cb.checked && !p.cb.disabled).length;
+    const label = () => {
+      go2.textContent = t("dupRemove").replace("{n}", count());
+      go2.disabled = !count();
+    };
+    box.addEventListener("change", label);
+    label();
+    go2.onclick = async () => {
+      const picked = picks.filter((p) => p.cb.checked && !p.cb.disabled).map((p) => p.x);
+      if (!picked.length || !confirm(t("dupConfirm").replace("{n}", picked.length).replace("{p}", name || "Playlist"))) return;
+      go2.disabled = true;
+      try {
+        const n = await removeItems(uri, picked);
+        S.PopupModal?.hide?.();
+        notify(n ? t("dupDone").replace("{n}", n) : t("dupFailed"), !n);
+      } catch {
+        go2.disabled = false;
+        notify(t("dupFailed"), true);
+      }
+    };
+    const actions = el("div", "m-actions");
+    actions.append(go2);
+    box.append(actions);
+    S.PopupModal.display({ title: t("dupTitle") + (name ? " \xB7 " + name : ""), content: box, isLarge: true });
+  }
+  async function cleanPlaylist(uri) {
+    if (busy) return;
+    if (typeof PL()?.getContents !== "function" || typeof PL()?.remove !== "function" || !S.PopupModal?.display) return notify(t("dupUnsupported"), true);
+    busy = true;
+    try {
+      const { ok, name } = await canEdit(uri);
+      if (!ok) return notify(t("dupNoEdit"), true);
+      notify(t("dupLoading"));
+      const items = await loadAll(uri);
+      if (!items) return notify(t("dupUnsupported"), true);
+      const found = findDuplicates(items);
+      if (!found.exact.length && !found.maybe.length) return notify(t("dupNone"));
+      showDuplicates(uri, name, found);
+    } catch {
+      notify(t("dupUnsupported"), true);
+    } finally {
+      busy = false;
+    }
+  }
+  function camelot(key, mode) {
+    if (!(key >= 0 && key <= 11)) return "";
+    const k = mode === 1 ? key : (key + 3) % 12;
+    return (k * 7 + 7) % 12 + 1 + (mode === 1 ? "B" : "A");
+  }
+  function remember2(id, v) {
+    cache.delete(id);
+    cache.set(id, v);
+    while (cache.size > CAP) cache.delete(cache.keys().next().value);
+    clearTimeout(saveT);
+    saveT = setTimeout(() => {
+      try {
+        localStorage.setItem(STORE, JSON.stringify(Object.fromEntries(cache)));
+      } catch {
+      }
+    }, 2e3);
+  }
+  function enqueue(id) {
+    if (known(id) || queue2.includes(id) || (tries.get(id) || 0) >= 3) return;
+    queue2.push(id);
+    pump();
+  }
+  function pump() {
+    clearTimeout(pumpT);
+    const wait = pauseUntil - Date.now();
+    if (wait > 0) {
+      pumpT = setTimeout(pump, wait);
+      return;
+    }
+    while (active < 2 && queue2.length && running) {
+      const id = queue2.pop();
+      if (known(id)) continue;
+      active++;
+      fetchOne(id).finally(() => {
+        active--;
+        pump();
+      });
+    }
+  }
+  async function fetchOne(id) {
+    if (typeof S.getAudioData !== "function") return;
+    try {
+      const d = await Promise.race([S.getAudioData("spotify:track:" + id), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 1e4))]);
+      const tr = d?.track;
+      const bpm2 = Math.round(Number(tr?.tempo) || 0);
+      const key = Number.isInteger(tr?.key) ? tr.key : -1;
+      remember2(id, [bpm2, key, tr?.mode === 1 ? 1 : 0, DAY()]);
+      fails = 0;
+      paintId(id);
+    } catch (e) {
+      tries.set(id, (tries.get(id) || 0) + 1);
+      fails++;
+      const limited = /429|rate/i.test(String(e?.message || e));
+      pauseUntil = Date.now() + Math.min(6e4, (limited ? 5e3 : 1500) * 2 ** Math.min(fails - 1, 6));
+      if ((tries.get(id) || 0) < 3 && visibleIds().has(id)) queue2.unshift(id);
+    }
+  }
+  function paint(row) {
+    const id = rowId(row);
+    row.dataset.mBpmId = id;
+    let pill = row.querySelector(".m-bpm");
+    const v = id && known(id);
+    if (!v || !v[0]) {
+      pill?.remove();
+      if (id && !v) enqueue(id);
+      return;
+    }
+    const cell = endCell(row);
+    if (!cell) return;
+    if (!pill) pill = el("span", "m-bpm");
+    if (pill.parentElement !== cell) cell.prepend(pill);
+    const cam = camelot(v[1], v[2]);
+    pill.textContent = cam ? `${v[0]} \xB7 ${cam}` : String(v[0]);
+    pill.title = [v[0] + " BPM", keyName(v[1], v[2])].filter(Boolean).join(" \xB7 ");
+  }
+  function paintId(id) {
+    for (const row of visible) if (row.isConnected && row.dataset.mBpmId === id) paint(row);
+  }
+  function onIntersect(entries) {
+    for (const e of entries) {
+      const row = e.target;
+      if (e.isIntersecting) {
+        visible.add(row);
+        paint(row);
+      } else {
+        visible.delete(row);
+        if (row.dataset.mBpmId) dequeue(row.dataset.mBpmId);
+      }
+    }
+  }
+  function scan() {
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv || !io) return;
+    for (const row of mv.querySelectorAll(SEL.rows)) {
+      if (!observed.has(row)) {
+        observed.add(row);
+        io.observe(row);
+      } else if (visible.has(row) && row.dataset.mBpmId !== rowId(row)) {
+        paint(row);
+      }
+    }
+    for (const row of visible) if (!row.isConnected) visible.delete(row);
+  }
+  function stop2() {
+    running = false;
+    io?.disconnect();
+    mo?.disconnect();
+    io = mo = null;
+    queue2.length = 0;
+    visible.clear();
+    document.querySelectorAll(".m-bpm").forEach((p) => p.remove());
+  }
+  function start() {
+    const mv = document.querySelector(SEL.mainView);
+    if (!mv || typeof IntersectionObserver !== "function" || typeof S.getAudioData !== "function") return;
+    if (!running) {
+      running = true;
+      observed = /* @__PURE__ */ new WeakSet();
+      io = new IntersectionObserver(onIntersect, { rootMargin: "200px 0px" });
+      mo = new MutationObserver(scanSoon);
+      mo.observe(mv, { childList: true, subtree: true, attributes: true, attributeFilter: ["href"] });
+    }
+    scanSoon();
+  }
+  function refresh() {
+    const want = !!cfg.libBpm && PAGES.has(root.dataset.mPage);
+    if (!want) {
+      if (running) stop2();
+      return;
+    }
+    if (running) stop2();
+    start();
+  }
+  var notify, el, PL, isPlaylist, editable, editableAt, NOISE, durMs, artistOf2, busy, NOTES, keyName, STORE, CAP, DAY, cache, saveT, known, queue2, tries, active, pauseUntil, fails, pumpT, dequeue, rowId, endCell, visible, visibleIds, running, io, mo, scanT, observed, PAGES, scanSoon, bpm;
+  var init_library = __esm({
+    "src/library.js"() {
+      init_core();
+      init_config();
+      init_i18n();
+      init_selectors();
+      notify = (msg, err) => {
+        try {
+          S.showNotification?.(msg, !!err, 4e3);
+        } catch {
+        }
+      };
+      el = (tag, cls, text) => {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text != null) e.textContent = text;
+        return e;
+      };
+      PL = () => S.Platform?.PlaylistAPI;
+      isPlaylist = (uri) => {
+        try {
+          if (typeof S.URI?.isPlaylistV1OrV2 === "function") return S.URI.isPlaylistV1OrV2(uri);
+        } catch {
+        }
+        return /^spotify:(user:[^:]+:)?playlist:[A-Za-z0-9]+$/.test(String(uri || ""));
+      };
+      editable = null;
+      editableAt = 0;
+      NOISE = /(feat\.?|ft\.|with |remaster|version|edit\b|mono|stereo|deluxe)/i;
+      durMs = (it) => Number(it?.duration?.milliseconds ?? it?.duration_ms ?? it?.duration) || 0;
+      artistOf2 = (it) => it?.artists?.[0]?.name || it?.artist?.name || "";
+      busy = false;
+      (function addDupMenu(tries2 = 0) {
+        const CM = S.ContextMenu;
+        if (!CM?.Item) return tries2 < 40 && setTimeout(() => addDupMenu(tries2 + 1), 500);
+        try {
+          loadEditable();
+          new CM.Item(
+            t("dupMenu"),
+            (uris) => cleanPlaylist(uris?.[0]),
+            (uris) => Array.isArray(uris) && uris.length === 1 && isPlaylist(uris[0]) && mayEdit(uris[0]),
+            "playlist"
+          ).register();
+        } catch {
+        }
+      })();
+      NOTES = ["C", "C\u266F", "D", "E\u266D", "E", "F", "F\u266F", "G", "A\u266D", "A", "B\u266D", "B"];
+      keyName = (key, mode) => key >= 0 && key <= 11 ? t(mode === 1 ? "libMajor" : "libMinor").replace("{k}", NOTES[key]) : "";
+      STORE = "mirage:bpm";
+      CAP = 4e3;
+      DAY = () => Math.floor(Date.now() / 864e5);
+      cache = /* @__PURE__ */ new Map();
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORE) || "{}");
+        if (raw && typeof raw === "object") {
+          for (const [id, v] of Object.entries(raw).slice(-CAP)) if (Array.isArray(v)) cache.set(id, v);
+        }
+      } catch {
+      }
+      saveT = 0;
+      known = (id) => {
+        const v = cache.get(id);
+        return v && (v[0] > 0 || DAY() - (v[3] || 0) < 30) ? v : null;
+      };
+      queue2 = [];
+      tries = /* @__PURE__ */ new Map();
+      active = 0;
+      pauseUntil = 0;
+      fails = 0;
+      pumpT = 0;
+      dequeue = (id) => {
+        const i = queue2.indexOf(id);
+        if (i >= 0) queue2.splice(i, 1);
+      };
+      rowId = (row) => {
+        const a = row.querySelector('a[data-testid="internal-track-link"], a[href*="/track/"]');
+        return /\/track\/([A-Za-z0-9]{22})/.exec(a?.getAttribute("href") || "")?.[1] || "";
+      };
+      endCell = (row) => row.querySelector(".main-trackList-rowSectionEnd") || [...row.querySelectorAll('[role="gridcell"]')].pop();
+      visible = /* @__PURE__ */ new Set();
+      visibleIds = () => new Set([...visible].map((r) => r.dataset.mBpmId).filter(Boolean));
+      running = false;
+      io = null;
+      mo = null;
+      scanT = 0;
+      observed = /* @__PURE__ */ new WeakSet();
+      PAGES = /* @__PURE__ */ new Set(["playlist", "album", "collection"]);
+      scanSoon = () => {
+        if (!scanT) scanT = setTimeout(() => {
+          scanT = 0;
+          scan();
+        }, 250);
+      };
+      try {
+        S.Platform?.History?.listen?.(() => setTimeout(refresh, 300));
+      } catch {
+      }
+      setTimeout(refresh, 1500);
+      bpm = { refresh };
+    }
+  });
+
   // src/settings.js
   function applySettings() {
     applyScheme(effectiveScheme());
@@ -22031,17 +22694,17 @@
     refreshColors();
   }
   function head(title, hint) {
-    const h = el("div", "m-schemes-head");
-    h.append(el("b", "", title));
-    if (hint) h.append(el("small", "", hint));
+    const h = el2("div", "m-schemes-head");
+    h.append(el2("b", "", title));
+    if (hint) h.append(el2("small", "", hint));
     return h;
   }
   function toggle(key, after) {
-    const row = el("label", "m-row");
-    const txt = el("span");
-    const b = el("b", "", t(key));
+    const row = el2("label", "m-row");
+    const txt = el2("span");
+    const b = el2("b", "", t(key));
     if (COSTLY.has(key)) {
-      const bolt = el("i", "m-cost", "\u26A1");
+      const bolt = el2("i", "m-cost", "\u26A1");
       bolt.title = t("costly");
       bolt.setAttribute("role", "img");
       bolt.setAttribute("aria-label", t("costly"));
@@ -22049,8 +22712,8 @@
     }
     txt.append(b);
     const hint = t(key + "Hint");
-    if (hint !== key + "Hint") txt.append(el("small", "", hint));
-    const cb = el("input");
+    if (hint !== key + "Hint") txt.append(el2("small", "", hint));
+    const cb = el2("input");
     cb.type = "checkbox";
     cb.setAttribute("role", "switch");
     cb.dataset.key = key;
@@ -22066,11 +22729,11 @@
     return row;
   }
   function range(key, min, max, step, unit, after) {
-    const row = el("label", "m-row");
-    const txt = el("span");
-    const hint = el("small", "", cfg[key] + unit);
-    txt.append(el("b", "", t(key)), hint);
-    const r = el("input");
+    const row = el2("label", "m-row");
+    const txt = el2("span");
+    const hint = el2("small", "", cfg[key] + unit);
+    txt.append(el2("b", "", t(key)), hint);
+    const r = el2("input");
     Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
     r.setAttribute("aria-valuetext", cfg[key] + unit);
     r.oninput = () => {
@@ -22084,10 +22747,10 @@
     return row;
   }
   function seg(options, value, onPick) {
-    const s = el("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
+    const s = el2("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
     s.setAttribute("role", "group");
     for (const [k, label] of options) {
-      const b = el("button", "", label);
+      const b = el2("button", "", label);
       b.type = "button";
       b.setAttribute("aria-pressed", String(value === k));
       b.onclick = () => {
@@ -22099,16 +22762,16 @@
     return s;
   }
   function select(groups, value, onPick) {
-    const s = el("select", "m-select");
+    const s = el2("select", "m-select");
     for (const [label, opts] of groups) {
       let parent = s;
       if (label) {
-        parent = el("optgroup");
+        parent = el2("optgroup");
         parent.label = label;
         s.append(parent);
       }
       for (const [k, text] of opts) {
-        const o = el("option", "", text);
+        const o = el2("option", "", text);
         o.value = k;
         o.selected = k === value;
         parent.append(o);
@@ -22118,7 +22781,7 @@
     return s;
   }
   function livePanel() {
-    const box = el("div", "m-live");
+    const box = el2("div", "m-live");
     const draw = () => {
       if (box.dataset.seen && !box.isConnected) return window.removeEventListener("mirage:live", draw);
       box.dataset.seen = "1";
@@ -22129,12 +22792,12 @@
       const img = new Image();
       img.alt = "";
       img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
-      const code = el("code", "", t("liveCopy"));
+      const code = el2("code", "", t("liveCopy"));
       code.title = info.url;
       code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {
       });
-      const txt = el("div");
-      txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")));
+      const txt = el2("div");
+      txt.append(el2("b", "", t("liveTitle")), el2("small", "", t("liveHint")), code, el2("small", "m-dim", t("liveRelay")));
       box.append(img, txt);
     };
     window.addEventListener("mirage:live", draw);
@@ -22153,13 +22816,13 @@
     }
   }
   function group(title, open, ...children) {
-    const d = el("details", "m-group");
+    const d = el2("details", "m-group");
     d.open = open;
-    d.append(el("summary", "", title), ...children.filter(Boolean));
+    d.append(el2("summary", "", title), ...children.filter(Boolean));
     return d;
   }
   function button(label, onClick, cls = "") {
-    const b = el("button", "m-btn " + cls, label);
+    const b = el2("button", "m-btn " + cls, label);
     b.type = "button";
     b.onclick = onClick;
     return b;
@@ -22190,14 +22853,14 @@
   function render(box) {
     render.again = () => render(box);
     const kids = [];
-    const search = el("input", "m-search");
+    const search = el2("input", "m-search");
     Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
     search.setAttribute("aria-label", t("searchSettings"));
     search.oninput = () => {
       query = search.value;
       applySearch(box);
     };
-    kids.push(search, el("small", "m-note m-search-none m-hide", t("searchNone")));
+    kids.push(search, el2("small", "m-note m-search-none m-hide", t("searchNone")));
     kids.push(head(t("presetTitle"), t("presetHint")));
     kids.push(
       seg(
@@ -22210,11 +22873,11 @@
         }
       )
     );
-    if (cfg.preset === "custom") kids.push(el("small", "m-note", t("presetCustom")));
+    if (cfg.preset === "custom") kids.push(el2("small", "m-note", t("presetCustom")));
     kids.push(head(t("scheme"), t("schemeHint")));
-    const pick = el("div", "m-schemes");
+    const pick = el2("div", "m-schemes");
     for (const [name, sc] of Object.entries(SCHEMES)) {
-      const b = el("button", "m-scheme");
+      const b = el2("button", "m-scheme");
       b.type = "button";
       b.setAttribute("aria-pressed", String(cfg.scheme === name));
       b.style.setProperty("--s-main", "#" + sc.main);
@@ -22228,7 +22891,7 @@
         render(box);
       };
       if (!BUILT_IN.includes(name)) {
-        const x = el("span", "m-scheme-del", "\xD7");
+        const x = el2("span", "m-scheme-del", "\xD7");
         x.title = t("schemeDelete");
         x.onclick = (e) => {
           e.stopPropagation();
@@ -22246,7 +22909,7 @@
     kids.push(pick);
     const item = currentItem();
     const album = albumUri(item), ctx = contextUri2();
-    const tools = el("div", "m-actions");
+    const tools = el2("div", "m-actions");
     if (album && current) {
       const pinned = !!cfg.pinned[album];
       tools.append(
@@ -22254,7 +22917,7 @@
           if (pinned) delete cfg.pinned[album];
           else cfg.pinned[album] = current.map((c2) => [...c2]);
           save();
-          notify(t(pinned ? "unpinnedAlbum" : "pinnedAlbum"));
+          notify2(t(pinned ? "unpinnedAlbum" : "pinnedAlbum"));
           render(box);
         })
       );
@@ -22304,7 +22967,7 @@
       toggle("burst"),
       toggle("calm"),
       toggle("autoPerf"),
-      el("small", "m-note", t("eco")),
+      el2("small", "m-note", t("eco")),
       seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
         cfg.eco = k;
         save();
@@ -22365,12 +23028,12 @@
             immersive.refresh();
           }
         ),
-        el("small", "m-note", t("partyLevel")),
+        el2("small", "m-note", t("partyLevel")),
         seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
           cfg.partyLevel = k;
           save();
         }),
-        el("small", "m-note", t("partyVenue")),
+        el2("small", "m-note", t("partyVenue")),
         seg(["auto", "club", "warehouse", "cellar", "jazzbar", "pub", "neon", "rooftop", "festival", "forest", "desert", "stadium", "beach", "skihut", "space", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
           cfg.partyVenue = k;
           save();
@@ -22439,22 +23102,22 @@
         })
       )
     );
-    const builder = el("div", "m-builder");
+    const builder = el2("div", "m-builder");
     const picks = {};
     const base = SCHEMES[cfg.scheme] || SCHEMES.Mirage;
     for (const [k, init] of [["base", base.main], ["accent", base.button], ["deep", base.notification], ["light", base["button-active"]]]) {
-      const lab = el("label", "m-color");
-      const inp = el("input");
+      const lab = el2("label", "m-color");
+      const inp = el2("input");
       inp.type = "color";
       inp.value = "#" + init;
       picks[k] = inp;
-      lab.append(inp, el("span", "", t("c_" + k)));
+      lab.append(inp, el2("span", "", t("c_" + k)));
       builder.append(lab);
     }
-    const nameIn = el("input", "m-text");
+    const nameIn = el2("input", "m-text");
     nameIn.placeholder = t("schemeName");
     nameIn.maxLength = 24;
-    const codeIn = el("input", "m-text");
+    const codeIn = el2("input", "m-text");
     codeIn.placeholder = t("schemeCodeHint");
     const saveScheme = (name, colors) => {
       const sc = buildScheme(colors);
@@ -22467,25 +23130,25 @@
       render(box);
     };
     const colorsNow = () => Object.fromEntries(Object.entries(picks).map(([k, i]) => [k, i.value.slice(1).toUpperCase()]));
-    const bActions = el("div", "m-actions");
+    const bActions = el2("div", "m-actions");
     bActions.append(
       button(t("schemeSave"), () => {
         const name = nameIn.value.trim().slice(0, 24);
-        if (!name || BUILT_IN.includes(name)) return notify(t("schemeNameTaken"), true);
+        if (!name || BUILT_IN.includes(name)) return notify2(t("schemeNameTaken"), true);
         saveScheme(name, colorsNow());
       }, "is-primary"),
       button(t("schemeCopy"), async () => {
         const code = encode("MIRAGE-SCHEME:", { name: nameIn.value.trim() || "My scheme", colors: colorsNow() });
         try {
           await navigator.clipboard.writeText(code);
-          notify(t("copied"));
+          notify2(t("copied"));
         } catch {
           codeIn.value = code;
         }
       }),
       button(t("schemeImport"), () => {
         const d = decode("MIRAGE-SCHEME:", codeIn.value);
-        if (!d?.colors?.accent) return notify(t("badCode"), true);
+        if (!d?.colors?.accent) return notify2(t("badCode"), true);
         const name = BUILT_IN.includes(d.name) ? d.name + " 2" : String(d.name).slice(0, 24);
         saveScheme(name, d.colors);
       })
@@ -22493,15 +23156,16 @@
     kids.push(group(t("g_builder"), false, builder, nameIn, bActions, codeIn));
     const os = String(S.Platform?.operatingSystem || navigator.platform || "").toLowerCase();
     const file = /win/.test(os) ? "Mirage-Overlay-Setup.exe" : /mac|osx|darwin/.test(os) ? "Mirage-Overlay.dmg" : "Mirage-Overlay.AppImage";
-    const ovState = el("small", "m-note", t(bridge.connected() ? "overlayConnected" : "overlayMissing"));
-    const ovRow = el("div", "m-actions");
+    const ovState = el2("small", "m-note", t(bridge.connected() ? "overlayConnected" : "overlayMissing"));
+    const ovRow = el2("div", "m-actions");
     ovRow.append(
       button(t("overlayDownload"), () => window.open(`https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/${file}`, "_blank"), "is-primary"),
       button(t("overlayAllDownloads"), () => window.open("https://github.com/Passimoritz/spicetify-mirage/releases/latest", "_blank"))
     );
+    kids.push(group(t("g_library"), false, toggle("libBpm", () => bpm.refresh()), el2("small", "m-note", t("libDupNote"))));
     kids.push(group(t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
-    const foot = el("div", "m-actions");
-    const dataIn = el("input", "m-text");
+    const foot = el2("div", "m-actions");
+    const dataIn = el2("input", "m-text");
     dataIn.placeholder = t("settingsCodeHint");
     foot.append(
       button(t("shareNow"), () => nowPlayingCard()),
@@ -22511,14 +23175,14 @@
         const code = encode("MIRAGE-SETTINGS:", cfg);
         try {
           await navigator.clipboard.writeText(code);
-          notify(t("copied"));
+          notify2(t("copied"));
         } catch {
           dataIn.value = code;
         }
       }),
       button(t("importSettings"), () => {
         const d = decode("MIRAGE-SETTINGS:", dataIn.value);
-        if (!d) return notify(t("badCode"), true);
+        if (!d) return notify2(t("badCode"), true);
         Object.assign(cfg, d);
         for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
         save();
@@ -22527,16 +23191,16 @@
       }),
       // dieselbe Sicherung als Datei (z. B. für einen zweiten PC)
       button(t("saveFile"), () => {
-        const a = el("a");
+        const a = el2("a");
         a.href = URL.createObjectURL(new Blob([JSON.stringify({ mirage: VERSION, settings: cfg }, null, 2)], { type: "application/json" }));
         a.download = `mirage-settings-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.json`;
         document.body.append(a);
         a.click();
         setTimeout(() => (URL.revokeObjectURL(a.href), a.remove()), 2e3);
-        notify(t("fileSaved"));
+        notify2(t("fileSaved"));
       }),
       button(t("loadFile"), () => {
-        const f = el("input");
+        const f = el2("input");
         f.type = "file";
         f.accept = "application/json,.json";
         f.onchange = async () => {
@@ -22545,13 +23209,13 @@
             d = JSON.parse(await f.files[0].text())?.settings;
           } catch {
           }
-          if (!d || typeof d !== "object" || Array.isArray(d)) return notify(t("badCode"), true);
+          if (!d || typeof d !== "object" || Array.isArray(d)) return notify2(t("badCode"), true);
           Object.assign(cfg, d);
           for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
           save();
           refreshColors();
           render(box);
-          notify(t("fileLoaded"));
+          notify2(t("fileLoaded"));
         };
         f.click();
       }),
@@ -22562,7 +23226,7 @@
       button(t("diagnostics"), async () => {
         try {
           await navigator.clipboard.writeText(diagnostics());
-          notify(t("copied"));
+          notify2(t("copied"));
         } catch {
           dataIn.value = diagnostics();
         }
@@ -22577,7 +23241,7 @@
       }, "is-danger")
     );
     kids.push(group(t("g_more"), false, foot, dataIn));
-    kids.push(el("small", "m-note", t("tip")), el("small", "m-note m-version", `Mirage ${VERSION}`));
+    kids.push(el2("small", "m-note", t("tip")), el2("small", "m-note m-version", `Mirage ${VERSION}`));
     const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
     const hadFocus = document.activeElement?.classList.contains("m-search");
     box.replaceChildren(...kids);
@@ -22587,7 +23251,7 @@
     box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
   }
   function openSettings() {
-    const box = el("div", "mirage-settings");
+    const box = el2("div", "mirage-settings");
     render(box);
     S.PopupModal.display({ title: "Mirage", content: box, isLarge: true });
   }
@@ -22603,15 +23267,15 @@
   }
   function tour() {
     document.querySelector(".mirage-welcome")?.remove();
-    const box = el("div", "mirage-welcome");
+    const box = el2("div", "mirage-welcome");
     box.setAttribute("role", "dialog");
     box.setAttribute("aria-label", t("welcomeTitle"));
     let i = 0;
     const draw = () => {
       const [tk, k, act] = TOUR[i];
-      const dots = el("div", "m-dots");
-      TOUR.forEach((_, j) => dots.append(el("i", j === i ? "is-on" : "")));
-      const row = el("div", "m-actions");
+      const dots = el2("div", "m-dots");
+      TOUR.forEach((_, j) => dots.append(el2("i", j === i ? "is-on" : "")));
+      const row = el2("div", "m-actions");
       if (act) row.append(button(t(k + "Try"), () => {
         box.remove();
         act();
@@ -22625,13 +23289,13 @@
       );
       const close = row.querySelector(".m-close");
       close.title = close.ariaLabel = t("k_close");
-      box.replaceChildren(el("small", "m-kick", `${i + 1} / ${TOUR.length}`), el("b", "", t(tk)), el("span", "", t(k)), dots, row);
+      box.replaceChildren(el2("small", "m-kick", `${i + 1} / ${TOUR.length}`), el2("b", "", t(tk)), el2("span", "", t(k)), dots, row);
       box.querySelector(".is-primary")?.focus();
     };
     draw();
     document.body.append(box);
   }
-  var COSTLY, el, labelN, notify, encode, decode, query, LABEL, TOUR;
+  var COSTLY, el2, labelN, notify2, encode, decode, query, LABEL, TOUR;
   var init_settings = __esm({
     "src/settings.js"() {
       init_core();
@@ -22651,15 +23315,16 @@
       init_fonts();
       init_party();
       init_live();
+      init_library();
       COSTLY = /* @__PURE__ */ new Set(["glass", "particles", "beat", "tilt", "canvas"]);
-      el = (tag, cls, text) => {
+      el2 = (tag, cls, text) => {
         const e = document.createElement(tag);
         if (cls) e.className = cls;
         if (text != null) e.textContent = text;
         return e;
       };
       labelN = 0;
-      notify = (msg, err) => {
+      notify2 = (msg, err) => {
         try {
           S.showNotification?.(msg, !!err, 3500);
         } catch {
@@ -22749,10 +23414,10 @@
     if (rgba4) return Number(rgba4[1].split(",")[3]);
     return 1;
   }
-  function tame(el2, minW) {
-    if (el2.classList.contains("m-tint") || el2.offsetWidth < minW || el2.offsetHeight < 40) return;
-    if (el2.closest(SEL.tintSkip)) return;
-    const cs = getComputedStyle(el2);
+  function tame(el3, minW) {
+    if (el3.classList.contains("m-tint") || el3.offsetWidth < minW || el3.offsetHeight < 40) return;
+    if (el3.closest(SEL.tintSkip)) return;
+    const cs = getComputedStyle(el3);
     if (/url\(["']?https?:/.test(cs.backgroundImage)) return;
     const tc = /rgba?\(([^)]+)\)/.exec(cs.color);
     if (tc) {
@@ -22761,14 +23426,14 @@
     }
     const alpha = alphaOf(cs.backgroundColor);
     for (const p of ["::before", "::after"]) {
-      const ps = getComputedStyle(el2, p);
+      const ps = getComputedStyle(el3, p);
       if (ps.content !== "none" && (alphaOf(ps.backgroundColor) >= 0.3 || ps.backgroundImage.includes("gradient("))) {
-        el2.classList.add("m-tint-pseudo");
+        el3.classList.add("m-tint-pseudo");
       }
     }
     const gradient = cs.backgroundImage.includes("gradient(");
-    if (alpha >= 0.3) el2.classList.add("m-tint");
-    if (gradient) el2.classList.add("m-tint", "m-tint-img");
+    if (alpha >= 0.3) el3.classList.add("m-tint");
+    if (gradient) el3.classList.add("m-tint", "m-tint-img");
   }
   function run() {
     queued3 = false;
@@ -22782,7 +23447,7 @@
     if (full) {
       full = false;
       pending4.clear();
-      for (const el2 of mv.querySelectorAll(CANDIDATE)) tame(el2, minW);
+      for (const el3 of mv.querySelectorAll(CANDIDATE)) tame(el3, minW);
       return;
     }
     const batch = [...pending4];
@@ -22790,7 +23455,7 @@
     for (const node of batch) {
       if (!node.isConnected) continue;
       if (node.matches(CANDIDATE)) tame(node, minW);
-      if (node.offsetWidth >= minW) for (const el2 of node.querySelectorAll(CANDIDATE)) tame(el2, minW);
+      if (node.offsetWidth >= minW) for (const el3 of node.querySelectorAll(CANDIDATE)) tame(el3, minW);
     }
   }
   function schedule2() {
@@ -22947,6 +23612,7 @@
       init_keys();
       init_readability();
       init_selectors();
+      init_library();
       (function addMenu() {
         if (!S.Menu?.Item) return setTimeout(addMenu, 500);
         try {

@@ -131,6 +131,8 @@ const DEFAULTS = {
   partyLasers: true,
   partyZoom: false,
   partyIdle: true,
+  // Tempo und Tonart als Pille in Titellisten – kostet je sichtbarem Song eine Anfrage, darum aus
+  libBpm: false,
   scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
 };
 let cfg = { ...DEFAULTS };
