@@ -9,7 +9,7 @@ This policy covers the Windows installer of the **Mirage Overlay** app (`Mirage-
 - Every release is built automatically by [GitHub Actions](.github/workflows/release.yml) from a tagged commit of this public repository – never on a personal computer.
 - The build first produces the unpacked app; all of its program files (`.exe`, `.dll`, `.node`) are submitted to SignPath for signing. The installer is then built from the signed files and signed itself.
 - SignPath verifies that each artifact comes from this repository and its release workflow. Every signing request is approved by hand before it is signed.
-- Only software developed in this repository is signed. Third-party components shipped with the app (Electron and its libraries, the `ws` and `qrcode` packages) are open source and are not altered.
+- Only software developed in this repository is signed. Third-party components shipped with the app (Electron and its libraries, the `ws` package) are open source and are not altered.
 
 ## Team
 

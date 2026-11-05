@@ -82,6 +82,8 @@ const DEFAULTS = {
   partyDepth: true,
   partyShatter: true,
   partyCamera: true,
+  partyCuts: true,
+  partyWishes: true,
   partyCrowd: true,
   partyJamLight: true,
   partyScreen: true,

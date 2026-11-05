@@ -62,7 +62,7 @@ const immersive = (() => {
   let el = null, raf = 0, lastText = 0, coverToken = 0;
   let q = {};
   let lyr = null, lyrUri = "", active = -2;
-  let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0;
+  let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
   const pit = new Float32Array(12);
   const vizRect = { n: 0, r: null };
   let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
@@ -1094,6 +1094,29 @@ const immersive = (() => {
         ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r, 0, Math.PI * 2);
         ctx.fill();
       }
+    } else if (V.style === "tunnel") {
+      // 3D-Tunnel: jeder Ring ist ein Abdruck des Spektrums von eben, der aus dem Cover auf dich zufliegt –
+      // erst langsam, dann immer schneller (Perspektive), und dabei verblasst
+      if (now - tunnelAt > 40) {
+        tunnelAt = now;
+        const ring = new Float32Array(48);
+        for (let k = 0; k < 48; k++) ring[k] = vals[Math.floor((k / 48) * N)] || 0;
+        tunnel3d.push({ at: now, v: ring, c: tunnel3d.length % 3 });
+      }
+      const life = 1400 - b * 500, far = Math.hypot(vw, vh) * 0.62;
+      tunnel3d = tunnel3d.filter((r) => now - r.at < life);
+      for (const r of tunnel3d) {
+        const z = (now - r.at) / life, d = R * 1.05 + (far - R) * z * z;
+        ctx.lineWidth = (1 + z * 5) * dpr;
+        ctx.strokeStyle = rgba(pal[r.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
+        ctx.beginPath();
+        for (let k = 0; k <= 48; k++) {
+          const j = k % 48, a = (j / 48) * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r.v[j] * 0.28 * V.height);
+          k ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
     } else if (V.style === "wave") {
       // geschlossene, weiche Kurve durch alle Spitzen
       ctx.beginPath();
@@ -1480,6 +1503,9 @@ const immersive = (() => {
 
   /* ---------------------------------------------------------------- Party-Erweiterungen */
   let blend = null, motes = [], hype = new Set(), hypeOn = false;
+  // Einstellungen für Kameraschnitte: [Zoom, Versatz x, Versatz y] (Anteil der Fenstergröße)
+  const SHOTS = [[1, 0, 0], [1.13, 0.05, 0.02], [1.13, -0.05, 0.02], [1.2, 0, -0.08], [1.07, 0, 0.035]];
+  const shot = { i: 0, s: 1, x: 0, y: 0, bars: 0, bar: -1 };
   const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
   // pro Bild, vor dem Zeichnen: Übergang, Hype, Kamera, 3D-Tiefe, Liedtext-Funken, Live-Zustand fürs Overlay
   // Läuft Party zu langsam (unter ~48 Bilder/s über 2 s), schaltet Mirage teure Details selbst herunter:
@@ -1578,17 +1604,43 @@ const immersive = (() => {
       }
     }
     // Kamerafahrt: in ruhigen Stellen weit, mit der Energie näher, beim Drop ein kurzer Ruck; langsames Schweben
-    if (cfg.partyCamera && px.fx && quality.level > 0) {
+    // Kameraschnitte: harte Schnitte auf dem Taktanfang zwischen festen Einstellungen (weit, nah links/rechts,
+    // in die Menge, von oben) – alle 8 Takte, in der Spitze alle 4; der Drop schneidet zurück auf die Totale
+    if ((cfg.partyCamera || cfg.partyCuts) && px.fx && quality.level > 0) {
       const t = now / 1000;
-      const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
+      if (cfg.partyCuts) {
+        // neuer Takt: der erste Schlag des Takts hat sich geändert (übersteht auch ein übersprungenes Bild)
+        const barId = px.beatIdx - (px.inBar || 0), newBar = px.beatIdx >= 0 && barId !== shot.bar;
+        if (px.beatIdx >= 0) shot.bar = barId;
+        if (px.dropHit && shot.i) [shot.i, shot.bars] = [0, 0];
+        else if (newBar) {
+          shot.bars++;
+          const hot = px.energy > 0.55 && px.low < 0.3 && !px.blackout;
+          if (!hot) shot.i = 0;
+          else if (shot.bars >= (px.finale || px.drop > 0.3 ? 4 : 8)) {
+            let i;
+            do i = 1 + Math.floor(Math.random() * (SHOTS.length - 1));
+            while (i === shot.i);
+            [shot.i, shot.bars] = [i, 0];
+          }
+        }
+      } else shot.i = 0;
+      // Schnitt = sofort; zurück zur Totalen in ruhigen Stellen = weich
+      const [ss, sx, sy] = SHOTS[shot.i];
+      const k1 = shot.i ? 1 : 1 - Math.exp(-dt * 1.5);
+      shot.s += (ss - shot.s) * k1;
+      shot.x += (sx - shot.x) * k1;
+      shot.y += (sy - shot.y) * k1;
+      const target = cfg.partyCamera ? 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8) : 1;
       // Grundzoom gleitet; der Ruck beim Drop ist ein kurzer, gefederter Stoß statt eines Sprungs
       cam.b = (cam.b ?? 1) + (target - (cam.b ?? 1)) * (1 - Math.exp(-dt * 1.2));
-      if (px.dropHit) cam.kick = 0.035;
+      if (px.dropHit && cfg.partyCamera) cam.kick = 0.035;
       cam.kick = (cam.kick || 0) * Math.exp(-dt * 2.5);
       cam.kv = (cam.kv || 0) + (cam.kick - (cam.kv || 0)) * (1 - Math.exp(-dt * 16));
-      cam.s = cam.b + cam.kv;
-      cam.x = Math.sin(t * 0.05) * innerWidth * 0.008 * (0.5 + px.energy);
-      cam.y = Math.cos(t * 0.037) * innerHeight * 0.006 * (0.5 + px.energy);
+      const ride = cfg.partyCamera ? 0.5 + px.energy : 0;
+      cam.s = (cam.b + cam.kv) * shot.s;
+      cam.x = Math.sin(t * 0.05) * innerWidth * 0.008 * ride + shot.x * innerWidth;
+      cam.y = Math.cos(t * 0.037) * innerHeight * 0.006 * ride + shot.y * innerHeight;
       // nur die Bühne bewegt sich (Hintergrund hier, Licht und Publikum im Canvas) – Cover, Liedtext
       // und Bedienung bleiben stehen: nichts rutscht aus dem Bild, kein Spotify-Rand blitzt durch
       // auf Zehntelpixel: ganze Pixel ließen das langsame Schweben sichtbar stufen
@@ -1599,6 +1651,7 @@ const immersive = (() => {
       }
     } else if (cam.key || cam.s !== 1) {
       Object.assign(cam, { s: 1, b: 1, kick: 0, kv: 0, x: 0, y: 0, key: "" });
+      Object.assign(shot, { i: 0, s: 1, x: 0, y: 0, bars: 0 });
       q.bg.style.translate = "";
     }
     // 3D-Tiefe: Liedtext, Titel und Licht liegen auf verschiedenen Ebenen; ohne Maus schwebt die Szene leise
@@ -1621,7 +1674,9 @@ const immersive = (() => {
     }
     // fürs Overlay (Kantenlicht): der aktuelle Lichtzustand
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
-    live.feed(px, vividPal || palette(), party.info.bpm);
+    // Liedtext zum Mitsingen auf den Handys: aktuelle und nächste Zeile (nur synchroner Liedtext)
+    const lineAt = (k) => (lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "♪" && lyr.lines[k]?.text) || "";
+    live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
   }
   const toLocal = (x, y) => [x, y];
   function drawMotes(ctx, dt, dpr) {
@@ -1882,7 +1937,53 @@ const immersive = (() => {
     q.screen.hidden = !(party && cfg.partyScreen && "getScreenDetails" in window);
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
+    drawWishes();
   }
+  // Songwünsche der Gäste (Live-Link): oben links, die meistgewünschten zuerst – annehmen = in die Warteschlange
+  function drawWishes() {
+    if (!el) return;
+    const list = el.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open").slice(0, 3) : [];
+    let box = el.querySelector(".m-im-wishes");
+    if (!list.length) return box?.remove();
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "m-im-wishes";
+      box.setAttribute("role", "region");
+      box.setAttribute("aria-label", t("wishTitle"));
+      el.append(box);
+    }
+    const head = document.createElement("b");
+    head.textContent = t("wishTitle");
+    const rows = list.map((w) => {
+      const row = document.createElement("div");
+      row.className = "m-im-wish";
+      const txt = document.createElement("span");
+      const ti = document.createElement("i");
+      ti.textContent = w.t;
+      const sub = document.createElement("small");
+      sub.textContent = `${w.a}${w.n ? " · " + t("wishBy").replace("{n}", w.n) : ""} · 👍 ${w.v}`;
+      txt.append(ti, sub);
+      const ok = document.createElement("button");
+      ok.type = "button";
+      ok.className = "m-im-wish-ok";
+      ok.textContent = t("wishQueue");
+      ok.onclick = async () => {
+        ok.disabled = true;
+        if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
+        else ok.disabled = false;
+      };
+      const no = document.createElement("button");
+      no.type = "button";
+      no.className = "m-im-wish-no";
+      no.textContent = "✕";
+      no.title = no.ariaLabel = t("wishDecline");
+      no.onclick = () => live.decline(w.i);
+      row.append(txt, ok, no);
+      return row;
+    });
+    box.replaceChildren(head, ...rows);
+  }
+  window.addEventListener("mirage:wishes", () => drawWishes());
   // Live-Link: QR-Code und Link der Handy-Seite (verschlüsselt über einen Relay, siehe live.js)
   async function toggleLiveCard() {
     const old = el.querySelector(".m-im-livecard");

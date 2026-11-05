@@ -6,25 +6,6 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap");
 
-:root {
-  --m-a: var(--spice-button);
-  --m-b: var(--spice-notification);
-  --m-c: var(--spice-button-active);
-  --m-a-rgb: var(--spice-rgb-button);
-  --m-b-rgb: var(--spice-rgb-notification);
-  --m-c-rgb: var(--spice-rgb-button-active);
-  --m-glass: rgba(var(--spice-rgb-main), 0.55);
-  --m-glass-strong: rgba(var(--spice-rgb-main), 0.84);
-  --m-line: rgba(255, 255, 255, 0.07);
-  --m-line-strong: rgba(255, 255, 255, 0.14);
-  --m-radius: 18px;
-  --m-blur: 28px;
-  --m-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --m-font: "Outfit", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
-  --m-mono: "JetBrains Mono", ui-monospace, monospace;
-}
-
 /* ---------- Schrift ---------- */
 body,
 .encore-dark-theme,
@@ -189,6 +170,8 @@ body {
      1,8 × 1,8 Fenstergrößen – blur(60px), später saturate/brightness. Ein Filter kommt nur noch
      dazu, wenn jemand die Helligkeit verstellt (Klasse mirage-bright-adjust). */
   animation: m-drift 70s linear infinite;
+  /* Stufen statt fließend: siehe „steps(n) = Dauer × 24“ weiter unten */
+  animation-timing-function: steps(1680) !important;
 }
 html.mirage-bright-adjust #mirage-stage .m-art i {
   filter: brightness(var(--m-bright, 1));
@@ -809,6 +792,81 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   box-shadow: 0 20px 60px rgb(0 0 0 / 0.5);
   cursor: pointer;
 }
+/* Songwünsche der Gäste: kleine Glaskarte oben links, die meistgewünschten zuerst */
+#mirage-immersive .m-im-wishes {
+  position: absolute;
+  top: 76px;
+  left: 24px;
+  z-index: 29;
+  display: grid;
+  gap: 8px;
+  width: min(320px, calc(100% - 32px));
+  padding: 14px;
+  border-radius: 18px;
+  color: #fff;
+  background: rgb(14 12 22 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(18px);
+  animation: m-wish-in 0.5s var(--m-ease) both;
+}
+@keyframes m-wish-in {
+  from {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+}
+#mirage-immersive .m-im-wishes > b {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+#mirage-immersive .m-im-wish {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#mirage-immersive .m-im-wish > span {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+#mirage-immersive .m-im-wish i,
+#mirage-immersive .m-im-wish small {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-style: normal;
+}
+#mirage-immersive .m-im-wish i {
+  font-size: 14px;
+  font-weight: 600;
+}
+#mirage-immersive .m-im-wish small {
+  font-size: 12px;
+  opacity: 0.65;
+}
+#mirage-immersive .m-im-wish button {
+  flex: none;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 99px;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgb(255 255 255 / 0.12);
+}
+#mirage-immersive .m-im-wish .m-im-wish-ok {
+  background: var(--m-c);
+  color: var(--m-on, #0b0a12);
+}
+#mirage-immersive .m-im-wish .m-im-wish-no {
+  width: 30px;
+  padding: 0;
+}
 #mirage-immersive .m-im-livecard img {
   width: 200px;
   height: 200px;
@@ -879,8 +937,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   width: 100%;
   height: 100%;
   border-radius: 24px;
-  background-size: cover;
-  background-position: center;
   transform: rotateX(var(--irx, 0deg)) rotateY(var(--iry, 0deg)) scale(0.9);
   transition:
     transform 0.6s var(--m-ease),
@@ -888,13 +944,11 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   box-shadow:
     0 60px 120px -30px rgba(var(--m-a-rgb), 0.75),
     0 0 0 1px rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
 }
 #mirage-immersive.is-on .m-im-cover {
   transform: rotateX(var(--irx, 0deg)) rotateY(var(--iry, 0deg)) scale(1);
-}
-#mirage-immersive .m-im-cover {
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
 }
 #mirage-immersive .m-im-cover img {
   position: absolute;
@@ -1130,6 +1184,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   text-align: center;
   row-gap: 13vh;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-immersive[data-mode="viz"] .m-im-cover-wrap {
   justify-self: center;
   width: min(22vw, 28vh);
@@ -1317,10 +1372,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="party"].is-idle :is(.m-im-top, .m-im-controls, .m-im-lyrbar, .m-im-empty) {
   opacity: 0;
   pointer-events: none;
-}
-/* „Kein Liedtext“ blendet mit der Bedienung aus und wieder ein */
-#mirage-immersive[data-mode="party"] .m-im-empty {
-  transition: opacity 0.5s var(--m-ease);
 }
 #mirage-immersive[data-mode="party"].is-idle .m-im-top {
   transform: translateY(-12px);
@@ -1824,6 +1875,7 @@ html.mirage-beat #mirage-stage .m-pulse {
 }
 
 /* Zeilen: Lichtkante links, Cover kippt beim Überfahren */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .main-trackList-trackListRow {
   position: relative;
 }
@@ -2391,9 +2443,6 @@ html[data-m-page="user"] .main-entityHeader-metaData a:hover {
 .main-card-card:has([class*="ircular"]) img,
 [data-encore-id="card"]:has([class*="ircular"]) img {
   border-radius: 50% !important;
-}
-.main-card-card:has([class*="ircular"]) img,
-[data-encore-id="card"]:has([class*="ircular"]) img {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
   transition: box-shadow 0.4s var(--m-ease), transform 0.6s var(--m-ease);
 }
@@ -2450,10 +2499,6 @@ html[data-m-page="artist"] .main-entityHeader-detailsText {
   color: #fff !important;
   letter-spacing: 0.02em !important;
   text-transform: none !important;
-  font-family: var(--m-font) !important;
-  font-size: 13px !important;
-}
-html[data-m-page="artist"] .main-entityHeader-detailsText {
   margin-top: 10px;
   font-family: var(--m-mono) !important;
   font-size: 12px !important;
@@ -2657,10 +2702,28 @@ html[data-m-page="artist"] h2 {
    Farben darunter gelten für jede Auswahlliste in Spotify, egal unter welchem Namen.
    ========================================================================== */
 :root {
+  --m-a: var(--spice-button);
+  --m-b: var(--spice-notification);
+  --m-c: var(--spice-button-active);
+  --m-a-rgb: var(--spice-rgb-button);
+  --m-b-rgb: var(--spice-rgb-notification);
+  --m-c-rgb: var(--spice-rgb-button-active);
+  --m-glass: rgba(var(--spice-rgb-main), 0.55);
+  --m-glass-strong: rgba(var(--spice-rgb-main), 0.84);
+  --m-line: rgba(255, 255, 255, 0.07);
+  --m-line-strong: rgba(255, 255, 255, 0.14);
+  --m-radius: 18px;
+  --m-blur: 28px;
+  --m-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --m-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --m-font: "Outfit", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --m-mono: "JetBrains Mono", ui-monospace, monospace;
   color-scheme: dark;
 }
 html.mirage-light {
   color-scheme: light;
+  --m-line: rgba(29, 26, 43, 0.09);
+  --m-line-strong: rgba(29, 26, 43, 0.18);
 }
 select option,
 select optgroup,
@@ -2688,6 +2751,7 @@ input:-webkit-autofill {
 }
 
 /* Platzhalter-Cover einer leeren Playlist */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .main-entityHeader-imagePlaceholder {
   color: var(--m-c) !important;
   background:
@@ -2918,10 +2982,6 @@ html.mirage-safe #mirage-stage {
 /* ==========================================================================
    HELLES SCHEMA (Pearl und eigene helle Schemata)
    ========================================================================== */
-html.mirage-light {
-  --m-line: rgba(29, 26, 43, 0.09);
-  --m-line-strong: rgba(29, 26, 43, 0.18);
-}
 html.mirage-light #mirage-stage .m-art i {
   /* hell und gesättigt kommt das Bild schon aus color.js */
   opacity: 0.55;
@@ -2956,6 +3016,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 /* ==========================================================================
    IMMERSIV: Liedtext-Größe, Übersetzung, Canvas, Teilen, Tastenhilfe
    ========================================================================== */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-immersive .m-im-line {
   font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1));
   margin-bottom: calc(0.5em * var(--m-lyr-gap, 1));
@@ -3037,6 +3098,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 /* ==========================================================================
    EINSTELLUNGEN: Gruppen, Knöpfe, Schema-Baukasten
    ========================================================================== */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .mirage-settings {
   min-width: min(560px, 80vw);
 }
@@ -3075,7 +3137,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   padding: 2px 4px;
 }
 .mirage-settings .m-version {
-  opacity: 0.6;
+  opacity: 0.75;
   font-family: var(--m-mono);
 }
 .mirage-settings .m-actions,
@@ -3194,6 +3256,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   background: none;
   cursor: pointer;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .mirage-settings .m-scheme {
   position: relative;
 }
@@ -3207,6 +3270,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 .mirage-settings .m-scheme-del:hover {
   opacity: 1;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .mirage-settings .m-seg {
   flex-wrap: wrap;
 }
@@ -3253,6 +3317,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 /* ==========================================================================
    IMMERSIV: Smart Shuffle, Seitenleiste (Als Nächstes, Geräte, Schlaf-Timer)
    ========================================================================== */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-immersive .m-im-shuffle.is-smart {
   color: var(--m-c);
   filter: drop-shadow(0 0 8px rgba(var(--m-a-rgb), 0.8));
@@ -3328,6 +3393,7 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 #mirage-immersive .m-im-side-item.is-on {
   background: rgba(var(--m-a-rgb), 0.2);
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-immersive .m-im-side-item img {
   width: 40px;
   height: 40px;
@@ -3406,20 +3472,21 @@ html.mirage-rich #mirage-stage .m-aurora {
    (Drift über 70 s, Aurora über 28 s …) sehen mit 24 Bildern genauso aus, kosten aber
    nur 40 %. steps(n) = Dauer × 24.
    ========================================================================== */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-stage {
   contain: strict;
   isolation: isolate;
   will-change: transform;
 }
-#mirage-stage .m-art i {
-  animation-timing-function: steps(1680) !important;
-}
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-stage .m-art i + i {
   animation-timing-function: steps(2280) !important;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-stage .m-aurora {
   animation-timing-function: steps(672) !important;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .mirage-playing #mirage-stage .m-pulse {
   animation-timing-function: steps(100) !important;
 }
@@ -3433,9 +3500,11 @@ html.mirage-rich #mirage-stage .m-aurora {
 .main-trackList-trackListRow:has(.main-trackList-playing) {
   animation-timing-function: steps(144) !important;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 [data-testid="action-bar-row"] [data-testid="play-button"]::before {
   animation-timing-function: steps(62) !important;
 }
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 .mirage-playing [data-testid="control-button-playpause"]::after {
   animation-timing-function: steps(77) !important;
 }
@@ -3510,6 +3579,8 @@ html.mirage-vinyl .main-coverSlotCollapsed-container img {
   align-items: center;
   text-align: center;
   animation-name: m-im-empty-in-mid;
+  /* „Kein Liedtext“ blendet mit der Bedienung aus und wieder ein */
+  transition: opacity 0.5s var(--m-ease);
 }
 #mirage-immersive[data-mode="party"] .m-im-empty-actions {
   justify-content: center;

@@ -178,19 +178,27 @@ function createVenue(makeCanvas) {
     stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },
     home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },
     warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },
-    beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach" },
+    beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },
+    // „open“: unter freiem Himmel (Feuerwerk erlaubt) · „calm“: drinnen und gediegen – kein CO2, keine Flammen,
+    // kein Stroboskop, kein Konfetti · „seated“: das Publikum sitzt (Konzertsaal) und wiegt sich nur
+    rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },
+    cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },
+    jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },
+    forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },
+    hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },
+    cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" },
   };
   // „Automatisch“: der Ort passt zum Genre
   const AUTO_VENUE = {
-    techno: "warehouse", dnb: "warehouse", house: "club", bass: "club", disco: "club", jazz: "club",
+    techno: "warehouse", dnb: "warehouse", house: "club", bass: "club", disco: "club", jazz: "jazzbar",
     rave: "festival", trance: "festival", hardstyle: "festival", reggae: "beach", afro: "beach", latin: "beach",
-    rock: "stadium", metal: "stadium", punk: "stadium", pop: "stadium", kpop: "stadium", country: "stadium",
-    chill: "home", classical: "home",
-    edm: "festival", deephouse: "beach", techhouse: "warehouse", psytrance: "festival", dubstep: "festival", garage: "club",
-    eurodance: "club", synthwave: "club", hyperpop: "club", trap: "club", drill: "warehouse", phonk: "warehouse", rnb: "club",
-    soul: "club", indie: "festival", alternative: "stadium", blues: "club", schlager: "festival", ballad: "stadium", gospel: "stadium",
+    rock: "stadium", metal: "stadium", punk: "cellar", pop: "stadium", kpop: "stadium", country: "forest",
+    chill: "home", classical: "hall",
+    edm: "festival", deephouse: "beach", techhouse: "warehouse", psytrance: "forest", dubstep: "festival", garage: "rooftop",
+    eurodance: "club", synthwave: "rooftop", hyperpop: "club", trap: "club", drill: "cellar", phonk: "cellar", rnb: "rooftop",
+    soul: "jazzbar", indie: "festival", alternative: "stadium", blues: "jazzbar", schlager: "festival", ballad: "stadium", gospel: "cathedral",
     reggaeton: "club", salsa: "beach", brazil: "beach", flamenco: "club", bollywood: "stadium", arabic: "festival", ambient: "home",
-    cinematic: "stadium",
+    cinematic: "hall",
   };
   function drawDecor(ctx, v, px, pal, rgba, dpr, st) {
     const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);
@@ -221,7 +229,7 @@ function createVenue(makeCanvas) {
       stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));
       for (const s1 of stands) {
         const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);
-        ctx.globalAlpha = clamp((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);
+        ctx.globalAlpha = clamp((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);
         const r = 5 * dpr;
         ctx.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);
       }
@@ -291,6 +299,203 @@ function createVenue(makeCanvas) {
         }
       }
       ctx.globalCompositeOperation = "lighter";
+    } else if (v.decor === "rooftop") {
+      // Dachterrasse: Skyline am Horizont mit funkelnden Fenstern, vorne ein Geländer, oben eine Lichterkette
+      sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));
+      win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));
+      const hz = vh * 0.8;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(6,5,14,0.6)";
+      for (const b of sky) ctx.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);
+      ctx.globalCompositeOperation = "lighter";
+      for (const w of win) {
+        const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t * 0.7 + w.ph);
+        if (tw < 0.25) continue;
+        const r = 3.2 * dpr;
+        ctx.globalAlpha = clamp(tw * (0.35 + beat * 0.25), 0, 1);
+        ctx.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);
+      }
+      for (let k = 0; k <= 18; k++) {
+        const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));
+        ctx.globalAlpha = clamp((0.28 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.4 + k * 2.1)), 0, 1);
+        const r = (8 + beat * 5) * dpr;
+        ctx.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(5,4,10,0.75)";
+      ctx.fillRect(0, vh * 0.84, vw, 3 * dpr);
+      for (let x = 0; x < vw; x += 70 * dpr) ctx.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);
+      ctx.globalCompositeOperation = "lighter";
+    } else if (v.decor === "cathedral") {
+      // Kathedrale: spitze Bögen rahmen die Bühne, oben eine Rosette in den Songfarben, Kerzen an den Seiten
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(5,4,12,0.8)";
+      for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {
+        const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;
+        ctx.beginPath();
+        ctx.rect(x0, 0, x1 - x0, vh);
+        ctx.moveTo(mid + iw, vh);
+        ctx.lineTo(mid + iw, vh * 0.36);
+        ctx.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);
+        ctx.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);
+        ctx.lineTo(mid - iw, vh);
+        ctx.closePath();
+        ctx.fill("evenodd");
+      }
+      // in den Bögen leuchten hohe Glasfenster in den Songfarben, auf dem Schlag etwas heller
+      ctx.globalCompositeOperation = "lighter";
+      for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {
+        const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat * 0.1 + px.energy * 0.08;
+        const g = ctx.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);
+        g.addColorStop(0, rgba(pal[0], al.toFixed(3)));
+        g.addColorStop(0.5, rgba(pal[1], (al * 0.9).toFixed(3)));
+        g.addColorStop(1, rgba(pal[2], 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(mid + iw, vh * 0.7);
+        ctx.lineTo(mid + iw, vh * 0.38);
+        ctx.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);
+        ctx.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);
+        ctx.lineTo(mid - iw, vh * 0.7);
+        ctx.fill();
+      }
+      for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {
+        const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - (k % 3) * 0.018);
+        const r = (7 + Math.sin(t * 9 + k * 3 + side) * 1.6) * dpr;
+        ctx.globalAlpha = 0.55;
+        ctx.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    } else if (v.decor === "jazzbar") {
+      // Jazz-Bar: drei Pendelleuchten werfen warmes Licht nach unten, links glimmt die Bar, viel Rauch
+      for (let k = 0; k < 3; k++) {
+        const x = vw * (0.22 + k * 0.28) + Math.sin(t * 0.6 + k) * vw * 0.01, y = vh * (0.16 + (k % 2) * 0.03);
+        ctx.strokeStyle = "rgba(255,255,255,0.07)";
+        ctx.lineWidth = dpr;
+        ctx.beginPath();
+        ctx.moveTo(vw * (0.22 + k * 0.28), 0);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        const g = ctx.createRadialGradient(x, y, 0, x, y, vh * 0.85);
+        g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat * 0.08).toFixed(3)})`);
+        g.addColorStop(1, "rgba(255,190,120,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(x - 8 * dpr, y);
+        ctx.lineTo(x - vh * 0.22, vh);
+        ctx.lineTo(x + vh * 0.22, vh);
+        ctx.lineTo(x + 8 * dpr, y);
+        ctx.fill();
+        const r = (16 + beat * 8) * dpr;
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);
+        ctx.globalAlpha = 1;
+      }
+      for (let k = 0; k < 9; k++) {
+        const r = 4 * dpr;
+        ctx.globalAlpha = clamp(0.25 + 0.2 * Math.sin(t * 1.2 + k), 0, 1);
+        ctx.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - (k % 2) * 0.03) - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+      for (let k = 0; k < 4; k++) {
+        const x = vw * (0.5 + 0.45 * Math.sin(t * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t * 0.07 + k)), r = vh * 0.35;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, "rgba(200,190,220,0.04)");
+        g.addColorStop(1, "rgba(200,190,220,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+    } else if (v.decor === "forest") {
+      // Waldbühne: Baumsilhouetten links und rechts, Lichterketten dazwischen, Glühwürmchen auf den Hi-Hats
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(4,4,10,0.9)";
+      for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {
+        const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t * 0.4 + bx) * 4 * dpr;
+        const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);
+        ctx.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);
+        for (let k = 0; k < 5; k++) {
+          const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);
+          ctx.beginPath();
+          ctx.moveTo(bx + sx, y0);
+          ctx.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);
+          ctx.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+      ctx.globalCompositeOperation = "lighter";
+      for (let k = 0; k <= 16; k++) {
+        const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));
+        ctx.globalAlpha = clamp((0.25 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.3 + k * 1.9)), 0, 1);
+        const r = (7 + beat * 4) * dpr;
+        ctx.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);
+      }
+      flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));
+      const hat = px.hatEnv || 0;
+      for (const f of flies) {
+        const x = (f.x + Math.sin(t * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t * f.sp * 0.4 + f.ph) * 0.03) * vh;
+        ctx.globalAlpha = clamp((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);
+        const r = 5 * dpr;
+        ctx.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    } else if (v.decor === "hall") {
+      // Konzertsaal: Ränge mit warmen Lämpchen, zwei Kronleuchter oben – das Licht ist gedämpft und edel
+      for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {
+        const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(8,6,16,0.8)";
+        ctx.fillRect(x0, y, w, vh * 0.05);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = clamp(0.32 + beat * 0.15, 0, 1);
+        for (let k = 0; k < 6; k++) {
+          const r = 5 * dpr;
+          ctx.drawImage(glowSprite([255, 214, 160]), x0 + ((k + 0.5) / 6) * w - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+      }
+      for (const x of [vw * 0.25, vw * 0.75]) {
+        ctx.globalAlpha = clamp(0.5 + px.energy * 0.3, 0, 1);
+        for (let k = 0; k < 8; k++) {
+          const a = (k / 8) * Math.PI * 2, r = (9 + Math.sin(t * 3 + k) * 1.5) * dpr;
+          ctx.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r, vh * 0.12 + Math.sin(a) * 8 * dpr - r, r * 2, r * 2);
+        }
+        const r = (60 + beat * 30) * dpr;
+        ctx.globalAlpha = clamp(0.25 + beat * 0.2, 0, 1);
+        ctx.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    } else if (v.decor === "cellar") {
+      // Keller: niedriges Ziegelgewölbe, nackte Glühbirnen, die auf der Kick aufglühen, dichter Dunst
+      const n = 4;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(6,4,10,0.85)";
+      ctx.beginPath();
+      ctx.rect(0, 0, vw, vh * 0.32);
+      for (let k = 0; k < n; k++) {
+        const x0 = (k / n) * vw, x1 = ((k + 1) / n) * vw;
+        ctx.moveTo(x1, vh * 0.32);
+        ctx.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);
+        ctx.closePath();
+      }
+      ctx.fill("evenodd");
+      ctx.strokeStyle = "rgba(255,255,255,0.035)";
+      ctx.lineWidth = dpr;
+      ctx.beginPath();
+      for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(vw, y);
+      }
+      ctx.stroke();
+      ctx.globalCompositeOperation = "lighter";
+      for (let k = 0; k < n; k++) {
+        const x = ((k + 0.5) / n) * vw, y = vh * (0.2 + Math.sin(t * 1.1 + k) * 0.004);
+        const r = (20 + px.kickEnv * 44) * dpr;
+        ctx.globalAlpha = clamp(0.4 + px.kickEnv * 0.6, 0, 1);
+        ctx.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
     } else if (v.decor === "fairy") {
       // Wohnzimmer: eine Lichterkette hängt oben durchs Bild und glimmt im Takt
       for (let k = 0; k <= 26; k++) {
@@ -303,7 +508,7 @@ function createVenue(makeCanvas) {
       ctx.globalAlpha = 1;
     }
   }
-  let stands = null;
+  let stands = null, sky = null, win = null, flies = null;
 
   /* ---------------------------------------------------------------- Bühneneffekte */
   // Nur wo sie hingehören: CO2-Fontänen bei elektronischer Musik, Pyro-Flammen bei Rock/Metal/Punk/Hardstyle,
@@ -312,15 +517,39 @@ function createVenue(makeCanvas) {
   const CO2 = new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
   const PYRO = new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
   const STROBE = new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
-  const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };
+  const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };
+  const GOLD = [255, 214, 120], WHITE = [255, 255, 255];
+  // Konfetti-Kanonen: zwei Fontänen von den Bühnenecken, die Schnipsel taumeln langsam herab; dazu Luftschlangen von oben
+  function confetti(pal, big, few) {
+    // Songfarben kräftig gesättigt und aufgehellt, dazu Gold und Weiß – sonst verschwimmen sie mit dem Licht
+    const pop = (c) => { const m = Math.max(...c, 1); return c.map((v) => Math.round(clamp(((v - m * 0.45) / (m * 0.55)) * 255, 0, 255))); };
+    const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];
+    for (let k = 0; k < n && fx.confetti.length < 420; k++) {
+      const side = k % 2 ? 1 : -1;
+      fx.confetti.push({
+        x: vw * (side < 0 ? 0.12 : 0.88), y: vh * 0.98, vx: -side * vh * (0.12 + Math.random() * 0.45), vy: -vh * (1.25 + Math.random() * 0.6),
+        r: Math.random() * 6.3, vr: (Math.random() - 0.5) * 14, w: (9 + Math.random() * 8) * (vh / 720), h: (5 + Math.random() * 4) * (vh / 720), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1,
+      });
+    }
+    for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });
+  }
   function drawFx(ctx, st, v, px, pal, dpr) {
     const dt = st.dt, key = px.key;
     const big = v.decor === "towers" || v.decor === "stands";
     const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;
     if (newBeat) fx.beat = px.beatIdx;
-    const barStart = newBeat && px.inBar === 0;
+    // neuer Takt = der erste Schlag des Takts hat sich geändert – nicht „Schlag 1 gesehen“: bei einem
+    // ruckelnden Bild kann genau der übersprungen werden, dann gingen Konfetti, Feuerwerk und Fontänen nie los
+    const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;
+    if (newBeat) fx.barId = barId;
     if (barStart) fx.bar++;
-    if (st.fx && !px.blackout && v.decor !== "fairy") {
+    // Konfetti im letzten Refrain: auf dem ersten Taktanfang des Finales und auf seinem Drop (höchstens alle 6 s)
+    if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || (barStart && fx.confAt < 0)) && st.t - fx.confAt > 6) {
+      fx.confAt = st.t;
+      confetti(pal, big, st.quality < 1 || v.decor === "fairy");
+    }
+    if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;
+    if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {
       // Drop: immer. Danach und in der Spitze eines Refrains: auf jedem zweiten Taktanfang, nicht jedes Mal
       const peak = px.drop > 0.3 || (px.energy > 0.85 && px.build < 0.15) || px.finale;
       const fire = px.dropHit || (barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7);
@@ -330,7 +559,7 @@ function createVenue(makeCanvas) {
       }
       if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });
       // Feuerwerk: im letzten Refrain auf fast jedem Taktanfang ein bis zwei Raketen
-      if (px.finale && big && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
+      if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
         for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });
       }
       if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;
@@ -390,6 +619,44 @@ function createVenue(makeCanvas) {
       ctx.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);
     }
     ctx.globalAlpha = 1;
+    // Konfetti: schießt hoch, bremst, taumelt dann flatternd herab (die Breite pulsiert – es dreht sich im Licht)
+    fx.confetti = fx.confetti.filter((c) => c.y < vh * 1.05 && (c.a -= dt * 0.07) > 0);
+    fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);
+    if (fx.confetti.length || fx.streamers.length) {
+      ctx.globalCompositeOperation = "source-over";
+      for (const c of fx.confetti) {
+        c.vy = c.vy < vh * 0.1 ? c.vy + vh * 1.4 * dt : vh * 0.1;
+        c.vx *= 1 - dt * 1.6;
+        c.ph += dt * 5;
+        c.r += c.vr * dt;
+        c.x += (c.vx + Math.sin(c.ph) * vh * 0.05) * dt;
+        c.y += c.vy * dt;
+        const flip = Math.abs(Math.cos(c.ph * 1.3)), w = c.w * (0.3 + 0.7 * flip), h = c.h;
+        ctx.globalAlpha = clamp(c.a, 0, 1) * (0.55 + 0.45 * flip);
+        ctx.fillStyle = `rgb(${c.c[0]},${c.c[1]},${c.c[2]})`;
+        const co = Math.cos(c.r), si = Math.sin(c.r);
+        ctx.setTransform(co, si, -si, co, c.x, c.y);
+        ctx.fillRect(-w / 2, -h / 2, w, h);
+      }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      // Luftschlangen: geschwungene Bänder, die langsam von oben herabsinken
+      ctx.lineWidth = 4 * (vh / 720);
+      ctx.lineCap = "round";
+      for (const m of fx.streamers) {
+        m.y += m.vy * dt;
+        m.ph += dt * 2;
+        ctx.globalAlpha = clamp(m.a, 0, 1) * 0.85;
+        ctx.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;
+        ctx.beginPath();
+        for (let k = 0; k <= 10; k++) {
+          const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;
+          k ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "lighter";
+    }
     // Stroboskop: kurzer weißer Blitz, der in ~0,1 s verlischt
     if (fx.strobe > 0.02) {
       ctx.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;
@@ -414,6 +681,15 @@ function createVenue(makeCanvas) {
     brazil: "bounce", flamenco: "clap", bollywood: "bounce", arabic: "clap", ambient: "sway", cinematic: "sway",
   };
   const mood = { x: 0 };
+  // Lichtermeer: bei Balladen und ruhigen, getragenen Songs halten im Refrain viele Handys und Feuerzeuge hoch
+  // und schwenken sie gemeinsam langsam hin und her (über zwei Takte)
+  const SEA = new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical"]);
+  const sea = { a: 0 };
+  function seaLevel(px, dt, st) {
+    const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp((px.energy - 0.32) * 2.2, 0, 1) : 0;
+    sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));
+    return sea.a;
+  }
   function crowdMood(px, dt, hype) {
     const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);
     mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));
@@ -497,7 +773,8 @@ function createVenue(makeCanvas) {
     if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);
     if (!crowd.people.length) return;
     const X = crowdMood(px, dt, st.hype), t = st.t;
-    const style = MOVES[px.key] || "clap";
+    const style = v.seated ? "sway" : MOVES[px.key] || "clap";
+    const SEAa = seaLevel(px, dt, st);
     // Schlagphase (0 = Schlag): schnelle Songs bewegen sich im halben Tempo
     const half = st.bpm > 150;
     const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));
@@ -583,7 +860,10 @@ function createVenue(makeCanvas) {
       ctx.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));
       ctx.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);
       // --- Arme: hoch mit der Stimmung, Faust auf der Kick, Klatschen auf 2 und 4, Winken, Handys
-      const wantUp = lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
+      // im Lichtermeer machen immer mehr mit – wer, steht je Person fest; im Saal bleiben die Hände unten
+      const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;
+      const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
+      const wantUp = v.seated && !inSea ? 0 : lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
       p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
       const arm = arms[p.row];
       const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
@@ -594,6 +874,8 @@ function createVenue(makeCanvas) {
         if (a > 0.02) {
           let ux = side * (12 + 6 * Math.sin(((beatN + phi) / 2) * Math.PI + p.ph)) * s1, uy = -50 * s1;
           if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin(((beatN + phi) / 2) * Math.PI * 2 + p.ph) * 14 * s1;
+          // Lichtermeer: alle schwenken im selben langsamen Bogen, leicht versetzt von links nach rechts
+          if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin(((beatN + phi) / 8) * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];
           if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];
           if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;
           hxA += (sx + ux - hxA) * a;
@@ -602,7 +884,7 @@ function createVenue(makeCanvas) {
         const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);
         arm.moveTo(sx, sy);
         arm.quadraticCurveTo(ex, ey, hxA, hyA);
-        if (side === p.hand && p.gadget && a > 0.5 && (me < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);
+        if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);
       }
       // Kamerablitze aus der Menge: in der Spitze öfter
       if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1 });

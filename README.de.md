@@ -38,11 +38,11 @@
   <tr>
     <td width="33%" valign="top"><h3>🎨 Farben aus dem Cover</h3>Jeder Song färbt Spotify in der Palette seines Covers – lesbar auf dunklem Glas, mit dem Cover als Schleier hinter den Flächen.</td>
     <td width="33%" valign="top"><h3>🎤 Karaoke & Visualizer</h3>Vollbild-Liedtext, der sich Silbe für Silbe füllt, ein Visualizer im Takt und ein Mix aus beidem.</td>
-    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>48 Stile, sechs Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
+    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>48 Stile, zwölf Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
   </tr>
   <tr>
     <td valign="top"><h3>🎺 Instrumente</h3>Bestätigen die Credits Trompete, Saxofon, Gitarre, Klavier, Streicher oder Chor, bekommt das Instrument einen eigenen Effekt.</td>
-    <td valign="top"><h3>📱 Handys leuchten mit</h3>Gäste scannen einen QR-Code und ihre Handys blitzen im Takt – in jedem Netz, Ende-zu-Ende verschlüsselt.</td>
+    <td valign="top"><h3>📱 Handys machen mit</h3>Gäste scannen einen QR-Code: Ihre Handys blitzen im Takt, zeigen den Liedtext und nehmen Songwünsche aus Spotify an – Ende-zu-Ende verschlüsselt.</td>
     <td valign="top"><h3>◎ Außerhalb von Spotify</h3>Die Overlay-App kündigt Songs über allen Fenstern an, mit Kantenlicht und OBS-Quelle.</td>
   </tr>
 </table>
@@ -120,7 +120,7 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
   <tr>
     <td align="center"><b>Cover</b><br><sub>neigt sich mit der Maus, alle Bedienelemente</sub></td>
     <td align="center"><b>Liedtext</b><br><sub>synchrones Karaoke, Klick auf eine Zeile springt</sub></td>
-    <td align="center"><b>Visualizer</b><br><sub>Kreis-Spektrum, Ringe im Takt</sub></td>
+    <td align="center"><b>Visualizer</b><br><sub>Balken, Welle, Punkte, Partikel, Linie oder 3D-Tunnel</sub></td>
   </tr>
   <tr>
     <td><img src="assets/shots/mode-mix.jpg" alt="Mix-Ansicht"></td>
@@ -181,17 +181,19 @@ Der Stil kommt aus Apples iTunes-Genre, Spotifys Künstler-Genres und dem Klang 
 | Ruhig & klassisch | Chill · Ambient · Jazz · Klassik · Film & Epik |
 </details>
 
-### Sechs Locations
+### Zwölf Locations
 
 <p align="center"><img src="assets/shots/venues-de.jpg" alt="Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer" width="100%"></p>
 
-Die Location richtet sich nach dem Stil oder wird in den Einstellungen festgelegt. Das Publikum hängt am Takt: Sprünge landen auf dem Schlag, Köpfe nicken oder bangen, Hände klatschen auf 2 und 4, ab und zu rollt eine La-Ola-Welle durch, und beim Drop blitzen die Handykameras.
+Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer – dazu Dachterrasse, Kathedrale, Jazz-Bar, Waldbühne, Konzertsaal (das Publikum sitzt) und Gewölbekeller. Die Location richtet sich nach dem Stil oder wird in den Einstellungen festgelegt. Das Publikum hängt am Takt: Sprünge landen auf dem Schlag, Köpfe nicken oder bangen, Hände klatschen auf 2 und 4, ab und zu rollt eine La-Ola-Welle durch, und beim Drop blitzen die Handykameras.
 
 ### Licht, Effekte und Momente
 
 - **Lichtrig** – Moving Heads an einer Traverse bewegen sich in Mustern passend zum Genre: Wellen bei House, Lauflichter bei Techno, Fächer bei EDM, alle aufs Cover bei Hip-Hop und Rock. Blinder zünden bei großen Schlägen, beim Drop spannt sich eine Laserfläche über die Menge; ruhige Songs bekommen stattdessen weiches Bokeh.
 - **Folgt den Instrumenten** – die Kick treibt Puls und Bodenlicht, die Snare die Spots, die Hi-Hats das Funkeln; zwei dünne *Melodie-Laser* folgen der Tonhöhe der Melodie.
-- **Bühneneffekte, wo sie hingehören** – CO2-Fontänen bei elektronischer Musik, Pyro bei Rock, Metal und Punk, Feuerwerk im letzten Refrain, Stroboskop bei harten Drops (ab *Extrem*, nie mehr als ein Blitz pro Schlag).
+- **Bühneneffekte, wo sie hingehören** – CO2-Fontänen bei elektronischer Musik, Pyro bei Rock, Metal und Punk, Feuerwerk, Konfetti-Kanonen und Luftschlangen im letzten Refrain, Stroboskop bei harten Drops (ab *Extrem*, nie mehr als ein Blitz pro Schlag).
+- **Lichtermeer** – bei Balladen, Gospel und Soul heben im Refrain immer mehr Leute Handys und Feuerzeuge und schwenken sie gemeinsam.
+- **Kameraschnitte** – harte Schnitte auf dem Taktanfang zwischen Totale, Nah und Publikum; der Drop schneidet zurück auf die Totale.
 - **Lichtregie** – vor dem Drop hält sich das Licht zurück, auf dem letzten Schlag wird es dunkel, dann schlägt alles auf einmal ein. Eine Zeitlupe friert die halbe Sekunde davor ein, und DJ-Übergänge blenden beim Songwechsel die Farben über vier Schläge.
 - **Fünf Stärken** von *Sanft* bis *Wahnsinn*, dazu Hype-Zeilen für Refrains, 3D-Tiefe, Kamerafahrten und Liedtext, der beim Drop in Licht zerplatzt.
 
@@ -213,6 +215,10 @@ Bestätigen die **Credits** des Songs (Spotify, sonst MusicBrainz) ein Instrumen
 <p align="center"><img src="assets/shots/phone-de.png" alt="Die Handy-Seite, wartend und live" width="70%"></p>
 
 **Live-Link** in den Party-Einstellungen einschalten, im Party-Modus den Handy-Knopf drücken und die Gäste den QR-Code scannen lassen. Ihre Handys werden zu zusätzlichen Lichtern: die Farben des Songs, ein Ring auf jedem Schlag, ein Blitz beim Drop – im Vollbild, der Bildschirm bleibt an.
+
+- **Liedtext zum Mitsingen** – die aktuelle Zeile groß in der Mitte, die nächste darunter.
+- **Songwünsche aus Spotify** – Gäste suchen auf dem Handy im echten Spotify-Katalog, wählen einen Song und stimmen über die Wünsche der anderen ab. Du siehst die meistgewünschten im Party-Modus und nimmst sie mit einem Klick in die Warteschlange; von selbst kommt nichts hinein.
+- **Vibration beim Drop** (Android).
 
 - **Jedes Netz, keine App** – WLAN oder mobile Daten; die Seite kommt von GitHub Pages.
 - **Nur für alle mit dem QR-Code** – Kanal und Schlüssel sind 128-Bit-Zufallswerte, die nur im QR-Link hinter dem `#` stehen, und dieser Teil geht nie an einen Server. Die Nachrichten sind Ende-zu-Ende verschlüsselt und authentifiziert (AES-GCM): Der Relay sieht nur Zufallsbytes, und niemand kann mitlesen oder etwas einschleusen.
@@ -281,7 +287,7 @@ Klappt es immer noch nicht? `spicetify clear`, danach `spicetify backup apply`. 
 
 - **Kein eigener Server, kein Tracking, kein Konto.** Liedtext, Taktdaten, Audio-Merkmale und Credits kommen von Spotify.
 - **Nur wenn Spotify nichts hat** – und alles abschaltbar: Titel, Interpret, Album und Länge gehen für Liedtexte an LRCLIB, NetEase und lyrics.ovh; Titel und Interpret für das Tempo an Deezer und für das Party-Genre an Apples iTunes-Suche; die ISRC-Nummer des Songs für Instrument-Credits an MusicBrainz.
-- **Live-Link** (standardmäßig aus) – Lichtfarben, Tempo und Songtitel, Ende-zu-Ende verschlüsselt über einen öffentlichen Relay (HiveMQ). Der Schlüssel verlässt nie den QR-Code.
+- **Live-Link** (standardmäßig aus) – Lichtfarben, Tempo und Songtitel, Ende-zu-Ende verschlüsselt über einen öffentlichen Relay (HiveMQ). Der Schlüssel verlässt nie den QR-Code. Die Songsuche der Gäste läuft über dein Spotify.
 - **Overlay-App** – lauscht nur auf deinem eigenen Rechner und fragt bei GitHub nach Updates (abschaltbar). Details in der [Code signing policy](CODE_SIGNING.md#privacy-policy).
 - Schriften kommen von Google Fonts.
 

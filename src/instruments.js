@@ -20,8 +20,9 @@ function kindOf(name) {
   return "";
 }
 
-// gefundene Credits bleiben gespeichert (je Song), damit niemand zweimal gefragt wird
-const LS = "mirage:instruments";
+// gefundene Credits bleiben gespeichert (je Song), damit niemand zweimal gefragt wird; kam keine Antwort
+// (offline, Dienst überlastet), wird erst nach einem Tag wieder gefragt – nicht bei jedem Abspielen
+const LS = "mirage:instruments", RETRY = 24 * 3600e3;
 let store = {};
 try {
   store = JSON.parse(localStorage.getItem(LS) || "{}") || {};
@@ -33,7 +34,7 @@ function persist() {
     localStorage.setItem(LS, JSON.stringify(store));
   } catch {}
 }
-// MusicBrainz erlaubt eine Anfrage pro Sekunde
+// MusicBrainz erlaubt eine Anfrage pro Sekunde; meldet es Überlastung (503), eine Minute Pause
 let mbNext = 0;
 async function mbFetch(url) {
   const wait = Math.max(0, mbNext - Date.now());
@@ -43,6 +44,7 @@ async function mbFetch(url) {
   const timer = setTimeout(() => ctl.abort(), 6000);
   try {
     const res = await fetch(url, { signal: ctl.signal, headers: { Accept: "application/json" } });
+    if (res.status === 503) mbNext = Math.max(mbNext, Date.now() + 60e3);
     return res.ok ? await res.json() : null;
   } catch {
     return null;
@@ -53,7 +55,9 @@ async function mbFetch(url) {
 const jobs = new Map();
 function credited(uri) {
   if (!uri?.startsWith("spotify:track:")) return Promise.resolve(new Set());
-  if (store[uri]) return Promise.resolve(new Set(store[uri]));
+  const known = store[uri];
+  if (Array.isArray(known)) return Promise.resolve(new Set(known));
+  if (known?.miss && Date.now() - known.miss < RETRY) return Promise.resolve(new Set());
   if (jobs.has(uri)) return jobs.get(uri);
   const job = (async () => {
     const id = uri.split(":")[2], found = new Set();
@@ -83,10 +87,9 @@ function credited(uri) {
         }
       } catch {}
     }
-    if (answered) {
-      store[uri] = [...found];
-      persist();
-    }
+    store[uri] = answered ? [...found] : { miss: Date.now() };
+    persist();
+    jobs.delete(uri);
     return found;
   })();
   jobs.set(uri, job);

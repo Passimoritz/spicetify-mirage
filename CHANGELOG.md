@@ -10,6 +10,35 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.14.0] – 2026-11-05
+
+### Added
+
+- **Song wishes from the real Spotify catalogue.** Guests search Spotify right on the phone page – Mirage answers with the matching songs and their covers, only to that phone. They tap the right one; everyone sees the list and votes with 👍. In party mode you see the top wishes and add them to the queue with one click – nothing gets in on its own. One wish per phone every 45 seconds, at most 8 open; all of it end-to-end encrypted like the rest of the live link.
+- **Lyrics on the phones.** The current line big in the middle, the next one below – for singing along. Can be switched off on the phone.
+- **Phones vibrate on the drop** (Android; iPhones don't allow it in the browser). Can be switched off on the phone.
+- **Six new venues:** rooftop with a skyline, cathedral with stained-glass windows and candles, jazz bar with pendant lights and smoke, forest stage with fairy lights and fireflies, concert hall with balconies and a seated audience, and a vaulted cellar. Twelve in total, and the automatic choice uses them for jazz, blues, soul, gospel, classical, film, psytrance, country, synthwave, R&B, drill, phonk and punk.
+- **Sea of lights** in ballads, gospel, soul, R&B, blues and country: in the chorus more and more people raise phones and lighters and sway them together.
+- **Confetti cannons and streamers** at the start of the final chorus and on its drop (not in the cathedral, concert hall or jazz bar).
+- **Camera cuts:** hard cuts on the downbeat between wide, close and crowd shots – every 8 bars, every 4 at the peak; the drop cuts back to wide. Only the stage moves, cover and lyrics stay put. Own switch in the party settings.
+- **3D tunnel** visualizer: rings shaped by the spectrum fly out of the cover towards you.
+- **Warning after Spotify updates:** if Spotify rebuilt a part of its layout that Mirage styles, Mirage says so once, instead of silently looking half broken.
+
+### Changed
+
+- **Translations proofread** in all 13 other languages: over 200 fixes – consistent terms and form of address, missing parts of the shortcut tip restored, literal translations replaced.
+- **Settings are friendlier to screen readers:** switches are announced as switches, button rows and lists name what they are for, sliders read out their value with the unit.
+- Instrument credits: no answer from MusicBrainz is asked again after a day at the earliest, not on every play, and Mirage pauses for a minute when MusicBrainz says it is busy.
+
+### Fixed
+
+- Fireworks, confetti, CO2 jets and camera cuts no longer depend on seeing exactly the first beat of a bar – a skipped frame could make them miss.
+- When a live link expires, Mirage now also clears the last message stored on the relay.
+
+### Removed
+
+- The old home-network live server inside the overlay app (unused since 1.13) and a stray test file.
+
 ## [1.13.1] – 2026-11-03
 
 ### Changed

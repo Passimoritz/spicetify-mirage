@@ -74,6 +74,8 @@ function toggle(key, after) {
   if (COSTLY.has(key)) {
     const bolt = el("i", "m-cost", "⚡");
     bolt.title = t("costly");
+    bolt.setAttribute("role", "img");
+    bolt.setAttribute("aria-label", t("costly"));
     b.append(" ", bolt);
   }
   txt.append(b);
@@ -81,6 +83,8 @@ function toggle(key, after) {
   if (hint !== key + "Hint") txt.append(el("small", "", hint));
   const cb = el("input");
   cb.type = "checkbox";
+  // sieht aus wie ein Schalter – Screenreader sagen dann „Schalter, an/aus“ statt „Kontrollkästchen“
+  cb.setAttribute("role", "switch");
   cb.dataset.key = key;
   cb.checked = !!cfg[key];
   cb.onchange = () => {
@@ -100,9 +104,11 @@ function range(key, min, max, step, unit, after) {
   txt.append(el("b", "", t(key)), hint);
   const r = el("input");
   Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
+  r.setAttribute("aria-valuetext", cfg[key] + unit);
   r.oninput = () => {
     cfg[key] = Number(r.value);
     hint.textContent = r.value + unit;
+    r.setAttribute("aria-valuetext", r.value + unit);
     save();
     after?.();
   };
@@ -112,6 +118,7 @@ function range(key, min, max, step, unit, after) {
 function seg(options, value, onPick) {
   // viele Wahlmöglichkeiten (Party-Stile): umbrechen statt aus dem Fenster zu laufen
   const s = el("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
+  s.setAttribute("role", "group");
   for (const [k, label] of options) {
     const b = el("button", "", label);
     b.type = "button";
@@ -168,6 +175,19 @@ function livePanel() {
   if (cfg.partyLive) live.prepare().then(draw, draw);
   draw();
   return box;
+}
+// Knopfreihen und Auswahllisten haben ihre Beschriftung als eigene Zeile darüber (Überschrift oder Hinweis):
+// für Screenreader damit verknüpfen, sonst hört man nur „Gruppe“ ohne zu wissen, wofür
+let labelN = 0;
+function labelControls(box) {
+  for (const c of box.querySelectorAll(".m-seg, .m-select")) {
+    if (c.hasAttribute("aria-labelledby") || c.closest("label")) continue;
+    let prev = c.previousElementSibling;
+    if (prev?.classList.contains("m-schemes-head")) prev = prev.querySelector("b") || prev;
+    if (!prev || !(prev.matches("b, .m-note, .m-schemes-head"))) continue;
+    prev.id ||= "m-lbl-" + ++labelN;
+    c.setAttribute("aria-labelledby", prev.id);
+  }
 }
 function group(title, open, ...children) {
   const d = el("details", "m-group");
@@ -308,7 +328,7 @@ function render(box) {
     })));
   const viz = [
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
-    ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")],
+    ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
   ];
   kids.push(
     group(
@@ -357,7 +377,7 @@ function render(box) {
         save();
       }),
       el("small", "m-note", t("partyVenue")),
-      seg(["auto", "club", "warehouse", "festival", "stadium", "beach", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+      seg(["auto", "club", "warehouse", "cellar", "jazzbar", "rooftop", "festival", "forest", "stadium", "beach", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
         cfg.partyVenue = k;
         save();
       }),
@@ -378,6 +398,7 @@ function render(box) {
       toggle("partyHype", () => immersive.reloadLyrics()),
       toggle("partyShatter", () => {}),
       toggle("partyCamera", () => {}),
+      toggle("partyCuts", () => {}),
       toggle("partyDepth", () => {}),
       head(t("ps_crowd")),
       toggle("partyCrowd", () => {}),
@@ -385,6 +406,7 @@ function render(box) {
       toggle("partyJam", () => {}),
       head(t("ps_extras")),
       toggle("partyLive", () => cfg.partyLive && live.prepare()),
+      toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
       livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),
@@ -493,6 +515,7 @@ function render(box) {
   // offene Gruppen merken, damit ein Neuaufbau nicht alles zuklappt
   const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
   box.replaceChildren(...kids);
+  labelControls(box);
   box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
 }
 

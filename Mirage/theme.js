@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.13.1" : "dev";
+      VERSION = true ? "1.14.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -479,7 +479,24 @@
           tapUnsure: "Too uneven \u2013 tap steadily on every beat",
           tapNoBeat: "No beat data for this song yet",
           liveRelay: "End-to-end encrypted over a public relay \u2013 only whoever has this QR code can see it. Stops when you leave party mode; after 10 minutes the code expires.",
-          liveError: "No relay reachable \u2013 is the internet connection up?"
+          liveError: "No relay reachable \u2013 is the internet connection up?",
+          selLost: "Spotify {v} rebuilt parts of its layout that Mirage styles \u2013 some pages may look a little off. Copy the diagnostics in Mirage settings and report it, then it gets fixed.",
+          partyCuts: "Camera cuts",
+          partyCutsHint: "Hard cuts on the downbeat between wide, close and crowd shots \u2013 every 8 bars, every 4 at the peak; the drop cuts back to wide",
+          venue_cellar: "Cellar",
+          venue_jazzbar: "Jazz bar",
+          venue_rooftop: "Rooftop",
+          venue_forest: "Forest stage",
+          venue_cathedral: "Cathedral",
+          venue_hall: "Concert hall",
+          partyWishes: "Song wishes from phones",
+          partyWishesHint: "Guests can wish for songs and vote on the phone page \u2013 only what you accept goes into the queue",
+          wishTitle: "Song wishes",
+          wishBy: "from {n}",
+          wishQueue: "+ Queue",
+          wishDecline: "Decline",
+          wishQueued: "\u201C{s}\u201D added to the queue",
+          viz_tunnel: "3D tunnel"
         },
         de: {
           menu: "Mirage-Einstellungen",
@@ -846,7 +863,24 @@
           tapUnsure: "Zu ungleichm\xE4\xDFig \u2013 tippe gleichm\xE4\xDFig auf jeden Schlag",
           tapNoBeat: "F\xFCr diesen Song gibt es noch keine Taktdaten",
           liveRelay: "Ende-zu-Ende verschl\xFCsselt \xFCber einen \xF6ffentlichen Relay \u2013 nur wer diesen QR-Code hat, sieht etwas. Endet, wenn du den Party-Modus verl\xE4sst; nach 10 Minuten verf\xE4llt der Code.",
-          liveError: "Kein Relay erreichbar \u2013 steht die Internetverbindung?"
+          liveError: "Kein Relay erreichbar \u2013 steht die Internetverbindung?",
+          selLost: "Spotify {v} hat Teile umgebaut, die Mirage gestaltet \u2013 manche Seiten sehen vielleicht nicht ganz richtig aus. Kopier in den Mirage-Einstellungen die Diagnose und melde es, dann wird es behoben.",
+          partyCuts: "Kameraschnitte",
+          partyCutsHint: "Harte Schnitte auf dem Taktanfang zwischen Totale, Nah und Publikum \u2013 alle 8 Takte, in der Spitze alle 4; der Drop schneidet zur\xFCck auf die Totale",
+          venue_cellar: "Keller",
+          venue_jazzbar: "Jazz-Bar",
+          venue_rooftop: "Dachterrasse",
+          venue_forest: "Waldb\xFChne",
+          venue_cathedral: "Kathedrale",
+          venue_hall: "Konzertsaal",
+          partyWishes: "Songw\xFCnsche von Handys",
+          partyWishesHint: "G\xE4ste k\xF6nnen sich auf der Handyseite Songs w\xFCnschen und abstimmen \u2013 in die Warteschlange kommt nur, was du annimmst",
+          wishTitle: "Songw\xFCnsche",
+          wishBy: "von {n}",
+          wishQueue: "+ Warteschlange",
+          wishDecline: "Ablehnen",
+          wishQueued: "\u201E{s}\u201C ist in der Warteschlange",
+          viz_tunnel: "3D-Tunnel"
         },
         fr: {
           menu: "R\xE9glages Mirage",
@@ -887,9 +921,9 @@
           grainHint: "L\xE9ger bruit sur l'arri\xE8re-plan",
           calm: "Mode calme",
           calmHint: "Arr\xEAte toutes les animations d'arri\xE8re-plan",
-          blur: "Flou du verre",
+          blur: "Flou du verre (vrai verre uniquement)",
           bright: "Luminosit\xE9 du fond",
-          tip: "Mode immersif : Ctrl + Maj + M ou le bouton rond en haut. \xC0 l'int\xE9rieur, 1 \xB7 2 \xB7 3 changent la vue.",
+          tip: "Mode immersif : Ctrl + Maj + M ou le bouton rond en haut. \xC0 l'int\xE9rieur : 1 \xB7 2 \xB7 3 vue, Espace lecture, \u2190 \u2192 avancer, \u2191 \u2193 volume, L j'aime, S al\xE9atoire, R r\xE9p\xE9ter, F plein \xE9cran.",
           vizSection: "Visualiseur",
           vizSectionHint: "Apparence du visualiseur en mode immersif \u2013 appliqu\xE9 en direct",
           viz_bars: "Barres",
@@ -941,7 +975,7 @@
           k_play: "Lecture / pause",
           k_seek: "Avancer/reculer de 5 s",
           k_vol: "Volume",
-          k_view: "Pochette \xB7 paroles \xB7 visualiseur \xB7 Mix \xB7 F\xEAte",
+          k_view: "Pochette \xB7 paroles \xB7 visualiseur \xB7 mix \xB7 f\xEAte",
           k_like: "J'aime",
           k_shuffle: "Al\xE9atoire",
           k_repeat: "R\xE9p\xE9ter",
@@ -1139,9 +1173,9 @@
           partyQuietFps: "30 i/s dans les passages calmes",
           partyQuietFpsHint: "Les intros et breaks calmes tournent \xE0 30 images par seconde \u2013 m\xEAme rendu, moins d'\xE9nergie",
           partyLive: "Lien live pour t\xE9l\xE9phones",
-          partyLiveHint: "Les t\xE9l\xE9phones sur n'importe quel r\xE9seau s'allument au rythme \u2013 scannez le QR code. Chiffr\xE9, accessible uniquement par le QR code et seulement pendant le mode f\xEAte. Aucune app n\xE9cessaire.",
+          partyLiveHint: "Les t\xE9l\xE9phones sur n'importe quel r\xE9seau s'allument au rythme \u2013 scanne le QR code. Chiffr\xE9, accessible uniquement par le QR code et seulement pendant le mode f\xEAte. Aucune app n\xE9cessaire.",
           mixInstruments: "Le mix r\xE9agit aux instruments",
-          mixInstrumentsHint: "En mode Mix, le pouls et les anneaux suivent la vraie grosse caisse, pas seulement la grille rythmique",
+          mixInstrumentsHint: "En mode Mix, la pulsation et les anneaux suivent la vraie grosse caisse, pas seulement la grille rythmique",
           partyVenue: "Lieu",
           venue_auto: "Selon le genre",
           venue_club: "Club",
@@ -1154,7 +1188,7 @@
           eco_off: "D\xE9sactiv\xE9e",
           liveBtn: "Lien live pour t\xE9l\xE9phones",
           liveTitle: "Allumer les t\xE9l\xE9phones",
-          liveHint: "Scannez avec votre t\xE9l\xE9phone et posez-le \xE9cran vers le haut \u2013 il clignote avec la f\xEAte",
+          liveHint: "Scanne avec ton t\xE9l\xE9phone et pose-le \xE9cran vers le haut \u2013 il clignote avec la f\xEAte",
           liveCopy: "Copier le lien",
           partyFx: "Effets de sc\xE8ne",
           partyFxHint: "Jets de CO2 pour l'\xE9lectro, flammes pyro pour le rock et le metal, feu d'artifice au dernier refrain \u2013 au drop et au sommet",
@@ -1208,12 +1242,29 @@
           partyInstrumentsHint: "Trompettes, sax, guitare, piano, cordes et ch\u0153ur ont leurs propres effets \u2013 seulement si les cr\xE9dits du titre confirment l'instrument (Spotify, MusicBrainz ; l'ISRC du titre est envoy\xE9 \xE0 MusicBrainz)",
           syncOffset: "Synchro (effets & paroles)",
           k_tap: "Taper en rythme (synchro)",
-          tapCount: "Continuez \xE0 taper en rythme \u2026 {n}/6",
+          tapCount: "Continue \xE0 taper en rythme \u2026 {n}/6",
           tapDone: "Synchro \u2013 ajust\xE9 de {ms} ms",
-          tapUnsure: "Trop irr\xE9gulier \u2013 tapez r\xE9guli\xE8rement sur chaque temps",
+          tapUnsure: "Trop irr\xE9gulier \u2013 tape r\xE9guli\xE8rement sur chaque temps",
           tapNoBeat: "Pas encore de donn\xE9es rythmiques pour ce titre",
-          liveRelay: "Chiffr\xE9 de bout en bout via un relais public \u2013 seul qui a ce QR code voit quelque chose. S'arr\xEAte quand vous quittez le mode f\xEAte ; le code expire apr\xE8s 10 minutes.",
-          liveError: "Aucun relais joignable \u2013 la connexion internet fonctionne-t-elle ?"
+          liveRelay: "Chiffr\xE9 de bout en bout via un relais public \u2013 seuls ceux qui ont ce QR code peuvent le voir. S'arr\xEAte quand tu quittes le mode f\xEAte ; le code expire apr\xE8s 10 minutes.",
+          liveError: "Aucun relais joignable \u2013 la connexion internet fonctionne-t-elle ?",
+          selLost: "Spotify {v} a modifi\xE9 des \xE9l\xE9ments que Mirage met en forme \u2013 certaines pages peuvent sembler un peu d\xE9cal\xE9es. Copie le diagnostic dans les r\xE9glages de Mirage et signale-le pour qu'il soit corrig\xE9.",
+          partyCuts: "Plans de cam\xE9ra",
+          partyCutsHint: "Coupes franches sur le premier temps entre plan large, gros plan et public \u2013 toutes les 8 mesures, toutes les 4 au sommet ; le drop revient au plan large",
+          venue_cellar: "Cave",
+          venue_jazzbar: "Club de jazz",
+          venue_rooftop: "Rooftop",
+          venue_forest: "Sc\xE8ne en for\xEAt",
+          venue_cathedral: "Cath\xE9drale",
+          venue_hall: "Salle de concert",
+          partyWishes: "Demandes de titres depuis les t\xE9l\xE9phones",
+          partyWishesHint: "Les invit\xE9s peuvent demander des titres et voter sur la page du t\xE9l\xE9phone \u2013 seul ce que tu acceptes va dans la file d'attente",
+          wishTitle: "Demandes de titres",
+          wishBy: "de {n}",
+          wishQueue: "+ File",
+          wishDecline: "Refuser",
+          wishQueued: "\xAB {s} \xBB ajout\xE9 \xE0 la file d'attente",
+          viz_tunnel: "Tunnel 3D"
         },
         es: {
           menu: "Ajustes de Mirage",
@@ -1254,9 +1305,9 @@
           grainHint: "Ruido fino sobre el fondo",
           calm: "Modo tranquilo",
           calmHint: "Detiene todas las animaciones del fondo",
-          blur: "Desenfoque del cristal",
+          blur: "Desenfoque del cristal (solo cristal real)",
           bright: "Brillo del fondo",
-          tip: "Modo inmersivo: Ctrl + May\xFAs + M o el bot\xF3n redondo de arriba. Dentro, 1 \xB7 2 \xB7 3 cambian la vista.",
+          tip: "Modo inmersivo: Ctrl + May\xFAs + M o el bot\xF3n redondo de arriba. Dentro: 1 \xB7 2 \xB7 3 vista, Espacio reproducir, \u2190 \u2192 saltar, \u2191 \u2193 volumen, L me gusta, S aleatorio, R repetir, F pantalla completa.",
           vizSection: "Visualizador",
           vizSectionHint: "Aspecto del visualizador en modo inmersivo \u2013 se aplica al instante",
           viz_bars: "Barras",
@@ -1308,7 +1359,7 @@
           k_play: "Reproducir / pausar",
           k_seek: "Saltar 5 s",
           k_vol: "Volumen",
-          k_view: "Portada \xB7 letra \xB7 visualizador \xB7 Mezcla \xB7 Fiesta",
+          k_view: "Portada \xB7 letra \xB7 visualizador \xB7 mix \xB7 fiesta",
           k_like: "Me gusta",
           k_shuffle: "Aleatorio",
           k_repeat: "Repetir",
@@ -1378,10 +1429,10 @@
           overlayConnected: "\u25CF Overlay conectado",
           overlayMissing: "\u25CB Overlay no est\xE1 en marcha \u2013 inst\xE1lalo con el bot\xF3n de abajo y \xE1brelo una vez",
           onlineLyrics: "Buscar letras en l\xEDnea",
-          onlineLyricsHint: "Si Spotify no tiene, Mirage pregunta a LRCLIB, NetEase y lyrics.ovh \u2013 solo se env\xEDan t\xEDtulo, artista, \xE1lbum y duraci\xF3n",
+          onlineLyricsHint: "Si Spotify no la tiene, Mirage pregunta a LRCLIB, NetEase y lyrics.ovh \u2013 solo se env\xEDan t\xEDtulo, artista, \xE1lbum y duraci\xF3n",
           emptyTitle: "No hay letra para esta canci\xF3n",
           emptyText: "Ninguna fuente de letras la tiene todav\xEDa.",
-          emptyTextOff: "Spotify no tiene. Activa \xABBuscar letras en l\xEDnea\xBB en los ajustes para buscar m\xE1s.",
+          emptyTextOff: "Spotify no la tiene. Activa \xABBuscar letras en l\xEDnea\xBB en los ajustes para buscar m\xE1s.",
           instrTitle: "Instrumental",
           instrText: "Sin palabras \u2013 deja que suene la m\xFAsica.",
           showViz: "Mostrar visualizador",
@@ -1417,7 +1468,7 @@
           party_rave: "Rave",
           party_rock: "Rock",
           party_pop: "Pop",
-          tabMix: "Mezcla",
+          tabMix: "Mix",
           tabParty: "Fiesta",
           party_auto: "Auto",
           party_bass: "Hip-Hop",
@@ -1460,14 +1511,14 @@
           party_metal: "Metal",
           party_latin: "Latino",
           partyBlend: "Transiciones al ritmo",
-          partyBlendHint: "Entre canciones la luz baja y vuelve en el primer golpe de la siguiente",
+          partyBlendHint: "Entre canciones la luz baja y vuelve en el primer tiempo de la siguiente",
           partyHype: "L\xEDneas hype",
           partyHypeHint: "Estribillos y llamadas al p\xFAblico (\xABhands up\xBB, \xABjump\xBB\u2026) brillan m\xE1s y sus palabras aparecen una a una",
           partyDepth: "Profundidad 3D",
           partyDepthHint: "Letra, t\xEDtulo y luz est\xE1n en capas distintas y siguen al rat\xF3n; sin rat\xF3n, la escena flota suavemente",
           partyCamera: "Movimientos de c\xE1mara",
           partyCameraHint: "Toda la escena hace zoom y se desliza despacio: abierta en lo tranquilo, m\xE1s cerca con la energ\xEDa, un golpe en el drop",
-          partyShatter: "Chispas de letra",
+          partyShatter: "Estallido de letra",
           partyShatterHint: "En el drop la l\xEDnea actual destella y estalla en part\xEDculas de luz",
           partyCrowd: "P\xFAblico",
           partyCrowdHint: "Siluetas frente al escenario levantan los brazos con la energ\xEDa y saltan con el bombo y el drop",
@@ -1507,7 +1558,7 @@
           partyQuietFpsHint: "Las intros y pausas tranquilas van a 30 fotogramas por segundo: se ve igual y ahorra energ\xEDa",
           partyLive: "Enlace en vivo para m\xF3viles",
           partyLiveHint: "Los m\xF3viles en cualquier red se iluminan al ritmo \u2013 escanea el c\xF3digo QR. Cifrado, solo accesible con el c\xF3digo QR y solo mientras el modo fiesta est\xE9 activo. Sin app.",
-          mixInstruments: "Mix reacciona a los instrumentos",
+          mixInstruments: "El Mix reacciona a los instrumentos",
           mixInstrumentsHint: "En el modo Mix, el pulso y los anillos siguen el bombo real, no solo la rejilla de tiempos",
           partyVenue: "Lugar",
           venue_auto: "Seg\xFAn el g\xE9nero",
@@ -1526,7 +1577,7 @@
           partyFx: "Efectos de escenario",
           partyFxHint: "Chorros de CO2 en la electr\xF3nica, llamas pirot\xE9cnicas en rock y metal, fuegos artificiales en el \xFAltimo estribillo \u2013 en el drop y en el cl\xEDmax",
           partyStrobe: "Estroboscopio en drops duros",
-          partyStrobeHint: "Techno, hardstyle, rave y drum & bass destellan en blanco a tiempo durante el drop \u2013 desde Extremo, como mucho un destello por tiempo",
+          partyStrobeHint: "Techno, hardstyle, rave y drum & bass destellan en blanco al ritmo durante el drop \u2013 desde Extremo, como mucho un destello por tiempo",
           venue_warehouse: "Nave",
           venue_beach: "Playa",
           g_party: "Modo fiesta",
@@ -1569,8 +1620,8 @@
           party_ambient: "Ambient",
           party_cinematic: "Cine y \xE9pico",
           ps_style: "Estilo",
-          partyRig: "Cabezas m\xF3viles y cegadoras",
-          partyRigHint: "Un rig de luces sobre el escenario se mueve con patrones seg\xFAn el g\xE9nero \u2013 olas para house, persecuciones para techno, abanicos para EDM \u2013 con cegadoras en los golpes fuertes y una l\xE1mina l\xE1ser en el drop",
+          partyRig: "Moving heads y blinders",
+          partyRigHint: "Un rig de luces sobre el escenario se mueve con patrones seg\xFAn el g\xE9nero \u2013 olas para house, chases para techno, abanicos para EDM \u2013 con blinders en los golpes fuertes y una cortina l\xE1ser en el drop",
           partyInstruments: "Reconocer instrumentos",
           partyInstrumentsHint: "Trompetas, saxo, guitarra, piano, cuerdas y coro tienen sus propios efectos \u2013 solo si los cr\xE9ditos de la canci\xF3n confirman el instrumento (Spotify, MusicBrainz; el ISRC de la canci\xF3n se env\xEDa a MusicBrainz)",
           syncOffset: "Sincron\xEDa (efectos y letra)",
@@ -1579,8 +1630,25 @@
           tapDone: "Sincronizado \u2013 ajustado {ms} ms",
           tapUnsure: "Demasiado irregular \u2013 marca cada tiempo de forma constante",
           tapNoBeat: "A\xFAn no hay datos de ritmo para esta canci\xF3n",
-          liveRelay: "Cifrado de extremo a extremo mediante un rel\xE9 p\xFAblico \u2013 solo quien tiene este c\xF3digo QR ve algo. Termina al salir del modo fiesta; el c\xF3digo caduca a los 10 minutos.",
-          liveError: "No hay rel\xE9 disponible \u2013 \xBFfunciona la conexi\xF3n a internet?"
+          liveRelay: "Cifrado de extremo a extremo mediante un relay p\xFAblico \u2013 solo quien tiene este c\xF3digo QR puede verlo. Termina al salir del modo fiesta; el c\xF3digo caduca a los 10 minutos.",
+          liveError: "No hay ning\xFAn relay disponible \u2013 \xBFfunciona la conexi\xF3n a internet?",
+          selLost: "Spotify {v} ha cambiado partes que Mirage dise\xF1a \u2013 algunas p\xE1ginas pueden verse un poco raras. Copia el diagn\xF3stico en los ajustes de Mirage y rep\xF3rtalo para que se arregle.",
+          partyCuts: "Cortes de c\xE1mara",
+          partyCutsHint: "Cortes secos en el primer tiempo entre plano general, primer plano y p\xFAblico \u2013 cada 8 compases, cada 4 en el cl\xEDmax; el drop vuelve al plano general",
+          venue_cellar: "S\xF3tano",
+          venue_jazzbar: "Bar de jazz",
+          venue_rooftop: "Azotea",
+          venue_forest: "Escenario en el bosque",
+          venue_cathedral: "Catedral",
+          venue_hall: "Sala de conciertos",
+          partyWishes: "Peticiones desde los m\xF3viles",
+          partyWishesHint: "Los invitados pueden pedir canciones y votar en la p\xE1gina del m\xF3vil \u2013 solo lo que aceptes entra en la cola",
+          wishTitle: "Peticiones",
+          wishBy: "de {n}",
+          wishQueue: "+ Cola",
+          wishDecline: "Rechazar",
+          wishQueued: "\xAB{s}\xBB a\xF1adida a la cola",
+          viz_tunnel: "T\xFAnel 3D"
         },
         it: {
           menu: "Impostazioni Mirage",
@@ -1621,9 +1689,9 @@
           grainHint: "Leggero rumore sullo sfondo",
           calm: "Modalit\xE0 calma",
           calmHint: "Ferma tutte le animazioni dello sfondo",
-          blur: "Sfocatura vetro",
+          blur: "Sfocatura vetro (solo vetro reale)",
           bright: "Luminosit\xE0 dello sfondo",
-          tip: "Modalit\xE0 immersiva: Ctrl + Maiusc + M o il pulsante rotondo in alto. All'interno 1 \xB7 2 \xB7 3 cambiano vista.",
+          tip: "Modalit\xE0 immersiva: Ctrl + Maiusc + M o il pulsante rotondo in alto. All'interno: 1 \xB7 2 \xB7 3 vista, Spazio riproduci, \u2190 \u2192 salta, \u2191 \u2193 volume, L mi piace, S casuale, R ripeti, F schermo intero.",
           vizSection: "Visualizzatore",
           vizSectionHint: "Aspetto del visualizzatore in modalit\xE0 immersiva \u2013 si applica subito",
           viz_bars: "Barre",
@@ -1675,7 +1743,7 @@
           k_play: "Riproduci / pausa",
           k_seek: "Salta di 5 s",
           k_vol: "Volume",
-          k_view: "Copertina \xB7 testo \xB7 visualizzatore \xB7 Mix \xB7 Festa",
+          k_view: "Copertina \xB7 testo \xB7 visualizzatore \xB7 mix \xB7 festa",
           k_like: "Mi piace",
           k_shuffle: "Casuale",
           k_repeat: "Ripeti",
@@ -1834,7 +1902,7 @@
           partyDepthHint: "Testo, titolo e luci stanno su piani diversi e seguono il mouse \u2013 senza mouse la scena fluttua piano",
           partyCamera: "Movimenti di camera",
           partyCameraHint: "Tutta la scena zooma e scorre lentamente: larga nelle parti calme, pi\xF9 vicina con l'energia, uno scatto sul drop",
-          partyShatter: "Scintille del testo",
+          partyShatter: "Testo in frantumi",
           partyShatterHint: "Sul drop la riga attuale si accende e si frantuma in particelle di luce",
           partyCrowd: "Pubblico",
           partyCrowdHint: "Sagome davanti al palco alzano le braccia con l'energia e saltano su cassa e drop",
@@ -1937,17 +2005,34 @@
           party_cinematic: "Film ed epica",
           ps_style: "Stile",
           partyRig: "Teste mobili e blinder",
-          partyRigHint: "Un rig luci sopra il palco si muove con figure adatte al genere \u2013 onde per la house, inseguimenti per la techno, ventagli per l'EDM \u2013 con blinder sui colpi forti e una lama laser sul drop",
+          partyRigHint: "Un rig luci sopra il palco si muove con figure adatte al genere \u2013 onde per la house, chase per la techno, ventagli per l'EDM \u2013 con blinder sui colpi forti e una lama laser sul drop",
           partyInstruments: "Riconosci strumenti",
           partyInstrumentsHint: "Trombe, sax, chitarra, piano, archi e coro hanno effetti propri \u2013 solo se i crediti del brano confermano lo strumento (Spotify, MusicBrainz; a MusicBrainz va il codice ISRC del brano)",
           syncOffset: "Sincronia (effetti e testo)",
           k_tap: "Batti a tempo (sincronizza)",
           tapCount: "Continua a battere a tempo \u2026 {n}/6",
           tapDone: "A tempo \u2013 regolato di {ms} ms",
-          tapUnsure: "Troppo irregolare \u2013 batti costante su ogni battito",
+          tapUnsure: "Troppo irregolare \u2013 batti regolarmente su ogni battito",
           tapNoBeat: "Ancora nessun dato ritmico per questo brano",
-          liveRelay: "Cifrato end-to-end tramite un relay pubblico \u2013 solo chi ha questo codice QR vede qualcosa. Finisce quando esci dalla modalit\xE0 festa; il codice scade dopo 10 minuti.",
-          liveError: "Nessun relay raggiungibile \u2013 la connessione internet funziona?"
+          liveRelay: "Cifrato end-to-end tramite un relay pubblico \u2013 solo chi ha questo codice QR pu\xF2 vederlo. Finisce quando esci dalla modalit\xE0 festa; il codice scade dopo 10 minuti.",
+          liveError: "Nessun relay raggiungibile \u2013 la connessione internet funziona?",
+          selLost: "Spotify {v} ha modificato parti che Mirage personalizza \u2013 alcune pagine potrebbero sembrare un po' strane. Copia la diagnostica nelle impostazioni di Mirage e segnalalo, cos\xEC verr\xE0 corretto.",
+          partyCuts: "Stacchi di camera",
+          partyCutsHint: "Stacchi netti sul primo battito tra campo largo, primo piano e pubblico \u2013 ogni 8 battute, ogni 4 nel culmine; il drop torna al campo largo",
+          venue_cellar: "Cantina",
+          venue_jazzbar: "Jazz club",
+          venue_rooftop: "Terrazza",
+          venue_forest: "Palco nel bosco",
+          venue_cathedral: "Cattedrale",
+          venue_hall: "Sala da concerto",
+          partyWishes: "Richieste dai telefoni",
+          partyWishesHint: "Gli ospiti possono chiedere brani e votare dalla pagina del telefono \u2013 in coda finisce solo ci\xF2 che accetti",
+          wishTitle: "Richieste",
+          wishBy: "da {n}",
+          wishQueue: "+ Coda",
+          wishDecline: "Rifiuta",
+          wishQueued: "\xAB{s}\xBB aggiunto alla coda",
+          viz_tunnel: "Tunnel 3D"
         },
         pt: {
           menu: "Configura\xE7\xF5es do Mirage",
@@ -1988,11 +2073,11 @@
           grainHint: "Ru\xEDdo fino sobre o fundo",
           calm: "Modo calmo",
           calmHint: "Para todas as anima\xE7\xF5es do fundo",
-          blur: "Desfoque do vidro",
+          blur: "Desfoque do vidro (s\xF3 vidro real)",
           bright: "Brilho do fundo",
-          tip: "Modo imersivo: Ctrl + Shift + M ou o bot\xE3o redondo no topo. Dentro, 1 \xB7 2 \xB7 3 trocam a vis\xE3o.",
+          tip: "Modo imersivo: Ctrl + Shift + M ou o bot\xE3o redondo no topo. Dentro: 1 \xB7 2 \xB7 3 vis\xE3o, Espa\xE7o tocar, \u2190 \u2192 pular, \u2191 \u2193 volume, L curtir, S aleat\xF3rio, R repetir, F tela cheia.",
           vizSection: "Visualizador",
-          vizSectionHint: "Apar\xEAncia do visualizador no modo imersivo \u2013 aplica na hora",
+          vizSectionHint: "Apar\xEAncia do visualizador no modo imersivo \u2013 se aplica na hora",
           viz_bars: "Barras",
           viz_wave: "Onda",
           viz_dots: "Pontos",
@@ -2042,7 +2127,7 @@
           k_play: "Tocar / pausar",
           k_seek: "Pular 5 s",
           k_vol: "Volume",
-          k_view: "Capa \xB7 letra \xB7 visualizador \xB7 Mix \xB7 Festa",
+          k_view: "Capa \xB7 letra \xB7 visualizador \xB7 mix \xB7 festa",
           k_like: "Curtir",
           k_shuffle: "Aleat\xF3rio",
           k_repeat: "Repetir",
@@ -2114,7 +2199,7 @@
           onlineLyrics: "Buscar letras online",
           onlineLyricsHint: "Se o Spotify n\xE3o tiver, o Mirage pergunta ao LRCLIB, NetEase e lyrics.ovh \u2013 s\xF3 t\xEDtulo, artista, \xE1lbum e dura\xE7\xE3o s\xE3o enviados",
           emptyTitle: "Sem letra para esta m\xFAsica",
-          emptyText: "Nenhuma fonte de letras tem ainda.",
+          emptyText: "Ainda n\xE3o est\xE1 em nenhuma fonte de letras.",
           emptyTextOff: "O Spotify n\xE3o tem. Ative \u201CBuscar letras online\u201D nas configura\xE7\xF5es para procurar mais.",
           instrTitle: "Instrumental",
           instrText: "Sem palavras \u2013 s\xF3 deixe a m\xFAsica tocar.",
@@ -2201,7 +2286,7 @@
           partyDepthHint: "Letra, t\xEDtulo e luz ficam em camadas diferentes e seguem o mouse \u2013 sem mouse a cena flutua de leve",
           partyCamera: "Movimentos de c\xE2mera",
           partyCameraHint: "A cena toda d\xE1 zoom e desliza devagar: aberta nas partes calmas, mais perto com a energia, um tranco no drop",
-          partyShatter: "Fa\xEDscas da letra",
+          partyShatter: "Explos\xE3o da letra",
           partyShatterHint: "No drop a linha atual brilha e se desfaz em part\xEDculas de luz",
           partyCrowd: "P\xFAblico",
           partyCrowdHint: "Silhuetas diante do palco levantam os bra\xE7os com a energia e pulam no bumbo e no drop",
@@ -2267,12 +2352,12 @@
           ps_light: "Luz e efeitos",
           ps_moments: "Momentos",
           ps_crowd: "P\xFAblico e Jam",
-          ps_extras: "Extras e partilha",
+          ps_extras: "Extras e compartilhamento",
           fam_electronic: "Eletr\xF4nica",
           fam_urban: "Hip-hop e R&B",
           fam_rock: "Rock",
           fam_pop: "Pop",
-          fam_world: "Latina e mundo",
+          fam_world: "Latino e mundo",
           fam_calm: "Calma e cl\xE1ssica",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
@@ -2304,23 +2389,40 @@
           party_cinematic: "Filme e \xE9pico",
           ps_style: "Estilo",
           partyRig: "Moving heads e blinders",
-          partyRigHint: "Um rig de luz sobre o palco se move em padr\xF5es conforme o g\xEAnero \u2013 ondas no house, persegui\xE7\xF5es no techno, leques no EDM \u2013 com blinders nas batidas fortes e uma l\xE2mina de laser no drop",
+          partyRigHint: "Um rig de luz sobre o palco se move em padr\xF5es conforme o g\xEAnero \u2013 ondas no house, chases no techno, leques no EDM \u2013 com blinders nas batidas fortes e uma l\xE2mina de laser no drop",
           partyInstruments: "Reconhecer instrumentos",
           partyInstrumentsHint: "Trompetes, sax, guitarra, piano, cordas e coro ganham efeitos pr\xF3prios \u2013 s\xF3 quando os cr\xE9ditos da m\xFAsica confirmam o instrumento (Spotify, MusicBrainz; o ISRC da m\xFAsica vai para o MusicBrainz)",
           syncOffset: "Sincronia (efeitos e letra)",
           k_tap: "Toque no ritmo (sincronizar)",
-          tapCount: "Continue tocando no ritmo \u2026 {n}/6",
+          tapCount: "Continue batendo no ritmo \u2026 {n}/6",
           tapDone: "No ritmo \u2013 ajustado em {ms} ms",
-          tapUnsure: "Irregular demais \u2013 toque constante em cada batida",
+          tapUnsure: "Irregular demais \u2013 bata de forma constante em cada batida",
           tapNoBeat: "Ainda n\xE3o h\xE1 dados de ritmo para esta m\xFAsica",
-          liveRelay: "Criptografado de ponta a ponta por um relay p\xFAblico \u2013 s\xF3 quem tem este QR code v\xEA algo. Termina quando voc\xEA sai do modo festa; o c\xF3digo expira ap\xF3s 10 minutos.",
-          liveError: "Nenhum relay dispon\xEDvel \u2013 a internet est\xE1 funcionando?"
+          liveRelay: "Criptografado de ponta a ponta por um relay p\xFAblico \u2013 s\xF3 quem tem este QR code pode ver. Termina quando voc\xEA sai do modo festa; o c\xF3digo expira ap\xF3s 10 minutos.",
+          liveError: "Nenhum relay dispon\xEDvel \u2013 a internet est\xE1 funcionando?",
+          selLost: "O Spotify {v} mudou partes que o Mirage estiliza \u2013 algumas p\xE1ginas podem parecer um pouco estranhas. Copie o diagn\xF3stico nas configura\xE7\xF5es do Mirage e reporte para que seja corrigido.",
+          partyCuts: "Cortes de c\xE2mera",
+          partyCutsHint: "Cortes secos no primeiro tempo entre plano geral, close e p\xFAblico \u2013 a cada 8 compassos, a cada 4 no auge; o drop volta ao plano geral",
+          venue_cellar: "Por\xE3o",
+          venue_jazzbar: "Bar de jazz",
+          venue_rooftop: "Rooftop",
+          venue_forest: "Palco na floresta",
+          venue_cathedral: "Catedral",
+          venue_hall: "Sala de concertos",
+          partyWishes: "Pedidos de m\xFAsicas pelos celulares",
+          partyWishesHint: "Os convidados podem pedir m\xFAsicas e votar na p\xE1gina do celular \u2013 s\xF3 entra na fila o que voc\xEA aceitar",
+          wishTitle: "Pedidos de m\xFAsicas",
+          wishBy: "de {n}",
+          wishQueue: "+ Fila",
+          wishDecline: "Recusar",
+          wishQueued: "\u201C{s}\u201D adicionada \xE0 fila",
+          viz_tunnel: "T\xFAnel 3D"
         },
         nl: {
           menu: "Mirage-instellingen",
-          immersive: "Mirage meeslepende modus",
+          immersive: "Mirage immersieve modus",
           back: "Terug",
-          dialog: "Mirage meeslepende modus",
+          dialog: "Mirage immersieve modus",
           tabCover: "Hoes",
           tabLyrics: "Songtekst",
           tabViz: "Visualizer",
@@ -2355,9 +2457,9 @@
           grainHint: "Fijne ruis over de achtergrond",
           calm: "Rustige modus",
           calmHint: "Stopt alle achtergrondanimaties",
-          blur: "Glasvervaging",
+          blur: "Glasvervaging (alleen echt glas)",
           bright: "Helderheid achtergrond",
-          tip: "Meeslepende modus: Ctrl + Shift + M of de ronde knop bovenaan. Daarin wisselen 1 \xB7 2 \xB7 3 de weergave.",
+          tip: "Immersieve modus: Ctrl + Shift + M of de ronde knop bovenaan. Daarin: 1 \xB7 2 \xB7 3 weergave, spatie afspelen, \u2190 \u2192 spoelen, \u2191 \u2193 volume, L liken, S shuffle, R herhalen, F volledig scherm.",
           vizSection: "Visualizer",
           vizSectionHint: "Uiterlijk van de visualizer in de immersieve modus \u2013 werkt meteen",
           viz_bars: "Balken",
@@ -2403,13 +2505,13 @@
           weekMinutes: "minuten",
           weekColours: "Kleuren van je hoezen",
           weekArtists: "Meest beluisterd",
-          weekEmpty: "Luister een paar nummers \u2013 je week vult zich vanzelf.",
+          weekEmpty: "Luister naar een paar nummers \u2013 je week vult zich vanzelf.",
           weekScheme: "Favoriete schema: {s}",
           keysTitle: "Sneltoetsen",
           k_play: "Afspelen / pauzeren",
           k_seek: "5 s spoelen",
           k_vol: "Volume",
-          k_view: "Hoes \xB7 songtekst \xB7 visualizer \xB7 Mix \xB7 Feest",
+          k_view: "Hoes \xB7 songtekst \xB7 visualizer \xB7 mix \xB7 feest",
           k_like: "Liken",
           k_shuffle: "Shuffle",
           k_repeat: "Herhalen",
@@ -2531,17 +2633,17 @@
           partyLevel3: "Max",
           partyFlash: "Kleurflitsen",
           partyFlashHint: "Zachte kleurgolven op de beat, nooit meer dan een paar per seconde. Uit bij \u2018minder beweging\u2019",
-          scanCode: "Scan in Spotify",
+          scanCode: "Scannen in Spotify",
           partyJam: "Jam-gasten tonen",
           partyJamHint: "Tijdens een Spotify Jam zweven de profielfoto's van alle deelnemers (ook die van jou) langs de randen",
           jamYou: "Jij",
           partyLevel4: "Extreem",
-          partyLevel5: "Waanzin",
+          partyLevel5: "Waanzinnig",
           partyLasers: "Podiumlicht",
           partyLasersHint: "Spots in de stijl van het genre \u2013 kruisende bundels bij rave, harde spots van boven bij rock, licht vanaf de vloer bij bass. Vanaf \u2018Extreem\u2019 ook bundels uit de hoes",
           partyZoom: "Camerastoten",
           partyZoomHint: "Vanaf \u2018Max\u2019: de regel veert op de beklemtoonde tellen en de hoes wiegt (pop, bass, chill). Vanaf \u2018Extreem\u2019: het hele beeld zoomt in",
-          partyIdle: "Bediening verbergen in rust",
+          partyIdle: "Bediening verbergen bij inactiviteit",
           partyIdleHint: "Na een paar seconden zonder muis verdwijnen de knoppen en schuift alles naar het midden",
           c_addTo: "Aan playlist toevoegen",
           plFind: "Playlists zoeken",
@@ -2599,7 +2701,7 @@
           partyDirector: "Lichtregie",
           partyDirectorHint: "Stilte voor de storm: voor de drop houdt het licht zich in, op de laatste tel wordt het donker \u2013 dan slaat de drop in. Het laatste refrein krijgt alles",
           partyMelody: "Melodielasers",
-          partyMelodyHint: "Twee dunne lasers vanuit de cover volgen de toonhoogte van de melodie",
+          partyMelodyHint: "Twee dunne lasers vanuit de hoes volgen de toonhoogte van de melodie",
           partySlowmo: "Slow motion voor de drop",
           partySlowmoHint: "Vonken, ringen en publiek bevriezen een halve seconde vlak voor de drop",
           partyDJ: "DJ-overgangen",
@@ -2681,7 +2783,24 @@
           tapUnsure: "Te onregelmatig \u2013 tik gelijkmatig op elke tel",
           tapNoBeat: "Nog geen beatgegevens voor dit nummer",
           liveRelay: "End-to-end versleuteld via een openbare relay \u2013 alleen wie deze QR-code heeft ziet iets. Stopt als je de feestmodus verlaat; na 10 minuten verloopt de code.",
-          liveError: "Geen relay bereikbaar \u2013 werkt de internetverbinding?"
+          liveError: "Geen relay bereikbaar \u2013 werkt de internetverbinding?",
+          selLost: "Spotify {v} heeft onderdelen omgebouwd die Mirage vormgeeft \u2013 sommige pagina's zien er misschien niet helemaal goed uit. Kopieer de diagnose in de Mirage-instellingen en meld het, dan wordt het opgelost.",
+          partyCuts: "Camerasneden",
+          partyCutsHint: "Harde sneden op de eerste tel tussen totaal, close-up en publiek \u2013 elke 8 maten, elke 4 op het hoogtepunt; de drop snijdt terug naar totaal",
+          venue_cellar: "Kelder",
+          venue_jazzbar: "Jazzbar",
+          venue_rooftop: "Dakterras",
+          venue_forest: "Bospodium",
+          venue_cathedral: "Kathedraal",
+          venue_hall: "Concertzaal",
+          partyWishes: "Verzoeknummers via telefoons",
+          partyWishesHint: "Gasten kunnen op de telefoonpagina nummers aanvragen en stemmen \u2013 alleen wat jij accepteert komt in de wachtrij",
+          wishTitle: "Verzoeknummers",
+          wishBy: "van {n}",
+          wishQueue: "+ Wachtrij",
+          wishDecline: "Weigeren",
+          wishQueued: "\u2018{s}\u2019 staat in de wachtrij",
+          viz_tunnel: "3D-tunnel"
         },
         pl: {
           menu: "Ustawienia Mirage",
@@ -2722,9 +2841,9 @@
           grainHint: "Delikatny szum na tle",
           calm: "Tryb spokojny",
           calmHint: "Zatrzymuje wszystkie animacje t\u0142a",
-          blur: "Rozmycie szk\u0142a",
+          blur: "Rozmycie szk\u0142a (tylko prawdziwe szk\u0142o)",
           bright: "Jasno\u015B\u0107 t\u0142a",
-          tip: "Tryb immersyjny: Ctrl + Shift + M lub okr\u0105g\u0142y przycisk u g\xF3ry. W \u015Brodku 1 \xB7 2 \xB7 3 zmieniaj\u0105 widok.",
+          tip: "Tryb immersyjny: Ctrl + Shift + M lub okr\u0105g\u0142y przycisk u g\xF3ry. W \u015Brodku: 1 \xB7 2 \xB7 3 widok, Spacja odtwarzanie, \u2190 \u2192 przewijanie, \u2191 \u2193 g\u0142o\u015Bno\u015B\u0107, L polub, S losowo, R powtarzaj, F pe\u0142ny ekran.",
           vizSection: "Wizualizator",
           vizSectionHint: "Wygl\u0105d wizualizatora w trybie immersyjnym \u2013 zmiany dzia\u0142aj\u0105 od razu",
           viz_bars: "S\u0142upki",
@@ -2757,7 +2876,7 @@
           perfStepped: "Mirage dzia\u0142a\u0142 tu w {fps} fps i prze\u0142\u0105czy\u0142 si\u0119 na \u201E{preset}\u201D, aby wszystko by\u0142o p\u0142ynne.",
           autoPerf: "Dostosuj automatycznie",
           autoPerfHint: "Obni\u017Ca poziom o jeden, gdy komputer nie nad\u0105\u017Ca",
-          costly: "Obci\u0105\u017Ca wydajno\u015B\u0107 i bateri\u0119",
+          costly: "Obci\u0105\u017Ca komputer i bateri\u0119",
           safeMode: "Spotify {v} zmieni\u0142 swoj\u0105 struktur\u0119 \u2013 Mirage dzia\u0142a w trybie awaryjnym (tylko kolory). Aktualizacja Mirage to naprawi.",
           share: "Udost\u0119pnij jako obraz",
           shareNow: "Udost\u0119pnij bie\u017C\u0105cy utw\xF3r",
@@ -2776,7 +2895,7 @@
           k_play: "Odtw\xF3rz / pauza",
           k_seek: "Przewi\u0144 o 5 s",
           k_vol: "G\u0142o\u015Bno\u015B\u0107",
-          k_view: "Ok\u0142adka \xB7 tekst \xB7 wizualizator \xB7 Miks \xB7 Impreza",
+          k_view: "Ok\u0142adka \xB7 tekst \xB7 wizualizator \xB7 miks \xB7 impreza",
           k_like: "Polub",
           k_shuffle: "Losowo",
           k_repeat: "Powtarzaj",
@@ -2878,7 +2997,7 @@
           monthTitle: "Tw\xF3j miesi\u0105c w kolorach",
           monthDays: "dni",
           monthDaily: "Czas s\u0142uchania dziennie",
-          monthSongs: "Top utwory",
+          monthSongs: "Najlepsze utwory",
           trToggle: "T\u0142umaczenie",
           trShow: "Poka\u017C t\u0142umaczenie",
           trHide: "Ukryj t\u0142umaczenie",
@@ -2900,14 +3019,14 @@
           partyFlashHint: "\u0141agodne fale koloru w rytm, najwy\u017Cej kilka na sekund\u0119. Wy\u0142\u0105czone przy \u201Eograniczeniu ruchu\u201D",
           scanCode: "Zeskanuj w Spotify",
           partyJam: "Poka\u017C go\u015Bci Jamu",
-          partyJamHint: "Podczas Jamu w Spotify zdj\u0119cia profilowe wszystkich uczestnik\xF3w (tak\u017Ce twoje) unosz\u0105 si\u0119 przy kraw\u0119dziach",
+          partyJamHint: "Podczas Jamu w Spotify zdj\u0119cia profilowe wszystkich uczestnik\xF3w (tak\u017Ce Twoje) unosz\u0105 si\u0119 przy kraw\u0119dziach",
           jamYou: "Ty",
-          partyLevel4: "Ekstremalny",
+          partyLevel4: "Ekstremalna",
           partyLevel5: "Szale\u0144stwo",
           partyLasers: "\u015Awiat\u0142o sceniczne",
-          partyLasersHint: "Reflektory w stylu gatunku \u2013 krzy\u017Cuj\u0105ce si\u0119 wi\u0105zki przy rave, ostre spoty z g\xF3ry przy rocku, \u015Bwiat\u0142o od pod\u0142ogi przy bassie. Od \u201EEkstremalny\u201D tak\u017Ce wi\u0105zki z ok\u0142adki",
+          partyLasersHint: "Reflektory w stylu gatunku \u2013 krzy\u017Cuj\u0105ce si\u0119 wi\u0105zki przy rave, ostre spoty z g\xF3ry przy rocku, \u015Bwiat\u0142o od pod\u0142ogi przy bassie. Od \u201EEkstremalna\u201D tak\u017Ce wi\u0105zki z ok\u0142adki",
           partyZoom: "Uderzenia kamery",
-          partyZoomHint: "Od \u201EMaks.\u201D: linijka spr\u0119\u017Cynuje na akcentach, a ok\u0142adka si\u0119 ko\u0142ysze (pop, bass, chill). Od \u201EEkstremalny\u201D: ca\u0142y obraz si\u0119 przybli\u017Ca",
+          partyZoomHint: "Od \u201EMaks.\u201D: linijka spr\u0119\u017Cynuje na akcentach, a ok\u0142adka si\u0119 ko\u0142ysze (pop, bass, chill). Od \u201EEkstremalna\u201D: ca\u0142y obraz si\u0119 przybli\u017Ca",
           partyIdle: "Ukrywaj sterowanie w spoczynku",
           partyIdleHint: "Po kilku sekundach bez myszy przyciski znikaj\u0105, a wszystko p\u0142ynnie przesuwa si\u0119 do \u015Brodka",
           c_addTo: "Dodaj do playlisty",
@@ -2920,7 +3039,7 @@
           smartPick: "Smart Shuffle",
           smartPickHint: "Dodane przez Smart Shuffle",
           partyOnline: "Sprawdzaj gatunek online",
-          partyOnlineHint: "Pyta wyszukiwark\u0119 iTunes Apple o gatunek utworu, \u017Ceby rave, rock czy hip-hop nie by\u0142y brane za pop \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142 i wykonawca",
+          partyOnlineHint: "Pyta wyszukiwark\u0119 iTunes firmy Apple o gatunek utworu, \u017Ceby rave, rock czy hip-hop nie by\u0142y brane za pop \u2013 wysy\u0142ane s\u0105 tylko tytu\u0142 i wykonawca",
           party_techno: "Techno",
           party_house: "House",
           party_trance: "Trance",
@@ -2946,7 +3065,7 @@
           partyRecap: "Podsumowanie imprezy",
           partyRecapHint: "Po trzech utworach pojawia si\u0119 przycisk do obrazka do udost\u0119pnienia: utwory, minuty, dropy, mieszanka gatunk\xF3w i najg\u0142o\u015Bniejszy drop",
           partyEdge: "\u015Awiat\u0142o kraw\u0119dzi (aplikacja overlay)",
-          partyEdgeHint: "Aplikacja Mirage Overlay roz\u015Bwietla kraw\u0119dzie ekranu w rytm, gdy trwa impreza \u2013 ukryte w grach pe\u0142noekranowych",
+          partyEdgeHint: "Aplikacja Mirage Overlay roz\u015Bwietla kraw\u0119dzie ekranu w rytm, gdy dzia\u0142a tryb imprezy \u2013 ukryte w grach pe\u0142noekranowych",
           recapBtn: "Podsumowanie imprezy",
           toScreen: "Impreza na innym ekranie",
           recapTitle: "Twoje podsumowanie imprezy",
@@ -2975,8 +3094,8 @@
           partyQuietFpsHint: "Ciche intra i przerwy dzia\u0142aj\u0105 w 30 klatkach na sekund\u0119 \u2013 wygl\u0105da tak samo, oszcz\u0119dza energi\u0119",
           partyLive: "Link na \u017Cywo dla telefon\xF3w",
           partyLiveHint: "Telefony w dowolnej sieci \u015Bwiec\u0105 w rytm \u2013 zeskanuj kod QR. Szyfrowane, dost\u0119pne tylko przez kod QR i tylko w trybie imprezy. Bez aplikacji.",
-          mixInstruments: "Mix reaguje na instrumenty",
-          mixInstrumentsHint: "W trybie Mix puls i pier\u015Bcienie pod\u0105\u017Caj\u0105 za prawdziw\u0105 stop\u0105, nie tylko za siatk\u0105 takt\xF3w",
+          mixInstruments: "Miks reaguje na instrumenty",
+          mixInstrumentsHint: "W trybie Miks puls i pier\u015Bcienie pod\u0105\u017Caj\u0105 za prawdziw\u0105 stop\u0105, nie tylko za siatk\u0105 takt\xF3w",
           partyVenue: "Miejsce",
           venue_auto: "Wg gatunku",
           venue_club: "Klub",
@@ -2994,7 +3113,7 @@
           partyFx: "Efekty sceniczne",
           partyFxHint: "Strumienie CO2 przy muzyce elektronicznej, p\u0142omienie pirotechniczne przy rocku i metalu, fajerwerki w ostatnim refrenie \u2013 na dropie i w szczycie",
           partyStrobe: "Stroboskop przy mocnych dropach",
-          partyStrobeHint: "Techno, hardstyle, rave i drum & bass b\u0142yskaj\u0105 na bia\u0142o w rytm podczas dropu \u2013 od poziomu Ekstremalny, najwy\u017Cej jeden b\u0142ysk na uderzenie",
+          partyStrobeHint: "Techno, hardstyle, rave i drum & bass b\u0142yskaj\u0105 na bia\u0142o w rytm podczas dropu \u2013 od poziomu \u201EEkstremalna\u201D, najwy\u017Cej jeden b\u0142ysk na uderzenie",
           venue_warehouse: "Hala",
           venue_beach: "Pla\u017Ca",
           g_party: "Tryb imprezy",
@@ -3037,10 +3156,10 @@
           party_ambient: "Ambient",
           party_cinematic: "Film i epika",
           ps_style: "Styl",
-          partyRig: "Ruchome g\u0142owy i blindery",
+          partyRig: "G\u0142owy ruchome i blindery",
           partyRigHint: "Rig \u015Bwietlny nad scen\u0105 porusza si\u0119 we wzorach pasuj\u0105cych do gatunku \u2013 fale przy house, gonitwy przy techno, wachlarze przy EDM \u2013 z blinderami przy mocnych uderzeniach i p\u0142aszczyzn\u0105 lasera na dropie",
           partyInstruments: "Rozpoznawaj instrumenty",
-          partyInstrumentsHint: "Tr\u0105bki, saksofon, gitara, fortepian, smyczki i ch\xF3r maj\u0105 w\u0142asne efekty \u2013 tylko gdy kredyty utworu potwierdzaj\u0105 instrument (Spotify, MusicBrainz; do MusicBrainz trafia numer ISRC utworu)",
+          partyInstrumentsHint: "Tr\u0105bki, saksofon, gitara, fortepian, smyczki i ch\xF3r maj\u0105 w\u0142asne efekty \u2013 tylko gdy lista tw\xF3rc\xF3w utworu potwierdza instrument (Spotify, MusicBrainz; do MusicBrainz trafia numer ISRC utworu)",
           syncOffset: "Synchronizacja (efekty i tekst)",
           k_tap: "Wystukaj rytm (synchronizacja)",
           tapCount: "Stukaj dalej w rytm \u2026 {n}/6",
@@ -3048,18 +3167,35 @@
           tapUnsure: "Zbyt nier\xF3wno \u2013 stukaj r\xF3wno na ka\u017Cde uderzenie",
           tapNoBeat: "Brak jeszcze danych o rytmie tego utworu",
           liveRelay: "Szyfrowanie end-to-end przez publiczny przeka\u017Anik \u2013 tylko posiadacz tego kodu QR co\u015B zobaczy. Ko\u0144czy si\u0119 po wyj\u015Bciu z trybu imprezy; kod wygasa po 10 minutach.",
-          liveError: "Brak dost\u0119pnego przeka\u017Anika \u2013 czy internet dzia\u0142a?"
+          liveError: "Brak dost\u0119pnego przeka\u017Anika \u2013 czy internet dzia\u0142a?",
+          selLost: "Spotify {v} przebudowa\u0142 elementy, kt\xF3re stylizuje Mirage \u2013 niekt\xF3re strony mog\u0105 wygl\u0105da\u0107 nieco dziwnie. Skopiuj diagnostyk\u0119 w ustawieniach Mirage i zg\u0142o\u015B to, a zostanie naprawione.",
+          partyCuts: "Ci\u0119cia kamery",
+          partyCutsHint: "Ostre ci\u0119cia na pierwsz\u0105 miar\u0119 mi\u0119dzy planem og\xF3lnym, zbli\u017Ceniem i publiczno\u015Bci\u0105 \u2013 co 8 takt\xF3w, w kulminacji co 4; drop wraca do planu og\xF3lnego",
+          venue_cellar: "Piwnica",
+          venue_jazzbar: "Klub jazzowy",
+          venue_rooftop: "Dach",
+          venue_forest: "Scena w lesie",
+          venue_cathedral: "Katedra",
+          venue_hall: "Sala koncertowa",
+          partyWishes: "Pro\u015Bby o utwory z telefon\xF3w",
+          partyWishesHint: "Go\u015Bcie mog\u0105 prosi\u0107 o utwory i g\u0142osowa\u0107 na stronie telefonu \u2013 do kolejki trafia tylko to, co zaakceptujesz",
+          wishTitle: "Pro\u015Bby o utwory",
+          wishBy: "od {n}",
+          wishQueue: "+ Kolejka",
+          wishDecline: "Odrzu\u0107",
+          wishQueued: "\u201E{s}\u201D dodano do kolejki",
+          viz_tunnel: "Tunel 3D"
         },
         tr: {
           menu: "Mirage ayarlar\u0131",
-          immersive: "Mirage s\xFCr\xFCkleyici mod",
+          immersive: "Mirage s\xFCr\xFCkleyici modu",
           back: "Geri",
-          dialog: "Mirage s\xFCr\xFCkleyici mod",
+          dialog: "Mirage s\xFCr\xFCkleyici modu",
           tabCover: "Kapak",
-          tabLyrics: "\u015Eark\u0131 s\xF6z\xFC",
+          tabLyrics: "\u015Eark\u0131 s\xF6zleri",
           tabViz: "G\xF6rselle\u015Ftirici",
           now: "\u015Eimdi \xE7al\u0131yor",
-          lyrics: "\u015Eark\u0131 s\xF6z\xFC",
+          lyrics: "\u015Eark\u0131 s\xF6zleri",
           vizBeat: "G\xF6rselle\u015Ftirici \xB7 ritimde",
           vizAmbient: "G\xF6rselle\u015Ftirici \xB7 ambiyans",
           loading: "\u015Eark\u0131 s\xF6zleri y\xFCkleniyor \u2026",
@@ -3078,7 +3214,7 @@
           burst: "Kalp patlamas\u0131",
           grain: "Film greni",
           calm: "Sakin mod",
-          blur: "Cam bulan\u0131kl\u0131\u011F\u0131",
+          blur: "Cam bulan\u0131kl\u0131\u011F\u0131 (yaln\u0131zca ger\xE7ek cam)",
           bright: "Arka plan parlakl\u0131\u011F\u0131",
           dynamicHint: "T\xFCm aray\xFCz \u015Fark\u0131n\u0131n renklerine b\xFCr\xFCn\xFCr",
           particlesHint: "Arka planda s\xFCz\xFClen \u0131\u015F\u0131k noktalar\u0131",
@@ -3143,7 +3279,7 @@
           k_play: "Oynat / duraklat",
           k_seek: "5 sn sar",
           k_vol: "Ses",
-          k_view: "Kapak \xB7 s\xF6zler \xB7 g\xF6rselle\u015Ftirici \xB7 Kar\u0131\u015F\u0131k \xB7 Parti",
+          k_view: "Kapak \xB7 s\xF6zler \xB7 g\xF6rselle\u015Ftirici \xB7 mix \xB7 parti",
           k_like: "Be\u011Fen",
           k_shuffle: "Kar\u0131\u015F\u0131k",
           k_repeat: "Tekrarla",
@@ -3252,19 +3388,19 @@
           party_rave: "Rave",
           party_rock: "Rock",
           party_pop: "Pop",
-          tabMix: "Kar\u0131\u015F\u0131k",
+          tabMix: "Mix",
           tabParty: "Parti",
           party_auto: "Otomatik",
           party_bass: "Hip-Hop",
-          party_chill: "Sakin",
+          party_chill: "Chill",
           partySection: "Parti modu",
-          partySectionHint: "Auto \u0131\u015F\u0131k dilini t\xFCre g\xF6re se\xE7er \u2013 ve \u0131\u015F\u0131k \u015Fark\u0131n\u0131n kendisini izler: y\xFCkseli\u015Fler, droplar, sakin aralar, maj\xF6r ya da min\xF6r",
+          partySectionHint: "Otomatik, \u0131\u015F\u0131k dilini t\xFCre g\xF6re se\xE7er \u2013 ve \u0131\u015F\u0131klar \u015Fark\u0131n\u0131n kendisini izler: y\xFCkseli\u015Fler, droplar, sakin aralar, maj\xF6r ya da min\xF6r",
           partyLevel: "Yo\u011Funluk",
           partyLevel1: "Hafif",
           partyLevel2: "Normal",
           partyLevel3: "Maksimum",
           partyFlash: "Renk fla\u015Flar\u0131",
-          partyFlashHint: "Ritimle yumu\u015Fak renk dalgalar\u0131, saniyede en fazla birka\xE7 tane. Hareketi azalt a\xE7\u0131kken kapal\u0131",
+          partyFlashHint: "Ritimle yumu\u015Fak renk dalgalar\u0131, saniyede en fazla birka\xE7 tane. \u201CHareketi azalt\u201D a\xE7\u0131kken kapal\u0131",
           scanCode: "Spotify'da tara",
           partyJam: "Jam konuklar\u0131n\u0131 g\xF6ster",
           partyJamHint: "Spotify Jam s\u0131ras\u0131nda t\xFCm kat\u0131l\u0131mc\u0131lar\u0131n (senin de) profil foto\u011Fraflar\u0131 kenarlarda s\xFCz\xFCl\xFCr",
@@ -3302,9 +3438,9 @@
           partyDepthHint: "\u015Eark\u0131 s\xF6z\xFC, ba\u015Fl\u0131k ve \u0131\u015F\u0131k farkl\u0131 katmanlarda durur ve fareyi izler \u2013 fare yokken sahne hafif\xE7e s\xFCz\xFCl\xFCr",
           partyCamera: "Kamera hareketleri",
           partyCameraHint: "T\xFCm sahne yava\u015F\xE7a yak\u0131nla\u015F\u0131p kayar: sakin yerlerde geni\u015F, enerjiyle daha yak\u0131n, dropta bir sars\u0131nt\u0131",
-          partyShatter: "S\xF6z k\u0131v\u0131lc\u0131mlar\u0131",
+          partyShatter: "S\xF6z patlamas\u0131",
           partyShatterHint: "Dropta ge\xE7erli sat\u0131r parlar ve \u0131\u015F\u0131k par\xE7ac\u0131klar\u0131na da\u011F\u0131l\u0131r",
-          partyCrowd: "Seyirci",
+          partyCrowd: "Kalabal\u0131k",
           partyCrowdHint: "Sahnenin \xF6n\xFCndeki sil\xFCetler enerjiyle kollar\u0131n\u0131 kald\u0131r\u0131r, kick ve dropta z\u0131plar",
           partyJamLight: "Jam renkleri",
           partyJamLightHint: "Spotify Jam'de herkesin bir rengi olur; \xE7alan \u015Fark\u0131y\u0131 ekleyen DJ olarak parlar (Spotify bunu kaydediyorsa)",
@@ -3331,11 +3467,11 @@
           party_jazz: "Caz",
           party_country: "Country ve Folk",
           partyDirector: "I\u015F\u0131k y\xF6netimi",
-          partyDirectorHint: "F\u0131rt\u0131na \xF6ncesi sessizlik: drop'tan \xF6nce \u0131\u015F\u0131k geri \xE7ekilir, son vuru\u015Fta karar\u0131r \u2013 sonra drop patlar. Son nakarat her \u015Feyi al\u0131r",
+          partyDirectorHint: "F\u0131rt\u0131na \xF6ncesi sessizlik: droptan \xF6nce \u0131\u015F\u0131k geri \xE7ekilir, son vuru\u015Fta karar\u0131r \u2013 sonra drop patlar. Son nakarat her \u015Feyi al\u0131r",
           partyMelody: "Melodi lazerleri",
           partyMelodyHint: "Kapaktan \xE7\u0131kan iki ince lazer melodinin perdesini takip eder",
           partySlowmo: "Drop \xF6ncesi a\u011F\u0131r \xE7ekim",
-          partySlowmoHint: "K\u0131v\u0131lc\u0131mlar, halkalar ve kalabal\u0131k drop'tan hemen \xF6nce yar\u0131m saniye donar",
+          partySlowmoHint: "K\u0131v\u0131lc\u0131mlar, halkalar ve kalabal\u0131k droptan hemen \xF6nce yar\u0131m saniye donar",
           partyDJ: "DJ ge\xE7i\u015Fleri",
           partyDJHint: "\u015Eark\u0131 de\u011Fi\u015Fince eski renkler ilk vuru\u015Fa kadar kal\u0131r, sonra d\xF6rt vuru\u015Fta yenilerine ge\xE7er",
           partyQuietFps: "Sakin yerlerde 30 fps",
@@ -3355,13 +3491,13 @@
           eco_on: "Her zaman",
           eco_off: "Kapal\u0131",
           liveBtn: "Telefonlar i\xE7in canl\u0131 ba\u011Flant\u0131",
-          liveTitle: "Telefonlar\u0131 yak",
+          liveTitle: "Telefonlar\u0131 ayd\u0131nlat",
           liveHint: "Telefonla tara ve ekran\u0131 yukar\u0131 gelecek \u015Fekilde koy \u2013 partiyle birlikte yan\u0131p s\xF6ner",
           liveCopy: "Ba\u011Flant\u0131y\u0131 kopyala",
           partyFx: "Sahne efektleri",
-          partyFxHint: "Elektronik m\xFCzikte CO2 f\u0131\u015Fk\u0131rtmalar\u0131, rock ve metalde piroteknik alevler, son nakaratta havai fi\u015Fek \u2013 drop'ta ve zirvede",
-          partyStrobe: "Sert drop'larda stroboskop",
-          partyStrobeHint: "Techno, hardstyle, rave ve drum & bass drop s\u0131ras\u0131nda ritimle beyaz \xE7akar \u2013 A\u015F\u0131r\u0131 seviyesinden itibaren, vuru\u015F ba\u015F\u0131na en fazla bir \xE7akma",
+          partyFxHint: "Elektronik m\xFCzikte CO2 f\u0131\u015Fk\u0131rtmalar\u0131, rock ve metalde piroteknik alevler, son nakaratta havai fi\u015Fek \u2013 dropta ve zirvede",
+          partyStrobe: "Sert droplarda strobe",
+          partyStrobeHint: "Tekno, hardstyle, rave ve drum & bass drop s\u0131ras\u0131nda ritimle beyaz \xE7akar \u2013 \u201CEkstrem\u201Dden itibaren, vuru\u015F ba\u015F\u0131na en fazla bir \xE7akma",
           venue_warehouse: "Depo",
           venue_beach: "Plaj",
           g_party: "Parti modu",
@@ -3400,12 +3536,12 @@
           party_brazil: "Brezilya",
           party_flamenco: "Flamenco",
           party_bollywood: "Bollywood",
-          party_arabic: "Arap",
+          party_arabic: "Arap m\xFCzi\u011Fi",
           party_ambient: "Ambient",
           party_cinematic: "Film & epik",
           ps_style: "Stil",
-          partyRig: "Hareketli kafalar ve blinder",
-          partyRigHint: "Sahnenin \xFCst\xFCndeki \u0131\u015F\u0131k riggi t\xFCre uygun desenlerle hareket eder \u2013 house'ta dalgalar, techno'da kovalamaca, EDM'de yelpazeler \u2013 b\xFCy\xFCk vuru\u015Flarda blinder ve drop'ta lazer d\xFCzlemi",
+          partyRig: "Moving head ve blinder",
+          partyRigHint: "Sahnenin \xFCst\xFCndeki moving head'ler t\xFCre uygun desenlerle hareket eder \u2013 house'ta dalgalar, teknoda chase, EDM'de yelpazeler \u2013 b\xFCy\xFCk vuru\u015Flarda blinder ve dropta lazer perdesi",
           partyInstruments: "Enstr\xFCmanlar\u0131 tan\u0131",
           partyInstrumentsHint: "Trompet, saksafon, gitar, piyano, yayl\u0131lar ve koro kendi efektlerini al\u0131r \u2013 yaln\u0131zca \u015Fark\u0131n\u0131n k\xFCnyesi enstr\xFCman\u0131 do\u011Frulad\u0131\u011F\u0131nda (Spotify, MusicBrainz; \u015Fark\u0131n\u0131n ISRC numaras\u0131 MusicBrainz'e gider)",
           syncOffset: "Senkron (efektler ve s\xF6zler)",
@@ -3415,7 +3551,24 @@
           tapUnsure: "\xC7ok d\xFCzensiz \u2013 her vuru\u015Fa e\u015Fit dokun",
           tapNoBeat: "Bu \u015Fark\u0131 i\xE7in hen\xFCz ritim verisi yok",
           liveRelay: "Herkese a\xE7\u0131k bir aktar\u0131c\u0131 \xFCzerinden u\xE7tan uca \u015Fifreli \u2013 yaln\u0131zca bu QR koda sahip olan g\xF6rebilir. Parti modundan \xE7\u0131k\u0131nca biter; kod 10 dakika sonra ge\xE7ersiz olur.",
-          liveError: "Ula\u015F\u0131labilir aktar\u0131c\u0131 yok \u2013 internet ba\u011Flant\u0131s\u0131 \xE7al\u0131\u015F\u0131yor mu?"
+          liveError: "Ula\u015F\u0131labilir aktar\u0131c\u0131 yok \u2013 internet ba\u011Flant\u0131s\u0131 \xE7al\u0131\u015F\u0131yor mu?",
+          selLost: "Spotify {v}, Mirage'\u0131n bi\xE7imlendirdi\u011Fi baz\u0131 b\xF6l\xFCmleri de\u011Fi\u015Ftirdi \u2013 baz\u0131 sayfalar biraz tuhaf g\xF6r\xFCnebilir. Mirage ayarlar\u0131ndan tan\u0131lamay\u0131 kopyalay\u0131p bildir, d\xFCzeltilsin.",
+          partyCuts: "Kamera ge\xE7i\u015Fleri",
+          partyCutsHint: "\u0130lk vuru\u015Fta geni\u015F, yak\u0131n ve kalabal\u0131k \xE7ekimleri aras\u0131nda sert ge\xE7i\u015Fler \u2013 her 8 \xF6l\xE7\xFCde, zirvede her 4 \xF6l\xE7\xFCde; drop geni\u015F \xE7ekime d\xF6ner",
+          venue_cellar: "Bodrum",
+          venue_jazzbar: "Caz bar\u0131",
+          venue_rooftop: "\xC7at\u0131 kat\u0131",
+          venue_forest: "Orman sahnesi",
+          venue_cathedral: "Katedral",
+          venue_hall: "Konser salonu",
+          partyWishes: "Telefonlardan \u015Fark\u0131 istekleri",
+          partyWishesHint: "Misafirler telefon sayfas\u0131ndan \u015Fark\u0131 isteyip oy verebilir \u2013 s\u0131raya yaln\u0131zca senin kabul ettiklerin girer",
+          wishTitle: "\u015Eark\u0131 istekleri",
+          wishBy: "{n} istedi",
+          wishQueue: "+ S\u0131ra",
+          wishDecline: "Reddet",
+          wishQueued: "\u201C{s}\u201D s\u0131raya eklendi",
+          viz_tunnel: "3D t\xFCnel"
         },
         ru: {
           menu: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 Mirage",
@@ -3433,9 +3586,9 @@
           noLyrics: "\u0423 Spotify \u043D\u0435\u0442 \u0442\u0435\u043A\u0441\u0442\u0430 \u0434\u043B\u044F \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438.",
           nothing: "\u041D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u0438\u0433\u0440\u0430\u0435\u0442",
           seek: "\u041F\u043E\u0437\u0438\u0446\u0438\u044F \u0432 \u0442\u0440\u0435\u043A\u0435",
-          prev: "\u041D\u0430\u0437\u0430\u0434",
+          prev: "\u041F\u0440\u0435\u0434\u044B\u0434\u0443\u0449\u0438\u0439",
           play: "\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0441\u0442\u0438/\u041F\u0430\u0443\u0437\u0430",
-          next: "\u0414\u0430\u043B\u0435\u0435",
+          next: "\u0421\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439",
           dynamic: "\u0426\u0432\u0435\u0442\u0430 \u0438\u0437 \u043E\u0431\u043B\u043E\u0436\u043A\u0438",
           particles: "\u0421\u0432\u0435\u0442\u043E\u0432\u0430\u044F \u043F\u044B\u043B\u044C",
           beat: "\u0424\u043E\u043D \u0432 \u0442\u0430\u043A\u0442",
@@ -3445,7 +3598,7 @@
           burst: "\u0412\u0437\u0440\u044B\u0432 \u0441\u0435\u0440\u0434\u0435\u0446",
           grain: "\u0417\u0435\u0440\u043D\u043E \u043F\u043B\u0451\u043D\u043A\u0438",
           calm: "\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u044B\u0439 \u0440\u0435\u0436\u0438\u043C",
-          blur: "\u0420\u0430\u0437\u043C\u044B\u0442\u0438\u0435 \u0441\u0442\u0435\u043A\u043B\u0430",
+          blur: "\u0420\u0430\u0437\u043C\u044B\u0442\u0438\u0435 \u0441\u0442\u0435\u043A\u043B\u0430 (\u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0435 \u0441\u0442\u0435\u043A\u043B\u043E)",
           bright: "\u042F\u0440\u043A\u043E\u0441\u0442\u044C \u0444\u043E\u043D\u0430",
           dynamicHint: "\u0412\u0435\u0441\u044C \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441 \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u0435\u0442 \u0446\u0432\u0435\u0442\u0430 \u043F\u0435\u0441\u043D\u0438",
           particlesHint: "\u041F\u0430\u0440\u044F\u0449\u0438\u0435 \u0441\u0432\u0435\u0442\u044F\u0449\u0438\u0435\u0441\u044F \u0442\u043E\u0447\u043A\u0438 \u043D\u0430 \u0444\u043E\u043D\u0435",
@@ -3453,7 +3606,7 @@
           cascadeHint: "\u0421\u043E\u0434\u0435\u0440\u0436\u0438\u043C\u043E\u0435 \u043F\u043B\u0430\u0432\u043D\u043E \u0432\u044A\u0435\u0437\u0436\u0430\u0435\u0442 \u043F\u0440\u0438 \u0441\u043C\u0435\u043D\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
           vinylHint: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 \u0432\u043D\u0438\u0437\u0443 \u043F\u0440\u0435\u0432\u0440\u0430\u0449\u0430\u0435\u0442\u0441\u044F \u0432\u043E \u0432\u0440\u0430\u0449\u0430\u044E\u0449\u0443\u044E\u0441\u044F \u043F\u043B\u0430\u0441\u0442\u0438\u043D\u043A\u0443",
           tiltHint: "\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0438 \u043D\u0430\u043A\u043B\u043E\u043D\u044F\u044E\u0442\u0441\u044F \u043A \u0443\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044E \u043C\u044B\u0448\u0438",
-          burstHint: "\u0414\u043E\u0436\u0434\u044C \u0438\u0441\u043A\u0440, \u043A\u043E\u0433\u0434\u0430 \u0442\u0435\u0431\u0435 \u043D\u0440\u0430\u0432\u0438\u0442\u0441\u044F \u043F\u0435\u0441\u043D\u044F",
+          burstHint: "\u0414\u043E\u0436\u0434\u044C \u0438\u0441\u043A\u0440, \u043A\u043E\u0433\u0434\u0430 \u0441\u0442\u0430\u0432\u0438\u0448\u044C \u043F\u0435\u0441\u043D\u0435 \u043B\u0430\u0439\u043A",
           overlay: "Mirage Overlay",
           overlayHint: "\u041E\u0442\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C \u0441\u043C\u0435\u043D\u0443 \u043F\u0435\u0441\u0435\u043D \u0432 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435-\u043E\u0432\u0435\u0440\u043B\u0435\u0439 \u0432\u043D\u0435 Spotify",
           grainHint: "\u041B\u0451\u0433\u043A\u0438\u0439 \u0448\u0443\u043C \u043F\u043E\u0432\u0435\u0440\u0445 \u0444\u043E\u043D\u0430",
@@ -3488,7 +3641,7 @@
           preset_light: "\u041B\u0451\u0433\u043A\u0438\u0439",
           preset_calm: "\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u044B\u0439",
           presetCustom: "\u0421\u0432\u043E\u0439 \u2013 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u044B\u0435 \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0430\u0442\u0435\u043B\u0438 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u044B",
-          perfStepped: "Mirage \u0440\u0430\u0431\u043E\u0442\u0430\u043B \u0437\u0434\u0435\u0441\u044C \u0441 {fps} fps \u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0438\u043B\u0441\u044F \u043D\u0430 \xAB{preset}\xBB, \u0447\u0442\u043E\u0431\u044B \u0432\u0441\u0451 \u0448\u043B\u043E \u043F\u043B\u0430\u0432\u043D\u043E.",
+          perfStepped: "Mirage \u0432\u044B\u0434\u0430\u0432\u0430\u043B \u0437\u0434\u0435\u0441\u044C {fps} fps \u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0438\u043B\u0441\u044F \u043D\u0430 \xAB{preset}\xBB, \u0447\u0442\u043E\u0431\u044B \u0432\u0441\u0451 \u0448\u043B\u043E \u043F\u043B\u0430\u0432\u043D\u043E.",
           autoPerf: "\u041D\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0442\u044C \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438",
           autoPerfHint: "\u041F\u043E\u043D\u0438\u0436\u0430\u0435\u0442 \u0443\u0440\u043E\u0432\u0435\u043D\u044C \u043D\u0430 \u0441\u0442\u0443\u043F\u0435\u043D\u044C, \u0435\u0441\u043B\u0438 \u041F\u041A \u043D\u0435 \u0441\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u0442\u0441\u044F",
           costly: "\u0420\u0430\u0441\u0445\u043E\u0434\u0443\u0435\u0442 \u0440\u0435\u0441\u0443\u0440\u0441\u044B \u0438 \u0437\u0430\u0440\u044F\u0434 \u0431\u0430\u0442\u0430\u0440\u0435\u0438",
@@ -3503,14 +3656,14 @@
           weekSongs: "\u043F\u0435\u0441\u0435\u043D",
           weekMinutes: "\u043C\u0438\u043D\u0443\u0442",
           weekColours: "\u0426\u0432\u0435\u0442\u0430 \u0442\u0432\u043E\u0438\u0445 \u043E\u0431\u043B\u043E\u0436\u0435\u043A",
-          weekArtists: "\u0427\u0430\u0449\u0435 \u0432\u0441\u0435\u0433\u043E",
+          weekArtists: "\u0427\u0430\u0449\u0435 \u0432\u0441\u0435\u0433\u043E \u0438\u0433\u0440\u0430\u043B\u043E",
           weekEmpty: "\u041F\u043E\u0441\u043B\u0443\u0448\u0430\u0439 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u043F\u0435\u0441\u0435\u043D \u2013 \u043D\u0435\u0434\u0435\u043B\u044F \u043D\u0430\u0447\u043D\u0451\u0442 \u0437\u0430\u043F\u043E\u043B\u043D\u044F\u0442\u044C\u0441\u044F.",
           weekScheme: "\u041B\u044E\u0431\u0438\u043C\u0430\u044F \u0441\u0445\u0435\u043C\u0430: {s}",
           keysTitle: "\u0421\u043E\u0447\u0435\u0442\u0430\u043D\u0438\u044F \u043A\u043B\u0430\u0432\u0438\u0448",
           k_play: "\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435 / \u043F\u0430\u0443\u0437\u0430",
           k_seek: "\u041F\u0435\u0440\u0435\u043C\u043E\u0442\u043A\u0430 \u043D\u0430 5 \u0441",
           k_vol: "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C",
-          k_view: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440 \xB7 \u041C\u0438\u043A\u0441 \xB7 \u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
+          k_view: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0442\u043E\u0440 \xB7 \u043C\u0438\u043A\u0441 \xB7 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
           k_like: "\u041D\u0440\u0430\u0432\u0438\u0442\u0441\u044F",
           k_shuffle: "\u041F\u0435\u0440\u0435\u043C\u0435\u0448\u0430\u0442\u044C",
           k_repeat: "\u041F\u043E\u0432\u0442\u043E\u0440",
@@ -3616,9 +3769,9 @@
           trToggle: "\u041F\u0435\u0440\u0435\u0432\u043E\u0434",
           trShow: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434",
           trHide: "\u0421\u043A\u0440\u044B\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434",
-          party_rave: "Rave",
-          party_rock: "Rock",
-          party_pop: "Pop",
+          party_rave: "\u0420\u0435\u0439\u0432",
+          party_rock: "\u0420\u043E\u043A",
+          party_pop: "\u041F\u043E\u043F",
           tabMix: "\u041C\u0438\u043A\u0441",
           tabParty: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430",
           party_auto: "\u0410\u0432\u0442\u043E",
@@ -3628,7 +3781,7 @@
           partySectionHint: "\u0410\u0432\u0442\u043E \u043F\u043E\u0434\u0431\u0438\u0440\u0430\u0435\u0442 \u0441\u0432\u0435\u0442\u043E\u0432\u043E\u0439 \u044F\u0437\u044B\u043A \u043F\u043E \u0436\u0430\u043D\u0440\u0443 \u2013 \u0430 \u0441\u0432\u0435\u0442 \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u0437\u0430 \u0441\u0430\u043C\u0438\u043C \u0442\u0440\u0435\u043A\u043E\u043C: \u043D\u0430\u0440\u0430\u0441\u0442\u0430\u043D\u0438\u044F, \u0434\u0440\u043E\u043F\u044B, \u0442\u0438\u0445\u0438\u0435 \u043F\u0430\u0443\u0437\u044B, \u043C\u0430\u0436\u043E\u0440 \u0438\u043B\u0438 \u043C\u0438\u043D\u043E\u0440",
           partyLevel: "\u0418\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u043E\u0441\u0442\u044C",
           partyLevel1: "\u041C\u044F\u0433\u043A\u043E",
-          partyLevel2: "\u041E\u0431\u044B\u0447\u043D\u043E",
+          partyLevel2: "\u041D\u043E\u0440\u043C\u0430\u043B\u044C\u043D\u043E",
           partyLevel3: "\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C",
           partyFlash: "\u0426\u0432\u0435\u0442\u043E\u0432\u044B\u0435 \u0432\u0441\u043F\u044B\u0448\u043A\u0438",
           partyFlashHint: "\u041C\u044F\u0433\u043A\u0438\u0435 \u0446\u0432\u0435\u0442\u043E\u0432\u044B\u0435 \u0432\u043E\u043B\u043D\u044B \u0432 \u0442\u0430\u043A\u0442, \u043D\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u0438\u0445 \u0432 \u0441\u0435\u043A\u0443\u043D\u0434\u0443. \u041E\u0442\u043A\u043B\u044E\u0447\u0435\u043D\u044B \u043F\u0440\u0438 \xAB\u0443\u043C\u0435\u043D\u044C\u0448\u0435\u043D\u0438\u0438 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F\xBB",
@@ -3642,7 +3795,7 @@
           partyLasersHint: "\u041F\u0440\u043E\u0436\u0435\u043A\u0442\u043E\u0440\u044B \u0432 \u0441\u0442\u0438\u043B\u0435 \u0436\u0430\u043D\u0440\u0430 \u2013 \u0441\u043A\u0440\u0435\u0449\u0451\u043D\u043D\u044B\u0435 \u043B\u0443\u0447\u0438 \u0434\u043B\u044F \u0440\u0435\u0439\u0432\u0430, \u0436\u0451\u0441\u0442\u043A\u0438\u0435 \u0441\u043F\u043E\u0442\u044B \u0441\u0432\u0435\u0440\u0445\u0443 \u0434\u043B\u044F \u0440\u043E\u043A\u0430, \u0441\u0432\u0435\u0442 \u043E\u0442 \u043F\u043E\u043B\u0430 \u0434\u043B\u044F \u0431\u0430\u0441\u0430. \u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB \u0435\u0449\u0451 \u0438 \u043B\u0443\u0447\u0438 \u0438\u0437 \u043E\u0431\u043B\u043E\u0436\u043A\u0438",
           partyZoom: "\u0423\u0434\u0430\u0440\u044B \u043A\u0430\u043C\u0435\u0440\u044B",
           partyZoomHint: "\u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C\xBB: \u0441\u0442\u0440\u043E\u043A\u0430 \u043F\u0440\u0443\u0436\u0438\u043D\u0438\u0442 \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u044B\u0445 \u0434\u043E\u043B\u044F\u0445, \u043E\u0431\u043B\u043E\u0436\u043A\u0430 \u043F\u043E\u043A\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F (\u043F\u043E\u043F, \u0431\u0430\u0441, \u0447\u0438\u043B\u043B). \u0421 \u0443\u0440\u043E\u0432\u043D\u044F \xAB\u042D\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0432\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F",
-          partyIdle: "\u0421\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u0432 \u043F\u043E\u043A\u043E\u0435",
+          partyIdle: "\u0421\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u0443\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u0440\u0438 \u0431\u0435\u0437\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0438",
           partyIdleHint: "\u0427\u0435\u0440\u0435\u0437 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E \u0441\u0435\u043A\u0443\u043D\u0434 \u0431\u0435\u0437 \u043C\u044B\u0448\u0438 \u043A\u043D\u043E\u043F\u043A\u0438 \u0438\u0441\u0447\u0435\u0437\u0430\u044E\u0442, \u0430 \u0432\u0441\u0451 \u043F\u043B\u0430\u0432\u043D\u043E \u0441\u043C\u0435\u0449\u0430\u0435\u0442\u0441\u044F \u043A \u0446\u0435\u043D\u0442\u0440\u0443",
           c_addTo: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442",
           plFind: "\u041F\u043E\u0438\u0441\u043A \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u043E\u0432",
@@ -3668,11 +3821,11 @@
           partyDepth: "3D-\u0433\u043B\u0443\u0431\u0438\u043D\u0430",
           partyDepthHint: "\u0422\u0435\u043A\u0441\u0442, \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0441\u0432\u0435\u0442 \u043B\u0435\u0436\u0430\u0442 \u043D\u0430 \u0440\u0430\u0437\u043D\u044B\u0445 \u0441\u043B\u043E\u044F\u0445 \u0438 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u043C\u044B\u0448\u044C\u044E \u2013 \u0431\u0435\u0437 \u043C\u044B\u0448\u0438 \u0441\u0446\u0435\u043D\u0430 \u043F\u043B\u0430\u0432\u043D\u043E \u043F\u0430\u0440\u0438\u0442",
           partyCamera: "\u0414\u0432\u0438\u0436\u0435\u043D\u0438\u0435 \u043A\u0430\u043C\u0435\u0440\u044B",
-          partyCameraHint: "\u0412\u0441\u044F \u0441\u0446\u0435\u043D\u0430 \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F \u0438 \u043F\u043B\u044B\u0432\u0451\u0442: \u0448\u0438\u0440\u043E\u043A\u043E \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0435\u0441\u0442\u0430\u0445, \u0431\u043B\u0438\u0436\u0435 \u0441 \u044D\u043D\u0435\u0440\u0433\u0438\u0435\u0439, \u0440\u044B\u0432\u043E\u043A \u043D\u0430 \u0434\u0440\u043E\u043F\u0435",
+          partyCameraHint: "\u0412\u0441\u044F \u0441\u0446\u0435\u043D\u0430 \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u043F\u0440\u0438\u0431\u043B\u0438\u0436\u0430\u0435\u0442\u0441\u044F \u0438 \u043F\u043B\u044B\u0432\u0451\u0442: \u0448\u0438\u0440\u043E\u043A\u043E \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0435\u0441\u0442\u0430\u0445, \u0431\u043B\u0438\u0436\u0435 \u0441 \u0440\u043E\u0441\u0442\u043E\u043C \u044D\u043D\u0435\u0440\u0433\u0438\u0438, \u0440\u044B\u0432\u043E\u043A \u043D\u0430 \u0434\u0440\u043E\u043F\u0435",
           partyShatter: "\u0418\u0441\u043A\u0440\u044B \u0442\u0435\u043A\u0441\u0442\u0430",
           partyShatterHint: "\u041D\u0430 \u0434\u0440\u043E\u043F\u0435 \u0442\u0435\u043A\u0443\u0449\u0430\u044F \u0441\u0442\u0440\u043E\u043A\u0430 \u0432\u0441\u043F\u044B\u0445\u0438\u0432\u0430\u0435\u0442 \u0438 \u0440\u0430\u0441\u0441\u044B\u043F\u0430\u0435\u0442\u0441\u044F \u043D\u0430 \u0447\u0430\u0441\u0442\u0438\u0446\u044B \u0441\u0432\u0435\u0442\u0430",
           partyCrowd: "\u041F\u0443\u0431\u043B\u0438\u043A\u0430",
-          partyCrowdHint: "\u0421\u0438\u043B\u0443\u044D\u0442\u044B \u043F\u0435\u0440\u0435\u0434 \u0441\u0446\u0435\u043D\u043E\u0439 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442 \u0440\u0443\u043A\u0438 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u044D\u043D\u0435\u0440\u0433\u0438\u0435\u0439 \u0438 \u043F\u0440\u044B\u0433\u0430\u044E\u0442 \u043D\u0430 \u0431\u043E\u0447\u043A\u0435 \u0438 \u0434\u0440\u043E\u043F\u0435",
+          partyCrowdHint: "\u0421\u0438\u043B\u0443\u044D\u0442\u044B \u043F\u0435\u0440\u0435\u0434 \u0441\u0446\u0435\u043D\u043E\u0439 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442 \u0440\u0443\u043A\u0438 \u043F\u043E \u043C\u0435\u0440\u0435 \u0440\u043E\u0441\u0442\u0430 \u044D\u043D\u0435\u0440\u0433\u0438\u0438 \u0438 \u043F\u0440\u044B\u0433\u0430\u044E\u0442 \u043D\u0430 \u0431\u043E\u0447\u043A\u0435 \u0438 \u0434\u0440\u043E\u043F\u0435",
           partyJamLight: "\u0426\u0432\u0435\u0442\u0430 Jam",
           partyJamLightHint: "\u0412 Spotify Jam \u0443 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u0441\u0432\u043E\u0439 \u0446\u0432\u0435\u0442; \u043A\u0442\u043E \u0434\u043E\u0431\u0430\u0432\u0438\u043B \u0442\u0435\u043A\u0443\u0449\u0438\u0439 \u0442\u0440\u0435\u043A, \u0441\u0432\u0435\u0442\u0438\u0442\u0441\u044F \u043A\u0430\u043A \u0434\u0438\u0434\u0436\u0435\u0439 (\u0435\u0441\u043B\u0438 Spotify \u044D\u0442\u043E \u043E\u0442\u043C\u0435\u0447\u0430\u0435\u0442)",
           partyScreen: "\u041A\u043D\u043E\u043F\u043A\u0430 \u0432\u0442\u043E\u0440\u043E\u0433\u043E \u044D\u043A\u0440\u0430\u043D\u0430",
@@ -3680,7 +3833,7 @@
           partyRecap: "\u0418\u0442\u043E\u0433\u0438 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           partyRecapHint: "\u041F\u043E\u0441\u043B\u0435 \u0442\u0440\u0451\u0445 \u0442\u0440\u0435\u043A\u043E\u0432 \u043F\u043E\u044F\u0432\u043B\u044F\u0435\u0442\u0441\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \u0434\u043B\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0438: \u0442\u0440\u0435\u043A\u0438, \u043C\u0438\u043D\u0443\u0442\u044B, \u0434\u0440\u043E\u043F\u044B, \u0441\u043C\u0435\u0441\u044C \u0436\u0430\u043D\u0440\u043E\u0432 \u0438 \u0441\u0430\u043C\u044B\u0439 \u0433\u0440\u043E\u043C\u043A\u0438\u0439 \u0434\u0440\u043E\u043F",
           partyEdge: "\u0421\u0432\u0435\u0442 \u043F\u043E \u043A\u0440\u0430\u044F\u043C (\u043E\u0432\u0435\u0440\u043B\u0435\u0439)",
-          partyEdgeHint: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay \u043F\u043E\u0434\u0441\u0432\u0435\u0447\u0438\u0432\u0430\u0435\u0442 \u043A\u0440\u0430\u044F \u044D\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0430 \u0438\u0434\u0451\u0442 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430 \u2013 \u0441\u043A\u0440\u044B\u0442\u043E \u0432 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u044B\u0445 \u0438\u0433\u0440\u0430\u0445",
+          partyEdgeHint: "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 Mirage Overlay \u043F\u043E\u0434\u0441\u0432\u0435\u0447\u0438\u0432\u0430\u0435\u0442 \u043A\u0440\u0430\u044F \u044D\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0430 \u0432\u043A\u043B\u044E\u0447\u0451\u043D \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438 \u2013 \u0441\u043A\u0440\u044B\u0442\u043E \u0432 \u043F\u043E\u043B\u043D\u043E\u044D\u043A\u0440\u0430\u043D\u043D\u044B\u0445 \u0438\u0433\u0440\u0430\u0445",
           recapBtn: "\u0418\u0442\u043E\u0433\u0438 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
           toScreen: "\u0412\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0430 \u043D\u0430 \u0434\u0440\u0443\u0433\u043E\u043C \u044D\u043A\u0440\u0430\u043D\u0435",
           recapTitle: "\u0418\u0442\u043E\u0433\u0438 \u0442\u0432\u043E\u0435\u0439 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438",
@@ -3708,7 +3861,7 @@
           partyQuietFps: "30 \u043A\u0430\u0434\u0440\u043E\u0432/\u0441 \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0435\u0441\u0442\u0430\u0445",
           partyQuietFpsHint: "\u0422\u0438\u0445\u0438\u0435 \u0432\u0441\u0442\u0443\u043F\u043B\u0435\u043D\u0438\u044F \u0438 \u043F\u0430\u0443\u0437\u044B \u0438\u0434\u0443\u0442 \u0441 30 \u043A\u0430\u0434\u0440\u0430\u043C\u0438 \u0432 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u044B\u0433\u043B\u044F\u0434\u0438\u0442 \u0442\u0430\u043A \u0436\u0435, \u044D\u043A\u043E\u043D\u043E\u043C\u0438\u0442 \u044D\u043D\u0435\u0440\u0433\u0438\u044E",
           partyLive: "\u0416\u0438\u0432\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430 \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
-          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u044B \u0432 \u043B\u044E\u0431\u043E\u0439 \u0441\u0435\u0442\u0438 \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u043E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u0417\u0430\u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u043E, \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E QR-\u043A\u043E\u0434\u0443 \u0438 \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E\u043A\u0430 \u0432\u043A\u043B\u044E\u0447\u0451\u043D \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438. \u0411\u0435\u0437 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F.",
+          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u044B \u0432 \u043B\u044E\u0431\u043E\u0439 \u0441\u0435\u0442\u0438 \u0441\u0432\u0435\u0442\u044F\u0442\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u043E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439 QR-\u043A\u043E\u0434. \u0417\u0430\u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u043E, \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E QR-\u043A\u043E\u0434\u0443 \u0438 \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E\u043A\u0430 \u0432\u043A\u043B\u044E\u0447\u0451\u043D \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438. \u0411\u0435\u0437 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F.",
           mixInstruments: "\u041C\u0438\u043A\u0441 \u0440\u0435\u0430\u0433\u0438\u0440\u0443\u0435\u0442 \u043D\u0430 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B",
           mixInstrumentsHint: "\u0412 \u0440\u0435\u0436\u0438\u043C\u0435 \xAB\u041C\u0438\u043A\u0441\xBB \u043F\u0443\u043B\u044C\u0441 \u0438 \u043A\u043E\u043B\u044C\u0446\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0442 \u0437\u0430 \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u0439 \u0431\u043E\u0447\u043A\u043E\u0439, \u0430 \u043D\u0435 \u0442\u043E\u043B\u044C\u043A\u043E \u0437\u0430 \u0441\u0435\u0442\u043A\u043E\u0439 \u0434\u043E\u043B\u0435\u0439",
           partyVenue: "\u041F\u043B\u043E\u0449\u0430\u0434\u043A\u0430",
@@ -3723,7 +3876,7 @@
           eco_off: "\u0412\u044B\u043A\u043B.",
           liveBtn: "\u0416\u0438\u0432\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430 \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
           liveTitle: "\u0417\u0430\u0436\u0435\u0447\u044C \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u044B",
-          liveHint: "\u041E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0438 \u043F\u043E\u043B\u043E\u0436\u0438\u0442\u0435 \u044D\u043A\u0440\u0430\u043D\u043E\u043C \u0432\u0432\u0435\u0440\u0445 \u2013 \u043E\u043D \u043C\u0438\u0433\u0430\u0435\u0442 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u043E\u0439",
+          liveHint: "\u041E\u0442\u0441\u043A\u0430\u043D\u0438\u0440\u0443\u0439 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0438 \u043F\u043E\u043B\u043E\u0436\u0438 \u0435\u0433\u043E \u044D\u043A\u0440\u0430\u043D\u043E\u043C \u0432\u0432\u0435\u0440\u0445 \u2013 \u043E\u043D \u043C\u0438\u0433\u0430\u0435\u0442 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u043E\u0439",
           liveCopy: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0441\u0441\u044B\u043B\u043A\u0443",
           partyFx: "\u0421\u0446\u0435\u043D\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u044D\u0444\u0444\u0435\u043A\u0442\u044B",
           partyFxHint: "\u0421\u0442\u0440\u0443\u0438 CO2 \u0434\u043B\u044F \u044D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0438\u043A\u0438, \u043F\u0438\u0440\u043E-\u043F\u043B\u0430\u043C\u044F \u0434\u043B\u044F \u0440\u043E\u043A\u0430 \u0438 \u043C\u0435\u0442\u0430\u043B\u0430, \u0444\u0435\u0439\u0435\u0440\u0432\u0435\u0440\u043A \u0432 \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0435\u043C \u043F\u0440\u0438\u043F\u0435\u0432\u0435 \u2013 \u043D\u0430 \u0434\u0440\u043E\u043F\u0435 \u0438 \u043D\u0430 \u043F\u0438\u043A\u0435",
@@ -3735,13 +3888,13 @@
           ps_light: "\u0421\u0432\u0435\u0442 \u0438 \u044D\u0444\u0444\u0435\u043A\u0442\u044B",
           ps_moments: "\u041C\u043E\u043C\u0435\u043D\u0442\u044B",
           ps_crowd: "\u041F\u0443\u0431\u043B\u0438\u043A\u0430 \u0438 Jam",
-          ps_extras: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0438 \u043F\u043E\u0434\u0435\u043B\u0438\u0442\u044C\u0441\u044F",
+          ps_extras: "\u0414\u043E\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u0438 \u043E\u0431\u043C\u0435\u043D",
           fam_electronic: "\u042D\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0438\u043A\u0430",
           fam_urban: "\u0425\u0438\u043F-\u0445\u043E\u043F \u0438 R&B",
           fam_rock: "\u0420\u043E\u043A",
           fam_pop: "\u041F\u043E\u043F",
           fam_world: "\u041B\u0430\u0442\u0438\u043D\u043E \u0438 \u043C\u0438\u0440",
-          fam_calm: "\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u0430\u044F \u0438 \u043A\u043B\u0430\u0441\u0441\u0438\u043A\u0430",
+          fam_calm: "\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u0430\u044F \u0438 \u043A\u043B\u0430\u0441\u0441\u0438\u0447\u0435\u0441\u043A\u0430\u044F",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -3774,15 +3927,32 @@
           partyRig: "\u0412\u0440\u0430\u0449\u0430\u044E\u0449\u0438\u0435\u0441\u044F \u0433\u043E\u043B\u043E\u0432\u044B \u0438 \u0431\u043B\u0438\u043D\u0434\u0435\u0440\u044B",
           partyRigHint: "\u0421\u0432\u0435\u0442\u043E\u0432\u0430\u044F \u0444\u0435\u0440\u043C\u0430 \u043D\u0430\u0434 \u0441\u0446\u0435\u043D\u043E\u0439 \u0434\u0432\u0438\u0436\u0435\u0442\u0441\u044F \u043F\u043E \u0440\u0438\u0441\u0443\u043D\u043A\u0430\u043C \u043F\u043E\u0434 \u0436\u0430\u043D\u0440 \u2013 \u0432\u043E\u043B\u043D\u044B \u0434\u043B\u044F \u0445\u0430\u0443\u0441\u0430, \u0431\u0435\u0433\u0443\u0449\u0438\u0435 \u043E\u0433\u043D\u0438 \u0434\u043B\u044F \u0442\u0435\u0445\u043D\u043E, \u0432\u0435\u0435\u0440\u0430 \u0434\u043B\u044F EDM \u2013 \u0441 \u0431\u043B\u0438\u043D\u0434\u0435\u0440\u0430\u043C\u0438 \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u044B\u0445 \u0443\u0434\u0430\u0440\u0430\u0445 \u0438 \u043B\u0430\u0437\u0435\u0440\u043D\u043E\u0439 \u043F\u043B\u043E\u0441\u043A\u043E\u0441\u0442\u044C\u044E \u043D\u0430 \u0434\u0440\u043E\u043F\u0435",
           partyInstruments: "\u0420\u0430\u0441\u043F\u043E\u0437\u043D\u0430\u0432\u0430\u0442\u044C \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B",
-          partyInstrumentsHint: "\u0422\u0440\u0443\u0431\u044B, \u0441\u0430\u043A\u0441\u043E\u0444\u043E\u043D, \u0433\u0438\u0442\u0430\u0440\u0430, \u0444\u043E\u0440\u0442\u0435\u043F\u0438\u0430\u043D\u043E, \u0441\u0442\u0440\u0443\u043D\u043D\u044B\u0435 \u0438 \u0445\u043E\u0440 \u043F\u043E\u043B\u0443\u0447\u0430\u044E\u0442 \u0441\u0432\u043E\u0438 \u044D\u0444\u0444\u0435\u043A\u0442\u044B \u2013 \u0442\u043E\u043B\u044C\u043A\u043E \u0435\u0441\u043B\u0438 \u0442\u0438\u0442\u0440\u044B \u043F\u0435\u0441\u043D\u0438 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u044E\u0442 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442 (Spotify, MusicBrainz; \u0432 MusicBrainz \u0443\u0445\u043E\u0434\u0438\u0442 ISRC \u043F\u0435\u0441\u043D\u0438)",
+          partyInstrumentsHint: "\u0422\u0440\u0443\u0431\u044B, \u0441\u0430\u043A\u0441\u043E\u0444\u043E\u043D, \u0433\u0438\u0442\u0430\u0440\u0430, \u0444\u043E\u0440\u0442\u0435\u043F\u0438\u0430\u043D\u043E, \u0441\u0442\u0440\u0443\u043D\u043D\u044B\u0435 \u0438 \u0445\u043E\u0440 \u043F\u043E\u043B\u0443\u0447\u0430\u044E\u0442 \u0441\u0432\u043E\u0438 \u044D\u0444\u0444\u0435\u043A\u0442\u044B \u2013 \u0442\u043E\u043B\u044C\u043A\u043E \u0435\u0441\u043B\u0438 \u0441\u0432\u0435\u0434\u0435\u043D\u0438\u044F \u043E\u0431 \u0443\u0447\u0430\u0441\u0442\u043D\u0438\u043A\u0430\u0445 \u0437\u0430\u043F\u0438\u0441\u0438 \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u044E\u0442 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442 (Spotify, MusicBrainz; \u0432 MusicBrainz \u0443\u0445\u043E\u0434\u0438\u0442 ISRC \u043F\u0435\u0441\u043D\u0438)",
           syncOffset: "\u0421\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0430\u0446\u0438\u044F (\u044D\u0444\u0444\u0435\u043A\u0442\u044B \u0438 \u0442\u0435\u043A\u0441\u0442)",
           k_tap: "\u041E\u0442\u0441\u0442\u0443\u0447\u0430\u0442\u044C \u0440\u0438\u0442\u043C (\u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0430\u0446\u0438\u044F)",
-          tapCount: "\u0421\u0442\u0443\u0447\u0438\u0442\u0435 \u0434\u0430\u043B\u044C\u0448\u0435 \u0432 \u0440\u0438\u0442\u043C \u2026 {n}/6",
+          tapCount: "\u0421\u0442\u0443\u0447\u0438 \u0434\u0430\u043B\u044C\u0448\u0435 \u0432 \u0440\u0438\u0442\u043C \u2026 {n}/6",
           tapDone: "\u0412 \u0440\u0438\u0442\u043C\u0435 \u2013 \u0441\u0434\u0432\u0438\u0433 {ms} \u043C\u0441",
-          tapUnsure: "\u0421\u043B\u0438\u0448\u043A\u043E\u043C \u043D\u0435\u0440\u043E\u0432\u043D\u043E \u2013 \u0441\u0442\u0443\u0447\u0438\u0442\u0435 \u0440\u0430\u0432\u043D\u043E\u043C\u0435\u0440\u043D\u043E \u043D\u0430 \u043A\u0430\u0436\u0434\u0443\u044E \u0434\u043E\u043B\u044E",
+          tapUnsure: "\u0421\u043B\u0438\u0448\u043A\u043E\u043C \u043D\u0435\u0440\u043E\u0432\u043D\u043E \u2013 \u0441\u0442\u0443\u0447\u0438 \u0440\u0430\u0432\u043D\u043E\u043C\u0435\u0440\u043D\u043E \u043D\u0430 \u043A\u0430\u0436\u0434\u0443\u044E \u0434\u043E\u043B\u044E",
           tapNoBeat: "\u0414\u043B\u044F \u044D\u0442\u043E\u0439 \u043F\u0435\u0441\u043D\u0438 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0434\u0430\u043D\u043D\u044B\u0445 \u043E \u0440\u0438\u0442\u043C\u0435",
           liveRelay: "\u0421\u043A\u0432\u043E\u0437\u043D\u043E\u0435 \u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u0447\u0435\u0440\u0435\u0437 \u043F\u0443\u0431\u043B\u0438\u0447\u043D\u044B\u0439 \u0440\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u2013 \u0432\u0438\u0434\u0438\u0442 \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u043E\u0442, \u0443 \u043A\u043E\u0433\u043E \u0435\u0441\u0442\u044C \u044D\u0442\u043E\u0442 QR-\u043A\u043E\u0434. \u0417\u0430\u043A\u0430\u043D\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u043F\u0440\u0438 \u0432\u044B\u0445\u043E\u0434\u0435 \u0438\u0437 \u0440\u0435\u0436\u0438\u043C\u0430 \u0432\u0435\u0447\u0435\u0440\u0438\u043D\u043A\u0438; \u0447\u0435\u0440\u0435\u0437 10 \u043C\u0438\u043D\u0443\u0442 \u043A\u043E\u0434 \u043D\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u0435\u043D.",
-          liveError: "\u0420\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D \u2013 \u0435\u0441\u0442\u044C \u043B\u0438 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u043A \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443?"
+          liveError: "\u0420\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D \u2013 \u0435\u0441\u0442\u044C \u043B\u0438 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u043A \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443?",
+          selLost: "Spotify {v} \u043F\u0435\u0440\u0435\u0441\u0442\u0440\u043E\u0438\u043B \u044D\u043B\u0435\u043C\u0435\u043D\u0442\u044B, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043E\u0444\u043E\u0440\u043C\u043B\u044F\u0435\u0442 Mirage, \u2013 \u043D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u043C\u043E\u0433\u0443\u0442 \u0432\u044B\u0433\u043B\u044F\u0434\u0435\u0442\u044C \u043D\u0435\u043C\u043D\u043E\u0433\u043E \u043D\u0435 \u0442\u0430\u043A. \u0421\u043A\u043E\u043F\u0438\u0440\u0443\u0439 \u0434\u0438\u0430\u0433\u043D\u043E\u0441\u0442\u0438\u043A\u0443 \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445 Mirage \u0438 \u0441\u043E\u043E\u0431\u0449\u0438 \u043E\u0431 \u044D\u0442\u043E\u043C \u2013 \u044D\u0442\u043E \u0438\u0441\u043F\u0440\u0430\u0432\u044F\u0442.",
+          partyCuts: "\u041C\u043E\u043D\u0442\u0430\u0436\u043D\u044B\u0435 \u0441\u043A\u043B\u0435\u0439\u043A\u0438",
+          partyCutsHint: "\u0420\u0435\u0437\u043A\u0438\u0435 \u0441\u043A\u043B\u0435\u0439\u043A\u0438 \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u0443\u044E \u0434\u043E\u043B\u044E \u043C\u0435\u0436\u0434\u0443 \u043E\u0431\u0449\u0438\u043C \u043F\u043B\u0430\u043D\u043E\u043C, \u043A\u0440\u0443\u043F\u043D\u044B\u043C \u0438 \u043F\u0443\u0431\u043B\u0438\u043A\u043E\u0439 \u2013 \u043A\u0430\u0436\u0434\u044B\u0435 8 \u0442\u0430\u043A\u0442\u043E\u0432, \u043D\u0430 \u043F\u0438\u043A\u0435 \u043A\u0430\u0436\u0434\u044B\u0435 4; \u0434\u0440\u043E\u043F \u0432\u043E\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043E\u0431\u0449\u0438\u0439 \u043F\u043B\u0430\u043D",
+          venue_cellar: "\u041F\u043E\u0434\u0432\u0430\u043B",
+          venue_jazzbar: "\u0414\u0436\u0430\u0437-\u0431\u0430\u0440",
+          venue_rooftop: "\u041A\u0440\u044B\u0448\u0430",
+          venue_forest: "\u041B\u0435\u0441\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430",
+          venue_cathedral: "\u0421\u043E\u0431\u043E\u0440",
+          venue_hall: "\u041A\u043E\u043D\u0446\u0435\u0440\u0442\u043D\u044B\u0439 \u0437\u0430\u043B",
+          partyWishes: "\u0417\u0430\u043A\u0430\u0437 \u043F\u0435\u0441\u0435\u043D \u0441 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
+          partyWishesHint: "\u0413\u043E\u0441\u0442\u0438 \u043C\u043E\u0433\u0443\u0442 \u0437\u0430\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C \u043F\u0435\u0441\u043D\u0438 \u0438 \u0433\u043E\u043B\u043E\u0441\u043E\u0432\u0430\u0442\u044C \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430 \u2013 \u0432 \u043E\u0447\u0435\u0440\u0435\u0434\u044C \u043F\u043E\u043F\u0430\u0434\u0430\u0435\u0442 \u0442\u043E\u043B\u044C\u043A\u043E \u0442\u043E, \u0447\u0442\u043E \u0442\u044B \u043E\u0434\u043E\u0431\u0440\u0438\u0448\u044C",
+          wishTitle: "\u0417\u0430\u043A\u0430\u0437\u044B \u043F\u0435\u0441\u0435\u043D",
+          wishBy: "\u043E\u0442 {n}",
+          wishQueue: "+ \u0412 \u043E\u0447\u0435\u0440\u0435\u0434\u044C",
+          wishDecline: "\u041E\u0442\u043A\u043B\u043E\u043D\u0438\u0442\u044C",
+          wishQueued: "\xAB{s}\xBB \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0430 \u0432 \u043E\u0447\u0435\u0440\u0435\u0434\u044C",
+          viz_tunnel: "3D-\u0442\u0443\u043D\u043D\u0435\u043B\u044C"
         },
         uk: {
           menu: "\u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage",
@@ -3801,13 +3971,13 @@
           vizBeat: "\u0412\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440 \xB7 \u0443 \u0442\u0430\u043A\u0442",
           vizAmbient: "\u0412\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440 \xB7 \u0435\u043C\u0431\u0456\u0454\u043D\u0442",
           seek: "\u041F\u043E\u0437\u0438\u0446\u0456\u044F \u0432 \u043F\u0456\u0441\u043D\u0456",
-          prev: "\u041D\u0430\u0437\u0430\u0434",
+          prev: "\u041F\u043E\u043F\u0435\u0440\u0435\u0434\u043D\u044F",
           play: "\u0412\u0456\u0434\u0442\u0432\u043E\u0440\u0438\u0442\u0438/\u041F\u0430\u0443\u0437\u0430",
-          next: "\u0414\u0430\u043B\u0456",
+          next: "\u041D\u0430\u0441\u0442\u0443\u043F\u043D\u0430",
           dynamic: "\u041A\u043E\u043B\u044C\u043E\u0440\u0438 \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438",
           dynamicHint: "\u0423\u0432\u0435\u0441\u044C \u0456\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441 \u043D\u0430\u0431\u0443\u0432\u0430\u0454 \u043A\u043E\u043B\u044C\u043E\u0440\u0456\u0432 \u043F\u0456\u0441\u043D\u0456",
           particles: "\u0421\u0432\u0456\u0442\u043B\u043E\u0432\u0438\u0439 \u043F\u0438\u043B",
-          particlesHint: "\u041F\u043B\u0430\u0432\u0443\u0447\u0456 \u0441\u0432\u0456\u0442\u043B\u043E\u0432\u0456 \u0442\u043E\u0447\u043A\u0438 \u043D\u0430 \u0442\u043B\u0456",
+          particlesHint: "\u0421\u0432\u0456\u0442\u043B\u043E\u0432\u0456 \u0446\u044F\u0442\u043A\u0438, \u0449\u043E \u0448\u0438\u0440\u044F\u044E\u0442\u044C \u043D\u0430 \u0442\u043B\u0456",
           beat: "\u0422\u043B\u043E \u0432 \u0442\u0430\u043A\u0442",
           beatHint: "\u041F\u0443\u043B\u044C\u0441\u0443\u0454 \u0432 \u0442\u0430\u043A\u0442, \u043A\u043E\u043B\u0438 Spotify \u043D\u0430\u0434\u0430\u0454 \u0434\u0430\u043D\u0456 \u043F\u0440\u043E \u0440\u0438\u0442\u043C",
           cascade: "\u0410\u043D\u0456\u043C\u0430\u0446\u0456\u0457 \u0441\u0442\u043E\u0440\u0456\u043D\u043E\u043A",
@@ -3817,7 +3987,7 @@
           tilt: "3D-\u043A\u0430\u0440\u0442\u043A\u0438",
           tiltHint: "\u041A\u0430\u0440\u0442\u043A\u0438 \u043D\u0430\u0445\u0438\u043B\u044F\u044E\u0442\u044C\u0441\u044F \u0434\u043E \u0432\u043A\u0430\u0437\u0456\u0432\u043D\u0438\u043A\u0430 \u043C\u0438\u0448\u0456",
           burst: "\u0412\u0438\u0431\u0443\u0445 \u0441\u0435\u0440\u0434\u0435\u0446\u044C",
-          burstHint: "\u0414\u043E\u0449 \u0456\u0441\u043A\u043E\u0440, \u043A\u043E\u043B\u0438 \u0442\u043E\u0431\u0456 \u043F\u043E\u0434\u043E\u0431\u0430\u0454\u0442\u044C\u0441\u044F \u043F\u0456\u0441\u043D\u044F",
+          burstHint: "\u0414\u043E\u0449 \u0456\u0441\u043A\u043E\u0440, \u043A\u043E\u043B\u0438 \u0432\u043F\u043E\u0434\u043E\u0431\u0430\u0454\u0448 \u043F\u0456\u0441\u043D\u044E",
           overlay: "Mirage Overlay",
           overlayHint: "\u041D\u0430\u0434\u0441\u0438\u043B\u0430\u0442\u0438 \u0437\u043C\u0456\u043D\u0443 \u043F\u0456\u0441\u0435\u043D\u044C \u0443 \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A-\u043E\u0432\u0435\u0440\u043B\u0435\u0439 \u043F\u043E\u0437\u0430 Spotify",
           grain: "\u0417\u0435\u0440\u043D\u043E \u043F\u043B\u0456\u0432\u043A\u0438",
@@ -3855,7 +4025,7 @@
           preset_light: "\u041B\u0435\u0433\u043A\u0438\u0439",
           preset_calm: "\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u0438\u0439",
           presetCustom: "\u0412\u043B\u0430\u0441\u043D\u0438\u0439 \u2013 \u043E\u043A\u0440\u0435\u043C\u0456 \u043F\u0435\u0440\u0435\u043C\u0438\u043A\u0430\u0447\u0456 \u0437\u043C\u0456\u043D\u0435\u043D\u043E",
-          perfStepped: "Mirage \u043F\u0440\u0430\u0446\u044E\u0432\u0430\u0432 \u0442\u0443\u0442 \u0456\u0437 {fps} fps \u0456 \u043F\u0435\u0440\u0435\u0439\u0448\u043E\u0432 \u043D\u0430 \xAB{preset}\xBB, \u0449\u043E\u0431 \u0443\u0441\u0435 \u0431\u0443\u043B\u043E \u043F\u043B\u0430\u0432\u043D\u043E.",
+          perfStepped: "Mirage \u0432\u0438\u0434\u0430\u0432\u0430\u0432 \u0442\u0443\u0442 {fps} fps \u0456 \u043F\u0435\u0440\u0435\u0439\u0448\u043E\u0432 \u043D\u0430 \xAB{preset}\xBB, \u0449\u043E\u0431 \u0443\u0441\u0435 \u0431\u0443\u043B\u043E \u043F\u043B\u0430\u0432\u043D\u043E.",
           autoPerf: "\u041D\u0430\u043B\u0430\u0448\u0442\u043E\u0432\u0443\u0432\u0430\u0442\u0438 \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u043D\u043E",
           autoPerfHint: "\u0417\u043D\u0438\u0436\u0443\u0454 \u0440\u0456\u0432\u0435\u043D\u044C \u043D\u0430 \u043E\u0434\u0438\u043D, \u044F\u043A\u0449\u043E \u041F\u041A \u043D\u0435 \u0432\u0441\u0442\u0438\u0433\u0430\u0454",
           costly: "\u0412\u0438\u0442\u0440\u0430\u0447\u0430\u0454 \u0440\u0435\u0441\u0443\u0440\u0441\u0438 \u0439 \u0437\u0430\u0440\u044F\u0434 \u0431\u0430\u0442\u0430\u0440\u0435\u0457",
@@ -3870,14 +4040,14 @@
           weekSongs: "\u043F\u0456\u0441\u0435\u043D\u044C",
           weekMinutes: "\u0445\u0432\u0438\u043B\u0438\u043D",
           weekColours: "\u041A\u043E\u043B\u044C\u043E\u0440\u0438 \u0442\u0432\u043E\u0457\u0445 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043E\u043A",
-          weekArtists: "\u041D\u0430\u0439\u0447\u0430\u0441\u0442\u0456\u0448\u0435",
+          weekArtists: "\u041D\u0430\u0439\u0447\u0430\u0441\u0442\u0456\u0448\u0435 \u0433\u0440\u0430\u043B\u043E",
           weekEmpty: "\u041F\u043E\u0441\u043B\u0443\u0445\u0430\u0439 \u043A\u0456\u043B\u044C\u043A\u0430 \u043F\u0456\u0441\u0435\u043D\u044C \u2013 \u0442\u0438\u0436\u0434\u0435\u043D\u044C \u043F\u043E\u0447\u043D\u0435 \u0437\u0430\u043F\u043E\u0432\u043D\u044E\u0432\u0430\u0442\u0438\u0441\u044F.",
           weekScheme: "\u0423\u043B\u044E\u0431\u043B\u0435\u043D\u0430 \u0441\u0445\u0435\u043C\u0430: {s}",
           keysTitle: "\u0421\u043F\u043E\u043B\u0443\u0447\u0435\u043D\u043D\u044F \u043A\u043B\u0430\u0432\u0456\u0448",
           k_play: "\u0412\u0456\u0434\u0442\u0432\u043E\u0440\u0435\u043D\u043D\u044F / \u043F\u0430\u0443\u0437\u0430",
           k_seek: "\u041F\u0435\u0440\u0435\u043C\u043E\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u043D\u0430 5 \u0441",
           k_vol: "\u0413\u0443\u0447\u043D\u0456\u0441\u0442\u044C",
-          k_view: "\u041E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440 \xB7 \u041C\u0456\u043A\u0441 \xB7 \u0412\u0435\u0447\u0456\u0440\u043A\u0430",
+          k_view: "\u041E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430 \xB7 \u0442\u0435\u043A\u0441\u0442 \xB7 \u0432\u0456\u0437\u0443\u0430\u043B\u0456\u0437\u0430\u0442\u043E\u0440 \xB7 \u043C\u0456\u043A\u0441 \xB7 \u0432\u0435\u0447\u0456\u0440\u043A\u0430",
           k_like: "\u041F\u043E\u0434\u043E\u0431\u0430\u0454\u0442\u044C\u0441\u044F",
           k_shuffle: "\u041F\u0435\u0440\u0435\u043C\u0456\u0448\u0430\u0442\u0438",
           k_repeat: "\u041F\u043E\u0432\u0442\u043E\u0440",
@@ -3927,7 +4097,7 @@
           importSettings: "\u0406\u043C\u043F\u043E\u0440\u0442\u0443\u0432\u0430\u0442\u0438 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F",
           diagnostics: "\u041A\u043E\u043F\u0456\u044E\u0432\u0430\u0442\u0438 \u0434\u0456\u0430\u0433\u043D\u043E\u0441\u0442\u0438\u043A\u0443",
           reset: "\u0421\u043A\u0438\u043D\u0443\u0442\u0438",
-          resetConfirm: "\u0421\u043A\u0438\u043D\u0443\u0442\u0438 \u0432\u0441\u0456 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage? \u0412\u043B\u0430\u0441\u043D\u0456 \u0441\u0445\u0435\u043C\u0438 \u0439 \u0437\u0430\u043F\u0430\u043C'\u044F\u0442\u043E\u0432\u0430\u043D\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u0438 \u0437\u0430\u043B\u0438\u0448\u0430\u0442\u044C\u0441\u044F.",
+          resetConfirm: "\u0421\u043A\u0438\u043D\u0443\u0442\u0438 \u0432\u0441\u0456 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F Mirage? \u0412\u043B\u0430\u0441\u043D\u0456 \u0441\u0445\u0435\u043C\u0438 \u0439 \u0437\u0430\u043F\u0430\u043C'\u044F\u0442\u0430\u043D\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u0438 \u0437\u0430\u043B\u0438\u0448\u0430\u0442\u044C\u0441\u044F.",
           welcomeTitle: "\u041B\u0430\u0441\u043A\u0430\u0432\u043E \u043F\u0440\u043E\u0441\u0438\u043C\u043E \u0434\u043E Mirage",
           welcomeText: "Ctrl + Shift + M \u0432\u0456\u0434\u043A\u0440\u0438\u0432\u0430\u0454 \u0440\u0435\u0436\u0438\u043C \u0437\u0430\u043D\u0443\u0440\u0435\u043D\u043D\u044F. \u041D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F \u0454 \u0432 \u043C\u0435\u043D\u044E \u043F\u0440\u043E\u0444\u0456\u043B\u044E.",
           welcomeImmersive: "\u0421\u043F\u0440\u043E\u0431\u0443\u0432\u0430\u0442\u0438 \u0440\u0435\u0436\u0438\u043C \u0437\u0430\u043D\u0443\u0440\u0435\u043D\u043D\u044F",
@@ -3983,9 +4153,9 @@
           trToggle: "\u041F\u0435\u0440\u0435\u043A\u043B\u0430\u0434",
           trShow: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u0430\u0434",
           trHide: "\u0421\u0445\u043E\u0432\u0430\u0442\u0438 \u043F\u0435\u0440\u0435\u043A\u043B\u0430\u0434",
-          party_rave: "Rave",
-          party_rock: "Rock",
-          party_pop: "Pop",
+          party_rave: "\u0420\u0435\u0439\u0432",
+          party_rock: "\u0420\u043E\u043A",
+          party_pop: "\u041F\u043E\u043F",
           tabMix: "\u041C\u0456\u043A\u0441",
           tabParty: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430",
           party_auto: "\u0410\u0432\u0442\u043E",
@@ -3995,10 +4165,10 @@
           partySectionHint: "\u0410\u0432\u0442\u043E \u043F\u0456\u0434\u0431\u0438\u0440\u0430\u0454 \u0441\u0432\u0456\u0442\u043B\u043E\u0432\u0443 \u043C\u043E\u0432\u0443 \u0437\u0430 \u0436\u0430\u043D\u0440\u043E\u043C \u2013 \u0430 \u0441\u0432\u0456\u0442\u043B\u043E \u0441\u0442\u0435\u0436\u0438\u0442\u044C \u0437\u0430 \u0441\u0430\u043C\u0438\u043C \u0442\u0440\u0435\u043A\u043E\u043C: \u043D\u0430\u0440\u043E\u0441\u0442\u0430\u043D\u043D\u044F, \u0434\u0440\u043E\u043F\u0438, \u0442\u0438\u0445\u0456 \u043F\u0430\u0443\u0437\u0438, \u043C\u0430\u0436\u043E\u0440 \u0447\u0438 \u043C\u0456\u043D\u043E\u0440",
           partyLevel: "\u0406\u043D\u0442\u0435\u043D\u0441\u0438\u0432\u043D\u0456\u0441\u0442\u044C",
           partyLevel1: "\u041C'\u044F\u043A\u043E",
-          partyLevel2: "\u0417\u0432\u0438\u0447\u0430\u0439\u043D\u043E",
+          partyLevel2: "\u041D\u043E\u0440\u043C\u0430\u043B\u044C\u043D\u043E",
           partyLevel3: "\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C",
           partyFlash: "\u041A\u043E\u043B\u044C\u043E\u0440\u043E\u0432\u0456 \u0441\u043F\u0430\u043B\u0430\u0445\u0438",
-          partyFlashHint: "\u041C'\u044F\u043A\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u043E\u0432\u0456 \u0445\u0432\u0438\u043B\u0456 \u0432 \u0442\u0430\u043A\u0442, \u043D\u0435 \u0431\u0456\u043B\u044C\u0448\u0435 \u043A\u0456\u043B\u044C\u043A\u043E\u0445 \u043D\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443. \u0412\u0438\u043C\u043A\u043D\u0435\u043D\u0456 \u043F\u0440\u0438 \xAB\u0437\u043C\u0435\u043D\u0448\u0435\u043D\u043D\u0456 \u0440\u0443\u0445\u0443\xBB",
+          partyFlashHint: "\u041C'\u044F\u043A\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u043E\u0432\u0456 \u0445\u0432\u0438\u043B\u0456 \u0432 \u0442\u0430\u043A\u0442, \u043D\u0435 \u0431\u0456\u043B\u044C\u0448\u0435 \u043A\u0456\u043B\u044C\u043A\u043E\u0445 \u0437\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443. \u0412\u0438\u043C\u043A\u043D\u0435\u043D\u043E \u0432 \u0440\u0435\u0436\u0438\u043C\u0456 \xAB\u0437\u043C\u0435\u043D\u0448\u0435\u043D\u043D\u044F \u0440\u0443\u0445\u0443\xBB",
           scanCode: "\u0421\u043A\u0430\u043D\u0443\u0432\u0430\u0442\u0438 \u0432 Spotify",
           partyJam: "\u041F\u043E\u043A\u0430\u0437\u0443\u0432\u0430\u0442\u0438 \u0433\u043E\u0441\u0442\u0435\u0439 Jam",
           partyJamHint: "\u041F\u0456\u0434 \u0447\u0430\u0441 Jam \u0443 Spotify \u0444\u043E\u0442\u043E \u043F\u0440\u043E\u0444\u0456\u043B\u0456\u0432 \u0443\u0441\u0456\u0445 \u0443\u0447\u0430\u0441\u043D\u0438\u043A\u0456\u0432 (\u0456 \u0442\u0432\u043E\u0454) \u043F\u043B\u0438\u0432\u0443\u0442\u044C \u043A\u0440\u0430\u044F\u043C\u0438",
@@ -4009,7 +4179,7 @@
           partyLasersHint: "\u041F\u0440\u043E\u0436\u0435\u043A\u0442\u043E\u0440\u0438 \u0432 \u0441\u0442\u0438\u043B\u0456 \u0436\u0430\u043D\u0440\u0443 \u2013 \u0441\u0445\u0440\u0435\u0449\u0435\u043D\u0456 \u043F\u0440\u043E\u043C\u0435\u043D\u0456 \u0434\u043B\u044F \u0440\u0435\u0439\u0432\u0443, \u0436\u043E\u0440\u0441\u0442\u043A\u0456 \u0441\u043F\u043E\u0442\u0438 \u0437\u0433\u043E\u0440\u0438 \u0434\u043B\u044F \u0440\u043E\u043A\u0443, \u0441\u0432\u0456\u0442\u043B\u043E \u0432\u0456\u0434 \u043F\u0456\u0434\u043B\u043E\u0433\u0438 \u0434\u043B\u044F \u0431\u0430\u0441\u0443. \u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB \u0449\u0435 \u0439 \u043F\u0440\u043E\u043C\u0435\u043D\u0456 \u0437 \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0438",
           partyZoom: "\u0423\u0434\u0430\u0440\u0438 \u043A\u0430\u043C\u0435\u0440\u0438",
           partyZoomHint: "\u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u041C\u0430\u043A\u0441\u0438\u043C\u0443\u043C\xBB: \u0440\u044F\u0434\u043E\u043A \u043F\u0440\u0443\u0436\u0438\u043D\u0438\u0442\u044C \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u0438\u0445 \u0434\u043E\u043B\u044F\u0445, \u043E\u0431\u043A\u043B\u0430\u0434\u0438\u043D\u043A\u0430 \u0433\u043E\u0439\u0434\u0430\u0454\u0442\u044C\u0441\u044F (\u043F\u043E\u043F, \u0431\u0430\u0441, \u0447\u0438\u043B). \u0412\u0456\u0434 \u0440\u0456\u0432\u043D\u044F \xAB\u0415\u043A\u0441\u0442\u0440\u0438\u043C\xBB: \u0443\u0441\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F",
-          partyIdle: "\u0425\u043E\u0432\u0430\u0442\u0438 \u043A\u0435\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0432 \u0441\u043F\u043E\u043A\u043E\u0457",
+          partyIdle: "\u0425\u043E\u0432\u0430\u0442\u0438 \u043A\u0435\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0432 \u0440\u0430\u0437\u0456 \u0431\u0435\u0437\u0434\u0456\u044F\u043B\u044C\u043D\u043E\u0441\u0442\u0456",
           partyIdleHint: "\u0427\u0435\u0440\u0435\u0437 \u043A\u0456\u043B\u044C\u043A\u0430 \u0441\u0435\u043A\u0443\u043D\u0434 \u0431\u0435\u0437 \u043C\u0438\u0448\u0456 \u043A\u043D\u043E\u043F\u043A\u0438 \u0437\u043D\u0438\u043A\u0430\u044E\u0442\u044C, \u0430 \u0432\u0441\u0435 \u043F\u043B\u0430\u0432\u043D\u043E \u0437\u0441\u0443\u0432\u0430\u0454\u0442\u044C\u0441\u044F \u0434\u043E \u0446\u0435\u043D\u0442\u0440\u0443",
           c_addTo: "\u0414\u043E\u0434\u0430\u0442\u0438 \u0434\u043E \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0430",
           plFind: "\u041F\u043E\u0448\u0443\u043A \u043F\u043B\u0435\u0439\u043B\u0438\u0441\u0442\u0456\u0432",
@@ -4035,11 +4205,11 @@
           partyDepth: "3D-\u0433\u043B\u0438\u0431\u0438\u043D\u0430",
           partyDepthHint: "\u0422\u0435\u043A\u0441\u0442, \u043D\u0430\u0437\u0432\u0430 \u0456 \u0441\u0432\u0456\u0442\u043B\u043E \u043B\u0435\u0436\u0430\u0442\u044C \u043D\u0430 \u0440\u0456\u0437\u043D\u0438\u0445 \u0448\u0430\u0440\u0430\u0445 \u0456 \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u043C\u0438\u0448\u0435\u044E \u2013 \u0431\u0435\u0437 \u043C\u0438\u0448\u0456 \u0441\u0446\u0435\u043D\u0430 \u043F\u043B\u0430\u0432\u043D\u043E \u0448\u0438\u0440\u044F\u0454",
           partyCamera: "\u0420\u0443\u0445 \u043A\u0430\u043C\u0435\u0440\u0438",
-          partyCameraHint: "\u0423\u0441\u044F \u0441\u0446\u0435\u043D\u0430 \u043F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F \u0439 \u043F\u043B\u0438\u0432\u0435: \u0448\u0438\u0440\u043E\u043A\u043E \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0456\u0441\u0446\u044F\u0445, \u0431\u043B\u0438\u0436\u0447\u0435 \u0437 \u0435\u043D\u0435\u0440\u0433\u0456\u0454\u044E, \u0440\u0438\u0432\u043E\u043A \u043D\u0430 \u0434\u0440\u043E\u043F\u0456",
+          partyCameraHint: "\u0423\u0441\u044F \u0441\u0446\u0435\u043D\u0430 \u043F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u043D\u0430\u0431\u043B\u0438\u0436\u0430\u0454\u0442\u044C\u0441\u044F \u0439 \u043F\u043B\u0438\u0432\u0435: \u0448\u0438\u0440\u043E\u043A\u043E \u0432 \u0442\u0438\u0445\u0438\u0445 \u043C\u0456\u0441\u0446\u044F\u0445, \u0431\u043B\u0438\u0436\u0447\u0435 \u0437 \u043D\u0430\u0440\u043E\u0441\u0442\u0430\u043D\u043D\u044F\u043C \u0435\u043D\u0435\u0440\u0433\u0456\u0457, \u0440\u0438\u0432\u043E\u043A \u043D\u0430 \u0434\u0440\u043E\u043F\u0456",
           partyShatter: "\u0406\u0441\u043A\u0440\u0438 \u0442\u0435\u043A\u0441\u0442\u0443",
           partyShatterHint: "\u041D\u0430 \u0434\u0440\u043E\u043F\u0456 \u043F\u043E\u0442\u043E\u0447\u043D\u0438\u0439 \u0440\u044F\u0434\u043E\u043A \u0441\u043F\u0430\u043B\u0430\u0445\u0443\u0454 \u0456 \u0440\u043E\u0437\u0441\u0438\u043F\u0430\u0454\u0442\u044C\u0441\u044F \u043D\u0430 \u0447\u0430\u0441\u0442\u0438\u043D\u043A\u0438 \u0441\u0432\u0456\u0442\u043B\u0430",
           partyCrowd: "\u041F\u0443\u0431\u043B\u0456\u043A\u0430",
-          partyCrowdHint: "\u0421\u0438\u043B\u0443\u0435\u0442\u0438 \u043F\u0435\u0440\u0435\u0434 \u0441\u0446\u0435\u043D\u043E\u044E \u043F\u0456\u0434\u043D\u0456\u043C\u0430\u044E\u0442\u044C \u0440\u0443\u043A\u0438 \u0440\u0430\u0437\u043E\u043C \u0437 \u0435\u043D\u0435\u0440\u0433\u0456\u0454\u044E \u0456 \u0441\u0442\u0440\u0438\u0431\u0430\u044E\u0442\u044C \u043D\u0430 \u0431\u043E\u0447\u0446\u0456 \u0439 \u0434\u0440\u043E\u043F\u0456",
+          partyCrowdHint: "\u0421\u0438\u043B\u0443\u0435\u0442\u0438 \u043F\u0435\u0440\u0435\u0434 \u0441\u0446\u0435\u043D\u043E\u044E \u043F\u0456\u0434\u043D\u0456\u043C\u0430\u044E\u0442\u044C \u0440\u0443\u043A\u0438 \u0437 \u043D\u0430\u0440\u043E\u0441\u0442\u0430\u043D\u043D\u044F\u043C \u0435\u043D\u0435\u0440\u0433\u0456\u0457 \u0456 \u0441\u0442\u0440\u0438\u0431\u0430\u044E\u0442\u044C \u043D\u0430 \u0431\u043E\u0447\u0446\u0456 \u0439 \u0434\u0440\u043E\u043F\u0456",
           partyJamLight: "\u041A\u043E\u043B\u044C\u043E\u0440\u0438 Jam",
           partyJamLightHint: "\u0423 Spotify Jam \u043A\u043E\u0436\u0435\u043D \u043C\u0430\u0454 \u0441\u0432\u0456\u0439 \u043A\u043E\u043B\u0456\u0440; \u0445\u0442\u043E \u0434\u043E\u0434\u0430\u0432 \u043F\u043E\u0442\u043E\u0447\u043D\u0438\u0439 \u0442\u0440\u0435\u043A, \u0441\u0432\u0456\u0442\u0438\u0442\u044C\u0441\u044F \u044F\u043A \u0434\u0456\u0434\u0436\u0435\u0439 (\u044F\u043A\u0449\u043E Spotify \u0446\u0435 \u043F\u043E\u0437\u043D\u0430\u0447\u0430\u0454)",
           partyScreen: "\u041A\u043D\u043E\u043F\u043A\u0430 \u0434\u0440\u0443\u0433\u043E\u0433\u043E \u0435\u043A\u0440\u0430\u043D\u0430",
@@ -4047,7 +4217,7 @@
           partyRecap: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           partyRecapHint: "\u041F\u0456\u0441\u043B\u044F \u0442\u0440\u044C\u043E\u0445 \u0442\u0440\u0435\u043A\u0456\u0432 \u0437'\u044F\u0432\u043B\u044F\u0454\u0442\u044C\u0441\u044F \u043A\u043D\u043E\u043F\u043A\u0430 \u0434\u043B\u044F \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0438: \u0442\u0440\u0435\u043A\u0438, \u0445\u0432\u0438\u043B\u0438\u043D\u0438, \u0434\u0440\u043E\u043F\u0438, \u0441\u0443\u043C\u0456\u0448 \u0436\u0430\u043D\u0440\u0456\u0432 \u0456 \u043D\u0430\u0439\u0433\u0443\u0447\u043D\u0456\u0448\u0438\u0439 \u0434\u0440\u043E\u043F",
           partyEdge: "\u0421\u0432\u0456\u0442\u043B\u043E \u043F\u043E \u043A\u0440\u0430\u044F\u0445 (\u043E\u0432\u0435\u0440\u043B\u0435\u0439)",
-          partyEdgeHint: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay \u043F\u0456\u0434\u0441\u0432\u0456\u0447\u0443\u0454 \u043A\u0440\u0430\u0457 \u0435\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0438 \u0442\u0440\u0438\u0432\u0430\u0454 \u0432\u0435\u0447\u0456\u0440\u043A\u0430 \u2013 \u043F\u0440\u0438\u0445\u043E\u0432\u0430\u043D\u043E \u0432 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u0438\u0445 \u0456\u0433\u0440\u0430\u0445",
+          partyEdgeHint: "\u0417\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043E\u043A Mirage Overlay \u043F\u0456\u0434\u0441\u0432\u0456\u0447\u0443\u0454 \u043A\u0440\u0430\u0457 \u0435\u043A\u0440\u0430\u043D\u0430 \u0432 \u0442\u0430\u043A\u0442, \u043F\u043E\u043A\u0438 \u0432\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438 \u2013 \u043F\u0440\u0438\u0445\u043E\u0432\u0430\u043D\u043E \u0432 \u043F\u043E\u0432\u043D\u043E\u0435\u043A\u0440\u0430\u043D\u043D\u0438\u0445 \u0456\u0433\u0440\u0430\u0445",
           recapBtn: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
           toScreen: "\u0412\u0435\u0447\u0456\u0440\u043A\u0430 \u043D\u0430 \u0456\u043D\u0448\u043E\u043C\u0443 \u0435\u043A\u0440\u0430\u043D\u0456",
           recapTitle: "\u041F\u0456\u0434\u0441\u0443\u043C\u043A\u0438 \u0442\u0432\u043E\u0454\u0457 \u0432\u0435\u0447\u0456\u0440\u043A\u0438",
@@ -4073,9 +4243,9 @@
           partyDJ: "DJ-\u043F\u0435\u0440\u0435\u0445\u043E\u0434\u0438",
           partyDJHint: "\u041F\u0456\u0434 \u0447\u0430\u0441 \u0437\u043C\u0456\u043D\u0438 \u0442\u0440\u0435\u043A\u0443 \u0441\u0442\u0430\u0440\u0456 \u043A\u043E\u043B\u044C\u043E\u0440\u0438 \u0442\u0440\u0438\u043C\u0430\u044E\u0442\u044C\u0441\u044F \u0434\u043E \u043F\u0435\u0440\u0448\u043E\u0457 \u0434\u043E\u043B\u0456, \u0430 \u043F\u043E\u0442\u0456\u043C \u0437\u0430 \u0447\u043E\u0442\u0438\u0440\u0438 \u0434\u043E\u043B\u0456 \u043F\u0435\u0440\u0435\u0445\u043E\u0434\u044F\u0442\u044C \u0443 \u043D\u043E\u0432\u0456",
           partyQuietFps: "30 \u043A\u0430\u0434\u0440\u0456\u0432/\u0441 \u0443 \u0442\u0438\u0445\u0438\u0445 \u043C\u0456\u0441\u0446\u044F\u0445",
-          partyQuietFpsHint: "\u0422\u0438\u0445\u0456 \u0432\u0441\u0442\u0443\u043F\u0438 \u0439 \u043F\u0430\u0443\u0437\u0438 \u0439\u0434\u0443\u0442\u044C \u0456\u0437 30 \u043A\u0430\u0434\u0440\u0430\u043C\u0438 \u043D\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u0438\u0433\u043B\u044F\u0434\u0430\u0454 \u0442\u0430\u043A \u0441\u0430\u043C\u043E, \u0437\u0430\u043E\u0449\u0430\u0434\u0436\u0443\u0454 \u0435\u043D\u0435\u0440\u0433\u0456\u044E",
+          partyQuietFpsHint: "\u0422\u0438\u0445\u0456 \u0432\u0441\u0442\u0443\u043F\u0438 \u0439 \u043F\u0430\u0443\u0437\u0438 \u0439\u0434\u0443\u0442\u044C \u0456\u0437 \u0447\u0430\u0441\u0442\u043E\u0442\u043E\u044E 30 \u043A\u0430\u0434\u0440\u0456\u0432 \u0437\u0430 \u0441\u0435\u043A\u0443\u043D\u0434\u0443 \u2013 \u0432\u0438\u0433\u043B\u044F\u0434\u0430\u0454 \u0442\u0430\u043A \u0441\u0430\u043C\u043E, \u0437\u0430\u043E\u0449\u0430\u0434\u0436\u0443\u0454 \u0435\u043D\u0435\u0440\u0433\u0456\u044E",
           partyLive: "\u0416\u0438\u0432\u0435 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
-          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u0438 \u0432 \u0431\u0443\u0434\u044C-\u044F\u043A\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456 \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u0432\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 QR-\u043A\u043E\u0434. \u0417\u0430\u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u043E, \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u043B\u0438\u0448\u0435 \u0437\u0430 QR-\u043A\u043E\u0434\u043E\u043C \u0456 \u043B\u0438\u0448\u0435 \u043F\u043E\u043A\u0438 \u0432\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438. \u0411\u0435\u0437 \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043A\u0443.",
+          partyLiveHint: "\u0422\u0435\u043B\u0435\u0444\u043E\u043D\u0438 \u0432 \u0431\u0443\u0434\u044C-\u044F\u043A\u0456\u0439 \u043C\u0435\u0440\u0435\u0436\u0456 \u0441\u0432\u0456\u0442\u044F\u0442\u044C\u0441\u044F \u0432 \u0440\u0438\u0442\u043C \u2013 \u0432\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439 QR-\u043A\u043E\u0434. \u0417\u0430\u0448\u0438\u0444\u0440\u043E\u0432\u0430\u043D\u043E, \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E \u043B\u0438\u0448\u0435 \u0437\u0430 QR-\u043A\u043E\u0434\u043E\u043C \u0456 \u043B\u0438\u0448\u0435 \u043F\u043E\u043A\u0438 \u0432\u0432\u0456\u043C\u043A\u043D\u0435\u043D\u043E \u0440\u0435\u0436\u0438\u043C \u0432\u0435\u0447\u0456\u0440\u043A\u0438. \u0411\u0435\u0437 \u0437\u0430\u0441\u0442\u043E\u0441\u0443\u043D\u043A\u0443.",
           mixInstruments: "\u041C\u0456\u043A\u0441 \u0440\u0435\u0430\u0433\u0443\u0454 \u043D\u0430 \u0456\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0438",
           mixInstrumentsHint: "\u0423 \u0440\u0435\u0436\u0438\u043C\u0456 \xAB\u041C\u0456\u043A\u0441\xBB \u043F\u0443\u043B\u044C\u0441 \u0456 \u043A\u0456\u043B\u044C\u0446\u044F \u0441\u0442\u0435\u0436\u0430\u0442\u044C \u0437\u0430 \u0441\u043F\u0440\u0430\u0432\u0436\u043D\u044C\u043E\u044E \u0431\u043E\u0447\u043A\u043E\u044E, \u0430 \u043D\u0435 \u043B\u0438\u0448\u0435 \u0437\u0430 \u0441\u0456\u0442\u043A\u043E\u044E \u0434\u043E\u043B\u044C",
           partyVenue: "\u041C\u0430\u0439\u0434\u0430\u043D\u0447\u0438\u043A",
@@ -4090,7 +4260,7 @@
           eco_off: "\u0412\u0438\u043C\u043A.",
           liveBtn: "\u0416\u0438\u0432\u0435 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
           liveTitle: "\u0417\u0430\u0441\u0432\u0456\u0442\u0438\u0442\u0438 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0438",
-          liveHint: "\u0412\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439\u0442\u0435 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0456 \u043F\u043E\u043A\u043B\u0430\u0434\u0456\u0442\u044C \u0435\u043A\u0440\u0430\u043D\u043E\u043C \u0434\u043E\u0433\u043E\u0440\u0438 \u2013 \u0432\u0456\u043D \u0431\u043B\u0438\u043C\u0430\u0454 \u0440\u0430\u0437\u043E\u043C \u0456\u0437 \u0432\u0435\u0447\u0456\u0440\u043A\u043E\u044E",
+          liveHint: "\u0412\u0456\u0434\u0441\u043A\u0430\u043D\u0443\u0439 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u043C \u0456 \u043F\u043E\u043A\u043B\u0430\u0434\u0438 \u0439\u043E\u0433\u043E \u0435\u043A\u0440\u0430\u043D\u043E\u043C \u0434\u043E\u0433\u043E\u0440\u0438 \u2013 \u0432\u0456\u043D \u0431\u043B\u0438\u043C\u0430\u0454 \u0440\u0430\u0437\u043E\u043C \u0456\u0437 \u0432\u0435\u0447\u0456\u0440\u043A\u043E\u044E",
           liveCopy: "\u041A\u043E\u043F\u0456\u044E\u0432\u0430\u0442\u0438 \u043F\u043E\u0441\u0438\u043B\u0430\u043D\u043D\u044F",
           partyFx: "\u0421\u0446\u0435\u043D\u0456\u0447\u043D\u0456 \u0435\u0444\u0435\u043A\u0442\u0438",
           partyFxHint: "\u0421\u0442\u0440\u0443\u043C\u0435\u043D\u0456 CO2 \u0434\u043B\u044F \u0435\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0456\u043A\u0438, \u043F\u0456\u0440\u043E-\u043F\u043E\u043B\u0443\u043C'\u044F \u0434\u043B\u044F \u0440\u043E\u043A\u0443 \u0439 \u043C\u0435\u0442\u0430\u043B\u0443, \u0444\u0435\u0454\u0440\u0432\u0435\u0440\u043A \u0432 \u043E\u0441\u0442\u0430\u043D\u043D\u044C\u043E\u043C\u0443 \u043F\u0440\u0438\u0441\u043F\u0456\u0432\u0456 \u2013 \u043D\u0430 \u0434\u0440\u043E\u043F\u0456 \u0439 \u043D\u0430 \u043F\u0456\u043A\u0443",
@@ -4102,13 +4272,13 @@
           ps_light: "\u0421\u0432\u0456\u0442\u043B\u043E \u0439 \u0435\u0444\u0435\u043A\u0442\u0438",
           ps_moments: "\u041C\u043E\u043C\u0435\u043D\u0442\u0438",
           ps_crowd: "\u041F\u0443\u0431\u043B\u0456\u043A\u0430 \u0439 Jam",
-          ps_extras: "\u0414\u043E\u0434\u0430\u0442\u043A\u043E\u0432\u043E \u0439 \u043F\u043E\u0448\u0438\u0440\u0435\u043D\u043D\u044F",
+          ps_extras: "\u0414\u043E\u0434\u0430\u0442\u043A\u0438 \u0439 \u043F\u043E\u0448\u0438\u0440\u0435\u043D\u043D\u044F",
           fam_electronic: "\u0415\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u0456\u043A\u0430",
           fam_urban: "\u0425\u0456\u043F-\u0445\u043E\u043F \u0456 R&B",
           fam_rock: "\u0420\u043E\u043A",
           fam_pop: "\u041F\u043E\u043F",
           fam_world: "\u041B\u0430\u0442\u0438\u043D\u043E \u0439 \u0441\u0432\u0456\u0442",
-          fam_calm: "\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u0430 \u0439 \u043A\u043B\u0430\u0441\u0438\u043A\u0430",
+          fam_calm: "\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u0430 \u0439 \u043A\u043B\u0430\u0441\u0438\u0447\u043D\u0430",
           party_edm: "EDM & Big Room",
           party_deephouse: "Deep House",
           party_techhouse: "Tech House",
@@ -4141,15 +4311,32 @@
           partyRig: "\u0420\u0443\u0445\u043E\u043C\u0456 \u0433\u043E\u043B\u043E\u0432\u0438 \u0439 \u0431\u043B\u0430\u0439\u043D\u0434\u0435\u0440\u0438",
           partyRigHint: "\u0421\u0432\u0456\u0442\u043B\u043E\u0432\u0430 \u0444\u0435\u0440\u043C\u0430 \u043D\u0430\u0434 \u0441\u0446\u0435\u043D\u043E\u044E \u0440\u0443\u0445\u0430\u0454\u0442\u044C\u0441\u044F \u0432\u0456\u0437\u0435\u0440\u0443\u043D\u043A\u0430\u043C\u0438 \u043F\u0456\u0434 \u0436\u0430\u043D\u0440 \u2013 \u0445\u0432\u0438\u043B\u0456 \u0434\u043B\u044F \u0445\u0430\u0443\u0441\u0443, \u0431\u0456\u0436\u0443\u0447\u0456 \u0432\u043E\u0433\u043D\u0456 \u0434\u043B\u044F \u0442\u0435\u0445\u043D\u043E, \u0432\u0456\u044F\u043B\u0430 \u0434\u043B\u044F EDM \u2013 \u0437 \u0431\u043B\u0430\u0439\u043D\u0434\u0435\u0440\u0430\u043C\u0438 \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u0438\u0445 \u0443\u0434\u0430\u0440\u0430\u0445 \u0456 \u043B\u0430\u0437\u0435\u0440\u043D\u043E\u044E \u043F\u043B\u043E\u0449\u0438\u043D\u043E\u044E \u043D\u0430 \u0434\u0440\u043E\u043F\u0456",
           partyInstruments: "\u0420\u043E\u0437\u043F\u0456\u0437\u043D\u0430\u0432\u0430\u0442\u0438 \u0456\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u0438",
-          partyInstrumentsHint: "\u0422\u0440\u0443\u0431\u0438, \u0441\u0430\u043A\u0441\u043E\u0444\u043E\u043D, \u0433\u0456\u0442\u0430\u0440\u0430, \u0444\u043E\u0440\u0442\u0435\u043F\u0456\u0430\u043D\u043E, \u0441\u0442\u0440\u0443\u043D\u043D\u0456 \u0439 \u0445\u043E\u0440 \u043E\u0442\u0440\u0438\u043C\u0443\u044E\u0442\u044C \u0432\u043B\u0430\u0441\u043D\u0456 \u0435\u0444\u0435\u043A\u0442\u0438 \u2013 \u043B\u0438\u0448\u0435 \u044F\u043A\u0449\u043E \u0442\u0438\u0442\u0440\u0438 \u043F\u0456\u0441\u043D\u0456 \u043F\u0456\u0434\u0442\u0432\u0435\u0440\u0434\u0436\u0443\u044E\u0442\u044C \u0456\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442 (Spotify, MusicBrainz; \u0434\u043E MusicBrainz \u0456\u0434\u0435 ISRC \u043F\u0456\u0441\u043D\u0456)",
+          partyInstrumentsHint: "\u0422\u0440\u0443\u0431\u0438, \u0441\u0430\u043A\u0441\u043E\u0444\u043E\u043D, \u0433\u0456\u0442\u0430\u0440\u0430, \u0444\u043E\u0440\u0442\u0435\u043F\u0456\u0430\u043D\u043E, \u0441\u0442\u0440\u0443\u043D\u043D\u0456 \u0439 \u0445\u043E\u0440 \u043E\u0442\u0440\u0438\u043C\u0443\u044E\u0442\u044C \u0432\u043B\u0430\u0441\u043D\u0456 \u0435\u0444\u0435\u043A\u0442\u0438 \u2013 \u043B\u0438\u0448\u0435 \u044F\u043A\u0449\u043E \u0432\u0456\u0434\u043E\u043C\u043E\u0441\u0442\u0456 \u043F\u0440\u043E \u0443\u0447\u0430\u0441\u043D\u0438\u043A\u0456\u0432 \u0437\u0430\u043F\u0438\u0441\u0443 \u043F\u0456\u0434\u0442\u0432\u0435\u0440\u0434\u0436\u0443\u044E\u0442\u044C \u0456\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442 (Spotify, MusicBrainz; \u0434\u043E MusicBrainz \u0456\u0434\u0435 ISRC \u043F\u0456\u0441\u043D\u0456)",
           syncOffset: "\u0421\u0438\u043D\u0445\u0440\u043E\u043D\u0456\u0437\u0430\u0446\u0456\u044F (\u0435\u0444\u0435\u043A\u0442\u0438 \u0439 \u0442\u0435\u043A\u0441\u0442)",
           k_tap: "\u0412\u0456\u0434\u0441\u0442\u0443\u043A\u0430\u0442\u0438 \u0440\u0438\u0442\u043C (\u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0456\u0437\u0430\u0446\u0456\u044F)",
-          tapCount: "\u0421\u0442\u0443\u043A\u0430\u0439\u0442\u0435 \u0434\u0430\u043B\u0456 \u0432 \u0440\u0438\u0442\u043C \u2026 {n}/6",
+          tapCount: "\u0421\u0442\u0443\u043A\u0430\u0439 \u0434\u0430\u043B\u0456 \u0432 \u0440\u0438\u0442\u043C \u2026 {n}/6",
           tapDone: "\u0423 \u0440\u0438\u0442\u043C\u0456 \u2013 \u0437\u0441\u0443\u0432 {ms} \u043C\u0441",
-          tapUnsure: "\u041D\u0430\u0434\u0442\u043E \u043D\u0435\u0440\u0456\u0432\u043D\u043E \u2013 \u0441\u0442\u0443\u043A\u0430\u0439\u0442\u0435 \u0440\u0456\u0432\u043D\u043E \u043D\u0430 \u043A\u043E\u0436\u043D\u0443 \u0434\u043E\u043B\u044E",
+          tapUnsure: "\u041D\u0430\u0434\u0442\u043E \u043D\u0435\u0440\u0456\u0432\u043D\u043E \u2013 \u0441\u0442\u0443\u043A\u0430\u0439 \u0440\u0456\u0432\u043D\u043E \u043D\u0430 \u043A\u043E\u0436\u043D\u0443 \u0434\u043E\u043B\u044E",
           tapNoBeat: "\u0414\u043B\u044F \u0446\u0456\u0454\u0457 \u043F\u0456\u0441\u043D\u0456 \u0449\u0435 \u043D\u0435\u043C\u0430\u0454 \u0434\u0430\u043D\u0438\u0445 \u043F\u0440\u043E \u0440\u0438\u0442\u043C",
-          liveRelay: "\u041D\u0430\u0441\u043A\u0440\u0456\u0437\u043D\u0435 \u0448\u0438\u0444\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0447\u0435\u0440\u0435\u0437 \u043F\u0443\u0431\u043B\u0456\u0447\u043D\u0438\u0439 \u0440\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u2013 \u0431\u0430\u0447\u0438\u0442\u044C \u043B\u0438\u0448\u0435 \u0442\u043E\u0439, \u0445\u0442\u043E \u043C\u0430\u0454 \u0446\u0435\u0439 QR-\u043A\u043E\u0434. \u0417\u0430\u0432\u0435\u0440\u0448\u0443\u0454\u0442\u044C\u0441\u044F, \u043A\u043E\u043B\u0438 \u0432\u0438 \u0432\u0438\u0445\u043E\u0434\u0438\u0442\u0435 \u0437 \u0440\u0435\u0436\u0438\u043C\u0443 \u0432\u0435\u0447\u0456\u0440\u043A\u0438; \u0447\u0435\u0440\u0435\u0437 10 \u0445\u0432\u0438\u043B\u0438\u043D \u043A\u043E\u0434 \u043D\u0435\u0434\u0456\u0439\u0441\u043D\u0438\u0439.",
-          liveError: "\u0420\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0438\u0439 \u2013 \u0447\u0438 \u0454 \u043F\u0456\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043D\u044F \u0434\u043E \u0456\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443?"
+          liveRelay: "\u041D\u0430\u0441\u043A\u0440\u0456\u0437\u043D\u0435 \u0448\u0438\u0444\u0440\u0443\u0432\u0430\u043D\u043D\u044F \u0447\u0435\u0440\u0435\u0437 \u043F\u0443\u0431\u043B\u0456\u0447\u043D\u0438\u0439 \u0440\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u2013 \u0431\u0430\u0447\u0438\u0442\u044C \u043B\u0438\u0448\u0435 \u0442\u043E\u0439, \u0445\u0442\u043E \u043C\u0430\u0454 \u0446\u0435\u0439 QR-\u043A\u043E\u0434. \u0417\u0430\u0432\u0435\u0440\u0448\u0443\u0454\u0442\u044C\u0441\u044F, \u043A\u043E\u043B\u0438 \u0442\u0438 \u0432\u0438\u0445\u043E\u0434\u0438\u0448 \u0456\u0437 \u0440\u0435\u0436\u0438\u043C\u0443 \u0432\u0435\u0447\u0456\u0440\u043A\u0438; \u0447\u0435\u0440\u0435\u0437 10 \u0445\u0432\u0438\u043B\u0438\u043D \u043A\u043E\u0434 \u0441\u0442\u0430\u0454 \u043D\u0435\u0434\u0456\u0439\u0441\u043D\u0438\u043C.",
+          liveError: "\u0420\u0435\u0442\u0440\u0430\u043D\u0441\u043B\u044F\u0442\u043E\u0440 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0438\u0439 \u2013 \u0447\u0438 \u0454 \u043F\u0456\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u043D\u044F \u0434\u043E \u0456\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443?",
+          selLost: "Spotify {v} \u043F\u0435\u0440\u0435\u0431\u0443\u0434\u0443\u0432\u0430\u0432 \u0435\u043B\u0435\u043C\u0435\u043D\u0442\u0438, \u044F\u043A\u0456 \u043E\u0444\u043E\u0440\u043C\u043B\u044E\u0454 Mirage, \u2013 \u0434\u0435\u044F\u043A\u0456 \u0441\u0442\u043E\u0440\u0456\u043D\u043A\u0438 \u043C\u043E\u0436\u0443\u0442\u044C \u0432\u0438\u0433\u043B\u044F\u0434\u0430\u0442\u0438 \u0442\u0440\u043E\u0445\u0438 \u043D\u0435 \u0442\u0430\u043A. \u0421\u043A\u043E\u043F\u0456\u044E\u0439 \u0434\u0456\u0430\u0433\u043D\u043E\u0441\u0442\u0438\u043A\u0443 \u0432 \u043D\u0430\u043B\u0430\u0448\u0442\u0443\u0432\u0430\u043D\u043D\u044F\u0445 Mirage \u0456 \u043F\u043E\u0432\u0456\u0434\u043E\u043C \u043F\u0440\u043E \u0446\u0435 \u2013 \u0446\u0435 \u0432\u0438\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C.",
+          partyCuts: "\u041C\u043E\u043D\u0442\u0430\u0436\u043D\u0456 \u0441\u043A\u043B\u0435\u0439\u043A\u0438",
+          partyCutsHint: "\u0420\u0456\u0437\u043A\u0456 \u0441\u043A\u043B\u0435\u0439\u043A\u0438 \u043D\u0430 \u0441\u0438\u043B\u044C\u043D\u0443 \u0434\u043E\u043B\u044E \u043C\u0456\u0436 \u0437\u0430\u0433\u0430\u043B\u044C\u043D\u0438\u043C \u043F\u043B\u0430\u043D\u043E\u043C, \u043A\u0440\u0443\u043F\u043D\u0438\u043C \u0456 \u043F\u0443\u0431\u043B\u0456\u043A\u043E\u044E \u2013 \u043A\u043E\u0436\u043D\u0456 8 \u0442\u0430\u043A\u0442\u0456\u0432, \u043D\u0430 \u043F\u0456\u043A\u0443 \u043A\u043E\u0436\u043D\u0456 4; \u0434\u0440\u043E\u043F \u043F\u043E\u0432\u0435\u0440\u0442\u0430\u0454 \u0437\u0430\u0433\u0430\u043B\u044C\u043D\u0438\u0439 \u043F\u043B\u0430\u043D",
+          venue_cellar: "\u041F\u0456\u0434\u0432\u0430\u043B",
+          venue_jazzbar: "\u0414\u0436\u0430\u0437-\u0431\u0430\u0440",
+          venue_rooftop: "\u0414\u0430\u0445",
+          venue_forest: "\u041B\u0456\u0441\u043E\u0432\u0430 \u0441\u0446\u0435\u043D\u0430",
+          venue_cathedral: "\u0421\u043E\u0431\u043E\u0440",
+          venue_hall: "\u041A\u043E\u043D\u0446\u0435\u0440\u0442\u043D\u0430 \u0437\u0430\u043B\u0430",
+          partyWishes: "\u0417\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u043F\u0456\u0441\u0435\u043D\u044C \u0456\u0437 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
+          partyWishesHint: "\u0413\u043E\u0441\u0442\u0456 \u043C\u043E\u0436\u0443\u0442\u044C \u0437\u0430\u043C\u043E\u0432\u043B\u044F\u0442\u0438 \u043F\u0456\u0441\u043D\u0456 \u0439 \u0433\u043E\u043B\u043E\u0441\u0443\u0432\u0430\u0442\u0438 \u043D\u0430 \u0441\u0442\u043E\u0440\u0456\u043D\u0446\u0456 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0430 \u2013 \u0434\u043E \u0447\u0435\u0440\u0433\u0438 \u043F\u043E\u0442\u0440\u0430\u043F\u043B\u044F\u0454 \u043B\u0438\u0448\u0435 \u0442\u0435, \u0449\u043E \u0442\u0438 \u0441\u0445\u0432\u0430\u043B\u0438\u0448",
+          wishTitle: "\u0417\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u043F\u0456\u0441\u0435\u043D\u044C",
+          wishBy: "\u0432\u0456\u0434 {n}",
+          wishQueue: "+ \u0414\u043E \u0447\u0435\u0440\u0433\u0438",
+          wishDecline: "\u0412\u0456\u0434\u0445\u0438\u043B\u0438\u0442\u0438",
+          wishQueued: "\xAB{s}\xBB \u0434\u043E\u0434\u0430\u043D\u043E \u0434\u043E \u0447\u0435\u0440\u0433\u0438",
+          viz_tunnel: "3D-\u0442\u0443\u043D\u0435\u043B\u044C"
         },
         ja: {
           menu: "Mirage \u306E\u8A2D\u5B9A",
@@ -4179,7 +4366,7 @@
           burst: "\u30CF\u30FC\u30C8\u30D0\u30FC\u30B9\u30C8",
           grain: "\u30D5\u30A3\u30EB\u30E0\u30B0\u30EC\u30A4\u30F3",
           calm: "\u843D\u3061\u7740\u3044\u305F\u30E2\u30FC\u30C9",
-          blur: "\u30AC\u30E9\u30B9\u306E\u307C\u304B\u3057",
+          blur: "\u30AC\u30E9\u30B9\u306E\u307C\u304B\u3057\uFF08\u672C\u7269\u306E\u30AC\u30E9\u30B9\u306E\u307F\uFF09",
           bright: "\u80CC\u666F\u306E\u660E\u308B\u3055",
           dynamicHint: "\u30A4\u30F3\u30BF\u30FC\u30D5\u30A7\u30FC\u30B9\u5168\u4F53\u304C\u66F2\u306E\u8272\u306B\u67D3\u307E\u308A\u307E\u3059",
           particlesHint: "\u80CC\u666F\u306B\u5149\u306E\u7C92\u304C\u3075\u308F\u308A\u3068\u6F02\u3044\u307E\u3059",
@@ -4214,7 +4401,7 @@
           c_mute: "\u30DF\u30E5\u30FC\u30C8",
           c_full: "\u5168\u753B\u9762 (F)",
           c_volume: "\u97F3\u91CF (\u2191 \u2193)",
-          tip: "\u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9: Ctrl + Shift + M \u307E\u305F\u306F\u4E0A\u90E8\u306E\u4E38\u3044\u30DC\u30BF\u30F3\u3002\u30E2\u30FC\u30C9\u5185: 1 \xB7 2 \xB7 3 \u8868\u793A\u5207\u66FF\u3001Space \u518D\u751F\u3001\u2190 \u2192 \u30B7\u30FC\u30AF\u3001\u2191 \u2193 \u97F3\u91CF\u3001L \u3044\u3044\u306D\u3001S \u30B7\u30E3\u30C3\u30D5\u30EB\u3001R \u30EA\u30D4\u30FC\u30C8\u3001F \u5168\u753B\u9762\u3002",
+          tip: "\u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9\uFF1ACtrl + Shift + M \u307E\u305F\u306F\u4E0A\u90E8\u306E\u4E38\u3044\u30DC\u30BF\u30F3\u3002\u30E2\u30FC\u30C9\u5185\uFF1A1 \xB7 2 \xB7 3 \u8868\u793A\u5207\u66FF\u3001Space \u518D\u751F\u3001\u2190 \u2192 \u30B7\u30FC\u30AF\u3001\u2191 \u2193 \u97F3\u91CF\u3001L \u3044\u3044\u306D\u3001S \u30B7\u30E3\u30C3\u30D5\u30EB\u3001R \u30EA\u30D4\u30FC\u30C8\u3001F \u5168\u753B\u9762\u3002",
           presetTitle: "\u898B\u305F\u76EE\u3068\u30D1\u30D5\u30A9\u30FC\u30DE\u30F3\u30B9",
           presetHint: "\u30EF\u30F3\u30AF\u30EA\u30C3\u30AF\u3067\u4E00\u62EC\u8A2D\u5B9A \u2013 \u7D30\u304B\u3044\u8ABF\u6574\u306F\u4E0B\u3067",
           preset_full: "\u30D5\u30EB",
@@ -4222,11 +4409,11 @@
           preset_light: "\u30E9\u30A4\u30C8",
           preset_calm: "\u63A7\u3048\u3081",
           presetCustom: "\u30AB\u30B9\u30BF\u30E0 \u2013 \u500B\u5225\u306E\u30B9\u30A4\u30C3\u30C1\u3092\u5909\u66F4\u3057\u307E\u3057\u305F",
-          perfStepped: "\u3053\u3053\u3067\u306F Mirage \u304C {fps} fps \u3067\u52D5\u4F5C\u3057\u3066\u3044\u305F\u305F\u3081\u3001\u306A\u3081\u3089\u304B\u3055\u3092\u4FDD\u3064\u305F\u3081\u300C{preset}\u300D\u306B\u5207\u308A\u66FF\u3048\u307E\u3057\u305F\u3002",
+          perfStepped: "Mirage \u306F\u3053\u3053\u3067 {fps} fps \u3057\u304B\u51FA\u3066\u3044\u306A\u304B\u3063\u305F\u305F\u3081\u3001\u306A\u3081\u3089\u304B\u3055\u3092\u4FDD\u3064\u3088\u3046\u300C{preset}\u300D\u306B\u5207\u308A\u66FF\u3048\u307E\u3057\u305F\u3002",
           autoPerf: "\u81EA\u52D5\u3067\u8ABF\u6574",
           autoPerfHint: "PC \u306E\u51E6\u7406\u304C\u8FFD\u3044\u3064\u304B\u306A\u3044\u5834\u5408\u306B 1 \u6BB5\u968E\u4E0B\u3052\u307E\u3059",
           costly: "\u30D1\u30D5\u30A9\u30FC\u30DE\u30F3\u30B9\u3068\u30D0\u30C3\u30C6\u30EA\u30FC\u3092\u6D88\u8CBB\u3057\u307E\u3059",
-          safeMode: "Spotify {v} \u306E\u69CB\u9020\u304C\u5909\u308F\u3063\u305F\u305F\u3081\u3001Mirage \u306F\u30BB\u30FC\u30D5\u30E2\u30FC\u30C9 (\u8272\u306E\u307F) \u3067\u52D5\u4F5C\u3057\u3066\u3044\u307E\u3059\u3002Mirage \u3092\u66F4\u65B0\u3059\u308B\u3068\u76F4\u308A\u307E\u3059\u3002",
+          safeMode: "Spotify {v} \u306E\u69CB\u9020\u304C\u5909\u308F\u3063\u305F\u305F\u3081\u3001Mirage \u306F\u30BB\u30FC\u30D5\u30E2\u30FC\u30C9\uFF08\u8272\u306E\u307F\uFF09\u3067\u52D5\u4F5C\u3057\u3066\u3044\u307E\u3059\u3002Mirage \u3092\u66F4\u65B0\u3059\u308B\u3068\u76F4\u308A\u307E\u3059\u3002",
           share: "\u753B\u50CF\u3068\u3057\u3066\u5171\u6709",
           shareNow: "\u518D\u751F\u4E2D\u306E\u66F2\u3092\u5171\u6709",
           shareWeek: "\u3042\u306A\u305F\u306E 1 \u9031\u9593\u3092\u8272\u3067",
@@ -4272,7 +4459,7 @@
           translate: "\u6B4C\u8A5E\u3092\u7FFB\u8A33",
           translateHint: "\u5404\u884C\u306E\u4E0B\u306B\u7FFB\u8A33\u3092\u8868\u793A\u3057\u307E\u3059 \u2013 \u6B4C\u8A5E\u306E\u884C\u306F Google \u7FFB\u8A33\u306B\u9001\u4FE1\u3055\u308C\u307E\u3059",
           canvas: "Canvas \u52D5\u753B",
-          canvasHint: "\u30B8\u30E3\u30B1\u30C3\u30C8\u306E\u80CC\u5F8C\u306B Spotify \u306E\u77ED\u3044\u30EB\u30FC\u30D7\u52D5\u753B\u3092\u8868\u793A (\u3042\u308B\u5834\u5408)",
+          canvasHint: "\u30B8\u30E3\u30B1\u30C3\u30C8\u306E\u80CC\u5F8C\u306B Spotify \u306E\u77ED\u3044\u30EB\u30FC\u30D7\u52D5\u753B\u3092\u8868\u793A\uFF08\u3042\u308B\u5834\u5408\uFF09",
           viz_particles: "\u30D1\u30FC\u30C6\u30A3\u30AF\u30EB",
           viz_line: "\u30E9\u30A4\u30F3",
           viz_bottom: "\u4E0B\u90E8\u306E\u30D0\u30FC",
@@ -4294,7 +4481,7 @@
           importSettings: "\u8A2D\u5B9A\u3092\u8AAD\u307F\u8FBC\u3080",
           diagnostics: "\u8A3A\u65AD\u60C5\u5831\u3092\u30B3\u30D4\u30FC",
           reset: "\u30EA\u30BB\u30C3\u30C8",
-          resetConfirm: "Mirage \u306E\u8A2D\u5B9A\u3092\u3059\u3079\u3066\u30EA\u30BB\u30C3\u30C8\u3057\u307E\u3059\u304B\uFF1F \u81EA\u4F5C\u306E\u30B9\u30AD\u30FC\u30E0\u3068\u8A18\u61B6\u3057\u305F\u8272\u306F\u6B8B\u308A\u307E\u3059\u3002",
+          resetConfirm: "Mirage \u306E\u8A2D\u5B9A\u3092\u3059\u3079\u3066\u30EA\u30BB\u30C3\u30C8\u3057\u307E\u3059\u304B\uFF1F\u81EA\u4F5C\u306E\u30B9\u30AD\u30FC\u30E0\u3068\u8A18\u61B6\u3057\u305F\u8272\u306F\u6B8B\u308A\u307E\u3059\u3002",
           welcomeTitle: "Mirage \u3078\u3088\u3046\u3053\u305D",
           welcomeText: "Ctrl + Shift + M \u3067\u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9\u304C\u958B\u304D\u307E\u3059\u3002\u8A2D\u5B9A\u306F\u30D7\u30ED\u30D5\u30A3\u30FC\u30EB\u30E1\u30CB\u30E5\u30FC\u306B\u3042\u308A\u307E\u3059\u3002",
           welcomeImmersive: "\u30A4\u30DE\u30FC\u30B7\u30D6\u30E2\u30FC\u30C9\u3092\u8A66\u3059",
@@ -4350,9 +4537,9 @@
           trToggle: "\u7FFB\u8A33",
           trShow: "\u7FFB\u8A33\u3092\u8868\u793A",
           trHide: "\u7FFB\u8A33\u3092\u975E\u8868\u793A",
-          party_rave: "Rave",
-          party_rock: "Rock",
-          party_pop: "Pop",
+          party_rave: "\u30EC\u30A4\u30D6",
+          party_rock: "\u30ED\u30C3\u30AF",
+          party_pop: "\u30DD\u30C3\u30D7",
           tabMix: "\u30DF\u30C3\u30AF\u30B9",
           tabParty: "\u30D1\u30FC\u30C6\u30A3\u30FC",
           party_auto: "\u81EA\u52D5",
@@ -4365,16 +4552,16 @@
           partyLevel2: "\u6A19\u6E96",
           partyLevel3: "\u6700\u5927",
           partyFlash: "\u30AB\u30E9\u30FC\u30D5\u30E9\u30C3\u30B7\u30E5",
-          partyFlashHint: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u305F\u3084\u308F\u3089\u304B\u306A\u8272\u306E\u6CE2\u30021\u79D2\u306B\u6570\u56DE\u307E\u3067\u3002\u300C\u8996\u5DEE\u52B9\u679C\u3092\u6E1B\u3089\u3059\u300D\u3067\u30AA\u30D5",
+          partyFlashHint: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u305F\u3084\u308F\u3089\u304B\u306A\u8272\u306E\u6CE2\u30021\u79D2\u306B\u6570\u56DE\u307E\u3067\u3002\u300C\u52D5\u304D\u3092\u6E1B\u3089\u3059\u300D\u8A2D\u5B9A\u6642\u306F\u30AA\u30D5",
           scanCode: "Spotify\u3067\u30B9\u30AD\u30E3\u30F3",
           partyJam: "Jam\u306E\u53C2\u52A0\u8005\u3092\u8868\u793A",
           partyJamHint: "Spotify Jam\u4E2D\u306F\u3001\u53C2\u52A0\u8005\u5168\u54E1\uFF08\u3042\u306A\u305F\u3082\uFF09\u306E\u30D7\u30ED\u30D5\u30A3\u30FC\u30EB\u753B\u50CF\u304C\u753B\u9762\u306E\u7AEF\u306B\u6D6E\u304B\u3073\u307E\u3059",
           jamYou: "\u3042\u306A\u305F",
           partyLevel4: "\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0",
-          partyLevel5: "\u72C2\u4E71",
+          partyLevel5: "\u30AF\u30EC\u30A4\u30B8\u30FC",
           partyLasers: "\u30B9\u30C6\u30FC\u30B8\u7167\u660E",
           partyLasersHint: "\u30B8\u30E3\u30F3\u30EB\u306B\u5408\u308F\u305B\u305F\u30B9\u30DD\u30C3\u30C8\u30E9\u30A4\u30C8 \u2013 \u30EC\u30A4\u30D6\u306F\u4EA4\u5DEE\u3059\u308B\u30D3\u30FC\u30E0\u3001\u30ED\u30C3\u30AF\u306F\u4E0A\u304B\u3089\u306E\u5F37\u3044\u30B9\u30DD\u30C3\u30C8\u3001\u30D9\u30FC\u30B9\u306F\u5E8A\u304B\u3089\u306E\u5149\u3002\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\u306F\u30B8\u30E3\u30B1\u30C3\u30C8\u304B\u3089\u306E\u30D3\u30FC\u30E0\u3082",
-          partyZoom: "\u30AB\u30E1\u30E9\u306E\u885D\u6483",
+          partyZoom: "\u30D3\u30FC\u30C8\u30BA\u30FC\u30E0",
           partyZoomHint: "\u300C\u6700\u5927\u300D\u4EE5\u4E0A\uFF1A\u6B4C\u8A5E\u304C\u5F37\u62CD\u3067\u5F3E\u307F\u3001\u30B8\u30E3\u30B1\u30C3\u30C8\u304C\u63FA\u308C\u307E\u3059\uFF08\u30DD\u30C3\u30D7\u30FB\u30D9\u30FC\u30B9\u30FB\u30C1\u30EB\uFF09\u3002\u300C\u30A8\u30AF\u30B9\u30C8\u30EA\u30FC\u30E0\u300D\u4EE5\u4E0A\uFF1A\u753B\u9762\u5168\u4F53\u304C\u30BA\u30FC\u30E0",
           partyIdle: "\u64CD\u4F5C\u3057\u306A\u3044\u3068\u304D\u306F\u30DC\u30BF\u30F3\u3092\u96A0\u3059",
           partyIdleHint: "\u30DE\u30A6\u30B9\u3092\u6570\u79D2\u52D5\u304B\u3055\u306A\u3044\u3068\u30DC\u30BF\u30F3\u304C\u6D88\u3048\u3001\u3059\u3079\u3066\u304C\u4E2D\u592E\u3078\u306A\u3081\u3089\u304B\u306B\u5BC4\u308A\u307E\u3059",
@@ -4385,8 +4572,8 @@
           plFail: "\u8FFD\u52A0\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F",
           plNone: "\u8FFD\u52A0\u3067\u304D\u308B\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u304C\u3042\u308A\u307E\u305B\u3093",
           plNoTrack: "\u30D7\u30EC\u30A4\u30EA\u30B9\u30C8\u306B\u8FFD\u52A0\u3067\u304D\u308B\u306E\u306F\u66F2\u3060\u3051\u3067\u3059",
-          smartPick: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB",
-          smartPickHint: "\u30B9\u30DE\u30FC\u30C8\u30B7\u30E3\u30C3\u30D5\u30EB\u304C\u8FFD\u52A0\u3057\u305F\u66F2",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Smart Shuffle \u304C\u8FFD\u52A0\u3057\u305F\u66F2",
           partyOnline: "\u30B8\u30E3\u30F3\u30EB\u3092\u30AA\u30F3\u30E9\u30A4\u30F3\u3067\u8ABF\u3079\u308B",
           partyOnlineHint: "Apple \u306E iTunes \u691C\u7D22\u3067\u66F2\u306E\u30B8\u30E3\u30F3\u30EB\u3092\u8ABF\u3079\u3001\u30EC\u30A4\u30D6\u3084\u30ED\u30C3\u30AF\u3001\u30D2\u30C3\u30D7\u30DB\u30C3\u30D7\u304C\u30DD\u30C3\u30D7\u3068\u5224\u5B9A\u3055\u308C\u306A\u3044\u3088\u3046\u306B\u3057\u307E\u3059 \u2013 \u9001\u4FE1\u3059\u308B\u306E\u306F\u66F2\u540D\u3068\u30A2\u30FC\u30C6\u30A3\u30B9\u30C8\u3060\u3051\u3067\u3059",
           party_techno: "\u30C6\u30AF\u30CE",
@@ -4398,12 +4585,12 @@
           partyBlend: "\u30D3\u30FC\u30C8\u306B\u5408\u308F\u305B\u305F\u5207\u308A\u66FF\u3048",
           partyBlendHint: "\u66F2\u306E\u5408\u9593\u306B\u7167\u660E\u304C\u843D\u3061\u3001\u6B21\u306E\u66F2\u306E\u6700\u521D\u306E\u62CD\u3067\u307E\u305F\u70B9\u304D\u307E\u3059",
           partyHype: "\u30CF\u30A4\u30D7\u30E9\u30A4\u30F3",
-          partyHypeHint: "\u30B5\u30D3\u3084\u89B3\u5BA2\u3078\u306E\u30B3\u30FC\u30EB\uFF08\u201Chands up\u201D\u201Cjump\u201D\u306A\u3069\uFF09\u304C\u3088\u308A\u5F37\u304F\u5149\u308A\u3001\u5358\u8A9E\u304C\u4E00\u3064\u305A\u3064\u5F3E\u3051\u3066\u73FE\u308C\u307E\u3059",
+          partyHypeHint: "\u30B5\u30D3\u3084\u89B3\u5BA2\u3078\u306E\u30B3\u30FC\u30EB\uFF08\u300Chands up\u300D\u300Cjump\u300D\u306A\u3069\uFF09\u304C\u3088\u308A\u5F37\u304F\u5149\u308A\u3001\u5358\u8A9E\u304C\u4E00\u3064\u305A\u3064\u5F3E\u3051\u3066\u73FE\u308C\u307E\u3059",
           partyDepth: "3D \u306E\u5965\u884C\u304D",
           partyDepthHint: "\u6B4C\u8A5E\u30FB\u30BF\u30A4\u30C8\u30EB\u30FB\u5149\u304C\u5225\u3005\u306E\u5C64\u306B\u3042\u308A\u3001\u30DE\u30A6\u30B9\u306B\u8FFD\u5F93\u3057\u307E\u3059 \u2013 \u30DE\u30A6\u30B9\u304C\u306A\u3051\u308C\u3070\u30B7\u30FC\u30F3\u304C\u3086\u3063\u304F\u308A\u6F02\u3044\u307E\u3059",
           partyCamera: "\u30AB\u30E1\u30E9\u30EF\u30FC\u30AF",
           partyCameraHint: "\u30B7\u30FC\u30F3\u5168\u4F53\u304C\u3086\u3063\u304F\u308A\u30BA\u30FC\u30E0\u3057\u3066\u6F02\u3044\u307E\u3059\uFF1A\u9759\u304B\u306A\u6240\u306F\u5F15\u304D\u3001\u30A8\u30CD\u30EB\u30AE\u30FC\u3067\u5BC4\u308A\u3001\u30C9\u30ED\u30C3\u30D7\u3067\u3050\u3063\u3068\u52D5\u304D\u307E\u3059",
-          partyShatter: "\u6B4C\u8A5E\u306E\u706B\u82B1",
+          partyShatter: "\u6B4C\u8A5E\u30D0\u30FC\u30B9\u30C8",
           partyShatterHint: "\u30C9\u30ED\u30C3\u30D7\u3067\u4ECA\u306E\u6B4C\u8A5E\u304C\u8F1D\u304D\u3001\u5149\u306E\u7C92\u306B\u306A\u3063\u3066\u98DB\u3073\u6563\u308A\u307E\u3059",
           partyCrowd: "\u89B3\u5BA2",
           partyCrowdHint: "\u30B9\u30C6\u30FC\u30B8\u524D\u306E\u30B7\u30EB\u30A8\u30C3\u30C8\u304C\u30A8\u30CD\u30EB\u30AE\u30FC\u306B\u5408\u308F\u305B\u3066\u624B\u3092\u6319\u3052\u3001\u30AD\u30C3\u30AF\u3068\u30C9\u30ED\u30C3\u30D7\u3067\u8DF3\u306D\u307E\u3059",
@@ -4434,7 +4621,7 @@
           partyDirector: "\u7167\u660E\u6F14\u51FA",
           partyDirectorHint: "\u5D50\u306E\u524D\u306E\u9759\u3051\u3055\uFF1A\u30C9\u30ED\u30C3\u30D7\u524D\u306F\u5149\u3092\u6291\u3048\u3001\u6700\u5F8C\u306E\u62CD\u3067\u6697\u8EE2\u3001\u305D\u3057\u3066\u30C9\u30ED\u30C3\u30D7\u304C\u70B8\u88C2\u3002\u6700\u5F8C\u306E\u30B5\u30D3\u306F\u5168\u958B",
           partyMelody: "\u30E1\u30ED\u30C7\u30A3\u30FC\u30EC\u30FC\u30B6\u30FC",
-          partyMelodyHint: "\u30AB\u30D0\u30FC\u304B\u3089\u4F38\u3073\u308B2\u672C\u306E\u7D30\u3044\u30EC\u30FC\u30B6\u30FC\u304C\u30E1\u30ED\u30C7\u30A3\u30FC\u306E\u97F3\u7A0B\u3092\u8FFD\u3044\u307E\u3059",
+          partyMelodyHint: "\u30B8\u30E3\u30B1\u30C3\u30C8\u304B\u3089\u4F38\u3073\u308B2\u672C\u306E\u7D30\u3044\u30EC\u30FC\u30B6\u30FC\u304C\u30E1\u30ED\u30C7\u30A3\u30FC\u306E\u97F3\u7A0B\u3092\u8FFD\u3044\u307E\u3059",
           partySlowmo: "\u30C9\u30ED\u30C3\u30D7\u524D\u306E\u30B9\u30ED\u30FC\u30E2\u30FC\u30B7\u30E7\u30F3",
           partySlowmoHint: "\u30C9\u30ED\u30C3\u30D7\u76F4\u524D\u306E0.5\u79D2\u3001\u706B\u82B1\u30FB\u30EA\u30F3\u30B0\u30FB\u89B3\u5BA2\u304C\u6B62\u307E\u308A\u307E\u3059",
           partyDJ: "DJ\u30C8\u30E9\u30F3\u30B8\u30B7\u30E7\u30F3",
@@ -4467,7 +4654,7 @@
           venue_beach: "\u30D3\u30FC\u30C1",
           g_party: "\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9",
           ps_light: "\u7167\u660E\u3068\u30A8\u30D5\u30A7\u30AF\u30C8",
-          ps_moments: "\u6F14\u51FA",
+          ps_moments: "\u898B\u305B\u5834",
           ps_crowd: "\u89B3\u5BA2\u3068Jam",
           ps_extras: "\u305D\u306E\u4ED6\u30FB\u5171\u6709",
           fam_electronic: "\u30A8\u30EC\u30AF\u30C8\u30ED\u30CB\u30C3\u30AF",
@@ -4506,7 +4693,7 @@
           party_cinematic: "\u6620\u753B\u30FB\u30A8\u30D4\u30C3\u30AF",
           ps_style: "\u30B9\u30BF\u30A4\u30EB",
           partyRig: "\u30E0\u30FC\u30D3\u30F3\u30B0\u30D8\u30C3\u30C9\uFF06\u30D6\u30E9\u30A4\u30F3\u30C0\u30FC",
-          partyRigHint: "\u30B9\u30C6\u30FC\u30B8\u4E0A\u306E\u7167\u660E\u30EA\u30B0\u304C\u30B8\u30E3\u30F3\u30EB\u306B\u5408\u308F\u305B\u305F\u30D1\u30BF\u30FC\u30F3\u3067\u52D5\u304D\u307E\u3059 \u2013 \u30CF\u30A6\u30B9\u306F\u6CE2\u3001\u30C6\u30AF\u30CE\u306F\u30C1\u30A7\u30A4\u30B9\u3001EDM\u306F\u6247 \u2013 \u5927\u304D\u306A\u30D2\u30C3\u30C8\u3067\u30D6\u30E9\u30A4\u30F3\u30C0\u30FC\u3001\u30C9\u30ED\u30C3\u30D7\u3067\u30EC\u30FC\u30B6\u30FC\u30B7\u30FC\u30C8",
+          partyRigHint: "\u30B9\u30C6\u30FC\u30B8\u4E0A\u306E\u7167\u660E\u30EA\u30B0\u304C\u30B8\u30E3\u30F3\u30EB\u306B\u5408\u308F\u305B\u305F\u30D1\u30BF\u30FC\u30F3\u3067\u52D5\u304D\u307E\u3059 \u2013 \u30CF\u30A6\u30B9\u306F\u6CE2\u3001\u30C6\u30AF\u30CE\u306F\u30C1\u30A7\u30A4\u30B9\u3001EDM\u306F\u6247 \u2013 \u5F37\u3044\u30A2\u30AF\u30BB\u30F3\u30C8\u3067\u30D6\u30E9\u30A4\u30F3\u30C0\u30FC\u3001\u30C9\u30ED\u30C3\u30D7\u3067\u30EC\u30FC\u30B6\u30FC\u30B7\u30FC\u30C8",
           partyInstruments: "\u697D\u5668\u3092\u8A8D\u8B58",
           partyInstrumentsHint: "\u30C8\u30E9\u30F3\u30DA\u30C3\u30C8\u3001\u30B5\u30C3\u30AF\u30B9\u3001\u30AE\u30BF\u30FC\u3001\u30D4\u30A2\u30CE\u3001\u5F26\u697D\u5668\u3001\u5408\u5531\u306B\u5C02\u7528\u30A8\u30D5\u30A7\u30AF\u30C8 \u2013 \u66F2\u306E\u30AF\u30EC\u30B8\u30C3\u30C8\u3067\u697D\u5668\u304C\u78BA\u8A8D\u3067\u304D\u305F\u5834\u5408\u306E\u307F\uFF08Spotify\u3001MusicBrainz\u3002MusicBrainz\u306B\u306F\u66F2\u306EISRC\u756A\u53F7\u304C\u9001\u3089\u308C\u307E\u3059\uFF09",
           syncOffset: "\u540C\u671F\uFF08\u30A8\u30D5\u30A7\u30AF\u30C8\u30FB\u6B4C\u8A5E\uFF09",
@@ -4516,7 +4703,24 @@
           tapUnsure: "\u3070\u3089\u3064\u304D\u304C\u5927\u304D\u3059\u304E\u307E\u3059 \u2013 \u5404\u62CD\u306B\u4E00\u5B9A\u306E\u30EA\u30BA\u30E0\u3067\u30BF\u30C3\u30D7\u3057\u3066\u304F\u3060\u3055\u3044",
           tapNoBeat: "\u3053\u306E\u66F2\u306E\u30D3\u30FC\u30C8\u30C7\u30FC\u30BF\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093",
           liveRelay: "\u516C\u958B\u30EA\u30EC\u30FC\u7D4C\u7531\u3067\u30A8\u30F3\u30C9\u30C4\u30FC\u30A8\u30F3\u30C9\u6697\u53F7\u5316 \u2013 \u3053\u306EQR\u30B3\u30FC\u30C9\u3092\u6301\u3064\u4EBA\u3060\u3051\u304C\u898B\u3089\u308C\u307E\u3059\u3002\u30D1\u30FC\u30C6\u30A3\u30FC\u30E2\u30FC\u30C9\u3092\u7D42\u3048\u308B\u3068\u505C\u6B62\u3057\u300110\u5206\u5F8C\u306B\u30B3\u30FC\u30C9\u306F\u7121\u52B9\u306B\u306A\u308A\u307E\u3059\u3002",
-          liveError: "\u30EA\u30EC\u30FC\u306B\u63A5\u7D9A\u3067\u304D\u307E\u305B\u3093 \u2013 \u30A4\u30F3\u30BF\u30FC\u30CD\u30C3\u30C8\u63A5\u7D9A\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044"
+          liveError: "\u30EA\u30EC\u30FC\u306B\u63A5\u7D9A\u3067\u304D\u307E\u305B\u3093 \u2013 \u30A4\u30F3\u30BF\u30FC\u30CD\u30C3\u30C8\u63A5\u7D9A\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044",
+          selLost: "Spotify {v} \u3067 Mirage \u304C\u30C7\u30B6\u30A4\u30F3\u3057\u3066\u3044\u308B\u90E8\u5206\u304C\u5909\u308F\u308A\u307E\u3057\u305F\u3002\u4E00\u90E8\u306E\u30DA\u30FC\u30B8\u304C\u5C11\u3057\u5D29\u308C\u3066\u898B\u3048\u308B\u304B\u3082\u3057\u308C\u307E\u305B\u3093\u3002Mirage \u306E\u8A2D\u5B9A\u3067\u8A3A\u65AD\u60C5\u5831\u3092\u30B3\u30D4\u30FC\u3057\u3066\u5831\u544A\u3057\u3066\u304F\u3060\u3055\u3044\u3002\u4FEE\u6B63\u3057\u307E\u3059\u3002",
+          partyCuts: "\u30AB\u30E1\u30E9\u30AB\u30C3\u30C8",
+          partyCutsHint: "\u5C0F\u7BC0\u306E\u982D\u3067\u5F15\u304D\u30FB\u5BC4\u308A\u30FB\u89B3\u5BA2\u306E\u30B7\u30E7\u30C3\u30C8\u3092\u5207\u308A\u66FF\u3048\u307E\u3059\u30028\u5C0F\u7BC0\u3054\u3068\u3001\u76DB\u308A\u4E0A\u304C\u308A\u3067\u306F4\u5C0F\u7BC0\u3054\u3068\u3002Drop \u3067\u5F15\u304D\u306E\u753B\u306B\u623B\u308A\u307E\u3059",
+          venue_cellar: "\u5730\u4E0B\u5BA4",
+          venue_jazzbar: "\u30B8\u30E3\u30BA\u30D0\u30FC",
+          venue_rooftop: "\u30EB\u30FC\u30D5\u30C8\u30C3\u30D7",
+          venue_forest: "\u68EE\u306E\u30B9\u30C6\u30FC\u30B8",
+          venue_cathedral: "\u5927\u8056\u5802",
+          venue_hall: "\u30B3\u30F3\u30B5\u30FC\u30C8\u30DB\u30FC\u30EB",
+          partyWishes: "\u30B9\u30DE\u30DB\u304B\u3089\u306E\u30EA\u30AF\u30A8\u30B9\u30C8",
+          partyWishesHint: "\u30B2\u30B9\u30C8\u306F\u30B9\u30DE\u30DB\u306E\u30DA\u30FC\u30B8\u3067\u66F2\u3092\u30EA\u30AF\u30A8\u30B9\u30C8\u3057\u3066\u6295\u7968\u3067\u304D\u307E\u3059\u3002\u30AD\u30E5\u30FC\u306B\u5165\u308B\u306E\u306F\u3042\u306A\u305F\u304C\u627F\u8A8D\u3057\u305F\u66F2\u3060\u3051\u3067\u3059",
+          wishTitle: "\u30EA\u30AF\u30A8\u30B9\u30C8",
+          wishBy: "{n} \u3055\u3093\u304B\u3089",
+          wishQueue: "+ \u30AD\u30E5\u30FC",
+          wishDecline: "\u5374\u4E0B",
+          wishQueued: "\u300C{s}\u300D\u3092\u30AD\u30E5\u30FC\u306B\u8FFD\u52A0\u3057\u307E\u3057\u305F",
+          viz_tunnel: "3D\u30C8\u30F3\u30CD\u30EB"
         },
         ko: {
           menu: "Mirage \uC124\uC815",
@@ -4546,7 +4750,7 @@
           burst: "\uD558\uD2B8 \uD3ED\uBC1C",
           grain: "\uD544\uB984 \uADF8\uB808\uC778",
           calm: "\uCC28\uBD84\uD55C \uBAA8\uB4DC",
-          blur: "\uC720\uB9AC \uD750\uB9BC",
+          blur: "\uC720\uB9AC \uD750\uB9BC(\uC9C4\uC9DC \uC720\uB9AC \uC804\uC6A9)",
           bright: "\uBC30\uACBD \uBC1D\uAE30",
           dynamicHint: "\uC778\uD130\uD398\uC774\uC2A4 \uC804\uCCB4\uAC00 \uACE1\uC758 \uC0C9\uC73C\uB85C \uBB3C\uB4ED\uB2C8\uB2E4",
           particlesHint: "\uBC30\uACBD\uC5D0 \uB5A0\uB2E4\uB2C8\uB294 \uBE5B \uC785\uC790",
@@ -4681,12 +4885,12 @@
           overlayConnected: "\u25CF Overlay \uC5F0\uACB0\uB428",
           overlayMissing: "\u25CB Overlay\uAC00 \uC2E4\uD589 \uC911\uC774 \uC544\uB2D9\uB2C8\uB2E4 \u2013 \uC544\uB798 \uBC84\uD2BC\uC73C\uB85C \uC124\uCE58\uD55C \uB4A4 \uD55C \uBC88 \uC2E4\uD589\uD558\uC138\uC694",
           onlineLyrics: "\uC628\uB77C\uC778\uC5D0\uC11C \uAC00\uC0AC \uCC3E\uAE30",
-          onlineLyricsHint: "Spotify\uC5D0 \uAC00\uC0AC\uAC00 \uC5C6\uC73C\uBA74 Mirage\uAC00 LRCLIB, NetEase, lyrics.ovh\uC5D0 \uBB3C\uC5B4\uBD10\uC694 \u2013 \uC81C\uBAA9, \uC544\uD2F0\uC2A4\uD2B8, \uC568\uBC94, \uAE38\uC774\uB9CC \uC804\uC1A1\uB3FC\uC694",
+          onlineLyricsHint: "Spotify\uC5D0 \uAC00\uC0AC\uAC00 \uC5C6\uC73C\uBA74 Mirage\uAC00 LRCLIB, NetEase, lyrics.ovh\uC5D0\uC11C \uCC3E\uC2B5\uB2C8\uB2E4 \u2013 \uC81C\uBAA9, \uC544\uD2F0\uC2A4\uD2B8, \uC568\uBC94, \uAE38\uC774\uB9CC \uC804\uC1A1\uB429\uB2C8\uB2E4",
           emptyTitle: "\uC774 \uACE1\uC758 \uAC00\uC0AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
-          emptyText: "\uC544\uC9C1 \uC5B4\uB5A4 \uAC00\uC0AC \uC18C\uC2A4\uC5D0\uB3C4 \uC5C6\uC5B4\uC694.",
+          emptyText: "\uC544\uC9C1 \uC5B4\uB5A4 \uAC00\uC0AC \uC18C\uC2A4\uC5D0\uB3C4 \uC5C6\uC2B5\uB2C8\uB2E4.",
           emptyTextOff: "Spotify\uC5D0 \uAC00\uC0AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4. \uC124\uC815\uC5D0\uC11C \u201C\uC628\uB77C\uC778\uC5D0\uC11C \uAC00\uC0AC \uCC3E\uAE30\u201D\uB97C \uCF1C\uBA74 \uB354 \uCC3E\uC544\uBD05\uB2C8\uB2E4.",
           instrTitle: "\uC5F0\uC8FC\uACE1",
-          instrText: "\uAC00\uC0AC\uAC00 \uC5C6\uC5B4\uC694 \u2013 \uC74C\uC545\uC744 \uADF8\uB300\uB85C \uC990\uAE30\uC138\uC694.",
+          instrText: "\uAC00\uC0AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4 \u2013 \uC74C\uC545\uC744 \uADF8\uB300\uB85C \uC990\uAE30\uC138\uC694.",
           showViz: "\uBE44\uC8FC\uC5BC\uB77C\uC774\uC800 \uBCF4\uAE30",
           searchWeb: "\uC6F9\uC5D0\uC11C \uAC80\uC0C9",
           lyrPick: "\uBC84\uC804 \uC120\uD0DD",
@@ -4717,16 +4921,16 @@
           trToggle: "\uBC88\uC5ED",
           trShow: "\uBC88\uC5ED \uD45C\uC2DC",
           trHide: "\uBC88\uC5ED \uC228\uAE30\uAE30",
-          party_rave: "Rave",
-          party_rock: "Rock",
-          party_pop: "Pop",
+          party_rave: "\uB808\uC774\uBE0C",
+          party_rock: "\uB85D",
+          party_pop: "\uD31D",
           tabMix: "\uBBF9\uC2A4",
           tabParty: "\uD30C\uD2F0",
           party_auto: "\uC790\uB3D9",
           party_bass: "\uD799\uD569",
           party_chill: "\uCE60",
           partySection: "\uD30C\uD2F0 \uBAA8\uB4DC",
-          partySectionHint: "\uC790\uB3D9\uC740 \uC7A5\uB974\uC5D0 \uB9DE\uB294 \uC870\uBA85 \uC2A4\uD0C0\uC77C\uC744 \uACE0\uB974\uACE0, \uC870\uBA85\uC740 \uACE1 \uC790\uCCB4\uB97C \uB530\uB77C\uAC00\uC694: \uBE4C\uB4DC\uC5C5, \uB4DC\uB86D, \uC870\uC6A9\uD55C \uBE0C\uB808\uC774\uD06C, \uC7A5\uC870\xB7\uB2E8\uC870",
+          partySectionHint: "\uC790\uB3D9\uC740 \uC7A5\uB974\uC5D0 \uB9DE\uB294 \uC870\uBA85 \uC2A4\uD0C0\uC77C\uC744 \uACE0\uB974\uACE0, \uC870\uBA85\uC740 \uACE1 \uC790\uCCB4\uB97C \uB530\uB77C\uAC11\uB2C8\uB2E4: \uBE4C\uB4DC\uC5C5, \uB4DC\uB86D, \uC870\uC6A9\uD55C \uBE0C\uB808\uC774\uD06C, \uC7A5\uC870\xB7\uB2E8\uC870",
           partyLevel: "\uAC15\uB3C4",
           partyLevel1: "\uBD80\uB4DC\uB7FD\uAC8C",
           partyLevel2: "\uBCF4\uD1B5",
@@ -4741,21 +4945,21 @@
           partyLevel5: "\uAD11\uB780",
           partyLasers: "\uBB34\uB300 \uC870\uBA85",
           partyLasersHint: "\uC7A5\uB974 \uC2A4\uD0C0\uC77C\uC758 \uC2A4\uD3EC\uD2B8\uB77C\uC774\uD2B8 \u2013 \uB808\uC774\uBE0C\uB294 \uAD50\uCC28\uD558\uB294 \uBE54, \uB85D\uC740 \uC704\uC5D0\uC11C \uB0B4\uB9AC\uAF42\uB294 \uC2A4\uD3FF, \uBCA0\uC774\uC2A4\uB294 \uBC14\uB2E5\uC5D0\uC11C \uC62C\uB77C\uC624\uB294 \uBE5B. \u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130\uB294 \uCEE4\uBC84\uC5D0\uC11C \uB098\uC624\uB294 \uBE5B\uC904\uAE30\uB3C4",
-          partyZoom: "\uCE74\uBA54\uB77C \uCDA9\uACA9",
-          partyZoomHint: "\u2018\uCD5C\uB300\u2019\uBD80\uD130: \uAC00\uC0AC\uAC00 \uAC15\uBC15\uC5D0 \uD280\uACE0 \uCEE4\uBC84\uAC00 \uD754\uB4E4\uB824\uC694(\uD31D\xB7\uBCA0\uC774\uC2A4\xB7\uCE60). \u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uD654\uBA74 \uC804\uCCB4\uAC00 \uD655\uB300\uB3FC\uC694",
+          partyZoom: "\uBE44\uD2B8 \uC90C",
+          partyZoomHint: "\u2018\uCD5C\uB300\u2019\uBD80\uD130: \uAC00\uC0AC\uAC00 \uAC15\uBC15\uC5D0 \uD280\uACE0 \uCEE4\uBC84\uAC00 \uD754\uB4E4\uB9BD\uB2C8\uB2E4(\uD31D\xB7\uBCA0\uC774\uC2A4\xB7\uCE60). \u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130: \uD654\uBA74 \uC804\uCCB4\uAC00 \uD655\uB300\uB429\uB2C8\uB2E4",
           partyIdle: "\uAC00\uB9CC\uD788 \uC788\uC73C\uBA74 \uCEE8\uD2B8\uB864 \uC228\uAE30\uAE30",
-          partyIdleHint: "\uB9C8\uC6B0\uC2A4\uB97C \uBA87 \uCD08 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC73C\uBA74 \uBC84\uD2BC\uC774 \uC0AC\uB77C\uC9C0\uACE0 \uBAA8\uB4E0 \uAC8C \uAC00\uC6B4\uB370\uB85C \uBD80\uB4DC\uB7FD\uAC8C \uBAA8\uC5EC\uC694",
+          partyIdleHint: "\uB9C8\uC6B0\uC2A4\uB97C \uBA87 \uCD08 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC73C\uBA74 \uBC84\uD2BC\uC774 \uC0AC\uB77C\uC9C0\uACE0 \uBAA8\uB4E0 \uAC83\uC774 \uAC00\uC6B4\uB370\uB85C \uBD80\uB4DC\uB7FD\uAC8C \uBAA8\uC785\uB2C8\uB2E4",
           c_addTo: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0 \uCD94\uAC00",
           plFind: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8 \uAC80\uC0C9",
           plAdded: "\uCD94\uAC00\uB428",
-          plDup: "\uC774\uBBF8 \uC774 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uC5B4\uC694",
-          plFail: "\uCD94\uAC00\uD558\uC9C0 \uBABB\uD588\uC5B4\uC694",
-          plNone: "\uCD94\uAC00\uD560 \uC218 \uC788\uB294 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uAC00 \uC5C6\uC5B4\uC694",
-          plNoTrack: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0\uB294 \uACE1\uB9CC \uCD94\uAC00\uD560 \uC218 \uC788\uC5B4\uC694",
-          smartPick: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C",
-          smartPickHint: "\uC2A4\uB9C8\uD2B8 \uC154\uD50C\uC774 \uCD94\uAC00\uD55C \uACE1",
+          plDup: "\uC774\uBBF8 \uC774 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0 \uC788\uC2B5\uB2C8\uB2E4",
+          plFail: "\uCD94\uAC00\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4",
+          plNone: "\uCD94\uAC00\uD560 \uC218 \uC788\uB294 \uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
+          plNoTrack: "\uD50C\uB808\uC774\uB9AC\uC2A4\uD2B8\uC5D0\uB294 \uACE1\uB9CC \uCD94\uAC00\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "Smart Shuffle\uB85C \uCD94\uAC00\uB41C \uACE1",
           partyOnline: "\uC7A5\uB974 \uC628\uB77C\uC778 \uC870\uD68C",
-          partyOnlineHint: "Apple iTunes \uAC80\uC0C9\uC5D0 \uACE1\uC758 \uC7A5\uB974\uB97C \uBB3C\uC5B4\uBD10\uC11C \uB808\uC774\uBE0C\xB7\uB85D\xB7\uD799\uD569\uC774 \uD31D\uC73C\uB85C \uC798\uBABB \uC7A1\uD788\uC9C0 \uC54A\uAC8C \uD574\uC694 \u2013 \uC81C\uBAA9\uACFC \uC544\uD2F0\uC2A4\uD2B8\uB9CC \uC804\uC1A1\uB3FC\uC694",
+          partyOnlineHint: "Apple iTunes \uAC80\uC0C9\uC73C\uB85C \uACE1\uC758 \uC7A5\uB974\uB97C \uC870\uD68C\uD574 \uB808\uC774\uBE0C\xB7\uB85D\xB7\uD799\uD569\uC774 \uD31D\uC73C\uB85C \uC798\uBABB \uBD84\uB958\uB418\uC9C0 \uC54A\uAC8C \uD569\uB2C8\uB2E4 \u2013 \uC81C\uBAA9\uACFC \uC544\uD2F0\uC2A4\uD2B8\uB9CC \uC804\uC1A1\uB429\uB2C8\uB2E4",
           party_techno: "\uD14C\uD06C\uB178",
           party_house: "\uD558\uC6B0\uC2A4",
           party_trance: "\uD2B8\uB79C\uC2A4",
@@ -4763,25 +4967,25 @@
           party_metal: "\uBA54\uD0C8",
           party_latin: "\uB77C\uD2F4",
           partyBlend: "\uBE44\uD2B8\uC5D0 \uB9DE\uCD98 \uC804\uD658",
-          partyBlendHint: "\uACE1 \uC0AC\uC774\uC5D0 \uC870\uBA85\uC774 \uC5B4\uB450\uC6CC\uC84C\uB2E4\uAC00 \uB2E4\uC74C \uACE1\uC758 \uCCAB \uBC15\uC5D0 \uB2E4\uC2DC \uCF1C\uC838\uC694",
+          partyBlendHint: "\uACE1 \uC0AC\uC774\uC5D0 \uC870\uBA85\uC774 \uC5B4\uB450\uC6CC\uC84C\uB2E4\uAC00 \uB2E4\uC74C \uACE1\uC758 \uCCAB \uBC15\uC5D0 \uB2E4\uC2DC \uCF1C\uC9D1\uB2C8\uB2E4",
           partyHype: "\uD558\uC774\uD504 \uB77C\uC778",
-          partyHypeHint: "\uD6C4\uB834\uACFC \uAD00\uAC1D \uD638\uC751(\u201Chands up\u201D, \u201Cjump\u201D \u2026)\uC774 \uB354 \uAC15\uD558\uAC8C \uBE5B\uB098\uACE0 \uB2E8\uC5B4\uAC00 \uD558\uB098\uC529 \uD280\uC5B4\uB098\uC640\uC694",
+          partyHypeHint: "\uD6C4\uB834\uACFC \uAD00\uAC1D \uD638\uC751(\u201Chands up\u201D, \u201Cjump\u201D \u2026)\uC774 \uB354 \uAC15\uD558\uAC8C \uBE5B\uB098\uACE0 \uB2E8\uC5B4\uAC00 \uD558\uB098\uC529 \uD280\uC5B4\uB098\uC635\uB2C8\uB2E4",
           partyDepth: "3D \uAE4A\uC774",
-          partyDepthHint: "\uAC00\uC0AC, \uC81C\uBAA9, \uBE5B\uC774 \uC11C\uB85C \uB2E4\uB978 \uCE35\uC5D0 \uC788\uACE0 \uB9C8\uC6B0\uC2A4\uB97C \uB530\uB77C\uC640\uC694 \u2013 \uB9C8\uC6B0\uC2A4\uAC00 \uC5C6\uC73C\uBA74 \uC7A5\uBA74\uC774 \uC0B4\uBA70\uC2DC \uB5A0\uB2E4\uB140\uC694",
+          partyDepthHint: "\uAC00\uC0AC, \uC81C\uBAA9, \uBE5B\uC774 \uC11C\uB85C \uB2E4\uB978 \uB808\uC774\uC5B4\uC5D0 \uC788\uACE0 \uB9C8\uC6B0\uC2A4\uB97C \uB530\uB77C\uC635\uB2C8\uB2E4 \u2013 \uB9C8\uC6B0\uC2A4\uAC00 \uC5C6\uC73C\uBA74 \uC7A5\uBA74\uC774 \uC0B4\uBA70\uC2DC \uB5A0\uB2E4\uB2D9\uB2C8\uB2E4",
           partyCamera: "\uCE74\uBA54\uB77C \uBB34\uBE59",
-          partyCameraHint: "\uC7A5\uBA74 \uC804\uCCB4\uAC00 \uCC9C\uCC9C\uD788 \uD655\uB300\uB418\uBA70 \uD758\uB7EC\uAC00\uC694: \uC870\uC6A9\uD560 \uB550 \uB113\uAC8C, \uC5D0\uB108\uC9C0\uAC00 \uC624\uB974\uBA74 \uAC00\uAE5D\uAC8C, \uB4DC\uB86D\uC5D0 \uD55C \uBC88 \uCFF5",
-          partyShatter: "\uAC00\uC0AC \uBD88\uAF43",
-          partyShatterHint: "\uB4DC\uB86D \uB54C \uD604\uC7AC \uAC00\uC0AC\uAC00 \uBC88\uCA4D\uC774\uBA70 \uBE5B \uC785\uC790\uB85C \uD769\uC5B4\uC838\uC694",
+          partyCameraHint: "\uC7A5\uBA74 \uC804\uCCB4\uAC00 \uCC9C\uCC9C\uD788 \uD655\uB300\uB418\uBA70 \uD758\uB7EC\uAC11\uB2C8\uB2E4: \uC870\uC6A9\uD560 \uB550 \uB113\uAC8C, \uC5D0\uB108\uC9C0\uAC00 \uC624\uB974\uBA74 \uAC00\uAE5D\uAC8C, \uB4DC\uB86D\uC5D0\uC11C \uD55C \uBC88 \uCFF5",
+          partyShatter: "\uAC00\uC0AC \uD3ED\uBC1C",
+          partyShatterHint: "\uB4DC\uB86D \uB54C \uD604\uC7AC \uAC00\uC0AC\uAC00 \uBC88\uCA4D\uC774\uBA70 \uBE5B \uC785\uC790\uB85C \uD769\uC5B4\uC9D1\uB2C8\uB2E4",
           partyCrowd: "\uAD00\uAC1D",
-          partyCrowdHint: "\uBB34\uB300 \uC55E \uC2E4\uB8E8\uC5E3\uC774 \uC5D0\uB108\uC9C0\uC5D0 \uB9DE\uCDB0 \uC190\uC744 \uB4E4\uACE0 \uD0A5\uACFC \uB4DC\uB86D\uC5D0 \uB6F0\uC5B4\uC694",
-          partyJamLight: "\uC7BC \uC0C9\uC0C1",
-          partyJamLightHint: "Spotify \uC7BC\uC5D0\uC11C \uBAA8\uB450\uC5D0\uAC8C \uC0C9\uC774 \uC0DD\uAE30\uACE0, \uC9C0\uAE08 \uACE1\uC744 \uCD94\uAC00\uD55C \uC0AC\uB78C\uC774 DJ\uB85C \uBE5B\uB098\uC694(Spotify\uAC00 \uAE30\uB85D\uD558\uB294 \uACBD\uC6B0)",
+          partyCrowdHint: "\uBB34\uB300 \uC55E \uC2E4\uB8E8\uC5E3\uC774 \uC5D0\uB108\uC9C0\uC5D0 \uB9DE\uCDB0 \uC190\uC744 \uB4E4\uACE0 \uD0A5\uACFC \uB4DC\uB86D\uC5D0 \uB6F0\uC5B4\uC624\uB985\uB2C8\uB2E4",
+          partyJamLight: "Jam \uC0C9\uC0C1",
+          partyJamLightHint: "Spotify Jam\uC5D0\uC11C\uB294 \uBAA8\uB450\uC5D0\uAC8C \uC0C9\uC774 \uC0DD\uAE30\uACE0, \uC9C0\uAE08 \uACE1\uC744 \uCD94\uAC00\uD55C \uC0AC\uB78C\uC774 DJ\uB85C \uBE5B\uB0A9\uB2C8\uB2E4(Spotify\uAC00 \uAE30\uB85D\uD558\uB294 \uACBD\uC6B0)",
           partyScreen: "\uB450 \uBC88\uC9F8 \uD654\uBA74 \uBC84\uD2BC",
-          partyScreenHint: "\uD30C\uD2F0 \uBAA8\uB4DC\uB97C \uB2E4\uB978 \uBAA8\uB2C8\uD130\uB098 TV\uC5D0 \uC804\uCCB4 \uD654\uBA74\uC73C\uB85C \uB744\uC6B0\uB294 \uBC84\uD2BC\uC744 \uBCF4\uC5EC \uC918\uC694",
+          partyScreenHint: "\uD30C\uD2F0 \uBAA8\uB4DC\uB97C \uB2E4\uB978 \uBAA8\uB2C8\uD130\uB098 TV\uC5D0 \uC804\uCCB4 \uD654\uBA74\uC73C\uB85C \uB744\uC6B0\uB294 \uBC84\uD2BC\uC744 \uD45C\uC2DC\uD569\uB2C8\uB2E4",
           partyRecap: "\uD30C\uD2F0 \uC694\uC57D",
-          partyRecapHint: "\uC138 \uACE1\uC774 \uC9C0\uB098\uBA74 \uACF5\uC720\uC6A9 \uC774\uBBF8\uC9C0 \uBC84\uD2BC\uC774 \uB098\uD0C0\uB098\uC694: \uACE1 \uC218, \uC2DC\uAC04, \uB4DC\uB86D, \uC7A5\uB974 \uBE44\uC728, \uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D",
+          partyRecapHint: "\uC138 \uACE1\uC774 \uC9C0\uB098\uBA74 \uACF5\uC720\uC6A9 \uC774\uBBF8\uC9C0 \uBC84\uD2BC\uC774 \uB098\uD0C0\uB0A9\uB2C8\uB2E4: \uACE1 \uC218, \uC2DC\uAC04, \uB4DC\uB86D, \uC7A5\uB974 \uBE44\uC728, \uAC00\uC7A5 \uAC15\uD55C \uB4DC\uB86D",
           partyEdge: "\uAC00\uC7A5\uC790\uB9AC \uC870\uBA85(\uC624\uBC84\uB808\uC774 \uC571)",
-          partyEdgeHint: "\uD30C\uD2F0 \uBAA8\uB4DC \uB3D9\uC548 Mirage Overlay \uC571\uC774 \uD654\uBA74 \uAC00\uC7A5\uC790\uB9AC\uB97C \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB098\uAC8C \uD574\uC694 \u2013 \uC804\uCCB4 \uD654\uBA74 \uAC8C\uC784\uC5D0\uC11C\uB294 \uC228\uACA8\uC694",
+          partyEdgeHint: "\uD30C\uD2F0 \uBAA8\uB4DC \uB3D9\uC548 Mirage Overlay \uC571\uC774 \uD654\uBA74 \uAC00\uC7A5\uC790\uB9AC\uB97C \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB098\uAC8C \uD569\uB2C8\uB2E4 \u2013 \uC804\uCCB4 \uD654\uBA74 \uAC8C\uC784\uC5D0\uC11C\uB294 \uC228\uACA8\uC9D1\uB2C8\uB2E4",
           recapBtn: "\uD30C\uD2F0 \uC694\uC57D",
           toScreen: "\uB2E4\uB978 \uD654\uBA74\uC5D0\uC11C \uD30C\uD2F0",
           recapTitle: "\uB098\uC758 \uD30C\uD2F0 \uC694\uC57D",
@@ -4807,7 +5011,7 @@
           partyDJ: "DJ \uC804\uD658",
           partyDJHint: "\uACE1\uC774 \uBC14\uB00C\uBA74 \uCCAB \uBC15\uAE4C\uC9C0 \uC774\uC804 \uC0C9\uC774 \uB0A8\uACE0, \uC774\uD6C4 \uB124 \uBC15\uC5D0 \uAC78\uCCD0 \uC0C8 \uC0C9\uC73C\uB85C \uBC14\uB01D\uB2C8\uB2E4",
           partyQuietFps: "\uC870\uC6A9\uD55C \uAD6C\uAC04 30fps",
-          partyQuietFpsHint: "\uC870\uC6A9\uD55C \uC778\uD2B8\uB85C\uC640 \uBE0C\uB808\uC774\uD06C\uB294 \uCD08\uB2F9 30\uD504\uB808\uC784\uC73C\uB85C \u2014 \uB611\uAC19\uC544 \uBCF4\uC774\uACE0 \uC804\uB825\uC740 \uC544\uB08D\uB2C8\uB2E4",
+          partyQuietFpsHint: "\uC870\uC6A9\uD55C \uC778\uD2B8\uB85C\uC640 \uBE0C\uB808\uC774\uD06C\uB294 \uCD08\uB2F9 30\uD504\uB808\uC784\uC73C\uB85C \uC2E4\uD589\uB429\uB2C8\uB2E4 \u2014 \uB611\uAC19\uC544 \uBCF4\uC774\uC9C0\uB9CC \uC804\uB825\uC744 \uC544\uB08D\uB2C8\uB2E4",
           partyLive: "\uD734\uB300\uD3F0\uC6A9 \uB77C\uC774\uBE0C \uB9C1\uD06C",
           partyLiveHint: "\uC5B4\uB5A4 \uB124\uD2B8\uC6CC\uD06C\uC758 \uD734\uB300\uD3F0\uC774\uB4E0 \uBE44\uD2B8\uC5D0 \uB9DE\uCDB0 \uBE5B\uB0A9\uB2C8\uB2E4 \u2013 QR \uCF54\uB4DC\uB97C \uC2A4\uCE94\uD558\uC138\uC694. \uC554\uD638\uD654\uB418\uC5B4 QR \uCF54\uB4DC\uB85C\uB9CC, \uD30C\uD2F0 \uBAA8\uB4DC \uC911\uC5D0\uB9CC \uC811\uC18D\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC571\uC774 \uD544\uC694 \uC5C6\uC2B5\uB2C8\uB2E4.",
           mixInstruments: "\uBBF9\uC2A4\uAC00 \uC545\uAE30\uC5D0 \uBC18\uC751",
@@ -4829,12 +5033,12 @@
           partyFx: "\uBB34\uB300 \uD6A8\uACFC",
           partyFxHint: "\uC77C\uB809\uD2B8\uB85C\uB2C9\uC5D4 CO2 \uBD84\uC0AC, \uB85D\uACFC \uBA54\uD0C8\uC5D4 \uD30C\uC774\uB85C \uBD88\uAF43, \uB9C8\uC9C0\uB9C9 \uD6C4\uB834\uC5D4 \uBD88\uAF43\uB180\uC774 \u2014 \uB4DC\uB86D\uACFC \uC808\uC815\uC5D0\uC11C",
           partyStrobe: "\uAC15\uD55C \uB4DC\uB86D\uC5D0 \uC2A4\uD2B8\uB85C\uBE0C",
-          partyStrobeHint: "\uD14C\uD06C\uB178, \uD558\uB4DC\uC2A4\uD0C0\uC77C, \uB808\uC774\uBE0C, \uB4DC\uB7FC\uC564\uBCA0\uC774\uC2A4\uC758 \uB4DC\uB86D \uC911 \uBC15\uC790\uC5D0 \uB9DE\uCDB0 \uD558\uC597\uAC8C \uBC88\uCA4D\uC785\uB2C8\uB2E4 \u2014 '\uC775\uC2A4\uD2B8\uB9BC'\uBD80\uD130, \uD55C \uBC15\uC5D0 \uCD5C\uB300 \uD55C \uBC88",
+          partyStrobeHint: "\uD14C\uD06C\uB178, \uD558\uB4DC\uC2A4\uD0C0\uC77C, \uB808\uC774\uBE0C, \uB4DC\uB7FC\uC564\uBCA0\uC774\uC2A4\uC758 \uB4DC\uB86D \uC911 \uBC15\uC790\uC5D0 \uB9DE\uCDB0 \uD558\uC597\uAC8C \uBC88\uCA4D\uC785\uB2C8\uB2E4 \u2014 \u2018\uC775\uC2A4\uD2B8\uB9BC\u2019\uBD80\uD130, \uD55C \uBC15\uC5D0 \uCD5C\uB300 \uD55C \uBC88",
           venue_warehouse: "\uCC3D\uACE0",
           venue_beach: "\uD574\uBCC0",
           g_party: "\uD30C\uD2F0 \uBAA8\uB4DC",
           ps_light: "\uC870\uBA85 & \uD6A8\uACFC",
-          ps_moments: "\uC21C\uAC04",
+          ps_moments: "\uD558\uC774\uB77C\uC774\uD2B8",
           ps_crowd: "\uAD00\uAC1D & Jam",
           ps_extras: "\uCD94\uAC00 \uAE30\uB2A5 & \uACF5\uC720",
           fam_electronic: "\uC77C\uB809\uD2B8\uB85C\uB2C9",
@@ -4873,7 +5077,7 @@
           party_cinematic: "\uC601\uD654 & \uC5D0\uD53D",
           ps_style: "\uC2A4\uD0C0\uC77C",
           partyRig: "\uBB34\uBE59 \uD5E4\uB4DC & \uBE14\uB77C\uC778\uB354",
-          partyRigHint: "\uBB34\uB300 \uC704 \uC870\uBA85 \uB9AC\uADF8\uAC00 \uC7A5\uB974\uC5D0 \uB9DE\uB294 \uD328\uD134\uC73C\uB85C \uC6C0\uC9C1\uC785\uB2C8\uB2E4 \u2013 \uD558\uC6B0\uC2A4\uB294 \uBB3C\uACB0, \uD14C\uD06C\uB178\uB294 \uCCB4\uC774\uC2A4, EDM\uC740 \uBD80\uCC44\uAF34 \u2013 \uD070 \uD788\uD2B8\uC5D0\uB294 \uBE14\uB77C\uC778\uB354, \uB4DC\uB86D\uC5D0\uB294 \uB808\uC774\uC800 \uC2DC\uD2B8",
+          partyRigHint: "\uBB34\uB300 \uC704 \uC870\uBA85 \uB9AC\uADF8\uAC00 \uC7A5\uB974\uC5D0 \uB9DE\uB294 \uD328\uD134\uC73C\uB85C \uC6C0\uC9C1\uC785\uB2C8\uB2E4 \u2013 \uD558\uC6B0\uC2A4\uB294 \uBB3C\uACB0, \uD14C\uD06C\uB178\uB294 \uCCB4\uC774\uC2A4, EDM\uC740 \uBD80\uCC44\uAF34 \u2013 \uAC15\uD55C \uC545\uC13C\uD2B8\uC5D0\uB294 \uBE14\uB77C\uC778\uB354, \uB4DC\uB86D\uC5D0\uB294 \uB808\uC774\uC800 \uC2DC\uD2B8",
           partyInstruments: "\uC545\uAE30 \uC778\uC2DD",
           partyInstrumentsHint: "\uD2B8\uB7FC\uD3AB, \uC0C9\uC18C\uD3F0, \uAE30\uD0C0, \uD53C\uC544\uB178, \uD604\uC545\uAE30, \uD569\uCC3D\uC5D0 \uC804\uC6A9 \uD6A8\uACFC \u2013 \uACE1\uC758 \uD06C\uB808\uB527\uC774 \uC545\uAE30\uB97C \uD655\uC778\uD560 \uB54C\uB9CC (Spotify, MusicBrainz; MusicBrainz\uC5D0\uB294 \uACE1\uC758 ISRC \uBC88\uD638\uAC00 \uC804\uC1A1\uB429\uB2C8\uB2E4)",
           syncOffset: "\uC2F1\uD06C (\uD6A8\uACFC & \uAC00\uC0AC)",
@@ -4883,7 +5087,24 @@
           tapUnsure: "\uB108\uBB34 \uBD88\uADDC\uCE59\uD569\uB2C8\uB2E4 \u2013 \uB9E4 \uBC15\uC790\uB9C8\uB2E4 \uC77C\uC815\uD558\uAC8C \uD0ED\uD558\uC138\uC694",
           tapNoBeat: "\uC774 \uACE1\uC5D0\uB294 \uC544\uC9C1 \uBC15\uC790 \uB370\uC774\uD130\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
           liveRelay: "\uACF5\uAC1C \uB9B4\uB808\uC774\uB97C \uD1B5\uD55C \uC885\uB2E8 \uAC04 \uC554\uD638\uD654 \u2013 \uC774 QR \uCF54\uB4DC\uB97C \uAC00\uC9C4 \uC0AC\uB78C\uB9CC \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uD30C\uD2F0 \uBAA8\uB4DC\uB97C \uB098\uAC00\uBA74 \uB05D\uB098\uACE0, 10\uBD84 \uD6C4 \uCF54\uB4DC\uAC00 \uB9CC\uB8CC\uB429\uB2C8\uB2E4.",
-          liveError: "\uC5F0\uACB0 \uAC00\uB2A5\uD55C \uB9B4\uB808\uC774\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4 \u2013 \uC778\uD130\uB137 \uC5F0\uACB0\uC744 \uD655\uC778\uD558\uC138\uC694"
+          liveError: "\uC5F0\uACB0 \uAC00\uB2A5\uD55C \uB9B4\uB808\uC774\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4 \u2013 \uC778\uD130\uB137 \uC5F0\uACB0\uC744 \uD655\uC778\uD558\uC138\uC694",
+          selLost: "Spotify {v}\uC5D0\uC11C Mirage\uAC00 \uAFB8\uBBF8\uB294 \uC77C\uBD80 \uC694\uC18C\uAC00 \uBC14\uB00C\uC5C8\uC2B5\uB2C8\uB2E4. \uC77C\uBD80 \uD398\uC774\uC9C0\uAC00 \uC870\uAE08 \uC5B4\uC0C9\uD574 \uBCF4\uC77C \uC218 \uC788\uC2B5\uB2C8\uB2E4. Mirage \uC124\uC815\uC5D0\uC11C \uC9C4\uB2E8 \uC815\uBCF4\uB97C \uBCF5\uC0AC\uD574 \uC54C\uB824 \uC8FC\uC2DC\uBA74 \uC218\uC815\uD558\uACA0\uC2B5\uB2C8\uB2E4.",
+          partyCuts: "\uCE74\uBA54\uB77C \uCEF7",
+          partyCutsHint: "\uB9C8\uB514 \uCCAB \uBC15\uC5D0 \uC640\uC774\uB4DC\xB7\uD074\uB85C\uC988\uC5C5\xB7\uAD00\uAC1D \uC0F7\uC744 \uB04A\uC5B4 \uC804\uD658\uD569\uB2C8\uB2E4. 8\uB9C8\uB514\uB9C8\uB2E4, \uC808\uC815\uC5D0\uC11C\uB294 4\uB9C8\uB514\uB9C8\uB2E4 \uBC14\uB00C\uBA70 Drop\uC5D0\uC11C \uC640\uC774\uB4DC\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4",
+          venue_cellar: "\uC9C0\uD558\uC2E4",
+          venue_jazzbar: "\uC7AC\uC988 \uBC14",
+          venue_rooftop: "\uB8E8\uD504\uD1B1",
+          venue_forest: "\uC232\uC18D \uBB34\uB300",
+          venue_cathedral: "\uB300\uC131\uB2F9",
+          venue_hall: "\uCF58\uC11C\uD2B8\uD640",
+          partyWishes: "\uD734\uB300\uD3F0 \uC2E0\uCCAD\uACE1",
+          partyWishesHint: "\uAC8C\uC2A4\uD2B8\uAC00 \uD734\uB300\uD3F0 \uD398\uC774\uC9C0\uC5D0\uC11C \uACE1\uC744 \uC2E0\uCCAD\uD558\uACE0 \uD22C\uD45C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC2B9\uC778\uD55C \uACE1\uB9CC \uB300\uAE30\uC5F4\uC5D0 \uB4E4\uC5B4\uAC11\uB2C8\uB2E4",
+          wishTitle: "\uC2E0\uCCAD\uACE1",
+          wishBy: "{n} \uB2D8",
+          wishQueue: "+ \uB300\uAE30\uC5F4",
+          wishDecline: "\uAC70\uC808",
+          wishQueued: "\u2018{s}\u2019\uC744(\uB97C) \uB300\uAE30\uC5F4\uC5D0 \uCD94\uAC00\uD588\uC2B5\uB2C8\uB2E4",
+          viz_tunnel: "3D \uD130\uB110"
         },
         zh: {
           menu: "Mirage \u8BBE\u7F6E",
@@ -4913,7 +5134,7 @@
           burst: "\u7231\u5FC3\u7206\u70B8",
           grain: "\u80F6\u7247\u9897\u7C92",
           calm: "\u5B89\u9759\u6A21\u5F0F",
-          blur: "\u73BB\u7483\u6A21\u7CCA",
+          blur: "\u73BB\u7483\u6A21\u7CCA\uFF08\u4EC5\u9650\u771F\u5B9E\u73BB\u7483\uFF09",
           bright: "\u80CC\u666F\u4EAE\u5EA6",
           dynamicHint: "\u6574\u4E2A\u754C\u9762\u968F\u6B4C\u66F2\u7684\u914D\u8272\u53D8\u5316",
           particlesHint: "\u80CC\u666F\u4E2D\u6F02\u6D6E\u7684\u5149\u70B9",
@@ -5084,16 +5305,16 @@
           trToggle: "\u7FFB\u8BD1",
           trShow: "\u663E\u793A\u7FFB\u8BD1",
           trHide: "\u9690\u85CF\u7FFB\u8BD1",
-          party_rave: "Rave",
-          party_rock: "Rock",
-          party_pop: "Pop",
+          party_rave: "\u9510\u821E",
+          party_rock: "\u6447\u6EDA",
+          party_pop: "\u6D41\u884C",
           tabMix: "\u6DF7\u5408",
           tabParty: "\u6D3E\u5BF9",
           party_auto: "\u81EA\u52A8",
           party_bass: "\u563B\u54C8",
           party_chill: "\u653E\u677E",
           partySection: "\u6D3E\u5BF9\u6A21\u5F0F",
-          partySectionHint: "\u81EA\u52A8\u4F1A\u6309\u66F2\u98CE\u9009\u62E9\u706F\u5149\u8BED\u8A00 \u2013 \u706F\u5149\u968F\u6B4C\u66F2\u672C\u8EAB\u53D8\u5316\uFF1A\u94FA\u57AB\u3001\u9AD8\u6F6E\u3001\u5B89\u9759\u7684\u95F4\u594F\u3001\u5927\u8C03\u6216\u5C0F\u8C03",
+          partySectionHint: "\u81EA\u52A8\u4F1A\u6309\u66F2\u98CE\u9009\u62E9\u706F\u5149\u8BED\u8A00 \u2013 \u706F\u5149\u968F\u6B4C\u66F2\u672C\u8EAB\u53D8\u5316\uFF1A\u94FA\u57AB\u3001Drop\u3001\u5B89\u9759\u7684\u95F4\u594F\u3001\u5927\u8C03\u6216\u5C0F\u8C03",
           partyLevel: "\u5F3A\u5EA6",
           partyLevel1: "\u67D4\u548C",
           partyLevel2: "\u6807\u51C6",
@@ -5107,9 +5328,9 @@
           partyLevel4: "\u6781\u9650",
           partyLevel5: "\u75AF\u72C2",
           partyLasers: "\u821E\u53F0\u706F\u5149",
-          partyLasersHint: "\u6309\u66F2\u98CE\u6253\u706F \u2013 \u7535\u97F3\u662F\u4EA4\u53C9\u5149\u675F\uFF0C\u6447\u6EDA\u662F\u4ECE\u4E0A\u65B9\u6253\u4E0B\u7684\u786C\u5149\uFF0C\u4F4E\u97F3\u662F\u4ECE\u5730\u9762\u6D8C\u8D77\u7684\u5149\u3002\u4ECE\u201C\u6781\u9650\u201D\u8D77\u8FD8\u4F1A\u4ECE\u5C01\u9762\u5C04\u51FA\u5149\u675F",
-          partyZoom: "\u955C\u5934\u51B2\u51FB",
-          partyZoomHint: "\u4ECE\u201C\u6700\u5F3A\u201D\u8D77\uFF1A\u6B4C\u8BCD\u5728\u91CD\u62CD\u4E0A\u5F39\u8DF3\uFF0C\u5C01\u9762\u968F\u4E4B\u6447\u6446\uFF08\u6D41\u884C\u3001\u4F4E\u97F3\u3001\u8F7B\u677E\uFF09\u3002\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u6574\u4E2A\u753B\u9762\u62C9\u8FD1",
+          partyLasersHint: "\u6309\u66F2\u98CE\u6253\u706F \u2013 \u9510\u821E\u662F\u4EA4\u53C9\u5149\u675F\uFF0C\u6447\u6EDA\u662F\u4ECE\u4E0A\u65B9\u6253\u4E0B\u7684\u786C\u5149\uFF0C\u4F4E\u97F3\u662F\u4ECE\u5730\u9762\u6D8C\u8D77\u7684\u5149\u3002\u4ECE\u201C\u6781\u9650\u201D\u8D77\u8FD8\u4F1A\u4ECE\u5C01\u9762\u5C04\u51FA\u5149\u675F",
+          partyZoom: "\u8282\u62CD\u7F29\u653E",
+          partyZoomHint: "\u4ECE\u201C\u6700\u5F3A\u201D\u8D77\uFF1A\u6B4C\u8BCD\u5728\u91CD\u62CD\u4E0A\u5F39\u8DF3\uFF0C\u5C01\u9762\u968F\u4E4B\u6447\u6446\uFF08\u6D41\u884C\u3001\u4F4E\u97F3\u3001\u653E\u677E\uFF09\u3002\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF1A\u6574\u4E2A\u753B\u9762\u62C9\u8FD1",
           partyIdle: "\u9759\u6B62\u65F6\u9690\u85CF\u63A7\u4EF6",
           partyIdleHint: "\u9F20\u6807\u51E0\u79D2\u4E0D\u52A8\u540E\u6309\u94AE\u6DE1\u51FA\uFF0C\u4E00\u5207\u5E73\u6ED1\u79FB\u5230\u4E2D\u592E",
           c_addTo: "\u6DFB\u52A0\u5230\u6B4C\u5355",
@@ -5119,10 +5340,10 @@
           plFail: "\u65E0\u6CD5\u6DFB\u52A0",
           plNone: "\u6CA1\u6709\u53EF\u6DFB\u52A0\u7684\u6B4C\u5355",
           plNoTrack: "\u53EA\u6709\u6B4C\u66F2\u53EF\u4EE5\u6DFB\u52A0\u5230\u6B4C\u5355",
-          smartPick: "\u667A\u80FD\u968F\u673A\u64AD\u653E",
-          smartPickHint: "\u7531\u667A\u80FD\u968F\u673A\u64AD\u653E\u52A0\u5165",
+          smartPick: "Smart Shuffle",
+          smartPickHint: "\u7531 Smart Shuffle \u52A0\u5165",
           partyOnline: "\u5728\u7EBF\u67E5\u8BE2\u66F2\u98CE",
-          partyOnlineHint: "\u5411 Apple \u7684 iTunes \u641C\u7D22\u67E5\u8BE2\u6B4C\u66F2\u66F2\u98CE\uFF0C\u907F\u514D\u7535\u97F3\u3001\u6447\u6EDA\u6216\u563B\u54C8\u88AB\u8BEF\u5224\u4E3A\u6D41\u884C \u2013 \u53EA\u53D1\u9001\u6B4C\u540D\u548C\u827A\u4EBA",
+          partyOnlineHint: "\u5411 Apple \u7684 iTunes \u641C\u7D22\u67E5\u8BE2\u6B4C\u66F2\u66F2\u98CE\uFF0C\u907F\u514D\u9510\u821E\u3001\u6447\u6EDA\u6216\u563B\u54C8\u88AB\u8BEF\u5224\u4E3A\u6D41\u884C \u2013 \u53EA\u53D1\u9001\u6B4C\u540D\u548C\u827A\u4EBA",
           party_techno: "\u79D1\u6280\u821E\u66F2",
           party_house: "\u6D69\u5BA4",
           party_trance: "\u8FF7\u5E7B\u821E\u66F2",
@@ -5136,25 +5357,25 @@
           partyDepth: "3D \u7EB5\u6DF1",
           partyDepthHint: "\u6B4C\u8BCD\u3001\u6807\u9898\u548C\u706F\u5149\u4F4D\u4E8E\u4E0D\u540C\u56FE\u5C42\u5E76\u8DDF\u968F\u9F20\u6807 \u2013 \u6CA1\u6709\u9F20\u6807\u65F6\u753B\u9762\u8F7B\u8F7B\u6F02\u6D6E",
           partyCamera: "\u955C\u5934\u8FD0\u52A8",
-          partyCameraHint: "\u6574\u4E2A\u753B\u9762\u7F13\u6162\u7F29\u653E\u6F02\u79FB\uFF1A\u5B89\u9759\u5904\u62C9\u8FDC\uFF0C\u80FD\u91CF\u9AD8\u65F6\u63A8\u8FD1\uFF0C\u9AD8\u6F6E\u65F6\u4E00\u9707",
-          partyShatter: "\u6B4C\u8BCD\u706B\u82B1",
-          partyShatterHint: "\u9AD8\u6F6E\u65F6\u5F53\u524D\u6B4C\u8BCD\u95EA\u4EAE\u5E76\u788E\u6210\u5149\u7C92",
+          partyCameraHint: "\u6574\u4E2A\u753B\u9762\u7F13\u6162\u7F29\u653E\u6F02\u79FB\uFF1A\u5B89\u9759\u5904\u62C9\u8FDC\uFF0C\u80FD\u91CF\u9AD8\u65F6\u63A8\u8FD1\uFF0CDrop \u65F6\u4E00\u9707",
+          partyShatter: "\u6B4C\u8BCD\u7206\u88C2",
+          partyShatterHint: "Drop \u65F6\u5F53\u524D\u6B4C\u8BCD\u95EA\u4EAE\u5E76\u788E\u6210\u5149\u7C92",
           partyCrowd: "\u89C2\u4F17",
-          partyCrowdHint: "\u821E\u53F0\u524D\u7684\u526A\u5F71\u968F\u80FD\u91CF\u4E3E\u8D77\u53CC\u624B\uFF0C\u5728\u5E95\u9F13\u548C\u9AD8\u6F6E\u65F6\u8DF3\u8D77",
+          partyCrowdHint: "\u821E\u53F0\u524D\u7684\u526A\u5F71\u968F\u80FD\u91CF\u4E3E\u8D77\u53CC\u624B\uFF0C\u5728\u5E95\u9F13\u548C Drop \u65F6\u8DF3\u8D77",
           partyJamLight: "Jam \u989C\u8272",
           partyJamLightHint: "\u5728 Spotify Jam \u4E2D\u6BCF\u4EBA\u4E00\u79CD\u989C\u8272\uFF1B\u6DFB\u52A0\u5F53\u524D\u6B4C\u66F2\u7684\u4EBA\u4F5C\u4E3A DJ \u53D1\u5149\uFF08\u82E5 Spotify \u6709\u8BB0\u5F55\uFF09",
           partyScreen: "\u7B2C\u4E8C\u5C4F\u5E55\u6309\u94AE",
           partyScreenHint: "\u663E\u793A\u4E00\u4E2A\u6309\u94AE\uFF0C\u628A\u6D3E\u5BF9\u6A21\u5F0F\u5168\u5C4F\u653E\u5230\u53E6\u4E00\u53F0\u663E\u793A\u5668\u6216\u7535\u89C6\u4E0A",
           partyRecap: "\u6D3E\u5BF9\u56DE\u987E",
-          partyRecapHint: "\u64AD\u653E\u4E09\u9996\u540E\u51FA\u73B0\u6309\u94AE\uFF0C\u751F\u6210\u53EF\u5206\u4EAB\u7684\u56FE\u7247\uFF1A\u6B4C\u66F2\u6570\u3001\u5206\u949F\u3001\u9AD8\u6F6E\u6B21\u6570\u3001\u66F2\u98CE\u6BD4\u4F8B\u548C\u6700\u5F3A\u7684\u9AD8\u6F6E",
-          partyEdge: "\u8FB9\u7F18\u706F\u5149\uFF08\u53E0\u52A0\u5C42\u5E94\u7528\uFF09",
+          partyRecapHint: "\u64AD\u653E\u4E09\u9996\u540E\u51FA\u73B0\u6309\u94AE\uFF0C\u751F\u6210\u53EF\u5206\u4EAB\u7684\u56FE\u7247\uFF1A\u6B4C\u66F2\u6570\u3001\u5206\u949F\u3001Drop \u6B21\u6570\u3001\u66F2\u98CE\u6BD4\u4F8B\u548C\u6700\u5F3A\u7684 Drop",
+          partyEdge: "\u8FB9\u7F18\u706F\u5149\uFF08\u60AC\u6D6E\u7A97\u5E94\u7528\uFF09",
           partyEdgeHint: "\u6D3E\u5BF9\u6A21\u5F0F\u8FD0\u884C\u65F6\uFF0CMirage Overlay \u5E94\u7528\u8BA9\u5C4F\u5E55\u8FB9\u7F18\u968F\u8282\u62CD\u53D1\u5149 \u2013 \u5168\u5C4F\u6E38\u620F\u65F6\u9690\u85CF",
           recapBtn: "\u6D3E\u5BF9\u56DE\u987E",
           toScreen: "\u5728\u5176\u4ED6\u5C4F\u5E55\u5F00\u6D3E\u5BF9",
           recapTitle: "\u4F60\u7684\u6D3E\u5BF9\u56DE\u987E",
-          recapDrops: "\u6B21\u9AD8\u6F6E",
+          recapDrops: "\u6B21 Drop",
           recapGenres: "\u66F2\u98CE\u6BD4\u4F8B",
-          recapPeak: "\u6700\u5F3A\u7684\u9AD8\u6F6E",
+          recapPeak: "\u6700\u5F3A\u7684 Drop",
           fullOff: "\u9000\u51FA\u5168\u5C4F",
           party_disco: "\u8FEA\u65AF\u79D1\u4E0E\u653E\u514B",
           party_kpop: "K-Pop",
@@ -5166,11 +5387,11 @@
           party_jazz: "\u7235\u58EB",
           party_country: "\u4E61\u6751\u4E0E\u6C11\u8C23",
           partyDirector: "\u706F\u5149\u5BFC\u6F14",
-          partyDirectorHint: "\u66B4\u98CE\u96E8\u524D\u7684\u5B81\u9759\uFF1Adrop \u524D\u706F\u5149\u6536\u655B\uFF0C\u6700\u540E\u4E00\u62CD\u7184\u706D\u2014\u2014\u7136\u540E drop \u7206\u53D1\u3002\u6700\u540E\u4E00\u6BB5\u526F\u6B4C\u5168\u529B\u4EE5\u8D74",
+          partyDirectorHint: "\u66B4\u98CE\u96E8\u524D\u7684\u5B81\u9759\uFF1ADrop \u524D\u706F\u5149\u6536\u655B\uFF0C\u6700\u540E\u4E00\u62CD\u7184\u706D\u2014\u2014\u7136\u540E Drop \u7206\u53D1\u3002\u6700\u540E\u4E00\u6BB5\u526F\u6B4C\u5168\u529B\u4EE5\u8D74",
           partyMelody: "\u65CB\u5F8B\u6FC0\u5149",
           partyMelodyHint: "\u5C01\u9762\u5C04\u51FA\u7684\u4E24\u9053\u7EC6\u6FC0\u5149\u8DDF\u968F\u65CB\u5F8B\u7684\u97F3\u9AD8",
           partySlowmo: "Drop \u524D\u6162\u52A8\u4F5C",
-          partySlowmoHint: "\u5728 drop \u4E4B\u524D\u7684\u534A\u79D2\uFF0C\u706B\u82B1\u3001\u5149\u73AF\u548C\u4EBA\u7FA4\u5B9A\u683C",
+          partySlowmoHint: "\u5728 Drop \u4E4B\u524D\u7684\u534A\u79D2\uFF0C\u706B\u82B1\u3001\u5149\u73AF\u548C\u4EBA\u7FA4\u5B9A\u683C",
           partyDJ: "DJ \u8FC7\u6E21",
           partyDJHint: "\u5207\u6B4C\u65F6\u65E7\u989C\u8272\u4FDD\u7559\u5230\u7B2C\u4E00\u62CD\uFF0C\u7136\u540E\u5728\u56DB\u62CD\u5185\u8FC7\u6E21\u5230\u65B0\u989C\u8272",
           partyQuietFps: "\u5B89\u9759\u6BB5\u843D 30 \u5E27",
@@ -5194,9 +5415,9 @@
           liveHint: "\u7528\u624B\u673A\u626B\u63CF\uFF0C\u5C4F\u5E55\u671D\u4E0A\u653E\u597D\u2014\u2014\u5B83\u4F1A\u968F\u6D3E\u5BF9\u4E00\u8D77\u95EA\u70C1",
           liveCopy: "\u590D\u5236\u94FE\u63A5",
           partyFx: "\u821E\u53F0\u7279\u6548",
-          partyFxHint: "\u7535\u5B50\u4E50\u914D CO2 \u55B7\u5C04\uFF0C\u6447\u6EDA\u548C\u91D1\u5C5E\u914D\u70DF\u706B\u706B\u7130\uFF0C\u6700\u540E\u4E00\u6BB5\u526F\u6B4C\u653E\u70DF\u82B1\u2014\u2014\u5728 drop \u548C\u9AD8\u6F6E\u65F6",
-          partyStrobe: "\u5F3A\u70C8 drop \u65F6\u9891\u95EA",
-          partyStrobeHint: "Techno\u3001\u786C\u6D3E\u3001\u9510\u821E\u548C\u9F13\u6253\u8D1D\u65AF\u5728 drop \u65F6\u968F\u8282\u62CD\u95EA\u767D\u5149\u2014\u2014\u4ECE\u300C\u6781\u9650\u300D\u8D77\uFF0C\u6BCF\u62CD\u6700\u591A\u4E00\u6B21",
+          partyFxHint: "\u7535\u5B50\u4E50\u914D CO2 \u55B7\u5C04\uFF0C\u6447\u6EDA\u548C\u91D1\u5C5E\u914D\u70DF\u706B\u706B\u7130\uFF0C\u6700\u540E\u4E00\u6BB5\u526F\u6B4C\u653E\u70DF\u82B1\u2014\u2014\u5728 Drop \u548C\u9AD8\u6F6E\u65F6",
+          partyStrobe: "\u5F3A\u70C8 Drop \u65F6\u9891\u95EA",
+          partyStrobeHint: "\u79D1\u6280\u821E\u66F2\u3001\u786C\u6D3E\u821E\u66F2\u3001\u9510\u821E\u548C\u9F13\u6253\u8D1D\u65AF\u5728 Drop \u65F6\u968F\u8282\u62CD\u95EA\u767D\u5149\u2014\u2014\u4ECE\u201C\u6781\u9650\u201D\u8D77\uFF0C\u6BCF\u62CD\u6700\u591A\u4E00\u6B21",
           venue_warehouse: "\u4ED3\u5E93",
           venue_beach: "\u6D77\u6EE9",
           g_party: "\u6D3E\u5BF9\u6A21\u5F0F",
@@ -5240,7 +5461,7 @@
           party_cinematic: "\u7535\u5F71\u4E0E\u53F2\u8BD7",
           ps_style: "\u98CE\u683C",
           partyRig: "\u6447\u5934\u706F\u4E0E\u89C2\u4F17\u706F",
-          partyRigHint: "\u821E\u53F0\u4E0A\u65B9\u7684\u706F\u5149\u67B6\u6309\u66F2\u98CE\u53D8\u6362\u56FE\u6848\u2014\u2014House \u662F\u6CE2\u6D6A\uFF0CTechno \u662F\u8FFD\u5149\uFF0CEDM \u662F\u6247\u5F62\u2014\u2014\u5927\u9F13\u70B9\u65F6\u89C2\u4F17\u706F\u95EA\u8D77\uFF0Cdrop \u65F6\u51FA\u73B0\u6FC0\u5149\u5E73\u9762",
+          partyRigHint: "\u821E\u53F0\u4E0A\u65B9\u7684\u706F\u5149\u67B6\u6309\u66F2\u98CE\u53D8\u6362\u56FE\u6848\u2014\u2014\u6D69\u5BA4\u662F\u6CE2\u6D6A\uFF0C\u79D1\u6280\u821E\u66F2\u662F\u8FFD\u5149\uFF0CEDM \u662F\u6247\u5F62\u2014\u2014\u91CD\u62CD\u65F6\u89C2\u4F17\u706F\u95EA\u8D77\uFF0CDrop \u65F6\u51FA\u73B0\u6FC0\u5149\u5E73\u9762",
           partyInstruments: "\u8BC6\u522B\u4E50\u5668",
           partyInstrumentsHint: "\u5C0F\u53F7\u3001\u8428\u514B\u65AF\u3001\u5409\u4ED6\u3001\u94A2\u7434\u3001\u5F26\u4E50\u548C\u5408\u5531\u5404\u6709\u4E13\u5C5E\u6548\u679C\u2014\u2014\u4EC5\u5F53\u6B4C\u66F2\u7F72\u540D\u786E\u8BA4\u8BE5\u4E50\u5668\u65F6\uFF08Spotify\u3001MusicBrainz\uFF1B\u6B4C\u66F2\u7684 ISRC \u7F16\u53F7\u4F1A\u53D1\u9001\u7ED9 MusicBrainz\uFF09",
           syncOffset: "\u540C\u6B65\uFF08\u7279\u6548\u4E0E\u6B4C\u8BCD\uFF09",
@@ -5250,7 +5471,24 @@
           tapUnsure: "\u592A\u4E0D\u5747\u5300\u2014\u2014\u8BF7\u5728\u6BCF\u4E00\u62CD\u4E0A\u5747\u5300\u70B9\u6309",
           tapNoBeat: "\u8FD9\u9996\u6B4C\u6682\u65F6\u6CA1\u6709\u8282\u62CD\u6570\u636E",
           liveRelay: "\u7ECF\u516C\u5171\u4E2D\u7EE7\u7AEF\u5230\u7AEF\u52A0\u5BC6\u2014\u2014\u53EA\u6709\u62E5\u6709\u6B64\u4E8C\u7EF4\u7801\u7684\u4EBA\u624D\u80FD\u770B\u5230\u3002\u9000\u51FA\u6D3E\u5BF9\u6A21\u5F0F\u5373\u7ED3\u675F\uFF1B10 \u5206\u949F\u540E\u4E8C\u7EF4\u7801\u5931\u6548\u3002",
-          liveError: "\u65E0\u6CD5\u8FDE\u63A5\u4E2D\u7EE7\u2014\u2014\u7F51\u7EDC\u662F\u5426\u6B63\u5E38\uFF1F"
+          liveError: "\u65E0\u6CD5\u8FDE\u63A5\u4E2D\u7EE7\u2014\u2014\u7F51\u7EDC\u662F\u5426\u6B63\u5E38\uFF1F",
+          selLost: "Spotify {v} \u6539\u52A8\u4E86 Mirage \u7F8E\u5316\u7684\u90E8\u5206\u754C\u9762\uFF0C\u6709\u4E9B\u9875\u9762\u53EF\u80FD\u770B\u8D77\u6765\u4E0D\u592A\u5BF9\u3002\u8BF7\u5728 Mirage \u8BBE\u7F6E\u4E2D\u590D\u5236\u8BCA\u65AD\u4FE1\u606F\u5E76\u53CD\u9988\uFF0C\u6211\u4EEC\u4F1A\u4FEE\u590D\u3002",
+          partyCuts: "\u955C\u5934\u5207\u6362",
+          partyCutsHint: "\u5728\u5C0F\u8282\u7B2C\u4E00\u62CD\u786C\u5207\u8FDC\u666F\u3001\u8FD1\u666F\u548C\u89C2\u4F17\u955C\u5934\u2014\u2014\u6BCF 8 \u5C0F\u8282\u4E00\u6B21\uFF0C\u9AD8\u6F6E\u65F6\u6BCF 4 \u5C0F\u8282\uFF1BDrop \u65F6\u5207\u56DE\u8FDC\u666F",
+          venue_cellar: "\u5730\u4E0B\u5BA4",
+          venue_jazzbar: "\u7235\u58EB\u9152\u5427",
+          venue_rooftop: "\u5929\u53F0",
+          venue_forest: "\u68EE\u6797\u821E\u53F0",
+          venue_cathedral: "\u5927\u6559\u5802",
+          venue_hall: "\u97F3\u4E50\u5385",
+          partyWishes: "\u624B\u673A\u70B9\u6B4C",
+          partyWishesHint: "\u6765\u5BBE\u53EF\u4EE5\u5728\u624B\u673A\u9875\u9762\u70B9\u6B4C\u548C\u6295\u7968\u2014\u2014\u53EA\u6709\u4F60\u540C\u610F\u7684\u6B4C\u66F2\u624D\u4F1A\u52A0\u5165\u961F\u5217",
+          wishTitle: "\u70B9\u6B4C",
+          wishBy: "\u6765\u81EA {n}",
+          wishQueue: "+ \u961F\u5217",
+          wishDecline: "\u62D2\u7EDD",
+          wishQueued: "\u5DF2\u5C06\u201C{s}\u201D\u52A0\u5165\u961F\u5217",
+          viz_tunnel: "3D \u96A7\u9053"
         }
       };
       LANG = (() => {
@@ -5377,6 +5615,8 @@
         partyDepth: true,
         partyShatter: true,
         partyCamera: true,
+        partyCuts: true,
+        partyWishes: true,
         partyCrowd: true,
         partyJamLight: true,
         partyScreen: true,
@@ -5438,12 +5678,12 @@
     const broken = CRITICAL.filter((k) => health.missing.includes(k));
     root.classList.toggle("mirage-safe", broken.length > 0);
     const KEY2 = "mirage:seenSpotify";
-    let seen = "";
+    let seen2 = "";
     try {
-      seen = localStorage.getItem(KEY2) || "";
+      seen2 = localStorage.getItem(KEY2) || "";
     } catch {
     }
-    if (broken.length && seen !== spotifyVersion + ":broken") {
+    if (broken.length && seen2 !== spotifyVersion + ":broken") {
       try {
         S.showNotification?.(t("safeMode").replace("{v}", spotifyVersion || "?"), true, 1e4);
         localStorage.setItem(KEY2, spotifyVersion + ":broken");
@@ -5457,7 +5697,20 @@
     }
     return health;
   }
-  var SEL, CRITICAL, spotifyVersion, spicetifyVersion, health, diagnostics;
+  function noteFound() {
+    const pg = pageNow();
+    if (!seenSel.pages.includes(pg)) seenSel.pages.push(pg);
+    for (const k of LOOK) {
+      if (!document.querySelector(SEL[k])) continue;
+      const list = seenSel.found[k] ||= [];
+      if (!list.includes(pg)) list.push(pg);
+    }
+    try {
+      localStorage.setItem(SEEN, JSON.stringify(seenSel));
+    } catch {
+    }
+  }
+  var SEL, CRITICAL, spotifyVersion, spicetifyVersion, health, SEEN, LOOK, blank, seenSel, pageNow, lookT, lookSoon, diagnostics;
   var init_selectors = __esm({
     "src/selectors.js"() {
       init_core();
@@ -5477,11 +5730,47 @@
       spicetifyVersion = String(S.Config?.version || "");
       health = { checked: false, missing: [], spotify: spotifyVersion, spicetify: spicetifyVersion, mirage: VERSION };
       setTimeout(checkHealth, 8e3);
+      SEEN = "mirage:selSeen";
+      LOOK = ["grid", "rows", "card", "nowPlayingCover", "likeButton"];
+      blank = () => ({ v: "", found: {}, prev: {}, pages: [], told: "" });
+      seenSel = blank();
+      try {
+        const raw = JSON.parse(localStorage.getItem(SEEN) || "{}");
+        if (raw && typeof raw.found === "object" && !Array.isArray(raw.found)) seenSel = { ...seenSel, ...raw };
+      } catch {
+      }
+      if (spotifyVersion && seenSel.v !== spotifyVersion) {
+        if (seenSel.v && Object.keys(seenSel.found).length) seenSel.prev = seenSel.found;
+        seenSel = { ...blank(), v: spotifyVersion, prev: seenSel.prev, told: seenSel.told };
+      }
+      health.lost = [];
+      pageNow = () => root.dataset.mPage || "other";
+      lookT = 0;
+      lookSoon = () => {
+        clearTimeout(lookT);
+        lookT = setTimeout(noteFound, 3e3);
+      };
+      setTimeout(() => {
+        noteFound();
+        S.Platform?.History?.listen?.(lookSoon);
+      }, 8e3);
+      setTimeout(() => {
+        noteFound();
+        health.lost = LOOK.filter((k) => (seenSel.prev[k] || []).some((pg) => seenSel.pages.includes(pg)) && !(seenSel.found[k] || []).length);
+        if (!health.lost.length || seenSel.told === spotifyVersion || root.classList.contains("mirage-safe")) return;
+        seenSel.told = spotifyVersion;
+        try {
+          localStorage.setItem(SEEN, JSON.stringify(seenSel));
+          S.showNotification?.(t("selLost").replace("{v}", spotifyVersion || "?"), true, 12e3);
+        } catch {
+        }
+      }, 20 * 6e4);
       diagnostics = () => [
         `Mirage ${VERSION}`,
         `Spotify ${spotifyVersion || "?"}`,
         `Spicetify ${spicetifyVersion || "?"}`,
         `missing: ${health.checked ? health.missing.join(", ") || "none" : "not checked yet"}`,
+        `lost since update: ${health.lost.join(", ") || "none"}`,
         `safe mode: ${root.classList.contains("mirage-safe")}`,
         `scheme: ${root.dataset.mScheme || "?"} \xB7 page: ${root.dataset.mPage || "?"}`,
         `ua: ${navigator.userAgent.replace(/.*(Chrome\/[\d.]+).*/, "$1")}`
@@ -5645,9 +5934,9 @@
     if (!fit2) return null;
     const lyr = await netease(`song/lyric/v1?id=${fit2.id}&cp=false&tv=0&lv=0&rv=0&kv=0&yv=0&ytv=0&yrv=0`) || await netease(`song/lyric?id=${fit2.id}&lv=-1&kv=-1&tv=-1`);
     if (lyr?.nolyric || lyr?.pureMusic) return { lang: "", source: "netease", synced: false, instrumental: true, lines: [] };
-    const clean = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
-    const lines = clean(parseLrc(lyr?.lrc?.lyric || ""));
-    const yrc = clean(parseYrc(lyr?.yrc?.lyric || ""));
+    const clean2 = (ls) => ls.filter((l, i) => !(i < 12 && CREDIT.test(l.text)));
+    const lines = clean2(parseLrc(lyr?.lrc?.lyric || ""));
+    const yrc = clean2(parseYrc(lyr?.yrc?.lyric || ""));
     if (yrc.length && yrc.length >= lines.length * 0.6) return { lang: "", source: "netease", synced: true, wordSynced: true, lines: yrc };
     return lines.length ? { lang: "", source: "netease", synced: true, lines } : null;
   }
@@ -5885,9 +6174,9 @@
     const one = votes.indexOf(Math.max(...votes));
     const bars = beats.filter((_, i) => (i - one) % 4 === 0).map((b) => ({ t: b.t }));
     const key = (s) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
-    const seen = /* @__PURE__ */ new Map();
-    for (const l of lines) seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1);
-    const hook = lines.filter((l) => seen.get(key(l.text)) >= 2).map((l) => l.t / 1e3);
+    const seen2 = /* @__PURE__ */ new Map();
+    for (const l of lines) seen2.set(key(l.text), (seen2.get(key(l.text)) || 0) + 1);
+    const hook = lines.filter((l) => seen2.get(key(l.text)) >= 2).map((l) => l.t / 1e3);
     const sung = lines.map((l) => l.t / 1e3);
     const near = (arr, t2, r) => arr.some((x) => Math.abs(x - t2) < r);
     const base = feat?.loud ?? dz?.loud ?? -8;
@@ -8198,7 +8487,15 @@
       stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },
       home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },
       warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },
-      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach" }
+      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },
+      // „open“: unter freiem Himmel (Feuerwerk erlaubt) · „calm“: drinnen und gediegen – kein CO2, keine Flammen,
+      // kein Stroboskop, kein Konfetti · „seated“: das Publikum sitzt (Konzertsaal) und wiegt sich nur
+      rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },
+      cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },
+      jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },
+      forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },
+      hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },
+      cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" }
     };
     const AUTO_VENUE = {
       techno: "warehouse",
@@ -8206,7 +8503,7 @@
       house: "club",
       bass: "club",
       disco: "club",
-      jazz: "club",
+      jazz: "jazzbar",
       rave: "festival",
       trance: "festival",
       hardstyle: "festival",
@@ -8215,32 +8512,32 @@
       latin: "beach",
       rock: "stadium",
       metal: "stadium",
-      punk: "stadium",
+      punk: "cellar",
       pop: "stadium",
       kpop: "stadium",
-      country: "stadium",
+      country: "forest",
       chill: "home",
-      classical: "home",
+      classical: "hall",
       edm: "festival",
       deephouse: "beach",
       techhouse: "warehouse",
-      psytrance: "festival",
+      psytrance: "forest",
       dubstep: "festival",
-      garage: "club",
+      garage: "rooftop",
       eurodance: "club",
-      synthwave: "club",
+      synthwave: "rooftop",
       hyperpop: "club",
       trap: "club",
-      drill: "warehouse",
-      phonk: "warehouse",
-      rnb: "club",
-      soul: "club",
+      drill: "cellar",
+      phonk: "cellar",
+      rnb: "rooftop",
+      soul: "jazzbar",
       indie: "festival",
       alternative: "stadium",
-      blues: "club",
+      blues: "jazzbar",
       schlager: "festival",
       ballad: "stadium",
-      gospel: "stadium",
+      gospel: "cathedral",
       reggaeton: "club",
       salsa: "beach",
       brazil: "beach",
@@ -8248,7 +8545,7 @@
       bollywood: "stadium",
       arabic: "festival",
       ambient: "home",
-      cinematic: "stadium"
+      cinematic: "hall"
     };
     function drawDecor(ctx, v, px, pal, rgba3, dpr, st) {
       const t2 = st.t, beat2 = Math.max(px.accent, px.kickEnv * px.energy);
@@ -8276,7 +8573,7 @@
         stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));
         for (const s1 of stands) {
           const tw = 0.5 + 0.5 * Math.sin(t2 * 2 + s1.ph);
-          ctx.globalAlpha = clamp3((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);
+          ctx.globalAlpha = clamp3((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);
           const r = 5 * dpr;
           ctx.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);
         }
@@ -8344,6 +8641,196 @@
           }
         }
         ctx.globalCompositeOperation = "lighter";
+      } else if (v.decor === "rooftop") {
+        sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));
+        win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));
+        const hz = vh * 0.8;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(6,5,14,0.6)";
+        for (const b of sky) ctx.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);
+        ctx.globalCompositeOperation = "lighter";
+        for (const w of win) {
+          const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t2 * 0.7 + w.ph);
+          if (tw < 0.25) continue;
+          const r = 3.2 * dpr;
+          ctx.globalAlpha = clamp3(tw * (0.35 + beat2 * 0.25), 0, 1);
+          ctx.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);
+        }
+        for (let k = 0; k <= 18; k++) {
+          const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));
+          ctx.globalAlpha = clamp3((0.28 + beat2 * 0.3) * (0.6 + 0.4 * Math.sin(t2 * 1.4 + k * 2.1)), 0, 1);
+          const r = (8 + beat2 * 5) * dpr;
+          ctx.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(5,4,10,0.75)";
+        ctx.fillRect(0, vh * 0.84, vw, 3 * dpr);
+        for (let x = 0; x < vw; x += 70 * dpr) ctx.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);
+        ctx.globalCompositeOperation = "lighter";
+      } else if (v.decor === "cathedral") {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(5,4,12,0.8)";
+        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {
+          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;
+          ctx.beginPath();
+          ctx.rect(x0, 0, x1 - x0, vh);
+          ctx.moveTo(mid + iw, vh);
+          ctx.lineTo(mid + iw, vh * 0.36);
+          ctx.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);
+          ctx.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);
+          ctx.lineTo(mid - iw, vh);
+          ctx.closePath();
+          ctx.fill("evenodd");
+        }
+        ctx.globalCompositeOperation = "lighter";
+        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {
+          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat2 * 0.1 + px.energy * 0.08;
+          const g = ctx.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);
+          g.addColorStop(0, rgba3(pal[0], al.toFixed(3)));
+          g.addColorStop(0.5, rgba3(pal[1], (al * 0.9).toFixed(3)));
+          g.addColorStop(1, rgba3(pal[2], 0));
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(mid + iw, vh * 0.7);
+          ctx.lineTo(mid + iw, vh * 0.38);
+          ctx.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);
+          ctx.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);
+          ctx.lineTo(mid - iw, vh * 0.7);
+          ctx.fill();
+        }
+        for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {
+          const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - k % 3 * 0.018);
+          const r = (7 + Math.sin(t2 * 9 + k * 3 + side) * 1.6) * dpr;
+          ctx.globalAlpha = 0.55;
+          ctx.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+      } else if (v.decor === "jazzbar") {
+        for (let k = 0; k < 3; k++) {
+          const x = vw * (0.22 + k * 0.28) + Math.sin(t2 * 0.6 + k) * vw * 0.01, y = vh * (0.16 + k % 2 * 0.03);
+          ctx.strokeStyle = "rgba(255,255,255,0.07)";
+          ctx.lineWidth = dpr;
+          ctx.beginPath();
+          ctx.moveTo(vw * (0.22 + k * 0.28), 0);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          const g = ctx.createRadialGradient(x, y, 0, x, y, vh * 0.85);
+          g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat2 * 0.08).toFixed(3)})`);
+          g.addColorStop(1, "rgba(255,190,120,0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(x - 8 * dpr, y);
+          ctx.lineTo(x - vh * 0.22, vh);
+          ctx.lineTo(x + vh * 0.22, vh);
+          ctx.lineTo(x + 8 * dpr, y);
+          ctx.fill();
+          const r = (16 + beat2 * 8) * dpr;
+          ctx.globalAlpha = 0.8;
+          ctx.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);
+          ctx.globalAlpha = 1;
+        }
+        for (let k = 0; k < 9; k++) {
+          const r = 4 * dpr;
+          ctx.globalAlpha = clamp3(0.25 + 0.2 * Math.sin(t2 * 1.2 + k), 0, 1);
+          ctx.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+        for (let k = 0; k < 4; k++) {
+          const x = vw * (0.5 + 0.45 * Math.sin(t2 * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t2 * 0.07 + k)), r = vh * 0.35;
+          const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+          g.addColorStop(0, "rgba(200,190,220,0.04)");
+          g.addColorStop(1, "rgba(200,190,220,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        }
+      } else if (v.decor === "forest") {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(4,4,10,0.9)";
+        for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {
+          const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t2 * 0.4 + bx) * 4 * dpr;
+          const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);
+          ctx.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);
+          for (let k = 0; k < 5; k++) {
+            const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);
+            ctx.beginPath();
+            ctx.moveTo(bx + sx, y0);
+            ctx.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);
+            ctx.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);
+            ctx.closePath();
+            ctx.fill();
+          }
+        }
+        ctx.globalCompositeOperation = "lighter";
+        for (let k = 0; k <= 16; k++) {
+          const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));
+          ctx.globalAlpha = clamp3((0.25 + beat2 * 0.3) * (0.6 + 0.4 * Math.sin(t2 * 1.3 + k * 1.9)), 0, 1);
+          const r = (7 + beat2 * 4) * dpr;
+          ctx.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);
+        }
+        flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));
+        const hat = px.hatEnv || 0;
+        for (const f of flies) {
+          const x = (f.x + Math.sin(t2 * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t2 * f.sp * 0.4 + f.ph) * 0.03) * vh;
+          ctx.globalAlpha = clamp3((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t2 * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);
+          const r = 5 * dpr;
+          ctx.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+      } else if (v.decor === "hall") {
+        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {
+          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;
+          ctx.globalCompositeOperation = "source-over";
+          ctx.fillStyle = "rgba(8,6,16,0.8)";
+          ctx.fillRect(x0, y, w, vh * 0.05);
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = clamp3(0.32 + beat2 * 0.15, 0, 1);
+          for (let k = 0; k < 6; k++) {
+            const r = 5 * dpr;
+            ctx.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);
+          }
+          ctx.globalAlpha = 1;
+        }
+        for (const x of [vw * 0.25, vw * 0.75]) {
+          ctx.globalAlpha = clamp3(0.5 + px.energy * 0.3, 0, 1);
+          for (let k = 0; k < 8; k++) {
+            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t2 * 3 + k) * 1.5) * dpr;
+            ctx.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);
+          }
+          const r = (60 + beat2 * 30) * dpr;
+          ctx.globalAlpha = clamp3(0.25 + beat2 * 0.2, 0, 1);
+          ctx.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
+      } else if (v.decor === "cellar") {
+        const n = 4;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(6,4,10,0.85)";
+        ctx.beginPath();
+        ctx.rect(0, 0, vw, vh * 0.32);
+        for (let k = 0; k < n; k++) {
+          const x0 = k / n * vw, x1 = (k + 1) / n * vw;
+          ctx.moveTo(x1, vh * 0.32);
+          ctx.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);
+          ctx.closePath();
+        }
+        ctx.fill("evenodd");
+        ctx.strokeStyle = "rgba(255,255,255,0.035)";
+        ctx.lineWidth = dpr;
+        ctx.beginPath();
+        for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {
+          ctx.moveTo(0, y);
+          ctx.lineTo(vw, y);
+        }
+        ctx.stroke();
+        ctx.globalCompositeOperation = "lighter";
+        for (let k = 0; k < n; k++) {
+          const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t2 * 1.1 + k) * 4e-3);
+          const r = (20 + px.kickEnv * 44) * dpr;
+          ctx.globalAlpha = clamp3(0.4 + px.kickEnv * 0.6, 0, 1);
+          ctx.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
       } else if (v.decor === "fairy") {
         for (let k = 0; k <= 26; k++) {
           const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));
@@ -8355,19 +8842,50 @@
         ctx.globalAlpha = 1;
       }
     }
-    let stands = null;
+    let stands = null, sky = null, win = null, flies = null;
     const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
     const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
     const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
-    const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };
+    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };
+    const GOLD = [255, 214, 120], WHITE = [255, 255, 255];
+    function confetti(pal, big, few) {
+      const pop = (c2) => {
+        const m = Math.max(...c2, 1);
+        return c2.map((v) => Math.round(clamp3((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));
+      };
+      const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];
+      for (let k = 0; k < n && fx.confetti.length < 420; k++) {
+        const side = k % 2 ? 1 : -1;
+        fx.confetti.push({
+          x: vw * (side < 0 ? 0.12 : 0.88),
+          y: vh * 0.98,
+          vx: -side * vh * (0.12 + Math.random() * 0.45),
+          vy: -vh * (1.25 + Math.random() * 0.6),
+          r: Math.random() * 6.3,
+          vr: (Math.random() - 0.5) * 14,
+          w: (9 + Math.random() * 8) * (vh / 720),
+          h: (5 + Math.random() * 4) * (vh / 720),
+          ph: Math.random() * 6.3,
+          c: cols[k % cols.length],
+          a: 1
+        });
+      }
+      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });
+    }
     function drawFx(ctx, st, v, px, pal, dpr) {
       const dt = st.dt, key = px.key;
       const big = v.decor === "towers" || v.decor === "stands";
       const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;
       if (newBeat) fx.beat = px.beatIdx;
-      const barStart = newBeat && px.inBar === 0;
+      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;
+      if (newBeat) fx.barId = barId;
       if (barStart) fx.bar++;
-      if (st.fx && !px.blackout && v.decor !== "fairy") {
+      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {
+        fx.confAt = st.t;
+        confetti(pal, big, st.quality < 1 || v.decor === "fairy");
+      }
+      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;
+      if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {
         const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;
         const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;
         if (fire && CO2.has(key)) {
@@ -8375,7 +8893,7 @@
           for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });
         }
         if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });
-        if (px.finale && big && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
+        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
           for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });
         }
         if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;
@@ -8432,6 +8950,42 @@
         ctx.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);
       }
       ctx.globalAlpha = 1;
+      fx.confetti = fx.confetti.filter((c2) => c2.y < vh * 1.05 && (c2.a -= dt * 0.07) > 0);
+      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);
+      if (fx.confetti.length || fx.streamers.length) {
+        ctx.globalCompositeOperation = "source-over";
+        for (const c2 of fx.confetti) {
+          c2.vy = c2.vy < vh * 0.1 ? c2.vy + vh * 1.4 * dt : vh * 0.1;
+          c2.vx *= 1 - dt * 1.6;
+          c2.ph += dt * 5;
+          c2.r += c2.vr * dt;
+          c2.x += (c2.vx + Math.sin(c2.ph) * vh * 0.05) * dt;
+          c2.y += c2.vy * dt;
+          const flip = Math.abs(Math.cos(c2.ph * 1.3)), w = c2.w * (0.3 + 0.7 * flip), h = c2.h;
+          ctx.globalAlpha = clamp3(c2.a, 0, 1) * (0.55 + 0.45 * flip);
+          ctx.fillStyle = `rgb(${c2.c[0]},${c2.c[1]},${c2.c[2]})`;
+          const co = Math.cos(c2.r), si = Math.sin(c2.r);
+          ctx.setTransform(co, si, -si, co, c2.x, c2.y);
+          ctx.fillRect(-w / 2, -h / 2, w, h);
+        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.lineWidth = 4 * (vh / 720);
+        ctx.lineCap = "round";
+        for (const m of fx.streamers) {
+          m.y += m.vy * dt;
+          m.ph += dt * 2;
+          ctx.globalAlpha = clamp3(m.a, 0, 1) * 0.85;
+          ctx.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;
+          ctx.beginPath();
+          for (let k = 0; k <= 10; k++) {
+            const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;
+            k ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+          }
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "lighter";
+      }
       if (fx.strobe > 0.02) {
         ctx.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;
         ctx.fillRect(0, 0, vw, vh);
@@ -8489,6 +9043,13 @@
       cinematic: "sway"
     };
     const mood = { x: 0 };
+    const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical"]);
+    const sea = { a: 0 };
+    function seaLevel(px, dt, st) {
+      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp3((px.energy - 0.32) * 2.2, 0, 1) : 0;
+      sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));
+      return sea.a;
+    }
     function crowdMood(px, dt, hype) {
       const target = clamp3(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);
       mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));
@@ -8576,7 +9137,8 @@
       if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);
       if (!crowd.people.length) return;
       const X = crowdMood(px, dt, st.hype), t2 = st.t;
-      const style = MOVES[px.key] || "clap";
+      const style = v.seated ? "sway" : MOVES[px.key] || "clap";
+      const SEAa = seaLevel(px, dt, st);
       const half = st.bpm > 150;
       const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t2 * (st.bpm / 60));
       const phi = clamp3(px.phase ?? 0, 0, 1);
@@ -8649,7 +9211,9 @@
         ctx.fillStyle = FILL[p.row];
         ctx.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));
         ctx.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);
-        const wantUp = lifted || inWave || me2 > 0.55 && p.up < me2 + 0.1 && style !== "sway" && style !== "nod" ? 1 : p.gadget && me2 < 0.5 ? 0.8 : style === "clap" && me2 > 0.3 ? 0.75 : 0;
+        const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;
+        const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
+        const wantUp = v.seated && !inSea ? 0 : lifted || inWave || me2 > 0.55 && p.up < me2 + 0.1 && style !== "sway" && style !== "nod" ? 1 : inSea ? 0.9 : p.gadget && me2 < 0.5 ? 0.8 : style === "clap" && me2 > 0.3 ? 0.75 : 0;
         p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
         const arm = arms[p.row];
         const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
@@ -8660,6 +9224,7 @@
           if (a > 0.02) {
             let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;
             if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;
+            if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin((beatN + phi) / 8 * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];
             if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];
             if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me2 > 0.55) uy -= 14 * s1 * down;
             hxA += (sx + ux - hxA) * a;
@@ -8668,7 +9233,7 @@
           const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);
           arm.moveTo(sx, sy);
           arm.quadraticCurveTo(ex, ey, hxA, hyA);
-          if (side === p.hand && p.gadget && a > 0.5 && (me2 < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);
+          if (side === p.hand && gadget && a > 0.5 && (inSea || me2 < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);
         }
         if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });
       }
@@ -8815,6 +9380,7 @@
     const timer = setTimeout(() => ctl.abort(), 6e3);
     try {
       const res = await fetch(url, { signal: ctl.signal, headers: { Accept: "application/json" } });
+      if (res.status === 503) mbNext = Math.max(mbNext, Date.now() + 6e4);
       return res.ok ? await res.json() : null;
     } catch {
       return null;
@@ -8824,7 +9390,9 @@
   }
   function credited(uri) {
     if (!uri?.startsWith("spotify:track:")) return Promise.resolve(/* @__PURE__ */ new Set());
-    if (store[uri]) return Promise.resolve(new Set(store[uri]));
+    const known = store[uri];
+    if (Array.isArray(known)) return Promise.resolve(new Set(known));
+    if (known?.miss && Date.now() - known.miss < RETRY2) return Promise.resolve(/* @__PURE__ */ new Set());
     if (jobs.has(uri)) return jobs.get(uri);
     const job = (async () => {
       const id = uri.split(":")[2], found = /* @__PURE__ */ new Set();
@@ -8856,10 +9424,9 @@
         } catch {
         }
       }
-      if (answered) {
-        store[uri] = [...found];
-        persist();
-      }
+      store[uri] = answered ? [...found] : { miss: Date.now() };
+      persist();
+      jobs.delete(uri);
       return found;
     })();
     jobs.set(uri, job);
@@ -8949,7 +9516,7 @@
     }
     return { ...cur.lv, chroma, credited: [...cur.kinds] };
   }
-  var KINDS, LS, store, mbNext, jobs, STEP2, maps, cur, instruments;
+  var KINDS, LS, RETRY2, store, mbNext, jobs, STEP2, maps, cur, instruments;
   var init_instruments = __esm({
     "src/instruments.js"() {
       init_core();
@@ -8958,6 +9525,7 @@
       init_player();
       KINDS = ["brass", "sax", "guitar", "piano", "strings", "choir"];
       LS = "mirage:instruments";
+      RETRY2 = 24 * 36e5;
       store = {};
       try {
         store = JSON.parse(localStorage.getItem(LS) || "{}") || {};
@@ -11081,7 +11649,7 @@
           onReady?.(api2);
         } else if (type === 3) {
           const tl = body[0] << 8 | body[1];
-          onMessage?.(body.slice(2 + tl));
+          onMessage?.(body.slice(2 + tl), new TextDecoder().decode(body.slice(2, 2 + tl)));
         }
       }
     };
@@ -11107,13 +11675,35 @@
     };
     return api2;
   }
+  function flushClears(c2) {
+    const list = pending();
+    if (!list.length) return;
+    for (const topic of list) c2.publish(topic, [], true);
+    setPending([]);
+  }
+  function retire(old) {
+    if (!old) return;
+    setPending([...pending().filter((x) => x !== old.topic), old.topic]);
+    if (client && status === "on") return flushClears(client);
+    const c2 = mqttOpen(BROKERS[brokerIx % BROKERS.length], {
+      onReady: (api2) => {
+        flushClears(api2);
+        setTimeout(() => api2.close(), 400);
+      }
+    });
+    setTimeout(() => c2.closed || c2.close(), 1e4);
+  }
   async function prepare() {
     if (ses && (lastFeed || !offAt || Date.now() - offAt < GRACE)) return ses;
+    clearTimeout(expireT);
+    retire(ses);
     const raw = crypto.getRandomValues(new Uint8Array(16)), ch = crypto.getRandomValues(new Uint8Array(16));
-    const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt"]);
+    const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
     const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}`;
     ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await import_qrcode.default.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }) };
     offAt = 0;
+    wishes = [];
+    emitWishes();
     emit();
     return ses;
   }
@@ -11121,7 +11711,12 @@
     if (client && !client.closed) return;
     setStatus("connecting");
     client = mqttOpen(BROKERS[brokerIx % BROKERS.length], {
-      onReady: () => setStatus("on"),
+      onReady: (api2) => {
+        setStatus("on");
+        flushClears(api2);
+        if (ses) api2.subscribe(ses.topic + "/in");
+      },
+      onMessage: (m, topic) => topic === ses?.topic + "/in" && inbound(m),
       onClose: () => {
         client = null;
         setStatus(wanted ? "connecting" : "off");
@@ -11143,11 +11738,99 @@
     }
     sending = false;
   }
-  function feed(px, pal, bpm) {
+  function remember(tr) {
+    if (!tr?.id || !ID.test(tr.id) || tr.is_playable === false) return null;
+    const x = { i: tr.id, uri: tr.uri || "spotify:track:" + tr.id, t: clean(tr.name, 80), a: clean((tr.artists || []).map((y) => y.name).join(", "), 60), img: /^https:\/\/i\.scdn\.co\//.test(coverOf(tr)) ? coverOf(tr) : "" };
+    tracks.set(x.i, x);
+    if (tracks.size > 300) tracks.delete(tracks.keys().next().value);
+    return x;
+  }
+  async function seal(obj) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ses.key, te.encode(JSON.stringify(obj))));
+    const out = new Uint8Array(12 + ct.length);
+    out.set(iv);
+    out.set(ct, 12);
+    return out;
+  }
+  async function inbound(m) {
+    if (!cfg.partyWishes || !ses || m.length < 29) return;
+    let msg;
+    try {
+      msg = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: m.slice(0, 12) }, ses.key, m.slice(12))));
+    } catch {
+      return;
+    }
+    const id = clean(msg?.id, 24);
+    if (!/^[\w-]{6,24}$/.test(id) || Math.abs(Date.now() - Number(msg.s)) > 12e4 || msg.on != null) return;
+    if (msg.k === "vote") {
+      const w = wishes.find((x) => x.i === clean(msg.w, 40));
+      if (w && !w.v.has(id)) {
+        w.v.add(id);
+        emitWishes();
+      }
+      return;
+    }
+    if (msg.k === "search") {
+      const q = clean(msg.q, 80);
+      if (q.length < 2 || Date.now() - (searched.get(id) || 0) < 600) return;
+      searched.set(id, Date.now());
+      let res = [];
+      try {
+        const r = await S.CosmosAsync.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=6`);
+        res = (r?.tracks?.items || []).map(remember).filter(Boolean).map(({ i, t: t2, a, img }) => ({ i, t: t2, a, img }));
+      } catch {
+      }
+      if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r: Number(msg.r) || 0, res }), false);
+      return;
+    }
+    if (msg.k !== "wish") return;
+    const tid = clean(msg.i, 22), name = clean(msg.n, 20);
+    if (!ID.test(tid) || Date.now() - (seen.get(id) || 0) < 45e3) return;
+    let tr = tracks.get(tid);
+    if (!tr) {
+      try {
+        tr = remember(await S.CosmosAsync.get(`https://api.spotify.com/v1/tracks/${tid}`));
+      } catch {
+      }
+    }
+    if (!tr) return;
+    seen.set(id, Date.now());
+    const have = wishes.find((x) => x.uri === tr.uri);
+    if (have) have.v.add(id);
+    else {
+      wishes.push({ ...tr, n: name, v: /* @__PURE__ */ new Set([id]), st: "open", at: Date.now() });
+      const open = wishes.filter((x) => x.st === "open");
+      if (open.length > 8) wishes = wishes.filter((x) => x !== open.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
+    }
+    emitWishes();
+  }
+  async function accept(i) {
+    const w = wishes.find((x) => x.i === i);
+    if (!w || w.st !== "open") return false;
+    try {
+      await S.addToQueue([{ uri: w.uri }]);
+    } catch {
+      return false;
+    }
+    w.st = "queued";
+    emitWishes();
+    setTimeout(() => {
+      wishes = wishes.filter((x) => x !== w);
+      emitWishes();
+    }, 6e4);
+    return true;
+  }
+  function decline(i) {
+    wishes = wishes.filter((x) => x.i !== i);
+    emitWishes();
+  }
+  function feed(px, pal, bpm, lyric) {
     if (!cfg.partyLive) return;
     lastFeed = performance.now();
     wanted = true;
     clearTimeout(stopT);
+    clearTimeout(expireT);
     stopT = setTimeout(stop, 2500);
     if (!ses) return void prepare();
     connect2();
@@ -11167,7 +11850,11 @@
       b: +px.build.toFixed(2),
       pal: (pal || []).slice(0, 3).map((c2) => c2.map((v) => Math.round(v))),
       t: titleOf(item) || "",
-      a: artistOf(item) || ""
+      a: artistOf(item) || "",
+      // Liedtext zum Mitsingen: aktuelle und nächste Zeile
+      ly: lyric?.ly || "",
+      lyn: lyric?.lyn || "",
+      w: cfg.partyWishes ? wishList() : null
     }, true);
   }
   async function stop() {
@@ -11182,11 +11869,18 @@
       client = null;
       setStatus("off");
     }, 400);
+    expireT = setTimeout(() => {
+      if (wanted) return;
+      retire(ses);
+      ses = null;
+      emit();
+    }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, wanted, emit, setStatus, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searched, tracks, ID, coverOf, emitWishes, clean, ranked, wishList, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
+      init_core();
       init_config();
       init_player();
       BROKERS = ["wss://broker.hivemq.com:8884/mqtt", "wss://broker.emqx.io:8084/mqtt"];
@@ -11219,6 +11913,7 @@
       offAt = 0;
       sending = false;
       stopT = 0;
+      expireT = 0;
       wanted = false;
       emit = () => window.dispatchEvent(new Event("mirage:live"));
       setStatus = (s) => {
@@ -11226,7 +11921,34 @@
         status = s;
         setTimeout(emit);
       };
-      live = { prepare, feed, stop, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status };
+      CLEAR = "mirage:liveClear";
+      pending = () => {
+        try {
+          return JSON.parse(localStorage.getItem(CLEAR) || "[]").filter((x) => typeof x === "string").slice(-20);
+        } catch {
+          return [];
+        }
+      };
+      setPending = (list) => {
+        try {
+          localStorage.setItem(CLEAR, JSON.stringify(list));
+        } catch {
+        }
+      };
+      wishes = [];
+      seen = /* @__PURE__ */ new Map();
+      searched = /* @__PURE__ */ new Map();
+      tracks = /* @__PURE__ */ new Map();
+      ID = /^[A-Za-z0-9]{22}$/;
+      coverOf = (tr) => {
+        const imgs = [...tr?.album?.images || []].sort((a, b) => (a.width || 0) - (b.width || 0));
+        return (imgs.find((x) => (x.width || 0) >= 64) || imgs[imgs.length - 1])?.url || "";
+      };
+      emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage:wishes")));
+      clean = (v, n) => String(v ?? "").replace(new RegExp("\\p{Cc}", "gu"), " ").trim().slice(0, n);
+      ranked = () => wishes.filter((w) => w.st === "open").sort((a, b) => b.v.size - a.v.size || a.at - b.at);
+      wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, v: w.v.size, st: w.st }));
+      live = { prepare, feed, stop, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
     }
   });
 
@@ -11294,7 +12016,7 @@
         let el2 = null, raf = 0, lastText = 0, coverToken = 0;
         let q = {};
         let lyr = null, lyrUri = "", active = -2;
-        let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0;
+        let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
         const pit = new Float32Array(12);
         const vizRect = { n: 0, r: null };
         let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
@@ -11915,9 +12637,9 @@
           lyr = got;
           hype = /* @__PURE__ */ new Set();
           const HYPE = /\b(drop|jump|hands? up|put your hands|everybody|let'?s go|come on|party|dance|scream|shout|louder|higher|alle zusammen|hände hoch|springen|los geht'?s|vamos|arriba|salta|dale|allez|levez|sautez|давай)\b/i;
-          const seen = /* @__PURE__ */ new Map(), key = (x) => x.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
-          (got?.lines || []).forEach((l) => key(l.text).length > 6 && seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1));
-          (got?.lines || []).forEach((l, i) => (seen.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
+          const seen2 = /* @__PURE__ */ new Map(), key = (x) => x.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+          (got?.lines || []).forEach((l) => key(l.text).length > 6 && seen2.set(key(l.text), (seen2.get(key(l.text)) || 0) + 1));
+          (got?.lines || []).forEach((l, i) => (seen2.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
           active = -2;
           q.inner.textContent = "";
           q.inner.classList.remove("is-in");
@@ -12233,6 +12955,27 @@
               ctx.beginPath();
               ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r2, 0, Math.PI * 2);
               ctx.fill();
+            }
+          } else if (V.style === "tunnel") {
+            if (now - tunnelAt > 40) {
+              tunnelAt = now;
+              const ring = new Float32Array(48);
+              for (let k2 = 0; k2 < 48; k2++) ring[k2] = vals[Math.floor(k2 / 48 * N)] || 0;
+              tunnel3d.push({ at: now, v: ring, c: tunnel3d.length % 3 });
+            }
+            const life = 1400 - b * 500, far = Math.hypot(vw, vh) * 0.62;
+            tunnel3d = tunnel3d.filter((r2) => now - r2.at < life);
+            for (const r2 of tunnel3d) {
+              const z = (now - r2.at) / life, d = R * 1.05 + (far - R) * z * z;
+              ctx.lineWidth = (1 + z * 5) * dpr;
+              ctx.strokeStyle = rgba3(pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
+              ctx.beginPath();
+              for (let k2 = 0; k2 <= 48; k2++) {
+                const j = k2 % 48, a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j] * 0.28 * V.height);
+                k2 ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+              }
+              ctx.closePath();
+              ctx.stroke();
             }
           } else if (V.style === "wave") {
             ctx.beginPath();
@@ -12556,7 +13299,7 @@
           if (venueWorker || venueCtx) return;
           try {
             if (q.venueEl.transferControlToOffscreen && window.Worker) {
-              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/show.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  var RIG = {\n    house: ["wave", "chase"],\n    deephouse: ["wave"],\n    techhouse: ["chase", "cross"],\n    garage: ["wave", "chase"],\n    disco: ["wave", "fan"],\n    techno: ["chase", "cross", "point"],\n    edm: ["fan", "cross", "wave"],\n    rave: ["fan", "cross"],\n    trance: ["fan", "wave"],\n    psytrance: ["cross", "wave"],\n    hardstyle: ["cross", "fan"],\n    dnb: ["chase", "cross"],\n    dubstep: ["point", "fan"],\n    eurodance: ["wave", "fan"],\n    synthwave: ["wave"],\n    hyperpop: ["chase", "fan"],\n    pop: ["wave", "fan"],\n    kpop: ["chase", "wave"],\n    schlager: ["wave", "fan"],\n    rock: ["point", "fan"],\n    metal: ["point", "fan"],\n    punk: ["point"],\n    alternative: ["point", "wave"],\n    indie: ["wave"],\n    latin: ["wave"],\n    reggaeton: ["wave", "chase"],\n    salsa: ["wave"],\n    brazil: ["wave"],\n    afro: ["wave"],\n    bollywood: ["wave", "fan"],\n    arabic: ["wave"],\n    bass: ["point", "chase"],\n    trap: ["point", "chase"],\n    drill: ["point"],\n    phonk: ["chase"],\n    soul: ["wave"],\n    gospel: ["fan"],\n    country: ["wave"],\n    reggae: ["wave"],\n    flamenco: ["point"]\n  };\n  var BLIND = /* @__PURE__ */ new Set(["rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);\n  var SHEET = /* @__PURE__ */ new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);\n  var CALM = /* @__PURE__ */ new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues"]);\n  var rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;\n  var mixW = (c, f) => c.map((v) => v + (255 - v) * f);\n  function createShow(glowSprite) {\n    let vw = 0, vh = 0;\n    const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };\n    const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);\n    function drawRig(ctx2, st, v, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);\n      const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);\n      if (px.dropHit) rig.drop = 1;\n      rig.drop *= Math.exp(-dt * 3);\n      const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;\n      const pats = RIG[key];\n      ctx2.globalCompositeOperation = "lighter";\n      if (n && pats && st.rig) {\n        const blk = Math.floor(bp / 32);\n        if (blk !== rig.blk) {\n          rig.blk = blk;\n          rig.pat = pats[(blk + (px.scene || 0)) % pats.length];\n          rig.col = (rig.col + 1) % 3;\n        }\n        const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(8,6,16,0.7)";\n        ctx2.fillRect(0, y - 3 * dpr, vw, 6 * dpr);\n        ctx2.globalCompositeOperation = "lighter";\n        const lead = Math.floor(bp * 2) % n;\n        for (let i = 0; i < n; i++) {\n          const x = vw * (0.07 + 0.86 * i / (n - 1)), u = i / (n - 1) - 0.5;\n          const toCover = Math.atan2(st.cy - y, st.cx - x);\n          let a = Math.PI / 2;\n          if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin(bp * Math.PI / 4) + rig.drop * 0.6);\n          else if (rig.pat === "wave") a += 0.5 * Math.sin(bp * Math.PI / 2 + i * 0.7);\n          else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin(bp * Math.PI / 4));\n          else if (rig.pat === "chase") a += u * 0.6;\n          else if (rig.pat === "point") a = toCover;\n          a += (toCover - a) * px.build * 0.8;\n          let k = base * (CALM.has(key) ? 0.5 : 1);\n          if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;\n          if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;\n          if (k < 4e-3) continue;\n          const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];\n          const len = vh * 1.2, wd = 0.03 + px.energy * 0.015 + rig.drop * 0.02;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, len);\n          g.addColorStop(0, rgba(c, k * 1.6));\n          g.addColorStop(0.4, rgba(c, k * 0.5));\n          g.addColorStop(1, rgba(c, 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x, y);\n          ctx2.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);\n          ctx2.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);\n          ctx2.closePath();\n          ctx2.fill();\n          const r = (8 + k * 70) * dpr;\n          ctx2.globalAlpha = clamp(k * 5, 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      const sn = px.snareEnv > 0.8;\n      if (st.flash && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale)) rig.blind = 1;\n      rig.sn = sn;\n      rig.blind *= Math.exp(-dt * 7);\n      if (rig.blind > 0.02 && vis > 0) {\n        for (const f of [0.22, 0.42, 0.58, 0.78]) {\n          const r = vh * 0.17 * (0.6 + rig.blind * 0.4);\n          ctx2.globalAlpha = rig.blind * 0.8 * vis;\n          ctx2.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);\n        ctx2.fillRect(0, 0, vw, vh);\n      }\n      const want = SHEET.has(key) && st.rig && !px.blackout && (px.drop > 0.35 || px.energy > 0.88 && px.build < 0.1) ? 1 : 0;\n      rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));\n      if (rig.sheet > 0.02) {\n        const c = mixW(pal[2], 0.35), tilt = Math.sin(bp * Math.PI / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));\n        for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * rig.sheet);\n          ctx2.beginPath();\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 + tilt * vw / 2);\n          ctx2.stroke();\n        }\n        ctx2.lineWidth = dpr;\n        ctx2.strokeStyle = rgba(c, 0.14 * rig.sheet);\n        ctx2.beginPath();\n        for (let k = -4; k <= 4; k++) {\n          const a = k * 0.03 + tilt;\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 - tilt * vw / 2 + Math.tan(a) * vw);\n        }\n        ctx2.stroke();\n      }\n      if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx2, st, px, pal, dpr);\n    }\n    let bokeh = null;\n    function drawBokeh(ctx2, st, px, pal, dpr) {\n      bokeh ||= Array.from({ length: 18 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random(), ph: Math.random() * 6.3, c: Math.floor(Math.random() * 3) }));\n      for (const b of bokeh) {\n        b.y -= st.dt * 0.012 * (0.5 + b.r);\n        if (b.y < -0.1) [b.y, b.x] = [1.1, Math.random()];\n        const r = (18 + b.r * 34) * dpr;\n        ctx2.globalAlpha = clamp((0.05 + 0.08 * px.energy) * (0.6 + 0.4 * Math.sin(st.t * 0.7 + b.ph)), 0, 1);\n        ctx2.drawImage(glowSprite(pal[b.c]), b.x * vw - r, b.y * vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const ins = { sparks: [], bolts: [], keys: new Float32Array(24), lastBolt: 0, kHit: false };\n    function drawInst(ctx2, st, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const I = st.inst, t = st.t, dt = st.dt;\n      if (!I || px.blackout) return;\n      ctx2.globalCompositeOperation = "lighter";\n      if (I.brass > 0.01) {\n        const L = I.brass, gold = [255, 200, 90];\n        for (const side of [-1, 1]) {\n          const ox = side < 0 ? 0 : vw, oy = vh * 0.95;\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);\n            const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            g.addColorStop(0, rgba(gold, 0.22 * L));\n            g.addColorStop(1, rgba(gold, 0));\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = (18 - k * 2) * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(ox, oy);\n            ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            ctx2.stroke();\n          }\n          const r = vh * 0.14 * (0.6 + L * 0.5);\n          ctx2.globalAlpha = L * 0.8;\n          ctx2.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });\n        }\n      }\n      if (I.sax > 0.01) {\n        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);\n        for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {\n          for (let k = 0; k < 3; k++) {\n            ctx2.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);\n            ctx2.lineWidth = (44 - k * 10) * dpr;\n            ctx2.beginPath();\n            for (let s = 0; s <= 20; s++) {\n              const f = s / 20, yy = vh * (0.95 - f * 0.75);\n              const xx = vw * bx + dir * Math.sin(f * 5 + t * (0.8 + k * 0.2) + k) * vw * 0.05 * (0.5 + f);\n              s ? ctx2.lineTo(xx, yy) : ctx2.moveTo(xx, yy);\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.guitar > 0.3) {\n        const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;\n        if (hitNow && !ins.kHit && t - ins.lastBolt > 0.25) {\n          ins.lastBolt = t;\n          const pts = [];\n          const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;\n          const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);\n          for (let s = 0; s <= 10; s++) {\n            const f = s / 10;\n            pts.push([x + (tx - x) * f + (s && s < 10 ? (Math.random() - 0.5) * vw * 0.04 : 0), y + (ty - y) * f]);\n          }\n          ins.bolts.push({ pts, a: 1 });\n        }\n        ins.kHit = hitNow;\n        for (let k = 0; k < 3; k++) {\n          if (Math.random() > dt * 18 * I.guitar) continue;\n          const r = (10 + Math.random() * 16) * dpr;\n          ctx2.globalAlpha = 0.5 + Math.random() * 0.5;\n          ctx2.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);\n      for (const b of ins.bolts) {\n        for (const [lw, c, al] of [[10 * dpr, [140, 170, 255], 0.25], [2.2 * dpr, [235, 245, 255], 0.95]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * b.a * Math.max(I.guitar, 0.3));\n          ctx2.beginPath();\n          b.pts.forEach(([x, y], k) => k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y));\n          ctx2.stroke();\n        }\n      }\n      if (I.piano > 0.01 || ins.keys.some((k) => k > 0.01)) {\n        const ch = I.chroma, w = vw / 24;\n        for (let k = 0; k < 24; k++) {\n          const target = ch ? (ch[k % 12] || 0) * I.piano : 0;\n          ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));\n          const L = ins.keys[k];\n          if (L < 0.02) continue;\n          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;\n          const g = ctx2.createLinearGradient(0, yb - h, 0, yb);\n          g.addColorStop(0, rgba(pal[k % 3], 0));\n          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x, yb - h, w * 0.6, h);\n          const r = w * 0.7;\n          ctx2.globalAlpha = clamp(L * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      if (I.strings > 0.01) {\n        const L = I.strings;\n        for (let k = 0; k < 3; k++) {\n          const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t * 0.6 + k * 1.7) * vh * 0.05;\n          for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {\n            ctx2.lineWidth = lw;\n            ctx2.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);\n            ctx2.beginPath();\n            for (let s = 0; s <= 32; s++) {\n              const x = s / 32 * vw;\n              s ? ctx2.lineTo(x, yy(x)) : ctx2.moveTo(x, yy(x));\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.choir > 0.01) {\n        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;\n        for (let k = 0; k < 9; k++) {\n          const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t * 0.2) * 0.05, len = vh * 1.1;\n          const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));\n          g.addColorStop(1, rgba([255, 245, 225], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = 40 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(ox, oy);\n          ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          ctx2.stroke();\n        }\n      }\n      ins.sparks = ins.sparks.filter((s) => (s.a -= dt * 0.9) > 0);\n      for (const s of ins.sparks) {\n        s.vy += vh * 0.2 * dt;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 6 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    return { drawRig, drawInst };\n  }\n\n  // src/venue.js\n  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    const show = createShow(glowSprite);\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp2(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba2(c, al));\n        g.addColorStop(0.5, rgba2(c, al * 0.35));\n        g.addColorStop(1, rgba2(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba2(pal[0], al));\n          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));\n          g.addColorStop(1, rgba2(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp2(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba2(pal[f.c], 0));\n            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba2(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach" }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "club",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "stadium",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "stadium",\n      chill: "home",\n      classical: "home",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "festival",\n      dubstep: "festival",\n      garage: "club",\n      eurodance: "club",\n      synthwave: "club",\n      hyperpop: "club",\n      trap: "club",\n      drill: "warehouse",\n      phonk: "warehouse",\n      rnb: "club",\n      soul: "club",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "club",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "stadium",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "stadium"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba2, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba2(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba2(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp2((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let stands = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], strobe: 0, beat: -1, bar: 0 };\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barStart = newBeat && px.inBar === 0;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && v.decor !== "fairy") {\n        const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && big && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp2(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway",\n      edm: "jump",\n      deephouse: "bounce",\n      techhouse: "pump",\n      psytrance: "jump",\n      dubstep: "bang",\n      garage: "bounce",\n      eurodance: "jump",\n      synthwave: "nod",\n      hyperpop: "jump",\n      trap: "bounce",\n      drill: "nod",\n      phonk: "pump",\n      rnb: "sway",\n      soul: "clap",\n      indie: "bounce",\n      alternative: "bang",\n      blues: "sway",\n      schlager: "clap",\n      ballad: "sway",\n      gospel: "clap",\n      reggaeton: "bounce",\n      salsa: "bounce",\n      brazil: "bounce",\n      flamenco: "clap",\n      bollywood: "bounce",\n      arabic: "clap",\n      ambient: "sway",\n      cinematic: "sway"\n    };\n    const mood = { x: 0 };\n    function crowdMood(px, dt, hype) {\n      const target = clamp2(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 40) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      x.moveTo(cx0 - 20 * S1, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba2, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = MOVES[px.key] || "clap";\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const phi = clamp2(px.phase ?? 0, 0, 1);\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba2(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba2(pal[0], 0));\n        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const strokeRow = (row) => {\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) strokeRow(curRow);\n          curRow = p.row;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp2(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const cycN = half ? beatN >> 1 : beatN;\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc));\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.fillStyle = FILL[p.row];\n        ctx2.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const wantUp = lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && p.gadget && a > 0.5 && (me < 0.55 || p.gadget === "phone")) glows.push([hxA, hyA - 6 * s1, p.gadget, s1, p.row]);\n        }\n        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });\n      }\n      if (curRow != null) strokeRow(curRow);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const [gx, gy, kind, s1, row] of glows) {\n        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n        ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];\n        ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n      }\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      for (const f of crowd.flashes) {\n        const r = 34 * f.s;\n        ctx2.globalAlpha = f.a * A;\n        ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        show.drawRig(ctx2, st, v, st.px, st.pal, st.dpr);\n        drawDecor(ctx2, v, st.px, st.pal, rgba2, st.dpr, st);\n      }\n      if (st.inst) show.drawInst(ctx2, st, st.px, st.pal, st.dpr);\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba2, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
+              const url = URL.createObjectURL(new Blob(['(() => {\n  // src/show.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  var RIG = {\n    house: ["wave", "chase"],\n    deephouse: ["wave"],\n    techhouse: ["chase", "cross"],\n    garage: ["wave", "chase"],\n    disco: ["wave", "fan"],\n    techno: ["chase", "cross", "point"],\n    edm: ["fan", "cross", "wave"],\n    rave: ["fan", "cross"],\n    trance: ["fan", "wave"],\n    psytrance: ["cross", "wave"],\n    hardstyle: ["cross", "fan"],\n    dnb: ["chase", "cross"],\n    dubstep: ["point", "fan"],\n    eurodance: ["wave", "fan"],\n    synthwave: ["wave"],\n    hyperpop: ["chase", "fan"],\n    pop: ["wave", "fan"],\n    kpop: ["chase", "wave"],\n    schlager: ["wave", "fan"],\n    rock: ["point", "fan"],\n    metal: ["point", "fan"],\n    punk: ["point"],\n    alternative: ["point", "wave"],\n    indie: ["wave"],\n    latin: ["wave"],\n    reggaeton: ["wave", "chase"],\n    salsa: ["wave"],\n    brazil: ["wave"],\n    afro: ["wave"],\n    bollywood: ["wave", "fan"],\n    arabic: ["wave"],\n    bass: ["point", "chase"],\n    trap: ["point", "chase"],\n    drill: ["point"],\n    phonk: ["chase"],\n    soul: ["wave"],\n    gospel: ["fan"],\n    country: ["wave"],\n    reggae: ["wave"],\n    flamenco: ["point"]\n  };\n  var BLIND = /* @__PURE__ */ new Set(["rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);\n  var SHEET = /* @__PURE__ */ new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);\n  var CALM = /* @__PURE__ */ new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues"]);\n  var rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;\n  var mixW = (c, f) => c.map((v) => v + (255 - v) * f);\n  function createShow(glowSprite) {\n    let vw = 0, vh = 0;\n    const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };\n    const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);\n    function drawRig(ctx2, st, v, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);\n      const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);\n      if (px.dropHit) rig.drop = 1;\n      rig.drop *= Math.exp(-dt * 3);\n      const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;\n      const pats = RIG[key];\n      ctx2.globalCompositeOperation = "lighter";\n      if (n && pats && st.rig) {\n        const blk = Math.floor(bp / 32);\n        if (blk !== rig.blk) {\n          rig.blk = blk;\n          rig.pat = pats[(blk + (px.scene || 0)) % pats.length];\n          rig.col = (rig.col + 1) % 3;\n        }\n        const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(8,6,16,0.7)";\n        ctx2.fillRect(0, y - 3 * dpr, vw, 6 * dpr);\n        ctx2.globalCompositeOperation = "lighter";\n        const lead = Math.floor(bp * 2) % n;\n        for (let i = 0; i < n; i++) {\n          const x = vw * (0.07 + 0.86 * i / (n - 1)), u = i / (n - 1) - 0.5;\n          const toCover = Math.atan2(st.cy - y, st.cx - x);\n          let a = Math.PI / 2;\n          if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin(bp * Math.PI / 4) + rig.drop * 0.6);\n          else if (rig.pat === "wave") a += 0.5 * Math.sin(bp * Math.PI / 2 + i * 0.7);\n          else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin(bp * Math.PI / 4));\n          else if (rig.pat === "chase") a += u * 0.6;\n          else if (rig.pat === "point") a = toCover;\n          a += (toCover - a) * px.build * 0.8;\n          let k = base * (CALM.has(key) ? 0.5 : 1);\n          if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;\n          if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;\n          if (k < 4e-3) continue;\n          const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];\n          const len = vh * 1.2, wd = 0.03 + px.energy * 0.015 + rig.drop * 0.02;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, len);\n          g.addColorStop(0, rgba(c, k * 1.6));\n          g.addColorStop(0.4, rgba(c, k * 0.5));\n          g.addColorStop(1, rgba(c, 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x, y);\n          ctx2.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);\n          ctx2.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);\n          ctx2.closePath();\n          ctx2.fill();\n          const r = (8 + k * 70) * dpr;\n          ctx2.globalAlpha = clamp(k * 5, 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      const sn = px.snareEnv > 0.8;\n      if (st.flash && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale)) rig.blind = 1;\n      rig.sn = sn;\n      rig.blind *= Math.exp(-dt * 7);\n      if (rig.blind > 0.02 && vis > 0) {\n        for (const f of [0.22, 0.42, 0.58, 0.78]) {\n          const r = vh * 0.17 * (0.6 + rig.blind * 0.4);\n          ctx2.globalAlpha = rig.blind * 0.8 * vis;\n          ctx2.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);\n        ctx2.fillRect(0, 0, vw, vh);\n      }\n      const want = SHEET.has(key) && st.rig && !px.blackout && (px.drop > 0.35 || px.energy > 0.88 && px.build < 0.1) ? 1 : 0;\n      rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));\n      if (rig.sheet > 0.02) {\n        const c = mixW(pal[2], 0.35), tilt = Math.sin(bp * Math.PI / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));\n        for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * rig.sheet);\n          ctx2.beginPath();\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 + tilt * vw / 2);\n          ctx2.stroke();\n        }\n        ctx2.lineWidth = dpr;\n        ctx2.strokeStyle = rgba(c, 0.14 * rig.sheet);\n        ctx2.beginPath();\n        for (let k = -4; k <= 4; k++) {\n          const a = k * 0.03 + tilt;\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 - tilt * vw / 2 + Math.tan(a) * vw);\n        }\n        ctx2.stroke();\n      }\n      if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx2, st, px, pal, dpr);\n    }\n    let bokeh = null;\n    function drawBokeh(ctx2, st, px, pal, dpr) {\n      bokeh ||= Array.from({ length: 18 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random(), ph: Math.random() * 6.3, c: Math.floor(Math.random() * 3) }));\n      for (const b of bokeh) {\n        b.y -= st.dt * 0.012 * (0.5 + b.r);\n        if (b.y < -0.1) [b.y, b.x] = [1.1, Math.random()];\n        const r = (18 + b.r * 34) * dpr;\n        ctx2.globalAlpha = clamp((0.05 + 0.08 * px.energy) * (0.6 + 0.4 * Math.sin(st.t * 0.7 + b.ph)), 0, 1);\n        ctx2.drawImage(glowSprite(pal[b.c]), b.x * vw - r, b.y * vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const ins = { sparks: [], bolts: [], keys: new Float32Array(24), lastBolt: 0, kHit: false };\n    function drawInst(ctx2, st, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const I = st.inst, t = st.t, dt = st.dt;\n      if (!I || px.blackout) return;\n      ctx2.globalCompositeOperation = "lighter";\n      if (I.brass > 0.01) {\n        const L = I.brass, gold = [255, 200, 90];\n        for (const side of [-1, 1]) {\n          const ox = side < 0 ? 0 : vw, oy = vh * 0.95;\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);\n            const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            g.addColorStop(0, rgba(gold, 0.22 * L));\n            g.addColorStop(1, rgba(gold, 0));\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = (18 - k * 2) * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(ox, oy);\n            ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            ctx2.stroke();\n          }\n          const r = vh * 0.14 * (0.6 + L * 0.5);\n          ctx2.globalAlpha = L * 0.8;\n          ctx2.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });\n        }\n      }\n      if (I.sax > 0.01) {\n        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);\n        for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {\n          for (let k = 0; k < 3; k++) {\n            ctx2.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);\n            ctx2.lineWidth = (44 - k * 10) * dpr;\n            ctx2.beginPath();\n            for (let s = 0; s <= 20; s++) {\n              const f = s / 20, yy = vh * (0.95 - f * 0.75);\n              const xx = vw * bx + dir * Math.sin(f * 5 + t * (0.8 + k * 0.2) + k) * vw * 0.05 * (0.5 + f);\n              s ? ctx2.lineTo(xx, yy) : ctx2.moveTo(xx, yy);\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.guitar > 0.3) {\n        const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;\n        if (hitNow && !ins.kHit && t - ins.lastBolt > 0.25) {\n          ins.lastBolt = t;\n          const pts = [];\n          const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;\n          const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);\n          for (let s = 0; s <= 10; s++) {\n            const f = s / 10;\n            pts.push([x + (tx - x) * f + (s && s < 10 ? (Math.random() - 0.5) * vw * 0.04 : 0), y + (ty - y) * f]);\n          }\n          ins.bolts.push({ pts, a: 1 });\n        }\n        ins.kHit = hitNow;\n        for (let k = 0; k < 3; k++) {\n          if (Math.random() > dt * 18 * I.guitar) continue;\n          const r = (10 + Math.random() * 16) * dpr;\n          ctx2.globalAlpha = 0.5 + Math.random() * 0.5;\n          ctx2.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);\n      for (const b of ins.bolts) {\n        for (const [lw, c, al] of [[10 * dpr, [140, 170, 255], 0.25], [2.2 * dpr, [235, 245, 255], 0.95]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * b.a * Math.max(I.guitar, 0.3));\n          ctx2.beginPath();\n          b.pts.forEach(([x, y], k) => k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y));\n          ctx2.stroke();\n        }\n      }\n      if (I.piano > 0.01 || ins.keys.some((k) => k > 0.01)) {\n        const ch = I.chroma, w = vw / 24;\n        for (let k = 0; k < 24; k++) {\n          const target = ch ? (ch[k % 12] || 0) * I.piano : 0;\n          ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));\n          const L = ins.keys[k];\n          if (L < 0.02) continue;\n          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;\n          const g = ctx2.createLinearGradient(0, yb - h, 0, yb);\n          g.addColorStop(0, rgba(pal[k % 3], 0));\n          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x, yb - h, w * 0.6, h);\n          const r = w * 0.7;\n          ctx2.globalAlpha = clamp(L * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      if (I.strings > 0.01) {\n        const L = I.strings;\n        for (let k = 0; k < 3; k++) {\n          const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t * 0.6 + k * 1.7) * vh * 0.05;\n          for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {\n            ctx2.lineWidth = lw;\n            ctx2.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);\n            ctx2.beginPath();\n            for (let s = 0; s <= 32; s++) {\n              const x = s / 32 * vw;\n              s ? ctx2.lineTo(x, yy(x)) : ctx2.moveTo(x, yy(x));\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.choir > 0.01) {\n        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;\n        for (let k = 0; k < 9; k++) {\n          const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t * 0.2) * 0.05, len = vh * 1.1;\n          const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));\n          g.addColorStop(1, rgba([255, 245, 225], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = 40 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(ox, oy);\n          ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          ctx2.stroke();\n        }\n      }\n      ins.sparks = ins.sparks.filter((s) => (s.a -= dt * 0.9) > 0);\n      for (const s of ins.sparks) {\n        s.vy += vh * 0.2 * dt;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 6 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    return { drawRig, drawInst };\n  }\n\n  // src/venue.js\n  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    const show = createShow(glowSprite);\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const t = st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = clamp2(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const cone = (sx, sy, a, wd, c, al, reach = far) => {\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba2(c, al));\n        g.addColorStop(0.5, rgba2(c, al * 0.35));\n        g.addColorStop(1, rgba2(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (px.P.spot) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k) => Math.round(c[k] * 0.55 + [255, 236, 210][k] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba2(pal[0], al));\n          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));\n          g.addColorStop(1, rgba2(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k * 2)), 0.12, pal[(k + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k = 0; k < 2; k++) {\n            const y = (t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[k], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp2(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k = 0; k < 3; k++) {\n            const base = vh * (0.14 + 0.11 * k) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k) + k * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba2(pal[k], 0));\n            g.addColorStop(0.5, rgba2(pal[k], al));\n            g.addColorStop(1, rgba2(pal[(k + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba2(pal[f.c], 0));\n            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba2(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);\n          for (let k = 0; k < 3; k++) {\n            cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },\n      // \u201Eopen\u201C: unter freiem Himmel (Feuerwerk erlaubt) \xB7 \u201Ecalm\u201C: drinnen und gediegen \u2013 kein CO2, keine Flammen,\n      // kein Stroboskop, kein Konfetti \xB7 \u201Eseated\u201C: das Publikum sitzt (Konzertsaal) und wiegt sich nur\n      rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },\n      cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },\n      jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },\n      forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },\n      hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },\n      cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "jazzbar",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "cellar",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "forest",\n      chill: "home",\n      classical: "hall",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "forest",\n      dubstep: "festival",\n      garage: "rooftop",\n      eurodance: "club",\n      synthwave: "rooftop",\n      hyperpop: "club",\n      trap: "club",\n      drill: "cellar",\n      phonk: "cellar",\n      rnb: "rooftop",\n      soul: "jazzbar",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "jazzbar",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "cathedral",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "hall"\n    };\n    function drawDecor(ctx2, v, px, pal, rgba2, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba2(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba2(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp2((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "rooftop") {\n        sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));\n        win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));\n        const hz = vh * 0.8;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,5,14,0.6)";\n        for (const b of sky) ctx2.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);\n        ctx2.globalCompositeOperation = "lighter";\n        for (const w of win) {\n          const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t * 0.7 + w.ph);\n          if (tw < 0.25) continue;\n          const r = 3.2 * dpr;\n          ctx2.globalAlpha = clamp2(tw * (0.35 + beat * 0.25), 0, 1);\n          ctx2.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);\n        }\n        for (let k = 0; k <= 18; k++) {\n          const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.28 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.4 + k * 2.1)), 0, 1);\n          const r = (8 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.75)";\n        ctx2.fillRect(0, vh * 0.84, vw, 3 * dpr);\n        for (let x = 0; x < vw; x += 70 * dpr) ctx2.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "cathedral") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.8)";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;\n          ctx2.beginPath();\n          ctx2.rect(x0, 0, x1 - x0, vh);\n          ctx2.moveTo(mid + iw, vh);\n          ctx2.lineTo(mid + iw, vh * 0.36);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);\n          ctx2.lineTo(mid - iw, vh);\n          ctx2.closePath();\n          ctx2.fill("evenodd");\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat * 0.1 + px.energy * 0.08;\n          const g = ctx2.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);\n          g.addColorStop(0, rgba2(pal[0], al.toFixed(3)));\n          g.addColorStop(0.5, rgba2(pal[1], (al * 0.9).toFixed(3)));\n          g.addColorStop(1, rgba2(pal[2], 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(mid + iw, vh * 0.7);\n          ctx2.lineTo(mid + iw, vh * 0.38);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);\n          ctx2.lineTo(mid - iw, vh * 0.7);\n          ctx2.fill();\n        }\n        for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {\n          const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - k % 3 * 0.018);\n          const r = (7 + Math.sin(t * 9 + k * 3 + side) * 1.6) * dpr;\n          ctx2.globalAlpha = 0.55;\n          ctx2.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "jazzbar") {\n        for (let k = 0; k < 3; k++) {\n          const x = vw * (0.22 + k * 0.28) + Math.sin(t * 0.6 + k) * vw * 0.01, y = vh * (0.16 + k % 2 * 0.03);\n          ctx2.strokeStyle = "rgba(255,255,255,0.07)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.22 + k * 0.28), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, vh * 0.85);\n          g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,190,120,0)");\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x - 8 * dpr, y);\n          ctx2.lineTo(x - vh * 0.22, vh);\n          ctx2.lineTo(x + vh * 0.22, vh);\n          ctx2.lineTo(x + 8 * dpr, y);\n          ctx2.fill();\n          const r = (16 + beat * 8) * dpr;\n          ctx2.globalAlpha = 0.8;\n          ctx2.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 9; k++) {\n          const r = 4 * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + 0.2 * Math.sin(t * 1.2 + k), 0, 1);\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (let k = 0; k < 4; k++) {\n          const x = vw * (0.5 + 0.45 * Math.sin(t * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t * 0.07 + k)), r = vh * 0.35;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, r);\n          g.addColorStop(0, "rgba(200,190,220,0.04)");\n          g.addColorStop(1, "rgba(200,190,220,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - r, y - r, r * 2, r * 2);\n        }\n      } else if (v.decor === "forest") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(4,4,10,0.9)";\n        for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {\n          const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t * 0.4 + bx) * 4 * dpr;\n          const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);\n          ctx2.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);\n          for (let k = 0; k < 5; k++) {\n            const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);\n            ctx2.beginPath();\n            ctx2.moveTo(bx + sx, y0);\n            ctx2.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.closePath();\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 16; k++) {\n          const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.25 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.3 + k * 1.9)), 0, 1);\n          const r = (7 + beat * 4) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);\n        }\n        flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));\n        const hat = px.hatEnv || 0;\n        for (const f of flies) {\n          const x = (f.x + Math.sin(t * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t * f.sp * 0.4 + f.ph) * 0.03) * vh;\n          ctx2.globalAlpha = clamp2((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "hall") {\n        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {\n          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;\n          ctx2.globalCompositeOperation = "source-over";\n          ctx2.fillStyle = "rgba(8,6,16,0.8)";\n          ctx2.fillRect(x0, y, w, vh * 0.05);\n          ctx2.globalCompositeOperation = "lighter";\n          ctx2.globalAlpha = clamp2(0.32 + beat * 0.15, 0, 1);\n          for (let k = 0; k < 6; k++) {\n            const r = 5 * dpr;\n            ctx2.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);\n          }\n          ctx2.globalAlpha = 1;\n        }\n        for (const x of [vw * 0.25, vw * 0.75]) {\n          ctx2.globalAlpha = clamp2(0.5 + px.energy * 0.3, 0, 1);\n          for (let k = 0; k < 8; k++) {\n            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t * 3 + k) * 1.5) * dpr;\n            ctx2.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);\n          }\n          const r = (60 + beat * 30) * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + beat * 0.2, 0, 1);\n          ctx2.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "cellar") {\n        const n = 4;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,10,0.85)";\n        ctx2.beginPath();\n        ctx2.rect(0, 0, vw, vh * 0.32);\n        for (let k = 0; k < n; k++) {\n          const x0 = k / n * vw, x1 = (k + 1) / n * vw;\n          ctx2.moveTo(x1, vh * 0.32);\n          ctx2.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);\n          ctx2.closePath();\n        }\n        ctx2.fill("evenodd");\n        ctx2.strokeStyle = "rgba(255,255,255,0.035)";\n        ctx2.lineWidth = dpr;\n        ctx2.beginPath();\n        for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {\n          ctx2.moveTo(0, y);\n          ctx2.lineTo(vw, y);\n        }\n        ctx2.stroke();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < n; k++) {\n          const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t * 1.1 + k) * 4e-3);\n          const r = (20 + px.kickEnv * 44) * dpr;\n          ctx2.globalAlpha = clamp2(0.4 + px.kickEnv * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let stands = null, sky = null, win = null, flies = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };\n    const GOLD = [255, 214, 120], WHITE = [255, 255, 255];\n    function confetti(pal, big, few) {\n      const pop = (c) => {\n        const m = Math.max(...c, 1);\n        return c.map((v) => Math.round(clamp2((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));\n      };\n      const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];\n      for (let k = 0; k < n && fx.confetti.length < 420; k++) {\n        const side = k % 2 ? 1 : -1;\n        fx.confetti.push({\n          x: vw * (side < 0 ? 0.12 : 0.88),\n          y: vh * 0.98,\n          vx: -side * vh * (0.12 + Math.random() * 0.45),\n          vy: -vh * (1.25 + Math.random() * 0.6),\n          r: Math.random() * 6.3,\n          vr: (Math.random() - 0.5) * 14,\n          w: (9 + Math.random() * 8) * (vh / 720),\n          h: (5 + Math.random() * 4) * (vh / 720),\n          ph: Math.random() * 6.3,\n          c: cols[k % cols.length],\n          a: 1\n        });\n      }\n      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });\n    }\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;\n      if (newBeat) fx.barId = barId;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {\n        fx.confAt = st.t;\n        confetti(pal, big, st.quality < 1 || v.decor === "fairy");\n      }\n      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;\n      if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {\n        const peak = px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale;\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp2(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.confetti = fx.confetti.filter((c) => c.y < vh * 1.05 && (c.a -= dt * 0.07) > 0);\n      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);\n      if (fx.confetti.length || fx.streamers.length) {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const c of fx.confetti) {\n          c.vy = c.vy < vh * 0.1 ? c.vy + vh * 1.4 * dt : vh * 0.1;\n          c.vx *= 1 - dt * 1.6;\n          c.ph += dt * 5;\n          c.r += c.vr * dt;\n          c.x += (c.vx + Math.sin(c.ph) * vh * 0.05) * dt;\n          c.y += c.vy * dt;\n          const flip = Math.abs(Math.cos(c.ph * 1.3)), w = c.w * (0.3 + 0.7 * flip), h = c.h;\n          ctx2.globalAlpha = clamp2(c.a, 0, 1) * (0.55 + 0.45 * flip);\n          ctx2.fillStyle = `rgb(${c.c[0]},${c.c[1]},${c.c[2]})`;\n          const co = Math.cos(c.r), si = Math.sin(c.r);\n          ctx2.setTransform(co, si, -si, co, c.x, c.y);\n          ctx2.fillRect(-w / 2, -h / 2, w, h);\n        }\n        ctx2.setTransform(1, 0, 0, 1, 0, 0);\n        ctx2.lineWidth = 4 * (vh / 720);\n        ctx2.lineCap = "round";\n        for (const m of fx.streamers) {\n          m.y += m.vy * dt;\n          m.ph += dt * 2;\n          ctx2.globalAlpha = clamp2(m.a, 0, 1) * 0.85;\n          ctx2.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;\n          ctx2.beginPath();\n          for (let k = 0; k <= 10; k++) {\n            const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;\n            k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y);\n          }\n          ctx2.stroke();\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "lighter";\n      }\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway",\n      edm: "jump",\n      deephouse: "bounce",\n      techhouse: "pump",\n      psytrance: "jump",\n      dubstep: "bang",\n      garage: "bounce",\n      eurodance: "jump",\n      synthwave: "nod",\n      hyperpop: "jump",\n      trap: "bounce",\n      drill: "nod",\n      phonk: "pump",\n      rnb: "sway",\n      soul: "clap",\n      indie: "bounce",\n      alternative: "bang",\n      blues: "sway",\n      schlager: "clap",\n      ballad: "sway",\n      gospel: "clap",\n      reggaeton: "bounce",\n      salsa: "bounce",\n      brazil: "bounce",\n      flamenco: "clap",\n      bollywood: "bounce",\n      arabic: "clap",\n      ambient: "sway",\n      cinematic: "sway"\n    };\n    const mood = { x: 0 };\n    const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical"]);\n    const sea = { a: 0 };\n    function seaLevel(px, dt, st) {\n      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp2((px.energy - 0.32) * 2.2, 0, 1) : 0;\n      sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));\n      return sea.a;\n    }\n    function crowdMood(px, dt, hype) {\n      const target = clamp2(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      for (const [row, scale, gap] of v.rows) {\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          people.push({\n            id: id++,\n            x,\n            row,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: r() < 0.25 ? "bun" : r() < 0.45 ? "cap" : r() < 0.65 ? "curl" : "",\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0\n          });\n        }\n      }\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [] };\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    function bodySprite(p, u, pal) {\n      const key = `${p.row}|${p.hair}|${p.hand}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (bodySprites.size > 40) bodySprites.clear();\n      const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;\n      x.fillStyle = FILL[p.row];\n      x.beginPath();\n      x.moveTo(cx0 - 20 * S1, y + 18 * S1);\n      x.quadraticCurveTo(cx0 - 22 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.lineTo(hx + 5 * S1, y - 50 * S1);\n      x.quadraticCurveTo(cx0 + 22 * S1, y - 46 * S1, cx0 + 20 * S1, y + 18 * S1);\n      x.closePath();\n      x.fill();\n      const c2 = pal[p.row === 0 ? 2 : 1];\n      x.lineWidth = Math.max(1, 1.6 * S1);\n      x.lineCap = "round";\n      x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;\n      x.beginPath();\n      x.moveTo(cx0 - 19 * S1, y - 30 * S1);\n      x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);\n      x.stroke();\n      const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));\n      hc.width = Math.ceil(34 * S1);\n      hc.height = Math.ceil(40 * S1);\n      const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;\n      hxx.fillStyle = FILL[p.row];\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);\n      if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);\n      if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);\n      hxx.fill();\n      if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);\n      hxx.lineWidth = Math.max(1, 1.6 * S1);\n      hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;\n      hxx.beginPath();\n      hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);\n      hxx.stroke();\n      sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];\n    function drawCrowd(ctx2, px, pal, dpr, rgba2, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (!crowd || crowd.w !== vw || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = v.seated ? "sway" : MOVES[px.key] || "clap";\n      const SEAa = seaLevel(px, dt, st);\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const phi = clamp2(px.phase ?? 0, 0, 1);\n      const cyc = half ? ((beatN & 1) + phi) / 2 : phi;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const down = Math.exp(-phi * 6);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba2(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];\n      let curRow = null;\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba2(pal[0], 0));\n        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const strokeRow = (row) => {\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];\n        ctx2.strokeStyle = FILL[row];\n        ctx2.stroke(arms[row]);\n        arms[row] = new Path2D();\n      };\n      for (const p of crowd.people) {\n        if (p.row !== curRow) {\n          if (curRow != null) strokeRow(curRow);\n          curRow = p.row;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp2(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const cycN = half ? beatN >> 1 : beatN;\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc));\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);\n        const sway = Math.sin((beatN + phi) / 2 * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6);\n        const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        ctx2.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);\n        ctx2.fillStyle = FILL[p.row];\n        ctx2.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));\n        ctx2.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);\n        const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;\n        const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;\n        const wantUp = v.seated && !inSea ? 0 : lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const arm = arms[p.row];\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        for (const side of [-1, 1]) {\n          const sx = x + side * 15 * s1, sy = yy - 42 * s1;\n          const a = side === p.hand ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);\n          let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;\n          if (a > 0.02) {\n            let ux = side * (12 + 6 * Math.sin((beatN + phi) / 2 * Math.PI + p.ph)) * s1, uy = -50 * s1;\n            if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin((beatN + phi) / 2 * Math.PI * 2 + p.ph) * 14 * s1;\n            if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin((beatN + phi) / 8 * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];\n            if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n            if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n            hxA += (sx + ux - hxA) * a;\n            hyA += (sy + uy - hyA) * a;\n          }\n          const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);\n          arm.moveTo(sx, sy);\n          arm.quadraticCurveTo(ex, ey, hxA, hyA);\n          if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);\n        }\n        if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1 });\n      }\n      if (curRow != null) strokeRow(curRow);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const [gx, gy, kind, s1, row] of glows) {\n        const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n        ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - row * 0.25) * A * rowA[row];\n        ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n      }\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      for (const f of crowd.flashes) {\n        const r = 34 * f.s;\n        ctx2.globalAlpha = f.a * A;\n        ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        show.drawRig(ctx2, st, v, st.px, st.pal, st.dpr);\n        drawDecor(ctx2, v, st.px, st.pal, rgba2, st.dpr, st);\n      }\n      if (st.inst) show.drawInst(ctx2, st, st.px, st.pal, st.dpr);\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba2, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
               const w = new Worker(url);
               const off = q.venueEl.transferControlToOffscreen();
               w.postMessage({ type: "init", canvas: off }, [off]);
@@ -12615,6 +13358,8 @@
           else venueCtx?.clearRect(0, 0, q.venueEl.width, q.venueEl.height);
         }
         let blend = null, motes = [], hype = /* @__PURE__ */ new Set(), hypeOn = false;
+        const SHOTS = [[1, 0, 0], [1.13, 0.05, 0.02], [1.13, -0.05, 0.02], [1.2, 0, -0.08], [1.07, 0, 0.035]];
+        const shot = { i: 0, s: 1, x: 0, y: 0, bars: 0, bar: -1 };
         const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
         const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };
         function tuneQuality(dt) {
@@ -12699,16 +13444,39 @@
               if (motes.length > 600) break;
             }
           }
-          if (cfg.partyCamera && px.fx && quality.level > 0) {
+          if ((cfg.partyCamera || cfg.partyCuts) && px.fx && quality.level > 0) {
             const t2 = now / 1e3;
-            const target = 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8);
+            if (cfg.partyCuts) {
+              const barId = px.beatIdx - (px.inBar || 0), newBar = px.beatIdx >= 0 && barId !== shot.bar;
+              if (px.beatIdx >= 0) shot.bar = barId;
+              if (px.dropHit && shot.i) [shot.i, shot.bars] = [0, 0];
+              else if (newBar) {
+                shot.bars++;
+                const hot = px.energy > 0.55 && px.low < 0.3 && !px.blackout;
+                if (!hot) shot.i = 0;
+                else if (shot.bars >= (px.finale || px.drop > 0.3 ? 4 : 8)) {
+                  let i;
+                  do
+                    i = 1 + Math.floor(Math.random() * (SHOTS.length - 1));
+                  while (i === shot.i);
+                  [shot.i, shot.bars] = [i, 0];
+                }
+              }
+            } else shot.i = 0;
+            const [ss, sx, sy] = SHOTS[shot.i];
+            const k1 = shot.i ? 1 : 1 - Math.exp(-dt * 1.5);
+            shot.s += (ss - shot.s) * k1;
+            shot.x += (sx - shot.x) * k1;
+            shot.y += (sy - shot.y) * k1;
+            const target = cfg.partyCamera ? 1 + (0.012 + 0.03 * px.energy + 0.025 * px.drop) * (1 - px.low * 0.8) : 1;
             cam.b = (cam.b ?? 1) + (target - (cam.b ?? 1)) * (1 - Math.exp(-dt * 1.2));
-            if (px.dropHit) cam.kick = 0.035;
+            if (px.dropHit && cfg.partyCamera) cam.kick = 0.035;
             cam.kick = (cam.kick || 0) * Math.exp(-dt * 2.5);
             cam.kv = (cam.kv || 0) + (cam.kick - (cam.kv || 0)) * (1 - Math.exp(-dt * 16));
-            cam.s = cam.b + cam.kv;
-            cam.x = Math.sin(t2 * 0.05) * innerWidth * 8e-3 * (0.5 + px.energy);
-            cam.y = Math.cos(t2 * 0.037) * innerHeight * 6e-3 * (0.5 + px.energy);
+            const ride = cfg.partyCamera ? 0.5 + px.energy : 0;
+            cam.s = (cam.b + cam.kv) * shot.s;
+            cam.x = Math.sin(t2 * 0.05) * innerWidth * 8e-3 * ride + shot.x * innerWidth;
+            cam.y = Math.cos(t2 * 0.037) * innerHeight * 6e-3 * ride + shot.y * innerHeight;
             const k = `${cam.x.toFixed(1)}|${cam.y.toFixed(1)}`;
             if (k !== cam.key) {
               cam.key = k;
@@ -12716,6 +13484,7 @@
             }
           } else if (cam.key || cam.s !== 1) {
             Object.assign(cam, { s: 1, b: 1, kick: 0, kv: 0, x: 0, y: 0, key: "" });
+            Object.assign(shot, { i: 0, s: 1, x: 0, y: 0, bars: 0 });
             q.bg.style.translate = "";
           }
           if (cfg.partyDepth && px.fx && quality.level > 0) {
@@ -12734,7 +13503,8 @@
             q.canvas.style.transform = q.lyrics.style.translate = q.meta.style.translate = "";
           }
           party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
-          live.feed(px, vividPal || palette(), party.info.bpm);
+          const lineAt = (k) => lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "\u266A" && lyr.lines[k]?.text || "";
+          live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
         }
         const toLocal = (x, y) => [x, y];
         function drawMotes(ctx, dt, dpr) {
@@ -12983,7 +13753,52 @@
           q.screen.hidden = !(party2 && cfg.partyScreen && "getScreenDetails" in window);
           q.live.hidden = !(party2 && cfg.partyLive);
           if (q.live.hidden) el2.querySelector(".m-im-livecard")?.remove();
+          drawWishes();
         }
+        function drawWishes() {
+          if (!el2) return;
+          const list = el2.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open").slice(0, 3) : [];
+          let box = el2.querySelector(".m-im-wishes");
+          if (!list.length) return box?.remove();
+          if (!box) {
+            box = document.createElement("div");
+            box.className = "m-im-wishes";
+            box.setAttribute("role", "region");
+            box.setAttribute("aria-label", t("wishTitle"));
+            el2.append(box);
+          }
+          const head2 = document.createElement("b");
+          head2.textContent = t("wishTitle");
+          const rows = list.map((w) => {
+            const row = document.createElement("div");
+            row.className = "m-im-wish";
+            const txt = document.createElement("span");
+            const ti = document.createElement("i");
+            ti.textContent = w.t;
+            const sub = document.createElement("small");
+            sub.textContent = `${w.a}${w.n ? " \xB7 " + t("wishBy").replace("{n}", w.n) : ""} \xB7 \u{1F44D} ${w.v}`;
+            txt.append(ti, sub);
+            const ok = document.createElement("button");
+            ok.type = "button";
+            ok.className = "m-im-wish-ok";
+            ok.textContent = t("wishQueue");
+            ok.onclick = async () => {
+              ok.disabled = true;
+              if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
+              else ok.disabled = false;
+            };
+            const no = document.createElement("button");
+            no.type = "button";
+            no.className = "m-im-wish-no";
+            no.textContent = "\u2715";
+            no.title = no.ariaLabel = t("wishDecline");
+            no.onclick = () => live.decline(w.i);
+            row.append(txt, ok, no);
+            return row;
+          });
+          box.replaceChildren(head2, ...rows);
+        }
+        window.addEventListener("mirage:wishes", () => drawWishes());
         async function toggleLiveCard() {
           const old = el2.querySelector(".m-im-livecard");
           if (old) return old.remove();
@@ -13660,15 +14475,15 @@
       e.n++;
       buckets.set(key, e);
     }
-    const ranked = [...buckets.values()].map((e) => {
+    const ranked2 = [...buckets.values()].map((e) => {
       const rgb = [e.r / e.n, e.g / e.n, e.b / e.n].map(Math.round);
       const [h, s, l] = rgb2hsl(rgb);
       const lightOk = l > 0.12 && l < 0.92 ? 1 : 0.15;
       return { rgb, h, s, score: e.n * (0.2 + s * s * 2) * lightOk };
     }).sort((x, y) => y.score - x.score);
-    if (!ranked.length) return null;
-    const first = ranked[0];
-    const partner = ranked.find((c2) => hueGap(c2.h, first.h) > 28 && c2.s > 0.15) || null;
+    if (!ranked2.length) return null;
+    const first = ranked2[0];
+    const partner = ranked2.find((c2) => hueGap(c2.h, first.h) > 28 && c2.s > 0.15) || null;
     return shape([first.rgb, partner?.rgb]);
   }
   async function analyse(url, uri) {
@@ -13939,13 +14754,13 @@
   function check(deadline) {
     queued = false;
     const until = performance.now() + Math.min(4, deadline?.timeRemaining?.() ?? 4);
-    while (pending.length && performance.now() < until) {
-      const root2 = pending.pop();
+    while (pending2.length && performance.now() < until) {
+      const root2 = pending2.pop();
       if (!root2.isConnected || checked.has(root2) || root2.closest("#mirage-immersive, #mirage-stage")) continue;
       checkOne(root2);
-      for (let c2 = root2.firstElementChild; c2; c2 = c2.nextElementSibling) if (!checked.has(c2)) pending.push(c2);
+      for (let c2 = root2.firstElementChild; c2; c2 = c2.nextElementSibling) if (!checked.has(c2)) pending2.push(c2);
     }
-    if (pending.length) schedule();
+    if (pending2.length) schedule();
   }
   function schedule() {
     if (queued) return;
@@ -13959,7 +14774,7 @@
       if (!inner) return;
       node = inner;
     }
-    pending.push(node);
+    pending2.push(node);
     schedule();
   }
   function recheckAll() {
@@ -13967,7 +14782,7 @@
     checked = /* @__PURE__ */ new WeakSet();
     document.querySelectorAll(SCOPES).forEach(queue);
   }
-  var SCOPES, parse, lum2, ratio, hasText, checked, queued, pending;
+  var SCOPES, parse, lum2, ratio, hasText, checked, queued, pending2;
   var init_readability = __esm({
     "src/readability.js"() {
       init_selectors();
@@ -13992,7 +14807,7 @@
       };
       checked = /* @__PURE__ */ new WeakSet();
       queued = false;
-      pending = [];
+      pending2 = [];
       new MutationObserver((list) => {
         for (const m of list) for (const n of m.addedNodes) queue(n);
       }).observe(document.body, { subtree: true, childList: true });
@@ -14082,6 +14897,8 @@
     if (COSTLY.has(key)) {
       const bolt = el("i", "m-cost", "\u26A1");
       bolt.title = t("costly");
+      bolt.setAttribute("role", "img");
+      bolt.setAttribute("aria-label", t("costly"));
       b.append(" ", bolt);
     }
     txt.append(b);
@@ -14089,6 +14906,7 @@
     if (hint !== key + "Hint") txt.append(el("small", "", hint));
     const cb = el("input");
     cb.type = "checkbox";
+    cb.setAttribute("role", "switch");
     cb.dataset.key = key;
     cb.checked = !!cfg[key];
     cb.onchange = () => {
@@ -14108,9 +14926,11 @@
     txt.append(el("b", "", t(key)), hint);
     const r = el("input");
     Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
+    r.setAttribute("aria-valuetext", cfg[key] + unit);
     r.oninput = () => {
       cfg[key] = Number(r.value);
       hint.textContent = r.value + unit;
+      r.setAttribute("aria-valuetext", r.value + unit);
       save();
       after?.();
     };
@@ -14119,6 +14939,7 @@
   }
   function seg(options, value, onPick) {
     const s = el("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
+    s.setAttribute("role", "group");
     for (const [k, label] of options) {
       const b = el("button", "", label);
       b.type = "button";
@@ -14174,6 +14995,16 @@
     if (cfg.partyLive) live.prepare().then(draw, draw);
     draw();
     return box;
+  }
+  function labelControls(box) {
+    for (const c2 of box.querySelectorAll(".m-seg, .m-select")) {
+      if (c2.hasAttribute("aria-labelledby") || c2.closest("label")) continue;
+      let prev = c2.previousElementSibling;
+      if (prev?.classList.contains("m-schemes-head")) prev = prev.querySelector("b") || prev;
+      if (!prev || !prev.matches("b, .m-note, .m-schemes-head")) continue;
+      prev.id ||= "m-lbl-" + ++labelN;
+      c2.setAttribute("aria-labelledby", prev.id);
+    }
   }
   function group(title, open, ...children) {
     const d = el("details", "m-group");
@@ -14308,7 +15139,8 @@
       ["dots", t("viz_dots")],
       ["particles", t("viz_particles")],
       ["line", t("viz_line")],
-      ["bottom", t("viz_bottom")]
+      ["bottom", t("viz_bottom")],
+      ["tunnel", t("viz_tunnel")]
     ];
     kids.push(
       group(
@@ -14361,7 +15193,7 @@
           save();
         }),
         el("small", "m-note", t("partyVenue")),
-        seg(["auto", "club", "warehouse", "festival", "stadium", "beach", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+        seg(["auto", "club", "warehouse", "cellar", "jazzbar", "rooftop", "festival", "forest", "stadium", "beach", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
           cfg.partyVenue = k;
           save();
         }),
@@ -14396,6 +15228,8 @@
         }),
         toggle("partyCamera", () => {
         }),
+        toggle("partyCuts", () => {
+        }),
         toggle("partyDepth", () => {
         }),
         head(t("ps_crowd")),
@@ -14407,6 +15241,7 @@
         }),
         head(t("ps_extras")),
         toggle("partyLive", () => cfg.partyLive && live.prepare()),
+        toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
         livePanel(),
         toggle("partyScreen", () => immersive.refresh()),
         toggle("partyRecap", () => immersive.refresh()),
@@ -14524,6 +15359,7 @@
     kids.push(el("small", "m-note", t("tip")), el("small", "m-note m-version", `Mirage ${VERSION}`));
     const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
     box.replaceChildren(...kids);
+    labelControls(box);
     box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
   }
   function openSettings() {
@@ -14560,7 +15396,7 @@
       setTimeout(() => box.isConnected && box.classList.add("is-gone"), 2e4);
     }, 5e3);
   }
-  var COSTLY, el, notify, encode, decode;
+  var COSTLY, el, labelN, notify, encode, decode;
   var init_settings = __esm({
     "src/settings.js"() {
       init_core();
@@ -14587,6 +15423,7 @@
         if (text != null) e.textContent = text;
         return e;
       };
+      labelN = 0;
       notify = (msg, err) => {
         try {
           S.showNotification?.(msg, !!err, 3500);
@@ -14607,13 +15444,13 @@
   });
 
   // src/cards.js
-  var hoverCard, pending2, queued2, wheelUntil;
+  var hoverCard, pending3, queued2, wheelUntil;
   var init_cards = __esm({
     "src/cards.js"() {
       init_selectors();
       init_config();
       hoverCard = null;
-      pending2 = null;
+      pending3 = null;
       queued2 = false;
       wheelUntil = 0;
       document.addEventListener(
@@ -14631,12 +15468,12 @@
         "pointermove",
         (e) => {
           if (e.pointerType === "touch" || performance.now() < wheelUntil) return;
-          pending2 = e;
+          pending3 = e;
           if (queued2) return;
           queued2 = true;
           requestAnimationFrame(() => {
             queued2 = false;
-            const ev = pending2;
+            const ev = pending3;
             const card = ev.target.closest?.(SEL.card);
             if (hoverCard && hoverCard !== card) {
               hoverCard.style.setProperty("--rx", "0deg");
@@ -14701,12 +15538,12 @@
     const minW = mv.clientWidth * 0.55;
     if (full) {
       full = false;
-      pending3.clear();
+      pending4.clear();
       for (const el2 of mv.querySelectorAll(CANDIDATE)) tame(el2, minW);
       return;
     }
-    const batch = [...pending3];
-    pending3.clear();
+    const batch = [...pending4];
+    pending4.clear();
     for (const node of batch) {
       if (!node.isConnected) continue;
       if (node.matches(CANDIDATE)) tame(node, minW);
@@ -14738,13 +15575,13 @@
     const stuck = stickyEl.getBoundingClientRect().top - grid.getBoundingClientRect().top > 2;
     if (stuck !== stickyEl.hasAttribute("data-m-stuck")) stickyEl.toggleAttribute("data-m-stuck", stuck);
   }
-  var CANDIDATE, pending3, queued3, full, lastRun, stickyEl, stickyQueued, stickySettle;
+  var CANDIDATE, pending4, queued3, full, lastRun, stickyEl, stickyQueued, stickySettle;
   var init_tints = __esm({
     "src/tints.js"() {
       init_selectors();
       init_core();
       CANDIDATE = "div, section, header";
-      pending3 = /* @__PURE__ */ new Set();
+      pending4 = /* @__PURE__ */ new Set();
       queued3 = false;
       full = false;
       lastRun = 0;
@@ -14754,10 +15591,10 @@
         new MutationObserver((list) => {
           for (const m of list) {
             if (m.type === "attributes") {
-              if (!m.target.closest(SEL.tintSkip)) pending3.add(m.target);
-            } else for (const n of m.addedNodes) if (n.nodeType === 1) pending3.add(n);
+              if (!m.target.closest(SEL.tintSkip)) pending4.add(m.target);
+            } else for (const n of m.addedNodes) if (n.nodeType === 1) pending4.add(n);
           }
-          if (pending3.size) schedule2();
+          if (pending4.size) schedule2();
         }).observe(mv, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
         scanAll();
         try {
@@ -14881,11 +15718,11 @@
           if (btn.nextElementSibling !== s) s.before(btn);
           return true;
         };
-        let fallback2 = null, seen = false;
+        let fallback2 = null, seen2 = false;
         const t0 = Date.now();
         (function keep() {
           if (place()) {
-            seen = true;
+            seen2 = true;
             if (fallback2) {
               try {
                 fallback2.deregister?.();
@@ -14894,7 +15731,7 @@
               fallback2.element?.remove();
               fallback2 = null;
             }
-          } else if (!seen && !fallback2 && Date.now() - t0 > 15e3 && S.Topbar?.Button) {
+          } else if (!seen2 && !fallback2 && Date.now() - t0 > 15e3 && S.Topbar?.Button) {
             try {
               fallback2 = new S.Topbar.Button(t("immersive"), ICON.orb, () => immersive.toggle());
               fallback2.element?.classList.add("m-orb-btn");

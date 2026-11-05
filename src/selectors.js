@@ -50,6 +50,55 @@ function checkHealth() {
 // Spotify baut die Oberfläche nach und nach auf: erst nach ein paar Sekunden urteilen
 setTimeout(checkHealth, 8000);
 
+/* ---------------------------------------------------------------- Nach Spotify-Updates */
+// Nicht jede Stelle gibt es auf jeder Seite (Raster, Titellisten, Karten). Darum merkt sich Mirage je
+// Spotify-Version, auf welcher Art Seite es welche Stelle gefunden hat. Nach einem Update zählt eine Stelle
+// erst als verloren, wenn so eine Seite wieder besucht wurde und sie dort nach 20 Minuten Benutzung nie
+// auftauchte – dann einmal Bescheid sagen, statt dass Mirage still halb kaputt aussieht.
+const SEEN = "mirage:selSeen", LOOK = ["grid", "rows", "card", "nowPlayingCover", "likeButton"];
+const blank = () => ({ v: "", found: {}, prev: {}, pages: [], told: "" });
+let seenSel = blank();
+try {
+  const raw = JSON.parse(localStorage.getItem(SEEN) || "{}");
+  if (raw && typeof raw.found === "object" && !Array.isArray(raw.found)) seenSel = { ...seenSel, ...raw };
+} catch {}
+if (spotifyVersion && seenSel.v !== spotifyVersion) {
+  if (seenSel.v && Object.keys(seenSel.found).length) seenSel.prev = seenSel.found;
+  seenSel = { ...blank(), v: spotifyVersion, prev: seenSel.prev, told: seenSel.told };
+}
+health.lost = [];
+const pageNow = () => root.dataset.mPage || "other";
+function noteFound() {
+  const pg = pageNow();
+  if (!seenSel.pages.includes(pg)) seenSel.pages.push(pg);
+  for (const k of LOOK) {
+    if (!document.querySelector(SEL[k])) continue;
+    const list = (seenSel.found[k] ||= []);
+    if (!list.includes(pg)) list.push(pg);
+  }
+  try { localStorage.setItem(SEEN, JSON.stringify(seenSel)); } catch {}
+}
+let lookT = 0;
+const lookSoon = () => {
+  clearTimeout(lookT);
+  lookT = setTimeout(noteFound, 3000);
+};
+setTimeout(() => {
+  noteFound();
+  S.Platform?.History?.listen?.(lookSoon);
+}, 8000);
+setTimeout(() => {
+  noteFound();
+  // verloren: früher gefunden, eine passende Seite wurde besucht, aber jetzt nirgends mehr gefunden
+  health.lost = LOOK.filter((k) => (seenSel.prev[k] || []).some((pg) => seenSel.pages.includes(pg)) && !(seenSel.found[k] || []).length);
+  if (!health.lost.length || seenSel.told === spotifyVersion || root.classList.contains("mirage-safe")) return;
+  seenSel.told = spotifyVersion;
+  try {
+    localStorage.setItem(SEEN, JSON.stringify(seenSel));
+    S.showNotification?.(t("selLost").replace("{v}", spotifyVersion || "?"), true, 12000);
+  } catch {}
+}, 20 * 60e3);
+
 // Kurztext für Fehlerberichte (Feld „Diagnose“ im Issue-Formular)
 const diagnostics = () =>
   [
@@ -57,6 +106,7 @@ const diagnostics = () =>
     `Spotify ${spotifyVersion || "?"}`,
     `Spicetify ${spicetifyVersion || "?"}`,
     `missing: ${health.checked ? health.missing.join(", ") || "none" : "not checked yet"}`,
+    `lost since update: ${health.lost.join(", ") || "none"}`,
     `safe mode: ${root.classList.contains("mirage-safe")}`,
     `scheme: ${root.dataset.mScheme || "?"} · page: ${root.dataset.mPage || "?"}`,
     `ua: ${navigator.userAgent.replace(/.*(Chrome\/[\d.]+).*/, "$1")}`,

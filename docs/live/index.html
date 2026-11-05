@@ -43,6 +43,47 @@
   .state p { max-width: 21em; font-size: 14px; line-height: 1.5; opacity: 0.7; }
   .tap { position: fixed; left: 0; right: 0; bottom: max(28px, env(safe-area-inset-bottom)); text-align: center; font-size: 12px; letter-spacing: 0.06em; opacity: 0.55; transition: opacity 0.5s; }
   body.on .tap, body.armed .tap { opacity: 0; }
+  /* Werkzeugleiste über der Karte: Liedtext, Wunsch, Vibration */
+  .tools { position: fixed; left: 0; right: 0; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 84px); display: flex; justify-content: center; gap: 10px;
+    transform: translateY(240%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  body.on .tools { transform: none; }
+  .tools button { height: 38px; padding: 0 16px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, 0.14); color: #fff; font: inherit; font-size: 13px; font-weight: 650;
+    background: rgba(10, 8, 20, 0.4); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .tools button[aria-pressed="true"] { background: rgba(var(--a), 0.55); border-color: rgba(var(--c), 0.6); }
+  .tools button[hidden] { display: none; }
+  /* Liedtext zum Mitsingen: groß in der Mitte, die nächste Zeile klein darunter */
+  .lyr { position: fixed; left: 20px; right: 20px; top: 50%; transform: translateY(-60%); text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
+  body.on.lyrics .lyr.has { opacity: 1; }
+  .lyr b { display: block; font-size: clamp(26px, 8.5vw, 46px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; text-shadow: 0 2px 30px rgba(0, 0, 0, 0.45); }
+  .lyr span { display: block; margin-top: 14px; font-size: clamp(15px, 4.4vw, 21px); font-weight: 600; opacity: 0.55; }
+  /* Songwünsche: Blatt von unten */
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: 82%; overflow: auto; padding: 18px 16px max(18px, env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0;
+    background: rgba(14, 12, 24, 0.94); border-top: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    transform: translateY(105%); transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  body.wish .sheet { transform: none; }
+  .sheet { z-index: 5; }
+  body.wish .card, body.wish .tools, body.wish .lyr { opacity: 0 !important; pointer-events: none; }
+  .sheet h2 { font-size: 18px; margin-bottom: 4px; }
+  .sheet .hint { font-size: 13px; opacity: 0.65; margin-bottom: 14px; }
+  .sheet input { width: 100%; height: 46px; margin-bottom: 10px; padding: 0 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06);
+    color: #fff; font: inherit; font-size: 16px; }
+  .sheet .row { display: flex; gap: 10px; }
+  .sheet .send { flex: 1; height: 46px; border: 0; border-radius: 14px; font: inherit; font-size: 15px; font-weight: 700; color: #0b0a12; background: rgb(var(--c)); }
+  .sheet .close { height: 46px; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: transparent; color: #fff; font: inherit; }
+  .sheet .msg { min-height: 20px; margin: 10px 0 4px; font-size: 13px; opacity: 0.8; }
+  .wl { list-style: none; display: grid; gap: 8px; margin-top: 8px; }
+  .wl li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); }
+  .wl li div { flex: 1; min-width: 0; }
+  .wl b, .wl small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wl small { font-size: 12px; opacity: 0.6; }
+  .wl button { flex: none; min-width: 58px; height: 34px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, 0.16); background: transparent; color: #fff; font: inherit; font-weight: 700; }
+  .wl button[aria-pressed="true"] { background: rgba(var(--a), 0.55); }
+  .wl .ok { font-size: 12px; opacity: 0.8; }
+  .wl img { flex: none; width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: rgba(255, 255, 255, 0.08); }
+  .res li { cursor: pointer; }
+  .res li.picked { background: rgba(var(--a), 0.4); }
+  .sheet .sub { margin-top: 12px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
+  .sheet .close { width: 100%; margin-top: 14px; }
   @media (prefers-reduced-motion: reduce) { .orb, body.on .dot { animation: none; } }
 </style>
 </head>
@@ -51,6 +92,13 @@
 <div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE</div></div>
 <div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p></div>
 <div class="tap" id="tap"></div>
+<div class="lyr" id="lyr" aria-live="polite"><b id="ly"></b><span id="lyn"></span></div>
+<div class="tools"><button type="button" id="bLyr" aria-pressed="true"></button><button type="button" id="bWish" hidden></button><button type="button" id="bVib" aria-pressed="true" hidden></button></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle"><h2 id="wTitle"></h2><p class="hint" id="wHint"></p>
+  <input id="wName" maxlength="20" autocomplete="nickname"><input id="wSong" type="search" maxlength="80" enterkeyhint="search" autocomplete="off">
+  <ul class="wl res" id="wRes"></ul>
+  <p class="msg" id="wMsg" aria-live="polite"></p><h3 class="sub" id="wNow"></h3><ul class="wl" id="wList"></ul>
+  <div class="row"><button type="button" class="close" id="wClose"></button></div></div>
 <div class="card"><div class="eq"><i></i><i></i><i></i></div><div class="meta"><b id="title"></b><span id="artist"></span></div><div class="bpm" id="bpm"></div></div>
 <script>
 // Kleinstmöglicher MQTT-3.1.1-Client über WebSocket: verbinden, abonnieren, Ping (wie in src/live.js)
@@ -105,15 +153,21 @@ function mqttOpen(url, { onReady, onMessage, onClose }) {
     api.closed = true;
     onClose?.();
   };
-  const api = { closed: false, subscribe: (topic) => ws.readyState === 1 && ws.send(mqPkt(0x82, [0, 1, ...mqStr(topic), 0])) };
+  const api = {
+    closed: false,
+    subscribe: (topic) => ws.readyState === 1 && ws.send(mqPkt(0x82, [0, 1, ...mqStr(topic), 0])),
+    publish: (topic, payload) => ws.readyState === 1 && ws.send(mqPkt(0x30, [...mqStr(topic), ...payload])),
+  };
   return api;
 }
 
 // Kanal und Schlüssel stehen nur hinter dem „#“ – dieser Teil wird nie an einen Server geschickt
 const de = /^de/i.test(navigator.language || "");
 const T = de
-  ? { tap: "Antippen für Vollbild · Display bleibt an", wait: ["Verbunden", "Warte auf den Party-Modus in Spotify …"], over: ["Party beendet", "Danke fürs Mitleuchten! Neue Party, neuer QR-Code."], bad: ["Link unvollständig", "Bitte den QR-Code noch einmal scannen."], net: ["Keine Verbindung", "Versuche es erneut … (WLAN oder mobile Daten an?)"], start: ["Mirage Live", "Verbinde …"] }
-  : { tap: "Tap for full screen · screen stays on", wait: ["Connected", "Waiting for party mode in Spotify …"], over: ["Party's over", "Thanks for lighting up! New party, new QR code."], bad: ["Incomplete link", "Please scan the QR code again."], net: ["No connection", "Retrying … (is Wi-Fi or mobile data on?)"], start: ["Mirage Live", "Connecting …"] };
+  ? { lyr: "Text", wish: "＋ Wunsch", vib: "Vibration", wTitle: "Song wünschen", wHint: "Mirage sucht ihn bei Spotify. Die anderen können abstimmen – wer die Musik macht, entscheidet.", wName: "Dein Name", wSong: "Song bei Spotify suchen …", wSend: "Wünschen", wNow: "Gewünscht", wNone: "Nichts gefunden – anders schreiben?", wSearching: "Suche …", wClose: "Schließen", wSent: "Gewünscht! Er erscheint gleich in der Liste.", wWait: "Kurz warten – ein Wunsch alle 45 Sekunden.", wQueued: "✓ in der Warteschlange", wEmpty: "Noch keine Wünsche – sei die erste Person!", wShort: "Bitte einen Titel eingeben.",
+      tap: "Antippen für Vollbild · Display bleibt an", wait: ["Verbunden", "Warte auf den Party-Modus in Spotify …"], over: ["Party beendet", "Danke fürs Mitleuchten! Neue Party, neuer QR-Code."], bad: ["Link unvollständig", "Bitte den QR-Code noch einmal scannen."], net: ["Keine Verbindung", "Versuche es erneut … (WLAN oder mobile Daten an?)"], start: ["Mirage Live", "Verbinde …"] }
+  : { lyr: "Lyrics", wish: "＋ Wish", vib: "Vibrate", wTitle: "Wish for a song", wHint: "Mirage looks it up on Spotify. Others can vote – whoever runs the music decides.", wName: "Your name", wSong: "Search Spotify …", wSend: "Wish", wNow: "Wished for", wNone: "Nothing found – try another spelling?", wSearching: "Searching …", wClose: "Close", wSent: "Sent! It shows up in the list in a moment.", wWait: "Hang on – one wish every 45 seconds.", wQueued: "✓ in the queue", wEmpty: "No wishes yet – be the first!", wShort: "Please enter a title.",
+      tap: "Tap for full screen · screen stays on", wait: ["Connected", "Waiting for party mode in Spotify …"], over: ["Party's over", "Thanks for lighting up! New party, new QR code."], bad: ["Incomplete link", "Please scan the QR code again."], net: ["No connection", "Retrying … (is Wi-Fi or mobile data on?)"], start: ["Mirage Live", "Connecting …"] };
 const $ = (id) => document.getElementById(id);
 const say = ([a, b]) => {
   $("sTitle").textContent = a;
@@ -128,7 +182,7 @@ async function start() {
   try {
     const raw = fromB64(p.get("k")), ch = p.get("c") || "";
     if (raw.length !== 16 || !/^[\w-]{16,}$/.test(ch)) throw 0;
-    key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]);
+    key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt", "encrypt"]);
     topic = "mirage-live/" + ch;
   } catch {
     return say(T.bad);
@@ -136,14 +190,18 @@ async function start() {
   // alle Relays zugleich abonnieren: das Theme sendet an den, der bei ihm erreichbar ist
   BROKERS.forEach(open);
 }
+const conns = new Set();
 function open(url) {
   mqttOpen(url, {
     onReady: (c) => {
+      conns.add(c);
       c.subscribe(topic);
+      c.subscribe(topic + "/r/" + myId);
       if (!cur && !ended) say(T.wait);
     },
     onMessage: receive,
     onClose: () => {
+      for (const c of conns) if (c.closed) conns.delete(c);
       if (!cur && !ended) say(T.net);
       setTimeout(() => open(url), 3000);
     },
@@ -157,6 +215,7 @@ async function receive(m) {
   } catch {
     return; // nicht mit unserem Schlüssel verschlüsselt – ignorieren
   }
+  if (Array.isArray(s.res)) return showResults(s); // Treffer unserer Suche
   if (cur && s.s < cur.s) return; // ältere Nachricht über den zweiten Relay
   // vom Relay aufbewahrte, alte Nachricht (z. B. Spotify wurde ohne Abmelden beendet): nicht als live zeigen
   if (s.on && Math.abs(Date.now() - s.s) > 60000) return;
@@ -176,8 +235,179 @@ async function receive(m) {
   $("title").textContent = s.t || "";
   $("artist").textContent = s.a || "";
   $("bpm").textContent = s.bpm ? s.bpm + " BPM" : "";
+  // Liedtext: aktuelle Zeile groß, nächste klein
+  if ($("ly").textContent !== (s.ly || "")) $("ly").textContent = s.ly || "";
+  if ($("lyn").textContent !== (s.lyn || "")) $("lyn").textContent = s.lyn || "";
+  $("lyr").classList.toggle("has", !!s.ly);
+  // Songwünsche: nur wenn der Gastgeber sie erlaubt
+  $("bWish").hidden = !Array.isArray(s.w);
+  if (Array.isArray(s.w)) drawWishes(s.w);
   document.body.classList.add("on");
 }
+
+/* ---- Songwünsche und Abstimmung: verschlüsselt zurück an Mirage (Unterkanal „/in“) */
+const store = (k, v) => {
+  try {
+    if (v === undefined) return localStorage.getItem(k);
+    localStorage.setItem(k, v);
+  } catch {}
+  return v;
+};
+const myId = store("mlId") || store("mlId", Math.random().toString(36).slice(2, 14));
+const voted = new Set();
+let lastWish = 0, wishKey = "";
+async function sendUp(obj) {
+  if (!key || !conns.size) return false;
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, te.encode(JSON.stringify({ v: 1, id: myId, s: Date.now(), ...obj }))));
+  const out = new Uint8Array(12 + ct.length);
+  out.set(iv);
+  out.set(ct, 12);
+  for (const c of conns) c.publish(topic + "/in", out);
+  return true;
+}
+function drawWishes(list) {
+  const k = JSON.stringify(list);
+  if (k === wishKey) return;
+  wishKey = k;
+  $("wList").replaceChildren(...(list.length ? list : [null]).map((w) => {
+    const li = document.createElement("li");
+    if (!w) {
+      li.textContent = T.wEmpty;
+      return li;
+    }
+    li.append(...songRow(w, w.n));
+    if (w.st === "queued") {
+      const ok = document.createElement("span");
+      ok.className = "ok";
+      ok.textContent = T.wQueued;
+      li.append(ok);
+    } else {
+      const v = document.createElement("button");
+      v.type = "button";
+      v.textContent = "👍 " + w.v;
+      v.setAttribute("aria-pressed", String(voted.has(w.i)));
+      v.onclick = () => {
+        if (voted.has(w.i)) return;
+        voted.add(w.i);
+        v.setAttribute("aria-pressed", "true");
+        v.textContent = "👍 " + (w.v + 1);
+        sendUp({ k: "vote", w: w.i });
+      };
+      li.append(v);
+    }
+    return li;
+  }));
+}
+// eine Zeile: Cover, Titel, Interpret (Cover nur von Spotifys Bildserver)
+function songRow(w, by) {
+  const out = [];
+  if (/^https:\/\/i\.scdn\.co\//.test(w.img || "")) {
+    const im = new Image();
+    im.alt = "";
+    im.loading = "lazy";
+    im.referrerPolicy = "no-referrer";
+    im.src = w.img;
+    out.push(im);
+  }
+  const d = document.createElement("div"), b = document.createElement("b"), sm = document.createElement("small");
+  b.textContent = w.t;
+  sm.textContent = w.a + (by ? " · " + by : "");
+  d.append(b, sm);
+  out.push(d);
+  return out;
+}
+$("wName").value = store("mlName") || "";
+// Suche im Spotify-Katalog: kurz nach dem Tippen fragen, nur die Antwort auf die letzte Frage zählt
+let rid = 0, searchT = 0;
+$("wSong").oninput = () => {
+  clearTimeout(searchT);
+  const q = $("wSong").value.trim();
+  if (q.length < 2) {
+    $("wRes").replaceChildren();
+    $("wMsg").textContent = "";
+    return;
+  }
+  searchT = setTimeout(async () => {
+    $("wMsg").textContent = T.wSearching;
+    if (!(await sendUp({ k: "search", q, r: ++rid }))) $("wMsg").textContent = T.net[1];
+  }, 380);
+};
+function showResults(s) {
+  if (s.r !== rid) return;
+  $("wMsg").textContent = s.res.length ? "" : T.wNone;
+  $("wRes").replaceChildren(...s.res.map((w) => {
+    const li = document.createElement("li");
+    li.append(...songRow(w));
+    const go = document.createElement("button");
+    go.type = "button";
+    go.textContent = T.wSend;
+    const pick = () => wish(w, li);
+    go.onclick = (e) => {
+      e.stopPropagation();
+      pick();
+    };
+    li.onclick = pick;
+    li.append(go);
+    return li;
+  }));
+}
+async function wish(w, li) {
+  if (Date.now() - lastWish < 45000) return ($("wMsg").textContent = T.wWait);
+  const n = $("wName").value.trim();
+  if (!(await sendUp({ k: "wish", i: w.i, n }))) return ($("wMsg").textContent = T.net[1]);
+  lastWish = Date.now();
+  store("mlName", n);
+  li.classList.add("picked");
+  $("wMsg").textContent = T.wSent;
+  setTimeout(() => {
+    $("wRes").replaceChildren();
+    $("wSong").value = "";
+  }, 900);
+}
+$("bWish").onclick = (e) => {
+  e.stopPropagation();
+  document.body.classList.add("wish");
+  $("wMsg").textContent = "";
+};
+$("wClose").onclick = (e) => {
+  e.stopPropagation();
+  document.body.classList.remove("wish");
+};
+$("sheet").addEventListener("click", (e) => e.stopPropagation());
+
+/* ---- Liedtext und Vibration an/aus (bleibt gespeichert) */
+const flag = (k, def) => (store(k) ?? (def ? "1" : "0")) === "1";
+let showLyr = flag("mlLyr", true), vib = flag("mlVib", true) && !!navigator.vibrate;
+const syncTools = () => {
+  $("bLyr").setAttribute("aria-pressed", String(showLyr));
+  $("bVib").setAttribute("aria-pressed", String(vib));
+  document.body.classList.toggle("lyrics", showLyr);
+};
+$("bLyr").textContent = T.lyr;
+$("bWish").textContent = T.wish;
+$("bVib").textContent = T.vib;
+$("bVib").hidden = !navigator.vibrate;
+$("wTitle").textContent = T.wTitle;
+$("wHint").textContent = T.wHint;
+$("wName").placeholder = T.wName;
+$("wSong").placeholder = T.wSong;
+$("wNow").textContent = T.wNow;
+$("wClose").textContent = T.wClose;
+$("bLyr").onclick = (e) => {
+  e.stopPropagation();
+  showLyr = !showLyr;
+  store("mlLyr", showLyr ? "1" : "0");
+  syncTools();
+};
+$("bVib").onclick = (e) => {
+  e.stopPropagation();
+  vib = !vib;
+  store("mlVib", vib ? "1" : "0");
+  if (vib) navigator.vibrate?.(40);
+  syncTools();
+};
+syncTools();
 
 /* ---- Licht: Canvas */
 const cv = $("c"), ctx = cv.getContext("2d");
@@ -217,6 +447,8 @@ function frame(now) {
     const d = Math.max(0, cur.d - age * 0.6);
     if (d > 0.85 && show.drop < 0.5) {
       show.flash = 1;
+      // Drop: kurz-kurz-lang vibrieren (Android; iPhones können das im Browser nicht)
+      if (vib) navigator.vibrate?.([60, 40, 140]);
       show.rings.push({ r: 0, a: 1, c: [255, 255, 255], w: 5 });
     }
     show.drop = d;
