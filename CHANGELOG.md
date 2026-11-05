@@ -10,6 +10,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [Unreleased]
+
+### Changed
+
+- **Richer vibration on the phones.** Websites can only switch the vibration motor on and off – browsers give them no strength setting (only apps get that, and iPhones don't let websites vibrate at all). Mirage now makes strength the way a dimmed LED does: in 16 ms slices the motor is on for only part of the time. Each part of the song feels different: a firm buzz on the downbeat that grows with the energy, light taps on the backbeat in loud parts, ticks that get denser and stronger during a build-up, a swell into a long, full vibration on the drop, and nothing in quiet parts. The vibration button now steps through off, gentle, normal and strong, with a sample buzz each time.
+
 ## [1.15.4] – 2026-11-05
 
 ### Fixed
