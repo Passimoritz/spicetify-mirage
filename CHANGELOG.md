@@ -10,6 +10,27 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.19.0] – 2026-11-05
+
+### Added
+
+- **Party moments:** a big **drop countdown** on the last four beats before a drop · **hands up** – in the chorus the whole crowd throws both hands in the air · a **camera flash storm** at the first big chorus and the last big drop · **floor fog** drifting behind the crowd, coloured by the lights · a **drone light show** in open-air venues on the first big drop (heart, star, circle or wave) · a **confetti cannon** on key <kbd>C</kbd>, a button at the top or the Stream Deck. Each one can be switched off in the party settings.
+- **A more varied crowd:** long hair, afros, ponytails, beanies, hats, short hair and three body builds.
+- **Key colours:** major keys light a little warmer, minor keys a little cooler, with a hint of each section’s key. **Tempo changes** are followed – half time, double time or a different tempo in a breakdown changes how the crowd dances.
+- **Pause scene:** when the music pauses in party mode, a calm scene with the song and the QR code for phones.
+- **Announcements:** type a message (or pick “Food is ready!”, “Last song!” …) – it shows big on the party screen and on every phone.
+- **Guest vote:** the guests vote on the next three songs on their phones for 45 seconds; the winner plays next.
+- **Reactions:** guests send 🔥 ❤️ 🙌 😂 🎉 👏 from their phones – they float up over the party screen.
+- **Party recap:** save the night as a Spotify playlist with one click, plus a guest ranking (whose wishes were played, who voted most).
+- **Phones:** the live page now speaks all 14 languages, tells you when your wish is next (also as a notification if you allow it), and reconnects by itself – right away when you unlock the phone again.
+- **Library:** “Remove duplicate songs” in the playlist menu (exact duplicates and songs that are probably the same) and, if you switch it on, tempo and key (Camelot) in track lists.
+- **Overlay app:** two new styles – **Mini bar** and **Cover bubble** –, a short **setup wizard** on the first start, and **export/import of settings** (without the Hue key and the Home Assistant token).
+- **Report a problem:** a button in the settings opens a pre-filled GitHub issue with the diagnostics; the diagnostics now include the last errors.
+
+### Changed
+
+- **Update watch:** after a Spotify update Mirage checks the new version after three minutes instead of twenty and says whether everything fits.
+
 ## [1.18.0] – 2026-11-05
 
 ### Added
