@@ -101,6 +101,16 @@
   .mini .viz i { width: 3px; height: 14px; border-radius: 2px; background: linear-gradient(to top, var(--b), var(--a), var(--c)); animation: vz 1s ease-in-out infinite alternate; }
   .mini .viz i:nth-child(odd) { animation-delay: -.4s; } .mini .viz i:nth-child(3n) { animation-delay: -.7s; }
   @keyframes vz { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+  .mini .strip { align-self: end; width: 100%; height: 14px; border-radius: 4px; display: flex; align-items: center; gap: 5px; padding: 0 4px 0 2px; position: relative; overflow: hidden;
+                 background: linear-gradient(90deg, color-mix(in srgb, var(--b) 45%, #120f1d), #120f1d 60%, color-mix(in srgb, var(--a) 30%, #120f1d)); border-top: 1px solid rgba(255,255,255,.3); }
+  .mini .strip .dot { width: 10px; height: 10px; border-radius: 3px; }
+  .mini .strip .ln { height: 3px; }
+  .mini .strip::after { content: ""; position: absolute; left: 0; bottom: 0; width: 45%; height: 1px; background: var(--a); }
+  .mini .bubble { display: flex; align-items: center; }
+  .mini .bubble .dot { width: 30px; height: 30px; border-radius: 50%; position: relative; z-index: 1; box-shadow: 0 0 0 2px var(--a); animation: bub 2.8s ease-out infinite; }
+  .mini .bubble .ln { width: 52px; height: 16px; margin-left: -14px; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--b) 55%, #120f1d), #1c1630); border: 1px solid rgba(255,255,255,.14); }
+  @keyframes bub { from { box-shadow: 0 0 0 2px var(--a), 0 0 0 0 var(--a); } to { box-shadow: 0 0 0 2px var(--a), 0 0 0 8px transparent; } }
+  .move { display: flex; gap: 10px; flex: none; }
   .styleHint { margin: 10px 2px 0; color: var(--sub); font-size: 13px; min-height: 1.45em; }
   /* macOS: Ampelknöpfe links, keine eingeblendeten Fensterknöpfe rechts */
   .mac header { padding: 0 20px 0 84px; }
@@ -183,6 +193,8 @@
       <button class="sty" data-v="minimal"><span class="mini"><span class="minimal">♪ Aa</span></span><span data-t="stMinimal"></span></button>
       <button class="sty" data-v="lyrics"><span class="mini"><span class="lyrics"><span class="dot"></span><span class="lns"><span class="ln"></span><span class="ln"></span></span></span></span><span data-t="stLyrics"></span></button>
       <button class="sty" data-v="visualizer"><span class="mini"><span class="viz"><span class="dot"></span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span data-t="stViz"></span></button>
+      <button class="sty" data-v="strip"><span class="mini"><span class="strip"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stStrip"></span></button>
+      <button class="sty" data-v="bubble"><span class="mini"><span class="bubble"><span class="dot"></span><span class="ln"></span></span></span><span data-t="stBubble"></span></button>
     </div>
     <div class="styleHint" id="styleHint"></div>
     <div class="row" style="margin-top:12px"><div><b data-t="motion"></b></div>
@@ -244,6 +256,12 @@
     <div class="row" id="updRow"><div><b data-t="autoUpdate"></b><small id="updText"></small></div>
       <div style="display:flex;gap:10px;align-items:center"><button type="button" class="btn" id="updBtn"></button><input type="checkbox" class="toggle" data-key="autoUpdate"></div></div>
   </section>
+
+  <section>
+    <h2 data-t="secMove"></h2>
+    <div class="row"><div><small data-t="moveHint"></small><b id="moveState" role="status" aria-live="polite"></b></div>
+      <div class="move"><button type="button" class="btn" id="moveExport" data-t="moveExport"></button><button type="button" class="btn" id="moveImport" data-t="moveImport"></button></div></div>
+  </section>
 </main>
 <script src="i18n.js"></script>
 <script>
@@ -277,7 +295,7 @@
     $$(".screen").forEach((s) => s.setAttribute("aria-pressed", String(cfg.display === s.dataset.id)));
     $$("#grid9 button").forEach((b) => b.setAttribute("aria-pressed", String(cfg.anchor === b.dataset.v)));
     // kurze Beschreibung für Stile, die mehr brauchen als den Songwechsel
-    const hint = { lyrics: "stLyricsHint", visualizer: "stVizHint" }[cfg.style];
+    const hint = { lyrics: "stLyricsHint", visualizer: "stVizHint", strip: "stStripHint", bubble: "stBubbleHint" }[cfg.style];
     $("#styleHint").textContent = hint ? t(hint) : "";
     // OBS: empfohlene Größe der Browserquelle = Fenstergröße des Overlays bei dieser Skalierung
     const s = (cfg.scale || 100) / 100;
@@ -440,6 +458,16 @@
     $("#hueGroupRow").hidden = false;
     if (!g.some((x) => x.id === cfg.hueGroup)) mirage.send("set", { hueGroup: g[0].id });
   }
+  // Einstellungen umziehen: Datei-Dialoge laufen im Hauptprozess, hier nur das Ergebnis als kurze Meldung
+  function moveResult(r, okKey) {
+    if (!r || r.canceled) return;
+    const text = r.ok ? t(okKey).replace("{n}", r.n ?? "") : t(r.error === "invalid" ? "moveInvalid" : "moveFailed");
+    $("#moveState").textContent = text;
+    clearTimeout(moveResult.t);
+    moveResult.t = setTimeout(() => ($("#moveState").textContent = ""), 6000);
+  }
+  $("#moveExport").onclick = async () => moveResult(await mirage.invoke("exportCfg"), "moveExported");
+  $("#moveImport").onclick = async () => moveResult(await mirage.invoke("importCfg"), "moveImported");
   $("#obsCopy").onclick = async () => {
     try { await navigator.clipboard.writeText($("#obsUrl").textContent); $("#obsCopy").textContent = t("copied"); }
     catch { getSelection().selectAllChildren($("#obsUrl")); }
