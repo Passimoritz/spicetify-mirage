@@ -10,6 +10,17 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.15.1] – 2026-11-05
+
+### Added
+
+- **Install the overlay app with Scoop:** `scoop install https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/packaging/scoop/mirage-overlay.json`. Manifests for winget and Homebrew are prepared in `packaging/`.
+- New preview pictures for the Spicetify Marketplace and for link previews.
+
+### Fixed
+
+- Close camera cuts in party mode pushed the crowd out of the picture at the bottom – the shots are now anchored at the bottom edge.
+
 ## [1.15.0] – 2026-11-05
 
 ### Added

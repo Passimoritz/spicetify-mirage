@@ -249,7 +249,11 @@ A small companion app that announces songs **outside Spotify** – above every w
 | [**⬇ Mirage-Overlay-Setup.exe**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay-Setup.exe) | [**⬇ Mirage-Overlay.dmg**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.dmg) | [**⬇ AppImage**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.AppImage) · [**⬇ .deb**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.deb) |
 | Double-click – it lives in the tray | Drag it into *Applications* | Make it executable, or `sudo apt install ./Mirage-Overlay.deb` |
 
-Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (picks the right file and shows whether it's connected).
+Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (picks the right file and shows whether it's connected). With Scoop:
+
+```powershell
+scoop install https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/packaging/scoop/mirage-overlay.json
+```
 
 - **When** – on every song change, permanently as a mini player, or off · on play/pause · quiet hours
 - **Where** – main screen, the screen with the mouse, or any screen · 9 positions · fine offset

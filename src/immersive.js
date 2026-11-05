@@ -1699,8 +1699,9 @@ const immersive = (() => {
 
   /* ---------------------------------------------------------------- Party-Erweiterungen */
   let blend = null, motes = [], hype = new Set(), hypeOn = false;
-  // Einstellungen für Kameraschnitte: [Zoom, Versatz x, Versatz y] (Anteil der Fenstergröße)
-  const SHOTS = [[1, 0, 0], [1.13, 0.05, 0.02], [1.13, -0.05, 0.02], [1.2, 0, -0.08], [1.07, 0, 0.035]];
+  // Einstellungen für Kameraschnitte: [Zoom, Versatz x, Versatz y] (Anteil der Fenstergröße). Der Zoom geht
+  // von der Bildmitte aus und schöbe das Publikum unten aus dem Bild – darum unten verankert (y ≈ −(Zoom−1)/2)
+  const SHOTS = [[1, 0, 0], [1.13, 0.05, -0.065], [1.13, -0.05, -0.065], [1.22, 0, -0.13], [1.07, 0, -0.02]];
   const shot = { i: 0, s: 1, x: 0, y: 0, bars: 0, bar: -1 };
   const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
   // pro Bild, vor dem Zeichnen: Übergang, Hype, Kamera, 3D-Tiefe, Liedtext-Funken, Live-Zustand fürs Overlay

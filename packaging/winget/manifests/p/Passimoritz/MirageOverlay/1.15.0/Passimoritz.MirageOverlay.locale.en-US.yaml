@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.9.0.schema.json
+
+PackageIdentifier: Passimoritz.MirageOverlay
+PackageVersion: 1.15.0
+PackageLocale: en-US
+Publisher: Passimoritz
+PublisherUrl: https://github.com/Passimoritz
+PublisherSupportUrl: https://github.com/Passimoritz/spicetify-mirage/issues
+PackageName: Mirage Overlay
+PackageUrl: https://github.com/Passimoritz/spicetify-mirage
+License: MIT
+LicenseUrl: https://github.com/Passimoritz/spicetify-mirage/blob/main/LICENSE
+ShortDescription: Song announcements, party edge light, room lights and an OBS source for the Mirage Spicetify theme
+Description: |-
+  Companion app for the Mirage theme for Spotify (Spicetify): announces songs above every window,
+  makes the desktop edges and your room lights (Philips Hue, WLED, OpenRGB, Razer Chroma) glow on the beat in party mode,
+  serves an OBS browser source and works with the Mirage Stream Deck plugin.
+Tags:
+  - spotify
+  - spicetify
+  - overlay
+  - now-playing
+  - obs
+ReleaseNotesUrl: https://github.com/Passimoritz/spicetify-mirage/releases/tag/v1.15.0
+ManifestType: defaultLocale
+ManifestVersion: 1.9.0

@@ -1,0 +1,35 @@
+{
+  "version": "1.15.0",
+  "description": "Song announcements above every window, party edge light, room lights and an OBS source for the Mirage Spicetify theme",
+  "homepage": "https://github.com/Passimoritz/spicetify-mirage",
+  "license": "MIT",
+  "notes": "Updates come through 'scoop update'. Turn off 'Update automatically' in the Mirage Overlay settings.",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Passimoritz/spicetify-mirage/releases/download/v1.15.0/Mirage-Overlay-Setup.exe#/dl.7z",
+      "hash": "d3dbddd5201028862b4935fa02c1c93dfcc57dcb00e4067828cac59b9450ff8b"
+    }
+  },
+  "installer": {
+    "script": [
+      "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+      "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse -Force"
+    ]
+  },
+  "shortcuts": [
+    [
+      "Mirage Overlay.exe",
+      "Mirage Overlay"
+    ]
+  ],
+  "checkver": {
+    "github": "https://github.com/Passimoritz/spicetify-mirage"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/Passimoritz/spicetify-mirage/releases/download/v$version/Mirage-Overlay-Setup.exe#/dl.7z"
+      }
+    }
+  }
+}

@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.15.0" : "dev";
+      VERSION = true ? "1.15.1" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -14126,7 +14126,7 @@
           else venueCtx?.clearRect(0, 0, q.venueEl.width, q.venueEl.height);
         }
         let blend = null, motes = [], hype = /* @__PURE__ */ new Set(), hypeOn = false;
-        const SHOTS = [[1, 0, 0], [1.13, 0.05, 0.02], [1.13, -0.05, 0.02], [1.2, 0, -0.08], [1.07, 0, 0.035]];
+        const SHOTS = [[1, 0, 0], [1.13, 0.05, -0.065], [1.13, -0.05, -0.065], [1.22, 0, -0.13], [1.07, 0, -0.02]];
         const shot = { i: 0, s: 1, x: 0, y: 0, bars: 0, bar: -1 };
         const cam = { s: 1, x: 0, y: 0, key: "" }, depth = { x: 0, y: 0, tx: 0, ty: 0, at: 0, key: "" };
         const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };

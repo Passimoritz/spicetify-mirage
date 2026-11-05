@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.9.0.schema.json
+
+PackageIdentifier: Passimoritz.MirageOverlay
+PackageVersion: 1.15.0
+InstallerType: nullsoft
+Scope: user
+InstallModes:
+  - silent
+InstallerSwitches:
+  Silent: /S
+  SilentWithProgress: /S
+UpgradeBehavior: install
+ReleaseDate: 2026-11-05
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/Passimoritz/spicetify-mirage/releases/download/v1.15.0/Mirage-Overlay-Setup.exe
+    InstallerSha256: D3DBDDD5201028862B4935FA02C1C93DFCC57DCB00E4067828CAC59B9450FF8B
+ManifestType: installer
+ManifestVersion: 1.9.0
