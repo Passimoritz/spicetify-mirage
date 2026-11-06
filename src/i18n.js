@@ -1,4 +1,5 @@
 import { S } from "./core.js";
+import { GAME_TEXT } from "./i18n-games.js";
 
 /* ---------------------------------------------------------------- Sprachen */
 // Fehlt eine Übersetzung, gilt Englisch – so funktioniert das Theme in jeder Sprache.
@@ -2304,6 +2305,7 @@ const I18N = {
     gL20: "… 到日出还在嗨?",
   },
 };
+for (const [l, v] of Object.entries(GAME_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 const LANG = (() => {
   let l = "";
   try { l = S.Locale?.getLocale?.() || ""; } catch {}

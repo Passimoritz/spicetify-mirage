@@ -44,8 +44,23 @@ function buildTvFx() {
   });
 }
 
+// QR-Leser für Handys ohne eingebaute Erkennung (iPhone): wird erst beim Scannen nachgeladen
+function buildQrReader() {
+  return esbuild.build({
+    stdin: { contents: 'import jsQR from "jsqr"; window.jsQR = jsQR;', resolveDir: path.join(__dirname, "..") },
+    outfile: path.join(__dirname, "..", "docs", "live", "qr.js"),
+    bundle: true,
+    minify: true,
+    format: "iife",
+    target: "chrome100",
+    legalComments: "none",
+    banner: { js: "/* jsQR, Apache-2.0, https://github.com/cozmo/jsQR */" },
+    logLevel: "info",
+  });
+}
+
 if (process.argv.includes("--watch")) {
   esbuild.context(options).then((ctx) => ctx.watch());
 } else {
-  Promise.all([esbuild.build(options), buildTvFx()]).catch(() => process.exit(1));
+  Promise.all([esbuild.build(options), buildTvFx(), buildQrReader()]).catch(() => process.exit(1));
 }

@@ -22,7 +22,8 @@ import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
-import { games, GAME_LIST, WHEEL_FIELDS } from "./games.js";
+import { games, GAME_LIST, WHEEL_FIELDS, WHEELS } from "./games.js";
+import { free } from "./lock.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -58,6 +59,8 @@ const ICON = {
   recap: '<svg viewBox="0 0 24 24"><path d="M4 20V10h3v10zm6 0V4h3v16zm6 0v-7h3v7z"/></svg>',
   screen: '<svg viewBox="0 0 24 24"><path d="M2 4h14v10H2zm2 2v6h10V6zm16-2h2v14H8v-2h12zM6 16h6v2H6z"/></svg>',
   live: '<svg viewBox="0 0 24 24"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5zm5 14.2a1 1 0 1 0 0 .01z"/></svg>',
+  lyrNone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 8h10M5 12h6M5 16h9"/><path d="M4 4l16 16"/></svg>',
+  lyrInstr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>',
   sparkle: '<svg viewBox="0 0 24 24"><path d="M11 2l1.9 5.6L18.5 9.5l-5.6 1.9L11 17l-1.9-5.6L3.5 9.5l5.6-1.9zM18.5 14l.9 2.2 2.1.8-2.1.9-.9 2.1-.8-2.1-2.2-.9 2.2-.8z"/></svg>',
 };
 const MODES = [
@@ -121,7 +124,10 @@ const immersive = (() => {
       <div class="m-im-meta">
         <div class="m-im-kicker"></div>
         <div class="m-im-smartpick" hidden>${ICON.sparkle}<span></span></div>
-        <div class="m-im-title"></div>
+        <div class="m-im-titlerow">
+          <div class="m-im-title"></div>
+          <div class="m-im-lyrstate" hidden><button type="button" class="m-im-lyrstate-btn"></button><div class="m-im-lyrstate-pop" role="tooltip"></div></div>
+        </div>
         <div class="m-im-artist"></div>
         <div class="m-im-bar" role="slider" tabindex="0"><div class="m-im-fill"></div></div>
         <div class="m-im-time"><span class="m-im-pos">0:00</span><span class="m-im-dur">0:00</span></div>
@@ -174,6 +180,7 @@ const immersive = (() => {
       wrap: el.querySelector(".m-im-cover-wrap"),
       kicker: el.querySelector(".m-im-kicker"),
       title: el.querySelector(".m-im-title"),
+      lyrstate: el.querySelector(".m-im-lyrstate"),
       artist: el.querySelector(".m-im-artist"),
       fill: el.querySelector(".m-im-fill"),
       pos: el.querySelector(".m-im-pos"),
@@ -287,7 +294,7 @@ const immersive = (() => {
     help.onclick = () => toggleKeys();
     q.keys.onclick = () => toggleKeys(false);
     el.querySelector(".m-im-close").onclick = close;
-    q.shuffle.onclick = async () => { await ctl.cycleShuffle(); setTimeout(syncState, 150); };
+    q.shuffle.onclick = async () => { if (!free()) return; await ctl.cycleShuffle(); setTimeout(syncState, 150); };
     // Titel → Album, Künstler → Künstlerseite (Immersiv-Fenster schließt dafür)
     q.title.onclick = () => ctl.go(ctl.albumOf(currentItem())) && close();
     q.artist.onclick = () => ctl.go(ctl.artistUriOf(currentItem())) && close();
@@ -301,7 +308,7 @@ const immersive = (() => {
     db.onclick = () => showSide(side === "devices" ? null : "devices");
     tb.onclick = () => showSide(side === "timer" ? null : "timer");
     if (!ctl.canConnect()) db.hidden = true;
-    q.repeat.onclick = () => { S.Player.toggleRepeat(); setTimeout(syncState, 120); };
+    q.repeat.onclick = () => { if (!free()) return; S.Player.toggleRepeat(); setTimeout(syncState, 120); };
     q.like.onclick = (e) => {
       const was = !!S.Player.getHeart?.();
       S.Player.toggleHeart();
@@ -314,17 +321,18 @@ const immersive = (() => {
     q.mute.onclick = () => { S.Player.toggleMute(); setTimeout(syncState, 120); };
     q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
     q.full.onclick = toggleFull;
-    el.querySelector(".m-im-prev").onclick = () => S.Player.back();
-    el.querySelector(".m-im-next").onclick = () => S.Player.next();
-    q.play.onclick = () => S.Player.togglePlay();
+    el.querySelector(".m-im-prev").onclick = () => free() && S.Player.back();
+    el.querySelector(".m-im-next").onclick = () => free() && S.Player.next();
+    q.play.onclick = () => free() && S.Player.togglePlay();
     el.querySelectorAll(".m-im-tabs button").forEach((b) => (b.onclick = () => setMode(b.dataset.mode, true)));
     el.querySelector(".m-im-bar").onclick = (e) => {
+      if (!free()) return;
       const r = e.currentTarget.getBoundingClientRect();
       S.Player.seek(clamp((e.clientX - r.left) / r.width, 0, 1));
     };
     q.inner.addEventListener("click", (e) => {
       const line = e.target.closest(".m-im-line");
-      if (line && lyr?.synced) S.Player.seek(Math.max(Number(line.dataset.t), 2));
+      if (line && lyr?.synced && free()) S.Player.seek(Math.max(Number(line.dataset.t), 2));
     });
     el.addEventListener("pointermove", (e) => {
       if (cfg.calm) return;
@@ -612,35 +620,53 @@ const immersive = (() => {
   // gleichzeitige Aufrufe für denselben Song (Ansicht wechseln + Songwechsel) beide ihre
   // Übersetzung an – die stand dann doppelt da.
   let lyrToken = 0;
-  // Kein Text (oder ein Instrumental): statt einer nackten Zeile eine ruhige Fläche in den
-  // Cover-Farben, mit dem naheliegenden nächsten Schritt
-  function emptyLyrics(instrumental) {
-    const item = currentItem();
-    const box = document.createElement("div");
-    box.className = "m-im-empty" + (instrumental ? " is-instrumental" : "");
-    box.innerHTML =
-      '<div class="m-im-empty-icon" aria-hidden="true">' +
-      (instrumental ? "<i></i><i></i><i></i><i></i><i></i>" : '<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>') +
-      '</div><b></b><p></p><div class="m-im-empty-actions"></div>';
-    box.querySelector("b").textContent = t(instrumental ? "instrTitle" : "emptyTitle");
-    box.querySelector("p").textContent = t(instrumental ? "instrText" : cfg.onlineLyrics ? "emptyText" : "emptyTextOff");
-    const actions = box.querySelector(".m-im-empty-actions");
-    const viz = document.createElement("button");
-    viz.type = "button";
-    viz.className = "m-im-empty-btn is-primary";
-    viz.textContent = t("showViz");
-    viz.onclick = () => setMode("viz", true);
-    actions.append(viz);
+  // Kein Text oder ein Instrumental: nur ein leises Zeichen neben dem Titel (in allen Ansichten),
+  // die Erklärung und die nächsten Schritte erscheinen beim Drüberfahren
+  let lyrStateToken = 0, lyrStateUri = "";
+  async function updateLyrState() {
+    const item = currentItem(), uri = item?.uri || "", tok = ++lyrStateToken;
+    // beim selben Song nichts ausblenden: sonst flackert das Zeichen bei jeder Aktualisierung
+    if (uri !== lyrStateUri) q.lyrstate.hidden = true;
+    lyrStateUri = uri;
+    if (!/^spotify:(track|local):/.test(uri)) return;
+    const got = await getLyrics(uri).catch(() => null);
+    if (tok !== lyrStateToken) return;
+    const instrumental = !!got?.instrumental;
+    // schon hier festlegen: sonst springt beim Wechsel in Liedtext oder Mix erst das Layout um
+    setNoLyr(instrumental || !got?.lines?.length);
+    if (!instrumental && got?.lines?.length) return void (q.lyrstate.hidden = true);
+    const label = t(instrumental ? "instrTitle" : "emptyTitle");
+    const btn = q.lyrstate.querySelector("button");
+    btn.innerHTML = instrumental ? ICON.lyrInstr : ICON.lyrNone;
+    btn.setAttribute("aria-label", label);
+    const pop = q.lyrstate.querySelector(".m-im-lyrstate-pop");
+    pop.textContent = "";
+    const head = document.createElement("b");
+    head.textContent = label;
+    const text = document.createElement("p");
+    text.textContent = t(instrumental ? "instrText" : cfg.onlineLyrics ? "emptyText" : "emptyTextOff");
+    const actions = document.createElement("div");
+    actions.className = "m-im-lyrstate-actions";
+    const action = (key, onclick, cls) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      if (cls) b.className = cls;
+      b.textContent = t(key);
+      b.onclick = onclick;
+      actions.append(b);
+    };
+    action("showViz", () => setMode("viz", true), "is-viz");
+    if (cfg.onlineLyrics) action("lyrPick", () => showSide("versions"));
     if (!instrumental && item) {
       const web = document.createElement("a");
-      web.className = "m-im-empty-btn";
       web.textContent = t("searchWeb");
       web.target = "_blank";
       web.rel = "noopener";
       web.href = "https://www.google.com/search?q=" + encodeURIComponent(`${titleOf(item)} ${artistOf(item).split(", ")[0]} lyrics`);
       actions.append(web);
     }
-    return box;
+    pop.append(head, text, actions);
+    q.lyrstate.hidden = false;
   }
   // Wortzeiten einer Zeile. Liefert Spotify Silbenzeiten, gelten die; sonst wird geschätzt:
   // die Zeile dauert bis zur nächsten (höchstens so lange, wie man sie ungefähr singt),
@@ -754,7 +780,8 @@ const immersive = (() => {
   // Knopf unten rechts: woher der Text kommt, und eine andere Fassung wählen
   function showSource(got) {
     const picked = !!cfg.lyricPicks?.[lyrUri];
-    q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri);
+    // ohne Text steckt „Fassung wählen“ im Zeichen neben dem Titel
+    q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri) || !got?.lines?.length;
     q.lyrsrc.querySelector("span").textContent = got ? (SOURCE_NAME[got.source] || "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
   }
   async function showVersions(body, item) {
@@ -786,7 +813,7 @@ const immersive = (() => {
   function setNoLyr(on) {
     if (!el || el.classList.contains("is-nolyr") === on) return;
     const parts = [q.wrap, q.meta, q.lyrics].filter(Boolean);
-    const glide = el.dataset.mode === "party" && !cfg.calm && el.isConnected;
+    const glide = LYR.has(el.dataset.mode) && !cfg.calm && el.isConnected;
     const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
     el.classList.toggle("is-nolyr", on);
     if (!glide) return;
@@ -832,10 +859,8 @@ const immersive = (() => {
     q.inner.classList.add("is-in");
     showSource(got);
     setNoLyr(!got || !!got.instrumental || !got.lines?.length);
-    if (!got || got.instrumental) {
-      q.inner.append(emptyLyrics(!!got));
-      return;
-    }
+    updateLyrState();
+    if (!got || got.instrumental) return;
     applyTiming(uri, got);
     voices(got);
     if (cfg.partyWords && got.synced) {
@@ -2139,7 +2164,8 @@ const immersive = (() => {
     const mode = el.dataset.mode;
     const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
-    pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying(), now);
+    // angehaltene Ausschnitte im Spiel sind keine Pause
+    pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying() && !games.active(), now);
     if (LYR.has(mode)) drawLyrics(pos);
     if (VIZ.has(mode)) {
       // ein Fehler in einem Bild darf den Visualizer nicht dauerhaft lahmlegen: Zustand zurücksetzen,
@@ -2220,9 +2246,20 @@ const immersive = (() => {
   }
   // Tastenkürzel-Übersicht (Taste ?)
   const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  // Es ist immer nur ein Menü offen: das neue schließt das vorherige
+  let liveToken = 0;
+  function closeMenus(keep) {
+    if (keep !== "side" && side) showSide(null);
+    if (keep !== "live") {
+      liveToken++;
+      el.querySelector(".m-im-livecard")?.remove();
+    }
+    if (keep !== "keys" && q.keys && !q.keys.hidden) toggleKeys(false);
+  }
   function toggleKeys(force) {
     if (!q.keys) return;
     const show = force ?? q.keys.hidden;
+    if (show) closeMenus("keys");
     if (show && !q.keys.childElementCount) {
       const box = document.createElement("div");
       box.className = "m-im-keys-box";
@@ -2248,6 +2285,7 @@ const immersive = (() => {
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer
   let side = null;
   function showSide(kind) {
+    if (kind) closeMenus("side");
     side = kind;
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
@@ -2369,6 +2407,7 @@ const immersive = (() => {
     q.title.textContent = titleOf(item) || t("nothing");
     q.artist.textContent = artistOf(item);
     q.smart.hidden = !ctl.isSmartPick(item);
+    updateLyrState();
     if (side === "playlists") showSide("playlists");
     q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
@@ -2516,7 +2555,11 @@ const immersive = (() => {
   async function toggleLiveCard() {
     const old = el.querySelector(".m-im-livecard");
     if (old) return old.remove();
+    closeMenus("live");
+    const token = ++liveToken;
     const info = await live.prepare().catch(() => null);
+    // beim Warten aufs Relay kann schon ein anderes Menü aufgegangen sein
+    if (token !== liveToken) return;
     const card = document.createElement("div");
     card.className = "m-im-livecard";
     const b = document.createElement("b");
@@ -2588,15 +2631,6 @@ const immersive = (() => {
     b.textContent = t("pauseTitle");
     s2.textContent = titleOf(currentItem()) || "";
     q.pause.append(b, s2);
-    const inf = cfg.partyLive ? live.info() : null;
-    if (inf?.qr) {
-      const qr = document.createElement("div");
-      qr.className = "m-im-pause-qr";
-      qr.innerHTML = inf.qr; // eigenes SVG aus der QR-Bibliothek
-      const hint = document.createElement("small");
-      hint.textContent = t("pauseSub");
-      q.pause.append(qr, hint);
-    }
     q.pause.classList.add("is-on");
   }
 
@@ -2646,10 +2680,13 @@ const immersive = (() => {
   function gameSettings(body) {
     gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
     gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
-    gameChoice(body, t("gSetJoin"), "gameJoin", secsOf([15, 30, 45, 60]));
+    gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);
+    gameChoice(body, t("gSetClip"), "gameClip", [[8, "8 s"], [12, "12 s"], [20, "20 s"], [0, t("gClipAll")]]);
     gameChoice(body, t("gSetDur"), "gameDur", secsOf([15, 30, 45, 60]));
     gameChoice(body, t("gSetBreak"), "gameBreak", secsOf([5, 8, 12, 20]));
     gameChoice(body, t("gSetBonus"), "gameBonus", [[true, "✓"], [false, "✕"]]);
+    gameChoice(body, t("gSetDrink"), "gameDrink", [[true, "✓"], [false, "✕"]]);
+    gameChoice(body, t("gSetSfx"), "gameSfx", [[0, "✕"], [0.35, t("gSfxLow")], [0.7, t("gSfxLoud")]]);
     gameChoice(body, t("gSetCard"), "gameCard", [["big", t("gCardBig")], ["small", t("gCardSmall")]]);
     const head = document.createElement("div");
     head.className = "m-im-side-sec";
@@ -2690,7 +2727,7 @@ const immersive = (() => {
     const cur = games.active();
     if (cur) {
       if (games.waiting()) sideBtn(body, t("gStartNow"), "", () => games.beginNow());
-      if (cur === "wheel") sideBtn(body, t("gSpin"), "", () => games.spin());
+      if (WHEELS.has(cur)) sideBtn(body, t("gSpin"), "", () => games.spin());
       else if (!games.waiting()) sideBtn(body, t("gSkip"), "", () => games.skip());
       sideBtn(body, t("gEndNow"), "", () => {
         games.stop();
@@ -2710,10 +2747,16 @@ const immersive = (() => {
         h.className = "m-im-side-sec";
         h.textContent = t(c);
         body.append(h);
+        if (c === "gCatDrink") {
+          const warn = document.createElement("p");
+          warn.className = "m-im-side-note";
+          warn.textContent = t("gDrinkNote");
+          body.append(warn);
+        }
       }
       sideBtn(body, `${icon}  ${t(label)}`, t(hint), async () => {
         // Handy-Spiele brauchen den Live-Link
-        if (k !== "wheel" && !cfg.partyLive) {
+        if (!WHEELS.has(k) && !cfg.partyLive) {
           cfg.partyLive = true;
           save();
           showExtras();

@@ -95,7 +95,10 @@ const DEFAULTS = {
   // Party-Spiele: Runden, Zeiten (Sekunden), Bonus für Schnelligkeit, Größe der Karte, Felder des Glücksrads
   gameRounds: 5,
   gameAsk: 20,
-  gameJoin: 30,
+  gameJoin: 120,
+  gameClip: 12,
+  gameDrink: false,
+  gameSfx: 0.7,
   gameDur: 30,
   gameBreak: 8,
   gameBonus: true,
@@ -158,6 +161,8 @@ try {
   // die Kamera-Stöße einmalig für alle aus – wer sie will, schaltet sie in den Einstellungen wieder ein
   cfg.partyCamera = cfg.partyCuts = cfg.partyDepth = false;
   if (!saved.zoomOff1155) Object.assign(cfg, { partyZoom: false, zoomOff1155: true });
+  // Warteraum: 30 s waren zu kurz, einmalig für alle auf 2 Minuten
+  if (!saved.join2min) Object.assign(cfg, { gameJoin: 120, join2min: true });
 } catch {}
 // eigene Schemata stehen gleichberechtigt neben den mitgelieferten
 for (const [name, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(name)) SCHEMES[name] = sc;

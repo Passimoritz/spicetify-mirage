@@ -3,16 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#06050b">
+<meta name="theme-color" id="chrome" content="#06050b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="robots" content="noindex">
 <title>Mirage Live</title>
 <script src="fx.js" defer></script>
 <style>
   /* Mirage Live: das Handy als Lichtquelle im Raum. Das Licht malt ein Canvas (drei treibende Lichtquellen
      in den Songfarben, Ringe im Takt, Blitz beim Drop); darüber nur schlanke Glas-Elemente. */
-  :root { --a: 155, 107, 240; --b: 34, 73, 231; --c: 217, 188, 241; }
+  :root { --a: 155, 107, 240; --b: 34, 73, 231; --c: 217, 188, 241; --chrome: #06050b; background: var(--chrome); }
+  ::backdrop { background: var(--chrome); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; background: #06050b; color: #fff; overflow: hidden; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+  html, body { height: 100%; background: var(--chrome); color: #fff; overflow: hidden; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
     font-family: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "SF Pro Display", Roboto, sans-serif; }
   canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   .top { position: fixed; top: max(16px, env(safe-area-inset-top)); left: 0; right: 0; display: flex; justify-content: center; }
@@ -124,7 +128,11 @@
   .note { position: fixed; left: 14px; right: 14px; top: max(64px, calc(env(safe-area-inset-top) + 52px)); z-index: 4; padding: 14px 16px; border-radius: 18px;
     background: rgba(10, 8, 20, 0.7); border: 1px solid rgba(255, 255, 255, 0.16); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
     transform: translateY(-160%); transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1); }
-  .note.show { transform: none; }
+  .note.show { transform: none; visibility: visible; transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  /* versteckt wirklich aus dem Bild: leer ragte die Leiste sonst als schwarzer Streifen oben hinein */
+  .note:not(.show) { visibility: hidden; transform: translateY(calc(-100% - 120px)); transition: transform 0.4s, visibility 0s 0.4s; }
+  /* erst nach dem Beitreten: die Bedienung gehört zur laufenden Party */
+  body:not(.on) :is(.reacts, .tools, .card) { visibility: hidden; }
   .note small { display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
   .note b { display: block; margin-top: 4px; font-size: 19px; line-height: 1.25; }
   /* Abstimmung: drei Songs zur Wahl */
@@ -218,6 +226,22 @@
   .gpod i { display: block; width: 100%; margin-top: 4px; border-radius: 10px 10px 0 0; background: rgba(var(--a), 0.75); }
   .gpod .p0 i { height: 96px; background: #cf9320; } .gpod .p1 i { height: 66px; background: #8e97a8; } .gpod .p2 i { height: 44px; background: #a56a3a; }
   .game .gme { font-weight: 700; opacity: 1; }
+  .gverdict.sip { color: #0b0a12; background: #ffc23d; }
+  .game .gword { font-size: clamp(34px, 12vw, 58px); font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: rgb(var(--c)); }
+  .game .gword.hit { color: #ffc23d; }
+  .game .gsnd { flex: none; width: 34px; min-height: 30px; height: 30px; padding: 0; border: 0; border-radius: 99px; background: rgba(255, 255, 255, 0.1); font-size: 14px; }
+  /* Beitreten ohne Link: QR-Code direkt in der Seite scannen */
+  .scan { display: grid; gap: 10px; width: min(300px, 80vw); pointer-events: auto; }
+  .scan[hidden], body.on .scan { display: none; }
+  .scan button { min-height: 52px; border: 0; border-radius: 16px; background: rgb(var(--c)); color: #0b0a12; font: inherit; font-size: 16px; font-weight: 700; }
+  .scan input { height: 44px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 14px; background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit; font-size: 15px; -webkit-user-select: text; user-select: text; text-align: center; }
+  .scanmsg { min-height: 1.4em; font-size: 13px; line-height: 1.4; opacity: 0.85; }
+  .scanview { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; background: #000; }
+  .scanview[hidden] { display: none; }
+  .scanview video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .scanframe { position: relative; width: min(68vw, 46vh); aspect-ratio: 1; border-radius: 26px; border: 3px solid #fff; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45); }
+  .scanview p { position: absolute; left: 20px; right: 20px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 70px)); text-align: center; font-size: 15px; font-weight: 600; text-shadow: 0 1px 8px #000; }
+  .scanview button { position: absolute; top: max(16px, env(safe-area-inset-top)); right: 16px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 18px; }
   /* sehr schmal oder quer: nichts soll überlappen */
   @media (max-width: 350px) { .bpm { display: none; } .tools button { padding: 0 10px; font-size: 12px; } }
   @media (max-height: 540px) {
@@ -240,7 +264,8 @@
 <body>
 <canvas id="c"></canvas>
 <div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE</div></div>
-<div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p></div>
+<div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p><div class="scan" id="scan" hidden><button type="button" id="scanBtn"></button><input id="scanLink" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url"><div class="scanmsg" id="scanMsg" role="status"></div></div></div>
+<div class="scanview" id="scanView" hidden><video id="scanVid" playsinline muted></video><div class="scanframe"></div><p id="scanTip"></p><button type="button" id="scanX" aria-label="✕">✕</button></div>
 <div class="tap" id="tap"></div>
 <div class="lyr" id="lyr" aria-live="polite"><b id="ly"></b><span id="lyn"></span></div>
 <div class="reacts" id="reacts"></div>
@@ -329,6 +354,9 @@ const L = {
 };
 const MORE = {"fr": {"lyr": "Paroles", "wish": "＋ Souhait", "vib": "Vibration", "vibLv": ["off", "douce", "normale", "forte"], "wTitle": "Souhaiter un titre", "wHint": "Mirage le cherche sur Spotify. Les autres peuvent voter – c'est la personne aux platines qui décide.", "wName": "Ton prénom", "opt": "facultatif", "wSong": "Chercher sur Spotify …", "wSend": "Souhaiter", "wNow": "Souhaité", "wNone": "Rien trouvé – essaie une autre orthographe ?", "wSearching": "Recherche …", "wSlow": "Pas encore de réponse – on réessaie …", "wDead": "Mirage ne répond pas. Le mode fête est-il lancé dans Spotify ?", "wErr": "Spotify n'a pas répondu à l'instant – réessaie dans un moment.", "vibTap": "Appuie une fois pour autoriser la vibration du téléphone", "wClose": "Fermer", "wSent": "Envoyé ! Il apparaît dans la liste dans un instant.", "wWait": "Un instant – un souhait toutes les 45 secondes.", "wQueued": "✓ dans la file d'attente", "wEmpty": "Aucun souhait pour l'instant – sois le premier !", "wShort": "Saisis un titre.", "tap": "Touche pour le plein écran · l'écran reste allumé", "wait": ["Connecté", "En attente du mode fête dans Spotify …"], "over": ["La fête est finie", "Merci d'avoir brillé avec nous ! Nouvelle fête, nouveau QR code."], "bad": ["Lien incomplet", "Scanne à nouveau le QR code."], "net": ["Pas de connexion", "Nouvel essai … (Wi-Fi ou données mobiles activés ?)"], "start": ["Mirage Live", "Connexion …"], "react": "Réagir", "reacted": "Envoyé", "notify": "Préviens-moi quand mon titre passe", "notifyOn": "Tu seras prévenu·e", "soonTitle": "Ton titre est le prochain !", "soon": "Prochain titre : {s}", "again": ["Connexion perdue", "Reconnexion … tentative {n}"], "poll": "Vote pour le prochain titre", "pollDone": "Merci pour ton vote !", "gQuiz": "Qui chante ?", "gGap": "Paroles à trous", "gStop": "Chaises musicales", "gBattle": "Battle de danse", "gWheel": "Roue de la fortune", "gEnd": "Scores finaux", "gStopJoin": "Rejoins-nous !", "gBattleJoin": "Rejoins-nous !", "gJoin": "Je suis là", "gJoined": "✓ Tu es dans la partie", "gWaitLine": "En attente de la prochaine ligne …", "gQuizAsk": "Qui chante ?", "gOut": "Éliminé – à la prochaine !", "gStopPlay": "Danse ! Tape seulement quand la musique s'arrête", "gStopNow": "STOP ! TAPE !", "gSafe": "Sauvé !", "gLeft": "{n} encore en jeu", "gShake": "Secoue ton téléphone !", "gTapShake": "Ou tape ici", "gTeam": "Tu es dans l'équipe {t}", "gDraw": "Égalité !", "gTeamWin": "L'équipe {t} gagne !", "gTitleQ": "Quel est ce titre ?", "gNext": "Ligne suivante", "gBeat": "Coup de beat", "gFast": "Doigt le plus rapide", "gBomb": "Patate chaude", "gLikely": "Qui serait le plus susceptible de …?", "gJoinAny": "Rejoins !", "gTitleAsk": "Quelle est cette chanson ?", "gNextAsk": "Et après ?", "gBeatGo": "Tape en rythme !", "gPerfect": "Parfait !", "gGood": "Bien", "gMiss": "Hors rythme", "gFastReady": "Attends …", "gFastGo": "MAINTENANT !", "gFastEarly": "Trop tôt !", "gBombPass": "Passe-la !", "gBombSafe": "{n} a la bombe", "gBombBoom": "{n} a explosé !", "gRight": "Bravo !", "gWrong": "Pas cette fois", "gPlace": "Ta place : {n}", "gPts": "{n} points", "gNoConn": "Reconnexion … ta réponse sera envoyée", "gPicked": "Réponse enregistrée"}, "es": {"lyr": "Letra", "wish": "＋ Deseo", "vib": "Vibración", "vibLv": ["off", "suave", "normal", "fuerte"], "wTitle": "Pide una canción", "wHint": "Mirage la busca en Spotify. Los demás pueden votar; quien pone la música decide.", "wName": "Tu nombre", "opt": "opcional", "wSong": "Buscar en Spotify …", "wSend": "Pedir", "wNow": "Pedida", "wNone": "No se encontró nada – ¿probamos otra grafía?", "wSearching": "Buscando …", "wSlow": "Aún sin respuesta – reintentando …", "wDead": "Mirage no responde. ¿Está el modo fiesta activo en Spotify?", "wErr": "Spotify no ha respondido ahora – inténtalo de nuevo en un momento.", "vibTap": "Toca una vez para que el móvil pueda vibrar", "wClose": "Cerrar", "wSent": "¡Enviado! Aparecerá en la lista en un momento.", "wWait": "Espera un poco – un deseo cada 45 segundos.", "wQueued": "✓ en la cola", "wEmpty": "Aún no hay deseos – ¡sé el primero!", "wShort": "Escribe un título.", "tap": "Toca para pantalla completa · la pantalla sigue encendida", "wait": ["Conectado", "Esperando el modo fiesta en Spotify …"], "over": ["Se acabó la fiesta", "¡Gracias por brillar con nosotros! Nueva fiesta, nuevo código QR."], "bad": ["Enlace incompleto", "Escanea el código QR otra vez."], "net": ["Sin conexión", "Reintentando … (¿Wi-Fi o datos móviles activados?)"], "start": ["Mirage Live", "Conectando …"], "react": "Reaccionar", "reacted": "Enviado", "notify": "Avísame cuando suene mi canción", "notifyOn": "Recibirás un aviso", "soonTitle": "¡Tu canción es la siguiente!", "soon": "A continuación: {s}", "again": ["Conexión perdida", "Reconectando … intento {n}"], "poll": "Vota la próxima canción", "pollDone": "¡Gracias por votar!", "gQuiz": "¿Quién canta?", "gGap": "Huecos de letra", "gStop": "Parada musical", "gBattle": "Batalla de baile", "gWheel": "Ruleta de la fortuna", "gEnd": "Resultado final", "gStopJoin": "¡Únete!", "gBattleJoin": "¡Únete!", "gJoin": "Me apunto", "gJoined": "✓ Estás dentro", "gWaitLine": "Esperando la siguiente línea …", "gQuizAsk": "¿Quién canta?", "gOut": "Fuera – ¡a la próxima!", "gStopPlay": "¡Baila! Toca solo cuando pare la música", "gStopNow": "¡PARA! ¡TOCA!", "gSafe": "¡Salvado!", "gLeft": "Quedan {n}", "gShake": "¡Agita tu móvil!", "gTapShake": "O toca aquí", "gTeam": "Estás en el equipo {t}", "gDraw": "¡Empate!", "gTeamWin": "¡Gana el equipo {t}!", "gTitleQ": "¿Cómo se llama?", "gNext": "Siguiente línea", "gBeat": "Golpe de beat", "gFast": "Dedo más rápido", "gBomb": "Patata caliente", "gLikely": "¿Quién tiene más pinta de …?", "gJoinAny": "¡Únete!", "gTitleAsk": "¿Qué canción es?", "gNextAsk": "¿Qué viene después?", "gBeatGo": "¡Toca al ritmo!", "gPerfect": "¡Perfecto!", "gGood": "Bien", "gMiss": "Fuera de ritmo", "gFastReady": "Espera …", "gFastGo": "¡YA!", "gFastEarly": "¡Demasiado pronto!", "gBombPass": "¡Pásala!", "gBombSafe": "{n} tiene la bomba", "gBombBoom": "¡{n} ha explotado!", "gRight": "¡Correcto!", "gWrong": "Esta vez no", "gPlace": "Tu puesto: {n}", "gPts": "{n} puntos", "gNoConn": "Reconectando … tu respuesta se enviará", "gPicked": "Respuesta guardada"}, "it": {"lyr": "Testo", "wish": "＋ Richiesta", "vib": "Vibrazione", "vibLv": ["off", "leggera", "normale", "forte"], "wTitle": "Richiedi una canzone", "wHint": "Mirage la cerca su Spotify. Gli altri possono votare – decide chi gestisce la musica.", "wName": "Il tuo nome", "opt": "facoltativo", "wSong": "Cerca su Spotify …", "wSend": "Richiedi", "wNow": "Richiesta", "wNone": "Non trovato – provi a scriverlo diversamente?", "wSearching": "Cerco …", "wSlow": "Ancora nessuna risposta – riprovo …", "wDead": "Mirage non risponde. La modalità festa è attiva in Spotify?", "wErr": "Spotify non ha risposto proprio ora – riprova tra poco.", "vibTap": "Tocca una volta per far vibrare il telefono", "wClose": "Chiudi", "wSent": "Inviata! Compare nella lista tra un attimo.", "wWait": "Un attimo – una richiesta ogni 45 secondi.", "wQueued": "✓ in coda", "wEmpty": "Ancora nessuna richiesta – sii il primo!", "wShort": "Inserisci un titolo.", "tap": "Tocca per lo schermo intero · lo schermo resta acceso", "wait": ["Connesso", "In attesa della modalità festa in Spotify …"], "over": ["Festa finita", "Grazie per aver brillato con noi! Nuova festa, nuovo codice QR."], "bad": ["Link incompleto", "Inquadra di nuovo il codice QR."], "net": ["Nessuna connessione", "Nuovo tentativo … (Wi-Fi o dati mobili attivi?)"], "start": ["Mirage Live", "Connessione …"], "react": "Reagisci", "reacted": "Inviato", "notify": "Avvisami quando arriva la mia canzone", "notifyOn": "Riceverai un avviso", "soonTitle": "La tua canzone è la prossima!", "soon": "Prossima: {s}", "again": ["Connessione persa", "Riconnessione … tentativo {n}"], "poll": "Vota la prossima canzone", "pollDone": "Grazie per il voto!", "gQuiz": "Chi canta?", "gGap": "Buchi nel testo", "gStop": "Stop alla musica", "gBattle": "Dance battle", "gWheel": "Ruota della fortuna", "gEnd": "Punteggio finale", "gStopJoin": "Partecipa!", "gBattleJoin": "Partecipa!", "gJoin": "Ci sono", "gJoined": "✓ Sei dentro", "gWaitLine": "In attesa della prossima riga …", "gQuizAsk": "Chi canta?", "gOut": "Eliminato – alla prossima!", "gStopPlay": "Balla! Tocca solo quando la musica si ferma", "gStopNow": "STOP! TOCCA!", "gSafe": "Salvo!", "gLeft": "Ancora in {n}", "gShake": "Scuoti il telefono!", "gTapShake": "Oppure tocca qui", "gTeam": "Sei nella squadra {t}", "gDraw": "Pareggio!", "gTeamWin": "Vince la squadra {t}!", "gTitleQ": "Che canzone è?", "gNext": "Riga successiva", "gBeat": "Colpo a tempo", "gFast": "Dito più veloce", "gBomb": "Patata bollente", "gLikely": "Chi sarebbe capace di …?", "gJoinAny": "Unisciti!", "gTitleAsk": "Che canzone è questa?", "gNextAsk": "Cosa viene dopo?", "gBeatGo": "Tocca a ritmo!", "gPerfect": "Perfetto!", "gGood": "Bene", "gMiss": "Fuori tempo", "gFastReady": "Aspetta …", "gFastGo": "ORA!", "gFastEarly": "Troppo presto!", "gBombPass": "Passala!", "gBombSafe": "{n} ha la bomba", "gBombBoom": "{n} è esploso!", "gRight": "Giusto!", "gWrong": "Stavolta no", "gPlace": "Il tuo posto: {n}", "gPts": "{n} punti", "gNoConn": "Riconnessione … la tua risposta verrà inviata", "gPicked": "Risposta salvata"}, "pt": {"lyr": "Letra", "wish": "＋ Pedido", "vib": "Vibração", "vibLv": ["desl.", "suave", "normal", "forte"], "wTitle": "Pedir uma música", "wHint": "O Mirage procura-a no Spotify. Os outros podem votar – quem põe a música decide.", "wName": "O teu nome", "opt": "opcional", "wSong": "Pesquisar no Spotify …", "wSend": "Pedir", "wNow": "Pedida", "wNone": "Nada encontrado – tentar outra grafia?", "wSearching": "A pesquisar …", "wSlow": "Ainda sem resposta – a tentar de novo …", "wDead": "O Mirage não responde. O modo festa está ativo no Spotify?", "wErr": "O Spotify não respondeu agora – tenta outra vez daqui a pouco.", "vibTap": "Toca uma vez para o telemóvel poder vibrar", "wClose": "Fechar", "wSent": "Enviado! Aparece na lista daqui a um momento.", "wWait": "Espera um pouco – um pedido a cada 45 segundos.", "wQueued": "✓ na fila", "wEmpty": "Ainda sem pedidos – sê o primeiro!", "wShort": "Escreve um título.", "tap": "Toca para ecrã inteiro · o ecrã fica ligado", "wait": ["Ligado", "À espera do modo festa no Spotify …"], "over": ["A festa acabou", "Obrigado por brilhares connosco! Nova festa, novo código QR."], "bad": ["Link incompleto", "Lê o código QR outra vez."], "net": ["Sem ligação", "A tentar de novo … (Wi-Fi ou dados móveis ligados?)"], "start": ["Mirage Live", "A ligar …"], "react": "Reagir", "reacted": "Enviado", "notify": "Avisa-me quando a minha música tocar", "notifyOn": "Vais receber um aviso", "soonTitle": "A tua música é a próxima!", "soon": "A seguir: {s}", "again": ["Ligação perdida", "A religar … tentativa {n}"], "poll": "Vota na próxima música", "pollDone": "Obrigado por votares!", "gQuiz": "Quem canta?", "gGap": "Lacunas na letra", "gStop": "Pára a música", "gBattle": "Batalha de dança", "gWheel": "Roda da sorte", "gEnd": "Resultado final", "gStopJoin": "Entra!", "gBattleJoin": "Entra!", "gJoin": "Estou dentro", "gJoined": "✓ Estás dentro", "gWaitLine": "À espera da próxima linha …", "gQuizAsk": "Quem canta?", "gOut": "Fora – até à próxima!", "gStopPlay": "Dança! Só toca quando a música parar", "gStopNow": "PÁRA! TOCA!", "gSafe": "Salvo!", "gLeft": "Ainda {n} em jogo", "gShake": "Abana o telemóvel!", "gTapShake": "Ou toca aqui", "gTeam": "Estás na equipa {t}", "gDraw": "Empate!", "gTeamWin": "A equipa {t} ganha!", "gTitleQ": "Qual é a música?", "gNext": "Próxima linha", "gBeat": "Batida certa", "gFast": "Dedo mais rápido", "gBomb": "Batata quente", "gLikely": "Quem seria mais capaz de …?", "gJoinAny": "Junta-te!", "gTitleAsk": "Que música é esta?", "gNextAsk": "O que vem a seguir?", "gBeatGo": "Toca ao ritmo!", "gPerfect": "Perfeito!", "gGood": "Bom", "gMiss": "Fora do ritmo", "gFastReady": "Espera …", "gFastGo": "JÁ!", "gFastEarly": "Cedo demais!", "gBombPass": "Passa!", "gBombSafe": "{n} tem a bomba", "gBombBoom": "{n} rebentou!", "gRight": "Certo!", "gWrong": "Desta vez não", "gPlace": "O teu lugar: {n}", "gPts": "{n} pontos", "gNoConn": "A reconectar … a tua resposta será enviada", "gPicked": "Resposta guardada"}, "nl": {"lyr": "Songtekst", "wish": "＋ Verzoek", "vib": "Trillen", "vibLv": ["uit", "zacht", "normaal", "sterk"], "wTitle": "Een nummer aanvragen", "wHint": "Mirage zoekt het op Spotify. De anderen kunnen stemmen – wie de muziek doet, beslist.", "wName": "Jouw naam", "opt": "optioneel", "wSong": "Zoeken op Spotify …", "wSend": "Aanvragen", "wNow": "Aangevraagd", "wNone": "Niets gevonden – anders spellen?", "wSearching": "Zoeken …", "wSlow": "Nog geen antwoord – we proberen het opnieuw …", "wDead": "Mirage reageert niet. Staat de feestmodus aan in Spotify?", "wErr": "Spotify reageerde net niet – probeer het zo nog eens.", "vibTap": "Tik één keer zodat je telefoon mag trillen", "wClose": "Sluiten", "wSent": "Verstuurd! Het staat zo in de lijst.", "wWait": "Even wachten – één verzoek per 45 seconden.", "wQueued": "✓ in de wachtrij", "wEmpty": "Nog geen verzoeken – wees de eerste!", "wShort": "Vul een titel in.", "tap": "Tik voor volledig scherm · scherm blijft aan", "wait": ["Verbonden", "Wachten op de feestmodus in Spotify …"], "over": ["Feest afgelopen", "Bedankt voor het meeschitteren! Nieuw feest, nieuwe QR-code."], "bad": ["Link onvolledig", "Scan de QR-code nog een keer."], "net": ["Geen verbinding", "We proberen het opnieuw … (wifi of mobiele data aan?)"], "start": ["Mirage Live", "Verbinden …"], "react": "Reageer", "reacted": "Verstuurd", "notify": "Laat me weten wanneer mijn nummer komt", "notifyOn": "Je krijgt een melding", "soonTitle": "Jouw nummer is de volgende!", "soon": "Hierna: {s}", "again": ["Verbinding verbroken", "Opnieuw verbinden … poging {n}"], "poll": "Stem op het volgende nummer", "pollDone": "Bedankt voor je stem!", "gQuiz": "Wie zingt er?", "gGap": "Tekstgaten", "gStop": "Muziekstop", "gBattle": "Dansbattle", "gWheel": "Rad van fortuin", "gEnd": "Eindstand", "gStopJoin": "Doe mee!", "gBattleJoin": "Doe mee!", "gJoin": "Ik doe mee", "gJoined": "✓ Je doet mee", "gWaitLine": "Wachten op de volgende regel …", "gQuizAsk": "Wie zingt er?", "gOut": "Eruit – volgende keer beter!", "gStopPlay": "Dansen! Tik pas als de muziek stopt", "gStopNow": "STOP! TIK!", "gSafe": "Veilig!", "gLeft": "Nog {n} over", "gShake": "Schud je telefoon!", "gTapShake": "Of tik hier", "gTeam": "Je zit in team {t}", "gDraw": "Gelijkspel!", "gTeamWin": "Team {t} wint!", "gTitleQ": "Welk nummer is dit?", "gNext": "Volgende regel", "gBeat": "Beat-raak", "gFast": "Snelste vinger", "gBomb": "Hete aardappel", "gLikely": "Wie zou het meest waarschijnlijk …?", "gJoinAny": "Doe mee!", "gTitleAsk": "Welk nummer is dit?", "gNextAsk": "Wat komt er nu?", "gBeatGo": "Tik op de beat!", "gPerfect": "Perfect!", "gGood": "Goed", "gMiss": "Naast de beat", "gFastReady": "Wacht even …", "gFastGo": "NU!", "gFastEarly": "Te vroeg!", "gBombPass": "Geef door!", "gBombSafe": "{n} heeft de bom", "gBombBoom": "{n} is ontploft!", "gRight": "Goed zo!", "gWrong": "Nu even niet", "gPlace": "Jouw plek: {n}", "gPts": "{n} punten", "gNoConn": "Opnieuw verbinden … je antwoord wordt nagestuurd", "gPicked": "Antwoord opgeslagen"}, "pl": {"lyr": "Tekst", "wish": "＋ Życzenie", "vib": "Wibracje", "vibLv": ["wył.", "delikatne", "normalne", "mocne"], "wTitle": "Zamów piosenkę", "wHint": "Mirage szuka jej w Spotify. Inni mogą głosować – decyduje osoba od muzyki.", "wName": "Twoje imię", "opt": "opcjonalnie", "wSong": "Szukaj w Spotify …", "wSend": "Zamów", "wNow": "Zamówiono", "wNone": "Nic nie znaleziono – spróbuj inaczej napisać?", "wSearching": "Szukam …", "wSlow": "Jeszcze brak odpowiedzi – próbuję ponownie …", "wDead": "Mirage nie odpowiada. Czy tryb imprezy działa w Spotify?", "wErr": "Spotify właśnie nie odpowiedziało – spróbuj za chwilę.", "vibTap": "Dotknij raz, żeby telefon mógł wibrować", "wClose": "Zamknij", "wSent": "Wysłano! Zaraz pojawi się na liście.", "wWait": "Chwila – jedno życzenie na 45 sekund.", "wQueued": "✓ w kolejce", "wEmpty": "Jeszcze nie ma życzeń – bądź pierwszy!", "wShort": "Wpisz tytuł.", "tap": "Dotknij, by włączyć pełny ekran · ekran zostaje włączony", "wait": ["Połączono", "Czekam na tryb imprezy w Spotify …"], "over": ["Impreza skończona", "Dzięki za wspólne świecenie! Nowa impreza, nowy kod QR."], "bad": ["Niepełny link", "Zeskanuj kod QR jeszcze raz."], "net": ["Brak połączenia", "Próbuję ponownie … (Wi-Fi lub dane komórkowe włączone?)"], "start": ["Mirage Live", "Łączenie …"], "react": "Reaguj", "reacted": "Wysłano", "notify": "Powiadom mnie, gdy będzie moja piosenka", "notifyOn": "Dostaniesz powiadomienie", "soonTitle": "Twoja piosenka jest następna!", "soon": "Zaraz: {s}", "again": ["Utracono połączenie", "Łączenie ponownie … próba {n}"], "poll": "Zagłosuj na następną piosenkę", "pollDone": "Dzięki za głos!", "gQuiz": "Kto śpiewa?", "gGap": "Luki w tekście", "gStop": "Stop muzyka", "gBattle": "Taneczny pojedynek", "gWheel": "Koło fortuny", "gEnd": "Wyniki końcowe", "gStopJoin": "Dołącz!", "gBattleJoin": "Dołącz!", "gJoin": "Jestem w grze", "gJoined": "✓ Jesteś w grze", "gWaitLine": "Czekamy na następną linijkę …", "gQuizAsk": "Kto śpiewa?", "gOut": "Odpadasz – następnym razem!", "gStopPlay": "Tańcz! Klikaj dopiero, gdy muzyka ucichnie", "gStopNow": "STOP! KLIKAJ!", "gSafe": "Uratowany!", "gLeft": "Zostało {n}", "gShake": "Potrząśnij telefonem!", "gTapShake": "Albo kliknij tutaj", "gTeam": "Jesteś w drużynie {t}", "gDraw": "Remis!", "gTeamWin": "Drużyna {t} wygrywa!", "gTitleQ": "Jaki to utwór?", "gNext": "Następna linijka", "gBeat": "Trafienie w beat", "gFast": "Najszybszy palec", "gBomb": "Gorący ziemniak", "gLikely": "Kto najprawdopodobniej …?", "gJoinAny": "Dołącz!", "gTitleAsk": "Jaki to utwór?", "gNextAsk": "Co dalej?", "gBeatGo": "Stukaj w rytm!", "gPerfect": "Idealnie!", "gGood": "Dobrze", "gMiss": "Obok beatu", "gFastReady": "Czekaj …", "gFastGo": "TERAZ!", "gFastEarly": "Za wcześnie!", "gBombPass": "Podaj dalej!", "gBombSafe": "{n} ma bombę", "gBombBoom": "Bomba wybuchła u: {n}!", "gRight": "Dobrze!", "gWrong": "Nie tym razem", "gPlace": "Twoje miejsce: {n}", "gPts": "{n} pkt", "gNoConn": "Łączenie … Twoja odpowiedź zostanie wysłana", "gPicked": "Odpowiedź zapisana"}, "tr": {"lyr": "Söz", "wish": "＋ İstek", "vib": "Titreşim", "vibLv": ["kapalı", "hafif", "normal", "güçlü"], "wTitle": "Şarkı iste", "wHint": "Mirage şarkıyı Spotify'da arar. Diğerleri oy verebilir – müziği çalan karar verir.", "wName": "Adın", "opt": "isteğe bağlı", "wSong": "Spotify'da ara …", "wSend": "İste", "wNow": "İstendi", "wNone": "Hiçbir şey bulunamadı – başka yazsan?", "wSearching": "Aranıyor …", "wSlow": "Henüz yanıt yok – tekrar deneniyor …", "wDead": "Mirage yanıt vermiyor. Spotify'da parti modu açık mı?", "wErr": "Spotify şu an yanıt vermedi – birazdan tekrar dene.", "vibTap": "Telefon titreyebilsin diye bir kez dokun", "wClose": "Kapat", "wSent": "Gönderildi! Birazdan listede görünecek.", "wWait": "Biraz bekle – 45 saniyede bir istek.", "wQueued": "✓ sırada", "wEmpty": "Henüz istek yok – ilk sen ol!", "wShort": "Lütfen bir başlık gir.", "tap": "Tam ekran için dokun · ekran açık kalır", "wait": ["Bağlandı", "Spotify'da parti modu bekleniyor …"], "over": ["Parti bitti", "Birlikte parladığın için sağ ol! Yeni parti, yeni QR kodu."], "bad": ["Eksik bağlantı", "Lütfen QR kodunu tekrar tara."], "net": ["Bağlantı yok", "Tekrar deneniyor … (Wi-Fi veya mobil veri açık mı?)"], "start": ["Mirage Live", "Bağlanıyor …"], "react": "Tepki ver", "reacted": "Gönderildi", "notify": "Şarkım gelince haber ver", "notifyOn": "Bildirim alacaksın", "soonTitle": "Sıradaki şarkı senin!", "soon": "Sıradaki: {s}", "again": ["Bağlantı koptu", "Yeniden bağlanıyor … deneme {n}"], "poll": "Sıradaki şarkıya oy ver", "pollDone": "Oy verdiğin için sağ ol!", "gQuiz": "Kim söylüyor?", "gGap": "Söz boşlukları", "gStop": "Müzik durdu", "gBattle": "Dans savaşı", "gWheel": "Şans çarkı", "gEnd": "Final skoru", "gStopJoin": "Katıl!", "gBattleJoin": "Katıl!", "gJoin": "Ben varım", "gJoined": "✓ Oyundasın", "gWaitLine": "Sıradaki satır bekleniyor …", "gQuizAsk": "Kim söylüyor?", "gOut": "Elendin – bir dahaki sefere!", "gStopPlay": "Dans et! Sadece müzik durunca dokun", "gStopNow": "DUR! DOKUN!", "gSafe": "Kurtuldun!", "gLeft": "{n} kişi kaldı", "gShake": "Telefonunu salla!", "gTapShake": "Ya da buraya dokun", "gTeam": "{t} takımındasın", "gDraw": "Berabere!", "gTeamWin": "{t} takımı kazandı!", "gTitleQ": "Bu şarkı hangisi?", "gNext": "Sıradaki satır", "gBeat": "Ritim vuruşu", "gFast": "En hızlı parmak", "gBomb": "Sıcak patates", "gLikely": "Kim büyük ihtimalle …?", "gJoinAny": "Katıl!", "gTitleAsk": "Bu hangi şarkı?", "gNextAsk": "Sırada ne var?", "gBeatGo": "Ritme göre dokun!", "gPerfect": "Mükemmel!", "gGood": "İyi", "gMiss": "Ritim dışı", "gFastReady": "Bekle …", "gFastGo": "ŞİMDİ!", "gFastEarly": "Çok erken!", "gBombPass": "Pasla!", "gBombSafe": "Bomba {n} kişisinde", "gBombBoom": "{n} patladı!", "gRight": "Doğru!", "gWrong": "Bu sefer olmadı", "gPlace": "Sıran: {n}", "gPts": "{n} puan", "gNoConn": "Yeniden bağlanıyor … yanıtın gönderilecek", "gPicked": "Yanıt kaydedildi"}, "ru": {"lyr": "Текст", "wish": "＋ Заказ", "vib": "Вибрация", "vibLv": ["выкл.", "слабая", "обычная", "сильная"], "wTitle": "Заказать песню", "wHint": "Mirage найдёт её в Spotify. Остальные могут голосовать – решает тот, кто ведёт музыку.", "wName": "Твоё имя", "opt": "необязательно", "wSong": "Поиск в Spotify …", "wSend": "Заказать", "wNow": "Заказана", "wNone": "Ничего не найдено – попробуй написать иначе?", "wSearching": "Ищем …", "wSlow": "Ответа пока нет – пробуем снова …", "wDead": "Mirage не отвечает. Включён ли режим вечеринки в Spotify?", "wErr": "Spotify только что не ответил – попробуй ещё раз чуть позже.", "vibTap": "Нажми один раз, чтобы телефон мог вибрировать", "wClose": "Закрыть", "wSent": "Отправлено! Скоро появится в списке.", "wWait": "Подожди немного – один заказ раз в 45 секунд.", "wQueued": "✓ в очереди", "wEmpty": "Заказов пока нет – будь первым!", "wShort": "Введи название.", "tap": "Нажми для полного экрана · экран не гаснет", "wait": ["Подключено", "Ждём режим вечеринки в Spotify …"], "over": ["Вечеринка окончена", "Спасибо, что светил с нами! Новая вечеринка – новый QR-код."], "bad": ["Неполная ссылка", "Отсканируй QR-код ещё раз."], "net": ["Нет соединения", "Пробуем снова … (включён Wi-Fi или мобильный интернет?)"], "start": ["Mirage Live", "Подключаемся …"], "react": "Реакция", "reacted": "Отправлено", "notify": "Сообщи, когда пойдёт моя песня", "notifyOn": "Ты получишь уведомление", "soonTitle": "Твоя песня следующая!", "soon": "Далее: {s}", "again": ["Соединение потеряно", "Переподключаемся … попытка {n}"], "poll": "Голосуй за следующую песню", "pollDone": "Спасибо за голос!", "gQuiz": "Кто поёт?", "gGap": "Пропуски в тексте", "gStop": "Стоп-музыка", "gBattle": "Танцевальный баттл", "gWheel": "Колесо фортуны", "gEnd": "Итоговый счёт", "gStopJoin": "Играй с нами!", "gBattleJoin": "Играй с нами!", "gJoin": "Я в игре", "gJoined": "✓ Ты в игре", "gWaitLine": "Ждём следующую строку …", "gQuizAsk": "Кто поёт?", "gOut": "Вылетел – в следующий раз!", "gStopPlay": "Танцуй! Жми, только когда музыка стихнет", "gStopNow": "СТОП! ЖМИ!", "gSafe": "Спасён!", "gLeft": "Осталось {n}", "gShake": "Тряси телефон!", "gTapShake": "Или нажми сюда", "gTeam": "Ты в команде {t}", "gDraw": "Ничья!", "gTeamWin": "Команда {t} побеждает!", "gTitleQ": "Что за песня?", "gNext": "Следующая строка", "gBeat": "Попади в бит", "gFast": "Быстрый палец", "gBomb": "Горячая картошка", "gLikely": "Кто скорее всего …?", "gJoinAny": "Подключайся!", "gTitleAsk": "Какая это песня?", "gNextAsk": "Что дальше?", "gBeatGo": "Жми в такт!", "gPerfect": "Идеально!", "gGood": "Хорошо", "gMiss": "Мимо бита", "gFastReady": "Жди …", "gFastGo": "СЕЙЧАС!", "gFastEarly": "Слишком рано!", "gBombPass": "Передай дальше!", "gBombSafe": "Бомба у {n}", "gBombBoom": "Бомба рванула у {n}!", "gRight": "Верно!", "gWrong": "В этот раз нет", "gPlace": "Твоё место: {n}", "gPts": "Очков: {n}", "gNoConn": "Переподключение … твой ответ будет отправлен", "gPicked": "Ответ сохранён"}, "uk": {"lyr": "Текст", "wish": "＋ Замовлення", "vib": "Вібрація", "vibLv": ["вимк.", "легка", "звичайна", "сильна"], "wTitle": "Замовити пісню", "wHint": "Mirage знайде її в Spotify. Інші можуть голосувати – вирішує той, хто веде музику.", "wName": "Твоє ім'я", "opt": "необов'язково", "wSong": "Пошук у Spotify …", "wSend": "Замовити", "wNow": "Замовлено", "wNone": "Нічого не знайдено – спробуй написати інакше?", "wSearching": "Шукаємо …", "wSlow": "Відповіді ще немає – пробуємо знову …", "wDead": "Mirage не відповідає. Чи увімкнено режим вечірки в Spotify?", "wErr": "Spotify щойно не відповів – спробуй ще раз трохи згодом.", "vibTap": "Торкнись один раз, щоб телефон міг вібрувати", "wClose": "Закрити", "wSent": "Надіслано! Скоро з'явиться в списку.", "wWait": "Зачекай трохи – одне замовлення раз на 45 секунд.", "wQueued": "✓ у черзі", "wEmpty": "Замовлень ще немає – будь першим!", "wShort": "Введи назву.", "tap": "Торкнись для повного екрана · екран не гасне", "wait": ["Підключено", "Чекаємо на режим вечірки в Spotify …"], "over": ["Вечірку завершено", "Дякуємо, що сяяв з нами! Нова вечірка – новий QR-код."], "bad": ["Неповне посилання", "Скануй QR-код ще раз."], "net": ["Немає зв'язку", "Пробуємо знову … (увімкнено Wi-Fi чи мобільний інтернет?)"], "start": ["Mirage Live", "Підключаємося …"], "react": "Реакція", "reacted": "Надіслано", "notify": "Повідом, коли гратиме моя пісня", "notifyOn": "Ти отримаєш сповіщення", "soonTitle": "Твоя пісня наступна!", "soon": "Далі: {s}", "again": ["Зв'язок втрачено", "Перепідключаємося … спроба {n}"], "poll": "Голосуй за наступну пісню", "pollDone": "Дякуємо за голос!", "gQuiz": "Хто співає?", "gGap": "Пропуски в тексті", "gStop": "Стоп-музика", "gBattle": "Танцювальний батл", "gWheel": "Колесо фортуни", "gEnd": "Підсумковий рахунок", "gStopJoin": "Грай з нами!", "gBattleJoin": "Грай з нами!", "gJoin": "Я в грі", "gJoined": "✓ Ти в грі", "gWaitLine": "Чекаємо наступний рядок …", "gQuizAsk": "Хто співає?", "gOut": "Вилетів – наступного разу!", "gStopPlay": "Танцюй! Тисни, лише коли музика стихне", "gStopNow": "СТОП! ТИСНИ!", "gSafe": "Врятований!", "gLeft": "Залишилось {n}", "gShake": "Труси телефон!", "gTapShake": "Або натисни сюди", "gTeam": "Ти в команді {t}", "gDraw": "Нічия!", "gTeamWin": "Команда {t} перемагає!", "gTitleQ": "Що за пісня?", "gNext": "Наступний рядок", "gBeat": "Влучи в біт", "gFast": "Найшвидший палець", "gBomb": "Гаряча картопля", "gLikely": "Хто, найімовірніше, …?", "gJoinAny": "Долучайся!", "gTitleAsk": "Яка це пісня?", "gNextAsk": "Що далі?", "gBeatGo": "Тисни в такт!", "gPerfect": "Ідеально!", "gGood": "Добре", "gMiss": "Повз біт", "gFastReady": "Чекай …", "gFastGo": "ЗАРАЗ!", "gFastEarly": "Зарано!", "gBombPass": "Передай далі!", "gBombSafe": "Бомба в {n}", "gBombBoom": "Бомба вибухнула в {n}!", "gRight": "Правильно!", "gWrong": "Цього разу ні", "gPlace": "Твоє місце: {n}", "gPts": "Балів: {n}", "gNoConn": "Перепідключення … твою відповідь буде надіслано", "gPicked": "Відповідь збережено"}, "ja": {"lyr": "歌詞", "wish": "＋ リクエスト", "vib": "バイブ", "vibLv": ["オフ", "弱め", "標準", "強め"], "wTitle": "曲をリクエスト", "wHint": "MirageがSpotifyで探します。みんなで投票もOK。最終的に決めるのは音楽担当の人です。", "wName": "あなたの名前", "opt": "任意", "wSong": "Spotifyで検索 …", "wSend": "リクエスト", "wNow": "リクエスト済み", "wNone": "見つかりませんでした。別の書き方で試してみて", "wSearching": "検索中 …", "wSlow": "まだ応答がありません。もう一度試します …", "wDead": "Mirageが応答しません。SpotifyでパーティーモードはONですか？", "wErr": "Spotifyから応答がありませんでした。少し待ってもう一度どうぞ。", "vibTap": "一度タップすると、スマホが振動できるようになります", "wClose": "閉じる", "wSent": "送信しました！まもなくリストに表示されます。", "wWait": "ちょっと待って。リクエストは45秒に1回までです。", "wQueued": "✓ キューに追加済み", "wEmpty": "まだリクエストはありません。一番乗りどうぞ！", "wShort": "タイトルを入力してください。", "tap": "タップで全画面 · 画面は点灯したまま", "wait": ["接続しました", "Spotifyのパーティーモードを待っています …"], "over": ["パーティー終了", "一緒に盛り上がってくれてありがとう！次のパーティーは新しいQRコードで。"], "bad": ["リンクが不完全です", "QRコードをもう一度読み取ってください。"], "net": ["接続できません", "再試行中 …（Wi-Fiまたはモバイルデータはオンですか？）"], "start": ["Mirage Live", "接続中 …"], "react": "リアクション", "reacted": "送信済み", "notify": "自分の曲が来たら教えて", "notifyOn": "通知します", "soonTitle": "次はあなたの曲です！", "soon": "次の曲：{s}", "again": ["接続が切れました", "再接続中 … {n}回目"], "poll": "次の曲に投票しよう", "pollDone": "投票ありがとう！", "gQuiz": "誰が歌ってる？", "gGap": "歌詞穴埋め", "gStop": "ミュージックストップ", "gBattle": "ダンスバトル", "gWheel": "ルーレット", "gEnd": "最終スコア", "gStopJoin": "参加しよう！", "gBattleJoin": "参加しよう！", "gJoin": "参加する", "gJoined": "✓ 参加中", "gWaitLine": "次の歌詞を待っています …", "gQuizAsk": "誰が歌ってる？", "gOut": "アウト – 次は頑張って！", "gStopPlay": "踊れ！音楽が止まったらタップ", "gStopNow": "ストップ！タップ！", "gSafe": "セーフ！", "gLeft": "残り{n}人", "gShake": "スマホを振れ！", "gTapShake": "またはここをタップ", "gTeam": "あなたはチーム{t}", "gDraw": "引き分け！", "gTeamWin": "チーム{t}の勝ち！", "gTitleQ": "この曲は?", "gNext": "次の歌詞", "gBeat": "ビートヒット", "gFast": "最速の指", "gBomb": "ホットポテト", "gLikely": "誰が一番 …?", "gJoinAny": "参加しよう!", "gTitleAsk": "これは何の曲?", "gNextAsk": "次は?", "gBeatGo": "ビートに合わせてタップ!", "gPerfect": "パーフェクト!", "gGood": "いいね", "gMiss": "ズレた", "gFastReady": "待って …", "gFastGo": "今!", "gFastEarly": "早すぎ!", "gBombPass": "回して!", "gBombSafe": "{n}が爆弾を持ってる", "gBombBoom": "{n}が爆発!", "gRight": "正解!", "gWrong": "残念", "gPlace": "あなたは{n}位", "gPts": "{n}ポイント", "gNoConn": "再接続中 … 回答は送信されます", "gPicked": "回答を保存しました"}, "ko": {"lyr": "가사", "wish": "＋ 신청", "vib": "진동", "vibLv": ["끔", "약하게", "보통", "강하게"], "wTitle": "노래 신청", "wHint": "Mirage가 Spotify에서 찾아줘요. 다른 사람들은 투표할 수 있고, 최종 결정은 음악 담당자가 해요.", "wName": "이름", "opt": "선택", "wSong": "Spotify에서 검색 …", "wSend": "신청", "wNow": "신청됨", "wNone": "찾지 못했어요 – 다르게 입력해 볼까요?", "wSearching": "검색 중 …", "wSlow": "아직 응답이 없어요 – 다시 시도 중 …", "wDead": "Mirage가 응답하지 않아요. Spotify에서 파티 모드가 켜져 있나요?", "wErr": "Spotify가 방금 응답하지 않았어요 – 잠시 후 다시 시도해 주세요.", "vibTap": "한 번 탭하면 휴대폰이 진동할 수 있어요", "wClose": "닫기", "wSent": "보냈어요! 곧 목록에 나타나요.", "wWait": "잠깐만요 – 신청은 45초에 한 번이에요.", "wQueued": "✓ 대기열에 추가됨", "wEmpty": "아직 신청이 없어요 – 첫 번째가 되어 보세요!", "wShort": "제목을 입력해 주세요.", "tap": "탭하면 전체 화면 · 화면이 켜진 채로 유지돼요", "wait": ["연결됨", "Spotify에서 파티 모드를 기다리는 중 …"], "over": ["파티 끝", "함께 빛나 줘서 고마워요! 새 파티, 새 QR 코드로 만나요."], "bad": ["링크가 불완전해요", "QR 코드를 다시 스캔해 주세요."], "net": ["연결 없음", "다시 시도하는 중 … (Wi-Fi나 모바일 데이터가 켜져 있나요?)"], "start": ["Mirage Live", "연결 중 …"], "react": "반응", "reacted": "보냄", "notify": "내 곡이 나오면 알려줘", "notifyOn": "알림을 받게 돼요", "soonTitle": "다음은 내 곡이에요!", "soon": "다음 곡: {s}", "again": ["연결이 끊겼어요", "다시 연결 중 … {n}번째 시도"], "poll": "다음 곡에 투표하세요", "pollDone": "투표해 줘서 고마워요!", "gQuiz": "누가 부르게?", "gGap": "가사 빈칸", "gStop": "뮤직 스톱", "gBattle": "댄스 배틀", "gWheel": "행운의 룰렛", "gEnd": "최종 점수", "gStopJoin": "같이 해요!", "gBattleJoin": "같이 해요!", "gJoin": "참여할래요", "gJoined": "✓ 참여 완료", "gWaitLine": "다음 가사를 기다리는 중 …", "gQuizAsk": "누가 부르게?", "gOut": "탈락 – 다음엔 잘해봐요!", "gStopPlay": "춤춰요! 음악이 멈출 때만 탭하세요", "gStopNow": "스톱! 탭!", "gSafe": "세이프!", "gLeft": "{n}명 남음", "gShake": "폰을 흔들어요!", "gTapShake": "또는 여기를 탭", "gTeam": "당신은 {t}팀", "gDraw": "무승부!", "gTeamWin": "{t}팀 승리!", "gTitleQ": "이 노래 제목은?", "gNext": "다음 가사", "gBeat": "비트 히트", "gFast": "가장 빠른 손가락", "gBomb": "뜨거운 감자", "gLikely": "누가 제일 …?", "gJoinAny": "참여해요!", "gTitleAsk": "이 노래 뭐예요?", "gNextAsk": "다음은?", "gBeatGo": "비트에 맞춰 탭!", "gPerfect": "완벽해요!", "gGood": "좋아요", "gMiss": "박자 어긋남", "gFastReady": "잠깐만 …", "gFastGo": "지금!", "gFastEarly": "너무 일러요!", "gBombPass": "넘겨요!", "gBombSafe": "{n}님이 폭탄을 들고 있어요", "gBombBoom": "{n}님이 터졌어요!", "gRight": "정답!", "gWrong": "이번엔 아쉬워요", "gPlace": "당신의 순위: {n}위", "gPts": "{n}점", "gNoConn": "다시 연결 중 … 답변은 전송될 거예요", "gPicked": "답변 저장됨"}, "zh": {"lyr": "歌词", "wish": "＋ 点歌", "vib": "振动", "vibLv": ["关", "轻柔", "正常", "强烈"], "wTitle": "点一首歌", "wHint": "Mirage 会在 Spotify 里搜索。其他人可以投票，最终由放音乐的人决定。", "wName": "你的名字", "opt": "可选", "wSong": "在 Spotify 搜索 …", "wSend": "点歌", "wNow": "已点", "wNone": "没找到，换个写法试试？", "wSearching": "搜索中 …", "wSlow": "暂无回应，正在重试 …", "wDead": "Mirage 没有响应。Spotify 里的派对模式开了吗？", "wErr": "Spotify 刚才没有响应，请稍后再试。", "vibTap": "点一下，手机才能振动", "wClose": "关闭", "wSent": "已发送！稍后会出现在列表里。", "wWait": "稍等一下，每 45 秒只能点一首。", "wQueued": "✓ 已加入队列", "wEmpty": "还没有人点歌，来当第一个吧！", "wShort": "请输入歌名。", "tap": "点击进入全屏 · 屏幕保持常亮", "wait": ["已连接", "正在等待 Spotify 的派对模式 …"], "over": ["派对结束", "谢谢你一起点亮现场！新派对，新二维码。"], "bad": ["链接不完整", "请重新扫描二维码。"], "net": ["无网络连接", "正在重试 …（Wi-Fi 或移动数据开了吗？）"], "start": ["Mirage Live", "连接中 …"], "react": "互动", "reacted": "已发送", "notify": "我的歌快到时提醒我", "notifyOn": "你会收到提醒", "soonTitle": "下一首就是你的歌！", "soon": "接下来：{s}", "again": ["连接已断开", "正在重新连接 … 第 {n} 次尝试"], "poll": "为下一首歌投票", "pollDone": "谢谢投票！", "gQuiz": "谁在唱？", "gGap": "歌词填空", "gStop": "音乐暂停", "gBattle": "舞蹈对战", "gWheel": "幸运转盘", "gEnd": "最终得分", "gStopJoin": "一起玩！", "gBattleJoin": "一起玩！", "gJoin": "我加入", "gJoined": "✓ 你已加入", "gWaitLine": "等待下一句歌词 …", "gQuizAsk": "谁在唱？", "gOut": "出局 – 下次加油！", "gStopPlay": "跳起来！音乐停时再点", "gStopNow": "停！快点！", "gSafe": "安全！", "gLeft": "还剩{n}人", "gShake": "摇你的手机！", "gTapShake": "或点这里", "gTeam": "你在{t}队", "gDraw": "平局！", "gTeamWin": "{t}队获胜！", "gTitleQ": "这首歌叫什么?", "gNext": "下一句", "gBeat": "节拍命中", "gFast": "最快手指", "gBomb": "击鼓传花", "gLikely": "谁最有可能 …?", "gJoinAny": "快加入!", "gTitleAsk": "这是哪首歌?", "gNextAsk": "接下来是?", "gBeatGo": "跟着节拍点!", "gPerfect": "完美!", "gGood": "不错", "gMiss": "没踩准", "gFastReady": "等一下 …", "gFastGo": "现在!", "gFastEarly": "太早了!", "gBombPass": "快传出去!", "gBombSafe": "{n}拿着炸弹", "gBombBoom": "{n}爆炸了!", "gRight": "答对了!", "gWrong": "这次没中", "gPlace": "你的名次:{n}", "gPts": "{n}分", "gNoConn": "重新连接中 … 你的答案会补发", "gPicked": "答案已保存"}, "en": {"react": "React", "reacted": "Sent", "notify": "Tell me when my song comes", "notifyOn": "You'll get a notice", "soonTitle": "Your song is next!", "soon": "Coming up next: {s}", "again": ["Connection lost", "Reconnecting … attempt {n}"], "poll": "Vote for the next song", "pollDone": "Thanks for voting!", "gQuiz": "Who's singing?", "gGap": "Lyric gaps", "gStop": "Music stop", "gBattle": "Dance battle", "gWheel": "Wheel of fortune", "gEnd": "Final scores", "gStopJoin": "Join in!", "gBattleJoin": "Join in!", "gJoin": "I'm in", "gJoined": "✓ You're in", "gWaitLine": "Waiting for the next line …", "gQuizAsk": "Who's singing?", "gOut": "You're out – next time!", "gStopPlay": "Dance! Only tap when the music stops", "gStopNow": "STOP! TAP!", "gSafe": "Safe!", "gLeft": "{n} still in", "gShake": "Shake your phone!", "gTapShake": "Or tap here", "gTeam": "You're on team {t}", "gDraw": "It's a draw!", "gTeamWin": "Team {t} wins!", "gTitleQ": "Name that song", "gNext": "Next line", "gBeat": "Beat hit", "gFast": "Fastest finger", "gBomb": "Hot potato", "gLikely": "Who would most likely …?", "gJoinAny": "Join in!", "gTitleAsk": "Which song is this?", "gNextAsk": "What comes next?", "gBeatGo": "Tap to the beat!", "gPerfect": "Perfect!", "gGood": "Good", "gMiss": "Off beat", "gFastReady": "Wait for it …", "gFastGo": "NOW!", "gFastEarly": "Too early!", "gBombPass": "Pass it on!", "gBombSafe": "{n} has the bomb", "gBombBoom": "{n} blew up!", "gRight": "Correct!", "gWrong": "Not this time", "gPlace": "You came {n}.", "gPts": "{n} points", "gNoConn": "Reconnecting … your answer will be sent", "gPicked": "Answer saved"}, "de": {"react": "Reagieren", "reacted": "Gesendet", "notify": "Sag mir Bescheid, wenn mein Song kommt", "notifyOn": "Du bekommst eine Nachricht", "soonTitle": "Dein Song ist als Nächstes dran!", "soon": "Gleich geht's weiter mit: {s}", "again": ["Verbindung verloren", "Verbinde neu … Versuch {n}"], "poll": "Stimm für den nächsten Song ab", "pollDone": "Danke fürs Abstimmen!", "gQuiz": "Wer singt hier?", "gGap": "Liedtext-Lücken", "gStop": "Musik-Stopp", "gBattle": "Tanz-Battle", "gWheel": "Glücksrad", "gEnd": "Endstand", "gStopJoin": "Mach mit!", "gBattleJoin": "Mach mit!", "gJoin": "Bin dabei", "gJoined": "✓ Du bist dabei", "gWaitLine": "Warte auf die nächste Zeile …", "gQuizAsk": "Wer singt hier?", "gOut": "Raus – nächstes Mal!", "gStopPlay": "Tanzen! Erst tippen, wenn die Musik stoppt", "gStopNow": "STOPP! TIPPEN!", "gSafe": "Sicher!", "gLeft": "{n} noch dabei", "gShake": "Schüttel dein Handy!", "gTapShake": "Oder hier tippen", "gTeam": "Du bist in Team {t}", "gDraw": "Unentschieden!", "gTeamWin": "Team {t} gewinnt!", "gTitleQ": "Wie heißt der Song?", "gNext": "Nächste Zeile", "gBeat": "Beat-Treffer", "gFast": "Schnellster Finger", "gBomb": "Heiße Kartoffel", "gLikely": "Wer würde am ehesten …?", "gJoinAny": "Mach mit!", "gTitleAsk": "Welcher Song ist das?", "gNextAsk": "Wie geht es weiter?", "gBeatGo": "Tippe im Takt!", "gPerfect": "Perfekt!", "gGood": "Gut", "gMiss": "Daneben", "gFastReady": "Warten …", "gFastGo": "JETZT!", "gFastEarly": "Zu früh!", "gBombPass": "Weitergeben!", "gBombSafe": "{n} hat die Bombe", "gBombBoom": "{n} ist explodiert!", "gRight": "Richtig!", "gWrong": "Leider nicht", "gPlace": "Dein Platz: {n}", "gPts": "{n} Punkte", "gNoConn": "Verbindung wird gesucht … deine Antwort wird nachgeschickt", "gPicked": "Antwort gespeichert"}};
 for (const [k, v] of Object.entries(MORE)) L[k] = { ...(L[k] || {}), ...v };
+const SCAN_TEXT = {"en": {"scanStart": ["Join the party", "Scan the QR code on the big screen."], "scanBtn": "Scan QR code", "scanPaste": "or paste the link", "scanHint": "Point your camera at the QR code", "scanBad": "That's not a Mirage code", "scanDenied": "Camera not available. Allow it in your browser or scan with your camera app."}, "de": {"scanStart": ["Party beitreten", "Scanne den QR-Code auf dem großen Bild."], "scanBtn": "QR-Code scannen", "scanPaste": "oder Link einfügen", "scanHint": "Halte die Kamera auf den QR-Code", "scanBad": "Das ist kein Mirage-Code", "scanDenied": "Kamera nicht verfügbar. Erlaube sie im Browser oder scanne mit der Kamera-App."}, "fr": {"scanStart": ["Rejoindre la fête", "Scanne le QR code sur le grand écran."], "scanBtn": "Scanner le QR code", "scanPaste": "ou colle le lien", "scanHint": "Vise le QR code avec la caméra", "scanBad": "Ce n'est pas un code Mirage", "scanDenied": "Caméra indisponible. Autorise-la dans le navigateur ou scanne avec l'appli caméra."}, "es": {"scanStart": ["Unirse a la fiesta", "Escanea el código QR de la pantalla grande."], "scanBtn": "Escanear código QR", "scanPaste": "o pega el enlace", "scanHint": "Apunta la cámara al código QR", "scanBad": "Eso no es un código de Mirage", "scanDenied": "Cámara no disponible. Permítela en el navegador o escanea con la app de cámara."}, "it": {"scanStart": ["Unisciti alla festa", "Scansiona il codice QR sullo schermo grande."], "scanBtn": "Scansiona codice QR", "scanPaste": "o incolla il link", "scanHint": "Inquadra il codice QR", "scanBad": "Questo non è un codice Mirage", "scanDenied": "Fotocamera non disponibile. Consentila nel browser o scansiona con l'app fotocamera."}, "pt": {"scanStart": ["Entrar na festa", "Escaneia o código QR na tela grande."], "scanBtn": "Escanear código QR", "scanPaste": "ou cola o link", "scanHint": "Aponta a câmera para o código QR", "scanBad": "Isso não é um código Mirage", "scanDenied": "Câmera indisponível. Permite no navegador ou escaneia com o app da câmera."}, "nl": {"scanStart": ["Doe mee met het feest", "Scan de QR-code op het grote scherm."], "scanBtn": "QR-code scannen", "scanPaste": "of plak de link", "scanHint": "Richt je camera op de QR-code", "scanBad": "Dat is geen Mirage-code", "scanDenied": "Camera niet beschikbaar. Sta hem toe in je browser of scan met de camera-app."}, "pl": {"scanStart": ["Dołącz do imprezy", "Zeskanuj kod QR z dużego ekranu."], "scanBtn": "Skanuj kod QR", "scanPaste": "lub wklej link", "scanHint": "Skieruj aparat na kod QR", "scanBad": "To nie jest kod Mirage", "scanDenied": "Aparat niedostępny. Zezwól na niego w przeglądarce lub skanuj aplikacją aparatu."}, "tr": {"scanStart": ["Partiye katıl", "Büyük ekrandaki QR kodunu tara."], "scanBtn": "QR kodunu tara", "scanPaste": "veya bağlantıyı yapıştır", "scanHint": "Kamerayı QR koduna tut", "scanBad": "Bu bir Mirage kodu değil", "scanDenied": "Kamera kullanılamıyor. Tarayıcıda izin ver veya kamera uygulamasıyla tara."}, "ru": {"scanStart": ["Присоединиться", "Отсканируй QR-код на большом экране."], "scanBtn": "Сканировать QR-код", "scanPaste": "или вставь ссылку", "scanHint": "Наведи камеру на QR-код", "scanBad": "Это не код Mirage", "scanDenied": "Камера недоступна. Разреши её в браузере или сканируй приложением камеры."}, "uk": {"scanStart": ["Приєднатися", "Відскануй QR-код на великому екрані."], "scanBtn": "Сканувати QR-код", "scanPaste": "або встав посилання", "scanHint": "Наведи камеру на QR-код", "scanBad": "Це не код Mirage", "scanDenied": "Камера недоступна. Дозволь її у браузері або скануй застосунком камери."}, "ja": {"scanStart": ["パーティーに参加", "大きな画面のQRコードをスキャンしてね。"], "scanBtn": "QRコードをスキャン", "scanPaste": "またはリンクを貼り付け", "scanHint": "カメラをQRコードに向けて", "scanBad": "Mirageのコードではありません", "scanDenied": "カメラを使えません。ブラウザーで許可するか、カメラアプリでスキャンしてね。"}, "ko": {"scanStart": ["파티 참여", "큰 화면의 QR 코드를 스캔하세요."], "scanBtn": "QR 코드 스캔", "scanPaste": "또는 링크 붙여넣기", "scanHint": "카메라를 QR 코드에 맞추세요", "scanBad": "Mirage 코드가 아니에요", "scanDenied": "카메라를 쓸 수 없어요. 브라우저에서 허용하거나 카메라 앱으로 스캔하세요."}, "zh": {"scanStart": ["加入派对", "扫描大屏幕上的二维码。"], "scanBtn": "扫描二维码", "scanPaste": "或粘贴链接", "scanHint": "将相机对准二维码", "scanBad": "这不是 Mirage 二维码", "scanDenied": "相机不可用。请在浏览器中允许,或用相机应用扫描。"}};
+const GAME_TEXT = {"en": {"gIntro": "Intro flash", "gTf": "Real or fake?", "gTfAsk": "Real or fake?", "gDquiz": "Sip quiz", "gTaps": "Tap race", "gTapsGo": "Tap as fast as you can!", "gNever": "Never have I ever", "gAlarm": "Word alarm", "gAlarmWord": "Sip on this word:", "gAlarmHit": "Drink!", "gAlarmEnd": "{n} sips for this song", "gDwheel": "Sip wheel", "gDlikely": "Who would … (sip edition)", "gSip": "One sip!", "gSafeSip": "You're safe", "gSing": "Keep singing", "gSingSoon": "It's about to go quiet …", "gSingNow": "Keep singing!", "gSingBack": "Back! Were you still in time?", "gLoadSong": "Next song …"}, "de": {"gIntro": "Intro-Blitz", "gTf": "Echt oder Fake?", "gTfAsk": "Echt oder Fake?", "gDquiz": "Schluck-Quiz", "gTaps": "Tipp-Rennen", "gTapsGo": "Tippe so schnell du kannst!", "gNever": "Ich hab noch nie", "gAlarm": "Wort-Alarm", "gAlarmWord": "Schluck bei diesem Wort:", "gAlarmHit": "Trinken!", "gAlarmEnd": "{n} Schlucke bei diesem Song", "gDwheel": "Schluck-Rad", "gDlikely": "Wer würde … (Schluck-Ausgabe)", "gSip": "Ein Schluck!", "gSafeSip": "Du bist sicher", "gSing": "Sing weiter", "gSingSoon": "Gleich wird es still …", "gSingNow": "Singt weiter!", "gSingBack": "Zurück! Wart ihr noch im Takt?", "gLoadSong": "Nächster Song …"}, "fr": {"gIntro": "Intro éclair", "gTf": "Vrai ou faux ?", "gTfAsk": "Vrai ou faux ?", "gDquiz": "Quiz gorgée", "gTaps": "Course de taps", "gTapsGo": "Tape aussi vite que tu peux !", "gNever": "Je n'ai jamais", "gAlarm": "Alerte mot", "gAlarmWord": "Une gorgée sur ce mot :", "gAlarmHit": "Bois !", "gAlarmEnd": "{n} gorgées pour cette chanson", "gDwheel": "Roue des gorgées", "gDlikely": "Qui serait … (version gorgée)", "gSip": "Une gorgée !", "gSafeSip": "T'es sauf", "gSing": "Continue de chanter", "gSingSoon": "Ça va bientôt se taire …", "gSingNow": "Continue de chanter !", "gSingBack": "C'est reparti ! Toujours en rythme ?", "gLoadSong": "Morceau suivant …"}, "es": {"gIntro": "Intro flash", "gTf": "¿Real o falso?", "gTfAsk": "¿Real o falso?", "gDquiz": "Quiz de sorbos", "gTaps": "Carrera de toques", "gTapsGo": "¡Toca lo más rápido que puedas!", "gNever": "Yo nunca", "gAlarm": "Alarma de palabra", "gAlarmWord": "Sorbo con esta palabra:", "gAlarmHit": "¡Bebe!", "gAlarmEnd": "{n} sorbos en esta canción", "gDwheel": "Ruleta de sorbos", "gDlikely": "Quién sería capaz de … (edición sorbo)", "gSip": "¡Un sorbo!", "gSafeSip": "Te salvas", "gSing": "Sigue cantando", "gSingSoon": "Ya casi se hace el silencio …", "gSingNow": "¡Sigue cantando!", "gSingBack": "¡Ha vuelto! ¿Seguías a tiempo?", "gLoadSong": "Siguiente canción …"}, "it": {"gIntro": "Intro lampo", "gTf": "Vero o falso?", "gTfAsk": "Vero o falso?", "gDquiz": "Quiz del sorso", "gTaps": "Gara di tap", "gTapsGo": "Tocca più veloce che puoi!", "gNever": "Io non ho mai", "gAlarm": "Allarme parola", "gAlarmWord": "Sorso su questa parola:", "gAlarmHit": "Bevi!", "gAlarmEnd": "{n} sorsi per questa canzone", "gDwheel": "Ruota dei sorsi", "gDlikely": "Chi sarebbe capace di … (edizione sorso)", "gSip": "Un sorso!", "gSafeSip": "Sei salvo", "gSing": "Continua a cantare", "gSingSoon": "Tra poco cala il silenzio …", "gSingNow": "Continua a cantare!", "gSingBack": "È tornata! Eri ancora a tempo?", "gLoadSong": "Prossima canzone …"}, "pt": {"gIntro": "Intro relâmpago", "gTf": "Verdadeiro ou falso?", "gTfAsk": "Verdadeiro ou falso?", "gDquiz": "Quiz do golo", "gTaps": "Corrida de toques", "gTapsGo": "Toca o mais rápido que conseguires!", "gNever": "Eu nunca", "gAlarm": "Alarme de palavra", "gAlarmWord": "Golo nesta palavra:", "gAlarmHit": "Bebe!", "gAlarmEnd": "{n} golos nesta música", "gDwheel": "Roleta de golos", "gDlikely": "Quem seria capaz de … (edição golo)", "gSip": "Um golo!", "gSafeSip": "Estás safo", "gSing": "Continua a cantar", "gSingSoon": "Já vai ficar tudo em silêncio …", "gSingNow": "Continua a cantar!", "gSingBack": "Voltou! Ainda estavas no ritmo?", "gLoadSong": "Próxima música …"}, "nl": {"gIntro": "Intro-flits", "gTf": "Echt of nep?", "gTfAsk": "Echt of nep?", "gDquiz": "Slokjesquiz", "gTaps": "Tikrace", "gTapsGo": "Tik zo snel als je kunt!", "gNever": "Ik heb nog nooit", "gAlarm": "Woordalarm", "gAlarmWord": "Slokje bij dit woord:", "gAlarmHit": "Drinken!", "gAlarmEnd": "{n} slokjes bij dit nummer", "gDwheel": "Slokjesrad", "gDlikely": "Wie zou … (slokjeseditie)", "gSip": "Een slokje!", "gSafeSip": "Je bent veilig", "gSing": "Zing door", "gSingSoon": "Zo wordt het stil …", "gSingNow": "Zing door!", "gSingBack": "Terug! Zat je nog in de maat?", "gLoadSong": "Volgend nummer …"}, "pl": {"gIntro": "Błyskawiczne intro", "gTf": "Prawda czy fałsz?", "gTfAsk": "Prawda czy fałsz?", "gDquiz": "Quiz łykowy", "gTaps": "Wyścig tapnięć", "gTapsGo": "Stukaj najszybciej, jak umiesz!", "gNever": "Nigdy przenigdy", "gAlarm": "Alarm słowa", "gAlarmWord": "Łyk na to słowo:", "gAlarmHit": "Pij!", "gAlarmEnd": "{n} łyków za ten utwór", "gDwheel": "Koło łyków", "gDlikely": "Kto by … (edycja łykowa)", "gSip": "Jeden łyk!", "gSafeSip": "Jesteś bezpieczny/a", "gSing": "Śpiewaj dalej", "gSingSoon": "Zaraz zrobi się cicho …", "gSingNow": "Śpiewaj dalej!", "gSingBack": "Wróciła! Trzymałeś rytm?", "gLoadSong": "Następny utwór …"}, "tr": {"gIntro": "Intro şimşeği", "gTf": "Gerçek mi sahte mi?", "gTfAsk": "Gerçek mi sahte mi?", "gDquiz": "Yudum quizi", "gTaps": "Dokunma yarışı", "gTapsGo": "Olabildiğince hızlı dokun!", "gNever": "Ben hiç yapmadım", "gAlarm": "Kelime alarmı", "gAlarmWord": "Bu kelimede yudum:", "gAlarmHit": "İç!", "gAlarmEnd": "Bu şarkıda {n} yudum", "gDwheel": "Yudum çarkı", "gDlikely": "Kim yapardı … (yudum versiyonu)", "gSip": "Bir yudum!", "gSafeSip": "Kurtuldun", "gSing": "Söylemeye devam et", "gSingSoon": "Birazdan sessizlik olacak …", "gSingNow": "Söylemeye devam et!", "gSingBack": "Geri geldi! Hâlâ ritimde miydin?", "gLoadSong": "Sıradaki şarkı …"}, "ru": {"gIntro": "Интро-молния", "gTf": "Правда или фейк?", "gTfAsk": "Правда или фейк?", "gDquiz": "Квиз на глоток", "gTaps": "Гонка тапов", "gTapsGo": "Тапай как можно быстрее!", "gNever": "Я никогда не", "gAlarm": "Слово-тревога", "gAlarmWord": "Глоток на это слово:", "gAlarmHit": "Пей!", "gAlarmEnd": "Глотков за эту песню: {n}", "gDwheel": "Колесо глотков", "gDlikely": "Кто бы мог … (глотковая версия)", "gSip": "Один глоток!", "gSafeSip": "Тебе повезло", "gSing": "Пой дальше", "gSingSoon": "Скоро станет тихо …", "gSingNow": "Пой дальше!", "gSingBack": "Музыка вернулась! Ты попал в такт?", "gLoadSong": "Следующая песня …"}, "uk": {"gIntro": "Інтро-блискавка", "gTf": "Правда чи фейк?", "gTfAsk": "Правда чи фейк?", "gDquiz": "Квіз на ковток", "gTaps": "Гонка тапів", "gTapsGo": "Тапай якомога швидше!", "gNever": "Я ніколи не", "gAlarm": "Слово-тривога", "gAlarmWord": "Ковток на це слово:", "gAlarmHit": "Пий!", "gAlarmEnd": "Ковтків за цю пісню: {n}", "gDwheel": "Колесо ковтків", "gDlikely": "Хто б міг … (ковткова версія)", "gSip": "Один ковток!", "gSafeSip": "Тобі пощастило", "gSing": "Співай далі", "gSingSoon": "Скоро стане тихо …", "gSingNow": "Співай далі!", "gSingBack": "Музика повернулась! Ти потрапив у такт?", "gLoadSong": "Наступна пісня …"}, "ja": {"gIntro": "イントロ一瞬", "gTf": "本物？ニセ？", "gTfAsk": "本物？ニセ？", "gDquiz": "ひと口クイズ", "gTaps": "タップ対決", "gTapsGo": "全力でタップ！", "gNever": "私は一度も…ない", "gAlarm": "ワードアラーム", "gAlarmWord": "この言葉でひと口：", "gAlarmHit": "飲んで！", "gAlarmEnd": "この曲で{n}口", "gDwheel": "ひと口ルーレット", "gDlikely": "やりそうな人は…（ひと口版）", "gSip": "ひと口！", "gSafeSip": "セーフ！", "gSing": "歌い続けて", "gSingSoon": "もうすぐ静かになるよ …", "gSingNow": "歌い続けて！", "gSingBack": "戻ってきた！ リズム合ってた？", "gLoadSong": "次の曲 …"}, "ko": {"gIntro": "인트로 퀴즈", "gTf": "진짜? 가짜?", "gTfAsk": "진짜? 가짜?", "gDquiz": "한 모금 퀴즈", "gTaps": "탭 대결", "gTapsGo": "최대한 빨리 눌러!", "gNever": "나는 한 번도 안 해봤다", "gAlarm": "단어 알람", "gAlarmWord": "이 단어에 한 모금:", "gAlarmHit": "마셔!", "gAlarmEnd": "이 곡에서 {n}모금", "gDwheel": "한 모금 룰렛", "gDlikely": "누가 그럴 것 같아 … (한 모금 에디션)", "gSip": "한 모금!", "gSafeSip": "넌 안전해", "gSing": "계속 불러", "gSingSoon": "곧 조용해져 …", "gSingNow": "계속 불러!", "gSingBack": "돌아왔어! 박자 맞았어?", "gLoadSong": "다음 곡 …"}, "zh": {"gIntro": "前奏闪现", "gTf": "真还是假？", "gTfAsk": "真还是假？", "gDquiz": "小口问答", "gTaps": "点击竞速", "gTapsGo": "用最快的速度点！", "gNever": "我从来没有", "gAlarm": "单词警报", "gAlarmWord": "听到这个词就喝：", "gAlarmHit": "喝！", "gAlarmEnd": "这首歌喝了{n}口", "gDwheel": "小口转盘", "gDlikely": "谁最可能…（小口版）", "gSip": "喝一小口！", "gSafeSip": "你安全了", "gSing": "接着唱", "gSingSoon": "马上要安静了 …", "gSingNow": "接着唱！", "gSingBack": "回来啦！你还在节奏上吗？", "gLoadSong": "下一首 …"}};
+for (const src of [SCAN_TEXT, GAME_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 const LANG = (navigator.languages || [navigator.language]).map((x) => String(x || "").slice(0, 2).toLowerCase()).find((x) => L[x]) || "en";
 const T = { ...L.en, ...L[LANG] };
 document.documentElement.lang = LANG;
@@ -352,10 +380,105 @@ async function start() {
     key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt", "encrypt"]);
     topic = "mirage-live/" + ch;
   } catch {
-    return say(T.bad);
+    // ohne Link: kein Fehler, sondern der normale Weg über den Scanner
+    say(location.hash.length > 1 ? T.bad : T.scanStart);
+    return showScan();
   }
   // alle Relays zugleich abonnieren: das Theme sendet an den, der bei ihm erreichbar ist
   BROKERS.forEach(open);
+  // alter Code (Party längst vorbei): nach einer Weile den Scanner anbieten
+  setTimeout(() => !cur && showScan(), 12000);
+}
+
+/* ---- QR-Code in der Seite scannen */
+// Nur Mirage-Links dieser Seite zählen: ein fremder QR-Code öffnet nie eine andere Adresse
+function joinHash(text) {
+  try {
+    const u = new URL(String(text).trim());
+    if (location.protocol !== "file:" && u.hostname !== location.hostname) return "";
+    const q = new URLSearchParams(u.hash.slice(1));
+    if (fromB64(q.get("k")).length !== 16 || !/^[\w-]{16,}$/.test(q.get("c") || "")) return "";
+    return u.hash;
+  } catch {
+    return "";
+  }
+}
+function joinNow(hash) {
+  location.hash = hash;
+  location.reload();
+}
+let scanStream = null, scanTimer = 0;
+function showScan() {
+  $("scanBtn").textContent = T.scanBtn;
+  $("scanLink").placeholder = T.scanPaste;
+  $("scan").hidden = false;
+}
+function stopScan() {
+  clearTimeout(scanTimer);
+  scanStream?.getTracks().forEach((x) => x.stop());
+  scanStream = null;
+  $("scanVid").srcObject = null;
+  $("scanView").hidden = true;
+}
+async function makeReader() {
+  if ("BarcodeDetector" in window) {
+    try {
+      const d = new BarcodeDetector({ formats: ["qr_code"] });
+      return async (v) => (await d.detect(v))[0]?.rawValue || "";
+    } catch {}
+  }
+  // iPhones haben keine eingebaute Erkennung: Leser erst jetzt nachladen
+  await new Promise((ok, no) => {
+    const sc = document.createElement("script");
+    sc.src = "qr.js";
+    sc.onload = ok;
+    sc.onerror = no;
+    document.head.append(sc);
+  });
+  const c = document.createElement("canvas"), x = c.getContext("2d", { willReadFrequently: true });
+  return async (v) => {
+    const k = Math.min(1, 640 / Math.max(v.videoWidth, v.videoHeight));
+    c.width = Math.round(v.videoWidth * k);
+    c.height = Math.round(v.videoHeight * k);
+    if (!c.width || !c.height) return "";
+    x.drawImage(v, 0, 0, c.width, c.height);
+    return window.jsQR(x.getImageData(0, 0, c.width, c.height).data, c.width, c.height)?.data || "";
+  };
+}
+async function openScan() {
+  $("scanMsg").textContent = "";
+  let read;
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+    read = await makeReader();
+  } catch {
+    stopScan();
+    $("scanMsg").textContent = T.scanDenied;
+    return;
+  }
+  const v = $("scanVid");
+  v.srcObject = scanStream;
+  $("scanTip").textContent = T.scanHint;
+  $("scanView").hidden = false;
+  v.play().catch(() => {});
+  const look = async () => {
+    if (!scanStream) return;
+    let text = "";
+    try {
+      if (v.readyState >= 2) text = await read(v);
+    } catch {}
+    if (!scanStream) return;
+    if (text) {
+      const hash = joinHash(text);
+      if (hash) {
+        stopScan();
+        return joinNow(hash);
+      }
+      $("scanTip").textContent = T.scanBad;
+    }
+    scanTimer = setTimeout(look, 180);
+  };
+  look();
 }
 const conns = new Set(), retryT = {};
 let tries = 0;
@@ -420,12 +543,24 @@ async function receive(m, retained) {
   }
   apply(s);
 }
+// Statusleiste und Seitenrand in der Farbe des Lichts: sonst steht oben ein schwarzer Streifen über dem Bild
+let chromeKey = "";
+function tintChrome() {
+  const k = pal.join();
+  if (k === chromeKey) return;
+  chromeKey = k;
+  const mix = [0, 1, 2].map((n) => Math.round([6, 5, 11][n] * 0.68 + ((pal[0][n] + pal[1][n]) / 2) * 0.32));
+  const css = `rgb(${mix.join(",")})`;
+  document.documentElement.style.setProperty("--chrome", css);
+  $("chrome").content = css;
+}
 function apply(s) {
   if (cur && s.s < cur.s) return; // ältere Nachricht über den zweiten Relay
   if (!s.on) {
     ended = true;
     cur = null;
     document.body.classList.remove("on");
+    showScan();
     return say(T.over);
   }
   ended = false;
@@ -441,6 +576,7 @@ function apply(s) {
   if (Array.isArray(s.pal) && s.pal.length === 3) {
     pal = s.pal;
     s.pal.forEach((c, i) => document.documentElement.style.setProperty(["--a", "--b", "--c"][i], c.join(",")));
+    tintChrome();
   }
   $("title").textContent = s.t || "";
   const img = /^https:\/\/i\.scdn\.co\/image\/[\w]+$/.test(s.img || "") ? s.img : "";
@@ -800,7 +936,8 @@ function frame(now) {
   if (live) {
     // Zeit seit dem Senden (nicht seit der Ankunft) – so sitzen Ringe und Vibration auf dem Songbeat
     const since = Math.max(0, (Date.now() - cur.s - skew) / 1000) + LEAD;
-    const bp = (cur.bi >= 0 ? cur.bi + cur.ph : 0) + since * (cur.bpm / 60);
+    // ohne Taktdaten frei im Tempo weiterlaufen, sonst bliebe alles auf dem ersten Schlag stehen
+    const bp = cur.bi >= 0 ? cur.bi + cur.ph + since * (cur.bpm / 60) : (now / 1000) * ((cur.bpm || 120) / 60);
     const beat = Math.floor(bp), f = bp - beat;
     kick = Math.exp(-f * 6) * (0.35 + 0.65 * cur.e);
     if (gBeatEl) gBeatEl.style.transform = `scale(${(1 + Math.exp(-f * 6) * 0.14).toFixed(3)})`;
@@ -986,10 +1123,14 @@ syncNotify();
 
 /* ---- Spiele: der PC führt Regie, das Handy ist der Controller */
 let gKey = "", gGame = "", gVoted = -1, gOut = false, gSeen = 0, gShook = 0, gTapped = false, gEarly = "", gMotion = false, gPrev = 0;
-let gBeatEl = null, gBeatScore = 0, gBeatSent = 0, gBeatLast = -1, gBeatT = 0;
+let gBeatEl = null, gBeatScore = 0, gBeatSent = 0, gBeatPrev = 0, gBeatT = 0, gBeatRun = 0, gTaps = 0;
 const me = myId.slice(-6);
 const TILE = ["A", "B", "C", "D", "E", "F"];
+const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never"]);
+const WHEELS = new Set(["wheel", "dwheel"]);
 const GAME = {
+  intro: ["⏱️", () => T.gIntro], sing: ["🎙️", () => T.gSing], tf: ["🕵️", () => T.gTf], taps: ["👆", () => T.gTaps], never: ["🙈", () => T.gNever],
+  dquiz: ["🍻", () => T.gDquiz], alarm: ["🚨", () => T.gAlarm], dlikely: ["👉", () => T.gDlikely], dwheel: ["🍀", () => T.gDwheel],
   quiz: ["🎤", () => T.gQuiz], title: ["🎵", () => T.gTitleQ], gap: ["✏️", () => T.gGap], next: ["📜", () => T.gNext], beat: ["🥁", () => T.gBeat],
   stop: ["✋", () => T.gStop], fast: ["⚡", () => T.gFast], battle: ["💃", () => T.gBattle], bomb: ["💣", () => T.gBomb], likely: ["🤔", () => T.gLikely], wheel: ["🎡", () => T.gWheel],
 };
@@ -1014,7 +1155,10 @@ const gEl = (tag, text, cls) => {
   if (cls) e.className = cls;
   return e;
 };
-const gLeft = (end) => Math.max(0, Math.ceil((end - (Date.now() - skew)) / 1000));
+const gLeft = (end) => {
+  const s = Math.max(0, Math.ceil((end - (Date.now() - skew)) / 1000));
+  return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : s + " s";
+};
 const gTap = (fn) => (e) => {
   e.stopPropagation();
   fn(e);
@@ -1035,23 +1179,74 @@ function startMotion() {
     gShook = 0;
   }, 500);
 }
-// Tipp im Takt: Abstand zum nächsten Schlag, gerechnet wie die Ringe im Hintergrund
+// Tipp im Takt: Was zählt, ist der Abstand zum vorigen Tipp im Verhältnis zum Tempo. Das funktioniert auch mit
+// Lautsprecher- und Netzverzögerung, die den Schlag am Handy um 100 ms und mehr verschieben können.
+// Halbes und doppeltes Tempo zählen mit, ein Fehltipp kostet nichts, Serien bringen mehr.
 function beatTap(fb) {
   if (!cur) return;
-  const since = Math.max(0, (Date.now() - cur.s - skew) / 1000) + LEAD;
-  const bp = (cur.bi >= 0 ? cur.bi + cur.ph : 0) + since * (cur.bpm / 60);
-  const near = Math.round(bp), err = Math.abs(bp - near);
-  const same = near === gBeatLast;
-  gBeatLast = near;
-  const [pts, text, cls] = same || err >= 0.16 ? [-2, T.gMiss, "miss"] : err < 0.07 ? [10, T.gPerfect, "perfect"] : [5, T.gGood, "good"];
-  gBeatScore = Math.max(0, gBeatScore + pts);
+  const now = performance.now(), period = 60000 / (cur.g?.bpm || cur.bpm || 120), dt = now - gBeatPrev, gBeatPrevWas = gBeatPrev;
+  // zittriger Doppeltipp
+  if (dt < 110) return;
+  gBeatPrev = now;
+  // erster Tipp oder lange Pause: gibt den Einsatz vor, noch keine Wertung
+  if (!gBeatPrevWas || dt > 3000) {
+    gBeatRun = 0;
+    fb.className = "gfb";
+    return;
+  }
+  const err = Math.min(...[0.5, 1, 2].map((m) => Math.abs(dt / (period * m) - 1)));
+  const [base, text, cls] = err < 0.1 ? [10, T.gPerfect, "perfect"] : err < 0.22 ? [5, T.gGood, "good"] : [0, T.gMiss, "miss"];
+  gBeatRun = base ? gBeatRun + 1 : 0;
+  const pts = base ? base + Math.min(5, Math.floor(gBeatRun / 4)) : 0;
+  gBeatScore += pts;
   fb.textContent = text;
   fb.className = "gfb " + cls;
   void fb.offsetWidth;
   fb.classList.add("show");
   const n = $("gBeatN");
   if (n) n.textContent = String(gBeatScore);
-  if (pts > 0) haptic([[pts > 5 ? 1 : 0.6, 30]]);
+  if (pts > 0) {
+    haptic([[pts > 5 ? 1 : 0.6, 30]]);
+    pSfx.tap();
+  } else pSfx.bad();
+}
+// Beat-Treffer und Tipp-Rennen melden ihren Stand laufend; Nachrichten dürfen verloren gehen, der nächste Stand ersetzt sie
+/* ---- Kleine Soundeffekte am Handy (leise, nur die eigene Rückmeldung) */
+let psOn = store("mlSfx") !== "0", pAc = null, gSingShown = -1;
+function pTone(f, d, type = "sine", g = 0.09, at = 0, to = 0) {
+  if (!psOn) return;
+  try {
+    pAc ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (pAc.state === "suspended") pAc.resume().catch(() => {});
+    const o = pAc.createOscillator(), v = pAc.createGain(), t0 = pAc.currentTime + at;
+    o.type = type;
+    o.frequency.setValueAtTime(f, t0);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t0 + d);
+    v.gain.setValueAtTime(0.0001, t0);
+    v.gain.exponentialRampToValueAtTime(g, t0 + 0.008);
+    v.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+    o.connect(v).connect(pAc.destination);
+    o.start(t0);
+    o.stop(t0 + d + 0.02);
+  } catch {}
+}
+const pSfx = {
+  tap: () => pTone(720, 0.06, "triangle"),
+  go: () => [523, 784].forEach((f, i) => pTone(f, 0.16, "triangle", 0.1, i * 0.08)),
+  good: () => [523, 659, 784].forEach((f, i) => pTone(f, 0.22, "triangle", 0.1, i * 0.07)),
+  bad: () => pTone(220, 0.22, "sawtooth", 0.05, 0, 150),
+  sip: () => [660, 880, 660].forEach((f, i) => pTone(f, 0.14, "square", 0.05, i * 0.13)),
+  bomb: () => [900, 900].forEach((f, i) => pTone(f, 0.05, "square", 0.05, i * 0.12)),
+  boom: () => pTone(150, 0.6, "sawtooth", 0.1, 0, 40),
+};
+function startScoreSender() {
+  gBeatT = setInterval(() => {
+    const k = cur?.g?.k, v = k === "beat" ? gBeatScore : k === "taps" ? gTaps : -1;
+    if (v >= 0 && v !== gBeatSent) {
+      gBeatSent = v;
+      gSend({ a: "sc", v });
+    }
+  }, 400);
 }
 function gBoard(list, box) {
   (list || []).forEach((x, i) => {
@@ -1065,7 +1260,7 @@ function gLive(g, box) {
   const bar = box.querySelector(".gbar b");
   if (bar) bar.style.width = g.end && g.dur ? Math.max(0, Math.min(100, ((g.end - (Date.now() - skew)) / g.dur) * 100)) + "%" : "0";
   const c = box.querySelector("[data-left]");
-  if (c) c.textContent = g.end ? gLeft(g.end) + " s" : "";
+  if (c) c.textContent = g.end ? gLeft(g.end) : "";
   const chips = box.querySelector(".gchips");
   if (chips) {
     const now = (g.names || []).join("|");
@@ -1090,8 +1285,8 @@ function gLive(g, box) {
 }
 function drawGame(g) {
   const box = $("game");
-  document.body.classList.toggle("game-on", !!g && g.k !== "wheel");
-  if (!g || (g.k === "wheel" && g.st !== "res")) {
+  document.body.classList.toggle("game-on", !!g && !WHEELS.has(g.k));
+  if (!g || (WHEELS.has(g.k) && g.st !== "res")) {
     box.hidden = true;
     gKey = "";
     gBeatEl = null;
@@ -1101,13 +1296,12 @@ function drawGame(g) {
     gGame = g.id;
     gOut = false;
     gEarly = "";
-    gBeatScore = gBeatSent = 0;
-    gBeatLast = -1;
+    gBeatScore = gBeatSent = gBeatPrev = gBeatRun = gTaps = 0;
   }
   if (g.out?.includes(me)) gOut = true;
   box.hidden = false;
   const isH = g.h === me;
-  const key = [g.id, g.k, g.st, g.r, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : ""].join("|");
+  const key = [g.id, g.k, g.st, g.r, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || ""].join("|");
   if (key === gKey) return gLive(g, box);
   gKey = key;
   gTapped = false;
@@ -1124,6 +1318,17 @@ function drawGame(g) {
   const left = gEl("span", null, "gtm");
   left.dataset.left = "1";
   head.append(left);
+  // eigener Ton am Handy: abschaltbar, damit es auf der Party nicht überall piept
+  const snd = gEl("button", psOn ? "🔊" : "🔇", "gsnd");
+  snd.type = "button";
+  snd.setAttribute("aria-label", "Sound");
+  snd.onclick = gTap(() => {
+    psOn = !psOn;
+    store("mlSfx", psOn ? "1" : "0");
+    snd.textContent = psOn ? "🔊" : "🔇";
+    if (psOn) pSfx.tap();
+  });
+  head.append(snd);
   const body = gEl("div", null, "gbody");
   box.append(head, body);
   gBuild(g, body, isH);
@@ -1170,17 +1375,62 @@ function gBuild(g, box, isH) {
     box.append(inp, b, gEl("div", null, "gchips"));
     return;
   }
-  if (g.k === "wheel") {
-    box.append(gEl("div", "🎉", "gbigic"), gEl("h2", g.text || ""));
+  if (WHEELS.has(g.k)) {
+    box.append(gEl("div", g.k === "dwheel" ? "🍻" : "🎉", "gbigic"), gEl("h2", g.text || ""));
     const k = gKey;
     setTimeout(() => {
       if (gKey === k) $("game").hidden = true;
     }, 5000);
     return;
   }
-  if (["quiz", "title", "gap", "next", "likely"].includes(g.k)) {
+  if (g.st === "load") return void box.append(gEl("div", "🎧", "gbigic gpop"), gEl("h2", T.gLoadSong));
+  if (g.k === "sing") {
     if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
-    const ask = g.k === "quiz" ? T.gQuizAsk : g.k === "title" ? T.gTitleAsk : g.k === "next" ? T.gNextAsk : "";
+    if (g.st === "res") return void box.append(gEl("div", "🎉", "gbigic gpop"), gEl("h2", T.gSingBack));
+    if (g.st === "ready") return void box.append(gEl("div", "🤫", "gbigic"), gEl("h2", T.gSingSoon));
+    if (gSingShown !== g.r) {
+      gSingShown = g.r;
+      pSfx.go();
+      haptic([[1, 160]]);
+    }
+    box.append(gEl("div", "🎙️", "gbigic"), gEl("small", T.gSingNow), gEl("h2", g.line || "", "gline"));
+    if (g.lyn) box.append(gEl("p", g.lyn));
+    return;
+  }
+  if (g.k === "alarm") {
+    if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
+    if (g.st === "res") return void box.append(gEl("div", "🍻", "gbigic"), gEl("h2", T.gAlarmEnd.replace("{n}", g.hits || 0)));
+    const hit = g.st === "hit";
+    box.append(gEl("small", T.gAlarmWord), gEl("div", g.word || "", "gword" + (hit ? " hit gpop" : "")));
+    box.append(hit ? gEl("div", "🍺 " + T.gAlarmHit, "gverdict sip") : gEl("p", "🍺 " + (g.hits || 0)));
+    if (hit) {
+      haptic([[1, 120], [0, 70], [1, 120]]);
+      pSfx.sip();
+    }
+    return;
+  }
+  if (g.k === "taps") {
+    box.append(gEl("h2", T.gTapsGo));
+    const ring = gEl("button", null, "gring"), n = gEl("b", String(gTaps));
+    ring.type = "button";
+    ring.append(n);
+    ring.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (cur?.g?.st !== "go") return;
+      n.textContent = String(++gTaps);
+      haptic([[0.4, 12]]);
+      pSfx.tap();
+    });
+    ring.onclick = (e) => e.stopPropagation();
+    box.append(ring);
+    if (!gBeatT) startScoreSender();
+    return;
+  }
+  if (ASK_GAMES.has(g.k)) {
+    if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
+    const ASK_TEXT = { quiz: T.gQuizAsk, dquiz: T.gQuizAsk, title: T.gTitleAsk, intro: T.gTitleAsk, next: T.gNextAsk, tf: T.gTfAsk, never: T.gNever };
+    const ask = ASK_TEXT[g.k] || "";
     if (g.st === "rev" && g.artist) box.append(gEl("h2", `${g.artist} – ${g.title}`));
     else if (g.q || g.line) {
       if (ask) box.append(gEl("small", ask));
@@ -1189,11 +1439,19 @@ function gBuild(g, box, isH) {
     const mem = gMem(`a${g.id}.${g.r}`);
     gVoted = mem == null ? -1 : Number(mem);
     if (g.st === "ask") gPrev = pts;
-    if (g.st === "rev" && gVoted >= 0) {
+    if (g.st === "rev" && g.drink && g.sipIds?.includes(me)) {
+      box.append(gEl("div", "🍺 " + T.gSip, "gverdict sip"));
+      haptic([[1, 120], [0, 70], [1, 120]]);
+      pSfx.sip();
+    } else if (g.st === "rev" && g.k === "never") {
+      box.append(gEl("div", "😇 " + T.gSafeSip, "gverdict miss"));
+    } else if (g.st === "rev" && gVoted >= 0) {
       const hit = gVoted === g.right, plus = pts - gPrev;
       const banner = gEl("div", (hit ? "✓ " + T.gRight : "✕ " + T.gWrong) + (plus > 0 ? ` · +${plus}` : ""), "gverdict " + (hit ? "hit" : "miss"));
       box.append(banner);
       haptic(hit ? [[1, 80], [0, 60], [1, 80]] : [[0.5, 160]]);
+      if (hit) pSfx.good();
+      else pSfx.bad();
     }
     const list = gEl("div", null, "gtiles");
     (g.o || []).forEach((o, i) => {
@@ -1211,10 +1469,11 @@ function gBuild(g, box, isH) {
           gMem(`a${g.id}.${g.r}`, i);
           list.querySelectorAll(".tile").forEach((x, n) => x.classList.add(n === i ? "pick" : "dim"));
           haptic([[0.7, 30]]);
+          pSfx.tap();
           gSure({ a: "ans", r: g.r, v: i });
         });
       }
-      if (g.st === "rev" && i === gVoted) b.classList.add("mine");
+      if (g.st === "rev" && i === gVoted && g.k !== "never") b.classList.add("mine");
       list.append(b);
     });
     box.append(list);
@@ -1246,7 +1505,10 @@ function gBuild(g, box, isH) {
         }
       });
       box.append(b);
-      if (g.st === "stop") haptic([[1, 200]]);
+      if (g.st === "stop") {
+        haptic([[1, 200]]);
+        pSfx.go();
+      }
     } else {
       box.append(gEl("div", gOut ? "💤" : "🎉", "gbigic"), gEl("h2", gOut ? T.gOut : T.gSafe), gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
     }
@@ -1276,7 +1538,10 @@ function gBuild(g, box, isH) {
         b.className = "safe";
       });
       box.append(b);
-      if (g.st === "go") haptic([[1, 120]]);
+      if (g.st === "go") {
+        haptic([[1, 120]]);
+        pSfx.go();
+      }
     } else {
       const b = gEl("div", null, "gboard");
       gBoard((g.win || []).map((x) => ({ n: x.n, p: x.ms + " ms" })), b);
@@ -1323,17 +1588,11 @@ function gBuild(g, box, isH) {
     ring.onclick = (e) => e.stopPropagation();
     gBeatEl = ring;
     box.append(fb, ring);
-    if (!gBeatT) {
-      gBeatT = setInterval(() => {
-        if (cur?.g?.k === "beat" && cur.g.st === "go" && gBeatScore !== gBeatSent) {
-          gBeatSent = gBeatScore;
-          gSend({ a: "sc", v: gBeatScore });
-        }
-      }, 600);
-    }
+    if (!gBeatT) startScoreSender();
     return;
   }
   if (g.k === "bomb") {
+    if (g.st === "res") pSfx.boom();
     if (g.st === "res") return void box.append(gEl("div", "💥", "gbigic gpop"), gEl("h2", T.gBombBoom.replace("{n}", g.boom || "")), gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
     if (gOut) return void box.append(gEl("div", "💤", "gbigic"), gEl("h2", T.gOut), gEl("p", T.gBombSafe.replace("{n}", g.hn || "")));
     if (isH) {
@@ -1349,6 +1608,7 @@ function gBuild(g, box, isH) {
       });
       box.append(b);
       haptic([[1, 100], [0, 60], [1, 100]]);
+      pSfx.bomb();
     } else {
       const hn = gEl("h2", T.gBombSafe.replace("{n}", g.hn || ""));
       hn.dataset.hn = "1";
@@ -1392,6 +1652,22 @@ document.addEventListener("click", async () => {
 });
 document.addEventListener("visibilitychange", async () => {
   if (lock && document.visibilityState === "visible") lock = await navigator.wakeLock?.request("screen").catch(() => null);
+});
+$("scanBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  openScan();
+});
+$("scanX").addEventListener("click", (e) => {
+  e.stopPropagation();
+  stopScan();
+});
+$("scanLink").addEventListener("click", (e) => e.stopPropagation());
+$("scanLink").addEventListener("input", (e) => {
+  const raw = e.target.value.trim();
+  if (!raw) return void ($("scanMsg").textContent = "");
+  const hash = joinHash(raw);
+  if (hash) joinNow(hash);
+  else $("scanMsg").textContent = T.scanBad;
 });
 start();
 </script>

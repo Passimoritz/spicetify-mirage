@@ -10,6 +10,40 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.23.0] – 2026-11-06
+
+### Added
+
+- **20 party games:** new are Intro flash, Real or fake?, Tap race and Keep singing (the music goes silent in the middle of a song and comes back: are you still in time?).
+- **Drinking games (18+):** Never have I ever, Sip quiz, Word alarm, Who would … (sip edition) and Sip wheel, plus an optional setting for sips in every quiz. Nobody has to drink, water counts too.
+- **Sound effects** for the games on the big screen, with a volume setting, and quiet feedback on the phones with a 🔊 switch.
+- **Play again button** for the guessing games, so a clip can be heard a second time.
+- **QR scanner on the phone page:** guests who opened the page without a link can scan the code with the camera or paste the link.
+- **Lyric state icon** next to the title in all immersive modes, with the details on hover. It replaces the "No lyrics for this song" and "Instrumental" messages.
+
+### Changed
+
+- **Songs in guessing games play only as far as needed:** a clip of adjustable length, then the music stops until the answer is revealed. The reveal plays the song again.
+- **Players have 2 minutes to join** instead of 30 seconds, adjustable from 30 seconds to 3 minutes.
+- **Beat hit** has a display on the big screen (a ring and four lights on the real beats, BPM, race bars) and now scores the intervals between your taps. It can also be played alone.
+- **Game visuals:** names light up once someone has answered, an equalizer shows when music plays, the time turns red at the end, and the reveal shows the cover.
+- **Better game rounds:** Real or fake? jumps to the real line on the reveal, Fastest finger signals on the next beat, the Hot potato fuse speeds up, Word alarm runs over several songs, Who would most likely shows the crowd's hands going up, and song titles leave out additions like "Remastered" or "feat.".
+- Only one menu is open at a time in immersive mode: a new one closes the previous one.
+
+### Fixed
+
+- **Song start was audible in guessing games**, which could give away the artist. The song stays muted until it has reached the right spot. Intro flash starts at the beginning on purpose.
+- **Questions could be about the wrong song** with shuffle or autoplay. The game now changes the song first and asks about the one really playing.
+- **Songs could be controlled during a game:** next, back, play, seek, shuffle, shortcuts, Stream Deck and the overlay are locked in games with music. Media keys cannot be blocked, so the game corrects itself: a pause resumes, and a skip restarts the same round with the new song.
+- **Black stripe at the top of the phone page**, caused by an empty note bar.
+- Beat hit on the phones could miss every tap when the song had no beat data.
+- The pause screen no longer appears on top of a running game.
+
+### Removed
+
+- Cover puzzle.
+- QR code on the pause screen.
+
 ## [1.22.0] – 2026-11-05
 
 ### Added

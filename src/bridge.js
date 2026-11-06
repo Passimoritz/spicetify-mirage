@@ -8,6 +8,7 @@ import { domReport } from "./pages.js";
 import { isFading } from "./controls.js";
 import { party } from "./party.js";
 import { cfg } from "./config.js";
+import { free } from "./lock.js";
 
 /* ---------------------------------------------------------------- Brücke zur Overlay-App */
 // Die Mirage-Overlay-App lauscht lokal; ohne App versucht das Theme es still alle 5 s erneut.
@@ -43,9 +44,9 @@ const bridge = (() => {
       // Antworten der Fernseher-Suche (Chromecast / Google TV) an den Party-Modus weitergeben
       if (m.type === "cast") return void window.dispatchEvent(new CustomEvent("mirage:cast", { detail: m }));
       if (m.type !== "cmd") return;
-      if (m.cmd === "toggle") S.Player.togglePlay();
-      else if (m.cmd === "next") S.Player.next();
-      else if (m.cmd === "prev") S.Player.back();
+      if (m.cmd === "toggle") free() && S.Player.togglePlay();
+      else if (m.cmd === "next") free() && S.Player.next();
+      else if (m.cmd === "prev") free() && S.Player.back();
       else if (m.cmd === "like") S.Player.toggleHeart?.();
       // Immersiv- und Party-Modus öffnet keys.js (dort ist der Immersiv-Modus bekannt)
       else if (m.cmd === "immersive" || m.cmd === "party" || m.cmd === "confetti") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
