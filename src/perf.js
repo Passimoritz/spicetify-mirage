@@ -1,4 +1,4 @@
-import { S, root } from "./core.js";
+import { S, root, VERSION } from "./core.js";
 import { t } from "./i18n.js";
 import { cfg, save } from "./config.js";
 
@@ -30,10 +30,40 @@ function detectPreset() {
 /* ---------------------------------------------------------------- Selbst drosseln */
 // In den ersten Sekunden die Bildrate messen. Schafft der Rechner keine ~45 fps, eine Stufe
 // runter und einmal Bescheid geben. Läuft pro Start höchstens einmal, nur bei sichtbarem Fenster.
+// Das Ergebnis wird je Gerät gemerkt: dieselbe Grafikkarte am selben Bildschirm muss nicht bei jedem
+// Start neu vermessen werden. Neu gemessen wird nach einem Mirage-Update, nach 14 Tagen oder wenn
+// sich Grafikkarte oder Bildschirm ändern (Dock, anderer Monitor).
+const PERF_KEY = "mirage:perf", PERF_DAYS = 14;
+function deviceKey() {
+  let gpu = "";
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    const ext = gl?.getExtension("WEBGL_debug_renderer_info");
+    gpu = String((ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) || gl?.getParameter(gl.RENDERER) || "");
+    // den Probe-Kontext gleich wieder freigeben
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+  } catch {}
+  return [gpu, `${screen.width}x${screen.height}`, devicePixelRatio || 1, navigator.hardwareConcurrency || 0].join("|");
+}
+function known(key) {
+  try {
+    const m = JSON.parse(localStorage.getItem(PERF_KEY) || "null");
+    return !!m && m.key === key && m.v === VERSION && Date.now() - m.at < PERF_DAYS * 864e5;
+  } catch {
+    return false;
+  }
+}
+function remember(key, fps) {
+  try {
+    localStorage.setItem(PERF_KEY, JSON.stringify({ key, v: VERSION, at: Date.now(), fps: Math.round(fps), preset: cfg.preset }));
+  } catch {}
+}
 let measured = false;
-function measure(onDone) {
+function measure(onDone, wait = 4000) {
   if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
   measured = true;
+  const key = deviceKey();
+  if (known(key)) return;
   let frames = 0, start = 0, hiddenSeen = false;
   const sample = (now) => {
     if (document.hidden) hiddenSeen = true;
@@ -46,17 +76,21 @@ function measure(onDone) {
       measured = false;
       return document.addEventListener("visibilitychange", () => !document.hidden && measure(onDone), { once: true });
     }
-    if (fps >= 45) return;
     const next = ORDER[ORDER.indexOf(cfg.preset) + 1];
-    if (!next) return;
+    if (fps >= 45 || !next) return remember(key, fps);
     applyPreset(next);
     onDone();
     try {
       S.showNotification?.(t("perfStepped").replace("{fps}", Math.round(fps)).replace("{preset}", t("preset_" + next)), false, 6000);
     } catch {}
+    // Reicht die neue Stufe? Früher klärte das erst der nächste Start – jetzt gleich, weil das Ergebnis
+    // danach 14 Tage gilt. „Leicht“ ist die letzte Stufe und wird ohne weitere Messung gemerkt.
+    if (next === "light") return remember(key, fps);
+    measured = false;
+    measure(onDone, 2000);
   };
   // erst messen, wenn Spotify fertig aufgebaut ist
-  setTimeout(() => requestAnimationFrame(sample), 4000);
+  setTimeout(() => requestAnimationFrame(sample), wait);
 }
 
 /* ---------------------------------------------------------------- Verdeckt = Pause */
