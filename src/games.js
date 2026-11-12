@@ -992,9 +992,12 @@ window.addEventListener("mirage:game", (e) => {
     return;
   }
   if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
-  // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen
-  if (G.k === "beat" && m.a === "sc" && v.st === "go") p.p = Math.max(p.p, Math.min(9999, Number(m.v) || 0));
-  if (G.k === "taps" && m.a === "sc") p.p = Math.max(p.p, Math.min(400, Number(m.v) || 0));
+  // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen.
+  // Eine Korrektur der Spielleitung (adj) bleibt daneben stehen, sonst würde die nächste Meldung sie überschreiben.
+  if ((G.k === "beat" && m.a === "sc" && v.st === "go") || (G.k === "taps" && m.a === "sc")) {
+    p.raw = Math.max(p.raw || 0, Math.min(G.k === "beat" ? 9999 : 400, Number(m.v) || 0));
+    p.p = Math.max(0, p.raw + (p.adj || 0));
+  }
   if (G.k === "bomb" && m.a === "pass" && v.st === "go" && p === G.holder && m.v === G.seq) {
     const rest = alive().filter((x) => x !== p);
     if (rest.length) {
@@ -1003,6 +1006,35 @@ window.addEventListener("mirage:game", (e) => {
       bombShow();
     }
   }
+});
+
+/* ---- Spielleitung am Handy */
+// Die Befehle kommen geprüft aus live.js: nur das Handy mit dem Link der Spielleitung kann sie unterschreiben.
+window.addEventListener("mirage:host", (e) => {
+  const m = e.detail || {};
+  if (!ctx || ctx.party?.() === false) return;
+  if (m.a === "open") {
+    if (INFO[m.t]) start(m.t);
+    return;
+  }
+  if (!G) return;
+  if (m.a === "start") return void beginNow();
+  if (m.a === "skip") return void skip();
+  if (m.a === "spin") return void spin();
+  if (m.a === "end") return void stop();
+  if (m.a !== "pts") return;
+  const p = all().find((x) => short(x.id) === m.t);
+  if (!p) return;
+  const d = Math.max(-1000, Math.min(1000, Math.round(m.v) || 0));
+  if (G.k === "beat" || G.k === "taps") {
+    p.adj = (p.adj || 0) + d;
+    p.p = Math.max(0, (p.raw || 0) + p.adj);
+  } else p.p = Math.max(0, p.p + d);
+  // die Siegerehrung zeigt eine feste Liste: mit dem neuen Stand neu aufbauen
+  if (G.view?.st === "end") G.view.top = top();
+  publish();
+  boxKey = "";
+  render();
 });
 
 /* ---- Anzeige auf dem großen Bild */

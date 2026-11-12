@@ -18,7 +18,9 @@ export const GAME_TEXT = {
 // Neuere Texte: nur Englisch und Deutsch, alle anderen Sprachen fallen auf Englisch zurück
 Object.assign(GAME_TEXT.en, {
   gLobbyIn: "{n} in the game", gLobbyNone: "Nobody here yet", gLobbyNeed: "{n} more needed",
+  gHost: "Game host on your phone", gHostHint: "Show a QR code that is only for you", gHostNote: "Only for the host: whoever scans this code can start, skip and end games and correct points. It hides again when you close this panel.",
 });
 Object.assign(GAME_TEXT.de, {
   gLobbyIn: "{n} dabei", gLobbyNone: "Noch niemand da", gLobbyNeed: "noch {n} nötig",
+  gHost: "Spielleitung am Handy", gHostHint: "Einen QR-Code nur für dich zeigen", gHostNote: "Nur für die Spielleitung: Wer diesen Code scannt, kann Spiele starten, Runden überspringen, beenden und Punkte korrigieren. Er verschwindet wieder, sobald du diese Leiste schließt.",
 });

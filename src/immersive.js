@@ -245,6 +245,7 @@ const immersive = (() => {
       bpm: () => party.info.bpm,
       venue: () => (moments.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)]),
       changed: () => side === "games" && showSide("games"),
+      party: () => el?.dataset.mode === "party",
     });
     q.screen.title = q.screen.ariaLabel = t("toScreen");
     q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
@@ -2285,6 +2286,8 @@ const immersive = (() => {
   function showSide(kind) {
     if (kind) closeMenus("side");
     side = kind;
+    // der QR-Code der Spielleitung bleibt nie offen stehen
+    if (kind !== "games") q.hostOpen = false;
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
@@ -2707,6 +2710,33 @@ const immersive = (() => {
     };
     body.append(own);
   }
+  // Spielleitung am Handy: eigener QR-Code, nur auf Knopfdruck zu sehen. Wer ihn scannt, darf Spiele steuern.
+  function hostPanel(body) {
+    sideBtn(body, "📱  " + t("gHost"), t("gHostHint"), async () => {
+      q.hostOpen = !q.hostOpen;
+      if (q.hostOpen && !cfg.partyLive) {
+        cfg.partyLive = true;
+        save();
+        showExtras();
+      }
+      showSide("games");
+    }, q.hostOpen);
+    if (!q.hostOpen) return;
+    const wrap = document.createElement("div");
+    wrap.className = "m-g-hostqr";
+    const note = document.createElement("p");
+    note.className = "m-im-side-note";
+    note.textContent = t("gHostNote");
+    wrap.append(note);
+    body.append(wrap);
+    live.hostInfo().then((info) => {
+      if (!wrap.isConnected) return;
+      const img = new Image();
+      img.alt = "";
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      wrap.prepend(img);
+    }).catch(() => {});
+  }
   let gameCfgOpen = false;
   function gamesPanel(body) {
     const cur = games.active();
@@ -2718,6 +2748,7 @@ const immersive = (() => {
         games.stop();
         showSide("games");
       });
+      hostPanel(body);
       return;
     }
     const note = document.createElement("p");
@@ -2752,6 +2783,7 @@ const immersive = (() => {
         showSide(null);
       });
     }
+    hostPanel(body);
     sideBtn(body, "⚙  " + t("gSettings"), "", () => {
       gameCfgOpen = !gameCfgOpen;
       showSide("games");

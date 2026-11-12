@@ -4335,6 +4335,19 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   border-color: transparent;
   background: rgb(var(--m-c-rgb));
 }
+/* QR-Code der Spielleitung: nur in der Leiste, nur auf Knopfdruck */
+#mirage-immersive .m-g-hostqr {
+  padding: 4px 10px 8px;
+}
+#mirage-immersive .m-g-hostqr img {
+  display: block;
+  box-sizing: border-box;
+  width: min(100%, 220px);
+  margin: 0 auto 8px;
+  padding: 8px;
+  border-radius: 14px;
+  background: #fff;
+}
 #mirage-immersive .m-g-own {
   box-sizing: border-box;
   width: calc(100% - 20px);

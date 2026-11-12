@@ -749,6 +749,74 @@ async function lateJoin() {
   ok(pts > 200, "spät: Gamma hat die Punkte aus beiden Runden: " + end[2].text);
   await close();
 }
+// Spielleitung am Handy: eigener QR-Code hinter einem Knopf, und nur das Handy mit diesem Link darf steuern
+async function hostGame() {
+  const H = P[2];
+  await ensurePhones("host");
+  const sideOpen = () => until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "host: Spiele-Leiste geht auf");
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await sideOpen();
+  ok(!(await T.js(`!!document.querySelector(".m-g-hostqr")`)), "host: der QR-Code der Spielleitung ist nicht von selbst zu sehen");
+  await T.click(".m-im-side-body .m-im-side-item", { text: "📱" });
+  await until(() => T.js(`!!document.querySelector(".m-g-hostqr img")?.naturalWidth`), 6000, "host: QR-Code nach dem Knopf");
+  const url = await T.js(`(async () => {
+    const im = document.querySelector(".m-g-hostqr img"), c = document.createElement("canvas");
+    c.width = c.height = 760;
+    const x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, 760, 760);
+    x.drawImage(im, 20, 20, 720, 720);
+    return jsQR(x.getImageData(0, 0, 760, 760).data, 760, 760)?.data || "";
+  })()`);
+  const hostHash = url.slice(url.indexOf("#"));
+  ok(hostHash.startsWith(hash + "&h=") && hostHash.length > hash.length + 20, "host: der Link trägt einen eigenen Schlüssel: " + url.slice(0, 60));
+  await T.click(".m-im-side-x");
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await sideOpen();
+  ok(!(await T.js(`!!document.querySelector(".m-g-hostqr")`)), "host: nach dem Schließen ist der QR-Code wieder weg");
+  await T.click(".m-im-side-x");
+  await H.win.loadURL(PAGE + "?host=1" + hostHash);
+  await until(() => H.js(`document.body.classList.contains("on") && !document.getElementById("bHost").hidden`).catch(() => false), 10000, "host: das Handy der Spielleitung hat den Knopf");
+  ok(await P[0].js(`document.getElementById("bHost").hidden`), "host: Gäste haben den Knopf nicht");
+  // ein Spiel vom Handy aus starten
+  await H.click("#bHost");
+  await H.click("#hBody .hgames button", { text: "🙈" });
+  await until(async () => (await big.state()).st === "join" && (await big.state()).k === "never", 5000, "host: das Spiel geht auf dem großen Bild auf");
+  for (const ph of [P[0], P[1]]) {
+    await until(async () => (await phoneState(ph)).st === "join", 8000, "host: Warteraum auf den Handys");
+    await ph.click("#game button.go");
+  }
+  await until(async () => (await big.state()).chips === 2, 6000, "host: zwei Gäste im Warteraum");
+  // ein Gast ohne den Schlüssel kann nichts steuern
+  await P[0].js(`sendSure({ k: "host", hd: [myId, "start", "", 0, Date.now(), "abcdefgh12"].join("|"), sig: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" }); 1`);
+  await wait(1200);
+  ok((await big.state()).st === "join", "host: ein gefälschter Befehl eines Gastes wirkt nicht");
+  await H.click("#hBody .hacts button.go");
+  await until(async () => (await phoneState(P[0])).st === "ask" && (await phoneState(P[0])).round === "1/2", 6000, "host: Start vom Handy");
+  await until(() => H.js(`document.querySelectorAll("#hBody .hacts button").length === 2 && !document.querySelector("#hBody .hacts button.go")`), 3000, "host: jetzt gibt es Überspringen");
+  await H.click("#hBody .hacts button", { index: 0 });
+  await until(async () => (await phoneState(P[0])).st === "ask" && (await phoneState(P[0])).round === "2/2", 9000, "host: Runde übersprungen");
+  await P[0].click(...tile(0));
+  await P[1].click(...tile(1));
+  // Punkte korrigieren: Alpha bekommt 100 dazu
+  await H.click("#hBody .hsteps button", { index: 2 });
+  const row = await H.js(`[...document.querySelectorAll("#hBody .hrow")].findIndex((r) => r.textContent.includes("Alpha"))`);
+  ok(row >= 0, "host: Alpha steht in der Liste der Spielleitung");
+  await until(() => H.js(`document.querySelectorAll("#hBody .hrow b")[${row}]?.textContent === "1"`), 5000, "host: die Spielleitung sieht Alphas Stand");
+  await H.click("#hBody .hrow button", { index: row * 2 + 1 });
+  await until(async () => /Alpha 101/.test((await big.state()).text), 6000, "host: der korrigierte Stand steht auf dem großen Bild");
+  await until(async () => / 101 (Punkte|points)/.test((await phoneState(P[0])).text), 12000, "host: und bei Alpha auf dem Handy");
+  // dieselbe Nachricht noch einmal (mitgelesen und wieder abgespielt) zählt nicht doppelt: sendSure schickt jede dreimal
+  await wait(1200);
+  ok(/Alpha 101/.test((await big.state()).text), "host: ein Befehl gilt genau einmal: " + (await big.state()).text);
+  await H.click("#hBody .hacts button.end");
+  await until(async () => !(await big.state()).open, 5000, "host: Ende vom Handy");
+  await until(() => H.js(`!!document.querySelector("#hBody .hgames")`), 4000, "host: danach steht wieder die Spieleliste da");
+  await H.win.loadURL(PAGE + "?guest=1" + hash);
+  await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bHost").hidden`).catch(() => false), 10000, "host: wieder als Gast verbunden");
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -758,7 +826,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame],
 ];
 
 /* ---------------------------------------------------------------- Start */
@@ -826,7 +894,7 @@ app.whenReady().then(async () => {
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
   // Handys verbinden sich im ersten Spiel mit Warteraum
-  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join"]);
+  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host"]);
   if (ONLY.length && list.every(([n]) => NO_LOBBY.has(n))) list = [CASES[0], ...list];
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");
