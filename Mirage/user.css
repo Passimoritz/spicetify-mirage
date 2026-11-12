@@ -3953,6 +3953,10 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 #mirage-immersive .m-g-opt.is-dim {
   opacity: 0.35;
 }
+#mirage-immersive .m-g-opt.is-pick {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
+}
 #mirage-immersive .m-g-opt.is-right {
   outline: 3px solid #fff;
   outline-offset: -3px;
@@ -4334,6 +4338,13 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   color: #0b0a12;
   border-color: transparent;
   background: rgb(var(--m-c-rgb));
+}
+#mirage-immersive .m-g-keyhint {
+  font-size: 13px;
+  opacity: 0.6;
+}
+#mirage-immersive .m-g-keyhint:empty {
+  display: none;
 }
 /* QR-Code der Spielleitung: nur in der Leiste, nur auf Knopfdruck */
 #mirage-immersive .m-g-hostqr {

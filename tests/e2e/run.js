@@ -919,6 +919,60 @@ async function quizSource() {
   await afterGame("quiz");
   await gameSource("");
 }
+// Spielen ohne Handys: die Tastatur am PC ist ein Mitspieler (Ziffern antworten, Leertaste ist der Buzzer)
+async function keyboardPlay() {
+  const press = (code) => T.js(`__sp.press(${JSON.stringify(code)}); 1`);
+  const mode = () => T.js(`document.getElementById("mirage-immersive").dataset.mode`);
+  await firstSong();
+  await openGame("quiz");
+  await until(async () => (await big.state()).st === "join", 4000, "tastatur: Warteraum");
+  ok(/Leertaste|Space/.test((await big.state()).text), "tastatur: der Warteraum sagt, wie es ohne Handy geht");
+  // im Spiel wechseln die Ziffern nicht die Ansicht, und die Leertaste hält die Musik nicht an
+  await press("Digit2");
+  await wait(300);
+  ok((await mode()) === "party" && (await big.state()).st === "join", "tastatur: die Zifferntaste lässt das Spiel offen");
+  await press("Space");
+  await until(async () => (await big.state()).chips === 1 && /Tastatur|Keyboard/.test((await big.state()).text), 3000, "tastatur: Leertaste meldet die Tastatur an");
+  ok((await big.state()).playing, "tastatur: die Musik läuft weiter");
+  await press("Enter");
+  let last = "";
+  for (const r of [1, 2]) {
+    const b = await until(async () => {
+      const s = await big.state();
+      return s.st === "ask" && s.uri !== last && s.opts.length === 4 && s.opts.includes(s.artist) && s;
+    }, 15000, `tastatur: Frage ${r}`);
+    last = b.uri;
+    ok(/1 (bis|to) 4/.test(b.text), "tastatur: die Frage nennt die Tasten: " + b.text);
+    await press("Digit" + (b.opts.indexOf(b.artist) + 1));
+    const rev = await until(async () => {
+      const s = await big.state();
+      return s.st === "rev" && s;
+    }, 3000, "tastatur: die Antwort per Taste löst sofort auf");
+    ok(rev.right === b.artist && rev.playing, "tastatur: richtig aufgelöst, Musik läuft");
+  }
+  const end = await until(async () => {
+    const s = await big.state();
+    return s.st === "end" && s;
+  }, 12000, "tastatur: Siegerehrung");
+  const pts = Number((/(?:Tastatur|Keyboard) (\d+)/.exec(end.text) || [])[1] || 0);
+  ok(pts >= 200, "tastatur: zwei richtige Antworten zählen: " + end.text);
+  await close();
+  await afterGame("quiz");
+  // Leertaste als Buzzer
+  await openGame("fast");
+  await until(async () => (await big.state()).st === "join", 4000, "tastatur: Warteraum Schnellster Finger");
+  await press("Space");
+  await until(async () => (await big.state()).chips === 1, 3000, "tastatur: angemeldet");
+  await press("Enter");
+  await until(async () => (await big.state()).st === "go", 14000, "tastatur: Signal");
+  await press("Space");
+  const res = await until(async () => {
+    const s = await big.state();
+    return s.st === "res" && s;
+  }, 7000, "tastatur: Ergebnis");
+  ok(/(Tastatur|Keyboard) \d+ ms/.test(res.text), "tastatur: die Leertaste zählt als Buzzer: " + res.text);
+  await close();
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -928,7 +982,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay],
 ];
 
 /* ---------------------------------------------------------------- Start */

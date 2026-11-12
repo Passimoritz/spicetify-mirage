@@ -1116,6 +1116,62 @@ window.addEventListener("mirage:game", (e) => {
   }
 });
 
+/* ---- Spielen ohne Handys: die Tastatur am PC ist ein Mitspieler */
+// Zifferntasten wählen die Antwort, die Leertaste ist der Buzzer. Die Tasten gehen als ganz normaler Mitspieler ins
+// Spiel (dieselben Meldungen wie von einem Handy), darum gelten alle Regeln unverändert.
+const KEY_ID = "tastatur-pc";
+const keySend = (o) => window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id: KEY_ID, n: t("gKeyName"), c: 9, ...o } }));
+const keyIn = () => !!G?.players.has(KEY_ID);
+// Beat-Treffer an der Tastatur: dieselbe Wertung wie am Handy (Abstand der Tipps im Verhältnis zum Tempo)
+function keyBeat() {
+  const b = (G.keyBeat ||= { prev: 0, run: 0, score: 0 }), now = performance.now(), period = 60000 / (ctx.bpm?.() || 120), dt = now - b.prev, had = b.prev;
+  if (dt < 110) return;
+  b.prev = now;
+  if (!had || dt > 3000) {
+    b.run = 0;
+    return keySend({ a: "sc", v: b.score });
+  }
+  const err = Math.min(...[0.5, 1, 2].map((m) => Math.abs(dt / (period * m) - 1)));
+  const base = err < 0.1 ? 10 : err < 0.22 ? 5 : 0;
+  b.run = base ? b.run + 1 : 0;
+  b.score += base ? base + Math.min(5, Math.floor(b.run / 4)) : 0;
+  keySend({ a: "sc", v: b.score });
+}
+function onKey(e) {
+  if (!G || e.ctrlKey || e.altKey || e.metaKey || e.target?.matches?.("input, textarea, [contenteditable]")) return;
+  const v = G.view || {}, digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code), space = e.code === "Space", enter = e.code === "Enter" && v.st === "join";
+  if (!digit && !space && !enter) return;
+  // ein Knopf hat den Fokus: Leertaste und Enter drücken ihn, wie überall
+  if (!digit && e.target?.closest?.("button")?.getClientRects().length) return;
+  // im Spiel gehören diese Tasten dem Spiel: sonst wechselt die 1 die Ansicht und die Leertaste hält die Musik an
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (e.repeat) return;
+  if (WHEELS.has(G.k)) return void (space && spin());
+  if (v.st === "join") return void (enter ? beginNow() : space && keySend({ a: "join" }));
+  if (digit) {
+    if (ASK_GAMES.has(G.k) && v.st === "ask" && +digit[1] <= v.o.length) keySend({ a: "ans", r: v.r, v: +digit[1] - 1 });
+    return;
+  }
+  if (G.k === "fast") {
+    if (v.st === "ready") keySend({ a: "early", r: v.r });
+    else if (v.st === "go") keySend({ a: "tap", r: v.r, ms: Date.now() - v.at });
+  } else if (G.k === "stop") {
+    if (v.st === "play") keySend({ a: "tap", r: v.r });
+    else if (v.st === "stop") keySend({ a: "tap", r: v.r, ms: Date.now() - (v.end - 4000) });
+  } else if (G.k === "taps") {
+    if (v.st === "go") keySend({ a: "sc", v: (G.keyTaps = (G.keyTaps || 0) + 1) });
+  } else if (G.k === "beat") {
+    if (v.st === "go") keyBeat();
+  } else if (G.k === "battle") {
+    if (v.st === "go") keySend({ a: "e", v: 3 });
+  } else if (G.k === "bomb") {
+    if (v.st === "go" && G.holder?.id === KEY_ID) keySend({ a: "pass", v: G.seq });
+  }
+}
+// vor den Tasten der Vollbild-Ansicht (keys.js): dieses Modul wird zuerst geladen
+window.addEventListener("keydown", onKey, true);
+
 /* ---- Spielleitung am Handy */
 // Die Befehle kommen geprüft aus live.js: nur das Handy mit dem Link der Spielleitung kann sie unterschreiben.
 window.addEventListener("mirage:host", (e) => {
@@ -1192,6 +1248,10 @@ function render(tickOnly) {
   box.dataset.st = v.st || "";
   box.append(head(v));
   build(v);
+  // die Tastatur spielt mit: welche Taste gerade gilt
+  if (keyIn() && !WHEELS.has(G.k) && v.st !== "join" && v.st !== "end" && v.st !== "load" && v.st !== "wait") {
+    box.append(div("m-g-sub m-g-keyhint", ASK_GAMES.has(G.k) ? (v.st === "ask" ? t("gKeyAsk").replace("{n}", v.o?.length || 4) : "") : t("gKeySpace")));
+  }
   update(v);
 }
 function head(v) {
@@ -1311,7 +1371,7 @@ function buildJoin() {
     e.stopPropagation();
     beginNow();
   };
-  txt.append(go);
+  txt.append(go, div("m-g-sub m-g-keyhint", t("gKeyJoin")));
   wrap.append(txt);
   box.append(wrap);
   need();
@@ -1421,6 +1481,11 @@ function update(v) {
       who.textContent = "";
       all().slice(0, 20).forEach((p) => who.append(chip(p, p.ans ? " is-on" : "")));
     }
+  }
+  // spielt nur die Tastatur, sieht der Raum die gewählte Antwort (neben Handys bliebe das ein Vorsagen)
+  if (v.st === "ask" && keyIn() && all().length === 1) {
+    const pick = G.players.get(KEY_ID).ans?.v;
+    box.querySelectorAll(".m-g-opt").forEach((o, i) => o.classList.toggle("is-pick", i === pick));
   }
   const eq = box.querySelector(".m-g-eq");
   if (eq) eq.classList.toggle("is-still", !!G.paused);
