@@ -1,0 +1,69 @@
+name: Spotify watch
+
+# Every night: unpack the newest Spotify desktop client and check whether Mirage's selectors still match.
+# If something stopped matching, an issue is opened (or updated) so it can be fixed before users notice,
+# often with a rule in remote/fixes.json and without a new release.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download and unpack the newest Spotify client
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq p7zip-full unzip
+          curl -fsSL -o spotify.exe https://download.scdn.co/SpotifyFullSetupX64.exe
+          7z x -y -ospotify spotify.exe > /dev/null
+          SPA=$(find spotify -name xpui.spa | head -1)
+          test -n "$SPA"
+          unzip -q -o "$SPA" -d xpui
+          VERSION=$(7z l spotify.exe | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)
+          echo "SPOTIFY_VERSION=${VERSION:-unknown}" >> "$GITHUB_ENV"
+          ls xpui | wc -l
+
+      - name: Download Spicetify's name list
+        run: curl -fsSL -o css-map.json https://raw.githubusercontent.com/spicetify/cli/main/css-map.json
+
+      - name: Check selectors
+        id: check
+        run: |
+          set +e
+          node tools/check-selectors.js --xpui xpui --cssmap css-map.json | tee report.txt
+          echo "code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the issue
+        if: steps.check.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Spotify watch: selectors stopped matching"
+          {
+            echo "The nightly check found rules that no longer match the newest Spotify client (${SPOTIFY_VERSION})."
+            echo
+            echo '```'
+            head -c 6000 report.txt
+            echo '```'
+            echo
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > body.md
+          NUMBER=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number // empty')
+          if [ -n "$NUMBER" ]; then
+            gh issue comment "$NUMBER" --body-file body.md
+          else
+            gh issue create --title "$TITLE" --body-file body.md
+          fi
+          exit 1

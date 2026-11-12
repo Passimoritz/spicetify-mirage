@@ -3,7 +3,7 @@ import { getLyrics } from "./lyrics.js";
 import { bands } from "./audio.js";
 import { LANG } from "./i18n.js";
 import { palette } from "./color.js";
-import { currentItem, covers, titleOf, artistOf } from "./player.js";
+import { currentItem, covers, titleOf, artistOf, PLR } from "./player.js";
 import { domReport } from "./pages.js";
 import { isFading } from "./controls.js";
 import { party } from "./party.js";
@@ -44,9 +44,9 @@ const bridge = (() => {
       // Antworten der Fernseher-Suche (Chromecast / Google TV) an den Party-Modus weitergeben
       if (m.type === "cast") return void window.dispatchEvent(new CustomEvent("mirage:cast", { detail: m }));
       if (m.type !== "cmd") return;
-      if (m.cmd === "toggle") free() && S.Player.togglePlay();
-      else if (m.cmd === "next") free() && S.Player.next();
-      else if (m.cmd === "prev") free() && S.Player.back();
+      if (m.cmd === "toggle") free() && PLR.togglePlay();
+      else if (m.cmd === "next") free() && PLR.next();
+      else if (m.cmd === "prev") free() && PLR.back();
       else if (m.cmd === "like") S.Player.toggleHeart?.();
       // Immersiv- und Party-Modus öffnet keys.js (dort ist der Immersiv-Modus bekannt)
       else if (m.cmd === "immersive" || m.cmd === "party" || m.cmd === "confetti") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
@@ -126,7 +126,7 @@ const bridge = (() => {
     const uri = currentItem()?.uri || "";
     const lyr = await getLyrics(uri);
     const lines = lyr?.synced ? lyr.lines : null;
-    const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
+    const i = lines ? seek(lines, PLR.getProgress() || 0, "t") : -1;
     const text = i >= 0 && lines[i].text !== "♪" ? lines[i].text : "";
     const key = uri + "|" + i;
     if (key === lastLine) return;
@@ -134,8 +134,8 @@ const bridge = (() => {
     send({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("♪", "") || "" });
   }
   function pushLevel() {
-    if (!S.Player.isPlaying()) return;
-    const b = bands((S.Player.getProgress?.() || 0) / 1000);
+    if (!PLR.isPlaying()) return;
+    const b = bands((PLR.getProgress() || 0) / 1000);
     if (b) send({ type: "level", bands: b });
   }
   function sendTrack(changed) {
@@ -152,9 +152,9 @@ const bridge = (() => {
         album: item.album?.name || item.metadata?.album_title || "",
         cover: c.big || c.small,
         colors: palette().map((x) => `rgb(${x.join(",")})`),
-        duration: S.Player.getDuration?.() || 0,
-        progress: S.Player.getProgress?.() || 0,
-        playing: !!S.Player.isPlaying(),
+        duration: PLR.getDuration() || 0,
+        progress: PLR.getProgress() || 0,
+        playing: !!PLR.isPlaying(),
         lang: LANG,
       })
     );

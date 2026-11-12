@@ -49,4 +49,50 @@ function toggleMute() {
   } else writeVolume(unmuteTo || 0.5);
 }
 
-export { currentItem, toHttp, covers, titleOf, artistOf, readVolume, writeVolume, toggleMute };
+/* ---- Steuerung */
+// Eine dünne eigene Schicht über Spicetifys Helfern: fehlt einer nach einem Spotify-Update oder wirft er,
+// geht der Aufruf direkt an Spotifys PlayerAPI. So hängt Mirage nicht an einem einzelnen Weg.
+const api = () => S.Platform?.PlayerAPI;
+const state = () => api()?._state || S.Player.data || null;
+function via(name, args, fallback) {
+  try {
+    if (typeof S.Player[name] === "function") return S.Player[name](...args);
+  } catch {}
+  try {
+    return fallback();
+  } catch {}
+}
+const PLR = {
+  // Spicetify behandelt Kommazahlen zwischen 0 und 1 als Anteil des Songs: darum immer ganze Millisekunden
+  seek: (ms) => {
+    const v = Math.max(0, Math.round(Number(ms) || 0));
+    return via("seek", [v], () => api()?.seekTo?.(v));
+  },
+  next: () => via("next", [], () => api()?.skipToNext?.()),
+  back: () => via("back", [], () => api()?.skipToPrevious?.()),
+  play: () => via("play", [], () => api()?.resume?.()),
+  pause: () => via("pause", [], () => api()?.pause?.()),
+  togglePlay: () => via("togglePlay", [], () => (PLR.isPlaying() ? api()?.pause?.() : api()?.resume?.())),
+  isPlaying: () => {
+    const v = via("isPlaying", [], () => undefined);
+    if (typeof v === "boolean") return v;
+    const st = state();
+    return !!st && !(st.isPaused ?? st.is_paused);
+  },
+  getProgress: () => {
+    const v = via("getProgress", [], () => undefined);
+    if (typeof v === "number" && v >= 0) return v;
+    const st = state();
+    if (!st) return 0;
+    const base = Number(st.positionAsOfTimestamp) || 0;
+    return st.isPaused ? base : base + (Date.now() - (Number(st.timestamp) || Date.now()));
+  },
+  getDuration: () => {
+    const v = via("getDuration", [], () => undefined);
+    if (typeof v === "number" && v > 0) return v;
+    const st = state();
+    return Number(st?.duration ?? st?.item?.duration?.milliseconds ?? currentItem()?.metadata?.duration) || 0;
+  },
+};
+
+export { currentItem, toHttp, covers, titleOf, artistOf, readVolume, writeVolume, toggleMute, PLR };

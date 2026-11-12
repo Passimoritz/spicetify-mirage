@@ -15,6 +15,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 - **Repairs without a new release:** Mirage loads a small file from its repository (`remote/fixes.json`) and applies matching fixes after a Spotify update: new selectors and plain CSS, never code. It can be switched off in the settings.
 - **One broken part no longer stops the rest:** if a part of Mirage fails to start, everything else keeps running, a note names the part, and it is listed in the diagnostics.
 - The phone page reloads itself once when the theme speaks a newer message format, and says so clearly if that does not help.
+- **Overlay app repairs and updates the theme:** after a Spotify update it notices that Mirage is gone (Windows) and puts it back with one click, and the tray menu offers a new theme version when there is one. Both only on a click, because Spotify restarts once.
+- **Nightly Spotify check:** a workflow unpacks the newest Spotify client every night and opens an issue when a rule of the theme stops matching. `npm run check:selectors` does the same for the installed Spotify.
+
+### Changed
+
+- Play, pause, skip and seek go through one small layer of Mirage's own with a direct fallback to Spotify, instead of relying on single Spicetify helpers.
 
 ### Tests
 

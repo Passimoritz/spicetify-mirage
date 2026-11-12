@@ -3,6 +3,7 @@ import { immersive, MODES } from "./immersive.js";
 import { tapSync } from "./clock.js";
 import { t } from "./i18n.js";
 import { free } from "./lock.js";
+import { PLR } from "./player.js";
 
 // Befehle von außen (Stream Deck über die Overlay-App)
 window.addEventListener("mirage:cmd", (e) => {
@@ -22,7 +23,7 @@ window.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input:not([type=range]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable]")) return;
     const keys = {
       Escape: () => (document.fullscreenElement ? document.exitFullscreen() : immersive.close()),
-      Space: () => free() && S.Player.togglePlay(),
+      Space: () => free() && PLR.togglePlay(),
       ArrowLeft: () => free() && immersive.seekBy(-5000),
       ArrowRight: () => free() && immersive.seekBy(5000),
       ArrowUp: () => immersive.volBy(0.05),
@@ -33,8 +34,8 @@ window.addEventListener("keydown", (e) => {
       KeyF: () => immersive.toggleFull(),
       F11: () => immersive.toggleFull(),
       KeyQ: () => immersive.toggleQueue(),
-      KeyN: () => free() && S.Player.next(),
-      KeyP: () => free() && S.Player.back(),
+      KeyN: () => free() && PLR.next(),
+      KeyP: () => free() && PLR.back(),
       KeyE: () => immersive.toggleTiming(),
       KeyC: () => immersive.confetti(),
       // im Takt antippen: misst den Versatz zwischen Bild und Ton ein

@@ -9574,13 +9574,57 @@
       writeVolume(0);
     } else writeVolume(unmuteTo || 0.5);
   }
-  var toHttp, unmuteTo;
+  function via(name, args, fallback2) {
+    try {
+      if (typeof S.Player[name] === "function") return S.Player[name](...args);
+    } catch {
+    }
+    try {
+      return fallback2();
+    } catch {
+    }
+  }
+  var toHttp, unmuteTo, api, state, PLR;
   var init_player = __esm({
     "src/player.js"() {
       init_selectors();
       init_core();
       toHttp = (u) => u && u.startsWith("spotify:image:") ? "https://i.scdn.co/image/" + u.slice(14) : u || "";
       unmuteTo = 0;
+      api = () => S.Platform?.PlayerAPI;
+      state = () => api()?._state || S.Player.data || null;
+      PLR = {
+        // Spicetify behandelt Kommazahlen zwischen 0 und 1 als Anteil des Songs: darum immer ganze Millisekunden
+        seek: (ms) => {
+          const v = Math.max(0, Math.round(Number(ms) || 0));
+          return via("seek", [v], () => api()?.seekTo?.(v));
+        },
+        next: () => via("next", [], () => api()?.skipToNext?.()),
+        back: () => via("back", [], () => api()?.skipToPrevious?.()),
+        play: () => via("play", [], () => api()?.resume?.()),
+        pause: () => via("pause", [], () => api()?.pause?.()),
+        togglePlay: () => via("togglePlay", [], () => PLR.isPlaying() ? api()?.pause?.() : api()?.resume?.()),
+        isPlaying: () => {
+          const v = via("isPlaying", [], () => void 0);
+          if (typeof v === "boolean") return v;
+          const st = state();
+          return !!st && !(st.isPaused ?? st.is_paused);
+        },
+        getProgress: () => {
+          const v = via("getProgress", [], () => void 0);
+          if (typeof v === "number" && v >= 0) return v;
+          const st = state();
+          if (!st) return 0;
+          const base = Number(st.positionAsOfTimestamp) || 0;
+          return st.isPaused ? base : base + (Date.now() - (Number(st.timestamp) || Date.now()));
+        },
+        getDuration: () => {
+          const v = via("getDuration", [], () => void 0);
+          if (typeof v === "number" && v > 0) return v;
+          const st = state();
+          return Number(st?.duration ?? st?.item?.duration?.milliseconds ?? currentItem()?.metadata?.duration) || 0;
+        }
+      };
     }
   });
 
@@ -9937,7 +9981,7 @@
   async function estimateAnalysis(uri) {
     const id = uri.split(":")[2];
     const item = currentItem()?.uri === uri ? currentItem() : null;
-    const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || S.Player.getDuration?.() || 0) / 1e3 || 210;
+    const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || PLR.getDuration() || 0) / 1e3 || 210;
     const [feat, lyr] = await Promise.all([spotifyFeatures(id), within2(getLyrics(uri), 9e3)]);
     const dz = feat ? null : await deezerBpm(item);
     const hint = feat?.bpm || dz?.bpm || 0;
@@ -10100,6 +10144,7 @@
       init_core();
       init_config();
       init_estimate();
+      init_player();
       audio = { uri: "", data: null };
       audioCache = lru(50);
       announce = () => document.dispatchEvent(new Event("mirage:audio"));
@@ -10114,7 +10159,7 @@
           const since = sec - bs[i].t;
           return Math.pow(clamp(1 - since / 0.32, 0, 1), 2) * clamp(0.4 + bs[i].c, 0, 1);
         }
-        const now = () => (S.Player.getProgress?.() || 0) / 1e3;
+        const now = () => (PLR.getProgress() || 0) / 1e3;
         function sync() {
           on = cfg.beat && !cfg.calm && !!audio.data && root.classList.contains("mirage-playing");
           root.classList.toggle("mirage-beat", on);
@@ -10324,7 +10369,7 @@
     const all2 = loadStats();
     const d = all2[today()] ||= { n: 0, ms: 0, artists: {}, hues: Array(12).fill(0), schemes: {} };
     d.n++;
-    d.ms += Number(item.duration?.milliseconds || item.metadata?.duration || S.Player.getDuration?.() || 0);
+    d.ms += Number(item.duration?.milliseconds || item.metadata?.duration || PLR.getDuration() || 0);
     const artist = (artistOf(item) || "").split(",")[0].trim();
     if (artist) d.artists[artist] = (d.artists[artist] || 0) + 1;
     const song = titleOf(item) + (artist ? " \xB7 " + artist : "");
@@ -10737,7 +10782,7 @@
     }
   }
   function stopSleep() {
-    S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
+    PLR.pause();
     clearInterval(fadeTick);
     setTimeout(restoreVolume, 900);
   }
@@ -10747,10 +10792,10 @@
       left = sleepAt - Date.now();
       span = Math.min(12e4, sleepTotal * 0.3);
     } else if (sleepEndOfTrack) {
-      left = (S.Player.getDuration?.() || 0) - (S.Player.getProgress?.() || 0);
+      left = (PLR.getDuration() || 0) - (PLR.getProgress() || 0);
       span = 2e4;
     } else return;
-    if (!S.Player.isPlaying() || left > span || left <= 0) return;
+    if (!PLR.isPlaying() || left > span || left <= 0) return;
     if (fadeFrom == null) fadeFrom = S.Player.getVolume?.() ?? 1;
     try {
       S.Player.setVolume(Math.max(0.02, fadeFrom * (left / span)));
@@ -10774,7 +10819,7 @@
     fadeTick = setInterval(fadeStep, 500);
     sleepTimer = setTimeout(() => {
       sleepAt = 0;
-      if (S.Player.isPlaying()) stopSleep();
+      if (PLR.isPlaying()) stopSleep();
       else {
         clearInterval(fadeTick);
         restoreVolume();
@@ -10822,12 +10867,13 @@
       return false;
     }
   }
-  var api, playerState, MODE, contextUri, nativeButton, lastMode, connect, canConnect, sleepTimer, sleepAt, sleepEndOfTrack, sleepTotal, fadeTick, fadeFrom, isFading, sleepState, albumOf, artistUriOf, canAddTo, isSmartPick;
+  var api2, playerState, MODE, contextUri, nativeButton, lastMode, connect, canConnect, sleepTimer, sleepAt, sleepEndOfTrack, sleepTotal, fadeTick, fadeFrom, isFading, sleepState, albumOf, artistUriOf, canAddTo, isSmartPick;
   var init_controls = __esm({
     "src/controls.js"() {
       init_core();
-      api = () => S.Platform?.PlayerAPI;
-      playerState = () => api()?._state || S.Player?.origin?._state || {};
+      init_player();
+      api2 = () => S.Platform?.PlayerAPI;
+      playerState = () => api2()?._state || S.Player?.origin?._state || {};
       MODE = { OFF: 0, ON: 1, SMART: 2 };
       contextUri = () => S.Player.data?.context?.uri || S.Player.data?.context_uri || playerState().context?.uri || "";
       nativeButton = () => document.querySelector('[data-testid="control-button-shuffle"]');
@@ -13527,9 +13573,9 @@
     return (Number(cfg.syncOffset) || 0) + (Number.isFinite(per) ? per : 0);
   }
   function songPos(now = performance.now()) {
-    const raw = S.Player.getProgress?.() || 0;
+    const raw = PLR.getProgress() || 0;
     const uri = currentItem()?.uri || "";
-    if (!S.Player.isPlaying()) {
+    if (!PLR.isPlaying()) {
       Object.assign(c, { pos: raw, at: now, uri });
       return raw + offsetFor(uri);
     }
@@ -15876,7 +15922,7 @@
         buf = buf.slice(i + len);
         if (type === 2 && body[1] === 0) {
           ping = setInterval(() => ws.readyState === 1 && ws.send(new Uint8Array([192, 0])), 3e4);
-          onReady?.(api2);
+          onReady?.(api3);
         } else if (type === 3) {
           const tl = body[0] << 8 | body[1];
           onMessage?.(body.slice(2 + tl), new TextDecoder().decode(body.slice(2, 2 + tl)));
@@ -15885,16 +15931,16 @@
     };
     ws.onclose = ws.onerror = () => {
       clearInterval(ping);
-      if (api2.closed) return;
-      api2.closed = true;
+      if (api3.closed) return;
+      api3.closed = true;
       onClose?.();
     };
-    const api2 = {
+    const api3 = {
       closed: false,
       publish: (topic, payload, retain) => ws.readyState === 1 && ws.send(mqPkt(48 | (retain ? 1 : 0), [...mqStr(topic), ...payload])),
       subscribe: (topic) => ws.readyState === 1 && ws.send(mqPkt(130, [0, 1, ...mqStr(topic), 0])),
       close: () => {
-        api2.closed = true;
+        api3.closed = true;
         clearInterval(ping);
         try {
           ws.send(new Uint8Array([224, 0]));
@@ -15903,7 +15949,7 @@
         }
       }
     };
-    return api2;
+    return api3;
   }
   function flushClears(c2) {
     const list = pending();
@@ -15916,9 +15962,9 @@
     setPending([...pending().filter((x) => x !== old.topic), old.topic]);
     if (client && status === "on") return flushClears(client);
     const c2 = mqttOpen(BROKERS[brokerIx % BROKERS.length], {
-      onReady: (api2) => {
-        flushClears(api2);
-        setTimeout(() => api2.close(), 400);
+      onReady: (api3) => {
+        flushClears(api3);
+        setTimeout(() => api3.close(), 400);
       }
     });
     setTimeout(() => c2.closed || c2.close(), 1e4);
@@ -15941,10 +15987,10 @@
     if (client && !client.closed) return;
     setStatus("connecting");
     client = mqttOpen(BROKERS[brokerIx % BROKERS.length], {
-      onReady: (api2) => {
+      onReady: (api3) => {
         setStatus("on");
-        flushClears(api2);
-        if (ses) api2.subscribe(ses.topic + "/in");
+        flushClears(api3);
+        if (ses) api3.subscribe(ses.topic + "/in");
       },
       onMessage: (m, topic) => topic === ses?.topic + "/in" && inbound(m),
       onClose: () => {
@@ -15954,12 +16000,12 @@
       }
     });
   }
-  async function send(state, retain) {
+  async function send(state2, retain) {
     if (!client || status !== "on" || !ses || sending) return;
     sending = true;
     try {
       const iv = crypto.getRandomValues(new Uint8Array(12));
-      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ses.key, te.encode(JSON.stringify(state))));
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ses.key, te.encode(JSON.stringify(state2))));
       const out = new Uint8Array(12 + ct.length);
       out.set(iv);
       out.set(ct, 12);
@@ -20874,9 +20920,9 @@
             }
             if (m.type === "cast") return void window.dispatchEvent(new CustomEvent("mirage:cast", { detail: m }));
             if (m.type !== "cmd") return;
-            if (m.cmd === "toggle") free() && S.Player.togglePlay();
-            else if (m.cmd === "next") free() && S.Player.next();
-            else if (m.cmd === "prev") free() && S.Player.back();
+            if (m.cmd === "toggle") free() && PLR.togglePlay();
+            else if (m.cmd === "next") free() && PLR.next();
+            else if (m.cmd === "prev") free() && PLR.back();
             else if (m.cmd === "like") S.Player.toggleHeart?.();
             else if (m.cmd === "immersive" || m.cmd === "party" || m.cmd === "confetti") window.dispatchEvent(new CustomEvent("mirage:cmd", { detail: m.cmd }));
             else if (m.cmd === "hello") sendTrack();
@@ -20951,7 +20997,7 @@
           const uri = currentItem()?.uri || "";
           const lyr = await getLyrics(uri);
           const lines = lyr?.synced ? lyr.lines : null;
-          const i = lines ? seek(lines, S.Player.getProgress?.() || 0, "t") : -1;
+          const i = lines ? seek(lines, PLR.getProgress() || 0, "t") : -1;
           const text = i >= 0 && lines[i].text !== "\u266A" ? lines[i].text : "";
           const key = uri + "|" + i;
           if (key === lastLine) return;
@@ -20959,8 +21005,8 @@
           send2({ type: "lyric", uri, index: i, text, next: lines?.[i + 1]?.text?.replace("\u266A", "") || "" });
         }
         function pushLevel() {
-          if (!S.Player.isPlaying()) return;
-          const b = bands((S.Player.getProgress?.() || 0) / 1e3);
+          if (!PLR.isPlaying()) return;
+          const b = bands((PLR.getProgress() || 0) / 1e3);
           if (b) send2({ type: "level", bands: b });
         }
         function sendTrack(changed) {
@@ -20977,9 +21023,9 @@
               album: item.album?.name || item.metadata?.album_title || "",
               cover: c2.big || c2.small,
               colors: palette().map((x) => `rgb(${x.join(",")})`),
-              duration: S.Player.getDuration?.() || 0,
-              progress: S.Player.getProgress?.() || 0,
-              playing: !!S.Player.isPlaying(),
+              duration: PLR.getDuration() || 0,
+              progress: PLR.getProgress() || 0,
+              playing: !!PLR.isPlaying(),
               lang: LANG
             })
           );
@@ -21470,7 +21516,7 @@
     if (st === "queued") moved.set(curUri, "played");
     else if (st === "played") {
       moved.delete(curUri);
-      if (cfg.djEnergy) setTimeout(() => !lock.on && S.Player.next(), 400);
+      if (cfg.djEnergy) setTimeout(() => !lock.on && PLR.next(), 400);
       return null;
     }
     if (!cfg.djEnergy) return null;
@@ -21500,6 +21546,7 @@
       init_config();
       init_library();
       init_lock();
+      init_player();
       STORE2 = "mirage:dj";
       CAP2 = 3e3;
       DAY2 = () => Math.floor(Date.now() / 864e5);
@@ -21695,7 +21742,7 @@
     ticker = setInterval(() => render(true), 250);
     if (WHEELS.has(kind)) return wheelIdle();
     if (kind === "alarm" || kind === "sing") {
-      S.Player.play?.();
+      PLR.play();
       if (kind === "alarm") {
         G.r = 1;
         alarmGo(0);
@@ -21726,7 +21773,7 @@
   function stop3(silent) {
     if (!G) return;
     clearTimers();
-    if (G.k === "stop") S.Player.play?.();
+    if (G.k === "stop") PLR.play();
     resume();
     muteOff();
     setLock(false);
@@ -21808,7 +21855,7 @@
     }
   }
   function hookPos() {
-    const dur = S.Player.getDuration?.() || 0;
+    const dur = PLR.getDuration() || 0;
     if (dur < 6e4) return 0;
     const secs2 = audio.uri === nowUri() ? (audio.data?.sections || []).filter((x) => x.t >= 20 && x.t * 1e3 < dur - 3e4) : [];
     if (secs2.length) {
@@ -21834,8 +21881,8 @@
       later(30, () => whenSilent(go2));
     };
     whenSilent(() => {
-      S.Player.next?.();
-      S.Player.play?.();
+      PLR.next();
+      PLR.play();
       const t0 = Date.now();
       let tAudio = 0;
       const landed = () => {
@@ -21856,11 +21903,11 @@
         const aim = () => {
           tries2++;
           t2 = Date.now();
-          S.Player.seek?.(at3);
+          PLR.seek(at3);
           settled();
         };
         const settled = () => {
-          const p = S.Player.getProgress?.() ?? 0;
+          const p = PLR.getProgress() ?? 0;
           if (Math.abs(p - at3) < 1200 && Date.now() - t2 > 150) return later(300, () => ready(nowItem()));
           if (Date.now() - t2 > 700) return tries2 < 4 ? aim() : ready(nowItem());
           later(50, settled);
@@ -21877,7 +21924,7 @@
     if (!clip || clip >= askMs()) return;
     G.clipT = setTimeout(() => {
       if (!G) return;
-      S.Player.pause?.();
+      PLR.pause();
       G.paused = true;
       render();
     }, clip);
@@ -21885,15 +21932,15 @@
   function replay() {
     if (!G || !SONG_FIELD[G.k] || G.view?.st !== "ask" || G.switching) return;
     sfx.pop();
-    S.Player.seek?.(G.clipAt || 0);
-    S.Player.play?.();
+    PLR.seek(G.clipAt || 0);
+    PLR.play();
     runClip();
     render();
   }
   function resume() {
     if (!G?.paused) return;
     G.paused = false;
-    S.Player.play?.();
+    PLR.play();
   }
   function guard2() {
     if (!G || G.switching) return;
@@ -21910,16 +21957,16 @@
       G.r--;
       return G.k === "tf" ? tfRound() : lineRound();
     }
-    const playing = S.Player.isPlaying?.();
+    const playing = PLR.isPlaying();
     const wantPlay = SONG_FIELD[G.k] && v.st === "ask" && !G.paused || LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf" || G.k === "beat" && v.st === "go" || G.k === "alarm" || G.k === "sing" || G.k === "stop" && v.st === "play";
     const wantStop = SONG_FIELD[G.k] && v.st === "ask" && G.paused || G.k === "stop" && v.st === "stop";
     if (now - (G.kick || 0) > 1e3) {
       if (wantPlay && !playing) {
         G.kick = now;
-        S.Player.play?.();
+        PLR.play();
       } else if (wantStop && playing) {
         G.kick = now;
-        S.Player.pause?.();
+        PLR.pause();
       }
     }
   }
@@ -21937,7 +21984,7 @@
       songAsk(songOf(item));
     };
     if (useCurrent) {
-      G.clipAt = S.Player.getProgress?.() || 0;
+      G.clipAt = PLR.getProgress() || 0;
       return go2(nowItem());
     }
     jumpNext(G.k === "intro", go2);
@@ -21991,10 +22038,10 @@
     if (!pick) {
       const far = lines.find((l, k) => l.t >= pos + ahead && usable(l, k));
       if (far) {
-        S.Player.seek?.(far.t - 1e4);
+        PLR.seek(far.t - 1e4);
         return retry(1200);
       }
-      if (tries2 === 1 || tries2 === 4) S.Player.next?.();
+      if (tries2 === 1 || tries2 === 4) PLR.next();
       return retry(3e3);
     }
     let answer, wrong, line;
@@ -22037,7 +22084,7 @@
         notify2(t("gNeedLyrics"), true);
         return G.r > 1 ? finish() : stop3();
       }
-      if (tries2 === 1) S.Player.next?.();
+      if (tries2 === 1) PLR.next();
       show({ st: "wait", r: G.r, of: rounds() });
       return after(3e3, () => tfAsk(tries2 + 1));
     }
@@ -22054,8 +22101,8 @@
     ask({ o, line: shown }, Math.min(askMs(), 15e3), () => {
       const d = award();
       hide("");
-      S.Player.seek?.(Math.max(lines[i].t - 400, 2));
-      S.Player.play?.();
+      PLR.seek(Math.max(lines[i].t - 400, 2));
+      PLR.play();
       show({ st: "rev", r: G.r, of: rounds(), o, d, right: G.right, line: real, ...sips() });
       after(breakMs(), tfRound);
     });
@@ -22091,7 +22138,7 @@
         notify2(t("gNeedLyrics"), true);
         return stop3();
       }
-      if (tries2 === 1) S.Player.next?.();
+      if (tries2 === 1) PLR.next();
       show({ st: "wait" });
       return after(3e3, () => alarmGo(tries2 + 1));
     }
@@ -22129,15 +22176,15 @@
     G.r++;
     const left = alive();
     if (left.length <= 1 || G.r > 12) {
-      S.Player.play?.();
+      PLR.play();
       left.forEach((p) => p.p += 100);
       return finish();
     }
     for (const p of left) p.ans = null;
-    S.Player.play?.();
+    PLR.play();
     show({ st: "play", r: G.r, left: left.length });
     after(8e3 + Math.random() * 12e3, () => {
-      S.Player.pause?.();
+      PLR.pause();
       show({ st: "stop", r: G.r, left: left.length, end: Date.now() + 4e3 });
       after(4e3, () => {
         const now = alive(), none = now.filter((p) => !p.ans);
@@ -22198,7 +22245,7 @@
     });
   }
   function beatGo() {
-    S.Player.play?.();
+    PLR.play();
     const end = Date.now() + durMs2();
     const tick = () => show({ st: "go", end, dur: durMs2(), bpm: Math.round(ctx2.bpm?.() || 120) });
     tick();
@@ -22276,13 +22323,13 @@
         notify2(t("gNeedLyrics"), true);
         return stop3();
       }
-      if (tries2 === 1) S.Player.next?.();
+      if (tries2 === 1) PLR.next();
       show({ st: "wait", r: G.r, of: rounds() });
       return after(3e3, () => singGo(tries2 + 1));
     }
     for (let k = at3; k < at3 + 3; k++) G.used.add(k);
     const start3 = lines[at3].t, stopAt = lines[at3 + 3].t;
-    if (start3 - pos > 16e3 || start3 < pos + 3e3) S.Player.seek?.(Math.max(start3 - 9e3, 2));
+    if (start3 - pos > 16e3 || start3 < pos + 3e3) PLR.seek(Math.max(start3 - 9e3, 2));
     show({ st: "ready", r: G.r, of: rounds(), line: lines[at3].text });
     G.lines = lines;
     G.tick = setInterval(() => {
@@ -22341,13 +22388,13 @@
   function wheelEffect(k) {
     if (k === "wh1") ctx2.confetti?.();
     else if (k === "wh2") ctx2.handsUp?.();
-    else if (k === "wh3") S.Player.next?.();
+    else if (k === "wh3") PLR.next();
     else if (k === "wh4") ctx2.venue?.();
     else if (k === "wh5") ctx2.flashStorm?.();
     else if (k === "wh6") {
       const w = live.wishes().find((x) => x.st === "open");
       if (w) live.accept(w.i);
-      else S.Player.next?.();
+      else PLR.next();
     }
   }
   function render(tickOnly) {
@@ -23164,18 +23211,18 @@
           };
           q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
           q.full.onclick = toggleFull;
-          el3.querySelector(".m-im-prev").onclick = () => free() && S.Player.back();
-          el3.querySelector(".m-im-next").onclick = () => free() && S.Player.next();
-          q.play.onclick = () => free() && S.Player.togglePlay();
+          el3.querySelector(".m-im-prev").onclick = () => free() && PLR.back();
+          el3.querySelector(".m-im-next").onclick = () => free() && PLR.next();
+          q.play.onclick = () => free() && PLR.togglePlay();
           el3.querySelectorAll(".m-im-tabs button").forEach((b) => b.onclick = () => setMode(b.dataset.mode, true));
           el3.querySelector(".m-im-bar").onclick = (e) => {
             if (!free()) return;
             const r = e.currentTarget.getBoundingClientRect();
-            S.Player.seek(clamp((e.clientX - r.left) / r.width, 0, 1));
+            PLR.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * (PLR.getDuration() || 0));
           };
           q.inner.addEventListener("click", (e) => {
             const line = e.target.closest(".m-im-line");
-            if (line && lyr?.synced && free()) S.Player.seek(Math.max(Number(line.dataset.t), 2));
+            if (line && lyr?.synced && free()) PLR.seek(Math.max(Number(line.dataset.t), 2));
           });
           el3.addEventListener("pointermove", (e) => {
             if (cfg.calm) return;
@@ -24012,7 +24059,7 @@
           const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
           const R = r.width / 2 * dpr + 16 * dpr;
           const sec = pos / 1e3;
-          const playing = S.Player.isPlaying();
+          const playing = PLR.isPlaying();
           let b = 0, havePitch = false, loud = 0.5;
           const mode = el3.dataset.mode;
           const V2 = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
@@ -24433,7 +24480,7 @@
             bpm: px.tempo || party.info.bpm || 120,
             stage: px.fx && cfg.partyLasers && px.level >= 2,
             crowd: cfg.partyCrowd && px.fx,
-            paused: !S.Player.isPlaying(),
+            paused: !PLR.isPlaying(),
             venue: moments2.venue || (cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : ""),
             fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
             drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
@@ -24837,7 +24884,7 @@
           lastDraw = now;
           if (sizeKey !== sizeKeyNow()) sizeCanvas();
           const pos = songPos(now);
-          const dur = S.Player.getDuration?.() || 0;
+          const dur = PLR.getDuration() || 0;
           const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
           if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
           if (now - lastText > 250) {
@@ -24870,7 +24917,7 @@
                   level: cfg.partyLevel ?? 2,
                   beat: g.px.accent || 0,
                   beatIdx: g.px.beatIdx,
-                  playing: S.Player.isPlaying()
+                  playing: PLR.isPlaying()
                 });
               }
             } catch (e) {
@@ -25093,7 +25140,7 @@
           q.smart.hidden = !isSmartPick(item);
           updateLyrState();
           if (side === "playlists") showSide("playlists");
-          q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
+          q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play;
           lastBeatIdx = -1;
           moments2.stormDone = false;
           moments2.venue = "";
@@ -25676,7 +25723,7 @@
           if (!document.hidden || !el3 || !isOpen() || el3.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
           const now = performance.now(), dt = hiddenAt ? Math.min(1, (now - hiddenAt) / 1e3) : 0.25;
           hiddenAt = now;
-          const pos = songPos(now), px = party.step(pos / 1e3, dt, S.Player.isPlaying());
+          const pos = songPos(now), px = party.step(pos / 1e3, dt, PLR.isPlaying());
           const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
           const lineAt = (i) => lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "\u266A" && lyr.lines[i]?.text || "";
           live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
@@ -25722,8 +25769,8 @@
           if (document.fullscreenElement) document.exitFullscreen?.();
         }
         const isOpen = () => !!el3?.classList.contains("is-on");
-        const playState = () => el3 && (q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play);
-        const seekBy = (ms) => S.Player.seek(clamp((S.Player.getProgress?.() || 0) + ms, 2, S.Player.getDuration?.() || 2));
+        const playState = () => el3 && (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play);
+        const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
         const volBy = (d) => {
           S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1));
           setTimeout(syncState, 80);
@@ -26260,7 +26307,7 @@
     }, { timeout: 4e3 });
   }
   function onPlayPause() {
-    root.classList.toggle("mirage-playing", !!S.Player.isPlaying());
+    root.classList.toggle("mirage-playing", !!PLR.isPlaying());
     immersive.playState();
     dust.wake();
     beat.sync();
@@ -27446,6 +27493,7 @@
       init_clock();
       init_i18n();
       init_lock();
+      init_player();
       window.addEventListener("mirage:cmd", (e) => {
         if (e.detail === "immersive") immersive.toggle();
         else if (e.detail === "confetti") immersive.confetti();
@@ -27462,7 +27510,7 @@
           if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input:not([type=range]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable]")) return;
           const keys = {
             Escape: () => document.fullscreenElement ? document.exitFullscreen() : immersive.close(),
-            Space: () => free() && S.Player.togglePlay(),
+            Space: () => free() && PLR.togglePlay(),
             ArrowLeft: () => free() && immersive.seekBy(-5e3),
             ArrowRight: () => free() && immersive.seekBy(5e3),
             ArrowUp: () => immersive.volBy(0.05),
@@ -27473,8 +27521,8 @@
             KeyF: () => immersive.toggleFull(),
             F11: () => immersive.toggleFull(),
             KeyQ: () => immersive.toggleQueue(),
-            KeyN: () => free() && S.Player.next(),
-            KeyP: () => free() && S.Player.back(),
+            KeyN: () => free() && PLR.next(),
+            KeyP: () => free() && PLR.back(),
             KeyE: () => immersive.toggleTiming(),
             KeyC: () => immersive.confetti(),
             // im Takt antippen: misst den Versatz zwischen Bild und Ton ein

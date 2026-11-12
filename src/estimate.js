@@ -1,7 +1,7 @@
 import { S, clamp } from "./core.js";
 import { cfg } from "./config.js";
 import { getLyrics } from "./lyrics.js";
-import { currentItem, titleOf } from "./player.js";
+import { currentItem, titleOf, PLR } from "./player.js";
 
 /* ---------------------------------------------------------------- Ersatz-Taktanalyse */
 // Für viele (gerade neuere) Songs liefert Spotify keine Taktanalyse mehr. Ohne sie hätte der Visualizer
@@ -96,7 +96,7 @@ function tempoFromLines(on, hint) {
 async function estimateAnalysis(uri) {
   const id = uri.split(":")[2];
   const item = currentItem()?.uri === uri ? currentItem() : null;
-  const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || S.Player.getDuration?.() || 0) / 1000 || 210;
+  const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || PLR.getDuration() || 0) / 1000 || 210;
   const [feat, lyr] = await Promise.all([spotifyFeatures(id), within(getLyrics(uri), 9000)]);
   const dz = feat ? null : await deezerBpm(item);
   const hint = feat?.bpm || dz?.bpm || 0;

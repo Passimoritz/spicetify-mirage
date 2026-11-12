@@ -11,6 +11,7 @@ import { S } from "./core.js";
 import { cfg } from "./config.js";
 import { camelot } from "./library.js";
 import { lock } from "./lock.js";
+import { PLR } from "./player.js";
 
 const STORE = "mirage:dj", CAP = 3000, DAY = () => Math.floor(Date.now() / 864e5);
 const cache = new Map();
@@ -117,7 +118,7 @@ async function onSong(curUri) {
   if (st === "queued") moved.set(curUri, "played");
   else if (st === "played") {
     moved.delete(curUri);
-    if (cfg.djEnergy) setTimeout(() => !lock.on && S.Player.next(), 400);
+    if (cfg.djEnergy) setTimeout(() => !lock.on && PLR.next(), 400);
     return null;
   }
   if (!cfg.djEnergy) return null;

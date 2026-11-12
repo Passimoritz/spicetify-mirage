@@ -1,4 +1,5 @@
 import { S } from "./core.js";
+import { PLR } from "./player.js";
 
 /* ---------------------------------------------------------------- Wiedergabe-Funktionen */
 // Alles, was Spotifys eigene Leiste unten kann, auch im Immersiv-Fenster. Spotify verschiebt
@@ -99,7 +100,7 @@ function restoreVolume() {
   try { S.Player.setVolume(v); } catch {}
 }
 function stopSleep() {
-  S.Player.pause ? S.Player.pause() : S.Player.togglePlay();
+  PLR.pause();
   clearInterval(fadeTick);
   // erst nach dem Anhalten zurückdrehen, sonst springt der Ton kurz hoch
   setTimeout(restoreVolume, 900);
@@ -110,10 +111,10 @@ function fadeStep() {
     left = sleepAt - Date.now();
     span = Math.min(120000, sleepTotal * 0.3);
   } else if (sleepEndOfTrack) {
-    left = (S.Player.getDuration?.() || 0) - (S.Player.getProgress?.() || 0);
+    left = (PLR.getDuration() || 0) - (PLR.getProgress() || 0);
     span = 20000;
   } else return;
-  if (!S.Player.isPlaying() || left > span || left <= 0) return;
+  if (!PLR.isPlaying() || left > span || left <= 0) return;
   if (fadeFrom == null) fadeFrom = S.Player.getVolume?.() ?? 1;
   try { S.Player.setVolume(Math.max(0.02, fadeFrom * (left / span))); } catch {}
 }
@@ -134,7 +135,7 @@ function setSleep(minutes) {
   fadeTick = setInterval(fadeStep, 500);
   sleepTimer = setTimeout(() => {
     sleepAt = 0;
-    if (S.Player.isPlaying()) stopSleep();
+    if (PLR.isPlaying()) stopSleep();
     else {
       clearInterval(fadeTick);
       restoreVolume();

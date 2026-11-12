@@ -13,7 +13,7 @@ import { live } from "./live.js";
 import { audio } from "./audio.js";
 import { lock } from "./lock.js";
 import { sfx } from "./sfx.js";
-import { readVolume, writeVolume } from "./player.js";
+import { readVolume, writeVolume, PLR } from "./player.js";
 
 export const GAME_LIST = [
   { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
@@ -206,7 +206,7 @@ function start(kind) {
   if (WHEELS.has(kind)) return wheelIdle();
   // Wort-Alarm läuft ohne Warteraum: niemand muss sich anmelden, um mitzutrinken
   if (kind === "alarm" || kind === "sing") {
-    S.Player.play?.();
+    PLR.play();
     if (kind === "alarm") {
       G.r = 1;
       alarmGo(0);
@@ -238,7 +238,7 @@ function skip() {
 function stop(silent) {
   if (!G) return;
   clearTimers();
-  if (G.k === "stop") S.Player.play?.();
+  if (G.k === "stop") PLR.play();
   resume();
   muteOff();
   setLock(false);
@@ -336,7 +336,7 @@ function muteRecover() {
 // Eine markante Stelle statt des Intros: der erste Abschnitt, der fast so laut ist wie der lauteste.
 // Am Anfang vieler Songs wird sonst der Künstlername gesungen.
 function hookPos() {
-  const dur = S.Player.getDuration?.() || 0;
+  const dur = PLR.getDuration() || 0;
   if (dur < 60000) return 0;
   const secs = audio.uri === nowUri() ? (audio.data?.sections || []).filter((x) => x.t >= 20 && x.t * 1000 < dur - 30000) : [];
   if (secs.length) {
@@ -365,8 +365,8 @@ function jumpNext(fromStart, done) {
     later(30, () => whenSilent(go));
   };
   whenSilent(() => {
-    S.Player.next?.();
-    S.Player.play?.();
+    PLR.next();
+    PLR.play();
     const t0 = Date.now();
     let tAudio = 0;
     const landed = () => {
@@ -388,11 +388,11 @@ function jumpNext(fromStart, done) {
       const aim = () => {
         tries++;
         t2 = Date.now();
-        S.Player.seek?.(at);
+        PLR.seek(at);
         settled();
       };
       const settled = () => {
-        const p = S.Player.getProgress?.() ?? 0;
+        const p = PLR.getProgress() ?? 0;
         if (Math.abs(p - at) < 1200 && Date.now() - t2 > 150) return later(300, () => ready(nowItem()));
         // ein Springen direkt nach dem Songwechsel kann untergehen: nochmal
         if (Date.now() - t2 > 700) return tries < 4 ? aim() : ready(nowItem());
@@ -410,7 +410,7 @@ function runClip() {
   if (!clip || clip >= askMs()) return;
   G.clipT = setTimeout(() => {
     if (!G) return;
-    S.Player.pause?.();
+    PLR.pause();
     G.paused = true;
     render();
   }, clip);
@@ -419,15 +419,15 @@ function runClip() {
 function replay() {
   if (!G || !SONG_FIELD[G.k] || G.view?.st !== "ask" || G.switching) return;
   sfx.pop();
-  S.Player.seek?.(G.clipAt || 0);
-  S.Player.play?.();
+  PLR.seek(G.clipAt || 0);
+  PLR.play();
   runClip();
   render();
 }
 function resume() {
   if (!G?.paused) return;
   G.paused = false;
-  S.Player.play?.();
+  PLR.play();
 }
 // Läuft hinter dem Rücken des Spiels etwas anders (Medientaste, Fernbedienung, Song zu Ende): wieder geradeziehen
 function guard() {
@@ -446,16 +446,16 @@ function guard() {
     G.r--;
     return G.k === "tf" ? tfRound() : lineRound();
   }
-  const playing = S.Player.isPlaying?.();
+  const playing = PLR.isPlaying();
   const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || (G.k === "beat" && v.st === "go") || G.k === "alarm" || G.k === "sing" || (G.k === "stop" && v.st === "play");
   const wantStop = (SONG_FIELD[G.k] && v.st === "ask" && G.paused) || (G.k === "stop" && v.st === "stop");
   if (now - (G.kick || 0) > 1000) {
     if (wantPlay && !playing) {
       G.kick = now;
-      S.Player.play?.();
+      PLR.play();
     } else if (wantStop && playing) {
       G.kick = now;
-      S.Player.pause?.();
+      PLR.pause();
     }
   }
 }
@@ -477,7 +477,7 @@ function songRound(useCurrent) {
     songAsk(songOf(item));
   };
   if (useCurrent) {
-    G.clipAt = S.Player.getProgress?.() || 0;
+    G.clipAt = PLR.getProgress() || 0;
     return go(nowItem());
   }
   jumpNext(G.k === "intro", go);
@@ -539,11 +539,11 @@ function askLine(tries) {
     const far = lines.find((l, k) => l.t >= pos + ahead && usable(l, k));
     // die nächste brauchbare Zeile liegt weit weg: hinspulen statt die Runde lang zu warten
     if (far) {
-      S.Player.seek?.(far.t - 10000);
+      PLR.seek(far.t - 10000);
       return retry(1200);
     }
     // dieser Song ist aufgebraucht oder hat keinen Text
-    if (tries === 1 || tries === 4) S.Player.next?.();
+    if (tries === 1 || tries === 4) PLR.next();
     return retry(3000);
   }
   let answer, wrong, line;
@@ -588,7 +588,7 @@ function tfAsk(tries) {
       notify(t("gNeedLyrics"), true);
       return G.r > 1 ? finish() : stop();
     }
-    if (tries === 1) S.Player.next?.();
+    if (tries === 1) PLR.next();
     show({ st: "wait", r: G.r, of: rounds() });
     return after(3000, () => tfAsk(tries + 1));
   }
@@ -606,8 +606,8 @@ function tfAsk(tries) {
     const d = award();
     hide("");
     // die Auflösung kommt aus dem Song selbst: er springt zu genau dieser Zeile
-    S.Player.seek?.(Math.max(lines[i].t - 400, 2));
-    S.Player.play?.();
+    PLR.seek(Math.max(lines[i].t - 400, 2));
+    PLR.play();
     show({ st: "rev", r: G.r, of: rounds(), o, d, right: G.right, line: real, ...sips() });
     after(breakMs(), tfRound);
   });
@@ -650,7 +650,7 @@ function alarmGo(tries) {
       notify(t("gNeedLyrics"), true);
       return stop();
     }
-    if (tries === 1) S.Player.next?.();
+    if (tries === 1) PLR.next();
     show({ st: "wait" });
     return after(3000, () => alarmGo(tries + 1));
   }
@@ -692,15 +692,15 @@ function stopPlay() {
   G.r++;
   const left = alive();
   if (left.length <= 1 || G.r > 12) {
-    S.Player.play?.();
+    PLR.play();
     left.forEach((p) => (p.p += 100));
     return finish();
   }
   for (const p of left) p.ans = null;
-  S.Player.play?.();
+  PLR.play();
   show({ st: "play", r: G.r, left: left.length });
   after(8000 + Math.random() * 12000, () => {
-    S.Player.pause?.();
+    PLR.pause();
     show({ st: "stop", r: G.r, left: left.length, end: Date.now() + 4000 });
     after(4000, () => {
       // wer nicht getippt hat, fliegt raus; haben alle getippt, der Langsamste
@@ -772,7 +772,7 @@ function battleGo() {
 
 /* ---- Beat-Treffer: das Handy misst, wie gut die Abstände seiner Tipps zum Tempo passen, und meldet seinen Stand */
 function beatGo() {
-  S.Player.play?.();
+  PLR.play();
   const end = Date.now() + durMs();
   const tick = () => show({ st: "go", end, dur: durMs(), bpm: Math.round(ctx.bpm?.() || 120) });
   tick();
@@ -861,14 +861,14 @@ function singGo(tries) {
       notify(t("gNeedLyrics"), true);
       return stop();
     }
-    if (tries === 1) S.Player.next?.();
+    if (tries === 1) PLR.next();
     show({ st: "wait", r: G.r, of: rounds() });
     return after(3000, () => singGo(tries + 1));
   }
   for (let k = at; k < at + 3; k++) G.used.add(k);
   const start = lines[at].t, stopAt = lines[at + 3].t;
   // kurz vor der Stelle einsteigen, damit alle drin sind
-  if (start - pos > 16000 || start < pos + 3000) S.Player.seek?.(Math.max(start - 9000, 2));
+  if (start - pos > 16000 || start < pos + 3000) PLR.seek(Math.max(start - 9000, 2));
   show({ st: "ready", r: G.r, of: rounds(), line: lines[at].text });
   G.lines = lines;
   G.tick = setInterval(() => {
@@ -930,13 +930,13 @@ function spin() {
 function wheelEffect(k) {
   if (k === "wh1") ctx.confetti?.();
   else if (k === "wh2") ctx.handsUp?.();
-  else if (k === "wh3") S.Player.next?.();
+  else if (k === "wh3") PLR.next();
   else if (k === "wh4") ctx.venue?.();
   else if (k === "wh5") ctx.flashStorm?.();
   else if (k === "wh6") {
     const w = live.wishes().find((x) => x.st === "open");
     if (w) live.accept(w.i);
-    else S.Player.next?.();
+    else PLR.next();
   }
 }
 

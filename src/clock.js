@@ -1,6 +1,6 @@
-import { S, clamp } from "./core.js";
+import { clamp } from "./core.js";
 import { cfg, save } from "./config.js";
-import { currentItem } from "./player.js";
+import { currentItem, PLR } from "./player.js";
 import { audio } from "./audio.js";
 
 /* ---------------------------------------------------------------- Songuhr */
@@ -16,9 +16,9 @@ function offsetFor(uri) {
   return (Number(cfg.syncOffset) || 0) + (Number.isFinite(per) ? per : 0);
 }
 function songPos(now = performance.now()) {
-  const raw = S.Player.getProgress?.() || 0;
+  const raw = PLR.getProgress() || 0;
   const uri = currentItem()?.uri || "";
-  if (!S.Player.isPlaying()) {
+  if (!PLR.isPlaying()) {
     Object.assign(c, { pos: raw, at: now, uri });
     return raw + offsetFor(uri);
   }

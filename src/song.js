@@ -5,7 +5,7 @@ import { showHaze } from "./stage.js";
 import { loadAudio, beat } from "./audio.js";
 import { bridge } from "./bridge.js";
 import { immersive } from "./immersive.js";
-import { currentItem, covers, toHttp } from "./player.js";
+import { currentItem, covers, toHttp, PLR } from "./player.js";
 import { record } from "./share.js";
 import { dust } from "./dust.js";
 
@@ -70,7 +70,7 @@ function prefetchNext() {
   }, { timeout: 4000 });
 }
 function onPlayPause() {
-  root.classList.toggle("mirage-playing", !!S.Player.isPlaying());
+  root.classList.toggle("mirage-playing", !!PLR.isPlaying());
   immersive.playState();
   dust.wake();
   beat.sync();

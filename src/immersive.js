@@ -11,7 +11,7 @@ import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvas
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard } from "./share.js";
 import * as ctl from "./controls.js";
-import { currentItem, covers, titleOf, artistOf, toggleMute } from "./player.js";
+import { currentItem, covers, titleOf, artistOf, toggleMute, PLR } from "./player.js";
 import { party } from "./party.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
@@ -321,18 +321,18 @@ const immersive = (() => {
     q.mute.onclick = () => { toggleMute(); setTimeout(syncState, 120); };
     q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
     q.full.onclick = toggleFull;
-    el.querySelector(".m-im-prev").onclick = () => free() && S.Player.back();
-    el.querySelector(".m-im-next").onclick = () => free() && S.Player.next();
-    q.play.onclick = () => free() && S.Player.togglePlay();
+    el.querySelector(".m-im-prev").onclick = () => free() && PLR.back();
+    el.querySelector(".m-im-next").onclick = () => free() && PLR.next();
+    q.play.onclick = () => free() && PLR.togglePlay();
     el.querySelectorAll(".m-im-tabs button").forEach((b) => (b.onclick = () => setMode(b.dataset.mode, true)));
     el.querySelector(".m-im-bar").onclick = (e) => {
       if (!free()) return;
       const r = e.currentTarget.getBoundingClientRect();
-      S.Player.seek(clamp((e.clientX - r.left) / r.width, 0, 1));
+      PLR.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * (PLR.getDuration() || 0));
     };
     q.inner.addEventListener("click", (e) => {
       const line = e.target.closest(".m-im-line");
-      if (line && lyr?.synced && free()) S.Player.seek(Math.max(Number(line.dataset.t), 2));
+      if (line && lyr?.synced && free()) PLR.seek(Math.max(Number(line.dataset.t), 2));
     });
     el.addEventListener("pointermove", (e) => {
       if (cfg.calm) return;
@@ -1258,7 +1258,7 @@ const immersive = (() => {
     const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
     const R = (r.width / 2) * dpr + 16 * dpr;
     const sec = pos / 1000;
-    const playing = S.Player.isPlaying();
+    const playing = PLR.isPlaying();
     let b = 0, havePitch = false, loud = 0.5;
     // Stil aus den Einstellungen; im Mix keine Linie quer durch den Liedtext, im Party-Modus das Song-Profil
     const mode = el.dataset.mode;
@@ -1696,7 +1696,7 @@ const immersive = (() => {
       strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
-      stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !S.Player.isPlaying(),
+      stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !PLR.isPlaying(),
       venue: moments.venue || (cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : ""),
       fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
       drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
@@ -2151,7 +2151,7 @@ const immersive = (() => {
     if (sizeKey !== sizeKeyNow()) sizeCanvas();
     // gleichmäßige Songuhr mit Vorlauf (siehe clock.js) – Party, Visualizer und Karaoke laufen danach
     const pos = songPos(now);
-    const dur = S.Player.getDuration?.() || 0;
+    const dur = PLR.getDuration() || 0;
     // scaleX statt width: kein Neu-Layout in jedem Bild
     const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
     if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
@@ -2175,7 +2175,7 @@ const immersive = (() => {
           wfxAt = now;
           wordFx.draw(vctx, {
             pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || palette(),
-            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: S.Player.isPlaying(),
+            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(),
           });
         }
       } catch (e) {
@@ -2407,7 +2407,7 @@ const immersive = (() => {
     q.smart.hidden = !ctl.isSmartPick(item);
     updateLyrState();
     if (side === "playlists") showSide("playlists");
-    q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play;
+    q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play;
     lastBeatIdx = -1;
     moments.stormDone = false;
     moments.venue = "";
@@ -3017,7 +3017,7 @@ const immersive = (() => {
     if (!document.hidden || !el || !isOpen() || el.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
     const now = performance.now(), dt = hiddenAt ? Math.min(1, (now - hiddenAt) / 1000) : 0.25;
     hiddenAt = now;
-    const pos = songPos(now), px = party.step(pos / 1000, dt, S.Player.isPlaying());
+    const pos = songPos(now), px = party.step(pos / 1000, dt, PLR.isPlaying());
     const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
     const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
     live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
@@ -3065,8 +3065,8 @@ const immersive = (() => {
     if (document.fullscreenElement) document.exitFullscreen?.();
   }
   const isOpen = () => !!el?.classList.contains("is-on");
-  const playState = () => el && (q.play.innerHTML = S.Player.isPlaying() ? ICON.pause : ICON.play);
-  const seekBy = (ms) => S.Player.seek(clamp((S.Player.getProgress?.() || 0) + ms, 2, S.Player.getDuration?.() || 2));
+  const playState = () => el && (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play);
+  const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,

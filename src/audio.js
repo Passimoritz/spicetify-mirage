@@ -1,6 +1,7 @@
 import { S, root, clamp, seek, lru } from "./core.js";
 import { cfg } from "./config.js";
 import { estimateAnalysis } from "./estimate.js";
+import { PLR } from "./player.js";
 
 /* ---------------------------------------------------------------- Taktdaten */
 const audio = { uri: "", data: null };
@@ -108,7 +109,7 @@ const beat = (() => {
     const since = sec - bs[i].t;
     return Math.pow(clamp(1 - since / 0.32, 0, 1), 2) * clamp(0.4 + bs[i].c, 0, 1);
   }
-  const now = () => (S.Player.getProgress?.() || 0) / 1000;
+  const now = () => (PLR.getProgress() || 0) / 1000;
   function sync() {
     on = cfg.beat && !cfg.calm && !!audio.data && root.classList.contains("mirage-playing");
     root.classList.toggle("mirage-beat", on);

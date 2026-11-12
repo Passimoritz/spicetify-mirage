@@ -494,6 +494,110 @@ function trayImage() {
   }
   return trayIcon(32);
 }
+/* ------------------------------------------------------------------ Theme-Wartung */
+// Nach einem Spotify-Update ist das Theme weg, bis Spicetify es wieder einspielt. Die App erkennt das (Windows),
+// bietet „Theme reparieren“ an und kann eine neue Theme-Version aus dem Release holen. Beides nur auf Klick:
+// Spicetify startet Spotify dabei neu.
+const HOME = os.homedir();
+const spicetifyBin = () => {
+  const list = WIN
+    ? [path.join(process.env.LOCALAPPDATA || "", "spicetify", "spicetify.exe")]
+    : [path.join(HOME, ".spicetify", "spicetify"), "/usr/local/bin/spicetify", "/opt/homebrew/bin/spicetify", "/usr/bin/spicetify"];
+  return list.find((f) => f && fs.existsSync(f)) || "";
+};
+const themeDir = () => {
+  const list = WIN
+    ? [path.join(process.env.APPDATA || "", "spicetify", "Themes", "Mirage")]
+    : [path.join(HOME, ".config", "spicetify", "Themes", "Mirage"), path.join(HOME, ".spicetify", "Themes", "Mirage")];
+  return list.find((d) => fs.existsSync(d)) || "";
+};
+function themeVersion() {
+  try {
+    // nur der Anfang der Datei: die Version steht in den ersten Zeilen, die Datei selbst ist fast 2 MB groß
+    const fd = fs.openSync(path.join(themeDir(), "theme.js"), "r"), buf = Buffer.alloc(20000);
+    const n = fs.readSync(fd, buf, 0, buf.length, 0);
+    fs.closeSync(fd);
+    const head = buf.toString("utf8", 0, n);
+    return (head.match(/VERSION = (?:true \? )?"(\d+\.\d+\.\d+)"/) || [])[1] || "";
+  } catch {
+    return "";
+  }
+}
+// Windows: Spicetify entpackt Spotifys Oberfläche in den Ordner „xpui“ und entfernt das Archiv „xpui.spa“.
+// Nach einem Spotify-Update liegt das Archiv wieder da – dann fehlt das Theme.
+function themeMissing() {
+  if (!WIN || !spicetifyBin() || !themeDir()) return false;
+  const apps = path.join(process.env.APPDATA || "", "Spotify", "Apps");
+  try {
+    return fs.existsSync(path.join(apps, "xpui.spa"));
+  } catch {
+    return false;
+  }
+}
+const runSpicetify = (args) =>
+  new Promise((resolve) => {
+    execFile(spicetifyBin(), args, { timeout: 180000, windowsHide: true }, (err) => resolve(!err));
+  });
+let themeBusy = false, themeLatest = "", themeTold = "";
+const themeNote = (title, body, onClick) => {
+  if (!Notification.isSupported()) return;
+  const n = new Notification({ title, body: body || "", icon: trayIcon(64) });
+  if (onClick) n.on("click", onClick);
+  n.show();
+};
+async function repairTheme() {
+  if (themeBusy || !spicetifyBin()) return;
+  themeBusy = true;
+  // erst der übliche Weg nach einem Update, dann der gründliche
+  const ok = (await runSpicetify(["backup", "apply"])) || (await runSpicetify(["restore", "backup", "apply"]));
+  themeBusy = false;
+  themeNote(t(ok ? "themeDone" : "themeFail"), ok ? "" : t("themeFailBody"));
+  buildTray();
+}
+async function updateTheme() {
+  const dir = themeDir();
+  if (themeBusy || !dir || !themeLatest || !spicetifyBin()) return;
+  themeBusy = true;
+  let ok = false;
+  try {
+    const files = {};
+    for (const name of ["theme.js", "user.css", "color.ini"]) {
+      const res = await net.fetch(`https://raw.githubusercontent.com/${REPO}/v${themeLatest}/Mirage/${name}`);
+      if (!res.ok) throw new Error(name + " " + res.status);
+      files[name] = Buffer.from(await res.arrayBuffer());
+    }
+    // nur einspielen, wenn alles da ist und nach Mirage aussieht
+    if (files["theme.js"].length < 100000 || !files["theme.js"].includes("__mirage") || files["user.css"].length < 10000) throw new Error("unexpected files");
+    for (const [name, buf] of Object.entries(files)) {
+      fs.writeFileSync(path.join(dir, name + ".new"), buf);
+      fs.renameSync(path.join(dir, name + ".new"), path.join(dir, name));
+    }
+    ok = (await runSpicetify(["apply"])) || (await runSpicetify(["backup", "apply"]));
+  } catch {}
+  themeBusy = false;
+  themeNote(t(ok ? "themeDone" : "themeFail"), ok ? "" : t("themeFailBody"));
+  buildTray();
+}
+const themeOutdated = () => {
+  const have = themeVersion();
+  return !!(have && themeLatest && spicetifyBin() && newer(themeLatest, have));
+};
+function watchTheme() {
+  if (themeBusy) return;
+  if (themeMissing()) {
+    if (themeTold !== "missing") {
+      themeTold = "missing";
+      themeNote(t("themeGone"), t("themeGoneBody"), repairTheme);
+      buildTray();
+    }
+  } else if (themeTold === "missing") {
+    themeTold = "";
+    buildTray();
+  }
+}
+setTimeout(watchTheme, 20000);
+setInterval(watchTheme, 5 * 60e3);
+
 function buildTray() {
   if (!tray) {
     tray = new Tray(trayImage());
@@ -512,6 +616,8 @@ function buildTray() {
       { label: t("settings"), click: openSettings },
       { label: t("test"), click: () => preview() },
       { label: t("setupAgain"), click: openSetup },
+      ...(themeOutdated() ? [{ label: t("themeUpdate").replace("{v}", themeLatest), enabled: !themeBusy, click: updateTheme }] : []),
+      ...(spicetifyBin() ? [{ label: t(themeMissing() ? "themeRepairNow" : "themeRepair"), enabled: !themeBusy, click: repairTheme }] : []),
       ...(history.length ? [{ label: t("history"), submenu: history.slice(0, 10).map((h) => ({ label: `${h.title} – ${h.artist}`.slice(0, 70), click: () => openUri(h.uri) })) }] : []),
       { type: "separator" },
       radio("song", t("modeSong")),
@@ -922,6 +1028,7 @@ async function checkUpdate(manual) {
     if (!res.ok) throw new Error(String(res.status));
     const rel = await res.json();
     const version = String(rel.tag_name || "").replace(/^v/, "");
+    themeLatest = version;
     const want = WIN ? "Mirage-Overlay-Setup.exe" : LINUX && process.env.APPIMAGE ? "Mirage-Overlay.AppImage" : "";
     const asset = (rel.assets || []).find((a) => a.name === want);
     if (!newer(version, app.getVersion())) return setUpd({ state: "current", version: app.getVersion() });

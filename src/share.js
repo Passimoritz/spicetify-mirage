@@ -2,7 +2,7 @@ import { S, loadImage } from "./core.js";
 import { t } from "./i18n.js";
 import { cfg } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
-import { currentItem, covers, titleOf, artistOf } from "./player.js";
+import { currentItem, covers, titleOf, artistOf, PLR } from "./player.js";
 
 /* ---------------------------------------------------------------- Teilbare Karten */
 // Bilder im Hochformat 1080 × 1350 (passt für Instagram, Discord, X) im Mirage-Look.
@@ -181,7 +181,7 @@ function record(item, colors) {
   const all = loadStats();
   const d = (all[today()] ||= { n: 0, ms: 0, artists: {}, hues: Array(12).fill(0), schemes: {} });
   d.n++;
-  d.ms += Number(item.duration?.milliseconds || item.metadata?.duration || S.Player.getDuration?.() || 0);
+  d.ms += Number(item.duration?.milliseconds || item.metadata?.duration || PLR.getDuration() || 0);
   const artist = (artistOf(item) || "").split(",")[0].trim();
   if (artist) d.artists[artist] = (d.artists[artist] || 0) + 1;
   // für die Monatskarte: Top-Songs (ältere Tage haben das Feld noch nicht)
