@@ -104,10 +104,10 @@ body {
 /* Kleiner Kopf beim Scrollen (Playlist-Name + Play): Spotify blendet ihn selbst ein (Deckkraft).
    Statt seiner Coverfarbe eine fast deckende dunkle Glasleiste – Inhalt darunter scheint nicht durch */
 /* doppelte Klasse: muss auch gegen .m-tint gewinnen, falls die Fläche schon markiert wurde */
+/* Kein Verwischen: hinter einer fast deckenden Fläche sieht man es nicht, es wurde aber bei jedem Scroll-Bild
+   neu gerechnet – und wegen !important sogar bei ausgeschaltetem Glas. Dafür eine Spur deckender. */
 .main-topBar-background.main-topBar-background {
-  background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.16), transparent 70%), rgba(var(--spice-rgb-main), 0.96) !important;
-  backdrop-filter: blur(24px) saturate(1.4) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+  background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.16), transparent 70%), rgba(var(--spice-rgb-main), 0.98) !important;
   border-bottom: 1px solid var(--m-line);
 }
 
@@ -394,11 +394,12 @@ html.mirage-no-tilt [data-encore-id="card"] {
 }
 
 /* Chips/Filter */
+/* ohne eigenes Verwischen: sie liegen auf der Glasplatte des Hauptbereichs, die schon verwischt –
+   ein zweites Mal sah man nicht, jede Chip war aber eine eigene Rechenfläche */
 .ChipInnerComponent,
 .ChipInnerComponent-sm,
 [class*="chip__inner"] {
   border-radius: 999px !important;
-  backdrop-filter: blur(10px);
 }
 [aria-checked="true"] .ChipInnerComponent,
 [aria-checked="true"] .ChipInnerComponent-sm,
@@ -453,9 +454,7 @@ html.mirage-no-tilt [data-encore-id="card"] {
 /* theme.js markiert ihn zusätzlich mit data-m-stuck – Spotifys neue Klassennamen kennt Spicetify nicht */
 .main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
 [data-m-stuck][data-m-stuck] {
-  background: rgba(var(--spice-rgb-main), 0.96) !important;
-  backdrop-filter: blur(24px) saturate(1.4) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+  background: rgba(var(--spice-rgb-main), 0.98) !important;
   border-bottom: 1px solid var(--m-line);
 }
 
@@ -1881,8 +1880,7 @@ html.mirage-calm #mirage-immersive .m-im-line.is-hype .m-w {
     filter: blur(12px);
   }
 }
-.m-enter .main-gridContainer-gridContainer > *,
-.m-enter [data-testid="grid-container"] > * {
+.m-enter .main-gridContainer-gridContainer > * {
   animation: m-rise 0.8s var(--m-ease) both;
   animation-delay: calc(min(var(--m-i, 0), 20) * 45ms + 120ms);
 }
@@ -2036,7 +2034,7 @@ html.mirage-beat #mirage-stage .m-pulse {
   }
 }
 
-/* Aktionsleiste als schwebende Glasleiste */
+/* Aktionsleiste als schwebende Glasleiste (verwischt nicht selbst: das tut die Glasplatte darunter schon) */
 [data-testid="action-bar-row"],
 .main-actionBar-ActionBarRow {
   margin: 0 16px;
@@ -2044,7 +2042,6 @@ html.mirage-beat #mirage-stage .m-pulse {
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--m-line);
-  backdrop-filter: blur(20px);
 }
 [data-testid="action-bar-row"] [data-testid="play-button"] {
   position: relative;
@@ -2147,23 +2144,20 @@ html.mirage-beat #mirage-stage .m-pulse {
   text-shadow: 0 0 30px rgba(var(--m-a-rgb), 0.6);
 }
 
-/* Schnellzugriff-Kacheln oben auf der Startseite: Glas mit Lichtstreif */
+/* Schnellzugriff-Kacheln oben auf der Startseite: Glas mit Lichtstreif (kein eigenes Verwischen je Kachel) */
 .view-homeShortcutsGrid-shortcut,
-[data-testid="home-page"] [data-encore-id="cardHorizontal"],
 [data-testid="shortcut"] {
   position: relative;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid var(--m-line);
   border-radius: 14px !important;
-  backdrop-filter: blur(14px);
   transition:
     transform 0.45s var(--m-spring),
     box-shadow 0.45s var(--m-ease),
     background 0.3s;
 }
 .view-homeShortcutsGrid-shortcut::after,
-[data-testid="home-page"] [data-encore-id="cardHorizontal"]::after,
 [data-testid="shortcut"]::after {
   content: "";
   position: absolute;
@@ -2174,14 +2168,12 @@ html.mirage-beat #mirage-stage .m-pulse {
   transition: transform 0.9s var(--m-ease);
 }
 .view-homeShortcutsGrid-shortcut:hover,
-[data-testid="home-page"] [data-encore-id="cardHorizontal"]:hover,
 [data-testid="shortcut"]:hover {
   transform: translateY(-3px);
   background: rgba(var(--m-a-rgb), 0.14) !important;
   box-shadow: 0 18px 40px -18px rgba(var(--m-a-rgb), 0.8);
 }
 .view-homeShortcutsGrid-shortcut:hover::after,
-[data-testid="home-page"] [data-encore-id="cardHorizontal"]:hover::after,
 [data-testid="shortcut"]:hover::after {
   transform: translateX(120%);
 }
@@ -2661,14 +2653,12 @@ html[data-m-page="user"] .main-entityHeader-metaData a:hover {
 /* ==========================================================================
    KÜNSTLERSEITEN
    ========================================================================== */
-html[data-m-page="artist"] .main-entityHeader-withBackgroundImage,
-html[data-m-page="artist"] [data-testid="artist-entity-header"] {
+html[data-m-page="artist"] .main-entityHeader-withBackgroundImage {
   position: relative;
   overflow: hidden;
 }
 /* Bild läuft unten weich in die Seite aus, mit Lichtkante in Coverfarbe */
-html[data-m-page="artist"] .main-entityHeader-withBackgroundImage::after,
-html[data-m-page="artist"] [data-testid="artist-entity-header"]::after {
+html[data-m-page="artist"] .main-entityHeader-withBackgroundImage::after {
   content: "";
   position: absolute;
   inset: 0;
