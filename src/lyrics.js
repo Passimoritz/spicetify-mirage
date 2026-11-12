@@ -1,6 +1,7 @@
 import { S, lru } from "./core.js";
 import { cfg, save } from "./config.js";
 import { currentItem, titleOf, artistOf } from "./player.js";
+import { createLyricStore } from "./lyricstore.js";
 
 /* ---------------------------------------------------------------- Liedtext */
 // Promise statt Ergebnis merken: fragen Immersiv-Modus und Overlay gleichzeitig, geht nur
@@ -11,16 +12,41 @@ function getLyrics(uri) {
   // Schalter und gewählte Fassung im Schlüssel: wer umschaltet, bekommt sofort das passende Ergebnis
   const pick = cfg.onlineLyrics ? cfg.lyricPicks?.[uri] || "" : "";
   const key = uri + (cfg.onlineLyrics ? "|web" : "") + (cfg.karaoke ? "|k" : "") + "|" + pick;
-  if (!lyricCache.has(key)) lyricCache.set(key, fetchLyrics(uri, pick));
+  if (!lyricCache.has(key)) lyricCache.set(key, keptLyrics(uri, pick, key));
   return lyricCache.get(key);
+}
+// Dauerhafter Speicher (IndexedDB, 500 Songs) unter demselben Schlüssel wie der Kurzzeitspeicher oben:
+// ein schon geholter Liedtext steht sofort da – auch ohne Netz
+const lyricStore = createLyricStore((() => {
+  try {
+    return window.indexedDB;
+  } catch {
+    return null;
+  }
+})());
+async function keptLyrics(uri, pick, key) {
+  // fetchLyrics hält die Song-Daten fest, solange der Song noch läuft – darum zuerst (ohne Warten) starten lassen
+  noteMeta(uri);
+  const kept = await lyricStore.get(key);
+  if (kept?.fresh) return kept.v;
+  const got = await fetchLyrics(uri, pick);
+  // nur echte Ergebnisse merken: „nichts gefunden“ kann am fehlenden Netz liegen –
+  // dann lieber den abgelaufenen Text von früher zeigen
+  if (!got?.lines?.length && !got?.instrumental) return kept?.v || got;
+  lyricStore.put(key, got);
+  return got;
 }
 // Song-Daten je Song, damit „Fassung wählen“ später noch weiß, wonach es suchen soll
 const metaCache = lru(60);
-async function fetchLyrics(uri, pick) {
-  // Song-Daten jetzt festhalten – bis die Spotify-Antwort da ist, kann schon der nächste laufen
+// Song-Daten jetzt festhalten – bis die Spotify-Antwort da ist, kann schon der nächste laufen
+function noteMeta(uri) {
   const item = currentItem();
   const meta = item?.uri === uri ? songMeta(item) : metaCache.get(uri) || null;
   if (meta) metaCache.set(uri, meta);
+  return meta;
+}
+async function fetchLyrics(uri, pick) {
+  const meta = metaCache.get(uri) || noteMeta(uri);
   if (pick) {
     const hit = await lrclib("get/" + encodeURIComponent(pick));
     const got = hit && fromHit(hit);
