@@ -11,7 +11,7 @@ import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvas
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard } from "./share.js";
 import * as ctl from "./controls.js";
-import { currentItem, covers, titleOf, artistOf } from "./player.js";
+import { currentItem, covers, titleOf, artistOf, toggleMute } from "./player.js";
 import { party } from "./party.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
@@ -318,7 +318,7 @@ const immersive = (() => {
       }
       setTimeout(syncState, 200);
     };
-    q.mute.onclick = () => { S.Player.toggleMute(); setTimeout(syncState, 120); };
+    q.mute.onclick = () => { toggleMute(); setTimeout(syncState, 120); };
     q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
     q.full.onclick = toggleFull;
     el.querySelector(".m-im-prev").onclick = () => free() && S.Player.back();
@@ -2164,8 +2164,6 @@ const immersive = (() => {
     const mode = el.dataset.mode;
     const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
-    // angehaltene Ausschnitte im Spiel sind keine Pause
-    pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying() && !games.active(), now);
     if (LYR.has(mode)) drawLyrics(pos);
     if (VIZ.has(mode)) {
       // ein Fehler in einem Bild darf den Visualizer nicht dauerhaft lahmlegen: Zustand zurücksetzen,
@@ -2609,29 +2607,6 @@ const immersive = (() => {
   function confetti() {
     if (!el || el.dataset.mode !== "party" || cfg.calm) return;
     moments.confetti++;
-  }
-
-  /* ---- Pause: ruhige Szene mit Party-Namen und QR-Code (nach 3 s Stille, verschwindet mit der Musik) */
-  let pausedAt = 0;
-  function pauseScene(on, now) {
-    if (!on) {
-      pausedAt = 0;
-      q.pause?.classList.remove("is-on");
-      return;
-    }
-    if (!pausedAt) pausedAt = now;
-    if (now - pausedAt < 3000 || q.pause?.classList.contains("is-on")) return;
-    if (!q.pause) {
-      q.pause = document.createElement("div");
-      q.pause.className = "m-im-pause";
-      el.append(q.pause);
-    }
-    q.pause.textContent = "";
-    const b = document.createElement("b"), s2 = document.createElement("small");
-    b.textContent = t("pauseTitle");
-    s2.textContent = titleOf(currentItem()) || "";
-    q.pause.append(b, s2);
-    q.pause.classList.add("is-on");
   }
 
   /* ---- Spiele: auswählen, starten, beenden. Alle außer dem Glücksrad spielen die Gäste auf ihren Handys. */

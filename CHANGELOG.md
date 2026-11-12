@@ -10,6 +10,27 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.23.1] – 2026-11-12
+
+### Removed
+
+- The pause screen is gone completely, including its setting.
+
+### Fixed
+
+- **Muting never worked in current Spotify versions:** Spicetify's mute clicks a button that no longer exists, so the start of a song stayed audible in guessing games, Keep singing never went silent, and the mute button in immersive mode did nothing. Mirage now sets the volume itself and restores it afterwards.
+- A jump right after a song change could get lost and the song played from its start. It is now repeated until the song is in place.
+- Guessing games no longer stop when the queue is small or holds only one artist.
+- Tap race and Beat hit could show a score that was too low on the big screen when a message got lost. Phones now repeat their score.
+- **Empty pink box in the player bar:** Spotify's new key badge next to the BPM (and a few other labels on coloured backgrounds) had invisible text.
+- Lyric games reuse lines correctly across songs, and a phone can answer again when a media key changed the song during a round.
+- **Spotify 1.3.9:** filter chips, the playing row in track lists, Spotify's own lyrics view and the sections on Spotify's settings page had lost their Mirage look after the update.
+
+### Tests
+
+- `npm run test:games` plays all 20 games end to end, silently: the real theme and phone page over a real MQTT relay, three guests joining by scanned QR code, with real mouse clicks. It also runs in CI.
+- `npm run check:spotify` compares the test's Spotify stand-in with the installed Spotify and Spicetify.
+
 ## [1.23.0] – 2026-11-06
 
 ### Added

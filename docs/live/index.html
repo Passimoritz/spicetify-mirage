@@ -1239,10 +1239,13 @@ const pSfx = {
   bomb: () => [900, 900].forEach((f, i) => pTone(f, 0.05, "square", 0.05, i * 0.12)),
   boom: () => pTone(150, 0.6, "sawtooth", 0.1, 0, 40),
 };
+let gBeatIdle = 0;
 function startScoreSender() {
   gBeatT = setInterval(() => {
     const k = cur?.g?.k, v = k === "beat" ? gBeatScore : k === "taps" ? gTaps : -1;
-    if (v >= 0 && v !== gBeatSent) {
+    // ein Paket kann unterwegs verloren gehen: auch ohne Änderung ab und zu wiederholen, sonst bleibt der Stand falsch
+    if (v > 0 && (v !== gBeatSent || ++gBeatIdle >= 3)) {
+      gBeatIdle = 0;
       gBeatSent = v;
       gSend({ a: "sc", v });
     }
@@ -1301,7 +1304,7 @@ function drawGame(g) {
   if (g.out?.includes(me)) gOut = true;
   box.hidden = false;
   const isH = g.h === me;
-  const key = [g.id, g.k, g.st, g.r, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || ""].join("|");
+  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || ""].join("|");
   if (key === gKey) return gLive(g, box);
   gKey = key;
   gTapped = false;
@@ -1436,7 +1439,7 @@ function gBuild(g, box, isH) {
       if (ask) box.append(gEl("small", ask));
       box.append(gEl("h2", g.q || g.line, g.line ? "gline" : ""));
     } else box.append(gEl("h2", ask));
-    const mem = gMem(`a${g.id}.${g.r}`);
+    const mem = gMem(`a${g.id}.${g.r}.${g.att || 0}`);
     gVoted = mem == null ? -1 : Number(mem);
     if (g.st === "ask") gPrev = pts;
     if (g.st === "rev" && g.drink && g.sipIds?.includes(me)) {
@@ -1466,7 +1469,7 @@ function gBuild(g, box, isH) {
         b.onclick = gTap(() => {
           if (gVoted >= 0) return;
           gVoted = i;
-          gMem(`a${g.id}.${g.r}`, i);
+          gMem(`a${g.id}.${g.r}.${g.att || 0}`, i);
           list.querySelectorAll(".tile").forEach((x, n) => x.classList.add(n === i ? "pick" : "dim"));
           haptic([[0.7, 30]]);
           pSfx.tap();

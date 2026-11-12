@@ -13,6 +13,7 @@ import { live } from "./live.js";
 import { audio } from "./audio.js";
 import { lock } from "./lock.js";
 import { sfx } from "./sfx.js";
+import { readVolume, writeVolume } from "./player.js";
 
 export const GAME_LIST = [
   { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
@@ -197,6 +198,7 @@ const FIRST = {
 function start(kind) {
   if (!ctx) return;
   stop(true);
+  muteBack = 0;
   G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null };
   boxKey = "";
   clearInterval(ticker);
@@ -266,7 +268,7 @@ function ask(view, ms, onEnd) {
   for (const p of all()) p.ans = null;
   G.askedAt = Date.now();
   G.onAsked = onEnd;
-  show({ st: "ask", r: G.r, of: rounds(), ...view, end: Date.now() + ms });
+  show({ st: "ask", r: G.r, of: rounds(), att: G.att || 0, ...view, end: Date.now() + ms });
   after(ms, onEnd);
 }
 // Punkte: richtig 100, dazu (abschaltbar) bis zu 100 für Schnelligkeit. Gibt zurück, wie oft was gewählt wurde.
@@ -288,30 +290,45 @@ function sips() {
 }
 
 /* ---- Stumm schalten: niemand soll den Anfang eines Songs hören, den wir gleich überspringen */
-const MUTE_KEY = "mirage:gameMute";
+const MUTE_KEY = "mirage:gameVol";
+// Lautstärke vor dem Stummschalten. Spotify bestätigt Änderungen erst nach einem Moment: eine noch nicht bestätigte 0
+// darf den gemerkten Wert nicht überschreiben, sonst bliebe die Musik für immer still.
+let muteBack = 0;
 function muteOn() {
   if (G.muted) return;
   G.muted = true;
-  G.wasMuted = !!S.Player.getMute?.();
-  if (!G.wasMuted) S.Player.setMute?.(true);
+  const v = readVolume();
+  if (v > 0) muteBack = v;
+  // war schon vor dem Spiel still: nichts zu tun und später nichts zurückzustellen
+  if (!(muteBack > 0)) return;
+  writeVolume(0);
   try {
-    localStorage.setItem(MUTE_KEY, "1");
+    localStorage.setItem(MUTE_KEY, String(muteBack));
   } catch {}
 }
 function muteOff() {
   if (!G?.muted) return;
   G.muted = false;
-  if (!G.wasMuted) S.Player.setMute?.(false);
+  if (!(muteBack > 0)) return;
+  const v = muteBack;
+  writeVolume(v);
   try {
     localStorage.removeItem(MUTE_KEY);
   } catch {}
+  // falls der Befehl im Songwechsel untergegangen ist: nachfassen
+  setTimeout(() => {
+    if (!G?.muted && readVolume() === 0) writeVolume(v);
+  }, 700);
 }
 // Spotify wurde mitten im Wechsel beendet: beim nächsten Mal nicht stumm bleiben
 function muteRecover() {
   try {
-    if (!localStorage.getItem(MUTE_KEY)) return;
+    const v = Number(localStorage.getItem(MUTE_KEY));
+    localStorage.removeItem("mirage:gameMute");
+    if (!(v > 0)) return;
     localStorage.removeItem(MUTE_KEY);
-    S.Player.setMute?.(false);
+    // die Lautstärke meldet Spotify erst kurz nach dem Start
+    setTimeout(() => readVolume() === 0 && writeVolume(v), 2000);
   } catch {}
 }
 
@@ -341,7 +358,13 @@ function jumpNext(fromStart, done) {
     muteOff();
     done(item);
   };
-  later(120, () => {
+  // erst weiter, wenn Spotify das Stummschalten bestätigt hat
+  const t00 = Date.now();
+  const whenSilent = (go) => {
+    if (readVolume() === 0 || Date.now() - t00 > 500) return go();
+    later(30, () => whenSilent(go));
+  };
+  whenSilent(() => {
     S.Player.next?.();
     S.Player.play?.();
     const t0 = Date.now();
@@ -359,17 +382,23 @@ function jumpNext(fromStart, done) {
       later(60, waitAudio);
     };
     const place = () => {
-      const at = fromStart ? 0 : hookPos();
-      S.Player.seek?.(at);
+      const at = Math.round(fromStart ? 0 : hookPos());
       G.clipAt = at;
-      const t2 = Date.now();
+      let tries = 0, t2 = 0;
+      const aim = () => {
+        tries++;
+        t2 = Date.now();
+        S.Player.seek?.(at);
+        settled();
+      };
       const settled = () => {
         const p = S.Player.getProgress?.() ?? 0;
         if (Math.abs(p - at) < 1200 && Date.now() - t2 > 150) return later(300, () => ready(nowItem()));
-        if (Date.now() - t2 > 1500) return ready(nowItem());
+        // ein Springen direkt nach dem Songwechsel kann untergehen: nochmal
+        if (Date.now() - t2 > 700) return tries < 4 ? aim() : ready(nowItem());
         later(50, settled);
       };
-      settled();
+      aim();
     };
     landed();
   });
@@ -408,6 +437,7 @@ function guard() {
     // der Song hat gewechselt: dieselbe Runde mit dem Song, der jetzt läuft
     clearTimers();
     G.r--;
+    G.att = (G.att || 0) + 1;
     return songRound(true);
   }
   if (LINE_GAMES.has(G.k) && v.st === "ask" && G.lines && ctx.lines() !== G.lines) {
@@ -431,6 +461,8 @@ function guard() {
 }
 
 /* ---- Wer singt hier? · Wie heißt der Song? · Intro-Blitz · Schluck-Quiz */
+const SPARE_ARTISTS = ["Taylor Swift", "The Weeknd", "Drake", "Billie Eilish", "Ed Sheeran", "Dua Lipa", "Rihanna", "Eminem", "Coldplay", "Adele", "Queen", "Bruno Mars"];
+const SPARE_TITLES = ["Blinding Lights", "Shape of You", "Bad Guy", "Levitating", "Rolling in the Deep", "Umbrella", "Viva la Vida", "Lose Yourself", "Bohemian Rhapsody", "Uptown Funk", "Anti-Hero", "Stay"];
 function songRound(useCurrent) {
   G.r++;
   if (G.r > rounds()) return finish();
@@ -452,8 +484,10 @@ function songRound(useCurrent) {
 }
 function songAsk(song) {
   const field = SONG_FIELD[G.k], answer = song[field];
-  const others = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer)).slice(0, 3);
-  if (!answer || others.length < 3) {
+  const own = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer));
+  // Warteschlange zu klein oder nur ein Künstler: das Spiel läuft trotzdem, mit bekannten Namen als falschen Antworten
+  const others = [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, 3);
+  if (!answer) {
     notify(t("gNeedQueue"), true);
     return G.r > 1 ? finish() : stop();
   }
@@ -478,8 +512,16 @@ function lineRound() {
   if (G.r > rounds()) return finish();
   askLine(0);
 }
+// verbrauchte Zeilen gelten nur für diesen Song: im nächsten sind es andere
+function freshLines(lines) {
+  if (G.usedIn !== lines) {
+    G.usedIn = lines;
+    G.used = new Set();
+  }
+}
 function askLine(tries) {
   const lines = ctx.lines() || [], pos = ctx.pos(), gap = G.k === "gap";
+  freshLines(lines);
   const ahead = Math.max(20000, askMs() + 6000);
   const usable = (l, i) => !G.used.has(i) && (gap ? !!gapWord(l.text || "") : i > 0 && !!lines[i - 1].text?.trim() && (l.text || "").trim().length > 2);
   const fits = (l, i) => l.t > pos + 7000 && l.t < pos + ahead && usable(l, i);
@@ -538,6 +580,7 @@ function tfRound() {
 }
 function tfAsk(tries) {
   const lines = ctx.lines() || [];
+  freshLines(lines);
   const words = [...new Set(lines.flatMap((l) => l.text?.match(WORD) || []).map((w) => w.toLocaleLowerCase()))].filter((w) => w.length <= 18);
   const cand = lines.map((l, i) => i).filter((i) => !G.used.has(i) && gapWord(lines[i].text || "") && lines[i].text.trim().split(/\s+/).length >= 4);
   if (!cand.length || words.length < 6) {
@@ -805,6 +848,7 @@ function singRound() {
 }
 function singGo(tries) {
   const lines = ctx.lines() || [], pos = ctx.pos();
+  freshLines(lines);
   const hasText = (l) => l && (l.text || "").trim().length > 3 && l.text !== "♪";
   // drei gesungene Zeilen hintereinander, die zusammen lang genug sind; der Refrain (wiederholte Zeilen) zuerst
   const seen = new Map();

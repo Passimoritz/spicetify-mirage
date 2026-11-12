@@ -89,7 +89,6 @@ const DEFAULTS = {
   partyHandsUp: true,
   partyFlashStorm: true,
   // Musik pausiert: ruhige Szene mit Party-Namen und QR-Code
-  partyPause: true,
   // DJ: passt der nächste Song gar nicht (Tonart, Tempo, Energie), einen passenderen aus der Warteschlange vorziehen
   djEnergy: false,
   // Party-Spiele: Runden, Zeiten (Sekunden), Bonus für Schnelligkeit, Größe der Karte, Felder des Glücksrads

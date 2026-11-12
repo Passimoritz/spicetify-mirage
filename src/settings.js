@@ -440,7 +440,6 @@ function render(box) {
       toggle("partyFlashStorm", () => {}),
       toggle("partyFog", () => {}),
       toggle("partyDrones", () => {}),
-      toggle("partyPause", () => {}),
       toggle("partyShatter", () => {}),
       head(t("ps_crowd")),
       toggle("partyCrowd", () => {}),

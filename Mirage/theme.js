@@ -93,7 +93,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.23.0" : "dev";
+      VERSION = true ? "1.23.1" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -637,11 +637,7 @@
           partyFogHint: "Slowly drifting fog behind the crowd, coloured by the lights",
           partyDrones: "Drone light show",
           partyDronesHint: "Open-air venues: on the first big drop, lights in the sky form a heart, a star, a circle or a wave",
-          partyPause: "Pause scene",
-          partyPauseHint: "When the music pauses: a calm scene with the song and the QR code for phones",
           confetti: "Confetti cannon (C)",
-          pauseTitle: "Short break",
-          pauseSub: "Scan and join in",
           pollBtn: "Guest vote",
           pollStart: "Let the guests vote on the next 3 songs",
           pollRun: "Voting \u2026 {s} s left",
@@ -1274,11 +1270,7 @@
           partyFogHint: "Langsam wabernder Nebel hinter der Menge, von den Scheinwerfern gef\xE4rbt",
           partyDrones: "Drohnen-Lichtshow",
           partyDronesHint: "Unter freiem Himmel: beim ersten gro\xDFen Drop formen Lichter am Himmel ein Herz, einen Stern, einen Kreis oder eine Welle",
-          partyPause: "Pausen-Szene",
-          partyPauseHint: "Pausiert die Musik: eine ruhige Szene mit dem Song und dem QR-Code f\xFCr die Handys",
           confetti: "Konfetti-Kanone (C)",
-          pauseTitle: "Kurze Pause",
-          pauseSub: "Scannen und mitmachen",
           pollBtn: "Abstimmung",
           pollStart: "G\xE4ste \xFCber die n\xE4chsten 3 Songs abstimmen lassen",
           pollRun: "Abstimmung l\xE4uft \u2026 noch {s} s",
@@ -1911,11 +1903,7 @@
           partyFogHint: "Un brouillard qui d\xE9rive lentement derri\xE8re la foule, color\xE9 par les lumi\xE8res",
           partyDrones: "Show lumineux de drones",
           partyDronesHint: "En plein air : au premier grand drop, des lumi\xE8res dans le ciel forment un c\u0153ur, une \xE9toile, un cercle ou une vague",
-          partyPause: "Sc\xE8ne de pause",
-          partyPauseHint: "Quand la musique fait une pause : une sc\xE8ne calme avec le titre et le QR code pour les t\xE9l\xE9phones",
           confetti: "Canon \xE0 confettis (C)",
-          pauseTitle: "Petite pause",
-          pauseSub: "Scanne et participe",
           pollBtn: "Vote des invit\xE9s",
           pollStart: "Laisse les invit\xE9s voter pour les 3 prochains titres",
           pollRun: "Vote en cours \u2026 {s} s restantes",
@@ -2548,11 +2536,7 @@
           partyFogHint: "Niebla que flota despacio tras la multitud, te\xF1ida por las luces",
           partyDrones: "Espect\xE1culo de luces con drones",
           partyDronesHint: "Al aire libre: en el primer gran drop, luces en el cielo forman un coraz\xF3n, una estrella, un c\xEDrculo o una ola",
-          partyPause: "Escena de pausa",
-          partyPauseHint: "Cuando la m\xFAsica se pausa: una escena tranquila con la canci\xF3n y el c\xF3digo QR para los m\xF3viles",
           confetti: "Ca\xF1\xF3n de confeti (C)",
-          pauseTitle: "Pausa breve",
-          pauseSub: "Escanea y participa",
           pollBtn: "Votaci\xF3n",
           pollStart: "Deja que los invitados voten las pr\xF3ximas 3 canciones",
           pollRun: "Votaci\xF3n en curso \u2026 quedan {s} s",
@@ -3185,11 +3169,7 @@
           partyFogHint: "Nebbia che si muove lenta dietro la folla, colorata dalle luci",
           partyDrones: "Spettacolo di luci con droni",
           partyDronesHint: "All'aperto: al primo grande drop, luci nel cielo formano un cuore, una stella, un cerchio o un'onda",
-          partyPause: "Scena di pausa",
-          partyPauseHint: "Quando la musica va in pausa: una scena calma con il brano e il codice QR per i telefoni",
           confetti: "Cannone di coriandoli (C)",
-          pauseTitle: "Breve pausa",
-          pauseSub: "Scansiona e partecipa",
           pollBtn: "Voto degli ospiti",
           pollStart: "Fai votare gli ospiti sui prossimi 3 brani",
           pollRun: "Votazione in corso \u2026 ancora {s} s",
@@ -3822,11 +3802,7 @@
           partyFogHint: "Nevoeiro a flutuar devagar atr\xE1s da multid\xE3o, colorido pelas luzes",
           partyDrones: "Show de luzes com drones",
           partyDronesHint: "Ao ar livre: no primeiro grande drop, luzes no c\xE9u formam um cora\xE7\xE3o, uma estrela, um c\xEDrculo ou uma onda",
-          partyPause: "Cena de pausa",
-          partyPauseHint: "Quando a m\xFAsica pausa: uma cena calma com a m\xFAsica e o c\xF3digo QR para os telem\xF3veis",
           confetti: "Canh\xE3o de confete (C)",
-          pauseTitle: "Pausa curta",
-          pauseSub: "Digitaliza e participa",
           pollBtn: "Vota\xE7\xE3o",
           pollStart: "Deixa os convidados votar nas pr\xF3ximas 3 m\xFAsicas",
           pollRun: "Vota\xE7\xE3o a decorrer \u2026 faltam {s} s",
@@ -4459,11 +4435,7 @@
           partyFogHint: "Langzaam zwevende mist achter het publiek, gekleurd door de lichten",
           partyDrones: "Drone-lichtshow",
           partyDronesHint: "In de open lucht: bij de eerste grote drop vormen lichten in de lucht een hart, een ster, een cirkel of een golf",
-          partyPause: "Pauzesc\xE8ne",
-          partyPauseHint: "Als de muziek pauzeert: een rustige sc\xE8ne met het nummer en de QR-code voor de telefoons",
           confetti: "Confettikanon (C)",
-          pauseTitle: "Korte pauze",
-          pauseSub: "Scan en doe mee",
           pollBtn: "Gastenstem",
           pollStart: "Laat de gasten stemmen over de volgende 3 nummers",
           pollRun: "Stemmen \u2026 nog {s} s",
@@ -5096,11 +5068,7 @@
           partyFogHint: "Powoli unosz\u0105ca si\u0119 mg\u0142a za t\u0142umem, zabarwiona \u015Bwiat\u0142ami",
           partyDrones: "Pokaz \u015Bwietlny dron\xF3w",
           partyDronesHint: "Pod go\u0142ym niebem: przy pierwszym wielkim dropie \u015Bwiat\u0142a na niebie tworz\u0105 serce, gwiazd\u0119, ko\u0142o lub fal\u0119",
-          partyPause: "Scena pauzy",
-          partyPauseHint: "Gdy muzyka jest wstrzymana: spokojna scena z utworem i kodem QR dla telefon\xF3w",
           confetti: "Armata konfetti (C)",
-          pauseTitle: "Kr\xF3tka przerwa",
-          pauseSub: "Zeskanuj i do\u0142\u0105cz",
           pollBtn: "G\u0142osowanie go\u015Bci",
           pollStart: "Pozw\xF3l go\u015Bciom zag\u0142osowa\u0107 na 3 kolejne utwory",
           pollRun: "G\u0142osowanie trwa \u2026 jeszcze {s} s",
@@ -5733,11 +5701,7 @@
           partyFogHint: "Kalabal\u0131\u011F\u0131n arkas\u0131nda yava\u015F\xE7a s\xFCz\xFClen, \u0131\u015F\u0131klarla renklenen sis",
           partyDrones: "Drone \u0131\u015F\u0131k g\xF6sterisi",
           partyDronesHint: "A\xE7\u0131k havada: ilk b\xFCy\xFCk drop'ta g\xF6ky\xFCz\xFCndeki \u0131\u015F\u0131klar kalp, y\u0131ld\u0131z, daire veya dalga olu\u015Fturur",
-          partyPause: "Duraklama sahnesi",
-          partyPauseHint: "M\xFCzik duraklat\u0131ld\u0131\u011F\u0131nda: \u015Fark\u0131n\u0131n ve telefonlar i\xE7in QR kodunun oldu\u011Fu sakin bir sahne",
           confetti: "Konfeti topu (C)",
-          pauseTitle: "K\u0131sa mola",
-          pauseSub: "Tara ve kat\u0131l",
           pollBtn: "Konuk oylamas\u0131",
           pollStart: "Konuklar s\u0131radaki 3 \u015Fark\u0131 i\xE7in oy versin",
           pollRun: "Oylama s\xFCr\xFCyor \u2026 {s} sn kald\u0131",
@@ -6370,11 +6334,7 @@
           partyFogHint: "\u041C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u043F\u043B\u044B\u0432\u0443\u0449\u0438\u0439 \u0442\u0443\u043C\u0430\u043D \u0437\u0430 \u0442\u043E\u043B\u043F\u043E\u0439, \u043E\u043A\u0440\u0430\u0448\u0435\u043D\u043D\u044B\u0439 \u0441\u0432\u0435\u0442\u043E\u043C \u043F\u0440\u043E\u0436\u0435\u043A\u0442\u043E\u0440\u043E\u0432",
           partyDrones: "\u0421\u0432\u0435\u0442\u043E\u0432\u043E\u0435 \u0448\u043E\u0443 \u0434\u0440\u043E\u043D\u043E\u0432",
           partyDronesHint: "\u041F\u043E\u0434 \u043E\u0442\u043A\u0440\u044B\u0442\u044B\u043C \u043D\u0435\u0431\u043E\u043C: \u043D\u0430 \u043F\u0435\u0440\u0432\u043E\u043C \u0431\u043E\u043B\u044C\u0448\u043E\u043C \u0434\u0440\u043E\u043F\u0435 \u043E\u0433\u043D\u0438 \u0432 \u043D\u0435\u0431\u0435 \u0441\u043A\u043B\u0430\u0434\u044B\u0432\u0430\u044E\u0442\u0441\u044F \u0432 \u0441\u0435\u0440\u0434\u0446\u0435, \u0437\u0432\u0435\u0437\u0434\u0443, \u043A\u0440\u0443\u0433 \u0438\u043B\u0438 \u0432\u043E\u043B\u043D\u0443",
-          partyPause: "\u0421\u0446\u0435\u043D\u0430 \u043F\u0430\u0443\u0437\u044B",
-          partyPauseHint: "\u041A\u043E\u0433\u0434\u0430 \u043C\u0443\u0437\u044B\u043A\u0430 \u043D\u0430 \u043F\u0430\u0443\u0437\u0435: \u0441\u043F\u043E\u043A\u043E\u0439\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0441 \u0442\u0440\u0435\u043A\u043E\u043C \u0438 QR-\u043A\u043E\u0434\u043E\u043C \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u043E\u0432",
           confetti: "\u0425\u043B\u043E\u043F\u0443\u0448\u043A\u0430 \u0441 \u043A\u043E\u043D\u0444\u0435\u0442\u0442\u0438 (C)",
-          pauseTitle: "\u041D\u0435\u0431\u043E\u043B\u044C\u0448\u043E\u0439 \u043F\u0435\u0440\u0435\u0440\u044B\u0432",
-          pauseSub: "\u0421\u043A\u0430\u043D\u0438\u0440\u0443\u0439 \u0438 \u043F\u0440\u0438\u0441\u043E\u0435\u0434\u0438\u043D\u044F\u0439\u0441\u044F",
           pollBtn: "\u0413\u043E\u043B\u043E\u0441\u043E\u0432\u0430\u043D\u0438\u0435 \u0433\u043E\u0441\u0442\u0435\u0439",
           pollStart: "\u041F\u0443\u0441\u0442\u044C \u0433\u043E\u0441\u0442\u0438 \u043F\u0440\u043E\u0433\u043E\u043B\u043E\u0441\u0443\u044E\u0442 \u0437\u0430 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0435 3 \u0442\u0440\u0435\u043A\u0430",
           pollRun: "\u0418\u0434\u0451\u0442 \u0433\u043E\u043B\u043E\u0441\u043E\u0432\u0430\u043D\u0438\u0435 \u2026 \u043E\u0441\u0442\u0430\u043B\u043E\u0441\u044C {s} \u0441",
@@ -7007,11 +6967,7 @@
           partyFogHint: "\u041F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u043F\u043B\u0438\u043D\u0435 \u0442\u0443\u043C\u0430\u043D \u0437\u0430 \u043D\u0430\u0442\u043E\u0432\u043F\u043E\u043C, \u0437\u0430\u0431\u0430\u0440\u0432\u043B\u0435\u043D\u0438\u0439 \u0441\u0432\u0456\u0442\u043B\u043E\u043C \u043F\u0440\u043E\u0436\u0435\u043A\u0442\u043E\u0440\u0456\u0432",
           partyDrones: "\u0421\u0432\u0456\u0442\u043B\u043E\u0432\u0435 \u0448\u043E\u0443 \u0434\u0440\u043E\u043D\u0456\u0432",
           partyDronesHint: "\u041F\u0440\u043E\u0441\u0442\u043E \u043D\u0435\u0431\u0430: \u043D\u0430 \u043F\u0435\u0440\u0448\u043E\u043C\u0443 \u0432\u0435\u043B\u0438\u043A\u043E\u043C\u0443 \u0434\u0440\u043E\u043F\u0456 \u0432\u043E\u0433\u043D\u0456 \u0432 \u043D\u0435\u0431\u0456 \u0441\u043A\u043B\u0430\u0434\u0430\u044E\u0442\u044C\u0441\u044F \u0432 \u0441\u0435\u0440\u0446\u0435, \u0437\u0456\u0440\u043A\u0443, \u043A\u043E\u043B\u043E \u0430\u0431\u043E \u0445\u0432\u0438\u043B\u044E",
-          partyPause: "\u0421\u0446\u0435\u043D\u0430 \u043F\u0430\u0443\u0437\u0438",
-          partyPauseHint: "\u041A\u043E\u043B\u0438 \u043C\u0443\u0437\u0438\u043A\u0430 \u043D\u0430 \u043F\u0430\u0443\u0437\u0456: \u0441\u043F\u043E\u043A\u0456\u0439\u043D\u0430 \u0441\u0446\u0435\u043D\u0430 \u0437 \u043F\u0456\u0441\u043D\u0435\u044E \u0442\u0430 QR-\u043A\u043E\u0434\u043E\u043C \u0434\u043B\u044F \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0456\u0432",
           confetti: "\u0413\u0430\u0440\u043C\u0430\u0442\u0430 \u0437 \u043A\u043E\u043D\u0444\u0435\u0442\u0456 (C)",
-          pauseTitle: "\u041A\u043E\u0440\u043E\u0442\u043A\u0430 \u043F\u0435\u0440\u0435\u0440\u0432\u0430",
-          pauseSub: "\u0421\u043A\u0430\u043D\u0443\u0439 \u0456 \u043F\u0440\u0438\u0454\u0434\u043D\u0443\u0439\u0441\u044F",
           pollBtn: "\u0413\u043E\u043B\u043E\u0441\u0443\u0432\u0430\u043D\u043D\u044F \u0433\u043E\u0441\u0442\u0435\u0439",
           pollStart: "\u041D\u0435\u0445\u0430\u0439 \u0433\u043E\u0441\u0442\u0456 \u043F\u0440\u043E\u0433\u043E\u043B\u043E\u0441\u0443\u044E\u0442\u044C \u0437\u0430 \u043D\u0430\u0441\u0442\u0443\u043F\u043D\u0456 3 \u043F\u0456\u0441\u043D\u0456",
           pollRun: "\u0422\u0440\u0438\u0432\u0430\u0454 \u0433\u043E\u043B\u043E\u0441\u0443\u0432\u0430\u043D\u043D\u044F \u2026 \u0437\u0430\u043B\u0438\u0448\u0438\u043B\u043E\u0441\u044C {s} \u0441",
@@ -7644,11 +7600,7 @@
           partyFogHint: "\u89B3\u5BA2\u306E\u5F8C\u308D\u3092\u3086\u3063\u304F\u308A\u6F02\u3046\u30B9\u30E2\u30FC\u30AF\u304C\u3001\u30E9\u30A4\u30C8\u3067\u8272\u3065\u304D\u307E\u3059",
           partyDrones: "\u30C9\u30ED\u30FC\u30F3\u30E9\u30A4\u30C8\u30B7\u30E7\u30FC",
           partyDronesHint: "\u5C4B\u5916\u5411\u3051\uFF1A\u6700\u521D\u306E\u5927\u304D\u306A\u30C9\u30ED\u30C3\u30D7\u3067\u3001\u7A7A\u306E\u5149\u304C\u30CF\u30FC\u30C8\u3001\u661F\u3001\u5186\u3001\u307E\u305F\u306F\u6CE2\u3092\u63CF\u304D\u307E\u3059",
-          partyPause: "\u30DD\u30FC\u30BA\u30B7\u30FC\u30F3",
-          partyPauseHint: "\u97F3\u697D\u304C\u4E00\u6642\u505C\u6B62\u3059\u308B\u3068\u3001\u66F2\u3068\u30B9\u30DE\u30DB\u7528\u306EQR\u30B3\u30FC\u30C9\u3092\u8868\u793A\u3059\u308B\u843D\u3061\u7740\u3044\u305F\u30B7\u30FC\u30F3\u306B\u306A\u308A\u307E\u3059",
           confetti: "\u7D19\u5439\u96EA\u30AD\u30E3\u30CE\u30F3 (C)",
-          pauseTitle: "\u3061\u3087\u3063\u3068\u4F11\u61A9",
-          pauseSub: "\u30B9\u30AD\u30E3\u30F3\u3057\u3066\u53C2\u52A0\u3057\u3088\u3046",
           pollBtn: "\u30B2\u30B9\u30C8\u6295\u7968",
           pollStart: "\u6B21\u306E3\u66F2\u3092\u30B2\u30B9\u30C8\u306B\u6295\u7968\u3057\u3066\u3082\u3089\u3046",
           pollRun: "\u6295\u7968\u4E2D \u2026 \u6B8B\u308A {s} \u79D2",
@@ -8281,11 +8233,7 @@
           partyFogHint: "\uAD00\uAC1D \uB4A4\uB85C \uCC9C\uCC9C\uD788 \uD750\uB974\uB294 \uC548\uAC1C\uAC00 \uC870\uBA85 \uC0C9\uC73C\uB85C \uBB3C\uB4E4\uC5B4\uC694",
           partyDrones: "\uB4DC\uB860 \uB77C\uC774\uD2B8 \uC1FC",
           partyDronesHint: "\uC57C\uC678\uC6A9: \uCCAB \uBC88\uC9F8 \uD070 \uB4DC\uB86D\uC5D0\uC11C \uD558\uB298\uC758 \uBD88\uBE5B\uC774 \uD558\uD2B8, \uBCC4, \uC6D0 \uB610\uB294 \uBB3C\uACB0 \uBAA8\uC591\uC744 \uB9CC\uB4E4\uC5B4\uC694",
-          partyPause: "\uC77C\uC2DC\uC815\uC9C0 \uC7A5\uBA74",
-          partyPauseHint: "\uC74C\uC545\uC774 \uBA48\uCD94\uBA74 \uB178\uB798\uC640 \uD3F0\uC6A9 QR \uCF54\uB4DC\uAC00 \uC788\uB294 \uCC28\uBD84\uD55C \uC7A5\uBA74\uC774 \uB098\uC640\uC694",
           confetti: "\uCEE8\uD398\uD2F0 \uCE90\uB17C (C)",
-          pauseTitle: "\uC7A0\uAE50 \uD734\uC2DD",
-          pauseSub: "\uC2A4\uCE94\uD558\uACE0 \uCC38\uC5EC\uD558\uC138\uC694",
           pollBtn: "\uAC8C\uC2A4\uD2B8 \uD22C\uD45C",
           pollStart: "\uB2E4\uC74C 3\uACE1\uC744 \uAC8C\uC2A4\uD2B8\uAC00 \uD22C\uD45C\uD558\uAC8C \uD558\uAE30",
           pollRun: "\uD22C\uD45C \uC911 \u2026 {s}\uCD08 \uB0A8\uC74C",
@@ -8918,11 +8866,7 @@
           partyFogHint: "\u5728\u4EBA\u7FA4\u540E\u65B9\u7F13\u7F13\u98D8\u52A8\u7684\u70DF\u96FE\uFF0C\u88AB\u706F\u5149\u67D3\u4E0A\u989C\u8272",
           partyDrones: "\u65E0\u4EBA\u673A\u706F\u5149\u79C0",
           partyDronesHint: "\u9002\u7528\u4E8E\u6237\u5916\uFF1A\u7B2C\u4E00\u6B21\u5927 Drop \u65F6\uFF0C\u5929\u7A7A\u4E2D\u7684\u706F\u5149\u4F1A\u7EC4\u6210\u7231\u5FC3\u3001\u661F\u661F\u3001\u5706\u5708\u6216\u6CE2\u6D6A",
-          partyPause: "\u6682\u505C\u573A\u666F",
-          partyPauseHint: "\u97F3\u4E50\u6682\u505C\u65F6\uFF1A\u663E\u793A\u5F53\u524D\u6B4C\u66F2\u548C\u624B\u673A\u626B\u7801\u7528\u4E8C\u7EF4\u7801\u7684\u5B89\u9759\u753B\u9762",
           confetti: "\u5F69\u7EB8\u793C\u70AE (C)",
-          pauseTitle: "\u77ED\u6682\u4F11\u606F",
-          pauseSub: "\u626B\u7801\u52A0\u5165",
           pollBtn: "\u5609\u5BBE\u6295\u7968",
           pollStart: "\u8BA9\u5609\u5BBE\u4E3A\u63A5\u4E0B\u6765\u7684 3 \u9996\u6B4C\u6295\u7968",
           pollRun: "\u6295\u7968\u4E2D \u2026 \u8FD8\u5269 {s} \u79D2",
@@ -9189,7 +9133,6 @@
         partyHandsUp: true,
         partyFlashStorm: true,
         // Musik pausiert: ruhige Szene mit Party-Namen und QR-Code
-        partyPause: true,
         // DJ: passt der nächste Song gar nicht (Tonart, Tempo, Energie), einen passenderen aus der Warteschlange vorziehen
         djEnergy: false,
         // Party-Spiele: Runden, Zeiten (Sekunden), Bonus für Schnelligkeit, Größe der Karte, Felder des Glücksrads
@@ -9584,12 +9527,28 @@
     }
     return (item?.artists || []).map((a) => a.name).join(", ");
   }
-  var toHttp;
+  function readVolume() {
+    const v = S.Player.getVolume?.() ?? S.Platform?.PlaybackAPI?._volume;
+    return typeof v === "number" && v >= 0 ? v : null;
+  }
+  function writeVolume(v) {
+    if (S.Player.setVolume) S.Player.setVolume(v);
+    else S.Platform?.PlaybackAPI?.setVolume?.(v);
+  }
+  function toggleMute() {
+    const v = readVolume();
+    if (v > 0) {
+      unmuteTo = v;
+      writeVolume(0);
+    } else writeVolume(unmuteTo || 0.5);
+  }
+  var toHttp, unmuteTo;
   var init_player = __esm({
     "src/player.js"() {
       init_selectors();
       init_core();
       toHttp = (u) => u && u.startsWith("spotify:image:") ? "https://i.scdn.co/image/" + u.slice(14) : u || "";
+      unmuteTo = 0;
     }
   });
 
@@ -20894,7 +20853,7 @@
               send2({ type: "debug-start", hidden: document.hidden, version: VERSION, vol: {
                 api: typeof S.Player.getVolume?.(),
                 pb: typeof S.Platform?.PlaybackAPI?._volume,
-                read: readVolume()
+                read: readVolume2()
               } });
               domReport();
             }
@@ -20917,7 +20876,7 @@
         }
         let volTimer = 0, lastVol = null;
         const num = (v) => typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null;
-        function readVolume() {
+        function readVolume2() {
           let v = num(S.Player.getVolume?.());
           if (v === null) v = num(S.Platform?.PlaybackAPI?._volume);
           if (v === null) {
@@ -20932,7 +20891,7 @@
           lastVol = null;
           if (!on) return;
           volTimer = setInterval(() => {
-            const v = readVolume();
+            const v = readVolume2();
             if (v === null) return;
             const muted = !!S.Player.getMute?.() || v === 0;
             const key = Math.round(v * 100) + (muted ? "m" : "");
@@ -21690,6 +21649,7 @@
   function start2(kind) {
     if (!ctx2) return;
     stop3(true);
+    muteBack = 0;
     G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: /* @__PURE__ */ new Map(), view: null, timers: [], used: /* @__PURE__ */ new Set(), lastFn: null };
     boxKey = "";
     clearInterval(ticker);
@@ -21755,7 +21715,7 @@
     for (const p of all()) p.ans = null;
     G.askedAt = Date.now();
     G.onAsked = onEnd;
-    show({ st: "ask", r: G.r, of: rounds(), ...view, end: Date.now() + ms });
+    show({ st: "ask", r: G.r, of: rounds(), att: G.att || 0, ...view, end: Date.now() + ms });
     after(ms, onEnd);
   }
   function award() {
@@ -21775,27 +21735,36 @@
   function muteOn() {
     if (G.muted) return;
     G.muted = true;
-    G.wasMuted = !!S.Player.getMute?.();
-    if (!G.wasMuted) S.Player.setMute?.(true);
+    const v = readVolume();
+    if (v > 0) muteBack = v;
+    if (!(muteBack > 0)) return;
+    writeVolume(0);
     try {
-      localStorage.setItem(MUTE_KEY, "1");
+      localStorage.setItem(MUTE_KEY, String(muteBack));
     } catch {
     }
   }
   function muteOff() {
     if (!G?.muted) return;
     G.muted = false;
-    if (!G.wasMuted) S.Player.setMute?.(false);
+    if (!(muteBack > 0)) return;
+    const v = muteBack;
+    writeVolume(v);
     try {
       localStorage.removeItem(MUTE_KEY);
     } catch {
     }
+    setTimeout(() => {
+      if (!G?.muted && readVolume() === 0) writeVolume(v);
+    }, 700);
   }
   function muteRecover() {
     try {
-      if (!localStorage.getItem(MUTE_KEY)) return;
+      const v = Number(localStorage.getItem(MUTE_KEY));
+      localStorage.removeItem("mirage:gameMute");
+      if (!(v > 0)) return;
       localStorage.removeItem(MUTE_KEY);
-      S.Player.setMute?.(false);
+      setTimeout(() => readVolume() === 0 && writeVolume(v), 2e3);
     } catch {
     }
   }
@@ -21820,7 +21789,12 @@
       muteOff();
       done(item);
     };
-    later(120, () => {
+    const t00 = Date.now();
+    const whenSilent = (go2) => {
+      if (readVolume() === 0 || Date.now() - t00 > 500) return go2();
+      later(30, () => whenSilent(go2));
+    };
+    whenSilent(() => {
       S.Player.next?.();
       S.Player.play?.();
       const t0 = Date.now();
@@ -21837,17 +21811,22 @@
         later(60, waitAudio);
       };
       const place = () => {
-        const at3 = fromStart ? 0 : hookPos();
-        S.Player.seek?.(at3);
+        const at3 = Math.round(fromStart ? 0 : hookPos());
         G.clipAt = at3;
-        const t2 = Date.now();
+        let tries2 = 0, t2 = 0;
+        const aim = () => {
+          tries2++;
+          t2 = Date.now();
+          S.Player.seek?.(at3);
+          settled();
+        };
         const settled = () => {
           const p = S.Player.getProgress?.() ?? 0;
           if (Math.abs(p - at3) < 1200 && Date.now() - t2 > 150) return later(300, () => ready(nowItem()));
-          if (Date.now() - t2 > 1500) return ready(nowItem());
+          if (Date.now() - t2 > 700) return tries2 < 4 ? aim() : ready(nowItem());
           later(50, settled);
         };
-        settled();
+        aim();
       };
       landed();
     });
@@ -21883,6 +21862,7 @@
     if (SONG_FIELD[G.k] && v.st === "ask" && G.uri && nowUri() && nowUri() !== G.uri) {
       clearTimers();
       G.r--;
+      G.att = (G.att || 0) + 1;
       return songRound(true);
     }
     if (LINE_GAMES.has(G.k) && v.st === "ask" && G.lines && ctx2.lines() !== G.lines) {
@@ -21925,8 +21905,9 @@
   }
   function songAsk(song) {
     const field = SONG_FIELD[G.k], answer = song[field];
-    const others = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer)).slice(0, 3);
-    if (!answer || others.length < 3) {
+    const own = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer));
+    const others = [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, 3);
+    if (!answer) {
       notify2(t("gNeedQueue"), true);
       return G.r > 1 ? finish() : stop3();
     }
@@ -21947,8 +21928,15 @@
     if (G.r > rounds()) return finish();
     askLine(0);
   }
+  function freshLines(lines) {
+    if (G.usedIn !== lines) {
+      G.usedIn = lines;
+      G.used = /* @__PURE__ */ new Set();
+    }
+  }
   function askLine(tries2) {
     const lines = ctx2.lines() || [], pos = ctx2.pos(), gap = G.k === "gap";
+    freshLines(lines);
     const ahead = Math.max(2e4, askMs() + 6e3);
     const usable = (l, i2) => !G.used.has(i2) && (gap ? !!gapWord(l.text || "") : i2 > 0 && !!lines[i2 - 1].text?.trim() && (l.text || "").trim().length > 2);
     const fits = (l, i2) => l.t > pos + 7e3 && l.t < pos + ahead && usable(l, i2);
@@ -22002,6 +21990,7 @@
   }
   function tfAsk(tries2) {
     const lines = ctx2.lines() || [];
+    freshLines(lines);
     const words = [...new Set(lines.flatMap((l) => l.text?.match(WORD) || []).map((w) => w.toLocaleLowerCase()))].filter((w) => w.length <= 18);
     const cand = lines.map((l, i2) => i2).filter((i2) => !G.used.has(i2) && gapWord(lines[i2].text || "") && lines[i2].text.trim().split(/\s+/).length >= 4);
     if (!cand.length || words.length < 6) {
@@ -22236,6 +22225,7 @@
   }
   function singGo(tries2) {
     const lines = ctx2.lines() || [], pos = ctx2.pos();
+    freshLines(lines);
     const hasText2 = (l) => l && (l.text || "").trim().length > 3 && l.text !== "\u266A";
     const seen2 = /* @__PURE__ */ new Map();
     for (const l of lines) seen2.set(l.text, (seen2.get(l.text) || 0) + 1);
@@ -22615,7 +22605,7 @@
     const res = box.querySelector(".m-g-wres");
     if (res) res.textContent = v.st === "res" ? v.text : v.st === "spin" ? "\u2026" : t("gSpin");
   }
-  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, pool, nowItem, nowUri, short, nameOf, all, alive, top, after, later, FIRST, MUTE_KEY, WORD, gapWord, FILLER, FAST_PTS, div, secs, beatRaf, WHEEL_COLORS, games;
+  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, pool, nowItem, nowUri, short, nameOf, all, alive, top, after, later, FIRST, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, WORD, gapWord, FILLER, FAST_PTS, div, secs, beatRaf, WHEEL_COLORS, games;
   var init_games = __esm({
     "src/games.js"() {
       init_core();
@@ -22625,6 +22615,7 @@
       init_audio();
       init_lock();
       init_sfx();
+      init_player();
       GAME_LIST = [
         { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "\u{1F3A4}" },
         { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint", icon: "\u{1F3B5}" },
@@ -22722,7 +22713,10 @@
         taps: () => tapsGo(),
         never: () => neverRound()
       };
-      MUTE_KEY = "mirage:gameMute";
+      MUTE_KEY = "mirage:gameVol";
+      muteBack = 0;
+      SPARE_ARTISTS = ["Taylor Swift", "The Weeknd", "Drake", "Billie Eilish", "Ed Sheeran", "Dua Lipa", "Rihanna", "Eminem", "Coldplay", "Adele", "Queen", "Bruno Mars"];
+      SPARE_TITLES = ["Blinding Lights", "Shape of You", "Bad Guy", "Levitating", "Rolling in the Deep", "Umbrella", "Viva la Vida", "Lose Yourself", "Bohemian Rhapsody", "Uptown Funk", "Anti-Hero", "Stay"];
       WORD = /[\p{L}\p{M}'’]{4,}/gu;
       gapWord = (text) => (text.match(WORD) || []).filter((w) => w.length <= 18).sort((a, b) => b.length - a.length)[0];
       FILLER = /* @__PURE__ */ new Set(["that", "your", "with", "this", "have", "when", "what", "just", "like", "from", "they", "will", "there", "about", "yeah", "gonna", "wanna", "dass", "wenn", "aber", "nicht", "eine", "einen", "mich", "dich", "auch", "noch", "sind"]);
@@ -23126,7 +23120,7 @@
             setTimeout(syncState, 200);
           };
           q.mute.onclick = () => {
-            S.Player.toggleMute();
+            toggleMute();
             setTimeout(syncState, 120);
           };
           q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
@@ -24816,7 +24810,6 @@
           const mode = el3.dataset.mode;
           const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
           if (el3.classList.contains("is-shatter") !== shatterOn) el3.classList.toggle("is-shatter", shatterOn);
-          pauseScene(mode === "party" && cfg.partyPause && !cfg.calm && !S.Player.isPlaying() && !games.active(), now);
           if (LYR.has(mode)) drawLyrics(pos);
           if (VIZ.has(mode)) {
             try {
@@ -25250,27 +25243,6 @@
         function confetti() {
           if (!el3 || el3.dataset.mode !== "party" || cfg.calm) return;
           moments2.confetti++;
-        }
-        let pausedAt = 0;
-        function pauseScene(on, now) {
-          if (!on) {
-            pausedAt = 0;
-            q.pause?.classList.remove("is-on");
-            return;
-          }
-          if (!pausedAt) pausedAt = now;
-          if (now - pausedAt < 3e3 || q.pause?.classList.contains("is-on")) return;
-          if (!q.pause) {
-            q.pause = document.createElement("div");
-            q.pause.className = "m-im-pause";
-            el3.append(q.pause);
-          }
-          q.pause.textContent = "";
-          const b = document.createElement("b"), s2 = document.createElement("small");
-          b.textContent = t("pauseTitle");
-          s2.textContent = titleOf(currentItem()) || "";
-          q.pause.append(b, s2);
-          q.pause.classList.add("is-on");
         }
         function menuPanel(body) {
           const go2 = (kind) => () => showSide(kind);
@@ -26872,8 +26844,6 @@
         toggle("partyFog", () => {
         }),
         toggle("partyDrones", () => {
-        }),
-        toggle("partyPause", () => {
         }),
         toggle("partyShatter", () => {
         }),

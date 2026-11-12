@@ -80,3 +80,33 @@ jobs:
 
           if (failed) process.exit(1);
           JS
+
+  games:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install browser libraries
+        run: sudo apt-get update && sudo apt-get install -y xvfb libnss3 libatk-bridge2.0-0 libgtk-3-0 libgbm1 libasound2t64
+
+      # Alle Party-Spiele: echtes Theme und echte Handy-Seite über einen lokalen Relay
+      - name: Play all party games
+        run: xvfb-run -a npm run test:games
+        env:
+          ELECTRON_DISABLE_SANDBOX: "1"
+
+      - name: Keep screenshots of failed games
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-test-output
+          path: tests/e2e/out/

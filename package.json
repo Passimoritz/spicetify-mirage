@@ -1,6 +1,6 @@
 {
   "name": "spicetify-mirage",
-  "version": "1.23.0",
+  "version": "1.23.1",
   "private": true,
   "description": "Mirage – a living glass theme for Spicetify. Tooling for building Mirage/theme.js from src/.",
   "license": "MIT",
@@ -12,17 +12,21 @@
     "build": "node tools/build.js",
     "watch": "node tools/build.js --watch",
     "lint": "eslint --no-error-on-unmatched-pattern src && stylelint Mirage/user.css",
-    "check": "npm run build && git diff --exit-code Mirage/theme.js"
+    "check": "npm run build && git diff --exit-code Mirage/theme.js",
+    "test:games": "electron tests/e2e/run.js",
+    "check:spotify": "node tools/check-spotify.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "electron": "^33.4.11",
     "esbuild": "^0.28.2",
     "eslint": "^9.39.5",
     "globals": "^17.13.0",
     "jsqr": "^1.4.0",
     "qrcode": "^1.5.4",
     "stylelint": "^17.16.0",
-    "stylelint-config-standard": "^40.0.0"
+    "stylelint-config-standard": "^40.0.0",
+    "ws": "^8.22.1"
   },
   "engines": {
     "node": ">=20.19"

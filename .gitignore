@@ -6,3 +6,5 @@ overlay/dist/
 
 # Demo-Videos (zu groß fürs Repo)
 media/
+
+tests/e2e/out/

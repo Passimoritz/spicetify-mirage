@@ -41,6 +41,16 @@ body,
   --decorative-subdued: var(--m-line) !important;
 }
 
+/* Spotify nimmt die Hintergrundfarbe auch als Schrift auf farbigen Flächen (Tonart-Abzeichen, Hinweise).
+   Hier ist sie durchsichtig, die Schrift wäre unsichtbar. tools/check-spotify.js meldet neue solche Stellen. */
+[data-encore-id="tag"][style*="background-color"],
+.Psc6sReKFsPXwnz1kvAR,
+.MhQ4IslqUKbPFP5sNq10,
+.POWlFlLUUtmA_JBtM3Wo,
+.avnj48VJ0oJ6tMx7lYZl.LCj7BdHyyr0Su0kPxcQq {
+  color: #121212 !important;
+}
+
 /* ---------- Bühne: alles transparent, damit die Mirage-Ebene durchscheint ---------- */
 html,
 body {
@@ -385,14 +395,16 @@ html.mirage-no-tilt [data-encore-id="card"] {
 
 /* Chips/Filter */
 .ChipInnerComponent,
-.ChipInnerComponent-sm {
+.ChipInnerComponent-sm,
+[class*="chip__inner"] {
   border-radius: 999px !important;
   backdrop-filter: blur(10px);
 }
 [aria-checked="true"] .ChipInnerComponent,
 [aria-checked="true"] .ChipInnerComponent-sm,
 .ChipInnerComponent-selected,
-.ChipInnerComponent-sm-selected {
+.ChipInnerComponent-sm-selected,
+[class*="chip__inner--selected"] {
   background: linear-gradient(135deg, var(--m-c), var(--m-a)) !important;
   color: #0b0a12 !important;
 }
@@ -428,7 +440,9 @@ html.mirage-no-tilt [data-encore-id="card"] {
 }
 .main-trackList-playingIcon,
 .main-trackList-rowTitle.main-trackList-playing,
-.main-trackList-active .main-trackList-rowTitle {
+.main-trackList-active .main-trackList-rowTitle,
+.fF97jAvlGYYHbI3_vPlV,
+.main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU .main-trackList-rowMainContentTitle {
   color: var(--m-c) !important;
   text-shadow: 0 0 18px rgba(var(--m-a-rgb), 0.8);
 }
@@ -598,19 +612,22 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
    LYRICS: Bühnenlicht
    ========================================================================== */
 .lyrics-lyrics-container,
-.lyrics-lyrics-background {
+.lyrics-lyrics-background,
+[style*="--lyrics-color-background"] {
   background: transparent !important;
   --lyrics-color-background: transparent !important;
   --lyrics-color-active: #fff !important;
   --lyrics-color-inactive: rgba(255, 255, 255, 0.3) !important;
   --lyrics-color-passed: rgba(var(--m-c-rgb), 0.6) !important;
 }
-.lyrics-lyricsContent-lyric {
+.lyrics-lyricsContent-lyric,
+.J4_kkGYm5hjbZlztykxr {
   font-weight: 700 !important;
   letter-spacing: -0.02em;
   transition: all 0.5s var(--m-ease) !important;
 }
-.lyrics-lyricsContent-lyric.lyrics-lyricsContent-active {
+.lyrics-lyricsContent-lyric.lyrics-lyricsContent-active,
+.J4_kkGYm5hjbZlztykxr.SOT5gG00YqnGQ4uR7PwQ {
   color: #fff !important;
   text-shadow:
     0 0 24px rgba(var(--m-a-rgb), 0.95),
@@ -2092,7 +2109,8 @@ html.mirage-beat #mirage-stage .m-pulse {
 }
 /* Der laufende Song: fließender Farbstrom */
 .main-trackList-trackListRow:has(.main-trackList-playingIcon),
-.main-trackList-trackListRow:has(.main-trackList-playing) {
+.main-trackList-trackListRow:has(.main-trackList-playing),
+.main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
   background: linear-gradient(
     90deg,
     rgba(var(--m-a-rgb), 0.3),
@@ -2103,7 +2121,8 @@ html.mirage-beat #mirage-stage .m-pulse {
   animation: m-flow 6s linear infinite;
 }
 .main-trackList-trackListRow:has(.main-trackList-playingIcon)::before,
-.main-trackList-trackListRow:has(.main-trackList-playing)::before {
+.main-trackList-trackListRow:has(.main-trackList-playing)::before,
+.main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU::before {
   transform: scaleY(1);
 }
 @keyframes m-flow {
@@ -2201,7 +2220,8 @@ html.mirage-beat #mirage-stage .m-pulse {
 }
 
 /* Einstellungsseite von Spotify */
-.x-settings-container .x-settings-section {
+.x-settings-container .x-settings-section,
+.x-settings-section {
   padding: 18px 20px;
   margin-bottom: 14px;
   border-radius: 18px;
@@ -4293,34 +4313,6 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 #mirage-immersive.is-gap .m-im-lyrics {
   opacity: 0;
 }
-/* Pausen-Szene: ruhig, mittig, mit QR-Code für die Handys */
-#mirage-immersive .m-im-pause {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 14px;
-  text-align: center;
-  color: #fff;
-  background: rgb(8 7 14 / 0.72);
-  backdrop-filter: blur(24px) saturate(1.3);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.9s var(--m-ease);
-}
-#mirage-immersive .m-im-pause.is-on {
-  opacity: 1;
-}
-#mirage-immersive .m-im-pause b {
-  font: 800 clamp(40px, 6vw, 96px) / 1 var(--m-font);
-  letter-spacing: -0.03em;
-}
-#mirage-immersive .m-im-pause small {
-  font-size: clamp(14px, 1.4vw, 22px);
-  opacity: 0.75;
-}
 /* Abstimmung: Karte unten links mit drei Balken */
 #mirage-immersive .m-im-pollcard {
   position: absolute;
@@ -4572,7 +4564,8 @@ html.mirage-rich #mirage-stage .m-aurora {
   animation-timing-function: steps(192) !important;
 }
 [data-testid="now-playing-bar"]::before,
-.main-trackList-trackListRow:has(.main-trackList-playing) {
+.main-trackList-trackListRow:has(.main-trackList-playing),
+.main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
   animation-timing-function: steps(144) !important;
 }
 /* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */

@@ -29,4 +29,24 @@ function artistOf(item) {
   return (item?.artists || []).map((a) => a.name).join(", ");
 }
 
-export { currentItem, toHttp, covers, titleOf, artistOf };
+/* ---- Lautstärke */
+// Spicetify.Player.setMute und toggleMute klicken auf „.volume-bar__icon-button“. Diese Klasse gibt es in aktuellen
+// Spotify-Versionen nicht mehr, der Aufruf tut dann still nichts. Darum immer über die Lautstärke selbst.
+function readVolume() {
+  const v = S.Player.getVolume?.() ?? S.Platform?.PlaybackAPI?._volume;
+  return typeof v === "number" && v >= 0 ? v : null;
+}
+function writeVolume(v) {
+  if (S.Player.setVolume) S.Player.setVolume(v);
+  else S.Platform?.PlaybackAPI?.setVolume?.(v);
+}
+let unmuteTo = 0;
+function toggleMute() {
+  const v = readVolume();
+  if (v > 0) {
+    unmuteTo = v;
+    writeVolume(0);
+  } else writeVolume(unmuteTo || 0.5);
+}
+
+export { currentItem, toHttp, covers, titleOf, artistOf, readVolume, writeVolume, toggleMute };
