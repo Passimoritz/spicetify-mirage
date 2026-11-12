@@ -120,7 +120,8 @@ const bridge = (() => {
     const L = party.live;
     // auch ohne Kantenlicht: die OBS-Party-Quelle der Overlay-App braucht das Licht ebenso
     if (!L || performance.now() - L.at > 400 || document.hidden) return;
-    send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge });
+    // nf = „Keine Blitze“: das Overlay soll dann weder blitzen noch hart aufreißen
+    send({ type: "party", a: L.a, k: L.k, e: L.e, d: L.d, pal: L.pal || palette(), edge: !!cfg.partyEdge, nf: cfg.noFlash ? 1 : 0 });
   }
   async function pushLyric() {
     const uri = currentItem()?.uri || "";

@@ -1270,6 +1270,8 @@ const immersive = (() => {
     const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
     if (px) partyExtras(px, now, dt, R, dpr);
     curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt) : null;
+    // Gitarrenblitze brauchen die Freigabe der Blitz-Schranke auch in leisen Stellen
+    party.stageFlash = (curInst?.guitar || 0) > 0.3;
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
     quietNow = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
     if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
@@ -1691,9 +1693,11 @@ const immersive = (() => {
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
       rig: cfg.partyRig && px.fx && px.level >= 2 && !lightMode(),
-      flash: cfg.partyFlash && px.fx,
+      flash: cfg.partyFlash && px.fx && !cfg.noFlash,
       inst: curInst,
-      strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,
+      strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4 && !cfg.noFlash,
+      // „Keine Blitze“ für alles Übrige der Bühne (Gitarrenblitze, Handy-Blitze, weißer Drop) · Freigabe der Blitz-Schranke
+      noFlash: !!cfg.noFlash, flashGo: !!px.flashGo,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !PLR.isPlaying(),
@@ -1701,7 +1705,7 @@ const immersive = (() => {
       fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
       drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
       song: currentItem()?.uri || "",
-      handsUp: moments.hands, flashStorm: moments.storm, confetti: moments.confetti,
+      handsUp: moments.hands, flashStorm: cfg.noFlash ? 0 : moments.storm, confetti: moments.confetti,
     });
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
@@ -1843,6 +1847,7 @@ const immersive = (() => {
   const glowSprite = venueLocal.glowSprite;
   let venueWorker = null, venueCtx = null, venueOn = false, venueBusy = false, venueSentAt = 0, venueDt = 0;
   const venueHold = { dropHit: false, hit: false };
+  let venueFlashGo = false;
   function venueInit() {
     if (venueWorker || venueCtx) return;
     try {
@@ -1881,13 +1886,15 @@ const immersive = (() => {
     // einmalige Signale (Drop, Treffer) gehen beim Auslassen nicht verloren
     venueHold.dropHit ||= !!st.px.dropHit;
     venueHold.hit ||= !!st.px.hit;
+    venueFlashGo ||= !!st.flashGo;
     if (venueWorker) {
       const now = performance.now();
       if (venueBusy && now - venueSentAt < 250) return;
       st.dt = venueDt;
       venueDt = 0;
       Object.assign(st.px, venueHold);
-      venueHold.dropHit = venueHold.hit = false;
+      st.flashGo = venueFlashGo;
+      venueHold.dropHit = venueHold.hit = venueFlashGo = false;
       venueBusy = true;
       venueSentAt = now;
       venueWorker.postMessage({ type: "frame", st });
@@ -1895,7 +1902,7 @@ const immersive = (() => {
     }
     st.dt = venueDt;
     venueDt = 0;
-    venueHold.dropHit = venueHold.hit = false;
+    venueHold.dropHit = venueHold.hit = venueFlashGo = false;
     if (venueCtx) {
       if (q.venueEl.width !== st.vw || q.venueEl.height !== st.vh) [q.venueEl.width, q.venueEl.height] = [st.vw, st.vh];
       venueLocal.draw(venueCtx, st);
@@ -1942,7 +1949,8 @@ const immersive = (() => {
     // die echte Kick (aus der Klangfarbe) treibt Strahlen, Scheinwerfer, Kranz und Puls – je mehr Energie, desto mehr
     px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
     // Hintergrund atmet mit: Kick, Energie, Refrain und Drop heben die Farbfläche (nur Deckkraft – billig)
-    px.ambient = clamp(0.04 + px.kickEnv * 0.2 * px.I + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
+    // („Keine Blitze“: ohne den Kick-Anteil, die Fläche folgt dann nur der langsamen Energie)
+    px.ambient = clamp(0.04 + (cfg.noFlash ? 0 : px.kickEnv * 0.2 * px.I) + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
     // Lichtregie: vor dem Drop wird es ruhiger und gespannter, auf dem letzten Schlag davor ist es dunkel –
     // dann schlägt der Drop ein. Im letzten Refrain gibt das Licht alles.
     if (px.blackout) {
@@ -1981,7 +1989,7 @@ const immersive = (() => {
       px.beamVis *= dim;
       if (!blend.waiting) {
         blend.glow *= Math.exp(-dt * 2.5);
-        px.flash = Math.max(px.flash, blend.glow * 0.4);
+        if (!cfg.noFlash) px.flash = Math.max(px.flash, blend.glow * 0.4);
         if (blend.glow < 0.02 && (!blend.from || now - blend.hitAt > (4 * 60000) / (party.info.bpm || 120))) blend = null;
       }
     }
@@ -1996,7 +2004,7 @@ const immersive = (() => {
       recap.peak = { title: q.title.textContent, artist: q.artist.textContent };
     }
     // Liedtext-Funken: beim Drop zerfällt die aktive Zeile in Lichtteilchen, die in die Strahlen fliegen
-    if (px.dropHit && cfg.partyShatter && px.fx && activeEl) {
+    if (px.dropHit && cfg.partyShatter && px.fx && activeEl && !cfg.noFlash) {
       activeEl.classList.remove("is-burst");
       void activeEl.offsetWidth;
       activeEl.classList.add("is-burst");
@@ -2112,8 +2120,11 @@ const immersive = (() => {
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
     // Liedtext zum Mitsingen auf den Handys: aktuelle und nächste Zeile (nur synchroner Liedtext)
     const lineAt = (k) => (lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "♪" && lyr.lines[k]?.text) || "";
-    live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
+    live.feed(noFlashFeed(px), vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
   }
+  // „Keine Blitze“ gilt auch für die Handys: ihre Seite blitzt weiß, sobald der Drop-Wert über 0,85 springt –
+  // gedeckelt kommt er dort nie an (die Seite selbst kennt den Schalter noch nicht)
+  const noFlashFeed = (px) => (cfg.noFlash ? { ...px, drop: Math.min(px.drop, 0.8) } : px);
   const toLocal = (x, y) => [x, y];
   function drawMotes(ctx, dt, dpr) {
     if (!motes.length) return;
@@ -2175,7 +2186,7 @@ const immersive = (() => {
           wfxAt = now;
           wordFx.draw(vctx, {
             pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || palette(),
-            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(),
+            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(), noFlash: !!cfg.noFlash,
           });
         }
       } catch (e) {
@@ -3020,7 +3031,7 @@ const immersive = (() => {
     const pos = songPos(now), px = party.step(pos / 1000, dt, PLR.isPlaying());
     const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
     const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
-    live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
+    live.feed(noFlashFeed(px), vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
   }
   function startTicker() {
     if (ticker) return;

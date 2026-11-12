@@ -1784,6 +1784,10 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
     opacity: 0.25;
   }
 }
+/* „Keine Blitze“: die Liedzeile reißt beim Drop nicht ins Licht auf */
+html.mirage-noflash #mirage-immersive .m-im-line.is-burst {
+  animation: none;
+}
 html.mirage-calm #mirage-immersive .m-im-line:is(.is-hype, .is-burst),
 html.mirage-calm #mirage-immersive .m-im-line.is-hype .m-w {
   animation: none;

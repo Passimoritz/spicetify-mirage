@@ -1003,14 +1003,14 @@ function createWordFx(lexicon, { onFire } = {}) {
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, 6.3);
         ctx.stroke();
-        if (t < 0.15) {
+        if (t < 0.15 && !st.noFlash) {
           ctx.fillStyle = `rgba(255,240,220,${(0.16 * (1 - t / 0.15)).toFixed(3)})`;
           ctx.fillRect(0, 0, w, h);
         }
         break;
       }
       case "sparks":
-        if (f.flicker && Math.random() < 0.18) {
+        if (f.flicker && !st.noFlash && Math.random() < 0.18) {
           ctx.fillStyle = `rgba(160,210,255,${(0.12 * env).toFixed(3)})`;
           ctx.fillRect(0, 0, w, h);
         }

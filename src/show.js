@@ -25,7 +25,8 @@ const CALM = new Set(["chill", "ambient", "jazz", "classical", "cinematic", "bal
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 
-function createShow(glowSprite) {
+// cap = die gemeinsame Blitz-Schranke der Bühne (flashcap.js): Blinder und Gitarrenblitze teilen sie sich mit dem Stroboskop
+function createShow(glowSprite, cap) {
   let vw = 0, vh = 0;
   const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };
   const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);
@@ -36,7 +37,8 @@ function createShow(glowSprite) {
     vh = st.vh;
     const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);
     const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);
-    if (px.dropHit) rig.drop = 1;
+    // der Drop reißt die Strahlen ins Weiße – ohne Blitze bleiben sie in ihrer Farbe
+    if (px.dropHit && !st.noFlash) rig.drop = 1;
     rig.drop *= Math.exp(-dt * 3);
     const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;
     const pats = RIG[key];
@@ -90,7 +92,7 @@ function createShow(glowSprite) {
     }
     // Blinder: warmweiße Flächen-Leuchten, die auf großen Snare-Schlägen im Refrain aufreißen
     const sn = px.snareEnv > 0.8;
-    if (st.flash && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale)) rig.blind = 1;
+    if (st.flash && st.flashGo && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale) && cap.take(t)) rig.blind = 1;
     rig.sn = sn;
     rig.blind *= Math.exp(-dt * 7);
     if (rig.blind > 0.02 && vis > 0) {
@@ -143,7 +145,7 @@ function createShow(glowSprite) {
   }
 
   /* ---- Instrumente */
-  const ins = { sparks: [], bolts: [], keys: new Float32Array(24), lastBolt: 0, kHit: false };
+  const ins = { sparks: [], bolts: [], keys: new Float32Array(24), kHit: false };
   function drawInst(ctx, st, px, pal, dpr) {
     vw = st.vw;
     vh = st.vh;
@@ -191,11 +193,11 @@ function createShow(glowSprite) {
         }
       }
     }
-    // E-Gitarre: Blitze von der Traverse auf den betonten Schlägen, höchstens vier pro Sekunde
+    // E-Gitarre: Blitze von der Traverse auf den betonten Schlägen – nur wenn die Blitz-Schranke frei ist
+    // (höchstens drei pro Sekunde, zusammen mit allen anderen Blitzen), mit „Keine Blitze“ gar nicht
     if (I.guitar > 0.3) {
       const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;
-      if (hitNow && !ins.kHit && t - ins.lastBolt > 0.25) {
-        ins.lastBolt = t;
+      if (hitNow && !ins.kHit && st.flashGo && !st.noFlash && cap.take(t)) {
         const pts = [];
         const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;
         const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);
@@ -208,7 +210,7 @@ function createShow(glowSprite) {
       ins.kHit = hitNow;
       // dazwischen knistert es an der Traverse: kleine blaue Funken
       for (let k = 0; k < 3; k++) {
-        if (Math.random() > dt * 18 * I.guitar) continue;
+        if (st.noFlash || Math.random() > dt * 18 * I.guitar) continue;
         const r = (10 + Math.random() * 16) * dpr;
         ctx.globalAlpha = 0.5 + Math.random() * 0.5;
         ctx.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);

@@ -45,6 +45,9 @@ const DEFAULTS = {
   glass: false,
   // folgt der Systemeinstellung „Bewegung reduzieren“, bis man selbst schaltet
   calm: !!matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  // „Keine Blitze“ (lichtempfindliche Augen): kein Stroboskop, Blinder, Drop-Blitz, aufblitzender Liedtext –
+  // überall, auch auf den Handys. Aus, außer das System bittet um weniger Bewegung
+  noFlash: !!matchMedia?.("(prefers-reduced-motion: reduce)").matches,
   preset: "balanced",
   autoPerf: true,
   lyrSize: 100,
