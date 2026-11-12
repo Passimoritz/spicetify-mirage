@@ -1,7 +1,7 @@
 // Mirage Overlay – zeigt Songansagen des Spicetify-Themes Mirage außerhalb von Spotify.
 // Spotify (theme.js) verbindet sich per WebSocket auf 127.0.0.1:47321 und meldet jeden Song.
 // Läuft auf Windows, macOS und Linux; plattformabhängige Stellen sind mit WIN / MAC / LINUX markiert.
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain, nativeImage, shell, dialog, Notification, net } = require("electron");
+const { app, BrowserWindow, Tray, Menu, screen, ipcMain, nativeImage, shell, dialog, Notification, net, safeStorage } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
@@ -9,6 +9,7 @@ const http = require("http");
 const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
+const { createSecrets, SECRET } = require("./secrets.js");
 const { createCast } = require("./cast.js");
 const { make } = require("./i18n");
 
@@ -71,7 +72,7 @@ const DEFAULTS = {
   control: true,
   // Licht im Raum (Party-Modus)
   lightBright: 100,
-  hueOn: false, hueIp: "", hueUser: "", hueGroup: "0",
+  hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
   chromaOn: false,
@@ -114,18 +115,23 @@ function remember(tr) {
 }
 const openUri = (uri) => /^spotify:track:[A-Za-z0-9]{22}$/.test(uri) && shell.openExternal(uri).catch(() => {});
 let cfg = { ...DEFAULTS };
+// Zugangsdaten liegen verschlüsselt in der Datei (secrets.js); safeStorage geht erst nach app „ready“
+const secrets = createSecrets(safeStorage);
 function load() {
   try {
     const saved = JSON.parse(fs.readFileSync(file(), "utf8"));
     // Bestandsnutzer: eine Einstellungsdatei aus der Zeit vor dem Assistenten heißt „längst eingerichtet“
     if (saved && typeof saved === "object" && !("setupDone" in saved)) saved.setupDone = true;
-    cfg = { ...DEFAULTS, ...saved };
+    const opened = secrets.open(saved);
+    cfg = { ...DEFAULTS, ...opened.cfg };
+    // Klartext aus einer älteren Version: gleich verschlüsselt zurückschreiben, das Klartextfeld verschwindet
+    if (opened.migrated) save();
   } catch {}
 }
 function save() {
   try {
     fs.mkdirSync(path.dirname(file()), { recursive: true });
-    fs.writeFileSync(file(), JSON.stringify(cfg, null, 2));
+    fs.writeFileSync(file(), JSON.stringify(secrets.seal(cfg), null, 2));
   } catch {}
 }
 
@@ -140,10 +146,10 @@ const clients = new Set();
 
 // Alles, was das Overlay-Fenster bekommt, bekommt auch eine offene OBS-Browserquelle
 // Zugangsdaten (Hue-Schlüssel, Home-Assistant-Token) bleiben im Hauptprozess: Overlay und OBS-Quellen
-// bekommen die Einstellungen ohne sie, das Einstellungsfenster nur „gesetzt / nicht gesetzt“
-const SECRET = ["hueUser", "haToken"];
+// bekommen die Einstellungen ohne sie, Einstellungsfenster und Assistent nur „gesetzt / nicht gesetzt“
 const publicCfg = (c) => Object.fromEntries(Object.entries(c).filter(([k]) => !SECRET.includes(k)));
-const settingsCfg = (c) => ({ ...c, haToken: c.haToken ? "set" : "" });
+// secretsPlain: Zugangsdaten liegen im Klartext in der Datei (kein Schlüsselbund) – die Einstellungen sagen das
+const settingsCfg = (c) => ({ ...c, ...Object.fromEntries(SECRET.map((k) => [k, c[k] ? "set" : ""])), secretsPlain: secrets.plain(c) });
 function toOverlay(ch, data) {
   if (ch === "config") data = publicCfg(data);
   overlay?.webContents.send(ch, data);
@@ -1213,7 +1219,18 @@ ipcMain.handle("get", () => ({
     label: d.label || "",
   })),
 }));
-ipcMain.on("set", (_e, patch) => update(patch));
+// Die Hue-Schlüssel setzt nur der Hauptprozess selbst (Koppeln). Aus einem Fenster kommt höchstens ein neu
+// eingetipptes Home-Assistant-Token – nie der Platzhalter „set“ zurück.
+ipcMain.on("set", (_e, patch) => {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const p = { ...patch };
+  delete p.hueUser;
+  delete p.hueClientKey;
+  delete p.secrets;
+  delete p.secretsPlain;
+  if (p.haToken === "set") delete p.haToken;
+  update(p);
+});
 ipcMain.on("preview", preview);
 ipcMain.on("openCss", openCss);
 ipcMain.on("checkUpdate", () => (upd.state === "available" || upd.state === "ready" ? installUpdate() : checkUpdate(true)));
@@ -1223,8 +1240,9 @@ ipcMain.on("openUri", (_e, uri) => openUri(String(uri || "")));
 ipcMain.handle("hueFind", () => lights.hueFind());
 ipcMain.handle("huePair", async (_e, ip) => {
   const r = await lights.huePair(String(ip || "").trim());
-  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueOn: true });
-  return r;
+  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true });
+  // der Schlüssel selbst geht das Fenster nichts an
+  return r.user ? { ok: true } : { error: r.error };
 });
 ipcMain.handle("hueGroups", () => lights.hueGroups());
 ipcMain.handle("goveeScan", async () => {

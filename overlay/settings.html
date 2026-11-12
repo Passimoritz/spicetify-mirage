@@ -224,6 +224,7 @@
   <section>
     <h2 data-t="secLights"></h2>
     <p class="lhint" data-t="lightsHint"></p>
+    <p class="lhint" id="secretsPlain" data-t="secretsPlain" role="note" hidden></p>
     <div class="row"><div><b data-t="lightBright"></b></div><input type="range" min="20" max="100" step="5" id="lightBright"></div>
     <div class="row"><div><b>Philips Hue</b><small id="hueState"></small></div><input type="checkbox" class="toggle" data-key="hueOn"></div>
     <div class="row lrow"><input type="text" id="hueIp" placeholder="192.168.1.20" inputmode="decimal" autocomplete="off"><button type="button" class="btn" id="hueFind" data-t="hueFind"></button><button type="button" class="btn" id="huePair" data-t="huePair"></button></div>
@@ -304,6 +305,7 @@
     $("#obsPartyRow").hidden = !cfg.obs;
     for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["goveeIps", "goveeIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
     if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
+    $("#secretsPlain").hidden = !cfg.secretsPlain;
     $("#haToken").placeholder = cfg.haToken ? t("haTokenSet") : t("haToken");
     if (!$("#haEntities").placeholder) $("#haEntities").placeholder = t("haEntities");
     renderUpd();
@@ -448,8 +450,8 @@
   $("#huePair").onclick = async () => {
     $("#hueState").textContent = t("huePairing");
     const r = await mirage.invoke("huePair", $("#hueIp").value);
-    $("#hueState").textContent = r?.user ? t("huePaired") : r?.error === "button" ? t("hueButton") : t("hueUnreachable");
-    if (r?.user) loadGroups();
+    $("#hueState").textContent = r?.ok ? t("huePaired") : r?.error === "button" ? t("hueButton") : t("hueUnreachable");
+    if (r?.ok) loadGroups();
   };
   async function loadGroups() {
     const g = await mirage.invoke("hueGroups");
