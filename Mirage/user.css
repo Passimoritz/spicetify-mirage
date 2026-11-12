@@ -3217,6 +3217,10 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   outline-offset: 2px;
   border-radius: 10px;
 }
+/* die Tastenhilfe bekommt den Fokus nur, damit Esc und Vorlesen dort ansetzen: kein Ring um den ganzen Bildschirm */
+#mirage-immersive .m-im-keys:focus-visible {
+  outline: none !important;
+}
 
 /* ==========================================================================
    IMMERSIV: Liedtext-Größe, Übersetzung, Canvas, Teilen, Tastenhilfe

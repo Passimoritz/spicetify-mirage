@@ -170,6 +170,7 @@ const immersive = (() => {
       el.querySelector(".m-im-" + k).title = t("c_" + k);
     }
     el.querySelector(".m-im-volume").setAttribute("aria-label", t("c_volume"));
+    a11y();
     // Verschiebe-Streifen und Kopfzeile ans Ende der Ebene: Electron wertet die Fenster-Regionen in
     // Dokument-Reihenfolge und ohne overflow-Beschnitt aus – sonst löschten schon gesungene, unsichtbar nach
     // oben gerollte Liedzeilen den Streifen, und im Party- und Mix-Modus ließ sich das Fenster nicht verschieben
@@ -356,6 +357,99 @@ const immersive = (() => {
     });
   }
 
+  /* ---- Tastatur und Vorlesen: nur Attribute und Tastengriffe, das Markup bleibt wie es ist */
+  const STOPS = "button, a[href], input, select, textarea, [tabindex]";
+  let lastFocus = null, keysFrom = null, sideFrom = null, said = "";
+  function a11y() {
+    el.setAttribute("aria-modal", "true");
+    const tabs = el.querySelector(".m-im-tabs");
+    tabs.setAttribute("aria-label", t("a11yViews"));
+    tabs.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-keyshortcuts", String(i + 1)));
+    // Reiter: Pfeiltasten wechseln die Ansicht (keys.js spult hier nicht), nur der aktive liegt in der Tab-Reihenfolge
+    tabs.addEventListener("keydown", (e) => {
+      const list = [...tabs.querySelectorAll("button")], i = list.indexOf(e.target);
+      const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: list.length - 1 }[e.key];
+      if (i < 0 || to == null || e.ctrlKey || e.altKey || e.metaKey) return;
+      e.preventDefault();
+      const b = list[(to + list.length) % list.length];
+      setMode(b.dataset.mode, true);
+      b.tabIndex = 0;
+      b.focus();
+    });
+    for (const [sel, key] of [[".m-im-side-x", "k_close"], [".m-im-fs", "c_full"]]) {
+      const b = el.querySelector(sel);
+      b.title = t(key);
+      b.setAttribute("aria-label", t(key));
+    }
+    el.querySelector(".m-im-bar").setAttribute("aria-valuemin", "0");
+    // Titel und Künstler sind anklickbar (Album, Künstlerseite): auch per Tab und Enter
+    for (const x of [el.querySelector(".m-im-title"), el.querySelector(".m-im-artist")]) {
+      x.setAttribute("role", "link");
+      x.tabIndex = 0;
+      x.addEventListener("keydown", (e) => e.key === "Enter" && x.click());
+    }
+    const sideEl = el.querySelector(".m-im-side"), keysEl = el.querySelector(".m-im-keys");
+    sideEl.setAttribute("role", "region");
+    sideEl.querySelector("b").id = "m-im-side-title";
+    sideEl.setAttribute("aria-labelledby", "m-im-side-title");
+    sideEl.tabIndex = keysEl.tabIndex = -1;
+    keysEl.setAttribute("aria-label", t("keysTitle"));
+    // Songwechsel leise ansagen – die einzige Stelle, an der die Ebene von sich aus spricht
+    const say = document.createElement("span");
+    say.className = "m-sr m-im-say";
+    say.setAttribute("role", "status");
+    el.append(say);
+    // Tab bleibt in der Ebene (sie verdeckt Spotify ganz) und läuft in sichtbarer Reihenfolge: die Kopfzeile
+    // steht wegen der Fenster-Verschieberegionen am Ende des Dokuments, gehört aber an den Anfang
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab" || !isOpen() || e.ctrlKey || e.altKey || e.metaKey) return;
+      const cur = document.activeElement;
+      // ein Fenster über der Ebene (Einstellungen, Einführung) behält seine eigene Reihenfolge
+      if (cur && !el.contains(cur) && cur.closest?.('[role="dialog"], .GenericModal')) return;
+      // der Fokus kann auf einer Fläche ohne eigenen Tab-Halt liegen (gerade geöffnete Seitenleiste): von dort geht es weiter
+      const all = [...el.querySelectorAll(STOPS)].filter((x) => x === cur || (!x.disabled && x.tabIndex >= 0 && (x.checkVisibility ? x.checkVisibility({ visibilityProperty: true }) : x.getClientRects().length > 0)));
+      const top = all.filter((x) => x.closest(".m-im-top"));
+      const list = [...top, ...all.filter((x) => !top.includes(x))];
+      if (!list.length) return;
+      e.preventDefault();
+      const i = list.indexOf(cur);
+      list[i < 0 ? (e.shiftKey ? list.length - 1 : 0) : (i + (e.shiftKey ? -1 : 1) + list.length) % list.length].focus();
+    });
+  }
+  function announce(item) {
+    const text = titleOf(item) ? t("a11yNow").replace("{t}", titleOf(item)).replace("{a}", artistOf(item)) : "";
+    if (text !== said) el.querySelector(".m-im-say").textContent = said = text;
+  }
+  const playLabel = () => q.play.setAttribute("aria-label", t(PLR.isPlaying() ? "pause" : "play"));
+  let seekText = "";
+  function seekLabel(pos, dur) {
+    const text = fmt(pos) + " / " + fmt(dur);
+    if (text === seekText) return;
+    seekText = text;
+    const bar = el.querySelector(".m-im-bar");
+    bar.setAttribute("aria-valuemax", String(Math.round(dur / 1000)));
+    bar.setAttribute("aria-valuenow", String(Math.round(pos / 1000)));
+    bar.setAttribute("aria-valuetext", text);
+  }
+  // Seitenleiste: beim Öffnen wandert der Fokus hinein, beim Schließen zurück zum Auslöser; baut sie sich neu
+  // auf (Timer gewählt, Spiel-Einstellung geändert), bleibt er an derselben Stelle statt verloren zu gehen
+  function sideFocus(kind) {
+    const cur = document.activeElement, inside = q.side.contains(cur);
+    if (!kind) return void (inside && sideFrom?.isConnected && sideFrom.focus());
+    // Neuaufbau im Hintergrund (Warteschlange nach Songwechsel): Fokus bleibt, wo er ist
+    if (kind === side && !inside) return;
+    if (kind !== side && !inside) sideFrom = cur;
+    const stops = () => [...q.side.querySelectorAll(STOPS)].filter((x) => x.tabIndex >= 0);
+    const idx = kind === side ? stops().indexOf(cur) : -1;
+    queueMicrotask(() => {
+      if (side !== kind || (q.side.contains(document.activeElement) && document.activeElement !== q.side)) return;
+      const s = stops()[idx];
+      (s && !s.disabled ? s : q.side).focus();
+    });
+  }
+  // Esc schließt zuerst, was obenauf liegt (Tastenhilfe, Seitenleiste) – erst dann den Immersiv-Modus
+  const dismiss = () => (!q.keys.hidden ? (toggleKeys(false), true) : side ? (showSide(null), true) : false);
+
   // Erst das kleine (meist schon geladene) Cover zeigen, dann scharf überblenden
   async function setCover(item) {
     const token = ++coverToken;
@@ -407,6 +501,7 @@ const immersive = (() => {
     q.like.innerHTML = liked ? ICON.heartOn : ICON.heart;
     const muted = !!P.getMute?.();
     q.mute.innerHTML = muted ? ICON.mute : ICON.vol;
+    q.mute.title = q.mute.ariaLabel = t(muted ? "c_unmute" : "c_mute");
     if (document.activeElement !== q.volume) q.volume.value = Math.round((muted ? 0 : P.getVolume?.() ?? 1) * 100);
     q.volume.style.setProperty("--v", q.volume.value + "%");
     syncFull();
@@ -511,6 +606,7 @@ const immersive = (() => {
       save();
       el.dataset.mode = mode;
       el.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
+      el.querySelectorAll(".m-im-tabs button").forEach((b) => (b.tabIndex = b.dataset.mode === mode ? 0 : -1));
       placeIndicator();
       updateKicker();
       if (LYR.has(mode)) loadLyrics();
@@ -2159,6 +2255,7 @@ const immersive = (() => {
       lastText = now;
       q.pos.textContent = fmt(pos);
       q.dur.textContent = fmt(dur);
+      seekLabel(pos, dur);
       syncState();
     }
     const mode = el.dataset.mode;
@@ -2273,7 +2370,12 @@ const immersive = (() => {
       }
       q.keys.append(box);
     }
+    // Fokus in die Übersicht, beim Schließen zurück zum Auslöser
+    const had = q.keys.contains(document.activeElement);
+    if (show && q.keys.hidden) keysFrom = document.activeElement;
     q.keys.hidden = !show;
+    if (show) q.keys.focus();
+    else if (had && keysFrom?.isConnected) keysFrom.focus();
   }
   function styleLyrics() {
     el.style.setProperty("--m-lyr-size", String(cfg.lyrSize / 100));
@@ -2283,6 +2385,7 @@ const immersive = (() => {
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer
   let side = null;
   function showSide(kind) {
+    sideFocus(kind);
     if (kind) closeMenus("side");
     side = kind;
     q.side.hidden = !kind;
@@ -2295,6 +2398,7 @@ const immersive = (() => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "m-im-side-item" + (on ? " is-on" : "");
+      if (on) b.setAttribute("aria-current", "true");
       if (img) {
         const i = document.createElement("img");
         i.src = img;
@@ -2408,6 +2512,8 @@ const immersive = (() => {
     updateLyrState();
     if (side === "playlists") showSide("playlists");
     q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play;
+    playLabel();
+    announce(item);
     lastBeatIdx = -1;
     moments.stormDone = false;
     moments.venue = "";
@@ -2575,6 +2681,9 @@ const immersive = (() => {
       const u = document.createElement("code");
       u.textContent = t("liveCopy");
       u.title = info.url;
+      u.setAttribute("role", "button");
+      u.tabIndex = 0;
+      u.onkeydown = (e) => e.key === "Enter" && u.click();
       u.onclick = (e) => {
         e.stopPropagation();
         navigator.clipboard?.writeText(info.url).catch(() => {});
@@ -2634,10 +2743,13 @@ const immersive = (() => {
     l.textContent = label;
     const seg = document.createElement("div");
     seg.className = "m-g-seg-row";
+    seg.setAttribute("role", "group");
+    seg.setAttribute("aria-label", label);
     for (const [v, text] of choices) {
       const b = document.createElement("button");
       b.type = "button";
       b.textContent = text;
+      if (text === "✓" || text === "✕") b.setAttribute("aria-label", t(text === "✓" ? "a11yOn" : "a11yOff"));
       b.setAttribute("aria-pressed", String(cfg[key] === v));
       b.onclick = () => {
         cfg[key] = v;
@@ -2670,6 +2782,8 @@ const immersive = (() => {
     const on = new Set(cfg.gameWheel || WHEEL_FIELDS);
     const chips = document.createElement("div");
     chips.className = "m-g-seg-row is-wrap";
+    chips.setAttribute("role", "group");
+    chips.setAttribute("aria-label", t("gSetWheel"));
     for (const k of WHEEL_FIELDS) {
       const b = document.createElement("button");
       b.type = "button";
@@ -2689,6 +2803,7 @@ const immersive = (() => {
     own.className = "m-g-own";
     own.maxLength = 200;
     own.placeholder = t("gWheelOwn");
+    own.setAttribute("aria-label", t("gWheelOwn"));
     own.value = cfg.gameWheelOwn || "";
     own.onkeydown = (e) => e.stopPropagation();
     own.onchange = () => {
@@ -2929,6 +3044,7 @@ const immersive = (() => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "m-im-side-item" + (on ? " is-on" : "");
+    if (on) b.setAttribute("aria-current", "true");
     const txt = document.createElement("span"), l = document.createElement("b");
     l.textContent = label;
     txt.append(l);
@@ -3034,6 +3150,7 @@ const immersive = (() => {
   }
 
   function open() {
+    if (!isOpen()) lastFocus = document.activeElement;
     startTicker();
     if (!el) build();
     sizeCanvas();
@@ -3050,6 +3167,8 @@ const immersive = (() => {
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
     q.play.focus();
+    // die Ebene wird erst mit dem nächsten Bild sichtbar – vorher nimmt der Knopf den Fokus nicht an
+    setTimeout(() => isOpen() && !el.contains(document.activeElement) && q.play.focus(), 80);
   }
   function close() {
     if (!el) return;
@@ -3063,14 +3182,16 @@ const immersive = (() => {
     dust.pause(false);
     cancelAnimationFrame(raf);
     if (document.fullscreenElement) document.exitFullscreen?.();
+    // Fokus zurück dorthin, wo er vor dem Öffnen war – sonst hängt er an einem unsichtbaren Knopf
+    if (el.contains(document.activeElement)) lastFocus?.isConnected && lastFocus !== document.body ? lastFocus.focus() : document.activeElement.blur();
   }
   const isOpen = () => !!el?.classList.contains("is-on");
-  const playState = () => el && (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play);
+  const playState = () => el && ((q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play), playLabel());
   const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
-    seekBy, volBy, toggleFull, toggleKeys, confetti, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
   };
 })();
 
