@@ -22,7 +22,7 @@ window.addEventListener("keydown", (e) => {
   } else if (immersive.isOpen()) {
     if (e.ctrlKey || e.altKey || e.metaKey || e.target.matches?.("input:not([type=range]):not([type=checkbox]):not([type=radio]), textarea, [contenteditable]")) return;
     const keys = {
-      Escape: () => (document.fullscreenElement ? document.exitFullscreen() : immersive.close()),
+      Escape: () => (document.fullscreenElement ? document.exitFullscreen() : immersive.dismiss() || immersive.close()),
       Space: () => free() && PLR.togglePlay(),
       ArrowLeft: () => free() && immersive.seekBy(-5000),
       ArrowRight: () => free() && immersive.seekBy(5000),
@@ -54,6 +54,8 @@ window.addEventListener("keydown", (e) => {
       return;
     }
     if (e.key === "?") return immersive.toggleKeys();
+    // in der Reiterleiste wechseln die Pfeiltasten die Ansicht (immersive.js), statt zu spulen
+    if (/^Arrow(Left|Right)$/.test(e.code) && e.target.closest?.('[role="tablist"]')) return;
     if (/^Digit[1-5]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
     else if (keys[e.code] && !(e.code === "Space" && e.target.closest?.("button"))) {
       e.preventDefault();

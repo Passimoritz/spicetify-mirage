@@ -1,0 +1,31 @@
+/* Texte für Einstieg und Bedienung (Suche, Bereich zurücksetzen, Vorlesen) – Englisch und Deutsch, der Rest fällt auf Englisch zurück */
+export const ENTRY_TEXT = {
+  en: {
+    resetSection: "Reset this section",
+    resetSectionConfirm: "Reset “{s}” to the defaults? Everything else stays as it is.",
+    resetSectionDone: "“{s}” is back to the defaults",
+    searchCount: "Matches: {n}",
+    searchClear: "Esc clears the search",
+    pause: "Pause",
+    a11yOn: "On",
+    a11yOff: "Off",
+    a11yViews: "Views",
+    c_unmute: "Unmute",
+    a11yNow: "Now playing: {t} – {a}",
+    schemeDeleteKey: "{s} – press Delete to remove this scheme",
+  },
+  de: {
+    resetSection: "Diesen Bereich zurücksetzen",
+    resetSectionConfirm: "„{s}“ auf die Standardwerte zurücksetzen? Alles andere bleibt, wie es ist.",
+    resetSectionDone: "„{s}“ steht wieder auf den Standardwerten",
+    searchCount: "Treffer: {n}",
+    searchClear: "Esc leert die Suche",
+    pause: "Pause",
+    a11yOn: "An",
+    a11yOff: "Aus",
+    a11yViews: "Ansichten",
+    c_unmute: "Ton an",
+    a11yNow: "Jetzt läuft: {t} – {a}",
+    schemeDeleteKey: "{s} – Entf löscht dieses Schema",
+  },
+};

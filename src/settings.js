@@ -1,6 +1,6 @@
 import { S, root, VERSION } from "./core.js";
 import { t } from "./i18n.js";
-import { SCHEMES, BUILT_IN, applyScheme, cfg, save, resetSettings, buildScheme } from "./config.js";
+import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme } from "./config.js";
 import { current } from "./color.js";
 import { beat } from "./audio.js";
 import { dust } from "./dust.js";
@@ -106,6 +106,7 @@ function range(key, min, max, step, unit, after) {
   txt.append(el("b", "", t(key)), hint);
   const r = el("input");
   Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
+  r.dataset.key = key;
   r.setAttribute("aria-valuetext", cfg[key] + unit);
   r.oninput = () => {
     cfg[key] = Number(r.value);
@@ -168,6 +169,9 @@ function livePanel() {
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
     const code = el("code", "", t("liveCopy"));
     code.title = info.url;
+    code.setAttribute("role", "button");
+    code.tabIndex = 0;
+    code.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), code.click());
     code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
     const txt = el("div");
     txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")));
@@ -182,7 +186,7 @@ function livePanel() {
 // für Screenreader damit verknüpfen, sonst hört man nur „Gruppe“ ohne zu wissen, wofür
 let labelN = 0;
 function labelControls(box) {
-  for (const c of box.querySelectorAll(".m-seg, .m-select")) {
+  for (const c of box.querySelectorAll(".m-seg, .m-select, .m-schemes")) {
     if (c.hasAttribute("aria-labelledby") || c.closest("label")) continue;
     let prev = c.previousElementSibling;
     if (prev?.classList.contains("m-schemes-head")) prev = prev.querySelector("b") || prev;
@@ -206,6 +210,25 @@ function button(label, onClick, cls = "") {
 const notify = (msg, err) => {
   try { S.showNotification?.(msg, !!err, 3500); } catch {}
 };
+// „Diesen Bereich zurücksetzen“: nur die Schalter und Regler dieser Gruppe (data-key) plus die genannten
+// Auswahlen gehen zurück auf DEFAULTS – eigene Schemata und alles außerhalb der Gruppe bleiben unberührt
+function sectionReset(d, extra, after) {
+  const row = el("div", "m-actions m-section-reset");
+  row.append(button(t("resetSection"), () => {
+    const title = d.querySelector("summary").textContent;
+    if (!confirm(t("resetSectionConfirm").replace("{s}", title))) return;
+    const keys = [...new Set([...[...d.querySelectorAll("[data-key]")].map((x) => x.dataset.key), ...(extra || [])])];
+    for (const k of keys) if (k in DEFAULTS) cfg[k] = DEFAULTS[k];
+    if (keys.some((k) => PRESET_KEYS.includes(k))) detectPreset();
+    save();
+    applySettings();
+    after?.();
+    render.again?.();
+    notify(t("resetSectionDone").replace("{s}", title));
+  }));
+  d.append(row);
+  return d;
+}
 const encode = (prefix, obj) => prefix + btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
 const decode = (prefix, text) => {
   const s = String(text || "").trim();
@@ -225,22 +248,32 @@ function applySearch(box) {
   for (const parent of [box, ...box.querySelectorAll("details.m-group")]) {
     let unit = null;
     for (const c of parent.children) {
-      if (c.matches("summary, .m-search, .m-search-none, .m-version")) continue;
+      if (c.matches("summary, .m-search, .m-search-none, .m-version, .m-sr, .m-section-reset")) continue;
       if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent }));
       unit.els.push(c);
     }
   }
   const hit = new Set();
+  let found = 0;
   for (const u of units) {
     const ok = !q || u.els.some((e) => e.textContent.toLowerCase().includes(q));
     for (const e of u.els) e.classList.toggle("m-hide", !ok);
-    if (ok && q) hit.add(u.parent);
+    if (ok && q) {
+      hit.add(u.parent);
+      found++;
+    }
   }
+  // beim Suchen stören die Rücksetz-Knöpfe nur: sie gelten für die ganze Gruppe, nicht für die Treffer
+  for (const r of box.querySelectorAll(".m-section-reset")) r.classList.toggle("m-hide", !!q);
   for (const d of box.querySelectorAll("details.m-group")) {
     d.classList.toggle("m-hide", !!q && !hit.has(d) && !d.querySelector("summary").textContent.toLowerCase().includes(q));
     if (q && hit.has(d)) d.open = true;
   }
   box.querySelector(".m-search-none")?.classList.toggle("m-hide", !q || hit.size > 0 || units.some((u) => u.parent === box && !u.els[0].classList.contains("m-hide")));
+  // Trefferzahl leise ansagen (nur wenn sie sich ändert, sonst redet der Screenreader bei jedem Buchstaben)
+  const say = box.querySelector(".m-search-say");
+  const msg = !q ? "" : found ? t("searchCount").replace("{n}", found) : t("searchNone");
+  if (say && say.textContent !== msg) say.textContent = msg;
 }
 function render(box) {
   render.again = () => render(box);
@@ -248,11 +281,22 @@ function render(box) {
   const search = el("input", "m-search");
   Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
   search.setAttribute("aria-label", t("searchSettings"));
+  search.title = t("searchClear");
   search.oninput = () => {
     query = search.value;
     applySearch(box);
   };
-  kids.push(search, el("small", "m-note m-search-none m-hide", t("searchNone")));
+  // Esc leert zuerst die Suche; erst das zweite Esc schließt das Fenster
+  search.onkeydown = (e) => {
+    if (e.key !== "Escape" || !search.value) return;
+    e.preventDefault();
+    e.stopPropagation();
+    search.value = query = "";
+    applySearch(box);
+  };
+  const say = el("span", "m-sr m-search-say");
+  say.setAttribute("role", "status");
+  kids.push(search, say, el("small", "m-note m-search-none m-hide", t("searchNone")));
 
   // ---- Presets
   kids.push(head(t("presetTitle"), t("presetHint")));
@@ -272,6 +316,7 @@ function render(box) {
   // ---- Schemata
   kids.push(head(t("scheme"), t("schemeHint")));
   const pick = el("div", "m-schemes");
+  pick.setAttribute("role", "group");
   for (const [name, sc] of Object.entries(SCHEMES)) {
     const b = el("button", "m-scheme");
     b.type = "button";
@@ -289,6 +334,10 @@ function render(box) {
     if (!BUILT_IN.includes(name)) {
       const x = el("span", "m-scheme-del", "×");
       x.title = t("schemeDelete");
+      x.setAttribute("aria-hidden", "true");
+      b.setAttribute("aria-label", t("schemeDeleteKey").replace("{s}", name));
+      b.setAttribute("aria-keyshortcuts", "Delete");
+      b.onkeydown = (e) => e.key === "Delete" && x.click();
       x.onclick = (e) => {
         e.stopPropagation();
         delete cfg.customSchemes[name];
@@ -342,8 +391,8 @@ function render(box) {
     applyFont();
   });
   Object.keys(FONTS).forEach((k, i) => (fontSeg.children[i].style.fontFamily = stackOf(k)));
-  kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg));
-  kids.push(
+  kids.push(sectionReset(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg), ["font"], refreshColors));
+  kids.push(sectionReset(
     group(
       t("g_background"),
       false,
@@ -357,19 +406,19 @@ function render(box) {
       }),
       range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
     )
-  );
-  kids.push(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf"),
+  ));
+  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf"),
     el("small", "m-note", t("eco")),
     seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
       cfg.eco = k;
       save();
-    })));
+    })), ["eco"]));
   const viz = [
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
     ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
     ["galaxy", t("viz_galaxy")], ["mountains", t("viz_mountains")], ["scope", t("viz_scope")], ["shatter", t("viz_shatter")],
   ];
-  kids.push(
+  kids.push(sectionReset(
     group(
       t("g_immersive"),
       false,
@@ -395,10 +444,10 @@ function render(box) {
       toggle("vizMirror", () => {}),
       toggle("vizSpin", () => {}),
       toggle("mixInstruments", () => {})
-    )
-  );
+    ), ["vizStyle"], () => (immersive.reloadLyrics(), immersive.refresh(), refreshRemote(true))
+  ));
   // ---- Party-Modus: eine eigene Gruppe, darin nach Thema geordnet
-  kids.push(
+  kids.push(sectionReset(
     group(
       t("g_party"),
       false,
@@ -457,8 +506,8 @@ function render(box) {
       toggle("partyOnline", () => immersive.refresh()),
       toggle("partyIdle", () => {}),
       toggle("partyQuietFps", () => {})
-    )
-  );
+    ), ["partyStyle", "partyLevel", "partyVenue"], () => (immersive.reloadLyrics(), immersive.refresh(), window.dispatchEvent(new Event("mirage:wishes")))
+  ));
 
   // ---- Schema-Baukasten
   const builder = el("div", "m-builder");
@@ -478,6 +527,8 @@ function render(box) {
   nameIn.maxLength = 24;
   const codeIn = el("input", "m-text");
   codeIn.placeholder = t("schemeCodeHint");
+  nameIn.setAttribute("aria-label", nameIn.placeholder);
+  codeIn.setAttribute("aria-label", codeIn.placeholder);
   const saveScheme = (name, colors) => {
     const sc = buildScheme(colors);
     SCHEMES[name] = sc;
@@ -526,6 +577,7 @@ function render(box) {
   const foot = el("div", "m-actions");
   const dataIn = el("input", "m-text");
   dataIn.placeholder = t("settingsCodeHint");
+  dataIn.setAttribute("aria-label", dataIn.placeholder);
   foot.append(
     button(t("shareNow"), () => nowPlayingCard()),
     button(t("shareWeek"), () => weekCard()),
@@ -602,10 +654,45 @@ function render(box) {
   box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
 }
 
+// Fokus im Fenster halten und beim Schließen dorthin zurückgeben, wo er vorher war. Spotifys Fenster macht das
+// in der Regel selbst – das hier greift nur, wenn es das nicht tut, und stört sonst nicht.
+// zugeklappte Gruppen haben in Chromium weiter ein Layout (content-visibility), sind aber nicht erreichbar
+const shown = (x) => (x.checkVisibility ? x.checkVisibility({ visibilityProperty: true }) : x.getClientRects().length > 0);
+function modalFocus(box, from) {
+  let dlg = null;
+  const trap = (e) => {
+    if (e.key !== "Tab" || e.ctrlKey || e.altKey || e.metaKey) return;
+    const list = [...dlg.querySelectorAll("button, a[href], input, select, textarea, summary, [tabindex]")].filter((x) => !x.disabled && x.tabIndex >= 0 && shown(x));
+    const first = list[0], last = list[list.length - 1], cur = document.activeElement;
+    const out = !dlg.contains(cur) || !list.includes(cur);
+    if (!first || !(out || cur === (e.shiftKey ? first : last))) return;
+    e.preventDefault();
+    (e.shiftKey ? last : first).focus();
+  };
+  const mo = new MutationObserver(() => check());
+  const check = () => {
+    if (box.isConnected) {
+      if (dlg) return;
+      dlg = box.closest('[role="dialog"], .GenericModal') || box;
+      dlg.addEventListener("keydown", trap);
+      return;
+    }
+    if (!dlg) return;
+    mo.disconnect();
+    dlg.removeEventListener("keydown", trap);
+    if (from?.isConnected && (!document.activeElement || document.activeElement === document.body)) from.focus();
+  };
+  mo.observe(document.body, { childList: true, subtree: true });
+  check();
+  // Fenster kam nie: nicht ewig lauschen
+  setTimeout(() => !dlg && mo.disconnect(), 4000);
+}
 function openSettings() {
+  const from = document.activeElement;
   const box = el("div", "mirage-settings");
   render(box);
   S.PopupModal.display({ title: "Mirage", content: box, isLarge: true });
+  modalFocus(box, from);
 }
 
 // erster Start: kurz zeigen, wo alles ist
@@ -615,7 +702,7 @@ function welcome() {
     if (localStorage.getItem(KEY)) return;
     localStorage.setItem(KEY, VERSION);
   } catch { return; }
-  setTimeout(tour, 5000);
+  setTimeout(() => tour(true), 5000);
 }
 // Einführung beim ersten Start: vier kurze Schritte – Farben, Immersiv-Modus, Party, Einstellungen.
 // Später jederzeit wieder unter „Teilen, sichern & Hilfe“.
@@ -625,29 +712,46 @@ const TOUR = [
   ["tour3t", "tour3", () => (immersive.open(), immersive.setMode("party", true))],
   ["tour4t", "tour4", () => openSettings()],
 ];
-function tour() {
+// auto = von selbst beim ersten Start: dann nimmt die Karte niemandem den Fokus weg (wer gerade tippt, drückte sonst
+// versehentlich „Weiter“), sie wird nur leise angesagt. Von Hand geöffnet springt der Fokus hinein.
+function tour(auto) {
   document.querySelector(".mirage-welcome")?.remove();
   const box = el("div", "mirage-welcome");
   box.setAttribute("role", "dialog");
   box.setAttribute("aria-label", t("welcomeTitle"));
+  if (auto === true) box.setAttribute("aria-live", "polite");
+  const from = document.activeElement;
   let i = 0;
+  const end = () => {
+    const had = box.contains(document.activeElement);
+    box.remove();
+    if (had && from?.isConnected) from.focus();
+  };
+  box.onkeydown = (e) => {
+    if (e.key !== "Escape") return;
+    e.stopPropagation();
+    end();
+  };
   const draw = () => {
     const [tk, k, act] = TOUR[i];
     const dots = el("div", "m-dots");
+    dots.setAttribute("aria-hidden", "true");
     TOUR.forEach((_, j) => dots.append(el("i", j === i ? "is-on" : "")));
     const row = el("div", "m-actions");
     if (act) row.append(button(t(k + "Try"), () => { box.remove(); act(); }));
     row.append(
-      i < TOUR.length - 1 ? button(t("tourNext"), () => { i++; draw(); }, "is-primary") : button(t("tourDone"), () => box.remove(), "is-primary"),
-      button("×", () => box.remove(), "m-close")
+      i < TOUR.length - 1 ? button(t("tourNext"), () => { i++; box.removeAttribute("aria-live"); draw(); }, "is-primary") : button(t("tourDone"), end, "is-primary"),
+      button("×", end, "m-close")
     );
     const close = row.querySelector(".m-close");
     close.title = close.ariaLabel = t("k_close");
     box.replaceChildren(el("small", "m-kick", `${i + 1} / ${TOUR.length}`), el("b", "", t(tk)), el("span", "", t(k)), dots, row);
-    box.querySelector(".is-primary")?.focus();
+    if (auto !== true || i > 0) box.querySelector(".is-primary")?.focus();
   };
-  draw();
   document.body.append(box);
+  // erst einhängen, dann füllen: nur so sagt ein Screenreader den ersten Schritt an
+  if (auto === true) setTimeout(draw, 150);
+  else draw();
 }
 
 export { applySettings, openSettings, welcome, tour };
