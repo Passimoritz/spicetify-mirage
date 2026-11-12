@@ -17,10 +17,30 @@ Release notes on GitHub are generated from the matching section of this file whe
 - The phone page reloads itself once when the theme speaks a newer message format, and says so clearly if that does not help.
 - **Overlay app repairs and updates the theme:** after a Spotify update it notices that Mirage is gone (Windows) and puts it back with one click, and the tray menu offers a new theme version when there is one. Both only on a click, because Spotify restarts once.
 - **Nightly Spotify check:** a workflow unpacks the newest Spotify client every night and opens an issue when a rule of the theme stops matching. `npm run check:selectors` does the same for the installed Spotify.
+- **No flashes:** a switch for photosensitive eyes removes strobe, blinders, drop flashes and the lyric burst. It is on automatically when the system asks for reduced motion. All flashes now share a hard limit of three per second.
+- **Lyrics are kept on your device** (up to 500 songs) and song analyses for the last 300 songs, so both are there at once and offline. The next song is prepared about 20 seconds before the current one ends.
+- **Not the right lyrics:** a button marks the result as wrong for that song and tries the next best one. Live versions and remixes no longer get the timed lyrics of a different recording.
+- Romanization also covers Russian, Ukrainian, Bulgarian, Serbian, Greek and Hindi lyrics.
+- DJ panel: **Apply order** sorts the upcoming songs by key, tempo and energy curve, with undo.
+- Six more instrument moments: drum solo, bass, synthesizer, accordion, flute and harp (only when the credits confirm them).
+- Settings: each section can be reset on its own, and Esc clears the search.
+- **Keyboard and screen readers:** immersive mode and settings are usable without a mouse, every control has a name and state, and song changes are announced.
+- Installer: `install.ps1` installs Spicetify if missing and works as a one-line install; new `install.sh` for macOS and Linux (not yet tried on a real machine).
+- Overlay app: Hue and Home Assistant credentials are stored encrypted, room lights get a maximum brightness, single lights can be left out, WLED and OpenRGB return to their previous state, and each light system gets its own timing with a blink test.
+- `npm run check:contrast` checks every accent colour pair against 2,617 synthetic covers; `npm run test:phones` tests the phone page with phone emulation in Chrome.
 
 ### Changed
 
 - Play, pause, skip and seek go through one small layer of Mirage's own with a direct fallback to Spotify, instead of relying on single Spicetify helpers.
+
+### Fixed
+
+- On deep blue and violet covers the second accent colour could be too dark for lyrics, the title gradient and the play icon.
+- The readability guard could pick the less readable text colour on mid-bright backgrounds.
+- Mirage now stands still when nothing plays: timers and animations rest while Spotify is paused or hidden, and several surfaces no longer blur what is behind them.
+- Saving the night as a playlist asks first and never creates a second playlist for the same party.
+- Changing a light setting during a party could make Hue and Home Assistant restore party colours.
+- The overlay's settings window no longer receives the Hue key in plain text.
 
 ### Tests
 
