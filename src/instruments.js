@@ -2,27 +2,20 @@ import { S, clamp } from "./core.js";
 import { cfg } from "./config.js";
 import { audio } from "./audio.js";
 import { currentItem } from "./player.js";
+import { KINDS, kindOf } from "./instrkinds.js";
 
 /* ---------------------------------------------------------------- Instrumente */
 // OB ein Instrument auf der Aufnahme spielt, steht in den Credits des Songs (Spotify, sonst MusicBrainz
 // über die ISRC-Nummer): das ist sicher, kein Raten. WANN es im Vordergrund ist, verrät die Klangfarbe
 // der Analyse (Tonhöhen-Klarheit, Helligkeit, Rauschanteil, Anschlag) – nur die deutlichsten Stellen des
 // Songs zählen, und nur für Instrumente, die die Credits bestätigen. Ohne Credits: keine Instrument-Effekte.
-const KINDS = ["brass", "sax", "guitar", "piano", "strings", "choir"];
-function kindOf(name) {
-  const s = String(name || "").toLowerCase();
-  if (/sax/.test(s)) return "sax";
-  if (/trumpet|trombone|flugelhorn|cornet|french horn|\bhorns?\b|tuba|brass|sousaphone|euphonium/.test(s)) return "brass";
-  if (/guitar/.test(s) && !/bass guitar|acoustic|classical|nylon|spanish|steel|ukulele/.test(s)) return "guitar";
-  if (/piano|rhodes|wurlitzer|clavinet/.test(s)) return "piano";
-  if (/violin|viola|cello|string|orchestra|contrabass|double bass|harp/.test(s)) return "strings";
-  if (/choir|chorus|choral/.test(s)) return "choir";
-  return "";
-}
+// Welche Credits zu welcher Art gehören, steht in instrkinds.js (Bläser, Saxofon, Gitarre, Klavier, Streicher, Chor,
+// Schlagzeug, Bass, Synthesizer, Akkordeon, Flöte, Harfe).
 
 // gefundene Credits bleiben gespeichert (je Song), damit niemand zweimal gefragt wird; kam keine Antwort
 // (offline, Dienst überlastet), wird erst nach einem Tag wieder gefragt – nicht bei jedem Abspielen
-const LS = "mirage:instruments", RETRY = 24 * 3600e3;
+// („2“: seit es Schlagzeug, Bass, Synthesizer, Akkordeon, Flöte und Harfe gibt – die alten Einträge kennen sie nicht)
+const LS = "mirage:instruments2", RETRY = 24 * 3600e3;
 let store = {};
 try {
   store = JSON.parse(localStorage.getItem(LS) || "{}") || {};
@@ -127,6 +120,18 @@ function moments(d, kinds) {
       piano: nk > 0.7 && T > 0.45 && nb < 0.78 ? nk * T : 0,
       strings: T > 0.6 && nk < 0.35 && nf < 0.4 ? T * (1 - nk) : 0,
       choir: T > 0.5 && nb < 0.45 && nk < 0.4 && nf < 0.5 ? T * (1 - nb) : 0,
+      // Schlagzeug-Solo: laut, harter Anschlag und kaum ein klarer Ton – sonst spielt die Band mit
+      drums: T < 0.3 && nk > 0.6 && nl > 0.55 ? (1 - T) * nk : 0,
+      // Bass im Vordergrund: dunkler, klarer Ton mit Druck
+      bass: T > 0.5 && nb < 0.3 && nl > 0.5 && nf < 0.45 ? T * (1 - nb) : 0,
+      // Synthesizer: heller, stehender Ton ohne Anschlag (Flächen und Leads)
+      synth: T > 0.5 && nb > 0.55 && nk < 0.45 && nf < 0.55 ? T * nb * (1 - nk) : 0,
+      // Akkordeon: getragener Zungenklang in der Mitte
+      accordion: T > 0.5 && nb > 0.4 && nb < 0.8 && nk < 0.5 && nf < 0.5 ? T * (1 - Math.abs(nb - 0.6) * 2) : 0,
+      // Flöte: sehr reiner, heller Ton, weich angeblasen
+      flute: T > 0.65 && nb > 0.5 && nk < 0.4 && nf < 0.35 ? T * (1 - nk) : 0,
+      // Harfe: reiner Ton, aber gezupft
+      harp: T > 0.6 && nk > 0.5 && nf < 0.35 && nb > 0.3 && nb < 0.8 ? T * nk : 0,
     };
     const a = Math.floor(s.t / STEP), e = Math.max(a + 1, Math.floor((segs[i + 1]?.t ?? s.t + 0.3) / STEP));
     for (const kind of kinds) for (let x = a; x < e && x < n; x++) out[kind][x] = Math.max(out[kind][x], sc[kind]);
@@ -189,4 +194,4 @@ function at(sec, dt) {
   return { ...cur.lv, chroma, credited: [...cur.kinds] };
 }
 
-export const instruments = { at, kindOf };
+export const instruments = { at, kindOf, KINDS };
