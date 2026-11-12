@@ -2640,13 +2640,14 @@ const immersive = (() => {
     row(el.querySelector(".m-im-help").title || "?", "", () => { showSide(null); toggleKeys(); });
   }
   // Auswahl in Stufen: eine Zeile mit Knöpfen
-  function gameChoice(body, label, key, choices) {
+  function gameChoice(body, label, key, choices, wrap) {
     const r = document.createElement("div");
     r.className = "m-g-cfg";
+    r.dataset.key = key;
     const l = document.createElement("span");
     l.textContent = label;
     const seg = document.createElement("div");
-    seg.className = "m-g-seg-row";
+    seg.className = "m-g-seg-row" + (wrap ? " is-wrap" : "");
     for (const [v, text] of choices) {
       const b = document.createElement("button");
       b.type = "button";
@@ -2665,7 +2666,43 @@ const immersive = (() => {
     body.append(r);
   }
   const secsOf = (list) => list.map((n) => [n, n + " s"]);
+  // Quelle der Quiz-Songs: die Warteschlange (Standard) oder eine Playlist aus der Bibliothek
+  function sourceChoice(body) {
+    const again = () => {
+      const top = q.sideBody.scrollTop;
+      showSide("games");
+      q.sideBody.scrollTop = top;
+    };
+    const head = document.createElement("div");
+    head.className = "m-im-side-sec";
+    head.textContent = t("gSetSource");
+    body.append(head);
+    const now = sideBtn(body, cfg.gameSource ? "🎵  " + (cfg.gameSourceName || "Playlist") : "▶  " + t("gSrcQueue"), t("gSrcHint"), () => {
+      q.srcOpen = !q.srcOpen;
+      again();
+    }, q.srcOpen);
+    now.classList.add("m-g-src");
+    if (!q.srcOpen) return;
+    const box = document.createElement("div");
+    box.className = "m-im-side-group m-g-srclist";
+    body.append(box);
+    const pick = (uri, name) => {
+      cfg.gameSource = uri;
+      cfg.gameSourceName = name;
+      save();
+      q.srcOpen = false;
+      again();
+    };
+    sideBtn(box, "▶  " + t("gSrcQueue"), "", () => pick("", ""), !cfg.gameSource);
+    games.sources().then((list) => {
+      if (!box.isConnected) return;
+      for (const p of list.slice(0, 200)) sideBtn(box, p.name, "", () => pick(p.uri, p.name), cfg.gameSource === p.uri);
+    });
+  }
   function gameSettings(body) {
+    gameChoice(body, t("gSetLevel"), "gameLevel", [["easy", t("gLvEasy")], ["normal", t("gLvNormal")], ["hard", t("gLvHard")]]);
+    gameChoice(body, t("gSetDecade"), "gameDecade", [[0, t("gDecAll")], ...[1980, 1990, 2000, 2010, 2020].map((d) => [d, String(d).slice(2) + t("gDecSuffix")])], true);
+    sourceChoice(body);
     gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
     gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
     gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);

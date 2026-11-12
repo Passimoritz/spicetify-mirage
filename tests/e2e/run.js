@@ -817,6 +817,108 @@ async function hostGame() {
   await H.win.loadURL(PAGE + "?guest=1" + hash);
   await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bHost").hidden`).catch(() => false), 10000, "host: wieder als Gast verbunden");
 }
+// Spiel-Einstellungen über die echte Leiste setzen
+async function openGameSettings() {
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Leiste geht auf");
+  if (!(await T.js(`!!document.querySelector(".m-g-cfg")`))) await T.click(".m-im-side-body .m-im-side-item", { text: "⚙" });
+  await until(() => T.js(`!!document.querySelector(".m-g-cfg")`), 2000, "Spiel-Einstellungen gehen auf");
+}
+async function gameSetting(key, index) {
+  await openGameSettings();
+  await T.click(`.m-g-cfg[data-key="${key}"] button`, { index });
+  await until(() => T.js(`document.querySelectorAll('.m-g-cfg[data-key="${key}"] button')[${index}]?.getAttribute("aria-pressed") === "true"`), 2000, `Einstellung ${key} ist gesetzt`);
+  await T.click(".m-im-side-x");
+}
+async function gameSource(name) {
+  await openGameSettings();
+  await T.click(".m-g-src");
+  await until(() => T.js(`document.querySelectorAll(".m-g-srclist .m-im-side-item").length > 1`), 4000, "Playlists der Bibliothek stehen zur Wahl");
+  await T.click(".m-g-srclist .m-im-side-item", name ? { text: name } : { index: 0 });
+  await until(() => T.js(`!document.querySelector(".m-g-srclist") && (document.querySelector(".m-g-src")?.textContent || "")`), 2000, "Quelle ist gewählt");
+  await T.click(".m-im-side-x");
+}
+const firstSong = async () => {
+  await T.js(`__sp.resetArtists(); __sp.setShuffleJump(0); 1`);
+  await wait(500);
+};
+// Schwierigkeit: leicht hat drei Antworten, schwer die ähnlichsten falschen
+async function quizLevel() {
+  await ensurePhones("quiz-level");
+  await firstSong();
+  await gameSetting("gameLevel", 0);
+  await openGame("quiz");
+  await joinAll("quiz");
+  let ps = await allPhones((s) => s.st === "ask" && s.tiles.length >= 3, 15000, "leicht: Frage");
+  let b = await big.state();
+  ok(ps[0].tiles.length === 3 && ps[0].tiles.includes(b.artist), "leicht: drei Antworten, die richtige dabei: " + ps[0].tiles.join(" | "));
+  await close();
+  await afterGame("quiz");
+  await firstSong();
+  await gameSetting("gameLevel", 2);
+  await openGame("quiz");
+  await joinAll("quiz");
+  ps = await allPhones((s) => s.st === "ask" && s.tiles.length >= 3, 15000, "schwer: Frage");
+  b = await big.state();
+  ok(b.artist === "Blue Lake" && ps[0].tiles.length === 4 && ps[0].tiles.includes(b.artist), "schwer: vier Antworten zu Blue Lake: " + b.artist + " / " + ps[0].tiles.join(" | "));
+  // ähnlich heißt hier: Namen derselben Form. In der Warteschlange stehen genau drei weitere aus zwei Wörtern.
+  ok(ps[0].tiles.every((x) => x.split(" ").length === 2), "schwer: die falschen Antworten sind die ähnlichsten: " + ps[0].tiles.join(" | "));
+  await close();
+  await afterGame("quiz");
+  await gameSetting("gameLevel", 1);
+}
+// Quelle und Jahrzehnt: Songs aus einer gewählten Playlist statt aus der Warteschlange, auf Wunsch nur ein Jahrzehnt
+async function quizSource() {
+  await ensurePhones("quiz-source");
+  await firstSong();
+  const yearOf = (uri) => T.js(`__sp.yearOf(${JSON.stringify(uri)})`);
+  await gameSource("Quiz Mix");
+  await gameSetting("gameDecade", 4);
+  const calls = await T.js(`__sp.log.yearCalls`);
+  await openGame("quiz");
+  await joinAll("quiz");
+  const seen = new Set();
+  for (const r of [1, 2]) {
+    const ps = await allPhones((s) => s.st === "ask" && s.round === `${r}/2` && s.tiles.length === 4, 15000, `quelle: Frage ${r}`);
+    const b = await big.state();
+    ok(b.uri.startsWith("spotify:track:p"), "quelle: der Song kommt aus der gewählten Playlist: " + b.title);
+    ok((await yearOf(b.uri)) === 2015, "quelle: nur Songs aus den 2010ern: " + (await yearOf(b.uri)));
+    ok(ps[0].tiles.includes(b.artist) && ps[0].tiles.every((x) => x.startsWith("Mix Artist")), "quelle: auch die falschen Antworten kommen aus der Playlist: " + ps[0].tiles.join(" | "));
+    ok(b.playing && b.vol === 0.7, "quelle: der Song ist zu hören");
+    seen.add(b.uri);
+    for (const ph of P) await ph.click(...tile(tileOf(ps[0], b.artist)));
+    await allPhones((s) => s.st === "rev" && s.round === `${r}/2`, 6000, "quelle: Auflösung");
+  }
+  ok(seen.size === 2, "quelle: zwei Runden, zwei verschiedene Songs");
+  await allPhones((s) => s.st === "end", 12000, "quelle: Siegerehrung");
+  await noBadNotes("quelle");
+  await close();
+  await afterGame("quiz");
+  ok((await T.js(`__sp.log.yearCalls`)) - calls === 1, "quelle: ein einziger Abruf für alle Erscheinungsjahre");
+  // Jahrzehnt ohne Playlist: Songs aus der Warteschlange, aber nur die passenden
+  await gameSource("");
+  await gameSetting("gameDecade", 1);
+  await openGame("title");
+  await joinAll("title");
+  await allPhones((s) => s.st === "ask" && s.tiles.length === 4, 15000, "jahrzehnt: Frage");
+  let b = await big.state();
+  ok(!b.uri.startsWith("spotify:track:p") && (await yearOf(b.uri)) === 1985, "jahrzehnt: Song aus der Warteschlange, aus den 80ern: " + b.title + " " + (await yearOf(b.uri)));
+  await close();
+  await afterGame("title");
+  await gameSetting("gameDecade", 0);
+  // leere Playlist: Hinweis, und das Spiel läuft mit der Warteschlange
+  await gameSource("Leer");
+  await openGame("quiz");
+  await joinAll("quiz");
+  const ps = await allPhones((s) => s.st === "ask" && s.tiles.length === 4, 15000, "leer: Frage trotz leerer Playlist");
+  b = await big.state();
+  ok(ps[0].tiles.includes(b.artist), "leer: es läuft mit der Warteschlange weiter");
+  ok((await T.js(`__sp.log.notes.filter((n) => n.err).length`)) === 1, "leer: ein Hinweis, dass die Playlist nichts hergibt");
+  await close();
+  await afterGame("quiz");
+  await gameSource("");
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -826,7 +928,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource],
 ];
 
 /* ---------------------------------------------------------------- Start */
@@ -894,7 +996,7 @@ app.whenReady().then(async () => {
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
   // Handys verbinden sich im ersten Spiel mit Warteraum
-  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host"]);
+  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host", "quiz-level", "quiz-source"]);
   if (ONLY.length && list.every(([n]) => NO_LOBBY.has(n))) list = [CASES[0], ...list];
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");

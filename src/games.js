@@ -83,14 +83,92 @@ const songOf = (x) => ({
   uri: x?.uri || "",
   title: cleanTitle(x?.metadata?.title || x?.name),
   artist: String(x?.metadata?.artist_name || x?.artists?.[0]?.name || "").split(",")[0].trim(),
-  img: coverOf(x?.metadata) || x?.album?.images?.[0]?.url || "",
+  img: coverOf(x?.metadata) || coverOf({ image_url: x?.album?.images?.[0]?.url }),
 });
-// falsche Antworten: was sonst in der Warteschlange steht oder gerade lief
-const pool = () =>
-  [...(S.Queue?.nextTracks || []), ...(S.Queue?.prevTracks || [])]
-    .map((x) => x.contextTrack || x)
-    .filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title)
-    .map(songOf);
+const queueSongs = (list) => (list || []).map((x) => x.contextTrack || x).filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title).map(songOf);
+// falsche Antworten: was sonst in der gewählten Quelle steht, sonst in der Warteschlange oder gerade lief
+const pool = () => G?.src || queueSongs([...(S.Queue?.nextTracks || []), ...(S.Queue?.prevTracks || [])]);
+
+/* ---- Quelle der Quiz-Songs: Warteschlange (Standard), eine Playlist, dazu auf Wunsch nur ein Jahrzehnt */
+const within = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
+// Alle Playlists der Bibliothek, Ordner aufgeklappt (für die Auswahl in den Spiel-Einstellungen)
+async function sources() {
+  const out = [];
+  const walk = (items) => {
+    for (const x of items || []) {
+      if (x?.type === "folder") walk(x.items);
+      else if (x?.type === "playlist" && x.uri) out.push({ uri: x.uri, name: clean(x.name, 60) });
+    }
+  };
+  try {
+    walk((await within(S.Platform.RootlistAPI.getContents(), 6000))?.items);
+  } catch {}
+  return out;
+}
+async function playlistSongs(uri) {
+  const r = await within(S.Platform.PlaylistAPI.getContents(uri, { offset: 0, limit: 1000 }), 8000);
+  return (r?.items || []).filter((x) => x?.uri?.startsWith("spotify:track:") && x.name && x.isPlayable !== false).map(songOf);
+}
+// Erscheinungsjahr: steht nicht in der Warteschlange. Spotifys Web-API nennt es für 50 Songs auf einmal.
+const years = new Map();
+async function loadYears(list) {
+  const need = list.filter((x) => !years.has(x.uri)).slice(0, 200);
+  for (let i = 0; i < need.length; i += 50) {
+    const part = need.slice(i, i + 50);
+    const r = await within(S.CosmosAsync.get("https://api.spotify.com/v1/tracks?ids=" + part.map((x) => x.uri.split(":")[2]).join(",")), 6000);
+    (r?.tracks || []).forEach((tr, k) => {
+      const y = Number(String(tr?.album?.release_date || "").slice(0, 4));
+      if (part[k] && y > 1900) years.set(part[k].uri, y);
+    });
+  }
+}
+// Gibt die Songs zurück, aus denen das Quiz wählt. null: wie bisher einfach der nächste Song der Warteschlange.
+async function loadSource() {
+  const uri = String(cfg.gameSource || ""), decade = Number(cfg.gameDecade) || 0;
+  if (!uri && !decade) return null;
+  let list = null;
+  if (uri) {
+    try {
+      list = await playlistSongs(uri);
+    } catch {}
+    if (!list?.length) {
+      notify(t("gSrcEmpty"), true);
+      list = null;
+    }
+  }
+  if (!decade) return list;
+  const base = list || queueSongs(S.Queue?.nextTracks);
+  try {
+    await loadYears(base);
+  } catch {}
+  const fits = base.filter((x) => years.get(x.uri) >= decade && years.get(x.uri) < decade + 10);
+  if (fits.length) return fits;
+  // Jahre nicht zu bekommen oder nichts aus dem Jahrzehnt dabei: ohne Filter spielen, aber sagen
+  notify(t(base.some((x) => years.has(x.uri)) ? "gDecadeNone" : "gDecadeFail"), true);
+  return list;
+}
+// Den nächsten Quiz-Song aus der Quelle nach vorn in die Warteschlange stellen: der Sprung landet dann auf ihm.
+// Die Wiedergabe (Playlist, Radio) bleibt, wie sie ist, und geht nach dem Spiel dort weiter.
+async function queueNext() {
+  const g = G;
+  if (g.src === undefined) {
+    const list = await loadSource().catch(() => null);
+    if (G !== g) return;
+    g.src = list;
+  }
+  if (!g.src) return;
+  let left = g.src.filter((x) => !g.played.has(x.uri) && x.uri !== nowUri());
+  if (!left.length) {
+    g.played.clear();
+    left = g.src.filter((x) => x.uri !== nowUri());
+  }
+  const pick = left[Math.floor(Math.random() * left.length)];
+  if (!pick) return;
+  g.played.add(pick.uri);
+  try {
+    await within(S.addToQueue([{ uri: pick.uri }]), 3000);
+  } catch {}
+}
 const nowItem = () => S.Player.data?.item || null;
 const nowUri = () => nowItem()?.uri || "";
 
@@ -203,7 +281,7 @@ function start(kind) {
   if (!ctx) return;
   stop(true);
   muteBack = 0;
-  G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null };
+  G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null, src: undefined, played: new Set() };
   boxKey = "";
   clearInterval(ticker);
   ticker = setInterval(() => render(true), 250);
@@ -484,13 +562,43 @@ function songRound(useCurrent) {
     G.clipAt = PLR.getProgress() || 0;
     return go(nowItem());
   }
-  jumpNext(G.k === "intro", go);
+  const g = G, r = G.r;
+  queueNext().then(() => {
+    // inzwischen beendet oder übersprungen: nicht mehr springen
+    if (G === g && G.r === r && G.view?.st === "load") jumpNext(G.k === "intro", go);
+  });
+}
+// Schwierigkeit: wie ähnlich die falschen Antworten der richtigen sind. Genre-Daten gibt es ohne weitere
+// Abfragen nicht; ähnlich heißt hier: derselbe Künstler (beim Titel), gemeinsame Wörter, gleiche Form des Namens.
+const wordsOf = (s) => String(s).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+function alike(x, song, field) {
+  const a = x[field], b = song[field], wa = wordsOf(a), wb = wordsOf(b);
+  let s = 0;
+  if (field === "title" && x.artist && x.artist === song.artist) s += 4;
+  if (wa.some((w) => w.length > 2 && wb.includes(w))) s += 2;
+  if (wa.length === wb.length) s += 1;
+  if (Math.abs(a.length - b.length) <= 3) s += 1;
+  if (wa[0]?.[0] === wb[0]?.[0]) s += 1;
+  return s;
+}
+function decoys(song, field) {
+  const answer = song[field], level = cfg.gameLevel, n = level === "easy" ? 2 : 3;
+  const best = new Map();
+  for (const x of shuffle(pool())) {
+    const v = x[field];
+    if (!v || v === answer) continue;
+    best.set(v, Math.max(best.get(v) ?? -1, alike(x, song, field)));
+  }
+  const own = [...best.keys()];
+  // die Reihenfolge ist schon gemischt: bei gleicher Ähnlichkeit entscheidet der Zufall
+  if (level === "hard") own.sort((a, b) => best.get(b) - best.get(a));
+  else if (level === "easy") own.sort((a, b) => best.get(a) - best.get(b));
+  // Quelle zu klein oder nur ein Künstler: das Spiel läuft trotzdem, mit bekannten Namen als falschen Antworten
+  return [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, n);
 }
 function songAsk(song) {
   const field = SONG_FIELD[G.k], answer = song[field];
-  const own = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer));
-  // Warteschlange zu klein oder nur ein Künstler: das Spiel läuft trotzdem, mit bekannten Namen als falschen Antworten
-  const others = [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, 3);
+  const others = answer ? decoys(song, field) : [];
   if (!answer) {
     notify(t("gNeedQueue"), true);
     return G.r > 1 ? finish() : stop();
@@ -1384,4 +1492,5 @@ export const games = {
   active: () => G?.k || null,
   waiting: () => G?.view?.st === "join",
   players: () => G?.players.size || 0,
+  sources,
 };

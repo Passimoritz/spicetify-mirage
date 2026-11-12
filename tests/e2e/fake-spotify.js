@@ -35,8 +35,28 @@
     return out;
   };
 
-  const log = { next: 0, seek: [], dropped: 0, pause: 0, play: 0, audible: {}, notes: [], volume: [] };
+  const log = { next: 0, seek: [], dropped: 0, pause: 0, play: 0, audible: {}, notes: [], volume: [], queued: [], yearCalls: 0 };
   let cur = 0, shuffleJump = 0, trackStart = Date.now();
+  // Eine Playlist in der Bibliothek, die gerade NICHT läuft (Quelle fürs Quiz): eigene Songs, eigene Künstler
+  const PL_URI = "spotify:playlist:quizmix";
+  const plTracks = Array.from({ length: 12 }, (_, i) => ({
+    uri: `spotify:track:p${String(i).padStart(21, "0")}`,
+    uid: "p" + i,
+    name: "Mix Song " + (i + 1),
+    isPlayable: true,
+    duration: { milliseconds: 200000 },
+    artists: [{ name: "Mix Artist " + (i + 1), uri: "spotify:artist:m" + i }],
+    album: { name: "Mix Album", uri: "spotify:album:m", images: [{ url: "spotify:image:ab67616d0000b273" + hex(100 + i) }] },
+    metadata: { title: "Mix Song " + (i + 1), artist_name: "Mix Artist " + (i + 1), album_title: "Mix Album", duration: "200000", image_url: "spotify:image:ab67616d00004851" + hex(100 + i) },
+  }));
+  // Erscheinungsjahr: die laufende Liste reihum 1985, 1995, 2015; die Playlist abwechselnd 1985 und 2015
+  const yearOf = (uri) => {
+    const p = plTracks.findIndex((x) => x.uri === uri);
+    if (p >= 0) return p % 2 ? 2015 : 1985;
+    const i = tracks.findIndex((x) => x.uri === uri);
+    return i < 0 ? 0 : [1985, 1995, 2015][i % 3];
+  };
+  const queued = [];
   const SKIP_MS = 220, SEEK_MS = 70, PLAY_MS = 40, VOL_MS = 60, SEEK_DROP_MS = 160;
 
   const st = { item: tracks[0], isPaused: false, timestamp: Date.now(), positionAsOfTimestamp: 0, duration: 200000, shuffle: false, repeat: 0, context: { uri: "spotify:playlist:test" } };
@@ -73,13 +93,24 @@
     fire("songchange", P.data);
   };
 
+  // ein Song aus der Warteschlange des Nutzers: läuft, ohne die Stelle in der Liste zu verschieben
+  const landItem = (item) => {
+    st.item = item;
+    st.duration = 200000;
+    st.isPaused = false;
+    setPos(0);
+    trackStart = Date.now();
+    refreshQueue();
+    P.data = st;
+    fire("songchange", P.data);
+  };
   const origin = {
     _state: st,
     _queue: { _queue: queueState, _queueState: { current: null, queued: [], nextUp: [] } },
     skipToNext() {
       log.next++;
-      const to = cur + 1 + shuffleJump;
-      setTimeout(() => land(to), SKIP_MS);
+      const to = cur + 1 + shuffleJump, mine = queued.shift();
+      setTimeout(() => (mine ? landItem(mine) : land(to)), SKIP_MS);
     },
     skipToPrevious() {
       setTimeout(() => land(cur - 1), SKIP_MS);
@@ -192,7 +223,11 @@
     get Queue() {
       return P.origin?._queue?._state ?? P.origin?._queue?._queue;
     },
-    Platform: { History: { listen() {}, location: { pathname: "/playlist/x" }, push() {} }, version: "1.2.80.0", PlaybackAPI, PlayerAPI: {} },
+    Platform: {
+      History: { listen() {}, location: { pathname: "/playlist/x" }, push() {} }, version: "1.2.80.0", PlaybackAPI, PlayerAPI: {},
+      RootlistAPI: { getContents: async () => ({ items: [{ type: "folder", name: "Party", items: [{ type: "playlist", uri: PL_URI, name: "Quiz Mix", isOwnedBySelf: true }] }, { type: "playlist", uri: "spotify:playlist:empty", name: "Leer" }] }) },
+      PlaylistAPI: { getContents: async (uri) => ({ items: uri === PL_URI ? plTracks : [], totalLength: uri === PL_URI ? plTracks.length : 0 }) },
+    },
     CosmosAsync: {
       get: async (url) => {
         const m = /color-lyrics\/v2\/track\/([A-Za-z0-9]+)/.exec(url);
@@ -202,6 +237,12 @@
           return { lyrics: { syncType: "LINE_SYNCED", lines: lyricLines(i), language: "en" } };
         }
         if (/artists[/]/.test(url)) return { genres: ["dance pop"] };
+        // Erscheinungsjahre, bis zu 50 Songs auf einmal
+        const ids = /v1[/]tracks[?]ids=([A-Za-z0-9,]+)/.exec(url);
+        if (ids) {
+          log.yearCalls++;
+          return { tracks: ids[1].split(",").map((id) => ({ id, uri: "spotify:track:" + id, album: { release_date: yearOf("spotify:track:" + id) + "-05-01" } })) };
+        }
         // Suche für Songwünsche: die ersten Songs der Liste
         if (/v1[/]search/.test(url)) return { tracks: { items: tracks.slice(0, 3).map((x) => ({ id: x.uri.split(":")[2], uri: x.uri, name: x.name, artists: [{ name: x.metadata.artist_name }], album: { images: [] } })) } };
         return {};
@@ -214,7 +255,13 @@
     Locale: { getLocale: () => "de" },
     colorExtractor: async () => ({ VIBRANT: "#ff4f8b", DARK_VIBRANT: "#7c3aed" }),
     showNotification: (msg, err) => log.notes.push({ msg: String(msg), err: !!err, at: Date.now() }),
-    addToQueue: async () => {},
+    addToQueue: async (list) => {
+      for (const x of list || []) {
+        const item = [...tracks, ...plTracks].find((y) => y.uri === x.uri);
+        if (item) queued.push(item);
+        log.queued.push(x.uri);
+      }
+    },
     getAudioData: async (uri) => {
       await new Promise((r) => setTimeout(r, 280));
       const i = Math.max(0, idx(uri));
@@ -250,7 +297,9 @@
       tracks = makeTracks(NAMES);
       land(0);
     },
+    yearOf,
     reset: () => {
+      queued.length = 0;
       if (st.isPaused) origin.resume();
       PlaybackAPI._volume = 0.7;
       shuffleJump = 0;
