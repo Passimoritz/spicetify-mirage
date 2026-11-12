@@ -3,6 +3,7 @@
 // dasselbe Modul im Hintergrund-Thread (eigenes OffscreenCanvas, venue-worker.js) und, wo das nicht geht,
 // im Hauptfenster. Jedes Bild bekommt seinen Zustand als „st“ (Takt, Energie, Farben, Kamera …) mitgeteilt.
 import { createShow } from "./show.js";
+import { createFlashCap } from "./flashcap.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -28,7 +29,10 @@ function createVenue(makeCanvas) {
     }
     return glowSprites.get(k);
   }
-  const show = createShow(glowSprite);
+  // Blitz-Schranke der Bühne: Stroboskop, Blinder und Gitarrenblitze zusammen höchstens drei pro Sekunde,
+  // auch wenn die Freigabe aus dem Hauptthread (st.flashGo) einmal fehlt oder doppelt ankommt
+  const flashCap = createFlashCap();
+  const show = createShow(glowSprite, flashCap);
   let disco = null, tunnel = [];
   function drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {
     const t = st.t, far = Math.hypot(vw, vh) * 1.1;
@@ -687,7 +691,7 @@ function createVenue(makeCanvas) {
   /* ---------------------------------------------------------------- Bühneneffekte */
   // Nur wo sie hingehören: CO2-Fontänen bei elektronischer Musik, Pyro-Flammen bei Rock/Metal/Punk/Hardstyle,
   // Feuerwerk im letzten Refrain im Stadion und auf dem Festival, Stroboskop bei harten Drops (höchstens einmal
-  // pro Schlag – also nie schneller als ~3 Blitze/s). Ausgelöst vom Drop und, in der Spitze, vom Taktanfang.
+  // pro Schlag und nur durch die Blitz-Schranke – also auch bei 200 BPM nie mehr als 3 Blitze/s). Ausgelöst vom Drop und, in der Spitze, vom Taktanfang.
   const CO2 = new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
   const PYRO = new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
   const STROBE = new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
@@ -741,7 +745,7 @@ function createVenue(makeCanvas) {
       if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {
         for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });
       }
-      if (st.strobe && STROBE.has(key) && px.drop > 0.5 && newBeat) fx.strobe = 1;
+      if (st.strobe && st.flashGo && STROBE.has(key) && px.drop > 0.5 && newBeat && flashCap.take(st.t)) fx.strobe = 1;
     }
     ctx.globalCompositeOperation = "lighter";
     // CO2: weiße Säule schießt in 0,25 s hoch und verweht dann über eine Sekunde
@@ -1128,7 +1132,10 @@ function createVenue(makeCanvas) {
         if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);
       }
       // Kamerablitze aus der Menge: in der Spitze öfter
-      if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1, row: p.row });
+      // (mit „Keine Blitze“ bleiben die Handys dunkel)
+      if (st.noFlash) {
+        // nichts
+      } else if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1, row: p.row });
       // Blitzlicht-Gewitter (großer Refrain): viele Handys blitzen gleichzeitig
       else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, row: p.row });
     }

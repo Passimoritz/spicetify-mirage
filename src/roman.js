@@ -3,16 +3,22 @@
 // Koreanisch rechnet Mirage selbst aus den Silben aus (Revised Romanization, ohne Lautangleichungen),
 // Japanisch kommt von NetEase (die haben Romaji zu vielen Songs) oder – bei reinem Kana – auch selbst,
 // Chinesisch braucht ein Wörterbuch (pinyin-pro), das erst geladen wird, wenn wirklich chinesischer Text kommt.
+// Kyrillisch, Griechisch und Hindi (Devanagari) rechnet translit.js aus Tabellen.
+import { CYR, GREEK, DEVA } from "./translit.js";
+
 const HAN = /\p{Script=Han}/u, KANA = /[぀-ヿ]/, HANGUL = /[가-힣]/;
 
 // welche Schrift die Mehrheit der Zeilen trägt (Japanisch: Kana; Chinesisch: Han ohne Kana)
 function scriptOf(lines) {
-  const n = { ko: 0, ja: 0, zh: 0 };
+  const n = { ko: 0, ja: 0, zh: 0, cyr: 0, el: 0, hi: 0 };
   for (const l of lines || []) {
     const s = l.text || "";
     if (HANGUL.test(s)) n.ko++;
     else if (KANA.test(s)) n.ja++;
     else if (HAN.test(s)) n.zh++;
+    else if (CYR.test(s)) n.cyr++;
+    else if (GREEK.test(s)) n.el++;
+    else if (DEVA.test(s)) n.hi++;
   }
   const best = Object.entries(n).sort((a, b) => b[1] - a[1])[0];
   // Japanisch hat oft auch reine Kanji-Zeilen: zählt zusammen

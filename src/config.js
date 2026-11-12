@@ -45,6 +45,9 @@ const DEFAULTS = {
   glass: false,
   // folgt der Systemeinstellung „Bewegung reduzieren“, bis man selbst schaltet
   calm: !!matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  // „Keine Blitze“ (lichtempfindliche Augen): kein Stroboskop, Blinder, Drop-Blitz, aufblitzender Liedtext –
+  // überall, auch auf den Handys. Aus, außer das System bittet um weniger Bewegung
+  noFlash: !!matchMedia?.("(prefers-reduced-motion: reduce)").matches,
   preset: "balanced",
   autoPerf: true,
   lyrSize: 100,
@@ -56,6 +59,8 @@ const DEFAULTS = {
   karaoke: true,
   font: "outfit",
   lyricPicks: {},
+  // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)
+  lyricBad: {},
   canvas: true,
   // Canvas je Ansicht – erst an, wenn man es dort mit dem Film-Knopf einschaltet
   canvasIn: { cover: false, lyrics: false, viz: false, mix: false, party: false },

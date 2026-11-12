@@ -1,5 +1,6 @@
 import { S, root, clamp, seek, fmt, loadImage } from "./core.js";
 import { scriptOf, hangul, kana, pinyinLines } from "./roman.js";
+import { translitLines } from "./translit.js";
 import { t } from "./i18n.js";
 import { cfg, save } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
@@ -7,9 +8,9 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
+import { getLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { LANG } from "./i18n.js";
-import { nowPlayingCard, partyRecapCard } from "./share.js";
+import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
 import { currentItem, covers, titleOf, artistOf, toggleMute, PLR } from "./player.js";
 import { party } from "./party.js";
@@ -155,6 +156,7 @@ const immersive = (() => {
       <div class="m-im-lyrbar">
         <button type="button" class="m-im-trbtn" hidden aria-pressed="false">${ICON.translate}<span></span><i aria-hidden="true"></i></button>
         <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
+        <button type="button" class="m-im-lyrsrc m-im-lyrbad" hidden><span></span></button>
       </div>
       <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">×</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
@@ -190,6 +192,7 @@ const immersive = (() => {
       lyrics: el.querySelector(".m-im-lyrics"),
       inner: el.querySelector(".m-im-lyrics-inner"),
       lyrsrc: el.querySelector(".m-im-lyrsrc"),
+      lyrbad: el.querySelector(".m-im-lyrbad"),
       trbtn: el.querySelector(".m-im-trbtn"),
       ind: el.querySelector(".m-im-ind"),
       canvas: el.querySelector(".m-im-viz"),
@@ -262,6 +265,9 @@ const immersive = (() => {
     q.wrap.addEventListener("transitionend", () => (vizRect.r = null));
     q.lyrsrc.querySelector("b").textContent = t("lyrPick");
     q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
+    q.lyrbad.querySelector("span").textContent = t("lyrWrong");
+    q.lyrbad.title = t("lyrWrongHint");
+    q.lyrbad.onclick = wrongLyrics;
     q.trbtn.querySelector("span").textContent = t("trToggle");
     q.trbtn.onclick = () => {
       // ein Klick schaltet die Einstellung „Liedtext übersetzen“ – gilt also auch für den nächsten Song
@@ -884,6 +890,19 @@ const immersive = (() => {
     // ohne Text steckt „Fassung wählen“ im Zeichen neben dem Titel
     q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri) || !got?.lines?.length;
     q.lyrsrc.querySelector("span").textContent = got ? (SOURCE_NAME[got.source] || "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
+    q.lyrbad.hidden = q.lyrsrc.hidden;
+  }
+  // „Nicht der richtige Liedtext“: das gezeigte Ergebnis für diesen Song als falsch merken und sofort das
+  // nächstbeste holen (andere Quelle oder anderer Eintrag). Zurück geht es über „Fassung wählen“ → „Automatisch“.
+  async function wrongLyrics() {
+    const uri = lyrUri;
+    if (!lyr || !uri || !cfg.onlineLyrics || !rejectLyrics(uri, lyr)) return;
+    showSide(null);
+    lyrUri = "";
+    await loadLyrics();
+    if (lyrUri !== uri) return;
+    const found = !!lyr?.lines?.length || !!lyr?.instrumental;
+    S.showNotification?.(found ? t("lyrWrongNext").replace("{s}", SOURCE_NAME[lyr.source] || "Spotify") : t("lyrWrongNone"), false, 3500);
   }
   async function showVersions(body, item) {
     const uri = lyrUri;
@@ -892,14 +911,16 @@ const immersive = (() => {
     if (side !== "versions" || uri !== lyrUri) return;
     body.textContent = "";
     const cur = lyr?.lrcId ? String(lyr.lrcId) : "";
-    const pickedId = cfg.lyricPicks?.[uri] || "";
+    const pickedId = cfg.lyricPicks?.[uri] || "", rejected = rejectedCount(uri);
     const choose = (id) => {
       pickLyrics(uri, id);
       lyrUri = "";
       loadLyrics();
       showSide(null);
     };
-    item(t("lyrAuto"), t("lyrAutoHint"), null, pickedId ? () => choose("") : null, !pickedId);
+    // „Automatisch“ nimmt auch gemeldete Fehler zurück
+    item(t("lyrAuto"), rejected ? t("lyrAutoReset").replace("{n}", rejected) : t("lyrAutoHint"), null, pickedId || rejected ? () => choose("") : null, !pickedId && !rejected);
+    if (lyr?.lines?.length || lyr?.instrumental) item(t("lyrWrong"), t("lyrWrongHint"), null, wrongLyrics);
     if (!list.length) return item(t("lyrNoVersions"));
     for (const v of list) {
       const kind = v.instrumental ? t("instrTitle") : v.synced ? t("lyrSynced") : t("lyrPlain");
@@ -938,7 +959,7 @@ const immersive = (() => {
     q.inner.style.transition = "";
     q.lyrics.classList.remove("is-unsynced");
     el.classList.remove("is-karaoke");
-    q.lyrsrc.hidden = true;
+    q.lyrsrc.hidden = q.lyrbad.hidden = true;
     q.trbtn.hidden = true;
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
@@ -1050,7 +1071,8 @@ const immersive = (() => {
       if (cur) l.who = cur;
     }
   }
-  // Lautschrift unter die Zeilen (Koreanisch selbst, Japanisch von NetEase oder aus Kana, Chinesisch per Wörterbuch)
+  // Lautschrift unter die Zeilen (Koreanisch selbst, Japanisch von NetEase oder aus Kana, Chinesisch per Wörterbuch,
+  // Kyrillisch, Griechisch und Hindi aus Tabellen)
   async function addRomaji(token) {
     const got = lyr, item = currentItem();
     if (!got?.lines?.length || got.instrumental) return;
@@ -1059,6 +1081,8 @@ const immersive = (() => {
     let rom = null;
     if (sc === "ko") rom = got.lines.map((l) => hangul(l.text));
     else if (sc === "zh") rom = await pinyinLines(got.lines.map((l) => l.text));
+    // Kyrillisch, Griechisch, Hindi: aus Tabellen (die Sprachangabe der Quelle hilft bei Kyrillisch)
+    else if (sc !== "ja") rom = translitLines(sc, got.lines.map((l) => l.text), got.lang);
     else {
       const ne = got.rom?.length ? got.rom : await romajiFor(item);
       rom = got.lines.map((l) => {
@@ -1372,6 +1396,8 @@ const immersive = (() => {
     const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
     if (px) partyExtras(px, now, dt, R, dpr);
     curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt) : null;
+    // Gitarrenblitze brauchen die Freigabe der Blitz-Schranke auch in leisen Stellen
+    party.stageFlash = (curInst?.guitar || 0) > 0.3;
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
     quietNow = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
     if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
@@ -1793,9 +1819,11 @@ const immersive = (() => {
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
       rig: cfg.partyRig && px.fx && px.level >= 2 && !lightMode(),
-      flash: cfg.partyFlash && px.fx,
+      flash: cfg.partyFlash && px.fx && !cfg.noFlash,
       inst: curInst,
-      strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4,
+      strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4 && !cfg.noFlash,
+      // „Keine Blitze“ für alles Übrige der Bühne (Gitarrenblitze, Handy-Blitze, weißer Drop) · Freigabe der Blitz-Schranke
+      noFlash: !!cfg.noFlash, flashGo: !!px.flashGo,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !PLR.isPlaying(),
@@ -1803,7 +1831,7 @@ const immersive = (() => {
       fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
       drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
       song: currentItem()?.uri || "",
-      handsUp: moments.hands, flashStorm: moments.storm, confetti: moments.confetti,
+      handsUp: moments.hands, flashStorm: cfg.noFlash ? 0 : moments.storm, confetti: moments.confetti,
     });
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
@@ -1945,6 +1973,7 @@ const immersive = (() => {
   const glowSprite = venueLocal.glowSprite;
   let venueWorker = null, venueCtx = null, venueOn = false, venueBusy = false, venueSentAt = 0, venueDt = 0;
   const venueHold = { dropHit: false, hit: false };
+  let venueFlashGo = false;
   function venueInit() {
     if (venueWorker || venueCtx) return;
     try {
@@ -1983,13 +2012,15 @@ const immersive = (() => {
     // einmalige Signale (Drop, Treffer) gehen beim Auslassen nicht verloren
     venueHold.dropHit ||= !!st.px.dropHit;
     venueHold.hit ||= !!st.px.hit;
+    venueFlashGo ||= !!st.flashGo;
     if (venueWorker) {
       const now = performance.now();
       if (venueBusy && now - venueSentAt < 250) return;
       st.dt = venueDt;
       venueDt = 0;
       Object.assign(st.px, venueHold);
-      venueHold.dropHit = venueHold.hit = false;
+      st.flashGo = venueFlashGo;
+      venueHold.dropHit = venueHold.hit = venueFlashGo = false;
       venueBusy = true;
       venueSentAt = now;
       venueWorker.postMessage({ type: "frame", st });
@@ -1997,7 +2028,7 @@ const immersive = (() => {
     }
     st.dt = venueDt;
     venueDt = 0;
-    venueHold.dropHit = venueHold.hit = false;
+    venueHold.dropHit = venueHold.hit = venueFlashGo = false;
     if (venueCtx) {
       if (q.venueEl.width !== st.vw || q.venueEl.height !== st.vh) [q.venueEl.width, q.venueEl.height] = [st.vw, st.vh];
       venueLocal.draw(venueCtx, st);
@@ -2044,7 +2075,8 @@ const immersive = (() => {
     // die echte Kick (aus der Klangfarbe) treibt Strahlen, Scheinwerfer, Kranz und Puls – je mehr Energie, desto mehr
     px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
     // Hintergrund atmet mit: Kick, Energie, Refrain und Drop heben die Farbfläche (nur Deckkraft – billig)
-    px.ambient = clamp(0.04 + px.kickEnv * 0.2 * px.I + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
+    // („Keine Blitze“: ohne den Kick-Anteil, die Fläche folgt dann nur der langsamen Energie)
+    px.ambient = clamp(0.04 + (cfg.noFlash ? 0 : px.kickEnv * 0.2 * px.I) + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
     // Lichtregie: vor dem Drop wird es ruhiger und gespannter, auf dem letzten Schlag davor ist es dunkel –
     // dann schlägt der Drop ein. Im letzten Refrain gibt das Licht alles.
     if (px.blackout) {
@@ -2083,7 +2115,7 @@ const immersive = (() => {
       px.beamVis *= dim;
       if (!blend.waiting) {
         blend.glow *= Math.exp(-dt * 2.5);
-        px.flash = Math.max(px.flash, blend.glow * 0.4);
+        if (!cfg.noFlash) px.flash = Math.max(px.flash, blend.glow * 0.4);
         if (blend.glow < 0.02 && (!blend.from || now - blend.hitAt > (4 * 60000) / (party.info.bpm || 120))) blend = null;
       }
     }
@@ -2098,7 +2130,7 @@ const immersive = (() => {
       recap.peak = { title: q.title.textContent, artist: q.artist.textContent };
     }
     // Liedtext-Funken: beim Drop zerfällt die aktive Zeile in Lichtteilchen, die in die Strahlen fliegen
-    if (px.dropHit && cfg.partyShatter && px.fx && activeEl) {
+    if (px.dropHit && cfg.partyShatter && px.fx && activeEl && !cfg.noFlash) {
       activeEl.classList.remove("is-burst");
       void activeEl.offsetWidth;
       activeEl.classList.add("is-burst");
@@ -2214,8 +2246,11 @@ const immersive = (() => {
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
     // Liedtext zum Mitsingen auf den Handys: aktuelle und nächste Zeile (nur synchroner Liedtext)
     const lineAt = (k) => (lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "♪" && lyr.lines[k]?.text) || "";
-    live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
+    live.feed(noFlashFeed(px), vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
   }
+  // „Keine Blitze“ gilt auch für die Handys: ihre Seite blitzt weiß, sobald der Drop-Wert über 0,85 springt –
+  // gedeckelt kommt er dort nie an (die Seite selbst kennt den Schalter noch nicht)
+  const noFlashFeed = (px) => (cfg.noFlash ? { ...px, drop: Math.min(px.drop, 0.8) } : px);
   const toLocal = (x, y) => [x, y];
   function drawMotes(ctx, dt, dpr) {
     if (!motes.length) return;
@@ -2290,7 +2325,7 @@ const immersive = (() => {
           wfxAt = now;
           wordFx.draw(vctx, {
             pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || palette(),
-            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(),
+            level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(), noFlash: !!cfg.noFlash,
           });
         }
       } catch (e) {
@@ -2556,7 +2591,7 @@ const immersive = (() => {
   const recap = { start: 0, songs: [], drops: 0, peak: null };
   function noteRecap(item, info) {
     if (!cfg.partyRecap || !item?.uri) return;
-    if (!recap.start || Date.now() - recap.last > 3600e3) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null });
+    if (!recap.start || Date.now() - recap.last > 3600e3) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null, saved: null });
     recap.last = Date.now();
     if (recap.songs.some((x) => x.uri === item.uri)) return;
     recap.songs.push({ uri: item.uri, title: titleOf(item), artist: artistOf(item), key: info?.key || "pop", bpm: info?.bpm || 0, img: covers(item).big || covers(item).small });
@@ -2927,6 +2962,38 @@ const immersive = (() => {
       }
       if (!done) sideBtn(box, t("djMore"));
     });
+    // Reihenfolge anwenden: die nächsten Songs zu einer Kette ordnen (Tonart, Tempo, Energiekurve), mit Rückgängig
+    const osec = document.createElement("div");
+    osec.className = "m-im-side-sec";
+    osec.textContent = t("djOrder");
+    const osub = document.createElement("small");
+    osub.textContent = t("djOrderSub");
+    osec.append(osub);
+    const obox = document.createElement("div");
+    obox.className = "m-im-side-group";
+    body.append(osec, obox);
+    const drawOrder = (res) => {
+      if (token !== djToken || side !== "dj") return;
+      obox.textContent = "";
+      const go = sideBtn(obox, t("djOrderApply"), dj.canReorder() ? "" : t("djOrderNoApi"), async () => {
+        go.disabled = true;
+        go.querySelector("b").textContent = t("loading");
+        const r = await dj.sortQueue(currentItem()?.uri);
+        const msg = { done: "djOrderDone", same: "djOrderSame", few: "djOrderFew", locked: "gLocked", fail: "djOrderFail", list: "djOrderNoApi" }[r.state];
+        S.showNotification?.(t(msg).replace("{n}", r.n).replace("{a}", r.from).replace("{b}", r.to), r.state === "fail", 4000);
+        drawOrder(r);
+      });
+      if (dj.canUndo()) {
+        sideBtn(obox, t("djOrderUndo"), "", async () => {
+          const ok = await dj.undoSort();
+          S.showNotification?.(t(ok ? "djOrderUndone" : "djOrderFail"), !ok, 3000);
+          drawOrder(null);
+        });
+      }
+      // die neue Reihenfolge, nummeriert (ohne Spotifys Verschiebe-Funktion ist das der Vorschlag zum Nachbauen)
+      if (res?.order && res.state !== "fail") res.order.forEach((x, i) => sideBtn(obox, `${i + 1}. ${x.title}`, [x.artist, fmtI(x.info)].filter(Boolean).join(" · ")));
+    };
+    drawOrder(null);
   }
 
   /* ---- Abstimmung: die nächsten drei Songs zur Wahl, die Handys stimmen 45 s lang ab */
@@ -3022,27 +3089,49 @@ const immersive = (() => {
       rank.forEach((g, i) => sideBtn(body, `${i + 1}. ${g.n || t("rankGuest")}`, t("rankLine").replace("{w}", g.played).replace("{v}", g.votes)));
     }
   }
+  // Ein Abend = eine Playlist: recap.saved merkt sich, was schon drin ist. Ein zweiter Klick legt nie eine
+  // zweite Playlist an, sondern trägt nur die Songs nach, die seitdem dazugekommen sind.
+  let savingPlaylist = false;
   async function savePartyPlaylist() {
-    const uris = recap.songs.map((x) => x.uri).filter((u) => u?.startsWith("spotify:track:"));
-    if (!uris.length) return;
-    const name = `Mirage Party · ${new Date(recap.start || Date.now()).toLocaleDateString()}`;
-    let uri = "";
+    if (savingPlaylist) return;
+    const all = recap.songs.map((x) => x.uri).filter((u) => u?.startsWith("spotify:track:"));
+    const done = recap.saved;
+    const uris = planPartySave(all, done?.uris);
+    if (!all.length) return;
+    const name = done?.name || `Mirage Party · ${new Date(recap.start || Date.now()).toLocaleDateString()}`;
+    if (done && !uris.length) return void S.showNotification?.(t("recapAlready").replace("{n}", name), false, 4000);
+    // erst fragen: eine Playlist in der Bibliothek soll niemand aus Versehen anlegen
+    if (!done && !confirm(t("recapConfirm").replace("{c}", uris.length).replace("{n}", name))) return;
+    savingPlaylist = true;
+    let uri = done?.uri || "", ok = false;
+    const idOf = (u) => String(u).split(":").pop();
     try {
-      uri = await S.Platform?.RootlistAPI?.createPlaylist?.(name, { before: "start" });
-      if (uri) await S.Platform.PlaylistAPI.add(uri, uris, { before: "start" });
-    } catch {
-      uri = "";
-    }
-    // Rückfall: Web-API
-    if (!uri) {
+      if (!uri) uri = (await S.Platform?.RootlistAPI?.createPlaylist?.(name, { before: "start" })) || "";
+      // manche Spotify-Versionen liefern ein Objekt statt der Adresse
+      if (uri && typeof uri !== "string") uri = uri.uri || "";
+      if (uri) {
+        await S.Platform.PlaylistAPI.add(uri, uris, done ? { after: "end" } : { before: "start" });
+        ok = true;
+      }
+    } catch {}
+    // Rückfall: Web-API – in die schon angelegte Playlist, nie eine zweite
+    if (!ok) {
       try {
-        const me = await S.CosmosAsync.get("https://api.spotify.com/v1/me");
-        const pl = await S.CosmosAsync.post(`https://api.spotify.com/v1/users/${me.id}/playlists`, { name, public: false, description: "Mirage party recap" });
-        await S.CosmosAsync.post(`https://api.spotify.com/v1/playlists/${pl.id}/tracks`, { uris });
-        uri = pl.uri;
+        if (!uri) {
+          const me = await S.CosmosAsync.get("https://api.spotify.com/v1/me");
+          uri = (await S.CosmosAsync.post(`https://api.spotify.com/v1/users/${me.id}/playlists`, { name, public: false, description: "Mirage party recap" })).uri || "";
+        }
+        if (uri) {
+          for (let i = 0; i < uris.length; i += 100) await S.CosmosAsync.post(`https://api.spotify.com/v1/playlists/${idOf(uri)}/tracks`, { uris: uris.slice(i, i + 100) });
+          ok = true;
+        }
       } catch {}
     }
-    S.showNotification?.(uri ? t("recapSaved").replace("{n}", name) : t("recapSaveFail"), !uri, 4000);
+    // auch eine leer gebliebene Playlist merken: der nächste Versuch füllt sie, statt eine neue anzulegen
+    if (uri) recap.saved = { uri, name, uris: ok ? all : done?.uris || [] };
+    savingPlaylist = false;
+    const msg = !ok ? t("recapSaveFail") : done ? t("recapAdded").replace("{c}", uris.length).replace("{n}", name) : t("recapSaved").replace("{n}", name);
+    S.showNotification?.(msg, !ok, 4000);
   }
 
   /* ---- Party auf anderem Bildschirm. Der PC rechnet die Party, der Fernseher zeigt nur das fertige Bild:
@@ -3158,7 +3247,7 @@ const immersive = (() => {
     const pos = songPos(now), px = party.step(pos / 1000, dt, PLR.isPlaying());
     const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
     const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
-    live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
+    live.feed(noFlashFeed(px), vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
   }
   // Der Taktgeber läuft nur, solange er gebraucht wird (Fenster verdeckt UND Party mit Handys). Früher tickte
   // er ab dem ersten Öffnen des Immersiv-Modus viermal pro Sekunde weiter – auch geschlossen und im Leerlauf.

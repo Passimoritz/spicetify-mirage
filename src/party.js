@@ -1,6 +1,7 @@
 import { S, clamp, seek, lru } from "./core.js";
 import { cfg } from "./config.js";
 import { audio } from "./audio.js";
+import { createFlashCap } from "./flashcap.js";
 
 /* ---------------------------------------------------------------- Party-Modus */
 // Ein Lichtpult, das den Song kennt. Aus Spotifys Taktanalyse entsteht einmal pro Song eine Karte:
@@ -8,7 +9,8 @@ import { audio } from "./audio.js";
 // steigt in den nächsten Sekunden steil an), ruhige Breaks, Dur/Moll je Abschnitt und Klanghelligkeit.
 // Das Genre-Profil legt die Lichtsprache fest: WO im Takt es schlägt (vier auf den Boden, 1 und 3,
 // Backbeat auf 2 und 4, nur die Eins), wie lange ein Schlag nachklingt und welche Scheinwerfer es gibt.
-// Blitze sind weiche Farbflächen, nie weißes Stroboskop, und kommen höchstens dreimal pro Sekunde.
+// Blitze sind weiche Farbflächen, nie weißes Stroboskop, und kommen höchstens dreimal pro Sekunde
+// (eine Schranke für alle Blitze, siehe flashcap.js). „Keine Blitze“ (cfg.noFlash) nimmt sie ganz heraus.
 // „Weniger Bewegung“ im System schaltet alles Zuckende ab.
 //
 // Profilfelder: decay = Nachklingen eines Schlags (1/s), accent = Betonung je Schlag im 4er-Takt,
@@ -462,7 +464,11 @@ const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
   const inst = { k: -1, s: -1, h: -1 };
-  let sway = 1, lastSec = 0, dropGlow = 0, lastFlashAt = -1e9, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
+  let sway = 1, lastSec = 0, dropGlow = 0, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
+  // eine Schranke für Farbfläche, Blinder, Stroboskop und Gitarrenblitze: zusammen nie mehr als 3 pro Sekunde
+  const flashCap = createFlashCap(), hot = { k: false, s: false };
+  // die E-Gitarre blitzt auch in leisen Stellen: immersive.js meldet, ob sie gerade spielt
+  let stageFlash = false;
   const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   async function prepare(item) {
@@ -624,12 +630,19 @@ const party = (() => {
     // hohe Energie: auch die Kick färbt (gerade Genres), damit es in Refrain und Drop richtig pumpt
     if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62) flashOn = true;
     if (smooth.k > 0.5) flashOn = false;
-    if (fx && cfg.partyFlash && (flashOn || dropHit) && clock - lastFlashAt > 0.34) {
-      lastFlashAt = clock;
+    let flashGo = false;
+    if (fx && cfg.partyFlash && !cfg.noFlash && (flashOn || dropHit) && flashCap.take(clock)) {
+      flashGo = true;
       flash = Math.min(1, (dropHit ? 1 : 0.35 + 0.5 * I) * Math.min(lvl, 1.6));
       flashCol = (flashCol + 1) % 3;
     }
     flash *= Math.exp(-dt * (P.decay * 0.8));
+    // Blitze der Bühne (Blinder auf der Snare, Stroboskop auf dem Schlag, Gitarrenblitze) zünden nur in einem Bild,
+    // das die Schranke freigibt. Gefragt wird nur, wo sie überhaupt möglich sind – sonst nähmen sie der Farbfläche den Platz.
+    const kHot = kickEnv > 0.8, sHot = snareEnv > 0.8;
+    const stageCue = (hit || (kHot && !hot.k) || (sHot && !hot.s)) && (smooth.e > 0.75 || dropGlow > 0.3 || stageFlash);
+    [hot.k, hot.s] = [kHot, sHot];
+    if (!flashGo && fx && !cfg.noFlash && stageCue) flashGo = flashCap.take(clock);
 
     if (fx && P.shake && strong) shake = P.shake * lvl * (0.35 + 0.65 * I) * conf;
     shake *= Math.exp(-dt * 14);
@@ -658,7 +671,7 @@ const party = (() => {
       blackout: !!cfg.partyDirector && toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95,
       finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
-      flash, flashCol, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
+      flash, flashCol, flashGo, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
     };
     // Fehlersuche: localStorage „mirage:debug“ = 1 legt den Lichtzustand und die Song-Karte offen
     if (DEBUG) window.__mirageParty = { ...out, P: info.key, map: d ? songMap(d) : null, sec };
@@ -672,7 +685,7 @@ const party = (() => {
     }
   })();
 
-  return { prepare, step, get info() { return info; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  return { prepare, step, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
 })();
 
 export { party, PROFILE_KEYS, FAMILIES };

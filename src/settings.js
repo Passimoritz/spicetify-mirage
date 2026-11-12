@@ -24,6 +24,7 @@ function applySettings() {
   root.classList.toggle("mirage-no-tilt", !cfg.tilt);
   root.classList.toggle("mirage-no-grain", !cfg.grain);
   root.classList.toggle("mirage-calm", cfg.calm);
+  root.classList.toggle("mirage-noflash", !!cfg.noFlash);
   root.classList.toggle("mirage-glass", cfg.glass);
   root.classList.toggle("mirage-lite", !!cfg.lite);
   root.classList.toggle("mirage-rich", cfg.preset === "full");
@@ -407,7 +408,7 @@ function render(box) {
       range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
     )
   ));
-  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf"),
+  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("noFlash"), toggle("autoPerf"),
     el("small", "m-note", t("eco")),
     seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
       cfg.eco = k;

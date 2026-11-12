@@ -5,7 +5,10 @@
 //   über der Menge im Drop, für ruhige Musik stattdessen weiches Bokeh.
 // · Instrumente (nur von den Credits bestätigt): Fanfaren-Strahlen für Bläser, Rauchschwaden fürs Saxofon,
 //   Blitze für die E-Gitarre, Lichttasten fürs Klavier (folgen den gespielten Tönen), Seidenbänder für
-//   Streicher, ein Lichtschein von oben für den Chor.
+//   Streicher, ein Lichtschein von oben für den Chor, Trommelfelle unter der Traverse fürs Schlagzeug-Solo,
+//   Druckwellen aus den Ecken für den Bass, eine Rechteck-Welle für den Synthesizer, ein Balg an den Rändern
+//   fürs Akkordeon, ein Lufthauch aus Lichtpunkten für die Flöte, Lichtsaiten mit Glissando für die Harfe.
+//   Alles liegt hinter dem Publikum (die Location zeichnet die Menge danach).
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const RIG = {
   house: ["wave", "chase"], deephouse: ["wave"], techhouse: ["chase", "cross"], garage: ["wave", "chase"], disco: ["wave", "fan"],
@@ -25,7 +28,8 @@ const CALM = new Set(["chill", "ambient", "jazz", "classical", "cinematic", "bal
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 
-function createShow(glowSprite) {
+// cap = die gemeinsame Blitz-Schranke der Bühne (flashcap.js): Blinder und Gitarrenblitze teilen sie sich mit dem Stroboskop
+function createShow(glowSprite, cap) {
   let vw = 0, vh = 0;
   const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };
   const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);
@@ -36,7 +40,8 @@ function createShow(glowSprite) {
     vh = st.vh;
     const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);
     const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);
-    if (px.dropHit) rig.drop = 1;
+    // der Drop reißt die Strahlen ins Weiße – ohne Blitze bleiben sie in ihrer Farbe
+    if (px.dropHit && !st.noFlash) rig.drop = 1;
     rig.drop *= Math.exp(-dt * 3);
     const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;
     const pats = RIG[key];
@@ -90,7 +95,7 @@ function createShow(glowSprite) {
     }
     // Blinder: warmweiße Flächen-Leuchten, die auf großen Snare-Schlägen im Refrain aufreißen
     const sn = px.snareEnv > 0.8;
-    if (st.flash && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale)) rig.blind = 1;
+    if (st.flash && st.flashGo && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale) && cap.take(t)) rig.blind = 1;
     rig.sn = sn;
     rig.blind *= Math.exp(-dt * 7);
     if (rig.blind > 0.02 && vis > 0) {
@@ -143,7 +148,7 @@ function createShow(glowSprite) {
   }
 
   /* ---- Instrumente */
-  const ins = { sparks: [], bolts: [], keys: new Float32Array(24), lastBolt: 0, kHit: false };
+  const ins = { sparks: [], bolts: [], keys: new Float32Array(24), kHit: false };
   function drawInst(ctx, st, px, pal, dpr) {
     vw = st.vw;
     vh = st.vh;
@@ -191,11 +196,11 @@ function createShow(glowSprite) {
         }
       }
     }
-    // E-Gitarre: Blitze von der Traverse auf den betonten Schlägen, höchstens vier pro Sekunde
+    // E-Gitarre: Blitze von der Traverse auf den betonten Schlägen – nur wenn die Blitz-Schranke frei ist
+    // (höchstens drei pro Sekunde, zusammen mit allen anderen Blitzen), mit „Keine Blitze“ gar nicht
     if (I.guitar > 0.3) {
       const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;
-      if (hitNow && !ins.kHit && t - ins.lastBolt > 0.25) {
-        ins.lastBolt = t;
+      if (hitNow && !ins.kHit && st.flashGo && !st.noFlash && cap.take(t)) {
         const pts = [];
         const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;
         const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);
@@ -208,7 +213,7 @@ function createShow(glowSprite) {
       ins.kHit = hitNow;
       // dazwischen knistert es an der Traverse: kleine blaue Funken
       for (let k = 0; k < 3; k++) {
-        if (Math.random() > dt * 18 * I.guitar) continue;
+        if (st.noFlash || Math.random() > dt * 18 * I.guitar) continue;
         const r = (10 + Math.random() * 16) * dpr;
         ctx.globalAlpha = 0.5 + Math.random() * 0.5;
         ctx.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);
@@ -275,6 +280,98 @@ function createShow(glowSprite) {
         ctx.beginPath();
         ctx.moveTo(ox, oy);
         ctx.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);
+        ctx.stroke();
+      }
+    }
+    // Schlagzeug-Solo: vier Trommelfelle aus Licht unter der Traverse – außen die Kick, innen die Snare,
+    // ein feiner Schimmer für die Hi-Hat. Mit „Keine Blitze“ leuchten sie ruhig, statt im Schlag zu pulsen.
+    if (I.drums > 0.01) {
+      const L = I.drums, env = (v) => (st.noFlash ? 0.45 : 0.25 + 0.75 * v);
+      [[0.2, px.kickEnv, 1], [0.4, px.snareEnv, 0.8], [0.6, px.snareEnv, 0.8], [0.8, px.kickEnv, 1]].forEach(([f, e, sz], k) => {
+        const x = vw * f, y = vh * 0.13, r = vh * 0.05 * sz * (0.85 + 0.15 * env(e)), c = mixW(pal[k % 3], 0.35);
+        ctx.lineWidth = 2 * dpr;
+        ctx.strokeStyle = rgba(c, 0.5 * L * env(e));
+        ctx.beginPath();
+        ctx.ellipse(x, y, r, r * 0.38, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = clamp(0.4 * L * env(e), 0, 1);
+        ctx.drawImage(glowSprite(c.map((q) => q | 0)), x - r * 1.3, y - r * 1.3, r * 2.6, r * 2.6);
+        ctx.globalAlpha = 1;
+      });
+      const hr = vh * 0.02;
+      ctx.globalAlpha = clamp(0.35 * L * env(px.hatEnv), 0, 1);
+      ctx.drawImage(glowSprite([255, 244, 214]), vw * 0.5 - hr, vh * 0.085 - hr, hr * 2, hr * 2);
+      ctx.globalAlpha = 1;
+    }
+    // Bass: langsame Druckwellen aus den unteren Ecken (dort stehen die Boxen), dunkel und breit
+    if (I.bass > 0.01) {
+      const L = I.bass, c = mixW(pal[0], 0.15);
+      for (const ox of [0, vw]) {
+        for (let k = 0; k < 3; k++) {
+          const ph = (t * 0.45 + k / 3) % 1, r = vh * (0.06 + 0.24 * ph);
+          ctx.lineWidth = (14 - 8 * ph) * dpr;
+          ctx.strokeStyle = rgba(c, 0.16 * L * (1 - ph));
+          ctx.beginPath();
+          ctx.arc(ox, vh * 0.92, r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+    }
+    // Synthesizer: eine Rechteck-Welle aus Licht läuft oben quer durchs Bild (wie auf einem Oszilloskop)
+    if (I.synth > 0.01) {
+      const L = I.synth, c = mixW(pal[2], 0.3), y0 = vh * 0.2, amp = vh * 0.035, step = vw / 16, off = (t * step * 0.9) % (step * 2);
+      for (const [lw, al] of [[9 * dpr, 0.07], [1.6 * dpr, 0.5]]) {
+        ctx.lineWidth = lw;
+        ctx.strokeStyle = rgba(c, al * L);
+        ctx.beginPath();
+        for (let k = -2, up = true; k <= 18; k++, up = !up) {
+          const x = k * step - off, y = y0 + (up ? -amp : amp);
+          k === -2 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          ctx.lineTo(x + step, y);
+        }
+        ctx.stroke();
+      }
+    }
+    // Akkordeon: ein Balg aus Lichtfalten an beiden Rändern, der langsam auf- und zugeht
+    if (I.accordion > 0.01) {
+      const L = I.accordion, open = 0.55 + 0.45 * Math.sin(t * 1.1), c = [255, 196, 140];
+      for (const side of [-1, 1]) {
+        for (let k = 0; k < 7; k++) {
+          const x = (side < 0 ? 0 : vw) - side * vw * (0.012 + 0.013 * k * open), lean = (k % 2 ? 1 : -1) * vw * 0.004;
+          ctx.lineWidth = 2 * dpr;
+          ctx.strokeStyle = rgba(k % 2 ? c : mixW(pal[1], 0.3), (0.3 - k * 0.03) * L);
+          ctx.beginPath();
+          ctx.moveTo(x - lean, vh * 0.22);
+          ctx.lineTo(x + lean, vh * 0.7);
+          ctx.stroke();
+        }
+      }
+    }
+    // Flöte: ein Lufthauch – kleine helle Punkte ziehen in einer weichen Welle oben durchs Bild
+    if (I.flute > 0.01) {
+      const L = I.flute, c = [214, 240, 255];
+      for (let k = 0; k < 12; k++) {
+        const f = (t * 0.06 + k / 12) % 1, x = vw * (f * 1.1 - 0.05), y = vh * (0.16 + 0.05 * Math.sin(f * 9 + k * 0.6) + 0.012 * (k % 3));
+        const r = (5 + (k % 4) * 2) * dpr;
+        ctx.globalAlpha = clamp(0.6 * L * Math.sin(f * Math.PI), 0, 1);
+        ctx.drawImage(glowSprite(c), x - r, y - r, r * 2, r * 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+    // Harfe: feine Lichtsaiten von der Traverse, ein Glissando wandert langsam über sie hinweg
+    if (I.harp > 0.01) {
+      const L = I.harp, n = 16, gl = (t * 0.35) % 1.4 - 0.2;
+      for (let k = 0; k < n; k++) {
+        const f = k / (n - 1), x = vw * (0.3 + 0.4 * f), len = vh * (0.34 - 0.16 * f);
+        const hit = clamp(1 - Math.abs(f - gl) * 5, 0, 1);
+        const g = ctx.createLinearGradient(0, vh * 0.04, 0, vh * 0.04 + len);
+        g.addColorStop(0, rgba([255, 232, 180], (0.12 + 0.4 * hit) * L));
+        g.addColorStop(1, rgba([255, 232, 180], 0));
+        ctx.strokeStyle = g;
+        ctx.lineWidth = (1 + hit) * dpr;
+        ctx.beginPath();
+        ctx.moveTo(x, vh * 0.04);
+        ctx.lineTo(x, vh * 0.04 + len);
         ctx.stroke();
       }
     }
