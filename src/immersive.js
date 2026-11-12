@@ -1,5 +1,6 @@
 import { S, root, clamp, seek, fmt, loadImage } from "./core.js";
 import { scriptOf, hangul, kana, pinyinLines } from "./roman.js";
+import { translitLines } from "./translit.js";
 import { t } from "./i18n.js";
 import { cfg, save } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
@@ -968,7 +969,8 @@ const immersive = (() => {
       if (cur) l.who = cur;
     }
   }
-  // Lautschrift unter die Zeilen (Koreanisch selbst, Japanisch von NetEase oder aus Kana, Chinesisch per Wörterbuch)
+  // Lautschrift unter die Zeilen (Koreanisch selbst, Japanisch von NetEase oder aus Kana, Chinesisch per Wörterbuch,
+  // Kyrillisch, Griechisch und Hindi aus Tabellen)
   async function addRomaji(token) {
     const got = lyr, item = currentItem();
     if (!got?.lines?.length || got.instrumental) return;
@@ -977,6 +979,8 @@ const immersive = (() => {
     let rom = null;
     if (sc === "ko") rom = got.lines.map((l) => hangul(l.text));
     else if (sc === "zh") rom = await pinyinLines(got.lines.map((l) => l.text));
+    // Kyrillisch, Griechisch, Hindi: aus Tabellen (die Sprachangabe der Quelle hilft bei Kyrillisch)
+    else if (sc !== "ja") rom = translitLines(sc, got.lines.map((l) => l.text), got.lang);
     else {
       const ne = got.rom?.length ? got.rom : await romajiFor(item);
       rom = got.lines.map((l) => {
