@@ -29,6 +29,27 @@ const errors = [];
 addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
 addEventListener("unhandledrejection", (e) => errors.length < 30 && errors.push("promise: " + String(e.reason)));
 
+// Ein Fehler soll nur seinen eigenen Baustein lahmlegen: guard() fängt ihn ab, merkt sich den Baustein und lässt
+// den Rest von Mirage weiterlaufen. Die Liste steht in der Diagnose.
+const failed = [];
+function fail(name, e) {
+  if (!failed.includes(name)) failed.push(name);
+  if (errors.length < 30) errors.push(name + ": " + String(e?.message || e));
+  try {
+    console.error("[Mirage] " + name, e);
+  } catch {}
+}
+function guard(name, fn) {
+  try {
+    const r = fn();
+    return r && typeof r.then === "function" ? r.catch((e) => fail(name, e)) : r;
+  } catch (e) {
+    fail(name, e);
+  }
+}
+// Stand der Reparatur-Datei aus dem Netz (remote.js)
+const remote = { applied: 0, at: 0 };
+
 /* ---------------------------------------------------------------- Helfer */
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const hueGap = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
@@ -69,4 +90,4 @@ function loadImage(url, cors) {
   return imgCache.get(key);
 }
 
-export { root, errors, clamp, hueGap, seek, fmt, loadImage };
+export { root, errors, failed, guard, remote, clamp, hueGap, seek, fmt, loadImage };

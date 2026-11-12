@@ -10,6 +10,16 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- **Repairs without a new release:** Mirage loads a small file from its repository (`remote/fixes.json`) and applies matching fixes after a Spotify update: new selectors and plain CSS, never code. It can be switched off in the settings.
+- **One broken part no longer stops the rest:** if a part of Mirage fails to start, everything else keeps running, a note names the part, and it is listed in the diagnostics.
+- The phone page reloads itself once when the theme speaks a newer message format, and says so clearly if that does not help.
+
+### Tests
+
+- The games test no longer depends on the language of the test machine, and the mute button test repeats a click that missed.
+
 ## [1.23.1] – 2026-11-12
 
 ### Removed

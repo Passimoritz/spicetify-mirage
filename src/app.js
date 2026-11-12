@@ -1,4 +1,4 @@
-import { S } from "./core.js";
+import { S, failed, guard } from "./core.js";
 import { t } from "./i18n.js";
 import { applySettings, openSettings, welcome } from "./settings.js";
 import { immersive, ICON } from "./immersive.js";
@@ -6,12 +6,15 @@ import { pageEnter } from "./pages.js";
 import { onSong, onPlayPause } from "./song.js";
 import { measure } from "./perf.js";
 import { nowPlayingCard } from "./share.js";
-import "./cards.js";
-import "./tints.js";
-import "./keys.js";
-import "./readability.js";
 import "./selectors.js";
-import "./library.js";
+
+// Zusatz-Bausteine einzeln laden: bricht einer beim Start ab, läuft der Rest weiter
+guard("cards", () => import("./cards.js"));
+guard("tints", () => import("./tints.js"));
+guard("keys", () => import("./keys.js"));
+guard("readability", () => import("./readability.js"));
+guard("library", () => import("./library.js"));
+guard("remote", () => import("./remote.js"));
 
 (function addMenu() {
   if (!S.Menu?.Item) return setTimeout(addMenu, 500);
@@ -72,13 +75,20 @@ import "./library.js";
   })();
 })();
 
-S.Player.addEventListener("songchange", () => onSong(true));
-S.Player.addEventListener("onplaypause", onPlayPause);
+S.Player.addEventListener("songchange", () => guard("song", () => onSong(true)));
+S.Player.addEventListener("onplaypause", (e) => guard("playpause", () => onPlayPause(e)));
 
-applySettings();
-onPlayPause();
-onSong(false);
-setTimeout(pageEnter, 400);
+guard("settings", () => applySettings());
+guard("playpause", () => onPlayPause());
+guard("song", () => onSong(false));
+setTimeout(() => guard("pages", () => pageEnter()), 400);
 // zu langsamer Rechner: eine Leistungsstufe runter (einmal pro Start)
-measure(applySettings);
-welcome();
+guard("perf", () => measure(applySettings));
+guard("welcome", () => welcome());
+// ist beim Start etwas ausgefallen: einmal sagen, welcher Teil – der Rest läuft
+setTimeout(() => {
+  if (!failed.length) return;
+  try {
+    S.showNotification?.(t("partFailed").replace("{p}", failed.join(", ")), true, 9000);
+  } catch {}
+}, 12000);

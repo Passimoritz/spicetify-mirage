@@ -20,6 +20,10 @@
       throw mod = 0, e;
     }
   };
+  var __export = (target, all2) => {
+    for (var name in all2)
+      __defProp(target, name, { get: all2[name], enumerable: true });
+  };
   var __copyProps = (to, from, except, desc) => {
     if (from && typeof from === "object" || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
@@ -56,6 +60,22 @@
       has: (k) => m.has(k)
     };
   }
+  function fail(name, e) {
+    if (!failed.includes(name)) failed.push(name);
+    if (errors.length < 30) errors.push(name + ": " + String(e?.message || e));
+    try {
+      console.error("[Mirage] " + name, e);
+    } catch {
+    }
+  }
+  function guard(name, fn) {
+    try {
+      const r = fn();
+      return r && typeof r.then === "function" ? r.catch((e) => fail(name, e)) : r;
+    } catch (e) {
+      fail(name, e);
+    }
+  }
   function seek(arr, at3, key) {
     let lo = 0, hi = arr.length - 1, r = -1;
     while (lo <= hi) {
@@ -89,7 +109,7 @@
     }
     return imgCache.get(key);
   }
-  var S, VERSION, root, errors, clamp, hueGap, fmt, imgCache;
+  var S, VERSION, root, errors, failed, remote, clamp, hueGap, fmt, imgCache;
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
@@ -98,6 +118,8 @@
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
       addEventListener("unhandledrejection", (e) => errors.length < 30 && errors.push("promise: " + String(e.reason)));
+      failed = [];
+      remote = { applied: 0, at: 0 };
       clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
       hueGap = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
       fmt = (ms) => {
@@ -221,6 +243,9 @@
           c_full: "Full screen (F)",
           c_volume: "Volume (\u2191 \u2193)",
           tip: "Immersive mode: Ctrl + Shift + M or the circle button at the top. Inside: 1 \xB7 2 \xB7 3 view, Space play, \u2190 \u2192 seek, \u2191 \u2193 volume, L like, S shuffle, R repeat, F full screen.",
+          remoteFix: "Repair itself after Spotify updates",
+          remoteFixHint: "Mirage loads small fixes from its GitHub repository, without a new version. Only the file is fetched, nothing is sent.",
+          partFailed: "A part of Mirage could not start ({p}). Everything else keeps running. Copy the diagnostics in Mirage settings to report it.",
           presetTitle: "Look & performance",
           presetHint: "One click sets everything \u2013 fine-tune below",
           preset_full: "Full",
@@ -854,6 +879,9 @@
           c_full: "Vollbild (F)",
           c_volume: "Lautst\xE4rke (\u2191 \u2193)",
           tip: "Immersiv-Modus: Strg + Umschalt + M oder der Kreis-Knopf oben. Darin: 1 \xB7 2 \xB7 3 Ansicht, Leertaste Wiedergabe, \u2190 \u2192 spulen, \u2191 \u2193 Lautst\xE4rke, L liken, S Zufall, R Wiederholen, F Vollbild.",
+          remoteFix: "Nach Spotify-Updates selbst reparieren",
+          remoteFixHint: "Mirage l\xE4dt kleine Korrekturen aus seinem GitHub-Repository, ohne neue Version. Es wird nur die Datei abgerufen, nichts gesendet.",
+          partFailed: "Ein Teil von Mirage konnte nicht starten ({p}). Alles andere l\xE4uft weiter. Kopier in den Mirage-Einstellungen die Diagnose, um es zu melden.",
           presetTitle: "Aussehen & Leistung",
           presetHint: "Ein Klick stellt alles ein \u2013 darunter feintunen",
           preset_full: "Voll",
@@ -9095,6 +9123,8 @@
         lyrGap: 100,
         translate: false,
         onlineLyrics: true,
+        // Reparaturen nach Spotify-Updates selbst aus dem Repository laden (remote/fixes.json)
+        remoteFix: true,
         karaoke: true,
         font: "outfit",
         lyricPicks: {},
@@ -9389,21 +9419,21 @@
     health.checked = true;
     const broken = CRITICAL.filter((k) => health.missing.includes(k));
     root.classList.toggle("mirage-safe", broken.length > 0);
-    const KEY2 = "mirage:seenSpotify";
+    const KEY3 = "mirage:seenSpotify";
     let seen2 = "";
     try {
-      seen2 = localStorage.getItem(KEY2) || "";
+      seen2 = localStorage.getItem(KEY3) || "";
     } catch {
     }
     if (broken.length && seen2 !== spotifyVersion + ":broken") {
       try {
         S.showNotification?.(t("safeMode").replace("{v}", spotifyVersion || "?"), true, 1e4);
-        localStorage.setItem(KEY2, spotifyVersion + ":broken");
+        localStorage.setItem(KEY3, spotifyVersion + ":broken");
       } catch {
       }
     } else if (!broken.length) {
       try {
-        localStorage.setItem(KEY2, spotifyVersion);
+        localStorage.setItem(KEY3, spotifyVersion);
       } catch {
       }
     }
@@ -9496,6 +9526,8 @@
         `missing: ${health.checked ? health.missing.join(", ") || "none" : "not checked yet"}`,
         `lost since update: ${health.lost.join(", ") || "none"}`,
         `safe mode: ${root.classList.contains("mirage-safe")}`,
+        `failed parts: ${failed.join(", ") || "none"}`,
+        `remote fixes: ${remote.applied} applied, last check ${remote.at ? new Date(remote.at).toISOString() : "never"}`,
         `scheme: ${root.dataset.mScheme || "?"} \xB7 page: ${root.dataset.mPage || "?"}`,
         `ua: ${navigator.userAgent.replace(/.*(Chrome\/[\d.]+).*/, "$1")}`,
         `errors: ${errors.length ? errors.slice(-5).map((e) => String(e).replace(/(file|https?):\/\/\S+/g, "\u2026").slice(0, 160)).join(" | ") : "none"}`
@@ -20959,6 +20991,13 @@
   });
 
   // src/library.js
+  var library_exports = {};
+  __export(library_exports, {
+    bpm: () => bpm,
+    camelot: () => camelot,
+    cleanPlaylist: () => cleanPlaylist,
+    findDuplicates: () => findDuplicates
+  });
   async function loadEditable() {
     const R = S.Platform?.RootlistAPI;
     if (typeof R?.getContents !== "function") return;
@@ -21856,7 +21895,7 @@
     G.paused = false;
     S.Player.play?.();
   }
-  function guard() {
+  function guard2() {
     if (!G || G.switching) return;
     const v = G.view || {}, now = Date.now();
     if (SONG_FIELD[G.k] && v.st === "ask" && G.uri && nowUri() && nowUri() !== G.uri) {
@@ -22335,7 +22374,7 @@
         sfx.tick();
       }
     }
-    if (tickOnly) return guard();
+    if (tickOnly) return guard2();
     if (WHEELS.has(G.k) && box.querySelector(".m-g-wheel")) return drawWheel(v);
     const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" ? "" : v.line].join("|");
     if (key === boxKey) return update(v);
@@ -23288,7 +23327,7 @@
         }
         function setMode(mode, animate) {
           if (!MODES.some(([k]) => k === mode)) mode = "cover";
-          const apply = () => {
+          const apply2 = () => {
             cfg.imMode = mode;
             save();
             el3.dataset.mode = mode;
@@ -23310,11 +23349,11 @@
           };
           if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
             try {
-              document.startViewTransition(apply);
+              document.startViewTransition(apply2);
             } catch {
             }
-            setTimeout(() => el3.dataset.mode !== mode && apply(), 400);
-          } else apply();
+            setTimeout(() => el3.dataset.mode !== mode && apply2(), 400);
+          } else apply2();
         }
         function updateKicker() {
           if (!el3) return;
@@ -26307,6 +26346,10 @@
   });
 
   // src/readability.js
+  var readability_exports = {};
+  __export(readability_exports, {
+    recheckAll: () => recheckAll
+  });
   function backgroundOf(el3) {
     let depth = 0;
     for (let n = el3; n && n !== document.documentElement && depth++ < 10; n = n.parentElement) {
@@ -26388,6 +26431,99 @@
         for (const m of list) for (const n of m.addedNodes) queue2(n);
       }).observe(document.body, { subtree: true, childList: true });
       setTimeout(recheckAll, 3e3);
+    }
+  });
+
+  // src/remote.js
+  var remote_exports = {};
+  __export(remote_exports, {
+    refreshRemote: () => refreshRemote
+  });
+  function matches(r) {
+    if (!r || typeof r !== "object") return false;
+    const sp = r.spotify;
+    if (sp && sp !== "*" && !(Array.isArray(sp) ? sp : [sp]).some((p) => spotify.startsWith(String(p)))) return false;
+    if (VERSION === "dev") return true;
+    if (r.mirageMin && cmp(VERSION, r.mirageMin) < 0) return false;
+    if (r.mirageMax && cmp(VERSION, r.mirageMax) > 0) return false;
+    return true;
+  }
+  function apply(data) {
+    Object.assign(SEL, baseSel);
+    let css2 = "", n = 0;
+    if (cfg.remoteFix && data && data.v === 1 && Array.isArray(data.rules)) {
+      for (const r of data.rules.slice(0, 40)) {
+        if (!matches(r)) continue;
+        n++;
+        for (const [k, v] of Object.entries(r.sel || {})) if (k in baseSel && okSel(v)) SEL[k] = v + ", " + baseSel[k];
+        if (okCss(r.css)) css2 += r.css + "\n";
+      }
+    }
+    if (sheet.textContent !== css2) sheet.textContent = css2;
+    if (css2 && !sheet.isConnected) document.head.append(sheet);
+    remote.applied = n;
+  }
+  async function refreshRemote(force) {
+    if (!cfg.remoteFix) return apply(null);
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem(KEY2) || "null");
+    } catch {
+    }
+    if (saved?.data) {
+      apply(saved.data);
+      remote.at = saved.at || 0;
+    }
+    if (!force && saved && Date.now() - (saved.at || 0) < EVERY) return;
+    try {
+      const res = await fetch(SRC, { cache: "no-store", credentials: "omit" });
+      if (!res.ok) return;
+      const txt = await res.text();
+      if (txt.length > 6e4) return;
+      const data = JSON.parse(txt);
+      if (data?.v !== 1) return;
+      remote.at = Date.now();
+      try {
+        localStorage.setItem(KEY2, JSON.stringify({ at: remote.at, data }));
+      } catch {
+      }
+      apply(data);
+    } catch {
+    }
+  }
+  var SRC, KEY2, EVERY, spotify, baseSel, sheet, cmp, okCss, okSel;
+  var init_remote = __esm({
+    "src/remote.js"() {
+      init_core();
+      init_config();
+      init_selectors();
+      SRC = "https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/remote/fixes.json";
+      KEY2 = "mirage:remoteFix";
+      EVERY = 6 * 36e5;
+      spotify = String(S.Platform?.version || S.Config?.spotify_version || "");
+      baseSel = { ...SEL };
+      sheet = document.createElement("style");
+      sheet.id = "mirage-remote";
+      cmp = (a, b) => {
+        const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number);
+        for (let i = 0; i < 3; i++) {
+          const d = (x[i] || 0) - (y[i] || 0);
+          if (d) return d;
+        }
+        return 0;
+      };
+      okCss = (c2) => typeof c2 === "string" && c2.length <= 2e4 && !/@import|url\s*\(|expression\s*\(|<\/|javascript:|behavior\s*:/i.test(c2);
+      okSel = (s) => {
+        if (typeof s !== "string" || !s || s.length > 600) return false;
+        try {
+          document.querySelector(s);
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      refreshRemote();
+      setInterval(refreshRemote, EVERY);
     }
   });
 
@@ -26760,6 +26896,7 @@
         range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
         range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
         toggle("onlineLyrics", () => immersive.reloadLyrics()),
+        toggle("remoteFix", () => refreshRemote(true)),
         toggle("karaoke", () => immersive.reloadLyrics()),
         range("syncOffset", -400, 400, 10, " ms"),
         toggle("translate", () => immersive.reloadLyrics()),
@@ -27023,10 +27160,10 @@
     S.PopupModal.display({ title: "Mirage", content: box2, isLarge: true });
   }
   function welcome() {
-    const KEY2 = "mirage:welcomed";
+    const KEY3 = "mirage:welcomed";
     try {
-      if (localStorage.getItem(KEY2)) return;
-      localStorage.setItem(KEY2, VERSION);
+      if (localStorage.getItem(KEY3)) return;
+      localStorage.setItem(KEY3, VERSION);
     } catch {
       return;
     }
@@ -27078,6 +27215,7 @@
       init_perf();
       init_readability();
       init_selectors();
+      init_remote();
       init_share();
       init_fonts();
       init_party();
@@ -27119,6 +27257,7 @@
   });
 
   // src/cards.js
+  var cards_exports = {};
   var hoverCard, pending3, queued2, wheelUntil;
   var init_cards = __esm({
     "src/cards.js"() {
@@ -27173,6 +27312,7 @@
   });
 
   // src/tints.js
+  var tints_exports = {};
   function alphaOf(c2) {
     if (!c2 || c2 === "transparent") return 0;
     const slash = /\/\s*([\d.]+)(%?)\s*\)$/.exec(c2);
@@ -27298,6 +27438,7 @@
   });
 
   // src/keys.js
+  var keys_exports = {};
   var init_keys = __esm({
     "src/keys.js"() {
       init_core();
@@ -27375,12 +27516,13 @@
       init_song();
       init_perf();
       init_share();
-      init_cards();
-      init_tints();
-      init_keys();
-      init_readability();
       init_selectors();
-      init_library();
+      guard("cards", () => Promise.resolve().then(() => (init_cards(), cards_exports)));
+      guard("tints", () => Promise.resolve().then(() => (init_tints(), tints_exports)));
+      guard("keys", () => Promise.resolve().then(() => (init_keys(), keys_exports)));
+      guard("readability", () => Promise.resolve().then(() => (init_readability(), readability_exports)));
+      guard("library", () => Promise.resolve().then(() => (init_library(), library_exports)));
+      guard("remote", () => Promise.resolve().then(() => (init_remote(), remote_exports)));
       (function addMenu() {
         if (!S.Menu?.Item) return setTimeout(addMenu, 500);
         try {
@@ -27433,14 +27575,21 @@
           setTimeout(keep, btn.isConnected ? 1e3 : 300);
         })();
       })();
-      S.Player.addEventListener("songchange", () => onSong2(true));
-      S.Player.addEventListener("onplaypause", onPlayPause);
-      applySettings();
-      onPlayPause();
-      onSong2(false);
-      setTimeout(pageEnter, 400);
-      measure(applySettings);
-      welcome();
+      S.Player.addEventListener("songchange", () => guard("song", () => onSong2(true)));
+      S.Player.addEventListener("onplaypause", (e) => guard("playpause", () => onPlayPause(e)));
+      guard("settings", () => applySettings());
+      guard("playpause", () => onPlayPause());
+      guard("song", () => onSong2(false));
+      setTimeout(() => guard("pages", () => pageEnter()), 400);
+      guard("perf", () => measure(applySettings));
+      guard("welcome", () => welcome());
+      setTimeout(() => {
+        if (!failed.length) return;
+        try {
+          S.showNotification?.(t("partFailed").replace("{p}", failed.join(", ")), true, 9e3);
+        } catch {
+        }
+      }, 12e3);
     }
   });
 

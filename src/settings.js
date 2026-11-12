@@ -11,6 +11,7 @@ import { currentItem } from "./player.js";
 import { PRESET_KEYS, applyPreset, detectPreset } from "./perf.js";
 import { recheckAll } from "./readability.js";
 import { diagnostics, reportUrl } from "./selectors.js";
+import { refreshRemote } from "./remote.js";
 import { nowPlayingCard, weekCard, monthCard } from "./share.js";
 import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
 import { FAMILIES } from "./party.js";
@@ -375,6 +376,7 @@ function render(box) {
       range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
       range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
       toggle("onlineLyrics", () => immersive.reloadLyrics()),
+      toggle("remoteFix", () => refreshRemote(true)),
       toggle("karaoke", () => immersive.reloadLyrics()),
       range("syncOffset", -400, 400, 10, " ms"),
       toggle("translate", () => immersive.reloadLyrics()),

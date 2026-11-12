@@ -51,6 +51,8 @@ const DEFAULTS = {
   lyrGap: 100,
   translate: false,
   onlineLyrics: true,
+  // Reparaturen nach Spotify-Updates selbst aus dem Repository laden (remote/fixes.json)
+  remoteFix: true,
   karaoke: true,
   font: "outfit",
   lyricPicks: {},

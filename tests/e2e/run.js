@@ -351,7 +351,7 @@ async function battleGame() {
   await openGame("battle");
   await joinAll("battle");
   const ps = await allPhones((s) => s.k === "battle" && s.st === "go", 5000, "battle: läuft");
-  ok(ps.every((s) => /Team [AB]/.test(s.text)), `battle: jeder hat ein Team: ${ps[0].text}`);
+  ok(ps.every((s) => /team [AB]/i.test(s.text)), `battle: jeder hat ein Team: ${ps[0].text}`);
   for (let i = 0; i < 8; i++) {
     await P[0].click("#game .gbody > button");
     await P[1].click("#game .gbody > button");
@@ -522,12 +522,23 @@ async function muteButton() {
   await big.hover();
   await T.click('#mirage-immersive [data-mode="lyrics"]');
   await wait(500);
-  await big.hover();
-  await T.click(".m-im-mute");
-  await until(async () => (await big.state()).vol === 0, 800, "Stumm-Knopf schaltet wirklich stumm");
-  await big.hover();
-  await T.click(".m-im-mute");
-  await until(async () => (await big.state()).vol === 0.7, 800, "Stumm-Knopf stellt die Lautstärke wieder her");
+  // die Leiste blendet nach dem Ansichtswechsel erst ein: ein Klick kann ins Leere gehen, darum bis zu dreimal
+  const press = async (want, what) => {
+    for (let i = 0; i < 3; i++) {
+      await big.hover();
+      await wait(250);
+      await T.click(".m-im-mute");
+      try {
+        return await until(async () => (await big.state()).vol === want, 1200, what);
+      } catch (e) {
+        // ein Klick, der doch ankam, darf nicht doppelt zählen
+        if (i === 2 || (await big.state()).vol !== (want === 0 ? 0.7 : 0)) throw e;
+      }
+    }
+  };
+  await until(async () => (await big.state()).vol === 0.7, 3000, "Lautstärke ist vor dem Stumm-Test zurück");
+  await press(0, "Stumm-Knopf schaltet wirklich stumm");
+  await press(0.7, "Stumm-Knopf stellt die Lautstärke wieder her");
   await big.hover();
   await T.click('#mirage-immersive [data-mode="party"]');
   await wait(1500);

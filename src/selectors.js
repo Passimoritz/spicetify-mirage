@@ -1,4 +1,4 @@
-import { S, root, VERSION, errors } from "./core.js";
+import { S, root, VERSION, errors, failed, remote } from "./core.js";
 import { t } from "./i18n.js";
 
 /* ---------------------------------------------------------------- Spotify-Selektoren */
@@ -121,6 +121,8 @@ const diagnostics = () =>
     `missing: ${health.checked ? health.missing.join(", ") || "none" : "not checked yet"}`,
     `lost since update: ${health.lost.join(", ") || "none"}`,
     `safe mode: ${root.classList.contains("mirage-safe")}`,
+    `failed parts: ${failed.join(", ") || "none"}`,
+    `remote fixes: ${remote.applied} applied, last check ${remote.at ? new Date(remote.at).toISOString() : "never"}`,
     `scheme: ${root.dataset.mScheme || "?"} · page: ${root.dataset.mPage || "?"}`,
     `ua: ${navigator.userAgent.replace(/.*(Chrome\/[\d.]+).*/, "$1")}`,
     `errors: ${errors.length ? errors.slice(-5).map((e) => String(e).replace(/(file|https?):\/\/\S+/g, "…").slice(0, 160)).join(" | ") : "none"}`,
