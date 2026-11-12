@@ -600,6 +600,32 @@ async function phoneReload() {
   ok(await P[0].js(`!!document.querySelector("#game .tile.pick")`), "nach dem Neuladen bleibt die Antwort markiert");
   await close();
 }
+// Funkloch: das Handy zeigt es an, verbindet sich von selbst neu, und der Gast spielt mit seinen Punkten weiter
+async function offline() {
+  const net = () => P[0].js(`({ lost: document.body.classList.contains("lost"), text: document.getElementById("net").textContent })`);
+  await openGame("never");
+  await joinAll("never");
+  await allPhones((s) => s.k === "never" && s.st === "ask" && s.round === "1/2", 8000, "offline: Frage 1");
+  await P[0].click(...tile(0));
+  await wait(700);
+  let n = await net();
+  ok(!n.lost && !n.text, `offline: verbunden zeigt keinen Hinweis: ${JSON.stringify(n)}`);
+  await P[0].js(`__e2eNet.cut(5000); 1`);
+  n = await until(async () => (await net()).lost && (await net()), 2000, "offline: der Punkt zeigt die Unterbrechung sofort");
+  ok(!n.text, `offline: ein kurzer Aussetzer bleibt ohne Text: ${n.text}`);
+  await until(async () => /Offline/.test((await net()).text), 7000, "offline: nach ein paar Sekunden steht es da");
+  await P[1].click(...tile(1));
+  await P[2].click(...tile(1));
+  await until(async () => /Alpha/.test((await big.state()).text) && (await big.state()).st === "rev", 6000, "offline: Alphas Antwort von vor dem Funkloch zählt");
+  await until(async () => !(await net()).lost, 20000, "offline: das Handy verbindet sich von selbst neu");
+  ok(/verbunden|Connected/.test((await net()).text), "offline: sagt, dass es wieder verbunden ist");
+  await allPhones((s) => s.k === "never" && s.st === "ask" && s.round === "2/2", 12000, "offline: Alpha spielt nach dem Funkloch weiter");
+  for (const ph of P) await ph.click(...tile(0));
+  const end = await allPhones((s) => s.st === "end", 8000, "offline: Siegerehrung");
+  ok(/ 2 (Punkte|points)/.test(end[0].text), `offline: Alpha hat die Punkte aus beiden Runden: ${end[0].text}`);
+  await until(async () => !(await net()).text, 4000, "offline: der Hinweis verschwindet wieder");
+  await close();
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -609,7 +635,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline],
 ];
 
 /* ---------------------------------------------------------------- Start */
