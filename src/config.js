@@ -59,6 +59,8 @@ const DEFAULTS = {
   karaoke: true,
   font: "outfit",
   lyricPicks: {},
+  // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)
+  lyricBad: {},
   canvas: true,
   // Canvas je Ansicht – erst an, wenn man es dort mit dem Film-Knopf einschaltet
   canvasIn: { cover: false, lyrics: false, viz: false, mix: false, party: false },

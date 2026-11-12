@@ -7,7 +7,7 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
+import { getLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
@@ -155,6 +155,7 @@ const immersive = (() => {
       <div class="m-im-lyrbar">
         <button type="button" class="m-im-trbtn" hidden aria-pressed="false">${ICON.translate}<span></span><i aria-hidden="true"></i></button>
         <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
+        <button type="button" class="m-im-lyrsrc m-im-lyrbad" hidden><span></span></button>
       </div>
       <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">×</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
@@ -189,6 +190,7 @@ const immersive = (() => {
       lyrics: el.querySelector(".m-im-lyrics"),
       inner: el.querySelector(".m-im-lyrics-inner"),
       lyrsrc: el.querySelector(".m-im-lyrsrc"),
+      lyrbad: el.querySelector(".m-im-lyrbad"),
       trbtn: el.querySelector(".m-im-trbtn"),
       ind: el.querySelector(".m-im-ind"),
       canvas: el.querySelector(".m-im-viz"),
@@ -261,6 +263,9 @@ const immersive = (() => {
     q.wrap.addEventListener("transitionend", () => (vizRect.r = null));
     q.lyrsrc.querySelector("b").textContent = t("lyrPick");
     q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
+    q.lyrbad.querySelector("span").textContent = t("lyrWrong");
+    q.lyrbad.title = t("lyrWrongHint");
+    q.lyrbad.onclick = wrongLyrics;
     q.trbtn.querySelector("span").textContent = t("trToggle");
     q.trbtn.onclick = () => {
       // ein Klick schaltet die Einstellung „Liedtext übersetzen“ – gilt also auch für den nächsten Song
@@ -783,6 +788,19 @@ const immersive = (() => {
     // ohne Text steckt „Fassung wählen“ im Zeichen neben dem Titel
     q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri) || !got?.lines?.length;
     q.lyrsrc.querySelector("span").textContent = got ? (SOURCE_NAME[got.source] || "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
+    q.lyrbad.hidden = q.lyrsrc.hidden;
+  }
+  // „Nicht der richtige Liedtext“: das gezeigte Ergebnis für diesen Song als falsch merken und sofort das
+  // nächstbeste holen (andere Quelle oder anderer Eintrag). Zurück geht es über „Fassung wählen“ → „Automatisch“.
+  async function wrongLyrics() {
+    const uri = lyrUri;
+    if (!lyr || !uri || !cfg.onlineLyrics || !rejectLyrics(uri, lyr)) return;
+    showSide(null);
+    lyrUri = "";
+    await loadLyrics();
+    if (lyrUri !== uri) return;
+    const found = !!lyr?.lines?.length || !!lyr?.instrumental;
+    S.showNotification?.(found ? t("lyrWrongNext").replace("{s}", SOURCE_NAME[lyr.source] || "Spotify") : t("lyrWrongNone"), false, 3500);
   }
   async function showVersions(body, item) {
     const uri = lyrUri;
@@ -791,14 +809,16 @@ const immersive = (() => {
     if (side !== "versions" || uri !== lyrUri) return;
     body.textContent = "";
     const cur = lyr?.lrcId ? String(lyr.lrcId) : "";
-    const pickedId = cfg.lyricPicks?.[uri] || "";
+    const pickedId = cfg.lyricPicks?.[uri] || "", rejected = rejectedCount(uri);
     const choose = (id) => {
       pickLyrics(uri, id);
       lyrUri = "";
       loadLyrics();
       showSide(null);
     };
-    item(t("lyrAuto"), t("lyrAutoHint"), null, pickedId ? () => choose("") : null, !pickedId);
+    // „Automatisch“ nimmt auch gemeldete Fehler zurück
+    item(t("lyrAuto"), rejected ? t("lyrAutoReset").replace("{n}", rejected) : t("lyrAutoHint"), null, pickedId || rejected ? () => choose("") : null, !pickedId && !rejected);
+    if (lyr?.lines?.length || lyr?.instrumental) item(t("lyrWrong"), t("lyrWrongHint"), null, wrongLyrics);
     if (!list.length) return item(t("lyrNoVersions"));
     for (const v of list) {
       const kind = v.instrumental ? t("instrTitle") : v.synced ? t("lyrSynced") : t("lyrPlain");
@@ -837,7 +857,7 @@ const immersive = (() => {
     q.inner.style.transition = "";
     q.lyrics.classList.remove("is-unsynced");
     el.classList.remove("is-karaoke");
-    q.lyrsrc.hidden = true;
+    q.lyrsrc.hidden = q.lyrbad.hidden = true;
     q.trbtn.hidden = true;
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
