@@ -43,6 +43,17 @@ async function fetchLyrics(uri, pick) {
   }
   return plain;
 }
+// Liedtext des nächsten Songs vorab holen (prefetch.js). Die Song-Daten kommen aus der Warteschlange –
+// ohne Titel und Länge würde die Online-Suche ins Leere laufen und das leere Ergebnis bliebe gemerkt.
+// Nur wenn der Liedtext des laufenden Songs gebraucht wurde (Immersiv, Overlay, Takt-Schätzung): sonst
+// ginge für jeden Song eine Anfrage raus, die niemand ansieht.
+function warmLyrics(item) {
+  const m = item?.metadata || {};
+  if (!item?.uri || !m.title || !(Number(m.duration) > 0)) return;
+  if (!metaCache.has(currentItem()?.uri)) return;
+  if (!metaCache.has(item.uri)) metaCache.set(item.uri, songMeta(item));
+  getLyrics(item.uri).catch(() => {});
+}
 // Gleicher Text? Wörter der ersten Zeilen vergleichen und Zeilenzahl ähnlich – sonst wäre es eine andere Fassung
 function sameLyrics(a, b) {
   const words = (x) => new Set(x.lines.filter((l) => l.text !== "♪").slice(0, 12).flatMap((l) => l.text.toLowerCase().split(/[^\p{L}\p{N}']+/u)).filter((w) => w.length > 1));
@@ -336,4 +347,4 @@ async function canvasBlocked() {
 // Anzeigename der Quelle (Knopf „Fassung wählen“, Overlay)
 const SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", ovh: "lyrics.ovh" };
 
-export { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, romajiFor, SOURCE_NAME };
+export { getLyrics, warmLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, romajiFor, SOURCE_NAME };

@@ -2,6 +2,7 @@ import { S, root, clamp, seek, lru } from "./core.js";
 import { cfg } from "./config.js";
 import { estimateAnalysis } from "./estimate.js";
 import { PLR } from "./player.js";
+import { analysisDb } from "./analysis-db.js";
 
 /* ---------------------------------------------------------------- Taktdaten */
 const audio = { uri: "", data: null };
@@ -11,12 +12,41 @@ async function loadAudio(uri) {
   if (!uri || audio.uri === uri) return;
   audio.uri = uri;
   audio.data = audioCache.get(uri) || null;
+  // nicht im Arbeitsspeicher: vielleicht von früher auf der Platte (analysis-db.js) – dann ohne Anfrage sofort da
+  if (!audio.data && uri.startsWith("spotify:track:")) {
+    const kept = await analysisDb.get(uri);
+    if (audio.uri !== uri) return;
+    if (kept && !audio.data) {
+      audio.data = kept;
+      audioCache.set(uri, kept);
+      announce();
+    }
+  }
   // eine gemerkte Schätzung reicht nicht: Spotify trotzdem noch einmal fragen
   if ((audio.data && !audio.data.synthetic) || !uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
     beat.sync();
     return;
   }
   await fetchAnalysis(uri, audio.data ? RETRY.length : 0);
+}
+// Nächsten Song vorbereiten (prefetch.js): Analyse holen und merken, ohne die Anzeige anzufassen.
+// Ein Versuch, keine Schätzung – klappt es nicht, lädt der Songwechsel wie bisher.
+const warming = new Set();
+async function warmAudio(uri) {
+  if (!uri?.startsWith("spotify:track:") || uri === audio.uri || warming.has(uri)) return;
+  const have = audioCache.get(uri);
+  if (have && !have.synthetic) return;
+  warming.add(uri);
+  try {
+    let data = await analysisDb.get(uri);
+    if (!data && typeof S.getAudioData === "function") {
+      data = shape(await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]));
+      if (data) analysisDb.put(uri, data);
+    }
+    // läuft der Song inzwischen selbst, hat loadAudio das Sagen
+    if (data && audio.uri !== uri) audioCache.set(uri, data);
+  } catch {}
+  warming.delete(uri);
 }
 // neue Taktdaten da (echt oder geschätzt): Anzeige und Party nachziehen
 const announce = () => document.dispatchEvent(new Event("mirage:audio"));
@@ -32,42 +62,47 @@ async function fallback(uri) {
 // Spotify liefert die Analyse manchmal nicht (Zeitüberschreitung, Anfragelimit). Früher blieb der Song
 // dann ganz ohne Taktdaten und die Welle lief „ins Blaue“ – jetzt noch dreimal nachfragen, solange er läuft.
 const RETRY = [3000, 8000, 20000];
+// Analysedaten sind nicht immer vollständig: fehlende oder kaputte Werte ersetzen, sonst
+// schleicht sich NaN in den Visualizer und er bleibt bis zum Neuladen leer
+function shape(d) {
+  const num = (v, fb) => (Number.isFinite(v) ? v : fb);
+  const ok = (x) => Number.isFinite(x?.start);
+  const beats = (d?.beats || []).filter(ok);
+  if (!beats.length) return null;
+  const segs = (d.segments || []).filter(ok).map((s) => ({
+    t: s.start,
+    l: num(s.loudness_max, -20),
+    p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
+    // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
+    b: num(s.timbre?.[1], 0),
+    // timbre[2] = Flachheit (rauschig wie Snare/Clap/Becken), timbre[3] = Anschlag (hart wie Kick/Snare)
+    f: num(s.timbre?.[2], 0),
+    k: num(s.timbre?.[3], 0),
+  }));
+  // Tempo (Spotify-Analyse, sonst aus den Schlagabständen) und mittlere Lautheit des Songs –
+  // der Party-Modus wählt daraus Stärke und Takt seiner Effekte und erkennt laute „Drops“
+  const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
+  const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
+  const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
+  return {
+    beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
+    bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
+    // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
+    sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12), key: num(s.key, -1), tempo: num(s.tempo, 0), tc: num(s.tempo_confidence, 0) })),
+    segs,
+    bpm: Math.round(bpm),
+    loud: Number(d.track?.loudness) || avg,
+    avg,
+  };
+}
 async function fetchAnalysis(uri, attempt) {
   let got = false;
   try {
-    const d = await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]);
-    // Analysedaten sind nicht immer vollständig: fehlende oder kaputte Werte ersetzen, sonst
-    // schleicht sich NaN in den Visualizer und er bleibt bis zum Neuladen leer
-    const num = (v, fb) => (Number.isFinite(v) ? v : fb);
-    const ok = (x) => Number.isFinite(x?.start);
-    const beats = (d?.beats || []).filter(ok);
-    if (audio.uri === uri && beats.length) {
-      const segs = (d.segments || []).filter(ok).map((s) => ({
-        t: s.start,
-        l: num(s.loudness_max, -20),
-        p: s.pitches?.length === 12 && s.pitches.every(Number.isFinite) ? s.pitches : [],
-        // Klangfarbe: timbre[1] = Helligkeit (Höhen, Becken, Synth-Leads) – der Party-Modus macht daraus Lichtschärfe
-        b: num(s.timbre?.[1], 0),
-        // timbre[2] = Flachheit (rauschig wie Snare/Clap/Becken), timbre[3] = Anschlag (hart wie Kick/Snare)
-        f: num(s.timbre?.[2], 0),
-        k: num(s.timbre?.[3], 0),
-      }));
-      // Tempo (Spotify-Analyse, sonst aus den Schlagabständen) und mittlere Lautheit des Songs –
-      // der Party-Modus wählt daraus Stärke und Takt seiner Effekte und erkennt laute „Drops“
-      const gaps = beats.slice(1, 200).map((b, i) => b.start - beats[i].start).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
-      const bpm = Number(d.track?.tempo) || (gaps.length ? 60 / gaps[gaps.length >> 1] : 0);
-      const avg = segs.length ? segs.reduce((n, s) => n + s.l, 0) / segs.length : -12;
-      audio.data = {
-        beats: beats.map((b) => ({ t: b.start, c: num(b.confidence, 1) })),
-        bars: (d.bars || []).filter(ok).map((b) => ({ t: b.start })),
-        // Abschnitte (Strophe, Refrain …) mit Tonart-Geschlecht: mode 1 = Dur, 0 = Moll
-        sections: (d.sections || []).filter(ok).map((s) => ({ t: s.start, mode: num(s.mode, 1), l: num(s.loudness, -12), key: num(s.key, -1), tempo: num(s.tempo, 0), tc: num(s.tempo_confidence, 0) })),
-        segs,
-        bpm: Math.round(bpm),
-        loud: Number(d.track?.loudness) || avg,
-        avg,
-      };
-      audioCache.set(uri, audio.data);
+    const data = shape(await Promise.race([S.getAudioData(uri), new Promise((_, rej) => setTimeout(rej, 8000))]));
+    if (data) analysisDb.put(uri, data);
+    if (data && audio.uri === uri) {
+      audio.data = data;
+      audioCache.set(uri, data);
       got = true;
       announce();
     }
@@ -117,4 +152,4 @@ const beat = (() => {
   return { sync, read, get level() { return on ? read(now()) : 0; } };
 })();
 
-export { audio, loadAudio, beat, bands };
+export { audio, loadAudio, warmAudio, beat, bands };

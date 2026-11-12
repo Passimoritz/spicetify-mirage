@@ -8,6 +8,7 @@ import { immersive } from "./immersive.js";
 import { currentItem, covers, toHttp, PLR } from "./player.js";
 import { record } from "./share.js";
 import { dust } from "./dust.js";
+import { planPrefetch } from "./prefetch.js";
 
 // Woher läuft gerade Musik (Playlist, Album, Radio …) und zu welchem Album gehört der Song?
 const contextUri = () => S.Player.data?.context?.uri || S.Player.data?.context_uri || "";
@@ -35,6 +36,7 @@ async function onSong(isChange, attempt = 0) {
   // Playlist mit festem Schema: Coverfarben aus, außer das feste Schema IST „Mirage“
   const dynamic = cfg.playlistSchemes?.[contextUri()] ? scheme === "Mirage" : cfg.dynamic;
   loadAudio(item?.uri).then(() => immersive.updateKicker());
+  planPrefetch();
   if (immersive.isOpen()) immersive.refresh();
   bridge.sendTrack(changed);
   if (!c.big) return;
@@ -74,6 +76,7 @@ function onPlayPause() {
   immersive.playState();
   dust.wake();
   beat.sync();
+  planPrefetch();
   bridge.sendTrack(false);
 }
 
