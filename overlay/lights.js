@@ -641,9 +641,11 @@ function createLights(getCfg, log = () => {}, opts = {}) {
   }
   async function huePair(ip) {
     if (!validIp(ip)) return { error: "ip" };
-    const r = await call("POST", `http://${ip}/api`, { devicetype: "mirage_overlay#pc" }, 4000);
+    // generateclientkey: der zweite Schlüssel, den Hue Entertainment (hue-stream.js) für DTLS braucht. Die
+    // Bridge gibt ihn nur beim Koppeln heraus – gleich mitnehmen, sonst müsste später neu gekoppelt werden.
+    const r = await call("POST", `http://${ip}/api`, { devicetype: "mirage_overlay#pc", generateclientkey: true }, 4000);
     const ok = Array.isArray(r) && r[0]?.success?.username;
-    if (ok) return { user: r[0].success.username };
+    if (ok) return { user: r[0].success.username, clientKey: /^[0-9a-f]{32}$/i.test(r[0].success.clientkey || "") ? r[0].success.clientkey : "" };
     return { error: Array.isArray(r) && r[0]?.error?.type === 101 ? "button" : "unreachable" };
   }
   async function hueGroups() {
