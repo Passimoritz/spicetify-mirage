@@ -50,12 +50,14 @@ function tame(el, minW) {
 }
 
 const pending = new Set();
-let queued = false, full = false, lastRun = 0;
+let queued = false, full = false, lastRun = 0, waiting = false;
+const covered = () => root.classList.contains("mirage-im-open") || document.hidden;
 function run() {
   queued = false;
-  if (root.classList.contains("mirage-im-open") || document.hidden) {
-    // später nachholen, wenn wieder sichtbar
-    return setTimeout(schedule, 2000);
+  if (covered()) {
+    // später nachholen, wenn wieder sichtbar – per Ereignis, nicht alle 2 s nachsehen
+    waiting = true;
+    return;
   }
   const mv = document.querySelector(SEL.mainView);
   if (!mv) return;
@@ -87,6 +89,13 @@ function scanAll() {
   full = true;
   schedule();
 }
+function resume() {
+  if (!waiting || covered()) return;
+  waiting = false;
+  schedule();
+}
+document.addEventListener("visibilitychange", resume);
+document.addEventListener("mirage:im-close", resume);
 
 (function watchTints() {
   const mv = document.querySelector(SEL.mainView);

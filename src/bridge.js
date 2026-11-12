@@ -15,6 +15,9 @@ import { free } from "./lock.js";
 const bridge = (() => {
   const ADDR = "ws://127.0.0.1:47321";
   let ws = null, retry = 0, wanted = false;
+  // Leerlauf: Musik pausiert UND Fenster verdeckt. Dann ruht die Brücke (kein Anklopfen, kein Nachsehen),
+  // bis wieder etwas läuft oder das Fenster aufgeht – idle() weiter unten zieht alles nach.
+  const resting = () => document.hidden && !PLR.isPlaying();
   function connect() {
     wanted = true;
     if (ws && ws.readyState <= 1) return;
@@ -63,7 +66,8 @@ const bridge = (() => {
   }
   function schedule() {
     clearTimeout(retry);
-    if (wanted) retry = setTimeout(connect, 5000);
+    retry = 0;
+    if (wanted && !resting()) retry = setTimeout(connect, 5000);
   }
   function close() {
     wanted = false;
@@ -76,7 +80,8 @@ const bridge = (() => {
 
   // Lautstärke: Spotify meldet Änderungen nicht, also leise nachsehen (nur solange die App verbunden ist).
   // Während der Schlaf-Timer ausblendet, nichts senden – sonst stünde die Leiste minutenlang da.
-  let volTimer = 0, lastVol = null;
+  // Im Leerlauf ruht auch das.
+  let volTimer = 0, lastVol = null, volOn = false;
   // Je nach Spotify-Version liefert getVolume() nichts – dann Spotifys PlaybackAPI, zuletzt der Regler selbst
   const num = (v) => (typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : null);
   function readVolume() {
@@ -90,9 +95,11 @@ const bridge = (() => {
     return v;
   }
   function watchVolume(on) {
+    volOn = on;
     clearInterval(volTimer);
+    volTimer = 0;
     lastVol = null;
-    if (!on) return;
+    if (!on || resting()) return;
     volTimer = setInterval(() => {
       const v = readVolume();
       if (v === null) return;
@@ -107,14 +114,40 @@ const bridge = (() => {
   let topics = new Set(), lyricTimer = 0, levelTimer = 0, partyTimer = 0, lastLine = "";
   function setTopics(list) {
     topics = new Set(list.filter((x) => x === "lyric" || x === "level" || x === "party"));
+    stopTopics();
+    lastLine = "";
+    idle();
+  }
+  // Die Wecker laufen nur, solange Musik läuft: pausiert ändern sich weder Zeile noch Pegel noch Licht.
+  // Früher tickten sie weiter (bis zu 30-mal pro Sekunde) und stellten jedes Mal nur fest, dass nichts zu tun ist.
+  let ticking = false, restT = 0;
+  function stopTopics() {
     clearInterval(lyricTimer);
     clearInterval(levelTimer);
     clearInterval(partyTimer);
-    lastLine = "";
+    ticking = false;
+  }
+  // nach Play/Pause, Songwechsel, neuem Abo und wenn das Fenster auf- oder zugeht
+  function idle() {
+    clearTimeout(restT);
+    // im Leerlauf wurde nicht weiter nach der Overlay-App gesucht: jetzt wieder
+    if (wanted && !ws && !retry && !resting()) connect();
+    if (!!volTimer !== (volOn && !resting())) watchVolume(volOn);
+    if (!topics.size) return;
+    // die Zeile einmal sofort: pausiert gespult oder Song gewechselt soll trotzdem stimmen
+    if (topics.has("lyric")) pushLyric();
+    if (!PLR.isPlaying()) {
+      // 2 s Ausklingen, damit das Party-Licht der Overlay-App nicht mitten im Aufleuchten stehen bleibt
+      if (ticking) restT = setTimeout(stopTopics, 2000);
+      return;
+    }
+    if (ticking) return;
+    ticking = true;
     if (topics.has("lyric")) lyricTimer = setInterval(pushLyric, 250);
     if (topics.has("level")) levelTimer = setInterval(pushLevel, 66);
     if (topics.has("party")) partyTimer = setInterval(pushParty, 33);
   }
+  document.addEventListener("visibilitychange", idle);
   // Kantenlicht der Overlay-App: der Lichtzustand des Party-Modus, nur solange er wirklich läuft
   function pushParty() {
     const L = party.live;
@@ -139,6 +172,8 @@ const bridge = (() => {
     if (b) send({ type: "level", bands: b });
   }
   function sendTrack(changed) {
+    // song.js ruft das bei jedem Songwechsel und Play/Pause: der richtige Moment, die Wecker nachzuziehen
+    idle();
     const item = currentItem();
     if (!item || ws?.readyState !== 1) return;
     const c = covers(item);

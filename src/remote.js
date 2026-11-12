@@ -82,6 +82,20 @@ async function refreshRemote(force) {
   } catch {}
 }
 refreshRemote();
-setInterval(refreshRemote, EVERY);
+// Der Wecker läuft nur bei sichtbarem Fenster. Beim Sichtbarwerden wird nachgeholt, was fällig ist.
+let again = 0, tried = Date.now();
+const tick = () => {
+  tried = Date.now();
+  refreshRemote();
+};
+function watch() {
+  clearInterval(again);
+  again = 0;
+  if (document.hidden) return;
+  if (Date.now() - tried >= EVERY) tick();
+  again = setInterval(tick, EVERY);
+}
+document.addEventListener("visibilitychange", watch);
+watch();
 
 export { refreshRemote };

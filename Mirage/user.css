@@ -4520,6 +4520,15 @@ html.mirage-hidden .main-coverSlotCollapsed-container img,
 html.mirage-hidden [data-testid="control-button-playpause"]::after {
   animation-play-state: paused !important;
 }
+/* Der Immersiv-Knopf oben schimmerte auch bei pausierter Musik ununterbrochen weiter: im Leerlauf ruht er
+   (ohne Animation liegt der Lichtstreif außerhalb der Kugel), unter der Maus lebt er wie gewohnt. */
+html:is(:not(.mirage-playing), .mirage-hidden) .m-orb-btn:not(:hover) .m-orb-shine::before,
+html:is(:not(.mirage-playing), .mirage-hidden) .m-orb-btn:not(:hover)::after {
+  animation: none;
+}
+html:not(.mirage-playing) #mirage-immersive .m-jam-p {
+  animation-play-state: paused;
+}
 
 /* Preset „Voll“: die teuren Licht-Mischungen zurück (eigene Mischflächen über dem ganzen Fenster) */
 html.mirage-rich #mirage-stage .m-art i + i {

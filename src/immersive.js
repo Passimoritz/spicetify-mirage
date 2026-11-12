@@ -345,11 +345,15 @@ const immersive = (() => {
       q.cover.style.setProperty("--gx", (50 + x * 80).toFixed(1) + "%");
       q.cover.style.setProperty("--gy", (50 + y * 80).toFixed(1) + "%");
     });
-    addEventListener("resize", sizeCanvas);
+    addEventListener("resize", () => {
+      sizeCanvas();
+      kick();
+    });
     document.addEventListener("keydown", () => isOpen() && wake(), true);
     // Taktdaten kamen später (Wiederholung oder Schätzung): Anzeige und Party-Profil nachziehen
     document.addEventListener("mirage:audio", () => {
       if (!isOpen()) return;
+      kick();
       lastBeatIdx = -1;
       if (el.dataset.mode === "party") party.prepare(currentItem()).then(updateKicker);
       else updateKicker();
@@ -478,6 +482,7 @@ const immersive = (() => {
   // Cover, Liedtext und Titel rücken um die frei gewordene Höhe nach unten zur Mitte.
   let idleT = 0, vizMoveUntil = 0;
   function wake() {
+    kick();
     clearTimeout(idleT);
     if (el.classList.contains("is-idle")) {
       el.classList.remove("is-idle");
@@ -845,6 +850,7 @@ const immersive = (() => {
     const got = await getLyrics(uri);
     if (token !== lyrToken) return;
     lyr = got;
+    kick();
     // Hype-Zeilen: der Refrain (Zeilen, die sich wiederholen) und Aufforderungen ans Publikum
     hype = new Set();
     const HYPE = /\b(drop|jump|hands? up|put your hands|everybody|let'?s go|come on|party|dance|scream|shout|louder|higher|alle zusammen|hände hoch|springen|los geht'?s|vamos|arriba|salta|dale|allez|levez|sautez|давай)\b/i;
@@ -2140,7 +2146,19 @@ const immersive = (() => {
     });
   } catch {}
   const ecoOn = () => cfg.eco === "on" || (cfg.eco === "auto" && onBattery);
+  // Leerlauf: Musik pausiert, kein Spiel, keine Handys am Live-Link → nach kurzem Ausklingen (Konfetti,
+  // abfallende Balken) steht die Bildschleife ganz, statt ein stehendes Bild 60-mal pro Sekunde neu zu
+  // zeichnen. kick() weckt sie: Maus, Taste, Play, Songwechsel, neue Daten, Fenstergröße.
+  const REST = 6000;
+  let restAt = 0;
+  const busy = () => PLR.isPlaying() || !!games.active() || (el.dataset.mode === "party" && cfg.partyLive);
+  function kick() {
+    restAt = performance.now() + REST;
+    if (!raf && isOpen()) raf = requestAnimationFrame(frame);
+  }
   function frame(now) {
+    if (busy()) restAt = now + REST;
+    else if (now > restAt) return void (raf = 0);
     raf = requestAnimationFrame(frame);
     // Bildrate je nach Preset: Leicht/Energiesparen/ruhige Party-Stellen 30, Ausgewogen höchstens 60
     // (auf 120/144-Hz-Bildschirmen halbiert das die Arbeit), Voll so schnell wie der Bildschirm.
@@ -2276,6 +2294,7 @@ const immersive = (() => {
     q.keys.hidden = !show;
   }
   function styleLyrics() {
+    kick();
     el.style.setProperty("--m-lyr-size", String(cfg.lyrSize / 100));
     el.style.setProperty("--m-lyr-gap", String(cfg.lyrGap / 100));
   }
@@ -2398,6 +2417,7 @@ const immersive = (() => {
 
   function refresh() {
     if (!el) return;
+    kick();
     if (side === "queue") setTimeout(() => side === "queue" && showSide("queue"), 600);
     const item = currentItem();
     setCover(item);
@@ -2607,6 +2627,7 @@ const immersive = (() => {
   function confetti() {
     if (!el || el.dataset.mode !== "party" || cfg.calm) return;
     moments.confetti++;
+    kick();
   }
 
   /* ---- Spiele: auswählen, starten, beenden. Alle außer dem Glücksrad spielen die Gäste auf ihren Handys. */
@@ -3012,9 +3033,10 @@ const immersive = (() => {
   // Fenster verdeckt oder minimiert: Chromium hält die Bildschleife an (0 Bilder/s) – ohne das hier gingen nach
   // 2,5 s Live-Link, Handys und Songwünsche aus, obwohl die Party läuft. Ein winziger Worker gibt den Takt vor
   // (Worker-Nachrichten werden in verdeckten Fenstern nicht gedrosselt wie Timer); gezeichnet wird nichts.
-  let hiddenAt = 0, ticker = null;
+  let hiddenAt = 0, ticker = null, tickUrl = "";
+  const tickerNeeded = () => document.hidden && !!el && isOpen() && el.dataset.mode === "party" && cfg.partyLive;
   function hiddenTick() {
-    if (!document.hidden || !el || !isOpen() || el.dataset.mode !== "party" || !cfg.partyLive) return void (hiddenAt = 0);
+    if (!tickerNeeded()) return syncTicker();
     const now = performance.now(), dt = hiddenAt ? Math.min(1, (now - hiddenAt) / 1000) : 0.25;
     hiddenAt = now;
     const pos = songPos(now), px = party.step(pos / 1000, dt, PLR.isPlaying());
@@ -3022,19 +3044,29 @@ const immersive = (() => {
     const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
     live.feed(px, vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
   }
-  function startTicker() {
-    if (ticker) return;
+  // Der Taktgeber läuft nur, solange er gebraucht wird (Fenster verdeckt UND Party mit Handys). Früher tickte
+  // er ab dem ersten Öffnen des Immersiv-Modus viermal pro Sekunde weiter – auch geschlossen und im Leerlauf.
+  function syncTicker() {
+    const need = tickerNeeded();
+    if (need === !!ticker) return;
+    hiddenAt = 0;
+    if (!need) {
+      if (ticker.terminate) ticker.terminate();
+      else clearInterval(ticker);
+      ticker = null;
+      return;
+    }
     try {
-      const url = URL.createObjectURL(new Blob(["setInterval(() => postMessage(0), 250);"], { type: "text/javascript" }));
-      ticker = new Worker(url);
+      tickUrl ||= URL.createObjectURL(new Blob(["setInterval(() => postMessage(0), 250);"], { type: "text/javascript" }));
+      ticker = new Worker(tickUrl);
       ticker.onmessage = hiddenTick;
     } catch {
       ticker = setInterval(hiddenTick, 250);
     }
   }
+  document.addEventListener("visibilitychange", syncTicker);
 
   function open() {
-    startTicker();
     if (!el) build();
     sizeCanvas();
     setMode(cfg.imMode, false);
@@ -3048,7 +3080,8 @@ const immersive = (() => {
     dust.pause(true);
     requestAnimationFrame(placeIndicator);
     cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(frame);
+    raf = 0;
+    kick();
     q.play.focus();
   }
   function close() {
@@ -3062,10 +3095,14 @@ const immersive = (() => {
     el.classList.remove("is-idle");
     dust.pause(false);
     cancelAnimationFrame(raf);
+    raf = 0;
+    syncTicker();
+    // tints.js holt Aufgeschobenes nach
+    document.dispatchEvent(new Event("mirage:im-close"));
     if (document.fullscreenElement) document.exitFullscreen?.();
   }
   const isOpen = () => !!el?.classList.contains("is-on");
-  const playState = () => el && (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play);
+  const playState = () => el && (kick(), (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play));
   const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {

@@ -54,6 +54,8 @@ guard("remote", () => import("./remote.js"));
   let fallback = null, seen = false;
   const t0 = Date.now();
   (function keep() {
+    // Fenster verdeckt: niemand sieht den Knopf, also auch nicht jede Sekunde nachsehen
+    if (document.hidden) return document.addEventListener("visibilitychange", keep, { once: true });
     if (place()) {
       seen = true;
       // Glocke doch noch da: Ersatzknopf wieder weg, sonst gäbe es zwei
