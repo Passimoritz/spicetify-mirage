@@ -125,7 +125,7 @@ async function openGame(k) {
 async function joinAll(k, who = P) {
   await until(async () => (await big.state()).st === "join", 4000, "Warteraum auf dem großen Bild");
   if (!hash) await connectPhones();
-  await allPhones((s) => !s.hidden && s.k === k && s.st === "join", 12000, "Handys zeigen den Warteraum");
+  await until(async () => (await Promise.all(who.map(phoneState))).every((s) => !s.hidden && s.k === k && s.st === "join"), 12000, "Handys zeigen den Warteraum");
   for (const ph of who) await ph.click("#game button.go");
   await until(async () => (await big.state()).chips === who.length, 6000, `${who.length} Gäste auf dem großen Bild`);
   await big.hover();
@@ -626,6 +626,129 @@ async function offline() {
   await until(async () => !(await net()).text, 4000, "offline: der Hinweis verschwindet wieder");
   await close();
 }
+// Name und Farbe: einmal gefragt, auf dem großen Bild im Warteraum, an Ständen und Wünschen zu sehen, später änderbar
+const BLUE = "rgb(74, 168, 255)", RED = "rgb(255, 90, 110)";
+const bigGuest = (sel, name) => T.js(`(() => {
+  const c = [...document.querySelectorAll(${JSON.stringify(sel)})].find((x) => x.textContent.includes(${JSON.stringify(name)}));
+  return c ? { dot: c.querySelector(".m-g-dot")?.style.background || "" } : null;
+})()`);
+async function guestProfile() {
+  const Z = P[2];
+  await ensurePhones("guest-profile");
+  await Z.js(`for (const k of ["mlName", "mlCol", "mlProf"]) localStorage.removeItem(k); location.reload(); 1`).catch(() => {});
+  await wait(500);
+  await until(() => Z.js(`!document.getElementById("prof").hidden`).catch(() => false), 10000, "profil: beim ersten Mal wird nach Name und Farbe gefragt");
+  await Z.click("#pName");
+  await Z.wc.insertText("Zoë");
+  await Z.click("#pSw .swb", { index: 5 });
+  await Z.click("#pOk");
+  const me = await Z.js(`({ n: localStorage.getItem("mlName"), c: localStorage.getItem("mlCol"), asked: localStorage.getItem("mlProf"), btn: document.getElementById("bMe").textContent, bg: document.getElementById("bMe").style.background, open: !document.getElementById("prof").hidden })`);
+  ok(me.n === "Zoë" && me.c === "5" && me.asked === "1" && me.btn === "Z" && me.bg === BLUE && !me.open, "profil: Name und Farbe sind gemerkt: " + JSON.stringify(me));
+  // Warteraum: wer da ist, mit Namen und Farbe, und was noch fehlt
+  await openGame("stop");
+  await until(async () => (await big.state()).st === "join", 4000, "profil: Warteraum");
+  const count = () => T.js(`document.querySelector(".m-g-jcount")?.textContent || ""`);
+  await until(async () => /niemand|Nobody/.test(await count()) && /2/.test(await count()), 3000, "warteraum: leer, zwei Gäste nötig");
+  await until(async () => (await phoneState(Z)).st === "join", 8000, "profil: Handy zeigt den Warteraum");
+  await Z.click("#game button.go");
+  await until(async () => (await bigGuest(".m-g-chips .m-g-chip", "Zoë"))?.dot === BLUE, 5000, "warteraum: Zoë steht mit ihrer Farbe auf dem großen Bild");
+  ok(/1 (dabei|in the game).*1/.test(await count()), "warteraum: einer da, einer fehlt noch: " + (await count()));
+  await P[0].click("#game button.go");
+  await until(async () => /^2 (dabei|in the game)$/.test(await count()), 5000, "warteraum: zwei da, niemand fehlt mehr");
+  const chip = await until(() => P[0].js(`(() => {
+    const c = [...document.querySelectorAll("#game .gchips span")].find((x) => x.textContent === "Zoë");
+    return c ? c.querySelector(".gdot")?.style.background : "";
+  })()`), 4000, "warteraum: auch das Handy zeigt Zoë mit Farbe");
+  ok(chip === BLUE, "warteraum: Farbe auf dem Handy: " + chip);
+  await close();
+  await afterGame("profil");
+  // Stände: wessen sie sind
+  await openGame("never");
+  await joinAll("never");
+  await allPhones((s) => s.st === "ask" && s.round === "1/2", 8000, "profil: Frage 1");
+  for (const ph of P) await ph.click(...tile(0));
+  await allPhones((s) => s.st === "rev" && s.round === "1/2", 6000, "profil: Auflösung");
+  ok((await bigGuest(".m-g-board .m-g-row", "Zoë"))?.dot === BLUE, "profil: Stand auf dem großen Bild trägt Zoës Farbe");
+  const mine = await Z.js(`document.querySelector("#game .grow.me")?.textContent || ""`);
+  ok(mine.includes("Zoë"), "profil: der eigene Stand ist auf dem Handy hervorgehoben: " + mine);
+  // später ändern: der Knopf oben rechts
+  await allPhones((s) => s.st === "ask" && s.round === "2/2", 8000, "profil: Frage 2");
+  await Z.click("#bMe");
+  await Z.click("#pSw .swb", { index: 0 });
+  await Z.click("#pOk");
+  await until(async () => (await bigGuest(".m-g-who .m-g-chip", "Zoë"))?.dot === RED, 5000, "profil: die neue Farbe kommt auf dem großen Bild an");
+  await close();
+  await afterGame("profil");
+  // Wunsch: von wem er ist
+  await Z.click("#bWish");
+  await wait(700);
+  await Z.js(`(() => { const i = document.getElementById("wSong"); i.value = "song"; i.dispatchEvent(new Event("input")); })(); 1`);
+  await until(() => Z.js(`document.querySelectorAll("#wRes li").length > 0`), 9000, "wunsch: Treffer");
+  await Z.click("#wRes li button.go");
+  const by = await until(() => P[0].js(`(() => {
+    const s = [...document.querySelectorAll("#wList small")].find((x) => x.textContent.includes("Zoë"));
+    return s ? s.querySelector(".gdot")?.style.background || "ohne" : "";
+  })()`), 6000, "wunsch: die anderen sehen, von wem er ist");
+  ok(by === RED, "wunsch: mit Zoës Farbe: " + by);
+  const toast = await until(() => T.js(`(() => {
+    const s = document.querySelector(".m-im-wishtoast small");
+    return s && s.textContent.includes("Zoë") ? s.querySelector(".m-im-who")?.style.background || "ohne" : "";
+  })()`), 6000, "wunsch: das große Bild nennt Zoë");
+  ok(toast === RED, "wunsch: mit Farbe auf dem großen Bild: " + toast);
+  await Z.click("#wClose");
+  await T.js(`document.querySelector(".m-im-wishtoast .m-im-wish-all")?.click(); 1`);
+  await wait(400);
+  await T.js(`document.querySelector(".m-im-wish-no")?.click(); document.querySelector(".m-im-side-x")?.click(); 1`);
+  // wieder Gamma, für die Fälle danach
+  await Z.js(`localStorage.setItem("mlName", "Gamma"); localStorage.removeItem("mlCol"); location.reload(); 1`).catch(() => {});
+  await wait(1500);
+}
+// Später einsteigen: ein Gast scannt mitten im Spiel, spielt ab sofort mit und behält seine Punkte auch nach dem Neuladen
+async function lateJoin() {
+  const L = P[2];
+  await ensurePhones("late-join");
+  await L.js(`sessionStorage.clear(); 1`);
+  await L.win.loadURL(PAGE);
+  await T.js(`__sp.setShuffleJump(0); 1`);
+  await openGame("quiz");
+  await joinAll("quiz", [P[0], P[1]]);
+  await until(async () => (await phoneState(P[0])).st === "ask" && (await phoneState(P[0])).tiles.length === 4, 15000, "spät: Frage 1 läuft");
+  await L.win.loadURL(PAGE + "?late=1" + hash);
+  const late = await until(async () => {
+    const s = await phoneState(L).catch(() => null);
+    return s && !s.hidden && s.k === "quiz" && s;
+  }, 10000, "spät: der neue Gast sieht das laufende Spiel");
+  ok(late.tiles.length === 0 && (await L.js(`document.getElementById("game").dataset.late`)) === "1", "spät: erst einsteigen, dann antworten: " + late.text);
+  await L.click("#game button.go");
+  const now = await until(async () => {
+    const s = await phoneState(L);
+    return s.st === "ask" && s.tiles.length === 4 && s;
+  }, 4000, "spät: nach dem Einsteigen ist die Frage da");
+  await until(() => T.js(`document.querySelectorAll(".m-g-who .m-g-chip").length === 3`), 4000, "spät: das große Bild zeigt den dritten Gast");
+  const b = await big.state(), right = tileOf(now, b.artist);
+  ok(right >= 0, "spät: die richtige Antwort steht zur Auswahl");
+  await P[0].click(...tile((right + 1) % 4));
+  await P[1].click(...tile((right + 1) % 4));
+  await L.click(...tile(right));
+  const rev = await allPhones((s) => s.st === "rev" && s.round === "1/2", 6000, "spät: Auflösung");
+  ok(/hit/.test(rev[2].verdict), "spät: die Antwort des neuen Gastes zählt: " + rev[2].verdict);
+  ok(/Gamma/.test(((await big.state()).text.split("🥇")[1] || "").split("🥈")[0]), "spät: Gamma führt: " + (await big.state()).text);
+  // Neuladen in einem frischen Tab: der PC kennt den Gast noch, die Punkte bleiben
+  await allPhones((s) => s.st === "ask" && s.round === "2/2" && s.tiles.length === 4, 15000, "spät: Frage 2");
+  await L.js(`sessionStorage.clear(); location.reload(); 1`).catch(() => {});
+  await wait(600);
+  const back = await until(async () => {
+    const s = await phoneState(L).catch(() => null);
+    return s && s.st === "ask" && s.round === "2/2" && s.tiles.length === 4 && s;
+  }, 9000, "spät: nach dem Neuladen direkt wieder im Spiel");
+  ok((await L.js(`document.getElementById("game").dataset.late`)) === "", "spät: kein zweites Einsteigen nötig");
+  const b2 = await big.state();
+  for (const ph of P) await ph.click(...tile(tileOf(back, b2.artist)));
+  const end = await allPhones((s) => s.st === "end", 14000, "spät: Siegerehrung");
+  const pts = Number((/(\d+) (Punkte|points)/.exec(end[2].text) || [])[1] || 0);
+  ok(pts > 200, "spät: Gamma hat die Punkte aus beiden Runden: " + end[2].text);
+  await close();
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -635,7 +758,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin],
 ];
 
 /* ---------------------------------------------------------------- Start */
@@ -703,7 +826,7 @@ app.whenReady().then(async () => {
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
   // Handys verbinden sich im ersten Spiel mit Warteraum
-  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge"]);
+  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join"]);
   if (ONLY.length && list.every(([n]) => NO_LOBBY.has(n))) list = [CASES[0], ...list];
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");

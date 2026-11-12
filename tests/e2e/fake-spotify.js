@@ -202,6 +202,8 @@
           return { lyrics: { syncType: "LINE_SYNCED", lines: lyricLines(i), language: "en" } };
         }
         if (/artists[/]/.test(url)) return { genres: ["dance pop"] };
+        // Suche für Songwünsche: die ersten Songs der Liste
+        if (/v1[/]search/.test(url)) return { tracks: { items: tracks.slice(0, 3).map((x) => ({ id: x.uri.split(":")[2], uri: x.uri, name: x.name, artists: [{ name: x.metadata.artist_name }], album: { images: [] } })) } };
         return {};
       },
     },

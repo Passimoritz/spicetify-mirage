@@ -22,7 +22,7 @@ import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
-import { games, GAME_LIST, WHEEL_FIELDS, WHEELS } from "./games.js";
+import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS } from "./games.js";
 import { free } from "./lock.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
@@ -2454,6 +2454,14 @@ const immersive = (() => {
   const seenWish = new Set();
   const openWishes = () => (el?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : []);
   const safeImg = (u) => (/^https:\/\/i\.scdn\.co\//.test(u || "") ? u : "");
+  // Farbpunkt des Gastes vor seinem Namen: man sieht, von wem der Wunsch ist
+  const whoDot = (node, w) => {
+    if (!w.n || !GUEST_COLORS[w.c]) return;
+    const d = document.createElement("i");
+    d.className = "m-im-who";
+    d.style.background = GUEST_COLORS[w.c];
+    node.prepend(d);
+  };
   async function takeWish(w, btn) {
     if (btn) btn.disabled = true;
     if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
@@ -2473,6 +2481,7 @@ const immersive = (() => {
     const ti = document.createElement("b"), sub = document.createElement("small");
     ti.textContent = w.t;
     sub.textContent = w.a + (w.n ? " · " + t("wishBy").replace("{n}", w.n) : "");
+    whoDot(sub, w);
     txt.append(ti, sub);
     const votes = document.createElement("i");
     votes.className = "m-im-votes";
@@ -2516,6 +2525,7 @@ const immersive = (() => {
     const txt = document.createElement("span");
     const k = document.createElement("small"), ti = document.createElement("b");
     k.textContent = w.n ? t("wishFrom").replace("{n}", w.n) : t("wishNew");
+    whoDot(k, w);
     ti.textContent = `${w.t} – ${w.a}`;
     txt.append(k, ti);
     const ok = document.createElement("button");

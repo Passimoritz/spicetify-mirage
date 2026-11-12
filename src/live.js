@@ -262,12 +262,15 @@ const emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage
 const clean = (v, n) => String(v ?? "").replace(/\p{Cc}/gu, " ").trim().slice(0, n);
 // Gäste: wer hat was gewünscht (für das Ranking im Rückblick); Reaktionen und Abstimmung brauchen keine Wünsche
 const guests = new Map(); // Handy-ID → { n, wished, played, votes }
-const guest = (id, n) => {
-  const g = guests.get(id) || { n: "", wished: 0, played: 0, votes: 0 };
+const guest = (id, n, c) => {
+  const g = guests.get(id) || { n: "", c: null, wished: 0, played: 0, votes: 0 };
   if (n) g.n = n;
+  if (c != null) g.c = c;
   guests.set(id, g);
   return g;
 };
+// Farbe eines Gastes: eine Nummer aus der festen Palette (dieselbe auf dem Handy), sonst keine
+const colour = (v) => (Number.isInteger(v) && v >= 0 && v < 10 ? v : null);
 const lastReact = new Map(), lastGame = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
 async function inbound(m) {
@@ -284,7 +287,7 @@ async function inbound(m) {
   if (msg.k === "gm") {
     if (Date.now() - (lastGame.get(id) || 0) < 100) return;
     lastGame.set(id, Date.now());
-    window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
+    window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), c: colour(msg.c), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
     return;
   }
   // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl
@@ -338,8 +341,8 @@ async function inbound(m) {
   const have = wishes.find((x) => x.uri === tr.uri);
   if (have) have.v.add(id);
   else {
-    wishes.push({ ...tr, n: name, by: id, v: new Set([id]), st: "open", at: Date.now() });
-    guest(id, name).wished++;
+    wishes.push({ ...tr, n: name, c: colour(msg.c), by: id, v: new Set([id]), st: "open", at: Date.now() });
+    guest(id, name, colour(msg.c)).wished++;
     // voll: der älteste Wunsch mit den wenigsten Stimmen fliegt raus
     const open = wishes.filter((x) => x.st === "open");
     if (open.length > 8) wishes = wishes.filter((x) => x !== open.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
@@ -369,7 +372,7 @@ function decline(i) {
   wishes = wishes.filter((x) => x.i !== i);
   emitWishes();
 }
-const wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, v: w.v.size, st: w.st }));
+const wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, c: w.c ?? undefined, v: w.v.size, st: w.st }));
 
 // kleines Cover für die Handykarte (Spotifys Bildserver); „spotify:image:…“ → https-Adresse
 const coverUrl = (item) => {

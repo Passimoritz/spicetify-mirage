@@ -30,6 +30,21 @@
   body.quiet:not(.lost) .dot { background: #fbbf24; box-shadow: none; animation: none; }
   .net { padding-left: 9px; border-left: 1px solid rgba(255, 255, 255, 0.22); font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
   .net:empty { display: none; }
+  /* Wer bin ich: Knopf oben rechts in der eigenen Farbe, dahinter Name und Farbe zum Ändern */
+  .mebtn { position: absolute; right: 14px; top: 0; width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.85); color: #0b0a12; font: inherit; font-size: 13px; font-weight: 800; line-height: 1; }
+  .mebtn[hidden], .prof[hidden] { display: none; }
+  .prof { position: fixed; inset: 0; z-index: 7; display: grid; place-items: center; padding: 20px; background: rgba(6, 5, 11, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .pbox { display: grid; gap: 14px; width: min(360px, 100%); padding: 20px 18px; border-radius: 24px; background: rgba(14, 12, 24, 0.94); border: 1px solid rgba(255, 255, 255, 0.14); text-align: center; }
+  .pbox h2 { font-size: 21px; letter-spacing: -0.01em; }
+  .pbox p { font-size: 14px; line-height: 1.4; opacity: 0.7; }
+  .pbox input { height: 48px; padding: 0 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit; font-size: 16px; text-align: center; -webkit-user-select: text; user-select: text; }
+  .pbox .go { min-height: 50px; border: 0; border-radius: 16px; color: #0b0a12; background: rgb(var(--c)); font: inherit; font-size: 16px; font-weight: 700; }
+  .sw { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .sw .swb { flex: none; width: 34px; height: 34px; min-height: 0; padding: 0; border-radius: 50%; border: 2px solid transparent; }
+  .sw .swb[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35); transform: scale(1.1); }
+  .gdot { flex: none; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; vertical-align: middle; }
+  .grow .gdot { margin-right: 0; }
+  .grow.me { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6); }
   .card { position: fixed; left: 14px; right: 14px; bottom: max(16px, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 14px; padding: 14px 16px;
     border-radius: 22px; background: rgba(10, 8, 20, 0.38); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
     transform: translateY(140%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.6s; }
@@ -268,7 +283,8 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div></div>
+<div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div><button type="button" class="mebtn" id="bMe" hidden></button></div>
+<div class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"><div class="pbox"><h2 id="pTitle"></h2><p id="pHint"></p><input id="pName" maxlength="20" autocomplete="nickname"><div class="sw" id="pSw"></div><button type="button" class="go" id="pOk"></button></div></div>
 <div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p><div class="scan" id="scan" hidden><button type="button" id="scanBtn"></button><input id="scanLink" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url"><div class="scanmsg" id="scanMsg" role="status"></div></div></div>
 <div class="scanview" id="scanView" hidden><video id="scanVid" playsinline muted></video><div class="scanframe"></div><p id="scanTip"></p><button type="button" id="scanX" aria-label="✕">✕</button></div>
 <div class="tap" id="tap"></div>
@@ -362,8 +378,8 @@ for (const [k, v] of Object.entries(MORE)) L[k] = { ...(L[k] || {}), ...v };
 const SCAN_TEXT = {"en": {"scanStart": ["Join the party", "Scan the QR code on the big screen."], "scanBtn": "Scan QR code", "scanPaste": "or paste the link", "scanHint": "Point your camera at the QR code", "scanBad": "That's not a Mirage code", "scanDenied": "Camera not available. Allow it in your browser or scan with your camera app."}, "de": {"scanStart": ["Party beitreten", "Scanne den QR-Code auf dem großen Bild."], "scanBtn": "QR-Code scannen", "scanPaste": "oder Link einfügen", "scanHint": "Halte die Kamera auf den QR-Code", "scanBad": "Das ist kein Mirage-Code", "scanDenied": "Kamera nicht verfügbar. Erlaube sie im Browser oder scanne mit der Kamera-App."}, "fr": {"scanStart": ["Rejoindre la fête", "Scanne le QR code sur le grand écran."], "scanBtn": "Scanner le QR code", "scanPaste": "ou colle le lien", "scanHint": "Vise le QR code avec la caméra", "scanBad": "Ce n'est pas un code Mirage", "scanDenied": "Caméra indisponible. Autorise-la dans le navigateur ou scanne avec l'appli caméra."}, "es": {"scanStart": ["Unirse a la fiesta", "Escanea el código QR de la pantalla grande."], "scanBtn": "Escanear código QR", "scanPaste": "o pega el enlace", "scanHint": "Apunta la cámara al código QR", "scanBad": "Eso no es un código de Mirage", "scanDenied": "Cámara no disponible. Permítela en el navegador o escanea con la app de cámara."}, "it": {"scanStart": ["Unisciti alla festa", "Scansiona il codice QR sullo schermo grande."], "scanBtn": "Scansiona codice QR", "scanPaste": "o incolla il link", "scanHint": "Inquadra il codice QR", "scanBad": "Questo non è un codice Mirage", "scanDenied": "Fotocamera non disponibile. Consentila nel browser o scansiona con l'app fotocamera."}, "pt": {"scanStart": ["Entrar na festa", "Escaneia o código QR na tela grande."], "scanBtn": "Escanear código QR", "scanPaste": "ou cola o link", "scanHint": "Aponta a câmera para o código QR", "scanBad": "Isso não é um código Mirage", "scanDenied": "Câmera indisponível. Permite no navegador ou escaneia com o app da câmera."}, "nl": {"scanStart": ["Doe mee met het feest", "Scan de QR-code op het grote scherm."], "scanBtn": "QR-code scannen", "scanPaste": "of plak de link", "scanHint": "Richt je camera op de QR-code", "scanBad": "Dat is geen Mirage-code", "scanDenied": "Camera niet beschikbaar. Sta hem toe in je browser of scan met de camera-app."}, "pl": {"scanStart": ["Dołącz do imprezy", "Zeskanuj kod QR z dużego ekranu."], "scanBtn": "Skanuj kod QR", "scanPaste": "lub wklej link", "scanHint": "Skieruj aparat na kod QR", "scanBad": "To nie jest kod Mirage", "scanDenied": "Aparat niedostępny. Zezwól na niego w przeglądarce lub skanuj aplikacją aparatu."}, "tr": {"scanStart": ["Partiye katıl", "Büyük ekrandaki QR kodunu tara."], "scanBtn": "QR kodunu tara", "scanPaste": "veya bağlantıyı yapıştır", "scanHint": "Kamerayı QR koduna tut", "scanBad": "Bu bir Mirage kodu değil", "scanDenied": "Kamera kullanılamıyor. Tarayıcıda izin ver veya kamera uygulamasıyla tara."}, "ru": {"scanStart": ["Присоединиться", "Отсканируй QR-код на большом экране."], "scanBtn": "Сканировать QR-код", "scanPaste": "или вставь ссылку", "scanHint": "Наведи камеру на QR-код", "scanBad": "Это не код Mirage", "scanDenied": "Камера недоступна. Разреши её в браузере или сканируй приложением камеры."}, "uk": {"scanStart": ["Приєднатися", "Відскануй QR-код на великому екрані."], "scanBtn": "Сканувати QR-код", "scanPaste": "або встав посилання", "scanHint": "Наведи камеру на QR-код", "scanBad": "Це не код Mirage", "scanDenied": "Камера недоступна. Дозволь її у браузері або скануй застосунком камери."}, "ja": {"scanStart": ["パーティーに参加", "大きな画面のQRコードをスキャンしてね。"], "scanBtn": "QRコードをスキャン", "scanPaste": "またはリンクを貼り付け", "scanHint": "カメラをQRコードに向けて", "scanBad": "Mirageのコードではありません", "scanDenied": "カメラを使えません。ブラウザーで許可するか、カメラアプリでスキャンしてね。"}, "ko": {"scanStart": ["파티 참여", "큰 화면의 QR 코드를 스캔하세요."], "scanBtn": "QR 코드 스캔", "scanPaste": "또는 링크 붙여넣기", "scanHint": "카메라를 QR 코드에 맞추세요", "scanBad": "Mirage 코드가 아니에요", "scanDenied": "카메라를 쓸 수 없어요. 브라우저에서 허용하거나 카메라 앱으로 스캔하세요."}, "zh": {"scanStart": ["加入派对", "扫描大屏幕上的二维码。"], "scanBtn": "扫描二维码", "scanPaste": "或粘贴链接", "scanHint": "将相机对准二维码", "scanBad": "这不是 Mirage 二维码", "scanDenied": "相机不可用。请在浏览器中允许,或用相机应用扫描。"}};
 const GAME_TEXT = {"en": {"gIntro": "Intro flash", "gTf": "Real or fake?", "gTfAsk": "Real or fake?", "gDquiz": "Sip quiz", "gTaps": "Tap race", "gTapsGo": "Tap as fast as you can!", "gNever": "Never have I ever", "gAlarm": "Word alarm", "gAlarmWord": "Sip on this word:", "gAlarmHit": "Drink!", "gAlarmEnd": "{n} sips for this song", "gDwheel": "Sip wheel", "gDlikely": "Who would … (sip edition)", "gSip": "One sip!", "gSafeSip": "You're safe", "gSing": "Keep singing", "gSingSoon": "It's about to go quiet …", "gSingNow": "Keep singing!", "gSingBack": "Back! Were you still in time?", "gLoadSong": "Next song …"}, "de": {"gIntro": "Intro-Blitz", "gTf": "Echt oder Fake?", "gTfAsk": "Echt oder Fake?", "gDquiz": "Schluck-Quiz", "gTaps": "Tipp-Rennen", "gTapsGo": "Tippe so schnell du kannst!", "gNever": "Ich hab noch nie", "gAlarm": "Wort-Alarm", "gAlarmWord": "Schluck bei diesem Wort:", "gAlarmHit": "Trinken!", "gAlarmEnd": "{n} Schlucke bei diesem Song", "gDwheel": "Schluck-Rad", "gDlikely": "Wer würde … (Schluck-Ausgabe)", "gSip": "Ein Schluck!", "gSafeSip": "Du bist sicher", "gSing": "Sing weiter", "gSingSoon": "Gleich wird es still …", "gSingNow": "Singt weiter!", "gSingBack": "Zurück! Wart ihr noch im Takt?", "gLoadSong": "Nächster Song …"}, "fr": {"gIntro": "Intro éclair", "gTf": "Vrai ou faux ?", "gTfAsk": "Vrai ou faux ?", "gDquiz": "Quiz gorgée", "gTaps": "Course de taps", "gTapsGo": "Tape aussi vite que tu peux !", "gNever": "Je n'ai jamais", "gAlarm": "Alerte mot", "gAlarmWord": "Une gorgée sur ce mot :", "gAlarmHit": "Bois !", "gAlarmEnd": "{n} gorgées pour cette chanson", "gDwheel": "Roue des gorgées", "gDlikely": "Qui serait … (version gorgée)", "gSip": "Une gorgée !", "gSafeSip": "T'es sauf", "gSing": "Continue de chanter", "gSingSoon": "Ça va bientôt se taire …", "gSingNow": "Continue de chanter !", "gSingBack": "C'est reparti ! Toujours en rythme ?", "gLoadSong": "Morceau suivant …"}, "es": {"gIntro": "Intro flash", "gTf": "¿Real o falso?", "gTfAsk": "¿Real o falso?", "gDquiz": "Quiz de sorbos", "gTaps": "Carrera de toques", "gTapsGo": "¡Toca lo más rápido que puedas!", "gNever": "Yo nunca", "gAlarm": "Alarma de palabra", "gAlarmWord": "Sorbo con esta palabra:", "gAlarmHit": "¡Bebe!", "gAlarmEnd": "{n} sorbos en esta canción", "gDwheel": "Ruleta de sorbos", "gDlikely": "Quién sería capaz de … (edición sorbo)", "gSip": "¡Un sorbo!", "gSafeSip": "Te salvas", "gSing": "Sigue cantando", "gSingSoon": "Ya casi se hace el silencio …", "gSingNow": "¡Sigue cantando!", "gSingBack": "¡Ha vuelto! ¿Seguías a tiempo?", "gLoadSong": "Siguiente canción …"}, "it": {"gIntro": "Intro lampo", "gTf": "Vero o falso?", "gTfAsk": "Vero o falso?", "gDquiz": "Quiz del sorso", "gTaps": "Gara di tap", "gTapsGo": "Tocca più veloce che puoi!", "gNever": "Io non ho mai", "gAlarm": "Allarme parola", "gAlarmWord": "Sorso su questa parola:", "gAlarmHit": "Bevi!", "gAlarmEnd": "{n} sorsi per questa canzone", "gDwheel": "Ruota dei sorsi", "gDlikely": "Chi sarebbe capace di … (edizione sorso)", "gSip": "Un sorso!", "gSafeSip": "Sei salvo", "gSing": "Continua a cantare", "gSingSoon": "Tra poco cala il silenzio …", "gSingNow": "Continua a cantare!", "gSingBack": "È tornata! Eri ancora a tempo?", "gLoadSong": "Prossima canzone …"}, "pt": {"gIntro": "Intro relâmpago", "gTf": "Verdadeiro ou falso?", "gTfAsk": "Verdadeiro ou falso?", "gDquiz": "Quiz do golo", "gTaps": "Corrida de toques", "gTapsGo": "Toca o mais rápido que conseguires!", "gNever": "Eu nunca", "gAlarm": "Alarme de palavra", "gAlarmWord": "Golo nesta palavra:", "gAlarmHit": "Bebe!", "gAlarmEnd": "{n} golos nesta música", "gDwheel": "Roleta de golos", "gDlikely": "Quem seria capaz de … (edição golo)", "gSip": "Um golo!", "gSafeSip": "Estás safo", "gSing": "Continua a cantar", "gSingSoon": "Já vai ficar tudo em silêncio …", "gSingNow": "Continua a cantar!", "gSingBack": "Voltou! Ainda estavas no ritmo?", "gLoadSong": "Próxima música …"}, "nl": {"gIntro": "Intro-flits", "gTf": "Echt of nep?", "gTfAsk": "Echt of nep?", "gDquiz": "Slokjesquiz", "gTaps": "Tikrace", "gTapsGo": "Tik zo snel als je kunt!", "gNever": "Ik heb nog nooit", "gAlarm": "Woordalarm", "gAlarmWord": "Slokje bij dit woord:", "gAlarmHit": "Drinken!", "gAlarmEnd": "{n} slokjes bij dit nummer", "gDwheel": "Slokjesrad", "gDlikely": "Wie zou … (slokjeseditie)", "gSip": "Een slokje!", "gSafeSip": "Je bent veilig", "gSing": "Zing door", "gSingSoon": "Zo wordt het stil …", "gSingNow": "Zing door!", "gSingBack": "Terug! Zat je nog in de maat?", "gLoadSong": "Volgend nummer …"}, "pl": {"gIntro": "Błyskawiczne intro", "gTf": "Prawda czy fałsz?", "gTfAsk": "Prawda czy fałsz?", "gDquiz": "Quiz łykowy", "gTaps": "Wyścig tapnięć", "gTapsGo": "Stukaj najszybciej, jak umiesz!", "gNever": "Nigdy przenigdy", "gAlarm": "Alarm słowa", "gAlarmWord": "Łyk na to słowo:", "gAlarmHit": "Pij!", "gAlarmEnd": "{n} łyków za ten utwór", "gDwheel": "Koło łyków", "gDlikely": "Kto by … (edycja łykowa)", "gSip": "Jeden łyk!", "gSafeSip": "Jesteś bezpieczny/a", "gSing": "Śpiewaj dalej", "gSingSoon": "Zaraz zrobi się cicho …", "gSingNow": "Śpiewaj dalej!", "gSingBack": "Wróciła! Trzymałeś rytm?", "gLoadSong": "Następny utwór …"}, "tr": {"gIntro": "Intro şimşeği", "gTf": "Gerçek mi sahte mi?", "gTfAsk": "Gerçek mi sahte mi?", "gDquiz": "Yudum quizi", "gTaps": "Dokunma yarışı", "gTapsGo": "Olabildiğince hızlı dokun!", "gNever": "Ben hiç yapmadım", "gAlarm": "Kelime alarmı", "gAlarmWord": "Bu kelimede yudum:", "gAlarmHit": "İç!", "gAlarmEnd": "Bu şarkıda {n} yudum", "gDwheel": "Yudum çarkı", "gDlikely": "Kim yapardı … (yudum versiyonu)", "gSip": "Bir yudum!", "gSafeSip": "Kurtuldun", "gSing": "Söylemeye devam et", "gSingSoon": "Birazdan sessizlik olacak …", "gSingNow": "Söylemeye devam et!", "gSingBack": "Geri geldi! Hâlâ ritimde miydin?", "gLoadSong": "Sıradaki şarkı …"}, "ru": {"gIntro": "Интро-молния", "gTf": "Правда или фейк?", "gTfAsk": "Правда или фейк?", "gDquiz": "Квиз на глоток", "gTaps": "Гонка тапов", "gTapsGo": "Тапай как можно быстрее!", "gNever": "Я никогда не", "gAlarm": "Слово-тревога", "gAlarmWord": "Глоток на это слово:", "gAlarmHit": "Пей!", "gAlarmEnd": "Глотков за эту песню: {n}", "gDwheel": "Колесо глотков", "gDlikely": "Кто бы мог … (глотковая версия)", "gSip": "Один глоток!", "gSafeSip": "Тебе повезло", "gSing": "Пой дальше", "gSingSoon": "Скоро станет тихо …", "gSingNow": "Пой дальше!", "gSingBack": "Музыка вернулась! Ты попал в такт?", "gLoadSong": "Следующая песня …"}, "uk": {"gIntro": "Інтро-блискавка", "gTf": "Правда чи фейк?", "gTfAsk": "Правда чи фейк?", "gDquiz": "Квіз на ковток", "gTaps": "Гонка тапів", "gTapsGo": "Тапай якомога швидше!", "gNever": "Я ніколи не", "gAlarm": "Слово-тривога", "gAlarmWord": "Ковток на це слово:", "gAlarmHit": "Пий!", "gAlarmEnd": "Ковтків за цю пісню: {n}", "gDwheel": "Колесо ковтків", "gDlikely": "Хто б міг … (ковткова версія)", "gSip": "Один ковток!", "gSafeSip": "Тобі пощастило", "gSing": "Співай далі", "gSingSoon": "Скоро стане тихо …", "gSingNow": "Співай далі!", "gSingBack": "Музика повернулась! Ти потрапив у такт?", "gLoadSong": "Наступна пісня …"}, "ja": {"gIntro": "イントロ一瞬", "gTf": "本物？ニセ？", "gTfAsk": "本物？ニセ？", "gDquiz": "ひと口クイズ", "gTaps": "タップ対決", "gTapsGo": "全力でタップ！", "gNever": "私は一度も…ない", "gAlarm": "ワードアラーム", "gAlarmWord": "この言葉でひと口：", "gAlarmHit": "飲んで！", "gAlarmEnd": "この曲で{n}口", "gDwheel": "ひと口ルーレット", "gDlikely": "やりそうな人は…（ひと口版）", "gSip": "ひと口！", "gSafeSip": "セーフ！", "gSing": "歌い続けて", "gSingSoon": "もうすぐ静かになるよ …", "gSingNow": "歌い続けて！", "gSingBack": "戻ってきた！ リズム合ってた？", "gLoadSong": "次の曲 …"}, "ko": {"gIntro": "인트로 퀴즈", "gTf": "진짜? 가짜?", "gTfAsk": "진짜? 가짜?", "gDquiz": "한 모금 퀴즈", "gTaps": "탭 대결", "gTapsGo": "최대한 빨리 눌러!", "gNever": "나는 한 번도 안 해봤다", "gAlarm": "단어 알람", "gAlarmWord": "이 단어에 한 모금:", "gAlarmHit": "마셔!", "gAlarmEnd": "이 곡에서 {n}모금", "gDwheel": "한 모금 룰렛", "gDlikely": "누가 그럴 것 같아 … (한 모금 에디션)", "gSip": "한 모금!", "gSafeSip": "넌 안전해", "gSing": "계속 불러", "gSingSoon": "곧 조용해져 …", "gSingNow": "계속 불러!", "gSingBack": "돌아왔어! 박자 맞았어?", "gLoadSong": "다음 곡 …"}, "zh": {"gIntro": "前奏闪现", "gTf": "真还是假？", "gTfAsk": "真还是假？", "gDquiz": "小口问答", "gTaps": "点击竞速", "gTapsGo": "用最快的速度点！", "gNever": "我从来没有", "gAlarm": "单词警报", "gAlarmWord": "听到这个词就喝：", "gAlarmHit": "喝！", "gAlarmEnd": "这首歌喝了{n}口", "gDwheel": "小口转盘", "gDlikely": "谁最可能…（小口版）", "gSip": "喝一小口！", "gSafeSip": "你安全了", "gSing": "接着唱", "gSingSoon": "马上要安静了 …", "gSingNow": "接着唱！", "gSingBack": "回来啦！你还在节奏上吗？", "gLoadSong": "下一首 …"}};
 // neuere Texte: nur Englisch und Deutsch, alle anderen Sprachen fallen auf Englisch zurück
-Object.assign(GAME_TEXT.en, { netLost: "Offline · reconnecting …", netBack: "Connected again", netQuiet: "No signal from the party" });
-Object.assign(GAME_TEXT.de, { netLost: "Offline · verbinde neu …", netBack: "Wieder verbunden", netQuiet: "Kein Signal von der Party" });
+Object.assign(GAME_TEXT.en, { pTitle: "Who are you?", pHint: "Your name and colour show up on the big screen, next to your wishes and scores.", pOk: "Done", pCol: "Colour", gLate: "The game is already running", gLateHint: "Jump in and play from here.", gLateWatch: "Jump in: you watch this game and play the next one.", gLateJoin: "Jump in", netLost: "Offline · reconnecting …", netBack: "Connected again", netQuiet: "No signal from the party" });
+Object.assign(GAME_TEXT.de, { pTitle: "Wer bist du?", pHint: "Name und Farbe stehen auf dem großen Bild, bei deinen Wünschen und Punkten.", pOk: "Fertig", pCol: "Farbe", gLate: "Das Spiel läuft schon", gLateHint: "Steig ein und spiel ab jetzt mit.", gLateWatch: "Steig ein: Dieses Spiel schaust du zu, beim nächsten bist du dabei.", gLateJoin: "Einsteigen", netLost: "Offline · verbinde neu …", netBack: "Wieder verbunden", netQuiet: "Kein Signal von der Party" });
 for (const src of [SCAN_TEXT, GAME_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
@@ -666,6 +682,13 @@ function apply(s) {
   $("bWish").hidden = !Array.isArray(s.w);
   if (Array.isArray(s.w)) drawWishes(s.w);
   document.body.classList.add("on");
+  if ($("bMe").hidden) {
+    $("bMe").hidden = false;
+    syncMe();
+  }
+  // beim ersten Mal: einmal nach Name und Farbe fragen (wer schon einen Namen hat, wird nicht gestört)
+  if (!profAsked && !store("mlProf") && !store("mlName")) openProf();
+  profAsked = true;
 }
 
 /* ---- Songwünsche und Abstimmung: verschlüsselt zurück an Mirage (Unterkanal „/in“) */
@@ -677,6 +700,83 @@ const store = (k, v) => {
   return v;
 };
 const myId = store("mlId") || store("mlId", Math.random().toString(36).slice(2, 14));
+/* ---- Wer bin ich: Name und Farbe. Einmal gefragt, im Handy gemerkt, über den Knopf oben rechts änderbar. */
+// dieselbe Palette wie im Theme: verschickt wird nur die Nummer
+const COLS = ["#ff5a6e", "#ff8f4d", "#ffc23d", "#4fd68c", "#2fd0c8", "#4aa8ff", "#7b8cff", "#b583ff", "#ff7ad1", "#c9d2e3"];
+const myCol = () => {
+  const v = store("mlCol"), n = v == null || v === "" ? -1 : Number(v);
+  // noch keine gewählt: eine feste aus der eigenen Kennung (dieselbe Rechnung wie im Theme)
+  return Number.isInteger(n) && n >= 0 && n < COLS.length ? n : [...myId].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7) % COLS.length;
+};
+const colDot = (c) => {
+  const d = document.createElement("i");
+  d.className = "gdot";
+  d.style.background = COLS[c] || "transparent";
+  return d;
+};
+function syncMe() {
+  const b = $("bMe"), n = (store("mlName") || "").trim();
+  b.textContent = ([...n][0] || "?").toUpperCase();
+  b.style.background = COLS[myCol()];
+  b.title = b.ariaLabel = T.pTitle;
+}
+// Name oder Farbe geändert: dem laufenden Spiel Bescheid geben
+let profT = 0;
+function tellGame() {
+  syncMe();
+  clearTimeout(profT);
+  profT = setTimeout(() => {
+    const g = cur?.g;
+    if (g && gLobby(g.k) && gIn(g)) gSure({ a: "join" });
+  }, 400);
+}
+function swatches(box) {
+  box.textContent = "";
+  COLS.forEach((hex, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "swb";
+    b.dataset.c = String(i);
+    b.style.background = hex;
+    b.setAttribute("aria-label", T.pCol + " " + (i + 1));
+    b.setAttribute("aria-pressed", String(i === myCol()));
+    b.onclick = (e) => {
+      e.stopPropagation();
+      store("mlCol", String(i));
+      document.querySelectorAll(".sw .swb").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.c === String(i))));
+      tellGame();
+    };
+    box.append(b);
+  });
+}
+function openProf() {
+  $("pTitle").textContent = T.pTitle;
+  $("pHint").textContent = T.pHint;
+  $("pOk").textContent = T.pOk;
+  $("pName").placeholder = T.wName;
+  $("pName").value = store("mlName") || "";
+  swatches($("pSw"));
+  $("prof").hidden = false;
+}
+function closeProf() {
+  store("mlName", $("pName").value.trim().slice(0, 20));
+  // die Farbe steht jetzt fest, auch wenn keine angetippt wurde
+  store("mlCol", String(myCol()));
+  store("mlProf", "1");
+  $("prof").hidden = true;
+  $("wName").value = store("mlName");
+  gKey = "";
+  if (cur?.g) drawGame(cur.g);
+  tellGame();
+}
+$("prof").addEventListener("click", (e) => e.stopPropagation());
+$("pOk").onclick = closeProf;
+$("pName").onkeydown = (e) => e.key === "Enter" && closeProf();
+$("bMe").onclick = (e) => {
+  e.stopPropagation();
+  openProf();
+};
+let profAsked = false;
 const voted = new Set();
 let lastWish = 0, wishKey = "";
 // Einmalige Meldungen: zweimal nachgeschickt (ein Relay kann verlieren), ohne Verbindung wartet die Meldung
@@ -749,7 +849,8 @@ function songRow(w, by) {
   }
   const d = document.createElement("div"), b = document.createElement("b"), sm = document.createElement("small");
   b.textContent = w.t;
-  sm.textContent = w.a + (by ? " · " + by : "");
+  sm.textContent = w.a + (by ? " · " : "");
+  if (by) sm.append(colDot(w.c), by);
   d.append(b, sm);
   out.push(d);
   return out;
@@ -817,10 +918,11 @@ function showResults(s) {
 async function wish(w, li) {
   if (Date.now() - lastWish < 45000) return ($("wMsg").textContent = T.wWait);
   const n = $("wName").value.trim();
-  if (!(await sendUp({ k: "wish", i: w.i, n }))) return ($("wMsg").textContent = T.net[1]);
+  if (!(await sendUp({ k: "wish", i: w.i, n, c: myCol() }))) return ($("wMsg").textContent = T.net[1]);
   lastWish = Date.now();
   myWishes.set("spotify:track:" + w.i, w.t || "");
   store("mlName", n);
+  syncMe();
   li.classList.add("picked");
   $("wMsg").textContent = T.wSent;
   setTimeout(() => {
@@ -1195,9 +1297,9 @@ const gName = () => (store("mlName") || "").slice(0, 20);
 // Einmalige Meldungen (Antwort, Tipp, Beitritt): notfalls mehrfach und nach dem Wiederverbinden. Der PC zählt jede nur einmal.
 const gSure = (o) => {
   if (!conns.size) showNote("", T.gNoConn, 3000);
-  return sendSure({ k: "gm", n: gName(), ...o });
+  return sendSure({ k: "gm", n: gName(), c: myCol(), ...o });
 };
-const gSend = (o) => sendUp({ k: "gm", n: gName(), ...o });
+const gSend = (o) => sendUp({ k: "gm", n: gName(), c: myCol(), ...o });
 // Merkt sich pro Tab die eigene Antwort: ein Neuladen mitten in der Runde vergisst sie nicht
 const gMem = (k, v) => {
   try {
@@ -1206,6 +1308,25 @@ const gMem = (k, v) => {
   } catch {}
   return v;
 };
+// Spiele mit Warteraum (die anderen laufen für alle, ohne Anmeldung)
+const gLobby = (k) => !WHEELS.has(k) && k !== "alarm" && k !== "sing";
+// Bin ich in diesem Spiel? Gemerkt im Tab, sonst weiß es der PC: er führt meinen Stand (auch nach Neuladen oder neuem Tab)
+const gIn = (g) => gMem("j" + g.id) === "1" || (!!g.sc && me in g.sc);
+// Name und Farbe direkt im Spiel
+function gWho(box) {
+  const inp = gEl("input");
+  inp.placeholder = T.wName;
+  inp.maxLength = 20;
+  inp.value = gName();
+  inp.oninput = () => {
+    store("mlName", inp.value.trim());
+    tellGame();
+  };
+  inp.onclick = (e) => e.stopPropagation();
+  const sw = gEl("div", null, "sw");
+  swatches(sw);
+  box.append(inp, sw);
+}
 const gEl = (tag, text, cls) => {
   const e = document.createElement(tag);
   if (text != null) e.textContent = text;
@@ -1311,7 +1432,11 @@ function startScoreSender() {
 function gBoard(list, box) {
   (list || []).forEach((x, i) => {
     const r = gEl("div", null, "grow");
-    r.append(gEl("i", ["🥇", "🥈", "🥉"][i] || String(i + 1)), gEl("span", x.n), gEl("b", String(x.p)));
+    r.append(gEl("i", ["🥇", "🥈", "🥉"][i] || String(i + 1)));
+    if (x.c != null) r.append(colDot(x.c));
+    r.append(gEl("span", x.n), gEl("b", String(x.p)));
+    // der eigene Stand ist hervorgehoben
+    if (x.i === me) r.classList.add("me");
     box.append(r);
   });
 }
@@ -1323,11 +1448,17 @@ function gLive(g, box) {
   if (c) c.textContent = g.end ? gLeft(g.end) : "";
   const chips = box.querySelector(".gchips");
   if (chips) {
-    const now = (g.names || []).join("|");
+    // neues Theme: Namen mit Farbe; altes Theme: nur die Namen
+    const list = g.pl || (g.names || []).map((n) => ({ n })), now = list.map((x) => x.n + (x.c ?? "")).join("|");
     if (chips.dataset.now !== now) {
       chips.dataset.now = now;
       chips.textContent = "";
-      (g.names || []).forEach((n) => chips.append(gEl("span", n)));
+      list.forEach((x) => {
+        const s = gEl("span");
+        if (x.c != null) s.append(colDot(x.c));
+        s.append(String(x.n ?? ""));
+        chips.append(s);
+      });
     }
   }
   if (g.k === "battle") {
@@ -1357,11 +1488,16 @@ function drawGame(g) {
     gOut = false;
     gEarly = "";
     gBeatScore = gBeatSent = gBeatPrev = gBeatRun = gTaps = 0;
+    // neu geladen mitten im Spiel: mit dem Stand weiter, den der PC für mich führt
+    const had = g.sc?.[me] || 0;
+    if (g.k === "taps") gTaps = gBeatSent = had;
+    if (g.k === "beat") gBeatScore = gBeatSent = had;
   }
   if (g.out?.includes(me)) gOut = true;
   box.hidden = false;
   const isH = g.h === me;
-  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || ""].join("|");
+  const late = gLobby(g.k) && g.st !== "join" && g.st !== "end" && !gIn(g);
+  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || "", late ? "late" : ""].join("|");
   if (key === gKey) return gLive(g, box);
   gKey = key;
   gTapped = false;
@@ -1369,6 +1505,7 @@ function drawGame(g) {
   box.textContent = "";
   box.dataset.k = g.k;
   box.dataset.st = g.st || "";
+  box.dataset.late = late ? "1" : "";
   const [icon, title] = GAME[g.k] || ["🎮", () => ""];
   const head = gEl("div", null, "ghead");
   const bar = gEl("i", null, "gbar");
@@ -1391,8 +1528,25 @@ function drawGame(g) {
   head.append(snd);
   const body = gEl("div", null, "gbody");
   box.append(head, body);
-  gBuild(g, body, isH);
+  if (late) gLate(g, body);
+  else gBuild(g, body, isH);
   gLive(g, box);
+}
+// Später dazugekommen: einsteigen, ohne auf das nächste Spiel zu warten
+function gLate(g, box) {
+  const watch = g.k === "stop" || g.k === "bomb";
+  box.append(gEl("div", GAME[g.k]?.[0] || "🎮", "gbigic"), gEl("h2", T.gLate), gEl("p", watch ? T.gLateWatch : T.gLateHint));
+  gWho(box);
+  const b = gEl("button", T.gLateJoin, "go");
+  b.onclick = gTap(() => {
+    if (g.k === "battle") startMotion();
+    gMem("j" + g.id, "1");
+    gSure({ a: "join" });
+    haptic([[0.7, 40]]);
+    gKey = "";
+    if (cur?.g) drawGame(cur.g);
+  });
+  box.append(b);
 }
 function gBuild(g, box, isH) {
   const pts = g.sc?.[me] || 0;
@@ -1416,12 +1570,7 @@ function gBuild(g, box, isH) {
   if (g.st === "join") {
     const joined = gMem("j" + g.id) === "1";
     box.append(gEl("div", GAME[g.k]?.[0] || "🎮", "gbigic"), gEl("h2", T.gJoinAny));
-    const inp = gEl("input");
-    inp.placeholder = T.wName;
-    inp.maxLength = 20;
-    inp.value = gName();
-    inp.oninput = () => store("mlName", inp.value.trim());
-    inp.onclick = (e) => e.stopPropagation();
+    gWho(box);
     const b = gEl("button", joined ? T.gJoined : T.gJoin, "go");
     b.disabled = joined;
     b.onclick = gTap(() => {
@@ -1432,7 +1581,7 @@ function gBuild(g, box, isH) {
       b.disabled = true;
       haptic([[0.7, 40]]);
     });
-    box.append(inp, b, gEl("div", null, "gchips"));
+    box.append(b, gEl("div", null, "gchips"));
     return;
   }
   if (WHEELS.has(g.k)) {

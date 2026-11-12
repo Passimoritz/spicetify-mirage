@@ -95,21 +95,25 @@ const nowItem = () => S.Player.data?.item || null;
 const nowUri = () => nowItem()?.uri || "";
 
 /* ---- Spielstand */
-function player(id, n) {
+function player(id, n, c) {
   let p = G.players.get(id);
   if (!p) {
-    p = { id, n: "", p: 0, out: false, team: 0, ans: null, e: 0, early: false };
+    p = { id, n: "", c: null, p: 0, out: false, team: 0, ans: null, e: 0, early: false };
     G.players.set(id, p);
   }
   const name = clean(n, 20);
   if (name) p.n = name;
+  if (c != null) p.c = c;
   return p;
 }
+// Farben der Gäste: dieselbe Palette wie auf dem Handy. Wer keine gewählt hat, bekommt eine feste aus seiner Kennung.
+export const GUEST_COLORS = ["#ff5a6e", "#ff8f4d", "#ffc23d", "#4fd68c", "#2fd0c8", "#4aa8ff", "#7b8cff", "#b583ff", "#ff7ad1", "#c9d2e3"];
+const colOf = (p) => p.c ?? [...p.id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7) % GUEST_COLORS.length;
 const short = (id) => id.slice(-6);
 const nameOf = (p) => p.n || `${t("rankGuest")} ${p.id.slice(-2).toUpperCase()}`;
 const all = () => [...G.players.values()];
 const alive = () => all().filter((p) => !p.out);
-const top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p) }));
+const top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p), c: colOf(p), i: short(p.id) }));
 // Der Rückruf des zuletzt gestellten Weckers ist zugleich „Runde überspringen“
 const after = (ms, fn) => {
   G.lastFn = fn;
@@ -135,7 +139,7 @@ function publish() {
   // das Cover beim Rätsel bleibt auf dem großen Bild
   const pub = { ...G.view };
   delete pub.cov;
-  live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf) });
+  live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf), pl: all().slice(0, 16).map((p) => ({ i: short(p.id), n: nameOf(p), c: colOf(p) })) });
 }
 function show(view) {
   if (view.end && !view.dur) view.dur = view.end - Date.now();
@@ -731,7 +735,7 @@ function fastRound() {
       after(3500, () => {
         const list = all().filter((x) => x.ans && !x.early).sort((a, b) => a.ans.ms - b.ans.ms);
         list.forEach((x, i) => (x.p += FAST_PTS[i] ?? 10));
-        show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((x) => ({ n: nameOf(x), ms: x.ans.ms })) });
+        show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((x) => ({ n: nameOf(x), ms: x.ans.ms, c: colOf(x) })) });
         after(Math.min(5000, breakMs()), fastRound);
       });
     };
@@ -945,7 +949,7 @@ window.addEventListener("mirage:game", (e) => {
   if (!G) return;
   const m = e.detail, v = G.view;
   if (!m?.id || !v) return;
-  const fresh = !G.players.has(m.id), p = player(m.id, m.n);
+  const fresh = !G.players.has(m.id), p = player(m.id, m.n, m.c);
   if (fresh && v.st === "join") sfx.pop();
   if (fresh && v.st !== "join") {
     // spät dazugekommen: bei Ausscheide-Spielen nur zuschauen, beim Battle ins kleinere Team
@@ -988,8 +992,9 @@ window.addEventListener("mirage:game", (e) => {
     return;
   }
   if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
-  if (G.k === "beat" && m.a === "sc" && v.st === "go") p.p = Math.max(0, Math.min(9999, Number(m.v) || 0));
-  if (G.k === "taps" && m.a === "sc") p.p = Math.max(0, Math.min(400, Number(m.v) || 0));
+  // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen
+  if (G.k === "beat" && m.a === "sc" && v.st === "go") p.p = Math.max(p.p, Math.min(9999, Number(m.v) || 0));
+  if (G.k === "taps" && m.a === "sc") p.p = Math.max(p.p, Math.min(400, Number(m.v) || 0));
   if (G.k === "bomb" && m.a === "pass" && v.st === "go" && p === G.holder && m.v === G.seq) {
     const rest = alive().filter((x) => x !== p);
     if (rest.length) {
@@ -1102,7 +1107,7 @@ function build(v) {
     if (v.st === "go") box.append(div("m-g-big is-hot m-g-pop", t("gFastGo")));
     if (v.st === "res") {
       const b = div("m-g-board");
-      (v.win || []).forEach((x, i) => b.append(row(["🥇", "🥈", "🥉"][i], x.n, x.ms + " ms")));
+      (v.win || []).forEach((x, i) => b.append(row(["🥇", "🥈", "🥉"][i], x.n, x.ms + " ms", x.c)));
       box.append(b);
     }
   } else if (G.k === "battle") {
@@ -1122,14 +1127,27 @@ function build(v) {
     box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? 0)));
   }
 }
-function row(rank, name, val) {
+// Farbpunkt eines Gastes: an Namen und Ständen sieht man, wer wer ist
+const dot = (c) => {
+  const d = div("m-g-dot");
+  d.style.background = GUEST_COLORS[c] || "transparent";
+  return d;
+};
+const chip = (p, cls = "") => {
+  const c = div("m-g-chip" + cls);
+  c.append(dot(colOf(p)), div("m-g-cn", nameOf(p)));
+  return c;
+};
+function row(rank, name, val, col) {
   const r = div("m-g-row");
-  r.append(div("m-g-rk", rank), div("m-g-nm", name), div("m-g-pt", val));
+  r.append(div("m-g-rk", rank));
+  if (col != null) r.append(dot(col));
+  r.append(div("m-g-nm", name), div("m-g-pt", val));
   return r;
 }
 function board(list) {
   const d = div("m-g-board");
-  (list || []).slice(0, 5).forEach((x, i) => d.append(row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p))));
+  (list || []).slice(0, 5).forEach((x, i) => d.append(row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p), x.c)));
   return d;
 }
 function buildJoin() {
@@ -1143,7 +1161,8 @@ function buildJoin() {
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
     wrap.prepend(img);
   };
-  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-chips"));
+  // wer schon da ist: Zahl, Namen in ihrer Farbe, und was noch fehlt
+  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
   const go = document.createElement("button");
   go.type = "button";
   go.className = "m-g-go";
@@ -1229,8 +1248,9 @@ function buildEnd(v) {
   for (const i of [1, 0, 2]) {
     const x = list[i];
     if (!x) continue;
-    const col = div(`m-g-pod is-p${i}`);
-    col.append(div("m-g-medal", ["🥇", "🥈", "🥉"][i]), div("m-g-pname", x.n), div("m-g-ppts", String(x.p)), div("m-g-pbar"));
+    const col = div(`m-g-pod is-p${i}`), name = div("m-g-pname");
+    name.append(dot(x.c), div("m-g-cn", x.n));
+    col.append(div("m-g-medal", ["🥇", "🥈", "🥉"][i]), name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
     pod.append(col);
   }
   if (list.length) box.append(pod);
@@ -1241,21 +1261,25 @@ function update(v) {
   if (v.st === "join") {
     const chips = box.querySelector(".m-g-chips");
     if (chips) {
-      const names = all().map(nameOf), now = names.join("|");
+      const list = all(), now = list.map((p) => nameOf(p) + colOf(p)).join("|");
       if (chips.dataset.now !== now) {
         chips.dataset.now = now;
         chips.textContent = "";
-        names.slice(0, 16).forEach((n) => chips.append(div("m-g-chip", n)));
+        list.slice(0, 24).forEach((p) => chips.append(chip(p)));
+        if (list.length > 24) chips.append(div("m-g-more", "+" + (list.length - 24)));
+        const need = (MIN[G.k] || 0) - list.length, count = box.querySelector(".m-g-jcount");
+        count.textContent = (list.length ? t("gLobbyIn").replace("{n}", list.length) : t("gLobbyNone")) + (need > 0 ? " · " + t("gLobbyNeed").replace("{n}", need) : "");
+        count.classList.toggle("is-short", need > 0);
       }
     }
   }
   const who = box.querySelector(".m-g-who");
   if (who) {
-    const now = all().map((p) => nameOf(p) + (p.ans ? "+" : "")).join("|");
+    const now = all().map((p) => nameOf(p) + colOf(p) + (p.ans ? "+" : "")).join("|");
     if (who.dataset.now !== now) {
       who.dataset.now = now;
       who.textContent = "";
-      all().slice(0, 20).forEach((p) => who.append(div("m-g-chip" + (p.ans ? " is-on" : ""), nameOf(p))));
+      all().slice(0, 20).forEach((p) => who.append(chip(p, p.ans ? " is-on" : "")));
     }
   }
   const eq = box.querySelector(".m-g-eq");
@@ -1282,7 +1306,7 @@ function update(v) {
       const list = top(), most = Math.max(1, ...list.map((x) => x.p));
       b.textContent = "";
       list.forEach((x, i) => {
-        const r = row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p));
+        const r = row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p), x.c);
         r.classList.add("has-bar");
         r.style.setProperty("--w", Math.round((x.p / most) * 100) + "%");
         b.append(r);
