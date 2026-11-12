@@ -72,6 +72,10 @@ const DEFAULTS = {
   control: true,
   // Licht im Raum (Party-Modus)
   lightBright: 100,
+  // Obergrenze in Prozent: heller wird keine Lampe
+  lightMax: 100,
+  // von der Show ausgenommen: Hue-Lampen („7“) und -Räume („g3“), HA-Lichter, OpenRGB-Geräte (Namensteil)
+  hueExclude: "", haExclude: "", orgbExclude: "",
   hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
@@ -1115,7 +1119,7 @@ function update(patch) {
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
   if ("control" in patch) cfg.control === false ? stopControl() : startControl();
-  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities"].some((k) => k in patch)) {
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude"].some((k) => k in patch)) {
     lights.sync();
     resubscribe();
   }
@@ -1245,6 +1249,7 @@ ipcMain.handle("huePair", async (_e, ip) => {
   return r.user ? { ok: true } : { error: r.error };
 });
 ipcMain.handle("hueGroups", () => lights.hueGroups());
+ipcMain.handle("hueLights", () => lights.hueLights());
 ipcMain.handle("goveeScan", async () => {
   const r = await lights.goveeScan();
   if (r.list?.length) update({ goveeIps: r.list.map((d) => d.ip).join(", "), goveeOn: true });
@@ -1267,9 +1272,15 @@ ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 &
 app.on("second-instance", openSettings);
 app.on("activate", openSettings); // MAC: erneutes Öffnen aus Finder/Launchpad
 app.on("window-all-closed", () => {}); // im Infobereich weiterlaufen
-app.on("before-quit", () => {
-  lights.stopAll();
+// Beim Beenden bekommen die Lampen ihren Zustand von vor der Party zurück. Das sind Netzaufrufe: kurz
+// darauf warten (höchstens 3 s), sonst ist der Prozess weg, bevor sie ankommen.
+let quitReady = false;
+app.on("before-quit", (e) => {
   cast.stopAll();
+  if (quitReady) return;
+  e.preventDefault();
+  quitReady = true;
+  Promise.race([lights.stopAll(), new Promise((r) => setTimeout(r, 3000))]).finally(() => app.quit());
 });
 app.on("before-quit", () => busyProc?.kill());
 app.whenReady().then(() => {

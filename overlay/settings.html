@@ -128,6 +128,11 @@
   .lrow input[type="text"], .lrow input[type="number"], .lrow select { height: 34px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--glass); color: inherit; font: inherit; }
   .lrow input[type="text"] { flex: 1; min-width: 0; }
   .lrow input[type="number"] { width: 84px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+  .chips label { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--glass); font-size: 13px; cursor: pointer; }
+  .chips label.room { font-weight: 700; }
+  .chips input { accent-color: var(--a); margin: 0; }
+  .chips:empty { display: none; }
   .hist { display: grid; gap: 6px; margin-top: 4px; }
   .hist button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; border: 0; border-radius: 12px; background: var(--glass); color: inherit; font: inherit; text-align: left; cursor: pointer; }
   .hist button:hover { background: var(--line); }
@@ -226,9 +231,11 @@
     <p class="lhint" data-t="lightsHint"></p>
     <p class="lhint" id="secretsPlain" data-t="secretsPlain" role="note" hidden></p>
     <div class="row"><div><b data-t="lightBright"></b></div><input type="range" min="20" max="100" step="5" id="lightBright"></div>
+    <div class="row"><div><b data-t="lightMax"></b><small data-t="lightMaxHint"></small></div><input type="range" min="10" max="100" step="5" id="lightMax"></div>
     <div class="row"><div><b>Philips Hue</b><small id="hueState"></small></div><input type="checkbox" class="toggle" data-key="hueOn"></div>
     <div class="row lrow"><input type="text" id="hueIp" placeholder="192.168.1.20" inputmode="decimal" autocomplete="off"><button type="button" class="btn" id="hueFind" data-t="hueFind"></button><button type="button" class="btn" id="huePair" data-t="huePair"></button></div>
     <div class="row lrow" id="hueGroupRow" hidden><div><b data-t="hueRoom"></b></div><select id="hueGroup"></select></div>
+    <div class="row lrow" id="huePartRow" hidden><div><b data-t="lightsPart"></b></div><div class="chips" id="hueLights"></div></div>
     <div class="row"><div><b>WLED</b><small data-t="wledHint"></small></div><input type="checkbox" class="toggle" data-key="wledOn"></div>
     <div class="row lrow"><input type="text" id="wledIp" placeholder="192.168.1.40" autocomplete="off"><input type="number" id="wledLeds" min="1" max="490" step="1"><small data-t="wledLeds"></small></div>
     <div class="row"><div><b>Govee</b><small id="goveeState" data-t="goveeHint"></small></div><input type="checkbox" class="toggle" data-key="goveeOn"></div>
@@ -236,8 +243,11 @@
     <div class="row"><div><b>Home Assistant</b><small id="haState" data-t="haHint"></small></div><input type="checkbox" class="toggle" data-key="haOn"></div>
     <div class="row lrow"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false"><input type="password" id="haToken" autocomplete="off" spellcheck="false"><button type="button" class="btn" id="haTest" data-t="haTest"></button></div>
     <div class="row lrow"><input type="text" id="haEntities" autocomplete="off" spellcheck="false"></div>
+    <div class="row lrow" id="haPartRow" hidden><div><b data-t="lightsPart"></b></div><div class="chips" id="haLights"></div></div>
     <div class="row"><div><b>OpenRGB</b><small data-t="orgbHint"></small></div><input type="checkbox" class="toggle" data-key="orgbOn"></div>
+    <div class="row lrow"><input type="text" id="orgbExclude" autocomplete="off" spellcheck="false"></div>
     <div class="row"><div><b>Razer Chroma</b><small data-t="chromaHint"></small></div><input type="checkbox" class="toggle" data-key="chromaOn"></div>
+    <p class="lhint" data-t="lightsRestore"></p>
   </section>
 
   <section id="histSec" hidden>
@@ -303,11 +313,12 @@
     $("#obsHint").textContent = t("obsHint").replace("{w}", Math.round(780 * s)).replace("{h}", Math.round(420 * s));
     $("#obsUrlRow").hidden = !cfg.obs;
     $("#obsPartyRow").hidden = !cfg.obs;
-    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["goveeIps", "goveeIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
+    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["lightMax", "lightMax"], ["goveeIps", "goveeIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"], ["orgbExclude", "orgbExclude"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
     if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
     $("#secretsPlain").hidden = !cfg.secretsPlain;
     $("#haToken").placeholder = cfg.haToken ? t("haTokenSet") : t("haToken");
     if (!$("#haEntities").placeholder) $("#haEntities").placeholder = t("haEntities");
+    if (!$("#orgbExclude").placeholder) $("#orgbExclude").placeholder = t("orgbExclude");
     renderUpd();
   }
 
@@ -423,6 +434,28 @@
     $("#haToken").value = "";
   };
   setText("haEntities", "haEntities");
+  setText("orgbExclude", "orgbExclude");
+  // Lampen von der Show ausnehmen: ein Häkchen je Lampe (an = macht mit); gespeichert wird die Liste der
+  // ausgenommenen. items: { token, name, room }
+  function drawPart(box, row, key, items) {
+    const out = new Set(String(cfg[key] || "").split(/[\s,;]+/).filter(Boolean));
+    $(box).replaceChildren(...items.map((it) => {
+      const l = document.createElement("label"), c = Object.assign(document.createElement("input"), { type: "checkbox", checked: !out.has(it.token) });
+      if (it.room) l.className = "room";
+      c.onchange = () => {
+        c.checked ? out.delete(it.token) : out.add(it.token);
+        cfg[key] = [...out].join(", ");
+        mirage.send("set", { [key]: cfg[key] });
+      };
+      l.append(c, it.name);
+      return l;
+    }));
+    $(row).hidden = !items.length;
+  }
+  async function loadHueLights() {
+    const r = await mirage.invoke("hueLights");
+    drawPart("#hueLights", "#huePartRow", "hueExclude", [...(r?.rooms || []).map((x) => ({ token: "g" + x.id, name: x.name, room: true })), ...(r?.lights || []).map((x) => ({ token: x.id, name: x.name }))]);
+  }
   $("#goveeScan").onclick = async () => {
     $("#goveeState").textContent = t("goveeSearching");
     const r = await mirage.invoke("goveeScan");
@@ -434,10 +467,16 @@
     if (r?.lights) {
       $("#haState").textContent = t("haOk").replace("{n}", r.lights.length);
       if (!$("#haEntities").value.trim()) $("#haEntities").placeholder = r.lights.slice(0, 6).map((l) => l.id).join(", ") + (r.lights.length > 6 ? ", …" : "");
+      drawPart("#haLights", "#haPartRow", "haExclude", r.lights.map((l) => ({ token: l.id, name: l.name })));
     } else $("#haState").textContent = t({ url: "haBadUrl", token: "haBadToken" }[r?.error] || "haFail");
   };
   $("#lightBright").oninput = () => mirage.send("set", { lightBright: Number($("#lightBright").value) });
-  $("#hueGroup").onchange = () => mirage.send("set", { hueGroup: $("#hueGroup").value });
+  $("#lightMax").oninput = () => mirage.send("set", { lightMax: Number($("#lightMax").value) });
+  $("#hueGroup").onchange = () => {
+    cfg.hueGroup = $("#hueGroup").value;
+    mirage.send("set", { hueGroup: cfg.hueGroup });
+    loadHueLights();
+  };
   $("#hueFind").onclick = async () => {
     $("#hueState").textContent = t("hueSearching");
     const ips = await mirage.invoke("hueFind");
@@ -451,14 +490,21 @@
     $("#hueState").textContent = t("huePairing");
     const r = await mirage.invoke("huePair", $("#hueIp").value);
     $("#hueState").textContent = r?.ok ? t("huePaired") : r?.error === "button" ? t("hueButton") : t("hueUnreachable");
-    if (r?.ok) loadGroups();
+    if (r?.ok) loadGroups(true);
   };
-  async function loadGroups() {
+  // fresh: gerade gekoppelt – dann mit dem ersten Raum anfangen statt gleich mit dem ganzen Haus
+  async function loadGroups(fresh) {
     const g = await mirage.invoke("hueGroups");
     if (!g?.length) return;
-    $("#hueGroup").replaceChildren(...g.map((x) => Object.assign(document.createElement("option"), { value: x.id, textContent: `${x.name} (${x.n})`, selected: x.id === cfg.hueGroup })));
+    // „alle Lampen“ (Gruppe 0) steht mit zur Wahl: dort lassen sich dann ganze Räume ausnehmen
+    const all = [{ id: "0", name: t("hueAll") }, ...g];
+    if (fresh || !all.some((x) => x.id === cfg.hueGroup)) {
+      cfg.hueGroup = g[0].id;
+      mirage.send("set", { hueGroup: g[0].id });
+    }
+    $("#hueGroup").replaceChildren(...all.map((x) => Object.assign(document.createElement("option"), { value: x.id, textContent: x.n ? `${x.name} (${x.n})` : x.name, selected: x.id === cfg.hueGroup })));
     $("#hueGroupRow").hidden = false;
-    if (!g.some((x) => x.id === cfg.hueGroup)) mirage.send("set", { hueGroup: g[0].id });
+    loadHueLights();
   }
   // Einstellungen umziehen: Datei-Dialoge laufen im Hauptprozess, hier nur das Ergebnis als kurze Meldung
   function moveResult(r, okKey) {

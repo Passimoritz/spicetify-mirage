@@ -44,6 +44,8 @@ function call(method, url, body, timeout = 2500, headers = {}) {
 // Home Assistant: Adresse wie http://homeassistant.local:8123 (ohne Pfad), Token = „langlebiges Zugriffstoken“
 const haBaseOk = (s) => /^https?:\/\/[a-z0-9.-]+(:\d{1,5})?$/i.test(String(s || ""));
 const haTokenOk = (s) => /^[\w.-]{20,600}$/.test(String(s || ""));
+// Listen aus den Einstellungen: „a, b; c“ → ["a", "b", "c"]
+const listOf = (s, sep = /[\s,;]+/) => String(s || "").split(sep).map((x) => x.trim()).filter(Boolean);
 const validIp = (s) => /^(\d{1,3}\.){3}\d{1,3}(:\d{1,5})?$|^[a-z0-9-]+(\.[a-z0-9-]+)*\.local$/i.test(String(s || ""));
 
 // RGB → Hue-Farbort (CIE xy, Gamut der Hue-Lampen grob genug)
@@ -55,24 +57,53 @@ function toXy([r, g, b]) {
   return [+(X / s).toFixed(4), +(Y / s).toFixed(4)];
 }
 
-function createLights(getCfg, log = () => {}) {
+// opts.wledHttpPort: nur für Tests (WLED-JSON-API auf einem anderen Port als 80)
+function createLights(getCfg, log = () => {}, opts = {}) {
   let st = null, beat = 0, kick = 0, lastAt = 0, idleT = 0;
   const pal = () => (Array.isArray(st?.pal) && st.pal.length === 3 ? st.pal : [[155, 107, 240], [34, 73, 231], [217, 188, 241]]);
   const bright = () => clamp((getCfg().lightBright ?? 100) / 100, 0.1, 1);
+  // Obergrenze: heller als das wird keine Lampe, egal was die Musik macht (lightBright dimmt alles,
+  // lightMax schneidet nur die Spitzen ab)
+  const cap = () => clamp((getCfg().lightMax ?? 100) / 100, 0.05, 1);
   // Helligkeit 0..1: Grundlicht mit der Energie, Kick und Akzent obendrauf, Drop = voll
-  const level = () => clamp(0.18 + 0.32 * (st?.e || 0) + 0.5 * Math.max(st?.k || 0, (st?.a || 0) * 0.8) + (st?.d > 0.85 ? 0.4 : 0), 0, 1) * bright();
+  const level = () => Math.min(cap(), clamp(0.18 + 0.32 * (st?.e || 0) + 0.5 * Math.max(st?.k || 0, (st?.a || 0) * 0.8) + (st?.d > 0.85 ? 0.4 : 0), 0, 1) * bright());
 
   /* ---- WLED: UDP-Echtzeit (DRGB), der Streifen fällt nach 2 s ohne Daten selbst in sein Programm zurück */
   const wled = {
-    sock: null, at: 0,
+    sock: null, at: 0, saved: null, asked: false,
+    // JSON-API des Streifens (Port 80; die Portangabe hinter der Adresse gilt nur für UDP)
+    http(ip) {
+      return `http://${String(ip).split(":")[0]}${opts.wledHttpPort ? ":" + opts.wledHttpPort : ""}/json/state`;
+    },
     start() {
-      if (this.sock) return;
-      this.sock = dgram.createSocket("udp4");
-      this.sock.on("error", () => this.stop());
+      if (!this.sock) {
+        this.sock = dgram.createSocket("udp4");
+        this.sock.on("error", () => this.stop());
+      }
+      if (!this.asked) this.capture();
+    },
+    // vorher-Zustand merken (an/aus, Helligkeit). Farben und Effekt kehren von selbst zurück, sobald keine
+    // Echtzeitdaten mehr kommen. Ein ausgeschalteter Streifen zeigt Echtzeitdaten nicht – für die Party an.
+    async capture() {
+      const ip = getCfg().wledIp;
+      if (!validIp(ip)) return;
+      this.asked = true;
+      const s = await call("GET", this.http(ip), null, 1500);
+      // inzwischen schon wieder vorbei (asked zurückgesetzt): nichts mehr merken oder einschalten
+      if (!this.asked || !s || typeof s.on !== "boolean") return;
+      this.saved = { ip, on: s.on, bri: Number(s.bri) || 0 };
+      if (!s.on) await call("POST", this.http(ip), { on: true }, 1500);
     },
     stop() {
       try { this.sock?.close(); } catch {}
       this.sock = null;
+    },
+    async restore() {
+      const s = this.saved;
+      this.saved = null;
+      this.asked = false;
+      this.stop();
+      if (s) await call("POST", this.http(s.ip), s.bri ? { on: s.on, bri: s.bri } : { on: s.on }, 1500);
     },
     frame(now) {
       const c = getCfg();
@@ -101,21 +132,37 @@ function createLights(getCfg, log = () => {}) {
 
   /* ---- Philips Hue (Bridge, REST v1): auf jedem Schlag wechselt reihum eine Lampe die Farbe */
   const hue = {
-    lights: [], next: 0, busy: false, saved: null, groupAt: 0, loading: false,
+    lights: [], next: 0, busy: false, saved: null, loading: false, retryAt: 0, gen: 0,
     base() {
       const c = getCfg();
       return validIp(c.hueIp) && /^[\w-]{10,64}$/.test(c.hueUser || "") ? `http://${c.hueIp}/api/${c.hueUser}` : "";
     },
     async load() {
-      const b = this.base(), g = getCfg().hueGroup || "0";
-      if (!b || this.loading) return;
+      const b = this.base(), c = getCfg(), g = c.hueGroup || "0", gen = this.gen;
+      // leerer Raum oder alles ausgenommen: nicht bei jedem Schlag neu fragen
+      if (!b || this.loading || Date.now() < this.retryAt) return;
       this.loading = true;
       const grp = await call("GET", `${b}/groups/${encodeURIComponent(g)}`);
-      this.lights = Array.isArray(grp?.lights) ? grp.lights.slice(0, 12) : [];
-      // vorher-Zustand merken, um ihn nach der Party wiederherzustellen
+      // ausgenommen: einzelne Lampen („7“) und ganze Räume/Zonen („g3“)
+      const ex = listOf(c.hueExclude), out = new Set(ex.filter((x) => /^\d+$/.test(x)));
+      const rooms = ex.filter((x) => /^g\d+$/.test(x)).map((x) => x.slice(1));
+      if (rooms.length) {
+        const groups = await call("GET", `${b}/groups`);
+        for (const r of rooms) for (const id of Array.isArray(groups?.[r]?.lights) ? groups[r].lights : []) out.add(String(id));
+      }
+      const lights = (Array.isArray(grp?.lights) ? grp.lights.map(String) : []).filter((id) => !out.has(id)).slice(0, 12);
       const all = await call("GET", `${b}/lights`);
-      this.saved = all && typeof all === "object" ? Object.fromEntries(this.lights.map((id) => [id, all[id]?.state]).filter(([, s]) => s)) : null;
       this.loading = false;
+      // die Party ist inzwischen vorbei (restore lief): nichts mehr übernehmen
+      if (gen !== this.gen) return;
+      // vorher-Zustand merken, um ihn nach der Party wiederherzustellen – je Lampe nur einmal: wird mitten
+      // in der Party neu geladen (Einstellung geändert), leuchtet sie schon in Partyfarben
+      if (all && typeof all === "object") {
+        this.saved ||= {};
+        for (const id of lights) if (!(id in this.saved) && all[id]?.state) this.saved[id] = all[id].state;
+      }
+      this.lights = lights;
+      this.retryAt = lights.length ? 0 : Date.now() + 5000;
     },
     async send(path, body) {
       const b = this.base();
@@ -129,12 +176,14 @@ function createLights(getCfg, log = () => {}) {
       if (!this.lights.length) return void this.load();
       const p = pal(), id = this.lights[this.next++ % this.lights.length];
       const drop = st?.d > 0.85;
-      this.send(`/lights/${id}/state`, { on: true, xy: toXy(drop ? [255, 255, 255] : p[this.next % 3]), bri: Math.round(40 + 214 * level()), transitiontime: 1 });
+      this.send(`/lights/${id}/state`, { on: true, xy: toXy(drop ? [255, 255, 255] : p[this.next % 3]), bri: Math.max(1, Math.round(Math.min(254 * cap(), 40 + 214 * level()))), transitiontime: 1 });
     },
     async restore() {
       const b = this.base(), saved = this.saved;
       this.saved = null;
       this.lights = [];
+      this.retryAt = 0;
+      this.gen++;
       if (!b || !saved) return;
       for (const [id, s] of Object.entries(saved)) {
         const body = { on: !!s.on, bri: s.bri, transitiontime: 10 };
@@ -159,7 +208,9 @@ function createLights(getCfg, log = () => {}) {
         this.devices = [];
         for (let i = 0; i < Math.min(n, 16); i++) {
           const d = await c.getControllerData(i);
-          this.devices.push({ id: i, leds: d?.colors?.length || d?.leds?.length || 0 });
+          // Farben vor der Party merken (nur die Farben – einen laufenden Effekt kann das SDK nicht zurückholen)
+          const saved = Array.isArray(d?.colors) && d.colors.length ? d.colors.map((x) => ({ red: x.red, green: x.green, blue: x.blue })) : null;
+          this.devices.push({ id: i, leds: d?.colors?.length || d?.leds?.length || 0, name: String(d?.name || "").toLowerCase(), saved });
         }
         c.on?.("disconnect", () => this.stop(true));
         this.client = c;
@@ -169,6 +220,10 @@ function createLights(getCfg, log = () => {}) {
       this.connecting = false;
     },
     stop(retry) {
+      // normales Ende (kein Verbindungsabbruch): die gemerkten Farben zurückschreiben
+      if (this.client && !retry) for (const d of this.devices) {
+        try { if (d.saved) this.client.updateLeds(d.id, d.saved); } catch {}
+      }
       try { this.client?.disconnect(); } catch {}
       this.client = null;
       if (retry) this.retryAt = Date.now() + 15000;
@@ -177,8 +232,10 @@ function createLights(getCfg, log = () => {}) {
       if (!this.client || now - this.at < 50) return;
       this.at = now;
       const p = pal(), lv = level(), drop = st?.d > 0.85;
+      // ausgenommene Geräte: Teil des Namens genügt („corsair“, „ram“)
+      const skip = listOf(getCfg().orgbExclude, /[,;]+/).map((x) => x.toLowerCase());
       for (const d of this.devices) {
-        if (!d.leds) continue;
+        if (!d.leds || skip.some((x) => d.name.includes(x))) continue;
         const colors = Array.from({ length: d.leds }, (_, i) => {
           let c = p[(Math.floor(i / Math.max(1, d.leds / 3)) + beat) % 3];
           if (drop) c = c.map((v) => v + (255 - v) * 0.7);
@@ -284,7 +341,7 @@ function createLights(getCfg, log = () => {}) {
       const p = pal(), drop = st?.d > 0.85;
       let c = p[beat % 3];
       if (drop) c = c.map((v) => v + (255 - v) * 0.7);
-      const lv = Math.round(level() * 10) / 10, [r, g, b] = scale(c, Math.max(0.15, lv));
+      const lv = Math.round(level() * 10) / 10, [r, g, b] = scale(c, Math.min(cap(), Math.max(0.15, lv)));
       const key = `${r >> 3},${g >> 3},${b >> 3}`;
       if (key === this.last) return;
       this.last = key;
@@ -299,7 +356,9 @@ function createLights(getCfg, log = () => {}) {
         if (s.brightness) this.send(ip, "brightness", { value: s.brightness });
         if (s.onOff === 0) this.send(ip, "turn", { value: 0 });
       }
-      setTimeout(() => this.stop(), 400);
+      if (!saved.length) return this.stop();
+      // UDP braucht einen Moment, bevor der Socket zugeht – beim Beenden der App wird darauf gewartet
+      return new Promise((r) => setTimeout(() => r(this.stop()), 400));
     },
     // Geräte im Netz finden: Rundruf, 2 s auf Antworten warten
     async scan() {
@@ -322,7 +381,7 @@ function createLights(getCfg, log = () => {}) {
      Vor der Party merkt sich HA den Zustand als Szene, danach wird sie wiederhergestellt. Auf jedem Schlag
      wechselt reihum ein Licht die Farbe (höchstens ~5 Befehle/s, Funklampen vertragen nicht mehr). */
   const ha = {
-    list: [], next: 0, busy: false, snap: false, loading: false, lastAt: 0,
+    list: [], next: 0, busy: false, snap: false, loading: false, lastAt: 0, retryAt: 0, gen: 0,
     ok() {
       const c = getCfg();
       return haBaseOk(c.haUrl) && haTokenOk(c.haToken);
@@ -332,19 +391,27 @@ function createLights(getCfg, log = () => {}) {
       return call(method, `${c.haUrl}${path}`, body, timeout, { authorization: `Bearer ${c.haToken}` });
     },
     async entities() {
-      const want = String(getCfg().haEntities || "").split(/[\s,;]+/).filter((x) => /^light\.[\w-]+$/.test(x));
-      if (want.length) return want.slice(0, 24);
+      const c = getCfg(), out = new Set(listOf(c.haExclude));
+      const want = listOf(c.haEntities).filter((x) => /^light\.[\w-]+$/.test(x));
+      if (want.length) return want.filter((id) => !out.has(id)).slice(0, 24);
       const all = await this.req("GET", "/api/states");
-      return Array.isArray(all) ? all.map((s) => s?.entity_id).filter((id) => /^light\.[\w-]+$/.test(id || "")).slice(0, 24) : [];
+      return Array.isArray(all) ? all.map((s) => s?.entity_id).filter((id) => /^light\.[\w-]+$/.test(id || "") && !out.has(id)).slice(0, 24) : [];
     },
     async load() {
-      if (!this.ok() || this.loading) return;
+      if (!this.ok() || this.loading || Date.now() < this.retryAt) return;
+      const gen = this.gen;
       this.loading = true;
-      this.list = await this.entities();
-      if (this.list.length && !this.snap) {
-        await this.req("POST", "/api/services/scene/create", { scene_id: "mirage_before_party", snapshot_entities: this.list });
+      const list = await this.entities();
+      // die Party ist inzwischen vorbei (restore lief): nichts mehr übernehmen
+      if (gen !== this.gen) return void (this.loading = false);
+      // Schnappschuss nur einmal je Party: beim Nachladen leuchten die Lichter schon in Partyfarben
+      if (list.length && !this.snap) {
         this.snap = true;
+        await this.req("POST", "/api/services/scene/create", { scene_id: "mirage_before_party", snapshot_entities: list });
       }
+      this.list = list;
+      // nichts gefunden oder alles ausgenommen: nicht bei jedem Schlag neu fragen
+      this.retryAt = list.length ? 0 : Date.now() + 5000;
       this.loading = false;
     },
     onBeat() {
@@ -356,12 +423,14 @@ function createLights(getCfg, log = () => {}) {
       this.lastAt = now;
       const p = pal(), drop = st?.d > 0.85, id = this.list[this.next++ % this.list.length];
       const rgb = drop ? [255, 255, 255] : p[this.next % 3];
-      this.req("POST", "/api/services/light/turn_on", { entity_id: id, rgb_color: rgb, brightness: Math.round(40 + 215 * level()), transition: 0.15 }, 1500).finally(() => (this.busy = false));
+      this.req("POST", "/api/services/light/turn_on", { entity_id: id, rgb_color: rgb, brightness: Math.max(1, Math.round(Math.min(255 * cap(), 40 + 215 * level()))), transition: 0.15 }, 1500).finally(() => (this.busy = false));
     },
     async restore() {
       const had = this.snap;
       this.snap = false;
       this.list = [];
+      this.retryAt = 0;
+      this.gen++;
       if (had && this.ok()) await this.req("POST", "/api/services/scene/turn_on", { entity_id: "scene.mirage_before_party", transition: 1 });
     },
     // Einstellungen: Verbindung prüfen und die Lichter auflisten
@@ -407,29 +476,31 @@ function createLights(getCfg, log = () => {}) {
     // kommt 2,5 s nichts mehr (Party vorbei): alles freigeben, Hue in den alten Zustand
     idleT = setTimeout(idle, 2500);
   }
+  // läuft noch ein Wiederherstellen? Beim Beenden der App wartet main.js darauf (stopAll gibt es zurück)
+  let restoring = Promise.resolve();
+  const later = (...jobs) => (restoring = Promise.allSettled([restoring, ...jobs]));
   function idle() {
     clearInterval(loop);
+    clearTimeout(idleT);
     loop = 0;
     st = null;
-    wled.stop();
+    lastAt = 0;
     orgb.stop();
     chroma.stop();
-    hue.restore();
-    govee.restore();
-    ha.restore();
     log("lights idle");
+    return later(hue.restore(), wled.restore(), govee.restore(), ha.restore());
   }
   // Einstellungen geändert: Abgeschaltetes sofort freigeben
   function sync() {
     const c = getCfg();
-    if (!c.wledOn) wled.stop();
+    if (!c.wledOn) later(wled.restore());
     if (!c.orgbOn) orgb.stop();
     if (!c.chromaOn) chroma.stop();
-    if (!c.hueOn) hue.restore();
-    else hue.lights = [];
-    if (!c.goveeOn) govee.restore();
-    if (!c.haOn) ha.restore();
-    else ha.list = [];
+    if (!c.hueOn) later(hue.restore());
+    else hue.lights = [], hue.retryAt = 0;
+    if (!c.goveeOn) later(govee.restore());
+    if (!c.haOn) later(ha.restore());
+    else ha.list = [], ha.retryAt = 0;
   }
   const active = () => !!lastAt && Date.now() - lastAt < 2500;
 
@@ -452,7 +523,17 @@ function createLights(getCfg, log = () => {}) {
     return g && typeof g === "object" && !Array.isArray(g) ? Object.entries(g).filter(([, x]) => x?.lights?.length).map(([id, x]) => ({ id, name: String(x.name || id), n: x.lights.length })) : [];
   }
 
-  return { feed, sync, active, stopAll: idle, hueFind, huePair, hueGroups, goveeScan: () => govee.scan(), haTest: () => ha.test() };
+  // Einstellungen: Lampen des gewählten Raums (und bei „alle“ die Räume), um einzelne auszunehmen
+  async function hueLights() {
+    const b = hue.base(), g = getCfg().hueGroup || "0";
+    if (!b) return { lights: [], rooms: [] };
+    const [grp, all, groups] = await Promise.all([call("GET", `${b}/groups/${encodeURIComponent(g)}`), call("GET", `${b}/lights`), g === "0" ? call("GET", `${b}/groups`) : null]);
+    const lights = (Array.isArray(grp?.lights) ? grp.lights.map(String) : []).map((id) => ({ id, name: String(all?.[id]?.name || id) }));
+    const rooms = groups && typeof groups === "object" && !Array.isArray(groups) ? Object.entries(groups).filter(([, x]) => x?.lights?.length).map(([id, x]) => ({ id, name: String(x.name || id) })) : [];
+    return { lights: lights.slice(0, 60), rooms: rooms.slice(0, 30) };
+  }
+
+  return { feed, sync, active, stopAll: idle, hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test() };
 }
 
 module.exports = { createLights, toXy };
