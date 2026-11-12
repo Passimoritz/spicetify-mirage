@@ -1,7 +1,7 @@
 // Mirage Overlay – zeigt Songansagen des Spicetify-Themes Mirage außerhalb von Spotify.
 // Spotify (theme.js) verbindet sich per WebSocket auf 127.0.0.1:47321 und meldet jeden Song.
 // Läuft auf Windows, macOS und Linux; plattformabhängige Stellen sind mit WIN / MAC / LINUX markiert.
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain, nativeImage, shell, dialog, Notification, net } = require("electron");
+const { app, BrowserWindow, Tray, Menu, screen, ipcMain, nativeImage, shell, dialog, Notification, net, safeStorage } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
@@ -9,6 +9,7 @@ const http = require("http");
 const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
+const { createSecrets, SECRET } = require("./secrets.js");
 const { createCast } = require("./cast.js");
 const { make } = require("./i18n");
 
@@ -71,7 +72,13 @@ const DEFAULTS = {
   control: true,
   // Licht im Raum (Party-Modus)
   lightBright: 100,
-  hueOn: false, hueIp: "", hueUser: "", hueGroup: "0",
+  // Obergrenze in Prozent: heller wird keine Lampe
+  lightMax: 100,
+  // von der Show ausgenommen: Hue-Lampen („7“) und -Räume („g3“), HA-Lichter, OpenRGB-Geräte (Namensteil)
+  hueExclude: "", haExclude: "", orgbExclude: "",
+  // Vorlauf je Gerät in ms (Lampen hängen unterschiedlich weit hinterher); Hue je Bridge: „ip=ms, ip=ms“
+  latHue: "", latWled: 0, latGovee: 0, latHa: 0, latOrgb: 0, latChroma: 0,
+  hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
   chromaOn: false,
@@ -114,18 +121,23 @@ function remember(tr) {
 }
 const openUri = (uri) => /^spotify:track:[A-Za-z0-9]{22}$/.test(uri) && shell.openExternal(uri).catch(() => {});
 let cfg = { ...DEFAULTS };
+// Zugangsdaten liegen verschlüsselt in der Datei (secrets.js); safeStorage geht erst nach app „ready“
+const secrets = createSecrets(safeStorage);
 function load() {
   try {
     const saved = JSON.parse(fs.readFileSync(file(), "utf8"));
     // Bestandsnutzer: eine Einstellungsdatei aus der Zeit vor dem Assistenten heißt „längst eingerichtet“
     if (saved && typeof saved === "object" && !("setupDone" in saved)) saved.setupDone = true;
-    cfg = { ...DEFAULTS, ...saved };
+    const opened = secrets.open(saved);
+    cfg = { ...DEFAULTS, ...opened.cfg };
+    // Klartext aus einer älteren Version: gleich verschlüsselt zurückschreiben, das Klartextfeld verschwindet
+    if (opened.migrated) save();
   } catch {}
 }
 function save() {
   try {
     fs.mkdirSync(path.dirname(file()), { recursive: true });
-    fs.writeFileSync(file(), JSON.stringify(cfg, null, 2));
+    fs.writeFileSync(file(), JSON.stringify(secrets.seal(cfg), null, 2));
   } catch {}
 }
 
@@ -140,10 +152,10 @@ const clients = new Set();
 
 // Alles, was das Overlay-Fenster bekommt, bekommt auch eine offene OBS-Browserquelle
 // Zugangsdaten (Hue-Schlüssel, Home-Assistant-Token) bleiben im Hauptprozess: Overlay und OBS-Quellen
-// bekommen die Einstellungen ohne sie, das Einstellungsfenster nur „gesetzt / nicht gesetzt“
-const SECRET = ["hueUser", "haToken"];
+// bekommen die Einstellungen ohne sie, Einstellungsfenster und Assistent nur „gesetzt / nicht gesetzt“
 const publicCfg = (c) => Object.fromEntries(Object.entries(c).filter(([k]) => !SECRET.includes(k)));
-const settingsCfg = (c) => ({ ...c, haToken: c.haToken ? "set" : "" });
+// secretsPlain: Zugangsdaten liegen im Klartext in der Datei (kein Schlüsselbund) – die Einstellungen sagen das
+const settingsCfg = (c) => ({ ...c, ...Object.fromEntries(SECRET.map((k) => [k, c[k] ? "set" : ""])), secretsPlain: secrets.plain(c) });
 function toOverlay(ch, data) {
   if (ch === "config") data = publicCfg(data);
   overlay?.webContents.send(ch, data);
@@ -409,7 +421,11 @@ function openSettings() {
   });
   settingsWin.setMenu(null);
   settingsWin.loadFile("settings.html");
-  settingsWin.on("closed", () => (settingsWin = null));
+  settingsWin.on("closed", () => {
+    settingsWin = null;
+    // ein laufendes Einmessen der Lampen endet mit dem Fenster
+    if (lights.calibrating()) lights.stopAll();
+  });
   if (MAC) app.focus({ steal: true });
 }
 
@@ -1109,7 +1125,7 @@ function update(patch) {
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
   if ("control" in patch) cfg.control === false ? stopControl() : startControl();
-  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities"].some((k) => k in patch)) {
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude"].some((k) => k in patch)) {
     lights.sync();
     resubscribe();
   }
@@ -1213,7 +1229,18 @@ ipcMain.handle("get", () => ({
     label: d.label || "",
   })),
 }));
-ipcMain.on("set", (_e, patch) => update(patch));
+// Die Hue-Schlüssel setzt nur der Hauptprozess selbst (Koppeln). Aus einem Fenster kommt höchstens ein neu
+// eingetipptes Home-Assistant-Token – nie der Platzhalter „set“ zurück.
+ipcMain.on("set", (_e, patch) => {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const p = { ...patch };
+  delete p.hueUser;
+  delete p.hueClientKey;
+  delete p.secrets;
+  delete p.secretsPlain;
+  if (p.haToken === "set") delete p.haToken;
+  update(p);
+});
 ipcMain.on("preview", preview);
 ipcMain.on("openCss", openCss);
 ipcMain.on("checkUpdate", () => (upd.state === "available" || upd.state === "ready" ? installUpdate() : checkUpdate(true)));
@@ -1223,10 +1250,23 @@ ipcMain.on("openUri", (_e, uri) => openUri(String(uri || "")));
 ipcMain.handle("hueFind", () => lights.hueFind());
 ipcMain.handle("huePair", async (_e, ip) => {
   const r = await lights.huePair(String(ip || "").trim());
-  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueOn: true });
-  return r;
+  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true });
+  // der Schlüssel selbst geht das Fenster nichts an
+  return r.user ? { ok: true } : { error: r.error };
 });
 ipcMain.handle("hueGroups", () => lights.hueGroups());
+ipcMain.handle("hueLights", () => lights.hueLights());
+// Verzögerung je Gerät: ohne Angabe nur lesen, mit { backend, ms } setzen; zurück kommen alle Werte
+ipcMain.handle("lightLat", (_e, d) => {
+  const patch = d && typeof d === "object" ? lights.latPatch(String(d.backend || ""), Number(d.ms)) : null;
+  if (patch) update(patch);
+  return lights.latAll();
+});
+// Einmessen starten (Gerätename) oder beenden (leer): das Fenster bekommt jeden Schlag als „calBeat“
+ipcMain.handle("lightCal", (e, name) => {
+  if (!name) return void lights.stopAll();
+  return lights.calibrate(String(name), (bright) => !e.sender.isDestroyed() && e.sender.send("calBeat", bright));
+});
 ipcMain.handle("goveeScan", async () => {
   const r = await lights.goveeScan();
   if (r.list?.length) update({ goveeIps: r.list.map((d) => d.ip).join(", "), goveeOn: true });
@@ -1249,9 +1289,15 @@ ipcMain.on("done", () => cfg.mode !== "always" && Date.now() - lastShow > 1200 &
 app.on("second-instance", openSettings);
 app.on("activate", openSettings); // MAC: erneutes Öffnen aus Finder/Launchpad
 app.on("window-all-closed", () => {}); // im Infobereich weiterlaufen
-app.on("before-quit", () => {
-  lights.stopAll();
+// Beim Beenden bekommen die Lampen ihren Zustand von vor der Party zurück. Das sind Netzaufrufe: kurz
+// darauf warten (höchstens 3 s), sonst ist der Prozess weg, bevor sie ankommen.
+let quitReady = false;
+app.on("before-quit", (e) => {
   cast.stopAll();
+  if (quitReady) return;
+  e.preventDefault();
+  quitReady = true;
+  Promise.race([lights.stopAll(), new Promise((r) => setTimeout(r, 3000))]).finally(() => app.quit());
 });
 app.on("before-quit", () => busyProc?.kill());
 app.whenReady().then(() => {
