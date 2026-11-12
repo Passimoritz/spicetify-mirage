@@ -9,7 +9,7 @@ import { dust } from "./dust.js";
 import { burst } from "./burst.js";
 import { getLyrics, lyricVersions, pickLyrics, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { LANG } from "./i18n.js";
-import { nowPlayingCard, partyRecapCard } from "./share.js";
+import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
 import { currentItem, covers, titleOf, artistOf, toggleMute, PLR } from "./player.js";
 import { party } from "./party.js";
@@ -2441,7 +2441,7 @@ const immersive = (() => {
   const recap = { start: 0, songs: [], drops: 0, peak: null };
   function noteRecap(item, info) {
     if (!cfg.partyRecap || !item?.uri) return;
-    if (!recap.start || Date.now() - recap.last > 3600e3) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null });
+    if (!recap.start || Date.now() - recap.last > 3600e3) Object.assign(recap, { start: Date.now(), songs: [], drops: 0, peak: null, saved: null });
     recap.last = Date.now();
     if (recap.songs.some((x) => x.uri === item.uri)) return;
     recap.songs.push({ uri: item.uri, title: titleOf(item), artist: artistOf(item), key: info?.key || "pop", bpm: info?.bpm || 0, img: covers(item).big || covers(item).small });
@@ -2897,27 +2897,49 @@ const immersive = (() => {
       rank.forEach((g, i) => sideBtn(body, `${i + 1}. ${g.n || t("rankGuest")}`, t("rankLine").replace("{w}", g.played).replace("{v}", g.votes)));
     }
   }
+  // Ein Abend = eine Playlist: recap.saved merkt sich, was schon drin ist. Ein zweiter Klick legt nie eine
+  // zweite Playlist an, sondern trägt nur die Songs nach, die seitdem dazugekommen sind.
+  let savingPlaylist = false;
   async function savePartyPlaylist() {
-    const uris = recap.songs.map((x) => x.uri).filter((u) => u?.startsWith("spotify:track:"));
-    if (!uris.length) return;
-    const name = `Mirage Party · ${new Date(recap.start || Date.now()).toLocaleDateString()}`;
-    let uri = "";
+    if (savingPlaylist) return;
+    const all = recap.songs.map((x) => x.uri).filter((u) => u?.startsWith("spotify:track:"));
+    const done = recap.saved;
+    const uris = planPartySave(all, done?.uris);
+    if (!all.length) return;
+    const name = done?.name || `Mirage Party · ${new Date(recap.start || Date.now()).toLocaleDateString()}`;
+    if (done && !uris.length) return void S.showNotification?.(t("recapAlready").replace("{n}", name), false, 4000);
+    // erst fragen: eine Playlist in der Bibliothek soll niemand aus Versehen anlegen
+    if (!done && !confirm(t("recapConfirm").replace("{c}", uris.length).replace("{n}", name))) return;
+    savingPlaylist = true;
+    let uri = done?.uri || "", ok = false;
+    const idOf = (u) => String(u).split(":").pop();
     try {
-      uri = await S.Platform?.RootlistAPI?.createPlaylist?.(name, { before: "start" });
-      if (uri) await S.Platform.PlaylistAPI.add(uri, uris, { before: "start" });
-    } catch {
-      uri = "";
-    }
-    // Rückfall: Web-API
-    if (!uri) {
+      if (!uri) uri = (await S.Platform?.RootlistAPI?.createPlaylist?.(name, { before: "start" })) || "";
+      // manche Spotify-Versionen liefern ein Objekt statt der Adresse
+      if (uri && typeof uri !== "string") uri = uri.uri || "";
+      if (uri) {
+        await S.Platform.PlaylistAPI.add(uri, uris, done ? { after: "end" } : { before: "start" });
+        ok = true;
+      }
+    } catch {}
+    // Rückfall: Web-API – in die schon angelegte Playlist, nie eine zweite
+    if (!ok) {
       try {
-        const me = await S.CosmosAsync.get("https://api.spotify.com/v1/me");
-        const pl = await S.CosmosAsync.post(`https://api.spotify.com/v1/users/${me.id}/playlists`, { name, public: false, description: "Mirage party recap" });
-        await S.CosmosAsync.post(`https://api.spotify.com/v1/playlists/${pl.id}/tracks`, { uris });
-        uri = pl.uri;
+        if (!uri) {
+          const me = await S.CosmosAsync.get("https://api.spotify.com/v1/me");
+          uri = (await S.CosmosAsync.post(`https://api.spotify.com/v1/users/${me.id}/playlists`, { name, public: false, description: "Mirage party recap" })).uri || "";
+        }
+        if (uri) {
+          for (let i = 0; i < uris.length; i += 100) await S.CosmosAsync.post(`https://api.spotify.com/v1/playlists/${idOf(uri)}/tracks`, { uris: uris.slice(i, i + 100) });
+          ok = true;
+        }
       } catch {}
     }
-    S.showNotification?.(uri ? t("recapSaved").replace("{n}", name) : t("recapSaveFail"), !uri, 4000);
+    // auch eine leer gebliebene Playlist merken: der nächste Versuch füllt sie, statt eine neue anzulegen
+    if (uri) recap.saved = { uri, name, uris: ok ? all : done?.uris || [] };
+    savingPlaylist = false;
+    const msg = !ok ? t("recapSaveFail") : done ? t("recapAdded").replace("{c}", uris.length).replace("{n}", name) : t("recapSaved").replace("{n}", name);
+    S.showNotification?.(msg, !ok, 4000);
   }
 
   /* ---- Party auf anderem Bildschirm. Der PC rechnet die Party, der Fernseher zeigt nur das fertige Bild:

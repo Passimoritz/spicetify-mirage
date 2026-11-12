@@ -472,4 +472,10 @@ async function monthCard() {
   deliver(cv, "mirage-month.png");
 }
 
-export { nowPlayingCard, weekCard, monthCard, partyRecapCard, record, week, period };
+// Abend als Playlist: welche Songs fehlen der Playlist noch? (ohne Doppelte, in der gespielten Reihenfolge)
+function planPartySave(played, saved) {
+  const have = new Set(saved || []);
+  return [...new Set(played)].filter((u) => !have.has(u));
+}
+
+export { nowPlayingCard, weekCard, monthCard, partyRecapCard, record, week, period, planPartySave };
