@@ -133,6 +133,8 @@
   .chips label.room { font-weight: 700; }
   .chips input { accent-color: var(--a); margin: 0; }
   .chips:empty { display: none; }
+  .calDot { width: 34px; height: 34px; flex: none; border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,.06); }
+  .calDot.on { background: #fff; box-shadow: 0 0 20px #fff; }
   .hist { display: grid; gap: 6px; margin-top: 4px; }
   .hist button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; border: 0; border-radius: 12px; background: var(--glass); color: inherit; font: inherit; text-align: left; cursor: pointer; }
   .hist button:hover { background: var(--line); }
@@ -248,6 +250,8 @@
     <div class="row lrow"><input type="text" id="orgbExclude" autocomplete="off" spellcheck="false"></div>
     <div class="row"><div><b>Razer Chroma</b><small data-t="chromaHint"></small></div><input type="checkbox" class="toggle" data-key="chromaOn"></div>
     <p class="lhint" data-t="lightsRestore"></p>
+    <div class="row"><div><b data-t="latTitle"></b><small data-t="latHint"></small></div><select id="latDev" aria-label="Device"></select></div>
+    <div class="row lrow"><span class="calDot" id="calDot" aria-hidden="true"></span><button type="button" class="btn" id="latMinus">−25</button><input type="number" id="latMs" min="-1000" max="1000" step="5" aria-label="ms"><small>ms</small><button type="button" class="btn" id="latPlus">+25</button><button type="button" class="btn" id="calBtn" data-t="calStart"></button></div>
   </section>
 
   <section id="histSec" hidden>
@@ -456,6 +460,38 @@
     const r = await mirage.invoke("hueLights");
     drawPart("#hueLights", "#huePartRow", "hueExclude", [...(r?.rooms || []).map((x) => ({ token: "g" + x.id, name: x.name, room: true })), ...(r?.lights || []).map((x) => ({ token: x.id, name: x.name }))]);
   }
+  // Verzögerung je Gerät einmessen: Lampe und Punkt blinken im selben Takt, der Vorlauf wird verschoben,
+  // bis beide gleichzeitig umschalten
+  let lat = {}, calOn = false;
+  const latDev = () => $("#latDev").value;
+  const showLat = () => { if (document.activeElement?.id !== "latMs") $("#latMs").value = lat[latDev()] ?? 0; };
+  const setLat = async (ms) => {
+    lat = (await mirage.invoke("lightLat", { backend: latDev(), ms })) || lat;
+    showLat();
+  };
+  const drawCal = () => {
+    $("#calBtn").textContent = t(calOn ? "calStop" : "calStart");
+    if (!calOn) $("#calDot").classList.remove("on");
+  };
+  $("#latDev").replaceChildren(...[["hue", "Philips Hue"], ["wled", "WLED"], ["govee", "Govee"], ["ha", "Home Assistant"], ["orgb", "OpenRGB"], ["chroma", "Razer Chroma"]].map(([value, textContent]) => Object.assign(document.createElement("option"), { value, textContent })));
+  $("#latDev").onchange = () => {
+    showLat();
+    if (calOn) mirage.invoke("lightCal", latDev());
+  };
+  $("#latMs").onchange = () => setLat(Number($("#latMs").value) || 0);
+  $("#latMinus").onclick = () => setLat((lat[latDev()] || 0) - 25);
+  $("#latPlus").onclick = () => setLat((lat[latDev()] || 0) + 25);
+  $("#calBtn").onclick = () => {
+    calOn = !calOn;
+    mirage.invoke("lightCal", calOn ? latDev() : "");
+    drawCal();
+  };
+  // null = das Einmessen ist zu Ende (von selbst nach 90 s oder weil ein anderes Gerät gewählt wurde)
+  mirage.on("calBeat", (bright) => {
+    if (bright === null) calOn = false, drawCal();
+    else if (calOn) $("#calDot").classList.toggle("on", !!bright);
+  });
+  mirage.invoke("lightLat").then((r) => { lat = r || {}; showLat(); });
   $("#goveeScan").onclick = async () => {
     $("#goveeState").textContent = t("goveeSearching");
     const r = await mirage.invoke("goveeScan");

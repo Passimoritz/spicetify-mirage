@@ -76,6 +76,8 @@ const DEFAULTS = {
   lightMax: 100,
   // von der Show ausgenommen: Hue-Lampen („7“) und -Räume („g3“), HA-Lichter, OpenRGB-Geräte (Namensteil)
   hueExclude: "", haExclude: "", orgbExclude: "",
+  // Vorlauf je Gerät in ms (Lampen hängen unterschiedlich weit hinterher); Hue je Bridge: „ip=ms, ip=ms“
+  latHue: "", latWled: 0, latGovee: 0, latHa: 0, latOrgb: 0, latChroma: 0,
   hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
@@ -419,7 +421,11 @@ function openSettings() {
   });
   settingsWin.setMenu(null);
   settingsWin.loadFile("settings.html");
-  settingsWin.on("closed", () => (settingsWin = null));
+  settingsWin.on("closed", () => {
+    settingsWin = null;
+    // ein laufendes Einmessen der Lampen endet mit dem Fenster
+    if (lights.calibrating()) lights.stopAll();
+  });
   if (MAC) app.focus({ steal: true });
 }
 
@@ -1250,6 +1256,17 @@ ipcMain.handle("huePair", async (_e, ip) => {
 });
 ipcMain.handle("hueGroups", () => lights.hueGroups());
 ipcMain.handle("hueLights", () => lights.hueLights());
+// Verzögerung je Gerät: ohne Angabe nur lesen, mit { backend, ms } setzen; zurück kommen alle Werte
+ipcMain.handle("lightLat", (_e, d) => {
+  const patch = d && typeof d === "object" ? lights.latPatch(String(d.backend || ""), Number(d.ms)) : null;
+  if (patch) update(patch);
+  return lights.latAll();
+});
+// Einmessen starten (Gerätename) oder beenden (leer): das Fenster bekommt jeden Schlag als „calBeat“
+ipcMain.handle("lightCal", (e, name) => {
+  if (!name) return void lights.stopAll();
+  return lights.calibrate(String(name), (bright) => !e.sender.isDestroyed() && e.sender.send("calBeat", bright));
+});
 ipcMain.handle("goveeScan", async () => {
   const r = await lights.goveeScan();
   if (r.list?.length) update({ goveeIps: r.list.map((d) => d.ip).join(", "), goveeOn: true });
