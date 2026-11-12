@@ -2826,6 +2826,38 @@ const immersive = (() => {
       }
       if (!done) sideBtn(box, t("djMore"));
     });
+    // Reihenfolge anwenden: die nächsten Songs zu einer Kette ordnen (Tonart, Tempo, Energiekurve), mit Rückgängig
+    const osec = document.createElement("div");
+    osec.className = "m-im-side-sec";
+    osec.textContent = t("djOrder");
+    const osub = document.createElement("small");
+    osub.textContent = t("djOrderSub");
+    osec.append(osub);
+    const obox = document.createElement("div");
+    obox.className = "m-im-side-group";
+    body.append(osec, obox);
+    const drawOrder = (res) => {
+      if (token !== djToken || side !== "dj") return;
+      obox.textContent = "";
+      const go = sideBtn(obox, t("djOrderApply"), dj.canReorder() ? "" : t("djOrderNoApi"), async () => {
+        go.disabled = true;
+        go.querySelector("b").textContent = t("loading");
+        const r = await dj.sortQueue(currentItem()?.uri);
+        const msg = { done: "djOrderDone", same: "djOrderSame", few: "djOrderFew", locked: "gLocked", fail: "djOrderFail", list: "djOrderNoApi" }[r.state];
+        S.showNotification?.(t(msg).replace("{n}", r.n).replace("{a}", r.from).replace("{b}", r.to), r.state === "fail", 4000);
+        drawOrder(r);
+      });
+      if (dj.canUndo()) {
+        sideBtn(obox, t("djOrderUndo"), "", async () => {
+          const ok = await dj.undoSort();
+          S.showNotification?.(t(ok ? "djOrderUndone" : "djOrderFail"), !ok, 3000);
+          drawOrder(null);
+        });
+      }
+      // die neue Reihenfolge, nummeriert (ohne Spotifys Verschiebe-Funktion ist das der Vorschlag zum Nachbauen)
+      if (res?.order && res.state !== "fail") res.order.forEach((x, i) => sideBtn(obox, `${i + 1}. ${x.title}`, [x.artist, fmtI(x.info)].filter(Boolean).join(" · ")));
+    };
+    drawOrder(null);
   }
 
   /* ---- Abstimmung: die nächsten drei Songs zur Wahl, die Handys stimmen 45 s lang ab */

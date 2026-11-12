@@ -1,10 +1,14 @@
 /* ---------------------------------------------------------------- DJ-Helfer */
-// Zwei Werkzeuge für Partys:
+// Drei Werkzeuge für Partys:
 // · Passende nächste Songs: aus der Warteschlange die, die harmonisch (Camelot-Rad), im Tempo (auch halbes/
 //   doppeltes) und in der Energie am besten an den laufenden Song anschließen – mit einem Klick als Nächstes.
 // · „Energie halten“: bei jedem Songwechsel schaut Mirage auf die nächsten Songs; käme als Nächstes ein deutlicher
 //   Bruch (viel ruhiger, ganz andere Tonart und Tempo), zieht es den am besten passenden vor. Damit er später nicht
 //   doppelt läuft, wird er an seiner alten Stelle übersprungen.
+// · „Reihenfolge anwenden“: ordnet die nächsten Songs zu einer Kette, in der jeder an den vorigen anschließt
+//   (Tonart, Tempo, Energiekurve – die Rechnung steht in djorder.js), mit „Rückgängig“. Dafür verschiebt Mirage die
+//   Songs mit Spotifys eigener Funktion (PlayerAPI.reorderQueue, dieselbe wie beim Ziehen in der Warteschlange).
+//   Fehlt sie in einer Spotify-Version, bleibt es bei der nummerierten Liste als Vorschlag.
 // Tempo, Tonart und Lautheit kommen aus Spotifys Audio-Analyse – höchstens eine Anfrage zugleich, mit Pause bei
 // Fehlern und einem Zwischenspeicher, damit nicht jeder Song immer wieder geladen wird.
 import { S } from "./core.js";
@@ -12,6 +16,7 @@ import { cfg } from "./config.js";
 import { camelot } from "./library.js";
 import { lock } from "./lock.js";
 import { PLR } from "./player.js";
+import { fit, orderQueue, chainScore, sameRef, planMove } from "./djorder.js";
 
 const STORE = "mirage:dj", CAP = 3000, DAY = () => Math.floor(Date.now() / 864e5);
 const cache = new Map();
@@ -60,28 +65,6 @@ function info(uri) {
   });
   chain = job.catch(() => null);
   return job;
-}
-
-/* ---- Wie gut passt b auf a? 0..1 aus Tonart, Tempo und Energie */
-function camDist(a, b) {
-  if (!a || !b) return 3;
-  const na = parseInt(a, 10), nb = parseInt(b, 10), la = a.slice(-1), lb = b.slice(-1);
-  const d = Math.min((na - nb + 12) % 12, (nb - na + 12) % 12);
-  if (d === 0 && la === lb) return 0;
-  if (d === 0) return 1; // Paralleltonart (8A ↔ 8B)
-  if (d === 1 && la === lb) return 1; // Nachbar im Quintenzirkel
-  if (d === 2 && la === lb) return 2;
-  return 3;
-}
-function fit(a, b) {
-  if (!a || !b) return 0;
-  const harm = [1, 0.85, 0.45, 0.12][camDist(a.cam, b.cam)];
-  // Tempo: gleich, halb oder doppelt – bis 8 % Abweichung lässt sich angleichen
-  const r = b.bpm / a.bpm, dev = Math.min(Math.abs(r - 1), Math.abs(r * 2 - 1), Math.abs(r / 2 - 1));
-  const tempo = Math.max(0, 1 - dev / 0.08);
-  // Energie: ähnlich laut, leicht steigend ist am besten
-  const dl = b.loud - a.loud, energy = Math.max(0, 1 - Math.abs(dl - 0.5) / 6);
-  return harm * 0.45 + tempo * 0.35 + energy * 0.2;
 }
 
 const upcoming = (max) =>
@@ -143,4 +126,79 @@ async function onSong(curUri) {
   }
 }
 
-export const dj = { info, suggest, onSong, fit };
+/* ---- Reihenfolge anwenden */
+// Der Block, der sortiert wird: die nächsten Songs gleicher Herkunft (erst die eigene Warteschlange, sonst die
+// Playlist), höchstens 25. Nie über die Grenze hinweg – eingereihte und Playlist-Songs zu mischen, bringt Spotify
+// durcheinander. anchor = was direkt danach kommt (die Stelle, vor die der Block wieder gesetzt wird).
+const trackOf = (x) => x?.contextTrack || x;
+const refOf = (x) => ({ uri: trackOf(x).uri, uid: trackOf(x).uid });
+function queueBlock(max = 25) {
+  const items = [];
+  let anchor = null;
+  for (const x of S.Queue?.nextTracks || []) {
+    const tr = trackOf(x);
+    if (!tr?.uri?.startsWith("spotify:track:") || !tr.metadata?.title || (items.length && x.provider !== items[0].provider) || items.length >= max) {
+      anchor = tr?.uri ? x : null;
+      break;
+    }
+    items.push(x);
+  }
+  return { items, anchor };
+}
+const canReorder = () => typeof S.Platform?.PlayerAPI?.reorderQueue === "function";
+// refs in dieser Reihenfolge an den Anfang des Blocks setzen und nachsehen, ob Spotify es übernommen hat
+async function moveBlock(refs, anchor) {
+  const plan = planMove((S.Queue?.nextTracks || []).map(refOf), refs, anchor);
+  if (!plan) return false;
+  const { live } = plan;
+  await S.Platform.PlayerAPI.reorderQueue(plan.move, { before: plan.before });
+  // Spotify meldet die neue Warteschlange erst einen Moment später
+  for (let k = 0; k < 12; k++) {
+    await new Promise((r) => setTimeout(r, 150));
+    const got = (S.Queue?.nextTracks || []).map(refOf).filter((n) => live.some((r) => sameRef(r, n)));
+    if (got.length === live.length && got.every((n, i) => sameRef(n, live[i]))) return true;
+  }
+  return false;
+}
+let undo = null;
+// → { state: "done", n, from, to } | "same" | "few" | "locked" | "fail" | "list" (nur Vorschlag, mit order)
+async function sortQueue(curUri) {
+  if (lock.on) return { state: "locked" };
+  const { items, anchor } = queueBlock();
+  if (items.length < 3) return { state: "few" };
+  const cur = await info(curUri), infos = [];
+  for (const x of items) infos.push(await info(trackOf(x).uri));
+  if (infos.filter(Boolean).length < 3) return { state: "few" };
+  const order = orderQueue(cur, infos);
+  if (order.every((i, k) => i === k)) return { state: "same" };
+  const pct = (list) => Math.round(chainScore(cur, list) * 100);
+  const res = {
+    n: items.length, from: pct(infos), to: pct(order.map((i) => infos[i])),
+    order: order.map((i) => ({ title: trackOf(items[i]).metadata.title, artist: trackOf(items[i]).metadata.artist_name || "", info: infos[i] })),
+  };
+  if (!canReorder()) return { state: "list", ...res };
+  // die Warteschlange kann sich beim Laden der Daten geändert haben (Songwechsel): dann lieber nichts tun
+  const again = queueBlock().items;
+  if (lock.on || again.length !== items.length || again.some((x, i) => !sameRef(refOf(x), refOf(items[i])))) return { state: "fail" };
+  const before = items.map(refOf), anchorRef = anchor ? refOf(anchor) : null;
+  try {
+    if (!(await moveBlock(order.map((i) => before[i]), anchorRef))) return { state: "fail", ...res };
+  } catch {
+    return { state: "fail", ...res };
+  }
+  undo = { before, anchor: anchorRef };
+  return { state: "done", ...res };
+}
+// alte Reihenfolge wiederherstellen (Songs, die inzwischen liefen, fehlen einfach)
+async function undoSort() {
+  if (!undo || lock.on || !canReorder()) return false;
+  const u = undo;
+  undo = null;
+  try {
+    return await moveBlock(u.before, u.anchor);
+  } catch {
+    return false;
+  }
+}
+
+export const dj = { info, suggest, onSong, fit, sortQueue, undoSort, canUndo: () => !!undo, canReorder };
