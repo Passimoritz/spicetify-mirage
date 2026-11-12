@@ -1,6 +1,6 @@
 import { S, root, VERSION } from "./core.js";
 import { t } from "./i18n.js";
-import { SCHEMES, BUILT_IN, applyScheme, cfg, save, resetSettings, buildScheme } from "./config.js";
+import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme } from "./config.js";
 import { current } from "./color.js";
 import { beat } from "./audio.js";
 import { dust } from "./dust.js";
@@ -106,6 +106,7 @@ function range(key, min, max, step, unit, after) {
   txt.append(el("b", "", t(key)), hint);
   const r = el("input");
   Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
+  r.dataset.key = key;
   r.setAttribute("aria-valuetext", cfg[key] + unit);
   r.oninput = () => {
     cfg[key] = Number(r.value);
@@ -206,6 +207,25 @@ function button(label, onClick, cls = "") {
 const notify = (msg, err) => {
   try { S.showNotification?.(msg, !!err, 3500); } catch {}
 };
+// „Diesen Bereich zurücksetzen“: nur die Schalter und Regler dieser Gruppe (data-key) plus die genannten
+// Auswahlen gehen zurück auf DEFAULTS – eigene Schemata und alles außerhalb der Gruppe bleiben unberührt
+function sectionReset(d, extra, after) {
+  const row = el("div", "m-actions m-section-reset");
+  row.append(button(t("resetSection"), () => {
+    const title = d.querySelector("summary").textContent;
+    if (!confirm(t("resetSectionConfirm").replace("{s}", title))) return;
+    const keys = [...new Set([...[...d.querySelectorAll("[data-key]")].map((x) => x.dataset.key), ...(extra || [])])];
+    for (const k of keys) if (k in DEFAULTS) cfg[k] = DEFAULTS[k];
+    if (keys.some((k) => PRESET_KEYS.includes(k))) detectPreset();
+    save();
+    applySettings();
+    after?.();
+    render.again?.();
+    notify(t("resetSectionDone").replace("{s}", title));
+  }));
+  d.append(row);
+  return d;
+}
 const encode = (prefix, obj) => prefix + btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
 const decode = (prefix, text) => {
   const s = String(text || "").trim();
@@ -225,22 +245,32 @@ function applySearch(box) {
   for (const parent of [box, ...box.querySelectorAll("details.m-group")]) {
     let unit = null;
     for (const c of parent.children) {
-      if (c.matches("summary, .m-search, .m-search-none, .m-version")) continue;
+      if (c.matches("summary, .m-search, .m-search-none, .m-version, .m-sr, .m-section-reset")) continue;
       if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent }));
       unit.els.push(c);
     }
   }
   const hit = new Set();
+  let found = 0;
   for (const u of units) {
     const ok = !q || u.els.some((e) => e.textContent.toLowerCase().includes(q));
     for (const e of u.els) e.classList.toggle("m-hide", !ok);
-    if (ok && q) hit.add(u.parent);
+    if (ok && q) {
+      hit.add(u.parent);
+      found++;
+    }
   }
+  // beim Suchen stören die Rücksetz-Knöpfe nur: sie gelten für die ganze Gruppe, nicht für die Treffer
+  for (const r of box.querySelectorAll(".m-section-reset")) r.classList.toggle("m-hide", !!q);
   for (const d of box.querySelectorAll("details.m-group")) {
     d.classList.toggle("m-hide", !!q && !hit.has(d) && !d.querySelector("summary").textContent.toLowerCase().includes(q));
     if (q && hit.has(d)) d.open = true;
   }
   box.querySelector(".m-search-none")?.classList.toggle("m-hide", !q || hit.size > 0 || units.some((u) => u.parent === box && !u.els[0].classList.contains("m-hide")));
+  // Trefferzahl leise ansagen (nur wenn sie sich ändert, sonst redet der Screenreader bei jedem Buchstaben)
+  const say = box.querySelector(".m-search-say");
+  const msg = !q ? "" : found ? t("searchCount").replace("{n}", found) : t("searchNone");
+  if (say && say.textContent !== msg) say.textContent = msg;
 }
 function render(box) {
   render.again = () => render(box);
@@ -248,11 +278,22 @@ function render(box) {
   const search = el("input", "m-search");
   Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
   search.setAttribute("aria-label", t("searchSettings"));
+  search.title = t("searchClear");
   search.oninput = () => {
     query = search.value;
     applySearch(box);
   };
-  kids.push(search, el("small", "m-note m-search-none m-hide", t("searchNone")));
+  // Esc leert zuerst die Suche; erst das zweite Esc schließt das Fenster
+  search.onkeydown = (e) => {
+    if (e.key !== "Escape" || !search.value) return;
+    e.preventDefault();
+    e.stopPropagation();
+    search.value = query = "";
+    applySearch(box);
+  };
+  const say = el("span", "m-sr m-search-say");
+  say.setAttribute("role", "status");
+  kids.push(search, say, el("small", "m-note m-search-none m-hide", t("searchNone")));
 
   // ---- Presets
   kids.push(head(t("presetTitle"), t("presetHint")));
@@ -342,8 +383,8 @@ function render(box) {
     applyFont();
   });
   Object.keys(FONTS).forEach((k, i) => (fontSeg.children[i].style.fontFamily = stackOf(k)));
-  kids.push(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg));
-  kids.push(
+  kids.push(sectionReset(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg), ["font"], refreshColors));
+  kids.push(sectionReset(
     group(
       t("g_background"),
       false,
@@ -357,19 +398,19 @@ function render(box) {
       }),
       range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
     )
-  );
-  kids.push(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf"),
+  ));
+  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("autoPerf"),
     el("small", "m-note", t("eco")),
     seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
       cfg.eco = k;
       save();
-    })));
+    })), ["eco"]));
   const viz = [
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
     ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
     ["galaxy", t("viz_galaxy")], ["mountains", t("viz_mountains")], ["scope", t("viz_scope")], ["shatter", t("viz_shatter")],
   ];
-  kids.push(
+  kids.push(sectionReset(
     group(
       t("g_immersive"),
       false,
@@ -395,10 +436,10 @@ function render(box) {
       toggle("vizMirror", () => {}),
       toggle("vizSpin", () => {}),
       toggle("mixInstruments", () => {})
-    )
-  );
+    ), ["vizStyle"], () => (immersive.reloadLyrics(), immersive.refresh(), refreshRemote(true))
+  ));
   // ---- Party-Modus: eine eigene Gruppe, darin nach Thema geordnet
-  kids.push(
+  kids.push(sectionReset(
     group(
       t("g_party"),
       false,
@@ -457,8 +498,8 @@ function render(box) {
       toggle("partyOnline", () => immersive.refresh()),
       toggle("partyIdle", () => {}),
       toggle("partyQuietFps", () => {})
-    )
-  );
+    ), ["partyStyle", "partyLevel", "partyVenue"], () => (immersive.reloadLyrics(), immersive.refresh(), window.dispatchEvent(new Event("mirage:wishes")))
+  ));
 
   // ---- Schema-Baukasten
   const builder = el("div", "m-builder");

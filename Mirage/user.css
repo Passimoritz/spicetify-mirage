@@ -3570,6 +3570,28 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 .mirage-settings .m-hide {
   display: none !important;
 }
+/* nur für Screenreader: Trefferzahl der Suche, Songwechsel im Immersiv-Modus */
+.m-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* „Diesen Bereich zurücksetzen“ am Ende jeder Gruppe, bewusst unauffällig */
+.mirage-settings .m-section-reset {
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.mirage-settings .m-section-reset .m-btn {
+  opacity: 0.75;
+  font-size: 12px;
+}
+.mirage-settings .m-section-reset .m-btn:is(:hover, :focus-visible) {
+  opacity: 1;
+}
 .mirage-welcome .m-close {
   margin-left: auto;
 }
