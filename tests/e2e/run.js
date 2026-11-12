@@ -973,6 +973,44 @@ async function keyboardPlay() {
   ok(/(Tastatur|Keyboard) \d+ ms/.test(res.text), "tastatur: die Leertaste zählt als Buzzer: " + res.text);
   await close();
 }
+// Ergebnis-Karte: nach dem Spiel entsteht auf Knopfdruck ein Bild mit der Rangliste
+async function resultCard() {
+  await ensurePhones("result-card");
+  const file = path.join(OUT, "mirage-game.png");
+  fs.rmSync(file, { force: true });
+  await openGame("never");
+  await joinAll("never");
+  for (const r of [1, 2]) {
+    await allPhones((s) => s.st === "ask" && s.round === `${r}/2`, 8000, `karte: Frage ${r}`);
+    await P[0].click(...tile(0));
+    await P[1].click(...tile(r === 1 ? 0 : 1));
+    await P[2].click(...tile(1));
+  }
+  await until(async () => (await big.state()).st === "end", 8000, "karte: Siegerehrung");
+  // mitschreiben, was auf die Karte gezeichnet wird
+  await T.js(`(() => {
+    const real = CanvasRenderingContext2D.prototype.fillText;
+    window.__drawn = [];
+    CanvasRenderingContext2D.prototype.fillText = function (text, ...rest) {
+      if (this.canvas.width === 1080 && this.canvas.height === 1350) window.__drawn.push(String(text));
+      return real.call(this, text, ...rest);
+    };
+    window.__undraw = () => (CanvasRenderingContext2D.prototype.fillText = real);
+  })(); 1`);
+  await big.hover();
+  await T.click(".m-g-card");
+  await until(() => fs.existsSync(file) && fs.statSync(file).size > 20000, 8000, "karte: das Bild wird gespeichert");
+  const png = fs.readFileSync(file);
+  ok(png.readUInt32BE(16) === 1080 && png.readUInt32BE(20) === 1350, "karte: Hochformat 1080 × 1350");
+  const drawn = await T.js(`(() => { window.__undraw(); return window.__drawn; })()`);
+  const at = (name) => drawn.indexOf(name);
+  ok(at("Alpha") >= 0 && at("Alpha") < at("Beta") && at("Beta") < at("Gamma"), "karte: alle drei in der Reihenfolge der Rangliste: " + drawn.join(" | "));
+  ok(drawn[at("Alpha") + 1] === "2" && drawn[at("Beta") + 1] === "1" && drawn[at("Gamma") + 1] === "0", "karte: mit ihren Punkten: " + drawn.join(" | "));
+  ok(drawn.some((x) => x.includes("Ich hab noch nie") || x.includes("Never have I ever")), "karte: nennt das Spiel");
+  await wait(600);
+  ok((await big.state()).st === "end", "karte: die Siegerehrung bleibt stehen");
+  await close();
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -982,7 +1020,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
 ];
 
 /* ---------------------------------------------------------------- Start */
@@ -1032,6 +1070,8 @@ app.whenReady().then(async () => {
       const allowed = /^(http|ws):\/\/(localhost|127\.0\.0\.1)|^data:|^blob:|^devtools:/.test(d.url) || (PUBLIC && /^wss:\/\/broker\.(hivemq\.com|emqx\.io)/.test(d.url));
       cb({ cancel: !allowed });
     });
+    // gespeicherte Bilder landen ohne Dialog im Ausgabeordner der Tests
+    s.on("will-download", (_e, item) => item.setSavePath(path.join(OUT, item.getFilename())));
     const win = new BrowserWindow({ width: w, height: h, useContentSize: true, show: false, webPreferences: { offscreen: true, backgroundThrottling: false, sandbox: false, contextIsolation: false, partition: part, preload: path.join(__dirname, "ws-preload.js"), additionalArguments: PUBLIC ? [] : ["--mirage-brokers=" + JSON.stringify(map)] } });
     win.webContents.setFrameRate(name === "Big" ? 24 : 6);
     return new Win(name, win);
@@ -1050,7 +1090,7 @@ app.whenReady().then(async () => {
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
   // Handys verbinden sich im ersten Spiel mit Warteraum
-  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host", "quiz-level", "quiz-source"]);
+  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host", "quiz-level", "quiz-source", "result-card"]);
   if (ONLY.length && list.every(([n]) => NO_LOBBY.has(n))) list = [CASES[0], ...list];
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");

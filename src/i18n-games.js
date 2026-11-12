@@ -22,6 +22,7 @@ Object.assign(GAME_TEXT.en, {
   gSetSource: "Quiz songs come from", gSrcQueue: "Queue", gSrcHint: "Tap to pick a playlist",
   gSrcEmpty: "That playlist has no playable songs. Using the queue.", gDecadeNone: "No songs from that decade here. Playing without the filter.", gDecadeFail: "Spotify did not return release years. Playing without the decade filter.",
   gKeyName: "Keyboard", gKeyJoin: "No phone at hand? Press Space to play on this keyboard.", gKeyAsk: "Keyboard: number keys 1 to {n}", gKeySpace: "Keyboard: Space bar",
+  gCardBtn: "Save result as image", gCardKicker: "Party game",
   gHost: "Game host on your phone", gHostHint: "Show a QR code that is only for you", gHostNote: "Only for the host: whoever scans this code can start, skip and end games and correct points. It hides again when you close this panel.",
 });
 Object.assign(GAME_TEXT.de, {
@@ -30,5 +31,6 @@ Object.assign(GAME_TEXT.de, {
   gSetSource: "Quiz-Songs kommen aus", gSrcQueue: "Warteschlange", gSrcHint: "Antippen, um eine Playlist zu wählen",
   gSrcEmpty: "Diese Playlist hat keine spielbaren Songs. Es geht mit der Warteschlange weiter.", gDecadeNone: "Hier sind keine Songs aus diesem Jahrzehnt. Es geht ohne Filter weiter.", gDecadeFail: "Spotify hat keine Erscheinungsjahre geliefert. Es geht ohne Jahrzehnt-Filter weiter.",
   gKeyName: "Tastatur", gKeyJoin: "Kein Handy zur Hand? Leertaste drücken und an dieser Tastatur mitspielen.", gKeyAsk: "Tastatur: Zifferntasten 1 bis {n}", gKeySpace: "Tastatur: Leertaste",
+  gCardBtn: "Ergebnis als Bild speichern", gCardKicker: "Party-Spiel",
   gHost: "Spielleitung am Handy", gHostHint: "Einen QR-Code nur für dich zeigen", gHostNote: "Nur für die Spielleitung: Wer diesen Code scannt, kann Spiele starten, Runden überspringen, beenden und Punkte korrigieren. Er verschwindet wieder, sobald du diese Leiste schließt.",
 });

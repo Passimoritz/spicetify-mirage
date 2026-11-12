@@ -14,6 +14,7 @@ import { audio } from "./audio.js";
 import { lock } from "./lock.js";
 import { sfx } from "./sfx.js";
 import { readVolume, writeVolume, PLR } from "./player.js";
+import { gameCard } from "./share.js";
 
 export const GAME_LIST = [
   { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
@@ -1455,6 +1456,28 @@ function buildEnd(v) {
   }
   if (list.length) box.append(pod);
   if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
+  if (list.length) {
+    // Ergebnis zum Teilen: die Rangliste als Bild
+    const save = document.createElement("button");
+    save.type = "button";
+    save.className = "m-g-go m-g-card";
+    save.textContent = t("gCardBtn");
+    save.onclick = (e) => {
+      e.stopPropagation();
+      resultCard();
+    };
+    box.append(save);
+  }
+}
+function resultCard() {
+  if (!G) return;
+  const list = all().sort((a, b) => b.p - a.p).slice(0, 10).map((p) => ({ n: nameOf(p), p: Math.round(p.p), col: GUEST_COLORS[colOf(p)] }));
+  gameCard({ icon: INFO[G.k].icon, title: t(INFO[G.k].label), list });
+  // wer das Bild holt, schaut noch hin: die Siegerehrung bleibt länger stehen
+  if (G.view?.st === "end") {
+    clearTimers();
+    after(30000, () => stop());
+  }
 }
 // was sich laufend ändert, ohne die Karte neu zu bauen
 function update(v) {
