@@ -21,6 +21,13 @@ const ratio = (x, y) => {
   const [hi, lo] = [lum(x), lum(y)].sort((p, q) => q - p);
   return (hi + 0.05) / (lo + 0.05);
 };
+// Ersatzfarben des Wächters. Gewählt wird die, die auf DIESEM Hintergrund den höheren Kontrast hat.
+// Früher entschied eine feste Schwelle (Leuchtdichte 0.4): auf mittelhellen Flächen wie Grün oder Orange
+// blieb helle Schrift damit bei rund 2 : 1 stehen.
+const PAPER = [245, 243, 255], INK = [29, 26, 43];
+const inkFor = (bg) => (ratio(PAPER, bg) >= ratio(INK, bg) ? PAPER : INK);
+// im hellen Schema direkt gesetzte helle Schrift – beim Schemawechsel wieder wegnehmen
+let inlined = new WeakSet();
 // Hintergrund, der tatsächlich hinter dem Text liegt: erster deckender Vorfahre
 function backgroundOf(el) {
   // höchstens 10 Ebenen hoch: weiter oben liegt nur noch Spotifys Gerüst über der Bühne
@@ -53,7 +60,13 @@ function checkOne(el) {
   const bg = backgroundOf(el);
   if (!bg || ratio(fg, bg) >= 3) return;
   // heller Hintergrund → dunkle Schrift, dunkler → helle
-  el.classList.add("m-readable", lum(bg) > 0.4 ? "m-readable-dark" : "m-readable-light");
+  const dark = inkFor(bg) === INK;
+  el.classList.add("m-readable", dark ? "m-readable-dark" : "m-readable-light");
+  // helles Schema: m-readable-light nimmt --spice-text, und die ist dort selbst dunkel – helle Schrift direkt setzen
+  if (!dark && document.documentElement.classList.contains("mirage-light")) {
+    el.style.setProperty("color", `rgb(${PAPER.join(",")})`, "important");
+    inlined.add(el);
+  }
 }
 function check(deadline) {
   queued = false;
@@ -88,10 +101,14 @@ new MutationObserver((list) => {
 }).observe(document.body, { subtree: true, childList: true });
 // Schemawechsel ändert alle Farben: dann einmal alles neu bewerten
 function recheckAll() {
-  document.querySelectorAll(".m-readable").forEach((el) => el.classList.remove("m-readable", "m-readable-dark", "m-readable-light"));
+  document.querySelectorAll(".m-readable").forEach((el) => {
+    el.classList.remove("m-readable", "m-readable-dark", "m-readable-light");
+    if (inlined.has(el)) el.style.removeProperty("color");
+  });
   checked = new WeakSet();
+  inlined = new WeakSet();
   document.querySelectorAll(SCOPES).forEach(queue);
 }
 setTimeout(recheckAll, 3000);
 
-export { recheckAll };
+export { recheckAll, inkFor };

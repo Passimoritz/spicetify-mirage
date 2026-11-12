@@ -14,6 +14,8 @@
     "lint": "eslint --no-error-on-unmatched-pattern src && stylelint Mirage/user.css",
     "check": "npm run build && git diff --exit-code Mirage/theme.js",
     "test:games": "electron tests/e2e/run.js",
+    "test:phones": "node tests/phones/run.js",
+    "check:contrast": "node tools/check-contrast.js",
     "check:spotify": "node tools/check-spotify.js",
     "check:selectors": "node tools/check-selectors.js"
   },
