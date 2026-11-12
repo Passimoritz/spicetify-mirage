@@ -39,10 +39,10 @@ const contrast = (x, y) => {
   const [hi, lo] = [lum(x), lum(y)].sort((p, q) => q - p);
   return (hi + 0.05) / (lo + 0.05);
 };
-// Helligkeit so lange verschieben, bis die Farbe auf dem Hintergrund lesbar ist (mind. 4.5 : 1)
-function readable([h, s, l], bg, step) {
+// Helligkeit so lange verschieben, bis die Farbe auf dem Hintergrund lesbar ist (mind. 4.5 : 1, große Schrift 3 : 1)
+function readable([h, s, l], bg, step, min = 4.5) {
   let rgb = hsl2rgb([h, s, l]);
-  for (let i = 0; i < 12 && contrast(rgb, bg) < 4.5; i++) rgb = hsl2rgb([h, s, (l = clamp(l + step, 0.05, 0.95))]);
+  for (let i = 0; i < 12 && contrast(rgb, bg) < min; i++) rgb = hsl2rgb([h, s, (l = clamp(l + step, 0.05, 0.95))]);
   return rgb;
 }
 
@@ -55,9 +55,15 @@ function shape(colors) {
   const gray = s1 < 0.12;
   const sec = second || [(h1 + 40) % 360, s1, 0.5];
   const light = document.documentElement.classList.contains("mirage-light");
-  const bg = light ? [244, 241, 250] : [7, 6, 12];
+  // Dunkel: gemessen wird an der dunklen Schrift (#0b0a12), die AUF den Leitfarben liegt (Play-Knopf, Chips).
+  // Sie ist etwas heller als jeder Schema-Hintergrund – so stimmt beides, Farbe auf Glas und Schrift auf Farbe.
+  const bg = light ? [244, 241, 250] : [11, 10, 18];
   const a = readable([h1, gray ? s1 : clamp(s1, 0.5, 0.95), light ? 0.42 : 0.68], bg, light ? -0.04 : 0.04);
-  const b = hsl2rgb([sec[0], gray ? sec[1] : clamp(sec[1], 0.45, 0.95), light ? 0.4 : 0.52]);
+  // B blieb früher ungeprüft: tiefes Blau und Violett verschwand als Liedtext und hinter dem Play-Symbol.
+  // 3 : 1 genügt (große Schrift, Symbole), gemessen an der hellsten Kartenfläche der dunklen Schemata
+  // (Abyss, #0a171d) – die meisten Cover behalten damit ihre Farbe. Hell bleibt B, wie es war.
+  const hslB = [sec[0], gray ? sec[1] : clamp(sec[1], 0.45, 0.95), light ? 0.4 : 0.52];
+  const b = light ? hsl2rgb(hslB) : readable(hslB, [10, 23, 29], 0.04, 3);
   const c = readable([(h1 + 12) % 360, gray ? s1 : clamp(s1 * 0.8, 0.35, 0.85), light ? 0.3 : 0.84], bg, light ? -0.04 : 0.04);
   return [a, b, c];
 }
