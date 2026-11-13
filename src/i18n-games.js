@@ -54,3 +54,12 @@ Object.assign(GAME_TEXT.de, {
 // Teams
 Object.assign(GAME_TEXT.en, { gSetTeams: "Play in teams (quizzes and races)", gTm0: "Red", gTm1: "Blue", gTm2: "Yellow", gTm3: "Green" });
 Object.assign(GAME_TEXT.de, { gSetTeams: "In Teams spielen (Quiz und Rennen)", gTm0: "Rot", gTm1: "Blau", gTm2: "Gelb", gTm3: "Grün" });
+// Turnier
+Object.assign(GAME_TEXT.en, {
+  gTour: "Tournament", gTourHint: "Several games in a row with the same guests, one ranking across all of them", gTourAfter: "Tournament · after game {i} of {n}", gTourNext: "Next: {g}",
+  gSetTour: "Tournament games", gSetTourNote: "Pick 3 to 6 games, or none for a random mix", gSetTourN: "Random mix: games",
+});
+Object.assign(GAME_TEXT.de, {
+  gTour: "Turnier", gTourHint: "Mehrere Spiele hintereinander mit denselben Gästen, eine Rangliste über alle", gTourAfter: "Turnier · nach Spiel {i} von {n}", gTourNext: "Als Nächstes: {g}",
+  gSetTour: "Spiele im Turnier", gSetTourNote: "3 bis 6 Spiele wählen, oder keins für einen Zufallsmix", gSetTourN: "Zufallsmix: Spiele",
+});

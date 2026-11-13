@@ -1232,6 +1232,116 @@ async function teamsGame() {
   await gameSetting("gameTeams", 0);
 }
 
+/* ---- Turnier: drei Spiele hintereinander, gestartet und gesteuert vom Handy der Spielleitung */
+async function hostLink() {
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Leiste geht auf");
+  await T.click(".m-im-side-body .m-im-side-item", { text: "📱" });
+  await until(() => T.js(`!!document.querySelector(".m-g-hostqr img")?.naturalWidth`), 6000, "QR-Code der Spielleitung");
+  await T.js(fs.readFileSync(path.join(LIVE, "qr.js"), "utf8") + ";1");
+  const url = await T.js(`(async () => {
+    const im = document.querySelector(".m-g-hostqr img"), c = document.createElement("canvas");
+    c.width = c.height = 760;
+    const x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, 760, 760);
+    x.drawImage(im, 20, 20, 720, 720);
+    return jsQR(x.getImageData(0, 0, 760, 760).data, 760, 760)?.data || "";
+  })()`);
+  await T.click(".m-im-side-x");
+  return url.slice(url.indexOf("#"));
+}
+async function tourGame() {
+  const press = (code) => T.js(`__sp.press(${JSON.stringify(code)}); 1`);
+  const H = P[2], two = [P[0], P[1]];
+  const both = (fn, ms, what) => until(async () => {
+    const s = await Promise.all(two.map(phoneState));
+    return s.every(fn) && s;
+  }, ms, what);
+  await firstSong();
+  // Spiele fürs Turnier: in dieser Reihenfolge angetippt
+  await openGameSettings();
+  for (const icon of ["🎤", "👆", "⚡"]) await T.click(".m-g-tourpick button", { text: icon });
+  ok((await T.js(`document.querySelectorAll('.m-g-tourpick button[aria-pressed="true"]').length`)) === 3, "turnier: drei Spiele gewählt");
+  await T.click(".m-im-side-x");
+  // Gäste verbinden (über ein normales Spiel mit Warteraum), dann das Handy der Spielleitung
+  if (!hash) {
+    await openGame("quiz");
+    await until(async () => (await big.state()).st === "join", 4000, "turnier: Warteraum zum Verbinden");
+    await connectPhones();
+    await close();
+    await afterGame("quiz");
+  }
+  const hostHash = await hostLink();
+  ok(hostHash.startsWith(hash + "&h="), "turnier: Link der Spielleitung");
+  await H.win.loadURL(PAGE + "?host=1" + hostHash);
+  await until(() => H.js(`document.body.classList.contains("on") && !document.getElementById("bHost").hidden`).catch(() => false), 10000, "turnier: Handy der Spielleitung ist verbunden");
+  try {
+    await H.click("#bHost");
+    await H.click("#hBody .hgames button", { text: "🏆" });
+    await until(async () => (await big.state()).k === "tour" && (await big.state()).st === "join", 5000, "turnier: Warteraum auf dem großen Bild");
+    const lobby = (await big.state()).text;
+    ok(/Wer singt hier\?.*Tipp-Rennen.*Schnellster Finger/.test(lobby), "turnier: der Warteraum nennt die drei Spiele in Reihenfolge: " + lobby);
+    for (const ph of two) {
+      await until(async () => {
+        const s = await phoneState(ph);
+        return !s.hidden && s.k === "tour" && s.st === "join";
+      }, 8000, "turnier: Warteraum auf den Handys");
+      await ph.click("#game button.go");
+    }
+    await press("Space");
+    await until(async () => (await big.state()).chips === 3, 6000, "turnier: zwei Handys und die Tastatur");
+    await H.click("#hBody .hacts button.go");
+    // Spiel 1, Quiz: ohne neuen Warteraum gleich die Frage; die Spielleitung überspringt Runde 1
+    await both((s) => s.k === "quiz" && s.st === "ask" && s.round === "1/2" && s.tiles.length === 4, 15000, "turnier: Spiel 1 beginnt ohne Warteraum");
+    await until(() => H.js(`!!document.querySelector("#hBody .hacts button:not(.go):not(.end)")`), 4000, "turnier: die Spielleitung kann überspringen");
+    await H.click("#hBody .hacts button", { index: 0 });
+    const ps = await both((s) => s.st === "ask" && s.round === "2/2" && s.tiles.length === 4, 12000, "turnier: Runde übersprungen");
+    const b = await big.state(), right = tileOf(ps[0], b.artist);
+    await P[0].click(...tile(right));
+    await P[1].click(...tile((right + 1) % 4));
+    await press("Digit" + (((right + 1) % 4) + 1));
+    const e1 = await both((s) => s.k === "quiz" && s.st === "end", 10000, "turnier: Zwischenstand nach Spiel 1");
+    ok(/nach Spiel 1 von 3/.test((await big.state()).text) && /Tipp-Rennen/.test((await big.state()).text), "turnier: großes Bild zeigt Zwischenstand und nächstes Spiel: " + (await big.state()).text);
+    ok(/nach Spiel 1 von 3/i.test(e1[0].text) && /Alpha\s*10\b/.test(e1[0].text), "turnier: Handy zeigt den Zwischenstand, Alpha hat 10: " + e1[0].text);
+    ok(!(await T.js(`!!document.querySelector(".m-g-card")`)), "turnier: das Ergebnisbild gibt es erst am Schluss");
+    // Spiel 2, Tipp-Rennen: dieselben Gäste, Beta tippt am meisten
+    await both((s) => s.k === "taps" && s.st === "go", 14000, "turnier: Spiel 2 beginnt von selbst");
+    for (let i = 0; i < 9; i++) await P[1].click(".gring");
+    for (let i = 0; i < 3; i++) await P[0].click(".gring");
+    await both((s) => s.k === "taps" && s.st === "end", 20000, "turnier: Zwischenstand nach Spiel 2");
+    // Spiel 3, Schnellster Finger: Alpha zweimal vorn
+    for (const r of ["1/2", "2/2"]) {
+      await both((s) => s.k === "fast" && s.st === "go" && s.round === r, 26000, "turnier: Signal " + r);
+      await P[0].click("#game button.hot");
+      await both((s) => s.k === "fast" && s.st === "res" && s.round === r, 7000, "turnier: Ergebnis " + r);
+    }
+    // Schluss: Platzierungspunkte über alle drei Spiele (Alpha 10 + 7 + 10, Beta 0 + 10 + 0)
+    const fin = await until(async () => {
+      const s = await big.state();
+      return s.k === "tour" && s.st === "end" && s;
+    }, 20000, "turnier: Siegerehrung über alle Spiele");
+    ok(/🥇\s*Alpha\s*27/.test(fin.text) && /Beta\s*10\b/.test(fin.text), "turnier: Gesamtwertung stimmt: " + fin.text);
+    ok(await T.js(`!!document.querySelector(".m-g-card")`), "turnier: am Schluss gibt es das Ergebnisbild");
+    await H.click("#hBody .hacts button.end");
+    await until(async () => !(await big.state()).open, 5000, "turnier: Ende vom Handy");
+  } finally {
+    // aufräumen, ohne einen Fehler von oben zu verdecken
+    await T.js(`document.querySelector(".m-g-x")?.click(); 1`).catch(() => {});
+    await H.win.loadURL(PAGE + "?guest=1" + hash).catch(() => {});
+    await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bHost").hidden`).catch(() => false), 10000, "turnier: wieder als Gast verbunden").catch(() => {});
+    await gameReset().catch(() => {});
+  }
+}
+// Turnier-Auswahl leeren, damit spätere Fälle nichts davon merken
+async function gameReset() {
+  await openGameSettings();
+  const n = await T.js(`document.querySelectorAll('.m-g-tourpick button[aria-pressed="true"]').length`);
+  for (let i = 0; i < n; i++) await T.click('.m-g-tourpick button[aria-pressed="true"]');
+  await T.click(".m-im-side-x");
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1244,7 +1354,7 @@ const CASES = [
 ];
 // neuere Spiele
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️" });
-CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame]);
+CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

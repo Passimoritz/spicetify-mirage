@@ -116,6 +116,8 @@ const DEFAULTS = {
   gameSource: "",
   gameSourceName: "",
   gameTeams: 0,
+  gameTour: [],
+  gameTourN: 4,
   partyDepth: false,
   partyShatter: true,
   partyCamera: false,

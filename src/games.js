@@ -35,6 +35,7 @@ export const GAME_LIST = [
   { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "💣" },
   { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "🤔" },
   { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "🎙️" },
+  { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "🏆" },
   { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "🎡" },
   { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint", icon: "🙈" },
   { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint", icon: "🍻" },
@@ -319,15 +320,28 @@ const FIRST = {
   older: () => olderRound(),
   cover: () => coverRound(),
   duel: () => duelRound(),
+  tour: () => tourBegin(),
 };
-function start(kind) {
-  if (!ctx) return;
-  stop(true);
-  muteBack = 0;
+function fresh(kind) {
   G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null, src: undefined, played: new Set() };
   boxKey = "";
   clearInterval(ticker);
   ticker = setInterval(() => render(true), 250);
+}
+// carry: die Gäste des Turniers, sie spielen ohne neuen Warteraum weiter
+function start(kind, carry) {
+  if (!ctx) return;
+  // ein anderes Spiel von Hand gestartet: das Turnier ist vorbei
+  if (!carry) TOUR = null;
+  stop(true);
+  muteBack = 0;
+  fresh(kind);
+  if (carry) {
+    for (const [id, p] of carry) G.players.set(id, { id, n: p.n, c: p.c, p: 0, out: false, team: 0, ans: null, e: 0, early: false });
+    G.view = { st: "join" };
+    return beginNow();
+  }
+  if (kind === "tour") G.plan = tourPlan();
   if (WHEELS.has(kind)) return wheelIdle();
   // Wort-Alarm läuft ohne Warteraum: niemand muss sich anmelden, um mitzutrinken
   if (kind === "alarm" || kind === "sing") {
@@ -363,6 +377,9 @@ function skip() {
 }
 function stop(silent) {
   if (!G) return;
+  // im Turnier: bricht ein Spiel ab (zu wenige Gäste, kein Liedtext), geht es mit dem nächsten weiter
+  const goOn = !silent && TOUR && G.k !== "tour" ? G.players : null;
+  if (goOn && !G.scored) tourScore();
   clearTimers();
   if (G.k === "stop") PLR.play();
   resume();
@@ -375,7 +392,16 @@ function stop(silent) {
   box?.remove();
   box = null;
   boxKey = "";
-  if (!silent) ctx.changed?.();
+  if (goOn) return void tourNext(goOn);
+  if (!silent) {
+    TOUR = null;
+    ctx.changed?.();
+  }
+}
+// Beenden von Hand (× auf dem großen Bild, Leiste, Spielleitung): auch ein laufendes Turnier ist dann vorbei
+function endAll() {
+  TOUR = null;
+  stop();
 }
 function finish() {
   clearTimers();
@@ -383,10 +409,73 @@ function finish() {
   muteOff();
   hide("");
   const list = top();
+  // im Turnier: Zwischenstand, dann das nächste Spiel mit denselben Gästen
+  if (TOUR && G.k !== "tour") {
+    tourScore();
+    G.scored = true;
+    show({ st: "end", top: list, tour: tourView() });
+    if (list.length) ctx.confetti?.();
+    after(10000, () => {
+      const pl = G.players;
+      stop(true);
+      tourNext(pl);
+    });
+    return void ctx.changed?.();
+  }
   show({ st: "end", top: list });
   if (list.length) ctx.confetti?.();
   after(14000, () => stop());
   ctx.changed?.();
+}
+
+/* ---- Turnier: mehrere Spiele hintereinander, Platzierungspunkte je Spiel, Siegerehrung über alles */
+// Spiele, die ohne Extras laufen (keine Trinkspiele, kein Rad, kein Schütteln, kein Abstimmen über Geschmack)
+export const TOUR_POOL = ["quiz", "title", "intro", "older", "cover", "gap", "next", "tf", "fast", "taps", "beat"];
+// die Punkte je Platz: so zählt ein Sieg im Tipp-Rennen (Hunderte Tipps) so viel wie einer im Quiz
+const TOUR_PTS = [10, 7, 5, 3, 2];
+let TOUR = null;
+function tourPlan() {
+  const pick = (cfg.gameTour || []).filter((k) => TOUR_POOL.includes(k));
+  if (pick.length >= 3) return pick.slice(0, 6);
+  return shuffle(TOUR_POOL).slice(0, Math.max(3, Math.min(6, Number(cfg.gameTourN) || 4)));
+}
+function tourBegin() {
+  // Spiele, für die zu wenige da sind, fallen gleich raus
+  const plan = G.plan.filter((k) => (MIN[k] || 0) <= all().length);
+  TOUR = { list: plan, i: 0, total: new Map() };
+  const pl = G.players;
+  stop(true);
+  tourNext(pl);
+}
+function tourNext(players) {
+  if (!TOUR) return;
+  const k = TOUR.list[TOUR.i++];
+  if (k) return start(k, players);
+  // fertig: Siegerehrung mit den Turnierpunkten, das Ergebnisbild gibt es wie nach jedem Spiel
+  const tot = TOUR.total;
+  TOUR = null;
+  fresh("tour");
+  for (const [id, x] of tot) G.players.set(id, { id, n: x.n, c: x.c, p: x.p, out: false, team: 0, ans: null, e: 0, early: false });
+  G.view = { st: "join" };
+  finish();
+}
+function tourScore() {
+  const list = all().sort((a, b) => b.p - a.p);
+  let rank = 0;
+  list.forEach((p, i) => {
+    if (i && p.p < list[i - 1].p) rank = i;
+    const x = TOUR.total.get(p.id) || { n: "", c: null, p: 0 };
+    x.n = p.n || x.n;
+    x.c = p.c ?? x.c;
+    // wer gar nichts geholt hat, bekommt auch keinen Platz
+    x.p += p.p > 0 ? (TOUR_PTS[rank] ?? 1) : 0;
+    TOUR.total.set(p.id, x);
+  });
+}
+function tourView() {
+  const tot = [...TOUR.total].map(([id, x]) => ({ id, ...x })).sort((a, b) => b.p - a.p).slice(0, 5);
+  const next = TOUR.list[TOUR.i];
+  return { i: TOUR.i, of: TOUR.list.length, next: next ? `${INFO[next].icon} ${t(INFO[next].label)}` : "", tot: tot.map((p) => ({ n: nameOf(p), p: p.p, c: colOf(p), i: short(p.id) })) };
 }
 
 /* ---- Fragen: gemeinsamer Ablauf */
@@ -1455,7 +1544,7 @@ window.addEventListener("mirage:host", (e) => {
   if (m.a === "start") return void beginNow();
   if (m.a === "skip") return void skip();
   if (m.a === "spin") return void spin();
-  if (m.a === "end") return void stop();
+  if (m.a === "end") return void endAll();
   if (m.a !== "pts") return;
   const p = all().find((x) => short(x.id) === m.t);
   if (!p) return;
@@ -1546,7 +1635,7 @@ function head(v) {
   x.title = x.ariaLabel = t("gEndNow");
   x.onclick = (e) => {
     e.stopPropagation();
-    stop();
+    endAll();
   };
   h.append(x);
   return h;
@@ -1637,7 +1726,7 @@ function buildJoin() {
     wrap.prepend(img);
   };
   // wer schon da ist: Zahl, Namen in ihrer Farbe, und was noch fehlt
-  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
+  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", G.plan ? G.plan.map((k) => `${INFO[k].icon} ${t(INFO[k].label)}`).join(" · ") : t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
   const go = document.createElement("button");
   go.type = "button";
   go.className = "m-g-go";
@@ -1749,6 +1838,12 @@ function buildEnd(v) {
   }
   if (list.length) box.append(pod);
   if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
+  // Turnier: Zwischenstand über alle Spiele und was als Nächstes kommt; das Bild gibt es am Schluss
+  if (v.tour) {
+    box.append(div("m-g-sub m-g-tour", "🏆 " + t("gTourAfter").replace("{i}", v.tour.i).replace("{n}", v.tour.of)), board(v.tour.tot));
+    if (v.tour.next) box.append(div("m-g-sub", t("gTourNext").replace("{g}", v.tour.next)));
+    return;
+  }
   if (list.length) {
     // Ergebnis zum Teilen: die Rangliste als Bild
     const save = document.createElement("button");
@@ -1879,7 +1974,7 @@ export const games = {
     muteRecover();
   },
   start,
-  stop,
+  stop: endAll,
   spin,
   beginNow,
   skip,
