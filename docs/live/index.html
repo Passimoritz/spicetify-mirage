@@ -59,6 +59,8 @@
   .hbody .rcrow button[aria-pressed="true"] { background: rgb(var(--c)); color: #0b0a12; border-color: transparent; }
   .rcsel { height: 46px; padding: 0 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.07); color: #fff; font: inherit; font-size: 15px; }
   .rcsel option { color: #0b0a12; }
+  /* oben verankert statt mittig: kommt ein Gast in die Liste, rutschen sonst die Knöpfe unter dem Finger weg */
+  .host { align-items: start; }
   .host .pbox { max-height: calc(100dvh - 40px); overflow: auto; overscroll-behavior: contain; text-align: left; }
   .host .shead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .host .x { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; color: #fff; font: inherit; font-size: 15px; background: rgba(255, 255, 255, 0.1); }
@@ -2143,7 +2145,7 @@ function gBingo(g, box) {
 /* ---- Spielleitung: starten, Runde überspringen, beenden, Punkte korrigieren */
 // Nur das Handy mit dem Link der Spielleitung hat ihren Schlüssel (hinter dem „#“, er verlässt das Handy nie).
 // Gesendet wird der Befehl mit einer Unterschrift aus diesem Schlüssel; das Theme prüft sie.
-let hostKey = null, hostStep = 10, hostDrawn = "";
+let hostKey = null, hostStep = 10, hostDrawn = "", hostList = "";
 const b64u = (u8) => btoa(String.fromCharCode(...u8)).replace(/[+]/g, "-").replace(/[/]/g, "_").replace(/=+$/, "");
 async function hostInit() {
   try {
@@ -2166,19 +2168,50 @@ async function hostCmd(a, t = "", v = 0) {
   sendSure({ k: "host", hd, sig });
   haptic([[0.7, 40]]);
 }
+// Punkte korrigieren: Schrittweite und eine Zeile je Gast
+function hostRows(box, list, btn) {
+  if (!list.length) return;
+  const steps = gEl("div", null, "hsteps");
+  for (const s of [1, 10, 100]) {
+    const b = btn("±" + s, "", () => {
+      hostStep = s;
+      drawHost();
+    });
+    b.setAttribute("aria-pressed", String(s === hostStep));
+    steps.append(b);
+  }
+  box.append(gEl("small", T.hPts), steps);
+  for (const x of list) {
+    const r = gEl("div", null, "hrow"), pts = gEl("b", "");
+    pts.dataset.i = x.i;
+    r.append(colDot(x.c), gEl("span", String(x.n ?? "")), pts, btn("−", "", () => hostCmd("pts", x.i, -hostStep)), btn("+", "", () => hostCmd("pts", x.i, hostStep)));
+    box.append(r);
+  }
+}
 function drawHost() {
   if ($("host").hidden) return;
   const g = cur?.g || null, body = $("hBody"), list = g?.pl || [];
-  const key = g ? [g.id, g.k, g.st, g.r || 0, hostStep, list.map((x) => x.i + x.n + x.c).join(",")].join("|") : "none";
+  // Knöpfe und Gästeliste getrennt: kommt ein Gast dazu, während die Spielleitung „Start“ drückt, darf der Knopf
+  // nicht zwischen Drücken und Loslassen neu gebaut werden (sonst geht der Tipp verloren)
+  const key = g ? [g.id, g.k, g.st, g.r || 0].join("|") : "none", listKey = [key, hostStep, list.map((x) => x.i + x.n + x.c).join(",")].join("|");
+  const btn = (text, cls, fn) => {
+    const b = gEl("button", text, cls);
+    b.type = "button";
+    b.onclick = gTap(fn);
+    return b;
+  };
+  if (key === hostDrawn && listKey !== hostList && g) {
+    hostList = listKey;
+    const box = body.querySelector(".hlist");
+    if (box) {
+      box.textContent = "";
+      hostRows(box, list, btn);
+    }
+  }
   if (key !== hostDrawn) {
     hostDrawn = key;
+    hostList = listKey;
     body.textContent = "";
-    const btn = (text, cls, fn) => {
-      const b = gEl("button", text, cls);
-      b.type = "button";
-      b.onclick = gTap(fn);
-      return b;
-    };
     if (!g) {
       const grid = gEl("div", null, "hgames");
       for (const [k, [icon, title]] of Object.entries(GAME)) grid.append(btn(icon + " " + title(), "", () => hostCmd("open", k)));
@@ -2191,25 +2224,9 @@ function drawHost() {
     else if (WHEELS.has(g.k)) acts.append(btn(T.hSpin, "go", () => hostCmd("spin")));
     else if (g.st !== "end") acts.append(btn(T.hSkip, "", () => hostCmd("skip")));
     acts.append(btn(T.hEnd, "end", () => hostCmd("end")));
-    body.append(gEl("p", icon + " " + title() + (g.r && g.of ? " · " + g.r + "/" + g.of : ""), "hnow"), acts);
-    if (list.length) {
-      const steps = gEl("div", null, "hsteps");
-      for (const s of [1, 10, 100]) {
-        const b = btn("±" + s, "", () => {
-          hostStep = s;
-          drawHost();
-        });
-        b.setAttribute("aria-pressed", String(s === hostStep));
-        steps.append(b);
-      }
-      body.append(gEl("small", T.hPts), steps);
-      for (const x of list) {
-        const r = gEl("div", null, "hrow"), pts = gEl("b", "");
-        pts.dataset.i = x.i;
-        r.append(colDot(x.c), gEl("span", String(x.n ?? "")), pts, btn("−", "", () => hostCmd("pts", x.i, -hostStep)), btn("+", "", () => hostCmd("pts", x.i, hostStep)));
-        body.append(r);
-      }
-    }
+    const rows = gEl("div", null, "hlist");
+    body.append(gEl("p", icon + " " + title() + (g.r && g.of ? " · " + g.r + "/" + g.of : ""), "hnow"), acts, rows);
+    hostRows(rows, list, btn);
   }
   // die Stände laufen mit, ohne die Knöpfe unter dem Finger neu zu bauen
   for (const b of body.querySelectorAll("b[data-i]")) b.textContent = String(g?.sc?.[b.dataset.i] ?? 0);

@@ -4,6 +4,7 @@
 //   npm run test:games                     alles
 //   E2E_ONLY=quiz,bomb npm run test:games  nur diese
 //   E2E_RELAY=public npm run test:games    über die echten öffentlichen Relays statt lokal
+//   E2E_LANG=en npm run test:games         die Handys auf Englisch
 const { app, BrowserWindow, session } = require("electron");
 const fs = require("fs"), path = require("path"), http = require("http");
 const { startBroker } = require("./broker.js");
@@ -11,6 +12,8 @@ const { startBroker } = require("./broker.js");
 const ROOT = path.join(__dirname, "..", ".."), OUT = path.join(__dirname, "out");
 const LIVE = path.join(ROOT, "docs", "live");
 const PUBLIC = process.env.E2E_RELAY === "public";
+// E2E_LANG=en npm run test:games: die Handys auf Englisch (wie auf GitHub), das große Bild bleibt deutsch
+const PHONE_LANG = process.env.E2E_LANG || "";
 const ONLY = (process.env.E2E_ONLY || "").split(",").filter(Boolean);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const ICON = { quiz: "🎤", title: "🎵", intro: "⏱️", gap: "✏️", next: "📜", tf: "🕵️", beat: "🥁", stop: "✋", fast: "⚡", taps: "👆", battle: "💃", bomb: "💣", likely: "🤔", sing: "🎙️", wheel: "🎡", never: "🙈", dquiz: "🍻", alarm: "🚨", dlikely: "👉", dwheel: "🍀" };
@@ -1294,7 +1297,24 @@ async function tourGame() {
     }
     await press("Space");
     await until(async () => (await big.state()).chips === 3, 6000, "turnier: zwei Handys und die Tastatur");
-    await H.click("#hBody .hacts button.go");
+    if (PHONE_LANG) ok((await H.js(`LANG`)) === PHONE_LANG.slice(0, 2), "turnier: die Handys laufen in der Sprache aus E2E_LANG");
+    // Start drücken, während ein Gast dazukommt: die Liste der Spielleitung ändert sich zwischen Drücken und Loslassen.
+    // Früher saß die Leiste der Spielleitung mittig: eine Zeile mehr schob den Knopf weg, und er wurde neu gebaut.
+    // Der Tipp ging verloren, das Turnier blieb im Warteraum (auf Englisch öfter, die Texte sind dort kürzer).
+    const at = await H.js(`(() => {
+      const b = document.querySelector("#hBody .hacts button.go");
+      b.scrollIntoView({ block: "center" });
+      const r = b.getBoundingClientRect();
+      return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+    })()`);
+    H.wc.sendInputEvent({ type: "mouseMove", ...at });
+    await wait(15);
+    H.wc.sendInputEvent({ type: "mouseDown", ...at, button: "left", clickCount: 1 });
+    await wait(15);
+    await H.js(`cur.g = { ...cur.g, pl: [...(cur.g.pl || []), { i: "zz9999", n: "Neu", c: 1 }] }; drawHost(); 1`);
+    await wait(15);
+    ok(await H.js(`!!document.elementFromPoint(${at.x}, ${at.y})?.closest("#hBody .hacts button.go")`), "turnier: der Start-Knopf bleibt unter dem Finger, auch wenn die Gästeliste wächst");
+    H.wc.sendInputEvent({ type: "mouseUp", ...at, button: "left", clickCount: 1 });
     // Spiel 1, Quiz: ohne neuen Warteraum gleich die Frage; die Spielleitung überspringt Runde 1
     await both((s) => s.k === "quiz" && s.st === "ask" && s.round === "1/2" && s.tiles.length === 4, 25000, "turnier: Spiel 1 beginnt ohne Warteraum");
     await until(() => H.js(`!!document.querySelector("#hBody .hacts button:not(.go):not(.end)")`), 4000, "turnier: die Spielleitung kann überspringen");
@@ -1628,6 +1648,13 @@ app.whenReady().then(async () => {
     s.on("will-download", (_e, item) => item.setSavePath(path.join(OUT, item.getFilename())));
     const win = new BrowserWindow({ width: w, height: h, useContentSize: true, show: false, webPreferences: { offscreen: true, backgroundThrottling: false, sandbox: false, contextIsolation: false, partition: part, preload: path.join(__dirname, "ws-preload.js"), additionalArguments: PUBLIC ? [] : ["--mirage-brokers=" + JSON.stringify(map)] } });
     win.webContents.setFrameRate(name === "Big" ? 24 : 6);
+    // E2E_LANG: die Handys in dieser Sprache (navigator.languages und Accept-Language), das große Bild bleibt, wie es ist
+    if (PHONE_LANG && name !== "Big") {
+      const dbg = win.webContents.debugger;
+      dbg.attach("1.3");
+      dbg.sendCommand("Network.setUserAgentOverride", { userAgent: win.webContents.getUserAgent(), acceptLanguage: PHONE_LANG }).catch((e) => console.log("E2E_LANG geht nicht: " + e.message));
+      dbg.sendCommand("Emulation.setLocaleOverride", { locale: PHONE_LANG }).catch(() => {});
+    }
     return new Win(name, win);
   };
   T = make("Big", 1280, 800, "e2e-theme");
