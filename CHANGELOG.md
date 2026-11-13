@@ -60,6 +60,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- The cover-colour wash under page headers (artist, playlist, album, podcast, concert pages) and at the top of Home fades out smoothly instead of ending in a hard line through track lists and card rows.
+- Header info lines no longer show doubled dots (“2022 • • 14 songs”).
 - The current lyric line no longer flickers back on pause or right after a song change; LRC `[offset:]` tags are honoured.
 - Party mode sometimes took key and mode from the wrong section.
 - **Play buttons** on headers, cards and the player bar are one crisp, round accent button again: no square behind the icon, no pulsing halo, no spinning ring. Selected filter chips are readable, selected tracks keep their highlight on hover, the playing row no longer turns olive on warm covers, and outlined “Follow” buttons are styled again on Spotify 1.3.
