@@ -35,13 +35,24 @@ function createVenue(makeCanvas) {
   const flashCap = createFlashCap();
   const show = createShow(glowSprite, flashCap);
   let disco = null, tunnel = [];
+  // Szenenwechsel der Lichtregie: das alte Bühnenlicht blendet aus, während das neue einblendet (nur für die
+  // Dauer des Übergangs werden beide gezeichnet)
   function drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {
+    const now = px.P.spot, old = px.spot2 || now, sx = px.sx ?? 1;
+    if (sx < 1 && old !== now) drawSpot(old, 1 - sx, ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v);
+    drawSpot(now, old !== now ? sx : 1, ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v);
+  }
+  function drawSpot(kind, k, ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {
     // t = Bewegungsuhr der Lichtregie (im Break langsamer, im Drop schneller, ohne Sprung), sonst die Uhrzeit
     const t = px.mt ?? st.t, far = Math.hypot(vw, vh) * 1.1;
-    const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
+    const beat = px.accent, vis = k * clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
+    if (vis < 0.01) return;
     // was welches Licht treibt: Boden = Kick, Spots von oben = Snare, Glitzern/Scanner = Hi-Hats
     const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);
-    const cone = (sx, sy, a, wd, c, al, reach = far) => {
+    // Kegelbreite nach der Stimmung: zärtlich weit und weich, aggressiv eng gebündelt
+    const spread = px.spread ?? 1;
+    const cone = (sx, sy, a, wd0, c, al, reach = far) => {
+      const wd = wd0 * spread;
       const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
       g.addColorStop(0, rgba(c, al));
       g.addColorStop(0.5, rgba(c, al * 0.35));
@@ -54,7 +65,7 @@ function createVenue(makeCanvas) {
       ctx.closePath();
       ctx.fill();
     };
-    switch (px.P.spot) {
+    switch (kind) {
       case "cross": {
         // Rave: zwei Kegel aus den unteren Ecken kreuzen sich – im Aufbau immer schneller, beim Drop weit offen
         const sp = 0.6 + px.energy * 0.8 + px.build * 3;
@@ -888,7 +899,8 @@ function createVenue(makeCanvas) {
     return sea.a;
   }
   function crowdMood(px, dt, hype) {
-    const target = clamp(Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0), 0, 1);
+    // px.crowd = Stimmung des Teils (Lichtregie): in einer traurigen Bridge wiegt sich die Menge eher, als dass sie springt
+    const target = clamp((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);
     mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));
     if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
     return mood.x;

@@ -26,7 +26,8 @@ async function cosmos(url) {
 async function spotifyFeatures(id) {
   for (const url of [`https://spclient.wg.spotify.com/audio-attributes/v1/audio-features/${id}`, `https://api.spotify.com/v1/audio-features/${id}`]) {
     const f = await within(cosmos(url), 4000);
-    if (Number(f?.tempo) > 40) return { bpm: Number(f.tempo), loud: Number(f.loudness) || -8, energy: Number(f.energy) || 0.6, key: Number.isFinite(f.key) ? f.key : -1, mode: Number.isFinite(f.mode) ? f.mode : 1 };
+    // (Valenz und Tanzbarkeit kommen in derselben Antwort mit – die Lichtregie schätzt daraus die Stimmung)
+    if (Number(f?.tempo) > 40) return { bpm: Number(f.tempo), loud: Number(f.loudness) || -8, energy: Number(f.energy) || 0.6, key: Number.isFinite(f.key) ? f.key : -1, mode: Number.isFinite(f.mode) ? f.mode : 1, valence: Number.isFinite(f.valence) ? f.valence : null, dance: Number.isFinite(f.danceability) ? f.danceability : null };
   }
   return null;
 }
@@ -160,6 +161,7 @@ async function estimateAnalysis(uri) {
   return {
     beats, bars, segs, avg, bpm: Math.round(bpm), loud: base,
     sections: [{ t: 0, mode: feat?.mode ?? 1, l: base }],
+    feat: feat ? { energy: feat.energy, valence: feat.valence, dance: feat.dance } : null,
     synthetic: true,
   };
 }

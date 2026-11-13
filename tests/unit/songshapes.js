@@ -9,6 +9,13 @@ const SHAPES = {
   ballad: { bpm: 72, kick: "rock", parts: [["intro", 4, -18], ["verse", 8, -15], ["chorus", 8, -10, { hold: true }], ["verse", 8, -15], ["chorus", 8, -10, { hold: true }], ["bridge", 4, -14, { key: 2 }], ["chorus", 8, -9.5, { hold: true }], ["outro", 4, -17]] },
   trap: { bpm: 140, kick: "trap", parts: [["intro", 4, -12], ["chorus", 8, -6], ["verse", 16, -9], ["chorus", 8, -6], ["break", 4, -17], ["chorus", 8, -5], ["outro", 4, -12]] },
   dnb: { bpm: 174, kick: "dnb", parts: [["intro", 16, -14], ["pre", 8, -13, { rise: -9, dip: true }], ["drop", 16, -5], ["break", 16, -15], ["pre", 8, -13, { rise: -9, dip: true }], ["drop", 16, -5], ["outro", 8, -13]] },
+  // Gefühls-Formen (mood.test.js, Bildstreifen): mode = Dur (1) / Moll (0) des Songs, dark = Klang dunkler (0..1)
+  // melancholische Ballade: langsam, leise, Moll, dunkler Klang, lange Töne
+  sad: { bpm: 66, kick: "rock", mode: 0, dark: 0.6, parts: [["intro", 4, -20], ["verse", 8, -17, { hold: true }], ["chorus", 8, -13, { hold: true }], ["verse", 8, -17, { hold: true }], ["chorus", 8, -12.5, { hold: true }], ["bridge", 4, -16, { key: 2, hold: true }], ["chorus", 8, -12.5, { hold: true }], ["outro", 4, -19]] },
+  // Metal: schnell, laut, Moll, kaum leise Stellen, heller Klang
+  metal: { bpm: 168, kick: "rock", mode: 0, dark: -0.3, parts: [["intro", 4, -7], ["verse", 8, -5.5], ["chorus", 8, -3.5], ["verse", 8, -5.5], ["chorus", 8, -3.5], ["bridge", 8, -6, { key: 4 }], ["chorus", 8, -3.5], ["chorus", 8, -3.5], ["outro", 4, -7]] },
+  // Tanzsong mit trauriger Bridge: Dur, vier auf den Boden – die Bridge leise, in Moll, mit langen Tönen
+  dancesad: { bpm: 124, kick: "four", mode: 1, parts: [["intro", 8, -12], ["verse", 16, -9], ["chorus", 16, -5], ["verse", 16, -9], ["chorus", 16, -5], ["bridge", 16, -17, { key: 4, mode: 0, hold: true }], ["chorus", 16, -5], ["outro", 8, -12]] },
 };
 // fester Zufall: jeder Lauf erzeugt denselben Song
 function rng(seed) {
@@ -23,7 +30,7 @@ function raw(name) {
   for (const [kind, nBars, db, o = {}] of S.parts) {
     const t0 = t;
     // Spotify legt Abschnitte selten genau auf die Eins: bis zu ±0,4 s daneben
-    sections.push({ start: Math.max(0, t0 + (sections.length ? (rnd() - 0.5) * 0.8 : -t0)), duration: nBars * 4 * beat, loudness: db, tempo: S.bpm, tempo_confidence: 0.8, key: o.key ?? 9, mode: 1 });
+    sections.push({ start: Math.max(0, t0 + (sections.length ? (rnd() - 0.5) * 0.8 : -t0)), duration: nBars * 4 * beat, loudness: db, tempo: S.bpm, tempo_confidence: 0.8, key: o.key ?? 9, mode: o.mode ?? S.mode ?? 1 });
     truth.push({ kind, t0, t1: t0 + nBars * 4 * beat });
     for (let k = 0; k < nBars * 4; k++, b++) {
       const tb = t + k * beat, inBar = k % 4, f = k / (nBars * 4);
@@ -41,13 +48,13 @@ function raw(name) {
         segments.push({
           start: ts, duration: beat / 2, loudness_max: lvl + (hit ? 1.5 : -2.5) + rnd() * 0.5, pitches,
           // timbre[1] Helligkeit, [2] Rauschen, [3] Anschlag
-          timbre: [0, half ? 120 : kick ? 20 : snare ? 60 : 45, snare ? 70 : half ? 40 : 15, kick ? 95 : snare ? 85 : 15],
+          timbre: [0, (half ? 120 : kick ? 20 : snare ? 60 : 45) * (1 - (S.dark || 0)), snare ? 70 : half ? 40 : 15, kick ? 95 : snare ? 85 : 15],
         });
       }
     }
     t += nBars * 4 * beat;
   }
-  return { track: { tempo: S.bpm, loudness: -8, key: 9, mode: 1 }, beats, bars, sections, segments, tatums: [], truth };
+  return { track: { tempo: S.bpm, loudness: -8, key: 9, mode: S.mode ?? 1 }, beats, bars, sections, segments, tatums: [], truth };
 }
 // wie audio.js shape(): kurze Feldnamen
 function shaped(name) {

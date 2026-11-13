@@ -1035,6 +1035,8 @@ const immersive = (() => {
     if (!got || got.instrumental) return;
     applyTiming(uri, got);
     voices(got);
+    // Stimmung der Lichtregie: eine kleine Wortliste über die Zeilen (bleibt lokal)
+    party.lyrics(uri, got.synced ? got.lines : []);
     if (cfg.partyWords && got.synced) {
       wordFx.prepare(uri, got.lines, got.lang);
       // Sprache ohne eigenes Wörterbuch: einmal die englische Übersetzung holen (nur mit Online-Suche)
@@ -1846,7 +1848,8 @@ const immersive = (() => {
     venueFrame({
       t: performance.now() / 1000, dt, vw, vh, dpr, pal, cx, cy, R,
       px: {
-        key: px.key, P: { spot: P.spot }, accent: px.accent, kickEnv: px.kickEnv, snareEnv: px.snareEnv, hatEnv: px.hatEnv,
+        // Bühnenlicht: das der Szene, sonst das des Genres; beim Szenenwechsel gleitet spot2 → spot über sx
+        key: px.key, P: { spot: px.spot || P.spot }, spot2: px.spot2 || P.spot, sx: px.sx ?? 1, rig: px.rig || "", spread: px.spread ?? 1, crowd: px.crowd ?? 1, accent: px.accent, kickEnv: px.kickEnv, snareEnv: px.snareEnv, hatEnv: px.hatEnv,
         beat: px.beat, hit: px.hit, energy: px.energy, build: px.build, low: px.low, drop: px.drop, dropHit: px.dropHit,
         I: px.I, spin: px.spin, level: px.level, scene: px.scene, inBar: px.inBar, phase: px.phase, beatIdx: px.beatIdx,
         finale: !!px.finale, blackout: !!px.blackout,
@@ -1878,7 +1881,7 @@ const immersive = (() => {
       // Riser der Regie (wird zum Drop hin dichter, ohne Blitze ruhig); ohne Regie wie bisher
       const riser = px.riser ? 1 + px.pulse * 0.7 : px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin((performance.now() / 1000) * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
       const al = (0.1 + px.accent * 0.4 + px.drop * 0.3) * px.beamVis * riser * (P.beams ?? 1);
-      const wd = (0.012 + px.accent * 0.016 + px.drop * 0.012) * (1 - px.build * 0.5);
+      const wd = (0.012 + px.accent * 0.016 + px.drop * 0.012) * (1 - px.build * 0.5) * (px.spread ?? 1);
       for (let k = 0; k < n; k++) {
         const side = k % 2 ? -1 : 1;
         const a = side * (px.spin + Math.floor(k / 2) * ((Math.PI * 2) / half)) - Math.PI / 2;
@@ -1952,6 +1955,22 @@ const immersive = (() => {
       if (px.dropHit) n += Math.round(50 * Math.min(px.lvl, 2));
       // Hi-Hats und Becken: ein paar feine Funken genau auf dem Klang
       if (px.hatHit && px.low < 0.6) n += Math.round(1 + px.bright * 4);
+      // Teilcheneffekt nach der Stimmung des Teils (director.js): fröhlich Funken, traurig/zärtlich/verträumt ein
+      // langsamer Lichtregen von oben, aggressiv/angespannt kurze harte Lichtstöße aus dem Cover – nie Blitze
+      if (px.fxk === "rain") {
+        const k = px.hit && px.low < 0.9 ? Math.round(1 + Math.min(px.lvl, 2) * (0.4 + 0.6 * px.I)) : 0;
+        for (let i = 0; i < k; i++) sparks.push({ rain: 1, x: Math.random() * vw, y: -Math.random() * vh * 0.1, v: (50 + Math.random() * 60) * dpr, life: 1, c: colAt(Math.random()) });
+        n = Math.round(n * 0.25);
+      } else if (px.fxk === "hits") {
+        if ((px.kickHit || px.snareHit) && px.low < 0.5 && px.energy > 0.35) {
+          const a0 = Math.random() * Math.PI * 2;
+          for (let i = 0, k = 3 + Math.round(px.I * 2); i < k; i++) {
+            const a = a0 + (i / k) * Math.PI * 2;
+            sparks.push({ hit: 1, a, r: R + maxLen * 0.4, v: (900 + Math.random() * 500) * dpr, life: 1, c: colAt(a / (Math.PI * 2)) });
+          }
+        }
+        n = Math.round(n * 0.4);
+      }
       for (let k = 0; k < n; k++) {
         const a = Math.random() * Math.PI * 2;
         sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
@@ -1961,8 +1980,28 @@ const immersive = (() => {
     if (px.dropHit) for (let k = 0; k < 3; k++) rings.push({ r: R - k * 46 * dpr, a: 0.95 - k * 0.2, w: 7 - k * 2 });
     // Funken im Tempo der Regie: im Break schweben sie langsam, im Drop schießen sie
     const sdt = dt * clamp(px.speed ?? 1, 0.4, 1.5);
-    sparks = sparks.filter((p) => (p.life -= sdt * 1.15) > 0);
+    // Regen lebt lange (fällt langsam), Lichtstöße nur einen Augenblick
+    sparks = sparks.filter((p) => (p.life -= sdt * (p.rain ? 0.3 : p.hit ? 3.2 : 1.15)) > 0 && !(p.rain && p.y > vh * 0.64));
     for (const p of sparks) {
+      if (p.rain) {
+        // Tropfen bleiben über dem Publikum: ab gut der halben Höhe blenden sie aus
+        p.y += p.v * sdt;
+        ctx.fillStyle = rgba(p.c, (0.55 * Math.min(1, p.life * 2) * clamp((vh * 0.64 - p.y) / (vh * 0.14), 0, 1)).toFixed(3));
+        ctx.fillRect(p.x, p.y, 1.6 * dpr, 16 * dpr);
+        continue;
+      }
+      if (p.hit) {
+        p.r += p.v * sdt;
+        p.v *= Math.exp(-sdt * 4);
+        const c = Math.cos(p.a), sn = Math.sin(p.a), l = 34 * dpr * p.life;
+        ctx.lineWidth = 2.2 * dpr;
+        ctx.strokeStyle = rgba(p.c, (0.75 * p.life).toFixed(3));
+        ctx.beginPath();
+        ctx.moveTo(cx + c * p.r, cy + sn * p.r);
+        ctx.lineTo(cx + c * (p.r + l), cy + sn * (p.r + l));
+        ctx.stroke();
+        continue;
+      }
       p.r += p.v * sdt;
       p.v *= Math.exp(-sdt * 1.6);
       ctx.fillStyle = rgba(p.c, p.life * 0.9);
