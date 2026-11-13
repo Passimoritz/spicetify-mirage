@@ -364,7 +364,7 @@ html.mirage-no-tilt [data-encore-id="card"] {
 .main-playButton-PlayButton button span,
 [data-testid="play-button"] > span {
   background: linear-gradient(135deg, var(--m-c), var(--m-a) 55%, var(--m-b)) !important;
-  color: #0b0a12 !important;
+  color: var(--m-ink) !important;
   box-shadow:
     0 10px 30px -6px rgba(var(--m-a-rgb), 0.75),
     0 0 0 1px rgba(255, 255, 255, 0.25) inset !important;
@@ -407,7 +407,7 @@ html.mirage-no-tilt [data-encore-id="card"] {
 .ChipInnerComponent-sm-selected,
 [class*="chip__inner--selected"] {
   background: linear-gradient(135deg, var(--m-c), var(--m-a)) !important;
-  color: #0b0a12 !important;
+  color: var(--m-ink) !important;
 }
 
 /* Suche oben: schwebende Kapsel */
@@ -516,12 +516,12 @@ html.mirage-no-tilt [data-encore-id="card"] {
 [data-testid="control-button-playpause"] {
   position: relative;
   background: linear-gradient(135deg, var(--m-c), var(--m-a) 60%, var(--m-b)) !important;
-  color: #0b0a12 !important;
+  color: var(--m-ink) !important;
   box-shadow: 0 8px 30px -6px rgba(var(--m-a-rgb), 0.9) !important;
   transition: transform 0.4s var(--m-spring), box-shadow 0.4s var(--m-ease) !important;
 }
 [data-testid="control-button-playpause"] svg {
-  fill: #0b0a12 !important;
+  fill: var(--m-ink) !important;
 }
 [data-testid="control-button-playpause"]:hover {
   transform: scale(1.12) !important;
@@ -658,9 +658,10 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 /* ==========================================================================
    SCROLLBALKEN, AUSWAHL, FOKUS
    ========================================================================== */
+/* deckend in der Leitfarbe mit passender Schrift: Weiß auf halbdurchsichtigem Gelb oder Grün war kaum lesbar */
 ::selection {
-  background: rgba(var(--m-a-rgb), 0.55);
-  color: #fff;
+  background: var(--m-a);
+  color: var(--m-ink);
 }
 .os-scrollbar-handle,
 ::-webkit-scrollbar-thumb {
@@ -820,9 +821,9 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   opacity: 0.62;
 }
 /* Hintergrundgesang in Klammern: leiser, kleiner, Zweitfarbe */
+/* ohne Deckkraft-Abzug: B ist schon knapp auf 3 : 1 gerechnet, jeder Abzug machte es unlesbar */
 #mirage-immersive .m-im-line .is-bg {
   font-size: 0.78em;
-  opacity: 0.6;
   color: var(--m-b);
 }
 /* Duette: jede Stimme ihre Farbe (Name vor der Zeile im Liedtext) */
@@ -1685,7 +1686,8 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
   place-items: center;
   font: 700 15px var(--m-font);
   color: #fff;
-  background: linear-gradient(135deg, rgba(var(--m-a-rgb), 0.55), rgba(var(--m-c-rgb), 0.35));
+  /* gedeckter als früher: weiße Initialen auf hellem Gelb oder Grün waren kaum lesbar */
+  background: linear-gradient(135deg, rgba(var(--m-a-rgb), 0.4), rgba(var(--m-c-rgb), 0.25));
   box-shadow:
     0 0 0 1.5px rgba(255, 255, 255, 0.28),
     0 6px 18px -6px rgba(0, 0, 0, 0.8),
@@ -2857,7 +2859,7 @@ html[data-m-page="artist"] h2 {
 /* Knöpfe: Hauptknopf in Coverfarbe, Nebenknöpfe als Glas-Kapsel */
 [data-encore-id="buttonPrimary"] > span:first-child {
   background: var(--m-a) !important;
-  color: #0b0a12 !important;
+  color: var(--m-ink) !important;
   box-shadow: 0 12px 30px -10px rgba(var(--m-a-rgb), 0.85) !important;
   transition: transform 0.35s var(--m-spring), box-shadow 0.35s var(--m-ease) !important;
 }
@@ -2915,6 +2917,9 @@ html[data-m-page="artist"] h2 {
   --m-a-rgb: var(--spice-rgb-button);
   --m-b-rgb: var(--spice-rgb-notification);
   --m-c-rgb: var(--spice-rgb-button-active);
+  /* Schrift AUF den Leitfarben (Play-Knopf, Chips, Hauptknopf): dunkel, im hellen Schema weiß –
+     dort sind die Leitfarben für hellen Grund abgedunkelt */
+  --m-ink: #0b0a12;
   --m-glass: rgba(var(--spice-rgb-main), 0.55);
   --m-glass-strong: rgba(var(--spice-rgb-main), 0.84);
   --m-line: rgba(255, 255, 255, 0.07);
@@ -2929,6 +2934,7 @@ html[data-m-page="artist"] h2 {
 }
 html.mirage-light {
   color-scheme: light;
+  --m-ink: #fff;
   --m-line: rgba(29, 26, 43, 0.09);
   --m-line-strong: rgba(29, 26, 43, 0.18);
 }
@@ -3078,8 +3084,8 @@ button .encore-bright-accent-set {
   --background-base: var(--m-a) !important;
   --background-highlight: var(--m-c) !important;
   --background-press: var(--m-b) !important;
-  --text-base: #0b0a12 !important;
-  --essential-base: #0b0a12 !important;
+  --text-base: var(--m-ink) !important;
+  --essential-base: var(--m-ink) !important;
 }
 .encore-dark-theme {
   --essential-positive: var(--m-a) !important;
@@ -3209,6 +3215,43 @@ html.mirage-light .mirage-settings input[type="checkbox"] {
 }
 html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   color: #fff;
+}
+/* Der Immersiv-Modus bleibt auch im hellen Schema dunkel: er bekommt die Leitfarben für dunklen Grund
+   (color.js/config.js schreiben sie als --m-ia/--m-ib/--m-ic) und die dunkle Schrift darauf zurück */
+html.mirage-light #mirage-immersive {
+  --m-a: var(--m-ia, #b69cff);
+  --m-b: var(--m-ib, #7c5cff);
+  --m-c: var(--m-ic, #d4c6ff);
+  --m-a-rgb: var(--m-ia-rgb, 182, 156, 255);
+  --m-b-rgb: var(--m-ib-rgb, 124, 92, 255);
+  --m-c-rgb: var(--m-ic-rgb, 212, 198, 255);
+  --m-ink: #0b0a12;
+}
+/* Verlaufstitel: Weiß am Anfang verschwindet auf hellem Grund – dort beginnt der Verlauf in der Schriftfarbe */
+html.mirage-light .main-entityHeader-title h1,
+html.mirage-light [data-testid="entityTitle"] h1 {
+  background: linear-gradient(100deg, var(--spice-text) 10%, var(--m-c) 45%, var(--m-a) 70%, var(--m-b) 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+html.mirage-light :is(.Root__main-view, #main-view) h1 {
+  background: linear-gradient(100deg, var(--spice-text) 35%, var(--m-c) 70%, var(--m-a));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* Platzhalter-Cover, Ränge auf Künstlerseiten, Textknopf beim Überfahren: waren für dunkles Glas gemischt */
+html.mirage-light .main-entityHeader-imagePlaceholder {
+  background:
+    radial-gradient(80% 80% at 30% 20%, rgba(var(--m-a-rgb), 0.16), transparent 60%),
+    radial-gradient(80% 80% at 80% 90%, rgba(var(--m-b-rgb), 0.14), transparent 60%),
+    rgba(var(--spice-rgb-main), 0.8) !important;
+}
+html.mirage-light[data-m-page="artist"] [role="grid"] [aria-colindex="1"] {
+  color: var(--m-c) !important;
+}
+html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTertiary"]:hover {
+  color: var(--spice-text) !important;
 }
 
 /* ==========================================================================

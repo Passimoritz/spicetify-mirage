@@ -11,7 +11,7 @@ const fs = require("fs");
 const path = require("path");
 const { loadTheme } = require("../tests/contrast/load-theme.js");
 const { covers } = require("../tests/contrast/covers.js");
-const { pairsFromCss, worst, contrast, lum, hexRgb, NEED } = require("../tests/contrast/pairs.js");
+const { pairsFromCss, varsFromCss, worst, contrast, lum, hexRgb, NEED } = require("../tests/contrast/pairs.js");
 
 const ROOT = path.join(__dirname, "..");
 const KNOWN_FILE = path.join(ROOT, "tests", "contrast", "known.json");
@@ -31,6 +31,14 @@ async function main() {
   const theme = await loadTheme();
   const css = fs.readFileSync(path.join(ROOT, "Mirage", "user.css"), "utf8");
   const pairs = pairsFromCss(css);
+  const vars = varsFromCss(css);
+  // Umgebung einer Messung: Leitfarben, Schema, eigene Variablen; im hellen Schema dazu die des Immersiv-Modus
+  const envOf = (pal, sc, mode) => ({
+    pal,
+    scheme: sc,
+    vars: vars[mode],
+    im: mode === "light" && vars.imRemap ? { pal: theme.darkGround(pal), scheme: sc, vars: vars.im } : null,
+  });
   const list = covers();
   const schemes = Object.entries(theme.SCHEMES).map(([name, sc]) => ({ name, sc, light: name === "Pearl" || !!sc.light }));
 
@@ -55,7 +63,7 @@ async function main() {
     }
     const pal = [sc.button, sc.notification, sc["button-active"]].map(hexRgb);
     for (const p of pairs) {
-      if (p.mode === mode) note(`${mode} | ${p.id}`, p.kind, worst(p, { pal, scheme: sc }), `Schema ${name} ohne Cover, Leitfarben ${pal.map(hex).join(" ")}`);
+      if (p.mode === mode) note(`${mode} | ${p.id}`, p.kind, worst(p, envOf(pal, sc, mode)), `Schema ${name} ohne Cover, Leitfarben ${pal.map(hex).join(" ")}`);
     }
   }
 
@@ -73,7 +81,7 @@ async function main() {
       const mode = light ? "light" : "dark";
       for (const { name, sc, light: l } of schemes) {
         if (l !== light) continue;
-        const env = { pal, scheme: sc };
+        const env = envOf(pal, sc, mode);
         for (const p of pairs) {
           if (p.mode === mode) note(`${mode} | ${p.id}`, p.kind, worst(p, env), `Cover „${cover.name}“, Schema ${name}, Leitfarben ${pal.map(hex).join(" ")}`);
         }

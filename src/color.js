@@ -1,50 +1,16 @@
-import { S, clamp, hueGap, loadImage, lru } from "./core.js";
+import { S, hueGap, loadImage, lru } from "./core.js";
+import { clamp, rgb2hsl, hsl2rgb, onGround, immersiveVars } from "./hsl.js";
 import { schemePalette } from "./config.js";
 import { dust } from "./dust.js";
 import { bridge } from "./bridge.js";
 
 /* ---------------------------------------------------------------- Farbe */
-const rgb2hsl = ([r, g, b]) => {
-  r /= 255; g /= 255; b /= 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  const l = (max + min) / 2;
-  if (max === min) return [0, 0, l];
-  const d = max - min;
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  const h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  return [h * 60, s, l];
-};
-const hsl2rgb = ([h, s, l]) => {
-  const k = (n) => (n + h / 30) % 12;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-  return [f(0), f(8), f(4)].map((v) => Math.round(v * 255));
-};
 const hex2rgb = (h) => {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(h || "").trim());
   if (!m) return null;
   const n = parseInt(m[1], 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
-
-// relative Leuchtdichte und Kontrast nach WCAG
-const lum = (rgb) => {
-  const [r, g, b] = rgb.map((v) => {
-    v /= 255;
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-};
-const contrast = (x, y) => {
-  const [hi, lo] = [lum(x), lum(y)].sort((p, q) => q - p);
-  return (hi + 0.05) / (lo + 0.05);
-};
-// Helligkeit so lange verschieben, bis die Farbe auf dem Hintergrund lesbar ist (mind. 4.5 : 1, große Schrift 3 : 1)
-function readable([h, s, l], bg, step, min = 4.5) {
-  let rgb = hsl2rgb([h, s, l]);
-  for (let i = 0; i < 12 && contrast(rgb, bg) < min; i++) rgb = hsl2rgb([h, s, (l = clamp(l + step, 0.05, 0.95))]);
-  return rgb;
-}
 
 // Drei Leitfarben: A (Akzent), B (tiefer Partner), C (helles Licht) – auf dunklem Glas gut lesbar,
 // beim hellen Schema dunkler. Fast farblose Cover (Schwarz-Weiß, Weiß) bekommen das Schema.
@@ -55,17 +21,12 @@ function shape(colors) {
   const gray = s1 < 0.12;
   const sec = second || [(h1 + 40) % 360, s1, 0.5];
   const light = document.documentElement.classList.contains("mirage-light");
-  // Dunkel: gemessen wird an der dunklen Schrift (#0b0a12), die AUF den Leitfarben liegt (Play-Knopf, Chips).
-  // Sie ist etwas heller als jeder Schema-Hintergrund – so stimmt beides, Farbe auf Glas und Schrift auf Farbe.
-  const bg = light ? [244, 241, 250] : [11, 10, 18];
-  const a = readable([h1, gray ? s1 : clamp(s1, 0.5, 0.95), light ? 0.42 : 0.68], bg, light ? -0.04 : 0.04);
-  // B blieb früher ungeprüft: tiefes Blau und Violett verschwand als Liedtext und hinter dem Play-Symbol.
-  // 3 : 1 genügt (große Schrift, Symbole), gemessen an der hellsten Kartenfläche der dunklen Schemata
-  // (Abyss, #0a171d) – die meisten Cover behalten damit ihre Farbe. Hell bleibt B, wie es war.
-  const hslB = [sec[0], gray ? sec[1] : clamp(sec[1], 0.45, 0.95), light ? 0.4 : 0.52];
-  const b = light ? hsl2rgb(hslB) : readable(hslB, [10, 23, 29], 0.04, 3);
-  const c = readable([(h1 + 12) % 360, gray ? s1 : clamp(s1 * 0.8, 0.35, 0.85), light ? 0.3 : 0.84], bg, light ? -0.04 : 0.04);
-  return [a, b, c];
+  return onGround(
+    [h1, gray ? s1 : clamp(s1, 0.5, 0.95)],
+    [sec[0], gray ? sec[1] : clamp(sec[1], 0.45, 0.95)],
+    [(h1 + 12) % 360, gray ? s1 : clamp(s1 * 0.8, 0.35, 0.85)],
+    light,
+  );
 }
 
 function quantize(data) {
@@ -173,14 +134,21 @@ function startFade() {
 const varSheet = document.createElement("style");
 varSheet.id = "mirage-vars";
 document.head.append(varSheet);
+// hell oder dunkel beim letzten Schreiben: beim Wechsel ins helle Schema fehlten sonst die Immersiv-Farben
+let wroteLight = false;
 function setColors(next) {
-  if (current && next.every((c, i) => c.every((v, j) => Math.abs(v - current[i][j]) < 3))) return;
+  const light = document.documentElement.classList.contains("mirage-light");
+  if (current && light === wroteLight && next.every((c, i) => c.every((v, j) => Math.abs(v - current[i][j]) < 3))) return;
   startFade();
   current = next;
+  wroteLight = light;
   const [a, b, c] = next.map((x) => x.join(","));
   varSheet.textContent =
     `html:root{--m-a:rgb(${a});--m-a-rgb:${a};--m-b:rgb(${b});--m-b-rgb:${b};--m-c:rgb(${c});--m-c-rgb:${c};` +
-    `--spice-button:rgb(${a});--spice-rgb-button:${a};--spice-button-active:rgb(${c});--spice-rgb-button-active:${c}}`;
+    `--spice-button:rgb(${a});--spice-rgb-button:${a};--spice-button-active:rgb(${c});--spice-rgb-button-active:${c};` +
+    // helles Schema: der Immersiv-Modus bleibt dunkel und braucht helle Leitfarben (user.css, #mirage-immersive)
+    (light ? immersiveVars(next) : "") +
+    "}";
   dust.recolor(next);
   bridge.sendTrack();
 }

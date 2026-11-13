@@ -10,6 +10,7 @@ const ENTRY = `
 export { quantize, shape, FALLBACK, rgb2hsl, hsl2rgb } from "./color.js";
 export { SCHEMES, buildScheme } from "./config.js";
 export * as readability from "./readability.js";
+export { darkGround } from "./hsl.js";
 `;
 // dust.js und bridge.js starten beim Laden Zeichenflächen und Netzverbindungen – für die Farben unnötig.
 // selectors.js zieht alle Übersetzungen nach; readability.js braucht daraus nur den Namen des Hauptbereichs.

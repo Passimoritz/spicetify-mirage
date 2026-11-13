@@ -4,6 +4,7 @@ import { translitLines } from "./translit.js";
 import { t } from "./i18n.js";
 import { cfg, save } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
+import { darkGround } from "./hsl.js";
 import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
@@ -25,6 +26,9 @@ import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
 import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS } from "./games.js";
 import { free } from "./lock.js";
+
+// Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
+const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
 const ICON = {
@@ -701,7 +705,7 @@ const immersive = (() => {
       f.className = "m-jam-p" + (m.me ? " is-me" : "") + (m.host ? " is-host" : "") + (cfg.partyJamLight && m.dj ? " is-dj" : "");
       f.style.cssText = `--i:${i};left:${SPOTS[i]}%;top:${i % 4 < 2 ? 87 : 84}%`;
       if (cfg.partyJamLight) {
-        const c = (vividPal || palette())[i % 3];
+        const c = (vividPal || imPalette())[i % 3];
         f.style.setProperty("--jc", `rgb(${c.join(",")})`);
       }
       const pic = document.createElement(m.img ? "img" : "span");
@@ -1470,7 +1474,7 @@ const immersive = (() => {
     }
     if (cfg.calm) return;
 
-    let pal = px ? vivid(palette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1, px.keyPc) : palette();
+    let pal = px ? vivid(imPalette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1, px.keyPc) : imPalette();
     // DJ-Übergang: bis zum ersten Schlag die alten Farben, dann über vier Schläge in die neuen
     if (px && blend?.from) {
       const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / ((4 * 60000) / (party.info.bpm || 120)), 0, 1);
@@ -2135,7 +2139,7 @@ const immersive = (() => {
       activeEl.classList.remove("is-burst");
       void activeEl.offsetWidth;
       activeEl.classList.add("is-burst");
-      const pal3 = vividPal || palette();
+      const pal3 = vividPal || imPalette();
       const words3 = activeEl.querySelectorAll(".m-w");
       for (const w of words3.length ? words3 : [activeEl]) {
         const b = w.getBoundingClientRect();
@@ -2247,7 +2251,7 @@ const immersive = (() => {
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
     // Liedtext zum Mitsingen auf den Handys: aktuelle und nächste Zeile (nur synchroner Liedtext)
     const lineAt = (k) => (lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "♪" && lyr.lines[k]?.text) || "";
-    live.feed(noFlashFeed(px), vividPal || palette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
+    live.feed(noFlashFeed(px), vividPal || imPalette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
   }
   // „Keine Blitze“ gilt auch für die Handys: ihre Seite blitzt weiß, sobald der Drop-Wert über 0,85 springt –
   // gedeckelt kommt er dort nie an (die Seite selbst kennt den Schalter noch nicht)
@@ -2325,7 +2329,7 @@ const immersive = (() => {
           const g = wfxGeo, dtw = Math.min(0.12, wfxAt ? (now - wfxAt) / 1000 : 0.016);
           wfxAt = now;
           wordFx.draw(vctx, {
-            pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || palette(),
+            pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || imPalette(),
             level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(), noFlash: !!cfg.noFlash,
           });
         }
@@ -3326,7 +3330,7 @@ const immersive = (() => {
     const pos = songPos(now), px = party.step(pos / 1000, dt, PLR.isPlaying());
     const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
     const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
-    live.feed(noFlashFeed(px), vividPal || palette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
+    live.feed(noFlashFeed(px), vividPal || imPalette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
   }
   // Der Taktgeber läuft nur, solange er gebraucht wird (Fenster verdeckt UND Party mit Handys). Früher tickte
   // er ab dem ersten Öffnen des Immersiv-Modus viermal pro Sekunde weiter – auch geschlossen und im Leerlauf.

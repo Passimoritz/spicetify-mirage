@@ -83,8 +83,10 @@ function pairsFromCss(css) {
   const lightFix = new Map();
   for (const r of rules) {
     for (const s of splitSelectors(r.sel)) {
-      const m = /^html\.mirage-light\s+(.+)$/.exec(s);
-      if (m) lightFix.set(m[1], { ...(lightFix.get(m[1]) || {}), ...r.decl });
+      // auch „html.mirage-light[data-m-page="artist"] X“ für die Regel „html[data-m-page="artist"] X“
+      const m = /^html\.mirage-light(\[[^\]]+\])?\s+(.+)$/.exec(s);
+      const key = m && (m[1] ? `html${m[1]} ${m[2]}` : m[2]);
+      if (m) lightFix.set(key, { ...(lightFix.get(key) || {}), ...r.decl });
     }
   }
   const out = [];
@@ -115,6 +117,28 @@ function pairsFromCss(css) {
   return out;
 }
 
+// Eigene Variablen (z. B. --m-ink) aus :root, html.mirage-light und html.mirage-light #mirage-immersive.
+// Die Leitfarben --m-a/b/c kommen nicht von hier, sondern aus dem Farbauszug (env.pal).
+// imRemap: user.css gibt dem Immersiv-Modus im hellen Schema eigene Leitfarben (darkGround in src/hsl.js).
+const IM_LIGHT = "html.mirage-light #mirage-immersive";
+function varsFromCss(css) {
+  const out = { dark: {}, light: {}, im: {}, imRemap: false };
+  for (const r of parseRules(css)) {
+    for (const s of splitSelectors(r.sel)) {
+      const into = s === ":root" ? [out.dark, out.light, out.im] : s === "html.mirage-light" ? [out.light, out.im] : s === IM_LIGHT ? [out.im] : [];
+      for (const [k, v] of Object.entries(r.decl)) {
+        if (!k.startsWith("--")) continue;
+        if (/^--m-[abc](-rgb)?$/.test(k)) {
+          if (s === IM_LIGHT && k === "--m-a") out.imRemap = true;
+          continue;
+        }
+        for (const o of into) o[k] = v;
+      }
+    }
+  }
+  return out;
+}
+
 // Einen Farbausdruck mit den aktuellen Variablen auflösen → [r, g, b, a] oder null (unbekannt/durchsichtig)
 function resolve(token, env) {
   token = token.trim();
@@ -134,6 +158,7 @@ function resolve(token, env) {
     if (s && s[1] === "button") return [...env.pal[0], 1];
     if (s && s[1] === "button-active") return [...env.pal[2], 1];
     if (s && env.scheme[s[1]]) return [...hexRgb(env.scheme[s[1]]), 1];
+    if (env.vars?.[v[1]] != null && env.vars[v[1]] !== token) return resolve(env.vars[v[1]], env);
     return v[2] ? resolve(v[2], env) : null;
   }
   const f = /^rgba?\((.*)\)$/i.exec(token);
@@ -152,7 +177,11 @@ function resolve(token, env) {
 
 // Alle Farben eines Ausdrucks. Bei Verläufen kommen Zwischenstufen dazu: die Mitte zwischen zwei bunten Farben
 // kann dunkler sein als beide Enden (Rot → Grün läuft durch ein dunkles Oliv).
+// Mehrere Hintergrund-Ebenen (Komma auf oberster Ebene) liegen übereinander und werden nicht ineinander
+// gemischt – Zwischenstufen nur innerhalb EINES Verlaufs.
 function colorsOf(value, env) {
+  const layers = splitSelectors(value);
+  if (layers.length > 1) return layers.flatMap((l) => colorsOf(l, env));
   const tokens = (value.match(COLOR_TOKEN) || []).map((t) => resolve(t, env)).filter(Boolean);
   if (!/gradient\(/.test(value) || tokens.length < 2) return tokens;
   const out = [];
@@ -173,6 +202,8 @@ function surfaces(sel, env) {
 
 // Schlechtester Kontrast eines Paars in einer Umgebung { pal, scheme }
 function worst(pair, env) {
+  // helles Schema im Immersiv-Modus: dort gelten die Leitfarben und Variablen für dunklen Grund
+  if (env.im && /#mirage-immersive/.test(pair.sel)) env = env.im;
   let min = Infinity;
   for (const s of surfaces(pair.sel, env)) {
     const bgs = pair.bg ? colorsOf(pair.bg, env).map((c) => over(c, s)) : [];
@@ -187,4 +218,4 @@ function worst(pair, env) {
   return min;
 }
 
-module.exports = { pairsFromCss, worst, contrast, lum, hexRgb, NEED, parseRules };
+module.exports = { pairsFromCss, varsFromCss, worst, contrast, lum, hexRgb, NEED, parseRules };

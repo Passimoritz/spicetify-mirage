@@ -86,7 +86,7 @@
   /* ------------------------------------------------------------ Schemes (Mirage/color.ini) */
   const SCHEMES = {
     Mirage:   { main: "07060C", elev: "12101C", high: "1C1929", side: "0B0A12", text: "F5F3FF", sub: "B9B4CC", a: "B69CFF", b: "7C5CFF", c: "D4C6FF" },
-    Obsidian: { main: "050505", elev: "101010", high: "1A1A1A", side: "090909", text: "F2F2F2", sub: "A8A8A8", a: "E8E8E8", b: "3A3A3A", c: "FFFFFF" },
+    Obsidian: { main: "050505", elev: "101010", high: "1A1A1A", side: "090909", text: "F2F2F2", sub: "A8A8A8", a: "E8E8E8", b: "707070", c: "FFFFFF" },
     Sakura:   { main: "0E070B", elev: "1A0E15", high: "26141E", side: "12090E", text: "FFF2F6", sub: "D9B3C1", a: "FF8FB8", b: "E0507F", c: "FFB8D2" },
     Abyss:    { main: "03090C", elev: "081419", high: "0E1E25", side: "050D11", text: "EAFBFF", sub: "9CC3CF", a: "4FE3FF", b: "1AA6C2", c: "9AF0FF" },
     Ember:    { main: "0C0705", elev: "18100B", high: "241811", side: "100A07", text: "FFF6EE", sub: "D6B8A0", a: "FF9F45", b: "E06A1A", c: "FFC48A" },
