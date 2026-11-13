@@ -110,3 +110,33 @@ jobs:
         with:
           name: game-test-output
           path: tests/e2e/out/
+
+  # DTLS-Client der Overlay-App (Hue Entertainment) gegen einen echten OpenSSL-Server, dazu die Einzeltests
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests
+        run: for t in tests/unit/*.test.js; do echo "== $t"; node "$t"; done
+
+      - name: Contrast on 2,617 covers
+        run: npm run check:contrast -- --strict
+
+      - name: DTLS test vectors and handshake
+        run: |
+          openssl version
+          node tests/dtls/vectors.test.js
+          node tests/dtls/handshake.test.js
+
+      - name: DTLS end to end against openssl s_server
+        run: node tests/dtls/run.js --require
