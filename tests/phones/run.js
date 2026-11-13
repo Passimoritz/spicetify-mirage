@@ -238,6 +238,7 @@ async function partySuite(browser, env, device) {
   await party.tickCheck(browser, env, o, check);
   await party.waveCheck(browser, env, o, check);
   await party.ecoCheck(browser, env, o, check);
+  await party.photoCheck(browser, env, o, check);
 }
 
 async function suite(browser, env, devices) {

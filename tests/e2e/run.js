@@ -1658,6 +1658,126 @@ async function perfMenu() {
   await T.click(".m-im-side-x");
 }
 
+// Foto-Wand: ein Gast wählt ein Foto aus (echte Dateiauswahl über DataTransfer), es wartet in der Seitenleiste
+// und nie auf der Bühne; nach der Freigabe schwebt es am Rand ein, immer nur eins zugleich. Ein abgelehntes
+// erscheint nie, die Grenzen halten, nichts landet in localStorage oder IndexedDB, und ohne „pw“ (älteres
+// Theme) zeigt das Handy keinen Knopf.
+const { MAKE_PHOTO } = require("../phones/party.js");
+async function photoWall() {
+  const [A, B, C] = P, im = "#mirage-immersive";
+  const msg = (ph) => ph.js(`document.getElementById("phMsg").textContent`);
+  const said = (ph, k) => until(async () => (await msg(ph)) === (await ph.js(`T.${k}`)), 12000, `foto: ${ph.name} zeigt ${k}`);
+  const stored = (w) => w.js(`(async () => ({ ls: Object.values(localStorage).filter((v) => /\\/9j\\/|blob:/.test(v)).length, size: Object.values(localStorage).join("").length, db: (await indexedDB.databases()).map((d) => d.name).sort().join() }))()`);
+  await ensurePhones("photo-wall");
+  await Promise.all(P.map((ph) => ph.js(`document.body.classList.contains("wish") && document.getElementById("wClose").click(); 1`).catch(() => {})));
+  // aus (Standard): kein Knopf auf den Handys, nichts am PC
+  await until(() => A.js(`document.getElementById("bPhoto").hidden`), 4000, "foto: aus – kein Knopf");
+  ok(await T.js(`document.querySelector("${im} .m-im-photobtn").hidden`), "foto: aus – kein Foto-Knopf am PC");
+  const before = await Promise.all([T, ...P].map(stored));
+  // jedes Polaroid mitschreiben, das je auf der Bühne erscheint
+  await T.js(`(() => {
+    const el = document.getElementById("mirage-immersive");
+    window.__pola = { seen: [], max: 0 };
+    new MutationObserver(() => {
+      const l = el.querySelectorAll(".m-im-polaroid");
+      __pola.max = Math.max(__pola.max, l.length);
+      for (const n of l) if (!__pola.seen.includes(n.dataset.p)) __pola.seen.push(n.dataset.p);
+    }).observe(el, { childList: true });
+    return 1;
+  })()`);
+  await setRule("partyPhotos", true);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  for (const ph of P) await until(() => ph.js(`!document.getElementById("bPhoto").hidden`), 5000, `foto: an – ${ph.name} hat den Knopf`);
+  // ein Foto wählen wie ein Gast: Knopf, Fenster, Dateiauswahl
+  const pick = async (ph, w, h) => {
+    await ph.js(MAKE_PHOTO(w, h));
+    await ph.click("#bPhoto");
+    await until(() => ph.js(`!document.getElementById("pho").hidden`), 2000, `foto: ${ph.name} sieht das Fenster`);
+    ok(/\S/.test(await ph.js(`document.getElementById("phHint").textContent`)), "foto: Datenschutz-Hinweis steht da");
+    await ph.js(`(() => { const dt = new DataTransfer(); dt.items.add(window.__photo); const i = document.getElementById("phFile"); i.files = dt.files; i.dispatchEvent(new Event("change")); return 1; })()`);
+  };
+  await pick(A, 1200, 900);
+  await said(A, "phWait");
+  await pick(C, 900, 1200);
+  await said(C, "phWait");
+  const [pa, pc] = [await A.js("phCur.p"), await C.js("phCur.p")];
+  // am PC: zwei warten, die Zahl steht am Knopf, auf der Bühne nichts
+  await until(() => T.js(`document.querySelector("${im} .m-im-photobtn").dataset.n === "2"`), 6000, "foto: der Knopf zeigt 2 wartende");
+  ok(!(await T.js(`document.querySelectorAll("${im} .m-im-polaroid").length`)), "foto: vor der Freigabe nichts auf der Bühne");
+  ok(!(await T.js(`[...document.querySelectorAll("${im} img")].filter((i) => i.src.startsWith("blob:") && !i.closest(".m-im-side")).length`)), "foto: kein Foto außerhalb der Seitenleiste");
+  await big.hover();
+  await T.click(".m-im-photobtn");
+  await until(() => T.js(`document.querySelectorAll(".m-im-side .m-im-photorow").length === 2`), 3000, "foto: zwei Fotos in der Warteschlange");
+  // was ankam: das gedrehte, verkleinerte JPEG ohne Metadaten
+  const got = await T.js(`(async () => {
+    const i = document.querySelector('.m-im-photorow[data-p="${pa}"] img');
+    await i.decode();
+    // fetch ist im Test-Spotify ersetzt: die blob:-Adresse über XHR lesen
+    const b = await new Promise((ok, no) => { const x = new XMLHttpRequest(); x.open("GET", i.src); x.responseType = "arraybuffer"; x.onload = () => ok(new Uint8Array(x.response)); x.onerror = no; x.send(); });
+    const s = new TextDecoder("latin1").decode(b);
+    return { n: b.length, soi: b[0] === 0xff && b[1] === 0xd8, meta: /Exif|GPS-SECRET/.test(s), w: i.naturalWidth, h: i.naturalHeight, who: i.closest(".m-im-photorow").textContent };
+  })()`);
+  ok(got.soi && got.n <= 60000 && !got.meta, `foto: JPEG unter 60 KB ohne Metadaten: ${JSON.stringify(got)}`);
+  ok(got.w === 480 && got.h === 640, `foto: nach EXIF gedreht, höchstens 640 px: ${got.w}×${got.h}`);
+  ok(got.who.includes("Alpha"), "foto: der Name des Gastes steht dabei: " + got.who);
+  ok(!(await T.js(`document.querySelectorAll("${im} .m-im-polaroid").length`)), "foto: offene Warteschlange zeigt nichts auf der Bühne");
+  // beide freigeben: sie kommen nacheinander, nie zwei zugleich, nur am Rand
+  await T.click(`.m-im-photorow[data-p="${pa}"] .m-im-photo-ok`);
+  await until(() => T.js(`document.querySelectorAll(".m-im-side .m-im-photorow").length === 1`), 3000, "foto: eins bleibt in der Warteschlange");
+  await T.click(`.m-im-photorow[data-p="${pc}"] .m-im-photo-ok`);
+  await until(() => T.js(`__pola.seen.length >= 1`), 4000, "foto: das erste Polaroid schwebt ein");
+  await wait(1400);
+  const pos = await T.js(`(() => { const n = document.querySelector("${im} .m-im-polaroid"), r = n.getBoundingClientRect(), sd = document.querySelector("${im} .m-im-side"), q = sd.hidden ? null : sd.getBoundingClientRect(); return { p: n.dataset.p, l: r.left / innerWidth, r: r.right / innerWidth, t: r.top / innerHeight, b: r.bottom / innerHeight, side: !!q && r.right > q.left && r.left < q.right && r.bottom > q.top && r.top < q.bottom }; })()`);
+  ok(pos.p === pa, "foto: zuerst das zuerst freigegebene");
+  ok(pos.r < 0.2 || pos.l > 0.8, `foto: am Rand, nie über der Mitte: ${JSON.stringify(pos)}`);
+  ok(!pos.side, "foto: das Polaroid liegt nicht über der offenen Seitenleiste");
+  await said(A, "phOk");
+  await until(() => T.js(`__pola.seen.length === 2`), 15000, "foto: das zweite folgt danach");
+  ok((await T.js(`__pola.max`)) === 1, "foto: nie zwei Polaroids zugleich");
+  ok((await T.js(`__pola.seen.join()`)) === [pa, pc].join(), "foto: genau die beiden freigegebenen, in dieser Reihenfolge");
+  await said(C, "phOk");
+  // abgelehnt: erscheint nie, ist weg
+  await pick(B, 1000, 1000);
+  await said(B, "phWait");
+  const pb = await B.js("phCur.p");
+  await until(() => T.js(`!!document.querySelector('.m-im-photorow[data-p="${pb}"]')`), 4000, "foto: Betas Foto wartet");
+  await T.click(`.m-im-photorow[data-p="${pb}"] .m-im-photo-no`);
+  await said(B, "phNo");
+  await wait(1500);
+  ok(!(await T.js(`__pola.seen.includes("${pb}") || !!document.querySelector('${im} [data-p="${pb}"]')`)), "foto: das abgelehnte erscheint nirgends");
+  ok((await T.js(`document.querySelectorAll(".m-im-side .m-im-photogrid img").length`)) === 2, "foto: in der Galerie die zwei freigegebenen");
+  ok((await T.js(`document.querySelector("${im} .m-im-photobtn").dataset.n`)) === "", "foto: keine wartenden mehr am Knopf");
+  // Grenzen: das Handy bremst selbst, und auch an ihm vorbei sagt Mirage „warte“
+  await A.js(`photoGo(window.__photo).then(() => 1)`);
+  const slow = (await A.js(`T.phSlow`)).split("{n}")[0];
+  ok((await msg(A)).startsWith(slow), "foto: zweites Foto sofort – das Handy sagt warten: " + (await msg(A)));
+  await A.js(`phLast = 0; photoPrep(window.__photo).then((b) => photoPush(b)).then(() => 1)`);
+  await until(async () => (await A.js(`phMine.get(phCur.p)`)) === "slow", 15000, "foto: Mirage lehnt das zweite Foto in 30 s ab");
+  // kaputte Daten: falsche Prüfsumme wird verworfen, nichts kommt in die Warteschlange
+  await A.js(`phMine.set("forged01", ""); sendSure({ k: "photo", p: "forged01", i: 0, n: 1, h: "A".repeat(43), d: "/9j/2wBD" }); 1`);
+  await until(async () => (await A.js(`phMine.get("forged01")`)) === "bad", 6000, "foto: kaputtes Foto wird abgelehnt");
+  ok(!(await T.js(`document.querySelectorAll(".m-im-side .m-im-photorow").length`)), "foto: nichts Kaputtes in der Warteschlange");
+  // ein Handy ohne „pw“ (wie mit einem älteren Theme): kein Knopf
+  await C.js(`window.__a0 = apply; apply = (s) => __a0({ ...s, pw: undefined }); document.getElementById("phClose").click(); 1`);
+  await until(() => C.js(`document.getElementById("bPhoto").hidden`), 4000, "foto: ohne pw kein Knopf");
+  ok(!(await A.js(`document.getElementById("bPhoto").hidden`)), "foto: die anderen haben ihn weiter");
+  await C.js(`apply = __a0; 1`);
+  // nichts in localStorage oder IndexedDB, weder am PC noch auf den Handys
+  const after = await Promise.all([T, ...P].map(stored));
+  after.forEach((s, i) => {
+    const w = [T, ...P][i].name;
+    ok(!s.ls, `foto: ${w} hat ein Bild in localStorage`);
+    ok(s.db === before[i].db, `foto: ${w} hat eine neue IndexedDB: ${s.db}`);
+    ok(s.size - before[i].size < 2000, `foto: ${w} localStorage wuchs um ${s.size - before[i].size} Zeichen`);
+  });
+  // ausgeschaltet: Knopf weg, alle Fotos vergessen
+  await setRule("partyPhotos", false);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  for (const ph of P) await until(() => ph.js(`document.getElementById("bPhoto").hidden && document.getElementById("pho").hidden`), 5000, `foto: aus – ${ph.name} ohne Knopf und Fenster`);
+  await until(() => T.js(`document.querySelector("${im} .m-im-photobtn").hidden && !document.querySelector("${im} .m-im-photogrid")`), 3000, "foto: aus – am PC alles weg");
+  await T.js(`document.querySelector(".m-im-side-x")?.click(); 1`);
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1673,6 +1793,7 @@ const CASES = [
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });
 CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame], ["bingo", bingoGame]);
 CASES.push(["perf-menu", perfMenu]);
+CASES.push(["photo-wall", photoWall]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

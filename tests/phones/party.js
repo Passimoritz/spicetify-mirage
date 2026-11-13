@@ -208,4 +208,111 @@ async function ecoCheck(browser, env, o, check) {
   check(`${o.device.name} · Akku sparen: ~30 Bilder/s und einfache Auflösung (gewählt oder bei schwachem Akku), Equalizer ohne Layout`, problems);
 }
 
-module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck, ecoCheck };
+// Ein Testfoto wie vom Handy: 1200×900 mit Rauschen (großes JPEG, die Qualität muss sinken), dazu ein
+// EXIF-Block „um 90° drehen“ und ein Kommentar mit Fantasie-Ortsdaten – beides muss beim Senden verschwinden.
+// Liegt danach als window.__photo (File) bereit. tests/e2e/run.js baut es genauso.
+const MAKE_PHOTO = (w = 1200, h = 900) => `(async () => {
+  const c = document.createElement("canvas");
+  c.width = ${w};
+  c.height = ${h};
+  const x = c.getContext("2d"), g = x.createLinearGradient(0, 0, ${w}, ${h});
+  g.addColorStop(0, "#ff5a6e");
+  g.addColorStop(1, "#2fd0c8");
+  x.fillStyle = g;
+  x.fillRect(0, 0, ${w}, ${h});
+  const im = x.getImageData(0, 0, ${w}, ${Math.round(h / 2)});
+  for (let i = 0; i < im.data.length; i += 4) {
+    const v = Math.random() * 255;
+    im.data[i] = v;
+    im.data[i + 1] = 255 - v;
+    im.data[i + 2] = v / 2;
+  }
+  x.putImageData(im, 0, 0);
+  x.fillStyle = "#fff";
+  x.fillRect(${Math.round(w / 12)}, ${Math.round(h * 0.56)}, ${Math.round(w / 4)}, ${Math.round(h / 3)});
+  const jpg = new Uint8Array(await (await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.95))).arrayBuffer());
+  const seg = (m, body) => [0xff, m, (body.length + 2) >> 8, (body.length + 2) & 255, ...body];
+  const tiff = [0x4d, 0x4d, 0, 0x2a, 0, 0, 0, 8, 0, 1, 0x01, 0x12, 0, 3, 0, 0, 0, 1, 0, 6, 0, 0, 0, 0, 0, 0];
+  const exif = seg(0xe1, [...new TextEncoder().encode("Exif"), 0, 0, ...tiff]), com = seg(0xfe, [...new TextEncoder().encode("GPS-SECRET 48.137N 11.575E")]);
+  window.__photo = new File([new Uint8Array([0xff, 0xd8, ...exif, ...com]), jpg.subarray(2)], "party.jpg", { type: "image/jpeg" });
+  return window.__photo.size;
+})()`;
+
+// Foto-Wand: der Knopf nur mit „pw: 1“ (ältere Themes senden nichts), das Foto wird gedreht, verkleinert und
+// ohne Metadaten in Stücken unter 32 KB gesendet, die Antwort des Themes erscheint im Fenster
+async function photoCheck(browser, env, o, check) {
+  const p = await party(browser, env, o);
+  const problems = [];
+  const btn = () => p.page.eval(`({ btn: !document.getElementById("bPhoto").hidden, dlg: !document.getElementById("pho").hidden })`);
+  try {
+    if ((await btn()).btn) problems.push("ohne „pw“ (älteres Theme) ist der Foto-Knopf da");
+    await p.hold({ pw: 0 }, 400);
+    if ((await btn()).btn) problems.push("mit pw: 0 ist der Foto-Knopf da");
+    await p.hold({ pw: 1 }, 400);
+    if (!(await btn()).btn) problems.push("mit pw: 1 fehlt der Foto-Knopf");
+    await p.page.eval(`document.getElementById("bPhoto").click(); 1`);
+    const dlg = await p.page.eval(`({ open: !document.getElementById("pho").hidden, hint: document.getElementById("phHint").textContent, cam: document.getElementById("phCam").getAttribute("capture"), acc: [...document.querySelectorAll("#pho input[type=file]")].map((i) => i.accept).join() })`);
+    if (!dlg.open) problems.push("das Foto-Fenster geht nicht auf");
+    if (!/erst nach der Freigabe/.test(dlg.hint) || !/nicht gespeichert/.test(dlg.hint)) problems.push("Datenschutz-Hinweis fehlt: " + dlg.hint);
+    if (dlg.cam !== "environment" || dlg.acc !== "image/*,image/*") problems.push(`Dateiauswahl: capture=${dlg.cam}, accept=${dlg.acc}`);
+    // Vorbereiten: gedreht nach EXIF, höchstens 640 px, unter 60 KB, keine Metadaten
+    const size = await p.page.eval(MAKE_PHOTO());
+    const r = await p.page.eval(`(async () => {
+      const b = await photoPrep(window.__photo);
+      if (!b) return null;
+      window.__bytes = b;
+      const s = new TextDecoder("latin1").decode(b), url = URL.createObjectURL(new Blob([b], { type: "image/jpeg" })), im = new Image();
+      im.src = url;
+      await im.decode();
+      URL.revokeObjectURL(url);
+      return { n: b.length, soi: b[0] === 0xff && b[1] === 0xd8, exif: s.includes("Exif"), secret: s.includes("GPS-SECRET"), w: im.naturalWidth, h: im.naturalHeight };
+    })()`);
+    if (!r) problems.push(`photoPrep lieferte nichts (Testfoto ${size} Bytes)`);
+    else {
+      if (!(size > 100000)) problems.push(`das Testfoto ist zu klein für die Prüfung: ${size} Bytes`);
+      if (r.n > 60000 || !r.soi) problems.push(`Ergebnis ${r.n} Bytes, JPEG ${r.soi}`);
+      if (r.exif || r.secret) problems.push("Metadaten sind noch drin");
+      if (r.w !== 480 || r.h !== 640) problems.push(`nicht nach EXIF gedreht oder falsch verkleinert: ${r.w}×${r.h} statt 480×640`);
+    }
+    // Senden: Stücke mit Kennung, Nummer, Anzahl und Prüfsumme – abgefangen statt über den Relay
+    await p.page.eval(`(() => { window.__sent = []; sendSure = (o) => (__sent.push(o), true); return 1; })()`);
+    await p.page.eval(`photoPush(window.__bytes).then(() => 1)`);
+    await sleep(2400);
+    const sent = await p.page.eval(`(async () => {
+      const l = __sent.filter((m) => m.k === "photo"), d = l.map((m) => m.d).join("");
+      const b = Uint8Array.from(atob(d), (c) => c.charCodeAt(0));
+      const h = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest("SHA-256", b)))).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/, "");
+      const wire = l.map((m) => JSON.stringify({ v: 1, id: myId, s: Date.now(), ...m }).length + 28);
+      return { n: l.length, count: l[0]?.n, idx: l.map((m) => m.i).join(), same: l.every((m) => m.p === l[0].p && m.h === l[0].h), p: l[0]?.p, ok: b.length === __bytes.length && b.every((v, i) => v === __bytes[i]), hash: h === l[0]?.h, max: Math.max(...wire), bar: document.getElementById("phMsg").textContent };
+    })()`);
+    if (!sent.n || sent.n !== sent.count || sent.idx !== [...Array(sent.count).keys()].join() || !sent.same) problems.push("Stücke unvollständig: " + JSON.stringify(sent));
+    if (!sent.ok || !sent.hash) problems.push("zusammengesetzt nicht dieselben Bytes oder falsche Prüfsumme");
+    if (sent.max > 31 * 1024) problems.push(`eine Nachricht hat ${sent.max} Bytes (Grenze 32 KB)`);
+    if (!/100 %/.test(sent.bar)) problems.push("kein Fortschritt: " + sent.bar);
+    // Antwort des Themes an dieses Handy: wartet auf Freigabe, dann freigegeben
+    const me = await p.page.eval("myId");
+    const ack = (st) => env.broker.publish(`${p.topic}/r/${me}`, sealWith(o.key)({ v: 1, s: Date.now(), r: -1, res: [], pho: { p: sent.p, st } }));
+    ack("wait");
+    await sleep(500);
+    let msg = await p.page.eval(`document.getElementById("phMsg").textContent`);
+    if (msg !== "Gesendet – wartet auf Freigabe.") problems.push("nach dem Senden: " + msg);
+    ack("ok");
+    await sleep(500);
+    msg = await p.page.eval(`document.getElementById("phMsg").textContent`);
+    if (!/^Freigegeben/.test(msg)) problems.push("nach der Freigabe: " + msg);
+    // gleich noch eins: das Handy bremst selbst (30 s)
+    await p.page.eval(`photoGo(window.__photo).then(() => 1)`);
+    msg = await p.page.eval(`document.getElementById("phMsg").textContent`);
+    if (!/30 Sekunden/.test(msg)) problems.push("zweites Foto sofort: " + msg);
+    // Foto-Wand wieder aus: Knopf weg, Fenster zu
+    await p.hold({ pw: 0 }, 400);
+    const off = await btn();
+    if (off.btn || off.dlg) problems.push(`aus: Knopf ${off.btn ? "noch da" : "weg"}, Fenster ${off.dlg ? "offen" : "zu"}`);
+    if (p.page.errors.length) problems.push(...p.page.errors.map((e) => "Fehler in der Konsole: " + e));
+  } finally {
+    await p.page.close();
+  }
+  check(`${o.device.name} · Foto-Wand: Knopf nur mit Freigabe am PC, Foto gedreht, klein, ohne Metadaten, in Stücken`, problems);
+}
+
+module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck, ecoCheck, photoCheck, MAKE_PHOTO };

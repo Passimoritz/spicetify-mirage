@@ -3,6 +3,7 @@ import { S } from "./core.js";
 import { cfg, save } from "./config.js";
 import { t as tr } from "./i18n.js";
 import { currentItem, titleOf, artistOf } from "./player.js";
+import { PHOTO, createAssembler, createLimiter } from "./photos.js";
 
 /* ---------------------------------------------------------------- Live-Link: Handys leuchten mit */
 // Über jedes Netz (WLAN, mobile Daten) und ohne Overlay-App: das Theme schickt den Lichtzustand an einen
@@ -155,6 +156,7 @@ async function prepare() {
   offAt = 0;
   wishes = [];
   emitWishes();
+  clearPhotos();
   emit();
   return ses;
 }
@@ -441,6 +443,8 @@ async function inbound(m) {
     window.dispatchEvent(new CustomEvent("mirage:react", { detail: msg.e }));
     return;
   }
+  // Foto-Wand: Stücke eines Fotos (zusammengesetzt und geprüft in photos.js)
+  if (msg.k === "photo") return void photoIn(id, msg);
   // Abstimmung über die nächsten Songs: eine Stimme je Handy und Abstimmung
   if (msg.k === "pvote") {
     if (!poll || poll.id !== msg.p || Date.now() > poll.end || poll.by.has(id)) return;
@@ -511,6 +515,99 @@ async function inbound(m) {
   }
   emitWishes();
 }
+/* ---- Foto-Wand: Fotos der Gäste, erst nach deiner Freigabe auf dem großen Bild */
+// Nur im Speicher (blob:-Adressen), nie auf der Platte, in localStorage oder IndexedDB; mit der Party ist alles
+// weg. Fremde Bytes werden nur in einem <img> aus einer blob:-Adresse entschlüsselt, nie anders angefasst.
+let photos = []; // { p, by, n, c, url, at, st: "wait" | "ok" }
+const asm = createAssembler(), lim = createLimiter(), phoSaid = new Map();
+const PHO_ID = /^[\w-]{6,16}$/;
+const emitPhotos = () => setTimeout(() => window.dispatchEvent(new Event("mirage:photos")));
+// Antwort an das Handy, gleich zweimal (Antworten gehen ohne Wiederholung über den Relay); die Kopien von
+// sendSure bekommen nicht jedes Mal eine – höchstens alle 1,5 s je Stand
+function phoTell(id, p, st, extra = {}) {
+  const k = id + "|" + p, last = phoSaid.get(k);
+  if (last && last.st === st && Date.now() - last.at < 1500) return;
+  phoSaid.set(k, { st, at: Date.now(), extra });
+  if (phoSaid.size > 200) phoSaid.delete(phoSaid.keys().next().value);
+  const msg = { r: -1, pho: { p, st, ...extra } };
+  reply(id, msg);
+  setTimeout(() => phoSaid.get(k)?.st === st && reply(id, msg), 700);
+}
+// Probe im <img>: lässt es sich als Bild lesen und hält es die Größe ein?
+const fits = (url) => new Promise((ok) => {
+  const im = new Image();
+  im.onload = () => ok(im.naturalWidth > 0 && im.naturalHeight > 0 && Math.max(im.naturalWidth, im.naturalHeight) <= PHOTO.SIDE + 8);
+  im.onerror = () => ok(false);
+  setTimeout(() => ok(false), 5000);
+  im.src = url;
+});
+const waiting = () => photos.filter((x) => x.st === "wait").length;
+async function photoIn(id, msg) {
+  const p = clean(msg.p, 16);
+  if (!PHO_ID.test(p)) return;
+  if (!cfg.partyPhotos) return phoTell(id, p, "off");
+  const r = await asm.add(id, msg);
+  if (r.st === "bad") return phoTell(id, p, "bad");
+  // schon fertig (die Bestätigung ging verloren, das Handy schickt noch einmal): letzten Stand wiederholen
+  if (r.st === "dup") {
+    const s = phoSaid.get(id + "|" + p);
+    if (s) phoTell(id, p, s.st, s.extra);
+    return;
+  }
+  // neuer Satz oder fertig: Grenzen prüfen, sonst gar nicht erst weitersammeln
+  if (r.first || r.st === "done") {
+    const c = lim.check(id, waiting());
+    if (c.st !== "go") {
+      asm.drop(id, p);
+      return phoTell(id, p, c.st, c.w ? { w: c.w } : c.n ? { n: c.n } : {});
+    }
+  }
+  if (r.st !== "done") return;
+  const url = URL.createObjectURL(new Blob([r.bytes], { type: "image/jpeg" }));
+  if (!(await fits(url)) || !cfg.partyPhotos || !ses) {
+    URL.revokeObjectURL(url);
+    return phoTell(id, p, cfg.partyPhotos ? "bad" : "off");
+  }
+  lim.take(id);
+  photos.push({ p, by: id, n: clean(msg.nm, 20), c: colour(msg.c), url, at: Date.now(), st: "wait" });
+  phoTell(id, p, "wait");
+  emitPhotos();
+}
+function approvePhoto(p) {
+  const x = photos.find((y) => y.p === p && y.st === "wait");
+  if (!x) return false;
+  x.st = "ok";
+  x.at = Date.now();
+  phoTell(x.by, p, "ok");
+  // Galerie voll: das älteste freigegebene Foto fällt raus
+  const ok = photos.filter((y) => y.st === "ok");
+  if (ok.length > PHOTO.GALLERY) dropPhoto(ok[0]);
+  emitPhotos();
+  window.dispatchEvent(new CustomEvent("mirage:photoshow", { detail: { p, url: x.url, n: x.n, c: x.c } }));
+  return true;
+}
+function dropPhoto(x) {
+  photos = photos.filter((y) => y !== x);
+  URL.revokeObjectURL(x.url);
+}
+function rejectPhoto(p) {
+  const x = photos.find((y) => y.p === p);
+  if (!x) return;
+  dropPhoto(x);
+  phoTell(x.by, p, "no");
+  emitPhotos();
+}
+// Party vorbei oder Foto-Wand aus: alles vergessen
+function clearPhotos() {
+  for (const x of photos) URL.revokeObjectURL(x.url);
+  photos = [];
+  asm.clear();
+  lim.clear();
+  phoSaid.clear();
+  emitPhotos();
+}
+const photoList = () => photos.map(({ p, n, c, url, st, at }) => ({ p, n, c, url, st, at }));
+
 const ranked = () => wishes.filter((w) => w.st === "open").sort((a, b) => b.v.size - a.v.size || a.at - b.at);
 async function accept(i) {
   const w = wishes.find((x) => x.i === i);
@@ -595,6 +692,8 @@ function feed(px, pal, bpm, lyric) {
     rx: cfg.partyReacts ? 1 : 0,
     // Lichtwelle: Art (0 aus, 1 der Reihe nach, 2 Farbgruppen) und Zahl der Plätze; ältere Seiten leuchten alle zugleich
     wv: cfg.partyWave || 0, wn: 8,
+    // Foto-Wand an: die Handys zeigen den Foto-Knopf (ältere Themes senden „pw“ nicht – dann bleibt er weg)
+    pw: cfg.partyPhotos ? 1 : 0,
     fx: !masked && lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }
@@ -605,6 +704,8 @@ async function stop() {
   wanted = false;
   lastFeed = 0;
   offAt = Date.now();
+  // Fotos überleben die Party nicht
+  clearPhotos();
   await send({ v: 1, on: 0, s: Date.now() }, true);
   setTimeout(() => {
     client?.close();
@@ -620,4 +721,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline, photos: photoList, approvePhoto, rejectPhoto, clearPhotos };
