@@ -110,6 +110,8 @@ const DEFAULTS = {
   gameDrink: false,
   gameSfx: 0.7,
   gameDur: 30,
+  // Karaoke: so lang ist die gesungene Stelle mindestens (12–45 s, ohne Schalter; die Tests kürzen sie)
+  gameKarLen: 30,
   gameBreak: 8,
   gameBonus: true,
   gameCard: "big",

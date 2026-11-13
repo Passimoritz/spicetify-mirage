@@ -17,13 +17,19 @@ const PHONE_LANG = process.env.E2E_LANG || "";
 const ONLY = (process.env.E2E_ONLY || "").split(",").filter(Boolean);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const ICON = { quiz: "🎤", title: "🎵", intro: "⏱️", gap: "✏️", next: "📜", tf: "🕵️", beat: "🥁", stop: "✋", fast: "⚡", taps: "👆", battle: "💃", bomb: "💣", likely: "🤔", sing: "🎙️", wheel: "🎡", never: "🙈", dquiz: "🍻", alarm: "🚨", dlikely: "👉", dwheel: "🍀" };
-const SETTINGS = { gameRounds: 2, gameAsk: 14, gameBreak: 2, gameDur: 10, gameClip: 6, gameJoin: 120, gameSfx: 0.7, partyLive: true, partyWishes: true };
+const SETTINGS = { gameRounds: 2, gameAsk: 14, gameBreak: 2, gameDur: 10, gameClip: 6, gameJoin: 120, gameSfx: 0.7, partyLive: true, partyWishes: true, gameKarLen: 12 };
 
 app.on("window-all-closed", () => {});
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
 app.commandLine.appendSwitch("disable-gpu");
 // Tests sind immer lautlos: kein Ton aus den Lautsprechern, auch nicht von den Soundeffekten
 app.commandLine.appendSwitch("mute-audio");
+// Karaoke: ein falsches Mikrofon, das eine WAV-Datei abspielt (nur in die Seite, nie in die Lautsprecher). Der Fall
+// schreibt sie passend zur Stelle, Chromium liest sie beim Öffnen des Mikros; ohne Nachfrage nach der Erlaubnis.
+const MIC_WAV = path.join(OUT, "karaoke-mic.wav");
+app.commandLine.appendSwitch("use-fake-ui-for-media-stream");
+app.commandLine.appendSwitch("use-fake-device-for-media-stream");
+app.commandLine.appendSwitch("use-file-for-fake-audio-capture", MIC_WAV + "%noloop");
 
 function ok(cond, msg) {
   if (!cond) throw new Error(msg);
@@ -1419,6 +1425,131 @@ async function bingoGame() {
     await bingoList(false);
   }
 }
+/* ---- Karaoke: das falsche Mikro spielt eine Stimme, die der Fall passend zur Stelle erzeugt */
+// 16-Bit-Mono-WAV aus fn(t in s)
+function writeWav(file, sr, secs, fn) {
+  const n = Math.round(sr * secs), b = Buffer.alloc(44 + n * 2);
+  b.write("RIFF", 0);
+  b.writeUInt32LE(36 + n * 2, 4);
+  b.write("WAVEfmt ", 8);
+  b.writeUInt32LE(16, 16);
+  b.writeUInt16LE(1, 20);
+  b.writeUInt16LE(1, 22);
+  b.writeUInt32LE(sr, 24);
+  b.writeUInt32LE(sr * 2, 28);
+  b.writeUInt16LE(2, 32);
+  b.writeUInt16LE(16, 34);
+  b.write("data", 36);
+  b.writeUInt32LE(n * 2, 40);
+  for (let i = 0; i < n; i++) b.writeInt16LE(Math.max(-32767, Math.min(32767, Math.round(fn(i / sr) * 32767))), 44 + i * 2);
+  fs.writeFileSync(file, b);
+}
+// Stimme zur Stelle: je Zeile ab ihrem Anfang alle 400 ms ein Ton (Grundton + Obertöne) in der stärksten Tonklasse
+// der Analyse, dazu leises Rauschen. open: PC-Zeit, zu der das Mikro die Datei zu lesen beginnt.
+function karaokeVoice(kp, at, open) {
+  const notes = [];
+  for (const [a, b] of kp.ln) {
+    for (let s = a; s < Math.min(b - 300, a + 2400); s += 400) {
+      const bin = Math.floor((s + 50 - kp.c0) / kp.cs), pc = parseInt(kp.ch[bin * 3], 16);
+      notes.push({ from: (at + s - open) / 1000, f: 261.63 * Math.pow(2, (Number.isFinite(pc) ? pc : 0) / 12) });
+    }
+  }
+  let seed = 3;
+  const noise = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 4294967296 - 0.5) * 0.006;
+  return (t) => {
+    let v = noise();
+    for (const nt of notes) {
+      const x = t - nt.from;
+      if (x < 0 || x > 0.34) continue;
+      const env = Math.min(1, x / 0.02) * Math.min(1, (0.34 - x) / 0.04), ph = 2 * Math.PI * nt.f * x;
+      v += 0.3 * env * (Math.sin(ph) + 0.5 * Math.sin(2 * ph) + 0.3 * Math.sin(3 * ph)) / 1.8;
+    }
+    return v;
+  };
+}
+async function karaokeGame() {
+  // was die Handys schicken: es dürfen nur Zahlen sein
+  await T.js(`window.__kar = []; addEventListener("mirage:game", (e) => e.detail.a === "ksc" && __kar.push(e.detail)); 1`);
+  await openGame("karaoke");
+  await joinAll("karaoke");
+  const who = () => Promise.all(P.map((ph) => ph.js(`(() => { const g = cur?.g; return g ? { st: g.st, r: g.r, kp: !!g.kp, mine: g.si === me } : null; })()`)));
+  const s1 = await until(async () => {
+    const w = await who();
+    return w.every((x) => x?.st === "ready" && x.r === 1 && x.kp) && w;
+  }, 25000, "karaoke: Stelle gefunden, alle Handys bereit");
+  const si = s1.findIndex((x) => x.mine), S = P[si];
+  ok(si >= 0 && s1.filter((x) => x.mine).length === 1, "karaoke: genau ein Handy ist dran");
+  ok(await S.js(`!!document.querySelector("#game .gkmic")`), "karaoke: wer dran ist, bekommt den Knopf fürs Mikro");
+  ok(await P[(si + 1) % 3].js(`!document.querySelector("#game .gkmic")`), "karaoke: die anderen nicht");
+  ok(/🔒/.test((await phoneState(S)).text), "karaoke: der Hinweis, dass die Aufnahme auf dem Handy bleibt, steht da");
+  const b0 = await big.state();
+  ok(b0.lock && b0.playing && b0.vol === 0.7, `karaoke: Musik läuft normal und ist gesperrt (${JSON.stringify({ lock: b0.lock, playing: b0.playing, vol: b0.vol })})`);
+  // die Datei passend zur Stelle, ab dem Klick gerechnet (PC-Uhr wie das Handy sie kennt)
+  const info = await S.js(`({ at: cur.g.at, kp: kPart.d, pc: Date.now() - skew })`);
+  ok(info.at - info.pc > 4000 && info.at - info.pc < 13000, `karaoke: Vorlauf vor der Stelle reicht fürs Mikro und den Grundpegel (${info.at - info.pc} ms)`);
+  ok(info.kp.ch.length > 0 && info.kp.on.length >= 3, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
+  const open = info.pc + 120;
+  writeWav(MIC_WAV, 48000, (info.at + info.kp.len + 1500 - open) / 1000, karaokeVoice(info.kp, info.at, open));
+  await S.click("#game .gkmic");
+  const rec = await until(() => S.js(`kRec && kRec.t0 ? { t0: kRec.t0, worklet: !!kRec.node?.port } : null`), 5000, "karaoke: Mikro ist an");
+  console.log(`    karaoke: Mikro liest ab ${Math.round(rec.t0 - open)} ms nach der angenommenen Zeit, AudioWorklet: ${rec.worklet}`);
+  await until(async () => /Mikro an/.test((await big.state()).text), 4000, "karaoke: das große Bild zeigt, dass das Mikro an ist");
+  await until(async () => (await big.state()).st === "go", 16000, "karaoke: die Stelle beginnt");
+  const g1 = await big.state();
+  ok(g1.playing && g1.vol === 0.7, "karaoke: beim Singen läuft die Musik laut weiter");
+  ok(await S.js(`!!document.querySelector("#game .gkmeter")`), "karaoke: der Singende sieht seinen Pegel");
+  const res = await until(async () => {
+    const s = await big.state();
+    return s.st === "res" && s;
+  }, 50000, "karaoke: Wertung auf dem großen Bild");
+  const sent = await T.js(`__kar.map((m) => m.v)`);
+  ok(sent.length >= 1 && sent.every((v) => Array.isArray(v) && v.length === 4 && v.every((x) => typeof x === "number")), "karaoke: vom Handy kommen nur vier Zahlen: " + JSON.stringify(sent));
+  const [s, t, p, d] = sent[0];
+  console.log(`    karaoke: gesamt ${s}, Timing ${t}, Töne ${p}, Dabei ${d}`);
+  // Chromium beginnt die Datei beim Öffnen des Geräts, das Handy zählt ab dem ersten Block, der bei ihm ankommt: unter
+  // Last liegen dazwischen bis zu einige hundert Millisekunden, die nur hier im Test als Verspätung zählen. Darum ist
+  // die Grenze fürs Timing weit; wie fein es unterscheidet, prüfen die Unit-Tests (tests/unit/karaoke.test.js).
+  ok(s >= 45 && t >= 30 && p >= 40 && d >= 60, `karaoke: die passende Stimme bekommt eine ordentliche Wertung (${sent[0].join(" / ")})`);
+  ok(res.text.includes(String(s)), "karaoke: das große Bild zeigt die Punkte: " + res.text);
+  const mic = await S.js(`({ on: !!kRec, tracks: kTracks.map((x) => x.readyState) })`);
+  ok(!mic.on && mic.tracks.length && mic.tracks.every((x) => x === "ended"), "karaoke: das Mikro ist wieder frei: " + JSON.stringify(mic));
+  const ps = await until(async () => {
+    const x = await phoneState(S);
+    return x.st === "res" && x;
+  }, 3000, "karaoke: Wertung auf dem Handy");
+  ok(ps.text.includes(String(s)) && ps.text.includes(String(t)) && !/undefined/.test(ps.text), "karaoke: der Singende sieht seine Wertung mit den drei Teilen: " + ps.text);
+  // Runde 2: jemand anderes ist dran, der Browser verweigert das Mikro: das Handy erklärt es, die Runde läuft ohne Wertung
+  const s2 = await until(async () => {
+    const w = await who();
+    return w.every((x) => x?.st === "ready" && x.r === 2) && w;
+  }, 25000, "karaoke: Runde 2 bereit");
+  const si2 = s2.findIndex((x) => x.mine), S2 = P[si2];
+  ok(si2 >= 0 && si2 !== si, "karaoke: in Runde 2 singt jemand anderes");
+  for (let i = 0; i < 3; i++) if (i !== si && i !== si2) ok((await P[i].js(`kTracks.length`)) === 0, "karaoke: ohne Tippen öffnet niemand ein Mikro");
+  // „Nicht erlauben“ nachgestellt: mit dem falschen Bedienfeld fragt Chromium nie, darum lehnt die Seite selbst ab, wie ein Browser es täte
+  await S2.js(`window.__gum = navigator.mediaDevices.getUserMedia; navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException("Permission denied", "NotAllowedError")); 1`);
+  try {
+    await S2.click("#game .gkmic");
+    await until(() => S2.js(`!!document.querySelector("#game .gkerr")`), 5000, "karaoke: das Handy erklärt, warum das Mikro nicht geht");
+    ok(/Einstellungen|settings/.test(await S2.js(`document.querySelector("#game .gkerr").textContent`)), "karaoke: die Erklärung sagt, wo man es erlaubt");
+  } finally {
+    await S2.js(`navigator.mediaDevices.getUserMedia = window.__gum; 1`);
+  }
+  ok((await S2.js(`kTracks.length`)) === 0, "karaoke: verweigert heißt: kein Mikro offen");
+  await until(async () => /Ohne Mikro/.test((await big.state()).text), 4000, "karaoke: das große Bild sagt, dass es ohne Mikro weitergeht");
+  const r2 = await until(async () => {
+    const x = await big.state();
+    return x.st === "res" && x;
+  }, 55000, "karaoke: Runde 2 vorbei");
+  ok(/ohne Wertung/.test(r2.text), "karaoke: ohne Mikro keine Wertung: " + r2.text);
+  // (die Zahlen aus Runde 1 kommen zur Sicherheit mehrfach, gezählt werden sie einmal)
+  ok((await T.js(`__kar.filter((m) => m.r === 2).length`)) === 0, "karaoke: ohne Mikro kommen auch keine Zahlen");
+  await allPhones((x) => x.st === "end", 20000, "karaoke: Siegerehrung");
+  const end = await big.state();
+  ok(new RegExp(S.name).test(end.text.split("🥇")[1] || ""), `karaoke: ${S.name} gewinnt: ${end.text}`);
+  await noBadNotes("karaoke");
+  await close();
+}
 // Turnier-Auswahl leeren, damit spätere Fälle nichts davon merken
 async function gameReset() {
   await openGameSettings();
@@ -1792,6 +1923,8 @@ const CASES = [
 // neuere Spiele
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });
 CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame], ["bingo", bingoGame]);
+Object.assign(ICON, { karaoke: "🎶" });
+CASES.push(["karaoke", karaokeGame]);
 CASES.push(["perf-menu", perfMenu]);
 CASES.push(["photo-wall", photoWall]);
 

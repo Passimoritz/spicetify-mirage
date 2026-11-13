@@ -73,8 +73,22 @@ function buildQrReader() {
   });
 }
 
+// Karaoke-Wertung für die Live-Seite (src/karaoke.js): das Handy des Singenden lädt sie erst, wenn es dran ist
+function buildKaraoke() {
+  return esbuild.build({
+    stdin: { contents: 'import * as K from "./src/karaoke.js"; window.MirageKaraoke = K;', resolveDir: path.join(__dirname, "..") },
+    outfile: path.join(__dirname, "..", "docs", "live", "karaoke.js"),
+    bundle: true,
+    minify: true,
+    format: "iife",
+    target: "chrome100",
+    legalComments: "none",
+    logLevel: "info",
+  });
+}
+
 if (process.argv.includes("--watch")) {
   esbuild.context(options).then((ctx) => ctx.watch());
 } else {
-  Promise.all([esbuild.build(options), buildTvFx(), buildQrReader()]).catch(() => process.exit(1));
+  Promise.all([esbuild.build(options), buildTvFx(), buildQrReader(), buildKaraoke()]).catch(() => process.exit(1));
 }
