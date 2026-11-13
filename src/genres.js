@@ -610,11 +610,14 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
 // Profil aus allen Hinweisen: Apple-Genre des Songs (3 Punkte), Spotify-Genres des Künstlers (2 für das
 // erste, 1 für weitere) und der Klang selbst – Tempo und Lautheit (1). Die meisten Punkte gewinnen.
+// Apple-Genres, die dort etwas anderes meinen als derselbe Name bei Spotify: Apples „Hardcore“ steht unter Dance
+// (Gabber, Hardcore Techno), Spotifys „hardcore“ ist Punk
+const APPLE_ONLY = { hardcore: "gabber" };
 function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
   const score = {}, add = (k, n) => (score[k] = (score[k] || 0) + n);
   let why = "";
-  const g = apple.toLowerCase();
-  const am = best(g) || APPLE.find(([, re]) => re.test(g));
+  const g = apple.toLowerCase().trim();
+  const am = (APPLE_ONLY[g] && [APPLE_ONLY[g]]) || best(g) || APPLE.find(([, re]) => re.test(g));
   if (am) {
     // „Electronic“ kann auch Ambient sein: langsam oder leise gemischt → Chill statt Rave
     const calmMix = (bpm && bpm < 95) || loud < -14;

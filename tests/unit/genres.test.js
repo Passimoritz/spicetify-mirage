@@ -160,6 +160,10 @@ for (const [g, want] of SPOTIFY) if (pick(g) !== want) fails.push(`Spotify „${
 for (const [a, want] of APPLE_NAMES) if (pickApple(a) !== want) fails.push(`Apple „${a}“: ${want} erwartet, ${pickApple(a)} gewählt`);
 assert.ok(!fails.length, fails.join("\n"));
 assert.ok(SPOTIFY.length + APPLE_NAMES.length >= 250, "mindestens 250 echte Genre-Namen im Test");
+// derselbe Name, zwei Bedeutungen: Apples „Hardcore“ ist Dance (Gabber), Spotifys „hardcore“ ist Punk
+assert.equal(pickApple("Hardcore"), "gabber", "Apple „Hardcore“ → Gabber");
+assert.equal(pick("hardcore"), "hardcorepunk", "Spotify „hardcore“ → Hardcore-Punk");
+assert.equal(pickProfile(["hardcore"], 180, -5, "Hardcore", 0).key, "gabber", "Apple zählt mehr als ein einzelnes Spotify-Genre");
 
 // ---- Tie-Breaker: Tempo, Lautheit und Moll nur dort, wo die Namen schweigen
 assert.equal(pickProfile([], 174, -6, "Electronic", 0).key, "dnb", "Electronic mit 174 BPM → Drum & Bass");
