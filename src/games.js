@@ -1,8 +1,9 @@
 /* ---------------------------------------------------------------- Party-Spiele */
-// Zwanzig Spiele für den Party-Modus. Der PC führt Regie und zeigt alles groß, die Handys der Gäste sind die
+// Dreiundzwanzig Spiele für den Party-Modus. Der PC führt Regie und zeigt alles groß, die Handys der Gäste sind die
 // Controller (verschlüsselt über den Live-Link, wie die Songwünsche). Die Songs kommen aus der Spotify-
 // Warteschlange, die Zeilen aus dem zeitgenauen Liedtext des laufenden Songs.
 // Musik-Quiz:      Wer singt hier? · Wie heißt der Song? · Intro-Blitz · Liedtext-Lücken · Nächste Zeile · Echt oder Fake? · Beat-Treffer
+//                  Älter oder jünger? · Cover-Rätsel · Song-Duell
 // Schnelle Finger: Musik-Stopp · Schnellster Finger · Tipp-Rennen · Tanz-Battle · Heiße Kartoffel
 // Party:           Wer würde am ehesten …? · Sing weiter · Glücksrad (braucht keine Handys)
 // Trinkspiele:     Ich hab noch nie · Schluck-Quiz · Wort-Alarm · Wer würde (Schluck-Ausgabe) · Schluck-Rad
@@ -24,6 +25,9 @@ export const GAME_LIST = [
   { k: "next", cat: "gCatMusic", label: "gNext", hint: "gNextHint", icon: "📜" },
   { k: "tf", cat: "gCatMusic", label: "gTf", hint: "gTfHint", icon: "🕵️" },
   { k: "beat", cat: "gCatMusic", label: "gBeat", hint: "gBeatHint", icon: "🥁" },
+  { k: "older", cat: "gCatMusic", label: "gOlder", hint: "gOlderHint", icon: "📅" },
+  { k: "cover", cat: "gCatMusic", label: "gCover", hint: "gCoverHint", icon: "🖼️" },
+  { k: "duel", cat: "gCatMusic", label: "gDuel", hint: "gDuelHint", icon: "⚔️" },
   { k: "stop", cat: "gCatQuick", label: "gStop", hint: "gStopHint", icon: "✋" },
   { k: "fast", cat: "gCatQuick", label: "gFast", hint: "gFastHint", icon: "⚡" },
   { k: "taps", cat: "gCatQuick", label: "gTaps", hint: "gTapsHint", icon: "👆" },
@@ -31,6 +35,8 @@ export const GAME_LIST = [
   { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "💣" },
   { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "🤔" },
   { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "🎙️" },
+  { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "🏆" },
+  { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint", icon: "🎱" },
   { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "🎡" },
   { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint", icon: "🙈" },
   { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint", icon: "🍻" },
@@ -46,10 +52,12 @@ export const WHEELS = new Set(["wheel", "dwheel"]);
 // Wer gegen sich selbst spielen kann, braucht nur ein Handy
 const MIN = { stop: 2, battle: 2, bomb: 2, likely: 2, dlikely: 2, fast: 1, beat: 1, taps: 1, never: 1 };
 // Spiele mit Antwort-Kacheln, und die davon, die enden dürfen, sobald alle geantwortet haben
-const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never"]);
-const EARLY_END = new Set(["quiz", "dquiz", "title", "intro", "tf", "likely", "dlikely", "never"]);
+const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
+const EARLY_END = new Set(["quiz", "dquiz", "title", "intro", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 // Diese Spiele führen die Musik: solange sie laufen, ist die Wiedergabe für alle anderen gesperrt
-const MUSIC_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing"]);
+const MUSIC_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel", "bingo"]);
+// zwei Ausschnitte je Runde: erst wenn beide gelaufen sind, darf die Runde vorzeitig enden
+const PAIR_GAMES = new Set(["older", "duel"]);
 const LINE_GAMES = new Set(["gap", "next", "tf"]);
 const SONG_FIELD = { quiz: "artist", dquiz: "artist", title: "title", intro: "title" };
 const OUT_GAMES = new Set(["stop", "bomb"]);
@@ -193,6 +201,30 @@ const nameOf = (p) => p.n || `${t("rankGuest")} ${p.id.slice(-2).toUpperCase()}`
 const all = () => [...G.players.values()];
 const alive = () => all().filter((p) => !p.out);
 const top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p), c: colOf(p), i: short(p.id) }));
+
+/* ---- Teams: auf Wunsch spielen die Gäste in 2 bis 4 Teams (Battle hat seine eigenen zwei) */
+const TEAM_GAMES = new Set(["quiz", "title", "intro", "dquiz", "gap", "next", "tf", "older", "cover", "taps", "fast", "beat"]);
+const TEAM_COLS = [0, 5, 2, 3];
+// beim Start: reihum verteilt, damit die Teams gleich groß sind
+function makeTeams() {
+  const n = Math.min(Number(cfg.gameTeams) || 0, all().length);
+  if (n < 2 || !TEAM_GAMES.has(G.k)) return;
+  G.teams = n;
+  shuffle(all()).forEach((p, i) => (p.team = i % n));
+}
+// spät dazugekommen: ins kleinste Team
+function joinTeam(p) {
+  const size = Array(G.teams).fill(0);
+  for (const x of all()) if (x !== p) size[x.team]++;
+  p.team = size.indexOf(Math.min(...size));
+}
+// Teamstand: der Schnitt je Mitglied, so hat ein größeres Team keinen Vorteil
+function teamTop() {
+  return Array.from({ length: G.teams || 0 }, (_, i) => {
+    const m = all().filter((p) => p.team === i);
+    return { i, n: t("gTm" + i), c: TEAM_COLS[i], p: m.length ? Math.round(m.reduce((a, p) => a + p.p, 0) / m.length) : 0, k: m.length };
+  }).sort((a, b) => b.p - a.p);
+}
 // Der Rückruf des zuletzt gestellten Weckers ist zugleich „Runde überspringen“
 const after = (ms, fn) => {
   G.lastFn = fn;
@@ -218,6 +250,11 @@ function publish() {
   // das Cover beim Rätsel bleibt auf dem großen Bild
   const pub = { ...G.view };
   delete pub.cov;
+  // Teams: Stand je Team und wer in welchem ist
+  if (G.teams) {
+    pub.tm = teamTop();
+    pub.tms = Object.fromEntries(all().slice(0, 40).map((p) => [short(p.id), p.team]));
+  }
   live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf), pl: all().slice(0, 16).map((p) => ({ i: short(p.id), n: nameOf(p), c: colOf(p) })) });
 }
 function show(view) {
@@ -240,7 +277,7 @@ function cue(v) {
   if (st === "end") return sfx.fanfare();
   if (st === "ask") return sfx.go();
   if (st === "rev") {
-    if (k === "never" || k === "likely" || k === "dlikely") return sfx.reveal();
+    if (k === "never" || k === "likely" || k === "dlikely" || k === "duel") return sfx.reveal();
     return all().some((p) => p.ans?.v === v.right) ? sfx.good() : sfx.bad();
   }
   if (k === "stop") return st === "stop" ? sfx.scratch() : st === "res" ? sfx.buzz() : undefined;
@@ -251,12 +288,16 @@ function cue(v) {
   if (k === "alarm") return st === "hit" ? sfx.siren() : st === "res" ? sfx.reveal() : undefined;
   if (k === "sing") return st === "go" ? sfx.whoosh() : st === "res" ? sfx.fanfare() : undefined;
   if (WHEELS.has(k)) return st === "spin" ? sfx.wheel() : st === "res" ? sfx.fanfare() : undefined;
+  if (k === "duel" && st === "champ") return sfx.fanfare();
 }
 function hide(on) {
   // verdeckt: Titel, Künstler, Cover und Liedtext dürfen die Lösung nicht verraten
-  ctx.root()?.classList.toggle("is-quiz", on === "quiz");
+  const q = on === "quiz" || on === "cover";
+  ctx.root()?.classList.toggle("is-quiz", q);
+  // beim Cover-Rätsel auch das echte Cover, der Hintergrund daraus und das Canvas-Video: sonst ist es gelöst
+  ctx.root()?.classList.toggle("is-cover", on === "cover");
   ctx.root()?.classList.toggle("is-gap", on === "gap");
-  live.mask(on === "quiz" ? "all" : on === "gap" ? "lyrics" : "");
+  live.mask(q ? "all" : on === "gap" ? "lyrics" : "");
 }
 
 /* ---- Start und Ende */
@@ -277,15 +318,34 @@ const FIRST = {
   tf: () => tfRound(),
   taps: () => tapsGo(),
   never: () => neverRound(),
+  older: () => olderRound(),
+  cover: () => coverRound(),
+  duel: () => duelRound(),
+  tour: () => tourBegin(),
+  bingo: () => bingoGo(),
 };
-function start(kind) {
-  if (!ctx) return;
-  stop(true);
-  muteBack = 0;
+function fresh(kind) {
   G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null, src: undefined, played: new Set() };
   boxKey = "";
   clearInterval(ticker);
   ticker = setInterval(() => render(true), 250);
+}
+// carry: die Gäste des Turniers, sie spielen ohne neuen Warteraum weiter
+function start(kind, carry) {
+  if (!ctx) return;
+  // ein anderes Spiel von Hand gestartet: das Turnier ist vorbei
+  if (!carry) TOUR = null;
+  stop(true);
+  muteBack = 0;
+  fresh(kind);
+  if (carry) {
+    for (const [id, p] of carry) G.players.set(id, { id, n: p.n, c: p.c, p: 0, out: false, team: 0, ans: null, e: 0, early: false });
+    G.view = { st: "join" };
+    return beginNow();
+  }
+  if (kind === "tour") G.plan = tourPlan();
+  // Bingo: erst prüfen, ob die Quelle genug Songs hat, sonst gar nicht erst anfangen
+  if (kind === "bingo") return void bingoCheck();
   if (WHEELS.has(kind)) return wheelIdle();
   // Wort-Alarm läuft ohne Warteraum: niemand muss sich anmelden, um mitzutrinken
   if (kind === "alarm" || kind === "sing") {
@@ -308,6 +368,7 @@ function beginNow() {
     return stop();
   }
   clearTimers();
+  makeTeams();
   FIRST[G.k]?.();
   ctx.changed?.();
 }
@@ -320,6 +381,9 @@ function skip() {
 }
 function stop(silent) {
   if (!G) return;
+  // im Turnier: bricht ein Spiel ab (zu wenige Gäste, kein Liedtext), geht es mit dem nächsten weiter
+  const goOn = !silent && TOUR && G.k !== "tour" ? G.players : null;
+  if (goOn && !G.scored) tourScore();
   clearTimers();
   if (G.k === "stop") PLR.play();
   resume();
@@ -332,7 +396,16 @@ function stop(silent) {
   box?.remove();
   box = null;
   boxKey = "";
-  if (!silent) ctx.changed?.();
+  if (goOn) return void tourNext(goOn);
+  if (!silent) {
+    TOUR = null;
+    ctx.changed?.();
+  }
+}
+// Beenden von Hand (× auf dem großen Bild, Leiste, Spielleitung): auch ein laufendes Turnier ist dann vorbei
+function endAll() {
+  TOUR = null;
+  stop();
 }
 function finish() {
   clearTimers();
@@ -340,10 +413,73 @@ function finish() {
   muteOff();
   hide("");
   const list = top();
+  // im Turnier: Zwischenstand, dann das nächste Spiel mit denselben Gästen
+  if (TOUR && G.k !== "tour") {
+    tourScore();
+    G.scored = true;
+    show({ st: "end", top: list, tour: tourView() });
+    if (list.length) ctx.confetti?.();
+    after(10000, () => {
+      const pl = G.players;
+      stop(true);
+      tourNext(pl);
+    });
+    return void ctx.changed?.();
+  }
   show({ st: "end", top: list });
   if (list.length) ctx.confetti?.();
   after(14000, () => stop());
   ctx.changed?.();
+}
+
+/* ---- Turnier: mehrere Spiele hintereinander, Platzierungspunkte je Spiel, Siegerehrung über alles */
+// Spiele, die ohne Extras laufen (keine Trinkspiele, kein Rad, kein Schütteln, kein Abstimmen über Geschmack)
+export const TOUR_POOL = ["quiz", "title", "intro", "older", "cover", "gap", "next", "tf", "fast", "taps", "beat"];
+// die Punkte je Platz: so zählt ein Sieg im Tipp-Rennen (Hunderte Tipps) so viel wie einer im Quiz
+const TOUR_PTS = [10, 7, 5, 3, 2];
+let TOUR = null;
+function tourPlan() {
+  const pick = (cfg.gameTour || []).filter((k) => TOUR_POOL.includes(k));
+  if (pick.length >= 3) return pick.slice(0, 6);
+  return shuffle(TOUR_POOL).slice(0, Math.max(3, Math.min(6, Number(cfg.gameTourN) || 4)));
+}
+function tourBegin() {
+  // Spiele, für die zu wenige da sind, fallen gleich raus
+  const plan = G.plan.filter((k) => (MIN[k] || 0) <= all().length);
+  TOUR = { list: plan, i: 0, total: new Map() };
+  const pl = G.players;
+  stop(true);
+  tourNext(pl);
+}
+function tourNext(players) {
+  if (!TOUR) return;
+  const k = TOUR.list[TOUR.i++];
+  if (k) return start(k, players);
+  // fertig: Siegerehrung mit den Turnierpunkten, das Ergebnisbild gibt es wie nach jedem Spiel
+  const tot = TOUR.total;
+  TOUR = null;
+  fresh("tour");
+  for (const [id, x] of tot) G.players.set(id, { id, n: x.n, c: x.c, p: x.p, out: false, team: 0, ans: null, e: 0, early: false });
+  G.view = { st: "join" };
+  finish();
+}
+function tourScore() {
+  const list = all().sort((a, b) => b.p - a.p);
+  let rank = 0;
+  list.forEach((p, i) => {
+    if (i && p.p < list[i - 1].p) rank = i;
+    const x = TOUR.total.get(p.id) || { n: "", c: null, p: 0 };
+    x.n = p.n || x.n;
+    x.c = p.c ?? x.c;
+    // wer gar nichts geholt hat, bekommt auch keinen Platz
+    x.p += p.p > 0 ? (TOUR_PTS[rank] ?? 1) : 0;
+    TOUR.total.set(p.id, x);
+  });
+}
+function tourView() {
+  const tot = [...TOUR.total].map(([id, x]) => ({ id, ...x })).sort((a, b) => b.p - a.p).slice(0, 5);
+  const next = TOUR.list[TOUR.i];
+  return { i: TOUR.i, of: TOUR.list.length, next: next ? `${INFO[next].icon} ${t(INFO[next].label)}` : "", tot: tot.map((p) => ({ n: nameOf(p), p: p.p, c: colOf(p), i: short(p.id) })) };
 }
 
 /* ---- Fragen: gemeinsamer Ablauf */
@@ -360,7 +496,9 @@ function award() {
   for (const p of all()) {
     if (!p.ans) continue;
     d[p.ans.v]++;
-    if (p.ans.v === G.right) p.p += 100 + (cfg.gameBonus === false ? 0 : Math.round(100 * Math.max(0, 1 - (p.ans.at - G.askedAt) / span)));
+    const early = Math.max(0, 1 - (p.ans.at - G.askedAt) / span);
+    // Cover-Rätsel: je unschärfer das Bild noch war, desto mehr (das ist der Kern des Spiels, darum ohne Schalter)
+    if (p.ans.v === G.right) p.p += G.k === "cover" ? Math.round(50 + 250 * early) : 100 + (cfg.gameBonus === false ? 0 : Math.round(100 * early));
   }
   return d;
 }
@@ -430,7 +568,8 @@ function hookPos() {
 }
 // Zum nächsten Song, stumm, bis er an der richtigen Stelle steht. Danach gilt der Song, der WIRKLICH läuft:
 // bei Shuffle, Warteschlange oder Autoplay ist das nicht immer der, den die Warteschlange als nächsten nennt.
-function jumpNext(fromStart, done) {
+// stay: der Song läuft schon (Titelverteidiger im Duell), nur stumm an die Stelle zurück
+function jumpNext(fromStart, done, stay) {
   const old = nowUri();
   G.switching = true;
   G.paused = false;
@@ -438,7 +577,8 @@ function jumpNext(fromStart, done) {
   muteOn();
   const ready = (item) => {
     G.switching = false;
-    muteOff();
+    // Cover-Rätsel: bleibt stumm bis zur Auflösung
+    if (!G.hold) muteOff();
     done(item);
   };
   // erst weiter, wenn Spotify das Stummschalten bestätigt hat
@@ -448,7 +588,7 @@ function jumpNext(fromStart, done) {
     later(30, () => whenSilent(go));
   };
   whenSilent(() => {
-    PLR.next();
+    if (!stay) PLR.next();
     PLR.play();
     const t0 = Date.now();
     let tAudio = 0;
@@ -483,7 +623,8 @@ function jumpNext(fromStart, done) {
       };
       aim();
     };
-    landed();
+    if (stay) place();
+    else landed();
   });
 }
 function runClip() {
@@ -530,8 +671,9 @@ function guard() {
     return G.k === "tf" ? tfRound() : lineRound();
   }
   const playing = PLR.isPlaying();
-  const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || (G.k === "beat" && v.st === "go") || G.k === "alarm" || G.k === "sing" || (G.k === "stop" && v.st === "play");
-  const wantStop = (SONG_FIELD[G.k] && v.st === "ask" && G.paused) || (G.k === "stop" && v.st === "stop");
+  const pair = PAIR_GAMES.has(G.k) && v.st === "ask" && G.heard > 0;
+  const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || ((G.k === "beat" || G.k === "bingo") && v.st === "go") || G.k === "alarm" || G.k === "sing" || (G.k === "stop" && v.st === "play") || (pair && !G.paused);
+  const wantStop = (SONG_FIELD[G.k] && v.st === "ask" && G.paused) || (G.k === "stop" && v.st === "stop") || (pair && G.paused) || (G.k === "cover" && v.st === "ask");
   if (now - (G.kick || 0) > 1000) {
     if (wantPlay && !playing) {
       G.kick = now;
@@ -1053,6 +1195,292 @@ function wheelEffect(k) {
   }
 }
 
+/* ---- Zwei Ausschnitte je Runde: Älter oder jünger? · Song-Duell */
+const pairClip = () => Math.min(clipMs() || 10000, 10000);
+const pairAsk = () => Math.max(askMs(), 2 * pairClip() + 6000);
+const label = (s) => `${s.artist} – ${s.title}`;
+const queueSong = (s) => within(S.addToQueue([{ uri: s.uri }]), 3000).catch(() => {});
+// Songs für die Paare: die gewählte Quelle, sonst die Warteschlange; ohne den laufenden und schon gespielte
+async function pairPool() {
+  const g = G;
+  if (g.src === undefined) {
+    const list = await loadSource().catch(() => null);
+    if (G !== g) return [];
+    g.src = list;
+  }
+  const seen = new Set();
+  return (g.src || queueSongs(S.Queue?.nextTracks)).filter((x) => x.uri !== nowUri() && !g.played.has(x.uri) && !seen.has(x.uri) && seen.add(x.uri));
+}
+// A stumm an die markante Stelle und ein Stück hören, dann B genauso, danach Stille bis zur Auflösung.
+// onA/onB bekommen den Song, der WIRKLICH läuft (null: Spotify hat nicht gewechselt).
+function playPair(pair, onA, onB) {
+  const g = G, r = G.r, half = pairClip(), on = () => G === g && G.r === r;
+  G.heard = 0;
+  // der Titelverteidiger läuft oft noch: kein Wechsel, sonst wartete der Sprung vergeblich auf einen neuen Song
+  const stay = pair[0].uri === nowUri();
+  (stay ? Promise.resolve() : queueSong(pair[0])).then(() => {
+    if (!on()) return;
+    jumpNext(false, (a) => {
+      if (!on()) return;
+      G.heard = 1;
+      onA(a ? songOf(a) : null);
+      later(half, () => queueSong(pair[1]).then(() => {
+        if (!on() || G.view?.st !== "ask") return;
+        jumpNext(false, (b) => {
+          if (!on() || G.view?.st !== "ask") return;
+          onB(b ? songOf(b) : null);
+          later(half, () => {
+            G.heard = 2;
+            PLR.pause();
+            G.paused = true;
+            render();
+            // alle haben schon getippt: nicht auf die Uhr warten
+            if (alive().length && alive().every((x) => x.ans)) {
+              clearTimers();
+              G.onAsked?.();
+            }
+          });
+        });
+      }));
+    }, stay);
+  });
+}
+// läuft statt des geplanten ein anderer Song (Shuffle, Autoplay): die Kachel zeigt den echten, die Runde fängt neu an
+function pairSwap(s, i, real) {
+  if (!real?.uri || real.uri === s[i].uri) return false;
+  s[i] = real;
+  G.played.add(real.uri);
+  loadYears([real]).catch(() => {});
+  return true;
+}
+function pairRefresh(s) {
+  for (const p of all()) p.ans = null;
+  G.att = (G.att || 0) + 1;
+  show({ ...G.view, o: s.map(label), att: G.att });
+}
+
+/* ---- Älter oder jünger?: welcher der beiden Songs ist zuerst erschienen */
+// Paar mit verschiedenen Erscheinungsjahren; die Schwierigkeit bestimmt, wie weit sie auseinanderliegen
+async function olderPair() {
+  const list = await pairPool();
+  try {
+    await loadYears(list);
+  } catch {}
+  const known = shuffle(list.filter((x) => years.get(x.uri)));
+  const lv = cfg.gameLevel, fit = (d) => (lv === "easy" ? d >= 10 : lv === "hard" ? d <= 6 : true);
+  for (const a of known) {
+    const ok = known.filter((b) => b !== a && years.get(b.uri) !== years.get(a.uri));
+    const b = ok.find((x) => fit(Math.abs(years.get(x.uri) - years.get(a.uri)))) || ok[0];
+    if (b) return [a, b];
+  }
+  return null;
+}
+function olderRound() {
+  G.r++;
+  if (G.r > rounds()) return finish();
+  show({ st: "load", r: G.r, of: rounds() });
+  const g = G, r = G.r;
+  olderPair().then((pair) => {
+    if (G !== g || G.r !== r) return;
+    if (!pair) {
+      notify(t("gOlderNone"), true);
+      return G.r > 1 ? finish() : stop();
+    }
+    pair.forEach((x) => G.played.add(x.uri));
+    const s = pair.slice(), q = t("gOlderAsk");
+    playPair(pair, (a) => {
+      pairSwap(s, 0, a);
+      ask({ o: s.map(label), q }, pairAsk(), () => {
+        const y = s.map((x) => years.get(x.uri) || 0);
+        // gleiches Jahr oder unbekannt: keine richtige Antwort, niemand verliert etwas
+        G.right = y[0] && y[1] && y[0] !== y[1] ? (y[0] < y[1] ? 0 : 1) : -1;
+        const d = award();
+        resume();
+        show({ st: "rev", r: G.r, of: rounds(), o: s.map((x, i) => `${label(x)} · ${y[i] || "?"}`), d, right: G.right, q, ...sips() });
+        after(breakMs(), olderRound);
+      });
+    }, (b) => pairSwap(s, 1, b) && pairRefresh(s));
+  });
+}
+
+/* ---- Song-Duell: zwei Ausschnitte, der Raum stimmt ab, der Sieger trifft auf den nächsten Song */
+function duelRound() {
+  G.r++;
+  if (G.r > rounds()) return duelEnd();
+  show({ st: "load", r: G.r, of: rounds() });
+  const g = G, r = G.r;
+  pairPool().then((list) => {
+    if (G !== g || G.r !== r) return;
+    const fresh = shuffle(list.filter((x) => x.uri !== G.champ?.uri));
+    const pair = G.champ ? [G.champ, fresh[0]] : fresh.slice(0, 2);
+    if (!pair[0] || !pair[1]) {
+      notify(t("gDuelNone"), true);
+      return G.r > 1 ? duelEnd() : stop();
+    }
+    pair.forEach((x) => G.played.add(x.uri));
+    const s = pair.slice(), q = t("gDuelAsk");
+    playPair(pair, (a) => {
+      pairSwap(s, 0, a);
+      G.right = -1;
+      ask({ o: s.map(label), q }, pairAsk(), () => {
+        const d = award(), most = Math.max(...d);
+        // Gleichstand: der Titelverteidiger bleibt
+        const win = d[1] > d[0] ? 1 : 0;
+        for (const p of all()) if (p.ans && most > 0 && d[p.ans.v] === most) p.p += 50;
+        G.wins = G.champ?.uri === s[win].uri ? (G.wins || 1) + 1 : 1;
+        G.champ = s[win];
+        G.right = win;
+        resume();
+        show({ st: "rev", r: G.r, of: rounds(), o: s.map(label), d, right: win, q });
+        after(breakMs(), duelRound);
+      });
+    }, (b) => pairSwap(s, 1, b) && pairRefresh(s));
+  });
+}
+function duelEnd() {
+  if (!G.champ) return finish();
+  show({ st: "champ", t: label(G.champ), cov: G.champ.img, wins: G.wins || 1 });
+  ctx.confetti?.();
+  after(6000, finish);
+}
+
+/* ---- Cover-Rätsel: das Cover des Songs wird von grob verpixelt langsam scharf, die Musik bleibt dabei aus */
+// Pixel je Seite über die Fragezeit: am Anfang sind Schrift und Gesichter nicht zu erkennen, ganz scharf wird es erst bei der Auflösung
+const COVER_STEPS = [4, 5, 6, 8, 10, 12, 15, 19, 24, 30, 38];
+// großes Cover (640 px) für die Auflösung, sonst das, was da ist
+const bigCover = (item) => coverOf({ image_url: item?.metadata?.image_large_url || item?.metadata?.image_xlarge_url || item?.metadata?.image_url }) || songOf(item).img;
+function coverRound(tries = 0) {
+  G.r++;
+  if (G.r > rounds()) return finish();
+  hide("cover");
+  G.hold = true;
+  show({ st: "load", r: G.r, of: rounds() });
+  const g = G, r = G.r;
+  queueNext().then(() => {
+    if (G === g && G.r === r && G.view?.st === "load") jumpNext(false, (item) => coverAsk(item, tries));
+  });
+}
+function coverAsk(item, tries) {
+  // das Bild ist der Hinweis: der Song steht schon an der richtigen Stelle, bleibt aber still bis zur Auflösung
+  PLR.pause();
+  G.paused = true;
+  const song = item ? songOf(item) : null, src = item ? bigCover(item) : "", g = G, r = G.r;
+  const retry = () => {
+    if (G !== g || G.r !== r || G.view?.st !== "load") return;
+    if (tries >= 2) {
+      notify(t("gCoverNone"), true);
+      return G.r > 1 ? finish() : stop();
+    }
+    G.r--;
+    coverRound(tries + 1);
+  };
+  if (!song?.title || !song.artist || !src) return retry();
+  // abwechselnd nach Titel und Künstler fragen
+  const field = G.r % 2 ? "title" : "artist", answer = song[field], o = shuffle([answer, ...decoys(song, field)]);
+  const img = new Image();
+  G.pixImg = img;
+  img.onerror = retry;
+  img.onload = () => {
+    if (G !== g || G.r !== r || G.view?.st !== "load") return;
+    G.uri = song.uri;
+    G.right = o.indexOf(answer);
+    ask({ o, q: t(field === "title" ? "gCoverTitle" : "gCoverArtist") }, askMs(), () => {
+      const d = award();
+      G.hold = false;
+      hide("");
+      muteOff();
+      resume();
+      show({ st: "rev", r: G.r, of: rounds(), o, d, right: G.right, title: song.title, artist: song.artist, cov: src, ...sips() });
+      after(breakMs(), () => coverRound());
+    });
+  };
+  img.src = src;
+  // lädt das Bild nicht: nicht ewig warten
+  later(6000, () => !img.naturalWidth && retry());
+}
+function pixTick() {
+  const c = box?.querySelector(".m-g-pix"), img = G.pixImg, v = G.view || {};
+  if (!c || v.st !== "ask" || !img?.naturalWidth) return;
+  const f = Math.max(0, Math.min(0.999, (Date.now() - G.askedAt) / (v.dur || askMs())));
+  const n = COVER_STEPS[Math.floor(f * COVER_STEPS.length)];
+  if (c.dataset.n === String(n)) return;
+  c.dataset.n = String(n);
+  // klein rechnen und ohne Glätten groß ziehen: harte Blöcke statt Weichzeichner, der Umrisse und Schrift durchscheinen lässt
+  const s = document.createElement("canvas");
+  s.width = s.height = n;
+  s.getContext("2d").drawImage(img, 0, 0, n, n);
+  const x = c.getContext("2d");
+  x.imageSmoothingEnabled = false;
+  x.drawImage(s, 0, 0, c.width, c.height);
+}
+
+/* ---- Musik-Bingo: jedes Handy hat eine 4×4-Karte mit Songtiteln, die Songs laufen, wer zuerst eine Reihe hat, gewinnt */
+const BINGO_N = 24;
+// Reihen, Spalten und die beiden Diagonalen
+const BINGO_LINES = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15], [0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15], [0, 5, 10, 15], [3, 6, 9, 12]];
+// Karte eines Gastes: 16 Felder aus dem Stapel, fest aus Spiel und Kennung gerechnet. Das Handy rechnet genauso,
+// so muss keine Karte verschickt werden, und eine Behauptung prüft der PC mit seiner eigenen Rechnung.
+function bingoCard(seed, n) {
+  let h = 2166136261;
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  const idx = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) {
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx.slice(0, 16);
+}
+async function bingoCheck() {
+  const g = G;
+  show({ st: "load" });
+  let list = null;
+  try {
+    list = await loadSource();
+  } catch {}
+  if (G !== g) return;
+  const seen = new Set();
+  list = (list || queueSongs(S.Queue?.nextTracks)).filter((x) => x.title && !seen.has(x.uri) && seen.add(x.uri));
+  if (list.length < BINGO_N) {
+    notify(t("gBingoFew").replace("{n}", list.length), true);
+    return stop();
+  }
+  G.deck = shuffle(list).slice(0, BINGO_N);
+  show({ st: "join", end: Date.now() + joinMs() });
+  after(joinMs(), beginNow);
+  ctx.changed?.();
+}
+function bingoGo() {
+  G.bp = [];
+  G.order = shuffle(G.deck.map((_, i) => i));
+  bingoTurn();
+}
+// der nächste Song vom Stapel; Stummschalten braucht es hier nicht, der Titel ist ja kein Geheimnis
+function bingoTurn() {
+  const i = G.order[G.bp.length];
+  if (i == null) return finish();
+  G.bp.push(i);
+  queueSong(G.deck[i]).then(() => {
+    if (G?.k !== "bingo" || G.view?.st !== "go") return;
+    PLR.next();
+    PLR.play();
+  });
+  show({ st: "go", deck: G.deck.map((x) => clean(x.title, 32)), bp: G.bp.slice(), end: Date.now() + durMs() });
+  after(durMs(), bingoTurn);
+}
+function bingoClaim(p, v) {
+  const line = BINGO_LINES[Number(v)];
+  if (!line || !G.deck) return;
+  const card = bingoCard(G.id + short(p.id), G.deck.length), played = new Set(G.bp);
+  // nur was wirklich gelaufen ist, zählt; wer zuerst eine echte Reihe meldet, gewinnt
+  if (!line.every((c) => played.has(card[c]))) return void sfx.buzz();
+  p.p += 100;
+  clearTimers();
+  show({ st: "res", win: nameOf(p), wc: colOf(p), ln: line.map((c) => G.deck[card[c]].title).join(" · ") });
+  ctx.confetti?.();
+  after(6000, finish);
+}
+
 /* ---- Antworten der Handys */
 window.addEventListener("mirage:game", (e) => {
   if (!G) return;
@@ -1064,6 +1492,7 @@ window.addEventListener("mirage:game", (e) => {
     // spät dazugekommen: bei Ausscheide-Spielen nur zuschauen, beim Battle ins kleinere Team
     if (OUT_GAMES.has(G.k)) p.out = true;
     if (G.k === "battle") p.team = all().filter((x) => x.team === 0).length > all().length / 2 ? 1 : 0;
+    if (G.teams) joinTeam(p);
   }
   if (m.a === "join") {
     publish();
@@ -1079,7 +1508,7 @@ window.addEventListener("mirage:game", (e) => {
     publish();
     render();
     // alle haben geantwortet: nicht warten (Lücken und Zeilen lösen sich erst beim Singen auf)
-    if (EARLY_END.has(G.k) && alive().every((x) => x.ans)) {
+    if (EARLY_END.has(G.k) && alive().every((x) => x.ans) && (!PAIR_GAMES.has(G.k) || G.heard >= 2)) {
       clearTimers();
       G.onAsked?.();
     }
@@ -1100,6 +1529,7 @@ window.addEventListener("mirage:game", (e) => {
     else if (m.a === "tap" && v.st === "go" && !p.ans && !p.early) p.ans = { ms: Math.max(0, Math.min(5000, Number(m.ms) || 5000)) };
     return;
   }
+  if (G.k === "bingo" && m.a === "bingo" && v.st === "go") return bingoClaim(p, m.v);
   if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
   // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen.
   // Eine Korrektur der Spielleitung (adj) bleibt daneben stehen, sonst würde die nächste Meldung sie überschreiben.
@@ -1186,7 +1616,7 @@ window.addEventListener("mirage:host", (e) => {
   if (m.a === "start") return void beginNow();
   if (m.a === "skip") return void skip();
   if (m.a === "spin") return void spin();
-  if (m.a === "end") return void stop();
+  if (m.a === "end") return void endAll();
   if (m.a !== "pts") return;
   const p = all().find((x) => short(x.id) === m.t);
   if (!p) return;
@@ -1239,9 +1669,10 @@ function render(tickOnly) {
       sfx.tick();
     }
   }
+  if (G.k === "cover") pixTick();
   if (tickOnly) return guard();
   if (WHEELS.has(G.k) && box.querySelector(".m-g-wheel")) return drawWheel(v);
-  const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" ? "" : v.line].join("|");
+  const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" ? "" : v.line, v.att].join("|");
   if (key === boxKey) return update(v);
   boxKey = key;
   box.textContent = "";
@@ -1249,11 +1680,14 @@ function render(tickOnly) {
   box.dataset.st = v.st || "";
   box.append(head(v));
   build(v);
+  // Teams: der Stand je Team steht immer unten mit dabei
+  if (G.teams && v.st !== "join") box.append(div("m-g-teams"));
   // die Tastatur spielt mit: welche Taste gerade gilt
   if (keyIn() && !WHEELS.has(G.k) && v.st !== "join" && v.st !== "end" && v.st !== "load" && v.st !== "wait") {
     box.append(div("m-g-sub m-g-keyhint", ASK_GAMES.has(G.k) ? (v.st === "ask" ? t("gKeyAsk").replace("{n}", v.o?.length || 4) : "") : t("gKeySpace")));
   }
   update(v);
+  if (G.k === "cover") pixTick();
 }
 function head(v) {
   const h = div("m-g-head");
@@ -1273,7 +1707,7 @@ function head(v) {
   x.title = x.ariaLabel = t("gEndNow");
   x.onclick = (e) => {
     e.stopPropagation();
-    stop();
+    endAll();
   };
   h.append(x);
   return h;
@@ -1284,6 +1718,12 @@ function build(v) {
   if (v.st === "join") return buildJoin();
   if (v.st === "wait") return box.append(div("m-g-sub", t("gWaitLine")));
   if (v.st === "load") return box.append(div("m-g-big m-g-pulse", "🎧"), div("m-g-sub", t("gLoadSong")));
+  if (G.k === "duel" && v.st === "champ") return buildChamp(v);
+  if (G.k === "bingo") {
+    if (v.st === "res") return box.append(div("m-g-big is-hot m-g-pop", t("gBingoWin").replace("{n}", v.win)), div("m-g-sub", v.ln));
+    // die gespielten Songs, der neueste oben (die Liste füllt update)
+    return box.append(div("m-g-sub m-g-bcount"), div("m-g-board m-g-bplayed"));
+  }
   if (G.k === "sing") {
     if (v.st === "res") return box.append(div("m-g-big m-g-pop", t("gSingBack")));
     if (v.st === "ready") return box.append(div("m-g-big m-g-pulse", t("gSingSoon")));
@@ -1363,7 +1803,7 @@ function buildJoin() {
     wrap.prepend(img);
   };
   // wer schon da ist: Zahl, Namen in ihrer Farbe, und was noch fehlt
-  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
+  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", G.plan ? G.plan.map((k) => `${INFO[k].icon} ${t(INFO[k].label)}`).join(" · ") : t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
   const go = document.createElement("button");
   go.type = "button";
   go.className = "m-g-go";
@@ -1377,7 +1817,23 @@ function buildJoin() {
   box.append(wrap);
   need();
 }
+function buildChamp(v) {
+  if (v.cov) {
+    const c = div("m-g-cov"), im = new Image();
+    im.alt = "";
+    im.src = v.cov;
+    c.append(im);
+    box.append(c);
+  }
+  box.append(div("m-g-sub", "🏆 " + t("gDuelChamp")), div("m-g-big m-g-pop", v.t), div("m-g-sub", t("gDuelWins").replace("{n}", v.wins)));
+}
 function buildAsk(v) {
+  if (G.k === "cover" && v.st === "ask") {
+    const c = document.createElement("canvas");
+    c.className = "m-g-pix";
+    c.width = c.height = 320;
+    box.append(c);
+  }
   if (v.cov && v.st === "rev") {
     const c = div("m-g-cov"), im = new Image();
     im.alt = "";
@@ -1444,6 +1900,9 @@ function beatLoop() {
 }
 function buildEnd(v) {
   box.append(div("m-g-big", t("gEnd")));
+  // Teams: zuerst das Siegerteam, darunter wie gewohnt die einzelnen
+  const tt = G.teams ? teamTop() : [];
+  if (tt.length) box.append(div("m-g-sub m-g-twin", tt[0].p > tt[1].p ? t("gTeamWin").replace("{t}", tt[0].n) : t("gDraw")));
   const list = v.top || [];
   const pod = div("m-g-podium");
   for (const i of [1, 0, 2]) {
@@ -1456,6 +1915,12 @@ function buildEnd(v) {
   }
   if (list.length) box.append(pod);
   if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
+  // Turnier: Zwischenstand über alle Spiele und was als Nächstes kommt; das Bild gibt es am Schluss
+  if (v.tour) {
+    box.append(div("m-g-sub m-g-tour", "🏆 " + t("gTourAfter").replace("{i}", v.tour.i).replace("{n}", v.tour.of)), board(v.tour.tot));
+    if (v.tour.next) box.append(div("m-g-sub", t("gTourNext").replace("{g}", v.tour.next)));
+    return;
+  }
   if (list.length) {
     // Ergebnis zum Teilen: die Rangliste als Bild
     const save = document.createElement("button");
@@ -1509,6 +1974,26 @@ function update(v) {
   if (v.st === "ask" && keyIn() && all().length === 1) {
     const pick = G.players.get(KEY_ID).ans?.v;
     box.querySelectorAll(".m-g-opt").forEach((o, i) => o.classList.toggle("is-pick", i === pick));
+  }
+  const bp = box.querySelector(".m-g-bplayed");
+  if (bp && v.bp && bp.dataset.n !== String(v.bp.length)) {
+    bp.dataset.n = String(v.bp.length);
+    box.querySelector(".m-g-bcount").textContent = t("gBingoPlayed").replace("{n}", v.bp.length).replace("{m}", v.deck.length);
+    bp.textContent = "";
+    v.bp.slice(-8).reverse().forEach((i, k) => bp.append(row(k ? "♪" : "▶", v.deck[i], "")));
+  }
+  const tb = box.querySelector(".m-g-teams");
+  if (tb) {
+    const list = teamTop(), now = list.map((x) => x.n + x.p + "/" + x.k).join("|");
+    if (tb.dataset.now !== now) {
+      tb.dataset.now = now;
+      tb.textContent = "";
+      list.forEach((x, i) => {
+        const c = div("m-g-chip m-g-tm" + (i === 0 && x.p > 0 ? " is-lead" : ""));
+        c.append(dot(x.c), div("m-g-cn", `${x.n} · ${x.p}`), div("m-g-tk", "👤" + x.k));
+        tb.append(c);
+      });
+    }
   }
   const eq = box.querySelector(".m-g-eq");
   if (eq) eq.classList.toggle("is-still", !!G.paused);
@@ -1573,7 +2058,7 @@ export const games = {
     muteRecover();
   },
   start,
-  stop,
+  stop: endAll,
   spin,
   beginNow,
   skip,

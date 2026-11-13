@@ -34,3 +34,41 @@ Object.assign(GAME_TEXT.de, {
   gCardBtn: "Ergebnis als Bild speichern", gCardKicker: "Party-Spiel",
   gHost: "Spielleitung am Handy", gHostHint: "Einen QR-Code nur für dich zeigen", gHostNote: "Nur für die Spielleitung: Wer diesen Code scannt, kann Spiele starten, Runden überspringen, beenden und Punkte korrigieren. Er verschwindet wieder, sobald du diese Leiste schließt.",
 });
+// Älter oder jünger? · Cover-Rätsel · Song-Duell
+Object.assign(GAME_TEXT.en, {
+  gOlder: "Older or newer?", gOlderHint: "Two songs, a short clip of each: which one came out first?", gOlderAsk: "Which one came out first?",
+  gOlderNone: "This needs songs from at least two different years in the queue or the chosen playlist.",
+  gCover: "Cover puzzle", gCoverHint: "A cover goes from blocky to sharp, the music stays off. The sooner you know it, the more points", gCoverTitle: "Which song is this?", gCoverArtist: "Who is this?",
+  gCoverNone: "No cover could be loaded for the next songs.",
+  gDuel: "Song duel", gDuelHint: "Two songs, a short clip of each, the room votes. The winner takes on the next song", gDuelAsk: "Which one stays?",
+  gDuelChamp: "Champion of the night", gDuelWins: "{n} duels won in a row", gDuelNone: "This needs at least 2 songs in the queue or the chosen playlist.",
+});
+Object.assign(GAME_TEXT.de, {
+  gOlder: "Älter oder jünger?", gOlderHint: "Zwei Songs, von jedem ein kurzes Stück: Welcher ist zuerst erschienen?", gOlderAsk: "Welcher ist zuerst erschienen?",
+  gOlderNone: "Dafür braucht es Songs aus mindestens zwei verschiedenen Jahren in der Warteschlange oder der gewählten Playlist.",
+  gCover: "Cover-Rätsel", gCoverHint: "Ein Cover wird von grob verpixelt langsam scharf, die Musik bleibt aus. Je früher du es weißt, desto mehr Punkte", gCoverTitle: "Welcher Song ist das?", gCoverArtist: "Wer ist das?",
+  gCoverNone: "Für die nächsten Songs ließ sich kein Cover laden.",
+  gDuel: "Song-Duell", gDuelHint: "Zwei Songs, von jedem ein kurzes Stück, der Raum stimmt ab. Der Sieger tritt gegen den nächsten Song an", gDuelAsk: "Welcher bleibt?",
+  gDuelChamp: "Sieger des Abends", gDuelWins: "{n} Duelle in Folge gewonnen", gDuelNone: "Dafür braucht es mindestens 2 Songs in der Warteschlange oder der gewählten Playlist.",
+});
+// Teams
+Object.assign(GAME_TEXT.en, { gSetTeams: "Play in teams (quizzes and races)", gTm0: "Red", gTm1: "Blue", gTm2: "Yellow", gTm3: "Green" });
+Object.assign(GAME_TEXT.de, { gSetTeams: "In Teams spielen (Quiz und Rennen)", gTm0: "Rot", gTm1: "Blau", gTm2: "Gelb", gTm3: "Grün" });
+// Turnier
+Object.assign(GAME_TEXT.en, {
+  gTour: "Tournament", gTourHint: "Several games in a row with the same guests, one ranking across all of them", gTourAfter: "Tournament · after game {i} of {n}", gTourNext: "Next: {g}",
+  gSetTour: "Tournament games", gSetTourNote: "Pick 3 to 6 games, or none for a random mix", gSetTourN: "Random mix: games",
+});
+Object.assign(GAME_TEXT.de, {
+  gTour: "Turnier", gTourHint: "Mehrere Spiele hintereinander mit denselben Gästen, eine Rangliste über alle", gTourAfter: "Turnier · nach Spiel {i} von {n}", gTourNext: "Als Nächstes: {g}",
+  gSetTour: "Spiele im Turnier", gSetTourNote: "3 bis 6 Spiele wählen, oder keins für einen Zufallsmix", gSetTourN: "Zufallsmix: Spiele",
+});
+// Musik-Bingo
+Object.assign(GAME_TEXT.en, {
+  gBingo: "Music bingo", gBingoHint: "Every phone gets a card of song titles. Mark what plays: four in a row, column or diagonal wins",
+  gBingoFew: "Music bingo needs at least 24 songs in the queue or the chosen playlist ({n} found).", gBingoPlayed: "{n} of {m} songs played", gBingoWin: "BINGO! {n}",
+});
+Object.assign(GAME_TEXT.de, {
+  gBingo: "Musik-Bingo", gBingoHint: "Jedes Handy bekommt eine Karte mit Songtiteln. Markiert, was läuft: vier in einer Reihe, Spalte oder Diagonale gewinnen",
+  gBingoFew: "Musik-Bingo braucht mindestens 24 Songs in der Warteschlange oder der gewählten Playlist ({n} gefunden).", gBingoPlayed: "{n} von {m} Songs gespielt", gBingoWin: "BINGO! {n}",
+});

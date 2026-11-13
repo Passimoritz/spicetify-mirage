@@ -4467,6 +4467,33 @@ html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTerti
 #mirage-immersive.is-quiz .m-im-cover {
   filter: blur(36px);
 }
+/* Cover-Rätsel: das echte Cover, der Hintergrund daraus und das Canvas-Video wären die Lösung */
+#mirage-immersive.is-cover :is(.m-im-cover-wrap, .m-im-bg i, .m-im-bg video) {
+  visibility: hidden;
+}
+/* Teams: Stand je Team unter der Spielkarte */
+#mirage-immersive .m-g-teams {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+#mirage-immersive .m-g-tm.is-lead {
+  background: rgb(255 255 255 / 0.24);
+}
+#mirage-immersive .m-g-tk {
+  opacity: 0.6;
+  font-size: 12px;
+}
+#mirage-immersive .m-g-pix {
+  width: min(34vh, 300px);
+  aspect-ratio: 1;
+  align-self: center;
+  border-radius: 18px;
+  box-shadow: 0 16px 50px rgb(0 0 0 / 0.45);
+  background: rgb(255 255 255 / 0.06);
+  image-rendering: pixelated;
+}
 #mirage-immersive.is-gap .m-im-lyrics {
   opacity: 0;
 }

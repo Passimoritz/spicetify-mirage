@@ -24,7 +24,7 @@ import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
-import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS } from "./games.js";
+import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from "./games.js";
 import { free } from "./lock.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
@@ -2871,10 +2871,42 @@ const immersive = (() => {
       for (const p of list.slice(0, 200)) sideBtn(box, p.name, "", () => pick(p.uri, p.name), cfg.gameSource === p.uri);
     });
   }
+  // Turnier: welche Spiele (in der Reihenfolge des Antippens), sonst ein Zufallsmix aus so vielen
+  function tourChoice(body) {
+    const head = document.createElement("div");
+    head.className = "m-im-side-sec";
+    head.textContent = t("gSetTour");
+    const note = document.createElement("p");
+    note.className = "m-im-side-note";
+    note.textContent = t("gSetTourNote");
+    body.append(head, note);
+    const chips = document.createElement("div");
+    chips.className = "m-g-seg-row is-wrap m-g-tourpick";
+    chips.setAttribute("role", "group");
+    chips.setAttribute("aria-label", t("gSetTour"));
+    for (const k of TOUR_POOL) {
+      const g = GAME_LIST.find((x) => x.k === k), b = document.createElement("button");
+      b.type = "button";
+      b.textContent = `${g.icon} ${t(g.label)}`;
+      b.setAttribute("aria-pressed", String((cfg.gameTour || []).includes(k)));
+      b.onclick = () => {
+        const list = (cfg.gameTour || []).filter((x) => x !== k);
+        // höchstens sechs
+        if (!(cfg.gameTour || []).includes(k) && list.length < 6) list.push(k);
+        cfg.gameTour = list;
+        save();
+        chips.querySelectorAll("button").forEach((x, i) => x.setAttribute("aria-pressed", String(list.includes(TOUR_POOL[i]))));
+      };
+      chips.append(b);
+    }
+    body.append(chips);
+    gameChoice(body, t("gSetTourN"), "gameTourN", [3, 4, 5, 6].map((n) => [n, String(n)]));
+  }
   function gameSettings(body) {
     gameChoice(body, t("gSetLevel"), "gameLevel", [["easy", t("gLvEasy")], ["normal", t("gLvNormal")], ["hard", t("gLvHard")]]);
     gameChoice(body, t("gSetDecade"), "gameDecade", [[0, t("gDecAll")], ...[1980, 1990, 2000, 2010, 2020].map((d) => [d, String(d).slice(2) + t("gDecSuffix")])], true);
     sourceChoice(body);
+    gameChoice(body, t("gSetTeams"), "gameTeams", [[0, "✕"], [2, "2"], [3, "3"], [4, "4"]]);
     gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
     gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
     gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);
@@ -2885,6 +2917,7 @@ const immersive = (() => {
     gameChoice(body, t("gSetDrink"), "gameDrink", [[true, "✓"], [false, "✕"]]);
     gameChoice(body, t("gSetSfx"), "gameSfx", [[0, "✕"], [0.35, t("gSfxLow")], [0.7, t("gSfxLoud")]]);
     gameChoice(body, t("gSetCard"), "gameCard", [["big", t("gCardBig")], ["small", t("gCardSmall")]]);
+    tourChoice(body);
     const head = document.createElement("div");
     head.className = "m-im-side-sec";
     head.textContent = t("gSetWheel");
