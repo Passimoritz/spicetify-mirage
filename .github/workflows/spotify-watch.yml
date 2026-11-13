@@ -23,17 +23,46 @@ jobs:
         with:
           node-version: 20
 
+      # Windows is usually a few days ahead of Linux, so try the Windows setup first. Its format is not
+      # documented; when it cannot be unpacked, the official Linux package is used (it holds xpui.spa directly).
       - name: Download and unpack the newest Spotify client
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq p7zip-full unzip
-          curl -fsSL -o spotify.exe https://download.scdn.co/SpotifyFullSetupX64.exe
-          7z x -y -ospotify spotify.exe > /dev/null
-          SPA=$(find spotify -name xpui.spa | head -1)
+          SPA=""
+          if curl -fsSL --max-time 300 -o spotify.exe https://download.scdn.co/SpotifyFullSetupX64.exe; then
+            echo "Windows setup: $(stat -c %s spotify.exe) bytes"
+            7z l spotify.exe 2>&1 | tail -n 15 || true
+            7z x -y -ospotify spotify.exe > /dev/null 2>&1 || true
+            # the setup may hold a further archive with the app inside
+            for inner in $(find spotify -type f \( -name '*.7z' -o -name '*.zip' -o -name '*.exe' \) 2>/dev/null | head -5); do
+              7z x -y -ospotify/inner "$inner" > /dev/null 2>&1 || true
+            done
+            SPA=$(find spotify -name xpui.spa 2>/dev/null | head -1)
+            VERSION=$(strings spotify.exe 2>/dev/null | grep -o -E '1\.[0-9]+\.[0-9]+\.[0-9]+\.g[0-9a-f]+' | head -1 || true)
+            SOURCE="Windows setup"
+          fi
+          if [ -z "$SPA" ]; then
+            echo "Windows setup could not be unpacked, using the Linux package"
+            BASE=http://repository.spotify.com
+            curl -fsSL --max-time 60 -o Packages "$BASE/dists/testing/non-free/binary-amd64/Packages"
+            # newest spotify-client entry: version, file name and checksum
+            read -r VERSION FILE SUM < <(awk '
+              /^Package: /{p=($2=="spotify-client"); v=f=s=""}
+              p&&/^Version: /{v=$2} p&&/^Filename: /{f=$2} p&&/^SHA256: /{s=$2}
+              p&&/^$/{if(f)print v, f, s; p=0}
+              END{if(p&&f)print v, f, s}' Packages | sort -V | tail -n 1)
+            test -n "$FILE"
+            curl -fsSL --max-time 600 -o spotify.deb "$BASE/$FILE"
+            echo "$SUM  spotify.deb" | sha256sum -c -
+            dpkg-deb -x spotify.deb deb
+            SPA=$(find deb -name xpui.spa | head -1)
+            VERSION="${VERSION#*:}"
+            SOURCE="Linux package"
+          fi
           test -n "$SPA"
           unzip -q -o "$SPA" -d xpui
-          VERSION=$(7z l spotify.exe | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)
-          echo "SPOTIFY_VERSION=${VERSION:-unknown}" >> "$GITHUB_ENV"
-          ls xpui | wc -l
+          echo "SPOTIFY_VERSION=${VERSION:-unknown} (${SOURCE})" >> "$GITHUB_ENV"
+          echo "Checking Spotify ${VERSION:-unknown} from the ${SOURCE}: $(ls xpui | wc -l) files"
 
       - name: Download Spicetify's name list
         run: curl -fsSL -o css-map.json https://raw.githubusercontent.com/spicetify/cli/main/css-map.json

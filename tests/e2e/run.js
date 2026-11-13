@@ -125,7 +125,7 @@ async function openGame(k) {
 async function joinAll(k, who = P) {
   await until(async () => (await big.state()).st === "join", 4000, "Warteraum auf dem großen Bild");
   if (!hash) await connectPhones();
-  await allPhones((s) => !s.hidden && s.k === k && s.st === "join", 12000, "Handys zeigen den Warteraum");
+  await until(async () => (await Promise.all(who.map(phoneState))).every((s) => !s.hidden && s.k === k && s.st === "join"), 12000, "Handys zeigen den Warteraum");
   for (const ph of who) await ph.click("#game button.go");
   await until(async () => (await big.state()).chips === who.length, 6000, `${who.length} Gäste auf dem großen Bild`);
   await big.hover();
@@ -600,6 +600,417 @@ async function phoneReload() {
   ok(await P[0].js(`!!document.querySelector("#game .tile.pick")`), "nach dem Neuladen bleibt die Antwort markiert");
   await close();
 }
+// Funkloch: das Handy zeigt es an, verbindet sich von selbst neu, und der Gast spielt mit seinen Punkten weiter
+async function offline() {
+  const net = () => P[0].js(`({ lost: document.body.classList.contains("lost"), text: document.getElementById("net").textContent })`);
+  await openGame("never");
+  await joinAll("never");
+  await allPhones((s) => s.k === "never" && s.st === "ask" && s.round === "1/2", 8000, "offline: Frage 1");
+  await P[0].click(...tile(0));
+  await wait(700);
+  let n = await net();
+  ok(!n.lost && !n.text, `offline: verbunden zeigt keinen Hinweis: ${JSON.stringify(n)}`);
+  await P[0].js(`__e2eNet.cut(5000); 1`);
+  n = await until(async () => (await net()).lost && (await net()), 2000, "offline: der Punkt zeigt die Unterbrechung sofort");
+  ok(!n.text, `offline: ein kurzer Aussetzer bleibt ohne Text: ${n.text}`);
+  await until(async () => /Offline/.test((await net()).text), 7000, "offline: nach ein paar Sekunden steht es da");
+  await P[1].click(...tile(1));
+  await P[2].click(...tile(1));
+  await until(async () => /Alpha/.test((await big.state()).text) && (await big.state()).st === "rev", 6000, "offline: Alphas Antwort von vor dem Funkloch zählt");
+  await until(async () => !(await net()).lost, 20000, "offline: das Handy verbindet sich von selbst neu");
+  ok(/verbunden|Connected/.test((await net()).text), "offline: sagt, dass es wieder verbunden ist");
+  await allPhones((s) => s.k === "never" && s.st === "ask" && s.round === "2/2", 12000, "offline: Alpha spielt nach dem Funkloch weiter");
+  for (const ph of P) await ph.click(...tile(0));
+  const end = await allPhones((s) => s.st === "end", 8000, "offline: Siegerehrung");
+  ok(/ 2 (Punkte|points)/.test(end[0].text), `offline: Alpha hat die Punkte aus beiden Runden: ${end[0].text}`);
+  await until(async () => !(await net()).text, 4000, "offline: der Hinweis verschwindet wieder");
+  await close();
+}
+// Name und Farbe: einmal gefragt, auf dem großen Bild im Warteraum, an Ständen und Wünschen zu sehen, später änderbar
+const BLUE = "rgb(74, 168, 255)", RED = "rgb(255, 90, 110)";
+const bigGuest = (sel, name) => T.js(`(() => {
+  const c = [...document.querySelectorAll(${JSON.stringify(sel)})].find((x) => x.textContent.includes(${JSON.stringify(name)}));
+  return c ? { dot: c.querySelector(".m-g-dot")?.style.background || "" } : null;
+})()`);
+async function guestProfile() {
+  const Z = P[2];
+  await ensurePhones("guest-profile");
+  await Z.js(`for (const k of ["mlName", "mlCol", "mlProf"]) localStorage.removeItem(k); location.reload(); 1`).catch(() => {});
+  await wait(500);
+  await until(() => Z.js(`!document.getElementById("prof").hidden`).catch(() => false), 10000, "profil: beim ersten Mal wird nach Name und Farbe gefragt");
+  await Z.click("#pName");
+  await Z.wc.insertText("Zoë");
+  await Z.click("#pSw .swb", { index: 5 });
+  await Z.click("#pOk");
+  const me = await Z.js(`({ n: localStorage.getItem("mlName"), c: localStorage.getItem("mlCol"), asked: localStorage.getItem("mlProf"), btn: document.getElementById("bMe").textContent, bg: document.getElementById("bMe").style.background, open: !document.getElementById("prof").hidden })`);
+  ok(me.n === "Zoë" && me.c === "5" && me.asked === "1" && me.btn === "Z" && me.bg === BLUE && !me.open, "profil: Name und Farbe sind gemerkt: " + JSON.stringify(me));
+  // Warteraum: wer da ist, mit Namen und Farbe, und was noch fehlt
+  await openGame("stop");
+  await until(async () => (await big.state()).st === "join", 4000, "profil: Warteraum");
+  const count = () => T.js(`document.querySelector(".m-g-jcount")?.textContent || ""`);
+  await until(async () => /niemand|Nobody/.test(await count()) && /2/.test(await count()), 3000, "warteraum: leer, zwei Gäste nötig");
+  await until(async () => (await phoneState(Z)).st === "join", 8000, "profil: Handy zeigt den Warteraum");
+  await Z.click("#game button.go");
+  await until(async () => (await bigGuest(".m-g-chips .m-g-chip", "Zoë"))?.dot === BLUE, 5000, "warteraum: Zoë steht mit ihrer Farbe auf dem großen Bild");
+  ok(/1 (dabei|in the game).*1/.test(await count()), "warteraum: einer da, einer fehlt noch: " + (await count()));
+  await P[0].click("#game button.go");
+  await until(async () => /^2 (dabei|in the game)$/.test(await count()), 5000, "warteraum: zwei da, niemand fehlt mehr");
+  const chip = await until(() => P[0].js(`(() => {
+    const c = [...document.querySelectorAll("#game .gchips span")].find((x) => x.textContent === "Zoë");
+    return c ? c.querySelector(".gdot")?.style.background : "";
+  })()`), 4000, "warteraum: auch das Handy zeigt Zoë mit Farbe");
+  ok(chip === BLUE, "warteraum: Farbe auf dem Handy: " + chip);
+  await close();
+  await afterGame("profil");
+  // Stände: wessen sie sind
+  await openGame("never");
+  await joinAll("never");
+  await allPhones((s) => s.st === "ask" && s.round === "1/2", 8000, "profil: Frage 1");
+  for (const ph of P) await ph.click(...tile(0));
+  await allPhones((s) => s.st === "rev" && s.round === "1/2", 6000, "profil: Auflösung");
+  ok((await bigGuest(".m-g-board .m-g-row", "Zoë"))?.dot === BLUE, "profil: Stand auf dem großen Bild trägt Zoës Farbe");
+  const mine = await Z.js(`document.querySelector("#game .grow.me")?.textContent || ""`);
+  ok(mine.includes("Zoë"), "profil: der eigene Stand ist auf dem Handy hervorgehoben: " + mine);
+  // später ändern: der Knopf oben rechts
+  await allPhones((s) => s.st === "ask" && s.round === "2/2", 8000, "profil: Frage 2");
+  await Z.click("#bMe");
+  await Z.click("#pSw .swb", { index: 0 });
+  await Z.click("#pOk");
+  await until(async () => (await bigGuest(".m-g-who .m-g-chip", "Zoë"))?.dot === RED, 5000, "profil: die neue Farbe kommt auf dem großen Bild an");
+  await close();
+  await afterGame("profil");
+  // Wunsch: von wem er ist
+  await Z.click("#bWish");
+  await wait(700);
+  await Z.js(`(() => { const i = document.getElementById("wSong"); i.value = "song"; i.dispatchEvent(new Event("input")); })(); 1`);
+  await until(() => Z.js(`document.querySelectorAll("#wRes li").length > 0`), 9000, "wunsch: Treffer");
+  await Z.click("#wRes li button.go");
+  const by = await until(() => P[0].js(`(() => {
+    const s = [...document.querySelectorAll("#wList small")].find((x) => x.textContent.includes("Zoë"));
+    return s ? s.querySelector(".gdot")?.style.background || "ohne" : "";
+  })()`), 6000, "wunsch: die anderen sehen, von wem er ist");
+  ok(by === RED, "wunsch: mit Zoës Farbe: " + by);
+  const toast = await until(() => T.js(`(() => {
+    const s = document.querySelector(".m-im-wishtoast small");
+    return s && s.textContent.includes("Zoë") ? s.querySelector(".m-im-who")?.style.background || "ohne" : "";
+  })()`), 6000, "wunsch: das große Bild nennt Zoë");
+  ok(toast === RED, "wunsch: mit Farbe auf dem großen Bild: " + toast);
+  await Z.click("#wClose");
+  await T.js(`document.querySelector(".m-im-wishtoast .m-im-wish-all")?.click(); 1`);
+  await wait(400);
+  await T.js(`document.querySelector(".m-im-wish-no")?.click(); document.querySelector(".m-im-side-x")?.click(); 1`);
+  // wieder Gamma, für die Fälle danach
+  await Z.js(`localStorage.setItem("mlName", "Gamma"); localStorage.removeItem("mlCol"); location.reload(); 1`).catch(() => {});
+  await wait(1500);
+}
+// Später einsteigen: ein Gast scannt mitten im Spiel, spielt ab sofort mit und behält seine Punkte auch nach dem Neuladen
+async function lateJoin() {
+  const L = P[2];
+  await ensurePhones("late-join");
+  await L.js(`sessionStorage.clear(); 1`);
+  await L.win.loadURL(PAGE);
+  await T.js(`__sp.setShuffleJump(0); 1`);
+  await openGame("quiz");
+  await joinAll("quiz", [P[0], P[1]]);
+  await until(async () => (await phoneState(P[0])).st === "ask" && (await phoneState(P[0])).tiles.length === 4, 15000, "spät: Frage 1 läuft");
+  await L.win.loadURL(PAGE + "?late=1" + hash);
+  const late = await until(async () => {
+    const s = await phoneState(L).catch(() => null);
+    return s && !s.hidden && s.k === "quiz" && s;
+  }, 10000, "spät: der neue Gast sieht das laufende Spiel");
+  ok(late.tiles.length === 0 && (await L.js(`document.getElementById("game").dataset.late`)) === "1", "spät: erst einsteigen, dann antworten: " + late.text);
+  await L.click("#game button.go");
+  const now = await until(async () => {
+    const s = await phoneState(L);
+    return s.st === "ask" && s.tiles.length === 4 && s;
+  }, 4000, "spät: nach dem Einsteigen ist die Frage da");
+  await until(() => T.js(`document.querySelectorAll(".m-g-who .m-g-chip").length === 3`), 4000, "spät: das große Bild zeigt den dritten Gast");
+  const b = await big.state(), right = tileOf(now, b.artist);
+  ok(right >= 0, "spät: die richtige Antwort steht zur Auswahl");
+  await P[0].click(...tile((right + 1) % 4));
+  await P[1].click(...tile((right + 1) % 4));
+  await L.click(...tile(right));
+  const rev = await allPhones((s) => s.st === "rev" && s.round === "1/2", 6000, "spät: Auflösung");
+  ok(/hit/.test(rev[2].verdict), "spät: die Antwort des neuen Gastes zählt: " + rev[2].verdict);
+  ok(/Gamma/.test(((await big.state()).text.split("🥇")[1] || "").split("🥈")[0]), "spät: Gamma führt: " + (await big.state()).text);
+  // Neuladen in einem frischen Tab: der PC kennt den Gast noch, die Punkte bleiben
+  await allPhones((s) => s.st === "ask" && s.round === "2/2" && s.tiles.length === 4, 15000, "spät: Frage 2");
+  await L.js(`sessionStorage.clear(); location.reload(); 1`).catch(() => {});
+  await wait(600);
+  const back = await until(async () => {
+    const s = await phoneState(L).catch(() => null);
+    return s && s.st === "ask" && s.round === "2/2" && s.tiles.length === 4 && s;
+  }, 9000, "spät: nach dem Neuladen direkt wieder im Spiel");
+  ok((await L.js(`document.getElementById("game").dataset.late`)) === "", "spät: kein zweites Einsteigen nötig");
+  const b2 = await big.state();
+  for (const ph of P) await ph.click(...tile(tileOf(back, b2.artist)));
+  const end = await allPhones((s) => s.st === "end", 14000, "spät: Siegerehrung");
+  const pts = Number((/(\d+) (Punkte|points)/.exec(end[2].text) || [])[1] || 0);
+  ok(pts > 200, "spät: Gamma hat die Punkte aus beiden Runden: " + end[2].text);
+  await close();
+}
+// Spielleitung am Handy: eigener QR-Code hinter einem Knopf, und nur das Handy mit diesem Link darf steuern
+async function hostGame() {
+  const H = P[2];
+  await ensurePhones("host");
+  const sideOpen = () => until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "host: Spiele-Leiste geht auf");
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await sideOpen();
+  ok(!(await T.js(`!!document.querySelector(".m-g-hostqr")`)), "host: der QR-Code der Spielleitung ist nicht von selbst zu sehen");
+  await T.click(".m-im-side-body .m-im-side-item", { text: "📱" });
+  await until(() => T.js(`!!document.querySelector(".m-g-hostqr img")?.naturalWidth`), 6000, "host: QR-Code nach dem Knopf");
+  const url = await T.js(`(async () => {
+    const im = document.querySelector(".m-g-hostqr img"), c = document.createElement("canvas");
+    c.width = c.height = 760;
+    const x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, 760, 760);
+    x.drawImage(im, 20, 20, 720, 720);
+    return jsQR(x.getImageData(0, 0, 760, 760).data, 760, 760)?.data || "";
+  })()`);
+  const hostHash = url.slice(url.indexOf("#"));
+  ok(hostHash.startsWith(hash + "&h=") && hostHash.length > hash.length + 20, "host: der Link trägt einen eigenen Schlüssel: " + url.slice(0, 60));
+  await T.click(".m-im-side-x");
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await sideOpen();
+  ok(!(await T.js(`!!document.querySelector(".m-g-hostqr")`)), "host: nach dem Schließen ist der QR-Code wieder weg");
+  await T.click(".m-im-side-x");
+  await H.win.loadURL(PAGE + "?host=1" + hostHash);
+  await until(() => H.js(`document.body.classList.contains("on") && !document.getElementById("bHost").hidden`).catch(() => false), 10000, "host: das Handy der Spielleitung hat den Knopf");
+  ok(await P[0].js(`document.getElementById("bHost").hidden`), "host: Gäste haben den Knopf nicht");
+  // ein Spiel vom Handy aus starten
+  await H.click("#bHost");
+  await H.click("#hBody .hgames button", { text: "🙈" });
+  await until(async () => (await big.state()).st === "join" && (await big.state()).k === "never", 5000, "host: das Spiel geht auf dem großen Bild auf");
+  for (const ph of [P[0], P[1]]) {
+    await until(async () => (await phoneState(ph)).st === "join", 8000, "host: Warteraum auf den Handys");
+    await ph.click("#game button.go");
+  }
+  await until(async () => (await big.state()).chips === 2, 6000, "host: zwei Gäste im Warteraum");
+  // ein Gast ohne den Schlüssel kann nichts steuern
+  await P[0].js(`sendSure({ k: "host", hd: [myId, "start", "", 0, Date.now(), "abcdefgh12"].join("|"), sig: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" }); 1`);
+  await wait(1200);
+  ok((await big.state()).st === "join", "host: ein gefälschter Befehl eines Gastes wirkt nicht");
+  await H.click("#hBody .hacts button.go");
+  await until(async () => (await phoneState(P[0])).st === "ask" && (await phoneState(P[0])).round === "1/2", 6000, "host: Start vom Handy");
+  await until(() => H.js(`document.querySelectorAll("#hBody .hacts button").length === 2 && !document.querySelector("#hBody .hacts button.go")`), 3000, "host: jetzt gibt es Überspringen");
+  await H.click("#hBody .hacts button", { index: 0 });
+  await until(async () => (await phoneState(P[0])).st === "ask" && (await phoneState(P[0])).round === "2/2", 9000, "host: Runde übersprungen");
+  await P[0].click(...tile(0));
+  await P[1].click(...tile(1));
+  // Punkte korrigieren: Alpha bekommt 100 dazu
+  await H.click("#hBody .hsteps button", { index: 2 });
+  const row = await H.js(`[...document.querySelectorAll("#hBody .hrow")].findIndex((r) => r.textContent.includes("Alpha"))`);
+  ok(row >= 0, "host: Alpha steht in der Liste der Spielleitung");
+  await until(() => H.js(`document.querySelectorAll("#hBody .hrow b")[${row}]?.textContent === "1"`), 5000, "host: die Spielleitung sieht Alphas Stand");
+  await H.click("#hBody .hrow button", { index: row * 2 + 1 });
+  await until(async () => /Alpha 101/.test((await big.state()).text), 6000, "host: der korrigierte Stand steht auf dem großen Bild");
+  await until(async () => / 101 (Punkte|points)/.test((await phoneState(P[0])).text), 12000, "host: und bei Alpha auf dem Handy");
+  // dieselbe Nachricht noch einmal (mitgelesen und wieder abgespielt) zählt nicht doppelt: sendSure schickt jede dreimal
+  await wait(1200);
+  ok(/Alpha 101/.test((await big.state()).text), "host: ein Befehl gilt genau einmal: " + (await big.state()).text);
+  await H.click("#hBody .hacts button.end");
+  await until(async () => !(await big.state()).open, 5000, "host: Ende vom Handy");
+  await until(() => H.js(`!!document.querySelector("#hBody .hgames")`), 4000, "host: danach steht wieder die Spieleliste da");
+  await H.win.loadURL(PAGE + "?guest=1" + hash);
+  await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bHost").hidden`).catch(() => false), 10000, "host: wieder als Gast verbunden");
+}
+// Spiel-Einstellungen über die echte Leiste setzen
+async function openGameSettings() {
+  await big.hover();
+  await T.click(".m-im-gamebtn");
+  await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Leiste geht auf");
+  if (!(await T.js(`!!document.querySelector(".m-g-cfg")`))) await T.click(".m-im-side-body .m-im-side-item", { text: "⚙" });
+  await until(() => T.js(`!!document.querySelector(".m-g-cfg")`), 2000, "Spiel-Einstellungen gehen auf");
+}
+async function gameSetting(key, index) {
+  await openGameSettings();
+  await T.click(`.m-g-cfg[data-key="${key}"] button`, { index });
+  await until(() => T.js(`document.querySelectorAll('.m-g-cfg[data-key="${key}"] button')[${index}]?.getAttribute("aria-pressed") === "true"`), 2000, `Einstellung ${key} ist gesetzt`);
+  await T.click(".m-im-side-x");
+}
+async function gameSource(name) {
+  await openGameSettings();
+  await T.click(".m-g-src");
+  await until(() => T.js(`document.querySelectorAll(".m-g-srclist .m-im-side-item").length > 1`), 4000, "Playlists der Bibliothek stehen zur Wahl");
+  await T.click(".m-g-srclist .m-im-side-item", name ? { text: name } : { index: 0 });
+  await until(() => T.js(`!document.querySelector(".m-g-srclist") && (document.querySelector(".m-g-src")?.textContent || "")`), 2000, "Quelle ist gewählt");
+  await T.click(".m-im-side-x");
+}
+const firstSong = async () => {
+  await T.js(`__sp.resetArtists(); __sp.setShuffleJump(0); 1`);
+  await wait(500);
+};
+// Schwierigkeit: leicht hat drei Antworten, schwer die ähnlichsten falschen
+async function quizLevel() {
+  await ensurePhones("quiz-level");
+  await firstSong();
+  await gameSetting("gameLevel", 0);
+  await openGame("quiz");
+  await joinAll("quiz");
+  let ps = await allPhones((s) => s.st === "ask" && s.tiles.length >= 3, 15000, "leicht: Frage");
+  let b = await big.state();
+  ok(ps[0].tiles.length === 3 && ps[0].tiles.includes(b.artist), "leicht: drei Antworten, die richtige dabei: " + ps[0].tiles.join(" | "));
+  await close();
+  await afterGame("quiz");
+  await firstSong();
+  await gameSetting("gameLevel", 2);
+  await openGame("quiz");
+  await joinAll("quiz");
+  ps = await allPhones((s) => s.st === "ask" && s.tiles.length >= 3, 15000, "schwer: Frage");
+  b = await big.state();
+  ok(b.artist === "Blue Lake" && ps[0].tiles.length === 4 && ps[0].tiles.includes(b.artist), "schwer: vier Antworten zu Blue Lake: " + b.artist + " / " + ps[0].tiles.join(" | "));
+  // ähnlich heißt hier: Namen derselben Form. In der Warteschlange stehen genau drei weitere aus zwei Wörtern.
+  ok(ps[0].tiles.every((x) => x.split(" ").length === 2), "schwer: die falschen Antworten sind die ähnlichsten: " + ps[0].tiles.join(" | "));
+  await close();
+  await afterGame("quiz");
+  await gameSetting("gameLevel", 1);
+}
+// Quelle und Jahrzehnt: Songs aus einer gewählten Playlist statt aus der Warteschlange, auf Wunsch nur ein Jahrzehnt
+async function quizSource() {
+  await ensurePhones("quiz-source");
+  await firstSong();
+  const yearOf = (uri) => T.js(`__sp.yearOf(${JSON.stringify(uri)})`);
+  await gameSource("Quiz Mix");
+  await gameSetting("gameDecade", 4);
+  const calls = await T.js(`__sp.log.yearCalls`);
+  await openGame("quiz");
+  await joinAll("quiz");
+  const seen = new Set();
+  for (const r of [1, 2]) {
+    const ps = await allPhones((s) => s.st === "ask" && s.round === `${r}/2` && s.tiles.length === 4, 15000, `quelle: Frage ${r}`);
+    const b = await big.state();
+    ok(b.uri.startsWith("spotify:track:p"), "quelle: der Song kommt aus der gewählten Playlist: " + b.title);
+    ok((await yearOf(b.uri)) === 2015, "quelle: nur Songs aus den 2010ern: " + (await yearOf(b.uri)));
+    ok(ps[0].tiles.includes(b.artist) && ps[0].tiles.every((x) => x.startsWith("Mix Artist")), "quelle: auch die falschen Antworten kommen aus der Playlist: " + ps[0].tiles.join(" | "));
+    ok(b.playing && b.vol === 0.7, "quelle: der Song ist zu hören");
+    seen.add(b.uri);
+    for (const ph of P) await ph.click(...tile(tileOf(ps[0], b.artist)));
+    await allPhones((s) => s.st === "rev" && s.round === `${r}/2`, 6000, "quelle: Auflösung");
+  }
+  ok(seen.size === 2, "quelle: zwei Runden, zwei verschiedene Songs");
+  await allPhones((s) => s.st === "end", 12000, "quelle: Siegerehrung");
+  await noBadNotes("quelle");
+  await close();
+  await afterGame("quiz");
+  ok((await T.js(`__sp.log.yearCalls`)) - calls === 1, "quelle: ein einziger Abruf für alle Erscheinungsjahre");
+  // Jahrzehnt ohne Playlist: Songs aus der Warteschlange, aber nur die passenden
+  await gameSource("");
+  await gameSetting("gameDecade", 1);
+  await openGame("title");
+  await joinAll("title");
+  await allPhones((s) => s.st === "ask" && s.tiles.length === 4, 15000, "jahrzehnt: Frage");
+  let b = await big.state();
+  ok(!b.uri.startsWith("spotify:track:p") && (await yearOf(b.uri)) === 1985, "jahrzehnt: Song aus der Warteschlange, aus den 80ern: " + b.title + " " + (await yearOf(b.uri)));
+  await close();
+  await afterGame("title");
+  await gameSetting("gameDecade", 0);
+  // leere Playlist: Hinweis, und das Spiel läuft mit der Warteschlange
+  await gameSource("Leer");
+  await openGame("quiz");
+  await joinAll("quiz");
+  const ps = await allPhones((s) => s.st === "ask" && s.tiles.length === 4, 15000, "leer: Frage trotz leerer Playlist");
+  b = await big.state();
+  ok(ps[0].tiles.includes(b.artist), "leer: es läuft mit der Warteschlange weiter");
+  ok((await T.js(`__sp.log.notes.filter((n) => n.err).length`)) === 1, "leer: ein Hinweis, dass die Playlist nichts hergibt");
+  await close();
+  await afterGame("quiz");
+  await gameSource("");
+}
+// Spielen ohne Handys: die Tastatur am PC ist ein Mitspieler (Ziffern antworten, Leertaste ist der Buzzer)
+async function keyboardPlay() {
+  const press = (code) => T.js(`__sp.press(${JSON.stringify(code)}); 1`);
+  const mode = () => T.js(`document.getElementById("mirage-immersive").dataset.mode`);
+  await firstSong();
+  await openGame("quiz");
+  await until(async () => (await big.state()).st === "join", 4000, "tastatur: Warteraum");
+  ok(/Leertaste|Space/.test((await big.state()).text), "tastatur: der Warteraum sagt, wie es ohne Handy geht");
+  // im Spiel wechseln die Ziffern nicht die Ansicht, und die Leertaste hält die Musik nicht an
+  await press("Digit2");
+  await wait(300);
+  ok((await mode()) === "party" && (await big.state()).st === "join", "tastatur: die Zifferntaste lässt das Spiel offen");
+  await press("Space");
+  await until(async () => (await big.state()).chips === 1 && /Tastatur|Keyboard/.test((await big.state()).text), 3000, "tastatur: Leertaste meldet die Tastatur an");
+  ok((await big.state()).playing, "tastatur: die Musik läuft weiter");
+  await press("Enter");
+  let last = "";
+  for (const r of [1, 2]) {
+    const b = await until(async () => {
+      const s = await big.state();
+      return s.st === "ask" && s.uri !== last && s.opts.length === 4 && s.opts.includes(s.artist) && s;
+    }, 15000, `tastatur: Frage ${r}`);
+    last = b.uri;
+    ok(/1 (bis|to) 4/.test(b.text), "tastatur: die Frage nennt die Tasten: " + b.text);
+    await press("Digit" + (b.opts.indexOf(b.artist) + 1));
+    const rev = await until(async () => {
+      const s = await big.state();
+      return s.st === "rev" && s;
+    }, 3000, "tastatur: die Antwort per Taste löst sofort auf");
+    ok(rev.right === b.artist && rev.playing, "tastatur: richtig aufgelöst, Musik läuft");
+  }
+  const end = await until(async () => {
+    const s = await big.state();
+    return s.st === "end" && s;
+  }, 12000, "tastatur: Siegerehrung");
+  const pts = Number((/(?:Tastatur|Keyboard) (\d+)/.exec(end.text) || [])[1] || 0);
+  ok(pts >= 200, "tastatur: zwei richtige Antworten zählen: " + end.text);
+  await close();
+  await afterGame("quiz");
+  // Leertaste als Buzzer
+  await openGame("fast");
+  await until(async () => (await big.state()).st === "join", 4000, "tastatur: Warteraum Schnellster Finger");
+  await press("Space");
+  await until(async () => (await big.state()).chips === 1, 3000, "tastatur: angemeldet");
+  await press("Enter");
+  await until(async () => (await big.state()).st === "go", 14000, "tastatur: Signal");
+  await press("Space");
+  const res = await until(async () => {
+    const s = await big.state();
+    return s.st === "res" && s;
+  }, 7000, "tastatur: Ergebnis");
+  ok(/(Tastatur|Keyboard) \d+ ms/.test(res.text), "tastatur: die Leertaste zählt als Buzzer: " + res.text);
+  await close();
+}
+// Ergebnis-Karte: nach dem Spiel entsteht auf Knopfdruck ein Bild mit der Rangliste
+async function resultCard() {
+  await ensurePhones("result-card");
+  const file = path.join(OUT, "mirage-game.png");
+  fs.rmSync(file, { force: true });
+  await openGame("never");
+  await joinAll("never");
+  for (const r of [1, 2]) {
+    await allPhones((s) => s.st === "ask" && s.round === `${r}/2`, 8000, `karte: Frage ${r}`);
+    await P[0].click(...tile(0));
+    await P[1].click(...tile(r === 1 ? 0 : 1));
+    await P[2].click(...tile(1));
+  }
+  await until(async () => (await big.state()).st === "end", 8000, "karte: Siegerehrung");
+  // mitschreiben, was auf die Karte gezeichnet wird
+  await T.js(`(() => {
+    const real = CanvasRenderingContext2D.prototype.fillText;
+    window.__drawn = [];
+    CanvasRenderingContext2D.prototype.fillText = function (text, ...rest) {
+      if (this.canvas.width === 1080 && this.canvas.height === 1350) window.__drawn.push(String(text));
+      return real.call(this, text, ...rest);
+    };
+    window.__undraw = () => (CanvasRenderingContext2D.prototype.fillText = real);
+  })(); 1`);
+  await big.hover();
+  await T.click(".m-g-card");
+  await until(() => fs.existsSync(file) && fs.statSync(file).size > 20000, 8000, "karte: das Bild wird gespeichert");
+  const png = fs.readFileSync(file);
+  ok(png.readUInt32BE(16) === 1080 && png.readUInt32BE(20) === 1350, "karte: Hochformat 1080 × 1350");
+  const drawn = await T.js(`(() => { window.__undraw(); return window.__drawn; })()`);
+  const at = (name) => drawn.indexOf(name);
+  ok(at("Alpha") >= 0 && at("Alpha") < at("Beta") && at("Beta") < at("Gamma"), "karte: alle drei in der Reihenfolge der Rangliste: " + drawn.join(" | "));
+  ok(drawn[at("Alpha") + 1] === "2" && drawn[at("Beta") + 1] === "1" && drawn[at("Gamma") + 1] === "0", "karte: mit ihren Punkten: " + drawn.join(" | "));
+  ok(drawn.some((x) => x.includes("Ich hab noch nie") || x.includes("Never have I ever")), "karte: nennt das Spiel");
+  await wait(600);
+  ok((await big.state()).st === "end", "karte: die Siegerehrung bleibt stehen");
+  await close();
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -609,7 +1020,7 @@ const CASES = [
   ["beat", beatGame], ["stop", stopGame], ["fast", fastGame], ["taps", tapsGame], ["battle", battleGame], ["bomb", bombGame],
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
-  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload],
+  ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
 ];
 
 /* ---------------------------------------------------------------- Start */
@@ -659,6 +1070,8 @@ app.whenReady().then(async () => {
       const allowed = /^(http|ws):\/\/(localhost|127\.0\.0\.1)|^data:|^blob:|^devtools:/.test(d.url) || (PUBLIC && /^wss:\/\/broker\.(hivemq\.com|emqx\.io)/.test(d.url));
       cb({ cancel: !allowed });
     });
+    // gespeicherte Bilder landen ohne Dialog im Ausgabeordner der Tests
+    s.on("will-download", (_e, item) => item.setSavePath(path.join(OUT, item.getFilename())));
     const win = new BrowserWindow({ width: w, height: h, useContentSize: true, show: false, webPreferences: { offscreen: true, backgroundThrottling: false, sandbox: false, contextIsolation: false, partition: part, preload: path.join(__dirname, "ws-preload.js"), additionalArguments: PUBLIC ? [] : ["--mirage-brokers=" + JSON.stringify(map)] } });
     win.webContents.setFrameRate(name === "Big" ? 24 : 6);
     return new Win(name, win);
@@ -677,7 +1090,7 @@ app.whenReady().then(async () => {
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
   // Handys verbinden sich im ersten Spiel mit Warteraum
-  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge"]);
+  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host", "quiz-level", "quiz-source", "result-card"]);
   if (ONLY.length && list.every(([n]) => NO_LOBBY.has(n))) list = [CASES[0], ...list];
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");

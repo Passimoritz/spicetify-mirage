@@ -386,6 +386,53 @@ async function partyRecapCard(r) {
   deliver(cv, "mirage-party.png");
 }
 
+/* ---------------------------------------------------------------- Ergebnis eines Party-Spiels */
+// Die Rangliste nach dem Spiel als Bild: wer gewonnen hat, mit Namen, Farbe und Punkten
+async function gameCard(r) {
+  const list = (r?.list || []).slice(0, 10);
+  if (!list.length) return;
+  const pal = palette();
+  const [cv, x] = canvas();
+  backdrop(x, pal, null);
+  x.textAlign = "left";
+  x.fillStyle = css(pal[0]);
+  x.font = `600 30px ${FONT}`;
+  x.fillText(`${t("gCardKicker")} · ${new Date().toLocaleDateString()}`.toUpperCase(), 90, 170);
+  x.fillStyle = "#fff";
+  x.font = `800 84px ${FONT}`;
+  x.fillText(fit(x, `${r.icon} ${r.title}`, W - 170), 84, 275);
+  x.fillStyle = "rgba(255,255,255,0.65)";
+  x.font = `500 36px ${FONT}`;
+  x.fillText(t("gEnd"), 90, 340);
+  // die ersten drei groß, der Rest als Liste
+  let Y = 400;
+  x.textBaseline = "middle";
+  list.forEach((p, i) => {
+    const big = i < 3, h = big ? 132 : 68, mid = Y + (h - 12) / 2;
+    x.fillStyle = `rgba(255,255,255,${big ? 0.1 : 0.05})`;
+    rounded(x, 84, Y, W - 168, h - 12, big ? 30 : 20);
+    x.fill();
+    x.fillStyle = "#fff";
+    x.font = `${big ? 800 : 600} ${big ? 56 : 30}px ${FONT}`;
+    x.fillText(["🥇", "🥈", "🥉"][i] || String(i + 1), big ? 112 : 124, mid);
+    x.fillStyle = p.col || "rgba(255,255,255,0.4)";
+    x.beginPath();
+    x.arc(big ? 224 : 196, mid, big ? 14 : 9, 0, Math.PI * 2);
+    x.fill();
+    x.fillStyle = "#fff";
+    x.font = `${big ? 700 : 600} ${big ? 48 : 30}px ${FONT}`;
+    x.fillText(fit(x, p.n, W - 520), big ? 256 : 222, mid);
+    x.textAlign = "right";
+    x.font = `800 ${big ? 52 : 30}px ${FONT}`;
+    x.fillText(String(p.p), W - 120, mid);
+    x.textAlign = "left";
+    Y += h;
+  });
+  x.textBaseline = "alphabetic";
+  watermark(x);
+  deliver(cv, "mirage-game.png");
+}
+
 /* ---------------------------------------------------------------- Monat in Farben */
 // Wie die Wochenkarte, für 30 Tage: Hörzeit pro Tag als Balken, Top-Künstler und Top-Songs nebeneinander
 async function monthCard() {
@@ -478,4 +525,4 @@ function planPartySave(played, saved) {
   return [...new Set(played)].filter((u) => !have.has(u));
 }
 
-export { nowPlayingCard, weekCard, monthCard, partyRecapCard, record, week, period, planPartySave };
+export { nowPlayingCard, weekCard, monthCard, partyRecapCard, gameCard, record, week, period, planPartySave };

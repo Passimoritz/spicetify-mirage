@@ -14,6 +14,7 @@ import { audio } from "./audio.js";
 import { lock } from "./lock.js";
 import { sfx } from "./sfx.js";
 import { readVolume, writeVolume, PLR } from "./player.js";
+import { gameCard } from "./share.js";
 
 export const GAME_LIST = [
   { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
@@ -83,33 +84,115 @@ const songOf = (x) => ({
   uri: x?.uri || "",
   title: cleanTitle(x?.metadata?.title || x?.name),
   artist: String(x?.metadata?.artist_name || x?.artists?.[0]?.name || "").split(",")[0].trim(),
-  img: coverOf(x?.metadata) || x?.album?.images?.[0]?.url || "",
+  img: coverOf(x?.metadata) || coverOf({ image_url: x?.album?.images?.[0]?.url }),
 });
-// falsche Antworten: was sonst in der Warteschlange steht oder gerade lief
-const pool = () =>
-  [...(S.Queue?.nextTracks || []), ...(S.Queue?.prevTracks || [])]
-    .map((x) => x.contextTrack || x)
-    .filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title)
-    .map(songOf);
+const queueSongs = (list) => (list || []).map((x) => x.contextTrack || x).filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title).map(songOf);
+// falsche Antworten: was sonst in der gewählten Quelle steht, sonst in der Warteschlange oder gerade lief
+const pool = () => G?.src || queueSongs([...(S.Queue?.nextTracks || []), ...(S.Queue?.prevTracks || [])]);
+
+/* ---- Quelle der Quiz-Songs: Warteschlange (Standard), eine Playlist, dazu auf Wunsch nur ein Jahrzehnt */
+const within = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
+// Alle Playlists der Bibliothek, Ordner aufgeklappt (für die Auswahl in den Spiel-Einstellungen)
+async function sources() {
+  const out = [];
+  const walk = (items) => {
+    for (const x of items || []) {
+      if (x?.type === "folder") walk(x.items);
+      else if (x?.type === "playlist" && x.uri) out.push({ uri: x.uri, name: clean(x.name, 60) });
+    }
+  };
+  try {
+    walk((await within(S.Platform.RootlistAPI.getContents(), 6000))?.items);
+  } catch {}
+  return out;
+}
+async function playlistSongs(uri) {
+  const r = await within(S.Platform.PlaylistAPI.getContents(uri, { offset: 0, limit: 1000 }), 8000);
+  return (r?.items || []).filter((x) => x?.uri?.startsWith("spotify:track:") && x.name && x.isPlayable !== false).map(songOf);
+}
+// Erscheinungsjahr: steht nicht in der Warteschlange. Spotifys Web-API nennt es für 50 Songs auf einmal.
+const years = new Map();
+async function loadYears(list) {
+  const need = list.filter((x) => !years.has(x.uri)).slice(0, 200);
+  for (let i = 0; i < need.length; i += 50) {
+    const part = need.slice(i, i + 50);
+    const r = await within(S.CosmosAsync.get("https://api.spotify.com/v1/tracks?ids=" + part.map((x) => x.uri.split(":")[2]).join(",")), 6000);
+    (r?.tracks || []).forEach((tr, k) => {
+      const y = Number(String(tr?.album?.release_date || "").slice(0, 4));
+      if (part[k] && y > 1900) years.set(part[k].uri, y);
+    });
+  }
+}
+// Gibt die Songs zurück, aus denen das Quiz wählt. null: wie bisher einfach der nächste Song der Warteschlange.
+async function loadSource() {
+  const uri = String(cfg.gameSource || ""), decade = Number(cfg.gameDecade) || 0;
+  if (!uri && !decade) return null;
+  let list = null;
+  if (uri) {
+    try {
+      list = await playlistSongs(uri);
+    } catch {}
+    if (!list?.length) {
+      notify(t("gSrcEmpty"), true);
+      list = null;
+    }
+  }
+  if (!decade) return list;
+  const base = list || queueSongs(S.Queue?.nextTracks);
+  try {
+    await loadYears(base);
+  } catch {}
+  const fits = base.filter((x) => years.get(x.uri) >= decade && years.get(x.uri) < decade + 10);
+  if (fits.length) return fits;
+  // Jahre nicht zu bekommen oder nichts aus dem Jahrzehnt dabei: ohne Filter spielen, aber sagen
+  notify(t(base.some((x) => years.has(x.uri)) ? "gDecadeNone" : "gDecadeFail"), true);
+  return list;
+}
+// Den nächsten Quiz-Song aus der Quelle nach vorn in die Warteschlange stellen: der Sprung landet dann auf ihm.
+// Die Wiedergabe (Playlist, Radio) bleibt, wie sie ist, und geht nach dem Spiel dort weiter.
+async function queueNext() {
+  const g = G;
+  if (g.src === undefined) {
+    const list = await loadSource().catch(() => null);
+    if (G !== g) return;
+    g.src = list;
+  }
+  if (!g.src) return;
+  let left = g.src.filter((x) => !g.played.has(x.uri) && x.uri !== nowUri());
+  if (!left.length) {
+    g.played.clear();
+    left = g.src.filter((x) => x.uri !== nowUri());
+  }
+  const pick = left[Math.floor(Math.random() * left.length)];
+  if (!pick) return;
+  g.played.add(pick.uri);
+  try {
+    await within(S.addToQueue([{ uri: pick.uri }]), 3000);
+  } catch {}
+}
 const nowItem = () => S.Player.data?.item || null;
 const nowUri = () => nowItem()?.uri || "";
 
 /* ---- Spielstand */
-function player(id, n) {
+function player(id, n, c) {
   let p = G.players.get(id);
   if (!p) {
-    p = { id, n: "", p: 0, out: false, team: 0, ans: null, e: 0, early: false };
+    p = { id, n: "", c: null, p: 0, out: false, team: 0, ans: null, e: 0, early: false };
     G.players.set(id, p);
   }
   const name = clean(n, 20);
   if (name) p.n = name;
+  if (c != null) p.c = c;
   return p;
 }
+// Farben der Gäste: dieselbe Palette wie auf dem Handy. Wer keine gewählt hat, bekommt eine feste aus seiner Kennung.
+export const GUEST_COLORS = ["#ff5a6e", "#ff8f4d", "#ffc23d", "#4fd68c", "#2fd0c8", "#4aa8ff", "#7b8cff", "#b583ff", "#ff7ad1", "#c9d2e3"];
+const colOf = (p) => p.c ?? [...p.id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7) % GUEST_COLORS.length;
 const short = (id) => id.slice(-6);
 const nameOf = (p) => p.n || `${t("rankGuest")} ${p.id.slice(-2).toUpperCase()}`;
 const all = () => [...G.players.values()];
 const alive = () => all().filter((p) => !p.out);
-const top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p) }));
+const top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p), c: colOf(p), i: short(p.id) }));
 // Der Rückruf des zuletzt gestellten Weckers ist zugleich „Runde überspringen“
 const after = (ms, fn) => {
   G.lastFn = fn;
@@ -135,7 +218,7 @@ function publish() {
   // das Cover beim Rätsel bleibt auf dem großen Bild
   const pub = { ...G.view };
   delete pub.cov;
-  live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf) });
+  live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf), pl: all().slice(0, 16).map((p) => ({ i: short(p.id), n: nameOf(p), c: colOf(p) })) });
 }
 function show(view) {
   if (view.end && !view.dur) view.dur = view.end - Date.now();
@@ -199,7 +282,7 @@ function start(kind) {
   if (!ctx) return;
   stop(true);
   muteBack = 0;
-  G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null };
+  G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null, src: undefined, played: new Set() };
   boxKey = "";
   clearInterval(ticker);
   ticker = setInterval(() => render(true), 250);
@@ -480,13 +563,43 @@ function songRound(useCurrent) {
     G.clipAt = PLR.getProgress() || 0;
     return go(nowItem());
   }
-  jumpNext(G.k === "intro", go);
+  const g = G, r = G.r;
+  queueNext().then(() => {
+    // inzwischen beendet oder übersprungen: nicht mehr springen
+    if (G === g && G.r === r && G.view?.st === "load") jumpNext(G.k === "intro", go);
+  });
+}
+// Schwierigkeit: wie ähnlich die falschen Antworten der richtigen sind. Genre-Daten gibt es ohne weitere
+// Abfragen nicht; ähnlich heißt hier: derselbe Künstler (beim Titel), gemeinsame Wörter, gleiche Form des Namens.
+const wordsOf = (s) => String(s).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+function alike(x, song, field) {
+  const a = x[field], b = song[field], wa = wordsOf(a), wb = wordsOf(b);
+  let s = 0;
+  if (field === "title" && x.artist && x.artist === song.artist) s += 4;
+  if (wa.some((w) => w.length > 2 && wb.includes(w))) s += 2;
+  if (wa.length === wb.length) s += 1;
+  if (Math.abs(a.length - b.length) <= 3) s += 1;
+  if (wa[0]?.[0] === wb[0]?.[0]) s += 1;
+  return s;
+}
+function decoys(song, field) {
+  const answer = song[field], level = cfg.gameLevel, n = level === "easy" ? 2 : 3;
+  const best = new Map();
+  for (const x of shuffle(pool())) {
+    const v = x[field];
+    if (!v || v === answer) continue;
+    best.set(v, Math.max(best.get(v) ?? -1, alike(x, song, field)));
+  }
+  const own = [...best.keys()];
+  // die Reihenfolge ist schon gemischt: bei gleicher Ähnlichkeit entscheidet der Zufall
+  if (level === "hard") own.sort((a, b) => best.get(b) - best.get(a));
+  else if (level === "easy") own.sort((a, b) => best.get(a) - best.get(b));
+  // Quelle zu klein oder nur ein Künstler: das Spiel läuft trotzdem, mit bekannten Namen als falschen Antworten
+  return [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, n);
 }
 function songAsk(song) {
   const field = SONG_FIELD[G.k], answer = song[field];
-  const own = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer));
-  // Warteschlange zu klein oder nur ein Künstler: das Spiel läuft trotzdem, mit bekannten Namen als falschen Antworten
-  const others = [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, 3);
+  const others = answer ? decoys(song, field) : [];
   if (!answer) {
     notify(t("gNeedQueue"), true);
     return G.r > 1 ? finish() : stop();
@@ -731,7 +844,7 @@ function fastRound() {
       after(3500, () => {
         const list = all().filter((x) => x.ans && !x.early).sort((a, b) => a.ans.ms - b.ans.ms);
         list.forEach((x, i) => (x.p += FAST_PTS[i] ?? 10));
-        show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((x) => ({ n: nameOf(x), ms: x.ans.ms })) });
+        show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((x) => ({ n: nameOf(x), ms: x.ans.ms, c: colOf(x) })) });
         after(Math.min(5000, breakMs()), fastRound);
       });
     };
@@ -945,7 +1058,7 @@ window.addEventListener("mirage:game", (e) => {
   if (!G) return;
   const m = e.detail, v = G.view;
   if (!m?.id || !v) return;
-  const fresh = !G.players.has(m.id), p = player(m.id, m.n);
+  const fresh = !G.players.has(m.id), p = player(m.id, m.n, m.c);
   if (fresh && v.st === "join") sfx.pop();
   if (fresh && v.st !== "join") {
     // spät dazugekommen: bei Ausscheide-Spielen nur zuschauen, beim Battle ins kleinere Team
@@ -988,8 +1101,12 @@ window.addEventListener("mirage:game", (e) => {
     return;
   }
   if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
-  if (G.k === "beat" && m.a === "sc" && v.st === "go") p.p = Math.max(0, Math.min(9999, Number(m.v) || 0));
-  if (G.k === "taps" && m.a === "sc") p.p = Math.max(0, Math.min(400, Number(m.v) || 0));
+  // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen.
+  // Eine Korrektur der Spielleitung (adj) bleibt daneben stehen, sonst würde die nächste Meldung sie überschreiben.
+  if ((G.k === "beat" && m.a === "sc" && v.st === "go") || (G.k === "taps" && m.a === "sc")) {
+    p.raw = Math.max(p.raw || 0, Math.min(G.k === "beat" ? 9999 : 400, Number(m.v) || 0));
+    p.p = Math.max(0, p.raw + (p.adj || 0));
+  }
   if (G.k === "bomb" && m.a === "pass" && v.st === "go" && p === G.holder && m.v === G.seq) {
     const rest = alive().filter((x) => x !== p);
     if (rest.length) {
@@ -998,6 +1115,91 @@ window.addEventListener("mirage:game", (e) => {
       bombShow();
     }
   }
+});
+
+/* ---- Spielen ohne Handys: die Tastatur am PC ist ein Mitspieler */
+// Zifferntasten wählen die Antwort, die Leertaste ist der Buzzer. Die Tasten gehen als ganz normaler Mitspieler ins
+// Spiel (dieselben Meldungen wie von einem Handy), darum gelten alle Regeln unverändert.
+const KEY_ID = "tastatur-pc";
+const keySend = (o) => window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id: KEY_ID, n: t("gKeyName"), c: 9, ...o } }));
+const keyIn = () => !!G?.players.has(KEY_ID);
+// Beat-Treffer an der Tastatur: dieselbe Wertung wie am Handy (Abstand der Tipps im Verhältnis zum Tempo)
+function keyBeat() {
+  const b = (G.keyBeat ||= { prev: 0, run: 0, score: 0 }), now = performance.now(), period = 60000 / (ctx.bpm?.() || 120), dt = now - b.prev, had = b.prev;
+  if (dt < 110) return;
+  b.prev = now;
+  if (!had || dt > 3000) {
+    b.run = 0;
+    return keySend({ a: "sc", v: b.score });
+  }
+  const err = Math.min(...[0.5, 1, 2].map((m) => Math.abs(dt / (period * m) - 1)));
+  const base = err < 0.1 ? 10 : err < 0.22 ? 5 : 0;
+  b.run = base ? b.run + 1 : 0;
+  b.score += base ? base + Math.min(5, Math.floor(b.run / 4)) : 0;
+  keySend({ a: "sc", v: b.score });
+}
+function onKey(e) {
+  if (!G || e.ctrlKey || e.altKey || e.metaKey || e.target?.matches?.("input, textarea, [contenteditable]")) return;
+  const v = G.view || {}, digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code), space = e.code === "Space", enter = e.code === "Enter" && v.st === "join";
+  if (!digit && !space && !enter) return;
+  // ein Knopf hat den Fokus: Leertaste und Enter drücken ihn, wie überall
+  if (!digit && e.target?.closest?.("button")?.getClientRects().length) return;
+  // im Spiel gehören diese Tasten dem Spiel: sonst wechselt die 1 die Ansicht und die Leertaste hält die Musik an
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (e.repeat) return;
+  if (WHEELS.has(G.k)) return void (space && spin());
+  if (v.st === "join") return void (enter ? beginNow() : space && keySend({ a: "join" }));
+  if (digit) {
+    if (ASK_GAMES.has(G.k) && v.st === "ask" && +digit[1] <= v.o.length) keySend({ a: "ans", r: v.r, v: +digit[1] - 1 });
+    return;
+  }
+  if (G.k === "fast") {
+    if (v.st === "ready") keySend({ a: "early", r: v.r });
+    else if (v.st === "go") keySend({ a: "tap", r: v.r, ms: Date.now() - v.at });
+  } else if (G.k === "stop") {
+    if (v.st === "play") keySend({ a: "tap", r: v.r });
+    else if (v.st === "stop") keySend({ a: "tap", r: v.r, ms: Date.now() - (v.end - 4000) });
+  } else if (G.k === "taps") {
+    if (v.st === "go") keySend({ a: "sc", v: (G.keyTaps = (G.keyTaps || 0) + 1) });
+  } else if (G.k === "beat") {
+    if (v.st === "go") keyBeat();
+  } else if (G.k === "battle") {
+    if (v.st === "go") keySend({ a: "e", v: 3 });
+  } else if (G.k === "bomb") {
+    if (v.st === "go" && G.holder?.id === KEY_ID) keySend({ a: "pass", v: G.seq });
+  }
+}
+// vor den Tasten der Vollbild-Ansicht (keys.js): dieses Modul wird zuerst geladen
+window.addEventListener("keydown", onKey, true);
+
+/* ---- Spielleitung am Handy */
+// Die Befehle kommen geprüft aus live.js: nur das Handy mit dem Link der Spielleitung kann sie unterschreiben.
+window.addEventListener("mirage:host", (e) => {
+  const m = e.detail || {};
+  if (!ctx || ctx.party?.() === false) return;
+  if (m.a === "open") {
+    if (INFO[m.t]) start(m.t);
+    return;
+  }
+  if (!G) return;
+  if (m.a === "start") return void beginNow();
+  if (m.a === "skip") return void skip();
+  if (m.a === "spin") return void spin();
+  if (m.a === "end") return void stop();
+  if (m.a !== "pts") return;
+  const p = all().find((x) => short(x.id) === m.t);
+  if (!p) return;
+  const d = Math.max(-1000, Math.min(1000, Math.round(m.v) || 0));
+  if (G.k === "beat" || G.k === "taps") {
+    p.adj = (p.adj || 0) + d;
+    p.p = Math.max(0, (p.raw || 0) + p.adj);
+  } else p.p = Math.max(0, p.p + d);
+  // die Siegerehrung zeigt eine feste Liste: mit dem neuen Stand neu aufbauen
+  if (G.view?.st === "end") G.view.top = top();
+  publish();
+  boxKey = "";
+  render();
 });
 
 /* ---- Anzeige auf dem großen Bild */
@@ -1047,6 +1249,10 @@ function render(tickOnly) {
   box.dataset.st = v.st || "";
   box.append(head(v));
   build(v);
+  // die Tastatur spielt mit: welche Taste gerade gilt
+  if (keyIn() && !WHEELS.has(G.k) && v.st !== "join" && v.st !== "end" && v.st !== "load" && v.st !== "wait") {
+    box.append(div("m-g-sub m-g-keyhint", ASK_GAMES.has(G.k) ? (v.st === "ask" ? t("gKeyAsk").replace("{n}", v.o?.length || 4) : "") : t("gKeySpace")));
+  }
   update(v);
 }
 function head(v) {
@@ -1102,7 +1308,7 @@ function build(v) {
     if (v.st === "go") box.append(div("m-g-big is-hot m-g-pop", t("gFastGo")));
     if (v.st === "res") {
       const b = div("m-g-board");
-      (v.win || []).forEach((x, i) => b.append(row(["🥇", "🥈", "🥉"][i], x.n, x.ms + " ms")));
+      (v.win || []).forEach((x, i) => b.append(row(["🥇", "🥈", "🥉"][i], x.n, x.ms + " ms", x.c)));
       box.append(b);
     }
   } else if (G.k === "battle") {
@@ -1122,14 +1328,27 @@ function build(v) {
     box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? 0)));
   }
 }
-function row(rank, name, val) {
+// Farbpunkt eines Gastes: an Namen und Ständen sieht man, wer wer ist
+const dot = (c) => {
+  const d = div("m-g-dot");
+  d.style.background = GUEST_COLORS[c] || "transparent";
+  return d;
+};
+const chip = (p, cls = "") => {
+  const c = div("m-g-chip" + cls);
+  c.append(dot(colOf(p)), div("m-g-cn", nameOf(p)));
+  return c;
+};
+function row(rank, name, val, col) {
   const r = div("m-g-row");
-  r.append(div("m-g-rk", rank), div("m-g-nm", name), div("m-g-pt", val));
+  r.append(div("m-g-rk", rank));
+  if (col != null) r.append(dot(col));
+  r.append(div("m-g-nm", name), div("m-g-pt", val));
   return r;
 }
 function board(list) {
   const d = div("m-g-board");
-  (list || []).slice(0, 5).forEach((x, i) => d.append(row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p))));
+  (list || []).slice(0, 5).forEach((x, i) => d.append(row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p), x.c)));
   return d;
 }
 function buildJoin() {
@@ -1143,7 +1362,8 @@ function buildJoin() {
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
     wrap.prepend(img);
   };
-  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-chips"));
+  // wer schon da ist: Zahl, Namen in ihrer Farbe, und was noch fehlt
+  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
   const go = document.createElement("button");
   go.type = "button";
   go.className = "m-g-go";
@@ -1152,7 +1372,7 @@ function buildJoin() {
     e.stopPropagation();
     beginNow();
   };
-  txt.append(go);
+  txt.append(go, div("m-g-sub m-g-keyhint", t("gKeyJoin")));
   wrap.append(txt);
   box.append(wrap);
   need();
@@ -1229,34 +1449,66 @@ function buildEnd(v) {
   for (const i of [1, 0, 2]) {
     const x = list[i];
     if (!x) continue;
-    const col = div(`m-g-pod is-p${i}`);
-    col.append(div("m-g-medal", ["🥇", "🥈", "🥉"][i]), div("m-g-pname", x.n), div("m-g-ppts", String(x.p)), div("m-g-pbar"));
+    const col = div(`m-g-pod is-p${i}`), name = div("m-g-pname");
+    name.append(dot(x.c), div("m-g-cn", x.n));
+    col.append(div("m-g-medal", ["🥇", "🥈", "🥉"][i]), name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
     pod.append(col);
   }
   if (list.length) box.append(pod);
   if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
+  if (list.length) {
+    // Ergebnis zum Teilen: die Rangliste als Bild
+    const save = document.createElement("button");
+    save.type = "button";
+    save.className = "m-g-go m-g-card";
+    save.textContent = t("gCardBtn");
+    save.onclick = (e) => {
+      e.stopPropagation();
+      resultCard();
+    };
+    box.append(save);
+  }
+}
+function resultCard() {
+  if (!G) return;
+  const list = all().sort((a, b) => b.p - a.p).slice(0, 10).map((p) => ({ n: nameOf(p), p: Math.round(p.p), col: GUEST_COLORS[colOf(p)] }));
+  gameCard({ icon: INFO[G.k].icon, title: t(INFO[G.k].label), list });
+  // wer das Bild holt, schaut noch hin: die Siegerehrung bleibt länger stehen
+  if (G.view?.st === "end") {
+    clearTimers();
+    after(30000, () => stop());
+  }
 }
 // was sich laufend ändert, ohne die Karte neu zu bauen
 function update(v) {
   if (v.st === "join") {
     const chips = box.querySelector(".m-g-chips");
     if (chips) {
-      const names = all().map(nameOf), now = names.join("|");
+      const list = all(), now = list.map((p) => nameOf(p) + colOf(p)).join("|");
       if (chips.dataset.now !== now) {
         chips.dataset.now = now;
         chips.textContent = "";
-        names.slice(0, 16).forEach((n) => chips.append(div("m-g-chip", n)));
+        list.slice(0, 24).forEach((p) => chips.append(chip(p)));
+        if (list.length > 24) chips.append(div("m-g-more", "+" + (list.length - 24)));
+        const need = (MIN[G.k] || 0) - list.length, count = box.querySelector(".m-g-jcount");
+        count.textContent = (list.length ? t("gLobbyIn").replace("{n}", list.length) : t("gLobbyNone")) + (need > 0 ? " · " + t("gLobbyNeed").replace("{n}", need) : "");
+        count.classList.toggle("is-short", need > 0);
       }
     }
   }
   const who = box.querySelector(".m-g-who");
   if (who) {
-    const now = all().map((p) => nameOf(p) + (p.ans ? "+" : "")).join("|");
+    const now = all().map((p) => nameOf(p) + colOf(p) + (p.ans ? "+" : "")).join("|");
     if (who.dataset.now !== now) {
       who.dataset.now = now;
       who.textContent = "";
-      all().slice(0, 20).forEach((p) => who.append(div("m-g-chip" + (p.ans ? " is-on" : ""), nameOf(p))));
+      all().slice(0, 20).forEach((p) => who.append(chip(p, p.ans ? " is-on" : "")));
     }
+  }
+  // spielt nur die Tastatur, sieht der Raum die gewählte Antwort (neben Handys bliebe das ein Vorsagen)
+  if (v.st === "ask" && keyIn() && all().length === 1) {
+    const pick = G.players.get(KEY_ID).ans?.v;
+    box.querySelectorAll(".m-g-opt").forEach((o, i) => o.classList.toggle("is-pick", i === pick));
   }
   const eq = box.querySelector(".m-g-eq");
   if (eq) eq.classList.toggle("is-still", !!G.paused);
@@ -1282,7 +1534,7 @@ function update(v) {
       const list = top(), most = Math.max(1, ...list.map((x) => x.p));
       b.textContent = "";
       list.forEach((x, i) => {
-        const r = row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p));
+        const r = row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p), x.c);
         r.classList.add("has-bar");
         r.style.setProperty("--w", Math.round((x.p / most) * 100) + "%");
         b.append(r);
@@ -1328,4 +1580,5 @@ export const games = {
   active: () => G?.k || null,
   waiting: () => G?.view?.st === "join",
   players: () => G?.players.size || 0,
+  sources,
 };

@@ -17,6 +17,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 - The phone page reloads itself once when the theme speaks a newer message format, and says so clearly if that does not help.
 - **Overlay app repairs and updates the theme:** after a Spotify update it notices that Mirage is gone (Windows) and puts it back with one click, and the tray menu offers a new theme version when there is one. Both only on a click, because Spotify restarts once.
 - **Nightly Spotify check:** a workflow unpacks the newest Spotify client every night and opens an issue when a rule of the theme stops matching. `npm run check:selectors` does the same for the installed Spotify.
+- **Guests have a name and a colour:** picked once on the phone; the lobby, scores and song wishes show whose they are. The lobby on the big screen shows who is in and how many players are still needed.
+- **Join late, keep your points:** guests can jump into a running game, and keep their points after a reload or a lost connection. The phone page shows clearly when it is offline and reconnects by itself.
+- **Game host on the phone:** a separate host QR code (behind a button in the games panel) lets one phone start, skip and end games and correct points. Host commands are signed, guests cannot send them.
+- Quiz difficulty (easy, normal, hard), an optional decade filter, and a playlist as the source of quiz songs instead of the queue.
+- Play without phones: number keys answer, Space is the buzzer, Enter starts.
+- After a game, save the ranking as an image.
 - **No flashes:** a switch for photosensitive eyes removes strobe, blinders, drop flashes and the lyric burst. It is on automatically when the system asks for reduced motion. All flashes now share a hard limit of three per second.
 - **Lyrics are kept on your device** (up to 500 songs) and song analyses for the last 300 songs, so both are there at once and offline. The next song is prepared about 20 seconds before the current one ends.
 - **Not the right lyrics:** a button marks the result as wrong for that song and tries the next best one. Live versions and remixes no longer get the timed lyrics of a different recording.

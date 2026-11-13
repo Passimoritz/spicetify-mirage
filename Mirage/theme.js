@@ -150,6 +150,60 @@
         "ko": { "gCatDrink": "\uC220\uAC8C\uC784", "gDrinkNote": "18+ \xB7 \uB9C8\uC2DC\uACE0 \uC2F6\uC744 \uB54C\uB9CC. \uC548 \uB9C8\uC154\uB3C4 \uB418\uACE0, \uBB3C\uB3C4 \uAD1C\uCC2E\uC544\uC694.", "gIntro": "\uC778\uD2B8\uB85C \uD034\uC988", "gIntroHint": "\uB2E4\uC74C \uACE1\uC758 \uCC98\uC74C 5\uCD08\uB9CC \uB4E3\uACE0: \uC81C\uBAA9\uC774 \uBB58\uAE4C?", "gTf": "\uC9C4\uC9DC? \uAC00\uC9DC?", "gTfHint": "\uC9C0\uAE08 \uB098\uC624\uB294 \uACE1\uC758 \uD55C \uC904, \uAC00\uB054 \uB2E8\uC5B4\uAC00 \uBC14\uB00C\uC5B4 \uC788\uC5B4\uC694. \uAC00\uC9DC\uB97C \uCC3E\uC544\uB77C", "gTfAsk": "\uC9C4\uC9DC? \uAC00\uC9DC?", "gTrue": "\uC9C4\uC9DC", "gFalse": "\uAC00\uC9DC", "gTaps": "\uD0ED \uB300\uACB0", "gTapsHint": "15\uCD08, \uBC84\uD2BC \uD558\uB098: \uAC00\uC7A5 \uB9CE\uC774 \uB204\uB978 \uC0AC\uB78C\uC774 \uC2B9\uB9AC", "gTapsGo": "\uCD5C\uB300\uD55C \uBE68\uB9AC \uB20C\uB7EC!", "gNever": "\uB098\uB294 \uD55C \uBC88\uB3C4 \uC548 \uD574\uBD24\uB2E4", "gNeverHint": "\uB77C\uC6B4\uB4DC\uB9C8\uB2E4 \uD55C \uBB38\uC7A5. \uD574\uBCF8 \uC0AC\uB78C\uC740 \uD55C \uBAA8\uAE08", "gHave": "\uD574\uBD24\uC5B4", "gNeverDid": "\uC548 \uD574\uBD24\uC5B4", "gDquiz": "\uD55C \uBAA8\uAE08 \uD034\uC988", "gDquizHint": "\uAC00\uC218\uB97C \uB9DE\uD600\uBD10. \uD2C0\uB9AC\uAC70\uB098 \uB2A6\uC73C\uBA74 \uD55C \uBAA8\uAE08", "gAlarm": "\uB2E8\uC5B4 \uC54C\uB78C", "gAlarmHint": "Mirage\uAC00 \uC9C0\uAE08 \uACE1\uC5D0\uC11C \uB2E8\uC5B4 \uD558\uB098\uB97C \uACE8\uB77C\uC694. \uBD88\uB9B4 \uB54C\uB9C8\uB2E4 \uD55C \uBAA8\uAE08", "gAlarmWord": "\uC774 \uB2E8\uC5B4\uC5D0 \uD55C \uBAA8\uAE08:", "gAlarmHit": "\uB9C8\uC154!", "gAlarmEnd": "\uC774 \uACE1\uC5D0\uC11C {n}\uBAA8\uAE08", "gDwheel": "\uD55C \uBAA8\uAE08 \uB8F0\uB81B", "gDwheelHint": "\uB8F0\uB81B\uC744 \uB3CC\uB824\uC694: \uB204\uAC00 \uB9C8\uC2E4\uC9C0 \uC815\uD574\uC918\uC694", "gDlikely": "\uB204\uAC00 \uADF8\uB7F4 \uAC83 \uAC19\uC544 \u2026 (\uD55C \uBAA8\uAE08 \uC5D0\uB514\uC158)", "gDlikelyHint": "\uAC8C\uC2A4\uD2B8\uC5D0\uAC8C \uD22C\uD45C. \uD45C\uB97C \uAC00\uC7A5 \uB9CE\uC774 \uBC1B\uC740 \uC0AC\uB78C\uC774 \uD55C \uBAA8\uAE08", "gSip": "\uD55C \uBAA8\uAE08!", "gSipWho": "\uD55C \uBAA8\uAE08: {n}", "gSafeSip": "\uB10C \uC548\uC804\uD574", "gSetClip": "\uB9DE\uD790 \uB54C \uB178\uB798 \uAD6C\uAC04", "gClipAll": "\uB77C\uC6B4\uB4DC \uC804\uCCB4", "gSetDrink": "\uD034\uC988\uB9C8\uB2E4 \uBAA8\uAE08 \uC218", "gN1": "\uD30C\uD2F0\uC5D0\uC11C \uB108\uBB34 \uD06C\uAC8C \uB178\uB798\uD574\uC11C \uB204\uAC00 \uD56D\uC758\uD55C \uC801 \uC788\uB2E4.", "gN2": "\uD14C\uC774\uBE14 \uC704\uC5D0\uC11C \uCDA4\uCD98 \uC801 \uC788\uB2E4.", "gN3": "\uC5C9\uB6B1\uD55C \uC0AC\uB78C\uC5D0\uAC8C \uBA54\uC2DC\uC9C0\uB97C \uBCF4\uB0B8 \uC801 \uC788\uB2E4.", "gN4": "\uB178\uB798 \uAC00\uC0AC\uB97C \uC544\uB294 \uCC99\uD55C \uC801 \uC788\uB2E4.", "gN5": "\uD30C\uD2F0\uC5D0\uC11C \uC7A0\uB4E0 \uC801 \uC788\uB2E4.", "gN6": "\uC778\uC0AC \uC5C6\uC774 \uBAB0\uB798 \uD30C\uD2F0\uB97C \uBE60\uC838\uB098\uC628 \uC801 \uC788\uB2E4.", "gN7": "\uB180\uB2E4\uAC00 \uD734\uB300\uD3F0\uC744 \uC783\uC5B4\uBC84\uB9B0 \uC801 \uC788\uB2E4.", "gN8": "\uBAB0\uB798 \uC74C\uC545\uC744 \uBC14\uAFBC \uC801 \uC788\uB2E4.", "gN9": "\uC0AC\uB791 \uB178\uB798\uB97C \uB4E3\uACE0 \uC6B4 \uC801 \uC788\uB2E4.", "gN10": "\uB098\uC774\uB97C \uC18D\uC778 \uC801 \uC788\uB2E4.", "gN11": "\uC774\uB984\uC744 \uB4E3\uC790\uB9C8\uC790 \uAE4C\uBA39\uC740 \uC801 \uC788\uB2E4.", "gN12": "\uBE57\uC744 \uB9C8\uC774\uD06C \uC0BC\uC544 \uB178\uB798\uD55C \uC801 \uC788\uB2E4.", "gN13": "\uD074\uB7FD\uC5D0\uC11C \uCAD3\uACA8\uB09C \uC801 \uC788\uB2E4.", "gN14": "\uB300\uD654\uB97C \uD53C\uD558\uB824\uACE0 \uC790\uB294 \uCC99\uD55C \uC801 \uC788\uB2E4.", "gN15": "\uBD80\uC5CC\uC5D0\uC11C \uD63C\uC790 \uCDA4\uCD98 \uC801 \uC788\uB2E4.", "gN16": "\uB2E4\uC74C \uB0A0 \uC544\uCE68 \uC0AC\uC9C4\uC744 \uD6C4\uD68C\uD55C \uC801 \uC788\uB2E4.", "gD1": "\uB2E4 \uAC19\uC774 \uD55C \uBAA8\uAE08", "gD2": "\uC67C\uCABD \uC774\uC6C3", "gD3": "\uC624\uB978\uCABD \uC774\uC6C3", "gD4": "3\uBAA8\uAE08 \uB098\uB220\uC8FC\uAE30", "gD5": "\uC81C\uC77C \uB2A6\uAC8C \uC628 \uC0AC\uB78C", "gD6": "\uBB3C \uB77C\uC6B4\uB4DC", "gD7": "DJ\uAC00 \uB9C8\uC2E0\uB2E4", "gD8": "\uAC74\uBC30\uD558\uACE0 \uB2E4 \uAC19\uC774 \uD55C \uBAA8\uAE08", "gSing": "\uACC4\uC18D \uBD88\uB7EC", "gSingHint": "\uB178\uB798 \uB3C4\uC911\uC5D0 \uC74C\uC545\uC774 \uB69D \uB04A\uACA8. \uADF8\uB300\uB85C \uACC4\uC18D \uBD88\uB7EC! \uC74C\uC545\uC774 \uB3CC\uC544\uC654\uC744 \uB54C\uB3C4 \uBC15\uC790\uAC00 \uB9DE\uC744\uAE4C?", "gSingSoon": "\uACE7 \uC870\uC6A9\uD574\uC838 \u2026", "gSingNow": "\uACC4\uC18D \uBD88\uB7EC!", "gSingBack": "\uB3CC\uC544\uC654\uC5B4! \uBC15\uC790 \uB9DE\uC558\uC5B4?", "gLoadSong": "\uB2E4\uC74C \uACE1 \u2026", "gReplay": "\uB2E4\uC2DC \uD558\uAE30", "gLocked": "\uAC8C\uC784 \uC911\uC5D0\uB294 \uC7A0\uAE40", "gSetSfx": "\uD6A8\uACFC\uC74C", "gSfxLow": "\uC791\uAC8C", "gSfxLoud": "\uD06C\uAC8C" },
         "zh": { "gCatDrink": "\u559D\u9152\u6E38\u620F", "gDrinkNote": "18+ \xB7 \u60F3\u73A9\u518D\u73A9\u3002\u6CA1\u4EBA\u5FC5\u987B\u559D\uFF0C\u559D\u6C34\u4E5F\u7B97\u3002", "gIntro": "\u524D\u594F\u95EA\u73B0", "gIntroHint": "\u53EA\u542C\u4E0B\u4E00\u9996\u6B4C\u7684\u524D5\u79D2\uFF1A\u6B4C\u540D\u662F\u4EC0\u4E48\uFF1F", "gTf": "\u771F\u8FD8\u662F\u5047\uFF1F", "gTfHint": "\u5F53\u524D\u6B4C\u66F2\u7684\u4E00\u53E5\u6B4C\u8BCD\uFF0C\u6709\u65F6\u4F1A\u88AB\u6362\u6389\u4E00\u4E2A\u8BCD\u3002\u627E\u51FA\u5047\u7684", "gTfAsk": "\u771F\u8FD8\u662F\u5047\uFF1F", "gTrue": "\u771F", "gFalse": "\u5047", "gTaps": "\u70B9\u51FB\u7ADE\u901F", "gTapsHint": "15\u79D2\uFF0C\u4E00\u4E2A\u6309\u94AE\uFF1A\u70B9\u5F97\u6700\u591A\u7684\u4EBA\u83B7\u80DC", "gTapsGo": "\u7528\u6700\u5FEB\u7684\u901F\u5EA6\u70B9\uFF01", "gNever": "\u6211\u4ECE\u6765\u6CA1\u6709", "gNeverHint": "\u6BCF\u8F6E\u4E00\u53E5\u8BDD\u3002\u505A\u8FC7\u7684\u4EBA\u559D\u4E00\u5C0F\u53E3", "gHave": "\u6211\u6709\u8FC7", "gNeverDid": "\u4ECE\u6CA1\u6709", "gDquiz": "\u5C0F\u53E3\u95EE\u7B54", "gDquizHint": "\u731C\u6B4C\u624B\u3002\u7B54\u9519\u6216\u592A\u6162\uFF1A\u559D\u4E00\u5C0F\u53E3", "gAlarm": "\u5355\u8BCD\u8B66\u62A5", "gAlarmHint": "Mirage \u4ECE\u5F53\u524D\u6B4C\u66F2\u91CC\u6311\u4E00\u4E2A\u8BCD\u3002\u6BCF\u5531\u5230\u4E00\u6B21\uFF1A\u559D\u4E00\u5C0F\u53E3", "gAlarmWord": "\u542C\u5230\u8FD9\u4E2A\u8BCD\u5C31\u559D\uFF1A", "gAlarmHit": "\u559D\uFF01", "gAlarmEnd": "\u8FD9\u9996\u6B4C\u559D\u4E86{n}\u53E3", "gDwheel": "\u5C0F\u53E3\u8F6C\u76D8", "gDwheelHint": "\u8F6C\u52A8\u8F6C\u76D8\uFF1A\u7531\u5B83\u51B3\u5B9A\u8C01\u559D", "gDlikely": "\u8C01\u6700\u53EF\u80FD\u2026\uFF08\u5C0F\u53E3\u7248\uFF09", "gDlikelyHint": "\u7ED9\u4E00\u4F4D\u5BBE\u5BA2\u6295\u7968\u3002\u7968\u6570\u6700\u591A\u7684\u4EBA\u559D\u4E00\u5C0F\u53E3", "gSip": "\u559D\u4E00\u5C0F\u53E3\uFF01", "gSipWho": "\u5C0F\u53E3\uFF1A{n}", "gSafeSip": "\u4F60\u5B89\u5168\u4E86", "gSetClip": "\u731C\u6B4C\u65F6\u7684\u7247\u6BB5", "gClipAll": "\u6574\u8F6E", "gSetDrink": "\u6BCF\u6B21\u95EE\u7B54\u7684\u53E3\u6570", "gN1": "\u5728\u6D3E\u5BF9\u4E0A\u5531\u5F97\u592A\u5927\u58F0\uFF0C\u88AB\u4EBA\u6295\u8BC9\u8FC7\u3002", "gN2": "\u5728\u684C\u5B50\u4E0A\u8DF3\u8FC7\u821E\u3002", "gN3": "\u628A\u6D88\u606F\u53D1\u9519\u4E86\u4EBA\u3002", "gN4": "\u5047\u88C5\u4F1A\u5531\u4E00\u9996\u6B4C\u7684\u6B4C\u8BCD\u3002", "gN5": "\u5728\u6D3E\u5BF9\u4E0A\u7761\u7740\u8FC7\u3002", "gN6": "\u6CA1\u6253\u62DB\u547C\u5C31\u5077\u5077\u6E9C\u51FA\u6D3E\u5BF9\u3002", "gN7": "\u51FA\u53BB\u73A9\u65F6\u5F04\u4E22\u4E86\u624B\u673A\u3002", "gN8": "\u5077\u5077\u6362\u8FC7\u97F3\u4E50\u3002", "gN9": "\u542C\u60C5\u6B4C\u54ED\u8FC7\u3002", "gN10": "\u8C0E\u62A5\u8FC7\u5E74\u9F84\u3002", "gN11": "\u521A\u542C\u5230\u540D\u5B57\u5C31\u5FD8\u4E86\u3002", "gN12": "\u5BF9\u7740\u68B3\u5B50\u5531\u8FC7\u6B4C\u3002", "gN13": "\u88AB\u591C\u5E97\u8D76\u51FA\u6765\u8FC7\u3002", "gN14": "\u4E3A\u4E86\u8EB2\u907F\u804A\u5929\u5047\u88C5\u7761\u7740\u3002", "gN15": "\u4E00\u4E2A\u4EBA\u5728\u53A8\u623F\u91CC\u8DF3\u8FC7\u821E\u3002", "gN16": "\u7B2C\u4E8C\u5929\u65E9\u4E0A\u540E\u6094\u53D1\u4E86\u4E00\u5F20\u7167\u7247\u3002", "gD1": "\u5927\u5BB6\u559D\u4E00\u53E3", "gD2": "\u5DE6\u8FB9\u7684\u90BB\u5C45", "gD3": "\u53F3\u8FB9\u7684\u90BB\u5C45", "gD4": "\u5206\u51FA3\u53E3", "gD5": "\u6700\u540E\u5230\u7684\u4EBA", "gD6": "\u559D\u6C34\u8F6E", "gD7": "DJ \u559D", "gD8": "\u5E72\u676F\uFF0C\u7136\u540E\u4E00\u8D77\u559D", "gSing": "\u63A5\u7740\u5531", "gSingHint": "\u6B4C\u5531\u5230\u4E00\u534A\uFF0C\u97F3\u4E50\u7A81\u7136\u6CA1\u58F0\u4E86\u3002\u63A5\u7740\u5531\uFF01\u97F3\u4E50\u56DE\u6765\u65F6\uFF0C\u4F60\u8FD8\u8DDF\u5F97\u4E0A\u8282\u594F\u5417\uFF1F", "gSingSoon": "\u9A6C\u4E0A\u8981\u5B89\u9759\u4E86 \u2026", "gSingNow": "\u63A5\u7740\u5531\uFF01", "gSingBack": "\u56DE\u6765\u5566\uFF01\u4F60\u8FD8\u5728\u8282\u594F\u4E0A\u5417\uFF1F", "gLoadSong": "\u4E0B\u4E00\u9996 \u2026", "gReplay": "\u518D\u73A9\u4E00\u6B21", "gLocked": "\u6E38\u620F\u4E2D\u5DF2\u9501\u5B9A", "gSetSfx": "\u97F3\u6548", "gSfxLow": "\u5C0F\u58F0", "gSfxLoud": "\u5927\u58F0" }
       };
+      Object.assign(GAME_TEXT.en, {
+        gLobbyIn: "{n} in the game",
+        gLobbyNone: "Nobody here yet",
+        gLobbyNeed: "{n} more needed",
+        gSetLevel: "Quiz difficulty",
+        gLvEasy: "Easy",
+        gLvNormal: "Normal",
+        gLvHard: "Hard",
+        gSetDecade: "Quiz songs from the",
+        gDecAll: "All",
+        gDecSuffix: "s",
+        gSetSource: "Quiz songs come from",
+        gSrcQueue: "Queue",
+        gSrcHint: "Tap to pick a playlist",
+        gSrcEmpty: "That playlist has no playable songs. Using the queue.",
+        gDecadeNone: "No songs from that decade here. Playing without the filter.",
+        gDecadeFail: "Spotify did not return release years. Playing without the decade filter.",
+        gKeyName: "Keyboard",
+        gKeyJoin: "No phone at hand? Press Space to play on this keyboard.",
+        gKeyAsk: "Keyboard: number keys 1 to {n}",
+        gKeySpace: "Keyboard: Space bar",
+        gCardBtn: "Save result as image",
+        gCardKicker: "Party game",
+        gHost: "Game host on your phone",
+        gHostHint: "Show a QR code that is only for you",
+        gHostNote: "Only for the host: whoever scans this code can start, skip and end games and correct points. It hides again when you close this panel."
+      });
+      Object.assign(GAME_TEXT.de, {
+        gLobbyIn: "{n} dabei",
+        gLobbyNone: "Noch niemand da",
+        gLobbyNeed: "noch {n} n\xF6tig",
+        gSetLevel: "Schwierigkeit im Quiz",
+        gLvEasy: "Leicht",
+        gLvNormal: "Normal",
+        gLvHard: "Schwer",
+        gSetDecade: "Quiz-Songs aus den",
+        gDecAll: "Alle",
+        gDecSuffix: "er",
+        gSetSource: "Quiz-Songs kommen aus",
+        gSrcQueue: "Warteschlange",
+        gSrcHint: "Antippen, um eine Playlist zu w\xE4hlen",
+        gSrcEmpty: "Diese Playlist hat keine spielbaren Songs. Es geht mit der Warteschlange weiter.",
+        gDecadeNone: "Hier sind keine Songs aus diesem Jahrzehnt. Es geht ohne Filter weiter.",
+        gDecadeFail: "Spotify hat keine Erscheinungsjahre geliefert. Es geht ohne Jahrzehnt-Filter weiter.",
+        gKeyName: "Tastatur",
+        gKeyJoin: "Kein Handy zur Hand? Leertaste dr\xFCcken und an dieser Tastatur mitspielen.",
+        gKeyAsk: "Tastatur: Zifferntasten 1 bis {n}",
+        gKeySpace: "Tastatur: Leertaste",
+        gCardBtn: "Ergebnis als Bild speichern",
+        gCardKicker: "Party-Spiel",
+        gHost: "Spielleitung am Handy",
+        gHostHint: "Einen QR-Code nur f\xFCr dich zeigen",
+        gHostNote: "Nur f\xFCr die Spielleitung: Wer diesen Code scannt, kann Spiele starten, Runden \xFCberspringen, beenden und Punkte korrigieren. Er verschwindet wieder, sobald du diese Leiste schlie\xDFt."
+      });
     }
   });
 
@@ -9281,6 +9335,10 @@
         gameCard: "big",
         gameWheel: ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"],
         gameWheelOwn: "",
+        gameLevel: "normal",
+        gameDecade: 0,
+        gameSource: "",
+        gameSourceName: "",
         partyDepth: false,
         partyShatter: true,
         partyCamera: false,
@@ -11206,6 +11264,49 @@
     });
     watermark(x);
     deliver(cv, "mirage-party.png");
+  }
+  async function gameCard(r) {
+    const list = (r?.list || []).slice(0, 10);
+    if (!list.length) return;
+    const pal = palette();
+    const [cv, x] = canvas();
+    backdrop(x, pal, null);
+    x.textAlign = "left";
+    x.fillStyle = css(pal[0]);
+    x.font = `600 30px ${FONT}`;
+    x.fillText(`${t("gCardKicker")} \xB7 ${(/* @__PURE__ */ new Date()).toLocaleDateString()}`.toUpperCase(), 90, 170);
+    x.fillStyle = "#fff";
+    x.font = `800 84px ${FONT}`;
+    x.fillText(fit(x, `${r.icon} ${r.title}`, W - 170), 84, 275);
+    x.fillStyle = "rgba(255,255,255,0.65)";
+    x.font = `500 36px ${FONT}`;
+    x.fillText(t("gEnd"), 90, 340);
+    let Y = 400;
+    x.textBaseline = "middle";
+    list.forEach((p, i) => {
+      const big = i < 3, h = big ? 132 : 68, mid = Y + (h - 12) / 2;
+      x.fillStyle = `rgba(255,255,255,${big ? 0.1 : 0.05})`;
+      rounded(x, 84, Y, W - 168, h - 12, big ? 30 : 20);
+      x.fill();
+      x.fillStyle = "#fff";
+      x.font = `${big ? 800 : 600} ${big ? 56 : 30}px ${FONT}`;
+      x.fillText(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), big ? 112 : 124, mid);
+      x.fillStyle = p.col || "rgba(255,255,255,0.4)";
+      x.beginPath();
+      x.arc(big ? 224 : 196, mid, big ? 14 : 9, 0, Math.PI * 2);
+      x.fill();
+      x.fillStyle = "#fff";
+      x.font = `${big ? 700 : 600} ${big ? 48 : 30}px ${FONT}`;
+      x.fillText(fit(x, p.n, W - 520), big ? 256 : 222, mid);
+      x.textAlign = "right";
+      x.font = `800 ${big ? 52 : 30}px ${FONT}`;
+      x.fillText(String(p.p), W - 120, mid);
+      x.textAlign = "left";
+      Y += h;
+    });
+    x.textBaseline = "alphabetic";
+    watermark(x);
+    deliver(cv, "mirage-game.png");
   }
   async function monthCard() {
     const m = period(30);
@@ -16791,7 +16892,10 @@
     const raw = crypto.getRandomValues(new Uint8Array(16)), ch = crypto.getRandomValues(new Uint8Array(16));
     const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
     const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}`;
-    ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await import_qrcode.default.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }) };
+    const hraw = crypto.getRandomValues(new Uint8Array(16));
+    const hostKey = await crypto.subtle.importKey("raw", hraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+    ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await import_qrcode.default.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "" };
+    hostSeen.clear();
     offAt = 0;
     wishes = [];
     emitWishes();
@@ -16884,6 +16988,25 @@
     out.set(ct, 12);
     return out;
   }
+  async function hostCommand(id, msg) {
+    if (!ses?.hostKey || typeof msg.hd !== "string" || msg.hd.length > 160 || typeof msg.sig !== "string" || msg.sig.length > 64) return;
+    let good = false;
+    try {
+      good = await crypto.subtle.verify("HMAC", ses.hostKey, unB64u(msg.sig), te.encode(msg.hd));
+    } catch {
+    }
+    if (!good) return;
+    const [from, a, t2, v, at3, nonce] = msg.hd.split("|");
+    if (from !== id || !nonce || Math.abs(Date.now() - Number(at3)) > 6e5 || hostSeen.has(nonce)) return;
+    hostSeen.set(nonce, Date.now());
+    for (const [k, when] of hostSeen) if (Date.now() - when > 13e5) hostSeen.delete(k);
+    window.dispatchEvent(new CustomEvent("mirage:host", { detail: { a: clean(a, 8), t: clean(t2, 24), v: Number(v) || 0 } }));
+  }
+  async function hostInfo() {
+    const s = await prepare();
+    if (!s.hostQr) s.hostQr = await import_qrcode.default.toString(s.hostUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+    return { url: s.hostUrl, qr: s.hostQr };
+  }
   async function inbound(m) {
     if (!ses || m.length < 29) return;
     let msg;
@@ -16897,8 +17020,13 @@
     if (msg.k === "gm") {
       if (Date.now() - (lastGame.get(id) || 0) < 100) return;
       lastGame.set(id, Date.now());
-      window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
+      window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), c: colour(msg.c), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
       return;
+    }
+    if (msg.k === "host") {
+      if (Date.now() - (lastHost.get(id) || 0) < 50) return;
+      lastHost.set(id, Date.now());
+      return void hostCommand(id, msg);
     }
     if (msg.k === "react") {
       if (!REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
@@ -16948,8 +17076,8 @@
     const have = wishes.find((x) => x.uri === tr.uri);
     if (have) have.v.add(id);
     else {
-      wishes.push({ ...tr, n: name, by: id, v: /* @__PURE__ */ new Set([id]), st: "open", at: Date.now() });
-      guest(id, name).wished++;
+      wishes.push({ ...tr, n: name, c: colour(msg.c), by: id, v: /* @__PURE__ */ new Set([id]), st: "open", at: Date.now() });
+      guest(id, name, colour(msg.c)).wished++;
       const open2 = wishes.filter((x) => x.st === "open");
       if (open2.length > 8) wishes = wishes.filter((x) => x !== open2.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
     }
@@ -17042,7 +17170,7 @@
       emit();
     }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within4, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, guests, guest, lastReact, lastGame, REACTIONS, ranked, wishList, coverUrl, lastFx, poll, game, masked, setGame, mask, pollState, nextUri, ranking, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within4, SEARCH_VARS, fromGql, ID, coverOf, emitWishes, clean, guests, guest, colour, hostSeen, lastHost, unB64u, lastReact, lastGame, REACTIONS, ranked, wishList, coverUrl, lastFx, poll, game, masked, setGame, mask, pollState, nextUri, ranking, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
@@ -17123,17 +17251,22 @@
       emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage:wishes")));
       clean = (v, n) => String(v ?? "").replace(new RegExp("\\p{Cc}", "gu"), " ").trim().slice(0, n);
       guests = /* @__PURE__ */ new Map();
-      guest = (id, n) => {
-        const g = guests.get(id) || { n: "", wished: 0, played: 0, votes: 0 };
+      guest = (id, n, c2) => {
+        const g = guests.get(id) || { n: "", c: null, wished: 0, played: 0, votes: 0 };
         if (n) g.n = n;
+        if (c2 != null) g.c = c2;
         guests.set(id, g);
         return g;
       };
+      colour = (v) => Number.isInteger(v) && v >= 0 && v < 10 ? v : null;
+      hostSeen = /* @__PURE__ */ new Map();
+      lastHost = /* @__PURE__ */ new Map();
+      unB64u = (s) => Uint8Array.from(atob(String(s).replace(/-/g, "+").replace(/_/g, "/")), (c2) => c2.charCodeAt(0));
       lastReact = /* @__PURE__ */ new Map();
       lastGame = /* @__PURE__ */ new Map();
       REACTIONS = ["\u{1F525}", "\u2764\uFE0F", "\u{1F64C}", "\u{1F602}", "\u{1F389}", "\u{1F44F}"];
       ranked = () => wishes.filter((w) => w.st === "open").sort((a, b) => b.v.size - a.v.size || a.at - b.at);
-      wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, v: w.v.size, st: w.st }));
+      wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, c: w.c ?? void 0, v: w.v.size, st: w.st }));
       coverUrl = (item) => {
         const m = item?.metadata || {}, raw = m.image_small_url || m.image_url || m.image_large_url || "";
         const id = String(raw).replace(/^spotify:image:/, "").replace(/^https:\/\/i\.scdn\.co\/image\//, "");
@@ -17151,7 +17284,7 @@
         return n?.uri || "";
       };
       ranking = () => [...guests.values()].filter((g) => g.n || g.wished || g.votes).sort((a, b) => b.played - a.played || b.wished - a.wished || b.votes - a.votes).slice(0, 10);
-      live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => ses ? { url: ses.url, qr: ses.qr } : null, status: () => status, wishes: wishList, accept, decline };
+      live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => ses ? { url: ses.url, qr: ses.qr } : null, hostInfo, status: () => status, wishes: wishList, accept, decline };
     }
   });
 
@@ -22646,14 +22779,90 @@
   });
 
   // src/games.js
-  function player(id, n) {
+  async function sources() {
+    const out = [];
+    const walk = (items) => {
+      for (const x of items || []) {
+        if (x?.type === "folder") walk(x.items);
+        else if (x?.type === "playlist" && x.uri) out.push({ uri: x.uri, name: clean2(x.name, 60) });
+      }
+    };
+    try {
+      walk((await within5(S.Platform.RootlistAPI.getContents(), 6e3))?.items);
+    } catch {
+    }
+    return out;
+  }
+  async function playlistSongs(uri) {
+    const r = await within5(S.Platform.PlaylistAPI.getContents(uri, { offset: 0, limit: 1e3 }), 8e3);
+    return (r?.items || []).filter((x) => x?.uri?.startsWith("spotify:track:") && x.name && x.isPlayable !== false).map(songOf);
+  }
+  async function loadYears(list) {
+    const need = list.filter((x) => !years.has(x.uri)).slice(0, 200);
+    for (let i = 0; i < need.length; i += 50) {
+      const part = need.slice(i, i + 50);
+      const r = await within5(S.CosmosAsync.get("https://api.spotify.com/v1/tracks?ids=" + part.map((x) => x.uri.split(":")[2]).join(",")), 6e3);
+      (r?.tracks || []).forEach((tr, k) => {
+        const y = Number(String(tr?.album?.release_date || "").slice(0, 4));
+        if (part[k] && y > 1900) years.set(part[k].uri, y);
+      });
+    }
+  }
+  async function loadSource() {
+    const uri = String(cfg.gameSource || ""), decade = Number(cfg.gameDecade) || 0;
+    if (!uri && !decade) return null;
+    let list = null;
+    if (uri) {
+      try {
+        list = await playlistSongs(uri);
+      } catch {
+      }
+      if (!list?.length) {
+        notify2(t("gSrcEmpty"), true);
+        list = null;
+      }
+    }
+    if (!decade) return list;
+    const base = list || queueSongs(S.Queue?.nextTracks);
+    try {
+      await loadYears(base);
+    } catch {
+    }
+    const fits = base.filter((x) => years.get(x.uri) >= decade && years.get(x.uri) < decade + 10);
+    if (fits.length) return fits;
+    notify2(t(base.some((x) => years.has(x.uri)) ? "gDecadeNone" : "gDecadeFail"), true);
+    return list;
+  }
+  async function queueNext() {
+    const g = G;
+    if (g.src === void 0) {
+      const list = await loadSource().catch(() => null);
+      if (G !== g) return;
+      g.src = list;
+    }
+    if (!g.src) return;
+    let left = g.src.filter((x) => !g.played.has(x.uri) && x.uri !== nowUri());
+    if (!left.length) {
+      g.played.clear();
+      left = g.src.filter((x) => x.uri !== nowUri());
+    }
+    const pick = left[Math.floor(Math.random() * left.length)];
+    if (!pick) return;
+    g.played.add(pick.uri);
+    try {
+      await within5(S.addToQueue([{ uri: pick.uri }]), 3e3);
+    } catch {
+    }
+  }
+  function player(id, n, c2) {
     let p = G.players.get(id);
     if (!p) {
-      p = { id, n: "", p: 0, out: false, team: 0, ans: null, e: 0, early: false };
+      p = { id, n: "", c: null, p: 0, out: false, team: 0, ans: null, e: 0, early: false };
       G.players.set(id, p);
     }
     const name = clean2(n, 20);
     if (name) p.n = name;
+    if (c2 != null) p.c = c2;
     return p;
   }
   function clearTimers() {
@@ -22672,7 +22881,7 @@
     }
     const pub = { ...G.view };
     delete pub.cov;
-    live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf) });
+    live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf), pl: all().slice(0, 16).map((p) => ({ i: short(p.id), n: nameOf(p), c: colOf(p) })) });
   }
   function show(view) {
     if (view.end && !view.dur) view.dur = view.end - Date.now();
@@ -22714,7 +22923,7 @@
     if (!ctx2) return;
     stop3(true);
     muteBack = 0;
-    G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: /* @__PURE__ */ new Map(), view: null, timers: [], used: /* @__PURE__ */ new Set(), lastFn: null };
+    G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: /* @__PURE__ */ new Map(), view: null, timers: [], used: /* @__PURE__ */ new Set(), lastFn: null, src: void 0, played: /* @__PURE__ */ new Set() };
     boxKey = "";
     clearInterval(ticker);
     ticker = setInterval(() => render(true), 250);
@@ -22965,12 +23174,37 @@
       G.clipAt = PLR.getProgress() || 0;
       return go2(nowItem());
     }
-    jumpNext(G.k === "intro", go2);
+    const g = G, r = G.r;
+    queueNext().then(() => {
+      if (G === g && G.r === r && G.view?.st === "load") jumpNext(G.k === "intro", go2);
+    });
+  }
+  function alike(x, song, field) {
+    const a = x[field], b = song[field], wa = wordsOf(a), wb = wordsOf(b);
+    let s = 0;
+    if (field === "title" && x.artist && x.artist === song.artist) s += 4;
+    if (wa.some((w) => w.length > 2 && wb.includes(w))) s += 2;
+    if (wa.length === wb.length) s += 1;
+    if (Math.abs(a.length - b.length) <= 3) s += 1;
+    if (wa[0]?.[0] === wb[0]?.[0]) s += 1;
+    return s;
+  }
+  function decoys(song, field) {
+    const answer = song[field], level2 = cfg.gameLevel, n = level2 === "easy" ? 2 : 3;
+    const best = /* @__PURE__ */ new Map();
+    for (const x of shuffle(pool())) {
+      const v = x[field];
+      if (!v || v === answer) continue;
+      best.set(v, Math.max(best.get(v) ?? -1, alike(x, song, field)));
+    }
+    const own = [...best.keys()];
+    if (level2 === "hard") own.sort((a, b) => best.get(b) - best.get(a));
+    else if (level2 === "easy") own.sort((a, b) => best.get(a) - best.get(b));
+    return [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, n);
   }
   function songAsk(song) {
     const field = SONG_FIELD[G.k], answer = song[field];
-    const own = shuffle([...new Set(pool().map((x) => x[field]))].filter((a) => a && a !== answer));
-    const others = [...own, ...shuffle(field === "artist" ? SPARE_ARTISTS : SPARE_TITLES).filter((a) => a !== answer && !own.includes(a))].slice(0, 3);
+    const others = answer ? decoys(song, field) : [];
     if (!answer) {
       notify2(t("gNeedQueue"), true);
       return G.r > 1 ? finish() : stop3();
@@ -23108,8 +23342,8 @@
   }
   function alarmGo(tries2) {
     const lines = ctx2.lines() || [], pos = ctx2.pos(), count = /* @__PURE__ */ new Map();
-    const wordsOf = (l) => new Set((l.text || "").match(WORD)?.map((w) => w.toLocaleLowerCase()) || []);
-    for (const l of lines) if (l.t > pos) for (const w of wordsOf(l)) count.set(w, (count.get(w) || 0) + 1);
+    const wordsOf2 = (l) => new Set((l.text || "").match(WORD)?.map((w) => w.toLocaleLowerCase()) || []);
+    for (const l of lines) if (l.t > pos) for (const w of wordsOf2(l)) count.set(w, (count.get(w) || 0) + 1);
     const best = [...count].filter(([w, n]) => n >= 2 && !FILLER.has(w)).sort((a, b) => b[1] - a[1]).slice(0, 4);
     if (!best.length) {
       if (tries2 > 4) {
@@ -23140,7 +23374,7 @@
       for (let k = 0; k < lines.length && lines[k].t <= p; k++) i = k;
       if (i !== last) {
         last = i;
-        if (i >= 0 && wordsOf(lines[i]).has(word)) {
+        if (i >= 0 && wordsOf2(lines[i]).has(word)) {
           hits++;
           show({ st: "hit", word, hits });
           ctx2.flashStorm?.();
@@ -23188,7 +23422,7 @@
         after(3500, () => {
           const list = all().filter((x) => x.ans && !x.early).sort((a, b) => a.ans.ms - b.ans.ms);
           list.forEach((x, i) => x.p += FAST_PTS[i] ?? 10);
-          show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((x) => ({ n: nameOf(x), ms: x.ans.ms })) });
+          show({ st: "res", r: G.r, of: rounds(), win: list.slice(0, 3).map((x) => ({ n: nameOf(x), ms: x.ans.ms, c: colOf(x) })) });
           after(Math.min(5e3, breakMs()), fastRound);
         });
       };
@@ -23375,6 +23609,50 @@
       else PLR.next();
     }
   }
+  function keyBeat() {
+    const b = G.keyBeat ||= { prev: 0, run: 0, score: 0 }, now = performance.now(), period2 = 6e4 / (ctx2.bpm?.() || 120), dt = now - b.prev, had = b.prev;
+    if (dt < 110) return;
+    b.prev = now;
+    if (!had || dt > 3e3) {
+      b.run = 0;
+      return keySend({ a: "sc", v: b.score });
+    }
+    const err = Math.min(...[0.5, 1, 2].map((m) => Math.abs(dt / (period2 * m) - 1)));
+    const base = err < 0.1 ? 10 : err < 0.22 ? 5 : 0;
+    b.run = base ? b.run + 1 : 0;
+    b.score += base ? base + Math.min(5, Math.floor(b.run / 4)) : 0;
+    keySend({ a: "sc", v: b.score });
+  }
+  function onKey(e) {
+    if (!G || e.ctrlKey || e.altKey || e.metaKey || e.target?.matches?.("input, textarea, [contenteditable]")) return;
+    const v = G.view || {}, digit = /^(?:Digit|Numpad)([1-9])$/.exec(e.code), space = e.code === "Space", enter = e.code === "Enter" && v.st === "join";
+    if (!digit && !space && !enter) return;
+    if (!digit && e.target?.closest?.("button")?.getClientRects().length) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (e.repeat) return;
+    if (WHEELS.has(G.k)) return void (space && spin());
+    if (v.st === "join") return void (enter ? beginNow() : space && keySend({ a: "join" }));
+    if (digit) {
+      if (ASK_GAMES.has(G.k) && v.st === "ask" && +digit[1] <= v.o.length) keySend({ a: "ans", r: v.r, v: +digit[1] - 1 });
+      return;
+    }
+    if (G.k === "fast") {
+      if (v.st === "ready") keySend({ a: "early", r: v.r });
+      else if (v.st === "go") keySend({ a: "tap", r: v.r, ms: Date.now() - v.at });
+    } else if (G.k === "stop") {
+      if (v.st === "play") keySend({ a: "tap", r: v.r });
+      else if (v.st === "stop") keySend({ a: "tap", r: v.r, ms: Date.now() - (v.end - 4e3) });
+    } else if (G.k === "taps") {
+      if (v.st === "go") keySend({ a: "sc", v: G.keyTaps = (G.keyTaps || 0) + 1 });
+    } else if (G.k === "beat") {
+      if (v.st === "go") keyBeat();
+    } else if (G.k === "battle") {
+      if (v.st === "go") keySend({ a: "e", v: 3 });
+    } else if (G.k === "bomb") {
+      if (v.st === "go" && G.holder?.id === KEY_ID) keySend({ a: "pass", v: G.seq });
+    }
+  }
   function render(tickOnly) {
     if (!G) return;
     const root2 = ctx2.root();
@@ -23409,6 +23687,9 @@
     box.dataset.st = v.st || "";
     box.append(head(v));
     build2(v);
+    if (keyIn() && !WHEELS.has(G.k) && v.st !== "join" && v.st !== "end" && v.st !== "load" && v.st !== "wait") {
+      box.append(div("m-g-sub m-g-keyhint", ASK_GAMES.has(G.k) ? v.st === "ask" ? t("gKeyAsk").replace("{n}", v.o?.length || 4) : "" : t("gKeySpace")));
+    }
     update(v);
   }
   function head(v) {
@@ -23464,7 +23745,7 @@
       if (v.st === "go") box.append(div("m-g-big is-hot m-g-pop", t("gFastGo")));
       if (v.st === "res") {
         const b = div("m-g-board");
-        (v.win || []).forEach((x, i) => b.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i], x.n, x.ms + " ms")));
+        (v.win || []).forEach((x, i) => b.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i], x.n, x.ms + " ms", x.c)));
         box.append(b);
       }
     } else if (G.k === "battle") {
@@ -23483,14 +23764,16 @@
       box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? 0)));
     }
   }
-  function row(rank, name, val) {
+  function row(rank, name, val, col) {
     const r = div("m-g-row");
-    r.append(div("m-g-rk", rank), div("m-g-nm", name), div("m-g-pt", val));
+    r.append(div("m-g-rk", rank));
+    if (col != null) r.append(dot(col));
+    r.append(div("m-g-nm", name), div("m-g-pt", val));
     return r;
   }
   function board(list) {
     const d = div("m-g-board");
-    (list || []).slice(0, 5).forEach((x, i) => d.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p))));
+    (list || []).slice(0, 5).forEach((x, i) => d.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p), x.c)));
     return d;
   }
   function buildJoin() {
@@ -23504,7 +23787,7 @@
       img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info2.qr);
       wrap.prepend(img);
     };
-    txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-chips"));
+    txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
     const go2 = document.createElement("button");
     go2.type = "button";
     go2.className = "m-g-go";
@@ -23513,7 +23796,7 @@
       e.stopPropagation();
       beginNow();
     };
-    txt.append(go2);
+    txt.append(go2, div("m-g-sub m-g-keyhint", t("gKeyJoin")));
     wrap.append(txt);
     box.append(wrap);
     need();
@@ -23587,33 +23870,62 @@
     for (const i of [1, 0, 2]) {
       const x = list[i];
       if (!x) continue;
-      const col = div(`m-g-pod is-p${i}`);
-      col.append(div("m-g-medal", ["\u{1F947}", "\u{1F948}", "\u{1F949}"][i]), div("m-g-pname", x.n), div("m-g-ppts", String(x.p)), div("m-g-pbar"));
+      const col = div(`m-g-pod is-p${i}`), name = div("m-g-pname");
+      name.append(dot(x.c), div("m-g-cn", x.n));
+      col.append(div("m-g-medal", ["\u{1F947}", "\u{1F948}", "\u{1F949}"][i]), name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
       pod.append(col);
     }
     if (list.length) box.append(pod);
     if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
+    if (list.length) {
+      const save2 = document.createElement("button");
+      save2.type = "button";
+      save2.className = "m-g-go m-g-card";
+      save2.textContent = t("gCardBtn");
+      save2.onclick = (e) => {
+        e.stopPropagation();
+        resultCard();
+      };
+      box.append(save2);
+    }
+  }
+  function resultCard() {
+    if (!G) return;
+    const list = all().sort((a, b) => b.p - a.p).slice(0, 10).map((p) => ({ n: nameOf(p), p: Math.round(p.p), col: GUEST_COLORS[colOf(p)] }));
+    gameCard({ icon: INFO[G.k].icon, title: t(INFO[G.k].label), list });
+    if (G.view?.st === "end") {
+      clearTimers();
+      after(3e4, () => stop3());
+    }
   }
   function update(v) {
     if (v.st === "join") {
       const chips = box.querySelector(".m-g-chips");
       if (chips) {
-        const names = all().map(nameOf), now = names.join("|");
+        const list = all(), now = list.map((p) => nameOf(p) + colOf(p)).join("|");
         if (chips.dataset.now !== now) {
           chips.dataset.now = now;
           chips.textContent = "";
-          names.slice(0, 16).forEach((n) => chips.append(div("m-g-chip", n)));
+          list.slice(0, 24).forEach((p) => chips.append(chip(p)));
+          if (list.length > 24) chips.append(div("m-g-more", "+" + (list.length - 24)));
+          const need = (MIN[G.k] || 0) - list.length, count = box.querySelector(".m-g-jcount");
+          count.textContent = (list.length ? t("gLobbyIn").replace("{n}", list.length) : t("gLobbyNone")) + (need > 0 ? " \xB7 " + t("gLobbyNeed").replace("{n}", need) : "");
+          count.classList.toggle("is-short", need > 0);
         }
       }
     }
     const who = box.querySelector(".m-g-who");
     if (who) {
-      const now = all().map((p) => nameOf(p) + (p.ans ? "+" : "")).join("|");
+      const now = all().map((p) => nameOf(p) + colOf(p) + (p.ans ? "+" : "")).join("|");
       if (who.dataset.now !== now) {
         who.dataset.now = now;
         who.textContent = "";
-        all().slice(0, 20).forEach((p) => who.append(div("m-g-chip" + (p.ans ? " is-on" : ""), nameOf(p))));
+        all().slice(0, 20).forEach((p) => who.append(chip(p, p.ans ? " is-on" : "")));
       }
+    }
+    if (v.st === "ask" && keyIn() && all().length === 1) {
+      const pick = G.players.get(KEY_ID).ans?.v;
+      box.querySelectorAll(".m-g-opt").forEach((o, i) => o.classList.toggle("is-pick", i === pick));
     }
     const eq = box.querySelector(".m-g-eq");
     if (eq) eq.classList.toggle("is-still", !!G.paused);
@@ -23638,7 +23950,7 @@
         const list = top(), most = Math.max(1, ...list.map((x) => x.p));
         b.textContent = "";
         list.forEach((x, i) => {
-          const r = row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p));
+          const r = row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p), x.c);
           r.classList.add("has-bar");
           r.style.setProperty("--w", Math.round(x.p / most * 100) + "%");
           b.append(r);
@@ -23669,7 +23981,7 @@
     const res = box.querySelector(".m-g-wres");
     if (res) res.textContent = v.st === "res" ? v.text : v.st === "spin" ? "\u2026" : t("gSpin");
   }
-  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, pool, nowItem, nowUri, short, nameOf, all, alive, top, after, later, FIRST, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, WORD, gapWord, FILLER, FAST_PTS, div, secs, beatRaf, WHEEL_COLORS, games;
+  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, queueSongs, pool, within5, years, nowItem, nowUri, GUEST_COLORS, colOf, short, nameOf, all, alive, top, after, later, FIRST, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, wordsOf, WORD, gapWord, FILLER, FAST_PTS, KEY_ID, keySend, keyIn, div, secs, dot, chip, beatRaf, WHEEL_COLORS, games;
   var init_games = __esm({
     "src/games.js"() {
       init_core();
@@ -23680,6 +23992,7 @@
       init_lock();
       init_sfx();
       init_player();
+      init_share();
       GAME_LIST = [
         { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "\u{1F3A4}" },
         { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint", icon: "\u{1F3B5}" },
@@ -23744,16 +24057,21 @@
         uri: x?.uri || "",
         title: cleanTitle2(x?.metadata?.title || x?.name),
         artist: String(x?.metadata?.artist_name || x?.artists?.[0]?.name || "").split(",")[0].trim(),
-        img: coverOf2(x?.metadata) || x?.album?.images?.[0]?.url || ""
+        img: coverOf2(x?.metadata) || coverOf2({ image_url: x?.album?.images?.[0]?.url })
       });
-      pool = () => [...S.Queue?.nextTracks || [], ...S.Queue?.prevTracks || []].map((x) => x.contextTrack || x).filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title).map(songOf);
+      queueSongs = (list) => (list || []).map((x) => x.contextTrack || x).filter((x) => x?.uri?.startsWith("spotify:track:") && x.metadata?.title).map(songOf);
+      pool = () => G?.src || queueSongs([...S.Queue?.nextTracks || [], ...S.Queue?.prevTracks || []]);
+      within5 = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
+      years = /* @__PURE__ */ new Map();
       nowItem = () => S.Player.data?.item || null;
       nowUri = () => nowItem()?.uri || "";
+      GUEST_COLORS = ["#ff5a6e", "#ff8f4d", "#ffc23d", "#4fd68c", "#2fd0c8", "#4aa8ff", "#7b8cff", "#b583ff", "#ff7ad1", "#c9d2e3"];
+      colOf = (p) => p.c ?? [...p.id].reduce((a, ch) => a * 31 + ch.charCodeAt(0) >>> 0, 7) % GUEST_COLORS.length;
       short = (id) => id.slice(-6);
       nameOf = (p) => p.n || `${t("rankGuest")} ${p.id.slice(-2).toUpperCase()}`;
       all = () => [...G.players.values()];
       alive = () => all().filter((p) => !p.out);
-      top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p) }));
+      top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p), c: colOf(p), i: short(p.id) }));
       after = (ms, fn) => {
         G.lastFn = fn;
         G.timers.push(setTimeout(() => G && fn(), ms));
@@ -23781,6 +24099,7 @@
       muteBack = 0;
       SPARE_ARTISTS = ["Taylor Swift", "The Weeknd", "Drake", "Billie Eilish", "Ed Sheeran", "Dua Lipa", "Rihanna", "Eminem", "Coldplay", "Adele", "Queen", "Bruno Mars"];
       SPARE_TITLES = ["Blinding Lights", "Shape of You", "Bad Guy", "Levitating", "Rolling in the Deep", "Umbrella", "Viva la Vida", "Lose Yourself", "Bohemian Rhapsody", "Uptown Funk", "Anti-Hero", "Stay"];
+      wordsOf = (s) => String(s).toLocaleLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
       WORD = /[\p{L}\p{M}'’]{4,}/gu;
       gapWord = (text) => (text.match(WORD) || []).filter((w) => w.length <= 18).sort((a, b) => b.length - a.length)[0];
       FILLER = /* @__PURE__ */ new Set(["that", "your", "with", "this", "have", "when", "what", "just", "like", "from", "they", "will", "there", "about", "yeah", "gonna", "wanna", "dass", "wenn", "aber", "nicht", "eine", "einen", "mich", "dich", "auch", "noch", "sind"]);
@@ -23789,7 +24108,7 @@
         if (!G) return;
         const m = e.detail, v = G.view;
         if (!m?.id || !v) return;
-        const fresh = !G.players.has(m.id), p = player(m.id, m.n);
+        const fresh = !G.players.has(m.id), p = player(m.id, m.n, m.c);
         if (fresh && v.st === "join") sfx.pop();
         if (fresh && v.st !== "join") {
           if (OUT_GAMES.has(G.k)) p.out = true;
@@ -23827,8 +24146,10 @@
           return;
         }
         if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
-        if (G.k === "beat" && m.a === "sc" && v.st === "go") p.p = Math.max(0, Math.min(9999, Number(m.v) || 0));
-        if (G.k === "taps" && m.a === "sc") p.p = Math.max(0, Math.min(400, Number(m.v) || 0));
+        if (G.k === "beat" && m.a === "sc" && v.st === "go" || G.k === "taps" && m.a === "sc") {
+          p.raw = Math.max(p.raw || 0, Math.min(G.k === "beat" ? 9999 : 400, Number(m.v) || 0));
+          p.p = Math.max(0, p.raw + (p.adj || 0));
+        }
         if (G.k === "bomb" && m.a === "pass" && v.st === "go" && p === G.holder && m.v === G.seq) {
           const rest = alive().filter((x) => x !== p);
           if (rest.length) {
@@ -23837,6 +24158,35 @@
             bombShow();
           }
         }
+      });
+      KEY_ID = "tastatur-pc";
+      keySend = (o) => window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id: KEY_ID, n: t("gKeyName"), c: 9, ...o } }));
+      keyIn = () => !!G?.players.has(KEY_ID);
+      window.addEventListener("keydown", onKey, true);
+      window.addEventListener("mirage:host", (e) => {
+        const m = e.detail || {};
+        if (!ctx2 || ctx2.party?.() === false) return;
+        if (m.a === "open") {
+          if (INFO[m.t]) start2(m.t);
+          return;
+        }
+        if (!G) return;
+        if (m.a === "start") return void beginNow();
+        if (m.a === "skip") return void skip();
+        if (m.a === "spin") return void spin();
+        if (m.a === "end") return void stop3();
+        if (m.a !== "pts") return;
+        const p = all().find((x) => short(x.id) === m.t);
+        if (!p) return;
+        const d = Math.max(-1e3, Math.min(1e3, Math.round(m.v) || 0));
+        if (G.k === "beat" || G.k === "taps") {
+          p.adj = (p.adj || 0) + d;
+          p.p = Math.max(0, (p.raw || 0) + p.adj);
+        } else p.p = Math.max(0, p.p + d);
+        if (G.view?.st === "end") G.view.top = top();
+        publish();
+        boxKey = "";
+        render();
       });
       div = (cls, text) => {
         const d = document.createElement("div");
@@ -23847,6 +24197,16 @@
       secs = (end) => {
         const s = Math.max(0, Math.ceil((end - Date.now()) / 1e3));
         return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : s + " s";
+      };
+      dot = (c2) => {
+        const d = div("m-g-dot");
+        d.style.background = GUEST_COLORS[c2] || "transparent";
+        return d;
+      };
+      chip = (p, cls = "") => {
+        const c2 = div("m-g-chip" + cls);
+        c2.append(dot(colOf(p)), div("m-g-cn", nameOf(p)));
+        return c2;
       };
       beatRaf = 0;
       WHEEL_COLORS = ["#ff5a6e", "#4aa8ff", "#ffc23d", "#4fd68c", "#b583ff", "#ff8f4d"];
@@ -23862,7 +24222,8 @@
         skip,
         active: () => G?.k || null,
         waiting: () => G?.view?.st === "join",
-        players: () => G?.players.size || 0
+        players: () => G?.players.size || 0,
+        sources
       };
     }
   });
@@ -24110,7 +24471,8 @@
             flashStorm: () => moments2.stormUntil = performance.now() + 2600,
             bpm: () => party.info.bpm,
             venue: () => moments2.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)],
-            changed: () => side === "games" && showSide("games")
+            changed: () => side === "games" && showSide("games"),
+            party: () => el3?.dataset.mode === "party"
           });
           q.screen.title = q.screen.ariaLabel = t("toScreen");
           q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
@@ -26125,6 +26487,7 @@
           sideFocus(kind);
           if (kind) closeMenus("side");
           side = kind;
+          if (kind !== "games") q.hostOpen = false;
           q.side.hidden = !kind;
           q.side.dataset.kind = kind || "";
           if (!kind) return;
@@ -26295,6 +26658,13 @@
         const seenWish = /* @__PURE__ */ new Set();
         const openWishes = () => el3?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : [];
         const safeImg = (u) => /^https:\/\/i\.scdn\.co\//.test(u || "") ? u : "";
+        const whoDot = (node, w) => {
+          if (!w.n || !GUEST_COLORS[w.c]) return;
+          const d = document.createElement("i");
+          d.className = "m-im-who";
+          d.style.background = GUEST_COLORS[w.c];
+          node.prepend(d);
+        };
         async function takeWish(w, btn) {
           if (btn) btn.disabled = true;
           if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
@@ -26314,6 +26684,7 @@
           const ti = document.createElement("b"), sub = document.createElement("small");
           ti.textContent = w.t;
           sub.textContent = w.a + (w.n ? " \xB7 " + t("wishBy").replace("{n}", w.n) : "");
+          whoDot(sub, w);
           txt.append(ti, sub);
           const votes = document.createElement("i");
           votes.className = "m-im-votes";
@@ -26357,6 +26728,7 @@
           const txt = document.createElement("span");
           const k = document.createElement("small"), ti = document.createElement("b");
           k.textContent = w.n ? t("wishFrom").replace("{n}", w.n) : t("wishNew");
+          whoDot(k, w);
           ti.textContent = `${w.t} \u2013 ${w.a}`;
           txt.append(k, ti);
           const ok = document.createElement("button");
@@ -26476,13 +26848,14 @@
             toggleKeys();
           });
         }
-        function gameChoice(body, label, key, choices) {
+        function gameChoice(body, label, key, choices, wrap) {
           const r = document.createElement("div");
           r.className = "m-g-cfg";
+          r.dataset.key = key;
           const l = document.createElement("span");
           l.textContent = label;
           const seg2 = document.createElement("div");
-          seg2.className = "m-g-seg-row";
+          seg2.className = "m-g-seg-row" + (wrap ? " is-wrap" : "");
           seg2.setAttribute("role", "group");
           seg2.setAttribute("aria-label", label);
           for (const [v, text] of choices) {
@@ -26504,7 +26877,42 @@
           body.append(r);
         }
         const secsOf = (list) => list.map((n) => [n, n + " s"]);
+        function sourceChoice(body) {
+          const again2 = () => {
+            const top2 = q.sideBody.scrollTop;
+            showSide("games");
+            q.sideBody.scrollTop = top2;
+          };
+          const head3 = document.createElement("div");
+          head3.className = "m-im-side-sec";
+          head3.textContent = t("gSetSource");
+          body.append(head3);
+          const now = sideBtn(body, cfg.gameSource ? "\u{1F3B5}  " + (cfg.gameSourceName || "Playlist") : "\u25B6  " + t("gSrcQueue"), t("gSrcHint"), () => {
+            q.srcOpen = !q.srcOpen;
+            again2();
+          }, q.srcOpen);
+          now.classList.add("m-g-src");
+          if (!q.srcOpen) return;
+          const box2 = document.createElement("div");
+          box2.className = "m-im-side-group m-g-srclist";
+          body.append(box2);
+          const pick = (uri, name) => {
+            cfg.gameSource = uri;
+            cfg.gameSourceName = name;
+            save();
+            q.srcOpen = false;
+            again2();
+          };
+          sideBtn(box2, "\u25B6  " + t("gSrcQueue"), "", () => pick("", ""), !cfg.gameSource);
+          games.sources().then((list) => {
+            if (!box2.isConnected) return;
+            for (const p of list.slice(0, 200)) sideBtn(box2, p.name, "", () => pick(p.uri, p.name), cfg.gameSource === p.uri);
+          });
+        }
         function gameSettings(body) {
+          gameChoice(body, t("gSetLevel"), "gameLevel", [["easy", t("gLvEasy")], ["normal", t("gLvNormal")], ["hard", t("gLvHard")]]);
+          gameChoice(body, t("gSetDecade"), "gameDecade", [[0, t("gDecAll")], ...[1980, 1990, 2e3, 2010, 2020].map((d) => [d, String(d).slice(2) + t("gDecSuffix")])], true);
+          sourceChoice(body);
           gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
           gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
           gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);
@@ -26552,6 +26960,33 @@
           };
           body.append(own);
         }
+        function hostPanel(body) {
+          sideBtn(body, "\u{1F4F1}  " + t("gHost"), t("gHostHint"), async () => {
+            q.hostOpen = !q.hostOpen;
+            if (q.hostOpen && !cfg.partyLive) {
+              cfg.partyLive = true;
+              save();
+              showExtras();
+            }
+            showSide("games");
+          }, q.hostOpen);
+          if (!q.hostOpen) return;
+          const wrap = document.createElement("div");
+          wrap.className = "m-g-hostqr";
+          const note = document.createElement("p");
+          note.className = "m-im-side-note";
+          note.textContent = t("gHostNote");
+          wrap.append(note);
+          body.append(wrap);
+          live.hostInfo().then((info2) => {
+            if (!wrap.isConnected) return;
+            const img = new Image();
+            img.alt = "";
+            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info2.qr);
+            wrap.prepend(img);
+          }).catch(() => {
+          });
+        }
         let gameCfgOpen = false;
         function gamesPanel(body) {
           const cur2 = games.active();
@@ -26563,6 +26998,7 @@
               games.stop();
               showSide("games");
             });
+            hostPanel(body);
             return;
           }
           const note = document.createElement("p");
@@ -26595,6 +27031,7 @@
               showSide(null);
             });
           }
+          hostPanel(body);
           sideBtn(body, "\u2699  " + t("gSettings"), "", () => {
             gameCfgOpen = !gameCfgOpen;
             showSide("games");

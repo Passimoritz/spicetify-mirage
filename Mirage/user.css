@@ -908,6 +908,14 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   box-shadow: 0 0 0 2px rgb(10 9 18 / 0.9);
 }
 /* Wünsche in der Seitenleiste: Cover, Titel, wer, Stimmen, annehmen/ablehnen */
+#mirage-immersive .m-im-who {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
 #mirage-immersive .m-im-wishrow {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) auto;
@@ -3858,11 +3866,48 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   min-height: 28px;
 }
 #mirage-immersive .m-g-chip {
-  padding: 4px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 4px 11px 4px 8px;
   border-radius: 99px;
   font: 600 14px var(--m-font);
   background: rgb(255 255 255 / 0.13);
   animation: m-g-pop 0.3s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+/* Farbe des Gastes: an Namen und Ständen */
+#mirage-immersive .m-g-dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+#mirage-immersive .m-g-cn {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#mirage-immersive .m-g-join .m-g-chip {
+  padding: 6px 14px 6px 10px;
+  font-size: 16px;
+}
+#mirage-immersive .m-g-join .m-g-dot {
+  width: 13px;
+  height: 13px;
+}
+#mirage-immersive .m-g-more {
+  align-self: center;
+  font: 600 14px var(--m-font);
+  opacity: 0.7;
+}
+#mirage-immersive .m-g-jcount {
+  font: 700 15px var(--m-font);
+  letter-spacing: 0.02em;
+}
+#mirage-immersive .m-g-jcount.is-short {
+  opacity: 0.75;
 }
 #mirage-immersive .m-g-go {
   padding: 10px 20px;
@@ -3927,6 +3972,10 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 }
 #mirage-immersive .m-g-opt.is-dim {
   opacity: 0.35;
+}
+#mirage-immersive .m-g-opt.is-pick {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
 }
 #mirage-immersive .m-g-opt.is-right {
   outline: 3px solid #fff;
@@ -4006,6 +4055,9 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   line-height: 1.1;
 }
 #mirage-immersive .m-g-pname {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   max-width: 100%;
   overflow: hidden;
   font: 700 17px var(--m-font);
@@ -4306,6 +4358,26 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   color: #0b0a12;
   border-color: transparent;
   background: rgb(var(--m-c-rgb));
+}
+#mirage-immersive .m-g-keyhint {
+  font-size: 13px;
+  opacity: 0.6;
+}
+#mirage-immersive .m-g-keyhint:empty {
+  display: none;
+}
+/* QR-Code der Spielleitung: nur in der Leiste, nur auf Knopfdruck */
+#mirage-immersive .m-g-hostqr {
+  padding: 4px 10px 8px;
+}
+#mirage-immersive .m-g-hostqr img {
+  display: block;
+  box-sizing: border-box;
+  width: min(100%, 220px);
+  margin: 0 auto 8px;
+  padding: 8px;
+  border-radius: 14px;
+  background: #fff;
 }
 #mirage-immersive .m-g-own {
   box-sizing: border-box;

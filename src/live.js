@@ -141,7 +141,12 @@ async function prepare() {
   const raw = crypto.getRandomValues(new Uint8Array(16)), ch = crypto.getRandomValues(new Uint8Array(16));
   const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
   const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}`;
-  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }) };
+  // Spielleitung: ein zweiter Zufallsschlüssel, nur im eigenen Link der Spielleitung. Er wird nie gesendet,
+  // das Handy unterschreibt damit seine Befehle (HMAC), und nur passend unterschriebene gelten.
+  const hraw = crypto.getRandomValues(new Uint8Array(16));
+  const hostKey = await crypto.subtle.importKey("raw", hraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "" };
+  hostSeen.clear();
   offAt = 0;
   wishes = [];
   emitWishes();
@@ -262,12 +267,39 @@ const emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage
 const clean = (v, n) => String(v ?? "").replace(/\p{Cc}/gu, " ").trim().slice(0, n);
 // Gäste: wer hat was gewünscht (für das Ranking im Rückblick); Reaktionen und Abstimmung brauchen keine Wünsche
 const guests = new Map(); // Handy-ID → { n, wished, played, votes }
-const guest = (id, n) => {
-  const g = guests.get(id) || { n: "", wished: 0, played: 0, votes: 0 };
+const guest = (id, n, c) => {
+  const g = guests.get(id) || { n: "", c: null, wished: 0, played: 0, votes: 0 };
   if (n) g.n = n;
+  if (c != null) g.c = c;
   guests.set(id, g);
   return g;
 };
+// Farbe eines Gastes: eine Nummer aus der festen Palette (dieselbe auf dem Handy), sonst keine
+const colour = (v) => (Number.isInteger(v) && v >= 0 && v < 10 ? v : null);
+/* ---- Spielleitung am Handy */
+// Jeder Gast kennt den Kanalschlüssel, aber nur das Handy mit dem Link der Spielleitung kennt deren Schlüssel.
+// Ein Befehl gilt, wenn seine Unterschrift stimmt, er frisch ist und noch nicht da war (mitgelesene Befehle
+// lassen sich so weder fälschen noch ein zweites Mal abspielen).
+const hostSeen = new Map(), lastHost = new Map();
+const unB64u = (s) => Uint8Array.from(atob(String(s).replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+async function hostCommand(id, msg) {
+  if (!ses?.hostKey || typeof msg.hd !== "string" || msg.hd.length > 160 || typeof msg.sig !== "string" || msg.sig.length > 64) return;
+  let good = false;
+  try {
+    good = await crypto.subtle.verify("HMAC", ses.hostKey, unB64u(msg.sig), te.encode(msg.hd));
+  } catch {}
+  if (!good) return;
+  const [from, a, t, v, at, nonce] = msg.hd.split("|");
+  if (from !== id || !nonce || Math.abs(Date.now() - Number(at)) > 600e3 || hostSeen.has(nonce)) return;
+  hostSeen.set(nonce, Date.now());
+  for (const [k, when] of hostSeen) if (Date.now() - when > 1300e3) hostSeen.delete(k);
+  window.dispatchEvent(new CustomEvent("mirage:host", { detail: { a: clean(a, 8), t: clean(t, 24), v: Number(v) || 0 } }));
+}
+async function hostInfo() {
+  const s = await prepare();
+  if (!s.hostQr) s.hostQr = await QRCode.toString(s.hostUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+  return { url: s.hostUrl, qr: s.hostQr };
+}
 const lastReact = new Map(), lastGame = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
 async function inbound(m) {
@@ -284,8 +316,14 @@ async function inbound(m) {
   if (msg.k === "gm") {
     if (Date.now() - (lastGame.get(id) || 0) < 100) return;
     lastGame.set(id, Date.now());
-    window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
+    window.dispatchEvent(new CustomEvent("mirage:game", { detail: { id, n: clean(msg.n, 20), c: colour(msg.c), a: clean(msg.a, 8), v: msg.v, r: msg.r, ms: msg.ms } }));
     return;
+  }
+  // Befehle der Spielleitung: höchstens 20 je Sekunde und Handy, geprüft wird die Unterschrift
+  if (msg.k === "host") {
+    if (Date.now() - (lastHost.get(id) || 0) < 50) return;
+    lastHost.set(id, Date.now());
+    return void hostCommand(id, msg);
   }
   // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl
   if (msg.k === "react") {
@@ -338,8 +376,8 @@ async function inbound(m) {
   const have = wishes.find((x) => x.uri === tr.uri);
   if (have) have.v.add(id);
   else {
-    wishes.push({ ...tr, n: name, by: id, v: new Set([id]), st: "open", at: Date.now() });
-    guest(id, name).wished++;
+    wishes.push({ ...tr, n: name, c: colour(msg.c), by: id, v: new Set([id]), st: "open", at: Date.now() });
+    guest(id, name, colour(msg.c)).wished++;
     // voll: der älteste Wunsch mit den wenigsten Stimmen fliegt raus
     const open = wishes.filter((x) => x.st === "open");
     if (open.length > 8) wishes = wishes.filter((x) => x !== open.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
@@ -369,7 +407,7 @@ function decline(i) {
   wishes = wishes.filter((x) => x.i !== i);
   emitWishes();
 }
-const wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, v: w.v.size, st: w.st }));
+const wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, c: w.c ?? undefined, v: w.v.size, st: w.st }));
 
 // kleines Cover für die Handykarte (Spotifys Bildserver); „spotify:image:…“ → https-Adresse
 const coverUrl = (item) => {
@@ -448,4 +486,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, status: () => status, wishes: wishList, accept, decline };

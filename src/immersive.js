@@ -23,7 +23,7 @@ import { createWordFx } from "./words.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
-import { games, GAME_LIST, WHEEL_FIELDS, WHEELS } from "./games.js";
+import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS } from "./games.js";
 import { free } from "./lock.js";
 
 /* ---------------------------------------------------------------- Immersiv-Modus */
@@ -249,6 +249,7 @@ const immersive = (() => {
       bpm: () => party.info.bpm,
       venue: () => (moments.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)]),
       changed: () => side === "games" && showSide("games"),
+      party: () => el?.dataset.mode === "party",
     });
     q.screen.title = q.screen.ariaLabel = t("toScreen");
     q.screen.onclick = () => showSide(side === "screens" ? null : "screens");
@@ -2442,6 +2443,8 @@ const immersive = (() => {
     sideFocus(kind);
     if (kind) closeMenus("side");
     side = kind;
+    // der QR-Code der Spielleitung bleibt nie offen stehen
+    if (kind !== "games") q.hostOpen = false;
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
@@ -2615,6 +2618,14 @@ const immersive = (() => {
   const seenWish = new Set();
   const openWishes = () => (el?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : []);
   const safeImg = (u) => (/^https:\/\/i\.scdn\.co\//.test(u || "") ? u : "");
+  // Farbpunkt des Gastes vor seinem Namen: man sieht, von wem der Wunsch ist
+  const whoDot = (node, w) => {
+    if (!w.n || !GUEST_COLORS[w.c]) return;
+    const d = document.createElement("i");
+    d.className = "m-im-who";
+    d.style.background = GUEST_COLORS[w.c];
+    node.prepend(d);
+  };
   async function takeWish(w, btn) {
     if (btn) btn.disabled = true;
     if (await live.accept(w.i)) S.showNotification?.(t("wishQueued").replace("{s}", w.t), false, 2500);
@@ -2634,6 +2645,7 @@ const immersive = (() => {
     const ti = document.createElement("b"), sub = document.createElement("small");
     ti.textContent = w.t;
     sub.textContent = w.a + (w.n ? " · " + t("wishBy").replace("{n}", w.n) : "");
+    whoDot(sub, w);
     txt.append(ti, sub);
     const votes = document.createElement("i");
     votes.className = "m-im-votes";
@@ -2677,6 +2689,7 @@ const immersive = (() => {
     const txt = document.createElement("span");
     const k = document.createElement("small"), ti = document.createElement("b");
     k.textContent = w.n ? t("wishFrom").replace("{n}", w.n) : t("wishNew");
+    whoDot(k, w);
     ti.textContent = `${w.t} – ${w.a}`;
     txt.append(k, ti);
     const ok = document.createElement("button");
@@ -2792,13 +2805,14 @@ const immersive = (() => {
     row(el.querySelector(".m-im-help").title || "?", "", () => { showSide(null); toggleKeys(); });
   }
   // Auswahl in Stufen: eine Zeile mit Knöpfen
-  function gameChoice(body, label, key, choices) {
+  function gameChoice(body, label, key, choices, wrap) {
     const r = document.createElement("div");
     r.className = "m-g-cfg";
+    r.dataset.key = key;
     const l = document.createElement("span");
     l.textContent = label;
     const seg = document.createElement("div");
-    seg.className = "m-g-seg-row";
+    seg.className = "m-g-seg-row" + (wrap ? " is-wrap" : "");
     seg.setAttribute("role", "group");
     seg.setAttribute("aria-label", label);
     for (const [v, text] of choices) {
@@ -2820,7 +2834,43 @@ const immersive = (() => {
     body.append(r);
   }
   const secsOf = (list) => list.map((n) => [n, n + " s"]);
+  // Quelle der Quiz-Songs: die Warteschlange (Standard) oder eine Playlist aus der Bibliothek
+  function sourceChoice(body) {
+    const again = () => {
+      const top = q.sideBody.scrollTop;
+      showSide("games");
+      q.sideBody.scrollTop = top;
+    };
+    const head = document.createElement("div");
+    head.className = "m-im-side-sec";
+    head.textContent = t("gSetSource");
+    body.append(head);
+    const now = sideBtn(body, cfg.gameSource ? "🎵  " + (cfg.gameSourceName || "Playlist") : "▶  " + t("gSrcQueue"), t("gSrcHint"), () => {
+      q.srcOpen = !q.srcOpen;
+      again();
+    }, q.srcOpen);
+    now.classList.add("m-g-src");
+    if (!q.srcOpen) return;
+    const box = document.createElement("div");
+    box.className = "m-im-side-group m-g-srclist";
+    body.append(box);
+    const pick = (uri, name) => {
+      cfg.gameSource = uri;
+      cfg.gameSourceName = name;
+      save();
+      q.srcOpen = false;
+      again();
+    };
+    sideBtn(box, "▶  " + t("gSrcQueue"), "", () => pick("", ""), !cfg.gameSource);
+    games.sources().then((list) => {
+      if (!box.isConnected) return;
+      for (const p of list.slice(0, 200)) sideBtn(box, p.name, "", () => pick(p.uri, p.name), cfg.gameSource === p.uri);
+    });
+  }
   function gameSettings(body) {
+    gameChoice(body, t("gSetLevel"), "gameLevel", [["easy", t("gLvEasy")], ["normal", t("gLvNormal")], ["hard", t("gLvHard")]]);
+    gameChoice(body, t("gSetDecade"), "gameDecade", [[0, t("gDecAll")], ...[1980, 1990, 2000, 2010, 2020].map((d) => [d, String(d).slice(2) + t("gDecSuffix")])], true);
+    sourceChoice(body);
     gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
     gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
     gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);
@@ -2868,6 +2918,33 @@ const immersive = (() => {
     };
     body.append(own);
   }
+  // Spielleitung am Handy: eigener QR-Code, nur auf Knopfdruck zu sehen. Wer ihn scannt, darf Spiele steuern.
+  function hostPanel(body) {
+    sideBtn(body, "📱  " + t("gHost"), t("gHostHint"), async () => {
+      q.hostOpen = !q.hostOpen;
+      if (q.hostOpen && !cfg.partyLive) {
+        cfg.partyLive = true;
+        save();
+        showExtras();
+      }
+      showSide("games");
+    }, q.hostOpen);
+    if (!q.hostOpen) return;
+    const wrap = document.createElement("div");
+    wrap.className = "m-g-hostqr";
+    const note = document.createElement("p");
+    note.className = "m-im-side-note";
+    note.textContent = t("gHostNote");
+    wrap.append(note);
+    body.append(wrap);
+    live.hostInfo().then((info) => {
+      if (!wrap.isConnected) return;
+      const img = new Image();
+      img.alt = "";
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      wrap.prepend(img);
+    }).catch(() => {});
+  }
   let gameCfgOpen = false;
   function gamesPanel(body) {
     const cur = games.active();
@@ -2879,6 +2956,7 @@ const immersive = (() => {
         games.stop();
         showSide("games");
       });
+      hostPanel(body);
       return;
     }
     const note = document.createElement("p");
@@ -2913,6 +2991,7 @@ const immersive = (() => {
         showSide(null);
       });
     }
+    hostPanel(body);
     sideBtn(body, "⚙  " + t("gSettings"), "", () => {
       gameCfgOpen = !gameCfgOpen;
       showSide("games");
