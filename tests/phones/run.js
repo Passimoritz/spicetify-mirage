@@ -12,10 +12,13 @@ const crypto = require("crypto");
 const { startServer, startBroker } = require("./server.js");
 const { findBrowser, launchChrome } = require("./chrome.js");
 const { loadPlaywright, launchWebkit } = require("./webkit.js");
+const party = require("./party.js");
 
 const ROOT = path.join(__dirname, "..", "..");
 const TMP = path.join(__dirname, ".tmp");
 const NEED_WEBKIT = process.argv.includes("--need-webkit");
+// PHONES_ONLY=party: nur die Prüfungen mit gespielter Party (schneller beim Arbeiten an einer Funktion)
+const ONLY_PARTY = process.env.PHONES_ONLY === "party";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const UA_IPHONE = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
@@ -167,8 +170,15 @@ async function scanCheck(browser, env, device) {
   await v.page.close();
 }
 
+// Mit gespielter Party: was die Seite aus den Nachrichten des Themes macht
+async function partySuite(browser, env, device) {
+  const o = { url: `http://127.0.0.1:${env.web.port}/${goodHash}`, device, lang: "de-DE", channel, key: Buffer.from(new URLSearchParams(goodHash.slice(1)).get("k"), "base64url"), initScript: initScript(env.broker.port, false) };
+  await party.noFlashCheck(browser, env, o, check);
+}
+
 async function suite(browser, env, devices) {
   console.log(`\n${browser.name}`);
+  if (ONLY_PARTY) return partySuite(browser, env, devices[0]);
   // Zustände in beiden Sprachen, je Gerät
   for (const device of devices) {
     for (const lang of ["de", "en"]) {
@@ -194,6 +204,7 @@ async function suite(browser, env, devices) {
     }
   }
   await scanCheck(browser, env, devices[0]);
+  await partySuite(browser, env, devices[0]);
 }
 
 async function main() {

@@ -448,9 +448,12 @@ function feed(px, pal, bpm, lyric) {
   if (lastFeed - lastSend < RATE) return;
   lastSend = lastFeed;
   const item = currentItem();
+  // „Keine Blitze“ gilt auch für die Handys: „nf“ schaltet dort Blitz, Schockring und lange Drop-Vibration ab.
+  // Ältere Handyseiten kennen „nf“ nicht und blitzen bei d > 0,85 – darum bleibt d dann auf 0,85 gedeckelt.
+  const nf = cfg.noFlash ? 1 : 0;
   send({
     v: 1, on: 1, s: Date.now(), bpm: Math.round(bpm || 120), bi: px.beatIdx, ph: +(px.phase || 0).toFixed(3),
-    e: +px.energy.toFixed(2), k: +px.kickEnv.toFixed(2), d: +px.drop.toFixed(2), b: +px.build.toFixed(2),
+    e: +px.energy.toFixed(2), k: +px.kickEnv.toFixed(2), d: +(nf ? Math.min(px.drop, 0.85) : px.drop).toFixed(2), nf, b: +px.build.toFixed(2),
     pal: (pal || []).slice(0, 3).map((c) => c.map((v) => Math.round(v))), t: masked === "all" ? "?" : titleOf(item) || "", a: masked === "all" ? "" : artistOf(item) || "",
     img: masked === "all" ? "" : coverUrl(item),
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile

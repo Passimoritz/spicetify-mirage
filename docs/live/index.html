@@ -1129,7 +1129,8 @@ function frame(now) {
       show.beat = beat;
     }
     const d = Math.max(0, cur.d - age * 0.6);
-    if (d > 0.85 && show.drop < 0.5) {
+    // „Keine Blitze“ am PC (nf): kein weißer Blitz, kein Schockring, keine lange Vibration
+    if (d > 0.85 && show.drop < 0.5 && !cur.nf) {
       show.flash = 1;
       // Drop: von sanft zu voll anschwellen, dann lang (Android; iPhones lassen Websites nicht vibrieren)
       haptic([[0.45, 45], [0.7, 45], [0.9, 45], [1, 260]]);
