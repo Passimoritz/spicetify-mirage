@@ -17,6 +17,11 @@ Release notes on GitHub are generated from the matching section of this file whe
 - The phone page reloads itself once when the theme speaks a newer message format, and says so clearly if that does not help.
 - **Overlay app repairs and updates the theme:** after a Spotify update it notices that Mirage is gone (Windows) and puts it back with one click, and the tray menu offers a new theme version when there is one. Both only on a click, because Spotify restarts once.
 - **Nightly Spotify check:** a workflow unpacks the newest Spotify client every night and opens an issue when a rule of the theme stops matching. `npm run check:selectors` does the same for the installed Spotify.
+- **Party mode plans every song section by section** (intro, verse, pre-chorus, chorus, drop, break, bridge, outro): each part has its own brightness, motion speed, colour grade and allowed effects, and every change lands on a downbeat. Builds tighten toward the drop, the last beat before it goes dark, and a light wipe and colour swap mark the start of a chorus, drop or bridge. The visualizer views follow the same structure.
+- **Style signatures:** house pumps with the kick, techno runs long hypnotic scanners, trap hits hard on the 808 with half-time sweeps, drum & bass runs double-time, rock fires a light wall on the chorus downbeat, ballads breathe over two bars with a follow spot on held notes, latin lights up on syncopated accents, EDM gets the full build/drop drama.
+- **New party crowd:** real silhouettes with shoulders, necks and 17 hair and headwear styles, varied builds and clothing, rim light in the song colours from the stage, rows that fade into the haze, arms with elbows, staggered reactions to the beat and a crouch before the drop. The concert hall sits in velvet seats and the living room has a few friends dancing along. It is cheaper to draw than before.
+- **Quick “Look & performance” menu in immersive mode** (the ⋯ button, or key O): switch Full / Balanced / Light / Calm, Energy saver and No flashes without opening the settings.
+- `npm run ui:shots` renders Spotify's real stylesheets with Mirage in a hidden window, for visual checks without Spotify.
 - **Five new games:** *Older or newer?* (two clips, guess which came out first), *Cover puzzle* (the cover goes from blocky to sharp while the music stays off), *Song duel* (the room votes, the winner takes on the next song), *Tournament* (3 to 6 games in a row with placement points and a podium) and *Music bingo* (every phone gets its own card; the PC checks every claimed row).
 - **Teams:** quizzes and races can be played in 2 to 4 even teams, with team scores next to the individual ones.
 - **Remote control for your phone:** playback, volume, intensity, location and games behind a separate signed QR code in the party settings.
@@ -50,6 +55,11 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- **Play buttons** on headers, cards and the player bar are one crisp, round accent button again: no square behind the icon, no pulsing halo, no spinning ring. Selected filter chips are readable, selected tracks keep their highlight on hover, the playing row no longer turns olive on warm covers, and outlined “Follow” buttons are styled again on Spotify 1.3.
+- **Immersive mode gives memory back:** closing it or leaving the party view stops the stage's background thread and frees its images, the large canvases and Canvas videos; a window hidden for 30 s frees them too. Beat analysis stays in memory for the last 8 songs (older ones come from disk), and game sounds release the audio device after a minute of silence.
+- Drops in party mode often landed one beat early.
+- The host buttons on the phone no longer jump away when a guest joins, so a tap on Start is never lost.
+- The nightly Spotify check now unpacks the client correctly, and the selector check no longer counts Spicetify's own files as Spotify.
 - **Party mode with big crowds** (stadium, festival, concert hall) redrew every person in every frame; the stage is about eight times faster and runs at 60 fps again, with an identical picture. Startup also does about 17 % less work.
 - **Pearl (light scheme):** immersive mode keeps its bright accents, buttons and chips get white text, page titles are no longer invisible. Text selection, background vocals and Jam avatars are readable on every cover; the contrast check passes with no known weakness.
 - Invisible text on the artist-pick badge and invisible ticks in Spotify's checkboxes.

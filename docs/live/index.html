@@ -2332,6 +2332,9 @@ $("bRc").onclick = (e) => {
   rcDrawn = "";
   drawRc();
   rcCmd("hi");
+  // ist nach zwei Sekunden noch kein Stand vom PC da (PC beschäftigt, Antwort verloren), noch zweimal nachfragen
+  const had = rcS;
+  [2000, 4500].forEach((ms) => setTimeout(() => !$("rc").hidden && rcS === had && rcCmd("hi"), ms));
 };
 $("rcClose").onclick = () => ($("rc").hidden = true);
 rcInit();
