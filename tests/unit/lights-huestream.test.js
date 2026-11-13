@@ -1,6 +1,6 @@
 // Hue Entertainment: Farbbild im Format HueStream v2 (Byte für Byte gegen das dokumentierte Layout) und die
 // Bereichsverwaltung über CLIP v2 gegen eine nachgebaute Bridge auf 127.0.0.1.
-// Die DTLS-Verbindung selbst gibt es noch nicht (siehe overlay/hue-stream.js) und wird hier nicht geprüft.
+// Die DTLS-Verbindung prüft tests/dtls/, das Zusammenspiel mit lights.js tests/unit/lights-huefast.test.js.
 // Aufruf: node tests/unit/lights-huestream.test.js
 const assert = require("assert");
 const http = require("http");

@@ -238,6 +238,8 @@
     <div class="row lrow"><input type="text" id="hueIp" placeholder="192.168.1.20" inputmode="decimal" autocomplete="off"><button type="button" class="btn" id="hueFind" data-t="hueFind"></button><button type="button" class="btn" id="huePair" data-t="huePair"></button></div>
     <div class="row lrow" id="hueGroupRow" hidden><div><b data-t="hueRoom"></b></div><select id="hueGroup"></select></div>
     <div class="row lrow" id="huePartRow" hidden><div><b data-t="lightsPart"></b></div><div class="chips" id="hueLights"></div></div>
+    <div class="row lrow" id="hueFastRow" hidden><div><b data-t="hueFast"></b><small id="hueFastHint"></small></div><input type="checkbox" class="toggle" data-key="hueFast"></div>
+    <div class="row lrow" id="hueAreaRow" hidden><div><b data-t="hueArea"></b></div><select id="hueArea"></select></div>
     <div class="row"><div><b>WLED</b><small data-t="wledHint"></small></div><input type="checkbox" class="toggle" data-key="wledOn"></div>
     <div class="row lrow"><input type="text" id="wledIp" placeholder="192.168.1.40" autocomplete="off"><input type="number" id="wledLeds" min="1" max="490" step="1"><small data-t="wledLeds"></small></div>
     <div class="row"><div><b>Govee</b><small id="goveeState" data-t="goveeHint"></small></div><input type="checkbox" class="toggle" data-key="goveeOn"></div>
@@ -319,6 +321,11 @@
     $("#obsPartyRow").hidden = !cfg.obs;
     for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["lightMax", "lightMax"], ["goveeIps", "goveeIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"], ["orgbExclude", "orgbExclude"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
     if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
+    // Hue schnell: nur gekoppelt; ohne Client-Schlüssel (vor dieser Version gekoppelt) erst neu koppeln
+    $("#hueFastRow").hidden = !cfg.hueUser;
+    $("#hueAreaRow").hidden = !cfg.hueUser || !cfg.hueFast;
+    if (!areaNote) $("#hueFastHint").textContent = t(cfg.hueUser && !cfg.hueClientKey ? "hueFastRepair" : "hueFastHint");
+    if (cfg.hueUser && cfg.hueFast && cfg.hueClientKey && !areasAsked) loadAreas();
     $("#secretsPlain").hidden = !cfg.secretsPlain;
     $("#haToken").placeholder = cfg.haToken ? t("haTokenSet") : t("haToken");
     if (!$("#haEntities").placeholder) $("#haEntities").placeholder = t("haEntities");
@@ -526,7 +533,25 @@
     $("#hueState").textContent = t("huePairing");
     const r = await mirage.invoke("huePair", $("#hueIp").value);
     $("#hueState").textContent = r?.ok ? t("huePaired") : r?.error === "button" ? t("hueButton") : t("hueUnreachable");
-    if (r?.ok) loadGroups(true);
+    if (r?.ok) {
+      loadGroups(true);
+      areasAsked = false;
+      areaNote = "";
+    }
+  };
+  // Entertainment-Bereiche der Bridge (in der Hue-App angelegt); ohne Wahl nimmt die App den ersten passenden
+  let areasAsked = false, areaNote = "";
+  async function loadAreas() {
+    areasAsked = true;
+    const r = await mirage.invoke("hueAreas");
+    const list = r?.areas || [];
+    areaNote = r?.error ? { clientkey: "hueFastRepair", unreachable: "hueUnreachable" }[r.error] || "" : list.length ? "" : "hueAreaNone";
+    if (areaNote) $("#hueFastHint").textContent = t(areaNote);
+    $("#hueArea").replaceChildren(...list.map((a) => Object.assign(document.createElement("option"), { value: a.id, textContent: `${a.name} (${a.n})`, selected: a.id === cfg.hueArea })));
+  }
+  $("#hueArea").onchange = () => {
+    cfg.hueArea = $("#hueArea").value;
+    mirage.send("set", { hueArea: cfg.hueArea });
   };
   // fresh: gerade gekoppelt – dann mit dem ersten Raum anfangen statt gleich mit dem ganzen Haus
   async function loadGroups(fresh) {
@@ -545,10 +570,15 @@
   // Einstellungen umziehen: Datei-Dialoge laufen im Hauptprozess, hier nur das Ergebnis als kurze Meldung
   function moveResult(r, okKey) {
     if (!r || r.canceled) return;
-    const text = r.ok ? t(okKey).replace("{n}", r.n ?? "") : t(r.error === "invalid" ? "moveInvalid" : "moveFailed");
+    let text = r.ok ? t(okKey).replace("{n}", r.n ?? "") : t(r.error === "invalid" ? "moveInvalid" : "moveFailed");
+    // die Datei nennt eine andere Bridge / ein anderes Home Assistant: Schlüssel bzw. Token wurden gelöscht
+    const cleared = Array.isArray(r.cleared) ? r.cleared : [];
+    if (cleared.includes("hue")) $("#hueState").textContent = t("moveRepairHue");
+    if (cleared.includes("ha")) $("#haState").textContent = t("moveRepairHa");
+    if (cleared.length) text += " · " + cleared.map((x) => t(x === "hue" ? "moveRepairHue" : "moveRepairHa")).join(" · ");
     $("#moveState").textContent = text;
     clearTimeout(moveResult.t);
-    moveResult.t = setTimeout(() => ($("#moveState").textContent = ""), 6000);
+    moveResult.t = setTimeout(() => ($("#moveState").textContent = ""), cleared.length ? 20000 : 6000);
   }
   $("#moveExport").onclick = async () => moveResult(await mirage.invoke("exportCfg"), "moveExported");
   $("#moveImport").onclick = async () => moveResult(await mirage.invoke("importCfg"), "moveImported");

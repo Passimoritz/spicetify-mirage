@@ -36,24 +36,30 @@ let cur = null, at = 0, pal = [[155, 107, 240], [34, 73, 231], [217, 188, 241]];
   ws.onclose = () => setTimeout(connect, 2000);
 })();
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
-const show = { lit: 0, e: 0, k: 0, d: 0, flash: 0, rings: [], last: 0 };
+// flashAt: letzter Blitz. Die Overlay-App deckelt schon (höchstens 3/s, mit „Keine Blitze“ = nf keine), die
+// Seite hält trotzdem selbst 0,34 s Abstand – sie kann auch ohne die App in einer alten OBS-Szene hängen
+const show = { lit: 0, e: 0, k: 0, d: 0, flash: 0, rings: [], last: 0, flashAt: -1e9 };
 let prev = performance.now();
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, (now - prev) / 1000);
   prev = now;
-  const live = cur && now - at < 1500;
+  const live = cur && now - at < 1500, calm = live && cur.nf === 1;
   const ease = (a, b, f) => a + (b - a) * (1 - Math.exp(-dt * f));
   show.lit = ease(show.lit, live ? 1 : 0, 2.5);
-  show.e = ease(show.e, live ? cur.e : 0.2, 4);
+  show.e = ease(show.e, live ? cur.e : 0.2, calm ? 1.5 : 4);
   const k = live ? Math.max(cur.k, cur.a * 0.8) : 0;
-  // ein Ring je deutlichem Schlag
-  if (live && k > 0.55 && show.k < 0.4 && now - show.last > 180) {
+  // ein Ring je deutlichem Schlag (nie mehr als 3 pro Sekunde, mit nf keine)
+  if (live && !calm && k > 0.55 && show.k < 0.4 && now - show.last > 340) {
     show.rings.push({ r: 0, a: 0.45 + show.e * 0.45, c: pal[show.rings.length % 3] });
     show.last = now;
   }
-  show.k = k > show.k ? k : ease(show.k, k, 10);
-  if (live && cur.d > 0.85 && show.d < 0.5) show.flash = 1;
+  show.k = k > show.k && !calm ? k : ease(show.k, k, calm ? 2 : 10);
+  if (live && !calm && cur.d > 0.85 && show.d < 0.5 && now - show.flashAt > 340) {
+    show.flash = 1;
+    show.flashAt = now;
+  }
+  if (calm) show.flash = 0;
   show.d = live ? cur.d : 0;
   ctx.globalCompositeOperation = "source-over";
   ctx.clearRect(0, 0, W, H);

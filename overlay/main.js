@@ -9,8 +9,8 @@ const http = require("http");
 const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
-const { createSecrets, SECRET } = require("./secrets.js");
-const { createCast } = require("./cast.js");
+const { createSecrets, SECRET, rebind, cleanPatch, senderIs } = require("./secrets.js");
+const { createPartyGuard } = require("./flashcap.js");
 const { make } = require("./i18n");
 
 const WIN = process.platform === "win32";
@@ -79,6 +79,8 @@ const DEFAULTS = {
   // Vorlauf je Gerät in ms (Lampen hängen unterschiedlich weit hinterher); Hue je Bridge: „ip=ms, ip=ms“
   latHue: "", latWled: 0, latGovee: 0, latHa: 0, latOrgb: 0, latChroma: 0,
   hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
+  // Hue schnell (Entertainment über DTLS): Bereich auf der Bridge; hueCertPin = „ip=Fingerabdruck“ ihres Zertifikats
+  hueFast: false, hueArea: "", hueCertPin: "",
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
   chromaOn: false,
@@ -142,10 +144,12 @@ function save() {
 }
 
 let overlay = null, settingsWin = null, setupWin = null, tray = null;
-const lights = createLights(() => cfg, (s) => dlog?.(s));
+// update: Hue schnell merkt sich so den Fingerabdruck des Bridge-Zertifikats
+const lights = createLights(() => cfg, (s) => dlog?.(s), { update: (p) => update(p) });
 // Party auf Fernsehern im Netz (Chromecast, Google TV, DLNA-Fernseher): der PC nimmt das Party-Bild auf und
-// streamt es als Video; gesteuert vom Theme
-const cast = createCast({ log: (s) => dlog?.(s), track: () => track });
+// streamt es als Video; gesteuert vom Theme. Erst geladen, wenn das Theme danach fragt – die meisten nutzen es nie.
+let castApi = null;
+const cast = () => (castApi ||= require("./cast.js").createCast({ log: (s) => dlog?.(s), track: () => track }));
 let track = null, lastPlaying = null, lastShow = 0, lyric = null, pointerT = 0;
 let t = make("en");
 const clients = new Set();
@@ -204,16 +208,25 @@ function payload(reason, sample) {
   };
 }
 function announce(reason, force, sample) {
-  if (!overlay || !track) return;
+  if (!track) return;
   if (!force && (cfg.mode === "off" || inQuiet() || busy)) return;
-  position();
-  lastShow = Date.now();
-  toOverlay("show", payload(reason, sample));
-  overlay.showInactive();
-  // WIN/MAC: Ebene „screen-saver“ liegt auch über Vollbild-Apps; LINUX: Fenstermanager entscheidet
-  overlay.setAlwaysOnTop(true, "screen-saver");
-  if (!WIN) overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  watchPointer();
+  // jetzt festhalten: die Vorschau setzt track nur für diesen Aufruf
+  const data = payload(reason, sample);
+  const go = () => {
+    if (!overlay || overlay.isDestroyed()) return;
+    position();
+    lastShow = Date.now();
+    toOverlay("show", data);
+    overlay.showInactive();
+    // WIN/MAC: Ebene „screen-saver“ liegt auch über Vollbild-Apps; LINUX: Fenstermanager entscheidet
+    overlay.setAlwaysOnTop(true, "screen-saver");
+    if (!WIN) overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    watchPointer();
+  };
+  // das Fenster entsteht erst mit der ersten Ansage; frisch angelegt erst nach dem Laden zeigen
+  ensureOverlay();
+  if (overlay.webContents.isLoading()) overlay.webContents.once("did-finish-load", go);
+  else go();
 }
 function hideOverlay() {
   toOverlay("hideNow");
@@ -278,6 +291,7 @@ function startServer() {
   });
   wss.on("connection", (ws) => {
     clients.add(ws);
+    themePresence();
     settingsWin?.webContents.send("status", status());
     ws.send(JSON.stringify({ type: "cmd", cmd: "hello" }));
     ws.send(JSON.stringify({ type: "cmd", cmd: "report" }));
@@ -293,12 +307,12 @@ function startServer() {
       else if (m.type === "level") onLevel(m);
       else if (m.type === "volume") showVolume(m);
       else if (m.type === "party") onParty(m);
-      else if (m.type === "castScan") cast.scan().then((list) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", list })));
-      else if (m.type === "castStart") cast.start(String(m.id || ""), { audio: !!m.audio }).then((r) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", id: m.id, result: r, list: cast.list() })));
+      else if (m.type === "castScan") cast().scan().then((list) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", list })));
+      else if (m.type === "castStart") cast().start(String(m.id || ""), { audio: !!m.audio }).then((r) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", id: m.id, result: r, list: cast().list() })));
       else if (m.type === "castStop") {
-        cast.stop(String(m.id || ""));
-        ws.send(JSON.stringify({ type: "cast", list: cast.list() }));
-      } else if (m.type === "castMiracast") cast.miracast();
+        castApi?.stop(String(m.id || ""));
+        ws.send(JSON.stringify({ type: "cast", list: castApi?.list() || [] }));
+      } else if (m.type === "castMiracast") cast().miracast();
       // eine neuere Mirage Overlay will den Port: diese (ältere) Kopie macht Platz
       else if (m.type === "yield" && newer(String(m.version || ""), app.getVersion())) app.exit(0);
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
@@ -310,6 +324,7 @@ function startServer() {
     });
     ws.on("close", () => {
       clients.delete(ws);
+      themePresence();
       settingsWin?.webContents.send("status", status());
     });
   });
@@ -342,6 +357,12 @@ function portBusy() {
   }
   setTimeout(startServer, 4000);
 }
+// Theme kommt oder geht: Vollbild-Abfrage und CSS-Beobachtung laufen nur, solange es etwas anzusagen gibt
+function themePresence() {
+  watchFullscreen();
+  watchCss();
+  idleWindows();
+}
 function send(msg) {
   for (const ws of clients) if (ws.readyState === 1) ws.send(JSON.stringify(msg));
 }
@@ -368,6 +389,24 @@ function resubscribe() {
 }
 
 /* ------------------------------------------------------------------ Fenster */
+// Das Overlay-Fenster gibt es nur, solange es gebraucht wird: angelegt bei der ersten Ansage (oder Vorschau),
+// geschlossen 2 min, nachdem das Theme gegangen ist – ohne Spotify gibt es nichts anzusagen, und ein verstecktes
+// Fenster hält trotzdem einen eigenen Renderer-Prozess am Leben. Gleiches gilt für Lautstärke und Kantenlicht.
+let idleT = 0;
+function ensureOverlay() {
+  if (!overlay || overlay.isDestroyed()) createOverlay();
+}
+function idleWindows() {
+  clearTimeout(idleT);
+  if (clients.size) return;
+  idleT = setTimeout(() => {
+    if (clients.size) return;
+    // sichtbare Fenster (Mini-Player im Modus „immer“) bleiben stehen
+    if (overlay && !overlay.isDestroyed() && !overlay.isVisible()) overlay.destroy();
+    if (volWin && !volWin.isDestroyed() && !volWin.isVisible()) volWin.destroy();
+    dropEdges();
+  }, 120000);
+}
 function createOverlay() {
   overlay = new BrowserWindow({
     width: BASE_W + 2 * SHADOW,
@@ -395,6 +434,7 @@ function createOverlay() {
     if (cfg.mode === "always") announce("update");
     else overlay.webContents.send("update", payload("update"));
   });
+  overlay.on("closed", () => (overlay = null));
   overlay.loadFile("overlay.html");
 }
 
@@ -760,7 +800,7 @@ ipcMain.on("volDone", () => volWin?.hide());
 // Vier schmale, durchsichtige Streifen an den Rändern des Bildschirms glühen im Takt des Party-Modus.
 // Bewusst Streifen statt eines Fensters über allem: Spotify selbst bleibt unverdeckt. Klicks gehen durch.
 const EDGE = 70;
-let edges = null, edgeT = 0;
+let edges = null, edgeT = 0, edgeKillT = 0;
 function makeEdges() {
   const b = pickDisplay().bounds;
   const rects = {
@@ -782,10 +822,16 @@ function makeEdges() {
     return w;
   });
 }
-function onParty(m) {
-  if (obsParty.size) obsSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal });
-  lights.feed(m);
+// Kantenlicht und OBS-Quelle bekommen den Zustand erst nach der Blitz-Schranke (höchstens 3 Blitze pro
+// Sekunde, mit „Keine Blitze“ gar keine); die Lampen haben in lights.js ihre eigene
+const screenGuard = createPartyGuard();
+function onParty(raw) {
+  if (!raw || typeof raw !== "object") return;
+  lights.feed(raw);
+  const m = screenGuard(raw, Date.now() / 1000);
+  if (obsParty.size) obsSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal, nf: m.nf });
   if (m.edge === false || cfg.mode === "off" || busy || cfg.edge === false) return;
+  clearTimeout(edgeKillT);
   if (!edges) makeEdges();
   for (const w of edges || []) {
     if (w.isDestroyed()) continue;
@@ -806,6 +852,15 @@ function hideEdges() {
     w.webContents.send("partyOff");
     setTimeout(() => !w.isDestroyed() && w.hide(), 300);
   }
+  // vier versteckte Fenster nicht bis zur nächsten Party behalten: nach 1 min ohne Party schließen
+  clearTimeout(edgeKillT);
+  if (edges) edgeKillT = setTimeout(dropEdges, 60000);
+}
+function dropEdges() {
+  clearTimeout(edgeKillT);
+  const list = edges || [];
+  edges = null;
+  for (const w of list) if (!w.isDestroyed()) w.destroy();
 }
 
 /* ------------------------------------------------------------------ Ruhig bei Vollbild */
@@ -827,7 +882,8 @@ function setBusy(on) {
 const PS_BUSY = `Add-Type -Namespace M -Name Q -MemberDefinition '[DllImport("shell32.dll")] public static extern int SHQueryUserNotificationState(out int s);'
 while ($true) { $s = 0; [void][M.Q]::SHQueryUserNotificationState([ref]$s); [Console]::Out.WriteLine($s); [Console]::Out.Flush(); Start-Sleep -Milliseconds 1500 }`;
 function watchFullscreen() {
-  const want = cfg.fullscreenQuiet && cfg.mode !== "off";
+  // ohne verbundenes Theme kommt keine Ansage – dann auch kein PowerShell-/xprop-Prozess, der alle 1,5 s fragt
+  const want = cfg.fullscreenQuiet && cfg.mode !== "off" && clients.size > 0;
   if (!want) {
     busyProc?.kill();
     busyProc = null;
@@ -837,9 +893,11 @@ function watchFullscreen() {
   }
   if (WIN && !busyProc) {
     try {
-      busyProc = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", PS_BUSY], { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
+      const proc = (busyProc = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", PS_BUSY], { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] }));
       let buf = "";
-      busyProc.stdout.on("data", (d) => {
+      proc.stdout.on("data", (d) => {
+        // ein schon beendeter Abfrage-Prozess (Theme kurz weg und wieder da) hat nichts mehr zu sagen
+        if (busyProc !== proc) return;
         buf += d;
         const lines = buf.split(/\r?\n/);
         buf = lines.pop();
@@ -847,7 +905,8 @@ function watchFullscreen() {
         // 2 = Vollbild-Programm, 3 = Direct3D-Vollbild (Spiele), 4 = Präsentationsmodus
         if (!Number.isNaN(last)) setBusy(last >= 2 && last <= 4);
       });
-      busyProc.on("exit", () => {
+      proc.on("exit", () => {
+        if (busyProc !== proc) return;
         busyProc = null;
         setBusy(false);
       });
@@ -891,8 +950,17 @@ function readCss() {
     return "";
   }
 }
+// Die Datei wird abgefragt (fs.watchFile), nicht beobachtet – das geht auch, wenn sie noch nicht existiert.
+// Abgefragt wird nur, solange das Theme verbunden oder eine OBS-Quelle offen ist; danach einmal neu lesen.
+let cssOn = false;
+const cssChanged = () => toOverlay("css", readCss());
 function watchCss() {
-  fs.watchFile(cssFile(), { interval: 1000 }, () => toOverlay("css", readCss()));
+  const want = clients.size > 0 || obsClients.size > 0;
+  if (want === cssOn) return;
+  cssOn = want;
+  if (!want) return fs.unwatchFile(cssFile(), cssChanged);
+  fs.watchFile(cssFile(), { interval: 1000 }, cssChanged);
+  cssChanged();
 }
 function openCss() {
   try {
@@ -965,10 +1033,14 @@ function startObs() {
         resubscribe();
       });
     }
+    watchCss();
     ws.send(JSON.stringify({ ch: "css", data: readCss() }));
     ws.send(JSON.stringify({ ch: "config", data: publicCfg(cfg) }));
     if (track) ws.send(JSON.stringify({ ch: cfg.mode === "always" ? "show" : "update", data: payload("update") }));
-    ws.on("close", () => obsClients.delete(ws));
+    ws.on("close", () => {
+      obsClients.delete(ws);
+      watchCss();
+    });
   });
   wss.on("error", () => {});
   obsServer.on("error", () => {
@@ -979,6 +1051,7 @@ function startObs() {
 function stopObs() {
   for (const c of obsClients) c.close();
   obsClients.clear();
+  watchCss();
   obsServer?.close();
   obsServer = null;
 }
@@ -1125,7 +1198,7 @@ function update(patch) {
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
   if ("control" in patch) cfg.control === false ? stopControl() : startControl();
-  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude"].some((k) => k in patch)) {
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude", "hueFast", "hueArea", "hueClientKey"].some((k) => k in patch)) {
     lights.sync();
     resubscribe();
   }
@@ -1141,7 +1214,8 @@ function update(patch) {
 /* ------------------------------------------------------------------ Einstellungen umziehen */
 // Export/Import als JSON-Datei. Zugangsdaten (SECRET) verlassen den Rechner nie, setupDone gehört zu
 // diesem Rechner. Beim Import zählen nur bekannte Schlüssel mit dem Typ ihres Standardwerts.
-const MOVE_SKIP = [...SECRET, "setupDone"];
+// hueCertPin gehört zur Bridge in diesem Netz, nicht zu den Einstellungen, die umziehen
+const MOVE_SKIP = [...SECRET, "setupDone", "hueCertPin"];
 const movable = (k) => Object.hasOwn(DEFAULTS, k) && !MOVE_SKIP.includes(k);
 function exportable() {
   return Object.fromEntries(Object.entries(cfg).filter(([k]) => movable(k)));
@@ -1187,11 +1261,14 @@ async function importCfg(win) {
     return { error: e instanceof SyntaxError ? "invalid" : "io" };
   }
   // eigenes Exportformat ({ settings: {…} }) oder eine rohe settings.json
-  const patch = importable(data && typeof data.settings === "object" ? data.settings : data);
-  const n = Object.keys(patch).length;
+  const raw = importable(data && typeof data.settings === "object" ? data.settings : data);
+  const n = Object.keys(raw).length;
   if (!n) return { error: "invalid" };
+  // andere Bridge oder anderes Home Assistant in der Datei: Schlüssel bzw. Token von hier gelten dort nicht
+  // und dürfen dort nie ankommen – leeren; die Einstellungen bitten darum, neu zu koppeln bzw. einzugeben
+  const { patch, cleared } = rebind(raw, cfg);
   update(patch);
-  return { ok: true, n };
+  return { ok: true, n, cleared: cleared.map((k) => (k === "hueIp" ? "hue" : "ha")) };
 }
 const SAMPLE = {
   title: "Midnight Mirage",
@@ -1211,7 +1288,15 @@ function preview() {
   track = keep;
 }
 
-ipcMain.handle("get", () => ({
+/* ---- Wer fragt? Alle Fenster teilen sich preload.js, doch nur Einstellungsfenster und Assistent dürfen
+   Einstellungen lesen und ändern oder Geräte ansprechen – nicht Overlay, Lautstärke, Kantenlicht. Gezählt wird
+   der Hauptframe des Fensters, das main.js selbst geöffnet hat, mit der erwarteten Seite (senderIs, secrets.js). */
+const fromSettings = (e) => senderIs(e, settingsWin, "settings.html");
+const fromUi = (e) => fromSettings(e) || senderIs(e, setupWin, "setup.html");
+// nur für Einstellungsfenster und Assistent; andere bekommen null
+const uiOnly = (fn) => (e, ...args) => (fromUi(e) ? fn(e, ...args) : null);
+
+ipcMain.handle("get", uiOnly(() => ({
   cfg: settingsCfg(cfg),
   status: status(),
   lang: t.lang,
@@ -1228,18 +1313,15 @@ ipcMain.handle("get", () => ({
     primary: d.id === screen.getPrimaryDisplay().id,
     label: d.label || "",
   })),
-}));
+})));
 // Die Hue-Schlüssel setzt nur der Hauptprozess selbst (Koppeln). Aus einem Fenster kommt höchstens ein neu
-// eingetipptes Home-Assistant-Token – nie der Platzhalter „set“ zurück.
-ipcMain.on("set", (_e, patch) => {
-  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
-  const p = { ...patch };
-  delete p.hueUser;
-  delete p.hueClientKey;
-  delete p.secrets;
-  delete p.secretsPlain;
-  if (p.haToken === "set") delete p.haToken;
-  update(p);
+// eingetipptes Home-Assistant-Token – nie der Platzhalter „set“ zurück. Bridge- und Home-Assistant-Adresse nur
+// aus dem Einstellungsfenster (der Assistent koppelt bzw. verbindet über eigene Wege, siehe huePair/haConnect).
+ipcMain.on("set", (e, patch) => {
+  if (!fromUi(e)) return;
+  const { patch: p, dropped } = cleanPatch(patch, cfg, fromSettings(e));
+  if (dropped.length) dlog(`set: address change refused (${dropped.join(", ")})`);
+  if (Object.keys(p).length) update(p);
 });
 ipcMain.on("preview", preview);
 ipcMain.on("openCss", openCss);
@@ -1247,37 +1329,53 @@ ipcMain.on("checkUpdate", () => (upd.state === "available" || upd.state === "rea
 ipcMain.on("cmd", (_e, c) => command(c));
 ipcMain.on("openUri", (_e, uri) => openUri(String(uri || "")));
 // Hue einrichten
-ipcMain.handle("hueFind", () => lights.hueFind());
-ipcMain.handle("huePair", async (_e, ip) => {
+ipcMain.handle("hueFind", uiOnly(() => lights.hueFind()));
+// neue Adresse und neuer Schlüssel kommen zusammen: der alte Schlüssel geht nie an die neue Adresse
+ipcMain.handle("huePair", uiOnly(async (_e, ip) => {
   const r = await lights.huePair(String(ip || "").trim());
-  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true });
+  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true, hueCertPin: "" });
   // der Schlüssel selbst geht das Fenster nichts an
   return r.user ? { ok: true } : { error: r.error };
-});
-ipcMain.handle("hueGroups", () => lights.hueGroups());
-ipcMain.handle("hueLights", () => lights.hueLights());
+}));
+ipcMain.handle("hueGroups", uiOnly(() => lights.hueGroups()));
+ipcMain.handle("hueLights", uiOnly(() => lights.hueLights()));
+ipcMain.handle("hueAreas", uiOnly(() => lights.hueAreas()));
 // Verzögerung je Gerät: ohne Angabe nur lesen, mit { backend, ms } setzen; zurück kommen alle Werte
-ipcMain.handle("lightLat", (_e, d) => {
+ipcMain.handle("lightLat", uiOnly((_e, d) => {
   const patch = d && typeof d === "object" ? lights.latPatch(String(d.backend || ""), Number(d.ms)) : null;
   if (patch) update(patch);
   return lights.latAll();
-});
+}));
 // Einmessen starten (Gerätename) oder beenden (leer): das Fenster bekommt jeden Schlag als „calBeat“
-ipcMain.handle("lightCal", (e, name) => {
+ipcMain.handle("lightCal", uiOnly((e, name) => {
   if (!name) return void lights.stopAll();
   return lights.calibrate(String(name), (bright) => !e.sender.isDestroyed() && e.sender.send("calBeat", bright));
-});
-ipcMain.handle("goveeScan", async () => {
+}));
+ipcMain.handle("goveeScan", uiOnly(async () => {
   const r = await lights.goveeScan();
   if (r.list?.length) update({ goveeIps: r.list.map((d) => d.ip).join(", "), goveeOn: true });
   return r;
-});
-ipcMain.handle("haTest", () => lights.haTest());
+}));
+ipcMain.handle("haTest", uiOnly(() => lights.haTest()));
+// Assistent: Adresse und (optional) neues Token zusammen setzen, dann prüfen. Neue Adresse ohne neues Token
+// löscht das alte (rebind) – es gehört zum alten Home Assistant. Eingeschaltet wird erst, wenn es antwortet.
+ipcMain.handle("haConnect", uiOnly(async (_e, d) => {
+  const url = String(d?.url || "").trim().replace(/\/+$/, ""), token = String(d?.token || "").trim();
+  if (!/^https?:\/\/[^/]+$/i.test(url)) return { error: "url" };
+  update(rebind({ haUrl: url, ...(token ? { haToken: token } : {}) }, cfg).patch);
+  const r = await lights.haTest();
+  if (r?.lights && !cfg.haOn) update({ haOn: true });
+  return r;
+}));
+ipcMain.handle("wledFind", uiOnly(() => lights.wledFind()));
+// Assistent: ein Gerät kurz blinken lassen (6 Schläge, danach alter Zustand)
+ipcMain.handle("lightTest", uiOnly((_e, name) => lights.test(String(name || ""))));
 // Einstellungen umziehen: der Dialog gehört zum Fenster, das gefragt hat
-ipcMain.handle("exportCfg", (e) => exportCfg(BrowserWindow.fromWebContents(e.sender)));
-ipcMain.handle("importCfg", (e) => importCfg(BrowserWindow.fromWebContents(e.sender)));
+ipcMain.handle("exportCfg", uiOnly((e) => exportCfg(BrowserWindow.fromWebContents(e.sender))));
+ipcMain.handle("importCfg", uiOnly((e) => importCfg(BrowserWindow.fromWebContents(e.sender))));
 // Assistent fertig oder übersprungen
-ipcMain.on("setupDone", () => {
+ipcMain.on("setupDone", (e) => {
+  if (!fromUi(e)) return;
   update({ setupDone: true });
   setupWin?.close();
 });
@@ -1293,7 +1391,7 @@ app.on("window-all-closed", () => {}); // im Infobereich weiterlaufen
 // darauf warten (höchstens 3 s), sonst ist der Prozess weg, bevor sie ankommen.
 let quitReady = false;
 app.on("before-quit", (e) => {
-  cast.stopAll();
+  castApi?.stopAll();
   if (quitReady) return;
   e.preventDefault();
   quitReady = true;
@@ -1306,16 +1404,13 @@ app.whenReady().then(() => {
   load();
   subscribed = JSON.stringify(topics());
   t = make(app.getLocale());
-  // LINUX: ohne kurze Pause bekommt das erste Fenster manchmal keinen durchsichtigen Hintergrund
-  if (LINUX) setTimeout(createOverlay, 300);
-  else createOverlay();
+  // Das Overlay-Fenster entsteht erst mit der ersten Ansage (ensureOverlay). Nebenbei erledigt das auch die
+  // kurze Pause, die LINUX vor dem ersten durchsichtigen Fenster braucht.
   buildTray();
   startServer();
   startObs();
   loadHistory();
   startControl();
-  watchCss();
-  watchFullscreen();
   scheduleUpdates();
   // Autostart bei jedem Start neu eintragen: nach einem Update, einer Neuinstallation oder dem Wechsel
   // von der Entwickler- zur installierten Version zeigt der Eintrag sonst noch auf den alten Pfad
