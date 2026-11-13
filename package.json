@@ -17,7 +17,8 @@
     "test:phones": "node tests/phones/run.js",
     "check:contrast": "node tools/check-contrast.js",
     "check:spotify": "node tools/check-spotify.js",
-    "check:selectors": "node tools/check-selectors.js"
+    "check:selectors": "node tools/check-selectors.js",
+    "ui:shots": "electron tools/ui-harness/run.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
