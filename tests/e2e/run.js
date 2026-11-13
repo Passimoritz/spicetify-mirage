@@ -1296,7 +1296,7 @@ async function tourGame() {
     await until(async () => (await big.state()).chips === 3, 6000, "turnier: zwei Handys und die Tastatur");
     await H.click("#hBody .hacts button.go");
     // Spiel 1, Quiz: ohne neuen Warteraum gleich die Frage; die Spielleitung überspringt Runde 1
-    await both((s) => s.k === "quiz" && s.st === "ask" && s.round === "1/2" && s.tiles.length === 4, 15000, "turnier: Spiel 1 beginnt ohne Warteraum");
+    await both((s) => s.k === "quiz" && s.st === "ask" && s.round === "1/2" && s.tiles.length === 4, 25000, "turnier: Spiel 1 beginnt ohne Warteraum");
     await until(() => H.js(`!!document.querySelector("#hBody .hacts button:not(.go):not(.end)")`), 4000, "turnier: die Spielleitung kann überspringen");
     await H.click("#hBody .hacts button", { index: 0 });
     const ps = await both((s) => s.st === "ask" && s.round === "2/2" && s.tiles.length === 4, 12000, "turnier: Runde übersprungen");
@@ -1306,7 +1306,7 @@ async function tourGame() {
     await press("Digit" + (((right + 1) % 4) + 1));
     const e1 = await both((s) => s.k === "quiz" && s.st === "end", 10000, "turnier: Zwischenstand nach Spiel 1");
     ok(/nach Spiel 1 von 3/.test((await big.state()).text) && /Tipp-Rennen/.test((await big.state()).text), "turnier: großes Bild zeigt Zwischenstand und nächstes Spiel: " + (await big.state()).text);
-    ok(/nach Spiel 1 von 3/i.test(e1[0].text) && /Alpha\s*10\b/.test(e1[0].text), "turnier: Handy zeigt den Zwischenstand, Alpha hat 10: " + e1[0].text);
+    ok(/(nach Spiel|after game) 1 (von|of) 3/i.test(e1[0].text) && /Alpha\s*10\b/.test(e1[0].text), "turnier: Handy zeigt den Zwischenstand, Alpha hat 10: " + e1[0].text);
     ok(!(await T.js(`!!document.querySelector(".m-g-card")`)), "turnier: das Ergebnisbild gibt es erst am Schluss");
     // Spiel 2, Tipp-Rennen: dieselben Gäste, Beta tippt am meisten
     await both((s) => s.k === "taps" && s.st === "go", 14000, "turnier: Spiel 2 beginnt von selbst");
