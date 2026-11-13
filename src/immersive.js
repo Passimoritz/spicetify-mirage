@@ -15,6 +15,7 @@ import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
 import { currentItem, covers, titleOf, artistOf, toggleMute, PLR } from "./player.js";
 import { party } from "./party.js";
+import { grade as gradePal } from "./director.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
 import { songPos } from "./clock.js";
@@ -1413,6 +1414,9 @@ const immersive = (() => {
     wfxGeo = px ? { cx, cy, R, dpr, px } : null;
     // Mix: dieselben Instrumentenspuren wie Party, nur dezent (Puls und Kranz auf der echten Kick)
     const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
+    // Visualizer-Ansichten folgen derselben Lichtregie: Farbe des Teils, Energie, Drop, langsamer im Break
+    const mood = px ? null : party.mood(sec, playing);
+    if (mood) V.height *= 0.86 + 0.18 * mood.I;
     if (px) partyExtras(px, now, dt, R, dpr);
     curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt) : null;
     // Gitarrenblitze brauchen die Freigabe der Blitz-Schranke auch in leisen Stellen
@@ -1459,7 +1463,8 @@ const immersive = (() => {
 
     const mirror = V.mirror;
     const span = mirror ? N / 2 : N;
-    const tt = now / 1000;
+    // Bewegungsuhr der Regie (Drehen, Kreisen, Ziehen) – ohne Analyse die Uhrzeit
+    const tt = (px || mood)?.mt ?? now / 1000;
     for (let i = 0; i < N; i++) {
       const m = mirror ? (i < span ? i : N - 1 - i) : i;
       let t;
@@ -1489,6 +1494,9 @@ const immersive = (() => {
     if (cfg.calm) return;
 
     let pal = px ? vivid(imPalette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1, px.keyPc) : imPalette();
+    // Farbkorrektur je Teil (Sättigung, Temperatur, Kontrast, Farbwelt der Bridge)
+    pal = gradePal(pal, (px || mood)?.grade);
+    if (mood?.dropHit && V.rings) for (let k = 0; k < 2; k++) rings.push({ r: R - k * 40 * dpr, a: 0.8 - k * 0.25, w: 5 - k * 2 });
     // DJ-Übergang: bis zum ersten Schlag die alten Farben, dann über vier Schläge in die neuen
     if (px && blend?.from) {
       const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / ((4 * 60000) / (party.info.bpm || 120)), 0, 1);
@@ -1565,7 +1573,7 @@ const immersive = (() => {
         for (let k = 0; k < 48; k++) ring[k] = vals[Math.floor((k / 48) * N)] || 0;
         tunnel3d.push({ at: now, v: ring, c: tunnel3d.length % 3 });
       }
-      const life = 1400 - b * 500, far = Math.hypot(vw, vh) * 0.62;
+      const life = (1400 - b * 500) / clamp(mood?.speed || 1, 0.5, 1.4), far = Math.hypot(vw, vh) * 0.62;
       tunnel3d = tunnel3d.filter((r) => now - r.at < life);
       for (const r of tunnel3d) {
         const z = (now - r.at) / life, d = R * 1.05 + (far - R) * z * z;
@@ -1834,6 +1842,9 @@ const immersive = (() => {
         beat: px.beat, hit: px.hit, energy: px.energy, build: px.build, low: px.low, drop: px.drop, dropHit: px.dropHit,
         I: px.I, spin: px.spin, level: px.level, scene: px.scene, inBar: px.inBar, phase: px.phase, beatIdx: px.beatIdx,
         finale: !!px.finale, blackout: !!px.blackout,
+        // Lichtregie (director.js)
+        mt: px.mt, mb: px.mb, wipe: px.wipe, wdir: px.wdir, pulse: px.pulse, lift: px.lift, wall: px.wall, vox: px.vox, swell: px.swell,
+        haze: px.haze, pump: px.pump, boom: px.boom, scan: px.scan, fxMul: px.fxMul,
       },
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
@@ -1856,7 +1867,8 @@ const immersive = (() => {
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
     if (px.lasers && px.beamVis > 0.02) {
       const n = px.lasers, far = Math.hypot(vw, vh), half = n / 2;
-      const riser = px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin((performance.now() / 1000) * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
+      // Riser der Regie (wird zum Drop hin dichter, ohne Blitze ruhig); ohne Regie wie bisher
+      const riser = px.riser ? 1 + px.pulse * 0.7 : px.build ? 1 + px.build * 0.7 * (0.5 + 0.5 * Math.sin((performance.now() / 1000) * Math.PI * 4 * ((party.info.bpm || 120) / 60))) : 1;
       const al = (0.1 + px.accent * 0.4 + px.drop * 0.3) * px.beamVis * riser * (P.beams ?? 1);
       const wd = (0.012 + px.accent * 0.016 + px.drop * 0.012) * (1 - px.build * 0.5);
       for (let k = 0; k < n; k++) {
@@ -1928,7 +1940,7 @@ const immersive = (() => {
     // Funken: auf betonten Schlägen, mehr bei hellem Klang (Becken, Synths), beim Drop ein großer Schwall
     if (sparks.length < 160 + px.level * 60) {
       let n = 0;
-      if (px.hit && px.beat > 0.5 && px.low < 0.5) n = Math.round(P.sparks * px.lvl * (0.35 + px.bright * 0.9) * (0.5 + px.I * 0.5));
+      if (px.hit && px.beat > 0.5 && px.low < 0.5) n = Math.round(P.sparks * px.lvl * (0.35 + px.bright * 0.9) * (0.5 + px.I * 0.5) * (px.sparkMul ?? 1));
       if (px.dropHit) n += Math.round(50 * Math.min(px.lvl, 2));
       // Hi-Hats und Becken: ein paar feine Funken genau auf dem Klang
       if (px.hatHit && px.low < 0.6) n += Math.round(1 + px.bright * 4);
@@ -1939,10 +1951,12 @@ const immersive = (() => {
     }
     // Drop: drei Ringe hintereinander
     if (px.dropHit) for (let k = 0; k < 3; k++) rings.push({ r: R - k * 46 * dpr, a: 0.95 - k * 0.2, w: 7 - k * 2 });
-    sparks = sparks.filter((p) => (p.life -= dt * 1.15) > 0);
+    // Funken im Tempo der Regie: im Break schweben sie langsam, im Drop schießen sie
+    const sdt = dt * clamp(px.speed ?? 1, 0.4, 1.5);
+    sparks = sparks.filter((p) => (p.life -= sdt * 1.15) > 0);
     for (const p of sparks) {
-      p.r += p.v * dt;
-      p.v *= Math.exp(-dt * 1.6);
+      p.r += p.v * sdt;
+      p.v *= Math.exp(-sdt * 1.6);
       ctx.fillStyle = rgba(p.c, p.life * 0.9);
       ctx.beginPath();
       ctx.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
@@ -2140,7 +2154,7 @@ const immersive = (() => {
     px.accent = Math.max(px.accent, px.kickEnv * (0.25 + 0.75 * px.energy) * (1 - px.low * 0.8));
     // Hintergrund atmet mit: Kick, Energie, Refrain und Drop heben die Farbfläche (nur Deckkraft – billig)
     // („Keine Blitze“: ohne den Kick-Anteil, die Fläche folgt dann nur der langsamen Energie)
-    px.ambient = clamp(0.04 + (cfg.noFlash ? 0 : px.kickEnv * 0.2 * px.I) + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08, 0, 0.42) * (1 - px.low * 0.7);
+    px.ambient = clamp(0.04 + (cfg.noFlash ? 0 : px.kickEnv * 0.2 * px.I) + px.drop * 0.16 + (hypeOn ? 0.06 : 0) + px.build * 0.08 + (px.glow || 0), 0, 0.42) * (1 - px.low * 0.7);
     // Lichtregie: vor dem Drop wird es ruhiger und gespannter, auf dem letzten Schlag davor ist es dunkel –
     // dann schlägt der Drop ein. Im letzten Refrain gibt das Licht alles.
     if (px.blackout) {

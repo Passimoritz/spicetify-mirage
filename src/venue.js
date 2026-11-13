@@ -35,7 +35,8 @@ function createVenue(makeCanvas) {
   const show = createShow(glowSprite, flashCap);
   let disco = null, tunnel = [];
   function drawStage(ctx, pal, px, rgba, cx, cy, R, dpr, dt, st, v) {
-    const t = st.t, far = Math.hypot(vw, vh) * 1.1;
+    // t = Bewegungsuhr der Lichtregie (im Break langsamer, im Drop schneller, ohne Sprung), sonst die Uhrzeit
+    const t = px.mt ?? st.t, far = Math.hypot(vw, vh) * 1.1;
     const beat = px.accent, vis = clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
     // was welches Licht treibt: Boden = Kick, Spots von oben = Snare, Glitzern/Scanner = Hi-Hats
     const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);
@@ -93,10 +94,11 @@ function createVenue(makeCanvas) {
       case "scan": {
         // Techno: weiche, breite Lichtbänder ziehen im Tempo über das Bild und leuchten auf den Hi-Hats auf –
         // bewusst keine harten Linien (die wirkten wie ein Gitter)
-        const bps = (st.bpm || 125) / 60;
+        // ein Durchlauf = 8 Schläge (Schlag-Uhr der Regie), bei Techno lange, hypnotische 16
+        const bps = (st.bpm || 125) / 60, beats = px.mb ?? t * bps, per = px.scan ? 16 : 8;
         const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;
         for (let k = 0; k < 2; k++) {
-          const y = ((t * bps * 0.125 + k * 0.5 + px.scene * 0.17) % 1) * vh * 1.3 - vh * 0.15;
+          const y = ((((beats / per + k * 0.5 + px.scene * 0.17) % 1) + 1) % 1) * vh * 1.3 - vh * 0.15;
           const band = vh * (0.16 + 0.06 * px.energy);
           const g = ctx.createLinearGradient(0, y - band, 0, y + band);
           g.addColorStop(0, rgba(pal[k], 0));
@@ -163,8 +165,8 @@ function createVenue(makeCanvas) {
         break;
       }
       default: {
-        // Chill: breite, sehr weiche Lichtbahnen von oben, die langsam wandern
-        const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4);
+        // Chill: breite, sehr weiche Lichtbahnen von oben, die langsam wandern (Balladen: sie atmen über zwei Takte)
+        const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4) * (1 + (px.swell || 0) * 0.8);
         for (let k = 0; k < 3; k++) {
           cone(vw * (0.2 + 0.3 * k) + Math.sin(t * 0.12 + k * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k) * 0.12, 0.2, pal[k], al, vh * 1.3);
         }
@@ -735,7 +737,8 @@ function createVenue(makeCanvas) {
     }
     if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {
       // Drop: immer. Danach und in der Spitze eines Refrains: auf jedem zweiten Taktanfang, nicht jedes Mal
-      const peak = px.drop > 0.3 || (px.energy > 0.85 && px.build < 0.15) || px.finale;
+      // (die Regie erlaubt Bühneneffekte nur im Refrain und Drop – in Strophe und Break bleibt es beim Drop selbst)
+      const peak = (px.fxMul ?? 1) >= 0.75 && (px.drop > 0.3 || (px.energy > 0.85 && px.build < 0.15) || px.finale);
       const fire = px.dropHit || (barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7);
       if (fire && CO2.has(key)) {
         const n = big ? 6 : 4;
@@ -1373,7 +1376,8 @@ function createVenue(makeCanvas) {
   const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 0.006 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));
   function drawFog(ctx, st, v) {
     if (v.decor === "fairy") return;
-    const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0));
+    // Nebel nach der Regie: in Intro und Break dichter (das Licht steht im Dunst), im Drop klarer
+    const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0)) * (px.haze ?? 1);
     ctx.globalCompositeOperation = "lighter";
     for (const b of fogBanks) {
       const x = (((b.x + t * b.sp) % 1.3) - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));
