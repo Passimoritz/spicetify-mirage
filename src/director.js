@@ -7,6 +7,7 @@
 // im Song, ausgelassene Bilder oder der Hintergrund-Thread können nichts aus dem Takt bringen.
 // Die Stile unterscheiden sich nur über eine kurze Signatur (SIG) – keine Sonderfälle im Zeichencode.
 import { songMap, at, seek, STEP } from "./songmap.js";
+import { songMood, PROTO } from "./mood.js";
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const KINDS = ["intro", "verse", "pre", "chorus", "drop", "break", "bridge", "outro"];
@@ -66,9 +67,114 @@ const STYLE = {
   latin: ["latin", "reggaeton", "salsa", "brazil", "flamenco", "afro", "arabic", "balkan", "dancehall"],
   reggae: ["reggae", "ska"],
 };
+// Grundstimmung jedes Stils (home): passt das Gefühl des Teils dazu, bleibt die eigene Lichtsprache vorn,
+// sonst leiht sich die Regie eher Szenen anderer Stile (eine traurige Bridge im House bekommt Balladenlicht)
+const HOME = { edm: "euphoric", house: "happy", techno: "tense", trance: "euphoric", dnb: "tense", dubstep: "aggressive", trap: "dark", hiphop: "tense", rock: "triumphant", metal: "aggressive", pop: "happy", ballad: "tender", calm: "calm", latin: "happy", reggae: "happy" };
+for (const [s, m] of Object.entries(HOME)) SIG[s].home = m;
 const SIG_OF = {};
 for (const [s, keys] of Object.entries(STYLE)) for (const k of keys) SIG_OF[k] = s;
 const sigOf = (key) => ({ ...BASE, ...SIG[SIG_OF[key] || "pop"], name: SIG_OF[key] || "pop" });
+
+/* ---- Gefühl → Look (mood.js schätzt das Gefühl je Teil) */
+// hue/k = Farbwelt, in die die Palette gezogen wird, und wie stark · sat/con/lum/warm = Farbkorrektur (lum hebt
+// Richtung Pastell bzw. senkt ins Dunkle) · speed = Bewegungstempo · haze = Nebel · soft = wie weich ein Schlag
+// ausklingt (1 = lang und weich, 0 = kurz und hart) · spread = Breite der Lichtkegel · crowd = wie viel sich das
+// Publikum bewegt · fx = Teilcheneffekt (Funken, langsamer Lichtregen, kurze harte Lichtstöße – nie Blitze) ·
+// flash = höchstens so viele Farbflächen (nimmt nur weg, gibt nie mehr als der Teil erlaubt)
+const MOOD = {
+  euphoric: { hue: 310, k: 0.12, sat: 1.15, con: 1.04, lum: 0.02, warm: 0, speed: 1.1, haze: 0.9, soft: 0, spread: 1.1, crowd: 1.15, fx: "sparks", flash: 1 },
+  happy: { hue: 45, k: 0.22, sat: 1.08, con: 1, lum: 0.03, warm: 0.15, speed: 1, haze: 0.95, soft: 0.2, spread: 1.05, crowd: 1.05, fx: "sparks", flash: 1 },
+  triumphant: { hue: 42, k: 0.5, sat: 1.05, con: 1.05, lum: 0.02, warm: 0.25, speed: 0.95, haze: 1.05, soft: 0.15, spread: 1.2, crowd: 1.05, fx: "sparks", flash: 1 },
+  tender: { hue: 335, k: 0.35, sat: 0.72, con: 0.95, lum: 0.08, warm: 0.1, speed: 0.8, haze: 1.15, soft: 0.75, spread: 1.3, crowd: 0.7, fx: "rain", flash: 0.5 },
+  dreamy: { hue: 270, k: 0.45, sat: 0.7, con: 0.94, lum: 0.08, warm: 0, speed: 0.78, haze: 1.35, soft: 0.8, spread: 1.35, crowd: 0.7, fx: "rain", flash: 0 },
+  calm: { hue: 190, k: 0.25, sat: 0.75, con: 0.95, lum: 0.03, warm: 0, speed: 0.72, haze: 1.2, soft: 0.85, spread: 1.25, crowd: 0.6, fx: "rain", flash: 0 },
+  melancholic: { hue: 232, k: 0.55, sat: 0.85, con: 0.98, lum: -0.03, warm: -0.15, speed: 0.8, haze: 1.25, soft: 0.7, spread: 1.2, crowd: 0.7, fx: "rain", flash: 0.5 },
+  sad: { hue: 222, k: 0.6, sat: 0.65, con: 0.95, lum: -0.06, warm: -0.25, speed: 0.7, haze: 1.3, soft: 0.85, spread: 1.15, crowd: 0.6, fx: "rain", flash: 0 },
+  tense: { hue: 280, k: 0.3, sat: 0.95, con: 1.08, lum: -0.04, warm: -0.15, speed: 1, haze: 1.1, soft: 0.1, spread: 0.8, crowd: 0.95, fx: "hits", flash: 1 },
+  aggressive: { hue: 2, k: 0.55, sat: 1.15, con: 1.12, lum: -0.02, warm: 0.1, speed: 1.12, haze: 0.85, soft: 0, spread: 0.75, crowd: 1.15, fx: "hits", flash: 1 },
+  dark: { hue: 262, k: 0.45, sat: 0.9, con: 1.08, lum: -0.08, warm: -0.2, speed: 0.9, haze: 1.2, soft: 0.3, spread: 0.8, crowd: 0.85, fx: "hits", flash: 0.5 },
+};
+
+/* ---- Szenen: Lichtbilder, zwischen denen die Regie innerhalb eines Songs wechselt */
+// Jede Szene passt zu einigen Stimmungen und stammt aus einigen Stilen (from). spot = Bühnenlicht der Location
+// (null = das des Genre-Profils), rig = Muster der Moving Heads, hue = Drehung der Farbwelt, spread = Kegelbreite,
+// borrow = Stil-Signaturen, die sie mitbringt (Atmen der Ballade, Pumpen des House, Lichtwand des Rock …).
+// „own“ ist die eigene Lichtsprache des Genres.
+const SCENES = [
+  { id: "own", from: [], moods: [], spot: null, rig: null },
+  { id: "festival", from: ["edm", "trance", "pop"], moods: ["euphoric", "happy", "triumphant"], spot: "cross", rig: "fan", spread: 1.1 },
+  { id: "aurora", from: ["trance", "techno", "calm"], moods: ["dreamy", "euphoric", "calm", "tender"], spot: "aurora", rig: "wave", hue: 18, spread: 1.25 },
+  { id: "discoball", from: ["house", "pop", "latin"], moods: ["happy", "euphoric"], spot: "disco", rig: "wave", hue: -12, spread: 1 },
+  { id: "sunset", from: ["latin", "reggae", "house", "pop"], moods: ["happy", "tender", "triumphant"], spot: "pan", rig: "wave", hue: 24, spread: 1.15 },
+  { id: "tunnel", from: ["dnb", "edm", "techno"], moods: ["euphoric", "tense", "aggressive"], spot: "tunnel", rig: "cross", hue: -24, spread: 0.85 },
+  { id: "scanner", from: ["techno", "house", "dnb"], moods: ["tense", "dark", "dreamy", "calm"], spot: "scan", rig: "chase", spread: 0.8, borrow: { scan: 1 } },
+  { id: "arena", from: ["rock", "metal", "pop"], moods: ["triumphant", "aggressive", "euphoric"], spot: "top", rig: "fan", borrow: { wall: 0.8 } },
+  { id: "stab", from: ["metal", "rock", "dubstep"], moods: ["aggressive", "dark", "tense"], spot: "top", rig: "point", spread: 0.7 },
+  { id: "inferno", from: ["metal", "trap", "dubstep", "hiphop"], moods: ["aggressive", "dark"], spot: "floor", rig: "chase", spread: 0.8, borrow: { boom: 0.6 } },
+  { id: "undertow", from: ["trap", "hiphop", "dubstep"], moods: ["dark", "tense", "melancholic"], spot: "floor", rig: "point", spread: 0.9, borrow: { boom: 0.4 } },
+  { id: "lighters", from: ["ballad", "rock", "pop"], moods: ["tender", "melancholic", "triumphant", "sad"], spot: "soft", rig: "wave", spread: 1.35, borrow: { swell: 1, vox: 1 } },
+  { id: "moonlight", from: ["ballad", "calm"], moods: ["sad", "melancholic", "calm"], spot: "top", rig: "point", spread: 1.2, borrow: { swell: 0.7, vox: 1 } },
+  { id: "rain", from: ["calm", "ballad", "techno"], moods: ["sad", "melancholic", "dreamy"], spot: "soft", rig: "wave", hue: -12, spread: 1.3, borrow: { swell: 0.5 } },
+  { id: "haze", from: ["calm", "trance", "ballad"], moods: ["dreamy", "calm", "tender"], spot: "aurora", rig: "fan", hue: 30, spread: 1.4, borrow: { swell: 0.8 } },
+  { id: "pulse", from: ["house", "edm", "techno"], moods: ["happy", "euphoric", "tense"], spot: "pan", rig: "chase", spread: 0.95, borrow: { pump: 0.8 } },
+  { id: "fiesta", from: ["latin", "reggae", "pop"], moods: ["happy", "euphoric"], spot: "pan", rig: "wave", hue: 36, borrow: { sync: 0.7 } },
+  { id: "gold", from: ["pop", "rock", "ballad", "edm"], moods: ["triumphant", "euphoric"], spot: "top", rig: "fan", spread: 1.15, borrow: { vox: 0.8 } },
+  { id: "noir", from: ["techno", "trap", "metal", "calm"], moods: ["dark", "tense", "melancholic"], spot: "scan", rig: "point", hue: 12, spread: 0.75 },
+];
+// verwandte Stile: von ihnen leiht die Regie leichter
+const NEAR = {
+  edm: ["trance", "house", "pop", "dnb"], house: ["edm", "pop", "latin", "techno"], techno: ["house", "trance", "dnb"], trance: ["edm", "techno", "calm"],
+  dnb: ["edm", "techno", "dubstep"], dubstep: ["dnb", "trap", "metal"], trap: ["hiphop", "dubstep"], hiphop: ["trap", "pop"], rock: ["metal", "pop", "ballad"],
+  metal: ["rock", "dubstep"], pop: ["edm", "house", "ballad", "rock"], ballad: ["calm", "pop", "rock"], calm: ["ballad", "trance"], latin: ["reggae", "pop", "house"], reggae: ["latin", "calm"],
+};
+// billige Bühnenlichter (Leicht: nur diese, die Discokugel und das Polarlicht bleiben dem Genre vorbehalten)
+const CHEAP = new Set(["soft", "top", "pan", "floor", "cross", "scan"]);
+// fester Zufall je Song: aus der Analyse selbst (gleicher Song → dieselben Szenen, auch nach dem Neustart)
+function seedOf(d) {
+  let h = 2166136261;
+  const mix = (v) => (h = Math.imul(h ^ (Math.round(v * 10) | 0), 16777619));
+  mix(d.segs?.length || 0);
+  mix(d.beats?.length || 0);
+  mix(d.bpm || 0);
+  for (let i = 0; i < Math.min(64, d.segs?.length || 0); i++) mix(d.segs[i].l);
+  return h >>> 0;
+}
+function rngOf(seed) {
+  let x = seed || 1;
+  return () => {
+    x = (x + 0x6d2b79f5) | 0;
+    let t = Math.imul(x ^ (x >>> 15), 1 | x);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+// Szene wählen: passt zur Stimmung (und zum Stil – fremde nur, wenn das Gefühl passt), nie dieselbe wie eben,
+// selten gezeigte bevorzugt (so wechselt die Regie durch statt immer dieselben zwei)
+function pickScene(emo, sig, rng, uses, lastId) {
+  const cand = [];
+  let tot = 0;
+  for (const s of SCENES) {
+    if (s.id === lastId) continue;
+    let mf, sf;
+    if (s.id === "own") {
+      const h = PROTO[sig.home || "happy"];
+      mf = clamp(1 - Math.hypot(emo.v - h[0], emo.a - h[1]) / 1.1, 0.05, 0.9);
+      sf = 1;
+    } else {
+      const mi = s.moods.indexOf(emo.name);
+      mf = mi === 0 ? 1 : mi > 0 ? 0.8 : s.moods.includes(emo.alt) ? 0.2 : 0;
+      sf = s.from.includes(sig.name) ? 1 : (NEAR[sig.name] || []).some((x) => s.from.includes(x)) ? 0.6 : 0.3;
+    }
+    if (!mf) continue;
+    // hoch drei: gut Passendes klar vorn, Abwechslung nur unter dem, was wirklich passt
+    const w = (mf * sf) ** 3 / (1 + 1.5 * (uses[s.id] || 0));
+    cand.push([s, w]);
+    tot += w;
+  }
+  let r = rng() * tot;
+  for (const [s, w] of cand) if ((r -= w) <= 0) return s;
+  return cand.length ? cand[cand.length - 1][0] : SCENES[0];
+}
 
 // nächster Wert in einer sortierten Zahlenliste
 function nearest(arr, t) {
@@ -89,7 +195,8 @@ function beatPos(beats, sec, beat) {
 }
 
 /* ---- Planung: einmal pro Song und Stil */
-function planSong(d, key) {
+// o: { feat: Spotifys Audio-Merkmale { valence, energy, dance }, lyrics: [{ t (s), text }] } – beides optional
+function planSong(d, key, o = {}) {
   const sig = sigOf(key), M = songMap(d), beats = d.beats || [];
   if (beats.length < 8 || !M.energy.length) return null;
   const gaps = beats.slice(1, 200).map((b, i) => b.t - beats[i].t).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
@@ -130,7 +237,8 @@ function planSong(d, key) {
   // 2. Teile mit ihrer Energie (Mitte, Anfang, Ende) und Tonart
   const tonart = (t) => M.sections[Math.max(0, seek(M.sections, t + 0.1, "t"))] || {};
   const parts = [{ t: 0, drop: false }, ...cuts].map((c, i, all) => {
-    const t1 = all[i + 1]?.t ?? end, s = tonart(c.t);
+    // Tonart einen Takt nach dem Anfang: der Teil beginnt auf der Eins, Spotifys Abschnitt oft knapp danach
+    const t1 = all[i + 1]?.t ?? end, s = tonart(Math.min(c.t + bar, (c.t + t1) / 2));
     return { t0: c.t, t1, drop: c.drop, e: mean(c.t, t1), key: s.key ?? -1, mode: s.mode ?? 1 };
   });
   // Haupttonart = die Tonart, die am längsten klingt (eine Bridge wechselt oft weg)
@@ -182,15 +290,25 @@ function planSong(d, key) {
       }
     }
   }
-  // 4. Look, Zeitgefühl und Übergänge je Teil
+  // 4. Gefühl je Teil (mood.js): färbt, beschleunigt oder beruhigt den Look des Teils
+  const emo = songMood(d, parts, o);
+  parts.forEach((p, i) => (p.emo = emo.parts[i]));
+  // 5. Look, Zeitgefühl und Übergänge je Teil
   const dev = (v, k) => 1 + (v - 1) * k;
   let n = 0, mt = 0, mb = 0;
   parts.forEach((p, i) => {
-    const L = LOOK[p.kind], c = sig.contrast;
+    const L = LOOK[p.kind], c = sig.contrast, E = p.emo, Mo = MOOD[E.name], k = E.conf, f = (v) => dev(v, k);
+    // Antrieb: wie viel Pumpen, 808 und Tresillo bleibt – eine traurige Bridge pumpt kaum noch
+    const drive = f(0.35 + 0.65 * clamp((E.a + 1) / 1.4, 0, 1));
     p.look = {
-      I: dev(L.I, c), speed: dev(L.speed, c) * sig.speed, sat: dev(L.sat, c) * sig.sat, con: dev(L.con, c), beams: dev(L.beams, c), sparks: dev(L.sparks, c),
-      warm: clamp(L.warm + sig.warm, -1, 1), hue: L.hue, flash: L.flash, fx: L.fx, haze: L.haze,
+      I: dev(L.I, c) * (1 + 0.1 * E.a * k), speed: clamp(dev(L.speed, c) * sig.speed * f(Mo.speed) * (1 + 0.1 * E.a * k), 0.25, 1.8),
+      sat: dev(L.sat, c) * sig.sat * f(Mo.sat) * (1 + 0.08 * E.a * k), con: dev(L.con, c) * f(Mo.con), beams: dev(L.beams, c), sparks: dev(L.sparks, c),
+      warm: clamp(L.warm + sig.warm + (Mo.warm + 0.15 * E.v) * k, -1, 1), hue: L.hue, flash: Math.min(L.flash, Mo.flash), fx: L.fx, haze: L.haze * f(Mo.haze),
+      // Farbwelt der Stimmung als Vektor (so überblendet sie über 0°/360° hinweg ohne Umweg über alle Farben)
+      tx: Math.cos((Mo.hue * Math.PI) / 180) * Mo.k * k, ty: Math.sin((Mo.hue * Math.PI) / 180) * Mo.k * k, lum: Mo.lum * k,
+      soft: Mo.soft * k + 0.2 * (1 - k), spread: f(Mo.spread), crowd: f(Mo.crowd), drive,
     };
+    p.fxk = Mo.fx;
     p.tf = p.kind === "break" ? sig.tfBreak : p.kind === "drop" ? sig.tfDrop : p.kind === "chorus" ? sig.tfChorus : 1;
     p.n = peak(p) ? ++n : 0;
     // Überblendung höchstens über die halbe Länge des Teils
@@ -213,7 +331,51 @@ function planSong(d, key) {
     mb += (beatPos(beats, p.t1, beat) - p.b0) * p.tf;
     p.kindIdx = KINDS.indexOf(p.kind);
   });
-  return { parts, beat, bar, bars, beats, end, sig, holds: M.holds, drops: M.drops };
+  const scenes = planScenes(parts, bars, bar, beat, sig, seedOf(d));
+  return { parts, scenes, beat, bar, bars, beats, end, sig, emo, holds: M.holds, drops: M.drops };
+}
+
+/* ---- Szenenfolge: einmal pro Song, fester Zufall aus der Analyse */
+// Eine neue Szene beginnt mit einem Teil (wenn seit der letzten mindestens 8 Takte vergangen sind – ein Drop
+// darf immer) und innerhalb langer Teile an Phrasengrenzen: alle 8 Takte, wenn es aufgedreht ist, sonst alle 16.
+// Jede Grenze ist eine Eins aus der Taktliste (ein Drop sein Schlag). Wechsel in der Mitte eines Teils: aufgedreht
+// mit Lichtwisch auf der Eins, ruhig als Überblendung über zwei Takte.
+function planScenes(parts, bars, bar, beat, sig, seed) {
+  const rng = rngOf(seed), uses = {}, out = [];
+  let last = null, lastT = -1e9;
+  const barIdx = (t) => {
+    let lo = 0, hi = bars.length - 1;
+    while (lo < hi) {
+      const m = (lo + hi) >> 1;
+      if (bars[m] < t - 0.01) lo = m + 1;
+      else hi = m;
+    }
+    return lo;
+  };
+  const add = (t, p, mid) => {
+    const s = pickScene(p.emo, sig, rng, uses, last?.id);
+    uses[s.id] = (uses[s.id] || 0) + 1;
+    // jede Szene etwas anders getönt (±12°, in 6°-Stufen), damit zwei Songs mit denselben Szenen nicht gleich aussehen
+    const sh = (s.hue || 0) + Math.round((rng() - 0.5) * 4) * 6;
+    const wipe = mid ? p.emo.a > 0.3 : p.wipe;
+    last = { t0: t, id: s.id, sc: out.length, spot: s.spot, rig: s.rig, sh, spread: s.spread || 1, borrow: s.borrow || {}, mid, wipe, fade: mid ? (wipe ? beat : bar * 2) : Math.max(p.fade, p.drop ? 0 : beat) };
+    out.push(last);
+    lastT = t;
+  };
+  parts.forEach((p, i) => {
+    // ein Aufbau direkt vor dem Höhepunkt behält seine Szene – die neue kommt mit dem Höhepunkt
+    const peakNext = p.kind === "pre" && (parts[i + 1]?.kind === "chorus" || parts[i + 1]?.kind === "drop");
+    if (!out.length || p.kind === "drop" || (!peakNext && p.t0 - lastT >= bar * 8 - 0.05)) add(p.t0, p, false);
+    const phrase = p.emo.a > 0.25 ? 8 : 16;
+    // Phrasen zählen ab der Eins, auf der der Teil beginnt
+    for (let j = barIdx(p.t0) + phrase; j < bars.length; j += phrase) {
+      const t = bars[j];
+      // der nächste Teil muss noch mindestens 8 Takte entfernt sein (sonst wechselt er selbst)
+      if (t + bar * 8 > p.t1 + 0.05) break;
+      if (t - lastT >= bar * 8 - 0.05) add(t, p, true);
+    }
+  });
+  return out;
 }
 
 /* ---- pro Bild: der Zustand zur Songzeit */
@@ -250,33 +412,62 @@ function cue(plan, sec, o = {}) {
   // Einsatz eines Höhepunkts: der erste Refrain hebt am stärksten an, jeder weitere etwas weniger
   const lift = P.n ? (P.n === 1 ? 1 : 0.6) * Math.exp(-x / bar) : 0;
   // Verfolger-Spot: ein gehaltener Ton (ab 0,3 s anschwellend, nach dem Ende 0,5 s ausklingend)
+  // (Hüllkurve 0..1 – die Stärke kommt vom Stil oder von der Szene, siehe unten)
   let vox = 0;
-  if (!o.lite && sig.vox) {
+  if (!o.lite) {
     let h = null;
     for (let lo = 0, hi = plan.holds.length - 1; lo <= hi; ) {
       const k = (lo + hi) >> 1;
       if (plan.holds[k][0] <= sec) [h, lo] = [plan.holds[k], k + 1];
       else hi = k - 1;
     }
-    if (h && sec < h[1] + 0.5) vox = sig.vox * clamp((sec - h[0] - 0.3) / 1.2, 0, 1) * (sec > h[1] ? 1 - (sec - h[1]) / 0.5 : 1);
+    if (h && sec < h[1] + 0.5) vox = clamp((sec - h[0] - 0.3) / 1.2, 0, 1) * (sec > h[1] ? 1 - (sec - h[1]) / 0.5 : 1);
   }
   const F = Math.max(P.fade, 1e-6), xm = Math.max(0, x);
   const mt = sec < 0 ? sec : P.mt0 + (xm < F ? P.s0 * xm + ((P.look.speed - P.s0) * xm * xm) / (2 * F) : P.look.speed * xm - ((P.look.speed - P.s0) * F) / 2);
+  // Szene (planScenes): Bühnenlicht, Muster, Tönung und geliehene Signaturen; der Übergang gleitet über sx
+  const SC = plan.scenes || [];
+  let j = 0;
+  for (let lo = 0, hi = SC.length - 1; lo <= hi; ) {
+    const k = (lo + hi) >> 1;
+    if (SC[k].t0 <= sec) [j, lo] = [k, k + 1];
+    else hi = k - 1;
+  }
+  const S = SC[j] || NOSCENE, S0 = SC[j - 1] || S, xs = sec - S.t0;
+  const sx = S.fade > 0 ? ease(clamp(xs / S.fade, 0, 1)) : 1, b0 = S0.borrow, b1 = S.borrow;
+  const drive = mix("drive"), tx = mix("tx"), ty = mix("ty");
+  const wSc = !o.lite && S.mid && S.wipe && xs >= 0 && xs < beat ? xs / beat : -1;
+  const wall = Math.max(sig.wall, lerpB(b0, b1, "wall", sx));
+  // Farbkorrektur in groben Stufen: gleitet über die Takte, ohne jedes Bild neue Farben (und Leuchtbilder) zu brauchen.
+  // th/tk = Farbwelt der Stimmung und ihre Stärke, lum = Pastell/Dunkel, sh = Tönung der Szene.
+  // Unverändert → dasselbe Objekt wie im Bild davor (grade() erkennt es dann ohne Vergleich)
+  const g = plan.g || (plan.g = {}), gs = q(dev("sat"), 0.04), gc = q(dev("con"), 0.04), gw = q(mix("warm"), 0.05), gh = q(mix("hue"), 6);
+  const th = q(((Math.atan2(ty, tx) * 180) / Math.PI + 360) % 360, 6), tk = q(Math.hypot(tx, ty), 0.05), lum = q(mix("lum"), 0.02), sh = q(S0.sh + (S.sh - S0.sh) * sx, 6);
+  if (g.sat !== gs || g.con !== gc || g.warm !== gw || g.hue !== gh || g.th !== th || g.tk !== tk || g.lum !== lum || g.sh !== sh) plan.g = { sat: gs, con: gc, warm: gw, hue: gh, th, tk, lum, sh };
   return {
     i, kind: P.kind, sect: P.kindIdx, n: P.n, mix: m,
     I: dev("I"), speed: dev("speed"), beams: dev("beams"), sparks: dev("sparks"),
-    // Farbkorrektur in groben Stufen: gleitet über die Takte, ohne jedes Bild neue Farben (und Leuchtbilder) zu brauchen
-    grade: { sat: q(dev("sat"), 0.04), con: q(dev("con"), 0.04), warm: q(mix("warm"), 0.05), hue: q(mix("hue"), 6) },
+    grade: plan.g,
     flash: o.noFlash ? 0 : m < 0.5 ? Q.look.flash : P.look.flash,
     fx: mix("fx"), haze: mix("haze"), tf: P.tf,
-    wipe: !o.lite && P.wipe && x >= 0 && x < beat ? x / beat : -1, wdir: i % 2 ? -1 : 1,
+    wipe: !o.lite && P.wipe && x >= 0 && x < beat ? x / beat : wSc, wdir: (i + S.sc) % 2 ? -1 : 1,
     riser, pulse, dim, lift,
-    wall: sig.wall && P.kind === "chorus" && !o.noFlash && !o.lite ? sig.wall * Math.exp(-x / (beat * 0.5)) : 0,
-    vox, swell: sig.swell ? sig.swell * (0.5 - 0.5 * Math.cos((Math.PI * bp) / 4)) : 0,
-    pump: sig.pump, boom: sig.boom, sync: sig.sync, scan: sig.scan,
+    wall: wall && P.kind === "chorus" && !o.noFlash && !o.lite ? wall * Math.exp(-x / (beat * 0.5)) : 0,
+    vox: vox * Math.max(sig.vox, lerpB(b0, b1, "vox", sx)),
+    swell: Math.max(sig.swell, lerpB(b0, b1, "swell", sx)) * (0.5 - 0.5 * Math.cos((Math.PI * bp) / 4)),
+    pump: Math.max(sig.pump, lerpB(b0, b1, "pump", sx)) * drive, boom: Math.max(sig.boom, lerpB(b0, b1, "boom", sx)) * drive,
+    sync: Math.max(sig.sync, lerpB(b0, b1, "sync", sx)) * drive, scan: Math.max(sig.scan, lerpB(b0, b1, "scan", sx)),
     mt, mb: P.mb0 + (bp - P.b0) * P.tf, bp,
+    // Gefühl und Szene: Stimmung des Teils, Weichheit der Schläge, Kegelbreite, Publikum, Teilcheneffekt
+    mood: P.emo.name, v: Q.emo.v + (P.emo.v - Q.emo.v) * m, a: Q.emo.a + (P.emo.a - Q.emo.a) * m,
+    soft: mix("soft"), spread: mix("spread") * (S0.spread + (S.spread - S0.spread) * sx), crowd: mix("crowd"), fxk: P.fxk,
+    // „Leicht“: nur billige Bühnenlichter, kein Überblenden zweier Lichter
+    sc: S.sc, scene: S.id, spot: spotOf(S, o.lite), spot2: spotOf(o.lite ? S : S0, o.lite), sx: o.lite ? 1 : sx, rig: S.rig || "",
   };
 }
+const lerpB = (b0, b1, k, f) => (b0[k] || 0) + ((b1[k] || 0) - (b0[k] || 0)) * f;
+const spotOf = (s, lite) => (s.spot && (!lite || CHEAP.has(s.spot)) ? s.spot : "");
+const NOSCENE = { t0: 0, id: "", sc: 0, spot: null, rig: null, sh: 0, spread: 1, borrow: {}, mid: false, wipe: false, fade: 0 };
 
 /* ---- Farbkorrektur der Palette */
 const rgb2hsl = ([r, g, b]) => {
@@ -298,20 +489,28 @@ const toward = (h, target, f) => (h + ((((target - h) % 360) + 540) % 360 - 180)
 let gradeKey = "", gradeIn = null, gradeOut = null;
 // Sättigung, Kontrast (Helligkeit um die Mitte gespreizt), Temperatur (Richtung Bernstein bzw. Eisblau)
 // und Farbwelt (Drehung des Farbkreises, z. B. in der Bridge). Ergebnis gemerkt, solange sich nichts ändert.
+// Dazu die Stimmung: die Palette wird in ihre Farbwelt gezogen (th, Stärke tk – die drei Farben bleiben je 26°
+// auseinander, damit es nicht einfarbig wird), lum hebt ins Pastell oder senkt ins Dunkle; sh = Tönung der Szene.
+let gradeG = null;
 function grade(pal, g) {
-  if (!g || (g.sat === 1 && g.con === 1 && !g.warm && !g.hue)) return pal;
-  const key = g.sat + "|" + g.con + "|" + g.warm + "|" + g.hue;
+  if (!g) return pal;
+  // dasselbe Objekt wie eben (cue() gibt es zurück, solange sich nichts ändert): ohne Vergleich fertig
+  if (g === gradeG && pal === gradeIn) return gradeOut;
+  if (g.sat === 1 && g.con === 1 && !g.warm && !g.hue && !g.tk && !g.lum && !g.sh) return pal;
+  const key = g.sat + "|" + g.con + "|" + g.warm + "|" + g.hue + "|" + (g.th || 0) + "|" + (g.tk || 0) + "|" + (g.lum || 0) + "|" + (g.sh || 0);
+  gradeG = g;
   if (pal === gradeIn && key === gradeKey) return gradeOut;
   [gradeIn, gradeKey] = [pal, key];
-  gradeOut = pal.map((c) => {
+  gradeOut = pal.map((c, i) => {
     let [h, s, l] = rgb2hsl(c);
-    h = (h + g.hue + 360) % 360;
+    h = (h + g.hue + (g.sh || 0) + 360) % 360;
+    if (g.tk) h = toward(h, (g.th + (i - 1) * 26 + 360) % 360, Math.min(0.85, g.tk));
     if (g.warm) h = toward(h, g.warm > 0 ? 32 : 212, Math.abs(g.warm) * 0.3);
     s = clamp(s * g.sat, 0, 1);
-    l = clamp(0.5 + (l - 0.5) * g.con + (g.con - 1) * 0.08, 0.12, 0.88);
+    l = clamp(0.5 + (l - 0.5) * g.con + (g.con - 1) * 0.08 + (g.lum || 0), 0.12, 0.88);
     return hsl2rgb([h, s, l]);
   });
   return gradeOut;
 }
 
-export { planSong, cue, grade, sigOf, KINDS, LOOK, SIG, STYLE };
+export { planSong, cue, grade, sigOf, KINDS, LOOK, SIG, STYLE, MOOD, SCENES };

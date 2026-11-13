@@ -357,16 +357,20 @@ function minorShare(d) {
 }
 
 /* ---- Song-Karte (songmap.js) und Lichtregie (director.js) */
-// Plan je Analyse und Stil: einmal berechnet, danach nur noch nachgeschlagen
+// Plan je Analyse und Stil: einmal berechnet, danach nur noch nachgeschlagen. Der Liedtext (für die Stimmung)
+// kommt oft erst nach der Analyse – dann wird einmal neu geplant (lyr = Zähler der Textstände)
 const plans = new WeakMap();
-function planFor(d, key) {
+const lyr = { uri: "", lines: null, n: 0, ver: 0 };
+function planFor(d, key, uri) {
+  const ln = lyr.uri && lyr.uri === uri ? lyr.n : 0;
   let p = plans.get(d);
-  if (!p || p.key !== key) plans.set(d, (p = { key, plan: planSong(d, key) }));
+  if (!p || p.key !== key || p.ln !== ln) plans.set(d, (p = { key, ln, plan: planSong(d, key, { feat: d.feat, lyrics: ln ? lyr.lines : null }) }));
   return p.plan;
 }
 
 // ohne Analyse oder mit ausgeschalteter Lichtregie: alles neutral, wie vorher
-const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1, grade: null, flash: 1, fx: 1, haze: 1, tf: 1, wipe: -1, wdir: 1, riser: 0, pulse: 0, dim: 0, lift: 0, wall: 0, vox: 0, swell: 0, pump: 0, boom: 0, sync: 0, scan: 0 };
+const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1, grade: null, flash: 1, fx: 1, haze: 1, tf: 1, wipe: -1, wdir: 1, riser: 0, pulse: 0, dim: 0, lift: 0, wall: 0, vox: 0, swell: 0, pump: 0, boom: 0, sync: 0, scan: 0,
+  mood: "", v: 0, a: 0, soft: 0.2, spread: 1, crowd: 1, fxk: "sparks", sc: -1, spot: "", spot2: "", sx: 1, rig: "" };
 const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
@@ -425,7 +429,7 @@ const party = (() => {
     let beatPhase = 0, beatIdx = -1;
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
     // Lichtregie: welcher Teil des Songs gerade läuft und wie er aussehen soll (director.js)
-    const C = (d && d.segs?.length && cfg.partyDirector && cue(planFor(d, info.key), sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL;
+    const C = (d && d.segs?.length && cfg.partyDirector && cue(planFor(d, info.key, uri), sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL;
     if (d && d.segs?.length) {
       const M = songMap(d);
       energy = at(M.energy, sec);
@@ -439,7 +443,8 @@ const party = (() => {
       low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
       // jeder neue Abschnitt (Strophe, Refrain, Bridge …) ist eine neue „Szene“: andere Farbfolge, andere Drehrichtung
       // (mit Lichtregie: ihre Teile – die wechseln genau auf der Eins)
-      scene = C.i >= 0 ? C.i : Math.max(seek(M.sections, sec, "t"), 0);
+      // (mit Szenen der Regie: deren Nummer – sie wechseln auf Phrasengrenzen, auch innerhalb eines Teils)
+      scene = C.sc >= 0 ? C.sc : C.i >= 0 ? C.i : Math.max(seek(M.sections, sec, "t"), 0);
       // Lichtregie: wie weit ist der nächste Drop entfernt, wie lang ist der Song
       for (const tD of M.drops) {
         if (tD > sec) {
@@ -448,7 +453,8 @@ const party = (() => {
         }
       }
       songLen = M.energy.length * STEP;
-      const sx = M.sections[scene];
+      // Abschnitt der Analyse (nicht die Szene – deren Nummer zählt anders)
+      const sx = M.sections[Math.max(seek(M.sections, sec, "t"), 0)];
       minor = sx ? sx.mode === 0 : false;
       // Tonart des Abschnitts (färbt das Licht leicht ein) und Tempo-Wechsel: halbes/doppeltes Tempo oder ein
       // deutlich anderes Tempo im Abschnitt (Breakdown, Bridge) – das Publikum tanzt dann im neuen Tempo
@@ -513,7 +519,8 @@ const party = (() => {
         // sehr schnelle Songs zählen in halbem Tempo, sonst wird es Flackern statt Groove
         const half = info.bpm > 150;
         const strength = P.accent[half ? (inBar & 2) : inBar] ?? 0.6;
-        beatEnv = strength * Math.exp(-since * P.decay * (half ? 0.6 : 1));
+        // Gefühl: zärtliche und traurige Teile klingen lang und weich aus, aggressive kurz und hart
+        beatEnv = strength * Math.exp(-since * P.decay * (half ? 0.6 : 1) * (1.1 - 0.5 * C.soft));
         conf = clamp(d.beats[bi].c + 0.3, 0, 1);
         if (bi !== lastBeat) {
           lastBeat = bi;
@@ -605,6 +612,10 @@ const party = (() => {
       riser: C.riser, pulse: fx ? C.pulse : 0, lift: C.lift, wall: fx ? C.wall : 0, vox: fx ? C.vox : 0, swell: C.swell, haze: C.haze,
       pump: fx ? C.pump : 0, boom: fx ? (cfg.noFlash ? boom * 0.35 : boom) : 0, scan: C.scan, sparkMul: C.sparks, fxMul: C.fx,
       glow: fx && C.pump ? C.pump * (cfg.noFlash ? 0.03 : 0.08) * (1 - kickEnv) * I : 0,
+      // Gefühl und Szene (director.js/mood.js): Stimmung, Kegelbreite, wie viel das Publikum tanzt, Teilcheneffekt,
+      // Bühnenlicht und Muster der Szene (spot2 → spot gleitet über sx)
+      mood: C.mood, valence: C.v, arousal: C.a, spread: C.spread, crowd: C.crowd, fxk: C.fxk,
+      spot: C.spot, spot2: C.spot2, sx: C.sx, rig: C.rig, look: C.scene || "",
     };
     // Fehlersuche: localStorage „mirage:debug“ = 1 legt den Lichtzustand und die Song-Karte offen
     if (DEBUG) window.__mirageParty = { ...out, P: info.key, map: d ? songMap(d) : null, sec };
@@ -623,7 +634,7 @@ const party = (() => {
   function mood(sec, playing) {
     const d = audio.data;
     if (!d?.segs?.length || !cfg.partyDirector) return null;
-    const C = cue(planFor(d, audio.uri === uri ? info.key : "pop"), sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
+    const C = cue(planFor(d, audio.uri === uri ? info.key : "pop", audio.uri), sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
     if (!C) return null;
     const M = songMap(d);
     let dropHit = false;
@@ -634,7 +645,14 @@ const party = (() => {
     return C;
   }
 
-  return { prepare, step, mood, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  // Liedtext des Songs (synchronisierte Zeilen, t in ms) – nur für die Stimmung, nichts geht hinaus
+  function lyrics(u, lines) {
+    const ls = (lines || []).filter((l) => l.text && l.text !== "♪").map((l) => ({ t: l.t / 1000, text: l.text }));
+    if (u === lyr.uri && ls.length === (lyr.lines?.length || 0)) return;
+    [lyr.uri, lyr.lines, lyr.n] = [u, ls, ls.length ? ++lyr.ver : 0];
+  }
+
+  return { prepare, step, mood, lyrics, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
 })();
 
 export { party, PROFILE_KEYS, FAMILIES };

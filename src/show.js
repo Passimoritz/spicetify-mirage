@@ -47,13 +47,15 @@ function createShow(glowSprite, cap) {
     if (px.dropHit && !st.noFlash) rig.drop = 1;
     rig.drop *= Math.exp(-dt * 3);
     const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;
-    const pats = RIG[key];
+    // Muster der Szene (Lichtregie) – auch ruhige Stile bekommen Moving Heads, wenn ihre Szene welche mitbringt
+    const pats = RIG[key] || (px.rig ? [px.rig] : null);
     ctx.globalCompositeOperation = "lighter";
     if (n && pats && st.rig) {
       const blk = Math.floor(bp / 32);
-      if (blk !== rig.blk) {
+      // die Szene wechselt auf einer Eins: ihr Muster gilt sofort, sonst alle 32 Schläge das nächste des Genres
+      if (blk !== rig.blk || (px.rig && px.rig !== rig.pat)) {
         rig.blk = blk;
-        rig.pat = pats[(blk + (px.scene || 0)) % pats.length];
+        rig.pat = px.rig || pats[(blk + (px.scene || 0)) % pats.length];
         rig.col = (rig.col + 1) % 3;
       }
       // Riser: die Köpfe pulsen im Aufbau immer dichter; der Einsatz eines Refrains/Drops hebt kurz an
@@ -79,7 +81,7 @@ function createShow(glowSprite, cap) {
         if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;
         if (k < 0.004) continue;
         const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];
-        const len = vh * 1.2, wd = 0.03 + px.energy * 0.015 + rig.drop * 0.02;
+        const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);
         const g = ctx.createRadialGradient(x, y, 0, x, y, len);
         g.addColorStop(0, rgba(c, k * 1.6));
         g.addColorStop(0.4, rgba(c, k * 0.5));
