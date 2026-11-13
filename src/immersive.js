@@ -26,6 +26,7 @@ import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
 import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from "./games.js";
 import { free } from "./lock.js";
+import { setPreset, setPerf } from "./settings.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
 const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
@@ -2453,7 +2454,7 @@ const immersive = (() => {
     playIn(q.video, on && mode === "lyrics");
   }
   // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["O", "k_perf"], ["Esc", "k_close"], ["?", "keysTitle"]];
   // Es ist immer nur ein Menü offen: das neue schließt das vorherige
   let liveToken = 0;
   function closeMenus(keep) {
@@ -2662,9 +2663,14 @@ const immersive = (() => {
   function showExtras() {
     if (!el) return;
     const party = el.dataset.mode === "party";
-    // Im Party-Modus bleiben oben nur Spiele, QR-Code, Wünsche und „Mehr“; der Rest liegt im Menü
+    // Im Party-Modus bleiben oben nur Spiele, QR-Code, Wünsche und „Mehr“; der Rest liegt im Menü.
+    // „Mehr“ gibt es in jeder Ansicht: dort liegt auch Aussehen & Leistung.
     q.recap.hidden = q.conf.hidden = q.pollbtn.hidden = q.djbtn.hidden = q.screen.hidden = true;
-    q.gamebtn.hidden = q.menubtn.hidden = !party;
+    q.gamebtn.hidden = !party;
+    q.menubtn.hidden = false;
+    q.menubtn.setAttribute("aria-keyshortcuts", "O");
+    // offenes Menü nach dem Ansichtswechsel neu füllen (Party-Werkzeuge kommen oder gehen)
+    if (side === "menu" && q.menuParty !== party) showSide("menu");
     el.querySelector(".m-im-share").hidden = el.querySelector(".m-im-help").hidden = party;
     el.classList.toggle("is-partyui", party);
     if (!party) games.stop();
@@ -2848,7 +2854,60 @@ const immersive = (() => {
 
   /* ---- Spiele: auswählen, starten, beenden. Alle außer dem Glücksrad spielen die Gäste auf ihren Handys. */
   // „Mehr“ im Party-Modus: alles, was nicht dauernd gebraucht wird
+  // Aussehen & Leistung ohne Umweg über die Einstellungen: dieselben Presets und Schalter (settings.js), wirkt sofort.
+  // Nach jedem Klick baut sich das Menü neu auf; der Fokus bleibt dabei an derselben Stelle (sideFocus).
+  function perfSection(body) {
+    // „Eigene“ (einzelne Schalter geändert) steht statt des Hinweises unter der Überschrift
+    sideHead(body, t("perfQuick"), t(cfg.preset === "custom" ? "presetCustom" : "perfQuickHint"));
+    q.menuParty = el.dataset.mode === "party";
+    const seg = document.createElement("div");
+    seg.className = "m-g-seg-row is-wrap m-im-perf";
+    seg.setAttribute("role", "group");
+    seg.setAttribute("aria-label", t("perfQuick"));
+    for (const k of ["full", "balanced", "light", "calm"]) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.preset = k;
+      b.textContent = t("preset_" + k);
+      b.setAttribute("aria-pressed", String(cfg.preset === k));
+      b.onclick = () => perfSet(() => setPreset(k));
+      seg.append(b);
+    }
+    body.append(seg);
+    // die zwei Schalter, die man mitten in der Party am ehesten braucht: Akku/Lüfter und Blitze
+    const flag = (label, sub, on, fn) => {
+      const b = sideBtn(body, label, sub, () => perfSet(fn), on);
+      b.removeAttribute("aria-current");
+      b.setAttribute("aria-pressed", String(on));
+      b.classList.add("m-im-perf-flag");
+    };
+    const eco = cfg.eco === "on";
+    flag(t("ecoQuick"), t(eco ? "ecoQuickOn" : cfg.eco === "off" ? "eco_off" : "ecoQuickAuto"), eco, () => setPerf("eco", eco ? "auto" : "on"));
+    flag(t("noFlash"), "", !!cfg.noFlash, () => setPerf("noFlash", !cfg.noFlash));
+  }
+  // umstellen und alles, was die offene Ebene aus cfg liest, gleich nachziehen
+  function perfSet(fn) {
+    fn();
+    sizeCanvas();
+    applyCanvas();
+    styleLyrics();
+    showExtras();
+    if (side === "menu") {
+      const top = q.sideBody.scrollTop;
+      showSide("menu");
+      q.sideBody.scrollTop = top;
+    }
+  }
+  // Taste O: Menü auf, Fokus auf das gewählte Preset (noch einmal O schließt es)
+  function perfMenu() {
+    if (!el || !isOpen()) return;
+    if (side === "menu") return showSide(null);
+    showSide("menu");
+    queueMicrotask(() => (q.sideBody.querySelector('.m-im-perf [aria-pressed="true"]') || q.sideBody.querySelector(".m-im-perf button"))?.focus());
+  }
   function menuPanel(body) {
+    // außerhalb der Party enthält „Mehr“ nur Aussehen & Leistung (die übrigen Knöpfe stehen dort oben)
+    if (el.dataset.mode !== "party") return perfSection(body);
     const go = (kind) => () => showSide(kind);
     const row = (label, sub, fn) => sideBtn(body, label, sub, fn);
     row(t("djTitle"), "", go("dj"));
@@ -2862,6 +2921,7 @@ const immersive = (() => {
     row(t("c_timer"), "", go("timer"));
     row(el.querySelector(".m-im-share").title || "Share", "", () => { showSide(null); nowPlayingCard(); });
     row(el.querySelector(".m-im-help").title || "?", "", () => { showSide(null); toggleKeys(); });
+    perfSection(body);
   }
   // Auswahl in Stufen: eine Zeile mit Knöpfen
   function gameChoice(body, label, key, choices, wrap) {
@@ -3530,7 +3590,7 @@ const immersive = (() => {
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
-    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
   };
 })();
 
