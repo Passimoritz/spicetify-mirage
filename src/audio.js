@@ -6,8 +6,9 @@ import { analysisDb } from "./analysis-db.js";
 
 /* ---------------------------------------------------------------- Taktdaten */
 const audio = { uri: "", data: null };
-// Taktdaten der letzten 50 Songs: Zurückspringen lädt nichts neu
-const audioCache = lru(50);
+// Taktdaten der letzten 8 Songs im Arbeitsspeicher (je Song einige hundert KB Segmente). Früher 50 – ältere
+// liegen ohnehin auf der Platte (analysis-db.js) und sind beim Zurückspringen ohne Anfrage gleich wieder da.
+const audioCache = lru(8);
 async function loadAudio(uri) {
   if (!uri || audio.uri === uri) return;
   audio.uri = uri;

@@ -38,6 +38,8 @@ window.addEventListener("keydown", (e) => {
       KeyP: () => free() && PLR.back(),
       KeyE: () => immersive.toggleTiming(),
       KeyC: () => immersive.confetti(),
+      // Aussehen & Leistung umstellen, ohne die Einstellungen zu öffnen
+      KeyO: () => immersive.perfMenu(),
       // im Takt antippen: misst den Versatz zwischen Bild und Ton ein
       KeyT: () => {
         const r = tapSync();

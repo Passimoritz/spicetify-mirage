@@ -2,17 +2,27 @@ import { cfg } from "./config.js";
 
 /* ---------------------------------------------------------------- Soundeffekte der Spiele */
 // Alles wird synthetisiert: keine Dateien, nichts zu laden. Lautstärke über „Soundeffekte“ in den Spiel-Einstellungen.
-let ac = null;
+let ac = null, idle = 0;
 const level = () => {
   const v = cfg.gameSfx;
   return v === undefined ? 0.7 : Number(v) || 0;
 };
+// Ein offener AudioContext hält das Audiogerät und einen eigenen Thread wach – auch stumm. Nach einer
+// Minute ohne Effekt schließen; der nächste Effekt öffnet einen neuen (dauert wenige ms).
+function sleepLater() {
+  clearTimeout(idle);
+  idle = setTimeout(() => {
+    ac?.close().catch(() => {});
+    ac = null;
+  }, 60000);
+}
 function ctx() {
   const lv = level();
   if (!lv) return null;
   try {
     ac ||= new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === "suspended") ac.resume().catch(() => {});
+    sleepLater();
     return ac;
   } catch {
     return null;

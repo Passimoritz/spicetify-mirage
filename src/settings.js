@@ -38,6 +38,20 @@ function applySettings() {
   immersive.styleLyrics();
   applyFont();
 }
+// Leistung von außerhalb des Dialogs umstellen (Schnellmenü im Immersiv-Modus): dieselben Wege wie die
+// Presets und Schalter im Dialog. Ist der Dialog offen, zeigt er den neuen Stand gleich mit.
+function setPreset(name) {
+  applyPreset(name);
+  applySettings();
+  render.again?.();
+}
+function setPerf(key, value) {
+  cfg[key] = value;
+  if (PRESET_KEYS.includes(key)) detectPreset();
+  save();
+  applySettings();
+  render.again?.();
+}
 // nach jeder Farb- oder Schemaänderung: Farben neu holen und Lesbarkeit neu prüfen
 function refreshColors() {
   applySettings();
@@ -339,7 +353,8 @@ function applySearch(box) {
   if (say && say.textContent !== msg) say.textContent = msg;
 }
 function render(box) {
-  render.again = () => render(box);
+  // geschlossener Dialog: nichts neu aufbauen (setPreset/setPerf rufen das auch von außen)
+  render.again = () => box.isConnected && render(box);
   const kids = [];
   const search = el("input", "m-search");
   Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
@@ -367,11 +382,7 @@ function render(box) {
     seg(
       [["full", t("preset_full")], ["balanced", t("preset_balanced")], ["light", t("preset_light")], ["calm", t("preset_calm")]],
       cfg.preset,
-      (k) => {
-        applyPreset(k);
-        applySettings();
-        render(box);
-      }
+      (k) => setPreset(k)
     )
   );
   if (cfg.preset === "custom") kids.push(el("small", "m-note", t("presetCustom")));
@@ -825,4 +836,4 @@ function tour(auto) {
   else draw();
 }
 
-export { applySettings, openSettings, welcome, tour };
+export { applySettings, openSettings, welcome, tour, setPreset, setPerf };

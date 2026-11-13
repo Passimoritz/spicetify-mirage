@@ -1562,6 +1562,76 @@ async function remoteControl() {
   await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bRc").hidden`).catch(() => false), 10000, "fernbedienung: wieder als Gast verbunden");
 }
 
+// Schnellmenü „Aussehen & Leistung“ im Immersiv-Modus: Presets und Schalter wirken sofort, landen in cfg,
+// und der Einstellungs-Dialog zeigt denselben Stand (auch umgekehrt). Taste O öffnet es mit Fokus auf dem Preset.
+async function perfMenu() {
+  const stored = () => T.js(`JSON.parse(localStorage.getItem("mirage:settings") || "{}")`);
+  const menu = () => T.js(`(() => {
+    const s = document.querySelector("#mirage-immersive .m-im-side");
+    const on = (sel) => [...s.querySelectorAll(sel)].filter((b) => b.getAttribute("aria-pressed") === "true");
+    return { open: !s.hidden && s.dataset.kind === "menu", presets: s.querySelectorAll(".m-im-perf button").length,
+      preset: on(".m-im-perf button").map((b) => b.dataset.preset).join(), flags: on(".m-im-perf-flag").map((b) => b.querySelector("b").textContent),
+      focus: document.activeElement?.dataset?.preset || "", lite: document.documentElement.classList.contains("mirage-lite"), noflash: document.documentElement.classList.contains("mirage-noflash") };
+  })()`);
+  const before = await stored();
+  await big.hover();
+  await T.click(".m-im-menubtn");
+  await until(async () => (await menu()).open, 2000, "leistung: Menü „Mehr“ geht auf");
+  let m = await menu();
+  ok(m.presets === 4, "leistung: vier Presets im Menü: " + m.presets);
+  ok(m.preset === (before.preset || "balanced"), `leistung: markiert ist das aktuelle Preset (${before.preset}): ${m.preset}`);
+  await T.click('.m-im-perf button[data-preset="light"]');
+  await until(async () => (await stored()).preset === "light" && (await menu()).preset === "light", 2000, "leistung: „Leicht“ gewählt und gespeichert");
+  m = await menu();
+  ok(m.lite && (await stored()).lite === true, "leistung: „Leicht“ wirkt sofort (mirage-lite)");
+  const flashOn = !!before.noFlash;
+  await T.click(".m-im-perf-flag", { index: 1 });
+  await until(async () => (await stored()).noFlash === !flashOn && (await menu()).noflash === !flashOn, 2000, "leistung: „Keine Blitze“ umgeschaltet");
+  await T.click(".m-im-perf-flag", { index: 0 });
+  await until(async () => (await stored()).eco === "on", 2000, "leistung: Energiesparen an");
+  // derselbe Stand im Einstellungs-Dialog (im Nachbau landet er direkt im body)
+  const dlg = () => T.js(`(() => {
+    const b = document.querySelector(".mirage-settings");
+    const seg = b?.querySelector(".m-seg");
+    return b && { preset: [...seg.querySelectorAll("button")].findIndex((x) => x.getAttribute("aria-pressed") === "true"), noFlash: b.querySelector('input[data-key="noFlash"]')?.checked };
+  })()`);
+  await T.js(`__menu.brightness(); 1`);
+  const d = await until(dlg, 2000, "leistung: Einstellungen gehen auf");
+  ok(d.preset === 2 && d.noFlash === !flashOn, "leistung: der Dialog zeigt dasselbe: " + JSON.stringify(d));
+  // umgekehrt: im Dialog umstellen – das Schnellmenü zeigt es beim nächsten Öffnen (Prüfung mit Taste O unten)
+  await T.js(`document.querySelector(".mirage-settings .m-seg button:nth-child(2)").click(); 1`);
+  await until(async () => (await stored()).preset === "balanced" && (await dlg()).preset === 1, 2000, "leistung: Dialog stellt auf „Ausgewogen“");
+  await T.js(`document.querySelector(".mirage-settings").remove(); 1`);
+  // Taste O: zu, wieder auf, Fokus auf dem gewählten Preset
+  await T.js(`__sp.press("KeyO"); 1`);
+  await until(async () => !(await menu()).open, 2000, "leistung: O schließt das Menü");
+  await T.js(`__sp.press("KeyO"); 1`);
+  m = await until(async () => {
+    const x = await menu();
+    return x.open && x.focus && x;
+  }, 2000, "leistung: O öffnet das Menü mit Fokus");
+  ok(m.preset === "balanced" && m.focus === "balanced", "leistung: Fokus und Markierung auf „Ausgewogen“: " + JSON.stringify(m));
+  // Esc schließt das Menü, nicht den Immersiv-Modus
+  const imOn = () => T.js(`document.getElementById("mirage-immersive").classList.contains("is-on")`);
+  await T.js(`__sp.press("Escape"); 1`);
+  await until(async () => !(await menu()).open && (await imOn()), 2000, "leistung: Esc schließt nur das Menü");
+  // die Tastenhilfe (?) nennt die Taste O
+  await T.js(`__sp.press("Slash", { key: "?" }); 1`);
+  const keys = await until(() => T.js(`(() => { const k = document.querySelector("#mirage-immersive .m-im-keys"); return !k.hidden && [...k.querySelectorAll("kbd")].map((x) => x.textContent); })()`), 2000, "leistung: Tastenhilfe geht auf");
+  ok(keys.includes("O"), "leistung: O steht in der Tastenhilfe: " + keys.join(" "));
+  await T.js(`__sp.press("Escape"); 1`);
+  await until(async () => (await T.js(`document.querySelector("#mirage-immersive .m-im-keys").hidden`)) && (await imOn()), 2000, "leistung: Tastenhilfe zu");
+  // zurück auf den Stand von vorher, damit die folgenden Fälle unverändert laufen
+  await big.hover();
+  await T.click(".m-im-menubtn");
+  await until(async () => (await menu()).open, 2000, "leistung: Menü wieder auf");
+  if (!!(await stored()).noFlash !== flashOn) await T.click(".m-im-perf-flag", { index: 1 });
+  if ((await stored()).eco !== (before.eco || "auto")) await T.click(".m-im-perf-flag", { index: 0 });
+  await T.click(`.m-im-perf button[data-preset="${before.preset || "balanced"}"]`);
+  await until(async () => (await stored()).preset === (before.preset || "balanced") && !!(await stored()).noFlash === flashOn, 2000, "leistung: alter Stand zurück");
+  await T.click(".m-im-side-x");
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1576,6 +1646,7 @@ const CASES = [
 // neuere Spiele
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });
 CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame], ["bingo", bingoGame]);
+CASES.push(["perf-menu", perfMenu]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

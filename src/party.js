@@ -358,7 +358,9 @@ const pct = (arr, p) => {
   const s = Float32Array.from(arr).sort();
   return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0;
 };
-const mapCache = lru(30);
+// WeakMap statt eigener Liste: die Karte lebt so lange wie die Taktdaten im audio.js-Speicher – eine Liste
+// über 30 Songs hielt deren Segmente fest, auch wenn audio.js sie längst verworfen hatte
+const mapCache = new WeakMap();
 function songMap(d) {
   if (mapCache.has(d)) return mapCache.get(d);
   const segs = d.segs || [];
