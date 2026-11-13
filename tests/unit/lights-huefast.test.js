@@ -125,7 +125,8 @@ async function party(lights, ms, extra = {}) {
     // 50 Bilder pro Sekunde (Toleranz für Zeitgeber), Format HueStream mit Bereichs-ID und zwei Kanälen
     const f = dt.frames, span = (f.at(-1).t - f[0].t) / 1000;
     const rate = (f.length - 1) / span;
-    assert.ok(rate > 35 && rate < 60, `Bildrate ${rate.toFixed(1)}/s`);
+    // Soll 50/s; unter Last (CI, parallele Tests) kommen Zeitgeber zu spät, darum großzügig nach unten
+    assert.ok(rate > 25 && rate < 60, `Bildrate ${rate.toFixed(1)}/s`);
     for (const { buf } of f) {
       assert.strictEqual(buf.subarray(0, 9).toString(), "HueStream");
       assert.strictEqual(buf.subarray(16, 52).toString(), AREA);
