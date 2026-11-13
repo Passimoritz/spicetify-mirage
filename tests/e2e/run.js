@@ -1040,6 +1040,54 @@ async function linkWish() {
   await wait(400);
   await T.js(`document.querySelector(".m-im-wish-no")?.click(); document.querySelector(".m-im-side-x")?.click(); 1`);
 }
+// Regeln für Songwünsche: in den echten Einstellungen gesetzt, auf den Handys wirksam
+async function setRule(key, value) {
+  await T.js(`(() => {
+    if (!document.querySelector(".mirage-settings")) __menu.brightness();
+    const i = document.querySelector('.mirage-settings [data-key="${key}"]');
+    if (i.type === "checkbox") { if (i.checked !== ${JSON.stringify(!!value)}) i.click(); }
+    else { i.value = ${JSON.stringify(String(value))}; i.dispatchEvent(new Event("input", { bubbles: true })); i.dispatchEvent(new Event("change", { bubbles: true })); }
+    return 1;
+  })()`);
+}
+async function wishRules() {
+  const [A, B] = P, msg = (ph) => ph.js(`document.getElementById("wMsg").textContent`);
+  const type = (ph, v) => ph.js(`(() => { const i = document.getElementById("wSong"); i.value = ${JSON.stringify(v)}; i.dispatchEvent(new Event("input")); })(); 1`);
+  const hits = (ph) => ph.js(`[...document.querySelectorAll("#wRes li b")].map((b) => b.textContent).join(" | ")`);
+  await ensurePhones("wish-rules");
+  await setRule("wishMax", 1);
+  await setRule("wishBlock", "cinder, nothing");
+  await setRule("wishClean", true);
+  await setRule("wishAuto", 2);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  // Suche: der gesperrte (Cinder) und der „Explicit“-Song (Blue Lake) erscheinen gar nicht
+  for (const ph of [A, B]) await ph.click("#bWish");
+  await wait(700);
+  await type(A, "song");
+  const list = await until(async () => (await hits(A)) || "", 9000, "regeln: Treffer");
+  ok(list === "Song of Aurora", "regeln: nur der erlaubte Song steht in der Liste: " + list);
+  await A.click("#wRes li button.go");
+  await until(() => B.js(`[...document.querySelectorAll("#wList b")].some((b) => /Aurora/.test(b.textContent))`), 8000, "regeln: Auroras Wunsch ist da");
+  // ein zweiter offener Wunsch desselben Gastes: abgelehnt, mit Grund
+  await A.js(`lastWish = 0; 1`);
+  await wait(1000);
+  await type(A, "spotify:track:t000000000000000000005");
+  await until(() => A.js(`document.querySelectorAll("#wRes li").length === 1`), 9000, "regeln: Link-Treffer");
+  await A.click("#wRes li button.go");
+  const max = (await A.js("T.wrMax")).replace("{n}", 1);
+  await until(async () => (await msg(A)) === max, 6000, "regeln: zu viele offene Wünsche – das Handy sagt es");
+  // gesperrter Song per Link: Grund statt „nichts gefunden“
+  await type(B, "https://open.spotify.com/track/t000000000000000000002");
+  const block = await B.js("T.wrBlock");
+  await until(async () => (await msg(B)) === block, 9000, "regeln: gesperrter Song per Link");
+  // zwei Stimmen: der Wunsch geht von selbst in die Warteschlange
+  await B.click("#wList button", { text: "👍" });
+  await until(() => T.js(`__sp.log.queued.includes("spotify:track:t000000000000000000000")`), 6000, "regeln: ab zwei Stimmen automatisch in der Warteschlange");
+  await until(() => A.js(`/✓/.test(document.getElementById("wList").textContent)`), 6000, "regeln: die Handys zeigen ihn als angenommen");
+  for (const ph of [A, B]) await ph.click("#wClose");
+  for (const [k, v] of [["wishMax", 0], ["wishBlock", ""], ["wishClean", false], ["wishAuto", 0]]) await setRule(k, v);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -1050,7 +1098,7 @@ const CASES = [
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
-  ["link-wish", linkWish],
+  ["link-wish", linkWish], ["wish-rules", wishRules],
 ];
 
 /* ---------------------------------------------------------------- Start */

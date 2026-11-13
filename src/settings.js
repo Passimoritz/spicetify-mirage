@@ -155,6 +155,36 @@ function select(groups, value, onPick) {
   s.onchange = () => onPick(s.value);
   return s;
 }
+// Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
+function rangeZero(key, max, zero) {
+  const row = range(key, 0, max, 1, "");
+  const hint = row.querySelector("small"), r = row.querySelector("input");
+  const show = () => {
+    hint.textContent = Number(r.value) ? r.value : t(zero);
+    r.setAttribute("aria-valuetext", hint.textContent);
+  };
+  r.addEventListener("input", show);
+  show();
+  return row;
+}
+// Regeln für Songwünsche: nur sichtbar, solange Wünsche an sind (Schalter zeichnet die Einstellungen neu)
+function wishRules() {
+  const box = el("div", "m-wishrules");
+  box.hidden = !cfg.partyWishes;
+  const row = el("label", "m-row");
+  const txt = el("span");
+  txt.append(el("b", "", t("wishBlock")));
+  const inp = el("input", "m-text");
+  Object.assign(inp, { maxLength: 400, value: cfg.wishBlock || "", placeholder: t("wishBlockPh") });
+  inp.dataset.key = "wishBlock";
+  inp.onchange = () => {
+    cfg.wishBlock = inp.value.slice(0, 400);
+    save();
+  };
+  row.append(txt, inp);
+  box.append(head(t("wishRules"), t("wishRulesHint")), rangeZero("wishMax", 5, "wishNoLimit"), row, toggle("wishClean", () => {}), rangeZero("wishAuto", 10, "wishOff"));
+  return box;
+}
 // Live-Link: QR-Code direkt unter dem Schalter – sobald er an ist
 function livePanel() {
   const box = el("div", "m-live");
@@ -500,6 +530,7 @@ function render(box) {
       head(t("ps_extras")),
       toggle("partyLive", () => cfg.partyLive && live.prepare()),
       toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
+      wishRules(),
       livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),

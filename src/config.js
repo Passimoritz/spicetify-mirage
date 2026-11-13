@@ -121,6 +121,12 @@ const DEFAULTS = {
   partyCuts: false,
   romanize: false,
   partyWishes: true,
+  // Regeln für Songwünsche: offene Wünsche je Gast (0 = beliebig), Sperrliste, keine „Explicit“-Songs,
+  // ab so vielen Stimmen von selbst in die Warteschlange (0 = nie, nur was du annimmst)
+  wishMax: 0,
+  wishBlock: "",
+  wishClean: false,
+  wishAuto: 0,
   partyCrowd: true,
   partyJamLight: true,
   partyScreen: true,

@@ -2,6 +2,7 @@ import { S } from "./core.js";
 import { GAME_TEXT } from "./i18n-games.js";
 import { ENTRY_TEXT } from "./i18n-entry.js";
 import { PARTY_TEXT } from "./i18n-party.js";
+import { GUESTS_TEXT } from "./i18n-guests.js";
 
 /* ---------------------------------------------------------------- Sprachen */
 // Fehlt eine Übersetzung, gilt Englisch – so funktioniert das Theme in jeder Sprache.
@@ -2314,6 +2315,7 @@ const I18N = {
 for (const [l, v] of Object.entries(GAME_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(ENTRY_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(PARTY_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
+for (const [l, v] of Object.entries(GUESTS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 const LANG = (() => {
   let l = "";
   try { l = S.Locale?.getLocale?.() || ""; } catch {}

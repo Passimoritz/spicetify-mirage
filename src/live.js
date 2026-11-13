@@ -199,7 +199,7 @@ const within = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() 
 // Suchseite schon geladen hat), zuletzt die Web-API (die Spotify oft mit 429 drosselt).
 const SEARCH_VARS = (q) => ({ searchTerm: q, offset: 0, limit: 20, numberOfTopResults: 20, includeAudiobooks: false, includeArtistHasConcertsField: false, includePreReleases: false, includeAlbumPreReleases: false, includeAuthors: false, includeEpisodeContentRatingsV2: false });
 const fromGql = (d) => ({
-  id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false,
+  id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false, explicit: d.contentRating?.label === "EXPLICIT",
   artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
   album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((x) => ({ url: x.url, width: x.width || 0 })) },
 });
@@ -246,18 +246,21 @@ async function runSearch(id) {
   while (job.next) {
     const { q, r } = job.next;
     job.next = null;
-    let res = [], err = 0, nl;
+    let res = [], err = 0, nl, wr;
     try {
       const seenName = new Set(), link = TRACK_LINK.exec(q);
       // „nl“: ein Spotify-Link, aber kein Song (ältere Handyseiten zeigen dann einfach „nichts gefunden“)
       if (!link && OTHER_LINK.test(q)) nl = 1;
       else res = (link ? [await trackById(link[1])] : await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
-      res = res.slice(0, 8).map(({ i, t, a, img }) => ({ i, t, a, img }));
+      // Regeln der Gastgeberin: gesperrte und (auf Wunsch) „Explicit“-Songs erscheinen gar nicht erst
+      // ein Link auf einen solchen Song: dem Gast sagen, warum (ältere Seiten zeigen „nichts gefunden“)
+      if (link && res[0]) wr = ruleOut(res[0]) || undefined;
+      res = res.filter((x) => !ruleOut(x)).slice(0, 8).map(({ i, t, a, img }) => ({ i, t, a, img }));
     } catch {
       err = 1;
     }
     // immer antworten – auch ohne Treffer oder bei einem Fehler, sonst sucht das Handy ewig
-    if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r, res, err, nl }), false);
+    await reply(id, { r, res, err, nl, wr });
   }
   job.busy = false;
   if (searching.size > 50) for (const [k, j] of searching) if (!j.busy) searching.delete(k);
@@ -270,7 +273,7 @@ const coverOf = (tr) => {
 };
 function remember(tr) {
   if (!tr?.id || !ID.test(tr.id) || tr.is_playable === false) return null;
-  const x = { i: tr.id, uri: tr.uri || "spotify:track:" + tr.id, t: clean(tr.name, 80), a: clean((tr.artists || []).map((y) => y.name).join(", "), 60), img: /^https:\/\/i\.scdn\.co\//.test(coverOf(tr)) ? coverOf(tr) : "" };
+  const x = { i: tr.id, uri: tr.uri || "spotify:track:" + tr.id, x: tr.explicit ? 1 : 0, t: clean(tr.name, 80), a: clean((tr.artists || []).map((y) => y.name).join(", "), 60), img: /^https:\/\/i\.scdn\.co\//.test(coverOf(tr)) ? coverOf(tr) : "" };
   tracks.set(x.i, x);
   if (tracks.size > 300) tracks.delete(tracks.keys().next().value);
   return x;
@@ -284,6 +287,26 @@ async function seal(obj) {
   return out;
 }
 const emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage:wishes")));
+// Antwort nur an ein Handy. Immer mit „res“: ältere Seiten behandeln sie dann als (fremde) Suchantwort
+// und ignorieren sie, statt sie für einen Lichtzustand ohne „on“ zu halten (= „Party beendet“)
+async function reply(id, obj) {
+  if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), res: [], ...obj }), false);
+}
+/* ---- Regeln für Songwünsche (Einstellungen im Party-Modus) */
+// Sperrliste: Künstler oder Wörter, mit Komma oder Zeilenumbruch getrennt, ohne Groß/klein
+const blockList = () => String(cfg.wishBlock || "").toLowerCase().split(/[,;\n]/).map((x) => x.trim()).filter((x) => x.length >= 2).slice(0, 60);
+function ruleOut(tr) {
+  const hay = (tr.t + " " + tr.a).toLowerCase();
+  if (blockList().some((w) => hay.includes(w))) return "block";
+  if (cfg.wishClean && tr.x) return "explicit";
+  return "";
+}
+// Wunsch reicht genug Stimmen: von selbst in die Warteschlange (aus, solange „wishAuto“ 0 ist)
+function autoAdd(w) {
+  if (!(cfg.wishAuto > 0) || w.st !== "open" || w.auto || w.v.size < cfg.wishAuto) return;
+  w.auto = true;
+  accept(w.i).then((ok) => ok || (w.auto = false));
+}
 const clean = (v, n) => String(v ?? "").replace(/\p{Cc}/gu, " ").trim().slice(0, n);
 // Gäste: wer hat was gewünscht (für das Ranking im Rückblick); Reaktionen und Abstimmung brauchen keine Wünsche
 const guests = new Map(); // Handy-ID → { n, wished, played, votes }
@@ -320,7 +343,7 @@ async function hostInfo() {
   if (!s.hostQr) s.hostQr = await QRCode.toString(s.hostUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
   return { url: s.hostUrl, qr: s.hostQr };
 }
-const lastReact = new Map(), lastGame = new Map();
+const lastReact = new Map(), lastGame = new Map(), refused = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
 async function inbound(m) {
   if (!ses || m.length < 29) return;
@@ -369,6 +392,7 @@ async function inbound(m) {
     if (w && !w.v.has(id)) {
       w.v.add(id);
       emitWishes();
+      autoAdd(w);
     }
     return;
   }
@@ -383,7 +407,18 @@ async function inbound(m) {
   }
   if (msg.k !== "wish") return;
   const tid = clean(msg.i, 22), name = clean(msg.n, 20);
-  if (!ID.test(tid) || Date.now() - (seen.get(id) || 0) < 45e3) return;
+  if (!ID.test(tid)) return;
+  // zu viele offene Wünsche: gleich sagen (noch vor der 45-s-Sperre, sonst bliebe es still); eine Stimme
+  // für einen schon offenen Wunsch geht immer. Antworten höchstens alle 2 s je Handy.
+  const mine = wishes.filter((x) => x.by === id && x.st === "open").length;
+  if (cfg.wishMax > 0 && mine >= cfg.wishMax && !wishes.some((x) => x.i === tid && x.st === "open")) {
+    if (Date.now() - (refused.get(id) || 0) > 2000) {
+      refused.set(id, Date.now());
+      reply(id, { r: -1, wr: "max", n: cfg.wishMax });
+    }
+    return;
+  }
+  if (Date.now() - (seen.get(id) || 0) < 45e3) return;
   // nur echte Spotify-Songs: aus der Suche von eben, sonst noch einmal bei Spotify nachgesehen
   let tr = tracks.get(tid);
   if (!tr) {
@@ -392,15 +427,21 @@ async function inbound(m) {
     } catch {}
   }
   if (!tr) return;
-  seen.set(id, Date.now());
   const have = wishes.find((x) => x.uri === tr.uri);
-  if (have) have.v.add(id);
-  else {
+  // Regeln: gesperrt oder „Explicit“ (die Suche zeigt solche Songs gar nicht erst, ein Link schon)
+  const why = ruleOut(tr);
+  if (why) return void reply(id, { r: -1, wr: why });
+  seen.set(id, Date.now());
+  if (have) {
+    have.v.add(id);
+    autoAdd(have);
+  } else {
     wishes.push({ ...tr, n: name, c: colour(msg.c), by: id, v: new Set([id]), st: "open", at: Date.now() });
     guest(id, name, colour(msg.c)).wished++;
     // voll: der älteste Wunsch mit den wenigsten Stimmen fliegt raus
     const open = wishes.filter((x) => x.st === "open");
     if (open.length > 8) wishes = wishes.filter((x) => x !== open.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
+    autoAdd(wishes[wishes.length - 1]);
   }
   emitWishes();
 }
