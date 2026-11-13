@@ -4,7 +4,9 @@ const assert = require("assert");
 const { load } = require("./load.js");
 const { runLyrics } = load("lyricflow.js");
 
-const later = (ms, v) => () => new Promise((ok) => setTimeout(() => ok(v), ms));
+// alle Zeiten zehnfach gestreckt: unter Last (CI, mehrere Tests parallel) reichen 20 gegen 60 ms nicht
+const K = 10;
+const later = (ms, v) => () => new Promise((ok) => setTimeout(() => ok(v), ms * K));
 const T = ["Look at the stars", "Look how they shine for you", "And everything you do", "Yeah they were all yellow", "I came along", "I wrote a song for you"];
 const plain = (src = "spotify", lines = T) => ({ source: src, synced: false, lang: "en", lines: lines.map((text) => ({ t: 0, text })) });
 const synced = (src, lines = T) => ({ source: src, synced: true, lang: "", lines: lines.map((text, i) => ({ t: 1000 + i * 3000, text })) });
@@ -52,15 +54,15 @@ const ES = ["Mira las estrellas", "Mira cómo brillan para ti", "Y todo lo que h
       emit: (v) => seen.push([v.source, Date.now() - t0]),
     });
     assert.deepEqual(seen.map((x) => x[0]), ["kugou", "netease"]);
-    assert.ok(seen[0][1] < 60, "erstes Ergebnis wartet nicht auf die anderen: " + seen[0][1]);
+    assert.ok(seen[0][1] < 60 * K, "erstes Ergebnis wartet nicht auf die anderen: " + seen[0][1]);
     assert.equal(r.source, "netease");
   }
   // 6. Eine hängende Quelle hält nicht auf: nach `wait` ist Schluss
   {
     const t0 = Date.now();
-    const r = await runLyrics({ own: null, online: true, wait: 80, sources: [() => new Promise(() => {}), later(10, synced("kugou"))] });
+    const r = await runLyrics({ own: null, online: true, wait: 80 * K, sources: [() => new Promise(() => {}), later(10, synced("kugou"))] });
     assert.equal(r.source, "kugou");
-    assert.ok(Date.now() - t0 < 200, "Wartezeit begrenzt");
+    assert.ok(Date.now() - t0 < 200 * K, "Wartezeit begrenzt");
   }
   // 7. lyrics.ovh (nur Text) nur, wenn sonst nichts kam
   {
