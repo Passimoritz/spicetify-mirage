@@ -913,7 +913,10 @@ function createVenue(makeCanvas) {
     const key = `${p.row}|${p.hair}|${p.hand}|${p.wd || 1}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
     let sp = bodySprites.get(key);
     if (sp) return sp;
-    if (bodySprites.size > 90) bodySprites.clear();
+    // Ein Stadion braucht bis zu 3 Reihen × 10 Frisuren × 2 Hände × 3 Staturen = 180 Bilder je Palette. Eine
+    // kleinere Grenze mit clear() malte sie dort in jedem Bild neu (Thread 80 ms statt wenige ms pro Bild).
+    // Darum: nur die ältesten verwerfen (zuerst die der vorigen Palette), Platz für einen ganzen Satz.
+    if (bodySprites.size >= 200) bodySprites.delete(bodySprites.keys().next().value);
     const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);
     const c = makeCanvas(w, h);
     c.width = w;

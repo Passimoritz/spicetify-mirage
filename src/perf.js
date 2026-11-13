@@ -62,9 +62,7 @@ let measured = false;
 function measure(onDone, wait = 4000) {
   if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
   measured = true;
-  const key = deviceKey();
-  if (known(key)) return;
-  let frames = 0, start = 0, hiddenSeen = false;
+  let key = "", frames = 0, start = 0, hiddenSeen = false;
   const sample = (now) => {
     if (document.hidden) hiddenSeen = true;
     if (!start) start = now;
@@ -89,8 +87,12 @@ function measure(onDone, wait = 4000) {
     measured = false;
     measure(onDone, 2000);
   };
-  // erst messen, wenn Spotify fertig aufgebaut ist
-  setTimeout(() => requestAnimationFrame(sample), wait);
+  // erst messen, wenn Spotify fertig aufgebaut ist. Auch die Geräte-Kennung erst dann: der WebGL-Probekontext
+  // dafür kostet ~30 ms und hielt sonst den Start auf
+  setTimeout(() => {
+    key = deviceKey();
+    if (!known(key)) requestAnimationFrame(sample);
+  }, wait);
 }
 
 /* ---------------------------------------------------------------- Verdeckt = Pause */
