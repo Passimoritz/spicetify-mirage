@@ -4,6 +4,8 @@ import { audio } from "./audio.js";
 import { createFlashCap } from "./flashcap.js";
 import { songMap, at, STEP } from "./songmap.js";
 import { planSong, cue } from "./director.js";
+import { KIN, baseOf } from "./styles.js";
+import { LOOKS, FAMILIES, pickProfile } from "./genres.js";
 
 /* ---------------------------------------------------------------- Party-Modus */
 // Ein Lichtpult, das den Song kennt. Aus Spotifys Taktanalyse entsteht einmal pro Song eine Karte:
@@ -146,92 +148,10 @@ Object.assign(PROFILES, {
   neoclassical: like("classical", { decay: 1.8, beams: 0.35, spot: "soft", tint: "cool", spinRate: 0.05, pulse: 0.03, sparks: 4 }), // Klavier, Streicher
   acoustic: like("ballad", { decay: 2.6, beams: 0.35, spot: "top", tint: "warm", spinRate: 0.06, sparks: 6 }), // Gitarre und Stimme
 });
-// Für die Auswahl in den Einstellungen: nach Musikfamilie geordnet
-const FAMILIES = {
-  electronic: ["rave", "edm", "house", "deephouse", "techhouse", "techno", "melodictechno", "hardtechno", "trance", "psytrance", "dnb", "breakbeat", "dubstep", "futurebass", "garage", "hardstyle", "eurodance", "synthwave", "hyperpop", "electroswing"],
-  urban: ["bass", "boombap", "trap", "cloudrap", "drill", "phonk", "rnb", "soul", "afro", "amapiano", "reggae", "dancehall"],
-  rock: ["rock", "hardrock", "alternative", "indie", "punk", "emo", "ska", "metal", "postrock", "blues"],
-  pop: ["pop", "kpop", "jpop", "disco", "schlager", "ballad", "gospel", "country", "musical", "christmas"],
-  world: ["latin", "reggaeton", "salsa", "brazil", "flamenco", "bollywood", "arabic", "balkan", "celtic"],
-  calm: ["chill", "lofi", "acoustic", "ambient", "jazz", "classical", "neoclassical", "cinematic"],
-};
+// Alle weiteren Spielarten (rund 250): je ein Verwandter von oben (styles.js), nur die Abweichungen stehen in genres.js.
+// Familien, Genre-Regeln und die Wahl der Spielart (pickProfile) liegen dort auch – ohne Spotify testbar.
+for (const k in KIN) PROFILES[k] = like(baseOf(k), LOOKS[k]);
 const PROFILE_KEYS = Object.keys(PROFILES);
-// Genaue Spielarten zuerst – gelten für Spotify- und Apple-Genres gleichermaßen
-const SPECIFIC = [
-  // zuerst, was alles andere schlägt: Weihnachtslieder bleiben Weihnachtslieder, egal welches Genre
-  ["christmas", /christmas|xmas|holiday|weihnacht|no[eë]l|navidad|natale/],
-  ["futurebass", /future bass|kawaii|melodic dubstep|color bass/],
-  ["electroswing", /electro ?swing/],
-  ["cloudrap", /cloud rap|emo rap|plugg|\brage\b|sad rap/],
-  ["amapiano", /amapiano|gqom|kwaito|3-?step/],
-  ["dancehall", /dancehall|bashment|soca/],
-  ["ska", /\bska\b|ska punk|rocksteady|two-?tone/],
-  ["emo", /\bemo\b|pop punk|screamo|midwest emo/],
-  ["jpop", /j-?pop|j-?rock|anime|city pop|vocaloid|visual kei|shibuya/],
-  ["dubstep", /dubstep|riddim|brostep/],
-  ["phonk", /phonk/],
-  ["drill", /\bdrill\b/],
-  ["reggaeton", /reggaeton|latin trap|trap latino|urbano latino|dembow|perreo/],
-  ["trap", /\btrap\b/],
-  ["psytrance", /psytrance|psy-trance|\bgoa\b|psychedelic trance|full ?on/],
-  ["techhouse", /tech ?house/],
-  ["deephouse", /deep house|melodic house|afro house|organic house|tropical house|lo-?fi house/],
-  ["garage", /uk garage|\bukg\b|2-?step|speed garage|bassline|grime/],
-  ["edm", /\bedm\b|big room|electro house|progressive house|future house|brazilian bass/],
-  ["synthwave", /synthwave|retrowave|outrun|darkwave|vaporwave|chillwave|new wave|synth-?pop/],
-  ["eurodance", /eurodance|euro ?dance|italo|euro ?house|hands ?up|eurobeat/],
-  ["hyperpop", /hyperpop|digicore|glitchcore|nightcore/],
-  ["ambient", /ambient|drone|new age|meditation|sleep|healing/],
-  ["brazil", /samba|pagode|forr[oó]|\bax[eé]\b|baile funk|funk carioca|sertanejo|\bmpb\b|bossa|brazil|brasil/],
-  ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
-  ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
-  ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
-  ["hardtechno", /hard ?techno|schranz|industrial techno|hardgroove|acid techno/],
-  ["melodictechno", /melodic techno|afterhours|progressive techno|indie dance|organic techno/],
-  ["breakbeat", /breakbeat|\bbreaks\b|big beat|nu skool/],
-  ["techno", /techno|minimal|industrial/],
-  ["trance", /trance|psytrance|uplifting/],
-  ["punk", /punk|post-hardcore|\bemo\b|hardcore/],
-  ["kpop", /k-?pop|j-?pop|c-?pop|idol/],
-  ["afro", /afrobeat|afro ?pop|afroswing|afro ?fusion/],
-  ["house", /house|garage house/],
-  ["schlager", /schlager|discofox|ballermann|apr[eè]s|stimmung|volksmusik|volkst[uü]mlich|oktoberfest|deutschpop/],
-  ["disco", /disco|funk|boogie/],
-  ["gospel", /gospel|worship|christian|\bccm\b|choir|praise/],
-  ["boombap", /boom ?bap|old school hip hop|golden age|jazz rap|east coast hip hop|conscious hip hop/],
-  ["rnb", /r&b|\brnb\b|neo ?soul|new jack|contemporary r/],
-  ["soul", /soul|motown/],
-  ["blues", /blues/],
-  ["reggae", /reggae|dancehall|\bdub\b|\bska\b/],
-  ["salsa", /salsa|bachata|merengue|cumbia|tropical|vallenato|tango|mariachi|ranchera|banda|norte[nñ]o|corrido|regional mexican/],
-  ["flamenco", /flamenco|rumba|spanish guitar|sevillanas/],
-  ["bollywood", /bollywood|filmi|bhangra|desi|punjabi|indian|tamil|telugu|hindi/],
-  ["balkan", /balkan|gypsy|klezmer|turbo ?folk|manele|brass band|polka|čoček|cocek/],
-  ["arabic", /arab|khaleeji|\bra[iï]\b|dabke|turkish|middle east|persian|mizrahi/],
-  ["celtic", /celtic|irish|scottish|shant(y|ies)|bagpipe|folk punk|gaelic/],
-  ["musical", /musical|show ?tunes|broadway|cabaret|west end/],
-  ["latin", /urbano|latin|moombah/],
-  ["lofi", /lo-?fi|chillhop|jazzhop|study beats|bedroom beats/],
-  ["neoclassical", /neo-?classical|modern classical|contemporary classical|minimalism|solo piano|\bpiano\b/],
-  ["postrock", /post-?rock|math rock|instrumental rock/],
-  ["cinematic", /soundtrack|\bscore\b|cinematic|\bepic\b|trailer|video game|film/],
-  ["classical", /classical|orchestra|opera|baroque/],
-  ["jazz", /jazz|swing|bebop/],
-  ["hardrock", /hard rock|glam|arena rock|classic rock|heavy rock|southern rock|\baor\b/],
-  ["acoustic", /acoustic|singer-songwriter|unplugged|folk pop|stomp and holler/],
-  ["ballad", /ballad|soft rock/],
-  ["country", /country|americana|bluegrass|folk/],
-  ["indie", /indie|bedroom pop|shoegaze|dream pop/],
-  ["alternative", /alternative|grunge|post-rock|post-punk|britpop|garage rock/],
-];
-// Reihenfolge zählt: „dance pop“ ist eher Pop als Rave, „pop punk“ eher Rock
-const GENRES = [
-  ["chill", /lo-?fi|chill|ambient|acoustic|jazz|classical|piano|folk|soul|r&b|rnb|bossa|sleep|meditation|singer-songwriter|soundtrack|orchestra/],
-  ["rock", /rock|metal|punk|grunge|core\b|emo|hardcore|garage/],
-  ["bass", /hip ?hop|rap|trap|drill|grime|phonk|dancehall|afro|boom bap|gangsta/],
-  ["rave", /edm|house|techno|trance|dubstep|drum and bass|dnb|electro|hardstyle|rave|bass music|garage house|big room|psytrance|eurodance/],
-  ["pop", /pop|dance|disco|funk|latin|k-pop|schlager|indie/],
-];
 
 const genreCache = lru(100);
 async function artistGenres(item) {
@@ -255,15 +175,6 @@ async function artistGenres(item) {
 // Spotifys Künstler-Genres kommen oft leer oder gar nicht (Anfragelimit) – dann blieb nur das Tempo und
 // fast alles wurde „Pop“. Apples Suche kennt zu fast jedem Song ein Genre („Alternative“, „Dance“,
 // „Hip-Hop/Rap“ …), ohne Konto. Raus gehen nur Titel und Künstler; abschaltbar („Genre online nachschlagen“).
-const APPLE = [
-  // R&B vor Soul: „R&B/Soul“ (The Weeknd, SZA) groovt eher wie Pop als dass es chillt
-  ["pop", /r&b/],
-  ["rave", /dance|electronic|electronica|house|techno|trance|dubstep|drum ?(&|and) ?bass|hardstyle|edm|club/],
-  ["bass", /hip-?hop|rap|trap|urbano|reggaeton|dancehall|afro|grime|drill/],
-  ["rock", /rock|alternative|metal|punk|grunge|hardcore|emo|indie(?! ?pop)/],
-  ["chill", /soul|singer|songwriter|jazz|classical|ambient|soundtrack|folk|acoustic|new age|easy listening|lo-?fi|blues|country|piano|instrumental/],
-  ["pop", /pop|schlager|disco|funk|latin|world|reggae/],
-];
 const appleCache = lru(200);
 const norm = (s) => String(s || "").toLowerCase().normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, "");
 const bareTitle = (s) => String(s || "").replace(/\s+-\s+.*$/, "").replace(/\s*[([].*?[)\]]/g, "").trim();
@@ -308,41 +219,6 @@ async function appleSearch(title, artist, country) {
   }
 }
 
-// Profil aus allen Hinweisen: Apple-Genre des Songs (3 Punkte), Spotify-Genres des Künstlers (2 für das
-// erste, 1 für weitere) und der Klang selbst – Tempo und Lautheit (1). Die meisten Punkte gewinnen.
-function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
-  const score = {}, add = (k, n) => (score[k] = (score[k] || 0) + n);
-  let why = "";
-  const g = apple.toLowerCase();
-  const am = SPECIFIC.find(([, re]) => re.test(g)) || APPLE.find(([, re]) => re.test(g));
-  if (am) {
-    // „Electronic“ kann auch Ambient sein: langsam oder leise gemischt → Chill statt Rave
-    const calmMix = (bpm && bpm < 95) || loud < -14;
-    add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
-    why = apple;
-  }
-  genres.slice(0, 4).forEach((x, i) => {
-    const m = SPECIFIC.find(([, re]) => re.test(x)) || GENRES.find(([, re]) => re.test(x));
-    if (m) {
-      add(m[0], i === 0 ? 2 : 1);
-      why ||= x;
-    }
-  });
-  const energy = clamp((loud + 16) / 12, 0, 1);
-  if (energy < 0.35 || (bpm && bpm < 80)) add("chill", 1);
-  else if (bpm >= 118 && bpm <= 135 && energy > 0.6) add("rave", 1);
-  else if (bpm >= 80 && bpm < 105) add("bass", 1);
-  else if (bpm > 140 && energy > 0.7) add("rock", 1);
-  const best = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
-  let key = best ? best[0] : "pop";
-  // nur „Dance“/„Electronic“ ohne genauere Angabe: Tempo und Moll-Anteil entscheiden die Spielart
-  if (key === "rave" && bpm) {
-    if (bpm >= 160) key = "dnb";
-    else if (bpm >= 132 && bpm <= 150) key = minor > 0.6 ? "techno" : "trance";
-    else if (bpm >= 118 && bpm < 132) key = minor > 0.6 ? "techno" : "house";
-  }
-  return { key, why };
-}
 // Anteil der Song-Zeit in Moll (0..1) aus den Abschnitten der Analyse
 function minorShare(d) {
   const sx = d?.sections || [];

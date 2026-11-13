@@ -3,6 +3,7 @@ import { t } from "./i18n.js";
 import { cfg } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
 import { currentItem, covers, titleOf, artistOf, PLR } from "./player.js";
+import { kin } from "./styles.js";
 
 /* ---------------------------------------------------------------- Teilbare Karten */
 // Bilder im Hochformat 1080 × 1350 (passt für Instagram, Discord, X) im Mirage-Look.
@@ -322,6 +323,8 @@ const GENRE_COL = {
   ska: [250, 240, 120], emo: [120, 110, 200], jpop: [255, 140, 200], musical: [255, 210, 130], christmas: [230, 60, 70],
   celtic: [90, 210, 120], balkan: [255, 120, 60], amapiano: [255, 170, 90], lofi: [190, 160, 220], neoclassical: [200, 210, 235], acoustic: [220, 180, 130],
 };
+// weitere Spielarten: Farbe ihres Verwandten
+kin(GENRE_COL);
 async function partyRecapCard(r) {
   const songs = r?.songs || [];
   if (!songs.length) return;

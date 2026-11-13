@@ -3554,6 +3554,10 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   background: #15131f;
   color: #fff;
 }
+/* Suchfeld über der langen Stil-Liste */
+.mirage-settings .m-select-find .m-text {
+  margin-bottom: 6px;
+}
 /* Live-Link: QR-Code direkt in den Einstellungen */
 .mirage-settings .m-live {
   display: flex;
