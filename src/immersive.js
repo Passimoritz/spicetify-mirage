@@ -53,6 +53,7 @@ const ICON = {
   timer: '<svg viewBox="0 0 24 24"><path d="M9 2h6v2H9zm3 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-1 2h2v4.4l3 1.8-1 1.7-4-2.4z"/></svg>',
   film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
   wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
+  photo: '<svg viewBox="0 0 24 24"><path d="M9 4h6l1.5 2H20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3.5zm3 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>',
   confetti: '<svg viewBox="0 0 24 24"><path d="M4 20l5-14 9 9zm4.6-9.5L6.8 16.6l5.6-2.2zM14 3h2v3h-2zm5 3.6 1.4 1.4-2.1 2.1-1.4-1.4zM18 13h3v2h-3zM10.5 4.4l1.4-1 1.2 1.6-1.4 1z"/></svg>',
   dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
   game: '<svg viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.7 3.6a2.5 2.5 0 0 1-4.3 1.2L14.6 16H9.4l-2.3 1.8a2.5 2.5 0 0 1-4.3-1.2L2.1 13A5 5 0 0 1 7 7zm0 2a3 3 0 0 0-3 3.6l.8 3.6.5.3 2.5-2.5h7.4l2.5 2.5.5-.3.8-3.6A3 3 0 0 0 17 9zm1 1h2v2h2v2h-2v2H8v-2H6v-2h2zm8 0a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4zm-2 3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
@@ -125,6 +126,7 @@ const immersive = (() => {
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
+          <button type="button" class="m-im-sm m-im-photobtn" hidden>${ICON.photo}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
           <button type="button" class="m-im-sm m-im-menubtn" hidden>${ICON.more}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
@@ -296,6 +298,8 @@ const immersive = (() => {
     q.cvid = el.querySelector(".m-im-cvid");
     q.wishbtn = el.querySelector(".m-im-wishbtn");
     q.wishbtn.onclick = () => showSide(side === "wishes" ? null : "wishes");
+    q.photobtn = el.querySelector(".m-im-photobtn");
+    q.photobtn.onclick = () => showSide(side === "photos" ? null : "photos");
     q.cvbtn = el.querySelector(".m-im-cvbtn");
     q.cvbtn.onclick = async () => {
       const mode = el.dataset.mode;
@@ -2569,7 +2573,7 @@ const immersive = (() => {
     q.side.hidden = !kind;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -2602,6 +2606,7 @@ const immersive = (() => {
       el.querySelector(".m-im-wishtoast")?.remove();
       return wishPanel(body);
     }
+    if (kind === "photos") return photoPanel(body);
     if (kind === "screens") return screensPanel(body, item);
     if (kind === "dj") return djPanel(body);
     if (kind === "games") return gamesPanel(body);
@@ -2738,6 +2743,7 @@ const immersive = (() => {
     q.live.hidden = !(party && cfg.partyLive);
     if (q.live.hidden) el.querySelector(".m-im-livecard")?.remove();
     drawWishes();
+    drawPhotos();
   }
   // Songwünsche der Gäste (Live-Link): ein Knopf oben mit Zahl, die Liste in der Seitenleiste (wie die
   // Warteschlange), neue Wünsche gleiten kurz oben ein – auch wenn die Bedienung im Party-Modus ausgeblendet ist
@@ -2849,6 +2855,119 @@ const immersive = (() => {
     if (side === "wishes") wishPanel(q.sideBody);
   }
   window.addEventListener("mirage:wishes", () => drawWishes());
+  /* ---- Foto-Wand: Fotos der Gäste warten in der Seitenleiste auf dich; freigegebene schweben einzeln am Rand ein */
+  // Vorschaubilder in der Warteschlange sind unscharf, bis du mit der Maus darüber gehst: auf dem großen Bild
+  // ist ein nicht freigegebenes Foto so nie zu erkennen.
+  const photoQueue = [];
+  let photoBusy = false, photoRight = false;
+  const photoOn = () => el?.dataset.mode === "party" && cfg.partyLive && cfg.partyPhotos;
+  function photoRow(x) {
+    const row = document.createElement("div");
+    row.className = "m-im-photorow";
+    row.dataset.p = x.p;
+    const i = new Image();
+    i.alt = "";
+    i.src = x.url;
+    const txt = document.createElement("small");
+    txt.textContent = t("photoBy").replace("{n}", x.n || t("photoGuest"));
+    whoDot(txt, x);
+    const ok = document.createElement("button");
+    ok.type = "button";
+    ok.className = "m-im-photo-ok";
+    ok.textContent = t("photoOk");
+    ok.onclick = () => live.approvePhoto(x.p);
+    const no = document.createElement("button");
+    no.type = "button";
+    no.className = "m-im-photo-no";
+    no.textContent = t("photoNo");
+    no.onclick = () => live.rejectPhoto(x.p);
+    row.append(i, txt, ok, no);
+    return row;
+  }
+  function photoPanel(body) {
+    const list = photoOn() ? live.photos() : [], wait = list.filter((x) => x.st === "wait"), shown = list.filter((x) => x.st === "ok").reverse();
+    if (!list.length) {
+      const e = document.createElement("p");
+      e.className = "m-im-wishempty";
+      e.textContent = t("photoNone");
+      return body.replaceChildren(e);
+    }
+    const out = [];
+    const sec = (k) => {
+      const h = document.createElement("div");
+      h.className = "m-im-side-sec";
+      h.textContent = t(k);
+      out.push(h);
+    };
+    if (wait.length) {
+      sec("photoQueue");
+      out.push(...wait.map(photoRow));
+    }
+    if (shown.length) {
+      sec("photoGallery");
+      const g = document.createElement("div");
+      g.className = "m-im-photogrid";
+      for (const x of shown) {
+        const i = new Image();
+        i.alt = x.n ? t("photoBy").replace("{n}", x.n) : "";
+        i.src = x.url;
+        i.dataset.p = x.p;
+        g.append(i);
+      }
+      out.push(g);
+    }
+    body.replaceChildren(...out);
+  }
+  function drawPhotos() {
+    if (!el || !q.photobtn) return;
+    const list = photoOn() ? live.photos() : [], n = list.filter((x) => x.st === "wait").length;
+    q.photobtn.hidden = !list.length;
+    q.photobtn.dataset.n = n > 9 ? "9+" : n ? String(n) : "";
+    q.photobtn.title = q.photobtn.ariaLabel = t("photoTitle") + (n ? ` (${n})` : "");
+    requestAnimationFrame(fitTop);
+    if (side === "photos") photoPanel(q.sideBody);
+    // Foto-Wand aus oder Party vorbei: nichts mehr zeigen, was schon gelöscht ist
+    if (!list.length) {
+      photoQueue.length = 0;
+      el.querySelectorAll(".m-im-polaroid").forEach((n) => n.remove());
+    }
+  }
+  window.addEventListener("mirage:photos", () => drawPhotos());
+  // Freigegeben: ein kleines Polaroid gleitet abwechselnd links oder rechts herein, bleibt ein paar Sekunden und
+  // geht wieder. Immer nur eins zugleich, die übrigen warten; nie über der Mitte.
+  function nextPhoto() {
+    if (photoBusy || !el || !photoQueue.length) return;
+    const x = photoQueue.shift();
+    if (!photoOn() || !live.photos().some((y) => y.p === x.p && y.st === "ok")) return nextPhoto();
+    photoBusy = true;
+    // rechts liegt die Seitenleiste, solange sie offen ist: dann links
+    photoRight = !photoRight && q.side.hidden;
+    const card = document.createElement("figure");
+    card.className = "m-im-polaroid" + (photoRight ? " is-right" : "");
+    card.dataset.p = x.p;
+    const i = new Image();
+    i.alt = "";
+    i.src = x.url;
+    card.append(i);
+    if (x.n) {
+      const cap = document.createElement("figcaption");
+      cap.textContent = x.n;
+      whoDot(cap, x);
+      card.append(cap);
+    }
+    el.append(card);
+    setTimeout(() => card.classList.add("is-gone"), 6500);
+    setTimeout(() => {
+      card.remove();
+      photoBusy = false;
+      setTimeout(nextPhoto, 600);
+    }, 7300);
+  }
+  window.addEventListener("mirage:photoshow", (e) => {
+    if (!photoOn() || photoQueue.length > 6) return;
+    photoQueue.push(e.detail);
+    nextPhoto();
+  });
   // Live-Link: QR-Code und Link der Handy-Seite (verschlüsselt über einen Relay, siehe live.js)
   async function toggleLiveCard() {
     const old = el.querySelector(".m-im-livecard");

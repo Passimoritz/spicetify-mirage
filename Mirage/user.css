@@ -1025,6 +1025,157 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   font-size: 13px;
   opacity: 0.65;
 }
+/* Foto-Wand: Knopf mit Zahl der wartenden Fotos (ohne wartende keine Zahl) */
+#mirage-immersive .m-im-photobtn {
+  position: relative;
+}
+#mirage-immersive .m-im-photobtn:not([data-n=""])::after {
+  content: attr(data-n);
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  font: 700 10px/17px var(--m-font);
+  text-align: center;
+  color: #0b0a12;
+  background: var(--m-c);
+  box-shadow: 0 0 0 2px rgb(10 9 18 / 0.9);
+}
+/* Warteschlange: kleines Vorschaubild, unscharf, bis du mit der Maus oder Tastatur darauf bist */
+#mirage-immersive .m-im-photorow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 14px;
+  transition: background 0.2s;
+}
+#mirage-immersive .m-im-photorow:hover {
+  background: rgb(255 255 255 / 0.06);
+}
+#mirage-immersive .m-im-photorow img {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  filter: blur(9px);
+  transition: filter 0.25s;
+}
+#mirage-immersive .m-im-photorow:is(:hover, :focus-within) img {
+  filter: none;
+}
+#mirage-immersive .m-im-photorow small {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  opacity: 0.75;
+}
+#mirage-immersive .m-im-photorow button {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 99px;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: rgb(255 255 255 / 0.12);
+  transition: transform 0.15s, filter 0.15s;
+}
+#mirage-immersive .m-im-photorow button:hover {
+  filter: brightness(1.15);
+}
+#mirage-immersive .m-im-photorow button:active {
+  transform: scale(0.95);
+}
+#mirage-immersive .m-im-photorow .m-im-photo-ok {
+  color: #0b0a12;
+  background: var(--m-c);
+}
+/* Galerie: was schon gezeigt wurde */
+#mirage-immersive .m-im-photogrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px 8px;
+}
+#mirage-immersive .m-im-photogrid img {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  object-fit: cover;
+}
+/* freigegebenes Foto: ein Polaroid gleitet am Rand herein, leicht schräg, nie über der Mitte */
+#mirage-immersive .m-im-polaroid {
+  position: absolute;
+  left: 2.5vw;
+  bottom: 16vh;
+  z-index: 31;
+  width: clamp(120px, 11vw, 190px);
+  margin: 0;
+  padding: 8px 8px 0;
+  border-radius: 4px;
+  background: #f4f1ea;
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+  transform: rotate(-4deg);
+  animation: m-pola-l 0.9s var(--m-ease) backwards;
+  transition: transform 0.8s var(--m-ease), opacity 0.8s;
+}
+#mirage-immersive .m-im-polaroid.is-right {
+  left: auto;
+  right: 2.5vw;
+  transform: rotate(4deg);
+  animation-name: m-pola-r;
+}
+#mirage-immersive .m-im-polaroid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+}
+#mirage-immersive .m-im-polaroid figcaption {
+  overflow: hidden;
+  padding: 6px 2px 8px;
+  color: #2a2630;
+  font: 600 13px/1.2 var(--m-font);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+#mirage-immersive .m-im-polaroid.is-gone {
+  opacity: 0;
+  transform: translateX(-130%) rotate(-8deg);
+}
+#mirage-immersive .m-im-polaroid.is-right.is-gone {
+  transform: translateX(130%) rotate(8deg);
+}
+@keyframes m-pola-l {
+  from {
+    opacity: 0;
+    transform: translateX(-130%) rotate(-10deg);
+  }
+}
+@keyframes m-pola-r {
+  from {
+    opacity: 0;
+    transform: translateX(130%) rotate(10deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #mirage-immersive .m-im-polaroid,
+  #mirage-immersive .m-im-polaroid.is-gone {
+    animation: none;
+    transform: none;
+  }
+}
 /* neuer Wunsch: gleitet oben in der Mitte ein und nach ein paar Sekunden wieder hinaus */
 #mirage-immersive .m-im-wishtoast {
   position: absolute;

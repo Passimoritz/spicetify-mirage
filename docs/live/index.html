@@ -316,12 +316,24 @@
   /* gesungenes Wort mit Wortbild: leuchtet kurz in dessen Farbe */
   .lyr .fxw { animation: fxw 2.6s ease-out both; }
   @keyframes fxw { 18% { text-shadow: 0 0 16px rgba(var(--fxc), 0.95), 0 0 46px rgba(var(--fxc), 0.6); } 100% { text-shadow: 0 0 12px rgba(var(--fxc), 0.25); } }
+  /* Foto-Wand: Aufnehmen oder Auswählen, Fortschritt, Ergebnis */
+  .phpick { position: relative; display: grid; place-items: center; min-height: 50px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06); font-size: 16px; font-weight: 700; cursor: pointer; }
+  .phpick.go { border: 0; color: #0b0a12; background: rgb(var(--c)); }
+  .phpick input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .phpick.off { opacity: 0.45; pointer-events: none; }
+  .phprev { justify-self: center; max-width: 60%; max-height: 28vh; border-radius: 6px; border: 6px solid #f4f1ea; border-bottom-width: 18px; object-fit: contain; }
+  .phprev[hidden], .phbar[hidden] { display: none; }
+  .phbar { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+  .phbar b { display: block; height: 100%; width: 0; background: rgb(var(--c)); transition: width 0.3s; }
+  .pbox .phmsg { min-height: 1.4em; font-size: 15px; font-weight: 650; opacity: 1; }
+  @media (max-width: 360px) { .tools #bPhoto span { display: none; } }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div><button type="button" class="mebtn" id="bMe" hidden></button><button type="button" class="hostbtn" id="bHost" hidden>👑</button><button type="button" class="hostbtn rcbtn" id="bRc" hidden>🎛️</button></div>
 <div class="prof host" id="rc" hidden role="dialog" aria-modal="true" aria-labelledby="rcTitle"><div class="pbox"><div class="shead"><h2 id="rcTitle"></h2><button type="button" class="x" id="rcClose">✕</button></div><div class="hbody" id="rcBody"></div></div></div>
+<div class="prof host" id="pho" hidden role="dialog" aria-modal="true" aria-labelledby="phTitle"><div class="pbox"><div class="shead"><h2 id="phTitle"></h2><button type="button" class="x" id="phClose">✕</button></div><p id="phHint"></p><label class="phpick go" id="phCamL"><input type="file" id="phCam" accept="image/*" capture="environment"><span></span></label><label class="phpick" id="phFileL"><input type="file" id="phFile" accept="image/*"><span></span></label><img class="phprev" id="phPrev" alt="" hidden><div class="phbar" id="phBar" hidden><b></b></div><p class="phmsg" id="phMsg" role="status" aria-live="polite"></p></div></div>
 <div class="prof host" id="host" hidden role="dialog" aria-modal="true" aria-labelledby="hTitle"><div class="pbox"><div class="shead"><h2 id="hTitle"></h2><button type="button" class="x" id="hClose">✕</button></div><div class="hbody" id="hBody"></div></div></div>
 <div class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"><div class="pbox"><h2 id="pTitle"></h2><p id="pHint"></p><input id="pName" maxlength="20" autocomplete="nickname"><div class="sw" id="pSw"></div><p id="pSlotHint" hidden></p><div class="sw" id="pSlot" hidden></div><button type="button" class="peco" id="pEco" aria-pressed="false"></button><button type="button" class="go" id="pOk"></button></div></div>
 <div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p><div class="scan" id="scan" hidden><button type="button" id="scanBtn"></button><input id="scanLink" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url"><div class="scanmsg" id="scanMsg" role="status"></div></div></div>
@@ -332,7 +344,7 @@
 <div class="note" id="note" role="status"><small id="noteK"></small><b id="noteT"></b></div>
 <div class="poll" id="poll" hidden><h3 id="pollH"></h3></div>
 <div class="game" id="game" hidden></div>
-<div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button><button type="button" id="bTick" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4l4.6 18H5.4zm1.5 2-3.6 14h8.2l-1.2-4.6-3.9 2.3-1-1.7 4.4-2.6L12.5 4z"/></svg><span></span></button></div>
+<div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button><button type="button" id="bPhoto" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l1.5 2H20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3.5zm3 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg><span></span></button><button type="button" id="bTick" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4l4.6 18H5.4zm1.5 2-3.6 14h8.2l-1.2-4.6-3.9 2.3-1-1.7 4.4-2.6L12.5 4z"/></svg><span></span></button></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle">
   <div class="top2"><div class="grab"></div><div class="shead"><h2 id="wTitle"></h2><button type="button" class="x" id="wClose">✕</button></div><p class="hint" id="wHint"></p>
     <div class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2 9.8 4.5 4.5-1.4 1.4-4.5-4.5z"/></svg><input id="wSong" type="search" maxlength="240" enterkeyhint="search" autocomplete="off"></div></div>
@@ -443,6 +455,24 @@ const GUEST_TEXT = {
   zh: {"hTitle": "游戏主持", "hPick": "在大屏幕上开始游戏：", "hStart": "立即开始", "hSkip": "跳过本轮", "hSpin": "转动", "hEnd": "结束游戏", "hPts": "修改分数", "pTitle": "你是谁？", "pHint": "你的名字和颜色会显示在大屏幕上，在你的点歌和分数旁边。", "pOk": "完成", "pCol": "颜色", "gLate": "游戏已经开始了", "gLateHint": "现在加入，一起玩。", "gLateWatch": "加入：这局先观战，下一局再参与。", "gLateJoin": "加入", "netLost": "离线 · 正在重新连接 …", "netBack": "已重新连接", "netQuiet": "没有收到派对的信号", "wSong": "在 Spotify 搜索或粘贴歌曲链接 …", "wLinkOther": "这里只支持歌曲链接。在 Spotify 中：分享 → 复制歌曲链接", "old": ["页面已过期", "请关闭此标签页，重新扫描二维码。"], "tick": "节拍声", "tickHint": "每拍一声轻响", "wrMax": "你已经有 {n} 首待播的点歌了，等其中一首播放后再点吧。", "wrBlock": "这场派对不允许点这首歌。", "wrExplicit": "本场派对不接受含露骨内容的歌曲。", "pSlot": "你在灯光波浪中的位置", "rcTitle": "遥控器", "rcPlay": "播放或暂停", "rcPrev": "上一首", "rcNext": "下一首", "rcVol": "音量", "rcLvl": "强度", "rcLoc": "场地", "rcGame": "开始游戏", "rcWait": "正在连接 Mirage …", "eco": "省电", "ecoLow": "电量低，已开启" },
 };
 for (const src of [SCAN_TEXT, GAME_TEXT, GUEST_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
+// Texte der Foto-Wand, alle 14 Sprachen
+const PHOTO_TEXT = {
+  en: {"phBtn": "Photo", "phTitle": "Send a photo", "phHint": "Your photo appears on the big screen only after it is approved, and it is not stored. Your phone removes location and camera details before sending.", "phCam": "Take a photo", "phFile": "Choose a photo", "phPrep": "Preparing the photo …", "phSending": "Sending … {p} %", "phWait": "Sent – waiting for approval.", "phOk": "Approved – your photo is on the big screen!", "phNo": "Not shown this time.", "phSlow": "One photo every 30 seconds – try again in {n} s.", "phMax": "That's {n} photos – the limit for this party.", "phFull": "Lots of photos right now – try again in a moment.", "phBad": "That didn't work – try another photo.", "phOff": "The photo wall is switched off.", "phNoAns": "No answer from the big screen – try again."},
+  de: {"phBtn": "Foto", "phTitle": "Foto schicken", "phHint": "Dein Foto erscheint erst nach der Freigabe auf dem großen Bild und wird nicht gespeichert. Ort und Kameradaten entfernt dein Handy schon vor dem Senden.", "phCam": "Foto aufnehmen", "phFile": "Foto auswählen", "phPrep": "Foto wird vorbereitet …", "phSending": "Sende … {p} %", "phWait": "Gesendet – wartet auf Freigabe.", "phOk": "Freigegeben – dein Foto ist auf dem großen Bild!", "phNo": "Diesmal nicht gezeigt.", "phSlow": "Ein Foto alle 30 Sekunden – versuch es in {n} s noch mal.", "phMax": "Das sind {n} Fotos – mehr gehen auf dieser Party nicht.", "phFull": "Gerade kommen viele Fotos – versuch es gleich noch mal.", "phBad": "Das hat nicht geklappt – versuch ein anderes Foto.", "phOff": "Die Foto-Wand ist ausgeschaltet.", "phNoAns": "Keine Antwort vom großen Bild – versuch es noch mal."},
+  fr: {"phBtn": "Photo", "phTitle": "Envoyer une photo", "phHint": "Ta photo n'apparaît sur le grand écran qu'après validation, et elle n'est pas enregistrée. Ton téléphone retire la localisation et les infos de l'appareil avant l'envoi.", "phCam": "Prendre une photo", "phFile": "Choisir une photo", "phPrep": "Préparation de la photo …", "phSending": "Envoi … {p} %", "phWait": "Envoyée – en attente de validation.", "phOk": "Validée – ta photo est sur le grand écran !", "phNo": "Pas affichée cette fois.", "phSlow": "Une photo toutes les 30 secondes – réessaie dans {n} s.", "phMax": "Ça fait {n} photos – la limite pour cette soirée.", "phFull": "Beaucoup de photos en ce moment – réessaie dans un instant.", "phBad": "Ça n'a pas marché – essaie une autre photo.", "phOff": "Le mur photo est désactivé.", "phNoAns": "Pas de réponse du grand écran – réessaie."},
+  es: {"phBtn": "Foto", "phTitle": "Enviar una foto", "phHint": "Tu foto solo aparece en la pantalla grande cuando se aprueba, y no se guarda. Tu móvil quita la ubicación y los datos de la cámara antes de enviarla.", "phCam": "Hacer una foto", "phFile": "Elegir una foto", "phPrep": "Preparando la foto …", "phSending": "Enviando … {p} %", "phWait": "Enviada – esperando aprobación.", "phOk": "Aprobada – ¡tu foto está en la pantalla grande!", "phNo": "Esta vez no se muestra.", "phSlow": "Una foto cada 30 segundos – vuelve a intentarlo en {n} s.", "phMax": "Ya son {n} fotos – el límite de esta fiesta.", "phFull": "Muchas fotos ahora mismo – inténtalo de nuevo en un momento.", "phBad": "No ha funcionado – prueba con otra foto.", "phOff": "El muro de fotos está desactivado.", "phNoAns": "La pantalla grande no responde – inténtalo de nuevo."},
+  it: {"phBtn": "Foto", "phTitle": "Invia una foto", "phHint": "La tua foto compare sullo schermo grande solo dopo l'approvazione e non viene salvata. Il telefono rimuove posizione e dati della fotocamera prima dell'invio.", "phCam": "Scatta una foto", "phFile": "Scegli una foto", "phPrep": "Preparo la foto …", "phSending": "Invio … {p} %", "phWait": "Inviata – in attesa di approvazione.", "phOk": "Approvata – la tua foto è sullo schermo grande!", "phNo": "Questa volta non viene mostrata.", "phSlow": "Una foto ogni 30 secondi – riprova tra {n} s.", "phMax": "Sono {n} foto – il limite per questa festa.", "phFull": "Tante foto in questo momento – riprova tra poco.", "phBad": "Non ha funzionato – prova con un'altra foto.", "phOff": "La parete foto è disattivata.", "phNoAns": "Nessuna risposta dallo schermo grande – riprova."},
+  pt: {"phBtn": "Foto", "phTitle": "Enviar uma foto", "phHint": "A tua foto só aparece no ecrã grande depois de aprovada e não é guardada. O telemóvel remove a localização e os dados da câmara antes de enviar.", "phCam": "Tirar uma foto", "phFile": "Escolher uma foto", "phPrep": "A preparar a foto …", "phSending": "A enviar … {p} %", "phWait": "Enviada – à espera de aprovação.", "phOk": "Aprovada – a tua foto está no ecrã grande!", "phNo": "Desta vez não é mostrada.", "phSlow": "Uma foto a cada 30 segundos – tenta de novo daqui a {n} s.", "phMax": "Já são {n} fotos – o limite desta festa.", "phFull": "Muitas fotos neste momento – tenta de novo daqui a pouco.", "phBad": "Não resultou – tenta outra foto.", "phOff": "O mural de fotos está desligado.", "phNoAns": "Sem resposta do ecrã grande – tenta de novo."},
+  nl: {"phBtn": "Foto", "phTitle": "Stuur een foto", "phHint": "Je foto verschijnt pas op het grote scherm na goedkeuring en wordt niet opgeslagen. Je telefoon haalt locatie- en cameragegevens weg voor het versturen.", "phCam": "Foto maken", "phFile": "Foto kiezen", "phPrep": "Foto wordt voorbereid …", "phSending": "Versturen … {p} %", "phWait": "Verstuurd – wacht op goedkeuring.", "phOk": "Goedgekeurd – je foto staat op het grote scherm!", "phNo": "Deze keer niet getoond.", "phSlow": "Eén foto per 30 seconden – probeer het over {n} s opnieuw.", "phMax": "Dat zijn {n} foto's – de grens voor dit feest.", "phFull": "Veel foto's op dit moment – probeer het zo opnieuw.", "phBad": "Dat lukte niet – probeer een andere foto.", "phOff": "De fotomuur staat uit.", "phNoAns": "Geen antwoord van het grote scherm – probeer het opnieuw."},
+  pl: {"phBtn": "Zdjęcie", "phTitle": "Wyślij zdjęcie", "phHint": "Twoje zdjęcie pojawi się na dużym ekranie dopiero po akceptacji i nie jest zapisywane. Telefon usuwa lokalizację i dane aparatu przed wysłaniem.", "phCam": "Zrób zdjęcie", "phFile": "Wybierz zdjęcie", "phPrep": "Przygotowuję zdjęcie …", "phSending": "Wysyłanie … {p} %", "phWait": "Wysłane – czeka na akceptację.", "phOk": "Zaakceptowane – twoje zdjęcie jest na dużym ekranie!", "phNo": "Tym razem nie pokazane.", "phSlow": "Jedno zdjęcie co 30 sekund – spróbuj za {n} s.", "phMax": "To już {n} zdjęć – limit na tej imprezie.", "phFull": "Teraz przychodzi dużo zdjęć – spróbuj za chwilę.", "phBad": "Nie udało się – spróbuj innego zdjęcia.", "phOff": "Ściana zdjęć jest wyłączona.", "phNoAns": "Brak odpowiedzi z dużego ekranu – spróbuj ponownie."},
+  tr: {"phBtn": "Fotoğraf", "phTitle": "Fotoğraf gönder", "phHint": "Fotoğrafın büyük ekranda yalnızca onaylandıktan sonra görünür ve kaydedilmez. Telefonun göndermeden önce konum ve kamera bilgilerini siler.", "phCam": "Fotoğraf çek", "phFile": "Fotoğraf seç", "phPrep": "Fotoğraf hazırlanıyor …", "phSending": "Gönderiliyor … %{p}", "phWait": "Gönderildi – onay bekleniyor.", "phOk": "Onaylandı – fotoğrafın büyük ekranda!", "phNo": "Bu sefer gösterilmedi.", "phSlow": "30 saniyede bir fotoğraf – {n} sn sonra tekrar dene.", "phMax": "{n} fotoğraf oldu – bu partinin sınırı.", "phFull": "Şu an çok fotoğraf geliyor – birazdan tekrar dene.", "phBad": "Olmadı – başka bir fotoğraf dene.", "phOff": "Fotoğraf duvarı kapalı.", "phNoAns": "Büyük ekrandan yanıt yok – tekrar dene."},
+  ru: {"phBtn": "Фото", "phTitle": "Отправить фото", "phHint": "Фото появится на большом экране только после одобрения и нигде не сохраняется. Телефон удаляет геоданные и данные камеры перед отправкой.", "phCam": "Сделать фото", "phFile": "Выбрать фото", "phPrep": "Готовлю фото …", "phSending": "Отправка … {p} %", "phWait": "Отправлено – ждёт одобрения.", "phOk": "Одобрено – твоё фото на большом экране!", "phNo": "В этот раз не показано.", "phSlow": "Одно фото раз в 30 секунд – попробуй через {n} с.", "phMax": "Уже {n} фото – это предел для этой вечеринки.", "phFull": "Сейчас много фото – попробуй чуть позже.", "phBad": "Не получилось – попробуй другое фото.", "phOff": "Фотостена выключена.", "phNoAns": "Большой экран не отвечает – попробуй ещё раз."},
+  uk: {"phBtn": "Фото", "phTitle": "Надіслати фото", "phHint": "Фото з'явиться на великому екрані лише після схвалення і ніде не зберігається. Телефон видаляє геодані та дані камери перед надсиланням.", "phCam": "Зробити фото", "phFile": "Вибрати фото", "phPrep": "Готую фото …", "phSending": "Надсилання … {p} %", "phWait": "Надіслано – чекає на схвалення.", "phOk": "Схвалено – твоє фото на великому екрані!", "phNo": "Цього разу не показано.", "phSlow": "Одне фото раз на 30 секунд – спробуй за {n} с.", "phMax": "Уже {n} фото – це межа для цієї вечірки.", "phFull": "Зараз багато фото – спробуй трохи згодом.", "phBad": "Не вдалося – спробуй інше фото.", "phOff": "Фотостіну вимкнено.", "phNoAns": "Великий екран не відповідає – спробуй ще раз."},
+  ja: {"phBtn": "写真", "phTitle": "写真を送る", "phHint": "写真は承認されてから大きな画面に表示され、保存されることはありません。送信前に位置情報とカメラ情報はスマホで削除されます。", "phCam": "写真を撮る", "phFile": "写真を選ぶ", "phPrep": "写真を準備中 …", "phSending": "送信中 … {p} %", "phWait": "送信しました。承認を待っています。", "phOk": "承認されました。あなたの写真が大きな画面に！", "phNo": "今回は表示されませんでした。", "phSlow": "写真は30秒に1枚までです。{n}秒後にもう一度どうぞ。", "phMax": "{n}枚送りました。このパーティーの上限です。", "phFull": "いま写真が混み合っています。少し待ってからどうぞ。", "phBad": "うまくいきませんでした。別の写真でお試しください。", "phOff": "フォトウォールはオフです。", "phNoAns": "大きな画面から応答がありません。もう一度お試しください。"},
+  ko: {"phBtn": "사진", "phTitle": "사진 보내기", "phHint": "사진은 승인된 뒤에만 큰 화면에 나오고 저장되지 않아요. 보내기 전에 휴대폰이 위치와 카메라 정보를 지워요.", "phCam": "사진 찍기", "phFile": "사진 고르기", "phPrep": "사진 준비 중 …", "phSending": "보내는 중 … {p} %", "phWait": "보냈어요. 승인을 기다리는 중이에요.", "phOk": "승인됐어요. 내 사진이 큰 화면에 나와요!", "phNo": "이번에는 표시되지 않았어요.", "phSlow": "사진은 30초에 한 장이에요. {n}초 뒤에 다시 해 보세요.", "phMax": "벌써 {n}장이에요. 이 파티의 한도예요.", "phFull": "지금 사진이 많아요. 잠시 후 다시 해 보세요.", "phBad": "잘 안 됐어요. 다른 사진으로 해 보세요.", "phOff": "포토 월이 꺼져 있어요.", "phNoAns": "큰 화면에서 응답이 없어요. 다시 해 보세요."},
+  zh: {"phBtn": "照片", "phTitle": "发送照片", "phHint": "照片经过批准后才会出现在大屏幕上，并且不会被保存。发送前手机会删除位置和相机信息。", "phCam": "拍照", "phFile": "选择照片", "phPrep": "正在准备照片 …", "phSending": "正在发送 … {p} %", "phWait": "已发送，等待批准。", "phOk": "已批准，你的照片在大屏幕上了！", "phNo": "这次没有展示。", "phSlow": "每 30 秒只能发一张，{n} 秒后再试。", "phMax": "已经 {n} 张了，这是本次派对的上限。", "phFull": "现在照片太多了，稍后再试。", "phBad": "没有成功，换一张照片试试。", "phOff": "照片墙已关闭。", "phNoAns": "大屏幕没有响应，请再试一次。"},
+};
+for (const [k, v] of Object.entries(PHOTO_TEXT)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
 L.en = { ...L.en, old: ["Page out of date", "Close this tab and scan the QR code again."] };
@@ -663,6 +693,8 @@ async function receive(m, retained) {
     drawRc();
     return;
   }
+  // Stand eines eigenen Fotos (angekommen, freigegeben, abgelehnt, zu viele …)
+  if (s.pho) return photoAck(s.pho);
   // Wunsch abgelehnt (Regeln der Party): sagen warum, und gleich wieder wünschen lassen
   if (s.wr) {
     // Antwort auf einen eingefügten Link: die Suche ist damit beantwortet
@@ -770,6 +802,9 @@ function apply(s) {
     lastFxAt = s.fx.s;
     wordFx(s.fx);
   }
+  // Foto-Wand: nur wenn der Gastgeber sie eingeschaltet hat (ältere Themes senden „pw“ nicht)
+  $("bPhoto").hidden = s.pw !== 1;
+  if (s.pw !== 1 && !$("pho").hidden) closePhoto();
   // Songwünsche: nur wenn der Gastgeber sie erlaubt
   $("bWish").hidden = !Array.isArray(s.w);
   if (Array.isArray(s.w)) drawWishes(s.w);
@@ -1085,6 +1120,163 @@ $("wClose").onclick = (e) => {
   document.body.classList.remove("wish");
 };
 $("sheet").addEventListener("click", (e) => e.stopPropagation());
+
+/* ---- Foto-Wand: ein Foto an das große Bild, sichtbar erst nach der Freigabe */
+// Das Foto wird hier auf dem Handy neu gezeichnet: das <img> dreht es nach EXIF richtig, beim Zeichnen auf
+// die Leinwand fallen alle Metadaten weg (Ort, Gerät, Zeit). Höchstens 640 px, als JPEG unter 60 KB – die
+// Qualität sinkt, bis es passt. Dann in Stücken unter 32 KB, verschlüsselt wie jede andere Nachricht.
+const PH_MAX = 60000, PH_SIDE = 640, PH_CHUNK = 20000, PH_GAP = 30000, PH_MAXN = 5;
+let phCur = null, phLast = 0, phCount = 0, phPrevUrl = "";
+const phMine = new Map(); // Kennung → letzter Stand
+const phB64 = (u8) => {
+  let x = "";
+  for (let i = 0; i < u8.length; i += 8192) x += String.fromCharCode(...u8.subarray(i, i + 8192));
+  return btoa(x);
+};
+const phSay = (text) => ($("phMsg").textContent = text);
+function phBar(f) {
+  $("phBar").hidden = f == null;
+  $("phBar").firstChild.style.width = Math.round((f || 0) * 100) + "%";
+}
+function phBusy(on) {
+  for (const id of ["phCamL", "phFileL"]) $(id).classList.toggle("off", on);
+}
+async function photoPrep(file) {
+  if (!file || (file.type && !/^image\//.test(file.type)) || file.size > 40e6) return null;
+  const url = URL.createObjectURL(file);
+  try {
+    const im = new Image();
+    im.src = url;
+    await im.decode();
+    const w = im.naturalWidth, h = im.naturalHeight;
+    if (!w || !h) return null;
+    const c = document.createElement("canvas"), x = c.getContext("2d");
+    // erst die Qualität senken, reicht das nicht, das Bild verkleinern
+    for (let k = Math.min(1, PH_SIDE / Math.max(w, h)), step = 0; step < 4; step++, k *= 0.75) {
+      c.width = Math.max(1, Math.round(w * k));
+      c.height = Math.max(1, Math.round(h * k));
+      x.fillStyle = "#000";
+      x.fillRect(0, 0, c.width, c.height);
+      x.drawImage(im, 0, 0, c.width, c.height);
+      for (const q of [0.86, 0.76, 0.66, 0.56, 0.46, 0.36]) {
+        const b = await new Promise((ok) => c.toBlob(ok, "image/jpeg", q));
+        if (b && b.size <= PH_MAX) return new Uint8Array(await b.arrayBuffer());
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+async function photoGo(file) {
+  if (phCur && !phCur.st) return;
+  if (phCount >= PH_MAXN) return phSay(T.phMax.replace("{n}", PH_MAXN));
+  if (Date.now() - phLast < PH_GAP) return phSay(T.phSlow.replace("{n}", Math.ceil((PH_GAP - (Date.now() - phLast)) / 1000)));
+  phBusy(true);
+  phSay(T.phPrep);
+  const bytes = await photoPrep(file);
+  if (!bytes) {
+    phBusy(false);
+    return phSay(T.phBad);
+  }
+  // Vorschau aus den Bytes, die wirklich gesendet werden
+  if (phPrevUrl) URL.revokeObjectURL(phPrevUrl);
+  phPrevUrl = URL.createObjectURL(new Blob([bytes], { type: "image/jpeg" }));
+  $("phPrev").src = phPrevUrl;
+  $("phPrev").hidden = false;
+  await photoPush(bytes);
+}
+// Stücke senden: jedes doppelt (ein Relay kann verlieren); kommt keine Antwort, der ganze Satz noch einmal
+async function photoPush(bytes) {
+  if (!conns.size) {
+    phBusy(false);
+    return phSay(T.net[1]);
+  }
+  const p = (Math.random().toString(36).slice(2) + "000000").slice(0, 10);
+  const h = phB64(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const d = phB64(bytes), n = Math.max(1, Math.ceil(d.length / PH_CHUNK)), nm = (store("mlName") || "").trim().slice(0, 20), c = myCol();
+  const parts = Array.from({ length: n }, (_, i) => ({ k: "photo", p, i, n, h, d: d.slice(i * PH_CHUNK, (i + 1) * PH_CHUNK), nm, c }));
+  phCur = { p, parts, tries: 0, st: "" };
+  phMine.set(p, "");
+  photoParts(phCur);
+}
+function photoParts(cur) {
+  cur.tries++;
+  cur.parts.forEach((m, i) => setTimeout(() => {
+    if (phCur !== cur || cur.st) return;
+    sendSure(m, 1);
+    if (cur.tries === 1) {
+      phBar((i + 1) / cur.parts.length);
+      phSay(T.phSending.replace("{p}", Math.round(((i + 1) / cur.parts.length) * 100)));
+    }
+  }, i * 300));
+  clearTimeout(cur.t);
+  cur.t = setTimeout(() => {
+    if (phCur !== cur || cur.st) return;
+    if (cur.tries < 2) return photoParts(cur);
+    cur.st = "none";
+    phBusy(false);
+    phBar(null);
+    phSay(T.phNoAns);
+  }, cur.parts.length * 300 + 9000);
+}
+const PH_SAY = { wait: "phWait", ok: "phOk", no: "phNo", slow: "phSlow", max: "phMax", full: "phFull", bad: "phBad", off: "phOff" };
+function photoAck(a) {
+  const p = String(a?.p || ""), st = String(a?.st || "");
+  if (!phMine.has(p) || !PH_SAY[st] || phMine.get(p) === st) return;
+  // freigegeben oder abgelehnt kommt erst später: ein älteres Foto zählt nicht mehr als „wartet“
+  if (phMine.get(p) && st === "wait") return;
+  phMine.set(p, st);
+  if (st === "wait") {
+    phCount++;
+    phLast = Date.now();
+  }
+  if (st === "max") phCount = PH_MAXN;
+  const text = T[PH_SAY[st]].replace("{n}", Number(a.w || a.n) || (st === "max" ? PH_MAXN : 30));
+  if (phCur?.p === p) {
+    phCur.st = st;
+    clearTimeout(phCur.t);
+    phBusy(false);
+    phBar(null);
+    phSay(text);
+  }
+  // Freigabe oder Ablehnung, während das Fenster zu ist: kurz oben sagen (nur auf diesem Handy)
+  if ((st === "ok" || st === "no") && $("pho").hidden) showNote(T.phTitle, text, 6000);
+}
+function openPhoto() {
+  $("phTitle").textContent = T.phTitle;
+  $("phHint").textContent = T.phHint;
+  $("phCamL").lastChild.textContent = "📷 " + T.phCam;
+  $("phFileL").lastChild.textContent = "🖼️ " + T.phFile;
+  if (!phCur || phCur.st) {
+    phSay("");
+    phBar(null);
+  }
+  $("pho").hidden = false;
+}
+function closePhoto() {
+  $("pho").hidden = true;
+}
+for (const id of ["phCam", "phFile"]) {
+  $(id).onchange = () => {
+    const f = $(id).files?.[0];
+    $(id).value = "";
+    if (f) photoGo(f);
+  };
+}
+$("bPhoto").querySelector("span").textContent = T.phBtn;
+$("bPhoto").title = $("bPhoto").ariaLabel = T.phTitle;
+$("bPhoto").onclick = (e) => {
+  e.stopPropagation();
+  openPhoto();
+};
+$("phClose").onclick = (e) => {
+  e.stopPropagation();
+  closePhoto();
+};
+$("pho").addEventListener("click", (e) => e.stopPropagation());
 
 /* ---- Liedtext und Vibration an/aus (bleibt gespeichert) */
 const flag = (k, def) => (store(k) ?? (def ? "1" : "0")) === "1";

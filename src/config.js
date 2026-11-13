@@ -136,6 +136,8 @@ const DEFAULTS = {
   wishAuto: 0,
   // Reaktionen der Gäste (Emoji vom Handy) steigen am linken und rechten Rand des Party-Bilds auf
   partyReacts: true,
+  // Foto-Wand: Gäste schicken Fotos vom Handy, sichtbar erst nach deiner Freigabe; aus, bis du sie einschaltest
+  partyPhotos: false,
   // Lichtwelle auf den Handys: 0 alle zugleich, 1 der Reihe nach (Platznummer 1–8), 2 in drei Farbgruppen
   partyWave: 0,
   partyCrowd: true,
