@@ -23,7 +23,9 @@ let hay = "";
   for (const f of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, f.name);
     if (f.isDirectory()) walk(p);
-    else if (/\.(css|js)$/.test(f.name) && !/^(theme\.js|user\.css|colors\.css)$/.test(f.name) && !/extensions/.test(p)) hay += fs.readFileSync(p, "utf8") + "\n";
+    // Spicetify legt eigene Dateien dazu (xpui-modules.js enthält eine eigene, teils veraltete Namensliste): die zählen
+    // nicht als Spotify, sonst gilt ein Name als vorhanden, den Spotify längst nicht mehr hat
+    else if (/\.(css|js)$/.test(f.name) && !/^(theme\.js|user\.css|colors\.css|xpui-modules\.js)$|^spicetify-/.test(f.name) && !/extensions|[\\/]helper[\\/]/.test(p)) hay += fs.readFileSync(p, "utf8") + "\n";
   }
 })(xpui);
 const cssmap = arg("cssmap");

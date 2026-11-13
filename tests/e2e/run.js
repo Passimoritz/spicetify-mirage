@@ -1006,7 +1006,9 @@ async function resultCard() {
   const at = (name) => drawn.indexOf(name);
   ok(at("Alpha") >= 0 && at("Alpha") < at("Beta") && at("Beta") < at("Gamma"), "karte: alle drei in der Reihenfolge der Rangliste: " + drawn.join(" | "));
   ok(drawn[at("Alpha") + 1] === "2" && drawn[at("Beta") + 1] === "1" && drawn[at("Gamma") + 1] === "0", "karte: mit ihren Punkten: " + drawn.join(" | "));
-  ok(drawn.some((x) => x.includes("Ich hab noch nie") || x.includes("Never have I ever")), "karte: nennt das Spiel");
+  // ohne Mirages Schrift (CI) bricht die Ersatzschrift den Titel um: darum über alle gezeichneten Texte hinweg suchen
+  const all = drawn.join(" ").replace(/\s+/g, " ");
+  ok(all.includes("Ich hab noch nie") || all.includes("Never have I ever"), "karte: nennt das Spiel: " + drawn.join(" | "));
   await wait(600);
   ok((await big.state()).st === "end", "karte: die Siegerehrung bleibt stehen");
   await close();

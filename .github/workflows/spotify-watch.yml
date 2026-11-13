@@ -33,9 +33,13 @@ jobs:
             echo "Windows setup: $(stat -c %s spotify.exe) bytes"
             7z l spotify.exe 2>&1 | tail -n 15 || true
             7z x -y -ospotify spotify.exe > /dev/null 2>&1 || true
-            # the setup may hold a further archive with the app inside
-            for inner in $(find spotify -type f \( -name '*.7z' -o -name '*.zip' -o -name '*.exe' \) 2>/dev/null | head -5); do
+            # the setup holds the app as one big embedded block (7-Zip lists it as "[0]"); unpack that and any archive in it
+            find spotify -type f -size +10M 2>/dev/null | head -5 | while read -r inner; do
+              echo "inner: $inner ($(stat -c %s "$inner") bytes)"
               7z x -y -ospotify/inner "$inner" > /dev/null 2>&1 || true
+            done
+            find spotify/inner -type f -size +10M 2>/dev/null | head -5 | while read -r inner; do
+              7z x -y -ospotify/inner2 "$inner" > /dev/null 2>&1 || true
             done
             SPA=$(find spotify -name xpui.spa 2>/dev/null | head -1)
             VERSION=$(strings spotify.exe 2>/dev/null | grep -o -E '1\.[0-9]+\.[0-9]+\.[0-9]+\.g[0-9a-f]+' | head -1 || true)
@@ -60,7 +64,9 @@ jobs:
             SOURCE="Linux package"
           fi
           test -n "$SPA"
-          unzip -q -o "$SPA" -d xpui
+          # 7-Zip instead of unzip: Spotify's archive has a "/" entry that unzip rejects with exit code 2
+          7z x -y -oxpui "$SPA" > /dev/null
+          test -n "$(ls xpui/*.css 2>/dev/null | head -1)"
           echo "SPOTIFY_VERSION=${VERSION:-unknown} (${SOURCE})" >> "$GITHUB_ENV"
           echo "Checking Spotify ${VERSION:-unknown} from the ${SOURCE}: $(ls xpui | wc -l) files"
 
