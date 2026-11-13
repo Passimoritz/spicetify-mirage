@@ -272,6 +272,42 @@
         gBingoPlayed: "{n} von {m} Songs gespielt",
         gBingoWin: "BINGO! {n}"
       });
+      Object.assign(GAME_TEXT.en, {
+        gKar: "Karaoke",
+        gKarHint: "One guest sings a part of the song, their phone listens and gives points for timing, notes and singing along. The recording stays on the phone",
+        gKarTurn: "{n} sings",
+        gKarMicWait: "Turn on the mic on your phone \u2026",
+        gKarMicOn: "\u{1F3A4} Mic on",
+        gKarMicOff: "No mic: just for fun this time",
+        gKarCalc: "The phone is counting \u2026",
+        gKarNoScore: "No score this time. Applause anyway!",
+        gKarNoLyrics: "Karaoke needs time-synced lyrics. The next songs had none.",
+        gKarT: "Timing",
+        gKarP: "Notes",
+        gKarD: "Sang along",
+        gKarP1: "Brave! Big applause!",
+        gKarP2: "Nicely done!",
+        gKarP3: "Really well sung!",
+        gKarP4: "Superstar!"
+      });
+      Object.assign(GAME_TEXT.de, {
+        gKar: "Karaoke",
+        gKarHint: "Einer singt eine Stelle des Songs, sein Handy h\xF6rt zu und gibt Punkte f\xFCr Timing, T\xF6ne und Dabeisein. Die Aufnahme bleibt auf dem Handy",
+        gKarTurn: "{n} singt",
+        gKarMicWait: "Mikro am Handy einschalten \u2026",
+        gKarMicOn: "\u{1F3A4} Mikro an",
+        gKarMicOff: "Ohne Mikro: diesmal nur zum Spa\xDF",
+        gKarCalc: "Das Handy rechnet \u2026",
+        gKarNoScore: "Diesmal ohne Wertung. Applaus gibt's trotzdem!",
+        gKarNoLyrics: "Karaoke braucht zeitgenauen Liedtext. Die n\xE4chsten Songs hatten keinen.",
+        gKarT: "Timing",
+        gKarP: "T\xF6ne",
+        gKarD: "Dabei",
+        gKarP1: "Mutig! Gro\xDFer Applaus!",
+        gKarP2: "Sch\xF6n gesungen!",
+        gKarP3: "Richtig stark gesungen!",
+        gKarP4: "Superstar!"
+      });
     }
   });
 
@@ -973,6 +1009,39 @@
     }
   });
 
+  // src/i18n-photos.js
+  var PHOTOS_TEXT;
+  var init_i18n_photos = __esm({
+    "src/i18n-photos.js"() {
+      PHOTOS_TEXT = {
+        en: {
+          partyPhotos: "Photo wall",
+          partyPhotosHint: "Guests can send a photo from their phone. Nothing shows until you approve it; photos stay in memory only and are gone when the party ends",
+          photoTitle: "Photo wall",
+          photoQueue: "Waiting for you",
+          photoGallery: "Shown",
+          photoNone: "No photos yet. Guests send them with the photo button on their phone.",
+          photoOk: "Show",
+          photoNo: "Reject",
+          photoBy: "from {n}",
+          photoGuest: "a guest"
+        },
+        de: {
+          partyPhotos: "Foto-Wand",
+          partyPhotosHint: "G\xE4ste k\xF6nnen ein Foto vom Handy schicken. Zu sehen ist nichts, bevor du es freigibst; Fotos bleiben nur im Speicher und sind nach der Party weg",
+          photoTitle: "Foto-Wand",
+          photoQueue: "Wartet auf dich",
+          photoGallery: "Gezeigt",
+          photoNone: "Noch keine Fotos. G\xE4ste schicken sie mit dem Foto-Knopf auf dem Handy.",
+          photoOk: "Zeigen",
+          photoNo: "Ablehnen",
+          photoBy: "von {n}",
+          photoGuest: "einem Gast"
+        }
+      };
+    }
+  });
+
   // src/i18n.js
   var I18N, LANG, t;
   var init_i18n = __esm({
@@ -986,6 +1055,7 @@
       init_i18n_res();
       init_i18n_lyrics();
       init_i18n_genres();
+      init_i18n_photos();
       I18N = {
         en: {
           g_library: "Library",
@@ -9864,6 +9934,7 @@
       for (const [l, v] of Object.entries(RES_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
       for (const [l, v] of Object.entries(LYRICS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
       for (const [l, v] of Object.entries(GENRE_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
+      for (const [l, v] of Object.entries(PHOTOS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
       LANG = (() => {
         let l = "";
         try {
@@ -10071,6 +10142,8 @@
         gameDrink: false,
         gameSfx: 0.7,
         gameDur: 30,
+        // Karaoke: so lang ist die gesungene Stelle mindestens (12–45 s, ohne Schalter; die Tests kürzen sie)
+        gameKarLen: 30,
         gameBreak: 8,
         gameBonus: true,
         gameCard: "big",
@@ -10097,6 +10170,8 @@
         wishAuto: 0,
         // Reaktionen der Gäste (Emoji vom Handy) steigen am linken und rechten Rand des Party-Bilds auf
         partyReacts: true,
+        // Foto-Wand: Gäste schicken Fotos vom Handy, sichtbar erst nach deiner Freigabe; aus, bis du sie einschaltest
+        partyPhotos: false,
         // Lichtwelle auf den Handys: 0 alle zugleich, 1 der Reihe nach (Platznummer 1–8), 2 in drei Farbgruppen
         partyWave: 0,
         partyCrowd: true,
@@ -11078,9 +11153,9 @@
       offer({ lang: "", source: "title", synced: false, instrumental: true, lines: [] });
       return best2;
     }
-    const fits = (r) => !own2 || !r.instrumental && sameLyrics(own2, r, 0.4);
+    const fits2 = (r) => !own2 || !r.instrumental && sameLyrics(own2, r, 0.4);
     await Promise.all((o.sources || []).map((src) => within(src, wait, signal).then((r) => {
-      if (r && fits(r)) offer(own2 ? { ...r, lang: own2.lang || r.lang } : r);
+      if (r && fits2(r)) offer(own2 ? { ...r, lang: own2.lang || r.lang } : r);
     })));
     for (const src of o.last || []) {
       if (best2 || signal?.aborted) break;
@@ -11703,15 +11778,15 @@
     return best2;
   }
   function tempoFromLines(on, hint) {
-    const fits = [];
+    const fits2 = [];
     let top2 = 0;
     for (let L3 = 1.2; L3 <= 12; L3 += 5e-3) {
       const { R } = fitGrid(on, L3);
-      fits.push([L3, R]);
+      fits2.push([L3, R]);
       top2 = Math.max(top2, R);
     }
     if (!top2) return null;
-    const L2 = fits.filter(([, R]) => R >= top2 * 0.97).pop()[0];
+    const L2 = fits2.filter(([, R]) => R >= top2 * 0.97).pop()[0];
     const family = [8, 4, 16, 2, 32].map((k) => 60 * k / L2).filter((b) => b >= 70 && b <= 170);
     if (!family.length) return null;
     const near = hint && family.find((b) => Math.abs(b / hint - 1) < 0.04);
@@ -11754,7 +11829,7 @@
     const seen2 = /* @__PURE__ */ new Map();
     for (const l of lines) seen2.set(key(l.text), (seen2.get(key(l.text)) || 0) + 1);
     const hook = lines.filter((l) => seen2.get(key(l.text)) >= 2).map((l) => l.t / 1e3);
-    const sung = lines.map((l) => l.t / 1e3);
+    const sung2 = lines.map((l) => l.t / 1e3);
     const near = (arr, t2, r) => arr.some((x) => Math.abs(x - t2) < r);
     const base = feat?.loud ?? dz?.loud ?? -8;
     const energy = feat?.energy ?? 0.65;
@@ -11767,8 +11842,8 @@
     for (let i = 0; i < beats.length * 2; i++) {
       const t2 = phase + i * (P / 2), beatI = i >> 1, inBar = ((beatI - one) % 4 + 4) % 4, off = i & 1;
       if (t2 >= dur) break;
-      const lyrical = near(sung, t2, 6), chorus = near(hook, t2, 5);
-      const lvl = base - (lyrical ? 0 : sung.length ? 7 : 2) + (chorus ? 2.5 : 0) - (t2 < 4 || t2 > dur - 6 ? 6 : 0);
+      const lyrical = near(sung2, t2, 6), chorus = near(hook, t2, 5);
+      const lvl = base - (lyrical ? 0 : sung2.length ? 7 : 2) + (chorus ? 2.5 : 0) - (t2 < 4 || t2 > dur - 6 ? 6 : 0);
       const kick = !off && (inBar === 0 || inBar === 2), snare = !off && (inBar === 1 || inBar === 3);
       segs.push({
         t: t2,
@@ -20540,6 +20615,122 @@
     }
   });
 
+  // src/photos.js
+  async function hashOf(u8) {
+    return b64u(new Uint8Array(await crypto.subtle.digest("SHA-256", u8)));
+  }
+  function fromB64(s) {
+    const bin = atob(s), out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  function createAssembler({ now = () => Date.now(), timeout = PHOTO.TIMEOUT, maxOpen = 6 } = {}) {
+    const open2 = /* @__PURE__ */ new Map(), done2 = /* @__PURE__ */ new Map();
+    function sweep() {
+      const t2 = now();
+      for (const [k, s] of open2) if (t2 - s.at > timeout) open2.delete(k);
+      for (const [k, at3] of done2) if (t2 - at3 > 12e4) done2.delete(k);
+    }
+    async function add(from2, m) {
+      sweep();
+      const n = m?.n, i = m?.i, d = m?.d;
+      if (!PID.test(String(m?.p)) || !HASH.test(String(m?.h)) || !Number.isInteger(n) || n < 1 || n > PHOTO.MAX_CHUNKS || !Number.isInteger(i) || i < 0 || i >= n) return { st: "bad" };
+      if (typeof d !== "string" || !d.length || d.length > PHOTO.CHUNK || !B64.test(d) || i < n - 1 && d.length !== PHOTO.CHUNK) return { st: "bad" };
+      const key = from2 + "|" + m.p;
+      if (done2.has(key)) return { st: "dup", p: m.p };
+      let s = open2.get(key);
+      if (s && (s.n !== n || s.h !== m.h)) {
+        open2.delete(key);
+        return { st: "bad", p: m.p };
+      }
+      const first = !s;
+      if (!s) {
+        for (const [k, o] of open2) if (o.from === from2) open2.delete(k);
+        if (open2.size >= maxOpen) open2.delete(open2.keys().next().value);
+        s = { from: from2, n, h: m.h, parts: new Array(n), got: 0, at: now() };
+        open2.set(key, s);
+      }
+      if (s.parts[i] == null) {
+        s.parts[i] = d;
+        s.got++;
+      }
+      if (s.got < n) return { st: "part", p: m.p, first };
+      open2.delete(key);
+      done2.set(key, now());
+      let bytes;
+      try {
+        bytes = fromB64(s.parts.join(""));
+      } catch {
+        bytes = null;
+      }
+      if (!bytes || bytes.length > PHOTO.MAX_BYTES || !isJpeg(bytes) || await hashOf(bytes) !== s.h) {
+        done2.delete(key);
+        return { st: "bad", p: m.p };
+      }
+      return { st: "done", p: m.p, bytes, first };
+    }
+    const drop = (from2, p) => open2.delete(from2 + "|" + p);
+    return { add, sweep, drop, open: open2, clear: () => (open2.clear(), done2.clear()) };
+  }
+  function createLimiter({ now = () => Date.now(), gap = PHOTO.GAP, perGuest = PHOTO.PER_GUEST, burst: burst2 = PHOTO.BURST, refill = PHOTO.REFILL, queue: queue3 = PHOTO.QUEUE } = {}) {
+    const by = /* @__PURE__ */ new Map();
+    let tokens = burst2, at3 = now();
+    const fill = () => {
+      const t2 = now();
+      tokens = Math.min(burst2, tokens + (t2 - at3) / refill);
+      at3 = t2;
+    };
+    function check2(id, waiting3) {
+      const g = by.get(id) || { n: 0, last: -Infinity };
+      if (g.n >= perGuest) return { st: "max", n: perGuest };
+      if (now() - g.last < gap) return { st: "slow", w: Math.ceil((gap - (now() - g.last)) / 1e3) };
+      if (waiting3 >= queue3) return { st: "full" };
+      fill();
+      if (tokens < 1) return { st: "full" };
+      return { st: "go" };
+    }
+    function take(id) {
+      const g = by.get(id) || { n: 0, last: -Infinity };
+      g.n++;
+      g.last = now();
+      by.set(id, g);
+      fill();
+      tokens = Math.max(0, tokens - 1);
+    }
+    return { check: check2, take, clear: () => by.clear() };
+  }
+  var PHOTO, B64, PID, HASH, b64u, isJpeg;
+  var init_photos = __esm({
+    "src/photos.js"() {
+      PHOTO = {
+        MAX_BYTES: 64 * 1024,
+        // Handy zielt auf 60 KB, ein wenig Luft
+        CHUNK: 2e4,
+        // Base64-Zeichen je Stück (durch 4 teilbar) → Nachricht ≈ 20 KB
+        MAX_CHUNKS: 5,
+        TIMEOUT: 25e3,
+        // unvollständige Sätze fliegen danach raus
+        GAP: 3e4,
+        // ein Foto je 30 s und Gast
+        PER_GUEST: 5,
+        // je Gast und Party
+        QUEUE: 12,
+        // höchstens so viele warten auf deine Freigabe
+        GALLERY: 24,
+        // freigegebene im Speicher, ältere fallen raus
+        BURST: 3,
+        // insgesamt: kurz drei, dann eines je 6 s
+        REFILL: 6e3,
+        SIDE: 640
+      };
+      B64 = /^[A-Za-z0-9+/]*={0,2}$/;
+      PID = /^[\w-]{6,16}$/;
+      HASH = /^[\w-]{43}$/;
+      b64u = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      isJpeg = (u8) => u8.length > 4 && u8[0] === 255 && u8[1] === 216 && u8[2] === 255 && u8[u8.length - 2] === 255 && u8[u8.length - 1] === 217;
+    }
+  });
+
   // src/live.js
   function mqttOpen(url, { onReady, onMessage, onClose }) {
     const ws = new WebSocket(url, "mqtt");
@@ -20621,16 +20812,17 @@
     retire(ses);
     const raw = crypto.getRandomValues(new Uint8Array(16)), ch = crypto.getRandomValues(new Uint8Array(16));
     const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
-    const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}`;
+    const url = `${PAGE}#c=${b64u2(ch)}&k=${b64u2(raw)}`;
     const hraw = crypto.getRandomValues(new Uint8Array(16));
     const hostKey = await crypto.subtle.importKey("raw", hraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
     const rraw = crypto.getRandomValues(new Uint8Array(16));
     const rcKey = await crypto.subtle.importKey("raw", rraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-    ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await import_qrcode.default.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "", rcKey, rcUrl: `${url}&h=${b64u(hraw)}&r=${b64u(rraw)}`, rcQr: "" };
+    ses = { topic: "mirage-live/" + b64u2(ch), key, url, qr: await import_qrcode.default.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u2(hraw)}`, hostQr: "", rcKey, rcUrl: `${url}&h=${b64u2(hraw)}&r=${b64u2(rraw)}`, rcQr: "" };
     hostSeen.clear();
     offAt = 0;
     wishes = [];
     emitWishes();
+    clearPhotos();
     emit();
     return ses;
   }
@@ -20837,6 +21029,7 @@
       window.dispatchEvent(new CustomEvent("mirage:react", { detail: msg.e }));
       return;
     }
+    if (msg.k === "photo") return void photoIn(id, msg);
     if (msg.k === "pvote") {
       if (!poll || poll.id !== msg.p || Date.now() > poll.end || poll.by.has(id)) return;
       const o = Number(msg.o);
@@ -20900,6 +21093,75 @@
       autoAdd(wishes[wishes.length - 1]);
     }
     emitWishes();
+  }
+  function phoTell(id, p, st, extra = {}) {
+    const k = id + "|" + p, last = phoSaid.get(k);
+    if (last && last.st === st && Date.now() - last.at < 1500) return;
+    phoSaid.set(k, { st, at: Date.now(), extra });
+    if (phoSaid.size > 200) phoSaid.delete(phoSaid.keys().next().value);
+    const msg = { r: -1, pho: { p, st, ...extra } };
+    reply(id, msg);
+    setTimeout(() => phoSaid.get(k)?.st === st && reply(id, msg), 700);
+  }
+  async function photoIn(id, msg) {
+    const p = clean(msg.p, 16);
+    if (!PHO_ID.test(p)) return;
+    if (!cfg.partyPhotos) return phoTell(id, p, "off");
+    const r = await asm.add(id, msg);
+    if (r.st === "bad") return phoTell(id, p, "bad");
+    if (r.st === "dup") {
+      const s = phoSaid.get(id + "|" + p);
+      if (s) phoTell(id, p, s.st, s.extra);
+      return;
+    }
+    if (r.first || r.st === "done") {
+      const c2 = lim.check(id, waiting());
+      if (c2.st !== "go") {
+        asm.drop(id, p);
+        return phoTell(id, p, c2.st, c2.w ? { w: c2.w } : c2.n ? { n: c2.n } : {});
+      }
+    }
+    if (r.st !== "done") return;
+    const url = URL.createObjectURL(new Blob([r.bytes], { type: "image/jpeg" }));
+    if (!await fits(url) || !cfg.partyPhotos || !ses) {
+      URL.revokeObjectURL(url);
+      return phoTell(id, p, cfg.partyPhotos ? "bad" : "off");
+    }
+    lim.take(id);
+    photos.push({ p, by: id, n: clean(msg.nm, 20), c: colour(msg.c), url, at: Date.now(), st: "wait" });
+    phoTell(id, p, "wait");
+    emitPhotos();
+  }
+  function approvePhoto(p) {
+    const x = photos.find((y) => y.p === p && y.st === "wait");
+    if (!x) return false;
+    x.st = "ok";
+    x.at = Date.now();
+    phoTell(x.by, p, "ok");
+    const ok = photos.filter((y) => y.st === "ok");
+    if (ok.length > PHOTO.GALLERY) dropPhoto(ok[0]);
+    emitPhotos();
+    window.dispatchEvent(new CustomEvent("mirage:photoshow", { detail: { p, url: x.url, n: x.n, c: x.c } }));
+    return true;
+  }
+  function dropPhoto(x) {
+    photos = photos.filter((y) => y !== x);
+    URL.revokeObjectURL(x.url);
+  }
+  function rejectPhoto(p) {
+    const x = photos.find((y) => y.p === p);
+    if (!x) return;
+    dropPhoto(x);
+    phoTell(x.by, p, "no");
+    emitPhotos();
+  }
+  function clearPhotos() {
+    for (const x of photos) URL.revokeObjectURL(x.url);
+    photos = [];
+    asm.clear();
+    lim.clear();
+    phoSaid.clear();
+    emitPhotos();
   }
   async function accept(i) {
     const w = wishes.find((x) => x.i === i);
@@ -20973,6 +21235,8 @@
       // Lichtwelle: Art (0 aus, 1 der Reihe nach, 2 Farbgruppen) und Zahl der Plätze; ältere Seiten leuchten alle zugleich
       wv: cfg.partyWave || 0,
       wn: 8,
+      // Foto-Wand an: die Handys zeigen den Foto-Knopf (ältere Themes senden „pw“ nicht – dann bleibt er weg)
+      pw: cfg.partyPhotos ? 1 : 0,
       fx: !masked && lastFx && Date.now() - lastFx.s < 3e3 ? lastFx : null
     }, true);
   }
@@ -20982,6 +21246,7 @@
     wanted = false;
     lastFeed = 0;
     offAt = Date.now();
+    clearPhotos();
     await send({ v: 1, on: 0, s: Date.now() }, true);
     setTimeout(() => {
       client?.close();
@@ -20995,7 +21260,7 @@
       emit();
     }, GRACE);
   }
-  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within4, SEARCH_VARS, fromGql, TRACK_LINK, OTHER_LINK, ID, coverOf, emitWishes, blockList, clean, guests, guest, colour, hostSeen, lastHost, unB64u, VENUES, playing, rcState, lastReact, lastGame, refused, lastRc, REACTIONS, reactBudget, reactAt, ranked, wishList, coverUrl, lastFx, poll, game, masked, setGame, mask, pollState, nextUri, ranking, live;
+  var import_qrcode, BROKERS, te, mqStr, mqLen, mqPkt, PAGE, GRACE, RATE, b64u2, ses, client, brokerIx, status, lastSend, lastFeed, offAt, sending, stopT, expireT, wanted, emit, setStatus, CLEAR, pending, setPending, wishes, seen, searching, tracks, within4, SEARCH_VARS, fromGql, TRACK_LINK, OTHER_LINK, ID, coverOf, emitWishes, blockList, clean, guests, guest, colour, hostSeen, lastHost, unB64u, VENUES, playing, rcState, lastReact, lastGame, refused, lastRc, REACTIONS, reactBudget, reactAt, photos, asm, lim, phoSaid, PHO_ID, emitPhotos, fits, waiting, photoList, ranked, wishList, coverUrl, lastFx, poll, game, masked, setGame, mask, pollState, nextUri, ranking, live;
   var init_live = __esm({
     "src/live.js"() {
       import_qrcode = __toESM(require_browser());
@@ -21003,6 +21268,7 @@
       init_config();
       init_i18n();
       init_player();
+      init_photos();
       BROKERS = ["wss://broker.hivemq.com:8884/mqtt", "wss://broker.emqx.io:8084/mqtt"];
       te = new TextEncoder();
       mqStr = (s) => {
@@ -21023,7 +21289,7 @@
       PAGE = "https://passimoritz.github.io/spicetify-mirage/live/";
       GRACE = 10 * 6e4;
       RATE = 125;
-      b64u = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      b64u2 = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
       ses = null;
       client = null;
       brokerIx = 0;
@@ -21115,6 +21381,21 @@
       REACTIONS = ["\u{1F525}", "\u2764\uFE0F", "\u{1F64C}", "\u{1F602}", "\u{1F389}", "\u{1F44F}"];
       reactBudget = 6;
       reactAt = 0;
+      photos = [];
+      asm = createAssembler();
+      lim = createLimiter();
+      phoSaid = /* @__PURE__ */ new Map();
+      PHO_ID = /^[\w-]{6,16}$/;
+      emitPhotos = () => setTimeout(() => window.dispatchEvent(new Event("mirage:photos")));
+      fits = (url) => new Promise((ok) => {
+        const im = new Image();
+        im.onload = () => ok(im.naturalWidth > 0 && im.naturalHeight > 0 && Math.max(im.naturalWidth, im.naturalHeight) <= PHOTO.SIDE + 8);
+        im.onerror = () => ok(false);
+        setTimeout(() => ok(false), 5e3);
+        im.src = url;
+      });
+      waiting = () => photos.filter((x) => x.st === "wait").length;
+      photoList = () => photos.map(({ p, n, c: c2, url, st, at: at3 }) => ({ p, n, c: c2, url, st, at: at3 }));
       ranked = () => wishes.filter((w) => w.st === "open").sort((a, b) => b.v.size - a.v.size || a.at - b.at);
       wishList = () => [...ranked(), ...wishes.filter((w) => w.st === "queued")].slice(0, 6).map((w) => ({ i: w.i, t: w.t, a: w.a, img: w.img, n: w.n, c: w.c ?? void 0, v: w.v.size, st: w.st }));
       coverUrl = (item) => {
@@ -21134,7 +21415,7 @@
         return n?.uri || "";
       };
       ranking = () => [...guests.values()].filter((g) => g.n || g.wished || g.votes).sort((a, b) => b.played - a.played || b.wished - a.wished || b.votes - a.votes).slice(0, 10);
-      live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => ses ? { url: ses.url, qr: ses.qr } : null, hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline };
+      live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => ses ? { url: ses.url, qr: ses.qr } : null, hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline, photos: photoList, approvePhoto, rejectPhoto, clearPhotos };
     }
   });
 
@@ -23491,6 +23772,101 @@
     }
   });
 
+  // src/karaoke.js
+  function pickPart(lines, { pos = 0, min = 3e4, max = 45e3, used = /* @__PURE__ */ new Set(), lead = 12e3 } = {}) {
+    const L2 = lines || [], seen2 = /* @__PURE__ */ new Map();
+    for (const l of L2) if (sung(l)) seen2.set(l.text.trim(), (seen2.get(l.text.trim()) || 0) + 1);
+    let best2 = null;
+    for (let i0 = 0; i0 < L2.length; i0++) {
+      const start3 = L2[i0].t;
+      if (!sung(L2[i0]) || used.has(i0) || !(start3 >= 8e3)) continue;
+      let i1 = i0, gap = false;
+      while (i1 + 1 < L2.length && L2[i1 + 1].t < start3 + min) {
+        if (L2[i1 + 1].t - L2[i1].t > 1e4) gap = true;
+        i1++;
+      }
+      const after2 = L2[i1 + 1]?.t;
+      const end = Math.min(after2 ?? L2[i1].t + 4e3, L2[i1].t + 6e3);
+      const len = end - start3;
+      let n = 0, hit = false;
+      for (let k = i0; k <= i1; k++) {
+        if (sung(L2[k])) n++;
+        if (used.has(k)) hit = true;
+      }
+      if (gap || hit || n < 3 || len > max || len < min * 0.75) continue;
+      const quiet = i0 === 0 || start3 - L2[i0 - 1].t >= 3500 || !sung(L2[i0 - 1]);
+      const score = (seen2.get(L2[i0].text.trim()) > 1 ? 2 : 0) + (quiet ? 1 : 0);
+      const near = Math.abs(start3 - (pos + lead + 3e3));
+      if (!best2 || score > best2.score || score === best2.score && near < best2.near) best2 = { i0, i1, start: start3, end, score, near };
+    }
+    return best2 && { i0: best2.i0, i1: best2.i1, start: best2.start, end: best2.end };
+  }
+  function lineOnsets(l, next) {
+    const inLine = (t2) => t2 >= l.t - 300 && t2 < next;
+    const syl = (l.syl || []).map((s) => Number(s.t)).filter(Number.isFinite);
+    if (syl.length && syl[0] < l.t - 500 && syl[syl.length - 1] < next - l.t) for (let i = 0; i < syl.length; i++) syl[i] += l.t;
+    if (syl.filter(inLine).length) return syl.filter(inLine);
+    const words = (l.words || []).map((w) => Number(w.t)).filter((t2) => Number.isFinite(t2) && inLine(t2));
+    if (words.length) return words;
+    return [l.t];
+  }
+  function chromaCode(segs, from2, to, step = CH_STEP) {
+    const S2 = (segs || []).filter((s) => s?.p?.length === 12);
+    if (!S2.length) return "";
+    let out = "", k = 0;
+    for (let t2 = from2; t2 < to; t2 += step) {
+      const at3 = (t2 + step / 2) / 1e3;
+      while (k + 1 < S2.length && S2[k + 1].t <= at3) k++;
+      const s = S2[k];
+      if (s.t > at3 + 0.5) {
+        out += "---";
+        continue;
+      }
+      const top2 = s.p.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]);
+      const m = top2[0][0];
+      let code = "";
+      for (let j = 0; j < 3; j++) code += m > 0 && top2[j][0] >= m * 0.3 ? top2[j][1].toString(16) : "-";
+      out += code;
+    }
+    return out;
+  }
+  function loudCode(segs, from2, to, step = CH_STEP) {
+    const S2 = (segs || []).filter((s) => Number.isFinite(s?.l) && Number.isFinite(s?.t));
+    if (!S2.length) return "";
+    let out = "", k = 0;
+    for (let t2 = from2; t2 < to; t2 += step) {
+      const a = t2 / 1e3, b = (t2 + step) / 1e3;
+      while (k + 1 < S2.length && S2[k + 1].t <= a) k++;
+      let m = null;
+      for (let j = k; j < S2.length && S2[j].t < b; j++) if (S2[j + 1]?.t > a || j === S2.length - 1) m = Math.max(m ?? -99, S2[j].l);
+      out += m == null ? "-" : Math.max(0, Math.min(35, Math.round(-m / 1.5))).toString(36);
+    }
+    return out;
+  }
+  function partData(lines, part, segs) {
+    const { i0, i1, start: start3, end } = part, on = [], ln = [];
+    for (let k = i0; k <= i1; k++) {
+      const l = lines[k], next = k < i1 ? lines[k + 1].t : end;
+      if (!sung(l)) continue;
+      ln.push([Math.round(l.t - start3), Math.round(next - start3), String(l.text).trim().slice(0, 90)]);
+      for (const t2 of lineOnsets(l, next)) on.push(Math.round(t2 - start3));
+    }
+    on.sort((a, b) => a - b);
+    const merged = on.filter((t2, i) => !i || t2 - on[i - 1] >= 120);
+    return { len: Math.round(end - start3), on: merged, ln, ch: chromaCode(segs, start3 + CH_FROM, end, CH_STEP), lo: loudCode(segs, start3 + CH_FROM, end, CH_STEP), c0: CH_FROM, cs: CH_STEP };
+  }
+  var CH_STEP, CH_FROM, sung;
+  var init_karaoke = __esm({
+    "src/karaoke.js"() {
+      CH_STEP = 250;
+      CH_FROM = -4e3;
+      sung = (l) => {
+        const s = String(l?.text || "").trim();
+        return s.length > 1 && s !== "\u266A";
+      };
+    }
+  });
+
   // src/games.js
   async function sources() {
     const out = [];
@@ -23541,8 +23917,8 @@
       await loadYears(base);
     } catch {
     }
-    const fits = base.filter((x) => years.get(x.uri) >= decade && years.get(x.uri) < decade + 10);
-    if (fits.length) return fits;
+    const fits2 = base.filter((x) => years.get(x.uri) >= decade && years.get(x.uri) < decade + 10);
+    if (fits2.length) return fits2;
     notify2(t(base.some((x) => years.has(x.uri)) ? "gDecadeNone" : "gDecadeFail"), true);
     return list;
   }
@@ -23646,6 +24022,7 @@
     if (k === "beat" || k === "taps") return st === "go" ? sfx.horn() : void 0;
     if (k === "alarm") return st === "hit" ? sfx.siren() : st === "res" ? sfx.reveal() : void 0;
     if (k === "sing") return st === "go" ? sfx.whoosh() : st === "res" ? sfx.fanfare() : void 0;
+    if (k === "karaoke") return st === "res" ? sfx.fanfare() : void 0;
     if (WHEELS.has(k)) return st === "spin" ? sfx.wheel() : st === "res" ? sfx.fanfare() : void 0;
     if (k === "duel" && st === "champ") return sfx.fanfare();
   }
@@ -23959,7 +24336,7 @@
     }
     const playing2 = PLR.isPlaying();
     const pair = PAIR_GAMES.has(G.k) && v.st === "ask" && G.heard > 0;
-    const wantPlay = SONG_FIELD[G.k] && v.st === "ask" && !G.paused || LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf" || (G.k === "beat" || G.k === "bingo") && v.st === "go" || G.k === "alarm" || G.k === "sing" || G.k === "stop" && v.st === "play" || pair && !G.paused;
+    const wantPlay = SONG_FIELD[G.k] && v.st === "ask" && !G.paused || LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf" || (G.k === "beat" || G.k === "bingo") && v.st === "go" || G.k === "alarm" || G.k === "sing" || G.k === "karaoke" || G.k === "stop" && v.st === "play" || pair && !G.paused;
     const wantStop = SONG_FIELD[G.k] && v.st === "ask" && G.paused || G.k === "stop" && v.st === "stop" || pair && G.paused || G.k === "cover" && v.st === "ask";
     if (now - (G.kick || 0) > 1e3) {
       if (wantPlay && !playing2) {
@@ -24051,8 +24428,8 @@
     freshLines(lines);
     const ahead = Math.max(2e4, askMs() + 6e3);
     const usable = (l, i2) => !G.used.has(i2) && (gap ? !!gapWord(l.text || "") : i2 > 0 && !!lines[i2 - 1].text?.trim() && (l.text || "").trim().length > 2);
-    const fits = (l, i2) => l.t > pos + 7e3 && l.t < pos + ahead && usable(l, i2);
-    const i = lines.findIndex(fits), pick = lines[i];
+    const fits2 = (l, i2) => l.t > pos + 7e3 && l.t < pos + ahead && usable(l, i2);
+    const i = lines.findIndex(fits2), pick = lines[i];
     const retry = (ms = 4e3) => {
       if (tries2 > 8) {
         notify2(t("gNeedLyrics"), true);
@@ -24341,8 +24718,8 @@
     const hasText2 = (l) => l && (l.text || "").trim().length > 3 && l.text !== "\u266A";
     const seen2 = /* @__PURE__ */ new Map();
     for (const l of lines) seen2.set(l.text, (seen2.get(l.text) || 0) + 1);
-    const fits = (i) => !G.used.has(i) && lines[i].t > 5e3 && hasText2(lines[i]) && hasText2(lines[i + 1]) && hasText2(lines[i + 2]) && lines[i + 3] && lines[i + 3].t - lines[i].t > 5e3 && lines[i + 3].t - lines[i].t < 16e3;
-    const idx = lines.map((_, i) => i).filter(fits);
+    const fits2 = (i) => !G.used.has(i) && lines[i].t > 5e3 && hasText2(lines[i]) && hasText2(lines[i + 1]) && hasText2(lines[i + 2]) && lines[i + 3] && lines[i + 3].t - lines[i].t > 5e3 && lines[i + 3].t - lines[i].t < 16e3;
+    const idx = lines.map((_, i) => i).filter(fits2);
     const at3 = idx.find((i) => seen2.get(lines[i].text) > 1 && lines[i].t > pos) ?? idx.find((i) => lines[i].t > pos) ?? idx[0];
     if (at3 == null) {
       if (tries2 > 4) {
@@ -24386,6 +24763,123 @@
       muteOff();
       after(500, singRound);
     });
+  }
+  function karNext() {
+    const list = all().filter((p) => p.id !== KEY_ID);
+    return list.reduce((a, p) => (p.sung || 0) < (a.sung || 0) ? p : a, list[0]) || null;
+  }
+  function karRound(retry) {
+    G.r++;
+    if (G.r > rounds()) return finish();
+    G.att = retry ? (G.att || 0) + 1 : 0;
+    G.singer = karNext();
+    if (!G.singer) {
+      notify2(t("gNeedPlayers"), true);
+      return stop3();
+    }
+    karFind(0, 0);
+  }
+  function karFind(tries2, skips) {
+    const lines = ctx2.lines(), pos = ctx2.pos();
+    if (lines) freshLines(lines);
+    const len = Math.min(45, Math.max(12, Number(cfg.gameKarLen) || 30)) * 1e3;
+    const part = lines ? pickPart(lines, { pos, min: len, max: len + 15e3, used: G.used, lead: KAR_LEAD }) : null;
+    if (!part) {
+      if (skips >= 3) {
+        notify2(t("gKarNoLyrics"), true);
+        return G.r > 1 ? finish() : stop3();
+      }
+      show({ st: "wait", r: G.r, of: rounds(), sn: nameOf2(G.singer), si: short(G.singer.id) });
+      if (!tries2 && !lines) return after(2500, () => karFind(1, skips));
+      PLR.next();
+      return after(3500, () => karFind(1, skips + 1));
+    }
+    for (let k = part.i0; k <= part.i1; k++) G.used.add(k);
+    G.part = { ...part, lines, data: partData(lines, part, karSegs()) };
+    G.mic = 0;
+    G.score = null;
+    G.lines = lines;
+    const ahead = part.start - pos;
+    G.kSeek = ahead > KAR_LEAD + 6e3 || ahead < KAR_LEAD - 2e3 ? { to: Math.max(part.start - KAR_LEAD, 2), at: Date.now(), n: 1 } : null;
+    if (G.kSeek) {
+      PLR.seek(G.kSeek.to);
+      show({ st: "wait", r: G.r, of: rounds(), att: G.att, sn: nameOf2(G.singer), si: short(G.singer.id) });
+    } else karShow("ready");
+    G.lastFn = karSkip;
+    G.tick = setInterval(karTick, 100);
+    later(KAR_LEAD + part.end - part.start + 3e4, () => G.view?.st !== "res" && G.view?.st !== "calc" && karSkip());
+  }
+  function karShow(st, extra) {
+    const P = G.part, v = { st, r: G.r, of: rounds(), att: G.att, sn: nameOf2(G.singer), si: short(G.singer.id), mic: G.mic, at: karAt(), ...extra };
+    if (st === "ready") Object.assign(v, { kp: P.data, line: P.data.ln[0]?.[2] || "" });
+    show(v);
+  }
+  function karTick() {
+    const P = G.part, v = G.view, p = ctx2.pos();
+    if (ctx2.lines() !== P.lines) {
+      clearTimers();
+      G.r--;
+      return karRound(true);
+    }
+    const sk = G.kSeek;
+    if (sk) {
+      if (Math.abs(p - sk.to) < 1500 || sk.n >= 4) {
+        G.kSeek = null;
+        return karShow("ready");
+      }
+      if (Date.now() - sk.at > 800) {
+        sk.n++;
+        sk.at = Date.now();
+        PLR.seek(sk.to);
+      }
+      return;
+    }
+    const at3 = karAt(), drift = Math.abs(at3 - (v.at || 0));
+    if (v.st === "ready") {
+      if (!P.data.ch && karSegs()?.length) P.data = partData(P.lines, P, karSegs());
+      if (p >= P.start - 40) return karShow("go", karLine(p));
+      if (drift > 80 || !v.kp?.ch !== !P.data.ch) karShow("ready");
+      return;
+    }
+    if (v.st !== "go") return;
+    if (p >= P.end) return karCalc();
+    const now = karLine(p);
+    if (now.line !== v.line || drift > 150) karShow("go", now);
+  }
+  function karLine(p) {
+    const ln = G.part.data.ln, rel = p - G.part.start;
+    let i = 0;
+    while (i + 1 < ln.length && ln[i + 1][0] <= rel) i++;
+    return { line: ln[i]?.[2] || "", lyn: ln[i + 1]?.[2] || "", end: Date.now() + (G.part.end - p), dur: G.part.end - G.part.start };
+  }
+  function karCalc() {
+    clearTimers();
+    G.singer.sung = (G.singer.sung || 0) + 1;
+    if (G.score) return karRes();
+    karShow("calc");
+    after(G.mic === 1 ? 8e3 : 2500, karRes);
+  }
+  function karSkip() {
+    clearTimers();
+    if (G.view?.st === "ready" || G.view?.st === "go" || G.view?.st === "wait") G.singer.sung = (G.singer.sung || 0) + 1;
+    karRes();
+  }
+  function karRes() {
+    clearTimers();
+    const sc = G.score;
+    if (sc) G.singer.p += sc.s;
+    karShow("res", { ks: sc, end: 0 });
+    if (sc?.s >= 60) ctx2.confetti?.();
+    after(breakMs() + 3e3, karRound);
+  }
+  function karScore(p, m) {
+    const v = G.view;
+    if (p !== G.singer || m.r !== v.r || G.score || v.st !== "go" && v.st !== "calc") return;
+    const a = Array.isArray(m.v) ? m.v.slice(0, 4).map(Number) : [];
+    if (a.length !== 4 || !a.every(Number.isFinite)) return;
+    const pc = (x) => Math.max(0, Math.min(100, Math.round(x)));
+    G.score = { s: pc(a[0]), t: pc(a[1]), p: a[2] < 0 ? -1 : pc(a[2]), d: pc(a[3]) };
+    if (v.st === "calc") karRes();
   }
   function wheelFields() {
     if (G.k === "dwheel") return DRINK_FIELDS.map((k) => ({ k: "", text: t(k) }));
@@ -24745,7 +25239,7 @@
     if (G.k === "cover") pixTick();
     if (tickOnly) return guard2();
     if (WHEELS.has(G.k) && box.querySelector(".m-g-wheel")) return drawWheel(v);
-    const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" ? "" : v.line, v.att].join("|");
+    const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" || G.k === "karaoke" ? "" : v.line, v.att].join("|");
     if (key === boxKey) return update(v);
     boxKey = key;
     box.textContent = "";
@@ -24794,6 +25288,7 @@
       if (v.st === "res") return box.append(div("m-g-big is-hot m-g-pop", t("gBingoWin").replace("{n}", v.win)), div("m-g-sub", v.ln));
       return box.append(div("m-g-sub m-g-bcount"), div("m-g-board m-g-bplayed"));
     }
+    if (G.k === "karaoke") return buildKar(v);
     if (G.k === "sing") {
       if (v.st === "res") return box.append(div("m-g-big m-g-pop", t("gSingBack")));
       if (v.st === "ready") return box.append(div("m-g-big m-g-pulse", t("gSingSoon")));
@@ -24873,6 +25368,27 @@
     wrap.append(txt);
     box.append(wrap);
     need();
+  }
+  function buildKar(v) {
+    if (v.st === "calc") return box.append(div("m-g-big m-g-pulse", "\u{1F3A7}"), div("m-g-sub", t("gKarCalc")));
+    if (v.st === "res") {
+      const sc = v.ks;
+      if (!sc) return box.append(div("m-g-big m-g-pop", "\u{1F44F}"), div("m-g-sub", t("gKarTurn").replace("{n}", v.sn)), div("m-g-sub", t("gKarNoScore")), board(top()));
+      const praise = t(sc.s >= 85 ? "gKarP4" : sc.s >= 65 ? "gKarP3" : sc.s >= 40 ? "gKarP2" : "gKarP1");
+      box.append(div("m-g-sub", "\u{1F3A4} " + v.sn), div("m-g-big is-hot m-g-pop", String(sc.s)), div("m-g-sub", praise));
+      const b = div("m-g-board m-g-kparts");
+      for (const [ic, key, val] of [["\u23F1\uFE0F", "gKarT", sc.t], ["\u{1F3B5}", "gKarP", sc.p], ["\u{1F64C}", "gKarD", sc.d]]) {
+        const r = row(ic, t(key), val < 0 ? "\u2013" : String(val));
+        r.classList.add("has-bar");
+        r.style.setProperty("--w", Math.max(0, val) + "%");
+        b.append(r);
+      }
+      box.append(b, board(top()));
+      return;
+    }
+    if (v.st === "ready") box.append(div("m-g-big m-g-pulse", "\u{1F3A4} " + t("gKarTurn").replace("{n}", v.sn)), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+    else box.append(div("m-g-sub", "\u{1F3A4} " + v.sn), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+    box.append(div("m-g-sub m-g-kmic"));
   }
   function buildChamp(v) {
     if (v.cov) {
@@ -25050,6 +25566,8 @@
       sl.textContent = v.line || "";
       box.querySelector(".m-g-snext").textContent = v.lyn || "";
     }
+    const km = box.querySelector(".m-g-kmic");
+    if (km) km.textContent = t(["gKarMicWait", "gKarMicOn", "gKarMicOff"][v.mic] || "gKarMicWait");
     if (G.k === "battle") {
       const bars = box.querySelectorAll(".m-g-team");
       if (bars.length) {
@@ -25097,7 +25615,7 @@
     const res = box.querySelector(".m-g-wres");
     if (res) res.textContent = v.st === "res" ? v.text : v.st === "spin" ? "\u2026" : t("gSpin");
   }
-  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, PAIR_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, queueSongs, pool, within5, years, nowItem, nowUri, GUEST_COLORS, colOf, short, nameOf2, all, alive, top, TEAM_GAMES, TEAM_COLS, after, later, FIRST, TOUR_POOL, TOUR_PTS, TOUR, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, wordsOf, WORD, gapWord, FILLER, FAST_PTS, pairClip, pairAsk, label, queueSong, COVER_STEPS, bigCover, BINGO_N, BINGO_LINES, KEY_ID, keySend, keyIn, div, secs, dot, chip, beatRaf, WHEEL_COLORS, games;
+  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, PAIR_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, queueSongs, pool, within5, years, nowItem, nowUri, GUEST_COLORS, colOf, short, nameOf2, all, alive, top, TEAM_GAMES, TEAM_COLS, after, later, FIRST, TOUR_POOL, TOUR_PTS, TOUR, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, wordsOf, WORD, gapWord, FILLER, FAST_PTS, KAR_LEAD, karSegs, karAt, pairClip, pairAsk, label, queueSong, COVER_STEPS, bigCover, BINGO_N, BINGO_LINES, KEY_ID, keySend, keyIn, div, secs, dot, chip, beatRaf, WHEEL_COLORS, games;
   var init_games = __esm({
     "src/games.js"() {
       init_core();
@@ -25109,6 +25627,7 @@
       init_sfx();
       init_player();
       init_share();
+      init_karaoke();
       GAME_LIST = [
         { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "\u{1F3A4}" },
         { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint", icon: "\u{1F3B5}" },
@@ -25127,6 +25646,8 @@
         { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "\u{1F4A3}" },
         { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "\u{1F914}" },
         { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "\u{1F399}\uFE0F" },
+        // 🎤 und 🎙️ sind schon vergeben (Quiz, Sing weiter)
+        { k: "karaoke", cat: "gCatParty", label: "gKar", hint: "gKarHint", icon: "\u{1F3B6}" },
         { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "\u{1F3C6}" },
         { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint", icon: "\u{1F3B1}" },
         { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "\u{1F3A1}" },
@@ -25140,10 +25661,10 @@
       WHEEL_FIELDS = ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"];
       DRINK_FIELDS = ["gD1", "gD2", "gD3", "gD4", "gD5", "gD6", "gD7", "gD8"];
       WHEELS = /* @__PURE__ */ new Set(["wheel", "dwheel"]);
-      MIN = { stop: 2, battle: 2, bomb: 2, likely: 2, dlikely: 2, fast: 1, beat: 1, taps: 1, never: 1 };
+      MIN = { stop: 2, battle: 2, bomb: 2, likely: 2, dlikely: 2, fast: 1, beat: 1, taps: 1, never: 1, karaoke: 1 };
       ASK_GAMES = /* @__PURE__ */ new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
       EARLY_END = /* @__PURE__ */ new Set(["quiz", "dquiz", "title", "intro", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
-      MUSIC_GAMES = /* @__PURE__ */ new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel", "bingo"]);
+      MUSIC_GAMES = /* @__PURE__ */ new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel", "bingo", "karaoke"]);
       PAIR_GAMES = /* @__PURE__ */ new Set(["older", "duel"]);
       LINE_GAMES = /* @__PURE__ */ new Set(["gap", "next", "tf"]);
       SONG_FIELD = { quiz: "artist", dquiz: "artist", title: "title", intro: "title" };
@@ -25222,7 +25743,8 @@
         cover: () => coverRound(),
         duel: () => duelRound(),
         tour: () => tourBegin(),
-        bingo: () => bingoGo()
+        bingo: () => bingoGo(),
+        karaoke: () => karRound()
       };
       TOUR_POOL = ["quiz", "title", "intro", "older", "cover", "gap", "next", "tf", "fast", "taps", "beat"];
       TOUR_PTS = [10, 7, 5, 3, 2];
@@ -25236,6 +25758,9 @@
       gapWord = (text) => (text.match(WORD) || []).filter((w) => w.length <= 18).sort((a, b) => b.length - a.length)[0];
       FILLER = /* @__PURE__ */ new Set(["that", "your", "with", "this", "have", "when", "what", "just", "like", "from", "they", "will", "there", "about", "yeah", "gonna", "wanna", "dass", "wenn", "aber", "nicht", "eine", "einen", "mich", "dich", "auch", "noch", "sind"]);
       FAST_PTS = [100, 70, 50, 30];
+      KAR_LEAD = 12e3;
+      karSegs = () => audio.uri === nowUri() && audio.data && !audio.data.synthetic ? audio.data.segs : null;
+      karAt = () => Math.round(Date.now() + (G.part.start - ctx2.pos()));
       pairClip = () => Math.min(clipMs() || 1e4, 1e4);
       pairAsk = () => Math.max(askMs(), 2 * pairClip() + 6e3);
       label = (s) => `${s.artist} \u2013 ${s.title}`;
@@ -25288,6 +25813,14 @@
           return;
         }
         if (G.k === "bingo" && m.a === "bingo" && v.st === "go") return bingoClaim(p, m.v);
+        if (G.k === "karaoke") {
+          if (m.a === "ksc") return karScore(p, m);
+          if (m.a === "kmic" && p === G.singer && m.r === v.r && (v.st === "ready" || v.st === "go")) {
+            G.mic = m.v === 1 ? 1 : 2;
+            show({ ...v, mic: G.mic });
+          }
+          return;
+        }
         if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
         if (G.k === "beat" && m.a === "sc" && v.st === "go" || G.k === "taps" && m.a === "sc") {
           p.raw = Math.max(p.raw || 0, Math.min(G.k === "beat" ? 9999 : 400, Number(m.v) || 0));
@@ -25426,6 +25959,7 @@
         timer: '<svg viewBox="0 0 24 24"><path d="M9 2h6v2H9zm3 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-1 2h2v4.4l3 1.8-1 1.7-4-2.4z"/></svg>',
         film: '<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v2h2V6zm12 0v2h2V6zM5 10v4h2v-4zm12 0v4h2v-4zM5 16v2h2v-2zm12 0v2h2v-2zM10 8.5v7l5.5-3.5z"/></svg>',
         wish: '<svg viewBox="0 0 24 24"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3zM4 6h6v2H4zm0 4h6v2H4zm0 4h4v2H4z"/></svg>',
+        photo: '<svg viewBox="0 0 24 24"><path d="M9 4h6l1.5 2H20a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h3.5zm3 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>',
         confetti: '<svg viewBox="0 0 24 24"><path d="M4 20l5-14 9 9zm4.6-9.5L6.8 16.6l5.6-2.2zM14 3h2v3h-2zm5 3.6 1.4 1.4-2.1 2.1-1.4-1.4zM18 13h3v2h-3zM10.5 4.4l1.4-1 1.2 1.6-1.4 1z"/></svg>',
         dj: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 2a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm5.5-7 3 3-1.4 1.4-3-3z"/></svg>',
         game: '<svg viewBox="0 0 24 24"><path d="M7 7h10a5 5 0 0 1 4.9 6l-.7 3.6a2.5 2.5 0 0 1-4.3 1.2L14.6 16H9.4l-2.3 1.8a2.5 2.5 0 0 1-4.3-1.2L2.1 13A5 5 0 0 1 7 7zm0 2a3 3 0 0 0-3 3.6l.8 3.6.5.3 2.5-2.5h7.4l2.5 2.5.5-.3.8-3.6A3 3 0 0 0 17 9zm1 1h2v2h2v2h-2v2H8v-2H6v-2h2zm8 0a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4zm-2 3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
@@ -25491,6 +26025,7 @@
           <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
           <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
           <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
+          <button type="button" class="m-im-sm m-im-photobtn" hidden>${ICON.photo}</button>
           <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
           <button type="button" class="m-im-sm m-im-menubtn" hidden>${ICON.more}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
@@ -25655,6 +26190,8 @@
           q2.cvid = el3.querySelector(".m-im-cvid");
           q2.wishbtn = el3.querySelector(".m-im-wishbtn");
           q2.wishbtn.onclick = () => showSide(side === "wishes" ? null : "wishes");
+          q2.photobtn = el3.querySelector(".m-im-photobtn");
+          q2.photobtn.onclick = () => showSide(side === "photos" ? null : "photos");
           q2.cvbtn = el3.querySelector(".m-im-cvbtn");
           q2.cvbtn.onclick = async () => {
             const mode = el3.dataset.mode;
@@ -27737,7 +28274,7 @@
           q2.side.hidden = !kind;
           q2.side.dataset.kind = kind || "";
           if (!kind) return;
-          q2.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
+          q2.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
           const body = q2.sideBody;
           body.textContent = "";
           const item = (label2, sub, img, onClick, on) => {
@@ -27770,6 +28307,7 @@
             el3.querySelector(".m-im-wishtoast")?.remove();
             return wishPanel(body);
           }
+          if (kind === "photos") return photoPanel(body);
           if (kind === "screens") return screensPanel(body, item);
           if (kind === "dj") return djPanel(body);
           if (kind === "games") return gamesPanel(body);
@@ -27903,6 +28441,7 @@
           q2.live.hidden = !(party2 && cfg.partyLive);
           if (q2.live.hidden) el3.querySelector(".m-im-livecard")?.remove();
           drawWishes();
+          drawPhotos();
         }
         const seenWish = /* @__PURE__ */ new Set();
         const openWishes = () => el3?.dataset.mode === "party" && cfg.partyLive && cfg.partyWishes ? live.wishes().filter((w) => w.st === "open") : [];
@@ -28011,6 +28550,112 @@
           if (side === "wishes") wishPanel(q2.sideBody);
         }
         window.addEventListener("mirage:wishes", () => drawWishes());
+        const photoQueue = [];
+        let photoBusy = false, photoRight = false;
+        const photoOn = () => el3?.dataset.mode === "party" && cfg.partyLive && cfg.partyPhotos;
+        function photoRow(x) {
+          const row2 = document.createElement("div");
+          row2.className = "m-im-photorow";
+          row2.dataset.p = x.p;
+          const i = new Image();
+          i.alt = "";
+          i.src = x.url;
+          const txt = document.createElement("small");
+          txt.textContent = t("photoBy").replace("{n}", x.n || t("photoGuest"));
+          whoDot(txt, x);
+          const ok = document.createElement("button");
+          ok.type = "button";
+          ok.className = "m-im-photo-ok";
+          ok.textContent = t("photoOk");
+          ok.onclick = () => live.approvePhoto(x.p);
+          const no = document.createElement("button");
+          no.type = "button";
+          no.className = "m-im-photo-no";
+          no.textContent = t("photoNo");
+          no.onclick = () => live.rejectPhoto(x.p);
+          row2.append(i, txt, ok, no);
+          return row2;
+        }
+        function photoPanel(body) {
+          const list = photoOn() ? live.photos() : [], wait = list.filter((x) => x.st === "wait"), shown2 = list.filter((x) => x.st === "ok").reverse();
+          if (!list.length) {
+            const e = document.createElement("p");
+            e.className = "m-im-wishempty";
+            e.textContent = t("photoNone");
+            return body.replaceChildren(e);
+          }
+          const out = [];
+          const sec = (k) => {
+            const h = document.createElement("div");
+            h.className = "m-im-side-sec";
+            h.textContent = t(k);
+            out.push(h);
+          };
+          if (wait.length) {
+            sec("photoQueue");
+            out.push(...wait.map(photoRow));
+          }
+          if (shown2.length) {
+            sec("photoGallery");
+            const g = document.createElement("div");
+            g.className = "m-im-photogrid";
+            for (const x of shown2) {
+              const i = new Image();
+              i.alt = x.n ? t("photoBy").replace("{n}", x.n) : "";
+              i.src = x.url;
+              i.dataset.p = x.p;
+              g.append(i);
+            }
+            out.push(g);
+          }
+          body.replaceChildren(...out);
+        }
+        function drawPhotos() {
+          if (!el3 || !q2.photobtn) return;
+          const list = photoOn() ? live.photos() : [], n = list.filter((x) => x.st === "wait").length;
+          q2.photobtn.hidden = !list.length;
+          q2.photobtn.dataset.n = n > 9 ? "9+" : n ? String(n) : "";
+          q2.photobtn.title = q2.photobtn.ariaLabel = t("photoTitle") + (n ? ` (${n})` : "");
+          requestAnimationFrame(fitTop);
+          if (side === "photos") photoPanel(q2.sideBody);
+          if (!list.length) {
+            photoQueue.length = 0;
+            el3.querySelectorAll(".m-im-polaroid").forEach((n2) => n2.remove());
+          }
+        }
+        window.addEventListener("mirage:photos", () => drawPhotos());
+        function nextPhoto() {
+          if (photoBusy || !el3 || !photoQueue.length) return;
+          const x = photoQueue.shift();
+          if (!photoOn() || !live.photos().some((y) => y.p === x.p && y.st === "ok")) return nextPhoto();
+          photoBusy = true;
+          photoRight = !photoRight && q2.side.hidden;
+          const card = document.createElement("figure");
+          card.className = "m-im-polaroid" + (photoRight ? " is-right" : "");
+          card.dataset.p = x.p;
+          const i = new Image();
+          i.alt = "";
+          i.src = x.url;
+          card.append(i);
+          if (x.n) {
+            const cap = document.createElement("figcaption");
+            cap.textContent = x.n;
+            whoDot(cap, x);
+            card.append(cap);
+          }
+          el3.append(card);
+          setTimeout(() => card.classList.add("is-gone"), 6500);
+          setTimeout(() => {
+            card.remove();
+            photoBusy = false;
+            setTimeout(nextPhoto, 600);
+          }, 7300);
+        }
+        window.addEventListener("mirage:photoshow", (e) => {
+          if (!photoOn() || photoQueue.length > 6) return;
+          photoQueue.push(e.detail);
+          nextPhoto();
+        });
         async function toggleLiveCard() {
           const old = el3.querySelector(".m-im-livecard");
           if (old) return old.remove();
@@ -30265,6 +30910,8 @@
         wishRules(),
         toggle("partyReacts", () => {
         }),
+        // ausgeschaltet: wartende und gezeigte Fotos sofort vergessen
+        toggle("partyPhotos", () => cfg.partyPhotos || live.clearPhotos()),
         head2(t("partyWave"), t("partyWaveHint")),
         seg([[0, t("waveOff")], [1, t("waveSeq")], [2, t("waveGroups")]], cfg.partyWave || 0, (k) => {
           cfg.partyWave = k;
@@ -30672,7 +31319,7 @@
   function run() {
     queued3 = false;
     if (covered()) {
-      waiting = true;
+      waiting2 = true;
       return;
     }
     const mv = document.querySelector(SEL.mainView);
@@ -30704,8 +31351,8 @@
     schedule2();
   }
   function resume2() {
-    if (!waiting || covered()) return;
-    waiting = false;
+    if (!waiting2 || covered()) return;
+    waiting2 = false;
     schedule2();
   }
   function findSticky() {
@@ -30723,7 +31370,7 @@
     const stuck = stickyEl.getBoundingClientRect().top - grid.getBoundingClientRect().top > 2;
     if (stuck !== stickyEl.hasAttribute("data-m-stuck")) stickyEl.toggleAttribute("data-m-stuck", stuck);
   }
-  var CANDIDATE, pending4, queued3, full, lastRun, waiting, covered, stickyEl, stickyQueued, stickySettle;
+  var CANDIDATE, pending4, queued3, full, lastRun, waiting2, covered, stickyEl, stickyQueued, stickySettle;
   var init_tints = __esm({
     "src/tints.js"() {
       init_selectors();
@@ -30733,7 +31380,7 @@
       queued3 = false;
       full = false;
       lastRun = 0;
-      waiting = false;
+      waiting2 = false;
       covered = () => root.classList.contains("mirage-im-open") || document.hidden;
       document.addEventListener("visibilitychange", resume2);
       document.addEventListener("mirage:im-close", resume2);
