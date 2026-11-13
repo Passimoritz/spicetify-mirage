@@ -31,7 +31,7 @@ const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 // cap = die gemeinsame Blitz-Schranke der Bühne (flashcap.js): Blinder und Gitarrenblitze teilen sie sich mit dem Stroboskop
 function createShow(glowSprite, cap) {
   let vw = 0, vh = 0;
-  const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0 };
+  const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false };
   const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);
 
   /* ---- Lichtrig */
@@ -39,6 +39,9 @@ function createShow(glowSprite, cap) {
     vw = st.vw;
     vh = st.vh;
     const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);
+    // Bewegung nach der Schlag-Uhr der Lichtregie: im Break halbes Tempo, im Drum-&-Bass-Drop doppeltes –
+    // stetig, ohne Sprung (Musterwechsel bleiben auf den echten Schlägen)
+    const mb = px.mb ?? bp;
     const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);
     // der Drop reißt die Strahlen ins Weiße – ohne Blitze bleiben sie in ihrer Farbe
     if (px.dropHit && !st.noFlash) rig.drop = 1;
@@ -53,20 +56,21 @@ function createShow(glowSprite, cap) {
         rig.pat = pats[(blk + (px.scene || 0)) % pats.length];
         rig.col = (rig.col + 1) % 3;
       }
-      const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv);
+      // Riser: die Köpfe pulsen im Aufbau immer dichter; der Einsatz eines Refrains/Drops hebt kurz an
+      const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv) * (1 + 0.45 * (px.pulse || 0) + 0.4 * (px.lift || 0));
       // Traverse
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = "rgba(8,6,16,0.7)";
       ctx.fillRect(0, y - 3 * dpr, vw, 6 * dpr);
       ctx.globalCompositeOperation = "lighter";
-      const lead = Math.floor(bp * 2) % n;
+      const lead = ((Math.floor(mb * 2) % n) + n) % n;
       for (let i = 0; i < n; i++) {
         const x = vw * (0.07 + (0.86 * i) / (n - 1)), u = i / (n - 1) - 0.5;
         const toCover = Math.atan2(st.cy - y, st.cx - x);
         let a = Math.PI / 2;
-        if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin((bp * Math.PI) / 4) + rig.drop * 0.6);
-        else if (rig.pat === "wave") a += 0.5 * Math.sin((bp * Math.PI) / 2 + i * 0.7);
-        else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin((bp * Math.PI) / 4));
+        if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin((mb * Math.PI) / 4) + rig.drop * 0.6);
+        else if (rig.pat === "wave") a += 0.5 * Math.sin((mb * Math.PI) / 2 + i * 0.7);
+        else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin((mb * Math.PI) / 4));
         else if (rig.pat === "chase") a += u * 0.6;
         else if (rig.pat === "point") a = toCover;
         a += (toCover - a) * px.build * 0.8; // im Aufbau richten sich alle auf die Mitte
@@ -109,10 +113,11 @@ function createShow(glowSprite, cap) {
       ctx.fillRect(0, 0, vw, vh);
     }
     // Laserfläche: eine dünne Lichtebene über der Menge, kippt im Takt
-    const want = SHEET.has(key) && st.rig && !px.blackout && (px.drop > 0.35 || (px.energy > 0.88 && px.build < 0.1)) ? 1 : 0;
+    // (nur wo die Regie Bühneneffekte erlaubt: Refrain und Drop)
+    const want = SHEET.has(key) && st.rig && !px.blackout && (px.fxMul ?? 1) >= 0.75 && (px.drop > 0.35 || (px.energy > 0.88 && px.build < 0.1)) ? 1 : 0;
     rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));
     if (rig.sheet > 0.02) {
-      const c = mixW(pal[2], 0.35), tilt = Math.sin((bp * Math.PI) / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));
+      const c = mixW(pal[2], 0.35), tilt = Math.sin((mb * Math.PI) / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));
       for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {
         ctx.lineWidth = lw;
         ctx.strokeStyle = rgba(c, al * rig.sheet);
@@ -133,6 +138,68 @@ function createShow(glowSprite, cap) {
     }
     // ruhige Musik: weiches Bokeh statt Moving Heads
     if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx, st, px, pal, dpr);
+    if (st.rig && !px.blackout) drawCues(ctx, st, px, pal, dpr, vis);
+  }
+
+  /* ---- Lichtregie: Wechsel, Momente, Stil-Signaturen (Werte aus director.js über party.js) */
+  function drawCues(ctx, st, px, pal, dpr, vis) {
+    const t = st.t, dt = st.dt, soft = st.noFlash ? 0.4 : 1;
+    // Lichtwisch beim Teilwechsel: eine weiche Lichtkante läuft in einem Schlag über die Bühne (über der Menge)
+    if (px.wipe >= 0) {
+      const f = px.wdir < 0 ? 1 - px.wipe : px.wipe, x = vw * (f * 1.3 - 0.15), w = vw * 0.16, c = mixW(pal[rig.col % 3], 0.3);
+      const g = ctx.createLinearGradient(x - w, 0, x + w, 0);
+      g.addColorStop(0, rgba(c, 0));
+      g.addColorStop(0.5, rgba(c, 0.2 * (1 - px.wipe * 0.5) * soft * vis));
+      g.addColorStop(1, rgba(c, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(x - w, 0, w * 2, vh * 0.72);
+    }
+    // Rock: Lichtwand auf der Eins des Refrains – eine Reihe Blinder, durch dieselbe Blitz-Schranke wie alle Blitze
+    const wallNow = (px.wall || 0) > 0.5;
+    if (wallNow && !rig.wallOn && st.flash && st.flashGo && !st.noFlash && cap.take(t)) rig.wall = 1;
+    rig.wallOn = wallNow;
+    rig.wall *= Math.exp(-dt * 5);
+    if (rig.wall > 0.03) {
+      const r = vh * 0.12;
+      ctx.globalAlpha = rig.wall * 0.75 * vis;
+      for (let k = 0; k < 6; k++) ctx.drawImage(glowSprite([255, 240, 215]), vw * (0.12 + 0.152 * k) - r, vh * 0.06 - r, r * 2, r * 2);
+      ctx.globalAlpha = 1;
+    }
+    // gehaltener Ton: ein warmer Verfolger-Spot von oben auf das Cover (endet am Cover, nicht in der Menge)
+    if (px.vox > 0.03) {
+      const sx = vw / 2, sy = -vh * 0.05, len = Math.hypot(st.cx - sx, st.cy - sy) + (st.R || 0), a = Math.atan2(st.cy - sy, st.cx - sx), c = mixW(pal[1], 0.55);
+      const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, len);
+      g.addColorStop(0, rgba(c, 0.05 * px.vox));
+      g.addColorStop(0.8, rgba(c, 0.16 * px.vox));
+      g.addColorStop(1, rgba(c, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx + Math.cos(a - 0.09) * len, sy + Math.sin(a - 0.09) * len);
+      ctx.lineTo(sx + Math.cos(a + 0.09) * len, sy + Math.sin(a + 0.09) * len);
+      ctx.fill();
+    }
+    // House: die Rückwand pumpt – sie duckt sich unter jede Kick und schwillt wieder an (Sidechain)
+    if (px.pump > 0.05) {
+      const r = vw * 0.55;
+      ctx.globalAlpha = clamp(0.1 * px.pump * px.I * (1 - (st.noFlash ? 0.3 : 0.85) * px.kickEnv) * vis, 0, 1);
+      ctx.drawImage(glowSprite(pal[0]), vw / 2 - r, vh * 0.3 - r * 0.6, r * 2, r * 1.2);
+      ctx.globalAlpha = 1;
+    }
+    // Trap: jede 808 drückt Licht aus dem Boden
+    if (px.boom > 0.03) {
+      const r = vh * (0.45 + 0.3 * px.boom);
+      ctx.globalAlpha = clamp(0.3 * px.boom * vis, 0, 1);
+      ctx.drawImage(glowSprite(pal[0]), vw / 2 - r * 1.6, vh - r * 0.6, r * 3.2, r * 1.2);
+      ctx.globalAlpha = 1;
+    }
+    // Ballade: warmes Licht von oben, das langsam über zwei Takte atmet
+    if (px.swell > 0.03) {
+      const r = vw * 0.5;
+      ctx.globalAlpha = clamp(0.07 * px.swell * (0.5 + 0.5 * px.I), 0, 1);
+      ctx.drawImage(glowSprite([255, 196, 140]), vw / 2 - r, -r * 0.55, r * 2, r * 1.1);
+      ctx.globalAlpha = 1;
+    }
   }
   let bokeh = null;
   function drawBokeh(ctx, st, px, pal, dpr) {

@@ -2,6 +2,8 @@ import { S, clamp, seek, lru } from "./core.js";
 import { cfg } from "./config.js";
 import { audio } from "./audio.js";
 import { createFlashCap } from "./flashcap.js";
+import { songMap, at, STEP } from "./songmap.js";
+import { planSong, cue } from "./director.js";
 
 /* ---------------------------------------------------------------- Party-Modus */
 // Ein Lichtpult, das den Song kennt. Aus Spotifys Taktanalyse entsteht einmal pro Song eine Karte:
@@ -12,6 +14,8 @@ import { createFlashCap } from "./flashcap.js";
 // Blitze sind weiche Farbflächen, nie weißes Stroboskop, und kommen höchstens dreimal pro Sekunde
 // (eine Schranke für alle Blitze, siehe flashcap.js). „Keine Blitze“ (cfg.noFlash) nimmt sie ganz heraus.
 // „Weniger Bewegung“ im System schaltet alles Zuckende ab.
+// Darüber liegt die Lichtregie (director.js): sie teilt den Song in Intro, Strophe, Refrain, Drop, Break …
+// und gibt jedem Teil einen eigenen Look, Wechsel immer auf der Eins.
 //
 // Profilfelder: decay = Nachklingen eines Schlags (1/s), accent = Betonung je Schlag im 4er-Takt,
 // flashOn = welche Schläge eine Farbfläche auslösen, spot = Scheinwerfer-Art, spinRate = Drehtempo
@@ -352,114 +356,17 @@ function minorShare(d) {
   return all ? m / all : 0;
 }
 
-/* ---- Song-Karte */
-const STEP = 0.25;
-const pct = (arr, p) => {
-  const s = Float32Array.from(arr).sort();
-  return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0;
-};
-const mapCache = lru(30);
-function songMap(d) {
-  if (mapCache.has(d)) return mapCache.get(d);
-  const segs = d.segs || [];
-  const end = segs.length ? segs[segs.length - 1].t + 2 : 0;
-  const n = Math.max(1, Math.ceil(end / STEP));
-  // lauteste Stelle je Rasterfeld, Lücken mit dem Vorgänger füllen
-  const raw = new Float32Array(n).fill(-60), rb = new Float32Array(n);
-  for (const s of segs) {
-    const i = Math.min(n - 1, Math.floor(s.t / STEP));
-    if (s.l > raw[i]) raw[i] = s.l;
-    rb[i] = Math.max(rb[i], s.b || 0);
-  }
-  for (let i = 1; i < n; i++) {
-    if (raw[i] <= -60) raw[i] = raw[i - 1];
-    if (!rb[i]) rb[i] = rb[i - 1];
-  }
-  // über 1,5 s geglättet = gefühlte Energie, nicht jeder einzelne Schlag. Mittig geglättet (der ganze
-  // Song ist ja bekannt): die Kurve steigt genau dort, wo der Song lauter wird – nicht eine Sekunde später
-  const sm = (a, w) => {
-    const o = new Float32Array(n), h = w >> 1;
-    for (let i = 0; i < n; i++) {
-      let acc = 0, c = 0;
-      for (let k = Math.max(0, i - h); k <= Math.min(n - 1, i + h); k++, c++) acc += a[k];
-      o[i] = acc / c;
-    }
-    return o;
-  };
-  const E = sm(raw, 6), B = sm(rb, 6);
-  // auf den Song selbst bezogen: seine lautesten 5 % = 1, 0 liegt bei den leisesten 10 % – aber immer
-  // mindestens 8 dB darunter (sonst wird ein fast durchgehend lauter Song zu einer flachen Null-Linie)
-  const hi = pct(E, 0.95), p10 = pct(E, 0.1), lo = Math.min(p10, hi - 8);
-  const bhi = pct(B, 0.95), blo = Math.min(pct(B, 0.1), bhi - 20);
-  const energy = E.map((v) => clamp((v - lo) / (hi - lo), 0, 1));
-  const bright = B.map((v) => clamp((v - blo) / (bhi - blo), 0, 1));
-  // Drops: die Energie springt binnen 4 s deutlich nach oben und bleibt hoch – mindestens 8 s Abstand
-  const drops = [];
-  for (let i = 16; i < n - 4; i++) {
-    let before = 1;
-    for (let k = i - 16; k < i - 2; k++) before = Math.min(before, energy[k]);
-    const after = (energy[i] + energy[i + 2] + energy[i + 4]) / 3;
-    if (after > 0.72 && after - before > 0.38 && (!drops.length || i * STEP - drops[drops.length - 1] > 8)) {
-      // den eigentlichen Sprung in der ungeglätteten Lautheit suchen, dann auf den nächsten Schlag legen
-      let j = i, best = -1e9;
-      for (let k = Math.max(1, i - 6); k <= Math.min(n - 1, i + 6); k++) {
-        const jump = raw[k] - raw[k - 1];
-        if (jump > best) [best, j] = [jump, k];
-      }
-      const tj = j * STEP, bi = seek(d.beats, tj, "t");
-      const b0 = d.beats[bi]?.t ?? tj, b1 = d.beats[bi + 1]?.t ?? b0;
-      drops.push(Math.abs(b1 - tj) < Math.abs(b0 - tj) ? b1 : b0);
-      i += 32;
-    }
-  }
-  // „dynamisch“ = der Song hat wirklich leise Stellen (Breaks gibt es nur dann)
-  // --- Instrumente aus Spotifys Klangfarbe je Segment, auf den Song selbst bezogen (Rang 0..1):
-  // Kick = harter Einsatz, dunkel, lauter als davor · Snare/Clap = harter Einsatz, rauschig ·
-  // Hi-Hat/Becken = sehr hell und eher leise · Melodie = klare Tonhöhe (ein Ton dominiert die 12 Tonklassen)
-  const rank = (vals) => {
-    const sorted = Float32Array.from(vals).sort();
-    return (v) => {
-      let lo = 0, hi2 = sorted.length;
-      while (lo < hi2) {
-        const mid = (lo + hi2) >> 1;
-        if (sorted[mid] < v) lo = mid + 1;
-        else hi2 = mid;
-      }
-      return sorted.length ? lo / sorted.length : 0;
-    };
-  };
-  const rA = rank(segs.map((x) => x.k || 0)), rF = rank(segs.map((x) => x.f || 0)), rB = rank(segs.map((x) => x.b || 0));
-  const kicks = [], snares = [], hats = [];
-  const tonal = new Float32Array(n), pc = new Uint8Array(n);
-  segs.forEach((x, i) => {
-    const rise = x.l - (segs[i - 1]?.l ?? -60), a = rA(x.k || 0), f = rF(x.f || 0), b = rB(x.b || 0);
-    const loudEnough = x.l > hi - 16;
-    if (loudEnough && (a > 0.72 || rise > 6) && b < 0.5) kicks.push(x.t);
-    else if (loudEnough && a > 0.65 && f > 0.62 && b >= 0.4) snares.push(x.t);
-    if (b > 0.82 && rise < 4 && x.l > hi - 22) hats.push(x.t);
-    if (x.p.length === 12) {
-      let sum = 0, mx = 0, arg = 0;
-      x.p.forEach((v, k) => {
-        sum += v;
-        if (v > mx) [mx, arg] = [v, k];
-      });
-      const bin = Math.min(n - 1, Math.floor(x.t / STEP));
-      const clarity = sum ? clamp(((mx / sum) * 12 - 1.6) / 2.4, 0, 1) : 0;
-      if (clarity >= tonal[bin]) [tonal[bin], pc[bin]] = [clarity, arg];
-    }
-  });
-  for (let i = 1; i < n; i++) if (!tonal[i]) [tonal[i], pc[i]] = [tonal[i - 1] * 0.9, pc[i - 1]];
-  const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc };
-  mapCache.set(d, m);
-  return m;
+/* ---- Song-Karte (songmap.js) und Lichtregie (director.js) */
+// Plan je Analyse und Stil: einmal berechnet, danach nur noch nachgeschlagen
+const plans = new WeakMap();
+function planFor(d, key) {
+  let p = plans.get(d);
+  if (!p || p.key !== key) plans.set(d, (p = { key, plan: planSong(d, key) }));
+  return p.plan;
 }
-const at = (arr, sec) => {
-  const f = sec / STEP, i = Math.floor(f);
-  if (i < 0) return arr[0] || 0;
-  if (i >= arr.length - 1) return arr[arr.length - 1] || 0;
-  return arr[i] + (arr[i + 1] - arr[i]) * (f - i);
-};
 
+// ohne Analyse oder mit ausgeschalteter Lichtregie: alles neutral, wie vorher
+const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1, grade: null, flash: 1, fx: 1, haze: 1, tf: 1, wipe: -1, wdir: 1, riser: 0, pulse: 0, dim: 0, lift: 0, wall: 0, vox: 0, swell: 0, pump: 0, boom: 0, sync: 0, scan: 0 };
 const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
@@ -470,6 +377,8 @@ const party = (() => {
   // die E-Gitarre blitzt auch in leisen Stellen: immersive.js meldet, ob sie gerade spielt
   let stageFlash = false;
   const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // „Leicht“: die Regie wählt weniger und billigere Effekte (kein Lichtwisch, kein Spot, keine Lichtwand)
+  const lite = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
 
   async function prepare(item) {
     const u = item?.uri || "";
@@ -515,6 +424,8 @@ const party = (() => {
     let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
     let beatPhase = 0, beatIdx = -1;
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
+    // Lichtregie: welcher Teil des Songs gerade läuft und wie er aussehen soll (director.js)
+    const C = (d && d.segs?.length && cfg.partyDirector && cue(planFor(d, info.key), sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL;
     if (d && d.segs?.length) {
       const M = songMap(d);
       energy = at(M.energy, sec);
@@ -527,7 +438,8 @@ const party = (() => {
       // Break: ruhige Stelle in einem Song, der sonst laut wird
       low = M.dynamic ? clamp((0.42 - energy) / 0.3, 0, 1) : 0;
       // jeder neue Abschnitt (Strophe, Refrain, Bridge …) ist eine neue „Szene“: andere Farbfolge, andere Drehrichtung
-      scene = Math.max(seek(M.sections, sec, "t"), 0);
+      // (mit Lichtregie: ihre Teile – die wechseln genau auf der Eins)
+      scene = C.i >= 0 ? C.i : Math.max(seek(M.sections, sec, "t"), 0);
       // Lichtregie: wie weit ist der nächste Drop entfernt, wie lang ist der Song
       for (const tD of M.drops) {
         if (tD > sec) {
@@ -617,8 +529,18 @@ const party = (() => {
     // --- Gesamtintensität: Energie, Drop-Nachglühen, Break dämpft; Aufbau steigert schrittweise
     if (dropHit) dropGlow = 1;
     dropGlow *= Math.exp(-dt * 0.55);
-    const I = clamp(0.22 + smooth.e * 0.78 + dropGlow * 0.35 + smooth.b * 0.2 - smooth.k * 0.35, 0.08, 1.35);
-    const accent = beatEnv * (0.45 + 0.55 * I);
+    // Lichtregie: Strophe ruhiger, Refrain größer, Break dunkel; der Einsatz eines Refrains hebt kurz an,
+    // der letzte Schlag vor dem Drop ist dunkel (dim)
+    const I = clamp((0.22 + smooth.e * 0.78 + dropGlow * 0.35 + smooth.b * 0.2 - smooth.k * 0.35) * C.I * (1 - 0.6 * C.dim) + C.lift * 0.15, 0.08, 1.35);
+    let accent = beatEnv * (0.45 + 0.55 * I);
+    // Stil-Signaturen: harte 808 (Trap) und Tresillo-Akzente 3-3-2 (Latin) – beides direkt auf der Musik
+    const boom = C.boom * kickEnv * (0.4 + 0.6 * smooth.e) * (1 - smooth.k);
+    if (boom) accent = Math.max(accent, boom * 0.9);
+    if (C.sync && beatIdx >= 0) {
+      const p8 = (inBar + beatPhase) * 2;
+      const since = Math.min((p8 + 8) % 8, (p8 + 5) % 8, (p8 + 2) % 8);
+      accent = Math.max(accent, C.sync * 0.75 * Math.exp(-since * 1.6) * (0.45 + 0.55 * I));
+    }
 
     // --- Farbflächen: je Profil auf anderen Schlägen, nie im Break, höchstens 3 pro Sekunde
     const strong = hit && beatEnv > 0.55;
@@ -628,8 +550,10 @@ const party = (() => {
     else if (P.flashOn === "down-hi") flashOn = hit && inBar === 0 && smooth.e > 0.65;
     if (level >= 5 && P.flashOn && strong && smooth.e > 0.7) flashOn = true;
     // hohe Energie: auch die Kick färbt (gerade Genres), damit es in Refrain und Drop richtig pumpt
-    if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62) flashOn = true;
+    if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62 && C.flash >= 0.75) flashOn = true;
     if (smooth.k > 0.5) flashOn = false;
+    // die Regie erlaubt je Teil keine (Intro, Break, Outro), nur Einsen (Strophe) oder alle Farbflächen (Refrain, Drop)
+    if (C.flash < 0.25 || (C.flash < 0.75 && !(hit && inBar === 0))) flashOn = false;
     let flashGo = false;
     if (fx && cfg.partyFlash && !cfg.noFlash && (flashOn || dropHit) && flashCap.take(clock)) {
       flashGo = true;
@@ -653,11 +577,13 @@ const party = (() => {
 
     // --- Strahlen: drehen mit der Energie, im Aufbau immer schneller, springen bei Rave pro Takt
     // Drehrichtung wechselt mit jeder Szene
-    spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
+    // Tempo der Regie: im Break langsam, im Drop schnell; halbes/doppeltes Zeitgefühl (Trap, Drum & Bass)
+    const feel = C.speed * (C.tf < 1 ? 0.6 : C.tf > 1 ? 1.5 : 1);
+    spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * feel * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
     if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
-    const lasers = fx && cfg.partyLasers && level >= 4 ? (level >= 5 ? 12 : 6) : 0;
+    const lasers = fx && cfg.partyLasers && level >= 4 && C.beams > 0.5 ? (level >= 5 ? 12 : 6) : 0;
     // im Break blenden Strahlen aus, im Aufbau ziehen sie sich zusammen
-    const beamVis = clamp(smooth.e * 1.25 + dropGlow - smooth.k, 0, 1.2);
+    const beamVis = clamp((smooth.e * 1.25 + dropGlow - smooth.k) * C.beams * (1 - C.dim), 0, 1.2);
     if (hit && P.sway) sway = -sway;
 
     const out = {
@@ -668,10 +594,17 @@ const party = (() => {
       // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
       toDrop,
       tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
-      blackout: !!cfg.partyDirector && toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95,
+      blackout: !!cfg.partyDirector && ((toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95) || C.dim >= 1),
       finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
       flash, flashCol, flashGo, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
+      // Lichtregie für Bühne, Location und Visualizer: Teil, Farbkorrektur, Bewegungsuhren (mt in Sekunden,
+      // mb in Schlägen), Lichtwisch beim Wechsel, Riser, Einsatz, Lichtwand, Spot auf gehaltenen Tönen, Atmen,
+      // Pumpen und 808 – ohne Blitze wird alles Pulsende zu ruhigem Glühen
+      sect: C.sect, kind: C.kind, grade: C.grade, speed: C.speed, tf: C.tf, mt: C.mt, mb: C.mb, wipe: fx ? C.wipe : -1, wdir: C.wdir,
+      riser: C.riser, pulse: fx ? C.pulse : 0, lift: C.lift, wall: fx ? C.wall : 0, vox: fx ? C.vox : 0, swell: C.swell, haze: C.haze,
+      pump: fx ? C.pump : 0, boom: fx ? (cfg.noFlash ? boom * 0.35 : boom) : 0, scan: C.scan, sparkMul: C.sparks, fxMul: C.fx,
+      glow: fx && C.pump ? C.pump * (cfg.noFlash ? 0.03 : 0.08) * (1 - kickEnv) * I : 0,
     };
     // Fehlersuche: localStorage „mirage:debug“ = 1 legt den Lichtzustand und die Song-Karte offen
     if (DEBUG) window.__mirageParty = { ...out, P: info.key, map: d ? songMap(d) : null, sec };
@@ -685,7 +618,23 @@ const party = (() => {
     }
   })();
 
-  return { prepare, step, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  // Visualizer-Ansichten (ohne Party): dieselbe Regie, nur das Nötige – Teil, Farbkorrektur, Tempo, Drop
+  let moodSec = 0;
+  function mood(sec, playing) {
+    const d = audio.data;
+    if (!d?.segs?.length || !cfg.partyDirector) return null;
+    const C = cue(planFor(d, audio.uri === uri ? info.key : "pop"), sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
+    if (!C) return null;
+    const M = songMap(d);
+    let dropHit = false;
+    if (playing && sec >= moodSec && sec - moodSec < 0.5) for (const t of M.drops) if (t > moodSec && t <= sec + 0.02) dropHit = true;
+    moodSec = sec;
+    C.energy = at(M.energy, sec);
+    C.dropHit = dropHit;
+    return C;
+  }
+
+  return { prepare, step, mood, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
 })();
 
 export { party, PROFILE_KEYS, FAMILIES };
