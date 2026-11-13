@@ -10,7 +10,6 @@ const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
 const { createSecrets, SECRET, rebind, cleanPatch, senderIs } = require("./secrets.js");
-const { createCast } = require("./cast.js");
 const { createPartyGuard } = require("./flashcap.js");
 const { make } = require("./i18n");
 
@@ -145,8 +144,9 @@ function save() {
 let overlay = null, settingsWin = null, setupWin = null, tray = null;
 const lights = createLights(() => cfg, (s) => dlog?.(s));
 // Party auf Fernsehern im Netz (Chromecast, Google TV, DLNA-Fernseher): der PC nimmt das Party-Bild auf und
-// streamt es als Video; gesteuert vom Theme
-const cast = createCast({ log: (s) => dlog?.(s), track: () => track });
+// streamt es als Video; gesteuert vom Theme. Erst geladen, wenn das Theme danach fragt – die meisten nutzen es nie.
+let castApi = null;
+const cast = () => (castApi ||= require("./cast.js").createCast({ log: (s) => dlog?.(s), track: () => track }));
 let track = null, lastPlaying = null, lastShow = 0, lyric = null, pointerT = 0;
 let t = make("en");
 const clients = new Set();
@@ -205,16 +205,25 @@ function payload(reason, sample) {
   };
 }
 function announce(reason, force, sample) {
-  if (!overlay || !track) return;
+  if (!track) return;
   if (!force && (cfg.mode === "off" || inQuiet() || busy)) return;
-  position();
-  lastShow = Date.now();
-  toOverlay("show", payload(reason, sample));
-  overlay.showInactive();
-  // WIN/MAC: Ebene „screen-saver“ liegt auch über Vollbild-Apps; LINUX: Fenstermanager entscheidet
-  overlay.setAlwaysOnTop(true, "screen-saver");
-  if (!WIN) overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  watchPointer();
+  // jetzt festhalten: die Vorschau setzt track nur für diesen Aufruf
+  const data = payload(reason, sample);
+  const go = () => {
+    if (!overlay || overlay.isDestroyed()) return;
+    position();
+    lastShow = Date.now();
+    toOverlay("show", data);
+    overlay.showInactive();
+    // WIN/MAC: Ebene „screen-saver“ liegt auch über Vollbild-Apps; LINUX: Fenstermanager entscheidet
+    overlay.setAlwaysOnTop(true, "screen-saver");
+    if (!WIN) overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    watchPointer();
+  };
+  // das Fenster entsteht erst mit der ersten Ansage; frisch angelegt erst nach dem Laden zeigen
+  ensureOverlay();
+  if (overlay.webContents.isLoading()) overlay.webContents.once("did-finish-load", go);
+  else go();
 }
 function hideOverlay() {
   toOverlay("hideNow");
@@ -279,6 +288,7 @@ function startServer() {
   });
   wss.on("connection", (ws) => {
     clients.add(ws);
+    themePresence();
     settingsWin?.webContents.send("status", status());
     ws.send(JSON.stringify({ type: "cmd", cmd: "hello" }));
     ws.send(JSON.stringify({ type: "cmd", cmd: "report" }));
@@ -294,12 +304,12 @@ function startServer() {
       else if (m.type === "level") onLevel(m);
       else if (m.type === "volume") showVolume(m);
       else if (m.type === "party") onParty(m);
-      else if (m.type === "castScan") cast.scan().then((list) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", list })));
-      else if (m.type === "castStart") cast.start(String(m.id || ""), { audio: !!m.audio }).then((r) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", id: m.id, result: r, list: cast.list() })));
+      else if (m.type === "castScan") cast().scan().then((list) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", list })));
+      else if (m.type === "castStart") cast().start(String(m.id || ""), { audio: !!m.audio }).then((r) => ws.readyState === 1 && ws.send(JSON.stringify({ type: "cast", id: m.id, result: r, list: cast().list() })));
       else if (m.type === "castStop") {
-        cast.stop(String(m.id || ""));
-        ws.send(JSON.stringify({ type: "cast", list: cast.list() }));
-      } else if (m.type === "castMiracast") cast.miracast();
+        castApi?.stop(String(m.id || ""));
+        ws.send(JSON.stringify({ type: "cast", list: castApi?.list() || [] }));
+      } else if (m.type === "castMiracast") cast().miracast();
       // eine neuere Mirage Overlay will den Port: diese (ältere) Kopie macht Platz
       else if (m.type === "yield" && newer(String(m.version || ""), app.getVersion())) app.exit(0);
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
@@ -311,6 +321,7 @@ function startServer() {
     });
     ws.on("close", () => {
       clients.delete(ws);
+      themePresence();
       settingsWin?.webContents.send("status", status());
     });
   });
@@ -343,6 +354,12 @@ function portBusy() {
   }
   setTimeout(startServer, 4000);
 }
+// Theme kommt oder geht: Vollbild-Abfrage und CSS-Beobachtung laufen nur, solange es etwas anzusagen gibt
+function themePresence() {
+  watchFullscreen();
+  watchCss();
+  idleWindows();
+}
 function send(msg) {
   for (const ws of clients) if (ws.readyState === 1) ws.send(JSON.stringify(msg));
 }
@@ -369,6 +386,24 @@ function resubscribe() {
 }
 
 /* ------------------------------------------------------------------ Fenster */
+// Das Overlay-Fenster gibt es nur, solange es gebraucht wird: angelegt bei der ersten Ansage (oder Vorschau),
+// geschlossen 2 min, nachdem das Theme gegangen ist – ohne Spotify gibt es nichts anzusagen, und ein verstecktes
+// Fenster hält trotzdem einen eigenen Renderer-Prozess am Leben. Gleiches gilt für Lautstärke und Kantenlicht.
+let idleT = 0;
+function ensureOverlay() {
+  if (!overlay || overlay.isDestroyed()) createOverlay();
+}
+function idleWindows() {
+  clearTimeout(idleT);
+  if (clients.size) return;
+  idleT = setTimeout(() => {
+    if (clients.size) return;
+    // sichtbare Fenster (Mini-Player im Modus „immer“) bleiben stehen
+    if (overlay && !overlay.isDestroyed() && !overlay.isVisible()) overlay.destroy();
+    if (volWin && !volWin.isDestroyed() && !volWin.isVisible()) volWin.destroy();
+    dropEdges();
+  }, 120000);
+}
 function createOverlay() {
   overlay = new BrowserWindow({
     width: BASE_W + 2 * SHADOW,
@@ -396,6 +431,7 @@ function createOverlay() {
     if (cfg.mode === "always") announce("update");
     else overlay.webContents.send("update", payload("update"));
   });
+  overlay.on("closed", () => (overlay = null));
   overlay.loadFile("overlay.html");
 }
 
@@ -761,7 +797,7 @@ ipcMain.on("volDone", () => volWin?.hide());
 // Vier schmale, durchsichtige Streifen an den Rändern des Bildschirms glühen im Takt des Party-Modus.
 // Bewusst Streifen statt eines Fensters über allem: Spotify selbst bleibt unverdeckt. Klicks gehen durch.
 const EDGE = 70;
-let edges = null, edgeT = 0;
+let edges = null, edgeT = 0, edgeKillT = 0;
 function makeEdges() {
   const b = pickDisplay().bounds;
   const rects = {
@@ -792,6 +828,7 @@ function onParty(raw) {
   const m = screenGuard(raw, Date.now() / 1000);
   if (obsParty.size) obsSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal, nf: m.nf });
   if (m.edge === false || cfg.mode === "off" || busy || cfg.edge === false) return;
+  clearTimeout(edgeKillT);
   if (!edges) makeEdges();
   for (const w of edges || []) {
     if (w.isDestroyed()) continue;
@@ -812,6 +849,15 @@ function hideEdges() {
     w.webContents.send("partyOff");
     setTimeout(() => !w.isDestroyed() && w.hide(), 300);
   }
+  // vier versteckte Fenster nicht bis zur nächsten Party behalten: nach 1 min ohne Party schließen
+  clearTimeout(edgeKillT);
+  if (edges) edgeKillT = setTimeout(dropEdges, 60000);
+}
+function dropEdges() {
+  clearTimeout(edgeKillT);
+  const list = edges || [];
+  edges = null;
+  for (const w of list) if (!w.isDestroyed()) w.destroy();
 }
 
 /* ------------------------------------------------------------------ Ruhig bei Vollbild */
@@ -833,7 +879,8 @@ function setBusy(on) {
 const PS_BUSY = `Add-Type -Namespace M -Name Q -MemberDefinition '[DllImport("shell32.dll")] public static extern int SHQueryUserNotificationState(out int s);'
 while ($true) { $s = 0; [void][M.Q]::SHQueryUserNotificationState([ref]$s); [Console]::Out.WriteLine($s); [Console]::Out.Flush(); Start-Sleep -Milliseconds 1500 }`;
 function watchFullscreen() {
-  const want = cfg.fullscreenQuiet && cfg.mode !== "off";
+  // ohne verbundenes Theme kommt keine Ansage – dann auch kein PowerShell-/xprop-Prozess, der alle 1,5 s fragt
+  const want = cfg.fullscreenQuiet && cfg.mode !== "off" && clients.size > 0;
   if (!want) {
     busyProc?.kill();
     busyProc = null;
@@ -843,9 +890,11 @@ function watchFullscreen() {
   }
   if (WIN && !busyProc) {
     try {
-      busyProc = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", PS_BUSY], { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] });
+      const proc = (busyProc = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", PS_BUSY], { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] }));
       let buf = "";
-      busyProc.stdout.on("data", (d) => {
+      proc.stdout.on("data", (d) => {
+        // ein schon beendeter Abfrage-Prozess (Theme kurz weg und wieder da) hat nichts mehr zu sagen
+        if (busyProc !== proc) return;
         buf += d;
         const lines = buf.split(/\r?\n/);
         buf = lines.pop();
@@ -853,7 +902,8 @@ function watchFullscreen() {
         // 2 = Vollbild-Programm, 3 = Direct3D-Vollbild (Spiele), 4 = Präsentationsmodus
         if (!Number.isNaN(last)) setBusy(last >= 2 && last <= 4);
       });
-      busyProc.on("exit", () => {
+      proc.on("exit", () => {
+        if (busyProc !== proc) return;
         busyProc = null;
         setBusy(false);
       });
@@ -897,8 +947,17 @@ function readCss() {
     return "";
   }
 }
+// Die Datei wird abgefragt (fs.watchFile), nicht beobachtet – das geht auch, wenn sie noch nicht existiert.
+// Abgefragt wird nur, solange das Theme verbunden oder eine OBS-Quelle offen ist; danach einmal neu lesen.
+let cssOn = false;
+const cssChanged = () => toOverlay("css", readCss());
 function watchCss() {
-  fs.watchFile(cssFile(), { interval: 1000 }, () => toOverlay("css", readCss()));
+  const want = clients.size > 0 || obsClients.size > 0;
+  if (want === cssOn) return;
+  cssOn = want;
+  if (!want) return fs.unwatchFile(cssFile(), cssChanged);
+  fs.watchFile(cssFile(), { interval: 1000 }, cssChanged);
+  cssChanged();
 }
 function openCss() {
   try {
@@ -971,10 +1030,14 @@ function startObs() {
         resubscribe();
       });
     }
+    watchCss();
     ws.send(JSON.stringify({ ch: "css", data: readCss() }));
     ws.send(JSON.stringify({ ch: "config", data: publicCfg(cfg) }));
     if (track) ws.send(JSON.stringify({ ch: cfg.mode === "always" ? "show" : "update", data: payload("update") }));
-    ws.on("close", () => obsClients.delete(ws));
+    ws.on("close", () => {
+      obsClients.delete(ws);
+      watchCss();
+    });
   });
   wss.on("error", () => {});
   obsServer.on("error", () => {
@@ -985,6 +1048,7 @@ function startObs() {
 function stopObs() {
   for (const c of obsClients) c.close();
   obsClients.clear();
+  watchCss();
   obsServer?.close();
   obsServer = null;
 }
@@ -1322,7 +1386,7 @@ app.on("window-all-closed", () => {}); // im Infobereich weiterlaufen
 // darauf warten (höchstens 3 s), sonst ist der Prozess weg, bevor sie ankommen.
 let quitReady = false;
 app.on("before-quit", (e) => {
-  cast.stopAll();
+  castApi?.stopAll();
   if (quitReady) return;
   e.preventDefault();
   quitReady = true;
@@ -1335,16 +1399,13 @@ app.whenReady().then(() => {
   load();
   subscribed = JSON.stringify(topics());
   t = make(app.getLocale());
-  // LINUX: ohne kurze Pause bekommt das erste Fenster manchmal keinen durchsichtigen Hintergrund
-  if (LINUX) setTimeout(createOverlay, 300);
-  else createOverlay();
+  // Das Overlay-Fenster entsteht erst mit der ersten Ansage (ensureOverlay). Nebenbei erledigt das auch die
+  // kurze Pause, die LINUX vor dem ersten durchsichtigen Fenster braucht.
   buildTray();
   startServer();
   startObs();
   loadHistory();
   startControl();
-  watchCss();
-  watchFullscreen();
   scheduleUpdates();
   // Autostart bei jedem Start neu eintragen: nach einem Update, einer Neuinstallation oder dem Wechsel
   // von der Entwickler- zur installierten Version zeigt der Eintrag sonst noch auf den alten Pfad
