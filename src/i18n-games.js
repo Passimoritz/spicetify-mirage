@@ -51,3 +51,6 @@ Object.assign(GAME_TEXT.de, {
   gDuel: "Song-Duell", gDuelHint: "Zwei Songs, von jedem ein kurzes Stück, der Raum stimmt ab. Der Sieger tritt gegen den nächsten Song an", gDuelAsk: "Welcher bleibt?",
   gDuelChamp: "Sieger des Abends", gDuelWins: "{n} Duelle in Folge gewonnen", gDuelNone: "Dafür braucht es mindestens 2 Songs in der Warteschlange oder der gewählten Playlist.",
 });
+// Teams
+Object.assign(GAME_TEXT.en, { gSetTeams: "Play in teams (quizzes and races)", gTm0: "Red", gTm1: "Blue", gTm2: "Yellow", gTm3: "Green" });
+Object.assign(GAME_TEXT.de, { gSetTeams: "In Teams spielen (Quiz und Rennen)", gTm0: "Rot", gTm1: "Blau", gTm2: "Gelb", gTm3: "Grün" });

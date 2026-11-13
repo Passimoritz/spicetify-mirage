@@ -115,6 +115,7 @@ const DEFAULTS = {
   gameDecade: 0,
   gameSource: "",
   gameSourceName: "",
+  gameTeams: 0,
   partyDepth: false,
   partyShatter: true,
   partyCamera: false,

@@ -2871,6 +2871,7 @@ const immersive = (() => {
     gameChoice(body, t("gSetLevel"), "gameLevel", [["easy", t("gLvEasy")], ["normal", t("gLvNormal")], ["hard", t("gLvHard")]]);
     gameChoice(body, t("gSetDecade"), "gameDecade", [[0, t("gDecAll")], ...[1980, 1990, 2000, 2010, 2020].map((d) => [d, String(d).slice(2) + t("gDecSuffix")])], true);
     sourceChoice(body);
+    gameChoice(body, t("gSetTeams"), "gameTeams", [[0, "✕"], [2, "2"], [3, "3"], [4, "4"]]);
     gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
     gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
     gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);

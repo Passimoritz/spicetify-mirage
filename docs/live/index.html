@@ -1522,7 +1522,7 @@ function drawGame(g) {
   box.hidden = false;
   const isH = g.h === me;
   const late = gLobby(g.k) && g.st !== "join" && g.st !== "end" && !gIn(g);
-  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || "", late ? "late" : ""].join("|");
+  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || "", late ? "late" : "", g.tms?.[me] ?? ""].join("|");
   if (key === gKey) return gLive(g, box);
   gKey = key;
   gTapped = false;
@@ -1537,6 +1537,14 @@ function drawGame(g) {
   bar.append(gEl("b"));
   head.append(bar, gEl("span", icon, "gic"), gEl("span", title(), "gnm"));
   if (g.r && g.of) head.append(gEl("span", `${g.r}/${g.of}`, "grd"));
+  // Teams: in welchem Team ich spiele
+  const myTeam = Array.isArray(g.tm) && g.tms ? g.tm.find((x) => x.i === g.tms[me]) : null;
+  if (myTeam) {
+    const b = gEl("span", null, "gteamb");
+    b.style.cssText = "display:inline-flex;align-items:center;gap:5px;white-space:nowrap";
+    b.append(colDot(myTeam.c), String(myTeam.n ?? ""));
+    head.append(b);
+  }
   const left = gEl("span", null, "gtm");
   left.dataset.left = "1";
   head.append(left);
@@ -1555,6 +1563,12 @@ function drawGame(g) {
   box.append(head, body);
   if (late) gLate(g, body);
   else gBuild(g, body, isH);
+  // Teams: Stand je Team bei Auflösung, Ergebnis und Siegerehrung
+  if (!late && Array.isArray(g.tm) && (g.st === "rev" || g.st === "res" || g.st === "end")) {
+    const tb = gEl("div", null, "gboard gteams");
+    gBoard(g.tm.slice(0, 4).map((x) => ({ n: x.n, p: x.p, c: x.c })), tb);
+    body.append(tb);
+  }
   gLive(g, box);
 }
 // Später dazugekommen: einsteigen, ohne auf das nächste Spiel zu warten

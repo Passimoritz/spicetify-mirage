@@ -4406,6 +4406,20 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 #mirage-immersive.is-cover :is(.m-im-cover-wrap, .m-im-bg i, .m-im-bg video) {
   visibility: hidden;
 }
+/* Teams: Stand je Team unter der Spielkarte */
+#mirage-immersive .m-g-teams {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+#mirage-immersive .m-g-tm.is-lead {
+  background: rgb(255 255 255 / 0.24);
+}
+#mirage-immersive .m-g-tk {
+  opacity: 0.6;
+  font-size: 12px;
+}
 #mirage-immersive .m-g-pix {
   width: min(34vh, 300px);
   aspect-ratio: 1;

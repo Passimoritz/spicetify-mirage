@@ -1178,6 +1178,60 @@ async function coverGame() {
   }
 }
 
+/* ---- Teams: reihum verteilt, Stand je Team (Schnitt je Mitglied), wer spät kommt, landet im kleineren Team */
+const gameOn = async (ph) => JSON.parse(await ph.js(`JSON.stringify(cur?.g || null)`));
+function teamsFit(g, what) {
+  ok(Array.isArray(g.tm) && g.tms, `${what}: die Handys bekommen den Teamstand`);
+  for (const x of g.tm) {
+    const m = Object.entries(g.tms).filter(([, k]) => k === x.i).map(([id]) => g.sc[id] || 0);
+    ok(x.k === m.length && x.p === Math.round(m.reduce((a, b) => a + b, 0) / (m.length || 1)), `${what}: Team ${x.n} hat den Schnitt seiner Mitglieder: ${JSON.stringify(x)} / ${m.join(",")}`);
+  }
+}
+async function teamsGame() {
+  const press = (code) => T.js(`__sp.press(${JSON.stringify(code)}); 1`);
+  await firstSong();
+  await gameSetting("gameTeams", 1);
+  await openGame("quiz");
+  await joinAll("quiz");
+  const ps = await allPhones((s) => s.st === "ask" && s.round === "1/2" && s.tiles.length === 4, 15000, "teams: Frage 1");
+  let g = await gameOn(P[0]);
+  const sizes = [0, 1].map((k) => Object.values(g.tms).filter((x) => x === k).length).sort();
+  ok(g.tm.length === 2 && sizes.join() === "1,2", "teams: drei Gäste, zwei Teams mit 2 und 1: " + JSON.stringify(g.tms));
+  for (const ph of P) {
+    const mine = await ph.js(`document.querySelector("#game .gteamb")?.textContent || ""`), id = await ph.js(`me`);
+    ok(mine && mine === g.tm.find((x) => x.i === g.tms[id]).n, `teams: ${ph.name} sieht sein Team (${mine})`);
+  }
+  ok((await T.js(`document.querySelectorAll(".m-g-teams .m-g-tm").length`)) === 2, "teams: das große Bild zeigt beide Teams");
+  // die Tastatur steigt mit ihrer ersten Antwort ein und kommt ins kleinere Team
+  const small = [0, 1].find((k) => Object.values(g.tms).filter((x) => x === k).length === 1);
+  const b = await big.state(), right = tileOf(ps[0], b.artist);
+  await press("Digit" + (right + 1));
+  g = await until(async () => {
+    const x = await gameOn(P[0]);
+    return x && x.tms && "tur-pc" in x.tms && x;
+  }, 4000, "teams: die Tastatur ist im Spiel");
+  ok(g.tms["tur-pc"] === small, `teams: spät dazugekommen, ins kleinere Team (${g.tms["tur-pc"]}, erwartet ${small})`);
+  await P[0].click(...tile(right));
+  await P[1].click(...tile((right + 1) % 4));
+  await P[2].click(...tile(right));
+  await allPhones((s) => s.st === "rev" && s.round === "1/2", 6000, "teams: Auflösung 1");
+  teamsFit(await gameOn(P[0]), "teams: Runde 1");
+  ok((await P[0].js(`document.querySelectorAll("#game .gteams .grow").length`)) === 2, "teams: das Handy zeigt den Teamstand bei der Auflösung");
+  const ps2 = await allPhones((s) => s.st === "ask" && s.round === "2/2" && s.tiles.length === 4, 15000, "teams: Frage 2");
+  const b2 = await big.state(), r2 = tileOf(ps2[0], b2.artist);
+  await press("Digit" + (r2 + 1));
+  for (const ph of P) await ph.click(...tile(r2));
+  await allPhones((s) => s.st === "end", 14000, "teams: Siegerehrung");
+  const end = await gameOn(P[0]);
+  teamsFit(end, "teams: Ende");
+  const want = end.tm[0].p > end.tm[1].p ? `Team ${end.tm[0].n}` : "Unentschieden";
+  ok((await big.state()).text.includes(want), `teams: das große Bild nennt das Siegerteam (${want}): ${(await big.state()).text}`);
+  await noBadNotes("teams");
+  await close();
+  await afterGame("quiz");
+  await gameSetting("gameTeams", 0);
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1190,7 +1244,7 @@ const CASES = [
 ];
 // neuere Spiele
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️" });
-CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame]);
+CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

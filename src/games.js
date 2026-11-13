@@ -199,6 +199,30 @@ const nameOf = (p) => p.n || `${t("rankGuest")} ${p.id.slice(-2).toUpperCase()}`
 const all = () => [...G.players.values()];
 const alive = () => all().filter((p) => !p.out);
 const top = () => all().sort((a, b) => b.p - a.p).slice(0, 5).map((p) => ({ n: nameOf(p), p: Math.round(p.p), c: colOf(p), i: short(p.id) }));
+
+/* ---- Teams: auf Wunsch spielen die Gäste in 2 bis 4 Teams (Battle hat seine eigenen zwei) */
+const TEAM_GAMES = new Set(["quiz", "title", "intro", "dquiz", "gap", "next", "tf", "older", "cover", "taps", "fast", "beat"]);
+const TEAM_COLS = [0, 5, 2, 3];
+// beim Start: reihum verteilt, damit die Teams gleich groß sind
+function makeTeams() {
+  const n = Math.min(Number(cfg.gameTeams) || 0, all().length);
+  if (n < 2 || !TEAM_GAMES.has(G.k)) return;
+  G.teams = n;
+  shuffle(all()).forEach((p, i) => (p.team = i % n));
+}
+// spät dazugekommen: ins kleinste Team
+function joinTeam(p) {
+  const size = Array(G.teams).fill(0);
+  for (const x of all()) if (x !== p) size[x.team]++;
+  p.team = size.indexOf(Math.min(...size));
+}
+// Teamstand: der Schnitt je Mitglied, so hat ein größeres Team keinen Vorteil
+function teamTop() {
+  return Array.from({ length: G.teams || 0 }, (_, i) => {
+    const m = all().filter((p) => p.team === i);
+    return { i, n: t("gTm" + i), c: TEAM_COLS[i], p: m.length ? Math.round(m.reduce((a, p) => a + p.p, 0) / m.length) : 0, k: m.length };
+  }).sort((a, b) => b.p - a.p);
+}
 // Der Rückruf des zuletzt gestellten Weckers ist zugleich „Runde überspringen“
 const after = (ms, fn) => {
   G.lastFn = fn;
@@ -224,6 +248,11 @@ function publish() {
   // das Cover beim Rätsel bleibt auf dem großen Bild
   const pub = { ...G.view };
   delete pub.cov;
+  // Teams: Stand je Team und wer in welchem ist
+  if (G.teams) {
+    pub.tm = teamTop();
+    pub.tms = Object.fromEntries(all().slice(0, 40).map((p) => [short(p.id), p.team]));
+  }
   live.setGame({ ...pub, id: G.id, k: G.k, top: top(), sc, out, n: all().length, ans: all().filter((p) => p.ans).length, names: all().slice(0, 16).map(nameOf), pl: all().slice(0, 16).map((p) => ({ i: short(p.id), n: nameOf(p), c: colOf(p) })) });
 }
 function show(view) {
@@ -321,6 +350,7 @@ function beginNow() {
     return stop();
   }
   clearTimers();
+  makeTeams();
   FIRST[G.k]?.();
   ctx.changed?.();
 }
@@ -1302,6 +1332,7 @@ window.addEventListener("mirage:game", (e) => {
     // spät dazugekommen: bei Ausscheide-Spielen nur zuschauen, beim Battle ins kleinere Team
     if (OUT_GAMES.has(G.k)) p.out = true;
     if (G.k === "battle") p.team = all().filter((x) => x.team === 0).length > all().length / 2 ? 1 : 0;
+    if (G.teams) joinTeam(p);
   }
   if (m.a === "join") {
     publish();
@@ -1488,6 +1519,8 @@ function render(tickOnly) {
   box.dataset.st = v.st || "";
   box.append(head(v));
   build(v);
+  // Teams: der Stand je Team steht immer unten mit dabei
+  if (G.teams && v.st !== "join") box.append(div("m-g-teams"));
   // die Tastatur spielt mit: welche Taste gerade gilt
   if (keyIn() && !WHEELS.has(G.k) && v.st !== "join" && v.st !== "end" && v.st !== "load" && v.st !== "wait") {
     box.append(div("m-g-sub m-g-keyhint", ASK_GAMES.has(G.k) ? (v.st === "ask" ? t("gKeyAsk").replace("{n}", v.o?.length || 4) : "") : t("gKeySpace")));
@@ -1701,6 +1734,9 @@ function beatLoop() {
 }
 function buildEnd(v) {
   box.append(div("m-g-big", t("gEnd")));
+  // Teams: zuerst das Siegerteam, darunter wie gewohnt die einzelnen
+  const tt = G.teams ? teamTop() : [];
+  if (tt.length) box.append(div("m-g-sub m-g-twin", tt[0].p > tt[1].p ? t("gTeamWin").replace("{t}", tt[0].n) : t("gDraw")));
   const list = v.top || [];
   const pod = div("m-g-podium");
   for (const i of [1, 0, 2]) {
@@ -1766,6 +1802,19 @@ function update(v) {
   if (v.st === "ask" && keyIn() && all().length === 1) {
     const pick = G.players.get(KEY_ID).ans?.v;
     box.querySelectorAll(".m-g-opt").forEach((o, i) => o.classList.toggle("is-pick", i === pick));
+  }
+  const tb = box.querySelector(".m-g-teams");
+  if (tb) {
+    const list = teamTop(), now = list.map((x) => x.n + x.p + "/" + x.k).join("|");
+    if (tb.dataset.now !== now) {
+      tb.dataset.now = now;
+      tb.textContent = "";
+      list.forEach((x, i) => {
+        const c = div("m-g-chip m-g-tm" + (i === 0 && x.p > 0 ? " is-lead" : ""));
+        c.append(dot(x.c), div("m-g-cn", `${x.n} · ${x.p}`), div("m-g-tk", "👤" + x.k));
+        tb.append(c);
+      });
+    }
   }
   const eq = box.querySelector(".m-g-eq");
   if (eq) eq.classList.toggle("is-still", !!G.paused);
