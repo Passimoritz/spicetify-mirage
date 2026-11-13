@@ -1334,6 +1334,66 @@ async function tourGame() {
     await gameReset().catch(() => {});
   }
 }
+/* ---- Musik-Bingo: zu wenige Songs → gar nicht erst anfangen; sonst Karte, falsche Meldung, echte Reihe gewinnt */
+// eine Playlist mit 26 Songs (die Warteschlange des Nachbaus hat nur 12): die Songs des Nachbaus, damit sie auch spielen
+const bingoList = (on) => T.js(on ? `(() => {
+  const api = Spicetify.Platform.PlaylistAPI;
+  window.__plOrig = api.getContents;
+  const items = Array.from({ length: 26 }, (_, i) => ({ uri: "spotify:track:t" + String(i).padStart(21, "0"), name: "Bingo Song " + i, isPlayable: true, artists: [{ name: "Bingo Artist " + i }], album: { images: [] } }));
+  api.getContents = async (uri) => (uri === "spotify:playlist:quizmix" ? { items, totalLength: items.length } : window.__plOrig(uri));
+  return 1;
+})()` : `(() => { if (window.__plOrig) Spicetify.Platform.PlaylistAPI.getContents = window.__plOrig; return 1; })()`);
+async function bingoGame() {
+  await firstSong();
+  await openGame("bingo");
+  await until(() => T.js(`__sp.log.notes.some((n) => n.err && /24/.test(n.msg))`), 4000, "bingo: Hinweis, dass 24 Songs nötig sind");
+  await until(async () => !(await big.state()).open, 3000, "bingo: mit 12 Songs in der Warteschlange startet es nicht");
+  await T.js(`__sp.log.notes.length = 0; 1`);
+  await bingoList(true);
+  try {
+    await gameSource("Quiz Mix");
+    await openGame("bingo");
+    await joinAll("bingo");
+    await allPhones((s) => s.k === "bingo" && s.st === "go", 8000, "bingo: läuft auf allen Handys");
+    const cells = await P[0].js(`[...document.querySelectorAll("#game .bcell")].map((b) => b.textContent)`);
+    ok(cells.length === 16 && new Set(cells).size === 16, "bingo: 4×4-Karte mit 16 verschiedenen Songs: " + cells.join(" | "));
+    ok((await P[1].js(`[...document.querySelectorAll("#game .bcell")].map((b) => b.textContent).join()`)) !== cells.join(), "bingo: jedes Handy hat seine eigene Karte");
+    // ein Gast meldet Bingo, ohne eine Reihe zu haben: zählt nicht
+    await P[1].js(`gSure({ a: "bingo", v: 0 }); 1`);
+    await wait(1500);
+    ok((await big.state()).st === "go", "bingo: eine falsche Meldung gewinnt nicht");
+    // Alpha markiert die erste Reihe sofort: das Handy prüft selbst und meldet noch nichts
+    for (let i = 0; i < 4; i++) await P[0].click("#game .bcell", { index: i });
+    await P[0].click("#game .gbclaim");
+    ok(/Noch nicht gelaufen|Not played yet/.test(await P[0].js(`document.querySelector("#game .gbmsg").textContent`)), "bingo: das Handy sagt, was noch nicht gelaufen ist");
+    // weiter, bis die vier Songs der Reihe gelaufen sind (Überspringen in der Leiste)
+    const row = cells.slice(0, 4);
+    await big.hover();
+    await T.click(".m-im-gamebtn");
+    for (let n = 0; n < 26; n++) {
+      const g = await gameOn(P[0]), played = (g.bp || []).map((i) => g.deck[i]);
+      const now = await big.state(), last = played[played.length - 1];
+      if (last) ok(now.uri === "spotify:track:t" + last.split(" ").pop().padStart(21, "0"), `bingo: der Song „${last}“ läuft wirklich (${now.uri})`);
+      if (row.every((x) => played.includes(x))) break;
+      // die Spielkarte liegt bei 1280 px über dem unteren Teil der Leiste: der Knopf wird direkt ausgelöst
+      await T.js(`[...document.querySelectorAll(".m-im-side-item")].find((e) => e.textContent.includes("Runde überspringen")).click(); 1`);
+      await until(async () => ((await gameOn(P[0])).bp || []).length > played.length, 4000, "bingo: nächster Song");
+      await wait(500);
+    }
+    await T.click(".m-im-side-x");
+    await P[0].click("#game .gbclaim");
+    const res = await allPhones((s) => s.st === "res", 6000, "bingo: Alpha hat Bingo");
+    ok(res[1].h2 === "Alpha", "bingo: alle sehen den Gewinner: " + res[1].text);
+    ok(/BINGO! Alpha/.test((await big.state()).text), "bingo: das große Bild zeigt den Gewinner");
+    await allPhones((s) => s.st === "end", 10000, "bingo: Siegerehrung");
+    await noBadNotes("bingo");
+    await close();
+    await afterGame("bingo");
+    await gameSource("");
+  } finally {
+    await bingoList(false);
+  }
+}
 // Turnier-Auswahl leeren, damit spätere Fälle nichts davon merken
 async function gameReset() {
   await openGameSettings();
@@ -1353,8 +1413,8 @@ const CASES = [
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
 ];
 // neuere Spiele
-Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️" });
-CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame]);
+Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });
+CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame], ["bingo", bingoGame]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

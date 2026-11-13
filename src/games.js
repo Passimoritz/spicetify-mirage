@@ -36,6 +36,7 @@ export const GAME_LIST = [
   { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "🤔" },
   { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "🎙️" },
   { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "🏆" },
+  { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint", icon: "🎱" },
   { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "🎡" },
   { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint", icon: "🙈" },
   { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint", icon: "🍻" },
@@ -54,7 +55,7 @@ const MIN = { stop: 2, battle: 2, bomb: 2, likely: 2, dlikely: 2, fast: 1, beat:
 const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 const EARLY_END = new Set(["quiz", "dquiz", "title", "intro", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 // Diese Spiele führen die Musik: solange sie laufen, ist die Wiedergabe für alle anderen gesperrt
-const MUSIC_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel"]);
+const MUSIC_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel", "bingo"]);
 // zwei Ausschnitte je Runde: erst wenn beide gelaufen sind, darf die Runde vorzeitig enden
 const PAIR_GAMES = new Set(["older", "duel"]);
 const LINE_GAMES = new Set(["gap", "next", "tf"]);
@@ -321,6 +322,7 @@ const FIRST = {
   cover: () => coverRound(),
   duel: () => duelRound(),
   tour: () => tourBegin(),
+  bingo: () => bingoGo(),
 };
 function fresh(kind) {
   G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null, src: undefined, played: new Set() };
@@ -342,6 +344,8 @@ function start(kind, carry) {
     return beginNow();
   }
   if (kind === "tour") G.plan = tourPlan();
+  // Bingo: erst prüfen, ob die Quelle genug Songs hat, sonst gar nicht erst anfangen
+  if (kind === "bingo") return void bingoCheck();
   if (WHEELS.has(kind)) return wheelIdle();
   // Wort-Alarm läuft ohne Warteraum: niemand muss sich anmelden, um mitzutrinken
   if (kind === "alarm" || kind === "sing") {
@@ -668,7 +672,7 @@ function guard() {
   }
   const playing = PLR.isPlaying();
   const pair = PAIR_GAMES.has(G.k) && v.st === "ask" && G.heard > 0;
-  const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || (G.k === "beat" && v.st === "go") || G.k === "alarm" || G.k === "sing" || (G.k === "stop" && v.st === "play") || (pair && !G.paused);
+  const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || ((G.k === "beat" || G.k === "bingo") && v.st === "go") || G.k === "alarm" || G.k === "sing" || (G.k === "stop" && v.st === "play") || (pair && !G.paused);
   const wantStop = (SONG_FIELD[G.k] && v.st === "ask" && G.paused) || (G.k === "stop" && v.st === "stop") || (pair && G.paused) || (G.k === "cover" && v.st === "ask");
   if (now - (G.kick || 0) > 1000) {
     if (wantPlay && !playing) {
@@ -1410,6 +1414,73 @@ function pixTick() {
   x.drawImage(s, 0, 0, c.width, c.height);
 }
 
+/* ---- Musik-Bingo: jedes Handy hat eine 4×4-Karte mit Songtiteln, die Songs laufen, wer zuerst eine Reihe hat, gewinnt */
+const BINGO_N = 24;
+// Reihen, Spalten und die beiden Diagonalen
+const BINGO_LINES = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15], [0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15], [0, 5, 10, 15], [3, 6, 9, 12]];
+// Karte eines Gastes: 16 Felder aus dem Stapel, fest aus Spiel und Kennung gerechnet. Das Handy rechnet genauso,
+// so muss keine Karte verschickt werden, und eine Behauptung prüft der PC mit seiner eigenen Rechnung.
+function bingoCard(seed, n) {
+  let h = 2166136261;
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  const idx = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) {
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx.slice(0, 16);
+}
+async function bingoCheck() {
+  const g = G;
+  show({ st: "load" });
+  let list = null;
+  try {
+    list = await loadSource();
+  } catch {}
+  if (G !== g) return;
+  const seen = new Set();
+  list = (list || queueSongs(S.Queue?.nextTracks)).filter((x) => x.title && !seen.has(x.uri) && seen.add(x.uri));
+  if (list.length < BINGO_N) {
+    notify(t("gBingoFew").replace("{n}", list.length), true);
+    return stop();
+  }
+  G.deck = shuffle(list).slice(0, BINGO_N);
+  show({ st: "join", end: Date.now() + joinMs() });
+  after(joinMs(), beginNow);
+  ctx.changed?.();
+}
+function bingoGo() {
+  G.bp = [];
+  G.order = shuffle(G.deck.map((_, i) => i));
+  bingoTurn();
+}
+// der nächste Song vom Stapel; Stummschalten braucht es hier nicht, der Titel ist ja kein Geheimnis
+function bingoTurn() {
+  const i = G.order[G.bp.length];
+  if (i == null) return finish();
+  G.bp.push(i);
+  queueSong(G.deck[i]).then(() => {
+    if (G?.k !== "bingo" || G.view?.st !== "go") return;
+    PLR.next();
+    PLR.play();
+  });
+  show({ st: "go", deck: G.deck.map((x) => clean(x.title, 32)), bp: G.bp.slice(), end: Date.now() + durMs() });
+  after(durMs(), bingoTurn);
+}
+function bingoClaim(p, v) {
+  const line = BINGO_LINES[Number(v)];
+  if (!line || !G.deck) return;
+  const card = bingoCard(G.id + short(p.id), G.deck.length), played = new Set(G.bp);
+  // nur was wirklich gelaufen ist, zählt; wer zuerst eine echte Reihe meldet, gewinnt
+  if (!line.every((c) => played.has(card[c]))) return void sfx.buzz();
+  p.p += 100;
+  clearTimers();
+  show({ st: "res", win: nameOf(p), wc: colOf(p), ln: line.map((c) => G.deck[card[c]].title).join(" · ") });
+  ctx.confetti?.();
+  after(6000, finish);
+}
+
 /* ---- Antworten der Handys */
 window.addEventListener("mirage:game", (e) => {
   if (!G) return;
@@ -1458,6 +1529,7 @@ window.addEventListener("mirage:game", (e) => {
     else if (m.a === "tap" && v.st === "go" && !p.ans && !p.early) p.ans = { ms: Math.max(0, Math.min(5000, Number(m.ms) || 5000)) };
     return;
   }
+  if (G.k === "bingo" && m.a === "bingo" && v.st === "go") return bingoClaim(p, m.v);
   if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
   // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen.
   // Eine Korrektur der Spielleitung (adj) bleibt daneben stehen, sonst würde die nächste Meldung sie überschreiben.
@@ -1647,6 +1719,11 @@ function build(v) {
   if (v.st === "wait") return box.append(div("m-g-sub", t("gWaitLine")));
   if (v.st === "load") return box.append(div("m-g-big m-g-pulse", "🎧"), div("m-g-sub", t("gLoadSong")));
   if (G.k === "duel" && v.st === "champ") return buildChamp(v);
+  if (G.k === "bingo") {
+    if (v.st === "res") return box.append(div("m-g-big is-hot m-g-pop", t("gBingoWin").replace("{n}", v.win)), div("m-g-sub", v.ln));
+    // die gespielten Songs, der neueste oben (die Liste füllt update)
+    return box.append(div("m-g-sub m-g-bcount"), div("m-g-board m-g-bplayed"));
+  }
   if (G.k === "sing") {
     if (v.st === "res") return box.append(div("m-g-big m-g-pop", t("gSingBack")));
     if (v.st === "ready") return box.append(div("m-g-big m-g-pulse", t("gSingSoon")));
@@ -1897,6 +1974,13 @@ function update(v) {
   if (v.st === "ask" && keyIn() && all().length === 1) {
     const pick = G.players.get(KEY_ID).ans?.v;
     box.querySelectorAll(".m-g-opt").forEach((o, i) => o.classList.toggle("is-pick", i === pick));
+  }
+  const bp = box.querySelector(".m-g-bplayed");
+  if (bp && v.bp && bp.dataset.n !== String(v.bp.length)) {
+    bp.dataset.n = String(v.bp.length);
+    box.querySelector(".m-g-bcount").textContent = t("gBingoPlayed").replace("{n}", v.bp.length).replace("{m}", v.deck.length);
+    bp.textContent = "";
+    v.bp.slice(-8).reverse().forEach((i, k) => bp.append(row(k ? "♪" : "▶", v.deck[i], "")));
   }
   const tb = box.querySelector(".m-g-teams");
   if (tb) {

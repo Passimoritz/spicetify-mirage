@@ -63,3 +63,12 @@ Object.assign(GAME_TEXT.de, {
   gTour: "Turnier", gTourHint: "Mehrere Spiele hintereinander mit denselben Gästen, eine Rangliste über alle", gTourAfter: "Turnier · nach Spiel {i} von {n}", gTourNext: "Als Nächstes: {g}",
   gSetTour: "Spiele im Turnier", gSetTourNote: "3 bis 6 Spiele wählen, oder keins für einen Zufallsmix", gSetTourN: "Zufallsmix: Spiele",
 });
+// Musik-Bingo
+Object.assign(GAME_TEXT.en, {
+  gBingo: "Music bingo", gBingoHint: "Every phone gets a card of song titles. Mark what plays: four in a row, column or diagonal wins",
+  gBingoFew: "Music bingo needs at least 24 songs in the queue or the chosen playlist ({n} found).", gBingoPlayed: "{n} of {m} songs played", gBingoWin: "BINGO! {n}",
+});
+Object.assign(GAME_TEXT.de, {
+  gBingo: "Musik-Bingo", gBingoHint: "Jedes Handy bekommt eine Karte mit Songtiteln. Markiert, was läuft: vier in einer Reihe, Spalte oder Diagonale gewinnen",
+  gBingoFew: "Musik-Bingo braucht mindestens 24 Songs in der Warteschlange oder der gewählten Playlist ({n} gefunden).", gBingoPlayed: "{n} von {m} Songs gespielt", gBingoWin: "BINGO! {n}",
+});

@@ -401,8 +401,8 @@ const GAME_TEXT = {"en": {"gIntro": "Intro flash", "gTf": "Real or fake?", "gTfA
 // neuere Texte: nur Englisch und Deutsch, alle anderen Sprachen fallen auf Englisch zurück
 Object.assign(GAME_TEXT.en, { hTitle: "Game host", hPick: "Start a game on the big screen:", hStart: "Start now", hSkip: "Skip round", hSpin: "Spin", hEnd: "End game", hPts: "Correct points", pTitle: "Who are you?", pHint: "Your name and colour show up on the big screen, next to your wishes and scores.", pOk: "Done", pCol: "Colour", gLate: "The game is already running", gLateHint: "Jump in and play from here.", gLateWatch: "Jump in: you watch this game and play the next one.", gLateJoin: "Jump in", netLost: "Offline · reconnecting …", netBack: "Connected again", netQuiet: "No signal from the party" });
 Object.assign(GAME_TEXT.de, { hTitle: "Spielleitung", hPick: "Spiel auf dem großen Bild starten:", hStart: "Jetzt starten", hSkip: "Runde überspringen", hSpin: "Drehen", hEnd: "Spiel beenden", hPts: "Punkte korrigieren", pTitle: "Wer bist du?", pHint: "Name und Farbe stehen auf dem großen Bild, bei deinen Wünschen und Punkten.", pOk: "Fertig", pCol: "Farbe", gLate: "Das Spiel läuft schon", gLateHint: "Steig ein und spiel ab jetzt mit.", gLateWatch: "Steig ein: Dieses Spiel schaust du zu, beim nächsten bist du dabei.", gLateJoin: "Einsteigen", netLost: "Offline · verbinde neu …", netBack: "Wieder verbunden", netQuiet: "Kein Signal von der Party" });
-Object.assign(GAME_TEXT.en, { gOlder: "Older or newer?", gCover: "Cover puzzle", gDuel: "Song duel", gDuelChamp: "Champion of the night", gTour: "Tournament", gTourAfter: "Tournament · after game {i} of {n}", gTourNext: "Next: {g}" });
-Object.assign(GAME_TEXT.de, { gOlder: "Älter oder jünger?", gCover: "Cover-Rätsel", gDuel: "Song-Duell", gDuelChamp: "Sieger des Abends", gTour: "Turnier", gTourAfter: "Turnier · nach Spiel {i} von {n}", gTourNext: "Als Nächstes: {g}" });
+Object.assign(GAME_TEXT.en, { gOlder: "Older or newer?", gCover: "Cover puzzle", gDuel: "Song duel", gDuelChamp: "Champion of the night", gTour: "Tournament", gTourAfter: "Tournament · after game {i} of {n}", gTourNext: "Next: {g}", gBingo: "Music bingo", gBingoHint: "Tap what plays. Four in a row, column or diagonal: BINGO!", gBingoNoLine: "Mark four in a row, column or diagonal first.", gBingoNotYet: "Not played yet: {t}", gBingoSent: "Sent, the big screen checks it …" });
+Object.assign(GAME_TEXT.de, { gOlder: "Älter oder jünger?", gCover: "Cover-Rätsel", gDuel: "Song-Duell", gDuelChamp: "Sieger des Abends", gTour: "Turnier", gTourAfter: "Turnier · nach Spiel {i} von {n}", gTourNext: "Als Nächstes: {g}", gBingo: "Musik-Bingo", gBingoHint: "Tippe an, was läuft. Vier in einer Reihe, Spalte oder Diagonale: BINGO!", gBingoNoLine: "Markiere erst vier in einer Reihe, Spalte oder Diagonale.", gBingoNotYet: "Noch nicht gelaufen: {t}", gBingoSent: "Gemeldet, das große Bild prüft …" });
 for (const src of [SCAN_TEXT, GAME_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
@@ -1316,7 +1316,7 @@ const GAME = {
   dquiz: ["🍻", () => T.gDquiz], alarm: ["🚨", () => T.gAlarm], dlikely: ["👉", () => T.gDlikely], dwheel: ["🍀", () => T.gDwheel],
   quiz: ["🎤", () => T.gQuiz], title: ["🎵", () => T.gTitleQ], gap: ["✏️", () => T.gGap], next: ["📜", () => T.gNext], beat: ["🥁", () => T.gBeat],
   stop: ["✋", () => T.gStop], fast: ["⚡", () => T.gFast], battle: ["💃", () => T.gBattle], bomb: ["💣", () => T.gBomb], likely: ["🤔", () => T.gLikely], wheel: ["🎡", () => T.gWheel],
-  older: ["📅", () => T.gOlder], cover: ["🖼️", () => T.gCover], duel: ["⚔️", () => T.gDuel], tour: ["🏆", () => T.gTour],
+  older: ["📅", () => T.gOlder], cover: ["🖼️", () => T.gCover], duel: ["⚔️", () => T.gDuel], tour: ["🏆", () => T.gTour], bingo: ["🎱", () => T.gBingo],
 };
 const gName = () => (store("mlName") || "").slice(0, 20);
 // Einmalige Meldungen (Antwort, Tipp, Beitritt): notfalls mehrfach und nach dem Wiederverbinden. Der PC zählt jede nur einmal.
@@ -1641,6 +1641,7 @@ function gBuild(g, box, isH) {
   if (g.st === "load") return void box.append(gEl("div", "🎧", "gbigic gpop"), gEl("h2", T.gLoadSong));
   // Song-Duell: der Sieger am Ende
   if (g.k === "duel" && g.st === "champ") return void box.append(gEl("div", "🏆", "gbigic gpop"), gEl("small", T.gDuelChamp), gEl("h2", String(g.t || "")));
+  if (g.k === "bingo") return void gBingo(g, box);
   if (g.k === "sing") {
     if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
     if (g.st === "res") return void box.append(gEl("div", "🎉", "gbigic gpop"), gEl("h2", T.gSingBack));
@@ -1872,6 +1873,62 @@ function gBuild(g, box, isH) {
       box.append(gEl("div", "😅", "gbigic"), hn, gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
     }
   }
+}
+
+/* ---- Musik-Bingo: die eigene Karte, markieren, Bingo melden */
+const BINGO_LINES = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15], [0, 4, 8, 12], [1, 5, 9, 13], [2, 6, 10, 14], [3, 7, 11, 15], [0, 5, 10, 15], [3, 6, 9, 12]];
+// dieselbe Rechnung wie im Theme (games.js): aus Spiel und eigener Kennung, so prüft der PC jede Meldung selbst
+function bingoCard(seed, n) {
+  let h = 2166136261;
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  const idx = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) {
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx.slice(0, 16);
+}
+function gBingo(g, box) {
+  if (g.st === "res") return box.append(gEl("div", "🎉", "gbigic gpop"), gEl("small", "BINGO!"), gEl("h2", String(g.win || "")), gEl("p", String(g.ln || "")));
+  if (g.st !== "go" || !Array.isArray(g.deck)) return;
+  const card = bingoCard(g.id + me, g.deck.length);
+  let mk;
+  try {
+    mk = new Set(JSON.parse(gMem("b" + g.id) || "[]"));
+  } catch {
+    mk = new Set();
+  }
+  const grid = gEl("div", null, "gbgrid"), msg = gEl("p", "", "gbmsg");
+  grid.style.cssText = "display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%";
+  const look = (b, on) => (b.style.cssText = `min-height:64px;padding:6px 4px;border-radius:12px;font-size:12px;line-height:1.2;overflow-wrap:anywhere;border:2px solid ${on ? "#fff" : "transparent"};background:${on ? "rgba(255,255,255,.32)" : "rgba(255,255,255,.08)"}`);
+  card.forEach((d, c) => {
+    const b = gEl("button", String(g.deck[d] ?? ""), "bcell");
+    b.type = "button";
+    look(b, mk.has(c));
+    b.onclick = gTap(() => {
+      if (mk.has(c)) mk.delete(c);
+      else mk.add(c);
+      look(b, mk.has(c));
+      gMem("b" + g.id, JSON.stringify([...mk]));
+      haptic([[0.5, 20]]);
+    });
+    grid.append(b);
+  });
+  const claim = gEl("button", "BINGO!", "go gbclaim");
+  claim.type = "button";
+  // erst selbst prüfen: eine volle Reihe, und alle ihre Songs sind wirklich gelaufen
+  claim.onclick = gTap(() => {
+    const played = new Set(cur?.g?.bp || []), full = BINGO_LINES.filter((l) => l.every((c) => mk.has(c)));
+    if (!full.length) return void (msg.textContent = T.gBingoNoLine);
+    const hit = full.find((l) => l.every((c) => played.has(card[c])));
+    if (!hit) return void (msg.textContent = T.gBingoNotYet.replace("{t}", full[0].filter((c) => !played.has(card[c])).map((c) => g.deck[card[c]]).join(", ")));
+    gSure({ a: "bingo", v: BINGO_LINES.indexOf(hit) });
+    msg.textContent = T.gBingoSent;
+    claim.disabled = true;
+    haptic([[1, 80], [0, 50], [1, 80]]);
+  });
+  box.append(gEl("small", T.gBingoHint), grid, claim, msg);
 }
 
 /* ---- Spielleitung: starten, Runde überspringen, beenden, Punkte korrigieren */
