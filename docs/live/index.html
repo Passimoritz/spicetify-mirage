@@ -8,6 +8,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="robots" content="noindex">
+<!-- als App auf den Startbildschirm: Vollbild, eigenes Icon. Bewusst ohne Service Worker – die Seite braucht ohnehin
+     Netz (Relays), und so kann nach einem Update nie eine alte Fassung aus einem Zwischenspeicher kommen. -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Mirage Live</title>
 <script src="fx.js" defer></script>
 <style>
@@ -446,6 +450,13 @@ const say = ([a, b]) => {
 };
 $("tap").textContent = T.tap;
 say(T.start);
+// Vom Startbildschirm geöffnet, ohne Link: wieder in die Party von eben (höchstens 12 Stunden alt). Gemerkt wird
+// nur Kanal und Gästeschlüssel, auf dem Handy selbst – nie die Schlüssel von Spielleitung oder Fernbedienung.
+const APP = navigator.standalone === true || matchMedia("(display-mode: fullscreen), (display-mode: standalone)").matches;
+try {
+  const last = JSON.parse(localStorage.getItem("mlLast") || "null");
+  if (APP && location.hash.length < 2 && last && Date.now() - last.at < 12 * 3600e3 && /^#c=[\w-]+&k=[\w-]+$/.test(last.h)) history.replaceState(null, "", last.h);
+} catch {}
 const p = new URLSearchParams(location.hash.slice(1));
 const fromB64 = (s) => Uint8Array.from(atob(String(s || "").replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
 let skew = 0, lags = [];
@@ -458,6 +469,9 @@ async function start() {
     if (raw.length !== 16 || !/^[\w-]{16,}$/.test(ch)) throw 0;
     key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt", "encrypt"]);
     topic = "mirage-live/" + ch;
+    try {
+      localStorage.setItem("mlLast", JSON.stringify({ h: "#c=" + ch + "&k=" + p.get("k"), at: Date.now() }));
+    } catch {}
   } catch {
     // ohne Link: kein Fehler, sondern der normale Weg über den Scanner
     say(location.hash.length > 1 ? T.bad : T.scanStart);

@@ -187,6 +187,48 @@ async function langCheck(browser, env, device) {
   }
 }
 
+// Als App auf dem Startbildschirm: Manifest und Icons laden, die App findet die Party von eben wieder
+async function appCheck(browser, env, device) {
+  const problems = [];
+  let { page } = await visit(browser, env, { device, lang: "de", state: "wait" }, (s) => s.title === TEXT.de.wait);
+  const m = await page.eval(`(async () => {
+    const href = document.querySelector('link[rel="manifest"]')?.href;
+    const man = await (await fetch(href)).json();
+    const icons = [];
+    for (const i of man.icons) {
+      const r = await fetch(new URL(i.src, href));
+      const bm = await createImageBitmap(await r.blob());
+      icons.push({ src: i.src, ok: r.ok, size: bm.width + "x" + bm.height, want: i.sizes, type: r.headers.get("content-type") });
+    }
+    const apple = document.querySelector('link[rel="apple-touch-icon"]')?.href;
+    return { name: man.name, display: man.display, start: man.start_url, icons, apple: apple && (await fetch(apple)).ok, last: JSON.parse(localStorage.getItem("mlLast") || "null")?.h, sw: !!navigator.serviceWorker?.controller };
+  })()`).catch((e) => ({ err: e.message }));
+  if (m.err) problems.push("Manifest: " + m.err);
+  else {
+    if (m.name !== "Mirage Live" || m.display !== "fullscreen" || m.start !== "./") problems.push(`Manifest: ${m.name} / ${m.display} / ${m.start}`);
+    for (const i of m.icons) if (!i.ok || i.size !== i.want) problems.push(`Icon ${i.src}: ${i.size} statt ${i.want}`);
+    if (!m.apple) problems.push("apple-touch-icon fehlt");
+    if (m.last !== goodHash) problems.push("die Party wird nicht gemerkt: " + m.last);
+    if (m.sw) problems.push("ein Service Worker steuert die Seite");
+  }
+  await page.close();
+  // vom Startbildschirm ohne Link: zurück in die Party von eben; ist sie älter als 12 Stunden, der Scanner
+  for (const [age, want, label] of [[60e3, TEXT.de.wait, "frisch"], [13 * 3600e3, TEXT.de.start, "zu alt"]]) {
+    const init = initScript(env.broker.port, false) + `\nObject.defineProperty(Navigator.prototype, "standalone", { get: () => true });\ntry { localStorage.setItem("mlLast", JSON.stringify({ h: ${JSON.stringify(goodHash)}, at: Date.now() - ${age} })); } catch {}`;
+    const pg = await browser.open({ url: `http://127.0.0.1:${env.web.port}/`, width: device.width, height: device.height, dpr: device.dpr, ua: device.ua, lang: "de-DE", initScript: init });
+    let snap = null;
+    for (let i = 0; i < 60; i++) {
+      snap = await pg.eval(SNAPSHOT).catch(() => null);
+      if (snap?.title === want) break;
+      await sleep(100);
+    }
+    if (snap?.title !== want) problems.push(`App-Start (${label}): Titel „${snap?.title}“ statt „${want}“`);
+    if (pg.errors.length) problems.push(...pg.errors.map((e) => "Fehler in der Konsole: " + e));
+    await pg.close();
+  }
+  check(`${device.name} · als App: Manifest, Icons, Party von eben, kein Service Worker`, problems);
+}
+
 // Mit gespielter Party: was die Seite aus den Nachrichten des Themes macht
 async function partySuite(browser, env, device) {
   const o = { url: `http://127.0.0.1:${env.web.port}/${goodHash}`, device, lang: "de-DE", channel, key: Buffer.from(new URLSearchParams(goodHash.slice(1)).get("k"), "base64url"), initScript: initScript(env.broker.port, false) };
@@ -224,6 +266,7 @@ async function suite(browser, env, devices) {
   }
   await scanCheck(browser, env, devices[0]);
   await langCheck(browser, env, devices[0]);
+  await appCheck(browser, env, devices[0]);
   await partySuite(browser, env, devices[0]);
 }
 
