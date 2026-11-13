@@ -1069,7 +1069,15 @@ function createWordFx(lexicon, { onFire } = {}) {
     fxs = [];
     parts = [];
   }
-  return { prepare, addTranslated, onLine, draw, fire, reset, needsTranslation, get uri() { return uriNow; } };
+  // Immersiv-Modus geschlossen: die fenstergroße eigene Ebene abgeben (draw() legt sie bei Bedarf neu an)
+  // (der Plan des laufenden Songs bleibt: nach dem Wiederöffnen kommen seine Wortbilder weiter)
+  function release() {
+    fxs = [];
+    parts = [];
+    if (off) off.width = off.height = 0;
+    off = null;
+  }
+  return { prepare, addTranslated, onLine, draw, fire, reset, release, needsTranslation, get uri() { return uriNow; } };
 }
 
 // für Tests: Treffer einer Zeile in allen Sprachen

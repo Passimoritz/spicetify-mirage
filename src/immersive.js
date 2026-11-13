@@ -91,6 +91,9 @@ const immersive = (() => {
   const pit = new Float32Array(12);
   const vizRect = { n: 0, r: null };
   let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
+  // Frist, nach der Geschlossenes oder Verlassenes freigegeben wird (Location-Thread, große Canvas, Videos);
+  // verdeckt etwas länger, weil man dort oft nur kurz in ein anderes Fenster schaut
+  const RELEASE_MS = 8000, HIDDEN_MS = 30000;
 
   function build() {
     el = document.createElement("div");
@@ -358,6 +361,8 @@ const immersive = (() => {
       q.cover.style.setProperty("--gy", (50 + y * 80).toFixed(1) + "%");
     });
     addEventListener("resize", () => {
+      // geschlossen nichts neu anlegen (freigegebenes Canvas bliebe sonst groß); open() misst ohnehin neu
+      if (!isOpen()) return;
       sizeCanvas();
       kick();
     });
@@ -569,10 +574,16 @@ const immersive = (() => {
 
   // Leicht-Preset oder Energiesparen fest an: weniger Pixel, 30 Bilder/s, weniger Details
   const lightMode = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
-  const sizeKeyNow = () => `${cfg.preset}|${cfg.lite}|${cfg.eco}`;
+  const sizeKeyNow = () => `${cfg.preset}|${cfg.lite}|${cfg.eco}|${VIZ.has(el?.dataset.mode)}`;
   let sizeKey = "";
   function sizeCanvas() {
     if (!q.canvas) return;
+    // Cover und Liedtext zeichnen nichts auf das Canvas: dort keine Pixel vorhalten (vw/vh bleiben für die Geometrie)
+    if (!VIZ.has(el.dataset.mode)) {
+      sizeKey = sizeKeyNow();
+      q.canvas.width = q.canvas.height = 0;
+      return;
+    }
     // höchstens ~3 Mio. Pixel: auf großen/hochauflösenden Bildschirmen wäre die volle Dichte ein
     // Vielfaches davon – jedes Bild neu zeichnen ruckelt dann. Die leuchtenden Linien bleiben trotzdem scharf genug.
     // je leichter das Preset, desto weniger Pixel: Leicht/Energiesparen ~1,2 Mio., Ausgewogen ~2 Mio.
@@ -680,6 +691,8 @@ const immersive = (() => {
     party.live = null;
     live.stop();
     venueClear();
+    // Party verlassen: Location-Thread samt Bildern bald freigeben (wer gleich zurückwechselt, findet ihn noch)
+    venueLater(RELEASE_MS);
     el?.querySelector(".m-im-livecard")?.remove();
   }
 
@@ -1969,23 +1982,40 @@ const immersive = (() => {
   }
 
   /* ---- Party-Location: im Hintergrund-Thread (OffscreenCanvas), sonst hier im Fenster */
-  const venueLocal = createVenue((w, h) => {
+  // erst bei Bedarf gebaut und beim Freigeben verworfen: hält im Ersatzfall (ohne Thread) die Körperbilder
+  let venueLocal = null;
+  const local = () => (venueLocal ||= createVenue((w, h) => {
     const c = document.createElement("canvas");
     c.width = w;
     c.height = h;
     return c;
-  });
-  const glowSprite = venueLocal.glowSprite;
+  }));
+  const glowSprite = (c) => local().glowSprite(c);
   let venueWorker = null, venueCtx = null, venueOn = false, venueBusy = false, venueSentAt = 0, venueDt = 0;
+  // venueUrl: eine Blob-URL für alle Threads (neu anlegen hieße jedes Mal eine neue, nie freigegebene URL);
+  // venueGiven: das Canvas gehört schon einem (beendeten) Thread und lässt sich nicht noch einmal übergeben
+  let venueUrl = "", venueGiven = false, venueNoThread = false;
   const venueHold = { dropHit: false, hit: false };
   let venueFlashGo = false;
+  // frisches Canvas an die Stelle des alten (das alte gehört dem Thread oder wird freigegeben)
+  function venueSwap() {
+    const n = q.venueEl.cloneNode(false);
+    // die Kopie erbt die Größe des alten: leer anfangen, das erste Bild setzt sie
+    n.width = n.height = 0;
+    q.venueEl.replaceWith(n);
+    q.venueEl = n;
+    venueGiven = false;
+  }
   function venueInit() {
     if (venueWorker || venueCtx) return;
+    if (venueNoThread) return venueFallback();
     try {
       if (typeof __VENUE_WORKER__ === "string" && q.venueEl.transferControlToOffscreen && window.Worker) {
-        const url = URL.createObjectURL(new Blob([__VENUE_WORKER__], { type: "text/javascript" }));
-        const w = new Worker(url);
+        venueUrl ||= URL.createObjectURL(new Blob([__VENUE_WORKER__], { type: "text/javascript" }));
+        const w = new Worker(venueUrl);
+        if (venueGiven) venueSwap();
         const off = q.venueEl.transferControlToOffscreen();
+        venueGiven = true;
         w.postMessage({ type: "init", canvas: off }, [off]);
         w.onerror = () => venueFallback();
         w.onmessage = (e) => {
@@ -2003,12 +2033,40 @@ const immersive = (() => {
       venueWorker?.terminate();
     } catch {}
     venueWorker = null;
-    const n = q.venueEl.cloneNode(false);
-    q.venueEl.replaceWith(n);
-    q.venueEl = n;
-    venueCtx = n.getContext("2d");
+    venueNoThread = true;
+    venueSwap();
+    venueCtx = q.venueEl.getContext("2d");
+  }
+  // Freigeben: Thread beenden (mit ihm gehen Körperbilder, Leuchtpunkte, Überblend-Kopie und sein Canvas),
+  // im Ersatzfall Canvas auf 0 × 0 und die Location verwerfen. Das nächste Party-Bild baut alles neu auf
+  // (gemessen: erstes Bild nach gut 100 ms statt nach gut 50 ms).
+  let venueDrop = 0;
+  function venueRelease() {
+    clearTimeout(venueDrop);
+    venueDrop = 0;
+    if (venueWorker) {
+      venueWorker.terminate();
+      venueWorker = null;
+      venueSwap();
+    } else if (venueCtx) {
+      venueCtx = null;
+      q.venueEl.width = q.venueEl.height = 0;
+    }
+    venueLocal = null;
+    venueOn = venueBusy = false;
+    venueDt = 0;
+    venueHold.dropHit = venueHold.hit = venueFlashGo = false;
+  }
+  function venueLater(ms) {
+    clearTimeout(venueDrop);
+    venueDrop = setTimeout(() => {
+      // sichtbar mit stehender Party (Pause, Bildschleife ruht): das letzte Bild bleibt stehen, nicht freigeben
+      if (isOpen() && el.dataset.mode === "party" && !document.hidden) return;
+      venueRelease();
+    }, ms);
   }
   function venueFrame(st) {
+    clearTimeout(venueDrop);
     venueInit();
     venueOn = true;
     // Der Thread zeichnet noch? Dann dieses Bild auslassen und die Zeit fürs nächste aufheben –
@@ -2036,7 +2094,7 @@ const immersive = (() => {
     venueHold.dropHit = venueHold.hit = venueFlashGo = false;
     if (venueCtx) {
       if (q.venueEl.width !== st.vw || q.venueEl.height !== st.vh) [q.venueEl.width, q.venueEl.height] = [st.vw, st.vh];
-      venueLocal.draw(venueCtx, st);
+      local().draw(venueCtx, st);
     }
   }
   function venueClear() {
@@ -3386,8 +3444,46 @@ const immersive = (() => {
   }
   document.addEventListener("visibilitychange", syncTicker);
 
+  /* ---- Ressourcen freigeben: geschlossen oder lange verdeckt */
+  // Was nur die sichtbare Ebene braucht, wird nach einer Frist abgegeben: Location-Thread (Körperbilder bis
+  // ~12 MB, sein Canvas), Visualizer-Canvas (bis 3 Mio. Pixel = 12 MB), die Ebene der Wortbilder und die
+  // Canvas-Videos samt Decoder. Klein und fürs schnelle Wiederöffnen wichtig (Wörterbuch-Index, Taktdaten) bleibt.
+  let releaseT = 0, hiddenT = 0, dropped = false;
+  function dropCanvases() {
+    venueRelease();
+    q.canvas.width = q.canvas.height = 0;
+    // beim nächsten Bild bzw. open() neu ausmessen
+    sizeKey = "";
+    wordFx.release();
+    dropped = true;
+  }
+  function release() {
+    releaseT = 0;
+    if (!el || isOpen()) return;
+    dropCanvases();
+    // Video ohne Quelle: erst load() gibt Puffer und Decoder wirklich frei
+    for (const v of [q.video, q.cvid]) {
+      if (!v.getAttribute("src")) continue;
+      v.classList.remove("is-on");
+      v.removeAttribute("src");
+      v.load();
+    }
+  }
+  document.addEventListener("visibilitychange", () => {
+    clearTimeout(hiddenT);
+    if (document.hidden) {
+      if (isOpen()) hiddenT = setTimeout(() => document.hidden && isOpen() && dropCanvases(), HIDDEN_MS);
+    } else if (dropped && isOpen()) {
+      // wieder sichtbar: ein Bild zeichnen, damit Bühne und Visualizer nicht leer stehen (auch bei Pause)
+      dropped = false;
+      kick();
+    }
+  });
+
   function open() {
     if (!isOpen()) lastFocus = document.activeElement;
+    clearTimeout(releaseT);
+    dropped = false;
     if (!el) build();
     sizeCanvas();
     setMode(cfg.imMode, false);
@@ -3420,6 +3516,8 @@ const immersive = (() => {
     cancelAnimationFrame(raf);
     raf = 0;
     syncTicker();
+    clearTimeout(releaseT);
+    releaseT = setTimeout(release, RELEASE_MS);
     // tints.js holt Aufgeschobenes nach
     document.dispatchEvent(new Event("mirage:im-close"));
     if (document.fullscreenElement) document.exitFullscreen?.();
