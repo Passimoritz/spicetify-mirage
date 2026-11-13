@@ -84,6 +84,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Tests
 
+- `npm run test:phones` now also runs the phone page in WebKit, the engine behind Safari on the iPhone (Playwright), here and on every push.
 - The games test no longer depends on the language of the test machine, and the mute button test repeats a click that missed.
 
 ## [1.23.1] – 2026-11-12

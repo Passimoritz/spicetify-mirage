@@ -26,7 +26,9 @@ async function launchWebkit(playwright) {
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push("Ausnahme: " + String(e.message).split("\n")[0]));
-    page.on("console", (m) => m.type() === "error" && errors.push("console.error: " + m.text()));
+    // Safari kennt die Viewport-Angabe interactive-widget nicht und meldet das als Fehler; andere Browser nutzen sie
+    const HARMLESS = /Viewport argument key "interactive-widget" not recognized/;
+    page.on("console", (m) => m.type() === "error" && !HARMLESS.test(m.text()) && errors.push("console.error: " + m.text()));
     page.on("requestfailed", (r) => errors.push("Browser: " + r.url() + " " + (r.failure()?.errorText || "")));
     await page.goto(url, { waitUntil: "domcontentloaded" });
     return {

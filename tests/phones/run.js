@@ -66,7 +66,8 @@ const SNAPSHOT = `(() => {
     title: $("sTitle").textContent, text: $("sText").textContent, lang: document.documentElement.lang,
     scan: !$("scan").hidden, btn: $("scanBtn").textContent, btnH: Math.round(btn.height), msg: $("scanMsg").textContent,
     w, scrollW: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), over: over.slice(0, 4),
-    touch: navigator.maxTouchPoints, navLang: navigator.language,
+    // WebKit unter Windows meldet maxTouchPoints 0, auch wenn Touch-Ereignisse emuliert werden
+    touch: navigator.maxTouchPoints || ("ontouchstart" in window ? 1 : 0), navLang: navigator.language,
   };
 })()`;
 

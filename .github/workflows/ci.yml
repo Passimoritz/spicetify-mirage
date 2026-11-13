@@ -140,3 +140,29 @@ jobs:
 
       - name: DTLS end to end against openssl s_server
         run: node tests/dtls/run.js --require
+
+  # Handy-Seite in WebKit (die Technik hinter Safari auf dem iPhone) und in Chrome mit Handy-Emulation
+  phones:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Playwright steht fest in package.json; hier nur die WebKit-Engine samt Systembibliotheken holen
+      - name: Install WebKit
+        run: npx playwright install --with-deps webkit
+
+      # Chrome ist auf ubuntu-latest vorinstalliert; --need-webkit macht ein fehlendes WebKit zum Fehler
+      - name: Phone page in WebKit and Chrome
+        run: npm run test:phones -- --need-webkit

@@ -93,8 +93,9 @@ async function tickCheck(browser, env, o, check) {
   // ohne Vibration (wie Safari auf dem iPhone): der Knopf ist da, aber aus
   const ios = await party(browser, env, { ...o, initScript: o.initScript + "\ndelete Navigator.prototype.vibrate;" });
   try {
-    const b = await ios.page.eval(`({ tick: !document.getElementById("bTick").hidden, vib: !document.getElementById("bVib").hidden, on: tickOn, pressed: document.getElementById("bTick").getAttribute("aria-pressed"), label: document.querySelector("#bTick span").textContent })`);
-    if (!b.tick || b.vib) problems.push(`ohne Vibration: Klick-Knopf ${b.tick ? "da" : "fehlt"}, Vibrationsknopf ${b.vib ? "da" : "weg"}`);
+    const b = await ios.page.eval(`({ ac: !!(window.AudioContext || window.webkitAudioContext), tick: !document.getElementById("bTick").hidden, vib: !document.getElementById("bVib").hidden, on: tickOn, pressed: document.getElementById("bTick").getAttribute("aria-pressed"), label: document.querySelector("#bTick span").textContent })`);
+    // ohne Web Audio (Playwrights WebKit unter Windows; das iPhone hat es) bleibt der Klick-Knopf zu Recht weg
+    if (b.ac ? !b.tick || b.vib : b.tick || b.vib) problems.push(`ohne Vibration: Klick-Knopf ${b.tick ? "da" : "fehlt"}, Vibrationsknopf ${b.vib ? "da" : "weg"}, Web Audio ${b.ac ? "da" : "fehlt"}`);
     if (b.on || b.pressed !== "false") problems.push("der Klick ist von selbst an");
     if (!b.label) problems.push("Klick-Knopf ohne Text");
     await ios.page.eval(`(() => { window.__t = []; clickAt = (beat, inSec) => __t.push([beat, performance.now() / 1000 + inSec]); tickOn = true; return 1; })()`);
@@ -179,7 +180,7 @@ async function ecoCheck(browser, env, o, check) {
       await p.page.eval(COUNT);
       const t0 = Date.now();
       await beats(p, 2000);
-      const r = await p.page.eval(`({ d: __d, w: document.getElementById("c").width, iw: innerWidth, dpr: devicePixelRatio, eq: document.querySelector(".eq i").style.transform, h: document.querySelector(".eq i").style.height, saving })`);
+      const r = await p.page.eval(`({ d: __d, w: document.getElementById("c").width, iw: innerWidth, dpr: devicePixelRatio, eq: document.querySelector(".eq i").style.transform, h: document.querySelector(".eq i").style.height, saving, gpu: !!navigator.userAgentData })`);
       r.fps = r.d / ((Date.now() - t0) / 1000);
       if (p.page.errors.length) problems.push(...p.page.errors.map((e) => label + ": Fehler in der Konsole: " + e));
       return r;
@@ -196,7 +197,8 @@ async function ecoCheck(browser, env, o, check) {
     if (!r.saving || r.w !== r.iw) problems.push(`${label}: Canvas ${r.w} px statt ${r.iw} px, sparen=${r.saving}`);
     if (r.fps > 34) problems.push(`${label}: ${r.fps.toFixed(0)} Bilder/s gemalt (höchstens ~30)`);
   }
-  if (normal.fps < 40) problems.push(`normal nur ${normal.fps.toFixed(0)} Bilder/s gemalt`);
+  // die volle Bildrate nur dort verlangen, wo eine Grafikkarte zeichnet: WebKit unter Windows rechnet hier in Software
+  if (normal.fps < 40 && normal.gpu) problems.push(`normal nur ${normal.fps.toFixed(0)} Bilder/s gemalt`);
   check(`${o.device.name} · Akku sparen: ~30 Bilder/s und einfache Auflösung (gewählt oder bei schwachem Akku), Equalizer ohne Layout`, problems);
 }
 
