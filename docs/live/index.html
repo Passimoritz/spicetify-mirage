@@ -401,6 +401,8 @@ const GAME_TEXT = {"en": {"gIntro": "Intro flash", "gTf": "Real or fake?", "gTfA
 // neuere Texte: nur Englisch und Deutsch, alle anderen Sprachen fallen auf Englisch zurück
 Object.assign(GAME_TEXT.en, { hTitle: "Game host", hPick: "Start a game on the big screen:", hStart: "Start now", hSkip: "Skip round", hSpin: "Spin", hEnd: "End game", hPts: "Correct points", pTitle: "Who are you?", pHint: "Your name and colour show up on the big screen, next to your wishes and scores.", pOk: "Done", pCol: "Colour", gLate: "The game is already running", gLateHint: "Jump in and play from here.", gLateWatch: "Jump in: you watch this game and play the next one.", gLateJoin: "Jump in", netLost: "Offline · reconnecting …", netBack: "Connected again", netQuiet: "No signal from the party" });
 Object.assign(GAME_TEXT.de, { hTitle: "Spielleitung", hPick: "Spiel auf dem großen Bild starten:", hStart: "Jetzt starten", hSkip: "Runde überspringen", hSpin: "Drehen", hEnd: "Spiel beenden", hPts: "Punkte korrigieren", pTitle: "Wer bist du?", pHint: "Name und Farbe stehen auf dem großen Bild, bei deinen Wünschen und Punkten.", pOk: "Fertig", pCol: "Farbe", gLate: "Das Spiel läuft schon", gLateHint: "Steig ein und spiel ab jetzt mit.", gLateWatch: "Steig ein: Dieses Spiel schaust du zu, beim nächsten bist du dabei.", gLateJoin: "Einsteigen", netLost: "Offline · verbinde neu …", netBack: "Wieder verbunden", netQuiet: "Kein Signal von der Party" });
+Object.assign(GAME_TEXT.en, { gOlder: "Older or newer?", gCover: "Cover puzzle", gDuel: "Song duel", gDuelChamp: "Champion of the night" });
+Object.assign(GAME_TEXT.de, { gOlder: "Älter oder jünger?", gCover: "Cover-Rätsel", gDuel: "Song-Duell", gDuelChamp: "Sieger des Abends" });
 for (const src of [SCAN_TEXT, GAME_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
@@ -1307,13 +1309,14 @@ let gKey = "", gGame = "", gVoted = -1, gOut = false, gSeen = 0, gShook = 0, gTa
 let gBeatEl = null, gBeatScore = 0, gBeatSent = 0, gBeatPrev = 0, gBeatT = 0, gBeatRun = 0, gTaps = 0;
 const me = myId.slice(-6);
 const TILE = ["A", "B", "C", "D", "E", "F"];
-const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never"]);
+const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 const WHEELS = new Set(["wheel", "dwheel"]);
 const GAME = {
   intro: ["⏱️", () => T.gIntro], sing: ["🎙️", () => T.gSing], tf: ["🕵️", () => T.gTf], taps: ["👆", () => T.gTaps], never: ["🙈", () => T.gNever],
   dquiz: ["🍻", () => T.gDquiz], alarm: ["🚨", () => T.gAlarm], dlikely: ["👉", () => T.gDlikely], dwheel: ["🍀", () => T.gDwheel],
   quiz: ["🎤", () => T.gQuiz], title: ["🎵", () => T.gTitleQ], gap: ["✏️", () => T.gGap], next: ["📜", () => T.gNext], beat: ["🥁", () => T.gBeat],
   stop: ["✋", () => T.gStop], fast: ["⚡", () => T.gFast], battle: ["💃", () => T.gBattle], bomb: ["💣", () => T.gBomb], likely: ["🤔", () => T.gLikely], wheel: ["🎡", () => T.gWheel],
+  older: ["📅", () => T.gOlder], cover: ["🖼️", () => T.gCover], duel: ["⚔️", () => T.gDuel],
 };
 const gName = () => (store("mlName") || "").slice(0, 20);
 // Einmalige Meldungen (Antwort, Tipp, Beitritt): notfalls mehrfach und nach dem Wiederverbinden. Der PC zählt jede nur einmal.
@@ -1615,6 +1618,8 @@ function gBuild(g, box, isH) {
     return;
   }
   if (g.st === "load") return void box.append(gEl("div", "🎧", "gbigic gpop"), gEl("h2", T.gLoadSong));
+  // Song-Duell: der Sieger am Ende
+  if (g.k === "duel" && g.st === "champ") return void box.append(gEl("div", "🏆", "gbigic gpop"), gEl("small", T.gDuelChamp), gEl("h2", String(g.t || "")));
   if (g.k === "sing") {
     if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
     if (g.st === "res") return void box.append(gEl("div", "🎉", "gbigic gpop"), gEl("h2", T.gSingBack));

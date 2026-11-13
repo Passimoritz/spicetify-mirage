@@ -1012,6 +1012,172 @@ async function resultCard() {
   await close();
 }
 
+/* ---- Zwei Ausschnitte je Runde: Älter oder jünger? · Song-Duell */
+// wartet, bis ein anderer Song als „not“ hörbar läuft (stumm gesprungen, an der richtigen Stelle wieder laut)
+const audibleSong = (not, ms, what) => until(async () => {
+  const s = await big.state();
+  return s.uri !== not && s.playing && s.vol === 0.7 && s;
+}, ms, what);
+const fromHook = async (k, uri) => {
+  const heard = await T.js(`__sp.log.audible[${JSON.stringify(uri)}]`);
+  ok(heard && heard.min > 15000, `${k}: vom Songanfang darf nichts zu hören sein (${uri.slice(-4)} hörbar ab ${heard?.min} ms)`);
+};
+async function olderGame() {
+  await firstSong();
+  await T.js(`__sp.log.audible = {}; 1`);
+  await openGame("older");
+  await joinAll("older");
+  let last = "";
+  for (const r of [1, 2]) {
+    const ps = await allPhones((s) => s.k === "older" && s.st === "ask" && s.round === `${r}/2` && s.tiles.length === 2, 20000, `älter: Frage ${r} auf allen Handys`);
+    const a = await audibleSong(last, 5000, "älter: der erste Ausschnitt ist zu hören");
+    const b0 = await big.state();
+    ok(b0.lock && b0.opts.join() === ps[0].tiles.join(), "älter: großes Bild und Handys zeigen dieselben zwei Songs, Wiedergabe gesperrt");
+    ok(ps[0].tiles[0].startsWith(a.artist + " – "), `älter: die erste Kachel ist der Song, der zuerst läuft: ${ps[0].tiles[0]} / ${a.artist}`);
+    const b = await audibleSong(a.uri, 12000, "älter: der zweite Ausschnitt ist zu hören");
+    ok(ps[0].tiles[1].startsWith(b.artist + " – "), `älter: die zweite Kachel ist der zweite Song: ${ps[0].tiles[1]} / ${b.artist}`);
+    last = b.uri;
+    const ya = await T.js(`__sp.yearOf(${JSON.stringify(a.uri)})`), yb = await T.js(`__sp.yearOf(${JSON.stringify(b.uri)})`);
+    ok(ya && yb && ya !== yb, `älter: zwei verschiedene Jahre (${ya}, ${yb})`);
+    const right = ya < yb ? 0 : 1;
+    await P[0].click(...tile(right));
+    await P[1].click(...tile(1 - right));
+    await P[2].click(...tile(r === 1 ? right : 1 - right));
+    // die Runde endet erst, wenn auch der zweite Ausschnitt gelaufen ist
+    const rev = await allPhones((s) => s.st === "rev" && s.round === `${r}/2`, 12000, `älter: Auflösung ${r}`);
+    ok(rev[0].right === right, `älter: richtig ist der ältere Song (${ya} gegen ${yb})`);
+    ok(rev[0].tiles[0].endsWith(" · " + ya) && rev[0].tiles[1].endsWith(" · " + yb), "älter: die Auflösung nennt beide Jahre: " + rev[0].tiles.join(" | "));
+    ok(/hit/.test(rev[0].verdict) && /miss/.test(rev[1].verdict), `älter: Rückmeldungen passen (${rev[0].verdict}, ${rev[1].verdict})`);
+    await fromHook("älter", a.uri);
+    await fromHook("älter", b.uri);
+    await until(async () => (await big.state()).playing, 1500, "älter: Musik läuft bei der Auflösung");
+  }
+  await allPhones((s) => s.st === "end", 12000, "älter: Siegerehrung");
+  ok(/Alpha/.test((await big.state()).text.split("🥇")[1] || ""), "älter: Alpha gewinnt");
+  await noBadNotes("older");
+  await close();
+}
+async function duelGame() {
+  const press = (code) => T.js(`__sp.press(${JSON.stringify(code)}); 1`);
+  await firstSong();
+  await T.js(`__sp.log.audible = {}; 1`);
+  await openGame("duel");
+  await until(async () => (await big.state()).st === "join", 4000, "duell: Warteraum");
+  if (!hash) await connectPhones();
+  await until(async () => (await Promise.all(P.map(phoneState))).every((s) => !s.hidden && s.k === "duel" && s.st === "join"), 12000, "duell: Handys zeigen den Warteraum");
+  for (const ph of P) await ph.click("#game button.go");
+  // die Tastatur stimmt als vierte mit
+  await press("Space");
+  await until(async () => (await big.state()).chips === 4, 6000, "duell: drei Handys und die Tastatur im Warteraum");
+  await big.hover();
+  await T.click(".m-g-go");
+  let champ = "";
+  for (const r of [1, 2]) {
+    const ps = await allPhones((s) => s.k === "duel" && s.st === "ask" && s.round === `${r}/2` && s.tiles.length === 2, 20000, `duell: Duell ${r} auf allen Handys`);
+    if (r === 2) ok(ps[0].tiles[0] === champ, `duell: der Sieger tritt wieder an: ${ps[0].tiles[0]} / ${champ}`);
+    const a = await audibleSong("", 5000, "duell: erster Ausschnitt");
+    const b = await audibleSong(a.uri, 12000, "duell: zweiter Ausschnitt");
+    // Runde 1: B gewinnt 3:1, Runde 2: alle für den Titelverteidiger
+    await P[0].click(...tile(0));
+    await P[1].click(...tile(r === 1 ? 1 : 0));
+    await P[2].click(...tile(r === 1 ? 1 : 0));
+    await press(r === 1 ? "Digit2" : "Digit1");
+    const rev = await allPhones((s) => s.st === "rev" && s.round === `${r}/2`, 12000, `duell: Ergebnis ${r}`);
+    ok(rev[0].right === (r === 1 ? 1 : 0), `duell: die Mehrheit entscheidet (${rev[0].right})`);
+    champ = rev[0].tiles[rev[0].right];
+    ok((await big.state()).right === champ, "duell: das große Bild zeigt denselben Sieger");
+    await fromHook("duell", a.uri);
+    await fromHook("duell", b.uri);
+  }
+  const fin = await allPhones((s) => s.st === "champ", 12000, "duell: der Sieger des Abends");
+  ok(fin.every((s) => s.h2 === champ), `duell: alle Handys zeigen den Sieger ${champ}: ${fin[0].h2}`);
+  ok((await big.state()).text.includes(champ), "duell: das große Bild zeigt den Sieger");
+  const end = await allPhones((s) => s.st === "end", 12000, "duell: Siegerehrung");
+  // wer mit der Mehrheit stimmt, bekommt 50: Beta, Gamma und die Tastatur zweimal, Alpha einmal
+  ok(/\b100 (Punkte|points)/.test(end[1].text) && /\b50 (Punkte|points)/.test(end[0].text), `duell: Punkte für die Mehrheit: ${end[0].text} / ${end[1].text}`);
+  await noBadNotes("duel");
+  await close();
+}
+
+/* ---- Cover-Rätsel */
+// Spotifys Bildserver ist im Test gesperrt: jede Cover-Adresse bekommt ein gezeichnetes Bild
+const fakeCovers = (on) => T.js(on ? `(() => {
+  if (window.__coverOff) return 1;
+  const d = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src"), made = new Map();
+  Object.defineProperty(HTMLImageElement.prototype, "src", { configurable: true, get() { return d.get.call(this); }, set(v) {
+    if (/^https:[/][/]i[.]scdn[.]co[/]/.test(String(v))) {
+      if (!made.has(v)) {
+        const c = document.createElement("canvas"), x = c.getContext("2d");
+        c.width = c.height = 64;
+        x.fillStyle = "#" + String(v).slice(-6);
+        x.fillRect(0, 0, 64, 64);
+        x.fillStyle = "#fff";
+        x.fillRect(8, 8, 20, 48);
+        made.set(v, c.toDataURL());
+      }
+      v = made.get(v);
+    }
+    d.set.call(this, v);
+  } });
+  window.__coverOff = () => { Object.defineProperty(HTMLImageElement.prototype, "src", d); delete window.__coverOff; };
+  return 1;
+})()` : `window.__coverOff?.(); 1`);
+async function coverGame() {
+  await firstSong();
+  await fakeCovers(true);
+  await T.js(`__sp.log.audible = {}; 1`);
+  try {
+    await openGame("cover");
+    await joinAll("cover");
+    for (const r of [1, 2]) {
+      const ps = await allPhones((s) => s.k === "cover" && s.st === "ask" && s.round === `${r}/2` && s.tiles.length === 4, 20000, `cover: Frage ${r} auf allen Handys`);
+      const b = await until(async () => {
+        const s = await big.state();
+        return !s.playing && s.vol === 0 && s;
+      }, 3000, "cover: beim Raten ist die Musik aus und stumm");
+      const want = r === 1 ? cleanTitle(b.title) : b.artist;
+      ok(ps[0].tiles.includes(want), `cover: die richtige Antwort „${want}“ steht zur Auswahl: ${ps[0].tiles.join(" | ")}`);
+      ok(b.lock && b.opts.join() === ps[0].tiles.join(), "cover: großes Bild und Handys zeigen dieselben Antworten");
+      const look = () => T.js(`(() => {
+        const im = document.getElementById("mirage-immersive"), c = im.querySelector(".m-g-pix");
+        return { n: Number(c?.dataset.n || 0), cov: !!im.querySelector(".m-g-cov"), hid: im.classList.contains("is-cover") && getComputedStyle(im.querySelector(".m-im-cover-wrap")).visibility === "hidden" };
+      })()`);
+      const first = await until(async () => {
+        const l = await look();
+        return l.n && l;
+      }, 3000, "cover: das verpixelte Cover ist zu sehen");
+      ok(first.n <= 6 && !first.cov && first.hid, `cover: am Anfang grob verpixelt, kein scharfes Cover, das echte Cover verdeckt: ${JSON.stringify(first)}`);
+      // nichts auf den Handys verrät das Bild oder den Song
+      const leak = await P[0].js(`JSON.stringify({ g: cur.g, t: cur.t, a: cur.a, img: cur.img })`), sent = JSON.parse(leak);
+      ok(!/scdn|data:image/.test(leak) && sent.t === "?" && !sent.a && !sent.img, "cover: die Handys bekommen weder Cover noch Titel: " + leak.slice(0, 200));
+      const right = tileOf(ps[0], want);
+      await P[0].click(...tile(right));
+      await P[1].click(...tile((right + 1) % 4));
+      // später richtig: weniger Punkte, und das Bild ist inzwischen schärfer
+      await wait(4000);
+      ok((await look()).n > first.n, "cover: das Bild wird mit der Zeit schärfer");
+      await P[2].click(...tile(right));
+      const rev = await allPhones((s) => s.st === "rev" && s.round === `${r}/2`, 6000, `cover: Auflösung ${r}`);
+      const plus = (s) => Number((/\+(\d+)/.exec(s.text) || [])[1] || 0);
+      ok(/hit/.test(rev[0].verdict) && /miss/.test(rev[1].verdict) && /hit/.test(rev[2].verdict), "cover: Rückmeldungen passen");
+      ok(plus(rev[0]) > plus(rev[2]) + 40, `cover: wer früher richtig liegt, bekommt mehr (${plus(rev[0])} gegen ${plus(rev[2])})`);
+      ok(rev[0].h2.includes(b.artist), "cover: die Auflösung nennt den Song: " + rev[0].h2);
+      await until(async () => {
+        const s = await big.state();
+        return s.playing && s.vol === 0.7;
+      }, 2000, "cover: bei der Auflösung kommt die Musik");
+      ok((await look()).cov, "cover: die Auflösung zeigt das scharfe Cover");
+      await fromHook("cover", b.uri);
+    }
+    await allPhones((s) => s.st === "end", 12000, "cover: Siegerehrung");
+    ok(/Alpha/.test((await big.state()).text.split("🥇")[1] || ""), "cover: Alpha gewinnt");
+    await noBadNotes("cover");
+    await close();
+  } finally {
+    await fakeCovers(false);
+  }
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1022,6 +1188,9 @@ const CASES = [
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
 ];
+// neuere Spiele
+Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️" });
+CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

@@ -4402,6 +4402,19 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 #mirage-immersive.is-quiz .m-im-cover {
   filter: blur(36px);
 }
+/* Cover-Rätsel: das echte Cover, der Hintergrund daraus und das Canvas-Video wären die Lösung */
+#mirage-immersive.is-cover :is(.m-im-cover-wrap, .m-im-bg i, .m-im-bg video) {
+  visibility: hidden;
+}
+#mirage-immersive .m-g-pix {
+  width: min(34vh, 300px);
+  aspect-ratio: 1;
+  align-self: center;
+  border-radius: 18px;
+  box-shadow: 0 16px 50px rgb(0 0 0 / 0.45);
+  background: rgb(255 255 255 / 0.06);
+  image-rendering: pixelated;
+}
 #mirage-immersive.is-gap .m-im-lyrics {
   opacity: 0;
 }

@@ -34,3 +34,20 @@ Object.assign(GAME_TEXT.de, {
   gCardBtn: "Ergebnis als Bild speichern", gCardKicker: "Party-Spiel",
   gHost: "Spielleitung am Handy", gHostHint: "Einen QR-Code nur für dich zeigen", gHostNote: "Nur für die Spielleitung: Wer diesen Code scannt, kann Spiele starten, Runden überspringen, beenden und Punkte korrigieren. Er verschwindet wieder, sobald du diese Leiste schließt.",
 });
+// Älter oder jünger? · Cover-Rätsel · Song-Duell
+Object.assign(GAME_TEXT.en, {
+  gOlder: "Older or newer?", gOlderHint: "Two songs, a short clip of each: which one came out first?", gOlderAsk: "Which one came out first?",
+  gOlderNone: "This needs songs from at least two different years in the queue or the chosen playlist.",
+  gCover: "Cover puzzle", gCoverHint: "A cover goes from blocky to sharp, the music stays off. The sooner you know it, the more points", gCoverTitle: "Which song is this?", gCoverArtist: "Who is this?",
+  gCoverNone: "No cover could be loaded for the next songs.",
+  gDuel: "Song duel", gDuelHint: "Two songs, a short clip of each, the room votes. The winner takes on the next song", gDuelAsk: "Which one stays?",
+  gDuelChamp: "Champion of the night", gDuelWins: "{n} duels won in a row", gDuelNone: "This needs at least 2 songs in the queue or the chosen playlist.",
+});
+Object.assign(GAME_TEXT.de, {
+  gOlder: "Älter oder jünger?", gOlderHint: "Zwei Songs, von jedem ein kurzes Stück: Welcher ist zuerst erschienen?", gOlderAsk: "Welcher ist zuerst erschienen?",
+  gOlderNone: "Dafür braucht es Songs aus mindestens zwei verschiedenen Jahren in der Warteschlange oder der gewählten Playlist.",
+  gCover: "Cover-Rätsel", gCoverHint: "Ein Cover wird von grob verpixelt langsam scharf, die Musik bleibt aus. Je früher du es weißt, desto mehr Punkte", gCoverTitle: "Welcher Song ist das?", gCoverArtist: "Wer ist das?",
+  gCoverNone: "Für die nächsten Songs ließ sich kein Cover laden.",
+  gDuel: "Song-Duell", gDuelHint: "Zwei Songs, von jedem ein kurzes Stück, der Raum stimmt ab. Der Sieger tritt gegen den nächsten Song an", gDuelAsk: "Welcher bleibt?",
+  gDuelChamp: "Sieger des Abends", gDuelWins: "{n} Duelle in Folge gewonnen", gDuelNone: "Dafür braucht es mindestens 2 Songs in der Warteschlange oder der gewählten Playlist.",
+});
