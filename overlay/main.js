@@ -1288,6 +1288,19 @@ ipcMain.handle("goveeScan", uiOnly(async () => {
   return r;
 }));
 ipcMain.handle("haTest", uiOnly(() => lights.haTest()));
+// Assistent: Adresse und (optional) neues Token zusammen setzen, dann prüfen. Neue Adresse ohne neues Token
+// löscht das alte (rebind) – es gehört zum alten Home Assistant. Eingeschaltet wird erst, wenn es antwortet.
+ipcMain.handle("haConnect", uiOnly(async (_e, d) => {
+  const url = String(d?.url || "").trim().replace(/\/+$/, ""), token = String(d?.token || "").trim();
+  if (!/^https?:\/\/[^/]+$/i.test(url)) return { error: "url" };
+  update(rebind({ haUrl: url, ...(token ? { haToken: token } : {}) }, cfg).patch);
+  const r = await lights.haTest();
+  if (r?.lights && !cfg.haOn) update({ haOn: true });
+  return r;
+}));
+ipcMain.handle("wledFind", uiOnly(() => lights.wledFind()));
+// Assistent: ein Gerät kurz blinken lassen (6 Schläge, danach alter Zustand)
+ipcMain.handle("lightTest", uiOnly((_e, name) => lights.test(String(name || ""))));
 // Einstellungen umziehen: der Dialog gehört zum Fenster, das gefragt hat
 ipcMain.handle("exportCfg", uiOnly((e) => exportCfg(BrowserWindow.fromWebContents(e.sender))));
 ipcMain.handle("importCfg", uiOnly((e) => importCfg(BrowserWindow.fromWebContents(e.sender))));

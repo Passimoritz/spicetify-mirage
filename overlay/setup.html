@@ -95,7 +95,6 @@
   .grid9 button[aria-pressed="true"] { background: linear-gradient(135deg, var(--c), var(--a)); border-color: transparent; transform: scale(1.08); }
 
   /* Schalter */
-  .lights { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .opt { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); cursor: pointer; }
   .opt b { font-weight: 600; }
   .opt small { display: block; color: var(--sub); }
@@ -104,6 +103,14 @@
   .toggle:checked { background: linear-gradient(135deg, var(--c), var(--a)); }
   .toggle:checked::after { transform: translateX(20px); }
   .more { margin-top: 14px; font-size: 13px; }
+  /* Geräte im Lichtschritt: Schalter oben, Suchen/Koppeln/Test darunter, Rückmeldung als kleine Zeile */
+  .devs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dev { padding: 12px 14px; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); display: grid; gap: 8px; align-content: start; }
+  .dev .opt { padding: 0; background: none; border: 0; border-radius: 0; }
+  .tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tools input { flex: 1 1 120px; min-width: 0; padding: 7px 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.06); color: var(--text); font: 500 13px var(--font); }
+  .btn.sm { padding: 7px 12px; font-size: 12px; box-shadow: none; }
+  .state { color: var(--sub); font-size: 12px; min-height: 1.2em; }
   .big { max-width: 420px; }
 
   footer { display: flex; align-items: center; gap: 10px; padding: 16px 30px 22px; }
@@ -159,13 +166,38 @@
   <section class="step" data-step="3">
     <h2 data-t="wzLightTitle"></h2>
     <p data-t="wzLightText"></p>
-    <div class="lights">
-      <label class="opt"><b>Philips Hue</b><input type="checkbox" class="toggle" data-key="hueOn"></label>
-      <label class="opt"><b>WLED</b><input type="checkbox" class="toggle" data-key="wledOn"></label>
-      <label class="opt"><b>Govee</b><input type="checkbox" class="toggle" data-key="goveeOn"></label>
-      <label class="opt"><b>Home Assistant</b><input type="checkbox" class="toggle" data-key="haOn"></label>
-      <label class="opt"><b>OpenRGB</b><input type="checkbox" class="toggle" data-key="orgbOn"></label>
-      <label class="opt"><b>Razer Chroma</b><input type="checkbox" class="toggle" data-key="chromaOn"></label>
+    <!-- je Gerät: einschalten, im Netz suchen bzw. Adresse angeben, kurz blinken lassen -->
+    <div class="devs">
+      <div class="dev">
+        <label class="opt"><b>Philips Hue</b><input type="checkbox" class="toggle" data-key="hueOn"></label>
+        <div class="tools"><input type="text" id="hueIp" placeholder="192.168.1.20" autocomplete="off" spellcheck="false" aria-label="Hue Bridge IP"><button type="button" class="btn sm" id="hueFind" data-t="hueFind"></button><button type="button" class="btn sm" id="huePair" data-t="huePair"></button><button type="button" class="btn sm ghost" data-test="hue" data-t="wzTest"></button></div>
+        <small class="state" id="hueState" role="status" aria-live="polite"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>WLED</b><input type="checkbox" class="toggle" data-key="wledOn"></label>
+        <div class="tools"><button type="button" class="btn sm" id="wledFind" data-t="wzFind"></button><button type="button" class="btn sm ghost" data-test="wled" data-t="wzTest"></button></div>
+        <small class="state" id="wledState" role="status" aria-live="polite"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>Govee</b><input type="checkbox" class="toggle" data-key="goveeOn"></label>
+        <div class="tools"><button type="button" class="btn sm" id="goveeScan" data-t="goveeScan"></button><button type="button" class="btn sm ghost" data-test="govee" data-t="wzTest"></button></div>
+        <small class="state" id="goveeState" role="status" aria-live="polite" data-t="goveeHint"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>Home Assistant</b><input type="checkbox" class="toggle" data-key="haOn"></label>
+        <div class="tools"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false" aria-label="Home Assistant URL"><input type="password" id="haToken" autocomplete="off" spellcheck="false" aria-label="Token"><button type="button" class="btn sm" id="haConnect" data-t="haTest"></button><button type="button" class="btn sm ghost" data-test="ha" data-t="wzTest"></button></div>
+        <small class="state" id="haState" role="status" aria-live="polite" data-t="haHint"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>OpenRGB</b><input type="checkbox" class="toggle" data-key="orgbOn"></label>
+        <div class="tools"><button type="button" class="btn sm ghost" data-test="orgb" data-t="wzTest"></button></div>
+        <small class="state" id="orgbState" role="status" aria-live="polite" data-t="orgbHint"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>Razer Chroma</b><input type="checkbox" class="toggle" data-key="chromaOn"></label>
+        <div class="tools"><button type="button" class="btn sm ghost" data-test="chroma" data-t="wzTest"></button></div>
+        <small class="state" id="chromaState" role="status" aria-live="polite" data-t="chromaHint"></small>
+      </div>
     </div>
     <p class="more" data-t="wzLightMore"></p>
   </section>
@@ -215,6 +247,10 @@
     $$("#grid9 button").forEach((b) => b.setAttribute("aria-pressed", String(cfg.anchor === b.dataset.v)));
     const hint = { lyrics: "stLyricsHint", visualizer: "stVizHint", strip: "stStripHint", bubble: "stBubbleHint" }[cfg.style];
     $("#styleHint").textContent = hint ? t(hint) : "";
+    // Adressen vorbelegen (nicht, während getippt wird); das Token selbst kommt nie hierher, nur „gesetzt“
+    for (const id of ["hueIp", "haUrl"]) if (document.activeElement?.id !== id && !$("#" + id).value) $("#" + id).value = cfg[id] || "";
+    $("#haToken").placeholder = cfg.haToken ? t("haTokenSet") : t("haToken");
+    if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
   }
 
   function showStep() {
@@ -280,6 +316,49 @@
   $$(".seg, .styles").forEach((g) => $$("button[data-v]", g).forEach((b) => (b.onclick = () => set({ [g.dataset.key]: b.dataset.v }))));
   // Licht und Autostart zeigen keine Vorschau – dort gibt es nichts zu sehen
   $$("input[data-key]").forEach((el) => el.addEventListener("change", () => set({ [el.dataset.key]: el.checked }, false)));
+
+  // Licht: suchen, koppeln, verbinden, testen. Adressen mit Schlüssel (Hue, Home Assistant) setzt der
+  // Hauptprozess nur zusammen mit dem neuen Schlüssel (huePair / haConnect) – ein „set“ von hier nähme er nicht an.
+  const say = (id, key, n) => ($("#" + id).textContent = t(key).replace("{n}", n ?? ""));
+  $("#hueFind").onclick = async () => {
+    say("hueState", "hueSearching");
+    const ips = await mirage.invoke("hueFind");
+    if (ips?.length) {
+      $("#hueIp").value = ips[0];
+      say("hueState", "hueFound");
+    } else say("hueState", "hueNone");
+  };
+  $("#huePair").onclick = async () => {
+    say("hueState", "huePairing");
+    const r = await mirage.invoke("huePair", $("#hueIp").value.trim());
+    say("hueState", r?.ok ? "huePaired" : r?.error === "button" ? "hueButton" : "hueUnreachable");
+  };
+  $("#wledFind").onclick = async () => {
+    say("wledState", "hueSearching");
+    const list = (await mirage.invoke("wledFind")) || [];
+    if (!list.length) return say("wledState", "wzWledNone");
+    // der erste Streifen; weitere stehen in der Meldung, ändern lässt es sich in den Einstellungen
+    set({ wledIp: list[0].ip, wledOn: true }, false);
+    $("#wledState").textContent = t("wzWledFound").replace("{n}", list.map((d) => `${d.name} (${d.ip})`).join(", "));
+  };
+  $("#goveeScan").onclick = async () => {
+    say("goveeState", "goveeSearching");
+    const r = await mirage.invoke("goveeScan");
+    say("goveeState", r?.list?.length ? "goveeFound" : r?.error === "port" ? "goveePort" : "goveeNone", r?.list?.length);
+  };
+  $("#haConnect").onclick = async () => {
+    say("haState", "haTesting");
+    const r = await mirage.invoke("haConnect", { url: $("#haUrl").value, token: $("#haToken").value });
+    $("#haToken").value = "";
+    if (r?.lights) say("haState", "haOk", r.lights.length);
+    else say("haState", { url: "haBadUrl", token: "haBadToken" }[r?.error] || "haFail");
+  };
+  $$("[data-test]").forEach((b) => (b.onclick = async () => {
+    const id = b.dataset.test + "State";
+    say(id, "wzTesting");
+    const r = await mirage.invoke("lightTest", b.dataset.test);
+    if (!r?.ok) say(id, "wzTestSetup");
+  }));
 
   $("#back").onclick = () => go(step - 1);
   $("#next").onclick = () => (step === STEPS ? mirage.send("setupDone") : go(step + 1));

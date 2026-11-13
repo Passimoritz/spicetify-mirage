@@ -627,13 +627,13 @@ function createLights(getCfg, log = () => {}, opts = {}) {
   /* ---- Verzögerung einmessen: das gewählte Gerät blinkt im festen Takt (jeder Schlag wechselt zwischen hell
      und dunkel), die Einstellungen lassen daneben einen Punkt blinken. onBeat(hell) kommt genau zum Schlag,
      onBeat(null) am Ende. Hört nach 150 Schlägen von selbst auf. */
-  async function calibrate(name, onBeat, period = 600) {
+  async function calibrate(name, onBeat, period = 600, beats = 150) {
     // laufende Party oder Messung beenden, Lampen erst zurück in ihren Zustand. Wird nur das Gerät
     // gewechselt, bekommt das Fenster dafür kein „zu Ende“.
     if (cal) cal.onBeat = null;
     await idle();
     if (!NAMES.includes(name)) return false;
-    const mine = (cal = { name, onBeat, timer: 0, left: 150 });
+    const mine = (cal = { name, onBeat, timer: 0, left: beats });
     const t0 = Date.now() + 200;
     let n = 0;
     const step = () => {
@@ -649,6 +649,44 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     return true;
   }
   const latAll = () => Object.fromEntries(NAMES.map((n) => [n, latOf(getCfg(), n)]));
+
+  /* ---- Einrichtung: ein Gerät kurz zeigen lassen, dass es mitmacht (6 Schläge im Abstand von 0,6 s, danach
+     zurück in den alten Zustand). Nur, wenn es so weit eingerichtet ist, dass Befehle ankommen können. */
+  function ready(name) {
+    const c = getCfg();
+    if (name === "hue") return !!hue.base();
+    if (name === "wled") return validIp(c.wledIp);
+    if (name === "govee") return govee.ips().length > 0;
+    if (name === "ha") return ha.ok();
+    return name === "orgb" || name === "chroma";
+  }
+  async function test(name) {
+    if (!NAMES.includes(name)) return { error: "name" };
+    if (!ready(name)) return { error: "setup" };
+    return (await calibrate(name, null, 600, 6)) ? { ok: true } : { error: "name" };
+  }
+  // WLED-Streifen im Netz finden: sie melden sich per mDNS als „_wled._tcp“. opts.bonjour nur für Tests.
+  async function wledFind(ms = 3000) {
+    let Bonjour;
+    try {
+      ({ Bonjour } = opts.bonjour || require("bonjour-service"));
+    } catch {
+      return [];
+    }
+    const found = new Map();
+    let b = null, browser = null;
+    try {
+      b = new Bonjour();
+      browser = b.find({ type: "wled" }, (s) => {
+        const ip = (s?.addresses || []).find((a) => /^\d{1,3}(\.\d{1,3}){3}$/.test(a)) || s?.referer?.address;
+        if (validIp(ip) && !found.has(ip)) found.set(ip, { ip, name: String(s.name || ip).slice(0, 60) });
+      });
+    } catch {}
+    await new Promise((r) => setTimeout(r, ms));
+    try { browser?.stop(); } catch {}
+    try { b?.destroy(); } catch {}
+    return [...found.values()].slice(0, 10);
+  }
 
   /* ---- Hue einrichten: Bridge finden, koppeln (Knopf auf der Bridge drücken), Räume holen */
   async function hueFind() {
@@ -681,7 +719,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     return { lights: lights.slice(0, 60), rooms: rooms.slice(0, 30) };
   }
 
-  return { feed, sync, active, stopAll: idle, calibrate, calibrating: () => !!cal, latAll, latPatch: (name, ms) => latPatch(getCfg(), name, ms), hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test() };
+  return { feed, sync, active, stopAll: idle, calibrate, calibrating: () => !!cal, latAll, test, wledFind, latPatch: (name, ms) => latPatch(getCfg(), name, ms), hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test() };
 }
 
 module.exports = { createLights, toXy, createBeatView, latOf, latPatch, LAT_MAX };
