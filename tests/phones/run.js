@@ -170,6 +170,23 @@ async function scanCheck(browser, env, device) {
   await v.page.close();
 }
 
+// Alle 14 Sprachen des Themes: die Handysprache wird erkannt, und keiner Sprache fehlt ein Text
+const ALL_LANGS = { fr: "fr-FR", es: "es-ES", it: "it-IT", pt: "pt-BR", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR", ru: "ru-RU", uk: "uk-UA", ja: "ja-JP", ko: "ko-KR", zh: "zh-CN" };
+async function langCheck(browser, env, device) {
+  for (const [lang, tag] of Object.entries(ALL_LANGS)) {
+    const { page, snap } = await visit(browser, env, { device, lang: tag, state: "start" }, (s) => s.lang === lang && s.title);
+    const problems = [];
+    if (!snap || snap.lang !== lang) problems.push(`<html lang> ist „${snap?.lang}“ statt „${lang}“`);
+    const miss = await page.eval(`Object.keys(L.en).filter((k) => !(k in L[${JSON.stringify(lang)}]))`).catch((e) => ["(Fehler: " + e.message + ")"]);
+    if (miss.length) problems.push("fehlende Texte: " + miss.join(", "));
+    if (snap && snap.title !== (await page.eval(`L[${JSON.stringify(lang)}].scanStart[0]`))) problems.push(`Titel „${snap.title}“ ist nicht in ${lang}`);
+    if (snap?.scrollW > snap?.w || snap?.over.length) problems.push("ragt seitlich hinaus: " + snap.over.join(", "));
+    if (page.errors.length) problems.push(...page.errors.map((e) => "Fehler in der Konsole: " + e));
+    await page.close();
+    check(`${device.name} · ${tag}: Seite auf ${lang}, kein Text fehlt`, problems);
+  }
+}
+
 // Mit gespielter Party: was die Seite aus den Nachrichten des Themes macht
 async function partySuite(browser, env, device) {
   const o = { url: `http://127.0.0.1:${env.web.port}/${goodHash}`, device, lang: "de-DE", channel, key: Buffer.from(new URLSearchParams(goodHash.slice(1)).get("k"), "base64url"), initScript: initScript(env.broker.port, false) };
@@ -204,6 +221,7 @@ async function suite(browser, env, devices) {
     }
   }
   await scanCheck(browser, env, devices[0]);
+  await langCheck(browser, env, devices[0]);
   await partySuite(browser, env, devices[0]);
 }
 
