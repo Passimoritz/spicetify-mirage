@@ -17,6 +17,15 @@ Release notes on GitHub are generated from the matching section of this file whe
 - The phone page reloads itself once when the theme speaks a newer message format, and says so clearly if that does not help.
 - **Overlay app repairs and updates the theme:** after a Spotify update it notices that Mirage is gone (Windows) and puts it back with one click, and the tray menu offers a new theme version when there is one. Both only on a click, because Spotify restarts once.
 - **Nightly Spotify check:** a workflow unpacks the newest Spotify client every night and opens an issue when a rule of the theme stops matching. `npm run check:selectors` does the same for the installed Spotify.
+- **Five new games:** *Older or newer?* (two clips, guess which came out first), *Cover puzzle* (the cover goes from blocky to sharp while the music stays off), *Song duel* (the room votes, the winner takes on the next song), *Tournament* (3 to 6 games in a row with placement points and a podium) and *Music bingo* (every phone gets its own card; the PC checks every claimed row).
+- **Teams:** quizzes and races can be played in 2 to 4 even teams, with team scores next to the individual ones.
+- **Remote control for your phone:** playback, volume, intensity, location and games behind a separate signed QR code in the party settings.
+- **Song wishes:** paste a Spotify song link instead of searching; new rules for wishes per guest, a block list, no explicit songs and auto-queue at N votes.
+- **Light wave:** phones can light up in turn or in colour groups instead of all at once.
+- Phones that cannot vibrate (iPhone) can switch on a quiet click on the beat; guest reactions rise quietly at the screen edges and can be switched off.
+- The phone page speaks all 14 Mirage languages and can be added to the home screen as a full-screen app.
+- New opt-in setting *Also recognise instruments from the sound*: guesses piano and distorted guitar when the credits name no instrument (can be wrong).
+- **Overlay app:** *Fast Hue (Entertainment)* streams 50 colour frames per second to a Hue entertainment area over the app's own encrypted connection, falling back to normal Hue control on any error (off by default; not yet tried with a real bridge). The first-start setup can find, pair and test lights.
 - **Guests have a name and a colour:** picked once on the phone; the lobby, scores and song wishes show whose they are. The lobby on the big screen shows who is in and how many players are still needed.
 - **Join late, keep your points:** guests can jump into a running game, and keep their points after a reload or a lost connection. The phone page shows clearly when it is offline and reconnects by itself.
 - **Game host on the phone:** a separate host QR code (behind a button in the games panel) lets one phone start, skip and end games and correct points. Host commands are signed, guests cannot send them.
@@ -41,6 +50,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- **Party mode with big crowds** (stadium, festival, concert hall) redrew every person in every frame; the stage is about eight times faster and runs at 60 fps again, with an identical picture. Startup also does about 17 % less work.
+- **Pearl (light scheme):** immersive mode keeps its bright accents, buttons and chips get white text, page titles are no longer invisible. Text selection, background vocals and Jam avatars are readable on every cover; the contrast check passes with no known weakness.
+- Invisible text on the artist-pick badge and invisible ticks in Spotify's checkboxes.
+- Library rows, context menus, the page header and the small cover are found by role or test id first, so they survive Spotify renames better.
+- *No flashes* now also reaches guest phones, the overlay's edge light, the OBS party source and room lights; the overlay never flashes more than three times per second.
+- Overlay app: importing settings with a different Hue bridge or Home Assistant address deletes the stored key instead of sending it to the new address, and only the settings window may change these addresses.
+- Overlay app: windows are created when needed and closed when idle, and background checks pause while Spotify is not running.
 - On deep blue and violet covers the second accent colour could be too dark for lyrics, the title gradient and the play icon.
 - The readability guard could pick the less readable text colour on mid-bright backgrounds.
 - Mirage now stands still when nothing plays: timers and animations rest while Spotify is paused or hidden, and several surfaces no longer blur what is behind them.
