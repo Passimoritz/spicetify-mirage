@@ -5,7 +5,7 @@
 // Musik-Quiz:      Wer singt hier? · Wie heißt der Song? · Intro-Blitz · Liedtext-Lücken · Nächste Zeile · Echt oder Fake? · Beat-Treffer
 //                  Älter oder jünger? · Cover-Rätsel · Song-Duell
 // Schnelle Finger: Musik-Stopp · Schnellster Finger · Tipp-Rennen · Tanz-Battle · Heiße Kartoffel
-// Party:           Wer würde am ehesten …? · Sing weiter · Glücksrad (braucht keine Handys)
+// Party:           Wer würde am ehesten …? · Sing weiter · Karaoke · Glücksrad (braucht keine Handys)
 // Trinkspiele:     Ich hab noch nie · Schluck-Quiz · Wort-Alarm · Wer würde (Schluck-Ausgabe) · Schluck-Rad
 import { S, seek } from "./core.js";
 import { cfg } from "./config.js";
@@ -16,6 +16,7 @@ import { lock } from "./lock.js";
 import { sfx } from "./sfx.js";
 import { readVolume, writeVolume, PLR } from "./player.js";
 import { gameCard } from "./share.js";
+import { pickPart, partData } from "./karaoke.js";
 
 export const GAME_LIST = [
   { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
@@ -35,6 +36,8 @@ export const GAME_LIST = [
   { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "💣" },
   { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "🤔" },
   { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "🎙️" },
+  // 🎤 und 🎙️ sind schon vergeben (Quiz, Sing weiter)
+  { k: "karaoke", cat: "gCatParty", label: "gKar", hint: "gKarHint", icon: "🎶" },
   { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "🏆" },
   { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint", icon: "🎱" },
   { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "🎡" },
@@ -50,12 +53,12 @@ const DRINK_FIELDS = ["gD1", "gD2", "gD3", "gD4", "gD5", "gD6", "gD7", "gD8"];
 export const WHEELS = new Set(["wheel", "dwheel"]);
 // So viele müssen mitmachen, damit das Spiel Sinn ergibt (Quiz geht auch nur für den Raum).
 // Wer gegen sich selbst spielen kann, braucht nur ein Handy
-const MIN = { stop: 2, battle: 2, bomb: 2, likely: 2, dlikely: 2, fast: 1, beat: 1, taps: 1, never: 1 };
+const MIN = { stop: 2, battle: 2, bomb: 2, likely: 2, dlikely: 2, fast: 1, beat: 1, taps: 1, never: 1, karaoke: 1 };
 // Spiele mit Antwort-Kacheln, und die davon, die enden dürfen, sobald alle geantwortet haben
 const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 const EARLY_END = new Set(["quiz", "dquiz", "title", "intro", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 // Diese Spiele führen die Musik: solange sie laufen, ist die Wiedergabe für alle anderen gesperrt
-const MUSIC_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel", "bingo"]);
+const MUSIC_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "beat", "stop", "alarm", "sing", "older", "cover", "duel", "bingo", "karaoke"]);
 // zwei Ausschnitte je Runde: erst wenn beide gelaufen sind, darf die Runde vorzeitig enden
 const PAIR_GAMES = new Set(["older", "duel"]);
 const LINE_GAMES = new Set(["gap", "next", "tf"]);
@@ -287,6 +290,8 @@ function cue(v) {
   if (k === "beat" || k === "taps") return st === "go" ? sfx.horn() : undefined;
   if (k === "alarm") return st === "hit" ? sfx.siren() : st === "res" ? sfx.reveal() : undefined;
   if (k === "sing") return st === "go" ? sfx.whoosh() : st === "res" ? sfx.fanfare() : undefined;
+  // Karaoke: still, solange das Handy zuhört (ein Effekt landete sonst in der Aufnahme und im Grundpegel)
+  if (k === "karaoke") return st === "res" ? sfx.fanfare() : undefined;
   if (WHEELS.has(k)) return st === "spin" ? sfx.wheel() : st === "res" ? sfx.fanfare() : undefined;
   if (k === "duel" && st === "champ") return sfx.fanfare();
 }
@@ -323,6 +328,7 @@ const FIRST = {
   duel: () => duelRound(),
   tour: () => tourBegin(),
   bingo: () => bingoGo(),
+  karaoke: () => karRound(),
 };
 function fresh(kind) {
   G = { k: kind, id: Math.random().toString(36).slice(2, 8), r: 0, players: new Map(), view: null, timers: [], used: new Set(), lastFn: null, src: undefined, played: new Set() };
@@ -672,7 +678,7 @@ function guard() {
   }
   const playing = PLR.isPlaying();
   const pair = PAIR_GAMES.has(G.k) && v.st === "ask" && G.heard > 0;
-  const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || ((G.k === "beat" || G.k === "bingo") && v.st === "go") || G.k === "alarm" || G.k === "sing" || (G.k === "stop" && v.st === "play") || (pair && !G.paused);
+  const wantPlay = (SONG_FIELD[G.k] && v.st === "ask" && !G.paused) || (LINE_GAMES.has(G.k) && v.st === "ask" && G.k !== "tf") || ((G.k === "beat" || G.k === "bingo") && v.st === "go") || G.k === "alarm" || G.k === "sing" || G.k === "karaoke" || (G.k === "stop" && v.st === "play") || (pair && !G.paused);
   const wantStop = (SONG_FIELD[G.k] && v.st === "ask" && G.paused) || (G.k === "stop" && v.st === "stop") || (pair && G.paused) || (G.k === "cover" && v.st === "ask");
   if (now - (G.kick || 0) > 1000) {
     if (wantPlay && !playing) {
@@ -1157,6 +1163,147 @@ function singGo(tries) {
   });
 }
 
+/* ---- Karaoke: einer singt die Stelle, sein Handy hört zu und wertet */
+// Der Ton bleibt auf dem Handy, hierher kommen nur vier Zahlen (gesamt, Timing, Töne, Dabei). Die Musik läuft normal weiter.
+// so lange vor der Stelle steigt die Musik ein: Zeit fürs Mikro und für den Grundpegel des Raums (3 s davor)
+const KAR_LEAD = 12000;
+// wer dran ist: wer am seltensten gesungen hat, in der Reihenfolge des Beitritts; die Tastatur kann nicht singen
+function karNext() {
+  const list = all().filter((p) => p.id !== KEY_ID);
+  return list.reduce((a, p) => ((p.sung || 0) < (a.sung || 0) ? p : a), list[0]) || null;
+}
+// retry: dieselbe Runde noch einmal (anderer Song); att sagt dem Handy, dass seine Messung nicht mehr gilt
+function karRound(retry) {
+  G.r++;
+  if (G.r > rounds()) return finish();
+  G.att = retry ? (G.att || 0) + 1 : 0;
+  G.singer = karNext();
+  if (!G.singer) {
+    notify(t("gNeedPlayers"), true);
+    return stop();
+  }
+  karFind(0, 0);
+}
+// Tonhöhen und Lautheit der Analyse, wenn sie zum laufenden Song gehören (eine Schätzung hat keine echten)
+const karSegs = () => (audio.uri === nowUri() && audio.data && !audio.data.synthetic ? audio.data.segs : null);
+// eine Stelle mit zeitgenauem Liedtext suchen; ohne: einmal warten (lädt vielleicht noch), dann bis zu drei Songs weiter
+function karFind(tries, skips) {
+  const lines = ctx.lines(), pos = ctx.pos();
+  if (lines) freshLines(lines);
+  const len = Math.min(45, Math.max(12, Number(cfg.gameKarLen) || 30)) * 1000;
+  const part = lines ? pickPart(lines, { pos, min: len, max: len + 15000, used: G.used, lead: KAR_LEAD }) : null;
+  if (!part) {
+    if (skips >= 3) {
+      notify(t("gKarNoLyrics"), true);
+      return G.r > 1 ? finish() : stop();
+    }
+    show({ st: "wait", r: G.r, of: rounds(), sn: nameOf(G.singer), si: short(G.singer.id) });
+    if (!tries && !lines) return after(2500, () => karFind(1, skips));
+    PLR.next();
+    return after(3500, () => karFind(1, skips + 1));
+  }
+  for (let k = part.i0; k <= part.i1; k++) G.used.add(k);
+  G.part = { ...part, lines, data: partData(lines, part, karSegs()) };
+  G.mic = 0;
+  G.score = null;
+  G.lines = lines;
+  // kurz vor der Stelle einsteigen; läuft der Song schon passend davor, nicht springen. „Bereit“ erst, wenn der
+  // Sprung angekommen ist: sonst bekäme das Handy eine falsche Startzeit für seine Messung
+  const ahead = part.start - pos;
+  G.kSeek = ahead > KAR_LEAD + 6000 || ahead < KAR_LEAD - 2000 ? { to: Math.max(part.start - KAR_LEAD, 2), at: Date.now(), n: 1 } : null;
+  if (G.kSeek) {
+    PLR.seek(G.kSeek.to);
+    show({ st: "wait", r: G.r, of: rounds(), att: G.att, sn: nameOf(G.singer), si: short(G.singer.id) });
+  } else karShow("ready");
+  G.lastFn = karSkip;
+  G.tick = setInterval(karTick, 100);
+  // Sicherheitsnetz: wird der Song angehalten, nicht ewig auf die Stelle warten
+  later(KAR_LEAD + part.end - part.start + 30000, () => G.view?.st !== "res" && G.view?.st !== "calc" && karSkip());
+}
+// PC-Zeit, zu der die Stelle beginnt: daran richtet das Handy seine Messung aus
+const karAt = () => Math.round(Date.now() + (G.part.start - ctx.pos()));
+function karShow(st, extra) {
+  const P = G.part, v = { st, r: G.r, of: rounds(), att: G.att, sn: nameOf(G.singer), si: short(G.singer.id), mic: G.mic, at: karAt(), ...extra };
+  // die Daten der Stelle nur vor dem Einsatz: das Handy merkt sie sich, danach wären sie nur Ballast
+  if (st === "ready") Object.assign(v, { kp: P.data, line: P.data.ln[0]?.[2] || "" });
+  show(v);
+}
+function karTick() {
+  const P = G.part, v = G.view, p = ctx.pos();
+  // anderer Song (Medientaste, Ende): dieselbe Runde mit dem, der jetzt läuft
+  if (ctx.lines() !== P.lines) {
+    clearTimers();
+    G.r--;
+    return karRound(true);
+  }
+  const sk = G.kSeek;
+  if (sk) {
+    // ein Sprung direkt nach dem Songwechsel kann untergehen: bis zu viermal, dann mit der Stelle, wo es ist
+    if (Math.abs(p - sk.to) < 1500 || sk.n >= 4) {
+      G.kSeek = null;
+      return karShow("ready");
+    }
+    if (Date.now() - sk.at > 800) {
+      sk.n++;
+      sk.at = Date.now();
+      PLR.seek(sk.to);
+    }
+    return;
+  }
+  const at = karAt(), drift = Math.abs(at - (v.at || 0));
+  if (v.st === "ready") {
+    // die Analyse kam erst nach der Wahl der Stelle: Tonhöhen nachreichen
+    if (!P.data.ch && karSegs()?.length) P.data = partData(P.lines, P, karSegs());
+    if (p >= P.start - 40) return karShow("go", karLine(p));
+    if (drift > 80 || !v.kp?.ch !== !P.data.ch) karShow("ready");
+    return;
+  }
+  if (v.st !== "go") return;
+  if (p >= P.end) return karCalc();
+  const now = karLine(p);
+  if (now.line !== v.line || drift > 150) karShow("go", now);
+}
+// die Zeile, die gerade dran ist, und die nächste
+function karLine(p) {
+  const ln = G.part.data.ln, rel = p - G.part.start;
+  let i = 0;
+  while (i + 1 < ln.length && ln[i + 1][0] <= rel) i++;
+  return { line: ln[i]?.[2] || "", lyn: ln[i + 1]?.[2] || "", end: Date.now() + (G.part.end - p), dur: G.part.end - G.part.start };
+}
+// die Stelle ist vorbei: kurz auf die Zahlen vom Handy warten (das Mikro ist dort schon aus)
+function karCalc() {
+  clearTimers();
+  G.singer.sung = (G.singer.sung || 0) + 1;
+  if (G.score) return karRes();
+  karShow("calc");
+  after(G.mic === 1 ? 8000 : 2500, karRes);
+}
+// Runde überspringen (Spielleitung): ohne Wertung weiter
+function karSkip() {
+  clearTimers();
+  if (G.view?.st === "ready" || G.view?.st === "go" || G.view?.st === "wait") G.singer.sung = (G.singer.sung || 0) + 1;
+  karRes();
+}
+function karRes() {
+  clearTimers();
+  const sc = G.score;
+  if (sc) G.singer.p += sc.s;
+  // „ks“: „sc“ ist schon der Punktestand aller (publish)
+  karShow("res", { ks: sc, end: 0 });
+  if (sc?.s >= 60) ctx.confetti?.();
+  after(breakMs() + 3000, karRound);
+}
+// die vier Zahlen vom Handy des Singenden: nur Zahlen, nur von ihm, nur für diese Runde
+function karScore(p, m) {
+  const v = G.view;
+  if (p !== G.singer || m.r !== v.r || G.score || (v.st !== "go" && v.st !== "calc")) return;
+  const a = Array.isArray(m.v) ? m.v.slice(0, 4).map(Number) : [];
+  if (a.length !== 4 || !a.every(Number.isFinite)) return;
+  const pc = (x) => Math.max(0, Math.min(100, Math.round(x)));
+  G.score = { s: pc(a[0]), t: pc(a[1]), p: a[2] < 0 ? -1 : pc(a[2]), d: pc(a[3]) };
+  if (v.st === "calc") karRes();
+}
+
 /* ---- Glücksrad */
 function wheelFields() {
   if (G.k === "dwheel") return DRINK_FIELDS.map((k) => ({ k: "", text: t(k) }));
@@ -1530,6 +1677,15 @@ window.addEventListener("mirage:game", (e) => {
     return;
   }
   if (G.k === "bingo" && m.a === "bingo" && v.st === "go") return bingoClaim(p, m.v);
+  if (G.k === "karaoke") {
+    if (m.a === "ksc") return karScore(p, m);
+    // Mikro an (1) oder geht nicht (0): das große Bild sagt es, gewertet wird nur mit Mikro
+    if (m.a === "kmic" && p === G.singer && m.r === v.r && (v.st === "ready" || v.st === "go")) {
+      G.mic = m.v === 1 ? 1 : 2;
+      show({ ...v, mic: G.mic });
+    }
+    return;
+  }
   if (G.k === "battle" && m.a === "e" && v.st === "go") p.e += Math.max(0, Math.min(40, Number(m.v) || 0));
   // diese Stände zählt das Handy: lädt es neu, darf ein kleinerer Wert den Stand nicht löschen.
   // Eine Korrektur der Spielleitung (adj) bleibt daneben stehen, sonst würde die nächste Meldung sie überschreiben.
@@ -1672,7 +1828,7 @@ function render(tickOnly) {
   if (G.k === "cover") pixTick();
   if (tickOnly) return guard();
   if (WHEELS.has(G.k) && box.querySelector(".m-g-wheel")) return drawWheel(v);
-  const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" ? "" : v.line, v.att].join("|");
+  const key = [G.k, v.st, v.r, v.q, v.h, v.word, G.k === "sing" || G.k === "karaoke" ? "" : v.line, v.att].join("|");
   if (key === boxKey) return update(v);
   boxKey = key;
   box.textContent = "";
@@ -1724,6 +1880,7 @@ function build(v) {
     // die gespielten Songs, der neueste oben (die Liste füllt update)
     return box.append(div("m-g-sub m-g-bcount"), div("m-g-board m-g-bplayed"));
   }
+  if (G.k === "karaoke") return buildKar(v);
   if (G.k === "sing") {
     if (v.st === "res") return box.append(div("m-g-big m-g-pop", t("gSingBack")));
     if (v.st === "ready") return box.append(div("m-g-big m-g-pulse", t("gSingSoon")));
@@ -1816,6 +1973,29 @@ function buildJoin() {
   wrap.append(txt);
   box.append(wrap);
   need();
+}
+// Karaoke: wer singt, der Text zum Mitlesen, am Ende die Punkte mit ihren drei Teilen
+function buildKar(v) {
+  if (v.st === "calc") return box.append(div("m-g-big m-g-pulse", "🎧"), div("m-g-sub", t("gKarCalc")));
+  if (v.st === "res") {
+    const sc = v.ks;
+    if (!sc) return box.append(div("m-g-big m-g-pop", "👏"), div("m-g-sub", t("gKarTurn").replace("{n}", v.sn)), div("m-g-sub", t("gKarNoScore")), board(top()));
+    const praise = t(sc.s >= 85 ? "gKarP4" : sc.s >= 65 ? "gKarP3" : sc.s >= 40 ? "gKarP2" : "gKarP1");
+    box.append(div("m-g-sub", "🎤 " + v.sn), div("m-g-big is-hot m-g-pop", String(sc.s)), div("m-g-sub", praise));
+    // die drei Teile als Balken: wer wissen will, woran es lag, sieht es
+    const b = div("m-g-board m-g-kparts");
+    for (const [ic, key, val] of [["⏱️", "gKarT", sc.t], ["🎵", "gKarP", sc.p], ["🙌", "gKarD", sc.d]]) {
+      const r = row(ic, t(key), val < 0 ? "–" : String(val));
+      r.classList.add("has-bar");
+      r.style.setProperty("--w", Math.max(0, val) + "%");
+      b.append(r);
+    }
+    box.append(b, board(top()));
+    return;
+  }
+  if (v.st === "ready") box.append(div("m-g-big m-g-pulse", "🎤 " + t("gKarTurn").replace("{n}", v.sn)), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+  else box.append(div("m-g-sub", "🎤 " + v.sn), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+  box.append(div("m-g-sub m-g-kmic"));
 }
 function buildChamp(v) {
   if (v.cov) {
@@ -2002,6 +2182,8 @@ function update(v) {
     sl.textContent = v.line || "";
     box.querySelector(".m-g-snext").textContent = v.lyn || "";
   }
+  const km = box.querySelector(".m-g-kmic");
+  if (km) km.textContent = t(["gKarMicWait", "gKarMicOn", "gKarMicOff"][v.mic] || "gKarMicWait");
   if (G.k === "battle") {
     const bars = box.querySelectorAll(".m-g-team");
     if (bars.length) {

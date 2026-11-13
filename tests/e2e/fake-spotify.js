@@ -283,7 +283,14 @@
           { start: hook, duration: 60, loudness: -5, tempo: 124, key: 1, mode: 1 },
           { start: hook + 60, duration: 200, loudness: -9, tempo: 124, key: 1, mode: 1 },
         ],
-        segments: [],
+        // Tonhöhen und Lautheit alle 0,5 s, der Akkord wechselt alle 3 s (Grundton, große Terz, Quinte): Karaoke vergleicht damit
+        segments: Array.from({ length: 400 }, (_, k) => {
+          const r = [0, 5, 7, 9][Math.floor(k / 6) % 4], p = Array(12).fill(0.08);
+          p[r] = 1;
+          p[(r + 4) % 12] = 0.7;
+          p[(r + 7) % 12] = 0.6;
+          return { start: k * 0.5, duration: 0.5, loudness_max: -8, pitches: p, timbre: Array(12).fill(0) };
+        }),
         bars: [],
         tatums: [],
       };

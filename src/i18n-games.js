@@ -72,3 +72,16 @@ Object.assign(GAME_TEXT.de, {
   gBingo: "Musik-Bingo", gBingoHint: "Jedes Handy bekommt eine Karte mit Songtiteln. Markiert, was läuft: vier in einer Reihe, Spalte oder Diagonale gewinnen",
   gBingoFew: "Musik-Bingo braucht mindestens 24 Songs in der Warteschlange oder der gewählten Playlist ({n} gefunden).", gBingoPlayed: "{n} von {m} Songs gespielt", gBingoWin: "BINGO! {n}",
 });
+// Karaoke
+Object.assign(GAME_TEXT.en, {
+  gKar: "Karaoke", gKarHint: "One guest sings a part of the song, their phone listens and gives points for timing, notes and singing along. The recording stays on the phone",
+  gKarTurn: "{n} sings", gKarMicWait: "Turn on the mic on your phone …", gKarMicOn: "🎤 Mic on", gKarMicOff: "No mic: just for fun this time",
+  gKarCalc: "The phone is counting …", gKarNoScore: "No score this time. Applause anyway!", gKarNoLyrics: "Karaoke needs time-synced lyrics. The next songs had none.",
+  gKarT: "Timing", gKarP: "Notes", gKarD: "Sang along", gKarP1: "Brave! Big applause!", gKarP2: "Nicely done!", gKarP3: "Really well sung!", gKarP4: "Superstar!",
+});
+Object.assign(GAME_TEXT.de, {
+  gKar: "Karaoke", gKarHint: "Einer singt eine Stelle des Songs, sein Handy hört zu und gibt Punkte für Timing, Töne und Dabeisein. Die Aufnahme bleibt auf dem Handy",
+  gKarTurn: "{n} singt", gKarMicWait: "Mikro am Handy einschalten …", gKarMicOn: "🎤 Mikro an", gKarMicOff: "Ohne Mikro: diesmal nur zum Spaß",
+  gKarCalc: "Das Handy rechnet …", gKarNoScore: "Diesmal ohne Wertung. Applaus gibt's trotzdem!", gKarNoLyrics: "Karaoke braucht zeitgenauen Liedtext. Die nächsten Songs hatten keinen.",
+  gKarT: "Timing", gKarP: "Töne", gKarD: "Dabei", gKarP1: "Mutig! Großer Applaus!", gKarP2: "Schön gesungen!", gKarP3: "Richtig stark gesungen!", gKarP4: "Superstar!",
+});
