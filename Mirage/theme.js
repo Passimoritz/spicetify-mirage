@@ -14412,8 +14412,8 @@
   function pickProfile(genres, bpm2, loud, apple = "", minor = 0) {
     const score = {}, add = (k, n) => score[k] = (score[k] || 0) + n;
     let why = "";
-    const g = apple.toLowerCase();
-    const am = best(g) || APPLE.find(([, re]) => re.test(g));
+    const g = apple.toLowerCase().trim();
+    const am = APPLE_ONLY[g] && [APPLE_ONLY[g]] || best(g) || APPLE.find(([, re]) => re.test(g));
     if (am) {
       const calmMix = bpm2 && bpm2 < 95 || loud < -14;
       add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
@@ -14440,7 +14440,7 @@
     }
     return { key, why };
   }
-  var LOOKS, FAMILIES, RULES, SPECIFIC, PRIORITY, ALL, memo, GENRES, APPLE, clamp6;
+  var LOOKS, FAMILIES, RULES, SPECIFIC, PRIORITY, ALL, memo, GENRES, APPLE, clamp6, APPLE_ONLY;
   var init_genres = __esm({
     "src/genres.js"() {
       LOOKS = {
@@ -15129,6 +15129,7 @@
         ["pop", /pop|schlager|disco|funk|latin|world|reggae/]
       ];
       clamp6 = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      APPLE_ONLY = { hardcore: "gabber" };
     }
   });
 

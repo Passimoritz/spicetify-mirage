@@ -1169,12 +1169,12 @@ async function coverGame() {
       ok(/hit/.test(rev[0].verdict) && /miss/.test(rev[1].verdict) && /hit/.test(rev[2].verdict), "cover: Rückmeldungen passen");
       ok(plus(rev[0]) > plus(rev[2]) + 40, `cover: wer früher richtig liegt, bekommt mehr (${plus(rev[0])} gegen ${plus(rev[2])})`);
       ok(rev[0].h2.includes(b.artist), "cover: die Auflösung nennt den Song: " + rev[0].h2);
+      // erst das Cover prüfen: die Auflösung dauert nur wenige Sekunden, das Warten auf die Musik kann sie unter Last aufbrauchen
+      await until(async () => (await look()).cov, 2000, "cover: die Auflösung zeigt das scharfe Cover");
       await until(async () => {
         const s = await big.state();
         return s.playing && s.vol === 0.7;
       }, 2000, "cover: bei der Auflösung kommt die Musik");
-      // das scharfe Cover kann einen Moment nach der Musik fertig sein
-      await until(async () => (await look()).cov, 2000, "cover: die Auflösung zeigt das scharfe Cover");
       await fromHook("cover", b.uri);
     }
     await allPhones((s) => s.st === "end", 12000, "cover: Siegerehrung");
