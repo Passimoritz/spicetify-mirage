@@ -38,7 +38,7 @@
   <tr>
     <td width="33%" valign="top"><h3>🎨 Farben aus dem Cover</h3>Jeder Song färbt Spotify in der Palette seines Covers – lesbar auf dunklem Glas, mit dem Cover als Schleier hinter den Flächen.</td>
     <td width="33%" valign="top"><h3>🎤 Karaoke & Visualizer</h3>Vollbild-Liedtext, der sich Silbe für Silbe füllt, ein Visualizer im Takt und ein Mix aus beidem.</td>
-    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>69 Stile, siebzehn Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
+    <td width="33%" valign="top"><h3>🎉 Eine Party, die den Song kennt</h3>318 Stile, siebzehn Locations, Publikum, Lichtrig, Bühneneffekte und Momente für den Drop – aus dem Song gelesen, bevor er läuft.</td>
   </tr>
   <tr>
     <td valign="top"><h3>🎺 Instrumente</h3>Bestätigen die Credits Trompete, Saxofon, Gitarre, Klavier, Streicher oder Chor, bekommt das Instrument einen eigenen Effekt.</td>
@@ -171,21 +171,32 @@ Eingestellt wird alles unter **Profilmenü → Mirage-Einstellungen**, und jeder
 
 Der Party-Modus liest den ganzen Song, bevor er läuft – Energiekurve, Aufbauten, Drops auf ihrem Schlag, Breaks, Dur oder Moll und wo Kick, Snare und Hi-Hats sitzen – und inszeniert das Licht nach dieser Karte. Er reagiert auf das, was *kommt*, nicht nur auf das, was gerade laut ist.
 
-### 48 Stile
+### 318 Stile
 
 Der Stil kommt aus Apples iTunes-Genre, Spotifys Künstler-Genres und dem Klang selbst – oder du wählst ihn in den Einstellungen. Jeder Stil hat eigene Lichtsprache, Publikumsbewegungen, Location und Effekte: Rave bekommt sich kreuzende Strahlen, Techno weiche Scanner-Bänder, House eine Discokugel, Trance Polarlicht-Bänder, Drum & Bass einen Tunnel aus Lichtringen, Hip-Hop Licht vom Boden, Rock harte Spots von oben, Chill langsam atmendes Licht.
 
 <details>
-<summary><b>Alle 48 Stile</b></summary>
+<summary><b>Alle 318 Stile in 17 Familien</b></summary>
 
 | Familie | Stile |
 |---|---|
-| Elektronisch | Rave · EDM & Big Room · House · Deep House · Tech House · Techno · Trance · Psytrance · Drum & Bass · Dubstep · UK Garage · Hardstyle · Eurodance · Synthwave · Hyperpop |
-| Hip-Hop & R&B | Hip-Hop · Trap · Drill · Phonk · R&B · Soul & Funk · Afro · Reggae |
-| Rock | Rock · Alternative · Indie · Punk · Metal · Blues |
-| Pop | Pop · K-Pop · Disco · Schlager · Ballade · Gospel · Country |
-| Latin & Welt | Latin · Reggaeton · Salsa & Tropical · Brasilianisch · Flamenco · Bollywood · Arabisch |
-| Ruhig & klassisch | Chill · Ambient · Jazz · Klassik · Film & Epik |
+| Elektronisch (51) | Rave · EDM & Big Room · Electro House · Progressive House · Future & Slap House · House · Deep House · Tropical House · Tech House · Bass House · Acid House · Chicago & Classic House · French House · Nu-Disco · UK Garage · Jersey Club · Techno · Minimal & Microhouse · Detroit Techno · Dub Techno · Melodic Techno · Hard Techno · EBM & Industrial Dance · Trance · Progressive Trance · Uplifting & Vocal Trance · Psytrance · Drum & Bass · Liquid Drum & Bass · Neurofunk · Jungle · Breakbeat · Footwork & Juke · Electro & Miami Bass · Dubstep · Festival Trap · Future Bass · Moombahton · Hardstyle · Gabber & Hardcore · Happy Hardcore · Eurodance · Eurobeat · Hands Up · Italo Disco · Synthwave · Darksynth · Vaporwave · Hyperpop · Chiptune & 8-Bit · Electro Swing |
+| Hip-Hop & R&B (28) | Hip-Hop · Boom Bap · Gangsta- & Hardcore-Rap · West Coast & G-Funk · Southern Hip-Hop & Crunk · Alternativer & Underground-Hip-Hop · Trap · Pop-Rap & Melodic Rap · Cloud Rap · Drill · Phonk · UK-Rap · Grime · Deutschrap · Französischer Rap · Italienischer Rap · Spanischer Rap · Russischer Rap · Türkischer Rap · Arabischer & Maghreb-Rap · Brasilianischer Hip-Hop & Trap · R&B · Alternative R&B · New Jack Swing · Soul & Funk · Neo-Soul · Northern & Classic Soul · Funk |
+| Rock (28) | Rock · Classic Rock · Rock ’n’ Roll & Rockabilly · Hard Rock · Glam Rock · Blues Rock · Southern Rock · Psychedelic Rock · Stoner & Desert Rock · Progressive & Art Rock · Krautrock · Surf Rock · Garage Rock · Alternative · Grunge · Indie · Britpop & UK-Indie · Shoegaze & Dream Pop · Post-Punk & Darkwave · Post-Rock · Folk Rock · Soft Rock & Yacht Rock · Deutschrock · Punk · Pop-Punk · Hardcore Punk · Post-Hardcore & Screamo · Emo |
+| Metal (17) | Metal · Heavy Metal & NWOBHM · Thrash Metal · Glam & Hair Metal · Power Metal · Symphonic & Gothic Metal · Progressive Metal & Djent · Doom & Sludge · Death Metal · Black Metal · Grindcore & Powerviolence · Groove & Alternative Metal · Metalcore · Deathcore · Nu Metal & Rap Metal · Industrial Metal & NDH · Folk & Viking Metal |
+| Pop (11) | Pop · Dance-Pop · Electropop · Synth-Pop & New Wave · Teenie-Pop & Boybands · Pop-Rock & Power-Pop · Indie-Pop & Bedroom-Pop · Art-Pop & Chamber-Pop · Disco & Funk · Ballade · Musical |
+| Asien (33) | K-Pop · K-Indie · K-Rock · K-Hip-Hop · K-R&B · Trot · J-Pop & Anime · J-Rock & Visual Kei · J-Hip-Hop · Anime & Anisong · Vocaloid & Utaite · City Pop · Shibuya-kei · Enka & Kayōkyoku · Traditionelle japanische Musik · C-Pop · Mandopop · Cantopop · Chinesischer Hip-Hop · Traditionelle chinesische Musik · T-Pop · Luk Thung & Mor Lam · V-Pop · OPM & P-Pop · Dangdut & Indo-Pop · Gamelan & südostasiatische Tradition · Bollywood · Südindische Filmmusik · Punjabi & Bhangra · Desi-Hip-Hop · Hindustanische Klassik · Karnatische Klassik · Qawwali & Sufi |
+| Lateinamerika (29) | Latin · Latin-Pop · Reggaeton · Latin Trap · Dembow · Bachata · Merengue · Salsa & Tropical · Son & Trova (Kuba) · Bolero & Balada · Cumbia · Vallenato · Tango · Mariachi & Ranchera · Regional Mexican · Banda · Norteño & Tejano · Corridos & Sierreño · Rock en Español · Anden-Musik & Folklore · Brasilianisch · Samba · Pagode · Axé & Frevo · Forró & Piseiro · Sertanejo · Funk Carioca & Baile Funk · MPB · Bossa Nova |
+| Afrika & Karibik (21) | Afrobeats · Afrobeat & Afro-Funk · Highlife & Hiplife · Amapiano · Gqom · Afro House · Bongo Flava & Ostafrika · Soukous & kongolesische Rumba · Kuduro · Kizomba & Semba · Desert Blues · Reggae · Roots Reggae & Lovers Rock · Dub · Rocksteady · Ska · Dancehall · Soca · Calypso & Steelpan · Zouk · Kompa |
+| Naher Osten & Nordafrika (14) | Arabisch · Arabischer Pop · Khaleeji · Tarab & arabische Klassik · Raï · Gnawa & Chaabi · Dabke · Mahraganat & Shaabi · Türkischer Pop · Arabesk & türkische Volksmusik · Anatolischer Rock · Persischer Pop · Persische Klassik · Mizrahi & israelischer Pop |
+| Europa (19) | Schlager · Après-Ski & Ballermann · Volksmusik & Alpenländisches · Polka & Blasmusik · Karneval & Levenslied · Deutschpop & NDW · Chanson & Variété · Canzone & Italo-Pop · Europop & Eurovision · Disco Polo · Russischer Pop & Estrada · Griechisch: Laïko & Rebetiko · Fado · Flamenco · Balkan · Turbo-Folk · Chalga & Manele · Klezmer · Irisch & keltisch · Nordischer Folk |
+| Country & Folk (10) | Country & Folk · Klassischer & Outlaw-Country · Country-Pop · Country-Rock & Red Dirt · Americana & Alt-Country · Bluegrass & Old-Time · Cajun & Zydeco · Folk · Indie-Folk & Folk-Pop · Akustik |
+| Jazz & Blues (17) | Jazz · New Orleans & Dixieland · Swing & Big Band · Bebop & Hard Bop · Cool & West Coast Jazz · Modal & Spiritual Jazz · Free & Avantgarde-Jazz · Vocal Jazz & Standards · Latin Jazz · Gypsy-Jazz (Manouche) · Jazz-Fusion & Jazz-Funk · Acid Jazz · Nu Jazz & UK-Jazz · Smooth Jazz · Blues · Delta & Acoustic Blues · Electric & Chicago Blues |
+| Gospel & Spirituelles (7) | Gospel · Christlicher Pop & CCM · Worship & Lobpreis · Christlicher Rock & Metal · Christlicher Hip-Hop · Bhajan · Kirtan & Mantra · Nasheed & islamische Musik |
+| Klassik & Filmmusik (12) | Klassik · Barock & Alte Musik · Wiener Klassik · Romantik · Oper & Operette · Chor & geistliche Musik · Kammermusik · Orchester & Sinfonik · Minimal Music · Neue Musik · Film & Epik · Videospielmusik |
+| Ruhig & klassisch (10) | Chill · Lo-Fi · Downtempo & Chillout · Trip-Hop · Easy Listening & Lounge · Ambient · New Age & Heilmusik · Meditation & Yoga · Schlaf & Naturklänge · Neoklassik |
+| Experimentell (5) | Experimentell & Avantgarde · IDM & Glitch · Industrial & Power Electronics · Noise & Noise-Rock · Dark Ambient & Drone |
+| Kinder, Feiertage & Gesprochenes (6) | Weihnachten · Halloween · Kindermusik · Disney & Familienfilm · Comedy & Spaßlieder · Wortbeitrag & Podcast |
 </details>
 
 ### Zwölf Locations

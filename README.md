@@ -38,7 +38,7 @@
   <tr>
     <td width="33%" valign="top"><h3>🎨 Colours from the cover</h3>Every song repaints Spotify in the palette of its album art – readable on dark glass, with the cover drifting behind the panels.</td>
     <td width="33%" valign="top"><h3>🎤 Karaoke & visualizer</h3>Full-screen lyrics that fill syllable by syllable, a visualizer on the beat, and a mix of both.</td>
-    <td width="33%" valign="top"><h3>🎉 A party that knows the song</h3>69 styles, seventeen venues, a crowd, a light rig, stage effects and moments for the drop – read from the song before it plays.</td>
+    <td width="33%" valign="top"><h3>🎉 A party that knows the song</h3>318 styles, seventeen venues, a crowd, a light rig, stage effects and moments for the drop – read from the song before it plays.</td>
   </tr>
   <tr>
     <td valign="top"><h3>🎺 Instruments</h3>When the credits confirm a trumpet, sax, guitar, piano, strings or choir, that instrument gets an effect of its own.</td>
@@ -171,21 +171,32 @@ Everything is set up in **Profile menu → Mirage settings**, and every effect b
 
 Party mode reads the whole song before it plays – energy curve, build-ups, drops placed on their beat, breaks, major or minor, and where kick, snare and hi-hats hit – and directs the light from that map. It reacts to what's *coming*, not just to what's loud.
 
-### 48 styles
+### 318 styles
 
 The style comes from Apple's iTunes genre, Spotify's artist genres and the sound itself – or you pick it in the settings. Each style has its own light language, crowd moves, venue and effects: rave gets crossing beams, techno soft scanner bands, house a disco ball, trance aurora ribbons, drum & bass a tunnel of light rings, hip-hop light from the floor, rock hard spots from above, chill slow breathing light.
 
 <details>
-<summary><b>All 48 styles</b></summary>
+<summary><b>All 318 styles in 17 families</b></summary>
 
 | Family | Styles |
 |---|---|
-| Electronic | Rave · EDM & Big Room · House · Deep House · Tech House · Techno · Trance · Psytrance · Drum & Bass · Dubstep · UK Garage · Hardstyle · Eurodance · Synthwave · Hyperpop |
-| Hip-hop & R&B | Hip-Hop · Trap · Drill · Phonk · R&B · Soul & Funk · Afro · Reggae |
-| Rock | Rock · Alternative · Indie · Punk · Metal · Blues |
-| Pop | Pop · K-Pop · Disco · Schlager · Ballad · Gospel · Country |
-| Latin & world | Latin · Reggaeton · Salsa & Tropical · Brazilian · Flamenco · Bollywood · Arabic |
-| Calm & classical | Chill · Ambient · Jazz · Classical · Film & Epic |
+| Electronic (51) | Rave · EDM & Big Room · Electro house · Progressive house · Future & slap house · House · Deep House · Tropical house · Tech House · Bass house · Acid house · Chicago & classic house · French house · Nu-disco · UK Garage · Jersey club · Techno · Minimal & microhouse · Detroit techno · Dub techno · Melodic techno · Hard techno · EBM & industrial dance · Trance · Progressive trance · Uplifting & vocal trance · Psytrance · Drum & Bass · Liquid drum & bass · Neurofunk · Jungle · Breakbeat · Footwork & juke · Electro & Miami bass · Dubstep · Festival trap · Future bass · Moombahton · Hardstyle · Gabber & hardcore · Happy hardcore · Eurodance · Eurobeat · Hands up · Italo disco · Synthwave · Darksynth · Vaporwave · Hyperpop · Chiptune & 8-bit · Electro swing |
+| Hip-Hop & R&B (28) | Hip-Hop · Boom bap · Gangsta & hardcore rap · West Coast & G-funk · Southern hip-hop & crunk · Alternative & underground hip-hop · Trap · Pop rap & melodic rap · Cloud rap · Drill · Phonk · UK rap · Grime · German rap · French rap · Italian rap · Spanish rap · Russian rap · Turkish rap · Arabic & Maghreb rap · Brazilian hip-hop & trap · R&B · Alternative R&B · New jack swing · Soul & Funk · Neo-soul · Northern & classic soul · Funk |
+| Rock (28) | Rock · Classic rock · Rock 'n' roll & rockabilly · Hard rock · Glam rock · Blues rock · Southern rock · Psychedelic rock · Stoner & desert rock · Progressive & art rock · Krautrock · Surf rock · Garage rock · Alternative · Grunge · Indie · Britpop & UK indie · Shoegaze & dream pop · Post-punk & darkwave · Post-rock · Folk rock · Soft rock & yacht rock · German rock · Punk · Pop punk · Hardcore punk · Post-hardcore & screamo · Emo |
+| Metal (17) | Metal · Heavy metal & NWOBHM · Thrash metal · Glam & hair metal · Power metal · Symphonic & gothic metal · Progressive metal & djent · Doom & sludge · Death metal · Black metal · Grindcore & powerviolence · Groove & alternative metal · Metalcore · Deathcore · Nu metal & rap metal · Industrial metal & NDH · Folk & viking metal |
+| Pop (11) | Pop · Dance pop · Electropop · Synth-pop & new wave · Teen pop & boy bands · Pop rock & power pop · Indie pop & bedroom pop · Art pop & chamber pop · Disco & Funk · Ballad · Musical |
+| Asia (33) | K-Pop · K-indie · K-rock · K-hip-hop · K-R&B · Trot · J-pop & anime · J-rock & visual kei · J-hip-hop · Anime & anisong · Vocaloid & utaite · City pop · Shibuya-kei · Enka & kayōkyoku · Japanese traditional · C-pop · Mandopop · Cantopop · Chinese hip-hop · Chinese traditional · T-pop · Luk thung & mor lam · V-pop · OPM & P-pop · Dangdut & Indo pop · Gamelan & Southeast Asian traditional · Bollywood · South Indian film · Punjabi & bhangra · Desi hip-hop · Hindustani classical · Carnatic classical · Qawwali & Sufi |
+| Latin America (29) | Latin · Latin pop · Reggaeton · Latin trap · Dembow · Bachata · Merengue · Salsa & Tropical · Son & trova (Cuba) · Bolero & balada · Cumbia · Vallenato · Tango · Mariachi & ranchera · Regional Mexican · Banda · Norteño & Tejano · Corridos & sierreño · Rock en español · Andean & folklore · Brazilian · Samba · Pagode · Axé & frevo · Forró & piseiro · Sertanejo · Funk carioca & baile funk · MPB · Bossa nova |
+| Africa & Caribbean (21) | Afrobeats · Afrobeat & Afro-funk · Highlife & hiplife · Amapiano · Gqom · Afro house · Bongo flava & East African · Soukous & Congolese rumba · Kuduro · Kizomba & semba · Desert blues · Reggae · Roots reggae & lovers rock · Dub · Rocksteady · Ska · Dancehall · Soca · Calypso & steelpan · Zouk · Kompa |
+| Middle East & North Africa (14) | Arabic · Arabic pop · Khaleeji · Tarab & Arabic classical · Raï · Gnawa & chaabi · Dabke · Mahraganat & shaabi · Turkish pop · Arabesk & Turkish folk · Anatolian rock · Persian pop · Persian classical · Mizrahi & Israeli pop |
+| Europe (19) | Schlager · Après-ski & Ballermann · Volksmusik & alpine · Polka & brass · Carnival & levenslied · German pop & NDW · Chanson & variété · Canzone & Italian pop · Europop & Eurovision · Disco polo · Russian pop & estrada · Greek laïko & rebetiko · Fado · Flamenco · Balkan · Turbo-folk · chalga & manele · Klezmer · Celtic & Irish · Nordic folk |
+| Country & folk (10) | Country & Folk · Classic & outlaw country · Country pop · Country rock & red dirt · Americana & alt-country · Bluegrass & old-time · Cajun & zydeco · Folk · Indie folk & folk pop · Acoustic |
+| Jazz & blues (17) | Jazz · New Orleans & Dixieland · Swing & big band · Bebop & hard bop · Cool & West Coast jazz · Modal & spiritual jazz · Free & avant-garde jazz · Vocal jazz & standards · Latin jazz · Gypsy jazz (manouche) · Jazz fusion & jazz-funk · Acid jazz · Nu jazz & UK jazz · Smooth jazz · Blues · Delta & acoustic blues · Electric & Chicago blues |
+| Gospel & spiritual (7) | Gospel · Christian pop & CCM · Worship & praise · Christian rock & metal · Christian hip-hop · Bhajan · kirtan & mantra · Nasheed & Islamic |
+| Classical & soundtrack (12) | Classical · Baroque & early music · Classical era · Romantic era · Opera & operetta · Choral & sacred · Chamber music · Orchestral & symphonic · Minimalism · Contemporary classical · Film & Epic · Video game music |
+| Calm & classical (10) | Chill · Lo-fi · Downtempo & chillout · Trip-hop · Easy listening & lounge · Ambient · New age & healing · Meditation & yoga · Sleep & nature sounds · Neoclassical |
+| Experimental (5) | Experimental & avant-garde · IDM & glitch · Industrial & power electronics · Noise & noise rock · Dark ambient & drone |
+| Kids, holidays & spoken (6) | Christmas · Halloween · Kids' music · Disney & family film · Comedy & novelty · Spoken word & podcast |
 </details>
 
 ### Twelve venues

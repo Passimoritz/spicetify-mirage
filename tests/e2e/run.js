@@ -1173,7 +1173,8 @@ async function coverGame() {
         const s = await big.state();
         return s.playing && s.vol === 0.7;
       }, 2000, "cover: bei der Auflösung kommt die Musik");
-      ok((await look()).cov, "cover: die Auflösung zeigt das scharfe Cover");
+      // das scharfe Cover kann einen Moment nach der Musik fertig sein
+      await until(async () => (await look()).cov, 2000, "cover: die Auflösung zeigt das scharfe Cover");
       await fromHook("cover", b.uri);
     }
     await allPhones((s) => s.st === "end", 12000, "cover: Siegerehrung");
@@ -1505,6 +1506,9 @@ async function wishRules() {
 // Reaktionen: nur am Rand, insgesamt gedrosselt, abschaltbar
 async function reactions() {
   await ensurePhones("reactions");
+  // ein offenes Wunschfenster aus dem Fall davor (Suchfeld) deckt sonst die Reaktionsknöpfe ab
+  await Promise.all(P.map((ph) => ph.js(`document.body.classList.contains("wish") && document.getElementById("wClose").click(); 1`).catch(() => {})));
+  await wait(400);
   await T.js(`(() => {
     window.__rx = [];
     new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.classList?.contains("m-im-react")) __rx.push({ at: performance.now(), left: parseFloat(n.style.left) }); }).observe(document.getElementById("mirage-immersive"), { childList: true });
@@ -1768,7 +1772,7 @@ app.whenReady().then(async () => {
       // aufräumen, damit der nächste Fall sauber beginnt
       await T.js(`document.querySelector(".m-g-x")?.click(); if (!document.querySelector(".m-im-side").hidden) document.querySelector(".m-im-side-x").click(); document.querySelector('#mirage-immersive [data-mode="party"]').click(); __sp.resetArtists(); __sp.reset(); __sp.log.notes.length = 0; 1`).catch(() => {});
       // offene Fenster auf den Handys (Spielleitung, Profil, Fernbedienung) schließen: sie verdecken sonst im nächsten Fall die Knöpfe
-      await Promise.all(P.map((ph) => ph.js(`document.querySelectorAll(".prof:not([hidden]), #rc:not([hidden])").forEach((x) => (x.hidden = true)); 1`).catch(() => {})));
+      await Promise.all(P.map((ph) => ph.js(`document.querySelectorAll(".prof:not([hidden]), #rc:not([hidden])").forEach((x) => (x.hidden = true)); if (document.body.classList.contains("wish")) document.getElementById("wClose").click(); 1`).catch(() => {})));
       [T, ...P].forEach((w) => (w.errors.length = 0));
       await wait(1500);
     }
