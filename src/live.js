@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import { S } from "./core.js";
-import { cfg } from "./config.js";
+import { cfg, save } from "./config.js";
+import { t as tr } from "./i18n.js";
 import { currentItem, titleOf, artistOf } from "./player.js";
 
 /* ---------------------------------------------------------------- Live-Link: Handys leuchten mit */
@@ -145,7 +146,11 @@ async function prepare() {
   // das Handy unterschreibt damit seine Befehle (HMAC), und nur passend unterschriebene gelten.
   const hraw = crypto.getRandomValues(new Uint8Array(16));
   const hostKey = await crypto.subtle.importKey("raw", hraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "" };
+  // Fernbedienung: ein dritter Schlüssel, nur in deinem eigenen Link (zusammen mit dem der Spielleitung) –
+  // wer nur den Spiel-Link hat, kann die Musik nicht steuern
+  const rraw = crypto.getRandomValues(new Uint8Array(16));
+  const rcKey = await crypto.subtle.importKey("raw", rraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "", rcKey, rcUrl: `${url}&h=${b64u(hraw)}&r=${b64u(rraw)}`, rcQr: "" };
   hostSeen.clear();
   offAt = 0;
   wishes = [];
@@ -199,7 +204,7 @@ const within = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() 
 // Suchseite schon geladen hat), zuletzt die Web-API (die Spotify oft mit 429 drosselt).
 const SEARCH_VARS = (q) => ({ searchTerm: q, offset: 0, limit: 20, numberOfTopResults: 20, includeAudiobooks: false, includeArtistHasConcertsField: false, includePreReleases: false, includeAlbumPreReleases: false, includeAuthors: false, includeEpisodeContentRatingsV2: false });
 const fromGql = (d) => ({
-  id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false,
+  id: d.uri.split(":")[2], uri: d.uri, name: d.name, is_playable: d.playability?.playable !== false, explicit: d.contentRating?.label === "EXPLICIT",
   artists: (d.artists?.items || []).map((a) => ({ name: a?.profile?.name || "" })),
   album: { images: (d.albumOfTrack?.coverArt?.sources || []).map((x) => ({ url: x.url, width: x.width || 0 })) },
 });
@@ -220,6 +225,24 @@ async function searchSpotify(q) {
   const r = await within(S.CosmosAsync.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=8`), 4000);
   return r?.tracks?.items || [];
 }
+// Spotify-Link statt Suche: „open.spotify.com/track/…“ (auch „/intl-de/…“) oder „spotify:track:…“ wird direkt
+// aufgelöst. Andere Spotify-Links (Album, Playlist, Kurzlink …) sind kein einzelner Song: freundlich ablehnen.
+const TRACK_LINK = /(?:open\.spotify\.com\/(?:intl-[\w-]+\/)?track\/|spotify:track:)([A-Za-z0-9]{22})/;
+const OTHER_LINK = /open\.spotify\.com\/|spotify:[a-z]+:|spotify\.link\/|spoti\.fi\//i;
+// ein Song über seine ID: zuerst Spotifys eigene Abfrage (wird kaum gedrosselt), sonst die Web-API
+async function trackById(id) {
+  const def = S.GraphQL?.Definitions?.getTrack;
+  if (def && S.GraphQL?.Request) {
+    try {
+      const d = (await within(S.GraphQL.Request(def, { uri: "spotify:track:" + id }), 4000))?.data?.trackUnion;
+      if (d?.name) {
+        const people = [...(d.firstArtist?.items || []), ...(d.otherArtists?.items || []), ...(d.artists?.items || [])];
+        return fromGql({ ...d, uri: d.uri || "spotify:track:" + id, artists: { items: people } });
+      }
+    } catch {}
+  }
+  return within(S.CosmosAsync.get(`https://api.spotify.com/v1/tracks/${id}`), 4000);
+}
 // je Handy höchstens eine Suche gleichzeitig; wer weitertippt, bekommt danach die Antwort auf die LETZTE Eingabe
 async function runSearch(id) {
   const job = searching.get(id);
@@ -228,16 +251,21 @@ async function runSearch(id) {
   while (job.next) {
     const { q, r } = job.next;
     job.next = null;
-    let res = [], err = 0;
+    let res = [], err = 0, nl, wr;
     try {
-      const seenName = new Set();
-      res = (await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
-      res = res.slice(0, 8).map(({ i, t, a, img }) => ({ i, t, a, img }));
+      const seenName = new Set(), link = TRACK_LINK.exec(q);
+      // „nl“: ein Spotify-Link, aber kein Song (ältere Handyseiten zeigen dann einfach „nichts gefunden“)
+      if (!link && OTHER_LINK.test(q)) nl = 1;
+      else res = (link ? [await trackById(link[1])] : await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
+      // Regeln der Gastgeberin: gesperrte und (auf Wunsch) „Explicit“-Songs erscheinen gar nicht erst
+      // ein Link auf einen solchen Song: dem Gast sagen, warum (ältere Seiten zeigen „nichts gefunden“)
+      if (link && res[0]) wr = ruleOut(res[0]) || undefined;
+      res = res.filter((x) => !ruleOut(x)).slice(0, 8).map(({ i, t, a, img }) => ({ i, t, a, img }));
     } catch {
       err = 1;
     }
     // immer antworten – auch ohne Treffer oder bei einem Fehler, sonst sucht das Handy ewig
-    if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r, res, err }), false);
+    await reply(id, { r, res, err, nl, wr });
   }
   job.busy = false;
   if (searching.size > 50) for (const [k, j] of searching) if (!j.busy) searching.delete(k);
@@ -250,7 +278,7 @@ const coverOf = (tr) => {
 };
 function remember(tr) {
   if (!tr?.id || !ID.test(tr.id) || tr.is_playable === false) return null;
-  const x = { i: tr.id, uri: tr.uri || "spotify:track:" + tr.id, t: clean(tr.name, 80), a: clean((tr.artists || []).map((y) => y.name).join(", "), 60), img: /^https:\/\/i\.scdn\.co\//.test(coverOf(tr)) ? coverOf(tr) : "" };
+  const x = { i: tr.id, uri: tr.uri || "spotify:track:" + tr.id, x: tr.explicit ? 1 : 0, t: clean(tr.name, 80), a: clean((tr.artists || []).map((y) => y.name).join(", "), 60), img: /^https:\/\/i\.scdn\.co\//.test(coverOf(tr)) ? coverOf(tr) : "" };
   tracks.set(x.i, x);
   if (tracks.size > 300) tracks.delete(tracks.keys().next().value);
   return x;
@@ -264,6 +292,26 @@ async function seal(obj) {
   return out;
 }
 const emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage:wishes")));
+// Antwort nur an ein Handy. Immer mit „res“: ältere Seiten behandeln sie dann als (fremde) Suchantwort
+// und ignorieren sie, statt sie für einen Lichtzustand ohne „on“ zu halten (= „Party beendet“)
+async function reply(id, obj) {
+  if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), res: [], ...obj }), false);
+}
+/* ---- Regeln für Songwünsche (Einstellungen im Party-Modus) */
+// Sperrliste: Künstler oder Wörter, mit Komma oder Zeilenumbruch getrennt, ohne Groß/klein
+const blockList = () => String(cfg.wishBlock || "").toLowerCase().split(/[,;\n]/).map((x) => x.trim()).filter((x) => x.length >= 2).slice(0, 60);
+function ruleOut(tr) {
+  const hay = (tr.t + " " + tr.a).toLowerCase();
+  if (blockList().some((w) => hay.includes(w))) return "block";
+  if (cfg.wishClean && tr.x) return "explicit";
+  return "";
+}
+// Wunsch reicht genug Stimmen: von selbst in die Warteschlange (aus, solange „wishAuto“ 0 ist)
+function autoAdd(w) {
+  if (!(cfg.wishAuto > 0) || w.st !== "open" || w.auto || w.v.size < cfg.wishAuto) return;
+  w.auto = true;
+  accept(w.i).then((ok) => ok || (w.auto = false));
+}
 const clean = (v, n) => String(v ?? "").replace(/\p{Cc}/gu, " ").trim().slice(0, n);
 // Gäste: wer hat was gewünscht (für das Ranking im Rückblick); Reaktionen und Abstimmung brauchen keine Wünsche
 const guests = new Map(); // Handy-ID → { n, wished, played, votes }
@@ -282,26 +330,72 @@ const colour = (v) => (Number.isInteger(v) && v >= 0 && v < 10 ? v : null);
 // lassen sich so weder fälschen noch ein zweites Mal abspielen).
 const hostSeen = new Map(), lastHost = new Map();
 const unB64u = (s) => Uint8Array.from(atob(String(s).replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
-async function hostCommand(id, msg) {
-  if (!ses?.hostKey || typeof msg.hd !== "string" || msg.hd.length > 160 || typeof msg.sig !== "string" || msg.sig.length > 64) return;
+// Unterschrift, Frische und Einmaligkeit prüfen – für Spielleitung und Fernbedienung, je mit eigenem Schlüssel
+async function signed(id, msg, key) {
+  if (!key || typeof msg.hd !== "string" || msg.hd.length > 160 || typeof msg.sig !== "string" || msg.sig.length > 64) return null;
   let good = false;
   try {
-    good = await crypto.subtle.verify("HMAC", ses.hostKey, unB64u(msg.sig), te.encode(msg.hd));
+    good = await crypto.subtle.verify("HMAC", key, unB64u(msg.sig), te.encode(msg.hd));
   } catch {}
-  if (!good) return;
+  if (!good) return null;
   const [from, a, t, v, at, nonce] = msg.hd.split("|");
-  if (from !== id || !nonce || Math.abs(Date.now() - Number(at)) > 600e3 || hostSeen.has(nonce)) return;
+  if (from !== id || !nonce || Math.abs(Date.now() - Number(at)) > 600e3 || hostSeen.has(nonce)) return null;
   hostSeen.set(nonce, Date.now());
   for (const [k, when] of hostSeen) if (Date.now() - when > 1300e3) hostSeen.delete(k);
-  window.dispatchEvent(new CustomEvent("mirage:host", { detail: { a: clean(a, 8), t: clean(t, 24), v: Number(v) || 0 } }));
+  return { a: clean(a, 8), t: clean(t, 24), v: Number(v) || 0 };
+}
+async function hostCommand(id, msg) {
+  const c = await signed(id, msg, ses?.hostKey);
+  if (c) window.dispatchEvent(new CustomEvent("mirage:host", { detail: c }));
+}
+/* ---- Fernbedienung für dich: Wiedergabe, Lautstärke, Stärke, Location, Spiele */
+// dieselben Locations wie in den Einstellungen
+const VENUES = ["auto", "club", "warehouse", "cellar", "jazzbar", "pub", "neon", "rooftop", "festival", "forest", "desert", "stadium", "beach", "skihut", "space", "cathedral", "hall", "home"];
+const playing = () => {
+  try {
+    return !!S.Player.isPlaying();
+  } catch {
+    return false;
+  }
+};
+// Stand für die Fernbedienung, Beschriftungen in deiner Sprache am PC (sie bedient ja nur du)
+const rcState = () => ({
+  pl: playing() ? 1 : 0, vol: Math.round((Number(S.Player.getVolume?.()) || 0) * 100), lv: cfg.partyLevel ?? 2, vn: cfg.partyVenue || "auto",
+  lvs: [1, 2, 3, 4, 5].map((n) => tr("partyLevel" + n)), vns: VENUES.map((k) => [k, tr("venue_" + k)]),
+});
+async function remoteCommand(id, msg) {
+  const c = await signed(id, msg, ses?.rcKey);
+  if (!c) return;
+  try {
+    if (c.a === "play") S.Player.togglePlay();
+    else if (c.a === "next") S.Player.next();
+    else if (c.a === "prev") S.Player.back();
+    else if (c.a === "vol") S.Player.setVolume(Math.max(0, Math.min(100, c.v)) / 100);
+    else if (c.a === "lvl" && c.v >= 1 && c.v <= 5) {
+      cfg.partyLevel = Math.round(c.v);
+      save();
+    } else if (c.a === "loc" && VENUES.includes(c.t)) {
+      cfg.partyVenue = c.t;
+      save();
+    } else if (c.a === "game") window.dispatchEvent(new CustomEvent("mirage:host", { detail: { a: "open", t: c.t, v: 0 } }));
+  } catch {}
+  // gleich antworten, und nach dem Wechsel noch einmal (Wiedergabe und Lautstärke brauchen einen Moment)
+  reply(id, { r: -1, rcs: rcState() });
+  setTimeout(() => reply(id, { r: -1, rcs: rcState() }), 700);
+}
+async function remoteInfo() {
+  const s = await prepare();
+  if (!s.rcQr) s.rcQr = await QRCode.toString(s.rcUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+  return { url: s.rcUrl, qr: s.rcQr };
 }
 async function hostInfo() {
   const s = await prepare();
   if (!s.hostQr) s.hostQr = await QRCode.toString(s.hostUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
   return { url: s.hostUrl, qr: s.hostQr };
 }
-const lastReact = new Map(), lastGame = new Map();
+const lastReact = new Map(), lastGame = new Map(), refused = new Map(), lastRc = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
+let reactBudget = 6, reactAt = 0;
 async function inbound(m) {
   if (!ses || m.length < 29) return;
   let msg;
@@ -325,10 +419,25 @@ async function inbound(m) {
     lastHost.set(id, Date.now());
     return void hostCommand(id, msg);
   }
-  // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl
+  // Fernbedienung: im Schnitt höchstens 10 je Sekunde (kurze Folgen schneller Tipps gehen durch, auch mit den
+  // Wiederholungen von sendSure), nur mit der Unterschrift aus deinem eigenen Link
+  if (msg.k === "rc") {
+    const b = lastRc.get(id) || { n: 8, at: 0 }, n = Math.min(8, b.n + (Date.now() - b.at) / 100);
+    if (n < 1) return;
+    lastRc.set(id, { n: n - 1, at: Date.now() });
+    if (lastRc.size > 50) lastRc.delete(lastRc.keys().next().value);
+    return void remoteCommand(id, msg);
+  }
+  // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl, und insgesamt höchstens
+  // 4 je Sekunde (bei vielen Gästen sonst ein Emoji-Regen); abschaltbar
   if (msg.k === "react") {
-    if (!REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
+    if (!cfg.partyReacts || !REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
+    reactBudget = Math.min(6, reactBudget + ((Date.now() - reactAt) / 1000) * 4);
+    reactAt = Date.now();
+    if (reactBudget < 1) return;
+    reactBudget--;
     lastReact.set(id, Date.now());
+    if (lastReact.size > 300) lastReact.delete(lastReact.keys().next().value);
     window.dispatchEvent(new CustomEvent("mirage:react", { detail: msg.e }));
     return;
   }
@@ -349,6 +458,7 @@ async function inbound(m) {
     if (w && !w.v.has(id)) {
       w.v.add(id);
       emitWishes();
+      autoAdd(w);
     }
     return;
   }
@@ -363,24 +473,41 @@ async function inbound(m) {
   }
   if (msg.k !== "wish") return;
   const tid = clean(msg.i, 22), name = clean(msg.n, 20);
-  if (!ID.test(tid) || Date.now() - (seen.get(id) || 0) < 45e3) return;
+  if (!ID.test(tid)) return;
+  // zu viele offene Wünsche: gleich sagen (noch vor der 45-s-Sperre, sonst bliebe es still); eine Stimme
+  // für einen schon offenen Wunsch geht immer. Antworten höchstens alle 2 s je Handy.
+  const mine = wishes.filter((x) => x.by === id && x.st === "open").length;
+  if (cfg.wishMax > 0 && mine >= cfg.wishMax && !wishes.some((x) => x.i === tid && x.st === "open")) {
+    if (Date.now() - (refused.get(id) || 0) > 2000) {
+      refused.set(id, Date.now());
+      reply(id, { r: -1, wr: "max", n: cfg.wishMax });
+    }
+    return;
+  }
+  if (Date.now() - (seen.get(id) || 0) < 45e3) return;
   // nur echte Spotify-Songs: aus der Suche von eben, sonst noch einmal bei Spotify nachgesehen
   let tr = tracks.get(tid);
   if (!tr) {
     try {
-      tr = remember(await S.CosmosAsync.get(`https://api.spotify.com/v1/tracks/${tid}`));
+      tr = remember(await trackById(tid));
     } catch {}
   }
   if (!tr) return;
-  seen.set(id, Date.now());
   const have = wishes.find((x) => x.uri === tr.uri);
-  if (have) have.v.add(id);
-  else {
+  // Regeln: gesperrt oder „Explicit“ (die Suche zeigt solche Songs gar nicht erst, ein Link schon)
+  const why = ruleOut(tr);
+  if (why) return void reply(id, { r: -1, wr: why });
+  seen.set(id, Date.now());
+  if (have) {
+    have.v.add(id);
+    autoAdd(have);
+  } else {
     wishes.push({ ...tr, n: name, c: colour(msg.c), by: id, v: new Set([id]), st: "open", at: Date.now() });
     guest(id, name, colour(msg.c)).wished++;
     // voll: der älteste Wunsch mit den wenigsten Stimmen fliegt raus
     const open = wishes.filter((x) => x.st === "open");
     if (open.length > 8) wishes = wishes.filter((x) => x !== open.sort((a, b) => a.v.size - b.v.size || a.at - b.at)[0]);
+    autoAdd(wishes[wishes.length - 1]);
   }
   emitWishes();
 }
@@ -448,9 +575,12 @@ function feed(px, pal, bpm, lyric) {
   if (lastFeed - lastSend < RATE) return;
   lastSend = lastFeed;
   const item = currentItem();
+  // „Keine Blitze“ gilt auch für die Handys: „nf“ schaltet dort Blitz, Schockring und lange Drop-Vibration ab.
+  // Ältere Handyseiten kennen „nf“ nicht und blitzen bei d > 0,85 – darum bleibt d dann auf 0,85 gedeckelt.
+  const nf = cfg.noFlash ? 1 : 0;
   send({
     v: 1, on: 1, s: Date.now(), bpm: Math.round(bpm || 120), bi: px.beatIdx, ph: +(px.phase || 0).toFixed(3),
-    e: +px.energy.toFixed(2), k: +px.kickEnv.toFixed(2), d: +px.drop.toFixed(2), b: +px.build.toFixed(2),
+    e: +px.energy.toFixed(2), k: +px.kickEnv.toFixed(2), d: +(nf ? Math.min(px.drop, 0.85) : px.drop).toFixed(2), nf, b: +px.build.toFixed(2),
     pal: (pal || []).slice(0, 3).map((c) => c.map((v) => Math.round(v))), t: masked === "all" ? "?" : titleOf(item) || "", a: masked === "all" ? "" : artistOf(item) || "",
     img: masked === "all" ? "" : coverUrl(item),
     // Liedtext zum Mitsingen: aktuelle und nächste Zeile
@@ -461,6 +591,10 @@ function feed(px, pal, bpm, lyric) {
     // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
     poll: poll && Date.now() < poll.end + 8000 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
     nx: masked ? "" : nextUri(),
+    // Reaktionen aus: die Handys blenden ihre Emoji-Leiste aus (ältere Seiten zeigen sie weiter, es kommt nur nichts an)
+    rx: cfg.partyReacts ? 1 : 0,
+    // Lichtwelle: Art (0 aus, 1 der Reihe nach, 2 Farbgruppen) und Zahl der Plätze; ältere Seiten leuchten alle zugleich
+    wv: cfg.partyWave || 0, wn: 8,
     fx: !masked && lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }
@@ -486,4 +620,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline };

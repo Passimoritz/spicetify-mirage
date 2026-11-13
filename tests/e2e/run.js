@@ -1402,6 +1402,164 @@ async function gameReset() {
   await T.click(".m-im-side-x");
 }
 
+/* ---------------------------------------------------------------- Gäste und Handys */
+// Wunsch per Spotify-Link: ein Song-Link wird direkt aufgelöst, andere Links freundlich abgelehnt
+async function linkWish() {
+  const B = P[1], msg = () => B.js(`document.getElementById("wMsg").textContent`);
+  await ensurePhones("link-wish");
+  const type = (v) => B.js(`(() => { const i = document.getElementById("wSong"); i.value = ${JSON.stringify(v)}; i.dispatchEvent(new Event("input")); })(); 1`);
+  await B.click("#bWish");
+  await wait(700);
+  await type("https://open.spotify.com/intl-de/track/t000000000000000000005?si=0123456789abcdef");
+  const hit = await until(() => B.js(`[...document.querySelectorAll("#wRes li b")].map((b) => b.textContent)`).then((l) => l.length && l), 9000, "link: der Song aus dem Link erscheint");
+  ok(hit.length === 1 && /Fable/.test(hit[0]), "link: genau der verlinkte Song: " + hit.join(" | "));
+  // Album-Link: schon auf dem Handy abgelehnt, ohne Anfrage
+  const other = await B.js("T.wLinkOther");
+  await type("https://open.spotify.com/album/1A2B3C4D5E6F7G8H9I0J1K");
+  await until(async () => (await msg()) === other, 2000, "link: ein Album-Link bekommt einen Hinweis");
+  ok(!(await B.js(`document.querySelectorAll("#wRes li").length`)), "link: zum Album-Link gibt es keine Treffer");
+  // ältere Handyseiten schicken den Link einfach als Suche: Mirage sagt, dass es kein Song ist
+  await B.js(`rid++; ask("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M", 0); 1`);
+  await until(async () => (await msg()) === other, 9000, "link: Mirage lehnt einen Playlist-Link ab");
+  await type("spotify:track:t000000000000000000005");
+  await until(() => B.js(`document.querySelectorAll("#wRes li").length === 1`), 9000, "link: auch als spotify:track:-Adresse");
+  await B.click("#wRes li button.go");
+  await until(() => P[0].js(`[...document.querySelectorAll("#wList b")].some((b) => /Fable/.test(b.textContent))`), 8000, "link: der Wunsch steht bei allen in der Liste");
+  await B.click("#wClose");
+  await T.js(`document.querySelector(".m-im-wishtoast .m-im-wish-all")?.click(); 1`);
+  await wait(400);
+  await T.js(`document.querySelector(".m-im-wish-no")?.click(); document.querySelector(".m-im-side-x")?.click(); 1`);
+}
+// Regeln für Songwünsche: in den echten Einstellungen gesetzt, auf den Handys wirksam
+async function setRule(key, value) {
+  await T.js(`(() => {
+    if (!document.querySelector(".mirage-settings")) __menu.brightness();
+    const i = document.querySelector('.mirage-settings [data-key="${key}"]');
+    if (i.type === "checkbox") { if (i.checked !== ${JSON.stringify(!!value)}) i.click(); }
+    else { i.value = ${JSON.stringify(String(value))}; i.dispatchEvent(new Event("input", { bubbles: true })); i.dispatchEvent(new Event("change", { bubbles: true })); }
+    return 1;
+  })()`);
+}
+async function wishRules() {
+  const [A, B] = P, msg = (ph) => ph.js(`document.getElementById("wMsg").textContent`);
+  const type = (ph, v) => ph.js(`(() => { const i = document.getElementById("wSong"); i.value = ${JSON.stringify(v)}; i.dispatchEvent(new Event("input")); })(); 1`);
+  const hits = (ph) => ph.js(`[...document.querySelectorAll("#wRes li b")].map((b) => b.textContent).join(" | ")`);
+  await ensurePhones("wish-rules");
+  await setRule("wishMax", 1);
+  await setRule("wishBlock", "cinder, nothing");
+  await setRule("wishClean", true);
+  await setRule("wishAuto", 2);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  // Suche: der gesperrte (Cinder) und der „Explicit“-Song (Blue Lake) erscheinen gar nicht
+  for (const ph of [A, B]) await ph.click("#bWish");
+  await wait(700);
+  await type(A, "song");
+  const list = await until(async () => (await hits(A)) || "", 9000, "regeln: Treffer");
+  ok(list === "Song of Aurora", "regeln: nur der erlaubte Song steht in der Liste: " + list);
+  await A.click("#wRes li button.go");
+  await until(() => B.js(`[...document.querySelectorAll("#wList b")].some((b) => /Aurora/.test(b.textContent))`), 8000, "regeln: Auroras Wunsch ist da");
+  // ein zweiter offener Wunsch desselben Gastes: abgelehnt, mit Grund
+  await A.js(`lastWish = 0; 1`);
+  await wait(1000);
+  await type(A, "spotify:track:t000000000000000000005");
+  await until(() => A.js(`document.querySelectorAll("#wRes li").length === 1`), 9000, "regeln: Link-Treffer");
+  await A.click("#wRes li button.go");
+  const max = (await A.js("T.wrMax")).replace("{n}", 1);
+  await until(async () => (await msg(A)) === max, 6000, "regeln: zu viele offene Wünsche – das Handy sagt es");
+  // gesperrter Song per Link: Grund statt „nichts gefunden“
+  await type(B, "https://open.spotify.com/track/t000000000000000000002");
+  const block = await B.js("T.wrBlock");
+  await until(async () => (await msg(B)) === block, 9000, "regeln: gesperrter Song per Link");
+  // zwei Stimmen: der Wunsch geht von selbst in die Warteschlange
+  await B.click("#wList button", { text: "👍" });
+  await until(() => T.js(`__sp.log.queued.includes("spotify:track:t000000000000000000000")`), 6000, "regeln: ab zwei Stimmen automatisch in der Warteschlange");
+  await until(() => A.js(`/✓/.test(document.getElementById("wList").textContent)`), 6000, "regeln: die Handys zeigen ihn als angenommen");
+  for (const ph of [A, B]) await ph.click("#wClose");
+  for (const [k, v] of [["wishMax", 0], ["wishBlock", ""], ["wishClean", false], ["wishAuto", 0]]) await setRule(k, v);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+}
+// Reaktionen: nur am Rand, insgesamt gedrosselt, abschaltbar
+async function reactions() {
+  await ensurePhones("reactions");
+  await T.js(`(() => {
+    window.__rx = [];
+    new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.classList?.contains("m-im-react")) __rx.push({ at: performance.now(), left: parseFloat(n.style.left) }); }).observe(document.getElementById("mirage-immersive"), { childList: true });
+    return 1;
+  })()`);
+  await P[0].click("#reacts button", { index: 0 });
+  await until(() => T.js(`__rx.length >= 1`), 5000, "reaktion: das Emoji erscheint auf dem großen Bild");
+  // 30 verschiedene Gäste auf einmal: insgesamt gedrosselt
+  await T.js(`__rx.length = 0; 1`);
+  await P[1].js(`for (let i = 0; i < 30; i++) sendUp({ k: "react", e: "🎉", id: "spam-" + i + "-abcdef" }); 1`);
+  await wait(1500);
+  const rx = await T.js(`__rx`);
+  ok(rx.length >= 3 && rx.length <= 11, `reaktion: aus 30 auf einmal werden ein paar, kein Regen: ${rx.length}`);
+  const mid = rx.filter((r) => r.left > 7 && r.left < 92);
+  ok(!mid.length, "reaktion: nichts über der Mitte: " + mid.map((r) => r.left.toFixed(1)).join(", "));
+  // ausgeschaltet: die Handys blenden die Leiste aus, und es kommt nichts mehr an
+  await setRule("partyReacts", false);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display === "none"`), 4000, "reaktion: aus – die Handys zeigen keine Emoji-Leiste");
+  await T.js(`__rx.length = 0; 1`);
+  await wait(2000);
+  await P[2].js(`sendUp({ k: "react", e: "🔥" }); 1`);
+  await wait(1500);
+  ok(!(await T.js(`__rx.length`)), "reaktion: aus – nichts erscheint");
+  await setRule("partyReacts", true);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display !== "none"`), 4000, "reaktion: wieder an");
+}
+// Fernbedienung: eigener QR-Code nur auf Knopfdruck, Befehle nur mit der Unterschrift aus diesem Link
+async function remoteControl() {
+  const H = P[2], now = () => T.js(`__sp.now()`);
+  await ensurePhones("remote");
+  await T.js(`__menu.brightness(); 1`);
+  ok(!(await T.js(`!!document.querySelector(".mirage-settings .m-rc-qr")`)), "fernbedienung: der QR-Code ist nicht von selbst zu sehen");
+  await T.js(`document.querySelector(".mirage-settings .m-rc-btn").click(); 1`);
+  await until(() => T.js(`!!document.querySelector(".mirage-settings .m-rc-qr img")?.naturalWidth`), 6000, "fernbedienung: QR-Code nach dem Knopf");
+  const url = await T.js(`(async () => {
+    const im = document.querySelector(".mirage-settings .m-rc-qr img"), c = document.createElement("canvas");
+    c.width = c.height = 760;
+    const x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, 760, 760);
+    x.drawImage(im, 20, 20, 720, 720);
+    return jsQR(x.getImageData(0, 0, 760, 760).data, 760, 760)?.data || "";
+  })()`);
+  const rcHash = url.slice(url.indexOf("#"));
+  ok(rcHash.startsWith(hash + "&h=") && /&r=[\w-]{20,}$/.test(rcHash), "fernbedienung: der Link trägt einen eigenen Schlüssel: " + url.slice(0, 60));
+  await T.js(`document.querySelector(".mirage-settings .m-rc-btn").click(); 1`);
+  ok(!(await T.js(`!!document.querySelector(".mirage-settings .m-rc-qr")`)), "fernbedienung: zweiter Druck verbirgt den Code wieder");
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  await H.win.loadURL(PAGE + "?rc=1" + rcHash);
+  await until(() => H.js(`document.body.classList.contains("on") && !document.getElementById("bRc").hidden`).catch(() => false), 10000, "fernbedienung: das Handy hat den Knopf");
+  ok(await P[0].js(`document.getElementById("bRc").hidden`), "fernbedienung: Gäste haben den Knopf nicht");
+  await H.click("#bRc");
+  await until(() => H.js(`document.querySelectorAll("#rcBody .rclv button").length === 5`), 6000, "fernbedienung: der Stand vom PC ist da");
+  // ein Gast ohne den Schlüssel: nichts passiert
+  const vol0 = (await now()).vol;
+  await P[0].js(`sendSure({ k: "rc", hd: [myId, "vol", "", 5, Date.now(), "abcdefgh12"].join("|"), sig: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" }); 1`);
+  await wait(1200);
+  ok((await now()).vol === vol0, "fernbedienung: ein gefälschter Befehl wirkt nicht");
+  // Lautstärke, nächster Song, Stärke, Location
+  await H.click("#rcBody .rcrow button", { index: 4 });
+  await until(async () => Math.abs((await now()).vol - (vol0 + 0.1)) < 0.011, 5000, "fernbedienung: lauter");
+  const before = (await now()).uri;
+  await H.click("#rcBody .rcrow button", { index: 2 });
+  await until(async () => (await now()).uri !== before, 5000, "fernbedienung: nächster Song");
+  await H.click("#rcBody .rclv button", { index: 4 });
+  await until(() => H.js(`document.querySelectorAll("#rcBody .rclv button")[4]?.getAttribute("aria-pressed") === "true"`), 5000, "fernbedienung: Stärke 5 kommt am PC an");
+  await H.js(`(() => { const s = document.querySelector("#rcBody .rcsel"); s.value = "beach"; s.dispatchEvent(new Event("change")); })(); 1`);
+  await until(() => H.js(`rcS?.vn === "beach"`), 5000, "fernbedienung: Location kommt am PC an");
+  // zurück: Stärke 2, Location automatisch, Lautstärke wie vorher, wieder als Gast
+  await H.click("#rcBody .rclv button", { index: 1 });
+  await H.js(`(() => { const s = document.querySelector("#rcBody .rcsel"); s.value = "auto"; s.dispatchEvent(new Event("change")); })(); 1`);
+  await until(() => H.js(`rcS?.vn === "auto" && rcS?.lv === 2`), 5000, "fernbedienung: zurückgestellt");
+  await T.js(`__sp.reset(); 1`);
+  await H.win.loadURL(PAGE + "?guest=1" + hash);
+  await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bRc").hidden`).catch(() => false), 10000, "fernbedienung: wieder als Gast verbunden");
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1411,6 +1569,7 @@ const CASES = [
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
+  ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions], ["remote", remoteControl],
 ];
 // neuere Spiele
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });

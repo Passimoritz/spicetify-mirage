@@ -2251,11 +2251,8 @@ const immersive = (() => {
     party.live = { at: now, a: +px.accent.toFixed(3), k: +px.kickEnv.toFixed(3), e: +px.energy.toFixed(3), d: +px.drop.toFixed(3), pal: vividPal };
     // Liedtext zum Mitsingen auf den Handys: aktuelle und nächste Zeile (nur synchroner Liedtext)
     const lineAt = (k) => (lyr?.synced && k >= 0 && lyr.lines[k]?.text !== "♪" && lyr.lines[k]?.text) || "";
-    live.feed(noFlashFeed(px), vividPal || imPalette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
+    live.feed(px, vividPal || imPalette(), party.info.bpm, { ly: lineAt(active), lyn: lineAt(active + 1) });
   }
-  // „Keine Blitze“ gilt auch für die Handys: ihre Seite blitzt weiß, sobald der Drop-Wert über 0,85 springt –
-  // gedeckelt kommt er dort nie an (die Seite selbst kennt den Schalter noch nicht)
-  const noFlashFeed = (px) => (cfg.noFlash ? { ...px, drop: Math.min(px.drop, 0.8) } : px);
   const toLocal = (x, y) => [x, y];
   function drawMotes(ctx, dt, dpr) {
     if (!motes.length) return;
@@ -3182,12 +3179,14 @@ const immersive = (() => {
 
   /* ---- Reaktionen der Gäste: Emojis steigen vom unteren Rand auf */
   window.addEventListener("mirage:react", (e) => {
-    if (!el || el.dataset.mode !== "party" || el.querySelectorAll(".m-im-react").length > 24) return;
+    if (!el || el.dataset.mode !== "party" || !cfg.partyReacts || el.querySelectorAll(".m-im-react").length > 12) return;
     const r = document.createElement("span");
     r.className = "m-im-react";
     r.textContent = e.detail;
-    r.style.left = 8 + Math.random() * 84 + "%";
-    r.style.setProperty("--dx", (Math.random() * 80 - 40).toFixed(0) + "px");
+    // nur am linken oder rechten Rand, nie über der Menge in der Mitte; seitlich treiben sie nach außen
+    const right = Math.random() < 0.5;
+    r.style.left = (right ? 93 + Math.random() * 4.5 : 1.5 + Math.random() * 4.5) + "%";
+    r.style.setProperty("--dx", ((right ? 1 : -1) * Math.random() * 14).toFixed(0) + "px");
     el.append(r);
     setTimeout(() => r.remove(), 3600);
   });
@@ -3363,7 +3362,7 @@ const immersive = (() => {
     const pos = songPos(now), px = party.step(pos / 1000, dt, PLR.isPlaying());
     const k = lyr?.synced ? seek(lyr.lines, pos, "t") : -1;
     const lineAt = (i) => (lyr?.synced && i >= 0 && lyr.lines[i]?.text !== "♪" && lyr.lines[i]?.text) || "";
-    live.feed(noFlashFeed(px), vividPal || imPalette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
+    live.feed(px, vividPal || imPalette(), party.info.bpm, { ly: lineAt(k), lyn: lineAt(k + 1) });
   }
   // Der Taktgeber läuft nur, solange er gebraucht wird (Fenster verdeckt UND Party mit Handys). Früher tickte
   // er ab dem ersten Öffnen des Immersiv-Modus viermal pro Sekunde weiter – auch geschlossen und im Leerlauf.

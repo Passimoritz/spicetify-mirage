@@ -3538,6 +3538,22 @@ html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTerti
 .mirage-settings .m-live .m-dim {
   opacity: 0.6;
 }
+/* Fernbedienung: Knopf unter dem Live-Link, der eigene QR-Code erst auf Druck */
+.mirage-settings .m-live .m-rc-btn {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 7px 14px;
+  border: 1px solid var(--m-line-strong);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--spice-text);
+  font: 600 13px var(--m-font);
+  cursor: pointer;
+}
+.mirage-settings .m-live .m-rc-qr img {
+  width: 168px;
+  height: 168px;
+}
 .mirage-settings .m-builder {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -4542,12 +4558,12 @@ html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTerti
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-/* Reaktionen der Gäste: steigen vom unteren Rand auf und verblassen */
+/* Reaktionen der Gäste: steigen am linken und rechten Rand auf und verblassen (dezent, nie über der Mitte) */
 #mirage-immersive .m-im-react {
   position: absolute;
-  bottom: 6vh;
+  bottom: 8vh;
   z-index: 32;
-  font-size: clamp(30px, 3.4vw, 56px);
+  font-size: clamp(22px, 2.2vw, 38px);
   pointer-events: none;
   animation: m-react 3.4s var(--m-ease) both;
 }
@@ -4557,12 +4573,12 @@ html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTerti
     transform: translate(0, 20px) scale(0.6);
   }
   15% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1.1);
+    opacity: 0.85;
+    transform: translate(0, 0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(var(--dx, 0), -46vh) scale(0.9);
+    transform: translate(var(--dx, 0), -38vh) scale(0.85);
   }
 }
 #mirage-immersive .m-im-side-note {

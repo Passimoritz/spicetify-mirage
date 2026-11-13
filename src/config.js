@@ -128,6 +128,16 @@ const DEFAULTS = {
   partyCuts: false,
   romanize: false,
   partyWishes: true,
+  // Regeln für Songwünsche: offene Wünsche je Gast (0 = beliebig), Sperrliste, keine „Explicit“-Songs,
+  // ab so vielen Stimmen von selbst in die Warteschlange (0 = nie, nur was du annimmst)
+  wishMax: 0,
+  wishBlock: "",
+  wishClean: false,
+  wishAuto: 0,
+  // Reaktionen der Gäste (Emoji vom Handy) steigen am linken und rechten Rand des Party-Bilds auf
+  partyReacts: true,
+  // Lichtwelle auf den Handys: 0 alle zugleich, 1 der Reihe nach (Platznummer 1–8), 2 in drei Farbgruppen
+  partyWave: 0,
   partyCrowd: true,
   partyJamLight: true,
   partyScreen: true,

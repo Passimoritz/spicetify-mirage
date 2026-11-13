@@ -12,10 +12,13 @@ const crypto = require("crypto");
 const { startServer, startBroker } = require("./server.js");
 const { findBrowser, launchChrome } = require("./chrome.js");
 const { loadPlaywright, launchWebkit } = require("./webkit.js");
+const party = require("./party.js");
 
 const ROOT = path.join(__dirname, "..", "..");
 const TMP = path.join(__dirname, ".tmp");
 const NEED_WEBKIT = process.argv.includes("--need-webkit");
+// PHONES_ONLY=party: nur die Prüfungen mit gespielter Party (schneller beim Arbeiten an einer Funktion)
+const ONLY_PARTY = process.env.PHONES_ONLY === "party";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const UA_IPHONE = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
@@ -167,8 +170,78 @@ async function scanCheck(browser, env, device) {
   await v.page.close();
 }
 
+// Alle 14 Sprachen des Themes: die Handysprache wird erkannt, und keiner Sprache fehlt ein Text
+const ALL_LANGS = { fr: "fr-FR", es: "es-ES", it: "it-IT", pt: "pt-BR", nl: "nl-NL", pl: "pl-PL", tr: "tr-TR", ru: "ru-RU", uk: "uk-UA", ja: "ja-JP", ko: "ko-KR", zh: "zh-CN" };
+async function langCheck(browser, env, device) {
+  for (const [lang, tag] of Object.entries(ALL_LANGS)) {
+    const { page, snap } = await visit(browser, env, { device, lang: tag, state: "start" }, (s) => s.lang === lang && s.title);
+    const problems = [];
+    if (!snap || snap.lang !== lang) problems.push(`<html lang> ist „${snap?.lang}“ statt „${lang}“`);
+    const miss = await page.eval(`Object.keys(L.en).filter((k) => !(k in L[${JSON.stringify(lang)}]))`).catch((e) => ["(Fehler: " + e.message + ")"]);
+    if (miss.length) problems.push("fehlende Texte: " + miss.join(", "));
+    if (snap && snap.title !== (await page.eval(`L[${JSON.stringify(lang)}].scanStart[0]`))) problems.push(`Titel „${snap.title}“ ist nicht in ${lang}`);
+    if (snap?.scrollW > snap?.w || snap?.over.length) problems.push("ragt seitlich hinaus: " + snap.over.join(", "));
+    if (page.errors.length) problems.push(...page.errors.map((e) => "Fehler in der Konsole: " + e));
+    await page.close();
+    check(`${device.name} · ${tag}: Seite auf ${lang}, kein Text fehlt`, problems);
+  }
+}
+
+// Als App auf dem Startbildschirm: Manifest und Icons laden, die App findet die Party von eben wieder
+async function appCheck(browser, env, device) {
+  const problems = [];
+  let { page } = await visit(browser, env, { device, lang: "de", state: "wait" }, (s) => s.title === TEXT.de.wait);
+  const m = await page.eval(`(async () => {
+    const href = document.querySelector('link[rel="manifest"]')?.href;
+    const man = await (await fetch(href)).json();
+    const icons = [];
+    for (const i of man.icons) {
+      const r = await fetch(new URL(i.src, href));
+      const bm = await createImageBitmap(await r.blob());
+      icons.push({ src: i.src, ok: r.ok, size: bm.width + "x" + bm.height, want: i.sizes, type: r.headers.get("content-type") });
+    }
+    const apple = document.querySelector('link[rel="apple-touch-icon"]')?.href;
+    return { fx: !!document.querySelector('script[src="fx.js"]') || !!window.MirageFx, name: man.name, display: man.display, start: man.start_url, icons, apple: apple && (await fetch(apple)).ok, last: JSON.parse(localStorage.getItem("mlLast") || "null")?.h, sw: !!navigator.serviceWorker?.controller };
+  })()`).catch((e) => ({ err: e.message }));
+  if (m.err) problems.push("Manifest: " + m.err);
+  else {
+    if (m.name !== "Mirage Live" || m.display !== "fullscreen" || m.start !== "./") problems.push(`Manifest: ${m.name} / ${m.display} / ${m.start}`);
+    for (const i of m.icons) if (!i.ok || i.size !== i.want) problems.push(`Icon ${i.src}: ${i.size} statt ${i.want}`);
+    if (!m.apple) problems.push("apple-touch-icon fehlt");
+    if (m.last !== goodHash) problems.push("die Party wird nicht gemerkt: " + m.last);
+    if (m.sw) problems.push("ein Service Worker steuert die Seite");
+    if (m.fx) problems.push("fx.js wird schon ohne Party geladen");
+  }
+  await page.close();
+  // vom Startbildschirm ohne Link: zurück in die Party von eben; ist sie älter als 12 Stunden, der Scanner
+  for (const [age, want, label] of [[60e3, TEXT.de.wait, "frisch"], [13 * 3600e3, TEXT.de.start, "zu alt"]]) {
+    const init = initScript(env.broker.port, false) + `\nObject.defineProperty(Navigator.prototype, "standalone", { get: () => true });\ntry { localStorage.setItem("mlLast", JSON.stringify({ h: ${JSON.stringify(goodHash)}, at: Date.now() - ${age} })); } catch {}`;
+    const pg = await browser.open({ url: `http://127.0.0.1:${env.web.port}/`, width: device.width, height: device.height, dpr: device.dpr, ua: device.ua, lang: "de-DE", initScript: init });
+    let snap = null;
+    for (let i = 0; i < 60; i++) {
+      snap = await pg.eval(SNAPSHOT).catch(() => null);
+      if (snap?.title === want) break;
+      await sleep(100);
+    }
+    if (snap?.title !== want) problems.push(`App-Start (${label}): Titel „${snap?.title}“ statt „${want}“`);
+    if (pg.errors.length) problems.push(...pg.errors.map((e) => "Fehler in der Konsole: " + e));
+    await pg.close();
+  }
+  check(`${device.name} · als App: Manifest, Icons, Party von eben, kein Service Worker`, problems);
+}
+
+// Mit gespielter Party: was die Seite aus den Nachrichten des Themes macht
+async function partySuite(browser, env, device) {
+  const o = { url: `http://127.0.0.1:${env.web.port}/${goodHash}`, device, lang: "de-DE", channel, key: Buffer.from(new URLSearchParams(goodHash.slice(1)).get("k"), "base64url"), initScript: initScript(env.broker.port, false) };
+  await party.noFlashCheck(browser, env, o, check);
+  await party.tickCheck(browser, env, o, check);
+  await party.waveCheck(browser, env, o, check);
+  await party.ecoCheck(browser, env, o, check);
+}
+
 async function suite(browser, env, devices) {
   console.log(`\n${browser.name}`);
+  if (ONLY_PARTY) return partySuite(browser, env, devices[0]);
   // Zustände in beiden Sprachen, je Gerät
   for (const device of devices) {
     for (const lang of ["de", "en"]) {
@@ -194,6 +267,9 @@ async function suite(browser, env, devices) {
     }
   }
   await scanCheck(browser, env, devices[0]);
+  await langCheck(browser, env, devices[0]);
+  await appCheck(browser, env, devices[0]);
+  await partySuite(browser, env, devices[0]);
 }
 
 async function main() {

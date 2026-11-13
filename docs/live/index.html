@@ -8,8 +8,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="robots" content="noindex">
+<!-- als App auf den Startbildschirm: Vollbild, eigenes Icon. Bewusst ohne Service Worker – die Seite braucht ohnehin
+     Netz (Relays), und so kann nach einem Update nie eine alte Fassung aus einem Zwischenspeicher kommen. -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Mirage Live</title>
-<script src="fx.js" defer></script>
 <style>
   /* Mirage Live: das Handy als Lichtquelle im Raum. Das Licht malt ein Canvas (drei treibende Lichtquellen
      in den Songfarben, Ringe im Takt, Blitz beim Drop); darüber nur schlanke Glas-Elemente. */
@@ -41,10 +44,21 @@
   .pbox .go { min-height: 50px; border: 0; border-radius: 16px; color: #0b0a12; background: rgb(var(--c)); font: inherit; font-size: 16px; font-weight: 700; }
   .sw { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
   .sw .swb { flex: none; width: 34px; height: 34px; min-height: 0; padding: 0; border-radius: 50%; border: 2px solid transparent; }
+  .peco { min-height: 44px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit; font-size: 14px; font-weight: 650; }
+  .peco[aria-pressed="true"] { background: rgba(var(--a), 0.55); }
+  .sw .slb { flex: none; width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.08); color: #fff; font: inherit; font-size: 14px; font-weight: 700; }
+  .sw .slb[aria-pressed="true"] { background: rgb(var(--c)); color: #0b0a12; border-color: transparent; }
   .sw .swb[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35); transform: scale(1.1); }
   /* Spielleitung: nur auf dem Handy mit dem eigenen Link */
   .hostbtn { position: absolute; left: 14px; top: 0; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(10, 8, 20, 0.5); font-size: 14px; line-height: 1; }
   .hostbtn[hidden] { display: none; }
+  .rcbtn { left: 52px; }
+  .hbody .rcrow { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+  .hbody .rcrow button { font-size: 20px; }
+  .hbody .rclv button { padding: 8px 2px; font-size: 13px; }
+  .hbody .rcrow button[aria-pressed="true"] { background: rgb(var(--c)); color: #0b0a12; border-color: transparent; }
+  .rcsel { height: 46px; padding: 0 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.07); color: #fff; font: inherit; font-size: 15px; }
+  .rcsel option { color: #0b0a12; }
   .host .pbox { max-height: calc(100dvh - 40px); overflow: auto; overscroll-behavior: contain; text-align: left; }
   .host .shead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .host .x { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; color: #fff; font: inherit; font-size: 15px; background: rgba(255, 255, 255, 0.1); }
@@ -73,7 +87,7 @@
   .cov { flex: none; width: 52px; height: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); background: rgba(255, 255, 255, 0.08); }
   .cov[hidden] { display: none; }
   .eq { flex: none; display: flex; align-items: flex-end; gap: 3px; height: 22px; width: 22px; }
-  .eq i { flex: 1; border-radius: 2px; background: rgb(var(--a)); height: 30%; transition: height 0.08s; }
+  .eq i { flex: 1; border-radius: 2px; background: rgb(var(--a)); height: 100%; transform: scaleY(0.3); transform-origin: 50% 100%; transition: transform 0.08s; will-change: transform; }
   .eq i:nth-child(2) { background: rgb(var(--b)); }
   .eq i:nth-child(3) { background: rgb(var(--c)); }
   .meta { min-width: 0; flex: 1; }
@@ -159,6 +173,7 @@
   .reacts { position: fixed; left: 50%; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 150px); display: flex; gap: 6px; transform: translate(-50%, 320%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
   body.on .reacts { transform: translate(-50%, 0); }
   body.wish .reacts { opacity: 0; pointer-events: none; }
+  body.norx .reacts { display: none; }
   .reacts button { flex: 0 1 44px; min-width: 0; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(10, 8, 20, 0.42); font-size: 22px; line-height: 1;
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.15s; }
   .reacts button:active { transform: scale(0.85); }
@@ -303,9 +318,10 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div><button type="button" class="mebtn" id="bMe" hidden></button><button type="button" class="hostbtn" id="bHost" hidden>👑</button></div>
+<div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div><button type="button" class="mebtn" id="bMe" hidden></button><button type="button" class="hostbtn" id="bHost" hidden>👑</button><button type="button" class="hostbtn rcbtn" id="bRc" hidden>🎛️</button></div>
+<div class="prof host" id="rc" hidden role="dialog" aria-modal="true" aria-labelledby="rcTitle"><div class="pbox"><div class="shead"><h2 id="rcTitle"></h2><button type="button" class="x" id="rcClose">✕</button></div><div class="hbody" id="rcBody"></div></div></div>
 <div class="prof host" id="host" hidden role="dialog" aria-modal="true" aria-labelledby="hTitle"><div class="pbox"><div class="shead"><h2 id="hTitle"></h2><button type="button" class="x" id="hClose">✕</button></div><div class="hbody" id="hBody"></div></div></div>
-<div class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"><div class="pbox"><h2 id="pTitle"></h2><p id="pHint"></p><input id="pName" maxlength="20" autocomplete="nickname"><div class="sw" id="pSw"></div><button type="button" class="go" id="pOk"></button></div></div>
+<div class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"><div class="pbox"><h2 id="pTitle"></h2><p id="pHint"></p><input id="pName" maxlength="20" autocomplete="nickname"><div class="sw" id="pSw"></div><p id="pSlotHint" hidden></p><div class="sw" id="pSlot" hidden></div><button type="button" class="peco" id="pEco" aria-pressed="false"></button><button type="button" class="go" id="pOk"></button></div></div>
 <div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p><div class="scan" id="scan" hidden><button type="button" id="scanBtn"></button><input id="scanLink" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url"><div class="scanmsg" id="scanMsg" role="status"></div></div></div>
 <div class="scanview" id="scanView" hidden><video id="scanVid" playsinline muted></video><div class="scanframe"></div><p id="scanTip"></p><button type="button" id="scanX" aria-label="✕">✕</button></div>
 <div class="tap" id="tap"></div>
@@ -314,10 +330,10 @@
 <div class="note" id="note" role="status"><small id="noteK"></small><b id="noteT"></b></div>
 <div class="poll" id="poll" hidden><h3 id="pollH"></h3></div>
 <div class="game" id="game" hidden></div>
-<div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button></div>
+<div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button><button type="button" id="bTick" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2h4l4.6 18H5.4zm1.5 2-3.6 14h8.2l-1.2-4.6-3.9 2.3-1-1.7 4.4-2.6L12.5 4z"/></svg><span></span></button></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle">
   <div class="top2"><div class="grab"></div><div class="shead"><h2 id="wTitle"></h2><button type="button" class="x" id="wClose">✕</button></div><p class="hint" id="wHint"></p>
-    <div class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2 9.8 4.5 4.5-1.4 1.4-4.5-4.5z"/></svg><input id="wSong" type="search" maxlength="80" enterkeyhint="search" autocomplete="off"></div></div>
+    <div class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2 9.8 4.5 4.5-1.4 1.4-4.5-4.5z"/></svg><input id="wSong" type="search" maxlength="240" enterkeyhint="search" autocomplete="off"></div></div>
   <ul class="wl res" id="wRes"></ul>
   <p class="msg" id="wMsg" aria-live="polite"></p>
   <div class="name"><input id="wName" maxlength="20" autocomplete="nickname"></div>
@@ -403,7 +419,28 @@ Object.assign(GAME_TEXT.en, { hTitle: "Game host", hPick: "Start a game on the b
 Object.assign(GAME_TEXT.de, { hTitle: "Spielleitung", hPick: "Spiel auf dem großen Bild starten:", hStart: "Jetzt starten", hSkip: "Runde überspringen", hSpin: "Drehen", hEnd: "Spiel beenden", hPts: "Punkte korrigieren", pTitle: "Wer bist du?", pHint: "Name und Farbe stehen auf dem großen Bild, bei deinen Wünschen und Punkten.", pOk: "Fertig", pCol: "Farbe", gLate: "Das Spiel läuft schon", gLateHint: "Steig ein und spiel ab jetzt mit.", gLateWatch: "Steig ein: Dieses Spiel schaust du zu, beim nächsten bist du dabei.", gLateJoin: "Einsteigen", netLost: "Offline · verbinde neu …", netBack: "Wieder verbunden", netQuiet: "Kein Signal von der Party" });
 Object.assign(GAME_TEXT.en, { gOlder: "Older or newer?", gCover: "Cover puzzle", gDuel: "Song duel", gDuelChamp: "Champion of the night", gTour: "Tournament", gTourAfter: "Tournament · after game {i} of {n}", gTourNext: "Next: {g}", gBingo: "Music bingo", gBingoHint: "Tap what plays. Four in a row, column or diagonal: BINGO!", gBingoNoLine: "Mark four in a row, column or diagonal first.", gBingoNotYet: "Not played yet: {t}", gBingoSent: "Sent, the big screen checks it …" });
 Object.assign(GAME_TEXT.de, { gOlder: "Älter oder jünger?", gCover: "Cover-Rätsel", gDuel: "Song-Duell", gDuelChamp: "Sieger des Abends", gTour: "Turnier", gTourAfter: "Turnier · nach Spiel {i} von {n}", gTourNext: "Als Nächstes: {g}", gBingo: "Musik-Bingo", gBingoHint: "Tippe an, was läuft. Vier in einer Reihe, Spalte oder Diagonale: BINGO!", gBingoNoLine: "Markiere erst vier in einer Reihe, Spalte oder Diagonale.", gBingoNotYet: "Noch nicht gelaufen: {t}", gBingoSent: "Gemeldet, das große Bild prüft …" });
-for (const src of [SCAN_TEXT, GAME_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
+// Texte der neueren Spiele (Älter oder jünger, Cover-Rätsel, Duell, Turnier, Bingo) in den übrigen Sprachen
+for (const [l, v] of Object.entries({"fr": {"gOlder": "Plus ancien ou plus récent ?", "gCover": "Pochette mystère", "gDuel": "Duel de chansons", "gDuelChamp": "Champion de la soirée", "gTour": "Tournoi", "gTourAfter": "Tournoi · après le jeu {i} sur {n}", "gTourNext": "Ensuite : {g}", "gBingo": "Bingo musical", "gBingoHint": "Touche ce qui passe. Quatre en ligne, en colonne ou en diagonale : BINGO !", "gBingoNoLine": "Coche d'abord quatre cases en ligne, en colonne ou en diagonale.", "gBingoNotYet": "Pas encore joué : {t}", "gBingoSent": "Envoyé, le grand écran vérifie …"}, "es": {"gOlder": "¿Más antigua o más nueva?", "gCover": "Portada misteriosa", "gDuel": "Duelo de canciones", "gDuelChamp": "Campeona de la noche", "gTour": "Torneo", "gTourAfter": "Torneo · tras el juego {i} de {n}", "gTourNext": "Siguiente: {g}", "gBingo": "Bingo musical", "gBingoHint": "Toca lo que suena. Cuatro en fila, columna o diagonal: ¡BINGO!", "gBingoNoLine": "Marca primero cuatro en fila, columna o diagonal.", "gBingoNotYet": "Aún no ha sonado: {t}", "gBingoSent": "Enviado, la pantalla grande lo comprueba …"}, "it": {"gOlder": "Più vecchia o più recente?", "gCover": "Copertina misteriosa", "gDuel": "Duello di canzoni", "gDuelChamp": "Campione della serata", "gTour": "Torneo", "gTourAfter": "Torneo · dopo il gioco {i} di {n}", "gTourNext": "Prossimo: {g}", "gBingo": "Tombola musicale", "gBingoHint": "Tocca ciò che suona. Quattro in riga, colonna o diagonale: BINGO!", "gBingoNoLine": "Segna prima quattro in riga, colonna o diagonale.", "gBingoNotYet": "Non ancora suonata: {t}", "gBingoSent": "Inviato, lo schermo grande controlla …"}, "pt": {"gOlder": "Mais antiga ou mais recente?", "gCover": "Capa mistério", "gDuel": "Duelo de músicas", "gDuelChamp": "Campeã da noite", "gTour": "Torneio", "gTourAfter": "Torneio · depois do jogo {i} de {n}", "gTourNext": "A seguir: {g}", "gBingo": "Bingo musical", "gBingoHint": "Toca no que está a tocar. Quatro em linha, coluna ou diagonal: BINGO!", "gBingoNoLine": "Marca primeiro quatro em linha, coluna ou diagonal.", "gBingoNotYet": "Ainda não tocou: {t}", "gBingoSent": "Enviado, o ecrã grande verifica …"}, "nl": {"gOlder": "Ouder of nieuwer?", "gCover": "Hoesraadsel", "gDuel": "Songduel", "gDuelChamp": "Kampioen van de avond", "gTour": "Toernooi", "gTourAfter": "Toernooi · na spel {i} van {n}", "gTourNext": "Volgende: {g}", "gBingo": "Muziekbingo", "gBingoHint": "Tik aan wat er speelt. Vier op een rij, in een kolom of diagonaal: BINGO!", "gBingoNoLine": "Markeer eerst vier op een rij, in een kolom of diagonaal.", "gBingoNotYet": "Nog niet gespeeld: {t}", "gBingoSent": "Verstuurd, het grote scherm controleert het …"}, "pl": {"gOlder": "Starsza czy nowsza?", "gCover": "Zagadka okładki", "gDuel": "Pojedynek piosenek", "gDuelChamp": "Mistrz wieczoru", "gTour": "Turniej", "gTourAfter": "Turniej · po grze {i} z {n}", "gTourNext": "Następna: {g}", "gBingo": "Muzyczne bingo", "gBingoHint": "Zaznacz to, co gra. Cztery w rzędzie, kolumnie lub po przekątnej: BINGO!", "gBingoNoLine": "Najpierw zaznacz cztery w rzędzie, kolumnie lub po przekątnej.", "gBingoNotYet": "Jeszcze nie grało: {t}", "gBingoSent": "Wysłano, duży ekran sprawdza …"}, "tr": {"gOlder": "Daha eski mi, daha yeni mi?", "gCover": "Kapak bilmecesi", "gDuel": "Şarkı düellosu", "gDuelChamp": "Gecenin şampiyonu", "gTour": "Turnuva", "gTourAfter": "Turnuva · {n} oyunun {i}. oyunundan sonra", "gTourNext": "Sıradaki: {g}", "gBingo": "Müzik tombalası", "gBingoHint": "Çalanı işaretle. Satırda, sütunda ya da çaprazda dört tane: TOMBALA!", "gBingoNoLine": "Önce satırda, sütunda ya da çaprazda dört tane işaretle.", "gBingoNotYet": "Henüz çalmadı: {t}", "gBingoSent": "Gönderildi, büyük ekran kontrol ediyor …"}, "ru": {"gOlder": "Старше или новее?", "gCover": "Загадка обложки", "gDuel": "Дуэль песен", "gDuelChamp": "Чемпион вечера", "gTour": "Турнир", "gTourAfter": "Турнир · после игры {i} из {n}", "gTourNext": "Далее: {g}", "gBingo": "Музыкальное бинго", "gBingoHint": "Отмечай то, что играет. Четыре в ряд, столбец или по диагонали: БИНГО!", "gBingoNoLine": "Сначала отметь четыре в ряд, столбец или по диагонали.", "gBingoNotYet": "Ещё не звучала: {t}", "gBingoSent": "Отправлено, большой экран проверяет …"}, "uk": {"gOlder": "Старша чи новіша?", "gCover": "Загадка обкладинки", "gDuel": "Дуель пісень", "gDuelChamp": "Чемпіон вечора", "gTour": "Турнір", "gTourAfter": "Турнір · після гри {i} з {n}", "gTourNext": "Далі: {g}", "gBingo": "Музичне бінго", "gBingoHint": "Познач те, що грає. Чотири в ряд, стовпчик або по діагоналі: БІНГО!", "gBingoNoLine": "Спершу познач чотири в ряд, стовпчик або по діагоналі.", "gBingoNotYet": "Ще не звучала: {t}", "gBingoSent": "Надіслано, великий екран перевіряє …"}, "ja": {"gOlder": "古いのはどっち？", "gCover": "ジャケット当て", "gDuel": "曲バトル", "gDuelChamp": "今夜のチャンピオン", "gTour": "トーナメント", "gTourAfter": "トーナメント · {n}ゲーム中{i}ゲーム終了", "gTourNext": "次：{g}", "gBingo": "ミュージックビンゴ", "gBingoHint": "流れた曲をタップ。縦・横・斜めに4つでビンゴ！", "gBingoNoLine": "まず縦・横・斜めに4つ並べてね。", "gBingoNotYet": "まだ流れていない曲：{t}", "gBingoSent": "送信しました。大きな画面で確認中 …"}, "ko": {"gOlder": "더 오래된 곡은?", "gCover": "커버 맞히기", "gDuel": "노래 대결", "gDuelChamp": "오늘 밤의 챔피언", "gTour": "토너먼트", "gTourAfter": "토너먼트 · {n}게임 중 {i}번째 이후", "gTourNext": "다음: {g}", "gBingo": "음악 빙고", "gBingoHint": "나오는 곡을 탭하세요. 가로, 세로, 대각선으로 4개면 빙고!", "gBingoNoLine": "먼저 가로, 세로, 대각선으로 4개를 표시하세요.", "gBingoNotYet": "아직 안 나온 곡: {t}", "gBingoSent": "보냈어요. 큰 화면에서 확인 중 …"}, "zh": {"gOlder": "哪首更早？", "gCover": "封面猜猜看", "gDuel": "歌曲对决", "gDuelChamp": "今晚冠军", "gTour": "锦标赛", "gTourAfter": "锦标赛 · 第 {i}/{n} 场之后", "gTourNext": "下一场：{g}", "gBingo": "音乐宾果", "gBingoHint": "点击正在播放的歌。横、竖或斜连成四个：宾果！", "gBingoNoLine": "请先在横、竖或斜线上标记四个。", "gBingoNotYet": "还没播放：{t}", "gBingoSent": "已发送，大屏幕正在核对 …"}})) GAME_TEXT[l] = Object.assign(GAME_TEXT[l] || {}, v);
+// Texte für Gäste-Funktionen (Link-Wünsche, Takt, Reaktionen, App …)
+const GUEST_TEXT = {
+  en: { wSong: "Search Spotify or paste a song link …", wLinkOther: "Only song links work here. In Spotify: Share → Copy song link.", "tick": "Click", "tickHint": "Quiet click on every beat", "wrMax": "You already have {n} open wishes. Wait until one is played.", "wrBlock": "This song isn't allowed at this party.", "wrExplicit": "No explicit songs at this party, please.", "pSlot": "Your spot in the light wave", "rcTitle": "Remote control", "rcPlay": "Play or pause", "rcPrev": "Previous song", "rcNext": "Next song", "rcVol": "Volume", "rcLvl": "Intensity", "rcLoc": "Location", "rcGame": "Start a game", "rcWait": "Connecting to Mirage …", "eco": "Battery saver", "ecoLow": "battery low, on" },
+  de: { wSong: "Bei Spotify suchen oder Song-Link einfügen …", wLinkOther: "Hier gehen nur Song-Links. In Spotify: Teilen → Songlink kopieren.", "tick": "Klick", "tickHint": "Leiser Klick auf jedem Schlag", "wrMax": "Du hast schon {n} offene Wünsche. Warte, bis einer läuft.", "wrBlock": "Dieser Song ist auf dieser Party nicht erlaubt.", "wrExplicit": "Bitte keine Songs mit „Explicit“ auf dieser Party.", "pSlot": "Dein Platz in der Lichtwelle", "rcTitle": "Fernbedienung", "rcPlay": "Abspielen oder Pause", "rcPrev": "Vorheriger Song", "rcNext": "Nächster Song", "rcVol": "Lautstärke", "rcLvl": "Stärke", "rcLoc": "Location", "rcGame": "Spiel starten", "rcWait": "Verbinde mit Mirage …", "eco": "Akku sparen", "ecoLow": "Akku schwach, an" },
+  // die übrigen zwölf Sprachen: auch für die neueren Texte oben (Spielleitung, Profil, Verbindung), die es
+  // bisher nur auf Englisch und Deutsch gab
+  fr: {"hTitle": "Animation du jeu", "hPick": "Lance un jeu sur le grand écran :", "hStart": "Lancer", "hSkip": "Passer la manche", "hSpin": "Tourner", "hEnd": "Terminer le jeu", "hPts": "Corriger les points", "pTitle": "Qui es-tu ?", "pHint": "Ton prénom et ta couleur s'affichent sur le grand écran, à côté de tes souhaits et de tes points.", "pOk": "OK", "pCol": "Couleur", "gLate": "Le jeu a déjà commencé", "gLateHint": "Rejoins-nous et joue à partir de maintenant.", "gLateWatch": "Rejoins-nous : tu regardes ce jeu et tu joues au suivant.", "gLateJoin": "Rejoindre", "netLost": "Hors ligne · reconnexion …", "netBack": "Reconnecté", "netQuiet": "Aucun signal de la fête", "wSong": "Chercher sur Spotify ou coller un lien …", "wLinkOther": "Seuls les liens de titres marchent ici. Dans Spotify : Partager → Copier le lien du titre.", "old": ["Page obsolète", "Ferme cet onglet et scanne à nouveau le QR code."], "tick": "Clic", "tickHint": "Petit clic sur chaque temps", "wrMax": "Tu as déjà {n} souhaits en attente. Attends qu'un passe.", "wrBlock": "Ce titre n'est pas autorisé à cette fête.", "wrExplicit": "Pas de titres explicites à cette fête, merci.", "pSlot": "Ta place dans la vague de lumière", "rcTitle": "Télécommande", "rcPlay": "Lecture ou pause", "rcPrev": "Titre précédent", "rcNext": "Titre suivant", "rcVol": "Volume", "rcLvl": "Intensité", "rcLoc": "Lieu", "rcGame": "Lancer un jeu", "rcWait": "Connexion à Mirage …", "eco": "Économie de batterie", "ecoLow": "batterie faible, activé" },
+  es: {"hTitle": "Dirección del juego", "hPick": "Inicia un juego en la pantalla grande:", "hStart": "Empezar ya", "hSkip": "Saltar ronda", "hSpin": "Girar", "hEnd": "Terminar juego", "hPts": "Corregir puntos", "pTitle": "¿Quién eres?", "pHint": "Tu nombre y tu color salen en la pantalla grande, junto a tus deseos y tus puntos.", "pOk": "Listo", "pCol": "Color", "gLate": "El juego ya ha empezado", "gLateHint": "Únete y juega desde ahora.", "gLateWatch": "Únete: este juego lo miras y en el siguiente juegas.", "gLateJoin": "Unirme", "netLost": "Sin conexión · reconectando …", "netBack": "Conectado de nuevo", "netQuiet": "No llega señal de la fiesta", "wSong": "Busca en Spotify o pega un enlace …", "wLinkOther": "Aquí solo valen enlaces de canciones. En Spotify: Compartir → Copiar enlace de la canción.", "old": ["Página desactualizada", "Cierra esta pestaña y vuelve a escanear el código QR."], "tick": "Clic", "tickHint": "Clic suave en cada tiempo", "wrMax": "Ya tienes {n} peticiones abiertas. Espera a que suene una.", "wrBlock": "Esta canción no está permitida en esta fiesta.", "wrExplicit": "Nada de canciones explícitas en esta fiesta, por favor.", "pSlot": "Tu sitio en la ola de luz", "rcTitle": "Mando a distancia", "rcPlay": "Reproducir o pausar", "rcPrev": "Canción anterior", "rcNext": "Siguiente canción", "rcVol": "Volumen", "rcLvl": "Intensidad", "rcLoc": "Lugar", "rcGame": "Empezar un juego", "rcWait": "Conectando con Mirage …", "eco": "Ahorro de batería", "ecoLow": "batería baja, activado" },
+  it: {"hTitle": "Conduzione del gioco", "hPick": "Avvia un gioco sullo schermo grande:", "hStart": "Avvia ora", "hSkip": "Salta il round", "hSpin": "Gira", "hEnd": "Termina il gioco", "hPts": "Correggi i punti", "pTitle": "Chi sei?", "pHint": "Nome e colore compaiono sullo schermo grande, accanto alle tue richieste e ai punti.", "pOk": "Fatto", "pCol": "Colore", "gLate": "Il gioco è già iniziato", "gLateHint": "Entra e gioca da adesso.", "gLateWatch": "Entra: questo gioco lo guardi, al prossimo giochi.", "gLateJoin": "Entra", "netLost": "Offline · riconnessione …", "netBack": "Di nuovo connesso", "netQuiet": "Nessun segnale dalla festa", "wSong": "Cerca su Spotify o incolla un link …", "wLinkOther": "Qui funzionano solo i link dei brani. In Spotify: Condividi → Copia link del brano.", "old": ["Pagina non aggiornata", "Chiudi questa scheda e inquadra di nuovo il codice QR."], "tick": "Clic", "tickHint": "Clic leggero a ogni battito", "wrMax": "Hai già {n} richieste aperte. Aspetta che ne parta una.", "wrBlock": "Questa canzone non è ammessa a questa festa.", "wrExplicit": "Niente canzoni esplicite a questa festa, per favore.", "pSlot": "Il tuo posto nell'onda di luce", "rcTitle": "Telecomando", "rcPlay": "Riproduci o pausa", "rcPrev": "Brano precedente", "rcNext": "Brano successivo", "rcVol": "Volume", "rcLvl": "Intensità", "rcLoc": "Location", "rcGame": "Avvia un gioco", "rcWait": "Connessione a Mirage …", "eco": "Risparmio batteria", "ecoLow": "batteria scarica, attivo" },
+  pt: {"hTitle": "Condução do jogo", "hPick": "Começa um jogo no ecrã grande:", "hStart": "Começar já", "hSkip": "Saltar ronda", "hSpin": "Rodar", "hEnd": "Terminar jogo", "hPts": "Corrigir pontos", "pTitle": "Quem és tu?", "pHint": "O teu nome e a tua cor aparecem no ecrã grande, junto aos teus pedidos e pontos.", "pOk": "Feito", "pCol": "Cor", "gLate": "O jogo já começou", "gLateHint": "Entra e joga a partir de agora.", "gLateWatch": "Entra: este jogo vês, no próximo jogas.", "gLateJoin": "Entrar", "netLost": "Offline · a religar …", "netBack": "Ligado de novo", "netQuiet": "Sem sinal da festa", "wSong": "Pesquisa no Spotify ou cola um link …", "wLinkOther": "Aqui só funcionam links de músicas. No Spotify: Partilhar → Copiar link da música.", "old": ["Página desatualizada", "Fecha este separador e lê o código QR outra vez."], "tick": "Clique", "tickHint": "Clique suave em cada batida", "wrMax": "Já tens {n} pedidos em aberto. Espera até um tocar.", "wrBlock": "Esta música não é permitida nesta festa.", "wrExplicit": "Nada de músicas explícitas nesta festa, por favor.", "pSlot": "O teu lugar na onda de luz", "rcTitle": "Comando", "rcPlay": "Reproduzir ou pausar", "rcPrev": "Música anterior", "rcNext": "Próxima música", "rcVol": "Volume", "rcLvl": "Intensidade", "rcLoc": "Local", "rcGame": "Começar um jogo", "rcWait": "A ligar ao Mirage …", "eco": "Poupar bateria", "ecoLow": "bateria fraca, ligado" },
+  nl: {"hTitle": "Spelleiding", "hPick": "Start een spel op het grote scherm:", "hStart": "Nu starten", "hSkip": "Ronde overslaan", "hSpin": "Draaien", "hEnd": "Spel beëindigen", "hPts": "Punten corrigeren", "pTitle": "Wie ben jij?", "pHint": "Je naam en kleur staan op het grote scherm, bij je verzoeken en punten.", "pOk": "Klaar", "pCol": "Kleur", "gLate": "Het spel is al bezig", "gLateHint": "Stap in en speel vanaf nu mee.", "gLateWatch": "Stap in: dit spel kijk je mee, het volgende speel je mee.", "gLateJoin": "Instappen", "netLost": "Offline · opnieuw verbinden …", "netBack": "Weer verbonden", "netQuiet": "Geen signaal van het feest", "wSong": "Zoek op Spotify of plak een link …", "wLinkOther": "Hier werken alleen links naar nummers. In Spotify: Delen → Link naar nummer kopiëren.", "old": ["Pagina verouderd", "Sluit dit tabblad en scan de QR-code opnieuw."], "tick": "Tik", "tickHint": "Zachte tik op elke tel", "wrMax": "Je hebt al {n} open verzoeken. Wacht tot er een speelt.", "wrBlock": "Dit nummer mag niet op dit feest.", "wrExplicit": "Geen expliciete nummers op dit feest, graag.", "pSlot": "Jouw plek in de lichtgolf", "rcTitle": "Afstandsbediening", "rcPlay": "Afspelen of pauzeren", "rcPrev": "Vorig nummer", "rcNext": "Volgend nummer", "rcVol": "Volume", "rcLvl": "Intensiteit", "rcLoc": "Locatie", "rcGame": "Spel starten", "rcWait": "Verbinden met Mirage …", "eco": "Batterij sparen", "ecoLow": "batterij bijna leeg, aan" },
+  pl: {"hTitle": "Prowadzenie gry", "hPick": "Uruchom grę na dużym ekranie:", "hStart": "Start", "hSkip": "Pomiń rundę", "hSpin": "Zakręć", "hEnd": "Zakończ grę", "hPts": "Popraw punkty", "pTitle": "Kim jesteś?", "pHint": "Twoje imię i kolor widać na dużym ekranie, przy życzeniach i punktach.", "pOk": "Gotowe", "pCol": "Kolor", "gLate": "Gra już trwa", "gLateHint": "Wskakuj i graj od teraz.", "gLateWatch": "Wskakuj: tę grę oglądasz, w następnej grasz.", "gLateJoin": "Dołącz", "netLost": "Offline · łączę ponownie …", "netBack": "Znowu połączono", "netQuiet": "Brak sygnału z imprezy", "wSong": "Szukaj w Spotify lub wklej link …", "wLinkOther": "Tu działają tylko linki do utworów. W Spotify: Udostępnij → Kopiuj link do utworu.", "old": ["Strona nieaktualna", "Zamknij tę kartę i zeskanuj kod QR jeszcze raz."], "tick": "Klik", "tickHint": "Cichy klik na każde uderzenie", "wrMax": "Masz już {n} otwarte życzenia. Poczekaj, aż któreś zagra.", "wrBlock": "Ten utwór nie jest dozwolony na tej imprezie.", "wrExplicit": "Prosimy bez utworów z oznaczeniem „explicit”.", "pSlot": "Twoje miejsce w fali światła", "rcTitle": "Pilot", "rcPlay": "Odtwórz lub wstrzymaj", "rcPrev": "Poprzedni utwór", "rcNext": "Następny utwór", "rcVol": "Głośność", "rcLvl": "Intensywność", "rcLoc": "Miejsce", "rcGame": "Uruchom grę", "rcWait": "Łączenie z Mirage …", "eco": "Oszczędzanie baterii", "ecoLow": "słaba bateria, włączone" },
+  tr: {"hTitle": "Oyun yönetimi", "hPick": "Büyük ekranda bir oyun başlat:", "hStart": "Şimdi başlat", "hSkip": "Turu atla", "hSpin": "Çevir", "hEnd": "Oyunu bitir", "hPts": "Puanları düzelt", "pTitle": "Sen kimsin?", "pHint": "Adın ve rengin büyük ekranda, isteklerinin ve puanlarının yanında görünür.", "pOk": "Tamam", "pCol": "Renk", "gLate": "Oyun zaten başladı", "gLateHint": "Katıl ve şimdiden oyna.", "gLateWatch": "Katıl: bu oyunu izlersin, sonrakinde oynarsın.", "gLateJoin": "Katıl", "netLost": "Çevrimdışı · yeniden bağlanıyor …", "netBack": "Yeniden bağlandı", "netQuiet": "Partiden sinyal yok", "wSong": "Spotify'da ara veya bağlantı yapıştır …", "wLinkOther": "Burada sadece şarkı bağlantıları çalışır. Spotify'da: Paylaş → Şarkı bağlantısını kopyala.", "old": ["Sayfa güncel değil", "Bu sekmeyi kapat ve QR kodunu tekrar tara."], "tick": "Tık", "tickHint": "Her vuruşta hafif bir tık", "wrMax": "Zaten {n} açık isteğin var. Biri çalana kadar bekle.", "wrBlock": "Bu şarkıya bu partide izin verilmiyor.", "wrExplicit": "Bu partide müstehcen şarkı yok, lütfen.", "pSlot": "Işık dalgasındaki yerin", "rcTitle": "Uzaktan kumanda", "rcPlay": "Oynat veya duraklat", "rcPrev": "Önceki şarkı", "rcNext": "Sonraki şarkı", "rcVol": "Ses", "rcLvl": "Yoğunluk", "rcLoc": "Mekân", "rcGame": "Oyun başlat", "rcWait": "Mirage'a bağlanıyor …", "eco": "Pil tasarrufu", "ecoLow": "pil zayıf, açık" },
+  ru: {"hTitle": "Ведущий игры", "hPick": "Запусти игру на большом экране:", "hStart": "Начать", "hSkip": "Пропустить раунд", "hSpin": "Крутить", "hEnd": "Закончить игру", "hPts": "Исправить очки", "pTitle": "Кто ты?", "pHint": "Твоё имя и цвет видны на большом экране – рядом с заказами и очками.", "pOk": "Готово", "pCol": "Цвет", "gLate": "Игра уже идёт", "gLateHint": "Подключайся и играй с этого момента.", "gLateWatch": "Подключайся: эту игру смотришь, в следующей играешь.", "gLateJoin": "Подключиться", "netLost": "Нет сети · переподключаемся …", "netBack": "Снова на связи", "netQuiet": "Нет сигнала от вечеринки", "wSong": "Поиск в Spotify или вставь ссылку …", "wLinkOther": "Здесь работают только ссылки на треки. В Spotify: Поделиться → Скопировать ссылку на трек.", "old": ["Страница устарела", "Закрой эту вкладку и отсканируй QR-код ещё раз."], "tick": "Щелчок", "tickHint": "Тихий щелчок на каждую долю", "wrMax": "У тебя уже {n} открытых заказа. Подожди, пока один сыграет.", "wrBlock": "Эту песню на этой вечеринке нельзя.", "wrExplicit": "Пожалуйста, без песен с пометкой «explicit».", "pSlot": "Твоё место в световой волне", "rcTitle": "Пульт", "rcPlay": "Играть или пауза", "rcPrev": "Предыдущий трек", "rcNext": "Следующий трек", "rcVol": "Громкость", "rcLvl": "Интенсивность", "rcLoc": "Площадка", "rcGame": "Запустить игру", "rcWait": "Подключаемся к Mirage …", "eco": "Экономия заряда", "ecoLow": "заряд низкий, включено" },
+  uk: {"hTitle": "Ведучий гри", "hPick": "Запусти гру на великому екрані:", "hStart": "Почати", "hSkip": "Пропустити раунд", "hSpin": "Крутити", "hEnd": "Завершити гру", "hPts": "Виправити бали", "pTitle": "Хто ти?", "pHint": "Твоє ім'я і колір видно на великому екрані – поруч із замовленнями та балами.", "pOk": "Готово", "pCol": "Колір", "gLate": "Гра вже триває", "gLateHint": "Долучайся і грай від цієї миті.", "gLateWatch": "Долучайся: цю гру дивишся, у наступній граєш.", "gLateJoin": "Долучитися", "netLost": "Немає мережі · перепідключаємося …", "netBack": "Знову на зв'язку", "netQuiet": "Немає сигналу від вечірки", "wSong": "Пошук у Spotify або встав посилання …", "wLinkOther": "Тут працюють лише посилання на треки. У Spotify: Поділитися → Копіювати посилання на трек.", "old": ["Сторінка застаріла", "Закрий цю вкладку і відскануй QR-код ще раз."], "tick": "Клац", "tickHint": "Тихе клацання на кожну долю", "wrMax": "У тебе вже {n} відкритих замовлення. Зачекай, поки одне заграє.", "wrBlock": "Цю пісню на цій вечірці не можна.", "wrExplicit": "Будь ласка, без пісень з позначкою «explicit».", "pSlot": "Твоє місце у світловій хвилі", "rcTitle": "Пульт", "rcPlay": "Грати або пауза", "rcPrev": "Попередній трек", "rcNext": "Наступний трек", "rcVol": "Гучність", "rcLvl": "Інтенсивність", "rcLoc": "Локація", "rcGame": "Запустити гру", "rcWait": "Підключаємося до Mirage …", "eco": "Економія заряду", "ecoLow": "заряд низький, увімкнено" },
+  ja: {"hTitle": "ゲーム進行", "hPick": "大きな画面でゲームを始める：", "hStart": "今すぐ開始", "hSkip": "ラウンドをスキップ", "hSpin": "回す", "hEnd": "ゲーム終了", "hPts": "ポイントを修正", "pTitle": "あなたは誰？", "pHint": "名前と色は、大きな画面のリクエストやスコアの横に表示されます。", "pOk": "完了", "pCol": "色", "gLate": "ゲームはもう始まっています", "gLateHint": "今から参加して遊べます。", "gLateWatch": "参加：このゲームは観戦、次のゲームから参加です。", "gLateJoin": "参加する", "netLost": "オフライン · 再接続中 …", "netBack": "再接続しました", "netQuiet": "パーティーからの信号がありません", "wSong": "Spotifyで検索、または曲のリンクを貼り付け …", "wLinkOther": "使えるのは曲のリンクだけです。Spotifyで：シェア → 曲のリンクをコピー", "old": ["ページが古くなっています", "このタブを閉じて、QRコードをもう一度読み取ってください。"], "tick": "クリック", "tickHint": "ビートごとに小さなクリック音", "wrMax": "未再生のリクエストがすでに{n}件あります。再生されるまで待ってね。", "wrBlock": "この曲はこのパーティーでは使えません。", "wrExplicit": "このパーティーでは、explicit の曲はNGです。", "pSlot": "光のウェーブでのあなたの番号", "rcTitle": "リモコン", "rcPlay": "再生・一時停止", "rcPrev": "前の曲", "rcNext": "次の曲", "rcVol": "音量", "rcLvl": "強さ", "rcLoc": "会場", "rcGame": "ゲームを始める", "rcWait": "Mirageに接続中 …", "eco": "省電力", "ecoLow": "残量少・オン" },
+  ko: {"hTitle": "게임 진행", "hPick": "큰 화면에서 게임 시작:", "hStart": "지금 시작", "hSkip": "라운드 건너뛰기", "hSpin": "돌리기", "hEnd": "게임 끝내기", "hPts": "점수 수정", "pTitle": "누구세요?", "pHint": "이름과 색이 큰 화면의 신청곡과 점수 옆에 표시돼요.", "pOk": "완료", "pCol": "색", "gLate": "게임이 이미 진행 중이에요", "gLateHint": "지금 들어와서 같이 해요.", "gLateWatch": "참여: 이번 게임은 구경하고 다음 게임부터 같이 해요.", "gLateJoin": "참여하기", "netLost": "오프라인 · 다시 연결 중 …", "netBack": "다시 연결됐어요", "netQuiet": "파티 신호가 없어요", "wSong": "Spotify에서 검색하거나 곡 링크 붙여넣기 …", "wLinkOther": "여기서는 곡 링크만 돼요. Spotify에서: 공유 → 곡 링크 복사", "old": ["페이지가 오래됐어요", "이 탭을 닫고 QR 코드를 다시 스캔해 주세요."], "tick": "클릭", "tickHint": "박자마다 작은 클릭 소리", "wrMax": "이미 대기 중인 신청이 {n}개 있어요. 하나가 재생될 때까지 기다려 주세요.", "wrBlock": "이 파티에서는 이 곡을 신청할 수 없어요.", "wrExplicit": "이 파티에서는 19금(explicit) 곡은 안 돼요.", "pSlot": "빛의 파도에서 내 자리", "rcTitle": "리모컨", "rcPlay": "재생 또는 일시정지", "rcPrev": "이전 곡", "rcNext": "다음 곡", "rcVol": "볼륨", "rcLvl": "강도", "rcLoc": "장소", "rcGame": "게임 시작", "rcWait": "Mirage에 연결 중 …", "eco": "배터리 절약", "ecoLow": "배터리 부족, 켜짐" },
+  zh: {"hTitle": "游戏主持", "hPick": "在大屏幕上开始游戏：", "hStart": "立即开始", "hSkip": "跳过本轮", "hSpin": "转动", "hEnd": "结束游戏", "hPts": "修改分数", "pTitle": "你是谁？", "pHint": "你的名字和颜色会显示在大屏幕上，在你的点歌和分数旁边。", "pOk": "完成", "pCol": "颜色", "gLate": "游戏已经开始了", "gLateHint": "现在加入，一起玩。", "gLateWatch": "加入：这局先观战，下一局再参与。", "gLateJoin": "加入", "netLost": "离线 · 正在重新连接 …", "netBack": "已重新连接", "netQuiet": "没有收到派对的信号", "wSong": "在 Spotify 搜索或粘贴歌曲链接 …", "wLinkOther": "这里只支持歌曲链接。在 Spotify 中：分享 → 复制歌曲链接", "old": ["页面已过期", "请关闭此标签页，重新扫描二维码。"], "tick": "节拍声", "tickHint": "每拍一声轻响", "wrMax": "你已经有 {n} 首待播的点歌了，等其中一首播放后再点吧。", "wrBlock": "这场派对不允许点这首歌。", "wrExplicit": "本场派对不接受含露骨内容的歌曲。", "pSlot": "你在灯光波浪中的位置", "rcTitle": "遥控器", "rcPlay": "播放或暂停", "rcPrev": "上一首", "rcNext": "下一首", "rcVol": "音量", "rcLvl": "强度", "rcLoc": "场地", "rcGame": "开始游戏", "rcWait": "正在连接 Mirage …", "eco": "省电", "ecoLow": "电量低，已开启" },
+};
+for (const src of [SCAN_TEXT, GAME_TEXT, GUEST_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
 L.en = { ...L.en, old: ["Page out of date", "Close this tab and scan the QR code again."] };
@@ -418,6 +455,13 @@ const say = ([a, b]) => {
 };
 $("tap").textContent = T.tap;
 say(T.start);
+// Vom Startbildschirm geöffnet, ohne Link: wieder in die Party von eben (höchstens 12 Stunden alt). Gemerkt wird
+// nur Kanal und Gästeschlüssel, auf dem Handy selbst – nie die Schlüssel von Spielleitung oder Fernbedienung.
+const APP = navigator.standalone === true || matchMedia("(display-mode: fullscreen), (display-mode: standalone)").matches;
+try {
+  const last = JSON.parse(localStorage.getItem("mlLast") || "null");
+  if (APP && location.hash.length < 2 && last && Date.now() - last.at < 12 * 3600e3 && /^#c=[\w-]+&k=[\w-]+$/.test(last.h)) history.replaceState(null, "", last.h);
+} catch {}
 const p = new URLSearchParams(location.hash.slice(1));
 const fromB64 = (s) => Uint8Array.from(atob(String(s || "").replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
 let skew = 0, lags = [];
@@ -430,6 +474,9 @@ async function start() {
     if (raw.length !== 16 || !/^[\w-]{16,}$/.test(ch)) throw 0;
     key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt", "encrypt"]);
     topic = "mirage-live/" + ch;
+    try {
+      localStorage.setItem("mlLast", JSON.stringify({ h: "#c=" + ch + "&k=" + p.get("k"), at: Date.now() }));
+    } catch {}
   } catch {
     // ohne Link: kein Fehler, sondern der normale Weg über den Scanner
     say(location.hash.length > 1 ? T.bad : T.scanStart);
@@ -608,6 +655,23 @@ async function receive(m, retained) {
   } catch {
     return; // nicht mit unserem Schlüssel verschlüsselt – ignorieren
   }
+  // Stand für die Fernbedienung (nur mit deinem eigenen Link)
+  if (s.rcs) {
+    rcS = rcClean(s.rcs);
+    drawRc();
+    return;
+  }
+  // Wunsch abgelehnt (Regeln der Party): sagen warum, und gleich wieder wünschen lassen
+  if (s.wr) {
+    // Antwort auf einen eingefügten Link: die Suche ist damit beantwortet
+    if (s.r === rid) {
+      clearTimeout(waitT);
+      $("wRes").replaceChildren();
+    } else if (s.r !== -1) return;
+    lastWish = 0;
+    $("wMsg").textContent = ({ max: T.wrMax, block: T.wrBlock, explicit: T.wrExplicit })[s.wr]?.replace("{n}", Number(s.n) || 1) || "";
+    return;
+  }
   if (Array.isArray(s.res)) return showResults(s); // Treffer unserer Suche
   if (retained) {
     if (hadLive) return;
@@ -660,6 +724,7 @@ function apply(s) {
     return say(T.over);
   }
   ended = false;
+  loadFx();
   cur = s;
   recvAt = performance.now();
   // Uhrenabgleich: Laufzeit über den Relay schwankt (50–500 ms). Die kürzeste gemessene „Ankunft minus
@@ -686,6 +751,8 @@ function apply(s) {
   $("lyr").classList.toggle("has", !!s.ly);
   drawPoll(s.poll);
   drawGame(s.g);
+  // Reaktionen am PC ausgeschaltet: keine Emoji-Leiste (ältere Themes senden „rx“ nicht – dann bleibt sie)
+  document.body.classList.toggle("norx", s.rx === 0);
   // dein Wunsch kommt als Nächstes
   if (s.nx && myWishes.has(s.nx) && !told.has(s.nx)) {
     told.add(s.nx);
@@ -773,7 +840,47 @@ function swatches(box) {
     box.append(b);
   });
 }
+// Platz in der Lichtwelle (0–7): selbst gewählt, sonst ein fester aus der eigenen Kennung
+const mySlot = () => {
+  const n = Number(store("mlSlot"));
+  return Number.isInteger(n) && n >= 0 && n < 8 && store("mlSlot") != null ? n : [...myId].reduce((a, ch) => (a * 17 + ch.charCodeAt(0)) >>> 0, 3) % 8;
+};
+function slots(box) {
+  box.textContent = "";
+  for (let i = 0; i < 8; i++) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "slb";
+    b.textContent = String(i + 1);
+    b.setAttribute("aria-label", T.pSlot + " " + (i + 1));
+    b.setAttribute("aria-pressed", String(i === mySlot()));
+    b.onclick = (e) => {
+      e.stopPropagation();
+      store("mlSlot", String(i));
+      box.querySelectorAll(".slb").forEach((x, k) => x.setAttribute("aria-pressed", String(k === i)));
+    };
+    box.append(b);
+  }
+}
+function syncEco() {
+  const b = $("pEco");
+  b.setAttribute("aria-pressed", String(eco));
+  b.textContent = "🔋 " + T.eco + (lowBat ? " · " + T.ecoLow : "");
+}
+$("pEco").onclick = (e) => {
+  e.stopPropagation();
+  eco = !eco;
+  store("mlEco", eco ? "1" : "0");
+  ecoNow();
+  syncEco();
+};
 function openProf() {
+  syncEco();
+  // die Platzwahl nur, wenn am PC die Lichtwelle „der Reihe nach“ läuft
+  const wave = cur?.wv === 1;
+  $("pSlot").hidden = $("pSlotHint").hidden = !wave;
+  $("pSlotHint").textContent = T.pSlot;
+  if (wave) slots($("pSlot"));
   $("pTitle").textContent = T.pTitle;
   $("pHint").textContent = T.pHint;
   $("pOk").textContent = T.pOk;
@@ -896,9 +1003,21 @@ async function ask(q, tries) {
     } else $("wMsg").textContent = T.wDead;
   }, 6000);
 }
+// Spotify-Link statt Suche: ein Song-Link geht kurz und eindeutig als „spotify:track:…“ an Mirage,
+// andere Spotify-Links (Album, Playlist, Kurzlink) gar nicht – dafür ein freundlicher Hinweis
+const songLink = (q) => /(?:open\.spotify\.com\/(?:intl-[\w-]+\/)?track\/|spotify:track:)([A-Za-z0-9]{22})/.exec(q)?.[1] || "";
+const otherLink = (q) => /open\.spotify\.com\/|spotify:[a-z]+:|spotify\.link\/|spoti\.fi\//i.test(q);
 $("wSong").oninput = () => {
   clearTimeout(searchT);
-  const q = $("wSong").value.trim();
+  let q = $("wSong").value.trim();
+  if (songLink(q)) q = "spotify:track:" + songLink(q);
+  else if (otherLink(q)) {
+    $("wRes").replaceChildren();
+    $("wMsg").textContent = T.wLinkOther;
+    clearTimeout(waitT);
+    rid++;
+    return;
+  }
   if (q.length < 2) {
     $("wRes").replaceChildren();
     $("wMsg").textContent = "";
@@ -921,7 +1040,7 @@ function showResults(s) {
   clearTimeout(waitT);
   if (!s.cached && !s.err && lastQ) hits.set(lastQ.toLowerCase(), s.res);
   if (hits.size > 40) hits.delete(hits.keys().next().value);
-  $("wMsg").textContent = s.err ? T.wErr : s.res.length ? "" : T.wNone;
+  $("wMsg").textContent = s.err ? T.wErr : s.res.length ? "" : s.nl ? T.wLinkOther : T.wNone;
   $("wRes").replaceChildren(...s.res.map((w) => {
     const li = document.createElement("li");
     li.append(...songRow(w));
@@ -1014,6 +1133,52 @@ $("bVib").onclick = (e) => {
   syncTools();
 };
 syncTools();
+/* ---- Takt-Klick: iPhones lassen Websites nicht vibrieren */
+// Sichtbar ist der Takt immer (Ringe und Leuchten auf jedem Schlag). Wer ihn hören will, schaltet einen leisen
+// Klick ein: aus bis zum Antippen (iOS gibt Ton erst nach einer Berührung frei) und nicht gemerkt.
+let tickOn = false, tAc = null, tickBeat = -1;
+// so weit im Voraus planen, dass ein ruckelndes Bild den Klick nicht verschiebt (Web Audio hat die genauere Uhr)
+const TICK_AHEAD = 0.12;
+// nächster Schlag ab Schlagposition bp: welcher und in wie vielen Sekunden – null, solange er weiter weg ist
+function tickPlan(bp, bpm, ahead = TICK_AHEAD) {
+  const next = Math.floor(bp) + 1, inSec = ((next - bp) * 60) / (bpm || 120);
+  return inSec <= ahead ? { beat: next, inSec } : null;
+}
+function clickAt(beat, inSec) {
+  if (!tAc || tAc.state !== "running") return;
+  const o = tAc.createOscillator(), g = tAc.createGain(), t0 = tAc.currentTime + inSec, one = beat % 4 === 0;
+  o.frequency.value = one ? 1500 : 1000;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(one ? 0.1 : 0.06, t0 + 0.003);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.035);
+  o.connect(g).connect(tAc.destination);
+  o.start(t0);
+  o.stop(t0 + 0.05);
+}
+function tickFrame(bp, bpm) {
+  const p = tickOn && tickPlan(bp, bpm);
+  // jeden Schlag einmal; springt der Takt zurück (neuer Song), zählt er neu
+  if (!p || (p.beat <= tickBeat && tickBeat - p.beat < 4)) return;
+  tickBeat = p.beat;
+  clickAt(p.beat, p.inSec);
+}
+const syncTick = () => {
+  $("bTick").setAttribute("aria-pressed", String(tickOn));
+  $("bTick").querySelector("span").textContent = T.tick;
+  $("bTick").title = $("bTick").ariaLabel = T.tickHint;
+};
+$("bTick").hidden = !!navigator.vibrate || !(window.AudioContext || window.webkitAudioContext);
+$("bTick").onclick = (e) => {
+  e.stopPropagation();
+  tickOn = !tickOn;
+  // Ton gibt es nur aus dieser Berührung heraus
+  if (tickOn) {
+    tAc ||= new (window.AudioContext || window.webkitAudioContext)();
+    tAc.resume().catch(() => {});
+  } else tAc?.suspend().catch(() => {});
+  syncTick();
+};
+syncTick();
 // Android-Chrome lässt erst vibrieren, wenn die Seite einmal angetippt wurde – bis dahin darum bitten
 const canBuzz = () => !navigator.userActivation || navigator.userActivation.hasBeenActive;
 /* ---- Haptik */
@@ -1092,21 +1257,50 @@ new MutationObserver(() => {
 /* ---- Licht: Canvas */
 const cv = $("c"), ctx = cv.getContext("2d");
 let W = 0, H = 0, dpr = 1;
+let eco = store("mlEco") === "1", lowBat = false, saving = eco;
 function size() {
-  dpr = Math.min(2, devicePixelRatio || 1);
+  dpr = Math.min(saving ? 1 : 2, devicePixelRatio || 1);
   W = cv.width = Math.round(innerWidth * dpr);
   H = cv.height = Math.round(innerHeight * dpr);
 }
 addEventListener("resize", size);
 size();
+// Akku sparen: halbe Bildrate und Canvas in einfacher Auflösung (weiches Licht sieht gleich aus). Von selbst bei
+// schwachem Akku (unter 20 %, nicht am Laden – nur Chrome auf Android meldet das), sonst auf Wunsch im Profil.
+let lastDraw = 0;
+function setSaving(on) {
+  if (on === saving) return;
+  saving = on;
+  size();
+  syncEco();
+}
+const ecoNow = () => setSaving(eco || lowBat);
+navigator.getBattery?.().then((b) => {
+  const upd = () => {
+    lowBat = !b.charging && b.level <= 0.2;
+    ecoNow();
+  };
+  upd();
+  b.addEventListener("levelchange", upd);
+  b.addEventListener("chargingchange", upd);
+}).catch(() => {});
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
 const lerp = (a, b, f) => a + (b - a) * f;
-const show = { lit: 0, e: 0, kick: 0, drop: 0, flash: 0, beat: -1, rings: [], eq: [0, 0, 0] };
+const show = { lit: 0, e: 0, kick: 0, drop: 0, flash: 0, beat: -1, rings: [], eq: [0, 0, 0], wave: 1, wk: 1 };
+// Lichtwelle: ist dieses Handy auf diesem Schlag dran? (1: Platz für Platz, 2: drei Farbgruppen im Wechsel)
+function waveTurn(beat, c) {
+  if (c.wv === 1) {
+    const n = Math.max(2, Math.min(16, Number(c.wn) || 8));
+    return ((beat % n) + n) % n === mySlot() % n;
+  }
+  if (c.wv === 2) return ((beat % 3) + 3) % 3 === myCol() % 3;
+  return true;
+}
 const bars = [...document.querySelectorAll(".eq i")];
 let last = performance.now();
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min(0.05, (now - last) / 1000);
+  let dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   const age = cur ? (now - recvAt) / 1000 : 99;
   const live = cur && age < 4;
@@ -1122,16 +1316,21 @@ function frame(now) {
     // ohne Taktdaten frei im Tempo weiterlaufen, sonst bliebe alles auf dem ersten Schlag stehen
     const bp = cur.bi >= 0 ? cur.bi + cur.ph + since * (cur.bpm / 60) : (now / 1000) * ((cur.bpm || 120) / 60);
     const beat = Math.floor(bp), f = bp - beat;
+    tickFrame(bp, cur.bpm);
     kick = Math.exp(-f * 6) * (0.35 + 0.65 * cur.e);
     if (gBeatEl) gBeatEl.style.transform = `scale(${(1 + Math.exp(-f * 6) * 0.14).toFixed(3)})`;
+    const turn = waveTurn(beat, cur);
+    show.wave = !cur.wv ? 1 : turn ? Math.exp(-f * 1.5) : 0;
     if (beat !== show.beat) {
-      if (show.beat >= 0) show.rings.push({ r: 0, a: 0.5 + cur.e * 0.4, c: pal[beat % 3], w: beat % 4 === 0 ? 2.4 : 1.4 });
+      // in der Lichtwelle Ring und Vibration nur, wenn dieses Handy dran ist
+      if (show.beat >= 0 && turn) show.rings.push({ r: 0, a: 0.5 + cur.e * 0.4, c: pal[beat % 3], w: beat % 4 === 0 ? 2.4 : 1.4 });
       // Vibration im Takt (Stärke und Muster je Musikteil, siehe beatParts)
-      if (show.beat >= 0) hapticBeat(beat, cur);
+      if (show.beat >= 0 && turn) hapticBeat(beat, cur);
       show.beat = beat;
     }
     const d = Math.max(0, cur.d - age * 0.6);
-    if (d > 0.85 && show.drop < 0.5) {
+    // „Keine Blitze“ am PC (nf): kein weißer Blitz, kein Schockring, keine lange Vibration
+    if (d > 0.85 && show.drop < 0.5 && !cur.nf) {
       show.flash = 1;
       // Drop: von sanft zu voll anschwellen, dann lang (Android; iPhones lassen Websites nicht vibrieren)
       haptic([[0.45, 45], [0.7, 45], [0.9, 45], [1, 260]]);
@@ -1140,6 +1339,12 @@ function frame(now) {
     show.drop = d;
   }
   show.lit = lerp(show.lit, live ? 1 : 0.18, 1 - Math.exp(-dt * 2));
+  // Lichtwelle: außer der Reihe nur ein schwaches Glimmen
+  show.wk = lerp(show.wk, live && cur.wv ? 0.15 + 0.85 * show.wave : 1, 1 - Math.exp(-dt * 14));
+  // Takt, Vibration und Klick laufen oben in jedem Bild weiter; gemalt wird beim Akkusparen nur jedes zweite
+  if (saving && now - lastDraw < 30) return;
+  if (saving) dt = Math.min(0.08, (now - lastDraw) / 1000);
+  lastDraw = now;
   show.e = lerp(show.e, live ? cur.e : 0.3, 1 - Math.exp(-dt * 3));
   show.kick = kick > show.kick ? kick : lerp(show.kick, kick, 1 - Math.exp(-dt * 10));
   const t = now / 1000, m = Math.max(W, H);
@@ -1153,7 +1358,7 @@ function frame(now) {
     const y = H * (0.45 + 0.3 * Math.cos(t * (0.09 + i * 0.05) + i * 1.3));
     const r = m * (0.45 + 0.12 * show.e) * (1 + show.kick * 0.12);
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-    const a = show.lit * (0.32 + show.e * 0.3 + show.kick * 0.22);
+    const a = show.lit * show.wk * (0.32 + show.e * 0.3 + show.kick * 0.22);
     g.addColorStop(0, rgba(pal[i], a));
     g.addColorStop(0.55, rgba(pal[i], a * 0.35));
     g.addColorStop(1, rgba(pal[i], 0));
@@ -1163,7 +1368,7 @@ function frame(now) {
   // Mitte: weiches Leuchten auf jedem Schlag
   const cx = W / 2, cy = H * 0.45;
   const gc = ctx.createRadialGradient(cx, cy, 0, cx, cy, m * 0.35);
-  gc.addColorStop(0, rgba([255, 255, 255], show.lit * show.kick * 0.35));
+  gc.addColorStop(0, rgba([255, 255, 255], show.lit * show.wk * show.kick * 0.35));
   gc.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = gc;
   ctx.fillRect(0, 0, W, H);
@@ -1195,7 +1400,11 @@ function frame(now) {
   }
   // kleiner Equalizer in der Karte
   show.eq = show.eq.map((v, i) => lerp(v, live ? Math.min(1, show.kick * (0.7 + 0.3 * Math.sin(t * 9 + i * 2)) + show.e * 0.35) : 0.15, 0.35));
-  bars.forEach((b, i) => (b.style.height = Math.round(25 + show.eq[i] * 75) + "%"));
+  // nur skalieren (kein neues Layout je Bild) und nur, wenn sich der Wert sichtbar ändert
+  bars.forEach((b, i) => {
+    const v = (0.25 + show.eq[i] * 0.75).toFixed(2);
+    if (b.dataset.v !== v) b.style.transform = "scaleY(" + (b.dataset.v = v) + ")";
+  });
   document.body.classList.toggle("loud", live && cur.e > 0.6);
 }
 requestAnimationFrame(frame);
@@ -2015,11 +2224,115 @@ $("bHost").onclick = (e) => {
 $("hClose").onclick = () => ($("host").hidden = true);
 hostInit();
 
+/* ---- Fernbedienung für dich: Wiedergabe, Lautstärke, Stärke, Location, Spiele */
+// Nur dein eigener Link hat den Schlüssel „r“ (hinter dem „#“, er verlässt das Handy nie). Unterschrieben wie die
+// Befehle der Spielleitung; ohne passende Unterschrift steuert niemand deine Musik.
+let rcKey = null, rcS = null, rcDrawn = "";
+async function rcInit() {
+  try {
+    const raw = fromB64(p.get("r"));
+    if (raw.length !== 16) return;
+    rcKey = await crypto.subtle.importKey("raw", raw, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  } catch {
+    return;
+  }
+  $("rcTitle").textContent = T.rcTitle;
+  $("bRc").title = $("bRc").ariaLabel = T.rcTitle;
+  $("bRc").hidden = false;
+}
+async function rcCmd(a, t = "", v = 0) {
+  if (!rcKey) return;
+  const hd = [myId, a, t, v, Date.now(), Math.random().toString(36).slice(2, 12)].join("|");
+  const sig = b64u(new Uint8Array(await crypto.subtle.sign("HMAC", rcKey, te.encode(hd))));
+  if (!conns.size) showNote("", T.gNoConn, 3000);
+  sendSure({ k: "rc", hd, sig });
+  haptic([[0.7, 40]]);
+}
+// Stand vom PC: nur Zahlen und kurze Texte übernehmen (angezeigt wird ohnehin nur als Text)
+const rcClean = (x) => ({
+  pl: x.pl ? 1 : 0, vol: Math.max(0, Math.min(100, Math.round(Number(x.vol) || 0))), lv: Number(x.lv) || 0, vn: String(x.vn || "").slice(0, 20),
+  lvs: (Array.isArray(x.lvs) ? x.lvs : []).slice(0, 5).map((n) => String(n).slice(0, 24)),
+  vns: (Array.isArray(x.vns) ? x.vns : []).slice(0, 30).filter((v) => Array.isArray(v)).map(([k, n]) => [String(k).slice(0, 20), String(n).slice(0, 40)]),
+});
+function drawRc() {
+  if ($("rc").hidden) return;
+  const body = $("rcBody"), s = rcS, key = JSON.stringify(s);
+  if (key === rcDrawn) return;
+  rcDrawn = key;
+  body.textContent = "";
+  const btn = (text, label, fn, pressed) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = text;
+    if (label) b.title = b.ariaLabel = label;
+    if (pressed != null) b.setAttribute("aria-pressed", String(pressed));
+    b.onclick = (e) => {
+      e.stopPropagation();
+      fn();
+    };
+    return b;
+  };
+  const row = (cls, ...kids) => {
+    const d = document.createElement("div");
+    d.className = cls;
+    d.append(...kids);
+    return d;
+  };
+  const cap = (text) => {
+    const c = document.createElement("small");
+    c.textContent = text;
+    return c;
+  };
+  body.append(row("rcrow", btn("⏮", T.rcPrev, () => rcCmd("prev")), btn(s?.pl ? "⏸" : "▶", T.rcPlay, () => rcCmd("play")), btn("⏭", T.rcNext, () => rcCmd("next"))));
+  if (!s) return void body.append(cap(T.rcWait));
+  body.append(cap(T.rcVol + " · " + s.vol + " %"), row("rcrow", btn("−", T.rcVol + " −", () => rcCmd("vol", "", Math.max(0, s.vol - 10))), btn("+", T.rcVol + " +", () => rcCmd("vol", "", Math.min(100, s.vol + 10)))));
+  if (s.lvs.length) body.append(cap(T.rcLvl), row("rcrow rclv", ...s.lvs.map((n, i) => btn(n, "", () => rcCmd("lvl", "", i + 1), s.lv === i + 1))));
+  if (s.vns.length) {
+    const sel = document.createElement("select");
+    sel.className = "rcsel";
+    sel.ariaLabel = T.rcLoc;
+    for (const [k, n] of s.vns) {
+      const o = document.createElement("option");
+      o.value = k;
+      o.textContent = n;
+      o.selected = k === s.vn;
+      sel.append(o);
+    }
+    sel.onclick = (e) => e.stopPropagation();
+    sel.onchange = () => rcCmd("loc", sel.value);
+    body.append(cap(T.rcLoc), sel);
+  }
+  // Spiele: die Liste der Spielleitung (dein Link trägt auch ihren Schlüssel)
+  if (hostKey) body.append(btn("🎮 " + T.rcGame, "", () => {
+    $("rc").hidden = true;
+    $("bHost").click();
+  }));
+}
+$("rc").addEventListener("click", (e) => e.stopPropagation());
+$("bRc").onclick = (e) => {
+  e.stopPropagation();
+  $("rc").hidden = false;
+  rcDrawn = "";
+  drawRc();
+  rcCmd("hi");
+};
+$("rcClose").onclick = () => ($("rc").hidden = true);
+rcInit();
+
 /* ---- Wortbilder (wie im Party-Modus, der PC schickt mit, welches Wort gerade ein Bild hat) */
 let wfx = null, fxSt = null, covR = null, covN = 0, lastFxAt = 0;
-addEventListener("load", () => {
-  try { wfx = window.MirageFx?.create() || null; } catch {}
-});
+// erst nachladen, wenn die Party wirklich läuft: Scan-Bild und toter Link brauchen die Wortbilder nicht
+let fxAsked = false;
+function loadFx() {
+  if (fxAsked) return;
+  fxAsked = true;
+  const sc = document.createElement("script");
+  sc.src = "fx.js";
+  sc.onload = () => {
+    try { wfx = window.MirageFx?.create() || null; } catch {}
+  };
+  document.head.append(sc);
+}
 addEventListener("resize", () => (covR = null));
 function wordFx(f) {
   if (!wfx || !fxSt) return;

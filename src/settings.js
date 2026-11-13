@@ -155,6 +155,68 @@ function select(groups, value, onPick) {
   s.onchange = () => onPick(s.value);
   return s;
 }
+// Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
+function rangeZero(key, max, zero) {
+  const row = range(key, 0, max, 1, "");
+  const hint = row.querySelector("small"), r = row.querySelector("input");
+  const show = () => {
+    hint.textContent = Number(r.value) ? r.value : t(zero);
+    r.setAttribute("aria-valuetext", hint.textContent);
+  };
+  r.addEventListener("input", show);
+  show();
+  return row;
+}
+// Regeln für Songwünsche: nur sichtbar, solange Wünsche an sind (Schalter zeichnet die Einstellungen neu)
+function wishRules() {
+  const box = el("div", "m-wishrules");
+  box.hidden = !cfg.partyWishes;
+  const row = el("label", "m-row");
+  const txt = el("span");
+  txt.append(el("b", "", t("wishBlock")));
+  const inp = el("input", "m-text");
+  Object.assign(inp, { maxLength: 400, value: cfg.wishBlock || "", placeholder: t("wishBlockPh") });
+  inp.dataset.key = "wishBlock";
+  inp.onchange = () => {
+    cfg.wishBlock = inp.value.slice(0, 400);
+    save();
+  };
+  row.append(txt, inp);
+  box.append(head(t("wishRules"), t("wishRulesHint")), rangeZero("wishMax", 5, "wishNoLimit"), row, toggle("wishClean", () => {}), rangeZero("wishAuto", 10, "wishOff"));
+  return box;
+}
+// Fernbedienung: eigener QR-Code nur für dich, nur auf Knopfdruck und nach zwei Minuten wieder weg
+// (wer ihn abfotografiert, steuert deine Musik)
+function remoteButton() {
+  const wrap = el("div", "m-rc");
+  const btn = el("button", "m-rc-btn", t("rcBtn"));
+  btn.type = "button";
+  let hideT = 0;
+  const hide = () => {
+    clearTimeout(hideT);
+    wrap.querySelector(".m-rc-qr")?.remove();
+    btn.textContent = t("rcBtn");
+    btn.setAttribute("aria-expanded", "false");
+  };
+  btn.setAttribute("aria-expanded", "false");
+  btn.onclick = () => {
+    if (wrap.querySelector(".m-rc-qr")) return hide();
+    live.remoteInfo().then((info) => {
+      if (!btn.isConnected || wrap.querySelector(".m-rc-qr")) return;
+      const box = el("div", "m-rc-qr");
+      const img = new Image();
+      img.alt = t("rcBtn");
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      box.append(img, el("small", "", t("rcHint")));
+      wrap.append(box);
+      btn.textContent = t("rcHide");
+      btn.setAttribute("aria-expanded", "true");
+      hideT = setTimeout(hide, 120e3);
+    });
+  };
+  wrap.append(btn);
+  return wrap;
+}
 // Live-Link: QR-Code direkt unter dem Schalter – sobald er an ist
 function livePanel() {
   const box = el("div", "m-live");
@@ -175,7 +237,7 @@ function livePanel() {
     code.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), code.click());
     code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
     const txt = el("div");
-    txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")));
+    txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")), remoteButton());
     box.append(img, txt);
   };
   window.addEventListener("mirage:live", draw);
@@ -501,6 +563,13 @@ function render(box) {
       head(t("ps_extras")),
       toggle("partyLive", () => cfg.partyLive && live.prepare()),
       toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
+      wishRules(),
+      toggle("partyReacts", () => {}),
+      head(t("partyWave"), t("partyWaveHint")),
+      seg([[0, t("waveOff")], [1, t("waveSeq")], [2, t("waveGroups")]], cfg.partyWave || 0, (k) => {
+        cfg.partyWave = k;
+        save();
+      }),
       livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),
