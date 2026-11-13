@@ -28,11 +28,12 @@ const CHECKS = [
   ["getProgress rechnet aus timestamp und positionAsOfTimestamp", () => wrapper.includes("(e.isPaused?0:Date.now()-e.timestamp)+e.positionAsOfTimestamp")],
 ];
 // Stellen, die die Hintergrundfarbe als Schrift nutzen: bei Mirage durchsichtig, darum in user.css einzeln behandelt
-const HANDLED = [".Psc6sReKFsPXwnz1kvAR", ".MhQ4IslqUKbPFP5sNq10", ".POWlFlLUUtmA_JBtM3Wo", ".avnj48VJ0oJ6tMx7lYZl.LCj7BdHyyr0Su0kPxcQq"];
+const HANDLED = [".Psc6sReKFsPXwnz1kvAR", ".MhQ4IslqUKbPFP5sNq10", ".POWlFlLUUtmA_JBtM3Wo", ".avnj48VJ0oJ6tMx7lYZl.LCj7BdHyyr0Su0kPxcQq", "._ZnH9lmh923t4tl8cMA3", ".lZy6JZ8BZVFg6777c7tA"];
 const usesBg = new Set();
 for (const f of files.filter((x) => x.endsWith(".css"))) {
   for (const m of fs.readFileSync(path.join(xpuiDir, f), "utf8").matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    if (/(^|;)color:var\(--background-base\)/.test(m[2])) m[1].split(",").forEach((x) => usesBg.add(x.trim()));
+    // alle Encore-Flächenfarben, die Mirage durchsichtig oder fast durchsichtig macht (user.css, .encore-dark-theme)
+    if (/(^|;)color:var\(--background-(base|press|highlight|tinted-base|tinted-highlight)\)/.test(m[2])) m[1].split(",").forEach((x) => usesBg.add(x.trim()));
   }
 }
 const fresh = [...usesBg].filter((x) => !HANDLED.includes(x));

@@ -41,14 +41,25 @@ body,
   --decorative-subdued: var(--m-line) !important;
 }
 
-/* Spotify nimmt die Hintergrundfarbe auch als Schrift auf farbigen Flächen (Tonart-Abzeichen, Hinweise).
-   Hier ist sie durchsichtig, die Schrift wäre unsichtbar. tools/check-spotify.js meldet neue solche Stellen. */
+/* Spotify nimmt die Hintergrundfarbe auch als Schrift auf farbigen Flächen (Tonart-Abzeichen, Hinweise,
+   Künstler-Tipp-Plakette auf weißer Kapsel). Hier ist sie durchsichtig, die Schrift wäre unsichtbar.
+   tools/check-spotify.js meldet neue solche Stellen. */
 [data-encore-id="tag"][style*="background-color"],
 .Psc6sReKFsPXwnz1kvAR,
 .MhQ4IslqUKbPFP5sNq10,
 .POWlFlLUUtmA_JBtM3Wo,
+._ZnH9lmh923t4tl8cMA3,
+.lZy6JZ8BZVFg6777c7tA,
 .avnj48VJ0oJ6tMx7lYZl.LCj7BdHyyr0Su0kPxcQq {
   color: #121212 !important;
+}
+/* Encore-Häkchen: Haken und Strich sind in der Hintergrundfarbe gezeichnet – bei Mirage durchsichtig.
+   Über den Teil des Namens ohne Versionsnummer (e-101040-…), die sich mit jedem Encore-Update ändert. */
+input:checked + label [class*="form-checkbox__indicator"]::before {
+  border-color: var(--m-ink) !important;
+}
+input + label [class*="form-checkbox__indicator"][class*="Encore_indeterminate"]::before {
+  background-color: var(--m-ink) !important;
 }
 
 /* ---------- Bühne: alles transparent, damit die Mirage-Ebene durchscheint ---------- */
