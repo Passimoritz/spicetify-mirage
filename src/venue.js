@@ -4,6 +4,7 @@
 // im Hauptfenster. Jedes Bild bekommt seinen Zustand als „st“ (Takt, Energie, Farben, Kamera …) mitgeteilt.
 import { createShow } from "./show.js";
 import { createFlashCap } from "./flashcap.js";
+import { kin, kinSet } from "./styles.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -217,6 +218,8 @@ function createVenue(makeCanvas) {
     jpop: "neon", musical: "hall", christmas: "skihut", celtic: "pub", balkan: "pub", amapiano: "beach", lofi: "home",
     neoclassical: "hall", acoustic: "pub",
   };
+  // alle weiteren Spielarten: eigener Ort aus styles.js, sonst der des Verwandten
+  kin(AUTO_VENUE, 1);
   function drawDecor(ctx, v, px, pal, rgba, dpr, st) {
     const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);
     if (v.decor === "club") {
@@ -698,6 +701,8 @@ function createVenue(makeCanvas) {
   const CO2 = new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);
   const PYRO = new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);
   const STROBE = new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);
+  // weitere Spielarten: Effekte aus styles.js oder wie der Verwandte
+  kinSet(CO2, "c"), kinSet(PYRO, "p"), kinSet(STROBE, "s");
   const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };
   const GOLD = [255, 214, 120], WHITE = [255, 255, 255];
   // Konfetti-Kanonen: zwei Fontänen von den Bühnenecken, die Schnipsel taumeln langsam herab; dazu Luftschlangen von oben
@@ -870,10 +875,12 @@ function createVenue(makeCanvas) {
     alternative: "bang", blues: "sway", schlager: "clap", ballad: "sway", gospel: "clap", reggaeton: "bounce", salsa: "bounce",
     brazil: "bounce", flamenco: "clap", bollywood: "bounce", arabic: "clap", ambient: "sway", cinematic: "sway",
   };
+  kin(MOVES, 2);
   const mood = { x: 0 };
   // Lichtermeer: bei Balladen und ruhigen, getragenen Songs halten im Refrain viele Handys und Feuerzeuge hoch
   // und schwenken sie gemeinsam langsam hin und her (über zwei Takte)
   const SEA = new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);
+  kinSet(SEA, "l");
   const sea = { a: 0 };
   function seaLevel(px, dt, st) {
     const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp((px.energy - 0.32) * 2.2, 0, 1) : 0;

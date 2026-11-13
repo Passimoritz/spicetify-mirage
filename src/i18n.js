@@ -5,6 +5,7 @@ import { PARTY_TEXT } from "./i18n-party.js";
 import { THEME_TEXT } from "./i18n-theme.js";
 import { GUESTS_TEXT } from "./i18n-guests.js";
 import { RES_TEXT } from "./i18n-res.js";
+import { GENRE_TEXT } from "./i18n-genres.js";
 
 /* ---------------------------------------------------------------- Sprachen */
 // Fehlt eine Übersetzung, gilt Englisch – so funktioniert das Theme in jeder Sprache.
@@ -2320,6 +2321,7 @@ for (const [l, v] of Object.entries(PARTY_TEXT)) if (I18N[l]) Object.assign(I18N
 for (const [l, v] of Object.entries(THEME_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(GUESTS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(RES_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
+for (const [l, v] of Object.entries(GENRE_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 const LANG = (() => {
   let l = "";
   try { l = S.Locale?.getLocale?.() || ""; } catch {}

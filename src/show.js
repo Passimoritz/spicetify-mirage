@@ -9,6 +9,8 @@
 //   Druckwellen aus den Ecken für den Bass, eine Rechteck-Welle für den Synthesizer, ein Balg an den Rändern
 //   fürs Akkordeon, ein Lufthauch aus Lichtpunkten für die Flöte, Lichtsaiten mit Glissando für die Harfe.
 //   Alles liegt hinter dem Publikum (die Location zeichnet die Menge danach).
+import { kin, kinSet } from "./styles.js";
+
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const RIG = {
   house: ["wave", "chase"], deephouse: ["wave"], techhouse: ["chase", "cross"], garage: ["wave", "chase"], disco: ["wave", "fan"],
@@ -25,6 +27,9 @@ const RIG = {
 const BLIND = new Set(["hardrock", "hardtechno", "balkan", "rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);
 const SHEET = new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);
 const CALM = new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues", "lofi", "neoclassical", "acoustic", "cloudrap", "christmas"]);
+// weitere Spielarten (styles.js): Muster und Effekte wie ihr Verwandter, außer sie sagen es anders
+kin(RIG);
+kinSet(BLIND, "b"), kinSet(SHEET, "w"), kinSet(CALM, "q");
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 

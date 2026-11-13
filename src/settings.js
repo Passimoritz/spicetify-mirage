@@ -150,7 +150,7 @@ function seg(options, value, onPick) {
   return s;
 }
 // Auswahlliste mit Gruppen (für die vielen Party-Stile – Knöpfe wären eine Wand)
-function select(groups, value, onPick) {
+function select(groups, value, onPick, find) {
   const s = el("select", "m-select");
   for (const [label, opts] of groups) {
     let parent = s;
@@ -167,7 +167,43 @@ function select(groups, value, onPick) {
     }
   }
   s.onchange = () => onPick(s.value);
-  return s;
+  return find ? findable(s, find, onPick) : s;
+}
+// Suchfeld über einer langen Auswahlliste (rund 300 Party-Stile): blendet nicht passende Einträge und leere
+// Gruppen aus; Enter übernimmt den ersten Treffer. Gesucht wird im Namen und in der Familie, ohne Akzente.
+function findable(s, [hint, none], onPick) {
+  const wrap = el("div", "m-select-find");
+  const q = el("input", "m-text");
+  Object.assign(q, { type: "search", placeholder: hint, spellcheck: false });
+  q.setAttribute("aria-label", hint);
+  const plain = (x) => String(x).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+  const note = el("small", "m-note", none);
+  note.hidden = true;
+  q.oninput = () => {
+    const words = plain(q.value).split(/\s+/).filter(Boolean);
+    let first = null;
+    for (const g of [s, ...s.querySelectorAll("optgroup")]) {
+      const opts = g === s ? [...s.children].filter((o) => o.tagName === "OPTION") : [...g.children];
+      let any = false;
+      for (const o of opts) {
+        const text = plain(o.textContent + " " + (g.label || "") + " " + o.value);
+        o.hidden = !!words.length && !words.every((w) => text.includes(w)) && o.value !== "auto";
+        if (!o.hidden && o.value !== "auto") first ||= o;
+        any ||= !o.hidden;
+      }
+      if (g !== s) g.hidden = !any;
+    }
+    note.hidden = !words.length || !!first;
+    q.first = words.length ? first : null;
+  };
+  q.onkeydown = (e) => {
+    if (e.key !== "Enter" || !q.first) return;
+    e.preventDefault();
+    s.value = q.first.value;
+    onPick(s.value);
+  };
+  wrap.append(q, s, note);
+  return wrap;
 }
 // Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
 function rangeZero(key, max, zero) {
@@ -533,7 +569,8 @@ function render(box) {
           cfg.partyStyle = k;
           save();
           immersive.refresh();
-        }
+        },
+        [t("partyFind"), t("partyFindNone")]
       ),
       el("small", "m-note", t("partyLevel")),
       seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
