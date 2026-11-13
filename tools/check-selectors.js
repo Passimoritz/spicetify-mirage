@@ -38,6 +38,12 @@ if (cssmap) {
     n++;
   }
   console.log(`Namensliste: ${n} von ${Object.keys(map).length} Namen gibt es in dieser Version`);
+  // Spicetifys Liste gehört zu einer bestimmten Spotify-Version (bei passender Version treffen über 450 Namen).
+  // Trifft kaum etwas, wäre jede lesbare Klasse „verloren“ – dann nichts behaupten, sondern eigens melden (Code 3)
+  if (n < 350) {
+    console.log("Die Namensliste passt nicht zu dieser Spotify-Version, darum keine Aussage über die Regeln.");
+    process.exit(3);
+  }
 }
 
 // eigene Klassen von Mirage und Zustände gehören nicht zu Spotify

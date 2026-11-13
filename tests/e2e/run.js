@@ -28,10 +28,12 @@ app.commandLine.appendSwitch("mute-audio");
 function ok(cond, msg) {
   if (!cond) throw new Error(msg);
 }
+// GitHub-Rechner sind deutlich langsamer als ein Desktop: dort alle Wartezeiten anderthalbmal so lang (E2E_SLOW setzt den Faktor selbst)
+const SLOW = Number(process.env.E2E_SLOW) || (process.env.CI ? 1.5 : 1);
 async function until(fn, ms, what) {
-  const t0 = Date.now();
+  const t0 = Date.now(), lim = ms * SLOW;
   let last;
-  while (Date.now() - t0 < ms) {
+  while (Date.now() - t0 < lim) {
     last = await fn();
     if (last) return last;
     await wait(80);
@@ -1765,6 +1767,8 @@ app.whenReady().then(async () => {
       error += `\n    groß: ${JSON.stringify({ st: stateNow.st, k: stateNow.k, text: stateNow.text })}\n    handy: ${JSON.stringify(phonesNow[0]).slice(0, 300)}`;
       // aufräumen, damit der nächste Fall sauber beginnt
       await T.js(`document.querySelector(".m-g-x")?.click(); if (!document.querySelector(".m-im-side").hidden) document.querySelector(".m-im-side-x").click(); document.querySelector('#mirage-immersive [data-mode="party"]').click(); __sp.resetArtists(); __sp.reset(); __sp.log.notes.length = 0; 1`).catch(() => {});
+      // offene Fenster auf den Handys (Spielleitung, Profil, Fernbedienung) schließen: sie verdecken sonst im nächsten Fall die Knöpfe
+      await Promise.all(P.map((ph) => ph.js(`document.querySelectorAll(".prof:not([hidden]), #rc:not([hidden])").forEach((x) => (x.hidden = true)); 1`).catch(() => {})));
       [T, ...P].forEach((w) => (w.errors.length = 0));
       await wait(1500);
     }
