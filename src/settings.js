@@ -185,6 +185,38 @@ function wishRules() {
   box.append(head(t("wishRules"), t("wishRulesHint")), rangeZero("wishMax", 5, "wishNoLimit"), row, toggle("wishClean", () => {}), rangeZero("wishAuto", 10, "wishOff"));
   return box;
 }
+// Fernbedienung: eigener QR-Code nur für dich, nur auf Knopfdruck und nach zwei Minuten wieder weg
+// (wer ihn abfotografiert, steuert deine Musik)
+function remoteButton() {
+  const wrap = el("div", "m-rc");
+  const btn = el("button", "m-rc-btn", t("rcBtn"));
+  btn.type = "button";
+  let hideT = 0;
+  const hide = () => {
+    clearTimeout(hideT);
+    wrap.querySelector(".m-rc-qr")?.remove();
+    btn.textContent = t("rcBtn");
+    btn.setAttribute("aria-expanded", "false");
+  };
+  btn.setAttribute("aria-expanded", "false");
+  btn.onclick = () => {
+    if (wrap.querySelector(".m-rc-qr")) return hide();
+    live.remoteInfo().then((info) => {
+      if (!btn.isConnected || wrap.querySelector(".m-rc-qr")) return;
+      const box = el("div", "m-rc-qr");
+      const img = new Image();
+      img.alt = t("rcBtn");
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
+      box.append(img, el("small", "", t("rcHint")));
+      wrap.append(box);
+      btn.textContent = t("rcHide");
+      btn.setAttribute("aria-expanded", "true");
+      hideT = setTimeout(hide, 120e3);
+    });
+  };
+  wrap.append(btn);
+  return wrap;
+}
 // Live-Link: QR-Code direkt unter dem Schalter – sobald er an ist
 function livePanel() {
   const box = el("div", "m-live");
@@ -205,7 +237,7 @@ function livePanel() {
     code.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), code.click());
     code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
     const txt = el("div");
-    txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")));
+    txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")), remoteButton());
     box.append(img, txt);
   };
   window.addEventListener("mirage:live", draw);

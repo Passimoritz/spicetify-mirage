@@ -1119,6 +1119,56 @@ async function reactions() {
   await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
   await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display !== "none"`), 4000, "reaktion: wieder an");
 }
+// Fernbedienung: eigener QR-Code nur auf Knopfdruck, Befehle nur mit der Unterschrift aus diesem Link
+async function remoteControl() {
+  const H = P[2], now = () => T.js(`__sp.now()`);
+  await ensurePhones("remote");
+  await T.js(`__menu.brightness(); 1`);
+  ok(!(await T.js(`!!document.querySelector(".mirage-settings .m-rc-qr")`)), "fernbedienung: der QR-Code ist nicht von selbst zu sehen");
+  await T.js(`document.querySelector(".mirage-settings .m-rc-btn").click(); 1`);
+  await until(() => T.js(`!!document.querySelector(".mirage-settings .m-rc-qr img")?.naturalWidth`), 6000, "fernbedienung: QR-Code nach dem Knopf");
+  const url = await T.js(`(async () => {
+    const im = document.querySelector(".mirage-settings .m-rc-qr img"), c = document.createElement("canvas");
+    c.width = c.height = 760;
+    const x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, 760, 760);
+    x.drawImage(im, 20, 20, 720, 720);
+    return jsQR(x.getImageData(0, 0, 760, 760).data, 760, 760)?.data || "";
+  })()`);
+  const rcHash = url.slice(url.indexOf("#"));
+  ok(rcHash.startsWith(hash + "&h=") && /&r=[\w-]{20,}$/.test(rcHash), "fernbedienung: der Link trägt einen eigenen Schlüssel: " + url.slice(0, 60));
+  await T.js(`document.querySelector(".mirage-settings .m-rc-btn").click(); 1`);
+  ok(!(await T.js(`!!document.querySelector(".mirage-settings .m-rc-qr")`)), "fernbedienung: zweiter Druck verbirgt den Code wieder");
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  await H.win.loadURL(PAGE + "?rc=1" + rcHash);
+  await until(() => H.js(`document.body.classList.contains("on") && !document.getElementById("bRc").hidden`).catch(() => false), 10000, "fernbedienung: das Handy hat den Knopf");
+  ok(await P[0].js(`document.getElementById("bRc").hidden`), "fernbedienung: Gäste haben den Knopf nicht");
+  await H.click("#bRc");
+  await until(() => H.js(`document.querySelectorAll("#rcBody .rclv button").length === 5`), 6000, "fernbedienung: der Stand vom PC ist da");
+  // ein Gast ohne den Schlüssel: nichts passiert
+  const vol0 = (await now()).vol;
+  await P[0].js(`sendSure({ k: "rc", hd: [myId, "vol", "", 5, Date.now(), "abcdefgh12"].join("|"), sig: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" }); 1`);
+  await wait(1200);
+  ok((await now()).vol === vol0, "fernbedienung: ein gefälschter Befehl wirkt nicht");
+  // Lautstärke, nächster Song, Stärke, Location
+  await H.click("#rcBody .rcrow button", { index: 4 });
+  await until(async () => Math.abs((await now()).vol - (vol0 + 0.1)) < 0.011, 5000, "fernbedienung: lauter");
+  const before = (await now()).uri;
+  await H.click("#rcBody .rcrow button", { index: 2 });
+  await until(async () => (await now()).uri !== before, 5000, "fernbedienung: nächster Song");
+  await H.click("#rcBody .rclv button", { index: 4 });
+  await until(() => H.js(`document.querySelectorAll("#rcBody .rclv button")[4]?.getAttribute("aria-pressed") === "true"`), 5000, "fernbedienung: Stärke 5 kommt am PC an");
+  await H.js(`(() => { const s = document.querySelector("#rcBody .rcsel"); s.value = "beach"; s.dispatchEvent(new Event("change")); })(); 1`);
+  await until(() => H.js(`rcS?.vn === "beach"`), 5000, "fernbedienung: Location kommt am PC an");
+  // zurück: Stärke 2, Location automatisch, Lautstärke wie vorher, wieder als Gast
+  await H.click("#rcBody .rclv button", { index: 1 });
+  await H.js(`(() => { const s = document.querySelector("#rcBody .rcsel"); s.value = "auto"; s.dispatchEvent(new Event("change")); })(); 1`);
+  await until(() => H.js(`rcS?.vn === "auto" && rcS?.lv === 2`), 5000, "fernbedienung: zurückgestellt");
+  await T.js(`__sp.reset(); 1`);
+  await H.win.loadURL(PAGE + "?guest=1" + hash);
+  await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bRc").hidden`).catch(() => false), 10000, "fernbedienung: wieder als Gast verbunden");
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -1129,7 +1179,7 @@ const CASES = [
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
-  ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions],
+  ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions], ["remote", remoteControl],
 ];
 
 /* ---------------------------------------------------------------- Start */

@@ -10,6 +10,8 @@ export const GUESTS_TEXT = {
     partyReacts: "Guest reactions", partyReactsHint: "Emoji from the phones rise quietly at the left and right edge of the party screen, never over the middle",
     partyWave: "Light wave on the phones", partyWaveHint: "Instead of all phones at once, the light runs through the room on the beat",
     waveOff: "All at once", waveSeq: "In turn (spot 1–8)", waveGroups: "Colour groups",
+    rcBtn: "Remote control for your phone", rcHide: "Hide code",
+    rcHint: "Scan it with your own phone: play and pause, skip, volume, intensity, location and games. Keep this code to yourself – whoever has it controls your music.",
   },
   de: {
     wishRules: "Regeln für Songwünsche", wishRulesHint: "Gelten für neue Wünsche von den Handys",
@@ -20,5 +22,7 @@ export const GUESTS_TEXT = {
     partyReacts: "Reaktionen der Gäste", partyReactsHint: "Emoji von den Handys steigen leise am linken und rechten Rand des Party-Bilds auf, nie über der Mitte",
     partyWave: "Lichtwelle auf den Handys", partyWaveHint: "Statt alle Handys zugleich läuft das Licht im Takt durch den Raum",
     waveOff: "Alle zugleich", waveSeq: "Der Reihe nach (Platz 1–8)", waveGroups: "Farbgruppen",
+    rcBtn: "Fernbedienung für dein Handy", rcHide: "Code verbergen",
+    rcHint: "Mit deinem eigenen Handy scannen: Pause und Weiter, Songs überspringen, Lautstärke, Stärke, Location und Spiele. Zeig diesen Code keinem Gast – wer ihn hat, steuert deine Musik.",
   },
 };

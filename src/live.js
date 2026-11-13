@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import { S } from "./core.js";
-import { cfg } from "./config.js";
+import { cfg, save } from "./config.js";
+import { t as tr } from "./i18n.js";
 import { currentItem, titleOf, artistOf } from "./player.js";
 
 /* ---------------------------------------------------------------- Live-Link: Handys leuchten mit */
@@ -145,7 +146,11 @@ async function prepare() {
   // das Handy unterschreibt damit seine Befehle (HMAC), und nur passend unterschriebene gelten.
   const hraw = crypto.getRandomValues(new Uint8Array(16));
   const hostKey = await crypto.subtle.importKey("raw", hraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "" };
+  // Fernbedienung: ein dritter Schlüssel, nur in deinem eigenen Link (zusammen mit dem der Spielleitung) –
+  // wer nur den Spiel-Link hat, kann die Musik nicht steuern
+  const rraw = crypto.getRandomValues(new Uint8Array(16));
+  const rcKey = await crypto.subtle.importKey("raw", rraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "", rcKey, rcUrl: `${url}&h=${b64u(hraw)}&r=${b64u(rraw)}`, rcQr: "" };
   hostSeen.clear();
   offAt = 0;
   wishes = [];
@@ -325,25 +330,70 @@ const colour = (v) => (Number.isInteger(v) && v >= 0 && v < 10 ? v : null);
 // lassen sich so weder fälschen noch ein zweites Mal abspielen).
 const hostSeen = new Map(), lastHost = new Map();
 const unB64u = (s) => Uint8Array.from(atob(String(s).replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
-async function hostCommand(id, msg) {
-  if (!ses?.hostKey || typeof msg.hd !== "string" || msg.hd.length > 160 || typeof msg.sig !== "string" || msg.sig.length > 64) return;
+// Unterschrift, Frische und Einmaligkeit prüfen – für Spielleitung und Fernbedienung, je mit eigenem Schlüssel
+async function signed(id, msg, key) {
+  if (!key || typeof msg.hd !== "string" || msg.hd.length > 160 || typeof msg.sig !== "string" || msg.sig.length > 64) return null;
   let good = false;
   try {
-    good = await crypto.subtle.verify("HMAC", ses.hostKey, unB64u(msg.sig), te.encode(msg.hd));
+    good = await crypto.subtle.verify("HMAC", key, unB64u(msg.sig), te.encode(msg.hd));
   } catch {}
-  if (!good) return;
+  if (!good) return null;
   const [from, a, t, v, at, nonce] = msg.hd.split("|");
-  if (from !== id || !nonce || Math.abs(Date.now() - Number(at)) > 600e3 || hostSeen.has(nonce)) return;
+  if (from !== id || !nonce || Math.abs(Date.now() - Number(at)) > 600e3 || hostSeen.has(nonce)) return null;
   hostSeen.set(nonce, Date.now());
   for (const [k, when] of hostSeen) if (Date.now() - when > 1300e3) hostSeen.delete(k);
-  window.dispatchEvent(new CustomEvent("mirage:host", { detail: { a: clean(a, 8), t: clean(t, 24), v: Number(v) || 0 } }));
+  return { a: clean(a, 8), t: clean(t, 24), v: Number(v) || 0 };
+}
+async function hostCommand(id, msg) {
+  const c = await signed(id, msg, ses?.hostKey);
+  if (c) window.dispatchEvent(new CustomEvent("mirage:host", { detail: c }));
+}
+/* ---- Fernbedienung für dich: Wiedergabe, Lautstärke, Stärke, Location, Spiele */
+// dieselben Locations wie in den Einstellungen
+const VENUES = ["auto", "club", "warehouse", "cellar", "jazzbar", "pub", "neon", "rooftop", "festival", "forest", "desert", "stadium", "beach", "skihut", "space", "cathedral", "hall", "home"];
+const playing = () => {
+  try {
+    return !!S.Player.isPlaying();
+  } catch {
+    return false;
+  }
+};
+// Stand für die Fernbedienung, Beschriftungen in deiner Sprache am PC (sie bedient ja nur du)
+const rcState = () => ({
+  pl: playing() ? 1 : 0, vol: Math.round((Number(S.Player.getVolume?.()) || 0) * 100), lv: cfg.partyLevel ?? 2, vn: cfg.partyVenue || "auto",
+  lvs: [1, 2, 3, 4, 5].map((n) => tr("partyLevel" + n)), vns: VENUES.map((k) => [k, tr("venue_" + k)]),
+});
+async function remoteCommand(id, msg) {
+  const c = await signed(id, msg, ses?.rcKey);
+  if (!c) return;
+  try {
+    if (c.a === "play") S.Player.togglePlay();
+    else if (c.a === "next") S.Player.next();
+    else if (c.a === "prev") S.Player.back();
+    else if (c.a === "vol") S.Player.setVolume(Math.max(0, Math.min(100, c.v)) / 100);
+    else if (c.a === "lvl" && c.v >= 1 && c.v <= 5) {
+      cfg.partyLevel = Math.round(c.v);
+      save();
+    } else if (c.a === "loc" && VENUES.includes(c.t)) {
+      cfg.partyVenue = c.t;
+      save();
+    } else if (c.a === "game") window.dispatchEvent(new CustomEvent("mirage:host", { detail: { a: "open", t: c.t, v: 0 } }));
+  } catch {}
+  // gleich antworten, und nach dem Wechsel noch einmal (Wiedergabe und Lautstärke brauchen einen Moment)
+  reply(id, { r: -1, rcs: rcState() });
+  setTimeout(() => reply(id, { r: -1, rcs: rcState() }), 700);
+}
+async function remoteInfo() {
+  const s = await prepare();
+  if (!s.rcQr) s.rcQr = await QRCode.toString(s.rcUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+  return { url: s.rcUrl, qr: s.rcQr };
 }
 async function hostInfo() {
   const s = await prepare();
   if (!s.hostQr) s.hostQr = await QRCode.toString(s.hostUrl, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
   return { url: s.hostUrl, qr: s.hostQr };
 }
-const lastReact = new Map(), lastGame = new Map(), refused = new Map();
+const lastReact = new Map(), lastGame = new Map(), refused = new Map(), lastRc = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
 let reactBudget = 6, reactAt = 0;
 async function inbound(m) {
@@ -368,6 +418,15 @@ async function inbound(m) {
     if (Date.now() - (lastHost.get(id) || 0) < 50) return;
     lastHost.set(id, Date.now());
     return void hostCommand(id, msg);
+  }
+  // Fernbedienung: im Schnitt höchstens 10 je Sekunde (kurze Folgen schneller Tipps gehen durch, auch mit den
+  // Wiederholungen von sendSure), nur mit der Unterschrift aus deinem eigenen Link
+  if (msg.k === "rc") {
+    const b = lastRc.get(id) || { n: 8, at: 0 }, n = Math.min(8, b.n + (Date.now() - b.at) / 100);
+    if (n < 1) return;
+    lastRc.set(id, { n: n - 1, at: Date.now() });
+    if (lastRc.size > 50) lastRc.delete(lastRc.keys().next().value);
+    return void remoteCommand(id, msg);
   }
   // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl, und insgesamt höchstens
   // 4 je Sekunde (bei vielen Gästen sonst ein Emoji-Regen); abschaltbar
@@ -561,4 +620,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, status: () => status, wishes: wishList, accept, decline };
+export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline };

@@ -3473,6 +3473,22 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 .mirage-settings .m-live .m-dim {
   opacity: 0.6;
 }
+/* Fernbedienung: Knopf unter dem Live-Link, der eigene QR-Code erst auf Druck */
+.mirage-settings .m-live .m-rc-btn {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 7px 14px;
+  border: 1px solid var(--m-line-strong);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--spice-text);
+  font: 600 13px var(--m-font);
+  cursor: pointer;
+}
+.mirage-settings .m-live .m-rc-qr img {
+  width: 168px;
+  height: 168px;
+}
 .mirage-settings .m-builder {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
