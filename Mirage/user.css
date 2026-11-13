@@ -112,6 +112,19 @@ body {
   opacity: 0.22 !important;
   mix-blend-mode: screen;
 }
+/* Unter dem Kopf (Aktionsleiste) und oben auf der Startseite: Spotify legt eine feste Farbfläche mit
+   Schwarzverlauf darüber. Durch „screen“ bleibt die Fläche, der Verlauf wirkt nur als Stufe – es entstanden
+   harte Kanten mitten in Liste und Karten. Jetzt läuft die Farbe nahtlos weich aus. */
+.main-actionBarBackground-background,
+.main-home-homeHeader {
+  background-image: none !important;
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+  mask-image: linear-gradient(180deg, #000, transparent);
+}
+/* Trenner in der Kopfzeile (Künstler • Jahr • Songs): Spotify setzt den Punkt als Text UND als ::before – doppelt */
+.main-entityHeader-divider:not(:empty)::before {
+  content: none !important;
+}
 /* Kleiner Kopf beim Scrollen (Playlist-Name + Play): Spotify blendet ihn selbst ein (Deckkraft).
    Statt seiner Coverfarbe eine fast deckende dunkle Glasleiste – Inhalt darunter scheint nicht durch */
 /* doppelte Klasse: muss auch gegen .m-tint gewinnen, falls die Fläche schon markiert wurde */
