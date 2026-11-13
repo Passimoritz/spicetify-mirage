@@ -180,7 +180,8 @@ function createVenue(makeCanvas) {
     club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },
     festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },
     stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },
-    home: { rows: [], haze: 0.5, spot: 0.5, decor: "fairy" },
+    // Wohnzimmer: keine Menge, nur ein paar Freunde vorne, die mitwippen
+    home: { rows: [[0, 1.7, 230]], haze: 0.5, spot: 0.5, decor: "fairy" },
     warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },
     beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },
     // „open“: unter freiem Himmel (Feuerwerk erlaubt) · „calm“: drinnen und gediegen – kein CO2, keine Flammen,
@@ -889,91 +890,244 @@ function createVenue(makeCanvas) {
   };
   let crowd = null, crowdA = 0;
   const rowA = [1, 1, 1];
+  // Frisuren und Kopfbedeckungen, von hinten gesehen: viele verschiedene Umrisse statt einer Reihe gleicher Köpfe
+  const HAIR = ["", "short", "short", "buzz", "long", "long", "bob", "pony", "bun", "pigtails", "cap", "beanie", "hat", "afro", "curl", "spiky", "hood"];
+  // hintere, kleine Reihen: nur grobe Umrisse – feine Unterschiede sieht dort niemand, und es braucht weniger Körperbilder
+  const FAR_HAIR = { short: "", buzz: "", spiky: "", bob: "long", pony: "long", pigtails: "long", beanie: "cap", hood: "cap", curl: "afro" };
+  const BUILD = [0.86, 0.95, 1.05, 1.17];
+  // Arme: Ober- und Unterarm (Länge in Körpereinheiten), Ellbogen per Zwei-Gelenk-Rechnung
+  const L1 = 26, L2 = 25;
   function makeCrowd(u, v) {
     const people = [];
     let id = 0;
-    for (const [row, scale, gap] of v.rows) {
+    v.rows.forEach(([row, scale, gap], lv) => {
+      // kleine (hintere) Reihen zeichnen vereinfacht: gröbere Frisuren, Arme als Strich
+      const far = scale < 0.66;
       for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {
         const r = Math.random;
+        const h0 = HAIR[Math.floor(r() * HAIR.length)];
         people.push({
-          id: id++, x, row, s: scale * (0.88 + r() * 0.26), ph: r() * 6.3, up: r(), hand: r() < 0.5 ? -1 : 1,
-          hair: HAIR[Math.floor(r() * HAIR.length)],
-          // Statur in drei Stufen (wenige Stufen = wenige vorgezeichnete Körperbilder)
-          wd: [0.86, 1, 1.15][Math.floor(r() * 3)],
-          gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "", arm: 0,
+          id: id++, x, row, lv, far, sc: scale, s: scale * (0.88 + r() * 0.26), ph: r() * 6.3, up: r(), hand: r() < 0.5 ? -1 : 1,
+          hair: far ? (FAR_HAIR[h0] ?? h0) : h0,
+          // Statur (vier Stufen) und Kleidung (nichts, Kapuze, Kragen, Rucksack) – wenige Stufen = wenige Körperbilder
+          wd: far ? 1 + Math.floor(r() * 2) : Math.floor(r() * 4), det: far ? 0 : Math.floor(r() * 4),
+          // eigene kleine Verzögerung: nicht alle reagieren im selben Augenblick auf den Schlag
+          lag: r() * 0.09,
+          gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "", arm: 0, spr: null, pk: "",
         });
       }
-    }
-    return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0 };
+    });
+    return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0, pk: "", T: [] };
   }
-  // Frisuren und Kopfbedeckungen: viele verschiedene Silhouetten statt einer Reihe gleicher Köpfe
-  const HAIR = ["", "", "bun", "cap", "curl", "long", "long", "afro", "pony", "beanie", "hat", "short"];
+  const mixC = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));
+  const css = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+  // Farben einer Reihe: vorne fast schwarz, nach hinten heller im farbigen Dunst (Luftperspektive);
+  // Kanten im Gegenlicht der Bühne (Songfarben, aufgehellt) – vorne kräftig, hinten weich
+  function tones(z, pal) {
+    // z: Tiefe 0 = hinten (im Dunst, nah an der Bühne) … 1 = vorne (fast schwarz, scharf)
+    const dark = [7, 6, 14], light = mixC(mixC(pal[0], pal[2], 0.45), [255, 255, 255], 0.35);
+    const base = mixC(dark, mixC(dark, pal[1], 0.45), 0.06 + (1 - z) * 0.26);
+    const low = mixC(base, [0, 0, 0], 0.35 * z);
+    return {
+      top: css(mixC(base, light, 0.08 + (1 - z) * 0.04)), low: css(low), rim: css(mixC(base, light, 0.85 - (1 - z) * 0.35)),
+      mid: css(mixC(base, light, 0.4 - (1 - z) * 0.15)), det: css(mixC(base, light, 0.05)), arm: css(mixC(base, light, 0.06)),
+      chair: css(mixC(base, [120, 28, 40], 0.3)), chairLow: css(mixC(low, [70, 14, 22], 0.25)), ext: css(low),
+    };
+  }
+  // Silhouette mit Gegenlicht: erst ganz in Kantenfarbe, darüber (nur innen) zweimal versetzt der Körper –
+  // es bleibt ein heller Saum oben und zur Bühnenmitte hin. Einmal ins Körperbild gemalt, kostet beim Zeichnen nichts.
+  function paint(x, P, S, top, bottom, T, c0, c1) {
+    // der Saum ist oben (Schultern, Scheitel) am hellsten und läuft an den Seiten nach unten aus
+    const lin = (a, b, c) => {
+      const g = x.createLinearGradient(0, top, 0, bottom);
+      g.addColorStop(0, a);
+      g.addColorStop(0.45, b);
+      g.addColorStop(1, c);
+      return g;
+    };
+    x.fillStyle = lin(T.rim, T.mid, c1);
+    x.fill(P);
+    x.globalCompositeOperation = "source-atop";
+    x.translate(-0.55 * S, 0.75 * S);
+    x.fillStyle = lin(T.mid, c0, c1);
+    x.fill(P);
+    x.translate(-0.55 * S, 0.75 * S);
+    const g = x.createLinearGradient(0, top, 0, bottom);
+    g.addColorStop(0, c0);
+    g.addColorStop(1, c1);
+    x.fillStyle = g;
+    x.fill(P);
+    x.setTransform(1, 0, 0, 1, 0, 0);
+    x.globalCompositeOperation = "source-over";
+  }
+  // alle Teilformen im Uhrzeigersinn (am Bildschirm), damit sie sich beim Füllen vereinigen statt Löcher zu stanzen
+  function bodyPath(cx, y, S, W, det) {
+    const P = new Path2D(), X = (d) => cx + d * S, Y = (d) => y + d * S;
+    const n = 4.4, sh = 21.5 * W, hip = 20 * W;
+    P.moveTo(X(-n), Y(-50));
+    P.lineTo(X(n), Y(-50));
+    // Nacken → Schulter → runder Oberarm → leicht schmaler zur Taille (Arme hängen in der Silhouette mit)
+    P.quadraticCurveTo(X(n + 6 * W), Y(-48.6), X(sh - 3), Y(-45.6));
+    P.bezierCurveTo(X(sh + 0.6), Y(-44.6), X(sh + 1.1), Y(-40), X(sh + 0.7), Y(-35));
+    P.quadraticCurveTo(X(sh - 0.2), Y(-14), X(hip), Y(20));
+    P.lineTo(X(-hip), Y(20));
+    P.quadraticCurveTo(X(-sh + 0.2), Y(-14), X(-sh - 0.7), Y(-35));
+    P.bezierCurveTo(X(-sh - 1.1), Y(-40), X(-sh - 0.6), Y(-44.6), X(-sh + 3), Y(-45.6));
+    P.quadraticCurveTo(X(-n - 6 * W), Y(-48.6), X(-n), Y(-50));
+    P.closePath();
+    if (det === 1) {
+      // Kapuze im Nacken
+      P.moveTo(X(10.5), Y(-47.5));
+      P.ellipse(X(0), Y(-47.5), 10.5 * S, 5.2 * S, 0, 0, Math.PI * 2);
+    } else if (det === 2) {
+      // hochgestellter Jackenkragen
+      P.moveTo(X(-8.5), Y(-45.5));
+      P.lineTo(X(-6.6), Y(-53.5));
+      P.lineTo(X(6.6), Y(-53.5));
+      P.lineTo(X(8.5), Y(-45.5));
+      P.closePath();
+    }
+    return P;
+  }
+  function headPath(ox, oy, S, hair) {
+    const P = new Path2D(), X = (d) => ox + d * S, Y = (d) => oy + d * S;
+    const E = (cx, cy, rx, ry) => {
+      P.moveTo(X(cx + rx), Y(cy));
+      P.ellipse(X(cx), Y(cy), rx * S, ry * S, 0, 0, Math.PI * 2);
+    };
+    const rx = hair === "buzz" ? 8 : 8.6, ry = hair === "buzz" ? 9.6 : 10.2;
+    E(0, 0, rx, ry);
+    if (["", "short", "buzz", "cap", "spiky", "pony", "bun"].includes(hair)) {
+      E(-rx + 0.3, 1.4, 1.7, 2.9);
+      E(rx - 0.3, 1.4, 1.7, 2.9);
+    }
+    const tail = (x0, dir) => {
+      P.moveTo(X(x0 - 2), Y(-4));
+      P.lineTo(X(x0 + 2.2), Y(-4));
+      P.quadraticCurveTo(X(x0 + 2.2 + dir * 2.6), Y(8), X(x0 + dir * 3), Y(19));
+      P.quadraticCurveTo(X(x0 + dir * 1.2), Y(20.5), X(x0 - 0.6), Y(18));
+      P.quadraticCurveTo(X(x0 + 0.4), Y(6), X(x0 - 2), Y(-4));
+      P.closePath();
+    };
+    if (hair === "short") E(0, -1.6, 9.2, 9.6);
+    else if (hair === "long" || hair === "bob") {
+      const b = hair === "long" ? 22 : 10, f = hair === "long" ? 11.4 : 10.6;
+      E(0, -1.5, 9.6, 10);
+      P.moveTo(X(-9.6), Y(-2));
+      P.lineTo(X(9.6), Y(-2));
+      P.quadraticCurveTo(X(f), Y(b * 0.55), X(f - 0.8), Y(b));
+      P.quadraticCurveTo(X(0), Y(b + 2.5), X(-f + 0.8), Y(b));
+      P.quadraticCurveTo(X(-f), Y(b * 0.55), X(-9.6), Y(-2));
+      P.closePath();
+    } else if (hair === "pony") {
+      E(0, -1.4, 9, 9.6);
+      tail(0.4, 1);
+      E(0.4, -3, 2.8, 2.3);
+    } else if (hair === "bun") {
+      E(0, -1.4, 9, 9.6);
+      E(0, -11.6, 4.6, 4.2);
+    } else if (hair === "pigtails") {
+      E(0, -1.4, 9, 9.6);
+      E(-9.6, 5.5, 2.6, 6.6);
+      E(9.6, 5.5, 2.6, 6.6);
+    } else if (hair === "cap") {
+      E(0, -3, 9.5, 8.6);
+      E(0, -1.4, 11.4, 1.5);
+      E(0, -11.4, 1.4, 1.1);
+    } else if (hair === "beanie") {
+      E(0, -4.6, 9.6, 9.8);
+      P.rect(X(-9.9), Y(-3.6), 19.8 * S, 3.6 * S);
+      E(0, -15.2, 3.2, 3);
+    } else if (hair === "hat") {
+      E(0, -4.6, 15.5, 2.3);
+      P.roundRect(X(-7.4), Y(-15), 14.8 * S, 10.6 * S, [3.6 * S, 3.6 * S, 0, 0]);
+    } else if (hair === "afro" || hair === "curl") {
+      const R = hair === "afro" ? 12.4 : 9.8, c = hair === "afro" ? -3 : -2, k = hair === "afro" ? 11 : 8, br = hair === "afro" ? 3.3 : 2.7;
+      E(0, c, R, R);
+      for (let i = 0; i < k; i++) {
+        const a = hair === "afro" ? (i / k) * Math.PI * 2 : Math.PI + (i / (k - 1)) * Math.PI;
+        E(Math.cos(a) * (R - 1.2), c + Math.sin(a) * (R - 1.2), br, br);
+      }
+    } else if (hair === "spiky") {
+      E(0, -1.4, 9, 9.6);
+      for (let k = -2; k <= 2; k++) {
+        const bx = k * 3.6, by = -8.6 + Math.abs(k) * 1.1;
+        P.moveTo(X(bx - 2.2), Y(by));
+        P.lineTo(X(bx + k * 0.9), Y(by - 5.6 + Math.abs(k) * 0.9));
+        P.lineTo(X(bx + 2.2), Y(by));
+        P.closePath();
+      }
+    } else if (hair === "hood") {
+      P.moveTo(X(-12.5), Y(17));
+      P.quadraticCurveTo(X(-13.8), Y(-8), X(-5), Y(-13.6));
+      P.quadraticCurveTo(X(0), Y(-15.6), X(5), Y(-13.6));
+      P.quadraticCurveTo(X(13.8), Y(-8), X(12.5), Y(17));
+      P.closePath();
+    }
+    return P;
+  }
+  // Körperbilder: einmal je Reihe, Frisur, Statur, Kleidung und Palette gemalt, danach nur noch drawImage.
+  // Jede Reihe in ihrer eigenen Größe (hinten klein = wenig Speicher, beim Zeichnen nie vergrößert).
+  // Ein Stadion braucht so rund 130 Bilder je Palette; nur die ältesten verwerfen (zuerst die der vorigen Palette).
   const bodySprites = new Map();
-  function bodySprite(p, u, pal) {
-    const key = `${p.row}|${p.hair}|${p.hand}|${p.wd || 1}|${pal[1].join()}|${pal[2].join()}|${u.toFixed(2)}`;
+  let palKey = "", spriteBudget = 0;
+  function bodySprite(p, u, T, seated) {
+    const key = `${p.lv}|${p.sc}|${p.hair}|${p.wd}|${p.det}|${seated ? 1 : 0}|${palKey}|${u.toFixed(2)}`;
     let sp = bodySprites.get(key);
     if (sp) return sp;
-    // Ein Stadion braucht bis zu 3 Reihen × 10 Frisuren × 2 Hände × 3 Staturen = 180 Bilder je Palette. Eine
-    // kleinere Grenze mit clear() malte sie dort in jedem Bild neu (Thread 80 ms statt wenige ms pro Bild).
-    // Darum: nur die ältesten verwerfen (zuerst die der vorigen Palette), Platz für einen ganzen Satz.
+    // Palettenwechsel: höchstens ein paar Dutzend neue Bilder je Bild – wer noch keins hat, behält kurz das alte
+    if (spriteBudget-- <= 0) return null;
     if (bodySprites.size >= 200) bodySprites.delete(bodySprites.keys().next().value);
-    const S1 = 1.3 * u, w = Math.ceil(60 * S1), h = Math.ceil(100 * S1);
+    const S = p.sc * 1.14 * u, W = BUILD[p.wd], pad = 2;
+    const bwU = Math.max(46 * W, seated ? 52 : 0);
+    // hintere Reihen: Kopf gleich mit ins Körperbild (ein drawImage statt zwei – dort nickt man nur ein paar Pixel)
+    const top = p.far ? 86 : 57;
+    const w = Math.ceil(bwU * S) + pad * 2, h = Math.ceil((top + 21) * S) + pad * 2;
     const c = makeCanvas(w, h);
     c.width = w;
     c.height = h;
-    const x = c.getContext("2d"), cx0 = w / 2, y = 82 * S1, hx = cx0;
-    x.fillStyle = FILL[p.row];
-    x.beginPath();
-    // nur der Körper – den Kopf zeichnet drawCrowd extra, damit er nicken kann
-    const W = p.wd || 1;
-    x.moveTo(cx0 - 20 * S1 * W, y + 18 * S1);
-    x.quadraticCurveTo(cx0 - 22 * S1 * W, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
-    x.lineTo(hx + 5 * S1, y - 50 * S1);
-    x.quadraticCurveTo(cx0 + 22 * S1 * W, y - 46 * S1, cx0 + 20 * S1 * W, y + 18 * S1);
-    x.closePath();
-    x.fill();
-    const c2 = pal[p.row === 0 ? 2 : 1];
-    x.lineWidth = Math.max(1, 1.6 * S1);
-    x.lineCap = "round";
-    x.strokeStyle = `rgba(${c2.join(",")},${0.5 - p.row * 0.12})`;
-    x.beginPath();
-    x.moveTo(cx0 - 19 * S1, y - 30 * S1);
-    x.quadraticCurveTo(cx0 - 21 * S1, y - 46 * S1, hx - 5 * S1, y - 50 * S1);
-    x.stroke();
-    // Kopf mit Frisur als eigenes kleines Bild
-    const hc = makeCanvas(Math.ceil(34 * S1), Math.ceil(40 * S1));
-    hc.width = Math.ceil(34 * S1);
-    hc.height = Math.ceil(40 * S1);
-    const hxx = hc.getContext("2d"), ox = hc.width / 2, oy = 24 * S1;
-    hxx.fillStyle = FILL[p.row];
-    hxx.beginPath();
-    hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, 0, Math.PI * 2);
-    if (p.hair === "curl") hxx.arc(ox, oy - 3 * S1, 12 * S1, 0, Math.PI * 2);
-    if (p.hair === "bun") hxx.arc(ox + 2 * S1, oy - 13 * S1, 5 * S1, 0, Math.PI * 2);
-    if (p.hair === "afro") hxx.arc(ox, oy - 4 * S1, 14 * S1, 0, Math.PI * 2);
-    if (p.hair === "pony") hxx.ellipse(ox - p.hand * 10 * S1, oy - 2 * S1, 4 * S1, 8 * S1, p.hand * 0.5, 0, Math.PI * 2);
-    if (p.hair === "beanie") hxx.ellipse(ox, oy - 8 * S1, 10.5 * S1, 8 * S1, 0, Math.PI, Math.PI * 2);
-    if (p.hair === "short") hxx.ellipse(ox, oy - 3 * S1, 10.2 * S1, 10 * S1, 0, Math.PI, Math.PI * 2);
-    hxx.fill();
-    if (p.hair === "cap") hxx.fillRect(ox - 2 * S1 + (p.hand < 0 ? -13 * S1 : 0), oy - 9 * S1, 15 * S1, 3 * S1);
-    if (p.hair === "long") {
-      hxx.fillRect(ox - 11 * S1, oy - 4 * S1, 4 * S1, 18 * S1);
-      hxx.fillRect(ox + 7 * S1, oy - 4 * S1, 4 * S1, 18 * S1);
+    const x = c.getContext("2d"), cx = w / 2, y = pad + top * S;
+    paint(x, bodyPath(cx, y, S, W, p.det), S, y - 56 * S, y + 20 * S, T, T.top, T.low);
+    if (p.det === 3) {
+      // Rucksack: Riemen und Packsack nur als leicht hellere Fläche auf dem Rücken
+      x.globalCompositeOperation = "source-atop";
+      x.fillStyle = T.det;
+      x.beginPath();
+      x.roundRect(cx - 9 * W * S, y - 33 * S, 18 * W * S, 27 * S, 5 * S);
+      x.fill();
+      x.strokeStyle = T.det;
+      x.lineWidth = 1.6 * S;
+      x.beginPath();
+      x.moveTo(cx - 10 * W * S, y - 46 * S);
+      x.lineTo(cx - 9.5 * W * S, y - 34 * S);
+      x.moveTo(cx + 10 * W * S, y - 46 * S);
+      x.lineTo(cx + 9.5 * W * S, y - 34 * S);
+      x.stroke();
+      x.globalCompositeOperation = "source-over";
     }
-    if (p.hair === "hat") {
-      hxx.fillRect(ox - 15 * S1, oy - 10 * S1, 30 * S1, 3 * S1);
-      hxx.fillRect(ox - 8 * S1, oy - 19 * S1, 16 * S1, 10 * S1);
+    if (seated) {
+      // Konzertsaal: Rückenlehne des Sitzes vor dem Körper (Samt, oben mit Lichtkante)
+      const Q = new Path2D();
+      Q.roundRect(cx - 25 * S, y - 16 * S, 50 * S, 36 * S, [6 * S, 6 * S, 0, 0]);
+      paint(x, Q, S * 0.7, y - 16 * S, y + 20 * S, T, T.chair, T.chairLow);
     }
-    hxx.lineWidth = Math.max(1, 1.6 * S1);
-    hxx.strokeStyle = `rgba(${c2.join(",")},${0.55 - p.row * 0.12})`;
-    hxx.beginPath();
-    hxx.ellipse(ox, oy, 9.5 * S1, 11 * S1, 0, Math.PI * 1.1, Math.PI * 1.9);
-    hxx.stroke();
-    sp = { c, w, h, ax: cx0, ay: y, head: hc, hox: ox, hoy: oy, S1 };
+    const hw = Math.ceil(36 * S) + pad * 2, hh = Math.ceil(48 * S) + pad * 2;
+    const hc = makeCanvas(hw, hh);
+    hc.width = hw;
+    hc.height = hh;
+    const ox = hw / 2, oy = pad + 20 * S;
+    const hx = hc.getContext("2d");
+    paint(hx, headPath(ox, oy, S, p.hair), S, oy - 20 * S, oy + 26 * S, T, T.top, T.low);
+    // Hals dahinter, ohne Lichtsaum: der nickende Kopf reißt nie vom Körper ab
+    hx.globalCompositeOperation = "destination-over";
+    hx.fillStyle = T.top;
+    hx.fillRect(ox - 3.4 * S, oy + 4 * S, 6.8 * S, 15 * S);
+    hx.globalCompositeOperation = "source-over";
+    if (p.far) x.drawImage(hc, cx - ox, y - 64 * S - oy);
+    sp = { c, w, h, ax: cx, ay: y, head: p.far ? null : hc, hox: ox, hoy: oy, S, ext: seated ? T.chairLow : T.ext, ew: seated ? 50 : 40 * W };
     bodySprites.set(key, sp);
     return sp;
   }
-  const FILL = ["rgba(4,3,10,0.96)", "rgba(12,9,24,0.86)", "rgba(24,18,44,0.7)"];
   function drawCrowd(ctx, px, pal, dpr, rgba, dt, st, v, A) {
     const u = Math.max(0.75, vh / (950 * dpr)) * dpr;
     // neue Fenster- oder Bildgröße (z. B. die Leistungsstufe wechselt): dieselben Leute, nur mitskaliert –
@@ -985,6 +1139,13 @@ function createVenue(makeCanvas) {
     }
     if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);
     if (!crowd.people.length) return;
+    palKey = `${pal[0].join()}|${pal[1].join()}|${pal[2].join()}`;
+    const pk = `${palKey}|${u.toFixed(2)}`;
+    if (crowd.pk !== pk) {
+      crowd.pk = pk;
+      crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, pal));
+    }
+    spriteBudget = 40;
     const X = crowdMood(px, dt, st.hype), t = st.t;
     const style = v.seated ? "sway" : MOVES[px.key] || "clap";
     const SEAa = seaLevel(px, dt, st);
@@ -1003,9 +1164,10 @@ function createVenue(makeCanvas) {
     crowd.phOff *= Math.exp(-(dt || 0.016) * 3);
     if (Math.abs(crowd.phOff) < 0.005) crowd.phOff = 0;
     const phi = (((raw - crowd.phOff) % 1) + 1) % 1;
-    const cyc = half ? ((beatN & 1) + phi) / 2 : phi; // 0..1 über einen (bzw. zwei) Schläge
     const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;
-    const down = Math.exp(-phi * 6); // kurz nach dem Schlag 1, dann abklingend
+    const beatPos = beatN + phi;
+    // Anspannung vor dem Drop: alle gehen leicht in die Knie und die Hände kommen schon halb hoch
+    const build = clamp(px.build || 0, 0, 1);
     // La-Ola: in der Spitze etwa alle 20 s eine Welle über zwei Takte
     if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];
     const waveX = crowd.wave >= 0 ? ((t - crowd.wave) / ((8 * 60) / st.bpm)) * vw * 1.3 - vw * 0.15 : -1e9;
@@ -1020,8 +1182,8 @@ function createVenue(makeCanvas) {
     ctx.globalAlpha = A;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    const glows = [], arms = [new Path2D(), new Path2D(), new Path2D()];
-    let curRow = null;
+    const glows = [];
+    let arms = new Path2D(), fore = new Path2D(), nArms = 0, curLv = -1, lastFill = "";
     // Gegenlicht: ein Streifen leuchtender Dunst hinter den Köpfen, der mit Kick und Drop aufglüht
     {
       const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;
@@ -1036,16 +1198,27 @@ function createVenue(makeCanvas) {
     }
     // Qualitätsstufe: hintere Reihen blenden weich aus und ein, statt schlagartig zu verschwinden
     for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));
-    const strokeRow = (row) => {
+    // Arme einer Reihe auf einmal: vorne Oberarme kräftig, Unterarme schmaler (zwei Striche mit runden Enden =
+    // Ellbogen und Faust), hinten ein einziger Strich. Gefüllte Flächen mit Lichtsaum sahen kaum besser aus,
+    // kosteten aber beim Rastern das Doppelte.
+    const flushArms = (lv) => {
+      if (!nArms) return;
+      const [row, sc] = v.rows[lv], k = sc * u;
       ctx.globalAlpha = A * rowA[row];
-      ctx.lineWidth = 6.5 * u * [1.04, 0.8, 0.62][row];
-      ctx.strokeStyle = FILL[row];
-      ctx.stroke(arms[row]);
-      arms[row] = new Path2D();
+      ctx.strokeStyle = crowd.T[lv].arm;
+      ctx.lineWidth = (sc < 0.66 ? 5.6 : 7.2) * k;
+      ctx.stroke(arms);
+      if (sc >= 0.66) {
+        ctx.lineWidth = 5.8 * k;
+        ctx.stroke(fore);
+        fore = new Path2D();
+      }
+      arms = new Path2D();
+      nArms = 0;
     };
     // Handylichter, Feuerzeuge und Kamerablitze einer Reihe gleich nach ihr zeichnen – die Reihen davor
     // verdecken sie dann (vorher lagen alle Lichter über allen Köpfen und schienen durch die Leute vorne)
-    const flushLights = (row) => {
+    const flushLights = (lv) => {
       ctx.globalCompositeOperation = "lighter";
       for (const [gx, gy, kind, s1, r0] of glows) {
         const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;
@@ -1054,97 +1227,139 @@ function createVenue(makeCanvas) {
       }
       glows.length = 0;
       for (const f of crowd.flashes) {
-        if ((f.row ?? 0) !== row) continue;
+        if ((f.lv ?? 0) !== lv) continue;
         const r = 34 * f.s;
         ctx.globalAlpha = f.a * A;
         ctx.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);
       }
       ctx.globalCompositeOperation = "source-over";
     };
+    const mid = vw / 2;
+    // sichtbarer Ausschnitt (mit Kamerazoom): Leute außerhalb nur weiterrechnen, nicht zeichnen
+    const cs = st.cam?.s || 1, ctx0 = ((1 - cs) * vw) / 2 + ((st.cam?.x || 0) + (st.dep?.on ? st.dep.x * 34 : 0)) * dpr;
+    const vx0 = -ctx0 / cs, vx1 = (vw - ctx0) / cs;
     for (const p of crowd.people) {
-      if (p.row !== curRow) {
-        if (curRow != null) {
-          strokeRow(curRow);
-          flushLights(curRow);
+      if (p.lv !== curLv) {
+        if (curLv >= 0) {
+          flushArms(curLv);
+          flushLights(curLv);
         }
-        curRow = p.row;
+        curLv = p.lv;
       }
       const ra = rowA[p.row];
       if (ra < 0.02) continue;
+      if (p.pk !== pk) {
+        const sp2 = bodySprite(p, u, crowd.T[p.lv], v.seated);
+        if (sp2) [p.spr, p.pk] = [sp2, pk];
+      }
+      const sp = p.spr;
+      if (!sp) continue;
       ctx.globalAlpha = A * ra;
       const s1 = p.s * u, me = clamp(X + (p.up - 0.5) * 0.3, 0, 1);
       // La-Ola: weicher Buckel, der durch die Reihe läuft (statt an/aus mitten im Sprung)
       const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;
       const inWave = wave > 0.35;
+      // eigener Takt der Person: ein paar Hundertstel nach dem Schlag – die Menge reagiert gestaffelt, nicht wie ein Uhrwerk
+      const bp = beatPos - p.lag, bN = Math.floor(bp), ph = bp - bN;
+      const cyc = half ? ((bN & 1) + ph) / 2 : ph, cycN = half ? bN >> 1 : bN;
+      const down = Math.exp(-ph * 6);
       // --- Körper: springen / wippen / skanken – alles phasenstarr. Ob jemand springt, steht zu Beginn jedes
       // Sprungs fest – ändert sich die Stimmung mitten in der Luft, wird der Sprung trotzdem zu Ende gesprungen
-      const cycN = half ? beatN >> 1 : beatN;
       if (p.cyc !== cycN) {
         p.cyc = cycN;
         p.jmp = ((style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2) || (px.drop > 0.6 && me > 0.6);
       }
       let lift = wave * (14 + me * 18) * s1;
-      if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc)); // landet auf dem Schlag
-      else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * phi);
-      else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((phi - 0.5) ** 2) * 40);
-      else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * phi);
-      const sway = Math.sin(((beatN + phi) / 2) * Math.PI + p.ph) * (2 + (1 - me) * 4) * s1;
+      // Sprung landet auf dem Schlag, danach kurz in die Knie (Landung federt)
+      if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc)) - 3 * s1 * Math.exp(-cyc * 16);
+      else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * ph);
+      else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((ph - 0.5) ** 2) * 40);
+      else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * ph);
+      lift -= build * 4 * s1 * (0.4 + me * 0.6);
+      // Wiegen mit Nachschwung: der Kopf folgt den Schultern etwas später und weiter
+      const th = (bp / 2) * Math.PI + p.ph, swA = (2 + (1 - me) * 4) * s1;
+      const sway = Math.sin(th) * swA;
       const base = vh + 8 * u, y = base - lift, x = p.x + sway;
       // --- Kopf: Nicken auf dem Schlag; Rock/Metal bangen kräftig
       const nodAmp = style === "bang" ? (me > 0.5 ? 9 : 4) : style === "nod" ? 6 : me > 0.3 ? 3 : 1;
-      const nod = nodAmp * s1 * down * (0.4 + me * 0.6);
-      const sp = bodySprite(p, u, pal), k1 = p.s / 1.3;
+      const nod = nodAmp * s1 * down * (0.4 + me * 0.6) * (1 - build * 0.5);
+      const hdx = Math.sin(th - 0.55) * swA * 1.25 - sway + (style === "bang" ? nod * 0.3 * p.hand : 0);
       // auf den Schultern: dieselbe Person sitzt eine Etage höher und reißt die Arme hoch
       const lifted = p.id === crowd.lift;
       p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4)); // weich hoch auf die Schultern
       const yy = y - 58 * s1 * p.sh;
-      ctx.drawImage(sp.c, x - sp.ax * k1, yy - sp.ay * k1, sp.w * k1, sp.h * k1);
-      // Körper bis weit unter den Bildrand verlängern: beim Springen, auf den Schultern und bei
-      // Kamerafahrten schwebt sonst ein abgeschnittener Oberkörper in der Luft
-      ctx.fillStyle = FILL[p.row];
-      ctx.fillRect(x - 20 * s1, yy + 18 * s1 - 0.5, 40 * s1, vh * 0.6 + (base - yy));
-      ctx.drawImage(sp.head, x - sp.hox * k1 + (style === "bang" ? nod * 0.3 * p.hand : 0), yy - 64 * s1 + nod - 24 * s1, sp.head.width * k1, sp.head.height * k1);
+      // Licht kommt von der Bühnenmitte: rechts davon gespiegelt zeichnen, damit der Lichtsaum zur Mitte zeigt
+      const vis = x > vx0 - 60 * s1 && x < vx1 + 60 * s1;
+      const k1 = s1 / sp.S, flip = p.x > mid, bx = flip ? -x : x, hx = bx + (flip ? -hdx : hdx);
+      if (vis) {
+        if (flip) ctx.scale(-1, 1);
+        ctx.drawImage(sp.c, bx - sp.ax * k1, yy - sp.ay * k1 + (sp.head ? 0 : nod * 0.5), sp.w * k1, sp.h * k1);
+        // Körper bis weit unter den Bildrand verlängern: beim Springen, auf den Schultern und bei
+        // Kamerafahrten schwebt sonst ein abgeschnittener Oberkörper in der Luft
+        if (lastFill !== sp.ext) ctx.fillStyle = lastFill = sp.ext;
+        ctx.fillRect(bx - (sp.ew / 2) * s1, yy + 20 * s1 - 0.5, sp.ew * s1, vh * 0.6 + (base - yy));
+        if (sp.head) ctx.drawImage(sp.head, hx - sp.hox * k1, yy - 64 * s1 + nod - sp.hoy * k1, sp.head.width * k1, sp.head.height * k1);
+        if (flip) ctx.scale(-1, 1);
+      }
       // --- Arme: hoch mit der Stimmung, Faust auf der Kick, Klatschen auf 2 und 4, Winken, Handys
       // im Lichtermeer machen immer mehr mit – wer, steht je Person fest; im Saal bleiben die Hände unten
       const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;
       const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
       // „Hands up“: im Refrain gehen (fast) alle Hände gleichzeitig hoch – beide Arme, als großes V
       const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;
-      const wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
+      let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
+      if (!v.seated && build > 0.2 && me > 0.4 && p.up < 0.6) wantUp = Math.max(wantUp, 0.55 * build);
       p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
-      const arm = arms[p.row];
       const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
+      const Wb = BUILD[p.wd];
       for (const side of [-1, 1]) {
-        const sx = x + side * 15 * s1, sy = yy - 42 * s1;
-        const a = side === p.hand || allUp ? p.arm : p.arm * (me > 0.6 || style === "clap" || lifted ? 1 : 0.35);
-        let hxA = sx + side * 6 * s1, hyA = yy + 2 * s1;
-        if (a > 0.02) {
-          let ux = side * (12 + 6 * Math.sin(((beatN + phi) / 2) * Math.PI + p.ph)) * s1, uy = -50 * s1;
-          if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin(((beatN + phi) / 2) * Math.PI * 2 + p.ph) * 14 * s1;
-          // Lichtermeer: alle schwenken im selben langsamen Bogen, leicht versetzt von links nach rechts
-          if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin(((beatN + phi) / 8) * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];
-          if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];
-          if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin(((beatN + phi) / 2) * Math.PI)) * s1, -54 * s1 - 6 * s1 * down];
-          if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;
-          hxA += (sx + ux - hxA) * a;
-          hyA += (sy + uy - hyA) * a;
+        // der zweite Arm geht nur ganz mit hoch (halb gehobene Arme sähen wie Zeigen aus)
+        const a = side === p.hand || allUp || me > 0.6 || style === "clap" || lifted ? p.arm : 0;
+        // hängende Arme gehören zur Silhouette des Körperbilds – erst gehobene Arme werden einzeln gezeichnet
+        if (a < 0.2 || !vis) continue;
+        const sx = x + side * 16.5 * Wb * s1, sy = yy - 41 * s1;
+        // Hände schwingen etwas hinter dem Körper her (Nachschwung)
+        const ths = th - 0.35;
+        let ux = side * (12 + 6 * Math.sin(ths)) * s1, uy = -50 * s1;
+        if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin(ths * 2) * 14 * s1;
+        // Lichtermeer: alle schwenken im selben langsamen Bogen, leicht versetzt von links nach rechts
+        if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin((bp / 8) * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];
+        if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];
+        if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin(ths)) * s1, -54 * s1 - 6 * s1 * down];
+        if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;
+        // Weg der Hand: vom gestreckt hängenden Arm erst am Körper hoch, dann nach oben-außen (Bogen statt Gerade)
+        const b0 = (1 - a) * (1 - a), b1 = 2 * a * (1 - a), b2 = a * a;
+        let hxA = sx + (b0 * side * 3 + b1 * side + b2 * ux / s1) * s1, hyA = sy + (b0 * 50 + b1 * 22) * s1 + b2 * uy;
+        // Ellbogen: zwei Gelenke, nach außen geknickt – erst wenn die Hand über die Schulter kommt (darunter knickt er
+        // zum Betrachter hin und bleibt hinter dem Körper); seitlich höchstens ein Stück, der Rest zeigt nach vorn; zu weit entfernte Hände bleiben am gestreckten Arm
+        let dx = hxA - sx, dy = hyA - sy, d = Math.hypot(dx, dy) || 1;
+        const dm = (L1 + L2 - 0.5) * s1;
+        if (d > dm) [hxA, hyA, dx, dy, d] = [sx + (dx / d) * dm, sy + (dy / d) * dm, (dx / d) * dm, (dy / d) * dm, dm];
+        const l1 = L1 * s1, l2 = L2 * s1, al = (l1 * l1 - l2 * l2 + d * d) / (2 * d), hh = Math.min(Math.sqrt(Math.max(0, l1 * l1 - al * al)), 9 * s1) * clamp((sy + 10 * s1 - hyA) / (30 * s1), 0, 1);
+        let nx = -dy / d, ny = dx / d;
+        if (nx * side < 0) [nx, ny] = [-nx, -ny];
+        const ex = sx + (dx / d) * al + nx * hh, ey = sy + (dy / d) * al + ny * hh;
+        arms.moveTo(sx, sy);
+        arms.lineTo(ex, ey);
+        if (p.far) arms.lineTo(hxA, hyA);
+        else {
+          fore.moveTo(ex, ey);
+          fore.lineTo(hxA, hyA);
         }
-        const ex = (sx + hxA) / 2 + side * 7 * s1, ey = (sy + hyA) / 2 + 4 * s1 * (1 - a);
-        arm.moveTo(sx, sy);
-        arm.quadraticCurveTo(ex, ey, hxA, hyA);
+        nArms++;
         if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);
       }
       // Kamerablitze aus der Menge: in der Spitze öfter
       // (mit „Keine Blitze“ bleiben die Handys dunkel)
       if (st.noFlash) {
         // nichts
-      } else if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1, row: p.row });
+      } else if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x: x, y: yy - 70 * s1, a: 1, s: s1, lv: p.lv });
       // Blitzlicht-Gewitter (großer Refrain): viele Handys blitzen gleichzeitig
-      else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, row: p.row });
+      else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, lv: p.lv });
     }
-    if (curRow != null) {
-      strokeRow(curRow);
-      flushLights(curRow);
+    if (curLv >= 0) {
+      flushArms(curLv);
+      flushLights(curLv);
     }
     ctx.globalCompositeOperation = "lighter";
     if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);
