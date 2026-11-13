@@ -11,6 +11,7 @@ const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
 const { createSecrets, SECRET } = require("./secrets.js");
 const { createCast } = require("./cast.js");
+const { createPartyGuard } = require("./flashcap.js");
 const { make } = require("./i18n");
 
 const WIN = process.platform === "win32";
@@ -782,9 +783,14 @@ function makeEdges() {
     return w;
   });
 }
-function onParty(m) {
-  if (obsParty.size) obsSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal });
-  lights.feed(m);
+// Kantenlicht und OBS-Quelle bekommen den Zustand erst nach der Blitz-Schranke (höchstens 3 Blitze pro
+// Sekunde, mit „Keine Blitze“ gar keine); die Lampen haben in lights.js ihre eigene
+const screenGuard = createPartyGuard();
+function onParty(raw) {
+  if (!raw || typeof raw !== "object") return;
+  lights.feed(raw);
+  const m = screenGuard(raw, Date.now() / 1000);
+  if (obsParty.size) obsSend("party", { a: m.a, k: m.k, e: m.e, d: m.d, pal: m.pal, nf: m.nf });
   if (m.edge === false || cfg.mode === "off" || busy || cfg.edge === false) return;
   if (!edges) makeEdges();
   for (const w of edges || []) {

@@ -120,7 +120,7 @@ function fakeHa() {
   await sleep(400);
   for (let i = 0; i < 6; i++) {
     beat();
-    await sleep(260);
+    await sleep(360); // über 0,34 s: schneller lässt die Blitz-Schranke keine Schläge durch
   }
   assert.ok(lights.active(), "Party sollte als aktiv gelten");
 
@@ -162,7 +162,7 @@ function fakeHa() {
   await sleep(400);
   for (let i = 0; i < 4; i++) {
     beat();
-    await sleep(260);
+    await sleep(360); // über 0,34 s: schneller lässt die Blitz-Schranke keine Schläge durch
   }
   assert.ok(hueDev.puts.some((p) => p.id === "3"), "Lampe 3 sollte nach dem Wieder-Aufnehmen mitmachen");
   assert.strictEqual(haDev.calls.filter((c) => c.svc === "scene/create").length, 1, "zweiter Schnappschuss hätte Partyfarben gemerkt");
@@ -203,7 +203,7 @@ function fakeHa() {
   await sleep(400);
   for (let i = 0; i < 3; i++) {
     beat();
-    await sleep(260);
+    await sleep(360); // über 0,34 s: schneller lässt die Blitz-Schranke keine Schläge durch
   }
   assert.deepStrictEqual([...new Set(hueDev.puts.map((p) => p.id))], ["4"]);
   await lights.stopAll();

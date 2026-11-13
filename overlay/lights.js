@@ -6,9 +6,18 @@
 const dgram = require("dgram");
 const http = require("http");
 const https = require("https");
+const { createPartyGuard } = require("./flashcap.js");
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const scale = (c, f) => c.map((v) => Math.round(clamp(v * f, 0, 255)));
+// Farbe an Stelle f im Kreis der drei Songfarben (1,5 = mitten zwischen der zweiten und dritten)
+function mixPal(p, f) {
+  f = ((f % 3) + 3) % 3;
+  const a = Math.floor(f), m = f - a, c0 = p[a % 3], c1 = p[(a + 1) % 3];
+  return [0, 1, 2].map((k) => c0[k] + (c1[k] - c0[k]) * m);
+}
+// „Keine Blitze“: die Farben wandern langsam weiter (eine Songfarbe je 4 s) statt auf jedem Schlag zu springen
+const drift = (now) => now / 4000;
 
 // kleiner JSON-Aufruf über http/https (Hue-Bridge, Razer Chroma, Hue-Suche)
 function call(method, url, body, timeout = 2500, headers = {}) {
@@ -131,6 +140,8 @@ function toXy([r, g, b]) {
 function createLights(getCfg, log = () => {}, opts = {}) {
   let beat = 0, kick = 0, lastAt = 0, idleT = 0;
   const bv = createBeatView();
+  // jeder Schlag und Drop vom Theme geht erst durch die Blitz-Schranke; nf = „Keine Blitze“ ist an
+  let guard = createPartyGuard(), nf = false;
   // Einmessen (calibrate): nur ein Gerät blinkt im festen Takt, weiß, abwechselnd hell und dunkel
   let cal = null;
   const on = (name) => (cal ? cal.name === name : !!getCfg()[name + "On"]);
@@ -196,9 +207,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       buf[1] = 2; // nach 2 s ohne Daten zurück zum normalen WLED-Programm
       for (let i = 0; i < n; i++) {
         // die drei Songfarben laufen als Verlauf über den Streifen und wandern mit jedem Schlag weiter
-        const f = ((i / n) * 3 + v.beat * 0.5) % 3, a = Math.floor(f), m = f - a;
-        const c0 = p[a % 3], c1 = p[(a + 1) % 3];
-        let col = [0, 1, 2].map((k) => c0[k] + (c1[k] - c0[k]) * m);
+        let col = mixPal(p, (i / n) * 3 + (nf && !cal ? drift(now) : v.beat * 0.5));
         if (drop) col = col.map((v) => v + (255 - v) * 0.7);
         const fall = 1 - 0.55 * Math.abs((i / n) * 2 - 1) * (1 - v.kick); // Mitte pulst stärker
         const out = scale(col, lv * fall);
@@ -258,7 +267,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       // beim Einmessen blinkt immer dieselbe (erste) Lampe, ohne Überblenden
       const p = pal(), id = cal ? this.lights[0] : this.lights[this.next++ % this.lights.length];
       const drop = v.st?.d > 0.85;
-      this.send(`/lights/${id}/state`, { on: true, xy: toXy(drop ? [255, 255, 255] : p[this.next % 3]), bri: briOf(254), transitiontime: cal ? 0 : 1 });
+      // „Keine Blitze“: kein Weiß (der Drop kommt dann gar nicht an) und 0,8 s Überblenden statt 0,1 s
+      this.send(`/lights/${id}/state`, { on: true, xy: toXy(drop ? [255, 255, 255] : p[this.next % 3]), bri: briOf(254), transitiontime: cal ? 0 : nf ? 8 : 1 });
     },
     async restore() {
       const b = this.base(), saved = this.saved;
@@ -319,7 +329,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       for (const d of this.devices) {
         if (!d.leds || skip.some((x) => d.name.includes(x))) continue;
         const colors = Array.from({ length: d.leds }, (_, i) => {
-          let c = p[(Math.floor(i / Math.max(1, d.leds / 3)) + v.beat) % 3];
+          const seg = Math.floor(i / Math.max(1, d.leds / 3));
+          let c = nf && !cal ? mixPal(p, seg + drift(now)) : p[(seg + v.beat) % 3];
           if (drop) c = c.map((v) => v + (255 - v) * 0.7);
           const o = scale(c, lv);
           return { red: o[0], green: o[1], blue: o[2] };
@@ -357,7 +368,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       if (!this.uri || now - this.at < 50) return;
       this.at = now;
       const p = pal(), drop = v.st?.d > 0.85;
-      let c = p[v.beat % 3];
+      // nf: in 16 Stufen je Farbe weiterwandern – Synapse bekommt so höchstens 4 Wechsel pro Sekunde
+      let c = nf && !cal ? mixPal(p, Math.round(drift(now) * 16) / 16) : p[v.beat % 3];
       if (drop) c = [255, 255, 255];
       // nur senden, wenn sich Farbe oder Helligkeit (in 12 Stufen) sichtbar ändert – Synapse mag keine Flut
       const [r, g, b] = scale(c, Math.round(level() * 12) / 12);
@@ -421,7 +433,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     frame(now) {
       if (!this.sock || now - this.at < 100) return;
       const p = pal(), drop = v.st?.d > 0.85;
-      let c = p[v.beat % 3];
+      let c = nf && !cal ? mixPal(p, drift(now)) : p[v.beat % 3];
       if (drop) c = c.map((v) => v + (255 - v) * 0.7);
       const lv = Math.round(level() * 10) / 10, [r, g, b] = scale(c, Math.min(cap(), Math.max(0.15, lv)));
       const key = `${r >> 3},${g >> 3},${b >> 3}`;
@@ -505,7 +517,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       this.lastAt = now;
       const p = pal(), drop = v.st?.d > 0.85, id = cal ? this.list[0] : this.list[this.next++ % this.list.length];
       const rgb = drop ? [255, 255, 255] : p[this.next % 3];
-      this.req("POST", "/api/services/light/turn_on", { entity_id: id, rgb_color: rgb, brightness: briOf(255), transition: cal ? 0 : 0.15 }, 1500).finally(() => (this.busy = false));
+      this.req("POST", "/api/services/light/turn_on", { entity_id: id, rgb_color: rgb, brightness: briOf(255), transition: cal ? 0 : nf ? 0.8 : 0.15 }, 1500).finally(() => (this.busy = false));
     },
     async restore() {
       const had = this.snap;
@@ -549,10 +561,12 @@ function createLights(getCfg, log = () => {}, opts = {}) {
   function feed(m) {
     // beim Einmessen zählt nur der feste Takt
     if (cal || !NAMES.some(on)) return;
-    const k = Math.max(+m.k || 0, (+m.a || 0) * 0.8);
-    const hit = k > 0.55 && kick < 0.4;
+    // ein Schlag zählt nur, wenn die Blitz-Schranke ihn durchlässt (höchstens 3 Aufleuchten pro Sekunde)
+    const s = guard(m, Date.now() / 1000);
+    nf = !!s.nf;
+    const k = Math.max(s.k, s.a * 0.8);
     kick = k > kick ? k : kick * 0.8 + k * 0.2;
-    push(m, hit);
+    push(s, s.beat);
   }
   function push(st, hit) {
     const now = Date.now();
@@ -583,6 +597,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     lastAt = 0;
     bv.reset();
     v = EMPTY;
+    guard = createPartyGuard();
+    nf = false;
     if (cal) {
       clearTimeout(cal.timer);
       const done = cal.onBeat;

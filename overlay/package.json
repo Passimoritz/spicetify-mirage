@@ -10,7 +10,7 @@
     "start": "electron .",
     "start:hidden": "electron . --hidden",
     "start:no-gpu": "electron . --no-gpu",
-    "check": "node --check main.js && node --check preload.js && node --check i18n.js && node --check lights.js && node --check secrets.js",
+    "check": "node --check main.js && node --check preload.js && node --check i18n.js && node --check lights.js && node --check secrets.js && node --check flashcap.js",
     "dist": "electron-builder --publish never"
   },
   "dependencies": {
@@ -40,6 +40,7 @@
       "main.js",
       "lights.js",
       "secrets.js",
+      "flashcap.js",
       "cast.js",
       "capture.html",
       "capture-preload.js",

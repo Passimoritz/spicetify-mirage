@@ -12,6 +12,7 @@
     transition: opacity 0.25s linear;
     will-change: opacity;
   }
+  #glow.calm { transition-duration: 0.8s; }
 </style>
 </head>
 <body>
@@ -27,6 +28,10 @@
     const c = pal[{ top: 0, bottom: 2, left: 1, right: 1 }[side] ?? 0] || pal[0];
     const col = `linear-gradient(${dir}, rgba(${c.join(",")},0.95), rgba(${c.join(",")},0.35) 35%, rgba(${c.join(",")},0) 100%)`;
     if (col !== lastCol) glow.style.background = lastCol = col;
+    // Schläge und Drops sind im Hauptprozess schon gedeckelt (höchstens 3 Blitze/s); mit „Keine Blitze“ (nf)
+    // kommen keine Spitzen mehr an, und das Glühen blendet zusätzlich langsam über
+    const calm = m.nf === 1;
+    if (calm !== glow.classList.contains("calm")) glow.classList.toggle("calm", calm);
     const a = Math.min(1, 0.1 + (m.k || 0) * 0.5 + (m.a || 0) * 0.25 + (m.d || 0) * 0.3) * (0.45 + (m.e || 0) * 0.55);
     glow.style.opacity = a.toFixed(3);
   });
