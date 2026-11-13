@@ -317,7 +317,7 @@
 <div class="tools"><button type="button" id="bLyr" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h10v2H4z"/></svg><span></span></button><button type="button" id="bWish" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6a4 4 0 1 0 2 3.4V7h4V3z"/></svg><span></span></button><button type="button" id="bVib" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v12h6V6zM3 8h2v8H3zm16 0h2v8h-2z"/></svg><span></span></button></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="wTitle">
   <div class="top2"><div class="grab"></div><div class="shead"><h2 id="wTitle"></h2><button type="button" class="x" id="wClose">✕</button></div><p class="hint" id="wHint"></p>
-    <div class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2 9.8 4.5 4.5-1.4 1.4-4.5-4.5z"/></svg><input id="wSong" type="search" maxlength="80" enterkeyhint="search" autocomplete="off"></div></div>
+    <div class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2 9.8 4.5 4.5-1.4 1.4-4.5-4.5z"/></svg><input id="wSong" type="search" maxlength="240" enterkeyhint="search" autocomplete="off"></div></div>
   <ul class="wl res" id="wRes"></ul>
   <p class="msg" id="wMsg" aria-live="polite"></p>
   <div class="name"><input id="wName" maxlength="20" autocomplete="nickname"></div>
@@ -401,7 +401,12 @@ const GAME_TEXT = {"en": {"gIntro": "Intro flash", "gTf": "Real or fake?", "gTfA
 // neuere Texte: nur Englisch und Deutsch, alle anderen Sprachen fallen auf Englisch zurück
 Object.assign(GAME_TEXT.en, { hTitle: "Game host", hPick: "Start a game on the big screen:", hStart: "Start now", hSkip: "Skip round", hSpin: "Spin", hEnd: "End game", hPts: "Correct points", pTitle: "Who are you?", pHint: "Your name and colour show up on the big screen, next to your wishes and scores.", pOk: "Done", pCol: "Colour", gLate: "The game is already running", gLateHint: "Jump in and play from here.", gLateWatch: "Jump in: you watch this game and play the next one.", gLateJoin: "Jump in", netLost: "Offline · reconnecting …", netBack: "Connected again", netQuiet: "No signal from the party" });
 Object.assign(GAME_TEXT.de, { hTitle: "Spielleitung", hPick: "Spiel auf dem großen Bild starten:", hStart: "Jetzt starten", hSkip: "Runde überspringen", hSpin: "Drehen", hEnd: "Spiel beenden", hPts: "Punkte korrigieren", pTitle: "Wer bist du?", pHint: "Name und Farbe stehen auf dem großen Bild, bei deinen Wünschen und Punkten.", pOk: "Fertig", pCol: "Farbe", gLate: "Das Spiel läuft schon", gLateHint: "Steig ein und spiel ab jetzt mit.", gLateWatch: "Steig ein: Dieses Spiel schaust du zu, beim nächsten bist du dabei.", gLateJoin: "Einsteigen", netLost: "Offline · verbinde neu …", netBack: "Wieder verbunden", netQuiet: "Kein Signal von der Party" });
-for (const src of [SCAN_TEXT, GAME_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
+// Texte für Gäste-Funktionen (Link-Wünsche, Takt, Reaktionen, App …)
+const GUEST_TEXT = {
+  en: { wSong: "Search Spotify or paste a song link …", wLinkOther: "Only song links work here. In Spotify: Share → Copy song link." },
+  de: { wSong: "Bei Spotify suchen oder Song-Link einfügen …", wLinkOther: "Hier gehen nur Song-Links. In Spotify: Teilen → Songlink kopieren." },
+};
+for (const src of [SCAN_TEXT, GAME_TEXT, GUEST_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
 L.en = { ...L.en, old: ["Page out of date", "Close this tab and scan the QR code again."] };
@@ -894,9 +899,21 @@ async function ask(q, tries) {
     } else $("wMsg").textContent = T.wDead;
   }, 6000);
 }
+// Spotify-Link statt Suche: ein Song-Link geht kurz und eindeutig als „spotify:track:…“ an Mirage,
+// andere Spotify-Links (Album, Playlist, Kurzlink) gar nicht – dafür ein freundlicher Hinweis
+const songLink = (q) => /(?:open\.spotify\.com\/(?:intl-[\w-]+\/)?track\/|spotify:track:)([A-Za-z0-9]{22})/.exec(q)?.[1] || "";
+const otherLink = (q) => /open\.spotify\.com\/|spotify:[a-z]+:|spotify\.link\/|spoti\.fi\//i.test(q);
 $("wSong").oninput = () => {
   clearTimeout(searchT);
-  const q = $("wSong").value.trim();
+  let q = $("wSong").value.trim();
+  if (songLink(q)) q = "spotify:track:" + songLink(q);
+  else if (otherLink(q)) {
+    $("wRes").replaceChildren();
+    $("wMsg").textContent = T.wLinkOther;
+    clearTimeout(waitT);
+    rid++;
+    return;
+  }
   if (q.length < 2) {
     $("wRes").replaceChildren();
     $("wMsg").textContent = "";
@@ -919,7 +936,7 @@ function showResults(s) {
   clearTimeout(waitT);
   if (!s.cached && !s.err && lastQ) hits.set(lastQ.toLowerCase(), s.res);
   if (hits.size > 40) hits.delete(hits.keys().next().value);
-  $("wMsg").textContent = s.err ? T.wErr : s.res.length ? "" : T.wNone;
+  $("wMsg").textContent = s.err ? T.wErr : s.res.length ? "" : s.nl ? T.wLinkOther : T.wNone;
   $("wRes").replaceChildren(...s.res.map((w) => {
     const li = document.createElement("li");
     li.append(...songRow(w));

@@ -243,6 +243,13 @@
           log.yearCalls++;
           return { tracks: ids[1].split(",").map((id) => ({ id, uri: "spotify:track:" + id, album: { release_date: yearOf("spotify:track:" + id) + "-05-01" } })) };
         }
+        // ein Song über seine ID (Wunsch per Spotify-Link)
+        const one = /v1[/]tracks[/]([A-Za-z0-9]{22})/.exec(url);
+        if (one) {
+          const x = [...tracks, ...plTracks].find((y) => y.uri.endsWith(one[1]));
+          if (!x) throw new Error("404");
+          return { id: one[1], uri: x.uri, name: x.name, artists: [{ name: x.metadata?.artist_name || x.artists?.[0]?.name || "" }], album: { images: [] } };
+        }
         // Suche für Songwünsche: die ersten Songs der Liste
         if (/v1[/]search/.test(url)) return { tracks: { items: tracks.slice(0, 3).map((x) => ({ id: x.uri.split(":")[2], uri: x.uri, name: x.name, artists: [{ name: x.metadata.artist_name }], album: { images: [] } })) } };
         return {};

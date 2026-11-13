@@ -220,6 +220,24 @@ async function searchSpotify(q) {
   const r = await within(S.CosmosAsync.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=8`), 4000);
   return r?.tracks?.items || [];
 }
+// Spotify-Link statt Suche: „open.spotify.com/track/…“ (auch „/intl-de/…“) oder „spotify:track:…“ wird direkt
+// aufgelöst. Andere Spotify-Links (Album, Playlist, Kurzlink …) sind kein einzelner Song: freundlich ablehnen.
+const TRACK_LINK = /(?:open\.spotify\.com\/(?:intl-[\w-]+\/)?track\/|spotify:track:)([A-Za-z0-9]{22})/;
+const OTHER_LINK = /open\.spotify\.com\/|spotify:[a-z]+:|spotify\.link\/|spoti\.fi\//i;
+// ein Song über seine ID: zuerst Spotifys eigene Abfrage (wird kaum gedrosselt), sonst die Web-API
+async function trackById(id) {
+  const def = S.GraphQL?.Definitions?.getTrack;
+  if (def && S.GraphQL?.Request) {
+    try {
+      const d = (await within(S.GraphQL.Request(def, { uri: "spotify:track:" + id }), 4000))?.data?.trackUnion;
+      if (d?.name) {
+        const people = [...(d.firstArtist?.items || []), ...(d.otherArtists?.items || []), ...(d.artists?.items || [])];
+        return fromGql({ ...d, uri: d.uri || "spotify:track:" + id, artists: { items: people } });
+      }
+    } catch {}
+  }
+  return within(S.CosmosAsync.get(`https://api.spotify.com/v1/tracks/${id}`), 4000);
+}
 // je Handy höchstens eine Suche gleichzeitig; wer weitertippt, bekommt danach die Antwort auf die LETZTE Eingabe
 async function runSearch(id) {
   const job = searching.get(id);
@@ -228,16 +246,18 @@ async function runSearch(id) {
   while (job.next) {
     const { q, r } = job.next;
     job.next = null;
-    let res = [], err = 0;
+    let res = [], err = 0, nl;
     try {
-      const seenName = new Set();
-      res = (await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
+      const seenName = new Set(), link = TRACK_LINK.exec(q);
+      // „nl“: ein Spotify-Link, aber kein Song (ältere Handyseiten zeigen dann einfach „nichts gefunden“)
+      if (!link && OTHER_LINK.test(q)) nl = 1;
+      else res = (link ? [await trackById(link[1])] : await searchSpotify(q)).map(remember).filter((x) => x && !seenName.has((x.t + "|" + x.a).toLowerCase()) && seenName.add((x.t + "|" + x.a).toLowerCase()));
       res = res.slice(0, 8).map(({ i, t, a, img }) => ({ i, t, a, img }));
     } catch {
       err = 1;
     }
     // immer antworten – auch ohne Treffer oder bei einem Fehler, sonst sucht das Handy ewig
-    if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r, res, err }), false);
+    if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), r, res, err, nl }), false);
   }
   job.busy = false;
   if (searching.size > 50) for (const [k, j] of searching) if (!j.busy) searching.delete(k);
@@ -368,7 +388,7 @@ async function inbound(m) {
   let tr = tracks.get(tid);
   if (!tr) {
     try {
-      tr = remember(await S.CosmosAsync.get(`https://api.spotify.com/v1/tracks/${tid}`));
+      tr = remember(await trackById(tid));
     } catch {}
   }
   if (!tr) return;

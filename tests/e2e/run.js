@@ -1012,6 +1012,35 @@ async function resultCard() {
   await close();
 }
 
+/* ---------------------------------------------------------------- Gäste und Handys */
+// Wunsch per Spotify-Link: ein Song-Link wird direkt aufgelöst, andere Links freundlich abgelehnt
+async function linkWish() {
+  const B = P[1], msg = () => B.js(`document.getElementById("wMsg").textContent`);
+  await ensurePhones("link-wish");
+  const type = (v) => B.js(`(() => { const i = document.getElementById("wSong"); i.value = ${JSON.stringify(v)}; i.dispatchEvent(new Event("input")); })(); 1`);
+  await B.click("#bWish");
+  await wait(700);
+  await type("https://open.spotify.com/intl-de/track/t000000000000000000005?si=0123456789abcdef");
+  const hit = await until(() => B.js(`[...document.querySelectorAll("#wRes li b")].map((b) => b.textContent)`).then((l) => l.length && l), 9000, "link: der Song aus dem Link erscheint");
+  ok(hit.length === 1 && /Fable/.test(hit[0]), "link: genau der verlinkte Song: " + hit.join(" | "));
+  // Album-Link: schon auf dem Handy abgelehnt, ohne Anfrage
+  const other = await B.js("T.wLinkOther");
+  await type("https://open.spotify.com/album/1A2B3C4D5E6F7G8H9I0J1K");
+  await until(async () => (await msg()) === other, 2000, "link: ein Album-Link bekommt einen Hinweis");
+  ok(!(await B.js(`document.querySelectorAll("#wRes li").length`)), "link: zum Album-Link gibt es keine Treffer");
+  // ältere Handyseiten schicken den Link einfach als Suche: Mirage sagt, dass es kein Song ist
+  await B.js(`rid++; ask("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M", 0); 1`);
+  await until(async () => (await msg()) === other, 9000, "link: Mirage lehnt einen Playlist-Link ab");
+  await type("spotify:track:t000000000000000000005");
+  await until(() => B.js(`document.querySelectorAll("#wRes li").length === 1`), 9000, "link: auch als spotify:track:-Adresse");
+  await B.click("#wRes li button.go");
+  await until(() => P[0].js(`[...document.querySelectorAll("#wList b")].some((b) => /Fable/.test(b.textContent))`), 8000, "link: der Wunsch steht bei allen in der Liste");
+  await B.click("#wClose");
+  await T.js(`document.querySelector(".m-im-wishtoast .m-im-wish-all")?.click(); 1`);
+  await wait(400);
+  await T.js(`document.querySelector(".m-im-wish-no")?.click(); document.querySelector(".m-im-side-x")?.click(); 1`);
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -1021,6 +1050,7 @@ const CASES = [
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
+  ["link-wish", linkWish],
 ];
 
 /* ---------------------------------------------------------------- Start */
