@@ -532,6 +532,11 @@ function render(box) {
       toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
       wishRules(),
       toggle("partyReacts", () => {}),
+      head(t("partyWave"), t("partyWaveHint")),
+      seg([[0, t("waveOff")], [1, t("waveSeq")], [2, t("waveGroups")]], cfg.partyWave || 0, (k) => {
+        cfg.partyWave = k;
+        save();
+      }),
       livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),

@@ -121,4 +121,48 @@ async function tickCheck(browser, env, o, check) {
   check(`${o.device.name} · Takt-Klick: aus bis zum Antippen, ein Klick je Schlag im Takt (lautlos geprüft)`, problems);
 }
 
-module.exports = { party, state, sleep, noFlashCheck, tickCheck };
+// Schläge wie das Theme senden: Schlagnummer und Phase laufen mit der Zeit weiter
+async function beats(p, ms, extra = {}, bpm = 120) {
+  for (const t0 = Date.now(); Date.now() - t0 < ms; await sleep(125)) {
+    const bp = ((Date.now() - t0) / 1000) * (bpm / 60);
+    p.send({ bpm, bi: Math.floor(bp), ph: +(bp % 1).toFixed(3), ...extra });
+  }
+}
+// Lichtwelle: das Handy leuchtet nur auf seinen Schlägen hell (Platz 3 von 4, Farbgruppe 2 von 3), sonst glimmt es
+async function waveCheck(browser, env, o, check) {
+  const problems = [];
+  const SAMPLE = `(() => { window.__s = []; setInterval(() => show.beat >= 0 && __s.push([show.beat, show.wk]), 20); return 1; })()`;
+  // Median der Helligkeit je Schlagart: dran / nicht dran
+  const split = (s, mine) => {
+    const med = (a) => (a.length ? a.sort((x, y) => x - y)[Math.floor(a.length / 2)] : NaN);
+    return [med(s.filter(([b]) => mine(b)).map((x) => x[1])), med(s.filter(([b]) => !mine(b)).map((x) => x[1]))];
+  };
+  for (const [label, init, extra, mine] of [
+    ["der Reihe nach, Platz 3 von 4", `localStorage.setItem("mlSlot", "2");`, { wv: 1, wn: 4 }, (b) => b % 4 === 2],
+    ["Farbgruppen, Farbe 5 (Gruppe 2)", `localStorage.setItem("mlCol", "4");`, { wv: 2, wn: 8 }, (b) => b % 3 === 1],
+  ]) {
+    const p = await party(browser, env, { ...o, initScript: o.initScript + "\n" + init });
+    try {
+      await p.page.eval(SAMPLE);
+      await beats(p, 4200, extra);
+      const [on, off] = split(await p.page.eval("__s"), mine);
+      if (!(on > 0.45) || !(off < 0.3)) problems.push(`${label}: dran ${on?.toFixed(2)}, nicht dran ${off?.toFixed(2)} (erwartet hell / gedämpft)`);
+      if (p.page.errors.length) problems.push(...p.page.errors.map((e) => "Fehler in der Konsole: " + e));
+    } finally {
+      await p.page.close();
+    }
+  }
+  // ohne Welle (älteres Theme): alle zugleich, nichts gedämpft
+  const p = await party(browser, env, o);
+  try {
+    await p.page.eval(SAMPLE);
+    await beats(p, 1500);
+    const s = await p.page.eval("__s");
+    if (s.some((x) => x[1] < 0.95)) problems.push("ohne Welle ist das Licht gedämpft");
+  } finally {
+    await p.page.close();
+  }
+  check(`${o.device.name} · Lichtwelle: der Reihe nach und in Farbgruppen, ohne Welle wie bisher`, problems);
+}
+
+module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck };

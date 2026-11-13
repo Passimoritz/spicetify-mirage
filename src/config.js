@@ -129,6 +129,8 @@ const DEFAULTS = {
   wishAuto: 0,
   // Reaktionen der Gäste (Emoji vom Handy) steigen am linken und rechten Rand des Party-Bilds auf
   partyReacts: true,
+  // Lichtwelle auf den Handys: 0 alle zugleich, 1 der Reihe nach (Platznummer 1–8), 2 in drei Farbgruppen
+  partyWave: 0,
   partyCrowd: true,
   partyJamLight: true,
   partyScreen: true,

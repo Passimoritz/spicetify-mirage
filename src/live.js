@@ -534,6 +534,8 @@ function feed(px, pal, bpm, lyric) {
     nx: masked ? "" : nextUri(),
     // Reaktionen aus: die Handys blenden ihre Emoji-Leiste aus (ältere Seiten zeigen sie weiter, es kommt nur nichts an)
     rx: cfg.partyReacts ? 1 : 0,
+    // Lichtwelle: Art (0 aus, 1 der Reihe nach, 2 Farbgruppen) und Zahl der Plätze; ältere Seiten leuchten alle zugleich
+    wv: cfg.partyWave || 0, wn: 8,
     fx: !masked && lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }
