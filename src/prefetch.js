@@ -2,7 +2,7 @@ import { S } from "./core.js";
 import { cfg } from "./config.js";
 import { lock } from "./lock.js";
 import { warmAudio } from "./audio.js";
-import { warmLyrics } from "./lyrics.js";
+import { warmLyrics, dropStaleLyrics } from "./lyrics.js";
 import { PLR } from "./player.js";
 
 /* ---------------------------------------------------------------- Nächsten Song vorbereiten */
@@ -38,6 +38,9 @@ function fire() {
 function plan() {
   clearTimeout(timer);
   timer = 0;
+  // schnell durchgeskippt: Liedtext-Anfragen für Songs, die weder laufen noch als Nächstes kommen, abbrechen –
+  // auch wenn der Immersiv-Modus gar nicht offen ist (Overlay, Handys, Takt-Schätzung fragen ebenfalls)
+  dropStaleLyrics();
   if (!PLR.isPlaying()) return;
   const dur = PLR.getDuration() || 0;
   // sehr kurze Stücke (Zwischenspiele, Werbung) lohnen nicht

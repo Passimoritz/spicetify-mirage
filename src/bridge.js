@@ -1,5 +1,5 @@
 import { S, seek, VERSION } from "./core.js";
-import { getLyrics } from "./lyrics.js";
+import { getLyrics, shownLyrics } from "./lyrics.js";
 import { bands } from "./audio.js";
 import { LANG } from "./i18n.js";
 import { palette } from "./color.js";
@@ -158,7 +158,8 @@ const bridge = (() => {
   }
   async function pushLyric() {
     const uri = currentItem()?.uri || "";
-    const lyr = await getLyrics(uri);
+    // schon gezeigtes Zwischenergebnis nehmen, statt auf die langsamste Quelle zu warten
+    const lyr = shownLyrics(uri) || (await getLyrics(uri));
     const lines = lyr?.synced ? lyr.lines : null;
     const i = lines ? seek(lines, PLR.getProgress() || 0, "t") : -1;
     const text = i >= 0 && lines[i].text !== "♪" ? lines[i].text : "";
