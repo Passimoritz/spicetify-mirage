@@ -371,15 +371,7 @@ html.mirage-no-tilt [data-encore-id="card"] {
   transform: none !important;
 }
 
-/* Grüner Play-Knopf auf Karten → Edelstein in Coverfarbe */
-.main-playButton-PlayButton button span,
-[data-testid="play-button"] > span {
-  background: linear-gradient(135deg, var(--m-c), var(--m-a) 55%, var(--m-b)) !important;
-  color: var(--m-ink) !important;
-  box-shadow:
-    0 10px 30px -6px rgba(var(--m-a-rgb), 0.75),
-    0 0 0 1px rgba(255, 255, 255, 0.25) inset !important;
-}
+/* Play-Knöpfe auf Karten, im Kopf und in der Leiste: siehe „PLAY-KNÖPFE“ bei den Knöpfen weiter unten */
 
 /* ==========================================================================
    SEITENLEISTE
@@ -425,6 +417,18 @@ html.mirage-no-tilt [data-encore-id="card"] {
   background: linear-gradient(135deg, var(--m-c), var(--m-a)) !important;
   color: var(--m-ink) !important;
 }
+/* Encore-Chips (Client 1.3): ausgewählt = aria-checked am Chip selbst, Spotify färbt ihn weiß (inverted-light).
+   Die Schrift blieb dabei hellgrau – auf Weiß kaum lesbar. Jetzt deckend in der Leitfarbe wie der Hauptknopf. */
+[data-encore-id="chip"][aria-checked="true"],
+button[class*="chip--"][aria-checked="true"] {
+  background: var(--m-a) !important;
+  color: var(--m-ink) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+[data-encore-id="chip"][aria-checked="true"] *,
+button[class*="chip--"][aria-checked="true"] * {
+  color: inherit !important;
+}
 
 /* Suche oben: schwebende Kapsel */
 .main-globalNav-searchContainer form,
@@ -451,9 +455,16 @@ html.mirage-no-tilt [data-encore-id="card"] {
 .main-trackList-trackListRow:hover {
   background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.14), rgba(255, 255, 255, 0.03) 60%) !important;
 }
+/* ausgewählt: aria-selected sitzt an der äußeren Zeile (role="row"), Spotifys Klasse an der inneren –
+   vorher griff nur Spotifys Grau, und beim Überfahren ersetzte der Hover-Verlauf die Auswahl ganz */
 .main-trackList-trackListRow.main-trackList-selected,
-.main-trackList-trackListRow[aria-selected="true"] {
+.main-trackList-trackListRow[aria-selected="true"],
+[role="row"][aria-selected="true"] > .main-trackList-trackListRow,
+.main-trackList-trackListRow.cBaCr8a86htxgcL815Aw,
+.main-trackList-trackListRow.cBaCr8a86htxgcL815Aw:hover,
+[role="row"][aria-selected="true"] > .main-trackList-trackListRow:hover {
   background: rgba(var(--m-a-rgb), 0.24) !important;
+  box-shadow: inset 0 0 0 1px rgba(var(--m-a-rgb), 0.35);
 }
 .main-trackList-playingIcon,
 .main-trackList-rowTitle.main-trackList-playing,
@@ -528,35 +539,19 @@ html.mirage-no-tilt [data-encore-id="card"] {
   to { transform: translateX(10%) scaleX(0.8); }
 }
 
-/* Play/Pause: leuchtender Kern mit rotierendem Ring */
+/* Play/Pause in der Leiste: gleicher Knopf wie auf Karten und im Kopf (siehe „PLAY-KNÖPFE“). Der Rotierring
+   und der Verlauf auf dem äußeren Knopf sind weg – unter der Fläche lag ein zweiter Kreis, der Ring wirkte
+   im Standbild wie ein abgebrochener Bogen. Spielt Musik, leuchtet der Knopf nur etwas weicher nach. */
 [data-testid="control-button-playpause"] {
-  position: relative;
-  background: linear-gradient(135deg, var(--m-c), var(--m-a) 60%, var(--m-b)) !important;
-  color: var(--m-ink) !important;
-  box-shadow: 0 8px 30px -6px rgba(var(--m-a-rgb), 0.9) !important;
-  transition: transform 0.4s var(--m-spring), box-shadow 0.4s var(--m-ease) !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
-[data-testid="control-button-playpause"] svg {
-  fill: var(--m-ink) !important;
-}
-[data-testid="control-button-playpause"]:hover {
-  transform: scale(1.12) !important;
-}
-[data-testid="control-button-playpause"]::after {
-  content: "";
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent, var(--m-c), transparent 40%, var(--m-b), transparent 75%);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
-  opacity: 0;
-  transition: opacity 0.6s var(--m-ease);
-  pointer-events: none;
-}
-.mirage-playing [data-testid="control-button-playpause"]::after {
-  opacity: 1;
-  animation: m-spin 3.2s linear infinite;
+.mirage-playing [data-testid="control-button-playpause"] > span:first-child {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 0 0 4px rgba(var(--m-a-rgb), 0.14),
+    0 6px 18px -6px rgba(var(--m-a-rgb), 0.75) !important;
 }
 @keyframes m-spin {
   to {
@@ -570,7 +565,8 @@ html.mirage-no-tilt [data-encore-id="card"] {
 .main-shuffleButton-button[aria-checked="true"],
 .main-repeatButton-button[aria-checked="true"] {
   color: var(--m-c) !important;
-  filter: drop-shadow(0 0 8px rgba(var(--m-a-rgb), 0.9));
+  /* nur ein Hauch: voller Schein machte aus dem kleinen Symbol einen Fleck */
+  filter: drop-shadow(0 0 4px rgba(var(--m-a-rgb), 0.55));
 }
 
 /* Fortschrittsbalken: Lichtfaden mit Kometenkopf */
@@ -586,14 +582,16 @@ html.mirage-no-tilt [data-encore-id="card"] {
 }
 .x-progressBar-fillColor {
   background: linear-gradient(90deg, var(--m-b), var(--m-a) 60%, var(--m-c)) !important;
-  box-shadow: 0 0 14px rgba(var(--m-a-rgb), 0.9);
+  box-shadow: 0 0 8px rgba(var(--m-a-rgb), 0.5);
   border-radius: 99px !important;
 }
+/* Griff: klarer weißer Punkt mit feinem Ring statt großem Lichthof (der überstrahlte Leiste und Zeiten) */
 .progress-bar__slider {
   background: #fff !important;
   box-shadow:
-    0 0 0 4px rgba(var(--m-c-rgb), 0.35),
-    0 0 18px 4px rgba(var(--m-a-rgb), 0.9) !important;
+    0 0 0 3px rgba(var(--m-c-rgb), 0.28),
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(var(--m-a-rgb), 0.55) !important;
 }
 
 /* Cover in der Insel: Vinyl, das sich dreht */
@@ -2077,24 +2075,6 @@ html.mirage-beat #mirage-stage .m-pulse {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--m-line);
 }
-[data-testid="action-bar-row"] [data-testid="play-button"] {
-  position: relative;
-}
-[data-testid="action-bar-row"] [data-testid="play-button"]::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--m-a-rgb), 0.55), transparent 70%);
-  animation: m-halo 2.6s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes m-halo {
-  50% {
-    transform: scale(1.35);
-    opacity: 0.35;
-  }
-}
 
 /* Tabellenkopf als Kapsel */
 .main-trackList-trackListHeaderRow {
@@ -2134,19 +2114,21 @@ html.mirage-beat #mirage-stage .m-pulse {
     transform 0.45s var(--m-spring),
     box-shadow 0.45s var(--m-ease);
 }
+/* leise kippen: stärker ragte das Cover über die Zeile hinaus und überdeckte den Titel */
 .main-trackList-trackListRow:hover img {
-  transform: scale(1.14) rotate(-4deg);
-  box-shadow: 0 10px 24px -6px rgba(var(--m-a-rgb), 0.85);
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow: 0 6px 16px -6px rgba(var(--m-a-rgb), 0.7);
 }
 /* Der laufende Song: fließender Farbstrom */
 .main-trackList-trackListRow:has(.main-trackList-playingIcon),
 .main-trackList-trackListRow:has(.main-trackList-playing),
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
+  /* nur eine Leitfarbe: A und B gemischt wurde bei warmen Covern olivbraun */
   background: linear-gradient(
     90deg,
-    rgba(var(--m-a-rgb), 0.3),
-    rgba(var(--m-b-rgb), 0.12),
-    rgba(var(--m-a-rgb), 0.3)
+    rgba(var(--m-a-rgb), 0.22),
+    rgba(var(--m-a-rgb), 0.08),
+    rgba(var(--m-a-rgb), 0.22)
   ) !important;
   background-size: 200% 100% !important;
   animation: m-flow 6s linear infinite;
@@ -2878,34 +2860,104 @@ html[data-m-page="artist"] h2 {
   border-radius: inherit;
 }
 
-/* Knöpfe: Hauptknopf in Coverfarbe, Nebenknöpfe als Glas-Kapsel */
-[data-encore-id="buttonPrimary"] > span:first-child {
+/* Knöpfe: Hauptknopf in Coverfarbe, Nebenknöpfe als Glas-Kapsel.
+   Eine Fläche, eine feine Lichtkante oben, ein kurzer dunkler und ein weicher farbiger Schatten – statt
+   Verlauf, Glanzring und großem Hof übereinander. Beim Überfahren etwas heller statt größer zu springen. */
+[data-encore-id="buttonPrimary"] > span:first-child,
+[class*="legacy-button-primary"] > [class*="button-primary__inner"] {
   background: var(--m-a) !important;
   color: var(--m-ink) !important;
-  box-shadow: 0 12px 30px -10px rgba(var(--m-a-rgb), 0.85) !important;
-  transition: transform 0.35s var(--m-spring), box-shadow 0.35s var(--m-ease) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 20px -10px rgba(var(--m-a-rgb), 0.8) !important;
+  transition:
+    transform 0.2s var(--m-ease),
+    box-shadow 0.2s var(--m-ease),
+    filter 0.2s var(--m-ease) !important;
 }
-[data-encore-id="buttonPrimary"]:hover > span:first-child {
-  transform: translateY(-1px) scale(1.04);
-  box-shadow: 0 16px 40px -10px rgba(var(--m-a-rgb), 1) !important;
+[data-encore-id="buttonPrimary"]:hover > span:first-child,
+[class*="legacy-button-primary"]:hover > [class*="button-primary__inner"] {
+  filter: brightness(1.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 12px 26px -10px rgba(var(--m-a-rgb), 0.95) !important;
 }
-[data-encore-id="buttonSecondary"] {
+[data-encore-id="buttonPrimary"]:active > span:first-child,
+[class*="legacy-button-primary"]:active > [class*="button-primary__inner"] {
+  filter: brightness(0.95);
+  transform: scale(0.97);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* PLAY-KNÖPFE (Kopf 56 px, Karten 48 px, Leiste 32 px): derselbe Knopf in drei Größen, rund.
+   Nur die äußere Fläche wird gefärbt (> span): früher traf „button span“ auch die innere Symbol-Hülle,
+   die als eckiges Verlaufs-Kästchen mit eigenem Schatten im Kreis lag. Das Symbol nimmt die Schriftfarbe. */
+.main-playButton-PlayButton button,
+[data-testid="play-button"],
+[data-testid="control-button-playpause"] {
+  border-radius: 50% !important;
+}
+:is(.main-playButton-PlayButton button, [data-testid="play-button"], [data-testid="control-button-playpause"]) > span {
+  border-radius: 50% !important;
+}
+:is(.main-playButton-PlayButton button, [data-testid="play-button"], [data-testid="control-button-playpause"]) > span span {
+  background: none !important;
+  box-shadow: none !important;
+}
+:is(.main-playButton-PlayButton button, [data-testid="play-button"], [data-testid="control-button-playpause"]) svg {
+  fill: var(--m-ink) !important;
+}
+/* rund heißt: leicht wachsen statt anheben (Karten und Kopf); in der Leiste bleibt er an seinem Platz */
+.main-playButton-PlayButton button:hover > span,
+[data-testid="play-button"]:hover > span {
+  transform: scale(1.04);
+}
+.main-playButton-PlayButton button:active > span,
+[data-testid="play-button"]:active > span,
+[data-testid="control-button-playpause"]:active > span {
+  transform: scale(0.95);
+}
+/* Tastatur: Ring mit Abstand in der Akzentfarbe, folgt dem Kreis */
+:is(.main-playButton-PlayButton button, [data-testid="play-button"], [data-testid="control-button-playpause"]):focus-visible {
+  outline: 2px solid var(--m-c) !important;
+  outline-offset: 3px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-encore-id="buttonPrimary"] > span:first-child,
+  [class*="legacy-button-primary"] > [class*="button-primary__inner"] {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+html.mirage-calm [data-encore-id="buttonPrimary"] > span:first-child,
+html.mirage-calm [class*="legacy-button-primary"] > [class*="button-primary__inner"] {
+  transition: none !important;
+  transform: none !important;
+}
+/* Nebenknöpfe („Folgen“ …): Client 1.3 erkennt man an Encores Klasse legacy-button-secondary,
+   data-encore-id bleibt als Rückfall für ältere Versionen */
+[data-encore-id="buttonSecondary"],
+[class*="legacy-button-secondary"] {
   border-radius: 999px !important;
   border-color: var(--m-line-strong) !important;
   background: rgba(255, 255, 255, 0.04) !important;
   transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, transform 0.35s var(--m-spring) !important;
 }
-[data-encore-id="buttonSecondary"]:hover {
+[data-encore-id="buttonSecondary"]:hover,
+[class*="legacy-button-secondary"]:hover {
   border-color: rgba(var(--m-a-rgb), 0.8) !important;
   background: rgba(var(--m-a-rgb), 0.1) !important;
-  box-shadow: 0 10px 28px -12px rgba(var(--m-a-rgb), 0.8);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -12px rgba(var(--m-a-rgb), 0.8);
 }
-:is(.Root__main-view, #main-view) [data-encore-id="buttonTertiary"] {
+:is(.Root__main-view, #main-view) :is([data-encore-id="buttonTertiary"], [class*="legacy-button-tertiary"]) {
   border-radius: 999px !important;
   transition: background 0.3s, color 0.3s !important;
 }
-:is(.Root__main-view, #main-view) [data-encore-id="buttonTertiary"]:hover {
+:is(.Root__main-view, #main-view) :is([data-encore-id="buttonTertiary"], [class*="legacy-button-tertiary"]):hover {
   background: rgba(var(--m-a-rgb), 0.14) !important;
   color: var(--m-c) !important;
 }
@@ -3272,7 +3324,7 @@ html.mirage-light .main-entityHeader-imagePlaceholder {
 html.mirage-light[data-m-page="artist"] [role="grid"] [aria-colindex="1"] {
   color: var(--m-c) !important;
 }
-html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTertiary"]:hover {
+html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonTertiary"], [class*="legacy-button-tertiary"]):hover {
   color: var(--spice-text) !important;
 }
 
@@ -4712,13 +4764,12 @@ html.mirage-light :is(.Root__main-view, #main-view) [data-encore-id="buttonTerti
    Cover, Farbstrom der spielenden Zeile). Vorher liefen sie pausiert endlos weiter.
    ========================================================================== */
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-bar"]::before,
-html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="action-bar-row"] [data-testid="play-button"]::before,
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="background-image"],
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-view"] [data-testid="cover-art-image"],
 html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow:has(.main-trackList-playing),
+html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU,
 html.mirage-hidden [data-testid="CoverSlotCollapsed__container"] img,
-html.mirage-hidden .main-coverSlotCollapsed-container img,
-html.mirage-hidden [data-testid="control-button-playpause"]::after {
+html.mirage-hidden .main-coverSlotCollapsed-container img {
   animation-play-state: paused !important;
 }
 /* Der Immersiv-Knopf oben schimmerte auch bei pausierter Musik ununterbrochen weiter: im Leerlauf ruht er
@@ -4777,14 +4828,6 @@ html.mirage-rich #mirage-stage .m-aurora {
 .main-trackList-trackListRow:has(.main-trackList-playing),
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
   animation-timing-function: steps(144) !important;
-}
-/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
-[data-testid="action-bar-row"] [data-testid="play-button"]::before {
-  animation-timing-function: steps(62) !important;
-}
-/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
-.mirage-playing [data-testid="control-button-playpause"]::after {
-  animation-timing-function: steps(77) !important;
 }
 html.mirage-vinyl [data-testid="CoverSlotCollapsed__container"] img,
 html.mirage-vinyl .main-coverSlotCollapsed-container img {
