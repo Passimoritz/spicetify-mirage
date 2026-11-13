@@ -9,7 +9,9 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
+import { getLyrics, watchLyrics, dropStaleLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
+import { estimateSync, applySync } from "./lyricsync.js";
+import { lineAt } from "./songtime.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
@@ -966,12 +968,33 @@ const immersive = (() => {
       p.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }], { duration: 750, easing: "cubic-bezier(0.22, 1, 0.36, 1)", composite: "add" });
     });
   }
-  async function loadLyrics() {
+  // Liedtext laden: das erste brauchbare Ergebnis erscheint sofort, jedes bessere (Text → zeitgenau → Wort für
+  // Wort) ersetzt es an Ort und Stelle – ohne „Lädt“, ohne Einblenden, ohne nach oben zu springen.
+  // Fertig (Promise erfüllt), wenn das endgültige Ergebnis da ist.
+  let lyrLoad = 0, lyrWatch = null;
+  function loadLyrics() {
     const uri = currentItem()?.uri || "";
-    if (uri === lyrUri && lyr !== undefined) return;
-    const token = ++lyrToken;
+    if (uri === lyrUri && lyr !== undefined) return Promise.resolve();
+    const load = ++lyrLoad;
+    // Song gewechselt: Anfragen für übersprungene Songs abbrechen
+    if (uri !== lyrUri) dropStaleLyrics();
     lyrUri = uri;
     lyr = undefined;
+    lyrWatch?.();
+    resetLyricsView();
+    return new Promise((done) => {
+      lyrWatch = watchLyrics(uri, (got, fin) => {
+        if (load !== lyrLoad || !el) return done();
+        // gleiches Ergebnis noch einmal (endgültig = zuletzt gezeigtes): nichts neu aufbauen
+        if (lyr === undefined || (got && got !== lyr)) {
+          // beim Timing von Hand nichts unter den Fingern austauschen
+          if (lyr === undefined || !edit) showLyrics(uri, got, lyr !== undefined && !!lyr);
+        }
+        if (fin) done();
+      });
+    });
+  }
+  function resetLyricsView() {
     // ohne Gleitfahrt nach oben zurücksetzen – sonst rutscht der alte Text 0,8 s quer durchs Bild
     q.inner.style.transition = "none";
     q.inner.style.transform = "";
@@ -984,8 +1007,10 @@ const immersive = (() => {
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
-    const got = await getLyrics(uri);
-    if (token !== lyrToken) return;
+  }
+  // upgrade: ein besseres Ergebnis ersetzt das gezeigte – Position und aktuelle Zeile bleiben, kein Einblenden
+  function showLyrics(uri, got, upgrade) {
+    const token = ++lyrToken;
     lyr = got;
     kick();
     // Hype-Zeilen: der Refrain (Zeilen, die sich wiederholen) und Aufforderungen ans Publikum
@@ -995,11 +1020,15 @@ const immersive = (() => {
     (got?.lines || []).forEach((l) => key(l.text).length > 6 && seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1));
     (got?.lines || []).forEach((l, i) => (seen.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
     active = -2;
+    words = [];
     q.inner.textContent = "";
-    // neuer Text blendet weich ein (Animation neu starten)
-    q.inner.classList.remove("is-in");
-    void q.inner.offsetWidth;
-    q.inner.classList.add("is-in");
+    // neuer Text blendet weich ein (Animation neu starten) – ein besseres Ergebnis zum selben Song nicht:
+    // es tauscht nur die Zeilen, die Ansicht gleitet höchstens ein Stück zur passenden Zeile
+    if (!upgrade) {
+      q.inner.classList.remove("is-in");
+      void q.inner.offsetWidth;
+      q.inner.classList.add("is-in");
+    }
     showSource(got);
     setNoLyr(!got || !!got.instrumental || !got.lines?.length);
     updateLyrState();
@@ -1280,56 +1309,35 @@ const immersive = (() => {
     const f = clamp((pos - sy[j].a) / Math.max(40, end - sy[j].a), 0, 1);
     return sy[j].f0 + (sy[j].f1 - sy[j].f0) * f;
   }
-  // Fremde Liedtexte (LRCLIB, NetEase) stammen oft von einer anderen Fassung: um ein paar hundert ms
-  // verschoben. Einmal je Song: der Versatz, bei dem die Zeilenanfänge am besten auf Gesangs-Einsätze
-  // fallen – übernommen nur, wenn er klar besser passt als gar keiner.
+  // Fremde Liedtexte (LRCLIB, NetEase, Kugou) stammen oft von einer anderen Fassung: um ein paar hundert ms
+  // verschoben oder leicht gestreckt. Einmal je Ergebnis, sobald die Analyse da ist: Versatz und Streckung,
+  // bei denen die Zeilen- und Wortanfänge am besten auf Gesangs-Einsätze fallen (lyricsync.js) – übernommen
+  // nur bei hoher Sicherheit. Spotifys eigene Zeiten gehören zu genau dieser Aufnahme und bleiben; ein von Hand
+  // gesetztes Timing (Taste E) hat immer das letzte Wort. Das Takt-Antippen (T) wirkt zusätzlich über die Songuhr.
   function alignLyrics() {
-    if (!lyr?.synced || lyr.aligned || lyr.source === "spotify") return;
+    if (!lyr?.synced || lyr.aligned || lyr.source === "spotify" || lyr.timed || edit) return;
     const d = audio.data;
     if (!d?.segs?.length || audio.uri !== lyrUri || d.synthetic) return;
     lyr.aligned = true;
-    const on = [];
-    d.segs.forEach((s, k) => {
-      const jump = s.l - (d.segs[k - 1]?.l ?? -60);
-      if (s.l > -30 && jump > 2) on.push({ t: s.t * 1000, s: Math.min(jump, 12) });
-    });
-    const ts = lyr.lines.filter((l) => l.text !== "♪").map((l) => l.t);
-    if (ts.length < 8 || on.length < 20) return;
-    const score = (off) => {
-      let sum = 0, j = 0;
-      for (const t of ts) {
-        const x = t + off;
-        while (j < on.length && on[j].t < x - 70) j++;
-        let best = 0;
-        for (let k = j; k < on.length && on[k].t <= x + 70; k++) best = Math.max(best, on[k].s);
-        sum += best;
-      }
-      return sum;
-    };
-    const base = score(0);
-    let bestOff = 0, best = base;
-    for (let off = -1500; off <= 1500; off += 20) {
-      const v = score(off);
-      if (v > best) [best, bestOff] = [v, off];
-    }
-    if (!bestOff || best < base * 1.3 || best < ts.length * 1.5) return;
-    for (const l of lyr.lines) {
-      l.t += bestOff;
-      for (const w of l.words || []) w.t += bestOff;
-      for (const s of l.syl || []) s.t += bestOff;
-    }
+    const r = estimateSync(lyr.lines, d.segs);
+    if (!r.apply) return;
+    applySync(lyr.lines, r);
+    lyr.sync = { off: r.off, scale: r.scale };
+    const map = (x) => x * r.scale + r.off;
     for (const list of words) for (const w of list || []) {
-      w.a += bestOff;
-      w.b += bestOff;
-      for (const s of w.sy || []) s.a += bestOff;
+      w.a = map(w.a);
+      w.b = map(w.b);
+      for (const s of w.sy || []) s.a = map(s.a);
     }
+    q.inner.querySelectorAll(".m-im-line").forEach((x, k) => lyr.lines[k] && (x.dataset.t = lyr.lines[k].t));
   }
 
   function drawLyrics(pos) {
     if (!lyr?.synced) return;
     alignLyrics();
     const lines = q.inner.children;
-    const i = seek(lyr.lines, pos, "t");
+    // kleine Rücksprünge der Uhr (Pause, Nachjustieren) lassen die eben begonnene Zeile stehen (songtime.js)
+    const i = lineAt(lyr.lines, pos, active);
     if (i !== active) {
       active = i;
       // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben

@@ -2,6 +2,7 @@ import { clamp } from "./core.js";
 import { cfg, save } from "./config.js";
 import { currentItem, PLR } from "./player.js";
 import { audio } from "./audio.js";
+import { freshPos } from "./songtime.js";
 
 /* ---------------------------------------------------------------- Songuhr */
 // Für alles, was im Takt laufen muss (Party, Visualizer, Karaoke). Spotify meldet die Position in kleinen
@@ -10,14 +11,17 @@ import { audio } from "./audio.js";
 // Zeichnen bis zum Bildschirm ausgleicht (ein bis zwei Bilder plus Hintergrund-Thread), und ein Versatz,
 // den man per Takt-Antippen (Taste T) einmisst – global, bei geschätzten Takten je Song.
 const LEAD = 40;
-const c = { pos: 0, at: 0, uri: "" };
+const c = { pos: 0, at: 0, uri: "", raw: 0, oldRaw: 0, switchAt: -1e9 };
 function offsetFor(uri) {
   const per = cfg.syncSongs?.[uri];
   return (Number(cfg.syncOffset) || 0) + (Number.isFinite(per) ? per : 0);
 }
 function songPos(now = performance.now()) {
-  const raw = PLR.getProgress() || 0;
   const uri = currentItem()?.uri || "";
+  if (uri !== c.uri) [c.oldRaw, c.switchAt] = [c.raw, now];
+  // gleich nach dem Songwechsel kann noch die Position des alten Songs kommen (songtime.js)
+  const raw = freshPos(PLR.getProgress() || 0, c.oldRaw, now - c.switchAt);
+  c.raw = raw;
   if (!PLR.isPlaying()) {
     Object.assign(c, { pos: raw, at: now, uri });
     return raw + offsetFor(uri);
