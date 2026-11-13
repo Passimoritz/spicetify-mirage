@@ -111,7 +111,7 @@ const STYLE = {
 };
 // Grundstimmung jedes Stils (home): passt das Gefühl des Teils dazu, bleibt die eigene Lichtsprache vorn,
 // sonst leiht sich die Regie eher Szenen anderer Stile (eine traurige Bridge im House bekommt Balladenlicht)
-const HOME = { edm: "euphoric", house: "happy", techno: "tense", trance: "euphoric", dnb: "tense", dubstep: "aggressive", trap: "dark", hiphop: "tense", rock: "triumphant", metal: "aggressive", pop: "happy", ballad: "tender", calm: "calm", latin: "happy", reggae: "happy" };
+const HOME = { folk: "tender", orchestral: "triumphant", kids: "happy", edm: "euphoric", house: "happy", techno: "tense", trance: "euphoric", dnb: "tense", dubstep: "aggressive", trap: "dark", hiphop: "tense", rock: "triumphant", metal: "aggressive", pop: "happy", ballad: "tender", calm: "calm", latin: "happy", reggae: "happy" };
 for (const [s, m] of Object.entries(HOME)) SIG[s].home = m;
 const SIG_OF = {};
 for (const [s, keys] of Object.entries(STYLE)) for (const k of keys) SIG_OF[k] = s;
