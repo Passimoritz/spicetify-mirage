@@ -1,0 +1,22 @@
+# DTLS-Client der Overlay-App (overlay/dtls.js) gegen einen echten OpenSSL-Server.
+# Als Job in einen bestehenden Workflow unter "jobs:" einfügen (oder als eigene Datei unter .github/workflows/
+# mit "on: [push, pull_request]" davor). Braucht keine npm-Pakete: nur node und openssl, alles auf 127.0.0.1.
+dtls:
+  runs-on: ubuntu-latest
+  timeout-minutes: 5
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - name: OpenSSL
+      run: |
+        command -v openssl || (sudo apt-get update && sudo apt-get install -y openssl)
+        openssl version
+    - name: Testvektoren und Ablauf
+      run: |
+        node tests/dtls/vectors.test.js
+        node tests/dtls/handshake.test.js
+    - name: Ende-zu-Ende gegen openssl s_server -dtls1_2
+      # --require: ohne funktionierenden DTLS-Server schlägt der Job fehl statt zu überspringen
+      run: node tests/dtls/run.js --require
