@@ -79,6 +79,8 @@ const DEFAULTS = {
   // Vorlauf je Gerät in ms (Lampen hängen unterschiedlich weit hinterher); Hue je Bridge: „ip=ms, ip=ms“
   latHue: "", latWled: 0, latGovee: 0, latHa: 0, latOrgb: 0, latChroma: 0,
   hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
+  // Hue schnell (Entertainment über DTLS): Bereich auf der Bridge; hueCertPin = „ip=Fingerabdruck“ ihres Zertifikats
+  hueFast: false, hueArea: "", hueCertPin: "",
   wledOn: false, wledIp: "", wledLeds: 60,
   orgbOn: false,
   chromaOn: false,
@@ -142,7 +144,8 @@ function save() {
 }
 
 let overlay = null, settingsWin = null, setupWin = null, tray = null;
-const lights = createLights(() => cfg, (s) => dlog?.(s));
+// update: Hue schnell merkt sich so den Fingerabdruck des Bridge-Zertifikats
+const lights = createLights(() => cfg, (s) => dlog?.(s), { update: (p) => update(p) });
 // Party auf Fernsehern im Netz (Chromecast, Google TV, DLNA-Fernseher): der PC nimmt das Party-Bild auf und
 // streamt es als Video; gesteuert vom Theme. Erst geladen, wenn das Theme danach fragt – die meisten nutzen es nie.
 let castApi = null;
@@ -1195,7 +1198,7 @@ function update(patch) {
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
   if ("control" in patch) cfg.control === false ? stopControl() : startControl();
-  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude"].some((k) => k in patch)) {
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude", "hueFast", "hueArea", "hueClientKey"].some((k) => k in patch)) {
     lights.sync();
     resubscribe();
   }
@@ -1211,7 +1214,8 @@ function update(patch) {
 /* ------------------------------------------------------------------ Einstellungen umziehen */
 // Export/Import als JSON-Datei. Zugangsdaten (SECRET) verlassen den Rechner nie, setupDone gehört zu
 // diesem Rechner. Beim Import zählen nur bekannte Schlüssel mit dem Typ ihres Standardwerts.
-const MOVE_SKIP = [...SECRET, "setupDone"];
+// hueCertPin gehört zur Bridge in diesem Netz, nicht zu den Einstellungen, die umziehen
+const MOVE_SKIP = [...SECRET, "setupDone", "hueCertPin"];
 const movable = (k) => Object.hasOwn(DEFAULTS, k) && !MOVE_SKIP.includes(k);
 function exportable() {
   return Object.fromEntries(Object.entries(cfg).filter(([k]) => movable(k)));
@@ -1329,12 +1333,13 @@ ipcMain.handle("hueFind", uiOnly(() => lights.hueFind()));
 // neue Adresse und neuer Schlüssel kommen zusammen: der alte Schlüssel geht nie an die neue Adresse
 ipcMain.handle("huePair", uiOnly(async (_e, ip) => {
   const r = await lights.huePair(String(ip || "").trim());
-  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true });
+  if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true, hueCertPin: "" });
   // der Schlüssel selbst geht das Fenster nichts an
   return r.user ? { ok: true } : { error: r.error };
 }));
 ipcMain.handle("hueGroups", uiOnly(() => lights.hueGroups()));
 ipcMain.handle("hueLights", uiOnly(() => lights.hueLights()));
+ipcMain.handle("hueAreas", uiOnly(() => lights.hueAreas()));
 // Verzögerung je Gerät: ohne Angabe nur lesen, mit { backend, ms } setzen; zurück kommen alle Werte
 ipcMain.handle("lightLat", uiOnly((_e, d) => {
   const patch = d && typeof d === "object" ? lights.latPatch(String(d.backend || ""), Number(d.ms)) : null;

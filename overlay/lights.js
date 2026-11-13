@@ -263,9 +263,14 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       setTimeout(() => (this.busy = false), 120);
     },
     onBeat() {
+      // Hue schnell schaltet gerade ein: REST hält still, bis feststeht, welche Lampen gestreamt werden
+      if (fast.state === "starting") return;
       if (!this.lights.length) return void this.load();
+      // während gestreamt wird, fasst REST die Lampen des Bereichs nicht an (die Bridge gehört dann dem Stream)
+      const pool = fast.state === "on" ? this.lights.filter((id) => !fast.ids.has(id)) : this.lights;
+      if (!pool.length) return;
       // beim Einmessen blinkt immer dieselbe (erste) Lampe, ohne Überblenden
-      const p = pal(), id = cal ? this.lights[0] : this.lights[this.next++ % this.lights.length];
+      const p = pal(), id = cal ? pool[0] : pool[this.next++ % pool.length];
       const drop = v.st?.d > 0.85;
       // „Keine Blitze“: kein Weiß (der Drop kommt dann gar nicht an) und 0,8 s Überblenden statt 0,1 s
       this.send(`/lights/${id}/state`, { on: true, xy: toXy(drop ? [255, 255, 255] : p[this.next % 3]), bri: briOf(254), transitiontime: cal ? 0 : nf ? 8 : 1 });
@@ -283,6 +288,92 @@ function createLights(getCfg, log = () => {}, opts = {}) {
         else if (s.ct) body.ct = s.ct;
         await call("PUT", `${b}/lights/${id}/state`, body, 1500);
       }
+    },
+    // Zustand weiterer Lampen merken (die eines Entertainment-Bereichs, die nicht im gewählten Raum sind)
+    async remember(ids) {
+      const b = this.base(), gen = this.gen;
+      if (!b || !ids.length) return;
+      const all = await call("GET", `${b}/lights`);
+      if (gen !== this.gen || !all || typeof all !== "object") return;
+      this.saved ||= {};
+      for (const id of ids) if (!(id in this.saved) && all[id]?.state) this.saved[id] = all[id].state;
+    },
+  };
+
+  /* ---- Hue schnell (Entertainment, Einstellung hueFast): statt eines REST-Befehls pro Schlag bekommt die Bridge
+     50 Farbbilder pro Sekunde über DTLS (hue-stream.js, dtls.js – erst hier geladen, wer es nicht nutzt, lädt es
+     nie). Jeder Fehler – kein Client-Schlüssel, kein Bereich, Bridge antwortet nicht, Verbindung reißt ab – führt
+     zurück auf REST und erst nach einer Minute zu einem neuen Versuch. opts.hueStream / dtlsConnect / hueV2Base
+     nur für Tests. */
+  const CLIENT_KEY = /^[0-9a-f]{32}$/i;
+  async function hueV2() {
+    const c = getCfg(), mod = opts.hueStream || require("./hue-stream.js");
+    const host = String(c.hueIp).split(":")[0];
+    // Zertifikat festnageln: gemerkt je Bridge-Adresse („ip=Fingerabdruck“); beim ersten Mal zählt die Bridge-ID
+    const [pinIp, pinFp] = String(c.hueCertPin || "").split("=");
+    const pin = pinIp === c.hueIp && pinFp ? pinFp : "";
+    let bridgeId = "";
+    if (!pin) {
+      const conf = await call("GET", `http://${c.hueIp}/api/config`, null, 2500);
+      bridgeId = /^[0-9a-f]{16}$/i.test(conf?.bridgeid || "") ? conf.bridgeid : "";
+    }
+    const v2 = mod.createHueV2({ base: opts.hueV2Base || `https://${host}`, key: c.hueUser, pin, bridgeId, onPin: (fp) => opts.update?.({ hueCertPin: `${c.hueIp}=${fp}` }) });
+    return { mod, v2, host };
+  }
+  const fast = {
+    state: "off", sess: null, area: null, ids: new Set(), retryAt: 0, at: 0, gen: 0,
+    want() {
+      const c = getCfg();
+      return !cal && !!c.hueFast && !!getCfg().hueOn && !!hue.base() && CLIENT_KEY.test(c.hueClientKey || "");
+    },
+    async start() {
+      if (this.state !== "off" || Date.now() < this.retryAt || !this.want()) return;
+      this.state = "starting";
+      const gen = ++this.gen, c = getCfg();
+      try {
+        const { mod, v2, host } = await hueV2();
+        const connect = opts.dtlsConnect || require("./dtls.js").connect;
+        const sess = mod.createSession({ v2, connect, host, clientKey: c.hueClientKey, area: c.hueArea, prepare: (ids) => hue.remember(ids), onDrop: () => gen === this.gen && this.fail("dropped") });
+        if (gen !== this.gen) return;
+        this.sess = sess;
+        const r = await sess.start();
+        if (gen !== this.gen) return void (r.ok && sess.stop());
+        if (!r.ok) return this.fail(r.error + (r.detail ? " " + r.detail : ""));
+        this.area = r.area;
+        this.ids = new Set(r.lights);
+        this.state = "on";
+        log(`hue fast: streaming ${r.area.channels.length} channels`);
+      } catch (e) {
+        if (gen === this.gen) this.fail(String(e?.message || e).slice(0, 80));
+      }
+    },
+    fail(why) {
+      this.gen++;
+      const s = this.sess;
+      Object.assign(this, { state: "off", sess: null, area: null, ids: new Set(), retryAt: Date.now() + 60000 });
+      s?.stop().catch(() => {});
+      log(`hue fast: back to REST (${why})`);
+    },
+    async stop() {
+      this.gen++;
+      const s = this.sess;
+      Object.assign(this, { state: "off", sess: null, area: null, ids: new Set(), retryAt: 0 });
+      if (s) await s.stop().catch(() => {});
+    },
+    // 50 Bilder pro Sekunde, auch wenn sich nichts ändert (nach 10 s ohne Bild beendet die Bridge den Stream)
+    frame(now) {
+      if (this.state !== "on" || now - this.at < 20) return;
+      // Takt im Raster von 20 ms statt „20 ms nach dem letzten“: die Schleife tickt je nach System nur alle
+      // ~16 ms (Windows), sonst kämen nur ~32 Bilder pro Sekunde an
+      this.at = Math.max(this.at + 20, now - 20);
+      const p = pal(), lv = level(), drop = v.st?.d > 0.85, ph = nf ? drift(now) : v.beat * 0.5;
+      const channels = this.area.channels.map((ch) => {
+        // Lage links (−1) bis rechts (+1) → erste bis dritte Songfarbe (nicht ganz herum, sonst wären die Ränder gleich)
+        let col = mixPal(p, clamp(ch.x, -1, 1) + 1 + ph);
+        if (drop) col = col.map((x) => x + (255 - x) * 0.7);
+        return { id: ch.id, rgb: scale(col, lv) };
+      });
+      if (!this.sess?.frame(channels)) this.fail("send");
     },
   };
 
@@ -551,6 +642,10 @@ function createLights(getCfg, log = () => {}, opts = {}) {
   function tick() {
     const now = Date.now();
     pulse(now);
+    if (fast.state === "on" && on("hue")) {
+      use("hue", now);
+      fast.frame(now);
+    }
     for (const [name, dev] of [["govee", govee], ["wled", wled], ["orgb", orgb], ["chroma", chroma]]) {
       if (!on(name)) continue;
       use(name, now);
@@ -580,6 +675,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     if (on("wled")) wled.start();
     if (on("orgb")) orgb.start();
     if (on("chroma")) chroma.start();
+    if (on("hue")) fast.start();
     // ohne Vorlauf geht der Schlag sofort raus, nicht erst mit dem nächsten Takt der Schleife
     pulse(now);
     if (!loop) loop = setInterval(tick, 16);
@@ -609,15 +705,17 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     orgb.stop();
     chroma.stop();
     log("lights idle");
-    return later(hue.restore(), wled.restore(), govee.restore(), ha.restore());
+    // erst den Stream beenden (die Bridge nimmt REST für diese Lampen erst danach wieder an), dann zurück
+    return later(fast.stop().then(() => hue.restore()), wled.restore(), govee.restore(), ha.restore());
   }
   // Einstellungen geändert: Abgeschaltetes sofort freigeben
   function sync() {
     if (!on("wled")) later(wled.restore());
     if (!on("orgb")) orgb.stop();
     if (!on("chroma")) chroma.stop();
-    if (!on("hue")) later(hue.restore());
-    else hue.lights = [], hue.retryAt = 0;
+    // Hue schnell: mit den neuen Einstellungen (Bereich, Schalter, Bridge) beim nächsten Schlag neu aufbauen
+    if (!on("hue")) later(fast.stop().then(() => hue.restore()));
+    else later(fast.stop()), (hue.lights = []), (hue.retryAt = 0);
     if (!on("govee")) later(govee.restore());
     if (!on("ha")) later(ha.restore());
     else ha.list = [], ha.retryAt = 0;
@@ -702,6 +800,14 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     if (ok) return { user: r[0].success.username, clientKey: /^[0-9a-f]{32}$/i.test(r[0].success.clientkey || "") ? r[0].success.clientkey : "" };
     return { error: Array.isArray(r) && r[0]?.error?.type === 101 ? "button" : "unreachable" };
   }
+  // Einstellungen: Entertainment-Bereiche der Bridge für die Auswahl
+  async function hueAreas() {
+    if (!hue.base()) return { error: "pair" };
+    if (!CLIENT_KEY.test(getCfg().hueClientKey || "")) return { error: "clientkey" };
+    const list = await (await hueV2()).v2.areas();
+    if (!list) return { error: "unreachable" };
+    return { areas: list.filter((a) => a.channels.length && a.channels.length <= 20).map((a) => ({ id: a.id, name: a.name, n: a.channels.length })) };
+  }
   async function hueGroups() {
     const b = hue.base();
     if (!b) return [];
@@ -719,7 +825,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     return { lights: lights.slice(0, 60), rooms: rooms.slice(0, 30) };
   }
 
-  return { feed, sync, active, stopAll: idle, calibrate, calibrating: () => !!cal, latAll, test, wledFind, latPatch: (name, ms) => latPatch(getCfg(), name, ms), hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test() };
+  return { feed, sync, active, stopAll: idle, calibrate, calibrating: () => !!cal, latAll, test, wledFind, hueAreas, hueFast: () => fast.state, latPatch: (name, ms) => latPatch(getCfg(), name, ms), hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test() };
 }
 
 module.exports = { createLights, toXy, createBeatView, latOf, latPatch, LAT_MAX };

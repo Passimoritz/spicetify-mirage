@@ -99,7 +99,8 @@ function rebind(patch, cfg) {
 function cleanPatch(patch, cfg, trusted) {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return { patch: {}, dropped: [] };
   const p = { ...patch }, dropped = [];
-  for (const k of ["hueUser", "hueClientKey", FIELD, "secretsPlain"]) delete p[k];
+  // hueCertPin (Fingerabdruck des Bridge-Zertifikats) merkt sich nur der Hauptprozess selbst
+  for (const k of ["hueUser", "hueClientKey", FIELD, "secretsPlain", "hueCertPin"]) delete p[k];
   if (p.haToken === "set" || (!trusted && "haToken" in p)) delete p.haToken;
   if (!trusted) {
     for (const key of Object.keys(BOUND)) {
