@@ -112,8 +112,12 @@ const countIn = (arr, t0, t1) => {
 function nameOf(v, a, hint) {
   const score = {};
   for (const k of MOODS) score[k] = Math.hypot(v - PROTO[k][0], a - PROTO[k][1]);
-  // Aufbau vor dem Höhepunkt fühlt sich nach Spannung an
+  // Aufbau vor dem Höhepunkt fühlt sich nach Spannung an – lang gesungene Töne dagegen nicht
   if (hint.kind === "pre") score.tense -= 0.18;
+  if (hint.held > 0.2) {
+    score.tense += 0.25;
+    score.aggressive += 0.15;
+  }
   // groß, getragen, mit langen Tönen: feierlich statt euphorisch
   if ((hint.kind === "chorus" || hint.kind === "drop") && hint.held > 0.2 && hint.bpm < 125 && v > 0.1) score.triumphant -= 0.2;
   // wenig Schlag, klare Töne, eher leise: verträumt
