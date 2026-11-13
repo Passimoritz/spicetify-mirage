@@ -345,6 +345,7 @@ async function hostInfo() {
 }
 const lastReact = new Map(), lastGame = new Map(), refused = new Map();
 const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
+let reactBudget = 6, reactAt = 0;
 async function inbound(m) {
   if (!ses || m.length < 29) return;
   let msg;
@@ -368,10 +369,16 @@ async function inbound(m) {
     lastHost.set(id, Date.now());
     return void hostCommand(id, msg);
   }
-  // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl
+  // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl, und insgesamt höchstens
+  // 4 je Sekunde (bei vielen Gästen sonst ein Emoji-Regen); abschaltbar
   if (msg.k === "react") {
-    if (!REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
+    if (!cfg.partyReacts || !REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
+    reactBudget = Math.min(6, reactBudget + ((Date.now() - reactAt) / 1000) * 4);
+    reactAt = Date.now();
+    if (reactBudget < 1) return;
+    reactBudget--;
     lastReact.set(id, Date.now());
+    if (lastReact.size > 300) lastReact.delete(lastReact.keys().next().value);
     window.dispatchEvent(new CustomEvent("mirage:react", { detail: msg.e }));
     return;
   }
@@ -525,6 +532,8 @@ function feed(px, pal, bpm, lyric) {
     // laufende Abstimmung, der nächste Song (für „dein Wunsch kommt gleich“)
     poll: poll && Date.now() < poll.end + 8000 ? { id: poll.id, o: poll.o, v: poll.v, end: poll.end } : null,
     nx: masked ? "" : nextUri(),
+    // Reaktionen aus: die Handys blenden ihre Emoji-Leiste aus (ältere Seiten zeigen sie weiter, es kommt nur nichts an)
+    rx: cfg.partyReacts ? 1 : 0,
     fx: !masked && lastFx && Date.now() - lastFx.s < 3000 ? lastFx : null,
   }, true);
 }

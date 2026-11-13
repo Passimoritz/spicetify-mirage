@@ -531,6 +531,7 @@ function render(box) {
       toggle("partyLive", () => cfg.partyLive && live.prepare()),
       toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
       wishRules(),
+      toggle("partyReacts", () => {}),
       livePanel(),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),

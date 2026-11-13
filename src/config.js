@@ -127,6 +127,8 @@ const DEFAULTS = {
   wishBlock: "",
   wishClean: false,
   wishAuto: 0,
+  // Reaktionen der Gäste (Emoji vom Handy) steigen am linken und rechten Rand des Party-Bilds auf
+  partyReacts: true,
   partyCrowd: true,
   partyJamLight: true,
   partyScreen: true,

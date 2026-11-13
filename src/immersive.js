@@ -3142,12 +3142,14 @@ const immersive = (() => {
 
   /* ---- Reaktionen der Gäste: Emojis steigen vom unteren Rand auf */
   window.addEventListener("mirage:react", (e) => {
-    if (!el || el.dataset.mode !== "party" || el.querySelectorAll(".m-im-react").length > 24) return;
+    if (!el || el.dataset.mode !== "party" || !cfg.partyReacts || el.querySelectorAll(".m-im-react").length > 12) return;
     const r = document.createElement("span");
     r.className = "m-im-react";
     r.textContent = e.detail;
-    r.style.left = 8 + Math.random() * 84 + "%";
-    r.style.setProperty("--dx", (Math.random() * 80 - 40).toFixed(0) + "px");
+    // nur am linken oder rechten Rand, nie über der Menge in der Mitte; seitlich treiben sie nach außen
+    const right = Math.random() < 0.5;
+    r.style.left = (right ? 93 + Math.random() * 4.5 : 1.5 + Math.random() * 4.5) + "%";
+    r.style.setProperty("--dx", ((right ? 1 : -1) * Math.random() * 14).toFixed(0) + "px");
     el.append(r);
     setTimeout(() => r.remove(), 3600);
   });

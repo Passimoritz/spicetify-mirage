@@ -1088,6 +1088,37 @@ async function wishRules() {
   for (const [k, v] of [["wishMax", 0], ["wishBlock", ""], ["wishClean", false], ["wishAuto", 0]]) await setRule(k, v);
   await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
 }
+// Reaktionen: nur am Rand, insgesamt gedrosselt, abschaltbar
+async function reactions() {
+  await ensurePhones("reactions");
+  await T.js(`(() => {
+    window.__rx = [];
+    new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.classList?.contains("m-im-react")) __rx.push({ at: performance.now(), left: parseFloat(n.style.left) }); }).observe(document.getElementById("mirage-immersive"), { childList: true });
+    return 1;
+  })()`);
+  await P[0].click("#reacts button", { index: 0 });
+  await until(() => T.js(`__rx.length >= 1`), 5000, "reaktion: das Emoji erscheint auf dem großen Bild");
+  // 30 verschiedene Gäste auf einmal: insgesamt gedrosselt
+  await T.js(`__rx.length = 0; 1`);
+  await P[1].js(`for (let i = 0; i < 30; i++) sendUp({ k: "react", e: "🎉", id: "spam-" + i + "-abcdef" }); 1`);
+  await wait(1500);
+  const rx = await T.js(`__rx`);
+  ok(rx.length >= 3 && rx.length <= 11, `reaktion: aus 30 auf einmal werden ein paar, kein Regen: ${rx.length}`);
+  const mid = rx.filter((r) => r.left > 7 && r.left < 92);
+  ok(!mid.length, "reaktion: nichts über der Mitte: " + mid.map((r) => r.left.toFixed(1)).join(", "));
+  // ausgeschaltet: die Handys blenden die Leiste aus, und es kommt nichts mehr an
+  await setRule("partyReacts", false);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display === "none"`), 4000, "reaktion: aus – die Handys zeigen keine Emoji-Leiste");
+  await T.js(`__rx.length = 0; 1`);
+  await wait(2000);
+  await P[2].js(`sendUp({ k: "react", e: "🔥" }); 1`);
+  await wait(1500);
+  ok(!(await T.js(`__rx.length`)), "reaktion: aus – nichts erscheint");
+  await setRule("partyReacts", true);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+  await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display !== "none"`), 4000, "reaktion: wieder an");
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -1098,7 +1129,7 @@ const CASES = [
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
-  ["link-wish", linkWish], ["wish-rules", wishRules],
+  ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions],
 ];
 
 /* ---------------------------------------------------------------- Start */

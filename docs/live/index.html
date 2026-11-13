@@ -159,6 +159,7 @@
   .reacts { position: fixed; left: 50%; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 150px); display: flex; gap: 6px; transform: translate(-50%, 320%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
   body.on .reacts { transform: translate(-50%, 0); }
   body.wish .reacts { opacity: 0; pointer-events: none; }
+  body.norx .reacts { display: none; }
   .reacts button { flex: 0 1 44px; min-width: 0; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(10, 8, 20, 0.42); font-size: 22px; line-height: 1;
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.15s; }
   .reacts button:active { transform: scale(0.85); }
@@ -714,6 +715,8 @@ function apply(s) {
   $("lyr").classList.toggle("has", !!s.ly);
   drawPoll(s.poll);
   drawGame(s.g);
+  // Reaktionen am PC ausgeschaltet: keine Emoji-Leiste (ältere Themes senden „rx“ nicht – dann bleibt sie)
+  document.body.classList.toggle("norx", s.rx === 0);
   // dein Wunsch kommt als Nächstes
   if (s.nx && myWishes.has(s.nx) && !told.has(s.nx)) {
     told.add(s.nx);

@@ -4450,12 +4450,12 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-/* Reaktionen der Gäste: steigen vom unteren Rand auf und verblassen */
+/* Reaktionen der Gäste: steigen am linken und rechten Rand auf und verblassen (dezent, nie über der Mitte) */
 #mirage-immersive .m-im-react {
   position: absolute;
-  bottom: 6vh;
+  bottom: 8vh;
   z-index: 32;
-  font-size: clamp(30px, 3.4vw, 56px);
+  font-size: clamp(22px, 2.2vw, 38px);
   pointer-events: none;
   animation: m-react 3.4s var(--m-ease) both;
 }
@@ -4465,12 +4465,12 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
     transform: translate(0, 20px) scale(0.6);
   }
   15% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1.1);
+    opacity: 0.85;
+    transform: translate(0, 0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(var(--dx, 0), -46vh) scale(0.9);
+    transform: translate(var(--dx, 0), -38vh) scale(0.85);
   }
 }
 #mirage-immersive .m-im-side-note {
