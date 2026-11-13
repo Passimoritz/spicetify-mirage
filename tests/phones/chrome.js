@@ -117,6 +117,8 @@ async function launchChrome(exe, tmpRoot) {
     await cmd("Page.navigate", { url });
     return {
       errors,
+      // Steuerbefehle direkt (Messungen: CPU-Drosselung, Leistungswerte)
+      cmd,
       async eval(expression) {
         const r = await cmd("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
         if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);

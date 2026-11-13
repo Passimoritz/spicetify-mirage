@@ -201,7 +201,7 @@ async function appCheck(browser, env, device) {
       icons.push({ src: i.src, ok: r.ok, size: bm.width + "x" + bm.height, want: i.sizes, type: r.headers.get("content-type") });
     }
     const apple = document.querySelector('link[rel="apple-touch-icon"]')?.href;
-    return { name: man.name, display: man.display, start: man.start_url, icons, apple: apple && (await fetch(apple)).ok, last: JSON.parse(localStorage.getItem("mlLast") || "null")?.h, sw: !!navigator.serviceWorker?.controller };
+    return { fx: !!document.querySelector('script[src="fx.js"]') || !!window.MirageFx, name: man.name, display: man.display, start: man.start_url, icons, apple: apple && (await fetch(apple)).ok, last: JSON.parse(localStorage.getItem("mlLast") || "null")?.h, sw: !!navigator.serviceWorker?.controller };
   })()`).catch((e) => ({ err: e.message }));
   if (m.err) problems.push("Manifest: " + m.err);
   else {
@@ -210,6 +210,7 @@ async function appCheck(browser, env, device) {
     if (!m.apple) problems.push("apple-touch-icon fehlt");
     if (m.last !== goodHash) problems.push("die Party wird nicht gemerkt: " + m.last);
     if (m.sw) problems.push("ein Service Worker steuert die Seite");
+    if (m.fx) problems.push("fx.js wird schon ohne Party geladen");
   }
   await page.close();
   // vom Startbildschirm ohne Link: zurück in die Party von eben; ist sie älter als 12 Stunden, der Scanner
@@ -235,6 +236,7 @@ async function partySuite(browser, env, device) {
   await party.noFlashCheck(browser, env, o, check);
   await party.tickCheck(browser, env, o, check);
   await party.waveCheck(browser, env, o, check);
+  await party.ecoCheck(browser, env, o, check);
 }
 
 async function suite(browser, env, devices) {

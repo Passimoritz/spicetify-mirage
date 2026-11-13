@@ -66,6 +66,9 @@ async function noFlashCheck(browser, env, o, check) {
   try {
     if (!(await p.page.eval(`document.body.classList.contains("on")`))) problems.push("Seite leuchtet nicht (keine Party angekommen)");
     await p.page.eval(WATCH);
+    // Wortbilder werden erst mit der Party nachgeladen
+    for (let i = 0; i < 40 && !(await p.page.eval("!!wfx")); i++) await sleep(100);
+    if (!(await p.page.eval("!!wfx"))) problems.push("fx.js wurde mit der Party nicht nachgeladen");
     // „Keine Blitze“ am PC: Drop kommt an (gedeckelt wie vom Theme, und ungedeckelt), aber nichts blitzt
     await p.hold({ d: 0, nf: 1 }, 400);
     await p.hold({ d: 1, nf: 1 }, 600);
@@ -165,4 +168,36 @@ async function waveCheck(browser, env, o, check) {
   check(`${o.device.name} · Lichtwelle: der Reihe nach und in Farbgruppen, ohne Welle wie bisher`, problems);
 }
 
-module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck };
+// Akku sparen: halbe Bildrate, Canvas in einfacher Auflösung – auf Wunsch und von selbst bei schwachem Akku;
+// der Equalizer wird nur skaliert (kein Layout je Bild)
+async function ecoCheck(browser, env, o, check) {
+  const problems = [];
+  const COUNT = `(() => { window.__d = 0; let l = lastDraw; setInterval(() => { if (lastDraw !== l) { __d++; l = lastDraw; } }, 4); return 1; })()`;
+  const run = async (label, init) => {
+    const p = await party(browser, env, { ...o, initScript: o.initScript + "\n" + init });
+    try {
+      await p.page.eval(COUNT);
+      const t0 = Date.now();
+      await beats(p, 2000);
+      const r = await p.page.eval(`({ d: __d, w: document.getElementById("c").width, iw: innerWidth, dpr: devicePixelRatio, eq: document.querySelector(".eq i").style.transform, h: document.querySelector(".eq i").style.height, saving })`);
+      r.fps = r.d / ((Date.now() - t0) / 1000);
+      if (p.page.errors.length) problems.push(...p.page.errors.map((e) => label + ": Fehler in der Konsole: " + e));
+      return r;
+    } finally {
+      await p.page.close();
+    }
+  };
+  const normal = await run("normal", "");
+  if (normal.saving || normal.w !== Math.round(normal.iw * Math.min(2, normal.dpr))) problems.push(`normal: Canvas ${normal.w} px bei ${normal.iw} px Breite, sparen=${normal.saving}`);
+  if (!/^scaleY\(/.test(normal.eq) || normal.h) problems.push(`Equalizer: transform „${normal.eq}“, height „${normal.h}“`);
+  const asked = await run("auf Wunsch", `localStorage.setItem("mlEco", "1");`);
+  const low = await run("schwacher Akku", `navigator.getBattery = () => Promise.resolve({ level: 0.12, charging: false, addEventListener() {} });`);
+  for (const [label, r] of [["auf Wunsch", asked], ["schwacher Akku", low]]) {
+    if (!r.saving || r.w !== r.iw) problems.push(`${label}: Canvas ${r.w} px statt ${r.iw} px, sparen=${r.saving}`);
+    if (r.fps > 34) problems.push(`${label}: ${r.fps.toFixed(0)} Bilder/s gemalt (höchstens ~30)`);
+  }
+  if (normal.fps < 40) problems.push(`normal nur ${normal.fps.toFixed(0)} Bilder/s gemalt`);
+  check(`${o.device.name} · Akku sparen: ~30 Bilder/s und einfache Auflösung (gewählt oder bei schwachem Akku), Equalizer ohne Layout`, problems);
+}
+
+module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck, ecoCheck };
