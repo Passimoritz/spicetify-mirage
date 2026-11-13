@@ -475,6 +475,7 @@ function render(box) {
       head(t("ps_light")),
       toggle("partyRig", () => {}),
       toggle("partyInstruments", () => {}),
+      toggle("instrSound", () => {}),
       toggle("partyFlash", () => {}),
       toggle("partyLasers", () => {}),
       toggle("partyMelody", () => {}),

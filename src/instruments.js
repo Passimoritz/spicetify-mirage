@@ -3,6 +3,7 @@ import { cfg } from "./config.js";
 import { audio } from "./audio.js";
 import { currentItem } from "./player.js";
 import { KINDS, kindOf } from "./instrkinds.js";
+import { heardMoments } from "./instrsound.js";
 
 /* ---------------------------------------------------------------- Instrumente */
 // OB ein Instrument auf der Aufnahme spielt, steht in den Credits des Songs (Spotify, sonst MusicBrainz
@@ -163,16 +164,31 @@ function moments(d, kinds) {
   return out;
 }
 
-const cur = { uri: "", kinds: new Set(), lv: Object.fromEntries(KINDS.map((k) => [k, 0])) };
+// Wahlfunktion „Auch am Klang erkennen“ (instrsound.js): nur wenn die Credits kein Instrument nennen
+const heard = new WeakMap();
+function heardOf(d) {
+  if (!heard.has(d)) heard.set(d, heardMoments(d.segs));
+  return heard.get(d);
+}
+
+const cur = { uri: "", kinds: new Set(), asked: false, lv: Object.fromEntries(KINDS.map((k) => [k, 0])) };
 function at(sec, dt) {
   const uri = currentItem()?.uri || "";
   if (uri !== cur.uri) {
     cur.uri = uri;
     cur.kinds = new Set();
-    credited(uri).then((k) => cur.uri === uri && (cur.kinds = k));
+    cur.asked = false;
+    credited(uri).then((k) => {
+      if (cur.uri !== uri) return;
+      cur.kinds = k;
+      cur.asked = true;
+    });
   }
   const d = audio.uri === uri ? audio.data : null;
-  const M = d && !d.synthetic && d.segs?.length && cur.kinds.size ? moments(d, cur.kinds) : null;
+  const real = d && !d.synthetic && d.segs?.length;
+  // erst wenn die Credits geantwortet haben (oder es keine gibt) – sonst flackerte kurz ein geratenes Instrument auf
+  const H = real && !cur.kinds.size && cur.asked && cfg.instrSound ? heardOf(d) : null;
+  const M = real && cur.kinds.size ? moments(d, cur.kinds) : H?.kinds.length ? H : null;
   const bin = Math.max(0, Math.floor(sec / STEP));
   // höchstens zwei Instrumente zugleich – die deutlichsten
   const want = KINDS.map((k) => [k, M?.[k]?.[bin] || 0]).sort((a, b) => b[1] - a[1]);
@@ -191,7 +207,7 @@ function at(sec, dt) {
     }
     chroma = d.segs[lo].p.length ? d.segs[lo].p : null;
   }
-  return { ...cur.lv, chroma, credited: [...cur.kinds] };
+  return { ...cur.lv, chroma, credited: [...cur.kinds], heard: H ? [...H.kinds] : [] };
 }
 
 export const instruments = { at, kindOf, KINDS };

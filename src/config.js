@@ -151,6 +151,8 @@ const DEFAULTS = {
   // Moving Heads, Blinder, Laserfläche · Instrumente aus den Credits
   partyRig: true,
   partyInstruments: true,
+  // ohne Credits Klavier und verzerrte Gitarre am Klang raten (instrsound.js) – kann danebenliegen, darum aus
+  instrSound: false,
   // Versatz zwischen Bild und Ton in ms (Taste T misst ihn ein); je Song für geschätzte Takte
   syncOffset: 0,
   syncSongs: {},
