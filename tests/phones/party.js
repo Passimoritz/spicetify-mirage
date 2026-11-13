@@ -83,4 +83,42 @@ async function noFlashCheck(browser, env, o, check) {
   check(`${o.device.name} · „Keine Blitze“ (nf): kein Blitz, kein Schockring, keine Drop-Vibration`, problems);
 }
 
-module.exports = { party, state, sleep, noFlashCheck };
+// Takt-Klick fürs iPhone: geprüft wird nur der Zeitplan, nie der Ton – clickAt wird durch einen Zähler ersetzt
+// und es entsteht kein AudioContext
+async function tickCheck(browser, env, o, check) {
+  const problems = [];
+  // ohne Vibration (wie Safari auf dem iPhone): der Knopf ist da, aber aus
+  const ios = await party(browser, env, { ...o, initScript: o.initScript + "\ndelete Navigator.prototype.vibrate;" });
+  try {
+    const b = await ios.page.eval(`({ tick: !document.getElementById("bTick").hidden, vib: !document.getElementById("bVib").hidden, on: tickOn, pressed: document.getElementById("bTick").getAttribute("aria-pressed"), label: document.querySelector("#bTick span").textContent })`);
+    if (!b.tick || b.vib) problems.push(`ohne Vibration: Klick-Knopf ${b.tick ? "da" : "fehlt"}, Vibrationsknopf ${b.vib ? "da" : "weg"}`);
+    if (b.on || b.pressed !== "false") problems.push("der Klick ist von selbst an");
+    if (!b.label) problems.push("Klick-Knopf ohne Text");
+    await ios.page.eval(`(() => { window.__t = []; clickAt = (beat, inSec) => __t.push([beat, performance.now() / 1000 + inSec]); tickOn = true; return 1; })()`);
+    // wie das Theme: Schlagnummer und Phase laufen mit der Zeit weiter
+    for (const t0 = Date.now(); Date.now() - t0 < 2600; await sleep(125)) {
+      const bp = ((Date.now() - t0) / 1000) * 2;
+      ios.send({ bpm: 120, bi: Math.floor(bp), ph: +(bp % 1).toFixed(3) });
+    }
+    const t = await ios.page.eval("__t");
+    const beats = t.map((x) => x[0]), gaps = t.slice(1).map((x, i) => x[1] - t[i][1]);
+    if (t.length < 4) problems.push(`nur ${t.length} Klicks in 2,6 s bei 120 BPM`);
+    if (beats.some((x, i) => i && x !== beats[i - 1] + 1)) problems.push("Schläge doppelt oder ausgelassen: " + beats.join(","));
+    if (gaps.some((g) => Math.abs(g - 0.5) > 0.04)) problems.push("Abstand weicht vom Takt ab: " + gaps.map((g) => g.toFixed(3)).join(", "));
+    const plan = await ios.page.eval(`[tickPlan(3.95, 120), tickPlan(3.5, 120), tickPlan(7.99, 60)]`);
+    if (plan[0]?.beat !== 4 || Math.abs(plan[0].inSec - 0.025) > 1e-6 || plan[1] !== null || plan[2]?.beat !== 8) problems.push("tickPlan rechnet falsch: " + JSON.stringify(plan));
+    if (ios.page.errors.length) problems.push(...ios.page.errors.map((e) => "Fehler in der Konsole: " + e));
+  } finally {
+    await ios.page.close();
+  }
+  // mit Vibration (Android) bleibt der Knopf weg
+  const and = await party(browser, env, o);
+  try {
+    if (!(await and.page.eval(`document.getElementById("bTick").hidden`))) problems.push("mit Vibration steht trotzdem der Klick-Knopf da");
+  } finally {
+    await and.page.close();
+  }
+  check(`${o.device.name} · Takt-Klick: aus bis zum Antippen, ein Klick je Schlag im Takt (lautlos geprüft)`, problems);
+}
+
+module.exports = { party, state, sleep, noFlashCheck, tickCheck };

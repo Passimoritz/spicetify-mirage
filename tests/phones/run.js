@@ -191,6 +191,7 @@ async function langCheck(browser, env, device) {
 async function partySuite(browser, env, device) {
   const o = { url: `http://127.0.0.1:${env.web.port}/${goodHash}`, device, lang: "de-DE", channel, key: Buffer.from(new URLSearchParams(goodHash.slice(1)).get("k"), "base64url"), initScript: initScript(env.broker.port, false) };
   await party.noFlashCheck(browser, env, o, check);
+  await party.tickCheck(browser, env, o, check);
 }
 
 async function suite(browser, env, devices) {
