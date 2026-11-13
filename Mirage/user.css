@@ -373,21 +373,26 @@ html.mirage-no-tilt [data-encore-id="card"] {
 /* ==========================================================================
    SEITENLEISTE
    ========================================================================== */
+/* Bibliothekszeilen: die Zeile selbst trägt role="row" – das überlebt Umbenennungen der Klassen */
+#Desktop_LeftSidebar_Id [role="row"],
 .main-yourLibraryX-listItem,
 .main-rootlist-rootlistItem {
   border-radius: 12px !important;
   transition: background 0.25s var(--m-ease), transform 0.35s var(--m-spring);
 }
+#Desktop_LeftSidebar_Id [role="row"]:hover,
 .main-yourLibraryX-listItem:hover,
 .main-rootlist-rootlistItem:hover {
   transform: translateX(3px);
 }
+#Desktop_LeftSidebar_Id [role="row"][aria-selected="true"],
 .main-yourLibraryX-listItem [aria-selected="true"],
 .main-yourLibraryX-listItem[aria-selected="true"],
 .main-yourLibraryX-listItem [aria-current="page"] {
   background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.28), rgba(var(--m-a-rgb), 0.04)) !important;
   box-shadow: inset 3px 0 0 var(--m-a);
 }
+#Desktop_LeftSidebar_Id [role="row"] img,
 .main-yourLibraryX-listItem img,
 .main-yourLibraryX-rowCover img {
   border-radius: 8px !important;
@@ -648,9 +653,12 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   border-radius: 16px !important;
   box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(var(--m-a-rgb), 0.1) !important;
 }
+/* Menüeinträge über ihre Rolle (menuitem, menuitemradio, menuitemcheckbox), Klassenname als Rückfall */
+[role="menu"] [role^="menuitem"],
 .main-contextMenu-menuItemButton {
   border-radius: 10px !important;
 }
+[role="menu"] [role^="menuitem"]:hover,
 .main-contextMenu-menuItemButton:hover {
   background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.3), rgba(var(--m-a-rgb), 0.06)) !important;
 }
@@ -1992,6 +2000,7 @@ html.mirage-beat #mirage-stage .m-pulse {
 /* ==========================================================================
    PLAYLIST-, ALBUM- UND KÜNSTLERSEITEN
    ========================================================================== */
+[data-testid="entity-header"],
 .main-entityHeader-container {
   min-height: 340px;
 }
@@ -2836,6 +2845,7 @@ html[data-m-page="artist"] h2 {
 
 /* Cover-Wahl im Bearbeiten-Dialog */
 [role="dialog"] [data-testid="cover-art-image"],
+[role="dialog"] [data-testid="edit-image-button"],
 [role="dialog"] .main-playlistEditDetailsModal-albumCover,
 [role="dialog"] .main-editImageButton-image {
   border-radius: 16px !important;
@@ -2844,6 +2854,7 @@ html[data-m-page="artist"] h2 {
     0 0 0 1px var(--m-line-strong) !important;
   transition: transform 0.45s var(--m-spring), box-shadow 0.45s var(--m-ease);
 }
+[role="dialog"] [data-testid="edit-image-button"]:hover,
 [role="dialog"] .main-editImageButton-image:hover,
 [role="dialog"] .main-playlistEditDetailsModal-albumCover:hover {
   transform: scale(1.03) rotate(-0.6deg);
@@ -4651,6 +4662,7 @@ html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="action-bar-row"] [d
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="background-image"],
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-view"] [data-testid="cover-art-image"],
 html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow:has(.main-trackList-playing),
+html.mirage-hidden [data-testid="CoverSlotCollapsed__container"] img,
 html.mirage-hidden .main-coverSlotCollapsed-container img,
 html.mirage-hidden [data-testid="control-button-playpause"]::after {
   animation-play-state: paused !important;
@@ -4720,6 +4732,7 @@ html.mirage-rich #mirage-stage .m-aurora {
 .mirage-playing [data-testid="control-button-playpause"]::after {
   animation-timing-function: steps(77) !important;
 }
+html.mirage-vinyl [data-testid="CoverSlotCollapsed__container"] img,
 html.mirage-vinyl .main-coverSlotCollapsed-container img {
   animation-timing-function: steps(144) !important;
 }
