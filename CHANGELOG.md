@@ -58,6 +58,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 - **Play buttons** on headers, cards and the player bar are one crisp, round accent button again: no square behind the icon, no pulsing halo, no spinning ring. Selected filter chips are readable, selected tracks keep their highlight on hover, the playing row no longer turns olive on warm covers, and outlined “Follow” buttons are styled again on Spotify 1.3.
 - **Immersive mode gives memory back:** closing it or leaving the party view stops the stage's background thread and frees its images, the large canvases and Canvas videos; a window hidden for 30 s frees them too. Beat analysis stays in memory for the last 8 songs (older ones come from disk), and game sounds release the audio device after a minute of silence.
 - Drops in party mode often landed one beat early.
+- Share cards and the game result card shrink long titles before cutting them, so a game name is not cut to “Ich hab noch …” when Mirage's font is missing.
 - The host buttons on the phone no longer jump away when a guest joins, so a tap on Start is never lost.
 - The nightly Spotify check now unpacks the client correctly, and the selector check no longer counts Spicetify's own files as Spotify.
 - **Party mode with big crowds** (stadium, festival, concert hall) redrew every person in every frame; the stage is about eight times faster and runs at 60 fps again, with an identical picture. Startup also does about 17 % less work.

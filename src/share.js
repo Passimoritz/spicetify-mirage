@@ -44,6 +44,17 @@ function fit(x, text, max) {
   while (text.length > 1 && x.measureText(text + "…").width > max) text = text.slice(0, -1);
   return text + "…";
 }
+// Große Titel erst kleiner setzen (bis 65 %), erst danach kürzen: fehlt die Schrift und springt eine breitere ein,
+// soll aus „Ich hab noch nie“ nicht „Ich hab noch …“ werden
+function fitTitle(x, weight, size, text, max) {
+  let s = size;
+  x.font = `${weight} ${s}px ${FONT}`;
+  while (s > size * 0.65 && x.measureText(text).width > max) {
+    s -= 2;
+    x.font = `${weight} ${s}px ${FONT}`;
+  }
+  return fit(x, text, max);
+}
 function watermark(x) {
   x.font = `600 30px ${FONT}`;
   x.fillStyle = "rgba(255,255,255,0.55)";
@@ -126,8 +137,7 @@ async function nowPlayingCard() {
   x.font = `600 28px ${FONT}`;
   x.fillText(t("now").toUpperCase(), W / 2, Y + size + 90);
   x.fillStyle = "#fff";
-  x.font = `800 64px ${FONT}`;
-  x.fillText(fit(x, titleOf(item), W - 140), W / 2, Y + size + 170);
+  x.fillText(fitTitle(x, 800, 64, titleOf(item), W - 140), W / 2, Y + size + 170);
   x.fillStyle = "rgba(255,255,255,0.72)";
   x.font = `500 38px ${FONT}`;
   x.fillText(fit(x, artistOf(item), W - 160), W / 2, Y + size + 230);
@@ -365,8 +375,7 @@ async function partyRecapCard(r) {
     x.font = `500 30px ${FONT}`;
     x.fillText(t("recapPeak"), 90, 860);
     x.fillStyle = "#fff";
-    x.font = `700 40px ${FONT}`;
-    x.fillText(fit(x, `${r.peak.title} – ${r.peak.artist}`, W - 180), 90, 910);
+    x.fillText(fitTitle(x, 700, 40, `${r.peak.title} – ${r.peak.artist}`, W - 180), 90, 910);
   }
   // die Songs der Nacht (die ersten sieben)
   songs.slice(0, 7).forEach((s, i) => {
@@ -399,8 +408,7 @@ async function gameCard(r) {
   x.font = `600 30px ${FONT}`;
   x.fillText(`${t("gCardKicker")} · ${new Date().toLocaleDateString()}`.toUpperCase(), 90, 170);
   x.fillStyle = "#fff";
-  x.font = `800 84px ${FONT}`;
-  x.fillText(fit(x, `${r.icon} ${r.title}`, W - 170), 84, 275);
+  x.fillText(fitTitle(x, 800, 84, `${r.icon} ${r.title}`, W - 170), 84, 275);
   x.fillStyle = "rgba(255,255,255,0.65)";
   x.font = `500 36px ${FONT}`;
   x.fillText(t("gEnd"), 90, 340);
