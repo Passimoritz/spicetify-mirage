@@ -545,10 +545,15 @@
   // Einstellungen umziehen: Datei-Dialoge laufen im Hauptprozess, hier nur das Ergebnis als kurze Meldung
   function moveResult(r, okKey) {
     if (!r || r.canceled) return;
-    const text = r.ok ? t(okKey).replace("{n}", r.n ?? "") : t(r.error === "invalid" ? "moveInvalid" : "moveFailed");
+    let text = r.ok ? t(okKey).replace("{n}", r.n ?? "") : t(r.error === "invalid" ? "moveInvalid" : "moveFailed");
+    // die Datei nennt eine andere Bridge / ein anderes Home Assistant: Schlüssel bzw. Token wurden gelöscht
+    const cleared = Array.isArray(r.cleared) ? r.cleared : [];
+    if (cleared.includes("hue")) $("#hueState").textContent = t("moveRepairHue");
+    if (cleared.includes("ha")) $("#haState").textContent = t("moveRepairHa");
+    if (cleared.length) text += " · " + cleared.map((x) => t(x === "hue" ? "moveRepairHue" : "moveRepairHa")).join(" · ");
     $("#moveState").textContent = text;
     clearTimeout(moveResult.t);
-    moveResult.t = setTimeout(() => ($("#moveState").textContent = ""), 6000);
+    moveResult.t = setTimeout(() => ($("#moveState").textContent = ""), cleared.length ? 20000 : 6000);
   }
   $("#moveExport").onclick = async () => moveResult(await mirage.invoke("exportCfg"), "moveExported");
   $("#moveImport").onclick = async () => moveResult(await mirage.invoke("importCfg"), "moveImported");

@@ -9,7 +9,7 @@ const http = require("http");
 const { spawn, execFile } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const { createLights } = require("./lights.js");
-const { createSecrets, SECRET } = require("./secrets.js");
+const { createSecrets, SECRET, rebind, cleanPatch, senderIs } = require("./secrets.js");
 const { createCast } = require("./cast.js");
 const { createPartyGuard } = require("./flashcap.js");
 const { make } = require("./i18n");
@@ -1193,11 +1193,14 @@ async function importCfg(win) {
     return { error: e instanceof SyntaxError ? "invalid" : "io" };
   }
   // eigenes Exportformat ({ settings: {…} }) oder eine rohe settings.json
-  const patch = importable(data && typeof data.settings === "object" ? data.settings : data);
-  const n = Object.keys(patch).length;
+  const raw = importable(data && typeof data.settings === "object" ? data.settings : data);
+  const n = Object.keys(raw).length;
   if (!n) return { error: "invalid" };
+  // andere Bridge oder anderes Home Assistant in der Datei: Schlüssel bzw. Token von hier gelten dort nicht
+  // und dürfen dort nie ankommen – leeren; die Einstellungen bitten darum, neu zu koppeln bzw. einzugeben
+  const { patch, cleared } = rebind(raw, cfg);
   update(patch);
-  return { ok: true, n };
+  return { ok: true, n, cleared: cleared.map((k) => (k === "hueIp" ? "hue" : "ha")) };
 }
 const SAMPLE = {
   title: "Midnight Mirage",
@@ -1217,7 +1220,15 @@ function preview() {
   track = keep;
 }
 
-ipcMain.handle("get", () => ({
+/* ---- Wer fragt? Alle Fenster teilen sich preload.js, doch nur Einstellungsfenster und Assistent dürfen
+   Einstellungen lesen und ändern oder Geräte ansprechen – nicht Overlay, Lautstärke, Kantenlicht. Gezählt wird
+   der Hauptframe des Fensters, das main.js selbst geöffnet hat, mit der erwarteten Seite (senderIs, secrets.js). */
+const fromSettings = (e) => senderIs(e, settingsWin, "settings.html");
+const fromUi = (e) => fromSettings(e) || senderIs(e, setupWin, "setup.html");
+// nur für Einstellungsfenster und Assistent; andere bekommen null
+const uiOnly = (fn) => (e, ...args) => (fromUi(e) ? fn(e, ...args) : null);
+
+ipcMain.handle("get", uiOnly(() => ({
   cfg: settingsCfg(cfg),
   status: status(),
   lang: t.lang,
@@ -1234,18 +1245,15 @@ ipcMain.handle("get", () => ({
     primary: d.id === screen.getPrimaryDisplay().id,
     label: d.label || "",
   })),
-}));
+})));
 // Die Hue-Schlüssel setzt nur der Hauptprozess selbst (Koppeln). Aus einem Fenster kommt höchstens ein neu
-// eingetipptes Home-Assistant-Token – nie der Platzhalter „set“ zurück.
-ipcMain.on("set", (_e, patch) => {
-  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
-  const p = { ...patch };
-  delete p.hueUser;
-  delete p.hueClientKey;
-  delete p.secrets;
-  delete p.secretsPlain;
-  if (p.haToken === "set") delete p.haToken;
-  update(p);
+// eingetipptes Home-Assistant-Token – nie der Platzhalter „set“ zurück. Bridge- und Home-Assistant-Adresse nur
+// aus dem Einstellungsfenster (der Assistent koppelt bzw. verbindet über eigene Wege, siehe huePair/haConnect).
+ipcMain.on("set", (e, patch) => {
+  if (!fromUi(e)) return;
+  const { patch: p, dropped } = cleanPatch(patch, cfg, fromSettings(e));
+  if (dropped.length) dlog(`set: address change refused (${dropped.join(", ")})`);
+  if (Object.keys(p).length) update(p);
 });
 ipcMain.on("preview", preview);
 ipcMain.on("openCss", openCss);
@@ -1253,37 +1261,39 @@ ipcMain.on("checkUpdate", () => (upd.state === "available" || upd.state === "rea
 ipcMain.on("cmd", (_e, c) => command(c));
 ipcMain.on("openUri", (_e, uri) => openUri(String(uri || "")));
 // Hue einrichten
-ipcMain.handle("hueFind", () => lights.hueFind());
-ipcMain.handle("huePair", async (_e, ip) => {
+ipcMain.handle("hueFind", uiOnly(() => lights.hueFind()));
+// neue Adresse und neuer Schlüssel kommen zusammen: der alte Schlüssel geht nie an die neue Adresse
+ipcMain.handle("huePair", uiOnly(async (_e, ip) => {
   const r = await lights.huePair(String(ip || "").trim());
   if (r.user) update({ hueIp: String(ip).trim(), hueUser: r.user, hueClientKey: r.clientKey || "", hueOn: true });
   // der Schlüssel selbst geht das Fenster nichts an
   return r.user ? { ok: true } : { error: r.error };
-});
-ipcMain.handle("hueGroups", () => lights.hueGroups());
-ipcMain.handle("hueLights", () => lights.hueLights());
+}));
+ipcMain.handle("hueGroups", uiOnly(() => lights.hueGroups()));
+ipcMain.handle("hueLights", uiOnly(() => lights.hueLights()));
 // Verzögerung je Gerät: ohne Angabe nur lesen, mit { backend, ms } setzen; zurück kommen alle Werte
-ipcMain.handle("lightLat", (_e, d) => {
+ipcMain.handle("lightLat", uiOnly((_e, d) => {
   const patch = d && typeof d === "object" ? lights.latPatch(String(d.backend || ""), Number(d.ms)) : null;
   if (patch) update(patch);
   return lights.latAll();
-});
+}));
 // Einmessen starten (Gerätename) oder beenden (leer): das Fenster bekommt jeden Schlag als „calBeat“
-ipcMain.handle("lightCal", (e, name) => {
+ipcMain.handle("lightCal", uiOnly((e, name) => {
   if (!name) return void lights.stopAll();
   return lights.calibrate(String(name), (bright) => !e.sender.isDestroyed() && e.sender.send("calBeat", bright));
-});
-ipcMain.handle("goveeScan", async () => {
+}));
+ipcMain.handle("goveeScan", uiOnly(async () => {
   const r = await lights.goveeScan();
   if (r.list?.length) update({ goveeIps: r.list.map((d) => d.ip).join(", "), goveeOn: true });
   return r;
-});
-ipcMain.handle("haTest", () => lights.haTest());
+}));
+ipcMain.handle("haTest", uiOnly(() => lights.haTest()));
 // Einstellungen umziehen: der Dialog gehört zum Fenster, das gefragt hat
-ipcMain.handle("exportCfg", (e) => exportCfg(BrowserWindow.fromWebContents(e.sender)));
-ipcMain.handle("importCfg", (e) => importCfg(BrowserWindow.fromWebContents(e.sender)));
+ipcMain.handle("exportCfg", uiOnly((e) => exportCfg(BrowserWindow.fromWebContents(e.sender))));
+ipcMain.handle("importCfg", uiOnly((e) => importCfg(BrowserWindow.fromWebContents(e.sender))));
 // Assistent fertig oder übersprungen
-ipcMain.on("setupDone", () => {
+ipcMain.on("setupDone", (e) => {
+  if (!fromUi(e)) return;
   update({ setupDone: true });
   setupWin?.close();
 });
