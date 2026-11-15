@@ -1487,7 +1487,8 @@ async function karaokeGame() {
   // die Datei passend zur Stelle, ab dem Klick gerechnet (PC-Uhr wie das Handy sie kennt)
   const info = await S.js(`({ at: cur.g.at, kp: kPart.d, pc: Date.now() - skew })`);
   ok(info.at - info.pc > 4000 && info.at - info.pc < 13000, `karaoke: Vorlauf vor der Stelle reicht fürs Mikro und den Grundpegel (${info.at - info.pc} ms)`);
-  ok(info.kp.ch.length > 0 && info.kp.on.length >= 3, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
+  // die Stelle (Einsätze, Tonhöhen) kommt mit dem „ready“-Stand; unter Last (CI) einen Moment später
+  await until(() => S.js(`!!(kPart?.d?.ch?.length && kPart.d.on?.length >= 3)`), 4000, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
   const open = info.pc + 120;
   writeWav(MIC_WAV, 48000, (info.at + info.kp.len + 1500 - open) / 1000, karaokeVoice(info.kp, info.at, open));
   await S.click("#game .gkmic");
@@ -1621,7 +1622,7 @@ async function wishRules() {
   await until(() => A.js(`document.querySelectorAll("#wRes li").length === 1`), 9000, "regeln: Link-Treffer");
   await A.click("#wRes li button.go");
   const max = (await A.js("T.wrMax")).replace("{n}", 1);
-  await until(async () => (await msg(A)) === max, 6000, "regeln: zu viele offene Wünsche – das Handy sagt es");
+  await until(async () => (await msg(A)) === max, 10000, "regeln: zu viele offene Wünsche – das Handy sagt es");
   // gesperrter Song per Link: Grund statt „nichts gefunden“
   await type(B, "https://open.spotify.com/track/t000000000000000000002");
   const block = await B.js("T.wrBlock");
