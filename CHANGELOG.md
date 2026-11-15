@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.24.0] – 2026-11-15
+
 ### Added
 
 - **Repairs without a new release:** Mirage loads a small file from its repository (`remote/fixes.json`) and applies matching fixes after a Spotify update: new selectors and plain CSS, never code. It can be switched off in the settings.
@@ -62,6 +64,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- **End on the host phone** closes the final screen of a game or tournament at once; the button no longer gets rebuilt under the finger when the next state arrives.
 - The cover-colour wash under page headers (artist, playlist, album, podcast, concert pages) and at the top of Home fades out smoothly instead of ending in a hard line through track lists and card rows.
 - Header info lines no longer show doubled dots (“2022 • • 14 songs”).
 - The current lyric line no longer flickers back on pause or right after a song change; LRC `[offset:]` tags are honoured.

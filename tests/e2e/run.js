@@ -822,8 +822,10 @@ async function hostGame() {
   // dieselbe Nachricht noch einmal (mitgelesen und wieder abgespielt) zählt nicht doppelt: sendSure schickt jede dreimal
   await wait(1200);
   ok(/Alpha 101/.test((await big.state()).text), "host: ein Befehl gilt genau einmal: " + (await big.state()).text);
+  // Beenden während der Siegerehrung: das große Bild ist sofort zu
+  ok((await big.state()).st === "end", "host: die Siegerehrung läuft");
   await H.click("#hBody .hacts button.end");
-  await until(async () => !(await big.state()).open, 5000, "host: Ende vom Handy");
+  await until(async () => !(await big.state()).open, 2000, "host: Ende vom Handy schließt die Siegerehrung sofort");
   await until(() => H.js(`!!document.querySelector("#hBody .hgames")`), 4000, "host: danach steht wieder die Spieleliste da");
   await H.win.loadURL(PAGE + "?guest=1" + hash);
   await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bHost").hidden`).catch(() => false), 10000, "host: wieder als Gast verbunden");
@@ -1355,8 +1357,26 @@ async function tourGame() {
     }, 20000, "turnier: Siegerehrung über alle Spiele");
     ok(/🥇\s*Alpha\s*27/.test(fin.text) && /Beta\s*10\b/.test(fin.text), "turnier: Gesamtwertung stimmt: " + fin.text);
     ok(await T.js(`!!document.querySelector(".m-g-card")`), "turnier: am Schluss gibt es das Ergebnisbild");
-    await H.click("#hBody .hacts button.end");
-    await until(async () => !(await big.state()).open, 5000, "turnier: Ende vom Handy");
+    // das Ergebnisbild hält die Siegerehrung länger fest; Beenden muss trotzdem sofort wirken
+    await big.hover();
+    await T.click(".m-g-card");
+    // Beenden, während das Handy der Spielleitung noch den Stand des letzten Spiels zeigt und genau jetzt der der
+    // Siegerehrung eintrifft: früher wurde der Knopf dabei neu gebaut und der Tipp ging verloren
+    const endAt = await H.js(`(() => {
+      const b = document.querySelector("#hBody .hacts button.end");
+      b.scrollIntoView({ block: "center" });
+      window.__endBtn = b;
+      const r = b.getBoundingClientRect();
+      return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+    })()`);
+    H.wc.sendInputEvent({ type: "mouseMove", ...endAt });
+    await wait(15);
+    H.wc.sendInputEvent({ type: "mouseDown", ...endAt, button: "left", clickCount: 1 });
+    await wait(15);
+    await H.js(`const real = cur.g; cur.g = { ...real, k: "fast", st: "res", r: 2, of: 2 }; drawHost(); cur.g = real; drawHost(); 1`);
+    ok(await H.js(`document.elementFromPoint(${endAt.x}, ${endAt.y}) === window.__endBtn`), "turnier: „Beenden“ bleibt derselbe Knopf am selben Platz, auch wenn sich der Stand ändert");
+    H.wc.sendInputEvent({ type: "mouseUp", ...endAt, button: "left", clickCount: 1 });
+    await until(async () => !(await big.state()).open, 2000, "turnier: Ende vom Handy schließt die Siegerehrung sofort");
   } finally {
     // aufräumen, ohne einen Fehler von oben zu verdecken
     await T.js(`document.querySelector(".m-g-x")?.click(); 1`).catch(() => {});

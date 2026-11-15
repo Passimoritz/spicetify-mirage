@@ -70,6 +70,8 @@
   .hbody small { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
   .hbody .hnow { font-size: 16px; font-weight: 700; opacity: 1; }
   .hgames, .hacts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  /* „Beenden“ immer rechts: fällt links „Überspringen“ weg (Siegerehrung), bleibt er unter dem Finger */
+  .hacts .end { grid-column: 2; }
   .hgames button { min-width: 0; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 650; }
   .hsteps { display: flex; gap: 6px; }
   .hsteps button { flex: 1; min-height: 36px; }
@@ -2632,7 +2634,13 @@ function drawHost() {
   if (key !== hostDrawn) {
     hostDrawn = key;
     hostList = listKey;
-    body.textContent = "";
+    // „Beenden“ wird weiterverwendet statt neu gebaut: trifft der neue Stand genau zwischen Drücken und Loslassen ein
+    // (letztes Spiel → Siegerehrung), bleibt es derselbe Knopf, und der Tipp zählt
+    const keepEnd = g ? body.querySelector(".hacts button.end") : null, keepActs = keepEnd?.parentElement || null;
+    // nicht aus der Seite nehmen: ein Knopf, der zwischen Drücken und Loslassen aus- und wieder eingehängt wird,
+    // bekommt keinen Klick mehr
+    for (const n of [...body.childNodes]) if (n !== keepActs) n.remove();
+    if (keepActs) for (const n of [...keepActs.childNodes]) if (n !== keepEnd) n.remove();
     if (!g) {
       const grid = gEl("div", null, "hgames");
       for (const [k, [icon, title]] of Object.entries(GAME)) grid.append(btn(icon + " " + title(), "", () => hostCmd("open", k)));
@@ -2640,13 +2648,17 @@ function drawHost() {
       return;
     }
     const [icon, title] = GAME[g.k] || ["🎮", () => ""];
-    const acts = gEl("div", null, "hacts");
-    if (g.st === "join") acts.append(btn(T.hStart, "go", () => hostCmd("start")));
-    else if (WHEELS.has(g.k)) acts.append(btn(T.hSpin, "go", () => hostCmd("spin")));
-    else if (g.st !== "end") acts.append(btn(T.hSkip, "", () => hostCmd("skip")));
-    acts.append(btn(T.hEnd, "end", () => hostCmd("end")));
-    const rows = gEl("div", null, "hlist");
-    body.append(gEl("p", icon + " " + title() + (g.r && g.of ? " · " + g.r + "/" + g.of : ""), "hnow"), acts, rows);
+    const acts = keepActs || gEl("div", null, "hacts");
+    // der Hauptknopf kommt vor „Beenden“
+    if (g.st === "join") acts.prepend(btn(T.hStart, "go", () => hostCmd("start")));
+    else if (WHEELS.has(g.k)) acts.prepend(btn(T.hSpin, "go", () => hostCmd("spin")));
+    else if (g.st !== "end") acts.prepend(btn(T.hSkip, "", () => hostCmd("skip")));
+    if (!keepEnd) acts.append(btn(T.hEnd, "end", () => hostCmd("end")));
+    const rows = gEl("div", null, "hlist"), head = gEl("p", icon + " " + title() + (g.r && g.of ? " · " + g.r + "/" + g.of : ""), "hnow");
+    if (keepActs) {
+      body.insertBefore(head, keepActs);
+      body.append(rows);
+    } else body.append(head, acts, rows);
     hostRows(rows, list, btn);
   }
   // die Stände laufen mit, ohne die Knöpfe unter dem Finger neu zu bauen

@@ -386,7 +386,22 @@ function skip() {
   fn?.();
 }
 function stop(silent) {
-  if (!G) return;
+  if (!G) {
+    // kein Spiel mehr, aber die Siegerehrung steht noch da (das Ergebnisbild hält sie fest): trotzdem schließen
+    const left = ctx?.root?.()?.querySelectorAll(".m-im-game") || [];
+    if ((box || left.length) && !silent) {
+      clearTimers();
+      clearInterval(ticker);
+      live.setGame(null);
+      box?.remove();
+      left.forEach((e) => e.remove());
+      box = null;
+      boxKey = "";
+      TOUR = null;
+      ctx.changed?.();
+    }
+    return;
+  }
   // im Turnier: bricht ein Spiel ab (zu wenige Gäste, kein Liedtext), geht es mit dem nächsten weiter
   const goOn = !silent && TOUR && G.k !== "tour" ? G.players : null;
   if (goOn && !G.scored) tourScore();
@@ -400,6 +415,8 @@ function stop(silent) {
   G = null;
   clearInterval(ticker);
   box?.remove();
+  // auch ein zweites Spielfeld, das render() anlegt, wenn das gemerkte kurz nicht im Dokument hing
+  ctx.root?.()?.querySelectorAll(".m-im-game").forEach((e) => e.remove());
   box = null;
   boxKey = "";
   if (goOn) return void tourNext(goOn);
@@ -1768,6 +1785,8 @@ window.addEventListener("mirage:host", (e) => {
     if (INFO[m.t]) start(m.t);
     return;
   }
+  // „Beenden“ wirkt auch, wenn nur noch die Siegerehrung zu sehen ist
+  if (m.a === "end") return void endAll();
   if (!G) return;
   if (m.a === "start") return void beginNow();
   if (m.a === "skip") return void skip();

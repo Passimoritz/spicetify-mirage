@@ -113,7 +113,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.23.1" : "dev";
+      VERSION = true ? "1.24.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -24084,7 +24084,21 @@
     fn?.();
   }
   function stop3(silent) {
-    if (!G) return;
+    if (!G) {
+      const left = ctx2?.root?.()?.querySelectorAll(".m-im-game") || [];
+      if ((box || left.length) && !silent) {
+        clearTimers();
+        clearInterval(ticker);
+        live.setGame(null);
+        box?.remove();
+        left.forEach((e) => e.remove());
+        box = null;
+        boxKey = "";
+        TOUR = null;
+        ctx2.changed?.();
+      }
+      return;
+    }
     const goOn = !silent && TOUR && G.k !== "tour" ? G.players : null;
     if (goOn && !G.scored) tourScore();
     clearTimers();
@@ -24097,6 +24111,7 @@
     G = null;
     clearInterval(ticker);
     box?.remove();
+    ctx2.root?.()?.querySelectorAll(".m-im-game").forEach((e) => e.remove());
     box = null;
     boxKey = "";
     if (goOn) return void tourNext(goOn);
@@ -25846,6 +25861,7 @@
           if (INFO[m.t]) start2(m.t);
           return;
         }
+        if (m.a === "end") return void endAll();
         if (!G) return;
         if (m.a === "start") return void beginNow();
         if (m.a === "skip") return void skip();
