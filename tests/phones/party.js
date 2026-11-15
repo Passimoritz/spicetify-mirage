@@ -27,9 +27,20 @@ function openWith(key) {
 // ein Lichtzustand wie aus live.feed (nur die Felder, die die Seite braucht)
 const state = (o = {}) => ({ v: 1, on: 1, s: Date.now(), bpm: 120, bi: 0, ph: 0, e: 0.5, k: 0, d: 0, b: 0, pal: [[200, 40, 90], [40, 90, 200], [90, 200, 40]], t: "Song", a: "Artist", img: "", ly: "", lyn: "", g: null, w: null, poll: null, nx: "", fx: null, ...o });
 
+// Bilder der Seite mitzählen; auf Wunsch (steady) treibt ein Zeitgeber statt der Engine den Bildtakt
+const FRAMES = `(() => {
+  const R = window.requestAnimationFrame.bind(window);
+  window.__bild = { n: 0, uhr: false };
+  window.requestAnimationFrame = (cb) => (__bild.uhr ? setTimeout(() => cb(performance.now()), 16) : R((t) => { __bild.n++; if (!__bild.uhr) cb(t); }));
+})();`;
+// Unter 8 Bildern/s fällt ein Schlag zwischen zwei Bilder (der Klick plant 120 ms voraus, ein Drop hält ~250 ms).
+// WebKit unter Linux auf GitHub (ohne GPU) malt diese Seite vermutlich nur ~1 Bild/s: genau diese Fehlerbilder
+// entstehen lokal mit PHONES_SLOWFRAME=1000. Unter Windows malt WebKit ~12/s, ein iPhone 60/s.
+const MIN_FPS = 8;
+
 async function party(browser, env, { url, device, lang, channel, key, initScript }) {
   const topic = "mirage-live/" + channel;
-  const page = await browser.open({ url, width: device.width, height: device.height, dpr: device.dpr, ua: device.ua, lang, initScript });
+  const page = await browser.open({ url, width: device.width, height: device.height, dpr: device.dpr, ua: device.ua, lang, initScript: initScript + "\n" + FRAMES });
   const seal = sealWith(key);
   const send = (o) => env.broker.publish(topic, seal(state(o)));
   // senden wie das Theme (8× je Sekunde), bis die Seite leuchtet
@@ -45,7 +56,17 @@ async function party(browser, env, { url, device, lang, channel, key, initScript
       await sleep(125);
     }
   };
-  return { page, send, hold, topic, open: openWith(key) };
+  // Taktlogik prüfen, nicht die Malgeschwindigkeit der Engine: malt sie zu langsam, übernimmt ein Zeitgeber den
+  // Bildtakt und das Canvas wird winzig – frame() rechnet Blitz, Ringe, Welle und Klick genauso wie sonst
+  const steady = async () => {
+    const n0 = await page.eval("__bild.n"), t0 = Date.now();
+    await hold({}, 1000);
+    const fps = ((await page.eval("__bild.n")) - n0) / ((Date.now() - t0) / 1000);
+    if (fps >= MIN_FPS) return "";
+    await page.eval(`(() => { __bild.uhr = true; W = H = cv.width = cv.height = 1; frame(performance.now()); return 1; })()`);
+    return ` (Engine malt nur ${fps.toFixed(1)} Bilder/s – Bildtakt per Zeitgeber)`;
+  };
+  return { page, send, hold, steady, topic, open: openWith(key) };
 }
 
 // Blitz, Schockring und lange Vibration beim Drop mitzählen (haptic ist eine globale Funktion der Seite)
@@ -63,8 +84,10 @@ const WATCH = `(() => {
 async function noFlashCheck(browser, env, o, check) {
   const p = await party(browser, env, o);
   const problems = [];
+  let note = "";
   try {
     if (!(await p.page.eval(`document.body.classList.contains("on")`))) problems.push("Seite leuchtet nicht (keine Party angekommen)");
+    note = await p.steady();
     await p.page.eval(WATCH);
     // Wortbilder werden erst mit der Party nachgeladen
     for (let i = 0; i < 40 && !(await p.page.eval("!!wfx")); i++) await sleep(100);
@@ -78,7 +101,7 @@ async function noFlashCheck(browser, env, o, check) {
     await p.hold({ d: 0 }, 400);
     await p.hold({ d: 1 }, 400);
     w = await p.page.eval("__w");
-    if (w.flash < 0.5 || !w.white || !w.long) problems.push(`ohne nf: Drop fehlt (Blitz ${w.flash.toFixed(2)}, weißer Ring ${w.white}, lange Vibration ${w.long})`);
+    if (w.flash < 0.5 || !w.white || !w.long) problems.push(`ohne nf: Drop fehlt (Blitz ${w.flash.toFixed(2)}, weißer Ring ${w.white}, lange Vibration ${w.long})${note}`);
     if (p.page.errors.length) problems.push(...p.page.errors.map((e) => "Fehler in der Konsole: " + e));
   } finally {
     await p.page.close();
@@ -98,6 +121,7 @@ async function tickCheck(browser, env, o, check) {
     if (b.ac ? !b.tick || b.vib : b.tick || b.vib) problems.push(`ohne Vibration: Klick-Knopf ${b.tick ? "da" : "fehlt"}, Vibrationsknopf ${b.vib ? "da" : "weg"}, Web Audio ${b.ac ? "da" : "fehlt"}`);
     if (b.on || b.pressed !== "false") problems.push("der Klick ist von selbst an");
     if (!b.label) problems.push("Klick-Knopf ohne Text");
+    const note = await ios.steady();
     await ios.page.eval(`(() => { window.__t = []; clickAt = (beat, inSec) => __t.push([beat, performance.now() / 1000 + inSec]); tickOn = true; return 1; })()`);
     // wie das Theme: Schlagnummer und Phase laufen mit der Zeit weiter
     for (const t0 = Date.now(); Date.now() - t0 < 2600; await sleep(125)) {
@@ -106,7 +130,7 @@ async function tickCheck(browser, env, o, check) {
     }
     const t = await ios.page.eval("__t");
     const beats = t.map((x) => x[0]), gaps = t.slice(1).map((x, i) => x[1] - t[i][1]);
-    if (t.length < 4) problems.push(`nur ${t.length} Klicks in 2,6 s bei 120 BPM`);
+    if (t.length < 4) problems.push(`nur ${t.length} Klicks in 2,6 s bei 120 BPM${note}`);
     if (beats.some((x, i) => i && x !== beats[i - 1] + 1)) problems.push("Schläge doppelt oder ausgelassen: " + beats.join(","));
     if (gaps.some((g) => Math.abs(g - 0.5) > 0.04)) problems.push("Abstand weicht vom Takt ab: " + gaps.map((g) => g.toFixed(3)).join(", "));
     const plan = await ios.page.eval(`[tickPlan(3.95, 120), tickPlan(3.5, 120), tickPlan(7.99, 60)]`);
@@ -115,8 +139,8 @@ async function tickCheck(browser, env, o, check) {
   } finally {
     await ios.page.close();
   }
-  // mit Vibration (Android) bleibt der Knopf weg
-  const and = await party(browser, env, o);
+  // mit Vibration (Android) bleibt der Knopf weg. WebKit kennt navigator.vibrate nie – dort wird Android nachgebildet
+  const and = await party(browser, env, { ...o, initScript: o.initScript + `\nif (!("vibrate" in Navigator.prototype)) Navigator.prototype.vibrate = () => true;` });
   try {
     if (!(await and.page.eval(`document.getElementById("bTick").hidden`))) problems.push("mit Vibration steht trotzdem der Klick-Knopf da");
   } finally {
@@ -147,12 +171,13 @@ async function waveCheck(browser, env, o, check) {
   ]) {
     const p = await party(browser, env, { ...o, initScript: o.initScript + "\n" + init });
     try {
+      const note = await p.steady();
       await p.page.eval(SAMPLE);
       await beats(p, 4200, extra);
       const [on, off] = split(await p.page.eval("__s"), mine);
       // feste Grenzen, oder bei langsam zeichnenden Engines (WebKit unter Windows, ~10 Bilder/s) ein klarer Abstand
       const clear = (on > 0.45 && off < 0.3) || (on > off + 0.12 && on > off * 1.4);
-      if (!clear) problems.push(`${label}: dran ${on?.toFixed(2)}, nicht dran ${off?.toFixed(2)} (erwartet hell / gedämpft)`);
+      if (!clear) problems.push(`${label}: dran ${on?.toFixed(2)}, nicht dran ${off?.toFixed(2)} (erwartet hell / gedämpft)${note}`);
       if (p.page.errors.length) problems.push(...p.page.errors.map((e) => "Fehler in der Konsole: " + e));
     } finally {
       await p.page.close();
@@ -203,6 +228,7 @@ async function ecoCheck(browser, env, o, check) {
   // Normal muss deutlich mehr Bilder malen als Sparen – das gilt auf jedem Rechner. Die feste Grenze von 40/s nur
   // lokal mit Grafikkarte: auf GitHub zeichnet Chrome ohne GPU höchstens etwa 30/s
   const saverFps = Math.max(asked.fps, low.fps);
+  if (normal.fps < MIN_FPS) console.log(`      Hinweis: diese Engine malt nur ${normal.fps.toFixed(1)} Bilder/s – der Vergleich der Bildraten entfällt`);
   if (normal.fps >= 25 && normal.fps < saverFps * 1.4) problems.push(`normal ${normal.fps.toFixed(0)} Bilder/s, Sparen ${saverFps.toFixed(0)}: kaum Unterschied`);
   if (normal.fps < 40 && normal.gpu && !process.env.CI) problems.push(`normal nur ${normal.fps.toFixed(0)} Bilder/s gemalt`);
   check(`${o.device.name} · Akku sparen: ~30 Bilder/s und einfache Auflösung (gewählt oder bei schwachem Akku), Equalizer ohne Layout`, problems);

@@ -10,8 +10,29 @@ function loadPlaywright() {
   }
 }
 
+// PHONES_LINUXLIKE=1: WebKit unter Windows hat kein Web Audio, das unter Linux (GitHub) und das iPhone schon.
+// Dann ein stummer Ersatz-AudioContext (Uhr aus performance.now, Knoten ohne Ton) – so laufen dieselben Wege
+// wie auf GitHub. Gibt nie einen Ton aus: es entsteht kein echter AudioContext.
+const LINUXLIKE = `(() => {
+  const t0 = performance.now();
+  const param = () => ({ value: 0, setValueAtTime() {}, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {} });
+  const node = () => ({ connect: (n) => n, disconnect() {}, start() {}, stop() {}, frequency: param(), gain: param(), type: "sine" });
+  class StummerAC {
+    constructor() { this.state = "suspended"; this.destination = node(); this.sampleRate = 48000; }
+    get currentTime() { return (performance.now() - t0) / 1000; }
+    createOscillator() { return node(); }
+    createGain() { return node(); }
+    resume() { this.state = "running"; return Promise.resolve(); }
+    suspend() { this.state = "suspended"; return Promise.resolve(); }
+    close() { this.state = "closed"; return Promise.resolve(); }
+  }
+  window.AudioContext = window.webkitAudioContext = StummerAC;
+  delete Navigator.prototype.vibrate;
+})();`;
+
 async function launchWebkit(playwright) {
   const browser = await playwright.webkit.launch({ headless: true });
+  const linuxlike = process.env.PHONES_LINUXLIKE === "1";
 
   async function open({ url, width, height, dpr, ua, lang, initScript }) {
     const context = await browser.newContext({
@@ -22,6 +43,10 @@ async function launchWebkit(playwright) {
       userAgent: ua,
       locale: lang,
     });
+    // zuerst: ein Test, der Vibration nachbildet (Android), setzt sie in seinem eigenen Skript danach wieder
+    if (linuxlike) await context.addInitScript(LINUXLIKE);
+    // PHONES_SLOWFRAME=ms: das Bild kommt nur alle ms Millisekunden (wie eine Engine, die kaum zeichnet) – Uhren und Nachrichten laufen normal
+    if (process.env.PHONES_SLOWFRAME) await context.addInitScript(`(() => { const R = window.requestAnimationFrame.bind(window); window.requestAnimationFrame = (cb) => setTimeout(() => R(cb), ${Number(process.env.PHONES_SLOWFRAME)}); })();`);
     if (initScript) await context.addInitScript(initScript);
     const page = await context.newPage();
     const errors = [];
@@ -38,7 +63,7 @@ async function launchWebkit(playwright) {
       close: () => context.close(),
     };
   }
-  return { name: "WebKit " + browser.version(), open, close: () => browser.close() };
+  return { name: "WebKit " + browser.version() + (linuxlike ? " (wie Linux: stummes Web Audio, ohne Vibration)" : ""), open, close: () => browser.close() };
 }
 
 module.exports = { loadPlaywright, launchWebkit };
