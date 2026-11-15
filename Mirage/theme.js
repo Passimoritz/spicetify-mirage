@@ -24826,7 +24826,7 @@
   }
   function karShow(st, extra) {
     const P = G.part, v = { st, r: G.r, of: rounds(), att: G.att, sn: nameOf2(G.singer), si: short(G.singer.id), mic: G.mic, at: karAt(), ...extra };
-    if (st === "ready") Object.assign(v, { kp: P.data, line: P.data.ln[0]?.[2] || "" });
+    if (st === "ready") Object.assign(v, { kp: P.data, line: P.data.ln[0]?.[2] || "", sent: Date.now() });
     show(v);
   }
   function karTick() {
@@ -24853,7 +24853,7 @@
     if (v.st === "ready") {
       if (!P.data.ch && karSegs()?.length) P.data = partData(P.lines, P, karSegs());
       if (p >= P.start - 40) return karShow("go", karLine(p));
-      if (drift > 80 || !v.kp?.ch !== !P.data.ch) karShow("ready");
+      if (drift > 80 || !v.kp?.ch !== !P.data.ch || Date.now() - (v.sent || 0) > 1500) karShow("ready");
       return;
     }
     if (v.st !== "go") return;

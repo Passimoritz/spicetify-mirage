@@ -10,6 +10,10 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Fixed
+
+- Karaoke: the singer's phone gets the part data again if the first message is lost, so scoring always has what it needs.
+
 ## [1.24.0] – 2026-11-15
 
 ### Added

@@ -1242,7 +1242,7 @@ const karAt = () => Math.round(Date.now() + (G.part.start - ctx.pos()));
 function karShow(st, extra) {
   const P = G.part, v = { st, r: G.r, of: rounds(), att: G.att, sn: nameOf(G.singer), si: short(G.singer.id), mic: G.mic, at: karAt(), ...extra };
   // die Daten der Stelle nur vor dem Einsatz: das Handy merkt sie sich, danach wären sie nur Ballast
-  if (st === "ready") Object.assign(v, { kp: P.data, line: P.data.ln[0]?.[2] || "" });
+  if (st === "ready") Object.assign(v, { kp: P.data, line: P.data.ln[0]?.[2] || "", sent: Date.now() });
   show(v);
 }
 function karTick() {
@@ -1272,7 +1272,9 @@ function karTick() {
     // die Analyse kam erst nach der Wahl der Stelle: Tonhöhen nachreichen
     if (!P.data.ch && karSegs()?.length) P.data = partData(P.lines, P, karSegs());
     if (p >= P.start - 40) return karShow("go", karLine(p));
-    if (drift > 80 || !v.kp?.ch !== !P.data.ch) karShow("ready");
+    // „bereit“ mit den Daten der Stelle regelmäßig wiederholen: geht die eine Nachricht unterwegs verloren, hätte
+    // das Handy sonst nichts, womit es den Gesang bewerten kann
+    if (drift > 80 || !v.kp?.ch !== !P.data.ch || Date.now() - (v.sent || 0) > 1500) karShow("ready");
     return;
   }
   if (v.st !== "go") return;
