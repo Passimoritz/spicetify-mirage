@@ -12,7 +12,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
-- Karaoke: the singer's phone gets the part data again if the first message is lost, so scoring always has what it needs.
+- Karaoke: if the singer's phone misses the details of the part to sing, it gets them again, so the score always works.
 
 ## [1.24.0] – 2026-11-15
 

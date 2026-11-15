@@ -1,179 +1,184 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="Mirage – a living Spicetify theme" width="100%">
+  <img src="assets/hero.svg" alt="Mirage – a living theme for Spotify" width="100%">
 </p>
 
 <p align="center">
-  <a href="#-install"><img alt="Spicetify" src="https://img.shields.io/badge/Spicetify-2.40%2B-b69cff?style=for-the-badge&labelColor=12101c"></a>
+  <b>English</b> · <a href="README.de.md">Deutsch</a>
+</p>
+
+<p align="center">
+  <a href="#-install-in-2-minutes"><img alt="Spicetify" src="https://img.shields.io/badge/Spicetify-2.40%2B-b69cff?style=for-the-badge&labelColor=12101c"></a>
   <a href="https://github.com/Passimoritz/spicetify-mirage/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Passimoritz/spicetify-mirage?style=for-the-badge&labelColor=12101c&color=7c5cff"></a>
   <img alt="Languages" src="https://img.shields.io/badge/languages-14-4fe3ff?style=for-the-badge&labelColor=12101c">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-e6deff?style=for-the-badge&labelColor=12101c">
 </p>
 
+<h3 align="center">Mirage paints Spotify in the colours of your music<br>and turns your screen into a stage with karaoke, a light show and party games.</h3>
+
 <p align="center">
-  <b>English</b> · <a href="README.de.md">Deutsch</a>
-  <br><br>
-  <a href="#-install">Install</a> ·
-  <a href="#-the-theme">Theme</a> ·
-  <a href="#-immersive-mode">Immersive</a> ·
-  <a href="#-party-mode">Party</a> ·
-  <a href="#-live-link-for-phones">Phones</a> ·
-  <a href="#-mirage-overlay">Overlay</a> ·
-  <a href="#-settings--performance">Settings</a> ·
-  <a href="#-faq">FAQ</a>
+  <a href="#-install-in-2-minutes"><img alt="Install" src="https://img.shields.io/badge/Install-in_2_minutes-7c5cff?style=for-the-badge&labelColor=12101c"></a>
+  <a href="#-what-mirage-can-do"><img alt="What it can do" src="https://img.shields.io/badge/What_it-can_do-4fe3ff?style=for-the-badge&labelColor=12101c"></a>
+  <a href="#-party-with-friends"><img alt="Party with friends" src="https://img.shields.io/badge/Party-with_friends-ff6fb5?style=for-the-badge&labelColor=12101c"></a>
 </p>
+
+<p align="center">
+  <img src="assets/clips/edm.webp" alt="Party mode: an EDM festival with moving lights, beams and a crowd jumping on the drop" width="100%">
+</p>
+
+<p align="center"><a href="https://passimoritz.github.io/spicetify-mirage/"><b>▶ Try the colours in your browser</b></a> – nothing to install.</p>
 
 ---
 
-<h3 align="center">Spotify as frosted glass, with the music living behind it.<br>One shortcut away: a full-screen stage with karaoke, a visualizer and a party light show that knows where the drop is.</h3>
+## 📦 Install in 2 minutes
 
-<p align="center">
-  <img src="assets/clips/edm.webp" alt="Party mode: EDM at a festival – moving heads, beams and the crowd jumping on the drop" width="100%">
-</p>
+**Before you start:** you need the normal Spotify app for your computer from [spotify.com/download](https://www.spotify.com/download/). Open it once and log in.
+On Windows, the Microsoft Store version does not work. On Linux, the Snap version does not work.
 
-<p align="center"><a href="https://passimoritz.github.io/spicetify-mirage/"><b>▶ Try the colours in your browser</b></a> – no install needed.</p>
+Mirage uses **Spicetify** (a free tool that lets Spotify load themes). The installer sets it up for you if you don't have it yet.
 
-## ✦ At a glance
+### Windows
 
-<table>
-  <tr>
-    <td width="33%" valign="top"><h3>🎨 Colours from the cover</h3>Every song repaints Spotify in the palette of its album art – readable on dark glass, with the cover drifting behind the panels.</td>
-    <td width="33%" valign="top"><h3>🎤 Karaoke & visualizer</h3>Full-screen lyrics that fill syllable by syllable, a visualizer on the beat, and a mix of both.</td>
-    <td width="33%" valign="top"><h3>🎉 A party that knows the song</h3>318 styles, seventeen venues, a crowd, a light rig, stage effects and moments for the drop – read from the song before it plays.</td>
-  </tr>
-  <tr>
-    <td valign="top"><h3>🎺 Instruments</h3>When the credits confirm a trumpet, sax, guitar, piano, strings or choir, that instrument gets an effect of its own.</td>
-    <td valign="top"><h3>📱 Phones join in</h3>Guests scan a QR code: their phones flash along, show the lyrics and let them wish for songs from Spotify – end-to-end encrypted.</td>
-    <td valign="top"><h3>◎ Outside Spotify</h3>The overlay app announces songs above every window and adds edge light and an OBS source.</td>
-  </tr>
-</table>
+1. Press the **Windows key**, type **PowerShell** and open it (the normal one, not "as administrator").
+2. Copy this line, paste it into the blue window (right-click pastes) and press **Enter**:
 
-## ⬇ Install
+   ```powershell
+   iwr -useb https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/install.ps1 | iex
+   ```
 
-**Marketplace (easiest):** open **Marketplace → Themes**, search for **Mirage**, install. Done.
+3. Wait about a minute. Spotify closes and opens again by itself.
+4. When you see **"Mirage is installed."** in green, you're done.
+
+### Mac and Linux
+
+1. Open the **Terminal** (Mac: press <kbd>Cmd</kbd>+<kbd>Space</kbd>, type *Terminal*, press Enter).
+2. Copy this line, paste it and press **Enter**:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/install.sh | bash
+   ```
+
+3. Wait about a minute. Spotify restarts.
+4. When you see **"Mirage is installed."** in green, you're done.
+
+> **Tip:** the installer only does four things: it installs Spicetify if it's missing, copies the Mirage files, switches Spotify to Mirage and restarts Spotify. You can run it again at any time, for example to update Mirage.
+
+**Already use the Spicetify Marketplace?** Open **Marketplace → Themes**, search for **Mirage** and click *Install*.
+
+### Your first steps
+
+- Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> (or the circle button at the top) to open the full-screen stage.
+- All settings are in your **profile menu** (your picture, top right) **→ Mirage settings**.
 
 <details>
-<summary><b>Windows, by script</b></summary>
+<summary><b>Something went wrong during installation</b></summary>
 
-```powershell
-git clone https://github.com/Passimoritz/spicetify-mirage
-cd spicetify-mirage
-powershell -ExecutionPolicy Bypass -File install.ps1            # theme only
-powershell -ExecutionPolicy Bypass -File install.ps1 -Overlay   # theme + overlay app
-```
-
-Add `-Scheme Obsidian` (or `Sakura`, `Abyss`, `Ember`) for a fixed colour scheme.
+- **"You are using the Microsoft Store version of Spotify"** – uninstall it, get Spotify from [spotify.com](https://www.spotify.com/download/windows/), open it once, then run the line again.
+- **"Spotify is installed as a Snap"** (Linux) – same idea: remove the Snap and install Spotify from spotify.com or Flathub.
+- **"spicetify apply failed"** – this usually happens right after a Spotify update. See [Help after a Spotify update](#-help-something-looks-wrong-after-a-spotify-update).
+- **"not on the PATH yet"** – close the window, open a new one and paste the line again.
+- **Linux: no permission for Spotify's folder** – the installer shows you the exact command to fix this.
+- The Mac and Linux installer is new. If it doesn't work for you, follow the [Spicetify guide](https://spicetify.app/docs/getting-started) and then install Mirage from the Marketplace.
 </details>
 
 <details>
-<summary><b>macOS / Linux / by hand</b></summary>
+<summary><b>Remove Mirage</b></summary>
+
+To pick another theme, use **Marketplace → Themes**. To put Spotify back exactly as it was, run this in PowerShell or the Terminal:
 
 ```bash
-cp -r Mirage "$(dirname "$(spicetify -c)")/Themes/"
-spicetify config current_theme Mirage color_scheme Mirage inject_css 1 replace_colors 1 inject_theme_js 1
-spicetify apply
+spicetify restore
 ```
 </details>
 
-<details>
-<summary><b>Uninstall</b></summary>
+## ✨ What Mirage can do
 
-```bash
-spicetify config current_theme marketplace
-spicetify apply
-```
-</details>
+### Spotify in the colours of your music
 
-Everything is set up in **Profile menu → Mirage settings**, and every effect below has its own switch.
-
-## 🎨 The theme
-
-<p align="center"><img src="assets/shots/playlist.png" alt="Mirage on a playlist page" width="100%"></p>
-<table>
-  <tr>
-    <td width="50%"><img src="assets/shots/album.png" alt="Mirage on an album page"></td>
-    <td width="50%"><img src="assets/shots/visualizer.png" alt="Immersive visualizer"></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Album page – the header melts into the glass</sub></td>
-    <td align="center"><sub>Visualizer, coloured live from the cover</sub></td>
-  </tr>
-</table>
-<sub>Real Spotify install; personal library and friends' names are pixelated.</sub>
-
-- **Colours from the cover** – accent, buttons, progress bar and selection take on each song's palette, tuned for contrast.
-- **Living background** – the cover drifts as slow haze with aurora bands, light dust and film grain, and breathes on the beat.
-- **Motion** – pages blur in, grids cascade, cards tilt towards the pointer, the player cover spins like a record, and a like sets off a heart burst.
-- **Schemes** – `Mirage` follows the cover live; `Obsidian`, `Sakura`, `Abyss` and `Ember` are calm fixed palettes, and there's a builder for your own.
-
-<p align="center"><img src="assets/schemes.svg" alt="Colour schemes" width="100%"></p>
-
-## ◐ Immersive mode
-
-<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> (or the circle button in the top bar) turns Spotify into a full-screen stage with five views that morph into each other – switch with <kbd>1</kbd>–<kbd>5</kbd>.
+<p align="center"><img src="assets/shots/playlist.png" alt="A playlist page in Mirage: frosted glass panels in the colours of the album cover" width="100%"></p>
 
 <table>
   <tr>
-    <td width="33%"><img src="assets/shots/mode-cover.jpg" alt="Cover view"></td>
-    <td width="33%"><img src="assets/shots/mode-lyrics.jpg" alt="Lyrics view"></td>
-    <td width="33%"><img src="assets/shots/mode-viz.jpg" alt="Visualizer view"></td>
+    <td width="50%"><img src="assets/shots/album.png" alt="An album page in Mirage, the header blends into the glass"></td>
+    <td width="50%"><img src="assets/shots/visualizer.png" alt="The visualizer, coloured like the current cover"></td>
   </tr>
   <tr>
-    <td align="center"><b>Cover</b><br><sub>tilts with the mouse, full controls</sub></td>
-    <td align="center"><b>Lyrics</b><br><sub>synced karaoke, click a line to jump</sub></td>
-    <td align="center"><b>Visualizer</b><br><sub>bars, wave, dots, particles, line or 3D tunnel</sub></td>
-  </tr>
-  <tr>
-    <td><img src="assets/shots/mode-mix.jpg" alt="Mix view"></td>
-    <td><img src="assets/shots/mode-party.jpg" alt="Party view"></td>
-    <td><img src="assets/clips/karaoke.webp" alt="Karaoke filling syllable by syllable"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>Mix</b><br><sub>visualizer ring and lyrics together</sub></td>
-    <td align="center"><b>Party</b><br><sub>the light show – see below</sub></td>
-    <td align="center"><b>Karaoke</b><br><sub>letters fill syllable by syllable</sub></td>
+    <td align="center"><sub>Every album gets its own colours</sub></td>
+    <td align="center"><sub>The visualizer in the colours of the cover</sub></td>
   </tr>
 </table>
 
-- **Karaoke on the syllable** – word timings from Spotify or NetEase are used as they are; otherwise every word is split into syllables and placed on a sung onset from the analysis. Lyrics from other sources are aligned to the song automatically.
-- **Lyrics when Spotify has none** – Mirage looks on [LRCLIB](https://lrclib.net), NetEase and lyrics.ovh; *Choose version* picks another match, and an optional translation sits under each line.
-- **A beat even without Spotify's analysis** – tempo and energy come from Spotify's audio features or Deezer, the beat from the lyric timing (the kicker then shows *≈ 128 BPM*).
-- **In sync with what you hear** – a steady song clock smooths Spotify's position; press <kbd>T</kbd> six times on the beat to calibrate light, crowd and lyrics to your speakers.
-- **Romanization** under Korean, Japanese and Chinese lyrics, **duet colours** for lines with a singer's name, and backing vocals in brackets set smaller.
-- **Fix the timing yourself** – press <kbd>E</kbd>, then Enter whenever the marked line starts; saved per song.
-- **Party moments** – hands up in the chorus, camera flash storm, floor fog, drone light show, confetti on key C and a guest vote on the next songs.
-- **20 party games** – Who's singing?, Name that song, Intro flash, Lyric gaps, Next line, Real or fake?, Beat hit, Keep singing, Music stop, Fastest finger, Tap race, Dance battle, Hot potato, Who would most likely …? and a Wheel of fortune, plus five optional drinking games (18+), with sound effects and adjustable rounds and times; guests play on their phones, the big screen shows the scores.
-- **DJ panel** – tempo and key of the current song, the best fitting songs from your queue, and *Keep the energy* to avoid breaks in the mood.
-- **Word pictures** – in party mode sung words get a subtle picture: sparks for “fire”, rain, hearts, stars, snow, money, a crown … around 65 ideas in 45 languages (almost 20,000 word forms). At most one per line, the crowd always stays clear.
-- **Canvas videos** – when a song has one, the film button at the top plays it inside the cover (and softly behind the lyrics) – switched on per view, off at first. If the button stays faded for every song, canvas is switched off in your Spotify account: turn on *Canvas* in the Spotify phone app (Settings → Playback).
-- **Full screen** with the button, <kbd>F</kbd> or <kbd>F11</kbd>; when the mouse rests, the controls fade out.
+- **Colours from the cover** – each song repaints buttons, bars and highlights, always easy to read.
+- **A living background** – the cover drifts behind the glass and breathes with the beat.
+- **Six colour schemes** – *Mirage* follows the cover; *Obsidian*, *Sakura*, *Abyss* and *Ember* are calm dark ones, *Pearl* is light. Or build your own.
 
-## 🎉 Party mode
+<p align="center"><img src="assets/schemes.svg" alt="The colour schemes Mirage, Obsidian, Sakura, Abyss and Ember" width="100%"></p>
+
+### A full-screen stage
+
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. Switch between five views with <kbd>1</kbd> to <kbd>5</kbd>.
 
 <table>
   <tr>
-    <td width="50%"><img src="assets/clips/rock.webp" alt="Rock in the stadium: pyro on the drop, headbanging crowd"></td>
-    <td width="50%"><img src="assets/clips/techno.webp" alt="Techno in the warehouse: chase lights, laser sheet, strobe"></td>
+    <td width="33%"><img src="assets/shots/mode-cover.jpg" alt="Cover view: the big album cover with controls"></td>
+    <td width="33%"><img src="assets/shots/mode-lyrics.jpg" alt="Lyrics view: large lyrics in time with the song"></td>
+    <td width="33%"><img src="assets/shots/mode-viz.jpg" alt="Visualizer view: light moving to the music"></td>
   </tr>
   <tr>
-    <td align="center"><sub><b>Rock · stadium</b> – spots from above, pyro on the drop, the crowd headbangs</sub></td>
-    <td align="center"><sub><b>Techno · warehouse</b> – chase lights, laser sheet, strobe on the hard drop</sub></td>
+    <td align="center"><b>1 · Cover</b></td>
+    <td align="center"><b>2 · Lyrics</b></td>
+    <td align="center"><b>3 · Visualizer</b></td>
   </tr>
   <tr>
-    <td><img src="assets/clips/house.webp" alt="House in the club with Jam guests in the crowd"></td>
-    <td><img src="assets/clips/finale.webp" alt="Final chorus in the stadium with fireworks"></td>
+    <td><img src="assets/shots/mode-mix.jpg" alt="Mix view: visualizer ring and lyrics together"></td>
+    <td><img src="assets/shots/mode-party.jpg" alt="Party view: stage, lights and a crowd"></td>
+    <td><img src="assets/clips/karaoke.webp" alt="Karaoke: the words fill with colour syllable by syllable"></td>
   </tr>
   <tr>
-    <td align="center"><sub><b>House · club</b> – disco ball, waves of light, Jam guests in the crowd</sub></td>
-    <td align="center"><sub><b>Pop · stadium</b> – the final chorus gets everything</sub></td>
+    <td align="center"><b>4 · Mix</b></td>
+    <td align="center"><b>5 · Party</b></td>
+    <td align="center"><b>Karaoke</b> – fills as it's sung</td>
   </tr>
 </table>
-<sub>Clips and the stills below are recorded from the real theme with made-up demo songs and Jam guests.</sub>
 
-Party mode reads the whole song before it plays – energy curve, build-ups, drops placed on their beat, breaks, major or minor, and where kick, snare and hi-hats hit – and directs the light from that map. It reacts to what's *coming*, not just to what's loud.
+- **Lyrics for almost every song** – if Spotify has none, Mirage looks in several free lyrics collections at once and lines them up with the singing by itself.
+- **Karaoke word by word** – the letters fill exactly as they are sung.
+- **Translation and Latin letters** under the lyrics, if you want them (for example under Korean, Japanese, Chinese, Russian, Greek or Hindi).
+- **Wrong lyrics?** One click on *Not the right lyrics* tries the next best match.
+- **Eleven visualizer styles**, from simple bars to a galaxy or a 3D tunnel.
 
-### 318 styles
+### A light show that knows the song
 
-The style comes from Apple's iTunes genre, Spotify's artist genres and the sound itself – or you pick it in the settings. Each style has its own light language, crowd moves, venue and effects: rave gets crossing beams, techno soft scanner bands, house a disco ball, trance aurora ribbons, drum & bass a tunnel of light rings, hip-hop light from the floor, rock hard spots from above, chill slow breathing light.
+<table>
+  <tr>
+    <td width="50%"><img src="assets/clips/rock.webp" alt="Rock in a stadium: flames on the drop and a headbanging crowd"></td>
+    <td width="50%"><img src="assets/clips/techno.webp" alt="Techno in a warehouse: running lights, lasers and strobe"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Rock · stadium</b> – flames on the drop</sub></td>
+    <td align="center"><sub><b>Techno · warehouse</b> – lasers and running lights</sub></td>
+  </tr>
+  <tr>
+    <td><img src="assets/clips/house.webp" alt="House in a club with a disco ball and waves of light"></td>
+    <td><img src="assets/clips/finale.webp" alt="The final chorus in a stadium with fireworks"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>House · club</b> – disco ball and waves of light</sub></td>
+    <td align="center"><sub><b>Pop · stadium</b> – fireworks for the last chorus</sub></td>
+  </tr>
+</table>
+<sub>Recorded from the real theme with made-up demo songs.</sub>
+
+Party mode listens to the whole song **before** it plays. It knows where the chorus starts and where the drop hits, and it plans the light for each part.
+
+- **Follows the mood** – a happy drop, a tender break and a sad bridge each get their own colours and pace. The scenes change during the song, always on the beat.
+- **318 music styles** – techno gets laser scanners, house a disco ball, rock hard spots, ballads a sea of phone lights. Mirage picks the style by itself, or you choose it.
+- **17 places** – club, warehouse, festival, stadium, beach, living room, rooftop, cathedral, jazz bar, forest stage, concert hall, cellar, outer space, neon street, pub, ski hut and desert night.
+- **A crowd that dances along** – jumps on the beat, hands up in the chorus, lighters in ballads.
+- **Instruments get a moment** – when the song credits name a trumpet, sax, guitar, piano, strings, choir and a few more, that instrument gets its own effect.
+- **Five strengths** from *Soft* to *Insane*. The picture never zooms or moves the camera.
+
+<p align="center"><img src="assets/shots/venues.jpg" alt="Six of the places: club, warehouse, festival, stadium, beach and living room" width="100%"></p>
+<p align="center"><img src="assets/shots/instruments.jpg" alt="Instrument effects for brass, sax, electric guitar, piano, strings and choir" width="100%"></p>
 
 <details>
 <summary><b>All 318 styles in 17 families</b></summary>
@@ -199,177 +204,189 @@ The style comes from Apple's iTunes genre, Spotify's artist genres and the sound
 | Kids, holidays & spoken (6) | Christmas · Halloween · Kids' music · Disney & family film · Comedy & novelty · Spoken word & podcast |
 </details>
 
-### Twelve venues
+## 🎉 Party with friends
 
-<p align="center"><img src="assets/shots/venues.jpg" alt="Club, warehouse, festival, stadium, beach and living room" width="100%"></p>
+<p align="center"><img src="assets/shots/phone.png" alt="The phone page that guests see: waiting screen and live party" width="70%"></p>
 
-Club, warehouse, festival, stadium, beach and living room – plus rooftop, cathedral, jazz bar, forest stage, concert hall (seated audience), vaulted cellar, outer space, neon street, pub, ski hut and desert night. When the style changes between songs, the venue cross-fades. The venue follows the style or is fixed in the settings. The crowd is locked to the beat: jumps land on it, heads nod or bang, hands clap on 2 and 4, a wave rolls through now and then, and camera flashes go off on the drop.
+Your guests join with their phone. **No app, no account** – Wi-Fi or mobile data both work.
 
-### Light, effects and moments
+1. In **Mirage settings → Party mode**, switch on **Live link for phones**.
+2. Open party mode (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>, then <kbd>5</kbd>) and click the **QR code** button at the top.
+3. Guests scan the code with their phone camera, pick a **name and a colour**, and they're in.
 
-- **Light rig** – moving heads on a truss move in genre patterns: waves for house, chases for techno, fans for EDM, everything on the cover for hip-hop and rock. Blinders fire on big hits and a laser sheet spans the crowd on the drop; calm songs get soft bokeh instead.
-- **Follows the instruments** – the kick drives the pulse and floor light, the snare the spots, the hi-hats the sparkle; two thin *melody lasers* follow the pitch of the tune.
-- **Stage effects where they belong** – CO2 jets for electronic music, pyro for rock, metal and punk, fireworks, confetti cannons and streamers in the final chorus, a strobe on hard drops (from *Extreme* on, never more than one flash per beat).
-- **Sea of lights** – in ballads, gospel and soul the crowd raises phones and lighters in the chorus and sways them together.
-- **Light director** – the light holds back before the drop, goes dark on the last beat, then everything hits at once. Slow motion freezes the half second before it, and DJ transitions blend the colours over four beats when the song changes.
-- **Five intensity levels** from *Soft* to *Insane*, plus hype lines for choruses and lyrics that burst into light on the drop. The picture itself stays still – no zooming or camera moves.
+**What guests can do on their phone**
 
-### 🎺 Instruments
+- 💡 **Light up along** – the phone flashes in the song's colours; as a *light wave*, phones can take turns.
+- 🎤 **Sing along** – the current lyric line, big and clear.
+- 🎵 **Wish for songs** – search like in Spotify or paste a Spotify link; others vote. You decide what gets played, or let songs join the queue automatically after enough votes.
+- 🔥 **Send reactions** – emoji float up quietly at the edge of the big screen.
+- 📸 **Photo wall** (off unless you turn it on) – guests send a photo; it only appears after you approve it.
+- 📱 The phone page speaks **14 languages** and can be added to the home screen like an app. Android phones can vibrate on the beat.
 
-<p align="center"><img src="assets/shots/instruments.jpg" alt="Effects for brass, sax, electric guitar, piano, strings and choir" width="100%"></p>
+**Two extra QR codes, just for you**
 
-When the song's **credits** (Spotify, otherwise MusicBrainz) confirm an instrument, it gets its own moment wherever it stands out in the sound: golden fanfare rays, rising smoke, lightning from the truss, keys of light that follow the notes, flowing silk ribbons, a halo from above. No credit, no effect – nothing is guessed, and at most two instruments show at a time.
+- **Remote control for your phone** (in the party settings): playback, volume, light strength, place and games from your sofa.
+- **Game host on your phone** (in the games panel): start, skip and end games and correct points. Guests can't do this.
 
-### Jam & extras
+### 26 party games
 
-- **Spotify Jam** – everyone in the Jam appears as a small, coloured face in the crowd and bounces on the kick; whoever added the current song lights up as the DJ.
-- **Second screen** – party mode full screen on a TV or another monitor.
-- **Edge light** – the overlay app makes the edges of your desktop glow on the beat.
-- **Party on the TV** – the overlay app streams the party your PC renders to Chromecast, Google TV and DLNA smart TVs (1080p, optionally with sound); Miracast works too.
-- **Light in the room** – the overlay app plays along with Philips Hue, WLED LED strips, Govee lamps (LAN), every light in Home Assistant, OpenRGB and Razer Chroma.
-- **Party recap** – a shareable card of the night: songs, genre mix, tempo range, the biggest drop.
+Click the **games** button in party mode. The big screen shows the questions and scores, everyone answers on their own phone.
+Play alone, against each other or in **2 to 4 teams**, or as a **tournament** of 3 to 6 games with a podium at the end.
 
-## 📱 Live link for phones
-
-<p align="center"><img src="assets/shots/phone.png" alt="The phone page, waiting and live" width="70%"></p>
-
-Turn on **Live link** in the party settings, press the phone button in party mode and let your guests scan the QR code. Their phones become extra lights: the song's colours, a ring on every beat, a flash on the drop – full screen, with the display kept on.
-
-- **Lyrics to sing along** – the current line big in the middle, the next one below.
-- **Song wishes from Spotify** – guests search just like in Spotify (typos and parts of titles are fine), pick a song and vote on the others' wishes. In party mode a counter shows new wishes, the list sits in the side panel, and one click adds a song to the queue; nothing gets in on its own.
-- **Vibration on the beat** (Android) – a firm buzz on the downbeat, light taps on the backbeat, faster ticks in a build-up, a long swell on the drop; *gentle*, *normal* or *strong* on the phone. (Websites can't set the motor's strength directly – Mirage makes it with fast pulses. iPhones don't let websites vibrate.)
-
-- **Any network, no app** – Wi-Fi or mobile data; the page is served from GitHub Pages.
-- **Only for whoever has the QR code** – channel and key are 128-bit random values that exist only in the QR link after the `#`, a part that is never sent to any server. Messages are end-to-end encrypted and authenticated (AES-GCM), so the relay sees only random bytes and nobody can read or inject anything.
-- **Only while you party** – the theme sends only in party mode; afterwards the page says *party's over*, and 10 minutes later the code expires. The next party gets a new one.
-
-## ⚙ Settings & performance
+| | Some favourites |
+|:-:|---|
+| 🎶 | **Karaoke** – one guest sings, their phone gives points for timing, notes and singing along. The recording never leaves the phone. |
+| 🎱 | **Music bingo** – every phone gets its own card of song titles. |
+| 🖼️ | **Cover puzzle** – a blurry album cover slowly gets sharp. Who knows it first? |
+| ⚔️ | **Song duel** – the room votes which of two songs stays. |
+| 📅 | **Older or newer?** – which of two songs came out first? |
 
 <details>
-<summary><b>Show the party settings</b></summary>
-<p align="center"><img src="assets/shots/settings.jpg" alt="Party settings: style, intensity, venue, light and effects" width="80%"></p>
+<summary><b>All 26 games</b></summary>
+
+- **Music quiz:** Who's singing? · Name that song · Intro flash · Lyric gaps · Next line · Real or fake? · Beat hit · Older or newer? · Cover puzzle · Song duel
+- **Fast fingers:** Music stop · Fastest finger · Tap race · Dance battle · Hot potato
+- **Party:** Who would most likely …? · Keep singing · Karaoke · Tournament · Music bingo · Wheel of fortune
+- **Drinking games (18+, only if you want; water counts too):** Never have I ever · Sip quiz · Word alarm · Who would … (sip edition) · Sip wheel
+
+Quizzes come in easy, normal or hard, can use a decade filter or one of your playlists, and late guests can still join and keep their points.
+**No phones?** Number keys answer, <kbd>Space</kbd> is the buzzer, <kbd>Enter</kbd> starts. After a game you can save the ranking as an image.
 </details>
 
-- **Presets** – *Full*, *Balanced*, *Light* and *Calm*. *Balanced* draws immersive mode at up to 60 fps (half the work on 120/144 Hz screens), *Light* at 30 fps with about 40 % fewer pixels. If the first seconds run below ~45 fps, Mirage steps down by itself.
-- **Party mode adapts** – stage and crowd are drawn in a background thread that never builds a backlog, a quality governor fades out back rows before frames drop, and quiet intros and breaks run at 30 fps.
-- **Energy saving** – on battery (or always) everything runs at 30 fps with lighter detail. Effects pause while Spotify is hidden, and Mirage starts calm when your system asks for reduced motion.
+**More for the party:** a DJ panel that sorts your queue so the mood flows, Spotify Jam guests dancing in the crowd, confetti on <kbd>C</kbd>, and a recap of the night that you can save as a playlist.
 
-## ◎ Mirage Overlay
+## 💡 Overlay app
 
-<p align="center"><img src="assets/overlay.svg" alt="Overlay styles: Island, Card, Banner, Minimal" width="100%"></p>
+<p align="center"><img src="assets/overlay.svg" alt="Overlay styles: Island, Card, Banner and Minimal" width="100%"></p>
 
-A small companion app that announces songs **outside Spotify** – above every window, on the screen you choose. The theme talks to it only on your own computer (`127.0.0.1`).
+A small free extra app. It shows the current song **above every window**, even while you work or play, and connects Mirage to the lights in your room.
 
-| Windows | macOS | Linux |
+| Windows | Mac | Linux |
 |:-:|:-:|:-:|
 | [**⬇ Mirage-Overlay-Setup.exe**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay-Setup.exe) | [**⬇ Mirage-Overlay.dmg**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.dmg) | [**⬇ AppImage**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.AppImage) · [**⬇ .deb**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage-Overlay.deb) |
-| Double-click – it lives in the tray | Drag it into *Applications* | Make it executable, or `sudo apt install ./Mirage-Overlay.deb` |
+| Double-click to install. It sits next to the clock. | Drag it into *Applications*. | Make the AppImage executable, or open the .deb. |
 
-Or in Spotify: **Mirage settings → Overlay → Download the Overlay app** (picks the right file and shows whether it's connected). With Scoop:
+- 🪟 **Song pop-ups** in eight styles, on the screen and spot you like.
+- 💡 **Lights in your room dance along** – Philips Hue (with a new, experimental fast mode for *Hue Entertainment*), WLED, Govee, Home Assistant, OpenRGB and Razer Chroma. On first start the app finds your lights for you. You can set a maximum brightness and fine-tune the timing per light. Passwords for your lights are stored encrypted.
+- 📺 **Party on the TV** – send the party screen to a Chromecast, Google TV or smart TV.
+- 🌈 **Edge light** – the edges of your screen glow on the beat.
+- 🛠️ **Repairs Mirage for you** – after a Spotify update, the app's menu (next to the clock, or in the Mac menu bar) offers *Repair theme in Spotify*, and it tells you when a new Mirage version is ready.
+- 🎛️ **Stream Deck** – [⬇ Mirage.streamDeckPlugin](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage.streamDeckPlugin) puts play, skip, like and party mode on buttons. Streamers also get a source for OBS.
 
-```powershell
-scoop install https://raw.githubusercontent.com/Passimoritz/spicetify-mirage/main/packaging/scoop/mirage-overlay.json
-```
+> **Windows asks "Windows protected your PC"?** The app is not signed yet ([why](CODE_SIGNING.md)). Click *More info → Run anyway*.
+>
+> **Mac says it can't be opened?** Right-click the app → *Open* → *Open*.
 
-- **When** – on every song change, permanently as a mini player, or off · on play/pause · quiet hours
-- **Where** – main screen, the screen with the mouse, or any screen · 9 positions · fine offset
-- **How** – Island, Card, Banner or Minimal · springy, slide or fade · glow, roundness, size, opacity · controls on hover
-- **Extras** – volume bar · stays quiet during full-screen games and videos · your own look via `custom.css` · OBS browser source (`http://127.0.0.1:47322/`, party light at `/party`) · edge light for party mode · recently played · updates itself
-- **Light in the room** – in party mode Philips Hue, WLED, Govee, Home Assistant, OpenRGB and Razer Chroma play along; set up in the overlay settings, everything stays in your network (the Home Assistant token stays in the overlay app's settings file)
-- **Stream Deck** – [**⬇ Mirage.streamDeckPlugin**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/Mirage.streamDeckPlugin): play/pause, skip, like, immersive and party mode on keys
+## ⚙️ Settings in short
 
-> **Code signing:** the Windows installer is being set up for free signing by the SignPath Foundation – see the [code signing policy](CODE_SIGNING.md). Until it is signed, Windows *Smart App Control* can block it and SmartScreen asks once: *More info → Run anyway*. On macOS: right-click → *Open* → *Open*.
+Open your **profile menu → Mirage settings**. Every effect has its own switch, and each section can be reset on its own.
 
-## ⌨ Shortcuts
+- **Look & performance** – one click for *Full*, *Balanced*, *Light* or *Calm*. If your computer struggles, Mirage steps down by itself.
+- **Quick menu** – in the full-screen stage, press <kbd>O</kbd> (or the **⋯** button) to change look and performance without leaving the music.
+- **Energy saving** – on battery, Mirage draws less and saves power.
+- **No flashes** – for sensitive eyes: no strobe, no blinding light, no sudden flashes anywhere, also on guest phones and room lights. It turns on by itself when your computer is set to reduce motion.
+- **Light and lyrics too early or too late?** Press <kbd>T</kbd> six times on the beat. Mirage measures the delay of your speakers (Bluetooth adds some).
 
-| Where | Key | Action |
-|---|---|---|
-| anywhere | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> | open / close immersive mode |
-| immersive | <kbd>1</kbd> … <kbd>5</kbd> | cover · lyrics · visualizer · mix · party |
-| immersive | <kbd>Space</kbd> · <kbd>N</kbd> <kbd>P</kbd> | play / pause · next · previous |
-| immersive | <kbd>←</kbd> <kbd>→</kbd> · <kbd>↑</kbd> <kbd>↓</kbd> | seek 5 s · volume |
-| immersive | <kbd>L</kbd> <kbd>S</kbd> <kbd>R</kbd> <kbd>Q</kbd> | like · shuffle · repeat · queue |
-| immersive | <kbd>F</kbd> / <kbd>F11</kbd> | full screen |
-| immersive | <kbd>T</kbd> (6×, on the beat) | sync light, crowd and lyrics to what you hear |
-| lyrics | <kbd>E</kbd> · <kbd>Enter</kbd> | fix the timing: the marked line starts now |
-| immersive | <kbd>?</kbd> · <kbd>Esc</kbd> | all shortcuts · close |
+<details>
+<summary><b>See the party settings</b></summary>
+<p align="center"><img src="assets/shots/settings.jpg" alt="Party settings: style, strength, place, light and effects" width="80%"></p>
+</details>
 
-## 🛠 Fix after a Spotify update
+## 🔧 Help: something looks wrong after a Spotify update
 
-Spotify updates itself every few weeks and overwrites what Spicetify patched. Spotify then looks normal again, `spicetify apply` complains about a *backup version mismatch* or *Cannot find xpui.spa*, or the window stays black. Nothing is broken – Spicetify just has to re-patch.
+Spotify updates itself every few weeks. Sometimes Mirage is gone afterwards, or Spotify stays black. **Nothing is broken** – Spicetify just has to be set up again.
 
-**One click (Windows):** <a href="https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/fix-spicetify.cmd"><b>⬇ fix-spicetify.cmd</b></a> · <sub><a href="tools/fix-spicetify.cmd">read the source</a></sub> – closes Spotify, updates Spicetify, makes a fresh backup, re-applies Mirage and your extensions and starts Spotify again. Settings and Marketplace items are kept.
+1. **Mirage often fixes small problems by itself.** It loads small repairs for new Spotify versions (you can switch this off under *Repair itself after Spotify updates*).
+2. **Using the overlay app?** Click its icon (next to the clock, or in the Mac menu bar) → **Repair theme in Spotify**.
+3. **Windows, one click:** download and double-click [**⬇ fix-spicetify.cmd**](https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/fix-spicetify.cmd) ([see what's inside](tools/fix-spicetify.cmd)). It closes Spotify, repairs Spicetify, puts Mirage back and opens Spotify again. Your settings stay.
+4. **Mac, Linux or by hand:** paste these two lines into the Terminal or PowerShell:
 
-**By hand (all systems):**
+   ```bash
+   spicetify upgrade
+   spicetify restore backup apply
+   ```
 
-```bash
-spicetify upgrade
-spicetify restore backup apply
-```
+Still broken? Right after a big Spotify update, Spicetify sometimes needs a few days to catch up. If Mirage itself looks odd, tell us with the [bug form for Spotify updates](https://github.com/Passimoritz/spicetify-mirage/issues/new/choose).
 
-Still broken? Run `spicetify clear`, then `spicetify backup apply`. Right after a big Spotify release Spicetify sometimes needs a few days – wait for the next [Spicetify release](https://github.com/spicetify/cli/releases). If Mirage itself looks off, use the [bug form for Spotify updates](https://github.com/Passimoritz/spicetify-mirage/issues/new/choose).
+## 🔒 Privacy in plain words
 
-## 🔒 Privacy
-
-- **No own server, no tracking, no account.** Lyrics, beat data, audio features and credits come from Spotify.
-- **Only when Spotify has nothing** – and each can be turned off: title, artist, album and length go to LRCLIB, NetEase and lyrics.ovh for lyrics; title and artist to Deezer for the tempo and to Apple's iTunes search for the party genre; the song's ISRC number to MusicBrainz for instrument credits.
-- **Live link** (off by default) – light colours, tempo and the song title, end-to-end encrypted through a public relay (HiveMQ). The key never leaves the QR code. Guests' song searches are looked up with your Spotify.
-- **Overlay app** – listens only on your own computer and asks GitHub for updates (can be turned off). Room lights are controlled inside your own network; *Find bridge* asks Philips' discovery service (`discovery.meethue.com`) for your bridge's address. Details in the [code signing policy](CODE_SIGNING.md#privacy-policy).
-- **Romanization** (off by default) – Chinese loads the pinyin dictionary from jsdelivr once.
-- Fonts load from Google Fonts.
+- **No account, no tracking, no ads.** Mirage has no server of its own.
+- **Stays on your computer:** your settings, saved lyrics, and the passwords for your lights (encrypted).
+- **Only song details leave your computer**, never who you are: when Spotify has no lyrics, tempo or style for a song, Mirage sends song details such as title and artist to free music services (LRCLIB, NetEase, Kugou, lyrics.ovh, Deezer, Apple's iTunes search, MusicBrainz). You can switch these lookups off.
+- **Translation** (off unless you turn it on) sends lyric lines to Google Translate.
+- **Phones at the party** (off unless you turn it on): everything is end-to-end encrypted – nobody but your guests can read it, not even the relay service that passes it on. The key is only in the QR code. It works only while party mode runs and expires 10 minutes after.
+- **Karaoke:** the singing is scored on the singer's phone. The recording never leaves it.
+- **Photo wall:** off unless you turn it on. Location and hidden photo data are removed on the phone, nothing shows without your OK, and nothing is saved – the photos are gone when the party ends.
+- **Overlay app:** talks to Mirage only on your own computer, controls lights only in your own home network, and asks GitHub for updates (you can switch that off). More in the [privacy policy](CODE_SIGNING.md#privacy-policy).
 
 ## ❓ FAQ
 
 <details>
+<summary><b>Is Mirage free?</b></summary>
+
+Yes, completely free and open source.
+</details>
+
+<details>
 <summary><b>Mirage is gone after Spotify updated.</b></summary>
 
-Run the [fix](#-fix-after-a-spotify-update) – that's Spicetify, not Mirage.
+That's normal. Follow [Help after a Spotify update](#-help-something-looks-wrong-after-a-spotify-update).
 </details>
 
 <details>
-<summary><b>Party mode picks the wrong style.</b></summary>
+<summary><b>Party mode picks the wrong music style.</b></summary>
 
-Pick it by hand in **Mirage settings → Party mode → Style**, or keep *Auto* and turn on online genre lookup for better guesses.
+Choose it yourself in **Mirage settings → Party mode → Style**. The list has a search field.
 </details>
 
 <details>
-<summary><b>Light and lyrics feel a little early or late.</b></summary>
+<summary><b>My laptop gets warm or the fan is loud.</b></summary>
 
-Press <kbd>T</kbd> six times on the beat in immersive mode – Mirage measures the delay of your speakers (Bluetooth adds some) – or set the sync offset in the settings.
+Press <kbd>O</kbd> in the full-screen stage and choose *Light* or *Calm*, or switch on energy saving.
 </details>
 
 <details>
-<summary><b>The phone page stays on “no connection”.</b></summary>
+<summary><b>The phone page says "no connection".</b></summary>
 
-The phone needs internet (Wi-Fi or mobile data). A firewall, VPN or ad blocker on the phone may block the relay `broker.hivemq.com`. The page says “waiting for party mode” until party mode runs in Spotify.
+The phone needs internet. A VPN or ad blocker on the phone can block the connection. The page waits until party mode is running in Spotify.
 </details>
 
 <details>
-<summary><b>It's too much / my laptop gets warm.</b></summary>
+<summary><b>Does the iPhone work?</b></summary>
 
-Choose the *Light* or *Calm* preset, set energy saving to *Always*, or lower the party intensity – every effect has its own switch.
+Yes. iPhones don't let websites vibrate, so they can play a quiet click on the beat instead.
 </details>
 
-## 🧩 Under the hood
+## ⌨️ Keyboard shortcuts
 
-```mermaid
-flowchart LR
-  A[Album art] -->|palette| B(theme.js)
-  E[Beat data / estimate] --> B
-  F[Lyrics] --> G[Immersive mode]
-  B --> G
-  G -->|state| W[Stage + crowd worker]
-  B <-->|WebSocket, local| H[Mirage Overlay]
-  G -->|AES-GCM via relay| P[Phones]
-```
+| Key | What it does |
+|---|---|
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> | open or close the full-screen stage |
+| <kbd>1</kbd> … <kbd>5</kbd> | cover · lyrics · visualizer · mix · party |
+| <kbd>Space</kbd> | play / pause |
+| <kbd>O</kbd> | quick menu for look and performance |
+| <kbd>?</kbd> | show all shortcuts |
 
-- Colours change in one style update; the background haze is a pre-shrunk image blurred once and only rotated.
-- Built against the real Spotify DOM and matched by computed style rather than class names that change every release.
-- With the overlay running, the theme can write a layout report (sizes, classes, colours – no content) to `%APPDATA%\Mirage Overlay\dom-report.json` for bug reports.
-- 14 languages: English, Deutsch, Français, Español, Italiano, Português, Nederlands, Polski, Türkçe, Русский, Українська, 日本語, 한국어, 中文.
+<details>
+<summary><b>All shortcuts in the full-screen stage</b></summary>
 
-Want to help? See [CONTRIBUTING.md](CONTRIBUTING.md) and the [changelog](CHANGELOG.md). Questions and ideas go to [Discussions](https://github.com/Passimoritz/spicetify-mirage/discussions).
+| Key | What it does |
+|---|---|
+| <kbd>N</kbd> · <kbd>P</kbd> | next · previous song |
+| <kbd>←</kbd> <kbd>→</kbd> | jump 5 seconds |
+| <kbd>↑</kbd> <kbd>↓</kbd> | volume |
+| <kbd>L</kbd> · <kbd>S</kbd> · <kbd>R</kbd> · <kbd>Q</kbd> | like · shuffle · repeat · queue |
+| <kbd>F</kbd> or <kbd>F11</kbd> | full screen |
+| <kbd>C</kbd> | confetti |
+| <kbd>T</kbd> (6×, on the beat) | match light and lyrics to your speakers |
+| <kbd>E</kbd>, then <kbd>Enter</kbd> | fix the lyric timing: press Enter when the marked line starts |
+| <kbd>Esc</kbd> | close |
+</details>
 
-## License
+## ❤️ Credits & licence
 
-MIT © Passimoritz
+Mirage is built on [Spicetify](https://spicetify.app). Lyrics come from Spotify, [LRCLIB](https://lrclib.net), NetEase, Kugou, lyrics.ovh and the [AMLL](https://github.com/amll-dev/amll-ttml-db) collection; song details from Deezer, Apple's iTunes search and [MusicBrainz](https://musicbrainz.org). Thank you!
+
+Ideas and questions are welcome in [Discussions](https://github.com/Passimoritz/spicetify-mirage/discussions). Want to help build it? See [CONTRIBUTING.md](CONTRIBUTING.md) and the [changelog](CHANGELOG.md).
+
+MIT licence © Passimoritz – free to use, share and change.
