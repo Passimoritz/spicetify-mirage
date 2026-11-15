@@ -10,6 +10,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.24.1] – 2026-11-15
+
+### Changed
+
+- New README in English and German, written for everyone: install in a few steps, a picture tour, party with friends, the overlay app, help and privacy in plain words.
+- New demo page: try the theme live (covers, colour schemes, immersive views, a party with a drop), see how guests join, and preview the overlay app's styles and how it connects to OBS and your lights.
+
 ### Fixed
 
 - Karaoke: if the singer's phone misses the details of the part to sing, it gets them again, so the score always works.
