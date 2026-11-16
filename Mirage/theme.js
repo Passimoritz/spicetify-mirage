@@ -1042,6 +1042,87 @@
     }
   });
 
+  // src/i18n-perfui.js
+  var PERFUI_TEXT;
+  var init_i18n_perfui = __esm({
+    "src/i18n-perfui.js"() {
+      PERFUI_TEXT = {
+        en: {
+          presetHint: "One click sets everything. The bars show how much power it needs.",
+          presetDesc_full: "Everything on, real glass",
+          presetDesc_balanced: "Looks great, uses less",
+          presetDesc_light: "For older PCs and battery",
+          presetDesc_calm: "Little motion, saves power",
+          costLabel: "Power use: {c}",
+          cost1: "low",
+          cost2: "medium",
+          cost3: "high",
+          ecoHint: "Fewer frames and pixels \u2013 easier on battery and fan",
+          autoPerfHint: "Steps down one level if your PC can't keep up",
+          rangeDefault: "Default",
+          costFree: "Costs no performance",
+          brightLo: "darker",
+          brightHi: "brighter",
+          blurLo: "sharp",
+          blurHi: "soft",
+          blurCost: "Softer = more work for the graphics card",
+          blurOff: "Only visible with \u201CReal glass\u201D on \u2013 costs nothing while it's off",
+          vizBarsLo: "few",
+          vizBarsHi: "many",
+          vizBarsCost: "More bars = a little more work per frame",
+          vizHeightLo: "low",
+          vizHeightHi: "tall",
+          vizSmoothLo: "lively",
+          vizSmoothHi: "calm",
+          lyrSizeLo: "smaller",
+          lyrSizeHi: "bigger",
+          lyrGapLo: "tighter",
+          lyrGapHi: "wider",
+          syncOffsetLo: "earlier",
+          syncOffsetHi: "later",
+          syncOffsetHint: "If lights and lyrics come too early or too late",
+          partyLevelHint: "Stronger = more light and effects, a little more work for your PC"
+        },
+        de: {
+          presetHint: "Ein Klick stellt alles ein. Die Balken zeigen, wie viel Leistung es braucht.",
+          presetDesc_full: "Alles an, echtes Glas",
+          presetDesc_balanced: "Sch\xF6n und sparsamer",
+          presetDesc_light: "F\xFCr \xE4ltere PCs und Akku",
+          presetDesc_calm: "Wenig Bewegung, spart Strom",
+          costLabel: "Leistungsbedarf: {c}",
+          cost1: "niedrig",
+          cost2: "mittel",
+          cost3: "hoch",
+          ecoHint: "Weniger Bilder und Pixel \u2013 schont Akku und L\xFCfter",
+          autoPerfHint: "Geht eine Stufe runter, wenn der PC nicht mitkommt",
+          rangeDefault: "Standard",
+          costFree: "Kostet keine Leistung",
+          brightLo: "dunkler",
+          brightHi: "heller",
+          blurLo: "scharf",
+          blurHi: "weich",
+          blurCost: "Weicher = mehr Arbeit f\xFCr die Grafikkarte",
+          blurOff: "Nur mit \u201EEchtes Glas\u201C zu sehen \u2013 kostet nichts, solange es aus ist",
+          vizBarsLo: "wenige",
+          vizBarsHi: "viele",
+          vizBarsCost: "Mehr Balken = etwas mehr Arbeit pro Bild",
+          vizHeightLo: "flach",
+          vizHeightHi: "hoch",
+          vizSmoothLo: "lebhaft",
+          vizSmoothHi: "ruhig",
+          lyrSizeLo: "kleiner",
+          lyrSizeHi: "gr\xF6\xDFer",
+          lyrGapLo: "enger",
+          lyrGapHi: "weiter",
+          syncOffsetLo: "fr\xFCher",
+          syncOffsetHi: "sp\xE4ter",
+          syncOffsetHint: "Wenn Licht und Liedtext zu fr\xFCh oder zu sp\xE4t kommen",
+          partyLevelHint: "St\xE4rker = mehr Licht und Effekte, etwas mehr Arbeit f\xFCr den PC"
+        }
+      };
+    }
+  });
+
   // src/i18n.js
   var I18N, LANG, t;
   var init_i18n = __esm({
@@ -1056,6 +1137,7 @@
       init_i18n_lyrics();
       init_i18n_genres();
       init_i18n_photos();
+      init_i18n_perfui();
       I18N = {
         en: {
           g_library: "Library",
@@ -9935,6 +10017,7 @@
       for (const [l, v] of Object.entries(LYRICS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
       for (const [l, v] of Object.entries(GENRE_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
       for (const [l, v] of Object.entries(PHOTOS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
+      for (const [l, v] of Object.entries(PERFUI_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
       LANG = (() => {
         let l = "";
         try {
@@ -11800,7 +11883,11 @@
     const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || PLR.getDuration() || 0) / 1e3 || 210;
     const [feat, lyr2] = await Promise.all([spotifyFeatures(id), within2(getLyrics(uri), 9e3)]);
     const dz = feat ? null : await deezerBpm(item);
-    const hint = feat?.bpm || dz?.bpm || 0;
+    let hint = feat?.bpm || dz?.bpm || 0;
+    if (!feat?.bpm && hint) {
+      while (hint > 150) hint /= 2;
+      while (hint < 75) hint *= 2;
+    }
     const lines = lyr2?.synced ? lyr2.lines.filter((l) => l.text && l.text !== "\u266A") : [];
     const words = lines.flatMap((l) => (l.words || []).map((w) => w.t / 1e3));
     const on = words.length > 30 ? words : lines.map((l) => l.t / 1e3);
@@ -13395,23 +13482,6 @@
     const bhi = pct(B, 0.95), blo = Math.min(pct(B, 0.1), bhi - 20);
     const energy = E.map((v) => clamp3((v - lo) / (hi - lo), 0, 1));
     const bright = B.map((v) => clamp3((v - blo) / (bhi - blo), 0, 1));
-    const drops = [];
-    for (let i = 16; i < n - 4; i++) {
-      let before = 1;
-      for (let k = i - 16; k < i - 2; k++) before = Math.min(before, energy[k]);
-      const after2 = (energy[i] + energy[i + 2] + energy[i + 4]) / 3;
-      if (after2 > 0.72 && after2 - before > 0.38 && (!drops.length || i * STEP - drops[drops.length - 1] > 8)) {
-        let j = i, best2 = -1e9;
-        for (let k = Math.max(1, i - 6); k <= Math.min(n - 1, i + 6); k++) {
-          const jump = raw[k] - raw[k - 1];
-          if (jump > best2) [best2, j] = [jump, k];
-        }
-        const tj = j * STEP, bi = seek2(d.beats, tj + STEP - 1e-3, "t");
-        const b0 = d.beats[bi]?.t ?? tj, b1 = d.beats[bi + 1]?.t ?? b0;
-        drops.push(b0 >= tj - 0.03 ? b0 : Math.abs(b1 - tj) < Math.abs(b0 - tj) ? b1 : b0);
-        i += 32;
-      }
-    }
     const rank = (vals) => {
       const sorted = Float32Array.from(vals).sort();
       return (v) => {
@@ -13445,6 +13515,46 @@
       }
     });
     for (let i = 1; i < n; i++) if (!tonal[i]) [tonal[i], pc[i]] = [tonal[i - 1] * 0.9, pc[i - 1]];
+    const cs = new Float64Array(n + 1);
+    for (let i = 0; i < n; i++) cs[i + 1] = cs[i] + energy[i];
+    const avg = (a, b) => {
+      [a, b] = [clamp3(a, 0, n), clamp3(b, 0, n)];
+      return b > a ? (cs[b] - cs[a]) / (b - a) : 0;
+    };
+    const beats = d.beats || [];
+    const ones = checkBars(d, beats, kicks, snares);
+    const bars = ones.map((t2) => ({ t: t2 }));
+    const phrase = phraseGrid(ones, avg, B, n);
+    const cands = [];
+    for (let o = 0; o < ones.length; o++) {
+      if (phrase.conf > 1.25 && (o - phrase.off) % 4) continue;
+      const tb = ones[o], i = Math.round(tb / STEP);
+      if (i < 16 || i > n - 16) continue;
+      const pre = avg(i - 32, i - 1), post = avg(i, i + 24);
+      let postMin = 1, dip = 1;
+      for (let k = i + 2; k + 4 <= i + 24; k += 2) postMin = Math.min(postMin, avg(k, k + 4));
+      for (let k = i - 32; k + 4 <= i; k += 2) dip = Math.min(dip, avg(k, k + 4));
+      if (post > 0.75 && postMin > 0.55 && post - pre > 0.33 && post - dip > 0.5) cands.push({ i, s: post - pre + (post - dip) * 0.5 });
+    }
+    cands.sort((a, b) => b.s - a.s);
+    const keep = [];
+    for (const c2 of cands) if (keep.every((k) => Math.abs(k.i - c2.i) * STEP >= 12)) keep.push(c2);
+    keep.sort((a, b) => a.i - b.i);
+    const drops = [];
+    for (const { i } of keep) {
+      let j = i, best2 = -1e9;
+      for (let k = Math.max(1, i - 6); k <= Math.min(n - 1, i + 6); k++) {
+        const jump = raw[k] - raw[k - 1];
+        if (jump > best2) [best2, j] = [jump, k];
+      }
+      const tj = j * STEP, bi = seek2(beats, tj + STEP - 1e-3, "t");
+      const b0 = beats[bi]?.t ?? tj, b1 = beats[bi + 1]?.t ?? b0;
+      let t2 = b0 >= tj - 0.03 ? b0 : Math.abs(b1 - tj) < Math.abs(b0 - tj) ? b1 : b0;
+      let near = null;
+      for (const x of ones) if (near == null || Math.abs(x - t2) < Math.abs(near - t2)) near = x;
+      if (near != null && Math.abs(near - t2) < (b1 - b0 || 0.5) * 0.35) t2 = near;
+      if (!drops.length || t2 - drops[drops.length - 1] > 8) drops.push(t2);
+    }
     const holds = [];
     for (let i = 0, start3 = -1; i <= n; i++) {
       const ok = i < n && tonal[i] > 0.5;
@@ -13454,11 +13564,85 @@
       }
       if (ok && start3 < 0) start3 = i;
     }
-    const m = { energy, bright, drops, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc, holds };
+    const m = { energy, bright, drops, phrase, ones, bars, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc, holds };
     mapCache.set(d, m);
     return m;
   }
-  var STEP, clamp3, pct, mapCache, at;
+  function checkBars(d, beats, kicks, snares) {
+    const given = (d.bars || []).map((b) => b.t), nb = beats.length;
+    const grid = (p) => beats.filter((_, i) => i % 4 === p).map((b) => b.t);
+    if (nb < 32) return given.length >= 4 ? given : grid(0);
+    const idx = given.map((t2) => seek2(beats, t2 + 0.03, "t")).filter((i) => i >= 0);
+    const vote = [0, 0, 0, 0];
+    let four = 0;
+    idx.forEach((i, k) => {
+      vote[i % 4]++;
+      if (k && idx[k] - idx[k - 1] === 4) four++;
+    });
+    const ap = given.length >= 4 ? vote.indexOf(Math.max(...vote)) : 0;
+    if (given.length >= 4 && four < (idx.length - 1) * 0.8) return given;
+    const F = { k: new Float32Array(nb), s: new Float32Array(nb), c: new Float32Array(nb) };
+    const segs = d.segs || [];
+    let ki = 0, si = 0, gi = 0;
+    for (let i = 0; i < nb; i++) {
+      const t2 = beats[i].t;
+      while (ki < kicks.length && kicks[ki] < t2 - 0.07) ki++;
+      while (si < snares.length && snares[si] < t2 - 0.07) si++;
+      F.k[i] = ki < kicks.length && kicks[ki] < t2 + 0.07 ? 1 : 0;
+      F.s[i] = si < snares.length && snares[si] < t2 + 0.07 ? 1 : 0;
+      while (gi < segs.length - 1 && segs[gi + 1].t <= t2 + 0.03) gi++;
+      let ab = 0, aa = 0, bb = 0;
+      for (let c2 = 0; c2 < 12; c2++) {
+        let a = 0, b = 0;
+        for (let j = Math.max(0, gi - 6); j < gi; j++) a += segs[j].p?.[c2] || 0;
+        for (let j = gi; j < Math.min(segs.length, gi + 6); j++) b += segs[j].p?.[c2] || 0;
+        [ab, aa, bb] = [ab + a * b, aa + a * a, bb + b * b];
+      }
+      F.c[i] = aa && bb ? 1 - ab / Math.sqrt(aa * bb) : 0;
+    }
+    const z = (a) => {
+      let m2 = 0, v = 0;
+      for (const x of a) m2 += x;
+      m2 /= a.length;
+      for (const x of a) v += (x - m2) ** 2;
+      const sd = Math.sqrt(v / a.length) || 1;
+      return (i) => (a[i] - m2) / sd;
+    };
+    const zk = z(F.k), zs = z(F.s), zc = z(F.c);
+    const sc = [0, 0, 0, 0], cnt = [0, 0, 0, 0];
+    for (let i = 0; i < nb; i++) {
+      sc[i % 4] += 0.5 * zk(i) + zc(i) - 0.5 * zs(i);
+      cnt[i % 4]++;
+    }
+    const m = sc.map((v, i) => v / cnt[i]), best2 = m.indexOf(Math.max(...m));
+    const second = Math.max(...m.filter((_, i) => i !== best2));
+    if (given.length >= 4 && (best2 === ap || m[best2] - second < BAR_MARGIN)) return given;
+    return grid(best2);
+  }
+  function phraseGrid(ones, avg, B, n) {
+    const nb = ones.length;
+    if (nb < 12) return { off: 0, conf: 0 };
+    const bin = (t2) => clamp3(Math.round(t2 / STEP), 0, n);
+    const bE = [], bB = [];
+    for (let k = 0; k < nb; k++) {
+      const a = bin(ones[k]), b = Math.max(a + 1, bin(ones[k + 1] ?? ones[k] + (ones[k] - ones[k - 1])));
+      bE.push(avg(a, b));
+      let s = 0;
+      for (let i = a; i < Math.min(b, n); i++) s += B[i];
+      bB.push(s / Math.max(1, Math.min(b, n) - a));
+    }
+    const bs = Math.max(1, ...bB) - Math.min(...bB) || 1;
+    const sc = [0, 0, 0, 0], cnt = [0, 0, 0, 0];
+    for (let k = 2; k < nb - 2; k++) {
+      const dE = Math.abs(bE[k] + bE[k + 1] - bE[k - 1] - bE[k - 2]) / 2, dB = Math.abs(bB[k] + bB[k + 1] - bB[k - 1] - bB[k - 2]) / 2 / bs;
+      sc[k % 4] += dE + 0.5 * dB;
+      cnt[k % 4]++;
+    }
+    const m = sc.map((v, i) => v / Math.max(1, cnt[i])), all2 = (m[0] + m[1] + m[2] + m[3]) / 4;
+    const off = m.indexOf(Math.max(...m));
+    return { off, conf: all2 ? m[off] / all2 : 0 };
+  }
+  var STEP, clamp3, pct, mapCache, BAR_MARGIN, at;
   var init_songmap = __esm({
     "src/songmap.js"() {
       STEP = 0.25;
@@ -13468,6 +13652,7 @@
         return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0;
       };
       mapCache = /* @__PURE__ */ new WeakMap();
+      BAR_MARGIN = 0.4;
       at = (arr, sec) => {
         const f = sec / STEP, i = Math.floor(f);
         if (i < 0) return arr[0] || 0;
@@ -13716,7 +13901,7 @@
     if (beats.length < 8 || !M.energy.length) return null;
     const gaps = beats.slice(1, 200).map((b, i) => b.t - beats[i].t).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
     const beat2 = gaps.length ? gaps[gaps.length >> 1] : 60 / (d.bpm || 120), bar = beat2 * 4;
-    const bars = d.bars?.length >= 4 ? d.bars.map((b) => b.t) : beats.filter((_, i) => i % 4 === 0).map((b) => b.t);
+    const bars = M.ones;
     const end = Math.max(M.energy.length * STEP, beats[beats.length - 1].t + beat2);
     const mean = (a, b) => {
       let s = 0, n2 = 0;
@@ -15110,7 +15295,39 @@
         ["ska", /ska punk|two-?tone/],
         ["boombap", /old school (?:hip[- ]?hop|rap)|east coast rap|golden age hip[- ]?hop/],
         ["gospel", /christian & gospel|contemporary gospel|traditional gospel|southern gospel|black gospel/],
-        ["acoustic", /singer\/songwriter/]
+        ["acoustic", /singer\/songwriter/],
+        // Apple-Genres in der Sprache des Landes: Mirage fragt iTunes zuerst im eigenen Land (Testlabor: 1800 Songs aus
+        // 30 Ländern – „Klassik“, „Elektronisch“, „ロック“, „流行樂“ … blieben vorher ohne Treffer und wurden Pop)
+        ["classical", /klassik|klassiek|cl[aá]sica|classica|classique|crossover classique|klassische crossover|klassieke crossover|クラシック/],
+        ["rave", /elektronisch|elektronik|electr[oó]nica|elettronica|[ée]lectronique|エレクトロニック|電子音樂|电子/],
+        ["cinematic", /bandas? sonoras?|colonne sonore|filmmusik|bandes? originales?|サウンドトラック|原聲帶|原声/],
+        ["chill", /strumentale|instrumentale?|instrumentaal|インストゥルメンタル|m[uú]sica tranquila|musique d'ambiance|entspannung/],
+        ["newage", /ニューエイジ|新世紀/],
+        ["jrock", /ロック|オルタナティブ|ヴィジュアル系/],
+        ["jpop", /ポップ|歌謡曲|j-?pop/],
+        ["anime", /アニメ/],
+        ["enka", /演歌/],
+        ["jhiphop", /ヒップホップ/],
+        ["mandopop", /華語流行|华语流行|台灣流行|流行樂|流行乐|國語流行/],
+        ["chinesehiphop", /嘻哈|饒舌|说唱/],
+        ["rock", /華語搖滾|獨立搖滾|民謠搖滾|搖滾|摇滚/, -2],
+        ["alternative", /alternativ[ao]|alternatief/],
+        ["afro", /afro[- ]?pop|m[uú]sica africana|musique africaine|afrikanisch|\bafrican\b|\bafrica\b/],
+        ["afrobeat", /afro-beat/],
+        ["kids", /children['’]s music|enfants|bambini|kinderen/],
+        ["indiefolk", /alternative folk|folk alternativo/],
+        ["edm", /fitness|workout/],
+        ["classicrock", /british invasion/],
+        ["vocaljazz", /^vocal$/],
+        ["zouk", /antilles|antillais/],
+        // FMA-Genres (freie Musik): Avantgarde, Klangcollage, Improvisation, Big Beat, Skweee
+        ["experimental", /audio collage|avant-garde|unclassifiable/],
+        ["freejazz", /^improv$/],
+        ["breakbeat", /bigbeat/],
+        ["electro", /skweee/],
+        ["rai", /north african/],
+        ["kids", /kid-friendly/],
+        ["progrock", /^progressive$/]
       ];
       SPECIFIC = [
         // zuerst, was alles andere schlägt: Weihnachtslieder bleiben Weihnachtslieder, egal welches Genre
@@ -15201,7 +15418,7 @@
         ["bass", /hip-?hop|rap|trap|urbano|reggaeton|dancehall|afro|grime|drill/],
         ["rock", /rock|alternative|metal|punk|grunge|hardcore|emo|indie(?! ?pop)/],
         ["chill", /soul|singer|songwriter|jazz|classical|ambient|soundtrack|folk|acoustic|new age|easy listening|lo-?fi|blues|country|piano|instrumental/],
-        ["pop", /pop|schlager|disco|funk|latin|world|reggae/]
+        ["pop", /pop|schlager|disco|funk|latin|world|weltweit|mundo|monde|wereld|reggae/]
       ];
       clamp6 = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
       APPLE_ONLY = { hardcore: "gabber" };
@@ -15958,8 +16175,9 @@
               const per = Math.max(0.2, (d.beats[bi + 1]?.t ?? d.beats[bi].t + 60 / (info2.bpm || 120)) - d.beats[bi].t);
               beatPhase = clamp(since / per, 0, 1);
               beatIdx = bi;
-              const ba = d.bars?.length ? seek(d.bars, sec, "t") : -1;
-              const barStart = ba >= 0 ? seek(d.beats, d.bars[ba].t + 0.05, "t") : bi - bi % 4;
+              const bars = d.segs?.length ? songMap(d).bars : d.bars || [];
+              const ba = bars.length ? seek(bars, sec, "t") : -1;
+              const barStart = ba >= 0 ? seek(d.beats, bars[ba].t + 0.05, "t") : bi - bi % 4;
               inBar = ((bi - barStart) % 4 + 4) % 4;
               const half = info2.bpm > 150;
               const strength = P.accent[half ? inBar & 2 : inBar] ?? 0.6;
@@ -16226,17 +16444,22 @@
           if (k < 4e-3) continue;
           const c2 = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];
           const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);
-          const g = ctx3.createRadialGradient(x, y, 0, x, y, len);
-          g.addColorStop(0, rgba(c2, k * 1.6));
-          g.addColorStop(0.4, rgba(c2, k * 0.5));
-          g.addColorStop(1, rgba(c2, 0));
-          ctx3.fillStyle = g;
-          ctx3.beginPath();
-          ctx3.moveTo(x, y);
-          ctx3.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);
-          ctx3.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);
-          ctx3.closePath();
-          ctx3.fill();
+          const cone = (w, al, col) => {
+            const g = ctx3.createRadialGradient(x, y, 0, x, y, len);
+            g.addColorStop(0, rgba(col, k * 1.6 * al));
+            g.addColorStop(0.4, rgba(col, k * 0.5 * al));
+            g.addColorStop(1, rgba(col, 0));
+            ctx3.fillStyle = g;
+            ctx3.beginPath();
+            ctx3.moveTo(x, y);
+            ctx3.lineTo(x + Math.cos(a - w) * len, y + Math.sin(a - w) * len);
+            ctx3.lineTo(x + Math.cos(a + w) * len, y + Math.sin(a + w) * len);
+            ctx3.closePath();
+            ctx3.fill();
+          };
+          if ((st.quality ?? 2) >= 2) cone(wd * 2.2, 0.28, c2);
+          cone(wd, 1, c2);
+          cone(wd * 0.3, 0.55, mixW(c2, 0.5));
           const r = (8 + k * 70) * dpr;
           ctx3.globalAlpha = clamp7(k * 5, 0, 1);
           ctx3.drawImage(glowSprite(c2.map((q2) => q2 | 0)), x - r, y - r, r * 2, r * 2);
@@ -16645,6 +16868,139 @@
     }
   });
 
+  // src/crowd.js
+  function createCrowdMind() {
+    let x = 0;
+    function mood(px, dt, hype) {
+      const target = clamp8((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);
+      x += (target - x) * (1 - Math.exp(-dt * (target > x ? 3 : 0.8)));
+      if (px.dropHit) x = Math.max(x, 0.9);
+      return x;
+    }
+    return { mood, get x() {
+      return x;
+    } };
+  }
+  function dance(px, X, seated) {
+    const base = seated ? "sway" : MOVES[px.key] || "clap";
+    const kind = px.kind || "";
+    let style = base, jump = JUMP[base] ?? 0, upAt = 0.55, clap = 0;
+    if (CALM2.has(kind) || kind === "bridge" && X < 0.55) {
+      style = SOFT[base] || "sway";
+      jump = 0;
+      upAt = 0.8;
+    } else if (kind === "verse") {
+      style = VERSE[base] || base;
+      jump = base === "jump" ? 0.35 : 0;
+      upAt = 0.68;
+    } else if (kind === "pre") {
+      clap = base === "sway" || base === "nod" || base === "bang" ? 0 : clamp8(0.4 + (px.build || 0), 0, 1);
+      if (clap) style = "clap";
+      jump = 0;
+      upAt = 0.5;
+    } else if (kind === "chorus") upAt = 0.5;
+    else if (kind === "drop") {
+      style = base === "sway" || base === "nod" ? base : "jump";
+      jump = base === "sway" || base === "nod" ? 0 : 1;
+      upAt = 0.45;
+    }
+    const crouch = clamp8(Math.max(px.build || 0, px.tension || 0) + (px.blackout ? 0.4 : 0), 0, 1);
+    return { style, base, jump, upAt, clap, crouch };
+  }
+  function jumps(D, me2, h, px) {
+    if (!D.jump) return false;
+    return me2 > 0.72 && h < D.jump * (0.45 + (me2 - 0.72) * 2) || px.drop > 0.6 && me2 > 0.6 && h < D.jump;
+  }
+  function armsUp(D, me2, up) {
+    if (D.clap > 0.3 && up < D.clap) return 0.75;
+    if (me2 > D.upAt && up < me2 + 0.1 && D.style !== "sway" && D.style !== "nod") return 1;
+    return D.style === "clap" && me2 > 0.3 ? 0.75 : 0;
+  }
+  var clamp8, MOVES, SOFT, VERSE, JUMP, CALM2, DANCES;
+  var init_crowd = __esm({
+    "src/crowd.js"() {
+      init_styles();
+      clamp8 = (v, a, b) => Math.min(b, Math.max(a, v));
+      MOVES = {
+        rave: "jump",
+        trance: "wave",
+        hardstyle: "jump",
+        dnb: "jump",
+        techno: "pump",
+        house: "bounce",
+        rock: "bang",
+        metal: "bang",
+        punk: "jump",
+        bass: "nod",
+        pop: "clap",
+        kpop: "clap",
+        disco: "clap",
+        country: "clap",
+        latin: "bounce",
+        afro: "bounce",
+        reggae: "skank",
+        chill: "sway",
+        jazz: "sway",
+        classical: "sway",
+        edm: "jump",
+        deephouse: "bounce",
+        techhouse: "pump",
+        psytrance: "jump",
+        dubstep: "bang",
+        garage: "bounce",
+        eurodance: "jump",
+        melodictechno: "pump",
+        hardtechno: "pump",
+        futurebass: "jump",
+        electroswing: "bounce",
+        breakbeat: "bounce",
+        boombap: "nod",
+        dancehall: "bounce",
+        cloudrap: "sway",
+        hardrock: "bang",
+        postrock: "sway",
+        ska: "skank",
+        emo: "jump",
+        jpop: "clap",
+        musical: "clap",
+        christmas: "sway",
+        celtic: "clap",
+        balkan: "jump",
+        amapiano: "bounce",
+        lofi: "sway",
+        neoclassical: "sway",
+        acoustic: "sway",
+        synthwave: "nod",
+        hyperpop: "jump",
+        trap: "bounce",
+        drill: "nod",
+        phonk: "pump",
+        rnb: "sway",
+        soul: "clap",
+        indie: "bounce",
+        alternative: "bang",
+        blues: "sway",
+        schlager: "clap",
+        ballad: "sway",
+        gospel: "clap",
+        reggaeton: "bounce",
+        salsa: "bounce",
+        brazil: "bounce",
+        flamenco: "clap",
+        bollywood: "bounce",
+        arabic: "clap",
+        ambient: "sway",
+        cinematic: "sway"
+      };
+      kin(MOVES, 2);
+      SOFT = { jump: "bounce", pump: "nod", bounce: "bounce", bang: "nod", clap: "sway", skank: "skank", nod: "nod", wave: "sway", sway: "sway" };
+      VERSE = { jump: "bounce", pump: "pump", bounce: "bounce", bang: "bang", clap: "clap", skank: "skank", nod: "nod", wave: "wave", sway: "sway" };
+      JUMP = { jump: 1, pump: 1, bounce: 1, bang: 0.45, clap: 0.45, skank: 0.25, wave: 0.6, nod: 0, sway: 0 };
+      CALM2 = /* @__PURE__ */ new Set(["intro", "outro", "break"]);
+      DANCES = Object.keys(JUMP);
+    }
+  });
+
   // src/venue.js
   function createVenue(makeCanvas) {
     let vw = 0, vh = 0;
@@ -16676,7 +17032,7 @@
     }
     function drawSpot(kind, k, ctx3, pal, px, rgba4, cx, cy, R, dpr, dt, st, v) {
       const t2 = px.mt ?? st.t, far = Math.hypot(vw, vh) * 1.1;
-      const beat2 = px.accent, vis = k * clamp8(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
+      const beat2 = px.accent, vis = k * clamp9(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
       if (vis < 0.01) return;
       const kickL = Math.max(beat2, px.kickEnv), snareL = Math.max(beat2 * 0.8, px.snareEnv), hatL = Math.max(beat2 * 0.6, px.hatEnv);
       const spread = px.spread ?? 1;
@@ -16751,7 +17107,7 @@
             if (face <= 0.05) return;
             const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;
             const tw = 0.5 + 0.5 * Math.sin(t2 * 4.5 + d.tw);
-            ctx3.globalAlpha = clamp8(face * (0.22 + Math.max(beat2 * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
+            ctx3.globalAlpha = clamp9(face * (0.22 + Math.max(beat2 * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);
             const r = (12 + d.s * 13 + beat2 * 16) * dpr;
             ctx3.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);
           });
@@ -16915,7 +17271,7 @@
         ctx3.globalCompositeOperation = "lighter";
         for (const [x, c2] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {
           const r = (60 + beat2 * 70) * dpr;
-          ctx3.globalAlpha = clamp8(0.35 + beat2 * 0.6, 0, 1);
+          ctx3.globalAlpha = clamp9(0.35 + beat2 * 0.6, 0, 1);
           ctx3.drawImage(glowSprite(c2), x - r, vh * 0.3 - r, r * 2, r * 2);
         }
         ctx3.globalAlpha = 1;
@@ -16923,7 +17279,7 @@
         stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));
         for (const s1 of stands) {
           const tw = 0.5 + 0.5 * Math.sin(t2 * 2 + s1.ph);
-          ctx3.globalAlpha = clamp8((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);
+          ctx3.globalAlpha = clamp9((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);
           const r = 5 * dpr;
           ctx3.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);
         }
@@ -16956,7 +17312,7 @@
           ctx3.lineTo(x, y);
           ctx3.stroke();
           const r = (22 + beat2 * 40) * dpr;
-          ctx3.globalAlpha = clamp8(0.35 + beat2 * 0.65, 0, 1);
+          ctx3.globalAlpha = clamp9(0.35 + beat2 * 0.65, 0, 1);
           ctx3.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);
         }
         ctx3.globalAlpha = 1;
@@ -17003,12 +17359,12 @@
           const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t2 * 0.7 + w.ph);
           if (tw < 0.25) continue;
           const r = 3.2 * dpr;
-          ctx3.globalAlpha = clamp8(tw * (0.35 + beat2 * 0.25), 0, 1);
+          ctx3.globalAlpha = clamp9(tw * (0.35 + beat2 * 0.25), 0, 1);
           ctx3.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);
         }
         for (let k = 0; k <= 18; k++) {
           const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));
-          ctx3.globalAlpha = clamp8((0.28 + beat2 * 0.3) * (0.6 + 0.4 * Math.sin(t2 * 1.4 + k * 2.1)), 0, 1);
+          ctx3.globalAlpha = clamp9((0.28 + beat2 * 0.3) * (0.6 + 0.4 * Math.sin(t2 * 1.4 + k * 2.1)), 0, 1);
           const r = (8 + beat2 * 5) * dpr;
           ctx3.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);
         }
@@ -17082,7 +17438,7 @@
         }
         for (let k = 0; k < 9; k++) {
           const r = 4 * dpr;
-          ctx3.globalAlpha = clamp8(0.25 + 0.2 * Math.sin(t2 * 1.2 + k), 0, 1);
+          ctx3.globalAlpha = clamp9(0.25 + 0.2 * Math.sin(t2 * 1.2 + k), 0, 1);
           ctx3.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);
         }
         ctx3.globalAlpha = 1;
@@ -17114,7 +17470,7 @@
         ctx3.globalCompositeOperation = "lighter";
         for (let k = 0; k <= 16; k++) {
           const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));
-          ctx3.globalAlpha = clamp8((0.25 + beat2 * 0.3) * (0.6 + 0.4 * Math.sin(t2 * 1.3 + k * 1.9)), 0, 1);
+          ctx3.globalAlpha = clamp9((0.25 + beat2 * 0.3) * (0.6 + 0.4 * Math.sin(t2 * 1.3 + k * 1.9)), 0, 1);
           const r = (7 + beat2 * 4) * dpr;
           ctx3.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);
         }
@@ -17122,19 +17478,19 @@
         const hat = px.hatEnv || 0;
         for (const f of flies) {
           const x = (f.x + Math.sin(t2 * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t2 * f.sp * 0.4 + f.ph) * 0.03) * vh;
-          ctx3.globalAlpha = clamp8((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t2 * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);
+          ctx3.globalAlpha = clamp9((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t2 * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);
           const r = 5 * dpr;
           ctx3.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);
         }
         ctx3.globalAlpha = 1;
       } else if (v.decor === "hall") {
-        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {
-          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;
+        for (const side of [-1, 1]) for (let tier2 = 0; tier2 < 3; tier2++) {
+          const y = vh * (0.3 + tier2 * 0.15), w = vw * (0.14 - tier2 * 0.015), x0 = side < 0 ? 0 : vw - w;
           ctx3.globalCompositeOperation = "source-over";
           ctx3.fillStyle = "rgba(8,6,16,0.8)";
           ctx3.fillRect(x0, y, w, vh * 0.05);
           ctx3.globalCompositeOperation = "lighter";
-          ctx3.globalAlpha = clamp8(0.32 + beat2 * 0.15, 0, 1);
+          ctx3.globalAlpha = clamp9(0.32 + beat2 * 0.15, 0, 1);
           for (let k = 0; k < 6; k++) {
             const r = 5 * dpr;
             ctx3.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);
@@ -17142,13 +17498,13 @@
           ctx3.globalAlpha = 1;
         }
         for (const x of [vw * 0.25, vw * 0.75]) {
-          ctx3.globalAlpha = clamp8(0.5 + px.energy * 0.3, 0, 1);
+          ctx3.globalAlpha = clamp9(0.5 + px.energy * 0.3, 0, 1);
           for (let k = 0; k < 8; k++) {
             const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t2 * 3 + k) * 1.5) * dpr;
             ctx3.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);
           }
           const r = (60 + beat2 * 30) * dpr;
-          ctx3.globalAlpha = clamp8(0.25 + beat2 * 0.2, 0, 1);
+          ctx3.globalAlpha = clamp9(0.25 + beat2 * 0.2, 0, 1);
           ctx3.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);
         }
         ctx3.globalAlpha = 1;
@@ -17177,7 +17533,7 @@
         for (let k = 0; k < n; k++) {
           const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t2 * 1.1 + k) * 4e-3);
           const r = (20 + px.kickEnv * 44) * dpr;
-          ctx3.globalAlpha = clamp8(0.4 + px.kickEnv * 0.6, 0, 1);
+          ctx3.globalAlpha = clamp9(0.4 + px.kickEnv * 0.6, 0, 1);
           ctx3.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);
         }
         ctx3.globalAlpha = 1;
@@ -17185,7 +17541,7 @@
         for (let k = 0; k <= 26; k++) {
           const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));
           const tw = 0.55 + 0.45 * Math.sin(t2 * 1.6 + k * 1.7);
-          ctx3.globalAlpha = clamp8((0.3 + beat2 * 0.35) * tw, 0, 1);
+          ctx3.globalAlpha = clamp9((0.3 + beat2 * 0.35) * tw, 0, 1);
           const r = (9 + beat2 * 6) * dpr;
           ctx3.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);
         }
@@ -17194,7 +17550,7 @@
         stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));
         for (const s1 of stars) {
           const x = ((s1.x - t2 * 4e-3 * s1.z) % 1 + 1) % 1, tw = 0.55 + 0.45 * Math.sin(t2 * (1 + s1.z) + s1.ph);
-          ctx3.globalAlpha = clamp8(tw * s1.z * (0.45 + px.energy * 0.35 + beat2 * 0.2), 0, 1);
+          ctx3.globalAlpha = clamp9(tw * s1.z * (0.45 + px.energy * 0.35 + beat2 * 0.2), 0, 1);
           const r = (1.6 + s1.z * 2.4) * dpr;
           ctx3.drawImage(glowSprite(s1.ph > 5 ? pal[2] : [235, 240, 255]), x * vw - r, s1.y * vh - r, r * 2, r * 2);
         }
@@ -17243,7 +17599,7 @@
         for (const n of neonSigns) {
           const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;
           const flick = Math.sin(t2 * 13 + n.ph) > 0.97 ? 0.3 : 1;
-          const a = clamp8((0.35 + beat2 * 0.5) * flick, 0, 1), c2 = pal[n.c];
+          const a = clamp9((0.35 + beat2 * 0.5) * flick, 0, 1), c2 = pal[n.c];
           ctx3.fillStyle = rgba4(c2, (a * 0.9).toFixed(3));
           ctx3.fillRect(x - 4 * dpr, y, 8 * dpr, h);
           const r = 26 * dpr;
@@ -17270,7 +17626,7 @@
           ctx3.moveTo(x, vh * 0.04);
           ctx3.lineTo(x + sw, y);
           ctx3.stroke();
-          ctx3.globalAlpha = clamp8(0.45 + beat2 * 0.35, 0, 1);
+          ctx3.globalAlpha = clamp9(0.45 + beat2 * 0.35, 0, 1);
           const r = (22 + beat2 * 10) * dpr;
           ctx3.drawImage(glowSprite([255, 180, 95]), x + sw - r, y - r, r * 2, r * 2);
           ctx3.globalAlpha = 1;
@@ -17278,7 +17634,7 @@
         for (let k = 0; k < 24; k++) {
           const tw = 0.5 + 0.5 * Math.sin(t2 * 0.9 + k * 2.3);
           if (tw < 0.4) continue;
-          ctx3.globalAlpha = clamp8(tw * (0.25 + beat2 * 0.2), 0, 1);
+          ctx3.globalAlpha = clamp9(tw * (0.25 + beat2 * 0.2), 0, 1);
           const r = 4 * dpr;
           ctx3.drawImage(glowSprite(k % 4 ? [255, 210, 140] : pal[k % 3]), vw * (0.08 + k * 0.036) - r, vh * 0.79 - r, r * 2, r * 2);
         }
@@ -17304,7 +17660,7 @@
         ctx3.globalCompositeOperation = "lighter";
         for (let k = 0; k <= 20; k++) {
           const f = k / 20, x = vw * f, y = vh * (0.04 + 0.1 * (1 - Math.abs(f - 0.5) * 2));
-          ctx3.globalAlpha = clamp8((0.3 + beat2 * 0.35) * (0.6 + 0.4 * Math.sin(t2 * 1.5 + k * 1.3)), 0, 1);
+          ctx3.globalAlpha = clamp9((0.3 + beat2 * 0.35) * (0.6 + 0.4 * Math.sin(t2 * 1.5 + k * 1.3)), 0, 1);
           const r = (9 + beat2 * 5) * dpr;
           ctx3.drawImage(glowSprite(k % 2 ? [255, 205, 130] : pal[k % 3]), x - r, y - r, r * 2, r * 2);
         }
@@ -17320,12 +17676,12 @@
         stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));
         for (const s1 of stars) {
           if (s1.y > 0.5) continue;
-          ctx3.globalAlpha = clamp8((0.25 + 0.3 * Math.sin(t2 * 1.3 + s1.ph)) * s1.z, 0, 1);
+          ctx3.globalAlpha = clamp9((0.25 + 0.3 * Math.sin(t2 * 1.3 + s1.ph)) * s1.z, 0, 1);
           const r = (1.4 + s1.z * 2) * dpr;
           ctx3.drawImage(glowSprite([255, 240, 220]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);
         }
         const mr = Math.min(vw, vh) * 0.09;
-        ctx3.globalAlpha = clamp8(0.55 + beat2 * 0.25, 0, 1);
+        ctx3.globalAlpha = clamp9(0.55 + beat2 * 0.25, 0, 1);
         ctx3.drawImage(glowSprite([255, 225, 180]), vw * 0.2 - mr * 2.4, vh * 0.2 - mr * 2.4, mr * 4.8, mr * 4.8);
         ctx3.globalAlpha = 1;
         ctx3.globalCompositeOperation = "source-over";
@@ -17357,7 +17713,7 @@
     function confetti(pal, big, few) {
       const pop = (c2) => {
         const m = Math.max(...c2, 1);
-        return c2.map((v) => Math.round(clamp8((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));
+        return c2.map((v) => Math.round(clamp9((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));
       };
       const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];
       for (let k = 0; k < n && fx2.confetti.length < 420; k++) {
@@ -17430,7 +17786,7 @@
         const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);
         for (let k = 0; k < 9; k++) {
           const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);
-          ctx3.globalAlpha = clamp8(life * (0.9 - k * 0.07), 0, 1);
+          ctx3.globalAlpha = clamp9(life * (0.9 - k * 0.07), 0, 1);
           ctx3.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);
         }
         ctx3.globalAlpha = life * 0.5;
@@ -17472,7 +17828,7 @@
           c2.x += (c2.vx + Math.sin(c2.ph) * vh * 0.05) * dt;
           c2.y += c2.vy * dt;
           const flip = Math.abs(Math.cos(c2.ph * 1.3)), w = c2.w * (0.3 + 0.7 * flip), h = c2.h;
-          ctx3.globalAlpha = clamp8(c2.a, 0, 1) * (0.55 + 0.45 * flip);
+          ctx3.globalAlpha = clamp9(c2.a, 0, 1) * (0.55 + 0.45 * flip);
           ctx3.fillStyle = `rgb(${c2.c[0]},${c2.c[1]},${c2.c[2]})`;
           const co = Math.cos(c2.r), si = Math.sin(c2.r);
           ctx3.setTransform(co, si, -si, co, c2.x, c2.y);
@@ -17484,7 +17840,7 @@
         for (const m of fx2.streamers) {
           m.y += m.vy * dt;
           m.ph += dt * 2;
-          ctx3.globalAlpha = clamp8(m.a, 0, 1) * 0.85;
+          ctx3.globalAlpha = clamp9(m.a, 0, 1) * 0.85;
           ctx3.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;
           ctx3.beginPath();
           for (let k = 0; k <= 10; k++) {
@@ -17502,92 +17858,14 @@
         fx2.strobe *= Math.exp(-dt * 28);
       }
     }
-    const MOVES = {
-      rave: "jump",
-      trance: "wave",
-      hardstyle: "jump",
-      dnb: "jump",
-      techno: "pump",
-      house: "bounce",
-      rock: "bang",
-      metal: "bang",
-      punk: "jump",
-      bass: "nod",
-      pop: "clap",
-      kpop: "clap",
-      disco: "clap",
-      country: "clap",
-      latin: "bounce",
-      afro: "bounce",
-      reggae: "skank",
-      chill: "sway",
-      jazz: "sway",
-      classical: "sway",
-      edm: "jump",
-      deephouse: "bounce",
-      techhouse: "pump",
-      psytrance: "jump",
-      dubstep: "bang",
-      garage: "bounce",
-      eurodance: "jump",
-      melodictechno: "pump",
-      hardtechno: "pump",
-      futurebass: "jump",
-      electroswing: "bounce",
-      breakbeat: "bounce",
-      boombap: "nod",
-      dancehall: "bounce",
-      cloudrap: "sway",
-      hardrock: "bang",
-      postrock: "sway",
-      ska: "skank",
-      emo: "jump",
-      jpop: "clap",
-      musical: "clap",
-      christmas: "sway",
-      celtic: "clap",
-      balkan: "jump",
-      amapiano: "bounce",
-      lofi: "sway",
-      neoclassical: "sway",
-      acoustic: "sway",
-      synthwave: "nod",
-      hyperpop: "jump",
-      trap: "bounce",
-      drill: "nod",
-      phonk: "pump",
-      rnb: "sway",
-      soul: "clap",
-      indie: "bounce",
-      alternative: "bang",
-      blues: "sway",
-      schlager: "clap",
-      ballad: "sway",
-      gospel: "clap",
-      reggaeton: "bounce",
-      salsa: "bounce",
-      brazil: "bounce",
-      flamenco: "clap",
-      bollywood: "bounce",
-      arabic: "clap",
-      ambient: "sway",
-      cinematic: "sway"
-    };
-    kin(MOVES, 2);
-    const mood = { x: 0 };
+    const mind = createCrowdMind();
     const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);
     kinSet(SEA, "l");
     const sea = { a: 0 };
     function seaLevel(px, dt, st) {
-      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp8((px.energy - 0.32) * 2.2, 0, 1) : 0;
+      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp9((px.energy - 0.32) * 2.2, 0, 1) : 0;
       sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));
       return sea.a;
-    }
-    function crowdMood(px, dt, hype) {
-      const target = clamp8((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);
-      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));
-      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
-      return mood.x;
     }
     const hash = (a, b) => {
       const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
@@ -17846,12 +18124,12 @@
         crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, pal));
       }
       spriteBudget = 40;
-      const X = crowdMood(px, dt, st.hype), t2 = st.t;
-      const style = v.seated ? "sway" : MOVES[px.key] || "clap";
+      const X = mind.mood(px, dt, st.hype), t2 = st.t;
+      const D = dance(px, X, v.seated), style = D.style;
       const SEAa = seaLevel(px, dt, st);
       const half = st.bpm > 150;
       const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t2 * (st.bpm / 60));
-      const raw = clamp8(px.phase ?? 0, 0, 1);
+      const raw = clamp9(px.phase ?? 0, 0, 1);
       if (crowd.lastPh >= 0) {
         let d = raw - (crowd.lastPh + (dt || 0) * (st.bpm / 60)) % 1;
         d -= Math.round(d);
@@ -17863,7 +18141,7 @@
       const phi = ((raw - crowd.phOff) % 1 + 1) % 1;
       const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;
       const beatPos2 = beatN + phi;
-      const build3 = clamp8(px.build || 0, 0, 1);
+      const build3 = D.crouch;
       if (X > 0.65 && t2 > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t2, t2 + 20 + Math.random() * 10];
       const waveX = crowd.wave >= 0 ? (t2 - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;
       if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;
@@ -17941,7 +18219,7 @@
         const sp = p.spr;
         if (!sp) continue;
         ctx3.globalAlpha = A * ra;
-        const s1 = p.s * u, me2 = clamp8(X + (p.up - 0.5) * 0.3, 0, 1);
+        const s1 = p.s * u, me2 = clamp9(X + (p.up - 0.5) * 0.3, 0, 1);
         const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;
         const inWave = wave > 0.35;
         const bp = beatPos2 - p.lag, bN = Math.floor(bp), ph = bp - bN;
@@ -17949,7 +18227,7 @@
         const down = Math.exp(-ph * 6);
         if (p.cyc !== cycN) {
           p.cyc = cycN;
-          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me2 > 0.72 && hash(p.id, bar) < 0.45 + (me2 - 0.72) * 2 || px.drop > 0.6 && me2 > 0.6;
+          p.jmp = jumps(D, me2, hash(p.id, bar), px);
         }
         let lift = wave * (14 + me2 * 18) * s1;
         if (p.jmp) lift = Math.max(lift, (16 + me2 * 22) * s1 * 4 * cyc * (1 - cyc)) - 3 * s1 * Math.exp(-cyc * 16);
@@ -17979,7 +18257,8 @@
         const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;
         const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
         const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;
-        let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || me2 > 0.55 && p.up < me2 + 0.1 && style !== "sway" && style !== "nod" ? 1 : inSea ? 0.9 : p.gadget && me2 < 0.5 ? 0.8 : style === "clap" && me2 > 0.3 ? 0.75 : 0;
+        const au = armsUp(D, me2, p.up);
+        let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || au === 1 ? 1 : inSea ? 0.9 : p.gadget && me2 < 0.5 ? 0.8 : au;
         if (!v.seated && build3 > 0.2 && me2 > 0.4 && p.up < 0.6) wantUp = Math.max(wantUp, 0.55 * build3);
         p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
         const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
@@ -18000,7 +18279,7 @@
           let dx = hxA - sx, dy = hyA - sy, d = Math.hypot(dx, dy) || 1;
           const dm = (L1 + L2 - 0.5) * s1;
           if (d > dm) [hxA, hyA, dx, dy, d] = [sx + dx / d * dm, sy + dy / d * dm, dx / d * dm, dy / d * dm, dm];
-          const l1 = L1 * s1, l2 = L2 * s1, al = (l1 * l1 - l2 * l2 + d * d) / (2 * d), hh = Math.min(Math.sqrt(Math.max(0, l1 * l1 - al * al)), 9 * s1) * clamp8((sy + 10 * s1 - hyA) / (30 * s1), 0, 1);
+          const l1 = L1 * s1, l2 = L2 * s1, al = (l1 * l1 - l2 * l2 + d * d) / (2 * d), hh = Math.min(Math.sqrt(Math.max(0, l1 * l1 - al * al)), 9 * s1) * clamp9((sy + 10 * s1 - hyA) / (30 * s1), 0, 1);
           let nx = -dy / d, ny = dx / d;
           if (nx * side < 0) [nx, ny] = [-nx, -ny];
           const ex = sx + dx / d * al + nx * hh, ey = sy + dy / d * al + ny * hh;
@@ -18034,7 +18313,7 @@
       ctx3.globalCompositeOperation = "lighter";
       for (const b of fogBanks) {
         const x = ((b.x + t2 * b.sp) % 1.3 - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t2 * 0.3 + b.ph));
-        ctx3.globalAlpha = clamp8((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);
+        ctx3.globalAlpha = clamp9((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);
         ctx3.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);
       }
       ctx3.globalAlpha = 1;
@@ -18069,7 +18348,7 @@
         const [qx, qy] = shapePoint(drones.shape, p.i, drones.pts.length);
         const x = p.sx * vw + (cx + qx * S2 - p.sx * vw) * e, y = p.sy * vh + (cy + qy * S2 - p.sy * vh) * e;
         const c2 = st.pal[p.i % 3], r = (3 + beat2 * 2.5) * st.dpr;
-        ctx3.globalAlpha = clamp8((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t2 * 6 + p.i)), 0, 1);
+        ctx3.globalAlpha = clamp9((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t2 * 6 + p.i)), 0, 1);
         ctx3.drawImage(glowSprite(c2.map((x2) => Math.round(x2 + (255 - x2) * 0.5))), x - r * 2, y - r * 2, r * 4, r * 4);
       }
       ctx3.globalAlpha = 1;
@@ -18119,7 +18398,7 @@
       if (crowdA > 0.01) drawCrowd(ctx3, st.px, st.pal, st.dpr, rgba4, st.dt, st, v, crowdA);
       ctx3.setTransform(1, 0, 0, 1, 0, 0);
       if (vT && vSnap) {
-        const f = clamp8((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);
+        const f = clamp9((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);
         if (f >= 1) vT = 0;
         else {
           ctx3.globalCompositeOperation = "destination-out";
@@ -18135,13 +18414,14 @@
     }
     return { draw, glowSprite };
   }
-  var clamp8;
+  var clamp9;
   var init_venue = __esm({
     "src/venue.js"() {
       init_show();
       init_flashcap();
       init_styles();
-      clamp8 = (v, a, b) => Math.min(b, Math.max(a, v));
+      init_crowd();
+      clamp9 = (v, a, b) => Math.min(b, Math.max(a, v));
     }
   });
 
@@ -18245,11 +18525,11 @@
     const mf = med("f"), sf = spread("f"), ml = pct2(segs.map((s) => s.l), 0.35);
     return segs.map((s, i) => {
       const end = segs[i + 1]?.t ?? s.t + 0.3;
-      const dur = clamp9(end - s.t, 0.02, 2);
+      const dur = clamp10(end - s.t, 0.02, 2);
       const p = s.p.length === 12 ? s.p : null;
       if (!p) return { t: s.t, dur, tonal: 0, noisy: false, strong: 0, power: false, zf: 0, loud: false, p: null };
       const mean = p.reduce((a, v) => a + v, 0) / 12;
-      const tonal = clamp9((1 - mean) * 1.3 - 0.15, 0, 1);
+      const tonal = clamp10((1 - mean) * 1.3 - 0.15, 0, 1);
       const strong = p.filter((v) => v >= 0.5).length;
       const top2 = p.indexOf(Math.max(...p));
       const power = strong <= 4 && p[top2] >= 0.9 && Math.max(p[(top2 + 7) % 12], p[(top2 + 5) % 12]) >= 0.6;
@@ -18261,7 +18541,7 @@
     if (!a || !b) return 0;
     let d = 0;
     for (let i = 0; i < 12; i++) d += Math.abs(a[i] - b[i]);
-    return clamp9(d / 6, 0, 1);
+    return clamp10(d / 6, 0, 1);
   }
   function judge(fs, from2, to, t0) {
     let pianoT = 0, chordT = 0, guitarT = 0, noisyT = 0, tot = 0, n = 0, moves = 0;
@@ -18316,7 +18596,7 @@
         while (y < n && sc[y]) y++;
         if ((y - x) * STEP2 >= WIN) {
           any = true;
-          for (let z = x; z < y; z++) lv[z] = clamp9(0.45 + (sc[z] - 0.55) * 1.2, 0.45, 0.9);
+          for (let z = x; z < y; z++) lv[z] = clamp10(0.45 + (sc[z] - 0.55) * 1.2, 0.45, 0.9);
         }
         x = y;
       }
@@ -18325,13 +18605,13 @@
     }
     return out;
   }
-  var STEP2, WIN, HEARD, clamp9;
+  var STEP2, WIN, HEARD, clamp10;
   var init_instrsound = __esm({
     "src/instrsound.js"() {
       STEP2 = 0.25;
       WIN = 6;
       HEARD = ["piano", "guitar"];
-      clamp9 = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+      clamp10 = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     }
   });
 
@@ -21541,7 +21821,9 @@
       c2.width = c2.height = 64;
       const x = c2.getContext("2d"), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
       g.addColorStop(0, "rgba(255,255,255,1)");
-      g.addColorStop(0.35, "rgba(255,255,255,0.35)");
+      g.addColorStop(0.15, "rgba(255,255,255,0.72)");
+      g.addColorStop(0.35, "rgba(255,255,255,0.33)");
+      g.addColorStop(0.6, "rgba(255,255,255,0.1)");
       g.addColorStop(1, "rgba(255,255,255,0)");
       x.fillStyle = g;
       x.fillRect(0, 0, 64, 64);
@@ -21583,7 +21865,7 @@
           const st = text.indexOf(w.text, pos);
           pos = st + w.text.length;
           if (m.at < pos) {
-            at3 = w.a + (w.b - w.a) * clamp10((m.at - st) / Math.max(1, w.text.length), 0, 1);
+            at3 = w.a + (w.b - w.a) * clamp11((m.at - st) / Math.max(1, w.text.length), 0, 1);
             break;
           }
         }
@@ -21594,7 +21876,7 @@
     function tryFire(item, now, st) {
       const spec = FX[item.m.c];
       const key = spec.fx + (spec.col ? spec.col.join() : "");
-      const gap = GAP[clamp10(st.level | 0, 0, 4)];
+      const gap = GAP[clamp11(st.level | 0, 0, 4)];
       if (now - lastFire < gap) return false;
       if (now - (cool.get(key) || -1e9) < (spec.pri <= 1 ? 25e3 : 3e4)) return false;
       if (fxs.length >= 2) return false;
@@ -21651,7 +21933,7 @@
     function start3(spec, st) {
       const { w, h, cx, cy, R, dpr } = st;
       const pal = st.pal || [[255, 255, 255], [200, 200, 255], [255, 200, 255]];
-      const k = (0.7 + 0.15 * clamp10(st.level, 0, 4)) * 0.55;
+      const k = (0.7 + 0.15 * clamp11(st.level, 0, 4)) * 0.55;
       const S2 = dpr || 1, T2 = 3.4;
       const pickCol = (col) => Array.isArray(col) ? col : col();
       const fall = (kind, n, col, o = {}) => add(Math.round(n * k), () => ({ kind, x: rnd(0, w), y: rnd(-h * 0.3, -10), vx: rnd(-20, 20) * S2, vy: rnd(60, 140) * S2 * (o.sp || 1), rot: rnd(0, 6.3), vr: rnd(-2, 2), s: rnd(6, 13) * S2 * (o.sz || 1), life: 0, max: rnd(T2, T2 + 1.5), col: pickCol(col) }));
@@ -21854,7 +22136,7 @@
         });
       }
       if (!fxs.length && !parts.length) return false;
-      const dt = clamp10(st.dt || 0.016, 0, 0.12), { w, h, cx, cy, dpr } = st, S2 = dpr || 1;
+      const dt = clamp11(st.dt || 0.016, 0, 0.12), { w, h, cx, cy, dpr } = st, S2 = dpr || 1;
       const main = ctx3;
       off ||= document.createElement("canvas");
       if (off.width !== w || off.height !== h) {
@@ -21869,7 +22151,7 @@
       ctx3.save();
       for (const f of fxs) {
         f.t += dt;
-        const p = f.t / f.max, env = clamp10(Math.min(f.t / 0.35, (f.max - f.t) / 0.8), 0, 1);
+        const p = f.t / f.max, env = clamp11(Math.min(f.t / 0.35, (f.max - f.t) / 0.8), 0, 1);
         screen2(ctx3, f, p, env, st, st.pal, S2);
       }
       fxs = fxs.filter((f) => f.t < f.max);
@@ -21895,7 +22177,7 @@
           q2.y += q2.vy * dt;
         }
         q2.rot += (q2.vr || 0) * dt;
-        const a = clamp10(Math.min(q2.life / 0.25, (q2.max - q2.life) / 0.7), 0, 1);
+        const a = clamp11(Math.min(q2.life / 0.25, (q2.max - q2.life) / 0.7), 0, 1);
         if (a > 0) part(ctx3, q2, a, sp, S2);
       }
       parts = parts.filter((q2) => q2.life < q2.max && q2.y < h + 300 && q2.y > -h && q2.x > -w * 0.7 && q2.x < w * 1.7);
@@ -22271,7 +22553,7 @@
             const sp = glow();
             for (let i = 0; i < 40; i++) {
               const x = (Math.sin(i * 91.7 + f.seed * 50) + 1) / 2 * w, y = (Math.sin(i * 47.3 + f.seed * 20) + 1) / 2 * h * 0.6;
-              ctx3.globalAlpha = clamp10(env * (0.3 + 0.4 * Math.sin(t2 * 3 + i)), 0, 1);
+              ctx3.globalAlpha = clamp11(env * (0.3 + 0.4 * Math.sin(t2 * 3 + i)), 0, 1);
               const r = (2 + i % 3) * S2;
               ctx3.drawImage(sp, x - r * 2, y - r * 2, r * 4, r * 4);
             }
@@ -22289,7 +22571,7 @@
           break;
         }
         case "heartbreak": {
-          const s = R * 0.7, split = clamp10((t2 - 0.7) / 1.4, 0, 1), y0 = cy - R * 1.6 + split * split * h * 0.5;
+          const s = R * 0.7, split = clamp11((t2 - 0.7) / 1.4, 0, 1), y0 = cy - R * 1.6 + split * split * h * 0.5;
           for (const sd of [-1, 1]) {
             ctx3.save();
             ctx3.translate(cx + sd * split * R * 0.9, y0);
@@ -22525,13 +22807,13 @@
       return uriNow;
     } };
   }
-  var LEX, clamp10, rnd, rgba2, mixW2, NOSPACE, TOKEN, strip, low, SCRIPTS, FX, GLOW, IDX;
+  var LEX, clamp11, rnd, rgba2, mixW2, NOSPACE, TOKEN, strip, low, SCRIPTS, FX, GLOW, IDX;
   var init_words = __esm({
     "src/words.js"() {
       LEX = {};
-      clamp10 = (v, a, b) => Math.min(b, Math.max(a, v));
+      clamp11 = (v, a, b) => Math.min(b, Math.max(a, v));
       rnd = (a, b) => a + Math.random() * (b - a);
-      rgba2 = (c2, a) => `rgba(${c2[0] | 0},${c2[1] | 0},${c2[2] | 0},${clamp10(a, 0, 1).toFixed(3)})`;
+      rgba2 = (c2, a) => `rgba(${c2[0] | 0},${c2[1] | 0},${c2[2] | 0},${clamp11(a, 0, 1).toFixed(3)})`;
       mixW2 = (c2, f) => c2.map((v) => v + (255 - v) * f);
       NOSPACE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Hangul}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
       TOKEN = /[\p{L}\p{M}\p{N}'’]+/gu;
@@ -24283,8 +24565,8 @@
       };
       const waitAudio = () => {
         tAudio ||= Date.now();
-        const has = audio.uri === nowUri() && audio.data && !audio.data.synthetic;
-        if (fromStart || has || Date.now() - tAudio > 1200) return place();
+        const has2 = audio.uri === nowUri() && audio.data && !audio.data.synthetic;
+        if (fromStart || has2 || Date.now() - tAudio > 1200) return place();
         later(60, waitAudio);
       };
       const place = () => {
@@ -25920,6 +26202,99 @@
     }
   });
 
+  // src/perf.js
+  function applyPreset(name) {
+    const p = PRESETS[name];
+    if (!p) return;
+    Object.assign(cfg, p, { preset: name, presetBase: name });
+    save();
+  }
+  function detectPreset() {
+    if (PRESETS[cfg.preset]) cfg.presetBase = cfg.preset;
+    const hit = Object.entries(PRESETS).find(([, p]) => PRESET_KEYS.every((k) => !!cfg[k] === !!p[k]));
+    cfg.preset = hit ? hit[0] : "custom";
+  }
+  function deviceKey() {
+    let gpu = "";
+    try {
+      const gl = document.createElement("canvas").getContext("webgl");
+      const ext = gl?.getExtension("WEBGL_debug_renderer_info");
+      gpu = String(ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || gl?.getParameter(gl.RENDERER) || "");
+      gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch {
+    }
+    return [gpu, `${screen.width}x${screen.height}`, devicePixelRatio || 1, navigator.hardwareConcurrency || 0].join("|");
+  }
+  function known2(key) {
+    try {
+      const m = JSON.parse(localStorage.getItem(PERF_KEY) || "null");
+      return !!m && m.key === key && m.v === VERSION && Date.now() - m.at < PERF_DAYS * 864e5;
+    } catch {
+      return false;
+    }
+  }
+  function remember4(key, fps2) {
+    try {
+      localStorage.setItem(PERF_KEY, JSON.stringify({ key, v: VERSION, at: Date.now(), fps: Math.round(fps2), preset: cfg.preset }));
+    } catch {
+    }
+  }
+  function measure(onDone, wait = 4e3) {
+    if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
+    measured = true;
+    let key = "", frames = 0, start3 = 0, hiddenSeen = false;
+    const sample = (now) => {
+      if (document.hidden) hiddenSeen = true;
+      if (!start3) start3 = now;
+      frames++;
+      if (now - start3 < 5e3) return requestAnimationFrame(sample);
+      const fps2 = frames * 1e3 / (now - start3);
+      if (hiddenSeen) {
+        measured = false;
+        return document.addEventListener("visibilitychange", () => !document.hidden && measure(onDone), { once: true });
+      }
+      const next = ORDER[ORDER.indexOf(cfg.preset) + 1];
+      if (fps2 >= 45 || !next) return remember4(key, fps2);
+      applyPreset(next);
+      onDone();
+      try {
+        S.showNotification?.(t("perfStepped").replace("{fps}", Math.round(fps2)).replace("{preset}", t("preset_" + next)), false, 6e3);
+      } catch {
+      }
+      if (next === "light") return remember4(key, fps2);
+      measured = false;
+      measure(onDone, 2e3);
+    };
+    setTimeout(() => {
+      key = deviceKey();
+      if (!known2(key)) requestAnimationFrame(sample);
+    }, wait);
+  }
+  var PRESETS, ORDER, PRESET_KEYS, tier, COST, PERF_KEY, PERF_DAYS, measured, syncHidden;
+  var init_perf = __esm({
+    "src/perf.js"() {
+      init_core();
+      init_i18n();
+      init_config();
+      PRESETS = {
+        full: { glass: true, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false },
+        balanced: { glass: false, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false },
+        light: { glass: false, particles: false, grain: false, beat: true, tilt: false, cascade: true, calm: false, lite: true },
+        calm: { glass: false, particles: false, grain: true, beat: false, tilt: false, cascade: false, calm: true, lite: false }
+      };
+      ORDER = ["full", "balanced", "light"];
+      PRESET_KEYS = Object.keys(PRESETS.full);
+      tier = () => PRESETS[cfg.preset] ? cfg.preset : PRESETS[cfg.presetBase] ? cfg.presetBase : "balanced";
+      COST = { full: 3, balanced: 2, light: 1, calm: 1 };
+      PERF_KEY = "mirage:perf";
+      PERF_DAYS = 14;
+      measured = false;
+      syncHidden = () => root.classList.toggle("mirage-hidden", document.hidden);
+      document.addEventListener("visibilitychange", syncHidden);
+      syncHidden();
+    }
+  });
+
   // src/immersive.js
   var imPalette, ICON, MODES, LYR, VIZ, immersive;
   var init_immersive = __esm({
@@ -25956,6 +26331,7 @@
       init_games();
       init_lock();
       init_settings();
+      init_perf();
       imPalette = () => root.classList.contains("mirage-light") ? darkGround(palette()) : palette();
       ICON = {
         prev: '<svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg>',
@@ -26185,7 +26561,7 @@
           document.addEventListener("fullscreenchange", syncFull);
           if (!canAddTo()) q2.addto.hidden = true;
           for (const ev of ["pointermove", "pointerdown", "wheel"]) el3.addEventListener(ev, wake, { passive: true });
-          q2.wrap.addEventListener("transitionend", () => vizRect.r = null);
+          q2.wrap.addEventListener("transitionend", (e) => e.target === q2.wrap && !/^(scale|rotate)$/.test(e.propertyName) && (vizRect.r = null));
           q2.lyrsrc.querySelector("b").textContent = t("lyrPick");
           q2.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
           q2.lyrbad.querySelector("span").textContent = t("lyrWrong");
@@ -26280,10 +26656,7 @@
             depth.tx = x;
             depth.ty = y;
             depth.at = performance.now();
-            q2.cover.style.setProperty("--iry", (x * 18).toFixed(2) + "deg");
-            q2.cover.style.setProperty("--irx", (-y * 14).toFixed(2) + "deg");
-            q2.cover.style.setProperty("--gx", (50 + x * 80).toFixed(1) + "%");
-            q2.cover.style.setProperty("--gy", (50 + y * 80).toFixed(1) + "%");
+            kick();
           });
           addEventListener("resize", () => {
             if (!isOpen()) return;
@@ -26464,7 +26837,21 @@
           const img = new Image();
           img.onload = img.onerror = () => {
             if (hazeSrc !== src) return;
-            back.style.backgroundImage = `url("${src}")`;
+            let url = src, baked = false;
+            if (src.startsWith("data:") && img.naturalWidth) {
+              try {
+                const c2 = document.createElement("canvas");
+                c2.width = c2.height = 256;
+                const x = c2.getContext("2d");
+                x.filter = "blur(3px) saturate(1.4) brightness(0.5)";
+                x.drawImage(img, -14, -14, 284, 284);
+                url = c2.toDataURL("image/jpeg", 0.92);
+                baked = true;
+              } catch {
+              }
+            }
+            back.classList.toggle("is-baked", baked);
+            back.style.backgroundImage = `url("${url}")`;
             requestAnimationFrame(() => {
               back.classList.add("is-on");
               front?.classList.remove("is-on");
@@ -26472,8 +26859,8 @@
           };
           img.src = src;
         }
-        const lightMode = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
-        const sizeKeyNow = () => `${cfg.preset}|${cfg.lite}|${cfg.eco}|${VIZ.has(el3?.dataset.mode)}`;
+        const lightMode = () => !!cfg.lite || tier() === "light" || cfg.eco === "on";
+        const sizeKeyNow = () => `${tier()}|${cfg.lite}|${cfg.eco}|${VIZ.has(el3?.dataset.mode)}`;
         let sizeKey = "";
         function sizeCanvas() {
           if (!q2.canvas) return;
@@ -26482,7 +26869,7 @@
             q2.canvas.width = q2.canvas.height = 0;
             return;
           }
-          const [pixels, cap] = lightMode() ? [12e5, 1] : cfg.preset === "balanced" ? [2e6, 1.25] : [3e6, 1.5];
+          const [pixels, cap] = lightMode() ? [12e5, 1] : tier() === "full" ? [3e6, 1.5] : [2e6, 1.25];
           const budget = Math.sqrt(pixels / Math.max(1, innerWidth * innerHeight));
           const dpr = Math.max(0.5, Math.min(devicePixelRatio || 1, cap, budget));
           sizeKey = sizeKeyNow();
@@ -26520,6 +26907,8 @@
             cfg.imMode = mode;
             save();
             el3.dataset.mode = mode;
+            vizRect.r = null;
+            vizMoveUntil = performance.now() + 1e3;
             el3.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
             el3.querySelectorAll(".m-im-tabs button").forEach((b) => b.tabIndex = b.dataset.mode === mode ? 0 : -1);
             placeIndicator();
@@ -26561,6 +26950,7 @@
           partyFx = false;
           q2.flash.style.opacity = "0";
           q2.wrap.style.translate = "";
+          shakeX = shakeY = 0;
           q2.canvas.style.scale = q2.bg.style.scale = lastKick = "";
           q2.wrap.style.rotate = lastRot = "";
           if (activeEl) activeEl.style.scale = lastBounce = "";
@@ -26804,7 +27194,9 @@
           const glide = LYR.has(el3.dataset.mode) && !cfg.calm && el3.isConnected;
           const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
           el3.classList.toggle("is-nolyr", on);
+          vizRect.r = null;
           if (!glide) return;
+          vizMoveUntil = performance.now() + 850;
           parts.forEach((p, i) => {
             const a = before[i], b = p.getBoundingClientRect();
             const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2);
@@ -27205,13 +27597,16 @@
           ctx3.clearRect(0, 0, vw, vh);
           const dpr = vw / innerWidth;
           if (!vizRect.r || vizRect.n++ % 30 === 0 || now < vizMoveUntil) {
-            vizRect.r = q2.wrap.getBoundingClientRect();
+            const b0 = q2.wrap.getBoundingClientRect(), w0 = q2.wrap.offsetWidth || b0.width, h0 = q2.wrap.offsetHeight || b0.height;
+            const [sx = 0, sy = 0] = (q2.wrap.style.translate || "").split(" ").map(parseFloat);
+            const mx = b0.left + b0.width / 2 - (sx || 0), my = b0.top + b0.height / 2 - (sy || 0);
+            vizRect.r = { left: mx - w0 / 2, top: my - h0 / 2, width: w0, height: h0 };
             const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
             if (q2.canvas.style.transformOrigin !== o) q2.canvas.style.transformOrigin = o;
           }
           const r = vizRect.r;
-          const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
-          const R = r.width / 2 * dpr + 16 * dpr;
+          const cx = (r.left + r.width / 2 + shakeX) * dpr, cy = (r.top + r.height / 2 + shakeY) * dpr;
+          const R = r.width / 2 * pulseS * dpr + 16 * dpr;
           const sec = pos / 1e3;
           const playing2 = PLR.isPlaying();
           let b = 0, havePitch = false, loud = 0.5;
@@ -27220,6 +27615,7 @@
           if (mode === "mix" && V2.style === "line") V2.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing2) : null;
           wfxGeo = px ? { cx, cy, R, dpr, px } : null;
+          if (!px) shakeX = shakeY = 0;
           const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing2) : null;
           const mood = px ? null : party.mood(sec, playing2);
           if (mood) V2.height *= 0.86 + 0.18 * mood.I;
@@ -27300,11 +27696,23 @@
           const rgba4 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
           const maxLen = Math.min(vw, vh) * 0.11 * V2.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V2.height)) : 1);
           const rot = V2.spin ? tt * (px ? 0.12 : 0.06) : 0;
+          vizBloom = Math.max(vizBloom * Math.exp(-dt * 2.2), mood?.dropHit ? 1 : 0);
+          const soft = cfg.noFlash ? 0.4 : 1;
+          const glowK = px ? 1 : clamp(0.7 + 0.4 * (mood?.I ?? 0.75) + 0.5 * (mood?.lift || 0) * soft + 0.35 * (mood?.riser || 0) + 0.7 * vizBloom * soft + 0.35 * b * soft, 0.6, 2.2);
+          const wheel = () => {
+            if (!ctx3.createConicGradient) return rgba4(pal[0], 1);
+            const g = ctx3.createConicGradient(-Math.PI / 2 + rot, cx, cy);
+            const st = mirror ? [0, 1, 2, 1, 0] : [0, 1, 2, 0];
+            st.forEach((k2, i) => g.addColorStop(i / (st.length - 1), rgba4(pal[k2], 1)));
+            return g;
+          };
           ctx3.globalCompositeOperation = "lighter";
           ctx3.lineCap = "round";
           ctx3.lineJoin = "round";
           const glow = ctx3.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-          glow.addColorStop(0, rgba4(pal[0], (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : 1)));
+          const g0 = (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : glowK);
+          glow.addColorStop(0, rgba4(pal[0], g0));
+          glow.addColorStop(0.45, rgba4(pal[0], g0 * 0.4));
           glow.addColorStop(1, "rgba(0,0,0,0)");
           ctx3.fillStyle = glow;
           const gr = R + maxLen * 1.2;
@@ -27316,57 +27724,92 @@
           const slow = px && cfg.partySlowmo && px.fx && px.toDrop > slowFrom && px.toDrop < slowFrom + 0.55;
           if (px) drawParty(ctx3, cx, cy, R, maxLen, N, pal, dpr, slow ? dt * 0.2 : dt, px, tip, ang);
           else if (V2.style === "bottom") {
-            const bw = vw / N, base = vh - 8 * dpr;
+            const bw = vw / N, base = vh - 8 * dpr, w2 = bw * 0.62, rr = Math.min(w2 / 2, 4 * dpr);
             for (let gi = 0; gi < 3; gi++) {
-              ctx3.fillStyle = rgba4(pal[gi], 0.85);
+              const g = ctx3.createLinearGradient(0, base - vh * 0.32 * V2.height, 0, base);
+              g.addColorStop(0, rgba4(mixRGB(pal[gi], WHITE, 0.25), 0.95));
+              g.addColorStop(1, rgba4(pal[gi], 0.35));
+              ctx3.fillStyle = g;
               ctx3.beginPath();
               for (let i = gi; i < N; i += 3) {
                 const h = 6 * dpr + vals[i] * vh * 0.32 * V2.height;
-                ctx3.rect(i * bw + bw * 0.15, base - h, bw * 0.7, h);
+                if (ctx3.roundRect) ctx3.roundRect(i * bw + (bw - w2) / 2, base - h, w2, h, [rr, rr, 0, 0]);
+                else ctx3.rect(i * bw + (bw - w2) / 2, base - h, w2, h);
               }
               ctx3.fill();
             }
           } else if (V2.style === "line") {
-            const mid = cy;
-            for (const [w, col, al] of [[10, pal[1], V2.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
-              if (!al) continue;
-              ctx3.lineWidth = w * dpr;
-              ctx3.strokeStyle = rgba4(col, al);
-              for (const dir of [-1, 1]) {
-                ctx3.beginPath();
-                for (let i = 0; i < N; i++) {
-                  const x = i / (N - 1) * vw, y = mid + dir * vals[i] * maxLen * 1.6;
-                  i ? ctx3.lineTo(x, y) : ctx3.moveTo(x, y);
-                }
-                ctx3.stroke();
+            const mid = cy, amp = maxLen * 1.6, up = new Path2D(), dn = new Path2D();
+            for (const [p, dir] of [[up, -1], [dn, 1]]) {
+              let px0 = 0, py0 = mid + dir * vals[0] * amp;
+              p.moveTo(px0, py0);
+              for (let i = 1; i < N; i++) {
+                const x = i / (N - 1) * vw, y = mid + dir * vals[i] * amp;
+                p.quadraticCurveTo(px0, py0, (px0 + x) / 2, (py0 + y) / 2);
+                [px0, py0] = [x, y];
               }
+              p.lineTo(px0, py0);
             }
+            const edge = (a) => {
+              const g = ctx3.createLinearGradient(0, 0, vw, 0);
+              g.addColorStop(0, rgba4(pal[0], 0));
+              g.addColorStop(0.12, rgba4(pal[0], a));
+              g.addColorStop(0.5, rgba4(pal[1], a));
+              g.addColorStop(0.88, rgba4(pal[2], a));
+              g.addColorStop(1, rgba4(pal[2], 0));
+              return g;
+            };
+            ctx3.fillStyle = edge(0.1 * glowK);
+            for (const p of [up, dn]) {
+              const area = new Path2D(p);
+              area.lineTo(vw, mid);
+              area.lineTo(0, mid);
+              area.closePath();
+              ctx3.fill(area);
+            }
+            if (V2.glow) {
+              ctx3.lineWidth = 9 * dpr;
+              ctx3.strokeStyle = edge(clamp(0.12 * glowK, 0, 0.4));
+              ctx3.stroke(up);
+              ctx3.stroke(dn);
+            }
+            ctx3.lineWidth = 2.2 * dpr;
+            ctx3.strokeStyle = edge(0.95);
+            ctx3.stroke(up);
+            ctx3.stroke(dn);
           } else if (V2.style === "particles") {
             for (let i = 0; i < N; i++) {
               const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
-              const r2 = (1.5 + vals[i] * 4) * dpr;
-              ctx3.fillStyle = rgba4(pal[i % 3], 0.35 + vals[i] * 0.6);
-              ctx3.beginPath();
-              ctx3.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r2, 0, Math.PI * 2);
-              ctx3.fill();
+              const r2 = (5.5 + vals[i] * 11) * dpr * (1 + b * 0.25);
+              ctx3.globalAlpha = clamp(0.3 + vals[i] * 0.7, 0, 1);
+              ctx3.drawImage(vizSprite(pal[i % 3]), cx + Math.cos(a) * e - r2, cy + Math.sin(a) * e - r2, r2 * 2, r2 * 2);
             }
+            ctx3.globalAlpha = 1;
           } else if (V2.style === "tunnel") {
-            if (now - tunnelAt > 40) {
-              tunnelAt = now;
+            if (now - tunnelAt > 200) tunnelAt = now - 45;
+            while (now - tunnelAt >= 45) {
+              tunnelAt += 45;
               const ring = new Float32Array(48);
               for (let k2 = 0; k2 < 48; k2++) ring[k2] = vals[Math.floor(k2 / 48 * N)] || 0;
-              tunnel3d.push({ at: now, v: ring, c: tunnel3d.length % 3 });
+              tunnel3d.push({ at: tunnelAt, v: ring, c: tunnel3d.length % 3 });
             }
             const life = (1400 - b * 500) / clamp(mood?.speed || 1, 0.5, 1.4), far = Math.hypot(vw, vh) * 0.62;
             tunnel3d = tunnel3d.filter((r2) => now - r2.at < life);
             for (const r2 of tunnel3d) {
               const z = (now - r2.at) / life, d = R * 1.05 + (far - R) * z * z;
               ctx3.lineWidth = (1 + z * 5) * dpr;
-              ctx3.strokeStyle = rgba4(pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
+              ctx3.strokeStyle = rgba4(z < 0.15 ? mixRGB(pal[r2.c], WHITE, 0.35) : pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6)) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
+              const pt = (j) => {
+                const a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j % 48] * 0.28 * V2.height);
+                return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr];
+              };
+              let [x0, y0] = pt(0), [x1, y1] = pt(1);
               ctx3.beginPath();
-              for (let k2 = 0; k2 <= 48; k2++) {
-                const j = k2 % 48, a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j] * 0.28 * V2.height);
-                k2 ? ctx3.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx3.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+              ctx3.moveTo((x0 + x1) / 2, (y0 + y1) / 2);
+              for (let k2 = 1; k2 <= 48; k2++) {
+                [x0, y0] = [x1, y1];
+                [x1, y1] = pt(k2 + 1);
+                ctx3.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
               }
               ctx3.closePath();
               ctx3.stroke();
@@ -27375,98 +27818,147 @@
             for (let i = 0; i < N; i++) {
               const arm = i % 3, f = i / N, a = arm * (Math.PI * 2 / 3) + f * Math.PI * 3 + tt * 0.18;
               const rr = R * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
-              const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r2 = (1.2 + vals[i] * 3.2 + (1 - f) * 1.2) * dpr;
-              ctx3.fillStyle = rgba4(pal[arm], ((0.25 + vals[i] * 0.7) * (0.6 + 0.4 * Math.sin(tt * 3 + i))).toFixed(3));
-              ctx3.beginPath();
-              ctx3.arc(x, y, r2, 0, Math.PI * 2);
-              ctx3.fill();
+              const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r2 = (4.5 + vals[i] * 9 + (1 - f) * 3.5) * dpr;
+              ctx3.globalAlpha = clamp((0.25 + vals[i] * 0.75) * (0.6 + 0.4 * Math.sin(tt * 3 + i)), 0, 1);
+              ctx3.drawImage(vizSprite(pal[arm]), x - r2, y - r2, r2 * 2, r2 * 2);
             }
+            ctx3.globalAlpha = 1;
           } else if (V2.style === "mountains") {
+            const sm = (j) => (vals[(j + N) % N] + vals[(j + 1) % N] + vals[(j + N - 1) % N]) / 3;
+            const at3 = (u) => {
+              const f = (u % N + N) % N, i0 = Math.floor(f), w = f - i0, s = w * w * (3 - 2 * w);
+              return sm(i0) + (sm(i0 + 1) - sm(i0)) * s;
+            };
             for (let k2 = 2; k2 >= 0; k2--) {
               const base = vh, hMax = vh * (0.22 + k2 * 0.07) * V2.height, shift = tt * (8 + k2 * 6);
-              ctx3.beginPath();
-              ctx3.moveTo(0, base);
-              const steps = 64;
+              const steps = 64, ridge = new Path2D();
+              let px0 = 0, py0 = 0;
               for (let s2 = 0; s2 <= steps; s2++) {
-                const x = s2 / steps * vw, j = Math.floor((s2 / steps * N + shift / 12 + k2 * 17) % N);
-                const v = (vals[j] + vals[(j + 1) % N] + vals[(j + N - 1) % N]) / 3;
-                ctx3.lineTo(x, base - (0.12 + v) * hMax * (0.7 + 0.3 * Math.sin(s2 * 0.5 + k2)));
+                const x = s2 / steps * vw, v = at3(s2 / steps * N + shift / 12 + k2 * 17);
+                const y = base - (0.12 + v) * hMax * (0.7 + 0.3 * Math.sin(s2 * 0.5 + k2));
+                if (!s2) ridge.moveTo(x, y);
+                else ridge.quadraticCurveTo(px0, py0, (px0 + x) / 2, (py0 + y) / 2);
+                [px0, py0] = [x, y];
               }
-              ctx3.lineTo(vw, base);
-              ctx3.closePath();
+              ridge.lineTo(px0, py0);
+              const body = new Path2D(ridge);
+              body.lineTo(vw, base);
+              body.lineTo(0, base);
+              body.closePath();
               const g = ctx3.createLinearGradient(0, base - hMax * 1.1, 0, base);
               g.addColorStop(0, rgba4(pal[k2], (0.5 - k2 * 0.12).toFixed(2)));
               g.addColorStop(1, rgba4(pal[k2], 0.04));
               ctx3.fillStyle = g;
-              ctx3.fill();
+              ctx3.fill(body);
+              ctx3.lineWidth = (1.6 - k2 * 0.3) * dpr;
+              ctx3.strokeStyle = rgba4(mixRGB(pal[k2], WHITE, 0.3), ((0.55 - k2 * 0.15) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
+              ctx3.stroke(ridge);
             }
           } else if (V2.style === "scope") {
-            for (const [w, al] of V2.glow ? [[9, 0.12], [2.5, 0.95]] : [[2.5, 0.95]]) {
-              ctx3.lineWidth = w * dpr;
-              for (let k2 = 0; k2 < 3; k2++) {
-                ctx3.strokeStyle = rgba4(pal[k2], (al * (k2 ? 0.65 : 1)).toFixed(3));
-                ctx3.beginPath();
-                for (let s2 = 0; s2 <= 180; s2++) {
-                  const a = s2 / 180 * Math.PI * 2;
-                  let off = 0;
-                  for (let h = 1; h <= 5; h++) off += vals[Math.floor(h / 6 * N)] * Math.sin(a * (h * 3 + k2) + tt * h * (k2 ? -1 : 1));
-                  const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
-                  const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
-                  s2 ? ctx3.lineTo(x, y) : ctx3.moveTo(x, y);
-                }
-                ctx3.stroke();
+            const paths = [0, 1, 2].map((k2) => {
+              const p = new Path2D();
+              for (let s2 = 0; s2 <= 180; s2++) {
+                const a = s2 / 180 * Math.PI * 2;
+                let off = 0;
+                for (let h = 1; h <= 5; h++) off += vals[Math.floor(h / 6 * N)] * Math.sin(a * (h * 3 + k2) + tt * h * (k2 ? -1 : 1));
+                const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
+                const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+                s2 ? p.lineTo(x, y) : p.moveTo(x, y);
               }
+              p.closePath();
+              return p;
+            });
+            for (const [w, al] of V2.glow ? [[9, clamp(0.12 * glowK, 0, 0.4)], [2.4, 0.95], [0.9, 0.5]] : [[2.4, 0.95]]) {
+              ctx3.lineWidth = w * dpr;
+              paths.forEach((p, k2) => {
+                ctx3.strokeStyle = w < 1 ? `rgba(255,255,255,${(al * (k2 ? 0.5 : 1)).toFixed(3)})` : rgba4(pal[k2], (al * (k2 ? 0.65 : 1)).toFixed(3));
+                ctx3.stroke(p);
+              });
             }
           } else if (V2.style === "shatter") {
             drawShatter(ctx3, cx, cy, maxLen, dt, b, dpr, tt);
           } else if (V2.style === "wave") {
-            ctx3.beginPath();
+            const p = new Path2D();
             for (let i = 0; i <= N; i++) {
               const j = i % N, nx = (i + 1) % N;
               const x0 = cx + Math.cos(ang(j)) * tip(j), y0 = cy + Math.sin(ang(j)) * tip(j);
               const x1 = cx + Math.cos(ang(nx)) * tip(nx), y1 = cy + Math.sin(ang(nx)) * tip(nx);
               const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
-              if (i === 0) ctx3.moveTo(mx, my);
-              else ctx3.quadraticCurveTo(x0, y0, mx, my);
+              if (i === 0) p.moveTo(mx, my);
+              else p.quadraticCurveTo(x0, y0, mx, my);
             }
-            ctx3.closePath();
-            ctx3.fillStyle = rgba4(pal[0], 0.16);
-            ctx3.fill();
+            p.closePath();
+            const fill = ctx3.createRadialGradient(cx, cy, R * 0.9, cx, cy, R + maxLen * 1.1);
+            fill.addColorStop(0, rgba4(pal[0], 0.3));
+            fill.addColorStop(1, rgba4(pal[1], 0.04));
+            ctx3.fillStyle = fill;
+            ctx3.fill(p);
+            const ring = wheel();
             if (V2.glow) {
               ctx3.lineWidth = 10 * dpr;
-              ctx3.strokeStyle = rgba4(pal[1], 0.14);
-              ctx3.stroke();
+              ctx3.globalAlpha = clamp(0.14 * glowK, 0, 0.4);
+              ctx3.strokeStyle = ring;
+              ctx3.stroke(p);
             }
+            ctx3.globalAlpha = 0.95;
             ctx3.lineWidth = 2.5 * dpr;
-            ctx3.strokeStyle = rgba4(pal[2], 0.95);
-            ctx3.stroke();
+            ctx3.strokeStyle = ring;
+            ctx3.stroke(p);
+            ctx3.globalAlpha = 0.4;
+            ctx3.lineWidth = 0.9 * dpr;
+            ctx3.strokeStyle = "#fff";
+            ctx3.stroke(p);
+            ctx3.globalAlpha = 1;
           } else {
-            const groups = [[], [], []];
-            for (let i = 0; i < N; i++) groups[i % 3 === 0 ? 2 : i % 2 ? 0 : 1].push(i);
-            const passes = V2.style === "bars" && V2.glow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
-            for (const [w, al] of passes) {
-              ctx3.lineWidth = w * dpr;
-              groups.forEach((idx, gi) => {
-                ctx3.beginPath();
-                for (const i of idx) {
-                  const c2 = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-                  if (V2.style === "dots") {
-                    ctx3.moveTo(cx + c2 * e + 3 * dpr, cy + sn * e);
-                    ctx3.arc(cx + c2 * e, cy + sn * e, 3 * dpr, 0, Math.PI * 2);
-                  } else {
-                    ctx3.moveTo(cx + c2 * R, cy + sn * R);
-                    ctx3.lineTo(cx + c2 * e, cy + sn * e);
-                  }
+            const bw = clamp(Math.PI * 2 * R / N * 0.5, 1.6 * dpr, 4.5 * dpr);
+            const ring = wheel(), body = new Path2D(), tips = new Path2D();
+            for (let i = 0; i < N; i++) {
+              const c2 = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
+              if (V2.style === "dots") {
+                const r2 = (2.2 + vals[i] * 2.6) * dpr;
+                body.moveTo(cx + c2 * e + r2, cy + sn * e);
+                body.arc(cx + c2 * e, cy + sn * e, r2, 0, Math.PI * 2);
+              } else {
+                body.moveTo(cx + c2 * R, cy + sn * R);
+                body.lineTo(cx + c2 * e, cy + sn * e);
+                if (vals[i] > 0.18) {
+                  const m = e - (e - R) * 0.3;
+                  tips.moveTo(cx + c2 * m, cy + sn * m);
+                  tips.lineTo(cx + c2 * e, cy + sn * e);
                 }
-                if (V2.style === "dots") {
-                  ctx3.fillStyle = rgba4(pal[gi], al);
-                  ctx3.fill();
-                } else {
-                  ctx3.strokeStyle = rgba4(pal[gi], al);
-                  ctx3.stroke();
-                }
-              });
+              }
             }
+            if (V2.style === "dots") {
+              if (V2.glow) {
+                ctx3.globalAlpha = clamp(0.16 * glowK, 0, 0.45);
+                ctx3.lineWidth = 7 * dpr;
+                ctx3.strokeStyle = ring;
+                ctx3.stroke(body);
+              }
+              ctx3.globalAlpha = 0.95;
+              ctx3.fillStyle = ring;
+              ctx3.fill(body);
+            } else {
+              ctx3.strokeStyle = ring;
+              if (V2.glow) {
+                ctx3.globalAlpha = clamp(0.15 * glowK, 0, 0.45);
+                ctx3.lineWidth = bw * 3.2;
+                ctx3.stroke(body);
+              }
+              const tube = ctx3.createRadialGradient(cx, cy, R, cx, cy, R + 4 * dpr + maxLen);
+              tube.addColorStop(0, rgba4(pal[0], 0.45));
+              tube.addColorStop(0.45, rgba4(pal[1], 0.9));
+              tube.addColorStop(1, rgba4(mixRGB(pal[2], WHITE, 0.3), 1));
+              ctx3.globalAlpha = 0.95;
+              ctx3.lineWidth = bw;
+              ctx3.strokeStyle = tube;
+              ctx3.stroke(body);
+              ctx3.globalAlpha = 0.3 + 0.2 * b;
+              ctx3.lineWidth = bw * 0.42;
+              ctx3.strokeStyle = "#fff";
+              ctx3.stroke(tips);
+            }
+            ctx3.globalAlpha = 1;
           }
           rings = rings.filter((g) => g.a > 0.02);
           for (const g of rings) {
@@ -27480,7 +27972,7 @@
           }
           ctx3.globalCompositeOperation = "source-over";
           const want = 1 + b * V2.pulse;
-          pulseS = want > pulseS ? want : pulseS + (want - pulseS) * (1 - Math.exp(-dt * 9));
+          pulseS += (want - pulseS) * (1 - Math.exp(-dt * (want > pulseS ? 40 : 9)));
           const pulse = pulseS.toFixed(4);
           if (pulse !== lastPulse) q2.wrap.style.scale = lastPulse = pulse;
           if (px) {
@@ -27492,7 +27984,10 @@
               const c2 = pal[px.flashCol];
               q2.flash.style.background = `radial-gradient(70% 60% at 50% 45%, rgba(${c2[0]},${c2[1]},${c2[2]},0.9), rgba(${c2[0]},${c2[1]},${c2[2]},0) 72%)`;
             }
-            const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
+            const ts = now / 1e3;
+            shakeX = px.shake > 0.3 ? Math.sin(ts * 31) * px.shake : 0;
+            shakeY = px.shake > 0.3 ? Math.sin(ts * 23 + 1.3) * px.shake * 0.6 : 0;
+            const sh = shakeX || shakeY ? `${shakeX.toFixed(1)}px ${shakeY.toFixed(1)}px` : "";
             if (q2.wrap.style.translate !== sh) q2.wrap.style.translate = sh;
             const move = px.fx && cfg.partyZoom && px.level >= 3;
             const bo = move && activeEl ? (1 + px.accent * px.accent * 0.04).toFixed(3) : "";
@@ -27511,8 +28006,66 @@
             }
           }
         }
+        let shakeX = 0, shakeY = 0;
         let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
-        let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "";
+        let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "", vizBloom = 0;
+        const WHITE = [255, 255, 255];
+        const mixRGB = (a, c2, f) => [0, 1, 2].map((k) => Math.round(a[k] + (c2[k] - a[k]) * f));
+        const vizSprites = /* @__PURE__ */ new Map();
+        function spriteOf(kind, c0, draw) {
+          const c2 = c0.map((v) => Math.min(255, Math.round(v / 16) * 16)), key = kind + c2.join(",");
+          let s = vizSprites.get(key);
+          if (s) return s;
+          if (vizSprites.size > 96) vizSprites.clear();
+          s = document.createElement("canvas");
+          draw(s, c2);
+          vizSprites.set(key, s);
+          return s;
+        }
+        const vizSprite = (c0) => spriteOf("d", c0, (s, c2) => {
+          s.width = s.height = 48;
+          const x = s.getContext("2d"), g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
+          const hot = mixRGB(c2, WHITE, 0.6);
+          g.addColorStop(0, `rgba(${hot},1)`);
+          g.addColorStop(0.18, `rgba(${hot},0.95)`);
+          g.addColorStop(0.38, `rgba(${c2},0.55)`);
+          g.addColorStop(0.68, `rgba(${c2},0.14)`);
+          g.addColorStop(1, `rgba(${c2},0)`);
+          x.fillStyle = g;
+          x.fillRect(0, 0, 48, 48);
+        });
+        const rainSprite = (c0) => spriteOf("r", c0, (s, c2) => {
+          s.width = 6;
+          s.height = 44;
+          const x = s.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 44);
+          g.addColorStop(0, `rgba(${c2},0)`);
+          g.addColorStop(0.75, `rgba(${c2},0.7)`);
+          g.addColorStop(1, `rgba(${mixRGB(c2, WHITE, 0.5)},1)`);
+          x.fillStyle = g;
+          x.beginPath();
+          x.roundRect ? x.roundRect(1.5, 0, 3, 44, 1.5) : x.rect(1.5, 0, 3, 44);
+          x.fill();
+        });
+        const tilt = { x: 0, y: 0, vx: 0, vy: 0, key: "", ip: "" };
+        function coverMotion(dt, fpsCap) {
+          const ip = fpsCap && fpsCap < 50 && !cfg.calm ? Math.round(1e3 / fpsCap + 2) + "ms" : "0s";
+          if (ip !== tilt.ip) el3.style.setProperty("--m-ip", tilt.ip = ip);
+          const tx = cfg.calm ? 0 : -depth.ty * 14, ty = cfg.calm ? 0 : depth.tx * 18;
+          for (let left = dt; left > 1e-4; left -= 0.016) {
+            const h = Math.min(0.016, left), w = 7;
+            tilt.vx += (w * w * (tx - tilt.x) - 2 * w * tilt.vx) * h;
+            tilt.vy += (w * w * (ty - tilt.y) - 2 * w * tilt.vy) * h;
+            tilt.x += tilt.vx * h;
+            tilt.y += tilt.vy * h;
+          }
+          const ang = Math.hypot(tilt.x, tilt.y);
+          const k = ang < 0.02 ? "" : `${(tilt.x / ang).toFixed(3)} ${(tilt.y / ang).toFixed(3)} 0 ${ang.toFixed(2)}deg`;
+          if (k === tilt.key) return;
+          tilt.key = k;
+          q2.cover.style.rotate = k;
+          q2.cover.style.setProperty("--gx", (tilt.y * 2.2).toFixed(1) + "%");
+          q2.cover.style.setProperty("--gy", (-tilt.x * 2.8).toFixed(1) + "%");
+        }
         function freshCanvas() {
           const n = q2.canvas.cloneNode(false);
           q2.canvas.replaceWith(n);
@@ -27645,7 +28198,10 @@
               pump: px.pump,
               boom: px.boom,
               scan: px.scan,
-              fxMul: px.fxMul
+              fxMul: px.fxMul,
+              // Publikum (crowd.js): Teil des Songs und Spannung vor dem Drop
+              kind: px.kind,
+              tension: px.tension
             },
             // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
             fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
@@ -27770,8 +28326,9 @@
           for (const p of sparks) {
             if (p.rain) {
               p.y += p.v * sdt;
-              ctx3.fillStyle = rgba4(p.c, (0.55 * Math.min(1, p.life * 2) * clamp((vh * 0.64 - p.y) / (vh * 0.14), 0, 1)).toFixed(3));
-              ctx3.fillRect(p.x, p.y, 1.6 * dpr, 16 * dpr);
+              ctx3.globalAlpha = clamp(0.6 * Math.min(1, p.life * 2) * clamp((vh * 0.64 - p.y) / (vh * 0.14), 0, 1), 0, 1);
+              ctx3.drawImage(rainSprite(p.c), p.x - 1.5 * dpr, p.y - 4 * dpr, 4.6 * dpr, 22 * dpr);
+              ctx3.globalAlpha = 1;
               continue;
             }
             if (p.hit) {
@@ -27788,11 +28345,11 @@
             }
             p.r += p.v * sdt;
             p.v *= Math.exp(-sdt * 1.6);
-            ctx3.fillStyle = rgba4(p.c, p.life * 0.9);
-            ctx3.beginPath();
-            ctx3.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
-            ctx3.fill();
+            const sr = (2.4 + p.life * 4.6) * dpr;
+            ctx3.globalAlpha = clamp(p.life * 0.95, 0, 1);
+            ctx3.drawImage(vizSprite(p.c), cx + Math.cos(p.a) * p.r - sr, cy + Math.sin(p.a) * p.r - sr, sr * 2, sr * 2);
           }
+          ctx3.globalAlpha = 1;
           drawMotes(ctx3, dt, dpr, pal);
         }
         const melody = { a: 0, trail: [] };
@@ -27847,7 +28404,7 @@
           if (venueNoThread) return venueFallback();
           try {
             if (q2.venueEl.transferControlToOffscreen && window.Worker) {
-              venueUrl ||= URL.createObjectURL(new Blob(['(() => {\n  // src/styles.js\n  var KIN = {\n    // Elektronisch\n    electrohouse: ["edm", "club"],\n    progressivehouse: "edm",\n    futurehouse: ["house", "", "jump"],\n    tropicalhouse: "deephouse",\n    basshouse: ["techhouse", "club"],\n    acidhouse: ["house", "warehouse"],\n    chicagohouse: "house",\n    frenchhouse: "house",\n    nudisco: ["disco", "rooftop"],\n    jerseyclub: ["garage", "club", "jump", "c"],\n    minimal: "techno",\n    detroittechno: "techno",\n    dubtechno: ["techno", "", "", "c"],\n    ebm: ["hardtechno", "", "bang", "psb"],\n    progressivetrance: "trance",\n    upliftingtrance: "trance",\n    liquiddnb: "dnb",\n    neurofunk: ["dnb", "warehouse"],\n    jungle: "dnb",\n    footwork: ["breakbeat", "club", "jump"],\n    electro: ["breakbeat", "club"],\n    festivaltrap: "dubstep",\n    moombahton: ["reggaeton", "festival", "bounce", "cs"],\n    gabber: ["hardstyle", "warehouse", "jump"],\n    happyhardcore: ["gabber", "festival"],\n    eurobeat: "eurodance",\n    handsup: ["eurodance", "festival"],\n    italodisco: "eurodance",\n    darksynth: "synthwave",\n    vaporwave: ["synthwave", "", "sway", "q"],\n    chiptune: ["hyperpop", "neon"],\n    // Hip-Hop & R&B\n    gangsta: "bass",\n    gfunk: ["bass", "rooftop", "bounce"],\n    southern: ["trap", "", "bounce"],\n    alternativehiphop: ["boombap", "cellar"],\n    poprap: ["trap", "stadium"],\n    ukhiphop: ["drill", "club"],\n    grime: ["garage", "cellar", "jump", "s"],\n    deutschrap: "trap",\n    frenchrap: "trap",\n    italianrap: "trap",\n    spanishrap: "trap",\n    russianrap: "trap",\n    turkishrap: "trap",\n    arabrap: "trap",\n    brazilianhiphop: "trap",\n    altrnb: ["rnb", "neon", "sway"],\n    newjackswing: ["rnb", "club", "bounce", "c"],\n    neosoul: ["soul", "jazzbar", "sway"],\n    northernsoul: ["soul", "club"],\n    funk: ["disco", "club", "bounce", "c"],\n    // Rock\n    classicrock: "hardrock",\n    rocknroll: ["rock", "pub", "bounce"],\n    glamrock: "hardrock",\n    bluesrock: "hardrock",\n    southernrock: ["hardrock", "desert"],\n    psychrock: ["rock", "forest", "sway"],\n    stonerrock: ["hardrock", "desert", "bang"],\n    progrock: "rock",\n    krautrock: ["postrock", "space", "nod"],\n    surfrock: ["rock", "beach", "bounce"],\n    garagerock: ["punk", "cellar"],\n    grunge: ["alternative", "cellar", "bang"],\n    britpop: ["indie", "festival", "jump"],\n    shoegaze: ["indie", "space", "sway", "q"],\n    postpunk: ["alternative", "cellar", "nod", "-"],\n    folkrock: ["country", "forest"],\n    softrock: ["ballad", "rooftop"],\n    deutschrock: "hardrock",\n    poppunk: ["punk", "festival", "jump"],\n    hardcorepunk: ["punk", "cellar", "bang"],\n    posthardcore: ["emo", "", "bang"],\n    // Metal\n    heavymetal: "metal",\n    thrash: "metal",\n    glammetal: "hardrock",\n    powermetal: ["metal", "festival"],\n    symphonicmetal: ["metal", "festival"],\n    progmetal: "metal",\n    doom: ["metal", "cellar"],\n    deathmetal: "metal",\n    blackmetal: ["metal", "forest"],\n    grindcore: ["punk", "cellar", "jump"],\n    groovemetal: "metal",\n    metalcore: ["metal", "festival", "jump"],\n    deathcore: ["metal", "cellar"],\n    numetal: ["metal", "festival", "jump"],\n    industrialmetal: ["metal", "", "", "psb"],\n    folkmetal: ["metal", "forest", "jump"],\n    // Pop\n    dancepop: ["pop", "", "jump"],\n    electropop: ["pop", "neon", "bounce"],\n    synthpop: ["synthwave", "neon", "bounce"],\n    teenpop: ["pop", "stadium"],\n    poprock: ["indie", "stadium", "jump"],\n    indiepop: ["indie", "", "bounce"],\n    artpop: ["indie", "space", "sway"],\n    // Asien\n    kindie: ["indie", "rooftop"],\n    krock: "rock",\n    khiphop: "trap",\n    krnb: "rnb",\n    trot: "schlager",\n    jrock: "rock",\n    jhiphop: "trap",\n    anime: ["jpop", "stadium"],\n    vocaloid: "jpop",\n    citypop: ["disco", "rooftop", "sway"],\n    shibuyakei: ["indiepop", "neon"],\n    enka: ["ballad", "hall"],\n    japantrad: ["classical", "forest", "sway", "q"],\n    cpop: "kpop",\n    mandopop: ["pop", "stadium", "sway", "cbl"],\n    cantopop: "mandopop",\n    chinesehiphop: "trap",\n    chinesetrad: ["japantrad", "hall"],\n    tpop: "kpop",\n    lukthung: "schlager",\n    vpop: "kpop",\n    opm: ["pop", "stadium"],\n    dangdut: ["bollywood", "festival"],\n    gamelan: "japantrad",\n    kollywood: "bollywood",\n    punjabi: ["bollywood", "festival", "jump"],\n    desihiphop: "trap",\n    hindustani: "classical",\n    carnatic: "hindustani",\n    qawwali: ["hindustani", "cathedral", "clap", "lq"],\n    // Lateinamerika\n    latinpop: ["latin", "stadium", "clap"],\n    latintrap: "trap",\n    dembow: ["reggaeton", "", "jump"],\n    bachata: ["latin", "", "sway", "l"],\n    merengue: "salsa",\n    son: ["salsa", "jazzbar", "clap"],\n    bolero: ["ballad", "jazzbar"],\n    cumbia: "latin",\n    vallenato: "cumbia",\n    tango: ["flamenco", "jazzbar", "sway"],\n    mariachi: ["country", "pub", "clap"],\n    regionalmexican: ["mariachi", "festival"],\n    banda: ["balkan", "festival", "jump"],\n    norteno: ["country", "desert", "clap"],\n    corridos: ["latin", "desert", "nod"],\n    latinrock: "rock",\n    andean: ["celtic", "forest"],\n    samba: ["brazil", "", "", "c"],\n    pagode: "samba",\n    axe: ["samba", "festival", "jump"],\n    forro: "brazil",\n    sertanejo: ["country", "stadium", "clap"],\n    funkcarioca: "reggaeton",\n    mpb: ["acoustic", "beach", "sway"],\n    bossa: ["jazz", "beach", "sway", "q"],\n    // Afrika & Karibik\n    afrobeat: ["afro", "club"],\n    highlife: "afro",\n    gqom: ["amapiano", "warehouse", "pump"],\n    afrohouse: ["deephouse", "beach", "bounce"],\n    bongo: "afro",\n    soukous: "afro",\n    kuduro: ["dancehall", "club", "jump", "cs"],\n    kizomba: ["afro", "club", "sway"],\n    desertblues: ["blues", "desert", "sway"],\n    rootsreggae: "reggae",\n    dub: ["reggae", "cellar", "nod"],\n    rocksteady: "ska",\n    soca: ["dancehall", "", "jump", "c"],\n    calypso: ["ska", "beach", "bounce"],\n    zouk: ["kizomba", "beach", "bounce"],\n    kompa: "zouk",\n    // Naher Osten & Nordafrika\n    arabicpop: ["arabic", "stadium", "clap", "cb"],\n    khaleeji: ["arabic", "desert"],\n    tarab: ["arabic", "hall", "sway", "lq"],\n    rai: ["arabic", "beach", "bounce"],\n    gnawa: ["arabic", "desert", "clap"],\n    dabke: ["arabic", "festival", "jump"],\n    mahraganat: ["arabic", "club", "jump", "cs"],\n    turkishpop: "pop",\n    arabesk: ["arabic", "pub", "sway", "l"],\n    anatolianrock: ["psychrock", "desert"],\n    persianpop: "arabicpop",\n    persiantrad: "tarab",\n    mizrahi: ["arabicpop", "beach"],\n    // Europa\n    partyschlager: ["schlager", "skihut", "jump", "cb"],\n    volksmusik: ["schlager", "skihut", "clap", "-"],\n    polka: ["volksmusik", "", "jump"],\n    karneval: ["schlager", "pub", "clap", "c"],\n    deutschpop: "pop",\n    chanson: ["acoustic", "jazzbar", "sway"],\n    canzone: "ballad",\n    europop: ["eurodance", "stadium", "clap"],\n    discopolo: ["eurodance", "festival", "clap"],\n    russianpop: ["eurodance", "stadium"],\n    greek: ["balkan", "beach", "clap"],\n    fado: ["ballad", "jazzbar", "sway", "lq"],\n    turbofolk: ["balkan", "club", "jump", "cb"],\n    klezmer: ["balkan", "", "clap"],\n    nordicfolk: ["celtic", "forest", "sway", "l"],\n    // Country & Folk\n    classiccountry: ["country", "pub", "clap"],\n    countrypop: ["country", "stadium", "clap", "cb"],\n    countryrock: ["country", "stadium", "jump", "pb"],\n    americana: ["country", "", "sway"],\n    bluegrass: ["celtic", "forest", "clap"],\n    cajun: ["bluegrass", "pub", "bounce"],\n    folk: ["acoustic", "forest", "sway", "lq"],\n    indiefolk: ["folk", "festival", "clap", "l"],\n    // Jazz & Blues\n    dixieland: ["jazz", "", "clap"],\n    swing: ["jazz", "club", "bounce"],\n    bebop: "jazz",\n    cooljazz: "jazz",\n    spiritualjazz: ["jazz", "space", "sway"],\n    freejazz: ["jazz", "cellar"],\n    vocaljazz: ["jazz", "", "", "lq"],\n    latinjazz: ["jazz", "", "bounce"],\n    gypsyjazz: ["jazz", "", "clap"],\n    fusion: ["jazz", "club", "bounce", "-"],\n    acidjazz: "funk",\n    nujazz: ["jazz", "rooftop", "nod"],\n    smoothjazz: ["jazz", "rooftop", "sway", "lq"],\n    deltablues: ["blues", "", "sway"],\n    chicagoblues: ["blues", "pub", "clap"],\n    // Gospel & Spirituelles\n    ccm: ["pop", "stadium", "clap", "cbl"],\n    worship: ["gospel", "", "sway", "lq"],\n    christianrock: "rock",\n    christianhiphop: "trap",\n    bhajan: ["worship", "forest", "clap"],\n    nasheed: "worship",\n    // Klassik & Filmmusik\n    baroque: ["classical", "cathedral"],\n    classicalera: "classical",\n    romantic: "classical",\n    opera: ["classical", "", "", "lq"],\n    choral: ["classical", "cathedral", "sway"],\n    chamber: "classical",\n    orchestral: "classical",\n    minimalism: ["neoclassical", "hall"],\n    contemporary: "classical",\n    gamemusic: ["cinematic", "neon"],\n    // Ruhig\n    downtempo: ["chill", "rooftop", "sway", "q"],\n    triphop: ["downtempo", "cellar", "nod"],\n    easylistening: ["jazz", "rooftop", "sway", "lq"],\n    newage: ["ambient", "forest"],\n    meditation: "ambient",\n    sleep: "ambient",\n    // Experimentell\n    experimental: ["cinematic", "space", "sway"],\n    idm: ["breakbeat", "", "nod", "-"],\n    industrial: ["hardtechno", "", "bang", "ps"],\n    noise: ["punk", "cellar", "bang"],\n    darkambient: ["ambient", "space"],\n    // Kinder, Feiertage & Gesprochenes\n    halloween: ["cinematic", "forest", "bounce", "c"],\n    kids: ["pop", "home", "clap", "-"],\n    disney: ["musical", "stadium", "clap", "cl"],\n    comedy: ["chill", "pub", "clap", "-"],\n    spoken: ["chill", "home", "sway", "q"]\n  };\n  var baseOf = (k) => typeof KIN[k] === "string" ? KIN[k] : KIN[k]?.[0];\n  var own = (k, i) => typeof KIN[k] === "string" ? "" : KIN[k][i] || "";\n  function kin(map, i = 9) {\n    for (const k in KIN) {\n      if (k in map) continue;\n      const v = own(k, i) || map[baseOf(k)];\n      if (v !== void 0) map[k] = v;\n    }\n    return map;\n  }\n  function kinSet(set, f) {\n    for (const k in KIN) {\n      const fx = own(k, 3);\n      if (fx ? fx.includes(f) : set.has(baseOf(k))) set.add(k);\n    }\n    return set;\n  }\n\n  // src/show.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  var RIG = {\n    house: ["wave", "chase"],\n    deephouse: ["wave"],\n    techhouse: ["chase", "cross"],\n    garage: ["wave", "chase"],\n    disco: ["wave", "fan"],\n    techno: ["chase", "cross", "point"],\n    edm: ["fan", "cross", "wave"],\n    rave: ["fan", "cross"],\n    trance: ["fan", "wave"],\n    psytrance: ["cross", "wave"],\n    hardstyle: ["cross", "fan"],\n    dnb: ["chase", "cross"],\n    dubstep: ["point", "fan"],\n    eurodance: ["wave", "fan"],\n    synthwave: ["wave"],\n    hyperpop: ["chase", "fan"],\n    pop: ["wave", "fan"],\n    kpop: ["chase", "wave"],\n    schlager: ["wave", "fan"],\n    rock: ["point", "fan"],\n    metal: ["point", "fan"],\n    punk: ["point"],\n    alternative: ["point", "wave"],\n    indie: ["wave"],\n    latin: ["wave"],\n    reggaeton: ["wave", "chase"],\n    salsa: ["wave"],\n    brazil: ["wave"],\n    afro: ["wave"],\n    bollywood: ["wave", "fan"],\n    arabic: ["wave"],\n    bass: ["point", "chase"],\n    trap: ["point", "chase"],\n    drill: ["point"],\n    phonk: ["chase"],\n    soul: ["wave"],\n    gospel: ["fan"],\n    country: ["wave"],\n    reggae: ["wave"],\n    flamenco: ["point"],\n    melodictechno: ["wave", "fan"],\n    hardtechno: ["chase", "cross"],\n    futurebass: ["fan", "wave"],\n    electroswing: ["wave"],\n    breakbeat: ["chase", "point"],\n    boombap: ["point"],\n    dancehall: ["wave", "chase"],\n    hardrock: ["point", "fan"],\n    postrock: ["fan"],\n    ska: ["wave", "chase"],\n    emo: ["point"],\n    jpop: ["chase", "wave"],\n    musical: ["fan"],\n    celtic: ["wave"],\n    balkan: ["chase", "wave"],\n    amapiano: ["wave"]\n  };\n  var BLIND = /* @__PURE__ */ new Set(["hardrock", "hardtechno", "balkan", "rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);\n  var SHEET = /* @__PURE__ */ new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);\n  var CALM = /* @__PURE__ */ new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues", "lofi", "neoclassical", "acoustic", "cloudrap", "christmas"]);\n  kin(RIG);\n  kinSet(BLIND, "b"), kinSet(SHEET, "w"), kinSet(CALM, "q");\n  var rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;\n  var mixW = (c, f) => c.map((v) => v + (255 - v) * f);\n  function createShow(glowSprite, cap) {\n    let vw = 0, vh = 0;\n    const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false };\n    const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);\n    function drawRig(ctx2, st, v, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);\n      const mb = px.mb ?? bp;\n      const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);\n      if (px.dropHit && !st.noFlash) rig.drop = 1;\n      rig.drop *= Math.exp(-dt * 3);\n      const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;\n      const pats = RIG[key] || (px.rig ? [px.rig] : null);\n      ctx2.globalCompositeOperation = "lighter";\n      if (n && pats && st.rig) {\n        const blk = Math.floor(bp / 32);\n        if (blk !== rig.blk || px.rig && px.rig !== rig.pat) {\n          rig.blk = blk;\n          rig.pat = px.rig || pats[(blk + (px.scene || 0)) % pats.length];\n          rig.col = (rig.col + 1) % 3;\n        }\n        const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv) * (1 + 0.45 * (px.pulse || 0) + 0.4 * (px.lift || 0));\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(8,6,16,0.7)";\n        ctx2.fillRect(0, y - 3 * dpr, vw, 6 * dpr);\n        ctx2.globalCompositeOperation = "lighter";\n        const lead = (Math.floor(mb * 2) % n + n) % n;\n        for (let i = 0; i < n; i++) {\n          const x = vw * (0.07 + 0.86 * i / (n - 1)), u = i / (n - 1) - 0.5;\n          const toCover = Math.atan2(st.cy - y, st.cx - x);\n          let a = Math.PI / 2;\n          if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin(mb * Math.PI / 4) + rig.drop * 0.6);\n          else if (rig.pat === "wave") a += 0.5 * Math.sin(mb * Math.PI / 2 + i * 0.7);\n          else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin(mb * Math.PI / 4));\n          else if (rig.pat === "chase") a += u * 0.6;\n          else if (rig.pat === "point") a = toCover;\n          a += (toCover - a) * px.build * 0.8;\n          let k = base * (CALM.has(key) ? 0.5 : 1);\n          if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;\n          if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;\n          if (k < 4e-3) continue;\n          const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];\n          const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, len);\n          g.addColorStop(0, rgba(c, k * 1.6));\n          g.addColorStop(0.4, rgba(c, k * 0.5));\n          g.addColorStop(1, rgba(c, 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x, y);\n          ctx2.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);\n          ctx2.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);\n          ctx2.closePath();\n          ctx2.fill();\n          const r = (8 + k * 70) * dpr;\n          ctx2.globalAlpha = clamp(k * 5, 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      const sn = px.snareEnv > 0.8;\n      if (st.flash && st.flashGo && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale) && cap.take(t)) rig.blind = 1;\n      rig.sn = sn;\n      rig.blind *= Math.exp(-dt * 7);\n      if (rig.blind > 0.02 && vis > 0) {\n        for (const f of [0.22, 0.42, 0.58, 0.78]) {\n          const r = vh * 0.17 * (0.6 + rig.blind * 0.4);\n          ctx2.globalAlpha = rig.blind * 0.8 * vis;\n          ctx2.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);\n        ctx2.fillRect(0, 0, vw, vh);\n      }\n      const want = SHEET.has(key) && st.rig && !px.blackout && (px.fxMul ?? 1) >= 0.75 && (px.drop > 0.35 || px.energy > 0.88 && px.build < 0.1) ? 1 : 0;\n      rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));\n      if (rig.sheet > 0.02) {\n        const c = mixW(pal[2], 0.35), tilt = Math.sin(mb * Math.PI / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));\n        for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * rig.sheet);\n          ctx2.beginPath();\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 + tilt * vw / 2);\n          ctx2.stroke();\n        }\n        ctx2.lineWidth = dpr;\n        ctx2.strokeStyle = rgba(c, 0.14 * rig.sheet);\n        ctx2.beginPath();\n        for (let k = -4; k <= 4; k++) {\n          const a = k * 0.03 + tilt;\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 - tilt * vw / 2 + Math.tan(a) * vw);\n        }\n        ctx2.stroke();\n      }\n      if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx2, st, px, pal, dpr);\n      if (st.rig && !px.blackout) drawCues(ctx2, st, px, pal, dpr, vis);\n    }\n    function drawCues(ctx2, st, px, pal, dpr, vis) {\n      const t = st.t, dt = st.dt, soft = st.noFlash ? 0.4 : 1;\n      if (px.wipe >= 0) {\n        const f = px.wdir < 0 ? 1 - px.wipe : px.wipe, x = vw * (f * 1.3 - 0.15), w = vw * 0.16, c = mixW(pal[rig.col % 3], 0.3);\n        const g = ctx2.createLinearGradient(x - w, 0, x + w, 0);\n        g.addColorStop(0, rgba(c, 0));\n        g.addColorStop(0.5, rgba(c, 0.2 * (1 - px.wipe * 0.5) * soft * vis));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(x - w, 0, w * 2, vh * 0.72);\n      }\n      const wallNow = (px.wall || 0) > 0.5;\n      if (wallNow && !rig.wallOn && st.flash && st.flashGo && !st.noFlash && cap.take(t)) rig.wall = 1;\n      rig.wallOn = wallNow;\n      rig.wall *= Math.exp(-dt * 5);\n      if (rig.wall > 0.03) {\n        const r = vh * 0.12;\n        ctx2.globalAlpha = rig.wall * 0.75 * vis;\n        for (let k = 0; k < 6; k++) ctx2.drawImage(glowSprite([255, 240, 215]), vw * (0.12 + 0.152 * k) - r, vh * 0.06 - r, r * 2, r * 2);\n        ctx2.globalAlpha = 1;\n      }\n      if (px.vox > 0.03) {\n        const sx = vw / 2, sy = -vh * 0.05, len = Math.hypot(st.cx - sx, st.cy - sy) + (st.R || 0), a = Math.atan2(st.cy - sy, st.cx - sx), c = mixW(pal[1], 0.55);\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, len);\n        g.addColorStop(0, rgba(c, 0.05 * px.vox));\n        g.addColorStop(0.8, rgba(c, 0.16 * px.vox));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - 0.09) * len, sy + Math.sin(a - 0.09) * len);\n        ctx2.lineTo(sx + Math.cos(a + 0.09) * len, sy + Math.sin(a + 0.09) * len);\n        ctx2.fill();\n      }\n      if (px.pump > 0.05) {\n        const r = vw * 0.55;\n        ctx2.globalAlpha = clamp(0.1 * px.pump * px.I * (1 - (st.noFlash ? 0.3 : 0.85) * px.kickEnv) * vis, 0, 1);\n        ctx2.drawImage(glowSprite(pal[0]), vw / 2 - r, vh * 0.3 - r * 0.6, r * 2, r * 1.2);\n        ctx2.globalAlpha = 1;\n      }\n      if (px.boom > 0.03) {\n        const r = vh * (0.45 + 0.3 * px.boom);\n        ctx2.globalAlpha = clamp(0.3 * px.boom * vis, 0, 1);\n        ctx2.drawImage(glowSprite(pal[0]), vw / 2 - r * 1.6, vh - r * 0.6, r * 3.2, r * 1.2);\n        ctx2.globalAlpha = 1;\n      }\n      if (px.swell > 0.03) {\n        const r = vw * 0.5;\n        ctx2.globalAlpha = clamp(0.07 * px.swell * (0.5 + 0.5 * px.I), 0, 1);\n        ctx2.drawImage(glowSprite([255, 196, 140]), vw / 2 - r, -r * 0.55, r * 2, r * 1.1);\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let bokeh = null;\n    function drawBokeh(ctx2, st, px, pal, dpr) {\n      bokeh ||= Array.from({ length: 18 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random(), ph: Math.random() * 6.3, c: Math.floor(Math.random() * 3) }));\n      for (const b of bokeh) {\n        b.y -= st.dt * 0.012 * (0.5 + b.r);\n        if (b.y < -0.1) [b.y, b.x] = [1.1, Math.random()];\n        const r = (18 + b.r * 34) * dpr;\n        ctx2.globalAlpha = clamp((0.05 + 0.08 * px.energy) * (0.6 + 0.4 * Math.sin(st.t * 0.7 + b.ph)), 0, 1);\n        ctx2.drawImage(glowSprite(pal[b.c]), b.x * vw - r, b.y * vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const ins = { sparks: [], bolts: [], keys: new Float32Array(24), kHit: false };\n    function drawInst(ctx2, st, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const I = st.inst, t = st.t, dt = st.dt;\n      if (!I || px.blackout) return;\n      ctx2.globalCompositeOperation = "lighter";\n      if (I.brass > 0.01) {\n        const L = I.brass, gold = [255, 200, 90];\n        for (const side of [-1, 1]) {\n          const ox = side < 0 ? 0 : vw, oy = vh * 0.95;\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);\n            const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            g.addColorStop(0, rgba(gold, 0.22 * L));\n            g.addColorStop(1, rgba(gold, 0));\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = (18 - k * 2) * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(ox, oy);\n            ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            ctx2.stroke();\n          }\n          const r = vh * 0.14 * (0.6 + L * 0.5);\n          ctx2.globalAlpha = L * 0.8;\n          ctx2.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });\n        }\n      }\n      if (I.sax > 0.01) {\n        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);\n        for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {\n          for (let k = 0; k < 3; k++) {\n            ctx2.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);\n            ctx2.lineWidth = (44 - k * 10) * dpr;\n            ctx2.beginPath();\n            for (let s = 0; s <= 20; s++) {\n              const f = s / 20, yy = vh * (0.95 - f * 0.75);\n              const xx = vw * bx + dir * Math.sin(f * 5 + t * (0.8 + k * 0.2) + k) * vw * 0.05 * (0.5 + f);\n              s ? ctx2.lineTo(xx, yy) : ctx2.moveTo(xx, yy);\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.guitar > 0.3) {\n        const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;\n        if (hitNow && !ins.kHit && st.flashGo && !st.noFlash && cap.take(t)) {\n          const pts = [];\n          const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;\n          const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);\n          for (let s = 0; s <= 10; s++) {\n            const f = s / 10;\n            pts.push([x + (tx - x) * f + (s && s < 10 ? (Math.random() - 0.5) * vw * 0.04 : 0), y + (ty - y) * f]);\n          }\n          ins.bolts.push({ pts, a: 1 });\n        }\n        ins.kHit = hitNow;\n        for (let k = 0; k < 3; k++) {\n          if (st.noFlash || Math.random() > dt * 18 * I.guitar) continue;\n          const r = (10 + Math.random() * 16) * dpr;\n          ctx2.globalAlpha = 0.5 + Math.random() * 0.5;\n          ctx2.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);\n      for (const b of ins.bolts) {\n        for (const [lw, c, al] of [[10 * dpr, [140, 170, 255], 0.25], [2.2 * dpr, [235, 245, 255], 0.95]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * b.a * Math.max(I.guitar, 0.3));\n          ctx2.beginPath();\n          b.pts.forEach(([x, y], k) => k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y));\n          ctx2.stroke();\n        }\n      }\n      if (I.piano > 0.01 || ins.keys.some((k) => k > 0.01)) {\n        const ch = I.chroma, w = vw / 24;\n        for (let k = 0; k < 24; k++) {\n          const target = ch ? (ch[k % 12] || 0) * I.piano : 0;\n          ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));\n          const L = ins.keys[k];\n          if (L < 0.02) continue;\n          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;\n          const g = ctx2.createLinearGradient(0, yb - h, 0, yb);\n          g.addColorStop(0, rgba(pal[k % 3], 0));\n          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x, yb - h, w * 0.6, h);\n          const r = w * 0.7;\n          ctx2.globalAlpha = clamp(L * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      if (I.strings > 0.01) {\n        const L = I.strings;\n        for (let k = 0; k < 3; k++) {\n          const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t * 0.6 + k * 1.7) * vh * 0.05;\n          for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {\n            ctx2.lineWidth = lw;\n            ctx2.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);\n            ctx2.beginPath();\n            for (let s = 0; s <= 32; s++) {\n              const x = s / 32 * vw;\n              s ? ctx2.lineTo(x, yy(x)) : ctx2.moveTo(x, yy(x));\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.choir > 0.01) {\n        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;\n        for (let k = 0; k < 9; k++) {\n          const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t * 0.2) * 0.05, len = vh * 1.1;\n          const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));\n          g.addColorStop(1, rgba([255, 245, 225], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = 40 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(ox, oy);\n          ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          ctx2.stroke();\n        }\n      }\n      if (I.drums > 0.01) {\n        const L = I.drums, env = (v) => st.noFlash ? 0.45 : 0.25 + 0.75 * v;\n        [[0.2, px.kickEnv, 1], [0.4, px.snareEnv, 0.8], [0.6, px.snareEnv, 0.8], [0.8, px.kickEnv, 1]].forEach(([f, e, sz], k) => {\n          const x = vw * f, y = vh * 0.13, r = vh * 0.05 * sz * (0.85 + 0.15 * env(e)), c = mixW(pal[k % 3], 0.35);\n          ctx2.lineWidth = 2 * dpr;\n          ctx2.strokeStyle = rgba(c, 0.5 * L * env(e));\n          ctx2.beginPath();\n          ctx2.ellipse(x, y, r, r * 0.38, 0, 0, Math.PI * 2);\n          ctx2.stroke();\n          ctx2.globalAlpha = clamp(0.4 * L * env(e), 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r * 1.3, y - r * 1.3, r * 2.6, r * 2.6);\n          ctx2.globalAlpha = 1;\n        });\n        const hr = vh * 0.02;\n        ctx2.globalAlpha = clamp(0.35 * L * env(px.hatEnv), 0, 1);\n        ctx2.drawImage(glowSprite([255, 244, 214]), vw * 0.5 - hr, vh * 0.085 - hr, hr * 2, hr * 2);\n        ctx2.globalAlpha = 1;\n      }\n      if (I.bass > 0.01) {\n        const L = I.bass, c = mixW(pal[0], 0.15);\n        for (const ox of [0, vw]) {\n          for (let k = 0; k < 3; k++) {\n            const ph = (t * 0.45 + k / 3) % 1, r = vh * (0.06 + 0.24 * ph);\n            ctx2.lineWidth = (14 - 8 * ph) * dpr;\n            ctx2.strokeStyle = rgba(c, 0.16 * L * (1 - ph));\n            ctx2.beginPath();\n            ctx2.arc(ox, vh * 0.92, r, 0, Math.PI * 2);\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.synth > 0.01) {\n        const L = I.synth, c = mixW(pal[2], 0.3), y0 = vh * 0.2, amp = vh * 0.035, step = vw / 16, off = t * step * 0.9 % (step * 2);\n        for (const [lw, al] of [[9 * dpr, 0.07], [1.6 * dpr, 0.5]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * L);\n          ctx2.beginPath();\n          for (let k = -2, up = true; k <= 18; k++, up = !up) {\n            const x = k * step - off, y = y0 + (up ? -amp : amp);\n            k === -2 ? ctx2.moveTo(x, y) : ctx2.lineTo(x, y);\n            ctx2.lineTo(x + step, y);\n          }\n          ctx2.stroke();\n        }\n      }\n      if (I.accordion > 0.01) {\n        const L = I.accordion, open = 0.55 + 0.45 * Math.sin(t * 1.1), c = [255, 196, 140];\n        for (const side of [-1, 1]) {\n          for (let k = 0; k < 7; k++) {\n            const x = (side < 0 ? 0 : vw) - side * vw * (0.012 + 0.013 * k * open), lean = (k % 2 ? 1 : -1) * vw * 4e-3;\n            ctx2.lineWidth = 2 * dpr;\n            ctx2.strokeStyle = rgba(k % 2 ? c : mixW(pal[1], 0.3), (0.3 - k * 0.03) * L);\n            ctx2.beginPath();\n            ctx2.moveTo(x - lean, vh * 0.22);\n            ctx2.lineTo(x + lean, vh * 0.7);\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.flute > 0.01) {\n        const L = I.flute, c = [214, 240, 255];\n        for (let k = 0; k < 12; k++) {\n          const f = (t * 0.06 + k / 12) % 1, x = vw * (f * 1.1 - 0.05), y = vh * (0.16 + 0.05 * Math.sin(f * 9 + k * 0.6) + 0.012 * (k % 3));\n          const r = (5 + k % 4 * 2) * dpr;\n          ctx2.globalAlpha = clamp(0.6 * L * Math.sin(f * Math.PI), 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      if (I.harp > 0.01) {\n        const L = I.harp, n = 16, gl = t * 0.35 % 1.4 - 0.2;\n        for (let k = 0; k < n; k++) {\n          const f = k / (n - 1), x = vw * (0.3 + 0.4 * f), len = vh * (0.34 - 0.16 * f);\n          const hit = clamp(1 - Math.abs(f - gl) * 5, 0, 1);\n          const g = ctx2.createLinearGradient(0, vh * 0.04, 0, vh * 0.04 + len);\n          g.addColorStop(0, rgba([255, 232, 180], (0.12 + 0.4 * hit) * L));\n          g.addColorStop(1, rgba([255, 232, 180], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = (1 + hit) * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(x, vh * 0.04);\n          ctx2.lineTo(x, vh * 0.04 + len);\n          ctx2.stroke();\n        }\n      }\n      ins.sparks = ins.sparks.filter((s) => (s.a -= dt * 0.9) > 0);\n      for (const s of ins.sparks) {\n        s.vy += vh * 0.2 * dt;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 6 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    return { drawRig, drawInst };\n  }\n\n  // src/flashcap.js\n  var FLASH_GAP = 0.34;\n  function createFlashCap(gap = FLASH_GAP) {\n    let last = -Infinity;\n    return {\n      // true = dieser Blitz darf z\xFCnden (und z\xE4hlt ab jetzt)\n      take(t) {\n        if (t < last) last = t;\n        if (t - last < gap) return false;\n        last = t;\n        return true;\n      },\n      free: (t) => t >= last && t - last >= gap\n    };\n  }\n\n  // src/venue.js\n  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    const flashCap = createFlashCap();\n    const show = createShow(glowSprite, flashCap);\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const now = px.P.spot, old = px.spot2 || now, sx = px.sx ?? 1;\n      if (sx < 1 && old !== now) drawSpot(old, 1 - sx, ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v);\n      drawSpot(now, old !== now ? sx : 1, ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v);\n    }\n    function drawSpot(kind, k, ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const t = px.mt ?? st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = k * clamp2(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      if (vis < 0.01) return;\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const spread = px.spread ?? 1;\n      const cone = (sx, sy, a, wd0, c, al, reach = far) => {\n        const wd = wd0 * spread;\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba2(c, al));\n        g.addColorStop(0.5, rgba2(c, al * 0.35));\n        g.addColorStop(1, rgba2(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (kind) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k2) => Math.round(c[k2] * 0.55 + [255, 236, 210][k2] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba2(pal[0], al));\n          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));\n          g.addColorStop(1, rgba2(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k2] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k2 * 2)), 0.12, pal[(k2 + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60, beats = px.mb ?? t * bps, per = px.scan ? 16 : 8;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k2 = 0; k2 < 2; k2++) {\n            const y = ((beats / per + k2 * 0.5 + px.scene * 0.17) % 1 + 1) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba2(pal[k2], 0));\n            g.addColorStop(0.5, rgba2(pal[k2], al));\n            g.addColorStop(1, rgba2(pal[k2], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp2(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k2 = 0; k2 < 3; k2++) {\n            const base = vh * (0.14 + 0.11 * k2) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k2) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k2) + k2 * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba2(pal[k2], 0));\n            g.addColorStop(0.5, rgba2(pal[k2], al));\n            g.addColorStop(1, rgba2(pal[(k2 + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba2(pal[f.c], 0));\n            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba2(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4) * (1 + (px.swell || 0) * 0.8);\n          for (let k2 = 0; k2 < 3; k2++) {\n            cone(vw * (0.2 + 0.3 * k2) + Math.sin(t * 0.12 + k2 * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k2) * 0.12, 0.2, pal[k2], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      // Wohnzimmer: keine Menge, nur ein paar Freunde vorne, die mitwippen\n      home: { rows: [[0, 1.7, 230]], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },\n      // \u201Eopen\u201C: unter freiem Himmel (Feuerwerk erlaubt) \xB7 \u201Ecalm\u201C: drinnen und gediegen \u2013 kein CO2, keine Flammen,\n      // kein Stroboskop, kein Konfetti \xB7 \u201Eseated\u201C: das Publikum sitzt (Konzertsaal) und wiegt sich nur\n      rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },\n      cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },\n      jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },\n      forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },\n      hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },\n      cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" },\n      // 1.17: Weltall, Neon-Stra\xDFe, Pub, Skih\xFCtte, W\xFCste\n      space: { rows: [[2, 0.5, 30], [1, 0.76, 40], [0, 1.02, 52]], haze: 0.5, spot: 1.1, decor: "space", open: true },\n      neon: { rows: [[1, 0.78, 36], [0, 1.03, 46]], haze: 1.2, spot: 0.9, decor: "neon" },\n      pub: { rows: [[1, 0.82, 40], [0, 1.06, 52]], haze: 1.4, spot: 0.6, decor: "pub", calm: true },\n      skihut: { rows: [[1, 0.78, 34], [0, 1.03, 44]], haze: 0.9, spot: 0.85, decor: "skihut", open: true },\n      desert: { rows: [[2, 0.52, 30], [1, 0.78, 40], [0, 1.03, 50]], haze: 0.7, spot: 1, decor: "desert", open: true }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "jazzbar",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "cellar",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "forest",\n      chill: "home",\n      classical: "hall",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "forest",\n      dubstep: "festival",\n      garage: "rooftop",\n      eurodance: "club",\n      synthwave: "rooftop",\n      hyperpop: "club",\n      trap: "club",\n      drill: "cellar",\n      phonk: "cellar",\n      rnb: "rooftop",\n      soul: "jazzbar",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "jazzbar",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "cathedral",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "space",\n      melodictechno: "space",\n      hardtechno: "warehouse",\n      futurebass: "neon",\n      electroswing: "jazzbar",\n      breakbeat: "warehouse",\n      boombap: "rooftop",\n      dancehall: "beach",\n      cloudrap: "neon",\n      hardrock: "stadium",\n      postrock: "space",\n      ska: "pub",\n      emo: "cellar",\n      jpop: "neon",\n      musical: "hall",\n      christmas: "skihut",\n      celtic: "pub",\n      balkan: "pub",\n      amapiano: "beach",\n      lofi: "home",\n      neoclassical: "hall",\n      acoustic: "pub"\n    };\n    kin(AUTO_VENUE, 1);\n    function drawDecor(ctx2, v, px, pal, rgba2, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba2(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba2(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp2((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp2(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "rooftop") {\n        sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));\n        win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));\n        const hz = vh * 0.8;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,5,14,0.6)";\n        for (const b of sky) ctx2.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);\n        ctx2.globalCompositeOperation = "lighter";\n        for (const w of win) {\n          const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t * 0.7 + w.ph);\n          if (tw < 0.25) continue;\n          const r = 3.2 * dpr;\n          ctx2.globalAlpha = clamp2(tw * (0.35 + beat * 0.25), 0, 1);\n          ctx2.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);\n        }\n        for (let k = 0; k <= 18; k++) {\n          const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.28 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.4 + k * 2.1)), 0, 1);\n          const r = (8 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.75)";\n        ctx2.fillRect(0, vh * 0.84, vw, 3 * dpr);\n        for (let x = 0; x < vw; x += 70 * dpr) ctx2.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "cathedral") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.8)";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;\n          ctx2.beginPath();\n          ctx2.rect(x0, 0, x1 - x0, vh);\n          ctx2.moveTo(mid + iw, vh);\n          ctx2.lineTo(mid + iw, vh * 0.36);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);\n          ctx2.lineTo(mid - iw, vh);\n          ctx2.closePath();\n          ctx2.fill("evenodd");\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat * 0.1 + px.energy * 0.08;\n          const g = ctx2.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);\n          g.addColorStop(0, rgba2(pal[0], al.toFixed(3)));\n          g.addColorStop(0.5, rgba2(pal[1], (al * 0.9).toFixed(3)));\n          g.addColorStop(1, rgba2(pal[2], 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(mid + iw, vh * 0.7);\n          ctx2.lineTo(mid + iw, vh * 0.38);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);\n          ctx2.lineTo(mid - iw, vh * 0.7);\n          ctx2.fill();\n        }\n        for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {\n          const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - k % 3 * 0.018);\n          const r = (7 + Math.sin(t * 9 + k * 3 + side) * 1.6) * dpr;\n          ctx2.globalAlpha = 0.55;\n          ctx2.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "jazzbar") {\n        for (let k = 0; k < 3; k++) {\n          const x = vw * (0.22 + k * 0.28) + Math.sin(t * 0.6 + k) * vw * 0.01, y = vh * (0.16 + k % 2 * 0.03);\n          ctx2.strokeStyle = "rgba(255,255,255,0.07)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.22 + k * 0.28), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, vh * 0.85);\n          g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,190,120,0)");\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x - 8 * dpr, y);\n          ctx2.lineTo(x - vh * 0.22, vh);\n          ctx2.lineTo(x + vh * 0.22, vh);\n          ctx2.lineTo(x + 8 * dpr, y);\n          ctx2.fill();\n          const r = (16 + beat * 8) * dpr;\n          ctx2.globalAlpha = 0.8;\n          ctx2.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 9; k++) {\n          const r = 4 * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + 0.2 * Math.sin(t * 1.2 + k), 0, 1);\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (let k = 0; k < 4; k++) {\n          const x = vw * (0.5 + 0.45 * Math.sin(t * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t * 0.07 + k)), r = vh * 0.35;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, r);\n          g.addColorStop(0, "rgba(200,190,220,0.04)");\n          g.addColorStop(1, "rgba(200,190,220,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - r, y - r, r * 2, r * 2);\n        }\n      } else if (v.decor === "forest") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(4,4,10,0.9)";\n        for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {\n          const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t * 0.4 + bx) * 4 * dpr;\n          const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);\n          ctx2.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);\n          for (let k = 0; k < 5; k++) {\n            const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);\n            ctx2.beginPath();\n            ctx2.moveTo(bx + sx, y0);\n            ctx2.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.closePath();\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 16; k++) {\n          const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp2((0.25 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.3 + k * 1.9)), 0, 1);\n          const r = (7 + beat * 4) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);\n        }\n        flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));\n        const hat = px.hatEnv || 0;\n        for (const f of flies) {\n          const x = (f.x + Math.sin(t * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t * f.sp * 0.4 + f.ph) * 0.03) * vh;\n          ctx2.globalAlpha = clamp2((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "hall") {\n        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {\n          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;\n          ctx2.globalCompositeOperation = "source-over";\n          ctx2.fillStyle = "rgba(8,6,16,0.8)";\n          ctx2.fillRect(x0, y, w, vh * 0.05);\n          ctx2.globalCompositeOperation = "lighter";\n          ctx2.globalAlpha = clamp2(0.32 + beat * 0.15, 0, 1);\n          for (let k = 0; k < 6; k++) {\n            const r = 5 * dpr;\n            ctx2.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);\n          }\n          ctx2.globalAlpha = 1;\n        }\n        for (const x of [vw * 0.25, vw * 0.75]) {\n          ctx2.globalAlpha = clamp2(0.5 + px.energy * 0.3, 0, 1);\n          for (let k = 0; k < 8; k++) {\n            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t * 3 + k) * 1.5) * dpr;\n            ctx2.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);\n          }\n          const r = (60 + beat * 30) * dpr;\n          ctx2.globalAlpha = clamp2(0.25 + beat * 0.2, 0, 1);\n          ctx2.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "cellar") {\n        const n = 4;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,10,0.85)";\n        ctx2.beginPath();\n        ctx2.rect(0, 0, vw, vh * 0.32);\n        for (let k = 0; k < n; k++) {\n          const x0 = k / n * vw, x1 = (k + 1) / n * vw;\n          ctx2.moveTo(x1, vh * 0.32);\n          ctx2.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);\n          ctx2.closePath();\n        }\n        ctx2.fill("evenodd");\n        ctx2.strokeStyle = "rgba(255,255,255,0.035)";\n        ctx2.lineWidth = dpr;\n        ctx2.beginPath();\n        for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {\n          ctx2.moveTo(0, y);\n          ctx2.lineTo(vw, y);\n        }\n        ctx2.stroke();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < n; k++) {\n          const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t * 1.1 + k) * 4e-3);\n          const r = (20 + px.kickEnv * 44) * dpr;\n          ctx2.globalAlpha = clamp2(0.4 + px.kickEnv * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "space") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          const x = ((s1.x - t * 4e-3 * s1.z) % 1 + 1) % 1, tw = 0.55 + 0.45 * Math.sin(t * (1 + s1.z) + s1.ph);\n          ctx2.globalAlpha = clamp2(tw * s1.z * (0.45 + px.energy * 0.35 + beat * 0.2), 0, 1);\n          const r = (1.6 + s1.z * 2.4) * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 5 ? pal[2] : [235, 240, 255]), x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const pr = Math.min(vw, vh) * 0.32, pxx = vw * 0.86, pyy = -pr * 0.35;\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,6,16,0.92)";\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr, 0, Math.PI * 2);\n        ctx2.fill();\n        ctx2.globalCompositeOperation = "lighter";\n        const rim = ctx2.createRadialGradient(pxx, pyy, pr * 0.92, pxx, pyy, pr * 1.18);\n        rim.addColorStop(0, rgba2(pal[1], 0));\n        rim.addColorStop(0.35, rgba2(pal[1], (0.22 + beat * 0.18).toFixed(3)));\n        rim.addColorStop(1, rgba2(pal[1], 0));\n        ctx2.fillStyle = rim;\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr * 1.18, 0, Math.PI * 2);\n        ctx2.fill();\n        if (px.dropHit || px.hit && px.inBar === 0 && px.energy > 0.7 && Math.random() < 0.35) shoot = { t0: t, y: 0.08 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.5 };\n        if (shoot) {\n          const f = (t - shoot.t0) / 0.9;\n          if (f > 1) shoot = null;\n          else {\n            const x0 = (shoot.x + f * 0.35) * vw, y0 = (shoot.y + f * 0.18) * vh, len = 140 * dpr;\n            const g = ctx2.createLinearGradient(x0, y0, x0 - len, y0 - len * 0.5);\n            g.addColorStop(0, `rgba(255,255,255,${(0.8 * (1 - f)).toFixed(3)})`);\n            g.addColorStop(1, "rgba(255,255,255,0)");\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = 2 * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(x0, y0);\n            ctx2.lineTo(x0 - len, y0 - len * 0.5);\n            ctx2.stroke();\n          }\n        }\n      } else if (v.decor === "neon") {\n        neonSigns ||= Array.from({ length: 10 }, (_, i) => ({ side: i % 2 ? 1 : -1, d: Math.floor(i / 2) / 5, h: 0.14 + Math.random() * 0.16, y: 0.18 + Math.random() * 0.3, c: i % 3, ph: Math.random() * 6.3 }));\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.88)";\n        for (const side of [-1, 1]) {\n          const x0 = side < 0 ? 0 : vw * 0.8;\n          ctx2.fillRect(x0, vh * 0.12, vw * 0.2, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const n of neonSigns) {\n          const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;\n          const flick = Math.sin(t * 13 + n.ph) > 0.97 ? 0.3 : 1;\n          const a = clamp2((0.35 + beat * 0.5) * flick, 0, 1), c = pal[n.c];\n          ctx2.fillStyle = rgba2(c, (a * 0.9).toFixed(3));\n          ctx2.fillRect(x - 4 * dpr, y, 8 * dpr, h);\n          const r = 26 * dpr;\n          ctx2.globalAlpha = a * 0.55;\n          for (let k = 0; k < 3; k++) ctx2.drawImage(glowSprite(c), x - r, y + h * k / 2 - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        const wet = ctx2.createLinearGradient(0, vh * 0.86, 0, vh);\n        wet.addColorStop(0, rgba2(pal[0], 0));\n        wet.addColorStop(1, rgba2(pal[0], (0.08 + beat * 0.12).toFixed(3)));\n        ctx2.fillStyle = wet;\n        ctx2.fillRect(0, vh * 0.86, vw, vh * 0.14);\n      } else if (v.decor === "pub") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(10,6,4,0.9)";\n        for (let k = 0; k < 4; k++) ctx2.fillRect(0, vh * (0.02 + k * 0.045), vw, 7 * dpr);\n        ctx2.fillRect(vw * 0.04, vh * 0.8, vw * 0.92, vh * 0.035);\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 7; k++) {\n          const x = vw * (0.1 + k * 0.133), sw = Math.sin(t * 1.1 + k) * 6 * dpr, y = vh * 0.22;\n          ctx2.strokeStyle = "rgba(60,40,25,0.5)";\n          ctx2.lineWidth = 1.5 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(x, vh * 0.04);\n          ctx2.lineTo(x + sw, y);\n          ctx2.stroke();\n          ctx2.globalAlpha = clamp2(0.45 + beat * 0.35, 0, 1);\n          const r = (22 + beat * 10) * dpr;\n          ctx2.drawImage(glowSprite([255, 180, 95]), x + sw - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 24; k++) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 0.9 + k * 2.3);\n          if (tw < 0.4) continue;\n          ctx2.globalAlpha = clamp2(tw * (0.25 + beat * 0.2), 0, 1);\n          const r = 4 * dpr;\n          ctx2.drawImage(glowSprite(k % 4 ? [255, 210, 140] : pal[k % 3]), vw * (0.08 + k * 0.036) - r, vh * 0.79 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "skihut") {\n        ctx2.globalCompositeOperation = "source-over";\n        const peaks = [[0, 0.62], [0.1, 0.5], [0.22, 0.66], [0.34, 0.74], [0.5, 0.78], [0.66, 0.73], [0.78, 0.64], [0.9, 0.48], [1, 0.6]];\n        const ridge = new Path2D();\n        ridge.moveTo(0, vh);\n        for (const [x, y] of peaks) ridge.lineTo(vw * x, vh * y);\n        ridge.lineTo(vw, vh);\n        ridge.closePath();\n        ctx2.fillStyle = "rgba(14,16,30,0.8)";\n        ctx2.fill(ridge);\n        ctx2.save();\n        ctx2.clip(ridge);\n        const snowG = ctx2.createLinearGradient(0, vh * 0.48, 0, vh * 0.7);\n        snowG.addColorStop(0, "rgba(225,232,255,0.22)");\n        snowG.addColorStop(1, "rgba(225,232,255,0)");\n        ctx2.fillStyle = snowG;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.restore();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 20; k++) {\n          const f = k / 20, x = vw * f, y = vh * (0.04 + 0.1 * (1 - Math.abs(f - 0.5) * 2));\n          ctx2.globalAlpha = clamp2((0.3 + beat * 0.35) * (0.6 + 0.4 * Math.sin(t * 1.5 + k * 1.3)), 0, 1);\n          const r = (9 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 205, 130] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        snow ||= Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), sp: 0.02 + Math.random() * 0.04, ph: Math.random() * 6.3 }));\n        for (const f of snow) {\n          const y = (f.y + t * f.sp) % 1, x = f.x + Math.sin(t * 0.6 + f.ph) * 0.01;\n          ctx2.globalAlpha = 0.35 + 0.25 * Math.sin(f.ph + t);\n          const r = 3 * dpr;\n          ctx2.drawImage(glowSprite([235, 240, 255]), x * vw - r, y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "desert") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          if (s1.y > 0.5) continue;\n          ctx2.globalAlpha = clamp2((0.25 + 0.3 * Math.sin(t * 1.3 + s1.ph)) * s1.z, 0, 1);\n          const r = (1.4 + s1.z * 2) * dpr;\n          ctx2.drawImage(glowSprite([255, 240, 220]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const mr = Math.min(vw, vh) * 0.09;\n        ctx2.globalAlpha = clamp2(0.55 + beat * 0.25, 0, 1);\n        ctx2.drawImage(glowSprite([255, 225, 180]), vw * 0.2 - mr * 2.4, vh * 0.2 - mr * 2.4, mr * 4.8, mr * 4.8);\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(14,8,6,0.85)";\n        for (const [y0, amp, ph] of [[0.76, 0.04, 0], [0.83, 0.03, 2]]) {\n          ctx2.beginPath();\n          ctx2.moveTo(0, vh);\n          for (let x = 0; x <= 24; x++) ctx2.lineTo(vw * x / 24, vh * (y0 + amp * Math.sin(x * 0.55 + ph)));\n          ctx2.lineTo(vw, vh);\n          ctx2.closePath();\n          ctx2.fill();\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        const fire = ctx2.createRadialGradient(vw / 2, vh, 0, vw / 2, vh, vh * 0.45);\n        fire.addColorStop(0, `rgba(255,140,60,${(0.12 + px.kickEnv * 0.1 + px.drop * 0.08).toFixed(3)})`);\n        fire.addColorStop(1, "rgba(255,140,60,0)");\n        ctx2.fillStyle = fire;\n        ctx2.fillRect(0, vh * 0.55, vw, vh * 0.45);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n    }\n    let stands = null, sky = null, win = null, flies = null, stars = null, neonSigns = null, snow = null, shoot = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    kinSet(CO2, "c"), kinSet(PYRO, "p"), kinSet(STROBE, "s");\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };\n    const GOLD = [255, 214, 120], WHITE = [255, 255, 255];\n    function confetti(pal, big, few) {\n      const pop = (c) => {\n        const m = Math.max(...c, 1);\n        return c.map((v) => Math.round(clamp2((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));\n      };\n      const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];\n      for (let k = 0; k < n && fx.confetti.length < 420; k++) {\n        const side = k % 2 ? 1 : -1;\n        fx.confetti.push({\n          x: vw * (side < 0 ? 0.12 : 0.88),\n          y: vh * 0.98,\n          vx: -side * vh * (0.12 + Math.random() * 0.45),\n          vy: -vh * (1.25 + Math.random() * 0.6),\n          r: Math.random() * 6.3,\n          vr: (Math.random() - 0.5) * 14,\n          w: (9 + Math.random() * 8) * (vh / 720),\n          h: (5 + Math.random() * 4) * (vh / 720),\n          ph: Math.random() * 6.3,\n          c: cols[k % cols.length],\n          a: 1\n        });\n      }\n      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });\n    }\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;\n      if (newBeat) fx.barId = barId;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {\n        fx.confAt = st.t;\n        confetti(pal, big, st.quality < 1 || v.decor === "fairy");\n      }\n      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;\n      if (st.confetti && st.confetti !== fx.confManual) {\n        fx.confManual = st.confetti;\n        if (v.decor !== "fairy") confetti(pal, big, st.quality < 1);\n      }\n      if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {\n        const peak = (px.fxMul ?? 1) >= 0.75 && (px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale);\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && st.flashGo && STROBE.has(key) && px.drop > 0.5 && newBeat && flashCap.take(st.t)) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp2(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.confetti = fx.confetti.filter((c) => c.y < vh * 1.05 && (c.a -= dt * 0.07) > 0);\n      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);\n      if (fx.confetti.length || fx.streamers.length) {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const c of fx.confetti) {\n          c.vy = c.vy < vh * 0.1 ? c.vy + vh * 1.4 * dt : vh * 0.1;\n          c.vx *= 1 - dt * 1.6;\n          c.ph += dt * 5;\n          c.r += c.vr * dt;\n          c.x += (c.vx + Math.sin(c.ph) * vh * 0.05) * dt;\n          c.y += c.vy * dt;\n          const flip = Math.abs(Math.cos(c.ph * 1.3)), w = c.w * (0.3 + 0.7 * flip), h = c.h;\n          ctx2.globalAlpha = clamp2(c.a, 0, 1) * (0.55 + 0.45 * flip);\n          ctx2.fillStyle = `rgb(${c.c[0]},${c.c[1]},${c.c[2]})`;\n          const co = Math.cos(c.r), si = Math.sin(c.r);\n          ctx2.setTransform(co, si, -si, co, c.x, c.y);\n          ctx2.fillRect(-w / 2, -h / 2, w, h);\n        }\n        ctx2.setTransform(1, 0, 0, 1, 0, 0);\n        ctx2.lineWidth = 4 * (vh / 720);\n        ctx2.lineCap = "round";\n        for (const m of fx.streamers) {\n          m.y += m.vy * dt;\n          m.ph += dt * 2;\n          ctx2.globalAlpha = clamp2(m.a, 0, 1) * 0.85;\n          ctx2.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;\n          ctx2.beginPath();\n          for (let k = 0; k <= 10; k++) {\n            const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;\n            k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y);\n          }\n          ctx2.stroke();\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "lighter";\n      }\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const MOVES = {\n      rave: "jump",\n      trance: "wave",\n      hardstyle: "jump",\n      dnb: "jump",\n      techno: "pump",\n      house: "bounce",\n      rock: "bang",\n      metal: "bang",\n      punk: "jump",\n      bass: "nod",\n      pop: "clap",\n      kpop: "clap",\n      disco: "clap",\n      country: "clap",\n      latin: "bounce",\n      afro: "bounce",\n      reggae: "skank",\n      chill: "sway",\n      jazz: "sway",\n      classical: "sway",\n      edm: "jump",\n      deephouse: "bounce",\n      techhouse: "pump",\n      psytrance: "jump",\n      dubstep: "bang",\n      garage: "bounce",\n      eurodance: "jump",\n      melodictechno: "pump",\n      hardtechno: "pump",\n      futurebass: "jump",\n      electroswing: "bounce",\n      breakbeat: "bounce",\n      boombap: "nod",\n      dancehall: "bounce",\n      cloudrap: "sway",\n      hardrock: "bang",\n      postrock: "sway",\n      ska: "skank",\n      emo: "jump",\n      jpop: "clap",\n      musical: "clap",\n      christmas: "sway",\n      celtic: "clap",\n      balkan: "jump",\n      amapiano: "bounce",\n      lofi: "sway",\n      neoclassical: "sway",\n      acoustic: "sway",\n      synthwave: "nod",\n      hyperpop: "jump",\n      trap: "bounce",\n      drill: "nod",\n      phonk: "pump",\n      rnb: "sway",\n      soul: "clap",\n      indie: "bounce",\n      alternative: "bang",\n      blues: "sway",\n      schlager: "clap",\n      ballad: "sway",\n      gospel: "clap",\n      reggaeton: "bounce",\n      salsa: "bounce",\n      brazil: "bounce",\n      flamenco: "clap",\n      bollywood: "bounce",\n      arabic: "clap",\n      ambient: "sway",\n      cinematic: "sway"\n    };\n    kin(MOVES, 2);\n    const mood = { x: 0 };\n    const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);\n    kinSet(SEA, "l");\n    const sea = { a: 0 };\n    function seaLevel(px, dt, st) {\n      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp2((px.energy - 0.32) * 2.2, 0, 1) : 0;\n      sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));\n      return sea.a;\n    }\n    function crowdMood(px, dt, hype) {\n      const target = clamp2((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);\n      mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));\n      if (px.dropHit) mood.x = Math.max(mood.x, 0.9);\n      return mood.x;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    const HAIR = ["", "short", "short", "buzz", "long", "long", "bob", "pony", "bun", "pigtails", "cap", "beanie", "hat", "afro", "curl", "spiky", "hood"];\n    const FAR_HAIR = { short: "", buzz: "", spiky: "", bob: "long", pony: "long", pigtails: "long", beanie: "cap", hood: "cap", curl: "afro" };\n    const BUILD = [0.86, 0.95, 1.05, 1.17];\n    const L1 = 26, L2 = 25;\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      v.rows.forEach(([row, scale, gap], lv) => {\n        const far = scale < 0.66;\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          const h0 = HAIR[Math.floor(r() * HAIR.length)];\n          people.push({\n            id: id++,\n            x,\n            row,\n            lv,\n            far,\n            sc: scale,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: far ? FAR_HAIR[h0] ?? h0 : h0,\n            // Statur (vier Stufen) und Kleidung (nichts, Kapuze, Kragen, Rucksack) \u2013 wenige Stufen = wenige K\xF6rperbilder\n            wd: far ? 1 + Math.floor(r() * 2) : Math.floor(r() * 4),\n            det: far ? 0 : Math.floor(r() * 4),\n            // eigene kleine Verz\xF6gerung: nicht alle reagieren im selben Augenblick auf den Schlag\n            lag: r() * 0.09,\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0,\n            spr: null,\n            pk: ""\n          });\n        }\n      });\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0, pk: "", T: [] };\n    }\n    const mixC = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));\n    const css = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;\n    function tones(z, pal) {\n      const dark = [7, 6, 14], light = mixC(mixC(pal[0], pal[2], 0.45), [255, 255, 255], 0.35);\n      const base = mixC(dark, mixC(dark, pal[1], 0.45), 0.06 + (1 - z) * 0.26);\n      const low = mixC(base, [0, 0, 0], 0.35 * z);\n      return {\n        top: css(mixC(base, light, 0.08 + (1 - z) * 0.04)),\n        low: css(low),\n        rim: css(mixC(base, light, 0.85 - (1 - z) * 0.35)),\n        mid: css(mixC(base, light, 0.4 - (1 - z) * 0.15)),\n        det: css(mixC(base, light, 0.05)),\n        arm: css(mixC(base, light, 0.06)),\n        chair: css(mixC(base, [120, 28, 40], 0.3)),\n        chairLow: css(mixC(low, [70, 14, 22], 0.25)),\n        ext: css(low)\n      };\n    }\n    function paint(x, P, S, top, bottom, T, c0, c1) {\n      const lin = (a, b, c) => {\n        const g2 = x.createLinearGradient(0, top, 0, bottom);\n        g2.addColorStop(0, a);\n        g2.addColorStop(0.45, b);\n        g2.addColorStop(1, c);\n        return g2;\n      };\n      x.fillStyle = lin(T.rim, T.mid, c1);\n      x.fill(P);\n      x.globalCompositeOperation = "source-atop";\n      x.translate(-0.55 * S, 0.75 * S);\n      x.fillStyle = lin(T.mid, c0, c1);\n      x.fill(P);\n      x.translate(-0.55 * S, 0.75 * S);\n      const g = x.createLinearGradient(0, top, 0, bottom);\n      g.addColorStop(0, c0);\n      g.addColorStop(1, c1);\n      x.fillStyle = g;\n      x.fill(P);\n      x.setTransform(1, 0, 0, 1, 0, 0);\n      x.globalCompositeOperation = "source-over";\n    }\n    function bodyPath(cx, y, S, W, det) {\n      const P = new Path2D(), X = (d) => cx + d * S, Y = (d) => y + d * S;\n      const n = 4.4, sh = 21.5 * W, hip = 20 * W;\n      P.moveTo(X(-n), Y(-50));\n      P.lineTo(X(n), Y(-50));\n      P.quadraticCurveTo(X(n + 6 * W), Y(-48.6), X(sh - 3), Y(-45.6));\n      P.bezierCurveTo(X(sh + 0.6), Y(-44.6), X(sh + 1.1), Y(-40), X(sh + 0.7), Y(-35));\n      P.quadraticCurveTo(X(sh - 0.2), Y(-14), X(hip), Y(20));\n      P.lineTo(X(-hip), Y(20));\n      P.quadraticCurveTo(X(-sh + 0.2), Y(-14), X(-sh - 0.7), Y(-35));\n      P.bezierCurveTo(X(-sh - 1.1), Y(-40), X(-sh - 0.6), Y(-44.6), X(-sh + 3), Y(-45.6));\n      P.quadraticCurveTo(X(-n - 6 * W), Y(-48.6), X(-n), Y(-50));\n      P.closePath();\n      if (det === 1) {\n        P.moveTo(X(10.5), Y(-47.5));\n        P.ellipse(X(0), Y(-47.5), 10.5 * S, 5.2 * S, 0, 0, Math.PI * 2);\n      } else if (det === 2) {\n        P.moveTo(X(-8.5), Y(-45.5));\n        P.lineTo(X(-6.6), Y(-53.5));\n        P.lineTo(X(6.6), Y(-53.5));\n        P.lineTo(X(8.5), Y(-45.5));\n        P.closePath();\n      }\n      return P;\n    }\n    function headPath(ox, oy, S, hair) {\n      const P = new Path2D(), X = (d) => ox + d * S, Y = (d) => oy + d * S;\n      const E = (cx, cy, rx2, ry2) => {\n        P.moveTo(X(cx + rx2), Y(cy));\n        P.ellipse(X(cx), Y(cy), rx2 * S, ry2 * S, 0, 0, Math.PI * 2);\n      };\n      const rx = hair === "buzz" ? 8 : 8.6, ry = hair === "buzz" ? 9.6 : 10.2;\n      E(0, 0, rx, ry);\n      if (["", "short", "buzz", "cap", "spiky", "pony", "bun"].includes(hair)) {\n        E(-rx + 0.3, 1.4, 1.7, 2.9);\n        E(rx - 0.3, 1.4, 1.7, 2.9);\n      }\n      const tail = (x0, dir) => {\n        P.moveTo(X(x0 - 2), Y(-4));\n        P.lineTo(X(x0 + 2.2), Y(-4));\n        P.quadraticCurveTo(X(x0 + 2.2 + dir * 2.6), Y(8), X(x0 + dir * 3), Y(19));\n        P.quadraticCurveTo(X(x0 + dir * 1.2), Y(20.5), X(x0 - 0.6), Y(18));\n        P.quadraticCurveTo(X(x0 + 0.4), Y(6), X(x0 - 2), Y(-4));\n        P.closePath();\n      };\n      if (hair === "short") E(0, -1.6, 9.2, 9.6);\n      else if (hair === "long" || hair === "bob") {\n        const b = hair === "long" ? 22 : 10, f = hair === "long" ? 11.4 : 10.6;\n        E(0, -1.5, 9.6, 10);\n        P.moveTo(X(-9.6), Y(-2));\n        P.lineTo(X(9.6), Y(-2));\n        P.quadraticCurveTo(X(f), Y(b * 0.55), X(f - 0.8), Y(b));\n        P.quadraticCurveTo(X(0), Y(b + 2.5), X(-f + 0.8), Y(b));\n        P.quadraticCurveTo(X(-f), Y(b * 0.55), X(-9.6), Y(-2));\n        P.closePath();\n      } else if (hair === "pony") {\n        E(0, -1.4, 9, 9.6);\n        tail(0.4, 1);\n        E(0.4, -3, 2.8, 2.3);\n      } else if (hair === "bun") {\n        E(0, -1.4, 9, 9.6);\n        E(0, -11.6, 4.6, 4.2);\n      } else if (hair === "pigtails") {\n        E(0, -1.4, 9, 9.6);\n        E(-9.6, 5.5, 2.6, 6.6);\n        E(9.6, 5.5, 2.6, 6.6);\n      } else if (hair === "cap") {\n        E(0, -3, 9.5, 8.6);\n        E(0, -1.4, 11.4, 1.5);\n        E(0, -11.4, 1.4, 1.1);\n      } else if (hair === "beanie") {\n        E(0, -4.6, 9.6, 9.8);\n        P.rect(X(-9.9), Y(-3.6), 19.8 * S, 3.6 * S);\n        E(0, -15.2, 3.2, 3);\n      } else if (hair === "hat") {\n        E(0, -4.6, 15.5, 2.3);\n        P.roundRect(X(-7.4), Y(-15), 14.8 * S, 10.6 * S, [3.6 * S, 3.6 * S, 0, 0]);\n      } else if (hair === "afro" || hair === "curl") {\n        const R = hair === "afro" ? 12.4 : 9.8, c = hair === "afro" ? -3 : -2, k = hair === "afro" ? 11 : 8, br = hair === "afro" ? 3.3 : 2.7;\n        E(0, c, R, R);\n        for (let i = 0; i < k; i++) {\n          const a = hair === "afro" ? i / k * Math.PI * 2 : Math.PI + i / (k - 1) * Math.PI;\n          E(Math.cos(a) * (R - 1.2), c + Math.sin(a) * (R - 1.2), br, br);\n        }\n      } else if (hair === "spiky") {\n        E(0, -1.4, 9, 9.6);\n        for (let k = -2; k <= 2; k++) {\n          const bx = k * 3.6, by = -8.6 + Math.abs(k) * 1.1;\n          P.moveTo(X(bx - 2.2), Y(by));\n          P.lineTo(X(bx + k * 0.9), Y(by - 5.6 + Math.abs(k) * 0.9));\n          P.lineTo(X(bx + 2.2), Y(by));\n          P.closePath();\n        }\n      } else if (hair === "hood") {\n        P.moveTo(X(-12.5), Y(17));\n        P.quadraticCurveTo(X(-13.8), Y(-8), X(-5), Y(-13.6));\n        P.quadraticCurveTo(X(0), Y(-15.6), X(5), Y(-13.6));\n        P.quadraticCurveTo(X(13.8), Y(-8), X(12.5), Y(17));\n        P.closePath();\n      }\n      return P;\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    let palKey = "", spriteBudget = 0;\n    function bodySprite(p, u, T, seated) {\n      const key = `${p.lv}|${p.sc}|${p.hair}|${p.wd}|${p.det}|${seated ? 1 : 0}|${palKey}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (spriteBudget-- <= 0) return null;\n      if (bodySprites.size >= 200) bodySprites.delete(bodySprites.keys().next().value);\n      const S = p.sc * 1.14 * u, W = BUILD[p.wd], pad = 2;\n      const bwU = Math.max(46 * W, seated ? 52 : 0);\n      const top = p.far ? 86 : 57;\n      const w = Math.ceil(bwU * S) + pad * 2, h = Math.ceil((top + 21) * S) + pad * 2;\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx = w / 2, y = pad + top * S;\n      paint(x, bodyPath(cx, y, S, W, p.det), S, y - 56 * S, y + 20 * S, T, T.top, T.low);\n      if (p.det === 3) {\n        x.globalCompositeOperation = "source-atop";\n        x.fillStyle = T.det;\n        x.beginPath();\n        x.roundRect(cx - 9 * W * S, y - 33 * S, 18 * W * S, 27 * S, 5 * S);\n        x.fill();\n        x.strokeStyle = T.det;\n        x.lineWidth = 1.6 * S;\n        x.beginPath();\n        x.moveTo(cx - 10 * W * S, y - 46 * S);\n        x.lineTo(cx - 9.5 * W * S, y - 34 * S);\n        x.moveTo(cx + 10 * W * S, y - 46 * S);\n        x.lineTo(cx + 9.5 * W * S, y - 34 * S);\n        x.stroke();\n        x.globalCompositeOperation = "source-over";\n      }\n      if (seated) {\n        const Q = new Path2D();\n        Q.roundRect(cx - 25 * S, y - 16 * S, 50 * S, 36 * S, [6 * S, 6 * S, 0, 0]);\n        paint(x, Q, S * 0.7, y - 16 * S, y + 20 * S, T, T.chair, T.chairLow);\n      }\n      const hw = Math.ceil(36 * S) + pad * 2, hh = Math.ceil(48 * S) + pad * 2;\n      const hc = makeCanvas(hw, hh);\n      hc.width = hw;\n      hc.height = hh;\n      const ox = hw / 2, oy = pad + 20 * S;\n      const hx = hc.getContext("2d");\n      paint(hx, headPath(ox, oy, S, p.hair), S, oy - 20 * S, oy + 26 * S, T, T.top, T.low);\n      hx.globalCompositeOperation = "destination-over";\n      hx.fillStyle = T.top;\n      hx.fillRect(ox - 3.4 * S, oy + 4 * S, 6.8 * S, 15 * S);\n      hx.globalCompositeOperation = "source-over";\n      if (p.far) x.drawImage(hc, cx - ox, y - 64 * S - oy);\n      sp = { c, w, h, ax: cx, ay: y, head: p.far ? null : hc, hox: ox, hoy: oy, S, ext: seated ? T.chairLow : T.ext, ew: seated ? 50 : 40 * W };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    function drawCrowd(ctx2, px, pal, dpr, rgba2, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (crowd && crowd.venue === v && crowd.w !== vw) {\n        const f = vw / crowd.w;\n        for (const p of crowd.people) p.x *= f;\n        crowd.w = vw;\n      }\n      if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      palKey = `${pal[0].join()}|${pal[1].join()}|${pal[2].join()}`;\n      const pk = `${palKey}|${u.toFixed(2)}`;\n      if (crowd.pk !== pk) {\n        crowd.pk = pk;\n        crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, pal));\n      }\n      spriteBudget = 40;\n      const X = crowdMood(px, dt, st.hype), t = st.t;\n      const style = v.seated ? "sway" : MOVES[px.key] || "clap";\n      const SEAa = seaLevel(px, dt, st);\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const raw = clamp2(px.phase ?? 0, 0, 1);\n      if (crowd.lastPh >= 0) {\n        let d = raw - (crowd.lastPh + (dt || 0) * (st.bpm / 60)) % 1;\n        d -= Math.round(d);\n        if (Math.abs(d) > 0.12) crowd.phOff += d;\n      }\n      crowd.lastPh = raw;\n      crowd.phOff *= Math.exp(-(dt || 0.016) * 3);\n      if (Math.abs(crowd.phOff) < 5e-3) crowd.phOff = 0;\n      const phi = ((raw - crowd.phOff) % 1 + 1) % 1;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const beatPos = beatN + phi;\n      const build = clamp2(px.build || 0, 0, 1);\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba2(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [];\n      let arms = new Path2D(), fore = new Path2D(), nArms = 0, curLv = -1, lastFill = "";\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba2(pal[0], 0));\n        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const flushArms = (lv) => {\n        if (!nArms) return;\n        const [row, sc] = v.rows[lv], k = sc * u;\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.strokeStyle = crowd.T[lv].arm;\n        ctx2.lineWidth = (sc < 0.66 ? 5.6 : 7.2) * k;\n        ctx2.stroke(arms);\n        if (sc >= 0.66) {\n          ctx2.lineWidth = 5.8 * k;\n          ctx2.stroke(fore);\n          fore = new Path2D();\n        }\n        arms = new Path2D();\n        nArms = 0;\n      };\n      const flushLights = (lv) => {\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [gx, gy, kind, s1, r0] of glows) {\n          const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n          ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - r0 * 0.25) * A * rowA[r0];\n          ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n        }\n        glows.length = 0;\n        for (const f of crowd.flashes) {\n          if ((f.lv ?? 0) !== lv) continue;\n          const r = 34 * f.s;\n          ctx2.globalAlpha = f.a * A;\n          ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n        }\n        ctx2.globalCompositeOperation = "source-over";\n      };\n      const mid = vw / 2;\n      const cs = st.cam?.s || 1, ctx0 = (1 - cs) * vw / 2 + ((st.cam?.x || 0) + (st.dep?.on ? st.dep.x * 34 : 0)) * dpr;\n      const vx0 = -ctx0 / cs, vx1 = (vw - ctx0) / cs;\n      for (const p of crowd.people) {\n        if (p.lv !== curLv) {\n          if (curLv >= 0) {\n            flushArms(curLv);\n            flushLights(curLv);\n          }\n          curLv = p.lv;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        if (p.pk !== pk) {\n          const sp2 = bodySprite(p, u, crowd.T[p.lv], v.seated);\n          if (sp2) [p.spr, p.pk] = [sp2, pk];\n        }\n        const sp = p.spr;\n        if (!sp) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp2(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const bp = beatPos - p.lag, bN = Math.floor(bp), ph = bp - bN;\n        const cyc = half ? ((bN & 1) + ph) / 2 : ph, cycN = half ? bN >> 1 : bN;\n        const down = Math.exp(-ph * 6);\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = (style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2 || px.drop > 0.6 && me > 0.6;\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc)) - 3 * s1 * Math.exp(-cyc * 16);\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * ph);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((ph - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * ph);\n        lift -= build * 4 * s1 * (0.4 + me * 0.6);\n        const th = bp / 2 * Math.PI + p.ph, swA = (2 + (1 - me) * 4) * s1;\n        const sway = Math.sin(th) * swA;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6) * (1 - build * 0.5);\n        const hdx = Math.sin(th - 0.55) * swA * 1.25 - sway + (style === "bang" ? nod * 0.3 * p.hand : 0);\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        const vis = x > vx0 - 60 * s1 && x < vx1 + 60 * s1;\n        const k1 = s1 / sp.S, flip = p.x > mid, bx = flip ? -x : x, hx = bx + (flip ? -hdx : hdx);\n        if (vis) {\n          if (flip) ctx2.scale(-1, 1);\n          ctx2.drawImage(sp.c, bx - sp.ax * k1, yy - sp.ay * k1 + (sp.head ? 0 : nod * 0.5), sp.w * k1, sp.h * k1);\n          if (lastFill !== sp.ext) ctx2.fillStyle = lastFill = sp.ext;\n          ctx2.fillRect(bx - sp.ew / 2 * s1, yy + 20 * s1 - 0.5, sp.ew * s1, vh * 0.6 + (base - yy));\n          if (sp.head) ctx2.drawImage(sp.head, hx - sp.hox * k1, yy - 64 * s1 + nod - sp.hoy * k1, sp.head.width * k1, sp.head.height * k1);\n          if (flip) ctx2.scale(-1, 1);\n        }\n        const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;\n        const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;\n        const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;\n        let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod" ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;\n        if (!v.seated && build > 0.2 && me > 0.4 && p.up < 0.6) wantUp = Math.max(wantUp, 0.55 * build);\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        const Wb = BUILD[p.wd];\n        for (const side of [-1, 1]) {\n          const a = side === p.hand || allUp || me > 0.6 || style === "clap" || lifted ? p.arm : 0;\n          if (a < 0.2 || !vis) continue;\n          const sx = x + side * 16.5 * Wb * s1, sy = yy - 41 * s1;\n          const ths = th - 0.35;\n          let ux = side * (12 + 6 * Math.sin(ths)) * s1, uy = -50 * s1;\n          if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin(ths * 2) * 14 * s1;\n          if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin(bp / 8 * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];\n          if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n          if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin(ths)) * s1, -54 * s1 - 6 * s1 * down];\n          if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n          const b0 = (1 - a) * (1 - a), b1 = 2 * a * (1 - a), b2 = a * a;\n          let hxA = sx + (b0 * side * 3 + b1 * side + b2 * ux / s1) * s1, hyA = sy + (b0 * 50 + b1 * 22) * s1 + b2 * uy;\n          let dx = hxA - sx, dy = hyA - sy, d = Math.hypot(dx, dy) || 1;\n          const dm = (L1 + L2 - 0.5) * s1;\n          if (d > dm) [hxA, hyA, dx, dy, d] = [sx + dx / d * dm, sy + dy / d * dm, dx / d * dm, dy / d * dm, dm];\n          const l1 = L1 * s1, l2 = L2 * s1, al = (l1 * l1 - l2 * l2 + d * d) / (2 * d), hh = Math.min(Math.sqrt(Math.max(0, l1 * l1 - al * al)), 9 * s1) * clamp2((sy + 10 * s1 - hyA) / (30 * s1), 0, 1);\n          let nx = -dy / d, ny = dx / d;\n          if (nx * side < 0) [nx, ny] = [-nx, -ny];\n          const ex = sx + dx / d * al + nx * hh, ey = sy + dy / d * al + ny * hh;\n          arms.moveTo(sx, sy);\n          arms.lineTo(ex, ey);\n          if (p.far) arms.lineTo(hxA, hyA);\n          else {\n            fore.moveTo(ex, ey);\n            fore.lineTo(hxA, hyA);\n          }\n          nArms++;\n          if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);\n        }\n        if (st.noFlash) {\n        } else if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1, lv: p.lv });\n        else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, lv: p.lv });\n      }\n      if (curLv >= 0) {\n        flushArms(curLv);\n        flushLights(curLv);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      ctx2.globalAlpha = 1;\n    }\n    const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 6e-3 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));\n    function drawFog(ctx2, st, v) {\n      if (v.decor === "fairy") return;\n      const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0)) * (px.haze ?? 1);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const b of fogBanks) {\n        const x = ((b.x + t * b.sp) % 1.3 - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));\n        ctx2.globalAlpha = clamp2((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);\n        ctx2.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const drones = { song: "", t: -1, pts: [], shape: 0 };\n    function shapePoint(kind, i, n) {\n      const a = i / n * Math.PI * 2;\n      if (kind === 0) return [16 * Math.sin(a) ** 3 / 17, -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a)) / 17];\n      if (kind === 1) {\n        const k = Math.floor(i / n * 10), f = i / n * 10 - k, r0 = k % 2 ? 0.42 : 1, r1 = k % 2 ? 1 : 0.42;\n        const a0 = k / 10 * Math.PI * 2 - Math.PI / 2, a1 = (k + 1) / 10 * Math.PI * 2 - Math.PI / 2;\n        return [Math.cos(a0) * r0 * (1 - f) + Math.cos(a1) * r1 * f, Math.sin(a0) * r0 * (1 - f) + Math.sin(a1) * r1 * f];\n      }\n      if (kind === 2) return [Math.cos(a), Math.sin(a)];\n      return [i / n * 2 - 1, Math.sin(i / n * Math.PI * 4) * 0.35];\n    }\n    function drawDrones(ctx2, st) {\n      const px = st.px, t = st.t;\n      if (st.song && st.song !== drones.song && st.drones && px.dropHit && px.energy > 0.7 && !px.blackout) {\n        drones.song = st.song;\n        drones.t = t;\n        drones.shape = Math.floor(Math.random() * 4);\n        drones.pts = Array.from({ length: 120 }, (_, i) => ({ sx: Math.random(), sy: Math.random() * 0.5, i }));\n      }\n      if (drones.t < 0) return;\n      const age = t - drones.t;\n      if (age > 9) return void (drones.t = -1);\n      const f = age < 2 ? age / 2 : age < 7 ? 1 : 1 - (age - 7) / 2, e = f * f * (3 - 2 * f);\n      const cx = vw / 2, cy = vh * 0.2, S = Math.min(vw, vh) * 0.12, beat = Math.max(px.kickEnv || 0, px.accent || 0);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const p of drones.pts) {\n        const [qx, qy] = shapePoint(drones.shape, p.i, drones.pts.length);\n        const x = p.sx * vw + (cx + qx * S - p.sx * vw) * e, y = p.sy * vh + (cy + qy * S - p.sy * vh) * e;\n        const c = st.pal[p.i % 3], r = (3 + beat * 2.5) * st.dpr;\n        ctx2.globalAlpha = clamp2((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t * 6 + p.i)), 0, 1);\n        ctx2.drawImage(glowSprite(c.map((x2) => Math.round(x2 + (255 - x2) * 0.5))), x - r * 2, y - r * 2, r * 4, r * 4);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    let lastV = null, vSnap = null, vT = 0;\n    const V_FADE = 1.3;\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      const vNext = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      if (lastV && vNext !== lastV && ctx2.canvas?.width && crowdA > 0.05) {\n        try {\n          vSnap = vSnap && vSnap.width === ctx2.canvas.width && vSnap.height === ctx2.canvas.height ? vSnap : makeCanvas(ctx2.canvas.width, ctx2.canvas.height);\n          vSnap.width = ctx2.canvas.width;\n          vSnap.height = ctx2.canvas.height;\n          vSnap.getContext("2d").drawImage(ctx2.canvas, 0, 0);\n          vT = st.t;\n        } catch {\n          vT = 0;\n        }\n      }\n      lastV = vNext;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = vNext;\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        show.drawRig(ctx2, st, v, st.px, st.pal, st.dpr);\n        drawDecor(ctx2, v, st.px, st.pal, rgba2, st.dpr, st);\n      }\n      if (st.inst) show.drawInst(ctx2, st, st.px, st.pal, st.dpr);\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (st.stage && st.fog) drawFog(ctx2, st, v);\n      if (st.stage && v.open) drawDrones(ctx2, st);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba2, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      if (vT && vSnap) {\n        const f = clamp2((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);\n        if (f >= 1) vT = 0;\n        else {\n          ctx2.globalCompositeOperation = "destination-out";\n          ctx2.fillStyle = `rgba(0,0,0,${(1 - e).toFixed(3)})`;\n          ctx2.fillRect(0, 0, vw, vh);\n          ctx2.globalCompositeOperation = "destination-over";\n          ctx2.globalAlpha = 1 - e;\n          ctx2.drawImage(vSnap, 0, 0);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
+              venueUrl ||= URL.createObjectURL(new Blob(['(() => {\n  // src/styles.js\n  var KIN = {\n    // Elektronisch\n    electrohouse: ["edm", "club"],\n    progressivehouse: "edm",\n    futurehouse: ["house", "", "jump"],\n    tropicalhouse: "deephouse",\n    basshouse: ["techhouse", "club"],\n    acidhouse: ["house", "warehouse"],\n    chicagohouse: "house",\n    frenchhouse: "house",\n    nudisco: ["disco", "rooftop"],\n    jerseyclub: ["garage", "club", "jump", "c"],\n    minimal: "techno",\n    detroittechno: "techno",\n    dubtechno: ["techno", "", "", "c"],\n    ebm: ["hardtechno", "", "bang", "psb"],\n    progressivetrance: "trance",\n    upliftingtrance: "trance",\n    liquiddnb: "dnb",\n    neurofunk: ["dnb", "warehouse"],\n    jungle: "dnb",\n    footwork: ["breakbeat", "club", "jump"],\n    electro: ["breakbeat", "club"],\n    festivaltrap: "dubstep",\n    moombahton: ["reggaeton", "festival", "bounce", "cs"],\n    gabber: ["hardstyle", "warehouse", "jump"],\n    happyhardcore: ["gabber", "festival"],\n    eurobeat: "eurodance",\n    handsup: ["eurodance", "festival"],\n    italodisco: "eurodance",\n    darksynth: "synthwave",\n    vaporwave: ["synthwave", "", "sway", "q"],\n    chiptune: ["hyperpop", "neon"],\n    // Hip-Hop & R&B\n    gangsta: "bass",\n    gfunk: ["bass", "rooftop", "bounce"],\n    southern: ["trap", "", "bounce"],\n    alternativehiphop: ["boombap", "cellar"],\n    poprap: ["trap", "stadium"],\n    ukhiphop: ["drill", "club"],\n    grime: ["garage", "cellar", "jump", "s"],\n    deutschrap: "trap",\n    frenchrap: "trap",\n    italianrap: "trap",\n    spanishrap: "trap",\n    russianrap: "trap",\n    turkishrap: "trap",\n    arabrap: "trap",\n    brazilianhiphop: "trap",\n    altrnb: ["rnb", "neon", "sway"],\n    newjackswing: ["rnb", "club", "bounce", "c"],\n    neosoul: ["soul", "jazzbar", "sway"],\n    northernsoul: ["soul", "club"],\n    funk: ["disco", "club", "bounce", "c"],\n    // Rock\n    classicrock: "hardrock",\n    rocknroll: ["rock", "pub", "bounce"],\n    glamrock: "hardrock",\n    bluesrock: "hardrock",\n    southernrock: ["hardrock", "desert"],\n    psychrock: ["rock", "forest", "sway"],\n    stonerrock: ["hardrock", "desert", "bang"],\n    progrock: "rock",\n    krautrock: ["postrock", "space", "nod"],\n    surfrock: ["rock", "beach", "bounce"],\n    garagerock: ["punk", "cellar"],\n    grunge: ["alternative", "cellar", "bang"],\n    britpop: ["indie", "festival", "jump"],\n    shoegaze: ["indie", "space", "sway", "q"],\n    postpunk: ["alternative", "cellar", "nod", "-"],\n    folkrock: ["country", "forest"],\n    softrock: ["ballad", "rooftop"],\n    deutschrock: "hardrock",\n    poppunk: ["punk", "festival", "jump"],\n    hardcorepunk: ["punk", "cellar", "bang"],\n    posthardcore: ["emo", "", "bang"],\n    // Metal\n    heavymetal: "metal",\n    thrash: "metal",\n    glammetal: "hardrock",\n    powermetal: ["metal", "festival"],\n    symphonicmetal: ["metal", "festival"],\n    progmetal: "metal",\n    doom: ["metal", "cellar"],\n    deathmetal: "metal",\n    blackmetal: ["metal", "forest"],\n    grindcore: ["punk", "cellar", "jump"],\n    groovemetal: "metal",\n    metalcore: ["metal", "festival", "jump"],\n    deathcore: ["metal", "cellar"],\n    numetal: ["metal", "festival", "jump"],\n    industrialmetal: ["metal", "", "", "psb"],\n    folkmetal: ["metal", "forest", "jump"],\n    // Pop\n    dancepop: ["pop", "", "jump"],\n    electropop: ["pop", "neon", "bounce"],\n    synthpop: ["synthwave", "neon", "bounce"],\n    teenpop: ["pop", "stadium"],\n    poprock: ["indie", "stadium", "jump"],\n    indiepop: ["indie", "", "bounce"],\n    artpop: ["indie", "space", "sway"],\n    // Asien\n    kindie: ["indie", "rooftop"],\n    krock: "rock",\n    khiphop: "trap",\n    krnb: "rnb",\n    trot: "schlager",\n    jrock: "rock",\n    jhiphop: "trap",\n    anime: ["jpop", "stadium"],\n    vocaloid: "jpop",\n    citypop: ["disco", "rooftop", "sway"],\n    shibuyakei: ["indiepop", "neon"],\n    enka: ["ballad", "hall"],\n    japantrad: ["classical", "forest", "sway", "q"],\n    cpop: "kpop",\n    mandopop: ["pop", "stadium", "sway", "cbl"],\n    cantopop: "mandopop",\n    chinesehiphop: "trap",\n    chinesetrad: ["japantrad", "hall"],\n    tpop: "kpop",\n    lukthung: "schlager",\n    vpop: "kpop",\n    opm: ["pop", "stadium"],\n    dangdut: ["bollywood", "festival"],\n    gamelan: "japantrad",\n    kollywood: "bollywood",\n    punjabi: ["bollywood", "festival", "jump"],\n    desihiphop: "trap",\n    hindustani: "classical",\n    carnatic: "hindustani",\n    qawwali: ["hindustani", "cathedral", "clap", "lq"],\n    // Lateinamerika\n    latinpop: ["latin", "stadium", "clap"],\n    latintrap: "trap",\n    dembow: ["reggaeton", "", "jump"],\n    bachata: ["latin", "", "sway", "l"],\n    merengue: "salsa",\n    son: ["salsa", "jazzbar", "clap"],\n    bolero: ["ballad", "jazzbar"],\n    cumbia: "latin",\n    vallenato: "cumbia",\n    tango: ["flamenco", "jazzbar", "sway"],\n    mariachi: ["country", "pub", "clap"],\n    regionalmexican: ["mariachi", "festival"],\n    banda: ["balkan", "festival", "jump"],\n    norteno: ["country", "desert", "clap"],\n    corridos: ["latin", "desert", "nod"],\n    latinrock: "rock",\n    andean: ["celtic", "forest"],\n    samba: ["brazil", "", "", "c"],\n    pagode: "samba",\n    axe: ["samba", "festival", "jump"],\n    forro: "brazil",\n    sertanejo: ["country", "stadium", "clap"],\n    funkcarioca: "reggaeton",\n    mpb: ["acoustic", "beach", "sway"],\n    bossa: ["jazz", "beach", "sway", "q"],\n    // Afrika & Karibik\n    afrobeat: ["afro", "club"],\n    highlife: "afro",\n    gqom: ["amapiano", "warehouse", "pump"],\n    afrohouse: ["deephouse", "beach", "bounce"],\n    bongo: "afro",\n    soukous: "afro",\n    kuduro: ["dancehall", "club", "jump", "cs"],\n    kizomba: ["afro", "club", "sway"],\n    desertblues: ["blues", "desert", "sway"],\n    rootsreggae: "reggae",\n    dub: ["reggae", "cellar", "nod"],\n    rocksteady: "ska",\n    soca: ["dancehall", "", "jump", "c"],\n    calypso: ["ska", "beach", "bounce"],\n    zouk: ["kizomba", "beach", "bounce"],\n    kompa: "zouk",\n    // Naher Osten & Nordafrika\n    arabicpop: ["arabic", "stadium", "clap", "cb"],\n    khaleeji: ["arabic", "desert"],\n    tarab: ["arabic", "hall", "sway", "lq"],\n    rai: ["arabic", "beach", "bounce"],\n    gnawa: ["arabic", "desert", "clap"],\n    dabke: ["arabic", "festival", "jump"],\n    mahraganat: ["arabic", "club", "jump", "cs"],\n    turkishpop: "pop",\n    arabesk: ["arabic", "pub", "sway", "l"],\n    anatolianrock: ["psychrock", "desert"],\n    persianpop: "arabicpop",\n    persiantrad: "tarab",\n    mizrahi: ["arabicpop", "beach"],\n    // Europa\n    partyschlager: ["schlager", "skihut", "jump", "cb"],\n    volksmusik: ["schlager", "skihut", "clap", "-"],\n    polka: ["volksmusik", "", "jump"],\n    karneval: ["schlager", "pub", "clap", "c"],\n    deutschpop: "pop",\n    chanson: ["acoustic", "jazzbar", "sway"],\n    canzone: "ballad",\n    europop: ["eurodance", "stadium", "clap"],\n    discopolo: ["eurodance", "festival", "clap"],\n    russianpop: ["eurodance", "stadium"],\n    greek: ["balkan", "beach", "clap"],\n    fado: ["ballad", "jazzbar", "sway", "lq"],\n    turbofolk: ["balkan", "club", "jump", "cb"],\n    klezmer: ["balkan", "", "clap"],\n    nordicfolk: ["celtic", "forest", "sway", "l"],\n    // Country & Folk\n    classiccountry: ["country", "pub", "clap"],\n    countrypop: ["country", "stadium", "clap", "cb"],\n    countryrock: ["country", "stadium", "jump", "pb"],\n    americana: ["country", "", "sway"],\n    bluegrass: ["celtic", "forest", "clap"],\n    cajun: ["bluegrass", "pub", "bounce"],\n    folk: ["acoustic", "forest", "sway", "lq"],\n    indiefolk: ["folk", "festival", "clap", "l"],\n    // Jazz & Blues\n    dixieland: ["jazz", "", "clap"],\n    swing: ["jazz", "club", "bounce"],\n    bebop: "jazz",\n    cooljazz: "jazz",\n    spiritualjazz: ["jazz", "space", "sway"],\n    freejazz: ["jazz", "cellar"],\n    vocaljazz: ["jazz", "", "", "lq"],\n    latinjazz: ["jazz", "", "bounce"],\n    gypsyjazz: ["jazz", "", "clap"],\n    fusion: ["jazz", "club", "bounce", "-"],\n    acidjazz: "funk",\n    nujazz: ["jazz", "rooftop", "nod"],\n    smoothjazz: ["jazz", "rooftop", "sway", "lq"],\n    deltablues: ["blues", "", "sway"],\n    chicagoblues: ["blues", "pub", "clap"],\n    // Gospel & Spirituelles\n    ccm: ["pop", "stadium", "clap", "cbl"],\n    worship: ["gospel", "", "sway", "lq"],\n    christianrock: "rock",\n    christianhiphop: "trap",\n    bhajan: ["worship", "forest", "clap"],\n    nasheed: "worship",\n    // Klassik & Filmmusik\n    baroque: ["classical", "cathedral"],\n    classicalera: "classical",\n    romantic: "classical",\n    opera: ["classical", "", "", "lq"],\n    choral: ["classical", "cathedral", "sway"],\n    chamber: "classical",\n    orchestral: "classical",\n    minimalism: ["neoclassical", "hall"],\n    contemporary: "classical",\n    gamemusic: ["cinematic", "neon"],\n    // Ruhig\n    downtempo: ["chill", "rooftop", "sway", "q"],\n    triphop: ["downtempo", "cellar", "nod"],\n    easylistening: ["jazz", "rooftop", "sway", "lq"],\n    newage: ["ambient", "forest"],\n    meditation: "ambient",\n    sleep: "ambient",\n    // Experimentell\n    experimental: ["cinematic", "space", "sway"],\n    idm: ["breakbeat", "", "nod", "-"],\n    industrial: ["hardtechno", "", "bang", "ps"],\n    noise: ["punk", "cellar", "bang"],\n    darkambient: ["ambient", "space"],\n    // Kinder, Feiertage & Gesprochenes\n    halloween: ["cinematic", "forest", "bounce", "c"],\n    kids: ["pop", "home", "clap", "-"],\n    disney: ["musical", "stadium", "clap", "cl"],\n    comedy: ["chill", "pub", "clap", "-"],\n    spoken: ["chill", "home", "sway", "q"]\n  };\n  var baseOf = (k) => typeof KIN[k] === "string" ? KIN[k] : KIN[k]?.[0];\n  var own = (k, i) => typeof KIN[k] === "string" ? "" : KIN[k][i] || "";\n  function kin(map, i = 9) {\n    for (const k in KIN) {\n      if (k in map) continue;\n      const v = own(k, i) || map[baseOf(k)];\n      if (v !== void 0) map[k] = v;\n    }\n    return map;\n  }\n  function kinSet(set, f) {\n    for (const k in KIN) {\n      const fx = own(k, 3);\n      if (fx ? fx.includes(f) : set.has(baseOf(k))) set.add(k);\n    }\n    return set;\n  }\n\n  // src/show.js\n  var clamp = (v, a, b) => Math.min(b, Math.max(a, v));\n  var RIG = {\n    house: ["wave", "chase"],\n    deephouse: ["wave"],\n    techhouse: ["chase", "cross"],\n    garage: ["wave", "chase"],\n    disco: ["wave", "fan"],\n    techno: ["chase", "cross", "point"],\n    edm: ["fan", "cross", "wave"],\n    rave: ["fan", "cross"],\n    trance: ["fan", "wave"],\n    psytrance: ["cross", "wave"],\n    hardstyle: ["cross", "fan"],\n    dnb: ["chase", "cross"],\n    dubstep: ["point", "fan"],\n    eurodance: ["wave", "fan"],\n    synthwave: ["wave"],\n    hyperpop: ["chase", "fan"],\n    pop: ["wave", "fan"],\n    kpop: ["chase", "wave"],\n    schlager: ["wave", "fan"],\n    rock: ["point", "fan"],\n    metal: ["point", "fan"],\n    punk: ["point"],\n    alternative: ["point", "wave"],\n    indie: ["wave"],\n    latin: ["wave"],\n    reggaeton: ["wave", "chase"],\n    salsa: ["wave"],\n    brazil: ["wave"],\n    afro: ["wave"],\n    bollywood: ["wave", "fan"],\n    arabic: ["wave"],\n    bass: ["point", "chase"],\n    trap: ["point", "chase"],\n    drill: ["point"],\n    phonk: ["chase"],\n    soul: ["wave"],\n    gospel: ["fan"],\n    country: ["wave"],\n    reggae: ["wave"],\n    flamenco: ["point"],\n    melodictechno: ["wave", "fan"],\n    hardtechno: ["chase", "cross"],\n    futurebass: ["fan", "wave"],\n    electroswing: ["wave"],\n    breakbeat: ["chase", "point"],\n    boombap: ["point"],\n    dancehall: ["wave", "chase"],\n    hardrock: ["point", "fan"],\n    postrock: ["fan"],\n    ska: ["wave", "chase"],\n    emo: ["point"],\n    jpop: ["chase", "wave"],\n    musical: ["fan"],\n    celtic: ["wave"],\n    balkan: ["chase", "wave"],\n    amapiano: ["wave"]\n  };\n  var BLIND = /* @__PURE__ */ new Set(["hardrock", "hardtechno", "balkan", "rock", "metal", "punk", "alternative", "pop", "kpop", "schlager", "edm", "rave", "eurodance", "hardstyle", "bollywood", "gospel"]);\n  var SHEET = /* @__PURE__ */ new Set(["edm", "rave", "trance", "psytrance", "techno", "techhouse", "hardstyle", "dnb", "dubstep"]);\n  var CALM = /* @__PURE__ */ new Set(["chill", "ambient", "jazz", "classical", "cinematic", "ballad", "rnb", "blues", "lofi", "neoclassical", "acoustic", "cloudrap", "christmas"]);\n  kin(RIG);\n  kinSet(BLIND, "b"), kinSet(SHEET, "w"), kinSet(CALM, "q");\n  var rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;\n  var mixW = (c, f) => c.map((v) => v + (255 - v) * f);\n  function createShow(glowSprite, cap) {\n    let vw = 0, vh = 0;\n    const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false };\n    const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);\n    function drawRig(ctx2, st, v, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const t = st.t, dt = st.dt, key = px.key, bp = beatPos(st, px);\n      const mb = px.mb ?? bp;\n      const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);\n      if (px.dropHit && !st.noFlash) rig.drop = 1;\n      rig.drop *= Math.exp(-dt * 3);\n      const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;\n      const pats = RIG[key] || (px.rig ? [px.rig] : null);\n      ctx2.globalCompositeOperation = "lighter";\n      if (n && pats && st.rig) {\n        const blk = Math.floor(bp / 32);\n        if (blk !== rig.blk || px.rig && px.rig !== rig.pat) {\n          rig.blk = blk;\n          rig.pat = px.rig || pats[(blk + (px.scene || 0)) % pats.length];\n          rig.col = (rig.col + 1) % 3;\n        }\n        const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv) * (1 + 0.45 * (px.pulse || 0) + 0.4 * (px.lift || 0));\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(8,6,16,0.7)";\n        ctx2.fillRect(0, y - 3 * dpr, vw, 6 * dpr);\n        ctx2.globalCompositeOperation = "lighter";\n        const lead = (Math.floor(mb * 2) % n + n) % n;\n        for (let i = 0; i < n; i++) {\n          const x = vw * (0.07 + 0.86 * i / (n - 1)), u = i / (n - 1) - 0.5;\n          const toCover = Math.atan2(st.cy - y, st.cx - x);\n          let a = Math.PI / 2;\n          if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin(mb * Math.PI / 4) + rig.drop * 0.6);\n          else if (rig.pat === "wave") a += 0.5 * Math.sin(mb * Math.PI / 2 + i * 0.7);\n          else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin(mb * Math.PI / 4));\n          else if (rig.pat === "chase") a += u * 0.6;\n          else if (rig.pat === "point") a = toCover;\n          a += (toCover - a) * px.build * 0.8;\n          let k = base * (CALM.has(key) ? 0.5 : 1);\n          if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;\n          if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;\n          if (k < 4e-3) continue;\n          const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];\n          const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);\n          const cone = (w, al, col) => {\n            const g = ctx2.createRadialGradient(x, y, 0, x, y, len);\n            g.addColorStop(0, rgba(col, k * 1.6 * al));\n            g.addColorStop(0.4, rgba(col, k * 0.5 * al));\n            g.addColorStop(1, rgba(col, 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.moveTo(x, y);\n            ctx2.lineTo(x + Math.cos(a - w) * len, y + Math.sin(a - w) * len);\n            ctx2.lineTo(x + Math.cos(a + w) * len, y + Math.sin(a + w) * len);\n            ctx2.closePath();\n            ctx2.fill();\n          };\n          if ((st.quality ?? 2) >= 2) cone(wd * 2.2, 0.28, c);\n          cone(wd, 1, c);\n          cone(wd * 0.3, 0.55, mixW(c, 0.5));\n          const r = (8 + k * 70) * dpr;\n          ctx2.globalAlpha = clamp(k * 5, 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      const sn = px.snareEnv > 0.8;\n      if (st.flash && st.flashGo && BLIND.has(key) && sn && !rig.sn && px.energy > 0.78 && (st.hype || px.drop > 0.3 || px.finale) && cap.take(t)) rig.blind = 1;\n      rig.sn = sn;\n      rig.blind *= Math.exp(-dt * 7);\n      if (rig.blind > 0.02 && vis > 0) {\n        for (const f of [0.22, 0.42, 0.58, 0.78]) {\n          const r = vh * 0.17 * (0.6 + rig.blind * 0.4);\n          ctx2.globalAlpha = rig.blind * 0.8 * vis;\n          ctx2.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);\n        ctx2.fillRect(0, 0, vw, vh);\n      }\n      const want = SHEET.has(key) && st.rig && !px.blackout && (px.fxMul ?? 1) >= 0.75 && (px.drop > 0.35 || px.energy > 0.88 && px.build < 0.1) ? 1 : 0;\n      rig.sheet += (want - rig.sheet) * (1 - Math.exp(-dt * 3));\n      if (rig.sheet > 0.02) {\n        const c = mixW(pal[2], 0.35), tilt = Math.sin(mb * Math.PI / 2) * 0.04, y0 = vh * (0.6 + 0.02 * Math.sin(t * 0.4));\n        for (const [lw, al] of [[14 * dpr, 0.08], [2 * dpr, 0.6]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * rig.sheet);\n          ctx2.beginPath();\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 + tilt * vw / 2);\n          ctx2.stroke();\n        }\n        ctx2.lineWidth = dpr;\n        ctx2.strokeStyle = rgba(c, 0.14 * rig.sheet);\n        ctx2.beginPath();\n        for (let k = -4; k <= 4; k++) {\n          const a = k * 0.03 + tilt;\n          ctx2.moveTo(0, y0 - tilt * vw / 2);\n          ctx2.lineTo(vw, y0 - tilt * vw / 2 + Math.tan(a) * vw);\n        }\n        ctx2.stroke();\n      }\n      if ((CALM.has(key) || v.decor === "fairy") && st.rig) drawBokeh(ctx2, st, px, pal, dpr);\n      if (st.rig && !px.blackout) drawCues(ctx2, st, px, pal, dpr, vis);\n    }\n    function drawCues(ctx2, st, px, pal, dpr, vis) {\n      const t = st.t, dt = st.dt, soft = st.noFlash ? 0.4 : 1;\n      if (px.wipe >= 0) {\n        const f = px.wdir < 0 ? 1 - px.wipe : px.wipe, x = vw * (f * 1.3 - 0.15), w = vw * 0.16, c = mixW(pal[rig.col % 3], 0.3);\n        const g = ctx2.createLinearGradient(x - w, 0, x + w, 0);\n        g.addColorStop(0, rgba(c, 0));\n        g.addColorStop(0.5, rgba(c, 0.2 * (1 - px.wipe * 0.5) * soft * vis));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(x - w, 0, w * 2, vh * 0.72);\n      }\n      const wallNow = (px.wall || 0) > 0.5;\n      if (wallNow && !rig.wallOn && st.flash && st.flashGo && !st.noFlash && cap.take(t)) rig.wall = 1;\n      rig.wallOn = wallNow;\n      rig.wall *= Math.exp(-dt * 5);\n      if (rig.wall > 0.03) {\n        const r = vh * 0.12;\n        ctx2.globalAlpha = rig.wall * 0.75 * vis;\n        for (let k = 0; k < 6; k++) ctx2.drawImage(glowSprite([255, 240, 215]), vw * (0.12 + 0.152 * k) - r, vh * 0.06 - r, r * 2, r * 2);\n        ctx2.globalAlpha = 1;\n      }\n      if (px.vox > 0.03) {\n        const sx = vw / 2, sy = -vh * 0.05, len = Math.hypot(st.cx - sx, st.cy - sy) + (st.R || 0), a = Math.atan2(st.cy - sy, st.cx - sx), c = mixW(pal[1], 0.55);\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, len);\n        g.addColorStop(0, rgba(c, 0.05 * px.vox));\n        g.addColorStop(0.8, rgba(c, 0.16 * px.vox));\n        g.addColorStop(1, rgba(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - 0.09) * len, sy + Math.sin(a - 0.09) * len);\n        ctx2.lineTo(sx + Math.cos(a + 0.09) * len, sy + Math.sin(a + 0.09) * len);\n        ctx2.fill();\n      }\n      if (px.pump > 0.05) {\n        const r = vw * 0.55;\n        ctx2.globalAlpha = clamp(0.1 * px.pump * px.I * (1 - (st.noFlash ? 0.3 : 0.85) * px.kickEnv) * vis, 0, 1);\n        ctx2.drawImage(glowSprite(pal[0]), vw / 2 - r, vh * 0.3 - r * 0.6, r * 2, r * 1.2);\n        ctx2.globalAlpha = 1;\n      }\n      if (px.boom > 0.03) {\n        const r = vh * (0.45 + 0.3 * px.boom);\n        ctx2.globalAlpha = clamp(0.3 * px.boom * vis, 0, 1);\n        ctx2.drawImage(glowSprite(pal[0]), vw / 2 - r * 1.6, vh - r * 0.6, r * 3.2, r * 1.2);\n        ctx2.globalAlpha = 1;\n      }\n      if (px.swell > 0.03) {\n        const r = vw * 0.5;\n        ctx2.globalAlpha = clamp(0.07 * px.swell * (0.5 + 0.5 * px.I), 0, 1);\n        ctx2.drawImage(glowSprite([255, 196, 140]), vw / 2 - r, -r * 0.55, r * 2, r * 1.1);\n        ctx2.globalAlpha = 1;\n      }\n    }\n    let bokeh = null;\n    function drawBokeh(ctx2, st, px, pal, dpr) {\n      bokeh ||= Array.from({ length: 18 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random(), ph: Math.random() * 6.3, c: Math.floor(Math.random() * 3) }));\n      for (const b of bokeh) {\n        b.y -= st.dt * 0.012 * (0.5 + b.r);\n        if (b.y < -0.1) [b.y, b.x] = [1.1, Math.random()];\n        const r = (18 + b.r * 34) * dpr;\n        ctx2.globalAlpha = clamp((0.05 + 0.08 * px.energy) * (0.6 + 0.4 * Math.sin(st.t * 0.7 + b.ph)), 0, 1);\n        ctx2.drawImage(glowSprite(pal[b.c]), b.x * vw - r, b.y * vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const ins = { sparks: [], bolts: [], keys: new Float32Array(24), kHit: false };\n    function drawInst(ctx2, st, px, pal, dpr) {\n      vw = st.vw;\n      vh = st.vh;\n      const I = st.inst, t = st.t, dt = st.dt;\n      if (!I || px.blackout) return;\n      ctx2.globalCompositeOperation = "lighter";\n      if (I.brass > 0.01) {\n        const L = I.brass, gold = [255, 200, 90];\n        for (const side of [-1, 1]) {\n          const ox = side < 0 ? 0 : vw, oy = vh * 0.95;\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 - side * (0.15 + k * 0.14) + Math.sin(t * 1.5 + k) * 0.03, len = vh * (0.5 + 0.4 * L);\n            const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            g.addColorStop(0, rgba(gold, 0.22 * L));\n            g.addColorStop(1, rgba(gold, 0));\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = (18 - k * 2) * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(ox, oy);\n            ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n            ctx2.stroke();\n          }\n          const r = vh * 0.14 * (0.6 + L * 0.5);\n          ctx2.globalAlpha = L * 0.8;\n          ctx2.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n          if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });\n        }\n      }\n      if (I.sax > 0.01) {\n        const L = I.sax, smoke = mixW([190, 110, 255], 0.2);\n        for (const [bx, dir] of [[0.12, 1], [0.88, -1]]) {\n          for (let k = 0; k < 3; k++) {\n            ctx2.strokeStyle = rgba(k ? mixW(pal[k], 0.3) : smoke, (0.1 - k * 0.02) * L);\n            ctx2.lineWidth = (44 - k * 10) * dpr;\n            ctx2.beginPath();\n            for (let s = 0; s <= 20; s++) {\n              const f = s / 20, yy = vh * (0.95 - f * 0.75);\n              const xx = vw * bx + dir * Math.sin(f * 5 + t * (0.8 + k * 0.2) + k) * vw * 0.05 * (0.5 + f);\n              s ? ctx2.lineTo(xx, yy) : ctx2.moveTo(xx, yy);\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.guitar > 0.3) {\n        const hitNow = px.kickEnv > 0.8 || px.snareEnv > 0.8;\n        if (hitNow && !ins.kHit && st.flashGo && !st.noFlash && cap.take(t)) {\n          const pts = [];\n          const x = vw * (0.15 + Math.random() * 0.7), y = vh * 0.04;\n          const tx = x + (Math.random() - 0.5) * vw * 0.3, ty = vh * (0.45 + Math.random() * 0.15);\n          for (let s = 0; s <= 10; s++) {\n            const f = s / 10;\n            pts.push([x + (tx - x) * f + (s && s < 10 ? (Math.random() - 0.5) * vw * 0.04 : 0), y + (ty - y) * f]);\n          }\n          ins.bolts.push({ pts, a: 1 });\n        }\n        ins.kHit = hitNow;\n        for (let k = 0; k < 3; k++) {\n          if (st.noFlash || Math.random() > dt * 18 * I.guitar) continue;\n          const r = (10 + Math.random() * 16) * dpr;\n          ctx2.globalAlpha = 0.5 + Math.random() * 0.5;\n          ctx2.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);\n      for (const b of ins.bolts) {\n        for (const [lw, c, al] of [[10 * dpr, [140, 170, 255], 0.25], [2.2 * dpr, [235, 245, 255], 0.95]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * b.a * Math.max(I.guitar, 0.3));\n          ctx2.beginPath();\n          b.pts.forEach(([x, y], k) => k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y));\n          ctx2.stroke();\n        }\n      }\n      if (I.piano > 0.01 || ins.keys.some((k) => k > 0.01)) {\n        const ch = I.chroma, w = vw / 24;\n        for (let k = 0; k < 24; k++) {\n          const target = ch ? (ch[k % 12] || 0) * I.piano : 0;\n          ins.keys[k] += (target - ins.keys[k]) * (1 - Math.exp(-dt * (target > ins.keys[k] ? 18 : 4)));\n          const L = ins.keys[k];\n          if (L < 0.02) continue;\n          const h = vh * (0.08 + 0.18 * L), x = k * w + w * 0.2, yb = vh * 0.84;\n          const g = ctx2.createLinearGradient(0, yb - h, 0, yb);\n          g.addColorStop(0, rgba(pal[k % 3], 0));\n          g.addColorStop(1, rgba(mixW(pal[k % 3], 0.45), 0.55 * L));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x, yb - h, w * 0.6, h);\n          const r = w * 0.7;\n          ctx2.globalAlpha = clamp(L * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(pal[k % 3]), x + w * 0.3 - r, yb - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      if (I.strings > 0.01) {\n        const L = I.strings;\n        for (let k = 0; k < 3; k++) {\n          const yy = (x) => vh * (0.28 + 0.12 * k) + Math.sin(x / vw * Math.PI * 2.4 + t * 0.6 + k * 1.7) * vh * 0.05;\n          for (const [lw, al] of [[16 * dpr, 0.06], [2 * dpr, 0.3]]) {\n            ctx2.lineWidth = lw;\n            ctx2.strokeStyle = rgba(mixW(pal[k], 0.25), al * L);\n            ctx2.beginPath();\n            for (let s = 0; s <= 32; s++) {\n              const x = s / 32 * vw;\n              s ? ctx2.lineTo(x, yy(x)) : ctx2.moveTo(x, yy(x));\n            }\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.choir > 0.01) {\n        const L = I.choir, ox = vw / 2, oy = -vh * 0.1;\n        for (let k = 0; k < 9; k++) {\n          const a = Math.PI / 2 + (k - 4) * 0.14 + Math.sin(t * 0.2) * 0.05, len = vh * 1.1;\n          const g = ctx2.createLinearGradient(ox, oy, ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          g.addColorStop(0, rgba([255, 245, 225], 0.2 * L));\n          g.addColorStop(1, rgba([255, 245, 225], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = 40 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(ox, oy);\n          ctx2.lineTo(ox + Math.cos(a) * len, oy + Math.sin(a) * len);\n          ctx2.stroke();\n        }\n      }\n      if (I.drums > 0.01) {\n        const L = I.drums, env = (v) => st.noFlash ? 0.45 : 0.25 + 0.75 * v;\n        [[0.2, px.kickEnv, 1], [0.4, px.snareEnv, 0.8], [0.6, px.snareEnv, 0.8], [0.8, px.kickEnv, 1]].forEach(([f, e, sz], k) => {\n          const x = vw * f, y = vh * 0.13, r = vh * 0.05 * sz * (0.85 + 0.15 * env(e)), c = mixW(pal[k % 3], 0.35);\n          ctx2.lineWidth = 2 * dpr;\n          ctx2.strokeStyle = rgba(c, 0.5 * L * env(e));\n          ctx2.beginPath();\n          ctx2.ellipse(x, y, r, r * 0.38, 0, 0, Math.PI * 2);\n          ctx2.stroke();\n          ctx2.globalAlpha = clamp(0.4 * L * env(e), 0, 1);\n          ctx2.drawImage(glowSprite(c.map((q) => q | 0)), x - r * 1.3, y - r * 1.3, r * 2.6, r * 2.6);\n          ctx2.globalAlpha = 1;\n        });\n        const hr = vh * 0.02;\n        ctx2.globalAlpha = clamp(0.35 * L * env(px.hatEnv), 0, 1);\n        ctx2.drawImage(glowSprite([255, 244, 214]), vw * 0.5 - hr, vh * 0.085 - hr, hr * 2, hr * 2);\n        ctx2.globalAlpha = 1;\n      }\n      if (I.bass > 0.01) {\n        const L = I.bass, c = mixW(pal[0], 0.15);\n        for (const ox of [0, vw]) {\n          for (let k = 0; k < 3; k++) {\n            const ph = (t * 0.45 + k / 3) % 1, r = vh * (0.06 + 0.24 * ph);\n            ctx2.lineWidth = (14 - 8 * ph) * dpr;\n            ctx2.strokeStyle = rgba(c, 0.16 * L * (1 - ph));\n            ctx2.beginPath();\n            ctx2.arc(ox, vh * 0.92, r, 0, Math.PI * 2);\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.synth > 0.01) {\n        const L = I.synth, c = mixW(pal[2], 0.3), y0 = vh * 0.2, amp = vh * 0.035, step = vw / 16, off = t * step * 0.9 % (step * 2);\n        for (const [lw, al] of [[9 * dpr, 0.07], [1.6 * dpr, 0.5]]) {\n          ctx2.lineWidth = lw;\n          ctx2.strokeStyle = rgba(c, al * L);\n          ctx2.beginPath();\n          for (let k = -2, up = true; k <= 18; k++, up = !up) {\n            const x = k * step - off, y = y0 + (up ? -amp : amp);\n            k === -2 ? ctx2.moveTo(x, y) : ctx2.lineTo(x, y);\n            ctx2.lineTo(x + step, y);\n          }\n          ctx2.stroke();\n        }\n      }\n      if (I.accordion > 0.01) {\n        const L = I.accordion, open = 0.55 + 0.45 * Math.sin(t * 1.1), c = [255, 196, 140];\n        for (const side of [-1, 1]) {\n          for (let k = 0; k < 7; k++) {\n            const x = (side < 0 ? 0 : vw) - side * vw * (0.012 + 0.013 * k * open), lean = (k % 2 ? 1 : -1) * vw * 4e-3;\n            ctx2.lineWidth = 2 * dpr;\n            ctx2.strokeStyle = rgba(k % 2 ? c : mixW(pal[1], 0.3), (0.3 - k * 0.03) * L);\n            ctx2.beginPath();\n            ctx2.moveTo(x - lean, vh * 0.22);\n            ctx2.lineTo(x + lean, vh * 0.7);\n            ctx2.stroke();\n          }\n        }\n      }\n      if (I.flute > 0.01) {\n        const L = I.flute, c = [214, 240, 255];\n        for (let k = 0; k < 12; k++) {\n          const f = (t * 0.06 + k / 12) % 1, x = vw * (f * 1.1 - 0.05), y = vh * (0.16 + 0.05 * Math.sin(f * 9 + k * 0.6) + 0.012 * (k % 3));\n          const r = (5 + k % 4 * 2) * dpr;\n          ctx2.globalAlpha = clamp(0.6 * L * Math.sin(f * Math.PI), 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      }\n      if (I.harp > 0.01) {\n        const L = I.harp, n = 16, gl = t * 0.35 % 1.4 - 0.2;\n        for (let k = 0; k < n; k++) {\n          const f = k / (n - 1), x = vw * (0.3 + 0.4 * f), len = vh * (0.34 - 0.16 * f);\n          const hit = clamp(1 - Math.abs(f - gl) * 5, 0, 1);\n          const g = ctx2.createLinearGradient(0, vh * 0.04, 0, vh * 0.04 + len);\n          g.addColorStop(0, rgba([255, 232, 180], (0.12 + 0.4 * hit) * L));\n          g.addColorStop(1, rgba([255, 232, 180], 0));\n          ctx2.strokeStyle = g;\n          ctx2.lineWidth = (1 + hit) * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(x, vh * 0.04);\n          ctx2.lineTo(x, vh * 0.04 + len);\n          ctx2.stroke();\n        }\n      }\n      ins.sparks = ins.sparks.filter((s) => (s.a -= dt * 0.9) > 0);\n      for (const s of ins.sparks) {\n        s.vy += vh * 0.2 * dt;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 6 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    return { drawRig, drawInst };\n  }\n\n  // src/flashcap.js\n  var FLASH_GAP = 0.34;\n  function createFlashCap(gap = FLASH_GAP) {\n    let last = -Infinity;\n    return {\n      // true = dieser Blitz darf z\xFCnden (und z\xE4hlt ab jetzt)\n      take(t) {\n        if (t < last) last = t;\n        if (t - last < gap) return false;\n        last = t;\n        return true;\n      },\n      free: (t) => t >= last && t - last >= gap\n    };\n  }\n\n  // src/crowd.js\n  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));\n  var MOVES = {\n    rave: "jump",\n    trance: "wave",\n    hardstyle: "jump",\n    dnb: "jump",\n    techno: "pump",\n    house: "bounce",\n    rock: "bang",\n    metal: "bang",\n    punk: "jump",\n    bass: "nod",\n    pop: "clap",\n    kpop: "clap",\n    disco: "clap",\n    country: "clap",\n    latin: "bounce",\n    afro: "bounce",\n    reggae: "skank",\n    chill: "sway",\n    jazz: "sway",\n    classical: "sway",\n    edm: "jump",\n    deephouse: "bounce",\n    techhouse: "pump",\n    psytrance: "jump",\n    dubstep: "bang",\n    garage: "bounce",\n    eurodance: "jump",\n    melodictechno: "pump",\n    hardtechno: "pump",\n    futurebass: "jump",\n    electroswing: "bounce",\n    breakbeat: "bounce",\n    boombap: "nod",\n    dancehall: "bounce",\n    cloudrap: "sway",\n    hardrock: "bang",\n    postrock: "sway",\n    ska: "skank",\n    emo: "jump",\n    jpop: "clap",\n    musical: "clap",\n    christmas: "sway",\n    celtic: "clap",\n    balkan: "jump",\n    amapiano: "bounce",\n    lofi: "sway",\n    neoclassical: "sway",\n    acoustic: "sway",\n    synthwave: "nod",\n    hyperpop: "jump",\n    trap: "bounce",\n    drill: "nod",\n    phonk: "pump",\n    rnb: "sway",\n    soul: "clap",\n    indie: "bounce",\n    alternative: "bang",\n    blues: "sway",\n    schlager: "clap",\n    ballad: "sway",\n    gospel: "clap",\n    reggaeton: "bounce",\n    salsa: "bounce",\n    brazil: "bounce",\n    flamenco: "clap",\n    bollywood: "bounce",\n    arabic: "clap",\n    ambient: "sway",\n    cinematic: "sway"\n  };\n  kin(MOVES, 2);\n  var SOFT = { jump: "bounce", pump: "nod", bounce: "bounce", bang: "nod", clap: "sway", skank: "skank", nod: "nod", wave: "sway", sway: "sway" };\n  var VERSE = { jump: "bounce", pump: "pump", bounce: "bounce", bang: "bang", clap: "clap", skank: "skank", nod: "nod", wave: "wave", sway: "sway" };\n  var JUMP = { jump: 1, pump: 1, bounce: 1, bang: 0.45, clap: 0.45, skank: 0.25, wave: 0.6, nod: 0, sway: 0 };\n  var CALM2 = /* @__PURE__ */ new Set(["intro", "outro", "break"]);\n  function createCrowdMind() {\n    let x = 0;\n    function mood(px, dt, hype) {\n      const target = clamp2((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);\n      x += (target - x) * (1 - Math.exp(-dt * (target > x ? 3 : 0.8)));\n      if (px.dropHit) x = Math.max(x, 0.9);\n      return x;\n    }\n    return { mood, get x() {\n      return x;\n    } };\n  }\n  function dance(px, X, seated) {\n    const base = seated ? "sway" : MOVES[px.key] || "clap";\n    const kind = px.kind || "";\n    let style = base, jump = JUMP[base] ?? 0, upAt = 0.55, clap = 0;\n    if (CALM2.has(kind) || kind === "bridge" && X < 0.55) {\n      style = SOFT[base] || "sway";\n      jump = 0;\n      upAt = 0.8;\n    } else if (kind === "verse") {\n      style = VERSE[base] || base;\n      jump = base === "jump" ? 0.35 : 0;\n      upAt = 0.68;\n    } else if (kind === "pre") {\n      clap = base === "sway" || base === "nod" || base === "bang" ? 0 : clamp2(0.4 + (px.build || 0), 0, 1);\n      if (clap) style = "clap";\n      jump = 0;\n      upAt = 0.5;\n    } else if (kind === "chorus") upAt = 0.5;\n    else if (kind === "drop") {\n      style = base === "sway" || base === "nod" ? base : "jump";\n      jump = base === "sway" || base === "nod" ? 0 : 1;\n      upAt = 0.45;\n    }\n    const crouch = clamp2(Math.max(px.build || 0, px.tension || 0) + (px.blackout ? 0.4 : 0), 0, 1);\n    return { style, base, jump, upAt, clap, crouch };\n  }\n  function jumps(D, me, h, px) {\n    if (!D.jump) return false;\n    return me > 0.72 && h < D.jump * (0.45 + (me - 0.72) * 2) || px.drop > 0.6 && me > 0.6 && h < D.jump;\n  }\n  function armsUp(D, me, up) {\n    if (D.clap > 0.3 && up < D.clap) return 0.75;\n    if (me > D.upAt && up < me + 0.1 && D.style !== "sway" && D.style !== "nod") return 1;\n    return D.style === "clap" && me > 0.3 ? 0.75 : 0;\n  }\n  var DANCES = Object.keys(JUMP);\n\n  // src/venue.js\n  var clamp3 = (v, a, b) => Math.min(b, Math.max(a, v));\n  function createVenue(makeCanvas) {\n    let vw = 0, vh = 0;\n    const glowSprites = /* @__PURE__ */ new Map();\n    function glowSprite(c) {\n      const k = c.join(",");\n      if (!glowSprites.has(k)) {\n        if (glowSprites.size > 24) glowSprites.clear();\n        const cv = makeCanvas(48, 48);\n        cv.width = cv.height = 48;\n        const x = cv.getContext("2d");\n        const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);\n        g.addColorStop(0, "rgba(255,255,255,1)");\n        g.addColorStop(0.22, `rgba(${k},0.75)`);\n        g.addColorStop(1, `rgba(${k},0)`);\n        x.fillStyle = g;\n        x.fillRect(0, 0, 48, 48);\n        glowSprites.set(k, cv);\n      }\n      return glowSprites.get(k);\n    }\n    const flashCap = createFlashCap();\n    const show = createShow(glowSprite, flashCap);\n    let disco = null, tunnel = [];\n    function drawStage(ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const now = px.P.spot, old = px.spot2 || now, sx = px.sx ?? 1;\n      if (sx < 1 && old !== now) drawSpot(old, 1 - sx, ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v);\n      drawSpot(now, old !== now ? sx : 1, ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v);\n    }\n    function drawSpot(kind, k, ctx2, pal, px, rgba2, cx, cy, R, dpr, dt, st, v) {\n      const t = px.mt ?? st.t, far = Math.hypot(vw, vh) * 1.1;\n      const beat = px.accent, vis = k * clamp3(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);\n      if (vis < 0.01) return;\n      const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);\n      const spread = px.spread ?? 1;\n      const cone = (sx, sy, a, wd0, c, al, reach = far) => {\n        const wd = wd0 * spread;\n        const g = ctx2.createRadialGradient(sx, sy, 0, sx, sy, reach);\n        g.addColorStop(0, rgba2(c, al));\n        g.addColorStop(0.5, rgba2(c, al * 0.35));\n        g.addColorStop(1, rgba2(c, 0));\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(sx, sy);\n        ctx2.lineTo(sx + Math.cos(a - wd) * reach, sy + Math.sin(a - wd) * reach);\n        ctx2.lineTo(sx + Math.cos(a + wd) * reach, sy + Math.sin(a + wd) * reach);\n        ctx2.closePath();\n        ctx2.fill();\n      };\n      switch (kind) {\n        case "cross": {\n          const sp = 0.6 + px.energy * 0.8 + px.build * 3;\n          const al = (0.05 + beat * 0.2 + px.drop * 0.12) * vis;\n          for (const [sx, dir, c] of [[0, 1, pal[1]], [vw, -1, pal[2]]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.45 + 0.4 * Math.sin(t * sp * dir + px.spin * 0.3)), 0.07 + px.drop * 0.07, c, al);\n          }\n          break;\n        }\n        case "top": {\n          const al = (0.06 + snareL * 0.3) * vis;\n          const warm = (c) => [0, 1, 2].map((k2) => Math.round(c[k2] * 0.55 + [255, 236, 210][k2] * 0.45));\n          for (const [sx, dir, c] of [[vw * 0.18, 1, pal[0]], [vw * 0.82, -1, pal[2]]]) {\n            cone(sx, 0, Math.PI / 2 - dir * (0.25 + 0.18 * Math.sin(t * 0.7 + dir)), 0.16, warm(c), al, vh * 1.25);\n          }\n          break;\n        }\n        case "floor": {\n          const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;\n          const g = ctx2.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));\n          g.addColorStop(0, rgba2(pal[0], al));\n          g.addColorStop(0.6, rgba2(pal[1], al * 0.35));\n          g.addColorStop(1, rgba2(pal[1], 0));\n          ctx2.fillStyle = g;\n          ctx2.fillRect(0, vh * 0.3, vw, vh * 0.7);\n          break;\n        }\n        case "pan": {\n          const al = (0.05 + beat * 0.14 + px.drop * 0.1) * vis;\n          for (const [sx, dir, k2] of [[0, 1, 0], [vw, -1, 1]]) {\n            cone(sx, vh, -Math.PI / 2 + dir * (0.55 + 0.3 * Math.sin(t * 0.45 + k2 * 2)), 0.12, pal[(k2 + Math.floor(t / 4)) % 3], al);\n          }\n          break;\n        }\n        case "scan": {\n          const bps = (st.bpm || 125) / 60, beats = px.mb ?? t * bps, per = px.scan ? 16 : 8;\n          const al = (0.05 + hatL * 0.22 + px.drop * 0.12) * vis;\n          for (let k2 = 0; k2 < 2; k2++) {\n            const y = ((beats / per + k2 * 0.5 + px.scene * 0.17) % 1 + 1) % 1 * vh * 1.3 - vh * 0.15;\n            const band = vh * (0.16 + 0.06 * px.energy);\n            const g = ctx2.createLinearGradient(0, y - band, 0, y + band);\n            g.addColorStop(0, rgba2(pal[k2], 0));\n            g.addColorStop(0.5, rgba2(pal[k2], al));\n            g.addColorStop(1, rgba2(pal[k2], 0));\n            ctx2.fillStyle = g;\n            ctx2.fillRect(0, y - band, vw, band * 2);\n          }\n          break;\n        }\n        case "disco": {\n          disco ||= Array.from({ length: 90 }, () => ({ th: Math.random() * Math.PI * 2, ph: Math.asin(Math.random() * 2 - 1), tw: Math.random() * 6.3, s: 0.6 + Math.random() }));\n          const rot = t * 0.32 + px.spin * 0.08;\n          disco.forEach((d, i) => {\n            const a = d.th + rot, face = Math.cos(a) * Math.cos(d.ph);\n            if (face <= 0.05) return;\n            const x = vw / 2 + Math.sin(a) * Math.cos(d.ph) * vw * 0.62, y = vh * 0.42 + Math.sin(d.ph) * vh * 0.62;\n            const tw = 0.5 + 0.5 * Math.sin(t * 4.5 + d.tw);\n            ctx2.globalAlpha = clamp3(face * (0.22 + Math.max(beat * 0.7, hatL) * 0.9 + px.drop * 0.3) * (0.4 + 0.6 * tw) * vis, 0, 1);\n            const r = (12 + d.s * 13 + beat * 16) * dpr;\n            ctx2.drawImage(glowSprite(pal[i % 3]), x - r, y - r, r * 2, r * 2);\n          });\n          ctx2.globalAlpha = 1;\n          break;\n        }\n        case "aurora": {\n          for (let k2 = 0; k2 < 3; k2++) {\n            const base = vh * (0.14 + 0.11 * k2) - px.build * vh * 0.08;\n            const amp = vh * (0.05 + 0.025 * k2) * (0.6 + px.I * 0.6), thick = vh * (0.08 + 0.05 * px.I);\n            const al = (0.05 + px.I * 0.1 + beat * 0.08 + px.drop * 0.1) * vis;\n            const wave = (i, off) => Math.sin(i * 0.45 + t * (0.45 + 0.12 * k2) + k2 * 2 + off) * amp + Math.sin(i * 0.17 - t * 0.3) * amp * 0.6;\n            ctx2.beginPath();\n            for (let i = 0; i <= 24; i++) i ? ctx2.lineTo(i / 24 * vw, base + wave(i, 0)) : ctx2.moveTo(0, base + wave(0, 0));\n            for (let i = 24; i >= 0; i--) ctx2.lineTo(i / 24 * vw, base + thick + wave(i, 0.6) * 0.8);\n            ctx2.closePath();\n            const g = ctx2.createLinearGradient(0, base - amp, 0, base + thick + amp);\n            g.addColorStop(0, rgba2(pal[k2], 0));\n            g.addColorStop(0.5, rgba2(pal[k2], al));\n            g.addColorStop(1, rgba2(pal[(k2 + 1) % 3], 0));\n            ctx2.fillStyle = g;\n            ctx2.fill();\n          }\n          break;\n        }\n        case "tunnel": {\n          if (px.hit && px.beat > 0.5) tunnel.push({ s: 1, a: 0.4 + 0.5 * px.accent, c: tunnel.length % 3 });\n          tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);\n          for (const f of tunnel) {\n            f.s *= Math.exp(dt * 1.7);\n            const r = R * f.s, w = (10 + f.s * 6) * dpr;\n            const g = ctx2.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);\n            g.addColorStop(0, rgba2(pal[f.c], 0));\n            g.addColorStop(0.5, rgba2(pal[f.c], f.a * vis * 0.5));\n            g.addColorStop(1, rgba2(pal[f.c], 0));\n            ctx2.fillStyle = g;\n            ctx2.beginPath();\n            ctx2.arc(cx, cy, r + w, 0, Math.PI * 2);\n            ctx2.fill();\n          }\n          break;\n        }\n        default: {\n          const al = (0.035 + beat * 0.05) * (0.6 + px.I * 0.4) * (1 + (px.swell || 0) * 0.8);\n          for (let k2 = 0; k2 < 3; k2++) {\n            cone(vw * (0.2 + 0.3 * k2) + Math.sin(t * 0.12 + k2 * 2) * vw * 0.08, -vh * 0.1, Math.PI / 2 + Math.sin(t * 0.09 + k2) * 0.12, 0.2, pal[k2], al, vh * 1.3);\n          }\n        }\n      }\n    }\n    const VENUES = {\n      club: { rows: [[1, 0.8, 38], [0, 1.04, 48]], haze: 1.5, spot: 0.85, decor: "club" },\n      festival: { rows: [[2, 0.5, 28], [2, 0.62, 34], [1, 0.8, 40], [0, 1.04, 50]], haze: 1, spot: 1.25, decor: "towers" },\n      stadium: { rows: [[2, 0.4, 20], [2, 0.5, 26], [2, 0.62, 32], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.75, spot: 1.1, decor: "stands" },\n      // Wohnzimmer: keine Menge, nur ein paar Freunde vorne, die mitwippen\n      home: { rows: [[0, 1.7, 230]], haze: 0.5, spot: 0.5, decor: "fairy" },\n      warehouse: { rows: [[1, 0.78, 34], [0, 1.02, 46]], haze: 1.8, spot: 0.9, decor: "warehouse" },\n      beach: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 0.6, spot: 0.8, decor: "beach", open: true },\n      // \u201Eopen\u201C: unter freiem Himmel (Feuerwerk erlaubt) \xB7 \u201Ecalm\u201C: drinnen und gediegen \u2013 kein CO2, keine Flammen,\n      // kein Stroboskop, kein Konfetti \xB7 \u201Eseated\u201C: das Publikum sitzt (Konzertsaal) und wiegt sich nur\n      rooftop: { rows: [[1, 0.76, 36], [0, 1.02, 48]], haze: 0.8, spot: 0.9, decor: "rooftop", open: true },\n      cathedral: { rows: [[1, 0.72, 42], [0, 0.98, 54]], haze: 1.3, spot: 0.7, decor: "cathedral", calm: true },\n      jazzbar: { rows: [[0, 1.08, 64]], haze: 1.7, spot: 0.55, decor: "jazzbar", calm: true },\n      forest: { rows: [[2, 0.55, 30], [1, 0.8, 40], [0, 1.04, 50]], haze: 1.2, spot: 1, decor: "forest", open: true },\n      hall: { rows: [[2, 0.48, 22], [1, 0.7, 28], [0, 0.94, 38]], haze: 0.6, spot: 0.7, decor: "hall", calm: true, seated: true },\n      cellar: { rows: [[1, 0.8, 34], [0, 1.04, 44]], haze: 2, spot: 0.8, decor: "cellar" },\n      // 1.17: Weltall, Neon-Stra\xDFe, Pub, Skih\xFCtte, W\xFCste\n      space: { rows: [[2, 0.5, 30], [1, 0.76, 40], [0, 1.02, 52]], haze: 0.5, spot: 1.1, decor: "space", open: true },\n      neon: { rows: [[1, 0.78, 36], [0, 1.03, 46]], haze: 1.2, spot: 0.9, decor: "neon" },\n      pub: { rows: [[1, 0.82, 40], [0, 1.06, 52]], haze: 1.4, spot: 0.6, decor: "pub", calm: true },\n      skihut: { rows: [[1, 0.78, 34], [0, 1.03, 44]], haze: 0.9, spot: 0.85, decor: "skihut", open: true },\n      desert: { rows: [[2, 0.52, 30], [1, 0.78, 40], [0, 1.03, 50]], haze: 0.7, spot: 1, decor: "desert", open: true }\n    };\n    const AUTO_VENUE = {\n      techno: "warehouse",\n      dnb: "warehouse",\n      house: "club",\n      bass: "club",\n      disco: "club",\n      jazz: "jazzbar",\n      rave: "festival",\n      trance: "festival",\n      hardstyle: "festival",\n      reggae: "beach",\n      afro: "beach",\n      latin: "beach",\n      rock: "stadium",\n      metal: "stadium",\n      punk: "cellar",\n      pop: "stadium",\n      kpop: "stadium",\n      country: "forest",\n      chill: "home",\n      classical: "hall",\n      edm: "festival",\n      deephouse: "beach",\n      techhouse: "warehouse",\n      psytrance: "forest",\n      dubstep: "festival",\n      garage: "rooftop",\n      eurodance: "club",\n      synthwave: "rooftop",\n      hyperpop: "club",\n      trap: "club",\n      drill: "cellar",\n      phonk: "cellar",\n      rnb: "rooftop",\n      soul: "jazzbar",\n      indie: "festival",\n      alternative: "stadium",\n      blues: "jazzbar",\n      schlager: "festival",\n      ballad: "stadium",\n      gospel: "cathedral",\n      reggaeton: "club",\n      salsa: "beach",\n      brazil: "beach",\n      flamenco: "club",\n      bollywood: "stadium",\n      arabic: "festival",\n      ambient: "home",\n      cinematic: "space",\n      melodictechno: "space",\n      hardtechno: "warehouse",\n      futurebass: "neon",\n      electroswing: "jazzbar",\n      breakbeat: "warehouse",\n      boombap: "rooftop",\n      dancehall: "beach",\n      cloudrap: "neon",\n      hardrock: "stadium",\n      postrock: "space",\n      ska: "pub",\n      emo: "cellar",\n      jpop: "neon",\n      musical: "hall",\n      christmas: "skihut",\n      celtic: "pub",\n      balkan: "pub",\n      amapiano: "beach",\n      lofi: "home",\n      neoclassical: "hall",\n      acoustic: "pub"\n    };\n    kin(AUTO_VENUE, 1);\n    function drawDecor(ctx2, v, px, pal, rgba2, dpr, st) {\n      const t = st.t, beat = Math.max(px.accent, px.kickEnv * px.energy);\n      if (v.decor === "club") {\n        const g = ctx2.createLinearGradient(0, 0, 0, vh * 0.22);\n        g.addColorStop(0, rgba2(pal[0], (0.08 + beat * 0.14).toFixed(3)));\n        g.addColorStop(1, rgba2(pal[0], 0));\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, 0, vw, vh * 0.22);\n      } else if (v.decor === "towers") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,14,0.85)";\n        for (const x of [vw * 0.06, vw * 0.94]) {\n          ctx2.fillRect(x - 7 * dpr, vh * 0.3, 14 * dpr, vh * 0.7);\n          ctx2.fillRect(x - 26 * dpr, vh * 0.3, 52 * dpr, 10 * dpr);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x, c] of [[vw * 0.06, pal[1]], [vw * 0.94, pal[2]]]) {\n          const r = (60 + beat * 70) * dpr;\n          ctx2.globalAlpha = clamp3(0.35 + beat * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite(c), x - r, vh * 0.3 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "stands") {\n        stands ||= Array.from({ length: 140 }, () => ({ x: Math.random(), y: 0.52 + Math.random() * 0.2, ph: Math.random() * 6.3 }));\n        for (const s1 of stands) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 2 + s1.ph);\n          ctx2.globalAlpha = clamp3((0.15 + tw * 0.4) * (0.4 + px.energy * 0.6) + sea.a * 0.35 * tw, 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 3 ? [255, 245, 220] : pal[2]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (const x of [vw * 0.1, vw * 0.9]) {\n          const g = ctx2.createRadialGradient(x, 0, 0, x, 0, vh * 0.6);\n          g.addColorStop(0, `rgba(255,250,235,${(0.08 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,250,235,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - vh * 0.6, 0, vh * 1.2, vh * 0.6);\n        }\n      } else if (v.decor === "warehouse") {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const f of [0.04, 0.27, 0.73, 0.96]) {\n          const g = ctx2.createLinearGradient(0, 0, 0, vh);\n          g.addColorStop(0, "rgba(5,4,10,0.55)");\n          g.addColorStop(0.75, "rgba(5,4,10,0.3)");\n          g.addColorStop(1, "rgba(5,4,10,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(f * vw - 11 * dpr, 0, 22 * dpr, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 5; k++) {\n          const swing = Math.sin(t * 1.3 + k) * 0.05 + px.kickEnv * 0.02 * (k % 2 ? 1 : -1);\n          const x = vw * (0.19 + k * 0.155) + Math.sin(swing) * vh * 0.18, y = vh * (0.12 + 0.03 * (k % 2));\n          ctx2.strokeStyle = "rgba(255,255,255,0.08)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.19 + k * 0.155), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const r = (22 + beat * 40) * dpr;\n          ctx2.globalAlpha = clamp3(0.35 + beat * 0.65, 0, 1);\n          ctx2.drawImage(glowSprite([255, 225, 180]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "beach") {\n        const g = ctx2.createLinearGradient(0, vh * 0.45, 0, vh * 0.75);\n        g.addColorStop(0, "rgba(255,120,60,0)");\n        g.addColorStop(0.7, `rgba(255,140,70,${(0.12 + beat * 0.06).toFixed(3)})`);\n        g.addColorStop(1, "rgba(255,90,90,0.04)");\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.fillStyle = `rgba(255,200,150,${(0.05 + beat * 0.05).toFixed(3)})`;\n        ctx2.fillRect(0, vh * 0.72, vw, 2 * dpr);\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.9)";\n        for (const [bx, dir] of [[vw * 0.05, 1], [vw * 0.95, -1]]) {\n          const sway = Math.sin(t * 0.8 + bx) * 0.04 + px.kickEnv * 0.015;\n          const tx = bx + dir * vh * 0.12 + Math.sin(sway) * vh * 0.4, ty = vh * 0.32;\n          ctx2.beginPath();\n          ctx2.moveTo(bx - 9 * dpr, vh);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.05, vh * 0.6, tx, ty);\n          ctx2.lineTo(tx + 6 * dpr, ty + 4 * dpr);\n          ctx2.quadraticCurveTo(bx + dir * vh * 0.06 + 10 * dpr, vh * 0.62, bx + 9 * dpr, vh);\n          ctx2.fill();\n          for (let k = 0; k < 6; k++) {\n            const a = -Math.PI / 2 + (k - 2.5) * 0.55 + sway * 3;\n            ctx2.beginPath();\n            ctx2.moveTo(tx, ty);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.09, ty + Math.sin(a) * vh * 0.09 - 10 * dpr, tx + Math.cos(a) * vh * 0.17, ty + Math.sin(a) * vh * 0.17 + vh * 0.05);\n            ctx2.lineTo(tx + Math.cos(a) * vh * 0.15, ty + Math.sin(a) * vh * 0.15 + vh * 0.055);\n            ctx2.quadraticCurveTo(tx + Math.cos(a) * vh * 0.08, ty + Math.sin(a) * vh * 0.08, tx, ty + 4 * dpr);\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "rooftop") {\n        sky ||= Array.from({ length: 26 }, (_, i) => ({ x: i / 26, w: 0.025 + Math.random() * 0.03, h: 0.04 + Math.random() * 0.1 }));\n        win ||= Array.from({ length: 90 }, () => ({ b: Math.floor(Math.random() * 26), fx: Math.random(), fy: Math.random(), ph: Math.random() * 6.3 }));\n        const hz = vh * 0.8;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,5,14,0.6)";\n        for (const b of sky) ctx2.fillRect(b.x * vw, hz - b.h * vh, b.w * vw, b.h * vh + 2);\n        ctx2.globalCompositeOperation = "lighter";\n        for (const w of win) {\n          const b = sky[w.b], tw = 0.5 + 0.5 * Math.sin(t * 0.7 + w.ph);\n          if (tw < 0.25) continue;\n          const r = 3.2 * dpr;\n          ctx2.globalAlpha = clamp3(tw * (0.35 + beat * 0.25), 0, 1);\n          ctx2.drawImage(glowSprite(w.ph > 4.6 ? pal[1] : [255, 214, 150]), (b.x + w.fx * b.w) * vw - r, hz - (0.1 + w.fy * 0.85) * b.h * vh - r, r * 2, r * 2);\n        }\n        for (let k = 0; k <= 18; k++) {\n          const f = k / 18, y = vh * (0.06 + 0.05 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp3((0.28 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.4 + k * 2.1)), 0, 1);\n          const r = (8 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 200, 130] : pal[k % 3]), f * vw - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,10,0.75)";\n        ctx2.fillRect(0, vh * 0.84, vw, 3 * dpr);\n        for (let x = 0; x < vw; x += 70 * dpr) ctx2.fillRect(x, vh * 0.84, 2 * dpr, vh * 0.16);\n        ctx2.globalCompositeOperation = "lighter";\n      } else if (v.decor === "cathedral") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.8)";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.32;\n          ctx2.beginPath();\n          ctx2.rect(x0, 0, x1 - x0, vh);\n          ctx2.moveTo(mid + iw, vh);\n          ctx2.lineTo(mid + iw, vh * 0.36);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.2, mid, vh * 0.12);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.2, mid - iw, vh * 0.36);\n          ctx2.lineTo(mid - iw, vh);\n          ctx2.closePath();\n          ctx2.fill("evenodd");\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [x0, x1] of [[0, vw * 0.16], [vw * 0.84, vw]]) {\n          const mid = (x0 + x1) / 2, iw = (x1 - x0) * 0.26, al = 0.14 + beat * 0.1 + px.energy * 0.08;\n          const g = ctx2.createLinearGradient(0, vh * 0.15, 0, vh * 0.7);\n          g.addColorStop(0, rgba2(pal[0], al.toFixed(3)));\n          g.addColorStop(0.5, rgba2(pal[1], (al * 0.9).toFixed(3)));\n          g.addColorStop(1, rgba2(pal[2], 0));\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(mid + iw, vh * 0.7);\n          ctx2.lineTo(mid + iw, vh * 0.38);\n          ctx2.quadraticCurveTo(mid + iw, vh * 0.22, mid, vh * 0.15);\n          ctx2.quadraticCurveTo(mid - iw, vh * 0.22, mid - iw, vh * 0.38);\n          ctx2.lineTo(mid - iw, vh * 0.7);\n          ctx2.fill();\n        }\n        for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {\n          const x = vw / 2 + side * vw * (0.25 + k * 0.022), y = vh * (0.66 - k % 3 * 0.018);\n          const r = (7 + Math.sin(t * 9 + k * 3 + side) * 1.6) * dpr;\n          ctx2.globalAlpha = 0.55;\n          ctx2.drawImage(glowSprite([255, 190, 110]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "jazzbar") {\n        for (let k = 0; k < 3; k++) {\n          const x = vw * (0.22 + k * 0.28) + Math.sin(t * 0.6 + k) * vw * 0.01, y = vh * (0.16 + k % 2 * 0.03);\n          ctx2.strokeStyle = "rgba(255,255,255,0.07)";\n          ctx2.lineWidth = dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(vw * (0.22 + k * 0.28), 0);\n          ctx2.lineTo(x, y);\n          ctx2.stroke();\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, vh * 0.85);\n          g.addColorStop(0, `rgba(255,190,120,${(0.16 + beat * 0.08).toFixed(3)})`);\n          g.addColorStop(1, "rgba(255,190,120,0)");\n          ctx2.fillStyle = g;\n          ctx2.beginPath();\n          ctx2.moveTo(x - 8 * dpr, y);\n          ctx2.lineTo(x - vh * 0.22, vh);\n          ctx2.lineTo(x + vh * 0.22, vh);\n          ctx2.lineTo(x + 8 * dpr, y);\n          ctx2.fill();\n          const r = (16 + beat * 8) * dpr;\n          ctx2.globalAlpha = 0.8;\n          ctx2.drawImage(glowSprite([255, 210, 150]), x - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 9; k++) {\n          const r = 4 * dpr;\n          ctx2.globalAlpha = clamp3(0.25 + 0.2 * Math.sin(t * 1.2 + k), 0, 1);\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 180, 90] : pal[0]), vw * (0.03 + k * 0.012) - r, vh * (0.6 - k % 2 * 0.03) - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n        for (let k = 0; k < 4; k++) {\n          const x = vw * (0.5 + 0.45 * Math.sin(t * 0.05 + k * 1.7)), y = vh * (0.35 + 0.15 * Math.sin(t * 0.07 + k)), r = vh * 0.35;\n          const g = ctx2.createRadialGradient(x, y, 0, x, y, r);\n          g.addColorStop(0, "rgba(200,190,220,0.04)");\n          g.addColorStop(1, "rgba(200,190,220,0)");\n          ctx2.fillStyle = g;\n          ctx2.fillRect(x - r, y - r, r * 2, r * 2);\n        }\n      } else if (v.decor === "forest") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(4,4,10,0.9)";\n        for (const bx of [vw * 0.04, vw * 0.96, vw * 0.15, vw * 0.85]) {\n          const tall = Math.abs(bx - vw / 2) > vw * 0.4, sway = Math.sin(t * 0.4 + bx) * 4 * dpr;\n          const top = vh * (tall ? 0.08 : 0.3), wide = vw * (tall ? 0.085 : 0.05);\n          ctx2.fillRect(bx - (tall ? 7 : 5) * dpr, top, (tall ? 14 : 10) * dpr, vh);\n          for (let k = 0; k < 5; k++) {\n            const y0 = top + (vh - top) * 0.14 * k, w = wide * (0.45 + k * 0.16), sx = sway * (1 - k * 0.18);\n            ctx2.beginPath();\n            ctx2.moveTo(bx + sx, y0);\n            ctx2.lineTo(bx + w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.lineTo(bx - w + sx * 0.5, y0 + (vh - top) * 0.22);\n            ctx2.closePath();\n            ctx2.fill();\n          }\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 16; k++) {\n          const f = k / 16, x = vw * (0.15 + 0.7 * f), y = vh * (0.3 + 0.08 * Math.sin(f * Math.PI));\n          ctx2.globalAlpha = clamp3((0.25 + beat * 0.3) * (0.6 + 0.4 * Math.sin(t * 1.3 + k * 1.9)), 0, 1);\n          const r = (7 + beat * 4) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 205, 130] : pal[1]), x - r, y - r, r * 2, r * 2);\n        }\n        flies ||= Array.from({ length: 50 }, () => ({ x: Math.random(), y: 0.35 + Math.random() * 0.45, ph: Math.random() * 6.3, sp: 0.3 + Math.random() * 0.5 }));\n        const hat = px.hatEnv || 0;\n        for (const f of flies) {\n          const x = (f.x + Math.sin(t * f.sp * 0.3 + f.ph) * 0.03) * vw, y = (f.y + Math.cos(t * f.sp * 0.4 + f.ph) * 0.03) * vh;\n          ctx2.globalAlpha = clamp3((0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 2.4 + f.ph))) * (0.6 + hat * 0.8), 0, 1);\n          const r = 5 * dpr;\n          ctx2.drawImage(glowSprite([200, 255, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "hall") {\n        for (const side of [-1, 1]) for (let tier = 0; tier < 3; tier++) {\n          const y = vh * (0.3 + tier * 0.15), w = vw * (0.14 - tier * 0.015), x0 = side < 0 ? 0 : vw - w;\n          ctx2.globalCompositeOperation = "source-over";\n          ctx2.fillStyle = "rgba(8,6,16,0.8)";\n          ctx2.fillRect(x0, y, w, vh * 0.05);\n          ctx2.globalCompositeOperation = "lighter";\n          ctx2.globalAlpha = clamp3(0.32 + beat * 0.15, 0, 1);\n          for (let k = 0; k < 6; k++) {\n            const r = 5 * dpr;\n            ctx2.drawImage(glowSprite([255, 214, 160]), x0 + (k + 0.5) / 6 * w - r, y - r, r * 2, r * 2);\n          }\n          ctx2.globalAlpha = 1;\n        }\n        for (const x of [vw * 0.25, vw * 0.75]) {\n          ctx2.globalAlpha = clamp3(0.5 + px.energy * 0.3, 0, 1);\n          for (let k = 0; k < 8; k++) {\n            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t * 3 + k) * 1.5) * dpr;\n            ctx2.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);\n          }\n          const r = (60 + beat * 30) * dpr;\n          ctx2.globalAlpha = clamp3(0.25 + beat * 0.2, 0, 1);\n          ctx2.drawImage(glowSprite([255, 220, 170]), x - r, vh * 0.12 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "cellar") {\n        const n = 4;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,4,10,0.85)";\n        ctx2.beginPath();\n        ctx2.rect(0, 0, vw, vh * 0.32);\n        for (let k = 0; k < n; k++) {\n          const x0 = k / n * vw, x1 = (k + 1) / n * vw;\n          ctx2.moveTo(x1, vh * 0.32);\n          ctx2.quadraticCurveTo((x0 + x1) / 2, vh * 0.02, x0, vh * 0.32);\n          ctx2.closePath();\n        }\n        ctx2.fill("evenodd");\n        ctx2.strokeStyle = "rgba(255,255,255,0.035)";\n        ctx2.lineWidth = dpr;\n        ctx2.beginPath();\n        for (let y = vh * 0.03; y < vh * 0.3; y += 14 * dpr) {\n          ctx2.moveTo(0, y);\n          ctx2.lineTo(vw, y);\n        }\n        ctx2.stroke();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < n; k++) {\n          const x = (k + 0.5) / n * vw, y = vh * (0.2 + Math.sin(t * 1.1 + k) * 4e-3);\n          const r = (20 + px.kickEnv * 44) * dpr;\n          ctx2.globalAlpha = clamp3(0.4 + px.kickEnv * 0.6, 0, 1);\n          ctx2.drawImage(glowSprite([255, 200, 140]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "fairy") {\n        for (let k = 0; k <= 26; k++) {\n          const f = k / 26, x = f * vw, y = vh * (0.05 + 0.07 * Math.sin(f * Math.PI));\n          const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + k * 1.7);\n          ctx2.globalAlpha = clamp3((0.3 + beat * 0.35) * tw, 0, 1);\n          const r = (9 + beat * 6) * dpr;\n          ctx2.drawImage(glowSprite(k % 3 ? [255, 200, 120] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "space") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          const x = ((s1.x - t * 4e-3 * s1.z) % 1 + 1) % 1, tw = 0.55 + 0.45 * Math.sin(t * (1 + s1.z) + s1.ph);\n          ctx2.globalAlpha = clamp3(tw * s1.z * (0.45 + px.energy * 0.35 + beat * 0.2), 0, 1);\n          const r = (1.6 + s1.z * 2.4) * dpr;\n          ctx2.drawImage(glowSprite(s1.ph > 5 ? pal[2] : [235, 240, 255]), x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const pr = Math.min(vw, vh) * 0.32, pxx = vw * 0.86, pyy = -pr * 0.35;\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(6,6,16,0.92)";\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr, 0, Math.PI * 2);\n        ctx2.fill();\n        ctx2.globalCompositeOperation = "lighter";\n        const rim = ctx2.createRadialGradient(pxx, pyy, pr * 0.92, pxx, pyy, pr * 1.18);\n        rim.addColorStop(0, rgba2(pal[1], 0));\n        rim.addColorStop(0.35, rgba2(pal[1], (0.22 + beat * 0.18).toFixed(3)));\n        rim.addColorStop(1, rgba2(pal[1], 0));\n        ctx2.fillStyle = rim;\n        ctx2.beginPath();\n        ctx2.arc(pxx, pyy, pr * 1.18, 0, Math.PI * 2);\n        ctx2.fill();\n        if (px.dropHit || px.hit && px.inBar === 0 && px.energy > 0.7 && Math.random() < 0.35) shoot = { t0: t, y: 0.08 + Math.random() * 0.3, x: 0.2 + Math.random() * 0.5 };\n        if (shoot) {\n          const f = (t - shoot.t0) / 0.9;\n          if (f > 1) shoot = null;\n          else {\n            const x0 = (shoot.x + f * 0.35) * vw, y0 = (shoot.y + f * 0.18) * vh, len = 140 * dpr;\n            const g = ctx2.createLinearGradient(x0, y0, x0 - len, y0 - len * 0.5);\n            g.addColorStop(0, `rgba(255,255,255,${(0.8 * (1 - f)).toFixed(3)})`);\n            g.addColorStop(1, "rgba(255,255,255,0)");\n            ctx2.strokeStyle = g;\n            ctx2.lineWidth = 2 * dpr;\n            ctx2.beginPath();\n            ctx2.moveTo(x0, y0);\n            ctx2.lineTo(x0 - len, y0 - len * 0.5);\n            ctx2.stroke();\n          }\n        }\n      } else if (v.decor === "neon") {\n        neonSigns ||= Array.from({ length: 10 }, (_, i) => ({ side: i % 2 ? 1 : -1, d: Math.floor(i / 2) / 5, h: 0.14 + Math.random() * 0.16, y: 0.18 + Math.random() * 0.3, c: i % 3, ph: Math.random() * 6.3 }));\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(5,4,12,0.88)";\n        for (const side of [-1, 1]) {\n          const x0 = side < 0 ? 0 : vw * 0.8;\n          ctx2.fillRect(x0, vh * 0.12, vw * 0.2, vh);\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        for (const n of neonSigns) {\n          const x = n.side < 0 ? vw * (0.03 + n.d * 0.15) : vw * (0.97 - n.d * 0.15), y = vh * n.y, h = vh * n.h;\n          const flick = Math.sin(t * 13 + n.ph) > 0.97 ? 0.3 : 1;\n          const a = clamp3((0.35 + beat * 0.5) * flick, 0, 1), c = pal[n.c];\n          ctx2.fillStyle = rgba2(c, (a * 0.9).toFixed(3));\n          ctx2.fillRect(x - 4 * dpr, y, 8 * dpr, h);\n          const r = 26 * dpr;\n          ctx2.globalAlpha = a * 0.55;\n          for (let k = 0; k < 3; k++) ctx2.drawImage(glowSprite(c), x - r, y + h * k / 2 - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        const wet = ctx2.createLinearGradient(0, vh * 0.86, 0, vh);\n        wet.addColorStop(0, rgba2(pal[0], 0));\n        wet.addColorStop(1, rgba2(pal[0], (0.08 + beat * 0.12).toFixed(3)));\n        ctx2.fillStyle = wet;\n        ctx2.fillRect(0, vh * 0.86, vw, vh * 0.14);\n      } else if (v.decor === "pub") {\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(10,6,4,0.9)";\n        for (let k = 0; k < 4; k++) ctx2.fillRect(0, vh * (0.02 + k * 0.045), vw, 7 * dpr);\n        ctx2.fillRect(vw * 0.04, vh * 0.8, vw * 0.92, vh * 0.035);\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k < 7; k++) {\n          const x = vw * (0.1 + k * 0.133), sw = Math.sin(t * 1.1 + k) * 6 * dpr, y = vh * 0.22;\n          ctx2.strokeStyle = "rgba(60,40,25,0.5)";\n          ctx2.lineWidth = 1.5 * dpr;\n          ctx2.beginPath();\n          ctx2.moveTo(x, vh * 0.04);\n          ctx2.lineTo(x + sw, y);\n          ctx2.stroke();\n          ctx2.globalAlpha = clamp3(0.45 + beat * 0.35, 0, 1);\n          const r = (22 + beat * 10) * dpr;\n          ctx2.drawImage(glowSprite([255, 180, 95]), x + sw - r, y - r, r * 2, r * 2);\n          ctx2.globalAlpha = 1;\n        }\n        for (let k = 0; k < 24; k++) {\n          const tw = 0.5 + 0.5 * Math.sin(t * 0.9 + k * 2.3);\n          if (tw < 0.4) continue;\n          ctx2.globalAlpha = clamp3(tw * (0.25 + beat * 0.2), 0, 1);\n          const r = 4 * dpr;\n          ctx2.drawImage(glowSprite(k % 4 ? [255, 210, 140] : pal[k % 3]), vw * (0.08 + k * 0.036) - r, vh * 0.79 - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "skihut") {\n        ctx2.globalCompositeOperation = "source-over";\n        const peaks = [[0, 0.62], [0.1, 0.5], [0.22, 0.66], [0.34, 0.74], [0.5, 0.78], [0.66, 0.73], [0.78, 0.64], [0.9, 0.48], [1, 0.6]];\n        const ridge = new Path2D();\n        ridge.moveTo(0, vh);\n        for (const [x, y] of peaks) ridge.lineTo(vw * x, vh * y);\n        ridge.lineTo(vw, vh);\n        ridge.closePath();\n        ctx2.fillStyle = "rgba(14,16,30,0.8)";\n        ctx2.fill(ridge);\n        ctx2.save();\n        ctx2.clip(ridge);\n        const snowG = ctx2.createLinearGradient(0, vh * 0.48, 0, vh * 0.7);\n        snowG.addColorStop(0, "rgba(225,232,255,0.22)");\n        snowG.addColorStop(1, "rgba(225,232,255,0)");\n        ctx2.fillStyle = snowG;\n        ctx2.fillRect(0, vh * 0.45, vw, vh * 0.3);\n        ctx2.restore();\n        ctx2.globalCompositeOperation = "lighter";\n        for (let k = 0; k <= 20; k++) {\n          const f = k / 20, x = vw * f, y = vh * (0.04 + 0.1 * (1 - Math.abs(f - 0.5) * 2));\n          ctx2.globalAlpha = clamp3((0.3 + beat * 0.35) * (0.6 + 0.4 * Math.sin(t * 1.5 + k * 1.3)), 0, 1);\n          const r = (9 + beat * 5) * dpr;\n          ctx2.drawImage(glowSprite(k % 2 ? [255, 205, 130] : pal[k % 3]), x - r, y - r, r * 2, r * 2);\n        }\n        snow ||= Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), sp: 0.02 + Math.random() * 0.04, ph: Math.random() * 6.3 }));\n        for (const f of snow) {\n          const y = (f.y + t * f.sp) % 1, x = f.x + Math.sin(t * 0.6 + f.ph) * 0.01;\n          ctx2.globalAlpha = 0.35 + 0.25 * Math.sin(f.ph + t);\n          const r = 3 * dpr;\n          ctx2.drawImage(glowSprite([235, 240, 255]), x * vw - r, y * vh - r, r * 2, r * 2);\n        }\n        ctx2.globalAlpha = 1;\n      } else if (v.decor === "desert") {\n        stars ||= Array.from({ length: 160 }, () => ({ x: Math.random(), y: Math.random() * 0.8, z: 0.3 + Math.random() * 0.7, ph: Math.random() * 6.3 }));\n        for (const s1 of stars) {\n          if (s1.y > 0.5) continue;\n          ctx2.globalAlpha = clamp3((0.25 + 0.3 * Math.sin(t * 1.3 + s1.ph)) * s1.z, 0, 1);\n          const r = (1.4 + s1.z * 2) * dpr;\n          ctx2.drawImage(glowSprite([255, 240, 220]), s1.x * vw - r, s1.y * vh - r, r * 2, r * 2);\n        }\n        const mr = Math.min(vw, vh) * 0.09;\n        ctx2.globalAlpha = clamp3(0.55 + beat * 0.25, 0, 1);\n        ctx2.drawImage(glowSprite([255, 225, 180]), vw * 0.2 - mr * 2.4, vh * 0.2 - mr * 2.4, mr * 4.8, mr * 4.8);\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "source-over";\n        ctx2.fillStyle = "rgba(14,8,6,0.85)";\n        for (const [y0, amp, ph] of [[0.76, 0.04, 0], [0.83, 0.03, 2]]) {\n          ctx2.beginPath();\n          ctx2.moveTo(0, vh);\n          for (let x = 0; x <= 24; x++) ctx2.lineTo(vw * x / 24, vh * (y0 + amp * Math.sin(x * 0.55 + ph)));\n          ctx2.lineTo(vw, vh);\n          ctx2.closePath();\n          ctx2.fill();\n        }\n        ctx2.globalCompositeOperation = "lighter";\n        const fire = ctx2.createRadialGradient(vw / 2, vh, 0, vw / 2, vh, vh * 0.45);\n        fire.addColorStop(0, `rgba(255,140,60,${(0.12 + px.kickEnv * 0.1 + px.drop * 0.08).toFixed(3)})`);\n        fire.addColorStop(1, "rgba(255,140,60,0)");\n        ctx2.fillStyle = fire;\n        ctx2.fillRect(0, vh * 0.55, vw, vh * 0.45);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n    }\n    let stands = null, sky = null, win = null, flies = null, stars = null, neonSigns = null, snow = null, shoot = null;\n    const CO2 = /* @__PURE__ */ new Set(["rave", "techno", "house", "trance", "dnb", "bass", "hardstyle", "kpop", "pop", "disco", "edm", "dubstep", "psytrance", "techhouse", "eurodance", "hyperpop", "trap", "reggaeton", "schlager"]);\n    const PYRO = /* @__PURE__ */ new Set(["rock", "metal", "punk", "hardstyle", "alternative", "phonk"]);\n    const STROBE = /* @__PURE__ */ new Set(["techno", "hardstyle", "rave", "dnb", "bass", "dubstep", "psytrance", "techhouse", "edm", "phonk", "hyperpop"]);\n    kinSet(CO2, "c"), kinSet(PYRO, "p"), kinSet(STROBE, "s");\n    const fx = { jets: [], flames: [], rockets: [], sparks: [], confetti: [], streamers: [], strobe: 0, beat: -1, bar: 0, barId: -1, confAt: -99 };\n    const GOLD = [255, 214, 120], WHITE = [255, 255, 255];\n    function confetti(pal, big, few) {\n      const pop = (c) => {\n        const m = Math.max(...c, 1);\n        return c.map((v) => Math.round(clamp3((v - m * 0.45) / (m * 0.55) * 255, 0, 255)));\n      };\n      const n = Math.round((big ? 220 : 140) * (few ? 0.5 : 1)), cols = [pop(pal[0]), pop(pal[1]), pop(pal[2]), GOLD, WHITE];\n      for (let k = 0; k < n && fx.confetti.length < 420; k++) {\n        const side = k % 2 ? 1 : -1;\n        fx.confetti.push({\n          x: vw * (side < 0 ? 0.12 : 0.88),\n          y: vh * 0.98,\n          vx: -side * vh * (0.12 + Math.random() * 0.45),\n          vy: -vh * (1.25 + Math.random() * 0.6),\n          r: Math.random() * 6.3,\n          vr: (Math.random() - 0.5) * 14,\n          w: (9 + Math.random() * 8) * (vh / 720),\n          h: (5 + Math.random() * 4) * (vh / 720),\n          ph: Math.random() * 6.3,\n          c: cols[k % cols.length],\n          a: 1\n        });\n      }\n      for (let k = 0; k < (few ? 6 : 12); k++) fx.streamers.push({ x: Math.random() * vw, y: -vh * Math.random() * 0.4, vy: vh * (0.12 + Math.random() * 0.08), len: vh * (0.16 + Math.random() * 0.14), ph: Math.random() * 6.3, c: cols[k % cols.length], a: 1 });\n    }\n    function drawFx(ctx2, st, v, px, pal, dpr) {\n      const dt = st.dt, key = px.key;\n      const big = v.decor === "towers" || v.decor === "stands";\n      const newBeat = px.beatIdx >= 0 && px.beatIdx !== fx.beat;\n      if (newBeat) fx.beat = px.beatIdx;\n      const barId = px.beatIdx - (px.inBar || 0), barStart = newBeat && barId !== fx.barId;\n      if (newBeat) fx.barId = barId;\n      if (barStart) fx.bar++;\n      if (st.fx && !px.blackout && !v.calm && px.finale && (px.dropHit || barStart && fx.confAt < 0) && st.t - fx.confAt > 6) {\n        fx.confAt = st.t;\n        confetti(pal, big, st.quality < 1 || v.decor === "fairy");\n      }\n      if (!px.finale && st.t - fx.confAt > 30) fx.confAt = -99;\n      if (st.confetti && st.confetti !== fx.confManual) {\n        fx.confManual = st.confetti;\n        if (v.decor !== "fairy") confetti(pal, big, st.quality < 1);\n      }\n      if (st.fx && !px.blackout && v.decor !== "fairy" && !v.calm) {\n        const peak = (px.fxMul ?? 1) >= 0.75 && (px.drop > 0.3 || px.energy > 0.85 && px.build < 0.15 || px.finale);\n        const fire = px.dropHit || barStart && peak && fx.bar % 2 === 0 && Math.random() < 0.7;\n        if (fire && CO2.has(key)) {\n          const n = big ? 6 : 4;\n          for (let k = 0; k < n; k++) fx.jets.push({ x: vw * (0.12 + 0.76 * k / (n - 1)), t: 0, h: vh * (0.5 + Math.random() * 0.15) });\n        }\n        if (fire && PYRO.has(key)) for (const f of big ? [0.1, 0.3, 0.7, 0.9] : [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });\n        if (px.finale && (big || v.open) && barStart && fx.rockets.length < 4 && Math.random() < 0.85) {\n          for (let k = Math.random() < 0.4 ? 2 : 1; k > 0; k--) fx.rockets.push({ x: vw * (0.15 + Math.random() * 0.7), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: pal[Math.floor(Math.random() * 3)] });\n        }\n        if (st.strobe && st.flashGo && STROBE.has(key) && px.drop > 0.5 && newBeat && flashCap.take(st.t)) fx.strobe = 1;\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      fx.jets = fx.jets.filter((j) => (j.t += dt) < 1.4);\n      for (const j of fx.jets) {\n        const up = Math.min(1, j.t / 0.25), fade = j.t < 0.25 ? 1 : Math.max(0, 1 - (j.t - 0.25) / 1.15);\n        const top = vh - j.h * up, w = (18 + j.t * 70) * dpr;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, "rgba(220,230,255,0)");\n        g.addColorStop(0.25, `rgba(220,230,255,${(0.32 * fade).toFixed(3)})`);\n        g.addColorStop(1, `rgba(220,230,255,${(0.5 * fade).toFixed(3)})`);\n        ctx2.fillStyle = g;\n        ctx2.beginPath();\n        ctx2.moveTo(j.x - 8 * dpr, vh);\n        ctx2.quadraticCurveTo(j.x - w * 0.4, (top + vh) / 2, j.x - w, top);\n        ctx2.lineTo(j.x + w, top);\n        ctx2.quadraticCurveTo(j.x + w * 0.4, (top + vh) / 2, j.x + 8 * dpr, vh);\n        ctx2.fill();\n      }\n      fx.flames = fx.flames.filter((f) => (f.t += dt) < 0.9);\n      for (const f of fx.flames) {\n        const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);\n        for (let k = 0; k < 9; k++) {\n          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);\n          ctx2.globalAlpha = clamp3(life * (0.9 - k * 0.07), 0, 1);\n          ctx2.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + (Math.random() - 0.5) * 10 * dpr, y - r2, r2 * 2, r2 * 2);\n        }\n        ctx2.globalAlpha = life * 0.5;\n        const r = vh * 0.3;\n        ctx2.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.rockets = fx.rockets.filter((r) => {\n        r.vy += vh * 1.1 * dt;\n        r.y += r.vy * dt;\n        ctx2.drawImage(glowSprite([255, 240, 210]), r.x - 4 * dpr, r.y - 4 * dpr, 8 * dpr, 8 * dpr);\n        if (r.vy < -vh * 0.12) return true;\n        for (let k = 0; k < 56; k++) {\n          const a = k / 56 * Math.PI * 2, sp = vh * (0.2 + Math.random() * 0.14);\n          fx.sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, a: 1, c: r.c });\n        }\n        return false;\n      });\n      fx.sparks = fx.sparks.filter((s) => (s.a -= dt * 0.5) > 0);\n      for (const s of fx.sparks) {\n        s.vy += vh * 0.25 * dt;\n        s.vx *= 1 - dt * 0.8;\n        s.x += s.vx * dt;\n        s.y += s.vy * dt;\n        const r = 9 * dpr;\n        ctx2.globalAlpha = s.a;\n        ctx2.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);\n      }\n      ctx2.globalAlpha = 1;\n      fx.confetti = fx.confetti.filter((c) => c.y < vh * 1.05 && (c.a -= dt * 0.07) > 0);\n      fx.streamers = fx.streamers.filter((m) => m.y - m.len < vh && (m.a -= dt * 0.08) > 0);\n      if (fx.confetti.length || fx.streamers.length) {\n        ctx2.globalCompositeOperation = "source-over";\n        for (const c of fx.confetti) {\n          c.vy = c.vy < vh * 0.1 ? c.vy + vh * 1.4 * dt : vh * 0.1;\n          c.vx *= 1 - dt * 1.6;\n          c.ph += dt * 5;\n          c.r += c.vr * dt;\n          c.x += (c.vx + Math.sin(c.ph) * vh * 0.05) * dt;\n          c.y += c.vy * dt;\n          const flip = Math.abs(Math.cos(c.ph * 1.3)), w = c.w * (0.3 + 0.7 * flip), h = c.h;\n          ctx2.globalAlpha = clamp3(c.a, 0, 1) * (0.55 + 0.45 * flip);\n          ctx2.fillStyle = `rgb(${c.c[0]},${c.c[1]},${c.c[2]})`;\n          const co = Math.cos(c.r), si = Math.sin(c.r);\n          ctx2.setTransform(co, si, -si, co, c.x, c.y);\n          ctx2.fillRect(-w / 2, -h / 2, w, h);\n        }\n        ctx2.setTransform(1, 0, 0, 1, 0, 0);\n        ctx2.lineWidth = 4 * (vh / 720);\n        ctx2.lineCap = "round";\n        for (const m of fx.streamers) {\n          m.y += m.vy * dt;\n          m.ph += dt * 2;\n          ctx2.globalAlpha = clamp3(m.a, 0, 1) * 0.85;\n          ctx2.strokeStyle = `rgb(${m.c[0]},${m.c[1]},${m.c[2]})`;\n          ctx2.beginPath();\n          for (let k = 0; k <= 10; k++) {\n            const f = k / 10, x = m.x + Math.sin(m.ph + f * 7) * 14 * dpr, y = m.y - f * m.len;\n            k ? ctx2.lineTo(x, y) : ctx2.moveTo(x, y);\n          }\n          ctx2.stroke();\n        }\n        ctx2.globalAlpha = 1;\n        ctx2.globalCompositeOperation = "lighter";\n      }\n      if (fx.strobe > 0.02) {\n        ctx2.fillStyle = `rgba(255,255,255,${(fx.strobe * 0.3).toFixed(3)})`;\n        ctx2.fillRect(0, 0, vw, vh);\n        fx.strobe *= Math.exp(-dt * 28);\n      }\n    }\n    const mind = createCrowdMind();\n    const SEA = /* @__PURE__ */ new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);\n    kinSet(SEA, "l");\n    const sea = { a: 0 };\n    function seaLevel(px, dt, st) {\n      const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp3((px.energy - 0.32) * 2.2, 0, 1) : 0;\n      sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));\n      return sea.a;\n    }\n    const hash = (a, b) => {\n      const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;\n      return x - Math.floor(x);\n    };\n    let crowd = null, crowdA = 0;\n    const rowA = [1, 1, 1];\n    const HAIR = ["", "short", "short", "buzz", "long", "long", "bob", "pony", "bun", "pigtails", "cap", "beanie", "hat", "afro", "curl", "spiky", "hood"];\n    const FAR_HAIR = { short: "", buzz: "", spiky: "", bob: "long", pony: "long", pigtails: "long", beanie: "cap", hood: "cap", curl: "afro" };\n    const BUILD = [0.86, 0.95, 1.05, 1.17];\n    const L1 = 26, L2 = 25;\n    function makeCrowd(u, v) {\n      const people = [];\n      let id = 0;\n      v.rows.forEach(([row, scale, gap], lv) => {\n        const far = scale < 0.66;\n        for (let x = -vw * 0.15; x < vw * 1.15; x += gap * u * (0.8 + Math.random() * 0.45)) {\n          const r = Math.random;\n          const h0 = HAIR[Math.floor(r() * HAIR.length)];\n          people.push({\n            id: id++,\n            x,\n            row,\n            lv,\n            far,\n            sc: scale,\n            s: scale * (0.88 + r() * 0.26),\n            ph: r() * 6.3,\n            up: r(),\n            hand: r() < 0.5 ? -1 : 1,\n            hair: far ? FAR_HAIR[h0] ?? h0 : h0,\n            // Statur (vier Stufen) und Kleidung (nichts, Kapuze, Kragen, Rucksack) \u2013 wenige Stufen = wenige K\xF6rperbilder\n            wd: far ? 1 + Math.floor(r() * 2) : Math.floor(r() * 4),\n            det: far ? 0 : Math.floor(r() * 4),\n            // eigene kleine Verz\xF6gerung: nicht alle reagieren im selben Augenblick auf den Schlag\n            lag: r() * 0.09,\n            gadget: r() < 0.16 ? "phone" : r() < 0.26 ? "lighter" : "",\n            arm: 0,\n            spr: null,\n            pk: ""\n          });\n        }\n      });\n      return { w: vw, venue: v, people, lift: -1, liftUntil: 0, wave: -1, nextWave: 0, flashes: [], lastPh: -1, phOff: 0, pk: "", T: [] };\n    }\n    const mixC = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));\n    const css = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;\n    function tones(z, pal) {\n      const dark = [7, 6, 14], light = mixC(mixC(pal[0], pal[2], 0.45), [255, 255, 255], 0.35);\n      const base = mixC(dark, mixC(dark, pal[1], 0.45), 0.06 + (1 - z) * 0.26);\n      const low = mixC(base, [0, 0, 0], 0.35 * z);\n      return {\n        top: css(mixC(base, light, 0.08 + (1 - z) * 0.04)),\n        low: css(low),\n        rim: css(mixC(base, light, 0.85 - (1 - z) * 0.35)),\n        mid: css(mixC(base, light, 0.4 - (1 - z) * 0.15)),\n        det: css(mixC(base, light, 0.05)),\n        arm: css(mixC(base, light, 0.06)),\n        chair: css(mixC(base, [120, 28, 40], 0.3)),\n        chairLow: css(mixC(low, [70, 14, 22], 0.25)),\n        ext: css(low)\n      };\n    }\n    function paint(x, P, S, top, bottom, T, c0, c1) {\n      const lin = (a, b, c) => {\n        const g2 = x.createLinearGradient(0, top, 0, bottom);\n        g2.addColorStop(0, a);\n        g2.addColorStop(0.45, b);\n        g2.addColorStop(1, c);\n        return g2;\n      };\n      x.fillStyle = lin(T.rim, T.mid, c1);\n      x.fill(P);\n      x.globalCompositeOperation = "source-atop";\n      x.translate(-0.55 * S, 0.75 * S);\n      x.fillStyle = lin(T.mid, c0, c1);\n      x.fill(P);\n      x.translate(-0.55 * S, 0.75 * S);\n      const g = x.createLinearGradient(0, top, 0, bottom);\n      g.addColorStop(0, c0);\n      g.addColorStop(1, c1);\n      x.fillStyle = g;\n      x.fill(P);\n      x.setTransform(1, 0, 0, 1, 0, 0);\n      x.globalCompositeOperation = "source-over";\n    }\n    function bodyPath(cx, y, S, W, det) {\n      const P = new Path2D(), X = (d) => cx + d * S, Y = (d) => y + d * S;\n      const n = 4.4, sh = 21.5 * W, hip = 20 * W;\n      P.moveTo(X(-n), Y(-50));\n      P.lineTo(X(n), Y(-50));\n      P.quadraticCurveTo(X(n + 6 * W), Y(-48.6), X(sh - 3), Y(-45.6));\n      P.bezierCurveTo(X(sh + 0.6), Y(-44.6), X(sh + 1.1), Y(-40), X(sh + 0.7), Y(-35));\n      P.quadraticCurveTo(X(sh - 0.2), Y(-14), X(hip), Y(20));\n      P.lineTo(X(-hip), Y(20));\n      P.quadraticCurveTo(X(-sh + 0.2), Y(-14), X(-sh - 0.7), Y(-35));\n      P.bezierCurveTo(X(-sh - 1.1), Y(-40), X(-sh - 0.6), Y(-44.6), X(-sh + 3), Y(-45.6));\n      P.quadraticCurveTo(X(-n - 6 * W), Y(-48.6), X(-n), Y(-50));\n      P.closePath();\n      if (det === 1) {\n        P.moveTo(X(10.5), Y(-47.5));\n        P.ellipse(X(0), Y(-47.5), 10.5 * S, 5.2 * S, 0, 0, Math.PI * 2);\n      } else if (det === 2) {\n        P.moveTo(X(-8.5), Y(-45.5));\n        P.lineTo(X(-6.6), Y(-53.5));\n        P.lineTo(X(6.6), Y(-53.5));\n        P.lineTo(X(8.5), Y(-45.5));\n        P.closePath();\n      }\n      return P;\n    }\n    function headPath(ox, oy, S, hair) {\n      const P = new Path2D(), X = (d) => ox + d * S, Y = (d) => oy + d * S;\n      const E = (cx, cy, rx2, ry2) => {\n        P.moveTo(X(cx + rx2), Y(cy));\n        P.ellipse(X(cx), Y(cy), rx2 * S, ry2 * S, 0, 0, Math.PI * 2);\n      };\n      const rx = hair === "buzz" ? 8 : 8.6, ry = hair === "buzz" ? 9.6 : 10.2;\n      E(0, 0, rx, ry);\n      if (["", "short", "buzz", "cap", "spiky", "pony", "bun"].includes(hair)) {\n        E(-rx + 0.3, 1.4, 1.7, 2.9);\n        E(rx - 0.3, 1.4, 1.7, 2.9);\n      }\n      const tail = (x0, dir) => {\n        P.moveTo(X(x0 - 2), Y(-4));\n        P.lineTo(X(x0 + 2.2), Y(-4));\n        P.quadraticCurveTo(X(x0 + 2.2 + dir * 2.6), Y(8), X(x0 + dir * 3), Y(19));\n        P.quadraticCurveTo(X(x0 + dir * 1.2), Y(20.5), X(x0 - 0.6), Y(18));\n        P.quadraticCurveTo(X(x0 + 0.4), Y(6), X(x0 - 2), Y(-4));\n        P.closePath();\n      };\n      if (hair === "short") E(0, -1.6, 9.2, 9.6);\n      else if (hair === "long" || hair === "bob") {\n        const b = hair === "long" ? 22 : 10, f = hair === "long" ? 11.4 : 10.6;\n        E(0, -1.5, 9.6, 10);\n        P.moveTo(X(-9.6), Y(-2));\n        P.lineTo(X(9.6), Y(-2));\n        P.quadraticCurveTo(X(f), Y(b * 0.55), X(f - 0.8), Y(b));\n        P.quadraticCurveTo(X(0), Y(b + 2.5), X(-f + 0.8), Y(b));\n        P.quadraticCurveTo(X(-f), Y(b * 0.55), X(-9.6), Y(-2));\n        P.closePath();\n      } else if (hair === "pony") {\n        E(0, -1.4, 9, 9.6);\n        tail(0.4, 1);\n        E(0.4, -3, 2.8, 2.3);\n      } else if (hair === "bun") {\n        E(0, -1.4, 9, 9.6);\n        E(0, -11.6, 4.6, 4.2);\n      } else if (hair === "pigtails") {\n        E(0, -1.4, 9, 9.6);\n        E(-9.6, 5.5, 2.6, 6.6);\n        E(9.6, 5.5, 2.6, 6.6);\n      } else if (hair === "cap") {\n        E(0, -3, 9.5, 8.6);\n        E(0, -1.4, 11.4, 1.5);\n        E(0, -11.4, 1.4, 1.1);\n      } else if (hair === "beanie") {\n        E(0, -4.6, 9.6, 9.8);\n        P.rect(X(-9.9), Y(-3.6), 19.8 * S, 3.6 * S);\n        E(0, -15.2, 3.2, 3);\n      } else if (hair === "hat") {\n        E(0, -4.6, 15.5, 2.3);\n        P.roundRect(X(-7.4), Y(-15), 14.8 * S, 10.6 * S, [3.6 * S, 3.6 * S, 0, 0]);\n      } else if (hair === "afro" || hair === "curl") {\n        const R = hair === "afro" ? 12.4 : 9.8, c = hair === "afro" ? -3 : -2, k = hair === "afro" ? 11 : 8, br = hair === "afro" ? 3.3 : 2.7;\n        E(0, c, R, R);\n        for (let i = 0; i < k; i++) {\n          const a = hair === "afro" ? i / k * Math.PI * 2 : Math.PI + i / (k - 1) * Math.PI;\n          E(Math.cos(a) * (R - 1.2), c + Math.sin(a) * (R - 1.2), br, br);\n        }\n      } else if (hair === "spiky") {\n        E(0, -1.4, 9, 9.6);\n        for (let k = -2; k <= 2; k++) {\n          const bx = k * 3.6, by = -8.6 + Math.abs(k) * 1.1;\n          P.moveTo(X(bx - 2.2), Y(by));\n          P.lineTo(X(bx + k * 0.9), Y(by - 5.6 + Math.abs(k) * 0.9));\n          P.lineTo(X(bx + 2.2), Y(by));\n          P.closePath();\n        }\n      } else if (hair === "hood") {\n        P.moveTo(X(-12.5), Y(17));\n        P.quadraticCurveTo(X(-13.8), Y(-8), X(-5), Y(-13.6));\n        P.quadraticCurveTo(X(0), Y(-15.6), X(5), Y(-13.6));\n        P.quadraticCurveTo(X(13.8), Y(-8), X(12.5), Y(17));\n        P.closePath();\n      }\n      return P;\n    }\n    const bodySprites = /* @__PURE__ */ new Map();\n    let palKey = "", spriteBudget = 0;\n    function bodySprite(p, u, T, seated) {\n      const key = `${p.lv}|${p.sc}|${p.hair}|${p.wd}|${p.det}|${seated ? 1 : 0}|${palKey}|${u.toFixed(2)}`;\n      let sp = bodySprites.get(key);\n      if (sp) return sp;\n      if (spriteBudget-- <= 0) return null;\n      if (bodySprites.size >= 200) bodySprites.delete(bodySprites.keys().next().value);\n      const S = p.sc * 1.14 * u, W = BUILD[p.wd], pad = 2;\n      const bwU = Math.max(46 * W, seated ? 52 : 0);\n      const top = p.far ? 86 : 57;\n      const w = Math.ceil(bwU * S) + pad * 2, h = Math.ceil((top + 21) * S) + pad * 2;\n      const c = makeCanvas(w, h);\n      c.width = w;\n      c.height = h;\n      const x = c.getContext("2d"), cx = w / 2, y = pad + top * S;\n      paint(x, bodyPath(cx, y, S, W, p.det), S, y - 56 * S, y + 20 * S, T, T.top, T.low);\n      if (p.det === 3) {\n        x.globalCompositeOperation = "source-atop";\n        x.fillStyle = T.det;\n        x.beginPath();\n        x.roundRect(cx - 9 * W * S, y - 33 * S, 18 * W * S, 27 * S, 5 * S);\n        x.fill();\n        x.strokeStyle = T.det;\n        x.lineWidth = 1.6 * S;\n        x.beginPath();\n        x.moveTo(cx - 10 * W * S, y - 46 * S);\n        x.lineTo(cx - 9.5 * W * S, y - 34 * S);\n        x.moveTo(cx + 10 * W * S, y - 46 * S);\n        x.lineTo(cx + 9.5 * W * S, y - 34 * S);\n        x.stroke();\n        x.globalCompositeOperation = "source-over";\n      }\n      if (seated) {\n        const Q = new Path2D();\n        Q.roundRect(cx - 25 * S, y - 16 * S, 50 * S, 36 * S, [6 * S, 6 * S, 0, 0]);\n        paint(x, Q, S * 0.7, y - 16 * S, y + 20 * S, T, T.chair, T.chairLow);\n      }\n      const hw = Math.ceil(36 * S) + pad * 2, hh = Math.ceil(48 * S) + pad * 2;\n      const hc = makeCanvas(hw, hh);\n      hc.width = hw;\n      hc.height = hh;\n      const ox = hw / 2, oy = pad + 20 * S;\n      const hx = hc.getContext("2d");\n      paint(hx, headPath(ox, oy, S, p.hair), S, oy - 20 * S, oy + 26 * S, T, T.top, T.low);\n      hx.globalCompositeOperation = "destination-over";\n      hx.fillStyle = T.top;\n      hx.fillRect(ox - 3.4 * S, oy + 4 * S, 6.8 * S, 15 * S);\n      hx.globalCompositeOperation = "source-over";\n      if (p.far) x.drawImage(hc, cx - ox, y - 64 * S - oy);\n      sp = { c, w, h, ax: cx, ay: y, head: p.far ? null : hc, hox: ox, hoy: oy, S, ext: seated ? T.chairLow : T.ext, ew: seated ? 50 : 40 * W };\n      bodySprites.set(key, sp);\n      return sp;\n    }\n    function drawCrowd(ctx2, px, pal, dpr, rgba2, dt, st, v, A) {\n      const u = Math.max(0.75, vh / (950 * dpr)) * dpr;\n      if (crowd && crowd.venue === v && crowd.w !== vw) {\n        const f = vw / crowd.w;\n        for (const p of crowd.people) p.x *= f;\n        crowd.w = vw;\n      }\n      if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);\n      if (!crowd.people.length) return;\n      palKey = `${pal[0].join()}|${pal[1].join()}|${pal[2].join()}`;\n      const pk = `${palKey}|${u.toFixed(2)}`;\n      if (crowd.pk !== pk) {\n        crowd.pk = pk;\n        crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, pal));\n      }\n      spriteBudget = 40;\n      const X = mind.mood(px, dt, st.hype), t = st.t;\n      const D = dance(px, X, v.seated), style = D.style;\n      const SEAa = seaLevel(px, dt, st);\n      const half = st.bpm > 150;\n      const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));\n      const raw = clamp3(px.phase ?? 0, 0, 1);\n      if (crowd.lastPh >= 0) {\n        let d = raw - (crowd.lastPh + (dt || 0) * (st.bpm / 60)) % 1;\n        d -= Math.round(d);\n        if (Math.abs(d) > 0.12) crowd.phOff += d;\n      }\n      crowd.lastPh = raw;\n      crowd.phOff *= Math.exp(-(dt || 0.016) * 3);\n      if (Math.abs(crowd.phOff) < 5e-3) crowd.phOff = 0;\n      const phi = ((raw - crowd.phOff) % 1 + 1) % 1;\n      const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;\n      const beatPos = beatN + phi;\n      const build = D.crouch;\n      if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];\n      const waveX = crowd.wave >= 0 ? (t - crowd.wave) / (8 * 60 / st.bpm) * vw * 1.3 - vw * 0.15 : -1e9;\n      if (crowd.wave >= 0 && waveX > vw * 1.2) crowd.wave = -1;\n      const hz = 260 * u, haze = ctx2.createLinearGradient(0, vh, 0, vh - hz);\n      haze.addColorStop(0, rgba2(pal[1], ((0.1 + 0.18 * X) * v.haze).toFixed(3)));\n      haze.addColorStop(1, rgba2(pal[1], 0));\n      ctx2.fillStyle = haze;\n      ctx2.fillRect(0, vh - hz, vw, hz);\n      ctx2.globalCompositeOperation = "source-over";\n      ctx2.globalAlpha = A;\n      ctx2.lineCap = "round";\n      ctx2.lineJoin = "round";\n      const glows = [];\n      let arms = new Path2D(), fore = new Path2D(), nArms = 0, curLv = -1, lastFill = "";\n      {\n        const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;\n        const g = ctx2.createLinearGradient(0, top, 0, vh);\n        g.addColorStop(0, rgba2(pal[0], 0));\n        g.addColorStop(0.55, rgba2(pal[0], glow.toFixed(3)));\n        g.addColorStop(1, rgba2(pal[1], (glow * 0.6).toFixed(3)));\n        ctx2.globalCompositeOperation = "lighter";\n        ctx2.fillStyle = g;\n        ctx2.fillRect(0, top, vw, vh - top);\n        ctx2.globalCompositeOperation = "source-over";\n      }\n      for (let r = 0; r < 3; r++) rowA[r] += ((r <= st.quality ? 1 : 0) - rowA[r]) * (1 - Math.exp(-dt * 2));\n      const flushArms = (lv) => {\n        if (!nArms) return;\n        const [row, sc] = v.rows[lv], k = sc * u;\n        ctx2.globalAlpha = A * rowA[row];\n        ctx2.strokeStyle = crowd.T[lv].arm;\n        ctx2.lineWidth = (sc < 0.66 ? 5.6 : 7.2) * k;\n        ctx2.stroke(arms);\n        if (sc >= 0.66) {\n          ctx2.lineWidth = 5.8 * k;\n          ctx2.stroke(fore);\n          fore = new Path2D();\n        }\n        arms = new Path2D();\n        nArms = 0;\n      };\n      const flushLights = (lv) => {\n        ctx2.globalCompositeOperation = "lighter";\n        for (const [gx, gy, kind, s1, r0] of glows) {\n          const r = (kind === "phone" ? 16 : 13 + Math.sin(t * 13 + gx) * 2) * s1;\n          ctx2.globalAlpha = (kind === "phone" ? 0.85 : 0.6) * (1 - r0 * 0.25) * A * rowA[r0];\n          ctx2.drawImage(glowSprite(kind === "phone" ? [170, 200, 255] : [255, 170, 70]), gx - r, gy - r, r * 2, r * 2);\n        }\n        glows.length = 0;\n        for (const f of crowd.flashes) {\n          if ((f.lv ?? 0) !== lv) continue;\n          const r = 34 * f.s;\n          ctx2.globalAlpha = f.a * A;\n          ctx2.drawImage(glowSprite([255, 255, 255]), f.x - r, f.y - r, r * 2, r * 2);\n        }\n        ctx2.globalCompositeOperation = "source-over";\n      };\n      const mid = vw / 2;\n      const cs = st.cam?.s || 1, ctx0 = (1 - cs) * vw / 2 + ((st.cam?.x || 0) + (st.dep?.on ? st.dep.x * 34 : 0)) * dpr;\n      const vx0 = -ctx0 / cs, vx1 = (vw - ctx0) / cs;\n      for (const p of crowd.people) {\n        if (p.lv !== curLv) {\n          if (curLv >= 0) {\n            flushArms(curLv);\n            flushLights(curLv);\n          }\n          curLv = p.lv;\n        }\n        const ra = rowA[p.row];\n        if (ra < 0.02) continue;\n        if (p.pk !== pk) {\n          const sp2 = bodySprite(p, u, crowd.T[p.lv], v.seated);\n          if (sp2) [p.spr, p.pk] = [sp2, pk];\n        }\n        const sp = p.spr;\n        if (!sp) continue;\n        ctx2.globalAlpha = A * ra;\n        const s1 = p.s * u, me = clamp3(X + (p.up - 0.5) * 0.3, 0, 1);\n        const wave = waveX > -1e8 ? Math.exp(-(((p.x - waveX) / (75 * u)) ** 2)) : 0;\n        const inWave = wave > 0.35;\n        const bp = beatPos - p.lag, bN = Math.floor(bp), ph = bp - bN;\n        const cyc = half ? ((bN & 1) + ph) / 2 : ph, cycN = half ? bN >> 1 : bN;\n        const down = Math.exp(-ph * 6);\n        if (p.cyc !== cycN) {\n          p.cyc = cycN;\n          p.jmp = jumps(D, me, hash(p.id, bar), px);\n        }\n        let lift = wave * (14 + me * 18) * s1;\n        if (p.jmp) lift = Math.max(lift, (16 + me * 22) * s1 * 4 * cyc * (1 - cyc)) - 3 * s1 * Math.exp(-cyc * 16);\n        else if (style === "bounce" && me > 0.3) lift = 6 * s1 * me * Math.sin(Math.PI * ph);\n        else if (style === "skank" && me > 0.25) lift = 7 * s1 * me * Math.exp(-((ph - 0.5) ** 2) * 40);\n        else if (me > 0.35) lift = 2.5 * s1 * me * Math.sin(Math.PI * ph);\n        lift -= build * 4 * s1 * (0.4 + me * 0.6);\n        const th = bp / 2 * Math.PI + p.ph, swA = (2 + (1 - me) * 4) * s1;\n        const sway = Math.sin(th) * swA;\n        const base = vh + 8 * u, y = base - lift, x = p.x + sway;\n        const nodAmp = style === "bang" ? me > 0.5 ? 9 : 4 : style === "nod" ? 6 : me > 0.3 ? 3 : 1;\n        const nod = nodAmp * s1 * down * (0.4 + me * 0.6) * (1 - build * 0.5);\n        const hdx = Math.sin(th - 0.55) * swA * 1.25 - sway + (style === "bang" ? nod * 0.3 * p.hand : 0);\n        const lifted = p.id === crowd.lift;\n        p.sh = (p.sh || 0) + ((lifted ? 1 : 0) - (p.sh || 0)) * (1 - Math.exp(-dt * 4));\n        const yy = y - 58 * s1 * p.sh;\n        const vis = x > vx0 - 60 * s1 && x < vx1 + 60 * s1;\n        const k1 = s1 / sp.S, flip = p.x > mid, bx = flip ? -x : x, hx = bx + (flip ? -hdx : hdx);\n        if (vis) {\n          if (flip) ctx2.scale(-1, 1);\n          ctx2.drawImage(sp.c, bx - sp.ax * k1, yy - sp.ay * k1 + (sp.head ? 0 : nod * 0.5), sp.w * k1, sp.h * k1);\n          if (lastFill !== sp.ext) ctx2.fillStyle = lastFill = sp.ext;\n          ctx2.fillRect(bx - sp.ew / 2 * s1, yy + 20 * s1 - 0.5, sp.ew * s1, vh * 0.6 + (base - yy));\n          if (sp.head) ctx2.drawImage(sp.head, hx - sp.hox * k1, yy - 64 * s1 + nod - sp.hoy * k1, sp.head.width * k1, sp.head.height * k1);\n          if (flip) ctx2.scale(-1, 1);\n        }\n        const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;\n        const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;\n        const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;\n        const au = armsUp(D, me, p.up);\n        let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || au === 1 ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : au;\n        if (!v.seated && build > 0.2 && me > 0.4 && p.up < 0.6) wantUp = Math.max(wantUp, 0.55 * build);\n        p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));\n        const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;\n        const Wb = BUILD[p.wd];\n        for (const side of [-1, 1]) {\n          const a = side === p.hand || allUp || me > 0.6 || style === "clap" || lifted ? p.arm : 0;\n          if (a < 0.2 || !vis) continue;\n          const sx = x + side * 16.5 * Wb * s1, sy = yy - 41 * s1;\n          const ths = th - 0.35;\n          let ux = side * (12 + 6 * Math.sin(ths)) * s1, uy = -50 * s1;\n          if (style === "wave" || st.hype) ux = side * 16 * s1 + Math.sin(ths * 2) * 14 * s1;\n          if (inSea && side === p.hand) [ux, uy] = [side * 6 * s1 + Math.sin(bp / 8 * Math.PI * 2 - p.x / (vw * 0.9)) * 18 * s1, -56 * s1];\n          if (style === "clap") [ux, uy] = [side * (14 - clapOn * 12) * s1, -40 * s1];\n          if (allUp) [ux, uy] = [side * (20 + 4 * Math.sin(ths)) * s1, -54 * s1 - 6 * s1 * down];\n          if ((style === "pump" || style === "jump" || style === "bang") && side === p.hand && me > 0.55) uy -= 14 * s1 * down;\n          const b0 = (1 - a) * (1 - a), b1 = 2 * a * (1 - a), b2 = a * a;\n          let hxA = sx + (b0 * side * 3 + b1 * side + b2 * ux / s1) * s1, hyA = sy + (b0 * 50 + b1 * 22) * s1 + b2 * uy;\n          let dx = hxA - sx, dy = hyA - sy, d = Math.hypot(dx, dy) || 1;\n          const dm = (L1 + L2 - 0.5) * s1;\n          if (d > dm) [hxA, hyA, dx, dy, d] = [sx + dx / d * dm, sy + dy / d * dm, dx / d * dm, dy / d * dm, dm];\n          const l1 = L1 * s1, l2 = L2 * s1, al = (l1 * l1 - l2 * l2 + d * d) / (2 * d), hh = Math.min(Math.sqrt(Math.max(0, l1 * l1 - al * al)), 9 * s1) * clamp3((sy + 10 * s1 - hyA) / (30 * s1), 0, 1);\n          let nx = -dy / d, ny = dx / d;\n          if (nx * side < 0) [nx, ny] = [-nx, -ny];\n          const ex = sx + dx / d * al + nx * hh, ey = sy + dy / d * al + ny * hh;\n          arms.moveTo(sx, sy);\n          arms.lineTo(ex, ey);\n          if (p.far) arms.lineTo(hxA, hyA);\n          else {\n            fore.moveTo(ex, ey);\n            fore.lineTo(hxA, hyA);\n          }\n          nArms++;\n          if (side === p.hand && gadget && a > 0.5 && (inSea || me < 0.55 || gadget === "phone")) glows.push([hxA, hyA - 6 * s1, gadget, s1, p.row]);\n        }\n        if (st.noFlash) {\n        } else if (!st.paused && p.gadget === "phone" && Math.random() < dt * (0.03 + X * 0.25)) crowd.flashes.push({ x, y: yy - 70 * s1, a: 1, s: s1, lv: p.lv });\n        else if (!st.paused && (st.flashStorm || 0) > 0.05 && Math.random() < dt * 2.2 * st.flashStorm) crowd.flashes.push({ x: x + p.hand * 18 * s1, y: yy - 92 * s1, a: 1, s: s1 * 0.8, lv: p.lv });\n      }\n      if (curLv >= 0) {\n        flushArms(curLv);\n        flushLights(curLv);\n      }\n      ctx2.globalCompositeOperation = "lighter";\n      if (crowd.flashes.length > 160) crowd.flashes.splice(0, crowd.flashes.length - 160);\n      crowd.flashes = crowd.flashes.filter((f) => (f.a -= dt * 7) > 0);\n      ctx2.globalAlpha = 1;\n    }\n    const fogBanks = Array.from({ length: 9 }, (_, i) => ({ x: i / 8, sp: 6e-3 + Math.random() * 0.01, r: 0.18 + Math.random() * 0.14, ph: Math.random() * 6.3, c: i % 3 }));\n    function drawFog(ctx2, st, v) {\n      if (v.decor === "fairy") return;\n      const px = st.px, t = st.t, dens = (v.calm ? 0.45 : 1) * (0.55 + 0.45 * (px.energy || 0)) * (px.haze ?? 1);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const b of fogBanks) {\n        const x = ((b.x + t * b.sp) % 1.3 - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));\n        ctx2.globalAlpha = clamp3((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);\n        ctx2.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    const drones = { song: "", t: -1, pts: [], shape: 0 };\n    function shapePoint(kind, i, n) {\n      const a = i / n * Math.PI * 2;\n      if (kind === 0) return [16 * Math.sin(a) ** 3 / 17, -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a)) / 17];\n      if (kind === 1) {\n        const k = Math.floor(i / n * 10), f = i / n * 10 - k, r0 = k % 2 ? 0.42 : 1, r1 = k % 2 ? 1 : 0.42;\n        const a0 = k / 10 * Math.PI * 2 - Math.PI / 2, a1 = (k + 1) / 10 * Math.PI * 2 - Math.PI / 2;\n        return [Math.cos(a0) * r0 * (1 - f) + Math.cos(a1) * r1 * f, Math.sin(a0) * r0 * (1 - f) + Math.sin(a1) * r1 * f];\n      }\n      if (kind === 2) return [Math.cos(a), Math.sin(a)];\n      return [i / n * 2 - 1, Math.sin(i / n * Math.PI * 4) * 0.35];\n    }\n    function drawDrones(ctx2, st) {\n      const px = st.px, t = st.t;\n      if (st.song && st.song !== drones.song && st.drones && px.dropHit && px.energy > 0.7 && !px.blackout) {\n        drones.song = st.song;\n        drones.t = t;\n        drones.shape = Math.floor(Math.random() * 4);\n        drones.pts = Array.from({ length: 120 }, (_, i) => ({ sx: Math.random(), sy: Math.random() * 0.5, i }));\n      }\n      if (drones.t < 0) return;\n      const age = t - drones.t;\n      if (age > 9) return void (drones.t = -1);\n      const f = age < 2 ? age / 2 : age < 7 ? 1 : 1 - (age - 7) / 2, e = f * f * (3 - 2 * f);\n      const cx = vw / 2, cy = vh * 0.2, S = Math.min(vw, vh) * 0.12, beat = Math.max(px.kickEnv || 0, px.accent || 0);\n      ctx2.globalCompositeOperation = "lighter";\n      for (const p of drones.pts) {\n        const [qx, qy] = shapePoint(drones.shape, p.i, drones.pts.length);\n        const x = p.sx * vw + (cx + qx * S - p.sx * vw) * e, y = p.sy * vh + (cy + qy * S - p.sy * vh) * e;\n        const c = st.pal[p.i % 3], r = (3 + beat * 2.5) * st.dpr;\n        ctx2.globalAlpha = clamp3((0.35 + 0.65 * e) * (0.7 + 0.3 * Math.sin(t * 6 + p.i)), 0, 1);\n        ctx2.drawImage(glowSprite(c.map((x2) => Math.round(x2 + (255 - x2) * 0.5))), x - r * 2, y - r * 2, r * 4, r * 4);\n      }\n      ctx2.globalAlpha = 1;\n    }\n    function stageCam(ctx2, st) {\n      const dx = st.cam.x + (st.dep.on ? st.dep.x * 34 : 0), dy = st.cam.y + (st.dep.on ? st.dep.y * 14 : 0);\n      if (st.cam.s === 1 && !dx && !dy) return;\n      ctx2.setTransform(st.cam.s, 0, 0, st.cam.s, (1 - st.cam.s) * vw / 2 + dx * st.dpr, (1 - st.cam.s) * vh / 2 + dy * st.dpr);\n    }\n    let lastV = null, vSnap = null, vT = 0;\n    const V_FADE = 1.3;\n    function draw(ctx2, st) {\n      vw = st.vw;\n      vh = st.vh;\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      ctx2.globalAlpha = 1;\n      const vNext = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];\n      if (lastV && vNext !== lastV && ctx2.canvas?.width && crowdA > 0.05) {\n        try {\n          vSnap = vSnap && vSnap.width === ctx2.canvas.width && vSnap.height === ctx2.canvas.height ? vSnap : makeCanvas(ctx2.canvas.width, ctx2.canvas.height);\n          vSnap.width = ctx2.canvas.width;\n          vSnap.height = ctx2.canvas.height;\n          vSnap.getContext("2d").drawImage(ctx2.canvas, 0, 0);\n          vT = st.t;\n        } catch {\n          vT = 0;\n        }\n      }\n      lastV = vNext;\n      ctx2.clearRect(0, 0, vw, vh);\n      crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));\n      if (!st.stage && crowdA < 0.01) return;\n      const rgba2 = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;\n      const v = vNext;\n      ctx2.globalCompositeOperation = "lighter";\n      ctx2.lineCap = "round";\n      stageCam(ctx2, st);\n      if (st.stage) {\n        drawStage(ctx2, st.pal, st.px, rgba2, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);\n        show.drawRig(ctx2, st, v, st.px, st.pal, st.dpr);\n        drawDecor(ctx2, v, st.px, st.pal, rgba2, st.dpr, st);\n      }\n      if (st.inst) show.drawInst(ctx2, st, st.px, st.pal, st.dpr);\n      drawFx(ctx2, st, v, st.px, st.pal, st.dpr);\n      if (st.stage && st.fog) drawFog(ctx2, st, v);\n      if (st.stage && v.open) drawDrones(ctx2, st);\n      if (crowdA > 0.01) drawCrowd(ctx2, st.px, st.pal, st.dpr, rgba2, st.dt, st, v, crowdA);\n      ctx2.setTransform(1, 0, 0, 1, 0, 0);\n      if (vT && vSnap) {\n        const f = clamp3((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);\n        if (f >= 1) vT = 0;\n        else {\n          ctx2.globalCompositeOperation = "destination-out";\n          ctx2.fillStyle = `rgba(0,0,0,${(1 - e).toFixed(3)})`;\n          ctx2.fillRect(0, 0, vw, vh);\n          ctx2.globalCompositeOperation = "destination-over";\n          ctx2.globalAlpha = 1 - e;\n          ctx2.drawImage(vSnap, 0, 0);\n          ctx2.globalAlpha = 1;\n        }\n      }\n      ctx2.globalCompositeOperation = "source-over";\n    }\n    return { draw, glowSprite };\n  }\n\n  // src/venue-worker.js\n  var venue = createVenue((w, h) => new OffscreenCanvas(w, h));\n  var canvas = null;\n  var ctx = null;\n  self.onmessage = (e) => {\n    const m = e.data;\n    if (m.type === "init") {\n      canvas = m.canvas;\n      ctx = canvas.getContext("2d");\n    } else if (m.type === "frame" && ctx) {\n      if (canvas.width !== m.st.vw || canvas.height !== m.st.vh) {\n        canvas.width = m.st.vw;\n        canvas.height = m.st.vh;\n      }\n      venue.draw(ctx, m.st);\n      self.postMessage({ type: "done" });\n    } else if (m.type === "clear" && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);\n  };\n})();\n'], { type: "text/javascript" }));
               const w = new Worker(venueUrl);
               if (venueGiven) venueSwap();
               const off = q2.venueEl.transferControlToOffscreen();
@@ -28143,9 +28700,12 @@
           if (busy2()) restAt = now + REST;
           else if (now > restAt) return void (raf = 0);
           raf = requestAnimationFrame(frame);
-          const fpsCap = ecoOn() || lightMode() || quietNow && cfg.partyQuietFps ? 30 : cfg.preset === "balanced" ? 60 : 0;
+          const tr = tier();
+          const fpsCap = ecoOn() || lightMode() || tr === "calm" || quietNow && cfg.partyQuietFps ? 30 : tr === "full" ? 0 : 60;
           if (fpsCap && now - lastDraw < 1e3 / fpsCap - 3) return;
+          const fdt = Math.min(0.1, lastDraw ? (now - lastDraw) / 1e3 : 0.016);
           lastDraw = now;
+          coverMotion(fdt, fpsCap);
           if (sizeKey !== sizeKeyNow()) sizeCanvas();
           const pos = songPos(now);
           const dur = PLR.getDuration() || 0;
@@ -28288,6 +28848,7 @@
           side = kind;
           if (kind !== "games") q2.hostOpen = false;
           q2.side.hidden = !kind;
+          vizMoveUntil = performance.now() + 1e3;
           q2.side.dataset.kind = kind || "";
           if (!kind) return;
           q2.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
@@ -28738,11 +29299,9 @@
           seg2.className = "m-g-seg-row is-wrap m-im-perf";
           seg2.setAttribute("role", "group");
           seg2.setAttribute("aria-label", t("perfQuick"));
-          for (const k of ["full", "balanced", "light", "calm"]) {
-            const b = document.createElement("button");
+          for (const k of Object.keys(COST)) {
+            const b = presetFill(document.createElement("button"), k);
             b.type = "button";
-            b.dataset.preset = k;
-            b.textContent = t("preset_" + k);
             b.setAttribute("aria-pressed", String(cfg.preset === k));
             b.onclick = () => perfSet(() => setPreset(k));
             seg2.append(b);
@@ -29486,9 +30045,10 @@
       init_color();
       init_stage();
       init_audio();
+      init_perf();
       SCALE = 0.25;
       FADE = 2200;
-      fps = () => ({ full: 30, light: 12 })[cfg.preset] || 20;
+      fps = () => cfg.preset === "full" ? 20 : tier() === "light" ? 10 : 15;
       TAU = Math.PI * 2;
       tri = (x) => 1 - Math.abs(2 * (x - Math.floor(x)) - 1);
       ease2 = (x) => x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2;
@@ -29497,9 +30057,9 @@
         const cv = stage.querySelector("canvas");
         const ctx3 = cv.getContext("2d", { alpha: false });
         const vig = document.createElement("canvas");
-        let W2 = 0, H2 = 0, timer2 = 0, running2 = false, paused = false, lastT = 0, clock = 0, aliveUntil = 0;
+        let W2 = 0, H2 = 0, timer2 = 0, running2 = false, paused = false, lastT = 0, clock = 0, aliveUntil = 0, drawnAt = 0, lvlS = 0;
         let pal = schemePalette(), base = [7, 6, 12], sprites = [];
-        let cur2 = null, prev = null, fadeT0 = 0;
+        let layers = [], fadeT0 = 0;
         const parts = [];
         function sprite(rgb) {
           const s = document.createElement("canvas");
@@ -29638,22 +30198,26 @@
         function draw(now) {
           const playing2 = root.classList.contains("mirage-playing");
           const moving = playing2 && !cfg.calm;
-          const dt = lastT ? Math.min(3, (now - lastT) / 16.7) : 0;
+          const dt = lastT ? Math.min(6, (now - lastT) / 16.7) : 0;
           lastT = now;
           if (moving) clock += dt * 16.7 / 1e3;
           const light = root.classList.contains("mirage-light");
-          const lvl = moving ? beat.level : 0;
+          const want = moving ? beat.level : 0, k = dt * 16.7 / 1e3;
+          lvlS += (want - lvlS) * (1 - Math.exp(-k * (want > lvlS ? 22 : 6)));
+          const lvl = lvlS;
           ctx3.globalCompositeOperation = "source-over";
           ctx3.globalAlpha = 1;
           ctx3.fillStyle = rgba3(base, 1);
           ctx3.fillRect(0, 0, W2, H2);
-          const f = cur2 ? ease2(Math.min(1, (now - fadeT0) / FADE)) : 0;
-          const bright = cfg.bright / 100;
-          for (const [layer, a] of [[prev, 1 - f], [cur2, f]]) {
-            if (!layer) continue;
-            haze(layer, a * (light ? 0.55 : 0.95), 70, 1, W2 / 2, H2 / 2, "source-over");
-            haze(layer, a * (light ? 0.35 : 0.55), 95, -1, W2 * 0.14, H2 * 0.86, light ? "source-over" : "screen");
-          }
+          const f = layers.length ? ease2(Math.min(1, (now - fadeT0) / FADE)) : 0;
+          if (f >= 1 && layers.length > 1) layers = layers.slice(-1);
+          const bright = cfg.bright / 100, cur2 = layers[layers.length - 1]?.img;
+          layers.forEach((L2, i) => {
+            const a = i === layers.length - 1 ? f : L2.a0 * (1 - f);
+            if (a <= 2e-3) return;
+            haze(L2.img, a * (light ? 0.55 : 0.95), 70, 1, W2 / 2, H2 / 2, "source-over");
+            haze(L2.img, a * (light ? 0.35 : 0.55), 95, -1, W2 * 0.14, H2 * 0.86, light ? "source-over" : "screen");
+          });
           if (bright < 1) {
             ctx3.globalAlpha = 1 - bright;
             ctx3.fillStyle = rgba3(base, 1);
@@ -29678,11 +30242,16 @@
         function tick2() {
           timer2 = 0;
           if (!running2 || document.hidden) return;
-          requestAnimationFrame((now) => {
-            draw(now);
-            if (active2()) timer2 = setTimeout(tick2, 1e3 / fps());
-            else lastT = 0;
-          });
+          requestAnimationFrame(frame);
+        }
+        function frame(now) {
+          if (!running2 || document.hidden) return;
+          const step = 1e3 / fps();
+          if (now > drawnAt && now - drawnAt < step - 4) return void requestAnimationFrame(frame);
+          draw(now);
+          drawnAt = Math.abs(now - drawnAt - step) < 8 ? drawnAt + step : now;
+          if (active2()) timer2 = setTimeout(tick2, Math.max(0, drawnAt + step - performance.now() - 20));
+          else lastT = 0;
         }
         function wake() {
           if (!running2 || timer2) return;
@@ -29692,9 +30261,10 @@
         onHaze((src) => {
           const img = new Image();
           img.onload = () => {
-            prev = cur2;
-            cur2 = img;
-            fadeT0 = performance.now();
+            const now = performance.now(), f = layers.length ? ease2(Math.min(1, (now - fadeT0) / FADE)) : 1;
+            layers = layers.map((L2, i) => ({ img: L2.img, a0: i === layers.length - 1 ? f : L2.a0 * (1 - f) })).filter((L2) => L2.a0 > 0.01).slice(-3);
+            layers.push({ img, a0: 0 });
+            fadeT0 = now;
             aliveUntil = fadeT0 + FADE + 100;
             wake();
           };
@@ -30004,96 +30574,6 @@
     }
   });
 
-  // src/perf.js
-  function applyPreset(name) {
-    const p = PRESETS[name];
-    if (!p) return;
-    Object.assign(cfg, p, { preset: name });
-    save();
-  }
-  function detectPreset() {
-    const hit = Object.entries(PRESETS).find(([, p]) => PRESET_KEYS.every((k) => !!cfg[k] === !!p[k]));
-    cfg.preset = hit ? hit[0] : "custom";
-  }
-  function deviceKey() {
-    let gpu = "";
-    try {
-      const gl = document.createElement("canvas").getContext("webgl");
-      const ext = gl?.getExtension("WEBGL_debug_renderer_info");
-      gpu = String(ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) || gl?.getParameter(gl.RENDERER) || "");
-      gl?.getExtension("WEBGL_lose_context")?.loseContext();
-    } catch {
-    }
-    return [gpu, `${screen.width}x${screen.height}`, devicePixelRatio || 1, navigator.hardwareConcurrency || 0].join("|");
-  }
-  function known2(key) {
-    try {
-      const m = JSON.parse(localStorage.getItem(PERF_KEY) || "null");
-      return !!m && m.key === key && m.v === VERSION && Date.now() - m.at < PERF_DAYS * 864e5;
-    } catch {
-      return false;
-    }
-  }
-  function remember4(key, fps2) {
-    try {
-      localStorage.setItem(PERF_KEY, JSON.stringify({ key, v: VERSION, at: Date.now(), fps: Math.round(fps2), preset: cfg.preset }));
-    } catch {
-    }
-  }
-  function measure(onDone, wait = 4e3) {
-    if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
-    measured = true;
-    let key = "", frames = 0, start3 = 0, hiddenSeen = false;
-    const sample = (now) => {
-      if (document.hidden) hiddenSeen = true;
-      if (!start3) start3 = now;
-      frames++;
-      if (now - start3 < 5e3) return requestAnimationFrame(sample);
-      const fps2 = frames * 1e3 / (now - start3);
-      if (hiddenSeen) {
-        measured = false;
-        return document.addEventListener("visibilitychange", () => !document.hidden && measure(onDone), { once: true });
-      }
-      const next = ORDER[ORDER.indexOf(cfg.preset) + 1];
-      if (fps2 >= 45 || !next) return remember4(key, fps2);
-      applyPreset(next);
-      onDone();
-      try {
-        S.showNotification?.(t("perfStepped").replace("{fps}", Math.round(fps2)).replace("{preset}", t("preset_" + next)), false, 6e3);
-      } catch {
-      }
-      if (next === "light") return remember4(key, fps2);
-      measured = false;
-      measure(onDone, 2e3);
-    };
-    setTimeout(() => {
-      key = deviceKey();
-      if (!known2(key)) requestAnimationFrame(sample);
-    }, wait);
-  }
-  var PRESETS, ORDER, PRESET_KEYS, PERF_KEY, PERF_DAYS, measured, syncHidden;
-  var init_perf = __esm({
-    "src/perf.js"() {
-      init_core();
-      init_i18n();
-      init_config();
-      PRESETS = {
-        full: { glass: true, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false },
-        balanced: { glass: false, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false },
-        light: { glass: false, particles: false, grain: false, beat: true, tilt: false, cascade: true, calm: false, lite: true },
-        calm: { glass: false, particles: false, grain: true, beat: false, tilt: false, cascade: false, calm: true, lite: false }
-      };
-      ORDER = ["full", "balanced", "light"];
-      PRESET_KEYS = Object.keys(PRESETS.full);
-      PERF_KEY = "mirage:perf";
-      PERF_DAYS = 14;
-      measured = false;
-      syncHidden = () => root.classList.toggle("mirage-hidden", document.hidden);
-      document.addEventListener("visibilitychange", syncHidden);
-      syncHidden();
-    }
-  });
-
   // src/readability.js
   var readability_exports = {};
   __export(readability_exports, {
@@ -30392,17 +30872,18 @@
     if (hint) h.append(el2("small", "", hint));
     return h;
   }
+  function bolt() {
+    const i = el2("i", "m-cost", "\u26A1");
+    i.title = t("costly");
+    i.setAttribute("role", "img");
+    i.setAttribute("aria-label", t("costly"));
+    return i;
+  }
   function toggle(key, after2) {
     const row2 = el2("label", "m-row");
     const txt = el2("span");
     const b = el2("b", "", t(key));
-    if (COSTLY.has(key)) {
-      const bolt = el2("i", "m-cost", "\u26A1");
-      bolt.title = t("costly");
-      bolt.setAttribute("role", "img");
-      bolt.setAttribute("aria-label", t("costly"));
-      b.append(" ", bolt);
-    }
+    if (COSTLY.has(key)) b.append(" ", bolt());
     txt.append(b);
     const hint = t(key + "Hint");
     if (hint !== key + "Hint") txt.append(el2("small", "", hint));
@@ -30421,24 +30902,75 @@
     row2.append(txt, cb);
     return row2;
   }
-  function range(key, min, max, step, unit, after2) {
-    const row2 = el2("label", "m-row");
-    const txt = el2("span");
-    const hint = el2("small", "", cfg[key] + unit);
-    txt.append(el2("b", "", t(key)), hint);
+  function range(key, min, max, step, unit, after2, fmt2 = (v) => v + unit) {
+    const row2 = el2("label", "m-row m-range");
+    const top2 = el2("span", "m-range-top");
+    const name = el2("b", "", t(key));
+    if (COSTLY_RANGE.has(key)) name.append(" ", bolt());
+    const val = el2("span", "m-range-val");
+    val.setAttribute("aria-hidden", "true");
+    top2.append(name, val);
     const r = el2("input");
     Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
     r.dataset.key = key;
-    r.setAttribute("aria-valuetext", cfg[key] + unit);
-    r.oninput = () => {
-      cfg[key] = Number(r.value);
-      hint.textContent = r.value + unit;
-      r.setAttribute("aria-valuetext", r.value + unit);
-      save();
+    r.setAttribute("aria-label", t(key));
+    const scale = el2("span", "m-range-scale");
+    scale.setAttribute("aria-hidden", "true");
+    const steps = Math.round((max - min) / step);
+    if (steps <= 16) scale.style.setProperty("--n", steps);
+    else scale.classList.add("is-noticks");
+    const def = DEFAULTS[key];
+    if (typeof def === "number" && def >= min && def <= max) scale.style.setProperty("--d", (def - min) / (max - min));
+    else scale.classList.add("is-nodef");
+    if (has(key + "Lo")) Object.assign(scale.dataset, { lo: t(key + "Lo"), hi: t(key + "Hi") });
+    row2.append(top2, r, scale);
+    const idle2 = key === "blur" && !cfg.glass;
+    row2.classList.toggle("is-idle", idle2);
+    const hk = idle2 ? "blurOff" : has(key + "Cost") ? key + "Cost" : FREE_RANGE.has(key) ? "costFree" : has(key + "Hint") ? key + "Hint" : "";
+    if (hk) {
+      const hint = el2("small", "m-range-hint" + (hk.endsWith("Cost") ? " is-cost" : hk === "costFree" ? " is-free" : ""), t(hk));
+      hint.id = "m-rh-" + ++rangeN;
+      r.setAttribute("aria-describedby", hint.id);
+      row2.append(hint);
+    }
+    const show2 = () => {
+      const v = Number(r.value), text = String(fmt2(v));
+      val.textContent = text;
+      r.style.setProperty("--p", (v - min) / (max - min));
+      r.setAttribute("aria-valuetext", v === def ? `${text} (${t("rangeDefault")})` : text);
+    };
+    show2();
+    let at3 = 0, timer2 = 0, done2 = cfg[key];
+    const apply2 = () => {
+      clearTimeout(timer2);
+      timer2 = 0;
+      at3 = performance.now();
+      done2 = cfg[key];
       after2?.();
     };
-    row2.append(txt, r);
+    r.oninput = () => {
+      cfg[key] = Number(r.value);
+      show2();
+      if (!after2 || timer2) return;
+      const wait = 100 - (performance.now() - at3);
+      if (wait <= 0) apply2();
+      else timer2 = setTimeout(apply2, wait);
+    };
+    r.onchange = () => {
+      cfg[key] = Number(r.value);
+      if (after2 && (timer2 || done2 !== cfg[key])) apply2();
+      save();
+    };
     return row2;
+  }
+  function presetFill(b, k) {
+    const meter = el2("i", "m-meter");
+    meter.dataset.cost = COST[k];
+    const name = t("preset_" + k), desc = t("presetDesc_" + k);
+    b.dataset.preset = k;
+    b.setAttribute("aria-label", `${name}, ${desc}, ${t("costLabel").replace("{c}", t("cost" + COST[k]))}`);
+    b.replaceChildren(el2("b", "", name), meter, el2("small", "", desc));
+    return b;
   }
   function seg(options, value, onPick) {
     const s = el2("div", options.length > 6 ? "m-seg is-wrap" : "m-seg");
@@ -30507,17 +31039,6 @@
     };
     wrap.append(q2, s, note);
     return wrap;
-  }
-  function rangeZero(key, max, zero) {
-    const row2 = range(key, 0, max, 1, "");
-    const hint = row2.querySelector("small"), r = row2.querySelector("input");
-    const show2 = () => {
-      hint.textContent = Number(r.value) ? r.value : t(zero);
-      r.setAttribute("aria-valuetext", hint.textContent);
-    };
-    r.addEventListener("input", show2);
-    show2();
-    return row2;
   }
   function wishRules() {
     const box2 = el2("div", "m-wishrules");
@@ -30687,14 +31208,20 @@
     say.setAttribute("role", "status");
     kids.push(search, say, el2("small", "m-note m-search-none m-hide", t("searchNone")));
     kids.push(head2(t("presetTitle"), t("presetHint")));
-    kids.push(
-      seg(
-        [["full", t("preset_full")], ["balanced", t("preset_balanced")], ["light", t("preset_light")], ["calm", t("preset_calm")]],
-        cfg.preset,
-        (k) => setPreset(k)
-      )
-    );
+    const order = Object.keys(COST);
+    const presets = seg(order.map((k) => [k, t("preset_" + k)]), cfg.preset, (k) => setPreset(k));
+    presets.classList.add("m-presets");
+    [...presets.children].forEach((b, i) => presetFill(b, order[i]));
+    kids.push(presets);
     if (cfg.preset === "custom") kids.push(el2("small", "m-note", t("presetCustom")));
+    kids.push(
+      head2(t("eco"), t("ecoHint")),
+      seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
+        cfg.eco = k;
+        save();
+      }),
+      toggle("autoPerf")
+    );
     kids.push(head2(t("scheme"), t("schemeHint")));
     const pick = el2("div", "m-schemes");
     pick.setAttribute("role", "group");
@@ -30784,22 +31311,7 @@
         range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
       )
     ));
-    kids.push(sectionReset(group(
-      t("g_motion"),
-      false,
-      toggle("cascade"),
-      toggle("vinyl"),
-      toggle("tilt"),
-      toggle("burst"),
-      toggle("calm"),
-      toggle("noFlash"),
-      toggle("autoPerf"),
-      el2("small", "m-note", t("eco")),
-      seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
-        cfg.eco = k;
-        save();
-      })
-    ), ["eco"]));
+    kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("noFlash"))));
     const viz = [
       ["bars", t("viz_bars")],
       ["wave", t("viz_wave")],
@@ -30822,7 +31334,7 @@
         toggle("onlineLyrics", () => immersive.reloadLyrics()),
         toggle("remoteFix", () => refreshRemote(true)),
         toggle("karaoke", () => immersive.reloadLyrics()),
-        range("syncOffset", -400, 400, 10, " ms"),
+        range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
         toggle("translate", () => immersive.reloadLyrics()),
         toggle("romanize", () => immersive.reloadLyrics()),
         toggle("canvas", () => immersive.refresh()),
@@ -30863,7 +31375,7 @@
           },
           [t("partyFind"), t("partyFindNone")]
         ),
-        el2("small", "m-note", t("partyLevel")),
+        head2(t("partyLevel"), t("partyLevelHint")),
         seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
           cfg.partyLevel = k;
           save();
@@ -31188,7 +31700,7 @@
     if (auto === true) setTimeout(draw, 150);
     else draw();
   }
-  var COSTLY, el2, labelN, notify3, encode, decode, query, LABEL, shown, TOUR2;
+  var COSTLY, el2, has, COSTLY_RANGE, FREE_RANGE, rangeN, rangeZero, labelN, notify3, encode, decode, query, LABEL, shown, TOUR2;
   var init_settings = __esm({
     "src/settings.js"() {
       init_core();
@@ -31217,6 +31729,11 @@
         if (text != null) e.textContent = text;
         return e;
       };
+      has = (k) => t(k) !== k;
+      COSTLY_RANGE = /* @__PURE__ */ new Set(["blur"]);
+      FREE_RANGE = /* @__PURE__ */ new Set(["bright", "vizHeight", "vizSmooth"]);
+      rangeN = 0;
+      rangeZero = (key, max, zero) => range(key, 0, max, 1, "", null, (v) => v || t(zero));
       labelN = 0;
       notify3 = (msg, err) => {
         try {

@@ -657,6 +657,8 @@ const immersive = (() => {
       cfg.imMode = mode;
       save();
       el.dataset.mode = mode;
+      vizRect.r = null;
+      vizMoveUntil = performance.now() + 1000;
       el.querySelectorAll(".m-im-tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
       el.querySelectorAll(".m-im-tabs button").forEach((b) => (b.tabIndex = b.dataset.mode === mode ? 0 : -1));
       placeIndicator();
@@ -702,6 +704,7 @@ const immersive = (() => {
     partyFx = false;
     q.flash.style.opacity = "0";
     q.wrap.style.translate = "";
+    shakeX = shakeY = 0;
     q.canvas.style.scale = q.bg.style.scale = lastKick = "";
     q.wrap.style.rotate = lastRot = "";
     if (activeEl) activeEl.style.scale = lastBounce = "";
@@ -981,7 +984,10 @@ const immersive = (() => {
     const glide = LYR.has(el.dataset.mode) && !cfg.calm && el.isConnected;
     const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
     el.classList.toggle("is-nolyr", on);
+    vizRect.r = null;
     if (!glide) return;
+    // der Visualizer-Kranz folgt dem gleitenden Cover Bild für Bild (sonst hing er bis zu einer halben Sekunde daneben)
+    vizMoveUntil = performance.now() + 850;
     parts.forEach((p, i) => {
       const a = before[i], b = p.getBoundingClientRect();
       const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2);
@@ -1436,8 +1442,9 @@ const immersive = (() => {
       if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
     }
     const r = vizRect.r;
-    const cx = (r.left + r.width / 2) * dpr, cy = (r.top + r.height / 2) * dpr;
-    const R = (r.width / 2) * dpr + 16 * dpr;
+    // Mitte und Größe folgen dem Cover in jedem Bild: Wackeln (translate) und Puls (scale) sind bekannt, ohne neu zu messen
+    const cx = (r.left + r.width / 2 + shakeX) * dpr, cy = (r.top + r.height / 2 + shakeY) * dpr;
+    const R = (r.width / 2) * pulseS * dpr + 16 * dpr;
     const sec = pos / 1000;
     const playing = PLR.isPlaying();
     let b = 0, havePitch = false, loud = 0.5;
@@ -1447,6 +1454,7 @@ const immersive = (() => {
     if (mode === "mix" && V.style === "line") V.style = "wave";
     const px = mode === "party" ? party.step(sec, dt, playing) : null;
     wfxGeo = px ? { cx, cy, R, dpr, px } : null;
+    if (!px) shakeX = shakeY = 0;
     // Mix: dieselben Instrumentenspuren wie Party, nur dezent (Puls und Kranz auf der echten Kick)
     const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing) : null;
     // Visualizer-Ansichten folgen derselben Lichtregie: Farbe des Teils, Energie, Drop, langsamer im Break
@@ -1862,7 +1870,11 @@ const immersive = (() => {
         const c = pal[px.flashCol];
         q.flash.style.background = `radial-gradient(70% 60% at 50% 45%, rgba(${c[0]},${c[1]},${c[2]},0.9), rgba(${c[0]},${c[1]},${c[2]},0) 72%)`;
       }
-      const sh = px.shake > 0.3 ? `${((Math.random() * 2 - 1) * px.shake).toFixed(1)}px ${((Math.random() * 2 - 1) * px.shake * 0.6).toFixed(1)}px` : "";
+      // Wackeln als weiche Schwingung statt Zufallssprung pro Bild (das hakte hin und her); der Kranz wackelt mit
+      const ts = now / 1000;
+      shakeX = px.shake > 0.3 ? Math.sin(ts * 31) * px.shake : 0;
+      shakeY = px.shake > 0.3 ? Math.sin(ts * 23 + 1.3) * px.shake * 0.6 : 0;
+      const sh = shakeX || shakeY ? `${shakeX.toFixed(1)}px ${shakeY.toFixed(1)}px` : "";
       if (q.wrap.style.translate !== sh) q.wrap.style.translate = sh;
       // ab „Max“: aktive Liedzeile federt auf den betonten Schlägen; Pop, Bass und Chill lassen das Cover
       // dazu pendeln (Rock wackelt stattdessen, Rave bleibt stehen und lässt das Licht arbeiten)
@@ -1886,6 +1898,7 @@ const immersive = (() => {
       }
     }
   }
+  let shakeX = 0, shakeY = 0;
   let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
   let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "", vizBloom = 0;
   const WHITE = [255, 255, 255];
@@ -2776,6 +2789,7 @@ const immersive = (() => {
     // der QR-Code der Spielleitung bleibt nie offen stehen
     if (kind !== "games") q.hostOpen = false;
     q.side.hidden = !kind;
+    vizMoveUntil = performance.now() + 1000;
     q.side.dataset.kind = kind || "";
     if (!kind) return;
     q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);

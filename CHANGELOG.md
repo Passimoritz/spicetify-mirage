@@ -10,6 +10,23 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Changed
+
+- Party mode reads songs more like a person would. Drops land on the real chorus far more often, there are about five times fewer false drops, and the beat grid sits better on the downbeat. This was tested against about 5,000 real song previews across genres.
+- The crowd now follows the song's parts. It gets calmer in verses and breaks and jumps on the chorus and the drop.
+- Genre names from Apple Music are recognised in more languages, and tempos from Deezer no longer show up at double or half speed.
+- New, clearer performance menu: the sliders are easier to read and cost the same performance.
+- The visualizer styles look sharper and softer at once: colours from the cover, gradient bars, smooth curves and glowing particles. Their glow follows the song's parts and drops.
+- Party sparks, light rain and moving-head beams are drawn as soft light.
+- The immersive background blur is prepared once per song, which saves graphics work on every frame.
+
+### Fixed
+
+- The visualizer ring now stays on the cover in every frame. This holds while the cover glides to a new place, pulses or shakes, and when you switch views or open a side panel. Before, the ring could sit next to the cover for up to half a second.
+- The cover's shake on strong beats is now a smooth wobble instead of random jumps.
+- The cover tilts towards the mouse with a smooth spring. Pulse and sway glide between frames even at 30 fps (Light, energy saver).
+- The spinning vinyl and the ambient background no longer stutter, and changing songs during a fade no longer makes the background jump.
+
 ## [1.24.1] – 2026-11-15
 
 ### Changed
