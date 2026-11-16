@@ -15,7 +15,8 @@ function createVenue(makeCanvas) {
   // Leuchtpunkt-Bild je Farbe, einmal gerendert: 90 Discokugel-Punkte kosten dann nur drawImage
   const glowSprites = new Map();
   function glowSprite(c) {
-    const k = c.join(",");
+    // auf 8er-Stufen gerastert: gleitende Lichtfarben erzeugen sonst in jedem Bild neue Leuchtbilder
+    const k = c.map((v) => Math.min(255, Math.round(v / 8) * 8)).join(",");
     if (!glowSprites.has(k)) {
       if (glowSprites.size > 24) glowSprites.clear();
       const cv = makeCanvas(48, 48);
@@ -1143,13 +1144,21 @@ function createVenue(makeCanvas) {
     }
     if (!crowd || crowd.venue !== v) crowd = makeCrowd(u, v);
     if (!crowd.people.length) return;
-    palKey = `${pal[0].join()}|${pal[1].join()}|${pal[2].join()}`;
+    // Farben der Körperbilder: ruhige Grundfarbe des Songs, gerastert und erst bei deutlicher Änderung neu.
+    // Vorher bekam die Menge jede Zwischenfarbe der Licht-Überblendung – beim Songwechsel malte sie so zwei
+    // Sekunden lang in jedem Bild Dutzende Körperbilder neu, und die Bildrate halbierte sich.
+    const src = st.crowdPal || pal;
+    if (!crowd.palC || src.some((c, i) => c.some((x, k) => Math.abs(x - (crowd.palC[i]?.[k] ?? -99)) > 18))) crowd.palC = src.map((c) => c.map((x) => Math.round(x / 6) * 6));
+    const cp = crowd.palC;
+    palKey = `${cp[0].join()}|${cp[1].join()}|${cp[2].join()}`;
     const pk = `${palKey}|${u.toFixed(2)}`;
     if (crowd.pk !== pk) {
       crowd.pk = pk;
-      crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, pal));
+      crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, cp));
     }
-    spriteBudget = 40;
+    // neue Farben: höchstens 12 neue Körperbilder je Bild – der Rest behält kurz die alten (dunkle Silhouetten,
+    // der Wechsel ist nach gut 10 Bildern durch und fällt nicht auf)
+    spriteBudget = 12;
     const X = mind.mood(px, dt, st.hype), t = st.t;
     const D = dance(px, X, v.seated), style = D.style;
     const SEAa = seaLevel(px, dt, st);

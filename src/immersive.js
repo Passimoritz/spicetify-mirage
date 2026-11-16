@@ -561,6 +561,40 @@ const immersive = (() => {
   }
   // Ruhender Hintergrund aus dem Cover – ersetzt das teure Live-Verwischen der ganzen Seite
   let hazeSrc = "";
+  // Weichzeichnen, Sättigung und Abdunkeln einmal pro Song in ein kleines Bild backen: vorher rechnete
+  // filter: blur(18px) … auf einer Fläche von 1,5 × Fenster in jedem Bild (Party verschiebt die Ebene).
+  // Kodiert wird asynchron (toBlob) – toDataURL hielt beim Songwechsel den Hauptthread ~25 ms an. Die letzten
+  // Ergebnisse bleiben gemerkt; song.js backt den nächsten Song schon vorab (prebake).
+  const baked = new Map();
+  function bake(src) {
+    if (baked.has(src)) return baked.get(src);
+    const job = new Promise((done) => {
+      if (!src.startsWith("data:")) return done(null);
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const c = document.createElement("canvas");
+          c.width = c.height = 256;
+          const x = c.getContext("2d");
+          x.filter = "blur(3px) saturate(1.4) brightness(0.5)";
+          x.drawImage(img, -14, -14, 284, 284);
+          c.toBlob((b) => done(b ? URL.createObjectURL(b) : null), "image/jpeg", 0.92);
+        } catch {
+          done(null);
+        }
+      };
+      img.onerror = () => done(null);
+      img.src = src;
+    });
+    baked.set(src, job);
+    // höchstens 4 merken (aktueller, vorheriger, nächster …); alte Bild-URLs freigeben
+    while (baked.size > 4) {
+      const [k, old] = baked.entries().next().value;
+      baked.delete(k);
+      old.then((u) => u && setTimeout(() => URL.revokeObjectURL(u), 5000));
+    }
+    return job;
+  }
   function setHaze(src) {
     if (!el || !src || src === hazeSrc) return;
     hazeSrc = src;
@@ -568,31 +602,21 @@ const immersive = (() => {
     const [a, b] = q.bg.querySelectorAll("i");
     const front = a.classList.contains("is-on") ? a : b.classList.contains("is-on") ? b : null;
     const back = front === a ? b : a;
-    const img = new Image();
-    img.onload = img.onerror = () => {
+    bake(src).then((url) => {
       if (hazeSrc !== src) return;
-      // Weichzeichnen, Sättigung und Abdunkeln einmal pro Song in ein kleines Bild backen: vorher rechnete
-      // filter: blur(18px) … auf einer Fläche von 1,5 × Fenster in jedem Bild (Party verschiebt die Ebene)
-      let url = src, baked = false;
-      if (src.startsWith("data:") && img.naturalWidth) {
-        try {
-          const c = document.createElement("canvas");
-          c.width = c.height = 256;
-          const x = c.getContext("2d");
-          x.filter = "blur(3px) saturate(1.4) brightness(0.5)";
-          x.drawImage(img, -14, -14, 284, 284);
-          url = c.toDataURL("image/jpeg", 0.92);
-          baked = true;
-        } catch {}
-      }
-      back.classList.toggle("is-baked", baked);
-      back.style.backgroundImage = `url("${url}")`;
-      requestAnimationFrame(() => {
-        back.classList.add("is-on");
-        front?.classList.remove("is-on");
+      back.classList.toggle("is-baked", !!url);
+      back.style.backgroundImage = `url("${url || src}")`;
+      // erst überblenden, wenn das Bild dekodiert ist – sonst blendet eine leere Ebene ein und das Bild ploppt nach
+      const ready = new Image();
+      ready.src = url || src;
+      (ready.decode ? ready.decode() : Promise.resolve()).catch(() => {}).then(() => {
+        if (hazeSrc !== src) return;
+        requestAnimationFrame(() => {
+          back.classList.add("is-on");
+          front?.classList.remove("is-on");
+        });
       });
-    };
-    img.src = src;
+    });
   }
 
   // Leicht-Preset oder Energiesparen fest an: weniger Pixel, 30 Bilder/s, weniger Details.
@@ -1034,6 +1058,9 @@ const immersive = (() => {
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
+    // meist ist der Liedtext vorgeladen und sofort da: der Hinweis blendet erst nach 0,7 s ein, statt bei jedem
+    // Songwechsel kurz aufzublitzen
+    q.inner.firstChild.classList.add("is-wait");
   }
   // upgrade: ein besseres Ergebnis ersetzt das gezeigte – Position und aktuelle Zeile bleiben, kein Einblenden
   function showLyrics(uri, got, upgrade) {
@@ -1465,7 +1492,12 @@ const immersive = (() => {
     // Gitarrenblitze brauchen die Freigabe der Blitz-Schranke auch in leisen Stellen
     party.stageFlash = (curInst?.guitar || 0) > 0.3;
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
-    quietNow = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
+    // erst nach 3 s Ruhe und nie in den ersten 8 s eines Songs: sonst fiel genau der Übergang (leises Intro)
+    // auf 30 Bilder/s, und kurze leise Takte schalteten ständig hin und her – das wirkte wie Ruckeln
+    const rawQuiet = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
+    if (!rawQuiet) quietSince = 0;
+    else if (!quietSince) quietSince = now;
+    quietNow = rawQuiet && now - quietSince > 3000 && now - songAt > 8000;
     if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
     if (px) {
       const P = px.P;
@@ -2061,6 +2093,9 @@ const immersive = (() => {
     // Bühnenlicht, Dekor und Publikum zeichnet die Location (eigenes Canvas darunter, möglichst eigener Thread)
     venueFrame({
       t: performance.now() / 1000, dt, vw, vh, dpr, pal, cx, cy, R,
+      // Publikum: die ruhige Grundfarbe des Songs (Cover), nicht die Lichtfarbe dieses Bildes – die gleitet beim
+      // Songwechsel über Sekunden und folgt der Melodie, und jede neue Farbe hieß: alle Körperbilder neu malen
+      crowdPal: imPalette(),
       px: {
         // Bühnenlicht: das der Szene, sonst das des Genres; beim Szenenwechsel gleitet spot2 → spot über sx
         key: px.key, P: { spot: px.spot || P.spot }, spot2: px.spot2 || P.spot, sx: px.sx ?? 1, rig: px.rig || "", spread: px.spread ?? 1, crowd: px.crowd ?? 1, accent: px.accent, kickEnv: px.kickEnv, snareEnv: px.snareEnv, hatEnv: px.hatEnv,
@@ -2609,7 +2644,7 @@ const immersive = (() => {
   }
 
   // Eco (Akku oder fest an) und ruhige Party-Stellen: höchstens 30 Bilder pro Sekunde
-  let lastDraw = 0, onBattery = false, quietNow = false;
+  let lastDraw = 0, onBattery = false, quietNow = false, quietSince = 0, songAt = 0;
   try {
     navigator.getBattery?.().then((b) => {
       const upd = () => (onBattery = !b.charging);
@@ -2918,6 +2953,9 @@ const immersive = (() => {
     playLabel();
     announce(item);
     lastBeatIdx = -1;
+    songAt = performance.now();
+    quietNow = false;
+    quietSince = 0;
     moments.stormDone = false;
     moments.venue = "";
     // „Energie halten“: passt der nächste Song gar nicht, zieht Mirage einen passenderen vor
@@ -3987,7 +4025,7 @@ const immersive = (() => {
   const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
-    open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze,
+    open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
     seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
   };
 })();

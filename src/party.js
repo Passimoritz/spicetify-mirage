@@ -260,6 +260,12 @@ const party = (() => {
   // „Leicht“: die Regie wählt weniger und billigere Effekte (kein Lichtwisch, kein Spot, keine Lichtwand)
   const lite = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
 
+  // nächsten Song vorbereiten (song.js): Genre-Abfragen schon jetzt, beide werden gemerkt
+  function warm(item) {
+    if (cfg.partyStyle !== "auto" || !item?.uri) return;
+    artistGenres(item).catch(() => {});
+    appleGenre(item).catch(() => {});
+  }
   async function prepare(item) {
     const u = item?.uri || "";
     // Song + gewählter Stil: wer in den Einstellungen umstellt, bekommt sofort das neue Profil
@@ -530,7 +536,7 @@ const party = (() => {
     [lyr.uri, lyr.lines, lyr.n] = [u, ls, ls.length ? ++lyr.ver : 0];
   }
 
-  return { prepare, step, mood, lyrics, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  return { prepare, warm, step, mood, lyrics, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
 })();
 
 export { party, PROFILE_KEYS, FAMILIES };

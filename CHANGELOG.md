@@ -22,6 +22,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- Song changes in party mode stay smooth. The crowd used to repaint its people for every in-between colour of the light crossfade, which halved the frame rate for about two seconds after each change. It now uses the song's calm base colours and spreads the repaint over a few frames. The power-saving 30 fps for quiet passages no longer kicks in during the first seconds of a song, and only after 3 seconds of real quiet.
+- Song changes no longer briefly show "Loading" for lyrics that are already there. The background image is prepared in the background and ahead of time for the next song, and party mode looks up the next song's genre in advance.
 - The visualizer ring now stays on the cover in every frame. This holds while the cover glides to a new place, pulses or shakes, and when you switch views or open a side panel. Before, the ring could sit next to the cover for up to half a second.
 - The cover's shake on strong beats is now a smooth wobble instead of random jumps.
 - The cover tilts towards the mouse with a smooth spring. Pulse and sway glide between frames even at 30 fps (Light, energy saver).

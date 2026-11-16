@@ -9,6 +9,7 @@ import { currentItem, covers, toHttp, PLR } from "./player.js";
 import { record } from "./share.js";
 import { dust } from "./dust.js";
 import { planPrefetch } from "./prefetch.js";
+import { party } from "./party.js";
 
 // Woher läuft gerade Musik (Playlist, Album, Radio …) und zu welchem Album gehört der Song?
 const contextUri = () => S.Player.data?.context?.uri || S.Player.data?.context_uri || "";
@@ -68,7 +69,9 @@ function prefetchNext() {
   (window.requestIdleCallback || setTimeout)(() => {
     loadImage(big);
     if (small && small !== big) loadImage(small);
-    analyse(big, next.uri).catch(() => {});
+    // Farben, Hintergrund (schon gebacken) und im Party-Modus das Genre: beim Wechsel ist dann alles fertig
+    analyse(big, next.uri).then((r) => r?.haze && immersive.prebake?.(r.haze)).catch(() => {});
+    if (immersive.isOpen() && cfg.imMode === "party") party.warm?.(next);
   }, { timeout: 4000 });
 }
 function onPlayPause() {

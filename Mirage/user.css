@@ -1551,6 +1551,15 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   opacity: 1;
   cursor: default;
 }
+/* „Lädt …“: erst einblenden, wenn das Laden wirklich dauert (meist ist der Liedtext vorgeladen) */
+#mirage-immersive .m-im-lyrics-note.is-wait {
+  animation: m-note-wait 0.3s ease 0.7s both;
+}
+@keyframes m-note-wait {
+  from {
+    opacity: 0;
+  }
+}
 #mirage-immersive .m-im-lyrics-note {
   position: absolute;
   top: 45%;
