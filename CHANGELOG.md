@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.25.0] – 2026-11-16
+
 ### Changed
 
 - Party mode reads songs more like a person would. Drops land on the real chorus far more often, there are about five times fewer false drops, and the beat grid sits better on the downbeat. This was tested against about 5,000 real song previews across genres.
