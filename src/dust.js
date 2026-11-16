@@ -11,11 +11,13 @@ import { beat, audio } from "./audio.js";
 // gemischter Ebenen nur noch eine kleine Textur hochladen und einmal zeichnen. Die Licht-
 // Mischungen (screen, soft-light) kosten in dieser Größe fast nichts – also gibt es sie für alle.
 //
-// Takt: 20 Bilder pro Sekunde (Voll 30, Leicht 12), nur wenn Musik läuft oder ein Cover überblendet.
+// Takt: 15 Bilder pro Sekunde (Voll 20, Leicht 10), gleichmäßig auf ganze Bildschirmbilder gelegt – so viele,
+// wie der alte Wecker-Takt (Ziel 20/30/12) tatsächlich schaffte, nur ohne Stolpern. Nur wenn Musik läuft
+// oder ein Cover überblendet.
 // Pause, verdeckt, Immersiv offen: ein Standbild, keine Schleife.
 const SCALE = 0.25, FADE = 2200;
 // Bildrate je Preset: jedes Hintergrund-Bild zwingt Spotify, das ganze Fenster neu zusammenzusetzen
-const fps = () => ({ full: 30, light: 12 })[cfg.preset] || 20;
+const fps = () => ({ full: 20, light: 10 })[cfg.preset] || 15;
 const TAU = Math.PI * 2;
 const tri = (x) => 1 - Math.abs(2 * (x - Math.floor(x)) - 1); // 0 → 1 → 0 pro Periode
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
@@ -25,9 +27,11 @@ const dust = (() => {
   const cv = stage.querySelector("canvas");
   const ctx = cv.getContext("2d", { alpha: false });
   const vig = document.createElement("canvas");
-  let W = 0, H = 0, timer = 0, running = false, paused = false, lastT = 0, clock = 0, aliveUntil = 0;
+  let W = 0, H = 0, timer = 0, running = false, paused = false, lastT = 0, clock = 0, aliveUntil = 0, drawnAt = 0, lvlS = 0;
   let pal = schemePalette(), base = [7, 6, 12], sprites = [];
-  let cur = null, prev = null, fadeT0 = 0;
+  // Cover-Lagen: die neue blendet ein, alle älteren gemeinsam aus – auch wenn ein Wechsel mitten in die
+  // Überblendung fällt (vorher sprang die halb eingeblendete Lage dann auf voll)
+  let layers = [], fadeT0 = 0;
   const parts = [];
 
   /* ---- Bausteine, einmal vorbereitet */
@@ -175,23 +179,29 @@ const dust = (() => {
   function draw(now) {
     const playing = root.classList.contains("mirage-playing");
     const moving = playing && !cfg.calm;
-    const dt = lastT ? Math.min(3, (now - lastT) / 16.7) : 0;
+    // bis 100 ms zählen voll: bei 12 Bildern/s (83 ms) lief die Bewegung sonst gebremst und ungleichmäßig
+    const dt = lastT ? Math.min(6, (now - lastT) / 16.7) : 0;
     lastT = now;
     if (moving) clock += (dt * 16.7) / 1000;
     const light = root.classList.contains("mirage-light");
-    const lvl = moving ? beat.level : 0;
+    // Takt-Atmen geglättet: bei 12–30 Bildern/s sprang der Puls sonst von Bild zu Bild (schnell hoch, weich ab)
+    const want = moving ? beat.level : 0, k = (dt * 16.7) / 1000;
+    lvlS += (want - lvlS) * (1 - Math.exp(-k * (want > lvlS ? 22 : 6)));
+    const lvl = lvlS;
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
     ctx.fillStyle = rgba(base, 1);
     ctx.fillRect(0, 0, W, H);
     // Überblendung alt → neu
-    const f = cur ? ease(Math.min(1, (now - fadeT0) / FADE)) : 0;
-    const bright = cfg.bright / 100;
-    for (const [layer, a] of [[prev, 1 - f], [cur, f]]) {
-      if (!layer) continue;
-      haze(layer, a * (light ? 0.55 : 0.95), 70, 1, W / 2, H / 2, "source-over");
-      haze(layer, a * (light ? 0.35 : 0.55), 95, -1, W * 0.14, H * 0.86, light ? "source-over" : "screen");
-    }
+    const f = layers.length ? ease(Math.min(1, (now - fadeT0) / FADE)) : 0;
+    if (f >= 1 && layers.length > 1) layers = layers.slice(-1);
+    const bright = cfg.bright / 100, cur = layers[layers.length - 1]?.img;
+    layers.forEach((L, i) => {
+      const a = i === layers.length - 1 ? f : L.a0 * (1 - f);
+      if (a <= 0.002) return;
+      haze(L.img, a * (light ? 0.55 : 0.95), 70, 1, W / 2, H / 2, "source-over");
+      haze(L.img, a * (light ? 0.35 : 0.55), 95, -1, W * 0.14, H * 0.86, light ? "source-over" : "screen");
+    });
     if (bright < 1) {
       ctx.globalAlpha = 1 - bright;
       ctx.fillStyle = rgba(base, 1);
@@ -215,14 +225,24 @@ const dust = (() => {
     const moving = root.classList.contains("mirage-playing") && !cfg.calm;
     return moving || performance.now() < aliveUntil;
   }
+  // Gleichmäßiger Takt: der Wecker klingelt kurz vor dem gewünschten Bild, gezeichnet wird im nächsten
+  // Bildschirmbild. Vorher kam nach der Wartezeit noch die Wartezeit aufs nächste Bild dazu – mal 50, mal
+  // 66 ms Abstand, die langsame Drift wirkte dadurch unruhig.
   function tick() {
     timer = 0;
     if (!running || document.hidden) return;
-    requestAnimationFrame((now) => {
-      draw(now);
-      if (active()) timer = setTimeout(tick, 1000 / fps());
-      else lastT = 0;
-    });
+    requestAnimationFrame(frame);
+  }
+  function frame(now) {
+    if (!running || document.hidden) return;
+    const step = 1000 / fps();
+    // zu früh geweckt (Bildschirmbild vor dem Zieltermin): ein Bild weiter warten statt zu früh zu zeichnen
+    if (now > drawnAt && now - drawnAt < step - 4) return void requestAnimationFrame(frame);
+    draw(now);
+    // im Raster bleiben; kam das Bild deutlich zu spät, ab hier neu zählen (kein Aufholen mit einem zu kurzen Abstand)
+    drawnAt = Math.abs(now - drawnAt - step) < 8 ? drawnAt + step : now;
+    if (active()) timer = setTimeout(tick, Math.max(0, drawnAt + step - performance.now() - 20));
+    else lastT = 0;
   }
   // nach Play, Sichtbarwerden, neuem Cover oder Schließen des Immersiv-Modus
   function wake() {
@@ -234,10 +254,12 @@ const dust = (() => {
   onHaze((src) => {
     const img = new Image();
     img.onload = () => {
-      // läuft gerade eine Überblendung, startet die neue vom aktuellen Mischstand aus
-      prev = cur;
-      cur = img;
-      fadeT0 = performance.now();
+      // läuft gerade eine Überblendung, startet die neue vom aktuellen Mischstand aus: jede Lage behält
+      // ihre momentane Deckkraft und blendet von dort aus
+      const now = performance.now(), f = layers.length ? ease(Math.min(1, (now - fadeT0) / FADE)) : 1;
+      layers = layers.map((L, i) => ({ img: L.img, a0: i === layers.length - 1 ? f : L.a0 * (1 - f) })).filter((L) => L.a0 > 0.01).slice(-3);
+      layers.push({ img, a0: 0 });
+      fadeT0 = now;
       aliveUntil = fadeT0 + FADE + 100;
       wake();
     };

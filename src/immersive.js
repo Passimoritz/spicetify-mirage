@@ -276,7 +276,8 @@ const immersive = (() => {
     // Party: ruht die Maus, blendet die Bedienung aus und alles rückt weich zusammen
     for (const ev of ["pointermove", "pointerdown", "wheel"]) el.addEventListener(ev, wake, { passive: true });
     // Cover fertig verschoben: Visualizer neu ausmessen
-    q.wrap.addEventListener("transitionend", () => (vizRect.r = null));
+    // (nicht nach Puls/Pendeln: die gleiten bei 30 Bildern/s je Bild kurz nach – das verschiebt nichts)
+    q.wrap.addEventListener("transitionend", (e) => e.target === q.wrap && !/^(scale|rotate)$/.test(e.propertyName) && (vizRect.r = null));
     q.lyrsrc.querySelector("b").textContent = t("lyrPick");
     q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
     q.lyrbad.querySelector("span").textContent = t("lyrWrong");
@@ -363,10 +364,8 @@ const immersive = (() => {
       depth.tx = x;
       depth.ty = y;
       depth.at = performance.now();
-      q.cover.style.setProperty("--iry", (x * 18).toFixed(2) + "deg");
-      q.cover.style.setProperty("--irx", (-y * 14).toFixed(2) + "deg");
-      q.cover.style.setProperty("--gx", (50 + x * 80).toFixed(1) + "%");
-      q.cover.style.setProperty("--gy", (50 + y * 80).toFixed(1) + "%");
+      // Neigung und Glanz folgen per Feder in der Bildschleife (coverMotion) – hier nur das Ziel
+      kick();
     });
     addEventListener("resize", () => {
       // geschlossen nichts neu anlegen (freigegebenes Canvas bliebe sonst groß); open() misst ohnehin neu
@@ -571,7 +570,22 @@ const immersive = (() => {
     const img = new Image();
     img.onload = img.onerror = () => {
       if (hazeSrc !== src) return;
-      back.style.backgroundImage = `url("${src}")`;
+      // Weichzeichnen, Sättigung und Abdunkeln einmal pro Song in ein kleines Bild backen: vorher rechnete
+      // filter: blur(18px) … auf einer Fläche von 1,5 × Fenster in jedem Bild (Party verschiebt die Ebene)
+      let url = src, baked = false;
+      if (src.startsWith("data:") && img.naturalWidth) {
+        try {
+          const c = document.createElement("canvas");
+          c.width = c.height = 256;
+          const x = c.getContext("2d");
+          x.filter = "blur(3px) saturate(1.4) brightness(0.5)";
+          x.drawImage(img, -14, -14, 284, 284);
+          url = c.toDataURL("image/jpeg", 0.92);
+          baked = true;
+        } catch {}
+      }
+      back.classList.toggle("is-baked", baked);
+      back.style.backgroundImage = `url("${url}")`;
       requestAnimationFrame(() => {
         back.classList.add("is-on");
         front?.classList.remove("is-on");
@@ -1409,7 +1423,11 @@ const immersive = (() => {
     ctx.clearRect(0, 0, vw, vh);
     const dpr = vw / innerWidth;
     if (!vizRect.r || vizRect.n++ % 30 === 0 || now < vizMoveUntil) {
-      vizRect.r = q.wrap.getBoundingClientRect();
+      // ohne Puls und Pendeln messen: sonst springt der Kranz alle 30 Bilder auf die gerade gemessene Pulsgröße
+      const b0 = q.wrap.getBoundingClientRect(), w0 = q.wrap.offsetWidth || b0.width, h0 = q.wrap.offsetHeight || b0.height;
+      const [sx = 0, sy = 0] = (q.wrap.style.translate || "").split(" ").map(parseFloat);
+      const mx = b0.left + b0.width / 2 - (sx || 0), my = b0.top + b0.height / 2 - (sy || 0);
+      vizRect.r = { left: mx - w0 / 2, top: my - h0 / 2, width: w0, height: h0 };
       // Kamera-Stoß zoomt den Canvas um die Cover-Mitte, nicht um die Bildschirmmitte
       const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
       if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
@@ -1520,11 +1538,27 @@ const immersive = (() => {
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
     const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
     const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
+    // Leuchtkraft der Visualizer-Ansichten nach der Lichtregie: Energie des Teils, Anheben beim Refrain-Einsatz,
+    // Anschwellen im Aufbau, ein Aufleuchten beim Drop, das weich abklingt („Keine Blitze“: nur ein Hauch davon)
+    vizBloom = Math.max(vizBloom * Math.exp(-dt * 2.2), mood?.dropHit ? 1 : 0);
+    const soft = cfg.noFlash ? 0.4 : 1;
+    const glowK = px ? 1 : clamp(0.7 + 0.4 * (mood?.I ?? 0.75) + 0.5 * (mood?.lift || 0) * soft + 0.35 * (mood?.riser || 0) + 0.7 * vizBloom * soft + 0.35 * b * soft, 0.6, 2.2);
+    // Farbkreis aus den drei Coverfarben rund ums Cover (gespiegelt, wenn die Balken gespiegelt sind)
+    const wheel = () => {
+      if (!ctx.createConicGradient) return rgba(pal[0], 1);
+      const g = ctx.createConicGradient(-Math.PI / 2 + rot, cx, cy);
+      const st = mirror ? [0, 1, 2, 1, 0] : [0, 1, 2, 0];
+      st.forEach((k, i) => g.addColorStop(i / (st.length - 1), rgba(pal[k], 1)));
+      return g;
+    };
     ctx.globalCompositeOperation = "lighter";
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
-    glow.addColorStop(0, rgba(pal[0], (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : 1)));
+    const g0 = (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : glowK);
+    // drei Stufen statt zwei: der Schein läuft weich aus, ohne sichtbare Kante
+    glow.addColorStop(0, rgba(pal[0], g0));
+    glow.addColorStop(0.45, rgba(pal[0], g0 * 0.4));
     glow.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = glow;
     // nur so groß wie der Schein reicht – außerhalb ist der Verlauf ohnehin durchsichtig
@@ -1541,167 +1575,259 @@ const immersive = (() => {
     const slow = px && cfg.partySlowmo && px.fx && px.toDrop > slowFrom && px.toDrop < slowFrom + 0.55;
     if (px) drawParty(ctx, cx, cy, R, maxLen, N, pal, dpr, slow ? dt * 0.2 : dt, px, tip, ang);
     else if (V.style === "bottom") {
-      // Balken am unteren Rand über die ganze Breite
-      const bw = vw / N, base = vh - 8 * dpr;
+      // Balken am unteren Rand über die ganze Breite: abgerundete Köpfe, nach unten auslaufend
+      const bw = vw / N, base = vh - 8 * dpr, w2 = bw * 0.62, rr = Math.min(w2 / 2, 4 * dpr);
       for (let gi = 0; gi < 3; gi++) {
-        ctx.fillStyle = rgba(pal[gi], 0.85);
+        const g = ctx.createLinearGradient(0, base - vh * 0.32 * V.height, 0, base);
+        g.addColorStop(0, rgba(mixRGB(pal[gi], WHITE, 0.25), 0.95));
+        g.addColorStop(1, rgba(pal[gi], 0.35));
+        ctx.fillStyle = g;
         ctx.beginPath();
         for (let i = gi; i < N; i += 3) {
           const h = 6 * dpr + vals[i] * vh * 0.32 * V.height;
-          ctx.rect(i * bw + bw * 0.15, base - h, bw * 0.7, h);
+          if (ctx.roundRect) ctx.roundRect(i * bw + (bw - w2) / 2, base - h, w2, h, [rr, rr, 0, 0]);
+          else ctx.rect(i * bw + (bw - w2) / 2, base - h, w2, h);
         }
         ctx.fill();
       }
     } else if (V.style === "line") {
-      // Wellenlinie quer durch das Bild, oben und unten gespiegelt
-      const mid = cy;
-      for (const [w, col, al] of [[10, pal[1], V.glow ? 0.14 : 0], [2.5, pal[2], 0.95]]) {
-        if (!al) continue;
-        ctx.lineWidth = w * dpr;
-        ctx.strokeStyle = rgba(col, al);
-        for (const dir of [-1, 1]) {
-          ctx.beginPath();
-          for (let i = 0; i < N; i++) {
-            const x = (i / (N - 1)) * vw, y = mid + dir * vals[i] * maxLen * 1.6;
-            i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-          }
-          ctx.stroke();
+      // Wellenlinie quer durch das Bild, oben und unten gespiegelt: weiche Kurve, Fläche dazwischen,
+      // zu den Rändern hin auslaufend
+      const mid = cy, amp = maxLen * 1.6, up = new Path2D(), dn = new Path2D();
+      for (const [p, dir] of [[up, -1], [dn, 1]]) {
+        let px0 = 0, py0 = mid + dir * vals[0] * amp;
+        p.moveTo(px0, py0);
+        for (let i = 1; i < N; i++) {
+          const x = (i / (N - 1)) * vw, y = mid + dir * vals[i] * amp;
+          p.quadraticCurveTo(px0, py0, (px0 + x) / 2, (py0 + y) / 2);
+          [px0, py0] = [x, y];
         }
+        p.lineTo(px0, py0);
       }
+      const edge = (a) => {
+        const g = ctx.createLinearGradient(0, 0, vw, 0);
+        g.addColorStop(0, rgba(pal[0], 0));
+        g.addColorStop(0.12, rgba(pal[0], a));
+        g.addColorStop(0.5, rgba(pal[1], a));
+        g.addColorStop(0.88, rgba(pal[2], a));
+        g.addColorStop(1, rgba(pal[2], 0));
+        return g;
+      };
+      ctx.fillStyle = edge(0.1 * glowK);
+      for (const p of [up, dn]) {
+        const area = new Path2D(p);
+        area.lineTo(vw, mid);
+        area.lineTo(0, mid);
+        area.closePath();
+        ctx.fill(area);
+      }
+      if (V.glow) {
+        ctx.lineWidth = 9 * dpr;
+        ctx.strokeStyle = edge(clamp(0.12 * glowK, 0, 0.4));
+        ctx.stroke(up);
+        ctx.stroke(dn);
+      }
+      ctx.lineWidth = 2.2 * dpr;
+      ctx.strokeStyle = edge(0.95);
+      ctx.stroke(up);
+      ctx.stroke(dn);
     } else if (V.style === "particles") {
-      // Lichtpunkte, die um das Cover kreisen und mit der Musik nach außen schweben
+      // Lichtpunkte, die um das Cover kreisen und mit der Musik nach außen schweben – weiche Leuchtpunkte
       for (let i = 0; i < N; i++) {
         const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
-        const r = (1.5 + vals[i] * 4) * dpr;
-        ctx.fillStyle = rgba(pal[i % 3], 0.35 + vals[i] * 0.6);
-        ctx.beginPath();
-        ctx.arc(cx + Math.cos(a) * e, cy + Math.sin(a) * e, r, 0, Math.PI * 2);
-        ctx.fill();
+        const r = (5.5 + vals[i] * 11) * dpr * (1 + b * 0.25);
+        ctx.globalAlpha = clamp(0.3 + vals[i] * 0.7, 0, 1);
+        ctx.drawImage(vizSprite(pal[i % 3]), cx + Math.cos(a) * e - r, cy + Math.sin(a) * e - r, r * 2, r * 2);
       }
+      ctx.globalAlpha = 1;
     } else if (V.style === "tunnel") {
       // 3D-Tunnel: jeder Ring ist ein Abdruck des Spektrums von eben, der aus dem Cover auf dich zufliegt –
-      // erst langsam, dann immer schneller (Perspektive), und dabei verblasst
-      if (now - tunnelAt > 40) {
-        tunnelAt = now;
+      // erst langsam, dann immer schneller (Perspektive), und dabei verblasst. Neue Ringe im festen Takt
+      // (unabhängig von der Bildrate), als weiche Kurve.
+      if (now - tunnelAt > 200) tunnelAt = now - 45;
+      while (now - tunnelAt >= 45) {
+        tunnelAt += 45;
         const ring = new Float32Array(48);
         for (let k = 0; k < 48; k++) ring[k] = vals[Math.floor((k / 48) * N)] || 0;
-        tunnel3d.push({ at: now, v: ring, c: tunnel3d.length % 3 });
+        tunnel3d.push({ at: tunnelAt, v: ring, c: tunnel3d.length % 3 });
       }
       const life = (1400 - b * 500) / clamp(mood?.speed || 1, 0.5, 1.4), far = Math.hypot(vw, vh) * 0.62;
       tunnel3d = tunnel3d.filter((r) => now - r.at < life);
       for (const r of tunnel3d) {
         const z = (now - r.at) / life, d = R * 1.05 + (far - R) * z * z;
         ctx.lineWidth = (1 + z * 5) * dpr;
-        ctx.strokeStyle = rgba(pal[r.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6))).toFixed(3));
+        ctx.strokeStyle = rgba(z < 0.15 ? mixRGB(pal[r.c], WHITE, 0.35) : pal[r.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6)) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
+        const pt = (j) => {
+          const a = (j / 48) * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r.v[j % 48] * 0.28 * V.height);
+          return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr];
+        };
+        let [x0, y0] = pt(0), [x1, y1] = pt(1);
         ctx.beginPath();
-        for (let k = 0; k <= 48; k++) {
-          const j = k % 48, a = (j / 48) * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r.v[j] * 0.28 * V.height);
-          k ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+        ctx.moveTo((x0 + x1) / 2, (y0 + y1) / 2);
+        for (let k = 1; k <= 48; k++) {
+          [x0, y0] = [x1, y1];
+          [x1, y1] = pt(k + 1);
+          ctx.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
         }
         ctx.closePath();
         ctx.stroke();
       }
     } else if (V.style === "galaxy") {
-      // Galaxie: drei Spiralarme aus Lichtpunkten drehen sich ums Cover; die Musik schiebt sie nach außen
+      // Galaxie: drei Spiralarme aus weichen Lichtpunkten drehen sich ums Cover; die Musik schiebt sie nach außen
       for (let i = 0; i < N; i++) {
         const arm = i % 3, f = i / N, a = arm * ((Math.PI * 2) / 3) + f * Math.PI * 3 + tt * 0.18;
         const rr = R * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
-        const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r = (1.2 + vals[i] * 3.2 + (1 - f) * 1.2) * dpr;
-        ctx.fillStyle = rgba(pal[arm], ((0.25 + vals[i] * 0.7) * (0.6 + 0.4 * Math.sin(tt * 3 + i))).toFixed(3));
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fill();
+        const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r = (4.5 + vals[i] * 9 + (1 - f) * 3.5) * dpr;
+        ctx.globalAlpha = clamp((0.25 + vals[i] * 0.75) * (0.6 + 0.4 * Math.sin(tt * 3 + i)), 0, 1);
+        ctx.drawImage(vizSprite(pal[arm]), x - r, y - r, r * 2, r * 2);
       }
+      ctx.globalAlpha = 1;
     } else if (V.style === "mountains") {
-      // Gebirge: drei Bergketten aus dem Spektrum am unteren Rand, hinten blasser, ziehen langsam vorbei
+      // Gebirge: drei Bergketten aus dem Spektrum am unteren Rand, hinten blasser, ziehen langsam vorbei.
+      // Zwischen den Spektrumswerten wird weich gemittelt (vorher sprang der Grat beim Weiterziehen von Wert zu Wert).
+      const sm = (j) => (vals[(j + N) % N] + vals[(j + 1) % N] + vals[(j + N - 1) % N]) / 3;
+      const at = (u) => {
+        const f = ((u % N) + N) % N, i0 = Math.floor(f), w = f - i0, s = w * w * (3 - 2 * w);
+        return sm(i0) + (sm(i0 + 1) - sm(i0)) * s;
+      };
       for (let k = 2; k >= 0; k--) {
         const base = vh, hMax = vh * (0.22 + k * 0.07) * V.height, shift = tt * (8 + k * 6);
-        ctx.beginPath();
-        ctx.moveTo(0, base);
-        const steps = 64;
+        const steps = 64, ridge = new Path2D();
+        let px0 = 0, py0 = 0;
         for (let s2 = 0; s2 <= steps; s2++) {
-          const x = (s2 / steps) * vw, j = Math.floor(((s2 / steps) * N + shift / 12 + k * 17) % N);
-          const v = (vals[j] + vals[(j + 1) % N] + vals[(j + N - 1) % N]) / 3;
-          ctx.lineTo(x, base - (0.12 + v) * hMax * (0.7 + 0.3 * Math.sin(s2 * 0.5 + k)));
+          const x = (s2 / steps) * vw, v = at((s2 / steps) * N + shift / 12 + k * 17);
+          const y = base - (0.12 + v) * hMax * (0.7 + 0.3 * Math.sin(s2 * 0.5 + k));
+          if (!s2) ridge.moveTo(x, y);
+          else ridge.quadraticCurveTo(px0, py0, (px0 + x) / 2, (py0 + y) / 2);
+          [px0, py0] = [x, y];
         }
-        ctx.lineTo(vw, base);
-        ctx.closePath();
+        ridge.lineTo(px0, py0);
+        const body = new Path2D(ridge);
+        body.lineTo(vw, base);
+        body.lineTo(0, base);
+        body.closePath();
         const g = ctx.createLinearGradient(0, base - hMax * 1.1, 0, base);
         g.addColorStop(0, rgba(pal[k], (0.5 - k * 0.12).toFixed(2)));
         g.addColorStop(1, rgba(pal[k], 0.04));
         ctx.fillStyle = g;
-        ctx.fill();
+        ctx.fill(body);
+        // heller Grat: macht die Kette klar statt verwaschen
+        ctx.lineWidth = (1.6 - k * 0.3) * dpr;
+        ctx.strokeStyle = rgba(mixRGB(pal[k], WHITE, 0.3), ((0.55 - k * 0.15) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
+        ctx.stroke(ridge);
       }
     } else if (V.style === "scope") {
       // Oszilloskop: ein Lichtkreis, der in Obertönen schwingt – jede Spektrumsgruppe eine eigene Welle
-      for (const [w, al] of V.glow ? [[9, 0.12], [2.5, 0.95]] : [[2.5, 0.95]]) {
-        ctx.lineWidth = w * dpr;
-        for (let k = 0; k < 3; k++) {
-          ctx.strokeStyle = rgba(pal[k], (al * (k ? 0.65 : 1)).toFixed(3));
-          ctx.beginPath();
-          for (let s2 = 0; s2 <= 180; s2++) {
-            const a = (s2 / 180) * Math.PI * 2;
-            let off = 0;
-            for (let h = 1; h <= 5; h++) off += vals[Math.floor((h / 6) * N)] * Math.sin(a * (h * 3 + k) + tt * h * (k ? -1 : 1));
-            const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
-            const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
-            s2 ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-          }
-          ctx.stroke();
+      const paths = [0, 1, 2].map((k) => {
+        const p = new Path2D();
+        for (let s2 = 0; s2 <= 180; s2++) {
+          const a = (s2 / 180) * Math.PI * 2;
+          let off = 0;
+          for (let h = 1; h <= 5; h++) off += vals[Math.floor((h / 6) * N)] * Math.sin(a * (h * 3 + k) + tt * h * (k ? -1 : 1));
+          const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
+          const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+          s2 ? p.lineTo(x, y) : p.moveTo(x, y);
         }
+        p.closePath();
+        return p;
+      });
+      for (const [w, al] of V.glow ? [[9, clamp(0.12 * glowK, 0, 0.4)], [2.4, 0.95], [0.9, 0.5]] : [[2.4, 0.95]]) {
+        ctx.lineWidth = w * dpr;
+        paths.forEach((p, k) => {
+          ctx.strokeStyle = w < 1 ? `rgba(255,255,255,${(al * (k ? 0.5 : 1)).toFixed(3)})` : rgba(pal[k], (al * (k ? 0.65 : 1)).toFixed(3));
+          ctx.stroke(p);
+        });
       }
     } else if (V.style === "shatter") {
       drawShatter(ctx, cx, cy, maxLen, dt, b, dpr, tt);
     } else if (V.style === "wave") {
-      // geschlossene, weiche Kurve durch alle Spitzen
-      ctx.beginPath();
+      // geschlossene, weiche Kurve durch alle Spitzen: Fläche im Verlauf vom Cover nach außen, Rand im
+      // Farbkreis der Coverfarben, feiner heller Kern
+      const p = new Path2D();
       for (let i = 0; i <= N; i++) {
         const j = i % N, nx = (i + 1) % N;
         const x0 = cx + Math.cos(ang(j)) * tip(j), y0 = cy + Math.sin(ang(j)) * tip(j);
         const x1 = cx + Math.cos(ang(nx)) * tip(nx), y1 = cy + Math.sin(ang(nx)) * tip(nx);
         const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
-        if (i === 0) ctx.moveTo(mx, my);
-        else ctx.quadraticCurveTo(x0, y0, mx, my);
+        if (i === 0) p.moveTo(mx, my);
+        else p.quadraticCurveTo(x0, y0, mx, my);
       }
-      ctx.closePath();
-      ctx.fillStyle = rgba(pal[0], 0.16);
-      ctx.fill();
+      p.closePath();
+      const fill = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R + maxLen * 1.1);
+      fill.addColorStop(0, rgba(pal[0], 0.3));
+      fill.addColorStop(1, rgba(pal[1], 0.04));
+      ctx.fillStyle = fill;
+      ctx.fill(p);
+      const ring = wheel();
       if (V.glow) {
         ctx.lineWidth = 10 * dpr;
-        ctx.strokeStyle = rgba(pal[1], 0.14);
-        ctx.stroke();
+        ctx.globalAlpha = clamp(0.14 * glowK, 0, 0.4);
+        ctx.strokeStyle = ring;
+        ctx.stroke(p);
       }
+      ctx.globalAlpha = 0.95;
       ctx.lineWidth = 2.5 * dpr;
-      ctx.strokeStyle = rgba(pal[2], 0.95);
-      ctx.stroke();
+      ctx.strokeStyle = ring;
+      ctx.stroke(p);
+      ctx.globalAlpha = 0.4;
+      ctx.lineWidth = 0.9 * dpr;
+      ctx.strokeStyle = "#fff";
+      ctx.stroke(p);
+      ctx.globalAlpha = 1;
     } else {
-      // Balken bzw. Punkte: pro Farbe EIN Pfad statt einer Linie pro Balken
-      const groups = [[], [], []];
-      for (let i = 0; i < N; i++) groups[i % 3 === 0 ? 2 : i % 2 ? 0 : 1].push(i);
-      const passes = V.style === "bars" && V.glow ? [[9, 0.15], [3, 0.95]] : [[3, 0.95]];
-      for (const [w, al] of passes) {
-        ctx.lineWidth = w * dpr;
-        groups.forEach((idx, gi) => {
-          ctx.beginPath();
-          for (const i of idx) {
-            const c = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-            if (V.style === "dots") {
-              ctx.moveTo(cx + c * e + 3 * dpr, cy + sn * e);
-              ctx.arc(cx + c * e, cy + sn * e, 3 * dpr, 0, Math.PI * 2);
-            } else {
-              ctx.moveTo(cx + c * R, cy + sn * R);
-              ctx.lineTo(cx + c * e, cy + sn * e);
-            }
+      // Balken bzw. Punkte: EIN Pfad für alle, eingefärbt über einen Farbkreis aus den Coverfarben (weicher
+      // Übergang statt bunter Einzelbalken); Breite aus dem Umfang, damit die Abstände bei jeder Balkenzahl stimmen
+      const bw = clamp(((Math.PI * 2 * R) / N) * 0.5, 1.6 * dpr, 4.5 * dpr);
+      const ring = wheel(), body = new Path2D(), tips = new Path2D();
+      for (let i = 0; i < N; i++) {
+        const c = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
+        if (V.style === "dots") {
+          const r = (2.2 + vals[i] * 2.6) * dpr;
+          body.moveTo(cx + c * e + r, cy + sn * e);
+          body.arc(cx + c * e, cy + sn * e, r, 0, Math.PI * 2);
+        } else {
+          body.moveTo(cx + c * R, cy + sn * R);
+          body.lineTo(cx + c * e, cy + sn * e);
+          // heller Kopf auf dem äußeren Drittel – nur bei Balken, die wirklich ausschlagen
+          if (vals[i] > 0.18) {
+            const m = e - (e - R) * 0.3;
+            tips.moveTo(cx + c * m, cy + sn * m);
+            tips.lineTo(cx + c * e, cy + sn * e);
           }
-          if (V.style === "dots") {
-            ctx.fillStyle = rgba(pal[gi], al);
-            ctx.fill();
-          } else {
-            ctx.strokeStyle = rgba(pal[gi], al);
-            ctx.stroke();
-          }
-        });
+        }
       }
+      if (V.style === "dots") {
+        if (V.glow) {
+          ctx.globalAlpha = clamp(0.16 * glowK, 0, 0.45);
+          ctx.lineWidth = 7 * dpr;
+          ctx.strokeStyle = ring;
+          ctx.stroke(body);
+        }
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = ring;
+        ctx.fill(body);
+      } else {
+        ctx.strokeStyle = ring;
+        if (V.glow) {
+          ctx.globalAlpha = clamp(0.15 * glowK, 0, 0.45);
+          ctx.lineWidth = bw * 3.2;
+          ctx.stroke(body);
+        }
+        // Körper: vom Cover nach außen heller werdend (Tiefe auch bei Covern mit ähnlichen Farben)
+        const tube = ctx.createRadialGradient(cx, cy, R, cx, cy, R + 4 * dpr + maxLen);
+        tube.addColorStop(0, rgba(pal[0], 0.45));
+        tube.addColorStop(0.45, rgba(pal[1], 0.9));
+        tube.addColorStop(1, rgba(mixRGB(pal[2], WHITE, 0.3), 1));
+        ctx.globalAlpha = 0.95;
+        ctx.lineWidth = bw;
+        ctx.strokeStyle = tube;
+        ctx.stroke(body);
+        ctx.globalAlpha = 0.3 + 0.2 * b;
+        ctx.lineWidth = bw * 0.42;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke(tips);
+      }
+      ctx.globalAlpha = 1;
     }
 
     rings = rings.filter((g) => g.a > 0.02);
@@ -1718,8 +1844,9 @@ const immersive = (() => {
     // Puls direkt als scale (eigene Grafikebene), nur bei sichtbarer Änderung
     // Puls federt: schneller Anstieg (~35 ms), weiches Abklingen – kein hartes Springen von Bild zu Bild
     // sofort hoch (sonst hinkt der Puls hinterher), weich wieder ab
+    // Anstieg in ~25 ms statt eines Sprungs von einem Bild aufs nächste (bei 30 Bildern/s gleitet CSS dazwischen)
     const want = 1 + b * V.pulse;
-    pulseS = want > pulseS ? want : pulseS + (want - pulseS) * (1 - Math.exp(-dt * 9));
+    pulseS += (want - pulseS) * (1 - Math.exp(-dt * (want > pulseS ? 40 : 9)));
     const pulse = pulseS.toFixed(4);
     if (pulse !== lastPulse) q.wrap.style.scale = lastPulse = pulse;
     if (px) {
@@ -1757,7 +1884,74 @@ const immersive = (() => {
     }
   }
   let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
-  let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "";
+  let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "", vizBloom = 0;
+  const WHITE = [255, 255, 255];
+  const mixRGB = (a, c, f) => [0, 1, 2].map((k) => Math.round(a[k] + (c[k] - a[k]) * f));
+  // weicher Leuchtpunkt je Farbe, einmal gerendert (Glockenkurve statt Kante): für Teilchen und Galaxie
+  // (Farben auf 16er-Stufen gerundet: Funken aus dem Farbverlauf teilen sich so wenige Bilder)
+  const vizSprites = new Map();
+  function spriteOf(kind, c0, draw) {
+    const c = c0.map((v) => Math.min(255, Math.round(v / 16) * 16)), key = kind + c.join(",");
+    let s = vizSprites.get(key);
+    if (s) return s;
+    if (vizSprites.size > 96) vizSprites.clear();
+    s = document.createElement("canvas");
+    draw(s, c);
+    vizSprites.set(key, s);
+    return s;
+  }
+  const vizSprite = (c0) => spriteOf("d", c0, (s, c) => {
+    s.width = s.height = 48;
+    const x = s.getContext("2d"), g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
+    const hot = mixRGB(c, WHITE, 0.6);
+    g.addColorStop(0, `rgba(${hot},1)`);
+    g.addColorStop(0.18, `rgba(${hot},0.95)`);
+    g.addColorStop(0.38, `rgba(${c},0.55)`);
+    g.addColorStop(0.68, `rgba(${c},0.14)`);
+    g.addColorStop(1, `rgba(${c},0)`);
+    x.fillStyle = g;
+    x.fillRect(0, 0, 48, 48);
+  });
+  // Regentropfen: dünner Lichtfaden, oben durchsichtig, unten ein heller Kopf
+  const rainSprite = (c0) => spriteOf("r", c0, (s, c) => {
+    s.width = 6;
+    s.height = 44;
+    const x = s.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 44);
+    g.addColorStop(0, `rgba(${c},0)`);
+    g.addColorStop(0.75, `rgba(${c},0.7)`);
+    g.addColorStop(1, `rgba(${mixRGB(c, WHITE, 0.5)},1)`);
+    x.fillStyle = g;
+    x.beginPath();
+    x.roundRect ? x.roundRect(1.5, 0, 3, 44, 1.5) : x.rect(1.5, 0, 3, 44);
+    x.fill();
+  });
+  // Cover-Neigung zur Maus: kritisch gedämpfte Feder, zeitbasiert – kein Neustart einer CSS-Übergangskurve bei
+  // jedem Mausereignis (das ruckte), gleich weich bei 30, 60 oder 144 Bildern/s. Gesetzt wird nur „rotate“
+  // (eine Drehachse aus X- und Y-Neigung) und die Lage des Glanzlichts – beides ohne Neu-Layout.
+  const tilt = { x: 0, y: 0, vx: 0, vy: 0, key: "", ip: "" };
+  function coverMotion(dt, fpsCap) {
+    // gedrosselt (30 Bilder/s): der Browser gleitet zwischen zwei Bildern linear weiter (Übergang = Bildabstand)
+    // (nur unter 50 Bildern/s – bei „Ausgewogen“ mit 60 zeigt der Bildschirm ohnehin jedes Bild)
+    const ip = fpsCap && fpsCap < 50 && !cfg.calm ? Math.round(1000 / fpsCap + 2) + "ms" : "0s";
+    if (ip !== tilt.ip) el.style.setProperty("--m-ip", (tilt.ip = ip));
+    const tx = cfg.calm ? 0 : -depth.ty * 14, ty = cfg.calm ? 0 : depth.tx * 18;
+    // in kleinen Schritten rechnen: auch bei 50 ms Bildabstand stabil
+    for (let left = dt; left > 1e-4; left -= 0.016) {
+      const h = Math.min(0.016, left), w = 7;
+      tilt.vx += (w * w * (tx - tilt.x) - 2 * w * tilt.vx) * h;
+      tilt.vy += (w * w * (ty - tilt.y) - 2 * w * tilt.vy) * h;
+      tilt.x += tilt.vx * h;
+      tilt.y += tilt.vy * h;
+    }
+    const ang = Math.hypot(tilt.x, tilt.y);
+    const k = ang < 0.02 ? "" : `${(tilt.x / ang).toFixed(3)} ${(tilt.y / ang).toFixed(3)} 0 ${ang.toFixed(2)}deg`;
+    if (k === tilt.key) return;
+    tilt.key = k;
+    q.cover.style.rotate = k;
+    // Glanzlicht wandert gegen die Neigung (verschiebt nur eine fertige Ebene)
+    q.cover.style.setProperty("--gx", (tilt.y * 2.2).toFixed(1) + "%");
+    q.cover.style.setProperty("--gy", (-tilt.x * 2.8).toFixed(1) + "%");
+  }
   function freshCanvas() {
     const n = q.canvas.cloneNode(false);
     q.canvas.replaceWith(n);
@@ -1990,8 +2184,10 @@ const immersive = (() => {
       if (p.rain) {
         // Tropfen bleiben über dem Publikum: ab gut der halben Höhe blenden sie aus
         p.y += p.v * sdt;
-        ctx.fillStyle = rgba(p.c, (0.55 * Math.min(1, p.life * 2) * clamp((vh * 0.64 - p.y) / (vh * 0.14), 0, 1)).toFixed(3));
-        ctx.fillRect(p.x, p.y, 1.6 * dpr, 16 * dpr);
+        // Tropfen als Lichtfaden: oben durchsichtig, unten hell (statt eines harten Rechtecks)
+        ctx.globalAlpha = clamp(0.6 * Math.min(1, p.life * 2) * clamp((vh * 0.64 - p.y) / (vh * 0.14), 0, 1), 0, 1);
+        ctx.drawImage(rainSprite(p.c), p.x - 1.5 * dpr, p.y - 4 * dpr, 4.6 * dpr, 22 * dpr);
+        ctx.globalAlpha = 1;
         continue;
       }
       if (p.hit) {
@@ -2008,11 +2204,12 @@ const immersive = (() => {
       }
       p.r += p.v * sdt;
       p.v *= Math.exp(-sdt * 1.6);
-      ctx.fillStyle = rgba(p.c, p.life * 0.9);
-      ctx.beginPath();
-      ctx.arc(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r, (0.8 + p.life * 1.8) * dpr, 0, Math.PI * 2);
-      ctx.fill();
+      // weicher Funke mit hellem Kern (Leuchtpunkt) statt einer harten Scheibe
+      const sr = (2.4 + p.life * 4.6) * dpr;
+      ctx.globalAlpha = clamp(p.life * 0.95, 0, 1);
+      ctx.drawImage(vizSprite(p.c), cx + Math.cos(p.a) * p.r - sr, cy + Math.sin(p.a) * p.r - sr, sr * 2, sr * 2);
     }
+    ctx.globalAlpha = 1;
     drawMotes(ctx, dt, dpr, pal);
   }
 
@@ -2422,7 +2619,9 @@ const immersive = (() => {
     // 3 ms Spielraum, damit ein leicht zu früh kommendes Bild nicht ausfällt.
     const fpsCap = ecoOn() || lightMode() || (quietNow && cfg.partyQuietFps) ? 30 : cfg.preset === "balanced" ? 60 : 0;
     if (fpsCap && now - lastDraw < 1000 / fpsCap - 3) return;
+    const fdt = Math.min(0.1, lastDraw ? (now - lastDraw) / 1000 : 0.016);
     lastDraw = now;
+    coverMotion(fdt, fpsCap);
     if (sizeKey !== sizeKeyNow()) sizeCanvas();
     // gleichmäßige Songuhr mit Vorlauf (siehe clock.js) – Party, Visualizer und Karaoke laufen danach
     const pos = songPos(now);

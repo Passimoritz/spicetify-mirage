@@ -1300,9 +1300,13 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   aspect-ratio: 1;
   perspective: 1200px;
   view-transition-name: m-cover;
+  /* Puls und Pendeln (scale/rotate aus immersive.js): bei gedrosselter Bildrate gleitet der Browser dazwischen */
+  transition:
+    scale var(--m-ip, 0s) linear,
+    rotate var(--m-ip, 0s) linear;
 }
-/* im Visualizer pulsiert das Cover (scale aus immersive.js): eigene Ebene, kein Neuzeichnen */
-#mirage-immersive[data-mode="viz"] .m-im-cover-wrap {
+/* im Visualizer, Mix und Party pulsiert das Cover (scale aus immersive.js): eigene Ebene, kein Neuzeichnen */
+#mirage-immersive:is([data-mode="viz"], [data-mode="mix"], [data-mode="party"]) .m-im-cover-wrap {
   will-change: scale;
 }
 #mirage-immersive .m-im-cover {
@@ -1310,10 +1314,15 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   width: 100%;
   height: 100%;
   border-radius: 24px;
-  transform: rotateX(var(--irx, 0deg)) rotateY(var(--iry, 0deg)) scale(0.9);
+  transform: scale(0.9);
+  /* Neigung zur Maus kommt als „rotate“ aus immersive.js (Feder je Bild); --m-ip = Bildabstand bei
+     gedrosselter Bildrate, dann gleitet der Browser zwischen zwei Bildern weiter statt zu springen */
   transition:
     transform 0.6s var(--m-ease),
-    border-radius 0.8s var(--m-ease);
+    border-radius 0.8s var(--m-ease),
+    rotate var(--m-ip, 0s) linear;
+  /* eigene Ebene: der große Schatten wird beim Neigen nicht in jedem Bild neu gezeichnet */
+  will-change: rotate;
   box-shadow:
     0 60px 120px -30px rgba(var(--m-a-rgb), 0.75),
     0 0 0 1px rgba(255, 255, 255, 0.12);
@@ -1321,7 +1330,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   background: rgba(255, 255, 255, 0.06);
 }
 #mirage-immersive.is-on .m-im-cover {
-  transform: rotateX(var(--irx, 0deg)) rotateY(var(--iry, 0deg)) scale(1);
+  transform: scale(1);
 }
 #mirage-immersive .m-im-cover img {
   position: absolute;
@@ -1335,13 +1344,18 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive .m-im-cover img.is-on {
   opacity: 1;
 }
+/* Glanzlicht: eine fertig gezeichnete, doppelt große Fläche, die nur verschoben wird (vorher wurde der
+   Verlauf bei jeder Mausbewegung neu gemalt) */
 #mirage-immersive .m-im-cover::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(80% 80% at var(--gx, 30%) var(--gy, 20%), rgba(255, 255, 255, 0.3), transparent 50%);
+  inset: -50%;
+  background: radial-gradient(40% 40% at 50% 50%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.12) 22%, transparent 50%);
   mix-blend-mode: overlay;
+  translate: var(--gx, -10%) var(--gy, -15%);
+  transition: translate var(--m-ip, 0s) linear;
+  will-change: translate;
+  pointer-events: none;
 }
 
 /* Titel, Fortschritt, Steuerung */
@@ -1737,7 +1751,11 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
     transform 0.7s var(--m-ease);
 }
 #mirage-immersive[data-mode="party"] :is(.m-im-cover-wrap, .m-im-lyrics, .m-im-meta) {
-  transition: transform 0.9s var(--m-ease);
+  /* scale/rotate: Puls und Pendeln des Covers (siehe .m-im-cover-wrap) */
+  transition:
+    transform 0.9s var(--m-ease),
+    scale var(--m-ip, 0s) linear,
+    rotate var(--m-ip, 0s) linear;
 }
 #mirage-immersive[data-mode="party"].is-idle {
   cursor: none;
@@ -2644,6 +2662,10 @@ html.mirage-im-open .Root * {
 }
 #mirage-immersive .m-im-bg i.is-on {
   opacity: 1;
+}
+/* Filter schon ins Bild gebacken (immersive.js setHaze): die Grafikkarte zeigt nur noch ein fertiges Bild */
+#mirage-immersive .m-im-bg i.is-baked {
+  filter: none;
 }
 #mirage-immersive .m-im-bg::after {
   content: "";
@@ -4997,10 +5019,8 @@ html.mirage-rich #mirage-stage .m-aurora {
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
   animation-timing-function: steps(144) !important;
 }
-html.mirage-vinyl [data-testid="CoverSlotCollapsed__container"] img,
-html.mirage-vinyl .main-coverSlotCollapsed-container img {
-  animation-timing-function: steps(144) !important;
-}
+/* Vinyl: KEINE Stufen – eine Drehung mit 24 Bildern/s ruckelt sichtbar (2,5° je Stufe). Die kleine Scheibe
+   dreht der Compositor ohne Hauptthread; das kostet fast nichts. */
 /* Spotifys Oberfläche als eigene Grafikebene: bewegt sich der Hintergrund, wird sie nur
    noch darübergelegt statt in jedem Bild neu gezeichnet. opacity statt transform, weil
    transform eingebettete Menüs/Tooltips (position: fixed) verschieben würde. */
