@@ -83,7 +83,8 @@ function expectFamily(meta) {
 }
 // Spotify-artige Künstler-Genres: FMA-Genres kleingeschrieben („Hip-Hop“ → „hip hop“), sonst keine
 function spotifyStrings(meta) {
-  return (meta.fmaGenres || []).map((g) => g.toLowerCase().replace(/-/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean);
+  // (Spotify schreibt „hip hop“ ohne Bindestrich, aber „lo-fi“, „k-pop“, „singer-songwriter“ mit)
+  return (meta.fmaGenres || []).map((g) => g.toLowerCase().replace(/hip-hop/g, "hip hop").trim()).filter(Boolean);
 }
 
 module.exports = { tolerantF, boundaryF, LABEL, labelAt, expectFamily, spotifyStrings };

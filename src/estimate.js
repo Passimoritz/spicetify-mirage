@@ -100,7 +100,13 @@ async function estimateAnalysis(uri) {
   const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || PLR.getDuration() || 0) / 1000 || 210;
   const [feat, lyr] = await Promise.all([spotifyFeatures(id), within(getLyrics(uri), 9000)]);
   const dz = feat ? null : await deezerBpm(item);
-  const hint = feat?.bpm || dz?.bpm || 0;
+  // Deezers Tempo liegt oft eine Oktave daneben (Testlabor, 665 Hits mit Harmonix-Tempo: 26 % doppelt/halb) –
+  // auf 75–150 BPM gefaltet stimmen 84 % statt 79 % (mit der Faltung unten auf 70–165)
+  let hint = feat?.bpm || dz?.bpm || 0;
+  if (!feat?.bpm && hint) {
+    while (hint > 150) hint /= 2;
+    while (hint < 75) hint *= 2;
+  }
   // Einsätze aus dem Liedtext: Wortanfänge, sonst Zeilenanfänge
   const lines = lyr?.synced ? lyr.lines.filter((l) => l.text && l.text !== "♪") : [];
   const words = lines.flatMap((l) => (l.words || []).map((w) => w.t / 1000));

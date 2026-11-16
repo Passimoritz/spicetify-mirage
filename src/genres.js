@@ -495,6 +495,38 @@ const RULES = [
   ["boombap", /old school (?:hip[- ]?hop|rap)|east coast rap|golden age hip[- ]?hop/],
   ["gospel", /christian & gospel|contemporary gospel|traditional gospel|southern gospel|black gospel/],
   ["acoustic", /singer\/songwriter/],
+  // Apple-Genres in der Sprache des Landes: Mirage fragt iTunes zuerst im eigenen Land (Testlabor: 1800 Songs aus
+  // 30 Ländern – „Klassik“, „Elektronisch“, „ロック“, „流行樂“ … blieben vorher ohne Treffer und wurden Pop)
+  ["classical", /klassik|klassiek|cl[aá]sica|classica|classique|crossover classique|klassische crossover|klassieke crossover|クラシック/],
+  ["rave", /elektronisch|elektronik|electr[oó]nica|elettronica|[ée]lectronique|エレクトロニック|電子音樂|电子/],
+  ["cinematic", /bandas? sonoras?|colonne sonore|filmmusik|bandes? originales?|サウンドトラック|原聲帶|原声/],
+  ["chill", /strumentale|instrumentale?|instrumentaal|インストゥルメンタル|m[uú]sica tranquila|musique d'ambiance|entspannung/],
+  ["newage", /ニューエイジ|新世紀/],
+  ["jrock", /ロック|オルタナティブ|ヴィジュアル系/],
+  ["jpop", /ポップ|歌謡曲|j-?pop/],
+  ["anime", /アニメ/],
+  ["enka", /演歌/],
+  ["jhiphop", /ヒップホップ/],
+  ["mandopop", /華語流行|华语流行|台灣流行|流行樂|流行乐|國語流行/],
+  ["chinesehiphop", /嘻哈|饒舌|说唱/],
+  ["rock", /華語搖滾|獨立搖滾|民謠搖滾|搖滾|摇滚/, -2],
+  ["alternative", /alternativ[ao]|alternatief/],
+  ["afro", /afro[- ]?pop|m[uú]sica africana|musique africaine|afrikanisch|\bafrican\b|\bafrica\b/],
+  ["afrobeat", /afro-beat/],
+  ["kids", /children['’]s music|enfants|bambini|kinderen/],
+  ["indiefolk", /alternative folk|folk alternativo/],
+  ["edm", /fitness|workout/],
+  ["classicrock", /british invasion/],
+  ["vocaljazz", /^vocal$/],
+  ["zouk", /antilles|antillais/],
+  // FMA-Genres (freie Musik): Avantgarde, Klangcollage, Improvisation, Big Beat, Skweee
+  ["experimental", /audio collage|avant-garde|unclassifiable/],
+  ["freejazz", /^improv$/],
+  ["breakbeat", /bigbeat/],
+  ["electro", /skweee/],
+  ["rai", /north african/],
+  ["kids", /kid-friendly/],
+  ["progrock", /^progressive$/],
 ];
 // Genaue Spielarten der ersten Versionen – gelten für Spotify- und Apple-Genres gleichermaßen
 const SPECIFIC = [
@@ -604,7 +636,7 @@ const APPLE = [
   ["bass", /hip-?hop|rap|trap|urbano|reggaeton|dancehall|afro|grime|drill/],
   ["rock", /rock|alternative|metal|punk|grunge|hardcore|emo|indie(?! ?pop)/],
   ["chill", /soul|singer|songwriter|jazz|classical|ambient|soundtrack|folk|acoustic|new age|easy listening|lo-?fi|blues|country|piano|instrumental/],
-  ["pop", /pop|schlager|disco|funk|latin|world|reggae/],
+  ["pop", /pop|schlager|disco|funk|latin|world|weltweit|mundo|monde|wereld|reggae/],
 ];
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
