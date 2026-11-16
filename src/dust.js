@@ -3,6 +3,7 @@ import { schemePalette, cfg } from "./config.js";
 import { current } from "./color.js";
 import { stage, onHaze } from "./stage.js";
 import { beat, audio } from "./audio.js";
+import { tier } from "./perf.js";
 
 /* ---------------------------------------------------------------- Umgebungs-Hintergrund */
 // Cover-Licht (zwei gedrehte Lagen), Aurora-Bänder, Puls, Lichtstaub und Vignette – alles in
@@ -14,8 +15,9 @@ import { beat, audio } from "./audio.js";
 // Takt: 20 Bilder pro Sekunde (Voll 30, Leicht 12), nur wenn Musik läuft oder ein Cover überblendet.
 // Pause, verdeckt, Immersiv offen: ein Standbild, keine Schleife.
 const SCALE = 0.25, FADE = 2200;
-// Bildrate je Preset: jedes Hintergrund-Bild zwingt Spotify, das ganze Fenster neu zusammenzusetzen
-const fps = () => ({ full: 30, light: 12 })[cfg.preset] || 20;
+// Bildrate je Preset: jedes Hintergrund-Bild zwingt Spotify, das ganze Fenster neu zusammenzusetzen.
+// „Eigene“ bleibt im Rahmen des Presets, von dem man kam (aus „Leicht“ also weiter 12)
+const fps = () => (cfg.preset === "full" ? 30 : tier() === "light" ? 12 : 20);
 const TAU = Math.PI * 2;
 const tri = (x) => 1 - Math.abs(2 * (x - Math.floor(x)) - 1); // 0 → 1 → 0 pro Periode
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);

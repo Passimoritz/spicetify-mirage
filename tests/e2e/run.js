@@ -1757,6 +1757,9 @@ async function perfMenu() {
   await until(async () => (await menu()).open, 2000, "leistung: Menü „Mehr“ geht auf");
   let m = await menu();
   ok(m.presets === 4, "leistung: vier Presets im Menü: " + m.presets);
+  // jede Preset-Karte zeigt ihren Leistungsbedarf (Balken) und sagt ihn auch vor
+  const cards = await T.js(`[...document.querySelectorAll("#mirage-immersive .m-im-perf button")].map((b) => [b.dataset.preset, b.querySelector(".m-meter")?.dataset.cost, /: /.test(b.getAttribute("aria-label") || "")].join())`);
+  ok(cards.join(" ") === "full,3,true balanced,2,true light,1,true calm,1,true", "leistung: Karten mit Leistungsbalken und Ansage: " + cards.join(" "));
   ok(m.preset === (before.preset || "balanced"), `leistung: markiert ist das aktuelle Preset (${before.preset}): ${m.preset}`);
   await T.click('.m-im-perf button[data-preset="light"]');
   await until(async () => (await stored()).preset === "light" && (await menu()).preset === "light", 2000, "leistung: „Leicht“ gewählt und gespeichert");
@@ -1779,6 +1782,30 @@ async function perfMenu() {
   // umgekehrt: im Dialog umstellen – das Schnellmenü zeigt es beim nächsten Öffnen (Prüfung mit Taste O unten)
   await T.js(`document.querySelector(".mirage-settings .m-seg button:nth-child(2)").click(); 1`);
   await until(async () => (await stored()).preset === "balanced" && (await dlg()).preset === 1, 2000, "leistung: Dialog stellt auf „Ausgewogen“");
+  // ein einzelner Schalter macht „Eigene“, der Kostenrahmen bleibt „Ausgewogen“ (presetBase) – nie teurer als gewählt
+  await T.js(`document.querySelector('.mirage-settings input[data-key="tilt"]').click(); 1`);
+  await until(async () => (await stored()).preset === "custom", 2000, "leistung: einzelner Schalter → Eigene");
+  ok((await stored()).presetBase === "balanced", "leistung: Eigene bleibt im Rahmen von „Ausgewogen“: " + (await stored()).presetBase);
+  await T.js(`document.querySelector('.mirage-settings input[data-key="tilt"]').click(); 1`);
+  await until(async () => (await stored()).preset === "balanced", 2000, "leistung: Schalter zurück → wieder Ausgewogen");
+  // Regler: beim Ziehen nur die Anzeige (Wert, Füllung, Ansage), gespeichert wird beim Loslassen,
+  // die Wirkung am Dokument kommt sofort beim ersten Schritt und danach höchstens alle 100 ms
+  const sl = await T.js(`(() => {
+    const r = document.querySelector('.mirage-settings input[data-key="bright"]'), row = r.closest(".m-range");
+    const fire = (type) => r.dispatchEvent(new Event(type, { bubbles: true }));
+    const css = () => document.documentElement.style.getPropertyValue("--m-bright");
+    const before = localStorage.getItem("mirage:settings"), old = r.value;
+    for (const v of [90, 95, 110, 120]) { r.value = v; fire("input"); }
+    const mid = { same: localStorage.getItem("mirage:settings") === before, css: css(), val: row.querySelector(".m-range-val").textContent, fill: (+r.style.getPropertyValue("--p")).toFixed(2), vt: r.getAttribute("aria-valuetext") };
+    fire("change");
+    const end = { stored: JSON.parse(localStorage.getItem("mirage:settings")).bright, css: css() };
+    r.value = old; fire("input"); fire("change");
+    return { mid, end, name: r.getAttribute("aria-label"), desc: document.getElementById(r.getAttribute("aria-describedby"))?.textContent || "", scale: !!row.querySelector(".m-range-scale[data-lo]") };
+  })()`);
+  ok(sl.mid.same && sl.mid.css === "0.9" && sl.mid.val === "120 %" && sl.mid.fill === "0.67" && sl.mid.vt === "120 %", "regler: beim Ziehen nur Anzeige, nichts gespeichert: " + JSON.stringify(sl.mid));
+  ok(sl.end.stored === 120 && sl.end.css === "1.2", "regler: beim Loslassen gespeichert und angewendet: " + JSON.stringify(sl.end));
+  ok(sl.name && sl.desc && sl.scale, "regler: Name, Kosten-Hinweis und Skala: " + JSON.stringify({ name: sl.name, desc: sl.desc, scale: sl.scale }));
+  ok((await stored()).bright === 100 || (await stored()).bright === before.bright, "regler: alter Wert zurück");
   await T.js(`document.querySelector(".mirage-settings").remove(); 1`);
   // Taste O: zu, wieder auf, Fokus auf dem gewählten Preset
   await T.js(`__sp.press("KeyO"); 1`);

@@ -8,7 +8,7 @@ import { bridge } from "./bridge.js";
 import { immersive } from "./immersive.js";
 import { onSong, contextUri, albumUri, effectiveScheme } from "./song.js";
 import { currentItem } from "./player.js";
-import { PRESET_KEYS, applyPreset, detectPreset } from "./perf.js";
+import { PRESET_KEYS, COST, applyPreset, detectPreset } from "./perf.js";
 import { recheckAll } from "./readability.js";
 import { diagnostics, reportUrl } from "./selectors.js";
 import { refreshRemote } from "./remote.js";
@@ -84,17 +84,19 @@ function head(title, hint) {
   if (hint) h.append(el("small", "", hint));
   return h;
 }
+function bolt() {
+  const i = el("i", "m-cost", "⚡");
+  i.title = t("costly");
+  i.setAttribute("role", "img");
+  i.setAttribute("aria-label", t("costly"));
+  return i;
+}
+const has = (k) => t(k) !== k;
 function toggle(key, after) {
   const row = el("label", "m-row");
   const txt = el("span");
   const b = el("b", "", t(key));
-  if (COSTLY.has(key)) {
-    const bolt = el("i", "m-cost", "⚡");
-    bolt.title = t("costly");
-    bolt.setAttribute("role", "img");
-    bolt.setAttribute("aria-label", t("costly"));
-    b.append(" ", bolt);
-  }
+  if (COSTLY.has(key)) b.append(" ", bolt());
   txt.append(b);
   const hint = t(key + "Hint");
   if (hint !== key + "Hint") txt.append(el("small", "", hint));
@@ -114,24 +116,90 @@ function toggle(key, after) {
   row.append(txt, cb);
   return row;
 }
-function range(key, min, max, step, unit, after) {
-  const row = el("label", "m-row");
-  const txt = el("span");
-  const hint = el("small", "", cfg[key] + unit);
-  txt.append(el("b", "", t(key)), hint);
+// Regler: Füllung in der Akzentfarbe, Wert mit Einheit, Striche bei wenigen Stufen, Marke beim Standardwert,
+// darunter in Klartext, was er kostet. Beim Ziehen ändert sich nur der Regler selbst (eine Variable am Element);
+// die Wirkung (after, oft eine Variable am ganzen Dokument) läuft höchstens alle 100 ms, gespeichert wird beim Loslassen.
+const COSTLY_RANGE = new Set(["blur"]);
+// Regler ohne Einfluss auf die Leistung: das steht ausdrücklich dabei
+const FREE_RANGE = new Set(["bright", "vizHeight", "vizSmooth"]);
+let rangeN = 0;
+function range(key, min, max, step, unit, after, fmt = (v) => v + unit) {
+  const row = el("label", "m-row m-range");
+  const top = el("span", "m-range-top");
+  const name = el("b", "", t(key));
+  if (COSTLY_RANGE.has(key)) name.append(" ", bolt());
+  const val = el("span", "m-range-val");
+  val.setAttribute("aria-hidden", "true");
+  top.append(name, val);
   const r = el("input");
   Object.assign(r, { type: "range", min, max, step, value: cfg[key] });
   r.dataset.key = key;
-  r.setAttribute("aria-valuetext", cfg[key] + unit);
-  r.oninput = () => {
-    cfg[key] = Number(r.value);
-    hint.textContent = r.value + unit;
-    r.setAttribute("aria-valuetext", r.value + unit);
-    save();
+  r.setAttribute("aria-label", t(key));
+  // Striche nur, wo es wenige Stufen gibt; die Standard-Marke immer. Beides malt CSS als Hintergrund eines
+  // einzigen Elements (--n Stufen, --d Lage des Standards), die Wörter an den Enden kommen aus data-lo/data-hi:
+  // jedes Element mehr kostet bei jeder Farbänderung am Dokument ein Stück Neuberechnung
+  const scale = el("span", "m-range-scale");
+  scale.setAttribute("aria-hidden", "true");
+  const steps = Math.round((max - min) / step);
+  if (steps <= 16) scale.style.setProperty("--n", steps);
+  else scale.classList.add("is-noticks");
+  const def = DEFAULTS[key];
+  if (typeof def === "number" && def >= min && def <= max) scale.style.setProperty("--d", (def - min) / (max - min));
+  else scale.classList.add("is-nodef");
+  if (has(key + "Lo")) Object.assign(scale.dataset, { lo: t(key + "Lo"), hi: t(key + "Hi") });
+  row.append(top, r, scale);
+  // Glas-Unschärfe ohne echtes Glas: sichtbar ruhiger, mit dem Hinweis, warum sie nichts tut
+  const idle = key === "blur" && !cfg.glass;
+  row.classList.toggle("is-idle", idle);
+  const hk = idle ? "blurOff" : has(key + "Cost") ? key + "Cost" : FREE_RANGE.has(key) ? "costFree" : has(key + "Hint") ? key + "Hint" : "";
+  if (hk) {
+    const hint = el("small", "m-range-hint" + (hk.endsWith("Cost") ? " is-cost" : hk === "costFree" ? " is-free" : ""), t(hk));
+    hint.id = "m-rh-" + ++rangeN;
+    r.setAttribute("aria-describedby", hint.id);
+    row.append(hint);
+  }
+  const show = () => {
+    const v = Number(r.value), text = String(fmt(v));
+    val.textContent = text;
+    r.style.setProperty("--p", (v - min) / (max - min));
+    r.setAttribute("aria-valuetext", v === def ? `${text} (${t("rangeDefault")})` : text);
+  };
+  show();
+  // höchstens ein Zeitgeber, er endet von selbst; beim Loslassen (change) sofort der letzte Stand
+  let at = 0, timer = 0, done = cfg[key];
+  const apply = () => {
+    clearTimeout(timer);
+    timer = 0;
+    at = performance.now();
+    done = cfg[key];
     after?.();
   };
-  row.append(txt, r);
+  r.oninput = () => {
+    cfg[key] = Number(r.value);
+    show();
+    if (!after || timer) return;
+    const wait = 100 - (performance.now() - at);
+    if (wait <= 0) apply();
+    else timer = setTimeout(apply, wait);
+  };
+  r.onchange = () => {
+    cfg[key] = Number(r.value);
+    if (after && (timer || done !== cfg[key])) apply();
+    save();
+  };
   return row;
+}
+// Preset-Knopf: Name, Balken für den Leistungsbedarf (1–3) und eine kurze Zeile, wofür es gut ist.
+// Auch das Schnellmenü im Immersiv-Modus baut seine Knöpfe damit.
+// Die Balken malt CSS als Hintergrund eines Elements; vorgelesen wird alles über aria-label.
+function presetFill(b, k) {
+  const meter = el("i", "m-meter");
+  meter.dataset.cost = COST[k];
+  const name = t("preset_" + k), desc = t("presetDesc_" + k);
+  b.dataset.preset = k;
+  b.setAttribute("aria-label", `${name}, ${desc}, ${t("costLabel").replace("{c}", t("cost" + COST[k]))}`);
+  b.replaceChildren(el("b", "", name), meter, el("small", "", desc));
+  return b;
 }
 function seg(options, value, onPick) {
   // viele Wahlmöglichkeiten (Party-Stile): umbrechen statt aus dem Fenster zu laufen
@@ -206,17 +274,7 @@ function findable(s, [hint, none], onPick) {
   return wrap;
 }
 // Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
-function rangeZero(key, max, zero) {
-  const row = range(key, 0, max, 1, "");
-  const hint = row.querySelector("small"), r = row.querySelector("input");
-  const show = () => {
-    hint.textContent = Number(r.value) ? r.value : t(zero);
-    r.setAttribute("aria-valuetext", hint.textContent);
-  };
-  r.addEventListener("input", show);
-  show();
-  return row;
-}
+const rangeZero = (key, max, zero) => range(key, 0, max, 1, "", null, (v) => v || t(zero));
 // Regeln für Songwünsche: nur sichtbar, solange Wünsche an sind (Schalter zeichnet die Einstellungen neu)
 function wishRules() {
   const box = el("div", "m-wishrules");
@@ -414,14 +472,21 @@ function render(box) {
 
   // ---- Presets
   kids.push(head(t("presetTitle"), t("presetHint")));
-  kids.push(
-    seg(
-      [["full", t("preset_full")], ["balanced", t("preset_balanced")], ["light", t("preset_light")], ["calm", t("preset_calm")]],
-      cfg.preset,
-      (k) => setPreset(k)
-    )
-  );
+  const order = Object.keys(COST);
+  const presets = seg(order.map((k) => [k, t("preset_" + k)]), cfg.preset, (k) => setPreset(k));
+  presets.classList.add("m-presets");
+  [...presets.children].forEach((b, i) => presetFill(b, order[i]));
+  kids.push(presets);
   if (cfg.preset === "custom") kids.push(el("small", "m-note", t("presetCustom")));
+  // Energiesparen und Selbst-Drosseln gehören zur Leistung: direkt unter die Presets statt zu den Animationen
+  kids.push(
+    head(t("eco"), t("ecoHint")),
+    seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
+      cfg.eco = k;
+      save();
+    }),
+    toggle("autoPerf")
+  );
 
   // ---- Schemata
   kids.push(head(t("scheme"), t("schemeHint")));
@@ -517,12 +582,7 @@ function render(box) {
       range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
     )
   ));
-  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("noFlash"), toggle("autoPerf"),
-    el("small", "m-note", t("eco")),
-    seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
-      cfg.eco = k;
-      save();
-    })), ["eco"]));
+  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("noFlash"))));
   const viz = [
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
     ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
@@ -537,7 +597,7 @@ function render(box) {
       toggle("onlineLyrics", () => immersive.reloadLyrics()),
       toggle("remoteFix", () => refreshRemote(true)),
       toggle("karaoke", () => immersive.reloadLyrics()),
-      range("syncOffset", -400, 400, 10, " ms"),
+      range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("romanize", () => immersive.reloadLyrics()),
       toggle("canvas", () => immersive.refresh()),
@@ -572,7 +632,7 @@ function render(box) {
         },
         [t("partyFind"), t("partyFindNone")]
       ),
-      el("small", "m-note", t("partyLevel")),
+      head(t("partyLevel"), t("partyLevelHint")),
       seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
         cfg.partyLevel = k;
         save();
@@ -875,4 +935,4 @@ function tour(auto) {
   else draw();
 }
 
-export { applySettings, openSettings, welcome, tour, setPreset, setPerf };
+export { applySettings, openSettings, welcome, tour, setPreset, setPerf, presetFill };

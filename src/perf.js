@@ -18,14 +18,22 @@ const PRESET_KEYS = Object.keys(PRESETS.full);
 function applyPreset(name) {
   const p = PRESETS[name];
   if (!p) return;
-  Object.assign(cfg, p, { preset: name });
+  Object.assign(cfg, p, { preset: name, presetBase: name });
   save();
 }
 // einzelner Schalter geändert: passt die Kombination noch zu einem Preset?
+// Das zuletzt gewählte Preset bleibt als Kostenrahmen gemerkt (presetBase, siehe tier)
 function detectPreset() {
+  if (PRESETS[cfg.preset]) cfg.presetBase = cfg.preset;
   const hit = Object.entries(PRESETS).find(([, p]) => PRESET_KEYS.every((k) => !!cfg[k] === !!p[k]));
   cfg.preset = hit ? hit[0] : "custom";
 }
+
+// Kostenrahmen für Bildrate und Pixel: bei „Eigene“ gilt das Preset, von dem man kam – ein einzelner Schalter
+// darf Bühne und Visualizer nicht teurer machen als das gewählte Preset (ohne Herkunft: „Ausgewogen“)
+const tier = () => (PRESETS[cfg.preset] ? cfg.preset : PRESETS[cfg.presetBase] ? cfg.presetBase : "balanced");
+// Leistungsbedarf je Preset für die Anzeige (1 niedrig … 3 hoch), passend zu Bildrate und Pixeln in immersive.js
+const COST = { full: 3, balanced: 2, light: 1, calm: 1 };
 
 /* ---------------------------------------------------------------- Selbst drosseln */
 // In den ersten Sekunden die Bildrate messen. Schafft der Rechner keine ~45 fps, eine Stufe
@@ -102,4 +110,4 @@ const syncHidden = () => root.classList.toggle("mirage-hidden", document.hidden)
 document.addEventListener("visibilitychange", syncHidden);
 syncHidden();
 
-export { PRESETS, PRESET_KEYS, applyPreset, detectPreset, measure };
+export { PRESETS, PRESET_KEYS, COST, applyPreset, detectPreset, measure, tier };

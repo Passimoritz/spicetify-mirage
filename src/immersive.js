@@ -29,7 +29,8 @@ import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
 import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from "./games.js";
 import { free } from "./lock.js";
-import { setPreset, setPerf } from "./settings.js";
+import { setPreset, setPerf, presetFill } from "./settings.js";
+import { COST, tier } from "./perf.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
 const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
@@ -580,9 +581,10 @@ const immersive = (() => {
     img.src = src;
   }
 
-  // Leicht-Preset oder Energiesparen fest an: weniger Pixel, 30 Bilder/s, weniger Details
-  const lightMode = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
-  const sizeKeyNow = () => `${cfg.preset}|${cfg.lite}|${cfg.eco}|${VIZ.has(el?.dataset.mode)}`;
+  // Leicht-Preset oder Energiesparen fest an: weniger Pixel, 30 Bilder/s, weniger Details.
+  // tier(): bei „Eigene“ der Rahmen des zuletzt gewählten Presets – ein Schalter macht es nie teurer
+  const lightMode = () => !!cfg.lite || tier() === "light" || cfg.eco === "on";
+  const sizeKeyNow = () => `${tier()}|${cfg.lite}|${cfg.eco}|${VIZ.has(el?.dataset.mode)}`;
   let sizeKey = "";
   function sizeCanvas() {
     if (!q.canvas) return;
@@ -595,7 +597,8 @@ const immersive = (() => {
     // höchstens ~3 Mio. Pixel: auf großen/hochauflösenden Bildschirmen wäre die volle Dichte ein
     // Vielfaches davon – jedes Bild neu zeichnen ruckelt dann. Die leuchtenden Linien bleiben trotzdem scharf genug.
     // je leichter das Preset, desto weniger Pixel: Leicht/Energiesparen ~1,2 Mio., Ausgewogen ~2 Mio.
-    const [pixels, cap] = lightMode() ? [1.2e6, 1] : cfg.preset === "balanced" ? [2e6, 1.25] : [3e6, 1.5];
+    // „Ruhig“ wie Ausgewogen (scharf genug für langsame Bewegung)
+    const [pixels, cap] = lightMode() ? [1.2e6, 1] : tier() === "full" ? [3e6, 1.5] : [2e6, 1.25];
     const budget = Math.sqrt(pixels / Math.max(1, innerWidth * innerHeight));
     const dpr = Math.max(0.5, Math.min(devicePixelRatio || 1, cap, budget));
     sizeKey = sizeKeyNow();
@@ -2417,10 +2420,11 @@ const immersive = (() => {
     if (busy()) restAt = now + REST;
     else if (now > restAt) return void (raf = 0);
     raf = requestAnimationFrame(frame);
-    // Bildrate je nach Preset: Leicht/Energiesparen/ruhige Party-Stellen 30, Ausgewogen höchstens 60
+    // Bildrate je nach Preset: Leicht/Ruhig/Energiesparen/ruhige Party-Stellen 30, Ausgewogen höchstens 60
     // (auf 120/144-Hz-Bildschirmen halbiert das die Arbeit), Voll so schnell wie der Bildschirm.
     // 3 ms Spielraum, damit ein leicht zu früh kommendes Bild nicht ausfällt.
-    const fpsCap = ecoOn() || lightMode() || (quietNow && cfg.partyQuietFps) ? 30 : cfg.preset === "balanced" ? 60 : 0;
+    const tr = tier();
+    const fpsCap = ecoOn() || lightMode() || tr === "calm" || (quietNow && cfg.partyQuietFps) ? 30 : tr === "full" ? 0 : 60;
     if (fpsCap && now - lastDraw < 1000 / fpsCap - 3) return;
     lastDraw = now;
     if (sizeKey !== sizeKeyNow()) sizeCanvas();
@@ -3044,11 +3048,10 @@ const immersive = (() => {
     seg.className = "m-g-seg-row is-wrap m-im-perf";
     seg.setAttribute("role", "group");
     seg.setAttribute("aria-label", t("perfQuick"));
-    for (const k of ["full", "balanced", "light", "calm"]) {
-      const b = document.createElement("button");
+    // wie im Dialog: Name, Leistungsbalken, kurze Zeile
+    for (const k of Object.keys(COST)) {
+      const b = presetFill(document.createElement("button"), k);
       b.type = "button";
-      b.dataset.preset = k;
-      b.textContent = t("preset_" + k);
       b.setAttribute("aria-pressed", String(cfg.preset === k));
       b.onclick = () => perfSet(() => setPreset(k));
       seg.append(b);
