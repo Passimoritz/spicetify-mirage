@@ -200,8 +200,11 @@ function createWordFx(lexicon, { onFire } = {}) {
     const c = document.createElement("canvas");
     c.width = c.height = 64;
     const x = c.getContext("2d"), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    // Glockenkurve statt Knick bei 35 %: der Schein läuft ohne sichtbaren Ring aus
     g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.35, "rgba(255,255,255,0.35)");
+    g.addColorStop(0.15, "rgba(255,255,255,0.72)");
+    g.addColorStop(0.35, "rgba(255,255,255,0.33)");
+    g.addColorStop(0.6, "rgba(255,255,255,0.1)");
     g.addColorStop(1, "rgba(255,255,255,0)");
     x.fillStyle = g;
     x.fillRect(0, 0, 64, 64);

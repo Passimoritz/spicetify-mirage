@@ -87,17 +87,24 @@ function createShow(glowSprite, cap) {
         if (k < 0.004) continue;
         const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];
         const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);
-        const g = ctx.createRadialGradient(x, y, 0, x, y, len);
-        g.addColorStop(0, rgba(c, k * 1.6));
-        g.addColorStop(0.4, rgba(c, k * 0.5));
-        g.addColorStop(1, rgba(c, 0));
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + Math.cos(a - wd) * len, y + Math.sin(a - wd) * len);
-        ctx.lineTo(x + Math.cos(a + wd) * len, y + Math.sin(a + wd) * len);
-        ctx.closePath();
-        ctx.fill();
+        // Kegel mit weichem Rand: ein breiter, schwacher Lichthof (nur in voller Qualität), der Kegel selbst und
+        // ein heller, schmaler Kern – wirkt wie ein Strahl im Dunst statt wie ein flaches Dreieck
+        const cone = (w, al, col) => {
+          const g = ctx.createRadialGradient(x, y, 0, x, y, len);
+          g.addColorStop(0, rgba(col, k * 1.6 * al));
+          g.addColorStop(0.4, rgba(col, k * 0.5 * al));
+          g.addColorStop(1, rgba(col, 0));
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + Math.cos(a - w) * len, y + Math.sin(a - w) * len);
+          ctx.lineTo(x + Math.cos(a + w) * len, y + Math.sin(a + w) * len);
+          ctx.closePath();
+          ctx.fill();
+        };
+        if ((st.quality ?? 2) >= 2) cone(wd * 2.2, 0.28, c);
+        cone(wd, 1, c);
+        cone(wd * 0.3, 0.55, mixW(c, 0.5));
         const r = (8 + k * 70) * dpr;
         ctx.globalAlpha = clamp(k * 5, 0, 1);
         ctx.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);
