@@ -46,6 +46,25 @@ function crowdV0(m) {
   };
 }
 
+// dasselbe über src/crowd.js (wie venue.js es nutzt): 40 Leute mit fester Neigung je Person
+function crowdV1(C) {
+  const mind = C.createCrowdMind();
+  let bar = 0;
+  return {
+    step(px, dt) {
+      const X = mind.mood(px, dt, false), D = C.dance(px, X, false);
+      if (px.beatIdx >= 0) bar = Math.floor(px.beatIdx / 4);
+      let jump = 0, up = 0;
+      for (let i = 0; i < 40; i++) {
+        const me = Math.max(0, Math.min(1, X + (i / 39 - 0.5) * 0.3)), pu = (i * 0.618) % 1, h = (Math.sin(i * 127.1 + bar * 311.7) * 43758.5453) % 1;
+        if (C.jumps(D, me, Math.abs(h), px)) jump++;
+        up += C.armsUp(D, me, pu);
+      }
+      return { X, style: D.style, jump: jump / 40, up: up / 40 };
+    },
+  };
+}
+
 const KIND_N = ["intro", "verse", "pre", "chorus", "drop", "break", "bridge", "outro"];
 async function simulate(raw, meta, opt = {}) {
   const m = await modules();
@@ -81,7 +100,7 @@ async function simulate(raw, meta, opt = {}) {
   audio.uri = "lab:" + (meta.id || Math.random());
   audio.data = d;
   await m.party.prepare({ uri: audio.uri });
-  const crowd = m.crowd?.createCrowd ? m.crowd.createCrowd() : crowdV0(m);
+  const crowd = m.crowd?.dance ? crowdV1(m.crowd) : crowdV0(m);
   const dt = 1 / 60;
   const hits = [], downs = [], flashes = [], drops = [], vizPeaks = [], frames = [];
   let vPrev = 0, vPrev2 = 0, stepMs = 0;
@@ -176,6 +195,18 @@ async function simulate(raw, meta, opt = {}) {
       a.jump += fr.jump;
       a.up += fr.up;
     }
+    // Blitze je Klasse der Wahrheit (je Minute): ruhige Teile ruhig?
+    const fl = {};
+    for (const t of flashes) {
+      const L = LABEL(labelAt(segs, t));
+      if (L) fl[L] = (fl[L] || 0) + 1;
+    }
+    const secs = {};
+    for (const fr of frames) {
+      const L = LABEL(labelAt(segs, fr.t));
+      if (L) secs[L] = (secs[L] || 0) + 0.1;
+    }
+    out.flashIn = Object.fromEntries(Object.entries(secs).filter(([, v]) => v > 4).map(([L, v]) => [L, +((((fl[L] || 0) / v) * 60).toFixed(1))]));
     out.crowd = Object.fromEntries(Object.entries(cr).map(([L, a]) => [L, { X: +(a.X / a.n).toFixed(3), jump: +(a.jump / a.n).toFixed(3), up: +(a.up / a.n).toFixed(3) }]));
   }
   // Publikum ohne Wahrheit: folgt es der Energie? (Korrelation über die Bilder) Ruhig, wenn es ruhig ist?

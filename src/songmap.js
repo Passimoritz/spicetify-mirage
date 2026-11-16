@@ -56,6 +56,42 @@ function songMap(d) {
   const bhi = pct(B, 0.95), blo = Math.min(pct(B, 0.1), bhi - 20);
   const energy = E.map((v) => clamp((v - lo) / (hi - lo), 0, 1));
   const bright = B.map((v) => clamp((v - blo) / (bhi - blo), 0, 1));
+  // --- Instrumente aus Spotifys Klangfarbe je Segment, auf den Song selbst bezogen (Rang 0..1):
+  // Kick = harter Einsatz, dunkel, lauter als davor · Snare/Clap = harter Einsatz, rauschig ·
+  // Hi-Hat/Becken = sehr hell und eher leise · Melodie = klare Tonhöhe (ein Ton dominiert die 12 Tonklassen)
+  const rank = (vals) => {
+    const sorted = Float32Array.from(vals).sort();
+    return (v) => {
+      let a = 0, b = sorted.length;
+      while (a < b) {
+        const mid = (a + b) >> 1;
+        if (sorted[mid] < v) a = mid + 1;
+        else b = mid;
+      }
+      return sorted.length ? a / sorted.length : 0;
+    };
+  };
+  const rA = rank(segs.map((x) => x.k || 0)), rF = rank(segs.map((x) => x.f || 0)), rB = rank(segs.map((x) => x.b || 0));
+  const kicks = [], snares = [], hats = [];
+  const tonal = new Float32Array(n), pc = new Uint8Array(n);
+  segs.forEach((x, i) => {
+    const rise = x.l - (segs[i - 1]?.l ?? -60), a = rA(x.k || 0), f = rF(x.f || 0), b = rB(x.b || 0);
+    const loudEnough = x.l > hi - 16;
+    if (loudEnough && (a > 0.72 || rise > 6) && b < 0.5) kicks.push(x.t);
+    else if (loudEnough && a > 0.65 && f > 0.62 && b >= 0.4) snares.push(x.t);
+    if (b > 0.82 && rise < 4 && x.l > hi - 22) hats.push(x.t);
+    if (x.p?.length === 12) {
+      let sum = 0, mx = 0, arg = 0;
+      x.p.forEach((v, k) => {
+        sum += v;
+        if (v > mx) [mx, arg] = [v, k];
+      });
+      const bin = Math.min(n - 1, Math.floor(x.t / STEP));
+      const clarity = sum ? clamp(((mx / sum) * 12 - 1.6) / 2.4, 0, 1) : 0;
+      if (clarity >= tonal[bin]) [tonal[bin], pc[bin]] = [clarity, arg];
+    }
+  });
+  for (let i = 1; i < n; i++) if (!tonal[i]) [tonal[i], pc[i]] = [tonal[i - 1] * 0.9, pc[i - 1]];
   // Drops, wie ein Mensch sie hört: davor ein Stück deutlich ruhiger (Break, Aufbau, Pause), danach ein Plateau,
   // das hoch BLEIBT – nicht nur ein lauter Schlag. Geprüft auf jeder Eins, die stärksten zuerst, höchstens einer
   // je 12 s. (Früher reichte ein Tal von einer Sekunde: bei Songs mit wechselnder Lautheit – Strophe mit Pausen,
@@ -67,7 +103,10 @@ function songMap(d) {
     return b > a ? (cs[b] - cs[a]) / (b - a) : 0;
   };
   const beats = d.beats || [];
-  const ones = d.bars?.length >= 4 ? d.bars.map((b) => b.t) : beats.filter((_, i) => i % 4 === 0).map((b) => b.t);
+  // Die Eins prüfen: Takte der Analyse liegen manchmal einen Schlag daneben (Spotify selten, Schätzungen oft).
+  // Kick und Harmoniewechsel fallen auf die Eins, die Snare auf 2 und 4 – zeigt das deutlich woandershin, gilt das.
+  const ones = checkBars(d, beats, kicks, snares);
+  const bars = ones.map((t) => ({ t }));
   // Phrasen: neue Teile beginnen fast immer im 4-Takt-Raster (4, 8, 16 Takte). Welche Eins zählt als „1“?
   // Die Lage, an der sich Energie und Klangfarbe im Mittel am stärksten ändern. phrase.conf > 1.25 = deutlich.
   const phrase = phraseGrid(ones, avg, B, n);
@@ -106,42 +145,6 @@ function songMap(d) {
     if (near != null && Math.abs(near - t) < (b1 - b0 || 0.5) * 0.35) t = near;
     if (!drops.length || t - drops[drops.length - 1] > 8) drops.push(t);
   }
-  // --- Instrumente aus Spotifys Klangfarbe je Segment, auf den Song selbst bezogen (Rang 0..1):
-  // Kick = harter Einsatz, dunkel, lauter als davor · Snare/Clap = harter Einsatz, rauschig ·
-  // Hi-Hat/Becken = sehr hell und eher leise · Melodie = klare Tonhöhe (ein Ton dominiert die 12 Tonklassen)
-  const rank = (vals) => {
-    const sorted = Float32Array.from(vals).sort();
-    return (v) => {
-      let a = 0, b = sorted.length;
-      while (a < b) {
-        const mid = (a + b) >> 1;
-        if (sorted[mid] < v) a = mid + 1;
-        else b = mid;
-      }
-      return sorted.length ? a / sorted.length : 0;
-    };
-  };
-  const rA = rank(segs.map((x) => x.k || 0)), rF = rank(segs.map((x) => x.f || 0)), rB = rank(segs.map((x) => x.b || 0));
-  const kicks = [], snares = [], hats = [];
-  const tonal = new Float32Array(n), pc = new Uint8Array(n);
-  segs.forEach((x, i) => {
-    const rise = x.l - (segs[i - 1]?.l ?? -60), a = rA(x.k || 0), f = rF(x.f || 0), b = rB(x.b || 0);
-    const loudEnough = x.l > hi - 16;
-    if (loudEnough && (a > 0.72 || rise > 6) && b < 0.5) kicks.push(x.t);
-    else if (loudEnough && a > 0.65 && f > 0.62 && b >= 0.4) snares.push(x.t);
-    if (b > 0.82 && rise < 4 && x.l > hi - 22) hats.push(x.t);
-    if (x.p?.length === 12) {
-      let sum = 0, mx = 0, arg = 0;
-      x.p.forEach((v, k) => {
-        sum += v;
-        if (v > mx) [mx, arg] = [v, k];
-      });
-      const bin = Math.min(n - 1, Math.floor(x.t / STEP));
-      const clarity = sum ? clamp(((mx / sum) * 12 - 1.6) / 2.4, 0, 1) : 0;
-      if (clarity >= tonal[bin]) [tonal[bin], pc[bin]] = [clarity, arg];
-    }
-  });
-  for (let i = 1; i < n; i++) if (!tonal[i]) [tonal[i], pc[i]] = [tonal[i - 1] * 0.9, pc[i - 1]];
   // gehaltene Töne: dieselbe Tonklasse klar hörbar über mindestens 1,25 s (lange Note am Zeilenende,
   // ein Belting im Refrain) – die Lichtregie setzt darauf einen Verfolger-Spot
   const holds = [];
@@ -154,10 +157,68 @@ function songMap(d) {
     if (ok && start < 0) start = i;
   }
   // „dynamisch“ = der Song hat wirklich leise Stellen (Breaks gibt es nur dann)
-  const m = { energy, bright, drops, phrase, ones, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc, holds };
+  const m = { energy, bright, drops, phrase, ones, bars, dynamic: hi - p10 > 4 || energy.some((v) => v < 0.2), sections: d.sections || [], kicks, snares, hats, tonal, pc, holds };
   mapCache.set(d, m);
   return m;
 }
+// Taktanfänge (Sekunden): die der Analyse – oder, wenn Kick, Snare und Harmoniewechsel klar eine andere Lage im
+// 4er-Takt zeigen, jeder vierte Schlag ab dieser. Nur im geraden Takt (fast alle Takte 4 Schläge lang).
+// Testlabor (Harmonix, Takte geschätzt): richtige Eins 48 % → 60 %; mit richtigen Takten bleibt sie in 99 % stehen.
+const BAR_MARGIN = 0.4;
+function checkBars(d, beats, kicks, snares) {
+  const given = (d.bars || []).map((b) => b.t), nb = beats.length;
+  const grid = (p) => beats.filter((_, i) => i % 4 === p).map((b) => b.t);
+  if (nb < 32) return given.length >= 4 ? given : grid(0);
+  // Lage der Analyse-Takte im Schlagraster (Mehrheit) und ob sie gerade sind
+  const idx = given.map((t) => seek(beats, t + 0.03, "t")).filter((i) => i >= 0);
+  const vote = [0, 0, 0, 0];
+  let four = 0;
+  idx.forEach((i, k) => {
+    vote[i % 4]++;
+    if (k && idx[k] - idx[k - 1] === 4) four++;
+  });
+  const ap = given.length >= 4 ? vote.indexOf(Math.max(...vote)) : 0;
+  if (given.length >= 4 && four < (idx.length - 1) * 0.8) return given;
+  // je Schlag: Kick, Snare, Harmoniewechsel (Tonklassen der Segmente kurz davor gegen kurz danach)
+  const F = { k: new Float32Array(nb), s: new Float32Array(nb), c: new Float32Array(nb) };
+  const segs = d.segs || [];
+  let ki = 0, si = 0, gi = 0;
+  for (let i = 0; i < nb; i++) {
+    const t = beats[i].t;
+    while (ki < kicks.length && kicks[ki] < t - 0.07) ki++;
+    while (si < snares.length && snares[si] < t - 0.07) si++;
+    F.k[i] = ki < kicks.length && kicks[ki] < t + 0.07 ? 1 : 0;
+    F.s[i] = si < snares.length && snares[si] < t + 0.07 ? 1 : 0;
+    while (gi < segs.length - 1 && segs[gi + 1].t <= t + 0.03) gi++;
+    let ab = 0, aa = 0, bb = 0;
+    for (let c = 0; c < 12; c++) {
+      let a = 0, b = 0;
+      for (let j = Math.max(0, gi - 6); j < gi; j++) a += segs[j].p?.[c] || 0;
+      for (let j = gi; j < Math.min(segs.length, gi + 6); j++) b += segs[j].p?.[c] || 0;
+      [ab, aa, bb] = [ab + a * b, aa + a * a, bb + b * b];
+    }
+    F.c[i] = aa && bb ? 1 - ab / Math.sqrt(aa * bb) : 0;
+  }
+  const z = (a) => {
+    let m = 0, v = 0;
+    for (const x of a) m += x;
+    m /= a.length;
+    for (const x of a) v += (x - m) ** 2;
+    const sd = Math.sqrt(v / a.length) || 1;
+    return (i) => (a[i] - m) / sd;
+  };
+  const zk = z(F.k), zs = z(F.s), zc = z(F.c);
+  const sc = [0, 0, 0, 0], cnt = [0, 0, 0, 0];
+  for (let i = 0; i < nb; i++) {
+    sc[i % 4] += 0.5 * zk(i) + zc(i) - 0.5 * zs(i);
+    cnt[i % 4]++;
+  }
+  const m = sc.map((v, i) => v / cnt[i]), best = m.indexOf(Math.max(...m));
+  const second = Math.max(...m.filter((_, i) => i !== best));
+  if (given.length >= 4 && (best === ap || m[best] - second < BAR_MARGIN)) return given;
+  return grid(best);
+}
+
 // Phrasen-Raster: Index (0..3) der Eins, mit der 4-Takt-Phrasen beginnen, und wie deutlich (Verhältnis zum Mittel)
 function phraseGrid(ones, avg, B, n) {
   const nb = ones.length;

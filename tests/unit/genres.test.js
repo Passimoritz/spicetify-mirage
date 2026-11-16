@@ -242,8 +242,10 @@ for (const [k, o] of Object.entries(LOOKS)) {
 const venue = src("venue.js"), show = src("show.js");
 const table = (text, name) => Function(`return (${text.slice(text.indexOf(`const ${name} = {`) + `const ${name} = `.length, text.indexOf("\n  };", text.indexOf(`const ${name} = {`)) + 4)});`)();
 const set = (text, name) => new Set(JSON.parse(text.match(new RegExp(`const ${name} = new Set\\((\\[[^\\]]*\\])\\)`))[1]));
-const VEN = table(venue, "VENUES"), AUTO = kin(table(venue, "AUTO_VENUE"), 1), MOVES = kin(table(venue, "MOVES"), 2);
-const moves = new Set(Object.values(table(venue, "MOVES")));
+const VEN = table(venue, "VENUES"), AUTO = kin(table(venue, "AUTO_VENUE"), 1);
+// Bewegungen des Publikums: crowd.js (dort schon über die Verwandten ergänzt); bekannt = was crowd.js tanzen kann
+const { MOVES, DANCES } = load("crowd.js");
+const moves = new Set(DANCES);
 for (const k of all) {
   assert.ok(VEN[AUTO[k]], `${k}: Ort ${AUTO[k]} unbekannt`);
   assert.ok(moves.has(MOVES[k]), `${k}: Bewegung ${MOVES[k]} unbekannt`);

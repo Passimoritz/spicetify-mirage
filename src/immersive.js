@@ -1860,6 +1860,8 @@ const immersive = (() => {
         // Lichtregie (director.js)
         mt: px.mt, mb: px.mb, wipe: px.wipe, wdir: px.wdir, pulse: px.pulse, lift: px.lift, wall: px.wall, vox: px.vox, swell: px.swell,
         haze: px.haze, pump: px.pump, boom: px.boom, scan: px.scan, fxMul: px.fxMul,
+        // Publikum (crowd.js): Teil des Songs und Spannung vor dem Drop
+        kind: px.kind, tension: px.tension,
       },
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),

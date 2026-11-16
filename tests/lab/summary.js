@@ -31,6 +31,7 @@ for (const [g, a] of Object.entries(groups).sort()) {
     introPeak: mean(a, (r) => r.peakIn?.intro), flowErr: mean(a, (r) => r.flowErr), flowOk: share(a.filter((r) => Number.isFinite(r.flowErr)), (r) => r.flowErr <= 2.5),
     dropsPerMin: mean(a, (r) => (r.drops / r.dur) * 60), dropGood: mean(a, (r) => (r.dropGood + r.dropBad ? r.dropGood / (r.dropGood + r.dropBad) : NaN)), dropRecall: mean(a, (r) => r.dropRecall ?? NaN),
     flashMax: Math.max(...a.map((r) => r.flashMax1s)), flashPerMin: mean(a, (r) => r.flashPerMin),
+    flashIntro: mean(a, (r) => r.flashIn?.intro), flashVerse: mean(a, (r) => r.flashIn?.verse), flashChorus: mean(a, (r) => r.flashIn?.chorus), flashBreak: mean(a, (r) => r.flashIn?.break),
     crowdCorr: mean(a, (r) => r.crowdCorr), jumpCalm: mean(a, (r) => r.jumpWhenCalm), jumpLoud: mean(a, (r) => r.jumpWhenLoud),
     crowdChorusX: mean(a, (r) => crowdOf(r, "chorus", "X")), crowdVerseX: mean(a, (r) => crowdOf(r, "verse", "X")), crowdIntroX: mean(a, (r) => crowdOf(r, "intro", "X")),
     jumpIntro: mean(a, (r) => crowdOf(r, "intro", "jump")), jumpVerse: mean(a, (r) => crowdOf(r, "verse", "jump")), jumpChorus: mean(a, (r) => crowdOf(r, "chorus", "jump")),
@@ -41,7 +42,7 @@ for (const [g, a] of Object.entries(groups).sort()) {
     moods: Object.entries(moods).sort((x, y) => y[1] - x[1]).slice(0, 3).map(([k, v]) => k + " " + Math.round((v / a.length) * 100) + "%").join(", "),
   };
 }
-const cols = ["n", "beatF", "downF", "vizF", "beatOff", "anaBeatF", "anaDownF", "boundF3", "chorusPeak", "versePeak", "introPeak", "flowOk", "flowErr", "dropsPerMin", "dropGood", "dropRecall", "flashMax", "flashPerMin", "crowdCorr", "jumpCalm", "jumpLoud", "crowdIntroX", "crowdVerseX", "crowdChorusX", "jumpVerse", "jumpChorus", "famHit", "famSoundHit", "guitar", "piano", "planMs", "stepUs"];
+const cols = ["n", "beatF", "downF", "vizF", "beatOff", "anaBeatF", "anaDownF", "boundF3", "chorusPeak", "versePeak", "introPeak", "flowOk", "flowErr", "dropsPerMin", "dropGood", "dropRecall", "flashMax", "flashPerMin", "flashIntro", "flashVerse", "flashChorus", "flashBreak", "crowdCorr", "jumpCalm", "jumpLoud", "crowdIntroX", "crowdVerseX", "crowdChorusX", "jumpVerse", "jumpChorus", "famHit", "famSoundHit", "guitar", "piano", "planMs", "stepUs"];
 const fmt = (v) => (typeof v === "number" ? (Number.isNaN(v) ? "-" : Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : v ?? "-");
 const show = (args.includes("--cols") ? opt("--cols").split(",") : cols);
 console.log(["group".padEnd(28), ...show.map((c) => c.slice(0, 9).padStart(9))].join(" "));

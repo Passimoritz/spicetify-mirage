@@ -244,7 +244,8 @@ function planSong(d, key, o = {}) {
   const gaps = beats.slice(1, 200).map((b, i) => b.t - beats[i].t).filter((g) => g > 0.2 && g < 2).sort((a, b) => a - b);
   const beat = gaps.length ? gaps[gaps.length >> 1] : 60 / (d.bpm || 120), bar = beat * 4;
   // Taktanfänge: Spotifys Takte, sonst jeder vierte Schlag
-  const bars = d.bars?.length >= 4 ? d.bars.map((b) => b.t) : beats.filter((_, i) => i % 4 === 0).map((b) => b.t);
+  // (geprüft: liegt die Eins der Analyse klar daneben, korrigiert die Song-Karte sie)
+  const bars = M.ones;
   const end = Math.max(M.energy.length * STEP, beats[beats.length - 1].t + beat);
   const mean = (a, b) => {
     let s = 0, n = 0;

@@ -389,8 +389,10 @@ const party = (() => {
         const per = Math.max(0.2, (d.beats[bi + 1]?.t ?? d.beats[bi].t + 60 / (info.bpm || 120)) - d.beats[bi].t);
         beatPhase = clamp(since / per, 0, 1);
         beatIdx = bi;
-        const ba = d.bars?.length ? seek(d.bars, sec, "t") : -1;
-        const barStart = ba >= 0 ? seek(d.beats, d.bars[ba].t + 0.05, "t") : bi - (bi % 4);
+        // Taktanfänge der Song-Karte: die der Analyse, außer die Eins liegt dort klar daneben (songmap.js)
+        const bars = d.segs?.length ? songMap(d).bars : d.bars || [];
+        const ba = bars.length ? seek(bars, sec, "t") : -1;
+        const barStart = ba >= 0 ? seek(d.beats, bars[ba].t + 0.05, "t") : bi - (bi % 4);
         inBar = (((bi - barStart) % 4) + 4) % 4;
         // sehr schnelle Songs zählen in halbem Tempo, sonst wird es Flackern statt Groove
         const half = info.bpm > 150;
