@@ -29,7 +29,9 @@ const mid = (x) => (x.t0 + x.t1) / 2 + 0.01;
 // ---- Tanzsong mit trauriger Bridge: die Bridge fühlt sich anders an und sieht anders aus als der Drop
 {
   const d = shaped("dancesad"), plan = planSong(d, "house");
-  const sadPart = plan.parts.find((p) => p.kind === "break" || p.kind === "bridge"), drop = parts(plan, "drop")[1];
+  // (der Höhepunkt nach der Bridge – ein Refrain nach der Strophe zählt nicht mehr als Drop, nur der nach der Pause)
+  const sadPart = plan.parts.find((p) => p.kind === "break" || p.kind === "bridge");
+  const drop = plan.parts.find((p) => p.t0 > sadPart.t0 && (p.kind === "drop" || p.kind === "chorus"));
   assert.ok(sadPart && ["melancholic", "sad", "tender", "dreamy"].includes(sadPart.emo.name), "Bridge: " + sadPart?.emo.name);
   assert.ok(["euphoric", "happy", "triumphant"].includes(drop.emo.name), "Drop: " + drop.emo.name);
   assert.ok(sadPart.emo.v < drop.emo.v - 0.5, "Bridge deutlich trauriger als der Drop");

@@ -5,6 +5,7 @@
 import { createShow } from "./show.js";
 import { createFlashCap } from "./flashcap.js";
 import { kin, kinSet } from "./styles.js";
+import { createCrowdMind, dance, jumps, armsUp } from "./crowd.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -874,20 +875,8 @@ function createVenue(makeCanvas) {
   // WAS sie tun, wählt eine träge Stimmung aus dem Song (Energiekurve, Aufbau, Drop, Break) und das Genre:
   // Rave/Techno springen und pumpen, Rock/Metal bangen, Pop klatscht, Latin/Afro wippen, Reggae skankt,
   // Hip-Hop nickt, ruhige Musik wiegt mit Handylicht und Feuerzeug.
-  const MOVES = {
-    rave: "jump", trance: "wave", hardstyle: "jump", dnb: "jump", techno: "pump", house: "bounce",
-    rock: "bang", metal: "bang", punk: "jump", bass: "nod", pop: "clap", kpop: "clap", disco: "clap", country: "clap",
-    latin: "bounce", afro: "bounce", reggae: "skank", chill: "sway", jazz: "sway", classical: "sway",
-    edm: "jump", deephouse: "bounce", techhouse: "pump", psytrance: "jump", dubstep: "bang", garage: "bounce", eurodance: "jump",
-    melodictechno: "pump", hardtechno: "pump", futurebass: "jump", electroswing: "bounce", breakbeat: "bounce", boombap: "nod",
-    dancehall: "bounce", cloudrap: "sway", hardrock: "bang", postrock: "sway", ska: "skank", emo: "jump", jpop: "clap", musical: "clap",
-    christmas: "sway", celtic: "clap", balkan: "jump", amapiano: "bounce", lofi: "sway", neoclassical: "sway", acoustic: "sway",
-    synthwave: "nod", hyperpop: "jump", trap: "bounce", drill: "nod", phonk: "pump", rnb: "sway", soul: "clap", indie: "bounce",
-    alternative: "bang", blues: "sway", schlager: "clap", ballad: "sway", gospel: "clap", reggaeton: "bounce", salsa: "bounce",
-    brazil: "bounce", flamenco: "clap", bollywood: "bounce", arabic: "clap", ambient: "sway", cinematic: "sway",
-  };
-  kin(MOVES, 2);
-  const mood = { x: 0 };
+  // Was die Menge tut (Stimmung, Bewegung je Genre und Teil des Songs, wer springt): crowd.js
+  const mind = createCrowdMind();
   // Lichtermeer: bei Balladen und ruhigen, getragenen Songs halten im Refrain viele Handys und Feuerzeuge hoch
   // und schwenken sie gemeinsam langsam hin und her (über zwei Takte)
   const SEA = new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);
@@ -897,13 +886,6 @@ function createVenue(makeCanvas) {
     const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp((px.energy - 0.32) * 2.2, 0, 1) : 0;
     sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));
     return sea.a;
-  }
-  function crowdMood(px, dt, hype) {
-    // px.crowd = Stimmung des Teils (Lichtregie): in einer traurigen Bridge wiegt sich die Menge eher, als dass sie springt
-    const target = clamp((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);
-    mood.x += (target - mood.x) * (1 - Math.exp(-dt * (target > mood.x ? 3 : 0.8)));
-    if (px.dropHit) mood.x = Math.max(mood.x, 0.9);
-    return mood.x;
   }
   // immer gleiche Zufallszahl je Person und Takt: wer in diesem Takt springt, steht fest (kein Flackern)
   const hash = (a, b) => {
@@ -1168,8 +1150,8 @@ function createVenue(makeCanvas) {
       crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, pal));
     }
     spriteBudget = 40;
-    const X = crowdMood(px, dt, st.hype), t = st.t;
-    const style = v.seated ? "sway" : MOVES[px.key] || "clap";
+    const X = mind.mood(px, dt, st.hype), t = st.t;
+    const D = dance(px, X, v.seated), style = D.style;
     const SEAa = seaLevel(px, dt, st);
     // Schlagphase (0 = Schlag): schnelle Songs bewegen sich im halben Tempo
     const half = st.bpm > 150;
@@ -1189,7 +1171,7 @@ function createVenue(makeCanvas) {
     const bar = Math.floor(beatN / 4), inBar = px.inBar ?? beatN & 3;
     const beatPos = beatN + phi;
     // Anspannung vor dem Drop: alle gehen leicht in die Knie und die Hände kommen schon halb hoch
-    const build = clamp(px.build || 0, 0, 1);
+    const build = D.crouch;
     // La-Ola: in der Spitze etwa alle 20 s eine Welle über zwei Takte
     if (X > 0.65 && t > crowd.nextWave && crowd.wave < 0) [crowd.wave, crowd.nextWave] = [t, t + 20 + Math.random() * 10];
     const waveX = crowd.wave >= 0 ? ((t - crowd.wave) / ((8 * 60) / st.bpm)) * vw * 1.3 - vw * 0.15 : -1e9;
@@ -1289,7 +1271,7 @@ function createVenue(makeCanvas) {
       // Sprungs fest – ändert sich die Stimmung mitten in der Luft, wird der Sprung trotzdem zu Ende gesprungen
       if (p.cyc !== cycN) {
         p.cyc = cycN;
-        p.jmp = ((style === "jump" || style === "bounce" || style === "pump") && me > 0.72 && hash(p.id, bar) < 0.45 + (me - 0.72) * 2) || (px.drop > 0.6 && me > 0.6);
+        p.jmp = jumps(D, me, hash(p.id, bar), px);
       }
       let lift = wave * (14 + me * 18) * s1;
       // Sprung landet auf dem Schlag, danach kurz in die Knie (Landung federt)
@@ -1329,7 +1311,8 @@ function createVenue(makeCanvas) {
       const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
       // „Hands up“: im Refrain gehen (fast) alle Hände gleichzeitig hoch – beide Arme, als großes V
       const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;
-      let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || (me > 0.55 && p.up < me + 0.1 && style !== "sway" && style !== "nod") ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : style === "clap" && me > 0.3 ? 0.75 : 0;
+      const au = armsUp(D, me, p.up);
+      let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || au === 1 ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : au;
       if (!v.seated && build > 0.2 && me > 0.4 && p.up < 0.6) wantUp = Math.max(wantUp, 0.55 * build);
       p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
       const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;

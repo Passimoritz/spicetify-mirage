@@ -153,4 +153,4 @@ const beat = (() => {
   return { sync, read, get level() { return on ? read(now()) : 0; } };
 })();
 
-export { audio, loadAudio, warmAudio, beat, bands };
+export { audio, loadAudio, warmAudio, beat, bands, shape };
