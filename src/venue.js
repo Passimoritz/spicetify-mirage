@@ -7,6 +7,7 @@ import { createFlashCap } from "./flashcap.js";
 import { kin, kinSet } from "./styles.js";
 import { createCrowdMind, dance, jumps, armsUp } from "./crowd.js";
 import { createStageFx } from "./stagefx.js";
+import { createInstFx } from "./instfx.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -39,6 +40,8 @@ function createVenue(makeCanvas) {
   const show = createShow(glowSprite, flashCap);
   // Szenarien (scenarios.js → stagefx.js): Bühnenbilder auf gesungene Wörter und Momente der Musik
   const sfx = createStageFx(glowSprite, flashCap);
+  // Bilder der Klang-Detektoren (weitere Instrumente und Soundeffekte, instfx.js)
+  const ifx = createInstFx(glowSprite);
   // ein Wort wie „jump“ lässt die Menge springen (0..1, gilt für dieses Bild)
   let wordJump = 0;
   let disco = null, tunnel = [];
@@ -1519,7 +1522,10 @@ function createVenue(makeCanvas) {
       show.drawRig(ctx, st, v, st.px, st.pal, st.dpr);
       drawDecor(ctx, v, st.px, st.pal, rgba, st.dpr, st);
     }
-    if (st.inst) show.drawInst(ctx, st, st.px, st.pal, st.dpr);
+    if (st.inst) {
+      show.drawInst(ctx, st, st.px, st.pal, st.dpr);
+      ifx.draw(ctx, st);
+    }
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
     wordJump = 0;
     if (st.stage && (st.px.scn || st.cues?.length)) {

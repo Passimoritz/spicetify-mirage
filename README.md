@@ -174,7 +174,7 @@ Party mode listens to the whole song **before** it plays. It knows where the cho
 - **318 music styles** – techno gets laser scanners, house a disco ball, rock hard spots, ballads a sea of phone lights. Mirage picks the style by itself, or you choose it.
 - **17 places** – club, warehouse, festival, stadium, beach, living room, rooftop, cathedral, jazz bar, forest stage, concert hall, cellar, outer space, neon street, pub, ski hut and desert night.
 - **A crowd that dances along** – jumps on the beat, hands up in the chorus, lighters in ballads.
-- **Instruments get a moment** – when the song credits name a trumpet, sax, guitar, piano, strings, choir and a few more, that instrument gets its own effect.
+- **Instruments get a moment** – when the song credits name a trumpet, sax, guitar, piano, strings, choir and a few more, that instrument gets its own effect. Mirage also listens to the song's 30-second preview (analysed, never played): kick, 808, hi-hats, guitars, piano, strings, pads and sound effects like risers, impacts, stops or sirens get their own light – only when Mirage is sure.
 - **Five strengths** from *Soft* to *Insane*. The picture never zooms or moves the camera.
 
 <p align="center"><img src="assets/shots/venues.jpg" alt="Six of the places: club, warehouse, festival, stadium, beach and living room" width="100%"></p>

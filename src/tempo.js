@@ -7,6 +7,8 @@
 // Die Lage des Schlags in der Hörprobe hilft nicht weiter (wo die Probe im Song liegt, ist unbekannt) – nur das Tempo.
 // Dazu ein paar Klangzahlen für die Genre-Schätzung: wie dicht die Einsätze sind, wie viel Bass, wie hell, wie laut.
 
+import { createFrameSink, palette, detectFx } from "./sonic.js";
+
 const HOP = 256, N = 1024;
 
 // kleine Radix-2-FFT (in place), nur für N = 1024
@@ -48,7 +50,8 @@ function fft(re, im) {
 
 // Einsatz-Kurve: positiver Zuwachs der log-Beträge je Frequenzband (Mel-ähnlich gruppiert), dazu Klangzahlen.
 // pause(): optional, wird alle paar hundert Bilder abgewartet – im Browser bleibt so kein Bild hängen.
-async function onsetEnvelope(pcm, sr, pause) {
+// sink: optional (sonic.js createFrameSink) – bekommt je Bild das Spektrum, für Instrumente und Effekte
+async function onsetEnvelope(pcm, sr, pause, sink) {
   const frames = Math.max(0, Math.floor((pcm.length - N) / HOP));
   const env = new Float32Array(frames), low = new Float32Array(frames);
   // 24 Bänder, logarithmisch von 40 Hz bis 8 kHz
@@ -88,6 +91,7 @@ async function onsetEnvelope(pcm, sr, pause) {
       if (b < 6) lowE += m;
     }
     prev.set(cur);
+    if (sink) sink.push(re, im, flux, fluxLow);
     env[f] = flux;
     low[f] = fluxLow;
   }
@@ -196,9 +200,22 @@ function tempoFromEnvelope(env, fps, hint = 0, opt = {}) {
 
 // Ganze Kette auf Mono-Samples: Tempo und Klangzahlen. Für die Genre-Schätzung zusätzlich die Einsatzdichte
 // (Einsätze je Sekunde – Metal, Drum & Bass hoch; Balladen, Ambient niedrig).
-async function analyzePcm(pcm, sr, hint = 0, pause) {
-  const { env, low, fps, feats } = await onsetEnvelope(pcm, sr, pause);
+// sonic: zusätzlich Instrumente und Effekte der Hörprobe (sonic.js) – Palette, Ereignisse, Lautheit fürs Wiederfinden im Song
+async function analyzePcm(pcm, sr, hint = 0, pause, sonic = false) {
+  const sink = sonic ? createFrameSink(sr, N) : null;
+  const { env, low, fps, feats } = await onsetEnvelope(pcm, sr, pause, sink);
   const t = tempoFromEnvelope(env, fps, hint);
+  let snd = null;
+  if (sink) {
+    const G = sink.grid(), bpm = t?.bpm || 0;
+    const pal = palette(G, bpm), events = detectFx(G, { bpm });
+    // je Effekt die höchste Sicherheit in der Hörprobe (Palette des Songs)
+    const fx = {};
+    for (const e of events) fx[e.k] = Math.max(fx[e.k] || 0, e.c);
+    // Raster ohne die Einzelbilder behalten (klein): fürs Wiederfinden der Hörprobe im Song (alignPreview)
+    delete G.frames;
+    snd = { inst: pal.conf, feats: pal.feats, fx, events, grid: { r: G.r, n: G.n, loud: G.loud } };
+  }
   // Einsatzdichte: Spitzen der Kurve über ihrem Mittel + 1 Standardabweichung, mindestens 70 ms auseinander
   let m = 0, s = 0, peaks = 0, last = -99;
   for (const v of env) m += v;
@@ -212,6 +229,7 @@ async function analyzePcm(pcm, sr, hint = 0, pause) {
   return {
     bpm: t?.bpm || 0, conf: t?.conf || 0, pulse: t?.pulse || 0, alt: t?.alt || 0,
     feats: { ...feats, density: env.length ? peaks / (env.length / fps) : 0, kick: allSum ? lowSum / allSum : 0 },
+    sonic: snd,
   };
 }
 

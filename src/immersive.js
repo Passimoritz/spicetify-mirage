@@ -99,9 +99,42 @@ const immersive = (() => {
   const scen = createScenarios();
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   // Fehlersuche (localStorage „mirage:debug“ = 1): eine Bühnen-Antwort von Hand auslösen, z. B. __mirageStageWord("fire")
+  // … und ein Instrument oder einen Soundeffekt der Klang-Detektoren, z. B. __mirageSonic("riser"); dazu eine kleine
+  // Liste, was gerade erkannt ist (nur mit diesem Schalter – keine Anzeige für alle)
+  let sonicDbg = false;
   try {
-    if (localStorage.getItem("mirage:debug") === "1") window.__mirageStageWord = (c) => stageWord(c);
+    if (localStorage.getItem("mirage:debug") === "1") {
+      window.__mirageStageWord = (c) => stageWord(c);
+      window.__mirageSonic = (k) => instruments.force(k, (PLR.getProgress() || 0) / 1000);
+      sonicDbg = true;
+    }
   } catch {}
+  let sonicBox = null, sonicAt = 0;
+  function sonicLegend(now) {
+    if (!sonicDbg || now - sonicAt < 250) return;
+    sonicAt = now;
+    if (!curInst) {
+      if (sonicBox) sonicBox.hidden = true;
+      return;
+    }
+    if (!sonicBox) {
+      sonicBox = document.createElement("div");
+      sonicBox.className = "mirage-sonic-debug";
+      sonicBox.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:9;font:11px/1.35 monospace;color:#fff;background:rgba(0,0,0,.55);padding:4px 6px;border-radius:4px;pointer-events:none;white-space:pre";
+      el.append(sonicBox);
+    }
+    sonicBox.hidden = false;
+    const on = Object.entries(curInst).filter(([, v]) => typeof v === "number" && v > 0.05).map(([k, v]) => `${k} ${v.toFixed(2)}`);
+    const fx = (curInst.sfx || []).map((f) => `${f.k} ${f.e.toFixed(2)}`);
+    const pv = instruments.debugInfo();
+    const pal = pv.pv ? Object.entries(pv.pv.inst).filter(([, c]) => c > 0.3).map(([k, c]) => `${k}:${c}`).join(" ") : "–";
+    const pfx = pv.pv ? Object.entries(pv.pv.fx).map(([k, c]) => `${k}:${c}`).join(" ") : "–";
+    sonicBox.textContent = `Klang [${curInst.src || "–"}${pv.al ? ` · Probe @${pv.al.off}s r=${pv.al.r}` : ""}]
+Instr: ${on.join(", ") || "–"}
+FX: ${fx.join(", ") || "–"}
+Palette: ${pal}
+Probe-FX: ${pfx}`;
+  }
   function stageWord(c) {
     const px = wfxGeo?.px;
     if (!px || !cfg.partyWords) return;
@@ -1740,9 +1773,10 @@ const immersive = (() => {
     const mood = px ? null : party.mood(sec, playing);
     if (mood) V.height *= 0.86 + 0.18 * mood.I;
     if (px) partyExtras(px, now, dt, R, dpr);
-    curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt) : null;
+    curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt, px, lightMode()) : null;
     // Gitarrenblitze brauchen die Freigabe der Blitz-Schranke auch in leisen Stellen
     party.stageFlash = (curInst?.guitar || 0) > 0.3;
+    if (sonicDbg) sonicLegend(now);
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
     // erst nach 3 s Ruhe und nie in den ersten 8 s eines Songs: sonst fiel genau der Übergang (leises Intro)
     // auf 30 Bilder/s, und kurze leise Takte schalteten ständig hin und her – das wirkte wie Ruckeln

@@ -4,6 +4,8 @@ import { audio } from "./audio.js";
 import { currentItem } from "./player.js";
 import { KINDS, kindOf } from "./instrkinds.js";
 import { heardMoments } from "./instrsound.js";
+import { previewSound } from "./sources.js";
+import { createSonicRuntime } from "./sonicrt.js";
 
 /* ---------------------------------------------------------------- Instrumente */
 // OB ein Instrument auf der Aufnahme spielt, steht in den Credits des Songs (Spotify, sonst MusicBrainz
@@ -171,13 +173,22 @@ function heardOf(d) {
   return heard.get(d);
 }
 
-const cur = { uri: "", kinds: new Set(), asked: false, lv: Object.fromEntries(KINDS.map((k) => [k, 0])) };
-function at(sec, dt) {
+// Klang-Detektoren (sonic.js, sonicrt.js): weitere Instrumente und Soundeffekte aus Spotifys Analyse und der Hörprobe
+const sonic = createSonicRuntime();
+const cur = { uri: "", kinds: new Set(), asked: false, pv: null, lv: Object.fromEntries(KINDS.map((k) => [k, 0])) };
+// px: Zustand der Party (Teil, Energie, Aufbau, Drop) · lite: Leicht-Modus (weniger zugleich)
+function at(sec, dt, px = null, lite = false) {
   const uri = currentItem()?.uri || "";
   if (uri !== cur.uri) {
     cur.uri = uri;
     cur.kinds = new Set();
     cur.asked = false;
+    cur.pv = null;
+    // Hörprobe (dieselbe, die Tempo und Genre schon nutzen – einmal je Song, nie abgespielt)
+    if (cfg.partyOnline && currentItem())
+      previewSound(currentItem())
+        .then((r) => cur.uri === uri && (cur.pv = r?.sonic || null))
+        .catch(() => {});
     credited(uri).then((k) => {
       if (cur.uri !== uri) return;
       cur.kinds = k;
@@ -207,7 +218,14 @@ function at(sec, dt) {
     }
     chroma = d.segs[lo].p.length ? d.segs[lo].p : null;
   }
-  return { ...cur.lv, chroma, credited: [...cur.kinds], heard: H ? [...H.kinds] : [] };
+  sonic.prepare(uri, d, cur.pv);
+  const so = sonic.frame(sec, dt, px, { lite });
+  const out = { ...cur.lv, chroma, credited: [...cur.kinds], heard: H ? [...H.kinds] : [], sfx: so.fx, src: so.src };
+  // am Klang erkannte Instrumente: neue Arten dazu; Gitarre, Klavier, Streicher nur, wo die Credits nichts zeigen
+  for (const [k, v] of Object.entries(so.lv)) out[k] = Math.max(out[k] || 0, v);
+  return out;
 }
 
-export const instruments = { at, kindOf, KINDS };
+// Fehlersuche: was der Klang gerade zeigt (Palette, Quelle, Lage der Hörprobe im Song)
+const debugInfo = () => ({ pv: cur.pv ? { inst: cur.pv.inst, fx: cur.pv.fx } : null, al: sonic.song.al, events: sonic.song.ev.length });
+export const instruments = { at, kindOf, KINDS, force: (k, sec) => sonic.force(k, sec), debugInfo };

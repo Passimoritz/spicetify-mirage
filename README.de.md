@@ -174,7 +174,7 @@ Der Party-Modus hört sich den ganzen Song an, **bevor** er läuft. Er weiß, wo
 - **318 Musikstile** – Techno bekommt Laser-Scanner, House eine Discokugel, Rock harte Spots, Balladen ein Lichtermeer aus Handys. Mirage erkennt den Stil selbst, oder du wählst ihn.
 - **17 Orte** – Club, Lagerhalle, Festival, Stadion, Strand, Wohnzimmer, Dachterrasse, Kathedrale, Jazz-Bar, Waldbühne, Konzertsaal, Gewölbekeller, Weltall, Neon-Straße, Pub, Skihütte und Wüstennacht.
 - **Ein Publikum, das mittanzt** – Sprünge auf dem Schlag, Hände hoch im Refrain, Feuerzeuge bei Balladen.
-- **Instrumente bekommen ihren Moment** – nennen die Song-Credits Trompete, Saxofon, Gitarre, Klavier, Streicher, Chor und ein paar mehr, bekommt das Instrument einen eigenen Effekt.
+- **Instrumente bekommen ihren Moment** – nennen die Song-Credits Trompete, Saxofon, Gitarre, Klavier, Streicher, Chor und ein paar mehr, bekommt das Instrument einen eigenen Effekt. Außerdem hört Mirage die 30-s-Hörprobe des Songs (nur gerechnet, nie abgespielt): Kick, 808, Hi-Hats, Gitarren, Klavier, Streicher, Flächen und Soundeffekte wie Riser, Einschläge, Stopps oder Sirenen bekommen eigenes Licht – nur wenn Mirage sicher ist.
 - **Fünf Stärken** von *Sanft* bis *Wahnsinn*. Das Bild zoomt nie und keine Kamera fährt.
 
 <p align="center"><img src="assets/shots/venues-de.jpg" alt="Sechs der Orte: Club, Lagerhalle, Festival, Stadion, Strand und Wohnzimmer" width="100%"></p>

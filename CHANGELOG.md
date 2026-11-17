@@ -14,6 +14,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 - Lyrics now drive the stage. Words like fire, rain, love, stars, gold, ocean, thunder, colours, "hands up" or a sung countdown trigger pyro, light rain, star fields, gold glitter, colour washes, crowd jumps and more, in many languages. Each effect has a cooldown and fits the song's energy.
 - New musical moments in party mode: a bigger last chorus, key changes, stops and comebacks, guitar solos, a cappella parts, call and response, the first beat and the outro. Drops get a different look each time.
+- Party mode reacts to many more instruments and to sound effects. From the song's 30-second preview (analysed, never played) and Spotify's audio analysis, Mirage recognises kick, 808 bass, hi-hats, cymbals, distorted and acoustic guitar, piano, strings, pads and bells, plus effects like risers, noise sweeps, impacts, sub drops, stops, tape stops, reverse cymbals, sidechain pumping, sirens, scratches and air horns. Each gets its own soft light picture on the stage, only when Mirage is sure, at most a few at once, and calmer with "No flashes", Light and Calm.
 - Party mode always shows a tempo. Without Spotify's beat data, Mirage works it out from the song's 30-second preview, which is only analysed and never played. Estimates are marked with "≈".
 
 ### Changed

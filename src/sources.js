@@ -110,7 +110,8 @@ function previewSound(item, hint = 0) {
         const audioBuf = await ctx.decodeAudioData(buf);
         const pcm = audioBuf.getChannelData(0);
         // alle 300 Bilder kurz Luft holen: die Rechnung (~80 ms) verteilt sich, kein Bild bleibt hängen
-        const r = await analyzePcm(pcm, audioBuf.sampleRate, hint || dz?.bpm || 0, () => new Promise((ok) => setTimeout(ok, 0)));
+        // dazu Instrumente und Effekte der Hörprobe (sonic.js) – dieselbe FFT, ~20 % mehr Rechnung, ebenfalls in Häppchen
+        const r = await analyzePcm(pcm, audioBuf.sampleRate, hint || dz?.bpm || 0, () => new Promise((ok) => setTimeout(ok, 0)), true);
         if (r.bpm) return r;
       } catch {}
     }
