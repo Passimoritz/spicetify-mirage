@@ -33,6 +33,7 @@ import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from 
 import { free } from "./lock.js";
 import { setPreset, setPerf, presetFill } from "./settings.js";
 import { COST, tier } from "./perf.js";
+import { createSteadyClock, createBeatClock } from "./steady.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
 const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
@@ -111,6 +112,10 @@ const immersive = (() => {
   }
   let wfxGeo = null, wfxAt = 0;
   let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
+  // Bewegungs- und Schlag-Uhr ohne Sprünge: Spulen, Songwechsel und Ansichtswechsel rissen sonst Kranz und
+  // Scheinwerfer im selben Bild um ganze Drehungen weiter (steady.js)
+  const motion = createSteadyClock(), beatsClock = createBeatClock();
+  let palShown = null, palFade = null;
   const pit = new Float32Array(12);
   const vizRect = { n: 0, r: null };
   let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
@@ -1090,6 +1095,11 @@ const immersive = (() => {
     });
   }
   function resetLyricsView() {
+    // erst den alten Text leeren, dann messen: das erzwungene Layout betrifft so nur den Hinweis statt aller
+    // alten Zeilen (beim Songwechsel waren das 10–15 ms im selben Bild)
+    words = [];
+    q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
+    q.inner.firstChild.textContent = t("loading");
     // ohne Gleitfahrt nach oben zurücksetzen – sonst rutscht der alte Text 0,8 s quer durchs Bild
     q.inner.style.transition = "none";
     q.inner.style.transform = "";
@@ -1099,9 +1109,6 @@ const immersive = (() => {
     el.classList.remove("is-karaoke");
     q.lyrsrc.hidden = q.lyrbad.hidden = true;
     q.trbtn.hidden = true;
-    words = [];
-    q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
-    q.inner.firstChild.textContent = t("loading");
     // meist ist der Liedtext vorgeladen und sofort da: der Hinweis blendet erst nach 0,7 s ein, statt bei jedem
     // Songwechsel kurz aufzublitzen
     q.inner.firstChild.classList.add("is-wait");
@@ -1432,6 +1439,24 @@ const immersive = (() => {
     q.inner.querySelectorAll(".m-im-line").forEach((x, k) => lyr.lines[k] && (x.dataset.t = lyr.lines[k].t));
   }
 
+  // Merkzettel: Mitte jeder Zeile und Höhe des Liedtext-Fensters. Ungültig, sobald sich eine Größe ändert
+  // (Schrift geladen, Übersetzung, Fenstergröße, neuer Liedtext) – das meldet ein ResizeObserver ohne Messen.
+  let lyrGeo = null, lyrRO = null;
+  function lyrScrollY(lines, i, fresh) {
+    if (!lyrRO && typeof ResizeObserver === "function") lyrRO = new ResizeObserver(() => (lyrGeo = null));
+    if (lyrRO && lyrRO.el !== q.inner) {
+      lyrRO.disconnect();
+      lyrRO.observe(q.inner);
+      lyrRO.observe(q.lyrics);
+      lyrRO.el = q.inner;
+      lyrGeo = null;
+    }
+    if (fresh || !lyrRO || !lyrGeo || lyrGeo.mid.length !== lines.length) {
+      lyrGeo = { h: q.lyrics.clientHeight, mid: Array.from(lines, (ln) => ln.offsetTop + ln.offsetHeight / 2) };
+    }
+    return lyrGeo.h * 0.42 - lyrGeo.mid[i];
+  }
+
   function drawLyrics(pos) {
     if (!lyr?.synced) return;
     alignLyrics();
@@ -1439,6 +1464,7 @@ const immersive = (() => {
     // kleine Rücksprünge der Uhr (Pause, Nachjustieren) lassen die eben begonnene Zeile stehen (songtime.js)
     const i = lineAt(lyr.lines, pos, active);
     if (i !== active) {
+      const was = active;
       active = i;
       // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben
       if (activeEl) activeEl.style.scale = "";
@@ -1453,17 +1479,20 @@ const immersive = (() => {
       }
       // erst jetzt sind die Taktdaten sicher geladen: geschätzte Wörter auf die Ton-Einsätze legen
       if (words[i]?.est && !words[i].snapped) snapWords(words[i], lyr.lines[i].t, lyr.lines[i + 1]?.t ?? lyr.lines[i].t + 6000);
-      for (let k = 0; k < lines.length; k++) {
+      // Lage der Zeile aus dem Merkzettel – gelesen, bevor unten Klassen wechseln. Früher erzwang das Auslesen
+      // nach dem Umstellen bei jedem Zeilenwechsel (und bei jedem Spulen) 8–20 ms Stil- und Layout-Rechnung.
+      const full = was < -1 || was >= lines.length;
+      const cur = lines[Math.max(i, 0)], y = cur ? lyrScrollY(lines, Math.max(i, 0), full) : 0;
+      // nur die Zeilen anfassen, deren Zustand sich ändert: zwischen alter und neuer Zeile ±6 (so weit reicht --d);
+      // frisch aufgebauter Liedtext (active = -2): einmal alle
+      const k0 = full ? 0 : Math.max(0, Math.min(was, i) - 6), k1 = full ? lines.length - 1 : Math.min(lines.length - 1, Math.max(was, i) + 6);
+      for (let k = k0; k <= k1; k++) {
         const ln = lines[k];
         ln.classList.toggle("is-active", k === i);
         ln.classList.toggle("is-past", k < i);
         ln.style.setProperty("--d", Math.min(Math.abs(k - Math.max(i, 0)), 6));
       }
-      const cur = lines[Math.max(i, 0)];
-      if (cur) {
-        const y = q.lyrics.clientHeight * 0.42 - (cur.offsetTop + cur.offsetHeight / 2);
-        q.inner.style.transform = `translateY(${y}px)`;
-      }
+      if (cur) q.inner.style.transform = `translateY(${y}px)`;
     }
     // Karaoke: nur die Wörter der aktuellen Zeile, und nur wenn sich ihr Stand sichtbar ändert
     const ws = i >= 0 && words[i];
@@ -1583,7 +1612,9 @@ const immersive = (() => {
     const mirror = V.mirror;
     const span = mirror ? N / 2 : N;
     // Bewegungsuhr der Regie (Drehen, Kreisen, Ziehen) – ohne Analyse die Uhrzeit
-    const tt = (px || mood)?.mt ?? now / 1000;
+    const tt = motion((px || mood)?.mt ?? now / 1000, now);
+    // die Location bekommt dieselben Uhren (ohne Analyse: Schlagposition bzw. Uhrzeit im Tempo – wie bisher dort)
+    if (px) [px.mt, px.mb] = [tt, beatsClock(px.mb ?? (px.beatIdx >= 0 ? px.beatIdx + px.phase : (now / 60000) * (px.tempo || 120)), now)];
     for (let i = 0; i < N; i++) {
       const m = mirror ? (i < span ? i : N - 1 - i) : i;
       let t;
@@ -1621,6 +1652,18 @@ const immersive = (() => {
       const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / ((4 * 60000) / (party.info.bpm || 120)), 0, 1);
       if (f < 1) pal = pal.map((c, i) => c.map((v, k) => Math.round(blend.from[i][k] + (v - blend.from[i][k]) * f)));
     }
+    // Sprung im Song (Spulen, Songwechsel, Taktdaten kommen an): die Lichtfarben gleiten in 0,6 s hinüber,
+    // statt im selben Bild umzuspringen (Tonart, Moll, Farbkorrektur des Teils hängen an der Songzeit)
+    if (px?.jump && palShown && !cfg.calm) palFade = { from: palShown, at: now };
+    if (palFade) {
+      const f = (now - palFade.at) / 600;
+      if (!px || f >= 1 || f < 0) palFade = null;
+      else {
+        const e = f * f * (3 - 2 * f), from = palFade.from;
+        pal = pal.map((c, i) => c.map((v, k) => Math.round(from[i][k] + (v - from[i][k]) * e)));
+      }
+    }
+    palShown = px ? pal : null;
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
     const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
