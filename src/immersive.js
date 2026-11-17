@@ -23,7 +23,8 @@ import { createVenue } from "./venue.js";
 import { songPos } from "./clock.js";
 import { instruments } from "./instruments.js";
 import { live } from "./live.js";
-import { createWordFx } from "./words.js";
+import { createWordFx, FX as WORD_FX } from "./words.js";
+import { createScenarios } from "./scenarios.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
@@ -91,7 +92,22 @@ const immersive = (() => {
   let lyr = null, lyrUri = "", active = -2;
   // Wortbilder: gesungene Begriffe („fire“, „Regen“, „corazón“ …) bekommen im Party-Modus ein passendes Bild
   // Ausgelöste Bilder gehen auch an den Live-Link: die TV-Ansicht zeigt dasselbe Bild
-  const wordFx = createWordFx(LEX, { onFire: (c, w) => live.fx(c, w) });
+  const wordFx = createWordFx(LEX, { onFire: (c, w) => (live.fx(c, w), stageWord(c)) });
+  // Szenarien: die Bühne antwortet auf gesungene Wörter (scenarios.js entscheidet, stagefx.js in der Location zeichnet)
+  const scen = createScenarios();
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  // Fehlersuche (localStorage „mirage:debug“ = 1): eine Bühnen-Antwort von Hand auslösen, z. B. __mirageStageWord("fire")
+  try {
+    if (localStorage.getItem("mirage:debug") === "1") window.__mirageStageWord = (c) => stageWord(c);
+  } catch {}
+  function stageWord(c) {
+    const px = wfxGeo?.px;
+    if (!px || !cfg.partyWords) return;
+    scen.word(c, {
+      t: performance.now() / 1000, energy: px.energy, kind: px.kind, level: px.level, lite: lightMode(), calm: cfg.calm || reducedMotion.matches,
+      noFlash: !!cfg.noFlash, flash: !!(cfg.partyFlash && px.fx), beat: 60 / (px.tempo || 120), phase: px.phase, col: WORD_FX[c]?.col,
+    });
+  }
   let wfxGeo = null, wfxAt = 0;
   let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
   const pit = new Float32Array(12);
@@ -2108,7 +2124,11 @@ const immersive = (() => {
         haze: px.haze, pump: px.pump, boom: px.boom, scan: px.scan, fxMul: px.fxMul,
         // Publikum (crowd.js): Teil des Songs und Spannung vor dem Drop
         kind: px.kind, tension: px.tension,
+        // Momente der Musik (director.js): Finale, Tonartwechsel, Stopp, Solo, Drop-Bild …
+        scn: px.scn || null,
       },
+      // Antworten der Bühne auf gesungene Wörter (scenarios.js)
+      cues: cfg.partyWords && !cfg.calm ? scen.frame(performance.now() / 1000) : null,
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
       rig: cfg.partyRig && px.fx && px.level >= 2 && !lightMode(),
@@ -2959,6 +2979,7 @@ const immersive = (() => {
     quietSince = 0;
     moments.stormDone = false;
     moments.venue = "";
+    scen.reset();
     // „Energie halten“: passt der nächste Song gar nicht, zieht Mirage einen passenderen vor
     if (item?.uri && el.dataset.mode === "party") dj.onSong(item.uri).then((m) => m && S.showNotification?.(t("djMoved").replace("{t}", m.title), false, 4000));
     updateKicker();

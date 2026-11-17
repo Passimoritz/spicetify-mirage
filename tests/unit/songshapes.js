@@ -15,6 +15,9 @@ const SHAPES = {
   // Metal: schnell, laut, Moll, kaum leise Stellen, heller Klang
   metal: { bpm: 168, kick: "rock", mode: 0, dark: -0.3, parts: [["intro", 4, -7], ["verse", 8, -5.5], ["chorus", 8, -3.5], ["verse", 8, -5.5], ["chorus", 8, -3.5], ["bridge", 8, -6, { key: 4 }], ["chorus", 8, -3.5], ["chorus", 8, -3.5], ["outro", 4, -7]] },
   // Tanzsong mit trauriger Bridge: Dur, vier auf den Boden – die Bridge leise, in Moll, mit langen Tönen
+  // Szenarien (scenarios.test.js): Pop-Rock mit Stopp mitten im Refrain (stop = ein Takt Stille in der Mitte),
+  // Gitarrensolo ohne Gesang und einer Rückung (der letzte Refrain einen Ganzton höher)
+  lift: { bpm: 118, kick: "rock", parts: [["intro", 4, -12], ["verse", 8, -10], ["chorus", 8, -5], ["verse", 8, -10], ["chorus", 8, -5, { stop: true }], ["solo", 8, -5.5], ["verse", 8, -10], ["chorus", 8, -5], ["chorus", 8, -4.5, { key: 11 }], ["outro", 4, -11]] },
   dancesad: { bpm: 124, kick: "four", mode: 1, parts: [["intro", 8, -12], ["verse", 16, -9], ["chorus", 16, -5], ["verse", 16, -9], ["chorus", 16, -5], ["bridge", 16, -17, { key: 4, mode: 0, hold: true }], ["chorus", 16, -5], ["outro", 8, -12]] },
 };
 // fester Zufall: jeder Lauf erzeugt denselben Song
@@ -37,7 +40,8 @@ function raw(name) {
       beats.push({ start: tb, duration: beat, confidence: 0.9 });
       if (!inBar) bars.push({ start: tb, duration: beat * 4, confidence: 0.9 });
       const lastBar = k >= nBars * 4 - 4;
-      const lvl = o.dip && lastBar ? -19 : o.rise != null ? db + (o.rise - db) * f : db;
+      const stopBar = o.stop && k >= Math.floor(nBars / 2) * 4 && k < Math.floor(nBars / 2) * 4 + 4;
+      const lvl = stopBar ? -40 : o.dip && lastBar ? -19 : o.rise != null ? db + (o.rise - db) * f : db;
       // Schlagzeug je Stil: vier auf den Boden, Rock (1 und 3 / 2 und 4), Trap (808 versetzt), DnB (1 und 2+)
       const kick = S.kick === "four" ? true : S.kick === "trap" ? inBar === 0 || (inBar === 2 && k % 8 >= 4) : S.kick === "dnb" ? inBar === 0 : inBar === 0 || inBar === 2;
       const snare = S.kick === "dnb" ? inBar === 1 || inBar === 3 : S.kick === "four" ? false : inBar === 1 || inBar === 3;

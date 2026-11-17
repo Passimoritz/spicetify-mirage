@@ -1,11 +1,15 @@
 /* ---------------------------------------------------------------- Wortbilder (Party-Modus) */
 // Singt jemand „fire“, „Regen“, „corazón“, „星“ oder „pyaar“, antwortet die Bühne mit einem passenden Bild:
-// Flammen, Regen, Herzen, Sterne … Das Wörterbuch (lexicon.js) kennt rund 65 Begriffe in 45 Sprachen mit
+// Flammen, Regen, Herzen, Sterne … Das Wörterbuch (lexicon.js) kennt rund 75 Begriffe in 45 Sprachen mit
 // ihren gängigen Formen. Die Sprache des Songs wird aus häufigen Füllwörtern und der Schrift erkannt –
 // verglichen wird nur mit diesen Sprachen (plus Englisch, das fast überall vorkommt). Für Sprachen ohne
 // eigenes Wörterbuch hilft auf Wunsch die englische Übersetzung des Liedtexts.
 // Nicht überladen: höchstens ein Bild pro Zeile, Pausen zwischen den Bildern (kürzer bei höherer Stärke),
-// dasselbe Bild erst nach einer Weile wieder, nie mehr als zwei gleichzeitig.
+// dasselbe Bild erst nach einer Weile wieder, nie mehr als zwei gleichzeitig. Jedes ausgelöste Bild meldet sich über
+// onFire – die Bühne antwortet dann mit (scenarios.js: Pyro, Sternenhimmel, Sprünge der Menge, Countdown …).
+import { isCountdown } from "./scenarios.js";
+import { createFlashCap } from "./flashcap.js";
+
 let LEX = {};
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -56,6 +60,9 @@ const FX = {
   red: { fx: "tint", col: [255, 40, 60], pri: 1 }, blue: { fx: "tint", col: [40, 110, 255], pri: 1 }, green: { fx: "tint", col: [40, 220, 110], pri: 1 },
   pink: { fx: "tint", col: [255, 90, 190], pri: 1 }, purple: { fx: "tint", col: [160, 70, 255], pri: 1 }, white: { fx: "tint", col: [255, 255, 255], pri: 1 },
   black: { fx: "dark", pri: 1 }, silver: { fx: "diamond", pri: 1 },
+  // Szenarien (scenarios.js): Bass, Hände hoch, Anfeuern, verrückt, Countdown und weitere Farben – die Bühne antwortet mit
+  orange: { fx: "tint", col: [255, 140, 30], pri: 1 }, yellow: { fx: "tint", col: [255, 220, 40], pri: 1 }, cyan: { fx: "tint", col: [40, 225, 235], pri: 1 },
+  bass: { fx: "boom", pri: 5 }, handsup: { fx: "jump", pri: 6 }, hype: { fx: "rings", pri: 3 }, crazy: { fx: "rainbow", pri: 3 }, count: { fx: "rings", pri: 7 },
 };
 // Farbe, in der das gesungene Wort aufleuchtet
 const GLOW = {
@@ -193,6 +200,8 @@ function createWordFx(lexicon, { onFire } = {}) {
   let off = null;
   let plan = [], queue = [], fxs = [], parts = [], lastFire = -1e9, langs = ["en"], sureLang = true, uriNow = "", st0 = {};
   const cool = new Map();
+  // eigene Blitz-Schranke der Wortbilder (Blitz bei „storm“/„lightning“): nie mehr als 3 pro Sekunde
+  const cap = createFlashCap();
   let glowSpr = null;
   // weicher Lichtpunkt, einmal gerendert
   function glow() {
@@ -211,6 +220,25 @@ function createWordFx(lexicon, { onFire } = {}) {
     return (glowSpr = c);
   }
 
+  // Lichtfaden je Farbe und Richtung, einmal gerendert (Regen, Raketen-Schweife)
+  const streaks = new Map();
+  function streak(col, up) {
+    const key = col.map((v) => (v >> 4) << 4).join() + (up ? "u" : "d");
+    let c = streaks.get(key);
+    if (c) return c;
+    if (streaks.size > 16) streaks.clear();
+    c = document.createElement("canvas");
+    c.width = 4;
+    c.height = 64;
+    const x = c.getContext("2d"), g = x.createLinearGradient(0, up ? 0 : 64, 0, up ? 64 : 0);
+    g.addColorStop(0, rgba(col, 1));
+    g.addColorStop(1, rgba(col, 0));
+    x.fillStyle = g;
+    x.fillRect(1, 0, 2, 64);
+    streaks.set(key, c);
+    return c;
+  }
+
   /* ---- je Song: Sprachen erkennen, alle Zeilen einmal durchsuchen */
   function prepare(uri, lines, hint) {
     if (!IDX) build();
@@ -221,7 +249,8 @@ function createWordFx(lexicon, { onFire } = {}) {
     const d = detect(lines, hint);
     langs = d.langs;
     sureLang = d.sure;
-    plan = lines.map((l) => pick(matchLine(l.text || "", langs)));
+    // ein Countdown („3, 2, 1“) geht jedem Wortbild der Zeile vor
+    plan = lines.map((l) => (isCountdown(l.text) ? { c: "count", at: -1, len: 0, raw: "" } : pick(matchLine(l.text || "", langs))));
   }
   // Sprache ohne eigenes Wörterbuch: die englische Übersetzung durchsuchen (Bild dann zur Zeilenmitte)
   function addTranslated(uri, translated) {
@@ -490,16 +519,11 @@ function createWordFx(lexicon, { onFire } = {}) {
         ctx.fill();
         break;
       case "streak": {
-        const x2 = x - q.vx * 0.02, y2 = y - q.vy * 0.02 - Math.sign(q.vy || 1) * s;
-        const g = ctx.createLinearGradient(x, y, x2, y2);
-        g.addColorStop(0, rgba(col, a * 0.55));
-        g.addColorStop(1, rgba(col, 0));
-        ctx.strokeStyle = g;
-        ctx.lineWidth = 1.4 * S;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
+        // Lichtfaden aus einem fertigen Bild (statt eines Farbverlaufs je Tropfen und Bild): Kopf hell, Schweif klar
+        const len = Math.abs(q.vy * 0.02) + s, up = q.vy < 0;
+        ctx.globalAlpha = a * 0.55;
+        ctx.drawImage(streak(col, up), x - q.vx * 0.01 - 1.2 * S, up ? y : y - len, 2.4 * S, len);
+        ctx.globalAlpha = 1;
         break;
       }
       case "flake":
@@ -1044,9 +1068,14 @@ function createWordFx(lexicon, { onFire } = {}) {
     for (let i = 0; i < f.bolts.length; i++) {
       const d = f.t - f.bolts[i];
       if (d < 0 || d > 0.35) continue;
-      const a = 1 - d / 0.35;
-      ctx.fillStyle = `rgba(220,230,255,${(0.14 * a).toFixed(3)})`;
-      ctx.fillRect(0, 0, w, h);
+      // Aufhellen des ganzen Bilds ist ein Blitz: nur mit Blitzen an und durch die Blitz-Schranke (höchstens 3/s).
+      // Ohne Blitze erscheint nur die Linie, weich eingeblendet und gedämpft
+      if (f["fl" + i] === undefined) f["fl" + i] = !st.noFlash && cap.take(st.now / 1000);
+      const a = f["fl" + i] ? 1 - d / 0.35 : 0.45 * Math.min(1, d / 0.1) * (1 - d / 0.35);
+      if (f["fl" + i]) {
+        ctx.fillStyle = `rgba(220,230,255,${(0.14 * a).toFixed(3)})`;
+        ctx.fillRect(0, 0, w, h);
+      }
       // zackiger Blitz von oben
       f["path" + i] ||= (() => {
         const pts = [[w * (0.2 + Math.random() * 0.6), 0]];

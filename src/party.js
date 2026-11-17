@@ -489,6 +489,8 @@ const party = (() => {
       // Bühnenlicht und Muster der Szene (spot2 → spot gleitet über sx)
       mood: C.mood, valence: C.v, arousal: C.a, spread: C.spread, crowd: C.crowd, fxk: C.fxk,
       spot: C.spot, spot2: C.spot2, sx: C.sx, rig: C.rig, look: C.scene || "",
+      // Momente der Musik für die Szenarien (stagefx.js): nur mit Effekten und Lichtregie
+      scn: fx && cfg.partyDirector ? C.scn || null : null,
     };
     // Fehlersuche: localStorage „mirage:debug“ = 1 legt den Lichtzustand und die Song-Karte offen
     if (DEBUG) window.__mirageParty = { ...out, P: info.key, map: d ? songMap(d) : null, sec };
