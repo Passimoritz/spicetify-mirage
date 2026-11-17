@@ -6,6 +6,7 @@ import { songMap, at, STEP } from "./songmap.js";
 import { planSong, cue } from "./director.js";
 import { KIN, baseOf } from "./styles.js";
 import { LOOKS, FAMILIES, pickProfile } from "./genres.js";
+import { isJump, createJumpFade } from "./steady.js";
 
 /* ---------------------------------------------------------------- Party-Modus */
 // Ein Lichtpult, das den Song kennt. Aus Spotifys Taktanalyse entsteht einmal pro Song eine Karte:
@@ -256,6 +257,9 @@ const party = (() => {
   const flashCap = createFlashCap(), hot = { k: false, s: false };
   // die E-Gitarre blitzt auch in leisen Stellen: immersive.js meldet, ob sie gerade spielt
   let stageFlash = false;
+  // Spulen/Songwechsel: der Look der Regie gleitet in 0,6 s in den neuen Teil, statt hart umzuschalten (steady.js)
+  const jumpFade = createJumpFade(0.6), moodFade = createJumpFade(0.6);
+  let lastPlan = null, glowCut = false;
   const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
   // „Leicht“: die Regie wählt weniger und billigere Effekte (kein Lichtwisch, kein Spot, keine Lichtwand)
   const lite = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
@@ -275,7 +279,8 @@ const party = (() => {
     uri = u;
     const my = ++token;
     lastBeat = lastBar = -1;
-    dropGlow = 0;
+    // das Nachglühen eines Drops klingt rasch aus statt im selben Bild abzureißen (das sah aus wie ein Ruckler)
+    glowCut = true;
     // beide Quellen gleichzeitig fragen
     const [genres, apple] = cfg.partyStyle === "auto" ? await Promise.all([artistGenres(item), appleGenre(item)]) : [[], ""];
     if (my !== token) return info;
@@ -311,7 +316,12 @@ const party = (() => {
     let beatPhase = 0, beatIdx = -1;
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
     // Lichtregie: welcher Teil des Songs gerade läuft und wie er aussehen soll (director.js)
-    const C = (d && d.segs?.length && cfg.partyDirector && cue(planFor(d, info.key, uri), sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL;
+    // auch wenn die Regie neu plant (Taktdaten oder Liedtext kommen nach dem Songwechsel an) oder ganz wegfällt
+    const plan = d && d.segs?.length && cfg.partyDirector ? planFor(d, info.key, uri) : null;
+    const jumped = isJump(sec, lastSec, dt) || plan !== lastPlan;
+    lastPlan = plan;
+    if (jumped) jumpFade.start(clock);
+    const C = jumpFade.apply((plan && cue(plan, sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL, clock);
     if (d && d.segs?.length) {
       const M = songMap(d);
       energy = at(M.energy, sec);
@@ -418,8 +428,9 @@ const party = (() => {
     }
 
     // --- Gesamtintensität: Energie, Drop-Nachglühen, Break dämpft; Aufbau steigert schrittweise
-    if (dropHit) dropGlow = 1;
-    dropGlow *= Math.exp(-dt * 0.55);
+    if (dropHit) [dropGlow, glowCut] = [1, false];
+    dropGlow *= Math.exp(-dt * (glowCut ? 5 : 0.55));
+    if (dropGlow < 0.01) glowCut = false;
     // Lichtregie: Strophe ruhiger, Refrain größer, Break dunkel; der Einsatz eines Refrains hebt kurz an,
     // der letzte Schlag vor dem Drop ist dunkel (dim)
     const I = clamp((0.22 + smooth.e * 0.78 + dropGlow * 0.35 + smooth.b * 0.2 - smooth.k * 0.35) * C.I * (1 - 0.6 * C.dim) + C.lift * 0.15, 0.08, 1.35);
@@ -487,6 +498,8 @@ const party = (() => {
       tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
       blackout: !!cfg.partyDirector && ((toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95) || C.dim >= 1),
       finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
+      // Sprung im Song in diesem Bild (Spulen, Songwechsel, neue Regie): die Farben gleiten hinüber (immersive.js)
+      jump: jumped,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
       flash, flashCol, flashGo, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
       // Lichtregie für Bühne, Location und Visualizer: Teil, Farbkorrektur, Bewegungsuhren (mt in Sekunden,
@@ -518,8 +531,12 @@ const party = (() => {
   function mood(sec, playing) {
     const d = audio.data;
     if (!d?.segs?.length || !cfg.partyDirector) return null;
+    // (ohne Party läuft clock nicht weiter: hier zählt die Uhrzeit)
+    const wall = performance.now() / 1000;
+    if (isJump(sec, moodSec, 0.1)) moodFade.start(wall);
     const C = cue(planFor(d, audio.uri === uri ? info.key : "pop", audio.uri), sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
     if (!C) return null;
+    Object.assign(C, moodFade.apply(C, wall));
     const M = songMap(d);
     let dropHit = false;
     if (playing && sec >= moodSec && sec - moodSec < 0.5) for (const t of M.drops) if (t > moodSec && t <= sec + 0.02) dropHit = true;
