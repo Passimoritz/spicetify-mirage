@@ -3976,51 +3976,100 @@ const immersive = (() => {
     }
   });
 
+  // Ein- und Ausblenden dauert so lange wie der Übergang in user.css (#mirage-immersive: opacity 0.6s)
+  const FADE_MS = 620;
+  // fadeT: Abschluss des laufenden Ein-/Ausblendens; fadingOut: Ebene blendet gerade aus (Schleife läuft noch)
+  let fadeT = 0, fadingOut = false, openedUri = null, showing = false, showRaf = 0;
   function open() {
     if (!isOpen()) lastFocus = document.activeElement;
     clearTimeout(releaseT);
+    clearTimeout(fadeT);
     dropped = false;
-    if (!el) build();
-    sizeCanvas();
-    setMode(cfg.imMode, false);
-    styleLyrics();
-    refresh();
-    setHaze(lastHaze);
-    syncState();
-    el.classList.add("is-on");
-    // Hintergrund dahinter ist verdeckt: anhalten spart sehr viel Leistung
-    root.classList.add("mirage-im-open");
-    dust.pause(true);
+    // Wieder öffnen, während die Ebene noch ausblendet (schnelles Hin und Her): alles steht noch – nur die
+    // Richtung umkehren. Kein Neuaufbau, sonst hakt die Umkehr mitten in der Blende.
+    const quick = fadingOut && !!el && openedUri === (currentItem()?.uri || "");
+    fadingOut = false;
+    if (!quick) {
+      if (!el) build();
+      sizeCanvas();
+      setMode(cfg.imMode, false);
+      styleLyrics();
+      refresh();
+      setHaze(lastHaze);
+      syncState();
+      openedUri = currentItem()?.uri || "";
+    }
+    cancelAnimationFrame(showRaf);
+    if (quick) el.classList.add("is-on");
+    else {
+      // Erst nach dem Aufbau einblenden: Aufbau, Layout und erstes Zeichnen kosten ein langes Bild (bis 150 ms).
+      // Lief die Blende schon in diesem Bild, war sie beim ersten sichtbaren Bild fast fertig – die Ebene sprang auf
+      // statt einzublenden. Zwei Bilder später beginnt sie bei 0. „showing“ zählt solange schon als offen.
+      showing = true;
+      showRaf = requestAnimationFrame(() => {
+        showRaf = requestAnimationFrame(() => {
+          showRaf = 0;
+          if (!showing) return;
+          showing = false;
+          el.classList.add("is-on");
+        });
+      });
+    }
+    // Hintergrund dahinter erst anhalten und verstecken, wenn die Ebene ganz deckt: vorher scheint die normale
+    // Oberfläche durch die halb durchsichtige Ebene – verschwand die Bühne sofort, sprang ihr Hintergrund
+    // im ersten Bild auf Einfarbig (Blitz beim Öffnen).
+    fadeT = setTimeout(() => {
+      fadeT = 0;
+      if (!isOpen()) return;
+      root.classList.add("mirage-im-open");
+      dust.pause(true);
+    }, FADE_MS + 50);
     requestAnimationFrame(placeIndicator);
-    cancelAnimationFrame(raf);
-    raf = 0;
+    if (!quick) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
     kick();
     q.play.focus();
     // die Ebene wird erst mit dem nächsten Bild sichtbar – vorher nimmt der Knopf den Fokus nicht an
     setTimeout(() => isOpen() && !el.contains(document.activeElement) && q.play.focus(), 80);
   }
   function close() {
-    if (!el) return;
+    if (!el || !isOpen()) return;
+    // noch gar nicht eingeblendet (Taste doppelt gedrückt): Einblenden einfach abbrechen
+    cancelAnimationFrame(showRaf);
+    showRaf = 0;
+    showing = false;
     el.classList.remove("is-on");
+    // Bühne sofort zurück: sie liegt unter der ausblendenden Ebene und ist zu sehen, sobald diese durchscheint
     root.classList.remove("mirage-im-open");
+    dust.pause(false);
     q.video?.pause();
     toggleKeys(false);
-    showSide(null);
     clearTimeout(idleT);
-    el.classList.remove("is-idle");
-    dust.pause(false);
-    cancelAnimationFrame(raf);
-    raf = 0;
     syncTicker();
     clearTimeout(releaseT);
     releaseT = setTimeout(release, RELEASE_MS);
-    // tints.js holt Aufgeschobenes nach
-    document.dispatchEvent(new Event("mirage:im-close"));
     if (document.fullscreenElement) document.exitFullscreen?.();
     // Fokus zurück dorthin, wo er vor dem Öffnen war – sonst hängt er an einem unsichtbaren Knopf
     if (el.contains(document.activeElement)) lastFocus?.isConnected && lastFocus !== document.body ? lastFocus.focus() : document.activeElement.blur();
+    // Während des Ausblendens läuft die Ebene weiter (Visualizer, Liedtext, Party) statt mitten in der Blende
+    // einzufrieren; Seitenleiste und Bedienung verschwinden erst danach – vorher sprangen sie in der Blende
+    // weg bzw. tauchten aus dem Leerlauf noch einmal auf. Aufgeschobene Arbeit (tints.js) kommt auch erst dann.
+    fadingOut = true;
+    clearTimeout(fadeT);
+    fadeT = setTimeout(() => {
+      fadeT = 0;
+      fadingOut = false;
+      if (isOpen()) return;
+      showSide(null);
+      el.classList.remove("is-idle");
+      cancelAnimationFrame(raf);
+      raf = 0;
+      document.dispatchEvent(new Event("mirage:im-close"));
+    }, FADE_MS);
   }
-  const isOpen = () => !!el?.classList.contains("is-on");
+  const isOpen = () => !!el && (showing || el.classList.contains("is-on"));
   const playState = () => el && (kick(), (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play), playLabel());
   const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };

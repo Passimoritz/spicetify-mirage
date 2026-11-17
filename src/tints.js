@@ -133,14 +133,20 @@ function findSticky() {
   }
   return null;
 }
+let stuckView = null;
 function markSticky() {
   stickyQueued = false;
   if (!stickyEl?.isConnected) stickyEl = findSticky();
+  // Hauptbereich merkt sich „Kopf angeheftet“: dann ist der kleine Kopf darüber ganz deckend (user.css)
+  const mv = stickyEl?.closest(SEL.mainView) || null;
+  if (stuckView && stuckView !== mv) stuckView.classList.remove("m-head-stuck");
+  stuckView = mv;
   if (!stickyEl) return;
   const grid = stickyEl.closest('[role="grid"]') || stickyEl.parentElement;
   // angeheftet = der Kopf ist gegenüber dem Anfang der Liste nach unten gewandert
   const stuck = stickyEl.getBoundingClientRect().top - grid.getBoundingClientRect().top > 2;
   if (stuck !== stickyEl.hasAttribute("data-m-stuck")) stickyEl.toggleAttribute("data-m-stuck", stuck);
+  if (mv && stuck !== mv.classList.contains("m-head-stuck")) mv.classList.toggle("m-head-stuck", stuck);
 }
 document.addEventListener(
   "scroll",
@@ -154,3 +160,11 @@ document.addEventListener(
   },
   { capture: true, passive: true },
 );
+// Seitenwechsel: neue Seite steht oben, ihr Kopf ist (noch) nicht angeheftet – sonst bliebe der kleine Kopf
+// der alten Seite deckend über dem Titelbild der neuen
+try {
+  S.Platform.History.listen(() => setTimeout(() => {
+    stickyEl = null;
+    markSticky();
+  }, 120));
+} catch {}

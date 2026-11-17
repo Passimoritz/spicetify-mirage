@@ -487,15 +487,27 @@ button[class*="chip--"][aria-checked="true"] * {
   color: var(--m-c) !important;
   text-shadow: 0 0 18px rgba(var(--m-a-rgb), 0.8);
 }
-.main-trackList-trackListHeader {
+/* in Ruhe durchsichtig – aber nie im angehefteten Zustand: Spotify setzt dafür selbst eine Klasse
+   (iPo4a2lbrsxW9Iedav3h = trackListHeaderStuck, Spicetify kennt keinen lesbaren Namen). Früher war der Kopf
+   dann bis zum nächsten Messen von theme.js (ein Bild + 160 ms) durchsichtig und die Zeilen liefen durch. */
+.main-trackList-trackListHeader:not(.iPo4a2lbrsxW9Iedav3h, [data-m-stuck]) {
   background: transparent !important;
 }
 /* angeheftet (unter dem kleinen Kopf): deckend wie dieser, sonst laufen die Titel sichtbar durch */
-/* theme.js markiert ihn zusätzlich mit data-m-stuck – Spotifys neue Klassennamen kennt Spicetify nicht */
+/* theme.js markiert ihn zusätzlich mit data-m-stuck – falls Spotify die Klasse wieder umbenennt */
 .main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
+.main-trackList-trackListHeader.iPo4a2lbrsxW9Iedav3h,
 [data-m-stuck][data-m-stuck] {
   background: rgba(var(--spice-rgb-main), 0.98) !important;
   border-bottom: 1px solid var(--m-line);
+  /* Spotifys Schatten (0 -1px in Spielerfarbe) als Kante über dem Kopf weg – Mirage hat die Linie unten */
+  box-shadow: none !important;
+}
+/* Kopf angeheftet: der kleine Kopf darüber ist ganz deckend. Spotify blendet ihn erst über 76 px Scrollweg ein –
+   so lange schien die Aktionsleiste (Play, +, Download, …) durch den halb durchsichtigen kleinen Kopf direkt über
+   den Spaltennamen, als sei der Spaltenkopf auf sie gerutscht. theme.js setzt m-head-stuck am Hauptbereich. */
+.m-head-stuck .main-topBar-background {
+  opacity: 1 !important;
 }
 
 /* Suchvorschläge unter dem Suchfeld oben: eigene, deckende Glasplatte über allem im Hauptbereich */
@@ -720,7 +732,11 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   color: #fff;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.6s var(--m-ease), visibility 0.6s;
+  /* gleichmäßige Blende (immersive.js wartet FADE_MS = 0,62 s): --m-ease schießt am Anfang fast ganz hoch –
+     die Ebene sprang beim Öffnen auf und war beim Schließen nach 2–3 Bildern schon fast weg */
+  transition:
+    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.6s;
   -webkit-app-region: no-drag;
 }
 #mirage-immersive * {
@@ -2260,7 +2276,10 @@ html.mirage-beat #mirage-stage .m-pulse {
 /* Aktionsleiste als schwebende Glasleiste (verwischt nicht selbst: das tut die Glasplatte darunter schon) */
 [data-testid="action-bar-row"],
 .main-actionBar-ActionBarRow {
-  margin: 0 16px;
+  /* Spotify gibt der Zeile width:100% – mit Rand und Innenabstand ragte die Glasleiste rechts über den Inhalt
+     (bis an die Kante des Hauptbereichs). Darum Rahmen in die Breite rechnen und bündig mit der Liste darunter. */
+  box-sizing: border-box;
+  margin: 0;
   padding: 14px 20px !important;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.04);
@@ -2269,6 +2288,8 @@ html.mirage-beat #mirage-stage .m-pulse {
 
 /* Tabellenkopf als Kapsel */
 .main-trackList-trackListHeaderRow {
+  /* Rahmen rundum statt nur unten: in die 36 px von Spotify rechnen, sonst ragt die Kapsel aus dem Kopf */
+  box-sizing: border-box;
   border-radius: 14px !important;
   background: rgba(255, 255, 255, 0.035) !important;
   border: 1px solid var(--m-line) !important;
@@ -3058,8 +3079,11 @@ html[data-m-page="artist"] h2 {
 /* ==========================================================================
    DIALOGE & BEARBEITEN-OBERFLÄCHEN
    ========================================================================== */
+/* nicht die Immersiv-Ebene: sie ist auch ein modaler Dialog (Vorlesen), hat aber ihre eigene Blende. Die
+   Animation lag dauerhaft (fill both) auf ihrer Deckkraft – danach sprang die Ebene bei jedem Öffnen und
+   Schließen ohne Übergang zwischen 0 und 1, und beim ersten Öffnen federte der ganze Bildschirm (Skalierung). */
 .GenericModal,
-[role="dialog"][aria-modal="true"] {
+[role="dialog"][aria-modal="true"]:not(#mirage-immersive) {
   animation: m-modal-in 0.45s var(--m-spring) both;
 }
 @keyframes m-modal-in {
