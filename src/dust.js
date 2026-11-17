@@ -231,16 +231,25 @@ const dust = (() => {
   // Gleichmäßiger Takt: der Wecker klingelt kurz vor dem gewünschten Bild, gezeichnet wird im nächsten
   // Bildschirmbild. Vorher kam nach der Wartezeit noch die Wartezeit aufs nächste Bild dazu – mal 50, mal
   // 66 ms Abstand, die langsame Drift wirkte dadurch unruhig.
+  // inFrame: ein Bild ist schon angefordert. Ohne die Marke startete wake() zwischen Wecker und Bild eine zweite
+  // Kette (timer war schon 0) – jedes Schließen des Immersiv-Modus weckt, nach schnellem Hin und Her liefen
+  // 15–20 Ketten parallel und zeichneten den Hintergrund mehrfach je Bild (Ruckeln nach dem Verlassen).
+  let inFrame = false;
   function tick() {
     timer = 0;
-    if (!running || document.hidden) return;
+    if (!running || document.hidden || inFrame) return;
+    inFrame = true;
     requestAnimationFrame(frame);
   }
   function frame(now) {
+    inFrame = false;
     if (!running || document.hidden) return;
     const step = 1000 / fps();
     // zu früh geweckt (Bildschirmbild vor dem Zieltermin): ein Bild weiter warten statt zu früh zu zeichnen
-    if (now > drawnAt && now - drawnAt < step - 4) return void requestAnimationFrame(frame);
+    if (now > drawnAt && now - drawnAt < step - 4) {
+      inFrame = true;
+      return void requestAnimationFrame(frame);
+    }
     draw(now);
     // im Raster bleiben; kam das Bild deutlich zu spät, ab hier neu zählen (kein Aufholen mit einem zu kurzen Abstand)
     drawnAt = Math.abs(now - drawnAt - step) < 8 ? drawnAt + step : now;
@@ -249,7 +258,7 @@ const dust = (() => {
   }
   // nach Play, Sichtbarwerden, neuem Cover oder Schließen des Immersiv-Modus
   function wake() {
-    if (!running || timer) return;
+    if (!running || timer || inFrame) return;
     timer = setTimeout(tick, 0);
   }
   document.addEventListener("visibilitychange", wake);

@@ -320,6 +320,24 @@
       shuffleJump = 0;
     },
     press: (code, extra = {}) => document.dispatchEvent(new KeyboardEvent("keydown", { code, bubbles: true, ...extra })),
+    // andere Inhalte als Songs, wie Spotify sie in Player.data.item meldet: ohne Liedtext, ohne Audio-Analyse,
+    // teils ohne Künstler, Cover oder Dauer
+    playSpecial: (kind) => landItem(SPECIAL[kind]),
+  };
+  const SPECIAL = {
+    // Podcast-Folge (auch Video-Podcasts: gleiche URI-Art, das Bild kommt aus Spotifys Videofläche)
+    episode: { uri: "spotify:episode:e0000000000000000000001", uid: "e1", name: "Folge 12: Glas", metadata: { title: "Folge 12: Glas", album_title: "Glas-Funk", artist_name: "Glas-Funk", image_url: "spotify:image:ab6765630000ba8a" + hex(7), media_type: "audio", "is_podcast": "true" } },
+    video: { uri: "spotify:episode:e0000000000000000000002", uid: "e2", name: "Folge 13 (Video)", metadata: { title: "Folge 13 (Video)", album_title: "Glas-Funk", image_url: "spotify:image:ab6765630000ba8a" + hex(8), media_type: "video", "is_podcast": "true" } },
+    // Hörbuch-Kapitel
+    chapter: { uri: "spotify:episode:c0000000000000000000003", uid: "c1", name: "Kapitel 1", metadata: { title: "Kapitel 1", album_title: "Das Glashaus", artist_name: "A. Autor", image_url: "spotify:image:ab67656300005f1f" + hex(9), is_audiobook: "true" } },
+    // Werbung (kostenloses Konto): eigene URI-Art, kein Künstler, oft kein großes Bild
+    ad: { uri: "spotify:ad:000000000000000000000001", uid: "a1", name: "Werbung", metadata: { title: "Spotify", is_advertisement: "true", image_url: "" } },
+    // lokale Datei: kein Cover vom Bildserver, keine Analyse
+    local: { uri: "spotify:local:Mirage+Ensemble:Glass+Hours:Local+Song:215", uid: "l1", name: "Local Song", metadata: { title: "Local Song", artist_name: "Mirage Ensemble", album_title: "Glass Hours", image_url: "" } },
+    // AI-DJ: Ansage zwischen den Songs (läuft im DJ-Kontext, keine Musik, kein Liedtext)
+    dj: { uri: "spotify:track:dj00000000000000000000x", uid: "dj", name: "DJ", metadata: { title: "DJ", artist_name: "DJ", is_dj_narration: "true", image_url: "spotify:image:ab67706f00000002" + hex(5) } },
+    // leer (Übergang, nichts ausgewählt)
+    none: { uri: "", uid: "", name: "", metadata: {} },
   };
 
   addEventListener("error", (e) => console.error("PAGEERROR " + e.message + " @" + e.lineno));
