@@ -1110,7 +1110,7 @@ function createVenue(makeCanvas) {
   // Jede Reihe in ihrer eigenen Größe (hinten klein = wenig Speicher, beim Zeichnen nie vergrößert).
   // Ein Stadion braucht so rund 130 Bilder je Palette; nur die ältesten verwerfen (zuerst die der vorigen Palette).
   const bodySprites = new Map();
-  let palKey = "", spriteBudget = 0;
+  let palKey = "", spriteBudget = 0, firstBudget = 0;
   function bodySprite(p, u, T, seated) {
     const key = `${p.lv}|${p.sc}|${p.hair}|${p.wd}|${p.det}|${seated ? 1 : 0}|${palKey}|${u.toFixed(2)}`;
     let sp = bodySprites.get(key);
@@ -1191,9 +1191,10 @@ function createVenue(makeCanvas) {
       crowd.pk = pk;
       crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, cp));
     }
-    // neue Farben: höchstens 12 neue Körperbilder je Bild – der Rest behält kurz die alten (dunkle Silhouetten,
-    // der Wechsel ist nach gut 10 Bildern durch und fällt nicht auf)
-    spriteBudget = 12;
+    // neue Farben: höchstens 4 neue Körperbilder je Bild (je ~3 ms im Venue-Thread) – der Rest behält kurz die alten (dunkle Silhouetten,
+    // der Wechsel ist nach gut einer halben Sekunde durch und fällt nicht auf)
+    spriteBudget = 4;
+    firstBudget = 12;
     const X = mind.mood(px, dt, st.hype), t = st.t;
     const D = dance(px, X, v.seated), style = D.style;
     const SEAa = seaLevel(px, dt, st);
@@ -1297,6 +1298,9 @@ function createVenue(makeCanvas) {
       const ra = rowA[p.row];
       if (ra < 0.02) continue;
       if (p.pk !== pk) {
+        // wer noch gar kein Körperbild hat (Menge erscheint), bekommt eins aus einem eigenen Topf: sonst tauchten
+        // die Leute beim ersten Mal einzeln nacheinander auf
+        if (!p.spr && firstBudget-- > 0) spriteBudget++;
         const sp2 = bodySprite(p, u, crowd.T[p.lv], v.seated);
         if (sp2) [p.spr, p.pk] = [sp2, pk];
       }

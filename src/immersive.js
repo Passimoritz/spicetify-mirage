@@ -115,7 +115,7 @@ const immersive = (() => {
   // Bewegungs- und Schlag-Uhr ohne Sprünge: Spulen, Songwechsel und Ansichtswechsel rissen sonst Kranz und
   // Scheinwerfer im selben Bild um ganze Drehungen weiter (steady.js)
   const motion = createSteadyClock(), beatsClock = createBeatClock();
-  let palShown = null, palFade = null;
+  let palShown = null, palFade = null, palSm = null;
   const pit = new Float32Array(12);
   const vizRect = { n: 0, r: null };
   let rings = [], lastBeatIdx = -1, vctx = null, vw = 0, vh = 0;
@@ -1665,6 +1665,15 @@ const immersive = (() => {
         pal = pal.map((c, i) => c.map((v, k) => Math.round(from[i][k] + (v - from[i][k]) * e)));
       }
     }
+    // Lichtfarben gleiten immer kurz (~80 ms) zum Ziel: Melodie-Tönung, Tonart und Farbkorrektur sprangen sonst
+    // von Bild zu Bild um bis zu 60 Stufen – das wirkte wie Flackern. Der Drop bleibt knackig (Blitz und Bloom
+    // laufen getrennt), „Ruhig“ zeichnet ohnehin ohne Party-Licht.
+    if (px && !cfg.calm) {
+      if (!palSm) palSm = pal.map((c) => c.slice());
+      const kk = 1 - Math.exp(-dt / 0.08);
+      for (let i = 0; i < 3; i++) for (let k = 0; k < 3; k++) palSm[i][k] += (pal[i][k] - palSm[i][k]) * kk;
+      pal = palSm.map((c) => [Math.round(c[0]), Math.round(c[1]), Math.round(c[2])]);
+    } else palSm = null;
     palShown = px ? pal : null;
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
