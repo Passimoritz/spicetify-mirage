@@ -71,6 +71,9 @@ class Win {
       if (o.text) list = list.filter((e) => e.textContent.includes(o.text));
       const el = list[o.index || 0];
       if (!el) return { miss: true };
+      // ein Mensch klickt erst, wenn es stillsteht: solange das Element oder eine Hülle darum noch auf- oder
+      // zugleitet (Menüs federn aus der Ecke), läge der Klick sonst neben dem Ziel
+      if (document.getAnimations().some((a) => a.playState === "running" && a.effect?.getComputedTiming().endTime !== Infinity && a.effect?.target?.contains?.(el))) return { moving: true };
       el.scrollIntoView({ block: "center", inline: "center" });
       const r = el.getBoundingClientRect(), x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2);
       const hit = document.elementFromPoint(x, y);
@@ -78,6 +81,10 @@ class Win {
       return { x, y, on: !!hit && (hit === el || el.contains(hit)), hit: name(hit), off: x < 0 || y < 0 || x > innerWidth || y > innerHeight };
     })()`);
     let p = await look();
+    for (let n = 0; n < 20 && p.moving; n++) {
+      await wait(50);
+      p = await look();
+    }
     // während eines Ansichtswechsels (View Transition) liegt kurz nichts Klickbares oben
     for (let n = 0; n < 15 && !p.miss && !p.on && p.hit.startsWith("HTML"); n++) {
       await wait(100);
