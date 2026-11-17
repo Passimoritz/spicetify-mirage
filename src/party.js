@@ -236,6 +236,15 @@ const party = (() => {
   // Genre aus allen Quellen (genres.js pickGenre): Apple, Deezer, Spotify-Künstler, Namen, zuletzt der Klang
   const choose = (bpm, d) =>
     pickGenre({ genres: info.genres || [], apple: info.apple || "", deezer: info.deezer || [], artist: info.artist, title: info.title, bpm, loud: d?.loud ?? -10, minor: d ? minorShare(d) : 0, sound: d?.sound || info.sound || null });
+  // Gesprochenes statt Musik: Podcast, Hörbuch, Werbung, DJ-Ansage – keine Lichtshow im Takt und keine
+  // Genre-Abfrage (der Titel einer Podcast-Folge geht nicht an Deezer/Apple)
+  function talkOf(item) {
+    const u = item?.uri || "", m = item?.metadata || {};
+    if (u.startsWith("spotify:ad:") || m.is_advertisement === "true") return "ad";
+    if (m.is_dj_narration === "true") return "dj";
+    if (/^spotify:(episode|chapter|audiobook|show):/.test(u) || m.is_podcast === "true" || m.is_audiobook === "true") return "talk";
+    return "";
+  }
   async function prepare(item) {
     const u = item?.uri || "";
     // Song + gewählter Stil: wer in den Einstellungen umstellt, bekommt sofort das neue Profil
@@ -252,6 +261,11 @@ const party = (() => {
     lastBeat = lastBar = -1;
     // das Nachglühen eines Drops klingt rasch aus statt im selben Bild abzureißen (das sah aus wie ein Ruckler)
     glowCut = true;
+    const talk = talkOf(item);
+    if (talk) {
+      info = { key: "chill", why: talk, conf: 1, bpm: 0, genres: [], apple: "", deezer: [], artist: "", title: "", sound: null, src: "", talk };
+      return info;
+    }
     // beide Quellen gleichzeitig fragen
     const auto0 = cfg.partyStyle === "auto";
     const [genres, apple, dzg] = auto0 ? await Promise.all([artistGenres(item), appleGenre(item).catch(() => ""), deezerGenres(item).catch(() => [])]) : [[], "", []];
@@ -289,7 +303,8 @@ const party = (() => {
     const P = PROFILES[info.key];
     const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
     const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
-    const fx = !calm();
+    // bei Gesprochenem nur ruhiges Grundlicht (wie „Ruhig“)
+    const fx = !calm() && !info.talk;
     const d = audio.uri === uri ? audio.data : null;
     clock += dt;
     const ease = (k) => 1 - Math.exp(-dt * k);

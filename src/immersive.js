@@ -763,6 +763,8 @@ const immersive = (() => {
     if (m === "party") {
       // „Party · Rave · 128 BPM“ – zeigt, welches Profil gerade greift
       const p = party.info;
+      // Podcast, Werbung, DJ-Ansage: kein Genre und kein Tempo anzeigen – es ist ja keine Musik
+      if (p.talk) return void (q.kicker.textContent = "Party");
       // „≈“: Tempo nur geschätzt (Spotify hat keine Taktanalyse, siehe estimate.js)
       // „120? BPM“: nur ein Richtwert (offline, kein Liedtext, keine Hörprobe) – ehrlich markiert, aber immer ein Tempo
       q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? (audio.data?.synthetic ? "≈ " : "") + p.bpm + (p.src === "guess" ? "?" : "") + " BPM" : ""].filter(Boolean).join(" · ");

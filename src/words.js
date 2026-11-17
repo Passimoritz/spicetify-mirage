@@ -327,9 +327,9 @@ function createWordFx(lexicon, { onFire } = {}) {
         const host = node.parentElement;
         if (host?.classList.contains("m-w")) {
           host.style.setProperty("--fxc", col.join(","));
+          // Animation neu starten ohne erzwungenes Layout (offsetWidth kostete ~11 ms): Klasse ab, im nächsten Bild wieder an
           host.classList.remove("m-wfx");
-          void host.offsetWidth;
-          host.classList.add("m-wfx");
+          requestAnimationFrame(() => host.isConnected && host.classList.add("m-wfx"));
         } else if (local >= 0) {
           const r = document.createRange();
           r.setStart(node, local);
