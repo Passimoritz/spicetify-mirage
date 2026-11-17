@@ -315,7 +315,7 @@ const immersive = (() => {
       if (cfg.translate) addTranslations(lyrToken);
       else {
         q.inner.querySelectorAll(".m-im-tr").forEach((n) => n.remove());
-        active = -2;
+        relayLyrics();
       }
     };
     q.video = el.querySelector(".m-im-canvas");
@@ -403,8 +403,9 @@ const immersive = (() => {
       const r = e.currentTarget.getBoundingClientRect();
       PLR.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * (PLR.getDuration() || 0));
     };
-    q.inner.addEventListener("click", (e) => {
-      const line = e.target.closest(".m-im-line");
+    // am Liedtext-Bereich (die Textfläche wird bei jedem neuen Text ausgetauscht, siehe ghostLyrics)
+    q.lyrics.addEventListener("click", (e) => {
+      const line = e.target.closest(".m-im-lyrics-inner:not(.m-im-lyrics-ghost) .m-im-line");
       if (line && lyr?.synced && free()) PLR.seek(Math.max(Number(line.dataset.t), 2));
     });
     el.addEventListener("pointermove", (e) => {
@@ -670,14 +671,18 @@ const immersive = (() => {
   // Leicht-Preset oder Energiesparen fest an: weniger Pixel, 30 Bilder/s, weniger Details.
   // tier(): bei „Eigene“ der Rahmen des zuletzt gewählten Presets – ein Schalter macht es nie teurer
   const lightMode = () => !!cfg.lite || tier() === "light" || cfg.eco === "on";
-  const sizeKeyNow = () => `${tier()}|${cfg.lite}|${cfg.eco}|${VIZ.has(el?.dataset.mode)}`;
+  // Visualizer verlassen (zu Cover oder Liedtext): er zeichnet weiter, bis er ausgeblendet ist (CSS 0,5 s) –
+  // sonst verschwand er schlagartig bzw. blendete als eingefrorenes Bild aus
+  let vizFadeUntil = 0;
+  const vizLive = () => VIZ.has(el?.dataset.mode) || performance.now() < vizFadeUntil;
+  const sizeKeyNow = () => `${tier()}|${cfg.lite}|${cfg.eco}|${vizLive()}`;
   let sizeKey = "";
   function sizeCanvas() {
     if (!q.canvas) return;
     // Cover und Liedtext zeichnen nichts auf das Canvas: dort keine Pixel vorhalten (vw/vh bleiben für die Geometrie)
-    if (!VIZ.has(el.dataset.mode)) {
+    if (!vizLive()) {
       sizeKey = sizeKeyNow();
-      q.canvas.width = q.canvas.height = 0;
+      if (q.canvas.width) q.canvas.width = q.canvas.height = 0;
       return;
     }
     // höchstens ~3 Mio. Pixel: auf großen/hochauflösenden Bildschirmen wäre die volle Dichte ein
@@ -688,8 +693,12 @@ const immersive = (() => {
     const budget = Math.sqrt(pixels / Math.max(1, innerWidth * innerHeight));
     const dpr = Math.max(0.5, Math.min(devicePixelRatio || 1, cap, budget));
     sizeKey = sizeKeyNow();
-    vw = q.canvas.width = Math.round(innerWidth * dpr);
-    vh = q.canvas.height = Math.round(innerHeight * dpr);
+    // gleiche Größe nicht neu setzen: das leert die Fläche und legt sie neu an (ein leeres Bild, Ruckler beim Ansichtswechsel)
+    const w = Math.round(innerWidth * dpr), h = Math.round(innerHeight * dpr);
+    if (q.canvas.width !== w) q.canvas.width = w;
+    if (q.canvas.height !== h) q.canvas.height = h;
+    vw = w;
+    vh = h;
   }
 
   // Ruhemodus (Party): nach 2,6 s ohne Maus/Taste verschwinden Kopfzeile, Knöpfe und Liedtext-Leiste,
@@ -726,6 +735,9 @@ const immersive = (() => {
   function setMode(mode, animate) {
     if (!MODES.some(([k]) => k === mode)) mode = "cover";
     const apply = () => {
+      // aus Visualizer, Mix oder Party heraus: der Visualizer läuft weiter, bis er ausgeblendet ist
+      const from = el.dataset.mode;
+      vizFadeUntil = VIZ.has(from) && !VIZ.has(mode) && !cfg.calm && isOpen() ? performance.now() + 550 : 0;
       cfg.imMode = mode;
       save();
       el.dataset.mode = mode;
@@ -737,6 +749,8 @@ const immersive = (() => {
       updateKicker();
       if (LYR.has(mode)) loadLyrics();
       if (mode === "mix") party.prepare(currentItem());
+      // aufgeschobene Wort-Effekte jetzt vorbereiten (sie werden in Party gebraucht)
+      if (mode === "party") wordPrep?.();
       if (mode === "party") party.prepare(currentItem()).then((info) => {
         updateKicker();
         noteRecap(currentItem(), info);
@@ -746,15 +760,71 @@ const immersive = (() => {
       applyCanvas();
       sizeCanvas();
       active = -2;
+      // Liedtext gleich an der richtigen Stelle der neuen Spalte, statt quer hinzugleiten
+      if (LYR.has(mode)) placeSoon("snap");
       wake();
     };
-    if (animate && document.startViewTransition && !cfg.calm && isOpen()) {
-      try {
-        document.startViewTransition(apply);
-      } catch {}
-      // läuft die Überblendung nicht an (verdecktes Fenster, zweite Blende), trotzdem wechseln
-      setTimeout(() => el.dataset.mode !== mode && apply(), 400);
-    } else apply();
+    if (animate && !stillMotion() && isOpen() && el.dataset.mode !== mode) morphMode(apply);
+    else apply();
+  }
+  // Ansichtswechsel als Gleitfahrt (FLIP) statt View Transition: die lief über eingefrorene Standbilder der
+  // ganzen Seite – der Visualizer stand für 0,45 s als Geisterbild still, sein Kranz saß schon am Ziel, während
+  // das Cover-Standbild noch flog, und das Abfotografieren kostete beim Wechsel ein langes Bild.
+  // Jetzt bleibt alles lebendig: Cover und Titelblock gleiten von der alten an die neue Stelle (der Kranz folgt
+  // Bild für Bild, siehe vizMoveUntil), der Titelblock blendet dabei über, Liedtext blendet ein bzw. aus.
+  let morphUntil = 0;
+  function morphMode(apply) {
+    const lyrWas = q.lyrics.offsetWidth > 0;
+    const a = q.wrap.getBoundingClientRect(), m = q.meta.getBoundingClientRect();
+    const metaGhost = ghostOf(q.meta, m);
+    const lyrGhost = lyrWas ? lyricsGhostIn(el) : null;
+    apply();
+    const b = q.wrap.getBoundingClientRect(), n = q.meta.getBoundingClientRect();
+    const ease = "cubic-bezier(0.22, 1, 0.36, 1)", ms = 700;
+    morphUntil = performance.now() + ms;
+    vizMoveUntil = morphUntil + 100;
+    if (a.width && b.width) {
+      const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2), k = a.width / b.width;
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || Math.abs(k - 1) > 0.01) q.wrap.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${k})` }, { transform: "none" }], { duration: ms, easing: ease, composite: "add" });
+    }
+    if (m.width && n.width) {
+      const dx = m.left + m.width / 2 - (n.left + n.width / 2), dy = m.top - n.top;
+      q.meta.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: ms, easing: ease, composite: "add" });
+      // Deckkraft eigens (nicht addiert): Party dimmt den Titelblock auf 0,6
+      q.meta.animate([{ opacity: 0 }, { opacity: getComputedStyle(q.meta).opacity }], { duration: ms * 0.6, delay: ms * 0.1, easing: ease, fill: "backwards" });
+      if (metaGhost) metaGhost.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${-dx}px, ${-dy}px)`, opacity: 0 }], { duration: ms * 0.5, easing: ease, fill: "forwards" }).finished.then(() => metaGhost.remove(), () => metaGhost.remove());
+    } else metaGhost?.remove();
+    if (lyrGhost) lyrGhost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 280, easing: "ease-out", fill: "forwards" }).finished.then(() => lyrGhost.remove(), () => lyrGhost.remove());
+    if (!lyrWas && q.lyrics.offsetWidth) q.lyrics.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 80, easing: ease, fill: "backwards" });
+  }
+  // Liedtext beim Verlassen: sichtbare Zeilen samt Randverlauf (Maske) an ihrer Stelle, über der neuen Ansicht
+  function lyricsGhostIn(host) {
+    const r = q.lyrics.getBoundingClientRect(), o = host.getBoundingClientRect(), ls = getComputedStyle(q.lyrics);
+    if (!r.width || !r.height) return null;
+    const { g, cs } = lyricsCopy();
+    g.style.cssText = `left:${q.inner.offsetLeft}px;top:${q.inner.offsetTop - q.lyrics.scrollTop}px;width:${q.inner.offsetWidth}px;transform:${cs.transform}`;
+    const w = document.createElement("div");
+    w.className = "m-im-morph";
+    w.setAttribute("aria-hidden", "true");
+    w.style.cssText = `position:absolute;left:${r.left - o.left}px;top:${r.top - o.top}px;width:${r.width}px;height:${r.height}px;overflow:hidden;pointer-events:none;-webkit-mask-image:${ls.webkitMaskImage};mask-image:${ls.maskImage}`;
+    w.append(g);
+    host.append(w);
+    return w;
+  }
+  // stille Kopie eines Bereichs an seiner jetzigen Stelle (für die Überblendung beim Ansichtswechsel)
+  function ghostOf(node, r) {
+    if (!r.width || !r.height) return null;
+    const display = getComputedStyle(node).display;
+    const g = node.cloneNode(true);
+    g.removeAttribute("id");
+    g.querySelectorAll("[id]").forEach((x) => x.removeAttribute("id"));
+    g.classList.add("m-im-morph");
+    g.setAttribute("aria-hidden", "true");
+    g.inert = true;
+    const o = el.getBoundingClientRect();
+    g.style.cssText += `;position:absolute;margin:0;left:${r.left - o.left}px;top:${r.top - o.top}px;width:${r.width}px;height:${r.height}px;pointer-events:none;translate:none;scale:none;rotate:none;display:${display}`;
+    el.append(g);
+    return g;
   }
 
   function updateKicker() {
@@ -1073,7 +1143,7 @@ const immersive = (() => {
   // Liedtext laden: das erste brauchbare Ergebnis erscheint sofort, jedes bessere (Text → zeitgenau → Wort für
   // Wort) ersetzt es an Ort und Stelle – ohne „Lädt“, ohne Einblenden, ohne nach oben zu springen.
   // Fertig (Promise erfüllt), wenn das endgültige Ergebnis da ist.
-  let lyrLoad = 0, lyrWatch = null;
+  let lyrLoad = 0, lyrWatch = null, wordPrep = null, lyrFade = null;
   function loadLyrics() {
     const uri = currentItem()?.uri || "";
     if (uri === lyrUri && lyr !== undefined) return Promise.resolve();
@@ -1096,17 +1166,60 @@ const immersive = (() => {
       });
     });
   }
+  // Ruhig oder „weniger Bewegung“ im System: Liedtext sofort tauschen, ohne Überblendung
+  const stillMotion = () => !!cfg.calm || !!matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  // Überblendung statt Schnitt: der gezeigte Text bleibt als stille Kopie („Geist“) genau an seinem Platz
+  // und blendet aus, während der neue darüber einblendet. Nichts verschwindet schlagartig, nichts springt.
+  // Der Geist liegt UNTER dem neuen Text (im DOM davor) – so wird die Schrift mitten in der Blende nicht blass.
+  // Kopie nur der gerade sichtbaren Zeilen (je an ihrer Stelle) statt aller Zeilen mit allen Wörtern: die Kopie
+  // kostet so kaum Layout und Rasterung. Liest nur Maße (das Layout ist hier noch sauber), schreibt nichts.
+  function lyricsCopy() {
+    const cs = getComputedStyle(q.inner);
+    const ty = (cs.transform && cs.transform !== "none" ? new DOMMatrixReadOnly(cs.transform).m42 : 0) - q.lyrics.scrollTop, h = q.lyrics.clientHeight;
+    const g = document.createElement("div");
+    g.className = "m-im-lyrics-ghost";
+    g.setAttribute("aria-hidden", "true");
+    g.inert = true;
+    for (const ln of q.inner.children) {
+      const top = ln.offsetTop;
+      if (top + ln.offsetHeight + ty < -60 || top + ty > h + 60) continue;
+      const c = ln.cloneNode(true);
+      c.style.position = "absolute";
+      c.style.left = c.style.right = "0";
+      c.style.top = top + "px";
+      c.style.margin = "0";
+      g.append(c);
+    }
+    return { g, cs };
+  }
+  // Ohne Kopieren und ohne Messen: die bisherige Textfläche selbst wird zum Geist (sie behält ihre Lage und
+  // gleitet sogar mitten in einer Gleitfahrt einfach weiter), eine frische, leere Fläche tritt an ihre Stelle.
+  function ghostLyrics(ms) {
+    q.lyrics.querySelectorAll(".m-im-lyrics-ghost").forEach((g) => g.remove());
+    const old = q.inner;
+    if (stillMotion() || !LYR.has(el.dataset.mode) || el.classList.contains("is-nolyr") || !old.querySelector(".m-im-line")) return null;
+    const fresh = old.cloneNode(false);
+    // einfacher Text scrollt mit: der Geist bleibt, wo er gerade zu sehen ist (der Bereich springt gleich nach oben)
+    if (q.lyrics.classList.contains("is-unsynced")) old.style.top = -q.lyrics.scrollTop + "px";
+    old.classList.add("m-im-lyrics-ghost");
+    old.setAttribute("aria-hidden", "true");
+    old.inert = true;
+    old.after(fresh);
+    q.inner = fresh;
+    const done = () => old.remove();
+    old.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }).finished.then(done, done);
+    return old;
+  }
   function resetLyricsView() {
-    // erst den alten Text leeren, dann messen: das erzwungene Layout betrifft so nur den Hinweis statt aller
-    // alten Zeilen (beim Songwechsel waren das 10–15 ms im selben Bild)
+    // der alte Text blendet aus, statt schlagartig zu verschwinden (der neue ist meist vorgeladen und blendet gleich ein)
+    // ohne Gleitfahrt nach oben zurücksetzen – sonst rutscht der alte Text 0,8 s quer durchs Bild.
+    // Mit Geist ist die Fläche neu (noch ohne Stil): dann gleitet ohnehin nichts, und es braucht kein Layout
+    if (ghostLyrics(320)) q.inner.style.transform = "";
+    else snapLyrics(() => (q.inner.style.transform = ""));
+    q.lyrics.scrollTop = 0;
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
-    // ohne Gleitfahrt nach oben zurücksetzen – sonst rutscht der alte Text 0,8 s quer durchs Bild
-    q.inner.style.transition = "none";
-    q.inner.style.transform = "";
-    void q.inner.offsetHeight;
-    q.inner.style.transition = "";
     q.lyrics.classList.remove("is-unsynced");
     el.classList.remove("is-karaoke");
     q.lyrsrc.hidden = q.lyrbad.hidden = true;
@@ -1128,14 +1241,17 @@ const immersive = (() => {
     (got?.lines || []).forEach((l, i) => (seen.get(key(l.text)) >= 2 || HYPE.test(l.text)) && hype.add(i));
     active = -2;
     words = [];
+    // ein besseres Ergebnis zum selben Song: der alte Text blendet an Ort und Stelle aus, der neue steht schon
+    // an der richtigen Stelle und blendet darüber ein (Text → zeitgenau → Wort für Wort ohne Springen)
+    // steht der Text gerade mitten in einer Gleitfahrt, fährt der neue von genau dort weiter (kein Sprung)
+    // gemessen wird nur, wenn wirklich gerade eine Gleitfahrt läuft (sonst ist das Ziel die jetzige Lage)
+    const from = upgrade && got?.synced ? (q.inner.getAnimations().length ? getComputedStyle(q.inner).transform : q.inner.style.transform) : "";
+    if (upgrade) ghostLyrics(450);
     q.inner.textContent = "";
-    // neuer Text blendet weich ein (Animation neu starten) – ein besseres Ergebnis zum selben Song nicht:
-    // es tauscht nur die Zeilen, die Ansicht gleitet höchstens ein Stück zur passenden Zeile
-    if (!upgrade) {
-      q.inner.classList.remove("is-in");
-      void q.inner.offsetWidth;
-      q.inner.classList.add("is-in");
-    }
+    q.lyrics.scrollTop = 0;
+    // neuer Text blendet weich ein – als Web-Animation: das Neustarten einer CSS-Animation erzwang ein Layout
+    lyrFade?.cancel();
+    if (!matchMedia?.("(prefers-reduced-motion: reduce)").matches) lyrFade = q.inner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
     showSource(got);
     setNoLyr(!got || !!got.instrumental || !got.lines?.length);
     updateLyrState();
@@ -1144,11 +1260,20 @@ const immersive = (() => {
     voices(got);
     // Stimmung der Lichtregie: eine kleine Wortliste über die Zeilen (bleibt lokal)
     party.lyrics(uri, got.synced ? got.lines : []);
-    if (cfg.partyWords && got.synced) {
-      wordFx.prepare(uri, got.lines, got.lang);
-      // Sprache ohne eigenes Wörterbuch: einmal die englische Übersetzung holen (nur mit Online-Suche)
-      if (wordFx.needsTranslation() && cfg.onlineLyrics) translateLines(uri, got, "en").then((tr) => token === lyrToken && wordFx.addTranslated(uri, tr)).catch(() => {});
-    } else wordFx.prepare(uri, [], "");
+    // Wort-Effekte (nur Party): Wörterbuch aufbauen und alle Zeilen durchsuchen kostet beim ersten Mal
+    // ~40 ms – außerhalb von Party erst, wenn der Browser Luft hat, statt im Bild, in dem der Text erscheint
+    wordPrep = () => {
+      wordPrep = null;
+      if (token !== lyrToken) return;
+      if (cfg.partyWords && got.synced) {
+        wordFx.prepare(uri, got.lines, got.lang);
+        // Sprache ohne eigenes Wörterbuch: einmal die englische Übersetzung holen (nur mit Online-Suche)
+        if (wordFx.needsTranslation() && cfg.onlineLyrics) translateLines(uri, got, "en").then((tr) => token === lyrToken && wordFx.addTranslated(uri, tr)).catch(() => {});
+      } else wordFx.prepare(uri, [], "");
+    };
+    if (el.dataset.mode === "party") wordPrep();
+    else if (window.requestIdleCallback) requestIdleCallback(() => wordPrep?.(), { timeout: 1500 });
+    else setTimeout(() => wordPrep?.(), 300);
     const karaoke = cfg.karaoke && got.synced;
     el.classList.toggle("is-karaoke", karaoke);
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -1159,9 +1284,13 @@ const immersive = (() => {
       note.textContent = t("unsynced");
       frag.append(note);
     }
+    // aktuelle Zeile schon beim Bauen markieren: so hat jede Zeile ihren Endzustand ab dem ersten Stil,
+    // egal wer vor dem nächsten Bild Stil oder Layout abfragt (kein Plopp der aktiven Zeile)
+    const i0 = got.synced ? lineAt(got.lines, songPos(performance.now()), -2) : -9;
     got.lines.forEach((l, i) => {
       const d = document.createElement("div");
-      d.className = "m-im-line";
+      d.className = i === i0 ? "m-im-line is-active" : i < i0 ? "m-im-line is-past" : "m-im-line";
+      if (i0 > -9) d.style.setProperty("--d", Math.min(Math.abs(i - Math.max(i0, 0)), 6));
       d.dataset.t = l.t;
       if (l.who) d.dataset.who = l.who;
       if (karaoke && l.text !== "♪") {
@@ -1187,7 +1316,17 @@ const immersive = (() => {
       } else bgSplit(d, l.text);
       frag.append(d);
     });
+    // mitten in einer Gleitfahrt: die (noch leere) Fläche bleibt genau dort stehen, wo sie gerade ist
+    const glide = from && from !== "none";
+    if (glide) snapLyrics(() => (q.inner.style.transform = from));
     q.inner.append(frag);
+    // gleich an die richtige Stelle, mit der aktuellen Zeile schon hervorgehoben: der Text gleitet nicht erst
+    // von oben herein, und die Zeile „ploppt“ nicht im nächsten Bild noch einmal auf
+    // Erst im nächsten Bild (vor dessen Layout): so wird nur EINMAL gelayoutet statt sofort und nach den
+    // folgenden Änderungen gleich noch einmal. Bis dahin wird nichts gezeichnet – die neuen Zeilen bekommen ihre
+    // Klassen also trotzdem vor ihrem ersten Stil.
+    if (got.synced) placeSoon(glide ? "glide" : "snap");
+    else snapLyrics(() => (q.inner.style.transform = ""));
     showTrBtn();
     if (cfg.translate) addTranslations(token);
     if (cfg.romanize) addRomaji(token);
@@ -1259,7 +1398,7 @@ const immersive = (() => {
       d.textContent = text;
       lines[i].insertBefore(d, lines[i].querySelector(".m-im-tr"));
     });
-    active = -2;
+    relayLyrics();
   }
 
   /* ---- Timing von Hand: im Liedtext E drücken, dann Enter, wenn eine Zeile beginnt (gespeichert je Song) */
@@ -1396,7 +1535,14 @@ const immersive = (() => {
       d.textContent = text;
       lines[i].append(d);
     });
-    active = -2;
+    relayLyrics();
+  }
+  // Zeilen sind höher geworden (Übersetzung, Lautschrift): sofort neu ausrichten – die aktuelle Zeile bleibt
+  // genau stehen, statt erst mit den Zeilen darüber wegzuspringen und dann zurückzugleiten
+  function relayLyrics() {
+    const cur = lyr?.synced && active > -2 && q.inner.children[Math.max(active, 0)];
+    if (!cur) return void (active = -2);
+    snapLyrics(() => (q.inner.style.transform = `translateY(${q.lyrics.clientHeight * 0.42 - (cur.offsetTop + cur.offsetHeight / 2)}px)`));
   }
   // Knopf nur, wenn es etwas zu übersetzen gibt (Text da, Sprache nicht schon die eigene)
   function showTrBtn() {
@@ -1459,12 +1605,36 @@ const immersive = (() => {
     return lyrGeo.h * 0.42 - lyrGeo.mid[i];
   }
 
-  function drawLyrics(pos) {
+  // Liedtext im nächsten Bild ausrichten – wer zuerst zeichnet (frame oder dieser Rückruf), richtet aus.
+  // how = "snap": sofort an die Stelle · "glide": von der jetzigen Stelle weitergleiten · after: danach ausführen
+  let lyrSnap = null;
+  function placeSoon(how, after) {
+    lyrSnap = { how, after };
+    requestAnimationFrame(() => lyrSnap && el && LYR.has(el.dataset.mode) && drawLyrics(songPos(performance.now())));
+  }
+  // Position der Textfläche ohne Gleitfahrt setzen. Nur die Fläche selbst (Stil direkt am Element): eine
+  // Klasse am Container würde alle Zeilen und Wörter zweimal neu berechnen lassen.
+  function snapLyrics(fn) {
+    q.inner.style.transition = "none";
+    fn();
+    void getComputedStyle(q.inner).opacity; // nur Stil auflösen (Deckkraft braucht kein Layout)
+    q.inner.style.transition = "";
+  }
+  // snap: frisch aufgebauter Text steht sofort an seiner Stelle, statt hinzugleiten. Die neuen Zeilen bekommen
+  // ihre Klassen vor ihrem ersten Stil – sie starten also ohnehin ohne Übergang im Endzustand (kein Plopp).
+  function drawLyrics(pos, snap) {
     if (!lyr?.synced) return;
+    const pend = lyrSnap;
+    if (pend) {
+      lyrSnap = null;
+      if (pend.how === "snap") snap = true;
+      active = -2;
+    }
     alignLyrics();
     const lines = q.inner.children;
     // kleine Rücksprünge der Uhr (Pause, Nachjustieren) lassen die eben begonnene Zeile stehen (songtime.js)
     const i = lineAt(lyr.lines, pos, active);
+    if (snap) q.inner.style.transition = "none";
     if (i !== active) {
       const was = active;
       active = i;
@@ -1496,6 +1666,11 @@ const immersive = (() => {
       }
       if (cur) q.inner.style.transform = `translateY(${y}px)`;
     }
+    if (snap) {
+      void getComputedStyle(q.inner).opacity; // nur Stil auflösen (Deckkraft braucht kein Layout)
+      q.inner.style.transition = "";
+    }
+    pend?.after?.();
     // Karaoke: nur die Wörter der aktuellen Zeile, und nur wenn sich ihr Stand sichtbar ändert
     const ws = i >= 0 && words[i];
     if (ws) {
@@ -1535,7 +1710,9 @@ const immersive = (() => {
     const dpr = vw / innerWidth;
     if (!vizRect.r || vizRect.n++ % 30 === 0 || now < vizMoveUntil) {
       // ohne Puls und Pendeln messen: sonst springt der Kranz alle 30 Bilder auf die gerade gemessene Pulsgröße
-      const b0 = q.wrap.getBoundingClientRect(), w0 = q.wrap.offsetWidth || b0.width, h0 = q.wrap.offsetHeight || b0.height;
+      // beim Ansichtswechsel wächst bzw. schrumpft das Cover (morphMode): dann die gezeigte Größe ohne den Puls
+      const b0 = q.wrap.getBoundingClientRect(), ps = now < morphUntil ? parseFloat(q.wrap.style.scale) || 1 : 0;
+      const w0 = ps ? b0.width / ps : q.wrap.offsetWidth || b0.width, h0 = ps ? b0.height / ps : q.wrap.offsetHeight || b0.height;
       const [sx = 0, sy = 0] = (q.wrap.style.translate || "").split(" ").map(parseFloat);
       const mx = b0.left + b0.width / 2 - (sx || 0), my = b0.top + b0.height / 2 - (sy || 0);
       vizRect.r = { left: mx - w0 / 2, top: my - h0 / 2, width: w0, height: h0 };
@@ -2796,7 +2973,7 @@ const immersive = (() => {
     const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
     if (LYR.has(mode)) drawLyrics(pos);
-    if (VIZ.has(mode)) {
+    if (VIZ.has(mode) || (vw && now < vizFadeUntil)) {
       // ein Fehler in einem Bild darf den Visualizer nicht dauerhaft lahmlegen: Zustand zurücksetzen,
       // das nächste Bild fängt sauber neu an
       try {

@@ -1364,10 +1364,12 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   height: 100%;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.9s var(--m-ease);
+  /* ausblenden zügig (immersive.js zeichnet bis dahin weiter), einblenden ruhig */
+  transition: opacity 0.5s var(--m-ease);
 }
 #mirage-immersive:is([data-mode="viz"], [data-mode="mix"], [data-mode="party"]) .m-im-viz {
   opacity: 1;
+  transition-duration: 0.9s;
 }
 
 /* Cover */
@@ -1379,7 +1381,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   width: min(40vw, 60vh);
   aspect-ratio: 1;
   perspective: 1200px;
-  view-transition-name: m-cover;
   /* Puls und Pendeln (scale/rotate aus immersive.js): bei gedrosselter Bildrate gleitet der Browser dazwischen */
   transition:
     scale var(--m-ip, 0s) linear,
@@ -1444,7 +1445,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   position: relative;
   z-index: 1;
   min-width: 0;
-  view-transition-name: m-meta;
 }
 #mirage-immersive .m-im-kicker {
   font: 500 12px/1 var(--m-mono);
@@ -1582,13 +1582,21 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   transition: transform 0.8s var(--m-ease);
   will-change: transform;
 }
-#mirage-immersive .m-im-lyrics-inner.is-in {
-  animation: m-lyr-in 0.5s var(--m-ease) both;
+/* der vorige Text als stille Kopie, die an ihrem Platz ausblendet (Überblendung bei Songwechsel und besserem Ergebnis) */
+#mirage-immersive .m-im-lyrics-ghost {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+  will-change: opacity;
 }
-@keyframes m-lyr-in {
-  /* nur Deckkraft: ein Weichzeichner über die ganze Textfläche wäre teuer */
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* die alte Textfläche selbst als Geist: liegt genau über der Textspalte (gleiche Innenabstände wie der Bereich) */
+#mirage-immersive .m-im-lyrics-inner.m-im-lyrics-ghost {
+  top: 0;
+  left: 0;
+  right: 0;
+  padding-left: inherit;
+  padding-right: inherit;
+  will-change: transform, opacity;
 }
 #mirage-immersive .m-im-line {
   margin: 0 0 0.5em;
@@ -2108,15 +2116,10 @@ html.mirage-calm #mirage-immersive .m-im-line.is-hype .m-w {
   }
 }
 
-/* Ansichtswechsel morpht (View Transitions) */
-::view-transition-group(m-cover),
-::view-transition-group(m-meta) {
-  animation-duration: 0.75s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.45s;
+/* Ansichtswechsel: Cover und Titelblock gleiten lebendig (immersive.js, morphMode) – stille Kopien blenden aus */
+#mirage-immersive .m-im-morph {
+  z-index: 1;
+  will-change: opacity, transform;
 }
 
 @media (max-width: 900px) {
