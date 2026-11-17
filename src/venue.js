@@ -6,6 +6,7 @@ import { createShow } from "./show.js";
 import { createFlashCap } from "./flashcap.js";
 import { kin, kinSet } from "./styles.js";
 import { createCrowdMind, dance, jumps, armsUp } from "./crowd.js";
+import { createStageFx } from "./stagefx.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -36,6 +37,10 @@ function createVenue(makeCanvas) {
   // auch wenn die Freigabe aus dem Hauptthread (st.flashGo) einmal fehlt oder doppelt ankommt
   const flashCap = createFlashCap();
   const show = createShow(glowSprite, flashCap);
+  // Szenarien (scenarios.js → stagefx.js): Bühnenbilder auf gesungene Wörter und Momente der Musik
+  const sfx = createStageFx(glowSprite, flashCap);
+  // ein Wort wie „jump“ lässt die Menge springen (0..1, gilt für dieses Bild)
+  let wordJump = 0;
   let disco = null, tunnel = [];
   // Szenenwechsel der Lichtregie: das alte Bühnenlicht blendet aus, während das neue einblendet (nur für die
   // Dauer des Übergangs werden beide gezeichnet)
@@ -792,9 +797,11 @@ function createVenue(makeCanvas) {
     for (const f of fx.flames) {
       const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);
       for (let k = 0; k < 9; k++) {
-        const y = vh - (h * k) / 8, r = (58 - k * 4.5) * dpr * (0.8 + Math.random() * 0.4);
+        // Flackern als gleitendes Rauschen (zwei Sinuswellen je Leuchtpunkt) statt Zufall je Bild – lodert, statt zu zittern
+        const n1 = Math.sin(f.t * 23 + k * 1.7 + f.x * 0.01), n2 = Math.sin(f.t * 15 + k * 2.9);
+        const y = vh - (h * k) / 8, r = (58 - k * 4.5) * dpr * (1 + 0.2 * n1);
         ctx.globalAlpha = clamp(life * (0.9 - k * 0.07), 0, 1);
-        ctx.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r + (Math.random() - 0.5) * 10 * dpr, y - r, r * 2, r * 2);
+        ctx.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r + n2 * (3 + k) * dpr, y - r, r * 2, r * 2);
       }
       ctx.globalAlpha = life * 0.5;
       const r = vh * 0.3;
@@ -869,6 +876,34 @@ function createVenue(makeCanvas) {
       fx.strobe *= Math.exp(-dt * 28);
     }
   }
+
+  // Bühneneffekte auf ein gesungenes Wort (stagefx.js fragt): true = gezündet. Nur wo sie hingehören – nicht im
+  // Wohnzimmer, nicht in ruhigen Locations, nicht ohne Bühneneffekte (Leicht, Stärke niedrig); Raketen nur im Freien
+  let hv = null, hst = null;
+  const hookOk = () => !!hst?.fx && !hst.px.blackout && hv.decor !== "fairy" && !hv.calm;
+  const hooks = {
+    pyro: () => {
+      if (!hookOk()) return false;
+      for (const f of [0.2, 0.8]) fx.flames.push({ x: vw * f, t: 0 });
+      return true;
+    },
+    co2: () => {
+      if (!hookOk()) return false;
+      for (let k = 0; k < 4; k++) fx.jets.push({ x: vw * (0.12 + (0.76 * k) / 3), t: 0, h: vh * (0.5 + Math.random() * 0.15) });
+      return true;
+    },
+    rockets: () => {
+      const big = hv.decor === "towers" || hv.decor === "stands";
+      if (!hookOk() || !(big || hv.open) || fx.rockets.length >= 4) return false;
+      for (let k = 0; k < 2; k++) fx.rockets.push({ x: vw * (0.2 + Math.random() * 0.6), y: vh, vy: -vh * (1.1 + Math.random() * 0.3), c: hst.pal[k % 3] });
+      return true;
+    },
+    confetti: () => {
+      if (!hst?.fx || hv.decor === "fairy" || hv.calm) return false;
+      confetti(hst.pal, hv.decor === "towers" || hv.decor === "stands", true);
+      return true;
+    },
+  };
 
   /* ---------------------------------------------------------------- Publikum */
   // Jede Bewegung ist an die Schlagphase gekoppelt (0 = genau auf dem Schlag): Sprünge LANDEN auf dem Schlag,
@@ -1280,7 +1315,8 @@ function createVenue(makeCanvas) {
       // Sprungs fest – ändert sich die Stimmung mitten in der Luft, wird der Sprung trotzdem zu Ende gesprungen
       if (p.cyc !== cycN) {
         p.cyc = cycN;
-        p.jmp = jumps(D, me, hash(p.id, bar), px);
+        // auf ein Wort wie „jump“ springt ein Teil der Menge mit (wer ohnehin nur wiegt oder sitzt, nicht)
+        p.jmp = jumps(D, me, hash(p.id, bar), px) || (wordJump > 0.05 && !v.seated && style !== "sway" && hash(p.id, bar + 7) < wordJump * 0.75);
       }
       let lift = wave * (14 + me * 18) * s1;
       // Sprung landet auf dem Schlag, danach kurz in die Knie (Landung federt)
@@ -1481,6 +1517,14 @@ function createVenue(makeCanvas) {
     }
     if (st.inst) show.drawInst(ctx, st, st.px, st.pal, st.dpr);
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
+    wordJump = 0;
+    if (st.stage && (st.px.scn || st.cues?.length)) {
+      hv = v;
+      hst = st;
+      const cr = sfx.draw(ctx, st, v, hooks);
+      wordJump = cr.jump;
+      if (cr.hands > (st.handsUp || 0)) st.handsUp = cr.hands;
+    }
     if (st.stage && st.fog) drawFog(ctx, st, v);
     if (st.stage && v.open) drawDrones(ctx, st);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);

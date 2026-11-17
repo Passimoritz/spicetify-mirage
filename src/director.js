@@ -8,6 +8,7 @@
 // Die Stile unterscheiden sich nur über eine kurze Signatur (SIG) – keine Sonderfälle im Zeichencode.
 import { songMap, at, seek, STEP } from "./songmap.js";
 import { songMood, PROTO } from "./mood.js";
+import { pickDropLook, DROP_LOOKS } from "./scenarios.js";
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const KINDS = ["intro", "verse", "pre", "chorus", "drop", "break", "bridge", "outro"];
@@ -375,7 +376,85 @@ function planSong(d, key, o = {}) {
     p.kindIdx = KINDS.indexOf(p.kind);
   });
   const scenes = planScenes(parts, bars, bar, beat, sig, seedOf(d));
-  return { parts, scenes, beat, bar, bars, beats, end, sig, emo, holds: M.holds, drops: M.drops };
+  const mo = planMoments(parts, M, beats, beat, bar, end, sig, o.lyrics, seedOf(d), d.segs);
+  return { parts, scenes, beat, bar, bars, beats, end, sig, emo, holds: M.holds, drops: M.drops, mo };
+}
+
+/* ---- Momente der Musik (Szenarien): einmal pro Song, gezeichnet in stagefx.js */
+// fin = Finale (der letzte Höhepunkt, wenn es mindestens zwei gab) · mod = Tonartwechsel eines Höhepunkts gegenüber dem
+// vorigen (die „Rückung“ im letzten Refrain) · dl = Drop-Bild des Höhepunkts (Palette des Stils, nie zweimal
+// hintereinander dasselbe) · solo = lauter Teil ohne Gesang mitten im Song (Gitarren-, Saxofon-Solo …) ·
+// acap = Gesang über fast stiller Musik · stops = Stopps (die Band setzt mitten im Song kurz aus) · echo = Zeilen mit
+// Antwort in Klammern (Ruf und Antwort) · first = erster richtiger Schlag · tc = sehr langsam (-1) / sehr schnell (1)
+function planMoments(parts, M, beats, beat, bar, end, sig, lyrics, seed, segs) {
+  const rng = rngOf((seed ^ 0x5bd1e995) >>> 0);
+  const peak = (p) => p.kind === "chorus" || p.kind === "drop";
+  const nPeak = parts.filter(peak).length;
+  let lastPeak = -1, prevKey = "", prevLook = "";
+  parts.forEach((p, i) => peak(p) && p.t0 > end * 0.5 && (lastPeak = i));
+  const ly = (lyrics || []).filter((l) => l.text && l.t >= 0);
+  const sung = (a, b) => ly.some((l) => l.t >= a && l.t < b);
+  const eMid = parts.map((p) => p.e).sort((a, b) => a - b)[parts.length >> 1] ?? 0.5;
+  parts.forEach((p, i) => {
+    p.fin = i === lastPeak && nPeak >= 2;
+    p.mod = false;
+    p.dl = -1;
+    if (peak(p)) {
+      const k = p.key + "/" + p.mode;
+      p.mod = !!prevKey && p.key >= 0 && k !== prevKey;
+      prevKey = k;
+      prevLook = pickDropLook(sig.name, rng, prevLook);
+      p.dl = DROP_LOOKS.indexOf(prevLook);
+    }
+    // Solo/a cappella nur mit Liedtext (sonst weiß niemand, wo gesungen wird) – und nicht bei Drop-Dramaturgie:
+    // ein Drop ohne Gesang ist dort die Regel, kein Solo
+    const len = p.t1 - p.t0, inner = sung(p.t0 + 0.5, p.t1 - 0.5);
+    p.solo = ly.length >= 8 && !sig.drops && len >= bar * 4 - 0.05 && p.kind !== "intro" && p.kind !== "outro" && p.e >= eMid && !inner && sung(0, p.t0) && sung(p.t1, end);
+    p.acap = ly.length >= 8 && p.e < 0.22 && p.kind !== "outro" && inner && len >= bar * 2 - 0.05;
+  });
+  // Stopps: mindestens eine halbe, höchstens vier Sekunden fast Stille, davor und danach laut
+  const stops = [], E = M.energy, n = E.length;
+  // die Energiekurve ist mittig geglättet und fällt darum schon vor der Stille ab: Anfang und Ende genau aus den
+  // Klangsegmenten (still = 15 dB unter dem Mittel des Songs)
+  const ls = (segs || []).map((x) => x.l).sort((a, b) => a - b), quiet = (ls[ls.length >> 1] ?? -10) - 15;
+  const exact = (a, b) => {
+    if (!segs?.length) return [a, b];
+    let k = Math.max(0, seek(segs, a - 0.5, "t"));
+    while (k < segs.length - 1 && segs[k].t < a + 1.5 && segs[k].l > quiet) k++;
+    const a2 = segs[k].t;
+    while (k < segs.length - 1 && segs[k].l <= quiet) k++;
+    return a2 < segs[k].t ? [a2, segs[k].t] : [a, b];
+  };
+  const meanE = (a, b) => {
+    let s = 0, c = 0;
+    for (let k = Math.max(0, a); k < Math.min(n, b); k++, c++) s += E[k];
+    return c ? s / c : 0;
+  };
+  for (let k = Math.ceil(4 / STEP); k < n - Math.ceil(4 / STEP); k++) {
+    if (E[k] >= 0.1 || E[k - 1] < 0.1) continue;
+    let j = k;
+    while (j < n && E[j] < 0.1) j++;
+    const dur = (j - k) * STEP;
+    // (die Stille direkt vor einem Drop ist schon dessen dunkler Schlag – kein eigener Stopp)
+    const pre = M.drops.some((d) => Math.abs(d - j * STEP) < beat * 1.5);
+    if (!pre && dur >= 0.5 && dur <= 4 && meanE(k - 8, k) > 0.45 && meanE(j, j + 8) > 0.45) stops.push(exact(k * STEP, j * STEP));
+    k = j;
+  }
+  // Ruf und Antwort: die Antwort (in Klammern) kommt meist am Ende der Zeile
+  const echo = [];
+  ly.forEach((l, i) => {
+    if (!/\([^)]{2,}\)/u.test(l.text)) return;
+    const nx = ly[i + 1]?.t ?? l.t + 4;
+    echo.push(l.t + clamp((nx - l.t) * 0.6, 0.4, 3));
+  });
+  // erster richtiger Schlag: der erste, bei dem schon Musik da ist
+  let first = -1;
+  for (const b of beats) if (b.t < 40 && at(E, b.t) > 0.25) {
+    first = b.t;
+    break;
+  }
+  const bpm = 60 / beat;
+  return { stops, echo: echo.length >= 2 ? echo : [], first, tc: bpm >= 160 ? 1 : bpm <= 80 ? -1 : 0 };
 }
 
 /* ---- Szenenfolge: einmal pro Song, fester Zufall aus der Analyse */
@@ -487,14 +566,18 @@ function cue(plan, sec, o = {}) {
   const g = plan.g || (plan.g = {}), gs = q(dev("sat"), 0.04), gc = q(dev("con"), 0.04), gw = q(mix("warm"), 0.05), gh = q(mix("hue"), 6);
   const th = q(((Math.atan2(ty, tx) * 180) / Math.PI + 360) % 360, 6), tk = q(Math.hypot(tx, ty), 0.05), lum = q(mix("lum"), 0.02), sh = q(S0.sh + (S.sh - S0.sh) * sx, 6);
   if (g.sat !== gs || g.con !== gc || g.warm !== gw || g.hue !== gh || g.th !== th || g.tk !== tk || g.lum !== lum || g.sh !== sh) plan.g = { sat: gs, con: gc, warm: gw, hue: gh, th, tk, lum, sh };
+  const scn = moments(plan, P, sec, x, bp);
+  // Stopp: das Licht geht mit der Band aus · Outro: es wird langsam ruhiger · a cappella: nur noch die Stimme
+  const dimMo = (1 - 0.7 * scn.stop) * (1 - 0.3 * scn.out) * (1 - 0.3 * scn.acap);
   return {
     i, kind: P.kind, sect: P.kindIdx, n: P.n, mix: m,
-    I: dev("I"), speed: dev("speed"), beams: dev("beams"), sparks: dev("sparks"),
+    I: dev("I") * dimMo, speed: dev("speed"), beams: dev("beams") * dimMo, sparks: dev("sparks"),
     grade: plan.g,
     flash: o.noFlash ? 0 : m < 0.5 ? Q.look.flash : P.look.flash,
     fx: mix("fx"), haze: mix("haze"), tf: P.tf,
     wipe: !o.lite && P.wipe && x >= 0 && x < beat ? x / beat : wSc, wdir: (i + S.sc) % 2 ? -1 : 1,
-    riser, pulse, dim, lift,
+    // Wiedereinsatz nach dem Stopp und Tonartwechsel heben an wie der Einsatz eines Refrains
+    riser, pulse, dim, lift: Math.max(lift, scn.back * 0.8, scn.mod * 0.7), scn,
     wall: wall && P.kind === "chorus" && !o.noFlash && !o.lite ? wall * Math.exp(-x / (beat * 0.5)) : 0,
     vox: vox * Math.max(sig.vox, lerpB(b0, b1, "vox", sx)),
     swell: Math.max(sig.swell, lerpB(b0, b1, "swell", sx)) * (0.5 - 0.5 * Math.cos((Math.PI * bp) / 4)),
@@ -507,6 +590,40 @@ function cue(plan, sec, o = {}) {
     // „Leicht“: nur billige Bühnenlichter, kein Überblenden zweier Lichter
     sc: S.sc, scene: S.id, spot: spotOf(S, o.lite), spot2: spotOf(o.lite ? S : S0, o.lite), sx: o.lite ? 1 : sx, rig: S.rig || "",
   };
+}
+// Momente zur Songzeit (alles Hüllkurven 0..1, rein aus der Zeit – Springen im Song bringt nichts durcheinander).
+// Ein Objekt je Plan, jedes Bild nur neu befüllt (keine Speicherbelegung je Bild)
+function moments(plan, P, sec, x, bp) {
+  const mo = plan.mo, { bar, beat } = plan, len = P.t1 - P.t0;
+  const o = plan.scn || (plan.scn = { fin: 0, mod: 0, stop: 0, back: 0, open: 0, out: 0, solo: 0, acap: 0, echo: 0, eside: 1, dl: -1, dx: 0, tc: 0, bp: 0 });
+  // weich hinein und heraus über einen Takt (bzw. die halbe Länge kurzer Teile)
+  const env = (on) => (on ? clamp(Math.min(x / bar, (len - x) / Math.min(bar, len / 2)), 0, 1) : 0);
+  o.fin = env(P.fin);
+  o.mod = P.mod && x >= 0 ? Math.exp(-x / (bar * 1.5)) : 0;
+  o.solo = env(P.solo);
+  o.acap = env(P.acap);
+  o.dl = P.dl ?? -1;
+  // Drop-Bild: setzt genau auf dem Schlag des Höhepunkts ein und klingt über knapp einen Takt aus
+  o.dx = o.dl >= 0 && x >= 0 && x < bar * 3 ? Math.exp(-x / (bar * 0.75)) : 0;
+  o.stop = o.back = o.echo = o.open = 0;
+  if (mo) {
+    for (const [a, b] of mo.stops) {
+      if (sec >= a && sec < b) o.stop = clamp((sec - a) / 0.08, 0, 1) * clamp((b - sec) / 0.05, 0, 1);
+      else if (sec >= b && sec - b < beat * 2) o.back = Math.exp(-(sec - b) / (beat * 0.6));
+    }
+    let e = -1;
+    for (let k = 0; k < mo.echo.length && mo.echo[k] <= sec; k++) e = k;
+    if (e >= 0 && sec - mo.echo[e] < 1.5) {
+      o.echo = Math.min(1, (sec - mo.echo[e]) / 0.12) * Math.exp(-(sec - mo.echo[e]) / 0.5);
+      o.eside = e % 2 ? -1 : 1;
+    }
+    if (mo.first >= 0 && sec >= mo.first && sec - mo.first < bar * 2) o.open = Math.exp(-(sec - mo.first) / (bar * 0.5));
+    o.tc = mo.tc;
+  }
+  const outT = Math.max(0, plan.end - bar * 8);
+  o.out = P.kind === "outro" ? clamp(x / Math.max(bar, len), 0, 1) : clamp((sec - outT) / (bar * 8), 0, 1) * 0.6;
+  o.bp = bp;
+  return o;
 }
 const lerpB = (b0, b1, k, f) => (b0[k] || 0) + ((b1[k] || 0) - (b0[k] || 0)) * f;
 const spotOf = (s, lite) => (s.spot && (!lite || CHEAP.has(s.spot)) ? s.spot : "");
