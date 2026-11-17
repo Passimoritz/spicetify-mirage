@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.26.0] – 2026-11-18
+
 ### Added
 
 - Lyrics now drive the stage. Words like fire, rain, love, stars, gold, ocean, thunder, colours, "hands up" or a sung countdown trigger pyro, light rain, star fields, gold glitter, colour washes, crowd jumps and more, in many languages. Each effect has a cooldown and fits the song's energy.
