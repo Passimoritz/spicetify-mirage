@@ -28,6 +28,7 @@ import { createScenarios } from "./scenarios.js";
 import { LEX } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
+import { UI, GAME, iconEl } from "./icons.js";
 import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from "./games.js";
 import { free } from "./lock.js";
 import { setPreset, setPerf, presetFill } from "./settings.js";
@@ -137,18 +138,18 @@ const immersive = (() => {
         <div class="m-im-actions">
           <button type="button" class="m-im-sm m-im-cvbtn" hidden aria-pressed="false">${ICON.film}</button>
           <button type="button" class="m-im-sm m-im-conf" hidden>${ICON.confetti}</button>
-          <button type="button" class="m-im-sm m-im-pollbtn" hidden>${ICON.poll}</button>
-          <button type="button" class="m-im-sm m-im-djbtn" hidden>${ICON.dj}</button>
-          <button type="button" class="m-im-sm m-im-gamebtn" hidden>${ICON.game}</button>
-          <button type="button" class="m-im-sm m-im-recap" hidden>${ICON.recap}</button>
-          <button type="button" class="m-im-sm m-im-screen" hidden>${ICON.screen}</button>
-          <button type="button" class="m-im-sm m-im-wishbtn" hidden>${ICON.wish}</button>
-          <button type="button" class="m-im-sm m-im-photobtn" hidden>${ICON.photo}</button>
-          <button type="button" class="m-im-sm m-im-live" hidden>${ICON.live}</button>
-          <button type="button" class="m-im-sm m-im-menubtn" hidden>${ICON.more}</button>
+          <button type="button" class="m-im-sm m-im-pollbtn" data-menu="poll" hidden>${ICON.poll}</button>
+          <button type="button" class="m-im-sm m-im-djbtn" data-menu="dj" hidden>${ICON.dj}</button>
+          <button type="button" class="m-im-sm m-im-gamebtn" data-menu="games" hidden>${ICON.game}</button>
+          <button type="button" class="m-im-sm m-im-recap" data-menu="recap" hidden>${ICON.recap}</button>
+          <button type="button" class="m-im-sm m-im-screen" data-menu="screens" hidden>${ICON.screen}</button>
+          <button type="button" class="m-im-sm m-im-wishbtn" data-menu="wishes" hidden>${ICON.wish}</button>
+          <button type="button" class="m-im-sm m-im-photobtn" data-menu="photos" hidden>${ICON.photo}</button>
+          <button type="button" class="m-im-sm m-im-live" data-menu="live" hidden>${ICON.live}</button>
+          <button type="button" class="m-im-sm m-im-menubtn" data-menu="menu" hidden>${ICON.more}</button>
           <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
-          <button type="button" class="m-im-sm m-im-help">?</button>
+          <button type="button" class="m-im-sm m-im-help" data-menu="keys">${UI.keyboard}</button>
         </div>
       </div>
       <div class="m-im-cover-wrap"><div class="m-im-cover"><img alt=""><img alt=""><video class="m-im-cvid" muted loop playsinline preload="none" aria-hidden="true"></video></div></div>
@@ -171,24 +172,24 @@ const immersive = (() => {
         </div>
         <div class="m-im-extras">
           <button type="button" class="m-im-sm m-im-like">${ICON.heart}</button>
-          <button type="button" class="m-im-sm m-im-addto">${ICON.add}</button>
+          <button type="button" class="m-im-sm m-im-addto" data-menu="playlists">${ICON.add}</button>
           <div class="m-im-vol">
             <button type="button" class="m-im-sm m-im-mute">${ICON.vol}</button>
             <input type="range" class="m-im-volume" min="0" max="100" step="1">
           </div>
-          <button type="button" class="m-im-sm m-im-queue-btn">${ICON.queue}</button>
-          <button type="button" class="m-im-sm m-im-dev">${ICON.devices}</button>
-          <button type="button" class="m-im-sm m-im-timer">${ICON.timer}</button>
+          <button type="button" class="m-im-sm m-im-queue-btn" data-menu="queue">${ICON.queue}</button>
+          <button type="button" class="m-im-sm m-im-dev" data-menu="devices">${ICON.devices}</button>
+          <button type="button" class="m-im-sm m-im-timer" data-menu="timer">${ICON.timer}</button>
           <button type="button" class="m-im-sm m-im-full">${ICON.full}</button>
         </div>
       </div>
       <div class="m-im-lyrics"><div class="m-im-lyrics-inner"></div></div>
       <div class="m-im-lyrbar">
         <button type="button" class="m-im-trbtn" hidden aria-pressed="false">${ICON.translate}<span></span><i aria-hidden="true"></i></button>
-        <button type="button" class="m-im-lyrsrc" hidden><span></span><b></b></button>
+        <button type="button" class="m-im-lyrsrc" data-menu="versions" hidden><span></span><b></b></button>
         <button type="button" class="m-im-lyrsrc m-im-lyrbad" hidden><span></span></button>
       </div>
-      <div class="m-im-side" hidden><div class="m-im-side-head"><b></b><button type="button" class="m-im-sm m-im-side-x">×</button></div><div class="m-im-side-body"></div></div>
+      <div class="m-im-side m-im-pop" hidden><div class="m-im-side-head"><button type="button" class="m-im-side-back" hidden>${UI.back}</button><b></b><button type="button" class="m-im-sm m-im-side-x">${UI.close}</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
     document.body.append(el);
     el.querySelector(".m-im-close .m-l").textContent = t("back");
@@ -333,7 +334,8 @@ const immersive = (() => {
     help.title = help.ariaLabel = t("keysTitle");
     share.onclick = () => nowPlayingCard();
     help.onclick = () => toggleKeys();
-    q.keys.onclick = () => toggleKeys(false);
+    // nur der abgedunkelte Rand schließt, ein Klick in die Übersicht selbst nicht
+    q.keys.onclick = (e) => !e.target.closest(".m-im-keys-box") && toggleKeys(false);
     el.querySelector(".m-im-close").onclick = close;
     q.shuffle.onclick = async () => { if (!free()) return; await ctl.cycleShuffle(); setTimeout(syncState, 150); };
     // Titel → Album, Künstler → Künstlerseite (Immersiv-Fenster schließt dafür)
@@ -342,6 +344,31 @@ const immersive = (() => {
     q.side = el.querySelector(".m-im-side");
     q.sideBody = el.querySelector(".m-im-side-body");
     el.querySelector(".m-im-side-x").onclick = () => showSide(null);
+    // Unterseite aus „Mehr“ (DJ, Umfrage …): ein Pfeil führt zurück ins Menü
+    q.sideBack = el.querySelector(".m-im-side-back");
+    q.sideBack.onclick = () => showSide("menu");
+    // Pfeil hoch/runter wandert durch die Zeilen des Menüs (wie in einem Menü üblich), Pos1/Ende springen ans Ende;
+    // in Eingabefeldern und Stufenwahlen bleiben die Pfeile beim Feld
+    q.side.addEventListener("keydown", (e) => {
+      const to = { ArrowDown: 1, ArrowUp: -1, Home: -2, End: 2 }[e.key];
+      if (!to || e.ctrlKey || e.altKey || e.metaKey || e.target.closest("input, textarea, .m-g-seg-row")) return;
+      const list = [...q.side.querySelectorAll(".m-im-side-item:not(:disabled), .m-im-side-head button:not([hidden])")].filter((x) => !x.hidden && x.getClientRects().length);
+      if (!list.length) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const i = list.indexOf(document.activeElement);
+      const n = to === -2 ? 0 : to === 2 ? list.length - 1 : i < 0 ? (to > 0 ? 0 : list.length - 1) : Math.min(list.length - 1, Math.max(0, i + to));
+      list[n].focus();
+    });
+    // Klick oder Tippen außerhalb schließt das offene Menü. pointerdown statt click: ein Regler, den man aus dem
+    // Menü hinauszieht, endet draußen, hat aber drinnen begonnen und schließt deshalb nichts.
+    // Auslöser (data-menu) schalten selbst um; Fenster über der Ebene (Einstellungen) zählen nicht als „außen“.
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button > 0 || !openMenu()) return;
+      const x = e.target;
+      if (x.closest?.(".m-im-pop, .m-im-keys-box, [data-menu]")) return;
+      closeMenus();
+    }, true);
     const qb = el.querySelector(".m-im-queue-btn"), db = el.querySelector(".m-im-dev"), tb = el.querySelector(".m-im-timer");
     q.timerBtn = tb;
     for (const [b, k] of [[qb, "c_queue"], [db, "c_devices"], [tb, "c_timer"]]) b.title = b.ariaLabel = t(k);
@@ -492,7 +519,7 @@ const immersive = (() => {
     });
   }
   // Esc schließt zuerst, was obenauf liegt (Tastenhilfe, Seitenleiste) – erst dann den Immersiv-Modus
-  const dismiss = () => (!q.keys.hidden ? (toggleKeys(false), true) : side ? (showSide(null), true) : false);
+  const dismiss = () => (openMenu() ? (closeMenus(), true) : false);
 
   // Erst das kleine (meist schon geladene) Cover zeigen, dann scharf überblenden
   async function setCover(item) {
@@ -674,7 +701,7 @@ const immersive = (() => {
   }
   function goIdle() {
     // nicht, solange eine Seitenleiste oder die Tastenhilfe offen ist oder die Maus auf der Bedienung ruht
-    if (!isOpen() || el.dataset.mode !== "party" || side || !q.keys.hidden || el.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
+    if (!isOpen() || el.dataset.mode !== "party" || openMenu() || el.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
       idleT = setTimeout(goIdle, 2600);
       return;
     }
@@ -2800,9 +2827,37 @@ const immersive = (() => {
     if (keep !== "side" && side) showSide(null);
     if (keep !== "live") {
       liveToken++;
-      el.querySelector(".m-im-livecard")?.remove();
+      closeLive();
     }
     if (keep !== "keys" && q.keys && !q.keys.hidden) toggleKeys(false);
+    syncTriggers();
+  }
+  // welches Menü gerade offen ist (Seitenleiste, QR-Karte oder Tastenhilfe) – oder nichts
+  const openMenu = () => (!el ? "" : side || (el.querySelector(".m-im-livecard:not(.is-out)") ? "live" : q.keys && !q.keys.hidden ? "keys" : ""));
+  // Auslöser sagen an, ob ihr Menü offen ist (aria-expanded), und leuchten dabei wie gedrückt
+  function syncTriggers() {
+    if (!el) return;
+    const cur = openMenu();
+    for (const b of el.querySelectorAll("[data-menu]")) {
+      const on = b.dataset.menu === cur;
+      b.setAttribute("aria-expanded", String(on));
+      b.classList.toggle("is-open", on);
+    }
+  }
+  // Menü weich ausblenden und erst danach entfernen; der Zustand („zu“) gilt sofort
+  function fadeOut(node) {
+    if (!node || node.classList.contains("is-out")) return;
+    node.classList.add("is-out");
+    node.setAttribute("aria-hidden", "true");
+    node.inert = true;
+    setTimeout(() => node.remove(), 220);
+  }
+  function closeLive() {
+    const card = el?.querySelector(".m-im-livecard:not(.is-out)");
+    if (!card) return;
+    const back = card.contains(document.activeElement);
+    fadeOut(card);
+    if (back && q.live?.isConnected && !q.live.hidden) q.live.focus();
   }
   function toggleKeys(force) {
     if (!q.keys) return;
@@ -2829,6 +2884,7 @@ const immersive = (() => {
     q.keys.hidden = !show;
     if (show) q.keys.focus();
     else if (had && keysFrom?.isConnected) keysFrom.focus();
+    syncTriggers();
   }
   function styleLyrics() {
     kick();
@@ -2837,17 +2893,30 @@ const immersive = (() => {
   }
 
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer
-  let side = null;
+  let side = null, sideFromMenu = false, viaMenu = false;
   function showSide(kind) {
     sideFocus(kind);
     if (kind) closeMenus("side");
+    const was = side;
+    // Zurück-Pfeil nur für Unterseiten, die aus „Mehr“ geöffnet wurden; Neuaufbau derselben Seite behält ihn
+    if (kind !== was) sideFromMenu = viaMenu && kind !== "menu";
+    viaMenu = false;
     side = kind;
     // der QR-Code der Spielleitung bleibt nie offen stehen
     if (kind !== "games") q.hostOpen = false;
     q.side.hidden = !kind;
     vizMoveUntil = performance.now() + 1000;
-    q.side.dataset.kind = kind || "";
+    syncTriggers();
     if (!kind) return;
+    q.side.dataset.kind = kind;
+    q.sideBack.hidden = !sideFromMenu;
+    q.sideBack.title = q.sideBack.ariaLabel = t("pmTitle");
+    // anderer Inhalt in der offenen Leiste: kurz einblenden statt hart springen (Neuaufbau derselben Seite nicht)
+    if (was && was !== kind) {
+      q.sideBody.classList.remove("is-swap");
+      void q.sideBody.offsetWidth;
+      q.sideBody.classList.add("is-swap");
+    }
     q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
@@ -2938,7 +3007,7 @@ const immersive = (() => {
         const res = await ctl.addToPlaylist(p.uri, track);
         b.classList.remove("is-busy");
         const small = b.querySelector("small") || b.querySelector("span").appendChild(document.createElement("small"));
-        small.textContent = res === true ? "✓ " + t("plAdded") : res === "dup" ? t("plDup") : t("plFail");
+        small.replaceChildren(...(res === true ? [iconEl(UI.check, "m-ic is-inline"), t("plAdded")] : [res === "dup" ? t("plDup") : t("plFail")]));
         b.classList.toggle("is-on", res === true || res === "dup");
         if (res === true) {
           cfg.plRecent = [p.uri, ...recent.filter((u) => u !== p.uri)].slice(0, 8);
@@ -3060,7 +3129,7 @@ const immersive = (() => {
     txt.append(ti, sub);
     const votes = document.createElement("i");
     votes.className = "m-im-votes";
-    votes.textContent = "👍 " + w.v;
+    votes.append(iconEl(UI.thumb, "m-ic is-inline"), String(w.v));
     const ok = document.createElement("button");
     ok.type = "button";
     ok.className = "m-im-wish-ok";
@@ -3069,7 +3138,7 @@ const immersive = (() => {
     const no = document.createElement("button");
     no.type = "button";
     no.className = "m-im-wish-no";
-    no.textContent = "✕";
+    no.innerHTML = UI.close;
     no.title = no.ariaLabel = t("wishDecline");
     no.onclick = () => live.decline(w.i);
     row.append(txt, votes, ok, no);
@@ -3248,44 +3317,73 @@ const immersive = (() => {
     nextPhoto();
   });
   // Live-Link: QR-Code und Link der Handy-Seite (verschlüsselt über einen Relay, siehe live.js)
+  // Karte wie die Seitenleiste: Kopf mit Titel und Schließen, darunter QR-Code, Hinweis und „Link kopieren“.
+  // Ein Klick in die Karte schließt sie nicht mehr (nur außerhalb, Esc oder das Kreuz).
   async function toggleLiveCard() {
-    const old = el.querySelector(".m-im-livecard");
-    if (old) return old.remove();
+    if (el.querySelector(".m-im-livecard:not(.is-out)")) return closeMenus();
     closeMenus("live");
     const token = ++liveToken;
     const info = await live.prepare().catch(() => null);
     // beim Warten aufs Relay kann schon ein anderes Menü aufgegangen sein
     if (token !== liveToken) return;
     const card = document.createElement("div");
-    card.className = "m-im-livecard";
+    card.className = "m-im-livecard m-im-pop";
+    card.setAttribute("role", "dialog");
+    card.setAttribute("aria-labelledby", "m-im-live-title");
+    const head = document.createElement("div");
+    head.className = "m-im-pop-head";
     const b = document.createElement("b");
+    b.id = "m-im-live-title";
     b.textContent = t("liveTitle");
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "m-im-sm m-im-pop-x";
+    x.innerHTML = UI.close;
+    x.title = x.ariaLabel = t("k_close");
+    x.onclick = () => closeMenus();
+    head.append(b, x);
+    let focus = x;
     if (!info) {
       const p = document.createElement("p");
       p.textContent = t("liveError");
-      card.append(b, p);
+      card.append(head, p);
     } else {
       const img = new Image();
       img.alt = "";
+      img.className = "m-im-qr";
       img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
       const p = document.createElement("p");
       p.textContent = t("liveHint");
-      const u = document.createElement("code");
-      u.textContent = t("liveCopy");
+      const u = document.createElement("button");
+      u.type = "button";
+      u.className = "m-im-btn";
       u.title = info.url;
-      u.setAttribute("role", "button");
-      u.tabIndex = 0;
-      u.onkeydown = (e) => e.key === "Enter" && u.click();
-      u.onclick = (e) => {
-        e.stopPropagation();
+      const label = document.createElement("span");
+      label.textContent = t("liveCopy");
+      u.append(iconEl(UI.copy), label);
+      let reset = 0;
+      u.onclick = () => {
         navigator.clipboard?.writeText(info.url).catch(() => {});
+        // kurz bestätigen: Haken und „Kopiert“, dann wieder wie vorher
+        u.classList.add("is-done");
+        u.firstChild.innerHTML = UI.check;
+        label.textContent = t("copied");
+        clearTimeout(reset);
+        reset = setTimeout(() => {
+          u.classList.remove("is-done");
+          u.firstChild.innerHTML = UI.copy;
+          label.textContent = t("liveCopy");
+        }, 1800);
       };
       const note = document.createElement("small");
       note.textContent = t("liveRelay");
-      card.append(img, b, p, u, note);
+      card.append(head, img, p, u, note);
+      focus = u;
     }
-    card.onclick = () => card.remove();
     el.append(card);
+    syncTriggers();
+    // Fokus in die Karte, wenn sie per Tastatur geöffnet wurde (Esc und Tab setzen dort an)
+    if (q.live.contains(document.activeElement) || document.activeElement === document.body) focus.focus({ preventScroll: true });
   }
   /* ---- Show-Momente im Party-Modus: Hände hoch und Blitzlicht-Gewitter im Refrain,
      Konfetti auf Knopfdruck. Die Bühne (venue.js) zeichnet Hände, Blitze und Konfetti; hier wird entschieden, wann. */
@@ -3333,15 +3431,15 @@ const immersive = (() => {
     }
     body.append(seg);
     // die zwei Schalter, die man mitten in der Party am ehesten braucht: Akku/Lüfter und Blitze
-    const flag = (label, sub, on, fn) => {
-      const b = sideBtn(body, label, sub, () => perfSet(fn), on);
+    const flag = (label, sub, on, fn, icon) => {
+      const b = sideBtn(body, label, sub, () => perfSet(fn), on, icon);
       b.removeAttribute("aria-current");
       b.setAttribute("aria-pressed", String(on));
       b.classList.add("m-im-perf-flag");
     };
     const eco = cfg.eco === "on";
-    flag(t("ecoQuick"), t(eco ? "ecoQuickOn" : cfg.eco === "off" ? "eco_off" : "ecoQuickAuto"), eco, () => setPerf("eco", eco ? "auto" : "on"));
-    flag(t("noFlash"), "", !!cfg.noFlash, () => setPerf("noFlash", !cfg.noFlash));
+    flag(t("ecoQuick"), t(eco ? "ecoQuickOn" : cfg.eco === "off" ? "eco_off" : "ecoQuickAuto"), eco, () => setPerf("eco", eco ? "auto" : "on"), UI.leaf);
+    flag(t("noFlash"), "", !!cfg.noFlash, () => setPerf("noFlash", !cfg.noFlash), UI.flashOff);
   }
   // umstellen und alles, was die offene Ebene aus cfg liest, gleich nachziehen
   function perfSet(fn) {
@@ -3366,19 +3464,22 @@ const immersive = (() => {
   function menuPanel(body) {
     // außerhalb der Party enthält „Mehr“ nur Aussehen & Leistung (die übrigen Knöpfe stehen dort oben)
     if (el.dataset.mode !== "party") return perfSection(body);
-    const go = (kind) => () => showSide(kind);
-    const row = (label, sub, fn) => sideBtn(body, label, sub, fn);
-    row(t("djTitle"), "", go("dj"));
-    if (cfg.partyLive) row(t("pollBtn"), "", go("poll"));
-    if (cfg.partyRecap && recap.songs.length >= 3) row(t("recapBtn"), "", go("recap"));
-    if (!cfg.calm) row(t("confetti"), "", () => { confetti(); showSide(null); });
-    if (cfg.partyScreen) row(t("toScreen"), "", go("screens"));
-    if (cfg.canvas && !cfg.calm) row(q.cvbtn.title || "Canvas", "", () => { q.cvbtn.click(); showSide(null); });
-    if (ctl.canAddTo()) row(t("c_addTo"), "", go("playlists"));
-    row(t("c_devices"), "", go("devices"));
-    row(t("c_timer"), "", go("timer"));
-    row(el.querySelector(".m-im-share").title || "Share", "", () => { showSide(null); nowPlayingCard(); });
-    row(el.querySelector(".m-im-help").title || "?", "", () => { showSide(null); toggleKeys(); });
+    const go = (kind) => () => {
+      viaMenu = true;
+      showSide(kind);
+    };
+    const row = (label, icon, fn, nav) => sideBtn(body, label, "", fn, false, icon, nav);
+    row(t("djTitle"), UI.dj, go("dj"), true);
+    if (cfg.partyLive) row(t("pollBtn"), UI.poll, go("poll"), true);
+    if (cfg.partyRecap && recap.songs.length >= 3) row(t("recapBtn"), UI.recap, go("recap"), true);
+    if (!cfg.calm) row(t("confetti"), UI.confetti, () => { confetti(); showSide(null); });
+    if (cfg.partyScreen) row(t("toScreen"), UI.screen, go("screens"), true);
+    if (cfg.canvas && !cfg.calm) row(q.cvbtn.title || "Canvas", UI.film, () => { q.cvbtn.click(); showSide(null); });
+    if (ctl.canAddTo()) row(t("c_addTo"), UI.add, go("playlists"), true);
+    row(t("c_devices"), UI.devices, go("devices"), true);
+    row(t("c_timer"), UI.timer, go("timer"), true);
+    row(el.querySelector(".m-im-share").title || "Share", UI.share, () => { showSide(null); nowPlayingCard(); });
+    row(el.querySelector(".m-im-help").title || "?", UI.keyboard, () => { showSide(null); toggleKeys(); });
     perfSection(body);
   }
   // Auswahl in Stufen: eine Zeile mit Knöpfen
@@ -3395,8 +3496,12 @@ const immersive = (() => {
     for (const [v, text] of choices) {
       const b = document.createElement("button");
       b.type = "button";
-      b.textContent = text;
-      if (text === "✓" || text === "✕") b.setAttribute("aria-label", t(text === "✓" ? "a11yOn" : "a11yOff"));
+      // ON/OFF: Symbol statt Zeichen, vorgelesen als „An“/„Aus“
+      if (text === ON || text === OFF) {
+        b.innerHTML = text === ON ? UI.check : UI.close;
+        b.setAttribute("aria-label", t(text === ON ? "a11yOn" : "a11yOff"));
+        b.classList.add("is-ic");
+      } else b.textContent = text;
       b.setAttribute("aria-pressed", String(cfg[key] === v));
       b.onclick = () => {
         cfg[key] = v;
@@ -3411,6 +3516,8 @@ const immersive = (() => {
     body.append(r);
   }
   const secsOf = (list) => list.map((n) => [n, n + " s"]);
+  // Platzhalter für Ein/Aus-Knöpfe (werden zu Symbolen)
+  const ON = "\u0001on", OFF = "\u0001off";
   // Quelle der Quiz-Songs: die Warteschlange (Standard) oder eine Playlist aus der Bibliothek
   function sourceChoice(body) {
     const again = () => {
@@ -3422,10 +3529,11 @@ const immersive = (() => {
     head.className = "m-im-side-sec";
     head.textContent = t("gSetSource");
     body.append(head);
-    const now = sideBtn(body, cfg.gameSource ? "🎵  " + (cfg.gameSourceName || "Playlist") : "▶  " + t("gSrcQueue"), t("gSrcHint"), () => {
+    const now = sideBtn(body, cfg.gameSource ? cfg.gameSourceName || "Playlist" : t("gSrcQueue"), t("gSrcHint"), () => {
       q.srcOpen = !q.srcOpen;
       again();
-    }, q.srcOpen);
+    }, q.srcOpen, cfg.gameSource ? UI.playlist : UI.queue);
+    now.setAttribute("aria-expanded", String(!!q.srcOpen));
     now.classList.add("m-g-src");
     if (!q.srcOpen) return;
     const box = document.createElement("div");
@@ -3438,7 +3546,7 @@ const immersive = (() => {
       q.srcOpen = false;
       again();
     };
-    sideBtn(box, "▶  " + t("gSrcQueue"), "", () => pick("", ""), !cfg.gameSource);
+    sideBtn(box, t("gSrcQueue"), "", () => pick("", ""), !cfg.gameSource, UI.queue);
     games.sources().then((list) => {
       if (!box.isConnected) return;
       for (const p of list.slice(0, 200)) sideBtn(box, p.name, "", () => pick(p.uri, p.name), cfg.gameSource === p.uri);
@@ -3460,7 +3568,8 @@ const immersive = (() => {
     for (const k of TOUR_POOL) {
       const g = GAME_LIST.find((x) => x.k === k), b = document.createElement("button");
       b.type = "button";
-      b.textContent = `${g.icon} ${t(g.label)}`;
+      b.append(iconEl(GAME[k] || UI.music, "m-ic is-inline"), t(g.label));
+      b.dataset.game = k;
       b.setAttribute("aria-pressed", String((cfg.gameTour || []).includes(k)));
       b.onclick = () => {
         const list = (cfg.gameTour || []).filter((x) => x !== k);
@@ -3479,16 +3588,16 @@ const immersive = (() => {
     gameChoice(body, t("gSetLevel"), "gameLevel", [["easy", t("gLvEasy")], ["normal", t("gLvNormal")], ["hard", t("gLvHard")]]);
     gameChoice(body, t("gSetDecade"), "gameDecade", [[0, t("gDecAll")], ...[1980, 1990, 2000, 2010, 2020].map((d) => [d, String(d).slice(2) + t("gDecSuffix")])], true);
     sourceChoice(body);
-    gameChoice(body, t("gSetTeams"), "gameTeams", [[0, "✕"], [2, "2"], [3, "3"], [4, "4"]]);
+    gameChoice(body, t("gSetTeams"), "gameTeams", [[0, OFF], [2, "2"], [3, "3"], [4, "4"]]);
     gameChoice(body, t("gSetRounds"), "gameRounds", [3, 5, 8, 10].map((n) => [n, String(n)]));
     gameChoice(body, t("gSetAsk"), "gameAsk", secsOf([10, 15, 20, 30]));
     gameChoice(body, t("gSetJoin"), "gameJoin", [[30, "30 s"], [60, "1 min"], [120, "2 min"], [180, "3 min"]]);
     gameChoice(body, t("gSetClip"), "gameClip", [[8, "8 s"], [12, "12 s"], [20, "20 s"], [0, t("gClipAll")]]);
     gameChoice(body, t("gSetDur"), "gameDur", secsOf([15, 30, 45, 60]));
     gameChoice(body, t("gSetBreak"), "gameBreak", secsOf([5, 8, 12, 20]));
-    gameChoice(body, t("gSetBonus"), "gameBonus", [[true, "✓"], [false, "✕"]]);
-    gameChoice(body, t("gSetDrink"), "gameDrink", [[true, "✓"], [false, "✕"]]);
-    gameChoice(body, t("gSetSfx"), "gameSfx", [[0, "✕"], [0.35, t("gSfxLow")], [0.7, t("gSfxLoud")]]);
+    gameChoice(body, t("gSetBonus"), "gameBonus", [[true, ON], [false, OFF]]);
+    gameChoice(body, t("gSetDrink"), "gameDrink", [[true, ON], [false, OFF]]);
+    gameChoice(body, t("gSetSfx"), "gameSfx", [[0, OFF], [0.35, t("gSfxLow")], [0.7, t("gSfxLoud")]]);
     gameChoice(body, t("gSetCard"), "gameCard", [["big", t("gCardBig")], ["small", t("gCardSmall")]]);
     tourChoice(body);
     const head = document.createElement("div");
@@ -3530,7 +3639,7 @@ const immersive = (() => {
   }
   // Spielleitung am Handy: eigener QR-Code, nur auf Knopfdruck zu sehen. Wer ihn scannt, darf Spiele steuern.
   function hostPanel(body) {
-    sideBtn(body, "📱  " + t("gHost"), t("gHostHint"), async () => {
+    const host = sideBtn(body, t("gHost"), t("gHostHint"), async () => {
       q.hostOpen = !q.hostOpen;
       if (q.hostOpen && !cfg.partyLive) {
         cfg.partyLive = true;
@@ -3538,7 +3647,9 @@ const immersive = (() => {
         showExtras();
       }
       showSide("games");
-    }, q.hostOpen);
+    }, q.hostOpen, UI.qr);
+    host.classList.add("m-g-hostbtn");
+    host.setAttribute("aria-expanded", String(!!q.hostOpen));
     if (!q.hostOpen) return;
     const wrap = document.createElement("div");
     wrap.className = "m-g-hostqr";
@@ -3559,13 +3670,13 @@ const immersive = (() => {
   function gamesPanel(body) {
     const cur = games.active();
     if (cur) {
-      if (games.waiting()) sideBtn(body, t("gStartNow"), "", () => games.beginNow());
-      if (WHEELS.has(cur)) sideBtn(body, t("gSpin"), "", () => games.spin());
-      else if (!games.waiting()) sideBtn(body, t("gSkip"), "", () => games.skip());
+      if (games.waiting()) sideBtn(body, t("gStartNow"), "", () => games.beginNow(), false, UI.play);
+      if (WHEELS.has(cur)) sideBtn(body, t("gSpin"), "", () => games.spin(), false, GAME.wheel);
+      else if (!games.waiting()) sideBtn(body, t("gSkip"), "", () => games.skip(), false, UI.skip);
       sideBtn(body, t("gEndNow"), "", () => {
         games.stop();
         showSide("games");
-      });
+      }, false, UI.stop);
       hostPanel(body);
       return;
     }
@@ -3574,7 +3685,7 @@ const immersive = (() => {
     note.textContent = t("gHint");
     body.append(note);
     let cat = "";
-    for (const { k, cat: c, label, hint, icon } of GAME_LIST) {
+    for (const { k, cat: c, label, hint } of GAME_LIST) {
       if (c !== cat) {
         cat = c;
         const h = document.createElement("div");
@@ -3588,7 +3699,7 @@ const immersive = (() => {
           body.append(warn);
         }
       }
-      sideBtn(body, `${icon}  ${t(label)}`, t(hint), async () => {
+      const g = sideBtn(body, t(label), t(hint), async () => {
         // Handy-Spiele brauchen den Live-Link
         if (!WHEELS.has(k) && !cfg.partyLive) {
           cfg.partyLive = true;
@@ -3599,14 +3710,17 @@ const immersive = (() => {
         games.start(k);
         // die Leiste würde die Spielkarte verdecken; beenden geht über denselben Knopf oben
         showSide(null);
-      });
+      }, false, GAME[k] || UI.music);
+      g.dataset.game = k;
     }
     hostPanel(body);
-    sideBtn(body, "⚙  " + t("gSettings"), "", () => {
+    const set = sideBtn(body, t("gSettings"), "", () => {
       gameCfgOpen = !gameCfgOpen;
       showSide("games");
       q.sideBody.scrollTop = q.sideBody.scrollHeight;
-    }, gameCfgOpen);
+    }, gameCfgOpen, UI.gear);
+    set.classList.add("m-g-setbtn");
+    set.setAttribute("aria-expanded", String(gameCfgOpen));
     if (gameCfgOpen) gameSettings(body);
   }
 
@@ -3841,11 +3955,13 @@ const immersive = (() => {
     }
     body.append(h);
   };
-  function sideBtn(parent, label, sub, onClick, on) {
+  // icon: Linien-Symbol links (icons.js); nav: Pfeil rechts – die Zeile führt zu einer weiteren Seite
+  function sideBtn(parent, label, sub, onClick, on, icon, nav) {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "m-im-side-item" + (on ? " is-on" : "");
+    b.className = "m-im-side-item" + (on ? " is-on" : "") + (icon ? " has-ic" : "");
     if (on) b.setAttribute("aria-current", "true");
+    if (icon) b.append(iconEl(icon, "m-ic m-im-side-ic"));
     const txt = document.createElement("span"), l = document.createElement("b");
     l.textContent = label;
     txt.append(l);
@@ -3855,6 +3971,7 @@ const immersive = (() => {
       txt.append(s2);
     }
     b.append(txt);
+    if (nav) b.append(iconEl(UI.chevron, "m-ic m-im-side-go"));
     if (onClick) b.onclick = onClick;
     else b.disabled = true;
     parent.append(b);

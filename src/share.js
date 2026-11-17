@@ -411,7 +411,7 @@ async function gameCard(r) {
   x.font = `600 30px ${FONT}`;
   x.fillText(`${t("gCardKicker")} · ${new Date().toLocaleDateString()}`.toUpperCase(), 90, 170);
   x.fillStyle = "#fff";
-  x.fillText(fitTitle(x, 800, 84, `${r.icon} ${r.title}`, W - 170), 84, 275);
+  x.fillText(fitTitle(x, 800, 84, r.title, W - 170), 84, 275);
   x.fillStyle = "rgba(255,255,255,0.65)";
   x.font = `500 36px ${FONT}`;
   x.fillText(t("gEnd"), 90, 340);

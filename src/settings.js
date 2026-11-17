@@ -17,6 +17,7 @@ import { FONTS, applyFont, preloadFonts, stackOf } from "./fonts.js";
 import { FAMILIES } from "./party.js";
 import { live } from "./live.js";
 import { bpm } from "./library.js";
+import { GAME as GAME_IC } from "./icons.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -70,7 +71,7 @@ function selectScheme(name) {
 }
 
 /* ---------------------------------------------------------------- Bausteine */
-// teure Effekte tragen ein ⚡ – so sieht man, was man für mehr Akku abschaltet
+// teure Effekte tragen einen Blitz – so sieht man, was man für mehr Akku abschaltet
 const COSTLY = new Set(["glass", "particles", "beat", "tilt", "canvas"]);
 const el = (tag, cls, text) => {
   const e = document.createElement(tag);
@@ -85,7 +86,8 @@ function head(title, hint) {
   return h;
 }
 function bolt() {
-  const i = el("i", "m-cost", "⚡");
+  const i = el("i", "m-cost");
+  i.innerHTML = GAME_IC.fast;
   i.title = t("costly");
   i.setAttribute("role", "img");
   i.setAttribute("aria-label", t("costly"));
