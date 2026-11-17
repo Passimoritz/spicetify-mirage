@@ -1499,6 +1499,14 @@ function karaokeVoice(kp, at, open) {
 async function karaokeGame() {
   // was die Handys schicken: es dürfen nur Zahlen sein
   await T.js(`window.__kar = []; addEventListener("mirage:game", (e) => e.detail.a === "ksc" && __kar.push(e.detail)); 1`);
+  // die Wertung der Töne braucht Spotifys Analyse: auf einen Song mit Analyse und Liedtext gehen. Welcher Song nach den
+  // Spielen davor läuft, hängt von deren Ablauf ab (fake-spotify: jeder 5. ohne Analyse, jeder 7. ohne Liedtext)
+  for (let n = 0; n < 8; n++) {
+    const i = await T.js(`__sp.now().i`);
+    if (i % 5 !== 2 && i % 7 !== 3) break;
+    await T.js(`Spicetify.Player.next(); 1`);
+    await wait(700);
+  }
   await openGame("karaoke");
   await joinAll("karaoke");
   const who = () => Promise.all(P.map((ph) => ph.js(`(() => { const g = cur?.g; return g ? { st: g.st, r: g.r, kp: !!g.kp, mine: g.si === me } : null; })()`)));
