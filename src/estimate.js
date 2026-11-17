@@ -1,12 +1,14 @@
 import { S, clamp } from "./core.js";
-import { cfg } from "./config.js";
 import { getLyrics } from "./lyrics.js";
-import { currentItem, titleOf, PLR } from "./player.js";
+import { currentItem, PLR } from "./player.js";
+import { deezer, previewSound } from "./sources.js";
+import { foldBpm } from "./tempo.js";
 
 /* ---------------------------------------------------------------- Ersatz-Taktanalyse */
 // Für viele (gerade neuere) Songs liefert Spotify keine Taktanalyse mehr. Ohne sie hätte der Visualizer
 // keinen Schlag und Party kein Feeling. Dann baut Mirage eine Schätzung im selben Format:
-//  1. Tempo: Spotifys Audio-Merkmale (gibt es oft noch, wenn die Analyse fehlt), sonst Deezer
+//  1. Tempo: Spotifys Audio-Merkmale (gibt es oft noch, wenn die Analyse fehlt), sonst Deezer, sonst selbst aus der
+//     30-s-Hörprobe von Deezer/iTunes gerechnet (tempo.js) – und wenn gar nichts geht, ein ehrlich markierter Richtwert
 //  2. Tempo/Schlag aus dem Liedtext: gesungene Zeilen und Wörter beginnen auf dem Schlag –
 //     das passendste Tempo zwischen 60 und 190 BPM und die Lage der Eins ergeben das Raster
 //  3. Aufbau aus dem Liedtext: Refrain (wiederholte Zeilen) lauter, Instrumental-Lücken leiser;
@@ -31,19 +33,6 @@ async function spotifyFeatures(id) {
   }
   return null;
 }
-// Deezer kennt bei vielen bekannten Songs das Tempo (nur Titel und Künstler gehen raus)
-async function deezerBpm(item) {
-  if (!cfg.partyOnline) return null;
-  const artist = item?.metadata?.artist_name || item?.artists?.[0]?.name || "";
-  const title = titleOf(item).replace(/\s+-\s+.*$/, "").replace(/\s*[([].*?[)\]]/g, "");
-  if (!artist || !title) return null;
-  const res = await within(cosmos(`https://api.deezer.com/search?q=${encodeURIComponent(`artist:"${artist}" track:"${title}"`)}&limit=3`), 4000);
-  const hit = res?.data?.[0];
-  if (!hit?.id) return null;
-  const t = await within(cosmos(`https://api.deezer.com/track/${hit.id}`), 4000);
-  return Number(t?.bpm) > 40 ? { bpm: Number(t.bpm), loud: Number(t.gain) || -8 } : null;
-}
-
 // Wie gut liegen die Einsätze auf einem Raster mit Periode P? (Länge des mittleren Phasen-Vektors, 0..1)
 function fitGrid(on, P) {
   let x = 0, y = 0;
@@ -99,30 +88,37 @@ async function estimateAnalysis(uri) {
   const item = currentItem()?.uri === uri ? currentItem() : null;
   const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || PLR.getDuration() || 0) / 1000 || 210;
   const [feat, lyr] = await Promise.all([spotifyFeatures(id), within(getLyrics(uri), 9000)]);
-  const dz = feat ? null : await deezerBpm(item);
+  const dz = feat ? null : await within(deezer(item || { uri }), 12000);
   // Deezers Tempo liegt oft eine Oktave daneben (Testlabor, 665 Hits mit Harmonix-Tempo: 26 % doppelt/halb) –
   // auf 75–150 BPM gefaltet stimmen 84 % statt 79 % (mit der Faltung unten auf 70–165)
-  let hint = feat?.bpm || dz?.bpm || 0;
-  if (!feat?.bpm && hint) {
-    while (hint > 150) hint /= 2;
-    while (hint < 75) hint *= 2;
+  let hint = feat?.bpm || (dz?.bpm ? foldBpm(dz.bpm, 75, 150) : 0);
+  // Woher das Tempo kommt (Anzeige „≈“, Richtwert „?“): features, deezer, preview, lyrics, guess
+  let src = feat?.bpm ? "features" : hint ? "deezer" : "";
+  // Hörprobe: rechnet das Tempo selbst (mit Deezers Tempo als Hinweis gegen Oktavfehler) – Testlabor Runde 9
+  const pv = feat ? null : await within(previewSound(item || { uri }, dz?.bpm || 0), 20000);
+  if (pv?.bpm && pv.conf >= 0.25) {
+    hint = foldBpm(pv.bpm, 75, 150);
+    src = "preview";
   }
   // Einsätze aus dem Liedtext: Wortanfänge, sonst Zeilenanfänge
   const lines = lyr?.synced ? lyr.lines.filter((l) => l.text && l.text !== "♪") : [];
   const words = lines.flatMap((l) => (l.words || []).map((w) => w.t / 1000));
   const on = words.length > 30 ? words : lines.map((l) => l.t / 1000);
-  let bpm = hint, phase = 0, conf = 0.5;
+  let bpm = hint, phase = 0, conf = 0.5, phaseKnown = false;
   if (on.length >= 8 && on !== words) {
     const fit = tempoFromLines(on, hint);
-    if (fit) [bpm, phase, conf] = [fit.bpm, fit.phase, clamp(fit.R * 1.2, 0.3, 0.9)];
+    if (fit) [bpm, phase, conf, phaseKnown] = [fit.bpm, fit.phase, clamp(fit.R * 1.2, 0.3, 0.9), fit.R > 0.3];
   } else if (on.length >= 8) {
     const fit = tempoFromOnsets(on, hint);
     // nur übernehmen, wenn der Text wirklich ein Raster zeigt – sonst lieber das bekannte Tempo
     const use = hint && fit.R < 0.4 ? hint : fit.bpm;
-    if (fit.R > 0.25 || !hint) [bpm, phase, conf] = [use, fitGrid(on, 60 / use).phase, clamp(fit.R * 1.4, 0.3, 0.95)];
-    else phase = fitGrid(on, 60 / hint).phase;
+    if (fit.R > 0.25 || !hint) [bpm, phase, conf, phaseKnown] = [use, fitGrid(on, 60 / use).phase, clamp(fit.R * 1.4, 0.3, 0.95), fit.R > 0.25];
+    else [phase, phaseKnown] = [fitGrid(on, 60 / hint).phase, true];
   }
-  if (!bpm) return null;
+  if (bpm && !hint) src = "lyrics";
+  // nichts gefunden (offline, kein Liedtext): Richtwert 120 BPM, als Richtwert markiert – Party zeigt „120? BPM“
+  // und schlägt weicher, weil weder Tempo noch Lage des Schlags bekannt sind
+  if (!bpm) [bpm, src, conf] = [120, "guess", 0.3];
   while (bpm > 165) bpm /= 2;
   while (bpm < 70) bpm *= 2;
   const P = 60 / bpm;
@@ -141,8 +137,10 @@ async function estimateAnalysis(uri) {
   const hook = lines.filter((l) => seen.get(key(l.text)) >= 2).map((l) => l.t / 1000);
   const sung = lines.map((l) => l.t / 1000);
   const near = (arr, t, r) => arr.some((x) => Math.abs(x - t) < r);
-  const base = feat?.loud ?? dz?.loud ?? -8;
-  const energy = feat?.energy ?? 0.65;
+  // Lautheit: Spotify, sonst Deezers „gain“ (Wiedergabe-Angleichung, ≈ Lautheit), sonst die Hörprobe
+  const base = feat?.loud ?? (Number.isFinite(dz?.gain) ? dz.gain : null) ?? (pv?.feats ? clamp(pv.feats.loud + 4, -20, -3) : -8);
+  // Energie: Spotify, sonst aus der Hörprobe (dichte, laute Einsätze = viel Energie)
+  const energy = feat?.energy ?? (pv?.feats ? clamp(0.25 + (pv.feats.loud + 20) / 25 + pv.feats.density / 12, 0.2, 0.95) : 0.65);
   const chroma = Array.from({ length: 12 }, (_, k) => {
     if (!feat || feat.key < 0) return 0.3 + 0.2 * Math.sin(k);
     // Tonart: Grundton, Terz (Dur/Moll) und Quinte klingen am meisten
@@ -165,7 +163,9 @@ async function estimateAnalysis(uri) {
   }
   const avg = segs.reduce((n, s) => n + s.l, 0) / segs.length;
   return {
-    beats, bars, segs, avg, bpm: Math.round(bpm), loud: base,
+    beats, bars, segs, avg, bpm: Math.round(bpm), loud: base, bpmSrc: src, phaseKnown,
+    // Klangzahlen der Hörprobe für die Genre-Schätzung (party.js → genres.js)
+    sound: pv ? { ...pv.feats, bpm: pv.bpm, conf: pv.conf } : null,
     sections: [{ t: 0, mode: feat?.mode ?? 1, l: base }],
     feat: feat ? { energy: feat.energy, valence: feat.valence, dance: feat.dance } : null,
     synthetic: true,

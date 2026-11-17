@@ -34,6 +34,6 @@ async function load(name, stubs = []) {
 }
 
 // Party mit Attrappen für Einstellungen und Taktdaten (globalThis.__labAudio / __labCfg): ein eigenes Exemplar je Aufruf
-const loadParty = () => load("party.js", ["core", "config", "audio"]);
+const loadParty = () => load("party.js", ["core", "config", "audio", "player"]);
 
 module.exports = { load, loadParty, SRC };

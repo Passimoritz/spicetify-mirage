@@ -640,22 +640,63 @@ const APPLE = [
 ];
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-// Profil aus allen Hinweisen: Apple-Genre des Songs (3 Punkte), Spotify-Genres des Künstlers (2 für das
-// erste, 1 für weitere) und der Klang selbst – Tempo und Lautheit (1). Die meisten Punkte gewinnen.
+// Profil aus allen Hinweisen: Apple-Genre des Songs (3 Punkte), Deezer-Album-Genre (2, ein bloßes „Pop“ 1),
+// Spotify-Genres des Künstlers (2 für das erste, 1 für weitere), Künstler-/Titelwörter („Orchestra“, „Extended Mix“: 1,5)
+// und zuletzt der Klang. Die meisten Punkte gewinnen.
 // Apple-Genres, die dort etwas anderes meinen als derselbe Name bei Spotify: Apples „Hardcore“ steht unter Dance
 // (Gabber, Hardcore Techno), Spotifys „hardcore“ ist Punk
 const APPLE_ONLY = { hardcore: "gabber" };
-function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
-  const score = {}, add = (k, n) => (score[k] = (score[k] || 0) + n);
+// Deezers Genre-Namen, die keine Regel trifft oder die dort etwas anderes heißen
+// (Deezer antwortet in der Sprache des Nutzers – deutsche Namen stehen mit drin. Film-/Spielmusik, Sport, Hörbücher:
+// das Genre der Sammlung, nicht des Songs – Testlabor: Pop-Hits auf Soundtrack-Alben wären sonst „Filmmusik“)
+const DEEZER_ONLY = {
+  "films/games": "", "filme/videospiele": "", filmmusik: "", soundtrack: "", sport: "", "hörbücher auf deutsch": "", "deutsche musik": "", "international pop": "pop",
+  "rap/hip hop": "bass", "soul & funk": "soul", "singer & songwriter": "acoustic", "traditional mexicano": "regionalmexican", electro: "edm",
+  "asian music": "", "asiatische musik": "", "african music": "afro", "afrikanische musik": "afro", "brazilian music": "brazil", "brasilianische musik": "brazil",
+  "indian music": "bollywood", "indische musik": "bollywood", "latin music": "latin", "latin musik": "latin", "lateinamerikanische musik": "latin",
+  kids: "kids", kinder: "kids", christian: "ccm", christlich: "ccm", klassik: "classical", "deutsch-rap": "deutschrap", alternative: "alternative",
+};
+// Künstler- und Titelwörter, die das Genre fast sicher verraten (Testlabor: ohne Spotify-Genres oft der einzige Hinweis)
+const NAME_HINTS = [
+  ["classical", /\b(orchestra|orchester|philharmoni|symphon|quartet|quartett|ensemble|choir|chor\b|staatskapelle|sinfonie)/, "artist"],
+  ["classical", /\b(op\. ?\d|bwv|k\. ?\d{2,3}|hob\.|concerto|konzert f[üu]r|sonata|sonate|nocturne|pr[ée]lude|symphony no|sinfonie nr|adagio|allegro|andante)\b/, "title"],
+  ["rave", /\b(extended mix|original mix|club mix|vip mix|dub mix)\b/, "title"],
+  ["jazz", /\b(trio|quintet|quintett|big band|jazz)\b/, "artist"],
+  ["christmas", /\b(christmas|xmas|weihnacht|navidad|no[eë]l|jingle bell|santa claus|let it snow)\b/, "title"],
+  ["lofi", /\b(lo-?fi|chillhop)\b/, "both"],
+  ["bass", /^(lil|yung|young)\b|\b(mc|21 savage)\b|\$/, "artist"],
+];
+// Klang ohne jeden Namen: nur wenn er eindeutig ist, sonst Pop. Früher bekam der Klang einen Punkt und gewann damit
+// allein – 125 BPM und laut hieß „Rave“, 90 BPM hieß „Hip-Hop“: das Testlabor traf so nur 39 % der Familien (Pop: 46 %).
+// s: Klangzahlen der Hörprobe (tempo.js: loud dBFS, centroid Hz, bass, density Einsätze/s, kick Bass-Anteil der Einsätze)
+function soundGuess(bpm, loud, s) {
+  // Testlabor Runde 9 (1 231 Hörproben): Regeln für „Rave“ (Bass-Einsätze, 118–135 BPM) und „Rock“ (dicht, hell)
+  // lagen öfter falsch als richtig (Rave 4 von 18) – übrig bleibt nur „sehr leise und spärlich = ruhig“
+  if (s && Number.isFinite(s.density)) return s.loud < -22 && s.density < 2 ? ["chill", 0.8] : ["pop", 0.5];
+  // ohne Hörprobe: nur sehr leise Mischungen gelten als ruhig
+  return loud < -17 || (bpm && bpm < 66) ? ["chill", 0.8] : ["pop", 0.5];
+}
+function pickGenre({ genres = [], apple = "", deezer = [], artist = "", title = "", bpm = 0, loud = -10, minor = 0, sound = null } = {}) {
+  const score = {}, add = (k, n) => k && (score[k] = (score[k] || 0) + n);
   let why = "";
-  const g = apple.toLowerCase().trim();
+  const g = String(apple || "").toLowerCase().trim();
   const am = (APPLE_ONLY[g] && [APPLE_ONLY[g]]) || best(g) || APPLE.find(([, re]) => re.test(g));
+  // „Electronic“ kann auch Ambient sein: langsam oder leise gemischt → Chill statt Rave
+  const calmMix = (bpm && bpm < 95) || loud < -14;
+  const fromName = (m) => (m[0] === "rave" && calmMix ? "chill" : m[0]);
   if (am) {
-    // „Electronic“ kann auch Ambient sein: langsam oder leise gemischt → Chill statt Rave
-    const calmMix = (bpm && bpm < 95) || loud < -14;
-    add(am[0] === "rave" && calmMix ? "chill" : am[0], 3);
+    add(fromName(am), 3);
     why = apple;
   }
+  // Deezer: Genres des Albums (das erste zählt, ein reines „Pop“ ist bei Deezer oft nur die Sammelschublade)
+  (deezer || []).slice(0, 2).forEach((x, i) => {
+    const d = String(x || "").toLowerCase().trim();
+    if (!d || (d in DEEZER_ONLY && !DEEZER_ONLY[d])) return;
+    const m = (DEEZER_ONLY[d] && [DEEZER_ONLY[d]]) || best(d) || APPLE.find(([, re]) => re.test(d));
+    if (!m) return;
+    add(fromName(m), (i === 0 ? 2 : 0.5) * (d === "pop" ? 0.5 : 1));
+    why ||= x;
+  });
   genres.slice(0, 4).forEach((x, i) => {
     const m = best(x) || GENRES.find(([, re]) => re.test(x));
     if (m) {
@@ -663,20 +704,43 @@ function pickProfile(genres, bpm, loud, apple = "", minor = 0) {
       why ||= x;
     }
   });
-  const energy = clamp((loud + 16) / 12, 0, 1);
-  if (energy < 0.35 || (bpm && bpm < 80)) add("chill", 1);
-  else if (bpm >= 118 && bpm <= 135 && energy > 0.6) add("rave", 1);
-  else if (bpm >= 80 && bpm < 105) add("bass", 1);
-  else if (bpm > 140 && energy > 0.7) add("rock", 1);
-  const winner = Object.entries(score).sort((x, y) => y[1] - x[1])[0];
-  let key = winner ? winner[0] : "pop";
+  const a = String(artist || "").toLowerCase(), t = String(title || "").toLowerCase();
+  for (const [k, re, where] of NAME_HINTS) {
+    if ((where !== "title" && re.test(a)) || (where !== "artist" && re.test(t))) {
+      add(k, 1.5);
+      why ||= k;
+      break;
+    }
+  }
+  const named = Object.values(score).reduce((n, v) => n + v, 0);
+  // Klang: mit Namen nur Zünglein an der Waage (0,75), ohne Namen die vorsichtige Schätzung oben
+  if (named) {
+    const energy = clamp((loud + 16) / 12, 0, 1);
+    if (energy < 0.35 || (bpm && bpm < 80)) add("chill", 0.75);
+    else if (bpm >= 118 && bpm <= 135 && energy > 0.6) add("rave", 0.75);
+    else if (bpm >= 80 && bpm < 105) add("bass", 0.75);
+    else if (bpm > 140 && energy > 0.7) add("rock", 0.75);
+  }
+  const ranked = Object.entries(score).sort((x, y) => y[1] - x[1]);
+  let key, conf;
+  if (ranked.length) {
+    key = ranked[0][0];
+    // Sicherheit: Vorsprung vor dem Zweiten und wie viel überhaupt dafür spricht (Apple allein ≈ 0,75)
+    conf = clamp((ranked[0][1] - (ranked[1]?.[1] || 0)) / 4 + Math.min(ranked[0][1], 4) / 8, 0, 1);
+  } else {
+    const [k, c] = soundGuess(bpm, loud, sound);
+    [key, conf] = [k, k === "pop" ? 0.2 : 0.35 * c];
+    why = "";
+  }
   // nur „Dance“/„Electronic“ ohne genauere Angabe: Tempo und Moll-Anteil entscheiden die Spielart
   if (key === "rave" && bpm) {
     if (bpm >= 160) key = "dnb";
     else if (bpm >= 132 && bpm <= 150) key = minor > 0.6 ? "techno" : "trance";
     else if (bpm >= 118 && bpm < 132) key = minor > 0.6 ? "techno" : "house";
   }
-  return { key, why };
+  return { key, why, conf: Math.round(conf * 100) / 100 };
 }
+// alte Form (Spotify-Genres, Tempo, Lautheit, Apple-Genre, Moll-Anteil) – für Aufrufer ohne die neuen Quellen
+const pickProfile = (genres, bpm, loud, apple = "", minor = 0) => pickGenre({ genres, bpm, loud, apple, minor });
 
-export { LOOKS, FAMILIES, RULES, SPECIFIC, GENRES, APPLE, PRIORITY, best, pickProfile };
+export { LOOKS, FAMILIES, RULES, SPECIFIC, GENRES, APPLE, PRIORITY, best, pickProfile, pickGenre, soundGuess };

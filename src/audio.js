@@ -26,6 +26,9 @@ async function loadAudio(uri) {
   // eine gemerkte Schätzung reicht nicht: Spotify trotzdem noch einmal fragen
   if ((audio.data && !audio.data.synthetic) || !uri.startsWith("spotify:track:") || typeof S.getAudioData !== "function") {
     beat.sync();
+    // keine Spotify-Analyse möglich (neueres Spicetify ohne getAudioData, lokale Datei): sofort schätzen –
+    // früher blieb der Song dann ganz ohne Takt und Tempo („BPM fehlt“)
+    if (!audio.data) fallback(uri);
     return;
   }
   await fetchAnalysis(uri, audio.data ? RETRY.length : 0);

@@ -5,7 +5,8 @@ import { createFlashCap } from "./flashcap.js";
 import { songMap, at, STEP } from "./songmap.js";
 import { planSong, cue } from "./director.js";
 import { KIN, baseOf } from "./styles.js";
-import { LOOKS, FAMILIES, pickProfile } from "./genres.js";
+import { LOOKS, FAMILIES, pickGenre } from "./genres.js";
+import { deezer, itunes, previewSound } from "./sources.js";
 
 /* ---------------------------------------------------------------- Party-Modus */
 // Ein Lichtpult, das den Song kennt. Aus Spotifys Taktanalyse entsteht einmal pro Song eine Karte:
@@ -171,53 +172,14 @@ async function artistGenres(item) {
   return job;
 }
 
-/* ---- Genre je Song aus der iTunes-Suche */
+/* ---- Genre je Song aus der iTunes-Suche und dem Deezer-Album (sources.js) */
 // Spotifys Künstler-Genres kommen oft leer oder gar nicht (Anfragelimit) – dann blieb nur das Tempo und
-// fast alles wurde „Pop“. Apples Suche kennt zu fast jedem Song ein Genre („Alternative“, „Dance“,
-// „Hip-Hop/Rap“ …), ohne Konto. Raus gehen nur Titel und Künstler; abschaltbar („Genre online nachschlagen“).
-const appleCache = lru(200);
-const norm = (s) => String(s || "").toLowerCase().normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, "");
-const bareTitle = (s) => String(s || "").replace(/\s+-\s+.*$/, "").replace(/\s*[([].*?[)\]]/g, "").trim();
-async function appleGenre(item) {
-  const uri = item?.uri || "";
-  const title = bareTitle(item?.metadata?.title || item?.name);
-  const artist = item?.metadata?.artist_name || item?.artists?.[0]?.name || "";
-  if (!cfg.partyOnline || !uri.startsWith("spotify:track:") || !title || !artist) return "";
-  if (appleCache.has(uri)) return appleCache.get(uri);
-  // erst im eigenen Land suchen (deutscher Rap steht nicht unbedingt im US-Katalog), dann in den USA
-  const region = (navigator.languages || [navigator.language]).map((l) => String(l).split("-")[1]).find((r) => /^[A-Z]{2}$/i.test(r || ""));
-  const countries = [...new Set([region || "DE", "US"].map((c) => c.toUpperCase()))];
-  const job = (async () => {
-    for (const country of countries) {
-      const g = await appleSearch(title, artist, country);
-      if (g) return g;
-    }
-    return "";
-  })();
-  appleCache.set(uri, job);
-  return job;
-}
-async function appleSearch(title, artist, country) {
-  try {
-    const ctl = new AbortController();
-    const timer = setTimeout(() => ctl.abort(), 5000);
-    const res = await fetch(`https://itunes.apple.com/search?media=music&entity=song&limit=10&country=${country}&term=${encodeURIComponent(title + " " + artist)}`, { signal: ctl.signal });
-    clearTimeout(timer);
-    const list = res.ok ? (await res.json())?.results || [] : [];
-    const a = norm(artist), tt = norm(title);
-    // nur Treffer vom selben Künstler; gleicher Titel zählt doppelt – das häufigste Genre gewinnt
-    const votes = {};
-    for (const r of list) {
-      const ra = norm(r.artistName);
-      if (!ra || !(ra.includes(a) || a.includes(ra)) || !r.primaryGenreName) continue;
-      const w = norm(bareTitle(r.trackName)) === tt ? 2 : 1;
-      votes[r.primaryGenreName] = (votes[r.primaryGenreName] || 0) + w;
-    }
-    return Object.entries(votes).sort((x, y) => y[1] - x[1])[0]?.[0] || "";
-  } catch {
-    return "";
-  }
-}
+// fast alles wurde „Pop“ (oder falsch „Rave“/„Hip-Hop“ nach dem Tempo). Apples Suche kennt zu fast jedem Song ein
+// Genre („Alternative“, „Dance“, „Hip-Hop/Rap“ …), Deezer das Genre des Albums. Raus gehen nur Titel und Künstler;
+// abschaltbar („Genre online nachschlagen“).
+const appleGenre = async (item) => (await itunes(item))?.genre || "";
+// Deezer braucht drei Anfragen nacheinander (Suche, Song, Album): höchstens 6 s warten, sonst ohne Deezer wählen
+const deezerGenres = (item) => Promise.race([deezer(item).then((d) => d?.genres || []), new Promise((r) => setTimeout(() => r([]), 6000))]);
 
 // Anteil der Song-Zeit in Moll (0..1) aus den Abschnitten der Analyse
 function minorShare(d) {
@@ -265,32 +227,54 @@ const party = (() => {
     if (cfg.partyStyle !== "auto" || !item?.uri) return;
     artistGenres(item).catch(() => {});
     appleGenre(item).catch(() => {});
+    deezerGenres(item).catch(() => {});
   }
+  // Genre aus allen Quellen (genres.js pickGenre): Apple, Deezer, Spotify-Künstler, Namen, zuletzt der Klang
+  const choose = (bpm, d) =>
+    pickGenre({ genres: info.genres || [], apple: info.apple || "", deezer: info.deezer || [], artist: info.artist, title: info.title, bpm, loud: d?.loud ?? -10, minor: d ? minorShare(d) : 0, sound: d?.sound || info.sound || null });
   async function prepare(item) {
     const u = item?.uri || "";
     // Song + gewählter Stil: wer in den Einstellungen umstellt, bekommt sofort das neue Profil
     const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
-    if (pk === picked) return info;
+    if (pk === picked) {
+      // Taktdaten kamen inzwischen (Schätzung, Wiederholung): Tempo gleich nachtragen, sonst zeigt die Anzeige
+      // bis zum nächsten Song kein BPM (updateKicker liest info direkt nach prepare)
+      refine();
+      return info;
+    }
     picked = pk;
     uri = u;
     const my = ++token;
     lastBeat = lastBar = -1;
     dropGlow = 0;
     // beide Quellen gleichzeitig fragen
-    const [genres, apple] = cfg.partyStyle === "auto" ? await Promise.all([artistGenres(item), appleGenre(item)]) : [[], ""];
+    const auto0 = cfg.partyStyle === "auto";
+    const [genres, apple, dzg] = auto0 ? await Promise.all([artistGenres(item), appleGenre(item).catch(() => ""), deezerGenres(item).catch(() => [])]) : [[], "", []];
     if (my !== token) return info;
-    const bpm = audio.uri === u ? audio.data?.bpm || 0 : 0;
-    const loud = audio.uri === u ? audio.data?.loud ?? -10 : -10;
-    const auto = pickProfile(genres, bpm, loud, apple, audio.uri === u ? minorShare(audio.data) : 0);
-    info = { key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, why: auto.why, bpm, genres, apple };
+    const d = audio.uri === u ? audio.data : null;
+    const bpm = d?.bpm || 0;
+    info = { key: "pop", why: "", conf: 0, bpm, genres, apple, deezer: dzg, artist: item?.metadata?.artist_name || item?.artists?.[0]?.name || "", title: item?.metadata?.title || item?.name || "", sound: null, src: d?.bpmSrc || "" };
+    const auto = choose(bpm, d);
+    [info.key, info.why, info.conf] = [cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, auto.why, auto.conf];
+    // kein Name sagt etwas (oder nur unsicher): die Hörprobe anhören (tempo.js) und danach noch einmal wählen
+    if (auto0 && auto.conf < 0.3 && !d?.sound && item?.uri)
+      previewSound(item).then((pv) => {
+        if (my !== token || !pv?.feats) return;
+        info.sound = { ...pv.feats, bpm: pv.bpm, conf: pv.conf };
+        const again = choose(info.bpm, audio.uri === uri ? audio.data : null);
+        [info.key, info.why, info.conf] = [again.key, again.why, again.conf];
+      });
     return info;
   }
   // Taktdaten kommen oft erst nach dem Songwechsel: dann Tempo nachtragen und ggf. neu wählen
   function refine() {
     if (!audio.data || audio.uri !== uri) return;
-    if (info.bpm !== audio.data.bpm) {
-      info.bpm = audio.data.bpm;
-      if (cfg.partyStyle === "auto") info.key = pickProfile(info.genres || [], info.bpm, audio.data.loud, info.apple || "", minorShare(audio.data)).key;
+    if (info.bpm !== audio.data.bpm || info.src !== (audio.data.bpmSrc || "")) {
+      [info.bpm, info.src] = [audio.data.bpm, audio.data.bpmSrc || ""];
+      if (cfg.partyStyle === "auto") {
+        const r = choose(info.bpm, audio.data);
+        [info.key, info.why, info.conf] = [r.key, r.why, r.conf];
+      }
     }
   }
 
@@ -405,6 +389,9 @@ const party = (() => {
         const strength = P.accent[half ? (inBar & 2) : inBar] ?? 0.6;
         // Gefühl: zärtliche und traurige Teile klingen lang und weich aus, aggressive kurz und hart
         beatEnv = strength * Math.exp(-since * P.decay * (half ? 0.6 : 1) * (1.1 - 0.5 * C.soft));
+        // geschätztes Raster ohne bekannte Lage des Schlags (kein Liedtext mit Zeiten): Tempo stimmt, die Eins ist
+        // geraten – dann nur sanft pulsieren statt hart daneben zu schlagen
+        if (d.synthetic && d.phaseKnown === false) beatEnv *= 0.45;
         conf = clamp(d.beats[bi].c + 0.3, 0, 1);
         if (bi !== lastBeat) {
           lastBeat = bi;
@@ -443,6 +430,8 @@ const party = (() => {
     // hohe Energie: auch die Kick färbt (gerade Genres), damit es in Refrain und Drop richtig pumpt
     if (level >= 3 && P.flashOn === "down" && kickHit && smooth.e > 0.62 && C.flash >= 0.75) flashOn = true;
     if (smooth.k > 0.5) flashOn = false;
+    // Lage des Schlags nur geraten: keine Farbflächen auf Schlägen (sie säßen sichtbar daneben), Drops bleiben
+    if (d?.synthetic && d.phaseKnown === false) flashOn = false;
     // die Regie erlaubt je Teil keine (Intro, Break, Outro), nur Einsen (Strophe) oder alle Farbflächen (Refrain, Drop)
     if (C.flash < 0.25 || (C.flash < 0.75 && !(hit && inBar === 0))) flashOn = false;
     let flashGo = false;
