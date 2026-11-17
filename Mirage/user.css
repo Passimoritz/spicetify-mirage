@@ -722,6 +722,12 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   visibility: hidden;
   transition: opacity 0.6s var(--m-ease), visibility 0.6s;
   -webkit-app-region: no-drag;
+  /* Menüs oben rechts (Seitenleiste, QR-Karte, Tastenhilfe): dunkles Glas in jedem Schema – die Ebene ist immer dunkel */
+  --m-pop-bg: rgb(16 14 25 / 0.95);
+  --m-pop-line: rgb(255 255 255 / 0.1);
+  --m-pop-radius: 20px;
+  --m-pop-spring: cubic-bezier(0.32, 1.32, 0.52, 1);
+  --m-pop-shadow: 0 28px 70px -18px rgb(0 0 0 / 0.75), 0 2px 10px rgb(0 0 0 / 0.25), inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 #mirage-immersive * {
   -webkit-app-region: no-drag;
@@ -820,25 +826,42 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 
 /* Visualizer-Leinwand */
 /* Party-Location (Bühnenlicht, Dekor, Publikum) liegt als eigenes Canvas unter dem Visualizer */
-/* Live-Link: QR-Karte über dem Party-Modus */
+/* Live-Link: QR-Karte über dem Party-Modus – dieselbe Fläche wie die Seitenleiste, wächst aus dem Knopf oben rechts */
 #mirage-immersive .m-im-livecard {
   position: absolute;
   top: 76px;
   right: 24px;
   z-index: 30;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   justify-items: center;
-  width: min(300px, calc(100% - 32px));
-  padding: 20px;
-  border-radius: 20px;
+  width: min(312px, calc(100% - 32px));
+  box-sizing: border-box;
+  padding: 14px 18px 18px;
+  border-radius: var(--m-pop-radius);
   text-align: center;
-  color: #fff;
-  background: rgb(14 12 22 / 0.88);
-  border: 1px solid rgb(255 255 255 / 0.12);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 60px rgb(0 0 0 / 0.5);
-  cursor: pointer;
+  color: #f5f3ff;
+  background: var(--m-pop-bg);
+  border: 1px solid var(--m-pop-line);
+  box-shadow: var(--m-pop-shadow);
+  transform-origin: calc(100% - 60px) 0;
+  animation: m-pop-in 0.26s var(--m-pop-spring) both;
+}
+#mirage-immersive .m-im-livecard.is-out {
+  pointer-events: none;
+  animation: m-pop-out 0.18s var(--m-ease) both;
+}
+@keyframes m-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.94);
+  }
+}
+@keyframes m-pop-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
 }
 /* Lautschrift unter der Zeile (wie die Übersetzung, etwas kleiner und kursiv) */
 #mirage-immersive .m-im-rom {
@@ -1000,6 +1023,8 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   opacity: 0.65;
 }
 #mirage-immersive .m-im-votes {
+  display: inline-flex;
+  align-items: center;
   flex: none;
   font-style: normal;
   font-size: 12px;
@@ -1240,30 +1265,69 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive .m-im-wishtoast b {
   font-size: 14px;
 }
-#mirage-immersive .m-im-livecard img {
-  width: 200px;
-  height: 200px;
-  padding: 8px;
-  border-radius: 12px;
+#mirage-immersive .m-im-livecard .m-im-qr {
+  width: 208px;
+  height: 208px;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 16px;
   background: #fff;
   image-rendering: pixelated;
+  box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.6);
 }
 #mirage-immersive .m-im-livecard p {
   margin: 0;
   font-size: 13px;
-  opacity: 0.75;
+  line-height: 1.45;
+  color: rgb(245 243 255 / 0.78);
 }
 #mirage-immersive .m-im-livecard small {
   font-size: 11px;
-  line-height: 1.4;
-  opacity: 0.55;
+  line-height: 1.45;
+  color: rgb(245 243 255 / 0.55);
 }
-#mirage-immersive .m-im-livecard code {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  font-size: 12px;
-  opacity: 0.85;
-  cursor: copy;
+/* Kopf einer Menü-Karte: Titel links, Schließen rechts */
+#mirage-immersive .m-im-pop-head {
+  display: flex;
+  align-items: center;
+  justify-self: stretch;
+  gap: 8px;
+  text-align: left;
+}
+#mirage-immersive .m-im-pop-head b {
+  flex: 1;
+  min-width: 0;
+  font: 650 16px var(--m-font);
+  letter-spacing: -0.01em;
+}
+/* Knopf in Menüs (zweitrangig): Pille mit Symbol */
+#mirage-immersive .m-im-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 99px;
+  color: #f5f3ff;
+  background: rgb(255 255 255 / 0.07);
+  font: 600 13px var(--m-font);
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s var(--m-pop-spring);
+}
+#mirage-immersive .m-im-btn:hover {
+  background: rgb(255 255 255 / 0.13);
+}
+#mirage-immersive .m-im-btn:active {
+  transform: scale(0.96);
+}
+#mirage-immersive .m-im-btn.is-done {
+  border-color: rgb(255 255 255 / 0.32);
+}
+#mirage-immersive .m-im-btn .m-ic svg {
+  width: 16px;
+  height: 16px;
 }
 #mirage-immersive .m-im-venue {
   position: absolute;
@@ -1837,12 +1901,13 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
   width: 100%;
   margin: 0 0 8px;
   padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 12px;
-  background: rgba(var(--spice-rgb-main), 0.92);
+  background: rgb(24 21 36 / 0.98);
   color: #fff;
   font: 500 14px var(--m-font);
   outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
 }
 #mirage-immersive .m-im-side-find:focus {
   border-color: rgba(var(--m-a-rgb), 0.8);
@@ -2583,8 +2648,16 @@ html.mirage-beat #mirage-stage .m-pulse {
 .mirage-settings .m-range .m-range-hint {
   font-size: 12px;
 }
+/* Blitz als Linienzeichnung (wie die Symbole in icons.js) statt Emoji */
 .mirage-settings .m-range-hint.is-cost::before {
-  content: "⚡ ";
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.3em;
+  vertical-align: -0.15em;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M13 2.5L5 13.5h6l-1 8 8-11h-6z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .mirage-settings .m-range-hint.is-free::before {
   content: "✓ ";
@@ -3780,50 +3853,64 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 }
 #mirage-immersive .m-im-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-left: auto;
 }
-#mirage-immersive .m-im-help {
-  font: 700 16px var(--m-font);
-}
+/* Tastenhilfe: abgedunkelter Rand, in der Mitte eine Karte wie die übrigen Menüs */
 #mirage-immersive .m-im-keys {
   position: absolute;
   inset: 0;
   z-index: 10;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(4 3 8 / 0.55);
+  transition: opacity 0.2s var(--m-ease), visibility 0s;
 }
 #mirage-immersive .m-im-keys[hidden] {
-  display: none;
+  display: grid;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.16s ease-in, visibility 0s 0.16s;
 }
 #mirage-immersive .m-im-keys-box {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   min-width: 340px;
-  padding: 26px 30px;
+  padding: 22px 26px 24px;
   border-radius: 22px;
-  background: rgba(var(--spice-rgb-main), 0.92);
-  border: 1px solid var(--m-line-strong);
-  color: var(--spice-text);
-  font: 500 15px var(--m-font);
+  background: var(--m-pop-bg);
+  border: 1px solid var(--m-pop-line);
+  box-shadow: var(--m-pop-shadow);
+  color: #f5f3ff;
+  font: 500 14px var(--m-font);
+  transition: transform 0.26s var(--m-pop-spring);
+}
+#mirage-immersive .m-im-keys[hidden] .m-im-keys-box {
+  transform: scale(0.96);
+  transition-duration: 0.16s;
 }
 #mirage-immersive .m-im-keys-box b {
-  font-size: 18px;
-  margin-bottom: 6px;
+  font: 650 17px var(--m-font);
+  margin-bottom: 8px;
 }
 #mirage-immersive .m-im-keys-box div {
   display: grid;
-  grid-template-columns: 90px 1fr;
+  grid-template-columns: 96px 1fr;
   align-items: center;
   gap: 14px;
+  color: rgb(245 243 255 / 0.82);
 }
 #mirage-immersive .m-im-keys-box kbd {
   justify-self: start;
-  padding: 3px 9px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--m-line-strong);
+  min-width: 14px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  text-align: center;
+  color: #f5f3ff;
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.3);
   font: 600 12px var(--m-mono);
 }
 
@@ -3859,9 +3946,13 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   margin-top: 6px;
 }
 .mirage-settings .m-cost {
+  display: inline-flex;
   font-style: normal;
-  font-size: 12px;
   opacity: 0.8;
+}
+.mirage-settings .m-cost svg {
+  width: 13px;
+  height: 13px;
 }
 .mirage-settings .m-note {
   display: block;
@@ -4147,44 +4238,132 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+/* Seitenleiste = das gemeinsame Menü oben rechts: dunkles Glas, wächst weich aus der Ecke der Knöpfe.
+   Zu ist sie sofort (hidden), blendet aber noch kurz aus; ohne Unschärfe dahinter, weil die Bühne darunter
+   jedes Bild neu malt und ein Weichzeichner dann jedes Bild mitrechnen müsste. */
 #mirage-immersive .m-im-side {
   position: absolute;
-  top: 84px;
+  top: 76px;
   right: 24px;
   bottom: 24px;
   z-index: 6;
   display: flex;
   flex-direction: column;
-  width: min(340px, 86vw);
-  border-radius: 22px;
-  background: rgba(var(--spice-rgb-main), 0.86);
-  border: 1px solid var(--m-line-strong);
-  color: var(--spice-text);
+  width: min(352px, 86vw);
+  border-radius: var(--m-pop-radius);
+  background: var(--m-pop-bg);
+  border: 1px solid var(--m-pop-line);
+  box-shadow: var(--m-pop-shadow);
+  color: #f5f3ff;
+  text-align: left;
   overflow: hidden;
-  animation: m-side-in 0.4s var(--m-ease) both;
+  transform-origin: calc(100% - 60px) 0;
+  transition: opacity 0.2s var(--m-ease), transform 0.26s var(--m-pop-spring), visibility 0s;
 }
 #mirage-immersive .m-im-side[hidden] {
-  display: none;
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.16s ease-in, transform 0.18s ease-in, visibility 0s 0.18s;
 }
-@keyframes m-side-in {
-  from {
-    opacity: 0;
-    transform: translateX(24px);
-  }
+/* zarter Schein der Leitfarbe oben in der Karte */
+#mirage-immersive .m-im-side::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 120px;
+  background: radial-gradient(120% 100% at 80% 0, rgba(var(--m-a-rgb), 0.14), transparent 70%);
+  pointer-events: none;
 }
 #mirage-immersive .m-im-side-head {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px 8px;
-  font: 700 17px var(--m-font);
+  gap: 6px;
+  min-height: 36px;
+  padding: 12px 12px 6px 18px;
+  font: 650 16px var(--m-font);
+  letter-spacing: -0.01em;
+}
+#mirage-immersive .m-im-side-head b {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#mirage-immersive .m-im-side-head:has(.m-im-side-back:not([hidden])) {
+  padding-left: 10px;
 }
 #mirage-immersive .m-im-side-body {
+  position: relative;
   display: grid;
   align-content: start;
-  gap: 4px;
-  padding: 6px 10px 14px;
+  gap: 2px;
+  padding: 4px 10px 14px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.2) transparent;
+}
+/* anderer Inhalt in der offenen Leiste (aus „Mehr“ zum DJ …): gleitet weich herein */
+#mirage-immersive .m-im-side-body.is-swap {
+  animation: m-pop-swap 0.24s var(--m-ease) both;
+}
+@keyframes m-pop-swap {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}
+/* Schließen und Zurück im Kopf: runde, ruhige Symbolknöpfe */
+#mirage-immersive :is(.m-im-side-x, .m-im-side-back, .m-im-pop-x) {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: rgb(245 243 255 / 0.8);
+  background: rgb(255 255 255 / 0.06);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.18s var(--m-pop-spring);
+}
+#mirage-immersive .m-im-side-back[hidden] {
+  display: none;
+}
+#mirage-immersive :is(.m-im-side-x, .m-im-side-back, .m-im-pop-x):hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.14);
+}
+#mirage-immersive :is(.m-im-side-x, .m-im-side-back, .m-im-pop-x):active {
+  transform: scale(0.92);
+}
+#mirage-immersive :is(.m-im-side-x, .m-im-side-back, .m-im-pop-x) svg {
+  width: 17px;
+  height: 17px;
+}
+/* Linien-Symbole (icons.js): Strich in Schriftfarbe, nie gefüllt */
+#mirage-immersive .m-ic {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  font-style: normal;
+}
+#mirage-immersive .m-ic svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+}
+#mirage-immersive .m-ic.is-inline svg {
+  width: 1.15em;
+  height: 1.15em;
+  margin-right: 0.35em;
+  vertical-align: -0.2em;
 }
 /* Visualizer „zersplittertes Cover“: die Kacheln zeichnet der Canvas – das echte Cover tritt zurück */
 #mirage-immersive.is-shatter .m-im-cover img {
@@ -4848,39 +5027,73 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 /* Einstellungen in der Seitenleiste */
 #mirage-immersive .m-g-cfg {
   display: grid;
-  gap: 6px;
+  gap: 7px;
   padding: 8px 10px;
   font: 500 13px var(--m-font);
 }
+/* Stufenwahl: eine Spur, darin gleitet die Auswahl (wie ein Segmented Control) */
 #mirage-immersive .m-g-seg-row {
   display: flex;
-  gap: 4px;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.05);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
 }
+/* mehrzeilig: einzelne Chips statt einer Spur */
 #mirage-immersive .m-g-seg-row.is-wrap {
   flex-wrap: wrap;
-  padding: 2px 10px 8px;
+  gap: 6px;
+  margin: 0 10px 8px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
 }
 #mirage-immersive .m-g-seg-row button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 1 1 auto;
   min-height: 30px;
-  padding: 3px 9px;
-  border: 1px solid rgb(255 255 255 / 0.14);
+  padding: 3px 10px;
+  border: 0;
   border-radius: 9px;
   color: inherit;
   font: 600 12px var(--m-font);
-  background: rgb(255 255 255 / 0.05);
+  background: transparent;
   cursor: pointer;
+  transition: background 0.2s var(--m-ease), color 0.2s, transform 0.18s var(--m-pop-spring);
+}
+#mirage-immersive .m-g-seg-row.is-wrap button {
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.04);
+}
+#mirage-immersive .m-g-seg-row button:hover {
+  background: rgb(255 255 255 / 0.09);
+}
+#mirage-immersive .m-g-seg-row button:active {
+  transform: scale(0.95);
+}
+#mirage-immersive .m-g-seg-row button.is-ic svg {
+  width: 16px;
+  height: 16px;
 }
 #mirage-immersive .m-g-seg-row button[aria-pressed="true"] {
   color: #0b0a12;
   border-color: transparent;
   background: rgb(var(--m-c-rgb));
+  box-shadow: 0 2px 10px -2px rgba(var(--m-a-rgb), 0.55);
 }
 /* Schnellmenü „Aussehen & Leistung“: Presets als Karten (2 × 2) mit Leistungsbalken wie im Dialog */
 #mirage-immersive .m-im-perf {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
+  margin: 0 0 6px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
 }
 #mirage-immersive .m-im-perf button {
   position: relative;
@@ -4888,8 +5101,10 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   align-content: start;
   justify-items: start;
   gap: 2px;
-  padding: 8px 10px;
-  border-radius: 12px;
+  padding: 9px 11px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.04);
   text-align: left;
 }
 #mirage-immersive .m-im-perf button b {
@@ -4908,18 +5123,19 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 #mirage-immersive .m-im-perf-flag::after {
   content: "";
   flex: none;
-  width: 34px;
-  height: 20px;
+  width: 36px;
+  height: 22px;
   margin-left: auto;
   border-radius: 99px;
   background:
-    radial-gradient(circle 7px at 10px 50%, #fff 92%, transparent 100%),
-    rgb(255 255 255 / 0.2);
+    radial-gradient(circle 8px at 11px 50%, #fff 92%, transparent 100%),
+    rgb(255 255 255 / 0.18);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
   transition: background 0.25s var(--m-ease);
 }
 #mirage-immersive .m-im-perf-flag[aria-pressed="true"]::after {
   background:
-    radial-gradient(circle 7px at 24px 50%, #0b0a12 92%, transparent 100%),
+    radial-gradient(circle 8px at 25px 50%, #0b0a12 92%, transparent 100%),
     rgb(var(--m-c-rgb));
 }
 #mirage-immersive .m-g-keyhint {
@@ -4945,13 +5161,19 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 #mirage-immersive .m-g-own {
   box-sizing: border-box;
   width: calc(100% - 20px);
-  margin: 0 10px 12px;
-  padding: 8px 10px;
-  border: 1px solid rgb(255 255 255 / 0.16);
-  border-radius: 9px;
+  margin: 2px 10px 12px;
+  padding: 9px 12px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 12px;
   color: inherit;
   font: 500 13px var(--m-font);
   background: rgb(255 255 255 / 0.05);
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+#mirage-immersive .m-g-own:focus {
+  border-color: rgba(var(--m-a-rgb), 0.8);
+  box-shadow: 0 0 0 3px rgba(var(--m-a-rgb), 0.25);
 }
 @media (prefers-reduced-motion: reduce) {
   #mirage-immersive :is(.m-g-beat, .m-g-bomb, .m-g-pulse) {
@@ -5066,17 +5288,18 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 #mirage-immersive .m-im-side-note {
   margin: 4px 10px 8px;
   font-size: 13px;
-  opacity: 0.7;
+  line-height: 1.45;
+  color: rgb(245 243 255 / 0.66);
 }
 /* Abschnitte in der Seitenleiste (Party auf anderem Bildschirm) */
 #mirage-immersive .m-im-side-sec {
   display: grid;
   gap: 2px;
-  padding: 14px 10px 4px;
+  padding: 16px 10px 6px;
   font: 700 11px var(--m-font);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.75;
+  color: rgb(245 243 255 / 0.6);
 }
 #mirage-immersive .m-im-side-sec small {
   font-weight: 500;
@@ -5115,7 +5338,8 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 8px 10px;
+  min-height: 44px;
+  padding: 7px 10px;
   border: 0;
   border-radius: 12px;
   background: none;
@@ -5123,15 +5347,45 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   text-align: left;
   font: 500 14px var(--m-font);
   cursor: pointer;
+  transition: background 0.16s, transform 0.16s var(--m-pop-spring);
 }
 #mirage-immersive .m-im-side-item:disabled {
   cursor: default;
 }
 #mirage-immersive .m-im-side-item:not(:disabled):hover {
-  background: rgba(var(--m-a-rgb), 0.14);
+  background: rgb(255 255 255 / 0.07);
+}
+#mirage-immersive .m-im-side-item:not(:disabled):active {
+  transform: scale(0.985);
 }
 #mirage-immersive .m-im-side-item.is-on {
   background: rgba(var(--m-a-rgb), 0.2);
+}
+/* Symbol einer Zeile: kleine Kachel links; gewählt leuchtet sie in der Leitfarbe */
+#mirage-immersive .m-im-side-ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.07);
+  transition: background 0.2s, color 0.2s;
+}
+#mirage-immersive .m-im-side-item:is(.is-on, [aria-pressed="true"]) .m-im-side-ic {
+  color: #0b0a12;
+  background: rgb(var(--m-c-rgb));
+}
+/* Pfeil rechts: die Zeile führt weiter (Unterseite) */
+#mirage-immersive .m-im-side-go {
+  margin-left: auto;
+  opacity: 0.45;
+  transition: transform 0.2s var(--m-ease), opacity 0.2s;
+}
+#mirage-immersive .m-im-side-go svg {
+  width: 16px;
+  height: 16px;
+}
+#mirage-immersive .m-im-side-item:hover .m-im-side-go {
+  opacity: 0.8;
+  transform: translateX(2px);
 }
 /* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-immersive .m-im-side-item img {
@@ -5151,22 +5405,28 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-#mirage-immersive .m-im-side-item small {
-  color: var(--spice-subtext);
+#mirage-immersive .m-im-side-item b {
+  font-weight: 600;
 }
-#mirage-immersive .m-im-actions button,
-#mirage-immersive .m-im-side-x {
+#mirage-immersive .m-im-side-item small {
+  margin-top: 1px;
+  font-size: 12px;
+  color: rgb(245 243 255 / 0.62);
+}
+/* Knöpfe oben rechts: runde Glas-Knöpfe in Schriftfarbe der Ebene (auch im hellen Schema hell);
+   offenes Menü = Knopf leuchtet wie gedrückt */
+#mirage-immersive .m-im-actions button {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   border-radius: 50%;
-  border: 1px solid var(--m-line-strong);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--spice-text);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.06);
+  color: #f5f3ff;
   cursor: pointer;
-  transition: background 0.25s, transform 0.25s var(--m-spring);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.25s, transform 0.22s var(--m-pop-spring);
 }
 /* „display: grid“ oben überschrieb das hidden-Attribut: ausgeblendete Knöpfe waren trotzdem zu sehen */
 #mirage-immersive .m-im-actions button[hidden] {
@@ -5177,15 +5437,74 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   left: 150px;
   transform: none;
 }
-#mirage-immersive .m-im-actions button:hover,
-#mirage-immersive .m-im-side-x:hover {
-  background: rgba(var(--m-a-rgb), 0.2);
-  transform: scale(1.06);
+#mirage-immersive .m-im-actions button:hover {
+  background: rgb(255 255 255 / 0.13);
+  border-color: rgb(255 255 255 / 0.2);
+  transform: translateY(-1px);
+}
+#mirage-immersive .m-im-actions button:active {
+  transform: scale(0.92);
+  transition-duration: 0.08s;
+}
+#mirage-immersive .m-im-actions .m-im-sm.is-open {
+  color: #fff;
+  border-color: rgba(var(--m-c-rgb), 0.55);
+  background: rgba(var(--m-a-rgb), 0.28);
+  box-shadow: 0 0 18px -4px rgba(var(--m-a-rgb), 0.8);
 }
 #mirage-immersive .m-im-actions svg {
   width: 18px;
   height: 18px;
   fill: currentColor;
+}
+/* Linien-Symbole (Tastenhilfe) oben: Strich statt Fläche */
+#mirage-immersive .m-im-actions svg[stroke] {
+  fill: none;
+}
+/* Wünsche: Stimmen mit Daumen, Ablehnen als Kreuz */
+#mirage-immersive .m-im-votes .m-ic svg {
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+}
+#mirage-immersive :is(.m-im-wishrow, .m-im-wishtoast) .m-im-wish-no {
+  display: grid;
+  place-items: center;
+}
+#mirage-immersive .m-im-wish-no svg {
+  width: 14px;
+  height: 14px;
+}
+/* Ruhig und „weniger Bewegung“: Menüs blenden nur, ohne Wachsen, Federn und Gleiten */
+@media (prefers-reduced-motion: reduce) {
+  #mirage-immersive :is(.m-im-side, .m-im-side[hidden], .m-im-keys-box, .m-im-keys[hidden] .m-im-keys-box) {
+    transform: none;
+  }
+  #mirage-immersive :is(.m-im-livecard, .m-im-side-body.is-swap) {
+    animation-name: m-pop-fade;
+  }
+  #mirage-immersive .m-im-livecard.is-out {
+    animation-name: m-pop-fade-out;
+  }
+}
+html.mirage-calm #mirage-immersive :is(.m-im-side, .m-im-side[hidden], .m-im-keys-box, .m-im-keys[hidden] .m-im-keys-box) {
+  transform: none;
+}
+html.mirage-calm #mirage-immersive :is(.m-im-livecard, .m-im-side-body.is-swap) {
+  animation-name: m-pop-fade;
+}
+html.mirage-calm #mirage-immersive .m-im-livecard.is-out {
+  animation-name: m-pop-fade-out;
+}
+@keyframes m-pop-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes m-pop-fade-out {
+  to {
+    opacity: 0;
+  }
 }
 
 /* ==========================================================================

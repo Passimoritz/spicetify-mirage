@@ -17,6 +17,7 @@ import { sfx } from "./sfx.js";
 import { readVolume, writeVolume, PLR } from "./player.js";
 import { gameCard } from "./share.js";
 import { pickPart, partData } from "./karaoke.js";
+import { GAME } from "./icons.js";
 
 export const GAME_LIST = [
   { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
@@ -502,7 +503,7 @@ function tourScore() {
 function tourView() {
   const tot = [...TOUR.total].map(([id, x]) => ({ id, ...x })).sort((a, b) => b.p - a.p).slice(0, 5);
   const next = TOUR.list[TOUR.i];
-  return { i: TOUR.i, of: TOUR.list.length, next: next ? `${INFO[next].icon} ${t(INFO[next].label)}` : "", tot: tot.map((p) => ({ n: nameOf(p), p: p.p, c: colOf(p), i: short(p.id) })) };
+  return { i: TOUR.i, of: TOUR.list.length, next: next ? t(INFO[next].label) : "", tot: tot.map((p) => ({ n: nameOf(p), p: p.p, c: colOf(p), i: short(p.id) })) };
 }
 
 /* ---- Fragen: gemeinsamer Ablauf */
@@ -1870,7 +1871,10 @@ function head(v) {
   const h = div("m-g-head");
   h.append(div("m-g-bar"));
   h.firstChild.append(document.createElement("i"));
-  h.append(div("m-g-ic", INFO[G.k].icon), div("m-g-name", t(INFO[G.k].label)));
+  // Symbol des Spiels als Linienzeichnung (icons.js) statt Emoji
+  const ic = div("m-g-ic");
+  ic.innerHTML = GAME[G.k] || "";
+  h.append(ic, div("m-g-name", t(INFO[G.k].label)));
   if (v.r && v.of) {
     const dots = div("m-g-dots");
     for (let i = 1; i <= v.of; i++) dots.append(div(i < v.r ? "is-done" : i === v.r ? "is-now" : ""));
@@ -1981,7 +1985,7 @@ function buildJoin() {
     wrap.prepend(img);
   };
   // wer schon da ist: Zahl, Namen in ihrer Farbe, und was noch fehlt
-  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", G.plan ? G.plan.map((k) => `${INFO[k].icon} ${t(INFO[k].label)}`).join(" · ") : t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
+  txt.append(div("m-g-big", t("gJoinAny")), div("m-g-sub", G.plan ? G.plan.map((k) => t(INFO[k].label)).join(" · ") : t(INFO[G.k].hint)), div("m-g-sub", t("gJoinScan")), div("m-g-jcount"), div("m-g-chips"));
   const go = document.createElement("button");
   go.type = "button";
   go.className = "m-g-go";

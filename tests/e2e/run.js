@@ -131,7 +131,7 @@ async function openGame(k) {
   await big.hover();
   await T.click(".m-im-gamebtn");
   await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Liste geht auf");
-  await T.click(".m-im-side-body .m-im-side-item", { text: ICON[k] });
+  await T.click(`.m-im-side-body .m-im-side-item[data-game="${k}"]`);
 }
 async function joinAll(k, who = P) {
   await until(async () => (await big.state()).st === "join", 4000, "Warteraum auf dem großen Bild");
@@ -769,7 +769,7 @@ async function hostGame() {
   await T.click(".m-im-gamebtn");
   await sideOpen();
   ok(!(await T.js(`!!document.querySelector(".m-g-hostqr")`)), "host: der QR-Code der Spielleitung ist nicht von selbst zu sehen");
-  await T.click(".m-im-side-body .m-im-side-item", { text: "📱" });
+  await T.click(".m-im-side-body .m-g-hostbtn");
   await until(() => T.js(`!!document.querySelector(".m-g-hostqr img")?.naturalWidth`), 6000, "host: QR-Code nach dem Knopf");
   const url = await T.js(`(async () => {
     const im = document.querySelector(".m-g-hostqr img"), c = document.createElement("canvas");
@@ -835,7 +835,7 @@ async function openGameSettings() {
   await big.hover();
   await T.click(".m-im-gamebtn");
   await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Leiste geht auf");
-  if (!(await T.js(`!!document.querySelector(".m-g-cfg")`))) await T.click(".m-im-side-body .m-im-side-item", { text: "⚙" });
+  if (!(await T.js(`!!document.querySelector(".m-g-cfg")`))) await T.click(".m-im-side-body .m-g-setbtn");
   await until(() => T.js(`!!document.querySelector(".m-g-cfg")`), 2000, "Spiel-Einstellungen gehen auf");
 }
 async function gameSetting(key, index) {
@@ -1253,7 +1253,7 @@ async function hostLink() {
   await big.hover();
   await T.click(".m-im-gamebtn");
   await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Leiste geht auf");
-  await T.click(".m-im-side-body .m-im-side-item", { text: "📱" });
+  await T.click(".m-im-side-body .m-g-hostbtn");
   await until(() => T.js(`!!document.querySelector(".m-g-hostqr img")?.naturalWidth`), 6000, "QR-Code der Spielleitung");
   await T.js(fs.readFileSync(path.join(LIVE, "qr.js"), "utf8") + ";1");
   const url = await T.js(`(async () => {
@@ -1278,7 +1278,7 @@ async function tourGame() {
   await firstSong();
   // Spiele fürs Turnier: in dieser Reihenfolge angetippt
   await openGameSettings();
-  for (const icon of ["🎤", "👆", "⚡"]) await T.click(".m-g-tourpick button", { text: icon });
+  for (const k of ["quiz", "taps", "fast"]) await T.click(`.m-g-tourpick button[data-game="${k}"]`);
   ok((await T.js(`document.querySelectorAll('.m-g-tourpick button[aria-pressed="true"]').length`)) === 3, "turnier: drei Spiele gewählt");
   await T.click(".m-im-side-x");
   // Gäste verbinden (über ein normales Spiel mit Warteraum), dann das Handy der Spielleitung
