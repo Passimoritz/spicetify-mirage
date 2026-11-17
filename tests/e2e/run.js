@@ -1509,6 +1509,14 @@ async function karaokeGame() {
   }
   await openGame("karaoke");
   await joinAll("karaoke");
+  // auch das Spiel selbst wechselt beim Start den Song, wenn die Stelle nicht passt: landet es auf einem Song ohne
+  // Analyse, weiterspringen – das Spiel nimmt dann dieselbe Runde mit dem neuen Song (karTick → karRound(true))
+  for (let n = 0; n < 6; n++) {
+    await wait(900);
+    const i = await T.js(`__sp.now().i`);
+    if (i % 5 !== 2 && i % 7 !== 3) break;
+    await T.js(`Spicetify.Player.next(); 1`);
+  }
   const who = () => Promise.all(P.map((ph) => ph.js(`(() => { const g = cur?.g; return g ? { st: g.st, r: g.r, kp: !!g.kp, mine: g.si === me } : null; })()`)));
   const s1 = await until(async () => {
     const w = await who();
