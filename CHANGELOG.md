@@ -10,6 +10,26 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Lyrics now drive the stage. Words like fire, rain, love, stars, gold, ocean, thunder, colours, "hands up" or a sung countdown trigger pyro, light rain, star fields, gold glitter, colour washes, crowd jumps and more, in many languages. Each effect has a cooldown and fits the song's energy.
+- New musical moments in party mode: a bigger last chorus, key changes, stops and comebacks, guitar solos, a cappella parts, call and response, the first beat and the outro. Drops get a different look each time.
+- Party mode always shows a tempo. Without Spotify's beat data, Mirage works it out from the song's 30-second preview, which is only analysed and never played. Estimates are marked with "≈".
+
+### Changed
+
+- Genre detection uses Apple Music, Deezer, Spotify and hints in the title and artist name together, and falls back to a neutral style when unsure instead of guessing wrongly.
+- The menus at the top right of the immersive view have a new, consistent look with icons instead of emojis. They spring open from their button, close when you click outside or press Esc, and only one is open at a time. The buttons are readable in the light Pearl scheme too.
+- Podcasts, audiobooks, ads and DJ announcements get a calm light in party mode instead of a beat show, and their titles are not looked up online.
+
+### Fixed
+
+- Seeking, scrubbing and song changes in party mode no longer make lights, beams or colours jump. They glide to the new position instead, and light colours no longer flicker with the melody.
+- Lyrics no longer pop or jump when a better version (synced, word by word) arrives, and they no longer go blank on song changes.
+- Switching between immersive views no longer freezes the visualizer for a moment.
+- Opening and closing the immersive view fades smoothly, even when toggled quickly, and no longer leaves background loops running.
+- The track list's column header no longer lets the action bar or rows show through when it sticks at the top of album and playlist pages.
+
 ## [1.25.0] – 2026-11-16
 
 ### Changed

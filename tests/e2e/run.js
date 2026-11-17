@@ -73,7 +73,9 @@ class Win {
       if (!el) return { miss: true };
       // ein Mensch klickt erst, wenn es stillsteht: solange das Element oder eine Hülle darum noch auf- oder
       // zugleitet (Menüs federn aus der Ecke), läge der Klick sonst neben dem Ziel
-      if (document.getAnimations().some((a) => a.playState === "running" && a.effect?.getComputedTiming().endTime !== Infinity && a.effect?.target?.contains?.(el))) return { moving: true };
+      // nur im Theme (Menüs, Seitenleiste) – auf den Handyseiten pulsieren Knöpfe absichtlich, dort zählt der Zeitpunkt
+      // des Tippens (Karaoke: Mikro an)
+      if (el.closest("#mirage-immersive") && document.getAnimations().some((a) => a.playState === "running" && a.effect?.getComputedTiming().endTime !== Infinity && a.effect?.target?.contains?.(el))) return { moving: true };
       el.scrollIntoView({ block: "center", inline: "center" });
       const r = el.getBoundingClientRect(), x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2);
       const hit = document.elementFromPoint(x, y);
