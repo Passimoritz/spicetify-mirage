@@ -1502,9 +1502,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   transition: transform 0.8s var(--m-ease);
   will-change: transform;
 }
-#mirage-immersive .m-im-lyrics-inner.is-in {
-  animation: m-lyr-in 0.5s var(--m-ease) both;
-}
 /* der vorige Text als stille Kopie, die an ihrem Platz ausblendet (Überblendung bei Songwechsel und besserem Ergebnis) */
 #mirage-immersive .m-im-lyrics-ghost {
   position: absolute;
@@ -1512,10 +1509,14 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   pointer-events: none;
   will-change: opacity;
 }
-@keyframes m-lyr-in {
-  /* nur Deckkraft: ein Weichzeichner über die ganze Textfläche wäre teuer */
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* die alte Textfläche selbst als Geist: liegt genau über der Textspalte (gleiche Innenabstände wie der Bereich) */
+#mirage-immersive .m-im-lyrics-inner.m-im-lyrics-ghost {
+  top: 0;
+  left: 0;
+  right: 0;
+  padding-left: inherit;
+  padding-right: inherit;
+  will-change: transform, opacity;
 }
 #mirage-immersive .m-im-line {
   margin: 0 0 0.5em;
