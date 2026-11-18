@@ -82,4 +82,21 @@ assert.deepStrictEqual(Object.values(BOUND).flat().sort(), [...SECRET].sort());
   assert.strictEqual(senderIs(null, S.w, "settings.html"), false);
 }
 
+/* ---- Nanoleaf: Schlüssel gehört zur Adresse; beides kommt nur zusammen vom Koppeln */
+{
+  const nc = { ...cfg, nanoleafIp: "192.168.1.60", nanoleafToken: "NanoLeafTok0123456789abcdefABCDE" };
+  // Import mit anderer Adresse: Schlüssel leer
+  let r = rebind({ nanoleafIp: "10.0.0.61" }, nc);
+  assert.deepStrictEqual(r.cleared, ["nanoleafIp"]);
+  assert.deepStrictEqual(r.patch, { nanoleafIp: "10.0.0.61", nanoleafToken: "" });
+  assert.deepStrictEqual(rebind({ nanoleafIp: " 192.168.1.60 " }, nc).cleared, []);
+  // aus keinem Fenster: weder Schlüssel noch Adresse (auch nicht aus den Einstellungen)
+  for (const trusted of [true, false]) {
+    r = cleanPatch({ nanoleafIp: "10.0.0.61", nanoleafToken: "x", nanoleafOn: true, lifxIps: "192.168.1.70" }, nc, trusted);
+    assert.deepStrictEqual(r.patch, { nanoleafOn: true, lifxIps: "192.168.1.70" });
+    assert.deepStrictEqual(r.dropped, ["nanoleafIp"]);
+  }
+  assert.deepStrictEqual(cleanPatch({ nanoleafIp: "192.168.1.60" }, nc, true), { patch: {}, dropped: [] });
+}
+
 console.log("lights-addrguard: ok");

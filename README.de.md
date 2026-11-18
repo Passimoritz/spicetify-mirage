@@ -267,7 +267,7 @@ Eine kleine kostenlose Zusatz-App. Sie zeigt den laufenden Song **über allen Fe
 | Doppelklick zum Installieren. Sie sitzt dann neben der Uhr. | In *Programme* ziehen. | AppImage ausführbar machen oder die .deb öffnen. |
 
 - 🪟 **Song-Einblendungen** in acht Stilen, auf dem Bildschirm und an der Stelle, die du magst.
-- 💡 **Die Lampen im Zimmer tanzen mit** – Philips Hue (mit einem neuen, noch experimentellen schnellen Modus für *Hue Entertainment*), WLED, Govee, Home Assistant, OpenRGB und Razer Chroma. Beim ersten Start sucht die App deine Lampen für dich. Du kannst eine Höchst-Helligkeit festlegen und das Timing je Lampe feinjustieren. Die Passwörter deiner Lampen werden verschlüsselt gespeichert.
+- 💡 **Die Lampen im Zimmer tanzen mit** – Philips Hue (mit einem neuen, noch experimentellen schnellen Modus für *Hue Entertainment*), WLED, Govee, Nanoleaf, LIFX, Yeelight, Home Assistant, OpenRGB und Razer Chroma. Beim ersten Start sucht die App deine Lampen für dich. Du kannst eine Höchst-Helligkeit festlegen und das Timing je Lampe feinjustieren. Die Passwörter deiner Lampen werden verschlüsselt gespeichert.
 - 📺 **Party auf dem Fernseher** – schick die Party an Chromecast, Google TV oder einen Smart-TV.
 - 🌈 **Kantenlicht** – die Ränder deines Bildschirms leuchten im Takt.
 - 🛠️ **Repariert Mirage für dich** – nach einem Spotify-Update bietet das Menü der App (neben der Uhr, am Mac oben in der Menüleiste) *Theme in Spotify reparieren* an, und sie sagt dir, wenn eine neue Mirage-Version bereitsteht.

@@ -184,6 +184,21 @@
         <small class="state" id="goveeState" role="status" aria-live="polite" data-t="goveeHint"></small>
       </div>
       <div class="dev">
+        <label class="opt"><b>Nanoleaf</b><input type="checkbox" class="toggle" data-key="nanoleafOn"></label>
+        <div class="tools"><input type="text" id="nanoleafIp" placeholder="192.168.1.60" autocomplete="off" spellcheck="false" aria-label="Nanoleaf IP"><button type="button" class="btn sm" id="nanoleafFind" data-t="wzFind"></button><button type="button" class="btn sm" id="nanoleafPair" data-t="huePair"></button><button type="button" class="btn sm ghost" data-test="nanoleaf" data-t="wzTest"></button></div>
+        <small class="state" id="nanoleafState" role="status" aria-live="polite" data-t="nanoleafHint"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>LIFX</b><input type="checkbox" class="toggle" data-key="lifxOn"></label>
+        <div class="tools"><button type="button" class="btn sm" id="lifxScan" data-t="wzFind"></button><button type="button" class="btn sm ghost" data-test="lifx" data-t="wzTest"></button></div>
+        <small class="state" id="lifxState" role="status" aria-live="polite" data-t="lifxHint"></small>
+      </div>
+      <div class="dev">
+        <label class="opt"><b>Yeelight</b><input type="checkbox" class="toggle" data-key="yeelightOn"></label>
+        <div class="tools"><button type="button" class="btn sm" id="yeelightScan" data-t="wzFind"></button><button type="button" class="btn sm ghost" data-test="yeelight" data-t="wzTest"></button></div>
+        <small class="state" id="yeelightState" role="status" aria-live="polite" data-t="yeelightHint"></small>
+      </div>
+      <div class="dev">
         <label class="opt"><b>Home Assistant</b><input type="checkbox" class="toggle" data-key="haOn"></label>
         <div class="tools"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false" aria-label="Home Assistant URL"><input type="password" id="haToken" autocomplete="off" spellcheck="false" aria-label="Token"><button type="button" class="btn sm" id="haConnect" data-t="haTest"></button><button type="button" class="btn sm ghost" data-test="ha" data-t="wzTest"></button></div>
         <small class="state" id="haState" role="status" aria-live="polite" data-t="haHint"></small>
@@ -345,6 +360,24 @@
     say("goveeState", "goveeSearching");
     const r = await mirage.invoke("goveeScan");
     say("goveeState", r?.list?.length ? "goveeFound" : r?.error === "port" ? "goveePort" : "goveeNone", r?.list?.length);
+  };
+  // Nanoleaf: suchen, dann Knopf halten und koppeln – Adresse und Schlüssel speichert der Hauptprozess zusammen
+  $("#nanoleafFind").onclick = async () => {
+    say("nanoleafState", "hueSearching");
+    const list = (await mirage.invoke("nanoleafFind")) || [];
+    if (!list.length) return say("nanoleafState", "nanoleafNone");
+    $("#nanoleafIp").value = list[0].ip;
+    say("nanoleafState", "nanoleafFound", list.map((d) => `${d.name} (${d.ip})`).join(", "));
+  };
+  $("#nanoleafPair").onclick = async () => {
+    say("nanoleafState", "huePairing");
+    const r = await mirage.invoke("nanoleafPair", $("#nanoleafIp").value.trim());
+    say("nanoleafState", r?.ok ? "huePaired" : { button: "nanoleafButton", ip: "lanBadIp" }[r?.error] || "nanoleafUnreachable");
+  };
+  for (const name of ["lifx", "yeelight"]) $(`#${name}Scan`).onclick = async () => {
+    say(name + "State", "hueSearching");
+    const r = await mirage.invoke(name + "Scan");
+    say(name + "State", r?.list?.length ? name + "Found" : name + "None", r?.list?.length);
   };
   $("#haConnect").onclick = async () => {
     say("haState", "haTesting");

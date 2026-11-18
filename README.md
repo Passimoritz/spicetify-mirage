@@ -267,7 +267,7 @@ A small free extra app. It shows the current song **above every window**, even w
 | Double-click to install. It sits next to the clock. | Drag it into *Applications*. | Make the AppImage executable, or open the .deb. |
 
 - 🪟 **Song pop-ups** in eight styles, on the screen and spot you like.
-- 💡 **Lights in your room dance along** – Philips Hue (with a new, experimental fast mode for *Hue Entertainment*), WLED, Govee, Home Assistant, OpenRGB and Razer Chroma. On first start the app finds your lights for you. You can set a maximum brightness and fine-tune the timing per light. Passwords for your lights are stored encrypted.
+- 💡 **Lights in your room dance along** – Philips Hue (with a new, experimental fast mode for *Hue Entertainment*), WLED, Govee, Nanoleaf, LIFX, Yeelight, Home Assistant, OpenRGB and Razer Chroma. On first start the app finds your lights for you. You can set a maximum brightness and fine-tune the timing per light. Passwords for your lights are stored encrypted.
 - 📺 **Party on the TV** – send the party screen to a Chromecast, Google TV or smart TV.
 - 🌈 **Edge light** – the edges of your screen glow on the beat.
 - 🛠️ **Repairs Mirage for you** – after a Spotify update, the app's menu (next to the clock, or in the Mac menu bar) offers *Repair theme in Spotify*, and it tells you when a new Mirage version is ready.

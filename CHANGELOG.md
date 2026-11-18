@@ -49,6 +49,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 ### Fixed
 
 - Previews that fade in from silence no longer confuse the instrument recognition.
+- The overlay app's party lights now also work with Nanoleaf (panels, Shapes, Canvas, Lines), LIFX bulbs and strips, and Yeelight bulbs. Everything stays in your home network, without any account or cloud. Find them in the setup assistant or the settings, pair Nanoleaf with its power button, and switch on "LAN Control" for Yeelight in its app. Nanoleaf panels and LIFX strips show a colour gradient, and all three respect "No flashes", the maximum brightness and the timing per light. When the party ends, they go back to how they were.
 
 ## [1.26.0] – 2026-11-18
 
