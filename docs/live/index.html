@@ -503,6 +503,18 @@ for (const [k, v] of Object.entries(PHOTO_TEXT)) L[k] = { ...(L[k] || {}), ...v 
 const REACT_TEXT = {
   en: { rHeart: "Heart", rFire: "Fire", rClap: "Applause", rWow: "Wow" },
   de: { rHeart: "Herz", rFire: "Feuer", rClap: "Applaus", rWow: "Wow" },
+  es: {"rHeart": "Corazón", "rFire": "Fuego", "rClap": "Aplausos", "rWow": "Guau"},
+  fr: {"rHeart": "Cœur", "rFire": "Feu", "rClap": "Applaudissements", "rWow": "Waouh"},
+  it: {"rHeart": "Cuore", "rFire": "Fuoco", "rClap": "Applausi", "rWow": "Wow"},
+  ja: {"rHeart": "ハート", "rFire": "ファイヤー", "rClap": "拍手", "rWow": "すごい"},
+  ko: {"rHeart": "하트", "rFire": "불꽃", "rClap": "박수", "rWow": "와우"},
+  nl: {"rHeart": "Hart", "rFire": "Vuur", "rClap": "Applaus", "rWow": "Wauw"},
+  pl: {"rHeart": "Serce", "rFire": "Ogień", "rClap": "Brawa", "rWow": "Wow"},
+  pt: {"rHeart": "Coração", "rFire": "Fogo", "rClap": "Aplausos", "rWow": "Uau"},
+  ru: {"rHeart": "Сердце", "rFire": "Огонь", "rClap": "Аплодисменты", "rWow": "Вау"},
+  tr: {"rHeart": "Kalp", "rFire": "Ateş", "rClap": "Alkış", "rWow": "Vay"},
+  uk: {"rHeart": "Серце", "rFire": "Вогонь", "rClap": "Оплески", "rWow": "Вау"},
+  zh: {"rHeart": "爱心", "rFire": "火", "rClap": "鼓掌", "rWow": "哇"},
 };
 for (const [k, v] of Object.entries(REACT_TEXT)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.

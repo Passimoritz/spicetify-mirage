@@ -34,6 +34,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 - Backing vocals in brackets are now smaller and quieter, and when they come at the end of a line they sit just below it. Labels like "(Chorus)" or "(x2)" are no longer treated as backing vocals.
 - During an AI DJ announcement the party kicker shows "DJ", and short DJ comments no longer switch the stage to calm and back. Songs the DJ plays get the full show.
 - All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English.
+- The Mirage Overlay app is now available in Ukrainian too, and all new texts of this version are translated into all 14 languages.
 - Checked against Spotify 1.3.10: volume and mute keep working with Spotify's new volume handling, and old style rules for parts Spotify no longer has were tidied up.
 - The nightly compatibility check now also tests the newest Windows version of Spotify, not just the Linux one.
 - The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
