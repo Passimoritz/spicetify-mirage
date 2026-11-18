@@ -10,6 +10,16 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- The mini player (picture-in-picture window) now has the Mirage look: cover colours, glass, the round play button and the coloured progress line. Its colours follow the song while it is open.
+- New Spotify pages in the Mirage look: the new song page, concert pages, venues and your saved concerts, the taste profile, the bell feed, the new Browse page, video feed tiles and the "on tour" cards in This Is playlists.
+
+### Fixed
+
+- Light schemes: placeholder text in search and input fields was white and could not be read.
+- Light schemes: the listen counts in your Wrapped Top Songs playlist are now dark enough to read.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added

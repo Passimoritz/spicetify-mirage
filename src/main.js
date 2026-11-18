@@ -13,4 +13,6 @@
   window.__mirage = true;
   // erst jetzt laden: die Module greifen beim Auswerten auf Spicetify und das DOM zu
   import("./app.js");
+  // Mini-Player-Fenster (Bild im Bild) bekommt Mirages Regeln und Farben
+  import("./pip.js");
 })();
