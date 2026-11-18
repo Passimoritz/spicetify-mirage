@@ -6,7 +6,7 @@ import { createShow } from "./show.js";
 import { createFlashCap } from "./flashcap.js";
 import { kin, kinSet } from "./styles.js";
 import { createCrowdMind, dance, jumps, armsUp } from "./crowd.js";
-import { createStageFx } from "./stagefx.js";
+import { createStageFx, createReactFx } from "./stagefx.js";
 import { createInstFx } from "./instfx.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -40,6 +40,8 @@ function createVenue(makeCanvas) {
   const show = createShow(glowSprite, flashCap);
   // Szenarien (scenarios.js → stagefx.js): Bühnenbilder auf gesungene Wörter und Momente der Musik
   const sfx = createStageFx(glowSprite, flashCap);
+  // Reaktionen der Gäste (Lichtzeichen aus der Menge, stagefx.js)
+  const rfx = createReactFx(glowSprite, makeCanvas);
   // Bilder der Klang-Detektoren (weitere Instrumente und Soundeffekte, instfx.js)
   const ifx = createInstFx(glowSprite);
   // ein Wort wie „jump“ lässt die Menge springen (0..1, gilt für dieses Bild)
@@ -1511,7 +1513,13 @@ function createVenue(makeCanvas) {
     ctx.clearRect(0, 0, vw, vh);
     // Pause: das Publikum blendet weich aus (stillstehend tanzen sähe falsch aus) und kommt mit der Musik zurück
     crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));
-    if (!st.stage && crowdA < 0.01) return;
+    if (!st.stage && crowdA < 0.01) {
+      // ohne Bühne (Ansage, ruhig): Reaktionen der Gäste steigen trotzdem leise auf
+      if (st.reacts) rfx.draw(ctx, st);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
+      return;
+    }
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     const v = vNext;
     ctx.globalCompositeOperation = "lighter";
@@ -1538,6 +1546,8 @@ function createVenue(makeCanvas) {
     if (st.stage && st.fog) drawFog(ctx, st, v);
     if (st.stage && v.open) drawDrones(ctx, st);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
+    // Reaktionen der Gäste: vor der Menge, im unteren Viertel
+    rfx.draw(ctx, st);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (vT && vSnap) {
       const f = clamp((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);

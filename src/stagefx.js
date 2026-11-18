@@ -343,4 +343,140 @@ function createStageFx(glowSprite, flashCap) {
   return { draw };
 }
 
-export { createStageFx, FI };
+
+/* ---------------------------------------------------------------- Reaktionen der Gäste */
+// Herz, Feuer, Applaus und Wow von den Handys (live.js sammelt sie zu Wellen): kleine Lichtzeichen in den Farben
+// der Bühne steigen aus der Menge auf – je mehr Gäste tippen, desto breiter und voller die Welle, nie ein Regen.
+// Sie bleiben im unteren Viertel links und rechts (Liedtext, Titel und Künstler stehen darüber bzw. in der Mitte). Dazu flackern ein paar
+// Lichter in der Menge auf – mit „Keine Blitze“ glühen sie nur weich, ohne Flackern. Ohne Bühne (Ansage, ruhig)
+// steigen nur wenige, langsame Zeichen auf.
+// Die Zeichen sind dieselben wie auf den Handys (docs/live/index.html), als Bild je Farbe einmal gerendert.
+const REACT_KINDS = ["heart", "fire", "clap", "wow"];
+function reactPath(kind) {
+  if (kind === "clap") {
+    const p = new Path2D();
+    p.ellipse(8.6, 14, 3.3, 6.2, (-24 * Math.PI) / 180, 0, Math.PI * 2);
+    p.ellipse(15.4, 14, 3.3, 6.2, (24 * Math.PI) / 180, 0, Math.PI * 2);
+    return p;
+  }
+  return new Path2D(
+    kind === "heart" ? "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+      : kind === "fire" ? "M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"
+        : "M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z",
+  );
+}
+function createReactFx(glowSprite, makeCanvas) {
+  let seen = 0;
+  const parts = [], glints = [], sprites = new Map(), paths = {};
+  // Zeichen je Art und Farbe (auf 16er-Stufen gerastert, höchstens 24 Bilder)
+  function sprite(kind, c) {
+    const rgb = c.map((v) => Math.min(255, Math.round(v / 16) * 16)).join(","), k = kind + rgb;
+    let cv = sprites.get(k);
+    if (cv) return cv;
+    if (sprites.size > 24) sprites.clear();
+    cv = makeCanvas(64, 64);
+    cv.width = cv.height = 64;
+    const x = cv.getContext("2d");
+    x.setTransform(64 / 24, 0, 0, 64 / 24, 0, 0);
+    x.fillStyle = `rgb(${rgb})`;
+    x.fill((paths[kind] ||= reactPath(kind)));
+    if (kind === "clap") {
+      // drei kurze Striche über den Händen
+      x.strokeStyle = x.fillStyle;
+      x.lineWidth = 1.6;
+      x.lineCap = "round";
+      x.beginPath();
+      x.moveTo(12, 2.2);
+      x.lineTo(12, 4.6);
+      x.moveTo(7.4, 3.6);
+      x.lineTo(8.6, 5.6);
+      x.moveTo(16.6, 3.6);
+      x.lineTo(15.4, 5.6);
+      x.stroke();
+    }
+    sprites.set(k, cv);
+    return cv;
+  }
+  function spawn(w, st, soft) {
+    const vw = st.vw, vh = st.vh, dpr = st.dpr || 1;
+    // Größe der Welle: wächst mit der Zahl der Taps, aber nur logarithmisch (30 Taps ≈ 6, nicht 30)
+    const s = clamp(1 + Math.log2(Math.max(1, w.n)), 1, 6);
+    const n = Math.round(clamp(3 + 3.6 * s, 4, 24) * (soft ? 0.35 : 1) * ((st.quality ?? 2) < 1 ? 0.6 : 1));
+    const total = REACT_KINDS.reduce((a, k) => a + (w.k?.[k] || 0), 0) || 1;
+    // links oder rechts der Mitte (dort stehen Liedtext, Titel und Künstler), eine große Welle auf beiden Seiten
+    const side = Math.random() < 0.5 ? -1 : 1, both = s >= 4, spread = vw * (0.05 + 0.025 * s);
+    const scale = clamp(vh / (900 * dpr), 0.75, 1.6) * dpr;
+    for (let i = 0; i < n && parts.length < 140; i++) {
+      const sd = both ? (i % 2 ? 1 : -1) : side, x0 = vw * (0.5 + sd * 0.32);
+      // Art nach Anteil der Taps
+      let r = Math.random() * total, kind = "heart";
+      for (const k of REACT_KINDS)
+        if ((r -= w.k?.[k] || 0) < 0) {
+          kind = k;
+          break;
+        }
+      const dx = (Math.random() * 2 - 1) * spread;
+      parts.push({
+        // nie in die Mitte (Titel und Künstler), nie über den Rand
+        kind, x: clamp(x0 + dx, vw * 0.03, vw * 0.97), y: vh * (0.93 + Math.random() * 0.05), vy: -vh * (0.06 + Math.random() * 0.05) * (soft ? 0.55 : 1),
+        // die Welle läuft von der Mitte nach außen
+        age: -(Math.abs(dx) / Math.max(1, spread)) * (0.15 + 0.06 * s), life: 2.2 + Math.random() * 0.8, ph: Math.random() * 6.3,
+        r: (12 + Math.random() * 7 + s * 1.4) * scale, c: i % 3,
+      });
+    }
+    // Lichter in der Menge flackern auf (ab einer kleinen Welle)
+    if (!soft && s >= 2)
+      for (let i = 0; i < 2 + Math.round(s * 1.5) && glints.length < 40; i++)
+        glints.push({ x: vw * (0.5 + (both ? (i % 2 ? 1 : -1) : side) * 0.32) + (Math.random() * 2 - 1) * spread * 1.2, y: vh * (0.8 + Math.random() * 0.09), age: -Math.random() * 0.3, life: 1.1 + Math.random() * 0.5, r: (26 + Math.random() * 24) * scale, c: i % 3, ph: Math.random() * 6.3 });
+  }
+  function draw(ctx, st) {
+    const soft = !st.stage;
+    for (const w of st.reacts || []) {
+      if (w.id <= seen) continue;
+      seen = w.id;
+      if (w.age < 2) spawn(w, st, soft);
+    }
+    if (!parts.length && !glints.length) return;
+    const dt = Math.min(0.1, st.dt || 0.016), vh = st.vh, pal = st.pal, t = st.t;
+    // höchstens bis gut drei Viertel der Höhe: darüber steht der Liedtext
+    const top = vh * 0.76, band = vh * 0.07;
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = glints.length - 1; i >= 0; i--) {
+      const g = glints[i];
+      g.age += dt;
+      if (g.age >= g.life) {
+        glints.splice(i, 1);
+        continue;
+      }
+      if (g.age < 0) continue;
+      const bell = Math.sin(Math.PI * clamp(g.age / g.life, 0, 1));
+      // Flackern wie Handylichter – mit „Keine Blitze“ nur ein weiches Glühen
+      const a = st.noFlash ? bell * 0.18 : bell * (0.22 + 0.2 * Math.sin(t * 26 + g.ph));
+      ctx.globalAlpha = clamp(a, 0, 0.45);
+      ctx.drawImage(glowSprite(pal[g.c]), g.x - g.r, g.y - g.r, g.r * 2, g.r * 2);
+    }
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      p.age += dt;
+      if (p.age >= p.life || p.y < top) {
+        parts.splice(i, 1);
+        continue;
+      }
+      if (p.age < 0) continue;
+      p.y += p.vy * dt;
+      const x = p.x + Math.sin(p.age * 2.2 + p.ph) * p.r * 0.5;
+      // ein, aus, und oben am Rand des unteren Viertels ganz weg
+      const a = smooth(p.age / 0.3) * Math.pow(1 - p.age / p.life, 1.4) * clamp((p.y - top) / band, 0, 1);
+      if (a < 0.01) continue;
+      const r = p.r * (0.85 + 0.25 * smooth(p.age / 0.6));
+      ctx.globalAlpha = a * 0.45;
+      ctx.drawImage(glowSprite(pal[p.c]), x - r * 1.6, p.y - r * 1.6, r * 3.2, r * 3.2);
+      ctx.globalAlpha = a * 0.9;
+      ctx.drawImage(sprite(p.kind, mixW(pal[p.c], 0.28)), x - r / 2, p.y - r / 2, r, r);
+    }
+    ctx.globalAlpha = 1;
+  }
+  return { draw };
+}
+
+export { createStageFx, createReactFx, REACT_KINDS, FI };

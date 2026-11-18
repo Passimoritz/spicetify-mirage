@@ -8,6 +8,9 @@ import { KIN, baseOf } from "./styles.js";
 import { LOOKS, FAMILIES, pickGenre } from "./genres.js";
 import { deezer, itunes, previewSound } from "./sources.js";
 import { isJump, createJumpFade } from "./steady.js";
+import { createTalkGate, vividOf, lerpPal, tempoRatio, djVoice, outroWindow } from "./handover.js";
+import { analysisDb } from "./analysis-db.js";
+import { t } from "./i18n.js";
 
 /* ---------------------------------------------------------------- Party-Modus */
 // Ein Lichtpult, das den Song kennt. Aus Spotifys Taktanalyse entsteht einmal pro Song eine Karte:
@@ -207,6 +210,7 @@ function planFor(d, key, uri) {
   return p.plan;
 }
 
+
 // ohne Analyse oder mit ausgeschalteter Lichtregie: alles neutral, wie vorher
 const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1, grade: null, flash: 1, fx: 1, haze: 1, tf: 1, wipe: -1, wdir: 1, riser: 0, pulse: 0, dim: 0, lift: 0, wall: 0, vox: 0, swell: 0, pump: 0, boom: 0, sync: 0, scan: 0,
   mood: "", v: 0, a: 0, soft: 0.2, spread: 1, crowd: 1, fxk: "sparks", sc: -1, spot: "", spot2: "", sx: 1, rig: "" };
@@ -226,22 +230,67 @@ const party = (() => {
   // „Leicht“: die Regie wählt weniger und billigere Effekte (kein Lichtwisch, kein Spot, keine Lichtwand)
   const lite = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
 
-  // nächsten Song vorbereiten (song.js): Genre-Abfragen schon jetzt, beide werden gemerkt
-  function warm(item) {
-    if (cfg.partyStyle !== "auto" || !item?.uri) return;
-    artistGenres(item).catch(() => {});
-    appleGenre(item).catch(() => {});
-    deezerGenres(item).catch(() => {});
+  /* ---- DJ-Übergabe: der Song klingt aus, der nächste übernimmt wie in einem Mix (statt Schnitt) */
+  // Über die letzten Takte gleiten Lichtfarben, Bühnenlicht und Drehtempo schon zum nächsten Song, die Menge wird
+  // ruhiger und geht vor dem Wechsel in die Knie; die erste Eins des neuen Songs landet mit einem Treffer (sein
+  // eigenes Taktraster, also phasengenau). Übersprungen mitten im Song: kurze, weiche Überblendung ohne Blitz.
+  // Gesprochenes davor oder danach: ruhig. Ändert sich die Warteschlange, gleitet das Ziel mit (oder zurück).
+  // nx = der vorbereitete nächste Song, a = wie weit der Ausklang ist (geglättet), land = Ankunft im neuen Song
+  const mix = { nx: null, a: 0, e: 0, pa: 0, tgt: null, shown: null, land: null, poll: -9, nearEnd: false, prevUri: "", prevTalk: "", spotShown: "" };
+  const talkGate = createTalkGate();
+  let api = null;
+  // die erste echte Eintragung der Warteschlange (Trennzeilen und Ausgeblendetes zählen nicht)
+  const nextOf = () => (S.Queue?.nextTracks || []).map((x) => x?.contextTrack || x).find((x) => x?.uri?.startsWith("spotify:") && x.uri !== "spotify:delimiter" && x.metadata?.hidden !== "true");
+  // Genre, Tempo und Lichtfarben des nächsten Songs (sobald alles da ist)
+  function guess(nx) {
+    if (!nx.talk && cfg.partyStyle === "auto" && nx.genres)
+      nx.key = pickGenre({ genres: nx.genres, apple: nx.apple || "", deezer: nx.dz || [], artist: nx.item?.metadata?.artist_name || "", title: nx.item?.metadata?.title || "", bpm: nx.bpm, loud: nx.d?.loud ?? -10, minor: nx.d ? minorShare(nx.d) : 0, sound: nx.d?.sound || null }).key;
+    if (nx.colors && !nx.talk) nx.pal = vividOf(nx.colors, PROFILES[nx.key || "pop"]?.tint);
+  }
+  // nächsten Song vorbereiten (song.js, beim Ausklang auch selbst aus der Warteschlange): Genre-Abfragen schon
+  // jetzt (werden gemerkt), Coverfarben und – wenn schon geholt (prefetch.js) – die Taktdaten aus dem Speicher
+  function warm(item, colors) {
+    if (!item?.uri) return;
+    const talk = talkOf(item);
+    if (mix.nx?.uri !== item.uri)
+      mix.nx = { uri: item.uri, item, talk, key: cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : "", bpm: 0, d: null, colors: null, pal: null, asked: 0 };
+    const nx = mix.nx;
+    if (Array.isArray(colors) && colors.length >= 3) nx.colors = colors;
+    else if (!nx.colors && api?.colorsOf && !nx.asked) {
+      nx.asked = 1;
+      // (Cover laden und auswerten kostet ein paar Millisekunden: nicht mitten im Bild)
+      (window.requestIdleCallback || setTimeout)(() => api.colorsOf(item).then((c) => mix.nx === nx && c && ((nx.colors = c), guess(nx))).catch(() => {}), { timeout: 1500 });
+    }
+    guess(nx);
+    // Gesprochenes: keine Genre-Abfrage (der Titel einer Podcast-Folge geht nicht an Deezer/Apple)
+    if (talk) return;
+    if (!nx.d && !nx.dAsked && item.uri.startsWith("spotify:track:")) {
+      nx.dAsked = 1;
+      analysisDb.get(item.uri).then((d) => {
+        if (mix.nx !== nx || !d) return;
+        [nx.d, nx.bpm] = [d, d.bpm || 0];
+        guess(nx);
+      }).catch(() => {});
+    }
+    if (cfg.partyStyle !== "auto" || nx.genres || nx.gAsked) return;
+    nx.gAsked = 1;
+    Promise.all([artistGenres(item), appleGenre(item).catch(() => ""), deezerGenres(item).catch(() => [])]).then(([genres, apple, dz]) => {
+      if (mix.nx !== nx) return;
+      Object.assign(nx, { genres, apple, dz });
+      guess(nx);
+    });
   }
   // Genre aus allen Quellen (genres.js pickGenre): Apple, Deezer, Spotify-Künstler, Namen, zuletzt der Klang
   const choose = (bpm, d) =>
     pickGenre({ genres: info.genres || [], apple: info.apple || "", deezer: info.deezer || [], artist: info.artist, title: info.title, bpm, loud: d?.loud ?? -10, minor: d ? minorShare(d) : 0, sound: d?.sound || info.sound || null });
   // Gesprochenes statt Musik: Podcast, Hörbuch, Werbung, DJ-Ansage – keine Lichtshow im Takt und keine
   // Genre-Abfrage (der Titel einer Podcast-Folge geht nicht an Deezer/Apple)
+  // AI-DJ: Spotify 1.3.10 markiert die Ansage mit „is_narration“ (ältere Versionen „is_dj_narration“); die Songs
+  // dazwischen tragen nichts davon und bekommen die volle Show – auch im DJ-Kontext
   function talkOf(item) {
     const u = item?.uri || "", m = item?.metadata || {};
     if (u.startsWith("spotify:ad:") || m.is_advertisement === "true") return "ad";
-    if (m.is_dj_narration === "true") return "dj";
+    if (m.is_dj_narration === "true" || m.is_narration === "true") return "dj";
     if (/^spotify:(episode|chapter|audiobook|show):/.test(u) || m.is_podcast === "true" || m.is_audiobook === "true") return "talk";
     return "";
   }
@@ -262,8 +311,13 @@ const party = (() => {
     // das Nachglühen eines Drops klingt rasch aus statt im selben Bild abzureißen (das sah aus wie ein Ruckler)
     glowCut = true;
     const talk = talkOf(item);
+    arrive(u, talk);
     if (talk) {
-      info = { key: "chill", why: talk, conf: 1, bpm: 0, genres: [], apple: "", deezer: [], artist: "", title: "", sound: null, src: "", talk };
+      // DJ-Ansage: der Look des letzten Songs bleibt (kurze Einwürfe sollen die Bühne nicht umwerfen), die Ruhe
+      // kommt über talkGate. Stimme im Kicker, wenn Spotify sie nennt („Party · DJ · Name“).
+      const voice = talk === "dj" ? djVoice(item, S.Player?.data?.context) : "";
+      info = { key: talk === "dj" && info.key ? info.key : "chill", why: talk, conf: 1, bpm: 0, genres: [], apple: "", deezer: [], artist: "", title: "", sound: null, src: "", talk,
+        label: talk === "dj" ? ["Party", t("partyDjTalk"), voice].filter(Boolean).join(" · ") : "" };
       return info;
     }
     // beide Quellen gleichzeitig fragen
@@ -287,7 +341,8 @@ const party = (() => {
   }
   // Taktdaten kommen oft erst nach dem Songwechsel: dann Tempo nachtragen und ggf. neu wählen
   function refine() {
-    if (!audio.data || audio.uri !== uri) return;
+    // (eine Ansage behält Look und Anzeige, auch wenn für sie ein geschätztes Tempo kommt)
+    if (!audio.data || audio.uri !== uri || info.talk) return;
     if (info.bpm !== audio.data.bpm || info.src !== (audio.data.bpmSrc || "")) {
       [info.bpm, info.src] = [audio.data.bpm, audio.data.bpmSrc || ""];
       if (cfg.partyStyle === "auto") {
@@ -297,14 +352,45 @@ const party = (() => {
     }
   }
 
+  // Ein neuer Song beginnt: wie kam er? Natürlich am Ende (Mix mit Treffer auf der ersten Eins), übersprungen
+  // (kurze Überblendung) oder von/zu Gesprochenem (ruhig). Das erste Öffnen des Party-Modus ist kein Wechsel.
+  function arrive(u, talk) {
+    if (u === mix.prevUri) return;
+    const first = !mix.prevUri, natural = mix.nearEnd || mix.a > 0.5;
+    const mode = first || !cfg.partyBlend || calm() ? "" : talk || mix.prevTalk ? "calm" : natural ? "mix" : "skip";
+    mix.land = mode ? { mode, t0: clock, hit: false, hitAt: 0, k: 0, from: mix.shown, spotFrom: mix.spotShown } : null;
+    [mix.prevUri, mix.prevTalk, mix.a, mix.e, mix.nearEnd] = [u, talk, 0, 0, false];
+    if (mix.nx?.uri === u) mix.nx = null;
+    mix.tgt = null;
+    mix.pa = 0;
+  }
+  // Lichtfarben im Übergang (immersive.js, nach der Farbkorrektur): im Ausklang ein Stück zu den Farben des nächsten
+  // Songs, nach dem Wechsel vom zuletzt gezeigten Stand weich in die neuen. „DJ-Übergänge“ aus: unverändert.
+  function mixPal(pal) {
+    let out = pal;
+    const L = mix.land;
+    if (cfg.partyDJ && L?.from && L.k < 1) out = lerpPal(L.from, pal, L.k);
+    else if (cfg.partyDJ && !L) {
+      const want = mix.e > 0.001 && mix.nx?.pal ? mix.nx.pal : null;
+      // neues Ziel (Warteschlange geändert): das Ziel gleitet hinüber statt zu springen; kein Ziel mehr: zurück
+      if (want) mix.tgt = mix.tgt ? lerpPal(mix.tgt, want, 0.08) : want.map((c) => c.slice());
+      mix.pa += ((want ? 1 : 0) - mix.pa) * 0.06;
+      if (mix.tgt && mix.pa > 0.005) out = lerpPal(pal, mix.tgt, 0.55 * mix.e * mix.pa);
+      else if (!want) mix.tgt = null;
+    }
+    mix.shown = out;
+    return out;
+  }
+
   // Pro Bild: der ganze Lichtzustand aus Song-Karte, Taktposition und Profil
   function step(sec, dt, playing) {
     refine();
     const P = PROFILES[info.key];
     const level = clamp(Math.round(cfg.partyLevel) || 2, 1, 5);
     const lvl = [0.6, 1, 1.45, 2, 2.7][level - 1];
-    // bei Gesprochenem nur ruhiges Grundlicht (wie „Ruhig“)
-    const fx = !calm() && !info.talk;
+    // bei Gesprochenem nur ruhiges Grundlicht (wie „Ruhig“) – erst wenn die Bühne schon abgedimmt ist (talkGate)
+    const talkV = talkGate.step(info.talk || "", dt);
+    const fx = !calm() && talkV < 0.97;
     const d = audio.uri === uri ? audio.data : null;
     clock += dt;
     const ease = (k) => 1 - Math.exp(-dt * k);
@@ -429,13 +515,57 @@ const party = (() => {
       }
     }
 
+    // --- DJ-Übergabe (siehe arrive/mixPal): Ausklang dieses Songs, Ankunft aus dem letzten
+    const beatLen = 60 / (info.bpm || 120);
+    const dur = (Number(S.Player?.getDuration?.()) || 0) / 1000;
+    let win = 0;
+    if (cfg.partyBlend && dur > 30 && !info.talk) {
+      win = outroWindow(sec, dur, info.bpm, d?.segs?.length ? songMap(d).bars : null);
+      // die Warteschlange im Blick: kommt ein anderer Song als vorbereitet (Shuffle, neu eingereiht), gleitet das Ziel mit
+      if (sec > dur - 30 && clock - mix.poll > 1) {
+        mix.poll = clock;
+        const n = nextOf();
+        if (!n) mix.nx = null;
+        else if (n.uri !== mix.nx?.uri && n.uri !== uri) warm(n);
+      }
+    }
+    mix.nearEnd = dur > 30 && sec > dur - 2.5;
+    // geglättet: Spulen in den Ausklang (oder heraus) gleitet in rund einer Sekunde statt zu springen
+    mix.a += (win - mix.a) * ease(win > mix.a ? 2.4 : 1.6);
+    if (mix.a < 0.001) mix.a = 0;
+    const mixE = (mix.e = mix.a * mix.a * (3 - 2 * mix.a));
+    const nx = mix.nx, nxTalk = !!nx?.talk, toEnd = dur - sec;
+    // Vorfreude: auf den letzten zwei Schlägen geht die Menge in die Knie (nicht vor Gesprochenem)
+    const ant = mixE > 0.3 && !nxTalk && toEnd > 0 && toEnd < 2 * beatLen ? clamp(1 - toEnd / (2 * beatLen), 0, 1) : 0;
+    // Ankunft: „mix“ wartet (abgedimmt) auf die erste Eins des neuen Songs, „skip“/„calm“ blenden kurz über
+    const L = mix.land;
+    let landDim = 1, landHit = false, landQuiet = false;
+    if (L) {
+      const age = clock - L.t0;
+      if (!L.hit) {
+        if (L.mode !== "mix") [L.hit, L.hitAt] = [true, clock];
+        else if (d && hit && inBar === 0 && age > 0.1) [L.hit, L.hitAt, landHit] = [true, clock, true];
+        else if (age > 2.6) [L.hit, L.hitAt] = [true, clock];
+      }
+      const span = L.mode === "mix" ? 4 * beatLen : L.mode === "skip" ? 0.7 : 1.2;
+      const k = L.hit ? clamp((clock - L.hitAt) / span, 0, 1) : 0;
+      L.k = k * k * (3 - 2 * k);
+      landDim = L.mode === "mix" ? (L.hit ? 1 : 0.74) : 0.72 + 0.28 * L.k;
+      // bis zur ersten Eins (Mix) bzw. während der Überblendung: keine Farbflächen, kein Blitz
+      landQuiet = L.mode !== "mix" ? k < 1 : !L.hit;
+      if (k >= 1) mix.land = null;
+    }
+    if (landHit && fx) [dropGlow, glowCut] = [Math.max(dropGlow, cfg.noFlash ? 0.35 : 0.6), false];
+
     // --- Gesamtintensität: Energie, Drop-Nachglühen, Break dämpft; Aufbau steigert schrittweise
     if (dropHit) [dropGlow, glowCut] = [1, false];
     dropGlow *= Math.exp(-dt * (glowCut ? 5 : 0.55));
     if (dropGlow < 0.01) glowCut = false;
     // Lichtregie: Strophe ruhiger, Refrain größer, Break dunkel; der Einsatz eines Refrains hebt kurz an,
     // der letzte Schlag vor dem Drop ist dunkel (dim)
-    const I = clamp((0.22 + smooth.e * 0.78 + dropGlow * 0.35 + smooth.b * 0.2 - smooth.k * 0.35) * C.I * (1 - 0.6 * C.dim) + C.lift * 0.15, 0.08, 1.35);
+    // Übergabe und Gesprochenes: im Ausklang etwas ruhiger, vor der ersten Eins abgedimmt, bei einer Ansage dunkel
+    const handDim = (1 - 0.22 * mixE) * landDim * (1 - 0.85 * talkV);
+    const I = clamp(((0.22 + smooth.e * 0.78 + dropGlow * 0.35 + smooth.b * 0.2 - smooth.k * 0.35) * C.I * (1 - 0.6 * C.dim) + C.lift * 0.15) * handDim, 0.08, 1.35);
     let accent = beatEnv * (0.45 + 0.55 * I);
     // Stil-Signaturen: harte 808 (Trap) und Tresillo-Akzente 3-3-2 (Latin) – beides direkt auf der Musik
     const boom = C.boom * kickEnv * (0.4 + 0.6 * smooth.e) * (1 - smooth.k);
@@ -460,10 +590,13 @@ const party = (() => {
     if (d?.synthetic && d.phaseKnown === false) flashOn = false;
     // die Regie erlaubt je Teil keine (Intro, Break, Outro), nur Einsen (Strophe) oder alle Farbflächen (Refrain, Drop)
     if (C.flash < 0.25 || (C.flash < 0.75 && !(hit && inBar === 0))) flashOn = false;
+    // Übergabe: der letzte Schlag vor dem Wechsel bleibt frei (der Treffer auf der neuen Eins soll stehen),
+    // in der Überblendung und bei einer Ansage blitzt nichts
+    if (landQuiet || ant > 0.5 || talkV > 0.05) flashOn = false;
     let flashGo = false;
-    if (fx && cfg.partyFlash && !cfg.noFlash && (flashOn || dropHit) && flashCap.take(clock)) {
+    if (fx && cfg.partyFlash && !cfg.noFlash && (flashOn || dropHit || landHit) && flashCap.take(clock)) {
       flashGo = true;
-      flash = Math.min(1, (dropHit ? 1 : 0.35 + 0.5 * I) * Math.min(lvl, 1.6));
+      flash = Math.min(1, (dropHit ? 1 : landHit ? 0.7 : 0.35 + 0.5 * I) * Math.min(lvl, 1.6));
       flashCol = (flashCol + 1) % 3;
     }
     flash *= Math.exp(-dt * (P.decay * 0.8));
@@ -472,7 +605,7 @@ const party = (() => {
     const kHot = kickEnv > 0.8, sHot = snareEnv > 0.8;
     const stageCue = (hit || (kHot && !hot.k) || (sHot && !hot.s)) && (smooth.e > 0.75 || dropGlow > 0.3 || stageFlash);
     [hot.k, hot.s] = [kHot, sHot];
-    if (!flashGo && fx && !cfg.noFlash && stageCue) flashGo = flashCap.take(clock);
+    if (!flashGo && fx && !cfg.noFlash && stageCue && !landQuiet && talkV < 0.05) flashGo = flashCap.take(clock);
 
     if (fx && P.shake && strong) shake = P.shake * lvl * (0.35 + 0.65 * I) * conf;
     shake *= Math.exp(-dt * 14);
@@ -484,12 +617,22 @@ const party = (() => {
     // --- Strahlen: drehen mit der Energie, im Aufbau immer schneller, springen bei Rave pro Takt
     // Drehrichtung wechselt mit jeder Szene
     // Tempo der Regie: im Break langsam, im Drop schnell; halbes/doppeltes Zeitgefühl (Trap, Drum & Bass)
-    const feel = C.speed * (C.tf < 1 ? 0.6 : C.tf > 1 ? 1.5 : 1);
+    // im Ausklang drehen die Strahlen schon ins Tempo des nächsten Songs
+    const feel = C.speed * (C.tf < 1 ? 0.6 : C.tf > 1 ? 1.5 : 1) * (nx && !nxTalk ? 1 + (tempoRatio(nx.bpm, info.bpm) - 1) * 0.6 * mixE : 1);
     spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * feel * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
     if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
-    const lasers = fx && cfg.partyLasers && level >= 4 && C.beams > 0.5 ? (level >= 5 ? 12 : 6) : 0;
+    const lasers = fx && cfg.partyLasers && level >= 4 && C.beams > 0.5 && talkV < 0.3 ? (level >= 5 ? 12 : 6) : 0;
     // im Break blenden Strahlen aus, im Aufbau ziehen sie sich zusammen
-    const beamVis = clamp((smooth.e * 1.25 + dropGlow - smooth.k) * C.beams * (1 - C.dim), 0, 1.2);
+    const beamVis = clamp((smooth.e * 1.25 + dropGlow - smooth.k) * C.beams * (1 - C.dim) * (1 - 0.3 * mixE) * landDim * (1 - talkV), 0, 1.2);
+    if (talkV) accent *= 1 - talkV;
+    // Bühnenlicht: im Ausklang gleitet es zum Licht des nächsten Stils, nach dem Wechsel vom zuletzt gezeigten weiter
+    let spot = C.spot, spot2 = C.spot2, sx = C.sx;
+    const curSpot = C.spot || P.spot;
+    if (cfg.partyDJ && !lite() && mixE > 0.001 && nx?.key && !nxTalk) {
+      const ns = PROFILES[nx.key]?.spot;
+      if (ns && ns !== curSpot) [spot, spot2, sx] = [ns, curSpot, Math.pow(mixE, 1.5)];
+    } else if (cfg.partyDJ && !lite() && L?.spotFrom && L.spotFrom !== curSpot) [spot, spot2, sx] = [curSpot, L.spotFrom, L.k];
+    mix.spotShown = (sx ?? 1) >= 0.5 ? spot || P.spot : spot2 || P.spot;
     if (hit && P.sway) sway = -sway;
 
     const out = {
@@ -499,11 +642,13 @@ const party = (() => {
       phase: beatPhase, beatIdx, keyPc, tempo: tempoNow || info.bpm || 120,
       // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
       toDrop,
-      tension: cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0,
+      tension: Math.max(cfg.partyDirector && toDrop > 60 / (info.bpm || 120) ? clamp((4 - toDrop) / 3.5, 0, 1) : 0, ant * 0.85),
       blackout: !!cfg.partyDirector && ((toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95) || C.dim >= 1),
       finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
       // Sprung im Song in diesem Bild (Spulen, Songwechsel, neue Regie): die Farben gleiten hinüber (immersive.js)
       jump: jumped,
+      // DJ-Übergabe: Treffer auf der ersten Eins des neuen Songs (Ringe), wie weit der Ausklang ist
+      land: landHit && fx, mixE,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
       flash, flashCol, flashGo, shake: fx ? shake : 0, kick: fx ? kick : 0, spin, lasers, beamVis, sway,
       // Lichtregie für Bühne, Location und Visualizer: Teil, Farbkorrektur, Bewegungsuhren (mt in Sekunden,
@@ -515,8 +660,9 @@ const party = (() => {
       glow: fx && C.pump ? C.pump * (cfg.noFlash ? 0.03 : 0.08) * (1 - kickEnv) * I : 0,
       // Gefühl und Szene (director.js/mood.js): Stimmung, Kegelbreite, wie viel das Publikum tanzt, Teilcheneffekt,
       // Bühnenlicht und Muster der Szene (spot2 → spot gleitet über sx)
-      mood: C.mood, valence: C.v, arousal: C.a, spread: C.spread, crowd: C.crowd, fxk: C.fxk,
-      spot: C.spot, spot2: C.spot2, sx: C.sx, rig: C.rig, look: C.scene || "",
+      // (im Ausklang und bei einer Ansage tanzt die Menge weniger)
+      mood: C.mood, valence: C.v, arousal: C.a, spread: C.spread, crowd: (C.crowd ?? 1) * (1 - 0.35 * mixE) * (1 - 0.6 * talkV), fxk: C.fxk,
+      spot, spot2, sx, rig: C.rig, look: C.scene || "",
       // Momente der Musik für die Szenarien (stagefx.js): nur mit Effekten und Lichtregie
       scn: fx && cfg.partyDirector ? C.scn || null : null,
     };
@@ -559,7 +705,9 @@ const party = (() => {
     [lyr.uri, lyr.lines, lyr.n] = [u, ls, ls.length ? ++lyr.ver : 0];
   }
 
-  return { prepare, warm, step, mood, lyrics, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  // colorsOf(item) → Coverfarben des Songs (setzt song.js; für den Fall, dass sich die Warteschlange ändert)
+  api = { prepare, warm, step, mood, mixPal, lyrics, colorsOf: null, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  return api;
 })();
 
 export { party, PROFILE_KEYS, FAMILIES };

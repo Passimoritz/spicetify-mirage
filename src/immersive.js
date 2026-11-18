@@ -905,7 +905,8 @@ Probe-FX: ${pfx}`;
       // „Party · Rave · 128 BPM“ – zeigt, welches Profil gerade greift
       const p = party.info;
       // Podcast, Werbung, DJ-Ansage: kein Genre und kein Tempo anzeigen – es ist ja keine Musik
-      if (p.talk) return void (q.kicker.textContent = "Party");
+      // (DJ-Ansage: „Party · DJ“, mit Stimme, wenn Spotify sie nennt)
+      if (p.talk) return void (q.kicker.textContent = p.label || "Party");
       // „≈“: Tempo nur geschätzt (Spotify hat keine Taktanalyse, siehe estimate.js)
       // „120? BPM“: nur ein Richtwert (offline, kein Liedtext, keine Hörprobe) – ehrlich markiert, aber immer ein Tempo
       q.kicker.textContent = ["Party", t("party_" + p.key), p.bpm ? (audio.data?.synthetic ? "≈ " : "") + p.bpm + (p.src === "guess" ? "?" : "") + " BPM" : ""].filter(Boolean).join(" · ");
@@ -931,7 +932,6 @@ Probe-FX: ${pfx}`;
     Object.assign(cam, { s: 1, x: 0, y: 0, key: "" });
     depth.key = "";
     motes = [];
-    blend = null;
     party.live = null;
     live.stop();
     venueClear();
@@ -1907,11 +1907,8 @@ Probe-FX: ${pfx}`;
     // Farbkorrektur je Teil (Sättigung, Temperatur, Kontrast, Farbwelt der Bridge)
     pal = gradePal(pal, (px || mood)?.grade);
     if (mood?.dropHit && V.rings) for (let k = 0; k < 2; k++) rings.push({ r: R - k * 40 * dpr, a: 0.8 - k * 0.25, w: 5 - k * 2 });
-    // DJ-Übergang: bis zum ersten Schlag die alten Farben, dann über vier Schläge in die neuen
-    if (px && blend?.from) {
-      const f = blend.waiting ? 0 : clamp((now - blend.hitAt) / ((4 * 60000) / (party.info.bpm || 120)), 0, 1);
-      if (f < 1) pal = pal.map((c, i) => c.map((v, k) => Math.round(blend.from[i][k] + (v - blend.from[i][k]) * f)));
-    }
+    // DJ-Übergabe (party.js): im Ausklang schon zu den Farben des nächsten Songs, danach weich in die neuen
+    if (px) pal = party.mixPal(pal);
     // Sprung im Song (Spulen, Songwechsel, Taktdaten kommen an): die Lichtfarben gleiten in 0,6 s hinüber,
     // statt im selben Bild umzuspringen (Tonart, Moll, Farbkorrektur des Teils hängen an der Songzeit)
     if (px?.jump && palShown && !cfg.calm) palFade = { from: palShown, at: now };
@@ -2494,6 +2491,8 @@ Probe-FX: ${pfx}`;
       drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
       song: currentItem()?.uri || "",
       handsUp: moments.hands, flashStorm: cfg.noFlash ? 0 : moments.storm, confetti: moments.confetti,
+      // Reaktionen der Gäste als Lichtzeichen aus der Menge (live.js sammelt, stagefx.js zeichnet)
+      reacts: cfg.partyReacts ? live.reactFrame() : null,
     });
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
@@ -2791,7 +2790,7 @@ Probe-FX: ${pfx}`;
   }
 
   /* ---------------------------------------------------------------- Party-Erweiterungen */
-  let blend = null, motes = [], hype = new Set(), hypeOn = false;
+  let motes = [], hype = new Set(), hypeOn = false;
   // Einstellungen für Kameraschnitte: [Zoom, Versatz x, Versatz y] (Anteil der Fenstergröße). Der Zoom geht
   // von der Bildmitte aus und schöbe das Publikum unten aus dem Bild – darum unten verankert (y ≈ −(Zoom−1)/2)
   const SHOTS = [[1, 0, 0], [1.13, 0.05, -0.065], [1.13, -0.05, -0.065], [1.22, 0, -0.13], [1.07, 0, -0.02]];
@@ -2849,25 +2848,8 @@ Probe-FX: ${pfx}`;
       px.lasers = Math.round(px.lasers / 2);
       px.lvl = Math.min(px.lvl, 1.6);
     }
-    // Übergang zwischen Songs: abdimmen, bis der erste Schlag des neuen Songs kommt (höchstens 4 s)
-    if (blend) {
-      const age = (now - blend.t0) / 1000;
-      if (blend.waiting && ((px.hit && age > 0.35) || age > 2.5)) {
-        blend.waiting = false;
-        blend.glow = 1;
-        blend.hitAt = now;
-        rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
-      }
-      const sm = clamp(age / 0.8, 0, 1), dim = blend.waiting ? 1 - 0.4 * sm * sm * (3 - 2 * sm) : 1;
-      px.I *= dim;
-      px.accent *= dim;
-      px.beamVis *= dim;
-      if (!blend.waiting) {
-        blend.glow *= Math.exp(-dt * 2.5);
-        if (!cfg.noFlash) px.flash = Math.max(px.flash, blend.glow * 0.4);
-        if (blend.glow < 0.02 && (!blend.from || now - blend.hitAt > (4 * 60000) / (party.info.bpm || 120))) blend = null;
-      }
-    }
+    // Übergang zwischen Songs (party.js): die erste Eins des neuen Songs landet mit zwei Ringen
+    if (px.land) rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
     showMoments(px, now);
     // Hype-Zeile: alles eine Spur heller und stärker
     if (hypeOn) {
@@ -3383,8 +3365,7 @@ Probe-FX: ${pfx}`;
     updateKicker();
     if (LYR.has(el.dataset.mode)) loadLyrics();
     if (el.dataset.mode === "party") {
-      // Übergang: das Licht des alten Songs dimmt ab und springt auf dem ersten Schlag des neuen wieder an
-      if (cfg.partyBlend && !cfg.calm) blend = { t0: performance.now(), waiting: true, glow: 0, from: cfg.partyDJ && vividPal ? vividPal.map((c) => c.slice()) : null, hitAt: 0 };
+      // Übergang (Ausklang, Treffer auf der ersten Eins, Überblendung beim Überspringen): party.js
       party.prepare(item).then((info) => {
         updateKicker();
         noteRecap(item, info);
@@ -4200,19 +4181,7 @@ Probe-FX: ${pfx}`;
     if (side === "poll") showSide("poll");
   });
 
-  /* ---- Reaktionen der Gäste: Emojis steigen vom unteren Rand auf */
-  window.addEventListener("mirage:react", (e) => {
-    if (!el || el.dataset.mode !== "party" || !cfg.partyReacts || el.querySelectorAll(".m-im-react").length > 12) return;
-    const r = document.createElement("span");
-    r.className = "m-im-react";
-    r.textContent = e.detail;
-    // nur am linken oder rechten Rand, nie über der Menge in der Mitte; seitlich treiben sie nach außen
-    const right = Math.random() < 0.5;
-    r.style.left = (right ? 93 + Math.random() * 4.5 : 1.5 + Math.random() * 4.5) + "%";
-    r.style.setProperty("--dx", ((right ? 1 : -1) * Math.random() * 14).toFixed(0) + "px");
-    el.append(r);
-    setTimeout(() => r.remove(), 3600);
-  });
+  // Reaktionen der Gäste: Lichtzeichen aus der Menge (live.js → Location, stagefx.js)
 
   /* ---- Rückblick: Bild, Party-Playlist, Gäste-Ranking */
   function recapPanel(body) {

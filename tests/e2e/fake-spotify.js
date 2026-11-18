@@ -384,8 +384,8 @@
     // andere Inhalte als Songs, wie Spotify sie in Player.data.item meldet: ohne Liedtext, ohne Audio-Analyse,
     // teils ohne Künstler, Cover oder Dauer
     playSpecial: (kind) => landItem(SPECIAL[kind]),
-    // Wiedergabe-Kontext umstellen (views: Album-Reise braucht spotify:album:…)
-    setContext: (uri) => (st.context = { uri }),
+    // Wiedergabe-Kontext (Album-Reise: spotify:album:…; AI-DJ: Playlist 37i9dQZF1EYkqdzj48dyYq, metadata.lexicon_set_type „your_dj“)
+    setContext: (uri, metadata) => (st.context = { uri, metadata: metadata || {} }),
   };
   const SPECIAL = {
     // Podcast-Folge (auch Video-Podcasts: gleiche URI-Art, das Bild kommt aus Spotifys Videofläche)
@@ -399,6 +399,10 @@
     local: { uri: "spotify:local:Mirage+Ensemble:Glass+Hours:Local+Song:215", uid: "l1", name: "Local Song", metadata: { title: "Local Song", artist_name: "Mirage Ensemble", album_title: "Glass Hours", image_url: "" } },
     // AI-DJ: Ansage zwischen den Songs (läuft im DJ-Kontext, keine Musik, kein Liedtext)
     dj: { uri: "spotify:track:dj00000000000000000000x", uid: "dj", name: "DJ", metadata: { title: "DJ", artist_name: "DJ", is_dj_narration: "true", image_url: "spotify:image:ab67706f00000002" + hex(5) } },
+    // so meldet Spotify 1.3.10 die Ansage: „is_narration“ am Eintrag, der Kontext ist der DJ (setContext)
+    djNarration: { uri: "spotify:track:dj00000000000000000000y", uid: "dj2", name: "DJ", metadata: { title: "DJ", is_narration: "true", image_url: "spotify:image:ab67706f00000002" + hex(6) } },
+    // ein Song, den der DJ spielt: trägt die Ansage davor nur als Text, ist aber Musik
+    djSong: { ...tracks[1], uid: "djs", metadata: { ...tracks[1].metadata, "narration.intro.ssml": "<speak>Up next</speak>" } },
     // leer (Übergang, nichts ausgewählt)
     none: { uri: "", uid: "", name: "", metadata: {} },
   };

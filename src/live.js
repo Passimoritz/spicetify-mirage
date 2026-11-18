@@ -396,8 +396,45 @@ async function hostInfo() {
   return { url: s.hostUrl, qr: s.hostQr };
 }
 const lastReact = new Map(), lastGame = new Map(), refused = new Map(), lastRc = new Map();
-const REACTIONS = ["🔥", "❤️", "🙌", "😂", "🎉", "👏"];
-let reactBudget = 6, reactAt = 0;
+/* ---- Reaktionen der Gäste: Herz, Feuer, Applaus, Wow */
+// Je Handy höchstens eine Reaktion alle 0,7 s. Alle Taps eines Augenblicks (0,35 s, danach höchstens alle 0,6 s)
+// werden zu EINER Welle zusammengefasst: viele Gäste = eine größere Welle, nie ein Regen einzelner Zeichen.
+// Die Location (stagefx.js) zeichnet sie als Lichtzeichen aus der Menge. Abschaltbar („Reaktionen der Gäste“).
+const REACT_KINDS = ["heart", "fire", "clap", "wow"];
+// ältere Handyseiten schicken ein Emoji-Zeichen statt der Art
+const OLD_REACT = { "\u2764\ufe0f": "heart", "\ud83d\udd25": "fire", "\ud83d\ude4c": "clap", "\ud83d\udc4f": "clap", "\ud83c\udf89": "wow", "\ud83d\ude02": "wow" };
+const rx = { pool: null, waves: [], seq: 0, last: 0 };
+function reactIn(id, kind) {
+  if (!rx.pool) {
+    rx.pool = { n: 0, by: new Set(), k: { heart: 0, fire: 0, clap: 0, wow: 0 } };
+    setTimeout(flushReacts, Math.max(350, 600 - (Date.now() - rx.last)));
+  }
+  rx.pool.n++;
+  rx.pool.k[kind]++;
+  rx.pool.by.add(id);
+}
+function flushReacts() {
+  const p = rx.pool;
+  rx.pool = null;
+  rx.last = Date.now();
+  if (!p || !cfg.partyReacts) return;
+  const top = REACT_KINDS.reduce((a, b) => (p.k[b] > p.k[a] ? b : a));
+  rx.waves.push({ id: ++rx.seq, at: rx.last, n: p.n, g: p.by.size, k: p.k, top, sent: false });
+  if (rx.waves.length > 6) rx.waves.shift();
+}
+// pro Bild der Location (immersive.js): die Wellen der letzten 4 s; neu übergebene melden sich einmal
+// („mirage:reactwave“, für die Tests und alles, was mitzählen will)
+function reactFrame() {
+  if (!rx.waves.length) return null;
+  const now = Date.now();
+  rx.waves = rx.waves.filter((w) => now - w.at < 4000);
+  for (const w of rx.waves)
+    if (!w.sent) {
+      w.sent = true;
+      window.dispatchEvent(new CustomEvent("mirage:reactwave", { detail: { n: w.n, g: w.g, top: w.top, k: { ...w.k } } }));
+    }
+  return rx.waves.length ? rx.waves.map((w) => ({ id: w.id, n: w.n, k: w.k, age: (now - w.at) / 1000 })) : null;
+}
 async function inbound(m) {
   if (!ses || m.length < 29) return;
   let msg;
@@ -430,17 +467,13 @@ async function inbound(m) {
     if (lastRc.size > 50) lastRc.delete(lastRc.keys().next().value);
     return void remoteCommand(id, msg);
   }
-  // Reaktion: höchstens eine pro 0,7 s je Handy, nur aus der festen Auswahl, und insgesamt höchstens
-  // 4 je Sekunde (bei vielen Gästen sonst ein Emoji-Regen); abschaltbar
+  // Reaktion: nur aus der festen Auswahl, höchstens eine pro 0,7 s je Handy; gesammelt zu Wellen (reactIn)
   if (msg.k === "react") {
-    if (!cfg.partyReacts || !REACTIONS.includes(msg.e) || Date.now() - (lastReact.get(id) || 0) < 700) return;
-    reactBudget = Math.min(6, reactBudget + ((Date.now() - reactAt) / 1000) * 4);
-    reactAt = Date.now();
-    if (reactBudget < 1) return;
-    reactBudget--;
+    const kind = REACT_KINDS.includes(msg.r) ? msg.r : OLD_REACT[msg.e];
+    if (!cfg.partyReacts || !kind || Date.now() - (lastReact.get(id) || 0) < 700) return;
     lastReact.set(id, Date.now());
     if (lastReact.size > 300) lastReact.delete(lastReact.keys().next().value);
-    window.dispatchEvent(new CustomEvent("mirage:react", { detail: msg.e }));
+    reactIn(id, kind);
     return;
   }
   // Foto-Wand: Stücke eines Fotos (zusammengesetzt und geprüft in photos.js)
@@ -721,4 +754,4 @@ async function stop() {
   }, GRACE);
 }
 
-export const live = { prepare, feed, stop, fx, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline, photos: photoList, approvePhoto, rejectPhoto, clearPhotos };
+export const live = { prepare, feed, stop, fx, reactFrame, setGame, mask, startPoll, pollState, ranking, info: () => (ses ? { url: ses.url, qr: ses.qr } : null), hostInfo, remoteInfo, status: () => status, wishes: wishList, accept, decline, photos: photoList, approvePhoto, rejectPhoto, clearPhotos };
