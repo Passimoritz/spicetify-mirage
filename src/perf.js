@@ -70,18 +70,23 @@ let measured = false;
 function measure(onDone, wait = 4000) {
   if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
   measured = true;
-  let key = "", frames = 0, start = 0, hiddenSeen = false;
+  let key = "", frames = 0, start = 0;
   const sample = (now) => {
-    if (document.hidden) hiddenSeen = true;
+    // verdecktes Fenster verfälscht die Messung: sofort aufhören (keine weiteren Bilder anfordern) und beim
+    // nächsten Sichtbarwerden neu versuchen. Früher lief die Probe verdeckt ihre 5 s zu Ende.
+    if (document.hidden) {
+      measured = false;
+      const again = () => {
+        if (document.hidden) return;
+        document.removeEventListener("visibilitychange", again);
+        measure(onDone);
+      };
+      return document.addEventListener("visibilitychange", again);
+    }
     if (!start) start = now;
     frames++;
     if (now - start < 5000) return requestAnimationFrame(sample);
     const fps = (frames * 1000) / (now - start);
-    // verdecktes Fenster verfälscht die Messung: beim nächsten Sichtbarwerden neu versuchen
-    if (hiddenSeen) {
-      measured = false;
-      return document.addEventListener("visibilitychange", () => !document.hidden && measure(onDone), { once: true });
-    }
     const next = ORDER[ORDER.indexOf(cfg.preset) + 1];
     if (fps >= 45 || !next) return remember(key, fps);
     applyPreset(next);

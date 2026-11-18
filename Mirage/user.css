@@ -5916,3 +5916,28 @@ html.mirage-rich #mirage-stage .m-aurora {
   opacity: 0.5;
   cursor: default;
 }
+
+/* === 1.27 idle === */
+/* Ruhige Cover-Ansicht: immersive.js zeichnet nur noch alle 250 ms – der Balken gleitet dazwischen weich weiter.
+   Etwas länger als der Abstand der Schritte, damit er nie kurz stehen bleibt (jeder Schritt setzt neu an). */
+#mirage-immersive.m-sparse .m-im-fill {
+  transition: transform 0.3s linear;
+}
+/* „Farbstrom“ der spielenden Zeile: die m-flow-Animation (background-position) war nie zu sehen – der Verlauf darüber
+   steht mit !important, und !important schlägt Animationen. Chromium rechnete sie trotzdem 60-mal pro Sekunde durch
+   (auch mit steps(), gemessen gut 20 ms Hauptthread je Sekunde und in jedem Bild eine Stil-Neuberechnung).
+   Aus damit – das Bild bleibt Pixel für Pixel gleich. */
+/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
+.main-trackList-trackListRow:has(.main-trackList-playingIcon),
+.main-trackList-trackListRow:has(.main-trackList-playing),
+.main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
+  animation: none !important;
+}
+/* Immersiv offen: auch die Pseudo-Elemente unter der Ebene anhalten (Naht der Leiste, Glanz und Hof des Immersiv-
+   Knopfs). „.Root *“ oben trifft keine ::before/::after – die liefen verdeckt weiter, und jede laufende Animation
+   lässt Spotify 60 Bilder pro Sekunde zusammensetzen, auch wenn die Cover-Ansicht selbst nur 4 braucht. */
+html.mirage-im-open .Root *::before,
+html.mirage-im-open .Root *::after {
+  animation-play-state: paused !important;
+}
+/* === end idle === */

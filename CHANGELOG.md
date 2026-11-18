@@ -10,6 +10,10 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Changed
+
+- Mirage uses much less CPU in the background. With the window minimised or hidden, the immersive view no longer draws anything, even if Spotify keeps asking for frames. The cover view redraws only a few times per second while nothing moves, and the playing row in track lists no longer keeps the processor busy. Nothing looks different.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added

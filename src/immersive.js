@@ -2285,7 +2285,7 @@ Probe-FX: ${pfx}`;
   // Cover-Neigung zur Maus: kritisch gedämpfte Feder, zeitbasiert – kein Neustart einer CSS-Übergangskurve bei
   // jedem Mausereignis (das ruckte), gleich weich bei 30, 60 oder 144 Bildern/s. Gesetzt wird nur „rotate“
   // (eine Drehachse aus X- und Y-Neigung) und die Lage des Glanzlichts – beides ohne Neu-Layout.
-  const tilt = { x: 0, y: 0, vx: 0, vy: 0, key: "", ip: "" };
+  const tilt = { x: 0, y: 0, vx: 0, vy: 0, key: "", ip: "", rest: false };
   function coverMotion(dt, fpsCap) {
     // gedrosselt (30 Bilder/s): der Browser gleitet zwischen zwei Bildern linear weiter (Übergang = Bildabstand)
     // (nur unter 50 Bildern/s – bei „Ausgewogen“ mit 60 zeigt der Bildschirm ohnehin jedes Bild)
@@ -2300,6 +2300,8 @@ Probe-FX: ${pfx}`;
       tilt.x += tilt.vx * h;
       tilt.y += tilt.vy * h;
     }
+    // Feder steht (Ziel erreicht, keine Geschwindigkeit): dann darf die Cover-Ansicht seltener zeichnen (siehe frame)
+    tilt.rest = Math.abs(tilt.vx) + Math.abs(tilt.vy) < 0.02 && Math.abs(tx - tilt.x) + Math.abs(ty - tilt.y) < 0.01;
     const ang = Math.hypot(tilt.x, tilt.y);
     const k = ang < 0.02 ? "" : `${(tilt.x / ang).toFixed(3)} ${(tilt.y / ang).toFixed(3)} 0 ${ang.toFixed(2)}deg`;
     if (k === tilt.key) return;
@@ -2972,11 +2974,22 @@ Probe-FX: ${pfx}`;
   const REST = 6000;
   let restAt = 0;
   const busy = () => PLR.isPlaying() || !!games.active() || (el.dataset.mode === "party" && cfg.partyLive);
+  // Ruhige Cover-Ansicht (1.27): dort bewegt sich ohne Maus nur der Fortschrittsbalken (wenige Pixel pro Sekunde)
+  // und die Zeit. Statt 60 Bildern pro Sekunde reichen dann 4 – den Balken schiebt der Browser dazwischen weich
+  // weiter (Übergang in user.css, .m-sparse). Maus, Taste, Play, Ansichtswechsel → kick() → sofort wieder jedes Bild.
+  const SPARSE_MS = 250;
+  let sparseT = 0, sparseFill = -1;
   function kick() {
     restAt = performance.now() + REST;
+    clearTimeout(sparseT);
+    sparseT = 0;
     if (!raf && isOpen()) raf = requestAnimationFrame(frame);
   }
   function frame(now) {
+    // Verdeckt/minimiert: nichts zeichnen. Chromium hält rAF dann meist selbst an, ein CEF, das weiter Bilder
+    // anfordert, zeichnete sonst unsichtbar mit voller Rate (gemessen: Party 125 ms Hauptthread je Sekunde).
+    // Handys bedient dann hiddenTick, beim Sichtbarwerden weckt der visibilitychange-Handler unten per kick().
+    if (document.hidden) return void (raf = 0);
     if (busy()) restAt = now + REST;
     else if (now > restAt) return void (raf = 0);
     raf = requestAnimationFrame(frame);
@@ -2994,7 +3007,14 @@ Probe-FX: ${pfx}`;
     const pos = songPos(now);
     const dur = PLR.getDuration() || 0;
     // scaleX statt width: kein Neu-Layout in jedem Bild
-    const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
+    const fillV = dur ? clamp(pos / dur, 0, 1) : 0, fill = `scaleX(${fillV.toFixed(4)})`;
+    const mode = el.dataset.mode;
+    // seltener zeichnen nur in der Cover-Ansicht, Feder in Ruhe, Maus seit 1,5 s still, keine Blende vom Visualizer
+    const sparse = mode === "cover" && tilt.rest && now - depth.at > 1500 && !(vw && now < vizFadeUntil);
+    // der Balken gleitet nur bei kleinen Schritten vorwärts – Spulen und Songwechsel springen wie bisher
+    const glide = sparse && sparseFill >= 0 && fillV >= sparseFill && fillV - sparseFill < 0.01;
+    if (glide !== el.classList.contains("m-sparse")) el.classList.toggle("m-sparse", glide);
+    sparseFill = sparse ? fillV : -1;
     if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
     if (now - lastText > 250) {
       lastText = now;
@@ -3003,7 +3023,6 @@ Probe-FX: ${pfx}`;
       seekLabel(pos, dur);
       syncState();
     }
-    const mode = el.dataset.mode;
     const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
     if (LYR.has(mode)) drawLyrics(pos);
@@ -3033,6 +3052,14 @@ Probe-FX: ${pfx}`;
     if (!VIZ.has(mode) && lastPulse) {
       q.wrap.style.scale = "";
       lastPulse = "";
+    }
+    if (sparse) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      sparseT = setTimeout(() => {
+        sparseT = 0;
+        if (!raf && isOpen() && !document.hidden) raf = requestAnimationFrame(frame);
+      }, SPARSE_MS);
     }
   }
 
@@ -4348,14 +4375,13 @@ Probe-FX: ${pfx}`;
   // Was nur die sichtbare Ebene braucht, wird nach einer Frist abgegeben: Location-Thread (Körperbilder bis
   // ~12 MB, sein Canvas), Visualizer-Canvas (bis 3 Mio. Pixel = 12 MB), die Ebene der Wortbilder und die
   // Canvas-Videos samt Decoder. Klein und fürs schnelle Wiederöffnen wichtig (Wörterbuch-Index, Taktdaten) bleibt.
-  let releaseT = 0, hiddenT = 0, dropped = false;
+  let releaseT = 0, hiddenT = 0;
   function dropCanvases() {
     venueRelease();
     q.canvas.width = q.canvas.height = 0;
     // beim nächsten Bild bzw. open() neu ausmessen
     sizeKey = "";
     wordFx.release();
-    dropped = true;
   }
   function release() {
     releaseT = 0;
@@ -4373,9 +4399,9 @@ Probe-FX: ${pfx}`;
     clearTimeout(hiddenT);
     if (document.hidden) {
       if (isOpen()) hiddenT = setTimeout(() => document.hidden && isOpen() && dropCanvases(), HIDDEN_MS);
-    } else if (dropped && isOpen()) {
-      // wieder sichtbar: ein Bild zeichnen, damit Bühne und Visualizer nicht leer stehen (auch bei Pause)
-      dropped = false;
+    } else if (isOpen()) {
+      // wieder sichtbar: ein Bild zeichnen, damit Bühne und Visualizer nicht leer stehen (auch bei Pause) –
+      // und die Bildschleife neu starten, die frame() beim Verdecken angehalten hat
       kick();
     }
   });
@@ -4388,7 +4414,6 @@ Probe-FX: ${pfx}`;
     if (!isOpen()) lastFocus = document.activeElement;
     clearTimeout(releaseT);
     clearTimeout(fadeT);
-    dropped = false;
     // Wieder öffnen, während die Ebene noch ausblendet (schnelles Hin und Her): alles steht noch – nur die
     // Richtung umkehren. Kein Neuaufbau, sonst hakt die Umkehr mitten in der Blende.
     const quick = fadingOut && !!el && openedUri === (currentItem()?.uri || "");
