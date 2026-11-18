@@ -10,6 +10,14 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Duets in the lyrics: each singer gets their own colour taken from the cover, and lines sung together show both. Mirage recognises singers from word-by-word lyrics (AMLL) and from names written in the lyrics ("Name:", "[Verse 2: Name]", "[Name & Name]"). Karaoke fills each word in the singer's colour. Turn it off with "Colour each voice" in the settings.
+
+### Changed
+
+- Backing vocals in brackets are now smaller and quieter, and when they come at the end of a line they sit just below it. Labels like "(Chorus)" or "(x2)" are no longer treated as backing vocals.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added

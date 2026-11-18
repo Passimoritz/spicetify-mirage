@@ -61,6 +61,8 @@ const DEFAULTS = {
   // Reparaturen nach Spotify-Updates selbst aus dem Repository laden (remote/fixes.json)
   remoteFix: true,
   karaoke: true,
+  // Duette: jede Stimme in ihrer Farbe (1.27)
+  lyrVoices: true,
   font: "outfit",
   lyricPicks: {},
   // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)

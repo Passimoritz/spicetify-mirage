@@ -599,6 +599,8 @@ function render(box) {
       toggle("onlineLyrics", () => immersive.reloadLyrics()),
       toggle("remoteFix", () => refreshRemote(true)),
       toggle("karaoke", () => immersive.reloadLyrics()),
+      // [duet 1.27] Duett-Stimmen farbig (nur Farbe, kein Neuaufbau)
+      toggle("lyrVoices", () => immersive.styleLyrics()),
       range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("romanize", () => immersive.reloadLyrics()),
