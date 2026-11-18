@@ -156,6 +156,10 @@ const I18N = {
     gL12: "… cry at a love song?", gL13: "… talk to a stranger for an hour?", gL14: "… take over the music without asking?", gL15: "… turn up two hours late?",
     gL16: "… win a dance contest?", gL17: "… tell the same story three times?", gL18: "… leave without saying goodbye?", gL19: "… have the worst dance moves?",
     gL20: "… still be going at sunrise?",
+    // Notiz nach einem Spotify-Update (updnote.js)
+    updnoteTitle: "Spotify {v} detected", updnoteOk: "Mirage runs as usual.", updnoteBad: "Mirage checked what it relies on – this no longer fits: {list}.",
+    updnoteHelp: "Open help", updnote_layout: "Spotify's layout", updnote_player: "playback controls", updnote_volume: "volume",
+    updnote_queue: "queue", updnote_pages: "page changes", updnote_data: "Spotify data (lyrics, genres)", updnote_colors: "cover colours", updnote_beats: "beat analysis",
   },
   de: {
     g_library: "Bibliothek", libBpm: "Tempo & Tonart in Titellisten", libBpmHint: "Zeigt BPM und Tonart (Camelot, z. B. 8A) neben der Dauer auf Playlist- und Albumseiten – lädt dafür Spotifys Audioanalyse für jeden sichtbaren Song", libMajor: "{k}-Dur",
@@ -300,6 +304,10 @@ const I18N = {
     gL12: "… bei einem Liebeslied weinen?", gL13: "… sich eine Stunde lang mit Fremden unterhalten?", gL14: "… ungefragt die Musik übernehmen?", gL15: "… zwei Stunden zu spät kommen?",
     gL16: "… einen Tanzwettbewerb gewinnen?", gL17: "… dieselbe Geschichte dreimal erzählen?", gL18: "… gehen, ohne Tschüss zu sagen?", gL19: "… die schlimmsten Tanzschritte haben?",
     gL20: "… bei Sonnenaufgang noch wach sein?",
+    // Notiz nach einem Spotify-Update (updnote.js)
+    updnoteTitle: "Spotify {v} erkannt", updnoteOk: "Mirage läuft wie gewohnt.", updnoteBad: "Mirage hat geprüft, worauf es sich verlässt – das passt nicht mehr: {list}.",
+    updnoteHelp: "Hilfe öffnen", updnote_layout: "Spotifys Aufbau", updnote_player: "Wiedergabe-Steuerung", updnote_volume: "Lautstärke",
+    updnote_queue: "Warteschlange", updnote_pages: "Seitenwechsel", updnote_data: "Spotify-Daten (Liedtexte, Genres)", updnote_colors: "Cover-Farben", updnote_beats: "Takt-Analyse",
   },
   fr: {
     g_library: "Bibliothèque", libBpm: "Tempo et tonalité dans les listes", libBpmHint: "Affiche le BPM et la tonalité (Camelot, p. ex. 8A) à côté de la durée sur les pages de playlists et d'albums – charge l'analyse audio de Spotify pour chaque titre visible", libMajor: "{k} majeur",

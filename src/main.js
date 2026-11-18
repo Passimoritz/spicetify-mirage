@@ -12,5 +12,6 @@
   if (window.__mirage) return;
   window.__mirage = true;
   // erst jetzt laden: die Module greifen beim Auswerten auf Spicetify und das DOM zu
-  import("./app.js");
+  // danach die Notiz nach Spotify-Updates (src/updnote.js); bricht sie ab, läuft alles andere weiter
+  import("./app.js").then(() => import("./updnote.js").catch(() => {}));
 })();

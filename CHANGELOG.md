@@ -10,6 +10,15 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- After a Spotify update, Mirage checks the new version once at startup and says so in a small note: "Spotify 1.3.10 detected – Mirage runs as usual". If something it relies on is missing, the note says exactly what, with buttons to open the help and copy the diagnostics. It shows once per version, never on a fresh install, and closes by itself.
+
+### Changed
+
+- Checked against Spotify 1.3.10: volume and mute keep working with Spotify's new volume handling, and old style rules for parts Spotify no longer has were tidied up.
+- The nightly compatibility check now also tests the newest Windows version of Spotify, not just the Linux one.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added
