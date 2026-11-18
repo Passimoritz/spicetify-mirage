@@ -1797,6 +1797,36 @@ async function remoteControl() {
   await until(() => H.js(`document.body.classList.contains("on") && document.getElementById("bRc").hidden`).catch(() => false), 10000, "fernbedienung: wieder als Gast verbunden");
 }
 
+// Verdecktes Fenster (minimiert, ganz verdeckt): Mirage fordert keine Bilder mehr an – auch wenn der Browser (wie
+// manches CEF) rAF weiterlaufen ließe. Simuliert über document.hidden; rAF läuft dabei weiter, gezählt wird, wer es
+// anfordert. Wieder sichtbar: die Party läuft sofort weiter.
+async function idleHidden() {
+  await T.js(`(() => {
+    if (!window.__rafN) {
+      const R = window.requestAnimationFrame.bind(window);
+      window.__rafN = 0;
+      window.requestAnimationFrame = (cb) => (window.__rafN++, R(cb));
+    }
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
+    Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" });
+    document.dispatchEvent(new Event("visibilitychange"));
+    return 1;
+  })()`);
+  try {
+    // ein schon angefordertes Bild darf noch kommen
+    await wait(400);
+    const n0 = await T.js("__rafN");
+    await wait(1500);
+    const n1 = await T.js("__rafN");
+    ok(n1 - n0 === 0, `verdeckt: keine Bilder mehr angefordert (${n1 - n0} in 1,5 s)`);
+  } finally {
+    await T.js(`delete document.hidden; delete document.visibilityState; document.dispatchEvent(new Event("visibilitychange")); 1`);
+  }
+  const n2 = await T.js("__rafN");
+  await wait(1000);
+  const n3 = await T.js("__rafN");
+  ok(n3 - n2 > 10, `wieder sichtbar: die Party zeichnet sofort weiter (${n3 - n2} Bilder in 1 s)`);
+}
 // Schnellmenü „Aussehen & Leistung“ im Immersiv-Modus: Presets und Schalter wirken sofort, landen in cfg,
 // und der Einstellungs-Dialog zeigt denselben Stand (auch umgekehrt). Taste O öffnet es mit Fokus auf dem Preset.
 async function perfMenu() {
@@ -2224,6 +2254,7 @@ CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["tea
 Object.assign(ICON, { karaoke: "🎶" });
 CASES.push(["karaoke", karaokeGame]);
 CASES.push(["perf-menu", perfMenu]);
+CASES.push(["idle-hidden", idleHidden]);
 CASES.push(["photo-wall", photoWall]);
 CASES.push(["settings-search", settingsSearch], ["coach-once", coachOnce]);
 
