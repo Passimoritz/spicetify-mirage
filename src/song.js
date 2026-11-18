@@ -70,10 +70,18 @@ function prefetchNext() {
     loadImage(big);
     if (small && small !== big) loadImage(small);
     // Farben, Hintergrund (schon gebacken) und im Party-Modus das Genre: beim Wechsel ist dann alles fertig
-    analyse(big, next.uri).then((r) => r?.haze && immersive.prebake?.(r.haze)).catch(() => {});
-    if (immersive.isOpen() && cfg.imMode === "party") party.warm?.(next);
+    // (Party: die Coverfarben gehen mit – im Ausklang gleitet das Licht schon zu ihnen, party.js)
+    analyse(big, next.uri).catch(() => null).then((r) => {
+      if (r?.haze) immersive.prebake?.(r.haze);
+      if (immersive.isOpen() && cfg.imMode === "party") party.warm?.(next, r?.colors);
+    }).catch(() => {});
   }, { timeout: 4000 });
 }
+// Coverfarben eines beliebigen Songs (für die DJ-Übergabe, wenn sich die Warteschlange nach dem Vorbereiten ändert)
+party.colorsOf = (item) => {
+  const m = item?.metadata || {}, big = toHttp(m.image_xlarge_url || m.image_large_url || m.image_url);
+  return big ? analyse(big, item.uri).then((r) => r?.colors || null) : Promise.resolve(null);
+};
 function onPlayPause() {
   root.classList.toggle("mirage-playing", !!PLR.isPlaying());
   immersive.playState();
