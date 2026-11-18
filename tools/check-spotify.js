@@ -12,14 +12,20 @@ const wrapper = fs.readFileSync(wrapperPath, "utf8");
 const files = fs.readdirSync(xpuiDir).filter((f) => /\.(js|css)$/.test(f));
 const inClient = (text) => files.some((f) => fs.readFileSync(path.join(xpuiDir, f), "utf8").includes(text));
 
-// so verhält sich der Nachbau; ändert sich hier etwas, muss er angepasst werden
+// so verhält sich der Nachbau (Stand: Spotify 1.3.10.2586, Spicetify 2.46.7); ändert sich hier etwas, muss er angepasst werden
 const CHECKS = [
   ["setMute klickt auf .volume-bar__icon-button", () => wrapper.includes('setMute:e=>{e!==Spicetify.Player.getMute()&&document.querySelector(".volume-bar__icon-button")?.click()}')],
   ["diesen Knopf gibt es im Client nicht (darum Lautstärke statt setMute)", () => !inClient("volume-bar__icon-button")],
   ["getMute liest die Lautstärke", () => wrapper.includes("getMute:()=>Spicetify.Player.getVolume()===0")],
   ["getVolume liest PlaybackAPI._volume", () => wrapper.includes("getVolume:()=>Spicetify.Platform.PlaybackAPI._volume")],
   ["setVolume geht an PlaybackAPI.setVolume", () => wrapper.includes("setVolume:e=>{Spicetify.Platform.PlaybackAPI.setVolume(e)}")],
-  ["PlaybackAPI hat setVolume und _volume", () => inClient("async setVolume(e){this._playbackService.setVolume(") && inClient("this._volume=e")],
+  // seit 1.3.10: setVolume schickt nur an den Dienst (mit source und connectLoggingParams), der neue Wert kommt erst
+  // über subVolume zurück; _volume ist ein Getter/Setter um __volume, der Setter meldet sich beim MuteHelper
+  ["PlaybackAPI.setVolume schickt nur an den Dienst", () => inClient("async setVolume(e){this._playbackService.setVolume({source:") && inClient("volume:e,connectLoggingParams:void 0})}")],
+  ["PlaybackAPI._volume ist Getter/Setter um __volume", () => inClient("get _volume(){return this.__volume}set _volume(e){this._muteHelper.onVolumeChange(e),this.__volume=e}")],
+  ["der neue Wert kommt über subVolume", () => inClient("this._playbackService.subVolume({},") && inClient("this._isVolumeAdjustable&&(this._volume=t)")],
+  ["MuteHelper: Lautstärke 0 heißt stumm, merkt sich die letzte", () => inClient("onVolumeChange(e){0!==e&&(this._volumeBehindMute=e),this.setMuted(0===e)}")],
+  ["getVolume() der PlaybackAPI ist async und liefert -1 ohne regelbares Gerät", () => inClient("async getVolume(){return this.getVolumeInternal()}") && inClient("getVolumeInternal(){return this._isAvailable&&this._isVolumeAdjustable?this._volume:-1}")],
   ["Queue ist origin._queue._state ?? _queue._queue", () => wrapper.includes("Spicetify.Player.origin?._queue?._state??Spicetify.Player.origin?._queue?._queue")],
   ["die Warteschlange hat _queue und kein _state", () => inClient("_queue=null;_queueState;") && !inClient("_queue=null;_queueState;_state")],
   ["next ruft skipToNext", () => wrapper.includes("next:()=>{Spicetify.Player.origin.skipToNext()}")],
@@ -28,7 +34,7 @@ const CHECKS = [
   ["getProgress rechnet aus timestamp und positionAsOfTimestamp", () => wrapper.includes("(e.isPaused?0:Date.now()-e.timestamp)+e.positionAsOfTimestamp")],
 ];
 // Stellen, die die Hintergrundfarbe als Schrift nutzen: bei Mirage durchsichtig, darum in user.css einzeln behandelt
-const HANDLED = [".Psc6sReKFsPXwnz1kvAR", ".MhQ4IslqUKbPFP5sNq10", ".POWlFlLUUtmA_JBtM3Wo", ".avnj48VJ0oJ6tMx7lYZl.LCj7BdHyyr0Su0kPxcQq", "._ZnH9lmh923t4tl8cMA3", ".lZy6JZ8BZVFg6777c7tA"];
+const HANDLED = [".Psc6sReKFsPXwnz1kvAR", ".MhQ4IslqUKbPFP5sNq10", ".POWlFlLUUtmA_JBtM3Wo", "._ZnH9lmh923t4tl8cMA3", ".lZy6JZ8BZVFg6777c7tA"];
 const usesBg = new Set();
 for (const f of files.filter((x) => x.endsWith(".css"))) {
   for (const m of fs.readFileSync(path.join(xpuiDir, f), "utf8").matchAll(/([^{}]+)\{([^{}]*)\}/g)) {

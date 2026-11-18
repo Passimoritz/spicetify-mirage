@@ -1,8 +1,10 @@
-// Spotify-Nachbau für die End-to-End-Tests. Der Spicetify.Player ist dem echten spicetifyWrapper.js (Spicetify 2.46.4)
-// nachgebaut, mit seinem Verhalten und seinen Fallen:
+// Spotify-Nachbau für die End-to-End-Tests. Der Spicetify.Player ist dem echten spicetifyWrapper.js (Spicetify 2.46.7,
+// Spotify 1.3.10) nachgebaut, mit seinem Verhalten und seinen Fallen:
 //  - setMute/toggleMute klicken auf „.volume-bar__icon-button“; den Knopf gibt es in aktuellen Spotify-Versionen nicht
 //  - Spicetify.Queue ist origin._queue._state ?? origin._queue._queue, nextTracks enthält Trennzeilen
-//  - Songwechsel, Springen, Pause und Lautstärke wirken erst nach einem Moment
+//  - Songwechsel, Springen, Pause und Lautstärke wirken erst nach einem Moment (Lautstärke: über die Meldung des Dienstes)
+//  - Platform.version wie im echten Client („1.3.10.2586.g…“); ein Test kann sie vor dem Laden über
+//    localStorage „e2e:spotifyVersion“ setzen, um ein Spotify-Update nachzustellen
 //  - ein neuer Song spielt von 0 los, bis gesprungen wurde; ein Sprung direkt nach dem Wechsel geht verloren
 //  - bei Shuffle kommt ein anderer Song als der, den die Warteschlange als nächsten nennt
 // Wird vom echten Spotify etwas anderes bekannt, gehört es hierher: tools/check-spotify.js vergleicht mit der Installation.
@@ -145,11 +147,68 @@
     setShuffle: (v) => (st.shuffle = v),
   };
 
+  // wie Spotify 1.3.10: setVolume schickt nur an den Wiedergabe-Dienst, der neue Wert kommt einen Moment später über
+  // dessen Meldung (subVolume) zurück. _volume ist ein Getter/Setter um __volume; der Setter sagt dem MuteHelper
+  // Bescheid (Lautstärke 0 heißt stumm, die letzte andere merkt er sich für „Ton an“ in Spotifys eigener Leiste).
+  const handlers = {};
+  const events = {
+    addListener: (n, f) => ((handlers[n] ||= []).push(f), events),
+    removeListener: (n, f) => ((handlers[n] = (handlers[n] || []).filter((x) => x !== f)), events),
+    emit: (n, data) => (handlers[n] || []).slice().forEach((f) => f({ type: n, data })),
+  };
+  const muteHelper = {
+    _volumeBehindMute: 0.35,
+    _isMuted: false,
+    isMuted: () => muteHelper._isMuted,
+    setMuted(e) {
+      if (e === muteHelper._isMuted) return;
+      muteHelper._isMuted = e;
+      events.emit("muted_changed", { muted: e });
+    },
+    onVolumeChange(e) {
+      if (e !== 0) muteHelper._volumeBehindMute = e;
+      muteHelper.setMuted(e === 0);
+    },
+    async mute() {
+      if (muteHelper._isMuted) return;
+      muteHelper._isMuted = true;
+      events.emit("muted_changed", { muted: true });
+      muteHelper._volumeBehindMute = await PlaybackAPI.getVolume();
+      PlaybackAPI.setVolume(0);
+    },
+    async unmute() {
+      if (!muteHelper._isMuted) return;
+      muteHelper._isMuted = false;
+      events.emit("muted_changed", { muted: false });
+      PlaybackAPI.setVolume(muteHelper._volumeBehindMute);
+    },
+    toggleMute: () => (muteHelper._isMuted ? muteHelper.unmute() : muteHelper.mute()),
+  };
   const PlaybackAPI = {
-    _volume: 0.7,
+    // echt: -1, bis der Dienst die erste Lautstärke meldet – das passiert beim Start von Spotify, lange vor dem Theme
+    __volume: 0.7,
+    get _volume() {
+      return PlaybackAPI.__volume;
+    },
+    set _volume(e) {
+      muteHelper.onVolumeChange(e);
+      PlaybackAPI.__volume = e;
+    },
+    _isAvailable: true,
+    _isVolumeAdjustable: true,
+    getMuteHelper: () => muteHelper,
+    getEvents: () => events,
+    getVolumeInternal: () => (PlaybackAPI._isAvailable && PlaybackAPI._isVolumeAdjustable ? PlaybackAPI._volume : -1),
+    async getVolume() {
+      return PlaybackAPI.getVolumeInternal();
+    },
     async setVolume(v) {
       log.volume.push(v);
-      setTimeout(() => (PlaybackAPI._volume = v), VOL_MS);
+      // subVolume: der Dienst meldet den neuen Wert
+      setTimeout(() => {
+        if (PlaybackAPI._isVolumeAdjustable) PlaybackAPI._volume = v;
+        events.emit("volume", { volume: PlaybackAPI.getVolumeInternal(), isLocal: true });
+      }, VOL_MS);
     },
     async raiseVolume() {},
     async lowerVolume() {},
@@ -224,7 +283,7 @@
       return P.origin?._queue?._state ?? P.origin?._queue?._queue;
     },
     Platform: {
-      History: { listen() {}, location: { pathname: "/playlist/x" }, push() {} }, version: "1.2.80.0", PlaybackAPI, PlayerAPI: {},
+      History: { listen() {}, location: { pathname: "/playlist/x" }, push() {} }, version: (() => { try { return localStorage.getItem("e2e:spotifyVersion"); } catch { return null; } })() || "1.3.10.2586.g81a118a22460", PlaybackAPI, PlayerAPI: {},
       RootlistAPI: { getContents: async () => ({ items: [{ type: "folder", name: "Party", items: [{ type: "playlist", uri: PL_URI, name: "Quiz Mix", isOwnedBySelf: true }] }, { type: "playlist", uri: "spotify:playlist:empty", name: "Leer" }] }) },
       PlaylistAPI: { getContents: async (uri) => ({ items: uri === PL_URI ? plTracks : [], totalLength: uri === PL_URI ? plTracks.length : 0 }) },
     },
@@ -259,7 +318,7 @@
     Menu: { Item: class { constructor(name, sel, fn, icon) { (window.__menu ||= {})[icon || name] = fn; } register() {} } },
     Topbar: { Button: class { constructor() { this.element = button("main-topBar-button"); } } },
     PopupModal: { display: (o) => document.body.append(o.content), hide() {} },
-    Config: { color_scheme: "Mirage", version: "2.46.4" },
+    Config: { color_scheme: "Mirage", version: "2.46.7" },
     Locale: { getLocale: () => "de" },
     colorExtractor: async () => ({ VIBRANT: "#ff4f8b", DARK_VIBRANT: "#7c3aed" }),
     showNotification: (msg, err) => log.notes.push({ msg: String(msg), err: !!err, at: Date.now() }),

@@ -17,8 +17,6 @@ body,
   -webkit-font-smoothing: antialiased;
 }
 .main-trackList-rowDuration,
-.playback-bar__progress-time-elapsed,
-.main-playbackBarRemainingTime-container,
 [data-testid="playback-position"],
 [data-testid="playback-duration"] {
   font-family: var(--m-mono) !important;
@@ -49,8 +47,7 @@ body,
 .MhQ4IslqUKbPFP5sNq10,
 .POWlFlLUUtmA_JBtM3Wo,
 ._ZnH9lmh923t4tl8cMA3,
-.lZy6JZ8BZVFg6777c7tA,
-.avnj48VJ0oJ6tMx7lYZl.LCj7BdHyyr0Su0kPxcQq {
+.lZy6JZ8BZVFg6777c7tA {
   color: #121212 !important;
 }
 /* Encore-Häkchen: Haken und Strich sind in der Hintergrundfarbe gezeichnet – bei Mirage durchsichtig.
@@ -73,7 +70,6 @@ body {
 .main-view-container,
 .main-view-container__scroll-node,
 .main-view-container__scroll-node-child,
-.main-view-container__scroll-node-child-spacer,
 :is(.Root__nav-bar, #Desktop_LeftSidebar_Id),
 :is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)),
 .Root__now-playing-bar,
@@ -391,14 +387,12 @@ html.mirage-no-tilt [data-encore-id="card"] {
    ========================================================================== */
 /* Bibliothekszeilen: die Zeile selbst trägt role="row" – das überlebt Umbenennungen der Klassen */
 #Desktop_LeftSidebar_Id [role="row"],
-.main-yourLibraryX-listItem,
-.main-rootlist-rootlistItem {
+.main-yourLibraryX-listItem {
   border-radius: 12px !important;
   transition: background 0.25s var(--m-ease), transform 0.35s var(--m-spring);
 }
 #Desktop_LeftSidebar_Id [role="row"]:hover,
-.main-yourLibraryX-listItem:hover,
-.main-rootlist-rootlistItem:hover {
+.main-yourLibraryX-listItem:hover {
   transform: translateX(3px);
 }
 #Desktop_LeftSidebar_Id [role="row"][aria-selected="true"],
@@ -409,23 +403,16 @@ html.mirage-no-tilt [data-encore-id="card"] {
   box-shadow: inset 3px 0 0 var(--m-a);
 }
 #Desktop_LeftSidebar_Id [role="row"] img,
-.main-yourLibraryX-listItem img,
-.main-yourLibraryX-rowCover img {
+.main-yourLibraryX-listItem img {
   border-radius: 8px !important;
 }
 
 /* Chips/Filter */
 /* ohne eigenes Verwischen: sie liegen auf der Glasplatte des Hauptbereichs, die schon verwischt –
    ein zweites Mal sah man nicht, jede Chip war aber eine eigene Rechenfläche */
-.ChipInnerComponent,
-.ChipInnerComponent-sm,
 [class*="chip__inner"] {
   border-radius: 999px !important;
 }
-[aria-checked="true"] .ChipInnerComponent,
-[aria-checked="true"] .ChipInnerComponent-sm,
-.ChipInnerComponent-selected,
-.ChipInnerComponent-sm-selected,
 [class*="chip__inner--selected"] {
   background: linear-gradient(135deg, var(--m-c), var(--m-a)) !important;
   color: var(--m-ink) !important;
@@ -470,7 +457,6 @@ button[class*="chip--"][aria-checked="true"] * {
 }
 /* ausgewählt: aria-selected sitzt an der äußeren Zeile (role="row"), Spotifys Klasse an der inneren –
    vorher griff nur Spotifys Grau, und beim Überfahren ersetzte der Hover-Verlauf die Auswahl ganz */
-.main-trackList-trackListRow.main-trackList-selected,
 .main-trackList-trackListRow[aria-selected="true"],
 [role="row"][aria-selected="true"] > .main-trackList-trackListRow,
 .main-trackList-trackListRow.cBaCr8a86htxgcL815Aw,
@@ -480,7 +466,6 @@ button[class*="chip--"][aria-checked="true"] * {
   box-shadow: inset 0 0 0 1px rgba(var(--m-a-rgb), 0.35);
 }
 .main-trackList-playingIcon,
-.main-trackList-rowTitle.main-trackList-playing,
 .main-trackList-active .main-trackList-rowTitle,
 .fF97jAvlGYYHbI3_vPlV,
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU .main-trackList-rowMainContentTitle {
@@ -495,7 +480,6 @@ button[class*="chip--"][aria-checked="true"] * {
 }
 /* angeheftet (unter dem kleinen Kopf): deckend wie dieser, sonst laufen die Titel sichtbar durch */
 /* theme.js markiert ihn zusätzlich mit data-m-stuck – falls Spotify die Klasse wieder umbenennt */
-.main-trackList-trackListHeader.main-trackList-trackListHeaderStuck,
 .main-trackList-trackListHeader.iPo4a2lbrsxW9Iedav3h,
 [data-m-stuck][data-m-stuck] {
   background: rgba(var(--spice-rgb-main), 0.98) !important;
@@ -586,9 +570,7 @@ button[class*="chip--"][aria-checked="true"] * {
 
 /* Aktive Schalter (Zufall, Wiederholen …) */
 [data-testid="control-button-shuffle"][aria-checked="true"],
-[data-testid="control-button-repeat"][aria-checked="true"],
-.main-shuffleButton-button[aria-checked="true"],
-.main-repeatButton-button[aria-checked="true"] {
+[data-testid="control-button-repeat"][aria-checked="true"] {
   color: var(--m-c) !important;
   /* nur ein Hauch: voller Schein machte aus dem kleinen Symbol einen Fleck */
   filter: drop-shadow(0 0 4px rgba(var(--m-a-rgb), 0.55));
@@ -649,8 +631,6 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 /* ==========================================================================
    LYRICS: Bühnenlicht
    ========================================================================== */
-.lyrics-lyrics-container,
-.lyrics-lyrics-background,
 [style*="--lyrics-color-background"] {
   background: transparent !important;
   --lyrics-color-background: transparent !important;
@@ -2401,7 +2381,6 @@ html.mirage-beat #mirage-stage .m-pulse {
 }
 /* Der laufende Song: fließender Farbstrom */
 .main-trackList-trackListRow:has(.main-trackList-playingIcon),
-.main-trackList-trackListRow:has(.main-trackList-playing),
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
   /* nur eine Leitfarbe: A und B gemischt wurde bei warmen Covern olivbraun */
   background: linear-gradient(
@@ -2414,7 +2393,6 @@ html.mirage-beat #mirage-stage .m-pulse {
   animation: m-flow 6s linear infinite;
 }
 .main-trackList-trackListRow:has(.main-trackList-playingIcon)::before,
-.main-trackList-trackListRow:has(.main-trackList-playing)::before,
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU::before {
   transform: scaleY(1);
 }
@@ -2427,8 +2405,6 @@ html.mirage-beat #mirage-stage .m-pulse {
 /* ==========================================================================
    STARTSEITE, SUCHE, BIBLIOTHEK, SONG-ANSICHT
    ========================================================================== */
-.main-shelf-title,
-.main-shelf-header h2,
 [data-testid="home-page"] section h2 {
   font-weight: 800 !important;
   letter-spacing: -0.03em !important;
@@ -2475,7 +2451,6 @@ html.mirage-beat #mirage-stage .m-pulse {
 }
 
 /* Suche: Kategorie-Kacheln */
-.x-categoryCard-CategoryCard,
 [data-testid="search-category-card"] {
   border-radius: 20px !important;
   overflow: hidden;
@@ -2483,16 +2458,13 @@ html.mirage-beat #mirage-stage .m-pulse {
     transform 0.55s var(--m-spring),
     box-shadow 0.55s var(--m-ease);
 }
-.x-categoryCard-CategoryCard:hover,
 [data-testid="search-category-card"]:hover {
   transform: translateY(-6px) rotate(-1.2deg) scale(1.03);
   box-shadow: 0 26px 50px -20px rgba(0, 0, 0, 0.9);
 }
-.x-categoryCard-CategoryCard img,
 [data-testid="search-category-card"] img {
   transition: transform 0.7s var(--m-spring);
 }
-.x-categoryCard-CategoryCard:hover img,
 [data-testid="search-category-card"]:hover img {
   transform: rotate(32deg) scale(1.15) translate(6%, -4%) !important;
 }
@@ -2508,7 +2480,6 @@ html.mirage-beat #mirage-stage .m-pulse {
 }
 
 /* Einstellungsseite von Spotify */
-.x-settings-container .x-settings-section,
 .x-settings-section {
   padding: 18px 20px;
   margin-bottom: 14px;
@@ -3134,16 +3105,14 @@ html[data-m-page="artist"] [role="row"]:hover [aria-colindex="1"] {
 html[data-m-page="artist"] section {
   border-radius: 22px;
 }
-html[data-m-page="artist"] [data-testid="artist-pick"],
-html[data-m-page="artist"] .artist-artistOverview-artistPick {
+html[data-m-page="artist"] [data-testid="artist-pick"] {
   padding: 14px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--m-line);
   transition: background 0.3s, box-shadow 0.4s var(--m-ease);
 }
-html[data-m-page="artist"] [data-testid="artist-pick"]:hover,
-html[data-m-page="artist"] .artist-artistOverview-artistPick:hover {
+html[data-m-page="artist"] [data-testid="artist-pick"]:hover {
   background: rgba(var(--m-a-rgb), 0.1);
   box-shadow: 0 20px 50px -24px rgba(var(--m-a-rgb), 0.8);
 }
@@ -3377,7 +3346,6 @@ html.mirage-calm [class*="legacy-button-primary"] > [class*="button-primary__inn
   box-shadow: 0 0 16px -2px rgba(var(--m-a-rgb), 0.8);
 }
 .main-dropDown-dropDown,
-.x-settings-container select,
 [role="dialog"] select {
   background: rgba(255, 255, 255, 0.06) !important;
   border: 1px solid var(--m-line-strong) !important;
@@ -5542,7 +5510,6 @@ html.mirage-calm #mirage-immersive .m-im-livecard.is-out {
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-bar"]::before,
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="background-image"],
 html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-view"] [data-testid="cover-art-image"],
-html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow:has(.main-trackList-playing),
 html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU,
 html.mirage-hidden [data-testid="CoverSlotCollapsed__container"] img,
 html.mirage-hidden .main-coverSlotCollapsed-container img {
@@ -5601,7 +5568,6 @@ html.mirage-rich #mirage-stage .m-aurora {
   animation-timing-function: steps(192) !important;
 }
 [data-testid="now-playing-bar"]::before,
-.main-trackList-trackListRow:has(.main-trackList-playing),
 .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU {
   animation-timing-function: steps(144) !important;
 }
