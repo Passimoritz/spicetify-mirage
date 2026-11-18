@@ -11,7 +11,7 @@
 //     bestätigt, dass der Song diesen Effekt benutzt. Scratch, Sirene, Air-Horn … lassen sich so nicht zeitlich
 //     setzen – dann gar nicht.
 //  3. Nichts davon: nichts (die Party reagiert wie bisher).
-import { THR, gridFromSegs, detectFx, createMixer, alignPreview } from "./sonic.js";
+import { THR, gridFromSegs, detectFx, createMixer, alignPreview, strength } from "./sonic.js";
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 // neue Instrumente (zusätzlich zu den zwölf aus den Credits, instrkinds.js)
@@ -37,22 +37,24 @@ function partGate(fam, kind, energy) {
 function directorEvents(pv, px, sec, st) {
   const ok = (k) => (pv?.[k] || 0) >= THR[k];
   if (!px) return;
+  // c: Sicherheit der Hörprobe (über der Schwelle, sonst käme nichts hierher) · w 0,85: der Zeitpunkt ist nur von der
+  // Regie geschlossen, nicht gemessen – das Bild bleibt eine Spur zarter
   const add = (k, t, dur, c) => {
     if (st.ev.some((e) => e.k === k && Math.abs(e.t - t) < 1)) return;
-    st.ev.push({ k, t, dur, c });
+    st.ev.push({ k, t, dur, c, w: 0.85 });
     if (st.ev.length > 24) st.ev.shift();
   };
   // Aufbau: Riser bis zum Drop (die Regie kennt den Abstand)
   if (px.build > 0.45 && px.toDrop < 9 && px.toDrop > 0.5 && (ok("riser") || ok("sweep")) && !st.ev.some((e) => (e.k === "riser" || e.k === "sweep") && sec < e.t + e.dur)) {
     const k = (pv.sweep || 0) > (pv.riser || 0) ? "sweep" : "riser";
-    add(k, sec, px.toDrop, Math.max(pv.riser || 0, pv.sweep || 0) * 0.85);
+    add(k, sec, px.toDrop, Math.max(pv.riser || 0, pv.sweep || 0));
   }
   if (px.dropHit) {
-    if (ok("subdrop")) add("subdrop", sec, 1.2, pv.subdrop * 0.85);
-    else if (ok("impact")) add("impact", sec, 0.9, pv.impact * 0.85);
-    if (ok("downlift")) add("downlift", sec + 0.3, 2, pv.downlift * 0.85);
+    if (ok("subdrop")) add("subdrop", sec, 1.2, pv.subdrop);
+    else if (ok("impact")) add("impact", sec, 0.9, pv.impact);
+    if (ok("downlift")) add("downlift", sec + 0.3, 2, pv.downlift);
   }
-  if (px.scn?.stop > 0.5 && (ok("tapestop") || ok("stop"))) add(ok("tapestop") ? "tapestop" : "stop", sec, 1.2, Math.max(pv.tapestop || 0, pv.stop || 0) * 0.85);
+  if (px.scn?.stop > 0.5 && (ok("tapestop") || ok("stop"))) add(ok("tapestop") ? "tapestop" : "stop", sec, 1.2, ok("tapestop") ? pv.tapestop : pv.stop);
 }
 
 function createSonicRuntime() {
@@ -69,7 +71,7 @@ function createSonicRuntime() {
     else {
       // nur Auslöser desselben Augenblicks (Uhrzeit) bleiben – frühere liefen nach dem Zurückspulen sonst wieder mit
       const now = Date.now();
-      forced.ev = [...forced.ev.filter((e) => now - e.at < 300), { k, t: sec, dur: k === "riser" || k === "sweep" ? 3 : 2.5, c: 1, at: now }];
+      forced.ev = [...forced.ev.filter((e) => now - e.at < 300), { k, t: sec, dur: k === "riser" || k === "sweep" ? 3 : 2.5, c: 1, forced: true, at: now }];
     }
     mix.reset();
   }
@@ -124,7 +126,8 @@ function createSonicRuntime() {
         if (!(c >= THR[k])) continue;
         const show = SHOW[k] || k;
         if (!(show in lv)) continue;
-        want[show] = Math.max(want[show] || 0, partGate(FAM[show], px.kind, px.energy) * clamp(0.55 + (c - THR[k]) * 1.5, 0.55, 1) * trust);
+        // nur sichere Arten (strength 0 unter der Schwelle), zart wenn knapp sicher, voll erst bei voller Sicherheit
+        want[show] = Math.max(want[show] || 0, partGate(FAM[show], px.kind, px.energy) * strength(k, c) * trust);
       }
     }
     for (const [k, until] of Object.entries(forced.inst)) if (Date.now() < until) want[k] = 1;
@@ -144,7 +147,7 @@ function createSonicRuntime() {
     const fx = mix.at(list, sec, { max: opt.lite ? 1 : opt.max ?? 3 });
     // Sidechain-Pumpen ohne Zeitangabe (nur Hörprobe): im Refrain und Drop, wo die Kick läuft
     const pump = song.pv?.fx?.pump || 0;
-    if (!song.ev.length && pump >= THR.pump && px && (px.kind === "chorus" || px.kind === "drop") && fx.length < (opt.lite ? 1 : 3)) fx.push({ k: "pump", p: 0, e: clamp((px.energy - 0.5) / 0.2, 0, 1), c: pump, flash: false });
+    if (!song.ev.length && pump >= THR.pump && px && (px.kind === "chorus" || px.kind === "drop") && fx.length < (opt.lite ? 1 : 3)) fx.push({ k: "pump", p: 0, e: clamp((px.energy - 0.5) / 0.2, 0, 1), c: pump, s: strength("pump", pump), flash: false });
     return { lv, fx, src: song.ev.length ? (song.al ? "spotify+preview" : "spotify") : song.pv ? "preview" : "" };
   }
   return { prepare, frame, force, get song() { return song; } };

@@ -40,6 +40,15 @@ Release notes on GitHub are generated from the matching section of this file whe
 ### Changed
 
 - Backing vocals in brackets are now smaller and quieter, and when they come at the end of a line they sit just below it. Labels like "(Chorus)" or "(x2)" are no longer treated as backing vocals.
+### Changed
+
+- Instrument and sound-effect recognition in party mode was tested on 201 real song previews and is now more reliable. It finds trap 808s, acoustic guitar, distorted guitar, hi-hats and kicks far more often, and no longer mistakes choirs for strings, bluegrass banjo for hi-hats, or country and jazz grooves for sidechain pumping.
+- The light pictures for instruments and effects now follow how sure Mirage is: soft when it is only just sure, full when it is certain.
+- Pads, bells, organ and scratch pictures no longer come from the song preview, because the test showed they could not be told apart reliably.
+
+### Fixed
+
+- Previews that fade in from silence no longer confuse the instrument recognition.
 
 ## [1.26.0] – 2026-11-18
 
