@@ -31,6 +31,9 @@ const UI = {
   leaf: s('<path d="M5 19.5C5 11 10 5 20 4.5 20 14 14.5 19 6 19"/><path d="M5 19.5l7.5-7.5"/>'),
   flashOff: s('<path d="M13 2.5L5.5 13H11l-1 8.5 7.5-10.5H12z"/><path d="M3 3l18 18"/>'),
   music: s('<path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>'),
+  // 1.27 views: Uhr-Ansicht und Album-Reise
+  clock: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
+  album: s('<rect x="3.5" y="3.5" width="8.5" height="8.5" rx="1.8"/><path d="M15.5 5.5h5M15.5 9.5h5M3.5 15.5h17M3.5 19.5h12"/>'),
 };
 
 // je Spiel ein eigenes Symbol (Schlüssel wie GAME_LIST in games.js)

@@ -34,6 +34,10 @@ import { free } from "./lock.js";
 import { setPreset, setPerf, presetFill } from "./settings.js";
 import { COST, tier } from "./perf.js";
 import { createSteadyClock, createBeatClock } from "./steady.js";
+// 1.27 views: weitere Visualizer-Stile, Album-Reise und Uhr-Ansicht (eigene Module)
+import { drawWavefield, drawCoverDust, resetVizExtra } from "./vizextra.js";
+import { createAlbumView } from "./albumview.js";
+import { createClockView } from "./clockview.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
 const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
@@ -83,10 +87,15 @@ const MODES = [
   ["viz", "tabViz"],
   ["mix", "tabMix"],
   ["party", "tabParty"],
+  // 1.27 views: ruhige Uhr für Musik im Hintergrund (Taste 6, im Umschalter als Symbol)
+  ["clock", "tabClock"],
 ];
 // Mix = Cover + Liedtext + Visualizer zugleich; Party = alles größer, im Takt, je nach Genre/Tempo
 const LYR = new Set(["lyrics", "mix", "party"]);
 const VIZ = new Set(["viz", "mix", "party"]);
+// 1.27 views: Stile aus vizextra.js; „coverdust“ zeichnet das Cover selbst (wie „shatter“)
+const EXTRA_VIZ = new Set(["wavefield", "coverdust"]);
+const OWN_COVER = new Set(["shatter", "coverdust"]);
 
 const immersive = (() => {
   let el = null, raf = 0, lastText = 0, coverToken = 0;
@@ -155,6 +164,19 @@ Probe-FX: ${pfx}`;
   // Frist, nach der Geschlossenes oder Verlassenes freigegeben wird (Location-Thread, große Canvas, Videos);
   // verdeckt etwas länger, weil man dort oft nur kurz in ein anderes Fenster schaut
   const RELEASE_MS = 8000, HIDDEN_MS = 30000;
+  /* === 1.27 views: Album-Reise (Cover-Ansicht) und Uhr-Ansicht === */
+  // Ein- und Ausblenden der Album-Spalte gleitet wie ein Ansichtswechsel (FLIP), Cover und Titel rücken weich
+  const album = createAlbumView({
+    layout: (go, animate) => {
+      if (animate && isOpen() && !stillMotion() && el.dataset.mode === "cover") morphMode(go);
+      else go();
+      vizRect.r = null;
+    },
+  });
+  const clockView = createClockView();
+  // Uhr steht still: keine Bildschleife (nur das Ausblenden des Visualizers bzw. der Ansichtswechsel läuft zu Ende)
+  const clockStill = (now) => el?.dataset.mode === "clock" && now > vizFadeUntil && now > morphUntil + 150;
+  /* === end views === */
 
   function build() {
     el = document.createElement("div");
@@ -232,6 +254,16 @@ Probe-FX: ${pfx}`;
     document.body.append(el);
     el.querySelector(".m-im-close .m-l").textContent = t("back");
     el.querySelectorAll(".m-im-tabs button").forEach((b, i) => (b.textContent = t(MODES[i][1])));
+    /* === 1.27 views: Uhr-Reiter als Symbol, Album-Spalte und Uhr-Ebene === */
+    const ckTab = el.querySelector('.m-im-tabs button[data-mode="clock"]');
+    ckTab.innerHTML = `${UI.clock}<span class="m-sr"></span>`;
+    ckTab.lastChild.textContent = t("tabClock");
+    ckTab.title = `${t("tabClock")} · ${MODES.length}`;
+    album.attach(el);
+    el.querySelector(".m-im-meta").after(album.panel);
+    clockView.attach(el);
+    el.querySelector(".m-im-cover-wrap").before(clockView.el);
+    /* === end views === */
     el.querySelector(".m-im-bar").setAttribute("aria-label", t("seek"));
     el.querySelector(".m-im-prev").setAttribute("aria-label", t("prev"));
     el.querySelector(".m-im-play").setAttribute("aria-label", t("play"));
@@ -792,6 +824,11 @@ Probe-FX: ${pfx}`;
       showExtras();
       applyCanvas();
       sizeCanvas();
+      // 1.27 views: Album-Spalte nur in der Cover-Ansicht, Uhr nur in ihrer Ansicht
+      album.sync(currentItem(), mode, false);
+      clockView.show(mode === "clock");
+      // aus der Uhr zurück: das Cover blendet weich ein, statt aufzuspringen
+      if (from === "clock" && mode !== "clock" && !stillMotion() && isOpen()) q.wrap.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: "ease-out" });
       active = -2;
       // Liedtext gleich an der richtigen Stelle der neuen Spalte, statt quer hinzugleiten
       if (LYR.has(mode)) placeSoon("snap");
@@ -2090,6 +2127,15 @@ Probe-FX: ${pfx}`;
           ctx.stroke(p);
         });
       }
+    } else if (EXTRA_VIZ.has(V.style)) {
+      /* === 1.27 views: Wellenfeld und Cover-Partikel (vizextra.js) === */
+      const o = { vw, vh, cx, cy, R, dpr, vals, N, b, tt, dt, pal, glowK, height: V.height, glow: V.glow, lite: lightMode(), full: tier() === "full", mood, soft, mode, now };
+      if (V.style === "wavefield") drawWavefield(ctx, o);
+      else if (vizRect.r) {
+        const img = q.wrap.querySelector("img.is-on");
+        drawCoverDust(ctx, { ...o, img: img?.complete && img.naturalWidth ? img : null, size: vizRect.r.width * dpr * pulseS });
+      }
+      /* === end views === */
     } else if (V.style === "shatter") {
       drawShatter(ctx, cx, cy, maxLen, dt, b, dpr, tt);
     } else if (V.style === "wave") {
@@ -2324,6 +2370,7 @@ Probe-FX: ${pfx}`;
     vizRect.r = null;
     lastVizT = 0;
     vw = 0;
+    resetVizExtra();
     try {
       vctx.globalCompositeOperation = "source-over";
     } catch {}
@@ -2974,9 +3021,10 @@ Probe-FX: ${pfx}`;
   const busy = () => PLR.isPlaying() || !!games.active() || (el.dataset.mode === "party" && cfg.partyLive);
   function kick() {
     restAt = performance.now() + REST;
-    if (!raf && isOpen()) raf = requestAnimationFrame(frame);
+    if (!raf && isOpen() && !clockStill(performance.now())) raf = requestAnimationFrame(frame);
   }
   function frame(now) {
+    if (clockStill(now)) return void (raf = 0);
     if (busy()) restAt = now + REST;
     else if (now > restAt) return void (raf = 0);
     raf = requestAnimationFrame(frame);
@@ -2996,6 +3044,7 @@ Probe-FX: ${pfx}`;
     // scaleX statt width: kein Neu-Layout in jedem Bild
     const fill = `scaleX(${dur ? clamp(pos / dur, 0, 1).toFixed(4) : 0})`;
     if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
+    if (album.shown) album.tick(pos, dur);
     if (now - lastText > 250) {
       lastText = now;
       q.pos.textContent = fmt(pos);
@@ -3004,7 +3053,7 @@ Probe-FX: ${pfx}`;
       syncState();
     }
     const mode = el.dataset.mode;
-    const shatterOn = VIZ.has(mode) && mode !== "party" && cfg.vizStyle === "shatter" && !cfg.calm;
+    const shatterOn = VIZ.has(mode) && mode !== "party" && OWN_COVER.has(cfg.vizStyle) && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
     if (LYR.has(mode)) drawLyrics(pos);
     if (VIZ.has(mode) || (vw && now < vizFadeUntil)) {
@@ -3085,7 +3134,7 @@ Probe-FX: ${pfx}`;
     playIn(q.video, on && mode === "lyrics");
   }
   // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – 5", "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["O", "k_perf"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – " + MODES.length, "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["O", "k_perf"], ["Esc", "k_close"], ["?", "keysTitle"]];
   // Es ist immer nur ein Menü offen: das neue schließt das vorherige
   let liveToken = 0;
   function closeMenus(keep) {
@@ -3302,6 +3351,9 @@ Probe-FX: ${pfx}`;
     q.title.textContent = titleOf(item) || t("nothing");
     q.artist.textContent = artistOf(item);
     q.smart.hidden = !ctl.isSmartPick(item);
+    // 1.27 views: Album-Reise und Uhr
+    album.sync(item, el.dataset.mode, true);
+    clockView.update(item);
     updateLyrState();
     if (side === "playlists") showSide("playlists");
     q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play;
@@ -3728,7 +3780,11 @@ Probe-FX: ${pfx}`;
   }
   function menuPanel(body) {
     // außerhalb der Party enthält „Mehr“ nur Aussehen & Leistung (die übrigen Knöpfe stehen dort oben)
-    if (el.dataset.mode !== "party") return perfSection(body);
+    if (el.dataset.mode !== "party") {
+      // 1.27 views: Album-Reise ein/aus (Cover-Ansicht, nur wenn ein Album läuft)
+      if (album.canToggle(el.dataset.mode)) sideBtn(body, album.label, album.albumName, () => { showSide(null); album.toggle(); }, false, UI.album).classList.add("m-im-albtoggle");
+      return perfSection(body);
+    }
     const go = (kind) => () => {
       viaMenu = true;
       showSide(kind);
@@ -4404,6 +4460,8 @@ Probe-FX: ${pfx}`;
       openedUri = currentItem()?.uri || "";
     }
     cancelAnimationFrame(showRaf);
+    // 1.27 views: die Uhr läuft nur, solange die Ebene offen ist
+    clockView.show(el.dataset.mode === "clock");
     if (quick) el.classList.add("is-on");
     else {
       // Erst nach dem Aufbau einblenden: Aufbau, Layout und erstes Zeichnen kosten ein langes Bild (bis 150 ms).
@@ -4470,16 +4528,20 @@ Probe-FX: ${pfx}`;
       el.classList.remove("is-idle");
       cancelAnimationFrame(raf);
       raf = 0;
+      // 1.27 views: geschlossen tickt auch die Uhr nicht weiter
+      clockView.show(false);
       document.dispatchEvent(new Event("mirage:im-close"));
     }, FADE_MS);
   }
   const isOpen = () => !!el && (showing || el.classList.contains("is-on"));
-  const playState = () => el && (kick(), (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play), playLabel());
+  const playState = () => el && (kick(), clockView.playing(), (q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play), playLabel());
   const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
     seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    // 1.27 views: Zustand der Album-Spalte (Tests)
+    albumState: () => album.state,
   };
 })();
 

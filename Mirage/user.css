@@ -5916,3 +5916,373 @@ html.mirage-rich #mirage-stage .m-aurora {
   opacity: 0.5;
   cursor: default;
 }
+
+/* === 1.27 views === */
+/* Uhr-Reiter im Ansichten-Umschalter: nur das Symbol (Name für Screenreader und im Tooltip) */
+#mirage-immersive .m-im-tabs button[data-mode="clock"] {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 13px;
+}
+#mirage-immersive .m-im-tabs button[data-mode="clock"] svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ---------- Album-Reise: Glas-Spalte rechts in der Cover-Ansicht (feste Breite, Songwechsel verschieben nichts) */
+#mirage-immersive .m-im-album {
+  display: none;
+}
+@media (min-width: 1001px) {
+  #mirage-immersive[data-mode="cover"].has-album {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr) minmax(270px, 0.8fr);
+    grid-template-areas: "cover meta album";
+    column-gap: 4vw;
+    padding-left: 5vw;
+    padding-right: 4vw;
+  }
+  #mirage-immersive[data-mode="cover"].has-album .m-im-cover-wrap {
+    width: min(100%, 52vh);
+  }
+  #mirage-immersive[data-mode="cover"].has-album .m-im-title {
+    font-size: clamp(28px, 3.6vw, 62px);
+  }
+  /* schmalere Mittelspalte: Knöpfe rücken zusammen, der Lautstärkeregler wird kürzer */
+  #mirage-immersive[data-mode="cover"].has-album .m-im-extras {
+    gap: 8px;
+  }
+  #mirage-immersive[data-mode="cover"].has-album .m-im-volume {
+    width: clamp(56px, 6vw, 110px);
+  }
+  #mirage-immersive[data-mode="cover"].has-album .m-im-album {
+    grid-area: album;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    min-height: 0;
+    max-height: min(72vh, 680px);
+    border-radius: 22px;
+    /* dunkles Glas ohne Live-Weichzeichner (der Hintergrund dahinter ist ohnehin ruhig und verwischt) */
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.03)), rgb(12 10 20 / 0.5);
+    border: 1px solid rgb(255 255 255 / 0.11);
+    box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.65), inset 0 1px 0 rgb(255 255 255 / 0.06);
+    overflow: hidden;
+    text-align: left;
+  }
+}
+#mirage-immersive .m-al-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.07);
+}
+#mirage-immersive .m-al-kicker {
+  font: 500 11px/1 var(--m-mono);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--m-c);
+}
+#mirage-immersive .m-al-name {
+  margin-top: 6px;
+  font: 700 18px/1.2 var(--m-font);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#mirage-immersive .m-al-sub {
+  font: 400 13px/1.3 var(--m-font);
+  color: rgb(255 255 255 / 0.62);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#mirage-immersive .m-al-left {
+  margin-top: 6px;
+  font: 500 12px/1 var(--m-mono);
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.72);
+}
+#mirage-immersive .m-al-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 8px 12px;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  mask-image: linear-gradient(transparent, #000 10px, #000 calc(100% - 16px), transparent);
+}
+#mirage-immersive .m-al-disc {
+  padding: 12px 10px 4px;
+  font: 500 11px/1 var(--m-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.5);
+}
+#mirage-immersive .m-al-row {
+  position: relative;
+  transition: opacity 0.45s var(--m-ease);
+}
+#mirage-immersive .m-al-row button {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: rgb(255 255 255 / 0.9);
+  font: 500 13.5px/1.25 var(--m-font);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.3s var(--m-ease),
+    color 0.3s var(--m-ease);
+}
+#mirage-immersive .m-al-row button:hover {
+  background: rgb(255 255 255 / 0.07);
+}
+#mirage-immersive .m-al-row[data-st="past"] {
+  opacity: 0.45;
+}
+#mirage-immersive .m-al-row[data-st="now"] button {
+  background: linear-gradient(90deg, rgba(var(--m-a-rgb), 0.24), rgba(var(--m-a-rgb), 0.06));
+  color: #fff;
+  font-weight: 650;
+}
+#mirage-immersive .m-al-no {
+  font: 500 12px/1 var(--m-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: rgb(255 255 255 / 0.5);
+}
+#mirage-immersive .m-al-row[data-st="now"] .m-al-no {
+  color: var(--m-c);
+}
+#mirage-immersive .m-al-t {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+#mirage-immersive .m-al-t :is(span, small) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#mirage-immersive .m-al-t small {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: rgb(255 255 255 / 0.55);
+}
+#mirage-immersive .m-al-dur {
+  font: 500 12px/1 var(--m-mono);
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.55);
+}
+/* Fortschritt des laufenden Titels: eine feine Linie, nur scaleX (kein Neu-Layout) */
+#mirage-immersive .m-al-prog {
+  position: absolute;
+  left: 44px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--m-c), var(--m-a));
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--m-ease);
+}
+#mirage-immersive .m-al-row[data-st="now"] .m-al-prog {
+  opacity: 1;
+}
+#mirage-immersive .m-al-credits {
+  display: grid;
+  gap: 5px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid rgb(255 255 255 / 0.07);
+  font: 400 12.5px/1.35 var(--m-font);
+}
+#mirage-immersive .m-al-credits[hidden] {
+  display: none;
+}
+#mirage-immersive .m-al-credits b {
+  margin-bottom: 2px;
+  font: 500 11px/1 var(--m-mono);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--m-c);
+}
+#mirage-immersive .m-al-credits div {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) minmax(0, 1fr);
+  gap: 10px;
+}
+#mirage-immersive .m-al-credits div span:first-child {
+  color: rgb(255 255 255 / 0.55);
+}
+#mirage-immersive .m-al-credits div span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Uhr: große Zeit, kleiner Song, sacht atmendes Licht, fast ohne Bewegung */
+#mirage-immersive .m-im-clock {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: rgb(4 3 9 / 0.42);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s var(--m-ease),
+    visibility 0s 0.5s;
+}
+#mirage-immersive[data-mode="clock"] .m-im-clock {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.9s var(--m-ease) 0.1s,
+    visibility 0s;
+}
+#mirage-immersive[data-mode="clock"] :is(.m-im-cover-wrap, .m-im-meta) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.4s var(--m-ease),
+    visibility 0s 0.4s;
+}
+#mirage-immersive .m-ck-glow {
+  position: absolute;
+  inset: 0;
+  width: min(84vw, 1100px);
+  height: min(84vh, 820px);
+  margin: auto;
+  background: radial-gradient(closest-side, rgba(var(--m-a-rgb), 0.34), rgba(var(--m-c-rgb), 0.12) 58%, transparent 78%);
+  transition: translate 2.5s ease-in-out;
+  will-change: opacity, scale;
+}
+#mirage-immersive[data-mode="clock"] .m-ck-glow {
+  animation: m-ck-breathe 11s ease-in-out infinite alternate;
+}
+@keyframes m-ck-breathe {
+  from {
+    opacity: 0.55;
+    scale: 0.94;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1.04;
+  }
+}
+html.mirage-calm #mirage-immersive .m-ck-glow {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #mirage-immersive .m-ck-glow {
+    animation: none !important;
+  }
+}
+#mirage-immersive .m-ck-face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: translate 2.5s ease-in-out;
+}
+#mirage-immersive .m-ck-time {
+  margin: 0;
+  padding: 0 0.04em;
+  border: 0;
+  background: linear-gradient(180deg, #fff 30%, rgba(var(--m-c-rgb), 0.9));
+  background-clip: text;
+  color: transparent;
+  font: 250 clamp(88px, 17vw, 280px)/0.95 var(--m-font);
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+}
+#mirage-immersive .m-ck-ap {
+  margin-left: 0.18em;
+  font-size: 0.2em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+#mirage-immersive .m-ck-ap[hidden],
+#mirage-immersive .m-ck-date[hidden],
+#mirage-immersive .m-ck-art[hidden] {
+  display: none;
+}
+#mirage-immersive .m-ck-date {
+  margin-top: 1.4vh;
+  font: 400 clamp(16px, 1.9vw, 28px)/1.2 var(--m-font);
+  color: rgb(255 255 255 / 0.7);
+}
+#mirage-immersive .m-ck-song {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(560px, 70vw);
+  margin-top: 7vh;
+  padding: 7px 18px 7px 7px;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  transition: opacity 0.6s var(--m-ease);
+}
+#mirage-immersive .m-im-clock.is-paused .m-ck-song {
+  opacity: 0.5;
+}
+#mirage-immersive .m-ck-art {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+#mirage-immersive .m-ck-txt {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+#mirage-immersive .m-ck-txt :is(b, small) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#mirage-immersive .m-ck-txt b {
+  font: 600 14px/1.3 var(--m-font);
+}
+#mirage-immersive .m-ck-txt small {
+  font: 400 12.5px/1.3 var(--m-font);
+  color: rgb(255 255 255 / 0.6);
+}
+/* Einbrenn-Schutz: nach kurzer Ruhe blendet die Kopfzeile aus, der Mauszeiger auch */
+#mirage-immersive[data-mode="clock"] .m-im-top {
+  transition: opacity 0.8s var(--m-ease);
+}
+#mirage-immersive[data-mode="clock"].is-clockidle {
+  cursor: none;
+}
+#mirage-immersive[data-mode="clock"].is-clockidle .m-im-top {
+  opacity: 0;
+}
+/* === end views === */

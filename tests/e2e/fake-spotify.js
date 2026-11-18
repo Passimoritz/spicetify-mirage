@@ -250,6 +250,8 @@
           if (!x) throw new Error("404");
           return { id: one[1], uri: x.uri, name: x.name, artists: [{ name: x.metadata?.artist_name || x.artists?.[0]?.name || "" }], album: { images: [] } };
         }
+        // Album-Reise (views): ein Album aus der laufenden Liste, alle Songs auf einer CD
+        if (/v1[/]albums[/]/.test(url)) return { name: "Glass Album", release_date: "2021-03-05", artists: [{ name: "Mirage Ensemble" }], tracks: { items: tracks.map((x, i) => ({ uri: x.uri, name: x.name, duration_ms: 200000, track_number: i + 1, disc_number: 1, artists: [{ name: x.metadata.artist_name }] })), next: null } };
         // Suche für Songwünsche: die ersten Songs der Liste
         if (/v1[/]search/.test(url)) return { tracks: { items: tracks.slice(0, 3).map((x, i) => ({ id: x.uri.split(":")[2], uri: x.uri, name: x.name, explicit: i === 1, artists: [{ name: x.metadata.artist_name }], album: { images: [] } })) } };
         return {};
@@ -323,6 +325,8 @@
     // andere Inhalte als Songs, wie Spotify sie in Player.data.item meldet: ohne Liedtext, ohne Audio-Analyse,
     // teils ohne Künstler, Cover oder Dauer
     playSpecial: (kind) => landItem(SPECIAL[kind]),
+    // Wiedergabe-Kontext umstellen (views: Album-Reise braucht spotify:album:…)
+    setContext: (uri) => (st.context = { uri }),
   };
   const SPECIAL = {
     // Podcast-Folge (auch Video-Podcasts: gleiche URI-Art, das Bild kommt aus Spotifys Videofläche)

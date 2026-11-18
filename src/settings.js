@@ -589,6 +589,8 @@ function render(box) {
     ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
     ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
     ["galaxy", t("viz_galaxy")], ["mountains", t("viz_mountains")], ["scope", t("viz_scope")], ["shatter", t("viz_shatter")],
+    // 1.27 views
+    ["wavefield", t("viz_wavefield")], ["coverdust", t("viz_coverdust")],
   ];
   kids.push(sectionReset(
     group(
