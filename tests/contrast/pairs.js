@@ -56,7 +56,7 @@ function parseRules(css) {
 // Eine Regel gilt nur dann als groß/Symbol, wenn ALLE ihre Selektoren dazugehören.
 const LARGE = /h1\b|\.m-im-title\b|\.m-im-line\b|\.m-g-time\b/;
 const ICON =
-  /playButton|play-button|control-button|svg\b|\.m-im-like\b|\.m-im-play\b|\.m-im-shuffle\b|\.m-im-sm\b|imagePlaceholder|\.m-im-cvbtn\b/;
+  /playButton|play-button|control-button|svg\b|\.m-im-like\b|\.m-im-play\b|\.m-im-shuffle\b|\.m-im-sm\b|imagePlaceholder|\.m-im-cvbtn\b|\.m-search-ic\b/;
 function kindOf(sel) {
   const parts = splitSelectors(sel);
   if (parts.every((p) => LARGE.test(p))) return "large";
@@ -197,6 +197,8 @@ function colorsOf(value, env) {
 function surfaces(sel, env) {
   // der Immersiv-Modus hat in JEDEM Schema seinen eigenen dunklen Grund (#mirage-immersive { background: #07060c })
   if (/#mirage-immersive/.test(sel)) return [[7, 6, 12]];
+  // die Notiz nach Spotify-Updates ist in jedem Schema eine eigene dunkle Glasfläche (rgb 16 14 25 / 0.9)
+  if (/\.m-updnote\b/.test(sel)) return [[16, 14, 25]];
   return ["main", "card"].map((k) => hexRgb(env.scheme[k]));
 }
 

@@ -6125,7 +6125,7 @@ html.mirage-rich #mirage-stage .m-aurora {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  color: var(--m-c, #d4c6ff);
+  color: #fff;
   background: rgba(var(--m-a-rgb, 182, 156, 255), 0.18);
 }
 .m-updnote.is-warn .m-updnote-icon {
