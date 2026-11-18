@@ -14,4 +14,6 @@
   // erst jetzt laden: die Module greifen beim Auswerten auf Spicetify und das DOM zu
   // danach die Notiz nach Spotify-Updates (src/updnote.js); bricht sie ab, läuft alles andere weiter
   import("./app.js").then(() => import("./updnote.js").catch(() => {}));
+  // Mini-Player-Fenster (Bild im Bild) bekommt Mirages Regeln und Farben
+  import("./pip.js");
 })();

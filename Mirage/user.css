@@ -6272,3 +6272,514 @@ html.mirage-rich #mirage-stage .m-aurora {
   }
 }
 /* === end compat === */
+/* === 1.27 pages === */
+/* ==========================================================================
+   NEUE SEITEN aus Spotify 1.3.10: Song-Seite, Konzerte, Geschmacksprofil, Neuigkeiten, Mini-Player
+   Die Bausteine kommen als eigene Module (xpui-routes-*, dwp-*) mit Zufallsnamen. Wo der Client eine
+   data-testid setzt, hängt die Regel daran; die Zufallsnamen prüft tools/check-selectors.js bei jedem Update.
+   Flächen: leichtes Glas aus der Schriftfarbe (wirkt so im dunklen wie im hellen Schema), Akzent aus dem Cover.
+   ========================================================================== */
+
+/* ---------- Song-Seite (xpui-routes-track-v2) ---------- */
+/* Künstler-Kärtchen unter dem Kopf und „Empfohlen“-Zeilen: Glaskapsel statt grauem Kasten */
+[data-testid="track-page"] .QfgvPYAl4waoB66Gqfgi {
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition:
+    background-color 0.3s var(--m-ease),
+    border-color 0.3s var(--m-ease),
+    box-shadow 0.4s var(--m-ease);
+}
+[data-testid="track-page"] .QfgvPYAl4waoB66Gqfgi:is(:hover, :focus-within) {
+  background-color: rgba(var(--m-a-rgb), 0.12);
+  border-color: rgba(var(--m-a-rgb), 0.3);
+  box-shadow: 0 16px 36px -24px rgba(var(--m-a-rgb), 0.9);
+}
+[data-testid="track-page"] [data-testid="track-artist-link-card"] img {
+  box-shadow:
+    0 0 0 2px rgba(var(--spice-rgb-text), 0.08),
+    0 8px 22px -10px rgba(var(--m-a-rgb), 0.8);
+  transition: box-shadow 0.4s var(--m-ease);
+}
+[data-testid="track-page"] .QfgvPYAl4waoB66Gqfgi:hover [data-testid="track-artist-link-card"] img,
+[data-testid="track-page"] [data-testid="track-artist-link-card"]:hover img {
+  box-shadow:
+    0 0 0 2px rgba(var(--m-a-rgb), 0.85),
+    0 8px 26px -8px rgba(var(--m-a-rgb), 0.9);
+}
+/* Playlist-Kärtchen („In diesen Playlists“): oben runde Ecken wie die Mirage-Karten, Akzent beim Überfahren */
+[data-testid="track-page"] ._9gYLAhT_VqC4EhvIAjN {
+  background-color: rgba(var(--spice-rgb-text), 0.05);
+  border: 1px solid var(--m-line);
+  border-radius: 16px;
+  overflow: hidden;
+  transition:
+    background-color 0.3s var(--m-ease),
+    border-color 0.3s var(--m-ease),
+    transform 0.45s var(--m-ease);
+}
+[data-testid="track-page"] ._9gYLAhT_VqC4EhvIAjN:is(:hover, :focus-within) {
+  background-color: rgba(var(--m-a-rgb), 0.14);
+  border-color: rgba(var(--m-a-rgb), 0.35);
+  transform: translateY(-2px);
+}
+[data-testid="track-page"] .U8e0afcmmcG4NEDZIcv6 {
+  border-radius: 15px 0 0;
+}
+/* Liedtext-Vorschau: Glasfläche, die aufklappbaren Zeilen bleiben ruhig lesbar */
+[data-testid="track-page"] [data-testid="lyrics-container"] {
+  padding: 20px 22px;
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(var(--m-a-rgb), 0.1), transparent 60%),
+    rgba(var(--spice-rgb-text), 0.035);
+  border: 1px solid var(--m-line);
+}
+/* Wie oft gehört: Zahl in Mirage-Schrift statt Fließtext-Grau */
+[data-testid="track-page"] [data-testid="playcount"] {
+  font-variant-numeric: tabular-nums;
+  color: var(--spice-text);
+}
+
+/* ---------- Konzerte: Konzertseite, Veranstaltungsort, Sammlung, Kampagnen ---------- */
+/* Konzert-Kacheln (Konzertseite + Veranstaltungsort): Glas, beim Überfahren Akzent */
+[data-testid="concert-card"] {
+  border: 1px solid transparent !important;
+  border-radius: 18px;
+  transition:
+    background-color 0.3s var(--m-ease),
+    border-color 0.3s var(--m-ease),
+    box-shadow 0.45s var(--m-ease),
+    transform 0.45s var(--m-ease);
+}
+[data-testid="concert-card"]:is(:hover, :focus-visible) {
+  background-color: rgba(var(--m-a-rgb), 0.12) !important;
+  border-color: rgba(var(--m-a-rgb), 0.3) !important;
+  box-shadow: 0 24px 48px -28px rgba(var(--m-a-rgb), 0.85);
+  transform: translateY(-3px);
+}
+[data-testid="concert-card"]:focus-visible,
+[data-testid="concert-promo"]:focus-visible,
+[data-testid="venue-link"]:focus-visible {
+  outline: 2px solid var(--m-c);
+  outline-offset: 2px;
+}
+[data-testid="concert-card"] .fmtI4DNuHjLJpCBIwqUM,
+.BZ3Jt_10IWjNI_HzYaNc {
+  border-radius: 14px;
+}
+[data-testid="concert-card"] .fmtI4DNuHjLJpCBIwqUM {
+  box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.7);
+}
+/* Datum oben links auf der Kachel und auf der Tournee-Karte: Glas-Plakette statt schwarzem Kasten */
+.Qo6QwdynkZ_snNleBqdM,
+.gTsVjIqKjagCEsOMmhMg {
+  background: rgba(var(--spice-rgb-main), 0.72);
+  border: 1px solid var(--m-line-strong);
+  border-radius: 12px;
+  color: var(--spice-text);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+}
+/* Spotifys festes Lila (Häkchen „Spotify verkauft“) und das Ort-Symbol folgen dem Cover */
+.V7sGgDUOa47JOua4bwjs,
+.KR3yr1jYvFf6YDrWKAVV,
+.ceJk1dAn7yA6wVmzqqB6 {
+  color: var(--m-c);
+}
+/* Ort mit Link auf der Konzertseite */
+[data-testid="venue-link"] .xkFo7wpAkmq_oLBw_7Xv {
+  background: rgba(var(--spice-rgb-text), 0.05);
+  border: 1px solid var(--m-line);
+  border-radius: 16px;
+  transition:
+    background-color 0.3s var(--m-ease),
+    border-color 0.3s var(--m-ease);
+}
+[data-testid="venue-link"]:hover .xkFo7wpAkmq_oLBw_7Xv {
+  background: rgba(var(--m-a-rgb), 0.12);
+  border-color: rgba(var(--m-a-rgb), 0.3);
+}
+[data-testid="venue-link"] .EXJgMU51oCqmCfsWLzgY,
+[data-testid="venue-info"] .EXJgMU51oCqmCfsWLzgY {
+  color: var(--m-c);
+}
+/* Listenzeilen (Konzertsammlung, Kampagnen): weicher Akzent statt grauer Fläche */
+.MsUOW8B6H8_KPeK_viT3,
+.myYtrKzrxp5szLFFnIg1 {
+  border-radius: 12px;
+  transition: background-color 0.25s var(--m-ease);
+}
+.MsUOW8B6H8_KPeK_viT3:hover,
+.myYtrKzrxp5szLFFnIg1:hover {
+  background: rgba(var(--m-a-rgb), 0.12);
+}
+/* Datums-Kästchen in der Konzertsammlung */
+.WmlbYxHIQQNGoCXxarDg {
+  background: rgba(var(--m-a-rgb), 0.14);
+  border: 1px solid rgba(var(--m-a-rgb), 0.28);
+  border-radius: 12px;
+}
+.Mud1LIbGD3LxoqECLYVg {
+  border-radius: 10px;
+}
+/* großes Werbe-Konzert in der Sammlung */
+[data-testid="concert-promo"] {
+  border-radius: 20px;
+  transition: background-color 0.3s var(--m-ease);
+}
+[data-testid="concert-promo"]:hover {
+  background-color: rgba(var(--m-a-rgb), 0.1);
+}
+[data-testid="concert-promo"] .GA9YHF8XHDc3RL6b5RtP {
+  border-radius: 16px;
+}
+/* Tournee-Karten in „This Is“-Playlists */
+.Sb0Tfx2nWZOwct6MogHB,
+.UnGhJt_mbH62JvLDezLW {
+  background: rgba(var(--spice-rgb-text), 0.05);
+  border: 1px solid var(--m-line);
+  border-radius: 18px;
+  transition:
+    background-color 0.3s var(--m-ease),
+    border-color 0.3s var(--m-ease),
+    box-shadow 0.45s var(--m-ease);
+}
+:is(.Sb0Tfx2nWZOwct6MogHB, .UnGhJt_mbH62JvLDezLW):hover {
+  background: rgba(var(--m-a-rgb), 0.12);
+  border-color: rgba(var(--m-a-rgb), 0.3);
+  box-shadow: 0 22px 44px -28px rgba(var(--m-a-rgb), 0.85);
+}
+.YmGE9mNASA4h6N7QcTj9 {
+  border-radius: 17px 0 0 17px;
+}
+/* Veranstaltungsort: Infofeld und Kapseln */
+.Vm_L4k1ZEaJT7nm9pm0E {
+  background: rgba(var(--spice-rgb-text), 0.05);
+  border: 1px solid var(--m-line);
+  border-radius: 16px;
+}
+.uKIdVdDCzF9OHK1QemtT {
+  background-color: rgba(var(--m-a-rgb), 0.14);
+  border: 1px solid rgba(var(--m-a-rgb), 0.25);
+  transition: background-color 0.25s var(--m-ease);
+}
+.XoA42YW2uSwXyNWmb8Y5:hover .uKIdVdDCzF9OHK1QemtT {
+  background-color: rgba(var(--m-a-rgb), 0.24);
+}
+/* Datumswahl der Konzertsammlung: Spotify-Grün und Blau → Akzent, Schrift auf dem gewählten Tag dunkel */
+.LdVcm1vsIIyY7r6ofaPl .rdp {
+  --rdp-accent-color: var(--m-a);
+  --rdp-background-color: rgba(var(--m-a-rgb), 0.16);
+  --rdp-selected-color: var(--m-ink);
+}
+
+/* Kacheln und Zeilen sind ganze Links: beim Überfahren nichts unterstreichen (Akzentfläche zeigt es schon) */
+:is([data-testid="concert-card"], [data-testid="concert-promo"], .MsUOW8B6H8_KPeK_viT3, .myYtrKzrxp5szLFFnIg1):hover,
+:is([data-testid="concert-card"], [data-testid="concert-promo"], .MsUOW8B6H8_KPeK_viT3, .myYtrKzrxp5szLFFnIg1):hover * {
+  text-decoration: none !important;
+}
+
+/* ---------- Geschmacksprofil (xpui-routes-taste-profile) ---------- */
+/* Abschnitte als Glasplatten, die beim Überfahren den Akzent annehmen */
+[data-testid="taste-profile-page"] .Z3Pigs9fS0OIInQKtiP2 {
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(var(--m-a-rgb), 0.08), transparent 55%),
+    rgba(var(--spice-rgb-text), 0.04);
+  border: 1px solid var(--m-line);
+  border-radius: 20px;
+  padding: 20px 22px;
+  transition:
+    border-color 0.35s var(--m-ease),
+    box-shadow 0.45s var(--m-ease);
+}
+[data-testid="taste-profile-page"] .Z3Pigs9fS0OIInQKtiP2:is(:hover, :focus-within) {
+  border-color: rgba(var(--m-a-rgb), 0.3);
+  box-shadow: 0 26px 56px -34px rgba(var(--m-a-rgb), 0.85);
+}
+/* Bilderstapel (Künstler rund, Playlists gekippt): feiner Rand trennt die Bilder voneinander */
+[data-testid="taste-profile-page"] .OzzC7NbfiQ0nlsfS04PH,
+[data-testid="taste-profile-page"] .vZcchBVO7U764OjTMFyW {
+  box-shadow:
+    0 0 0 2px rgba(var(--spice-rgb-main), 0.9),
+    0 10px 22px -10px rgba(var(--m-a-rgb), 0.75);
+}
+[data-testid="taste-profile-page"] .vZcchBVO7U764OjTMFyW {
+  border-radius: 10px;
+}
+/* „Erzähl uns mehr“: Eingabefeld und Notizen aus Glas, Fokus in der Akzentfarbe */
+[data-testid="taste-profile-page"] .zesT6C4wmCxtufSwvgwI {
+  background: rgba(var(--spice-rgb-text), 0.06);
+  box-shadow: inset 0 0 0 1px var(--m-line);
+}
+[data-testid="taste-profile-page"] .zesT6C4wmCxtufSwvgwI:hover {
+  background: rgba(var(--spice-rgb-text), 0.08);
+  box-shadow: inset 0 0 0 1px var(--m-line-strong);
+}
+[data-testid="taste-profile-page"] .zesT6C4wmCxtufSwvgwI:focus {
+  background: rgba(var(--m-a-rgb), 0.08);
+  box-shadow:
+    inset 0 0 0 2px var(--m-a),
+    0 0 0 4px rgba(var(--m-a-rgb), 0.16);
+}
+[data-testid="taste-profile-page"] .zesT6C4wmCxtufSwvgwI.FOTqOpEnvrB4siYPNj0f {
+  border-radius: 16px;
+}
+/* helles Schema: Platzhalter waren weiß (für dunkles Glas gemischt) – auf hellem Glas unsichtbar */
+html.mirage-light :is([role="dialog"], .Root__main-view, #main-view) ::placeholder {
+  color: var(--spice-subtext) !important;
+  opacity: 0.8;
+}
+
+/* Fehlerränder (zu lang, Netz) bleiben sichtbar: sie stehen in Spotifys eigenen Klassen weiter hinten */
+[data-testid="taste-profile-page"] .zesT6C4wmCxtufSwvgwI.JDMhEobZEv9HlGCiXR8x {
+  box-shadow: inset 0 0 0 1px var(--text-negative, var(--spice-notification-error));
+}
+[data-testid="taste-profile-page"] .mfBBy7aXSDFZGgl1Q5so {
+  background: rgba(var(--spice-rgb-text), 0.05);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px var(--m-line);
+}
+[data-testid="taste-profile-page"] .mfBBy7aXSDFZGgl1Q5so:hover {
+  background: rgba(var(--m-a-rgb), 0.1);
+}
+[data-testid="taste-profile-page"] .mfBBy7aXSDFZGgl1Q5so.YeDlKCxk3VHptqWi8OXY {
+  background: rgba(var(--m-a-rgb), 0.08);
+  box-shadow: inset 0 0 0 2px var(--m-a);
+}
+/* Ladekreis beim Senden */
+[data-testid="taste-profile-page"] .rmNPpX7PmWdeP3qF6kBS {
+  border-color: rgba(var(--m-a-rgb), 0.25);
+  border-top-color: var(--m-a);
+}
+
+/* ---------- Neuigkeiten (Glocke, dwp-whats-new-feed) ---------- */
+/* Einträge: runde Glaszeile beim Überfahren statt grauem Block */
+.e6ssqE0uX8qNAFRRz8rV,
+.DrCaHsTcp0RuF3H4DVPK {
+  border-radius: 14px;
+  transition: background-color 0.25s var(--m-ease);
+}
+:is(.e6ssqE0uX8qNAFRRz8rV, .DrCaHsTcp0RuF3H4DVPK):is(:hover, :focus-within) {
+  background-color: rgba(var(--m-a-rgb), 0.1) !important;
+}
+.EgSsJ6Li8efziu7YHU_u,
+.B7I23cSfqpQuBfW1tXHw {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+/* Fortschritt angefangener Folgen in den Leitfarben */
+.zOAjJ0be_vmMxq6_35xr {
+  background: linear-gradient(90deg, var(--m-b), var(--m-a) 60%, var(--m-c));
+}
+.prwixNxu_aGU_lfvDF_6 {
+  background-color: rgba(var(--spice-rgb-text), 0.6);
+  opacity: 0.25;
+}
+/* Hinweis-Kasten oben im Feed */
+.NtNM_jUgEdKZwNmQgUk8 {
+  background: rgba(var(--m-a-rgb), 0.1);
+  border: 1px solid rgba(var(--m-a-rgb), 0.22);
+  border-radius: 16px;
+}
+
+/* ---------- Stöbern (browse-v2) und Videos (dwp-watch-feed) ---------- */
+/* Kategorie-Kacheln: runder und mit weichem Farbschatten wie die Suchkacheln */
+.o2Gw0qj1mG_fVr8PMu_m,
+.A_usQZe3y5Fte9TTYFOo,
+.HtM3Jwxu320XxtqqziZi {
+  border-radius: 16px;
+}
+.o2Gw0qj1mG_fVr8PMu_m {
+  transition:
+    transform 0.5s var(--m-ease),
+    box-shadow 0.5s var(--m-ease);
+}
+:hover > .o2Gw0qj1mG_fVr8PMu_m {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px -24px rgba(0, 0, 0, 0.85);
+}
+/* Video-Feed: Kacheln wie die übrigen Karten gerundet */
+.eVDr5geQI32u7u5OyPp5,
+.WYeDeALViaJyGe41jjfN,
+.R2rYKpxnoBcHK6eXc0l5::after,
+.BZ2EqTq2wilqzcwxqd0w {
+  border-radius: 18px;
+}
+
+/* ---------- Chips „Mit Notizen“ (Playlist aus Freunden, Trends in der Nähe) ---------- */
+:is(.LfzN15Ixjks9tH7IiBHr, .HVr5CDPKzOUpj3p5Lef8) {
+  transition:
+    background-color 0.25s var(--m-ease),
+    color 0.25s var(--m-ease);
+}
+:is(.LfzN15Ixjks9tH7IiBHr, .HVr5CDPKzOUpj3p5Lef8):not(.UmQ8AjnrYnbTD0QzyzCO, .Cq5fkqB1AnNAnc3814XQ):hover {
+  background-color: rgba(var(--m-a-rgb), 0.16);
+}
+
+/* ---------- Wrapped: Hörzahlen in „Deine Top-Songs“ ---------- */
+/* Spotify färbt „N-mal gehört“ in den Wrapped-Top-Songs fest ein (2025 Lila, 2026 Lachs, dazu eine Playlist
+   in Limette – siehe 4251.js, formatListData „wrapped-2026-top100“). Auf hellem Glas wären das 1,1–2,4 : 1;
+   im hellen Schema dieselben Farbtöne, aber dunkel genug zum Lesen (über 4,5 : 1). React setzt die Farbe per
+   style.color, im Attribut steht sie dann als rgb(); die Hex-Form fängt andere Schreibweisen ab. */
+html.mirage-light [data-encore-id="text"][style*="rgb(150, 145, 255)"],
+html.mirage-light [data-encore-id="text"][style*="#9691ff" i] {
+  color: #4b45c9 !important;
+}
+html.mirage-light [data-encore-id="text"][style*="rgb(207, 245, 106)"],
+html.mirage-light [data-encore-id="text"][style*="#cff56a" i] {
+  color: #4a6600 !important;
+}
+html.mirage-light [data-encore-id="text"][style*="rgb(247, 148, 139)"],
+html.mirage-light [data-encore-id="text"][style*="#f7948b" i] {
+  color: #b3382c !important;
+}
+
+/* ---------- Mini-Player (Bild-im-Bild-Fenster) ---------- */
+/* Eigenes Dokument (documentPictureInPicture) mit nur pip-mini-player-snapshot.css: dort gibt es weder
+   user.css noch Mirages Farben. src/pip.js kopiert beim Öffnen genau die Regeln mit „html.m-pip“ hinüber,
+   dazu die Farbvariablen, und hält sie bei jedem Songwechsel aktuell. Im Hauptfenster trifft keine davon. */
+html.m-pip,
+html.m-pip body {
+  background: var(--spice-main) !important;
+  color: var(--spice-text);
+  font-family: var(--m-font) !important;
+  -webkit-font-smoothing: antialiased;
+}
+html.m-pip .encore-dark-theme {
+  --encore-title-font-stack: var(--m-font);
+  --encore-body-font-stack: var(--m-font);
+  --encore-variable-font-stack: var(--m-font);
+  --text-base: var(--spice-text);
+  --text-subdued: var(--spice-subtext);
+  --essential-base: var(--spice-text);
+  --essential-subdued: rgba(var(--spice-rgb-text), 0.45);
+  --essential-bright-accent: var(--m-a);
+  --text-bright-accent: var(--m-c);
+  --decorative-subdued: var(--m-line);
+  --background-elevated-base: var(--m-glass-strong);
+  --background-elevated-highlight: rgba(var(--m-a-rgb), 0.16);
+  --background-press: rgba(var(--spice-rgb-main), 0.96);
+}
+/* Fläche hinter allem: Schemagrund mit dem Farbschleier des Covers statt Spotifys Einheitsfarbe */
+html.m-pip .bEhb_FeKn_j0Not8O0Ua {
+  background:
+    radial-gradient(120% 90% at 12% 0%, rgba(var(--m-a-rgb), 0.34), transparent 62%),
+    radial-gradient(110% 90% at 100% 100%, rgba(var(--m-b-rgb), 0.3), transparent 64%),
+    var(--spice-main) !important;
+}
+/* Spotifys eigener Farbauszug steht inline auf dieser Fläche; darunter gilt Mirages Farbe */
+html.m-pip .bEhb_FeKn_j0Not8O0Ua > * {
+  --extracted-background-color: rgba(var(--spice-rgb-main), 0.6);
+  --extracted-text-base: var(--spice-text);
+  --extracted-text-subdued: var(--spice-subtext);
+  --extracted-text-bright-accent: var(--m-c);
+}
+/* Cover: Mirage-Rundung und ein Schatten in der Leitfarbe */
+html.m-pip .OFvjVxyv43ub_8GLhOyW,
+html.m-pip [data-testid="document-pip-cover-art"] img {
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px var(--m-line-strong),
+    0 18px 40px -16px rgba(var(--m-a-rgb), 0.75);
+}
+html.m-pip [data-testid="document-pip-cover-art-placeholder"] {
+  border-radius: 16px;
+  background:
+    radial-gradient(80% 80% at 30% 20%, rgba(var(--m-a-rgb), 0.45), transparent 60%),
+    radial-gradient(80% 80% at 80% 90%, rgba(var(--m-b-rgb), 0.4), transparent 60%),
+    rgba(var(--spice-rgb-main), 0.8);
+}
+/* Titel und Künstler */
+html.m-pip [data-testid="context-item-info-title"] {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+/* Spotify schreibt Titel und Künstler im Mini-Player fest weiß (#fff, #b3b3b3) – hier die Schemafarben,
+   damit sie auch im hellen Schema lesbar sind */
+html.m-pip .dptOUlEO7wJMfsIXDXxd,
+html.m-pip [data-testid="context-item-info-title"] {
+  color: var(--spice-text);
+}
+html.m-pip :is(.ryPQvuZZRG7WCISD5zux, .kcyNU2GvnQbtKvPLNRKh) a:is(:link, :visited),
+html.m-pip .kcyNU2GvnQbtKvPLNRKh {
+  color: var(--spice-subtext);
+}
+html.m-pip [data-testid="context-item-info-subtitles"] a {
+  transition: color 0.25s var(--m-ease);
+}
+html.m-pip [data-testid="context-item-info-subtitles"] a:hover {
+  color: var(--m-c) !important;
+}
+/* Steuerung über dem Cover: Glas, sobald die Maus darüber ist (Spotify blendet sie selbst ein und aus) */
+html.m-pip [data-testid="document-pip-hover-element"] {
+  border-radius: 16px;
+}
+html.m-pip.mirage-glass [data-testid="document-pip-hover-element"] {
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+}
+/* Play/Pause: derselbe runde Knopf wie in der Player-Insel */
+html.m-pip [data-testid="control-button-playpause"] {
+  border-radius: 50% !important;
+  background: transparent !important;
+}
+html.m-pip [data-testid="control-button-playpause"] > span {
+  border-radius: 50% !important;
+  background: var(--m-a) !important;
+  color: var(--m-ink) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 6px 18px -6px rgba(var(--m-a-rgb), 0.85) !important;
+  transition:
+    transform 0.25s var(--m-ease),
+    box-shadow 0.3s var(--m-ease);
+}
+html.m-pip [data-testid="control-button-playpause"] svg {
+  fill: var(--m-ink) !important;
+}
+html.m-pip [data-testid="control-button-playpause"]:hover > span {
+  transform: scale(1.06);
+}
+html.m-pip [data-testid="control-button-playpause"]:active > span {
+  transform: scale(0.95);
+}
+html.m-pip [data-testid="control-button-playpause"]:focus-visible {
+  outline: 2px solid var(--m-c) !important;
+  outline-offset: 3px !important;
+}
+html.m-pip :is([data-testid="control-button-shuffle"], [data-testid="control-button-repeat"])[aria-checked="true"] {
+  color: var(--m-c) !important;
+}
+/* auf der dunklen Steuerfläche über dem Cover: im hellen Schema die hellen Leitfarben (wie im Immersiv-Modus) */
+html.m-pip.mirage-light .encore-over-media-set :is([data-testid="control-button-shuffle"], [data-testid="control-button-repeat"])[aria-checked="true"] {
+  color: var(--m-ic, #fff) !important;
+}
+/* Fortschritt: Lichtfaden in den Leitfarben, auch der feine Strich am unteren Rand */
+html.m-pip .x-progressBar-progressBarBg {
+  border-radius: 99px !important;
+  background: rgba(var(--spice-rgb-text), 0.16) !important;
+}
+html.m-pip .x-progressBar-fillColor {
+  background: linear-gradient(90deg, var(--m-b), var(--m-a) 60%, var(--m-c)) !important;
+  border-radius: 99px !important;
+}
+html.m-pip .progress-bar__slider {
+  background: #fff !important;
+  box-shadow:
+    0 0 0 3px rgba(var(--m-c-rgb), 0.28),
+    0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+html.m-pip [data-testid="miniplayer-edge-progress"]::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--m-b), var(--m-a) 60%, var(--m-c));
+}
+/* helles Schema: Spotifys Mini-Player bringt auf dem Cover eine eigene helle Schrift mit (over-media), der Rest wird dunkel */
+html.m-pip.mirage-light .encore-dark-theme {
+  color-scheme: light;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.m-pip [data-testid="control-button-playpause"] > span {
+    transition: none;
+  }
+}
+/* === end pages === */
