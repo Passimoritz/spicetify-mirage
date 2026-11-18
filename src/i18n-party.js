@@ -21,6 +21,8 @@ export const PARTY_TEXT = {
     recapConfirm: "Die {c} Songs dieser Party als neue Playlist „{n}“ speichern?", recapAlready: "Diese Party ist schon als „{n}“ gespeichert", recapAdded: "{c} neue Songs zu „{n}“ hinzugefügt",
   },
   es: {
+    partyBlendHint: "Cambios de canción como en una sesión de DJ: en los últimos compases la luz ya se desliza hacia los colores y el estilo de la siguiente canción, el público contiene la respiración y el primer golpe de la nueva canción entra con fuerza. Al saltar, un fundido corto sin destello",
+    partyDjTalk: "DJ",
     noFlash: "Sin destellos",
     noFlashHint: "Para ojos fotosensibles: sin estroboscopio, sin blinders, sin destellos en el drop ni letra que estalla – en el modo fiesta, en el modo inmersivo y en los móviles de los invitados",
     romanizeHint: "Letras latinas bajo la letra en coreano, japonés, chino, cirílico (ruso, ucraniano, búlgaro, serbio), griego e hindi – el japonés viene de NetEase, el chino carga una vez un diccionario pinyin de jsdelivr",
@@ -45,6 +47,8 @@ export const PARTY_TEXT = {
     recapAdded: "{c} canciones nuevas añadidas a «{n}»",
   },
   fr: {
+    partyBlendHint: "Les changements de morceau comme dans un mix de DJ : sur les dernières mesures, la lumière glisse déjà vers les couleurs et le style du morceau suivant, la foule retient son souffle, et le premier temps du nouveau morceau tombe comme un coup. Si tu passes un morceau, petit fondu sans flash",
+    partyDjTalk: "DJ",
     noFlash: "Pas de flashs",
     noFlashHint: "Pour les yeux photosensibles : pas de stroboscope, pas de blinders, pas de flash au drop ni de paroles qui éclatent – en mode fête, en mode immersif et sur les téléphones des invités",
     romanizeHint: "Lettres latines sous les paroles en coréen, japonais, chinois, cyrillique (russe, ukrainien, bulgare, serbe), grec et hindi – le japonais vient de NetEase, le chinois charge une fois un dictionnaire pinyin depuis jsdelivr",
@@ -69,6 +73,8 @@ export const PARTY_TEXT = {
     recapAdded: "{c} nouveaux titres ajoutés à « {n} »",
   },
   it: {
+    partyBlendHint: "Cambi di brano come in un DJ set: nelle ultime battute la luce scivola già nei colori e nello stile del brano successivo, la folla trattiene il fiato e il primo battito del nuovo brano arriva con un colpo. Se salti, una breve dissolvenza senza flash",
+    partyDjTalk: "DJ",
     noFlash: "Niente lampi",
     noFlashHint: "Per occhi fotosensibili: niente stroboscopio, niente blinder, niente lampi sul drop né testo che esplode – in modalità festa, in modalità immersiva e sui telefoni degli ospiti",
     romanizeHint: "Lettere latine sotto i testi coreani, giapponesi, cinesi, cirillici (russo, ucraino, bulgaro, serbo), greci e hindi – il giapponese arriva da NetEase, per il cinese si carica una volta un dizionario pinyin da jsdelivr",
@@ -93,6 +99,8 @@ export const PARTY_TEXT = {
     recapAdded: "{c} nuovi brani aggiunti a «{n}»",
   },
   ja: {
+    partyBlendHint: "DJ ミックスのような曲の切り替え：最後の数小節で光が次の曲の色とスタイルへと移り、フロアが息をのみ、新しい曲の最初のビートで一気に弾けます。スキップしたときはフラッシュなしで素早くクロスフェード",
+    partyDjTalk: "DJ",
     noFlash: "フラッシュなし",
     noFlashHint: "光に敏感な方へ：ストロボ、ブラインダー、ドロップのフラッシュ、歌詞バーストをすべてオフに – パーティーモード、イマーシブモード、ゲストのスマホで",
     romanizeHint: "韓国語・日本語・中国語・キリル文字（ロシア語、ウクライナ語、ブルガリア語、セルビア語）・ギリシャ語・ヒンディー語の歌詞の下にラテン文字を表示します – 日本語は NetEase から、中国語は初回のみ jsdelivr からピンイン辞書を読み込みます",
@@ -117,6 +125,8 @@ export const PARTY_TEXT = {
     recapAdded: "「{n}」に新しい曲を {c} 曲追加しました",
   },
   ko: {
+    partyBlendHint: "DJ 믹스처럼 곡 전환: 마지막 몇 마디에서 조명이 벌써 다음 곡의 색과 스타일로 흘러가고, 관객이 숨을 죽이고, 새 곡의 첫 비트가 쾅 하고 터져요. 건너뛸 때는 플래시 없이 빠르게 크로스페이드",
+    partyDjTalk: "DJ",
     noFlash: "번쩍임 없음",
     noFlashHint: "빛에 민감한 눈을 위해: 스트로브, 블라인더, 드롭 플래시, 가사 폭발을 모두 끕니다 – 파티 모드, 몰입 모드, 게스트 폰에서",
     romanizeHint: "한국어·일본어·중국어·키릴 문자(러시아어, 우크라이나어, 불가리아어, 세르비아어)·그리스어·힌디어 가사 아래에 로마자를 표시합니다 – 일본어는 NetEase에서, 중국어는 처음 한 번 jsdelivr에서 병음 사전을 불러옵니다",
@@ -141,6 +151,8 @@ export const PARTY_TEXT = {
     recapAdded: "“{n}”에 새 곡 {c}개를 추가했어요",
   },
   nl: {
+    partyBlendHint: "Nummerwissels als in een DJ-mix: in de laatste maten glijdt het licht al naar de kleuren en stijl van het volgende nummer, het publiek houdt de adem in en de eerste beat van het nieuwe nummer slaat in als een bom. Bij overslaan een snelle overgang zonder flits",
+    partyDjTalk: "DJ",
     noFlash: "Geen flitsen",
     noFlashHint: "Voor lichtgevoelige ogen: geen stroboscoop, geen blinders, geen dropflits en geen oplichtende songtekst – in de feestmodus, de immersieve modus en op de telefoons van gasten",
     romanizeHint: "Latijnse letters onder Koreaanse, Japanse, Chinese, Cyrillische (Russisch, Oekraïens, Bulgaars, Servisch), Griekse en Hindi-songteksten – Japans van NetEase, voor Chinees wordt eenmalig een pinyin-woordenboek van jsdelivr geladen",
@@ -165,6 +177,8 @@ export const PARTY_TEXT = {
     recapAdded: "{c} nieuwe nummers toegevoegd aan ‘{n}’",
   },
   pl: {
+    partyBlendHint: "Zmiana utworu jak w miksie DJ-a: w ostatnich taktach światło już przechodzi w kolory i styl następnego utworu, tłum wstrzymuje oddech, a pierwszy beat nowego utworu uderza z całą mocą. Przy przewijaniu szybkie przejście bez błysku",
+    partyDjTalk: "DJ",
     noFlash: "Bez błysków",
     noFlashHint: "Dla oczu wrażliwych na światło: bez stroboskopu, blinderów, błysku przy dropie i rozbłyskującego tekstu – w trybie imprezy, trybie immersyjnym i na telefonach gości",
     romanizeHint: "Litery łacińskie pod tekstem koreańskim, japońskim, chińskim, cyrylicą (rosyjski, ukraiński, bułgarski, serbski), greckim i hindi – japoński z NetEase, dla chińskiego raz ładowany jest słownik pinyin z jsdelivr",
@@ -189,6 +203,8 @@ export const PARTY_TEXT = {
     recapAdded: "Dodano nowe utwory do „{n}”: {c}",
   },
   pt: {
+    partyBlendHint: "Mudança de música como num set de DJ: nos últimos compassos a luz já desliza para as cores e o estilo da próxima música, a pista sustém a respiração e a primeira batida da nova música entra em cheio. Ao saltar, uma transição rápida sem flash",
+    partyDjTalk: "DJ",
     noFlash: "Sem flashes",
     noFlashHint: "Para olhos sensíveis à luz: sem estroboscópio, sem blinders, sem flash no drop e sem letra a piscar – no modo festa, no modo imersivo e nos telemóveis dos convidados",
     romanizeHint: "Letras latinas sob letras em coreano, japonês, chinês, cirílico (russo, ucraniano, búlgaro, sérvio), grego e hindi – o japonês vem do NetEase, o chinês carrega uma vez um dicionário pinyin do jsdelivr",
@@ -213,6 +229,8 @@ export const PARTY_TEXT = {
     recapAdded: "{c} músicas novas adicionadas a “{n}”",
   },
   ru: {
+    partyBlendHint: "Смена треков как в DJ-миксе: в последних тактах свет уже перетекает в цвета и стиль следующего трека, толпа замирает, и первая доля нового трека обрушивается ударом. При пропуске – быстрый переход без вспышки",
+    partyDjTalk: "DJ",
     noFlash: "Без вспышек",
     noFlashHint: "Для светочувствительных глаз: без стробоскопа, блиндеров, вспышек на дропах и вспыхивающего текста – в режиме вечеринки, режиме погружения и на телефонах гостей",
     romanizeHint: "Латиница под корейским, японским, китайским, кириллическим (русский, украинский, болгарский, сербский), греческим текстом и текстом на хинди – японский из NetEase, для китайского один раз загружается словарь пиньиня с jsdelivr",
@@ -237,6 +255,8 @@ export const PARTY_TEXT = {
     recapAdded: "В «{n}» добавлено новых песен: {c}",
   },
   tr: {
+    partyBlendHint: "Şarkı geçişleri DJ miksi gibi: son ölçülerde ışık şimdiden sonraki şarkının renklerine ve stiline kayar, kalabalık nefesini tutar ve yeni şarkının ilk vuruşu bir patlamayla iner. Atlarken flaş olmadan hızlı bir geçiş",
+    partyDjTalk: "DJ",
     noFlash: "Flaş yok",
     noFlashHint: "Işığa duyarlı gözler için: strobe yok, blinder yok, drop flaşı ve söz patlaması yok – parti modunda, sürükleyici modda ve misafirlerin telefonlarında",
     romanizeHint: "Korece, Japonca, Çince, Kiril (Rusça, Ukraynaca, Bulgarca, Sırpça), Yunanca ve Hintçe sözlerin altında Latin harfleri – Japonca NetEase'den, Çince için jsdelivr'dan bir kez pinyin sözlüğü yüklenir",
@@ -261,6 +281,8 @@ export const PARTY_TEXT = {
     recapAdded: "“{n}” listesine {c} yeni şarkı eklendi",
   },
   uk: {
+    partyBlendHint: "Зміна треків як у DJ-міксі: в останніх тактах світло вже перетікає в кольори й стиль наступного треку, натовп завмирає, і перша доля нового треку влітає з ударом. Під час пропуску – швидкий перехід без спалаху",
+    partyDjTalk: "DJ",
     noFlash: "Без спалахів",
     noFlashHint: "Для світлочутливих очей: без стробоскопа, блайндерів, спалахів на дропах і спалахів тексту – у режимі вечірки, режимі занурення й на телефонах гостей",
     romanizeHint: "Латиниця під корейським, японським, китайським, кириличним (українська, російська, болгарська, сербська), грецьким текстом і текстом гінді – японська з NetEase, для китайської один раз завантажується словник піньїню з jsdelivr",
@@ -285,6 +307,8 @@ export const PARTY_TEXT = {
     recapAdded: "До «{n}» додано нових пісень: {c}",
   },
   zh: {
+    partyBlendHint: "像 DJ 混音一样切歌：在最后几个小节里，灯光已渐渐过渡到下一首歌的颜色和风格，全场屏住呼吸，新歌的第一个节拍重重落下。跳过时快速交叉淡化，不闪光",
+    partyDjTalk: "DJ",
     noFlash: "无闪光",
     noFlashHint: "照顾光敏感的眼睛：没有频闪、观众灯、Drop 闪光和歌词爆裂 – 适用于派对模式、沉浸模式和客人的手机",
     romanizeHint: "在韩语、日语、中文、西里尔字母（俄语、乌克兰语、保加利亚语、塞尔维亚语）、希腊语和印地语歌词下方显示拉丁字母 – 日语来自 NetEase，中文会从 jsdelivr 加载一次拼音词典",

@@ -17,7 +17,7 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Changed
 
-- All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English.
+- All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English. The Mirage Overlay app is now available in Ukrainian too.
 - The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
 - After a Spotify update, Mirage checks the new version once at startup and says so in a small note: "Spotify 1.3.10 detected – Mirage runs as usual". If something it relies on is missing, the note says exactly what, with buttons to open the help and copy the diagnostics. It shows once per version, never on a fresh install, and closes by itself.
 
