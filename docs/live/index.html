@@ -123,6 +123,8 @@
   .tools button[aria-pressed="true"] { background: rgba(var(--a), 0.6); }
   .tools #bWish { background: rgb(var(--c)); color: #0b0a12; }
   .tools button[hidden] { display: none; }
+  /* schmale Handys und längere Wörter (Polnisch, Türkisch …): etwas enger, damit die Beschriftungen ganz bleiben */
+  @media (max-width: 440px) { .tools { gap: 2px; padding: 4px; } .tools button { gap: 5px; padding: 0 10px; } }
   /* Liedtext zum Mitsingen: groß in der Mitte, die nächste Zeile klein darunter */
   .lyr { position: fixed; left: 20px; right: 20px; top: max(60px, calc(env(safe-area-inset-top) + 48px)); bottom: calc(max(16px, env(safe-area-inset-bottom)) + 204px); display: flex; flex-direction: column; justify-content: center;
     overflow: hidden; overflow-wrap: anywhere; text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
