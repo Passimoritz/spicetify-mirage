@@ -10,6 +10,16 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Changed
+
+- Instrument and sound-effect recognition in party mode was tested on 201 real song previews and is now more reliable. It finds trap 808s, acoustic guitar, distorted guitar, hi-hats and kicks far more often, and no longer mistakes choirs for strings, bluegrass banjo for hi-hats, or country and jazz grooves for sidechain pumping.
+- The light pictures for instruments and effects now follow how sure Mirage is: soft when it is only just sure, full when it is certain.
+- Pads, bells, organ and scratch pictures no longer come from the song preview, because the test showed they could not be told apart reliably.
+
+### Fixed
+
+- Previews that fade in from silence no longer confuse the instrument recognition.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added

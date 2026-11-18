@@ -14,20 +14,19 @@
 // Seltenheits-Regel: ein Effekt, der öfter als RARE[art] Mal pro Minute „erkannt“ wird, ist kein Effekt, sondern die
 // Textur des Songs – dann fällt die ganze Art für diesen Song weg (außer Sidechain-Pumpen, das ist Textur).
 //
-// Signal und Verlässlichkeit je Art (gemessen im Testlabor, siehe CHANGELOG / Bericht Runde 10):
-//   kick       Bass-Einsätze (< 150 Hz) im Takt                         Hörprobe        gut
-//   sub808     tiefer Sub (< 64 Hz) mit langem Ausklang nach Einsätzen  Hörprobe        gut bei Trap/Drill/Phonk
-//   snare      rauschige Einsätze 1–5 kHz auf jedem zweiten Schlag       Hörprobe        mittel
-//   hats       dichte, leise Einsätze > 5 kHz (Hi-Hat, Shaker)          Hörprobe        gut
-//   crash      Höhen > 5 kHz klingen nach einem Schlag lange rauschig    Hörprobe        mittel
-//   distguitar rauschig-dichter, gehaltener Mittenbereich (400 Hz–4 kHz) Hörprobe       mittel (Supersaws ähneln)
-//   piano      angeschlagene Töne, die frei ausklingen, kaum Schlagzeug   Hörprobe        mittel
-//   pad        gehaltener, klarer Klang ohne Einsätze (Streicher, Flächen) Hörprobe      mittel
-//   organ      gehaltener, sehr gleichbleibender, obertonreicher Klang    Hörprobe        zu schwach (Testlabor: 30 % Präzision) → Schwelle
-//              über 1, also aus; das Bild bleibt für spätere Quellen (Credits) und die Fehlersuche
-//   arp        gleichmäßige Sechzehntel mit wechselnden Tönen            Hörprobe        mittel
-//   bells      klare hohe Töne (Schwerpunkt > 2 kHz) mit langem Ausklang Hörprobe        schwach → hohe Schwelle
-//   (Bläser, Saxofon, Streicher, Chor, Flöte, Harfe, Akkordeon: nur über die Credits, instruments.js – die Klangzahlen
+// Signal und Verlässlichkeit je Art aus der Hörprobe. Gemessen im Testlabor Runde 11: 201 Deezer-/iTunes-Hörproben mit
+// begründeten Etiketten (Training 142, Hold-out 38, Blind 21; Zahlen und Etiketten in tests/unit/fixtures/sonic-eval.json,
+// geprüft von tests/unit/sonic-eval.test.js). Präzision / Trefferquote über alle drei Gruppen:
+//   kick       Bass-Einsätze (< 150 Hz) im Takt; in Trap die 808, im Rock die Gitarrenwand    0,98 / 0,63
+//   sub808     viel Sub (< 64 Hz) mit langem Ausklang, dazu dichte Hi-Hats                    1,00 / 0,50
+//   hats       dichte Einsätze > 5 kHz im Achtel-Raster (Trap: 808 + sehr dichte Höhen)       1,00 / 0,63
+//   crash      Höhen > 5 kHz klingen nach einem Schlag lange rauschig                         1,00 / 0,27
+//   distguitar rauschige, wenig klare Mitten ohne Hi-Hat-Raster und ohne Sub-Teppich           1,00 / 0,58
+//   acguitar   Gitarre ohne Band: dunkel, unruhig, kein Schlagzeug, wenige Harmoniewechsel      1,00 / 0,61
+//   piano      frei ausklingende Töne bei stillen Höhen (Klavier allein; mit Band kaum)        1,00 / 0,30
+//   strings    gehaltene, klare Töne mit Bogenrauschen – kein Chor, keine Pfeifenorgel         1,00 / 0,19
+//   pad, organ, bells: aus (Schwelle über 1) – die Zahlen trennen sie nicht von Streichern, Chören und Klavier
+//   (Bläser, Saxofon, Chor, Flöte, Harfe, Akkordeon: nur über die Credits, instruments.js – die Klangzahlen
 //    unterscheiden sie nicht zuverlässig)
 // Effekte (beide Quellen, zeitlich genau; aus der Hörprobe nur als Palette):
 //   riser      Helligkeit steigt 2–8 s stetig, Lautheit mit, endet an einer Grenze
@@ -41,10 +40,10 @@
 //   revcym     0,5–2,5 s rauschiges Anschwellen, das hart abbricht (rückwärts gespieltes Becken)
 //   stutter    sehr schnelle, gleiche Wiederholungen (≥ 11/s), weit dichter als der Song sonst
 //   filter     Helligkeit wandert stetig über ≥ 2 s bei gleicher Lautheit (Filterfahrt)
-//   pump       Lautheit pumpt im Takt (Sidechain)
+//   pump       Lautheit pumpt im Takt (Sidechain); Hörprobe: mindestens zwei 4-s-Fenster, mit Synth-/Schlagzeug-Rauschen
 //   cheer      rauschig, hell, ohne Ton und ohne Takt ≥ 1,5 s (Publikum)
 //   siren      klarer Ton, dessen Höhe periodisch auf- und abfährt
-//   scratch    Helligkeit springt 3–10× je Sekunde hin und her, rauschig (Vinyl-Scratch)
+//   scratch    Helligkeit springt 3–10× je Sekunde hin und her, rauschig (Vinyl-Scratch) – aus, siehe THR
 //   airhorn    2–4 kurze, laute, klare Stöße auf demselben Ton
 //   zap        klarer Ton fällt in < 0,15 s um mehr als eine Oktave (Laser)
 //   whoosh     rauschiges An- und Abschwellen in 0,4–1,5 s ohne harten Einsatz
@@ -53,15 +52,22 @@
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const INST = ["kick", "sub808", "hats", "crash", "distguitar", "acguitar", "piano", "strings", "pad", "organ", "bells"];
 const FX = ["riser", "sweep", "downlift", "impact", "subdrop", "orchhit", "stop", "tapestop", "revcym", "stutter", "filter", "pump", "cheer", "siren", "scratch", "airhorn", "zap", "whoosh", "rewind"];
-// Schwelle der Sicherheit je Art (darunter: nichts)
-// Schwellen und gemessene Werte (Testlabor Runde 10, 348 iTunes-Hörproben in 50 Suchbegriffen, Ja/Nein-Gruppen):
-//   Kick 35 % gefunden / 0 % Fehlalarm · Hi-Hat 48 / 1,4 · 808 12 / 0,8 · Verzerrte Gitarre 37 / 2,5 · Akustikgitarre 46 / 2,2
-//   Klavier 57 / 1,1 · Streicher 19 / 0,6 · Fläche 19 / 0 · Glocken 14 / 0 · Becken 7 / 0 · Pumpen 20 / 1,4 · Einschlag 11 / 5,7
+// Schwelle der Sicherheit je Art (darunter: nichts). Schwelle über 1 = aus, weil das Testlabor Runde 11 keine sichere
+// Erkennung zeigte: pad, bells, organ (keine Treffer, nur Fehlalarme) und scratch (die vier Turntablism-Stücke blieben
+// stumm, „gefunden“ wurden nur Hi-Hat-Rollen in Trap und House). Effekte: auf 201 Hörproben kein Fehlalarm auf Songs, in
+// denen der Effekt sicher fehlt; ob sie in einer Hörprobe vorkommen, ließ sich ohne Hören nicht belegen (Trefferquote offen)
 const THR = {
-  kick: 0.6, sub808: 0.65, hats: 0.6, crash: 0.65, distguitar: 0.65, acguitar: 0.7, piano: 0.65, strings: 0.65, pad: 0.7, organ: 1.1, bells: 0.75,
+  kick: 0.6, sub808: 0.65, hats: 0.6, crash: 0.65, distguitar: 0.65, acguitar: 0.7, piano: 0.65, strings: 0.65, pad: 1.1, organ: 1.1, bells: 1.1,
   riser: 0.6, sweep: 0.6, downlift: 0.65, impact: 0.6, subdrop: 0.65, orchhit: 0.7, stop: 0.6, tapestop: 0.7, revcym: 0.75, stutter: 0.65,
-  filter: 0.7, pump: 0.7, cheer: 0.7, siren: 0.8, scratch: 0.85, airhorn: 0.75, zap: 0.8, whoosh: 0.7, rewind: 0.7,
+  filter: 0.7, pump: 0.7, cheer: 0.7, siren: 0.8, scratch: 1.1, airhorn: 0.75, zap: 0.8, whoosh: 0.7, rewind: 0.7,
 };
+// Wie kräftig ein Bild sein darf: knapp über der Schwelle zart (0,4), erst bei voller Sicherheit voll (1). Unter der
+// Schwelle 0 – dann zeigt die Laufzeit ohnehin nichts (sonicrt.js, instfx.js)
+function strength(k, c) {
+  const t = THR[k] ?? 1;
+  if (!(c >= t) || t > 1) return 0;
+  return Math.round((0.4 + 0.6 * clamp((c - t) / Math.max(0.05, 1 - t), 0, 1)) * 100) / 100;
+}
 // höchstens so viele je Minute, sonst ist es Textur statt Effekt
 const RARE = { riser: 4, sweep: 4, downlift: 4, impact: 5, subdrop: 3, orchhit: 4, stop: 4, tapestop: 2, revcym: 4, stutter: 4, filter: 3, cheer: 3, siren: 3, scratch: 5, airhorn: 3, zap: 4, whoosh: 5, rewind: 2 };
 
@@ -203,8 +209,10 @@ function createFrameSink(sr, N) {
     frames.mid.push(db(mid));
     frames.air.push(airDb);
     frames.cent.push(E > 0 ? Math.log2(Math.max(50, (cw / E) * binHz) / 1000) : 0);
-    frames.flat.push(sa > 0 ? Math.exp(sl / nf) / (sa / nf) : 0);
-    frames.mflat.push(ma > 0 ? Math.exp(ml / nm) / (ma / nm) : 0);
+    // fast stille Bilder (Einblenden aus digitaler Stille am Anfang vieler Hörproben): dort ist der kleine Zuschlag im
+    // Logarithmus größer als die Leistung selbst, das Maß liefe gegen unendlich (Testlabor Runde 11: Mittel 0,6 statt 0,01)
+    frames.flat.push(sa / nf > 1e-6 ? Math.exp(sl / nf) / (sa / nf) : 0);
+    frames.mflat.push(ma / nm > 1e-6 ? Math.exp(ml / nm) / (ma / nm) : 0);
     // klar = die drei stärksten Tonklassen tragen fast alles (Akkord), Rauschen verteilt sich auf alle zwölf
     frames.tonal.push(cs > 0 ? clamp(((c1 + c2 + c3) / cs - 0.3) / 0.45, 0, 1) : 0);
     frames.top1.push(cs > 0 ? c1 / cs : 0);
@@ -280,8 +288,8 @@ function createFrameSink(sr, N) {
 /* ---- Palette: welche Instrumente benutzt der Song? (Hörprobe, ganze 30 s) */
 // feats: die Klangzahlen fürs Testlabor; conf: Sicherheit je Art (0..1). bpm: Tempo (tempo.js), 0 = unbekannt
 function palette(G, bpm = 0) {
-  const conf = Object.fromEntries(INST.map((k) => [k, 0])), feats = {};
-  if (!G?.bands || G.n < G.r * 8) return { conf, feats };
+  const feats = {};
+  if (!G?.bands || G.n < G.r * 8) return { conf: paletteConf(null), feats };
   const r = G.r, n = G.n, beat = bpm > 0 ? 60 / bpm : 0.5;
   const loudM = pct(G.loud, 0.5);
   const active = (x) => G.loud[x] > loudM - 15;
@@ -395,24 +403,61 @@ function palette(G, bpm = 0) {
   }
   feats.crashRate = (crash / dur) * 60;
 
-  // ---- Sicherheiten (Schwellen im Testlabor gesetzt: hohe Präzision vor Trefferquote; Etiketten und Zahlen im Bericht)
+  return { conf: paletteConf(feats), feats };
+}
+
+// Sicherheiten der Palette aus den Klangzahlen – eigene Funktion, damit das Regressions-Fixture (tests/unit/fixtures/
+// sonic-eval.json: nur Zahlen, keine Hörproben) sie ohne Audio nachrechnen kann.
+// Eingestellt im Testlabor Runde 11 (142 Hörproben, Etiketten mit Begründung, Präzision vor Trefferquote; Zahlen im
+// CHANGELOG/Bericht). Gemessen je Art: Treffer / Fehlalarme auf Songs, in denen die Art sicher fehlt.
+function paletteConf(feats) {
+  const f = feats, conf = Object.fromEntries(INST.map((k) => [k, 0]));
+  if (!f || !Number.isFinite(f.flat)) return conf;
   const ramp = (v, a, b) => clamp((v - a) / (b - a), 0, 1);
   const inv = (v, a, b) => 1 - ramp(v, a, b);
   // Schlagzeug-Rauschen überhaupt da (akustische Musik: Rauschanteil ≈ 0)
-  const kit = ramp(feats.flat, 0.012, 0.03);
-  conf.kick = ramp(feats.lowGrid, 0.5, 0.68) * ramp(feats.lowRate, 0.5, 1) * ramp(feats.lowRel, -14, -9) * kit;
-  conf.sub808 = conf.kick > 0.3 ? ramp(feats.subRel, -12, -7) * ramp(feats.subSus, 0.3, 0.42) : 0;
-  conf.hats = ramp(feats.airRate, 1.2, 2) * ramp(feats.airGrid, 0.45, 0.65) * ramp(feats.airRel, -35, -28) * kit;
-  conf.crash = ramp(feats.crashRate, 4, 10) * kit;
-  conf.distguitar = ramp(feats.mflat, 0.12, 0.2) * ramp(feats.bright, -1, -0.5) * ramp(feats.midRel, -8, -6) * inv(feats.subRel, -10, -7) * inv(feats.airGrid, 0.75, 0.9);
-  conf.piano = ramp(-feats.airRel, 45, 50) * ramp(feats.decay, 0.28, 0.38) * ramp(feats.tonal, 0.84, 0.9) * ramp(feats.freeOn, 0.45, 0.6);
-  conf.strings = ramp(feats.tonal, 0.76, 0.82) * ramp(feats.midRel, -7, -5.5) * inv(feats.flat, 0.02, 0.04) * ramp(-feats.airRel, 26, 29) * inv(-feats.airRel, 42, 46) * inv(feats.jitter, 4.5, 6) * inv(feats.decay, 0.3, 0.42);
-  conf.pad = ramp(feats.stand, 0.38, 0.5) * inv(feats.decay, 0.15, 0.28) * ramp(feats.tonal, 0.72, 0.8) * ramp(feats.subRel, -16, -11);
-  conf.organ = inv(feats.mflat, 0.04, 0.07) * ramp(feats.tonal, 0.84, 0.88) * ramp(feats.top1, 0.38, 0.41) * inv(feats.subRel, -17, -13) * inv(feats.decay, 0.25, 0.4) * ramp(feats.stand, 0.2, 0.3);
-  conf.bells = ramp(feats.tonal, 0.84, 0.88) * ramp(feats.top1, 0.38, 0.42) * ramp(feats.decay, 0.3, 0.4) * inv(feats.mflat, 0.08, 0.12) * ramp(feats.bright, -1.2, -0.9) * inv(-feats.airRel, 46, 50);
-  conf.acguitar = ramp(feats.tonal, 0.85, 0.9) * ramp(feats.top1, 0.4, 0.45) * ramp(feats.airRate, 1.5, 2) * inv(feats.bright, -1.4, -1.1) * ramp(feats.jitter, 4.5, 5.5) * inv(-feats.airRel, 47, 50);
-  for (const k of INST) conf[k] = Math.round(conf[k] * 100) / 100;
-  return { conf, feats };
+  const kit = ramp(f.flat, 0.012, 0.03);
+  conf.kick = ramp(f.lowGrid, 0.5, 0.68) * ramp(f.lowRate, 0.5, 1) * ramp(f.lowRel, -14, -9) * kit;
+  // 808: sehr viel Sub im Verhältnis zum Ganzen, langer Ausklang nach den Bass-Einsätzen, dazu Schlagzeug-Rauschen.
+  // Früher nur zusammen mit einer erkannten Kick – aber die 808 klingt im Bass weiter, darum sah die Kick-Prüfung bei
+  // Trap kaum Einsätze (Testlabor: 0 von 9 Trap-Songs, jetzt 6 von 9, kein Fehlalarm)
+  conf.sub808 = ramp(f.subRel, -11.5, -8.5) * ramp(f.subSus, 0.42, 0.55) * ramp(f.airRate, 2.5, 3.3) * ramp(f.flat, 0.012, 0.02);
+  conf.hats = ramp(f.airRate, 1.2, 1.6) * ramp(f.airGrid, 0.58, 0.66) * ramp(f.airRel, -35, -28) * kit;
+  // Trap: Hi-Hat-Rollen (Triolen, 32tel) fallen nicht ins Achtel-Raster – dort reicht die 808 plus sehr dichte Höhen
+  conf.hats = Math.max(conf.hats, conf.sub808 * ramp(f.airRate, 3, 4) * ramp(f.airRel, -30, -26));
+  conf.crash = ramp(f.crashRate, 4, 10) * kit;
+  // Verzerrte Gitarre: rauschige, wenig klare Mitten; Supersaw-Flächen (EDM) sind klarer und laufen über einem starren
+  // Hi-Hat-Raster, Dubstep-Bässe bringen viel mehr Sub
+  conf.distguitar = ramp(f.mflat, 0.14, 0.24) * inv(f.tonal, 0.72, 0.8) * ramp(f.midRel, -10, -7.5) * inv(f.subRel, -8, -6) * inv(f.airGrid, 0.84, 0.95) * ramp(f.bright, -1.6, -1.2) * inv(f.subSus, 0.42, 0.5);
+  // In Trap trägt die 808 den Schlag, im Rock geht die Kick unter der Gitarrenwand unter – beides heißt: Schlagzeug läuft
+  conf.kick = Math.max(conf.kick, conf.sub808, conf.distguitar);
+  // Klavier: (a) frei ausklingende Töne bei stillen Höhen und vielen freien Einsätzen, (b) Klavier allein: ruhiges
+  // Spektrum (keine Anschlag-Unruhe wie bei der Gitarre), kein Rauschen. Klavier mit Band/Stimme bleibt unerkannt
+  conf.piano = Math.max(
+    ramp(-f.airRel, 45, 50) * ramp(f.decay, 0.28, 0.38) * ramp(f.tonal, 0.84, 0.9) * ramp(f.freeOn, 0.45, 0.6),
+    ramp(-f.airRel, 40, 45) * ramp(f.decay, 0.3, 0.4) * ramp(f.tonal, 0.8, 0.85) * inv(f.jitter, 3.4, 4.2) * inv(f.flat, 0.002, 0.006),
+  );
+  // Streicher – aber kein Chor (Stimmen ohne Bass-Instrumente drängen sich in die Mitten 400 Hz–4 kHz, darunter fast
+  // nichts; Testlabor: 4 von 8 A-cappella-Chören waren „Streicher“) und keine Pfeifenorgel (starker Pedal-Bass unter
+  // vollkommen gehaltenen Tönen)
+  const choir = ramp(f.midRel, -2.2, -1.4) * ramp(-f.lowRel, 18, 24);
+  const pipe = ramp(f.lowRel, -8, -6) * ramp(f.stand, 0.55, 0.65);
+  conf.strings = ramp(f.tonal, 0.74, 0.8) * ramp(f.midRel, -7, -5.5) * inv(f.flat, 0.02, 0.04) * ramp(-f.airRel, 21, 26) * inv(-f.airRel, 42, 46) * inv(f.jitter, 4.5, 6) * inv(f.decay, 0.3, 0.42) * (1 - choir) * (1 - pipe) * ramp(f.mflat, 0.028, 0.04);
+  // Fläche, Orgel, Glocken: die Zahlen trennen sie nicht von Streichern, Chören, Bluegrass-Banjo und Klavier
+  // (Testlabor Runde 11: Fläche 0 von 4 Ambient-Stücken, 1 Fehlalarm; Glocken 0 von 3, 3 Fehlalarme; Orgel 0 von 7).
+  // Die Formeln bleiben für die Fehlersuche, die Schwellen (THR) liegen über 1 – die Bilder kommen nie aus der Hörprobe.
+  conf.pad = ramp(f.stand, 0.38, 0.5) * inv(f.decay, 0.15, 0.28) * ramp(f.tonal, 0.72, 0.8) * ramp(f.subRel, -16, -11);
+  conf.organ = inv(f.mflat, 0.04, 0.07) * ramp(f.tonal, 0.84, 0.88) * ramp(f.top1, 0.38, 0.41) * inv(f.subRel, -17, -13) * inv(f.decay, 0.25, 0.4) * ramp(f.stand, 0.2, 0.3);
+  conf.bells = ramp(f.tonal, 0.84, 0.88) * ramp(f.top1, 0.38, 0.42) * ramp(f.decay, 0.3, 0.4) * inv(f.mflat, 0.08, 0.12) * ramp(f.bright, -1.2, -0.9) * inv(-f.airRel, 46, 50);
+  // Akustikgitarre: (a) hell gezupft mit vielen Höhen-Einsätzen, (b) ohne Band: kein Schlagzeug-Rauschen, dunkel,
+  // Mitten zurückgenommen, unruhig (Anschläge), nicht nur gehalten (Streicher), keine Klavier-Stille in den Höhen und
+  // wenige Harmoniewechsel je Anschlag (Folk schlägt denselben Akkord; Jazz-Orgel wechselt ständig)
+  conf.acguitar = Math.max(
+    ramp(f.tonal, 0.85, 0.9) * ramp(f.top1, 0.4, 0.45) * ramp(f.airRate, 1.5, 2) * inv(f.bright, -1.4, -1.1) * ramp(f.jitter, 4.5, 5.5) * inv(-f.airRel, 47, 50),
+    inv(f.flat, 0.012, 0.02) * ramp(-f.midRel, 5, 6) * ramp(f.jitter, 3.8, 4.5) * inv(f.bright, -1, -0.8) * ramp(f.tonal, 0.72, 0.76) * inv(f.decay, 0.75, 0.9) * inv(-f.airRel, 46, 50) * inv(f.pcMove, 0.72, 0.78),
+  );
+  for (const k of INST) conf[k] = Math.round(clamp(conf[k] || 0, 0, 1) * 100) / 100;
+  return conf;
 }
 
 /* ---- Effekte im Raster (beide Quellen). Rückgabe: [{ k, t, dur, c }] – nur Ereignisse über der Schwelle */
@@ -429,7 +474,7 @@ function detectFx(G, { bpm = 0, keepAll = false } = {}) {
   const STUDIO = new Set(["riser", "sweep", "downlift", "stop", "tapestop", "revcym", "stutter", "filter", "pump", "siren", "scratch", "airhorn", "zap", "whoosh", "rewind", "subdrop"]);
   const push = (k, t0, d, c) => {
     if (STUDIO.has(k)) c *= kitSong;
-    if (c > 0 && (keepAll || c >= THR[k])) ev.push({ k, t: Math.round((t0 / r) * 100) / 100, dur: Math.round((d / r) * 100) / 100, c: Math.round(clamp(c, 0, 1) * 100) / 100 });
+    if (c > 0.01) ev.push({ k, t: Math.round((t0 / r) * 100) / 100, dur: Math.round((d / r) * 100) / 100, c: Math.round(clamp(c, 0, 1) * 100) / 100 });
   };
   const ramp = (v, a, b) => clamp((v - a) / (b - a), 0, 1);
   // Hörprobe: zusätzlich absolute Maße – Helligkeit in Oktaven, echter Rauschanteil (Schlagzeug, Rauschen). Akustische
@@ -586,7 +631,9 @@ function detectFx(G, { bpm = 0, keepAll = false } = {}) {
         x += S(0.2);
       }
       const held = mean(G.loud, a, a + win) > loudM - 6 ? 1 : 0;
-      if (k >= 4) push("pump", a, win, ramp(d / k, 2, 5) * held);
+      // dazu Schlagzeug-/Synth-Rauschen im Fenster: der Boom-Chicka-Takt im Country (Bass auf dem Schlag, Besen
+      // dazwischen) und Walzer-Begleitungen ducken die Mitten auch (Testlabor Runde 11)
+      if (k >= 4) push("pump", a, win, ramp(d / k, 2, 5) * held * ramp(mean(G.flat, a, a + win), 0.03, 0.05));
     }
   } else if (bpm > 0) {
     const lag = Math.round((60 / bpm) * r), win = S(4);
@@ -714,19 +761,27 @@ function detectFx(G, { bpm = 0, keepAll = false } = {}) {
       x = b;
     }
   }
-  // gleiche Art, überlappend: nur die sicherste behalten
-  ev.sort((a, b) => b.c - a.c);
+  // keepAll: alle Kandidaten (fürs Testlabor und das Regressions-Fixture), sonst nur die sicheren
+  return keepAll ? prune(ev).sort((a, b) => a.t - b.t) : fxSelect(ev, n / r);
+}
+
+// gleiche Art, überlappend: nur die sicherste behalten
+function prune(ev) {
   const kept = [];
-  for (const e of ev) if (!kept.some((o) => o.k === e.k && e.t < o.t + o.dur && o.t < e.t + e.dur)) kept.push(e);
-  ev.length = 0;
-  ev.push(...kept);
+  for (const e of ev.slice().sort((a, b) => b.c - a.c)) if (!kept.some((o) => o.k === e.k && e.t < o.t + o.dur && o.t < e.t + e.dur)) kept.push(e);
+  return kept;
+}
+// Aus den Kandidaten ({ k, t, dur, c }) die gezeigten Ereignisse: über der Schwelle, nicht überlappend, Pumpen erst ab
+// zwei Fenstern, Seltenheits-Regel. sec: Länge des Rasters (s). Eigene Funktion, damit das Fixture sie nachrechnen kann
+function fxSelect(cands, sec) {
+  let ev = prune(cands.filter((e) => e.c >= THR[e.k]));
+  // Pumpen ist Textur, kein Augenblick: erst ab zwei sicheren 4-s-Fenstern gilt es (ein einzelnes war im Testlabor
+  // meist ein Zufall – ein Rock-Riff, ein Jazz-Walking-Bass)
+  if (ev.filter((e) => e.k === "pump").length < 2) ev = ev.filter((e) => e.k !== "pump");
   // Seltenheits-Regel: zu häufig = Textur, nicht Effekt
-  if (!keepAll) {
-    const mins = Math.max(0.5, n / r / 60), count = {};
-    for (const e of ev) count[e.k] = (count[e.k] || 0) + 1;
-    return ev.filter((e) => !RARE[e.k] || count[e.k] / mins <= RARE[e.k]).sort((a, b) => a.t - b.t);
-  }
-  return ev.sort((a, b) => a.t - b.t);
+  const mins = Math.max(0.5, sec / 60), count = {};
+  for (const e of ev) count[e.k] = (count[e.k] || 0) + 1;
+  return ev.filter((e) => !RARE[e.k] || count[e.k] / mins <= RARE[e.k]).sort((a, b) => a.t - b.t);
 }
 
 /* ---- Laufzeit: welche Effekte gerade zu sehen sind (Vorrang, höchstens n zugleich, Abklingzeiten) */
@@ -764,7 +819,8 @@ function createMixer() {
       // weich hinein (0,15 s bzw. über den ganzen Anstieg bei Risern), weich hinaus (0,6 s nach dem Ende)
       const rise = ev.k === "riser" || ev.k === "sweep" || ev.k === "revcym" ? 1 : clamp((sec - ev.t) / 0.15, 0, 1);
       const fall = clamp(1 - (sec - ev.t - ev.dur) / 0.6, 0, 1);
-      out.push({ k: ev.k, p, e: rise * fall, c: ev.c, flash: !!PRI[ev.k]?.[2] });
+      // s: Stärke aus der Sicherheit (zart, wenn Mirage nur knapp sicher ist); von Hand ausgelöste (c = 1) voll
+      out.push({ k: ev.k, p, e: rise * fall, c: ev.c, s: ev.forced ? 1 : Math.round(strength(ev.k, ev.c) * (ev.w ?? 1) * 100) / 100, flash: !!PRI[ev.k]?.[2] });
     }
     seen = now;
     return out;
@@ -806,4 +862,4 @@ function alignPreview(gSong, gPrev) {
   return best && best.r > 0 ? { off: best.off, r: Math.round(best.r * 100) / 100 } : null;
 }
 
-export { INST, FX, THR, RARE, PRI, gridFromSegs, createFrameSink, palette, detectFx, createMixer, alignPreview };
+export { INST, FX, THR, RARE, PRI, gridFromSegs, createFrameSink, palette, paletteConf, detectFx, fxSelect, strength, createMixer, alignPreview };

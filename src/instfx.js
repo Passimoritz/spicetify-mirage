@@ -135,9 +135,9 @@ function createInstFx(glowSprite) {
     }
   }
 
-  /* ---- Effekte (je { k, p: Fortschritt, e: Hülle, c }) */
+  /* ---- Effekte (je { k, p: Fortschritt, e: Hülle, c: Sicherheit, s: Stärke 0,4–1 aus der Sicherheit – knapp sicher = zart) */
   function effect(ctx, st, f, px, pal, S, lite) {
-    const t = st.t, p = clamp(f.p, 0, 1), e = clamp(f.e, 0, 1) * (0.75 + 0.25 * f.c), cx = st.cx ?? vw / 2, cy = st.cy ?? vh / 2, R = st.R || vh * 0.15;
+    const t = st.t, p = clamp(f.p, 0, 1), e = clamp(f.e, 0, 1) * clamp(f.s ?? 1, 0, 1), cx = st.cx ?? vw / 2, cy = st.cy ?? vh / 2, R = st.R || vh * 0.15;
     const far = Math.hypot(vw, vh), noFlash = !!st.noFlash;
     switch (f.k) {
       case "riser":

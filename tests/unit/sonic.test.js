@@ -240,6 +240,75 @@ const STUDIO = ["riser", "sweep", "downlift", "stop", "tapestop", "revcym", "stu
     fx.draw(ctx, st({ sfx: [{ k: "impact", p: 0.05, e: 1, c: 1 }] }, false));
     assert.ok(nf === 0 && calls.bright > 0, "„Keine Blitze“: kein großer Aufschein beim Einschlag");
   }
+  // ---- Runde 11: Stärke aus der Sicherheit – nichts unter der Schwelle, zart knapp darüber, voll bei voller Sicherheit
+  {
+    assert.strictEqual(S.strength("kick", S.THR.kick - 0.01), 0, "unter der Schwelle: nichts");
+    assert.strictEqual(S.strength("kick", S.THR.kick), 0.4, "knapp sicher: zart");
+    assert.strictEqual(S.strength("kick", 1), 1, "ganz sicher: voll");
+    assert.ok(S.strength("kick", 0.8) > 0.4 && S.strength("kick", 0.8) < 1, "dazwischen gestuft");
+    for (const k of ["pad", "organ", "bells", "scratch"]) assert.strictEqual(S.strength(k, 1), 0, "abgeschaltet: " + k);
+    const mx = S.createMixer();
+    const ev = [{ k: "riser", t: 0, dur: 4, c: S.THR.riser }, { k: "impact", t: 0, dur: 2, c: 1, w: 0.85 }, { k: "scratch", t: 0, dur: 2, c: 1, forced: true }];
+    const a = mx.at(ev, 1, { max: 3 });
+    assert.strictEqual(a.find((f) => f.k === "riser").s, 0.4, "Mischer: knapp sicherer Riser zart");
+    assert.strictEqual(a.find((f) => f.k === "impact").s, 0.85, "Mischer: Regie-Zeitpunkt (w) eine Spur zarter");
+    assert.strictEqual(a.find((f) => f.k === "scratch").s, 1, "Mischer: von Hand ausgelöst (Fehlersuche) voll, auch wenn die Art aus ist");
+    // Regie-Ereignisse tragen die Sicherheit der Hörprobe, nicht abgeschwächt (sonst fielen sie unter die Schwelle)
+    const st = { ev: [] };
+    RT.directorEvents({ impact: S.THR.impact }, { build: 0, toDrop: 99, dropHit: true }, 5, st);
+    assert.ok(st.ev[0] && st.ev[0].c === S.THR.impact && st.ev[0].w === 0.85, "Regie: c bleibt, w dämpft: " + JSON.stringify(st.ev));
+    // Laufzeit: knapp sichere Kick zart, sichere voll – abgeschaltete Arten (Fläche) nie
+    const lvOf = async (inst) => {
+      const rt = RT.createSonicRuntime();
+      rt.prepare("u" + Math.random(), null, { inst, fx: {}, events: [], grid: null });
+      await new Promise((r) => setTimeout(r, 5));
+      let out;
+      for (let i = 0; i < 240; i++) out = rt.frame(30 + i / 60, 1 / 60, { kind: "chorus", energy: 0.9, build: 0, toDrop: 99 });
+      return out.lv;
+    };
+    const lo = await lvOf({ kick: S.THR.kick, pad: 0.99 }), hi = await lvOf({ kick: 1 });
+    assert.ok(lo.kick > 0.2 && lo.kick < hi.kick * 0.5, `knapp sicher zart (${lo.kick}) gegen sicher (${hi.kick})`);
+    assert.strictEqual(lo.pad, 0, "Fläche ist aus");
+    // Bild: dieselbe Wirkung mit s = 0,4 deutlich blasser als mit s = 1
+    const alpha = { sum: 0 };
+    const ctx = new Proxy(
+      {},
+      {
+        get(o, k) {
+          if (k in o) return o[k];
+          if (k === "createLinearGradient" || k === "createRadialGradient") return () => ({ addColorStop() {} });
+          if (k === "drawImage") return () => (alpha.sum += o.globalAlpha ?? 1);
+          return () => {};
+        },
+      },
+    );
+    const fxd = createInstFx(() => ({}));
+    const st2 = (s) => ({ t: 3, dt: 0.016, vw: 1280, vh: 720, dpr: 1, pal: [[200, 60, 120], [60, 120, 220], [240, 180, 60]], cx: 640, cy: 330, R: 120, bpm: 120, quality: 2, inst: { sfx: [{ k: "revcym", p: 0.6, e: 1, c: 1, s }] }, px: { kickEnv: 0.5, energy: 0.8, kind: "chorus" } });
+    alpha.sum = 0;
+    fxd.draw(ctx, st2(0.4));
+    const weak = alpha.sum;
+    alpha.sum = 0;
+    fxd.draw(ctx, st2(1));
+    assert.ok(weak > 0 && weak < alpha.sum * 0.5, `Bild zart bei s = 0,4 (${weak.toFixed(2)} gegen ${alpha.sum.toFixed(2)})`);
+  }
+  // ---- Runde 11: Einblenden aus digitaler Stille – Rauschanteil bleibt endlich (früher liefen die Maße gegen 10^12)
+  {
+    const pcm = new Float32Array(SR * 30);
+    chord(pcm, 0.5, 30, 220, (t) => Math.min(1, (t - 0.5) * 2));
+    const { G } = await grid(pcm);
+    const fr = G.frames;
+    assert.ok(Math.max(...fr.flat) <= 1.0001 && Math.max(...fr.mflat) <= 1.0001, "Rauschanteil ≤ 1 auch an der Stille");
+    assert.ok(S.palette(G, 0).feats.mflat < 0.1, "Akkord bleibt klar: " + S.palette(G, 0).feats.mflat);
+  }
+  // ---- Runde 11: Pumpen erst ab zwei sicheren Fenstern; Palette aus Zahlen allein (paletteConf)
+  {
+    const one = S.fxSelect([{ k: "pump", t: 0, dur: 4, c: 0.95 }], 30);
+    assert.deepStrictEqual(one, [], "ein Pump-Fenster allein ist Zufall");
+    const two = S.fxSelect([{ k: "pump", t: 0, dur: 4, c: 0.95 }, { k: "pump", t: 4, dur: 4, c: 0.8 }], 30);
+    assert.strictEqual(two.length, 2, "zwei Fenster: Pumpen");
+    const z = S.paletteConf(null);
+    assert.ok(S.INST.every((k) => z[k] === 0), "ohne Zahlen keine Sicherheit");
+  }
   console.log("sonic: ok");
 })().catch((e) => {
   console.error(e);
