@@ -1,8 +1,10 @@
 name: Spotify watch
 
-# Every night: unpack the newest Spotify desktop client and check whether Mirage's selectors still match.
-# If something stopped matching, an issue is opened (or updated) so it can be fixed before users notice,
-# often with a rule in remote/fixes.json and without a new release.
+# Every night: unpack the newest Spotify desktop clients (Linux package and Windows installer) and check whether
+# Mirage's selectors still match. If something stopped matching, an issue is opened (or updated) so it can be fixed
+# before users notice, often with a rule in remote/fixes.json and without a new release.
+# Windows is usually days ahead of Linux. Its check must never break the nightly run: when the Windows client cannot
+# be found, downloaded or unpacked, the run shows a warning and the Linux result still counts.
 on:
   schedule:
     - cron: "17 3 * * *"
@@ -13,9 +15,15 @@ permissions:
   issues: write
 
 jobs:
+  # ---------------------------------------------------------------- Linux: the official Debian package
   watch:
+    name: Linux package
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      version: ${{ steps.unpack.outputs.version }}
+      code: ${{ steps.check.outputs.code }}
+      fake: ${{ steps.check.outputs.fake }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,57 +31,35 @@ jobs:
         with:
           node-version: 20
 
-      # Windows is usually a few days ahead of Linux, so try the Windows setup first. Its format is not
-      # documented; when it cannot be unpacked, the official Linux package is used (it holds xpui.spa directly).
-      - name: Download and unpack the newest Spotify client
+      - name: Download and unpack the newest Linux client
+        id: unpack
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq p7zip-full unzip
-          SPA=""
-          if curl -fsSL --max-time 300 -o spotify.exe https://download.scdn.co/SpotifyFullSetupX64.exe; then
-            echo "Windows setup: $(stat -c %s spotify.exe) bytes"
-            7z l spotify.exe 2>&1 | tail -n 15 || true
-            7z x -y -ospotify spotify.exe > /dev/null 2>&1 || true
-            # the setup holds the app as one big embedded block (7-Zip lists it as "[0]"); unpack that and any archive in it
-            find spotify -type f -size +10M 2>/dev/null | head -5 | while read -r inner; do
-              echo "inner: $inner ($(stat -c %s "$inner") bytes)"
-              7z x -y -ospotify/inner "$inner" > /dev/null 2>&1 || true
-            done
-            find spotify/inner -type f -size +10M 2>/dev/null | head -5 | while read -r inner; do
-              7z x -y -ospotify/inner2 "$inner" > /dev/null 2>&1 || true
-            done
-            SPA=$(find spotify -name xpui.spa 2>/dev/null | head -1)
-            VERSION=$(strings spotify.exe 2>/dev/null | grep -o -E '1\.[0-9]+\.[0-9]+\.[0-9]+\.g[0-9a-f]+' | head -1 || true)
-            SOURCE="Windows setup"
-          fi
-          if [ -z "$SPA" ]; then
-            echo "Windows setup could not be unpacked, using the Linux package"
-            BASE=http://repository.spotify.com
-            curl -fsSL --max-time 60 -o Packages "$BASE/dists/testing/non-free/binary-amd64/Packages"
-            # newest spotify-client entry: version, file name and checksum
-            read -r VERSION FILE SUM < <(awk '
-              /^Package: /{p=($2=="spotify-client"); v=f=s=""}
-              p&&/^Version: /{v=$2} p&&/^Filename: /{f=$2} p&&/^SHA256: /{s=$2}
-              p&&/^$/{if(f)print v, f, s; p=0}
-              END{if(p&&f)print v, f, s}' Packages | sort -V | tail -n 1)
-            test -n "$FILE"
-            curl -fsSL --max-time 600 -o spotify.deb "$BASE/$FILE"
-            echo "$SUM  spotify.deb" | sha256sum -c -
-            dpkg-deb -x spotify.deb deb
-            SPA=$(find deb -name xpui.spa | head -1)
-            VERSION="${VERSION#*:}"
-            SOURCE="Linux package"
-          fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq p7zip-full
+          BASE=http://repository.spotify.com
+          curl -fsSL --max-time 60 -o Packages "$BASE/dists/testing/non-free/binary-amd64/Packages"
+          # newest spotify-client entry: version, file name and checksum
+          read -r VERSION FILE SUM < <(awk '
+            /^Package: /{p=($2=="spotify-client"); v=f=s=""}
+            p&&/^Version: /{v=$2} p&&/^Filename: /{f=$2} p&&/^SHA256: /{s=$2}
+            p&&/^$/{if(f)print v, f, s; p=0}
+            END{if(p&&f)print v, f, s}' Packages | sort -V | tail -n 1)
+          test -n "$FILE"
+          curl -fsSL --max-time 600 -o spotify.deb "$BASE/$FILE"
+          echo "$SUM  spotify.deb" | sha256sum -c -
+          dpkg-deb -x spotify.deb deb
+          SPA=$(find deb -name xpui.spa | head -1)
           test -n "$SPA"
           # 7-Zip instead of unzip: Spotify's archive has a "/" entry that unzip rejects with exit code 2
           7z x -y -oxpui "$SPA" > /dev/null
           test -n "$(ls xpui/*.css 2>/dev/null | head -1)"
-          echo "SPOTIFY_VERSION=${VERSION:-unknown} (${SOURCE})" >> "$GITHUB_ENV"
-          echo "Checking Spotify ${VERSION:-unknown} from the ${SOURCE}: $(ls xpui | wc -l) files"
+          VERSION="${VERSION#*:}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Checking Spotify $VERSION from the Linux package: $(ls xpui | wc -l) files"
 
       - name: Download Spicetify's name list
         run: curl -fsSL -o css-map.json https://raw.githubusercontent.com/spicetify/cli/main/css-map.json
 
-      - name: Check selectors
+      - name: Check selectors and player code
         id: check
         run: |
           set +e
@@ -82,20 +68,248 @@ jobs:
           echo "code=$code" >> "$GITHUB_OUTPUT"
           # 3: Spicetify's name list belongs to another Spotify version (often the Linux package lags behind),
           # so the result says nothing; note it in the run instead of opening an issue
-          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify ${SPOTIFY_VERSION}; nothing checked."; fi
+          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify ${{ steps.unpack.outputs.version }} (Linux); nothing checked."; fi
+          # the player code the test fake copies (volume, queue …): a difference is a warning, not an issue
+          node tools/check-spotify.js --xpui xpui | tee fake.txt
+          fake=${PIPESTATUS[0]}
+          echo "fake=$fake" >> "$GITHUB_OUTPUT"
+          if [ "$fake" != "0" ]; then echo "::warning::Spotify ${{ steps.unpack.outputs.version }} (Linux) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
+          exit 0
 
-      - name: Open or update the issue
-        if: steps.check.outputs.code != '0' && steps.check.outputs.code != '3'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-linux
+          path: |
+            report.txt
+            fake.txt
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------- Windows: the newest full installer
+  # Version and download address come from the winget manifest of Spotify.Spotify (microsoft/winget-pkgs), which a
+  # bot updates within hours of a release; the address is Spotify's own download.scdn.co. The installer refuses to
+  # run with admin rights (the runner has them), so it is started with a normal user's rights first.
+  windows:
+    name: Windows installer
+    runs-on: windows-latest
+    timeout-minutes: 25
+    continue-on-error: true
+    outputs:
+      expected: ${{ steps.find.outputs.version }}
+      version: ${{ steps.unpack.outputs.version }}
+      problem: ${{ steps.unpack.outputs.problem }}
+      code: ${{ steps.check.outputs.code }}
+      fake: ${{ steps.check.outputs.fake }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Find the newest Windows client
+        id: find
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          DIR=manifests/s/Spotify/Spotify
+          URL=https://download.scdn.co/SpotifyFullSetupX64.exe
+          SUM=""
+          # one folder per version, e.g. 1.3.10.2586.g81a118a22460
+          VERSION=$(gh api "repos/microsoft/winget-pkgs/contents/$DIR" --jq '.[] | select(.type == "dir") | .name' 2>/dev/null | grep -E '^[0-9]+(\.[0-9]+){3}' | sort -V | tail -n 1)
+          if [ -n "$VERSION" ]; then
+            YAML=$(gh api -H "Accept: application/vnd.github.raw" "repos/microsoft/winget-pkgs/contents/$DIR/$VERSION/Spotify.Spotify.installer.yaml" 2>/dev/null)
+            # the x64 entry: address and checksum follow "Architecture: x64"
+            U=$(printf '%s\n' "$YAML" | awk '/Architecture: x64/{f=1; next} f&&/Architecture:/{f=0} f&&/InstallerUrl:/{print $2; exit}' | tr -d '\r')
+            SUM=$(printf '%s\n' "$YAML" | awk '/Architecture: x64/{f=1; next} f&&/Architecture:/{f=0} f&&/InstallerSha256:/{print $2; exit}' | tr -d '\r')
+            # only Spotify's own servers
+            case "$U" in https://download.scdn.co/*|https://upgrade.scdn.co/*) URL="$U" ;; *) SUM="" ;; esac
+            echo "winget knows Spotify $VERSION: $URL"
+          else
+            echo "::warning::The winget manifest for Spotify could not be read; trying the newest installer without a checksum."
+          fi
+          {
+            echo "version=$VERSION"
+            echo "url=$URL"
+            echo "sum=$SUM"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Download the installer
+        id: download
+        run: |
+          if ! curl -fsSL --retry 3 --max-time 600 -o SpotifyFullSetupX64.exe "${{ steps.find.outputs.url }}"; then
+            echo "::warning::The Windows installer could not be downloaded – only the Linux client was checked tonight."
+            exit 0
+          fi
+          echo "Installer: $(stat -c %s SpotifyFullSetupX64.exe) bytes"
+          SUM="${{ steps.find.outputs.sum }}"
+          GOT=$(sha256sum SpotifyFullSetupX64.exe | cut -d' ' -f1)
+          # the address never changes, the file behind it does: a different checksum usually means an even newer
+          # version than winget knows yet – check it anyway, its version is read from the client itself
+          if [ -n "$SUM" ] && [ "${GOT,,}" != "${SUM,,}" ]; then
+            echo "::warning::The Windows installer differs from the winget manifest (${{ steps.find.outputs.version }}); probably newer. Checking it anyway."
+          fi
+          echo "ok=1" >> "$GITHUB_OUTPUT"
+
+      - name: Install it quietly
+        if: steps.download.outputs.ok == '1'
+        shell: pwsh
+        run: |
+          $spa = Join-Path $env:APPDATA 'Spotify\Apps\xpui.spa'
+          $exe = (Resolve-Path 'SpotifyFullSetupX64.exe').Path
+          # same switches as winget; first with a normal user's rights (runas /trustlevel), then directly
+          foreach ($how in 'basic', 'direct') {
+            if (Test-Path $spa) { break }
+            Write-Host "Installing ($how) …"
+            if ($how -eq 'basic') {
+              Start-Process runas.exe -ArgumentList "/trustlevel:0x20000 `"$exe /silent /skip-app-launch`"" -WindowStyle Hidden
+            } else {
+              Start-Process $exe -ArgumentList '/silent', '/skip-app-launch' -WindowStyle Hidden
+            }
+            $t0 = Get-Date
+            while (((Get-Date) - $t0).TotalSeconds -lt 300) {
+              Start-Sleep -Seconds 5
+              $busy = Get-Process -Name 'SpotifyFullSetupX64' -ErrorAction SilentlyContinue
+              if ((Test-Path $spa) -and -not $busy) { break }
+            }
+          }
+          # in case it started anyway
+          Get-Process -Name 'Spotify', 'SpotifyFullSetupX64' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          if (Test-Path $spa) { Write-Host "xpui.spa: $((Get-Item $spa).Length) bytes" } else { Write-Host 'xpui.spa not found after installing' }
+          exit 0
+
+      - name: Unpack the client
+        id: unpack
+        if: steps.download.outputs.ok == '1'
+        run: |
+          SPA="$APPDATA/Spotify/Apps/xpui.spa"
+          if [ ! -f "$SPA" ]; then
+            echo "::warning::The Windows installer could not be installed on the runner – only the Linux client was checked tonight."
+            echo "problem=not installed" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          Z=$(command -v 7z || echo "/c/Program Files/7-Zip/7z.exe")
+          "$Z" x -y -oxpui "$SPA" > /dev/null || true
+          if [ -z "$(ls xpui/*.css 2>/dev/null | head -1)" ]; then
+            echo "::warning::xpui.spa of the Windows client could not be unpacked – only the Linux client was checked tonight."
+            echo "problem=not unpacked" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # the exact version is in the client itself; winget's version as a fallback
+          VERSION=$(grep -h -o -E 'clientVersion:"[0-9.]+\.g[0-9a-f]+"' xpui/*.js 2>/dev/null | head -n 1 | cut -d'"' -f2)
+          VERSION="${VERSION:-${{ steps.find.outputs.version }}}"
+          echo "version=${VERSION:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "Checking Spotify ${VERSION:-unknown} from the Windows installer: $(ls xpui | wc -l) files"
+
+      - name: Download Spicetify's name list
+        if: steps.unpack.outputs.version != ''
+        run: curl -fsSL -o css-map.json https://raw.githubusercontent.com/spicetify/cli/main/css-map.json
+
+      - name: Check selectors and player code
+        id: check
+        if: steps.unpack.outputs.version != ''
+        run: |
+          set +e
+          node tools/check-selectors.js --xpui xpui --cssmap css-map.json | tee report.txt
+          code=${PIPESTATUS[0]}
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify ${{ steps.unpack.outputs.version }} (Windows) yet; nothing checked."; fi
+          node tools/check-spotify.js --xpui xpui | tee fake.txt
+          fake=${PIPESTATUS[0]}
+          echo "fake=$fake" >> "$GITHUB_OUTPUT"
+          if [ "$fake" != "0" ]; then echo "::warning::Spotify ${{ steps.unpack.outputs.version }} (Windows) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
+          exit 0
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-windows
+          path: |
+            report.txt
+            fake.txt
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------- Both versions in the summary, one issue
+  report:
+    name: Summary
+    needs: [watch, windows]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          path: reports
+
+      - name: Write the summary
+        env:
+          LINUX_VERSION: ${{ needs.watch.outputs.version }}
+          LINUX_CODE: ${{ needs.watch.outputs.code }}
+          LINUX_FAKE: ${{ needs.watch.outputs.fake }}
+          WIN_EXPECTED: ${{ needs.windows.outputs.expected }}
+          WIN_VERSION: ${{ needs.windows.outputs.version }}
+          WIN_PROBLEM: ${{ needs.windows.outputs.problem }}
+          WIN_CODE: ${{ needs.windows.outputs.code }}
+          WIN_FAKE: ${{ needs.windows.outputs.fake }}
+        run: |
+          say() {
+            case "$1" in
+              0) echo "all selectors match" ;;
+              1) echo "**selectors stopped matching**" ;;
+              3) echo "Spicetify's name list does not fit yet – not checked" ;;
+              "") echo "not checked" ;;
+              *) echo "check failed (code $1)" ;;
+            esac
+          }
+          fake() { case "$1" in 0) echo "same" ;; "") echo "–" ;; *) echo "**differs**" ;; esac; }
+          WIN="$WIN_VERSION"
+          if [ -z "$WIN" ]; then WIN="${WIN_EXPECTED:-unknown} (${WIN_PROBLEM:-not downloaded})"; fi
+          {
+            echo "## Spotify watch"
+            echo
+            echo "| Client | Version | Selectors | Player code vs. test fake |"
+            echo "| --- | --- | --- | --- |"
+            echo "| Windows installer | $WIN | $(say "$WIN_CODE") | $(fake "$WIN_FAKE") |"
+            echo "| Linux package | ${LINUX_VERSION:-unknown} | $(say "$LINUX_CODE") | $(fake "$LINUX_FAKE") |"
+            for os in windows linux; do
+              f="reports/report-$os/report.txt"
+              [ -f "$f" ] || continue
+              echo
+              echo "<details><summary>Report $os</summary>"
+              echo
+              echo '```'
+              head -c 4000 "$f"
+              echo '```'
+              echo "</details>"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the issue
+        # only a real finding opens an issue (an empty code means the client could not be checked at all)
+        if: (needs.watch.outputs.code != '' && needs.watch.outputs.code != '0' && needs.watch.outputs.code != '3') || needs.windows.outputs.code == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          LINUX_VERSION: ${{ needs.watch.outputs.version }}
+          WIN_VERSION: ${{ needs.windows.outputs.version }}
+        run: |
           TITLE="Spotify watch: selectors stopped matching"
           {
-            echo "The nightly check found rules that no longer match the newest Spotify client (${SPOTIFY_VERSION})."
-            echo
-            echo '```'
-            head -c 6000 report.txt
-            echo '```'
+            echo "The nightly check found rules that no longer match the newest Spotify client (Windows ${WIN_VERSION:-not checked}, Linux ${LINUX_VERSION:-not checked})."
+            for os in windows linux; do
+              f="reports/report-$os/report.txt"
+              [ -f "$f" ] || continue
+              echo
+              echo "**$os**"
+              echo
+              echo '```'
+              head -c 5000 "$f"
+              echo '```'
+            done
             echo
             echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } > body.md
