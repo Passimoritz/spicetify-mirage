@@ -302,6 +302,9 @@ const I18N = {
     gL20: "… bei Sonnenaufgang noch wach sein?",
   },
   fr: {
+    remoteFix: "Se réparer après les mises à jour de Spotify",
+    remoteFixHint: "Mirage charge de petits correctifs depuis son dépôt GitHub, sans nouvelle version. Seul le fichier est récupéré, rien n'est envoyé.",
+    partFailed: "Une partie de Mirage n'a pas pu démarrer ({p}). Tout le reste continue de tourner. Copie le diagnostic dans les réglages de Mirage pour le signaler.",
     g_library: "Bibliothèque", libBpm: "Tempo et tonalité dans les listes", libBpmHint: "Affiche le BPM et la tonalité (Camelot, p. ex. 8A) à côté de la durée sur les pages de playlists et d'albums – charge l'analyse audio de Spotify pour chaque titre visible", libMajor: "{k} majeur",
     libMinor: "{k} mineur", libDupNote: "Trouver les doublons : clic droit sur une de tes playlists → « Supprimer les titres en double »", dupMenu: "Supprimer les titres en double", dupTitle: "Titres en double",
     dupLoading: "Recherche des doublons …", dupNone: "Aucun doublon dans cette playlist", dupExact: "Doublons exacts – le premier reste", dupMaybe: "Probablement le même titre (autre version)",
@@ -473,6 +476,9 @@ const I18N = {
     gL20: "… tenir encore debout au lever du soleil ?",
   },
   es: {
+    remoteFix: "Repararse solo tras las actualizaciones de Spotify",
+    remoteFixHint: "Mirage descarga pequeñas correcciones de su repositorio de GitHub, sin necesidad de una nueva versión. Solo se descarga el archivo, no se envía nada.",
+    partFailed: "Una parte de Mirage no ha podido iniciarse ({p}). Todo lo demás sigue funcionando. Copia el diagnóstico en los ajustes de Mirage para reportarlo.",
     g_library: "Biblioteca", libBpm: "Tempo y tonalidad en las listas", libBpmHint: "Muestra los BPM y la tonalidad (Camelot, p. ej. 8A) junto a la duración en las páginas de playlists y álbumes – carga el análisis de audio de Spotify de cada canción visible", libMajor: "{k} mayor",
     libMinor: "{k} menor", libDupNote: "Buscar duplicados: clic derecho en una de tus playlists → «Quitar canciones duplicadas»", dupMenu: "Quitar canciones duplicadas", dupTitle: "Canciones duplicadas",
     dupLoading: "Buscando duplicados …", dupNone: "No hay duplicados en esta playlist", dupExact: "Duplicados exactos – la primera se queda", dupMaybe: "Probablemente la misma canción (otra versión)",
@@ -644,6 +650,9 @@ const I18N = {
     gL20: "… seguir de fiesta al amanecer?",
   },
   it: {
+    remoteFix: "Ripararsi da solo dopo gli aggiornamenti di Spotify",
+    remoteFixHint: "Mirage scarica piccole correzioni dal suo repository GitHub, senza una nuova versione. Viene solo scaricato il file, non viene inviato nulla.",
+    partFailed: "Una parte di Mirage non è riuscita ad avviarsi ({p}). Tutto il resto continua a funzionare. Copia la diagnostica nelle impostazioni di Mirage per segnalarlo.",
     g_library: "Libreria", libBpm: "Tempo e tonalità negli elenchi", libBpmHint: "Mostra BPM e tonalità (Camelot, es. 8A) accanto alla durata nelle pagine di playlist e album – carica l'analisi audio di Spotify per ogni brano visibile", libMajor: "{k} maggiore",
     libMinor: "{k} minore", libDupNote: "Trova i doppioni: clic destro su una tua playlist → «Rimuovi brani doppi»", dupMenu: "Rimuovi brani doppi", dupTitle: "Brani doppi",
     dupLoading: "Cerco i doppioni …", dupNone: "Nessun doppione in questa playlist", dupExact: "Doppioni esatti – il primo resta", dupMaybe: "Probabilmente lo stesso brano (altra versione)",
@@ -815,6 +824,9 @@ const I18N = {
     gL20: "… essere ancora in pista all'alba?",
   },
   pt: {
+    remoteFix: "Reparar-se sozinho após atualizações do Spotify",
+    remoteFixHint: "O Mirage carrega pequenas correções do seu repositório no GitHub, sem nova versão. Só o ficheiro é descarregado, nada é enviado.",
+    partFailed: "Uma parte do Mirage não conseguiu arrancar ({p}). Tudo o resto continua a funcionar. Copia o diagnóstico nas definições do Mirage para o reportar.",
     g_library: "Biblioteca", libBpm: "Andamento e tom nas listas", libBpmHint: "Mostra BPM e tom (Camelot, ex. 8A) ao lado da duração nas páginas de playlists e álbuns – carrega a análise de áudio do Spotify para cada música visível", libMajor: "{k} maior",
     libMinor: "{k} menor", libDupNote: "Encontrar duplicadas: clique com o botão direito numa playlist sua → “Remover músicas duplicadas”", dupMenu: "Remover músicas duplicadas", dupTitle: "Músicas duplicadas",
     dupLoading: "Procurando duplicadas …", dupNone: "Nenhuma duplicada nesta playlist", dupExact: "Duplicadas exatas – a primeira fica", dupMaybe: "Provavelmente a mesma música (outra versão)",
@@ -986,6 +998,9 @@ const I18N = {
     gL20: "… ainda estar de pé ao nascer do sol?",
   },
   nl: {
+    remoteFix: "Zichzelf herstellen na Spotify-updates",
+    remoteFixHint: "Mirage laadt kleine reparaties uit zijn GitHub-repository, zonder nieuwe versie. Alleen het bestand wordt opgehaald, er wordt niets verstuurd.",
+    partFailed: "Een onderdeel van Mirage kon niet starten ({p}). De rest blijft gewoon werken. Kopieer de diagnose in de Mirage-instellingen om het te melden.",
     g_library: "Bibliotheek", libBpm: "Tempo & toonsoort in tracklijsten", libBpmHint: "Toont BPM en toonsoort (Camelot, bijv. 8A) naast de duur op playlist- en albumpagina's – laadt daarvoor Spotify's audioanalyse voor elk zichtbaar nummer", libMajor: "{k} majeur",
     libMinor: "{k} mineur", libDupNote: "Dubbele vinden: klik met rechts op een eigen playlist → „Dubbele nummers verwijderen”", dupMenu: "Dubbele nummers verwijderen", dupTitle: "Dubbele nummers",
     dupLoading: "Zoeken naar dubbele nummers …", dupNone: "Geen dubbele nummers in deze playlist", dupExact: "Precies gelijk – de eerste blijft", dupMaybe: "Waarschijnlijk hetzelfde nummer (andere versie)",
@@ -1157,6 +1172,9 @@ const I18N = {
     gL20: "… bij zonsopgang nog bezig zijn?",
   },
   pl: {
+    remoteFix: "Naprawiaj się sam po aktualizacjach Spotify",
+    remoteFixHint: "Mirage pobiera drobne poprawki ze swojego repozytorium na GitHubie, bez nowej wersji. Pobierany jest tylko plik, nic nie jest wysyłane.",
+    partFailed: "Część Mirage nie mogła się uruchomić ({p}). Cała reszta działa dalej. Skopiuj diagnostykę w ustawieniach Mirage, żeby to zgłosić.",
     g_library: "Biblioteka", libBpm: "Tempo i tonacja na listach utworów", libBpmHint: "Pokazuje BPM i tonację (Camelot, np. 8A) obok czasu trwania na stronach playlist i albumów – pobiera analizę audio Spotify dla każdego widocznego utworu", libMajor: "{k}-dur",
     libMinor: "{k}-moll", libDupNote: "Znajdź duplikaty: kliknij prawym przyciskiem swoją playlistę → „Usuń zduplikowane utwory”", dupMenu: "Usuń zduplikowane utwory", dupTitle: "Zduplikowane utwory",
     dupLoading: "Szukam duplikatów …", dupNone: "Brak duplikatów w tej playliście", dupExact: "Dokładne duplikaty – pierwszy zostaje", dupMaybe: "Prawdopodobnie ten sam utwór (inna wersja)",
@@ -1328,6 +1346,9 @@ const I18N = {
     gL20: "… będzie się jeszcze bawić o wschodzie słońca?",
   },
   tr: {
+    remoteFix: "Spotify güncellemelerinden sonra kendini onar",
+    remoteFixHint: "Mirage küçük düzeltmeleri yeni sürüm gerekmeden GitHub deposundan yükler. Yalnızca dosya indirilir, hiçbir şey gönderilmez.",
+    partFailed: "Mirage'ın bir bölümü başlatılamadı ({p}). Geri kalan her şey çalışmaya devam ediyor. Bildirmek için Mirage ayarlarından tanılamayı kopyala.",
     g_library: "Kitaplık", libBpm: "Parça listelerinde tempo ve ton", libBpmHint: "Çalma listesi ve albüm sayfalarında sürenin yanında BPM ve tonu (Camelot, ör. 8A) gösterir – görünen her şarkı için Spotify'ın ses analizini yükler", libMajor: "{k} majör",
     libMinor: "{k} minör", libDupNote: "Tekrarları bul: kendi çalma listelerinden birine sağ tıkla → „Tekrarlanan şarkıları kaldır”", dupMenu: "Tekrarlanan şarkıları kaldır", dupTitle: "Tekrarlanan şarkılar",
     dupLoading: "Tekrarlar aranıyor …", dupNone: "Bu çalma listesinde tekrar yok", dupExact: "Birebir tekrarlar – ilki kalır", dupMaybe: "Muhtemelen aynı şarkı (başka sürüm)",
@@ -1493,6 +1514,9 @@ const I18N = {
     gL20: "… gün doğarken hâlâ eğleniyor olur?",
   },
   ru: {
+    remoteFix: "Самовосстановление после обновлений Spotify",
+    remoteFixHint: "Mirage загружает небольшие исправления из своего репозитория на GitHub без новой версии. Скачивается только файл, ничего не отправляется.",
+    partFailed: "Часть Mirage не запустилась ({p}). Всё остальное продолжает работать. Чтобы сообщить об этом, скопируй диагностику в настройках Mirage.",
     g_library: "Медиатека", libBpm: "Темп и тональность в списках треков", libBpmHint: "Показывает BPM и тональность (Camelot, напр. 8A) рядом с длительностью на страницах плейлистов и альбомов – загружает аудиоанализ Spotify для каждого видимого трека", libMajor: "{k} мажор",
     libMinor: "{k} минор", libDupNote: "Найти дубликаты: правый клик по своему плейлисту → «Удалить повторяющиеся треки»", dupMenu: "Удалить повторяющиеся треки", dupTitle: "Повторяющиеся треки",
     dupLoading: "Ищу дубликаты …", dupNone: "В этом плейлисте нет дубликатов", dupExact: "Точные дубликаты – первый остаётся", dupMaybe: "Вероятно, тот же трек (другая версия)",
@@ -1658,6 +1682,9 @@ const I18N = {
     gL20: "… всё ещё будет отрываться на рассвете?",
   },
   uk: {
+    remoteFix: "Самовідновлення після оновлень Spotify",
+    remoteFixHint: "Mirage завантажує невеликі виправлення зі свого репозиторію на GitHub без нової версії. Завантажується лише файл, нічого не надсилається.",
+    partFailed: "Частина Mirage не запустилася ({p}). Усе інше працює далі. Щоб повідомити про це, скопіюй діагностику в налаштуваннях Mirage.",
     g_library: "Медіатека", libBpm: "Темп і тональність у списках треків", libBpmHint: "Показує BPM і тональність (Camelot, напр. 8A) поруч із тривалістю на сторінках плейлистів і альбомів – завантажує аудіоаналіз Spotify для кожного видимого треку", libMajor: "{k} мажор",
     libMinor: "{k} мінор", libDupNote: "Знайти дублікати: правий клік на своєму плейлисті → «Видалити повторювані треки»", dupMenu: "Видалити повторювані треки", dupTitle: "Повторювані треки",
     dupLoading: "Шукаю дублікати …", dupNone: "У цьому плейлисті немає дублікатів", dupExact: "Точні дублікати – перший залишається", dupMaybe: "Імовірно, той самий трек (інша версія)",
@@ -1823,6 +1850,9 @@ const I18N = {
     gL20: "… ще гулятиме на світанку?",
   },
   ja: {
+    remoteFix: "Spotify のアップデート後に自動で修復",
+    remoteFixHint: "Mirage は新しいバージョンなしで、GitHub リポジトリから小さな修正を読み込みます。ファイルを取得するだけで、何も送信しません。",
+    partFailed: "Mirage の一部を起動できませんでした（{p}）。ほかの機能はそのまま動きます。報告するには Mirage の設定で診断情報をコピーしてください。",
     g_library: "ライブラリ", libBpm: "曲リストにテンポとキー", libBpmHint: "プレイリストとアルバムのページで、再生時間の横に BPM とキー（Camelot、例: 8A）を表示します – 表示中の各曲について Spotify のオーディオ分析を読み込みます", libMajor: "{k} メジャー",
     libMinor: "{k} マイナー", libDupNote: "重複を探す: 自分のプレイリストを右クリック →「重複した曲を削除」", dupMenu: "重複した曲を削除", dupTitle: "重複した曲",
     dupLoading: "重複を探しています …", dupNone: "このプレイリストに重複はありません", dupExact: "完全な重複 – 最初の 1 曲は残ります", dupMaybe: "おそらく同じ曲（別バージョン）",
@@ -1988,6 +2018,9 @@ const I18N = {
     gL20: "… 朝日が昇ってもまだ盛り上がってそう?",
   },
   ko: {
+    remoteFix: "Spotify 업데이트 후 스스로 복구",
+    remoteFixHint: "Mirage가 새 버전 없이 GitHub 저장소에서 작은 수정을 불러와요. 파일만 받아오고, 아무것도 보내지 않아요.",
+    partFailed: "Mirage의 일부를 시작하지 못했어요({p}). 나머지는 계속 작동해요. 신고하려면 Mirage 설정에서 진단 정보를 복사하세요.",
     g_library: "라이브러리", libBpm: "트랙 목록에 템포와 키 표시", libBpmHint: "플레이리스트와 앨범 페이지에서 재생 시간 옆에 BPM과 키(Camelot, 예: 8A)를 표시합니다 – 보이는 곡마다 Spotify 오디오 분석을 불러옵니다", libMajor: "{k} 장조",
     libMinor: "{k} 단조", libDupNote: "중복 찾기: 내 플레이리스트를 마우스 오른쪽 버튼으로 클릭 → '중복된 곡 제거'", dupMenu: "중복된 곡 제거", dupTitle: "중복된 곡",
     dupLoading: "중복을 찾는 중 …", dupNone: "이 플레이리스트에는 중복이 없습니다", dupExact: "완전히 같은 곡 – 첫 번째 곡은 남습니다", dupMaybe: "아마 같은 곡(다른 버전)",
@@ -2153,6 +2186,9 @@ const I18N = {
     gL20: "… 해 뜰 때까지 놀고 있을 것 같아?",
   },
   zh: {
+    remoteFix: "Spotify 更新后自动修复",
+    remoteFixHint: "Mirage 会从它的 GitHub 仓库加载小修复，无需新版本。只下载文件，不发送任何内容。",
+    partFailed: "Mirage 的某个部分无法启动（{p}）。其他功能照常运行。如需反馈，请在 Mirage 设置中复制诊断信息。",
     g_library: "音乐库", libBpm: "曲目列表中显示速度和调性", libBpmHint: "在歌单和专辑页面的时长旁显示 BPM 和调性（Camelot，例如 8A）——会为每首可见歌曲加载 Spotify 的音频分析", libMajor: "{k} 大调",
     libMinor: "{k} 小调", libDupNote: "查找重复：右键点击你自己的歌单 →“移除重复歌曲”", dupMenu: "移除重复歌曲", dupTitle: "重复歌曲",
     dupLoading: "正在查找重复歌曲 …", dupNone: "此歌单中没有重复歌曲", dupExact: "完全重复——保留第一首", dupMaybe: "可能是同一首歌（其他版本）",
