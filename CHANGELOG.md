@@ -12,57 +12,38 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Added
 
-- Search in the settings got smarter: it finds names and hints in your language and in English, highlights the matches, shows only the sections with results and keeps the window from jumping. Ctrl + F or / jumps into the search, Esc clears it, Enter jumps to the first result.
-- After the first-start intro, three short pointers show where the immersive button, party mode and the settings are. They show only once and can be skipped.
-
-### Changed
-
-- All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English.
-- The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
-- After a Spotify update, Mirage checks the new version once at startup and says so in a small note: "Spotify 1.3.10 detected – Mirage runs as usual". If something it relies on is missing, the note says exactly what, with buttons to open the help and copy the diagnostics. It shows once per version, never on a fresh install, and closes by itself.
-
-### Changed
-
-- Checked against Spotify 1.3.10: volume and mute keep working with Spotify's new volume handling, and old style rules for parts Spotify no longer has were tidied up.
-- The nightly compatibility check now also tests the newest Windows version of Spotify, not just the Linux one.
-- The mini player (picture-in-picture window) now has the Mirage look: cover colours, glass, the round play button and the coloured progress line. Its colours follow the song while it is open.
-- New Spotify pages in the Mirage look: the new song page, concert pages, venues and your saved concerts, the taste profile, the bell feed, the new Browse page, video feed tiles and the "on tour" cards in This Is playlists.
-
-### Fixed
-
-- Light schemes: placeholder text in search and input fields was white and could not be read.
-- Light schemes: the listen counts in your Wrapped Top Songs playlist are now dark enough to read.
+- Song changes in party mode feel like a DJ mix. Over the last bars of a song, the light already drifts into the next song's colours, stage lights and tempo, the crowd calms down and holds its breath, and the first beat of the new song lands with a hit. Skipping a song crossfades quickly without a flash. If the queue changes at the last moment, the light follows the new next song.
+- Guests can react from their phones with heart, fire, applause and wow. The reactions rise as small lights from the crowd on the party screen, to the left and right of the lyrics and the song title. Many taps at once make one bigger wave instead of a flood, each phone counts at most once every 0.7 seconds, and with "No flashes" the crowd lights glow softly instead of flickering. You can turn reactions off in the party settings.
 - Two new visualizer styles. "Wave field" is a calm, flowing field of light lines in your cover's colours: the music lifts it and every beat sends a wave out from the cover. "Cover particles" lets the cover break apart into glowing pieces on drops and big moments and slowly puts it back together. Both are lighter on "Light" and do nothing on "Calm".
 - Album journey: when you play an album, the cover view shows its track list next to the cover. You see what you've heard, what's playing with its progress, what's still coming, how long the album still runs and, when Spotify has them, the credits of the current song. Click a track to play it. Turn it on or off with the album button at the top right.
 - Clock view for listening in the background: a large clock with the date, the current song in small, and a soft light in the cover's colours. It barely moves, uses almost no power and shifts by a few pixels every minute so nothing burns into the screen. Open it with the clock symbol in the view switcher or the 6 key; click the time to show or hide the date.
 - Duets in the lyrics: each singer gets their own colour taken from the cover, and lines sung together show both. Mirage recognises singers from word-by-word lyrics (AMLL) and from names written in the lyrics ("Name:", "[Verse 2: Name]", "[Name & Name]"). Karaoke fills each word in the singer's colour. Turn it off with "Colour each voice" in the settings.
+- The mini player (picture-in-picture window) now has the Mirage look: cover colours, glass, the round play button and the coloured progress line. Its colours follow the song while it is open.
+- New Spotify pages in the Mirage look: the new song page, concert pages, venues and your saved concerts, the taste profile, the bell feed, the new Browse page, video feed tiles and the "on tour" cards in This Is playlists.
+- After a Spotify update, Mirage checks the new version once at startup and says so in a small note: "Spotify 1.3.10 detected – Mirage runs as usual". If something it relies on is missing, the note says exactly what, with buttons to open the help and copy the diagnostics. It shows once per version, never on a fresh install, and closes by itself.
+- Search in the settings got smarter: it finds names and hints in your language and in English, highlights the matches, shows only the sections with results and keeps the window from jumping. Ctrl + F or / jumps into the search, Esc clears it, Enter jumps to the first result.
+- After the first-start intro, three short pointers show where the immersive button, party mode and the settings are. They show only once and can be skipped.
+- The overlay app's party lights now also work with Nanoleaf (panels, Shapes, Canvas, Lines), LIFX bulbs and strips, and Yeelight bulbs. Everything stays in your home network, without any account or cloud. Find them in the setup assistant or the settings, pair Nanoleaf with its power button, and switch on "LAN Control" for Yeelight in its app. Nanoleaf panels and LIFX strips show a colour gradient, and all three respect "No flashes", the maximum brightness and the timing per light. When the party ends, they go back to how they were.
 
 ### Changed
 
-- Backing vocals in brackets are now smaller and quieter, and when they come at the end of a line they sit just below it. Labels like "(Chorus)" or "(x2)" are no longer treated as backing vocals.
-### Changed
-
+- Mirage uses much less CPU in the background. With the window minimised or hidden, the immersive view no longer draws anything, even if Spotify keeps asking for frames. The cover view redraws only a few times per second while nothing moves, and the playing row in track lists no longer keeps the processor busy. Nothing looks different.
 - Instrument and sound-effect recognition in party mode was tested on 201 real song previews and is now more reliable. It finds trap 808s, acoustic guitar, distorted guitar, hi-hats and kicks far more often, and no longer mistakes choirs for strings, bluegrass banjo for hi-hats, or country and jazz grooves for sidechain pumping.
 - The light pictures for instruments and effects now follow how sure Mirage is: soft when it is only just sure, full when it is certain.
 - Pads, bells, organ and scratch pictures no longer come from the song preview, because the test showed they could not be told apart reliably.
-
-### Fixed
-
-- Previews that fade in from silence no longer confuse the instrument recognition.
-- The overlay app's party lights now also work with Nanoleaf (panels, Shapes, Canvas, Lines), LIFX bulbs and strips, and Yeelight bulbs. Everything stays in your home network, without any account or cloud. Find them in the setup assistant or the settings, pair Nanoleaf with its power button, and switch on "LAN Control" for Yeelight in its app. Nanoleaf panels and LIFX strips show a colour gradient, and all three respect "No flashes", the maximum brightness and the timing per light. When the party ends, they go back to how they were.
-- Guests can react from their phones with heart, fire, applause and wow. The reactions rise as small lights from the crowd on the party screen, to the left and right of the lyrics and the song title. Many taps at once make one bigger wave instead of a flood, each phone counts at most once every 0.7 seconds, and with "No flashes" the crowd lights glow softly instead of flickering. You can turn reactions off in the party settings.
-
-### Changed
-
-- Song changes in party mode feel like a DJ mix. Over the last bars of a song, the light already drifts into the next song's colours, stage lights and tempo, the crowd calms down and holds its breath, and the first beat of the new song lands with a hit. Skipping a song crossfades quickly without a flash. If the queue changes at the last moment, the light follows the new next song.
+- Backing vocals in brackets are now smaller and quieter, and when they come at the end of a line they sit just below it. Labels like "(Chorus)" or "(x2)" are no longer treated as backing vocals.
 - During an AI DJ announcement the party kicker shows "DJ", and short DJ comments no longer switch the stage to calm and back. Songs the DJ plays get the full show.
+- All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English.
+- Checked against Spotify 1.3.10: volume and mute keep working with Spotify's new volume handling, and old style rules for parts Spotify no longer has were tidied up.
+- The nightly compatibility check now also tests the newest Windows version of Spotify, not just the Linux one.
+- The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
 
 ### Fixed
 
 - AI DJ announcements in the current Spotify version are now recognised, so the stage calms down while the DJ talks.
-### Changed
-
-- Mirage uses much less CPU in the background. With the window minimised or hidden, the immersive view no longer draws anything, even if Spotify keeps asking for frames. The cover view redraws only a few times per second while nothing moves, and the playing row in track lists no longer keeps the processor busy. Nothing looks different.
+- Previews that fade in from silence no longer confuse the instrument recognition.
+- Light schemes: placeholder text in search and input fields was white and could not be read.
+- Light schemes: the listen counts in your Wrapped Top Songs playlist are now dark enough to read.
 
 ## [1.26.0] – 2026-11-18
 
