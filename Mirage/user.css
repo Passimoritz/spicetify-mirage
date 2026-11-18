@@ -5916,3 +5916,227 @@ html.mirage-rich #mirage-stage .m-aurora {
   opacity: 0.5;
   cursor: default;
 }
+
+/* === 1.27 i18n === */
+/* beim Suchen stehen die Treffer oben, auch wenn das Fenster seine Höhe behält */
+.mirage-settings.is-searching {
+  align-content: start;
+}
+/* Suche in den Einstellungen: bleibt beim Scrollen oben stehen, Lupe links, Trefferzahl und „/“-Hinweis rechts */
+.mirage-settings .m-search-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 0 8px;
+  padding: 4px 0 6px;
+  background: rgba(var(--spice-rgb-main), 0.96);
+}
+.mirage-settings .m-search-bar .m-search {
+  margin: 0;
+  padding: 0 72px 0 40px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.mirage-settings .m-search-bar .m-search:focus {
+  outline: none;
+  border-color: rgba(var(--m-a-rgb), 0.7);
+  background: rgba(var(--m-a-rgb), 0.08);
+  box-shadow: 0 0 0 3px rgba(var(--m-a-rgb), 0.22);
+}
+.mirage-settings .m-search-bar .m-search::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+.mirage-settings .m-search-ic {
+  display: inline-flex;
+  color: var(--spice-subtext);
+  pointer-events: none;
+}
+.mirage-settings .m-search-ic svg {
+  width: 18px;
+  height: 18px;
+}
+.mirage-settings .m-search-bar > .m-search-ic {
+  position: absolute;
+  top: 15px;
+  left: 13px;
+}
+.mirage-settings .m-search-bar:focus-within > .m-search-ic {
+  color: var(--m-a);
+}
+.mirage-settings .m-search-count,
+.mirage-settings .m-search-kbd {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+  font: 600 11px var(--m-mono);
+  color: var(--spice-subtext);
+}
+.mirage-settings .m-search-count {
+  right: 38px;
+  font-variant-numeric: tabular-nums;
+}
+.mirage-settings .m-search-kbd {
+  right: 12px;
+  min-width: 20px;
+  padding: 2px 6px;
+  border: 1px solid var(--m-line-strong);
+  border-radius: 6px;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+.mirage-settings .m-search-bar:focus-within .m-search-kbd,
+.mirage-settings.is-searching .m-search-kbd {
+  opacity: 0;
+}
+/* Fundstellen (CSS Custom Highlight API: keine zusätzlichen Elemente, kein Umbruch) */
+::highlight(mirage-hit) {
+  background-color: rgba(var(--m-a-rgb), 0.38);
+  color: var(--spice-text);
+}
+/* nichts gefunden: freundlich, mittig, mit Knopf zum Leeren */
+.mirage-settings .m-search-none {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 28px 16px 32px;
+  text-align: center;
+  animation: m-search-none 0.3s var(--m-ease) both;
+}
+.mirage-settings .m-search-none .m-search-ic svg {
+  width: 30px;
+  height: 30px;
+  opacity: 0.7;
+}
+.mirage-settings .m-search-none b {
+  font-size: 15px;
+}
+.mirage-settings .m-search-none small {
+  color: var(--spice-subtext);
+}
+.mirage-settings .m-search-none .m-btn {
+  margin-top: 6px;
+}
+@keyframes m-search-none {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Wegweiser nach der Einführung: Lichtkreis um den echten Knopf, Karte mit Pfeil daneben */
+.m-coach-ring {
+  position: fixed;
+  z-index: 10000;
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px rgba(var(--m-a-rgb), 0.9),
+    0 0 24px 4px rgba(var(--m-a-rgb), 0.45),
+    0 0 0 100vmax rgba(0, 0, 0, 0.32);
+  transition: left 0.4s var(--m-ease), top 0.4s var(--m-ease), width 0.4s var(--m-ease), height 0.4s var(--m-ease);
+}
+.mirage-coach {
+  --ax: 50%;
+
+  position: fixed;
+  z-index: 10001;
+  display: grid;
+  gap: 6px;
+  width: min(320px, calc(100vw - 24px));
+  padding: 16px 18px 10px;
+  border-radius: 18px;
+  background: rgba(var(--spice-rgb-main), 0.96);
+  border: 1px solid var(--m-line-strong);
+  box-shadow: 0 20px 60px -20px rgba(var(--m-b-rgb), 0.7), 0 0 0 1px rgba(var(--m-a-rgb), 0.15);
+  color: var(--spice-text);
+  font: 500 14px/1.45 var(--m-font);
+  transition: left 0.4s var(--m-ease), top 0.4s var(--m-ease);
+}
+.mirage-coach::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: calc(var(--ax) - 7px);
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border: 1px solid var(--m-line-strong);
+  border-right: 0;
+  border-bottom: 0;
+  rotate: 45deg;
+}
+.mirage-coach.is-above::before {
+  top: auto;
+  bottom: -7px;
+  rotate: 225deg;
+}
+.mirage-coach.is-free {
+  right: 24px;
+  bottom: 112px;
+}
+.mirage-coach.is-free::before {
+  display: none;
+}
+.mirage-coach.is-step > * {
+  animation: m-coach-in 0.35s var(--m-ease) both;
+}
+.mirage-coach b {
+  font-size: 16px;
+}
+.mirage-coach .m-kick {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+}
+.mirage-coach .m-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 6px 0;
+}
+.mirage-coach .m-btn {
+  border: 1px solid var(--m-line-strong);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--spice-text);
+  font: 600 13px var(--m-font);
+  padding: 8px 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+}
+.mirage-coach .m-btn:hover {
+  background: rgba(var(--m-a-rgb), 0.16);
+  border-color: rgba(var(--m-a-rgb), 0.5);
+}
+.mirage-coach .m-btn.is-primary {
+  background: var(--m-a);
+  border-color: transparent;
+  color: var(--spice-main);
+}
+.mirage-coach .m-coach-skip {
+  margin-right: auto;
+  border-color: transparent;
+  background: none;
+  color: var(--spice-subtext);
+}
+.mirage-coach :focus-visible {
+  outline: 2px solid var(--m-a);
+  outline-offset: 2px;
+}
+@keyframes m-coach-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .m-coach-ring,
+  .mirage-coach {
+    transition: none;
+  }
+  .mirage-coach.is-step > *,
+  .mirage-settings .m-search-none {
+    animation: none;
+  }
+}
+/* === end i18n === */

@@ -1,5 +1,5 @@
 import { S, root, VERSION } from "./core.js";
-import { t } from "./i18n.js";
+import { t, I18N, LANG } from "./i18n.js";
 import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme } from "./config.js";
 import { current } from "./color.js";
 import { beat } from "./audio.js";
@@ -412,24 +412,98 @@ const decode = (prefix, text) => {
 /* ---------------------------------------------------------------- Einstellungs-Dialog */
 // Suche in den Einstellungen: zeigt nur passende Schalter, Regler und Auswahlen (mit ihrer Überschrift) und
 // klappt die Gruppen auf, in denen etwas passt. Eine „Einheit“ ist eine Zeile oder eine Beschriftung samt
-// den Bedienelementen bis zur nächsten Beschriftung.
+// den Bedienelementen bis zur nächsten Beschriftung. Gesucht wird in Name und Hinweis in der eigenen Sprache und
+// zusätzlich im englischen Text derselben Einstellung (wer „color“ tippt, findet auch „Farben“), ohne Akzente;
+// mehrere Wörter müssen alle passen. Treffer leuchten über die CSS-Highlight-API auf (ohne das DOM anzufassen).
 let query = "";
 const LABEL = ".m-row, .m-schemes-head, .m-note";
+const SKIP = "summary, .m-search-bar, .m-search-none, .m-version, .m-sr, .m-section-reset";
+const plain = (x) => String(x).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+// übersetzter Text → englischer Text (nur einmal gebaut, nur wenn nicht ohnehin Englisch)
+let toEn = null;
+const english = () => {
+  if (toEn) return toEn;
+  toEn = new Map();
+  if (LANG === "en") return toEn;
+  for (const [k, v] of Object.entries(I18N[LANG] || {})) if (typeof v === "string" && typeof I18N.en[k] === "string" && v !== I18N.en[k]) toEn.set(v.trim(), I18N.en[k]);
+  return toEn;
+};
+// englische Wörter, unter denen man eine Einstellung auch sucht
+const SYN = {
+  color: "colour", colors: "colours", gray: "grey", theme: "scheme colour", palette: "scheme colour",
+  battery: "energy power", power: "performance energy", fps: "performance smooth", lag: "performance smooth", slow: "performance",
+  speed: "performance", typeface: "font", karaoke: "lyrics", words: "lyrics", text: "lyrics font",
+  transparent: "glass blur", strobe: "flash", epilepsy: "flash", photosensitive: "flash", seizure: "flash",
+  phone: "live guest", qr: "live", tv: "screen cast", chromecast: "screen cast", cast: "screen",
+  backup: "file copy", export: "copy save file", import: "load paste", language: "translate", visualiser: "visualizer",
+  spectrum: "visualizer", quiz: "game", games: "game", dark: "bright calm", brightness: "bright",
+  shortcut: "keyboard", keys: "keyboard", hotkey: "keyboard", request: "wish",
+};
+const words = (q) => plain(q).split(/\s+/).filter(Boolean).map((w) => [w, ...(SYN[w] || "").split(" ").filter(Boolean)]);
+const haystack = new WeakMap();
+function textOf(els) {
+  let s = haystack.get(els[0]);
+  if (s != null) return s;
+  const map = english(), parts = [];
+  for (const e of els) {
+    parts.push(e.textContent);
+    for (const n of [e, ...e.querySelectorAll("b, small, summary, option, button, span")]) {
+      const v = n.childNodes.length && n.firstChild.nodeType === 3 ? n.firstChild.data.trim() : "";
+      if (v && map.has(v)) parts.push(map.get(v));
+    }
+  }
+  s = plain(parts.join(" "));
+  haystack.set(els[0], s);
+  return s;
+}
+const matches = (hay, ws) => ws.every((alts) => alts.some((w) => hay.includes(w)));
+// Fundstellen markieren: nur sichtbare Beschriftungen und Hinweise, nur die getippten Wörter
+function highlight(box, ws) {
+  const H = globalThis.Highlight, reg = globalThis.CSS?.highlights;
+  if (!H || !reg) return;
+  if (!ws.length) return reg.delete("mirage-hit");
+  const ranges = [];
+  const tw = document.createTreeWalker(box, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement?.closest("b, small, summary") && !n.parentElement.closest(".m-hide, .m-search-bar, .m-search-none") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
+  });
+  for (let n = tw.nextNode(); n && ranges.length < 400; n = tw.nextNode()) {
+    const low = n.data.toLowerCase();
+    // nur, wo Kleinschreibung die Länge nicht ändert – sonst lägen die Markierungen neben dem Text
+    if (low.length !== n.data.length) continue;
+    for (const [w] of ws) {
+      for (let i = low.indexOf(w); i >= 0 && ranges.length < 400; i = low.indexOf(w, i + w.length)) {
+        const r = new Range();
+        r.setStart(n, i);
+        r.setEnd(n, i + w.length);
+        ranges.push(r);
+      }
+    }
+  }
+  reg.set("mirage-hit", new H(...ranges));
+}
+// offene Gruppen vor dem Suchen: nach dem Leeren der Suche genau so wieder
+let openBefore = null;
 function applySearch(box) {
-  const q = query.trim().toLowerCase();
+  const q = query.trim(), ws = words(q);
   const units = [];
   for (const parent of [box, ...box.querySelectorAll("details.m-group")]) {
     let unit = null;
     for (const c of parent.children) {
-      if (c.matches("summary, .m-search, .m-search-none, .m-version, .m-sr, .m-section-reset")) continue;
+      if (c.matches(SKIP)) continue;
       if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent }));
       unit.els.push(c);
     }
   }
+  const groups = [...box.querySelectorAll("details.m-group")];
+  if (q && !openBefore) {
+    openBefore = new Set(groups.filter((d) => d.open).map((d) => d.querySelector("summary").textContent));
+    // das Fenster schrumpft beim Tippen nicht zusammen (sonst springt es in der Bildmitte hin und her)
+    box.style.minHeight = Math.round(Math.min(box.offsetHeight, innerHeight * 0.7)) + "px";
+  }
   const hit = new Set();
   let found = 0;
   for (const u of units) {
-    const ok = !q || u.els.some((e) => e.textContent.toLowerCase().includes(q));
+    const ok = !q || matches(textOf(u.els), ws);
     for (const e of u.els) e.classList.toggle("m-hide", !ok);
     if (ok && q) {
       hit.add(u.parent);
@@ -438,39 +512,113 @@ function applySearch(box) {
   }
   // beim Suchen stören die Rücksetz-Knöpfe nur: sie gelten für die ganze Gruppe, nicht für die Treffer
   for (const r of box.querySelectorAll(".m-section-reset")) r.classList.toggle("m-hide", !!q);
-  for (const d of box.querySelectorAll("details.m-group")) {
-    d.classList.toggle("m-hide", !!q && !hit.has(d) && !d.querySelector("summary").textContent.toLowerCase().includes(q));
-    if (q && hit.has(d)) d.open = true;
+  for (const d of groups) {
+    // passt nur der Gruppenname: die ganze Gruppe zeigen
+    const whole = !!q && !hit.has(d) && matches(textOf([d.querySelector("summary")]), ws);
+    if (whole) {
+      for (const c of d.children) if (!c.matches("summary, .m-section-reset")) c.classList.remove("m-hide");
+      found++;
+    }
+    d.classList.toggle("m-hide", !!q && !hit.has(d) && !whole);
+    if (q && (hit.has(d) || whole)) d.open = true;
   }
-  box.querySelector(".m-search-none")?.classList.toggle("m-hide", !q || hit.size > 0 || units.some((u) => u.parent === box && !u.els[0].classList.contains("m-hide")));
+  if (!q && openBefore) {
+    for (const d of groups) d.open = openBefore.has(d.querySelector("summary").textContent);
+    openBefore = null;
+    box.style.removeProperty("min-height");
+  }
+  box.querySelector(".m-search-none")?.classList.toggle("m-hide", !q || found > 0);
+  box.classList.toggle("is-searching", !!q);
+  const count = box.querySelector(".m-search-count");
+  if (count) count.textContent = q ? String(found) : "";
+  highlight(box, q ? ws : []);
   // Trefferzahl leise ansagen (nur wenn sie sich ändert, sonst redet der Screenreader bei jedem Buchstaben)
   const say = box.querySelector(".m-search-say");
   const msg = !q ? "" : found ? t("searchCount").replace("{n}", found) : t("searchNone");
   if (say && say.textContent !== msg) say.textContent = msg;
 }
+const SEARCH_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/></svg>';
+// erstes Bedienelement im ersten Treffer (Enter / Pfeil runter im Suchfeld springt dorthin)
+const firstHit = (box) => [...box.querySelectorAll("input:not(.m-search), select, button, summary")].find((x) => !x.closest(".m-hide, .m-search-bar, .m-search-none, .m-section-reset") && shown(x));
+function searchBar(box) {
+  const bar = el("div", "m-search-bar");
+  const ic = el("span", "m-search-ic");
+  ic.innerHTML = SEARCH_IC;
+  const search = el("input", "m-search");
+  Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query, spellcheck: false, autocomplete: "off" });
+  search.setAttribute("aria-label", t("searchSettings"));
+  search.setAttribute("aria-keyshortcuts", "Control+F /");
+  search.title = t("searchClear");
+  const count = el("span", "m-search-count");
+  count.setAttribute("aria-hidden", "true");
+  const kbd = el("kbd", "m-search-kbd", "/");
+  kbd.setAttribute("aria-hidden", "true");
+  // höchstens ein Durchlauf pro Bild: schnelles Tippen staut nichts auf
+  let raf = 0;
+  search.oninput = () => {
+    query = search.value;
+    if (!raf) raf = requestAnimationFrame(() => ((raf = 0), applySearch(box)));
+  };
+  search.onkeydown = (e) => {
+    // Esc leert zuerst die Suche; erst das zweite Esc schließt das Fenster
+    if (e.key === "Escape" && search.value) {
+      e.preventDefault();
+      e.stopPropagation();
+      search.value = query = "";
+      applySearch(box);
+    } else if ((e.key === "Enter" || e.key === "ArrowDown") && search.value.trim()) {
+      const f = firstHit(box);
+      if (!f) return;
+      e.preventDefault();
+      f.focus();
+      f.scrollIntoView({ block: "nearest" });
+    }
+  };
+  bar.append(ic, search, count, kbd);
+  return { bar, search };
+}
+function emptyState(box, search) {
+  const none = el("div", "m-search-none m-hide");
+  const ic = el("span", "m-search-ic");
+  ic.innerHTML = SEARCH_IC;
+  const clear = button(t("searchReset"), () => {
+    search.value = query = "";
+    applySearch(box);
+    search.focus();
+  });
+  none.append(ic, el("b", "", t("searchNone")), el("small", "", t("searchNoneHint")), clear);
+  return none;
+}
+// Strg + F oder „/“ springt ins Suchfeld, solange der Dialog offen ist (ein einziger Lauscher, er räumt sich selbst weg)
+let findKeys = null;
+function bindFind(box) {
+  if (findKeys) document.removeEventListener("keydown", findKeys, true);
+  findKeys = (e) => {
+    if (!box.isConnected) {
+      document.removeEventListener("keydown", findKeys, true);
+      findKeys = null;
+      return;
+    }
+    const typing = e.target?.matches?.("input:not([type=checkbox]):not([type=range]):not([type=radio]), textarea, select, [contenteditable]");
+    const ctrlF = (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.code === "KeyF";
+    if (!ctrlF && !(e.key === "/" && !typing && !e.ctrlKey && !e.altKey && !e.metaKey)) return;
+    const s = box.querySelector(".m-search");
+    if (!s) return;
+    e.preventDefault();
+    e.stopPropagation();
+    s.focus();
+    s.select();
+  };
+  document.addEventListener("keydown", findKeys, true);
+}
 function render(box) {
   // geschlossener Dialog: nichts neu aufbauen (setPreset/setPerf rufen das auch von außen)
   render.again = () => box.isConnected && render(box);
   const kids = [];
-  const search = el("input", "m-search");
-  Object.assign(search, { type: "search", placeholder: t("searchSettings"), value: query });
-  search.setAttribute("aria-label", t("searchSettings"));
-  search.title = t("searchClear");
-  search.oninput = () => {
-    query = search.value;
-    applySearch(box);
-  };
-  // Esc leert zuerst die Suche; erst das zweite Esc schließt das Fenster
-  search.onkeydown = (e) => {
-    if (e.key !== "Escape" || !search.value) return;
-    e.preventDefault();
-    e.stopPropagation();
-    search.value = query = "";
-    applySearch(box);
-  };
+  const { bar, search } = searchBar(box);
   const say = el("span", "m-sr m-search-say");
   say.setAttribute("role", "status");
-  kids.push(search, say, el("small", "m-note m-search-none m-hide", t("searchNone")));
+  kids.push(bar, say, emptyState(box, search));
 
   // ---- Presets
   kids.push(head(t("presetTitle"), t("presetHint")));
@@ -831,6 +979,7 @@ function render(box) {
   const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
   const hadFocus = document.activeElement?.classList.contains("m-search");
   box.replaceChildren(...kids);
+  bindFind(box);
   labelControls(box);
   applySearch(box);
   if (hadFocus) search.focus();
@@ -909,6 +1058,7 @@ function tour(auto) {
     const had = box.contains(document.activeElement);
     box.remove();
     if (had && from?.isConnected) from.focus();
+    coachLater();
   };
   box.onkeydown = (e) => {
     if (e.key !== "Escape") return;
@@ -921,7 +1071,7 @@ function tour(auto) {
     dots.setAttribute("aria-hidden", "true");
     TOUR.forEach((_, j) => dots.append(el("i", j === i ? "is-on" : "")));
     const row = el("div", "m-actions");
-    if (act) row.append(button(t(k + "Try"), () => { box.remove(); act(); }));
+    if (act) row.append(button(t(k + "Try"), () => { box.remove(); act(); coachLater(); }));
     row.append(
       i < TOUR.length - 1 ? button(t("tourNext"), () => { i++; box.removeAttribute("aria-live"); draw(); }, "is-primary") : button(t("tourDone"), end, "is-primary"),
       button("×", end, "m-close")
@@ -935,6 +1085,106 @@ function tour(auto) {
   // erst einhängen, dann füllen: nur so sagt ein Screenreader den ersten Schritt an
   if (auto === true) setTimeout(draw, 150);
   else draw();
+}
+
+// Wegweiser nach der Einführung (einmal im Leben): drei kurze Hinweise direkt an den echten Knöpfen –
+// Immersiv-Knopf, Party, Profilmenü mit den Einstellungen. Erst wenn nichts anderes offen ist (Immersiv-Modus,
+// Einstellungen, Einführungskarte); fehlt ein Knopf (andere Spotify-Version), steht der Hinweis ohne Pfeil in der Ecke.
+// Gemerkt wird schon beim Erscheinen: nach Überspringen, Fertig oder Neustart kommt er nie wieder.
+const COACH_KEY = "mirage:coach";
+const ORB = ".m-orb-btn";
+const PROFILE = '[data-testid="user-widget-link"], .main-userWidget-box, .main-topBar-avatarButton';
+const COACH = [
+  ["coach1t", "coach1", ORB],
+  ["coach2t", "coach2", ORB],
+  ["coach3t", "coach3", PROFILE],
+];
+let coachWait = 0;
+function coachLater() {
+  try {
+    if (localStorage.getItem(COACH_KEY)) return;
+  } catch { return; }
+  clearTimeout(coachWait);
+  const t0 = Date.now();
+  (function check() {
+    const busy = immersive.isOpen() || document.querySelector(".mirage-settings, .mirage-welcome, .mirage-coach") || document.hidden;
+    // nach zwei Minuten voller Beschäftigung: beim nächsten Start der Einführung eben nicht – nicht ewig lauern
+    if (busy) return Date.now() - t0 < 120e3 && (coachWait = setTimeout(check, 700));
+    coachWait = setTimeout(() => !immersive.isOpen() && !document.querySelector(".mirage-settings, .mirage-welcome") && coach(), 600);
+  })();
+}
+function coach() {
+  try {
+    if (localStorage.getItem(COACH_KEY)) return;
+    localStorage.setItem(COACH_KEY, VERSION);
+  } catch { return; }
+  const ring = el("div", "m-coach-ring");
+  ring.setAttribute("aria-hidden", "true");
+  const card = el("div", "mirage-coach");
+  card.setAttribute("role", "dialog");
+  card.setAttribute("aria-modal", "false");
+  card.setAttribute("aria-label", t("welcomeTitle"));
+  const from = document.activeElement;
+  let i = 0, target = null;
+  const place = () => {
+    const vw = innerWidth, vh = innerHeight, r = target?.isConnected ? target.getBoundingClientRect() : null;
+    const ok = r && r.width > 0 && r.bottom > 0 && r.top < vh;
+    card.classList.toggle("is-free", !ok);
+    ring.hidden = !ok;
+    if (!ok) {
+      card.style.removeProperty("left");
+      card.style.removeProperty("top");
+      return;
+    }
+    const pad = 6;
+    Object.assign(ring.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + pad * 2 + "px", height: r.height + pad * 2 + "px" });
+    const w = card.offsetWidth, h = card.offsetHeight, gap = 16;
+    const below = r.bottom + gap + h < vh - 8;
+    const x = Math.max(12, Math.min(vw - w - 12, r.left + r.width / 2 - w / 2));
+    const y = below ? r.bottom + gap : Math.max(12, r.top - gap - h);
+    card.classList.toggle("is-above", !below);
+    card.style.left = x + "px";
+    card.style.top = y + "px";
+    card.style.setProperty("--ax", Math.max(18, Math.min(w - 18, r.left + r.width / 2 - x)) + "px");
+  };
+  let raf = 0;
+  const onResize = () => !raf && (raf = requestAnimationFrame(() => ((raf = 0), place())));
+  const end = () => {
+    removeEventListener("resize", onResize);
+    document.removeEventListener("keydown", onKey, true);
+    const had = card.contains(document.activeElement);
+    card.remove();
+    ring.remove();
+    if (had && from?.isConnected) from.focus();
+  };
+  const onKey = (e) => {
+    if (e.key !== "Escape" || !card.isConnected) return;
+    e.stopPropagation();
+    end();
+  };
+  const draw = () => {
+    const [tk, k, sel] = COACH[i];
+    target = [...document.querySelectorAll(sel)].find((x) => x.getClientRects().length) || null;
+    const row = el("div", "m-actions");
+    const last = i === COACH.length - 1;
+    row.append(
+      button(t("coachSkip"), end, "m-coach-skip"),
+      button(last ? t("tourDone") : t("tourNext"), () => (last ? end() : (i++, draw())), "is-primary")
+    );
+    card.replaceChildren(el("small", "m-kick", `${i + 1} / ${COACH.length}`), el("b", "", t(tk)), el("span", "", t(k)), row);
+    card.classList.remove("is-step");
+    // neuer Schritt: kurz einblenden (ohne Bewegung, wenn weniger Bewegung gewünscht ist – das regelt das CSS)
+    void card.offsetWidth;
+    card.classList.add("is-step");
+    place();
+    // wer gerade irgendwo tippt, behält den Fokus (sonst landete das nächste Leerzeichen auf „Weiter“)
+    const typing = document.activeElement?.matches?.("input, textarea, select, [contenteditable]") && !card.contains(document.activeElement);
+    if (!typing) card.querySelector(".is-primary")?.focus({ preventScroll: true });
+  };
+  document.body.append(ring, card);
+  addEventListener("resize", onResize);
+  document.addEventListener("keydown", onKey, true);
+  draw();
 }
 
 export { applySettings, openSettings, welcome, tour, setPreset, setPerf, presetFill };

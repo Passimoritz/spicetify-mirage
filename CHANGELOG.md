@@ -10,6 +10,16 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Search in the settings got smarter: it finds names and hints in your language and in English, highlights the matches, shows only the sections with results and keeps the window from jumping. Ctrl + F or / jumps into the search, Esc clears it, Enter jumps to the first result.
+- After the first-start intro, three short pointers show where the immersive button, party mode and the settings are. They show only once and can be skipped.
+
+### Changed
+
+- All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English.
+- The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added

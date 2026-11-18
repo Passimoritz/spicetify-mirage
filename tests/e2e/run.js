@@ -1982,6 +1982,87 @@ async function photoWall() {
   await T.js(`document.querySelector(".m-im-side-x")?.click(); 1`);
 }
 
+// Suche in den Einstellungen: filtert live über alle Gruppen (auch mit englischem Wort im deutschen Nachbau),
+// freundlicher Leerzustand, Esc leert und stellt die Gruppen wieder her, Strg + F springt ins Feld
+async function settingsSearch() {
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
+  await until(() => T.js(`!!document.querySelector(".mirage-settings .m-search")`), 2000, "suche: Einstellungen gehen auf");
+  // die Suche läuft höchstens einmal pro Bild: kurz warten, bis das Getippte angewendet ist
+  const type = async (q) => (await T.js(`(() => { const s = document.querySelector(".mirage-settings .m-search"); s.value = ${JSON.stringify(q)}; s.dispatchEvent(new Event("input")); return 1; })()`), await wait(300));
+  const state = () => T.js(`(() => {
+    const b = document.querySelector(".mirage-settings"), vis = (e) => !e.closest(".m-hide") && e.getClientRects().length > 0;
+    const rows = [...b.querySelectorAll(".m-row")].filter(vis);
+    const groups = [...b.querySelectorAll("details.m-group")];
+    return { rows: rows.length, texts: rows.map((r) => r.textContent.toLowerCase()), groups: groups.length, shown: groups.filter((d) => !d.classList.contains("m-hide")).length,
+      open: groups.filter((d) => d.open).length, none: vis(b.querySelector(".m-search-none")), count: b.querySelector(".m-search-count").textContent,
+      hl: CSS.highlights?.get("mirage-hit")?.size ?? -1, value: b.querySelector(".m-search").value, focus: document.activeElement === b.querySelector(".m-search") };
+  })()`);
+  const start = await state();
+  ok(start.rows > 20 && start.shown === start.groups && !start.none, "suche: ohne Suche ist alles da: " + JSON.stringify({ ...start, texts: 0 }));
+  // „Glas“ steht im deutschen Text: nur passende Zeilen, nur ihre Gruppen, Fundstellen markiert
+  await type("glas");
+  let s = await until(async () => { const x = await state(); return x.count && x; }, 2000, "suche: Treffer für „glas“");
+  ok(s.rows > 0 && s.rows < start.rows / 3 && s.texts.some((x) => x.includes("glas")), "suche: nur Zeilen mit „glas“: " + s.texts.join(" | ").slice(0, 300));
+  ok(s.shown < s.groups && s.shown > 0, `suche: nur Gruppen mit Treffern (${s.shown} von ${s.groups})`);
+  ok(s.hl !== 0, "suche: Fundstellen markiert: " + s.hl);
+  // englisches Wort im deutschen Dialog: „color“ findet „Farben“ (über den englischen Text und colour)
+  await type("color");
+  s = await until(async () => { const x = await state(); return x.count && x; }, 2000, "suche: Treffer für „color“");
+  ok(s.rows > 0 && s.texts.some((x) => x.includes("farb")), "suche: „color“ findet deutsche Farb-Einstellungen: " + s.texts.join(" | ").slice(0, 200));
+  // nichts passt: Leerzustand mit Knopf, keine Zeile, keine Gruppe
+  await type("qqxyzzy");
+  s = await until(async () => { const x = await state(); return x.none && x; }, 2000, "suche: Leerzustand erscheint");
+  ok(s.rows === 0 && s.shown === 0, "suche: im Leerzustand nichts anderes sichtbar: " + JSON.stringify({ rows: s.rows, shown: s.shown }));
+  // Esc im Feld: Suche leer, alles wieder da, Gruppen so offen wie vorher
+  await T.js(`document.querySelector(".mirage-settings .m-search").focus(); 1`);
+  T.wc.sendInputEvent({ type: "keyDown", keyCode: "Escape" });
+  T.wc.sendInputEvent({ type: "keyUp", keyCode: "Escape" });
+  s = await until(async () => { const x = await state(); return !x.value && !x.none && x; }, 2000, "suche: Esc leert");
+  ok(s.rows === start.rows && s.shown === s.groups && s.open === start.open, "suche: nach Esc wie vorher: " + JSON.stringify({ rows: s.rows, start: start.rows, open: s.open, openBefore: start.open }));
+  ok(!!(await T.js(`!!document.querySelector(".mirage-settings")`)), "suche: das erste Esc schließt das Fenster nicht");
+  // Strg + F aus dem Dialog heraus springt ins Suchfeld
+  await T.js(`document.querySelector(".mirage-settings .m-search").blur(); document.querySelector(".mirage-settings summary").focus(); 1`);
+  T.wc.sendInputEvent({ type: "keyDown", keyCode: "F", modifiers: ["control"] });
+  T.wc.sendInputEvent({ type: "keyUp", keyCode: "F", modifiers: ["control"] });
+  await until(async () => (await state()).focus, 2000, "suche: Strg + F setzt den Fokus ins Suchfeld");
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+}
+// Wegweiser nach der Einführung: erscheint einmal (erst wenn der Immersiv-Modus zu ist), überspringen geht, danach nie wieder
+async function coachOnce() {
+  const coach = () => T.js(`(() => { const c = document.querySelector(".mirage-coach"); return c ? { kick: c.querySelector(".m-kick").textContent, b: c.querySelector("b").textContent } : null; })()`);
+  const introAgain = async () => {
+    await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
+    await until(() => T.js(`!!document.querySelector(".mirage-settings")`), 2000, "wegweiser: Einstellungen gehen auf");
+    // „Einführung noch einmal zeigen“ in „Teilen, sichern & Hilfe“
+    await T.js(`(() => { [...document.querySelectorAll(".mirage-settings .m-btn")].find((b) => b.textContent === "Einführung noch einmal zeigen").click(); document.querySelector(".mirage-settings")?.remove(); return 1; })()`);
+    await until(() => T.js(`!!document.querySelector(".mirage-welcome .m-close")`), 2000, "wegweiser: Einführung erscheint");
+    await T.js(`document.querySelector(".mirage-welcome .m-close").click(); 1`);
+  };
+  await T.js(`localStorage.removeItem("mirage:coach"); 1`);
+  await introAgain();
+  // solange der Immersiv-Modus offen ist, wartet der Wegweiser
+  await wait(1800);
+  ok(!(await coach()), "wegweiser: nicht über dem offenen Immersiv-Modus");
+  await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  let c = await until(coach, 5000, "wegweiser: erscheint, sobald der Immersiv-Modus zu ist");
+  ok(c.kick === "1 / 3", "wegweiser: drei Schritte: " + c.kick);
+  await T.click(".mirage-coach .is-primary");
+  c = await until(async () => { const x = await coach(); return x?.kick === "2 / 3" && x; }, 2000, "wegweiser: Weiter");
+  await T.click(".mirage-coach .m-coach-skip");
+  await until(async () => !(await coach()) && !(await T.js(`!!document.querySelector(".m-coach-ring")`)), 2000, "wegweiser: Überspringen schließt");
+  ok(!!(await T.js(`localStorage.getItem("mirage:coach")`)), "wegweiser: gemerkt");
+  // Einführung noch einmal: danach kein Wegweiser mehr
+  await introAgain();
+  await wait(2500);
+  ok(!(await coach()), "wegweiser: kommt nur einmal");
+  // Party wieder an für die übrigen Fälle
+  await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await until(() => T.js(`!!document.querySelector('#mirage-immersive [data-mode="party"]')`), 4000, "wegweiser: Immersiv wieder auf");
+  await wait(600);
+  await T.click('#mirage-immersive [data-mode="party"]');
+  await wait(800);
+}
+
 const CASES = [
   // der erste verbindet die Handys
   ["never", neverGame],
@@ -2000,6 +2081,7 @@ Object.assign(ICON, { karaoke: "🎶" });
 CASES.push(["karaoke", karaokeGame]);
 CASES.push(["perf-menu", perfMenu]);
 CASES.push(["photo-wall", photoWall]);
+CASES.push(["settings-search", settingsSearch], ["coach-once", coachOnce]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
