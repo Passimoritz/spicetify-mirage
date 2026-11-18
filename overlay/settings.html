@@ -244,6 +244,13 @@
     <div class="row lrow"><input type="text" id="wledIp" placeholder="192.168.1.40" autocomplete="off"><input type="number" id="wledLeds" min="1" max="490" step="1"><small data-t="wledLeds"></small></div>
     <div class="row"><div><b>Govee</b><small id="goveeState" data-t="goveeHint"></small></div><input type="checkbox" class="toggle" data-key="goveeOn"></div>
     <div class="row lrow"><input type="text" id="goveeIps" placeholder="192.168.1.50, 192.168.1.51" autocomplete="off"><button type="button" class="btn" id="goveeScan" data-t="goveeScan"></button></div>
+    <!-- Nanoleaf: die Adresse zählt erst mit dem Schlüssel vom Koppeln; LIFX und Yeelight: Adressen im Heimnetz -->
+    <div class="row"><div><b>Nanoleaf</b><small id="nanoleafState" role="status" aria-live="polite" data-t="nanoleafHint"></small></div><input type="checkbox" class="toggle" data-key="nanoleafOn"></div>
+    <div class="row lrow"><input type="text" id="nanoleafIp" placeholder="192.168.1.60" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Nanoleaf IP"><button type="button" class="btn" id="nanoleafFind" data-t="wzFind"></button><button type="button" class="btn" id="nanoleafPair" data-t="huePair"></button></div>
+    <div class="row"><div><b>LIFX</b><small id="lifxState" role="status" aria-live="polite" data-t="lifxHint"></small></div><input type="checkbox" class="toggle" data-key="lifxOn"></div>
+    <div class="row lrow"><input type="text" id="lifxIps" placeholder="192.168.1.70, 192.168.1.71" autocomplete="off" spellcheck="false" aria-label="LIFX IP"><button type="button" class="btn" id="lifxScan" data-t="wzFind"></button></div>
+    <div class="row"><div><b>Yeelight</b><small id="yeelightState" role="status" aria-live="polite" data-t="yeelightHint"></small></div><input type="checkbox" class="toggle" data-key="yeelightOn"></div>
+    <div class="row lrow"><input type="text" id="yeelightIps" placeholder="192.168.1.80, 192.168.1.81" autocomplete="off" spellcheck="false" aria-label="Yeelight IP"><button type="button" class="btn" id="yeelightScan" data-t="wzFind"></button></div>
     <div class="row"><div><b>Home Assistant</b><small id="haState" data-t="haHint"></small></div><input type="checkbox" class="toggle" data-key="haOn"></div>
     <div class="row lrow"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false"><input type="password" id="haToken" autocomplete="off" spellcheck="false"><button type="button" class="btn" id="haTest" data-t="haTest"></button></div>
     <div class="row lrow"><input type="text" id="haEntities" autocomplete="off" spellcheck="false"></div>
@@ -319,8 +326,11 @@
     $("#obsHint").textContent = t("obsHint").replace("{w}", Math.round(780 * s)).replace("{h}", Math.round(420 * s));
     $("#obsUrlRow").hidden = !cfg.obs;
     $("#obsPartyRow").hidden = !cfg.obs;
-    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["lightMax", "lightMax"], ["goveeIps", "goveeIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"], ["orgbExclude", "orgbExclude"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
+    for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["lightMax", "lightMax"], ["goveeIps", "goveeIps"], ["lifxIps", "lifxIps"], ["yeelightIps", "yeelightIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"], ["orgbExclude", "orgbExclude"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
     if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
+    if (cfg.nanoleafToken && !nanoleafSaid) $("#nanoleafState").textContent = t("huePaired");
+    // gekoppelte Adresse zeigen, eine gerade gefundene oder getippte aber nicht überschreiben
+    if (!$("#nanoleafIp").value && document.activeElement?.id !== "nanoleafIp") $("#nanoleafIp").value = cfg.nanoleafIp || "";
     // Hue schnell: nur gekoppelt; ohne Client-Schlüssel (vor dieser Version gekoppelt) erst neu koppeln
     $("#hueFastRow").hidden = !cfg.hueUser;
     $("#hueAreaRow").hidden = !cfg.hueUser || !cfg.hueFast;
@@ -437,6 +447,31 @@
   setText("wledIp", "wledIp");
   setText("wledLeds", "wledLeds", true);
   setText("goveeIps", "goveeIps");
+  setText("lifxIps", "lifxIps");
+  setText("yeelightIps", "yeelightIps");
+  // Nanoleaf: die Adresse wird nur mit dem Koppeln gespeichert (zusammen mit ihrem Schlüssel)
+  let nanoleafSaid = false;
+  const sayDev = (id, key, n) => {
+    if (id === "nanoleafState") nanoleafSaid = true;
+    $("#" + id).textContent = t(key).replace("{n}", n ?? "");
+  };
+  $("#nanoleafFind").onclick = async () => {
+    sayDev("nanoleafState", "hueSearching");
+    const list = (await mirage.invoke("nanoleafFind")) || [];
+    if (!list.length) return sayDev("nanoleafState", "nanoleafNone");
+    $("#nanoleafIp").value = list[0].ip;
+    sayDev("nanoleafState", "nanoleafFound", list.map((d) => `${d.name} (${d.ip})`).join(", "));
+  };
+  $("#nanoleafPair").onclick = async () => {
+    sayDev("nanoleafState", "huePairing");
+    const r = await mirage.invoke("nanoleafPair", $("#nanoleafIp").value.trim());
+    sayDev("nanoleafState", r?.ok ? "huePaired" : { button: "nanoleafButton", ip: "lanBadIp" }[r?.error] || "nanoleafUnreachable");
+  };
+  for (const name of ["lifx", "yeelight"]) $(`#${name}Scan`).onclick = async () => {
+    sayDev(name + "State", "hueSearching");
+    const r = await mirage.invoke(name + "Scan");
+    sayDev(name + "State", r?.list?.length ? name + "Found" : name + "None", r?.list?.length);
+  };
   // Home Assistant: Adresse ohne / am Ende; das Token wird nur gesendet, nie angezeigt
   $("#haUrl").onchange = () => mirage.send("set", { haUrl: $("#haUrl").value.trim().replace(/\/+$/, "") });
   $("#haToken").onchange = () => {
@@ -480,7 +515,7 @@
     $("#calBtn").textContent = t(calOn ? "calStop" : "calStart");
     if (!calOn) $("#calDot").classList.remove("on");
   };
-  $("#latDev").replaceChildren(...[["hue", "Philips Hue"], ["wled", "WLED"], ["govee", "Govee"], ["ha", "Home Assistant"], ["orgb", "OpenRGB"], ["chroma", "Razer Chroma"]].map(([value, textContent]) => Object.assign(document.createElement("option"), { value, textContent })));
+  $("#latDev").replaceChildren(...[["hue", "Philips Hue"], ["wled", "WLED"], ["govee", "Govee"], ["ha", "Home Assistant"], ["nanoleaf", "Nanoleaf"], ["lifx", "LIFX"], ["yeelight", "Yeelight"], ["orgb", "OpenRGB"], ["chroma", "Razer Chroma"]].map(([value, textContent]) => Object.assign(document.createElement("option"), { value, textContent })));
   $("#latDev").onchange = () => {
     showLat();
     if (calOn) mirage.invoke("lightCal", latDev());
@@ -575,7 +610,9 @@
     const cleared = Array.isArray(r.cleared) ? r.cleared : [];
     if (cleared.includes("hue")) $("#hueState").textContent = t("moveRepairHue");
     if (cleared.includes("ha")) $("#haState").textContent = t("moveRepairHa");
-    if (cleared.length) text += " · " + cleared.map((x) => t(x === "hue" ? "moveRepairHue" : "moveRepairHa")).join(" · ");
+    if (cleared.includes("nanoleaf")) sayDev("nanoleafState", "moveRepairNanoleaf");
+    const repair = { hue: "moveRepairHue", ha: "moveRepairHa", nanoleaf: "moveRepairNanoleaf" };
+    if (cleared.length) text += " · " + cleared.filter((x) => repair[x]).map((x) => t(repair[x])).join(" · ");
     $("#moveState").textContent = text;
     clearTimeout(moveResult.t);
     moveResult.t = setTimeout(() => ($("#moveState").textContent = ""), cleared.length ? 20000 : 6000);

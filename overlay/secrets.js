@@ -1,9 +1,9 @@
 /* ------------------------------------------------------------------ Zugangsdaten sicher ablegen */
-// Hue-Schlüssel, Hue-Entertainment-Schlüssel und Home-Assistant-Token liegen nicht im Klartext in der
+// Hue-Schlüssel, Hue-Entertainment-Schlüssel, Nanoleaf-Schlüssel und Home-Assistant-Token liegen nicht im Klartext in der
 // Einstellungsdatei, sondern verschlüsselt über Electrons safeStorage (Windows DPAPI, macOS-Schlüsselbund,
 // Linux libsecret/kwallet). Im Speicher des Hauptprozesses bleiben sie Klartext – nur dort werden sie gebraucht.
 // Eigene Datei ohne Electron-Abhängigkeit, damit sich das mit einem nachgebauten safeStorage testen lässt.
-const SECRET = ["hueUser", "hueClientKey", "haToken"];
+const SECRET = ["hueUser", "hueClientKey", "haToken", "nanoleafToken"];
 // Feld in der Einstellungsdatei: { hueUser: "<base64>", … }
 const FIELD = "secrets";
 
@@ -75,7 +75,7 @@ function createSecrets(safeStorage) {
 /* ---- Zugangsdaten gehören zu einer Adresse: der Hue-Schlüssel zu genau dieser Bridge, das Token zu genau
    diesem Home Assistant. Ändert sich die Adresse, ohne dass zugleich neue Zugangsdaten kommen, ginge der alte
    Schlüssel bei der nächsten Party an die neue Adresse – etwa nach dem Import einer fremden Einstellungsdatei. */
-const BOUND = { hueIp: ["hueUser", "hueClientKey"], haUrl: ["haToken"] };
+const BOUND = { hueIp: ["hueUser", "hueClientKey"], haUrl: ["haToken"], nanoleafIp: ["nanoleafToken"] };
 const addr = (v) => String(v ?? "").trim().replace(/\/+$/, "").toLowerCase();
 const moved = (patch, cfg, key) => key in patch && addr(patch[key]) !== addr(cfg[key]);
 
@@ -93,14 +93,17 @@ function rebind(patch, cfg) {
 }
 
 // Änderung aus einem Fenster („set“): Zugangsdaten setzt dort nur, wer ein neues Home-Assistant-Token eintippt –
-// nie der Platzhalter „set“ zurück, nie die Hue-Schlüssel (die kommen nur vom Koppeln). Adressen mit Schlüssel
+// nie der Platzhalter „set“ zurück, nie die Hue- und Nanoleaf-Schlüssel (die kommen nur vom Koppeln). Adressen mit Schlüssel
 // dürfen nur aus dem Einstellungsfenster kommen (trusted); von woanders werden sie verworfen. dropped: verworfene
 // Adressen (für das Protokoll)
 function cleanPatch(patch, cfg, trusted) {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return { patch: {}, dropped: [] };
   const p = { ...patch }, dropped = [];
   // hueCertPin (Fingerabdruck des Bridge-Zertifikats) merkt sich nur der Hauptprozess selbst
-  for (const k of ["hueUser", "hueClientKey", FIELD, "secretsPlain", "hueCertPin"]) delete p[k];
+  for (const k of ["hueUser", "hueClientKey", "nanoleafToken", FIELD, "secretsPlain", "hueCertPin"]) delete p[k];
+  // die Nanoleaf-Adresse kommt nur zusammen mit ihrem Schlüssel vom Koppeln (nanoleafPair), auch nicht aus den Einstellungen
+  if (moved(p, cfg, "nanoleafIp")) dropped.push("nanoleafIp");
+  delete p.nanoleafIp;
   if (p.haToken === "set" || (!trusted && "haToken" in p)) delete p.haToken;
   if (!trusted) {
     for (const key of Object.keys(BOUND)) {

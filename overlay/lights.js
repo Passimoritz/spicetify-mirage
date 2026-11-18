@@ -1,12 +1,15 @@
 /* ------------------------------------------------------------------ Licht im Raum */
-// Im Party-Modus spielt echtes Licht mit: Philips Hue, WLED-LED-Streifen, Govee (LAN), Home Assistant (alle
-// Lichter im Haus), PC-Beleuchtung über OpenRGB und Razer Chroma. Alles läuft im eigenen Netz bzw. auf diesem Rechner; das Theme liefert ~30-mal pro Sekunde
+// Im Party-Modus spielt echtes Licht mit: Philips Hue, WLED-LED-Streifen, Govee (LAN), Nanoleaf, LIFX, Yeelight,
+// Home Assistant (alle Lichter im Haus), PC-Beleuchtung über OpenRGB und Razer Chroma. Alles läuft im eigenen Netz bzw. auf diesem Rechner; das Theme liefert ~30-mal pro Sekunde
 // den Lichtzustand (Akzent, Kick, Energie, Drop, drei Songfarben). Jede Lampe bekommt nur so viel, wie sie
 // verträgt: WLED 30 Bilder/s, OpenRGB und Chroma 20/s, Hue höchstens ~8 Befehle/s (die Bridge drosselt sonst).
 const dgram = require("dgram");
 const http = require("http");
 const https = require("https");
 const { createPartyGuard } = require("./flashcap.js");
+const { createNanoleaf } = require("./nanoleaf.js");
+const { createLifx } = require("./lifx.js");
+const { createYeelight } = require("./yeelight.js");
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const scale = (c, f) => c.map((v) => Math.round(clamp(v * f, 0, 255)));
@@ -61,7 +64,7 @@ const validIp = (s) => /^(\d{1,3}\.){3}\d{1,3}(:\d{1,5})?$|^[a-z0-9-]+(\.[a-z0-9
    früher ein Gerät seine Befehle bekommt; negativ = später (z. B. wenn der Ton über Bluetooth nachhinkt). */
 const LAT_MAX = 1000;
 const clampLat = (ms) => clamp(Math.round(Number(ms) || 0), -LAT_MAX, LAT_MAX);
-const LAT_KEYS = { wled: "latWled", govee: "latGovee", ha: "latHa", orgb: "latOrgb", chroma: "latChroma" };
+const LAT_KEYS = { wled: "latWled", govee: "latGovee", ha: "latHa", orgb: "latOrgb", chroma: "latChroma", nanoleaf: "latNanoleaf", lifx: "latLifx", yeelight: "latYeelight" };
 const NAMES = ["hue", ...Object.keys(LAT_KEYS)];
 // Hue je Bridge: „192.168.1.20=120, 10.0.0.5=-40“ – wer die Bridge wechselt, behält beide Werte
 const hueLatMap = (s) => new Map(listOf(s, /[,;]+/).map((x) => x.split("=")).filter(([ip, ms]) => validIp(ip) && Number.isFinite(Number(ms))).map(([ip, ms]) => [ip, clampLat(ms)]));
@@ -159,6 +162,13 @@ function createLights(getCfg, log = () => {}, opts = {}) {
   // Helligkeit für Lampen mit eigener Skala (Hue 1–254, Home Assistant 1–255): in der Party nie ganz dunkel,
   // beim Einmessen der volle Unterschied zwischen hell und dunkel
   const briOf = (max) => Math.max(1, Math.round(cal ? max * level() : Math.min(max * cap(), 40 + (max - 40) * level())));
+  // was die Treiber in eigenen Dateien (Nanoleaf, LIFX, Yeelight) je Bild bekommen: Songfarben, Helligkeit
+  // 0..1 (schon mit lightBright/lightMax), Drop, „Keine Blitze“, Einmessen, Schlagnummer – alles aus der
+  // um den Vorlauf des Geräts verschobenen Sicht v
+  const look = (now) => ({ p: pal(), lv: level(), drop: !nf && !cal && v.st?.d > 0.85, nf: nf && !cal, cal: !!cal, beat: v.beat, kick: v.kick, now });
+  // opts.nanoleafUdpPort / ssdp / bonjour, lifxPort / lifxBroadcast, yeelightSsdp: nur für Tests
+  const nano = createNanoleaf({ getCfg, log, opts }), lifx = createLifx({ getCfg, log, opts }), yee = createYeelight({ getCfg, log, opts });
+  const EXTRA = [["nanoleaf", nano], ["lifx", lifx], ["yeelight", yee]];
 
   /* ---- WLED: UDP-Echtzeit (DRGB), der Streifen fällt nach 2 s ohne Daten selbst in sein Programm zurück */
   const wled = {
@@ -651,6 +661,11 @@ function createLights(getCfg, log = () => {}, opts = {}) {
       use(name, now);
       dev.frame(now);
     }
+    for (const [name, dev] of EXTRA) {
+      if (!on(name)) continue;
+      use(name, now);
+      dev.frame(now, look(now));
+    }
   }
   // Party-Zustand vom Theme (über onParty in main.js)
   function feed(m) {
@@ -676,6 +691,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     if (on("orgb")) orgb.start();
     if (on("chroma")) chroma.start();
     if (on("hue")) fast.start();
+    for (const [name, dev] of EXTRA) if (on(name)) dev.start();
     // ohne Vorlauf geht der Schlag sofort raus, nicht erst mit dem nächsten Takt der Schleife
     pulse(now);
     if (!loop) loop = setInterval(tick, 16);
@@ -706,7 +722,7 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     chroma.stop();
     log("lights idle");
     // erst den Stream beenden (die Bridge nimmt REST für diese Lampen erst danach wieder an), dann zurück
-    return later(fast.stop().then(() => hue.restore()), wled.restore(), govee.restore(), ha.restore());
+    return later(fast.stop().then(() => hue.restore()), wled.restore(), govee.restore(), ha.restore(), ...EXTRA.map(([, dev]) => dev.restore()));
   }
   // Einstellungen geändert: Abgeschaltetes sofort freigeben
   function sync() {
@@ -719,6 +735,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     if (!on("govee")) later(govee.restore());
     if (!on("ha")) later(ha.restore());
     else ha.list = [], ha.retryAt = 0;
+    // abgeschaltet: alles zurück; an: nur Geräte, die nicht mehr eingetragen sind
+    for (const [name, dev] of EXTRA) later(on(name) ? dev.sync() : dev.restore());
   }
   const active = () => !!lastAt && Date.now() - lastAt < 2500;
 
@@ -756,6 +774,9 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     if (name === "wled") return validIp(c.wledIp);
     if (name === "govee") return govee.ips().length > 0;
     if (name === "ha") return ha.ok();
+    if (name === "nanoleaf") return nano.ready();
+    if (name === "lifx") return lifx.ready();
+    if (name === "yeelight") return yee.ready();
     return name === "orgb" || name === "chroma";
   }
   async function test(name) {
@@ -825,7 +846,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
     return { lights: lights.slice(0, 60), rooms: rooms.slice(0, 30) };
   }
 
-  return { feed, sync, active, stopAll: idle, calibrate, calibrating: () => !!cal, latAll, test, wledFind, hueAreas, hueFast: () => fast.state, latPatch: (name, ms) => latPatch(getCfg(), name, ms), hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test() };
+  return { feed, sync, active, stopAll: idle, calibrate, calibrating: () => !!cal, latAll, test, wledFind, hueAreas, hueFast: () => fast.state, latPatch: (name, ms) => latPatch(getCfg(), name, ms), hueFind, huePair, hueGroups, hueLights, goveeScan: () => govee.scan(), haTest: () => ha.test(),
+    nanoleafFind: (ms) => nano.find(ms), nanoleafPair: (ip) => nano.pair(ip), nanoleafState: () => nano.state(), lifxScan: (ms) => lifx.scan(ms), yeelightScan: (ms) => yee.scan(ms) };
 }
 
 module.exports = { createLights, toXy, createBeatView, latOf, latPatch, LAT_MAX };

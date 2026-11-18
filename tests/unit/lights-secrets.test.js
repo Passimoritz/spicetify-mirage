@@ -16,17 +16,17 @@ function fakeStorage({ on = true, backend, broken = false } = {}) {
     },
   };
 }
-const HUE = "abcDEF1234567890-hueuser", KEY = "0123456789ABCDEF0123456789ABCDEF", TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.token";
-const cfg = { hueIp: "192.168.1.20", hueUser: HUE, hueClientKey: KEY, haToken: TOKEN, haUrl: "http://ha.local:8123", lightBright: 80 };
+const HUE = "abcDEF1234567890-hueuser", KEY = "0123456789ABCDEF0123456789ABCDEF", TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.token", NANO = "NanoLeafTok0123456789abcdefABCDE";
+const cfg = { hueIp: "192.168.1.20", hueUser: HUE, hueClientKey: KEY, haToken: TOKEN, haUrl: "http://ha.local:8123", nanoleafIp: "192.168.1.60", nanoleafToken: NANO, lightBright: 80 };
 
-assert.deepStrictEqual(SECRET, ["hueUser", "hueClientKey", "haToken"]);
+assert.deepStrictEqual(SECRET, ["hueUser", "hueClientKey", "haToken", "nanoleafToken"]);
 
 // 1) Hin- und Rückweg: in der Datei steht kein Klartext, nach dem Lesen ist alles wieder da
 {
   const s = createSecrets(fakeStorage());
   const disk = s.seal(cfg), text = JSON.stringify(disk);
   for (const k of SECRET) assert.ok(!(k in disk), `${k} darf nicht als Feld in der Datei stehen`);
-  for (const v of [HUE, KEY, TOKEN]) assert.ok(!text.includes(v), "Klartext in der Datei");
+  for (const v of [HUE, KEY, TOKEN, NANO]) assert.ok(!text.includes(v), "Klartext in der Datei");
   assert.strictEqual(disk.hueIp, "192.168.1.20");
   assert.strictEqual(disk.lightBright, 80);
   assert.deepStrictEqual(Object.keys(disk.secrets).sort(), [...SECRET].sort());

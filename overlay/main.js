@@ -77,7 +77,7 @@ const DEFAULTS = {
   // von der Show ausgenommen: Hue-Lampen („7“) und -Räume („g3“), HA-Lichter, OpenRGB-Geräte (Namensteil)
   hueExclude: "", haExclude: "", orgbExclude: "",
   // Vorlauf je Gerät in ms (Lampen hängen unterschiedlich weit hinterher); Hue je Bridge: „ip=ms, ip=ms“
-  latHue: "", latWled: 0, latGovee: 0, latHa: 0, latOrgb: 0, latChroma: 0,
+  latHue: "", latWled: 0, latGovee: 0, latHa: 0, latOrgb: 0, latChroma: 0, latNanoleaf: 0, latLifx: 0, latYeelight: 0,
   hueOn: false, hueIp: "", hueUser: "", hueClientKey: "", hueGroup: "0",
   // Hue schnell (Entertainment über DTLS): Bereich auf der Bridge; hueCertPin = „ip=Fingerabdruck“ ihres Zertifikats
   hueFast: false, hueArea: "", hueCertPin: "",
@@ -85,6 +85,10 @@ const DEFAULTS = {
   orgbOn: false,
   chromaOn: false,
   goveeOn: false, goveeIps: "",
+  // Nanoleaf: Adresse und Schlüssel kommen zusammen vom Koppeln; LIFX und Yeelight: Adressen im Heimnetz
+  nanoleafOn: false, nanoleafIp: "", nanoleafToken: "",
+  lifxOn: false, lifxIps: "",
+  yeelightOn: false, yeelightIps: "",
   haOn: false, haUrl: "", haToken: "", haEntities: "",
   // Einrichtungs-Assistent schon durchlaufen (oder übersprungen)?
   setupDone: false,
@@ -376,7 +380,7 @@ const status = () => ({ connected: clients.size > 0, track });
 // „party“ auch, solange eine OBS-Party-Quelle offen ist
 const topics = () => {
   const list = cfg.mode === "off" ? [] : [...(STYLE_TOPICS[cfg.style] || []), "party"];
-  const room = cfg.hueOn || cfg.wledOn || cfg.orgbOn || cfg.chromaOn || cfg.goveeOn || cfg.haOn;
+  const room = cfg.hueOn || cfg.wledOn || cfg.orgbOn || cfg.chromaOn || cfg.goveeOn || cfg.haOn || cfg.nanoleafOn || cfg.lifxOn || cfg.yeelightOn;
   if ((obsParty.size || room) && !list.includes("party")) list.push("party");
   return list;
 };
@@ -1198,7 +1202,7 @@ function update(patch) {
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
   if ("obs" in patch) cfg.obs ? startObs() : stopObs();
   if ("control" in patch) cfg.control === false ? stopControl() : startControl();
-  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude", "hueFast", "hueArea", "hueClientKey"].some((k) => k in patch)) {
+  if (["hueOn", "wledOn", "orgbOn", "chromaOn", "hueGroup", "hueIp", "hueUser", "goveeOn", "goveeIps", "haOn", "haUrl", "haToken", "haEntities", "hueExclude", "haExclude", "hueFast", "hueArea", "hueClientKey", "nanoleafOn", "nanoleafIp", "nanoleafToken", "lifxOn", "lifxIps", "yeelightOn", "yeelightIps"].some((k) => k in patch)) {
     lights.sync();
     resubscribe();
   }
@@ -1268,7 +1272,7 @@ async function importCfg(win) {
   // und dürfen dort nie ankommen – leeren; die Einstellungen bitten darum, neu zu koppeln bzw. einzugeben
   const { patch, cleared } = rebind(raw, cfg);
   update(patch);
-  return { ok: true, n, cleared: cleared.map((k) => (k === "hueIp" ? "hue" : "ha")) };
+  return { ok: true, n, cleared: cleared.map((k) => ({ hueIp: "hue", haUrl: "ha", nanoleafIp: "nanoleaf" })[k]) };
 }
 const SAMPLE = {
   title: "Midnight Mirage",
@@ -1368,6 +1372,24 @@ ipcMain.handle("haConnect", uiOnly(async (_e, d) => {
   return r;
 }));
 ipcMain.handle("wledFind", uiOnly(() => lights.wledFind()));
+// Nanoleaf: suchen; koppeln setzt Adresse und Schlüssel zusammen (der alte Schlüssel geht nie an eine neue Adresse)
+ipcMain.handle("nanoleafFind", uiOnly(() => lights.nanoleafFind()));
+ipcMain.handle("nanoleafPair", uiOnly(async (_e, ip) => {
+  const r = await lights.nanoleafPair(String(ip || "").trim());
+  if (r.token) update({ nanoleafIp: String(ip).trim(), nanoleafToken: r.token, nanoleafOn: true });
+  return r.token ? { ok: true } : { error: r.error };
+}));
+// LIFX und Yeelight: gefundene Lampen eintragen und einschalten
+ipcMain.handle("lifxScan", uiOnly(async () => {
+  const r = await lights.lifxScan();
+  if (r.list?.length) update({ lifxIps: r.list.map((d) => d.ip).join(", "), lifxOn: true });
+  return r;
+}));
+ipcMain.handle("yeelightScan", uiOnly(async () => {
+  const r = await lights.yeelightScan();
+  if (r.list?.length) update({ yeelightIps: r.list.map((d) => d.ip).join(", "), yeelightOn: true });
+  return r;
+}));
 // Assistent: ein Gerät kurz blinken lassen (6 Schläge, danach alter Zustand)
 ipcMain.handle("lightTest", uiOnly((_e, name) => lights.test(String(name || ""))));
 // Einstellungen umziehen: der Dialog gehört zum Fenster, das gefragt hat
