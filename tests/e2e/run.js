@@ -2062,6 +2062,118 @@ async function coachOnce() {
   await T.click('#mirage-immersive [data-mode="party"]');
   await wait(800);
 }
+/* ---- 1.27 views: neue Visualizer-Stile, Album-Reise, Uhr-Ansicht (ohne Handys) */
+const IM = "#mirage-immersive";
+const storedSettings = () => T.js(`JSON.parse(localStorage.getItem("mirage:settings") || "{}")`);
+async function toMode(m) {
+  await big.hover();
+  await T.click(`${IM} .m-im-tabs [data-mode="${m}"]`);
+  await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "${m}"`), 2000, `Ansicht „${m}“`);
+  await wait(800);
+}
+// Visualizer-Stil über den Einstellungs-Dialog wählen (wie ein Mensch), danach den Dialog wieder schließen
+async function pickViz(label) {
+  await T.js(`__menu.brightness(); 1`);
+  await until(() => T.js(`!![...document.querySelectorAll(".mirage-settings .m-seg button")].find((b) => b.textContent === ${JSON.stringify(label)})`), 2000, `Stil „${label}“ in den Einstellungen`);
+  await T.js(`[...document.querySelectorAll(".mirage-settings .m-seg button")].find((b) => b.textContent === ${JSON.stringify(label)}).click(); document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); 1`);
+}
+// kleiner Abdruck des Visualizer-Canvas: ändert er sich, zeichnet die Bildschleife
+const vizPrint = () => T.js(`(() => {
+  const v = document.querySelector("${IM} .m-im-viz");
+  if (!v.width) return "";
+  const c = document.createElement("canvas");
+  c.width = 64; c.height = 40;
+  const x = c.getContext("2d");
+  x.drawImage(v, 0, 0, 64, 40);
+  const d = x.getImageData(0, 0, 64, 40).data;
+  let h = 0, lit = 0;
+  for (let i = 0; i < d.length; i += 4) { h = (h * 31 + d[i] + d[i + 1] * 7 + d[i + 2] * 13 + d[i + 3]) >>> 0; if (d[i + 3] > 8) lit++; }
+  return h + ":" + lit;
+})()`);
+async function vizStyles() {
+  await toMode("viz");
+  for (const [key, label] of [["wavefield", "Wellenfeld"], ["coverdust", "Cover-Partikel"]]) {
+    await pickViz(label);
+    await until(async () => (await storedSettings()).vizStyle === key, 2000, `viz: „${label}“ gewählt und gespeichert`);
+    await wait(700);
+    const a = await vizPrint();
+    await wait(400);
+    const b = await vizPrint();
+    ok(a && b && +a.split(":")[1] > 50, `viz ${key}: der Visualizer zeichnet etwas: ${a}`);
+    ok(a !== b, `viz ${key}: neue Bilder kommen (Abdruck ändert sich): ${a} → ${b}`);
+    const own = await T.js(`document.getElementById("mirage-immersive").classList.contains("is-shatter")`);
+    ok(own === (key === "coverdust"), `viz ${key}: Cover-Partikel zeichnen das Cover selbst (is-shatter: ${own})`);
+  }
+  // der Stil gilt auch im Mix
+  await toMode("mix");
+  const m1 = await vizPrint();
+  await wait(400);
+  ok(m1 && m1 !== (await vizPrint()), "viz: Cover-Partikel laufen auch im Mix");
+  await pickViz("Balken");
+  await until(async () => (await storedSettings()).vizStyle === "bars", 2000, "viz: zurück auf Balken");
+  await toMode("party");
+}
+async function albumView() {
+  const st = () => T.js(`(() => {
+    const p = document.querySelector("${IM} .m-im-album"), now = p.querySelector('.m-al-row[data-st="now"]');
+    return { shown: !!p.getClientRects().length && p.getBoundingClientRect().width > 200, rows: p.querySelectorAll(".m-al-row").length, now: now?.querySelector(".m-al-t span")?.textContent || "",
+      past: p.querySelectorAll('.m-al-row[data-st="past"]').length, left: p.querySelector(".m-al-left").textContent,
+      title: __sp.now().title, grid: getComputedStyle(document.getElementById("mirage-immersive")).gridTemplateAreas };
+  })()`);
+  await T.js(`__sp.setContext("spotify:album:glass0000000000000000"); Spicetify.Player.next(); 1`);
+  await toMode("cover");
+  let s = await until(async () => { const x = await st(); return x.shown && x.now && x; }, 4000, "album: Spalte erscheint in der Cover-Ansicht");
+  ok(s.rows === 32 && /album/.test(s.grid), "album: 32 Titel in einer eigenen Spalte: " + JSON.stringify(s));
+  ok(s.now === s.title, `album: der laufende Titel ist markiert: „${s.now}“ / „${s.title}“`);
+  ok(/noch .*Min/.test(s.left), "album: Restzeit des Albums: " + s.left);
+  const before = s;
+  await T.js(`Spicetify.Player.next(); 1`);
+  s = await until(async () => { const x = await st(); return x.now === x.title && x.title !== before.title && x; }, 3000, "album: nach next() ist der neue Titel markiert");
+  ok(s.past === before.past + 1 && s.rows === 32, "album: der vorige Titel zählt als gehört: " + JSON.stringify({ past: s.past, before: before.past }));
+  // Schalter im Menü „Mehr“: ausblenden (gemerkt), wieder einblenden
+  const viaMenu = async (label) => {
+    await big.hover();
+    await T.click(`${IM} .m-im-menubtn`);
+    await T.click(`${IM} .m-im-side .m-im-albtoggle`, { text: label });
+  };
+  await viaMenu("Albumliste ausblenden");
+  await until(async () => !(await st()).shown && (await storedSettings()).albumPanel === false, 2500, "album: Menü blendet die Spalte aus und merkt es");
+  await viaMenu("Albumliste zeigen");
+  await until(async () => (await st()).shown && (await storedSettings()).albumPanel === true, 2500, "album: Menü blendet sie wieder ein");
+  // kein Album mehr: Spalte und Menüzeile verschwinden
+  await T.js(`__sp.setContext("spotify:playlist:test"); Spicetify.Player.next(); 1`);
+  await until(async () => !(await st()).shown, 3000, "album: ohne Album-Kontext keine Spalte");
+  await big.hover();
+  await T.click(`${IM} .m-im-menubtn`);
+  await until(() => T.js(`document.querySelector("${IM} .m-im-side").dataset.kind === "menu"`), 2000, "album: Menü offen");
+  ok(!(await T.js(`!!document.querySelector("${IM} .m-im-side .m-im-albtoggle")`)), "album: ohne Album keine Menüzeile");
+  await T.js(`document.querySelector("${IM} .m-im-side-x").click(); 1`);
+  await toMode("party");
+}
+async function clockView() {
+  const st = () => T.js(`(() => {
+    const im = document.getElementById("mirage-immersive"), c = im.querySelector(".m-im-clock");
+    return { mode: im.dataset.mode, time: c.dataset.time || "", vis: getComputedStyle(c).visibility, song: c.querySelector(".m-ck-txt b").textContent, title: __sp.now().title };
+  })()`);
+  await toMode("clock");
+  let s = await st();
+  ok(s.vis === "visible" && /^\d{1,2}:\d{2}/.test(s.time) && s.song === s.title, "uhr: über den Umschalter, zeigt Zeit und Song: " + JSON.stringify(s));
+  const now = await T.js(`new Intl.DateTimeFormat("de", { hour: "numeric", minute: "2-digit" }).format(new Date())`);
+  ok(s.time === now, `uhr: richtige Uhrzeit (${s.time} / ${now})`);
+  // steht still: keine Bildschleife (rAF zählen, die Maus ruht)
+  await wait(1200);
+  const n = await T.js(`new Promise((done) => { let n = 0; const o = window.requestAnimationFrame; window.requestAnimationFrame = (cb) => (n++, o.call(window, cb)); setTimeout(() => { window.requestAnimationFrame = o; done(n); }, 1500); })`);
+  ok(n <= 1, "uhr: keine Bildschleife, solange sie steht – rAF-Aufrufe in 1,5 s: " + n);
+  // Tasten: 1 = Cover, 6 = Uhr
+  await T.js(`__sp.press("Digit1"); 1`);
+  await until(async () => (await st()).mode === "cover", 2000, "uhr: Taste 1 → Cover");
+  await T.js(`__sp.press("Digit6"); 1`);
+  await until(async () => (await st()).mode === "clock", 2000, "uhr: Taste 6 → Uhr");
+  // Songwechsel kommt auch in der Uhr an
+  await T.js(`Spicetify.Player.next(); 1`);
+  await until(async () => { const x = await st(); return x.song === x.title && x; }, 3000, "uhr: neuer Song in der Uhr");
+  await toMode("party");
+}
 
 const CASES = [
   // der erste verbindet die Handys
@@ -2141,6 +2253,8 @@ async function updateNote() {
   }
 }
 CASES.push(["update-note", updateNote]);
+// 1.27 views
+CASES.push(["viz-styles", vizStyles], ["album-view", albumView], ["clock-view", clockView]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";

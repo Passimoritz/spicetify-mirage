@@ -32,6 +32,9 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 - Light schemes: placeholder text in search and input fields was white and could not be read.
 - Light schemes: the listen counts in your Wrapped Top Songs playlist are now dark enough to read.
+- Two new visualizer styles. "Wave field" is a calm, flowing field of light lines in your cover's colours: the music lifts it and every beat sends a wave out from the cover. "Cover particles" lets the cover break apart into glowing pieces on drops and big moments and slowly puts it back together. Both are lighter on "Light" and do nothing on "Calm".
+- Album journey: when you play an album, the cover view shows its track list next to the cover. You see what you've heard, what's playing with its progress, what's still coming, how long the album still runs and, when Spotify has them, the credits of the current song. Click a track to play it. Turn it on or off with the album button at the top right.
+- Clock view for listening in the background: a large clock with the date, the current song in small, and a soft light in the cover's colours. It barely moves, uses almost no power and shifts by a few pixels every minute so nothing burns into the screen. Open it with the clock symbol in the view switcher or the 6 key; click the time to show or hide the date.
 
 ## [1.26.0] – 2026-11-18
 

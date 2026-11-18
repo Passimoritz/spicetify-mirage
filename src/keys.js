@@ -60,7 +60,8 @@ window.addEventListener("keydown", (e) => {
     if (/^Arrow(Left|Right)$/.test(e.code) && e.target.closest?.('[role="tablist"]')) return;
     // in einem offenen Menü (Seitenleiste) gehören Pfeil hoch/runter, Pos1 und Ende der Menüführung
     if (/^(Arrow(Up|Down)|Home|End)$/.test(e.code) && e.target.closest?.(".m-im-side")) return;
-    if (/^Digit[1-5]$/.test(e.code)) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
+    // 1 … 6: Cover · Liedtext · Visualizer · Mix · Party · Uhr (so viele, wie es Ansichten gibt)
+    if (/^Digit[1-9]$/.test(e.code) && MODES[+e.code.slice(5) - 1]) immersive.setMode(MODES[+e.code.slice(5) - 1][0], true);
     else if (keys[e.code] && !(e.code === "Space" && e.target.closest?.("button"))) {
       e.preventDefault();
       e.stopPropagation();
