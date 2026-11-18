@@ -3065,7 +3065,6 @@ Probe-FX: ${pfx}`;
       seekLabel(pos, dur);
       syncState();
     }
-    const mode = el.dataset.mode;
     const shatterOn = VIZ.has(mode) && mode !== "party" && OWN_COVER.has(cfg.vizStyle) && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
     if (LYR.has(mode)) drawLyrics(pos);
