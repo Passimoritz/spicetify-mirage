@@ -173,16 +173,21 @@
   .sheet .sub { margin-top: 12px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; }
   .sheet .close { width: 100%; margin-top: 14px; }
   @media (prefers-reduced-motion: reduce) { .orb, body.on .dot { animation: none; } }
-  /* Reaktionen: eine Reihe Emojis über der Werkzeugleiste */
-  .reacts { position: fixed; left: 50%; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 150px); display: flex; gap: 6px; transform: translate(-50%, 320%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
+  /* Reaktionen: Herz, Feuer, Applaus, Wow über der Werkzeugleiste (SVG in der Akzentfarbe der Party) */
+  .reacts { position: fixed; left: 50%; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 150px); display: flex; gap: 10px; width: max-content; transform: translate(-50%, 320%); transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.2, 1); }
   body.on .reacts { transform: translate(-50%, 0); }
   body.wish .reacts { opacity: 0; pointer-events: none; }
   body.norx .reacts { display: none; }
-  .reacts button { flex: 0 1 44px; min-width: 0; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(10, 8, 20, 0.42); font-size: 22px; line-height: 1;
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.15s; }
+  .reacts button { flex: none; width: 46px; height: 46px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(10, 8, 20, 0.42); color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform 0.15s, opacity 0.3s, box-shadow 0.3s; }
+  .reacts button svg { width: 22px; height: 22px; fill: currentColor; }
   .reacts button:active { transform: scale(0.85); }
-  .fly { position: fixed; bottom: 200px; font-size: 34px; pointer-events: none; animation: fly 1.6s ease-out forwards; }
-  @keyframes fly { to { transform: translate(var(--dx), -45vh) scale(1.4); opacity: 0; } }
+  /* gerade gesendet: kurz gedimmt, bis das nächste Tippen wieder ankommt (der PC nimmt nur eins je 0,7 s) */
+  .reacts button.cool { opacity: 0.55; box-shadow: 0 0 18px rgba(var(--a), 0.55); }
+  .fly { position: fixed; bottom: 200px; width: 30px; height: 30px; pointer-events: none; color: rgb(var(--c)); filter: drop-shadow(0 0 8px rgba(var(--a), 0.9)); animation: fly 1.6s ease-out forwards; }
+  .fly svg { width: 100%; height: 100%; fill: currentColor; }
+  @keyframes fly { to { transform: translate(var(--dx), -45vh) scale(1.35); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .fly { animation: fade 1s ease-out forwards; } @keyframes fade { to { opacity: 0; } } }
   /* Ansage des Gastgebers und „dein Song kommt gleich“: Band oben */
   .note { position: fixed; left: 14px; right: 14px; top: max(64px, calc(env(safe-area-inset-top) + 52px)); z-index: 4; padding: 14px 16px; border-radius: 18px;
     background: rgba(10, 8, 20, 0.7); border: 1px solid rgba(255, 255, 255, 0.16); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
@@ -492,6 +497,12 @@ const PHOTO_TEXT = {
   zh: {"phBtn": "照片", "phTitle": "发送照片", "phHint": "照片经过批准后才会出现在大屏幕上，并且不会被保存。发送前手机会删除位置和相机信息。", "phCam": "拍照", "phFile": "选择照片", "phPrep": "正在准备照片 …", "phSending": "正在发送 … {p} %", "phWait": "已发送，等待批准。", "phOk": "已批准，你的照片在大屏幕上了！", "phNo": "这次没有展示。", "phSlow": "每 30 秒只能发一张，{n} 秒后再试。", "phMax": "已经 {n} 张了，这是本次派对的上限。", "phFull": "现在照片太多了，稍后再试。", "phBad": "没有成功，换一张照片试试。", "phOff": "照片墙已关闭。", "phNoAns": "大屏幕没有响应，请再试一次。"},
 };
 for (const [k, v] of Object.entries(PHOTO_TEXT)) L[k] = { ...(L[k] || {}), ...v };
+// Reaktionen (Namen der vier Knöpfe für Screenreader); andere Sprachen fallen auf Englisch zurück
+const REACT_TEXT = {
+  en: { rHeart: "Heart", rFire: "Fire", rClap: "Applause", rWow: "Wow" },
+  de: { rHeart: "Herz", rFire: "Feuer", rClap: "Applaus", rWow: "Wow" },
+};
+for (const [k, v] of Object.entries(REACT_TEXT)) L[k] = { ...(L[k] || {}), ...v };
 // Nachrichtenformat, das diese Seite versteht. Sendet das Theme ein neueres, lädt die Seite einmal neu.
 const PROTO = 1;
 L.en = { ...L.en, old: ["Page out of date", "Close this tab and scan the QR code again."] };
@@ -1625,18 +1636,36 @@ requestAnimationFrame(frame);
 /* ---- Reaktionen, Ansagen, Abstimmung, „dein Song kommt gleich“ */
 let notifyOn = store("mlNotify") === "1", noteT = 0, pollId = "", myVote = -1;
 const myWishes = new Map(), told = new Set();
-for (const e of ["🔥", "❤️", "🙌", "😂", "🎉", "👏"]) {
+// Vier Reaktionen als SVG-Zeichen (dieselben zeichnet die Bühne, stagefx.js). Gesendet wird die Art („r“);
+// „e“ verstehen ältere Mirage-Versionen am PC. Höchstens eine je 0,9 s – öfter nimmt der PC ohnehin nicht an.
+const REACTS = [
+  ["heart", T.rHeart, "\u2764\ufe0f", '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>'],
+  ["fire", T.rFire, "\ud83d\udd25", '<path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>'],
+  ["clap", T.rClap, "\ud83d\udc4f", '<ellipse cx="8.6" cy="14" rx="3.3" ry="6.2" transform="rotate(-24 8.6 14)"/><ellipse cx="15.4" cy="14" rx="3.3" ry="6.2" transform="rotate(24 15.4 14)"/><path d="M12 2.2v2.4M7.4 3.6l1.2 2M16.6 3.6l-1.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>'],
+  ["wow", T.rWow, "\ud83c\udf89", '<path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/>'],
+];
+const reactSvg = (inner) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + inner + "</svg>";
+let reactAt = 0;
+for (const [r, label, e, icon] of REACTS) {
   const b = document.createElement("button");
   b.type = "button";
-  b.textContent = e;
-  b.ariaLabel = T.react + " " + e;
+  b.dataset.r = r;
+  b.innerHTML = reactSvg(icon);
+  b.ariaLabel = T.react + ": " + label;
   b.onclick = (ev) => {
     ev.stopPropagation();
-    sendUp({ k: "react", e });
+    const now = Date.now();
+    // zu schnell hintereinander: nur das kleine Zeichen hier, nichts geht hinaus
+    if (now - reactAt >= 900) {
+      reactAt = now;
+      sendUp({ k: "react", r, e });
+      for (const x of $("reacts").children) x.classList.add("cool");
+      setTimeout(() => { for (const x of $("reacts").children) x.classList.remove("cool"); }, 900);
+    }
     const f = document.createElement("span");
     f.className = "fly";
-    f.textContent = e;
-    f.style.left = ev.clientX - 17 + "px";
+    f.innerHTML = reactSvg(icon);
+    f.style.left = ev.clientX - 15 + "px";
     f.style.setProperty("--dx", Math.round(Math.random() * 60 - 30) + "px");
     document.body.append(f);
     setTimeout(() => f.remove(), 1700);

@@ -10,6 +10,19 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Guests can react from their phones with heart, fire, applause and wow. The reactions rise as small lights from the crowd on the party screen, to the left and right of the lyrics and the song title. Many taps at once make one bigger wave instead of a flood, each phone counts at most once every 0.7 seconds, and with "No flashes" the crowd lights glow softly instead of flickering. You can turn reactions off in the party settings.
+
+### Changed
+
+- Song changes in party mode feel like a DJ mix. Over the last bars of a song, the light already drifts into the next song's colours, stage lights and tempo, the crowd calms down and holds its breath, and the first beat of the new song lands with a hit. Skipping a song crossfades quickly without a flash. If the queue changes at the last moment, the light follows the new next song.
+- During an AI DJ announcement the party kicker shows "DJ", and short DJ comments no longer switch the stage to calm and back. Songs the DJ plays get the full show.
+
+### Fixed
+
+- AI DJ announcements in the current Spotify version are now recognised, so the stage calms down while the DJ talks.
+
 ## [1.26.0] – 2026-11-18
 
 ### Added

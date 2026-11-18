@@ -2434,6 +2434,8 @@ Probe-FX: ${pfx}`;
       drones: cfg.partyDrones && px.fx && px.level >= 2 && !lightMode(),
       song: currentItem()?.uri || "",
       handsUp: moments.hands, flashStorm: cfg.noFlash ? 0 : moments.storm, confetti: moments.confetti,
+      // Reaktionen der Gäste als Lichtzeichen aus der Menge (live.js sammelt, stagefx.js zeichnet)
+      reacts: cfg.partyReacts ? live.reactFrame() : null,
     });
     // Lichtstrahlen (ab „Extrem“): gespiegelte Fächer aus dem Cover. Im Break blenden sie aus, im Aufbau
     // werden sie schmaler und flirren im doppelten Tempo, beim Drop gehen sie voll auf.
@@ -4111,19 +4113,7 @@ Probe-FX: ${pfx}`;
     if (side === "poll") showSide("poll");
   });
 
-  /* ---- Reaktionen der Gäste: Emojis steigen vom unteren Rand auf */
-  window.addEventListener("mirage:react", (e) => {
-    if (!el || el.dataset.mode !== "party" || !cfg.partyReacts || el.querySelectorAll(".m-im-react").length > 12) return;
-    const r = document.createElement("span");
-    r.className = "m-im-react";
-    r.textContent = e.detail;
-    // nur am linken oder rechten Rand, nie über der Menge in der Mitte; seitlich treiben sie nach außen
-    const right = Math.random() < 0.5;
-    r.style.left = (right ? 93 + Math.random() * 4.5 : 1.5 + Math.random() * 4.5) + "%";
-    r.style.setProperty("--dx", ((right ? 1 : -1) * Math.random() * 14).toFixed(0) + "px");
-    el.append(r);
-    setTimeout(() => r.remove(), 3600);
-  });
+  // Reaktionen der Gäste: Lichtzeichen aus der Menge (live.js → Location, stagefx.js)
 
   /* ---- Rückblick: Bild, Party-Playlist, Gäste-Ranking */
   function recapPanel(body) {

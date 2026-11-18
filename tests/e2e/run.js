@@ -1686,33 +1686,65 @@ async function reactions() {
   // ein offenes Wunschfenster aus dem Fall davor (Suchfeld) deckt sonst die Reaktionsknöpfe ab
   await Promise.all(P.map((ph) => ph.js(`document.body.classList.contains("wish") && document.getElementById("wClose").click(); 1`).catch(() => {})));
   await wait(400);
+  // Wellen, die die Bühne (Location) bekommt
   await T.js(`(() => {
-    window.__rx = [];
-    new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.classList?.contains("m-im-react")) __rx.push({ at: performance.now(), left: parseFloat(n.style.left) }); }).observe(document.getElementById("mirage-immersive"), { childList: true });
+    window.__rw = [];
+    if (!window.__rwOn) window.__rwOn = addEventListener("mirage:reactwave", (e) => __rw.push(e.detail)) || 1;
     return 1;
   })()`);
+  // vier Knöpfe mit SVG-Zeichen, ohne Emoji
+  const bar = await P[0].js(`[...document.querySelectorAll("#reacts button")].map((b) => ({ r: b.dataset.r, svg: !!b.querySelector("svg path, svg ellipse"), text: b.textContent.trim(), label: b.ariaLabel || "" }))`);
+  ok(bar.map((b) => b.r).join() === "heart,fire,clap,wow", "reaktion: Herz, Feuer, Applaus, Wow: " + JSON.stringify(bar.map((b) => b.r)));
+  ok(bar.every((b) => b.svg && !b.text && b.label.length > 3), "reaktion: SVG-Zeichen mit Namen, kein Text: " + JSON.stringify(bar));
+  ok(!(await T.js(`!!document.querySelector(".m-im-react")`)), "reaktion: keine Emoji-Zeichen mehr im Bild");
   await P[0].click("#reacts button", { index: 0 });
-  await until(() => T.js(`__rx.length >= 1`), 5000, "reaktion: das Emoji erscheint auf dem großen Bild");
-  // 30 verschiedene Gäste auf einmal: insgesamt gedrosselt
-  await T.js(`__rx.length = 0; 1`);
-  await P[1].js(`for (let i = 0; i < 30; i++) sendUp({ k: "react", e: "🎉", id: "spam-" + i + "-abcdef" }); 1`);
-  await wait(1500);
-  const rx = await T.js(`__rx`);
-  ok(rx.length >= 3 && rx.length <= 11, `reaktion: aus 30 auf einmal werden ein paar, kein Regen: ${rx.length}`);
-  const mid = rx.filter((r) => r.left > 7 && r.left < 92);
-  ok(!mid.length, "reaktion: nichts über der Mitte: " + mid.map((r) => r.left.toFixed(1)).join(", "));
+  const w1 = await until(() => T.js(`__rw[0] || null`), 5000, "reaktion: das Herz erreicht die Bühne");
+  ok(w1.n === 1 && w1.top === "heart", "reaktion: eine Welle aus einem Herz: " + JSON.stringify(w1));
+  // dasselbe Handy tippt zehnmal schnell hintereinander: höchstens eine Reaktion je 0,7 s kommt an
+  await wait(1000);
+  await T.js(`__rw.length = 0; 1`);
+  await P[1].js(`for (let i = 0; i < 10; i++) setTimeout(() => sendUp({ k: "react", r: "fire" }), i * 60); 1`);
+  await wait(2200);
+  const same = await T.js(`__rw.reduce((a, w) => a + w.n, 0)`);
+  ok(same === 1, "reaktion: ein Handy, zehn Taps in 0,6 s – angekommen: " + same);
+  // 30 Gäste auf einmal: eine große Welle (höchstens zwei) statt 30 einzelner Zeichen
+  await T.js(`__rw.length = 0; 1`);
+  await P[2].js(`for (let i = 0; i < 30; i++) sendUp({ k: "react", r: ["heart", "fire", "clap", "wow"][i % 4], id: "crowd-" + i + "-abcdef" }); 1`);
+  await wait(2000);
+  const rw = await T.js(`__rw`);
+  const total = rw.reduce((a, w) => a + w.n, 0), biggest = Math.max(0, ...rw.map((w) => w.n));
+  ok(rw.length >= 1 && rw.length <= 2, "reaktion: 30 Gäste werden ein bis zwei Wellen: " + rw.length);
+  // (der Test-Relay verliert absichtlich einzelne Nachrichten, wie ein echtes Netz)
+  ok(total >= 24 && total <= 30 && biggest >= 15, `reaktion: (fast) alle 30 zählen, die Welle wird groß (${total} / größte ${biggest})`);
+  ok(rw.some((w) => w.g >= 15), "reaktion: die Welle kennt die Zahl der Gäste: " + JSON.stringify(rw.map((w) => w.g)));
+  // ältere Handyseite (schickt ein Emoji-Zeichen statt der Art): kommt als Feuer an; Unbekanntes gar nicht
+  await T.js(`__rw.length = 0; 1`);
+  await P[2].js(`sendUp({ k: "react", e: "\\ud83d\\udd25", id: "old-page-abcdef" }); sendUp({ k: "react", r: "poop", id: "bad-kind-abcdef" }); 1`);
+  const old = await until(() => T.js(`__rw[0] || null`), 4000, "reaktion: Reaktion einer älteren Handyseite");
+  ok(old.top === "fire" && old.n === 1, "reaktion: ältere Seite → Feuer, Unbekanntes verworfen: " + JSON.stringify(old));
   // ausgeschaltet: die Handys blenden die Leiste aus, und es kommt nichts mehr an
   await setRule("partyReacts", false);
   await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
-  await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display === "none"`), 4000, "reaktion: aus – die Handys zeigen keine Emoji-Leiste");
-  await T.js(`__rx.length = 0; 1`);
-  await wait(2000);
-  await P[2].js(`sendUp({ k: "react", e: "🔥" }); 1`);
+  await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display === "none"`), 4000, "reaktion: aus – die Handys zeigen keine Reaktionsleiste");
+  await T.js(`__rw.length = 0; 1`);
+  await wait(1000);
+  await P[2].js(`sendUp({ k: "react", r: "fire" }); 1`);
   await wait(1500);
-  ok(!(await T.js(`__rx.length`)), "reaktion: aus – nichts erscheint");
+  ok(!(await T.js(`__rw.length`)), "reaktion: aus – nichts erreicht die Bühne");
   await setRule("partyReacts", true);
   await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
   await until(() => P[0].js(`getComputedStyle(document.getElementById("reacts")).display !== "none"`), 4000, "reaktion: wieder an");
+}
+// AI-DJ (Spotify 1.3.10): die Ansage („is_narration“ im DJ-Kontext) zeigt „Party · DJ“; die Songs, die der DJ
+// spielt, sind Musik und bekommen die volle Show (Genre und Tempo im Kicker)
+async function djTalk() {
+  const kicker = () => T.js(`document.querySelector("#mirage-immersive .m-im-kicker")?.textContent || ""`);
+  await T.js(`__sp.setContext("spotify:playlist:37i9dQZF1EYkqdzj48dyYq", { lexicon_set_type: "your_dj" }); __sp.playSpecial("djNarration"); 1`);
+  await until(async () => /^Party · DJ$/.test(await kicker()), 5000, "dj: Ansage zeigt „Party · DJ“");
+  await T.js(`__sp.playSpecial("djSong"); 1`);
+  await until(async () => / BPM$/.test(await kicker()), 8000, "dj: Song im DJ-Kontext bekommt die Show (Genre und Tempo)");
+  ok(!/DJ$/.test(await kicker()), "dj: der Song gilt nicht als Ansage: " + (await kicker()));
+  await T.js(`__sp.setContext("spotify:playlist:test"); __sp.resetArtists(); 1`);
 }
 // Fernbedienung: eigener QR-Code nur auf Knopfdruck, Befehle nur mit der Unterschrift aus diesem Link
 async function remoteControl() {
@@ -1991,7 +2023,7 @@ const CASES = [
   ["likely", () => voteGame("likely")], ["dlikely", () => voteGame("dlikely")],
   ["sing", singGame], ["alarm", alarmGame], ["wheel", () => wheelGame("wheel")], ["dwheel", () => wheelGame("dwheel")],
   ["key-badge", keyBadge], ["pause-screen", pauseScreen], ["mute-button", muteButton], ["media-keys", mediaKeys], ["one-artist", oneArtist], ["phone-reload", phoneReload], ["offline", offline], ["guest-profile", guestProfile], ["late-join", lateJoin], ["host", hostGame], ["quiz-level", quizLevel], ["quiz-source", quizSource], ["keyboard", keyboardPlay], ["result-card", resultCard],
-  ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions], ["remote", remoteControl],
+  ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions], ["dj-talk", djTalk], ["remote", remoteControl],
 ];
 // neuere Spiele
 Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });
@@ -2075,7 +2107,7 @@ app.whenReady().then(async () => {
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
   // Handys verbinden sich im ersten Spiel mit Warteraum
-  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host", "quiz-level", "quiz-source", "result-card"]);
+  const NO_LOBBY = new Set(["sing", "alarm", "wheel", "dwheel", "pause-screen", "mute-button", "key-badge", "guest-profile", "late-join", "host", "quiz-level", "quiz-source", "result-card", "reactions", "dj-talk"]);
   if (ONLY.length && list.every(([n]) => NO_LOBBY.has(n))) list = [CASES[0], ...list];
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");
