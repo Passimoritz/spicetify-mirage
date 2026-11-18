@@ -5,6 +5,7 @@ import { createLyricStore } from "./lyricstore.js";
 import { rankLyrics, baseTitle, instrumentalMeta, instrumentalText, cleanCredits, tierOf } from "./lyricmatch.js";
 import { runLyrics } from "./lyricflow.js";
 import { parseLrc, parseYrc, parseTtml } from "./lyricparse.js";
+import { parseVoices } from "./lyricvoices.js";
 
 /* ---------------------------------------------------------------- Liedtext */
 // Je Song EIN Ladevorgang („Auftrag“): fragen Immersiv-Modus, Overlay und Handys gleichzeitig, geht nur eine
@@ -29,7 +30,9 @@ function jobFor(uri) {
   // nur Verbesserungen melden: gleich gute Ergebnisse tauschen nie (das würde flackern)
   job.emit = (v) => {
     if (job.ctrl.signal.aborted || !v || tierOf(v, cfg.karaoke) <= tierOf(job.cur, cfg.karaoke)) return;
-    job.cur = v;
+    // Duett-Stimmen und Hintergrundgesang erkennen – hier, damit Immersiv, Overlay und Handys denselben Text
+    // bekommen (ohne „Name:“ davor). Gefahrlos wiederholbar, ändert ohne Hinweise im Text nichts.
+    job.cur = parseVoices(v);
     for (const f of [...job.subs]) f(v, false);
   };
   job.promise = keptLyrics(uri, pick, key, bad, job).then(

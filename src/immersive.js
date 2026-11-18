@@ -11,6 +11,7 @@ import { dust } from "./dust.js";
 import { burst } from "./burst.js";
 import { getLyrics, watchLyrics, dropStaleLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { estimateSync, applySync } from "./lyricsync.js";
+import { parseVoices, bgFlags, bgParts, voiceColors } from "./lyricvoices.js";
 import { lineAt } from "./songtime.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
@@ -1044,7 +1045,7 @@ Probe-FX: ${pfx}`;
     const l = lines[i];
     const next = lines[i + 1]?.t ?? l.t + 6000;
     // echte Wortzeiten (NetEase-YRC, Enhanced LRC): genau so, wie gesungen wird
-    if (l.words?.length) return l.words.map((w) => ({ text: w.text, a: w.t, b: w.t + Math.max(60, w.d), sp: w.sp }));
+    if (l.words?.length) return l.words.map((w) => ({ text: w.text, a: w.t, b: w.t + Math.max(60, w.d), sp: w.sp, bg: w.bg }));
     const parts = l.text.split(/\s+/).filter(Boolean);
     if (l.syl?.length) {
       // Silben → Zeichenpositionen, dann je Wort Anfang der ersten und Ende der letzten Silbe
@@ -1327,7 +1328,9 @@ Probe-FX: ${pfx}`;
     updateLyrState();
     if (!got || got.instrumental) return;
     applyTiming(uri, got);
-    voices(got);
+    // [duet 1.27] Duett-Stimmen und Hintergrundgesang (meist schon in lyrics.js erkannt; wiederholbar)
+    parseVoices(got);
+    voiceTint(true);
     // Stimmung der Lichtregie: eine kleine Wortliste über die Zeilen (bleibt lokal)
     party.lyrics(uri, got.synced ? got.lines : []);
     // Wort-Effekte (nur Party): Wörterbuch aufbauen und alle Zeilen durchsuchen kostet beim ersten Mal
@@ -1362,28 +1365,36 @@ Probe-FX: ${pfx}`;
       d.className = i === i0 ? "m-im-line is-active" : i < i0 ? "m-im-line is-past" : "m-im-line";
       if (i0 > -9) d.style.setProperty("--d", Math.min(Math.abs(i - Math.max(i0, 0)), 6));
       d.dataset.t = l.t;
+      // [duet 1.27] Stimme (Farbe) und Hintergrundgesang als eigene, kleinere Zeile
       if (l.who) d.dataset.who = l.who;
+      if (l.bg) d.classList.add("is-bgline");
       if (karaoke && l.text !== "♪") {
         const box = document.createElement("span");
         box.className = "m-im-words";
-        const list = [];
-        let bg = false;
-        for (const w of wordTimes(got.lines, i)) {
+        const list = [], wt = wordTimes(got.lines, i);
+        // Hintergrundgesang in Klammern („(“ bis „)“, aber nicht „(x2)“) – kleiner und leiser. Steht er am Zeilenende,
+        // rückt er als eigene kleine Zeile darunter (m-im-bgl). Ist die ganze Zeile Hintergrund, reicht deren Größe.
+        const bgs = l.bg ? wt.map(() => false) : wt.some((w) => w.bg) ? wt.map((w) => !!w.bg) : bgFlags(wt.map((w) => w.text));
+        let tail = bgs.length;
+        while (tail > 0 && bgs[tail - 1]) tail--;
+        const under = tail > 0 && tail < bgs.length ? document.createElement("span") : null;
+        if (under) under.className = "m-im-bgl";
+        wt.forEach((w, k) => {
           const s = document.createElement("span");
-          // Hintergrundgesang in Klammern: von „(“ bis „)“ leiser und in der Zweitfarbe
-          if (/^[(（]/.test(w.text)) bg = true;
-          s.className = bg ? "m-w is-bg" : "m-w";
-          if (/[)）][,.!?…]*$/.test(w.text)) bg = false;
+          s.className = bgs[k] ? "m-w is-bg" : "m-w";
           s.textContent = w.text;
           s.style.setProperty("--wi", list.length);
-          box.append(s);
-          if (w.sp !== false) box.append(" ");
+          const into = under && k >= tail ? under : box;
+          into.append(s);
+          if (w.sp !== false && k < wt.length - 1 && !(under && k === tail - 1)) into.append(" ");
           list.push({ el: s, a: w.a, b: w.b, p: -1, text: w.text, sy: w.sy || null });
           if (w.est) list.est = true;
-        }
+        });
+        if (under) box.append(under);
         d.append(box);
         words[i] = list;
-      } else bgSplit(d, l.text);
+      } else if (l.bg) d.textContent = l.text;
+      else bgSplit(d, l.text, l.who === "all");
       frag.append(d);
     });
     // mitten in einer Gleitfahrt: die (noch leere) Fläche bleibt genau dort stehen, wo sie gerade ist
@@ -1401,42 +1412,40 @@ Probe-FX: ${pfx}`;
     if (cfg.translate) addTranslations(token);
     if (cfg.romanize) addRomaji(token);
   }
-  // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück
-  function bgSplit(d, text) {
-    const parts = String(text).split(/([(（][^)）]*[)）])/);
-    if (parts.length < 2) return (d.textContent = text);
-    for (const p of parts) {
-      if (!p) continue;
+  // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück – am Zeilenende als
+  // kleine Zeile darunter. Etiketten wie „(x2)“ bleiben normaler Text. all: Duett „zusammen“ – der Text steckt
+  // in einem eigenen Stück, damit der Farbverlauf aus beiden Stimmen nur so breit wie der Text ist.
+  function bgSplit(d, text, all) {
+    const parts = bgParts(text);
+    if (!parts.some((p) => p.bg) && !all) return (d.textContent = text);
+    while (parts.length > 1 && !parts[parts.length - 1].text.trim()) parts.pop();
+    const lastMain = parts.findLastIndex((p) => !p.bg);
+    parts.forEach((p, k) => {
       const s = document.createElement("span");
-      if (/^[(（]/.test(p)) s.className = "is-bg";
-      s.textContent = p;
+      s.className = p.bg ? (k > lastMain && lastMain >= 0 && parts[lastMain].text.trim() ? "is-bg m-im-bgl" : "is-bg") : all ? "m-im-all" : "";
+      s.textContent = p.bg || k < lastMain ? p.text : p.text.trimEnd();
       d.append(s);
-    }
+    });
   }
-  // Duette: steht vor Zeilen ein Name („Name:“ oder „[Name]“) und kommen mindestens zwei Stimmen je dreimal
-  // vor, bekommt jede Stimme ihre Farbe – der Name selbst verschwindet aus der Zeile
-  function voices(got) {
-    if (got.voices) return;
-    got.voices = true;
-    const TAG = /^\s*(?:\[([^\]]{1,24})\]|\(([^)]{1,24})\)|([\p{Lu}][\p{L} .'&-]{0,22}):)\s*/u;
-    const count = new Map();
-    for (const l of got.lines) {
-      const m = !l.words && l.text.match(TAG);
-      const who = m && (m[1] || m[2] || m[3]).trim();
-      if (who) count.set(who.toLowerCase(), (count.get(who.toLowerCase()) || 0) + 1);
-    }
-    const names = [...count].filter(([, n]) => n >= 3).map(([k]) => k);
-    if (names.length < 2) return;
-    let cur = "";
-    for (const l of got.lines) {
-      const m = !l.words && l.text.match(TAG);
-      const who = m && (m[1] || m[2] || m[3]).trim().toLowerCase();
-      if (who && names.includes(who)) {
-        cur = String((names.indexOf(who) % 3) + 1);
-        l.text = l.text.slice(m[0].length) || "♪";
-      } else if (/^(all|alle|both|beide|tous|todos|tutti)$/i.test(who || "")) cur = "all";
-      if (cur) l.who = cur;
-    }
+  // [duet 1.27] Stimmfarben (--m-v1 … --m-v3) aus der Coverfarbe an der Liedtext-Fläche – nur bei Duetten und nur,
+  // wenn sich die Farbe sichtbar ändert (beim Songwechsel blendet die Palette über: höchstens alle 0,4 s neu).
+  // Die Zeilen haben einen Farbübergang, also gleitet auch das.
+  let tintKey = "", tintAt = 0;
+  function voiceTint(force) {
+    if (!q.lyrics || !lyr?.voices || !lyr.lines?.length) return;
+    const now = performance.now();
+    if (!force && now - tintAt < 400) return;
+    tintAt = now;
+    if (lyr.duet === undefined) lyr.duet = lyr.lines.some((l) => l.who);
+    if (!lyr.duet) return;
+    const pal = imPalette();
+    const key = pal.map((c) => c.map((v) => v >> 3).join(",")).join(";");
+    if (key === tintKey) return;
+    tintKey = key;
+    voiceColors(pal).forEach((c, k) => {
+      q.lyrics.style.setProperty(`--m-v${k + 1}`, `rgb(${c.join(",")})`);
+      q.lyrics.style.setProperty(`--m-v${k + 1}-rgb`, c.join(","));
+    });
   }
   // Lautschrift unter die Zeilen (Koreanisch selbst, Japanisch von NetEase oder aus Kana, Chinesisch per Wörterbuch,
   // Kyrillisch, Griechisch und Hindi aus Tabellen)
@@ -1694,6 +1703,7 @@ Probe-FX: ${pfx}`;
   // ihre Klassen vor ihrem ersten Stil – sie starten also ohnehin ohne Übergang im Endzustand (kein Plopp).
   function drawLyrics(pos, snap) {
     if (!lyr?.synced) return;
+    voiceTint();
     const pend = lyrSnap;
     if (pend) {
       lyrSnap = null;
@@ -3204,6 +3214,8 @@ Probe-FX: ${pfx}`;
     kick();
     el.style.setProperty("--m-lyr-size", String(cfg.lyrSize / 100));
     el.style.setProperty("--m-lyr-gap", String(cfg.lyrGap / 100));
+    // [duet 1.27] „Stimmen farbig“: nur Farben – Größen und Abstände hängen nicht daran, Umschalten springt nie
+    q.lyrics?.classList.toggle("is-voices", cfg.lyrVoices !== false);
   }
 
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer

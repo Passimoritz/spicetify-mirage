@@ -1,6 +1,7 @@
 /* ---------------------------------------------------------------- Liedtext-Formate lesen */
 // LRC (auch mit Wortzeiten), NetEase-YRC und TTML (AMLL-Sammlung, Wort für Wort). Ohne Fenster: einzeln
-// testbar (tests/unit/lyricparse.test.js). Ergebnis je Zeile: { t, text, words?: [{ t, d, text, sp }], who? }
+// testbar (tests/unit/lyricparse.test.js). Ergebnis je Zeile: { t, text, words?: [{ t, d, text, sp, bg? }], who?, bg? }
+// who = Stimme im Duett ("1" … "3", "all" = zusammen), bg = Hintergrundgesang (siehe auch lyricvoices.js)
 
 // Wörter zu einer Zeile: Leerzeichen nur, wo der Text eines hat – oder zwischen zwei lateinischen Wörtern,
 // die NetEase manchmal ohne Abstand liefert („how(…)to“). Chinesisch/Japanisch bleibt ohne Abstände.
@@ -47,7 +48,8 @@ function parseYrc(text) {
     const head = /^\[(\d+),(\d+)\]/.exec(row);
     if (!head) continue;
     const words = [];
-    for (const m of row.slice(head[0].length).matchAll(/\((\d+),(\d+),\d+\)([^(]*)/g)) {
+    // Text bis zur nächsten Zeitmarke – auch mit Klammern darin („(ooh)“ = Hintergrundgesang ging früher verloren)
+    for (const m of row.slice(head[0].length).matchAll(/\((\d+),(\d+),\d+\)([\s\S]*?)(?=\(\d+,\d+,\d+\)|$)/g)) {
       if (!m[3]) continue;
       words.push({ t: Number(m[1]), d: Number(m[2]), raw: m[3] });
     }
@@ -73,6 +75,9 @@ const attr = (tag, name) => new RegExp(`\\s${name}="([^"]*)"`).exec(tag)?.[1];
 // (ttm:role="x-translation"/"x-roman") fallen weg, Hintergrundgesang (x-bg) kommt in Klammern dazu.
 function parseTtml(xml) {
   const out = [], agents = [];
+  // Stimmen aus dem Kopf: <ttm:agent type="person|group|other" xml:id="v1"> – „group“ (oft v1000) heißt: alle zusammen
+  const groups = new Set();
+  for (const m of String(xml || "").matchAll(/<ttm:agent\b([^>]*)>/g)) if (attr(m[1], "type") === "group") groups.add(attr(m[1], "xml:id"));
   const body = String(xml || "").slice(Math.max(0, String(xml || "").indexOf("<body")));
   for (const pm of body.matchAll(/<p\b([^>]*)>([\s\S]*?)<\/p>/g)) {
     const words = [], stack = [];
@@ -127,13 +132,16 @@ function parseTtml(xml) {
     out.push({
       t: Number.isFinite(begin) ? Math.min(begin, list[0].t) : list[0].t,
       text: list.map((w) => w.text + (w.sp ? " " : "")).join("").trim(),
-      words: list.map(({ t, d, text, sp }) => ({ t, d, text, sp })),
+      words: list.map(({ t, d, text, sp, bg }) => (bg ? { t, d, text, sp, bg } : { t, d, text, sp })),
       agent,
+      ...(list.every((w) => w.bg) ? { bg: true } : {}),
     });
   }
-  // Duett: zwei oder mehr Stimmen bekommen ihre Farbe (1, 2, 3 wie bei den Namen vor den Zeilen)
+  // Duett: zwei oder mehr Stimmen bekommen ihre Farbe (1, 2, 3 wie bei den Namen vor den Zeilen); die Gruppe
+  // („alle“) zählt nicht als eigene Stimme. Mehr als drei Stimmen teilen sich die Farben reihum.
+  const solo = agents.filter((a) => !groups.has(a));
   for (const l of out) {
-    if (agents.length >= 2 && l.agent) l.who = String((agents.indexOf(l.agent) % 3) + 1);
+    if (solo.length >= 2 && l.agent) l.who = groups.has(l.agent) ? "all" : String((solo.indexOf(l.agent) % 3) + 1);
     delete l.agent;
   }
   return out.sort((a, b) => a.t - b.t);

@@ -20,6 +20,10 @@ assert.deepEqual(l[0].words.map((w) => w.t), [1000, 1400, 1700, 2000]);
 l = parseYrc('{"t":0,"c":[{"tx":"作词: x"}]}\n[1000,2000](1000,400,0)how(1400,300,0)to (1700,300,0)go');
 assert.equal(l.length, 1);
 assert.equal(l[0].text, "how to go");
+// Klammern im Wort (Hintergrundgesang) gehen nicht verloren
+l = parseYrc("[1000,2000](1000,400,0)Oh (1400,300,0)(yeah, (1700,300,0)yeah)");
+assert.deepEqual(l[0].words.map((w) => [w.t, w.text]), [[1000, "Oh"], [1400, "(yeah,"], [1700, "yeah)"]]);
+assert.equal(l[0].text, "Oh (yeah, yeah)");
 
 // ---- TTML: Silben eines Worts ohne Abstand, Wörter mit Abstand, Übersetzung weg, Hintergrund in Klammern, Duett
 const ttml = `<tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata"><head></head><body dur="1:00.000"><div>

@@ -869,35 +869,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   letter-spacing: 0.01em;
   opacity: 0.62;
 }
-/* Hintergrundgesang in Klammern: leiser, kleiner, Zweitfarbe */
-/* ohne Deckkraft-Abzug: B ist schon knapp auf 3 : 1 gerechnet, jeder Abzug machte es unlesbar */
-#mirage-immersive .m-im-line .is-bg {
-  font-size: 0.78em;
-  color: var(--m-b);
-}
-/* Duette: jede Stimme ihre Farbe (Name vor der Zeile im Liedtext) */
-#mirage-immersive .m-im-line[data-who="1"].is-active {
-  color: var(--m-a);
-}
-#mirage-immersive .m-im-line[data-who="2"].is-active {
-  color: var(--m-c);
-}
-#mirage-immersive .m-im-line[data-who="3"].is-active {
-  color: var(--m-b);
-}
-#mirage-immersive .m-im-line[data-who] {
-  border-left: 3px solid transparent;
-  padding-left: 0.4em;
-}
-#mirage-immersive .m-im-line[data-who="1"] {
-  border-left-color: var(--m-a);
-}
-#mirage-immersive .m-im-line[data-who="2"] {
-  border-left-color: var(--m-c);
-}
-#mirage-immersive .m-im-line[data-who="3"] {
-  border-left-color: var(--m-b);
-}
+/* Hintergrundgesang und Duett-Stimmen: Block „1.27 duet“ am Ende der Datei */
 /* Timing von Hand: Leiste unten, die nächste Zeile ist markiert */
 #mirage-immersive .m-im-timing {
   position: absolute;
@@ -7152,3 +7124,122 @@ html.mirage-calm #mirage-immersive .m-ck-glow {
   opacity: 0;
 }
 /* === end views === */
+/* === 1.27 duet === */
+/* Hintergrundgesang: kleiner und leiser in der Farbe der Zeile (weiß bzw. Stimmfarbe – beides ist hell genug, dass
+   die Deckkraft nicht unlesbar macht). Am Zeilenende rückt er als eigene kleine Zeile leicht eingerückt darunter. */
+#mirage-immersive .m-im-line :is(.is-bg, .m-im-bgl) {
+  font-size: 0.72em;
+  font-weight: 700;
+  opacity: 0.7;
+}
+#mirage-immersive .m-im-line .m-im-bgl {
+  display: block;
+  margin-top: 0.06em;
+  padding-left: 0.9em;
+  line-height: 1.15;
+}
+/* Karaoke: die Wörter im .m-im-bgl sind selbst .is-bg – dort keine zweite Verkleinerung */
+#mirage-immersive .m-im-line .m-im-bgl .is-bg {
+  font-size: 1em;
+  opacity: 1;
+}
+/* ganze Zeile Hintergrundgesang: kleiner, leiser und dicht unter die Zeile davor gerückt */
+#mirage-immersive .m-im-line.is-bgline {
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * 0.72);
+  font-weight: 700;
+  margin-top: calc(-0.35em * var(--m-lyr-gap, 1));
+  padding-left: 0.9em;
+  opacity: calc((1 - var(--d, 0) * 0.13) * 0.75);
+}
+#mirage-immersive .m-im-line.is-bgline.is-active {
+  opacity: 0.85;
+}
+#mirage-immersive[data-mode="party"] .m-im-line.is-bgline {
+  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * 0.72);
+  padding-left: calc((var(--m-act) - 1) * 70%);
+  opacity: calc((0.55 - var(--d, 0) * 0.2) * 0.8);
+}
+#mirage-immersive[data-mode="party"] .m-im-line.is-bgline.is-active {
+  opacity: 0.85;
+}
+#mirage-immersive[data-mode="party"] .m-im-line .m-im-bgl {
+  padding-left: 0;
+}
+
+/* Duette: jede Stimme ihre Farbe (--m-v1 … --m-v3 aus der Coverfarbe, lesbar gerechnet: lyricvoices.js), gemeinsam
+   gesungene Zeilen („all“) einen Verlauf aus Stimme 1 und 2. Die Leiste links und ihr Abstand stehen immer da
+   (außer im mittig gesetzten Party-Modus) – der Schalter „Stimmen farbig“ ändert nur Farben, nie das Layout. */
+#mirage-immersive:not([data-mode="party"]) .m-im-line[data-who] {
+  border-left: 3px solid transparent;
+  padding-left: 0.4em;
+}
+#mirage-immersive:not([data-mode="party"]) .m-im-line[data-who].is-bgline {
+  padding-left: 0.9em;
+}
+#mirage-immersive .m-im-line[data-who] {
+  transition:
+    color 0.5s var(--m-ease),
+    border-color 0.5s var(--m-ease),
+    opacity 0.7s var(--m-ease),
+    transform 0.7s var(--m-spring);
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="1"],
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="all"] {
+  --m-vc: var(--m-v1, var(--m-a));
+  --m-vc-rgb: var(--m-v1-rgb, var(--m-a-rgb));
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="2"] {
+  --m-vc: var(--m-v2, var(--m-c));
+  --m-vc-rgb: var(--m-v2-rgb, var(--m-c-rgb));
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="3"] {
+  --m-vc: var(--m-v3, var(--m-b));
+  --m-vc-rgb: var(--m-v3-rgb, var(--m-b-rgb));
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who] {
+  color: rgba(var(--m-vc-rgb), 0.42);
+  border-left-color: rgba(var(--m-vc-rgb), 0.45);
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who].is-past {
+  color: rgba(var(--m-vc-rgb), 0.3);
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who]:hover {
+  color: rgba(var(--m-vc-rgb), 0.75);
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who].is-active {
+  color: var(--m-vc);
+  border-left-color: var(--m-vc);
+  text-shadow: 0 0 28px rgba(var(--m-vc-rgb), 0.5);
+}
+#mirage-immersive .m-im-lyrics.is-unsynced.is-voices .m-im-line[data-who] {
+  color: rgba(var(--m-vc-rgb), 0.9);
+}
+/* zusammen: Leiste und Text im Verlauf beider Stimmen */
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="all"] {
+  border-image: linear-gradient(rgba(var(--m-v1-rgb, var(--m-a-rgb)), 0.5), rgba(var(--m-v2-rgb, var(--m-c-rgb)), 0.5)) 1;
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="all"].is-active {
+  border-image: linear-gradient(var(--m-v1, var(--m-a)), var(--m-v2, var(--m-c))) 1;
+}
+#mirage-immersive .m-im-lyrics.is-voices .m-im-line[data-who="all"].is-active .m-im-all {
+  background: linear-gradient(90deg, var(--m-v1, var(--m-a)), var(--m-v2, var(--m-c)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Karaoke: das Wort füllt sich in der Stimmfarbe statt in Weiß */
+#mirage-immersive.is-karaoke .m-im-lyrics.is-voices .m-im-line[data-who].is-active .m-w {
+  background: linear-gradient(90deg, var(--m-vc) calc(var(--p, 0) * (100% + 0.5em) - 0.5em), rgba(var(--m-vc-rgb), 0.34) calc(var(--p, 0) * (100% + 0.5em)));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* zusammen: der gesungene Teil des Worts im Verlauf beider Stimmen (oben, so breit wie gefüllt), darunter der
+   noch offene Teil gedämpft wie sonst */
+#mirage-immersive.is-karaoke .m-im-lyrics.is-voices .m-im-line[data-who="all"].is-active .m-w {
+  background:
+    linear-gradient(90deg, var(--m-v1, var(--m-a)), var(--m-v2, var(--m-c))) left / max(0px, calc(var(--p, 0) * (100% + 0.5em) - 0.25em)) 100% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.34));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* === end duet === */
