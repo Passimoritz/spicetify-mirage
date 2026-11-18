@@ -28,6 +28,9 @@ const CRITICAL = ["mainView", "nowPlayingBar"];
 const spotifyVersion = String(S.Platform?.version || S.Config?.spotify_version || "").split(".").slice(0, 4).join(".");
 const spicetifyVersion = String(S.Config?.version || "");
 const health = { checked: false, missing: [], spotify: spotifyVersion, spicetify: spicetifyVersion, mirage: VERSION };
+// Nach einem Spotify-Update sagt die Update-Notiz (updnote.js) selbst, was los ist: dann hier keine zweite Meldung
+let noteOwnsUpdate = false;
+const handOffUpdateNote = () => (noteOwnsUpdate = true);
 
 function checkHealth() {
   health.missing = Object.keys(SEL).filter((k) => !document.querySelector(SEL[k]));
@@ -39,7 +42,7 @@ function checkHealth() {
   try { seen = localStorage.getItem(KEY) || ""; } catch {}
   if (broken.length && seen !== spotifyVersion + ":broken") {
     try {
-      S.showNotification?.(t("safeMode").replace("{v}", spotifyVersion || "?"), true, 10000);
+      if (!noteOwnsUpdate) S.showNotification?.(t("safeMode").replace("{v}", spotifyVersion || "?"), true, 10000);
       localStorage.setItem(KEY, spotifyVersion + ":broken");
     } catch {}
   } else if (!broken.length) {
@@ -63,6 +66,7 @@ try {
   if (raw && typeof raw.found === "object" && !Array.isArray(raw.found)) seenSel = { ...seenSel, ...raw };
 } catch {}
 // Spotify wurde aktualisiert (gespeicherte Version ≠ jetzige): dann früh prüfen und das Ergebnis sagen
+const prevSpotify = seenSel.v;
 const updated = !!(spotifyVersion && seenSel.v && seenSel.v !== spotifyVersion);
 if (spotifyVersion && seenSel.v !== spotifyVersion) {
   if (seenSel.v && Object.keys(seenSel.found).length) seenSel.prev = seenSel.found;
@@ -100,7 +104,8 @@ setTimeout(() => {
       seenSel.told = spotifyVersion;
       try {
         localStorage.setItem(SEEN, JSON.stringify(seenSel));
-        S.showNotification?.(t("updOk").replace("{v}", spotifyVersion || "?"), false, 6000);
+        // die Update-Notiz hat das gleich beim Start gesagt
+        if (!noteOwnsUpdate) S.showNotification?.(t("updOk").replace("{v}", spotifyVersion || "?"), false, 6000);
       } catch {}
     }
     return;
@@ -132,4 +137,4 @@ const reportUrl = () =>
   "https://github.com/Passimoritz/spicetify-mirage/issues/new?" +
   new URLSearchParams({ template: "bug-after-spotify-update.yml", title: `[Bug] Spotify ${spotifyVersion || "?"} · Mirage ${VERSION}`, diagnostics: diagnostics() }).toString();
 
-export { SEL, health, checkHealth, diagnostics, reportUrl };
+export { SEL, CRITICAL, health, checkHealth, diagnostics, reportUrl, spotifyVersion, prevSpotify, handOffUpdateNote };

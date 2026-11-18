@@ -19,6 +19,12 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 - All newer texts (party games, drinking games, photo wall, guest rules, look & performance, lyrics sources, genres and more) are now translated into all 14 languages instead of falling back to English.
 - The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
+- After a Spotify update, Mirage checks the new version once at startup and says so in a small note: "Spotify 1.3.10 detected – Mirage runs as usual". If something it relies on is missing, the note says exactly what, with buttons to open the help and copy the diagnostics. It shows once per version, never on a fresh install, and closes by itself.
+
+### Changed
+
+- Checked against Spotify 1.3.10: volume and mute keep working with Spotify's new volume handling, and old style rules for parts Spotify no longer has were tidied up.
+- The nightly compatibility check now also tests the newest Windows version of Spotify, not just the Linux one.
 
 ## [1.26.0] – 2026-11-18
 

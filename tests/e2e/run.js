@@ -2083,6 +2083,65 @@ CASES.push(["perf-menu", perfMenu]);
 CASES.push(["photo-wall", photoWall]);
 CASES.push(["settings-search", settingsSearch], ["coach-once", coachOnce]);
 
+// Notiz nach einem Spotify-Update (src/updnote.js): nie bei der ersten Installation, genau einmal nach einem
+// Versionswechsel, beim nächsten Start mit derselben Version nicht mehr; fehlt etwas, sagt sie was. Eigenes,
+// verstecktes und stummes Fenster mit eigenem Speicher; „Neustart“ heißt Seite neu laden.
+async function updateNote() {
+  const part = "e2e-updnote";
+  session.fromPartition(part).webRequest.onBeforeRequest((d, cb) => cb({ cancel: !/^(http|ws):\/\/(localhost|127\.0\.0\.1)|^data:|^blob:|^devtools:/.test(d.url) }));
+  const W = new Win("Update", new BrowserWindow({ width: 1100, height: 760, useContentSize: true, show: false, webPreferences: { offscreen: true, backgroundThrottling: false, sandbox: false, contextIsolation: false, partition: part } }));
+  W.wc.setFrameRate(12);
+  const note = () => W.js(`(() => {
+    const n = document.querySelector(".m-updnote");
+    return n && !n.classList.contains("is-gone") ? { text: n.innerText.replace(/\\s+/g, " "), warn: n.classList.contains("is-warn"), buttons: n.querySelectorAll(".m-updnote-btn").length } : null;
+  })()`);
+  // Mirage urteilt 9 s nach dem Start: bis 12 s darf keine Notiz kommen
+  const none = async (what) => {
+    const t0 = Date.now();
+    while (Date.now() - t0 < 12000 * SLOW) {
+      const n = await note();
+      ok(!n, `update-note: ${what} – trotzdem eine Notiz: ${JSON.stringify(n)}`);
+      await wait(400);
+    }
+  };
+  const restart = async (version) => {
+    if (version) await W.js(`localStorage.setItem("e2e:spotifyVersion", ${JSON.stringify(version)}); 1`);
+    const loaded = new Promise((r) => W.wc.once("did-finish-load", r));
+    W.wc.reloadIgnoringCache();
+    await loaded;
+    await until(() => W.js(`!!window.__mirage`), 8000, "update-note: Mirage startet");
+  };
+  try {
+    // erste Installation (Spotify 1.3.10 aus dem Nachbau): still, aber die Version ist gemerkt
+    await W.win.loadURL(PAGE + "__theme");
+    await until(() => W.js(`!!window.__mirage`), 8000, "update-note: Mirage startet");
+    await none("erste Installation");
+    ok((await W.js(`localStorage.getItem("mirage:updSeen")`)) === "1.3.10.2586", "update-note: die erste Version ist gemerkt");
+    // Spotify-Update: einmal „läuft wie gewohnt“, mit Version, ohne Knöpfe, ohne zweite Meldung von Spicetify
+    await restart("1.3.11.120.gabcdef123456");
+    const n = await until(note, 15000, "update-note: Notiz nach dem Update");
+    ok(n.text.includes("Spotify 1.3.11 erkannt") && n.text.includes("läuft wie gewohnt") && !n.warn && !n.buttons, "update-note: Entwarnung mit Version: " + n.text);
+    ok(!(await W.js(`__sp.log.notes.filter((x) => x.msg.includes("1.3.11")).length`)), "update-note: keine zweite Meldung dazu");
+    // schließen per Klick auf das X
+    await W.click(".m-updnote-x");
+    await until(async () => !(await note()), 2000, "update-note: X schließt die Notiz");
+    ok(!W.errors.length, "update-note: Fehler in der Konsole:\n  " + W.errors.slice(0, 5).join("\n  "));
+    // nächster Start mit derselben Version: still
+    await restart();
+    await none("zweiter Start mit derselben Version");
+    ok(!W.errors.length, "update-note: Fehler in der Konsole:\n  " + W.errors.slice(0, 5).join("\n  "));
+    // nächstes Update, und Spotify hat die Taktanalyse nicht mehr: sagt genau das, mit Hilfe und Diagnose
+    await restart("1.3.12.7.g0123456789ab");
+    await W.js(`delete Spicetify.getAudioData; 1`);
+    const w = await until(note, 15000, "update-note: Notiz, wenn etwas fehlt");
+    ok(w.warn && w.text.includes("Takt-Analyse") && w.buttons === 2, "update-note: sagt, was fehlt, mit zwei Knöpfen: " + w.text);
+    ok(!w.text.includes("Lautstärke") && !w.text.includes("Warteschlange"), "update-note: nennt nur, was wirklich fehlt: " + w.text);
+  } finally {
+    W.win.destroy();
+  }
+}
+CASES.push(["update-note", updateNote]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {
