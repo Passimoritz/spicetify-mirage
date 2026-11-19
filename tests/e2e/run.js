@@ -15,9 +15,14 @@ const PUBLIC = process.env.E2E_RELAY === "public";
 // E2E_LANG=en npm run test:games: die Handys auf Englisch (wie auf GitHub), das große Bild bleibt deutsch
 const PHONE_LANG = process.env.E2E_LANG || "";
 const ONLY = (process.env.E2E_ONLY || "").split(",").filter(Boolean);
+// Sichtprüfung: E2E_SHOTS=<Ordner> speichert an markanten Stellen Bilder vom großen Bild und den Handys,
+// E2E_PHONE=390x844 setzt die Größe der Handys, E2E_SCHEME=Pearl das Farbschema (hell) am PC
+const SHOTS = process.env.E2E_SHOTS || "";
+const [PHONE_W, PHONE_H] = (process.env.E2E_PHONE || "412x860").split("x").map(Number);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-const ICON = { quiz: "🎤", title: "🎵", intro: "⏱️", gap: "✏️", next: "📜", tf: "🕵️", beat: "🥁", stop: "✋", fast: "⚡", taps: "👆", battle: "💃", bomb: "💣", likely: "🤔", sing: "🎙️", wheel: "🎡", never: "🙈", dquiz: "🍻", alarm: "🚨", dlikely: "👉", dwheel: "🍀" };
-const SETTINGS = { gameRounds: 2, gameAsk: 14, gameBreak: 2, gameDur: 10, gameClip: 6, gameJoin: 120, gameSfx: 0.7, partyLive: true, partyWishes: true, gameKarLen: 12 };
+// Spiele, nach deren Fall afterGame aufräumt (früher eine Emoji-Tabelle; die Symbole sind jetzt SVG)
+const ICON = Object.fromEntries("quiz title intro gap next tf beat stop fast taps battle bomb likely sing wheel never dquiz alarm dlikely dwheel".split(" ").map((k) => [k, 1]));
+const SETTINGS = { ...(process.env.E2E_SCHEME ? { scheme: process.env.E2E_SCHEME } : {}), gameRounds: 2, gameAsk: 14, gameBreak: 2, gameDur: 10, gameClip: 6, gameJoin: 120, gameSfx: 0.7, partyLive: true, partyWishes: true, gameKarLen: 12 };
 
 app.on("window-all-closed", () => {});
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
@@ -115,18 +120,31 @@ const big = {
     const g = document.querySelector("#mirage-immersive .m-im-game"), im = document.getElementById("mirage-immersive");
     return { ...__sp.now(), open: !!g, k: g?.dataset.k, st: g?.dataset.st, text: g?.innerText.replace(/\\s+/g, " ").slice(0, 300) || "", lock: im.classList.contains("is-game-lock"),
       opts: [...(g?.querySelectorAll(".m-g-otx") || [])].map((x) => x.textContent), right: g?.querySelector(".m-g-opt.is-right .m-g-otx")?.textContent,
-      chips: g?.querySelectorAll(".m-g-chip").length || 0, replay: !!g?.querySelector(".m-g-replay") };
+      chips: g?.querySelectorAll(".m-g-chip").length || 0, replay: !!g?.querySelector(".m-g-replay"),
+      // je Medaille die Zeile (Podest oder Rangliste), in der sie steht – die Medaillen sind SVG, keine Emojis
+      medals: [1, 2, 3].map((m) => [...(g?.querySelectorAll('[data-medal="' + m + '"]') || [])].map((x) => (x.closest(".m-g-row, .m-g-pod")?.innerText || "").replace(/\\s+/g, " ").trim())),
+      emoji: /\\p{Extended_Pictographic}/u.test(g?.innerText || "") };
   })()`),
   hover: async () => {
     T.wc.sendInputEvent({ type: "mouseMove", x: 640, y: 300 + Math.floor(Math.random() * 40) });
     await wait(60);
   },
 };
+// Text der Zeile mit der goldenen Medaille (auf dem Podest oder in der Rangliste)
+const gold = (st) => st.medals?.[0]?.[0] || "";
+async function snap(name, phones = P) {
+  if (!SHOTS) return;
+  fs.mkdirSync(SHOTS, { recursive: true });
+  await wait(450);
+  await T.shot(path.join(SHOTS, name + "-big.png"));
+  await Promise.all(phones.map((ph) => ph.shot(path.join(SHOTS, `${name}-${ph.name}.png`))));
+}
 const phoneState = (ph) => ph.js(`(() => {
   const g = document.getElementById("game"), tiles = [...g.querySelectorAll(".tile")];
   return { hidden: g.hidden, k: g.dataset.k, st: g.dataset.st, round: g.querySelector(".grd")?.textContent || "", text: g.innerText.replace(/\\s+/g, " ").slice(0, 300),
     tiles: tiles.map((t) => t.querySelector("span").textContent), right: tiles.findIndex((t) => t.classList.contains("right")), verdict: g.querySelector(".gverdict")?.className || "",
-    h2: g.querySelector("h2")?.textContent || "" };
+    h2: g.querySelector("h2")?.textContent || "", big: g.querySelector(".gbigic use")?.getAttribute("href") || "",
+    lock: !!g.querySelector('.gpriv use[href="#i-lock"]') && !!g.querySelector(".gpriv")?.textContent.trim(), emoji: /\\p{Extended_Pictographic}/u.test(g.innerText) };
 })()`);
 const allPhones = (fn, ms, what) => until(async () => {
   const s = await Promise.all(P.map(phoneState));
@@ -140,6 +158,7 @@ async function openGame(k) {
   await big.hover();
   await T.click(".m-im-gamebtn");
   await until(() => T.js(`!document.querySelector(".m-im-side").hidden`), 2000, "Spiele-Liste geht auf");
+  await snap("list-" + k, []);
   await T.click(`.m-im-side-body .m-im-side-item[data-game="${k}"]`);
 }
 async function joinAll(k, who = P) {
@@ -247,13 +266,16 @@ async function songGame(k) {
     ok(/hit/.test(rev[0].verdict), `${k}: Alpha hat richtig: ${rev[0].verdict}`);
     if (k === "dquiz") ok(/sip/.test(rev[1].verdict), `${k}: Beta muss trinken: ${rev[1].verdict}`);
     else ok(/miss/.test(rev[1].verdict), `${k}: Beta hat falsch: ${rev[1].verdict}`);
+    await snap(`${k}-rev${r}`);
     const after = await big.state();
     ok(after.right === want, `${k}: großes Bild löst auf „${want}“ auf (${after.right})`);
     await until(async () => (await big.state()).playing, 1500, `${k}: Musik läuft bei der Auflösung`);
   }
   await allPhones((s) => s.st === "end", 12000, `${k}: Siegerehrung`);
+  await snap(`${k}-end`);
   const end = await big.state();
-  ok(/Alpha/.test(end.text.split("🥇")[1] || ""), `${k}: Alpha gewinnt: ${end.text}`);
+  ok(/Alpha/.test(gold(end)), `${k}: Alpha gewinnt: ${end.text}`);
+  ok(!end.emoji && !(await phoneState(P[0])).emoji, `${k}: keine Emojis auf dem großen Bild und am Handy`);
   ok(end.vol === 0.7 && !end.lock, `${k}: am Ende nicht stumm, nicht gesperrt`);
   await noBadNotes(k);
   await close();
@@ -323,12 +345,12 @@ async function stopGame() {
   await P[1].click("#game button.hot");
   const r1 = await allPhones((s) => s.st === "res", 7000, "stop: Ergebnis Runde 1");
   ok(/Gamma/.test((await big.state()).text), "stop: Gamma hat nicht getippt und fliegt raus");
-  ok(r1[2].text.includes("💤"), `stop: Gamma sieht, dass Gamma raus ist: ${r1[2].text}`);
+  ok(r1[2].big === "#i-moon" && r1[2].h2 === (await P[2].js("T.gOut")), `stop: Gamma sieht, dass Gamma raus ist: ${r1[2].text} ${r1[2].big}`);
   await allPhones((s) => s.st === "play", 6000, "stop: nächste Runde");
   await until(async () => (await big.state()).playing, 1500, "stop: Musik läuft wieder");
   await P[1].click("#game button.calm");
   await allPhones((s) => s.st === "end", 34000, "stop: Siegerehrung");
-  ok(/Alpha/.test((await big.state()).text.split("🥇")[1] || ""), "stop: Alpha gewinnt");
+  ok(/Alpha/.test(gold(await big.state())), "stop: Alpha gewinnt");
   await close();
 }
 
@@ -360,9 +382,9 @@ async function tapsGame() {
   await allPhones((s) => s.k === "taps" && s.st === "go", 5000, "taps: läuft");
   for (let i = 0; i < 14; i++) await P[0].click(".gring");
   for (let i = 0; i < 5; i++) await P[1].click(".gring");
-  await until(async () => /Alpha \d*14/.test((await big.state()).text.replace(/🥇|🥈|🥉/g, "")) || /Alpha\s*14/.test((await big.state()).text), 3000, "taps: 14 Tipps von Alpha auf dem großen Bild");
+  await until(async () => /Alpha\s*14/.test((await big.state()).text), 3000, "taps: 14 Tipps von Alpha auf dem großen Bild");
   await allPhones((s) => s.st === "end", 18000, "taps: Siegerehrung");
-  ok(/Alpha/.test((await big.state()).text.split("🥇")[1] || ""), "taps: Alpha gewinnt");
+  ok(/Alpha/.test(gold(await big.state())), "taps: Alpha gewinnt");
   await close();
 }
 
@@ -752,7 +774,7 @@ async function lateJoin() {
   await L.click(...tile(right));
   const rev = await allPhones((s) => s.st === "rev" && s.round === "1/2", 6000, "spät: Auflösung");
   ok(/hit/.test(rev[2].verdict), "spät: die Antwort des neuen Gastes zählt: " + rev[2].verdict);
-  ok(/Gamma/.test(((await big.state()).text.split("🥇")[1] || "").split("🥈")[0]), "spät: Gamma führt: " + (await big.state()).text);
+  ok(/Gamma/.test(gold(await big.state())), "spät: Gamma führt: " + (await big.state()).text);
   // Neuladen in einem frischen Tab: der PC kennt den Gast noch, die Punkte bleiben
   await allPhones((s) => s.st === "ask" && s.round === "2/2" && s.tiles.length === 4, 15000, "spät: Frage 2");
   await L.js(`sessionStorage.clear(); location.reload(); 1`).catch(() => {});
@@ -802,7 +824,7 @@ async function hostGame() {
   ok(await P[0].js(`document.getElementById("bHost").hidden`), "host: Gäste haben den Knopf nicht");
   // ein Spiel vom Handy aus starten
   await H.click("#bHost");
-  await H.click("#hBody .hgames button", { text: "🙈" });
+  await H.click('#hBody .hgames button[data-k="never"]');
   await until(async () => (await big.state()).st === "join" && (await big.state()).k === "never", 5000, "host: das Spiel geht auf dem großen Bild auf");
   for (const ph of [P[0], P[1]]) {
     await until(async () => (await phoneState(ph)).st === "join", 8000, "host: Warteraum auf den Handys");
@@ -1077,7 +1099,7 @@ async function olderGame() {
     await until(async () => (await big.state()).playing, 1500, "älter: Musik läuft bei der Auflösung");
   }
   await allPhones((s) => s.st === "end", 12000, "älter: Siegerehrung");
-  ok(/Alpha/.test((await big.state()).text.split("🥇")[1] || ""), "älter: Alpha gewinnt");
+  ok(/Alpha/.test(gold(await big.state())), "älter: Alpha gewinnt");
   await noBadNotes("older");
   await close();
 }
@@ -1195,7 +1217,7 @@ async function coverGame() {
       await fromHook("cover", b.uri);
     }
     await allPhones((s) => s.st === "end", 12000, "cover: Siegerehrung");
-    ok(/Alpha/.test((await big.state()).text.split("🥇")[1] || ""), "cover: Alpha gewinnt");
+    ok(/Alpha/.test(gold(await big.state())), "cover: Alpha gewinnt");
     await noBadNotes("cover");
     await close();
   } finally {
@@ -1304,7 +1326,7 @@ async function tourGame() {
   await until(() => H.js(`document.body.classList.contains("on") && !document.getElementById("bHost").hidden`).catch(() => false), 10000, "turnier: Handy der Spielleitung ist verbunden");
   try {
     await H.click("#bHost");
-    await H.click("#hBody .hgames button", { text: "🏆" });
+    await H.click('#hBody .hgames button[data-k="tour"]');
     await until(async () => (await big.state()).k === "tour" && (await big.state()).st === "join", 5000, "turnier: Warteraum auf dem großen Bild");
     const lobby = (await big.state()).text;
     ok(/Wer singt hier\?.*Tipp-Rennen.*Schnellster Finger/.test(lobby), "turnier: der Warteraum nennt die drei Spiele in Reihenfolge: " + lobby);
@@ -1364,7 +1386,7 @@ async function tourGame() {
       const s = await big.state();
       return s.k === "tour" && s.st === "end" && s;
     }, 20000, "turnier: Siegerehrung über alle Spiele");
-    ok(/🥇\s*Alpha\s*27/.test(fin.text) && /Beta\s*10\b/.test(fin.text), "turnier: Gesamtwertung stimmt: " + fin.text);
+    ok(fin.medals[0].some((r) => /^Alpha\s*27\b/.test(r)) && /Beta\s*10\b/.test(fin.text), "turnier: Gesamtwertung stimmt: " + fin.text + " " + JSON.stringify(fin.medals));
     ok(await T.js(`!!document.querySelector(".m-g-card")`), "turnier: am Schluss gibt es das Ergebnisbild");
     // das Ergebnisbild hält die Siegerehrung länger fest; Beenden muss trotzdem sofort wirken
     await big.hover();
@@ -1526,7 +1548,8 @@ async function karaokeGame() {
   ok(si >= 0 && s1.filter((x) => x.mine).length === 1, "karaoke: genau ein Handy ist dran");
   ok(await S.js(`!!document.querySelector("#game .gkmic")`), "karaoke: wer dran ist, bekommt den Knopf fürs Mikro");
   ok(await P[(si + 1) % 3].js(`!document.querySelector("#game .gkmic")`), "karaoke: die anderen nicht");
-  ok(/🔒/.test((await phoneState(S)).text), "karaoke: der Hinweis, dass die Aufnahme auf dem Handy bleibt, steht da");
+  ok((await phoneState(S)).lock, "karaoke: der Hinweis, dass die Aufnahme auf dem Handy bleibt, steht da (mit Schloss-Symbol)");
+  ok(!(await phoneState(S)).emoji, "karaoke: keine Emojis am Handy");
   const b0 = await big.state();
   ok(b0.lock && b0.playing && b0.vol === 0.7, `karaoke: Musik läuft normal und ist gesperrt (${JSON.stringify({ lock: b0.lock, playing: b0.playing, vol: b0.vol })})`);
   // die Datei passend zur Stelle, ab dem Klick gerechnet (PC-Uhr wie das Handy sie kennt)
@@ -1557,6 +1580,10 @@ async function karaokeGame() {
   // die Grenze fürs Timing weit; wie fein es unterscheidet, prüfen die Unit-Tests (tests/unit/karaoke.test.js).
   ok(s >= 45 && t >= 30 && p >= 40 && d >= 60, `karaoke: die passende Stimme bekommt eine ordentliche Wertung (${sent[0].join(" / ")})`);
   ok(res.text.includes(String(s)), "karaoke: das große Bild zeigt die Punkte: " + res.text);
+  // die drei Teile als Zeilen aus Symbol (SVG), Name und Wert – keine Emoji-Zeichenkette
+  const parts = await T.js(`[...document.querySelectorAll("#mirage-immersive .m-g-kparts .m-g-row")].map((r) => ({ svg: !!r.querySelector(".m-g-rk svg"), name: r.querySelector(".m-g-nm")?.textContent, val: r.querySelector(".m-g-pt")?.textContent }))`);
+  ok(parts.length === 3 && parts.every((x) => x.svg && x.name && /^(\d+|–)$/.test(x.val)) && parts[0].val === String(t), "karaoke: Timing, Töne, Dabei mit Symbol und Wert: " + JSON.stringify(parts));
+  ok(!res.emoji, "karaoke: keine Emojis im Ergebnis: " + res.text);
   const mic = await S.js(`({ on: !!kRec, tracks: kTracks.map((x) => x.readyState) })`);
   ok(!mic.on && mic.tracks.length && mic.tracks.every((x) => x === "ended"), "karaoke: das Mikro ist wieder frei: " + JSON.stringify(mic));
   const ps = await until(async () => {
@@ -1564,6 +1591,8 @@ async function karaokeGame() {
     return x.st === "res" && x;
   }, 3000, "karaoke: Wertung auf dem Handy");
   ok(ps.text.includes(String(s)) && ps.text.includes(String(t)) && !/undefined/.test(ps.text), "karaoke: der Singende sieht seine Wertung mit den drei Teilen: " + ps.text);
+  ok(!ps.emoji && (await S.js(`document.querySelectorAll("#game .gkparts .grow i svg use").length`)) === 3, "karaoke: am Handy die drei Teile mit Symbol, ohne Emojis");
+  await snap("karaoke-res", [S]);
   // Runde 2: jemand anderes ist dran, der Browser verweigert das Mikro: das Handy erklärt es, die Runde läuft ohne Wertung
   const s2 = await until(async () => {
     const w = await who();
@@ -1592,7 +1621,7 @@ async function karaokeGame() {
   ok((await T.js(`__kar.filter((m) => m.r === 2).length`)) === 0, "karaoke: ohne Mikro kommen auch keine Zahlen");
   await allPhones((x) => x.st === "end", 20000, "karaoke: Siegerehrung");
   const end = await big.state();
-  ok(new RegExp(S.name).test(end.text.split("🥇")[1] || ""), `karaoke: ${S.name} gewinnt: ${end.text}`);
+  ok(new RegExp(S.name).test(gold(end)), `karaoke: ${S.name} gewinnt: ${end.text}`);
   await noBadNotes("karaoke");
   await close();
 }
@@ -1673,7 +1702,7 @@ async function wishRules() {
   const block = await B.js("T.wrBlock");
   await until(async () => (await msg(B)) === block, 9000, "regeln: gesperrter Song per Link");
   // zwei Stimmen: der Wunsch geht von selbst in die Warteschlange
-  await B.click("#wList button", { text: "👍" });
+  await B.click('#wList button:has(use[href="#i-thumb"])');
   await until(() => T.js(`__sp.log.queued.includes("spotify:track:t000000000000000000000")`), 6000, "regeln: ab zwei Stimmen automatisch in der Warteschlange");
   await until(() => A.js(`/✓/.test(document.getElementById("wList").textContent)`), 6000, "regeln: die Handys zeigen ihn als angenommen");
   for (const ph of [A, B]) await ph.click("#wClose");
@@ -2249,9 +2278,9 @@ const CASES = [
   ["link-wish", linkWish], ["wish-rules", wishRules], ["reactions", reactions], ["dj-talk", djTalk], ["remote", remoteControl],
 ];
 // neuere Spiele
-Object.assign(ICON, { older: "📅", cover: "🖼️", duel: "⚔️", bingo: "🎱" });
+Object.assign(ICON, { older: 1, cover: 1, duel: 1, bingo: 1 });
 CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame], ["bingo", bingoGame]);
-Object.assign(ICON, { karaoke: "🎶" });
+Object.assign(ICON, { karaoke: 1 });
 CASES.push(["karaoke", karaokeGame]);
 CASES.push(["perf-menu", perfMenu]);
 CASES.push(["idle-hidden", idleHidden]);
@@ -2380,7 +2409,7 @@ app.whenReady().then(async () => {
     return new Win(name, win);
   };
   T = make("Big", 1280, 800, "e2e-theme");
-  P = ["Alpha", "Beta", "Gamma"].map((n, i) => make(n, 412, 860, "e2e-p" + i));
+  P = ["Alpha", "Beta", "Gamma"].map((n, i) => make(n, PHONE_W, PHONE_H, "e2e-p" + i));
   await T.win.loadURL(base + "__theme");
   await Promise.all(P.map((ph) => ph.win.loadURL(base)));
   await wait(1500);

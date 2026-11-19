@@ -81,7 +81,7 @@
   .hrow b { min-width: 44px; text-align: right; }
   .hrow button { flex: none; width: 44px; padding: 0; font-size: 20px; }
   .gdot { flex: none; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; vertical-align: middle; }
-  .grow .gdot { margin-right: 0; }
+  .grow .gdot { width: 9px; margin-right: 0; }
   .grow.me { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6); }
   .card { position: fixed; left: 14px; right: 14px; bottom: max(16px, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 14px; padding: 14px 16px;
     border-radius: 22px; background: rgba(10, 8, 20, 0.38); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
@@ -336,11 +336,36 @@
   .phbar b { display: block; height: 100%; width: 0; background: rgb(var(--c)); transition: width 0.3s; }
   .pbox .phmsg { min-height: 1.4em; font-size: 15px; font-weight: 650; opacity: 1; }
   @media (max-width: 360px) { .tools #bPhoto span { display: none; } }
+  /* Linien-Symbole (Sprite aus src/icons.js, npm run icons): Strich in Schriftfarbe, nie gefüllt – wie im Theme.
+     Keine Emojis: die sähen auf jedem Handy anders aus und passen nicht zum Glas */
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .ic { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.2em; }
+  .ic.lead { margin-inline-end: 0.4em; }
+  .hostbtn:not([hidden]) { display: grid; place-items: center; }
+  .hostbtn .ic { width: 16px; height: 16px; }
+  .gic .ic { width: 18px; height: 18px; vertical-align: middle; color: rgb(var(--c)); }
+  .game .gsnd .ic { width: 16px; height: 16px; vertical-align: middle; }
+  .gbigic .ic { width: 1em; height: 1em; stroke-width: 1.5; color: rgb(var(--c)); filter: drop-shadow(0 0 18px rgba(var(--a), 0.55)); }
+  .gbigic.gboom .ic { color: #ff7a8c; }
+  .gwob .ic { width: 1em; height: 1em; stroke-width: 1.4; }
+  .grow i .ic { width: 18px; height: 18px; vertical-align: middle; opacity: 0.85; }
+  .grow i.gmed .ic { width: 21px; height: 21px; opacity: 1; }
+  .gpod .med .ic { width: 36px; height: 36px; filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35)); }
+  /* Medaillen: Gold, Silber, Bronze, leicht mit der Songfarbe getönt; die Scheibe zart gefüllt */
+  .gmed.m1 { color: #ffd25e; color: color-mix(in oklab, #ffd25e 86%, rgb(var(--a))); }
+  .gmed.m2 { color: #dfe4ee; color: color-mix(in oklab, #dfe4ee 88%, rgb(var(--a))); }
+  .gmed.m3 { color: #d98c5f; color: color-mix(in oklab, #d98c5f 86%, rgb(var(--a))); }
+  .sprite symbol[id^="i-medal"] circle { fill: currentColor; fill-opacity: 0.16; }
+  .hbody .rcrow button .ic { width: 22px; height: 22px; vertical-align: middle; }
+  .hgames button .ic { color: rgb(var(--c)); }
 </style>
 </head>
 <body>
+<!-- icons:start (npm run icons, aus src/icons.js) -->
+<svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false"><symbol id="i-g-quiz" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></symbol><symbol id="i-g-title" viewBox="0 0 24 24"><path d="M12 17.5V4l6.5 2.5"/><circle cx="8.5" cy="17.5" r="3.5"/></symbol><symbol id="i-g-intro" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M18.5 6.5L20 5"/></symbol><symbol id="i-g-gap" viewBox="0 0 24 24"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l2 2"/></symbol><symbol id="i-g-next" viewBox="0 0 24 24"><path d="M4 6h12M4 11h9M4 16h6"/><path d="M15.5 13.5l4 3-4 3"/></symbol><symbol id="i-g-tf" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/><path d="M8 10.5l1.8 1.8 3.2-3.3"/></symbol><symbol id="i-g-beat" viewBox="0 0 24 24"><ellipse cx="12" cy="10" rx="8" ry="3"/><path d="M4 10v6.5c0 1.7 3.6 3 8 3s8-1.3 8-3V10"/><path d="M7.5 3.5l3 4M16.5 3.5l-3 4"/></symbol><symbol id="i-g-older" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol><symbol id="i-g-cover" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 15.5l-5-5-9 9"/></symbol><symbol id="i-g-duel" viewBox="0 0 24 24"><path d="M4.5 4.5l9 9M4.5 4.5h3.5M4.5 4.5V8M19.5 4.5l-9 9M19.5 4.5H16M19.5 4.5V8M7 14.5l2.5 2.5M17 14.5L14.5 17M8.3 15.7L4.5 19.5M15.7 15.7l3.8 3.8"/></symbol><symbol id="i-g-stop" viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 10.5V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.4a6 6 0 0 1-5-2.7L3.2 15.4a1.6 1.6 0 0 1 2.6-1.8L8 16"/></symbol><symbol id="i-g-fast" viewBox="0 0 24 24"><path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/></symbol><symbol id="i-g-taps" viewBox="0 0 24 24"><path d="M9.5 11.5v-6a1.5 1.5 0 0 1 3 0v6.5l3.4.8a2 2 0 0 1 1.5 2.2l-.6 4.3a2 2 0 0 1-2 1.7h-3.2a2 2 0 0 1-1.6-.8L6 15.6a1.5 1.5 0 0 1 2.3-1.9l1.2 1.4"/><path d="M5.5 7a5.5 5.5 0 0 1 10-2.4"/></symbol><symbol id="i-g-battle" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="2"/><path d="M5.5 6.5L12 10l6.5-3.5M12 10v4.5L8.5 21M12 14.5l4 3 1 3.5"/></symbol><symbol id="i-g-bomb" viewBox="0 0 24 24"><circle cx="10.5" cy="14" r="6.5"/><path d="M15 9.5l2.5-2.5"/><path d="M19.5 3.5l1-1M21 7h1M17.5 2.5V1.5"/></symbol><symbol id="i-g-likely" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/></symbol><symbol id="i-g-sing" viewBox="0 0 24 24"><circle cx="15" cy="9" r="5"/><path d="M11.5 12.5L4 20M12 6.5l5.5 5.5"/></symbol><symbol id="i-g-karaoke" viewBox="0 0 24 24"><path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></symbol><symbol id="i-g-tour" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.9M17 6h2.5a2.5 2.5 0 0 1-2.6 3.9M12 14v3.5M8 21h8M9.5 17.5h5"/></symbol><symbol id="i-g-bingo" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/></symbol><symbol id="i-g-wheel" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.6"/><path d="M12 3.5v6.9M12 13.6v6.9M3.5 12h6.9M13.6 12h6.9M6 6l4.9 4.9M13.1 13.1L18 18M18 6l-4.9 4.9M10.9 13.1L6 18"/></symbol><symbol id="i-g-never" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c5 0 8.5 4.5 9.5 7a13 13 0 0 1-2.7 3.8M6.6 6.6A13 13 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol><symbol id="i-g-dquiz" viewBox="0 0 24 24"><path d="M5 8h10v10.5a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 5 18.5z"/><path d="M15 10.5h2.5a2.5 2.5 0 0 1 0 5H15M5 8a2.5 2.5 0 0 1 2.5-3.5 3 3 0 0 1 5 0A2.5 2.5 0 0 1 15 8M8.5 12v5.5M11.5 12v5.5"/></symbol><symbol id="i-g-alarm" viewBox="0 0 24 24"><path d="M6 18v-5a6 6 0 0 1 12 0v5"/><path d="M4 18h16v3H4zM12 2.5V4M4.2 5.2l1.1 1.1M19.8 5.2l-1.1 1.1M2 11h1.5M20.5 11H22"/></symbol><symbol id="i-g-dlikely" viewBox="0 0 24 24"><circle cx="16" cy="7.5" r="3"/><path d="M10.5 20.5a5.5 5.5 0 0 1 11 0"/><path d="M2.5 12.5h8M7.5 9.5l3 3-3 3"/></symbol><symbol id="i-g-dwheel" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8.5 8.5h.01M12 12h.01M15.5 15.5h.01M15.5 8.5h.01M8.5 15.5h.01" stroke-width="2.6"/></symbol><symbol id="i-medal1" viewBox="0 0 24 24"><path d="M8 2.5l2.6 6.2M16 2.5l-2.6 6.2"/><circle cx="12" cy="15" r="6.3"/><path d="M11 13.2l1.3-1v5.6" stroke-width="1.6"/></symbol><symbol id="i-medal2" viewBox="0 0 24 24"><path d="M8 2.5l2.6 6.2M16 2.5l-2.6 6.2"/><circle cx="12" cy="15" r="6.3"/><path d="M10.2 13.6a1.8 1.8 0 0 1 3.5.5c0 1.5-3.6 2.3-3.6 3.8h3.7" stroke-width="1.6"/></symbol><symbol id="i-medal3" viewBox="0 0 24 24"><path d="M8 2.5l2.6 6.2M16 2.5l-2.6 6.2"/><circle cx="12" cy="15" r="6.3"/><path d="M10.3 12.3h3.3l-1.9 2.1a1.7 1.7 0 1 1-1.5 2.8" stroke-width="1.6"/></symbol><symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5v-3a3.5 3.5 0 0 1 7 0v3M12 14.5v2"/></symbol><symbol id="i-crown" viewBox="0 0 24 24"><path d="M4 8l4 4 4-6.5 4 6.5 4-4-1.6 10H5.6z"/><path d="M6 21h12"/></symbol><symbol id="i-mixer" viewBox="0 0 24 24"><path d="M6 3.5v8.3M6 16.2v4.3M12 3.5v2.3M12 10.2v10.3M18 3.5v6.3M18 14.2v6.3"/><circle cx="6" cy="14" r="2.2"/><circle cx="12" cy="8" r="2.2"/><circle cx="18" cy="12" r="2.2"/></symbol><symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="16.5" height="10" rx="2.5"/><path d="M21.5 10.5v3M6 10.5v3M9.5 10.5v3"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M4.5 7.5h2.8l1.8-2.5h5.8l1.8 2.5h2.8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><circle cx="12" cy="13.5" r="3.5"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 21h4"/></symbol><symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7.5 10.5V20h-3v-9.5zM7.5 10.5l3.8-6.6a1.9 1.9 0 0 1 3.4 1.6L13.6 9.5h5a2 2 0 0 1 2 2.4l-1.3 6.2a2.4 2.4 0 0 1-2.4 1.9H7.5"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol><symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 17V12.5a8 8 0 0 1 16 0V17"/><rect x="3.5" y="13" width="4.5" height="7.5" rx="1.8"/><rect x="16" y="13" width="4.5" height="7.5" rx="1.8"/></symbol><symbol id="i-boom" viewBox="0 0 24 24"><path d="M12 2.5l1.8 5.2 5-2.5-2.5 5 5.2 1.8-5.2 1.8 2.5 5-5-2.5-1.8 5.2-1.8-5.2-5 2.5 2.5-5L2.5 12l5.2-1.8-2.5-5 5 2.5z"/></symbol><symbol id="i-voice" viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10.5v3"/></symbol><symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol><symbol id="i-speakerOff" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></symbol><symbol id="i-gamepad" viewBox="0 0 24 24"><path d="M7 7.5h10a4.5 4.5 0 0 1 4.4 5.4l-.8 4a2.6 2.6 0 0 1-4.5 1.2L14.5 16h-5l-1.6 2.1a2.6 2.6 0 0 1-4.5-1.2l-.8-4A4.5 4.5 0 0 1 7 7.5z"/><path d="M8 10.5v3M6.5 12h3M15.5 11h.01M17.5 13h.01"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10z"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></symbol><symbol id="i-shake" viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 8.5v7M2 10.5v3M19.5 8.5v7M22 10.5v3"/></symbol><symbol id="i-draw" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 10h7M8.5 14h7"/></symbol><symbol id="i-prev" viewBox="0 0 24 24"><path d="M18.5 5.5l-9 6.5 9 6.5zM5.5 5.5v13"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5" width="3.5" height="14" rx="1.2"/><rect x="14" y="5" width="3.5" height="14" rx="1.2"/></symbol><symbol id="i-play" viewBox="0 0 24 24"><path d="M7.5 5v14l11-7z"/></symbol><symbol id="i-skip" viewBox="0 0 24 24"><path d="M5.5 5.5l9 6.5-9 6.5zM18.5 5.5v13"/></symbol><symbol id="i-confetti" viewBox="0 0 24 24"><path d="M4 20l4.5-12 7.5 7.5z"/><path d="M13.5 4.5c.6 1.5.1 3-.9 4M19.5 10.5c-1.5-.6-3-.1-4 .9M17 3v1.5M21 7h-1.5M19.5 14.5l1 1"/></symbol><symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></symbol><symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2M9.5 2.5h5"/></symbol></svg>
+<!-- icons:end -->
 <canvas id="c"></canvas>
-<div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div><button type="button" class="mebtn" id="bMe" hidden></button><button type="button" class="hostbtn" id="bHost" hidden>👑</button><button type="button" class="hostbtn rcbtn" id="bRc" hidden>🎛️</button></div>
+<div class="top"><div class="brand"><span class="dot"></span>MIRAGE LIVE<span class="net" id="net" role="status"></span></div><button type="button" class="mebtn" id="bMe" hidden></button><button type="button" class="hostbtn" id="bHost" hidden><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-crown"/></svg></button><button type="button" class="hostbtn rcbtn" id="bRc" hidden><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-mixer"/></svg></button></div>
 <div class="prof host" id="rc" hidden role="dialog" aria-modal="true" aria-labelledby="rcTitle"><div class="pbox"><div class="shead"><h2 id="rcTitle"></h2><button type="button" class="x" id="rcClose">✕</button></div><div class="hbody" id="rcBody"></div></div></div>
 <div class="prof host" id="pho" hidden role="dialog" aria-modal="true" aria-labelledby="phTitle"><div class="pbox"><div class="shead"><h2 id="phTitle"></h2><button type="button" class="x" id="phClose">✕</button></div><p id="phHint"></p><label class="phpick go" id="phCamL"><input type="file" id="phCam" accept="image/*" capture="environment"><span></span></label><label class="phpick" id="phFileL"><input type="file" id="phFile" accept="image/*"><span></span></label><img class="phprev" id="phPrev" alt="" hidden><div class="phbar" id="phBar" hidden><b></b></div><p class="phmsg" id="phMsg" role="status" aria-live="polite"></p></div></div>
 <div class="prof host" id="host" hidden role="dialog" aria-modal="true" aria-labelledby="hTitle"><div class="pbox"><div class="shead"><h2 id="hTitle"></h2><button type="button" class="x" id="hClose">✕</button></div><div class="hbody" id="hBody"></div></div></div>
@@ -446,39 +471,39 @@ Object.assign(GAME_TEXT.de, { gOlder: "Älter oder jünger?", gCover: "Cover-Rä
 for (const [l, v] of Object.entries({"fr": {"gOlder": "Plus ancien ou plus récent ?", "gCover": "Pochette mystère", "gDuel": "Duel de chansons", "gDuelChamp": "Champion de la soirée", "gTour": "Tournoi", "gTourAfter": "Tournoi · après le jeu {i} sur {n}", "gTourNext": "Ensuite : {g}", "gBingo": "Bingo musical", "gBingoHint": "Touche ce qui passe. Quatre en ligne, en colonne ou en diagonale : BINGO !", "gBingoNoLine": "Coche d'abord quatre cases en ligne, en colonne ou en diagonale.", "gBingoNotYet": "Pas encore joué : {t}", "gBingoSent": "Envoyé, le grand écran vérifie …"}, "es": {"gOlder": "¿Más antigua o más nueva?", "gCover": "Portada misteriosa", "gDuel": "Duelo de canciones", "gDuelChamp": "Campeona de la noche", "gTour": "Torneo", "gTourAfter": "Torneo · tras el juego {i} de {n}", "gTourNext": "Siguiente: {g}", "gBingo": "Bingo musical", "gBingoHint": "Toca lo que suena. Cuatro en fila, columna o diagonal: ¡BINGO!", "gBingoNoLine": "Marca primero cuatro en fila, columna o diagonal.", "gBingoNotYet": "Aún no ha sonado: {t}", "gBingoSent": "Enviado, la pantalla grande lo comprueba …"}, "it": {"gOlder": "Più vecchia o più recente?", "gCover": "Copertina misteriosa", "gDuel": "Duello di canzoni", "gDuelChamp": "Campione della serata", "gTour": "Torneo", "gTourAfter": "Torneo · dopo il gioco {i} di {n}", "gTourNext": "Prossimo: {g}", "gBingo": "Tombola musicale", "gBingoHint": "Tocca ciò che suona. Quattro in riga, colonna o diagonale: BINGO!", "gBingoNoLine": "Segna prima quattro in riga, colonna o diagonale.", "gBingoNotYet": "Non ancora suonata: {t}", "gBingoSent": "Inviato, lo schermo grande controlla …"}, "pt": {"gOlder": "Mais antiga ou mais recente?", "gCover": "Capa mistério", "gDuel": "Duelo de músicas", "gDuelChamp": "Campeã da noite", "gTour": "Torneio", "gTourAfter": "Torneio · depois do jogo {i} de {n}", "gTourNext": "A seguir: {g}", "gBingo": "Bingo musical", "gBingoHint": "Toca no que está a tocar. Quatro em linha, coluna ou diagonal: BINGO!", "gBingoNoLine": "Marca primeiro quatro em linha, coluna ou diagonal.", "gBingoNotYet": "Ainda não tocou: {t}", "gBingoSent": "Enviado, o ecrã grande verifica …"}, "nl": {"gOlder": "Ouder of nieuwer?", "gCover": "Hoesraadsel", "gDuel": "Songduel", "gDuelChamp": "Kampioen van de avond", "gTour": "Toernooi", "gTourAfter": "Toernooi · na spel {i} van {n}", "gTourNext": "Volgende: {g}", "gBingo": "Muziekbingo", "gBingoHint": "Tik aan wat er speelt. Vier op een rij, in een kolom of diagonaal: BINGO!", "gBingoNoLine": "Markeer eerst vier op een rij, in een kolom of diagonaal.", "gBingoNotYet": "Nog niet gespeeld: {t}", "gBingoSent": "Verstuurd, het grote scherm controleert het …"}, "pl": {"gOlder": "Starsza czy nowsza?", "gCover": "Zagadka okładki", "gDuel": "Pojedynek piosenek", "gDuelChamp": "Mistrz wieczoru", "gTour": "Turniej", "gTourAfter": "Turniej · po grze {i} z {n}", "gTourNext": "Następna: {g}", "gBingo": "Muzyczne bingo", "gBingoHint": "Zaznacz to, co gra. Cztery w rzędzie, kolumnie lub po przekątnej: BINGO!", "gBingoNoLine": "Najpierw zaznacz cztery w rzędzie, kolumnie lub po przekątnej.", "gBingoNotYet": "Jeszcze nie grało: {t}", "gBingoSent": "Wysłano, duży ekran sprawdza …"}, "tr": {"gOlder": "Daha eski mi, daha yeni mi?", "gCover": "Kapak bilmecesi", "gDuel": "Şarkı düellosu", "gDuelChamp": "Gecenin şampiyonu", "gTour": "Turnuva", "gTourAfter": "Turnuva · {n} oyunun {i}. oyunundan sonra", "gTourNext": "Sıradaki: {g}", "gBingo": "Müzik tombalası", "gBingoHint": "Çalanı işaretle. Satırda, sütunda ya da çaprazda dört tane: TOMBALA!", "gBingoNoLine": "Önce satırda, sütunda ya da çaprazda dört tane işaretle.", "gBingoNotYet": "Henüz çalmadı: {t}", "gBingoSent": "Gönderildi, büyük ekran kontrol ediyor …"}, "ru": {"gOlder": "Старше или новее?", "gCover": "Загадка обложки", "gDuel": "Дуэль песен", "gDuelChamp": "Чемпион вечера", "gTour": "Турнир", "gTourAfter": "Турнир · после игры {i} из {n}", "gTourNext": "Далее: {g}", "gBingo": "Музыкальное бинго", "gBingoHint": "Отмечай то, что играет. Четыре в ряд, столбец или по диагонали: БИНГО!", "gBingoNoLine": "Сначала отметь четыре в ряд, столбец или по диагонали.", "gBingoNotYet": "Ещё не звучала: {t}", "gBingoSent": "Отправлено, большой экран проверяет …"}, "uk": {"gOlder": "Старша чи новіша?", "gCover": "Загадка обкладинки", "gDuel": "Дуель пісень", "gDuelChamp": "Чемпіон вечора", "gTour": "Турнір", "gTourAfter": "Турнір · після гри {i} з {n}", "gTourNext": "Далі: {g}", "gBingo": "Музичне бінго", "gBingoHint": "Познач те, що грає. Чотири в ряд, стовпчик або по діагоналі: БІНГО!", "gBingoNoLine": "Спершу познач чотири в ряд, стовпчик або по діагоналі.", "gBingoNotYet": "Ще не звучала: {t}", "gBingoSent": "Надіслано, великий екран перевіряє …"}, "ja": {"gOlder": "古いのはどっち？", "gCover": "ジャケット当て", "gDuel": "曲バトル", "gDuelChamp": "今夜のチャンピオン", "gTour": "トーナメント", "gTourAfter": "トーナメント · {n}ゲーム中{i}ゲーム終了", "gTourNext": "次：{g}", "gBingo": "ミュージックビンゴ", "gBingoHint": "流れた曲をタップ。縦・横・斜めに4つでビンゴ！", "gBingoNoLine": "まず縦・横・斜めに4つ並べてね。", "gBingoNotYet": "まだ流れていない曲：{t}", "gBingoSent": "送信しました。大きな画面で確認中 …"}, "ko": {"gOlder": "더 오래된 곡은?", "gCover": "커버 맞히기", "gDuel": "노래 대결", "gDuelChamp": "오늘 밤의 챔피언", "gTour": "토너먼트", "gTourAfter": "토너먼트 · {n}게임 중 {i}번째 이후", "gTourNext": "다음: {g}", "gBingo": "음악 빙고", "gBingoHint": "나오는 곡을 탭하세요. 가로, 세로, 대각선으로 4개면 빙고!", "gBingoNoLine": "먼저 가로, 세로, 대각선으로 4개를 표시하세요.", "gBingoNotYet": "아직 안 나온 곡: {t}", "gBingoSent": "보냈어요. 큰 화면에서 확인 중 …"}, "zh": {"gOlder": "哪首更早？", "gCover": "封面猜猜看", "gDuel": "歌曲对决", "gDuelChamp": "今晚冠军", "gTour": "锦标赛", "gTourAfter": "锦标赛 · 第 {i}/{n} 场之后", "gTourNext": "下一场：{g}", "gBingo": "音乐宾果", "gBingoHint": "点击正在播放的歌。横、竖或斜连成四个：宾果！", "gBingoNoLine": "请先在横、竖或斜线上标记四个。", "gBingoNotYet": "还没播放：{t}", "gBingoSent": "已发送，大屏幕正在核对 …"}})) GAME_TEXT[l] = Object.assign(GAME_TEXT[l] || {}, v);
 // Karaoke: das Mikro des Singenden, Datenschutz, die drei Teile der Wertung (alle Sprachen)
 for (const [l, v] of Object.entries({
-  en: { gKar: "Karaoke", gKarYou: "Your turn!", gKarTurn: "{n} sings", gKarListen: "Starting soon. Cheer them on!", gKarMicBtn: "🎤 Turn on mic", gKarMicOn: "Mic on. Stay quiet for a moment: the phone first listens to how loud the room is.", gKarSing: "Sing!", gKarNoMic: "No mic: just sing along, no score this time.", gKarPriv: "The recording stays on your phone. Only the points are sent.", gKarCalc: "The phone is counting …", gKarNoScore: "No score this time. Applause anyway!", gKarT: "Timing", gKarP: "Notes", gKarD: "Sang along", gKarP1: "Brave! Big applause!", gKarP2: "Nicely done!", gKarP3: "Really well sung!", gKarP4: "Superstar!", gKarLoud: "The room was loud: the mic hears the speakers too, so timing counts more this time.", gKarErrSec: "The mic only works over a secure connection (https). Open the link from the QR code directly in your browser.", gKarErrDeny: "No access to the mic. You can allow it for this page in your browser settings, or just sing along without a score.", gKarErrNone: "This browser doesn't offer a mic here (for example some in-app browsers on iPhone). Open the link in Safari or Chrome.", gKarErrLib: "The scoring couldn't be loaded. Just sing along!" },
-  de: { gKar: "Karaoke", gKarYou: "Du bist dran!", gKarTurn: "{n} singt", gKarListen: "Gleich geht's los. Feuer an!", gKarMicBtn: "🎤 Mikro an", gKarMicOn: "Mikro an. Kurz still sein: Das Handy hört erst, wie laut der Raum ist.", gKarSing: "Sing!", gKarNoMic: "Ohne Mikro: Sing einfach mit, diesmal ohne Wertung.", gKarPriv: "Die Aufnahme bleibt auf deinem Handy. Gesendet werden nur die Punkte.", gKarCalc: "Das Handy rechnet …", gKarNoScore: "Diesmal ohne Wertung. Applaus gibt's trotzdem!", gKarT: "Timing", gKarP: "Töne", gKarD: "Dabei", gKarP1: "Mutig! Großer Applaus!", gKarP2: "Schön gesungen!", gKarP3: "Richtig stark gesungen!", gKarP4: "Superstar!", gKarLoud: "Der Raum war laut: Das Mikro hört auch die Boxen, darum zählt das Timing diesmal mehr.", gKarErrSec: "Das Mikro geht nur über eine sichere Verbindung (https). Öffne den Link aus dem QR-Code direkt im Browser.", gKarErrDeny: "Kein Zugriff aufs Mikro. Du kannst es in den Browser-Einstellungen für diese Seite erlauben oder einfach ohne Wertung mitsingen.", gKarErrNone: "Hier gibt der Browser kein Mikro frei (zum Beispiel in manchen In-App-Browsern auf dem iPhone). Öffne den Link in Safari oder Chrome.", gKarErrLib: "Die Wertung ließ sich nicht laden. Sing einfach so mit!" },
-  fr: { gKar: "Karaoké", gKarYou: "À toi !", gKarTurn: "{n} chante", gKarListen: "Ça commence bientôt. Encourage-le !", gKarMicBtn: "🎤 Activer le micro", gKarMicOn: "Micro activé. Reste silencieux un instant : le téléphone écoute d'abord le bruit de la salle.", gKarSing: "Chante !", gKarNoMic: "Sans micro : chante quand même, sans note cette fois.", gKarPriv: "L'enregistrement reste sur ton téléphone. Seuls les points sont envoyés.", gKarCalc: "Le téléphone calcule …", gKarNoScore: "Pas de note cette fois. Applaudissements quand même !", gKarT: "Rythme", gKarP: "Justesse", gKarD: "Présence", gKarP1: "Courageux ! Bravo !", gKarP2: "Joliment chanté !", gKarP3: "Vraiment bien chanté !", gKarP4: "Superstar !", gKarLoud: "La salle était bruyante : le micro entend aussi les enceintes, le rythme compte donc davantage.", gKarErrSec: "Le micro ne fonctionne qu'avec une connexion sécurisée (https). Ouvre le lien du QR code directement dans ton navigateur.", gKarErrDeny: "Pas d'accès au micro. Autorise-le pour cette page dans les réglages du navigateur, ou chante sans note.", gKarErrNone: "Ce navigateur ne donne pas accès au micro ici (par exemple certains navigateurs intégrés sur iPhone). Ouvre le lien dans Safari ou Chrome.", gKarErrLib: "La notation n'a pas pu être chargée. Chante quand même !" },
-  es: { gKar: "Karaoke", gKarYou: "¡Te toca!", gKarTurn: "{n} canta", gKarListen: "Empieza enseguida. ¡Anímale!", gKarMicBtn: "🎤 Activar micro", gKarMicOn: "Micro activado. Silencio un momento: el móvil escucha primero lo ruidosa que está la sala.", gKarSing: "¡Canta!", gKarNoMic: "Sin micro: canta igualmente, esta vez sin puntuación.", gKarPriv: "La grabación se queda en tu móvil. Solo se envían los puntos.", gKarCalc: "El móvil está calculando …", gKarNoScore: "Esta vez sin puntuación. ¡Aplausos igualmente!", gKarT: "Ritmo", gKarP: "Afinación", gKarD: "Presencia", gKarP1: "¡Valiente! ¡Un gran aplauso!", gKarP2: "¡Bien cantado!", gKarP3: "¡Muy bien cantado!", gKarP4: "¡Superestrella!", gKarLoud: "La sala estaba ruidosa: el micro también oye los altavoces, así que el ritmo cuenta más esta vez.", gKarErrSec: "El micro solo funciona con una conexión segura (https). Abre el enlace del código QR directamente en el navegador.", gKarErrDeny: "Sin acceso al micro. Puedes permitirlo para esta página en los ajustes del navegador o cantar sin puntuación.", gKarErrNone: "Este navegador no ofrece micro aquí (por ejemplo, algunos navegadores integrados en iPhone). Abre el enlace en Safari o Chrome.", gKarErrLib: "No se pudo cargar la puntuación. ¡Canta igualmente!" },
-  it: { gKar: "Karaoke", gKarYou: "Tocca a te!", gKarTurn: "{n} canta", gKarListen: "Si parte tra poco. Fai il tifo!", gKarMicBtn: "🎤 Attiva il microfono", gKarMicOn: "Microfono attivo. Un attimo di silenzio: il telefono ascolta prima quanto è rumorosa la sala.", gKarSing: "Canta!", gKarNoMic: "Senza microfono: canta lo stesso, stavolta senza punteggio.", gKarPriv: "La registrazione resta sul tuo telefono. Vengono inviati solo i punti.", gKarCalc: "Il telefono sta calcolando …", gKarNoScore: "Stavolta senza punteggio. Applausi comunque!", gKarT: "Tempo", gKarP: "Intonazione", gKarD: "Presenza", gKarP1: "Coraggioso! Un grande applauso!", gKarP2: "Ben cantato!", gKarP3: "Cantato davvero bene!", gKarP4: "Superstar!", gKarLoud: "La sala era rumorosa: il microfono sente anche le casse, quindi stavolta conta di più il tempo.", gKarErrSec: "Il microfono funziona solo con una connessione sicura (https). Apri il link del codice QR direttamente nel browser.", gKarErrDeny: "Nessun accesso al microfono. Puoi consentirlo per questa pagina nelle impostazioni del browser, oppure cantare senza punteggio.", gKarErrNone: "Questo browser non offre il microfono qui (ad esempio alcuni browser integrati su iPhone). Apri il link in Safari o Chrome.", gKarErrLib: "Non è stato possibile caricare il punteggio. Canta lo stesso!" },
-  pt: { gKar: "Karaoke", gKarYou: "É a tua vez!", gKarTurn: "{n} canta", gKarListen: "Começa já a seguir. Apoia!", gKarMicBtn: "🎤 Ligar o micro", gKarMicOn: "Micro ligado. Fica em silêncio um momento: o telemóvel ouve primeiro o barulho da sala.", gKarSing: "Canta!", gKarNoMic: "Sem micro: canta na mesma, desta vez sem pontuação.", gKarPriv: "A gravação fica no teu telemóvel. Só os pontos são enviados.", gKarCalc: "O telemóvel está a calcular …", gKarNoScore: "Desta vez sem pontuação. Aplausos na mesma!", gKarT: "Ritmo", gKarP: "Afinação", gKarD: "Presença", gKarP1: "Corajoso! Grande aplauso!", gKarP2: "Bem cantado!", gKarP3: "Muito bem cantado!", gKarP4: "Superestrela!", gKarLoud: "A sala estava barulhenta: o micro também ouve as colunas, por isso o ritmo conta mais desta vez.", gKarErrSec: "O micro só funciona com uma ligação segura (https). Abre o link do código QR diretamente no navegador.", gKarErrDeny: "Sem acesso ao micro. Podes permiti-lo para esta página nas definições do navegador ou cantar sem pontuação.", gKarErrNone: "Este navegador não disponibiliza o micro aqui (por exemplo, alguns navegadores integrados no iPhone). Abre o link no Safari ou no Chrome.", gKarErrLib: "Não foi possível carregar a pontuação. Canta na mesma!" },
-  nl: { gKar: "Karaoke", gKarYou: "Jij bent!", gKarTurn: "{n} zingt", gKarListen: "Het begint zo. Moedig aan!", gKarMicBtn: "🎤 Microfoon aan", gKarMicOn: "Microfoon aan. Even stil zijn: de telefoon luistert eerst hoe luid de ruimte is.", gKarSing: "Zing!", gKarNoMic: "Zonder microfoon: zing gewoon mee, deze keer zonder score.", gKarPriv: "De opname blijft op je telefoon. Alleen de punten worden verstuurd.", gKarCalc: "De telefoon rekent …", gKarNoScore: "Deze keer geen score. Toch applaus!", gKarT: "Timing", gKarP: "Toonhoogte", gKarD: "Meegezongen", gKarP1: "Dapper! Groot applaus!", gKarP2: "Mooi gezongen!", gKarP3: "Echt sterk gezongen!", gKarP4: "Superster!", gKarLoud: "Het was luid in de ruimte: de microfoon hoort ook de speakers, daarom telt timing deze keer zwaarder.", gKarErrSec: "De microfoon werkt alleen via een beveiligde verbinding (https). Open de link uit de QR-code direct in je browser.", gKarErrDeny: "Geen toegang tot de microfoon. Je kunt het voor deze pagina toestaan in de browserinstellingen, of gewoon zonder score meezingen.", gKarErrNone: "Deze browser geeft hier geen microfoon vrij (bijvoorbeeld sommige in-app-browsers op iPhone). Open de link in Safari of Chrome.", gKarErrLib: "De score kon niet worden geladen. Zing gewoon mee!" },
-  pl: { gKar: "Karaoke", gKarYou: "Twoja kolej!", gKarTurn: "{n} śpiewa", gKarListen: "Zaraz się zacznie. Dopinguj!", gKarMicBtn: "🎤 Włącz mikrofon", gKarMicOn: "Mikrofon włączony. Chwila ciszy: telefon najpierw słucha, jak głośno jest w sali.", gKarSing: "Śpiewaj!", gKarNoMic: "Bez mikrofonu: po prostu śpiewaj, tym razem bez oceny.", gKarPriv: "Nagranie zostaje w twoim telefonie. Wysyłane są tylko punkty.", gKarCalc: "Telefon liczy …", gKarNoScore: "Tym razem bez oceny. I tak brawa!", gKarT: "Rytm", gKarP: "Dźwięki", gKarD: "Obecność", gKarP1: "Odważnie! Wielkie brawa!", gKarP2: "Ładnie zaśpiewane!", gKarP3: "Naprawdę świetnie zaśpiewane!", gKarP4: "Supergwiazda!", gKarLoud: "W sali było głośno: mikrofon słyszy też głośniki, więc tym razem rytm liczy się bardziej.", gKarErrSec: "Mikrofon działa tylko przez bezpieczne połączenie (https). Otwórz link z kodu QR bezpośrednio w przeglądarce.", gKarErrDeny: "Brak dostępu do mikrofonu. Możesz zezwolić na niego dla tej strony w ustawieniach przeglądarki albo śpiewać bez oceny.", gKarErrNone: "Ta przeglądarka nie udostępnia tu mikrofonu (np. niektóre przeglądarki w aplikacjach na iPhonie). Otwórz link w Safari lub Chrome.", gKarErrLib: "Nie udało się wczytać oceny. Po prostu śpiewaj!" },
-  tr: { gKar: "Karaoke", gKarYou: "Sıra sende!", gKarTurn: "{n} söylüyor", gKarListen: "Birazdan başlıyor. Destek ol!", gKarMicBtn: "🎤 Mikrofonu aç", gKarMicOn: "Mikrofon açık. Bir an sessiz ol: telefon önce ortamın ne kadar gürültülü olduğunu dinliyor.", gKarSing: "Söyle!", gKarNoMic: "Mikrofon yok: yine de eşlik et, bu sefer puansız.", gKarPriv: "Kayıt telefonunda kalır. Sadece puanlar gönderilir.", gKarCalc: "Telefon hesaplıyor …", gKarNoScore: "Bu sefer puan yok. Yine de alkış!", gKarT: "Zamanlama", gKarP: "Notalar", gKarD: "Katılım", gKarP1: "Cesurca! Büyük alkış!", gKarP2: "Güzel söyledin!", gKarP3: "Gerçekten çok iyi söyledin!", gKarP4: "Süperstar!", gKarLoud: "Ortam gürültülüydü: mikrofon hoparlörleri de duyuyor, bu yüzden bu sefer zamanlama daha çok sayıldı.", gKarErrSec: "Mikrofon yalnızca güvenli bağlantıyla (https) çalışır. QR kodundaki bağlantıyı doğrudan tarayıcıda aç.", gKarErrDeny: "Mikrofona erişim yok. Tarayıcı ayarlarından bu sayfaya izin verebilir ya da puansız eşlik edebilirsin.", gKarErrNone: "Bu tarayıcı burada mikrofon sunmuyor (örneğin iPhone'daki bazı uygulama içi tarayıcılar). Bağlantıyı Safari veya Chrome'da aç.", gKarErrLib: "Puanlama yüklenemedi. Yine de eşlik et!" },
-  ru: { gKar: "Караоке", gKarYou: "Твоя очередь!", gKarTurn: "Поёт {n}", gKarListen: "Сейчас начнётся. Поддержи!", gKarMicBtn: "🎤 Включить микрофон", gKarMicOn: "Микрофон включён. Помолчи немного: телефон сначала слушает, насколько шумно в зале.", gKarSing: "Пой!", gKarNoMic: "Без микрофона: просто подпевай, в этот раз без оценки.", gKarPriv: "Запись остаётся на твоём телефоне. Отправляются только очки.", gKarCalc: "Телефон считает …", gKarNoScore: "В этот раз без оценки. Но аплодисменты всё равно!", gKarT: "Ритм", gKarP: "Ноты", gKarD: "Участие", gKarP1: "Смело! Бурные аплодисменты!", gKarP2: "Хорошо спето!", gKarP3: "Очень здорово спето!", gKarP4: "Суперзвезда!", gKarLoud: "В зале было шумно: микрофон слышит и колонки, поэтому в этот раз ритм важнее.", gKarErrSec: "Микрофон работает только через защищённое соединение (https). Открой ссылку из QR-кода прямо в браузере.", gKarErrDeny: "Нет доступа к микрофону. Разреши его для этой страницы в настройках браузера или просто подпевай без оценки.", gKarErrNone: "Этот браузер здесь не даёт доступ к микрофону (например, некоторые встроенные браузеры на iPhone). Открой ссылку в Safari или Chrome.", gKarErrLib: "Не удалось загрузить оценку. Просто подпевай!" },
-  uk: { gKar: "Караоке", gKarYou: "Твоя черга!", gKarTurn: "Співає {n}", gKarListen: "Зараз почнеться. Підтримай!", gKarMicBtn: "🎤 Увімкнути мікрофон", gKarMicOn: "Мікрофон увімкнено. Помовч трохи: телефон спершу слухає, наскільки гучно в залі.", gKarSing: "Співай!", gKarNoMic: "Без мікрофона: просто підспівуй, цього разу без оцінки.", gKarPriv: "Запис залишається на твоєму телефоні. Надсилаються лише бали.", gKarCalc: "Телефон рахує …", gKarNoScore: "Цього разу без оцінки. Але оплески все одно!", gKarT: "Ритм", gKarP: "Ноти", gKarD: "Участь", gKarP1: "Сміливо! Гучні оплески!", gKarP2: "Гарно заспівано!", gKarP3: "Дуже класно заспівано!", gKarP4: "Суперзірка!", gKarLoud: "У залі було гучно: мікрофон чує й колонки, тому цього разу ритм важить більше.", gKarErrSec: "Мікрофон працює лише через захищене з'єднання (https). Відкрий посилання з QR-коду просто в браузері.", gKarErrDeny: "Немає доступу до мікрофона. Дозволь його для цієї сторінки в налаштуваннях браузера або просто підспівуй без оцінки.", gKarErrNone: "Цей браузер тут не надає мікрофон (наприклад, деякі вбудовані браузери на iPhone). Відкрий посилання в Safari або Chrome.", gKarErrLib: "Не вдалося завантажити оцінку. Просто підспівуй!" },
-  ja: { gKar: "カラオケ", gKarYou: "あなたの番！", gKarTurn: "{n}が歌います", gKarListen: "もうすぐ始まります。応援しよう！", gKarMicBtn: "🎤 マイクをオン", gKarMicOn: "マイクがオンになりました。少し静かに：まず部屋の音の大きさを聞いています。", gKarSing: "歌って！", gKarNoMic: "マイクなし：今回は採点なしで一緒に歌おう。", gKarPriv: "録音はあなたのスマホから出ません。送られるのは点数だけです。", gKarCalc: "スマホが計算中 …", gKarNoScore: "今回は採点なし。それでも拍手！", gKarT: "タイミング", gKarP: "音程", gKarD: "参加度", gKarP1: "勇気ある！大きな拍手！", gKarP2: "いい歌でした！", gKarP3: "本当に上手！", gKarP4: "スーパースター！", gKarLoud: "部屋がにぎやかでした：マイクはスピーカーの音も拾うので、今回はタイミングを重視しました。", gKarErrSec: "マイクは安全な接続（https）でのみ使えます。QRコードのリンクをブラウザで直接開いてください。", gKarErrDeny: "マイクを使えません。ブラウザの設定でこのページに許可するか、採点なしで歌ってください。", gKarErrNone: "このブラウザではマイクが使えません（iPhoneの一部のアプリ内ブラウザなど）。SafariかChromeでリンクを開いてください。", gKarErrLib: "採点を読み込めませんでした。そのまま歌おう！" },
-  ko: { gKar: "노래방", gKarYou: "네 차례야!", gKarTurn: "{n} 노래 중", gKarListen: "곧 시작해요. 응원해 주세요!", gKarMicBtn: "🎤 마이크 켜기", gKarMicOn: "마이크가 켜졌어요. 잠깐 조용히: 휴대폰이 먼저 방이 얼마나 시끄러운지 들어요.", gKarSing: "불러!", gKarNoMic: "마이크 없음: 이번엔 점수 없이 따라 불러요.", gKarPriv: "녹음은 휴대폰에만 남아요. 점수만 전송돼요.", gKarCalc: "휴대폰이 계산 중 …", gKarNoScore: "이번엔 점수가 없어요. 그래도 박수!", gKarT: "타이밍", gKarP: "음정", gKarD: "참여", gKarP1: "용감해요! 큰 박수!", gKarP2: "잘 불렀어요!", gKarP3: "정말 잘 불렀어요!", gKarP4: "슈퍼스타!", gKarLoud: "방이 시끄러웠어요: 마이크가 스피커 소리도 들어서 이번엔 타이밍을 더 중요하게 봤어요.", gKarErrSec: "마이크는 보안 연결(https)에서만 작동해요. QR 코드의 링크를 브라우저에서 바로 열어 주세요.", gKarErrDeny: "마이크에 접근할 수 없어요. 브라우저 설정에서 이 페이지를 허용하거나 점수 없이 따라 불러요.", gKarErrNone: "이 브라우저에서는 마이크를 쓸 수 없어요(예: iPhone의 일부 앱 내 브라우저). Safari나 Chrome에서 링크를 열어 주세요.", gKarErrLib: "채점을 불러오지 못했어요. 그냥 따라 불러요!" },
-  zh: { gKar: "卡拉OK", gKarYou: "轮到你了！", gKarTurn: "{n} 在唱", gKarListen: "马上开始。加油助威！", gKarMicBtn: "🎤 打开麦克风", gKarMicOn: "麦克风已打开。先安静一下：手机先听听房间有多吵。", gKarSing: "唱吧！", gKarNoMic: "没有麦克风：一起唱吧，这次不打分。", gKarPriv: "录音只留在你的手机上，只发送分数。", gKarCalc: "手机正在计算 …", gKarNoScore: "这次没有分数。照样鼓掌！", gKarT: "节奏", gKarP: "音准", gKarD: "参与", gKarP1: "好勇敢！热烈鼓掌！", gKarP2: "唱得不错！", gKarP3: "唱得真棒！", gKarP4: "超级巨星！", gKarLoud: "房间很吵：麦克风也会听到音箱，所以这次节奏更重要。", gKarErrSec: "麦克风只能在安全连接（https）下使用。请直接在浏览器中打开二维码里的链接。", gKarErrDeny: "无法使用麦克风。可以在浏览器设置中允许此页面，或者不打分一起唱。", gKarErrNone: "此浏览器在这里不提供麦克风（例如 iPhone 上的某些应用内浏览器）。请在 Safari 或 Chrome 中打开链接。", gKarErrLib: "无法加载评分。照样唱吧！" },
+  en: { gKar: "Karaoke", gKarYou: "Your turn!", gKarTurn: "{n} sings", gKarListen: "Starting soon. Cheer them on!", gKarMicBtn: "Turn on mic", gKarMicOn: "Mic on. Stay quiet for a moment: the phone first listens to how loud the room is.", gKarSing: "Sing!", gKarNoMic: "No mic: just sing along, no score this time.", gKarPriv: "The recording stays on your phone. Only the points are sent.", gKarCalc: "The phone is counting …", gKarNoScore: "No score this time. Applause anyway!", gKarT: "Timing", gKarP: "Notes", gKarD: "Sang along", gKarP1: "Brave! Big applause!", gKarP2: "Nicely done!", gKarP3: "Really well sung!", gKarP4: "Superstar!", gKarLoud: "The room was loud: the mic hears the speakers too, so timing counts more this time.", gKarErrSec: "The mic only works over a secure connection (https). Open the link from the QR code directly in your browser.", gKarErrDeny: "No access to the mic. You can allow it for this page in your browser settings, or just sing along without a score.", gKarErrNone: "This browser doesn't offer a mic here (for example some in-app browsers on iPhone). Open the link in Safari or Chrome.", gKarErrLib: "The scoring couldn't be loaded. Just sing along!" },
+  de: { gKar: "Karaoke", gKarYou: "Du bist dran!", gKarTurn: "{n} singt", gKarListen: "Gleich geht's los. Feuer an!", gKarMicBtn: "Mikro an", gKarMicOn: "Mikro an. Kurz still sein: Das Handy hört erst, wie laut der Raum ist.", gKarSing: "Sing!", gKarNoMic: "Ohne Mikro: Sing einfach mit, diesmal ohne Wertung.", gKarPriv: "Die Aufnahme bleibt auf deinem Handy. Gesendet werden nur die Punkte.", gKarCalc: "Das Handy rechnet …", gKarNoScore: "Diesmal ohne Wertung. Applaus gibt's trotzdem!", gKarT: "Timing", gKarP: "Töne", gKarD: "Dabei", gKarP1: "Mutig! Großer Applaus!", gKarP2: "Schön gesungen!", gKarP3: "Richtig stark gesungen!", gKarP4: "Superstar!", gKarLoud: "Der Raum war laut: Das Mikro hört auch die Boxen, darum zählt das Timing diesmal mehr.", gKarErrSec: "Das Mikro geht nur über eine sichere Verbindung (https). Öffne den Link aus dem QR-Code direkt im Browser.", gKarErrDeny: "Kein Zugriff aufs Mikro. Du kannst es in den Browser-Einstellungen für diese Seite erlauben oder einfach ohne Wertung mitsingen.", gKarErrNone: "Hier gibt der Browser kein Mikro frei (zum Beispiel in manchen In-App-Browsern auf dem iPhone). Öffne den Link in Safari oder Chrome.", gKarErrLib: "Die Wertung ließ sich nicht laden. Sing einfach so mit!" },
+  fr: { gKar: "Karaoké", gKarYou: "À toi !", gKarTurn: "{n} chante", gKarListen: "Ça commence bientôt. Encourage-le !", gKarMicBtn: "Activer le micro", gKarMicOn: "Micro activé. Reste silencieux un instant : le téléphone écoute d'abord le bruit de la salle.", gKarSing: "Chante !", gKarNoMic: "Sans micro : chante quand même, sans note cette fois.", gKarPriv: "L'enregistrement reste sur ton téléphone. Seuls les points sont envoyés.", gKarCalc: "Le téléphone calcule …", gKarNoScore: "Pas de note cette fois. Applaudissements quand même !", gKarT: "Rythme", gKarP: "Justesse", gKarD: "Présence", gKarP1: "Courageux ! Bravo !", gKarP2: "Joliment chanté !", gKarP3: "Vraiment bien chanté !", gKarP4: "Superstar !", gKarLoud: "La salle était bruyante : le micro entend aussi les enceintes, le rythme compte donc davantage.", gKarErrSec: "Le micro ne fonctionne qu'avec une connexion sécurisée (https). Ouvre le lien du QR code directement dans ton navigateur.", gKarErrDeny: "Pas d'accès au micro. Autorise-le pour cette page dans les réglages du navigateur, ou chante sans note.", gKarErrNone: "Ce navigateur ne donne pas accès au micro ici (par exemple certains navigateurs intégrés sur iPhone). Ouvre le lien dans Safari ou Chrome.", gKarErrLib: "La notation n'a pas pu être chargée. Chante quand même !" },
+  es: { gKar: "Karaoke", gKarYou: "¡Te toca!", gKarTurn: "{n} canta", gKarListen: "Empieza enseguida. ¡Anímale!", gKarMicBtn: "Activar micro", gKarMicOn: "Micro activado. Silencio un momento: el móvil escucha primero lo ruidosa que está la sala.", gKarSing: "¡Canta!", gKarNoMic: "Sin micro: canta igualmente, esta vez sin puntuación.", gKarPriv: "La grabación se queda en tu móvil. Solo se envían los puntos.", gKarCalc: "El móvil está calculando …", gKarNoScore: "Esta vez sin puntuación. ¡Aplausos igualmente!", gKarT: "Ritmo", gKarP: "Afinación", gKarD: "Presencia", gKarP1: "¡Valiente! ¡Un gran aplauso!", gKarP2: "¡Bien cantado!", gKarP3: "¡Muy bien cantado!", gKarP4: "¡Superestrella!", gKarLoud: "La sala estaba ruidosa: el micro también oye los altavoces, así que el ritmo cuenta más esta vez.", gKarErrSec: "El micro solo funciona con una conexión segura (https). Abre el enlace del código QR directamente en el navegador.", gKarErrDeny: "Sin acceso al micro. Puedes permitirlo para esta página en los ajustes del navegador o cantar sin puntuación.", gKarErrNone: "Este navegador no ofrece micro aquí (por ejemplo, algunos navegadores integrados en iPhone). Abre el enlace en Safari o Chrome.", gKarErrLib: "No se pudo cargar la puntuación. ¡Canta igualmente!" },
+  it: { gKar: "Karaoke", gKarYou: "Tocca a te!", gKarTurn: "{n} canta", gKarListen: "Si parte tra poco. Fai il tifo!", gKarMicBtn: "Attiva il microfono", gKarMicOn: "Microfono attivo. Un attimo di silenzio: il telefono ascolta prima quanto è rumorosa la sala.", gKarSing: "Canta!", gKarNoMic: "Senza microfono: canta lo stesso, stavolta senza punteggio.", gKarPriv: "La registrazione resta sul tuo telefono. Vengono inviati solo i punti.", gKarCalc: "Il telefono sta calcolando …", gKarNoScore: "Stavolta senza punteggio. Applausi comunque!", gKarT: "Tempo", gKarP: "Intonazione", gKarD: "Presenza", gKarP1: "Coraggioso! Un grande applauso!", gKarP2: "Ben cantato!", gKarP3: "Cantato davvero bene!", gKarP4: "Superstar!", gKarLoud: "La sala era rumorosa: il microfono sente anche le casse, quindi stavolta conta di più il tempo.", gKarErrSec: "Il microfono funziona solo con una connessione sicura (https). Apri il link del codice QR direttamente nel browser.", gKarErrDeny: "Nessun accesso al microfono. Puoi consentirlo per questa pagina nelle impostazioni del browser, oppure cantare senza punteggio.", gKarErrNone: "Questo browser non offre il microfono qui (ad esempio alcuni browser integrati su iPhone). Apri il link in Safari o Chrome.", gKarErrLib: "Non è stato possibile caricare il punteggio. Canta lo stesso!" },
+  pt: { gKar: "Karaoke", gKarYou: "É a tua vez!", gKarTurn: "{n} canta", gKarListen: "Começa já a seguir. Apoia!", gKarMicBtn: "Ligar o micro", gKarMicOn: "Micro ligado. Fica em silêncio um momento: o telemóvel ouve primeiro o barulho da sala.", gKarSing: "Canta!", gKarNoMic: "Sem micro: canta na mesma, desta vez sem pontuação.", gKarPriv: "A gravação fica no teu telemóvel. Só os pontos são enviados.", gKarCalc: "O telemóvel está a calcular …", gKarNoScore: "Desta vez sem pontuação. Aplausos na mesma!", gKarT: "Ritmo", gKarP: "Afinação", gKarD: "Presença", gKarP1: "Corajoso! Grande aplauso!", gKarP2: "Bem cantado!", gKarP3: "Muito bem cantado!", gKarP4: "Superestrela!", gKarLoud: "A sala estava barulhenta: o micro também ouve as colunas, por isso o ritmo conta mais desta vez.", gKarErrSec: "O micro só funciona com uma ligação segura (https). Abre o link do código QR diretamente no navegador.", gKarErrDeny: "Sem acesso ao micro. Podes permiti-lo para esta página nas definições do navegador ou cantar sem pontuação.", gKarErrNone: "Este navegador não disponibiliza o micro aqui (por exemplo, alguns navegadores integrados no iPhone). Abre o link no Safari ou no Chrome.", gKarErrLib: "Não foi possível carregar a pontuação. Canta na mesma!" },
+  nl: { gKar: "Karaoke", gKarYou: "Jij bent!", gKarTurn: "{n} zingt", gKarListen: "Het begint zo. Moedig aan!", gKarMicBtn: "Microfoon aan", gKarMicOn: "Microfoon aan. Even stil zijn: de telefoon luistert eerst hoe luid de ruimte is.", gKarSing: "Zing!", gKarNoMic: "Zonder microfoon: zing gewoon mee, deze keer zonder score.", gKarPriv: "De opname blijft op je telefoon. Alleen de punten worden verstuurd.", gKarCalc: "De telefoon rekent …", gKarNoScore: "Deze keer geen score. Toch applaus!", gKarT: "Timing", gKarP: "Toonhoogte", gKarD: "Meegezongen", gKarP1: "Dapper! Groot applaus!", gKarP2: "Mooi gezongen!", gKarP3: "Echt sterk gezongen!", gKarP4: "Superster!", gKarLoud: "Het was luid in de ruimte: de microfoon hoort ook de speakers, daarom telt timing deze keer zwaarder.", gKarErrSec: "De microfoon werkt alleen via een beveiligde verbinding (https). Open de link uit de QR-code direct in je browser.", gKarErrDeny: "Geen toegang tot de microfoon. Je kunt het voor deze pagina toestaan in de browserinstellingen, of gewoon zonder score meezingen.", gKarErrNone: "Deze browser geeft hier geen microfoon vrij (bijvoorbeeld sommige in-app-browsers op iPhone). Open de link in Safari of Chrome.", gKarErrLib: "De score kon niet worden geladen. Zing gewoon mee!" },
+  pl: { gKar: "Karaoke", gKarYou: "Twoja kolej!", gKarTurn: "{n} śpiewa", gKarListen: "Zaraz się zacznie. Dopinguj!", gKarMicBtn: "Włącz mikrofon", gKarMicOn: "Mikrofon włączony. Chwila ciszy: telefon najpierw słucha, jak głośno jest w sali.", gKarSing: "Śpiewaj!", gKarNoMic: "Bez mikrofonu: po prostu śpiewaj, tym razem bez oceny.", gKarPriv: "Nagranie zostaje w twoim telefonie. Wysyłane są tylko punkty.", gKarCalc: "Telefon liczy …", gKarNoScore: "Tym razem bez oceny. I tak brawa!", gKarT: "Rytm", gKarP: "Dźwięki", gKarD: "Obecność", gKarP1: "Odważnie! Wielkie brawa!", gKarP2: "Ładnie zaśpiewane!", gKarP3: "Naprawdę świetnie zaśpiewane!", gKarP4: "Supergwiazda!", gKarLoud: "W sali było głośno: mikrofon słyszy też głośniki, więc tym razem rytm liczy się bardziej.", gKarErrSec: "Mikrofon działa tylko przez bezpieczne połączenie (https). Otwórz link z kodu QR bezpośrednio w przeglądarce.", gKarErrDeny: "Brak dostępu do mikrofonu. Możesz zezwolić na niego dla tej strony w ustawieniach przeglądarki albo śpiewać bez oceny.", gKarErrNone: "Ta przeglądarka nie udostępnia tu mikrofonu (np. niektóre przeglądarki w aplikacjach na iPhonie). Otwórz link w Safari lub Chrome.", gKarErrLib: "Nie udało się wczytać oceny. Po prostu śpiewaj!" },
+  tr: { gKar: "Karaoke", gKarYou: "Sıra sende!", gKarTurn: "{n} söylüyor", gKarListen: "Birazdan başlıyor. Destek ol!", gKarMicBtn: "Mikrofonu aç", gKarMicOn: "Mikrofon açık. Bir an sessiz ol: telefon önce ortamın ne kadar gürültülü olduğunu dinliyor.", gKarSing: "Söyle!", gKarNoMic: "Mikrofon yok: yine de eşlik et, bu sefer puansız.", gKarPriv: "Kayıt telefonunda kalır. Sadece puanlar gönderilir.", gKarCalc: "Telefon hesaplıyor …", gKarNoScore: "Bu sefer puan yok. Yine de alkış!", gKarT: "Zamanlama", gKarP: "Notalar", gKarD: "Katılım", gKarP1: "Cesurca! Büyük alkış!", gKarP2: "Güzel söyledin!", gKarP3: "Gerçekten çok iyi söyledin!", gKarP4: "Süperstar!", gKarLoud: "Ortam gürültülüydü: mikrofon hoparlörleri de duyuyor, bu yüzden bu sefer zamanlama daha çok sayıldı.", gKarErrSec: "Mikrofon yalnızca güvenli bağlantıyla (https) çalışır. QR kodundaki bağlantıyı doğrudan tarayıcıda aç.", gKarErrDeny: "Mikrofona erişim yok. Tarayıcı ayarlarından bu sayfaya izin verebilir ya da puansız eşlik edebilirsin.", gKarErrNone: "Bu tarayıcı burada mikrofon sunmuyor (örneğin iPhone'daki bazı uygulama içi tarayıcılar). Bağlantıyı Safari veya Chrome'da aç.", gKarErrLib: "Puanlama yüklenemedi. Yine de eşlik et!" },
+  ru: { gKar: "Караоке", gKarYou: "Твоя очередь!", gKarTurn: "Поёт {n}", gKarListen: "Сейчас начнётся. Поддержи!", gKarMicBtn: "Включить микрофон", gKarMicOn: "Микрофон включён. Помолчи немного: телефон сначала слушает, насколько шумно в зале.", gKarSing: "Пой!", gKarNoMic: "Без микрофона: просто подпевай, в этот раз без оценки.", gKarPriv: "Запись остаётся на твоём телефоне. Отправляются только очки.", gKarCalc: "Телефон считает …", gKarNoScore: "В этот раз без оценки. Но аплодисменты всё равно!", gKarT: "Ритм", gKarP: "Ноты", gKarD: "Участие", gKarP1: "Смело! Бурные аплодисменты!", gKarP2: "Хорошо спето!", gKarP3: "Очень здорово спето!", gKarP4: "Суперзвезда!", gKarLoud: "В зале было шумно: микрофон слышит и колонки, поэтому в этот раз ритм важнее.", gKarErrSec: "Микрофон работает только через защищённое соединение (https). Открой ссылку из QR-кода прямо в браузере.", gKarErrDeny: "Нет доступа к микрофону. Разреши его для этой страницы в настройках браузера или просто подпевай без оценки.", gKarErrNone: "Этот браузер здесь не даёт доступ к микрофону (например, некоторые встроенные браузеры на iPhone). Открой ссылку в Safari или Chrome.", gKarErrLib: "Не удалось загрузить оценку. Просто подпевай!" },
+  uk: { gKar: "Караоке", gKarYou: "Твоя черга!", gKarTurn: "Співає {n}", gKarListen: "Зараз почнеться. Підтримай!", gKarMicBtn: "Увімкнути мікрофон", gKarMicOn: "Мікрофон увімкнено. Помовч трохи: телефон спершу слухає, наскільки гучно в залі.", gKarSing: "Співай!", gKarNoMic: "Без мікрофона: просто підспівуй, цього разу без оцінки.", gKarPriv: "Запис залишається на твоєму телефоні. Надсилаються лише бали.", gKarCalc: "Телефон рахує …", gKarNoScore: "Цього разу без оцінки. Але оплески все одно!", gKarT: "Ритм", gKarP: "Ноти", gKarD: "Участь", gKarP1: "Сміливо! Гучні оплески!", gKarP2: "Гарно заспівано!", gKarP3: "Дуже класно заспівано!", gKarP4: "Суперзірка!", gKarLoud: "У залі було гучно: мікрофон чує й колонки, тому цього разу ритм важить більше.", gKarErrSec: "Мікрофон працює лише через захищене з'єднання (https). Відкрий посилання з QR-коду просто в браузері.", gKarErrDeny: "Немає доступу до мікрофона. Дозволь його для цієї сторінки в налаштуваннях браузера або просто підспівуй без оцінки.", gKarErrNone: "Цей браузер тут не надає мікрофон (наприклад, деякі вбудовані браузери на iPhone). Відкрий посилання в Safari або Chrome.", gKarErrLib: "Не вдалося завантажити оцінку. Просто підспівуй!" },
+  ja: { gKar: "カラオケ", gKarYou: "あなたの番！", gKarTurn: "{n}が歌います", gKarListen: "もうすぐ始まります。応援しよう！", gKarMicBtn: "マイクをオン", gKarMicOn: "マイクがオンになりました。少し静かに：まず部屋の音の大きさを聞いています。", gKarSing: "歌って！", gKarNoMic: "マイクなし：今回は採点なしで一緒に歌おう。", gKarPriv: "録音はあなたのスマホから出ません。送られるのは点数だけです。", gKarCalc: "スマホが計算中 …", gKarNoScore: "今回は採点なし。それでも拍手！", gKarT: "タイミング", gKarP: "音程", gKarD: "参加度", gKarP1: "勇気ある！大きな拍手！", gKarP2: "いい歌でした！", gKarP3: "本当に上手！", gKarP4: "スーパースター！", gKarLoud: "部屋がにぎやかでした：マイクはスピーカーの音も拾うので、今回はタイミングを重視しました。", gKarErrSec: "マイクは安全な接続（https）でのみ使えます。QRコードのリンクをブラウザで直接開いてください。", gKarErrDeny: "マイクを使えません。ブラウザの設定でこのページに許可するか、採点なしで歌ってください。", gKarErrNone: "このブラウザではマイクが使えません（iPhoneの一部のアプリ内ブラウザなど）。SafariかChromeでリンクを開いてください。", gKarErrLib: "採点を読み込めませんでした。そのまま歌おう！" },
+  ko: { gKar: "노래방", gKarYou: "네 차례야!", gKarTurn: "{n} 노래 중", gKarListen: "곧 시작해요. 응원해 주세요!", gKarMicBtn: "마이크 켜기", gKarMicOn: "마이크가 켜졌어요. 잠깐 조용히: 휴대폰이 먼저 방이 얼마나 시끄러운지 들어요.", gKarSing: "불러!", gKarNoMic: "마이크 없음: 이번엔 점수 없이 따라 불러요.", gKarPriv: "녹음은 휴대폰에만 남아요. 점수만 전송돼요.", gKarCalc: "휴대폰이 계산 중 …", gKarNoScore: "이번엔 점수가 없어요. 그래도 박수!", gKarT: "타이밍", gKarP: "음정", gKarD: "참여", gKarP1: "용감해요! 큰 박수!", gKarP2: "잘 불렀어요!", gKarP3: "정말 잘 불렀어요!", gKarP4: "슈퍼스타!", gKarLoud: "방이 시끄러웠어요: 마이크가 스피커 소리도 들어서 이번엔 타이밍을 더 중요하게 봤어요.", gKarErrSec: "마이크는 보안 연결(https)에서만 작동해요. QR 코드의 링크를 브라우저에서 바로 열어 주세요.", gKarErrDeny: "마이크에 접근할 수 없어요. 브라우저 설정에서 이 페이지를 허용하거나 점수 없이 따라 불러요.", gKarErrNone: "이 브라우저에서는 마이크를 쓸 수 없어요(예: iPhone의 일부 앱 내 브라우저). Safari나 Chrome에서 링크를 열어 주세요.", gKarErrLib: "채점을 불러오지 못했어요. 그냥 따라 불러요!" },
+  zh: { gKar: "卡拉OK", gKarYou: "轮到你了！", gKarTurn: "{n} 在唱", gKarListen: "马上开始。加油助威！", gKarMicBtn: "打开麦克风", gKarMicOn: "麦克风已打开。先安静一下：手机先听听房间有多吵。", gKarSing: "唱吧！", gKarNoMic: "没有麦克风：一起唱吧，这次不打分。", gKarPriv: "录音只留在你的手机上，只发送分数。", gKarCalc: "手机正在计算 …", gKarNoScore: "这次没有分数。照样鼓掌！", gKarT: "节奏", gKarP: "音准", gKarD: "参与", gKarP1: "好勇敢！热烈鼓掌！", gKarP2: "唱得不错！", gKarP3: "唱得真棒！", gKarP4: "超级巨星！", gKarLoud: "房间很吵：麦克风也会听到音箱，所以这次节奏更重要。", gKarErrSec: "麦克风只能在安全连接（https）下使用。请直接在浏览器中打开二维码里的链接。", gKarErrDeny: "无法使用麦克风。可以在浏览器设置中允许此页面，或者不打分一起唱。", gKarErrNone: "此浏览器在这里不提供麦克风（例如 iPhone 上的某些应用内浏览器）。请在 Safari 或 Chrome 中打开链接。", gKarErrLib: "无法加载评分。照样唱吧！" },
 })) GAME_TEXT[l] = Object.assign(GAME_TEXT[l] || {}, v);
 // Texte für Gäste-Funktionen (Link-Wünsche, Takt, Reaktionen, App …)
 const GUEST_TEXT = {
-  en: { wSong: "Search Spotify or paste a song link …", wLinkOther: "Only song links work here. In Spotify: Share → Copy song link.", "tick": "Click", "tickHint": "Quiet click on every beat", "wrMax": "You already have {n} open wishes. Wait until one is played.", "wrBlock": "This song isn't allowed at this party.", "wrExplicit": "No explicit songs at this party, please.", "pSlot": "Your spot in the light wave", "rcTitle": "Remote control", "rcPlay": "Play or pause", "rcPrev": "Previous song", "rcNext": "Next song", "rcVol": "Volume", "rcLvl": "Intensity", "rcLoc": "Location", "rcGame": "Start a game", "rcWait": "Connecting to Mirage …", "eco": "Battery saver", "ecoLow": "battery low, on" },
-  de: { wSong: "Bei Spotify suchen oder Song-Link einfügen …", wLinkOther: "Hier gehen nur Song-Links. In Spotify: Teilen → Songlink kopieren.", "tick": "Klick", "tickHint": "Leiser Klick auf jedem Schlag", "wrMax": "Du hast schon {n} offene Wünsche. Warte, bis einer läuft.", "wrBlock": "Dieser Song ist auf dieser Party nicht erlaubt.", "wrExplicit": "Bitte keine Songs mit „Explicit“ auf dieser Party.", "pSlot": "Dein Platz in der Lichtwelle", "rcTitle": "Fernbedienung", "rcPlay": "Abspielen oder Pause", "rcPrev": "Vorheriger Song", "rcNext": "Nächster Song", "rcVol": "Lautstärke", "rcLvl": "Stärke", "rcLoc": "Location", "rcGame": "Spiel starten", "rcWait": "Verbinde mit Mirage …", "eco": "Akku sparen", "ecoLow": "Akku schwach, an" },
+  en: { gRank: "Place {n}", wSong: "Search Spotify or paste a song link …", wLinkOther: "Only song links work here. In Spotify: Share → Copy song link.", "tick": "Click", "tickHint": "Quiet click on every beat", "wrMax": "You already have {n} open wishes. Wait until one is played.", "wrBlock": "This song isn't allowed at this party.", "wrExplicit": "No explicit songs at this party, please.", "pSlot": "Your spot in the light wave", "rcTitle": "Remote control", "rcPlay": "Play or pause", "rcPrev": "Previous song", "rcNext": "Next song", "rcVol": "Volume", "rcLvl": "Intensity", "rcLoc": "Location", "rcGame": "Start a game", "rcWait": "Connecting to Mirage …", "eco": "Battery saver", "ecoLow": "battery low, on" },
+  de: { gRank: "Platz {n}", wSong: "Bei Spotify suchen oder Song-Link einfügen …", wLinkOther: "Hier gehen nur Song-Links. In Spotify: Teilen → Songlink kopieren.", "tick": "Klick", "tickHint": "Leiser Klick auf jedem Schlag", "wrMax": "Du hast schon {n} offene Wünsche. Warte, bis einer läuft.", "wrBlock": "Dieser Song ist auf dieser Party nicht erlaubt.", "wrExplicit": "Bitte keine Songs mit „Explicit“ auf dieser Party.", "pSlot": "Dein Platz in der Lichtwelle", "rcTitle": "Fernbedienung", "rcPlay": "Abspielen oder Pause", "rcPrev": "Vorheriger Song", "rcNext": "Nächster Song", "rcVol": "Lautstärke", "rcLvl": "Stärke", "rcLoc": "Location", "rcGame": "Spiel starten", "rcWait": "Verbinde mit Mirage …", "eco": "Akku sparen", "ecoLow": "Akku schwach, an" },
   // die übrigen zwölf Sprachen: auch für die neueren Texte oben (Spielleitung, Profil, Verbindung), die es
   // bisher nur auf Englisch und Deutsch gab
-  fr: {"hTitle": "Animation du jeu", "hPick": "Lance un jeu sur le grand écran :", "hStart": "Lancer", "hSkip": "Passer la manche", "hSpin": "Tourner", "hEnd": "Terminer le jeu", "hPts": "Corriger les points", "pTitle": "Qui es-tu ?", "pHint": "Ton prénom et ta couleur s'affichent sur le grand écran, à côté de tes souhaits et de tes points.", "pOk": "OK", "pCol": "Couleur", "gLate": "Le jeu a déjà commencé", "gLateHint": "Rejoins-nous et joue à partir de maintenant.", "gLateWatch": "Rejoins-nous : tu regardes ce jeu et tu joues au suivant.", "gLateJoin": "Rejoindre", "netLost": "Hors ligne · reconnexion …", "netBack": "Reconnecté", "netQuiet": "Aucun signal de la fête", "wSong": "Chercher sur Spotify ou coller un lien …", "wLinkOther": "Seuls les liens de titres marchent ici. Dans Spotify : Partager → Copier le lien du titre.", "old": ["Page obsolète", "Ferme cet onglet et scanne à nouveau le QR code."], "tick": "Clic", "tickHint": "Petit clic sur chaque temps", "wrMax": "Tu as déjà {n} souhaits en attente. Attends qu'un passe.", "wrBlock": "Ce titre n'est pas autorisé à cette fête.", "wrExplicit": "Pas de titres explicites à cette fête, merci.", "pSlot": "Ta place dans la vague de lumière", "rcTitle": "Télécommande", "rcPlay": "Lecture ou pause", "rcPrev": "Titre précédent", "rcNext": "Titre suivant", "rcVol": "Volume", "rcLvl": "Intensité", "rcLoc": "Lieu", "rcGame": "Lancer un jeu", "rcWait": "Connexion à Mirage …", "eco": "Économie de batterie", "ecoLow": "batterie faible, activé" },
-  es: {"hTitle": "Dirección del juego", "hPick": "Inicia un juego en la pantalla grande:", "hStart": "Empezar ya", "hSkip": "Saltar ronda", "hSpin": "Girar", "hEnd": "Terminar juego", "hPts": "Corregir puntos", "pTitle": "¿Quién eres?", "pHint": "Tu nombre y tu color salen en la pantalla grande, junto a tus deseos y tus puntos.", "pOk": "Listo", "pCol": "Color", "gLate": "El juego ya ha empezado", "gLateHint": "Únete y juega desde ahora.", "gLateWatch": "Únete: este juego lo miras y en el siguiente juegas.", "gLateJoin": "Unirme", "netLost": "Sin conexión · reconectando …", "netBack": "Conectado de nuevo", "netQuiet": "No llega señal de la fiesta", "wSong": "Busca en Spotify o pega un enlace …", "wLinkOther": "Aquí solo valen enlaces de canciones. En Spotify: Compartir → Copiar enlace de la canción.", "old": ["Página desactualizada", "Cierra esta pestaña y vuelve a escanear el código QR."], "tick": "Clic", "tickHint": "Clic suave en cada tiempo", "wrMax": "Ya tienes {n} peticiones abiertas. Espera a que suene una.", "wrBlock": "Esta canción no está permitida en esta fiesta.", "wrExplicit": "Nada de canciones explícitas en esta fiesta, por favor.", "pSlot": "Tu sitio en la ola de luz", "rcTitle": "Mando a distancia", "rcPlay": "Reproducir o pausar", "rcPrev": "Canción anterior", "rcNext": "Siguiente canción", "rcVol": "Volumen", "rcLvl": "Intensidad", "rcLoc": "Lugar", "rcGame": "Empezar un juego", "rcWait": "Conectando con Mirage …", "eco": "Ahorro de batería", "ecoLow": "batería baja, activado" },
-  it: {"hTitle": "Conduzione del gioco", "hPick": "Avvia un gioco sullo schermo grande:", "hStart": "Avvia ora", "hSkip": "Salta il round", "hSpin": "Gira", "hEnd": "Termina il gioco", "hPts": "Correggi i punti", "pTitle": "Chi sei?", "pHint": "Nome e colore compaiono sullo schermo grande, accanto alle tue richieste e ai punti.", "pOk": "Fatto", "pCol": "Colore", "gLate": "Il gioco è già iniziato", "gLateHint": "Entra e gioca da adesso.", "gLateWatch": "Entra: questo gioco lo guardi, al prossimo giochi.", "gLateJoin": "Entra", "netLost": "Offline · riconnessione …", "netBack": "Di nuovo connesso", "netQuiet": "Nessun segnale dalla festa", "wSong": "Cerca su Spotify o incolla un link …", "wLinkOther": "Qui funzionano solo i link dei brani. In Spotify: Condividi → Copia link del brano.", "old": ["Pagina non aggiornata", "Chiudi questa scheda e inquadra di nuovo il codice QR."], "tick": "Clic", "tickHint": "Clic leggero a ogni battito", "wrMax": "Hai già {n} richieste aperte. Aspetta che ne parta una.", "wrBlock": "Questa canzone non è ammessa a questa festa.", "wrExplicit": "Niente canzoni esplicite a questa festa, per favore.", "pSlot": "Il tuo posto nell'onda di luce", "rcTitle": "Telecomando", "rcPlay": "Riproduci o pausa", "rcPrev": "Brano precedente", "rcNext": "Brano successivo", "rcVol": "Volume", "rcLvl": "Intensità", "rcLoc": "Location", "rcGame": "Avvia un gioco", "rcWait": "Connessione a Mirage …", "eco": "Risparmio batteria", "ecoLow": "batteria scarica, attivo" },
-  pt: {"hTitle": "Condução do jogo", "hPick": "Começa um jogo no ecrã grande:", "hStart": "Começar já", "hSkip": "Saltar ronda", "hSpin": "Rodar", "hEnd": "Terminar jogo", "hPts": "Corrigir pontos", "pTitle": "Quem és tu?", "pHint": "O teu nome e a tua cor aparecem no ecrã grande, junto aos teus pedidos e pontos.", "pOk": "Feito", "pCol": "Cor", "gLate": "O jogo já começou", "gLateHint": "Entra e joga a partir de agora.", "gLateWatch": "Entra: este jogo vês, no próximo jogas.", "gLateJoin": "Entrar", "netLost": "Offline · a religar …", "netBack": "Ligado de novo", "netQuiet": "Sem sinal da festa", "wSong": "Pesquisa no Spotify ou cola um link …", "wLinkOther": "Aqui só funcionam links de músicas. No Spotify: Partilhar → Copiar link da música.", "old": ["Página desatualizada", "Fecha este separador e lê o código QR outra vez."], "tick": "Clique", "tickHint": "Clique suave em cada batida", "wrMax": "Já tens {n} pedidos em aberto. Espera até um tocar.", "wrBlock": "Esta música não é permitida nesta festa.", "wrExplicit": "Nada de músicas explícitas nesta festa, por favor.", "pSlot": "O teu lugar na onda de luz", "rcTitle": "Comando", "rcPlay": "Reproduzir ou pausar", "rcPrev": "Música anterior", "rcNext": "Próxima música", "rcVol": "Volume", "rcLvl": "Intensidade", "rcLoc": "Local", "rcGame": "Começar um jogo", "rcWait": "A ligar ao Mirage …", "eco": "Poupar bateria", "ecoLow": "bateria fraca, ligado" },
-  nl: {"hTitle": "Spelleiding", "hPick": "Start een spel op het grote scherm:", "hStart": "Nu starten", "hSkip": "Ronde overslaan", "hSpin": "Draaien", "hEnd": "Spel beëindigen", "hPts": "Punten corrigeren", "pTitle": "Wie ben jij?", "pHint": "Je naam en kleur staan op het grote scherm, bij je verzoeken en punten.", "pOk": "Klaar", "pCol": "Kleur", "gLate": "Het spel is al bezig", "gLateHint": "Stap in en speel vanaf nu mee.", "gLateWatch": "Stap in: dit spel kijk je mee, het volgende speel je mee.", "gLateJoin": "Instappen", "netLost": "Offline · opnieuw verbinden …", "netBack": "Weer verbonden", "netQuiet": "Geen signaal van het feest", "wSong": "Zoek op Spotify of plak een link …", "wLinkOther": "Hier werken alleen links naar nummers. In Spotify: Delen → Link naar nummer kopiëren.", "old": ["Pagina verouderd", "Sluit dit tabblad en scan de QR-code opnieuw."], "tick": "Tik", "tickHint": "Zachte tik op elke tel", "wrMax": "Je hebt al {n} open verzoeken. Wacht tot er een speelt.", "wrBlock": "Dit nummer mag niet op dit feest.", "wrExplicit": "Geen expliciete nummers op dit feest, graag.", "pSlot": "Jouw plek in de lichtgolf", "rcTitle": "Afstandsbediening", "rcPlay": "Afspelen of pauzeren", "rcPrev": "Vorig nummer", "rcNext": "Volgend nummer", "rcVol": "Volume", "rcLvl": "Intensiteit", "rcLoc": "Locatie", "rcGame": "Spel starten", "rcWait": "Verbinden met Mirage …", "eco": "Batterij sparen", "ecoLow": "batterij bijna leeg, aan" },
-  pl: {"hTitle": "Prowadzenie gry", "hPick": "Uruchom grę na dużym ekranie:", "hStart": "Start", "hSkip": "Pomiń rundę", "hSpin": "Zakręć", "hEnd": "Zakończ grę", "hPts": "Popraw punkty", "pTitle": "Kim jesteś?", "pHint": "Twoje imię i kolor widać na dużym ekranie, przy życzeniach i punktach.", "pOk": "Gotowe", "pCol": "Kolor", "gLate": "Gra już trwa", "gLateHint": "Wskakuj i graj od teraz.", "gLateWatch": "Wskakuj: tę grę oglądasz, w następnej grasz.", "gLateJoin": "Dołącz", "netLost": "Offline · łączę ponownie …", "netBack": "Znowu połączono", "netQuiet": "Brak sygnału z imprezy", "wSong": "Szukaj w Spotify lub wklej link …", "wLinkOther": "Tu działają tylko linki do utworów. W Spotify: Udostępnij → Kopiuj link do utworu.", "old": ["Strona nieaktualna", "Zamknij tę kartę i zeskanuj kod QR jeszcze raz."], "tick": "Klik", "tickHint": "Cichy klik na każde uderzenie", "wrMax": "Masz już {n} otwarte życzenia. Poczekaj, aż któreś zagra.", "wrBlock": "Ten utwór nie jest dozwolony na tej imprezie.", "wrExplicit": "Prosimy bez utworów z oznaczeniem „explicit”.", "pSlot": "Twoje miejsce w fali światła", "rcTitle": "Pilot", "rcPlay": "Odtwórz lub wstrzymaj", "rcPrev": "Poprzedni utwór", "rcNext": "Następny utwór", "rcVol": "Głośność", "rcLvl": "Intensywność", "rcLoc": "Miejsce", "rcGame": "Uruchom grę", "rcWait": "Łączenie z Mirage …", "eco": "Oszczędzanie baterii", "ecoLow": "słaba bateria, włączone" },
-  tr: {"hTitle": "Oyun yönetimi", "hPick": "Büyük ekranda bir oyun başlat:", "hStart": "Şimdi başlat", "hSkip": "Turu atla", "hSpin": "Çevir", "hEnd": "Oyunu bitir", "hPts": "Puanları düzelt", "pTitle": "Sen kimsin?", "pHint": "Adın ve rengin büyük ekranda, isteklerinin ve puanlarının yanında görünür.", "pOk": "Tamam", "pCol": "Renk", "gLate": "Oyun zaten başladı", "gLateHint": "Katıl ve şimdiden oyna.", "gLateWatch": "Katıl: bu oyunu izlersin, sonrakinde oynarsın.", "gLateJoin": "Katıl", "netLost": "Çevrimdışı · yeniden bağlanıyor …", "netBack": "Yeniden bağlandı", "netQuiet": "Partiden sinyal yok", "wSong": "Spotify'da ara veya bağlantı yapıştır …", "wLinkOther": "Burada sadece şarkı bağlantıları çalışır. Spotify'da: Paylaş → Şarkı bağlantısını kopyala.", "old": ["Sayfa güncel değil", "Bu sekmeyi kapat ve QR kodunu tekrar tara."], "tick": "Tık", "tickHint": "Her vuruşta hafif bir tık", "wrMax": "Zaten {n} açık isteğin var. Biri çalana kadar bekle.", "wrBlock": "Bu şarkıya bu partide izin verilmiyor.", "wrExplicit": "Bu partide müstehcen şarkı yok, lütfen.", "pSlot": "Işık dalgasındaki yerin", "rcTitle": "Uzaktan kumanda", "rcPlay": "Oynat veya duraklat", "rcPrev": "Önceki şarkı", "rcNext": "Sonraki şarkı", "rcVol": "Ses", "rcLvl": "Yoğunluk", "rcLoc": "Mekân", "rcGame": "Oyun başlat", "rcWait": "Mirage'a bağlanıyor …", "eco": "Pil tasarrufu", "ecoLow": "pil zayıf, açık" },
-  ru: {"hTitle": "Ведущий игры", "hPick": "Запусти игру на большом экране:", "hStart": "Начать", "hSkip": "Пропустить раунд", "hSpin": "Крутить", "hEnd": "Закончить игру", "hPts": "Исправить очки", "pTitle": "Кто ты?", "pHint": "Твоё имя и цвет видны на большом экране – рядом с заказами и очками.", "pOk": "Готово", "pCol": "Цвет", "gLate": "Игра уже идёт", "gLateHint": "Подключайся и играй с этого момента.", "gLateWatch": "Подключайся: эту игру смотришь, в следующей играешь.", "gLateJoin": "Подключиться", "netLost": "Нет сети · переподключаемся …", "netBack": "Снова на связи", "netQuiet": "Нет сигнала от вечеринки", "wSong": "Поиск в Spotify или вставь ссылку …", "wLinkOther": "Здесь работают только ссылки на треки. В Spotify: Поделиться → Скопировать ссылку на трек.", "old": ["Страница устарела", "Закрой эту вкладку и отсканируй QR-код ещё раз."], "tick": "Щелчок", "tickHint": "Тихий щелчок на каждую долю", "wrMax": "У тебя уже {n} открытых заказа. Подожди, пока один сыграет.", "wrBlock": "Эту песню на этой вечеринке нельзя.", "wrExplicit": "Пожалуйста, без песен с пометкой «explicit».", "pSlot": "Твоё место в световой волне", "rcTitle": "Пульт", "rcPlay": "Играть или пауза", "rcPrev": "Предыдущий трек", "rcNext": "Следующий трек", "rcVol": "Громкость", "rcLvl": "Интенсивность", "rcLoc": "Площадка", "rcGame": "Запустить игру", "rcWait": "Подключаемся к Mirage …", "eco": "Экономия заряда", "ecoLow": "заряд низкий, включено" },
-  uk: {"hTitle": "Ведучий гри", "hPick": "Запусти гру на великому екрані:", "hStart": "Почати", "hSkip": "Пропустити раунд", "hSpin": "Крутити", "hEnd": "Завершити гру", "hPts": "Виправити бали", "pTitle": "Хто ти?", "pHint": "Твоє ім'я і колір видно на великому екрані – поруч із замовленнями та балами.", "pOk": "Готово", "pCol": "Колір", "gLate": "Гра вже триває", "gLateHint": "Долучайся і грай від цієї миті.", "gLateWatch": "Долучайся: цю гру дивишся, у наступній граєш.", "gLateJoin": "Долучитися", "netLost": "Немає мережі · перепідключаємося …", "netBack": "Знову на зв'язку", "netQuiet": "Немає сигналу від вечірки", "wSong": "Пошук у Spotify або встав посилання …", "wLinkOther": "Тут працюють лише посилання на треки. У Spotify: Поділитися → Копіювати посилання на трек.", "old": ["Сторінка застаріла", "Закрий цю вкладку і відскануй QR-код ще раз."], "tick": "Клац", "tickHint": "Тихе клацання на кожну долю", "wrMax": "У тебе вже {n} відкритих замовлення. Зачекай, поки одне заграє.", "wrBlock": "Цю пісню на цій вечірці не можна.", "wrExplicit": "Будь ласка, без пісень з позначкою «explicit».", "pSlot": "Твоє місце у світловій хвилі", "rcTitle": "Пульт", "rcPlay": "Грати або пауза", "rcPrev": "Попередній трек", "rcNext": "Наступний трек", "rcVol": "Гучність", "rcLvl": "Інтенсивність", "rcLoc": "Локація", "rcGame": "Запустити гру", "rcWait": "Підключаємося до Mirage …", "eco": "Економія заряду", "ecoLow": "заряд низький, увімкнено" },
-  ja: {"hTitle": "ゲーム進行", "hPick": "大きな画面でゲームを始める：", "hStart": "今すぐ開始", "hSkip": "ラウンドをスキップ", "hSpin": "回す", "hEnd": "ゲーム終了", "hPts": "ポイントを修正", "pTitle": "あなたは誰？", "pHint": "名前と色は、大きな画面のリクエストやスコアの横に表示されます。", "pOk": "完了", "pCol": "色", "gLate": "ゲームはもう始まっています", "gLateHint": "今から参加して遊べます。", "gLateWatch": "参加：このゲームは観戦、次のゲームから参加です。", "gLateJoin": "参加する", "netLost": "オフライン · 再接続中 …", "netBack": "再接続しました", "netQuiet": "パーティーからの信号がありません", "wSong": "Spotifyで検索、または曲のリンクを貼り付け …", "wLinkOther": "使えるのは曲のリンクだけです。Spotifyで：シェア → 曲のリンクをコピー", "old": ["ページが古くなっています", "このタブを閉じて、QRコードをもう一度読み取ってください。"], "tick": "クリック", "tickHint": "ビートごとに小さなクリック音", "wrMax": "未再生のリクエストがすでに{n}件あります。再生されるまで待ってね。", "wrBlock": "この曲はこのパーティーでは使えません。", "wrExplicit": "このパーティーでは、explicit の曲はNGです。", "pSlot": "光のウェーブでのあなたの番号", "rcTitle": "リモコン", "rcPlay": "再生・一時停止", "rcPrev": "前の曲", "rcNext": "次の曲", "rcVol": "音量", "rcLvl": "強さ", "rcLoc": "会場", "rcGame": "ゲームを始める", "rcWait": "Mirageに接続中 …", "eco": "省電力", "ecoLow": "残量少・オン" },
-  ko: {"hTitle": "게임 진행", "hPick": "큰 화면에서 게임 시작:", "hStart": "지금 시작", "hSkip": "라운드 건너뛰기", "hSpin": "돌리기", "hEnd": "게임 끝내기", "hPts": "점수 수정", "pTitle": "누구세요?", "pHint": "이름과 색이 큰 화면의 신청곡과 점수 옆에 표시돼요.", "pOk": "완료", "pCol": "색", "gLate": "게임이 이미 진행 중이에요", "gLateHint": "지금 들어와서 같이 해요.", "gLateWatch": "참여: 이번 게임은 구경하고 다음 게임부터 같이 해요.", "gLateJoin": "참여하기", "netLost": "오프라인 · 다시 연결 중 …", "netBack": "다시 연결됐어요", "netQuiet": "파티 신호가 없어요", "wSong": "Spotify에서 검색하거나 곡 링크 붙여넣기 …", "wLinkOther": "여기서는 곡 링크만 돼요. Spotify에서: 공유 → 곡 링크 복사", "old": ["페이지가 오래됐어요", "이 탭을 닫고 QR 코드를 다시 스캔해 주세요."], "tick": "클릭", "tickHint": "박자마다 작은 클릭 소리", "wrMax": "이미 대기 중인 신청이 {n}개 있어요. 하나가 재생될 때까지 기다려 주세요.", "wrBlock": "이 파티에서는 이 곡을 신청할 수 없어요.", "wrExplicit": "이 파티에서는 19금(explicit) 곡은 안 돼요.", "pSlot": "빛의 파도에서 내 자리", "rcTitle": "리모컨", "rcPlay": "재생 또는 일시정지", "rcPrev": "이전 곡", "rcNext": "다음 곡", "rcVol": "볼륨", "rcLvl": "강도", "rcLoc": "장소", "rcGame": "게임 시작", "rcWait": "Mirage에 연결 중 …", "eco": "배터리 절약", "ecoLow": "배터리 부족, 켜짐" },
-  zh: {"hTitle": "游戏主持", "hPick": "在大屏幕上开始游戏：", "hStart": "立即开始", "hSkip": "跳过本轮", "hSpin": "转动", "hEnd": "结束游戏", "hPts": "修改分数", "pTitle": "你是谁？", "pHint": "你的名字和颜色会显示在大屏幕上，在你的点歌和分数旁边。", "pOk": "完成", "pCol": "颜色", "gLate": "游戏已经开始了", "gLateHint": "现在加入，一起玩。", "gLateWatch": "加入：这局先观战，下一局再参与。", "gLateJoin": "加入", "netLost": "离线 · 正在重新连接 …", "netBack": "已重新连接", "netQuiet": "没有收到派对的信号", "wSong": "在 Spotify 搜索或粘贴歌曲链接 …", "wLinkOther": "这里只支持歌曲链接。在 Spotify 中：分享 → 复制歌曲链接", "old": ["页面已过期", "请关闭此标签页，重新扫描二维码。"], "tick": "节拍声", "tickHint": "每拍一声轻响", "wrMax": "你已经有 {n} 首待播的点歌了，等其中一首播放后再点吧。", "wrBlock": "这场派对不允许点这首歌。", "wrExplicit": "本场派对不接受含露骨内容的歌曲。", "pSlot": "你在灯光波浪中的位置", "rcTitle": "遥控器", "rcPlay": "播放或暂停", "rcPrev": "上一首", "rcNext": "下一首", "rcVol": "音量", "rcLvl": "强度", "rcLoc": "场地", "rcGame": "开始游戏", "rcWait": "正在连接 Mirage …", "eco": "省电", "ecoLow": "电量低，已开启" },
+  fr: {"gRank": "Place {n}", "hTitle": "Animation du jeu", "hPick": "Lance un jeu sur le grand écran :", "hStart": "Lancer", "hSkip": "Passer la manche", "hSpin": "Tourner", "hEnd": "Terminer le jeu", "hPts": "Corriger les points", "pTitle": "Qui es-tu ?", "pHint": "Ton prénom et ta couleur s'affichent sur le grand écran, à côté de tes souhaits et de tes points.", "pOk": "OK", "pCol": "Couleur", "gLate": "Le jeu a déjà commencé", "gLateHint": "Rejoins-nous et joue à partir de maintenant.", "gLateWatch": "Rejoins-nous : tu regardes ce jeu et tu joues au suivant.", "gLateJoin": "Rejoindre", "netLost": "Hors ligne · reconnexion …", "netBack": "Reconnecté", "netQuiet": "Aucun signal de la fête", "wSong": "Chercher sur Spotify ou coller un lien …", "wLinkOther": "Seuls les liens de titres marchent ici. Dans Spotify : Partager → Copier le lien du titre.", "old": ["Page obsolète", "Ferme cet onglet et scanne à nouveau le QR code."], "tick": "Clic", "tickHint": "Petit clic sur chaque temps", "wrMax": "Tu as déjà {n} souhaits en attente. Attends qu'un passe.", "wrBlock": "Ce titre n'est pas autorisé à cette fête.", "wrExplicit": "Pas de titres explicites à cette fête, merci.", "pSlot": "Ta place dans la vague de lumière", "rcTitle": "Télécommande", "rcPlay": "Lecture ou pause", "rcPrev": "Titre précédent", "rcNext": "Titre suivant", "rcVol": "Volume", "rcLvl": "Intensité", "rcLoc": "Lieu", "rcGame": "Lancer un jeu", "rcWait": "Connexion à Mirage …", "eco": "Économie de batterie", "ecoLow": "batterie faible, activé" },
+  es: {"gRank": "Puesto {n}", "hTitle": "Dirección del juego", "hPick": "Inicia un juego en la pantalla grande:", "hStart": "Empezar ya", "hSkip": "Saltar ronda", "hSpin": "Girar", "hEnd": "Terminar juego", "hPts": "Corregir puntos", "pTitle": "¿Quién eres?", "pHint": "Tu nombre y tu color salen en la pantalla grande, junto a tus deseos y tus puntos.", "pOk": "Listo", "pCol": "Color", "gLate": "El juego ya ha empezado", "gLateHint": "Únete y juega desde ahora.", "gLateWatch": "Únete: este juego lo miras y en el siguiente juegas.", "gLateJoin": "Unirme", "netLost": "Sin conexión · reconectando …", "netBack": "Conectado de nuevo", "netQuiet": "No llega señal de la fiesta", "wSong": "Busca en Spotify o pega un enlace …", "wLinkOther": "Aquí solo valen enlaces de canciones. En Spotify: Compartir → Copiar enlace de la canción.", "old": ["Página desactualizada", "Cierra esta pestaña y vuelve a escanear el código QR."], "tick": "Clic", "tickHint": "Clic suave en cada tiempo", "wrMax": "Ya tienes {n} peticiones abiertas. Espera a que suene una.", "wrBlock": "Esta canción no está permitida en esta fiesta.", "wrExplicit": "Nada de canciones explícitas en esta fiesta, por favor.", "pSlot": "Tu sitio en la ola de luz", "rcTitle": "Mando a distancia", "rcPlay": "Reproducir o pausar", "rcPrev": "Canción anterior", "rcNext": "Siguiente canción", "rcVol": "Volumen", "rcLvl": "Intensidad", "rcLoc": "Lugar", "rcGame": "Empezar un juego", "rcWait": "Conectando con Mirage …", "eco": "Ahorro de batería", "ecoLow": "batería baja, activado" },
+  it: {"gRank": "Posto {n}", "hTitle": "Conduzione del gioco", "hPick": "Avvia un gioco sullo schermo grande:", "hStart": "Avvia ora", "hSkip": "Salta il round", "hSpin": "Gira", "hEnd": "Termina il gioco", "hPts": "Correggi i punti", "pTitle": "Chi sei?", "pHint": "Nome e colore compaiono sullo schermo grande, accanto alle tue richieste e ai punti.", "pOk": "Fatto", "pCol": "Colore", "gLate": "Il gioco è già iniziato", "gLateHint": "Entra e gioca da adesso.", "gLateWatch": "Entra: questo gioco lo guardi, al prossimo giochi.", "gLateJoin": "Entra", "netLost": "Offline · riconnessione …", "netBack": "Di nuovo connesso", "netQuiet": "Nessun segnale dalla festa", "wSong": "Cerca su Spotify o incolla un link …", "wLinkOther": "Qui funzionano solo i link dei brani. In Spotify: Condividi → Copia link del brano.", "old": ["Pagina non aggiornata", "Chiudi questa scheda e inquadra di nuovo il codice QR."], "tick": "Clic", "tickHint": "Clic leggero a ogni battito", "wrMax": "Hai già {n} richieste aperte. Aspetta che ne parta una.", "wrBlock": "Questa canzone non è ammessa a questa festa.", "wrExplicit": "Niente canzoni esplicite a questa festa, per favore.", "pSlot": "Il tuo posto nell'onda di luce", "rcTitle": "Telecomando", "rcPlay": "Riproduci o pausa", "rcPrev": "Brano precedente", "rcNext": "Brano successivo", "rcVol": "Volume", "rcLvl": "Intensità", "rcLoc": "Location", "rcGame": "Avvia un gioco", "rcWait": "Connessione a Mirage …", "eco": "Risparmio batteria", "ecoLow": "batteria scarica, attivo" },
+  pt: {"gRank": "Lugar {n}", "hTitle": "Condução do jogo", "hPick": "Começa um jogo no ecrã grande:", "hStart": "Começar já", "hSkip": "Saltar ronda", "hSpin": "Rodar", "hEnd": "Terminar jogo", "hPts": "Corrigir pontos", "pTitle": "Quem és tu?", "pHint": "O teu nome e a tua cor aparecem no ecrã grande, junto aos teus pedidos e pontos.", "pOk": "Feito", "pCol": "Cor", "gLate": "O jogo já começou", "gLateHint": "Entra e joga a partir de agora.", "gLateWatch": "Entra: este jogo vês, no próximo jogas.", "gLateJoin": "Entrar", "netLost": "Offline · a religar …", "netBack": "Ligado de novo", "netQuiet": "Sem sinal da festa", "wSong": "Pesquisa no Spotify ou cola um link …", "wLinkOther": "Aqui só funcionam links de músicas. No Spotify: Partilhar → Copiar link da música.", "old": ["Página desatualizada", "Fecha este separador e lê o código QR outra vez."], "tick": "Clique", "tickHint": "Clique suave em cada batida", "wrMax": "Já tens {n} pedidos em aberto. Espera até um tocar.", "wrBlock": "Esta música não é permitida nesta festa.", "wrExplicit": "Nada de músicas explícitas nesta festa, por favor.", "pSlot": "O teu lugar na onda de luz", "rcTitle": "Comando", "rcPlay": "Reproduzir ou pausar", "rcPrev": "Música anterior", "rcNext": "Próxima música", "rcVol": "Volume", "rcLvl": "Intensidade", "rcLoc": "Local", "rcGame": "Começar um jogo", "rcWait": "A ligar ao Mirage …", "eco": "Poupar bateria", "ecoLow": "bateria fraca, ligado" },
+  nl: {"gRank": "Plaats {n}", "hTitle": "Spelleiding", "hPick": "Start een spel op het grote scherm:", "hStart": "Nu starten", "hSkip": "Ronde overslaan", "hSpin": "Draaien", "hEnd": "Spel beëindigen", "hPts": "Punten corrigeren", "pTitle": "Wie ben jij?", "pHint": "Je naam en kleur staan op het grote scherm, bij je verzoeken en punten.", "pOk": "Klaar", "pCol": "Kleur", "gLate": "Het spel is al bezig", "gLateHint": "Stap in en speel vanaf nu mee.", "gLateWatch": "Stap in: dit spel kijk je mee, het volgende speel je mee.", "gLateJoin": "Instappen", "netLost": "Offline · opnieuw verbinden …", "netBack": "Weer verbonden", "netQuiet": "Geen signaal van het feest", "wSong": "Zoek op Spotify of plak een link …", "wLinkOther": "Hier werken alleen links naar nummers. In Spotify: Delen → Link naar nummer kopiëren.", "old": ["Pagina verouderd", "Sluit dit tabblad en scan de QR-code opnieuw."], "tick": "Tik", "tickHint": "Zachte tik op elke tel", "wrMax": "Je hebt al {n} open verzoeken. Wacht tot er een speelt.", "wrBlock": "Dit nummer mag niet op dit feest.", "wrExplicit": "Geen expliciete nummers op dit feest, graag.", "pSlot": "Jouw plek in de lichtgolf", "rcTitle": "Afstandsbediening", "rcPlay": "Afspelen of pauzeren", "rcPrev": "Vorig nummer", "rcNext": "Volgend nummer", "rcVol": "Volume", "rcLvl": "Intensiteit", "rcLoc": "Locatie", "rcGame": "Spel starten", "rcWait": "Verbinden met Mirage …", "eco": "Batterij sparen", "ecoLow": "batterij bijna leeg, aan" },
+  pl: {"gRank": "Miejsce {n}", "hTitle": "Prowadzenie gry", "hPick": "Uruchom grę na dużym ekranie:", "hStart": "Start", "hSkip": "Pomiń rundę", "hSpin": "Zakręć", "hEnd": "Zakończ grę", "hPts": "Popraw punkty", "pTitle": "Kim jesteś?", "pHint": "Twoje imię i kolor widać na dużym ekranie, przy życzeniach i punktach.", "pOk": "Gotowe", "pCol": "Kolor", "gLate": "Gra już trwa", "gLateHint": "Wskakuj i graj od teraz.", "gLateWatch": "Wskakuj: tę grę oglądasz, w następnej grasz.", "gLateJoin": "Dołącz", "netLost": "Offline · łączę ponownie …", "netBack": "Znowu połączono", "netQuiet": "Brak sygnału z imprezy", "wSong": "Szukaj w Spotify lub wklej link …", "wLinkOther": "Tu działają tylko linki do utworów. W Spotify: Udostępnij → Kopiuj link do utworu.", "old": ["Strona nieaktualna", "Zamknij tę kartę i zeskanuj kod QR jeszcze raz."], "tick": "Klik", "tickHint": "Cichy klik na każde uderzenie", "wrMax": "Masz już {n} otwarte życzenia. Poczekaj, aż któreś zagra.", "wrBlock": "Ten utwór nie jest dozwolony na tej imprezie.", "wrExplicit": "Prosimy bez utworów z oznaczeniem „explicit”.", "pSlot": "Twoje miejsce w fali światła", "rcTitle": "Pilot", "rcPlay": "Odtwórz lub wstrzymaj", "rcPrev": "Poprzedni utwór", "rcNext": "Następny utwór", "rcVol": "Głośność", "rcLvl": "Intensywność", "rcLoc": "Miejsce", "rcGame": "Uruchom grę", "rcWait": "Łączenie z Mirage …", "eco": "Oszczędzanie baterii", "ecoLow": "słaba bateria, włączone" },
+  tr: {"gRank": "{n}. sıra", "hTitle": "Oyun yönetimi", "hPick": "Büyük ekranda bir oyun başlat:", "hStart": "Şimdi başlat", "hSkip": "Turu atla", "hSpin": "Çevir", "hEnd": "Oyunu bitir", "hPts": "Puanları düzelt", "pTitle": "Sen kimsin?", "pHint": "Adın ve rengin büyük ekranda, isteklerinin ve puanlarının yanında görünür.", "pOk": "Tamam", "pCol": "Renk", "gLate": "Oyun zaten başladı", "gLateHint": "Katıl ve şimdiden oyna.", "gLateWatch": "Katıl: bu oyunu izlersin, sonrakinde oynarsın.", "gLateJoin": "Katıl", "netLost": "Çevrimdışı · yeniden bağlanıyor …", "netBack": "Yeniden bağlandı", "netQuiet": "Partiden sinyal yok", "wSong": "Spotify'da ara veya bağlantı yapıştır …", "wLinkOther": "Burada sadece şarkı bağlantıları çalışır. Spotify'da: Paylaş → Şarkı bağlantısını kopyala.", "old": ["Sayfa güncel değil", "Bu sekmeyi kapat ve QR kodunu tekrar tara."], "tick": "Tık", "tickHint": "Her vuruşta hafif bir tık", "wrMax": "Zaten {n} açık isteğin var. Biri çalana kadar bekle.", "wrBlock": "Bu şarkıya bu partide izin verilmiyor.", "wrExplicit": "Bu partide müstehcen şarkı yok, lütfen.", "pSlot": "Işık dalgasındaki yerin", "rcTitle": "Uzaktan kumanda", "rcPlay": "Oynat veya duraklat", "rcPrev": "Önceki şarkı", "rcNext": "Sonraki şarkı", "rcVol": "Ses", "rcLvl": "Yoğunluk", "rcLoc": "Mekân", "rcGame": "Oyun başlat", "rcWait": "Mirage'a bağlanıyor …", "eco": "Pil tasarrufu", "ecoLow": "pil zayıf, açık" },
+  ru: {"gRank": "Место {n}", "hTitle": "Ведущий игры", "hPick": "Запусти игру на большом экране:", "hStart": "Начать", "hSkip": "Пропустить раунд", "hSpin": "Крутить", "hEnd": "Закончить игру", "hPts": "Исправить очки", "pTitle": "Кто ты?", "pHint": "Твоё имя и цвет видны на большом экране – рядом с заказами и очками.", "pOk": "Готово", "pCol": "Цвет", "gLate": "Игра уже идёт", "gLateHint": "Подключайся и играй с этого момента.", "gLateWatch": "Подключайся: эту игру смотришь, в следующей играешь.", "gLateJoin": "Подключиться", "netLost": "Нет сети · переподключаемся …", "netBack": "Снова на связи", "netQuiet": "Нет сигнала от вечеринки", "wSong": "Поиск в Spotify или вставь ссылку …", "wLinkOther": "Здесь работают только ссылки на треки. В Spotify: Поделиться → Скопировать ссылку на трек.", "old": ["Страница устарела", "Закрой эту вкладку и отсканируй QR-код ещё раз."], "tick": "Щелчок", "tickHint": "Тихий щелчок на каждую долю", "wrMax": "У тебя уже {n} открытых заказа. Подожди, пока один сыграет.", "wrBlock": "Эту песню на этой вечеринке нельзя.", "wrExplicit": "Пожалуйста, без песен с пометкой «explicit».", "pSlot": "Твоё место в световой волне", "rcTitle": "Пульт", "rcPlay": "Играть или пауза", "rcPrev": "Предыдущий трек", "rcNext": "Следующий трек", "rcVol": "Громкость", "rcLvl": "Интенсивность", "rcLoc": "Площадка", "rcGame": "Запустить игру", "rcWait": "Подключаемся к Mirage …", "eco": "Экономия заряда", "ecoLow": "заряд низкий, включено" },
+  uk: {"gRank": "Місце {n}", "hTitle": "Ведучий гри", "hPick": "Запусти гру на великому екрані:", "hStart": "Почати", "hSkip": "Пропустити раунд", "hSpin": "Крутити", "hEnd": "Завершити гру", "hPts": "Виправити бали", "pTitle": "Хто ти?", "pHint": "Твоє ім'я і колір видно на великому екрані – поруч із замовленнями та балами.", "pOk": "Готово", "pCol": "Колір", "gLate": "Гра вже триває", "gLateHint": "Долучайся і грай від цієї миті.", "gLateWatch": "Долучайся: цю гру дивишся, у наступній граєш.", "gLateJoin": "Долучитися", "netLost": "Немає мережі · перепідключаємося …", "netBack": "Знову на зв'язку", "netQuiet": "Немає сигналу від вечірки", "wSong": "Пошук у Spotify або встав посилання …", "wLinkOther": "Тут працюють лише посилання на треки. У Spotify: Поділитися → Копіювати посилання на трек.", "old": ["Сторінка застаріла", "Закрий цю вкладку і відскануй QR-код ще раз."], "tick": "Клац", "tickHint": "Тихе клацання на кожну долю", "wrMax": "У тебе вже {n} відкритих замовлення. Зачекай, поки одне заграє.", "wrBlock": "Цю пісню на цій вечірці не можна.", "wrExplicit": "Будь ласка, без пісень з позначкою «explicit».", "pSlot": "Твоє місце у світловій хвилі", "rcTitle": "Пульт", "rcPlay": "Грати або пауза", "rcPrev": "Попередній трек", "rcNext": "Наступний трек", "rcVol": "Гучність", "rcLvl": "Інтенсивність", "rcLoc": "Локація", "rcGame": "Запустити гру", "rcWait": "Підключаємося до Mirage …", "eco": "Економія заряду", "ecoLow": "заряд низький, увімкнено" },
+  ja: {"gRank": "{n}位", "hTitle": "ゲーム進行", "hPick": "大きな画面でゲームを始める：", "hStart": "今すぐ開始", "hSkip": "ラウンドをスキップ", "hSpin": "回す", "hEnd": "ゲーム終了", "hPts": "ポイントを修正", "pTitle": "あなたは誰？", "pHint": "名前と色は、大きな画面のリクエストやスコアの横に表示されます。", "pOk": "完了", "pCol": "色", "gLate": "ゲームはもう始まっています", "gLateHint": "今から参加して遊べます。", "gLateWatch": "参加：このゲームは観戦、次のゲームから参加です。", "gLateJoin": "参加する", "netLost": "オフライン · 再接続中 …", "netBack": "再接続しました", "netQuiet": "パーティーからの信号がありません", "wSong": "Spotifyで検索、または曲のリンクを貼り付け …", "wLinkOther": "使えるのは曲のリンクだけです。Spotifyで：シェア → 曲のリンクをコピー", "old": ["ページが古くなっています", "このタブを閉じて、QRコードをもう一度読み取ってください。"], "tick": "クリック", "tickHint": "ビートごとに小さなクリック音", "wrMax": "未再生のリクエストがすでに{n}件あります。再生されるまで待ってね。", "wrBlock": "この曲はこのパーティーでは使えません。", "wrExplicit": "このパーティーでは、explicit の曲はNGです。", "pSlot": "光のウェーブでのあなたの番号", "rcTitle": "リモコン", "rcPlay": "再生・一時停止", "rcPrev": "前の曲", "rcNext": "次の曲", "rcVol": "音量", "rcLvl": "強さ", "rcLoc": "会場", "rcGame": "ゲームを始める", "rcWait": "Mirageに接続中 …", "eco": "省電力", "ecoLow": "残量少・オン" },
+  ko: {"gRank": "{n}위", "hTitle": "게임 진행", "hPick": "큰 화면에서 게임 시작:", "hStart": "지금 시작", "hSkip": "라운드 건너뛰기", "hSpin": "돌리기", "hEnd": "게임 끝내기", "hPts": "점수 수정", "pTitle": "누구세요?", "pHint": "이름과 색이 큰 화면의 신청곡과 점수 옆에 표시돼요.", "pOk": "완료", "pCol": "색", "gLate": "게임이 이미 진행 중이에요", "gLateHint": "지금 들어와서 같이 해요.", "gLateWatch": "참여: 이번 게임은 구경하고 다음 게임부터 같이 해요.", "gLateJoin": "참여하기", "netLost": "오프라인 · 다시 연결 중 …", "netBack": "다시 연결됐어요", "netQuiet": "파티 신호가 없어요", "wSong": "Spotify에서 검색하거나 곡 링크 붙여넣기 …", "wLinkOther": "여기서는 곡 링크만 돼요. Spotify에서: 공유 → 곡 링크 복사", "old": ["페이지가 오래됐어요", "이 탭을 닫고 QR 코드를 다시 스캔해 주세요."], "tick": "클릭", "tickHint": "박자마다 작은 클릭 소리", "wrMax": "이미 대기 중인 신청이 {n}개 있어요. 하나가 재생될 때까지 기다려 주세요.", "wrBlock": "이 파티에서는 이 곡을 신청할 수 없어요.", "wrExplicit": "이 파티에서는 19금(explicit) 곡은 안 돼요.", "pSlot": "빛의 파도에서 내 자리", "rcTitle": "리모컨", "rcPlay": "재생 또는 일시정지", "rcPrev": "이전 곡", "rcNext": "다음 곡", "rcVol": "볼륨", "rcLvl": "강도", "rcLoc": "장소", "rcGame": "게임 시작", "rcWait": "Mirage에 연결 중 …", "eco": "배터리 절약", "ecoLow": "배터리 부족, 켜짐" },
+  zh: {"gRank": "第{n}名", "hTitle": "游戏主持", "hPick": "在大屏幕上开始游戏：", "hStart": "立即开始", "hSkip": "跳过本轮", "hSpin": "转动", "hEnd": "结束游戏", "hPts": "修改分数", "pTitle": "你是谁？", "pHint": "你的名字和颜色会显示在大屏幕上，在你的点歌和分数旁边。", "pOk": "完成", "pCol": "颜色", "gLate": "游戏已经开始了", "gLateHint": "现在加入，一起玩。", "gLateWatch": "加入：这局先观战，下一局再参与。", "gLateJoin": "加入", "netLost": "离线 · 正在重新连接 …", "netBack": "已重新连接", "netQuiet": "没有收到派对的信号", "wSong": "在 Spotify 搜索或粘贴歌曲链接 …", "wLinkOther": "这里只支持歌曲链接。在 Spotify 中：分享 → 复制歌曲链接", "old": ["页面已过期", "请关闭此标签页，重新扫描二维码。"], "tick": "节拍声", "tickHint": "每拍一声轻响", "wrMax": "你已经有 {n} 首待播的点歌了，等其中一首播放后再点吧。", "wrBlock": "这场派对不允许点这首歌。", "wrExplicit": "本场派对不接受含露骨内容的歌曲。", "pSlot": "你在灯光波浪中的位置", "rcTitle": "遥控器", "rcPlay": "播放或暂停", "rcPrev": "上一首", "rcNext": "下一首", "rcVol": "音量", "rcLvl": "强度", "rcLoc": "场地", "rcGame": "开始游戏", "rcWait": "正在连接 Mirage …", "eco": "省电", "ecoLow": "电量低，已开启" },
 };
 for (const src of [SCAN_TEXT, GAME_TEXT, GUEST_TEXT]) for (const [k, v] of Object.entries(src)) L[k] = { ...(L[k] || {}), ...v };
 // Texte der Foto-Wand, alle 14 Sprachen
@@ -525,6 +550,22 @@ const LANG = (navigator.languages || [navigator.language]).map((x) => String(x |
 const T = { ...L.en, ...L[LANG] };
 document.documentElement.lang = LANG;
 const $ = (id) => document.getElementById(id);
+// Linien-Symbole aus dem Sprite oben (erzeugt aus src/icons.js, wie im Theme) statt Emojis
+const ic = (name, cls) => {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("class", "ic" + (cls ? " " + cls : ""));
+  s.setAttribute("aria-hidden", "true");
+  s.setAttribute("focusable", "false");
+  const u = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  u.setAttribute("href", "#i-" + name);
+  s.append(u);
+  return s;
+};
+// Symbol vor einem Text (ersetzt den Inhalt)
+const icText = (e, name, text) => {
+  e.replaceChildren(ic(name, "lead"), String(text ?? ""));
+  return e;
+};
 const say = ([a, b]) => {
   $("sTitle").textContent = a;
   $("sText").textContent = b;
@@ -946,7 +987,7 @@ function slots(box) {
 function syncEco() {
   const b = $("pEco");
   b.setAttribute("aria-pressed", String(eco));
-  b.textContent = "🔋 " + T.eco + (lowBat ? " · " + T.ecoLow : "");
+  icText(b, "battery", T.eco + (lowBat ? " · " + T.ecoLow : ""));
 }
 $("pEco").onclick = (e) => {
   e.stopPropagation();
@@ -1033,13 +1074,13 @@ function drawWishes(list) {
     } else {
       const v = document.createElement("button");
       v.type = "button";
-      v.textContent = "👍 " + w.v;
+      icText(v, "thumb", w.v);
       v.setAttribute("aria-pressed", String(voted.has(w.i)));
       v.onclick = () => {
         if (voted.has(w.i)) return;
         voted.add(w.i);
         v.setAttribute("aria-pressed", "true");
-        v.textContent = "👍 " + (w.v + 1);
+        icText(v, "thumb", w.v + 1);
         sendUp({ k: "vote", w: w.i });
       };
       li.append(v);
@@ -1292,8 +1333,8 @@ function photoAck(a) {
 function openPhoto() {
   $("phTitle").textContent = T.phTitle;
   $("phHint").textContent = T.phHint;
-  $("phCamL").lastChild.textContent = "📷 " + T.phCam;
-  $("phFileL").lastChild.textContent = "🖼️ " + T.phFile;
+  icText($("phCamL").lastChild, "camera", T.phCam);
+  icText($("phFileL").lastChild, "g-cover", T.phFile);
   if (!phCur || phCur.st) {
     phSay("");
     phBar(null);
@@ -1756,7 +1797,7 @@ function drawPoll(p) {
 // Benachrichtigung, wenn der eigene Wunsch als Nächstes kommt (nur solange diese Seite offen ist)
 function syncNotify() {
   $("wNotify").hidden = !("Notification" in window);
-  $("wNotify").textContent = (notifyOn ? "✓ " + T.notifyOn : "🔔 " + T.notify);
+  icText($("wNotify"), notifyOn ? "check" : "bell", notifyOn ? T.notifyOn : T.notify);
 }
 $("wNotify").onclick = async (e) => {
   e.stopPropagation();
@@ -1776,14 +1817,16 @@ const me = myId.slice(-6);
 const TILE = ["A", "B", "C", "D", "E", "F"];
 const ASK_GAMES = new Set(["quiz", "dquiz", "title", "intro", "gap", "next", "tf", "likely", "dlikely", "never", "older", "cover", "duel"]);
 const WHEELS = new Set(["wheel", "dwheel"]);
+// je Spiel der Name; das Symbol ist #i-g-<Spiel> im Sprite
 const GAME = {
-  intro: ["⏱️", () => T.gIntro], sing: ["🎙️", () => T.gSing], tf: ["🕵️", () => T.gTf], taps: ["👆", () => T.gTaps], never: ["🙈", () => T.gNever],
-  dquiz: ["🍻", () => T.gDquiz], alarm: ["🚨", () => T.gAlarm], dlikely: ["👉", () => T.gDlikely], dwheel: ["🍀", () => T.gDwheel],
-  quiz: ["🎤", () => T.gQuiz], title: ["🎵", () => T.gTitleQ], gap: ["✏️", () => T.gGap], next: ["📜", () => T.gNext], beat: ["🥁", () => T.gBeat],
-  stop: ["✋", () => T.gStop], fast: ["⚡", () => T.gFast], battle: ["💃", () => T.gBattle], bomb: ["💣", () => T.gBomb], likely: ["🤔", () => T.gLikely], wheel: ["🎡", () => T.gWheel],
-  older: ["📅", () => T.gOlder], cover: ["🖼️", () => T.gCover], duel: ["⚔️", () => T.gDuel], tour: ["🏆", () => T.gTour], bingo: ["🎱", () => T.gBingo],
-  karaoke: ["🎶", () => T.gKar],
+  intro: () => T.gIntro, sing: () => T.gSing, tf: () => T.gTf, taps: () => T.gTaps, never: () => T.gNever,
+  dquiz: () => T.gDquiz, alarm: () => T.gAlarm, dlikely: () => T.gDlikely, dwheel: () => T.gDwheel,
+  quiz: () => T.gQuiz, title: () => T.gTitleQ, gap: () => T.gGap, next: () => T.gNext, beat: () => T.gBeat,
+  stop: () => T.gStop, fast: () => T.gFast, battle: () => T.gBattle, bomb: () => T.gBomb, likely: () => T.gLikely, wheel: () => T.gWheel,
+  older: () => T.gOlder, cover: () => T.gCover, duel: () => T.gDuel, tour: () => T.gTour, bingo: () => T.gBingo,
+  karaoke: () => T.gKar,
 };
+const gIcon = (k) => (GAME[k] ? "g-" + k : "gamepad");
 const gName = () => (store("mlName") || "").slice(0, 20);
 // Einmalige Meldungen (Antwort, Tipp, Beitritt): notfalls mehrfach und nach dem Wiederverbinden. Der PC zählt jede nur einmal.
 const gSure = (o) => {
@@ -1822,6 +1865,24 @@ const gEl = (tag, text, cls) => {
   const e = document.createElement(tag);
   if (text != null) e.textContent = text;
   if (cls) e.className = cls;
+  return e;
+};
+const gIc = (tag, name, text, cls) => icText(gEl(tag, null, cls), name, text);
+// großes Symbol mitten im Spiel
+const gBig = (name, cls) => {
+  const e = gEl("div", null, "gbigic" + (cls ? " " + cls : ""));
+  e.append(ic(name));
+  return e;
+};
+// Medaille für Platz 1–3 (Vorlesetext „Platz 1“), danach die Zahl
+const gMedal = (i, tag = "i", cls = "") => {
+  const e = gEl(tag, i > 2 ? String(i + 1) : null, cls);
+  if (i > 2) return e;
+  e.classList.add("gmed", "m" + (i + 1));
+  e.setAttribute("role", "img");
+  e.setAttribute("aria-label", T.gRank.replace("{n}", i + 1));
+  e.dataset.medal = String(i + 1);
+  e.append(ic("medal" + (i + 1)));
   return e;
 };
 const gLeft = (end) => {
@@ -1924,7 +1985,7 @@ function startScoreSender() {
 function gBoard(list, box) {
   (list || []).forEach((x, i) => {
     const r = gEl("div", null, "grow");
-    r.append(gEl("i", ["🥇", "🥈", "🥉"][i] || String(i + 1)));
+    r.append(gMedal(i));
     if (x.c != null) r.append(colDot(x.c));
     r.append(gEl("span", x.n), gEl("b", String(x.p)));
     // der eigene Stand ist hervorgehoben
@@ -1999,11 +2060,13 @@ function drawGame(g) {
   box.dataset.k = g.k;
   box.dataset.st = g.st || "";
   box.dataset.late = late ? "1" : "";
-  const [icon, title] = GAME[g.k] || ["🎮", () => ""];
+  const title = GAME[g.k] || (() => "");
   const head = gEl("div", null, "ghead");
   const bar = gEl("i", null, "gbar");
   bar.append(gEl("b"));
-  head.append(bar, gEl("span", icon, "gic"), gEl("span", title(), "gnm"));
+  const gic = gEl("span", null, "gic");
+  gic.append(ic(gIcon(g.k)));
+  head.append(bar, gic, gEl("span", title(), "gnm"));
   if (g.r && g.of) head.append(gEl("span", `${g.r}/${g.of}`, "grd"));
   // Teams: in welchem Team ich spiele
   const myTeam = Array.isArray(g.tm) && g.tms ? g.tm.find((x) => x.i === g.tms[me]) : null;
@@ -2017,13 +2080,14 @@ function drawGame(g) {
   left.dataset.left = "1";
   head.append(left);
   // eigener Ton am Handy: abschaltbar, damit es auf der Party nicht überall piept
-  const snd = gEl("button", psOn ? "🔊" : "🔇", "gsnd");
+  const snd = gEl("button", null, "gsnd");
+  snd.append(ic(psOn ? "speaker" : "speakerOff"));
   snd.type = "button";
   snd.setAttribute("aria-label", "Sound");
   snd.onclick = gTap(() => {
     psOn = !psOn;
     store("mlSfx", psOn ? "1" : "0");
-    snd.textContent = psOn ? "🔊" : "🔇";
+    snd.replaceChildren(ic(psOn ? "speaker" : "speakerOff"));
     if (psOn) pSfx.tap();
   });
   head.append(snd);
@@ -2042,7 +2106,7 @@ function drawGame(g) {
 // Später dazugekommen: einsteigen, ohne auf das nächste Spiel zu warten
 function gLate(g, box) {
   const watch = g.k === "stop" || g.k === "bomb";
-  box.append(gEl("div", GAME[g.k]?.[0] || "🎮", "gbigic"), gEl("h2", T.gLate), gEl("p", watch ? T.gLateWatch : T.gLateHint));
+  box.append(gBig(gIcon(g.k)), gEl("h2", T.gLate), gEl("p", watch ? T.gLateWatch : T.gLateHint));
   gWho(box);
   const b = gEl("button", T.gLateJoin, "go");
   b.onclick = gTap(() => {
@@ -2063,7 +2127,7 @@ function gBuild(g, box, isH) {
     for (const i of [1, 0, 2]) {
       if (!list[i]) continue;
       const c = gEl("div", null, "p" + i);
-      c.append(gEl("span", ["🥇", "🥈", "🥉"][i], "med"), gEl("b", list[i].n), gEl("small", String(list[i].p)), gEl("i"));
+      c.append(gMedal(i, "span", "med"), gEl("b", list[i].n), gEl("small", String(list[i].p)), gEl("i"));
       pod.append(c);
     }
     box.append(pod);
@@ -2075,7 +2139,7 @@ function gBuild(g, box, isH) {
     if (g.tour && Array.isArray(g.tour.tot)) {
       const tb = gEl("div", null, "gboard gtour");
       gBoard(g.tour.tot, tb);
-      box.append(gEl("small", "🏆 " + T.gTourAfter.replace("{i}", g.tour.i).replace("{n}", g.tour.of)), tb);
+      box.append(gIc("small", "g-tour", T.gTourAfter.replace("{i}", g.tour.i).replace("{n}", g.tour.of)), tb);
       if (g.tour.next) box.append(gEl("p", T.gTourNext.replace("{g}", String(g.tour.next))));
     }
     haptic([[1, 120], [0, 60], [1, 120]]);
@@ -2083,7 +2147,7 @@ function gBuild(g, box, isH) {
   }
   if (g.st === "join") {
     const joined = gMem("j" + g.id) === "1";
-    box.append(gEl("div", GAME[g.k]?.[0] || "🎮", "gbigic"), gEl("h2", T.gJoinAny));
+    box.append(gBig(gIcon(g.k)), gEl("h2", T.gJoinAny));
     gWho(box);
     const b = gEl("button", joined ? T.gJoined : T.gJoin, "go");
     b.disabled = joined;
@@ -2096,41 +2160,41 @@ function gBuild(g, box, isH) {
       haptic([[0.7, 40]]);
     });
     box.append(b, gEl("div", null, "gchips"));
-    if (g.k === "karaoke") box.append(gEl("small", "🔒 " + T.gKarPriv));
+    if (g.k === "karaoke") box.append(gIc("small", "lock", T.gKarPriv, "gpriv"));
     return;
   }
   if (WHEELS.has(g.k)) {
-    box.append(gEl("div", g.k === "dwheel" ? "🍻" : "🎉", "gbigic"), gEl("h2", g.text || ""));
+    box.append(gBig(g.k === "dwheel" ? "g-dquiz" : "confetti"), gEl("h2", g.text || ""));
     const k = gKey;
     setTimeout(() => {
       if (gKey === k) $("game").hidden = true;
     }, 5000);
     return;
   }
-  if (g.st === "load") return void box.append(gEl("div", "🎧", "gbigic gpop"), gEl("h2", T.gLoadSong));
+  if (g.st === "load") return void box.append(gBig("headphones", "gpop"), gEl("h2", T.gLoadSong));
   // Song-Duell: der Sieger am Ende
-  if (g.k === "duel" && g.st === "champ") return void box.append(gEl("div", "🏆", "gbigic gpop"), gEl("small", T.gDuelChamp), gEl("h2", String(g.t || "")));
+  if (g.k === "duel" && g.st === "champ") return void box.append(gBig("g-tour", "gpop"), gEl("small", T.gDuelChamp), gEl("h2", String(g.t || "")));
   if (g.k === "bingo") return void gBingo(g, box);
   if (g.k === "karaoke") return void gKaraoke(g, box);
   if (g.k === "sing") {
-    if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
-    if (g.st === "res") return void box.append(gEl("div", "🎉", "gbigic gpop"), gEl("h2", T.gSingBack));
-    if (g.st === "ready") return void box.append(gEl("div", "🤫", "gbigic"), gEl("h2", T.gSingSoon));
+    if (g.st === "wait") return void box.append(gBig("music"), gEl("p", T.gWaitLine));
+    if (g.st === "res") return void box.append(gBig("confetti", "gpop"), gEl("h2", T.gSingBack));
+    if (g.st === "ready") return void box.append(gBig("timer"), gEl("h2", T.gSingSoon));
     if (gSingShown !== g.r) {
       gSingShown = g.r;
       pSfx.go();
       haptic([[1, 160]]);
     }
-    box.append(gEl("div", "🎙️", "gbigic"), gEl("small", T.gSingNow), gEl("h2", g.line || "", "gline"));
+    box.append(gBig("g-sing"), gEl("small", T.gSingNow), gEl("h2", g.line || "", "gline"));
     if (g.lyn) box.append(gEl("p", g.lyn));
     return;
   }
   if (g.k === "alarm") {
-    if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
-    if (g.st === "res") return void box.append(gEl("div", "🍻", "gbigic"), gEl("h2", T.gAlarmEnd.replace("{n}", g.hits || 0)));
+    if (g.st === "wait") return void box.append(gBig("music"), gEl("p", T.gWaitLine));
+    if (g.st === "res") return void box.append(gBig("g-dquiz"), gEl("h2", T.gAlarmEnd.replace("{n}", g.hits || 0)));
     const hit = g.st === "hit";
     box.append(gEl("small", T.gAlarmWord), gEl("div", g.word || "", "gword" + (hit ? " hit gpop" : "")));
-    box.append(hit ? gEl("div", "🍺 " + T.gAlarmHit, "gverdict sip") : gEl("p", "🍺 " + (g.hits || 0)));
+    box.append(hit ? gIc("div", "g-dquiz", T.gAlarmHit, "gverdict sip") : gIc("p", "g-dquiz", g.hits || 0));
     if (hit) {
       haptic([[1, 120], [0, 70], [1, 120]]);
       pSfx.sip();
@@ -2156,7 +2220,7 @@ function gBuild(g, box, isH) {
     return;
   }
   if (ASK_GAMES.has(g.k)) {
-    if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
+    if (g.st === "wait") return void box.append(gBig("music"), gEl("p", T.gWaitLine));
     const ASK_TEXT = { quiz: T.gQuizAsk, dquiz: T.gQuizAsk, title: T.gTitleAsk, intro: T.gTitleAsk, next: T.gNextAsk, tf: T.gTfAsk, never: T.gNever };
     const ask = ASK_TEXT[g.k] || "";
     if (g.st === "rev" && g.artist) box.append(gEl("h2", `${g.artist} – ${g.title}`));
@@ -2168,11 +2232,11 @@ function gBuild(g, box, isH) {
     gVoted = mem == null ? -1 : Number(mem);
     if (g.st === "ask") gPrev = pts;
     if (g.st === "rev" && g.drink && g.sipIds?.includes(me)) {
-      box.append(gEl("div", "🍺 " + T.gSip, "gverdict sip"));
+      box.append(gIc("div", "g-dquiz", T.gSip, "gverdict sip"));
       haptic([[1, 120], [0, 70], [1, 120]]);
       pSfx.sip();
     } else if (g.st === "rev" && g.k === "never") {
-      box.append(gEl("div", "😇 " + T.gSafeSip, "gverdict miss"));
+      box.append(gIc("div", "shield", T.gSafeSip, "gverdict miss"));
     } else if (g.st === "rev" && gVoted >= 0) {
       const hit = gVoted === g.right, plus = pts - gPrev;
       const banner = gEl("div", (hit ? "✓ " + T.gRight : "✕ " + T.gWrong) + (plus > 0 ? ` · +${plus}` : ""), "gverdict " + (hit ? "hit" : "miss"));
@@ -2214,7 +2278,7 @@ function gBuild(g, box, isH) {
   }
   if (g.k === "stop") {
     if (g.st === "play" || g.st === "stop") {
-      if (gOut) return void box.append(gEl("div", "💤", "gbigic"), gEl("h2", T.gOut));
+      if (gOut) return void box.append(gBig("moon"), gEl("h2", T.gOut));
       gSeen = performance.now();
       const b = gEl("button", g.st === "stop" ? T.gStopNow : T.gStopPlay, g.st === "stop" ? "hot" : "calm");
       b.onclick = gTap(() => {
@@ -2238,7 +2302,7 @@ function gBuild(g, box, isH) {
         pSfx.go();
       }
     } else {
-      box.append(gEl("div", gOut ? "💤" : "🎉", "gbigic"), gEl("h2", gOut ? T.gOut : T.gSafe), gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
+      box.append(gBig(gOut ? "moon" : "confetti"), gEl("h2", gOut ? T.gOut : T.gSafe), gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
     }
     return;
   }
@@ -2246,7 +2310,7 @@ function gBuild(g, box, isH) {
     if (g.st === "ready" || g.st === "go") {
       const early = gEarly === g.id + "." + g.r;
       gSeen = performance.now();
-      if (early) return void box.append(gEl("div", "🙈", "gbigic"), gEl("h2", T.gFastEarly));
+      if (early) return void box.append(gBig("g-never"), gEl("h2", T.gFastEarly));
       const b = gEl("button", g.st === "go" ? T.gFastGo : T.gFastReady, g.st === "go" ? "hot" : "calm");
       b.onclick = gTap(() => {
         if (gTapped) return;
@@ -2281,7 +2345,7 @@ function gBuild(g, box, isH) {
     const mine = g.teams?.[me];
     if (g.st === "go") {
       startMotion();
-      box.append(gEl("div", "📳", "gbigic gshake"), gEl("h2", T.gShake), gEl("p", mine == null ? "" : T.gTeam.replace("{t}", mine ? "B" : "A"), "gteam"));
+      box.append(gBig("shake", "gshake"), gEl("h2", T.gShake), gEl("p", mine == null ? "" : T.gTeam.replace("{t}", mine ? "B" : "A"), "gteam"));
       const bars = gEl("div", null, "bars");
       bars.append(gEl("i", "A"), gEl("i", "B"));
       box.append(bars);
@@ -2292,7 +2356,7 @@ function gBuild(g, box, isH) {
       });
       box.append(b);
     } else {
-      box.append(gEl("div", g.win < 0 ? "🤝" : "🏆", "gbigic"), gEl("h2", g.win < 0 ? T.gDraw : T.gTeamWin.replace("{t}", g.win ? "B" : "A")));
+      box.append(gBig(g.win < 0 ? "draw" : "g-tour"), gEl("h2", g.win < 0 ? T.gDraw : T.gTeamWin.replace("{t}", g.win ? "B" : "A")));
       const bars = gEl("div", null, "bars");
       bars.append(gEl("i", "A"), gEl("i", "B"));
       box.append(bars);
@@ -2321,11 +2385,13 @@ function gBuild(g, box, isH) {
   }
   if (g.k === "bomb") {
     if (g.st === "res") pSfx.boom();
-    if (g.st === "res") return void box.append(gEl("div", "💥", "gbigic gpop"), gEl("h2", T.gBombBoom.replace("{n}", g.boom || "")), gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
-    if (gOut) return void box.append(gEl("div", "💤", "gbigic"), gEl("h2", T.gOut), gEl("p", T.gBombSafe.replace("{n}", g.hn || "")));
+    if (g.st === "res") return void box.append(gBig("boom", "gpop gboom"), gEl("h2", T.gBombBoom.replace("{n}", g.boom || "")), gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
+    if (gOut) return void box.append(gBig("moon"), gEl("h2", T.gOut), gEl("p", T.gBombSafe.replace("{n}", g.hn || "")));
     if (isH) {
       const b = gEl("button", null, "hot gbombbtn");
-      b.append(gEl("span", "💣", "gwob"), gEl("b", T.gBombPass));
+      const wob = gEl("span", null, "gwob");
+      wob.append(ic("g-bomb"));
+      b.append(wob, gEl("b", T.gBombPass));
       b.onclick = gTap(() => {
         if (gTapped) return;
         gTapped = true;
@@ -2340,7 +2406,7 @@ function gBuild(g, box, isH) {
     } else {
       const hn = gEl("h2", T.gBombSafe.replace("{n}", g.hn || ""));
       hn.dataset.hn = "1";
-      box.append(gEl("div", "😅", "gbigic"), hn, gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
+      box.append(gBig("shield"), hn, gEl("p", T.gLeft.replace("{n}", g.left ?? "")));
     }
   }
 }
@@ -2360,7 +2426,7 @@ function bingoCard(seed, n) {
   return idx.slice(0, 16);
 }
 function gBingo(g, box) {
-  if (g.st === "res") return box.append(gEl("div", "🎉", "gbigic gpop"), gEl("small", "BINGO!"), gEl("h2", String(g.win || "")), gEl("p", String(g.ln || "")));
+  if (g.st === "res") return box.append(gBig("confetti", "gpop"), gEl("small", "BINGO!"), gEl("h2", String(g.win || "")), gEl("p", String(g.ln || "")));
   if (g.st !== "go" || !Array.isArray(g.deck)) return;
   const card = bingoCard(g.id + me, g.deck.length);
   let mk;
@@ -2556,19 +2622,20 @@ document.addEventListener("visibilitychange", () => document.visibilityState ===
 function gKaraoke(g, box) {
   kLoad().catch(() => {});
   const mine = g.si === me, id = kId(g);
-  if (g.st === "wait") return void box.append(gEl("div", "🎶", "gbigic"), gEl("p", T.gWaitLine));
-  if (g.st === "calc") return void box.append(gEl("div", "🎧", "gbigic gpop"), gEl("h2", T.gKarCalc));
+  if (g.st === "wait") return void box.append(gBig("music"), gEl("p", T.gWaitLine));
+  if (g.st === "calc") return void box.append(gBig("headphones", "gpop"), gEl("h2", T.gKarCalc));
   if (g.st === "res") {
     const sc = g.ks;
-    if (!sc) box.append(gEl("div", "👏", "gbigic gpop"), gEl("h2", T.gKarNoScore));
+    if (!sc) box.append(gBig("confetti", "gpop"), gEl("h2", T.gKarNoScore));
     else {
       const praise = sc.s >= 85 ? T.gKarP4 : sc.s >= 65 ? T.gKarP3 : sc.s >= 40 ? T.gKarP2 : T.gKarP1;
-      box.append(gEl("small", "🎤 " + String(g.sn || "")), gEl("div", String(sc.s), "gbigic gpop gkscore"), gEl("h2", praise));
+      box.append(gIc("small", "mic", g.sn || ""), gEl("div", String(sc.s), "gbigic gpop gkscore"), gEl("h2", praise));
       // die drei Teile: freundlich und ehrlich, woran es lag
       const parts = gEl("div", null, "gboard gkparts");
-      for (const [ic, label, v] of [["⏱️", T.gKarT, sc.t], ["🎵", T.gKarP, sc.p], ["🙌", T.gKarD, sc.d]]) {
-        const row = gEl("div", null, "grow");
-        row.append(gEl("i", ic), gEl("span", label), gEl("b", v < 0 ? "–" : String(v)));
+      for (const [name, label, v] of [["timer", T.gKarT, sc.t], ["music", T.gKarP, sc.p], ["voice", T.gKarD, sc.d]]) {
+        const row = gEl("div", null, "grow"), lead = gEl("i");
+        lead.append(ic(name));
+        row.append(lead, gEl("span", label), gEl("b", v < 0 ? "–" : String(v)));
         parts.append(row);
       }
       box.append(parts);
@@ -2582,12 +2649,12 @@ function gKaraoke(g, box) {
   }
   if (g.st !== "ready" && g.st !== "go") return;
   if (!mine) {
-    box.append(gEl("div", "🎤", "gbigic"), gEl("small", T.gKarTurn.replace("{n}", String(g.sn || ""))), gEl("h2", g.line || "", "gline"));
+    box.append(gBig("mic"), gEl("small", T.gKarTurn.replace("{n}", String(g.sn || ""))), gEl("h2", g.line || "", "gline"));
     if (g.st === "go" && g.lyn) box.append(gEl("p", g.lyn));
     if (g.st === "ready") box.append(gEl("p", T.gKarListen));
     return;
   }
-  if (g.st === "ready") box.append(gEl("div", "🎤", "gbigic"), gEl("h2", T.gKarYou), gEl("p", g.line || "", "gline"));
+  if (g.st === "ready") box.append(gBig("mic"), gEl("h2", T.gKarYou), gEl("p", g.line || "", "gline"));
   else box.append(gEl("small", T.gKarSing), gEl("h2", g.line || "", "gline"), gEl("p", g.lyn || ""));
   if (kRec?.id === id) {
     // Pegel zum Mitsehen: das Handy hört dich
@@ -2600,12 +2667,12 @@ function gKaraoke(g, box) {
   } else {
     if (kErr) box.append(gEl("p", T["gKarErr" + kErr] || T.gKarErrNone, "gkerr"), gEl("p", T.gKarNoMic));
     // ohne Erklärung oder nach einem Fehler: der Knopf bleibt, ein zweiter Versuch kostet nichts
-    const b = gEl("button", T.gKarMicBtn, "go gkmic");
+    const b = gIc("button", "mic", T.gKarMicBtn, "go gkmic");
     b.type = "button";
     b.onclick = gTap(() => kStart(cur?.g || g));
     box.append(b);
   }
-  box.append(gEl("small", "🔒 " + T.gKarPriv));
+  box.append(gIc("small", "lock", T.gKarPriv, "gpriv"));
 }
 
 /* ---- Spielleitung: starten, Runde überspringen, beenden, Punkte korrigieren */
@@ -2686,18 +2753,23 @@ function drawHost() {
     if (keepActs) for (const n of [...keepActs.childNodes]) if (n !== keepEnd) n.remove();
     if (!g) {
       const grid = gEl("div", null, "hgames");
-      for (const [k, [icon, title]] of Object.entries(GAME)) grid.append(btn(icon + " " + title(), "", () => hostCmd("open", k)));
+      for (const [k, title] of Object.entries(GAME)) {
+        const b = btn(title(), "", () => hostCmd("open", k));
+        b.dataset.k = k;
+        b.prepend(ic("g-" + k, "lead"));
+        grid.append(b);
+      }
       body.append(gEl("p", T.hPick), grid);
       return;
     }
-    const [icon, title] = GAME[g.k] || ["🎮", () => ""];
+    const title = GAME[g.k] || (() => "");
     const acts = keepActs || gEl("div", null, "hacts");
     // der Hauptknopf kommt vor „Beenden“
     if (g.st === "join") acts.prepend(btn(T.hStart, "go", () => hostCmd("start")));
     else if (WHEELS.has(g.k)) acts.prepend(btn(T.hSpin, "go", () => hostCmd("spin")));
     else if (g.st !== "end") acts.prepend(btn(T.hSkip, "", () => hostCmd("skip")));
     if (!keepEnd) acts.append(btn(T.hEnd, "end", () => hostCmd("end")));
-    const rows = gEl("div", null, "hlist"), head = gEl("p", icon + " " + title() + (g.r && g.of ? " · " + g.r + "/" + g.of : ""), "hnow");
+    const rows = gEl("div", null, "hlist"), head = gIc("p", gIcon(g.k), title() + (g.r && g.of ? " · " + g.r + "/" + g.of : ""), "hnow");
     if (keepActs) {
       body.insertBefore(head, keepActs);
       body.append(rows);
@@ -2776,7 +2848,12 @@ function drawRc() {
     c.textContent = text;
     return c;
   };
-  body.append(row("rcrow", btn("⏮", T.rcPrev, () => rcCmd("prev")), btn(s?.pl ? "⏸" : "▶", T.rcPlay, () => rcCmd("play")), btn("⏭", T.rcNext, () => rcCmd("next"))));
+  const icBtn = (name, label, fn) => {
+    const b = btn("", label, fn);
+    b.append(ic(name));
+    return b;
+  };
+  body.append(row("rcrow", icBtn("prev", T.rcPrev, () => rcCmd("prev")), icBtn(s?.pl ? "pause" : "play", T.rcPlay, () => rcCmd("play")), icBtn("skip", T.rcNext, () => rcCmd("next"))));
   if (!s) return void body.append(cap(T.rcWait));
   body.append(cap(T.rcVol + " · " + s.vol + " %"), row("rcrow", btn("−", T.rcVol + " −", () => rcCmd("vol", "", Math.max(0, s.vol - 10))), btn("+", T.rcVol + " +", () => rcCmd("vol", "", Math.min(100, s.vol + 10)))));
   if (s.lvs.length) body.append(cap(T.rcLvl), row("rcrow rclv", ...s.lvs.map((n, i) => btn(n, "", () => rcCmd("lvl", "", i + 1), s.lv === i + 1))));
@@ -2796,10 +2873,10 @@ function drawRc() {
     body.append(cap(T.rcLoc), sel);
   }
   // Spiele: die Liste der Spielleitung (dein Link trägt auch ihren Schlüssel)
-  if (hostKey) body.append(btn("🎮 " + T.rcGame, "", () => {
+  if (hostKey) body.append(icText(btn("", "", () => {
     $("rc").hidden = true;
     $("bHost").click();
-  }));
+  }), "gamepad", T.rcGame));
 }
 $("rc").addEventListener("click", (e) => e.stopPropagation());
 $("bRc").onclick = (e) => {

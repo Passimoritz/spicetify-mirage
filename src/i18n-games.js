@@ -85,3 +85,6 @@ Object.assign(GAME_TEXT.de, {
   gKarCalc: "Das Handy rechnet …", gKarNoScore: "Diesmal ohne Wertung. Applaus gibt's trotzdem!", gKarNoLyrics: "Karaoke braucht zeitgenauen Liedtext. Die nächsten Songs hatten keinen.",
   gKarT: "Timing", gKarP: "Töne", gKarD: "Dabei", gKarP1: "Mutig! Großer Applaus!", gKarP2: "Schön gesungen!", gKarP3: "Richtig stark gesungen!", gKarP4: "Superstar!",
 });
+// 1.27 icons: Vorlesetexte für Symbole, die früher Emojis waren (Medaillen, Teamgröße)
+Object.assign(GAME_TEXT.en, { gRank: "Place {n}", gTeamSize: "{n} players" });
+Object.assign(GAME_TEXT.de, { gRank: "Platz {n}", gTeamSize: "{n} Spieler" });
