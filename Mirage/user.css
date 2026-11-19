@@ -7267,3 +7267,94 @@ html.mirage-im-open .Root *::after {
   animation-play-state: paused !important;
 }
 /* === end idle === */
+/* === 1.27 icons === */
+/* Spiele ohne Emojis: Medaillen, große Symbole und Zeilen aus Symbol + Text (games.js, icons.js).
+   Medaillen: Gold, Silber, Bronze – leicht mit der Coverfarbe getönt, die Scheibe zart gefüllt */
+/* Symbol des Spiels im Kopf der Karte (games.js head) */
+#mirage-immersive .m-g-head .m-g-ic svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  color: var(--m-c);
+  fill: none;
+}
+#mirage-immersive .m-g-mdl {
+  display: inline-grid;
+  place-items: center;
+  font-style: normal;
+}
+#mirage-immersive .m-g-mdl svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+}
+#mirage-immersive .m-g-mdl circle {
+  fill: currentcolor;
+  fill-opacity: 0.16;
+}
+#mirage-immersive .m-g-mdl.is-1 {
+  color: color-mix(in oklab, #ffd25e 86%, var(--m-a));
+}
+#mirage-immersive .m-g-mdl.is-2 {
+  color: color-mix(in oklab, #dfe4ee 88%, var(--m-a));
+}
+#mirage-immersive .m-g-mdl.is-3 {
+  color: color-mix(in oklab, #d98c5f 86%, var(--m-a));
+}
+#mirage-immersive .m-g-pod .m-g-medal {
+  line-height: 0;
+}
+#mirage-immersive .m-g-medal .m-g-mdl svg {
+  width: 46px;
+  height: 46px;
+  filter: drop-shadow(0 4px 14px rgb(0 0 0 / 0.35));
+}
+#mirage-immersive .m-g-row > .m-g-rk {
+  display: grid;
+  place-items: center;
+}
+#mirage-immersive .m-g-rk > .m-ic {
+  opacity: 0.85;
+}
+/* großes Symbol mitten im Spiel (Laden, Applaus): Strich etwas feiner, damit es nicht klobig wirkt */
+#mirage-immersive .m-g-bigic svg,
+#mirage-immersive .m-g-bomb svg {
+  display: block;
+  width: 1.3em;
+  height: 1.3em;
+  margin: 0 auto;
+  fill: none;
+  stroke-width: 1.5;
+}
+#mirage-immersive .m-g-bomb svg {
+  width: 1em;
+  height: 1em;
+  color: var(--m-c);
+  filter: drop-shadow(0 0 24px rgb(var(--m-a-rgb) / 0.55));
+}
+#mirage-immersive .m-g-bomb.is-boom svg {
+  color: #ff5a6e;
+}
+#mirage-immersive .m-g-hub svg {
+  width: 64%;
+  height: 64%;
+  color: #0b0a12;
+  fill: none;
+}
+#mirage-immersive .m-g-tm .m-g-tk {
+  display: inline-flex;
+  align-items: center;
+}
+#mirage-immersive .m-g-tk .m-ic.is-inline svg {
+  margin-right: 0.2em;
+}
+/* Herz in der Herz-Explosion: gefüllt in der Funkenfarbe */
+.m-burst i.h svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: currentcolor;
+  stroke: none;
+  filter: drop-shadow(0 0 6px var(--c));
+}
+/* === end icons === */

@@ -4,6 +4,7 @@ import { cfg } from "./config.js";
 import { palette, rgb2hsl, hsl2rgb } from "./color.js";
 import { currentItem, covers, titleOf, artistOf, PLR } from "./player.js";
 import { kin } from "./styles.js";
+import { UI } from "./icons.js";
 
 /* ---------------------------------------------------------------- Teilbare Karten */
 // Bilder im Hochformat 1080 × 1350 (passt für Instagram, Discord, X) im Mirage-Look.
@@ -399,6 +400,36 @@ async function partyRecapCard(r) {
 }
 
 /* ---------------------------------------------------------------- Ergebnis eines Party-Spiels */
+// Linien-Symbol aus icons.js auf den Canvas: dieselben Pfade wie in der Oberfläche (Path2D versteht SVG-Pfade)
+function drawIcon(x, svg, cx, cy, size, stroke, fill) {
+  const k = size / 24;
+  x.save();
+  x.translate(cx - size / 2, cy - size / 2);
+  x.scale(k, k);
+  x.lineCap = x.lineJoin = "round";
+  x.strokeStyle = stroke;
+  // Attribute stehen mit Leerzeichen davor: „ width=“ trifft nicht „stroke-width=“
+  const attr = (a, n) => a.split(" " + n + '="')[1]?.split('"')[0];
+  const num = (a, n) => Number(attr(a, n) || 0);
+  for (const [, tag, a] of svg.matchAll(/<(path|circle|rect)([^>]*)\/>/g)) {
+    const p = new Path2D();
+    if (tag === "path") p.addPath(new Path2D(attr(a, "d") || ""));
+    else if (tag === "circle") p.arc(num(a, "cx"), num(a, "cy"), num(a, "r"), 0, Math.PI * 2);
+    else p.roundRect(num(a, "x"), num(a, "y"), num(a, "width"), num(a, "height"), num(a, "rx"));
+    // die Scheibe der Medaille leicht gefüllt, damit sie auf dem Bild Gewicht hat
+    if (fill && tag === "circle") {
+      x.fillStyle = fill;
+      x.fill(p);
+    }
+    x.lineWidth = num(a, "stroke-width") || 1.8;
+    x.stroke(p);
+  }
+  x.restore();
+}
+// Gold, Silber, Bronze – mit der ersten Songfarbe getönt, damit sie zum Bild passen
+const MEDAL = [[255, 210, 94], [223, 228, 238], [217, 140, 95]];
+const tint = (c, by, k) => c.map((v, i) => Math.round(v * (1 - k) + by[i] * k));
+
 // Die Rangliste nach dem Spiel als Bild: wer gewonnen hat, mit Namen, Farbe und Punkten
 async function gameCard(r) {
   const list = (r?.list || []).slice(0, 10);
@@ -425,7 +456,10 @@ async function gameCard(r) {
     x.fill();
     x.fillStyle = "#fff";
     x.font = `${big ? 800 : 600} ${big ? 56 : 30}px ${FONT}`;
-    x.fillText(["🥇", "🥈", "🥉"][i] || String(i + 1), big ? 112 : 124, mid);
+    if (big) {
+      const m = tint(MEDAL[i], pal[0], 0.14);
+      drawIcon(x, UI["medal" + (i + 1)], 146, mid, 68, css(m), css(m, 0.16));
+    } else x.fillText(String(i + 1), 124, mid);
     x.fillStyle = p.col || "rgba(255,255,255,0.4)";
     x.beginPath();
     x.arc(big ? 224 : 196, mid, big ? 14 : 9, 0, Math.PI * 2);

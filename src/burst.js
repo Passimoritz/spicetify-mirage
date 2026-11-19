@@ -1,6 +1,7 @@
 import { SEL } from "./selectors.js";
 import { cfg } from "./config.js";
 import { palette } from "./color.js";
+import { UI } from "./icons.js";
 
 /* ---------------------------------------------------------------- Herz-Explosion */
 function burst(x, y) {
@@ -16,7 +17,8 @@ function burst(x, y) {
     const dist = 36 + Math.random() * 54;
     if (i % 3 === 0) {
       s.className = "h";
-      s.textContent = "♥";
+      // Herz als Linien-Symbol (icons.js), gefüllt in der Funkenfarbe – kein Schrift-Zeichen
+      s.innerHTML = UI.heart;
     }
     s.style.setProperty("--c", cols[i % cols.length]);
     s.style.setProperty("--tx", Math.cos(ang) * dist + "px");

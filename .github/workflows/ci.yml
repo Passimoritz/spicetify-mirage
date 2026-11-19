@@ -24,6 +24,9 @@ jobs:
       - name: Lint (ESLint on src/, Stylelint on Mirage/user.css)
         run: npm run lint
 
+      - name: No emojis in the UI (SVG icons only, phone sprite in sync)
+        run: npm run check:emoji
+
       - name: Build and verify committed Mirage/theme.js
         run: |
           if [ -d src ]; then

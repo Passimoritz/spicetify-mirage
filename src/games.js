@@ -17,36 +17,35 @@ import { sfx } from "./sfx.js";
 import { readVolume, writeVolume, PLR } from "./player.js";
 import { gameCard } from "./share.js";
 import { pickPart, partData } from "./karaoke.js";
-import { GAME } from "./icons.js";
+import { GAME, UI } from "./icons.js";
 
 export const GAME_LIST = [
-  { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "🎤" },
-  { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint", icon: "🎵" },
-  { k: "intro", cat: "gCatMusic", label: "gIntro", hint: "gIntroHint", icon: "⏱️" },
-  { k: "gap", cat: "gCatMusic", label: "gGap", hint: "gGapHint", icon: "✏️" },
-  { k: "next", cat: "gCatMusic", label: "gNext", hint: "gNextHint", icon: "📜" },
-  { k: "tf", cat: "gCatMusic", label: "gTf", hint: "gTfHint", icon: "🕵️" },
-  { k: "beat", cat: "gCatMusic", label: "gBeat", hint: "gBeatHint", icon: "🥁" },
-  { k: "older", cat: "gCatMusic", label: "gOlder", hint: "gOlderHint", icon: "📅" },
-  { k: "cover", cat: "gCatMusic", label: "gCover", hint: "gCoverHint", icon: "🖼️" },
-  { k: "duel", cat: "gCatMusic", label: "gDuel", hint: "gDuelHint", icon: "⚔️" },
-  { k: "stop", cat: "gCatQuick", label: "gStop", hint: "gStopHint", icon: "✋" },
-  { k: "fast", cat: "gCatQuick", label: "gFast", hint: "gFastHint", icon: "⚡" },
-  { k: "taps", cat: "gCatQuick", label: "gTaps", hint: "gTapsHint", icon: "👆" },
-  { k: "battle", cat: "gCatQuick", label: "gBattle", hint: "gBattleHint", icon: "💃" },
-  { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "💣" },
-  { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "🤔" },
-  { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "🎙️" },
-  // 🎤 und 🎙️ sind schon vergeben (Quiz, Sing weiter)
-  { k: "karaoke", cat: "gCatParty", label: "gKar", hint: "gKarHint", icon: "🎶" },
-  { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "🏆" },
-  { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint", icon: "🎱" },
-  { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "🎡" },
-  { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint", icon: "🙈" },
-  { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint", icon: "🍻" },
-  { k: "alarm", cat: "gCatDrink", label: "gAlarm", hint: "gAlarmHint", icon: "🚨" },
-  { k: "dlikely", cat: "gCatDrink", label: "gDlikely", hint: "gDlikelyHint", icon: "👉" },
-  { k: "dwheel", cat: "gCatDrink", label: "gDwheel", hint: "gDwheelHint", icon: "🍀" },
+  { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint" },
+  { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint" },
+  { k: "intro", cat: "gCatMusic", label: "gIntro", hint: "gIntroHint" },
+  { k: "gap", cat: "gCatMusic", label: "gGap", hint: "gGapHint" },
+  { k: "next", cat: "gCatMusic", label: "gNext", hint: "gNextHint" },
+  { k: "tf", cat: "gCatMusic", label: "gTf", hint: "gTfHint" },
+  { k: "beat", cat: "gCatMusic", label: "gBeat", hint: "gBeatHint" },
+  { k: "older", cat: "gCatMusic", label: "gOlder", hint: "gOlderHint" },
+  { k: "cover", cat: "gCatMusic", label: "gCover", hint: "gCoverHint" },
+  { k: "duel", cat: "gCatMusic", label: "gDuel", hint: "gDuelHint" },
+  { k: "stop", cat: "gCatQuick", label: "gStop", hint: "gStopHint" },
+  { k: "fast", cat: "gCatQuick", label: "gFast", hint: "gFastHint" },
+  { k: "taps", cat: "gCatQuick", label: "gTaps", hint: "gTapsHint" },
+  { k: "battle", cat: "gCatQuick", label: "gBattle", hint: "gBattleHint" },
+  { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint" },
+  { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint" },
+  { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint" },
+  { k: "karaoke", cat: "gCatParty", label: "gKar", hint: "gKarHint" },
+  { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint" },
+  { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint" },
+  { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint" },
+  { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint" },
+  { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint" },
+  { k: "alarm", cat: "gCatDrink", label: "gAlarm", hint: "gAlarmHint" },
+  { k: "dlikely", cat: "gCatDrink", label: "gDlikely", hint: "gDlikelyHint" },
+  { k: "dwheel", cat: "gCatDrink", label: "gDwheel", hint: "gDwheelHint" },
 ];
 const INFO = Object.fromEntries(GAME_LIST.map((g) => [g.k, g]));
 export const WHEEL_FIELDS = ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"];
@@ -1817,6 +1816,40 @@ const div = (cls, text) => {
   if (text != null) d.textContent = text;
   return d;
 };
+// Linien-Symbol (icons.js) als Knoten; Emojis gibt es auf dem großen Bild nicht. Einmal geparst, danach geklont:
+// die Ranglisten der Rennen bauen sich bei jedem Tipp neu
+const IC_CACHE = new Map();
+const svgIc = (svg, cls = "m-ic is-inline") => {
+  let i = IC_CACHE.get(cls + svg);
+  if (!i) {
+    i = document.createElement("i");
+    i.className = cls;
+    i.innerHTML = svg;
+    IC_CACHE.set(cls + svg, i);
+  }
+  return i.cloneNode(true);
+};
+// Zeile aus Symbol und Text (früher Emoji plus Text)
+const icDiv = (cls, svg, text) => {
+  const d = div(cls);
+  d.append(svgIc(svg), String(text ?? ""));
+  return d;
+};
+// großes Symbol in der Mitte (Laden, Applaus, Bombe)
+const bigIc = (cls, svg) => {
+  const d = div(cls + " m-g-bigic");
+  d.innerHTML = svg;
+  return d;
+};
+// Medaille für Platz 1–3 (Vorlesetext „Platz 1“), danach die Zahl
+const medalOf = (i) => {
+  if (i > 2) return String(i + 1);
+  const m = svgIc(UI["medal" + (i + 1)], "m-g-mdl is-" + (i + 1));
+  m.setAttribute("role", "img");
+  m.setAttribute("aria-label", t("gRank").replace("{n}", i + 1));
+  m.dataset.medal = String(i + 1);
+  return m;
+};
 const secs = (end) => {
   const s = Math.max(0, Math.ceil((end - Date.now()) / 1000));
   return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : s + " s";
@@ -1898,7 +1931,7 @@ function build(v) {
   if (WHEELS.has(G.k)) return drawWheel(v, true);
   if (v.st === "join") return buildJoin();
   if (v.st === "wait") return box.append(div("m-g-sub", t("gWaitLine")));
-  if (v.st === "load") return box.append(div("m-g-big m-g-pulse", "🎧"), div("m-g-sub", t("gLoadSong")));
+  if (v.st === "load") return box.append(bigIc("m-g-big m-g-pulse", UI.headphones), div("m-g-sub", t("gLoadSong")));
   if (G.k === "duel" && v.st === "champ") return buildChamp(v);
   if (G.k === "bingo") {
     if (v.st === "res") return box.append(div("m-g-big is-hot m-g-pop", t("gBingoWin").replace("{n}", v.win)), div("m-g-sub", v.ln));
@@ -1917,7 +1950,7 @@ function build(v) {
   if (G.k === "alarm") {
     if (v.st === "res") return box.append(div("m-g-big", t("gAlarmEnd").replace("{n}", v.hits)));
     box.append(div("m-g-sub", t("gAlarmWord")), div("m-g-big m-g-word" + (v.st === "hit" ? " is-hot m-g-pop" : ""), v.word));
-    box.append(v.st === "hit" ? div("m-g-big is-hot m-g-pop", "🍺 " + t("gAlarmHit")) : div("m-g-sub", "🍺 " + v.hits));
+    box.append(v.st === "hit" ? icDiv("m-g-big is-hot m-g-pop", GAME.dquiz, t("gAlarmHit")) : icDiv("m-g-sub", GAME.dquiz, v.hits));
     return;
   }
   if (G.k === "stop") {
@@ -1930,7 +1963,7 @@ function build(v) {
     if (v.st === "go") box.append(div("m-g-big is-hot m-g-pop", t("gFastGo")));
     if (v.st === "res") {
       const b = div("m-g-board");
-      (v.win || []).forEach((x, i) => b.append(row(["🥇", "🥈", "🥉"][i], x.n, x.ms + " ms", x.c)));
+      (v.win || []).forEach((x, i) => b.append(row(medalOf(i), x.n, x.ms + " ms", x.c)));
       box.append(b);
     }
   } else if (G.k === "battle") {
@@ -1945,8 +1978,8 @@ function build(v) {
     box.append(div("m-g-beat"), lights, div("m-g-big", t("gBeatGo")), div("m-g-sub m-g-bpm"), div("m-g-board"));
     beatLoop();
   } else if (G.k === "bomb") {
-    if (v.st === "go") box.append(div("m-g-bomb", "💣"), div("m-g-big", t("gBombHolder").replace("{n}", v.hn)));
-    if (v.st === "res") box.append(div("m-g-bomb is-boom", "💥"), div("m-g-big is-hot", t("gBombBoom").replace("{n}", v.boom)));
+    if (v.st === "go") box.append(bigIc("m-g-bomb", GAME.bomb), div("m-g-big", t("gBombHolder").replace("{n}", v.hn)));
+    if (v.st === "res") box.append(bigIc("m-g-bomb is-boom", UI.boom), div("m-g-big is-hot", t("gBombBoom").replace("{n}", v.boom)));
     box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? 0)));
   }
 }
@@ -1961,16 +1994,17 @@ const chip = (p, cls = "") => {
   c.append(dot(colOf(p)), div("m-g-cn", nameOf(p)));
   return c;
 };
-function row(rank, name, val, col) {
-  const r = div("m-g-row");
-  r.append(div("m-g-rk", rank));
+function row(rk, name, val, col) {
+  const r = div("m-g-row"), c = div("m-g-rk");
+  c.append(rk);
+  r.append(c);
   if (col != null) r.append(dot(col));
   r.append(div("m-g-nm", name), div("m-g-pt", val));
   return r;
 }
 function board(list) {
   const d = div("m-g-board");
-  (list || []).slice(0, 5).forEach((x, i) => d.append(row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p), x.c)));
+  (list || []).slice(0, 5).forEach((x, i) => d.append(row(medalOf(i), x.n, String(x.p), x.c)));
   return d;
 }
 function buildJoin() {
@@ -2001,16 +2035,16 @@ function buildJoin() {
 }
 // Karaoke: wer singt, der Text zum Mitlesen, am Ende die Punkte mit ihren drei Teilen
 function buildKar(v) {
-  if (v.st === "calc") return box.append(div("m-g-big m-g-pulse", "🎧"), div("m-g-sub", t("gKarCalc")));
+  if (v.st === "calc") return box.append(bigIc("m-g-big m-g-pulse", UI.headphones), div("m-g-sub", t("gKarCalc")));
   if (v.st === "res") {
     const sc = v.ks;
-    if (!sc) return box.append(div("m-g-big m-g-pop", "👏"), div("m-g-sub", t("gKarTurn").replace("{n}", v.sn)), div("m-g-sub", t("gKarNoScore")), board(top()));
+    if (!sc) return box.append(bigIc("m-g-big m-g-pop", UI.confetti), div("m-g-sub", t("gKarTurn").replace("{n}", v.sn)), div("m-g-sub", t("gKarNoScore")), board(top()));
     const praise = t(sc.s >= 85 ? "gKarP4" : sc.s >= 65 ? "gKarP3" : sc.s >= 40 ? "gKarP2" : "gKarP1");
-    box.append(div("m-g-sub", "🎤 " + v.sn), div("m-g-big is-hot m-g-pop", String(sc.s)), div("m-g-sub", praise));
+    box.append(icDiv("m-g-sub", UI.mic, v.sn), div("m-g-big is-hot m-g-pop", String(sc.s)), div("m-g-sub", praise));
     // die drei Teile als Balken: wer wissen will, woran es lag, sieht es
     const b = div("m-g-board m-g-kparts");
-    for (const [ic, key, val] of [["⏱️", "gKarT", sc.t], ["🎵", "gKarP", sc.p], ["🙌", "gKarD", sc.d]]) {
-      const r = row(ic, t(key), val < 0 ? "–" : String(val));
+    for (const [ic, key, val] of [[UI.timer, "gKarT", sc.t], [UI.music, "gKarP", sc.p], [UI.voice, "gKarD", sc.d]]) {
+      const r = row(svgIc(ic, "m-ic"), t(key), val < 0 ? "–" : String(val));
       r.classList.add("has-bar");
       r.style.setProperty("--w", Math.max(0, val) + "%");
       b.append(r);
@@ -2018,8 +2052,8 @@ function buildKar(v) {
     box.append(b, board(top()));
     return;
   }
-  if (v.st === "ready") box.append(div("m-g-big m-g-pulse", "🎤 " + t("gKarTurn").replace("{n}", v.sn)), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
-  else box.append(div("m-g-sub", "🎤 " + v.sn), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+  if (v.st === "ready") box.append(icDiv("m-g-big m-g-pulse", UI.mic, t("gKarTurn").replace("{n}", v.sn)), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+  else box.append(icDiv("m-g-sub", UI.mic, v.sn), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
   box.append(div("m-g-sub m-g-kmic"));
 }
 function buildChamp(v) {
@@ -2030,7 +2064,7 @@ function buildChamp(v) {
     c.append(im);
     box.append(c);
   }
-  box.append(div("m-g-sub", "🏆 " + t("gDuelChamp")), div("m-g-big m-g-pop", v.t), div("m-g-sub", t("gDuelWins").replace("{n}", v.wins)));
+  box.append(icDiv("m-g-sub", GAME.tour, t("gDuelChamp")), div("m-g-big m-g-pop", v.t), div("m-g-sub", t("gDuelWins").replace("{n}", v.wins)));
 }
 function buildAsk(v) {
   if (G.k === "cover" && v.st === "ask") {
@@ -2077,7 +2111,7 @@ function buildAsk(v) {
   box.append(opts);
   // wer schon geantwortet hat, leuchtet auf
   if (v.st === "ask") box.append(div("m-g-who"));
-  if (v.drink && v.sip?.length) box.append(div("m-g-sub is-sip", "🍺 " + t("gSipWho").replace("{n}", v.sip.join(", "))));
+  if (v.drink && v.sip?.length) box.append(icDiv("m-g-sub is-sip", GAME.dquiz, t("gSipWho").replace("{n}", v.sip.join(", "))));
   if (v.st === "rev" && all().length) box.append(board(top()));
 }
 let beatRaf = 0;
@@ -2115,14 +2149,16 @@ function buildEnd(v) {
     if (!x) continue;
     const col = div(`m-g-pod is-p${i}`), name = div("m-g-pname");
     name.append(dot(x.c), div("m-g-cn", x.n));
-    col.append(div("m-g-medal", ["🥇", "🥈", "🥉"][i]), name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
+    const md = div("m-g-medal");
+    md.append(medalOf(i));
+    col.append(md, name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
     pod.append(col);
   }
   if (list.length) box.append(pod);
   if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
   // Turnier: Zwischenstand über alle Spiele und was als Nächstes kommt; das Bild gibt es am Schluss
   if (v.tour) {
-    box.append(div("m-g-sub m-g-tour", "🏆 " + t("gTourAfter").replace("{i}", v.tour.i).replace("{n}", v.tour.of)), board(v.tour.tot));
+    box.append(icDiv("m-g-sub m-g-tour", GAME.tour, t("gTourAfter").replace("{i}", v.tour.i).replace("{n}", v.tour.of)), board(v.tour.tot));
     if (v.tour.next) box.append(div("m-g-sub", t("gTourNext").replace("{g}", v.tour.next)));
     return;
   }
@@ -2142,7 +2178,7 @@ function buildEnd(v) {
 function resultCard() {
   if (!G) return;
   const list = all().sort((a, b) => b.p - a.p).slice(0, 10).map((p) => ({ n: nameOf(p), p: Math.round(p.p), col: GUEST_COLORS[colOf(p)] }));
-  gameCard({ icon: INFO[G.k].icon, title: t(INFO[G.k].label), list });
+  gameCard({ title: t(INFO[G.k].label), list });
   // wer das Bild holt, schaut noch hin: die Siegerehrung bleibt länger stehen
   if (G.view?.st === "end") {
     clearTimers();
@@ -2185,7 +2221,7 @@ function update(v) {
     bp.dataset.n = String(v.bp.length);
     box.querySelector(".m-g-bcount").textContent = t("gBingoPlayed").replace("{n}", v.bp.length).replace("{m}", v.deck.length);
     bp.textContent = "";
-    v.bp.slice(-8).reverse().forEach((i, k) => bp.append(row(k ? "♪" : "▶", v.deck[i], "")));
+    v.bp.slice(-8).reverse().forEach((i, k) => bp.append(row(svgIc(k ? UI.music : UI.play, "m-ic"), v.deck[i], "")));
   }
   const tb = box.querySelector(".m-g-teams");
   if (tb) {
@@ -2195,7 +2231,9 @@ function update(v) {
       tb.textContent = "";
       list.forEach((x, i) => {
         const c = div("m-g-chip m-g-tm" + (i === 0 && x.p > 0 ? " is-lead" : ""));
-        c.append(dot(x.c), div("m-g-cn", `${x.n} · ${x.p}`), div("m-g-tk", "👤" + x.k));
+        const tk = icDiv("m-g-tk", UI.user, x.k);
+        tk.title = t("gTeamSize").replace("{n}", x.k);
+        c.append(dot(x.c), div("m-g-cn", `${x.n} · ${x.p}`), tk);
         tb.append(c);
       });
     }
@@ -2226,7 +2264,7 @@ function update(v) {
       const list = top(), most = Math.max(1, ...list.map((x) => x.p));
       b.textContent = "";
       list.forEach((x, i) => {
-        const r = row(["🥇", "🥈", "🥉"][i] || String(i + 1), x.n, String(x.p), x.c);
+        const r = row(medalOf(i), x.n, String(x.p), x.c);
         r.classList.add("has-bar");
         r.style.setProperty("--w", Math.round((x.p / most) * 100) + "%");
         b.append(r);
@@ -2247,7 +2285,8 @@ function drawWheel(v, build) {
       l.append(div("m-g-segt", x.text));
       w.append(l);
     });
-    const hub = div("m-g-hub", "🎡");
+    const hub = div("m-g-hub");
+    hub.innerHTML = GAME.wheel;
     w.onclick = spin;
     const stage = div("m-g-wstage");
     stage.append(div("m-g-pin"), w, hub);

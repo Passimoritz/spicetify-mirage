@@ -38,9 +38,11 @@ Release notes on GitHub are generated from the matching section of this file whe
 - Checked against Spotify 1.3.10: volume and mute keep working with Spotify's new volume handling, and old style rules for parts Spotify no longer has were tidied up.
 - The nightly compatibility check now also tests the newest Windows version of Spotify, not just the Linux one.
 - The buttons at the bottom of the guest phone page are a little tighter on narrow phones, so longer words fit.
+- Party games no longer use emojis. Game icons, medals, results (timing, notes, singing along), the guest phone page, the game host list and the phone remote now use line icons in the Mirage style that take on the song colours. Medals are gold, silver and bronze with a hint of the cover colour, also on the shareable result image. Screen readers still hear "Place 1" and so on.
 
 ### Fixed
 
+- Party games: the game's icon in the header of the big screen card was invisible; the colour dots next to names in the rankings on guest phones were stretched into ovals.
 - AI DJ announcements in the current Spotify version are now recognised, so the stage calms down while the DJ talks.
 - Previews that fade in from silence no longer confuse the instrument recognition.
 - Light schemes: placeholder text in search and input fields was white and could not be read.
