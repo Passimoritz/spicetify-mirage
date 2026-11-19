@@ -27,6 +27,9 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Changed
 
+- The immersive view now scales with big screens: on a 4K screen or TV without Windows scaling, the top bar, menus, title, buttons, lyrics, album list and clock grow with the screen instead of looking tiny.
+- In smaller windows the immersive view stays tidy: the top bar tightens, and below about 960 px the view switcher moves to its own row. Cover, lyrics and mix keep two columns down to small windows, with slightly smaller buttons that wrap instead of running off the edge.
+- When the next song's title is longer or shorter, the title block glides to its new place instead of jumping by a line.
 - Mirage uses much less CPU in the background. With the window minimised or hidden, the immersive view no longer draws anything, even if Spotify keeps asking for frames. The cover view redraws only a few times per second while nothing moves, and the playing row in track lists no longer keeps the processor busy. Nothing looks different.
 - Instrument and sound-effect recognition in party mode was tested on 201 real song previews and is now more reliable. It finds trap 808s, acoustic guitar, distorted guitar, hi-hats and kicks far more often, and no longer mistakes choirs for strings, bluegrass banjo for hi-hats, or country and jazz grooves for sidechain pumping.
 - The light pictures for instruments and effects now follow how sure Mirage is: soft when it is only just sure, full when it is certain.
@@ -41,6 +44,10 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- Immersive view: in windows narrower than about 1220 px, the view switcher (including the clock tab) overlapped the buttons in the top right.
+- Immersive view: below 900 px the lyrics view had no room for the lyrics, and the play button in the mix view got squashed.
+- Immersive view: the tab highlight no longer grows out of the corner the first time you open the view.
+- Album journey: the track list's scrollbar now matches the glass panel instead of showing the grey default bar with arrows.
 - AI DJ announcements in the current Spotify version are now recognised, so the stage calms down while the DJ talks.
 - Previews that fade in from silence no longer confuse the instrument recognition.
 - Light schemes: placeholder text in search and input fields was white and could not be read.

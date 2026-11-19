@@ -785,7 +785,8 @@ Probe-FX: ${pfx}`;
       idleT = setTimeout(goIdle, 2600);
       return;
     }
-    el.style.setProperty("--m-idle-shift", Math.round(q.controls.offsetHeight + 10) + "px");
+    // sichtbare Höhe (große Fenster zoomen die Knöpfe, offsetHeight zählte ungezoomt)
+    el.style.setProperty("--m-idle-shift", Math.round(q.controls.getBoundingClientRect().height + 10) + "px");
     el.classList.add("is-idle");
     // der Visualizer folgt dem wandernden Cover Bild für Bild
     vizMoveUntil = performance.now() + 1000;
@@ -794,11 +795,40 @@ Probe-FX: ${pfx}`;
   function placeIndicator() {
     const b = el.querySelector(`.m-im-tabs button[data-mode="${cfg.imMode}"]`);
     if (!b) return;
+    // 1.27 polish: das erste Setzen springt an seinen Platz – sonst wuchs der Balken beim ersten Öffnen aus der Ecke heraus
+    const first = !q.ind.style.width;
+    if (first) q.ind.style.transition = "none";
     q.ind.style.width = b.offsetWidth + "px";
     q.ind.style.transform = `translateX(${b.offsetLeft}px)`;
+    if (first) {
+      void q.ind.offsetWidth;
+      q.ind.style.transition = "";
+    }
   }
 
+  // 1.27 polish: schnell hintereinander (Tasten 1–6 gehämmert, Pfeiltasten in den Reitern gehalten): höchstens ein
+  // Wechsel alle 160 ms, dazwischen gewünschte sammeln sich – der letzte gewinnt. Jeder Wechsel baut Spalten, Liedtext
+  // und Leinwand um (bis 40 ms); ungebremst stauten sich die Bilder, und die Ansicht hing hinter den Tasten her.
+  let modeT = 0, modeAt = -1e9, modeNext = null;
   function setMode(mode, animate) {
+    if (animate && isOpen() && !stillMotion()) {
+      const left = modeAt + 160 - performance.now();
+      if (left > 0 || modeT) {
+        modeNext = mode;
+        if (!modeT) modeT = setTimeout(() => {
+          modeT = 0;
+          const m = modeNext;
+          modeNext = null;
+          if (m) setMode(m, true);
+        }, Math.max(0, left));
+        return;
+      }
+      modeAt = performance.now();
+    } else if (modeT) {
+      clearTimeout(modeT);
+      modeT = 0;
+      modeNext = null;
+    }
     if (!MODES.some(([k]) => k === mode)) mode = "cover";
     const apply = () => {
       // aus Visualizer, Mix oder Party heraus: der Visualizer läuft weiter, bis er ausgeblendet ist
@@ -843,12 +873,19 @@ Probe-FX: ${pfx}`;
   // das Cover-Standbild noch flog, und das Abfotografieren kostete beim Wechsel ein langes Bild.
   // Jetzt bleibt alles lebendig: Cover und Titelblock gleiten von der alten an die neue Stelle (der Kranz folgt
   // Bild für Bild, siehe vizMoveUntil), der Titelblock blendet dabei über, Liedtext blendet ein bzw. aus.
-  let morphUntil = 0;
+  let morphUntil = 0, morphAnims = [];
   function morphMode(apply) {
     const lyrWas = q.lyrics.offsetWidth > 0;
-    const a = q.wrap.getBoundingClientRect(), m = q.meta.getBoundingClientRect();
+    const a = q.wrap.getBoundingClientRect(), m = q.meta.getBoundingClientRect(), l0 = lyrWas ? q.lyrics.getBoundingClientRect() : null;
     const metaGhost = ghostOf(q.meta, m);
     const lyrGhost = lyrWas ? lyricsGhostIn(el) : null;
+    // 1.27 polish: wie sichtbar der Titelblock gerade ist (mitten im Einblenden): so hell startet auch sein Geist
+    const mOp = getComputedStyle(q.meta).opacity;
+    // neuer Wechsel mitten in einer Gleitfahrt (Tasten 1–6 schnell hintereinander): die laufende endet hier. Gemessen
+    // ist schon, wo alles gerade zu sehen ist – lief sie weiter, addierte sich ihr Versatz zum neuen, und das Cover
+    // sprang um Hunderte Pixel
+    for (const x of morphAnims) x.cancel();
+    morphAnims = [];
     apply();
     const b = q.wrap.getBoundingClientRect(), n = q.meta.getBoundingClientRect();
     const ease = "cubic-bezier(0.22, 1, 0.36, 1)", ms = 700;
@@ -856,17 +893,23 @@ Probe-FX: ${pfx}`;
     vizMoveUntil = morphUntil + 100;
     if (a.width && b.width) {
       const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2), k = a.width / b.width;
-      if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || Math.abs(k - 1) > 0.01) q.wrap.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${k})` }, { transform: "none" }], { duration: ms, easing: ease, composite: "add" });
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || Math.abs(k - 1) > 0.01) morphAnims.push(q.wrap.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${k})` }, { transform: "none" }], { duration: ms, easing: ease, composite: "add" }));
     }
     if (m.width && n.width) {
       const dx = m.left + m.width / 2 - (n.left + n.width / 2), dy = m.top - n.top;
-      q.meta.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: ms, easing: ease, composite: "add" });
+      morphAnims.push(q.meta.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: ms, easing: ease, composite: "add" }));
       // Deckkraft eigens (nicht addiert): Party dimmt den Titelblock auf 0,6
-      q.meta.animate([{ opacity: 0 }, { opacity: getComputedStyle(q.meta).opacity }], { duration: ms * 0.6, delay: ms * 0.1, easing: ease, fill: "backwards" });
-      if (metaGhost) metaGhost.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${-dx}px, ${-dy}px)`, opacity: 0 }], { duration: ms * 0.5, easing: ease, fill: "forwards" }).finished.then(() => metaGhost.remove(), () => metaGhost.remove());
+      morphAnims.push(q.meta.animate([{ opacity: 0 }, { opacity: getComputedStyle(q.meta).opacity }], { duration: ms * 0.6, delay: ms * 0.1, easing: ease, fill: "backwards" }));
+      if (metaGhost) metaGhost.animate([{ transform: "none", opacity: mOp }, { transform: `translate(${-dx}px, ${-dy}px)`, opacity: 0 }], { duration: ms * 0.5, easing: ease, fill: "forwards" }).finished.then(() => metaGhost.remove(), () => metaGhost.remove());
     } else metaGhost?.remove();
     if (lyrGhost) lyrGhost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 280, easing: "ease-out", fill: "forwards" }).finished.then(() => lyrGhost.remove(), () => lyrGhost.remove());
-    if (!lyrWas && q.lyrics.offsetWidth) q.lyrics.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 80, easing: ease, fill: "backwards" });
+    if (!lyrWas && q.lyrics.offsetWidth) morphAnims.push(q.lyrics.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 80, easing: ease, fill: "backwards" }));
+    // 1.27 polish: Liedtext bleibt, steht aber woanders (Liedtext ↔ Mix ↔ Party): der neue blendet über den
+    // ausblendenden Geist ein, statt an der neuen Stelle schlagartig dazustehen
+    else if (lyrGhost && q.lyrics.offsetWidth) {
+      const l1 = q.lyrics.getBoundingClientRect();
+      if (Math.abs(l1.left - l0.left) > 24 || Math.abs(l1.top - l0.top) > 24 || Math.abs(l1.width - l0.width) > 24) morphAnims.push(q.lyrics.animate([{ opacity: 0 }, { opacity: getComputedStyle(q.lyrics).opacity }], { duration: 460, delay: 90, easing: ease, fill: "backwards" }));
+    }
   }
   // Liedtext beim Verlassen: sichtbare Zeilen samt Randverlauf (Maske) an ihrer Stelle, über der neuen Ansicht
   function lyricsGhostIn(host) {
@@ -1287,7 +1330,9 @@ Probe-FX: ${pfx}`;
     // Mit Geist ist die Fläche neu (noch ohne Stil): dann gleitet ohnehin nichts, und es braucht kein Layout
     if (ghostLyrics(320)) q.inner.style.transform = "";
     else snapLyrics(() => (q.inner.style.transform = ""));
-    q.lyrics.scrollTop = 0;
+    // 1.27 polish: gescrollt wird nur einfacher Text – scrollTop zu setzen erzwang sonst bei jedem Songwechsel
+    // mitten im Umbau ein ganzes Layout (bis 17 ms), obwohl die Fläche ohnehin oben stand
+    if (q.lyrics.classList.contains("is-unsynced")) q.lyrics.scrollTop = 0;
     words = [];
     q.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
     q.inner.firstChild.textContent = t("loading");
@@ -1319,7 +1364,7 @@ Probe-FX: ${pfx}`;
     const from = upgrade && got?.synced ? (q.inner.getAnimations().length ? getComputedStyle(q.inner).transform : q.inner.style.transform) : "";
     if (upgrade) ghostLyrics(450);
     q.inner.textContent = "";
-    q.lyrics.scrollTop = 0;
+    if (q.lyrics.classList.contains("is-unsynced")) q.lyrics.scrollTop = 0;
     // neuer Text blendet weich ein – als Web-Animation: das Neustarten einer CSS-Animation erzwang ein Layout
     lyrFade?.cancel();
     if (!matchMedia?.("(prefers-reduced-motion: reduce)").matches) lyrFade = q.inner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
@@ -3130,11 +3175,15 @@ Probe-FX: ${pfx}`;
     v.play().then(() => v.classList.add("is-on")).catch(() => v.classList.remove("is-on"));
   }
   // Kopfzeile: überlappen die Knöpfe rechts die mittigen Ansichten, rücken die Ansichten nach links
+  // 1.27 polish: ohne die Klasse kurz abzunehmen und neu zu messen (kostete ein Layout); geprüft wird, wo die Reiter
+  // mittig stünden, und nur, wenn sie in derselben Zeile liegen (in kleinen Fenstern ordnet user.css sie selbst an)
   function fitTop() {
     if (!el) return;
-    el.classList.remove("tabs-left");
-    const tabs = el.querySelector(".m-im-tabs")?.getBoundingClientRect(), acts = el.querySelector(".m-im-actions")?.getBoundingClientRect();
-    if (tabs && acts && acts.width && acts.left < tabs.right + 12) el.classList.add("tabs-left");
+    const tabs = el.querySelector(".m-im-tabs"), acts = el.querySelector(".m-im-actions")?.getBoundingClientRect();
+    if (!tabs || !acts?.width) return;
+    const r = tabs.getBoundingClientRect(), right = innerWidth / 2 + r.width / 2;
+    const left = getComputedStyle(tabs).position === "absolute" && acts.top < r.bottom && acts.bottom > r.top && acts.left < right + 12;
+    if (el.classList.contains("tabs-left") !== left) el.classList.toggle("tabs-left", left);
   }
   addEventListener("resize", () => requestAnimationFrame(fitTop));
   function applyCanvas() {
@@ -3370,9 +3419,20 @@ Probe-FX: ${pfx}`;
     const item = currentItem();
     setCover(item);
     setCanvas(item);
-    q.title.textContent = titleOf(item) || t("nothing");
-    q.artist.textContent = artistOf(item);
+    // 1.27 polish: ändert der neue Titel die Höhe des Titelblocks (eine Zeile mehr oder weniger), gleiten Kicker,
+    // Leiste und Knöpfe an ihren neuen Platz, statt um eine Zeilenhöhe zu springen (FLIP, nur sichtbar offen)
+    const title = titleOf(item) || t("nothing"), artist = artistOf(item);
+    const glide = el.classList.contains("is-on") && !stillMotion() && (q.title.textContent !== title || q.artist.textContent !== artist);
+    const kids = glide ? [...q.meta.children].filter((k) => k.offsetParent) : [];
+    const tops = kids.map((k) => k.getBoundingClientRect().top);
+    q.title.textContent = title;
+    q.artist.textContent = artist;
     q.smart.hidden = !ctl.isSmartPick(item);
+    kids.forEach((k, i) => {
+      const dy = tops[i] - k.getBoundingClientRect().top;
+      // verschoben wird im eigenen (gezoomten) Maß
+      if (Math.abs(dy) > 1) k.animate([{ transform: `translateY(${dy / (k.currentCSSZoom || 1)}px)` }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)", composite: "add" });
+    });
     // 1.27 views: Album-Reise und Uhr
     album.sync(item, el.dataset.mode, true);
     clockView.update(item);
