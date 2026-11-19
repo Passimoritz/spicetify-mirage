@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.27.0] – 2026-11-19
+
 ### Added
 
 - Song changes in party mode feel like a DJ mix. Over the last bars of a song, the light already drifts into the next song's colours, stage lights and tempo, the crowd calms down and holds its breath, and the first beat of the new song lands with a hit. Skipping a song crossfades quickly without a flash. If the queue changes at the last moment, the light follows the new next song.
