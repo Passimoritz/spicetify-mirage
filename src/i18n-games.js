@@ -88,3 +88,17 @@ Object.assign(GAME_TEXT.de, {
 // 1.27 icons: Vorlesetexte für Symbole, die früher Emojis waren (Medaillen, Teamgröße)
 Object.assign(GAME_TEXT.en, { gRank: "Place {n}", gTeamSize: "{n} players" });
 Object.assign(GAME_TEXT.de, { gRank: "Platz {n}", gTeamSize: "{n} Spieler" });
+for (const [l, r, s] of [
+  ["fr", "Place {n}", "{n} joueurs"],
+  ["es", "Puesto {n}", "{n} jugadores"],
+  ["it", "Posto {n}", "{n} giocatori"],
+  ["pt", "Lugar {n}", "{n} jogadores"],
+  ["nl", "Plaats {n}", "{n} spelers"],
+  ["pl", "Miejsce {n}", "Graczy: {n}"],
+  ["tr", "{n}. sıra", "{n} oyuncu"],
+  ["ru", "Место {n}", "Игроков: {n}"],
+  ["uk", "Місце {n}", "Гравців: {n}"],
+  ["ja", "{n}位", "{n}人"],
+  ["ko", "{n}위", "{n}명"],
+  ["zh", "第{n}名", "{n}名玩家"],
+]) if (GAME_TEXT[l]) Object.assign(GAME_TEXT[l], { gRank: r, gTeamSize: s });
