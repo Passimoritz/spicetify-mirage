@@ -39,8 +39,9 @@ app.commandLine.appendSwitch("use-file-for-fake-audio-capture", MIC_WAV + "%nolo
 function ok(cond, msg) {
   if (!cond) throw new Error(msg);
 }
-// GitHub-Rechner sind deutlich langsamer als ein Desktop: dort alle Wartezeiten anderthalbmal so lang (E2E_SLOW setzt den Faktor selbst)
-const SLOW = Number(process.env.E2E_SLOW) || (process.env.CI ? 1.5 : 1);
+// GitHub-Rechner sind deutlich langsamer als ein Desktop: dort alle Wartezeiten doppelt so lang (E2E_SLOW setzt den
+// Faktor selbst). Mit 1,5 liefen seit 1.27 (56 Fälle, mehr Handy-Verkehr) einzelne Fälle knapp ins Zeitlimit.
+const SLOW = Number(process.env.E2E_SLOW) || (process.env.CI ? 2 : 1);
 async function until(fn, ms, what) {
   const t0 = Date.now(), lim = ms * SLOW;
   let last;
