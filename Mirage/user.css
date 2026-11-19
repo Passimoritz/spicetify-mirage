@@ -1739,7 +1739,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   /* wächst von der Mitte aus: je Seite die Hälfte der Vergrößerung (mit Nachfedern) */
   padding: 0 calc((var(--m-act) - 1) * 70%);
   transform-origin: center;
-  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1));
+  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1));
   opacity: calc(0.55 - var(--d, 0) * 0.2);
 }
 #mirage-immersive[data-mode="party"] .m-im-line.is-active {
@@ -2074,7 +2074,7 @@ html.mirage-calm #mirage-immersive .m-im-line.is-hype .m-w {
   will-change: opacity, transform;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   #mirage-immersive,
   #mirage-immersive[data-mode="lyrics"] {
     grid-template-columns: 1fr;
@@ -2937,7 +2937,7 @@ html.mirage-im-open .Root * {
 #mirage-immersive[data-mode="viz"] .m-im-extras {
   justify-content: center;
 }
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   #mirage-immersive .m-im-extras {
     justify-content: center;
   }
@@ -3762,7 +3762,7 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
    ========================================================================== */
 /* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
 #mirage-immersive .m-im-line {
-  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1));
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1));
   margin-bottom: calc(0.5em * var(--m-lyr-gap, 1));
 }
 #mirage-immersive .m-im-tr {
@@ -7145,7 +7145,7 @@ html.mirage-calm #mirage-immersive .m-ck-glow {
 }
 /* ganze Zeile Hintergrundgesang: kleiner, leiser und dicht unter die Zeile davor gerückt */
 #mirage-immersive .m-im-line.is-bgline {
-  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * 0.72);
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72);
   font-weight: 700;
   margin-top: calc(-0.35em * var(--m-lyr-gap, 1));
   padding-left: 0.9em;
@@ -7155,7 +7155,7 @@ html.mirage-calm #mirage-immersive .m-ck-glow {
   opacity: 0.85;
 }
 #mirage-immersive[data-mode="party"] .m-im-line.is-bgline {
-  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * 0.72);
+  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72);
   padding-left: calc((var(--m-act) - 1) * 70%);
   opacity: calc((0.55 - var(--d, 0) * 0.2) * 0.8);
 }
@@ -7358,3 +7358,218 @@ html.mirage-im-open .Root *::after {
   filter: drop-shadow(0 0 6px var(--c));
 }
 /* === end icons === */
+/* === 1.27 polish === */
+/* stylelint-disable no-duplicate-selectors -- bewusst: dieser Block ergänzt die Regeln weiter oben erst an dieser Stelle der Kaskade */
+/* Große Fenster (4K ohne Windows-Skalierung, Fernseher): Bedienung, Titel und Liedtext wachsen mit, statt winzig
+   in einer riesigen Fläche zu stehen. --m-uk ist der Faktor; die Kopfzeile, Menüs, die Album-Spalte, die Uhr und die
+   Teile des Titelblocks bekommen ihn als zoom (das Seitenverhältnis bleibt wie gestaltet). Der Titelblock selbst und
+   Cover/Liedtext bleiben ungezoomt: die Ansichtswechsel messen und verschieben sie in Bildschirm-Pixeln (FLIP).
+   Achtung: in einem gezoomten Element wachsen auch vw/vh mit – deshalb dort „/ var(--m-uk)“. */
+#mirage-immersive {
+  --m-uk: 1;
+  padding-top: calc(92px * var(--m-uk));
+}
+@media (min-width: 2200px) and (min-height: 1200px) {
+  #mirage-immersive {
+    --m-uk: 1.3;
+  }
+}
+@media (min-width: 3000px) and (min-height: 1650px) {
+  #mirage-immersive {
+    --m-uk: 1.7;
+  }
+}
+#mirage-immersive :is(.m-im-top, .m-im-side, .m-im-lyrbar, .m-im-keys-box, .m-ck-face, .m-im-meta > *) {
+  zoom: var(--m-uk);
+}
+/* Kopfzeile: sichtbar 64 px links und 170 px rechts frei (Fensterknöpfe), die Ansichten auf der Fenstermitte */
+#mirage-immersive .m-im-top {
+  top: calc(14px / var(--m-uk));
+  left: calc(64px / var(--m-uk));
+  right: calc(170px / var(--m-uk));
+}
+#mirage-immersive .m-im-tabs {
+  left: calc((50vw - 64px) / var(--m-uk));
+}
+/* der Verschiebe-Streifen liegt immer über dem Raster: beim Ausblenden (ohne .is-on) wurde er sonst zur Rasterzelle,
+   und alles rückte mitten in der Blende um 8 px nach oben */
+#mirage-immersive .m-im-drag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(64px * var(--m-uk));
+}
+#mirage-immersive .m-im-side {
+  max-width: calc(86vw / var(--m-uk));
+}
+#mirage-immersive[data-mode="party"] .m-im-meta {
+  width: min(calc(640px * var(--m-uk)), 80vw);
+}
+/* lange Zeilen brechen ausgewogen um statt mit einem einzelnen Wort in der zweiten Reihe */
+#mirage-immersive[data-mode="party"] .m-im-line {
+  text-wrap: balance;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics {
+  padding: 0 max(var(--m-bleed), calc((100% - min(calc(1100px * var(--m-uk)), 86vw)) / 2));
+}
+@media (min-width: 1001px) {
+  #mirage-immersive[data-mode="cover"].has-album .m-im-album {
+    zoom: var(--m-uk);
+    max-height: min(calc(72vh / var(--m-uk)), 680px);
+  }
+}
+
+/* Album-Liste: schmaler Balken in Glas statt des grauen Standardbalkens mit Pfeilen */
+#mirage-immersive .m-al-list {
+  scrollbar-color: rgb(255 255 255 / 0.2) transparent;
+}
+
+/* Knöpfe unter dem Titel: der Abspielknopf bleibt rund, auch wenn die Spalte schmal wird */
+#mirage-immersive .m-im-controls button {
+  flex: none;
+}
+/* schmale Titelspalte (Liedtext und Mix in kleinen Fenstern): Knöpfe etwas kleiner, Zusatzknöpfe brechen um,
+   statt über den Rand zu laufen. Gemessen wird die Spalte selbst (container), nicht das Fenster. */
+/* nur, wo die Spalte die Breite vorgibt: Visualizer und Party bemessen den Titelblock nach seinem Inhalt */
+#mirage-immersive:is([data-mode="cover"], [data-mode="lyrics"], [data-mode="mix"]) .m-im-meta {
+  container: m-meta / inline-size;
+}
+@container m-meta (max-width: 440px) {
+  #mirage-immersive .m-im-extras {
+    gap: 6px;
+  }
+  #mirage-immersive .m-im-volume {
+    width: 70px;
+  }
+}
+@container m-meta (max-width: 400px) {
+  #mirage-immersive :is(.m-im-controls, .m-im-extras) {
+    zoom: calc(var(--m-uk) * 0.78);
+  }
+  #mirage-immersive .m-im-controls {
+    gap: 14px;
+  }
+}
+/* sehr schmal: lieber eine zweite Reihe als abgeschnittene Knöpfe */
+@container m-meta (max-width: 320px) {
+  #mirage-immersive :is(.m-im-controls, .m-im-extras) {
+    zoom: calc(var(--m-uk) * 0.72);
+  }
+  #mirage-immersive .m-im-extras {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 2px;
+  }
+  /* Vollbild gibt es oben in der Kopfzeile (und mit F) – hier wäre er sonst allein in einer zweiten Reihe */
+  #mirage-immersive .m-im-extras .m-im-full {
+    display: none;
+  }
+}
+/* Liedtext-Leiste unten rechts: bleibt in der Liedtext-Spalte und bricht dort um, statt über die Knöpfe zu ragen */
+#mirage-immersive .m-im-lyrbar {
+  max-width: calc(54vw / var(--m-uk));
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 6px;
+}
+
+/* Kopfzeile in kleineren Fenstern: Zurück, Ansichten und Knöpfe teilen sich die Zeile, ohne sich zu überdecken */
+@media (max-width: 1240px) {
+  #mirage-immersive .m-im-top {
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  }
+  #mirage-immersive .m-im-top > .m-im-close {
+    justify-self: start;
+  }
+  #mirage-immersive .m-im-actions {
+    justify-self: end;
+    justify-content: flex-end;
+    /* Platz für fünf Knöpfe: wechselt die Ansicht (Uhr hat einen weniger), bleiben die Reiter stehen */
+    min-width: calc(5 * 38px + 4 * 6px);
+  }
+  #mirage-immersive .m-im-tabs,
+  #mirage-immersive.tabs-left .m-im-tabs {
+    position: relative;
+    left: auto;
+    transform: none;
+  }
+}
+@media (max-width: 1060px) {
+  #mirage-immersive .m-im-tabs button {
+    padding: 8px 13px;
+  }
+  #mirage-immersive .m-im-tabs button[data-mode="clock"] {
+    padding: 8px 10px;
+  }
+  #mirage-immersive .m-im-close kbd {
+    display: none;
+  }
+}
+/* noch schmaler: die Ansichten bekommen eine eigene Zeile unter Zurück und den Knöpfen, mittig im Fenster */
+@media (max-width: 960px) {
+  #mirage-immersive {
+    padding-top: 128px;
+  }
+  /* Party blendet die Kopfzeile ohnehin aus: dort bleibt die Bühne so hoch wie bisher */
+  #mirage-immersive[data-mode="party"] {
+    padding-top: 92px;
+  }
+  #mirage-immersive .m-im-top {
+    display: flex;
+  }
+  #mirage-immersive .m-im-tabs,
+  #mirage-immersive.tabs-left .m-im-tabs {
+    position: absolute;
+    top: 48px;
+    left: calc(50vw - 64px);
+    transform: translateX(-50%);
+  }
+}
+
+/* kleine Fenster: Titelblock dichter, damit Cover, Titel und Knöpfe in die Höhe passen */
+@media (max-height: 680px) {
+  #mirage-immersive .m-im-title {
+    margin: 10px 0 6px;
+  }
+  #mirage-immersive .m-im-bar {
+    margin-top: 3.5vh;
+  }
+  #mirage-immersive .m-im-controls {
+    margin-top: 2.6vh;
+  }
+  #mirage-immersive .m-im-extras {
+    margin-top: 1.6vh;
+  }
+  #mirage-immersive[data-mode="lyrics"] .m-im-cover-wrap {
+    width: min(24vw, 27vh);
+  }
+  #mirage-immersive[data-mode="mix"] {
+    row-gap: 7vh;
+  }
+  #mirage-immersive[data-mode="lyrics"] {
+    row-gap: 2.5vh;
+  }
+  #mirage-immersive[data-mode="viz"] .m-im-cover-wrap {
+    width: min(22vw, 19vh);
+  }
+  #mirage-immersive[data-mode="mix"] .m-im-cover-wrap {
+    width: min(19vw, 21vh);
+    margin-top: 2vh;
+  }
+}
+/* große Fenster: die Abstände im Titelblock (vh) wachsen durch den zoom schon mit – hier wieder auf Maß */
+@media (min-width: 2200px) and (min-height: 1200px) {
+  #mirage-immersive .m-im-meta > .m-im-bar {
+    margin-top: calc(4.5vh / var(--m-uk));
+  }
+  #mirage-immersive .m-im-meta > .m-im-controls {
+    margin-top: calc(3.5vh / var(--m-uk));
+  }
+  #mirage-immersive .m-im-meta > .m-im-extras {
+    margin-top: calc(2.4vh / var(--m-uk));
+  }
+}
+/* stylelint-enable no-duplicate-selectors */
+/* === end polish === */

@@ -2348,6 +2348,58 @@ CASES.push(["update-note", updateNote]);
 // 1.27 views
 CASES.push(["viz-styles", vizStyles], ["album-view", albumView], ["clock-view", clockView]);
 
+/* ---- 1.27 polish: Ansichten hämmern, Ebene hämmern, Kopfzeile in kleinen Fenstern */
+async function imPolish() {
+  const st = () => T.js(`(() => {
+    const im = document.getElementById("mirage-immersive"), sel = im.querySelector('.m-im-tabs [aria-selected="true"]'), ind = im.querySelector(".m-im-ind");
+    const m = /translateX\\(([-\\d.]+)px\\)/.exec(ind.style.transform);
+    const R = (s) => im.querySelector(s).getBoundingClientRect();
+    const ov = (a, b) => a.width > 0 && b.width > 0 && a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+    const tabs = R(".m-im-tabs"), acts = [...im.querySelectorAll(".m-im-actions > button")].filter((b) => !b.hidden).map((b) => b.getBoundingClientRect());
+    return { open: im.classList.contains("is-on"), mode: im.dataset.mode, stored: JSON.parse(localStorage.getItem("mirage:settings") || "{}").imMode, sel: sel?.dataset.mode,
+      ind: !!m && !!sel && Math.abs(+m[1] - sel.offsetLeft) < 2 && Math.abs(ind.offsetWidth - sel.offsetWidth) < 2, ghosts: document.querySelectorAll(".m-im-morph").length,
+      clock: getComputedStyle(im.querySelector(".m-im-clock")).visibility, overlap: acts.some((a) => ov(a, tabs)) || ov(R(".m-im-close"), tabs), right: Math.round(tabs.right), W: innerWidth };
+  })()`);
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await toMode("cover");
+  // Tasten 1–6 so schnell wie möglich: am Ende steht genau die zuletzt gedrückte Ansicht, ohne Reste der Überblendung
+  await T.js(`(() => { let i = 0; const t = setInterval(() => { __sp.press("Digit" + ((i * 5) % 6 + 1)); if (++i >= 32) clearInterval(t); }, 45); })(); 1`);
+  await wait(1500 + 32 * 45);
+  let s = await st();
+  ok(s.mode === "clock" && s.stored === "clock" && s.sel === "clock" && s.ind && !s.ghosts && s.clock === "visible", "polish: nach 32 schnellen Ansichtswechseln stimmt alles (Uhr): " + JSON.stringify(s));
+  await T.js(`__sp.press("Digit1"); 1`);
+  await until(async () => (await st()).mode === "cover", 2000, "polish: Taste 1 → Cover");
+  // Ebene schnell auf und zu (ungerade oft: zu), dann wieder auf: Zustand wie vorher
+  await T.js(`(() => { let i = 0; const t = setInterval(() => { __sp.press("KeyM", { ctrlKey: true, shiftKey: true }); if (++i >= 9) clearInterval(t); }, 60); })(); 1`);
+  await wait(9 * 60 + 1200);
+  s = await st();
+  ok(!s.open, "polish: nach neunmal Auf/Zu ist die Ebene zu: " + JSON.stringify(s));
+  await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await wait(1200);
+  s = await st();
+  ok(s.open && s.mode === "cover" && s.sel === "cover" && s.ind && !s.ghosts && s.clock === "hidden", "polish: wieder offen, Cover, Reiter stimmen: " + JSON.stringify(s));
+  // kleine Fenster: Zurück, Ansichten und Knöpfe oben überdecken sich nicht (in jeder Ansicht)
+  const [w0, h0] = T.win.getContentSize();
+  try {
+    for (const [w, h] of [[1100, 700], [1000, 640], [800, 560]]) {
+      T.win.setContentSize(w, h);
+      await wait(500);
+      for (const m of ["cover", "lyrics", "clock"]) {
+        await T.js(`__sp.press("Digit${{ cover: 1, lyrics: 2, clock: 6 }[m]}"); 1`);
+        await until(async () => (await st()).mode === m, 2000, `polish: ${m} bei ${w}×${h}`);
+        await wait(800);
+        s = await st();
+        ok(!s.overlap && s.right <= s.W && s.ind, `polish: Kopfzeile ${w}×${h} ${m} ohne Überdeckung: ` + JSON.stringify(s));
+      }
+    }
+  } finally {
+    T.win.setContentSize(w0, h0);
+    await wait(500);
+  }
+  await toMode("cover");
+}
+CASES.push(["im-polish", imPolish]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {
