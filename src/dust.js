@@ -54,11 +54,25 @@ const dust = (() => {
     const v = getComputedStyle(root).getPropertyValue("--spice-rgb-main").split(",").map(Number);
     return v.length === 3 && v.every((n) => n >= 0) ? v : [7, 6, 12];
   }
+  // Grundfarbe nach einem Farbwechsel erst im nächsten Bild lesen: direkt danach erzwänge getComputedStyle eine
+  // zusätzliche Stil-Neuberechnung mitten im Songwechsel (gemessen 15–28 ms); im rAF fällt sie mit der ohnehin
+  // fälligen zusammen. Beim ersten Aufruf sofort, damit das erste Bild schon den richtigen Grund hat.
+  let baseRaf = 0, baseRead = false;
   function recolor(cols) {
     pal = cols || schemePalette();
-    base = baseColor();
     sprites = [...pal, [255, 255, 255]].map(sprite);
-    if (running && !timer) draw(performance.now());
+    if (!baseRead) {
+      baseRead = true;
+      base = baseColor();
+      if (running && !timer) draw(performance.now());
+      return;
+    }
+    if (baseRaf) return;
+    baseRaf = requestAnimationFrame(() => {
+      baseRaf = 0;
+      base = baseColor();
+      if (running && !timer) draw(performance.now());
+    });
   }
   // Vignette ändert sich nur mit der Fenstergröße
   function buildVignette() {
