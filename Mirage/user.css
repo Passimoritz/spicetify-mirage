@@ -7315,6 +7315,10 @@ html.mirage-im-open .Root *::after {
 #mirage-immersive[data-mode="party"] .m-im-meta {
   width: min(calc(640px * var(--m-uk)), 80vw);
 }
+/* lange Zeilen brechen ausgewogen um statt mit einem einzelnen Wort in der zweiten Reihe */
+#mirage-immersive[data-mode="party"] .m-im-line {
+  text-wrap: balance;
+}
 #mirage-immersive[data-mode="party"] .m-im-lyrics {
   padding: 0 max(var(--m-bleed), calc((100% - min(calc(1100px * var(--m-uk)), 86vw)) / 2));
 }
@@ -7358,9 +7362,17 @@ html.mirage-im-open .Root *::after {
 }
 /* sehr schmal: lieber eine zweite Reihe als abgeschnittene Knöpfe */
 @container m-meta (max-width: 320px) {
+  #mirage-immersive :is(.m-im-controls, .m-im-extras) {
+    zoom: calc(var(--m-uk) * 0.72);
+  }
   #mirage-immersive .m-im-extras {
     flex-wrap: wrap;
+    justify-content: center;
     row-gap: 2px;
+  }
+  /* Vollbild gibt es oben in der Kopfzeile (und mit F) – hier wäre er sonst allein in einer zweiten Reihe */
+  #mirage-immersive .m-im-extras .m-im-full {
+    display: none;
   }
 }
 /* Liedtext-Leiste unten rechts: bleibt in der Liedtext-Spalte und bricht dort um, statt über die Knöpfe zu ragen */
@@ -7443,16 +7455,16 @@ html.mirage-im-open .Root *::after {
     width: min(24vw, 27vh);
   }
   #mirage-immersive[data-mode="mix"] {
-    row-gap: 4vh;
+    row-gap: 7vh;
   }
   #mirage-immersive[data-mode="lyrics"] {
     row-gap: 2.5vh;
   }
   #mirage-immersive[data-mode="viz"] .m-im-cover-wrap {
-    width: min(22vw, 22vh);
+    width: min(22vw, 19vh);
   }
   #mirage-immersive[data-mode="mix"] .m-im-cover-wrap {
-    width: min(19vw, 24vh);
+    width: min(19vw, 21vh);
     margin-top: 2vh;
   }
 }
