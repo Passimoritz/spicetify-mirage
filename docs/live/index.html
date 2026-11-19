@@ -1081,7 +1081,8 @@ function drawWishes(list) {
         voted.add(w.i);
         v.setAttribute("aria-pressed", "true");
         icText(v, "thumb", w.v + 1);
-        sendUp({ k: "vote", w: w.i });
+        // nachgeschickt wie alle einmaligen Meldungen: der PC zählt je Handy nur eine Stimme
+        sendSure({ k: "vote", w: w.i });
       };
       li.append(v);
     }
@@ -1183,7 +1184,9 @@ function showResults(s) {
 async function wish(w, li) {
   if (Date.now() - lastWish < 45000) return ($("wMsg").textContent = T.wWait);
   const n = $("wName").value.trim();
-  if (!(await sendUp({ k: "wish", i: w.i, n, c: myCol() }))) return ($("wMsg").textContent = T.net[1]);
+  if (!key || !conns.size) return ($("wMsg").textContent = T.net[1]);
+  // nachgeschickt (ein Relay kann verlieren): der PC nimmt je Handy nur einen Wunsch in 45 s, Kopien fallen weg
+  sendSure({ k: "wish", i: w.i, n, c: myCol() });
   lastWish = Date.now();
   myWishes.set("spotify:track:" + w.i, w.t || "");
   store("mlName", n);
