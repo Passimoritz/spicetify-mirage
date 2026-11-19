@@ -308,6 +308,22 @@
         gKarP3: "Richtig stark gesungen!",
         gKarP4: "Superstar!"
       });
+      Object.assign(GAME_TEXT.en, { gRank: "Place {n}", gTeamSize: "{n} players" });
+      Object.assign(GAME_TEXT.de, { gRank: "Platz {n}", gTeamSize: "{n} Spieler" });
+      for (const [l, r, s2] of [
+        ["fr", "Place {n}", "{n} joueurs"],
+        ["es", "Puesto {n}", "{n} jugadores"],
+        ["it", "Posto {n}", "{n} giocatori"],
+        ["pt", "Lugar {n}", "{n} jogadores"],
+        ["nl", "Plaats {n}", "{n} spelers"],
+        ["pl", "Miejsce {n}", "Graczy: {n}"],
+        ["tr", "{n}. s\u0131ra", "{n} oyuncu"],
+        ["ru", "\u041C\u0435\u0441\u0442\u043E {n}", "\u0418\u0433\u0440\u043E\u043A\u043E\u0432: {n}"],
+        ["uk", "\u041C\u0456\u0441\u0446\u0435 {n}", "\u0413\u0440\u0430\u0432\u0446\u0456\u0432: {n}"],
+        ["ja", "{n}\u4F4D", "{n}\u4EBA"],
+        ["ko", "{n}\uC704", "{n}\uBA85"],
+        ["zh", "\u7B2C{n}\u540D", "{n}\u540D\u73A9\u5BB6"]
+      ]) if (GAME_TEXT[l]) Object.assign(GAME_TEXT[l], { gRank: r, gTeamSize: s2 });
     }
   });
 
@@ -16481,6 +16497,109 @@
     }
   });
 
+  // src/icons.js
+  function iconEl(svg, cls = "m-ic") {
+    const i = document.createElement("i");
+    i.className = cls;
+    i.innerHTML = svg;
+    return i;
+  }
+  var s, UI, GAME;
+  var init_icons = __esm({
+    "src/icons.js"() {
+      s = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
+      UI = {
+        close: s('<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>'),
+        back: s('<path d="M14.5 6l-6 6 6 6"/>'),
+        chevron: s('<path d="M9.5 6l6 6-6 6"/>'),
+        check: s('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+        thumb: s('<path d="M7.5 10.5V20h-3v-9.5zM7.5 10.5l3.8-6.6a1.9 1.9 0 0 1 3.4 1.6L13.6 9.5h5a2 2 0 0 1 2 2.4l-1.3 6.2a2.4 2.4 0 0 1-2.4 1.9H7.5"/>'),
+        gear: s('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+        phone: s('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>'),
+        qr: s('<rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/><path d="M14 14h2.5v2.5H14zM19 19h1.5M14 20.5h2.5M20.5 14v2.5"/>'),
+        copy: s('<rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V6A2.5 2.5 0 0 0 13 3.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/>'),
+        play: s('<path d="M7.5 5v14l11-7z"/>'),
+        skip: s('<path d="M5.5 5.5l9 6.5-9 6.5zM18.5 5.5v13"/>'),
+        stop: s('<rect x="6" y="6" width="12" height="12" rx="2.5"/>'),
+        queue: s('<path d="M4 6h12M4 11h12M4 16h6"/><path d="M15 14v6l5-3z"/>'),
+        playlist: s('<path d="M4 6h12M4 11h12M4 16h6"/><path d="M18 18.5V11l3 1"/><circle cx="16.2" cy="18.5" r="1.8"/>'),
+        add: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/>'),
+        devices: s('<rect x="2.5" y="5" width="12.5" height="10" rx="1.6"/><path d="M5.5 19h6.5"/><rect x="17" y="9" width="4.5" height="11" rx="1.4"/>'),
+        timer: s('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2M9.5 2.5h5"/>'),
+        share: s('<path d="M12 14.5V3.5M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>'),
+        keyboard: s('<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M7.5 14h9"/>'),
+        dj: s('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3.5a8.5 8.5 0 0 1 8.5 8.5M12 6.5a5.5 5.5 0 0 1 5.5 5.5"/>'),
+        poll: s('<path d="M5 20v-6M12 20V5M19 20v-9"/>'),
+        recap: s('<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5"/><path d="M3.5 3.5v5h5M12 8v4.5l3 2"/>'),
+        confetti: s('<path d="M4 20l4.5-12 7.5 7.5z"/><path d="M13.5 4.5c.6 1.5.1 3-.9 4M19.5 10.5c-1.5-.6-3-.1-4 .9M17 3v1.5M21 7h-1.5M19.5 14.5l1 1"/>'),
+        screen: s('<rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>'),
+        film: s('<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7.5 4v16M16.5 4v16M3.5 9h4M3.5 15h4M16.5 9h4M16.5 15h4"/>'),
+        leaf: s('<path d="M5 19.5C5 11 10 5 20 4.5 20 14 14.5 19 6 19"/><path d="M5 19.5l7.5-7.5"/>'),
+        flashOff: s('<path d="M13 2.5L5.5 13H11l-1 8.5 7.5-10.5H12z"/><path d="M3 3l18 18"/>'),
+        music: s('<path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>'),
+        // 1.27 icons: was früher Emojis waren (Spiel-Ergebnisse, Handy-Seite, Fernbedienung)
+        mic: s('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
+        micOff: s('<path d="M15 9.5V6a3 3 0 0 0-5.6-1.5M9 9v2a3 3 0 0 0 4.6 2.5M5.5 11a6.5 6.5 0 0 0 10.6 5M18.5 11c0 .8-.1 1.5-.4 2.2M12 17.5V21M8.5 21h7M3.5 3.5l17 17"/>'),
+        lock: s('<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5v-3a3.5 3.5 0 0 1 7 0v3M12 14.5v2"/>'),
+        crown: s('<path d="M4 8l4 4 4-6.5 4 6.5 4-4-1.6 10H5.6z"/><path d="M6 21h12"/>'),
+        mixer: s('<path d="M6 3.5v8.3M6 16.2v4.3M12 3.5v2.3M12 10.2v10.3M18 3.5v6.3M18 14.2v6.3"/><circle cx="6" cy="14" r="2.2"/><circle cx="12" cy="8" r="2.2"/><circle cx="18" cy="12" r="2.2"/>'),
+        battery: s('<rect x="2.5" y="7" width="16.5" height="10" rx="2.5"/><path d="M21.5 10.5v3M6 10.5v3M9.5 10.5v3"/>'),
+        camera: s('<path d="M4.5 7.5h2.8l1.8-2.5h5.8l1.8 2.5h2.8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><circle cx="12" cy="13.5" r="3.5"/>'),
+        bell: s('<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 21h4"/>'),
+        headphones: s('<path d="M4 17V12.5a8 8 0 0 1 16 0V17"/><rect x="3.5" y="13" width="4.5" height="7.5" rx="1.8"/><rect x="16" y="13" width="4.5" height="7.5" rx="1.8"/>'),
+        boom: s('<path d="M12 2.5l1.8 5.2 5-2.5-2.5 5 5.2 1.8-5.2 1.8 2.5 5-5-2.5-1.8 5.2-1.8-5.2-5 2.5 2.5-5L2.5 12l5.2-1.8-2.5-5 5 2.5z"/>'),
+        // Dabei (Karaoke): wie viel mitgesungen wurde – als Stimm-Pegel
+        voice: s('<path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10.5v3"/>'),
+        user: s('<circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>'),
+        speaker: s('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/>'),
+        speakerOff: s('<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>'),
+        gamepad: s('<path d="M7 7.5h10a4.5 4.5 0 0 1 4.4 5.4l-.8 4a2.6 2.6 0 0 1-4.5 1.2L14.5 16h-5l-1.6 2.1a2.6 2.6 0 0 1-4.5-1.2l-.8-4A4.5 4.5 0 0 1 7 7.5z"/><path d="M8 10.5v3M6.5 12h3M15.5 11h.01M17.5 13h.01"/>'),
+        moon: s('<path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10z"/>'),
+        shield: s('<path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/>'),
+        shake: s('<rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 8.5v7M2 10.5v3M19.5 8.5v7M22 10.5v3"/>'),
+        draw: s('<circle cx="12" cy="12" r="8.5"/><path d="M8.5 10h7M8.5 14h7"/>'),
+        prev: s('<path d="M18.5 5.5l-9 6.5 9 6.5zM5.5 5.5v13"/>'),
+        pause: s('<rect x="6.5" y="5" width="3.5" height="14" rx="1.2"/><rect x="14" y="5" width="3.5" height="14" rx="1.2"/>'),
+        heart: s('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>'),
+        // Medaillen 1–3: Band und Scheibe mit der Zahl; die Farbe (Gold/Silber/Bronze, mit der Coverfarbe getönt) kommt aus CSS
+        medal1: s('<path d="M8 2.5l2.6 6.2M16 2.5l-2.6 6.2"/><circle cx="12" cy="15" r="6.3"/><path d="M11 13.2l1.3-1v5.6" stroke-width="1.6"/>'),
+        medal2: s('<path d="M8 2.5l2.6 6.2M16 2.5l-2.6 6.2"/><circle cx="12" cy="15" r="6.3"/><path d="M10.2 13.6a1.8 1.8 0 0 1 3.5.5c0 1.5-3.6 2.3-3.6 3.8h3.7" stroke-width="1.6"/>'),
+        medal3: s('<path d="M8 2.5l2.6 6.2M16 2.5l-2.6 6.2"/><circle cx="12" cy="15" r="6.3"/><path d="M10.3 12.3h3.3l-1.9 2.1a1.7 1.7 0 1 1-1.5 2.8" stroke-width="1.6"/>'),
+        // 1.27 views: Uhr-Ansicht und Album-Reise
+        clock: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
+        album: s('<rect x="3.5" y="3.5" width="8.5" height="8.5" rx="1.8"/><path d="M15.5 5.5h5M15.5 9.5h5M3.5 15.5h17M3.5 19.5h12"/>')
+      };
+      GAME = {
+        quiz: s('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
+        title: s('<path d="M12 17.5V4l6.5 2.5"/><circle cx="8.5" cy="17.5" r="3.5"/>'),
+        intro: s('<circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M18.5 6.5L20 5"/>'),
+        gap: s('<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l2 2"/>'),
+        next: s('<path d="M4 6h12M4 11h9M4 16h6"/><path d="M15.5 13.5l4 3-4 3"/>'),
+        tf: s('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/><path d="M8 10.5l1.8 1.8 3.2-3.3"/>'),
+        beat: s('<ellipse cx="12" cy="10" rx="8" ry="3"/><path d="M4 10v6.5c0 1.7 3.6 3 8 3s8-1.3 8-3V10"/><path d="M7.5 3.5l3 4M16.5 3.5l-3 4"/>'),
+        older: s('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),
+        cover: s('<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 15.5l-5-5-9 9"/>'),
+        duel: s('<path d="M4.5 4.5l9 9M4.5 4.5h3.5M4.5 4.5V8M19.5 4.5l-9 9M19.5 4.5H16M19.5 4.5V8M7 14.5l2.5 2.5M17 14.5L14.5 17M8.3 15.7L4.5 19.5M15.7 15.7l3.8 3.8"/>'),
+        stop: s('<path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 10.5V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.4a6 6 0 0 1-5-2.7L3.2 15.4a1.6 1.6 0 0 1 2.6-1.8L8 16"/>'),
+        fast: s('<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/>'),
+        taps: s('<path d="M9.5 11.5v-6a1.5 1.5 0 0 1 3 0v6.5l3.4.8a2 2 0 0 1 1.5 2.2l-.6 4.3a2 2 0 0 1-2 1.7h-3.2a2 2 0 0 1-1.6-.8L6 15.6a1.5 1.5 0 0 1 2.3-1.9l1.2 1.4"/><path d="M5.5 7a5.5 5.5 0 0 1 10-2.4"/>'),
+        battle: s('<circle cx="12" cy="4.5" r="2"/><path d="M5.5 6.5L12 10l6.5-3.5M12 10v4.5L8.5 21M12 14.5l4 3 1 3.5"/>'),
+        bomb: s('<circle cx="10.5" cy="14" r="6.5"/><path d="M15 9.5l2.5-2.5"/><path d="M19.5 3.5l1-1M21 7h1M17.5 2.5V1.5"/>'),
+        likely: s('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/>'),
+        sing: s('<circle cx="15" cy="9" r="5"/><path d="M11.5 12.5L4 20M12 6.5l5.5 5.5"/>'),
+        karaoke: UI.music,
+        tour: s('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.9M17 6h2.5a2.5 2.5 0 0 1-2.6 3.9M12 14v3.5M8 21h8M9.5 17.5h5"/>'),
+        bingo: s('<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/>'),
+        wheel: s('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.6"/><path d="M12 3.5v6.9M12 13.6v6.9M3.5 12h6.9M13.6 12h6.9M6 6l4.9 4.9M13.1 13.1L18 18M18 6l-4.9 4.9M10.9 13.1L6 18"/>'),
+        never: s('<path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c5 0 8.5 4.5 9.5 7a13 13 0 0 1-2.7 3.8M6.6 6.6A13 13 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
+        dquiz: s('<path d="M5 8h10v10.5a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 5 18.5z"/><path d="M15 10.5h2.5a2.5 2.5 0 0 1 0 5H15M5 8a2.5 2.5 0 0 1 2.5-3.5 3 3 0 0 1 5 0A2.5 2.5 0 0 1 15 8M8.5 12v5.5M11.5 12v5.5"/>'),
+        alarm: s('<path d="M6 18v-5a6 6 0 0 1 12 0v5"/><path d="M4 18h16v3H4zM12 2.5V4M4.2 5.2l1.1 1.1M19.8 5.2l-1.1 1.1M2 11h1.5M20.5 11H22"/>'),
+        dlikely: s('<circle cx="16" cy="7.5" r="3"/><path d="M10.5 20.5a5.5 5.5 0 0 1 11 0"/><path d="M2.5 12.5h8M7.5 9.5l3 3-3 3"/>'),
+        dwheel: s('<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8.5 8.5h.01M12 12h.01M15.5 15.5h.01M15.5 8.5h.01M8.5 15.5h.01" stroke-width="2.6"/>')
+      };
+    }
+  });
+
   // src/burst.js
   function burst(x, y) {
     const box2 = document.createElement("div");
@@ -16495,7 +16614,7 @@
       const dist = 36 + Math.random() * 54;
       if (i % 3 === 0) {
         s2.className = "h";
-        s2.textContent = "\u2665";
+        s2.innerHTML = UI.heart;
       }
       s2.style.setProperty("--c", cols[i % cols.length]);
       s2.style.setProperty("--tx", Math.cos(ang) * dist + "px");
@@ -16511,6 +16630,7 @@
       init_selectors();
       init_config();
       init_color();
+      init_icons();
       document.addEventListener(
         "click",
         (e) => {
@@ -17306,6 +17426,29 @@
     watermark(x);
     deliver(cv, "mirage-party.png");
   }
+  function drawIcon(x, svg, cx, cy, size, stroke, fill) {
+    const k = size / 24;
+    x.save();
+    x.translate(cx - size / 2, cy - size / 2);
+    x.scale(k, k);
+    x.lineCap = x.lineJoin = "round";
+    x.strokeStyle = stroke;
+    const attr2 = (a, n) => a.split(" " + n + '="')[1]?.split('"')[0];
+    const num = (a, n) => Number(attr2(a, n) || 0);
+    for (const [, tag, a] of svg.matchAll(/<(path|circle|rect)([^>]*)\/>/g)) {
+      const p = new Path2D();
+      if (tag === "path") p.addPath(new Path2D(attr2(a, "d") || ""));
+      else if (tag === "circle") p.arc(num(a, "cx"), num(a, "cy"), num(a, "r"), 0, Math.PI * 2);
+      else p.roundRect(num(a, "x"), num(a, "y"), num(a, "width"), num(a, "height"), num(a, "rx"));
+      if (fill && tag === "circle") {
+        x.fillStyle = fill;
+        x.fill(p);
+      }
+      x.lineWidth = num(a, "stroke-width") || 1.8;
+      x.stroke(p);
+    }
+    x.restore();
+  }
   async function gameCard(r) {
     const list = (r?.list || []).slice(0, 10);
     if (!list.length) return;
@@ -17330,7 +17473,10 @@
       x.fill();
       x.fillStyle = "#fff";
       x.font = `${big ? 800 : 600} ${big ? 56 : 30}px ${FONT}`;
-      x.fillText(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), big ? 112 : 124, mid);
+      if (big) {
+        const m = tint(MEDAL[i], pal[0], 0.14);
+        drawIcon(x, UI["medal" + (i + 1)], 146, mid, 68, css(m), css(m, 0.16));
+      } else x.fillText(String(i + 1), 124, mid);
       x.fillStyle = p.col || "rgba(255,255,255,0.4)";
       x.beginPath();
       x.arc(big ? 224 : 196, mid, big ? 14 : 9, 0, Math.PI * 2);
@@ -17432,7 +17578,7 @@
     const have = new Set(saved || []);
     return [...new Set(played)].filter((u) => !have.has(u));
   }
-  var W, H, css, FONT, STATS, today, lastRecorded, week, GENRE_COL;
+  var W, H, css, FONT, STATS, today, lastRecorded, week, GENRE_COL, MEDAL, tint;
   var init_share = __esm({
     "src/share.js"() {
       init_core();
@@ -17441,6 +17587,7 @@
       init_color();
       init_player();
       init_styles();
+      init_icons();
       W = 1080;
       H = 1350;
       css = (c2, a = 1) => `rgba(${c2[0]},${c2[1]},${c2[2]},${a})`;
@@ -17521,6 +17668,8 @@
         acoustic: [220, 180, 130]
       };
       kin(GENRE_COL);
+      MEDAL = [[255, 210, 94], [223, 228, 238], [217, 140, 95]];
+      tint = (c2, by, k) => c2.map((v, i) => Math.round(v * (1 - k) + by[i] * k));
     }
   });
 
@@ -20191,12 +20340,12 @@
   });
 
   // src/handover.js
-  function vividOf(pal, tint) {
+  function vividOf(pal, tint2) {
     if (!Array.isArray(pal) || pal.length < 3) return null;
     const hsl = pal.map(rgb2hsl), grey = hsl.every(([, s2]) => s2 < 0.12);
     return hsl.map(([h, s2, l], i) => {
       let hue = grey ? [275, 195, 320][i] : h;
-      if (TINT[tint] != null) hue = toward2(hue, TINT[tint] + (i - 1) * 22, 0.45);
+      if (TINT[tint2] != null) hue = toward2(hue, TINT[tint2] + (i - 1) * 22, 0.45);
       return hsl2rgb([hue, Math.max(s2, 0.74), clamp10(l, 0.56, 0.7)]);
     });
   }
@@ -29938,81 +30087,6 @@
     }
   });
 
-  // src/icons.js
-  function iconEl(svg, cls = "m-ic") {
-    const i = document.createElement("i");
-    i.className = cls;
-    i.innerHTML = svg;
-    return i;
-  }
-  var s, UI, GAME;
-  var init_icons = __esm({
-    "src/icons.js"() {
-      s = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
-      UI = {
-        close: s('<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>'),
-        back: s('<path d="M14.5 6l-6 6 6 6"/>'),
-        chevron: s('<path d="M9.5 6l6 6-6 6"/>'),
-        check: s('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
-        thumb: s('<path d="M7.5 10.5V20h-3v-9.5zM7.5 10.5l3.8-6.6a1.9 1.9 0 0 1 3.4 1.6L13.6 9.5h5a2 2 0 0 1 2 2.4l-1.3 6.2a2.4 2.4 0 0 1-2.4 1.9H7.5"/>'),
-        gear: s('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
-        phone: s('<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>'),
-        qr: s('<rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/><path d="M14 14h2.5v2.5H14zM19 19h1.5M14 20.5h2.5M20.5 14v2.5"/>'),
-        copy: s('<rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V6A2.5 2.5 0 0 0 13 3.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/>'),
-        play: s('<path d="M7.5 5v14l11-7z"/>'),
-        skip: s('<path d="M5.5 5.5l9 6.5-9 6.5zM18.5 5.5v13"/>'),
-        stop: s('<rect x="6" y="6" width="12" height="12" rx="2.5"/>'),
-        queue: s('<path d="M4 6h12M4 11h12M4 16h6"/><path d="M15 14v6l5-3z"/>'),
-        playlist: s('<path d="M4 6h12M4 11h12M4 16h6"/><path d="M18 18.5V11l3 1"/><circle cx="16.2" cy="18.5" r="1.8"/>'),
-        add: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/>'),
-        devices: s('<rect x="2.5" y="5" width="12.5" height="10" rx="1.6"/><path d="M5.5 19h6.5"/><rect x="17" y="9" width="4.5" height="11" rx="1.4"/>'),
-        timer: s('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.6 2M9.5 2.5h5"/>'),
-        share: s('<path d="M12 14.5V3.5M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>'),
-        keyboard: s('<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M7.5 14h9"/>'),
-        dj: s('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3.5a8.5 8.5 0 0 1 8.5 8.5M12 6.5a5.5 5.5 0 0 1 5.5 5.5"/>'),
-        poll: s('<path d="M5 20v-6M12 20V5M19 20v-9"/>'),
-        recap: s('<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5"/><path d="M3.5 3.5v5h5M12 8v4.5l3 2"/>'),
-        confetti: s('<path d="M4 20l4.5-12 7.5 7.5z"/><path d="M13.5 4.5c.6 1.5.1 3-.9 4M19.5 10.5c-1.5-.6-3-.1-4 .9M17 3v1.5M21 7h-1.5M19.5 14.5l1 1"/>'),
-        screen: s('<rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>'),
-        film: s('<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M7.5 4v16M16.5 4v16M3.5 9h4M3.5 15h4M16.5 9h4M16.5 15h4"/>'),
-        leaf: s('<path d="M5 19.5C5 11 10 5 20 4.5 20 14 14.5 19 6 19"/><path d="M5 19.5l7.5-7.5"/>'),
-        flashOff: s('<path d="M13 2.5L5.5 13H11l-1 8.5 7.5-10.5H12z"/><path d="M3 3l18 18"/>'),
-        music: s('<path d="M9 18V5.5l10-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>'),
-        // 1.27 views: Uhr-Ansicht und Album-Reise
-        clock: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
-        album: s('<rect x="3.5" y="3.5" width="8.5" height="8.5" rx="1.8"/><path d="M15.5 5.5h5M15.5 9.5h5M3.5 15.5h17M3.5 19.5h12"/>')
-      };
-      GAME = {
-        quiz: s('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
-        title: s('<path d="M12 17.5V4l6.5 2.5"/><circle cx="8.5" cy="17.5" r="3.5"/>'),
-        intro: s('<circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M18.5 6.5L20 5"/>'),
-        gap: s('<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l2 2"/>'),
-        next: s('<path d="M4 6h12M4 11h9M4 16h6"/><path d="M15.5 13.5l4 3-4 3"/>'),
-        tf: s('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/><path d="M8 10.5l1.8 1.8 3.2-3.3"/>'),
-        beat: s('<ellipse cx="12" cy="10" rx="8" ry="3"/><path d="M4 10v6.5c0 1.7 3.6 3 8 3s8-1.3 8-3V10"/><path d="M7.5 3.5l3 4M16.5 3.5l-3 4"/>'),
-        older: s('<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),
-        cover: s('<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 15.5l-5-5-9 9"/>'),
-        duel: s('<path d="M4.5 4.5l9 9M4.5 4.5h3.5M4.5 4.5V8M19.5 4.5l-9 9M19.5 4.5H16M19.5 4.5V8M7 14.5l2.5 2.5M17 14.5L14.5 17M8.3 15.7L4.5 19.5M15.7 15.7l3.8 3.8"/>'),
-        stop: s('<path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 10.5V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.4a6 6 0 0 1-5-2.7L3.2 15.4a1.6 1.6 0 0 1 2.6-1.8L8 16"/>'),
-        fast: s('<path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/>'),
-        taps: s('<path d="M9.5 11.5v-6a1.5 1.5 0 0 1 3 0v6.5l3.4.8a2 2 0 0 1 1.5 2.2l-.6 4.3a2 2 0 0 1-2 1.7h-3.2a2 2 0 0 1-1.6-.8L6 15.6a1.5 1.5 0 0 1 2.3-1.9l1.2 1.4"/><path d="M5.5 7a5.5 5.5 0 0 1 10-2.4"/>'),
-        battle: s('<circle cx="12" cy="4.5" r="2"/><path d="M5.5 6.5L12 10l6.5-3.5M12 10v4.5L8.5 21M12 14.5l4 3 1 3.5"/>'),
-        bomb: s('<circle cx="10.5" cy="14" r="6.5"/><path d="M15 9.5l2.5-2.5"/><path d="M19.5 3.5l1-1M21 7h1M17.5 2.5V1.5"/>'),
-        likely: s('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17h.01"/>'),
-        sing: s('<circle cx="15" cy="9" r="5"/><path d="M11.5 12.5L4 20M12 6.5l5.5 5.5"/>'),
-        karaoke: UI.music,
-        tour: s('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.9M17 6h2.5a2.5 2.5 0 0 1-2.6 3.9M12 14v3.5M8 21h8M9.5 17.5h5"/>'),
-        bingo: s('<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/>'),
-        wheel: s('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.6"/><path d="M12 3.5v6.9M12 13.6v6.9M3.5 12h6.9M13.6 12h6.9M6 6l4.9 4.9M13.1 13.1L18 18M18 6l-4.9 4.9M10.9 13.1L6 18"/>'),
-        never: s('<path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c5 0 8.5 4.5 9.5 7a13 13 0 0 1-2.7 3.8M6.6 6.6A13 13 0 0 0 2.5 12c1 2.5 4.5 7 9.5 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>'),
-        dquiz: s('<path d="M5 8h10v10.5a2.5 2.5 0 0 1-2.5 2.5h-5A2.5 2.5 0 0 1 5 18.5z"/><path d="M15 10.5h2.5a2.5 2.5 0 0 1 0 5H15M5 8a2.5 2.5 0 0 1 2.5-3.5 3 3 0 0 1 5 0A2.5 2.5 0 0 1 15 8M8.5 12v5.5M11.5 12v5.5"/>'),
-        alarm: s('<path d="M6 18v-5a6 6 0 0 1 12 0v5"/><path d="M4 18h16v3H4zM12 2.5V4M4.2 5.2l1.1 1.1M19.8 5.2l-1.1 1.1M2 11h1.5M20.5 11H22"/>'),
-        dlikely: s('<circle cx="16" cy="7.5" r="3"/><path d="M10.5 20.5a5.5 5.5 0 0 1 11 0"/><path d="M2.5 12.5h8M7.5 9.5l3 3-3 3"/>'),
-        dwheel: s('<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8.5 8.5h.01M12 12h.01M15.5 15.5h.01M15.5 8.5h.01M8.5 15.5h.01" stroke-width="2.6"/>')
-      };
-    }
-  });
-
   // src/sfx.js
   function sleepLater() {
     clearTimeout(idle);
@@ -31646,7 +31720,7 @@
     if (WHEELS.has(G.k)) return drawWheel(v, true);
     if (v.st === "join") return buildJoin();
     if (v.st === "wait") return box.append(div("m-g-sub", t("gWaitLine")));
-    if (v.st === "load") return box.append(div("m-g-big m-g-pulse", "\u{1F3A7}"), div("m-g-sub", t("gLoadSong")));
+    if (v.st === "load") return box.append(bigIc("m-g-big m-g-pulse", UI.headphones), div("m-g-sub", t("gLoadSong")));
     if (G.k === "duel" && v.st === "champ") return buildChamp(v);
     if (G.k === "bingo") {
       if (v.st === "res") return box.append(div("m-g-big is-hot m-g-pop", t("gBingoWin").replace("{n}", v.win)), div("m-g-sub", v.ln));
@@ -31664,7 +31738,7 @@
     if (G.k === "alarm") {
       if (v.st === "res") return box.append(div("m-g-big", t("gAlarmEnd").replace("{n}", v.hits)));
       box.append(div("m-g-sub", t("gAlarmWord")), div("m-g-big m-g-word" + (v.st === "hit" ? " is-hot m-g-pop" : ""), v.word));
-      box.append(v.st === "hit" ? div("m-g-big is-hot m-g-pop", "\u{1F37A} " + t("gAlarmHit")) : div("m-g-sub", "\u{1F37A} " + v.hits));
+      box.append(v.st === "hit" ? icDiv("m-g-big is-hot m-g-pop", GAME.dquiz, t("gAlarmHit")) : icDiv("m-g-sub", GAME.dquiz, v.hits));
       return;
     }
     if (G.k === "stop") {
@@ -31677,7 +31751,7 @@
       if (v.st === "go") box.append(div("m-g-big is-hot m-g-pop", t("gFastGo")));
       if (v.st === "res") {
         const b = div("m-g-board");
-        (v.win || []).forEach((x, i) => b.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i], x.n, x.ms + " ms", x.c)));
+        (v.win || []).forEach((x, i) => b.append(row(medalOf(i), x.n, x.ms + " ms", x.c)));
         box.append(b);
       }
     } else if (G.k === "battle") {
@@ -31691,21 +31765,22 @@
       box.append(div("m-g-beat"), lights, div("m-g-big", t("gBeatGo")), div("m-g-sub m-g-bpm"), div("m-g-board"));
       beatLoop();
     } else if (G.k === "bomb") {
-      if (v.st === "go") box.append(div("m-g-bomb", "\u{1F4A3}"), div("m-g-big", t("gBombHolder").replace("{n}", v.hn)));
-      if (v.st === "res") box.append(div("m-g-bomb is-boom", "\u{1F4A5}"), div("m-g-big is-hot", t("gBombBoom").replace("{n}", v.boom)));
+      if (v.st === "go") box.append(bigIc("m-g-bomb", GAME.bomb), div("m-g-big", t("gBombHolder").replace("{n}", v.hn)));
+      if (v.st === "res") box.append(bigIc("m-g-bomb is-boom", UI.boom), div("m-g-big is-hot", t("gBombBoom").replace("{n}", v.boom)));
       box.append(div("m-g-sub", t("gLeft").replace("{n}", v.left ?? 0)));
     }
   }
-  function row(rank, name, val, col) {
-    const r = div("m-g-row");
-    r.append(div("m-g-rk", rank));
+  function row(rk, name, val, col) {
+    const r = div("m-g-row"), c2 = div("m-g-rk");
+    c2.append(rk);
+    r.append(c2);
     if (col != null) r.append(dot(col));
     r.append(div("m-g-nm", name), div("m-g-pt", val));
     return r;
   }
   function board(list) {
     const d = div("m-g-board");
-    (list || []).slice(0, 5).forEach((x, i) => d.append(row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p), x.c)));
+    (list || []).slice(0, 5).forEach((x, i) => d.append(row(medalOf(i), x.n, String(x.p), x.c)));
     return d;
   }
   function buildJoin() {
@@ -31734,15 +31809,15 @@
     need();
   }
   function buildKar(v) {
-    if (v.st === "calc") return box.append(div("m-g-big m-g-pulse", "\u{1F3A7}"), div("m-g-sub", t("gKarCalc")));
+    if (v.st === "calc") return box.append(bigIc("m-g-big m-g-pulse", UI.headphones), div("m-g-sub", t("gKarCalc")));
     if (v.st === "res") {
       const sc = v.ks;
-      if (!sc) return box.append(div("m-g-big m-g-pop", "\u{1F44F}"), div("m-g-sub", t("gKarTurn").replace("{n}", v.sn)), div("m-g-sub", t("gKarNoScore")), board(top()));
+      if (!sc) return box.append(bigIc("m-g-big m-g-pop", UI.confetti), div("m-g-sub", t("gKarTurn").replace("{n}", v.sn)), div("m-g-sub", t("gKarNoScore")), board(top()));
       const praise = t(sc.s >= 85 ? "gKarP4" : sc.s >= 65 ? "gKarP3" : sc.s >= 40 ? "gKarP2" : "gKarP1");
-      box.append(div("m-g-sub", "\u{1F3A4} " + v.sn), div("m-g-big is-hot m-g-pop", String(sc.s)), div("m-g-sub", praise));
+      box.append(icDiv("m-g-sub", UI.mic, v.sn), div("m-g-big is-hot m-g-pop", String(sc.s)), div("m-g-sub", praise));
       const b = div("m-g-board m-g-kparts");
-      for (const [ic, key, val] of [["\u23F1\uFE0F", "gKarT", sc.t], ["\u{1F3B5}", "gKarP", sc.p], ["\u{1F64C}", "gKarD", sc.d]]) {
-        const r = row(ic, t(key), val < 0 ? "\u2013" : String(val));
+      for (const [ic, key, val] of [[UI.timer, "gKarT", sc.t], [UI.music, "gKarP", sc.p], [UI.voice, "gKarD", sc.d]]) {
+        const r = row(svgIc(ic, "m-ic"), t(key), val < 0 ? "\u2013" : String(val));
         r.classList.add("has-bar");
         r.style.setProperty("--w", Math.max(0, val) + "%");
         b.append(r);
@@ -31750,8 +31825,8 @@
       box.append(b, board(top()));
       return;
     }
-    if (v.st === "ready") box.append(div("m-g-big m-g-pulse", "\u{1F3A4} " + t("gKarTurn").replace("{n}", v.sn)), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
-    else box.append(div("m-g-sub", "\u{1F3A4} " + v.sn), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+    if (v.st === "ready") box.append(icDiv("m-g-big m-g-pulse", UI.mic, t("gKarTurn").replace("{n}", v.sn)), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
+    else box.append(icDiv("m-g-sub", UI.mic, v.sn), div("m-g-line m-g-sline"), div("m-g-sub m-g-snext"));
     box.append(div("m-g-sub m-g-kmic"));
   }
   function buildChamp(v) {
@@ -31762,7 +31837,7 @@
       c2.append(im);
       box.append(c2);
     }
-    box.append(div("m-g-sub", "\u{1F3C6} " + t("gDuelChamp")), div("m-g-big m-g-pop", v.t), div("m-g-sub", t("gDuelWins").replace("{n}", v.wins)));
+    box.append(icDiv("m-g-sub", GAME.tour, t("gDuelChamp")), div("m-g-big m-g-pop", v.t), div("m-g-sub", t("gDuelWins").replace("{n}", v.wins)));
   }
   function buildAsk(v) {
     if (G.k === "cover" && v.st === "ask") {
@@ -31807,7 +31882,7 @@
     });
     box.append(opts);
     if (v.st === "ask") box.append(div("m-g-who"));
-    if (v.drink && v.sip?.length) box.append(div("m-g-sub is-sip", "\u{1F37A} " + t("gSipWho").replace("{n}", v.sip.join(", "))));
+    if (v.drink && v.sip?.length) box.append(icDiv("m-g-sub is-sip", GAME.dquiz, t("gSipWho").replace("{n}", v.sip.join(", "))));
     if (v.st === "rev" && all().length) box.append(board(top()));
   }
   function beatLoop() {
@@ -31843,13 +31918,15 @@
       if (!x) continue;
       const col = div(`m-g-pod is-p${i}`), name = div("m-g-pname");
       name.append(dot(x.c), div("m-g-cn", x.n));
-      col.append(div("m-g-medal", ["\u{1F947}", "\u{1F948}", "\u{1F949}"][i]), name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
+      const md = div("m-g-medal");
+      md.append(medalOf(i));
+      col.append(md, name, div("m-g-ppts", String(x.p)), div("m-g-pbar"));
       pod.append(col);
     }
     if (list.length) box.append(pod);
     if (list.length > 3) box.append(board(list.slice(3).map((x) => ({ ...x }))));
     if (v.tour) {
-      box.append(div("m-g-sub m-g-tour", "\u{1F3C6} " + t("gTourAfter").replace("{i}", v.tour.i).replace("{n}", v.tour.of)), board(v.tour.tot));
+      box.append(icDiv("m-g-sub m-g-tour", GAME.tour, t("gTourAfter").replace("{i}", v.tour.i).replace("{n}", v.tour.of)), board(v.tour.tot));
       if (v.tour.next) box.append(div("m-g-sub", t("gTourNext").replace("{g}", v.tour.next)));
       return;
     }
@@ -31868,7 +31945,7 @@
   function resultCard() {
     if (!G) return;
     const list = all().sort((a, b) => b.p - a.p).slice(0, 10).map((p) => ({ n: nameOf2(p), p: Math.round(p.p), col: GUEST_COLORS[colOf(p)] }));
-    gameCard({ icon: INFO[G.k].icon, title: t(INFO[G.k].label), list });
+    gameCard({ title: t(INFO[G.k].label), list });
     if (G.view?.st === "end") {
       clearTimers();
       after(3e4, () => stop3());
@@ -31908,7 +31985,7 @@
       bp.dataset.n = String(v.bp.length);
       box.querySelector(".m-g-bcount").textContent = t("gBingoPlayed").replace("{n}", v.bp.length).replace("{m}", v.deck.length);
       bp.textContent = "";
-      v.bp.slice(-8).reverse().forEach((i, k) => bp.append(row(k ? "\u266A" : "\u25B6", v.deck[i], "")));
+      v.bp.slice(-8).reverse().forEach((i, k) => bp.append(row(svgIc(k ? UI.music : UI.play, "m-ic"), v.deck[i], "")));
     }
     const tb = box.querySelector(".m-g-teams");
     if (tb) {
@@ -31918,7 +31995,9 @@
         tb.textContent = "";
         list.forEach((x, i) => {
           const c2 = div("m-g-chip m-g-tm" + (i === 0 && x.p > 0 ? " is-lead" : ""));
-          c2.append(dot(x.c), div("m-g-cn", `${x.n} \xB7 ${x.p}`), div("m-g-tk", "\u{1F464}" + x.k));
+          const tk = icDiv("m-g-tk", UI.user, x.k);
+          tk.title = t("gTeamSize").replace("{n}", x.k);
+          c2.append(dot(x.c), div("m-g-cn", `${x.n} \xB7 ${x.p}`), tk);
           tb.append(c2);
         });
       }
@@ -31948,7 +32027,7 @@
         const list = top(), most = Math.max(1, ...list.map((x) => x.p));
         b.textContent = "";
         list.forEach((x, i) => {
-          const r = row(["\u{1F947}", "\u{1F948}", "\u{1F949}"][i] || String(i + 1), x.n, String(x.p), x.c);
+          const r = row(medalOf(i), x.n, String(x.p), x.c);
           r.classList.add("has-bar");
           r.style.setProperty("--w", Math.round(x.p / most * 100) + "%");
           b.append(r);
@@ -31968,7 +32047,8 @@
         l.append(div("m-g-segt", x.text));
         w2.append(l);
       });
-      const hub = div("m-g-hub", "\u{1F3A1}");
+      const hub = div("m-g-hub");
+      hub.innerHTML = GAME.wheel;
       w2.onclick = spin;
       const stage2 = div("m-g-wstage");
       stage2.append(div("m-g-pin"), w2, hub);
@@ -31979,7 +32059,7 @@
     const res = box.querySelector(".m-g-wres");
     if (res) res.textContent = v.st === "res" ? v.text : v.st === "spin" ? "\u2026" : t("gSpin");
   }
-  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, PAIR_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, queueSongs, pool, within6, years, nowItem, nowUri, GUEST_COLORS, colOf, short, nameOf2, all, alive, top, TEAM_GAMES, TEAM_COLS, after, later, FIRST, TOUR_POOL, TOUR_PTS, TOUR, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, wordsOf, WORD, gapWord, FILLER, FAST_PTS, KAR_LEAD, karSegs, karAt, pairClip, pairAsk, label, queueSong, COVER_STEPS, bigCover, BINGO_N, BINGO_LINES, KEY_ID, keySend, keyIn, div, secs, dot, chip, beatRaf, WHEEL_COLORS, games;
+  var GAME_LIST, INFO, WHEEL_FIELDS, DRINK_FIELDS, WHEELS, MIN, ASK_GAMES, EARLY_END, MUSIC_GAMES, PAIR_GAMES, LINE_GAMES, SONG_FIELD, OUT_GAMES, TILES, rounds, askMs, joinMs, clipMs, durMs2, breakMs, ctx2, G, box, ticker, boxKey, shuffle, clean2, notify2, coverOf2, cleanTitle2, songOf, queueSongs, pool, within6, years, nowItem, nowUri, GUEST_COLORS, colOf, short, nameOf2, all, alive, top, TEAM_GAMES, TEAM_COLS, after, later, FIRST, TOUR_POOL, TOUR_PTS, TOUR, MUTE_KEY, muteBack, SPARE_ARTISTS, SPARE_TITLES, wordsOf, WORD, gapWord, FILLER, FAST_PTS, KAR_LEAD, karSegs, karAt, pairClip, pairAsk, label, queueSong, COVER_STEPS, bigCover, BINGO_N, BINGO_LINES, KEY_ID, keySend, keyIn, div, IC_CACHE, svgIc, icDiv, bigIc, medalOf, secs, dot, chip, beatRaf, WHEEL_COLORS, games;
   var init_games = __esm({
     "src/games.js"() {
       init_core();
@@ -31994,33 +32074,32 @@
       init_karaoke();
       init_icons();
       GAME_LIST = [
-        { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint", icon: "\u{1F3A4}" },
-        { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint", icon: "\u{1F3B5}" },
-        { k: "intro", cat: "gCatMusic", label: "gIntro", hint: "gIntroHint", icon: "\u23F1\uFE0F" },
-        { k: "gap", cat: "gCatMusic", label: "gGap", hint: "gGapHint", icon: "\u270F\uFE0F" },
-        { k: "next", cat: "gCatMusic", label: "gNext", hint: "gNextHint", icon: "\u{1F4DC}" },
-        { k: "tf", cat: "gCatMusic", label: "gTf", hint: "gTfHint", icon: "\u{1F575}\uFE0F" },
-        { k: "beat", cat: "gCatMusic", label: "gBeat", hint: "gBeatHint", icon: "\u{1F941}" },
-        { k: "older", cat: "gCatMusic", label: "gOlder", hint: "gOlderHint", icon: "\u{1F4C5}" },
-        { k: "cover", cat: "gCatMusic", label: "gCover", hint: "gCoverHint", icon: "\u{1F5BC}\uFE0F" },
-        { k: "duel", cat: "gCatMusic", label: "gDuel", hint: "gDuelHint", icon: "\u2694\uFE0F" },
-        { k: "stop", cat: "gCatQuick", label: "gStop", hint: "gStopHint", icon: "\u270B" },
-        { k: "fast", cat: "gCatQuick", label: "gFast", hint: "gFastHint", icon: "\u26A1" },
-        { k: "taps", cat: "gCatQuick", label: "gTaps", hint: "gTapsHint", icon: "\u{1F446}" },
-        { k: "battle", cat: "gCatQuick", label: "gBattle", hint: "gBattleHint", icon: "\u{1F483}" },
-        { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint", icon: "\u{1F4A3}" },
-        { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint", icon: "\u{1F914}" },
-        { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint", icon: "\u{1F399}\uFE0F" },
-        // 🎤 und 🎙️ sind schon vergeben (Quiz, Sing weiter)
-        { k: "karaoke", cat: "gCatParty", label: "gKar", hint: "gKarHint", icon: "\u{1F3B6}" },
-        { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint", icon: "\u{1F3C6}" },
-        { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint", icon: "\u{1F3B1}" },
-        { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint", icon: "\u{1F3A1}" },
-        { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint", icon: "\u{1F648}" },
-        { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint", icon: "\u{1F37B}" },
-        { k: "alarm", cat: "gCatDrink", label: "gAlarm", hint: "gAlarmHint", icon: "\u{1F6A8}" },
-        { k: "dlikely", cat: "gCatDrink", label: "gDlikely", hint: "gDlikelyHint", icon: "\u{1F449}" },
-        { k: "dwheel", cat: "gCatDrink", label: "gDwheel", hint: "gDwheelHint", icon: "\u{1F340}" }
+        { k: "quiz", cat: "gCatMusic", label: "gQuiz", hint: "gQuizHint" },
+        { k: "title", cat: "gCatMusic", label: "gTitleQ", hint: "gTitleQHint" },
+        { k: "intro", cat: "gCatMusic", label: "gIntro", hint: "gIntroHint" },
+        { k: "gap", cat: "gCatMusic", label: "gGap", hint: "gGapHint" },
+        { k: "next", cat: "gCatMusic", label: "gNext", hint: "gNextHint" },
+        { k: "tf", cat: "gCatMusic", label: "gTf", hint: "gTfHint" },
+        { k: "beat", cat: "gCatMusic", label: "gBeat", hint: "gBeatHint" },
+        { k: "older", cat: "gCatMusic", label: "gOlder", hint: "gOlderHint" },
+        { k: "cover", cat: "gCatMusic", label: "gCover", hint: "gCoverHint" },
+        { k: "duel", cat: "gCatMusic", label: "gDuel", hint: "gDuelHint" },
+        { k: "stop", cat: "gCatQuick", label: "gStop", hint: "gStopHint" },
+        { k: "fast", cat: "gCatQuick", label: "gFast", hint: "gFastHint" },
+        { k: "taps", cat: "gCatQuick", label: "gTaps", hint: "gTapsHint" },
+        { k: "battle", cat: "gCatQuick", label: "gBattle", hint: "gBattleHint" },
+        { k: "bomb", cat: "gCatQuick", label: "gBomb", hint: "gBombHint" },
+        { k: "likely", cat: "gCatParty", label: "gLikely", hint: "gLikelyHint" },
+        { k: "sing", cat: "gCatParty", label: "gSing", hint: "gSingHint" },
+        { k: "karaoke", cat: "gCatParty", label: "gKar", hint: "gKarHint" },
+        { k: "tour", cat: "gCatParty", label: "gTour", hint: "gTourHint" },
+        { k: "bingo", cat: "gCatParty", label: "gBingo", hint: "gBingoHint" },
+        { k: "wheel", cat: "gCatParty", label: "gWheel", hint: "gWheelHint" },
+        { k: "never", cat: "gCatDrink", label: "gNever", hint: "gNeverHint" },
+        { k: "dquiz", cat: "gCatDrink", label: "gDquiz", hint: "gDquizHint" },
+        { k: "alarm", cat: "gCatDrink", label: "gAlarm", hint: "gAlarmHint" },
+        { k: "dlikely", cat: "gCatDrink", label: "gDlikely", hint: "gDlikelyHint" },
+        { k: "dwheel", cat: "gCatDrink", label: "gDwheel", hint: "gDwheelHint" }
       ];
       INFO = Object.fromEntries(GAME_LIST.map((g) => [g.k, g]));
       WHEEL_FIELDS = ["wh1", "wh2", "wh3", "wh4", "wh5", "wh6", "wh7", "wh8"];
@@ -32235,6 +32314,35 @@
         d.className = cls;
         if (text != null) d.textContent = text;
         return d;
+      };
+      IC_CACHE = /* @__PURE__ */ new Map();
+      svgIc = (svg, cls = "m-ic is-inline") => {
+        let i = IC_CACHE.get(cls + svg);
+        if (!i) {
+          i = document.createElement("i");
+          i.className = cls;
+          i.innerHTML = svg;
+          IC_CACHE.set(cls + svg, i);
+        }
+        return i.cloneNode(true);
+      };
+      icDiv = (cls, svg, text) => {
+        const d = div(cls);
+        d.append(svgIc(svg), String(text ?? ""));
+        return d;
+      };
+      bigIc = (cls, svg) => {
+        const d = div(cls + " m-g-bigic");
+        d.innerHTML = svg;
+        return d;
+      };
+      medalOf = (i) => {
+        if (i > 2) return String(i + 1);
+        const m = svgIc(UI["medal" + (i + 1)], "m-g-mdl is-" + (i + 1));
+        m.setAttribute("role", "img");
+        m.setAttribute("aria-label", t("gRank").replace("{n}", i + 1));
+        m.dataset.medal = String(i + 1);
+        return m;
       };
       secs = (end) => {
         const s2 = Math.max(0, Math.ceil((end - Date.now()) / 1e3));
@@ -33687,17 +33795,42 @@ Probe-FX: ${pfx}`;
             idleT = setTimeout(goIdle, 2600);
             return;
           }
-          el4.style.setProperty("--m-idle-shift", Math.round(q2.controls.offsetHeight + 10) + "px");
+          el4.style.setProperty("--m-idle-shift", Math.round(q2.controls.getBoundingClientRect().height + 10) + "px");
           el4.classList.add("is-idle");
           vizMoveUntil = performance.now() + 1e3;
         }
         function placeIndicator() {
           const b = el4.querySelector(`.m-im-tabs button[data-mode="${cfg.imMode}"]`);
           if (!b) return;
+          const first = !q2.ind.style.width;
+          if (first) q2.ind.style.transition = "none";
           q2.ind.style.width = b.offsetWidth + "px";
           q2.ind.style.transform = `translateX(${b.offsetLeft}px)`;
+          if (first) {
+            void q2.ind.offsetWidth;
+            q2.ind.style.transition = "";
+          }
         }
+        let modeT = 0, modeAt = -1e9, modeNext = null;
         function setMode(mode, animate) {
+          if (animate && isOpen() && !stillMotion()) {
+            const left = modeAt + 160 - performance.now();
+            if (left > 0 || modeT) {
+              modeNext = mode;
+              if (!modeT) modeT = setTimeout(() => {
+                modeT = 0;
+                const m = modeNext;
+                modeNext = null;
+                if (m) setMode(m, true);
+              }, Math.max(0, left));
+              return;
+            }
+            modeAt = performance.now();
+          } else if (modeT) {
+            clearTimeout(modeT);
+            modeT = 0;
+            modeNext = null;
+          }
           if (!MODES.some(([k]) => k === mode)) mode = "cover";
           const apply2 = () => {
             const from2 = el4.dataset.mode;
@@ -33732,12 +33865,15 @@ Probe-FX: ${pfx}`;
           if (animate && !stillMotion() && isOpen() && el4.dataset.mode !== mode) morphMode(apply2);
           else apply2();
         }
-        let morphUntil = 0;
+        let morphUntil = 0, morphAnims = [];
         function morphMode(apply2) {
           const lyrWas = q2.lyrics.offsetWidth > 0;
-          const a = q2.wrap.getBoundingClientRect(), m = q2.meta.getBoundingClientRect();
+          const a = q2.wrap.getBoundingClientRect(), m = q2.meta.getBoundingClientRect(), l0 = lyrWas ? q2.lyrics.getBoundingClientRect() : null;
           const metaGhost = ghostOf(q2.meta, m);
           const lyrGhost = lyrWas ? lyricsGhostIn(el4) : null;
+          const mOp = getComputedStyle(q2.meta).opacity;
+          for (const x of morphAnims) x.cancel();
+          morphAnims = [];
           apply2();
           const b = q2.wrap.getBoundingClientRect(), n = q2.meta.getBoundingClientRect();
           const ease4 = "cubic-bezier(0.22, 1, 0.36, 1)", ms = 700;
@@ -33745,16 +33881,20 @@ Probe-FX: ${pfx}`;
           vizMoveUntil = morphUntil + 100;
           if (a.width && b.width) {
             const dx = a.left + a.width / 2 - (b.left + b.width / 2), dy = a.top + a.height / 2 - (b.top + b.height / 2), k = a.width / b.width;
-            if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || Math.abs(k - 1) > 0.01) q2.wrap.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${k})` }, { transform: "none" }], { duration: ms, easing: ease4, composite: "add" });
+            if (Math.abs(dx) > 1 || Math.abs(dy) > 1 || Math.abs(k - 1) > 0.01) morphAnims.push(q2.wrap.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${k})` }, { transform: "none" }], { duration: ms, easing: ease4, composite: "add" }));
           }
           if (m.width && n.width) {
             const dx = m.left + m.width / 2 - (n.left + n.width / 2), dy = m.top - n.top;
-            q2.meta.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: ms, easing: ease4, composite: "add" });
-            q2.meta.animate([{ opacity: 0 }, { opacity: getComputedStyle(q2.meta).opacity }], { duration: ms * 0.6, delay: ms * 0.1, easing: ease4, fill: "backwards" });
-            if (metaGhost) metaGhost.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${-dx}px, ${-dy}px)`, opacity: 0 }], { duration: ms * 0.5, easing: ease4, fill: "forwards" }).finished.then(() => metaGhost.remove(), () => metaGhost.remove());
+            morphAnims.push(q2.meta.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: ms, easing: ease4, composite: "add" }));
+            morphAnims.push(q2.meta.animate([{ opacity: 0 }, { opacity: getComputedStyle(q2.meta).opacity }], { duration: ms * 0.6, delay: ms * 0.1, easing: ease4, fill: "backwards" }));
+            if (metaGhost) metaGhost.animate([{ transform: "none", opacity: mOp }, { transform: `translate(${-dx}px, ${-dy}px)`, opacity: 0 }], { duration: ms * 0.5, easing: ease4, fill: "forwards" }).finished.then(() => metaGhost.remove(), () => metaGhost.remove());
           } else metaGhost?.remove();
           if (lyrGhost) lyrGhost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 280, easing: "ease-out", fill: "forwards" }).finished.then(() => lyrGhost.remove(), () => lyrGhost.remove());
-          if (!lyrWas && q2.lyrics.offsetWidth) q2.lyrics.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 80, easing: ease4, fill: "backwards" });
+          if (!lyrWas && q2.lyrics.offsetWidth) morphAnims.push(q2.lyrics.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 80, easing: ease4, fill: "backwards" }));
+          else if (lyrGhost && q2.lyrics.offsetWidth) {
+            const l1 = q2.lyrics.getBoundingClientRect();
+            if (Math.abs(l1.left - l0.left) > 24 || Math.abs(l1.top - l0.top) > 24 || Math.abs(l1.width - l0.width) > 24) morphAnims.push(q2.lyrics.animate([{ opacity: 0 }, { opacity: getComputedStyle(q2.lyrics).opacity }], { duration: 460, delay: 90, easing: ease4, fill: "backwards" }));
+          }
         }
         function lyricsGhostIn(host) {
           const r = q2.lyrics.getBoundingClientRect(), o = host.getBoundingClientRect(), ls = getComputedStyle(q2.lyrics);
@@ -34111,7 +34251,7 @@ Probe-FX: ${pfx}`;
         function resetLyricsView() {
           if (ghostLyrics(320)) q2.inner.style.transform = "";
           else snapLyrics(() => q2.inner.style.transform = "");
-          q2.lyrics.scrollTop = 0;
+          if (q2.lyrics.classList.contains("is-unsynced")) q2.lyrics.scrollTop = 0;
           words2 = [];
           q2.inner.innerHTML = '<div class="m-im-lyrics-note"></div>';
           q2.inner.firstChild.textContent = t("loading");
@@ -34135,7 +34275,7 @@ Probe-FX: ${pfx}`;
           const from2 = upgrade && got?.synced ? q2.inner.getAnimations().length ? getComputedStyle(q2.inner).transform : q2.inner.style.transform : "";
           if (upgrade) ghostLyrics(450);
           q2.inner.textContent = "";
-          q2.lyrics.scrollTop = 0;
+          if (q2.lyrics.classList.contains("is-unsynced")) q2.lyrics.scrollTop = 0;
           lyrFade?.cancel();
           if (!matchMedia?.("(prefers-reduced-motion: reduce)").matches) lyrFade = q2.inner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
           showSource(got);
@@ -35090,15 +35230,15 @@ Probe-FX: ${pfx}`;
           ctx3.restore();
           ctx3.globalCompositeOperation = "lighter";
         }
-        function vivid(pal, minor, tint, pitch = -1, keyPc = -1) {
-          const key = pal.map((c2) => c2.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch + "k" + keyPc;
+        function vivid(pal, minor, tint2, pitch = -1, keyPc = -1) {
+          const key = pal.map((c2) => c2.join(",")).join("|") + (minor ? "m" : "") + (tint2 || "") + pitch + "k" + keyPc;
           if (key === vividKey) return vividPal;
           vividKey = key;
           const hsl = pal.map(rgb2hsl);
           const grey = hsl.every(([, s2]) => s2 < 0.12);
           vividPal = hsl.map(([h, s2, l], i) => {
             let hue = grey ? [275, 195, 320][i] : h;
-            if (TINT2[tint] != null) hue = toward3(hue, TINT2[tint] + (i - 1) * 22, 0.45);
+            if (TINT2[tint2] != null) hue = toward3(hue, TINT2[tint2] + (i - 1) * 22, 0.45);
             if (pitch >= 0) hue = toward3(hue, pitch * 7 % 12 * 30, i === 2 ? 0.35 : 0.1);
             if (keyPc >= 0) hue = toward3(hue, keyPc * 7 % 12 * 30, 0.08);
             hue = toward3(hue, minor ? 225 : 35, 0.07);
@@ -35765,9 +35905,11 @@ Probe-FX: ${pfx}`;
         }
         function fitTop() {
           if (!el4) return;
-          el4.classList.remove("tabs-left");
-          const tabs = el4.querySelector(".m-im-tabs")?.getBoundingClientRect(), acts = el4.querySelector(".m-im-actions")?.getBoundingClientRect();
-          if (tabs && acts && acts.width && acts.left < tabs.right + 12) el4.classList.add("tabs-left");
+          const tabs = el4.querySelector(".m-im-tabs"), acts = el4.querySelector(".m-im-actions")?.getBoundingClientRect();
+          if (!tabs || !acts?.width) return;
+          const r = tabs.getBoundingClientRect(), right = innerWidth / 2 + r.width / 2;
+          const left = getComputedStyle(tabs).position === "absolute" && acts.top < r.bottom && acts.bottom > r.top && acts.left < right + 12;
+          if (el4.classList.contains("tabs-left") !== left) el4.classList.toggle("tabs-left", left);
         }
         addEventListener("resize", () => requestAnimationFrame(fitTop));
         function applyCanvas() {
@@ -35992,9 +36134,17 @@ Probe-FX: ${pfx}`;
           const item = currentItem();
           setCover(item);
           setCanvas(item);
-          q2.title.textContent = titleOf(item) || t("nothing");
-          q2.artist.textContent = artistOf(item);
+          const title = titleOf(item) || t("nothing"), artist = artistOf(item);
+          const glide = el4.classList.contains("is-on") && !stillMotion() && (q2.title.textContent !== title || q2.artist.textContent !== artist);
+          const kids = glide ? [...q2.meta.children].filter((k) => k.offsetParent) : [];
+          const tops = kids.map((k) => k.getBoundingClientRect().top);
+          q2.title.textContent = title;
+          q2.artist.textContent = artist;
           q2.smart.hidden = !isSmartPick(item);
+          kids.forEach((k, i) => {
+            const dy = tops[i] - k.getBoundingClientRect().top;
+            if (Math.abs(dy) > 1) k.animate([{ transform: `translateY(${dy / (k.currentCSSZoom || 1)}px)` }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)", composite: "add" });
+          });
           album.sync(item, el4.dataset.mode, true);
           clockView.update(item);
           updateLyrState();
@@ -37176,11 +37326,22 @@ Probe-FX: ${pfx}`;
           const v = getComputedStyle(root).getPropertyValue("--spice-rgb-main").split(",").map(Number);
           return v.length === 3 && v.every((n) => n >= 0) ? v : [7, 6, 12];
         }
+        let baseRaf = 0, baseRead = false;
         function recolor(cols) {
           pal = cols || schemePalette();
-          base = baseColor();
           sprites = [...pal, [255, 255, 255]].map(sprite);
-          if (running2 && !timer2) draw(performance.now());
+          if (!baseRead) {
+            baseRead = true;
+            base = baseColor();
+            if (running2 && !timer2) draw(performance.now());
+            return;
+          }
+          if (baseRaf) return;
+          baseRaf = requestAnimationFrame(() => {
+            baseRaf = 0;
+            base = baseColor();
+            if (running2 && !timer2) draw(performance.now());
+          });
         }
         function buildVignette() {
           vig.width = W2;
