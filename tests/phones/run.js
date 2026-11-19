@@ -283,7 +283,15 @@ async function main() {
   try {
     const exe = findBrowser();
     if (exe) {
-      chrome = await launchChrome(exe, TMP);
+      // auf GitHub-Rechnern öffnet Chrome seine Steuerverbindung manchmal nicht: bis zu drei Versuche
+      for (let tries = 1; !chrome; tries++) {
+        try {
+          chrome = await launchChrome(exe, TMP);
+        } catch (e) {
+          if (tries >= 3) throw e;
+          console.log(`  Chrome-Start ${tries} fehlgeschlagen (${e.message}), neuer Versuch`);
+        }
+      }
       // iPhone-Maße in Chromium zeigen nur das Layout – Safaris eigene Eigenheiten prüft erst der WebKit-Teil
       await suite(chrome, env, [PIXEL, IPHONE]);
     } else {

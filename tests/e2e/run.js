@@ -2282,7 +2282,16 @@ const CASES = [
 Object.assign(ICON, { older: 1, cover: 1, duel: 1, bingo: 1 });
 CASES.push(["older", olderGame], ["cover", coverGame], ["duel", duelGame], ["teams", teamsGame], ["tour", tourGame], ["bingo", bingoGame]);
 Object.assign(ICON, { karaoke: 1 });
-CASES.push(["karaoke", karaokeGame]);
+// Karaoke prüft die Wertung, die braucht Spotifys Analyse: währenddessen haben alle Songs eine (sonst landet das
+// Spiel auf langsamen Rechnern schon mal auf einem Song ohne, bevor die Sprung-Schleifen greifen)
+CASES.push(["karaoke", async () => {
+  await T.js(`__sp.allAnalysis(true); 1`);
+  try {
+    await karaokeGame();
+  } finally {
+    await T.js(`__sp.allAnalysis(false); 1`).catch(() => {});
+  }
+}]);
 CASES.push(["perf-menu", perfMenu]);
 CASES.push(["idle-hidden", idleHidden]);
 CASES.push(["photo-wall", photoWall]);

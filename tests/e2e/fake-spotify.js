@@ -24,7 +24,9 @@
 
   // Songs ohne Liedtext und ohne Taktdaten gibt es auch in echt
   const noLyrics = (i) => i % 7 === 3;
-  const noAnalysis = (i) => i % 5 === 2;
+  // allAna: für Tests, die eine Analyse brauchen (Karaoke-Wertung), haben vorübergehend alle Songs eine
+  let allAna = false;
+  const noAnalysis = (i) => !allAna && i % 5 === 2;
   const idx = (uri) => tracks.findIndex((x) => x.uri === uri);
   const VERSE = ["We are dancing in the fire tonight", "Feel the rain falling on my skin", "You hold my heart inside your hand", "Money falling down from the sky", "Under silver stars we run away", "Nothing ever stays the same again", "Golden summer burning through the night", "Every window open to the street"];
   const CHORUS = ["Forever running with the morning light", "Forever singing till the morning comes"];
@@ -386,6 +388,8 @@
     playSpecial: (kind) => landItem(SPECIAL[kind]),
     // Wiedergabe-Kontext (Album-Reise: spotify:album:…; AI-DJ: Playlist 37i9dQZF1EYkqdzj48dyYq, metadata.lexicon_set_type „your_dj“)
     setContext: (uri, metadata) => (st.context = { uri, metadata: metadata || {} }),
+    // alle Songs mit Audio-Analyse (true) oder wie sonst jeder fünfte ohne (false)
+    allAnalysis: (on) => (allAna = !!on),
   };
   const SPECIAL = {
     // Podcast-Folge (auch Video-Podcasts: gleiche URI-Art, das Bild kommt aus Spotifys Videofläche)
