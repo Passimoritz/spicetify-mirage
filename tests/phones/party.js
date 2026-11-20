@@ -229,7 +229,8 @@ async function ecoCheck(browser, env, o, check) {
   // lokal mit Grafikkarte: auf GitHub zeichnet Chrome ohne GPU höchstens etwa 30/s
   const saverFps = Math.max(asked.fps, low.fps);
   if (normal.fps < MIN_FPS) console.log(`      Hinweis: diese Engine malt nur ${normal.fps.toFixed(1)} Bilder/s – der Vergleich der Bildraten entfällt`);
-  if (normal.fps >= 25 && normal.fps < saverFps * 1.4) problems.push(`normal ${normal.fps.toFixed(0)} Bilder/s, Sparen ${saverFps.toFixed(0)}: kaum Unterschied`);
+  // nur vergleichen, wo Normal klar über den ~30/s des Sparens malen kann (GitHub-Rechner schaffen teils nur ~35/s)
+  if (normal.fps >= 45 && normal.fps < saverFps * 1.4) problems.push(`normal ${normal.fps.toFixed(0)} Bilder/s, Sparen ${saverFps.toFixed(0)}: kaum Unterschied`);
   if (normal.fps < 40 && normal.gpu && !process.env.CI) problems.push(`normal nur ${normal.fps.toFixed(0)} Bilder/s gemalt`);
   check(`${o.device.name} · Akku sparen: ~30 Bilder/s und einfache Auflösung (gewählt oder bei schwachem Akku), Equalizer ohne Layout`, problems);
 }
