@@ -225,15 +225,18 @@ Probe-FX: ${pfx}`;
         <div class="m-im-bar" role="slider" tabindex="0"><div class="m-im-fill"></div></div>
         <div class="m-im-time"><span class="m-im-pos">0:00</span><span class="m-im-dur">0:00</span></div>
         <div class="m-im-controls">
+          <button type="button" class="m-im-sm m-im-b15" hidden>${UI.back15}</button>
           <button type="button" class="m-im-sm m-im-shuffle">${ICON.shuffle}</button>
           <button type="button" class="m-im-prev">${ICON.prev}</button>
           <button type="button" class="m-im-play">${ICON.play}</button>
           <button type="button" class="m-im-next">${ICON.next}</button>
           <button type="button" class="m-im-sm m-im-repeat">${ICON.repeat}</button>
+          <button type="button" class="m-im-sm m-im-f15" hidden>${UI.fwd15}</button>
         </div>
         <div class="m-im-extras">
           <button type="button" class="m-im-sm m-im-like">${ICON.heart}</button>
           <button type="button" class="m-im-sm m-im-addto" data-menu="playlists">${ICON.add}</button>
+          <button type="button" class="m-im-sm m-im-songbtn" data-menu="song">${ICON.more}</button>
           <div class="m-im-vol">
             <button type="button" class="m-im-sm m-im-mute">${ICON.vol}</button>
             <input type="range" class="m-im-volume" min="0" max="100" step="1">
@@ -362,6 +365,25 @@ Probe-FX: ${pfx}`;
     q.fs.hidden = !canFull();
     document.addEventListener("fullscreenchange", syncFull);
     if (!ctl.canAddTo()) q.addto.hidden = true;
+    /* === 1.27 actions: Song-Menü (Drei Punkte, Rechtsklick, Taste M) und ±15 s für Podcasts === */
+    q.songbtn = el.querySelector(".m-im-songbtn");
+    q.songbtn.title = q.songbtn.ariaLabel = t("smOpen");
+    q.songbtn.setAttribute("aria-keyshortcuts", "M");
+    q.songbtn.onclick = () => showSide(side === "song" ? null : "song");
+    q.b15 = el.querySelector(".m-im-b15");
+    q.f15 = el.querySelector(".m-im-f15");
+    q.b15.title = q.b15.ariaLabel = t("c_back15");
+    q.f15.title = q.f15.ariaLabel = t("c_fwd15");
+    q.b15.onclick = () => free() && seekBy(-15000);
+    q.f15.onclick = () => free() && seekBy(15000);
+    // Rechtsklick irgendwo auf der Ebene (Cover, Titel, Liedtext, Bühne) öffnet das Song-Menü; nicht in Menüs,
+    // Eingabefeldern und Spielen, die ihre eigenen Ziele haben
+    el.addEventListener("contextmenu", (e) => {
+      if (e.target.closest?.("input, textarea, [contenteditable], .m-im-pop, .m-im-keys, .m-im-game, .m-im-livecard")) return;
+      e.preventDefault();
+      showSide("song");
+    });
+    /* === end actions === */
     // Party: ruht die Maus, blendet die Bedienung aus und alles rückt weich zusammen
     for (const ev of ["pointermove", "pointerdown", "wheel"]) el.addEventListener(ev, wake, { passive: true });
     // Cover fertig verschoben: Visualizer neu ausmessen
@@ -417,7 +439,8 @@ Probe-FX: ${pfx}`;
     el.querySelector(".m-im-side-x").onclick = () => showSide(null);
     // Unterseite aus „Mehr“ (DJ, Umfrage …): ein Pfeil führt zurück ins Menü
     q.sideBack = el.querySelector(".m-im-side-back");
-    q.sideBack.onclick = () => showSide("menu");
+    // 1.27 actions: aus dem Song-Menü geöffnete Seiten (Playlists) führen dorthin zurück
+    q.sideBack.onclick = () => showSide(sideParent);
     // Pfeil hoch/runter wandert durch die Zeilen des Menüs (wie in einem Menü üblich), Pos1/Ende springen ans Ende;
     // in Eingabefeldern und Stufenwahlen bleiben die Pfeile beim Feld
     q.side.addEventListener("keydown", (e) => {
@@ -3203,7 +3226,7 @@ Probe-FX: ${pfx}`;
     playIn(q.video, on && mode === "lyrics");
   }
   // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – " + MODES.length, "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["T", "k_tap"], ["E", "k_timing"], ["O", "k_perf"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – " + MODES.length, "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["M", "k_song"], ["A", "k_addto"], ["T", "k_tap"], ["E", "k_timing"], ["O", "k_perf"], ["Esc", "k_close"], ["?", "keysTitle"]];
   // Es ist immer nur ein Menü offen: das neue schließt das vorherige
   let liveToken = 0;
   function closeMenus(keep) {
@@ -3279,13 +3302,18 @@ Probe-FX: ${pfx}`;
 
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer
   let side = null, sideFromMenu = false, viaMenu = false;
+  // 1.27 actions: Elternseite für den Zurück-Pfeil („Mehr“ oder das Song-Menü)
+  let sideParent = "menu", viaSong = false;
   function showSide(kind) {
     sideFocus(kind);
     if (kind) closeMenus("side");
     const was = side;
-    // Zurück-Pfeil nur für Unterseiten, die aus „Mehr“ geöffnet wurden; Neuaufbau derselben Seite behält ihn
-    if (kind !== was) sideFromMenu = viaMenu && kind !== "menu";
-    viaMenu = false;
+    // Zurück-Pfeil nur für Unterseiten, die aus „Mehr“ (oder dem Song-Menü) geöffnet wurden; Neuaufbau derselben Seite behält ihn
+    if (kind !== was) {
+      sideFromMenu = (viaMenu || viaSong) && kind !== "menu";
+      sideParent = viaSong ? "song" : "menu";
+    }
+    viaMenu = viaSong = false;
     side = kind;
     // der QR-Code der Spielleitung bleibt nie offen stehen
     if (kind !== "games") q.hostOpen = false;
@@ -3295,14 +3323,14 @@ Probe-FX: ${pfx}`;
     if (!kind) return;
     q.side.dataset.kind = kind;
     q.sideBack.hidden = !sideFromMenu;
-    q.sideBack.title = q.sideBack.ariaLabel = t("pmTitle");
+    q.sideBack.title = q.sideBack.ariaLabel = t(sideParent === "song" ? "smOpen" : "pmTitle");
     // anderer Inhalt in der offenen Leiste: kurz einblenden statt hart springen (Neuaufbau derselben Seite nicht)
     if (was && was !== kind) {
       q.sideBody.classList.remove("is-swap");
       void q.sideBody.offsetWidth;
       q.sideBody.classList.add("is-swap");
     }
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle" }[kind]);
+    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle", song: ctl.isEpisode(currentItem()) ? "smTitleEp" : "smTitle" }[kind]);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -3340,12 +3368,11 @@ Probe-FX: ${pfx}`;
     if (kind === "dj") return djPanel(body);
     if (kind === "games") return gamesPanel(body);
     if (kind === "menu") return menuPanel(body);
+    if (kind === "song") return songPanel(body);
     if (kind === "poll") return pollPanel(body);
     if (kind === "recap") return recapPanel(body);
     if (kind === "queue") {
-      const list = ctl.upNext();
-      if (!list.length) return item(t("queueEmpty"));
-      for (const x of list) item(x.title, x.artist, x.image, null);
+      queuePanel(body, item);
     } else if (kind === "devices") {
       const list = ctl.devices();
       if (!list.length) return item(t("devicesNone"));
@@ -3370,6 +3397,21 @@ Probe-FX: ${pfx}`;
     const list = await ctl.playlists();
     if (side !== "playlists") return;
     body.textContent = "";
+    // 1.27 actions: „Neue Playlist“ wie in Spotify – heißt wie der Song, der Song ist gleich drin
+    if (ctl.canCreate() && /^spotify:(track|episode):/.test(track)) {
+      const made = sideBtn(body, t("plNew"), t("plNewSub"), async () => {
+        if (made.classList.contains("is-busy")) return;
+        made.classList.add("is-busy");
+        const uri = await ctl.newPlaylist(titleOf(currentItem()) || t("plNew"), track);
+        made.classList.remove("is-busy");
+        rowNote(made, uri ? t("plMade") : t("smFail"), !!uri);
+        if (uri) {
+          cfg.plRecent = [uri, ...(cfg.plRecent || []).filter((u) => u !== uri)].slice(0, 8);
+          save();
+        }
+      }, false, UI.add);
+      made.classList.add("m-im-plnew");
+    }
     if (!list.length) return item(t("plNone"));
     const recent = cfg.plRecent || [];
     const rank = (p) => (recent.includes(p.uri) ? recent.indexOf(p.uri) : 99);
@@ -3412,6 +3454,172 @@ Probe-FX: ${pfx}`;
     find.focus();
   }
 
+  /* === 1.27 actions: Song-Menü – alles, was Spotify mit dem laufenden Song anbietet, ohne den Immersiv-Modus zu verlassen === */
+  // Rückmeldung direkt in der Zeile (Häkchen und kurzer Text), die Zeile bleibt, wo sie ist
+  function rowNote(b, text, good) {
+    const span = b.querySelector("span");
+    const small = span.querySelector("small") || span.appendChild(document.createElement("small"));
+    small.replaceChildren(...(good ? [iconEl(UI.check, "m-ic is-inline"), text] : [text]));
+    b.classList.toggle("is-done", !!good);
+  }
+  // Seite verlassen (Künstler, Album, Podcast): Ebene blendet weich aus, Spotify zeigt die Seite dahinter schon
+  const goTo = (uri) => ctl.go(uri) && close();
+  function songPanel(body) {
+    const it = currentItem(), uri = it?.uri || "";
+    const track = /^spotify:track:/.test(uri), ep = /^spotify:episode:/.test(uri), local = /^spotify:local:/.test(uri);
+    // Kopf: kleines Cover, Titel und Künstler – man sieht, worauf sich das Menü bezieht
+    const head = document.createElement("div");
+    head.className = "m-im-songhead";
+    const cv = covers(it).small;
+    if (cv) {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.onerror = () => img.remove();
+      img.src = cv;
+      head.append(img);
+    }
+    const txt = document.createElement("span"), b = document.createElement("b"), s2 = document.createElement("small");
+    b.textContent = titleOf(it) || t("nothing");
+    s2.textContent = artistOf(it);
+    txt.append(b, s2);
+    head.append(txt);
+    body.append(head);
+    if (!track && !ep && !local) return sideBtn(body, t("smNone"));
+    // Trennlinie erst, wenn die nächste Gruppe wirklich eine Zeile bringt (keine doppelten Linien)
+    let gap = false;
+    const sep = () => (gap = true);
+    const flush = () => {
+      if (gap && body.querySelector(".m-im-side-item")) body.append(Object.assign(document.createElement("hr"), { className: "m-im-song-sep" }));
+      gap = false;
+    };
+    const row = (label, sub, fn, icon, nav) => (flush(), sideBtn(body, label, sub, fn, false, icon, nav));
+    // Bibliothek: Lieblingssongs, Playlist, Warteschlange, Geschmacksprofil
+    if (track || ep) {
+      const liked = !!S.Player.getHeart?.();
+      const like = row(t(ep ? (liked ? "smUnsaveEp" : "smSaveEp") : liked ? "smUnlike" : "smLike"), "", () => {
+        S.Player.toggleHeart();
+        // Funkenregen wie beim Herz unten, hier an der Zeile
+        if (!liked && cfg.burst && !cfg.calm) {
+          const r = like.getBoundingClientRect();
+          burst(r.left + 28, r.top + r.height / 2);
+        }
+        setTimeout(() => {
+          syncState();
+          if (side === "song") showSide("song");
+        }, 250);
+      }, UI.heart);
+      like.classList.add("m-im-song-like");
+      like.setAttribute("aria-pressed", String(liked));
+    }
+    if (ctl.canAddTo()) row(t("c_addTo"), "", () => { viaSong = true; showSide("playlists"); }, UI.playlist, true).setAttribute("aria-keyshortcuts", "A");
+    if (ctl.canQueueAdd()) {
+      const qb = row(t("smQueue"), "", async () => rowNote(qb, (await ctl.queueAdd(uri)) ? t("smQueued") : t("smFail"), true), UI.queueAdd);
+    }
+    if (track && ctl.canTaste()) {
+      const tb = row(t("smTaste"), t("smTasteSub"), null, UI.excl);
+      tb.classList.add("m-im-song-wrap");
+      ctl.tasteExcluded(uri).then((on) => {
+        if (on == null || !tb.isConnected) return;
+        tb.querySelector("b").textContent = t(on ? "smTasteOff" : "smTaste");
+        tb.setAttribute("aria-pressed", String(on));
+        tb.disabled = false;
+        tb.onclick = async () => {
+          if (await ctl.setTasteExcluded(uri, !on)) showSide("song");
+          else rowNote(tb, t("smFail"));
+        };
+      });
+    }
+    // Weiter: Song-Radio, Künstler, Album oder Podcast
+    sep();
+    if (track && ctl.canRadio()) {
+      const rb = row(t("smRadio"), "", async () => {
+        if (rb.classList.contains("is-busy")) return;
+        rb.classList.add("is-busy");
+        const ok = await ctl.songRadio(uri);
+        rb.classList.remove("is-busy");
+        rowNote(rb, ok ? t("smRadioOn") : t("smFail"), ok);
+      }, UI.radio);
+    }
+    for (const a of ctl.artistsOf(it).slice(0, 4)) row(t("smArtist"), a.name, () => goTo(a.uri), UI.user, true).classList.add("m-im-song-artist");
+    const al = ep ? ctl.showOf(it) : ctl.albumOf(it);
+    if (/^spotify:(album|show):/.test(al || "")) row(t(ep ? "smShow" : "smAlbum"), it?.album?.name || it?.metadata?.album_title || "", () => goTo(al), ep ? UI.podcast : UI.disc, true);
+    // Teilen: Link und Bild
+    if (track || ep) {
+      sep();
+      const lb = row(t(ep ? "smLinkEp" : "smLink"), "", async () => {
+        const ok = await ctl.copyLink(uri);
+        rowNote(lb, ok ? t("smCopied") : t("smFail"), ok);
+      }, UI.link);
+      row(t("smShare"), "", () => { showSide(null); nowPlayingCard(); }, UI.share);
+    }
+    // Podcasts und Hörbücher: Tempo wie Spotifys Tempo-Knopf
+    if (ctl.canSpeed(it)) {
+      sep();
+      const r = document.createElement("div");
+      r.className = "m-g-cfg m-im-speed";
+      const l = document.createElement("span");
+      l.textContent = t("smSpeed");
+      const seg = document.createElement("div");
+      seg.className = "m-g-seg-row";
+      seg.setAttribute("role", "group");
+      seg.setAttribute("aria-label", t("smSpeed"));
+      const now = ctl.speedNow();
+      for (const v of [0.5, 0.8, 1, 1.2, 1.5, 2, 3]) {
+        const sb = document.createElement("button");
+        sb.type = "button";
+        sb.textContent = new Intl.NumberFormat(LANG).format(v) + "×";
+        sb.setAttribute("aria-pressed", String(Math.abs(now - v) < 0.01));
+        sb.onclick = async () => {
+          if (await ctl.setSpeed(v)) seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === sb)));
+        };
+        seg.append(sb);
+      }
+      flush();
+      r.append(l, seg);
+      body.append(r);
+    }
+  }
+  // Als Nächstes: Klick spielt den Song, das Minus nimmt ihn aus der Warteschlange; darunter „Zuletzt gespielt“
+  function queuePanel(body, item) {
+    const list = ctl.upNext(), skip = ctl.canSkipTo(), edit = ctl.canQueueEdit();
+    if (!list.length) item(t("queueEmpty"));
+    if (list.some((x) => x.queued) && ctl.canQueueClear()) {
+      const cb = sideBtn(body, t("qClear"), "", async () => {
+        if (await ctl.queueClear()) setTimeout(() => side === "queue" && showSide("queue"), 400);
+        else rowNote(cb, t("smFail"));
+      }, false, UI.close);
+      cb.classList.add("m-im-qclear");
+    }
+    for (const x of list) {
+      item(x.title, x.queued ? t("qMine") + " · " + x.artist : x.artist, x.image, skip ? async () => { if (free()) await ctl.skipTo(x); } : null);
+      const b = body.lastElementChild;
+      if (skip) b.title = t("qPlayHint");
+      if (!edit) continue;
+      // Zeile und Entfernen-Knopf nebeneinander (ein Knopf im Knopf wäre ungültig)
+      const wrap = document.createElement("div");
+      wrap.className = "m-im-qrow";
+      b.replaceWith(wrap);
+      const rm = document.createElement("button");
+      rm.type = "button";
+      rm.className = "m-im-qx";
+      rm.innerHTML = UI.remove;
+      rm.title = rm.ariaLabel = t("qRemove") + ": " + x.title;
+      rm.onclick = async () => {
+        rm.disabled = true;
+        if (await ctl.queueRemove([x])) {
+          wrap.classList.add("is-gone");
+          setTimeout(() => side === "queue" && showSide("queue"), 260);
+        } else rm.disabled = false;
+      };
+      wrap.append(b, rm);
+    }
+    const old = ctl.recent();
+    if (!old.length) return;
+    sideHead(body, t("qRecent"));
+    for (const x of old) item(x.title, x.artist, x.image, null);
+  }
+  /* === end actions === */
+
   function refresh() {
     if (!el) return;
     kick();
@@ -3438,6 +3646,11 @@ Probe-FX: ${pfx}`;
     clockView.update(item);
     updateLyrState();
     if (side === "playlists") showSide("playlists");
+    // 1.27 actions: Song-Menü zeigt den neuen Song; bei Podcasts ±15 s statt Zufall und Wiederholen (wie Spotify)
+    if (side === "song") showSide("song");
+    const ep = ctl.isEpisode(item);
+    q.shuffle.hidden = q.repeat.hidden = ep;
+    q.b15.hidden = q.f15.hidden = !ep;
     q.play.innerHTML = PLR.isPlaying() ? ICON.pause : ICON.play;
     playLabel();
     announce(item);
@@ -3860,6 +4073,8 @@ Probe-FX: ${pfx}`;
     queueMicrotask(() => (q.sideBody.querySelector('.m-im-perf [aria-pressed="true"]') || q.sideBody.querySelector(".m-im-perf button"))?.focus());
   }
   function menuPanel(body) {
+    // 1.27 actions: das Song-Menü steht in jeder Ansicht oben in „Mehr“ – in Party und Uhr fehlt die Knopfreihe unter dem Titel
+    sideBtn(body, t("smOpen"), titleOf(currentItem()), () => { viaMenu = true; showSide("song"); }, false, UI.music, true).classList.add("m-im-tosong");
     // außerhalb der Party enthält „Mehr“ nur Aussehen & Leistung (die übrigen Knöpfe stehen dort oben)
     if (el.dataset.mode !== "party") {
       // 1.27 views: Album-Reise ein/aus (Cover-Ansicht, nur wenn ein Album läuft)
@@ -4609,6 +4824,13 @@ Probe-FX: ${pfx}`;
     seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
     // 1.27 views: Zustand der Album-Spalte (Tests)
     albumState: () => album.state,
+    // 1.27 actions: Taste M (Song-Menü) und A (Zu Playlist hinzufügen); per Tastatur liegt der Fokus gleich auf der ersten Zeile
+    songMenu: (kind = "song") => {
+      if (!el || !isOpen()) return;
+      if (side === kind) return showSide(null);
+      showSide(kind);
+      queueMicrotask(() => kind === "song" && q.side.querySelector(".m-im-side-item:not(:disabled)")?.focus());
+    },
   };
 })();
 

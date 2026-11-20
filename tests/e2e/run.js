@@ -2410,6 +2410,158 @@ async function imPolish() {
 }
 CASES.push(["im-polish", imPolish]);
 
+/* ---- 1.27 actions: Song-Menü – alles, was Spotify mit dem laufenden Song kann, ohne den Immersiv-Modus zu verlassen */
+async function songMenu() {
+  const SIDE = `${IM} .m-im-side`;
+  const st = () => T.js(`(() => {
+    const s = document.querySelector("${SIDE}"), im = document.getElementById("mirage-immersive");
+    const rows = [...s.querySelectorAll(".m-im-side-body .m-im-side-item")].filter((b) => b.getClientRects().length);
+    return { open: !s.hidden, kind: s.dataset.kind, title: s.querySelector(".m-im-side-head b").textContent, back: !s.querySelector(".m-im-side-back").hidden,
+      rows: rows.map((b) => b.querySelector("b")?.textContent + (b.querySelector("small")?.textContent ? " | " + b.querySelector("small").textContent : "")),
+      head: s.querySelector(".m-im-songhead")?.innerText.replace(/\\s+/g, " ") || "", focus: document.activeElement?.closest?.(".m-im-side-item")?.querySelector("b")?.textContent || document.activeElement?.className || "",
+      emoji: /\\p{Extended_Pictographic}/u.test(s.innerText), imOpen: im.classList.contains("is-on"), mode: im.dataset.mode, log: __sp.log, now: __sp.now() };
+  })()`);
+  const row = (text) => T.click(`${SIDE} .m-im-side-item`, { text });
+  const press = (code, extra = {}) => T.js(`__sp.press(${JSON.stringify(code)}, ${JSON.stringify(extra)}); 1`);
+  const shot = async (name) => SHOTS && (fs.mkdirSync(SHOTS, { recursive: true }), await wait(450), await T.shot(path.join(SHOTS, name + ".png")));
+  // echte Spotify-Metadaten tragen Künstler- und Album-Links (der Nachbau sonst nicht): für diesen Fall an den Song hängen
+  const links = `(() => { const it = Spicetify.Player.data.item; (window.__linked ||= []).push(it); Object.assign(it.metadata, { artist_uri: "spotify:artist:main00000000000000000a", "artist_uri:1": "spotify:artist:guest0000000000000000b", "artist_name:1": "Guest Star", album_uri: "spotify:album:alb000000000000000000c" }); return 1; })()`;
+  const unlinks = `(() => { for (const x of window.__linked || []) for (const k of ["artist_uri", "artist_uri:1", "artist_name:1", "album_uri"]) delete x.metadata[k]; return 1; })()`;
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await press("KeyM", { ctrlKey: true, shiftKey: true });
+  await toMode("cover");
+  await T.js(links);
+  try {
+    const uri = (await st()).now.uri, id = uri.split(":")[2];
+    // 1) Drei Punkte unter dem Titel
+    await big.hover();
+    await T.click(`${IM} .m-im-songbtn`);
+    let s = await until(async () => { const x = await st(); return x.open && x.kind === "song" && x; }, 2000, "song: Drei Punkte öffnen das Song-Menü");
+    ok(s.title === "Dieser Song" && s.head.includes(s.now.title) && !s.emoji, "song: Kopf zeigt den Song, keine Emojis: " + JSON.stringify({ t: s.title, h: s.head }));
+    for (const want of ["Zu Lieblingssongs hinzufügen", "Zu Playlist hinzufügen", "Zur Warteschlange hinzufügen", "Aus deinem Geschmacksprofil ausschließen", "Song-Radio starten", "Zum Künstler | " + s.now.artist, "Zum Künstler | Guest Star", "Zum Album", "Link zum Song kopieren", "Als Bild teilen"]) {
+      ok(s.rows.some((r) => r.startsWith(want)), `song: Zeile „${want}“ fehlt: ${s.rows.join(" / ")}`);
+    }
+    ok((await T.js(`document.querySelector("${IM} .m-im-songbtn").getAttribute("aria-expanded")`)) === "true", "song: der Auslöser sagt „offen“");
+    await shot("song-menu-cover");
+    // 2) Lieblingssongs: Herz unten leuchtet mit, die Zeile wechselt auf „Entfernen“
+    await row("Zu Lieblingssongs hinzufügen");
+    s = await until(async () => { const x = await st(); return x.rows.some((r) => r.startsWith("Aus Lieblingssongs entfernen")) && x; }, 2000, "song: Like wirkt");
+    ok(s.log.liked.at(-1) === uri && (await T.js(`document.querySelector("${IM} .m-im-like").classList.contains("is-on")`)), "song: geliked und das Herz unten leuchtet");
+    await row("Aus Lieblingssongs entfernen");
+    await until(async () => (await st()).rows.some((r) => r.startsWith("Zu Lieblingssongs hinzufügen")), 2000, "song: Like wieder aus");
+    // 3) Warteschlange, Link, Geschmacksprofil, Song-Radio
+    await row("Zur Warteschlange hinzufügen");
+    await until(async () => (await st()).log.queued.at(-1) === uri, 2000, "song: in die Warteschlange (PlayerAPI.addToQueue mit der Song-URI)");
+    await row("Link zum Song kopieren");
+    s = await until(async () => { const x = await st(); return x.log.clip.at(-1) === "https://open.spotify.com/track/" + id && x; }, 2000, "song: Link kopiert (ClipboardAPI)");
+    ok(s.rows.some((r) => r === "Link zum Song kopieren | Link kopiert"), "song: die Zeile bestätigt: " + s.rows.join(" / "));
+    await row("Aus deinem Geschmacksprofil ausschließen");
+    s = await until(async () => { const x = await st(); return x.rows.some((r) => r.startsWith("In dein Geschmacksprofil aufnehmen")) && x; }, 2000, "song: aus dem Geschmacksprofil ausgeschlossen");
+    ok(s.log.taste.at(-1) === "+" + uri, "song: ignoreinrecs bekommt die Song-URI: " + s.log.taste);
+    await row("In dein Geschmacksprofil aufnehmen");
+    await until(async () => (await st()).log.taste.at(-1) === "-" + uri, 2000, "song: wieder im Geschmacksprofil");
+    await row("Song-Radio starten");
+    await until(async () => (await st()).log.played.at(-1) === "spotify:playlist:radio" + uri.slice(-6), 2000, "song: Song-Radio spielt die Radio-Playlist");
+    // 4) Zu Playlist hinzufügen: Unterseite mit Zurück-Pfeil, richtige URIs, „Neue Playlist“ heißt wie der Song
+    await row("Zu Playlist hinzufügen");
+    s = await until(async () => { const x = await st(); return x.kind === "playlists" && x.rows.some((r) => r.startsWith("Quiz Mix")) && x; }, 3000, "song: Playlist-Auswahl");
+    ok(s.back && s.rows[0].startsWith("Neue Playlist"), "song: Zurück-Pfeil und „Neue Playlist“ oben: " + JSON.stringify({ back: s.back, rows: s.rows.slice(0, 3) }));
+    await shot("song-menu-playlists");
+    await row("Quiz Mix");
+    s = await until(async () => { const x = await st(); return x.log.added.length && x; }, 3000, "song: zur Playlist hinzugefügt");
+    ok(s.log.added.at(-1).pl === "spotify:playlist:quizmix" && JSON.stringify(s.log.added.at(-1).uris) === JSON.stringify([uri]), "song: PlaylistAPI.add mit Playlist- und Song-URI: " + JSON.stringify(s.log.added.at(-1)));
+    await row("Neue Playlist");
+    s = await until(async () => { const x = await st(); return x.log.created.length && x.log.added.length === 2 && x; }, 3000, "song: neue Playlist");
+    ok(s.log.created[0].name === s.now.title && s.log.added[1].pl === s.log.created[0].uri && s.log.added[1].uris[0] === uri, "song: neue Playlist heißt wie der Song und enthält ihn: " + JSON.stringify([s.log.created[0], s.log.added[1]]));
+    await T.click(`${SIDE} .m-im-side-back`);
+    await until(async () => (await st()).kind === "song", 2000, "song: Zurück-Pfeil führt ins Song-Menü");
+    // 5) Esc schließt; Rechtsklick aufs Cover öffnet; Tastatur: M mit Fokus auf der ersten Zeile, Pfeile wandern, A = Playlists
+    await press("Escape");
+    await until(async () => !(await st()).open, 2000, "song: Esc schließt das Menü");
+    ok((await st()).imOpen, "song: Esc schließt nur das Menü, nicht den Immersiv-Modus");
+    const r = await T.js(`(() => { const b = document.querySelector("${IM} .m-im-cover").getBoundingClientRect(); return { x: Math.round(b.left + b.width / 2), y: Math.round(b.top + b.height / 2) }; })()`);
+    T.wc.sendInputEvent({ type: "mouseDown", x: r.x, y: r.y, button: "right", clickCount: 1 });
+    await wait(20);
+    T.wc.sendInputEvent({ type: "mouseUp", x: r.x, y: r.y, button: "right", clickCount: 1 });
+    await until(async () => { const x = await st(); return x.open && x.kind === "song"; }, 2000, "song: Rechtsklick aufs Cover öffnet das Song-Menü");
+    await press("Escape");
+    await until(async () => !(await st()).open, 2000, "song: wieder zu");
+    await press("KeyM");
+    s = await until(async () => { const x = await st(); return x.open && x.kind === "song" && x.focus === "Zu Lieblingssongs hinzufügen" && x; }, 2000, "song: Taste M öffnet, Fokus auf der ersten Zeile");
+    await T.js(`document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", code: "ArrowDown", bubbles: true })); 1`);
+    ok((await st()).focus === "Zu Playlist hinzufügen", "song: Pfeil runter wandert zur nächsten Zeile: " + (await st()).focus);
+    await press("KeyM");
+    await until(async () => !(await st()).open, 2000, "song: M noch einmal schließt");
+    await press("KeyA");
+    s = await until(async () => { const x = await st(); return x.kind === "playlists" && x.focus.includes("m-im-side-find") && x; }, 3000, "song: Taste A öffnet die Playlists mit Fokus in der Suche");
+    await press("Escape");
+    // 6) Warteschlange: eigene Songs zuerst, Minus entfernt, Klick springt hin, „Zuletzt gespielt“ darunter
+    // (erst einen Song zurück: am Anfang der Liste gibt es noch nichts „zuletzt Gespieltes“)
+    const before = (await st()).now.title;
+    await T.js(`Spicetify.Player.back(); 1`);
+    await until(async () => (await st()).now.title !== before, 3000, "song: ein Song zurück");
+    await T.js(`Spicetify.Platform.PlayerAPI.addToQueue([{ uri: "spotify:track:t000000000000000000005" }]); 1`);
+    await press("KeyQ");
+    s = await until(async () => { const x = await st(); return x.kind === "queue" && x.rows.length > 4 && x; }, 2000, "song: Warteschlange geht auf");
+    ok(s.rows[0] === "Warteschlange leeren" && s.rows[1].includes("Von dir hinzugefügt"), "song: eigene Songs markiert, „leeren“ da: " + s.rows.slice(0, 3).join(" / "));
+    ok(await T.js(`!![...document.querySelectorAll("${SIDE} .m-im-side-sec")].find((h) => h.textContent.includes("Zuletzt gespielt"))`), "song: „Zuletzt gespielt“ steht darunter");
+    await shot("song-menu-queue");
+    await T.click(`${SIDE} .m-im-qx`);
+    await until(async () => (await st()).log.removedQ.length >= 1, 2000, "song: Minus entfernt aus der Warteschlange (PlayerAPI.removeFromQueue)");
+    const target = await T.js(`document.querySelectorAll("${SIDE} .m-im-qrow .m-im-side-item b")[2]?.textContent || ""`);
+    await T.click(`${SIDE} .m-im-qrow .m-im-side-item`, { index: 2 });
+    await until(async () => (await st()).now.title === target, 3000, `song: Klick in der Warteschlange spielt „${target}“`);
+    await press("Escape");
+    await T.js(links);
+    // 7) Zum Künstler: Ebene schließt weich, Spotify zeigt die Künstlerseite (zweiter Künstler)
+    await press("KeyM");
+    await until(async () => (await st()).kind === "song", 2000, "song: Menü für den neuen Song");
+    await row("Guest Star");
+    s = await until(async () => { const x = await st(); return !x.imOpen && x; }, 3000, "song: „Zum Künstler“ schließt den Immersiv-Modus");
+    ok(s.log.nav.at(-1) === "/artist/guest0000000000000000b", "song: History.push auf die Künstlerseite: " + s.log.nav.at(-1));
+    await wait(700);
+    await press("KeyM", { ctrlKey: true, shiftKey: true });
+    await until(async () => (await st()).imOpen, 3000, "song: Immersiv wieder auf");
+    await wait(800);
+    // 8) Uhr: Rechtsklick öffnet das Menü; Party: über „Mehr“ mit Zurück-Pfeil (ohne Kamerabewegung)
+    await toMode("clock");
+    T.wc.sendInputEvent({ type: "mouseDown", x: 640, y: 420, button: "right", clickCount: 1 });
+    T.wc.sendInputEvent({ type: "mouseUp", x: 640, y: 420, button: "right", clickCount: 1 });
+    await until(async () => (await st()).kind === "song", 2000, "song: Rechtsklick in der Uhr");
+    await shot("song-menu-clock");
+    await press("Escape");
+    await toMode("party");
+    await big.hover();
+    await T.click(`${IM} .m-im-menubtn`);
+    await until(async () => (await st()).kind === "menu", 2000, "song: Party-Menü „Mehr“");
+    await T.click(`${SIDE} .m-im-tosong`);
+    s = await until(async () => { const x = await st(); return x.kind === "song" && x; }, 2000, "song: aus „Mehr“ ins Song-Menü");
+    ok(s.back, "song: in der Party führt ein Zurück-Pfeil nach „Mehr“");
+    await press("Escape");
+    // 9) Podcast-Folge: ±15 s statt Zufall/Wiederholen, Tempo im Menü
+    await toMode("cover");
+    await T.js(`__sp.playSpecial("episode"); 1`);
+    await until(() => T.js(`!document.querySelector("${IM} .m-im-f15").hidden && document.querySelector("${IM} .m-im-shuffle").hidden`), 2000, "song: Folge zeigt ±15 s");
+    await wait(400);
+    const seeks = (await st()).log.seek.length;
+    await T.click(`${IM} .m-im-f15`);
+    await until(async () => (await st()).log.seek.length > seeks, 2000, "song: +15 s springt");
+    await press("KeyM");
+    s = await until(async () => { const x = await st(); return x.kind === "song" && x; }, 2000, "song: Menü einer Folge");
+    ok(s.title === "Diese Folge" && s.rows.some((r) => r.startsWith("In „Deine Folgen“ speichern")) && !s.rows.some((r) => r.startsWith("Song-Radio")), "song: Folge – eigener Titel, kein Radio: " + s.rows.join(" / "));
+    await T.click(`${SIDE} .m-im-speed button`, { text: "1,5" });
+    await until(async () => (await st()).log.speed.at(-1) === 1.5, 2000, "song: Tempo 1,5× gesetzt");
+    await shot("song-menu-episode");
+    await press("Escape");
+    await T.js(`Spicetify.Player.next(); 1`);
+    await until(() => T.js(`document.querySelector("${IM} .m-im-f15").hidden && !document.querySelector("${IM} .m-im-shuffle").hidden`), 3000, "song: wieder ein Song – Zufall und Wiederholen zurück");
+  } finally {
+    await T.js(unlinks).catch(() => {});
+    await T.js(`Spicetify.Platform.PlayerAPI.clearQueue(); 1`).catch(() => {});
+  }
+  await toMode("party");
+}
+CASES.push(["song-menu", songMenu]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {

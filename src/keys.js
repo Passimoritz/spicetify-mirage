@@ -33,7 +33,12 @@ window.addEventListener("keydown", (e) => {
       KeyR: () => free() && immersive.repeat(),
       KeyF: () => immersive.toggleFull(),
       F11: () => immersive.toggleFull(),
+      ...(e.shiftKey ? { F10: () => immersive.songMenu() } : {}),
       KeyQ: () => immersive.toggleQueue(),
+      // 1.27 actions: Song-Menü (auch Kontextmenü-Taste und Umschalt+F10 wie überall) und „Zu Playlist hinzufügen“
+      KeyM: () => immersive.songMenu(),
+      ContextMenu: () => immersive.songMenu(),
+      KeyA: () => immersive.songMenu("playlists"),
       KeyN: () => free() && PLR.next(),
       KeyP: () => free() && PLR.back(),
       KeyE: () => immersive.toggleTiming(),

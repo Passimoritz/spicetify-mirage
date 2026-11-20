@@ -62,6 +62,19 @@ const UI = {
   // 1.27 views: Uhr-Ansicht und Album-Reise
   clock: s('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'),
   album: s('<rect x="3.5" y="3.5" width="8.5" height="8.5" rx="1.8"/><path d="M15.5 5.5h5M15.5 9.5h5M3.5 15.5h17M3.5 19.5h12"/>'),
+  // 1.27 actions: Song-Menü im Immersiv-Modus
+  more: s('<circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/>'),
+  disc: s('<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.2"/><path d="M12 6.5a5.5 5.5 0 0 0-5.5 5.5"/>'),
+  radio: s('<circle cx="12" cy="12" r="2"/><path d="M8.2 8.2a5.4 5.4 0 0 0 0 7.6M15.8 8.2a5.4 5.4 0 0 1 0 7.6M5.4 5.4a9.3 9.3 0 0 0 0 13.2M18.6 5.4a9.3 9.3 0 0 1 0 13.2"/>'),
+  link: s('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>'),
+  queueAdd: s('<path d="M4 6h11M4 11h11M4 16h6"/><path d="M17.5 13v7M14 16.5h7"/>'),
+  excl: s('<circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/>'),
+  podcast: s('<rect x="9" y="3" width="6" height="10" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>'),
+  speed: s('<path d="M4.5 16a8 8 0 1 1 15 0"/><path d="M12 13l3.5-4"/><circle cx="12" cy="13.5" r="1.2"/>'),
+  back15: s('<path d="M4.5 12A7.5 7.5 0 1 0 7 6.4"/><path d="M4.5 3.5v4h4"/><path d="M9.3 10.3l1.2-.8v5.3M13.4 9.5h2.8M13.4 9.5l-.3 2.6c.4-.3.9-.4 1.4-.4a1.6 1.6 0 0 1 0 3.2c-.6 0-1.1-.3-1.4-.7"/>'),
+  fwd15: s('<path d="M19.5 12A7.5 7.5 0 1 1 17 6.4"/><path d="M19.5 3.5v4h-4"/><path d="M8.3 10.3l1.2-.8v5.3M12.4 9.5h2.8M12.4 9.5l-.3 2.6c.4-.3.9-.4 1.4-.4a1.6 1.6 0 0 1 0 3.2c-.6 0-1.1-.3-1.4-.7"/>'),
+  remove: s('<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/>'),
+  history: s('<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6L3.5 8.5"/><path d="M3.5 3.5v5h5M12 8v4.5l3 2"/>'),
 };
 
 // je Spiel ein eigenes Symbol (Schlüssel wie GAME_LIST in games.js)

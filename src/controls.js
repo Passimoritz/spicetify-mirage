@@ -66,14 +66,17 @@ const smartSupported = () => !!shuffleApi() || !!nativeButton();
 function upNext(max = 12) {
   const q = S.Queue?.nextTracks || S.Platform?.PlayerAPI?._queue?._queueState?.nextUp || [];
   return q
-    .map((x) => x.contextTrack || x)
-    .filter((x) => x?.uri && !x.uri.startsWith("spotify:delimiter") && x.metadata?.title)
+    .map((w) => [w.contextTrack || w, w])
+    .filter(([x]) => x?.uri && !x.uri.startsWith("spotify:delimiter") && x.metadata?.title)
     .slice(0, max)
-    .map((x) => ({
+    .map(([x, w]) => ({
       uri: x.uri,
       title: x.metadata.title,
       artist: x.metadata.artist_name || "",
       image: (x.metadata.image_url || x.metadata.image_small_url || "").replace("spotify:image:", "https://i.scdn.co/image/"),
+      // 1.27 actions: zum Entfernen und Hinspringen (uid); „von dir eingereiht“ (provider queue)
+      uid: x.uid || "",
+      queued: w.provider === "queue",
     }));
 }
 
@@ -199,7 +202,181 @@ async function addToPlaylist(playlistUri, trackUri) {
     return false;
   }
 }
+/* === 1.27 actions: was Spotifys Song-Menü kann, für das Song-Menü im Immersiv-Modus === */
+// Spotify legt manche Schnittstellen nur in seine interne Registry (wie die Shuffle-Schnittstelle oben)
+function platform(name) {
+  const direct = S.Platform?.[name];
+  if (direct) return direct;
+  try {
+    return (S._platform?.getRegistry?.() || S.Platform?.Registry)?.resolve?.(Symbol.for(name)) || null;
+  } catch {
+    return null;
+  }
+}
+const kindOf = (uri) => String(uri || "").split(":")[1] || "";
+// Podcast-Folge oder Hörbuch-Kapitel (beide melden sich als spotify:episode:)
+const isEpisode = (item) => kindOf(item?.uri) === "episode" || item?.metadata?.is_podcast === "true" || item?.metadata?.is_audiobook === "true";
+// alle Künstler eines Songs mit Seite (Player.data.item.artists oder metadata.artist_uri, artist_uri:1 …)
+function artistsOf(item) {
+  const out = [], seen = new Set();
+  const push = (uri, name) => {
+    if (!/^spotify:artist:/.test(uri || "") || seen.has(uri)) return;
+    seen.add(uri);
+    out.push({ uri, name: name || "" });
+  };
+  for (const a of item?.artists || []) push(a?.uri, a?.name);
+  const m = item?.metadata || {};
+  push(m.artist_uri, m.artist_name);
+  for (let i = 1; i < 10 && m["artist_uri:" + i]; i++) push(m["artist_uri:" + i], m["artist_name:" + i]);
+  return out;
+}
+// Sendung einer Folge (Spotify meldet sie als show oder als „album“ der Folge)
+const showOf = (item) => [item?.show?.uri, item?.metadata?.show_uri, item?.album?.uri, item?.metadata?.album_uri].find((u) => /^spotify:show:/.test(u || "")) || "";
+// öffentlicher Link, wie „Link zum Song kopieren“ in Spotify
+function linkOf(uri) {
+  const [, type, id] = String(uri || "").split(":");
+  return id && ["track", "episode", "album", "artist", "playlist", "show"].includes(type) ? `https://open.spotify.com/${type}/${id}` : "";
+}
+async function copyLink(uri) {
+  const url = linkOf(uri);
+  if (!url) return false;
+  try {
+    await platform("ClipboardAPI").copy(url);
+    return true;
+  } catch {}
+  try {
+    await navigator.clipboard.writeText(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+/* ---- Warteschlange bearbeiten */
+const canQueueAdd = () => typeof api()?.addToQueue === "function" || typeof S.addToQueue === "function";
+async function queueAdd(uri) {
+  try {
+    if (typeof api()?.addToQueue === "function") await api().addToQueue([{ uri }]);
+    else await S.addToQueue([{ uri }]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+const canQueueEdit = () => typeof api()?.removeFromQueue === "function";
+async function queueRemove(list) {
+  try {
+    await api().removeFromQueue(list.map((x) => (x.uid ? { uri: x.uri, uid: x.uid } : { uri: x.uri })));
+    return true;
+  } catch {
+    return false;
+  }
+}
+const canQueueClear = () => typeof api()?.clearQueue === "function";
+async function queueClear() {
+  try {
+    await api().clearQueue();
+    return true;
+  } catch {
+    return false;
+  }
+}
+// zu einem Song in „Als Nächstes“ springen (wie ein Klick in Spotifys Warteschlange)
+const canSkipTo = () => typeof api()?.skipTo === "function";
+async function skipTo(x) {
+  try {
+    await api().skipTo({ uri: x.uri, uid: x.uid || "" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+// zuletzt gespielt: was in der Warteschlange vor dem laufenden Song steht, neuester zuerst
+function recent(max = 8) {
+  const q = S.Queue?.prevTracks || [];
+  return q
+    .map((x) => x.contextTrack || x)
+    .filter((x) => x?.uri && !x.uri.startsWith("spotify:delimiter") && x.metadata?.title)
+    .reverse()
+    .slice(0, max)
+    .map((x) => ({
+      uri: x.uri,
+      title: x.metadata.title,
+      artist: x.metadata.artist_name || "",
+      image: (x.metadata.image_url || x.metadata.image_small_url || "").replace("spotify:image:", "https://i.scdn.co/image/"),
+    }));
+}
+/* ---- Song-Radio: Spotify baut aus dem Song eine Radio-Playlist (wie „Zum Song-Radio“); Mirage spielt sie gleich ab */
+const canRadio = () => typeof S.CosmosAsync?.get === "function" && (typeof S.Player.playUri === "function" || typeof api()?.play === "function");
+async function songRadio(uri) {
+  try {
+    const r = await S.CosmosAsync.get(`https://spclient.wg.spotify.com/inspiredby-mix/v2/seed_to_playlist/${uri}?response-format=json`);
+    const pl = r?.mediaItems?.[0]?.uri;
+    if (!/^spotify:playlist:/.test(pl || "")) return false;
+    if (typeof S.Player.playUri === "function") await S.Player.playUri(pl);
+    else await api().play({ uri: pl }, {}, {});
+    return true;
+  } catch {
+    return false;
+  }
+}
+/* ---- „Aus deinem Geschmacksprofil ausschließen“ (Spotify 1.3: Sammlung „ignoreinrecs“ der CollectionPlatformAPI) */
+function tasteApi() {
+  const c = platform("CollectionPlatformAPI");
+  return typeof c?.contains === "function" && typeof c.add === "function" && typeof c.remove === "function" ? c : null;
+}
+const canTaste = () => !!tasteApi();
+async function tasteExcluded(uri) {
+  try {
+    return !!(await tasteApi().contains("ignoreinrecs", [uri]))?.[0];
+  } catch {
+    return null;
+  }
+}
+async function setTasteExcluded(uri, on) {
+  try {
+    await tasteApi()[on ? "add" : "remove"]("ignoreinrecs", [uri]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+/* ---- Neue Playlist mit diesem Song (wie in Spotify: sie heißt wie der Song und steht oben in der Bibliothek) */
+const canCreate = () => typeof S.Platform?.RootlistAPI?.createPlaylist === "function" && typeof S.Platform?.PlaylistAPI?.add === "function";
+async function newPlaylist(name, trackUri) {
+  try {
+    let uri = await S.Platform.RootlistAPI.createPlaylist(name, { before: "start" });
+    // manche Spotify-Versionen liefern ein Objekt statt der Adresse (wie beim Party-Rückblick)
+    if (uri && typeof uri !== "string") uri = uri.uri || "";
+    if (!uri) return "";
+    await S.Platform.PlaylistAPI.add(uri, [trackUri], { after: "end" });
+    return uri;
+  } catch {
+    return "";
+  }
+}
+/* ---- Wiedergabe-Tempo (Podcasts und Hörbücher, wie Spotifys Tempo-Knopf) */
+function canSpeed(item) {
+  const p = api();
+  if (typeof p?.setSpeed !== "function" || !isEpisode(item)) return false;
+  try {
+    if (p.getCapabilities?.()?.canChangeSpeed === false) return false;
+  } catch {}
+  return !playerState().restrictions?.disallowSettingPlaybackSpeedReasons?.length;
+}
+const speedNow = () => Number(playerState().speed) || 1;
+async function setSpeed(v) {
+  try {
+    await api().setSpeed(v);
+    return true;
+  } catch {
+    return false;
+  }
+}
+/* === end actions === */
+
 // Smart Shuffle hat diesen Song eingestreut (Spotify zeigt dafür ein Funkeln) – nicht, wenn man ihn selbst eingereiht hat
 const isSmartPick = (item) => item?.metadata?.provider === "enhanced_recommendation" && item?.provider !== "queue";
 
 export { shuffleState, cycleShuffle, smartSupported, upNext, devices, canConnect, transfer, setSleep, sleepState, isFading, go, albumOf, artistUriOf, playlists, canAddTo, addToPlaylist, isSmartPick };
+// 1.27 actions
+export { isEpisode, artistsOf, showOf, linkOf, copyLink, canQueueAdd, queueAdd, canQueueEdit, queueRemove, canQueueClear, queueClear, canSkipTo, skipTo, recent, canRadio, songRadio, canTaste, tasteExcluded, setTasteExcluded, canCreate, newPlaylist, canSpeed, speedNow, setSpeed };
