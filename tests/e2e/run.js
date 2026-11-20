@@ -253,7 +253,8 @@ async function songGame(k) {
       await T.click(".m-g-replay");
       const again = await until(async () => {
         const s = await big.state();
-        return s.playing && s;
+        // beim Intro auch auf den Sprung an den Anfang warten: der kommt auf langsamen Rechnern einen Moment nach „spielt“
+        return s.playing && (k !== "intro" || s.pos < 2000) && s;
       }, 1500, `${k}: Nochmal abspielen startet die Musik`);
       if (k === "intro") ok(again.pos < 2000, `${k}: Nochmal beginnt von vorn (${again.pos})`);
       first = false;
