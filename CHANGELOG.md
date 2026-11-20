@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.28.0] – 2026-11-20
+
 ### Added
 
 - A song menu in immersive mode, so you never have to leave it to do something with the current song. Open it with the three dots under the title, a right-click anywhere (also in party mode and the clock view), "Song menu" in the "More" menu, or the M key. It lets you like the song, add it to a playlist or a new playlist named after the song, add it to the queue, exclude it from your taste profile, start a song radio, go to each artist or the album, copy the song link and share it as a picture. Going to an artist or album closes immersive mode smoothly and opens the page.
