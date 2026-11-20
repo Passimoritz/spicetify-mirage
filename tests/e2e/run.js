@@ -1857,6 +1857,60 @@ async function idleHidden() {
   const n3 = await T.js("__rafN");
   ok(n3 - n2 > 10, `wieder sichtbar: die Party zeichnet sofort weiter (${n3 - n2} Bilder in 1 s)`);
 }
+// Dauerlauf im Kleinen (1.27 perf): viele Songwechsel, Einstellungen auf und zu, Verdecken – danach dürfen Listener an
+// window/document, DOM-Knoten (auch abgehängte, die noch jemand festhält) und offene Objekt-URLs nicht mitwachsen.
+// Früher hielt jedes Öffnen der Einstellungen den alten Einstellungsbaum (~2 400 Knoten) über einen Listener fest.
+async function soakLite() {
+  const dbg = T.wc.debugger;
+  if (!dbg.isAttached()) dbg.attach("1.3");
+  await dbg.sendCommand("Performance.enable").catch(() => {});
+  const listeners = async (expr) => {
+    const { result } = await dbg.sendCommand("Runtime.evaluate", { expression: expr });
+    const { listeners: l } = await dbg.sendCommand("DOMDebugger.getEventListeners", { objectId: result.objectId });
+    await dbg.sendCommand("Runtime.releaseObject", { objectId: result.objectId });
+    return l.length;
+  };
+  const snap = async () => {
+    for (let i = 0; i < 3; i++) await dbg.sendCommand("HeapProfiler.collectGarbage");
+    const m = Object.fromEntries((await dbg.sendCommand("Performance.getMetrics")).metrics.map((x) => [x.name, x.value]));
+    return { win: await listeners("window"), doc: await listeners("document"), nodes: m.Nodes, jsl: m.JSEventListeners, urls: await T.js("__soakUrls.size") };
+  };
+  await T.js(`(() => {
+    if (!window.__soakUrls) {
+      window.__soakUrls = new Set();
+      const cu = URL.createObjectURL, ru = URL.revokeObjectURL;
+      URL.createObjectURL = (o) => { const u = cu(o); __soakUrls.add(u); return u; };
+      URL.revokeObjectURL = (u) => { __soakUrls.delete(u); return ru(u); };
+    }
+    return 1;
+  })()`);
+  const cycle = async (i) => {
+    await T.js(`Spicetify.Player.next(); 1`);
+    await wait(450);
+    if (i % 3 === 0) {
+      await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
+      await until(() => T.js(`!!document.querySelector(".mirage-settings")`), 2000, "soak: Einstellungen gehen auf");
+      await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+    }
+    if (i % 4 === 0) {
+      await T.js(`Object.defineProperty(document, "hidden", { configurable: true, get: () => true }); document.dispatchEvent(new Event("visibilitychange")); 1`);
+      await wait(300);
+      await T.js(`delete document.hidden; document.dispatchEvent(new Event("visibilitychange")); 1`);
+    }
+  };
+  // einmal durchspielen (Zwischenspeicher füllen sich, einmalige Dinge entstehen), dann messen
+  for (let i = 0; i < 6; i++) await cycle(i);
+  await wait(1500);
+  const a = await snap();
+  for (let i = 0; i < 12; i++) await cycle(i);
+  await wait(1500);
+  const b = await snap();
+  const d = { win: b.win - a.win, doc: b.doc - a.doc, nodes: b.nodes - a.nodes, jsl: b.jsl - a.jsl, urls: b.urls - a.urls };
+  ok(d.win <= 1 && d.doc <= 1, `soak: Listener an window/document wachsen nicht (${JSON.stringify(a)} -> ${JSON.stringify(b)})`);
+  ok(d.nodes < 2000, `soak: keine festgehaltenen DOM-Bäume (+${d.nodes} Knoten nach 12 Songs und 4× Einstellungen)`);
+  ok(d.jsl < 200, `soak: Event-Listener insgesamt wachsen nicht (+${d.jsl})`);
+  ok(d.urls <= 4, `soak: Objekt-URLs werden wieder freigegeben (+${d.urls} offen)`);
+}
 // Schnellmenü „Aussehen & Leistung“ im Immersiv-Modus: Presets und Schalter wirken sofort, landen in cfg,
 // und der Einstellungs-Dialog zeigt denselben Stand (auch umgekehrt). Taste O öffnet es mit Fokus auf dem Preset.
 async function perfMenu() {
@@ -2294,6 +2348,7 @@ CASES.push(["karaoke", async () => {
 }]);
 CASES.push(["perf-menu", perfMenu]);
 CASES.push(["idle-hidden", idleHidden]);
+CASES.push(["soak-lite", soakLite]);
 CASES.push(["photo-wall", photoWall]);
 CASES.push(["settings-search", settingsSearch], ["coach-once", coachOnce]);
 

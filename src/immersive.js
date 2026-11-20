@@ -690,7 +690,9 @@ Probe-FX: ${pfx}`;
         try {
           const c = document.createElement("canvas");
           c.width = c.height = 256;
-          const x = c.getContext("2d");
+          // 1.27 perf: Software-Leinwand – das Bild wird gleich per toBlob ausgelesen; auf der Grafikkarte kostete
+          // das beim kalten Start ~36 ms synchron (Kontext + Zurücklesen), auf der CPU ~1 ms
+          const x = c.getContext("2d", { willReadFrequently: true });
           x.filter = "blur(3px) saturate(1.4) brightness(0.5)";
           x.drawImage(img, -14, -14, 284, 284);
           c.toBlob((b) => done(b ? URL.createObjectURL(b) : null), "image/jpeg", 0.92);

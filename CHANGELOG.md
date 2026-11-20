@@ -10,6 +10,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Fixed
+
+- Spotify no longer gets slower the longer it stays open. Every time you opened the Mirage settings, the closed settings window stayed in memory for good; after a long evening that added up to tens of thousands of hidden elements and noticeably slower clicks and scrolling. Memory now stays flat, no matter how long Spotify runs.
+- Mirage no longer lowers your performance preset by mistake after starting Spotify and then minimizing it or switching away. The short speed check counted the time in the background as slow frames and switched to a lighter preset for the next two weeks.
+- Starting Spotify with Mirage is smoother: the first cover colours are worked out without a short freeze of almost a tenth of a second, and Mirage starts up in smaller steps so Spotify stays responsive while it loads.
+- Coming back to Spotify after a long time in the background no longer makes Mirage catch up on every single page change it missed in one go.
+
 ## [1.27.0] – 2026-11-19
 
 ### Added

@@ -13,7 +13,12 @@
   window.__mirage = true;
   // erst jetzt laden: die Module greifen beim Auswerten auf Spicetify und das DOM zu
   // danach die Notiz nach Spotify-Updates (src/updnote.js); bricht sie ab, läuft alles andere weiter
-  import("./app.js").then(() => import("./updnote.js").catch(() => {}));
-  // Mini-Player-Fenster (Bild im Bild) bekommt Mirages Regeln und Farben
-  import("./pip.js");
+  // 1.27 perf: in einer eigenen Aufgabe (setTimeout 0) statt direkt im Anschluss an das Übersetzen der 2,8 MB:
+  // Übersetzen und Starten der Module waren zusammen eine lange Aufgabe von 40–55 ms, jetzt sind es zwei kurze,
+  // und Spotify kommt dazwischen zum Zeichnen und für Eingaben dran
+  setTimeout(() => {
+    import("./app.js").then(() => import("./updnote.js").catch(() => {}));
+    // Mini-Player-Fenster (Bild im Bild) bekommt Mirages Regeln und Farben
+    import("./pip.js");
+  }, 0);
 })();

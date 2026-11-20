@@ -302,6 +302,8 @@ async function fetchOne(id) {
     fails = 0;
     paintId(id);
   } catch (e) {
+    // 1.27 perf: Fehlversuche nicht unbegrenzt sammeln (lange offen, viele Listen ohne Netz)
+    if (tries.size > 2000) tries.clear();
     tries.set(id, (tries.get(id) || 0) + 1);
     fails++;
     // Anfragelimit (429) bremst härter als ein einzelner Aussetzer

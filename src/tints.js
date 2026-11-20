@@ -108,7 +108,17 @@ document.addEventListener("mirage:im-close", resume);
       }
       else for (const n of m.addedNodes) if (n.nodeType === 1) pending.add(n);
     }
-    if (pending.size) schedule();
+    // 1.27 perf: verdeckt (Immersiv offen, Fenster im Hintergrund) wird nichts abgearbeitet – Spotify baut aber
+    // weiter um. Früher sammelte die Liste dabei über Stunden zehntausende längst entfernte Knoten (hielt sie im
+    // Speicher fest) und arbeitete sie beim Zurückkommen alle auf einmal ab. Jetzt: ab 300 Einträgen
+    // stattdessen einmal „alles neu ansehen“ vormerken – ein Durchgang über die aktuelle Seite reicht.
+    if (pending.size > 300 && covered()) {
+      pending.clear();
+      full = true;
+    }
+    // verdeckt: keinen Zeitgeber je Änderung stellen, resume() holt es beim Sichtbarwerden nach
+    if (covered()) waiting = true;
+    else if (pending.size || full) schedule();
   }).observe(mv, { subtree: true, childList: true, attributes: true, attributeFilter: ["style"] });
   scanAll();
   // Seitenwechsel: einmal alles, und kurz danach noch einmal (Spotify färbt Köpfe verzögert)

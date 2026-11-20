@@ -328,7 +328,12 @@ function remoteButton() {
   return wrap;
 }
 // Live-Link: QR-Code direkt unter dem Schalter – sobald er an ist
+// 1.27 perf: höchstens EIN Listener – der des zuletzt gebauten Panels. Früher meldete sich der alte erst ab, wenn
+// „mirage:live“ feuerte (nur bei Party mit Handys): ohne Party hielt jedes Öffnen der Einstellungen den ganzen
+// alten Einstellungsbaum (Tausende Knoten samt Listenern) für immer im Speicher.
+let liveOff = null;
 function livePanel() {
+  liveOff?.();
   const box = el("div", "m-live");
   const draw = () => {
     if (box.dataset.seen && !box.isConnected) return window.removeEventListener("mirage:live", draw);
@@ -351,6 +356,7 @@ function livePanel() {
     box.append(img, txt);
   };
   window.addEventListener("mirage:live", draw);
+  liveOff = () => window.removeEventListener("mirage:live", draw);
   if (cfg.partyLive) live.prepare().then(draw, draw);
   draw();
   return box;

@@ -323,11 +323,13 @@ async function fetchAmll(neId, signal) {
   }
 }
 // nur die Romaji eines Songs (wenn der Liedtext aus einer anderen Quelle kommt), einmal je Song
-const romCache = new Map();
+// 1.27 perf: begrenzt (früher eine Map ohne Obergrenze – wuchs mit jedem Song mit Romaji-Bedarf)
+const romCache = lru(40);
 function romajiFor(item) {
   const uri = item?.uri || "";
-  if (!romCache.has(uri)) romCache.set(uri, fetchNetease(songMeta(item), null, null, { rom: true }).then((r) => r?.rom || [], () => []));
-  return romCache.get(uri);
+  let job = romCache.get(uri);
+  if (!job) romCache.set(uri, (job = fetchNetease(songMeta(item), null, null, { rom: true }).then((r) => r?.rom || [], () => [])));
+  return job;
 }
 
 /* ---- Kugou: riesige Sammlung zeitgenauer Texte, gerade für chinesische und internationale Musik */
