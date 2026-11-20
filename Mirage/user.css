@@ -7573,3 +7573,122 @@ html.mirage-im-open .Root *::after {
 }
 /* stylelint-enable no-duplicate-selectors */
 /* === end polish === */
+
+/* === 1.27 actions === */
+/* Song-Menü: Kopf mit kleinem Cover, Titel und Künstler – man sieht, worauf sich das Menü bezieht */
+#mirage-immersive .m-im-songhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 6px;
+  padding: 8px 10px 12px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+#mirage-immersive .m-im-songhead img {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.7);
+}
+#mirage-immersive .m-im-songhead span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+#mirage-immersive .m-im-songhead b {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 650 15px var(--m-font);
+}
+#mirage-immersive .m-im-songhead small {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 500 13px var(--m-font);
+  color: rgb(245 243 255 / 0.66);
+}
+/* Trennlinie zwischen den Gruppen (Bibliothek · Weiter · Teilen · Tempo) */
+#mirage-immersive .m-im-song-sep {
+  width: calc(100% - 20px);
+  height: 1px;
+  margin: 5px 10px;
+  border: 0;
+  background: rgb(255 255 255 / 0.08);
+}
+/* Rückmeldung in der Zeile („Link kopiert“): in der Leitfarbe, federt kurz herein */
+#mirage-immersive .m-im-side-item.is-done small {
+  color: rgb(var(--m-c-rgb));
+  animation: m-act-done 0.36s var(--m-pop-spring) both;
+}
+@keyframes m-act-done {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+/* Tempo: sieben Stufen in einer Spur */
+#mirage-immersive .m-im-speed .m-g-seg-row button {
+  flex: 1 1 0;
+  padding: 3px 2px;
+}
+/* Warteschlange: Zeile und Entfernen-Knopf nebeneinander */
+#mirage-immersive .m-im-qrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px;
+  transition: opacity 0.22s var(--m-ease), transform 0.22s var(--m-ease);
+}
+#mirage-immersive .m-im-qrow.is-gone {
+  opacity: 0;
+  transform: translateX(16px);
+}
+#mirage-immersive .m-im-qx {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: rgb(245 243 255 / 0.66);
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: background 0.16s, color 0.16s, opacity 0.16s, transform 0.16s var(--m-pop-spring);
+}
+#mirage-immersive .m-im-qrow:hover .m-im-qx,
+#mirage-immersive .m-im-qx:focus-visible {
+  opacity: 1;
+}
+#mirage-immersive .m-im-qx:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 0.12);
+}
+#mirage-immersive .m-im-qx:active {
+  transform: scale(0.9);
+}
+#mirage-immersive .m-im-qx svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+}
+/* Knopfreihen: verborgene Knöpfe (±15 s nur bei Podcasts, Zufall und Wiederholen dort nicht) wirklich weg */
+#mirage-immersive :is(.m-im-controls, .m-im-extras) button[hidden] {
+  display: none;
+}
+/* ±15 s sind Linien-Symbole (icons.js), nicht gefüllt wie die übrigen */
+#mirage-immersive :is(.m-im-b15, .m-im-f15) svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+}
+/* lange Zeilen (Geschmacksprofil) dürfen umbrechen statt abzuschneiden */
+#mirage-immersive .m-im-side-item.m-im-song-wrap b {
+  white-space: normal;
+}
+/* === end actions === */

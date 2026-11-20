@@ -10,6 +10,16 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- A song menu in immersive mode, so you never have to leave it to do something with the current song. Open it with the three dots under the title, a right-click anywhere (also in party mode and the clock view), "Song menu" in the "More" menu, or the M key. It lets you like the song, add it to a playlist or a new playlist named after the song, add it to the queue, exclude it from your taste profile, start a song radio, go to each artist or the album, copy the song link and share it as a picture. Going to an artist or album closes immersive mode smoothly and opens the page.
+- The A key opens "Add to playlist" directly in immersive mode.
+- Podcasts and audiobooks in immersive mode: buttons to skip 15 seconds back and forward instead of shuffle and repeat, and the playback speed in the song menu.
+
+### Changed
+
+- The queue in immersive mode can now be edited: click a song to play it, remove songs with the minus button, clear the songs you added, and see what played recently below.
+
 ## [1.27.0] – 2026-11-19
 
 ### Added

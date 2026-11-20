@@ -39,7 +39,9 @@
     return out;
   };
 
-  const log = { next: 0, seek: [], dropped: 0, pause: 0, play: 0, audible: {}, notes: [], volume: [], queued: [], yearCalls: 0 };
+  const log = { next: 0, seek: [], dropped: 0, pause: 0, play: 0, audible: {}, notes: [], volume: [], queued: [], yearCalls: 0,
+    // 1.27 actions: Song-Menü
+    nav: [], added: [], created: [], clip: [], removedQ: [], skipTo: [], played: [], speed: [], taste: [], liked: [] };
   let cur = 0, shuffleJump = 0, trackStart = Date.now();
   // Eine Playlist in der Bibliothek, die gerade NICHT läuft (Quelle fürs Quiz): eigene Songs, eigene Künstler
   const PL_URI = "spotify:playlist:quizmix";
@@ -61,6 +63,9 @@
     return i < 0 ? 0 : [1985, 1995, 2015][i % 3];
   };
   const queued = [];
+  // 1.27 actions: was über PlayerAPI.addToQueue eingereiht wurde, zeigt die Warteschlange (provider „queue“) wie Spotify
+  const shownQueued = new Set();
+  const hearts = new Set();
   const SKIP_MS = 220, SEEK_MS = 70, PLAY_MS = 40, VOL_MS = 60, SEEK_DROP_MS = 160;
 
   const st = { item: tracks[0], isPaused: false, timestamp: Date.now(), positionAsOfTimestamp: 0, duration: 200000, shuffle: false, repeat: 0, context: { uri: "spotify:playlist:test" } };
@@ -70,6 +75,8 @@
     const n = tracks.length, next = [];
     for (let k = 1; k <= 12; k++) next.push(wrap(tracks[(cur + k) % n]));
     next.splice(5, 0, { contextTrack: { uri: "spotify:delimiter", uid: "d", metadata: { hidden: "true" } }, removed: [], blocked: [], provider: "context" });
+    const mine = queued.filter((x) => shownQueued.has(x));
+    next.unshift(...mine.map((x, i) => ({ contextTrack: { ...x, uid: "q" + i + x.uid }, removed: [], blocked: [], provider: "queue" })));
     const prev = [];
     for (let k = 3; k >= 1; k--) if (cur - k >= 0) prev.push(wrap(tracks[cur - k]));
     Object.assign(queueState, { track: wrap(tracks[cur]), nextTracks: next, prevTracks: prev, queueRevision: String(Date.now()) });
@@ -251,8 +258,14 @@
       if (e !== P.getMute()) document.querySelector(".volume-bar__icon-button")?.click();
     },
     formatTime: () => "0:00",
-    getHeart: () => false,
-    toggleHeart: () => {},
+    getHeart: () => hearts.has(st.item.uri),
+    toggleHeart: () => {
+      const u = st.item.uri;
+      if (hearts.has(u)) hearts.delete(u);
+      else hearts.add(u);
+      log.liked.push(u);
+    },
+    playUri: async (uri) => log.played.push(uri),
     pause: () => origin.pause(),
     play: () => origin.resume(),
   };
@@ -285,9 +298,63 @@
       return P.origin?._queue?._state ?? P.origin?._queue?._queue;
     },
     Platform: {
-      History: { listen() {}, location: { pathname: "/playlist/x" }, push() {} }, version: (() => { try { return localStorage.getItem("e2e:spotifyVersion"); } catch { return null; } })() || "1.3.10.2586.g81a118a22460", PlaybackAPI, PlayerAPI: {},
-      RootlistAPI: { getContents: async () => ({ items: [{ type: "folder", name: "Party", items: [{ type: "playlist", uri: PL_URI, name: "Quiz Mix", isOwnedBySelf: true }] }, { type: "playlist", uri: "spotify:playlist:empty", name: "Leer" }] }) },
-      PlaylistAPI: { getContents: async (uri) => ({ items: uri === PL_URI ? plTracks : [], totalLength: uri === PL_URI ? plTracks.length : 0 }) },
+      History: { listen() {}, location: { pathname: "/playlist/x" }, push: (p) => log.nav.push(String(p)) }, version: (() => { try { return localStorage.getItem("e2e:spotifyVersion"); } catch { return null; } })() || "1.3.10.2586.g81a118a22460", PlaybackAPI,
+      // 1.27 actions: Spotifys PlayerAPI (1.3.10): Warteschlange bearbeiten, zu einem Song springen, Tempo bei Podcasts
+      PlayerAPI: {
+        async addToQueue(list) {
+          for (const x of list || []) {
+            const item = [...tracks, ...plTracks].find((y) => y.uri === x.uri) || st.item;
+            queued.push(item);
+            shownQueued.add(item);
+            log.queued.push(x.uri);
+          }
+          refreshQueue();
+        },
+        async removeFromQueue(list) {
+          for (const x of list || []) {
+            log.removedQ.push(x.uri);
+            const i = queued.findIndex((y) => y.uri === x.uri);
+            if (i >= 0) queued.splice(i, 1);
+          }
+          refreshQueue();
+        },
+        async clearQueue() {
+          queued.length = 0;
+          refreshQueue();
+        },
+        async skipTo(x) {
+          log.skipTo.push(x.uri);
+          const i = idx(x.uri);
+          setTimeout(() => (i >= 0 ? land(i) : landItem([...plTracks, ...queued].find((y) => y.uri === x.uri) || st.item)), SKIP_MS);
+        },
+        getCapabilities: () => ({ canChangeSpeed: true }),
+        async setSpeed(v) {
+          log.speed.push(v);
+          st.speed = v;
+        },
+      },
+      RootlistAPI: {
+        getContents: async () => ({ items: [{ type: "folder", name: "Party", items: [{ type: "playlist", uri: PL_URI, name: "Quiz Mix", isOwnedBySelf: true }] }, { type: "playlist", uri: "spotify:playlist:empty", name: "Leer" }] }),
+        createPlaylist: async (name, pos) => {
+          const uri = "spotify:playlist:new" + log.created.length;
+          log.created.push({ name, pos, uri });
+          return uri;
+        },
+      },
+      PlaylistAPI: {
+        getContents: async (uri) => ({ items: uri === PL_URI ? plTracks : [], totalLength: uri === PL_URI ? plTracks.length : 0 }),
+        add: async (pl, uris, pos) => log.added.push({ pl, uris, pos }),
+      },
+      ClipboardAPI: { copy: async (text) => log.clip.push(text) },
+      // „Aus deinem Geschmacksprofil ausschließen“: Sammlung ignoreinrecs
+      CollectionPlatformAPI: (() => {
+        const sets = { ignoreinrecs: new Set() };
+        return {
+          contains: async (set, uris) => uris.map((u) => !!sets[set]?.has(u)),
+          add: async (set, uris) => uris.forEach((u) => (sets[set].add(u), log.taste.push("+" + u))),
+          remove: async (set, uris) => uris.forEach((u) => (sets[set].delete(u), log.taste.push("-" + u))),
+        };
+      })(),
     },
     CosmosAsync: {
       get: async (url) => {
@@ -298,6 +365,9 @@
           return { lyrics: { syncType: "LINE_SYNCED", lines: lyricLines(i), language: "en" } };
         }
         if (/artists[/]/.test(url)) return { genres: ["dance pop"] };
+        // Song-Radio (1.27 actions): Spotify baut eine Radio-Playlist aus dem Song
+        const seed = /inspiredby-mix[/]v2[/]seed_to_playlist[/](spotify:track:[A-Za-z0-9]+)/.exec(url);
+        if (seed) return { mediaItems: [{ uri: "spotify:playlist:radio" + seed[1].slice(-6) }] };
         // Erscheinungsjahre, bis zu 50 Songs auf einmal
         const ids = /v1[/]tracks[?]ids=([A-Za-z0-9,]+)/.exec(url);
         if (ids) {
