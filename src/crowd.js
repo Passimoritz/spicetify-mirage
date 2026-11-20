@@ -34,7 +34,7 @@ function createCrowdMind() {
   let x = 0;
   function mood(px, dt, hype) {
     // px.crowd = Gefühl des Teils (Lichtregie): in einer traurigen Bridge wiegt sich die Menge eher, als dass sie springt
-    const target = clamp((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);
+    const target = clamp((Math.pow(px.energy, 1.3) * 0.85 + px.drop * 0.5 + px.build * 0.2 + (px.bass || 0) * 0.12 - px.low * 0.7 + (hype && px.energy > 0.45 ? 0.12 : 0)) * (px.crowd ?? 1), 0, 1);
     x += (target - x) * (1 - Math.exp(-dt * (target > x ? 3 : 0.8)));
     if (px.dropHit) x = Math.max(x, 0.9);
     return x;

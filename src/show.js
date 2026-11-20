@@ -386,7 +386,8 @@ function createShow(glowSprite, cap) {
     }
     // Bass: langsame Druckwellen aus den unteren Ecken (dort stehen die Boxen), dunkel und breit
     if (I.bass > 0.01) {
-      const L = I.bass, c = mixW(pal[0], 0.15);
+      // (die Wellen sind kräftiger, solange tiefe Töne wirklich klingen – px.bass, party.js/bass.js)
+      const L = I.bass * (0.55 + 0.45 * (px.bass ?? 1)), c = mixW(pal[0], 0.15);
       for (const ox of [0, vw]) {
         for (let k = 0; k < 3; k++) {
           const ph = (t * 0.45 + k / 3) % 1, r = vh * (0.06 + 0.24 * ph);

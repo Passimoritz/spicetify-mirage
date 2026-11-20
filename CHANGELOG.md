@@ -20,6 +20,11 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 - The queue in immersive mode can now be edited: click a song to play it, remove songs with the minus button, clear the songs you added, and see what played recently below.
 
+### Fixed
+
+- Party mode now shows low notes. Before, only short kick drum hits reached the light, so held bass lines, long 808s, an organ's pedal notes or an upright bass without drums barely showed. Now the floor light and the glow above the crowd stay lit while the bass plays, a new low note gives a small push, the crowd moves a bit more in bass-heavy parts, and the 808 glow fades out with the 808 itself. Songs with little or no bass, like solo violin, a cappella or quiet piano, stay calm. With "No flashes" the pushes are much softer.
+- Party mode finds the matching part of the song for the audio preview much more often, and places it more accurately. This makes sound effects and instruments from the preview line up better with the music.
+
 ## [1.27.0] – 2026-11-19
 
 ### Added

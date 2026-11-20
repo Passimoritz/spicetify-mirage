@@ -65,7 +65,8 @@ function createInstFx(glowSprite) {
         const f = age / 0.8;
         ellipse(ctx, c, vw / 2, floorY, vw * (0.06 + 0.55 * f), vh * (0.015 + 0.07 * f), 0.4 * I.sub808 * (1 - f) * (st.noFlash ? 0.6 : 1), (6 - 4 * f) * S);
       }
-      glow(ctx, [90, 40, 160], vw / 2, vh * 1.02, vw * 0.35, 0.18 * I.sub808 * calmPulse(px.kickEnv));
+      // die 808 klingt lang aus: der Schein folgt dem gehaltenen Bass, nicht nur der kurzen Kick
+      glow(ctx, [90, 40, 160], vw / 2, vh * 1.02, vw * 0.35, 0.18 * I.sub808 * calmPulse(Math.max(px.kickEnv, px.bass || 0)));
     }
     if (I.hats > 0.01) {
       // Funkeln an der Traverse: kleine Punkte, die auf der Hi-Hat aufblitzen (ohne Blitze: ruhig glimmend)
