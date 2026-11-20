@@ -661,7 +661,8 @@ async function offline() {
   await P[2].click(...tile(1));
   await until(async () => /Alpha/.test((await big.state()).text) && (await big.state()).st === "rev", 6000, "offline: Alphas Antwort von vor dem Funkloch zählt");
   await until(async () => !(await net()).lost, 20000, "offline: das Handy verbindet sich von selbst neu");
-  ok(/verbunden|Connected/.test((await net()).text), "offline: sagt, dass es wieder verbunden ist");
+  // der Hinweis folgt dem Punkt einen Moment später (auf langsamen Rechnern sichtbar): kurz darauf warten
+  await until(async () => /verbunden|Connected/.test((await net()).text), 3000, "offline: sagt, dass es wieder verbunden ist");
   await allPhones((s) => s.k === "never" && s.st === "ask" && s.round === "2/2", 12000, "offline: Alpha spielt nach dem Funkloch weiter");
   for (const ph of P) await ph.click(...tile(0));
   const end = await allPhones((s) => s.st === "end", 8000, "offline: Siegerehrung");
