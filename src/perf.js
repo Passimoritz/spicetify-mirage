@@ -70,8 +70,19 @@ let measured = false;
 function measure(onDone, wait = 4000) {
   if (measured || !cfg.autoPerf || !ORDER.includes(cfg.preset) || cfg.preset === "light") return;
   measured = true;
-  let key = "", frames = 0, start = 0;
+  let key = "", frames = 0, start = 0, last = 0, stalls = 0;
   const sample = (now) => {
+    // 1.27 perf: eine Bildlücke über 0,5 s ist kein langsamer Rechner, sondern ein Fenster, das zwischendurch
+    // verdeckt/minimiert war (Chromium hält rAF dann an, ohne dass document.hidden beim nächsten Bild noch
+    // true ist) oder ein einmaliger Hänger beim Zurückkommen. Früher zählte die Lücke mit: 5 s Probe, davon
+    // 10 min verdeckt = „2 fps“ = eine Stufe runter. Jetzt beginnt die Probe nach so einer Lücke neu;
+    // nach drei Lücken wird für diesen Start nicht mehr gemessen (nichts gemerkt, nichts umgestellt).
+    if (last && now - last > 500) {
+      if (++stalls > 3) return;
+      start = 0;
+      frames = 0;
+    }
+    last = now;
     // verdecktes Fenster verfälscht die Messung: sofort aufhören (keine weiteren Bilder anfordern) und beim
     // nächsten Sichtbarwerden neu versuchen. Früher lief die Probe verdeckt ihre 5 s zu Ende.
     if (document.hidden) {

@@ -70,7 +70,10 @@ async function analyse(url, uri) {
 function softHaze(src, light) {
   const c = document.createElement("canvas");
   c.width = c.height = 64;
-  const x = c.getContext("2d");
+  // 1.27 perf: Software-Leinwand (willReadFrequently). Gleich danach wird das Bild ausgelesen (toDataURL) – auf
+  // einer Grafikkarten-Leinwand hieß das beim ersten Mal: GPU-Kontext anlegen + synchron zurücklesen, gemessen
+  // ~65 ms Hänger beim kalten Start (bei 64 px rechnet die CPU den Weichzeichner in Bruchteilen einer ms)
+  const x = c.getContext("2d", { willReadFrequently: true });
   // Sättigung und Helligkeit gleich mit einbacken – vorher rechnete das ein CSS-Filter in jedem Bild
   x.filter = light ? "blur(5px) saturate(2) brightness(1.35)" : "blur(5px) saturate(1.5) brightness(0.66)";
   // etwas größer zeichnen, damit die weichen Ränder außerhalb liegen
