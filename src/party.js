@@ -8,6 +8,8 @@ import { KIN, baseOf } from "./styles.js";
 import { LOOKS, FAMILIES, pickGenre } from "./genres.js";
 import { deezer, itunes, previewSound } from "./sources.js";
 import { isJump, createJumpFade } from "./steady.js";
+import { bassTarget, createBassEnv } from "./bass.js";
+import { alignFor, alignedOf } from "./sonic.js";
 import { createTalkGate, vividOf, lerpPal, tempoRatio, djVoice, outroWindow } from "./handover.js";
 import { analysisDb } from "./analysis-db.js";
 import { t } from "./i18n.js";
@@ -226,6 +228,9 @@ const party = (() => {
   // Spulen/Songwechsel: der Look der Regie gleitet in 0,6 s in den neuen Teil, statt hart umzuschalten (steady.js)
   const jumpFade = createJumpFade(0.6), moodFade = createJumpFade(0.6);
   let lastPlan = null, glowCut = false;
+  // tiefe Töne (bass.js): eigenes, gehaltenes Signal neben der kurzen Kick – mit Hörprobe (wie viel Bass, und in ihrem
+  // Ausschnitt der gemessene Verlauf) und ihrer Lage im Song (einmal gesucht, nie im Bild)
+  const bassEnv = createBassEnv(), bassSong = { uri: "", prof: null, grid: null, busy: false };
   const calm = () => cfg.calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
   // „Leicht“: die Regie wählt weniger und billigere Effekte (kein Lichtwisch, kein Spot, keine Lichtwand)
   const lite = () => !!cfg.lite || cfg.preset === "light" || cfg.eco === "on";
@@ -312,6 +317,15 @@ const party = (() => {
     glowCut = true;
     const talk = talkOf(item);
     arrive(u, talk);
+    if (bassSong.uri !== u) {
+      Object.assign(bassSong, { uri: u, prof: null, grid: null });
+      bassEnv.reset();
+      // dieselbe Hörprobe wie Tempo, Genre und Instrumente (einmal je Song gerechnet, nie abgespielt)
+      if (!talk && cfg.partyOnline && item)
+        previewSound(item)
+          .then((pv) => bassSong.uri === u && pv?.sonic && Object.assign(bassSong, { prof: pv.sonic.bass || null, grid: pv.sonic.grid || null }))
+          .catch(() => {});
+    }
     if (talk) {
       // DJ-Ansage: der Look des letzten Songs bleibt (kurze Einwürfe sollen die Bühne nicht umwerfen), die Ruhe
       // kommt über talkGate. Stimme im Kicker, wenn Spotify sie nennt („Party · DJ · Name“).
@@ -515,6 +529,27 @@ const party = (() => {
       }
     }
 
+    // --- tiefe Töne: gehaltener Bass (Bass-Linie, 808, Orgelpedal …) unabhängig von der Kick, siehe bass.js
+    let bassT = 0, bassSrc = "";
+    if (d && playing && d.segs?.length) {
+      let al = null;
+      if (bassSong.grid && !d.synthetic) {
+        al = alignedOf(d.segs, bassSong.grid);
+        // noch nicht gesucht (Instrumente aus, sonst sucht sonicrt.js): in einer Leerlaufpause, nie in diesem Bild
+        if (al === undefined && !bassSong.busy) {
+          const segs = d.segs, g = bassSong.grid;
+          bassSong.busy = true;
+          (window.requestIdleCallback || setTimeout)(() => {
+            bassSong.busy = false;
+            alignFor(segs, g);
+          }, { timeout: 3000 });
+        }
+      }
+      const tg = bassTarget(sec, d, bassSong.prof, al || null, smooth.e, beatIdx >= 0 ? sec - d.beats[beatIdx].t : 9);
+      [bassT, bassSrc] = [tg.v, tg.src];
+    }
+    const bassNow = bassEnv.step(bassT, dt);
+
     // --- DJ-Übergabe (siehe arrive/mixPal): Ausklang dieses Songs, Ankunft aus dem letzten
     const beatLen = 60 / (info.bpm || 120);
     const dur = (Number(S.Player?.getDuration?.()) || 0) / 1000;
@@ -639,6 +674,9 @@ const party = (() => {
       P, key: info.key, level, lvl, fx, hit, barHit, inBar, conf,
       energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I, scene,
       kickEnv, snareEnv, hatEnv, tone, pitch, kickHit, snareHit, hatHit,
+      // tiefe Töne: bass = gehaltener Pegel 0..1 (Glühen, Wiegen), bassPulse = Anschlag eines neuen tiefen Tons
+      // (ohne Blitze nur ein Drittel so stark). Bei Gesprochenem still.
+      bass: bassNow.bass * (1 - talkV), bassPulse: fx ? bassNow.pulse * (cfg.noFlash ? 0.35 : 1) : 0, bassSrc,
       phase: beatPhase, beatIdx, keyPc, tempo: tempoNow || info.bpm || 120,
       // Lichtregie: Ruhe vor dem Sturm (tension), Blackout auf dem letzten Schlag vor dem Drop, Finale im letzten Refrain
       toDrop,

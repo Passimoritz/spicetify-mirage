@@ -2509,6 +2509,7 @@ Probe-FX: ${pfx}`;
       px: {
         // Bühnenlicht: das der Szene, sonst das des Genres; beim Szenenwechsel gleitet spot2 → spot über sx
         key: px.key, P: { spot: px.spot || P.spot }, spot2: px.spot2 || P.spot, sx: px.sx ?? 1, rig: px.rig || "", spread: px.spread ?? 1, crowd: px.crowd ?? 1, accent: px.accent, kickEnv: px.kickEnv, snareEnv: px.snareEnv, hatEnv: px.hatEnv,
+        bass: px.bass || 0, bassPulse: px.bassPulse || 0,
         beat: px.beat, hit: px.hit, energy: px.energy, build: px.build, low: px.low, drop: px.drop, dropHit: px.dropHit,
         I: px.I, spin: px.spin, level: px.level, scene: px.scene, inBar: px.inBar, phase: px.phase, beatIdx: px.beatIdx,
         finale: !!px.finale, blackout: !!px.blackout,
@@ -2878,6 +2879,8 @@ Probe-FX: ${pfx}`;
       px.I *= 0.06;
       px.accent *= 0.05;
       px.kickEnv *= 0.1;
+      px.bass *= 0.1;
+      px.bassPulse = 0;
       px.beamVis = 0;
       px.flash = 0;
       px.ambient = 0;

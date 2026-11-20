@@ -837,9 +837,11 @@ function createMixer() {
 // Rückgabe { off (s, Lage der Hörprobe im Song), r (0..1) } oder null
 function alignPreview(gSong, gPrev) {
   if (!gSong || !gPrev) return null;
+  // je genau 0,25 s (nach Zeit, nicht nach Zellen: das Raster der Hörprobe hat 21,5 Zellen/s – fünf Zellen sind 0,23 s,
+  // früher als 0,25 s gezählt: über 30 s lief die Hörprobe so 2 s auseinander und passte schlechter, als sie ist)
   const q = (G) => {
-    const k = Math.max(1, Math.round(G.r / 4)), out = [];
-    for (let x = 0; x + k <= G.n; x += k) out.push(mean(G.loud, x, x + k));
+    const out = [], k = G.r / 4;
+    for (let j = 0; Math.round((j + 1) * k) <= G.n; j++) out.push(mean(G.loud, Math.round(j * k), Math.max(Math.round(j * k) + 1, Math.round((j + 1) * k))));
     return out;
   };
   const A = q(gSong), B = q(gPrev);
@@ -859,7 +861,50 @@ function alignPreview(gSong, gPrev) {
     const c = num / (Math.sqrt(sa) * sbv || 1);
     if (!best || c > best.r) best = { off: o / 4, r: c };
   }
-  return best && best.r > 0 ? { off: best.off, r: Math.round(best.r * 100) / 100 } : null;
+  if (!best || !(best.r > 0)) return null;
+  // fein nachstellen: ±0,25 s in 25-ms-Schritten auf den vollen Rastern. Die Viertelsekunde allein lag bis zu 125 ms
+  // daneben – zu grob für Bass und Einsätze aus der Hörprobe
+  let off = best.off, top = -2;
+  for (let k = -10; k <= 10; k++) {
+    const o = best.off + k * 0.025, c = corrAt(gSong, gPrev, o);
+    if (c > top) [top, off] = [c, o];
+  }
+  return { off: Math.round(off * 1000) / 1000, r: Math.round(best.r * 100) / 100 };
+}
+// Korrelation der Lautheit, Hörprobe um o Sekunden verschoben (Song linear zwischen seinen Zellen gelesen)
+function corrAt(gS, gP, o) {
+  let sa = 0, sb = 0, saa = 0, sbb = 0, sab = 0, n = 0;
+  for (let x = 0; x < gP.n; x++) {
+    const p = (o + x / gP.r) * gS.r, i = Math.floor(p), f = p - i;
+    if (i < 0 || i + 1 >= gS.n) continue;
+    const a = gS.loud[i] * (1 - f) + gS.loud[i + 1] * f, b = gP.loud[x];
+    if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
+    sa += a;
+    sb += b;
+    saa += a * a;
+    sbb += b * b;
+    sab += a * b;
+    n++;
+  }
+  if (n < 20) return -2;
+  const cov = sab - (sa * sb) / n, va = saa - (sa * sa) / n, vb = sbb - (sb * sb) / n;
+  return va > 0 && vb > 0 ? cov / Math.sqrt(va * vb) : -2;
+}
+// Lage der Hörprobe im Song, einmal je Song und Hörprobe (sonicrt.js und party.js/bass.js fragen beide): nur bei
+// deutlich passendem Lautheitsverlauf (r ≥ 0,75), sonst null. G: Raster des Songs, falls schon gerechnet
+const alMemo = new WeakMap();
+function alignFor(segs, grid, G) {
+  const m = alMemo.get(grid);
+  if (m && m.segs === segs) return m.al;
+  const a = alignPreview(G || gridFromSegs(segs), grid);
+  const al = a && a.r >= 0.75 ? { ...a, end: a.off + grid.n / grid.r } : null;
+  alMemo.set(grid, { segs, al });
+  return al;
+}
+// schon gerechnet? (ohne zu rechnen – im Bild wird nie gesucht) · undefined = noch nicht
+function alignedOf(segs, grid) {
+  const m = grid && alMemo.get(grid);
+  return m && m.segs === segs ? m.al : undefined;
 }
 
-export { INST, FX, THR, RARE, PRI, gridFromSegs, createFrameSink, palette, paletteConf, detectFx, fxSelect, strength, createMixer, alignPreview };
+export { INST, FX, THR, RARE, PRI, gridFromSegs, createFrameSink, palette, paletteConf, detectFx, fxSelect, strength, createMixer, alignPreview, alignFor, alignedOf };

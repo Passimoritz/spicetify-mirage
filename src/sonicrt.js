@@ -11,7 +11,7 @@
 //     bestätigt, dass der Song diesen Effekt benutzt. Scratch, Sirene, Air-Horn … lassen sich so nicht zeitlich
 //     setzen – dann gar nicht.
 //  3. Nichts davon: nichts (die Party reagiert wie bisher).
-import { THR, gridFromSegs, detectFx, createMixer, alignPreview, strength } from "./sonic.js";
+import { THR, gridFromSegs, detectFx, createMixer, alignFor, strength } from "./sonic.js";
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 // neue Instrumente (zusätzlich zu den zwölf aus den Credits, instrkinds.js)
@@ -94,10 +94,8 @@ function createSonicRuntime() {
       song.segEv = G ? detectFx(G, { bpm: song.data.bpm || 0 }) : [];
       // Hörprobe im Song wiederfinden: nur bei deutlich passendem Lautheitsverlauf
       song.al = null;
-      if (G && song.pv?.grid) {
-        const a = alignPreview(G, song.pv.grid);
-        if (a && a.r >= 0.75) song.al = { ...a, end: a.off + song.pv.grid.n / song.pv.grid.r };
-      }
+      // (einmal je Song und Hörprobe gemerkt – das Bass-Licht der Party nutzt dieselbe Lage, bass.js)
+      if (G && song.pv?.grid) song.al = alignFor(song.data.segs, song.pv.grid, G);
       const shifted = song.al ? (song.pv.events || []).map((e) => ({ ...e, t: e.t + song.al.off })) : [];
       song.ev = [...song.segEv, ...shifted].sort((a, b) => a.t - b.t);
     };

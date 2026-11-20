@@ -60,7 +60,8 @@ function createVenue(makeCanvas) {
     const beat = px.accent, vis = k * clamp(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
     if (vis < 0.01) return;
     // was welches Licht treibt: Boden = Kick, Spots von oben = Snare, Glitzern/Scanner = Hi-Hats
-    const kickL = Math.max(beat, px.kickEnv), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);
+    // (Boden: auch der gehaltene Bass – eine Bass-Linie oder 808 hält das Bodenlicht, statt nach 0,14 s zu verlöschen)
+    const kickL = Math.max(beat, px.kickEnv, (px.bass || 0) * 0.6), snareL = Math.max(beat * 0.8, px.snareEnv), hatL = Math.max(beat * 0.6, px.hatEnv);
     // Kegelbreite nach der Stimmung: zärtlich weit und weich, aggressiv eng gebündelt
     const spread = px.spread ?? 1;
     const cone = (sx, sy, a, wd0, c, al, reach = far) => {
@@ -1240,7 +1241,8 @@ function createVenue(makeCanvas) {
     let arms = new Path2D(), fore = new Path2D(), nArms = 0, curLv = -1, lastFill = "";
     // Gegenlicht: ein Streifen leuchtender Dunst hinter den Köpfen, der mit Kick und Drop aufglüht
     {
-      const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1) * A;
+      // tiefe Töne: der Dunst über den Köpfen glüht, solange der Bass hält, und hebt sich kurz bei jedem neuen tiefen Ton
+      const top = vh * 0.72, glow = (0.07 + px.kickEnv * 0.12 * (0.4 + px.energy) + px.drop * 0.1 + (px.bass || 0) * 0.08 + (px.bassPulse || 0) * 0.05) * A;
       const g = ctx.createLinearGradient(0, top, 0, vh);
       g.addColorStop(0, rgba(pal[0], 0));
       g.addColorStop(0.55, rgba(pal[0], glow.toFixed(3)));

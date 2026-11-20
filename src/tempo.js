@@ -8,6 +8,7 @@
 // Dazu ein paar Klangzahlen für die Genre-Schätzung: wie dicht die Einsätze sind, wie viel Bass, wie hell, wie laut.
 
 import { createFrameSink, palette, detectFx } from "./sonic.js";
+import { bassProfile } from "./bass.js";
 
 const HOP = 256, N = 1024;
 
@@ -214,7 +215,8 @@ async function analyzePcm(pcm, sr, hint = 0, pause, sonic = false) {
     for (const e of events) fx[e.k] = Math.max(fx[e.k] || 0, e.c);
     // Raster ohne die Einzelbilder behalten (klein): fürs Wiederfinden der Hörprobe im Song (alignPreview)
     delete G.frames;
-    snd = { inst: pal.conf, feats: pal.feats, fx, events, grid: { r: G.r, n: G.n, loud: G.loud } };
+    // bass: wie viel Tiefband der Song hat und sein Verlauf in der Hörprobe (bass.js, Party-Licht für tiefe Töne)
+    snd = { inst: pal.conf, feats: pal.feats, fx, events, grid: { r: G.r, n: G.n, loud: G.loud }, bass: bassProfile(G) };
   }
   // Einsatzdichte: Spitzen der Kurve über ihrem Mittel + 1 Standardabweichung, mindestens 70 ms auseinander
   let m = 0, s = 0, peaks = 0, last = -99;
