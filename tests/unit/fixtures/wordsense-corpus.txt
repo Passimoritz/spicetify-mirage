@@ -1,0 +1,457 @@
+# Testkorpus für wordsense.js: erfundene, liedtext-typische Zeilen (keine echten Songtexte).
+# Format: sprache|erwartung|zeile — erwartung: Begriff, mehrere erlaubte mit „/“, „-“ = keine Antwort.
+# Verneinte Gefühle bekommen die Gegenstimmung („no fear“ → strong, „nicht allein“ → together, „liebe dich nicht“ → heartbreak).
+# Trägt eine Zeile mehrere Begriffe, zählt der erwartete auch, wenn er Teil der kombinierten Antwort ist.
+# --- Englisch: soll reagieren
+en|fire|We set the world on fire tonight
+en|fire|Burning like a wildfire, flames up high
+en|fire|My body's on fire when you call my name
+en|rain|Dancing in the rain until the morning comes
+en|rain|Heavy rain is falling on the window pane
+en|storm|Here comes the storm, thunder in the distance
+en|lightning|Lightning strikes twice in the same place
+en|snow|Snowflakes falling on the empty street
+en|sun/sunshine|Sunshine on my face, feeling so alive
+en|star|Shooting star across the midnight sky
+en|moon|Under the full moon we're howling
+en|heartbreak|You broke my heart in two, now I'm heartbroken
+en|tears|Crying tears of gold on the bathroom floor
+en|money|Money on my mind, money on my mind
+en|money|Make it rain, throw it all up in the air
+en|champagne|Pop the champagne, we celebrate tonight
+en|club|Meet me in the club, it's going down
+en|drink|Pour up a drink, we're getting drunk tonight
+en|shots|Tequila shots lined up on the bar
+en|turnup|Turn up, turn up, it's lit tonight
+en|weekend|Friday night and we're ready for the weekend
+en|allnight|We gonna party all night long
+en|dancefloor|Meet me on the dance floor
+en|neon|Neon lights are flashing in the dark
+en|laser|Lasers cutting through the smoke
+en|rich|Woke up rich, got a million in the bank
+en|luxury|Gucci on my feet, Prada on my back
+en|supercar|Pull up in the Lambo, doors up to the sky
+en|bling|Iced out chain hanging on my neck
+en|jet|Private jet to Paris, first class all the way
+en|yacht|Sipping on a yacht in Monaco
+en|flex|Flexing on my ex, I'm ballin'
+en|payday|Get paid, get paid, it's payday baby
+en|sweat|Dripping in sweat on the floor
+en|move|Move your body, move your body
+en|shake|Shake it, shake it, shake it for me
+en|clap|Clap your hands to the beat
+en|stomp|Stomp your feet, make the ground shake
+en|heartbeat|I can hear your heartbeat in the dark
+en|getup|Get up, stand up, on your feet now
+en|anger|So much rage inside, I'm furious
+en|freedom|Break free, set me free tonight
+en|lonely|So lonely, I'm all alone again
+en|longing|I miss you, I'm missing you every night
+en|fear|I'm so scared of the dark, afraid of the night
+en|happy|I'm so happy, joy is all I feel
+en|sad|Sadness in my bones, sorrow everywhere
+en|pain|The pain won't go away, it hurts so bad
+en|peace|Peace of mind is all I need
+en|together|We stand together, hand in hand
+en|street|Running through the streets of the city
+en|desert|Lost in the desert, nothing but sand
+en|sunrise|Waiting for the sunrise, watching the dawn
+en|sunset|Golden hour, sunset on the beach
+en|island|Take me to an island far away
+en|highway|Driving down the highway with the windows down
+en|fog|Lost in the fog, mist all around
+en|hey|Hey hey hey, everybody say hey
+en|everybody|Everybody, put your hands in the air
+en|comeon|Come on, come on, come on now
+en|ole|Olé olé olé, we are the champions
+en|hallelujah|Hallelujah, hallelujah
+en|onemore|One more time, we're gonna celebrate
+en|wolf|Howling at the moon like a wolf
+en|dragon|Breathing fire like a dragon
+en|police|Sirens in the night, the cops are coming
+en|wedding|Marry me, be my bride tonight
+en|victory|We are the champions, victory is ours
+en|countdown/count|Three, two, one, let's go
+en|sexy|You look so sexy in that dress tonight
+en|sexy|Turn me on, take it off, get naked
+en|insult|Bad bitch, I don't need no hoes
+en|insult|You're a motherfucker, get out of my face
+en|curse|Fuck yeah, we're on top of the world
+en|curse/money|Holy shit, look at all this money
+en|drugs|Rolling up a blunt, smoking weed all day
+en|drugs|We're getting high, high as a kite
+en|fireworks|Fireworks exploding in the sky
+en|ocean|Waves crashing on the ocean shore
+en|butterfly|Butterflies in my stomach when you're near
+en|rainbow|Over the rainbow, colours everywhere
+en|ghost|Ghosts are dancing in the hall
+en|candle|Candlelight and a glass of wine
+en|drums|Bang the drums, feel the beat
+en|guitar|Play that guitar, electric guitar
+en|bells|Church bells ringing in the morning
+en|alien|Aliens landing in my backyard
+en|earthquake|It's like an earthquake shaking the ground
+en|silence|Silence, hush, not a sound
+en|camera|Paparazzi flashing lights, camera on me
+en|bass|Drop the bass, feel the bass
+en|handsup|Put your hands up in the air
+en|jump|Jump, jump, everybody jump
+# --- Englisch: soll NICHT reagieren
+en|-|There's no fire left between us
+en|-|I don't need your money
+en|-|Never gonna dance again
+en|-|Pull the fire alarm and run
+en|-|You're fired, pack your things
+en|-|Ceasefire on the border tonight
+en|-|I've got cold feet about this
+en|-|All the time I spend with you
+en|-|Every time you walk away
+en|-|I can't feel the rain anymore
+en|-|Don't cry for me tonight
+en|-|No more tears for you
+en|strong|I won't be afraid
+en|-|There's no party without you
+en|-|Not a single star tonight
+en|-|I don't wanna be rich
+en|-|We don't need no drugs
+en|-|No smoke without fire
+en|-|I can't remember your name
+en|-|You ain't no friend of mine
+en|-|Without a sound we walk
+en|-|Nobody's gonna save me now
+en|-|It's free of charge, they said
+en|curse|What the hell did you say
+en|lonely/together|I never wanted to be alone
+en|strong|I'm not afraid of heights
+en|-|She doesn't drink anymore
+en|-|Can't stop thinking about it
+en|-|Tell me what you mean
+en|-|Walking to the store today
+en|-|I'll call you when I'm home
+en|-|Maybe someday you'll understand
+en|-|Sitting by the phone and waiting
+en|-|I don't wanna fight with you
+en|-|Never been to the city
+en|-|The kids are at school
+en|-|Open the door and let me in
+en|-|What did you do last night
+en|together|Lean on me when you're weak
+# --- Deutsch: soll reagieren
+de|fire|Wir stehen in Flammen heut Nacht
+de|fire|Feuer und Flamme für dich
+de|rain|Der Regen fällt auf unser Dach
+de|storm|Ein Sturm zieht auf, Gewitter über der Stadt
+de|snow|Schnee fällt leise auf die Straßen
+de|sun|Die Sonne scheint auf mein Gesicht
+de|star|Wir sind Sterne in der Nacht
+de|moon|Der Mond scheint hell über dem See
+de|heartbreak|Du brichst mein Herz, Liebeskummer pur
+de|tears|Tränen laufen über mein Gesicht
+de|money|Geld, Geld, Geld regiert die Welt
+de|party|Heute wird gefeiert, Party bis zum Morgen
+de|club|Wir sind im Club und tanzen
+de|drink|Wir trinken bis wir besoffen sind
+de|shots|Noch ein Schnaps, noch ein Tequila
+de|beer|Ein kaltes Bier in der Hand
+de|allnight|Wir tanzen die ganze Nacht
+de|weekend|Endlich Wochenende, endlich frei
+de|dancefloor|Alle auf die Tanzfläche
+de|rich|Ich werde reich, Millionär mit zwanzig
+de|luxury|Gucci, Prada, Luxusleben
+de|supercar|Im Lamborghini durch die Stadt
+de|bling|Goldkette um den Hals
+de|boss|Ich bin der Boss in meinem Viertel
+de|sweat|Wir schwitzen auf der Tanzfläche, schweißgebadet
+de|move|Beweg dich, beweg dich
+de|clap|Alle klatschen mit, Applaus
+de|heartbeat|Ich hör deinen Herzschlag
+de|getup|Steh auf, steh auf, auf die Beine
+de|anger|Ich bin so wütend, voller Wut
+de|freedom|Endlich frei, Freiheit für immer
+de|lonely|So einsam in der großen Stadt
+de|longing|Ich vermisse dich, Sehnsucht nach dir
+de|fear|Ich hab Angst vor der Dunkelheit
+de|happy|Ich bin so glücklich mit dir
+de|sad|Ich bin so traurig ohne dich
+de|pain|Der Schmerz tut so weh
+de|peace|Frieden in meinem Herzen
+de|together|Wir halten zusammen, Hand in Hand
+de|street|Auf den Straßen dieser Stadt
+de|desert|Allein in der Wüste, nur Sand
+de|sunrise|Wir warten auf den Sonnenaufgang
+de|sunset|Beim Sonnenuntergang am Meer
+de|island|Auf einer Insel weit weg
+de|highway|Mit Vollgas über die Autobahn
+de|midnight|Um Mitternacht treffen wir uns
+de|hey|Hey, hey, hey
+de|comeon|Komm schon, komm schon
+de|onemore|Zugabe, Zugabe, noch einmal
+de|hallelujah|Halleluja, Halleluja
+de|police|Die Bullen kommen, Sirenen in der Nacht
+de|wedding|Heirate mich, sei meine Braut
+de|victory|Wir sind die Sieger, wir haben gewonnen
+de|wolf|Heulen mit den Wölfen
+de|sexy|Du bist so sexy, so geil
+de|sexy|Nackt im Mondlicht
+de|insult|Du Hurensohn, du Wichser
+de|insult|Diese Schlampe will nur mein Geld
+de|curse|Scheiß drauf, wir feiern heute
+de|curse|Verdammt, was für eine Nacht
+de|drugs|Wir kiffen jeden Tag, bekifft im Park
+de|drugs|Koks und Ecstasy auf der Toilette
+de|countdown/count|Drei, zwei, eins, los
+de|fireworks|Feuerwerk am Himmel
+de|handsup|Alle Hände hoch
+de|bass|Spürst du den Bass
+de|crazy|Völlig verrückt, wir drehen durch
+# --- Deutsch: soll NICHT reagieren
+de|-|Die Feuerwehr kommt um die Ecke
+de|-|Ich hab kein Geld mehr
+de|heartbreak|Ich liebe dich nicht
+de|-|Ich will nicht tanzen
+de|-|Keine Party ohne dich
+de|-|Nie wieder Tränen
+de|strong|Ohne Angst gehen wir weiter
+de|-|Ich hab keine Zeit für dich
+de|together|Ich bin nicht allein
+de|wedding|Kalte Füße vor der Hochzeit
+de|-|Ich trinke nicht mehr
+de|-|Es regnet nicht mehr
+de|-|Kein Stern am Himmel heut
+de|-|Er hat das Feuerzeug vergessen
+de|-|Wir gehen morgen einkaufen
+de|-|Ich ruf dich später an
+de|-|Was hast du gestern gemacht
+de|-|Die Tür ist offen
+de|-|Ich weiß es auch nicht
+de|-|Wir sehen uns am Freitag
+de|-|Der Bus kommt gleich
+de|-|Kein Bock auf Streit
+de|-|Ich will keinen Krieg
+de|together|Niemals allein
+de|strong|Ich hab nie Angst gehabt
+de|-|Ohne Drogen geht es auch
+de|-|Ich will nicht reich sein
+de|-|Mit der Zeit wird alles gut
+# --- Spanisch: soll reagieren
+es|fire|Tu cuerpo está en llamas, fuego
+es|rain|La lluvia cae sobre mi ventana
+es|sun|El sol brilla en tu piel
+es|moon|Bajo la luna llena bailamos
+es|star|Eres mi estrella en la noche
+es|heartbreak|Me rompiste el corazón
+es|tears|Lágrimas en mis ojos
+es|money|Dinero, dinero, mucho dinero
+es|party|Vamos de fiesta esta noche
+es|allnight|Bailando toda la noche
+es|drink|Estoy borracho otra vez
+es|shots|Tequila, tequila, otra ronda
+es|club|Nos vemos en la discoteca
+es|rich|Soy millonario, rico de verdad
+es|luxury|Gucci, Prada, Louis Vuitton
+es|bling|Cadenas de oro en el cuello
+es|boss|Soy el jefe, el patrón
+es|sweat|Sudando en la pista
+es|hips|Mueve las caderas
+es|together|Juntos para siempre
+es|lonely|Estoy tan solo sin ti, soledad
+es|longing|Te extraño cada día
+es|fear|Tengo miedo de perderte
+es|happy|Soy feliz contigo, alegría
+es|sad|Estoy triste, tristeza
+es|pain|Este dolor me mata
+es|freedom|Libre como el viento, libertad
+es|street|Por las calles de la ciudad
+es|sunrise/allnight|Hasta el amanecer
+es|sunset|Mirando el atardecer
+es|island|Una isla en el Caribe
+es|ole|Olé, olé, olé
+es|comeon|Vamos, vamos, vamos
+es|everybody|Todo el mundo a bailar
+es|sexy|Qué sexy te ves, mami
+es|sexy|Perreo hasta abajo
+es|insult|Hijo de puta, cabrón
+es|curse|Joder, qué noche
+es|drugs|Fumando mota con mis panas
+es|dance|Bailando contigo
+es|crazy|Una locura total
+# --- Spanisch: soll NICHT reagieren
+es|-|Sin dinero no hay nada
+es|-|No quiero bailar contigo
+es|-|Nunca más lágrimas
+es|strong|No tengo miedo
+es|-|No hay fiesta sin ti
+es|together|No estoy solo
+es|-|Qué rico tu sabor
+es|-|Mañana te llamo
+es|-|Abre la puerta
+es|-|Dónde estás ahora
+es|-|No fumo nada
+es|-|Sin luz no hay camino
+es|-|Ni una estrella en el cielo
+es|-|Ya no bebo más
+# --- Französisch: soll reagieren
+fr|fire/turnup|On va mettre le feu ce soir
+fr|fire|Mon cœur est en feu
+fr|rain|La pluie tombe sur Paris
+fr|sun|Le soleil se lève sur la mer
+fr|moon|Sous la lune on danse
+fr|star|Tu es mon étoile
+fr|heartbreak|Tu m'as brisé le cœur
+fr|tears|Des larmes sur mon visage
+fr|money|L'argent, toujours l'argent
+fr|party|C'est la fête ce soir
+fr|allnight|On danse toute la nuit
+fr|drink|Je suis bourré, on a trop bu
+fr|club|On se retrouve en boîte
+fr|rich|Je veux être riche, millionnaire
+fr|luxury|Gucci, Chanel, Dior
+fr|sweat|On transpire sur la piste
+fr|lonely|Je suis seul, la solitude me tue
+fr|longing|Tu me manques tellement
+fr|fear|J'ai peur du noir
+fr|happy|Je suis heureux avec toi
+fr|sad|Je suis triste ce soir
+fr|pain|Cette douleur ne part pas
+fr|freedom|Libre, enfin libre, liberté
+fr|together|Ensemble pour toujours
+fr|street|Dans les rues de la ville
+fr|sunrise|Jusqu'au lever du soleil
+fr|sunset|Le coucher du soleil sur la plage
+fr|comeon/hype|Allez, allez, allez
+fr|sexy|T'es trop sexy ce soir
+fr|insult|Espèce de salope
+fr|insult|Fils de pute
+fr|curse|Putain, quelle soirée
+fr|curse|Merde alors
+fr|drugs|On fume de la beuh tous les jours
+fr|dance/allnight|On danse jusqu'au matin
+fr|crazy|C'est la folie
+# --- Französisch: soll NICHT reagieren
+fr|strong|Je n'ai pas peur
+fr|-|Je n'ai pas d'argent
+fr|-|Je ne danse jamais
+fr|-|Sans toi pas de fête
+fr|-|Je ne suis pas seul
+fr|-|Plus jamais de larmes
+fr|-|Ouvre la porte
+fr|-|On se voit demain
+fr|-|Je ne bois plus
+fr|-|Pas une étoile ce soir
+fr|-|Je ne veux pas être riche
+# --- Italienisch, Portugiesisch, Türkisch, Polnisch, Niederländisch
+it|fire|Il mio cuore è in fiamme
+it|rain|La pioggia cade su di noi
+it|heartbreak|Mi hai spezzato il cuore
+it|money|Soldi, soldi, tanti soldi
+it|party|Stasera si fa festa
+it|sexy|Sei troppo sexy
+it|insult|Figlio di puttana
+it|curse|Cazzo, che serata
+it|strong|Non ho paura
+it|-|Senza soldi non si vive
+it|-|Non ballo mai
+pt|fire|Meu corpo pegando fogo
+pt|rain|A chuva cai lá fora
+pt|heartbreak|Você partiu meu coração
+pt|money|Dinheiro no bolso
+pt|party|Hoje tem festa
+pt|longing|Saudade de você
+pt|sexy|Ela é muito sexy
+pt|curse|Porra, que noite
+pt|insult|Filho da puta
+pt|strong|Não tenho medo
+pt|-|Sem dinheiro não dá
+pt|-|Não quero dançar
+tr|fire|Yanıyorum ateş gibi
+tr|rain|Yağmur yağıyor dışarıda
+tr|money|Para para para
+tr|party|Bu gece parti var
+tr|insult|Orospu çocuğu
+tr|curse|Siktir git
+tr|-|Para yok
+tr|-|Aşk değil bu
+pl|fire|Płonę jak ogień
+pl|rain|Deszcz pada za oknem
+pl|money|Hajs się zgadza
+pl|party|Dzisiaj impreza do rana
+pl|curse|Kurwa, co za noc
+pl|-|Nie mam pieniędzy
+pl|-|Bez ciebie nie ma imprezy
+nl|fire|Mijn hart staat in vuur en vlam
+nl|rain|De regen valt op straat
+nl|party|Vanavond is het feest
+nl|money|Geld, geld, geld
+nl|-|Ik heb geen geld
+nl|-|Ik dans niet
+# --- Nachtrag (vor dem Abgleich geschrieben, danach nicht nachgestimmt)
+en|fire|The whole place is burning up tonight
+en|-|I'm not on fire, I'm just tired
+en|rain|Purple rain falling down on me
+en|-|It never rains in this town
+en|money|Stacks of cash on the kitchen table
+en|-|Money can't buy me love
+en|club|Tonight we hit the club with the crew
+en|drink|Another round of drinks for everyone
+en|-|I don't drink, I don't smoke
+en|sunset|Chasing the sunset down the coast
+en|street|Grew up on these streets, nothing to lose
+en|lonely|Lonely nights without your touch
+en|freedom|I just wanna be free tonight
+en|anger|I hate the way you lie to me
+en|happy|Happy days are here again
+en|sad|I wasn't happy anyway
+en|sexy|Sex on the beach, body on me
+en|insult|Bitch, get out of my way
+en|curse|Damn, girl, you look good
+en|drugs|Pop a molly, I'm sweating
+en|-|Let's talk about the weather
+en|-|My phone is dead again
+en|-|She said she'd call me back
+en|everybody|Everybody in the place, let me hear you
+en|yeah|Yeah, yeah, yeah, oh yeah
+en|wedding|Wedding bells are ringing for us
+en|island|Island girl, take me to the sea
+en|morning|Good morning, sunshine, wake up
+en|police|Blue lights flashing, the police are here
+en|victory|Winner takes it all tonight
+de|fire|Es brennt lichterloh in mir
+de|-|Es brennt nicht mehr
+de|rain|Im strömenden Regen stehen wir
+de|money|Die Kohle stimmt, das Geld ist da
+de|-|Geld ist nicht alles
+de|club|Freitagnacht im Club
+de|drink|Wir saufen bis zum Morgen
+de|lonely|Einsam in meinem Zimmer
+de|longing|Ich vermisse deine Stimme
+de|freedom|Frei wie ein Vogel
+de|happy|Ich bin so glücklich heute
+de|sexy|Geile Nacht mit dir
+de|insult|Du Arschloch, hau ab
+de|curse|Scheiße, ich hab verschlafen
+de|drugs|Wir drehen einen Joint
+de|-|Ich geh jetzt nach Hause
+de|-|Der Zug hat Verspätung
+de|-|Wie spät ist es
+de|sunset|Abendrot über der Stadt
+de|street|Durch die Gassen der Altstadt
+es|fire|Quemando como el fuego
+es|-|No hay fuego entre nosotros
+es|money|Billetes, dinero en efectivo
+es|party|La fiesta no para
+es|drink|Bebiendo hasta el amanecer
+es|lonely|Solo en mi cuarto, soledad
+es|sexy|Ella es sexy, sabe lo que quiere
+es|insult|Puta madre, pendejo
+es|-|¿Dónde está mi teléfono?
+es|-|Mañana es lunes
+fr|fire|Ça brûle, le feu en moi
+fr|-|Pas de feu sans fumée
+fr|money|Le fric, toujours le fric
+fr|party|Ce soir c'est la teuf
+fr|lonely|La solitude me pèse
+fr|sexy|Tu es sexy, chérie
+fr|insult|Connard, va-t'en
+fr|-|Il fait beau aujourd'hui
+fr|-|Je prends le métro
+fr|longing|Tu me manques, mon amour
