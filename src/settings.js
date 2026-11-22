@@ -819,6 +819,11 @@ function render(box) {
       toggle("partyDJ", () => {}),
       toggle("partyHype", () => immersive.reloadLyrics()),
       toggle("partyWords", () => immersive.reloadLyrics()),
+      head(t("partyExplicit"), t("partyExplicitHint")),
+      seg(["on", "soft", "off"].map((k) => [k, t("partyExplicit_" + k)]), cfg.partyExplicit || "on", (k) => {
+        cfg.partyExplicit = k;
+        save();
+      }),
       toggle("partyHandsUp", () => {}),
       toggle("partyFlashStorm", () => {}),
       toggle("partyFog", () => {}),

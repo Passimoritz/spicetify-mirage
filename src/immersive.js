@@ -26,7 +26,8 @@ import { instruments } from "./instruments.js";
 import { live } from "./live.js";
 import { createWordFx, FX as WORD_FX } from "./words.js";
 import { createScenarios } from "./scenarios.js";
-import { LEX } from "./lexicon.js";
+import { planSong, senseLine, pickLine } from "./wordsense.js";
+import { LEX, NEG } from "./lexicon.js";
 import { bridge } from "./bridge.js";
 import { dj } from "./dj.js";
 import { UI, GAME, iconEl } from "./icons.js";
@@ -104,7 +105,8 @@ const immersive = (() => {
   let lyr = null, lyrUri = "", active = -2;
   // Wortbilder: gesungene Begriffe („fire“, „Regen“, „corazón“ …) bekommen im Party-Modus ein passendes Bild
   // Ausgelöste Bilder gehen auch an den Live-Link: die TV-Ansicht zeigt dasselbe Bild
-  const wordFx = createWordFx(LEX, { onFire: (c, w) => (live.fx(c, w), stageWord(c)) });
+  // (nur Begriffe mit Bild gehen an die TV-Ansicht – derbe Wörter nie als Text)
+  const wordFx = createWordFx(LEX, { neg: NEG, sense: { planSong, senseLine, pickLine }, onFire: (c, w, o) => (o?.img && live.fx(c, w), stageWord(c, o)) });
   // Szenarien: die Bühne antwortet auf gesungene Wörter (scenarios.js entscheidet, stagefx.js in der Location zeichnet)
   const scen = createScenarios();
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -145,13 +147,27 @@ FX: ${fx.join(", ") || "–"}
 Palette: ${pal}
 Probe-FX: ${pfx}`;
   }
-  function stageWord(c) {
+  // o: Plan aus wordsense.js (Stärke, weitere Begriffe der Zeile, ruhige Stelle)
+  function stageWord(c, o) {
     const px = wfxGeo?.px;
     if (!px || !cfg.partyWords) return;
     scen.word(c, {
       t: performance.now() / 1000, energy: px.energy, kind: px.kind, level: px.level, lite: lightMode(), calm: cfg.calm || reducedMotion.matches,
       noFlash: !!cfg.noFlash, flash: !!(cfg.partyFlash && px.fx), beat: 60 / (px.tempo || 120), phase: px.phase, col: WORD_FX[c]?.col,
+      k: o?.k, also: o?.also, soft: o?.soft, valence: px.valence, arousal: px.arousal, explicit: explicitMode(),
     });
+  }
+  // Derbe Wörter: Einstellung „on“ / „soft“ (nur Farbe) / „off“ – hat Spotify den Filter für explizite Inhalte
+  // an (Produktstatus „filter-explicit-content“), gilt „off“
+  let exFilter = false, exAt = 0;
+  function explicitMode() {
+    if (performance.now() - exAt > 60000) {
+      exAt = performance.now();
+      try {
+        S.Platform?.ProductStateAPI?.getValues?.()?.then?.((v) => (exFilter = v?.["filter-explicit-content"] === "1")).catch?.(() => {});
+      } catch {}
+    }
+    return exFilter ? "off" : ["on", "soft", "off"].includes(cfg.partyExplicit) ? cfg.partyExplicit : "on";
   }
   let wfxGeo = null, wfxAt = 0;
   let vals = new Float32Array(120), targets = new Float32Array(120), lastVizT = 0, tunnel3d = [], tunnelAt = 0;
@@ -1410,6 +1426,8 @@ Probe-FX: ${pfx}`;
       if (token !== lyrToken) return;
       if (cfg.partyWords && got.synced) {
         wordFx.prepare(uri, got.lines, got.lang);
+        // Filter für explizite Inhalte schon jetzt nachsehen (nicht erst beim ersten derben Wort)
+        explicitMode();
         // Sprache ohne eigenes Wörterbuch: einmal die englische Übersetzung holen (nur mit Online-Suche)
         if (wordFx.needsTranslation() && cfg.onlineLyrics) translateLines(uri, got, "en").then((tr) => token === lyrToken && wordFx.addTranslated(uri, tr)).catch(() => {});
       } else wordFx.prepare(uri, [], "");
