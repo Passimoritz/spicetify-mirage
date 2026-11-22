@@ -1,0 +1,269 @@
+{
+  "en": { "c": {
+    "sexy": "sex|sexy|sexual|horny|naked|nude|nudes|lust|lustful|booty|seduce|seduction|turn me on|turns me on|kinky|make love|making love|lingerie|stripper|strippers|pussy|dick|titties|tits|orgasm|moan|moaning",
+    "insult": "bitch|bitches|biatch|motherfucker|motherfuckers|hoe|hoes|slut|sluts|whore|whores|bastard|bastards|asshole|assholes|dickhead|dickheads|fuck you|prick|cunt|twat|wanker|douchebag|scumbag",
+    "curse": "fuck|fuckin'|fucking|fucked|fucks|fuck yeah|fuck it|motherfuckin'|motherfucking|shit|shitty|holy shit|bullshit|damn|damned|dammit|goddamn|goddamnit|hell yeah|hell no|bloody hell|wtf|crap",
+    "drugs": "weed|marijuana|cannabis|joint|blunt|blunts|kush|cocaine|ecstasy|mdma|xanax|xans|codeine|heroin|lsd|meth|percocet|percs|stoned|stoner|get high|getting high|gettin' high|got high|roll a joint|smoke weed|smokin' weed|ganja|reefer|spliff|doobie|shrooms|edibles"
+  } },
+  "de": { "c": {
+    "sexy": "sex|sexy|geil|geile|geilen|geiler|nackt|nackte|nackten|nackter|verführen|verführung|verführerisch|erotik|erotisch|ficken|bumsen|titten|stripclub|stripper|horny",
+    "insult": "schlampe|schlampen|hure|huren|hurensohn|hurensöhne|wichser|arschloch|arschlöcher|bastard|bastarde|missgeburt|fotze|nutte|nutten|bitch|bitches|fick dich|fick deine mutter|penner|spast|vollidiot",
+    "curse": "scheiße|scheisse|scheiss|scheiß|scheiß drauf|scheiss drauf|verdammt|verdammte|verdammter|verdammt nochmal|verflucht|verflixt|mist|kacke|fuck|fucking|shit|damn|verfickt|verfickte|leck mich|was zur hölle",
+    "drugs": "kiffen|kiff|kifft|gekifft|kiffer|bekifft|joint|joints|dübel|ott|weed|marihuana|cannabis|haschisch|hasch|ganja|kush|koks|kokain|ecstasy|xtc|mdma|molly|lsd|heroin|stoned|zugedröhnt|codein|xanax|blunt|tilidin"
+  } },
+  "nl": { "c": {
+    "sexy": "seks|sex|sexy|geil|geile|naakt|naakte|verleiden|opwindend|wellust|neuken|horny",
+    "insult": "klootzak|klootzakken|hoer|hoeren|slet|sletten|teef|eikel|smeerlap|bitch|bitches|rot op",
+    "curse": "godverdomme|verdomme|tering|kut|klote|kolere|shit|fuck",
+    "drugs": "wiet|wietje|weed|joint|jointje|blowen|stoned|hasj|cocaïne|xtc|mdma|lsd|heroïne|ketamine|lachgas|spliff|ganja|stickie"
+  } },
+  "sv": { "c": {
+    "sexy": "sex|sexig|sexiga|sexy|kåt|kåta|naken|nakna|förföra|knulla|horny",
+    "insult": "hora|horor|horunge|slyna|bitch|din jävel|ditt as|fittunge",
+    "curse": "fan|fy fan|för fan|fan också|jävla|jävlar|jävligt|skit|fuck|shit",
+    "drugs": "weed|marijuana|cannabis|joint|jointen|tjack|kokain|röka på|röker på|hasch|braj|knark|knarka|knarkar|ecstasy|lsd|heroin|lean|xanax|stoned"
+  } },
+  "da": { "c": {
+    "sexy": "sex|sexet|sexy|liderlig|nøgen|nøgne|kneppe|knepper|forføre",
+    "insult": "luder|ludere|kælling|kællinger|bitch|bitches|røvhul|røvhuller|fuck dig|horeunge",
+    "curse": "fanden|for fanden|fandeme|pis|lort|for satan|satans|kraftedeme|fuck|shit",
+    "drugs": "hash|joint|jointen|weed|skunk|kokain|ecstasy|mdma|lsd|heroin|stoned|ryge en joint|lean|xanax"
+  } },
+  "no": { "c": {
+    "sexy": "sex|sexy|kåt|kåte|naken|nakne|forføre|pule|puler",
+    "insult": "hore|horer|horunge|bitch|bitches|fitte|kuk|rasshøl|rævhøl|drittsekk|drittsekker|faen ta deg",
+    "curse": "faen|fy faen|for faen|jævla|jævlig|dritt|satan|fuck|shit|dæven",
+    "drugs": "hasj|weed|marihuana|cannabis|joint|jointen|kokain|ecstasy|mdma|lsd|heroin|ruset|dop|lean|xanax|stoned"
+  } },
+  "fr": { "c": {
+    "sexy": "sexe|sexy|sexuel|sexuelle|nue|nues|à poil|coquine|coquin|excité|excitée|sensuel|sensuelle|sensualité|luxure|érotique|faire l'amour|baise|baisent|baisée|fesses|seins|string|lingerie|levrette|orgasme|jouir|bonnasse|kamasutra",
+    "insult": "salope|salopes|connard|connards|connasse|pute|putes|enculé|enculés|fils de pute|fdp|bâtard|bâtards|pétasse|pétasses|enfoiré|enfoirés|ta gueule|ferme ta gueule|nique ta mère|ntm|tchoin|tchoins|abruti|crétin|bouffon|trou du cul",
+    "curse": "putain|ptn|merde|bordel|bordel de merde|putain de merde|merde alors|fait chier|je m'en fous|j'm'en fous|nom de dieu|sa mère|tabarnak|câlisse",
+    "drugs": "beuh|la beuh|bédo|bédos|pétard|pétards|joint|joints|spliff|spliffs|weed|zeb|teuchi|pochon|kush|cannabis|canna|marijuana|cocaïne|ecstasy|ecsta|mdma|molly|lsd|kétamine|kéta|codéine|lean|xanax|défoncé|défoncée|défoncés|défonce|stone|stoned|rouler un joint|fumer un joint|fumer un bédo"
+  } },
+  "es": { "c": {
+    "sexy": "sexo|sexy|sexual|perreo|perrear|perreando|perreito|bellaco|bellaca|bellacos|bellacas|bellaquear|bellaqueo|bellaqueando|bellaquera|desnudo|desnuda|desnudos|desnúdate|desnudarte|sensual|sensualidad|seducir|lujuria|cachondo|cachonda|gata|gatas|mamacita|mamasita|follar|singar|singando|culear|en cuatro|tanga|lencería|nalgas|tetas|toto|totito",
+    "insult": "puta|putas|hijo de puta|hija de puta|hijueputa|hijoputa|cabrón|cabrona|cabrones|pendejo|pendeja|pendejos|pendejas|zorra|zorras|perra|perras|maricón|malparido|malparida|gonorrea|culero|culera|mamón|imbécil|gilipollas|capullo|hijo de perra|bastardo|bastarda|chinga tu madre|tu puta madre|vete al carajo|que te jodan|mamaguevo|mamahuevo|mamabicho",
+    "curse": "mierda|joder|coño|carajo|qué carajo|puñeta|la chingada|chingada|chingao|me cago en|hostia|hostias|puta madre|maldita sea|a la verga|qué verga|pinche|jodido|jodida|cojones",
+    "drugs": "marihuana|mariguana|mota|porro|porros|blunt|blunts|un blunt|kush|cocaína|perico|perica|tusi|tussi|molly|éxtasis|mdma|xanax|lean|codeína|percocet|percs|lsd|ketamina|droga|drogas|drogado|drogada|fumar mota|fumando mota|phillie|cripy|cripi"
+  } },
+  "it": { "c": {
+    "sexy": "sesso|sexy|sessuale|nuda|nudo|nudi|nude|eccitato|eccitata|lussuria|sensuale|sedurre|sedurti|scopare|scopiamo|scopata|fare l'amore|culo|tette|figa|gnocca|perizoma|lingerie",
+    "insult": "stronzo|stronza|stronzi|stronze|troia|troie|puttana|puttane|bastardo|bastarda|bastardi|figlio di puttana|vaffanculo|fanculo|coglione|cogliona|testa di cazzo|pezzo di merda|zoccola|zoccole|cornuto|idiota|deficiente|cretino|imbecille|infame|infami",
+    "curse": "cazzo|porca|merda|porca puttana|porca troia|porca miseria|minchia|che cazzo|del cazzo|cazzate|mannaggia|porco dio|maledizione|dannazione",
+    "drugs": "marijuana|cannabis|canna|canne|cannone|spinello|spinelli|joint|blunt|hashish|bamba|cocaina|ketamina|keta|mdma|molly|ecstasy|xanax|lean|codeina|sballato|sballata|sballo|strafatto|strafatta|rollare|rollo una canna|fumare canne"
+  } },
+  "pt": { "c": {
+    "sexy": "sexo|sexy|sexual|safada|safado|safadinha|safadeza|putaria|nua|nuas|tesão|com tesão|transar|transa|transando|foder|gostosa|gostosinha|tarada|tarado|sentadinha|sentada|rabetão|bunda|bundão|popozuda|raba|de quatro|lingerie",
+    "insult": "filho da puta|filha da puta|fdp|vagabunda|vagabundo|vadia|vadias|puta|putas|piranha|piranhas|cuzão|arrombado|arrombada|otário|otária|babaca|corno|cornos|desgraçado|desgraçada|tomar no cu|vai se foder|vsf|vai à merda|vacilão|pau no cu",
+    "curse": "porra|caralho|carai|krl|merda|foda|foda se|fodase|fodeu|puta merda|puta que pariu|pqp|cacete|bosta|caramba",
+    "drugs": "maconha|baseado|baseados|beck|becks|um beck|ganja|skunk|prensado|haxixe|cocaína|lança perfume|loló|ecstasy|mdma|molly|xanax|lean|codeína|lsd|kush|blunt|brisado|brisada|maconheiro|maconheira|fumar maconha|fumar um"
+  } },
+  "ro": { "c": {
+    "sexy": "sex|sexul|sexy|sexual|dezbrăcat|dezbrăcată|dezbracă te|excitat|excitată|senzual|senzuală|futai",
+    "insult": "curvă|curva|curve|târfă|târfa|târfe|nenorocit|nenorocită|nenorociți|bulangiu|muie|pizdă|pizda|jigodie|fraier|fraieri|futu ți mama",
+    "curse": "naiba|la naiba|ce naiba|ce dracu|la dracu|pula mea|în pula mea",
+    "drugs": "marijuana|canabis|cannabis|joint|jointuri|cocaină|cocaina|heroină|droguri|drogat|drogată|drogați|etnobotanice|ecstasy|mdma|xanax"
+  } },
+  "ca": { "c": {
+    "sexy": "sexe|sexy|sexual|nu|nua|nus|nues|despullat|despullada|despulla't|cardar|follar|sensual|luxúria|excitat|excitada",
+    "insult": "fill de puta|puta|putes|cabró|cabrons|gilipolles|imbècil|desgraciat|desgraciada|malparit|malparida|capullo",
+    "curse": "merda|collons|hòstia|hòsties|redéu|mecagum|me cago en|cony|carai|ostres",
+    "drugs": "marihuana|porro|porros|canuto|drogues|drogat|drogada|cocaïna|èxtasi|ecstasy|mdma|xanax|haixix|kush"
+  } },
+  "pl": { "c": {
+    "sexy": "seks|seksu|seksem|sex|seksowny|seksowna|seksowne|seksownie|sexy|nagi|naga|nadzy|nago|nagie|pożądanie|pożądania|podniecony|podniecona|napalony|napalona|ruchać|rucham|ruchasz|rucha|ruchanie|bzykać|bzykanie|bzykam|dupa|dupę|dupą|dupeczka|tyłek|tyłeczek|cycki|orgazm|kochajmy się",
+    "insult": "suka|suki|suko|sukę|dziwka|dziwki|dziwko|dziwkę|dziwką|szmata|szmato|szmaty|kurwo|chuju|chuje|chujku|skurwysyn|skurwysyny|skurwysynu|skurwiel|skurwiela|skurwielu|sukinsyn|sukinsynu|sukinsyny|kutas|kutasie|pizda|pizdo|cipa|cipo|frajer|frajerze|frajerzy|frajerów|debil|debilu|debile|idiota|idioto|kretyn|kretynie|cwel|cwele|cwelu|zjeb|zjebie|zjeby|spierdalaj|wypierdalaj|odpierdol się|pierdol się|spieprzaj|jebać cię|jeb się|pierdolę cię",
+    "curse": "kurwa|kurwy|kurwę|kurwą|kurde|kurczę|cholera|cholery|cholerny|cholerna|cholerne|jasna cholera|psiakrew|jebać|jebać to|jebie|jebię|jebiesz|jeban*|zajebi*|pierdol*|spierdolić|spierdolony|rozpierdolić|wpierdol|wpierdolić|chuj|chuja|chujem|chujowo|chujowy|chujowa|chujnia|ja pierdolę|ja pierdole|o kurwa|kurwa mać|w dupie|do dupy|gówno|gówna|gównem|gówniany|pieprzyć|pieprzę|pieprzony|pieprzona|pieprzone|szlag|niech to szlag|do cholery",
+    "drugs": "zioło|zioła|ziołem|trawka|trawki|trawkę|marihuana|marihuany|marihuanę|ganja|maryśka|maryśkę|joint|jointa|jointy|jointem|blanty|blantów|kokaina|kokainy|kokainę|ecstasy|mdma|amfa|amfy|amfetamina|amfetaminy|heroina|heroiny|lsd|upalony|upalona|upaleni|naćpany|naćpana|naćpani|ćpać|ćpam|ćpasz|ćpun|ćpuny|zjarany|zjarana|zjarani|dragi|dragów|dragami|narkotyki|narkotyków|narkotykami|haj|na haju|haszysz|hasz|lean|kodeina|xanax|xanaxy|xany"
+  } },
+  "cs": { "c": {
+    "sexy": "sex|sexu|sexem|sexy|nahý|nahá|nazí|nahé|vzrušený|vzrušená|nadržený|nadržená|nadrženej|šukat|šukám|šukáš|šuká|šukání|zadek|zadeček|prsa|orgasmus|mrdat|mrdám|mrdáš",
+    "insult": "kurvo|děvka|děvko|děvky|coura|čubka|čubko|zmrd|zmrde|zmrdi|kretén|kreténe|debil|debile|idiot|idiote|kokot|kokote|kokoti|čurák|čuráku|hajzl|hajzle|hajzlové|parchant|parchante|zkurvysyn|zkurvysynu|jdi do prdele|táhni do háje|seru na tebe|vyser se",
+    "curse": "kurva|do prdele|doprdele|prdel|prdele|sakra|sakra práce|krucinál|kruci|ksakru|hovno|hovna|hovnem|sračka|sračky|do hajzlu|zasraný|zasraná|zasraně|zasranej|seru|kurevsky|zkurvený|zkurvená|zkurvenej|zatraceně|zatracený|do háje|do pytle|ty vole|kurva drát|jebat|jebu",
+    "drugs": "marihuana|marihuanu|marihuany|ganja|joint|jointy|brko|brka|brkem|špek|špeka|hulíme|zhulený|zhulená|zhulenej|kokain|kokainu|koks|koksu|pervitin|piko|extáze|éčko|heroin|heroinu|lsd|feťák|fetovat|fetuju|sjetý|sjetá|sjetej|drogy|drog|drogama|drogami"
+  } },
+  "sk": { "c": {
+    "sexy": "sex|sexu|sexom|sexy|nahý|nahá|nahí|nahé|vzrušený|vzrušená|nadržaný|nadržaná|zadok|zadoček|prsia|orgazmus|šukať|trtkať",
+    "insult": "kurvo|pičo|kokot|kokoti|debil|debilko|debili|idiot|idiotka|hajzel|hajzli|sviňa|suka|šľapka|šľapky|skurvysyn|skurvysynu|zmrd|zmrde|choď do piče|choď do riti|choď do prdele",
+    "curse": "kurva|do piče|dopiče|do riti|doriti|piča|do kelu|sakra|kruci|hovno|hovná|sračka|sračky|jebať|jebem|jebe|jebnutý|jebnutá|pojebaný|pojebaná|skurvený|skurvená|kurevsky|do prdele|kurva drát",
+    "drugs": "marihuana|marihuanu|ganja|jointa|jointy|špek|huliť|hulíme|zhulený|zhulená|kokaín|kokaínu|koks|koksu|pervitín|piko|extáza|heroín|lsd|feťák|fetovať|zfetovaný|sfetovaný|drogy|drog|drogami"
+  } },
+  "hr": { "c": {
+    "sexy": "seks|seksa|seksom|seksi|sexy|gola|goli|golo|naga|nagi|napaljen|napaljena|požuda|požude|požudu|guza|guzu|guzica|guzicu|karati|karam|karaš|ševiti|ševim|ševimo",
+    "insult": "kurva|kurvo|kurve|kurvin sin|kurvin sine|pička|pičko|pizda|pizdo|drolja|droljo|kučka|kučko|kučke|jebem ti mater|jebem ti majku|jebi se|odjebi|idiot|idiote|kreten|kretenu|kreteni|debil|debilu|šupak|šupče|šupčino",
+    "curse": "jebote|jebiga|jebem|jebem ti|jebeš|jebe|jebeno|jebeni|jebena|sranje|sranja|kurac|kurca|kurcem|pička mu materina|pizda mu materina|u pičku materinu|u kurac|dovraga|kvragu|k vragu|do vraga|govno|govna|jebo",
+    "drugs": "marihuana|marihuane|marihuanu|ganja|vutra|vutru|vutre|joint|kokain|kokaina|kokainom|spid|ekstazi|heroin|lsd|droga|droge|drogu|drogom|drogiran|drogirana|nadrogiran|naduvan|naduvana|napušen|napušena|gudra|gudru|gudre"
+  } },
+  "sr": { "c": {
+    "sexy": "seks|seksa|seksom|seksi|gola|goli|golo|naga|nagi|napaljen|napaljena|požuda|požude|požudu|guza|guzu|guzica|guzicu|karam|karaš|karati|секс|секса|сексом|секси|гола|голи|голо|нага|наги|напаљен|напаљена|пожуда|пожуде|пожуду|гуза|гузу|гузица|гузицу|карам|караш|карати|sexy",
+    "insult": "kurva|kurvo|kurve|kurvin sin|kurvin sine|pička|pičko|kučka|kučko|kučke|drolja|droljo|jebem ti mater|jebem ti majku|jebi se|odjebi|idiot|idiote|kreten|kretenu|kreteni|debil|debilu|šupak|šupče|курва|курво|курве|курвин син|курвин сине|пичка|пичко|кучка|кучко|кучке|дроља|дрољо|јебем ти матер|јебем ти мајку|јеби се|одјеби|идиот|идиоте|кретен|кретену|кретени|дебил|дебилу|шупак|шупче",
+    "curse": "jebote|jebiga|jebem|jebem ti|jebeš|jebe|jebeno|jebeni|jebena|sranje|sranja|kurac|kurca|kurcem|pička mu materina|u pičku materinu|u kurac|dođavola|do đavola|govno|govna|jebo|jebo te|bem ti|bem ga|majku mu|majku ti|јеботе|јебига|јебем|јебем ти|јебеш|јебе|јебено|јебени|јебена|срање|срања|курац|курца|курцем|пичка му материна|у пичку материну|у курац|дођавола|до ђавола|говно|говна|јебо|јебо те|бем ти|бем га|мајку му|мајку ти",
+    "drugs": "marihuana|marihuane|marihuanu|ganja|vutra|vutru|vutre|kokain|kokaina|kokainom|spid|ekstazi|heroin|droga|droge|drogu|drogom|drogiran|drogirana|naduvan|naduvana|napušen|napušena|gudra|gudru|gudre|марихуана|марихуане|марихуану|гања|вутра|вутру|вутре|кокаин|кокаина|кокаином|спид|екстази|хероин|дрога|дроге|дрогу|дрогом|дрогиран|дрогирана|надуван|надувана|напушен|напушена|гудра|гудру|гудре|lsd"
+  } },
+  "ru": { "c": {
+    "sexy": "секс|секса|сексом|сексе|сексуальный|сексуальная|сексуально|секси|голая|голый|голые|обнажённая|обнаженная|возбуждён|возбужден|возбуждена|похоть|похоти|трахать|трахаю|трахаешь|трахает|трахаться|трахнуть|попка|попку|сиськи|раздевайся|разденься|оргазм|минет|хочу тебя",
+    "insult": "сука|суки|суку|сукой|сучка|сучки|сучку|шлюха|шлюхи|шлюху|шлюхой|бляди|блядина|мразь|мрази|мразота|ублюдок|ублюдки|ублюдков|урод|уроды|уродов|козёл|придурок|придурки|дебил|дебилы|идиот|идиоты|пидор|пидорас|пидоры|мудак|мудаки|мудила|чмо|лох|лохи|лоха|шалава|шалавы|сукин сын|сукины дети|иди нахуй|пошёл нахуй|пошел нахуй|иди на хуй|пошёл на хуй|пошел на хуй|тварь|твари|гнида|гниды|падла|падлы|долбоёб|долбоеб|уёбок|уебок|уёбки|хуесос|пиздюк",
+    "curse": "блять|бля|блядь|блин|хуй|хуя|хуём|хуем|хуйня|хуйню|хуёво|хуево|нахуй|похуй|нихуя|охуеть|охуел|охуен*|пиздец|пизда|пизды|пиздат*|ебать|ебал|ебёт|ебет|ёбаный|ёбаная|ебаный|ебаная|ебаное|ебаные|ебану*|ебучий|заеба*|уебать|въебать|чёрт возьми|черт возьми|чёрт побери|черт побери|твою мать|ёб твою мать|епт|ёпт|ёпта|херня|хер|хрен|нахрен|похрен|ни хрена|дерьмо|дерьма|дерьмом|говно|говна|говном|срать|насрать",
+    "drugs": "марихуана|марихуаны|марихуану|ганджа|ганжа|канабис|джоинт|блант|бланта|кокаин|кокаина|кокс|экстази|мдма|героин|героина|лсд|наркота|наркоты|наркотики|наркотиков|наркоман|наркоманы|упоротый|упоротая|обдолбанный|обдолбан|накуренный|накуренная|укуренный|укуренная|под кайфом|дурь|дури|гашиш|ганжубас|шмаль|шмали|меф|мефедрон|ксанакс|кодеин|кодеина|курнуть|накуриться|дунуть|дунем"
+  } },
+  "uk": { "c": {
+    "sexy": "секс|сексу|сексом|сексі|сексуальний|сексуальна|сексуально|гола|голий|голі|оголена|збуджений|збуджена|хтивість|хіть|трахати|трахаю|трахатись|оргазм|сідниці",
+    "insult": "сука|суки|суку|сучка|шльондра|шльондри|повія|повії|повію|блядина|мразь|мрази|виродок|виродки|покидьок|покидьки|придурок|дебіл|дебіли|ідіот|ідіоти|козел|мудак|мудаки|йди нахуй|іди нахуй|пішов нахуй|сучий син|сучі діти|чмо|лох|підор|тварюка|падлюка|падло",
+    "curse": "бля|блять|блядь|блін|хуй|хуйня|нахуй|похуй|ніхуя|охуєнно|пизда|пиздець|піздєц|пиздато|їбати|йобаний|йобана|ебать|ебаний|заїбав|заїбало|курва|курва мать|трясця|трясця твоїй матері|холера|дідько|дідька|до дідька|чорт забирай|лайно|лайна|гівно|срати|насрати",
+    "drugs": "марихуана|марихуани|марихуану|ганджа|канабіс|джоінт|блант|кокаїн|кокаїну|кокс|екстазі|мдма|героїн|героїну|лсд|наркота|наркотики|наркотиків|наркоман|накурений|накурена|обдовбаний|упоротий|під кайфом|дурь|гашиш|шмаль|меф|мефедрон|ксанакс|кодеїн"
+  } },
+  "bg": { "c": {
+    "sexy": "секс|секса|сексът|секси|сексапилна|сексапилен|гола|гол|голи|голо|възбуден|възбудена|похот|похотта|дупе|дупето|цици",
+    "insult": "курва|курви|курвата|кучка|кучката|кучко|кучки|пачавра|пачаври|мръсница|мръсници|идиот|идиоти|идиотка|тъпак|тъпаци|тъпанар|кретен|кретени|еба ти майката|еба ти",
+    "curse": "мамка му|мамицата му|да му еба|еба го|шибан|шибана|шибано|шибани|по дяволите|лайно|лайна|лайната|майната му|майната ти|ебаси|ебати",
+    "drugs": "марихуана|марихуаната|джоинт|канабис|кокаин|кокаина|екстази|хероин|хероина|лсд|дрога|дрогата|наркотици|наркотиците|наркоман|наркомани|надрусан|надрусана|напушен|напушена|напушени|дрогиран|дрогирана|амфетамин|амфети|ганджа|хашиш"
+  } },
+  "lt": { "c": {
+    "sexy": "seksas|sekso|seksą|seksu|seksuali|seksualus|seksi|nuogas|nuoga|nuogi|geismas|geismo|užpakalis",
+    "insult": "kalė|kalės|šliundra|šliundros|kekšė|kekšės|kurvos|debilas|debilai|idiotas|idiotai|šūdžius",
+    "curse": "blet|bliat|bliamba|blemba|po velnių|velniop|šūdas|šūdo|šūdą|šūdinas|kurva|nachui|pizdec|rupūžė",
+    "drugs": "marihuana|marihuanos|marihuaną|kanapės|kanapių|džointas|kokainas|kokaino|ekstazi|heroinas|heroino|lsd|narkotikai|narkotikų|narkotikus|narkomanas|apsinešęs|apsinešusi|apsirūkęs|apsirūkiusi|hašišas"
+  } },
+  "lv": { "c": {
+    "sexy": "sekss|seksu|seksā|seksīgs|seksīga|seksīgi|kails|kaila|kaili|iekāre|iekāri|dibens|dibenu",
+    "insult": "kuce|kuces|mauka|maukas|padauza|padauzas|idiots|idioti|debils|debili|kretīns|kretīni|stulbenis|maita|maitas",
+    "curse": "sūds|sūdi|sūdu|sūdīgi|pie velna|bļin|bļe|bļeģ|bļaģ|pizģec|nahuj|lai velns parauj|velns lai parauj|nolādēts|nolādēta|sasodīts|sasodīta|sasodīti|velns parāvis",
+    "drugs": "marihuāna|marihuānu|marihuānas|kaņepes|kaņepju|džoints|džointu|kokaīns|kokaīnu|ekstazī|heroīns|heroīnu|lsd|narkotikas|narkotikām|narkotiku|narkomāns|narkomāni|sapīpējies"
+  } },
+  "et": { "c": {
+    "sexy": "seks|seksikas|alasti|iha|himu",
+    "insult": "lits|litsid|hoor|litapoeg|sitapea|türapea",
+    "curse": "türa|perse|persse|mine perse|sitt|raisk",
+    "drugs": "kanep|marihuaana|kokaiin|kokaiini|heroiin|ecstasy"
+  } },
+  "fi": { "c": {
+    "sexy": "seksi|seksiä|seksikäs|seksikkäät|alasti|alaston|kiimainen|himo|himokas|nussia|nussii",
+    "insult": "huora|huorat|huoran|lutka|horo|kusipää|mulkku|mulkut|paskiainen|paskiaiset|äpärä|vittupää|narttu",
+    "curse": "vittu|vitun|voi vittu|paska|paskaa|paskat|jumalauta|kyrpä|kyrpää",
+    "drugs": "kannabis|marihuana|hasis|ganja|kokaiini|heroiini|ekstaasi|piri|piriä|jointti|jointit|subu"
+  } },
+  "hu": { "c": {
+    "sexy": "szex|szexi|meztelen|kéj|kéjes|dugunk|dugni|kefélni|kefélünk",
+    "insult": "kurvák|ribanc|ribancok|kurva anyád|kurvanyád|faszfej|seggfej|rohadék|köcsög|szemétláda|buzi|csicska",
+    "curse": "bassza meg|baszd meg|baszki|baszom|a francba|francba|fasz|faszom|faszt|geci|picsába|a picsába|szar|szarság|kurva|kurvára",
+    "drugs": "marihuána|marihuana|kokain|heroin|extasy|ecstasy|füvezünk|füvezek|joint|jointot|lsd"
+  } },
+  "el": { "c": {
+    "sexy": "σεξ|σέξι|γυμνή|γυμνός|γυμνά|πόθος|καύλα|καυλωμένη|καυλωμένος",
+    "insult": "πουτάνα|πουτάνες|παλιοπουτάνα|καριόλα|καριόλη|μαλάκα|μαλάκας|μαλάκες|πούστη|κερατά|γαμιόλη|σκύλα|τσούλα|ρουφιάνος",
+    "curse": "γαμώτο|γαμώ|γαμώ το|γαμιέται|γαμημένο|γαμημένη|σκατά|γαμήσου|άντε γαμήσου|στο διάολο",
+    "drugs": "χασίς|μαριχουάνα|κάνναβη|κοκαΐνη|ηρωίνη|τσιγαριλίκι|τσιγαριλίκια|μαστούρα|μαστουρωμένος|μαστουρωμένη"
+  } },
+  "tr": { "c": {
+    "sexy": "seks|seksi|çıplak|şehvet|şehvetli|azgın|seviş|sevişelim|sevişiyoruz|sevişmek",
+    "insult": "orospu|orospular|orospu çocuğu|oç|piç|piçler|ibne|yavşak|şerefsiz|pezevenk|kahpe|kaltak|puşt|gavat|kancık|aşağılık|dangalak|gerizekalı|salak|amcık",
+    "curse": "siktir|siktir git|hassiktir|amk|aq|amına|amına koyayım|amına koyim|sikeyim|sikerim|siktim|sikik|ananı|ananı sikeyim|lan|kahretsin|lanet|lanet olsun|bok|boktan|yarrak|yarak",
+    "drugs": "esrar|esrarlı|esrarkeş|kokain|eroin|ekstazi|marihuana|kenevir|bonzai|uyuşturucu|torbacı|joint|jointi|kafayı bulduk"
+  } },
+  "ja": { "c": {
+    "sexy": "セクシー|エロ|官能|欲情|セックス|エッチ|誘惑|裸の|裸で|全裸",
+    "insult": "クソ野郎|バカ野郎|馬鹿野郎|この野郎|クズ|ビッチ|てめえ|てめぇ",
+    "curse": "クソ|ちくしょう|畜生|チクショウ|くそったれ|クソッタレ|ファック",
+    "drugs": "大麻|マリファナ|ドラッグ|麻薬|コカイン|覚醒剤|ハッパ|ガンジャ"
+  } },
+  "ko": { "c": {
+    "sexy": "섹시|야한|야해|유혹|섹스|알몸|관능",
+    "insult": "개새끼|개새|병신|미친놈|미친년|썅년|쌍년|니애미|호로새끼|후레자식",
+    "curse": "씨발|시발|씨팔|젠장|빌어먹을|좆같|존나|제기랄|썅",
+    "drugs": "마약|대마초|마리화나|코카인|엑스터시"
+  } },
+  "zh": { "c": {
+    "sexy": "性感|做爱|做愛|性爱|性愛|欲望|慾望|诱惑|誘惑|裸体|裸體|赤裸",
+    "insult": "婊子|贱人|賤人|贱货|賤貨|狗娘养的|狗娘養的|王八蛋|混蛋|傻逼|人渣|滚蛋|滾蛋|操你",
+    "curse": "他妈的|他媽的|卧槽|我操|我靠|该死|該死|见鬼|見鬼",
+    "drugs": "毒品|大麻|吸毒|可卡因|摇头丸|搖頭丸|嗑药|嗑藥|冰毒|海洛因"
+  } },
+  "vi": { "c": {
+    "sexy": "gợi cảm|quyến rũ|khiêu gợi|tình dục|làm tình|khỏa thân|dục vọng",
+    "insult": "đĩ|con đĩ|đồ khốn|thằng khốn|khốn nạn|chó má|thằng chó",
+    "curse": "đm|đmm|đéo|địt|đụ|đụ má|đù má|mẹ kiếp|chết tiệt|vãi|vcl",
+    "drugs": "ma túy|ma tuý|cần sa|thuốc lắc|bay lắc"
+  } },
+  "th": { "c": {
+    "sexy": "เซ็กซี่|เซ็กส์|ยั่ว|ยั่วยวน|เปลือย|ร่าน",
+    "insult": "อีดอก|ไอ้สัตว์|ไอ้เหี้ย|อีเหี้ย|อีตัว|กะหรี่|ไอ้ระยำ|ส้นตีน|ชาติหมา",
+    "curse": "เหี้ย|ชิบหาย|ฉิบหาย|แม่ง|เชี่ย",
+    "drugs": "ยาเสพติด|กัญชา|ยาบ้า|ยาไอซ์|โคเคน|ยาอี|เมายา"
+  } },
+  "id": { "c": {
+    "sexy": "seksi|bercinta|nafsu|birahi|telanjang|bugil|seks|ngewe",
+    "insult": "bangsat|bajingan|brengsek|keparat|lonte|pelacur|kontol|memek|goblok|tolol|bego",
+    "curse": "sialan|sial|kampret|tai|taik|asu|jancuk|jancok|cuk|anjir",
+    "drugs": "ganja|narkoba|sabu|sabu-sabu|putaw|nyabu|ekstasi|inex|cimeng|giting"
+  } },
+  "ms": { "c": {
+    "sexy": "seksi|bercinta|nafsu|berahi|bogel|telanjang|seks",
+    "insult": "bangsat|keparat|pukimak|puki|sundal|pelacur|bodoh|bahlul",
+    "curse": "sial|celaka|cilaka|lancau|haram jadah",
+    "drugs": "dadah|ganja|syabu|pil khayal|ekstasi|ketum"
+  } },
+  "tl": { "c": {
+    "sexy": "malibog|libog|hubad|hubo't hubad|kantot|kantutan|malandi|landi",
+    "insult": "putang ina mo|tang ina mo|gago|gaga|tarantado|ulol|bobo|tanga|hayop ka|walanghiya|puta|pokpok|kupal|inutil",
+    "curse": "putangina|putang ina|tangina|tang ina|leche|buwisit|bwisit|pakshet|pucha|punyeta|anak ng puta|syet",
+    "drugs": "droga|shabu|tsongki|adik|nagdodroga"
+  } },
+  "hi": { "c": {
+    "sexy": "सेक्सी|हवस|ठरकी|hawas|tharki",
+    "insult": "कमीना|कमीने|हरामी|हरामज़ादा|हरामजादा|हरामखोर|मादरचोद|बहनचोद|भेनचोद|चूतिया|चूतिये|रंडी|गांडू|भोसड़ीके|kamina|kameena|kamine|kameene|harami|haraami|haramzada|haramkhor|madarchod|behenchod|bhenchod|chutiya|chutiye|randi|gandu|bhosdike",
+    "curse": "साला|साले|लानत|saala|saale|laanat|lanat",
+    "drugs": "गांजा|चरस|भांग|अफ़ीम|अफीम|हेरोइन|कोकीन|ganja|charas|bhang|afeem|afim"
+  } },
+  "ur": { "c": {
+    "sexy": "ہوس|ٹھرکی|hawas|tharki",
+    "insult": "حرامی|حرامزادہ|کمینہ|کمینے|کنجر|کنجری|harami|haraami|haramzada|haramkhor|kamina|kameena|kamine|kameene|kanjar|kanjri|madarchod|behenchod|bhenchod|chutiya|randi|gandu|ullu ka pattha|ullu ka patha",
+    "curse": "لعنت|lanat|laanat",
+    "drugs": "چرس|افیون|ہیروئن|گانجا|بھنگ|charas|afeem|afyun|ganja|bhang"
+  } },
+  "bn": { "c": {
+    "sexy": "সেক্সি",
+    "insult": "হারামজাদা|শুয়োরের বাচ্চা|কুত্তার বাচ্চা|খানকি|মাগি|বেশ্যা",
+    "curse": "শালা|শালার",
+    "drugs": "গাঁজা|চরস|হেরোইন|ইয়াবা|কোকেন|ফেনসিডিল"
+  } },
+  "ta": { "c": {
+    "sexy": "செக்ஸி|காமம்",
+    "insult": "தேவிடியா|பொறுக்கி|thevidiya|thevdiya|porukki|punda",
+    "drugs": "கஞ்சா|அபின்|போதைப்பொருள்|போதை மருந்து|ganja|kanja"
+  } },
+  "pa": { "c": {
+    "sexy": "ਸੈਕਸੀ|sexy",
+    "insult": "ਕੰਜਰ|ਕੰਜਰੀ|ਹਰਾਮੀ|ਹਰਾਮਖੋਰ|kanjar|kanjri|harami|haramkhor|madarchod|bhenchod|penchod|behenchod",
+    "curse": "ਲਾਹਨਤ|lahnat",
+    "drugs": "ਅਫੀਮ|ਅਫ਼ੀਮ|ਭੁੱਕੀ|ਪੋਸਤ|ਸਮੈਕ|afeem|afim|bhukki|ganja|charas"
+  } },
+  "ar": { "c": {
+    "sexy": "سكسي|عريانة|عارية|شهوة|مثيرة|sexy|sexi",
+    "insult": "شرموطة|شرموط|قحبة|قحاب|ابن الكلب|يا ابن الكلب|ابن القحبة|ابن الشرموطة|عرص|معرص|خول|متناك|كس أمك|كسمك|sharmouta|sharmuta|ibn el kalb|kosomak|kos omak|a7ba",
+    "curse": "أحا|احا|a7a|يلعن|يلعن أبوك|تبا|اللعنة|زفت|خرا|yel3an",
+    "drugs": "حشيش|الحشيش|حشيشة|مخدرات|كوكايين|هيروين|بانجو|ترامادول|مسطول|مسطولة|مساطيل|hashish|7ashish|mastool|mastoul"
+  } },
+  "fa": { "c": {
+    "sexy": "سکسی|سکس|لخت|برهنه|هوس|sexy|sex|lokht",
+    "insult": "جنده|کونی|حرومزاده|حروم‌زاده|کصکش|کسکش|مادرجنده|بیشرف|بی‌شرف|لاشی|jende|koni|kaskesh|kos kesh|madarjende|lashi|haroomzade",
+    "curse": "کیر|کیرم|کیری|گوه|گه|لعنتی|لعنت|kir|kiram|goh|lanati",
+    "drugs": "حشیش|ماری‌جوانا|ماریجوانا|کوکائین|هروئین|تریاک|جوینت|نشئه|نئشه|joint|nashe|teryak|hashish"
+  } },
+  "he": { "c": {
+    "sexy": "סקסי|סקס|עירום|עירומה|תאווה|חרמן|חרמנית|חושני|חושנית",
+    "insult": "זונה|זונות|בן זונה|בת זונה|יא בן זונה|שרמוטה|שרמוטות|מניאק|מניאקים",
+    "curse": "חרא|זין|כוס אמק|כוסאמק|לעזאזל|פאק|פאקינג|שיט",
+    "drugs": "גראס|ג'וינט|ג'וינטים|קוקאין|הרואין|אקסטזי|מסטול|מסטולה|סטלן|סטלנית|חשיש|מריחואנה|קנאביס|בונג"
+  } },
+  "sw": { "c": {
+    "sexy": "ngono|uchi|matako|nyege|kutomba|kutombana",
+    "insult": "malaya|kumamako|kumanyoko|mpumbavu|pumbavu|mbwa wewe",
+    "drugs": "bangi|bange|msokoto|misokoto|mirungi|miraa|dawa za kulevya|mateja|teja|kuvuta bangi"
+  } },
+  "yo": { "c": {
+    "sexy": "ìbálòpọ̀|ibalopo|ìhòòhò|ihoho",
+    "insult": "ọmọ àlè|omo ale|ashawo|aṣẹ́wó|asewo|olosho|oloso|oloshi|werey|mumu|olodo",
+    "drugs": "fa igbo|mu igbo|colos"
+  } }
+}
