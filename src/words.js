@@ -1,12 +1,14 @@
 /* ---------------------------------------------------------------- Wortbilder (Party-Modus) */
 // Singt jemand „fire“, „Regen“, „corazón“, „星“ oder „pyaar“, antwortet die Bühne mit einem passenden Bild:
-// Flammen, Regen, Herzen, Sterne … Das Wörterbuch (lexicon.js) kennt rund 75 Begriffe in 45 Sprachen mit
+// Flammen, Regen, Herzen, Sterne … Das Wörterbuch (lexicon.js) kennt rund 200 Begriffe in 45 Sprachen mit
 // ihren gängigen Formen. Die Sprache des Songs wird aus häufigen Füllwörtern und der Schrift erkannt –
 // verglichen wird nur mit diesen Sprachen (plus Englisch, das fast überall vorkommt). Für Sprachen ohne
 // eigenes Wörterbuch hilft auf Wunsch die englische Übersetzung des Liedtexts.
-// Nicht überladen: höchstens ein Bild pro Zeile, Pausen zwischen den Bildern (kürzer bei höherer Stärke),
-// dasselbe Bild erst nach einer Weile wieder, nie mehr als zwei gleichzeitig. Jedes ausgelöste Bild meldet sich über
-// onFire – die Bühne antwortet dann mit (scenarios.js: Pyro, Sternenhimmel, Sprünge der Menge, Countdown …).
+// Welche Treffer wirklich zählen, plant wordsense.js je Song (Verneinung, Redewendungen, Wiederholung, Stimmung,
+// Sicherheit). Nicht überladen: höchstens ein Bild pro Zeile, Pausen zwischen den Bildern (kürzer bei höherer
+// Stärke), dasselbe Bild erst nach einer Weile wieder, nie mehr als zwei gleichzeitig. Jede geplante Antwort meldet
+// sich über onFire – die Bühne antwortet dann mit (scenarios.js: Pyro, Sternenhimmel, Sprünge der Menge,
+// Countdown …), auch bei Begriffen ohne eigenes Bild (Gefühle als Farbe, Rufe, derbe Wörter nur als Licht).
 import { isCountdown } from "./scenarios.js";
 import { createFlashCap } from "./flashcap.js";
 
@@ -20,6 +22,8 @@ const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
 // Schriften ohne Leerzeichen zwischen Wörtern (und Koreanisch mit angehängten Partikeln): Teilstring-Suche
 const NOSPACE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Hangul}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
 const TOKEN = /[\p{L}\p{M}\p{N}'’]+/gu;
+// Sprachen mit Elision vor dem Wort (Artikel und Präpositionen hängen mit Apostroph davor)
+const ELIDE = new Set(["fr", "it", "ca", "pt"]);
 // Akzente weg (für Texte, die ohne geschrieben wurden) – nicht bei Vietnamesisch, dort tragen sie die Bedeutung
 const strip = (s) => s.normalize("NFD").replace(/\p{M}/gu, "").normalize("NFC");
 const low = (s) => String(s || "").normalize("NFC").toLocaleLowerCase();
@@ -63,6 +67,44 @@ const FX = {
   // Szenarien (scenarios.js): Bass, Hände hoch, Anfeuern, verrückt, Countdown und weitere Farben – die Bühne antwortet mit
   orange: { fx: "tint", col: [255, 140, 30], pri: 1 }, yellow: { fx: "tint", col: [255, 220, 40], pri: 1 }, cyan: { fx: "tint", col: [40, 225, 235], pri: 1 },
   bass: { fx: "boom", pri: 5 }, handsup: { fx: "jump", pri: 6 }, hype: { fx: "rings", pri: 3 }, crazy: { fx: "rainbow", pri: 3 }, count: { fx: "rings", pri: 7 },
+  // Weitere Bereiche (lex-more.json). fx: null = kein Bild über dem Cover, nur die Bühne antwortet (Gefühle als
+  // Farbstimmung, Rufe, an die die Menge antwortet, Bewegung …)
+  // Nachtleben
+  club: { fx: "city", pri: 4 }, drink: { fx: null, pri: 3 }, shots: { fx: null, pri: 4 }, beer: { fx: "bubbles", pri: 3 }, wine: { fx: null, pri: 3 },
+  turnup: { fx: "rings", pri: 5 }, weekend: { fx: "confetti", pri: 3 }, allnight: { fx: "night", pri: 3 }, dj: { fx: "notes", pri: 4 },
+  dancefloor: { fx: "rings", pri: 4 }, neon: { fx: null, pri: 4 }, laser: { fx: null, pri: 4 }, vip: { fx: "gold", pri: 4 }, wild: { fx: null, pri: 3 },
+  bounce: { fx: "jump", pri: 4 }, crew: { fx: null, pri: 3 }, blackout: { fx: null, pri: 5 },
+  // Geld und Luxus (goldener Regen, Glitzer)
+  rich: { fx: "money", pri: 5 }, million: { fx: "money", pri: 5 }, luxury: { fx: "diamond", pri: 4 }, supercar: { fx: "speed", pri: 5 },
+  bling: { fx: "diamond", pri: 4 }, boss: { fx: "crown", pri: 4 }, jet: { fx: "rocket", pri: 4 }, yacht: { fx: "wave", pri: 4 },
+  mansion: { fx: "gold", pri: 4 }, flex: { fx: "gold", pri: 3 }, payday: { fx: "money", pri: 5 },
+  // Körper und Bewegung
+  body: { fx: null, pri: 2 }, sweat: { fx: null, pri: 3 }, move: { fx: null, pri: 2 }, shake: { fx: null, pri: 3 }, hips: { fx: null, pri: 3 },
+  clap: { fx: null, pri: 4 }, stomp: { fx: null, pri: 4 }, spin: { fx: null, pri: 3 }, run: { fx: null, pri: 2 }, heartbeat: { fx: "hearts", pri: 4 },
+  breathe: { fx: null, pri: 2 }, getup: { fx: "jump", pri: 4 }, touch: { fx: null, pri: 2 }, sway: { fx: null, pri: 3 },
+  // Gefühle: nur Farbstimmung
+  anger: { fx: null, pri: 3 }, freedom: { fx: "birds", pri: 3 }, lonely: { fx: null, pri: 3 }, longing: { fx: null, pri: 3 }, fear: { fx: null, pri: 3 },
+  hope: { fx: null, pri: 2 }, happy: { fx: null, pri: 2 }, sad: { fx: null, pri: 3 }, pain: { fx: null, pri: 3 }, peace: { fx: null, pri: 2 },
+  pride: { fx: null, pri: 2 }, jealous: { fx: null, pri: 3 }, alive: { fx: null, pri: 3 }, strong: { fx: null, pri: 2 }, lost: { fx: null, pri: 2 },
+  home: { fx: null, pri: 2 }, memory: { fx: null, pri: 2 }, goodbye: { fx: null, pri: 3 }, smile: { fx: null, pri: 2 }, together: { fx: null, pri: 2 },
+  // Orte und Zeiten
+  street: { fx: "city", pri: 3 }, desert: { fx: "sun", pri: 4 }, midnight: { fx: "moon", pri: 4 }, sunrise: { fx: "sun", pri: 4 }, sunset: { fx: "sun", pri: 4 },
+  morning: { fx: "rays", pri: 2 }, forest: { fx: null, pri: 3 }, jungle: { fx: null, pri: 4 }, mountain: { fx: null, pri: 3 }, island: { fx: "beach", pri: 4 },
+  tropical: { fx: "beach", pri: 4 }, highway: { fx: "speed", pri: 3 }, rooftop: { fx: "city", pri: 4 }, spring: { fx: "petals", pri: 3 },
+  autumn: { fx: null, pri: 3 }, fog: { fx: "smoke", pri: 4 }, holiday: { fx: "beach", pri: 3 }, journey: { fx: "orbit", pri: 2 }, train: { fx: "speed", pri: 3 },
+  sail: { fx: "wave", pri: 3 },
+  // Rufe: die Menge antwortet
+  hey: { fx: null, pri: 2 }, yeah: { fx: null, pri: 2 }, ole: { fx: null, pri: 4 }, woo: { fx: null, pri: 3 }, everybody: { fx: null, pri: 3 },
+  comeon: { fx: null, pri: 3 }, hallelujah: { fx: "heaven", pri: 5 }, onemore: { fx: null, pri: 4 },
+  // Weiteres
+  wolf: { fx: "moon", pri: 4 }, beast: { fx: null, pri: 4 }, dragon: { fx: "flames", pri: 5 }, war: { fx: null, pri: 3 }, blood: { fx: null, pri: 3 },
+  candle: { fx: null, pri: 4 }, drums: { fx: "boom", pri: 4 }, guitar: { fx: "notes", pri: 4 }, bells: { fx: "notes", pri: 4 }, sparkle: { fx: "diamond", pri: 4 },
+  rise: { fx: null, pri: 2 }, monster: { fx: "ghosts", pri: 4 }, alien: { fx: "galaxy", pri: 4 }, robot: { fx: "sparks", pri: 4 },
+  earthquake: { fx: "boom", pri: 5 }, sweet: { fx: null, pri: 2 }, pray: { fx: "heaven", pri: 3 }, camera: { fx: null, pri: 4 }, sleep: { fx: null, pri: 2 },
+  wakeup: { fx: "rays", pri: 3 }, silence: { fx: null, pri: 3 }, victory: { fx: "confetti", pri: 4 }, hero: { fx: "rays", pri: 3 }, legend: { fx: "crown", pri: 4 },
+  police: { fx: null, pri: 4 }, wedding: { fx: "petals", pri: 5 },
+  // Derbes (lex-explicit.json): nie als Text oder Bild, nur Licht und Stimmung (scenarios.js, Einstellung partyExplicit)
+  sexy: { fx: null, pri: 3, ex: true }, insult: { fx: null, pri: 2, ex: true }, curse: { fx: null, pri: 1, ex: true }, drugs: { fx: null, pri: 3, ex: true },
 };
 // Farbe, in der das gesungene Wort aufleuchtet
 const GLOW = {
@@ -128,7 +170,9 @@ function detect(lines, hint) {
   const ranked = Object.entries(hits).sort((a, b) => b[1] - a[1]);
   const top = ranked[0]?.[1] || 0;
   for (const [lang, n] of ranked.slice(0, 3)) if (n >= 3 && n >= top * 0.45) langs.add(lang);
-  return { langs: [...langs].filter((l) => IDX[l]), sure: top >= 4 || langs.size > 1 };
+  // main: die wahrscheinlichste Sprache des Songs (Füllwörter, sonst die Schrift, sonst Englisch)
+  const main = ranked[0] && top >= 3 ? ranked[0][0] : [...langs].find((l) => l !== "en" && IDX[l]) || "en";
+  return { langs: [...langs].filter((l) => IDX[l]), sure: top >= 4 || langs.size > 1, main };
 }
 
 // Treffer einer Zeile: [{ c, at (Zeichenstelle), len, raw }]
@@ -149,14 +193,22 @@ function matchLine(text, langs) {
         const ph = toks.slice(i, i + n).map((x) => x.w).join(" ");
         const c = ix.phrase.get(ph) || (lang !== "vi" && ix.phrase.get(strip(ph)));
         const end = toks[i + n - 1].at + toks[i + n - 1].raw.length;
-        if (c) out.push({ c, at: t.at, len: end - t.at, raw: text.slice(t.at, end) });
+        if (c) out.push({ c, at: t.at, len: end - t.at, raw: text.slice(t.at, end), how: "phrase", lang, ti: i, tn: n });
       }
-      let c = ix.exact.get(t.w) || (lang !== "vi" && ix.exact.get(strip(t.w)));
+      let c = ix.exact.get(t.w) || (lang !== "vi" && ix.exact.get(strip(t.w))), how = "exact";
       if (!c && t.w.length >= 5) {
         const sw = lang === "vi" ? t.w : strip(t.w);
         c = ix.pre.find(([p]) => t.w.startsWith(p) || sw.startsWith(p))?.[1];
+        how = "pre";
       }
-      if (c) out.push({ c, at: t.at, len: t.raw.length, raw: t.raw });
+      // Elision („l'argent“, „dell'amore“, „d'amor“): das Wort hinter dem Apostroph
+      if (!c && ELIDE.has(lang)) {
+        const k = Math.max(t.w.lastIndexOf("'"), t.w.lastIndexOf("’"));
+        const rest = k > 0 ? t.w.slice(k + 1) : "";
+        if (rest.length >= 3) c = ix.exact.get(rest) || ix.exact.get(strip(rest));
+        how = "exact";
+      }
+      if (c) out.push({ c, at: t.at, len: t.raw.length, raw: t.raw, how, lang, ti: i, tn: 1 });
     }
     if (ix.sub.length && NOSPACE.test(lowText)) {
       const taken = [];
@@ -165,7 +217,7 @@ function matchLine(text, langs) {
         while (k >= 0) {
           if (!taken.some(([a, b]) => k < b && k + s.length > a)) {
             taken.push([k, k + s.length]);
-            out.push({ c, at: k, len: s.length, raw: text.slice(k, k + s.length) });
+            out.push({ c, at: k, len: s.length, raw: text.slice(k, k + s.length), how: "sub", lang, ti: -1, tn: 0 });
           }
           k = lowText.indexOf(s, k + s.length);
         }
@@ -192,7 +244,9 @@ function starPath(ctx, x, y, r, pts = 5, inner = 0.45) {
   ctx.closePath();
 }
 
-function createWordFx(lexicon, { onFire } = {}) {
+// sense: der Planer aus wordsense.js ({ planSong, senseLine, pickLine }) – von außen gereicht, damit die kleine
+// TV-Ansicht (tvfx.js, ohne Wörterbuch) ihn nicht mitbündelt. Ohne ihn: das wichtigste Wort je Zeile.
+function createWordFx(lexicon, { onFire, neg, sense } = {}) {
   if (lexicon && lexicon !== LEX) {
     LEX = lexicon;
     IDX = null;
@@ -249,24 +303,29 @@ function createWordFx(lexicon, { onFire } = {}) {
     const d = detect(lines, hint);
     langs = d.langs;
     sureLang = d.sure;
+    // Wortsinn (wordsense.js): Verneinung, Redewendungen, Wiederholung, Stimmung, Sicherheit – einmal je Song
+    const hits = lines.map((l) => matchLine(l.text || "", langs));
+    const sp = sense ? sense.planSong(lines, hits, { neg, main: d.main, pri: (c) => FX[c]?.pri }) : hits.map(pick);
     // ein Countdown („3, 2, 1“) geht jedem Wortbild der Zeile vor
-    plan = lines.map((l) => (isCountdown(l.text) ? { c: "count", at: -1, len: 0, raw: "" } : pick(matchLine(l.text || "", langs))));
+    plan = lines.map((l, i) => (isCountdown(l.text) ? { c: "count", at: -1, len: 0, raw: "", k: 1, conf: 1 } : sp[i]));
   }
   // Sprache ohne eigenes Wörterbuch: die englische Übersetzung durchsuchen (Bild dann zur Zeilenmitte)
   function addTranslated(uri, translated) {
     if (uri !== uriNow || !translated?.length) return;
     translated.forEach((tr, i) => {
       if (plan[i] || !tr) return;
-      const m = pick(matchLine(tr, ["en"]));
-      if (m) plan[i] = { ...m, at: -1, raw: "" };
+      // (Übersetzung: etwas weniger sicher als der Originaltext)
+      const ms = matchLine(tr, ["en"]);
+      const m = sense ? sense.pickLine(sense.senseLine(tr, ms, { neg, tr: true }), (c) => FX[c]?.pri) : pick(ms);
+      if (m) plan[i] = { ...m, at: -1, raw: "", rep: 0 };
     });
   }
   const needsTranslation = () => !sureLang;
-  // höchstens ein Bild je Zeile: das wichtigste, bei Gleichstand das frühere
+  // ohne Planer: das wichtigste Wort der Zeile, bei Gleichstand das frühere
   function pick(ms) {
     if (!ms.length) return null;
     ms.sort((a, b) => FX[b.c].pri - FX[a.c].pri || a.at - b.at);
-    return ms[0];
+    return { ...ms[0], k: 1, conf: 1, ex: !!FX[ms[0].c].ex };
   }
 
   /* ---- Zeile i wird aktiv: Bild auf das Wort legen (Wortzeiten aus dem Liedtext) */
@@ -292,23 +351,29 @@ function createWordFx(lexicon, { onFire } = {}) {
 
   // Abstand zwischen Bildern je Stärke (0 sanft … 4 Wahnsinn)
   const GAP = [9000, 6500, 4500, 3200, 2400];
+  // Bild über dem Cover nur mit Abstand, dasselbe erst nach einer Weile, bei Wiederholungen (außer im letzten
+  // Refrain) gar nicht. Die Bühne bekommt jede geplante Antwort – sie hat eigene Abklingzeiten (scenarios.js).
   function tryFire(item, now, st) {
-    const spec = FX[item.m.c];
-    const key = spec.fx + (spec.col ? spec.col.join() : "");
-    const gap = GAP[clamp(st.level | 0, 0, 4)];
-    if (now - lastFire < gap) return false;
-    if (now - (cool.get(key) || -1e9) < (spec.pri <= 1 ? 25000 : 30000)) return false;
-    if (fxs.length >= 2) return false;
-    lastFire = now;
-    cool.set(key, now);
-    start(spec, st);
-    highlight(item, spec);
-    onFire?.(item.m.c, item.m.raw || "");
-    return true;
+    const m = item.m, spec = FX[m.c];
+    let img = false;
+    if (spec.fx && !spec.ex && (!m.rep || m.last)) {
+      const key = spec.fx + (spec.col ? spec.col.join() : "");
+      const gap = GAP[clamp(st.level | 0, 0, 4)];
+      if (now - lastFire >= gap && now - (cool.get(key) || -1e9) >= (spec.pri <= 1 ? 25000 : 30000) && fxs.length < 2) {
+        lastFire = now;
+        cool.set(key, now);
+        start(spec, st);
+        highlight(item, spec);
+        img = true;
+      }
+    }
+    // derbe Wörter: nie als Text weitergeben (auch nicht an die TV-Ansicht)
+    onFire?.(m.c, img ? m.raw || "" : "", { img, k: m.k ?? 1, conf: m.conf ?? 1, ex: !!spec.ex, also: m.also || [], soft: !!m.soft, rep: m.rep || 0, last: !!m.last });
+    return img;
   }
   // Bild direkt starten (die TV-Ansicht bekommt den Begriff vom PC, ohne eigenes Wörterbuch)
   function fire(c, st) {
-    if (!FX[c] || fxs.length >= 3) return;
+    if (!FX[c]?.fx || FX[c].ex || fxs.length >= 3) return;
     st0 = st;
     start(FX[c], st);
   }

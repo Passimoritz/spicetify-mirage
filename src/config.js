@@ -101,6 +101,8 @@ const DEFAULTS = {
   partyHype: true,
   // Wortbilder: gesungene Begriffe bekommen ein passendes Bild (Flammen bei „fire“, Regen bei „Regen“ …)
   partyWords: true,
+  // Derbe Wörter im Liedtext (sex, bitch, Scheiße …): nie als Text, nur Licht – "on" | "soft" (nur Farbe) | "off"
+  partyExplicit: "on",
   // Show-Momente: Bodennebel, Drohnen-Lichtshow, Hände hoch im Refrain, Blitzlicht-Gewitter
   partyFog: true,
   partyDrones: true,

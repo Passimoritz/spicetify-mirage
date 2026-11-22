@@ -13,6 +13,7 @@ import { ACTIONS_TEXT } from "./i18n-actions.js";
 import { IMUI_TEXT } from "./i18n-immersiveui.js";
 import { LYRICSTYLE_TEXT } from "./i18n-lyricstyle.js";
 import { SUBGENRES_TEXT } from "./i18n-subgenres.js";
+import { WORDS_TEXT } from "./i18n-words.js";
 
 /* ---------------------------------------------------------------- Sprachen */
 // Fehlt eine Übersetzung, gilt Englisch – so funktioniert das Theme in jeder Sprache.
@@ -2738,6 +2739,7 @@ for (const [l, v] of Object.entries(ACTIONS_TEXT)) if (I18N[l]) Object.assign(I1
 for (const [l, v] of Object.entries(IMUI_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(LYRICSTYLE_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(SUBGENRES_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
+for (const [l, v] of Object.entries(WORDS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 const LANG = (() => {
   let l = "";
   try { l = S.Locale?.getLocale?.() || ""; } catch {}

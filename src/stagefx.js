@@ -22,6 +22,14 @@ const hash = (i, s) => {
 const mixW = (c, f) => [c[0] + (255 - c[0]) * f, c[1] + (255 - c[1]) * f, c[2] + (255 - c[2]) * f];
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const FI = Object.fromEntries(FAMS.map((f, i) => [f, i]));
+// Farbton (0..360) → kräftige Farbe (psychedelischer Farblauf)
+const hueRgb = (h) => {
+  const f = (n) => {
+    const k = (n + h / 60) % 6;
+    return 255 * (1 - Math.max(0, Math.min(k, 4 - k, 1)) * 0.85);
+  };
+  return [f(5), f(3), f(1)];
+};
 
 function createStageFx(glowSprite, flashCap) {
   let vw = 0, vh = 0;
@@ -363,6 +371,65 @@ function createStageFx(glowSprite, flashCap) {
             }
             const ok = venueOk.get(c.seq);
             if (!ok && f !== "confetti") wash(ctx, f === "pyro" ? [255, 120, 40] : [220, 230, 255], "floor", 0.2 * k * e, st);
+            break;
+          }
+          case "mood": {
+            // Farbstimmung: langsamer hinein (1,2 s) und hinaus (2 s); dunkle Farbe dunkelt die Bühne ab
+            const m = smooth(age / 1.2) * smooth((dur - age) / 2);
+            const cc = c.col || col;
+            if (cc[0] + cc[1] + cc[2] < 60) {
+              ctx.globalCompositeOperation = "source-over";
+              ctx.globalAlpha = 1;
+              ctx.fillStyle = `rgba(0,0,0,${(0.38 * k * m).toFixed(3)})`;
+              ctx.fillRect(0, 0, vw, vh);
+              ctx.globalCompositeOperation = "lighter";
+            } else {
+              ctx.globalAlpha = 1;
+              ctx.fillStyle = rgba(cc, 0.09 * k * m);
+              ctx.fillRect(0, 0, vw, vh);
+              wash(ctx, cc, "floor", 0.16 * k * m, st);
+            }
+            break;
+          }
+          case "sway": {
+            // zwei Spots von oben, nah an der Mitte, wiegen sich langsam gegeneinander
+            const m = smooth(age / 1) * smooth((dur - age) / 1.6), sw = Math.sin(t * 0.9) * st.R * 0.45;
+            const cc = mixW(c.col || col, 0.15), y1 = st.cy + st.R * 1.25;
+            cone(ctx, cc, vw * 0.3, st.cx - st.R * 0.55 + sw, y1, vw * 0.05, 0.2 * k * m);
+            cone(ctx, cc, vw * 0.7, st.cx + st.R * 0.55 + sw, y1, vw * 0.05, 0.2 * k * m);
+            break;
+          }
+          case "accent": {
+            // ein Ring zieht sich zur Mitte zusammen – hart nur mit Blitzen an, sonst weich eingeblendet
+            const p = clamp(age / dur, 0, 1), on = smooth(age / (noFlash ? 0.25 : 0.05)), cc = mixW(c.col || [255, 70, 60], 0.3);
+            const r = st.R * (3.2 - 2.1 * p);
+            ring(ctx, cc, st.cx, st.cy, r, r * 0.92, k * (noFlash ? 0.3 : 0.6) * (1 - p) * on, 5 * S);
+            glow(ctx, cc, st.cx, st.cy, st.R * 1.6, k * (noFlash ? 0.12 : 0.25) * (1 - p) * on);
+            break;
+          }
+          case "psy": {
+            // langsamer Lauf durch den Farbkreis, drei (Leicht: zwei) weiche Flecken – nie flackernd
+            const m = smooth(age / 1.2) * smooth((dur - age) / 1.5);
+            for (let n = 0; n < (lite ? 2 : 3); n++) {
+              const h = (t * 30 + n * 120) % 360, an = t * 0.35 + (n * Math.PI * 2) / 3;
+              glow(ctx, hueRgb(h), vw / 2 + Math.cos(an) * vw * 0.28, vh * 0.42 + Math.sin(an) * vh * 0.18, vh * 0.55, 0.22 * k * m);
+            }
+            break;
+          }
+          case "neon": {
+            // zwei Neonbänder oben; Sirenen: Rot und Blau gleiten ineinander (kein hartes Umschalten)
+            const m = smooth(age / 0.5) * smooth((dur - age) / 1.2);
+            const police = c.from === "police", ph = 0.5 + 0.5 * Math.sin(t * (noFlash ? 1.5 : 4));
+            const ca = police ? [255, 40, 50] : c.col || [255, 60, 200], cb = police ? [40, 90, 255] : [40, 220, 255];
+            for (let n = 0; n < 2; n++) {
+              const cc = n ? cb : ca, a = 0.5 * k * m * (police ? (n ? 1 - ph : ph) : 1), y = vh * (0.1 + n * 0.08);
+              if (a < 0.01) continue;
+              ctx.globalAlpha = 1;
+              ctx.fillStyle = rgba(cc, a * 0.18);
+              ctx.fillRect(0, y - 14 * S, vw, 28 * S);
+              ctx.fillStyle = rgba(mixW(cc, 0.4), a);
+              ctx.fillRect(0, y - 2 * S, vw, 4 * S);
+            }
             break;
           }
           case "jump": crowdOut.jump = Math.max(crowdOut.jump, k * e); break;
