@@ -3852,6 +3852,10 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   color: #f5f3ff;
   font: 500 14px var(--m-font);
   transition: transform 0.26s var(--m-pop-spring);
+  /* eine Tabelle für alle Tasten: rollt in kleinen Fenstern */
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 #mirage-immersive .m-im-keys[hidden] .m-im-keys-box {
   transform: scale(0.96);
@@ -3861,15 +3865,39 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   font: 650 17px var(--m-font);
   margin-bottom: 8px;
 }
+#mirage-immersive .m-im-keys-sep {
+  width: 100%;
+  margin: 2px 0;
+  border: 0;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+/* breite Fenster: die Tastenhilfe in zwei Spalten statt einer langen, rollenden Liste */
+@media (min-width: 1100px) {
+  #mirage-immersive .m-im-keys-box {
+    display: block;
+    columns: 2;
+    column-gap: 36px;
+    max-width: min(1040px, calc(100vw - 64px));
+  }
+  #mirage-immersive .m-im-keys-box > b {
+    display: block;
+    column-span: all;
+  }
+  #mirage-immersive .m-im-keys-box div {
+    margin-bottom: 8px;
+  }
+}
 #mirage-immersive .m-im-keys-box div {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: 124px 1fr;
+  break-inside: avoid;
   align-items: center;
   gap: 14px;
   color: rgb(245 243 255 / 0.82);
 }
 #mirage-immersive .m-im-keys-box kbd {
   justify-self: start;
+  white-space: nowrap;
   min-width: 14px;
   padding: 3px 8px;
   border-radius: 7px;
@@ -4339,10 +4367,6 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 #mirage-immersive.is-shatter .m-im-cover {
   background: transparent;
   box-shadow: none;
-}
-/* Party-Modus: Unten nur die Musik-Bedienung. Playlist, Geräte, Timer liegen im Menü „Mehr“, Vollbild ist oben. */
-#mirage-immersive.is-partyui :is(.m-im-addto, .m-im-dev, .m-im-timer, .m-im-full) {
-  display: none;
 }
 /* Spiele: Karte oben in der Mitte (das Publikum bleibt frei). Die Feldfarben sind dieselben wie auf den Handys. */
 #mirage-immersive .m-im-game {
@@ -5736,8 +5760,72 @@ html.mirage-rich #mirage-stage .m-aurora {
   align-items: center;
   gap: 8px;
 }
-#mirage-immersive:not([data-mode="lyrics"], [data-mode="mix"]) .m-im-lyrbar {
+#mirage-immersive:not([data-mode="lyrics"], [data-mode="mix"], [data-mode="party"]) .m-im-lyrbar {
   display: none;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrbar {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity 0.4s var(--m-ease),
+    transform 0.4s var(--m-ease),
+    visibility 0s 0.4s;
+}
+#mirage-immersive[data-mode="party"].is-barwake:not(.is-idle) .m-im-lyrbar,
+#mirage-immersive[data-mode="party"] .m-im-lyrbar:focus-within {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.25s var(--m-ease),
+    transform 0.25s var(--m-ease),
+    visibility 0s;
+}
+/* Liedtext früher / später (je Song): drei kleine Knöpfe in einer Pille, die Mitte zeigt den Versatz */
+#mirage-immersive .m-im-nudge {
+  display: inline-flex;
+  align-items: center;
+  height: 33px;
+  padding: 0 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+#mirage-immersive .m-im-nudge[hidden] {
+  display: none;
+}
+#mirage-immersive .m-im-nudge button {
+  min-width: 27px;
+  height: 27px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: rgba(255, 255, 255, 0.72);
+  font: 650 12.5px var(--m-font);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+#mirage-immersive .m-im-nudge button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+#mirage-immersive .m-im-nudge button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+#mirage-immersive .m-im-nudge .m-im-nudge-val {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+#mirage-immersive .m-im-nudge .m-im-nudge-val.is-on {
+  color: rgb(var(--m-c-rgb));
+}
+#mirage-immersive .m-im-nudge button:disabled {
+  cursor: default;
 }
 /* bewusst leiser als der Fassungs-Knopf: kein Rahmen, erst beim Darüberfahren deutlich */
 #mirage-immersive .m-im-trbtn {
@@ -7068,6 +7156,29 @@ html.mirage-calm #mirage-immersive .m-ck-glow {
   white-space: nowrap;
   cursor: pointer;
   pointer-events: auto;
+  position: relative;
+}
+#mirage-immersive .m-ck-time::after {
+  content: attr(data-hint);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgb(14 12 22 / 0.7);
+  color: rgb(255 255 255 / 0.78);
+  -webkit-text-fill-color: rgb(255 255 255 / 0.78);
+  font: 500 13px/1.3 var(--m-font);
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 0;
+  translate: -50% 4px;
+  transition: opacity 0.25s var(--m-ease), translate 0.25s var(--m-ease);
+  pointer-events: none;
+}
+#mirage-immersive .m-ck-time:is(:hover, :focus-visible)::after {
+  opacity: 1;
+  translate: -50% 0;
 }
 #mirage-immersive .m-ck-ap {
   margin-left: 0.18em;
@@ -7473,10 +7584,6 @@ html.mirage-im-open .Root *::after {
     justify-content: center;
     row-gap: 2px;
   }
-  /* Vollbild gibt es oben in der Kopfzeile (und mit F) – hier wäre er sonst allein in einer zweiten Reihe */
-  #mirage-immersive .m-im-extras .m-im-full {
-    display: none;
-  }
 }
 /* Liedtext-Leiste unten rechts: bleibt in der Liedtext-Spalte und bricht dort um, statt über die Knöpfe zu ragen */
 #mirage-immersive .m-im-lyrbar {
@@ -7704,3 +7811,109 @@ html.mirage-im-open .Root *::after {
   white-space: normal;
 }
 /* === end actions === */
+
+/* ==========================================================================
+   IMMERSIV: Menü „Mehr“ in festen Gruppen, Zustände, Hinweis mit Knöpfen
+   ========================================================================== */
+/* Zeile mit Zustand (Timer läuft, Canvas an …): kleiner leuchtender Punkt an der Ecke ihres Symbols */
+#mirage-immersive .m-im-side-item.has-state .m-im-side-ic {
+  position: relative;
+}
+#mirage-immersive .m-im-side-item.has-state.is-active .m-im-side-ic::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(var(--m-c-rgb));
+  box-shadow: 0 0 0 2px rgb(14 12 22 / 0.9), 0 0 8px rgb(var(--m-c-rgb));
+}
+/* Lautstärke und Liedtext-Timing im Menü: Beschriftung über dem Regler bzw. den Knöpfen */
+#mirage-immersive .m-im-volrow {
+  display: grid;
+  gap: 8px;
+  padding: 8px 10px;
+}
+#mirage-immersive .m-im-volrow .m-im-volume {
+  width: 100%;
+}
+#mirage-immersive .m-im-nudgerow .m-g-seg-row button {
+  font-variant-numeric: tabular-nums;
+}
+/* Herkunft des Liedtexts in „Fassung wählen“: Auskunft, kein Knopf */
+#mirage-immersive .m-im-side-item.m-im-diag:disabled {
+  min-height: 34px;
+  opacity: 0.78;
+}
+#mirage-immersive .m-im-genrelist {
+  padding: 0 4px 6px;
+}
+/* Hinweis unten in der Mitte (Übersetzung für alle, Live-Link an …), auf Wunsch mit Knöpfen */
+#mirage-immersive .m-im-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: min(640px, calc(100% - 32px));
+  padding: 8px 8px 8px 18px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(14 12 22 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 18px 50px -12px rgba(var(--m-a-rgb), 0.55);
+  font: 500 14px var(--m-font);
+  translate: -50% 0;
+  animation: m-toast-in 0.4s var(--m-spring, var(--m-ease)) both;
+  transition: opacity 0.2s, translate 0.2s var(--m-ease);
+}
+#mirage-immersive .m-im-toast:not(:has(button)) {
+  padding-right: 18px;
+}
+#mirage-immersive .m-im-toast.is-out {
+  opacity: 0;
+  translate: -50% 10px;
+}
+#mirage-immersive .m-im-toast span {
+  margin-right: 6px;
+}
+#mirage-immersive .m-im-toast button {
+  flex: none;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+  font: 650 13px var(--m-font);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#mirage-immersive .m-im-toast button:hover {
+  background: rgb(255 255 255 / 0.18);
+}
+#mirage-immersive .m-im-toast button:first-of-type {
+  color: #0b0a12;
+  background: rgb(var(--m-c-rgb));
+}
+#mirage-immersive .m-im-toast button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+@keyframes m-toast-in {
+  from {
+    opacity: 0;
+    translate: -50% 12px;
+  }
+}
+html.mirage-calm #mirage-immersive .m-im-toast {
+  animation: none;
+}
+/* Mirage-Einstellungen aus „Mehr“ → Alle Einstellungen: über der Immersiv-Ebene statt dahinter */
+body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overlay):has(.mirage-settings) {
+  z-index: 10000 !important;
+}

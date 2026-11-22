@@ -1029,12 +1029,18 @@ function modalFocus(box, from) {
   // Fenster kam nie: nicht ewig lauschen
   setTimeout(() => !dlg && mo.disconnect(), 4000);
 }
-function openSettings() {
+// focus: i18n-Schlüssel einer Gruppe („g_party“) – aus dem Immersiv-Menü „Mehr“ geht sie gleich auf und rückt nach
+// oben. (Spotifys Menüpunkt ruft ohne Schlüssel bzw. mit seinem eigenen Objekt auf.)
+function openSettings(focus) {
   const from = document.activeElement;
   const box = el("div", "mirage-settings");
   render(box);
   S.PopupModal.display({ title: "Mirage", content: box, isLarge: true });
   modalFocus(box, from);
+  const g = typeof focus === "string" && [...box.querySelectorAll("details.m-group")].find((d) => d.querySelector("summary")?.textContent === t(focus));
+  if (!g) return;
+  g.open = true;
+  requestAnimationFrame(() => g.scrollIntoView({ block: "start" }));
 }
 
 // erster Start: kurz zeigen, wo alles ist

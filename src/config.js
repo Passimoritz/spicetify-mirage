@@ -68,8 +68,11 @@ const DEFAULTS = {
   // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)
   lyricBad: {},
   canvas: true,
-  // Canvas je Ansicht – erst an, wenn man es dort mit dem Film-Knopf einschaltet
-  canvasIn: { cover: false, lyrics: false, viz: false, mix: false, party: false },
+  // Canvas: ein Schalter für alle Ansichten (Film-Knopf oben, „Mehr“ → Diese Ansicht); nicht in Party und Uhr
+  canvasShow: false,
+  // Übersetzung je Song abweichend vom Schalter für alle (uri → true/false) · Party-Stil je Künstler fest (artistUri → Stil)
+  translateSongs: {},
+  genreArtist: {},
   freeze: false,
   pinned: {},
   playlistSchemes: {},
@@ -200,6 +203,9 @@ try {
   if (!saved.zoomOff1155) Object.assign(cfg, { partyZoom: false, zoomOff1155: true });
   // Warteraum: 30 s waren zu kurz, einmalig für alle auf 2 Minuten
   if (!saved.join2min) Object.assign(cfg, { gameJoin: 120, join2min: true });
+  // Canvas war je Ansicht (canvasIn): war es irgendwo an, bleibt es an – jetzt für alle Ansichten
+  if (!("canvasShow" in saved) && saved.canvasIn) cfg.canvasShow = Object.values(saved.canvasIn).some(Boolean);
+  delete cfg.canvasIn;
 } catch {}
 // eigene Schemata stehen gleichberechtigt neben den mitgelieferten
 for (const [name, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(name)) SCHEMES[name] = sc;

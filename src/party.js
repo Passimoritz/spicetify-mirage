@@ -296,7 +296,9 @@ const party = (() => {
     });
   }
   // Genre aus allen Quellen (genres.js pickGenre): Apple, Deezer, Spotify-Künstler, Namen, zuletzt der Klang
+  // „Für diesen Künstler immer …“ (Menü „Mehr“ → Party, cfg.genreArtist) geht vor jeder Erkennung
   const choose = (bpm, d) =>
+    (PROFILES[cfg.genreArtist?.[info.artistUri]] && { key: cfg.genreArtist[info.artistUri], why: "artist", conf: 1 }) ||
     pickGenre({ genres: info.genres || [], apple: info.apple || "", deezer: info.deezer || [], artist: info.artist, title: info.title, bpm, loud: d?.loud ?? -10, minor: d ? minorShare(d) : 0, sound: d?.sound || info.sound || null });
   // Gesprochenes statt Musik: Podcast, Hörbuch, Werbung, DJ-Ansage – keine Lichtshow im Takt und keine
   // Genre-Abfrage (der Titel einer Podcast-Folge geht nicht an Deezer/Apple)
@@ -312,7 +314,8 @@ const party = (() => {
   async function prepare(item) {
     const u = item?.uri || "";
     // Song + gewählter Stil: wer in den Einstellungen umstellt, bekommt sofort das neue Profil
-    const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
+    const artistUri = item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
+    const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline + "|" + (cfg.genreArtist?.[artistUri] || "");
     if (pk === picked) {
       // Taktdaten kamen inzwischen (Schätzung, Wiederholung): Tempo gleich nachtragen, sonst zeigt die Anzeige
       // bis zum nächsten Song kein BPM (updateKicker liest info direkt nach prepare)
@@ -350,7 +353,7 @@ const party = (() => {
     if (my !== token) return info;
     const d = audio.uri === u ? audio.data : null;
     const bpm = d?.bpm || 0;
-    info = { key: "pop", why: "", conf: 0, bpm, genres, apple, deezer: dzg, artist: item?.metadata?.artist_name || item?.artists?.[0]?.name || "", title: item?.metadata?.title || item?.name || "", sound: null, src: d?.bpmSrc || "" };
+    info = { key: "pop", why: "", conf: 0, bpm, genres, apple, deezer: dzg, artist: item?.metadata?.artist_name || item?.artists?.[0]?.name || "", title: item?.metadata?.title || item?.name || "", sound: null, src: d?.bpmSrc || "", artistUri };
     const auto = choose(bpm, d);
     [info.key, info.why, info.conf] = [cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, auto.why, auto.conf];
     // kein Name sagt etwas (oder nur unsicher): die Hörprobe anhören (tempo.js) und danach noch einmal wählen

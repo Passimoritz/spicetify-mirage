@@ -1,7 +1,7 @@
 /* Texte für das Leistungs-Schnellmenü im Immersiv-Modus – Englisch und Deutsch, der Rest fällt auf Englisch zurück */
 export const RES_TEXT = {
   en: {
-    k_perf: "Look & performance (quick menu)",
+    k_perf: "More (this view, party, look & performance)",
     perfQuick: "Look & performance",
     perfQuickHint: "Applies right away – same as in the settings",
     ecoQuick: "Energy saver",
@@ -9,7 +9,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Only on battery",
   },
   de: {
-    k_perf: "Aussehen & Leistung (Schnellmenü)",
+    k_perf: "Mehr (Ansicht, Party, Aussehen & Leistung)",
     perfQuick: "Aussehen & Leistung",
     perfQuickHint: "Wirkt sofort – wie in den Einstellungen",
     ecoQuick: "Energiesparen",
@@ -17,7 +17,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Nur im Akkubetrieb",
   },
   es: {
-    k_perf: "Aspecto y rendimiento (menú rápido)",
+    k_perf: "Más (vista, fiesta, aspecto y rendimiento)",
     perfQuick: "Aspecto y rendimiento",
     perfQuickHint: "Se aplica al instante – igual que en los ajustes",
     ecoQuick: "Ahorro de energía",
@@ -25,7 +25,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Solo con batería",
   },
   fr: {
-    k_perf: "Apparence & performances (menu rapide)",
+    k_perf: "Plus (vue, fête, apparence & performances)",
     perfQuick: "Apparence & performances",
     perfQuickHint: "Effet immédiat – comme dans les réglages",
     ecoQuick: "Économie d'énergie",
@@ -33,7 +33,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Seulement sur batterie",
   },
   it: {
-    k_perf: "Aspetto e prestazioni (menu rapido)",
+    k_perf: "Altro (vista, festa, aspetto e prestazioni)",
     perfQuick: "Aspetto e prestazioni",
     perfQuickHint: "Si applica subito – come nelle impostazioni",
     ecoQuick: "Risparmio energetico",
@@ -41,7 +41,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Solo a batteria",
   },
   ja: {
-    k_perf: "見た目とパフォーマンス（クイックメニュー）",
+    k_perf: "その他(画面、パーティー、見た目とパフォーマンス)",
     perfQuick: "見た目とパフォーマンス",
     perfQuickHint: "すぐに反映 – 設定画面と同じです",
     ecoQuick: "省電力",
@@ -49,7 +49,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "バッテリー駆動時のみ",
   },
   ko: {
-    k_perf: "모양 및 성능 (빠른 메뉴)",
+    k_perf: "더보기 (화면, 파티, 모양 및 성능)",
     perfQuick: "모양 및 성능",
     perfQuickHint: "바로 적용돼요 – 설정과 같아요",
     ecoQuick: "절전",
@@ -57,7 +57,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "배터리 사용 시에만",
   },
   nl: {
-    k_perf: "Uiterlijk & prestaties (snelmenu)",
+    k_perf: "Meer (weergave, feest, uiterlijk & prestaties)",
     perfQuick: "Uiterlijk & prestaties",
     perfQuickHint: "Werkt meteen – net als in de instellingen",
     ecoQuick: "Energie besparen",
@@ -65,7 +65,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Alleen op accu",
   },
   pl: {
-    k_perf: "Wygląd i wydajność (szybkie menu)",
+    k_perf: "Więcej (widok, impreza, wygląd i wydajność)",
     perfQuick: "Wygląd i wydajność",
     perfQuickHint: "Działa od razu – tak samo jak w ustawieniach",
     ecoQuick: "Oszczędzanie energii",
@@ -73,7 +73,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Tylko na baterii",
   },
   pt: {
-    k_perf: "Aparência e desempenho (menu rápido)",
+    k_perf: "Mais (visão, festa, aparência e desempenho)",
     perfQuick: "Aparência e desempenho",
     perfQuickHint: "Aplica-se logo – igual às definições",
     ecoQuick: "Economia de energia",
@@ -81,7 +81,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Só na bateria",
   },
   ru: {
-    k_perf: "Вид и производительность (быстрое меню)",
+    k_perf: "Ещё (этот вид, вечеринка, внешний вид и производительность)",
     perfQuick: "Вид и производительность",
     perfQuickHint: "Применяется сразу – как в настройках",
     ecoQuick: "Энергосбережение",
@@ -89,7 +89,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Только от батареи",
   },
   tr: {
-    k_perf: "Görünüm ve performans (hızlı menü)",
+    k_perf: "Daha fazla (bu görünüm, parti, görünüm ve performans)",
     perfQuick: "Görünüm ve performans",
     perfQuickHint: "Hemen uygulanır – ayarlardakiyle aynı",
     ecoQuick: "Enerji tasarrufu",
@@ -97,7 +97,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Yalnızca pildeyken",
   },
   uk: {
-    k_perf: "Вигляд і продуктивність (швидке меню)",
+    k_perf: "Більше (цей вигляд, вечірка, зовнішній вигляд і продуктивність)",
     perfQuick: "Вигляд і продуктивність",
     perfQuickHint: "Діє одразу – як у налаштуваннях",
     ecoQuick: "Енергозбереження",
@@ -105,7 +105,7 @@ export const RES_TEXT = {
     ecoQuickAuto: "Лише від батареї",
   },
   zh: {
-    k_perf: "外观与性能（快捷菜单）",
+    k_perf: "更多(视图、派对、外观与性能)",
     perfQuick: "外观与性能",
     perfQuickHint: "立即生效 – 与设置中相同",
     ecoQuick: "节能",

@@ -27,11 +27,12 @@ function createClockView() {
   const q = { face: el.querySelector(".m-ck-face"), glow: el.querySelector(".m-ck-glow"), time: el.querySelector(".m-ck-time"), hm: el.querySelector(".m-ck-hm"), ap: el.querySelector(".m-ck-ap"), date: el.querySelector(".m-ck-date"), art: el.querySelector(".m-ck-art"), title: el.querySelector(".m-ck-txt b"), artist: el.querySelector(".m-ck-txt small") };
   let on = false, timer = 0, idleT = 0, host = null, fmtT = null, fmtD = null, fmtL = "", dx = 0, dy = 0, lastMin = "";
   const withDate = () => cfg.clockDate !== false;
-  q.time.onclick = () => {
+  const toggleDate = () => {
     cfg.clockDate = !withDate();
     save();
     draw(true);
   };
+  q.time.onclick = toggleDate;
   function formats() {
     const l = locale();
     if (l === fmtL) return;
@@ -53,6 +54,8 @@ function createClockView() {
     hm = hm.replace(/\s+$/, "");
     const key = hm + ap + withDate();
     q.time.title = q.time.ariaLabel = t(withDate() ? "ckDateOff" : "ckDateOn");
+    // sichtbarer Hinweis beim Darüberfahren (user.css: .m-ck-time::after) – sonst ahnt niemand, dass die Uhr klickbar ist
+    q.time.dataset.hint = q.time.title;
     if (key === lastMin && !force) return;
     const moved = key !== lastMin && lastMin;
     lastMin = key;
@@ -118,7 +121,7 @@ function createClockView() {
   }
   document.addEventListener("visibilitychange", () => on && !document.hidden && draw());
   return {
-    el, show, update, playing,
+    el, show, update, playing, toggleDate,
     attach(h) {
       host = h;
       for (const ev of ["pointermove", "pointerdown", "keydown"]) h.addEventListener(ev, () => on && awake(), { passive: true });
