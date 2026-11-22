@@ -1,5 +1,6 @@
 import { root } from "./core.js";
 import { cfg } from "./config.js";
+import { PFONTS_URL } from "./lyricfont.js";
 
 /* ---------------------------------------------------------------- Schriftwahl */
 // Outfit kommt schon über user.css; die anderen lädt Mirage erst, wenn man sie wählt
@@ -32,5 +33,17 @@ function applyFont() {
   else root.style.setProperty("--m-font", stackOf(k));
 }
 const preloadFonts = () => load(Object.keys(FONTS));
+// Anzeige-Schriften des verspielten Liedtext-Stils (lyricfont.js): erst, wenn der Stil an ist (und nicht „Dezent“),
+// einmal je Sitzung, display=swap – bis sie da sind, steht die normale Liedtext-Schrift (lange Ausweich-Listen in CSS)
+let playLoaded = false;
+function loadPlayfulFonts() {
+  if (playLoaded) return;
+  playLoaded = true;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = PFONTS_URL;
+  link.dataset.mirage = "playful-fonts";
+  document.head.append(link);
+}
 
-export { FONTS, applyFont, preloadFonts, stackOf };
+export { FONTS, applyFont, preloadFonts, stackOf, loadPlayfulFonts };

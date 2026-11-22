@@ -10,7 +10,13 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Lyrics, playful style: 65 line entrances and 88 word-meaning effects, picked from a per-song "deck" so every song looks different; display fonts, meaning colours (always at least 4.5:1 contrast), a ♪ that wiggles on the beat during instrumental breaks, and a new "Playful intensity" setting (Subtle / Playful / Wild).
+
 ### Fixed
+
+- Lyrics, playful style: words land exactly on the sung beat instead of a little late, and tilted, dropped or huge words are no longer cut off at the edge of the lyrics area.
 
 - Lyrics: short backing vocals under a line, like "(hey)", no longer break their closing bracket onto a line of its own (karaoke words measured slightly too narrow since 1.29.0).
 

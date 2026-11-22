@@ -8129,10 +8129,18 @@ body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overl
    mit der Vergrößerung der aktiven Zeile und dem Party-Wippen verrechnen statt sie zu ersetzen). Kein text-shadow,
    keine Maße in @keyframes: Schein liegt als stille Kopie (::before) daneben, geblendet wird nur deren Deckkraft
    (geprüft in tests/unit/lyricstyle.test.js). */
+/* Container: Obergrenzen aus der Spaltenbreite (cqi) – ein riesiges Schlüsselwort passt immer in die Textfläche */
 #mirage-immersive .m-im-lyrics.is-playful {
+  container-type: inline-size;
   --pci: 3;
   --pbn: m-p-bounce;
   --ppn: m-t-punch;
+  --pf-shout: "Oswald", "Arial Narrow", "Roboto Condensed", impact;
+  --pf-round: "Fredoka", "Nunito", "Varela Round";
+  --pf-serif: "Playfair Display", "DM Serif Display", georgia, serif;
+  --pf-mono: "JetBrains Mono", "Cascadia Mono", consolas, monospace;
+  --pf-wide: "Unbounded", "Segoe UI Black", "Arial Black";
+  --pf-marker: "Permanent Marker", "Segoe Print", "Comic Sans MS", cursive;
 }
 /* „Leicht“: Wortbilder nur einmal, kein Wippen und kein Schlag-Stoß der Zeile */
 html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
@@ -8142,17 +8150,27 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 }
 /* Satz der Teile: --m-ps skaliert die Zeile (Strophe kompakt, Refrain groß, Rand ruhig – nie unter 90 %) */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line {
-  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1));
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1) * var(--pfs, 1));
   font-weight: 700;
 }
+/* Party: die Textfläche liegt zwischen Cover und Titel und ist in kleinen Fenstern nur wenige Zeilen hoch. Die Zeile
+   wird höchstens so groß, dass sie (zwei Reihen, aktiv vergrößert, mit Reserve fürs Kippen) im deckenden Bereich
+   der Maske Platz hat – Container-Einheiten der Höhe (cqh) statt Abschneiden */
 #mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line {
-  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1));
+  font-size: min(calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1) * var(--pfs, 1)), calc(17cqh * var(--pfs, 1)));
+}
+/* Party: schmalere Ausblend-Ränder – die aktive Zeile (mit Kippen und großen Schlüsselwörtern) steht nie darin;
+   immersive.js hält sie zwischen 18 % und 82 % der Höhe */
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful {
+  container-type: size;
+  -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-bgline {
   font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72);
 }
 #mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-bgline {
-  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72);
+  font-size: min(calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72), 14cqh);
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-verse {
   --m-ps: 0.94;
@@ -8256,7 +8274,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 #mirage-immersive .m-im-lyrics.is-playful .m-w {
   display: inline-block;
   max-width: 100%;
-  font-size: calc(1em * var(--pz, 1));
+  font-size: calc(1em * var(--pz, 1) * var(--pfw, 1));
   transform-origin: center 70%;
 }
 /* gehaltener Ton dehnt sich nach rechts – in die Lücke zum nächsten Wort bzw. ans Zeilenende, nicht ins Wort davor */
@@ -8269,6 +8287,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-soft {
   font-weight: 500;
+  --psop: 0.82;
   opacity: 0.82;
 }
 /* Leistung: jedes bewegte Wort bekommt kurz eine eigene Ebene und malt dabei seinen (geerbten) Schein mit. Der
@@ -8289,19 +8308,24 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   text-shadow: 0 0 14px rgba(var(--fxc, 255, 255, 255), 0.6);
 }
 
-/* ---- Inszenierungen: der ruhende Satz (gilt immer, auch mit „Ruhig“ – nur Größe, Stärke, Lage) */
-/* Schlüsselwort riesig, der Rest klein (nie unter 72 % der Zeilengröße) */
+/* ---- Inszenierungen: der ruhende Satz (gilt immer, auch mit „Ruhig“ – nur Größe, Stärke, Lage, Schrift, Farbe) */
+/* Schlüsselwort riesig, der Rest klein (nie unter 72 % der Zeilengröße). Obergrenze aus der Spaltenbreite
+   (Container-Einheiten der Textfläche, --pkn = Zeichen): ein langes Schlüsselwort ragt nie aus der Textfläche */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-key .m-w {
   font-size: max(0.72em, calc(0.8em * var(--pz, 1)));
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-key .m-w.is-p-key {
-  font-size: calc(1em * var(--pk, 2));
+  font-size: min(calc(1em * var(--pk, 2)), calc(80cqi / (var(--pkn, 6) * 0.64)));
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.045em;
 }
+/* Party: das Schlüsselwort auch nach der Höhe der Textfläche begrenzen (mit Vergrößerung und Akzent im deckenden Bereich) */
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-t-key .m-w.is-p-key {
+  font-size: min(calc(1em * var(--pk, 2)), calc(80cqi / (var(--pkn, 6) * 0.64)), 34cqh);
+}
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-wave .m-w.is-p-key {
-  font-size: calc(1.3em * var(--pz, 1));
+  font-size: min(calc(1.3em * var(--pz, 1)), calc(80cqi / (var(--pkn, 6) * 0.64)));
   font-weight: 900;
 }
 /* Ruf: enge Großbuchstaben */
@@ -8310,60 +8334,202 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   letter-spacing: -0.04em;
   font-weight: 900;
 }
-/* schneller Rap: kompakt, etwas weiter gesperrt (liest sich im Tempo besser) */
-#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-type {
+/* schneller Rap: kompakt */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-t-type, .is-t-typer) {
   letter-spacing: -0.01em;
   line-height: 1.08;
 }
 /* Ballade: leichter Schnitt, mehr Luft */
-#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-glow {
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-t-glow, .is-t-fade, .is-t-curtain) {
   font-weight: 600;
   letter-spacing: 0;
 }
-#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-slam {
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-t-slam, .is-t-stamp, .is-t-zoom) {
   font-weight: 900;
 }
 /* Bridge: die ganze Zeile steht schräg */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-tilt {
   rotate: -1.6deg;
 }
-/* treppauf/treppab: Wörter versetzt und gekippt (rasten beim Singen ein) */
-#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-stagger .m-w {
-  rotate: -1.5deg;
-}
-#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-stagger .m-w.is-p-odd {
-  translate: 0 0.16em;
-  rotate: 2deg;
-}
-/* Buchstaben eines zerlegten Worts */
+/* Buchstaben eines zerlegten Worts: eigene Wartestellung nur, wenn sie selbst eine haben (die des Worts erben sie nicht) */
 #mirage-immersive .m-im-lyrics.is-playful .m-ch {
   display: inline-block;
+  --wx: 0em;
+  --wy: 0em;
+  --wr: 0deg;
+  --ws: 1;
+  --wo: 1;
+  --wt: none;
+  --wog: center 70%;
+}
+/* ♪ in der Instrumental-Lücke: nur so breit wie das Zeichen (dreht sich um sich selbst) */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-note {
+  width: fit-content;
+  transform-origin: 50% 85%;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-p-note,
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-note.is-p-chorus {
+  margin-inline: auto;
 }
 /* Karaoke in Buchstaben: jeder füllt sich selbst, sein Stand folgt aus dem des Worts (--p) und seiner Stelle –
-   die Füllung des Worts würde bewegte Buchstaben nicht mitnehmen. Polster wie beim Wort gegen abgeschnittene Unterlängen. */
+   die Füllung des Worts würde bewegte Buchstaben nicht mitnehmen. Farbe aus der Bedeutung (--pkc), sonst Weiß.
+   Polster nur senkrecht gegen abgeschnittene Unterlängen (waagrechte negative Ränder machten Wörter zu schmal) */
 #mirage-immersive.is-karaoke .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-split {
   background: none;
 }
 #mirage-immersive.is-karaoke .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-split .m-ch {
   --q: clamp(0, var(--p, 0) * var(--cn, 1) - var(--ci, 0), 1);
-  background: linear-gradient(90deg, #fff calc(var(--q) * 100%), rgba(255, 255, 255, 0.34) calc(var(--q) * 100%));
+  background: linear-gradient(90deg, rgb(var(--pkc, 255 255 255)) calc(var(--q) * 100%), rgb(var(--pkc, 255 255 255) / 0.34) calc(var(--q) * 100%));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  padding: 0.1em 0.03em 0.26em;
-  margin: -0.1em -0.03em -0.26em;
+  padding-block: 0.1em 0.26em;
+  margin-block: -0.1em -0.26em;
 }
-/* Wortbilder mit Schein: Bezug für die Schein-Ebene; Farbe je Bild */
-#mirage-immersive .m-im-lyrics.is-playful .m-w.is-cg {
+
+/* ---- Anzeige-Schriften (lyricfont.js; geladen erst mit dem Stil, fonts.js). Ausweich-Listen, falls Google Fonts
+   nicht erreichbar ist (--pf-*, oben an der Textfläche); am Ende immer die normale Liedtext-Schrift. --pfs/--pfw
+   gleichen breite Schriften aus (nie unter 0,86 – Hauptzeilen bleiben weit über 70 % groß) */
+#mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-shout, .m-w.is-f-shout) {
+  font-family: var(--pf-shout), var(--m-font);
+  font-weight: 700;
+  letter-spacing: 0.005em;
+}
+#mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-round, .m-w.is-f-round) {
+  font-family: var(--pf-round), var(--m-font);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+#mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-serif, .m-w.is-f-serif) {
+  font-family: var(--pf-serif), var(--m-font);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-mono {
+  font-family: var(--pf-mono), var(--m-font);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  --pfs: 0.9;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-wide {
+  font-family: var(--pf-wide), var(--m-font);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  --pfs: 0.86;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-f-wide {
+  font-family: var(--pf-wide), var(--m-font);
+  letter-spacing: -0.02em;
+  --pfw: 0.88;
+}
+#mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-marker, .m-w.is-f-marker) {
+  font-family: var(--pf-marker), var(--m-font);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Farben aus der Bedeutung (lyriccolor.js setzt --pc-<art> an die Textfläche: alle ≥ 4,5 : 1 auf dem Liedtext-
+   Grund). Nur in der aktiven Zeile, nie in Duett-Zeilen (die Stimmfarben haben Vorrang); die Karaoke-Füllung bleibt
+   – sie füllt dann in der Farbe statt in Weiß */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-fire {
+  --pkc: var(--pc-fire);
+  --pkc2: var(--pc-fire2);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-warm {
+  --pkc: var(--pc-warm);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-ice {
+  --pkc: var(--pc-ice);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-water {
+  --pkc: var(--pc-water);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-gold {
+  --pkc: var(--pc-gold);
+  --pkc2: var(--pc-gold2);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-love {
+  --pkc: var(--pc-love);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-k-dark:not([data-who]),
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-dark {
+  --pkc: var(--pc-dark);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-nature {
+  --pkc: var(--pc-nature);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-neon {
+  --pkc: var(--pc-neon);
+  --pkc2: var(--pc-neon2);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-sky {
+  --pkc: var(--pc-sky);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-k-light:not([data-who]),
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-light {
+  --pkc: var(--pc-light);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-rage {
+  --pkc: var(--pc-rage);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-dream {
+  --pkc: var(--pc-dream);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not([data-who]) .m-w.is-k-party {
+  --pkc: var(--pc-party);
+}
+/* ohne Karaoke: einfache Schriftfarbe, Feuer/Gold/Neon als Verlauf in der Schrift */
+#mirage-immersive:not(.is-karaoke) .m-im-lyrics.is-playful .m-im-line.is-pk.is-active:not([data-who]) .m-w {
+  color: rgb(var(--pkc, 255 255 255));
+}
+#mirage-immersive:not(.is-karaoke) .m-im-lyrics.is-playful .m-im-line.is-pk.is-active:not([data-who]) .m-w.is-kg:not(.is-split) {
+  background: linear-gradient(90deg, rgb(var(--pkc)), rgb(var(--pkc2, var(--pkc))));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-block: 0.1em 0.26em;
+  margin-block: -0.1em -0.26em;
+}
+/* mit Karaoke: dieselbe Füllung wie sonst, nur in der Farbe; Verlauf (wie „zusammen“ im Duett) über dem offenen Teil */
+#mirage-immersive.is-karaoke .m-im-lyrics.is-playful .m-im-line.is-pk.is-active:not([data-who]) .m-w {
+  background: linear-gradient(90deg, rgb(var(--pkc, 255 255 255)) calc(var(--p, 0) * (100% + 0.5em) - 0.5em), rgb(var(--pkc, 255 255 255) / 0.34) calc(var(--p, 0) * (100% + 0.5em)));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+#mirage-immersive.is-karaoke .m-im-lyrics.is-playful .m-im-line.is-pk.is-active:not([data-who]) .m-w.is-kg {
+  background:
+    linear-gradient(90deg, rgb(var(--pkc)), rgb(var(--pkc2, var(--pkc)))) left / max(0px, calc(var(--p, 0) * (100% + 0.5em) - 0.25em)) 100% no-repeat,
+    linear-gradient(rgb(var(--pkc) / 0.34), rgb(var(--pkc) / 0.34));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* Bezug für Teilchen, Echo und Schreibmarke */
+#mirage-immersive .m-im-lyrics.is-playful .m-w:is(.is-pt, .is-echo, .is-caret, .is-cg) {
   position: relative;
 }
+/* Wortbilder mit Schein: Farbe je Bild */
 #mirage-immersive .m-im-lyrics.is-playful .m-w:is(.is-c-flame, .is-c-heat) {
   --cc: 255 140 40;
 }
-#mirage-immersive .m-im-lyrics.is-playful .m-w:is(.is-c-shiver, .is-c-jolt) {
+#mirage-immersive .m-im-lyrics.is-playful .m-w:is(.is-c-shiver, .is-c-jolt, .is-c-snow) {
   --cc: 170 220 255;
 }
-/* Dauer eines Durchgangs je Wortbild (--pcd) und die Bewegung (--pcn) */
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-c-neon {
+  --cc: 90 255 240;
+  --pcn: m-c-glint;
+  --pcd: 1.6s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-c-star {
+  --cc: 255 250 220;
+  --pcn: m-c-shine;
+  --pcd: 1.5s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-c-snow {
+  --pcn: m-c-drift;
+  --pcd: 2.4s;
+}
+/* Dauer eines Durchgangs je Wortbild (--pcd) und die Bewegung (--pcn) – Spielart 0; die anderen Spielarten setzt
+   lyricstyle.js je Wort über dieselben Variablen (lyricdeck.js, FX_VARIANTS) */
 #mirage-immersive .m-im-lyrics.is-playful .m-w.is-c-flame {
   --pcn: m-c-flame;
   --pcd: 0.9s;
@@ -8372,7 +8538,6 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   --pcn: m-c-heat;
   --pcd: 1.6s;
 }
-/* Regen-Wort: auch Bezug für den Tropfen (::after) */
 #mirage-immersive .m-im-lyrics.is-playful .m-w.is-c-drip {
   position: relative;
   --pcn: m-c-drip;
@@ -8470,135 +8635,56 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   --pcn: none;
 }
 
-/* ---- Bewegung: nur ohne „Ruhig“, „Keine Blitze“ und „weniger Bewegung“, und nur in der aktiven Zeile.
-   Jedes Wort trägt eine Liste aus vier Plätzen, die die Regeln unten nur über Variablen füllen – so verdrängt das
-   Wortbild nie den Auftritt und umgekehrt: --pa beim Aktivwerden der Zeile, --pe beim Einsatz des Worts, --ph der
-   gehaltene Ton, --pq das Wortbild. Animiert werden nur transform/translate/scale/rotate und opacity. */
+/* ---- Bewegung: nur ohne „Ruhig“, „Keine Blitze“ und „weniger Bewegung“, und nur in der aktiven Zeile und der
+   nächsten, kurz bevor sie dran ist (.is-pnext, PRE_MS vor ihrem ersten Wort).
+   Ein Auftritt = Wartezustand → Ruhezustand. Wo ein Wort (oder Buchstabe) wartet, sagen seine Variablen
+   (--wx/--wy Versatz, --wr Drehung, --ws Größe, --wo Deckkraft, --wt 3D-Kippen/Neigung, --wog Drehpunkt; lyricdeck.js).
+   Beim Einsatz (.is-sung, --pl ms VOR dem gesungenen Einsatz) gleitet es in --pl in den Ruhezustand: es ist genau auf
+   dem Einsatz gelandet. Buchstaben gestaffelt (--ld), ihre Dauer verkürzt sich um die Staffelung – der letzte landet
+   mit dem Wort. Die Deckkraft ist schon nach drei Vierteln voll (lesbar vor dem Einsatz). Danach (ab dem Einsatz) nur noch Akzente und Wortbilder, die im Ruhezustand beginnen.
+   Animiert werden nur transform/translate/scale/rotate und opacity. */
 @media (prefers-reduced-motion: no-preference) {
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w {
-    animation: var(--pa, none), var(--pe, none), var(--ph, none), var(--pq, none);
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext) :is(.m-w, .m-ch) {
+    transform-origin: var(--wog, center 70%);
     transition:
-      translate 0.42s var(--m-spring),
-      rotate 0.42s var(--m-spring),
-      scale 0.42s var(--m-spring),
-      opacity 0.3s ease;
+      translate calc(var(--pl, 160ms) - var(--ld, 0ms)) var(--pez, ease-out) var(--ld, 0ms),
+      rotate calc(var(--pl, 160ms) - var(--ld, 0ms)) var(--pez, ease-out) var(--ld, 0ms),
+      scale calc(var(--pl, 160ms) - var(--ld, 0ms)) var(--pez, ease-out) var(--ld, 0ms),
+      transform calc(var(--pl, 160ms) - var(--ld, 0ms)) var(--pez, ease-out) var(--ld, 0ms),
+      opacity calc((var(--pl, 160ms) - var(--ld, 0ms)) * 0.75) ease-out var(--ld, 0ms);
   }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-sung {
-    --pe: m-p-land 0.34s var(--m-spring) both;
+  /* Wartezustand */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext) .m-w:not(.is-sung),
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext) .m-w:not(.is-sung) .m-ch {
+    translate: var(--wx, 0em) var(--wy, 0em);
+    rotate: var(--wr, 0deg);
+    scale: var(--ws, 1);
+    opacity: calc(var(--wo, 1) * var(--psop, 1));
+    transform: var(--wt, none);
   }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-beat.is-sung {
-    --pe: m-p-land-beat 0.4s var(--m-spring) both;
+  /* nach dem Einsatz: Akzent (ab dem Einsatz), gehaltener Ton, Wortbild (nach der Landung) */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext) .m-w {
+    animation: var(--pe, none), var(--ph, none), var(--pq, none);
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext) .m-w.is-sung {
+    --pe: var(--pac, none) var(--pad, 400ms) ease-out var(--pl, 0ms);
   }
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-held.is-sung {
-    --ph: m-p-hold var(--hd, 1s) cubic-bezier(0.2, 0.6, 0.3, 1) 0.08s both;
+    --ph: m-p-hold var(--hd, 1s) cubic-bezier(0.2, 0.6, 0.3, 1) var(--pl, 0ms) forwards;
   }
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-cue.is-sung {
-    --pq: var(--pcn, none) var(--pcd, 1s) ease-in-out 0.22s var(--pci, 3);
+    --pq: var(--pcn, none) var(--pcd, 1s) ease-in-out calc(var(--pl, 0ms) + 60ms) var(--pci, 3);
   }
-
-  /* Inszenierungen */
-  /* rise: die Wörter warten tiefer und blasser und steigen auf ihrem Einsatz auf */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-rise .m-w:not(.is-sung) {
-    translate: 0 0.34em;
-    opacity: 0.7;
+  /* Welle durch die Buchstaben (Schlüsselwort und Wortbild „Welle“) – erst nach der Landung */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w:is(.is-c-wave, .is-t-wave .is-p-key).is-sung .m-ch {
+    animation: m-c-wave 0.9s ease-in-out calc(var(--pl, 0ms) + var(--ci, 0) * 55ms) var(--pci, 3);
   }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-rise .m-w.is-sung {
-    --pe: none;
-  }
-  /* drop: von oben herein, gekippt, federt nach */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-drop .m-w:not(.is-sung) {
-    translate: 0 -0.3em;
-    rotate: -5deg;
-    opacity: 0.7;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-drop .m-w.is-sung {
-    --pe: none;
-  }
-  /* Party: die aktive Zeile steht oben im Ausblend-Rand der Textfläche – von oben nur ein kurzes Stück, mehr Drehung */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-active.is-t-drop .m-w:not(.is-sung) {
-    translate: 0 -0.12em;
-    rotate: -8deg;
-  }
-  /* stagger: rastet beim Singen auf die Grundlinie ein */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-stagger .m-w.is-sung {
-    translate: 0 0;
-    rotate: 0deg;
-  }
-  /* split: erste Hälfte von links, zweite von rechts */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-split .m-w.is-p-l:not(.is-sung) {
-    translate: -0.9em 0;
-    opacity: 0.7;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-split .m-w.is-p-r:not(.is-sung) {
-    translate: 0.9em 0;
-    opacity: 0.7;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-split .m-w.is-sung {
-    --pe: none;
-  }
-  /* collide: weit auseinander, prallen beim Einsatz zusammen (schnelle Feder) und stoßen kurz nach */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-collide .m-w:not(.is-sung) {
-    translate: calc(var(--pc, 0) * 1.2em) 0;
-    scale: 0.9;
-    opacity: 0.75;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-collide .m-w {
-    transition:
-      translate 0.22s cubic-bezier(0.5, 0, 0.75, 0),
-      scale 0.3s var(--m-spring),
-      opacity 0.15s ease;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-collide .m-w.is-sung {
-    --pe: m-t-impact 0.36s ease-out 0.2s both;
-  }
-  /* type: hart herein, ohne Weichzeichnen */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-type .m-w:not(.is-sung) {
-    opacity: 0.45;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-type .m-w {
-    transition: opacity 0.05s linear;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-type .m-w.is-sung {
-    --pe: m-t-type 0.16s ease-out both;
-  }
-  /* glow: langsam aufglimmen */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-glow .m-w:not(.is-sung) {
-    opacity: 0.6;
-    scale: 0.97;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-glow .m-w {
-    transition:
-      opacity 0.9s ease,
-      scale 1.4s var(--m-ease);
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-glow .m-w.is-sung {
-    --pe: none;
-  }
-  /* key: die kleinen Wörter warten blass, das Schlüsselwort springt groß auf */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-key .m-w:not(.is-sung, .is-p-key) {
-    opacity: 0.7;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-key .m-w.is-p-key.is-sung {
-    --pe: m-t-pop 0.6s var(--m-spring) both;
-  }
-  /* wave: eine Welle läuft durch die Buchstaben des Schlüsselworts */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-wave .m-w.is-p-key.is-sung .m-ch {
-    animation: m-c-wave 0.9s ease-in-out calc(var(--ci, 0) * 55ms) var(--pci, 3);
-  }
-  /* caps: jedes Wort ein Stoß */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-caps .m-w.is-sung {
-    --pe: m-t-stomp 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-  }
-  /* slam: die Zeile knallt groß herein, alle Wörter auf einmal */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-slam .m-w {
-    --pa: m-t-slam 0.5s cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
-  }
-  /* tilt: die schräge Zeile wiegt ihre Wörter */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active.is-t-tilt .m-w.is-sung {
-    --pe: m-t-sway 1.6s ease-in-out both;
+  /* Explosion: die Buchstaben springen auseinander und fügen sich wieder */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-burst.is-sung .m-ch {
+    animation: m-c-burst 0.75s cubic-bezier(0.2, 0.9, 0.3, 1) var(--pl, 0ms);
   }
   /* Wortbild mit Schein: eine stille Kopie des Worts, die nur ihren Schein zeigt – geblendet wird allein ihre
-     Deckkraft (kein text-shadow im Bild) */
+     Deckkraft (kein text-shadow im Bild), nie schneller als 1,4 s je Durchgang (höchstens zwei kräftige Wechsel) */
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-cg.is-sung::before {
     content: attr(data-tx);
     position: absolute;
@@ -8612,7 +8698,19 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    animation: m-c-glow var(--pcd, 1s) ease-in-out 0.22s var(--pci, 3) both;
+    animation: m-c-glow max(var(--pcd, 1s), 1.4s) ease-in-out calc(var(--pl, 0ms) + 60ms) var(--pci, 3) both;
+  }
+  /* Echo: eine blasse Kopie zieht nach und verweht */
+  html:not(.mirage-calm, .mirage-noflash, .mirage-lite) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-echo.is-sung::before {
+    content: attr(data-tx);
+    position: absolute;
+    inset: 0;
+    padding: inherit;
+    color: rgb(var(--pkc, 255 255 255) / 0.5);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    animation: m-a-echo 0.6s ease-out var(--pl, 0ms);
   }
   /* Regen: ein Tropfen löst sich vom Wort (nicht bei „Leicht“) */
   html:not(.mirage-calm, .mirage-noflash, .mirage-lite) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-drip.is-sung::after {
@@ -8625,45 +8723,70 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
     background: rgb(150 200 255 / 0.85);
     pointer-events: none;
-    animation: m-p-drop 1.5s ease-in 0.3s var(--pci, 3) both;
+    animation: m-p-drop 1.5s ease-in calc(var(--pl, 0ms) + 120ms) var(--pci, 3) both;
   }
-  /* Explosion: die Buchstaben springen auseinander und fügen sich wieder */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-burst.is-sung .m-ch {
-    animation: m-c-burst 0.75s cubic-bezier(0.2, 0.9, 0.3, 1) 0.05s both;
+  /* Teilchen je Spielart (Glut, Tropfen, Funken, Flocken, Blasen, Blüten, Blitze, Sterne, Rauch, Noten) */
+  html:not(.mirage-calm, .mirage-noflash, .mirage-lite) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-pt.is-sung::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    width: var(--ptw, 0.1em);
+    height: var(--pth, 0.1em);
+    border-radius: var(--ptr, 50%);
+    background: rgb(var(--ptc, 255 255 255) / 0.85);
+    pointer-events: none;
+    animation: m-q-pt var(--ptd, 1.2s) ease-out calc(var(--pl, 0ms) + 120ms) var(--pci, 3) both;
   }
-  /* Welle als Wortbild (Ozean, Musik …) */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-wave.is-sung .m-ch {
-    animation: m-c-wave 0.9s ease-in-out calc(var(--ci, 0) * 55ms) var(--pci, 3);
+  /* Schreibmaschine: eine Schreibmarke hinter dem zuletzt gesungenen Wort (blinkt langsam: knapp zwei Wechsel je Sekunde) */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-caret.is-sung:has(+ .m-w:not(.is-sung))::after {
+    content: "";
+    position: absolute;
+    right: -0.12em;
+    top: 0.12em;
+    width: 0.06em;
+    height: 0.95em;
+    background: rgb(255 255 255 / 0.85);
+    pointer-events: none;
+    animation: m-p-caret 1.1s steps(1, end) infinite;
   }
 
   /* Zeile: Refrain wippt im Takt (Länge und Lage des Schlags setzt immersive.js je Zeile); Party wippt schon selbst */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib, .is-t-punch) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib, .is-l-punch, .is-l-tide, .is-l-pend, .is-p-note) {
     animation: var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) infinite;
   }
   /* punch: die Zeile stößt auf jedem Schlag (Party: dort hüpft die Zeile schon selbst) */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-t-punch.is-active:not(.is-p-adlib) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-l-punch.is-active:not(.is-p-adlib) {
     animation: var(--ppn, none) var(--pb, 500ms) cubic-bezier(0.2, 0.8, 0.3, 1) var(--pbd, 0ms) infinite;
   }
+  /* Gezeiten: die Zeile hebt und senkt sich über vier Schläge; Pendel: schwingt über zwei Schläge */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-tide.is-active:not(.is-p-adlib) {
+    animation: var(--ptn, m-l-tide) calc(var(--pb, 500ms) * 4) ease-in-out var(--pbd, 0ms) infinite;
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-pend.is-active:not(.is-p-adlib) {
+    animation: var(--ptn, m-l-pend) calc(var(--pb, 500ms) * 2) ease-in-out var(--pbd, 0ms) infinite;
+  }
+  /* ♪ wippt im Takt: vier Schläge je Durchgang, auf der Eins ein großer Ausschlag (Lage im Takt: --pnd) */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-note.is-active {
+    animation: var(--pnn, m-p-note) calc(var(--pb, 500ms) * 4) linear var(--pnd, 0ms) infinite;
+  }
   /* Auftritt nach dem Drop */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-drop.is-active {
-    animation: m-p-drop-in 0.7s var(--m-spring) both;
-  }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-p-drop.is-active:not(.is-p-adlib) {
-    animation:
-      m-p-drop-in 0.7s var(--m-spring) both,
-      var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) infinite;
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-drop.is-active:not(.is-p-note) {
+    animation: m-p-drop-in 0.18s var(--m-spring) both;
   }
 }
-@keyframes m-p-land {
-  from {
-    translate: 0 -0.14em;
-  }
+/* Stufen: „Dezent“ – Wortbilder nur einmal, kein Wippen, kleiner Ausschlag des ♪; „Wild“ – Wortbilder öfter.
+   „Leicht“ (Leistung) wie „Dezent“ */
+#mirage-immersive .m-im-lyrics.is-playful.is-lv-subtle {
+  --pci: 1;
+  --pbn: none;
+  --ppn: none;
+  --ptn: none;
+  --pna: 0.45;
 }
-@keyframes m-p-land-beat {
-  from {
-    translate: 0 -0.24em;
-    scale: 1.14;
-  }
+#mirage-immersive .m-im-lyrics.is-playful.is-lv-wild {
+  --pci: 5;
+  --pna: 1.25;
 }
 @keyframes m-p-hold {
   from {
@@ -8686,9 +8809,8 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 }
 @keyframes m-p-drop-in {
   from {
-    opacity: 0.2;
-    scale: 0.82;
-    translate: 0 0.4em;
+    opacity: 0.4;
+    scale: 0.9;
   }
 }
 @keyframes m-p-drop {
@@ -8704,7 +8826,53 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     transform: translateY(0.9em) scale(1);
   }
 }
-/* Inszenierungen */
+@keyframes m-p-caret {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+/* ♪: Eins groß, die anderen drei Schläge klein und abwechselnd (--pna: Stärke je Stufe) */
+@keyframes m-p-note {
+  0% {
+    rotate: calc(-16deg * var(--pna, 1));
+    translate: 0 calc(-0.2em * var(--pna, 1));
+  }
+  12% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  25% {
+    rotate: calc(7deg * var(--pna, 1));
+    translate: 0 calc(-0.06em * var(--pna, 1));
+  }
+  37% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  50% {
+    rotate: calc(-7deg * var(--pna, 1));
+    translate: 0 calc(-0.08em * var(--pna, 1));
+  }
+  62% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  75% {
+    rotate: calc(7deg * var(--pna, 1));
+    translate: 0 calc(-0.06em * var(--pna, 1));
+  }
+  87%,
+  100% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+}
+/* Zeilen-Bewegungen */
 @keyframes m-t-punch {
   0% {
     scale: 1.045;
@@ -8713,48 +8881,147 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     scale: 1;
   }
 }
-@keyframes m-t-impact {
-  0% {
-    scale: 1.18;
-  }
+@keyframes m-l-tide {
+  0%,
   100% {
-    scale: 1;
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -0.05em;
   }
 }
-@keyframes m-t-type {
-  from {
-    translate: -0.06em 0;
-    scale: 1.08;
-  }
-}
-@keyframes m-t-pop {
-  0% {
-    scale: 0.55;
-    opacity: 0.4;
-  }
-  60% {
-    scale: 1.08;
-  }
-}
-@keyframes m-t-stomp {
-  from {
-    scale: 1.32;
-    translate: 0 -0.08em;
-  }
-}
-@keyframes m-t-slam {
-  from {
-    scale: 1.7;
-    opacity: 0;
-  }
-}
-@keyframes m-t-sway {
+@keyframes m-l-pend {
   0%,
   100% {
     rotate: 0deg;
   }
+  25% {
+    rotate: 0.8deg;
+  }
+  75% {
+    rotate: -0.8deg;
+  }
+}
+/* Akzente auf dem Einsatz: beginnen und enden im Ruhezustand (das Wort steht auf dem Einsatz still) */
+@keyframes m-a-impact {
+  0%,
+  100% {
+    scale: 1;
+  }
+  25% {
+    scale: 1.12;
+  }
+}
+@keyframes m-a-pop {
+  0%,
+  100% {
+    scale: 1;
+  }
+  30% {
+    scale: 1.16;
+  }
+  60% {
+    scale: 0.97;
+  }
+}
+@keyframes m-a-jelly {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  20% {
+    scale: 1.16 0.86;
+  }
   40% {
-    rotate: 3deg;
+    scale: 0.92 1.08;
+  }
+  60% {
+    scale: 1.04 0.97;
+  }
+  80% {
+    scale: 0.99 1.01;
+  }
+}
+@keyframes m-a-hop {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  40% {
+    translate: 0 -0.22em;
+  }
+}
+@keyframes m-a-heart {
+  0%,
+  45%,
+  100% {
+    scale: 1;
+  }
+  12% {
+    scale: 1.12;
+  }
+  28% {
+    scale: 1.05;
+  }
+}
+/* Neon geht an: ein einziges, sanftes Nachglimmen (kein Flackern im Stroboskop-Takt) */
+@keyframes m-a-neon {
+  0%,
+  45%,
+  100% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0.78;
+  }
+}
+@keyframes m-a-echo {
+  0% {
+    opacity: 0.6;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-0.3em) scale(1.08);
+  }
+}
+@keyframes m-a-glitch {
+  0%,
+  100% {
+    translate: 0 0;
+    transform: none;
+  }
+  20% {
+    translate: 0.06em 0;
+    transform: skewX(-8deg);
+  }
+  40% {
+    translate: -0.05em 0;
+    transform: skewX(6deg);
+  }
+  60% {
+    translate: 0.02em 0;
+    transform: none;
+  }
+}
+@keyframes m-a-beat {
+  0%,
+  100% {
+    scale: 1;
+  }
+  20% {
+    scale: 1.08;
+  }
+}
+@keyframes m-a-bar {
+  0%,
+  100% {
+    scale: 1;
+    translate: 0 0;
+  }
+  22% {
+    scale: 1.14;
+    translate: 0 -0.05em;
   }
 }
 /* Wortbilder (nur transform: so bleiben translate/scale/rotate frei für Auftritt und gehaltenen Ton) */
@@ -8893,7 +9160,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
   50% {
     transform: scale(0.96);
-    opacity: 0.55;
+    opacity: 0.65;
   }
 }
 @keyframes m-c-shine {
@@ -8941,28 +9208,30 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
 }
 @keyframes m-c-halt {
-  0% {
-    transform: scale(1.18) translateX(0.06em);
-  }
-  20% {
-    transform: scale(0.96);
-  }
+  0%,
   35%,
   100% {
     transform: none;
   }
+  10% {
+    transform: scale(1.12) translateX(0.04em);
+  }
+  20% {
+    transform: scale(0.97);
+  }
 }
 @keyframes m-c-tick {
   0%,
+  100% {
+    transform: none;
+  }
+  25%,
   45% {
     transform: rotate(-6deg);
   }
-  50%,
+  55%,
   95% {
     transform: rotate(6deg);
-  }
-  100% {
-    transform: rotate(-6deg);
   }
 }
 @keyframes m-c-drift {
@@ -8977,16 +9246,15 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
 }
 @keyframes m-c-dash {
-  0% {
-    transform: translateX(-0.5em) skewX(-14deg);
-    opacity: 0.4;
-  }
-  60% {
-    transform: translateX(0.04em) skewX(4deg);
-    opacity: 1;
-  }
+  0%,
   100% {
     transform: none;
+  }
+  30% {
+    transform: translateX(0.1em) skewX(-14deg);
+  }
+  60% {
+    transform: translateX(-0.02em) skewX(4deg);
   }
 }
 @keyframes m-c-power {
@@ -9009,14 +9277,15 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
 }
 @keyframes m-c-bloom {
-  0% {
-    transform: scale(0.8) rotate(-6deg);
-  }
-  60% {
-    transform: scale(1.1) rotate(2deg);
-  }
+  0%,
   100% {
     transform: none;
+  }
+  40% {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  70% {
+    transform: scale(0.97) rotate(2deg);
   }
 }
 @keyframes m-c-sultry {
@@ -9040,21 +9309,151 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     translate: 0 0.05em;
   }
 }
+/* Explosion: Buchstaben springen höchstens ±0,32 em auseinander (lange Wörter ragten sonst aus der Textfläche) */
 @keyframes m-c-burst {
-  0% {
+  0%,
+  100% {
     translate: 0 0;
     rotate: 0deg;
     scale: 1;
   }
   28% {
-    translate: calc((var(--ci, 0) - (var(--cn, 1) - 1) / 2) * 0.3em) -0.3em;
-    rotate: calc((var(--ci, 0) - (var(--cn, 1) - 1) / 2) * 12deg);
-    scale: 1.3;
+    translate: calc(clamp(-2, var(--ci, 0) - (var(--cn, 1) - 1) / 2, 2) * 0.16em) -0.25em;
+    rotate: calc(clamp(-2, var(--ci, 0) - (var(--cn, 1) - 1) / 2, 2) * 10deg);
+    scale: 1.25;
+  }
+}
+/* frei einstellbare Wortbild-Schleifen der Spielarten (Stellgrößen --qy, --qr, --qs, --qx, --qk, --qo je Wort) */
+@keyframes m-q-bob {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateY(var(--qy, -0.15em));
+  }
+}
+@keyframes m-q-sway {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: rotate(var(--qr, 4deg));
+  }
+  75% {
+    transform: rotate(calc(var(--qr, 4deg) * -1));
+  }
+}
+@keyframes m-q-pulse {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: scale(var(--qs, 1.1));
+  }
+}
+@keyframes m-q-jit {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(calc(var(--qx, 0.04em) * -1));
+  }
+  45% {
+    transform: translateX(var(--qx, 0.04em));
+  }
+  70% {
+    transform: translateX(calc(var(--qx, 0.04em) * -0.5));
+  }
+}
+@keyframes m-q-skew {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: skewX(var(--qk, -6deg));
+  }
+  60% {
+    transform: skewX(calc(var(--qk, -6deg) * -0.6));
+  }
+}
+@keyframes m-q-sink {
+  0% {
+    transform: none;
+  }
+  40%,
+  100% {
+    transform: translateY(var(--qy, 0.12em)) rotate(var(--qr, 0deg));
+  }
+}
+@keyframes m-q-swell {
+  0% {
+    transform: none;
+  }
+  35%,
+  100% {
+    transform: scale(var(--qs, 1.1));
+  }
+}
+@keyframes m-q-orbit {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translate(var(--qx, 0.06em), 0);
+  }
+  50% {
+    transform: translate(0, var(--qy, -0.08em));
+  }
+  75% {
+    transform: translate(calc(var(--qx, 0.06em) * -1), 0);
+  }
+}
+@keyframes m-q-spin {
+  0% {
+    transform: none;
   }
   100% {
-    translate: 0 0;
-    rotate: 0deg;
-    scale: 1;
+    transform: rotate(var(--qr, 360deg));
+  }
+}
+@keyframes m-q-stretch {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    transform: scale(var(--qs, 1.08), calc(2 - var(--qs, 1.08)));
+  }
+}
+/* sanftes Abdunkeln (Deckkraft nie unter 0,6: kein kräftiger Helligkeitswechsel) */
+@keyframes m-q-flick {
+  0%,
+  55%,
+  100% {
+    opacity: 1;
+  }
+  40% {
+    opacity: var(--qo, 0.7);
+  }
+}
+@keyframes m-q-pt {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(var(--pts, 0.5)) rotate(0deg);
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--ptx, 0), var(--pty, -0.8em)) scale(1) rotate(var(--ptq, 0deg));
   }
 }
 /* === end i-playful === */
