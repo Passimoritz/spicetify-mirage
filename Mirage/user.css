@@ -9463,4 +9463,14 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     transform: translate(var(--ptx, 0), var(--pty, -0.8em)) scale(1) rotate(var(--ptq, 0deg));
   }
 }
+/* Party + verspielt: Platz für den Liedtext. Die Schrift ist an die Höhe der Liedtext-Fläche gebunden (cqh, damit
+   bewegte Wörter nie abgeschnitten werden) – und die Fläche ist nur, was zwischen Cover und Titelblock übrig bleibt.
+   Darum wird nur der Block UNTER dem Liedtext (Info-Zeile, Titel, Interpret, Zeitleiste, Knöpfe, Lautstärke) hier
+   kleiner – Cover und Abstände bleiben: die Liedtext-Fläche wächst, die Schrift mit ihr. Nur im verspielten Stil. */
+#mirage-immersive[data-mode="party"]:has(.m-im-lyrics.is-playful) .m-im-meta {
+  zoom: 0.78;
+}
+#mirage-immersive[data-mode="party"]:has(.m-im-lyrics.is-playful) .m-im-bar {
+  margin-top: 0.8vh;
+}
 /* === end i-playful === */

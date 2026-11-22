@@ -3091,6 +3091,30 @@ async function partyVolume() {
 }
 CASES.push(["party-volume", partyVolume]);
 
+// Party + verspielt: nur der Block unter dem Liedtext wird kleiner, damit die Liedtext-Fläche (und mit ihr die an
+// ihre Höhe gebundene Schrift) wächst. Cover bleibt gleich groß; im normalen Stil ändert sich nichts.
+async function playfulRoom() {
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await toMode("party");
+  const measure = (playful) => T.js(`(async () => {
+    const im = document.getElementById("mirage-immersive"), box = im.querySelector(".m-im-lyrics"), had = box.classList.contains("is-playful");
+    box.classList.toggle("is-playful", ${playful});
+    await new Promise((r) => setTimeout(r, 1200));
+    const R = (s) => im.querySelector(s).getBoundingClientRect();
+    // Cover: Layoutbreite (offsetWidth) – die sichtbare pulsiert im Takt (scale)
+    const out = { cover: im.querySelector(".m-im-cover-wrap").offsetWidth, lyricsH: Math.round(R(".m-im-lyrics").height), metaH: Math.round(R(".m-im-meta").height), zoom: getComputedStyle(im.querySelector(".m-im-meta")).zoom, title: Math.round(R(".m-im-title").height) };
+    box.classList.toggle("is-playful", had);
+    return out;
+  })()`);
+  const n = await measure(false), p = await measure(true);
+  console.log(`  platz: normal ${JSON.stringify(n)} · verspielt ${JSON.stringify(p)}`);
+  ok(p.cover === n.cover, `platz: Cover bleibt gleich groß (${n.cover} / ${p.cover})`);
+  ok(p.metaH < n.metaH * 0.85, `platz: Block unter dem Liedtext kleiner (${n.metaH} → ${p.metaH})`);
+  ok(p.lyricsH > n.lyricsH, `platz: Liedtext-Fläche größer (${n.lyricsH} → ${p.lyricsH})`);
+  ok(String(n.zoom) === "1", "platz: normaler Stil unverändert (zoom " + n.zoom + ")");
+}
+CASES.push(["playful-room", playfulRoom]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {
