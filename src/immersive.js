@@ -22,6 +22,10 @@ import { grade as gradePal } from "./director.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
 import { songPos } from "./clock.js";
+// Liedtext-Diagnose und -Timing je Song (lyrics.js: setAutoSync, autoSyncOff, researchLyrics · clock.js: nudgeSong,
+// resetSong, songOffset) – über den Namensraum, damit die Bedienung auch ohne diese Funktionen läuft (Zeilen fehlen dann)
+import * as lyricsApi from "./lyrics.js";
+import * as clockApi from "./clock.js";
 import { instruments } from "./instruments.js";
 import { live } from "./live.js";
 import { createWordFx, FX as WORD_FX } from "./words.js";
@@ -32,7 +36,9 @@ import { dj } from "./dj.js";
 import { UI, GAME, iconEl } from "./icons.js";
 import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from "./games.js";
 import { free } from "./lock.js";
-import { setPreset, setPerf, presetFill } from "./settings.js";
+import { setPreset, setPerf, presetFill, openSettings } from "./settings.js";
+import { helpRows } from "./shortcuts.js";
+import { crowdLayers } from "./stagefx.js";
 import { COST, tier } from "./perf.js";
 import { createSteadyClock, createBeatClock } from "./steady.js";
 // 1.27 views: weitere Visualizer-Stile, Album-Reise und Uhr-Ansicht (eigene Module)
@@ -208,7 +214,6 @@ Probe-FX: ${pfx}`;
           <button type="button" class="m-im-sm m-im-photobtn" data-menu="photos" hidden>${ICON.photo}</button>
           <button type="button" class="m-im-sm m-im-live" data-menu="live" hidden>${ICON.live}</button>
           <button type="button" class="m-im-sm m-im-menubtn" data-menu="menu" hidden>${ICON.more}</button>
-          <button type="button" class="m-im-sm m-im-share">${ICON.share}</button>
           <button type="button" class="m-im-sm m-im-fs">${ICON.full}</button>
           <button type="button" class="m-im-sm m-im-help" data-menu="keys">${UI.keyboard}</button>
         </div>
@@ -235,7 +240,6 @@ Probe-FX: ${pfx}`;
         </div>
         <div class="m-im-extras">
           <button type="button" class="m-im-sm m-im-like">${ICON.heart}</button>
-          <button type="button" class="m-im-sm m-im-addto" data-menu="playlists">${ICON.add}</button>
           <button type="button" class="m-im-sm m-im-songbtn" data-menu="song">${ICON.more}</button>
           <div class="m-im-vol">
             <button type="button" class="m-im-sm m-im-mute">${ICON.vol}</button>
@@ -244,14 +248,13 @@ Probe-FX: ${pfx}`;
           <button type="button" class="m-im-sm m-im-queue-btn" data-menu="queue">${ICON.queue}</button>
           <button type="button" class="m-im-sm m-im-dev" data-menu="devices">${ICON.devices}</button>
           <button type="button" class="m-im-sm m-im-timer" data-menu="timer">${ICON.timer}</button>
-          <button type="button" class="m-im-sm m-im-full">${ICON.full}</button>
         </div>
       </div>
       <div class="m-im-lyrics"><div class="m-im-lyrics-inner"></div></div>
       <div class="m-im-lyrbar">
         <button type="button" class="m-im-trbtn" hidden aria-pressed="false">${ICON.translate}<span></span><i aria-hidden="true"></i></button>
         <button type="button" class="m-im-lyrsrc" data-menu="versions" hidden><span></span><b></b></button>
-        <button type="button" class="m-im-lyrsrc m-im-lyrbad" hidden><span></span></button>
+        <span class="m-im-nudge" role="group" hidden><button type="button" class="m-im-nudge-early"></button><button type="button" class="m-im-nudge-val"></button><button type="button" class="m-im-nudge-late"></button></span>
       </div>
       <div class="m-im-side m-im-pop" hidden><div class="m-im-side-head"><button type="button" class="m-im-side-back" hidden>${UI.back}</button><b></b><button type="button" class="m-im-sm m-im-side-x">${UI.close}</button></div><div class="m-im-side-body"></div></div>
       <div class="m-im-keys" role="dialog" hidden></div>`;
@@ -272,7 +275,7 @@ Probe-FX: ${pfx}`;
     el.querySelector(".m-im-prev").setAttribute("aria-label", t("prev"));
     el.querySelector(".m-im-play").setAttribute("aria-label", t("play"));
     el.querySelector(".m-im-next").setAttribute("aria-label", t("next"));
-    for (const k of ["shuffle", "repeat", "like", "mute", "full"]) {
+    for (const k of ["shuffle", "repeat", "like", "mute"]) {
       el.querySelector(".m-im-" + k).setAttribute("aria-label", t("c_" + k));
       el.querySelector(".m-im-" + k).title = t("c_" + k);
     }
@@ -297,7 +300,7 @@ Probe-FX: ${pfx}`;
       lyrics: el.querySelector(".m-im-lyrics"),
       inner: el.querySelector(".m-im-lyrics-inner"),
       lyrsrc: el.querySelector(".m-im-lyrsrc"),
-      lyrbad: el.querySelector(".m-im-lyrbad"),
+      nudge: el.querySelector(".m-im-nudge"),
       trbtn: el.querySelector(".m-im-trbtn"),
       ind: el.querySelector(".m-im-ind"),
       canvas: el.querySelector(".m-im-viz"),
@@ -310,8 +313,6 @@ Probe-FX: ${pfx}`;
       like: el.querySelector(".m-im-like"),
       mute: el.querySelector(".m-im-mute"),
       volume: el.querySelector(".m-im-volume"),
-      full: el.querySelector(".m-im-full"),
-      addto: el.querySelector(".m-im-addto"),
       smart: el.querySelector(".m-im-smartpick"),
       controls: el.querySelector(".m-im-controls"),
       meta: el.querySelector(".m-im-meta"),
@@ -327,9 +328,6 @@ Probe-FX: ${pfx}`;
     vctx = q.canvas.getContext("2d");
     q.smart.querySelector("span").textContent = t("smartPick");
     q.smart.title = t("smartPickHint");
-    q.addto.title = t("c_addTo");
-    q.addto.setAttribute("aria-label", t("c_addTo"));
-    q.addto.onclick = () => showSide(side === "playlists" ? null : "playlists");
     // Party-Rückblick und zweiter Bildschirm (Party im Vollbild auf einem anderen Monitor/Fernseher)
     q.recap.title = q.recap.ariaLabel = t("recapBtn");
     q.recap.onclick = () => showSide(side === "recap" ? null : "recap");
@@ -353,7 +351,10 @@ Probe-FX: ${pfx}`;
       flashStorm: () => (moments.stormUntil = performance.now() + 2600),
       bpm: () => party.info.bpm,
       venue: () => (moments.venue = ["club", "festival", "beach", "stadium", "rooftop", "forest", "neon", "space", "desert"][Math.floor(Math.random() * 9)]),
-      changed: () => side === "games" && showSide("games"),
+      changed: () => {
+        if (side === "games") showSide("games");
+        liveAfterGame();
+      },
       party: () => el?.dataset.mode === "party",
     });
     q.screen.title = q.screen.ariaLabel = t("toScreen");
@@ -364,7 +365,6 @@ Probe-FX: ${pfx}`;
     q.fs.onclick = toggleFull;
     q.fs.hidden = !canFull();
     document.addEventListener("fullscreenchange", syncFull);
-    if (!ctl.canAddTo()) q.addto.hidden = true;
     /* === 1.27 actions: Song-Menü (Drei Punkte, Rechtsklick, Taste M) und ±15 s für Podcasts === */
     q.songbtn = el.querySelector(".m-im-songbtn");
     q.songbtn.title = q.songbtn.ariaLabel = t("smOpen");
@@ -391,21 +391,20 @@ Probe-FX: ${pfx}`;
     q.wrap.addEventListener("transitionend", (e) => e.target === q.wrap && !/^(scale|rotate)$/.test(e.propertyName) && (vizRect.r = null));
     q.lyrsrc.querySelector("b").textContent = t("lyrPick");
     q.lyrsrc.onclick = () => showSide(side === "versions" ? null : "versions");
-    q.lyrbad.querySelector("span").textContent = t("lyrWrong");
-    q.lyrbad.title = t("lyrWrongHint");
-    q.lyrbad.onclick = wrongLyrics;
+    // „Nicht der richtige Liedtext“ steht nur noch in „Fassung wählen“ (ein Ort je Aktion)
     q.trbtn.querySelector("span").textContent = t("trToggle");
-    q.trbtn.onclick = () => {
-      // ein Klick schaltet die Einstellung „Liedtext übersetzen“ – gilt also auch für den nächsten Song
-      cfg.translate = !cfg.translate;
-      save();
-      showTrBtn();
-      if (cfg.translate) addTranslations(lyrToken);
-      else {
-        q.inner.querySelectorAll(".m-im-tr").forEach((n) => n.remove());
-        relayLyrics();
-      }
+    q.trbtn.onclick = toggleTranslate;
+    // Liedtext früher / später (je Song, ±0,25 s) – Mitte zeigt den Versatz und setzt ihn zurück
+    q.nudge.setAttribute("aria-label", t("syRow"));
+    const nb = (cls, text, hint, fn) => {
+      const b = q.nudge.querySelector(cls);
+      b.textContent = text;
+      b.title = b.ariaLabel = hint;
+      b.onclick = fn;
     };
+    nb(".m-im-nudge-early", "−", t("syEarlierHint"), () => nudge(250));
+    nb(".m-im-nudge-late", "+", t("syLaterHint"), () => nudge(-250));
+    nb(".m-im-nudge-val", "", t("syReset"), () => nudge(0));
     q.video = el.querySelector(".m-im-canvas");
     q.cvid = el.querySelector(".m-im-cvid");
     q.wishbtn = el.querySelector(".m-im-wishbtn");
@@ -413,19 +412,11 @@ Probe-FX: ${pfx}`;
     q.photobtn = el.querySelector(".m-im-photobtn");
     q.photobtn.onclick = () => showSide(side === "photos" ? null : "photos");
     q.cvbtn = el.querySelector(".m-im-cvbtn");
-    q.cvbtn.onclick = async () => {
-      const mode = el.dataset.mode;
-      // ohne Canvas erklärt der Knopf, warum: im Spotify-Konto ausgeschaltet oder der Song hat einfach keins
-      if (!canvasUrl) return S.showNotification?.(t((await canvasBlocked()) ? "canvasBlocked" : "canvasNone"), false, 6000);
-      cfg.canvasIn = { ...(cfg.canvasIn || {}), [mode]: !cfg.canvasIn?.[mode] };
-      save();
-      applyCanvas();
-    };
+    q.cvbtn.onclick = toggleCanvas;
     q.keys = el.querySelector(".m-im-keys");
-    const share = el.querySelector(".m-im-share"), help = el.querySelector(".m-im-help");
-    share.title = share.ariaLabel = t("share");
+    // Teilen als Bild liegt im Song-Menü (und in den Einstellungen) – oben nur noch die Tastenhilfe
+    const help = el.querySelector(".m-im-help");
     help.title = help.ariaLabel = t("keysTitle");
-    share.onclick = () => nowPlayingCard();
     help.onclick = () => toggleKeys();
     // nur der abgedunkelte Rand schließt, ein Klick in die Übersicht selbst nicht
     q.keys.onclick = (e) => !e.target.closest(".m-im-keys-box") && toggleKeys(false);
@@ -437,10 +428,9 @@ Probe-FX: ${pfx}`;
     q.side = el.querySelector(".m-im-side");
     q.sideBody = el.querySelector(".m-im-side-body");
     el.querySelector(".m-im-side-x").onclick = () => showSide(null);
-    // Unterseite aus „Mehr“ (DJ, Umfrage …): ein Pfeil führt zurück ins Menü
+    // Unterseiten (aus „Mehr“, dem Song-Menü …) liegen auf einem Stapel: der Pfeil geht eine Seite zurück
     q.sideBack = el.querySelector(".m-im-side-back");
-    // 1.27 actions: aus dem Song-Menü geöffnete Seiten (Playlists) führen dorthin zurück
-    q.sideBack.onclick = () => showSide(sideParent);
+    q.sideBack.onclick = sideBack;
     // Pfeil hoch/runter wandert durch die Zeilen des Menüs (wie in einem Menü üblich), Pos1/Ende springen ans Ende;
     // in Eingabefeldern und Stufenwahlen bleiben die Pfeile beim Feld
     q.side.addEventListener("keydown", (e) => {
@@ -482,7 +472,6 @@ Probe-FX: ${pfx}`;
     };
     q.mute.onclick = () => { toggleMute(); setTimeout(syncState, 120); };
     q.volume.oninput = () => S.Player.setVolume(Number(q.volume.value) / 100);
-    q.full.onclick = toggleFull;
     el.querySelector(".m-im-prev").onclick = () => free() && PLR.back();
     el.querySelector(".m-im-next").onclick = () => free() && PLR.next();
     q.play.onclick = () => free() && PLR.togglePlay();
@@ -690,8 +679,7 @@ Probe-FX: ${pfx}`;
   function syncFull() {
     if (!el) return;
     const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    for (const b of [q.full, q.fs]) {
-      if (!b) continue;
+    for (const b of [q.fs]) {
       b.innerHTML = on ? ICON.fullOff : ICON.full;
       b.title = b.ariaLabel = t(on ? "fullOff" : "c_full");
     }
@@ -795,9 +783,16 @@ Probe-FX: ${pfx}`;
   // Ruhemodus (Party): nach 2,6 s ohne Maus/Taste verschwinden Kopfzeile, Knöpfe und Liedtext-Leiste,
   // Cover, Liedtext und Titel rücken um die frei gewordene Höhe nach unten zur Mitte.
   let idleT = 0, vizMoveUntil = 0;
+  let barT = 0;
   function wake() {
     kick();
     clearTimeout(idleT);
+    if (el.dataset.mode === "party" && isOpen()) {
+      el.classList.add("is-barwake");
+      clearTimeout(barT);
+      const off = () => (barT = setTimeout(() => (el.querySelector(".m-im-lyrbar:hover, .m-im-lyrbar:focus-within") ? off() : el.classList.remove("is-barwake")), 3000));
+      off();
+    }
     if (el.classList.contains("is-idle")) {
       el.classList.remove("is-idle");
       vizMoveUntil = performance.now() + 1000;
@@ -1220,7 +1215,7 @@ Probe-FX: ${pfx}`;
     // ohne Text steckt „Fassung wählen“ im Zeichen neben dem Titel
     q.lyrsrc.hidden = !cfg.onlineLyrics || !/^spotify:(track|local):/.test(lyrUri) || !got?.lines?.length;
     q.lyrsrc.querySelector("span").textContent = got ? (SOURCE_NAME[got.source] || "Spotify") + (picked ? " · " + t("lyrPicked") : "") : t("lyrNone");
-    q.lyrbad.hidden = q.lyrsrc.hidden;
+    showNudge();
   }
   // „Nicht der richtige Liedtext“: das gezeigte Ergebnis für diesen Song als falsch merken und sofort das
   // nächstbeste holen (andere Quelle oder anderer Eintrag). Zurück geht es über „Fassung wählen“ → „Automatisch“.
@@ -1248,6 +1243,7 @@ Probe-FX: ${pfx}`;
       loadLyrics();
       showSide(null);
     };
+    syncDiag(body, item);
     // „Automatisch“ nimmt auch gemeldete Fehler zurück
     item(t("lyrAuto"), rejected ? t("lyrAutoReset").replace("{n}", rejected) : t("lyrAutoHint"), null, pickedId || rejected ? () => choose("") : null, !pickedId && !rejected);
     if (lyr?.lines?.length || lyr?.instrumental) item(t("lyrWrong"), t("lyrWrongHint"), null, wrongLyrics);
@@ -1259,6 +1255,91 @@ Probe-FX: ${pfx}`;
       item(`${v.title} – ${v.artist}`, sub, null, on ? null : () => choose(v.id), on);
     }
   }
+  /* ---- Woher der Liedtext kommt und ob Mirage ihn verschoben hat (oben in „Fassung wählen“)
+     Liest lyr.diag ({ source, id, candidates, cluster, spotifyOverruled, shifted, auto: { off, scale, conf, applied, why } }
+     aus lyrics.js), sonst, was heute schon da ist (source, lrcId, neId, sync). Fehlt etwas, fehlt nur die Zeile.
+     Zurücknehmen, wieder einschalten und neu suchen gehen über lyrics.js (setAutoSync, autoSyncOff, researchLyrics);
+     gibt es die noch nicht, fehlen nur diese Zeilen. */
+  const signed = (v) => (v > 0 ? "+" : v < 0 ? "−" : "±") + new Intl.NumberFormat(LANG, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(v));
+  function syncInfo(l = lyr) {
+    if (!l?.lines?.length) return null;
+    const d = l.diag || {};
+    const source = d.source || l.source || "spotify";
+    const id = d.id ?? (source === "lrclib" ? l.lrcId : /^(netease|amll)$/.test(source) ? l.neId : "");
+    // Versatz in ms (wie alignLyrics); off/scale gelten nur, wenn applied
+    const a = d.auto || (l.sync ? { off: l.sync.off, scale: l.sync.scale, conf: l.sync.conf, applied: true } : null);
+    const off = typeof lyricsApi.autoSyncOff === "function" ? !!lyricsApi.autoSyncOff(lyrUri) : a?.why === "off";
+    return { source, id, auto: a, cands: Number(d.candidates) || 0, cluster: Number(d.cluster) || 0, shifted: Number(d.shifted) || 0, overruled: !!d.spotifyOverruled, off };
+  }
+  const reloadLyr = () => {
+    lyrUri = "";
+    if (el && LYR.has(el.dataset.mode)) loadLyrics();
+  };
+  function syncDiag(body, item) {
+    const s0 = syncInfo();
+    if (!s0) return;
+    const info = (text, sub) => {
+      item(text, sub || "", null, null);
+      q.sideBody.lastElementChild.classList.add("m-im-diag");
+    };
+    const name = (SOURCE_NAME[s0.source] || s0.source) + (s0.id ? " #" + s0.id : "");
+    const agree = s0.cands > 1 ? (s0.cluster > 1 ? t("dgCluster").replace("{c}", s0.cluster).replace("{n}", s0.cands) : t("dgCands").replace("{n}", s0.cands)) : "";
+    const moved = s0.shifted ? t("dgShifted").replace("{v}", signed(s0.shifted / 1000)) : "";
+    info(t("dgSource").replace("{s}", name), [agree, moved, s0.overruled ? t("dgSpotifyOver") : ""].filter(Boolean).join(" · "));
+    const a = s0.auto, setAuto = lyricsApi.setAutoSync;
+    const uri = lyrUri;
+    const flip = (on) => {
+      setAuto(uri, on);
+      S.showNotification?.(t(on ? "dgRedone" : "dgUndone"), false, 3000);
+      showSide(null);
+      reloadLyr();
+    };
+    if (a?.applied && (a.off || (a.scale && a.scale !== 1))) {
+      let text = t("dgAuto").replace("{v}", signed((Number(a.off) || 0) / 1000));
+      if (a.conf != null) text += ", " + t("dgSure").replace("{p}", Math.round(a.conf * 100));
+      if (a.scale && a.scale !== 1) text += " · " + t("dgStretch").replace("{x}", signed((a.scale - 1) * 100).replace(/,00|\.00/, ""));
+      info(text);
+      if (typeof setAuto === "function") item(t("dgUndo"), t("dgUndoHint"), null, () => flip(false));
+    } else if (s0.off) {
+      info(t("dgAutoOff"));
+      if (typeof setAuto === "function") item(t("dgRedo"), t("dgRedoHint"), null, () => flip(true));
+    } else info(t("dgNoAuto"));
+    // neu suchen: vergisst das gemerkte Ergebnis (auch „kein Liedtext“) und fragt alle Quellen noch einmal
+    if (typeof lyricsApi.researchLyrics === "function") {
+      item(t("dgSearch"), t("dgSearchHint"), null, async () => {
+        showSide(null);
+        await lyricsApi.researchLyrics(uri).catch(() => {});
+        reloadLyr();
+      });
+    }
+  }
+
+  /* ---- Liedtext früher / später je Song (clock.js: nudgeSong/resetSong/songOffset – Liedtext UND Licht/Bild) */
+  const songOffset = (uri) => (typeof clockApi.songOffset === "function" ? clockApi.songOffset(uri) || 0 : 0);
+  const canNudge = () => typeof clockApi.nudgeSong === "function";
+  function showNudge() {
+    if (!q.nudge) return;
+    const can = canNudge() && !!lyr?.synced && /^spotify:(track|local):/.test(lyrUri);
+    q.nudge.hidden = !can;
+    if (!can) return;
+    const v = songOffset(lyrUri), b = q.nudge.querySelector(".m-im-nudge-val");
+    b.textContent = v ? signed(v / 1000) + " s" : "0 s";
+    b.classList.toggle("is-on", !!v);
+    b.disabled = !v;
+  }
+  function nudge(ms) {
+    const uri = lyrUri || currentItem()?.uri || "";
+    if (!uri || !canNudge()) return;
+    const v = ms ? clockApi.nudgeSong(uri, ms) : (clockApi.resetSong(uri), 0);
+    showNudge();
+    // die Zeile springt sofort an die neue Stelle (die Bildschleife schaut nach der aktuellen Zeile)
+    active = -2;
+    kick();
+    if (!ms) imToast(t("syResetDone"));
+    else imToast((v ? t(v > 0 ? "syNowEarly" : "syNowLate").replace("{v}", new Intl.NumberFormat(LANG, { maximumFractionDigits: 2 }).format(Math.abs(v) / 1000)) : t("syNone")), [[t("syReset"), () => nudge(0)]], 2400);
+    if (side === "menu") rebuildMenu();
+  }
+
   // Party ohne Liedtext: Titel und Bedienung rücken unter das Cover. Der Wechsel passiert erst, wenn klar ist,
   // ob es Text gibt (nicht schon beim Laden – sonst sprang alles bei jedem Songwechsel zweimal hin und her),
   // und er gleitet: Cover, Titel und Liedtext fliegen von der alten an die neue Stelle (FLIP).
@@ -1363,7 +1444,7 @@ Probe-FX: ${pfx}`;
     q.inner.firstChild.textContent = t("loading");
     q.lyrics.classList.remove("is-unsynced");
     el.classList.remove("is-karaoke");
-    q.lyrsrc.hidden = q.lyrbad.hidden = true;
+    q.lyrsrc.hidden = q.nudge.hidden = true;
     q.trbtn.hidden = true;
     // meist ist der Liedtext vorgeladen und sofort da: der Hinweis blendet erst nach 0,7 s ein, statt bei jedem
     // Songwechsel kurz aufzublitzen
@@ -1675,7 +1756,7 @@ Probe-FX: ${pfx}`;
     const uri = lyrUri, got = lyr;
     if (!got?.lines?.length || got.instrumental) return;
     const tr = await translateLines(uri, got, LANG);
-    if (token !== lyrToken || !tr || !cfg.translate) return;
+    if (token !== lyrToken || !tr || !trOn(uri)) return;
     const lines = q.inner.querySelectorAll(".m-im-line");
     tr.forEach((text, i) => {
       if (!text || !lines[i] || lines[i].querySelector(".m-im-tr") || text.toLowerCase() === got.lines[i].text.toLowerCase()) return;
@@ -1694,12 +1775,53 @@ Probe-FX: ${pfx}`;
     snapLyrics(() => (q.inner.style.transform = `translateY(${q.lyrics.clientHeight * 0.42 - (cur.offsetTop + cur.offsetHeight / 2)}px)`));
   }
   // Knopf nur, wenn es etwas zu übersetzen gibt (Text da, Sprache nicht schon die eigene)
+  const canTranslate = () => !!lyr?.lines?.length && !lyr.instrumental && (lyr?.lang || "").slice(0, 2).toLowerCase() !== LANG;
   function showTrBtn() {
-    const lang = (lyr?.lang || "").slice(0, 2).toLowerCase();
-    q.trbtn.hidden = !lyr?.lines?.length || lyr.instrumental || lang === LANG;
-    q.trbtn.classList.toggle("is-on", !!cfg.translate);
-    q.trbtn.setAttribute("aria-pressed", String(!!cfg.translate));
-    q.trbtn.title = t(cfg.translate ? "trHide" : "trShow");
+    const on = trOn(lyrUri);
+    q.trbtn.hidden = !canTranslate();
+    q.trbtn.classList.toggle("is-on", on);
+    q.trbtn.setAttribute("aria-pressed", String(on));
+    q.trbtn.title = t(on ? "trHide" : "trShow");
+    // nur für diesen Song an (für alle aus): showLyrics fragt nur den Schalter für alle – hier nachholen
+    if (on && !cfg.translate && canTranslate() && !q.inner.querySelector(".m-im-tr")) addTranslations(lyrToken);
+  }
+  // Übersetzung: ein Schalter für alle Songs (cfg.translate), je Song abweichend (cfg.translateSongs[uri])
+  const trOn = (uri) => (typeof cfg.translateSongs?.[uri] === "boolean" ? cfg.translateSongs[uri] : !!cfg.translate);
+  function setTrSong(uri, v) {
+    const all = { ...(cfg.translateSongs || {}) };
+    delete all[uri];
+    if (v !== !!cfg.translate) all[uri] = v;
+    const keys = Object.keys(all);
+    if (keys.length > 300) for (const k of keys.slice(0, keys.length - 300)) delete all[k];
+    cfg.translateSongs = all;
+  }
+  function applyTr() {
+    save();
+    showTrBtn();
+    if (trOn(lyrUri)) addTranslations(lyrToken);
+    else {
+      q.inner.querySelectorAll(".m-im-tr").forEach((n) => n.remove());
+      relayLyrics();
+    }
+    if (side === "menu") rebuildMenu();
+  }
+  // Ein Klick schaltet die Übersetzung für alle Songs – und sagt das; „Nur dieser Song“ nimmt es für die anderen
+  // zurück. Hat dieser Song schon eine eigene Wahl, schaltet der Klick nur sie.
+  function toggleTranslate() {
+    const uri = lyrUri, now = trOn(uri);
+    if (typeof cfg.translateSongs?.[uri] === "boolean") {
+      setTrSong(uri, !now);
+      applyTr();
+      return imToast(t(!now ? "trSongOn" : "trSongOff"));
+    }
+    cfg.translate = !now;
+    applyTr();
+    imToast(t(!now ? "trAllOn" : "trAllOff"), [[t("trOnlySong"), () => {
+      cfg.translate = now;
+      setTrSong(uri, !now);
+      applyTr();
+      imToast(t(!now ? "trSongOn" : "trSongOff"));
+    }]], 6000);
   }
 
   // Fortschritt eines Worts 0..1 (Anteil der gefüllten Buchstaben): mit Silbenzeiten stückweise je Silbe
@@ -1719,6 +1841,7 @@ Probe-FX: ${pfx}`;
   // nur bei hoher Sicherheit. Spotifys eigene Zeiten gehören zu genau dieser Aufnahme und bleiben; ein von Hand
   // gesetztes Timing (Taste E) hat immer das letzte Wort. Das Takt-Antippen (T) wirkt zusätzlich über die Songuhr.
   function alignLyrics() {
+    // „Automatische Verschiebung zurücknehmen“ (Fassung wählen) gilt für diesen Song auch künftig
     if (!lyr?.synced || lyr.aligned || lyr.source === "spotify" || lyr.timed || edit) return;
     const d = audio.data;
     if (!d?.segs?.length || audio.uri !== lyrUri || d.synthetic) return;
@@ -2627,8 +2750,8 @@ Probe-FX: ${pfx}`;
       ctx.strokeStyle = `rgba(255,255,255,${(0.18 + px.bright * 0.25 + px.drop * 0.3).toFixed(2)})`;
       ctx.stroke();
     }
-    // Bassbalken am unteren Rand – nicht, wenn dort das Publikum steht
-    if (P.bottom && !cfg.partyCrowd) {
+    // Bassbalken am unteren Rand – nicht, wenn dort das Publikum steht (ohne Publikum füllen sie den Rand, stagefx.js)
+    if (crowdLayers({ crowd: cfg.partyCrowd, bottom: P.bottom }).bassBars) {
       // Bass: flache Balken am unteren Rand, in den Farben des Kranzes
       const n = 64, bw = vw / n, base = vh;
       ctx.beginPath();
@@ -3178,10 +3301,21 @@ Probe-FX: ${pfx}`;
     }
   }
 
-  // Canvas (Spotifys kurze Video-Loops): je Ansicht ein- und ausschaltbar über den Film-Knopf oben, anfangs aus.
-  // Cover, Visualizer, Mix und Party zeigen es IM Cover (rund in Mix und Party), der Liedtext dazu gedämpft
-  // im Hintergrund. Gespielt wird nur, was zu sehen ist.
-  const CV_MODES = new Set(["cover", "lyrics", "viz", "mix", "party"]);
+  // Canvas (Spotifys kurze Video-Loops): EIN Schalter für alle Ansichten (Film-Knopf oben oder „Mehr“ → Diese
+  // Ansicht), anfangs aus. Cover und Visualizer zeigen es IM Cover, Mix im runden Cover, der Liedtext gedämpft im
+  // Hintergrund. Party und Uhr haben kein Canvas (dort steht die Bühne bzw. Ruhe im Vordergrund).
+  // Gespielt wird nur, was zu sehen ist.
+  const CV_MODES = new Set(["cover", "lyrics", "viz", "mix"]);
+  const CV_HOW = { cover: "imCvCover", viz: "imCvCover", mix: "imCvMix", lyrics: "imCvLyrics" };
+  const canvasHint = (mode) => t(CV_HOW[mode] || "imCvCover");
+  async function toggleCanvas() {
+    // ohne Canvas erklärt der Knopf, warum: im Spotify-Konto ausgeschaltet oder der Song hat einfach keins
+    if (!canvasUrl) return S.showNotification?.(t((await canvasBlocked()) ? "canvasBlocked" : "canvasNone"), false, 6000);
+    cfg.canvasShow = !cfg.canvasShow;
+    save();
+    applyCanvas();
+    if (side === "menu") rebuildMenu();
+  }
   let canvasToken = 0, canvasUrl = null;
   async function setCanvas(item) {
     const token = ++canvasToken;
@@ -3219,19 +3353,19 @@ Probe-FX: ${pfx}`;
     // Der Knopf ist in passenden Ansichten immer da (sonst findet man die Funktion nie); ohne Canvas wird er
     // blass und sagt beim Klick, warum. So springt die Leiste auch nicht bei jedem Songwechsel.
     const mode = el.dataset.mode, show = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show && !!canvasUrl;
-    const on = can && !!cfg.canvasIn?.[mode];
-    // im Party-Modus liegt der Film im Menü „Mehr“
-    q.cvbtn.hidden = !show || mode === "party";
+    const on = can && !!cfg.canvasShow;
+    // in Party und Uhr gibt es kein Canvas – dort auch keinen Knopf
+    q.cvbtn.hidden = !show;
     q.cvbtn.classList.toggle("is-none", show && !canvasUrl);
     q.cvbtn.setAttribute("aria-pressed", String(on));
-    q.cvbtn.title = q.cvbtn.ariaLabel = t(!canvasUrl ? "canvasNone" : on ? "canvasOff" : "canvasOn");
+    // der Hinweis sagt, wie das Video in DIESER Ansicht erscheint (der Schalter selbst gilt für alle)
+    q.cvbtn.title = q.cvbtn.ariaLabel = !canvasUrl ? t("canvasNone") : `${t(on ? "canvasOff" : "canvasOn")} · ${canvasHint(mode)}`;
     el.classList.toggle("has-canvas", on);
     requestAnimationFrame(fitTop);
     playIn(q.cvid, on);
     playIn(q.video, on && mode === "lyrics");
   }
-  // Tastenkürzel-Übersicht (Taste ?)
-  const KEYS = [["Space", "k_play"], ["← →", "k_seek"], ["↑ ↓", "k_vol"], ["1 – " + MODES.length, "k_view"], ["L", "k_like"], ["S", "k_shuffle"], ["R", "k_repeat"], ["F", "k_full"], ["N / P", "k_next"], ["Q", "k_queue"], ["M", "k_song"], ["A", "k_addto"], ["T", "k_tap"], ["E", "k_timing"], ["O", "k_perf"], ["Esc", "k_close"], ["?", "keysTitle"]];
+  // Tastenkürzel-Übersicht (Taste ?): aus derselben Tabelle wie die Tastatursteuerung (shortcuts.js)
   // Es ist immer nur ein Menü offen: das neue schließt das vorherige
   let liveToken = 0;
   function closeMenus(keep) {
@@ -3280,11 +3414,15 @@ Probe-FX: ${pfx}`;
       const h = document.createElement("b");
       h.textContent = t("keysTitle");
       box.append(h);
-      for (const [k, label] of KEYS) {
+      let group = "";
+      for (const r of helpRows(MODES.length)) {
+        // dünne Linie zwischen den Abschnitten (Wiedergabe, Ansicht, Menüs, Liedtext, Party, App)
+        if (group && r.group !== group) box.append(Object.assign(document.createElement("hr"), { className: "m-im-keys-sep" }));
+        group = r.group;
         const row = document.createElement("div");
         row.innerHTML = "<kbd></kbd><span></span>";
-        row.firstChild.textContent = k;
-        row.lastChild.textContent = t(label);
+        row.firstChild.textContent = r.kbdKey ? t(r.kbdKey) : r.kbd;
+        row.lastChild.textContent = t(r.label);
         box.append(row);
       }
       q.keys.append(box);
@@ -3306,19 +3444,25 @@ Probe-FX: ${pfx}`;
   }
 
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer
-  let side = null, sideFromMenu = false, viaMenu = false;
-  // 1.27 actions: Elternseite für den Zurück-Pfeil („Mehr“ oder das Song-Menü)
-  let sideParent = "menu", viaSong = false;
-  function showSide(kind) {
+  // Seiten liegen auf einem Stapel: „Mehr“ → Song-Menü → Zu Playlist hinzufügen → Zurück → Zurück. Ein Auslöser
+  // (Knopf, Taste) beginnt einen neuen Stapel, eine Zeile, die weiterführt, legt ihre Seite oben drauf (push),
+  // der Neuaufbau derselben Seite (Timer gewählt, Song gewechselt) lässt ihn, wie er ist.
+  let side = null, stack = [];
+  const SIDE_TITLE = { queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle", genre: "imGenreTitle" };
+  const sideTitle = (kind) => t(kind === "song" ? (ctl.isEpisode(currentItem()) ? "smTitleEp" : "smTitle") : SIDE_TITLE[kind] || kind);
+  const pushSide = (kind) => showSide(kind, true);
+  function sideBack() {
+    if (stack.length < 2) return showSide(null);
+    stack.pop();
+    showSide(stack.pop(), true);
+  }
+  function showSide(kind, push) {
     sideFocus(kind);
     if (kind) closeMenus("side");
     const was = side;
-    // Zurück-Pfeil nur für Unterseiten, die aus „Mehr“ (oder dem Song-Menü) geöffnet wurden; Neuaufbau derselben Seite behält ihn
-    if (kind !== was) {
-      sideFromMenu = (viaMenu || viaSong) && kind !== "menu";
-      sideParent = viaSong ? "song" : "menu";
-    }
-    viaMenu = viaSong = false;
+    if (!kind) stack = [];
+    else if (push && was) stack = [...stack.filter((k) => k !== kind), kind];
+    else if (kind !== was) stack = [kind];
     side = kind;
     // der QR-Code der Spielleitung bleibt nie offen stehen
     if (kind !== "games") q.hostOpen = false;
@@ -3327,15 +3471,15 @@ Probe-FX: ${pfx}`;
     syncTriggers();
     if (!kind) return;
     q.side.dataset.kind = kind;
-    q.sideBack.hidden = !sideFromMenu;
-    q.sideBack.title = q.sideBack.ariaLabel = t(sideParent === "song" ? "smOpen" : "pmTitle");
+    q.sideBack.hidden = stack.length < 2;
+    q.sideBack.title = q.sideBack.ariaLabel = stack.length > 1 ? sideTitle(stack[stack.length - 2]) : "";
     // anderer Inhalt in der offenen Leiste: kurz einblenden statt hart springen (Neuaufbau derselben Seite nicht)
     if (was && was !== kind) {
       q.sideBody.classList.remove("is-swap");
       void q.sideBody.offsetWidth;
       q.sideBody.classList.add("is-swap");
     }
-    q.side.querySelector("b").textContent = t({ queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle", song: ctl.isEpisode(currentItem()) ? "smTitleEp" : "smTitle" }[kind]);
+    q.side.querySelector("b").textContent = sideTitle(kind);
     const body = q.sideBody;
     body.textContent = "";
     const item = (label, sub, img, onClick, on) => {
@@ -3376,6 +3520,7 @@ Probe-FX: ${pfx}`;
     if (kind === "song") return songPanel(body);
     if (kind === "poll") return pollPanel(body);
     if (kind === "recap") return recapPanel(body);
+    if (kind === "genre") return genrePanel(body);
     if (kind === "queue") {
       queuePanel(body, item);
     } else if (kind === "devices") {
@@ -3516,7 +3661,7 @@ Probe-FX: ${pfx}`;
       like.classList.add("m-im-song-like");
       like.setAttribute("aria-pressed", String(liked));
     }
-    if (ctl.canAddTo()) row(t("c_addTo"), "", () => { viaSong = true; showSide("playlists"); }, UI.playlist, true).setAttribute("aria-keyshortcuts", "A");
+    if (ctl.canAddTo()) row(t("c_addTo"), "", () => pushSide("playlists"), UI.playlist, true).setAttribute("aria-keyshortcuts", "A");
     if (ctl.canQueueAdd()) {
       const qb = row(t("smQueue"), "", async () => rowNote(qb, (await ctl.queueAdd(uri)) ? t("smQueued") : t("smFail"), true), UI.queueAdd);
     }
@@ -3555,7 +3700,7 @@ Probe-FX: ${pfx}`;
         const ok = await ctl.copyLink(uri);
         rowNote(lb, ok ? t("smCopied") : t("smFail"), ok);
       }, UI.link);
-      row(t("smShare"), "", () => { showSide(null); nowPlayingCard(); }, UI.share);
+      row(t("smShare"), "", () => { showSide(null); nowPlayingCard(); }, UI.share).classList.add("m-im-song-share");
     }
     // Podcasts und Hörbücher: Tempo wie Spotifys Tempo-Knopf
     if (ctl.canSpeed(it)) {
@@ -3699,9 +3844,8 @@ Probe-FX: ${pfx}`;
     q.gamebtn.hidden = !party;
     q.menubtn.hidden = false;
     q.menubtn.setAttribute("aria-keyshortcuts", "O");
-    // offenes Menü nach dem Ansichtswechsel neu füllen (Party-Werkzeuge kommen oder gehen)
-    if (side === "menu" && q.menuParty !== party) showSide("menu");
-    el.querySelector(".m-im-share").hidden = el.querySelector(".m-im-help").hidden = party;
+    // offenes Menü nach dem Ansichtswechsel neu füllen („Diese Ansicht“ und die Party-Gruppe hängen an der Ansicht)
+    if (side === "menu" && q.menuMode !== el.dataset.mode) rebuildMenu();
     el.classList.toggle("is-partyui", party);
     if (!party) games.stop();
     q.live.hidden = !(party && cfg.partyLive);
@@ -4001,6 +4145,40 @@ Probe-FX: ${pfx}`;
     // Fokus in die Karte, wenn sie per Tastatur geöffnet wurde (Esc und Tab setzen dort an)
     if (q.live.contains(document.activeElement) || document.activeElement === document.body) focus.focus({ preventScroll: true });
   }
+  /* ---- Hinweis unten in der Mitte, auf Wunsch mit Knöpfen (Rückgängig, „Nur dieser Song“, Anlassen …).
+     Spotifys eigene Meldung kann keine Knöpfe und liegt hinter der Ebene; hier ist immer nur einer zu sehen. */
+  let toastT = 0;
+  function imToast(text, actions = [], ms = 3200) {
+    if (!el) return S.showNotification?.(text, false, ms);
+    el.querySelector(".m-im-toast")?.remove();
+    clearTimeout(toastT);
+    const box = document.createElement("div");
+    box.className = "m-im-toast";
+    box.setAttribute("role", "status");
+    const p = document.createElement("span");
+    p.textContent = text;
+    box.append(p);
+    const done = () => {
+      clearTimeout(toastT);
+      fadeOut(box);
+    };
+    for (const [label, fn] of actions) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.onclick = () => {
+        done();
+        fn();
+      };
+      box.append(b);
+    }
+    el.append(box);
+    // mit Knöpfen etwas länger (man muss lesen und zielen); die Maus darauf hält ihn offen
+    const later = () => (toastT = setTimeout(() => (box.matches(":hover, :focus-within") ? later() : done()), actions.length ? Math.max(ms, 6000) : ms));
+    later();
+    return box;
+  }
+
   /* ---- Show-Momente im Party-Modus: Hände hoch und Blitzlicht-Gewitter im Refrain,
      Konfetti auf Knopfdruck. Die Bühne (venue.js) zeichnet Hände, Blitze und Konfetti; hier wird entschieden, wann. */
   const moments = { hands: 0, storm: 0, confetti: 0, handsUntil: 0, stormUntil: 0, stormDone: false, hypeWas: false };
@@ -4019,8 +4197,12 @@ Probe-FX: ${pfx}`;
     moments.hands = clamp((moments.handsUntil - now) / 500, 0, 1);
     moments.storm = clamp((moments.stormUntil - now) / 600, 0, 1);
   }
-  function confetti() {
-    if (!el || el.dataset.mode !== "party" || cfg.calm) return;
+  // byKey: Taste C – dann sagt ein kurzer Hinweis, warum nichts passiert (nur in der Party, nicht in „Ruhig“)
+  function confetti(byKey) {
+    if (!el || el.dataset.mode !== "party" || cfg.calm) {
+      if (byKey === true && el && isOpen()) imToast(t(cfg.calm ? "hintConfettiCalm" : "hintConfetti"));
+      return;
+    }
     moments.confetti++;
     kick();
   }
@@ -4077,32 +4259,194 @@ Probe-FX: ${pfx}`;
     showSide("menu");
     queueMicrotask(() => (q.sideBody.querySelector('.m-im-perf [aria-pressed="true"]') || q.sideBody.querySelector(".m-im-perf button"))?.focus());
   }
+  // Menü „Mehr“: feste Gruppen in fester Reihenfolge, in jeder Ansicht dieselben – nur „Diese Ansicht“ und
+  // „Party“ hängen an der Ansicht. Dieser Song (öffnet das Song-Menü) → Diese Ansicht → Party (nur in der Party)
+  // → Aussehen & Leistung → Alle Einstellungen. Jede Aktion hat genau einen Ort: Song-Aktionen im Song-Menü,
+  // Ansicht und Leistung hier, Vollbild und Tastenhilfe oben.
+  function rebuildMenu() {
+    const top = q.sideBody.scrollTop;
+    showSide("menu", true);
+    q.sideBody.scrollTop = top;
+  }
+  // Zeile mit Zustand: kleiner Punkt bei „an“, der Zustand als Unterzeile („noch 23 min“, Gerätename, „An“)
+  function stateRow(body, label, sub, on, fn, icon, nav) {
+    const b = sideBtn(body, label, sub, fn, false, icon, nav);
+    b.classList.add("has-state");
+    b.classList.toggle("is-active", !!on);
+    if (!nav && fn) b.setAttribute("aria-pressed", String(!!on));
+    return b;
+  }
+  const onOff = (v) => t(v ? "imOn" : "imOff");
+  // Übersetzen als Linien-Symbol (wie icons.js) – ICON.translate ist gefüllt und bliebe in der Menü-Kachel leer
+  const TR_LINE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 5.5h9M8 3.5v2M5.5 5.5c.6 3 2.6 5.8 6 7.8M10.5 5.5c-.7 3.4-3 6.3-6.5 8.3"/><path d="M12.5 20.5l4-9 4 9M14 17.3h5"/></svg>';
+  function timerText() {
+    const now = ctl.sleepState();
+    return !now ? t("timerOff") : now === "track" ? t("timerTrack") : t("timerLeft").replace("{m}", now);
+  }
   function menuPanel(body) {
-    // 1.27 actions: das Song-Menü steht in jeder Ansicht oben in „Mehr“ – in Party und Uhr fehlt die Knopfreihe unter dem Titel
-    sideBtn(body, t("smOpen"), titleOf(currentItem()), () => { viaMenu = true; showSide("song"); }, false, UI.music, true).classList.add("m-im-tosong");
-    // außerhalb der Party enthält „Mehr“ nur Aussehen & Leistung (die übrigen Knöpfe stehen dort oben)
-    if (el.dataset.mode !== "party") {
-      // 1.27 views: Album-Reise ein/aus (Cover-Ansicht, nur wenn ein Album läuft)
-      if (album.canToggle(el.dataset.mode)) sideBtn(body, album.label, album.albumName, () => { showSide(null); album.toggle(); }, false, UI.album).classList.add("m-im-albtoggle");
-      return perfSection(body);
+    const mode = el.dataset.mode, party = mode === "party";
+    q.menuMode = mode;
+    // 1) Dieser Song: das Song-Menü (Playlist, Warteschlange, Radio, Teilen …) – mit dem Zurück-Pfeil hierher
+    sideHead(body, t("imThisSong"));
+    sideBtn(body, t("smOpen"), titleOf(currentItem()), () => pushSide("song"), false, UI.music, true).classList.add("m-im-tosong");
+    // 2) Diese Ansicht
+    sideHead(body, t("imThisView"), t(MODES.find(([k]) => k === mode)?.[1] || "tabCover"));
+    viewRows(body, mode);
+    // 3) Party: eigene Gruppe, nur in der Party
+    if (party) {
+      sideHead(body, t("imParty"));
+      partyRows(body);
     }
-    const go = (kind) => () => {
-      viaMenu = true;
-      showSide(kind);
-    };
-    const row = (label, icon, fn, nav) => sideBtn(body, label, "", fn, false, icon, nav);
-    row(t("djTitle"), UI.dj, go("dj"), true);
-    if (cfg.partyLive) row(t("pollBtn"), UI.poll, go("poll"), true);
-    if (cfg.partyRecap && recap.songs.length >= 3) row(t("recapBtn"), UI.recap, go("recap"), true);
-    if (!cfg.calm) row(t("confetti"), UI.confetti, () => { confetti(); showSide(null); });
-    if (cfg.partyScreen) row(t("toScreen"), UI.screen, go("screens"), true);
-    if (cfg.canvas && !cfg.calm) row(q.cvbtn.title || "Canvas", UI.film, () => { q.cvbtn.click(); showSide(null); });
-    if (ctl.canAddTo()) row(t("c_addTo"), UI.add, go("playlists"), true);
-    row(t("c_devices"), UI.devices, go("devices"), true);
-    row(t("c_timer"), UI.timer, go("timer"), true);
-    row(el.querySelector(".m-im-share").title || "Share", UI.share, () => { showSide(null); nowPlayingCard(); });
-    row(el.querySelector(".m-im-help").title || "?", UI.keyboard, () => { showSide(null); toggleKeys(); });
+    // 4) Aussehen & Leistung (Presets, Energie, Blitze)
     perfSection(body);
+    // 5) Alle Einstellungen: der Mirage-Dialog über der Bühne, gleich bei der passenden Gruppe
+    const all = sideBtn(body, t("imAllSettings"), t("imAllSettingsSub").replace("{g}", t(party ? "g_party" : "g_immersive")), () => {
+      showSide(null);
+      openSettings(party ? "g_party" : "g_immersive");
+    }, false, UI.gear);
+    all.classList.add("m-im-allsettings");
+  }
+  function viewRows(body, mode) {
+    const lyrView = LYR.has(mode), synced = !!lyr?.synced && /^spotify:(track|local):/.test(lyrUri);
+    // Canvas: ein Schalter für alle Ansichten, die Unterzeile sagt, wie es HIER erscheint
+    if (cfg.canvas && !cfg.calm && CV_MODES.has(mode)) {
+      const on = !!cfg.canvasShow && !!canvasUrl;
+      stateRow(body, t("imCanvasRow"), canvasUrl ? `${onOff(on)} · ${canvasHint(mode)}` : t("canvasNone"), on, () => toggleCanvas(), UI.film).classList.add("m-im-cvrow");
+    }
+    // 1.27 views: Album-Reise ein/aus (Cover-Ansicht, nur wenn ein Album läuft)
+    if (album.canToggle(mode)) sideBtn(body, album.label, album.albumName, () => { showSide(null); album.toggle(); }, false, UI.album).classList.add("m-im-albtoggle");
+    // Uhr: Datum ein/aus (auch ein Klick auf die Uhrzeit)
+    if (mode === "clock") stateRow(body, t("imClockDate"), `${onOff(cfg.clockDate !== false)} · ${t("imClockDateSub")}`, cfg.clockDate !== false, () => { clockView.toggleDate(); rebuildMenu(); }, UI.clock).classList.add("m-im-ckdate");
+    // Liedtext: in der Party fehlt die Leiste unten (nur kurz bei Mausbewegung) – Übersetzung und Fassung auch hier
+    if (mode === "party" && lyr?.lines?.length) {
+      if (canTranslate()) stateRow(body, t("trToggle"), trOn(lyrUri) ? t(typeof cfg.translateSongs?.[lyrUri] === "boolean" ? "trSongOnShort" : "trAllOnShort") : onOff(false), trOn(lyrUri), toggleTranslate, TR_LINE);
+      if (cfg.onlineLyrics && /^spotify:(track|local):/.test(lyrUri)) sideBtn(body, t("lyrPick"), SOURCE_NAME[lyr.source] || "Spotify", () => pushSide("versions"), false, UI.music, true);
+    }
+    // Liedtext früher / später (je Song) – in allen Ansichten mit zeitgenauem Text
+    if (lyrView && synced && canNudge()) nudgeRow(body);
+    // Party und Uhr zeigen die Knopfreihe unter dem Titel nicht: Warteschlange, Lautstärke, Geräte, Timer hier
+    if (mode === "party" || mode === "clock") {
+      sideBtn(body, t("k_queue"), "", () => pushSide("queue"), false, UI.queue, true);
+      volRow(body);
+      if (ctl.canConnect()) stateRow(body, t("c_devices"), ctl.devices().find((d) => d.active)?.name || "", false, () => pushSide("devices"), UI.devices, true);
+      stateRow(body, t("c_timer"), timerText(), !!ctl.sleepState(), () => pushSide("timer"), UI.timer, true);
+    }
+  }
+  function nudgeRow(body) {
+    const v = songOffset(lyrUri);
+    const r = document.createElement("div");
+    r.className = "m-g-cfg m-im-nudgerow";
+    const l = document.createElement("span");
+    l.textContent = t("syRow");
+    const seg = document.createElement("div");
+    seg.className = "m-g-seg-row";
+    seg.setAttribute("role", "group");
+    seg.setAttribute("aria-label", t("syRow"));
+    for (const [text, hint, ms, dis] of [[t("syEarlier"), t("syEarlierHint"), 250], [v ? signed(v / 1000) + " s" : "0 s", t("syReset"), 0, !v], [t("syLater"), t("syLaterHint"), -250]]) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = text;
+      b.title = hint;
+      b.disabled = !!dis;
+      if (!ms) b.setAttribute("aria-pressed", String(!!v));
+      b.onclick = () => nudge(ms);
+      seg.append(b);
+    }
+    r.append(l, seg);
+    body.append(r);
+  }
+  function volRow(body) {
+    const r = document.createElement("label");
+    r.className = "m-g-cfg m-im-volrow";
+    const l = document.createElement("span");
+    l.textContent = t("c_volume");
+    const v = document.createElement("input");
+    v.type = "range";
+    v.min = "0";
+    v.max = "100";
+    v.step = "1";
+    v.className = "m-im-volume";
+    v.value = q.volume.value;
+    v.style.setProperty("--v", v.value + "%");
+    v.setAttribute("aria-label", t("c_volume"));
+    v.oninput = () => {
+      S.Player.setVolume(Number(v.value) / 100);
+      v.style.setProperty("--v", v.value + "%");
+    };
+    r.append(l, v);
+    body.append(r);
+  }
+  // Party-Gruppe: DJ, Abstimmung, Rückblick, Konfetti, anderer Bildschirm, Publikum, erkannter Stil
+  function partyRows(body) {
+    const row = (label, icon, fn, nav, sub) => sideBtn(body, label, sub || "", fn, false, icon, nav);
+    row(t("djTitle"), UI.dj, () => pushSide("dj"), true);
+    if (cfg.partyLive) row(t("pollBtn"), UI.poll, () => pushSide("poll"), true);
+    if (cfg.partyRecap && recap.songs.length >= 3) row(t("recapBtn"), UI.recap, () => pushSide("recap"), true);
+    if (!cfg.calm) row(t("confetti"), UI.confetti, () => { confetti(); showSide(null); });
+    if (cfg.partyScreen) row(t("toScreen"), UI.screen, () => pushSide("screens"), true);
+    stateRow(body, t("imCrowd"), t(cfg.partyCrowd ? "imCrowdOn" : "imCrowdOff"), !!cfg.partyCrowd, () => {
+      cfg.partyCrowd = !cfg.partyCrowd;
+      save();
+      kick();
+      rebuildMenu();
+    }, UI.user).classList.add("m-im-crowdrow");
+    genreRow(body);
+  }
+  /* ---- Party: erkannter Stil und „Für diesen Künstler immer …“ (cfg.genreArtist) */
+  // Liest party.info ({ key, why, conf, family? }); ohne Stil (Ansage, noch nicht erkannt) fehlt die Zeile
+  const familyOf = (key) => party.info?.family || Object.entries(party.FAMILIES || {}).find(([, ks]) => ks.includes(key))?.[0] || "";
+  const hasText = (k) => t(k) !== k;
+  const styleName = (key) => (hasText("party_" + key) ? t("party_" + key) : key);
+  const famName = (f) => (hasText("fam_" + f) ? t("fam_" + f) : f);
+  function genreRow(body) {
+    const info = party.info, key = info?.key;
+    if (!key || info.talk || !party.FAMILIES) return;
+    const fam = familyOf(key), art = ctl.artistUriOf(currentItem());
+    const fixed = !!art && cfg.genreArtist?.[art] === key;
+    const name = fam ? t("imGenreFam").replace("{g}", styleName(key)).replace("{f}", famName(fam)) : styleName(key);
+    const sub = fixed ? t("imGenreFixed") : info.conf > 0 ? t("imGenreSure").replace("{p}", Math.round(info.conf <= 1 ? info.conf * 100 : info.conf)) : "";
+    sideBtn(body, t("imGenre").replace("{g}", name), sub, null, false, UI.music).classList.add("m-im-genre");
+    if (art) sideBtn(body, t("imGenrePick"), fixed ? styleName(key) : t("imGenreAuto"), () => pushSide("genre"), false, UI.gear, true).classList.add("m-im-genrepick");
+  }
+  function genrePanel(body) {
+    const it = currentItem(), art = ctl.artistUriOf(it), cur = cfg.genreArtist?.[art] || "", who = artistOf(it).split(", ")[0] || "";
+    if (!art) return void sideBtn(body, t("smNone"));
+    const note = document.createElement("p");
+    note.className = "m-im-side-note";
+    note.textContent = t("imGenreNote").replace("{a}", who);
+    body.append(note);
+    const pick = (k) => {
+      const all = { ...(cfg.genreArtist || {}) };
+      if (k) all[art] = k;
+      else delete all[art];
+      cfg.genreArtist = all;
+      save();
+      // Party-Plan neu: party.prepare merkt sich den Stil je Song und Künstler-Wahl
+      party.prepare(currentItem()).then(() => {
+        updateKicker();
+        if (side === "menu") rebuildMenu();
+      });
+      imToast(k ? t("imGenreSet").replace("{g}", styleName(k)).replace("{a}", who) : t("imGenreAutoSet"));
+      sideBack();
+    };
+    sideBtn(body, t("imGenreAuto"), t("imGenreAutoSub"), () => pick(""), !cur, UI.music);
+    for (const [f, keys] of Object.entries(party.FAMILIES || {})) {
+      sideHead(body, famName(f));
+      const seg = document.createElement("div");
+      seg.className = "m-g-seg-row is-wrap m-im-genrelist";
+      seg.setAttribute("role", "group");
+      seg.setAttribute("aria-label", famName(f));
+      for (const k of keys) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = styleName(k);
+        b.dataset.style = k;
+        b.setAttribute("aria-pressed", String(cur === k));
+        b.onclick = () => pick(k);
+        seg.append(b);
+      }
+      body.append(seg);
+    }
   }
   // Auswahl in Stufen: eine Zeile mit Knöpfen
   function gameChoice(body, label, key, choices, wrap) {
@@ -4263,11 +4607,7 @@ Probe-FX: ${pfx}`;
   function hostPanel(body) {
     const host = sideBtn(body, t("gHost"), t("gHostHint"), async () => {
       q.hostOpen = !q.hostOpen;
-      if (q.hostOpen && !cfg.partyLive) {
-        cfg.partyLive = true;
-        save();
-        showExtras();
-      }
+      if (q.hostOpen && !cfg.partyLive) liveOn(() => (q.hostOpen = false));
       showSide("games");
     }, q.hostOpen, UI.qr);
     host.classList.add("m-g-hostbtn");
@@ -4287,6 +4627,37 @@ Probe-FX: ${pfx}`;
       img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(info.qr);
       wrap.prepend(img);
     }).catch(() => {});
+  }
+  // Handy-Spiele und die Spielleitung brauchen den Live-Link: Mirage schaltet ihn ein – und sagt es, mit
+  // „Rückgängig“. Nach dem Spiel fragt ein Hinweis, ob er anbleiben soll (er war ja nicht bewusst eingeschaltet).
+  let liveAuto = false, gameWas = false;
+  function liveOn(undo) {
+    cfg.partyLive = true;
+    save();
+    showExtras();
+    liveAuto = true;
+    imToast(t("liveAutoOn"), [[t("imUndo"), () => {
+      undo?.();
+      liveOff();
+    }]], 7000);
+  }
+  function liveOff() {
+    liveAuto = false;
+    cfg.partyLive = false;
+    save();
+    showExtras();
+    if (side === "games") showSide("games");
+  }
+  function liveAfterGame() {
+    const now = !!games.active();
+    if (gameWas && !now && liveAuto && cfg.partyLive) {
+      liveAuto = false;
+      imToast(t("liveKeepAsk"), [[t("liveKeep"), () => {}], [t("liveOff"), () => {
+        liveOff();
+        imToast(t("liveOffDone"));
+      }]], 12000);
+    }
+    gameWas = now;
   }
   let gameCfgOpen = false;
   function gamesPanel(body) {
@@ -4324,9 +4695,7 @@ Probe-FX: ${pfx}`;
       const g = sideBtn(body, t(label), t(hint), async () => {
         // Handy-Spiele brauchen den Live-Link
         if (!WHEELS.has(k) && !cfg.partyLive) {
-          cfg.partyLive = true;
-          save();
-          showExtras();
+          liveOn(() => games.stop());
           await live.prepare();
         }
         games.start(k);
@@ -4826,7 +5195,7 @@ Probe-FX: ${pfx}`;
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
-    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle && !q.shuffle.hidden && q.shuffle.click(), repeat: () => q.repeat && !q.repeat.hidden && q.repeat.click(),
     // 1.27 views: Zustand der Album-Spalte (Tests)
     albumState: () => album.state,
     // 1.27 actions: Taste M (Song-Menü) und A (Zu Playlist hinzufügen); per Tastatur liegt der Fokus gleich auf der ersten Zeile

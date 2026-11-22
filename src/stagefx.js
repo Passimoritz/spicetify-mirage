@@ -365,6 +365,14 @@ function reactPath(kind) {
         : "M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z",
   );
 }
+// Publikum an oder aus („Publikum zeigen“, cfg.partyCrowd) – was dann am unteren Rand steht:
+// mit Menge: Silhouetten, Dunst über ihnen, Handy-Lichter darin, Reaktionen steigen aus der Menge auf;
+// ohne Menge: nichts davon – dafür die flachen Bassbalken (wenn das Genre sie hat) und Reaktionen, die vom
+// unteren Bildrand aufsteigen. fx: die Bühne spielt gerade (keine Ansage, nicht „Ruhig“)
+function crowdLayers({ crowd, fx = true, bottom = false } = {}) {
+  const people = !!crowd && !!fx;
+  return { people, glints: people, bassBars: !crowd && !!bottom, reactY0: people ? 0.93 : 1.01, reactSpread: people ? 0.05 : 0.02 };
+}
 function createReactFx(glowSprite, makeCanvas) {
   let seen = 0;
   const parts = [], glints = [], sprites = new Map(), paths = {};
@@ -399,6 +407,8 @@ function createReactFx(glowSprite, makeCanvas) {
   }
   function spawn(w, st, soft) {
     const vw = st.vw, vh = st.vh, dpr = st.dpr || 1;
+    // ohne Publikum steigen die Zeichen vom unteren Bildrand auf, und in der (fehlenden) Menge blinkt nichts
+    const lay = crowdLayers({ crowd: st.crowd !== false });
     // Größe der Welle: wächst mit der Zahl der Taps, aber nur logarithmisch (30 Taps ≈ 6, nicht 30)
     const s = clamp(1 + Math.log2(Math.max(1, w.n)), 1, 6);
     const n = Math.round(clamp(3 + 3.6 * s, 4, 24) * (soft ? 0.35 : 1) * ((st.quality ?? 2) < 1 ? 0.6 : 1));
@@ -418,14 +428,14 @@ function createReactFx(glowSprite, makeCanvas) {
       const dx = (Math.random() * 2 - 1) * spread;
       parts.push({
         // nie in die Mitte (Titel und Künstler), nie über den Rand
-        kind, x: clamp(x0 + dx, vw * 0.03, vw * 0.97), y: vh * (0.93 + Math.random() * 0.05), vy: -vh * (0.06 + Math.random() * 0.05) * (soft ? 0.55 : 1),
+        kind, x: clamp(x0 + dx, vw * 0.03, vw * 0.97), y: vh * (lay.reactY0 + Math.random() * lay.reactSpread), vy: -vh * (0.06 + Math.random() * 0.05) * (soft ? 0.55 : 1),
         // die Welle läuft von der Mitte nach außen
         age: -(Math.abs(dx) / Math.max(1, spread)) * (0.15 + 0.06 * s), life: 2.2 + Math.random() * 0.8, ph: Math.random() * 6.3,
         r: (12 + Math.random() * 7 + s * 1.4) * scale, c: i % 3,
       });
     }
     // Lichter in der Menge flackern auf (ab einer kleinen Welle)
-    if (!soft && s >= 2)
+    if (!soft && s >= 2 && lay.glints)
       for (let i = 0; i < 2 + Math.round(s * 1.5) && glints.length < 40; i++)
         glints.push({ x: vw * (0.5 + (both ? (i % 2 ? 1 : -1) : side) * 0.32) + (Math.random() * 2 - 1) * spread * 1.2, y: vh * (0.8 + Math.random() * 0.09), age: -Math.random() * 0.3, life: 1.1 + Math.random() * 0.5, r: (26 + Math.random() * 24) * scale, c: i % 3, ph: Math.random() * 6.3 });
   }
@@ -479,4 +489,4 @@ function createReactFx(glowSprite, makeCanvas) {
   return { draw };
 }
 
-export { createStageFx, createReactFx, REACT_KINDS, FI };
+export { createStageFx, createReactFx, crowdLayers, REACT_KINDS, FI };

@@ -2619,6 +2619,85 @@ async function songMenu() {
 }
 CASES.push(["song-menu", songMenu]);
 
+/* ---- Menü „Mehr“ in festen Gruppen, Seiten-Stapel mit Zurück, Tastenhilfe aus der Tastentabelle, Hinweise */
+async function moreMenu() {
+  const SIDE = `${IM} .m-im-side`;
+  const st = () => T.js(`(() => {
+    const s = document.querySelector("${SIDE}");
+    const vis = (x) => x.getClientRects().length;
+    return { open: !s.hidden, kind: s.dataset.kind, back: !s.querySelector(".m-im-side-back").hidden, backTitle: s.querySelector(".m-im-side-back").title,
+      heads: [...s.querySelectorAll(".m-im-side-body > .m-im-side-sec")].filter(vis).map((h) => h.firstChild.textContent),
+      rows: [...s.querySelectorAll(".m-im-side-body .m-im-side-item")].filter(vis).map((b) => b.querySelector("b")?.textContent),
+      last: [...s.querySelectorAll(".m-im-side-body .m-im-side-item")].filter(vis).at(-1)?.querySelector("b")?.textContent || "" };
+  })()`);
+  const press = (code, extra = {}) => T.js(`__sp.press(${JSON.stringify(code)}, ${JSON.stringify(extra)}); 1`);
+  const shot = async (name) => SHOTS && (fs.mkdirSync(SHOTS, { recursive: true }), await wait(450), await T.shot(path.join(SHOTS, name + ".png")));
+  const openMore = async () => {
+    await big.hover();
+    await T.click(`${IM} .m-im-menubtn`);
+    return until(async () => { const x = await st(); return x.open && x.kind === "menu" && x; }, 2000, "mehr: Menü offen");
+  };
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await press("KeyM", { ctrlKey: true, shiftKey: true });
+  // 1) Party: feste Reihenfolge Dieser Song → Diese Ansicht → Party → Aussehen & Leistung → Alle Einstellungen
+  await toMode("party");
+  let s = await openMore();
+  const order = ["Dieser Song", "Diese Ansicht", "Party"];
+  ok(order.every((h, i) => s.heads[i] === h) && s.heads.length >= 4, "mehr: Gruppen in fester Reihenfolge: " + s.heads.join(" / "));
+  ok(s.last === "Alle Einstellungen …", "mehr: zuletzt „Alle Einstellungen“: " + s.last);
+  for (const want of ["Song-Menü", "Lautstärke (↑ ↓)", "Schlaf-Timer", "Publikum zeigen"]) ok(s.rows.includes(want) || s.rows.some((r) => r?.startsWith(want)) || (await T.js(`document.querySelector("${SIDE}").innerText.includes(${JSON.stringify(want)})`)), `mehr: Party-Menü ohne „${want}“: ${s.rows.join(" / ")}`);
+  ok(!s.rows.some((r) => r === "Als Bild teilen" || r === "Zu Playlist hinzufügen"), "mehr: Song-Aktionen nur im Song-Menü: " + s.rows.join(" / "));
+  await shot("more-party");
+  // 2) Stapel: Mehr → Song-Menü → Zu Playlist hinzufügen → Zurück → Zurück
+  await T.click(`${SIDE} .m-im-tosong`);
+  s = await until(async () => { const x = await st(); return x.kind === "song" && x; }, 2000, "mehr: Song-Menü");
+  ok(s.back && s.backTitle === "Mehr", "mehr: Zurück führt nach „Mehr“: " + s.backTitle);
+  await T.click(`${SIDE} .m-im-side-item`, { text: "Zu Playlist hinzufügen" });
+  s = await until(async () => { const x = await st(); return x.kind === "playlists" && x; }, 2000, "mehr: Playlists");
+  ok(s.back && s.backTitle === "Dieser Song", "mehr: aus dem Song-Menü zurück ins Song-Menü: " + s.backTitle);
+  await T.click(`${SIDE} .m-im-side-back`);
+  s = await until(async () => { const x = await st(); return x.kind === "song" && x; }, 2000, "mehr: zurück im Song-Menü");
+  ok(s.back, "mehr: der Zurück-Pfeil bleibt (zurück nach „Mehr“)");
+  await T.click(`${SIDE} .m-im-side-back`);
+  s = await until(async () => { const x = await st(); return x.kind === "menu" && x; }, 2000, "mehr: zurück in „Mehr“");
+  ok(!s.back, "mehr: ganz oben kein Zurück-Pfeil");
+  // 3) Publikum: Schalter im Menü, gespeichert
+  const crowd0 = (await storedSettings()).partyCrowd !== false;
+  await T.click(`${SIDE} .m-im-crowdrow`);
+  await until(async () => (await storedSettings()).partyCrowd === !crowd0, 2000, "mehr: Publikum umgeschaltet");
+  await T.click(`${SIDE} .m-im-crowdrow`);
+  await until(async () => (await storedSettings()).partyCrowd === crowd0, 2000, "mehr: Publikum zurück");
+  // 4) Alle Einstellungen: der Dialog geht bei „Party-Modus“ auf
+  await T.click(`${SIDE} .m-im-allsettings`);
+  const grp = await until(() => T.js(`(() => { const d = [...document.querySelectorAll(".mirage-settings details.m-group")].find((x) => x.open); return d && d.querySelector("summary").textContent; })()`), 2000, "mehr: Einstellungen offen");
+  ok(grp === "Party-Modus", "mehr: Einstellungen bei der Party-Gruppe: " + grp);
+  ok(await T.js(`document.querySelector("${SIDE}").hidden`), "mehr: das Menü schließt dafür");
+  await T.js(`document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); 1`);
+  // 5) Cover: keine Party-Gruppe, Taste C sagt, warum nichts passiert
+  await toMode("cover");
+  s = await openMore();
+  ok(!s.heads.includes("Party") && s.heads[0] === "Dieser Song" && s.heads[1] === "Diese Ansicht", "mehr: Cover ohne Party-Gruppe: " + s.heads.join(" / "));
+  await shot("more-cover");
+  await press("Escape");
+  await until(async () => !(await st()).open, 2000, "mehr: Esc schließt");
+  await press("KeyC");
+  const toast = await until(() => T.js(`document.querySelector("${IM} .m-im-toast:not(.is-out)")?.textContent || ""`), 2000, "mehr: Hinweis zu C");
+  ok(/Party/.test(toast), "mehr: C außerhalb der Party erklärt sich: " + toast);
+  // 6) Uhr: Datum, Geräte/Timer im Menü (die Knopfreihe ist dort unsichtbar)
+  await toMode("clock");
+  s = await openMore();
+  ok(s.rows.includes("Datum") && s.rows.includes("Schlaf-Timer"), "mehr: Uhr mit Datum und Timer: " + s.rows.join(" / "));
+  await shot("more-clock");
+  await press("Escape");
+  // 7) Tastenhilfe: aus der gemeinsamen Tabelle – mit C, F11, Rechtsklick, Strg+Umschalt+M
+  await press("Slash", { key: "?" });
+  const keys = await until(() => T.js(`(() => { const k = document.querySelector("${IM} .m-im-keys"); return !k.hidden && [...k.querySelectorAll("kbd")].map((x) => x.textContent); })()`), 2000, "mehr: Tastenhilfe");
+  for (const k of ["C", "F / F11", "Rechtsklick", "Ctrl ⇧ M", "O"]) ok(keys.includes(k), `mehr: Tastenhilfe ohne „${k}“: ${keys.join(" ")}`);
+  await shot("more-keys");
+  await press("Escape");
+  await toMode("party");
+}
+CASES.push(["more-menu", moreMenu]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {
