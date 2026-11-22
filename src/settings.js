@@ -344,6 +344,18 @@ function calmSwitch() {
   row.append(txt, cb);
   return row;
 }
+// Verspielter Liedtext-Stil: Dezent · Verspielt · Wild („Ruhig“, „Keine Blitze“ und weniger Bewegung stellen trotzdem still)
+function playLevel() {
+  const opts = ["subtle", "playful", "wild"].map((k) => [k, t("lyrPlayLevel_" + k)]);
+  const s = seg(opts, ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful", (k) => {
+    cfg.lyrPlayLevel = k;
+    save();
+    immersive.reloadLyrics();
+  });
+  s.dataset.key = "lyrPlayLevel";
+  s.setAttribute("aria-label", t("lyrPlayLevel"));
+  return [head(t("lyrPlayLevel"), t("lyrPlayLevelHint")), s];
+}
 // Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
 const rangeZero = (key, max, zero) => range(key, 0, max, 1, "", null, (v) => v || t(zero));
 // Regeln für Songwünsche: nur sichtbar, solange Wünsche an sind (Schalter zeichnet die Einstellungen neu)
@@ -828,6 +840,8 @@ function render(box) {
       toggle("lyrVoices", () => immersive.styleLyrics()),
       // i-playful: verspielter Stil (baut den Text neu auf – die Wörter brauchen dann eigene Elemente)
       toggle("lyrPlayful", () => immersive.reloadLyrics()),
+      // Stärke des verspielten Stils – nur sichtbar, solange er an ist (der Schalter zeichnet die Einstellungen neu)
+      ...(cfg.lyrPlayful ? playLevel() : []),
       range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("romanize", () => immersive.reloadLyrics())

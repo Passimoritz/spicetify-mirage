@@ -71,6 +71,8 @@ const DEFAULTS = {
   lyrVoices: true,
   // Verspielter Liedtext-Stil: Betonung, gehaltene Töne, Takt, Wortbilder (lyricstyle.js) – nur auf Wunsch
   lyrPlayful: false,
+  // Stärke des verspielten Stils: "subtle" (nur Größe, Stärke, Farbe, wenig Bewegung) · "playful" · "wild" (alles)
+  lyrPlayLevel: "playful",
   font: "outfit",
   lyricPicks: {},
   // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)

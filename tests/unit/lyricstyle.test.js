@@ -2,7 +2,9 @@
 // Verspielter Liedtext-Stil: Betonung aus Wortzeiten und Lautheit (sonst Faustregeln), gehaltene Töne, gerufene
 // Zeilen, Hintergrundgesang, Satz der Teile, Takt, Inszenierungen je Zeile (Vielfalt, Wiederholung), Wortbilder über
 // den Wortsinn (Verneinung, Deutsch, derbe Wörter), „Ruhig“ ohne Bewegung – und ein Wächter über das Stylesheet:
-// in den @keyframes des Stils werden nur transform/opacity bewegt (kein text-shadow, keine Maße).
+// in den @keyframes des Stils werden nur transform/opacity bewegt (kein text-shadow, keine Maße), höchstens drei
+// kräftige Helligkeitswechsel je Sekunde. Dazu: Landung genau auf dem Einsatz (Spiel-Uhr), Abwechslung über zehn Songs,
+// sichere Wartezustände (nie abgeschnitten), Schriften (Fenster, Schriftsysteme, lange Zeilen), Farben ≥ 4,5 : 1, Stufen, ♪.
 // VERBOSE=1 zeigt je Beispiel-Song Inszenierungen und Wortbilder.
 const assert = require("assert");
 const fs = require("fs");
@@ -11,8 +13,11 @@ const { load } = require("./load.js");
 const {
   wordLoud, emphasis, heldNotes, isShout, sectionKind, sectionStyle, adlibPose, isAdlib, voiceSide,
   onBeat, beatPhase, cueOf, cueMatcher, planPlayful, paintPlayful, pickTreatments, syllables, rhymes,
-  motionLoad, TREATMENTS,
+  motionLoad, TREATMENTS, sungAt, PRE_MS, barPhase,
 } = load("lyricstyle.js");
+const { RECIPES, songDeck, allowed, wordPose, letterPoses, leadOf, LEAD_MAX, RAP_SET, BALLAD_SET, BRIDGE_SET, ACCENTS, FX_VARIANTS, FX_COUNT, fxVariant } = load("lyricdeck.js");
+const { PFONTS, PFONTS_URL, scriptsOf, covers, windowFonts, LONG_WORDS, LONG_CHARS } = load("lyricfont.js");
+const { meaningColors, lyricGrounds, contrast, KINDS, CUE_KIND } = load("lyriccolor.js");
 const { LEX, NEG } = load("lexicon.js");
 const { shaped } = require("./songshapes.js");
 const { SONGS, build } = require("./fixtures/playful-songs.js");
@@ -281,14 +286,14 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   // Zeilen ohne Wort-Elemente: nur Zeilen-Klassen, keine Inszenierung, die Wörter braucht
   const noWords = planPlayful(lines, [], null, { match: () => [] });
   assert.ok(noWords.every((p) => p.words.length === 0 && p.cls.length > 0));
-  assert.ok(noWords.every((p) => ["", "plain", "caps", "punch", "tilt", "slam"].includes(p.t)), noWords.map((p) => p.t).join());
+  assert.ok(noWords.every((p) => ["", "plain", "caps", "punch", "tilt"].includes(p.t)), noWords.map((p) => p.t).join());
   // Duett: Seite je Stimme
   const duet = planPlayful([{ t: 0, text: "hello", who: "1" }, { t: 2000, text: "hi there", who: "2" }], [], null, { match: () => [] });
   assert.ok(duet[0].cls.includes("is-p-left") && duet[1].cls.includes("is-p-right"));
   // Auftritt nach dem Drop: die erste gesungene Zeile danach – und sie prallt zusammen
   const dropped = planPlayful(lines, words, null, { parts: [{ t0: 0, kind: "verse" }, { t0: 33.5, kind: "drop" }], drops: [33.5], match: () => [] });
   assert.ok(dropped[1].cls.includes("is-p-drop") && !dropped[0].cls.includes("is-p-drop"));
-  assert.equal(dropped[1].t, "collide", "Drop-Zeile: Wörter prallen zusammen");
+  assert.ok(RECIPES[dropped[1].t].e >= 2, "Drop-Zeile: kräftiger Auftritt, nicht " + dropped[1].t);
 }
 
 /* ---- Inszenierungen: Vielfalt in einem synthetischen 40-Zeilen-Song, Wiederholung variiert */
@@ -323,8 +328,8 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
     const count = {};
     for (const p of plan) count[p.t] = (count[p.t] || 0) + 1;
     const top = Math.max(...Object.values(count));
-    assert.ok(top / plan.length <= 0.35, "eine Inszenierung zu oft: " + JSON.stringify(count));
-    assert.ok(Object.keys(count).length >= 7, "zu wenig Abwechslung: " + JSON.stringify(count));
+    assert.ok(top / plan.length <= 0.2, "eine Inszenierung zu oft (über 20 %): " + JSON.stringify(count));
+    assert.ok(Object.keys(count).length >= 14, "zu wenig Abwechslung: " + JSON.stringify(count));
     // keine zwei gleichen hintereinander
     for (let i = 1; i < plan.length; i++) assert.notEqual(plan[i].t, plan[i - 1].t, `Zeile ${i}: zweimal ${plan[i].t}`);
     // jede Refrain-Zeile: über ihre vier Wiederholungen nicht immer dieselbe Inszenierung
@@ -334,20 +339,20 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
     }
     // die erste Refrain-Zeile trifft hart (Knall, Aufprall, Stoß oder großes Schlüsselwort)
     const firstChorus = lines.findIndex((l) => l.text === chorus[0]);
-    assert.ok(["slam", "collide", "punch", "key", "drop", "caps"].includes(plan[firstChorus].t), "erste Refrain-Zeile: " + plan[firstChorus].t);
-    // Bridge steht schräg
-    assert.ok(plan.slice(16, 20).some((p) => p.t === "tilt"), "Bridge: " + plan.slice(16, 20).map((p) => p.t));
+    assert.ok(RECIPES[plan[firstChorus].t].e >= 2, "erste Refrain-Zeile: " + plan[firstChorus].t);
+    // Bridge: schräg, schwingend, klappend – aus dem Bridge-Satz des Decks
+    assert.ok(plan.slice(16, 20).some((p) => BRIDGE_SET.has(p.t) || plan.deck.bridge.includes(p.t)), "Bridge: " + plan.slice(16, 20).map((p) => p.t));
   }
   // schneller Rap tippt, eine langsame Ballade glimmt
   const rap = build("rap"), bal = build("ballad");
   const rp = planPlayful(rap.lines, rap.words, null, { lexicon: LEX, neg: NEG, parts: rap.parts });
   const bp = planPlayful(bal.lines, bal.words, null, { lexicon: LEX, neg: NEG, parts: bal.parts });
-  assert.ok(rp.filter((p) => p.t === "type").length >= 4, "Rap ohne Tipp-Zeilen");
-  assert.ok(bp.filter((p) => p.t === "glow").length >= 2, "Ballade ohne Glimm-Zeilen");
-  assert.ok(!bp.some((p) => p.t === "type"), "Ballade tippt nicht");
+  assert.ok(rp.filter((p) => RAP_SET.has(p.t)).length >= 4, "Rap ohne Tipp-/Rap-Zeilen: " + rp.map((p) => p.t));
+  assert.ok(bp.filter((p) => BALLAD_SET.has(p.t)).length >= 2, "Ballade ohne ruhige Zeilen: " + bp.map((p) => p.t));
+  assert.ok(bp.filter((p) => p.t && RECIPES[p.t].e >= 3).length <= 2, "Ballade knallt höchstens zum Refrain-Beginn: " + bp.map((p) => p.t));
   // pickTreatments ist fest (gleiche Eingabe, gleiche Wahl)
   const f = { kind: "verse", n: 5, rate: 3, energy: 0, mood: 0, words: true, key: "x", keyStrength: 0.6 };
-  assert.deepEqual(pickTreatments([f, { ...f, key: "y" }]), pickTreatments([f, { ...f, key: "y" }]));
+  assert.deepEqual(pickTreatments([f, { ...f, key: "y" }], songDeck("a")), pickTreatments([f, { ...f, key: "y" }], songDeck("a")));
 }
 
 /* ---- Beispiel-Songs: wie viele Wortbilder, wie viele Inszenierungen, Last je Zeile */
@@ -469,7 +474,35 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   for (const fx of ["flame", "drip", "shiver", "beat", "float", "fall", "burst", "spin", "glint", "dim", "shine", "shake", "hush", "bounce", "halt", "tick", "sultry"]) {
     assert.ok(effects.has(fx), "Wortbild ohne CSS: " + fx);
   }
-  for (const t of TREATMENTS.filter((x) => x !== "plain")) assert.ok(block.includes(".is-t-" + t), "Inszenierung ohne CSS: " + t);
+  // Auftritte laufen über die eine Überblendung mit --pl (Vorlauf = Landedauer), Akzente beginnen mit --pl Verzögerung
+  assert.ok(/transition:\s*translate calc\(var\(--pl, 160ms\) - var\(--ld, 0ms\)\)/.test(block), "Auftritt nicht über --pl");
+  assert.ok(/--pe: var\(--pac, none\) var\(--pad, 400ms\) ease-out var\(--pl, 0ms\);/.test(block), "Akzent beginnt nicht auf dem Einsatz");
+  // jede Bewegung, auf die die Daten zeigen, gibt es als @keyframes
+  for (const a of Object.keys(ACCENTS)) assert.ok(names.has("m-a-" + a), "Akzent ohne Keyframes: " + a);
+  for (const [cue, list] of Object.entries(FX_VARIANTS)) {
+    assert.ok(effects.has(cue), "Wortbild ohne CSS: " + cue);
+    for (const v of list) if (v.n) assert.ok(names.has(v.n), `Spielart von ${cue}: Schleife ${v.n} fehlt`);
+  }
+  for (const n of ["m-l-tide", "m-l-pend", "m-t-punch", "m-p-note", "m-q-pt", "m-p-caret"]) assert.ok(names.has(n), n);
+  // Helligkeit: kräftige Wechsel (Deckkraft-Sprung ≥ 0,4) nur in bekannten Bewegungen, und die laufen langsam genug
+  // für höchstens drei je Sekunde (m-c-glow: Durchgang ≥ 1,4 s; Schreibmarke 1,1 s – je zwei Wechsel)
+  const strong = [];
+  for (const fr of frames) {
+    const ops = fr.kids.map((k) => decls(k.body).find(([p]) => p === "opacity")).filter(Boolean).map(([, v]) => Number(v)).filter((v) => !isNaN(v));
+    let ch = 0;
+    for (let k = 1; k < ops.length; k++) if (Math.abs(ops[k] - ops[k - 1]) >= 0.4) ch++;
+    if (ch) strong.push([fr.sel.replace("@keyframes", "").trim(), ch]);
+  }
+  const SLOW = { "m-c-glow": 1.4, "m-p-caret": 1.1, "m-p-drop": 1.5, "m-q-pt": 0.9, "m-a-echo": 0.6, "m-p-drop-in": 0.18 };
+  for (const [n, ch] of strong) {
+    assert.ok(n in SLOW, "kräftiger Helligkeitswechsel in " + n);
+    // Teilchen, Tropfen, Echo und der Drop-Auftritt sind kleine, einmalige Ein-/Ausblendungen – kein Blinken der Schrift
+    if (["m-c-glow", "m-p-caret"].includes(n)) assert.ok((ch * 2) / SLOW[n] <= 3, `${n}: ${ch} Wechsel je ${SLOW[n]} s`);
+  }
+  assert.ok(/animation: m-c-glow max\(var\(--pcd, 1s\), 1\.4s\)/.test(block), "Schein ohne Mindestdauer");
+  assert.ok(/animation: m-p-caret 1\.1s/.test(block), "Schreibmarke zu schnell");
+  // ♪ wippt nur im Bewegungs-Block (Ruhig/Keine Blitze/weniger Bewegung: still)
+  assert.ok(media[0].kids.some((r) => /\.is-p-note\.is-active/.test(r.sel) && /m-p-note/.test(r.body)), "♪ wippt nicht");
 }
 
 /* ---- An die Zeilen setzen: Klassen, Variablen, Buchstaben – und alles wieder weg */
@@ -524,6 +557,262 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   planPlayful(lines, words, d, { lexicon: LEX, neg: NEG });
   const ms = performance.now() - t0;
   assert.ok(ms < 120, "Planung zu langsam: " + ms.toFixed(1) + " ms");
+}
+
+/* ---- Takt der Auftritte: mit einer Spiel-Uhr – jedes Wort ist genau auf seinem Einsatz gelandet (±40 ms) */
+// Landung = Auslösen (.is-sung, sungAt) + Überblendung (Dauer --pl; Buchstaben: Staffelung --ld + verkürzte Dauer)
+{
+  const landing = (w, pw) => {
+    let T = null;
+    for (let pos = w.a - 400; pos <= w.a + 400; pos++) if (sungAt({ a: w.a, lead: pw.lead }, pos)) {
+      T = pos;
+      break;
+    }
+    const pl = parseFloat(pw.vars["--pl"] || "0");
+    // Buchstaben: der letzte landet nach ld + (pl − ld) = pl
+    const dur = Array.isArray(pw.chars) ? Math.max(...pw.chars.map((c) => c.ld + (pl - c.ld))) : pl;
+    return T + dur;
+  };
+  let n = 0;
+  const seenT = new Set();
+  for (const level of ["subtle", "playful", "wild"]) {
+    for (const name of Object.keys(SONGS)) {
+      for (const seed of ["a", "b", "c", "d"]) {
+        const s = build(name);
+        const plan = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, level, seed: name + seed });
+        plan.forEach((p, i) => p.words.forEach((pw, k) => {
+          const w = s.words[i][k];
+          assert.ok(pw.lead <= LEAD_MAX, `${p.t}: Vorlauf ${pw.lead} ms`);
+          assert.equal(parseFloat(pw.vars["--pl"] || "0"), pw.lead, "Vorlauf = Landedauer");
+          const land = landing(w, pw);
+          assert.ok(Math.abs(land - w.a) <= 40, `${level} ${p.t} „${w.text}“: gelandet ${land - w.a} ms neben dem Einsatz`);
+          if (Array.isArray(pw.chars)) for (const c of pw.chars) assert.ok(c.ld <= pw.lead / 2, "Staffelung frisst die Landung");
+          seenT.add(p.t);
+          n++;
+        }));
+      }
+    }
+  }
+  // dazu jedes Rezept einzeln (auch die, die in den Beispiel-Songs nicht vorkamen)
+  for (const t of TREATMENTS) {
+    const lead = leadOf(t);
+    assert.ok(lead > 0 && lead <= LEAD_MAX, `${t}: Vorlauf ${lead}`);
+    if (RECIPES[t].L) for (const c of letterPoses(t, "fire", { k: 0, n: 2, dir: 1, amp: 1, seed: "x", lead })) assert.ok(c.ld + (lead - c.ld) === lead && c.ld <= lead / 2, t);
+  }
+  // Wortbilder beginnen erst nach der Landung (CSS: Verzögerung --pl + 60 ms), Akzente auf dem Einsatz (--pl)
+  const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
+  assert.ok(/--pq: var\(--pcn, none\) var\(--pcd, 1s\) ease-in-out calc\(var\(--pl, 0ms\) \+ 60ms\)/.test(css), "Wortbild vor der Landung");
+  // ohne Bewegung: kein Vorlauf (das Wort gilt auf dem Einsatz als gesungen)
+  const still = planPlayful(build("party").lines, build("party").words, null, { lexicon: LEX, neg: NEG, still: true });
+  assert.ok(still.every((p) => p.words.every((w) => w.lead === 0)));
+  // die nächste Zeile nimmt rechtzeitig ihre Wartestellung ein (Vorlauf der Zeile > längster Wort-Vorlauf + Überblendung)
+  assert.ok(PRE_MS >= 2 * LEAD_MAX + 100);
+  if (process.env.VERBOSE) console.log(`Takt: ${n} Wörter, ${seenT.size} Rezepte, alle auf dem Einsatz gelandet`);
+}
+
+/* ---- Abwechslung: zehn verschiedene Songs – viele Rezept-Spielarten, jedes Deck anders, keins über 20 % im Song */
+{
+  const songs = [];
+  const VERSE = ["I walk alone along the river side", "Counting all the lights that pass me by", "Every word you said is in my head", "Shadows on the wall beside my bed",
+    "Running through the city in the rain", "Calling out your name and back again", "Pictures on the floor of better days", "Nothing ever stays the way it stays"];
+  const CHORUS = ["Turn it up and let it go", "We are burning, burning slow", "Hold on tight and never stop", "Take me higher to the top"];
+  for (let s = 0; s < 10; s++) {
+    const lines = [], words = [], parts = [];
+    let t = 2000;
+    const sec = (kind, ls) => {
+      parts.push({ t0: t / 1000 - 0.2, kind });
+      for (const text of ls) {
+        lines.push({ t, text });
+        words.push(WS(text, t, 240 + (s % 3) * 30));
+        t += 3000;
+      }
+      t += 1500;
+    };
+    const v = VERSE.map((x, k) => VERSE[(k + s) % VERSE.length]);
+    sec("intro", ["Oh oh oh", "Here we go"]);
+    sec("verse", v.slice(0, 4));
+    sec("pre", ["Can you feel it coming now", "Every heartbeat, every vow"]);
+    sec("chorus", CHORUS);
+    sec("verse", v.slice(4));
+    sec("chorus", CHORUS);
+    sec("bridge", ["Slowly fading into blue", "Everything I knew was you", "Silence when the music ends"]);
+    sec("drop", ["Jump!", "Boom boom boom"]);
+    sec("chorus", CHORUS);
+    sec("outro", ["Let it go", "Let it go"]);
+    songs.push({ lines, words, parts, uri: "spotify:track:" + (1000 + s * 7919).toString(36) });
+  }
+  const combos = new Set(), recipes = new Set(), decks = new Set();
+  for (const level of ["playful", "wild"]) {
+    for (const sg of songs) {
+      const plan = planPlayful(sg.lines, sg.words, null, { lexicon: LEX, neg: NEG, parts: sg.parts, level, seed: sg.uri });
+      decks.add(level + plan.deck.sig);
+      const count = {};
+      for (const p of plan) {
+        if (!p.t) continue;
+        combos.add(p.v);
+        recipes.add(p.t);
+        count[p.t] = (count[p.t] || 0) + 1;
+        if (level === "playful") assert.ok(!RECIPES[p.t].wild, "„Verspielt“ zeigt ein wildes Rezept: " + p.t);
+      }
+      const n = plan.filter((p) => p.t).length;
+      const top = Math.max(...Object.values(count));
+      assert.ok(top / n <= 0.2, `${sg.uri}: ein Rezept in ${top} von ${n} Zeilen`);
+    }
+  }
+  assert.equal(decks.size, songs.length * 2, "zwei Songs mit gleichem Deck");
+  assert.ok(TREATMENTS.length >= 50, "Rezepte: " + TREATMENTS.length);
+  assert.ok(recipes.size >= 45, "nur " + recipes.size + " Rezepte über zehn Songs");
+  assert.ok(combos.size >= 250, "nur " + combos.size + " Rezept-Spielarten über zehn Songs");
+  assert.ok(FX_COUNT >= 80, "Wortbild-Spielarten: " + FX_COUNT);
+  // dasselbe Wortbild sieht in verschiedenen Songs verschieden aus
+  const looks = new Set(songs.map((sg) => {
+    const d = songDeck(sg.uri);
+    return FX_VARIANTS.flame.indexOf(fxVariant("flame", "fire", d.fx));
+  }));
+  assert.ok(looks.size >= 2, "Feuer sieht in jedem Song gleich aus");
+  if (process.env.VERBOSE) console.log(`Abwechslung: ${TREATMENTS.length} Rezepte, ${recipes.size} davon in 10 Songs, ${combos.size} Spielarten, ${FX_COUNT} Wortbild-Spielarten`);
+  console.log(`  Abwechslung: ${recipes.size}/${TREATMENTS.length} Rezepte und ${combos.size} Rezept-Spielarten in 10 Songs (Verspielt + Wild), ${FX_COUNT} Wortbild-Spielarten`);
+}
+
+/* ---- Nie abgeschnitten: Wartezustände bleiben in sicheren Grenzen (lange Wörter drehen und wachsen weniger) */
+{
+  for (const t of TREATMENTS) {
+    for (const len of [1, 3, 6, 10, 14]) for (const amp of [0.55, 1, 1.5]) for (const dir of [-1, 1]) for (let k = 0; k < 6; k++) {
+      const p = wordPose(t, { k, n: 6, dir, amp, len, key: k === 2, seed: "s" });
+      assert.ok(Math.abs(p.x || 0) <= 0.6 && Math.abs(p.y || 0) <= 0.45, `${t}: Versatz ${p.x}/${p.y}`);
+      const sc = Array.isArray(p.s) ? Math.max(...p.s) : p.s ?? 1;
+      assert.ok(sc <= Math.max(1, Math.min(2.2, 1 + 2.5 / len)) + 1e-9, `${t}: wächst auf ${sc} bei ${len} Zeichen`);
+      // sichtbar gedreht (deckend und nicht winzig): ragt höchstens ~0,45 em über die Zeile
+      const visible = (p.o ?? 1) > 0 && !(sc <= 0.5);
+      if (visible && p.r) assert.ok(Math.sin((Math.min(90, Math.abs(p.r)) * Math.PI) / 180) * 0.3 * len <= 0.46 || Math.abs(p.r) <= 8, `${t}: ${p.r}° bei ${len} Zeichen`);
+    }
+  }
+}
+
+/* ---- Schriften: Pinsel nie auf langen Zeilen, andere Schriften → normale Schrift, höchstens zwei je Fenster */
+{
+  assert.ok(PFONTS_URL.startsWith("https://fonts.googleapis.com/css2?") && PFONTS_URL.endsWith("&display=swap"));
+  for (const f of ["Oswald", "Fredoka", "Playfair+Display", "JetBrains+Mono", "Permanent+Marker", "Unbounded"]) assert.ok(PFONTS_URL.includes("family=" + f), f);
+  assert.deepEqual([...scriptsOf("Hello Привет")].sort(), ["cyrillic", "latin"]);
+  assert.ok(covers("serif", "Привет мир") && !covers("marker", "Привет") && !covers("round", "Привет"));
+  assert.ok(covers("marker", "Fire") && !covers("marker", "Łódź"), "Pinsel kann nur Latin-1");
+  for (const r of Object.keys(PFONTS)) for (const tx of ["我爱你", "أحبك", "אני אוהב", "मैं प्यार", "ฉันรัก", "사랑해"]) assert.ok(!covers(r, tx), `${r} für ${tx}`);
+  // ganze Songs: Fenster-Regel, lange Zeilen, Schriften der Zeile
+  const LANGS = {
+    ru: ["Я горю в огне любви", "Дождь стучит в моё окно", "Сердце бьётся только для тебя", "ПРЫГАЙ!", "Мы летим высоко", "Холодно без тебя"],
+    ja: ["夜空に光る星", "雨が降っている", "心が燃えている", "飛べ！", "愛してる", "君と踊りたい"],
+    ar: ["قلبي يحترق بالنار", "المطر يتساقط", "أحبك كثيرا", "ارقص معي", "النجوم في السماء", "لا تتركني"],
+  };
+  let fontLines = 0;
+  for (const level of ["playful", "wild"]) {
+    for (const [name, mk] of [...Object.keys(SONGS).map((n) => [n, () => build(n)]), ...Object.entries(LANGS).map(([n, ls]) => [n, () => {
+      const lines = [], words = [];
+      let t = 1000;
+      for (let r = 0; r < 6; r++) for (const text of ls) {
+        lines.push({ t, text });
+        words.push(WS(text, t, 300));
+        t += 3000;
+      }
+      return { lines, words, parts: undefined };
+    }])]) {
+      for (const seed of ["1", "2", "3", "4", "5", "6"]) {
+        const s = mk();
+        const plan = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, level, seed: name + seed });
+        const fonts = plan.map((p) => ({ line: p.font?.line || "", word: p.font?.word || "" }));
+        plan.forEach((p, i) => {
+          const text = s.lines[i].text, n = s.words[i]?.length || 0;
+          assert.ok(windowFonts(fonts, i) <= 2, `${name}: ${windowFonts(fonts, i)} Schriften um Zeile ${i}`);
+          const f = fonts[i];
+          if (f.line || f.word) fontLines++;
+          if (f.line) assert.ok(covers(f.line, text), `${name}: ${f.line} kann „${text}“ nicht`);
+          if (f.line === "marker") assert.ok(n <= 3, "Pinsel auf langer Zeile: " + text);
+          if (n > LONG_WORDS || [...text].length > LONG_CHARS) assert.ok(!f.line || ["serif", "mono"].includes(f.line), `lange Zeile mit ${f.line}: ${text}`);
+          if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Arabic}]/u.test(text)) assert.ok(!f.line && !f.word, "fremde Schrift mit Anzeige-Schrift: " + text);
+          const marked = p.words.filter((w) => w.cls.some((c) => c.startsWith("is-f-")));
+          assert.ok(marked.length <= 1, "mehr als ein Wort mit eigener Schrift");
+          if (marked.some((w) => w.cls.includes("is-f-marker"))) assert.equal(p.t, "key", "Pinsel-Wort nur als Schlüsselwort");
+        });
+      }
+    }
+  }
+  assert.ok(fontLines > 30, "kaum Anzeige-Schriften: " + fontLines);
+  // „Dezent“: keine Schriftmischung
+  const sub = planPlayful(build("party").lines, build("party").words, null, { lexicon: LEX, neg: NEG, level: "subtle", seed: "x" });
+  assert.ok(sub.every((p) => !p.font?.line && !p.font?.word && !p.cls.some((c) => c.startsWith("is-f-"))));
+}
+
+/* ---- Farben: jede erzeugte Farbe ≥ 4,5 : 1 auf dem Liedtext-Grund – über viele Cover-Paletten und Farbstimmungen */
+{
+  const rnd = (() => {
+    let a = 12345;
+    return () => ((a = (a * 1103515245 + 12345) >>> 0) / 4294967296);
+  })();
+  const pals = [
+    [[255, 255, 255], [255, 255, 255], [255, 255, 255]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[128, 128, 128], [90, 90, 90], [200, 200, 200]],
+    [[255, 0, 0], [0, 0, 255], [255, 255, 0]], [[0, 0, 255], [0, 0, 128], [60, 60, 255]], [[255, 255, 0], [255, 200, 0], [255, 255, 200]],
+  ];
+  for (let k = 0; k < 600; k++) pals.push([0, 1, 2].map(() => [rnd() * 255, rnd() * 255, rnd() * 255].map(Math.round)));
+  let min = Infinity, worst = "";
+  for (const pal of pals) for (const grade of [{ hue: 0, sat: 1 }, { hue: -15, sat: 1.15 }, { hue: 15, sat: 0.85 }]) {
+    const cols = meaningColors(pal, grade);
+    const grounds = lyricGrounds(pal);
+    for (const [k, c] of Object.entries(cols)) for (const g of grounds) {
+      const r = contrast(c, g);
+      if (r < min) (min = r), (worst = `${k} ${c} auf ${g}`);
+    }
+  }
+  assert.ok(min >= 4.5, "Farbe unter 4,5 : 1: " + min.toFixed(2) + " " + worst);
+  // jede Bedeutung hat ihre Farbe, und die Farben bleiben unterscheidbar (Feuer ist nicht Eis)
+  const c0 = meaningColors([[124, 92, 255], [182, 156, 255], [230, 222, 255]]);
+  for (const k of new Set(Object.values(CUE_KIND))) assert.ok(c0[k], "keine Farbe für " + k);
+  const hueOf = (c) => load("lyriccolor.js").rgb2hsl(c)[0];
+  assert.ok(Math.abs(hueOf(c0.fire) - hueOf(c0.ice)) > 90, "Feuer und Eis zu ähnlich");
+  console.log(`  Farben: ${Object.keys(KINDS).length} Bedeutungen, kleinster Kontrast ${min.toFixed(2)} : 1 über ${pals.length} Paletten × 3 Stimmungen`);
+  if (process.env.VERBOSE) for (const [k, c] of Object.entries(c0)) console.log(`    ${k.padEnd(7)} rgb(${c.join(", ")})  ${contrast(c, [7, 6, 12]).toFixed(2)} : 1`);
+  // im Plan: Farben nur ohne Duett-Stimme, Verlauf nur für Feuer/Gold/Neon
+  const lines = [{ t: 0, text: "I can feel the fire in my soul" }, { t: 3000, text: "Gold and diamonds on my neck", who: "1" }, { t: 6000, text: "and I am here for you" }];
+  const plan = planPlayful(lines, lines.map((l) => WS(l.text, l.t)), null, { lexicon: LEX, neg: NEG });
+  assert.ok(plan[0].words[4].cls.includes("is-k-fire") && plan[0].words[4].cls.includes("is-kg") && plan[0].cls.includes("is-pk"));
+  assert.ok(plan[1].words.every((w) => !w.cls.some((c) => c.startsWith("is-k"))), "Duett-Zeile eingefärbt");
+}
+
+/* ---- Stufen: Dezent (wenig Bewegung, keine Buchstaben/Akzente/Teilchen) · Verspielt · Wild (alles) */
+{
+  const used = { subtle: new Set(), playful: new Set(), wild: new Set() };
+  for (const level of Object.keys(used)) for (const name of Object.keys(SONGS)) for (const seed of ["a", "b", "c", "d", "e"]) {
+    const s = build(name);
+    const plan = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, level, seed: name + seed });
+    for (const p of plan) {
+      if (p.t) used[level].add(p.t);
+      if (level === "subtle") {
+        assert.ok(!p.t || allowed(p.t, "subtle"), "Dezent: " + p.t);
+        for (const w of p.words) {
+          assert.ok(!Array.isArray(w.chars) && !w.chars, "Dezent: Buchstaben");
+          assert.ok(!("--pac" in w.vars) && !w.cls.includes("is-pt"), "Dezent: Akzent/Teilchen");
+          if (w.vars["--wr"]) assert.ok(Math.abs(parseFloat(w.vars["--wr"])) <= 10, "Dezent: Drehung " + w.vars["--wr"]);
+        }
+      }
+    }
+  }
+  assert.ok([...used.subtle].every((t) => RECIPES[t].e <= 1));
+  assert.ok([...used.wild].some((t) => RECIPES[t].wild), "Wild ohne wilde Rezepte");
+  assert.ok(used.wild.size >= used.playful.size - 3 && used.playful.size > used.subtle.size);
+}
+
+/* ---- ♪ in der Lücke: eigene Klasse, wippt im Takt (Lage im Takt aus Schlägen bzw. Takten) */
+{
+  const lines = [{ t: 0, text: "hello there my friend" }, { t: 3000, text: "♪" }, { t: 9000, text: "and here we go again" }];
+  const plan = planPlayful(lines, [WS(lines[0].text, 0), [], WS(lines[2].text, 9000)], null, { match: () => [] });
+  assert.ok(plan[1].cls.includes("is-p-note") && !plan[0].cls.includes("is-p-note"));
+  const beats = [];
+  for (let t = 0; t < 20; t += 0.5) beats.push({ t });
+  const bp = barPhase(beats, null, 3.25);
+  assert.equal(bp.p, 500);
+  assert.equal(bp.bar, 2000);
+  assert.equal(bp.d, -1250, "Takt beginnt bei 2 s: 1,25 s hinein");
+  const bars = [{ t: 0.5 }, { t: 2.5 }];
+  assert.equal(barPhase(beats, bars, 3.25).d, -750, "mit Takten der Analyse");
+  assert.equal(barPhase(null, null, 3), null);
 }
 
 console.log("lyricstyle: ok");

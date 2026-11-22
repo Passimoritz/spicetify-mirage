@@ -13,9 +13,11 @@ Release notes on GitHub are generated from the matching section of this file whe
 ### Added
 
 - Party: a volume slider with mute button right under the playback controls; it hides together with the controls when you stop moving the mouse.
+- Lyrics, playful style: 65 line entrances and 88 word-meaning effects, picked from a per-song "deck" so every song looks different; display fonts, meaning colours (always at least 4.5:1 contrast), a ♪ that wiggles on the beat during instrumental breaks, and a new "Playful intensity" setting (Subtle / Playful / Wild).
 
 ### Fixed
 
+- Lyrics, playful style: words land exactly on the sung beat instead of a little late, and tilted, dropped or huge words are no longer cut off at the edge of the lyrics area.
 - Lyrics: short backing vocals under a line, like "(hey)", no longer break their closing bracket onto a line of its own (karaoke words measured slightly too narrow since 1.29.0).
 
 ## [1.29.0] – 2026-11-22

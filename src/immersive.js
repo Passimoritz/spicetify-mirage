@@ -49,7 +49,9 @@ import { drawWavefield, drawCoverDust, resetVizExtra } from "./vizextra.js";
 import { createAlbumView } from "./albumview.js";
 import { createClockView } from "./clockview.js";
 // i-playful: verspielter Liedtext-Stil (Entscheidung in lyricstyle.js, Bewegung in user.css)
-import { planPlayful, paintPlayful, beatPhase } from "./lyricstyle.js";
+import { planPlayful, paintPlayful, beatPhase, barPhase, sungAt, PRE_MS } from "./lyricstyle.js";
+import { meaningColors, colorVars } from "./lyriccolor.js";
+import { loadPlayfulFonts } from "./fonts.js";
 import { lowpass, lowpassHue, fpsDivisor, refreshFrom } from "./fxenv.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
@@ -1646,21 +1648,64 @@ Probe-FX: ${pfx}`;
   }
   // [playful] Verspielter Stil: Klassen und Variablen einmal je Song (und noch einmal, wenn die Analyse nachkommt) –
   // im Leerlauf, weil das Wörterbuch beim ersten Mal aufgebaut wird. Danach gleitet der Text an seine neue Lage.
-  let playfulKey = null;
+  let playfulKey = null, playGrade = null, playCols = "", playPre = -1;
+  // [playful] Farben aus der Bedeutung: aus den Leitfarben des Covers neu, sobald die sich ändern (je Zeilenwechsel
+  // geprüft, grob gerundet – das Überblenden der Palette löst nicht bei jedem Schritt aus). Alle ≥ 4,5 : 1 (lyriccolor.js)
+  function playColors() {
+    if (!q.lyrics || !playGrade) return;
+    const pal = imPalette();
+    const key = pal.map((c) => c.map((v) => v >> 4).join(".")).join("|");
+    if (key === playCols) return;
+    playCols = key;
+    for (const [k, v] of Object.entries(colorVars(meaningColors(pal, playGrade)))) q.lyrics.style.setProperty(k, v);
+  }
+  // [playful] Takt: Wörter setzen mit Vorlauf ein (genau auf dem Einsatz gelandet), die nächste Zeile nimmt kurz vor
+  // ihrem ersten Wort ihre Wartestellung ein. Nur Klassenwechsel beim Überschreiten der Schwellen – dieselbe Uhr wie die
+  // Karaoke-Füllung (pos inkl. Versatz, je-Song-Korrektur, Tipp-Abgleich), keine Zeitgeber.
+  function playMarks(ws, pos) {
+    for (const w of ws || []) {
+      const on = sungAt(w, pos);
+      if (on !== !!w.on) w.el.classList.toggle("is-sung", (w.on = on));
+    }
+  }
+  function playTick(i, pos, lines) {
+    if (i >= 0) playMarks(words[i], pos);
+    const j = i + 1, first = words[j]?.[0]?.a ?? lyr.lines[j]?.t;
+    const want = lines[j] && first != null && pos >= first - PRE_MS ? j : -1;
+    if (want !== playPre) {
+      if (playPre >= 0 && playPre !== i) {
+        lines[playPre]?.classList.remove("is-pnext");
+        for (const w of words[playPre] || []) if (w.on) w.el.classList.remove("is-sung"), (w.on = false);
+      }
+      playPre = want;
+      if (want >= 0) lines[want].classList.add("is-pnext");
+    }
+    if (playPre >= 0) playMarks(words[playPre], pos);
+  }
   function playfulSoon(token, fresh) {
     // frisch aufgebaute Zeilen (auch derselbe Text nach dem Umschalten) brauchen ihre Klassen neu
     if (fresh) playfulKey = null;
     const run = () => {
       if (token !== lyrToken || !q.lyrics) return;
       const on = !!cfg.lyrPlayful && !!lyr?.synced && !!lyr.lines?.length;
+      const level = ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful";
       q.lyrics.classList.toggle("is-playful", on);
+      q.lyrics.classList.toggle("is-lv-subtle", on && level === "subtle");
+      q.lyrics.classList.toggle("is-lv-wild", on && level === "wild");
+      playPre = -1;
       if (!on) return;
+      // Anzeige-Schriften erst jetzt (und nie bei „Dezent“: dort keine Schriftmischung)
+      if (level !== "subtle") loadPlayfulFonts();
       const d = audio.uri === lyrUri ? audio.data : null;
       // derbe Wörter wie in Party (Einstellung und Spotifys Filter); ohne Bewegung keine Wortbilder und Buchstaben
       const ex = explicitMode(), still = stillMotion() || !!cfg.noFlash;
-      if (playfulKey?.lyr === lyr && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still) return;
-      playfulKey = { lyr, d, ex, still };
-      paintPlayful(q.inner.children, planPlayful(lyr.lines, words, d, { lexicon: LEX, neg: NEG, explicit: ex, still }), words);
+      if (playfulKey?.lyr === lyr && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still && playfulKey.level === level) return;
+      playfulKey = { lyr, d, ex, still, level };
+      const plan = planPlayful(lyr.lines, words, d, { lexicon: LEX, neg: NEG, explicit: ex, still, level, seed: lyrUri });
+      paintPlayful(q.inner.children, plan, words);
+      playGrade = plan.deck?.grade || null;
+      playCols = "";
+      playColors();
       placeSoon("glide");
     };
     if (!cfg.lyrPlayful) return run();
@@ -1980,9 +2025,19 @@ Probe-FX: ${pfx}`;
       lyrGeo = null;
     }
     if (fresh || !lyrRO || !lyrGeo || lyrGeo.mid.length !== lines.length) {
-      lyrGeo = { h: q.lyrics.clientHeight, mid: Array.from(lines, (ln) => ln.offsetTop + ln.offsetHeight / 2) };
+      const hh = [];
+      lyrGeo = { h: q.lyrics.clientHeight, hh, mid: Array.from(lines, (ln) => (hh.push(ln.offsetHeight), ln.offsetTop + ln.offsetHeight / 2)) };
     }
-    return lyrGeo.h * 0.42 - lyrGeo.mid[i];
+    let c = lyrGeo.h * 0.42;
+    // [playful] die aktive Zeile steht nie im Ausblend-Rand der Textfläche (Masken in user.css: Liedtext/Mix 16 %/80 %,
+    // Party im verspielten Stil 18 %/82 %) – mit Reserve für Vergrößerung, Kippen und große Schlüsselwörter
+    if (q.lyrics.classList.contains("is-playful") && lyrGeo.hh[i]) {
+      const party = el.dataset.mode === "party";
+      const half = (lyrGeo.hh[i] * (party ? 1.12 : 1.05)) / 2 + lyrGeo.hh[i] * 0.08 + 6;
+      const top = lyrGeo.h * (party ? 0.18 : 0.16) + half, bot = lyrGeo.h * (party ? 0.82 : 0.8) - half;
+      c = top <= bot ? Math.min(bot, Math.max(top, c)) : (top + bot) / 2;
+    }
+    return c - lyrGeo.mid[i];
   }
 
   // Liedtext im nächsten Bild ausrichten – wer zuerst zeichnet (frame oder dieser Rückruf), richtet aus.
@@ -2026,10 +2081,21 @@ Probe-FX: ${pfx}`;
       if (playOn) for (const w of words[was] || []) if (w.on) w.el.classList.remove("is-sung"), (w.on = false);
       activeEl = lines[i] || null;
       playOn = !!activeEl && !!cfg.lyrPlayful && q.lyrics.classList.contains("is-playful");
+      // [playful] die vorbereitete Zeile ist jetzt die aktive (ihre schon gesungenen Wörter bleiben gelandet)
+      if (playPre === i) {
+        activeEl?.classList.remove("is-pnext");
+        playPre = -1;
+      }
+      if (playOn) playColors();
       // [playful] Wippen, Schlag-Stoß und hüpfende Wortbilder im Takt: Länge und Lage des Schlags einmal je Zeile
       // (CSS-Animation, kein Rechnen im Bild)
       const bp = playOn && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1000) : null;
       if (bp) activeEl.style.setProperty("--pb", bp.p + "ms"), activeEl.style.setProperty("--pbd", bp.d + "ms");
+      // [playful] ♪ in der Instrumental-Lücke: wippt im Takt, auf der Eins stärker (Lage im Takt)
+      if (playOn && activeEl.classList.contains("is-p-note")) {
+        const bb = audio.uri === lyrUri ? barPhase(audio.data?.beats, audio.data?.bars, pos / 1000) : null;
+        if (bb) activeEl.style.setProperty("--pb", bb.p + "ms"), activeEl.style.setProperty("--pnd", bb.d + "ms");
+      }
       lastBounce = "";
       hypeOn = !!activeEl && cfg.partyHype && el.dataset.mode === "party" && hype.has(i);
       activeEl?.classList.toggle("is-hype", hypeOn);
@@ -2059,6 +2125,8 @@ Probe-FX: ${pfx}`;
       q.inner.style.transition = "";
     }
     pend?.after?.();
+    // [playful] Einsätze mit Vorlauf und die vorbereitete nächste Zeile
+    if (cfg.lyrPlayful && q.lyrics.classList.contains("is-playful")) playTick(i, pos, lines);
     // Karaoke: nur die Wörter der aktuellen Zeile, und nur wenn sich ihr Stand sichtbar ändert
     const ws = i >= 0 && words[i];
     if (ws) {
@@ -2067,8 +2135,6 @@ Probe-FX: ${pfx}`;
         if (p !== w.p) {
           w.p = p;
           w.el.style.setProperty("--p", p);
-          // [playful] das Wort landet: eine Klasse beim Einsatz, den Rest macht CSS
-          if (playOn && p > 0 !== !!w.on) w.el.classList.toggle("is-sung", (w.on = p > 0));
         }
       }
     }

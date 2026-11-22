@@ -2460,8 +2460,12 @@ CASES.push(["update-note", updateNote]);
 // 1.27 views
 CASES.push(["viz-styles", vizStyles], ["album-view", albumView], ["clock-view", clockView]);
 
-/* ---- Verspielter Liedtext-Stil: Inszenierungen und Wortbilder im echten Aufbau, Bewegung nur transform/opacity */
+/* ---- Verspielter Liedtext-Stil: Inszenierungen und Wortbilder im echten Aufbau, Bewegung nur transform/opacity,
+   Schriften erst mit dem Stil, Landung genau auf dem Einsatz, ♪ wippt, nichts wird von der Textfläche abgeschnitten */
+// Wartezustände der Rezepte für die Beschnitt-Prüfung: dieselben Daten wie im Theme (src/lyricdeck.js, gebündelt)
+let DECK = null;
 async function playfulLyrics() {
+  DECK ||= require(path.join(ROOT, "tests", "unit", "load.js")).load("lyricdeck.js");
   const setKey = async (k, on) => {
     await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
     await until(() => T.js(`!!document.querySelector('.mirage-settings input[data-key="${k}"]')`), 2000, `playful: Schalter ${k}`);
@@ -2470,6 +2474,13 @@ async function playfulLyrics() {
     await T.js(`document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); 1`);
     return was;
   };
+  // Stärke über den Einstellungs-Dialog (nur sichtbar, solange der Stil an ist)
+  const setLevel = async (lv) => {
+    await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
+    await until(() => T.js(`!!document.querySelector('.mirage-settings [data-key="lyrPlayLevel"] button')`), 2000, "playful: Stärke-Wahl");
+    await T.js(`document.querySelectorAll('.mirage-settings [data-key="lyrPlayLevel"] button')[${["subtle", "playful", "wild"].indexOf(lv)}].click(); document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); 1`);
+  };
+  const fontLink = () => T.js(`[...document.querySelectorAll('link[data-mirage="playful-fonts"]')].map((l) => l.href)`);
   const state = () => T.js(`(() => {
     const box = document.querySelector("${IM} .m-im-lyrics"), lines = [...box.querySelectorAll(".m-im-line")];
     const t = {}, cues = {};
@@ -2482,9 +2493,13 @@ async function playfulLyrics() {
     for (const a of anims) for (const k of a.effect.getKeyframes()) for (const p of Object.keys(k)) if (!["offset", "easing", "composite", "computedOffset"].includes(p)) props.add(p);
     return { on: box.classList.contains("is-playful"), n: lines.length, t, cues, running: anims.length, props: [...props], letters: box.querySelectorAll(".m-ch").length };
   })()`);
+  ok(!(await fontLink()).length, "playful: Anzeige-Schriften geladen, obwohl der Stil aus ist");
   const kar = await setKey("karaoke", true);
   await setKey("lyrPlayful", true);
   try {
+    // Schriften: erst jetzt, eine Anfrage an Google Fonts mit display=swap
+    const links = await until(async () => { const l = await fontLink(); return l.length && l; }, 4000, "playful: Anzeige-Schriften werden geladen");
+    ok(links.length === 1 && /^https:\/\/fonts\.googleapis\.com\/css2\?.*family=Oswald.*display=swap$/.test(links[0]), "playful: Schrift-Adresse " + links[0]);
     for (const m of ["lyrics", "party"]) {
       await toMode(m);
       const s = await until(async () => { const x = await state(); return x.on && Object.keys(x.t).length >= 4 && x; }, 8000 * SLOW, `playful ${m}: Stil mit Inszenierungen`);
@@ -2498,12 +2513,175 @@ async function playfulLyrics() {
         if (SHOTS) await T.shot(path.join(SHOTS, `playful-${m}-${k}.png`));
         await wait(400);
       }
-      ok(most <= 40, `playful ${m}: ${most} Animationen gleichzeitig`);
+      ok(most <= 60, `playful ${m}: ${most} Animationen gleichzeitig`);
       console.log(`  playful ${m}: ${s.n} Zeilen, Inszenierungen ${JSON.stringify(s.t)}, Wortbilder ${JSON.stringify(s.cues)}, Buchstaben ${s.letters}, höchstens ${most} Animationen`);
       await T.shot(path.join(OUT, `playful-${m}.png`));
       if (SHOTS) await T.shot(path.join(SHOTS, `playful-${m}.png`));
     }
+
+    // Landung genau auf dem Einsatz: an einigen Wörtern messen, wann .is-sung kommt (= Einsatz − Vorlauf --pl) und wie
+    // das Wort im ersten Bild ab dem Einsatz dasteht – voll deckend, ohne Versatz, Drehung und Größe (Wörter mit Akzent
+    // dürfen ab dem Einsatz schon wachsen: sie zählen nur bei der Deckkraft)
+    const timing = await T.js(`new Promise((done) => {
+      const box = document.querySelector("${IM} .m-im-lyrics"), out = [];
+      const mo = new MutationObserver((recs) => {
+        for (const r of recs) {
+          const w = r.target;
+          if (!w.classList?.contains("m-w") || !w.classList.contains("is-sung") || w.dataset.e2eSeen) continue;
+          w.dataset.e2eSeen = "1";
+          const t0 = performance.now(), pl = parseFloat(getComputedStyle(w).getPropertyValue("--pl")) || 0;
+          const acc = !!getComputedStyle(w).getPropertyValue("--pac").trim() || w.classList.contains("is-p-held");
+          const step = () => {
+            // inzwischen neu aufgebaut (Analyse kam nach, Songwechsel): nicht messbar
+            if (!w.isConnected) return;
+            const el = performance.now() - t0;
+            if (el < pl) return requestAnimationFrame(step);
+            // Chromium startet die Überblendung erst mit dem nächsten Bild (im Test 24 Bilder/s): ein Bild später messen –
+            // das Theme löst dafür LEAD_PAD früher aus, in echt (60 Hz) landet das Wort so auf dem Einsatz
+            if (!step.once) return (step.once = true), requestAnimationFrame(step);
+            const cs = getComputedStyle(w), fs = parseFloat(cs.fontSize) || 16;
+            const tr = (cs.translate === "none" ? "0px 0px" : cs.translate).split(" ").map(parseFloat);
+            const sc = cs.scale === "none" ? 1 : Math.max(...cs.scale.split(" ").map(Number));
+            const rot = cs.rotate === "none" ? 0 : parseFloat(cs.rotate);
+            let op = 1;
+            for (let e = w; e && e !== box; e = e.parentElement) op *= Number(getComputedStyle(e).opacity);
+            const chOp = Math.min(1, ...[...w.querySelectorAll(".m-ch")].map((c) => Number(getComputedStyle(c).opacity)));
+            out.push({ text: w.textContent, pl, late: Math.round(el - pl), op: Number(cs.opacity), chOp, lineOp: op, tx: Math.abs(tr[0] || 0) / fs, ty: Math.abs(tr[1] || 0) / fs, sc, rot, tf: cs.transform, acc, t: [...(w.closest(".m-im-line")?.classList || [])].find((c) => c.startsWith("is-t-")) });
+          };
+          requestAnimationFrame(step);
+        }
+      });
+      mo.observe(box, { subtree: true, attributes: true, attributeFilter: ["class"] });
+      setTimeout(() => { mo.disconnect(); box.querySelectorAll("[data-e2e-seen]").forEach((x) => delete x.dataset.e2eSeen); done(out); }, 7000);
+    })`);
+    ok(timing.length >= 6, "playful Takt: zu wenige Wörter gemessen: " + timing.length);
+    for (const x of timing) {
+      ok(x.op >= 0.95 && x.chOp >= 0.95, `playful Takt: „${x.text}“ (${x.t}) auf dem Einsatz erst ${x.op.toFixed(2)}/${x.chOp.toFixed(2)} deckend`);
+      if (!x.acc) {
+        ok(x.tx <= 0.03 && x.ty <= 0.03 && Math.abs(x.sc - 1) <= 0.03 && Math.abs(x.rot) <= 1.5 && (x.tf === "none" || /^matrix\(1, 0, 0, 1, 0, 0\)$/.test(x.tf)), `playful Takt: „${x.text}“ (${x.t}) auf dem Einsatz nicht in Ruhe: ${JSON.stringify(x)}`);
+      }
+    }
+    console.log(`  playful Takt: ${timing.length} Wörter auf dem Einsatz gelandet (Vorlauf ${[...new Set(timing.map((x) => x.pl))].join("/")} ms, Bild bis ${Math.max(...timing.map((x) => x.late))} ms später gemessen)`);
+
+    // ♪ in der Instrumental-Lücke wippt im Takt – mit „Ruhig“ steht es still
+    const note = await T.js(`(async () => {
+      const line = document.querySelector("${IM} .m-im-line.is-active");
+      const had = line.className, txt = line.innerHTML;
+      line.className = "m-im-line is-active is-p-note";
+      line.textContent = "♪";
+      await new Promise((r) => setTimeout(r, 300));
+      const run = () => line.getAnimations().some((a) => a.animationName === "m-p-note" && a.playState === "running");
+      const moving = run();
+      document.documentElement.classList.add("mirage-calm");
+      await new Promise((r) => setTimeout(r, 100));
+      const calm = run();
+      document.documentElement.classList.remove("mirage-calm");
+      line.className = had;
+      line.innerHTML = txt;
+      return { moving, calm };
+    })()`);
+    ok(note.moving, "playful: ♪ wippt nicht im Takt");
+    ok(!note.calm, "playful: ♪ wippt trotz „Ruhig“");
+
+    // Nie abgeschnitten: jedes Rezept (Stärke „Wild“) mit kurzen, langen, riesigen und kursiven Zeilen in Liedtext, Mix
+    // und Party bei schmalem und breitem Fenster. Die Zeile wird in die übernächste Zeile geschrieben und angesprungen
+    // (so platziert der echte Ablauf sie), dann landen alle Wörter; über die Akzente hinweg liegt jedes Wort in der
+    // Textfläche (±1 px), im Fenster und außerhalb des Ausblend-Rands
+    await setLevel("wild");
+    const TEXTS = [
+      ["Fire!"],
+      "We are dancing in the pouring rain tonight until the morning light comes".split(" "),
+      ["set", "my", "HEARTBREAKING", "soul"],
+      ["jiggly", "gypsy", "quay", "glyphs"],
+      ["Fly", "away", "now"],
+    ];
+    const FONTS = ["", "shout", "serif", "mono", "wide", "marker", "round"];
+    const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+    const lineHtml = (t, k) => {
+      const R = DECK.RECIPES[t];
+      let texts = R.L ? TEXTS[4] : t === "key" ? TEXTS[2] : TEXTS[k % 4];
+      const lead = DECK.leadOf(t), n = texts.length, keyAt = t === "key" ? 2 : -1;
+      const ws = texts.map((tx, i) => {
+        const cls = ["m-w"], v = { "--pl": lead + "ms" };
+        if (R.acc) (v["--pac"] = "m-a-" + R.acc), (v["--pad"] = DECK.ACCENTS[R.acc] + "ms");
+        if (i === keyAt) cls.push("is-p-key"), (v["--pk"] = "2.4"), (v["--pkn"] = String(tx.length));
+        if (i === n - 1 && !R.L) cls.push("is-p-cue", ["is-c-float", "is-c-fall", "is-c-spin", "is-c-shake"][k % 4]);
+        let inner = esc(tx);
+        if (R.L) {
+          cls.push("is-split");
+          v["--cn"] = String(tx.length);
+          inner = DECK.letterPoses(t, tx, { k: i, n, dir: 1, amp: 1.5, seed: "e2e", lead }).map((c, ci) => `<span class="m-ch" style="--ci:${ci};--ld:${c.ld}ms;${Object.entries(c.vars).map(([a, b]) => a + ":" + b).join(";")}">${esc(c.ch)}</span>`).join("");
+        } else Object.assign(v, DECK.poseVars(DECK.wordPose(t, { k: i, n, dir: k % 2 ? 1 : -1, amp: 1.5, len: tx.length, key: i === keyAt, seed: "e2e" })));
+        return `<span class="${cls.join(" ")}" style="${esc(Object.entries(v).map(([a, b]) => a + ":" + b).join(";"))}">${inner}</span>`;
+      });
+      const sect = ["is-p-chorus", "is-p-verse", "is-p-bridge"][k % 3];
+      const font = FONTS[k % FONTS.length];
+      const cls = ["m-im-line", "is-t-" + t, sect, R.ln ? "is-l-" + R.ln : "", font ? "is-f-" + font : "", k % 5 === 0 ? "is-p-shout" : ""].filter(Boolean).join(" ");
+      return { cls, html: `<span class="m-im-words">${ws.join(" ")}</span>` };
+    };
+    const fails = [];
+    let checked = 0;
+    // die Gleitfahrt der Textfläche (0,8 s) hier abschalten: die Zeile steht sofort dort, wo der Ablauf sie hinstellt
+    await T.js(`(() => { const st = document.createElement("style"); st.id = "e2e-noglide"; st.textContent = "#mirage-immersive .m-im-lyrics-inner { transition: none !important }"; document.head.append(st); return 1; })()`);
+    for (const [w, h] of [[820, 620], [1600, 900]]) {
+      T.win.setContentSize(w, h);
+      await wait(500);
+      for (const m of (process.env.E2E_CLIP || "lyrics,mix,party").split(",")) {
+        await toMode(m);
+        for (let k = 0; k < DECK.TREATMENTS.length; k++) {
+          const t = DECK.TREATMENTS[k], spec = lineHtml(t, k);
+          // übernächste Zeile umschreiben und anspringen
+          const at = await T.js(`(() => {
+            const lines = [...document.querySelectorAll("${IM} .m-im-line")];
+            let i = lines.findIndex((l) => l.classList.contains("is-active"));
+            if (i < 0 || i + 2 >= lines.length - 2) i = 2;
+            const ln = lines[i + 2];
+            ln.className = ${JSON.stringify(spec.cls)};
+            ln.innerHTML = ${JSON.stringify(spec.html)};
+            ln.dataset.e2eClip = "1";
+            Spicetify.Player.seek(Number(ln.dataset.t) + 250);
+            return i + 2;
+          })()`);
+          await until(() => T.js(`!!document.querySelectorAll("${IM} .m-im-line")[${at}]?.classList.contains("is-active")`), 3000, `beschnitt ${m} ${t}: Zeile wird aktiv`);
+          const r = await T.js(`(async () => {
+            const box = document.querySelector("${IM} .m-im-lyrics"), ln = document.querySelectorAll("${IM} .m-im-line")[${at}];
+            ln.querySelectorAll(".m-w").forEach((x) => x.classList.add("is-sung"));
+            const party = document.getElementById("mirage-immersive").dataset.mode === "party";
+            const bad = [];
+            // Landung abwarten, dann über die Akzente hinweg zweimal messen
+            for (const dt of [240, 260]) {
+              await new Promise((res) => setTimeout(res, dt));
+              const b = box.getBoundingClientRect();
+              const fadeTop = b.top + b.height * (party ? 0.18 : 0.16), fadeBot = b.top + b.height * (party ? 0.82 : 0.8);
+              let top = Infinity, bot = -Infinity;
+              for (const w of ln.querySelectorAll(".m-w")) {
+                const q = w.getBoundingClientRect();
+                top = Math.min(top, q.top);
+                bot = Math.max(bot, q.bottom);
+                if (q.left < b.left - 1 || q.right > b.right + 1 || q.top < b.top - 1 || q.bottom > b.bottom + 1) bad.push("Textfläche „" + w.textContent + "“ " + [q.left, q.top, q.right, q.bottom].map(Math.round) + " / " + [b.left, b.top, b.right, b.bottom].map(Math.round));
+                if (q.left < -1 || q.top < -1 || q.right > innerWidth + 1 || q.bottom > innerHeight + 1) bad.push("Fenster „" + w.textContent + "“");
+              }
+              // Glyphen (ohne das Karaoke-Polster unten) im deckenden Bereich der Maske
+              const pad = parseFloat(getComputedStyle(ln.querySelector(".m-w")).fontSize) * 0.26;
+              if (top < fadeTop - 2 || bot - pad > fadeBot + 2) bad.push("Ausblend-Rand " + [Math.round(top), Math.round(bot - pad)] + " / " + [Math.round(fadeTop), Math.round(fadeBot)]);
+            }
+            return [...new Set(bad)];
+          })()`);
+          checked++;
+          if (r.length) fails.push(`${w}×${h} ${m} ${t}: ${r.slice(0, 2).join("; ")}`);
+        }
+        console.log(`  playful Beschnitt ${w}×${h} ${m}: ${fails.length} Funde bisher`);
+      }
+    }
+    await T.js(`document.getElementById("e2e-noglide")?.remove(); 1`);
+    T.win.setContentSize(1280, 800);
+    await wait(400);
+    console.log(`  playful Beschnitt: ${checked} Zeilen (${DECK.TREATMENTS.length} Rezepte × Liedtext/Mix/Party × 820/1600 px), ${fails.length} abgeschnitten`);
+    if (fails.length) console.log("    " + fails.join("\n    "));
+    ok(!fails.length, "playful: abgeschnitten:\n    " + fails.slice(0, 12).join("\n    "));
   } finally {
+    T.win.setContentSize(1280, 800);
+    await setLevel("playful").catch(() => {});
     await setKey("lyrPlayful", false);
     await setKey("karaoke", kar);
   }

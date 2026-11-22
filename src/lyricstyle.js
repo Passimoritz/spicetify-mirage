@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------- Verspielter Liedtext-Stil */
-// Option „Verspielter Stil“ (cfg.lyrPlayful, Standard aus): der Liedtext spielt mit dem Song wie in einem guten
+// Option „Verspielter Stil“ (cfg.lyrPlayful, Standard aus; Stärke cfg.lyrPlayLevel: subtle / playful / wild): der Liedtext spielt mit dem Song wie in einem guten
 // Lyric-Video. Jede Zeile bekommt eine bewusst gewählte Inszenierung („Treatment“) aus einem großen Satz – Wörter
 // steigen einzeln auf, fallen herein, kommen von beiden Seiten, prallen beim Drop zusammen, ein Schlüsselwort steht
 // riesig zwischen kleinen, Buchstaben laufen als Welle, Rufe stehen eng in Großbuchstaben, schneller Rap tippt sich
@@ -20,6 +20,9 @@ import { matchAny, detectSong } from "./words.js";
 import { senseLine, planSong as planSense, EXPLICIT } from "./wordsense.js";
 import { lineMood } from "./mood.js";
 import { bgFlags } from "./lyricvoices.js";
+import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars } from "./lyricdeck.js";
+import { lineRole, markerOk, limitFonts, covers } from "./lyricfont.js";
+import { CUE_KIND } from "./lyriccolor.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -235,13 +238,16 @@ const EFFECTS = {
   drip: "rain tears water", // eintauchen, ein Tropfen löst sich
   wave: "ocean sail yacht sing music sway rainbow guitar bells", // Welle durch die Buchstaben
   jolt: "storm lightning earthquake electric", // Ruck mit Lichtblitz
-  shiver: "cold snow fear", // Zittern, frostiger Schein
+  shiver: "cold fear", // Zittern, frostiger Schein
+  snow: "snow", // Flocken rieseln
   beat: "heart heartbeat love kiss", // Herzschlag (doppelt)
   crack: "heartbreak pain goodbye", // knickt ein und rutscht ab
   float: "fly bird butterfly angel heaven sky rocket space jet freedom rise hallelujah pray", // hebt ab
   burst: "boom bass fireworks drums", // zerspringt in Buchstaben und fügt sich wieder
   spin: "spin crazy", // dreht sich einmal
-  glint: "money gold diamond rich million bling crown sparkle luxury vip star champagne silver mansion flex payday christmas neon laser", // Glanz
+  glint: "money gold diamond rich million bling crown luxury vip champagne silver mansion flex payday christmas", // Glanz
+  star: "star sparkle", // funkelt
+  neon: "neon laser", // Neonröhre glimmt (ohne Flackern im Stroboskop-Takt)
   dim: "dark black midnight blackout lonely lost moon", // dunkelt ab (nicht „night“: steht in fast jedem Lied)
   shine: "light sunrise morning wakeup hope alive smile happy", // hellt auf
   shake: "shake anger wild war beast monster hype", // bebt (auch die Rufe an die Menge: „scream“, „make some noise“)
@@ -295,11 +301,11 @@ const BROKEN = /\b(?:br(?:oke|eak|eaks|eaking|oken)|tore|rip(?:ped)?|shatter(?:e
 const XIDX = new Map();
 for (const [fx, byLang] of Object.entries(EXTRA)) for (const [lang, words] of Object.entries(byLang)) for (const w of words.split(" ")) if (!XIDX.has(w)) XIDX.set(w, [fx, lang]);
 // Wichtigkeit, wenn eine Zeile mehrere Treffer hat (zwei Bilder je Zeile höchstens)
-const FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4 };
+const FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4, neon: 4, snow: 4, star: 4 };
 // laute Bewegungen in einem traurigen Lied / an einer leisen Stelle: die sanfte Schwester
-const SOFTEN = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift" };
+const SOFTEN = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift", neon: "shine" };
 // Bewegungen mit Schein (Pseudo-Element mit Deckkraft – nie text-shadow im Bild)
-const GLOWS = new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift"]);
+const GLOWS = new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift", "neon", "star", "snow"]);
 // Bewegungen, die das Wort in Buchstaben zerlegen
 const LETTERS = new Set(["burst", "wave"]);
 export const cueOf = (concept) => CUE[concept] || "";
@@ -363,54 +369,20 @@ function explicitSpans(text, hitsOf) {
   return out;
 }
 
-/* ---- Inszenierungen je Zeile */
-// plain   ruhig, nur Betonung (Atempause zwischen den großen Auftritten)
-// rise    Wörter steigen einzeln von unten auf, genau auf ihrem Einsatz
-// drop    Wörter fallen von oben herein und federn nach
-// stagger Wörter treppauf/treppab versetzt und gekippt, rasten beim Singen ein
-// key     ein Schlüsselwort 1,6–2,4× groß, der Rest klein
-// wave    das Schlüsselwort läuft als Welle durch seine Buchstaben
-// split   erste Hälfte kommt von links, zweite von rechts
-// caps    Ruf: eng gesetzte Großbuchstaben, jedes Wort ein Stoß
-// type    schneller Rap: Wörter tippen sich hart herein
-// glow    Ballade: Wörter glimmen langsam auf
-// punch   die Zeile stößt auf jedem Schlag
-// collide Wörter weit auseinander, prallen beim Einsatz zusammen (Drop)
-// tilt    Bridge: die Zeile steht schräg, die Wörter wiegen sich
-// slam    die Zeile knallt groß herein (erste Zeile eines Refrains)
-export const TREATMENTS = ["plain", "rise", "drop", "stagger", "key", "wave", "split", "caps", "type", "glow", "punch", "collide", "tilt", "slam"];
-// Bewegung auch ohne Wortzeiten sichtbar? (Inszenierungen, die nur auf .is-sung reagieren, brauchen Wörter)
-const NEEDS_WORDS = new Set(["rise", "drop", "stagger", "split", "type", "glow", "collide", "key", "wave"]);
+/* ---- Inszenierungen je Zeile: Rezepte aus dem Deck des Songs (lyricdeck.js) */
+// Über 60 Rezepte (Wörter steigen, fallen, klappen auf, prallen zusammen, Buchstaben regnen, tippen sich, drehen
+// sich herein …), je Song ein eigenes Deck: welche Rezepte Strophe, Pre-Chorus, Refrain (ein gemeinsames Motiv),
+// Drop, Bridge und ruhige Stellen spielen. Gewählt wird je Zeile aus dem Deck ihres Teils – mit Verlauf: nie zweimal
+// dasselbe hintereinander, keins über ~20 % der Zeilen, eine wiederholte Zeile wechselt.
+export { TREATMENTS };
+// ohne Wort-Elemente bewegt sich nur die ganze Zeile
+const WORDLESS = ["plain", "punch", "tilt", "caps"];
+const FAMILY_OF = {};
+for (const [fam, list] of Object.entries(FAMILIES)) for (const t of list) FAMILY_OF[t] ??= fam;
 
-// Merkmale → Punkte je Inszenierung (ohne Verlauf). f: siehe planPlayful
-function scoreTreatments(f) {
-  const chorus = f.kind === "chorus" || f.kind === "drop";
-  const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
-  const E = f.energy, n = f.n;
-  const s = {
-    plain: 0.35 + (quiet ? 0.5 : 0) + (f.kind === "verse" ? 0.2 : 0) - (chorus ? 0.6 : 0),
-    rise: 0.9 + (f.kind === "verse" || f.kind === "pre" ? 0.4 : 0) + (f.ballad ? 0.2 : 0) + (f.mood > 0.3 ? 0.2 : 0),
-    drop: 0.7 + (chorus ? 0.5 : 0) + (E > 0.3 ? 0.4 : 0) + (f.mood < -0.3 ? 0.2 : 0),
-    stagger: 0.5 + (n >= 3 && n <= 7 ? 0.5 : -0.6) + (f.kind === "verse" ? 0.3 : 0),
-    key: (f.keyStrength >= 0.55 ? 0.55 + f.keyStrength * 0.6 : -0.4) + (n >= 3 && n <= 9 ? 0.3 : -0.6) + (chorus ? 0.2 : 0),
-    wave: (f.keyLetters ? 0.6 : -2) + (f.ballad ? 0.4 : 0) + (f.mood > 0.2 ? 0.3 : 0) + (f.cueLetters ? 0.6 : 0),
-    split: 0.4 + (n >= 4 && n <= 10 ? 0.6 : -1) + (chorus || f.kind === "pre" ? 0.3 : 0),
-    caps: (f.shout ? 2.2 : -0.6) + (E > 0.5 ? 0.6 : 0) + (n <= 6 ? 0.3 : -0.5),
-    type: (f.rap ? 2.2 : -0.7) + (n >= 8 ? 0.4 : 0) + (f.rate > 4.2 ? 0.5 : 0),
-    glow: (f.ballad ? 1.4 : 0) + (f.mood < -0.2 ? 0.4 : 0) + (quiet ? 0.7 : 0) + (E < -0.2 ? 0.4 : 0) - (chorus && E > 0.3 ? 0.8 : 0),
-    punch: (chorus && f.beats ? 0.8 : -1) + (E > 0.3 ? 0.6 : 0) + (f.rap ? -0.5 : 0),
-    collide: (f.dropIn ? 2.4 : -0.8) + (f.first && chorus && E > 0.4 ? 0.9 : 0) + (n >= 3 && n <= 8 ? 0.2 : -0.6),
-    tilt: (f.kind === "bridge" ? 1.7 : -0.5) + (f.mood < -0.3 ? 0.2 : 0),
-    slam: (f.first && chorus ? 2.0 : -1.2) + (E > 0.4 ? 0.4 : 0) + (n <= 7 ? 0.2 : -0.5),
-  };
-  if (!f.words) for (const t of NEEDS_WORDS) s[t] -= 3;
-  // sehr lange Zeilen: lieber ruhig setzen als zappeln
-  if (n > 12) for (const t of ["stagger", "split", "collide", "key", "slam"]) s[t] -= 1.2;
-  return s;
-}
-// Verlauf: keine zwei gleichen hintereinander, keine Inszenierung über ~30 % des Songs, eine wiederholte Zeile
-// wechselt (die erste Refrain-Zeile trifft trotzdem jedes Mal hart – nur nicht jedes Mal gleich)
-export function pickTreatments(feats) {
+export function pickTreatments(feats, deck) {
+  const D = deck || songDeck("default");
+  const level = D.level || "playful";
   const out = [], count = {}, byKey = new Map();
   let n = 0;
   for (let i = 0; i < feats.length; i++) {
@@ -419,18 +391,57 @@ export function pickTreatments(feats) {
       out.push("");
       continue;
     }
-    const s = scoreTreatments(f);
+    const chorus = f.kind === "chorus" || f.kind === "drop";
+    const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
+    let pool;
+    if (!f.words) pool = chorus ? ["punch", "caps", "tilt", "plain"] : f.kind === "bridge" ? ["tilt", "plain"] : ["plain", "punch", "tilt"];
+    else if (f.dropIn) pool = D.drop;
+    else if (f.first && chorus) pool = [...D.hit, ...D.chorus];
+    else if (f.shout) pool = [...D.shout, ...D.chorus];
+    else if (f.rap) pool = D.rap;
+    else if (chorus) pool = [...D.chorus, D.hit[0]];
+    else if (f.kind === "pre") pool = D.pre;
+    else if (f.kind === "bridge") pool = D.bridge;
+    else if (quiet) pool = D.calm;
+    else if (f.ballad) pool = [...D.ballad, ...D.verse.slice(0, 2)];
+    else pool = D.verse;
+    const fits = (t) => {
+      const r = RECIPES[t];
+      if (!r || !allowed(t, level)) return false;
+      if (!f.words) return WORDLESS.includes(t);
+      if (r.L && !f.lettersOk) return false;
+      if (r.keyed && !(f.keyStrength >= 0.55)) return false;
+      if (r.min && f.n < r.min) return false;
+      if (r.max && f.n > r.max) return false;
+      // sehr lange Zeilen: lieber ruhig setzen als zappeln
+      if (f.n > 12 && (r.e >= 2 || r.L)) return false;
+      // Ballade: höchstens die erste Refrain-Zeile darf knallen
+      if (f.ballad && r.e >= 3 && !(f.first && chorus)) return false;
+      return true;
+    };
+    const cands = new Map();
+    pool.forEach((t, k) => fits(t) && !cands.has(t) && cands.set(t, 1.3 - k * 0.07));
+    // alles Übrige, was passt, mit wenig Gewicht (passend zur Energie des Teils): über viele Songs taucht so jedes
+    // Rezept auf, im Song bleibt das Deck tonangebend
+    if (f.words) {
+      const want = f.dropIn || (f.first && chorus) ? 3 : chorus ? 2.4 : quiet || f.ballad ? 0.3 : f.kind === "pre" ? 1.6 : f.rap ? 1.2 : 1;
+      for (const t of TREATMENTS) if (!cands.has(t) && fits(t)) cands.set(t, 0.5 - Math.abs(RECIPES[t].e - want) * 0.2);
+    }
+    if (!cands.size) cands.set("plain", 0);
     const prev = out.filter(Boolean);
     const p1 = prev[prev.length - 1], p2 = prev[prev.length - 2];
     const used = byKey.get(f.key) || [];
     let best = "plain", bv = -Infinity;
-    for (const t of TREATMENTS) {
-      let v = s[t] + hash01(f.key + "|" + t + "|" + used.length) * 0.55;
-      if (t === p1) v -= 1.8;
-      if (t === p2) v -= 0.6;
-      const share = n >= 6 ? (count[t] || 0) / n : 0;
-      if (share > 0.22) v -= (share - 0.22) * 9;
-      if (used.includes(t)) v -= 1.3 + 0.4 * used.filter((u) => u === t).length;
+    for (const [t, base] of cands) {
+      let v = base + hash01(D.seed + "|" + f.key + "|" + t + "|" + used.length) * 0.6;
+      if (t === p1) v -= 3;
+      if (t === p2) v -= 1;
+      // was in den letzten sechs Zeilen schon lief, tritt zurück (sonst kreist ein Refrain durch dieselben vier)
+      else if (prev.slice(-6).includes(t)) v -= 0.9;
+      if (p1 && FAMILY_OF[t] && FAMILY_OF[t] === FAMILY_OF[p1] && !chorus) v -= 0.3;
+      const share = n >= 5 ? (count[t] || 0) / n : 0;
+      if (share > 0.1) v -= (share - 0.1) * 14;
+      if (used.includes(t)) v -= 1.4 + 0.5 * used.filter((u) => u === t).length;
       if (v > bv) (bv = v), (best = t);
     }
     out.push(best);
@@ -456,12 +467,25 @@ function keyWord(ws, em, cueAt, no) {
 // Buchstaben-Zerlegung nur für einfache Schrift (keine Zeichen, die sich verbinden), höchstens 12 Zeichen
 const SPLITTABLE = /^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}'’!?.,-]{2,12}$/u;
 const canSplit = (s) => SPLITTABLE.test(String(s || "")) && !/\p{M}/u.test(String(s || "").normalize("NFC"));
+// Zeilen, deren Wörter alle in Buchstaben zerfallen dürfen: kurz (≤ 4 Wörter, ≤ 18 Buchstaben), einfache Schrift
+const lettersOk = (ws, who) => !who && ws.length > 0 && ws.length <= 4 && ws.reduce((s, w) => s + [...String(w.text)].length, 0) <= 18 && ws.every((w) => canSplit(w.text) || [...String(w.text)].length < 2);
+
+// Wort setzt ein (.is-sung): Vorlauf vor dem Einsatz, damit es genau auf dem Einsatz gelandet ist. Dieselbe Uhr wie
+// die Karaoke-Füllung (pos = Songposition inkl. Versatz, je-Song-Korrektur und Tipp-Abgleich). LEAD_PAD: Chromium
+// startet eine Überblendung erst mit dem nächsten Bild der Grafikkarte (bei 60 Hz ~16 ms nach dem Klassenwechsel) –
+// so viel früher auslösen, dann liegt die Landung auch in echt auf dem Einsatz.
+export const LEAD_PAD = 20;
+export const sungAt = (w, pos) => pos >= w.a - (w.lead ? w.lead + LEAD_PAD : 0);
+// Vorlauf der nächsten Zeile: so lange vor ihrem ersten Wort nimmt sie ihre Wartestellung ein (.is-pnext)
+export const PRE_MS = 600;
 
 /* ---- Alles zusammen: einmal je Song */
 // lines: Zeilen ({ t, text, who?, bg? }), wordLists[i]: Wörter der Zeile i ({ text, a, b, est?, bg?, el? }) oder leer,
 // d: Analyse aus audio.js (oder null). o: { lexicon, neg (lexicon.js), explicit ("on"|"soft"|"off"), still (ohne
-// Bewegung: nur Größe, Stärke, Satz), parts/drops (statt aus der Regie), match (eigener Treffer-Sucher, Tests) }
-// → je Zeile { t: Inszenierung, cls: [], vars: {}, words: [{ cls: [], vars: {}, chars?, tx? }] }
+// Bewegung: nur Größe, Stärke, Satz, Farbe), level ("subtle"|"playful"|"wild"), seed (Song-Kennung fürs Deck),
+// parts/drops (statt aus der Regie), match (eigener Treffer-Sucher, Tests) }
+// → je Zeile { t: Rezept, v: Spielart, cls: [], vars: {}, font, words: [{ cls, vars, lead, chars?, tx? }] }
+//   (das Ergebnis trägt zusätzlich .deck)
 const planCache = new WeakMap();
 function partsOf(d) {
   if (!d?.beats?.length || d.synthetic) return { parts: null, drops: [] };
@@ -475,12 +499,17 @@ function partsOf(d) {
   return r;
 }
 const lineKey = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+// Stärke je Teil: Pre-Chorus baut auf, Refrain kräftig, ruhige Stellen leise
+const AMP = { chorus: 1.1, drop: 1.15, pre: 1, verse: 0.95, bridge: 0.9, intro: 0.8, outro: 0.8, break: 0.75 };
 export function planPlayful(lines, wordLists, d, o = {}) {
   const L = lines || [];
   const real = d && !d.synthetic;
   const segs = real ? d.segs : null;
   const beats = d?.beats || null;
+  const bars = d?.bars || null;
   const still = !!o.still;
+  const level = o.level === "subtle" || o.level === "wild" ? o.level : "playful";
+  const deck = songDeck(o.seed || "lyr:" + hash01(L.map((l) => l.text).join("\n")), level);
   const { parts, drops } = o.parts !== undefined ? { parts: o.parts, drops: o.drops || [] } : partsOf(d);
   const match = o.match || cueMatcher(L, o.lexicon, { neg: o.neg, explicit: o.explicit || "on" });
   const hitsOf = match.hitsOf || (() => []);
@@ -555,10 +584,10 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     prevKind = p.kind;
     prevEnd = Math.max(l.t, b);
     const mood = lineMood(text)?.v ?? 0;
-    return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp(energy, -1, 1.2), shout: p.shout, first, mood, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, key: lineKey(text) || "#" + i };
+    return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp(energy, -1, 1.2), shout: p.shout, first, mood, text, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, lettersOk: lettersOk(ws, l.who), key: lineKey(text) || "#" + i };
   });
 
-  // 2. Wörter: Betonung, Wortbilder, Schlüsselwort (vor der Wahl der Inszenierung: „key“/„wave“ brauchen sie)
+  // 2. Wörter: Betonung, Wortbilder, Schlüsselwort (vor der Wahl der Inszenierung: „key“ braucht sie)
   const wordInfo = pre.map((p, i) => {
     const ws = p.ws;
     if (!ws.length) return null;
@@ -574,35 +603,56 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     for (const [s0, s1] of explicitSpans(joined, hitsOf)) for (let k = at(s0); k >= 0 && k <= at(s1 - 1); k++) no.add(k);
     const lastW = ws[ws.length - 1]?.text, nb = [L[i - 1], L[i + 1], L[i - 2]].map((x) => String(x?.text || "").trim().split(/\s+/).pop());
     const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real, rhyme: nb.some((x) => rhymes(lastW, x)), hook, no });
-    // Wortbilder: die Zeile als Text, Treffer auf die Wörter zurückgelegt; höchstens zwei je Zeile, die wichtigsten
-    const cues = new Map();
-    if (!still) {
-      const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
-      for (const m of ms) {
-        if (cues.size >= 2) break;
-        // Wortgruppen („on fire“, „broken heart“) bewegen ihr letztes Wort – das trägt die Bedeutung
-        const k = at(m.at + m.len - 1);
-        if (k >= 0 && !cues.has(k) && !ws[k].bg) cues.set(k, m.cue);
+    // Wortbilder: die Zeile als Text, Treffer auf die Wörter zurückgelegt; höchstens zwei je Zeile, die wichtigsten.
+    // Auch ohne Bewegung gesucht: die Farbe gehört zum ruhenden Satz
+    const cues = new Map(), concept = new Map();
+    const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
+    for (const m of ms) {
+      if (cues.size >= 2) break;
+      // Wortgruppen („on fire“, „broken heart“) bewegen ihr letztes Wort – das trägt die Bedeutung
+      const k = at(m.at + m.len - 1);
+      if (k >= 0 && !cues.has(k) && !ws[k].bg) {
+        cues.set(k, m.cue);
+        concept.set(k, m.c);
       }
     }
     const kw = keyWord(ws, em, cues, no);
-    return { em, cues, kw, no };
+    return { em, cues, concept, kw, no };
   });
   feats.forEach((f, i) => {
     if (!f) return;
     const wi = wordInfo[i];
     f.keyStrength = wi ? wi.kw.strength : 0;
-    f.keyLetters = !!wi && wi.kw.k >= 0 && canSplit(pre[i].ws[wi.kw.k].text) && !L[i].who;
-    f.cueLetters = !!wi && [...wi.cues.values()].includes("wave");
+    f.cues = new Set(wi ? wi.cues.values() : []);
   });
-  const treat = pickTreatments(feats);
+  const treat = pickTreatments(feats, deck);
 
-  // 3. Klassen und Variablen
-  return pre.map((p, i) => {
+  // 3. Schriften: Rolle je Zeile (Rezept, Teil, Wortbild), Pinsel nur für ein Wort oder einen kurzen Ruf – dann die
+  // Fenster-Regel über den ganzen Song
+  const fontsRaw = pre.map((p, i) => {
+    const f = feats[i], t = treat[i];
+    if (!f || !t) return null;
+    const line = lineRole({ ...f, t }, deck.fonts, level);
+    let word = "";
+    const wi = wordInfo[i];
+    if (deck.fonts.includes("marker") && level !== "subtle") {
+      if (level === "wild" && f.shout && markerOk(p.text, f.n) && !line) return { line: "marker", word: "" };
+      if (t === "key" && wi && wi.kw.k >= 0 && markerOk(p.ws[wi.kw.k].text, 1)) word = "marker";
+    }
+    if (!word && !line && wi && deck.fonts.includes("wide")) for (const [k, c] of wi.cues) if ((c === "jolt" || c === "neon") && covers("wide", p.ws[k].text)) word = "wide";
+    return { line, word };
+  });
+  const fonts = limitFonts(fontsRaw, { max: 2, share: level === "wild" ? 0.6 : 0.4 });
+
+  // 4. Klassen und Variablen
+  let preRun = 0;
+  const plan = pre.map((p, i) => {
     const { l, ws } = p;
     const cls = [], vars = {};
     const t = treat[i] || "";
+    const R = RECIPES[t];
     cls.push(sectionStyle(sectionKind(parts, l.t), { repeated: p.repeated }));
+    if (l.text === "♪") cls.push("is-p-note");
     if (t) cls.push("is-t-" + t);
     if (dropIn.has(i) && !still) cls.push("is-p-drop");
     const side = voiceSide(l.who);
@@ -620,11 +670,36 @@ export function planPlayful(lines, wordLists, d, o = {}) {
       cls.push("is-p-shout");
       shouts++;
     }
+    const fo = fonts[i] || { line: "", word: "" };
+    if (fo.line) cls.push("is-f-" + fo.line);
+    // Stimmung der ganzen Zeile als leichte Farbe (Nacht/Trauer, Hoffnung/Freude)
+    const f = feats[i];
+    const tint = f && !l.who ? (f.mood <= -0.5 ? "dark" : f.mood >= 0.6 ? "light" : "") : "";
+    if (tint) cls.push("is-k-" + tint);
     const wi = wordInfo[i];
-    if (!wi) return { t, cls, vars, words: [] };
-    const { em, cues, kw } = wi;
+    // Spielart: Richtung, Stärke, Kurve – aus Deck, Teil und Wiederholung
+    const kind = p.kind;
+    preRun = kind === "pre" ? preRun + 1 : 0;
+    const dir = hash01(deck.seed + "|dir|" + (f?.key || i) + "|" + i) < 0.5 ? -1 : 1;
+    let amp = deck.amp * (AMP[kind] ?? 1) * (level === "wild" ? 1.15 : 1);
+    if (kind === "pre") amp *= 0.8 + Math.min(4, preRun) * 0.1;
+    if (level === "subtle") amp = 0.55;
+    const easeKey = R?.ease || (kind === "chorus" || kind === "drop" ? deck.ease[0] : deck.ease[1]);
+    const v = t ? `${t}:${dir > 0 ? "r" : "l"}:${Math.round(amp * 10)}:${easeKey}` : "";
+    if (t && !still) {
+      vars["--pez"] = EASE[easeKey] || EASE.expo;
+      if (R?.ln) cls.push("is-l-" + R.ln);
+    }
+    if (!wi) {
+      if (tint) cls.push("is-pk");
+      return { t, v, cls, vars, font: fo, words: [] };
+    }
+    const { em, cues, concept, kw } = wi;
     const hold = heldNotes(ws);
     const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
+    const lead = still ? 0 : leadOf(t);
+    let coloured = !!tint;
+    const wideAt = fo.word === "wide" ? [...cues].find(([, c]) => c === "jolt" || c === "neon")?.[0] : -1;
     const words = ws.map((w, k) => {
       const wc = [], wv = {};
       if (em[k].cls) wc.push(em[k].cls);
@@ -632,71 +707,120 @@ export function planPlayful(lines, wordLists, d, o = {}) {
       const isKey = k === kw.k && (t === "key" || t === "wave");
       if (isKey) {
         wc.push("is-p-key");
-        // je länger das Wort, desto weniger wächst es (passt in die Spalte)
+        // je länger das Wort, desto weniger wächst es; --pkn (Zeichen) begrenzt es zusätzlich auf die Spaltenbreite
         if (t === "key") wv["--pk"] = String(r2(clamp(2.6 - 0.12 * [...bare(w.text)].length, 1.6, 2.4)));
+        wv["--pkn"] = String(Math.max(2, [...String(w.text)].length));
       }
       if (t === "split") wc.push(k < half ? "is-p-l" : "is-p-r");
       if (t === "stagger" && k % 2 === 1) wc.push("is-p-odd");
       if (t === "collide" && n > 1) wv["--pc"] = String(r2((k - mid) / Math.max(1, mid)));
+      if ((fo.word === "marker" && k === kw.k) || k === wideAt) wc.push("is-f-" + fo.word);
+      // Farbe aus der Bedeutung (auch ohne Bewegung; Duett-Farben haben Vorrang)
+      const c = cues.get(k);
+      const ck = c && !l.who ? CUE_KIND[c] : "";
+      if (ck) {
+        wc.push("is-k", "is-k-" + ck);
+        if (ck === "fire" || ck === "gold" || ck === "neon") wc.push("is-kg");
+        coloured = true;
+      }
       let chars = false, tx = "";
+      const out = { cls: wc, vars: wv, lead };
       if (!still) {
+        // Wartezustand (wo das Wort vor seinem Einsatz steht) und Vorlauf
+        const len = [...String(w.text)].length;
+        const useLetters = !!R?.L && (lettersOk(ws, l.who) || isKey) && canSplit(w.text);
+        if (!useLetters) Object.assign(wv, poseVars(wordPose(t, { k, n, dir, amp, len, key: isKey, seed: deck.seed + "|" + i })));
+        if (lead) wv["--pl"] = lead + "ms";
         if (hold[k].held) {
           wc.push("is-p-held");
           wv["--hd"] = hold[k].hd + "ms";
         }
         if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
-        const c = cues.get(k);
+        if (bars?.length && real && !w.est && onBeat(w.a, bars, 70)) wc.push("is-p-bar");
+        let acc = R?.acc || "";
         if (c) {
           wc.push("is-p-cue", "is-c-" + c);
+          // Spielart des Wortbilds: je Begriff und Song eine andere
+          const fv = fxVariant(c, concept.get(k) || c, deck.fx);
+          if (fv?.n) Object.assign(wv, fxVars(fv));
+          if (fv?.pt && level !== "subtle") {
+            wc.push("is-pt");
+            Object.assign(wv, particleVars(fv.pt));
+          }
           if (GLOWS.has(c)) {
             wc.push("is-cg");
             tx = String(w.text || "");
           }
-          if (LETTERS.has(c) && canSplit(w.text) && !l.who) chars = true;
+          if (LETTERS.has(c) && canSplit(w.text) && !l.who && level !== "subtle") chars = true;
         }
         if (isKey && t === "wave" && canSplit(w.text) && !l.who) chars = true;
+        if (useLetters) chars = letterPoses(t, w.text, { k, n, dir, amp, seed: deck.seed + "|" + i, lead });
         if (chars) {
           // bewegte Buchstaben und eine stille Kopie des ganzen Worts passen nicht übereinander: kein Schein
-          if (tx) wc.splice(wc.indexOf("is-cg"), 1), (tx = "");
+          if (tx) {
+            wc.splice(wc.indexOf("is-cg"), 1);
+            tx = "";
+          }
           wc.push("is-split");
           wv["--cn"] = String([...String(w.text)].length);
         }
+        // Echo braucht die Kopie (::before) für sich
+        if (acc === "echo" && (tx || chars)) acc = "";
+        if (acc === "echo") tx = String(w.text || "");
+        if (!acc && wc.includes("is-p-bar")) acc = "bar";
+        else if (!acc && wc.includes("is-p-beat")) acc = "beat";
+        if (acc && level !== "subtle") {
+          wv["--pac"] = "m-a-" + acc;
+          wv["--pad"] = ACCENTS[acc] + "ms";
+          if (acc === "echo") wc.push("is-echo");
+        }
+        if (R?.caret && !c) wc.push("is-caret");
       }
-      const out = { cls: wc, vars: wv };
-      if (chars) out.chars = true;
+      if (chars) out.chars = chars;
       if (tx) out.tx = tx;
       return out;
     });
-    return { t, cls, vars, words };
+    if (coloured) cls.push("is-pk");
+    return { t, v, cls, vars, font: fo, words };
   });
+  plan.deck = deck;
+  return plan;
 }
 
 /* ---- Last: wie viele Elemente einer Zeile höchstens gleichzeitig animiert sind (Wörter + Buchstaben) */
-// Für den Leistungs-Test: die Bewegung bleibt auf die aktive Zeile beschränkt, also zählt je Zeile.
+// Für den Leistungs-Test: die Bewegung bleibt auf die aktive Zeile (±1) beschränkt, also zählt je Zeile.
 export function motionLoad(linePlan) {
   if (!linePlan) return 0;
-  let n = ["punch", "slam", "collide", "tilt"].includes(linePlan.t) ? 1 : 0;
+  let n = linePlan.cls.some((c) => c.startsWith("is-l-")) || ["punch", "slam", "collide", "tilt"].includes(linePlan.t) ? 1 : 0;
   for (const w of linePlan.words || []) {
-    const moving = w.cls.some((c) => c.startsWith("is-c-") || c === "is-p-held" || c === "is-p-beat") || NEEDS_WORDS.has(linePlan.t) || linePlan.t === "caps";
-    if (moving) n++;
-    if (w.chars) n += Number(w.vars["--cn"]) || 0;
-    if (w.cls.includes("is-cg")) n++;
+    if (Array.isArray(w.chars)) n += w.chars.length;
+    else {
+      const moving = w.cls.some((c) => c.startsWith("is-c-") || c === "is-p-held" || c === "is-p-beat") || Object.keys(w.vars).some((k) => k.startsWith("--w")) || "--pac" in w.vars;
+      if (moving) n++;
+      if (w.chars) n += Number(w.vars["--cn"]) || 0;
+    }
+    if (w.cls.includes("is-cg") || w.cls.includes("is-echo")) n++;
+    if (w.cls.includes("is-pt")) n++;
   }
   return n;
 }
 
 /* ---- An die Zeilen setzen (DOM) – nur beim Aufbau und wenn die Analyse nachkommt */
-const PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pc", "--cn"];
+const PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pkn", "--pc", "--cn", "--wx", "--wy", "--wr", "--ws", "--wo", "--wt", "--wog", "--pl", "--pac", "--pad", "--pez",
+  "--pcn", "--pcd", "--qk", "--qs", "--qy", "--qr", "--qx", "--qo", "--ptw", "--pth", "--ptr", "--ptc", "--ptx", "--pty", "--pts", "--ptd", "--ptq"];
+const PCLS = /^(is-p-|is-t-|is-c-|is-f-|is-k|is-l-)/;
+const PONE = new Set(["is-cg", "is-split", "is-pt", "is-echo", "is-caret", "is-pk", "is-pnext"]);
 function strip(el, text) {
   if (!el) return;
-  for (const c of [...el.classList]) if (c.startsWith("is-p-") || c.startsWith("is-t-") || c.startsWith("is-c-") || c === "is-cg" || c === "is-split") el.classList.remove(c);
+  for (const c of [...el.classList]) if (PCLS.test(c) || PONE.has(c)) el.classList.remove(c);
   for (const v of PVARS) el.style.removeProperty(v);
   if (el.dataset?.tx != null) delete el.dataset.tx;
   // in Buchstaben zerlegt: wieder ein Text
   if (text != null && el.firstElementChild?.classList?.contains("m-ch")) el.textContent = text;
 }
-// Wort in Buchstaben (je .m-ch mit --ci); die Karaoke-Füllung rechnet daraus je Buchstabe ihren Stand
-function letters(el, text) {
+// Wort in Buchstaben (je .m-ch mit --ci); die Karaoke-Füllung rechnet daraus je Buchstabe ihren Stand.
+// poses: je Buchstabe Wartezustand und Staffelung (--ld) aus dem Rezept
+function letters(el, text, poses) {
   const doc = el.ownerDocument;
   if (!doc || el.firstElementChild) return;
   el.textContent = "";
@@ -705,28 +829,55 @@ function letters(el, text) {
     s.className = "m-ch";
     s.textContent = ch;
     s.style.setProperty("--ci", k);
+    const p = Array.isArray(poses) ? poses[k] : null;
+    if (p) {
+      if (p.ld) s.style.setProperty("--ld", p.ld + "ms");
+      for (const [kk, v] of Object.entries(p.vars)) s.style.setProperty(kk, v);
+    }
     el.append(s);
   });
 }
 // lineEls: die Zeilen-Elemente (gleiche Reihenfolge wie lines), wordLists[i][k].el: das Wort-Element.
-// plan = null: alles wieder entfernen (Option aus)
+// plan = null: alles wieder entfernen (Option aus). Merkt sich den Vorlauf je Wort (wordLists[i][k].lead).
 export function paintPlayful(lineEls, plan, wordLists) {
   const n = lineEls?.length || 0;
   for (let i = 0; i < n; i++) {
     const el = lineEls[i], p = plan?.[i];
     strip(el);
     const ws = wordLists?.[i] || [];
-    ws.forEach((w) => strip(w.el, w.text));
+    ws.forEach((w) => {
+      strip(w.el, w.text);
+      w.lead = 0;
+    });
     if (!p) continue;
     if (p.cls.length) el.classList.add(...p.cls);
     for (const [k, v] of Object.entries(p.vars)) el.style.setProperty(k, v);
     p.words.forEach((pw, k) => {
       const wel = ws[k]?.el;
       if (!wel) return;
+      ws[k].lead = pw.lead || 0;
       if (pw.cls.length) wel.classList.add(...pw.cls);
       for (const [kk, v] of Object.entries(pw.vars)) wel.style.setProperty(kk, v);
       if (pw.tx) wel.dataset.tx = pw.tx;
-      if (pw.chars) letters(wel, ws[k].text);
+      if (pw.chars) letters(wel, ws[k].text, pw.chars);
     });
   }
+}
+
+/* ---- ♪ (Instrumental-Lücke): wippt im Takt, auf der Eins stärker. Lage im Takt (vier Schläge) beim Zeilenwechsel */
+// → { p: Schlaglänge, bar: Taktlänge, d: Verzögerung (negativ: so weit ist der Takt schon) } oder null
+export function barPhase(beats, bars, sec) {
+  const b = beatPhase(beats, sec);
+  if (!b) return null;
+  const bar = 4 * b.p;
+  let start = null;
+  if (bars?.length) {
+    const k = seek(bars, sec, "t");
+    if (k >= 0) start = bars[k].t;
+  }
+  if (start == null) {
+    const k = seek(beats, sec, "t");
+    start = beats[k - (k % 4)].t;
+  }
+  return { p: b.p, bar, d: -Math.round(((sec - start) * 1000) % bar) };
 }
