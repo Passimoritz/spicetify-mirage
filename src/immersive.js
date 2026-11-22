@@ -47,6 +47,8 @@ import { createSteadyClock, createBeatClock } from "./steady.js";
 import { drawWavefield, drawCoverDust, resetVizExtra } from "./vizextra.js";
 import { createAlbumView } from "./albumview.js";
 import { createClockView } from "./clockview.js";
+// i-playful: verspielter Liedtext-Stil (Entscheidung in lyricstyle.js, Bewegung in user.css)
+import { planPlayful, paintPlayful, beatPhase } from "./lyricstyle.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
 const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
@@ -511,6 +513,7 @@ Probe-FX: ${pfx}`;
       lastBeatIdx = -1;
       if (el.dataset.mode === "party") party.prepare(currentItem()).then(updateKicker);
       else updateKicker();
+      if (cfg.lyrPlayful && lyr?.synced) playfulSoon(lyrToken);
     });
   }
 
@@ -1512,6 +1515,8 @@ Probe-FX: ${pfx}`;
     whenIdle(() => wordPrep?.(), el.dataset.mode === "party" ? 400 : 1500);
     const karaoke = cfg.karaoke && got.synced;
     el.classList.toggle("is-karaoke", karaoke);
+    // [playful] der verspielte Stil braucht die Wörter einzeln – auch ohne Karaoke-Füllung
+    const split = karaoke || (!!cfg.lyrPlayful && got.synced);
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
     const frag = document.createDocumentFragment();
     if (!got.synced) {
@@ -1531,7 +1536,7 @@ Probe-FX: ${pfx}`;
       // [duet 1.27] Stimme (Farbe) und Hintergrundgesang als eigene, kleinere Zeile
       if (l.who) d.dataset.who = l.who;
       if (l.bg) d.classList.add("is-bgline");
-      if (karaoke && l.text !== "♪") {
+      if (split && l.text !== "♪") {
         const box = document.createElement("span");
         box.className = "m-im-words";
         const list = [], wt = wordTimes(got.lines, i);
@@ -1550,7 +1555,7 @@ Probe-FX: ${pfx}`;
           const into = under && k >= tail ? under : box;
           into.append(s);
           if (w.sp !== false && k < wt.length - 1 && !(under && k === tail - 1)) into.append(" ");
-          list.push({ el: s, a: w.a, b: w.b, p: -1, text: w.text, sy: w.sy || null });
+          list.push({ el: s, a: w.a, b: w.b, p: -1, text: w.text, sy: w.sy || null, est: !!w.est, bg: !!bgs[k] });
           if (w.est) list.est = true;
         });
         if (under) box.append(under);
@@ -1577,6 +1582,7 @@ Probe-FX: ${pfx}`;
     else snapLyrics(() => (q.inner.style.transform = ""));
     // Übersetzung und Lautschrift erst, wenn alle Zeilen stehen (sie hängen sich an die Zeilen)
     const extras = () => {
+      playfulSoon(token, true); // [playful] erst, wenn alle Zeilen stehen
       showTrBtn();
       if (cfg.translate) addTranslations(token);
       if (cfg.romanize) addRomaji(token);
@@ -1616,6 +1622,27 @@ Probe-FX: ${pfx}`;
   // Layout mit/ohne Liedtext über den Wächter (je Song höchstens ein Wechsel, lyrlayout.js)
   function noLyrFor(uri, got) {
     if (el) setNoLyr(lyrGate.next(uri, got, el.classList.contains("is-nolyr")));
+  }
+  // [playful] Verspielter Stil: Klassen und Variablen einmal je Song (und noch einmal, wenn die Analyse nachkommt) –
+  // im Leerlauf, weil das Wörterbuch beim ersten Mal aufgebaut wird. Danach gleitet der Text an seine neue Lage.
+  let playfulKey = null;
+  function playfulSoon(token, fresh) {
+    // frisch aufgebaute Zeilen (auch derselbe Text nach dem Umschalten) brauchen ihre Klassen neu
+    if (fresh) playfulKey = null;
+    const run = () => {
+      if (token !== lyrToken || !q.lyrics) return;
+      const on = !!cfg.lyrPlayful && !!lyr?.synced && !!lyr.lines?.length;
+      q.lyrics.classList.toggle("is-playful", on);
+      if (!on) return;
+      const d = audio.uri === lyrUri ? audio.data : null;
+      if (playfulKey?.lyr === lyr && playfulKey.d === d) return;
+      playfulKey = { lyr, d };
+      paintPlayful(q.inner.children, planPlayful(lyr.lines, words, d, { lexicon: LEX }), words);
+      placeSoon("glide");
+    };
+    if (!cfg.lyrPlayful) return run();
+    if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 400 });
+    else setTimeout(run, 120);
   }
   // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück – am Zeilenende als
   // kleine Zeile darunter. Etiketten wie „(x2)“ bleiben normaler Text. all: Duett „zusammen“ – der Text steckt
@@ -1972,7 +1999,13 @@ Probe-FX: ${pfx}`;
       // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben
       if (activeEl) activeEl.style.scale = "";
       activeEl?.classList.remove("is-hype");
+      // [playful] die alte Zeile gibt ihre gesungenen Wörter frei (kommt man zurück, landen sie wieder)
+      if (playOn) for (const w of words[was] || []) if (w.on) w.el.classList.remove("is-sung"), (w.on = false);
       activeEl = lines[i] || null;
+      playOn = !!activeEl && !!cfg.lyrPlayful && q.lyrics.classList.contains("is-playful");
+      // [playful] Wippen im Takt: Länge und Lage des Schlags einmal je Zeile (CSS-Animation, kein Rechnen im Bild)
+      const bp = playOn && activeEl.classList.contains("is-p-chorus") && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1000) : null;
+      if (bp) activeEl.style.setProperty("--pb", bp.p + "ms"), activeEl.style.setProperty("--pbd", bp.d + "ms");
       lastBounce = "";
       hypeOn = !!activeEl && cfg.partyHype && el.dataset.mode === "party" && hype.has(i);
       activeEl?.classList.toggle("is-hype", hypeOn);
@@ -2010,6 +2043,8 @@ Probe-FX: ${pfx}`;
         if (p !== w.p) {
           w.p = p;
           w.el.style.setProperty("--p", p);
+          // [playful] das Wort landet: eine Klasse beim Einsatz, den Rest macht CSS
+          if (playOn && p > 0 !== !!w.on) w.el.classList.toggle("is-sung", (w.on = p > 0));
         }
       }
     }
@@ -2546,6 +2581,7 @@ Probe-FX: ${pfx}`;
   }
   let shakeX = 0, shakeY = 0;
   let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+  let playOn = false;
   let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "", vizBloom = 0;
   const WHITE = [255, 255, 255];
   const mixRGB = (a, c, f) => [0, 1, 2].map((k) => Math.round(a[k] + (c[k] - a[k]) * f));

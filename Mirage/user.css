@@ -7917,3 +7917,349 @@ html.mirage-calm #mirage-immersive .m-im-toast {
 body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overlay):has(.mirage-settings) {
   z-index: 10000 !important;
 }
+/* === i-playful === */
+/* Verspielter Liedtext-Stil (Einstellung „Verspielter Stil“, Standard aus). Klassen und Variablen setzt lyricstyle.js
+   einmal je Song an Zeilen und Wörter; immersive.js schaltet nur .is-sung (Wort hat eingesetzt) und je Zeile die
+   Schlaglänge (--pb, --pbd). Größe und Stärke gelten immer; bewegt wird nur ohne „Ruhig“, „Keine Blitze“ und
+   „weniger Bewegung“ – und nur mit transform/opacity (einzelne Eigenschaften translate/scale/rotate, damit sie
+   sich mit der Vergrößerung der aktiven Zeile und dem Party-Wippen verrechnen statt sie zu ersetzen). */
+#mirage-immersive .m-im-lyrics.is-playful {
+  --pci: infinite;
+  --pbn: m-p-bounce;
+}
+/* „Leicht“: Wortbilder nur zweimal statt immerzu, kein Wippen der Zeile */
+html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
+  --pci: 2;
+  --pbn: none;
+}
+/* Satz der Teile: --m-ps skaliert die Zeile (Strophe kompakt, Refrain groß, Rand ruhig – nie unter 90 %) */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line {
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1));
+  font-weight: 700;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line {
+  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1));
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-bgline {
+  font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72);
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-bgline {
+  font-size: calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * 0.72);
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-verse {
+  --m-ps: 0.94;
+  line-height: 1.1;
+  margin-bottom: calc(0.38em * var(--m-lyr-gap, 1));
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-chorus {
+  --m-ps: 1.1;
+  font-weight: 800;
+}
+/* Refrain mittig (Party steht ohnehin mittig): wächst von der Mitte aus, Reserve auf beiden Seiten */
+#mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus {
+  text-align: center;
+  transform-origin: center;
+  padding-left: calc((var(--m-act) - 1) * 70%);
+  padding-right: calc((var(--m-act) - 1) * 70%);
+}
+/* Bridge: anders gesetzt – schräg, luftiger, eingerückt */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-bridge {
+  font-style: italic;
+  letter-spacing: 0;
+  padding-left: 1.2em;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-calm {
+  --m-ps: 0.9;
+  font-weight: 600;
+}
+/* gerufene Zeile */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-shout {
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+/* Duett: jede Stimme ihre Seite (Farben wie bisher aus lyricvoices.js), zusammen in der Mitte */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-left {
+  text-align: left;
+  transform-origin: left center;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-right {
+  text-align: right;
+  transform-origin: right center;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-mid {
+  text-align: center;
+  transform-origin: center;
+}
+#mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line[data-who].is-p-right {
+  border-left-width: 0;
+  border-right: 3px solid transparent;
+  padding-left: calc((var(--m-act) - 1) * 140%);
+  padding-right: 0.4em;
+}
+#mirage-immersive .m-im-lyrics.is-playful.is-voices .m-im-line[data-who].is-p-right {
+  border-right-color: rgba(var(--m-vc-rgb), 0.45);
+}
+#mirage-immersive .m-im-lyrics.is-playful.is-voices .m-im-line[data-who].is-p-right.is-active {
+  border-right-color: var(--m-vc);
+}
+/* Hintergrundgesang: klein, schräg und versetzt daneben (Winkel und Versatz abwechselnd, --pr/--px) */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-adlib {
+  width: fit-content;
+  max-width: 100%;
+  rotate: var(--pr, -3deg);
+  translate: var(--px, 2em) 0;
+}
+/* Party steht mittig: der Hintergrundgesang auch, nur leicht versetzt */
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-p-adlib {
+  margin-left: auto;
+  margin-right: auto;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-adlib.is-p-right {
+  margin-left: auto;
+  translate: calc(-1 * var(--px, 2em)) 0;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line .m-im-bgl {
+  width: fit-content;
+  max-width: 100%;
+  rotate: var(--pr, -3deg);
+  translate: 1.2em 0;
+  transform-origin: left center;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:not(.is-p-adlib) > .is-bg:not(.m-im-bgl),
+#mirage-immersive .m-im-lyrics.is-playful .m-im-words > .is-bg {
+  display: inline-block;
+  rotate: var(--pr, -3deg);
+  translate: 0 -0.12em;
+}
+/* Wörter: einzeln setzbar; Betonung über Größe (--pz 0,88 … 1,16) und Stärke */
+#mirage-immersive .m-im-lyrics.is-playful .m-w {
+  display: inline-block;
+  max-width: 100%;
+  font-size: calc(1em * var(--pz, 1));
+  transform-origin: center 70%;
+}
+/* gehaltener Ton dehnt sich nach rechts – in die Lücke zum nächsten Wort bzw. ans Zeilenende, nicht ins Wort davor */
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-held {
+  transform-origin: left 70%;
+  margin-right: 0.12em;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-loud {
+  font-weight: 800;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-soft {
+  font-weight: 500;
+  opacity: 0.82;
+}
+/* Bewegung – nur ohne „Ruhig“, „Keine Blitze“ und „weniger Bewegung“, und nur in der aktiven Zeile */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-sung {
+    animation: m-p-land 0.34s var(--m-spring) both;
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-beat.is-sung {
+    animation: m-p-land-beat 0.4s var(--m-spring) both;
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-held.is-sung {
+    animation:
+      m-p-land 0.34s var(--m-spring) both,
+      m-p-hold var(--hd, 1s) cubic-bezier(0.2, 0.6, 0.3, 1) 0.08s both;
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-cue.is-sung {
+    animation:
+      m-p-land 0.34s var(--m-spring) both,
+      var(--pcue, none) var(--pcd, 1s) ease-in-out 0.25s var(--pci, infinite);
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-cue.is-p-held.is-sung {
+    animation:
+      m-p-land 0.34s var(--m-spring) both,
+      m-p-hold var(--hd, 1s) cubic-bezier(0.2, 0.6, 0.3, 1) 0.08s both,
+      var(--pcue, none) var(--pcd, 1s) ease-in-out 0.25s var(--pci, infinite);
+  }
+  /* Regen: ein Tropfen löst sich vom Wort (nicht bei „Leicht“) */
+  html:not(.mirage-calm, .mirage-noflash, .mirage-lite) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-drip.is-sung::after {
+    content: "";
+    position: absolute;
+    left: 55%;
+    top: 78%;
+    width: 0.12em;
+    height: 0.17em;
+    border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+    background: rgb(150 200 255 / 0.85);
+    pointer-events: none;
+    animation: m-p-drop 1.5s ease-in 0.3s infinite both;
+  }
+  /* Refrain wippt im Takt (Länge und Lage des Schlags setzt immersive.js je Zeile); Party wippt schon selbst */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib) {
+    animation: var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) infinite;
+  }
+  /* Auftritt nach dem Drop */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-drop.is-active {
+    animation: m-p-drop-in 0.7s var(--m-spring) both;
+  }
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-p-drop.is-active:not(.is-p-adlib) {
+    animation:
+      m-p-drop-in 0.7s var(--m-spring) both,
+      var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) infinite;
+  }
+}
+/* Wortbilder: welche Bewegung und wie lang ein Durchgang dauert */
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-flicker {
+  --pcue: m-p-flicker;
+  --pcd: 0.9s;
+}
+/* Regen-Wort: auch Bezug für den Tropfen (::after) */
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-drip {
+  position: relative;
+  --pcue: m-p-dip;
+  --pcd: 1.5s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-pulse {
+  --pcue: m-p-pulse;
+  --pcd: 1s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-rise {
+  --pcue: m-p-rise;
+  --pcd: 1.6s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-fall {
+  --pcue: m-p-fall;
+  --pcd: 1.8s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-twinkle {
+  --pcue: m-p-twinkle;
+  --pcd: 1.4s;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-shiver {
+  --pcue: m-p-shiver;
+  --pcd: 0.5s;
+}
+@keyframes m-p-land {
+  from {
+    translate: 0 -0.14em;
+  }
+}
+@keyframes m-p-land-beat {
+  from {
+    translate: 0 -0.24em;
+    scale: 1.12;
+  }
+}
+@keyframes m-p-hold {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.13 1;
+  }
+}
+@keyframes m-p-flicker {
+  0%,
+  100% {
+    transform: none;
+    text-shadow: 0 0 0.25em rgb(255 140 40 / 0.55);
+  }
+  25% {
+    transform: skewX(-2deg) scaleY(1.04);
+    text-shadow: 0 -0.05em 0.4em rgb(255 110 30 / 0.8);
+  }
+  55% {
+    transform: skewX(1.5deg) scaleY(0.98);
+    text-shadow: 0 0 0.3em rgb(255 170 60 / 0.6);
+  }
+}
+@keyframes m-p-dip {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    transform: translateY(0.05em);
+  }
+}
+@keyframes m-p-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0.9em) scale(1);
+  }
+}
+@keyframes m-p-pulse {
+  0%,
+  40%,
+  100% {
+    transform: none;
+  }
+  12% {
+    transform: scale(1.12);
+  }
+  26% {
+    transform: scale(1.05);
+  }
+}
+@keyframes m-p-rise {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateY(-0.2em);
+  }
+}
+@keyframes m-p-fall {
+  0%,
+  100% {
+    transform: none;
+  }
+  45% {
+    transform: translateY(0.22em) rotate(5deg);
+  }
+}
+@keyframes m-p-twinkle {
+  0%,
+  100% {
+    transform: none;
+    text-shadow: none;
+  }
+  30% {
+    transform: scale(1.05);
+    text-shadow:
+      0 0 0.2em rgb(255 255 255 / 0.9),
+      0 0 0.6em rgb(255 240 200 / 0.5);
+  }
+}
+@keyframes m-p-shiver {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translateX(-0.025em);
+  }
+  75% {
+    transform: translateX(0.025em);
+  }
+}
+@keyframes m-p-bounce {
+  0% {
+    translate: 0 0.045em;
+  }
+  30% {
+    translate: 0 -0.03em;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+@keyframes m-p-drop-in {
+  from {
+    opacity: 0.2;
+    scale: 0.82;
+    translate: 0 0.4em;
+  }
+}
+/* === end i-playful === */

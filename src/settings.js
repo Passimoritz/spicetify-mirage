@@ -757,6 +757,8 @@ function render(box) {
       toggle("karaoke", () => immersive.reloadLyrics()),
       // [duet 1.27] Duett-Stimmen farbig (nur Farbe, kein Neuaufbau)
       toggle("lyrVoices", () => immersive.styleLyrics()),
+      // i-playful: verspielter Stil (baut den Text neu auf – die Wörter brauchen dann eigene Elemente)
+      toggle("lyrPlayful", () => immersive.reloadLyrics()),
       range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("romanize", () => immersive.reloadLyrics()),

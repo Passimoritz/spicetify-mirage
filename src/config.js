@@ -63,6 +63,8 @@ const DEFAULTS = {
   karaoke: true,
   // Duette: jede Stimme in ihrer Farbe (1.27)
   lyrVoices: true,
+  // Verspielter Liedtext-Stil: Betonung, gehaltene Töne, Takt, Wortbilder (lyricstyle.js) – nur auf Wunsch
+  lyrPlayful: false,
   font: "outfit",
   lyricPicks: {},
   // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)
