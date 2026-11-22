@@ -49,6 +49,7 @@ import { createAlbumView } from "./albumview.js";
 import { createClockView } from "./clockview.js";
 // i-playful: verspielter Liedtext-Stil (Entscheidung in lyricstyle.js, Bewegung in user.css)
 import { planPlayful, paintPlayful, beatPhase } from "./lyricstyle.js";
+import { lowpass, lowpassHue, fpsDivisor, refreshFrom } from "./fxenv.js";
 
 // Der Immersiv-Modus ist in jedem Schema dunkel: im hellen Schema die Leitfarben für dunklen Grund
 const imPalette = () => (root.classList.contains("mirage-light") ? darkGround(palette()) : palette());
@@ -168,6 +169,8 @@ Probe-FX: ${pfx}`;
   // Bewegungs- und Schlag-Uhr ohne Sprünge: Spulen, Songwechsel und Ansichtswechsel rissen sonst Kranz und
   // Scheinwerfer im selben Bild um ganze Drehungen weiter (steady.js)
   const motion = createSteadyClock(), beatsClock = createBeatClock();
+  // Melodie-Tönung: geglätteter Farbton der gespielten Tonklasse (~1 s) und wie stark sie gerade wirkt (0..1)
+  const pitchSm = { h: -1, w: 0 };
   let palShown = null, palFade = null, palSm = null;
   const pit = new Float32Array(12);
   const vizRect = { n: 0, r: null };
@@ -2113,7 +2116,9 @@ Probe-FX: ${pfx}`;
     // ruhig = wenig Energie, kein Aufbau, kein Drop in Sicht → mit 30 Bildern/s ist es nicht zu unterscheiden
     // erst nach 3 s Ruhe und nie in den ersten 8 s eines Songs: sonst fiel genau der Übergang (leises Intro)
     // auf 30 Bilder/s, und kurze leise Takte schalteten ständig hin und her – das wirkte wie Ruckeln
-    const rawQuiet = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop;
+    // … und nur, solange kein Effekt läuft (Lichtwisch, Klang-Effekt, Moment der Regie): Bewegung bei 30 Bildern/s ruckelt
+    const fxRun = !!px && (px.wipe >= 0 || !!curInst?.sfx?.length || (px.scn && (px.scn.dx > 0.01 || px.scn.mod > 0.01 || px.scn.back > 0.01 || px.scn.open > 0.01 || px.scn.echo > 0.01)));
+    const rawQuiet = !!px && px.energy < 0.25 && px.build < 0.1 && px.toDrop > 5 && !px.drop && !fxRun;
     if (!rawQuiet) quietSince = 0;
     else if (!quietSince) quietSince = now;
     quietNow = rawQuiet && now - quietSince > 3000 && now - songAt > 8000;
@@ -2149,8 +2154,10 @@ Probe-FX: ${pfx}`;
         lastBeatIdx = bi;
         const c = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
         // Party: Ringe nur auf betonten Schlägen, kräftiger je mehr Energie; im Break keine
+        // (solange das Drop-Bild der Regie führt, treten die Schlag-Ringe deutlich zurück – ein Bild je Moment)
         if (px) {
-          if (V.rings && (px.beat > 0.5 || (px.kickHit && px.energy > 0.55)) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c, w: 2 + 5 * px.accent });
+          const lead = 1 - 0.7 * clamp((px.scn?.dx || 0) / 0.3, 0, 1);
+          if (V.rings && (px.beat > 0.5 || (px.kickHit && px.energy > 0.55)) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c * lead, w: 2 + 5 * px.accent });
         } else if (V.rings && bi % V.ring === 0) rings.push({ r: R, a: 0.6 * c, w: 2 });
       }
     }
@@ -2189,7 +2196,14 @@ Probe-FX: ${pfx}`;
     }
     if (cfg.calm) return;
 
-    let pal = px ? vivid(imPalette(), px.minor, px.P.tint, px.tone > 0.35 ? px.pitch : -1, px.keyPc) : imPalette();
+    // Melodie-Tönung: die Tonklasse kommt je Viertelsekunde neu – geglättet über ~1 s (auf dem Farbkreis, im HSL-Raum),
+    // statt bei jedem Wechsel umzufärben; wo keine Melodie erkannt wird, klingt die Tönung langsam aus
+    if (px) {
+      const on = px.tone > 0.35 && px.pitch >= 0, target = on ? ((px.pitch * 7) % 12) * 30 : -1;
+      if (on) pitchSm.h = pitchSm.h < 0 || px.jump ? target : lowpassHue(pitchSm.h, target, dt, 1);
+      pitchSm.w = lowpass(pitchSm.w, on ? 1 : 0, dt, on ? 0.5 : 1);
+    }
+    let pal = px ? vivid(imPalette(), px.minor, px.P.tint, pitchSm.h >= 0 && pitchSm.w > 0.02 ? Math.round(pitchSm.h) : -1, px.keyPc, Math.round(pitchSm.w * 50) / 50) : imPalette();
     // Farbkorrektur je Teil (Sättigung, Temperatur, Kontrast, Farbwelt der Bridge)
     pal = gradePal(pal, (px || mood)?.grade);
     if (mood?.dropHit && V.rings) for (let k = 0; k < 2; k++) rings.push({ r: R - k * 40 * dpr, a: 0.8 - k * 0.25, w: 5 - k * 2 });
@@ -2544,12 +2558,14 @@ Probe-FX: ${pfx}`;
     if (px) {
       // Farbfläche: nur Deckkraft und (beim Takt) Farbe ändern – beides ohne Neu-Layout
       partyFx = true;
-      const op = Math.max(px.flash * 0.42, px.ambient || 0).toFixed(2);
+      // (drei Nachkommastellen: in Hundertsteln sprang die Deckkraft beim Abklingen sichtbar in Stufen)
+      const op = Math.max(px.flash * 0.42, px.ambient || 0).toFixed(3);
       if (q.flash.style.opacity !== op) q.flash.style.opacity = op;
       if (px.flashCol !== lastFlashCol) {
         lastFlashCol = px.flashCol;
         const c = pal[px.flashCol];
-        q.flash.style.background = `radial-gradient(70% 60% at 50% 45%, rgba(${c[0]},${c[1]},${c[2]},0.9), rgba(${c[0]},${c[1]},${c[2]},0) 72%)`;
+        // nur die Farbe setzen: der Verlauf (viele Stufen) steht in user.css, die Farbe gleitet dort in 0,35 s hinüber
+        q.flash.style.setProperty("--m-fc", `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`);
       }
       // Wackeln als weiche Schwingung statt Zufallssprung pro Bild (das hakte hin und her); der Kranz wackelt mit
       const ts = now / 1000;
@@ -2580,7 +2596,7 @@ Probe-FX: ${pfx}`;
     }
   }
   let shakeX = 0, shakeY = 0;
-  let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "";
+  let curInst = null, pulseS = 1, lastPulse = "", lastFlashCol = -1, vizErr = null, lostSince = 0, lastKick = "", lastFill = "", lastFillP = "";
   let playOn = false;
   let activeEl = null, lastBounce = "", lastRot = "", lastBgZ = "", vizBloom = 0;
   const WHITE = [255, 255, 255];
@@ -2712,8 +2728,9 @@ Probe-FX: ${pfx}`;
     ctx.restore();
     ctx.globalCompositeOperation = "lighter";
   }
-  function vivid(pal, minor, tint, pitch = -1, keyPc = -1) {
-    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitch + "k" + keyPc;
+  // pitchHue = geglätteter Farbton der Melodie (Grad, −1 = keine), pitchW = wie stark sie wirkt (0..1)
+  function vivid(pal, minor, tint, pitchHue = -1, keyPc = -1, pitchW = 1) {
+    const key = pal.map((c) => c.join(",")).join("|") + (minor ? "m" : "") + (tint || "") + pitchHue + "w" + pitchW + "k" + keyPc;
     if (key === vividKey) return vividPal;
     vividKey = key;
     const hsl = pal.map(rgb2hsl);
@@ -2722,7 +2739,7 @@ Probe-FX: ${pfx}`;
       let hue = grey ? [275, 195, 320][i] : h;
       if (TINT[tint] != null) hue = toward(hue, TINT[tint] + (i - 1) * 22, 0.45);
       // Melodie: die Tonklasse färbt das Akzentlicht (Quintenzirkel – verwandte Töne liegen nah beieinander)
-      if (pitch >= 0) hue = toward(hue, ((pitch * 7) % 12) * 30, i === 2 ? 0.35 : 0.1);
+      if (pitchHue >= 0) hue = toward(hue, pitchHue, (i === 2 ? 0.35 : 0.1) * pitchW);
       // Tonart-Farben: Dur leicht wärmer, Moll leicht kühler, dazu ein Hauch der Tonart (Quintenzirkel)
       if (keyPc >= 0) hue = toward(hue, ((keyPc * 7) % 12) * 30, 0.08);
       hue = toward(hue, minor ? 225 : 35, 0.07);
@@ -2754,7 +2771,7 @@ Probe-FX: ${pfx}`;
         key: px.key, P: { spot: px.spot || P.spot }, spot2: px.spot2 || P.spot, sx: px.sx ?? 1, rig: px.rig || "", spread: px.spread ?? 1, crowd: px.crowd ?? 1, accent: px.accent, kickEnv: px.kickEnv, snareEnv: px.snareEnv, hatEnv: px.hatEnv,
         bass: px.bass || 0, bassPulse: px.bassPulse || 0,
         beat: px.beat, hit: px.hit, energy: px.energy, build: px.build, low: px.low, drop: px.drop, dropHit: px.dropHit,
-        I: px.I, spin: px.spin, level: px.level, scene: px.scene, inBar: px.inBar, phase: px.phase, beatIdx: px.beatIdx,
+        I: px.I, spin: px.spin, level: px.level, scene: px.scene, inBar: px.inBar, barIdx: px.barIdx ?? -1, phase: px.phase, beatIdx: px.beatIdx,
         finale: !!px.finale, blackout: !!px.blackout,
         // Lichtregie (director.js)
         mt: px.mt, mb: px.mb, wipe: px.wipe, wdir: px.wdir, pulse: px.pulse, lift: px.lift, wall: px.wall, vox: px.vox, swell: px.swell,
@@ -2775,7 +2792,7 @@ Probe-FX: ${pfx}`;
       // „Keine Blitze“ für alles Übrige der Bühne (Gitarrenblitze, Handy-Blitze, weißer Drop) · Freigabe der Blitz-Schranke
       noFlash: !!cfg.noFlash, flashGo: !!px.flashGo,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
-      quality: quality.level, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
+      quality: quality.level, qf: Math.round(quality.f1 * 50) / 50, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !PLR.isPlaying(),
       venue: moments.venue || (cfg.partyVenue && cfg.partyVenue !== "auto" ? cfg.partyVenue : ""),
       fog: cfg.partyFog && px.fx && px.level >= 2 && !lightMode(),
@@ -2967,7 +2984,7 @@ Probe-FX: ${pfx}`;
     return c;
   }));
   const glowSprite = (c) => local().glowSprite(c);
-  let venueWorker = null, venueCtx = null, venueOn = false, venueBusy = false, venueSentAt = 0, venueDt = 0;
+  let venueWorker = null, venueCtx = null, venueOn = false, venueBusy = false, venueSentAt = 0, venueDt = 0, venuePaced = false, venueDoneAt = 0;
   // venueUrl: eine Blob-URL für alle Threads (neu anlegen hieße jedes Mal eine neue, nie freigegebene URL);
   // venueGiven: das Canvas gehört schon einem (beendeten) Thread und lässt sich nicht noch einmal übergeben
   let venueUrl = "", venueGiven = false, venueNoThread = false;
@@ -2995,7 +3012,8 @@ Probe-FX: ${pfx}`;
         w.postMessage({ type: "init", canvas: off }, [off]);
         w.onerror = () => venueFallback();
         w.onmessage = (e) => {
-          if (e.data?.type === "done") venueBusy = false;
+          if (e.data?.type === "done") [venueBusy, venueDoneAt] = [false, performance.now()];
+          else if (e.data?.type === "ready") [venuePaced, venueDoneAt] = [!!e.data.paced, performance.now()];
         };
         venueWorker = w;
         return;
@@ -3029,7 +3047,7 @@ Probe-FX: ${pfx}`;
       q.venueEl.width = q.venueEl.height = 0;
     }
     venueLocal = null;
-    venueOn = venueBusy = false;
+    venueOn = venueBusy = venuePaced = false;
     venueDt = 0;
     venueHold.dropHit = venueHold.hit = venueFlashGo = false;
   }
@@ -3054,7 +3072,10 @@ Probe-FX: ${pfx}`;
     venueFlashGo ||= !!st.flashGo;
     if (venueWorker) {
       const now = performance.now();
-      if (venueBusy && now - venueSentAt < 250) return;
+      // Zeichnet der Thread im eigenen Bildtakt (venue-worker.js), bekommt er jeden Zustand und legt selbst zusammen;
+      // ausgelassen wird nur, wenn er seit 250 ms kein Bild fertig hat (hängt) – sonst wie bisher: erst nach „fertig“
+      const stuck = venuePaced ? now - venueDoneAt > 250 : venueBusy;
+      if (stuck && now - venueSentAt < 250) return;
       st.dt = venueDt;
       venueDt = 0;
       Object.assign(st.px, venueHold);
@@ -3091,8 +3112,12 @@ Probe-FX: ${pfx}`;
   // Läuft Party zu langsam (unter ~48 Bilder/s über 2 s), schaltet Mirage teure Details selbst herunter:
   // Stufe 1 = hintere Publikumsreihe, halbe Strahlen, weniger Funken · Stufe 0 = ohne Publikum, Kamera und Tiefe.
   // Läuft es lange flüssig, geht es wieder hoch.
-  const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60 };
+  // f1/f2: gleitende Anteile „mindestens Stufe 1/2“ (0..1, ~1 s) – ein Stufenwechsel mitten im Song blendet über,
+  // statt Punkte, Verläufe und Strahlen im selben Bild umzuschalten (instfx.js, stagefx.js über st.qf)
+  const quality = { level: 2, slow: 0, fast: 0, ema: 1 / 60, f1: 1, f2: 1 };
   function tuneQuality(dt) {
+    quality.f1 = lowpass(quality.f1, quality.level >= 1 ? 1 : 0, dt, 0.35);
+    quality.f2 = lowpass(quality.f2, quality.level >= 2 ? 1 : 0, dt, 0.35);
     quality.ema += (dt - quality.ema) * 0.05;
     // erst bei deutlich unter 40 Bildern/s über 4 s eine Stufe runter, schon nach 5 s flüssig wieder hoch
     if (quality.ema > 1 / 40) {
@@ -3137,12 +3162,18 @@ Probe-FX: ${pfx}`;
       px.beamVis = Math.min(1.2, px.beamVis + 0.25);
       px.lasers = Math.round(px.lasers * 1.5);
     }
-    if (quality.level < 2) {
-      px.lasers = Math.round(px.lasers / 2);
-      px.lvl = Math.min(px.lvl, 1.6);
+    // unter voller Qualität: halb so viele Strahlen, schwächerer Kranz – gleitend: der Kranz folgt f2 stetig, die Zahl der
+    // Strahlen wechselt in der Mitte des Übergangs, während die Strahlen kurz ausgeblendet sind (kein Sprung im Fächer)
+    const f2 = quality.f2;
+    if (f2 < 0.5) px.lasers = Math.round(px.lasers / 2);
+    if (f2 < 0.999) {
+      px.lvl = Math.min(px.lvl, 1.6 + Math.max(0, px.lvl - 1.6) * f2);
+      const d = Math.min(1, Math.abs(2 * f2 - 1) / 0.6);
+      px.beamVis *= d * d * (3 - 2 * d);
     }
     // Übergang zwischen Songs (party.js): die erste Eins des neuen Songs landet mit zwei Ringen
-    if (px.land) rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
+    // (fällt sie mit dem Drop-Bild der Regie zusammen, führt das Drop-Bild – keine Ringe zusätzlich)
+    if (px.land && !((px.scn?.dx || 0) > 0.3)) rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
     showMoments(px, now);
     // Hype-Zeile: alles eine Spur heller und stärker
     if (hypeOn) {
@@ -3245,9 +3276,11 @@ Probe-FX: ${pfx}`;
       depth.y += (ty - depth.y) * (1 - Math.exp(-dt * 3));
       const k = `${depth.x.toFixed(3)}|${depth.y.toFixed(3)}`;
       if (k !== depth.key) {
+        // Titelblock in Hundertstel- statt Zehntelpixeln: er liegt in Party auf einer eigenen Ebene (will-change in user.css)
+        // und gleitet so stufenlos, ohne neu gezeichnet zu werden (der Liedtext bleibt bei Zehnteln: er würde sonst jedes Bild neu gemalt)
         depth.key = k;
         q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
-        q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
+        q.meta.style.translate = `${(-depth.x * 12).toFixed(2)}px ${(-depth.y * 7).toFixed(2)}px`;
         // das Licht-Canvas wird NICHT gekippt (sonst schwenkt eine Bildecke ein und das Publikum fehlt dort) –
         // Bühnenlicht und Publikum verschieben sich stattdessen in der Bühnen-Kamera (stageCam)
       }
@@ -3263,7 +3296,7 @@ Probe-FX: ${pfx}`;
       } else {
         depth.key = "out";
         q.lyrics.style.translate = `${(-depth.x * 22).toFixed(1)}px ${(-depth.y * 12).toFixed(1)}px`;
-        q.meta.style.translate = `${(-depth.x * 12).toFixed(1)}px ${(-depth.y * 7).toFixed(1)}px`;
+        q.meta.style.translate = `${(-depth.x * 12).toFixed(2)}px ${(-depth.y * 7).toFixed(2)}px`;
       }
     }
     // fürs Overlay (Kantenlicht): der aktuelle Lichtzustand
@@ -3290,6 +3323,9 @@ Probe-FX: ${pfx}`;
 
   // Eco (Akku oder fest an) und ruhige Party-Stellen: höchstens 30 Bilder pro Sekunde
   let lastDraw = 0, onBattery = false, quietNow = false, quietSince = 0, songAt = 0;
+  // gemessene Bildschirmrate: Abstände der letzten 60 Bildaufrufe, Rate (0 = noch unbekannt), Aufrufe seit dem letzten Bild
+  const rafD = new Array(60).fill(0);
+  let lastRaf = 0, rafN = 0, hzNow = 0, sinceDraw = 0;
   try {
     navigator.getBattery?.().then((b) => {
       const upd = () => (onBattery = !b.charging);
@@ -3327,13 +3363,26 @@ Probe-FX: ${pfx}`;
     raf = requestAnimationFrame(frame);
     // Bildrate je nach Preset: Leicht/Ruhig/Energiesparen/ruhige Party-Stellen 30, Ausgewogen höchstens 60
     // (auf 120/144-Hz-Bildschirmen halbiert das die Arbeit), Voll so schnell wie der Bildschirm.
-    // 3 ms Spielraum, damit ein leicht zu früh kommendes Bild nicht ausfällt.
+    // Die Obergrenze wird zu einem ganzzahligen Teiler der gemessenen Bildschirmrate (fxenv.js): jedes d-te Bild, also
+    // immer gleich lange Abstände – „höchstens 60“ auf 144 Hz gab sonst einen Wechsel aus 2 und 3 Bildern (Ruckeln),
+    // auf 75 Hz fiel jedes zweite Bild aus (~37 Bilder/s). Solange die Rate noch nicht gemessen ist: wie bisher
+    // (3 ms Spielraum, damit ein leicht zu früh kommendes Bild nicht ausfällt).
+    if (lastRaf && now - lastRaf < 50) {
+      rafD[rafN++ % rafD.length] = now - lastRaf;
+      if (rafN % rafD.length === 0) hzNow = refreshFrom(rafD) || hzNow;
+    }
+    lastRaf = now;
     const tr = tier();
     const fpsCap = ecoOn() || lightMode() || tr === "calm" || (quietNow && cfg.partyQuietFps) ? 30 : tr === "full" ? 0 : 60;
-    if (fpsCap && now - lastDraw < 1000 / fpsCap - 3) return;
+    const div = fpsCap && hzNow ? fpsDivisor(hzNow, fpsCap) : 1;
+    if (fpsCap && hzNow) {
+      // (ein ausgefallener Bildaufruf zählt über die Zeit mit: spätestens nach d − ½ Bildern wird gezeichnet)
+      if (++sinceDraw < div && now - lastDraw < ((div - 0.5) * 1000) / hzNow) return;
+    } else if (fpsCap && now - lastDraw < 1000 / fpsCap - 3) return;
+    sinceDraw = 0;
     const fdt = Math.min(0.1, lastDraw ? (now - lastDraw) / 1000 : 0.016);
     lastDraw = now;
-    coverMotion(fdt, fpsCap);
+    coverMotion(fdt, fpsCap && hzNow ? hzNow / div : fpsCap);
     if (sizeKey !== sizeKeyNow()) sizeCanvas();
     // gleichmäßige Songuhr mit Vorlauf (siehe clock.js) – Party, Visualizer und Karaoke laufen danach
     const pos = songPos(now);
@@ -3348,6 +3397,9 @@ Probe-FX: ${pfx}`;
     if (glide !== el.classList.contains("m-sparse")) el.classList.toggle("m-sparse", glide);
     sparseFill = sparse ? fillV : -1;
     if (fill !== lastFill) q.fill.style.transform = lastFill = fill;
+    // Schein der Leiste (eigene, nicht gestreckte Ebene in user.css) endet an der Spitze – Tausendstel genügen
+    const fillP = fillV.toFixed(3);
+    if (fillP !== lastFillP) q.fill.parentElement?.style.setProperty("--m-p", (lastFillP = fillP));
     if (album.shown) album.tick(pos, dur);
     if (now - lastText > 250) {
       lastText = now;

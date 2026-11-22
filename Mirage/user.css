@@ -1423,6 +1423,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   color: rgba(255, 255, 255, 0.78);
 }
 #mirage-immersive .m-im-bar {
+  position: relative;
   margin-top: 6vh;
   height: 6px;
   border-radius: 99px;
@@ -1431,6 +1432,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   cursor: pointer;
 }
 #mirage-immersive .m-im-fill {
+  position: relative;
   height: 100%;
   width: 100%;
   transform: scaleX(0);
@@ -1438,7 +1440,27 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   will-change: transform;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--m-b), var(--m-a), var(--m-c));
-  box-shadow: 0 0 20px rgba(var(--m-a-rgb), 0.9);
+}
+/* Schein der Leiste: eine eigene, nicht gestreckte Ebene (der Schatten am gestreckten Balken wurde mit ihm gestaucht
+   und zeigte als einfarbiger 20-px-Schatten Farbstufen). Dieselben drei Farben wie der Balken, ober- und unterhalb in
+   vielen Stufen weich auslaufend; endet weich an der Spitze (--m-p = Fortschritt 0..1, setzt immersive.js) */
+@property --m-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+#mirage-immersive .m-im-bar::before {
+  content: "";
+  position: absolute;
+  inset: -16px 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(var(--m-b-rgb, var(--m-a-rgb)), 0.75), rgba(var(--m-a-rgb), 0.85), rgba(var(--m-c-rgb, var(--m-a-rgb)), 0.75));
+  -webkit-mask:
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.02) 8%, rgba(0, 0, 0, 0.07) 16%, rgba(0, 0, 0, 0.17) 24%, rgba(0, 0, 0, 0.33) 32%, rgba(0, 0, 0, 0.52) 38%, rgba(0, 0, 0, 0.78) 44%, #000 50%, rgba(0, 0, 0, 0.78) 56%, rgba(0, 0, 0, 0.52) 62%, rgba(0, 0, 0, 0.33) 68%, rgba(0, 0, 0, 0.17) 76%, rgba(0, 0, 0, 0.07) 84%, rgba(0, 0, 0, 0.02) 92%, transparent 100%),
+    linear-gradient(90deg, #000 calc(var(--m-p) * 100% - 14px), transparent calc(var(--m-p) * 100% + 4px));
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  opacity: 0.7;
 }
 #mirage-immersive .m-im-time {
   display: flex;
@@ -1750,13 +1772,19 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
     0 0 90px rgba(var(--m-c-rgb), 0.45);
 }
 /* Party zeigt nur Titel, Künstler, Fortschritt und die Hauptknöpfe – leise, bis man darüberfährt */
+/* (die Deckkraft liegt auf den Kindern statt auf dem ganzen Block: eine Gruppen-Deckkraft rechnet den Schein der
+   Leiste ein zweites Mal in 8 Bit um – das gab sichtbare Farbstufen; die Knöpfe blenden im Ruhemodus weiter aus) */
 #mirage-immersive[data-mode="party"] .m-im-meta {
   width: min(640px, 80vw);
+  /* eigene Ebene: die 3D-Tiefe verschiebt den Titelblock um Hundertstelpixel, ohne ihn neu zu zeichnen */
+  will-change: translate;
+}
+#mirage-immersive[data-mode="party"] .m-im-meta > * {
   opacity: 0.6;
   transition: opacity 0.4s;
 }
-#mirage-immersive[data-mode="party"] .m-im-meta:hover,
-#mirage-immersive[data-mode="party"] .m-im-meta:focus-within {
+#mirage-immersive[data-mode="party"] .m-im-meta:hover > *,
+#mirage-immersive[data-mode="party"] .m-im-meta:focus-within > * {
   opacity: 1;
 }
 #mirage-immersive[data-mode="party"] .m-im-title {
@@ -1779,6 +1807,13 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   margin-top: 1.5vh;
 }
 /* weiche Farbfläche im Takt (Deckkraft setzt immersive.js); liegt über dem Hintergrund, unter dem Inhalt */
+/* Farbe (--m-fc) setzt immersive.js beim Farbwechsel; sie gleitet in 0,35 s hinüber statt umzuspringen. Der Verlauf
+   hat viele Stufen (vorher zwei: ein sichtbarer Ring am Rand des Scheins) */
+@property --m-fc {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
 #mirage-immersive .m-im-flash {
   position: absolute;
   inset: 0;
@@ -1787,6 +1822,19 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
   opacity: 0;
   mix-blend-mode: screen;
   will-change: opacity;
+  background: radial-gradient(
+    70% 60% at 50% 45%,
+    color-mix(in srgb, var(--m-fc) 90%, transparent) 0%,
+    color-mix(in srgb, var(--m-fc) 86%, transparent) 12%,
+    color-mix(in srgb, var(--m-fc) 76%, transparent) 24%,
+    color-mix(in srgb, var(--m-fc) 60%, transparent) 36%,
+    color-mix(in srgb, var(--m-fc) 41%, transparent) 47%,
+    color-mix(in srgb, var(--m-fc) 22%, transparent) 57%,
+    color-mix(in srgb, var(--m-fc) 9%, transparent) 65%,
+    color-mix(in srgb, var(--m-fc) 2%, transparent) 70%,
+    transparent 74%
+  );
+  transition: --m-fc 0.35s ease;
 }
 #mirage-immersive:not([data-mode="party"]) .m-im-flash {
   display: none;
@@ -7371,6 +7419,9 @@ html.mirage-calm #mirage-immersive .m-ck-glow {
    Etwas länger als der Abstand der Schritte, damit er nie kurz stehen bleibt (jeder Schritt setzt neu an). */
 #mirage-immersive.m-sparse .m-im-fill {
   transition: transform 0.3s linear;
+}
+#mirage-immersive.m-sparse .m-im-bar {
+  transition: --m-p 0.3s linear;
 }
 /* „Farbstrom“ der spielenden Zeile: die m-flow-Animation (background-position) war nie zu sehen – der Verlauf darüber
    steht mit !important, und !important schlägt Animationen. Chromium rechnete sie trotzdem 60-mal pro Sekunde durch

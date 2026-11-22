@@ -7,6 +7,7 @@
 // Weich statt hart: jedes Bild blendet über eine Glockenkurve ein und aus; einzig der Blitz darf hart sein – und nur
 // mit Blitzen an, durch die gemeinsame Blitz-Schranke (höchstens 3/s). Sonst wird er ein ruhiges Glühen.
 import { DROP_LOOKS, FAMS } from "./scenarios.js";
+import { envAR } from "./fxenv.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (x) => {
@@ -29,8 +30,12 @@ function createStageFx(glowSprite, flashCap) {
   const glow = (ctx, col, x, y, r, a) => {
     if (a <= 0.004 || r <= 0) return;
     ctx.globalAlpha = clamp(a, 0, 1);
-    ctx.drawImage(glowSprite(col), x - r, y - r, r * 2, r * 2);
+    // große Scheine aus dem 256-px-Leuchtbild (gestreckt zeigt das kleine Ringe)
+    ctx.drawImage(glowSprite(col, r > 48), x - r, y - r, r * 2, r * 2);
   };
+  // Deckkraft-Faktor nahe einer Wiederholungskante (0..1-Lage q): statt am Rand zu verschwinden und am anderen
+  // aufzutauchen, blendet ein Element über die letzten/ersten 6 % aus und ein
+  const edge = (q) => smooth(q / 0.06) * smooth((1 - q) / 0.06);
 
   /* ---- Schleier: von oben, vom Boden oder aus der Mitte */
   function wash(ctx, col, from, a, st) {
@@ -86,10 +91,15 @@ function createStageFx(glowSprite, flashCap) {
     for (let i = 0; i < n; i++) {
       const tw = Math.max(0, Math.sin(t * (1.5 + hash(i, salt + 3) * 2.5) + hash(i, salt + 4) * 6.3));
       const x = hash(i, salt) * vw;
-      let y = hash(i, salt + 1) * vh * top;
-      if (fall) y = ((y + t * vh * (0.12 + hash(i, salt + 2) * 0.1)) % (vh * 0.7)) - vh * 0.02;
+      let y = hash(i, salt + 1) * vh * top, wrap = 1;
+      if (fall) {
+        // fallendes Gold: unten aus-, oben wieder einblenden (vorher sprang es von unten nach oben)
+        const q = ((y + t * vh * (0.12 + hash(i, salt + 2) * 0.1)) % (vh * 0.7)) / (vh * 0.7);
+        y = q * vh * 0.7 - vh * 0.02;
+        wrap = edge(q);
+      }
       const r = (3 + hash(i, salt + 5) * 5) * S * (0.6 + 0.6 * tw) * (fall ? 1 : 1.5);
-      glow(ctx, col, x, y, r, a * (0.25 + 0.75 * tw * tw));
+      glow(ctx, col, x, y, r, a * (0.25 + 0.75 * tw * tw) * wrap);
     }
   }
   /* ---- Wellenlicht über dem Boden */
@@ -111,6 +121,26 @@ function createStageFx(glowSprite, flashCap) {
   /* ---- Lichtkegel von oben auf einen Punkt (Solo, a cappella, Schwenk) */
   function cone(ctx, col, x0, x1, y1, w, a) {
     if (a < 0.005) return;
+    if (ctx.createConicGradient) {
+      // weiche Seitenkanten: ein Winkel-Verlauf um die Spitze (quer zum Kegel eine Glocke in 9 Stufen) statt harter
+      // Polygonkanten; zwei Lagen (breiter Hof, schmaler Kern), zusammen so hell wie der alte Kegel im Mittel
+      const ay = -y1 * 0.087, ax = x0, axis = Math.atan2(y1 - ay, x1 - ax), half = Math.atan2(w, Math.hypot(x1 - ax, y1 - ay));
+      for (const [wk, ak] of [[1.7, 0.3], [0.9, 0.35]]) {
+        const span = half * wk, g = ctx.createConicGradient(axis - span, ax, ay), f = span / Math.PI;
+        for (let s = 0; s < 9; s++) g.addColorStop((s / 8) * f, rgba(col, a * ak * Math.pow(Math.sin((Math.PI * s) / 8), 2)));
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = g;
+        const len = Math.hypot(x1 - ax, y1 - ay) * 1.05;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(ax + Math.cos(axis - span) * len, ay + Math.sin(axis - span) * len);
+        ctx.lineTo(ax + Math.cos(axis + span) * len, ay + Math.sin(axis + span) * len);
+        ctx.closePath();
+        ctx.fill();
+      }
+      glow(ctx, col, x1, y1, w * 1.6, a * 0.8);
+      return;
+    }
     const g = ctx.createLinearGradient(0, 0, 0, y1);
     g.addColorStop(0, rgba(col, a * 0.15));
     g.addColorStop(1, rgba(col, a));
@@ -138,10 +168,11 @@ function createStageFx(glowSprite, flashCap) {
   }
 
   /* ---- Drop-Bilder: je Höhepunkt eines (director.js wählt es), p = Fortschritt 0..1, a = Stärke */
-  function dropLook(ctx, look, a, p, st, pal, S, soft) {
+  function dropLook(ctx, look, a, p, st, pal, S, soft, age) {
     const c0 = mixW(pal[0], 0.35), c1 = mixW(pal[1], 0.35), c2 = mixW(pal[2], 0.5);
-    // ohne Blitze kein harter Einsatz: der Anfang blendet in einer Achtelsekunde ein
-    const k = a * (soft ? 0.6 : 1);
+    // ohne Blitze kein harter Einsatz: der Anfang blendet in einer Achtelsekunde ein; mit Blitzen in 80 ms
+    // (age = Alter des Drop-Bilds aus der Regie; fehlt es, wie bisher)
+    const k = a * (soft ? 0.6 : 1) * (age >= 0 ? envAR(age, Infinity, soft ? 0.125 : 0.08) : 1);
     switch (look) {
       case "shock":
         ring(ctx, c2, vw / 2, vh * 0.88, vw * (0.08 + 0.62 * p), vh * (0.03 + 0.1 * p), k * 0.55, 6 * S * (1 - p * 0.6));
@@ -155,12 +186,14 @@ function createStageFx(glowSprite, flashCap) {
         g.addColorStop(0, rgba(c1, k * 0.32));
         g.addColorStop(0.7, rgba(c1, k * 0.08));
         g.addColorStop(1, rgba(c1, 0));
-        ctx.globalAlpha = 1;
         ctx.fillStyle = g;
         for (let i = 0; i < 9; i++) {
-          const x = ((i / 9 + p * 0.35 * (i % 2 ? 1 : -1) + 1) % 1) * vw;
+          const q = (i / 9 + p * 0.35 * (i % 2 ? 1 : -1) + 1) % 1, x = q * vw;
+          // an der Wiederholungskante aus- und einblenden statt von rechts nach links zu springen
+          ctx.globalAlpha = edge(q);
           ctx.fillRect(x - 10 * S, 0, 20 * S, vh);
         }
+        ctx.globalAlpha = 1;
         break;
       }
       case "bloom":
@@ -191,7 +224,7 @@ function createStageFx(glowSprite, flashCap) {
       case "tunnel":
         for (let i = 0; i < 4; i++) {
           const q = (p + i * 0.25) % 1;
-          ring(ctx, i % 2 ? c1 : c2, st.cx, st.cy, st.R * (1.15 + q * 2.6), st.R * (1.15 + q * 2.6) * 0.92, k * 0.4 * (1 - q), 3 * S);
+          ring(ctx, i % 2 ? c1 : c2, st.cx, st.cy, st.R * (1.15 + q * 2.6), st.R * (1.15 + q * 2.6) * 0.92, k * 0.4 * (1 - q) * smooth(q / 0.08), 3 * S);
         }
         break;
       case "halo":
@@ -210,13 +243,14 @@ function createStageFx(glowSprite, flashCap) {
     vw = st.vw;
     vh = st.vh;
     crowdOut.jump = crowdOut.hands = 0;
-    const px = st.px, scn = px.scn, cues = st.cues, S = st.dpr || 1, t = st.t, pal = st.pal;
+    // Größen nach der Fensterhöhe (900 px = 1), nicht nur nach der Pixeldichte – im großen Fenster sonst winzig
+    const px = st.px, scn = px.scn, cues = st.cues, S = (st.dpr || 1) * clamp(vh / (900 * (st.dpr || 1)), 0.75, 1.6), t = st.t, pal = st.pal;
     const lite = (st.quality ?? 2) < 1, noFlash = !!st.noFlash;
     if (!scn && !cues?.length) return crowdOut;
     ctx.globalCompositeOperation = "lighter";
     /* ---- Momente der Musik */
     if (scn) {
-      if (scn.dx > 0.01 && scn.dl >= 0) dropLook(ctx, DROP_LOOKS[scn.dl], scn.dx, 1 - scn.dx, st, pal, S, noFlash);
+      if (scn.dx > 0.01 && scn.dl >= 0) dropLook(ctx, DROP_LOOKS[scn.dl], scn.dx, 1 - scn.dx, st, pal, S, noFlash, scn.da ?? -1);
       if (scn.back > 0.01) ring(ctx, mixW(pal[2], 0.5), vw / 2, vh * 0.88, vw * (0.1 + 0.6 * (1 - scn.back)), vh * (0.03 + 0.1 * (1 - scn.back)), scn.back * (noFlash ? 0.3 : 0.5), 5 * S);
       if (scn.open > 0.01) glow(ctx, mixW(pal[0], 0.3), vw / 2, vh * 1.02, vh * (0.55 + 0.25 * (1 - scn.open)), scn.open * 0.35);
       if (scn.mod > 0.01) {
@@ -291,7 +325,7 @@ function createStageFx(glowSprite, flashCap) {
             for (let i = 0; i < (lite ? 16 : 40); i++) {
               const ox = vw * (0.15 + 0.7 * ((i % 4) / 3)), vx = (hash(i, c.seq) - 0.5) * vw * 0.5, vy = -hash(i, c.seq + 1) * vh * 0.3;
               const x = ox + vx * age, y = vh * 0.08 + vy * age + 0.5 * vh * 0.9 * age * age;
-              glow(ctx, mixW([120, 200, 255], hash(i, 5)), x, y, 7 * S, k * (1 - age / dur));
+              glow(ctx, mixW([120, 200, 255], hash(i, 5)), x, y, 7 * S, k * (1 - age / dur) * envAR(age));
             }
             break;
           case "bolt": {

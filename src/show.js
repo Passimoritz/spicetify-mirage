@@ -10,6 +10,7 @@
 //   fürs Akkordeon, ein Lufthauch aus Lichtpunkten für die Flöte, Lichtsaiten mit Glissando für die Harfe.
 //   Alles liegt hinter dem Publikum (die Location zeichnet die Menge danach).
 import { kin, kinSet } from "./styles.js";
+import { smooth, easeInOut, wipeAt, hash, envAR } from "./fxenv.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const RIG = {
@@ -32,11 +33,27 @@ kin(RIG);
 kinSet(BLIND, "b"), kinSet(SHEET, "w"), kinSet(CALM, "q");
 const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
 const mixW = (c, f) => c.map((v) => v + (255 - v) * f);
+// Lichtwisch: Nachzieher (Abstand im Fortschritt, Deckkraft) und die Glocke quer zur Kante (9 Stufen, flache Enden)
+const WIPE_TRAIL = [[0.1, 0.22], [0.05, 0.45], [0, 1]];
+const WIPE_BELL = Array.from({ length: 9 }, (_, s) => Math.pow(0.5 + 0.5 * Math.cos((Math.PI * s) / 8), 1.4));
 
 // cap = die gemeinsame Blitz-Schranke der Bühne (flashcap.js): Blinder und Gitarrenblitze teilen sie sich mit dem Stroboskop
 function createShow(glowSprite, cap) {
   let vw = 0, vh = 0;
-  const rig = { blk: -1, pat: "", col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false };
+  // prev/pt: Muster vor dem letzten Wechsel und wann er war – die Köpfe schwenken in 0,4 s hinüber statt zu springen
+  const rig = { blk: -1, pat: "", prev: "", pt: -9, col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false };
+  // großes Leuchtbild (256 px) für alles, was weit gestreckt wird – sonst zeigt der Schein Ringe
+  const spr = (c, r) => glowSprite(c, r > 48);
+  // Winkel eines Kopfes in einem Muster (ohne die Ausrichtung im Aufbau)
+  function headAngle(pat, i, u, mb, toCover) {
+    let a = Math.PI / 2;
+    if (pat === "fan") a += u * (1.1 + 0.35 * Math.sin((mb * Math.PI) / 4) + rig.drop * 0.6);
+    else if (pat === "wave") a += 0.5 * Math.sin((mb * Math.PI) / 2 + i * 0.7);
+    else if (pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin((mb * Math.PI) / 4));
+    else if (pat === "chase") a += u * 0.6;
+    else if (pat === "point") a = toCover;
+    return a;
+  }
   const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);
 
   /* ---- Lichtrig */
@@ -59,10 +76,14 @@ function createShow(glowSprite, cap) {
       const blk = Math.floor(bp / 32);
       // die Szene wechselt auf einer Eins: ihr Muster gilt sofort, sonst alle 32 Schläge das nächste des Genres
       if (blk !== rig.blk || (px.rig && px.rig !== rig.pat)) {
+        const next = px.rig || pats[(blk + (px.scene || 0)) % pats.length];
+        if (next !== rig.pat) [rig.prev, rig.pt] = [rig.pat, t];
         rig.blk = blk;
-        rig.pat = px.rig || pats[(blk + (px.scene || 0)) % pats.length];
+        rig.pat = next;
         rig.col = (rig.col + 1) % 3;
       }
+      // Schwenk ins neue Muster (0,4 s, weich) – kein Sprung aller Köpfe auf einmal
+      const swing = rig.prev && t - rig.pt >= 0 && t - rig.pt < 0.4 ? easeInOut((t - rig.pt) / 0.4) : 1;
       // Riser: die Köpfe pulsen im Aufbau immer dichter; der Einsatz eines Refrains/Drops hebt kurz an
       const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv) * (1 + 0.45 * (px.pulse || 0) + 0.4 * (px.lift || 0));
       // Traverse
@@ -70,22 +91,30 @@ function createShow(glowSprite, cap) {
       ctx.fillStyle = "rgba(8,6,16,0.7)";
       ctx.fillRect(0, y - 3 * dpr, vw, 6 * dpr);
       ctx.globalCompositeOperation = "lighter";
-      const lead = ((Math.floor(mb * 2) % n) + n) % n;
+      // Lauflicht: die Spitze wandert stetig von Kopf zu Kopf (zwei je Schlag) statt im Halbschlag ×3/×0,25 zu springen
+      const lead = (((mb * 2) % n) + n) % n;
       for (let i = 0; i < n; i++) {
         const x = vw * (0.07 + (0.86 * i) / (n - 1)), u = i / (n - 1) - 0.5;
         const toCover = Math.atan2(st.cy - y, st.cx - x);
-        let a = Math.PI / 2;
-        if (rig.pat === "fan") a += u * (1.1 + 0.35 * Math.sin((mb * Math.PI) / 4) + rig.drop * 0.6);
-        else if (rig.pat === "wave") a += 0.5 * Math.sin((mb * Math.PI) / 2 + i * 0.7);
-        else if (rig.pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin((mb * Math.PI) / 4));
-        else if (rig.pat === "chase") a += u * 0.6;
-        else if (rig.pat === "point") a = toCover;
+        let a = headAngle(rig.pat, i, u, mb, toCover);
+        if (swing < 1) {
+          const a0 = headAngle(rig.prev, i, u, mb, toCover);
+          a = a0 + (a - a0) * swing;
+        }
         a += (toCover - a) * px.build * 0.8; // im Aufbau richten sich alle auf die Mitte
+        // Helligkeit je Muster (beim Schwenk zwischen altem und neuem überblendet); das Lauflicht als weiche Kuppe
+        const kOf = (pat) => {
+          if (pat === "chase") {
+            const d = Math.min(Math.abs(i - lead), n - Math.abs(i - lead));
+            return 0.25 + 2.75 * smooth(1 - d / 1.5);
+          }
+          return pat === "point" ? 0.6 + px.snareEnv * 1.2 : 1;
+        };
         let k = base * (CALM.has(key) ? 0.5 : 1);
-        if (rig.pat === "chase") k *= i === lead ? 3 : 0.25;
-        if (rig.pat === "point") k *= 0.6 + px.snareEnv * 1.2;
+        k *= swing < 1 ? kOf(rig.prev) + (kOf(rig.pat) - kOf(rig.prev)) * swing : kOf(rig.pat);
         if (k < 0.004) continue;
-        const c = rig.drop > 0.3 ? mixW(pal[(i + rig.col) % 3], rig.drop * 0.8) : pal[(i + rig.col) % 3];
+        // Drop: die Strahlen werden weiß und klingen stetig in ihre Farbe zurück (vorher ein Sprung bei 0,3)
+        const c = mixW(pal[(i + rig.col) % 3], rig.drop * 0.8);
         const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);
         // Kegel mit weichem Rand: ein breiter, schwacher Lichthof (nur in voller Qualität), der Kegel selbst und
         // ein heller, schmaler Kern – wirkt wie ein Strahl im Dunst statt wie ein flaches Dreieck
@@ -107,7 +136,8 @@ function createShow(glowSprite, cap) {
         cone(wd * 0.3, 0.55, mixW(c, 0.5));
         const r = (8 + k * 70) * dpr;
         ctx.globalAlpha = clamp(k * 5, 0, 1);
-        ctx.drawImage(glowSprite(c.map((q) => q | 0)), x - r, y - r, r * 2, r * 2);
+        // Leuchtbild in 1/16-Stufen des Weißanteils (sonst bräuchte jedes Bild des Abklingens neue Leuchtbilder)
+        ctx.drawImage(spr(mixW(pal[(i + rig.col) % 3], Math.round(rig.drop * 12.8) / 16).map((q) => q | 0), r), x - r, y - r, r * 2, r * 2);
         ctx.globalAlpha = 1;
       }
     }
@@ -120,7 +150,7 @@ function createShow(glowSprite, cap) {
       for (const f of [0.22, 0.42, 0.58, 0.78]) {
         const r = vh * 0.17 * (0.6 + rig.blind * 0.4);
         ctx.globalAlpha = rig.blind * 0.8 * vis;
-        ctx.drawImage(glowSprite([255, 236, 200]), f * vw - r, vh * 0.05 - r, r * 2, r * 2);
+        ctx.drawImage(spr([255, 236, 200], r), f * vw - r, vh * 0.05 - r, r * 2, r * 2);
       }
       ctx.globalAlpha = 1;
       ctx.fillStyle = rgba([255, 236, 200], 0.05 * rig.blind * vis);
@@ -158,15 +188,27 @@ function createShow(glowSprite, cap) {
   /* ---- Lichtregie: Wechsel, Momente, Stil-Signaturen (Werte aus director.js über party.js) */
   function drawCues(ctx, st, px, pal, dpr, vis) {
     const t = st.t, dt = st.dt, soft = st.noFlash ? 0.4 : 1;
-    // Lichtwisch beim Teilwechsel: eine weiche Lichtkante läuft in einem Schlag über die Bühne (über der Menge)
+    // Lichtwisch beim Teilwechsel: ein weicher Lichtschleier gleitet in zwei Schlägen (mindestens 0,8 s) über die Bühne –
+    // gleitet an und aus statt mit fester Geschwindigkeit, blendet über die ersten/letzten 15 % ein und aus und zieht
+    // zwei blassere Abbilder seiner letzten Lagen nach (wirkt wie Bewegungsunschärfe statt Stottern von Bild zu Bild).
+    // Quer eine Glocke in 9 Stufen, nach unten weich auslaufend (elliptischer Verlauf statt einer harten Schnittkante)
     if (px.wipe >= 0) {
-      const f = px.wdir < 0 ? 1 - px.wipe : px.wipe, x = vw * (f * 1.3 - 0.15), w = vw * 0.16, c = mixW(pal[rig.col % 3], 0.3);
-      const g = ctx.createLinearGradient(x - w, 0, x + w, 0);
-      g.addColorStop(0, rgba(c, 0));
-      g.addColorStop(0.5, rgba(c, 0.2 * (1 - px.wipe * 0.5) * soft * vis));
-      g.addColorStop(1, rgba(c, 0));
-      ctx.fillStyle = g;
-      ctx.fillRect(x - w, 0, w * 2, vh * 0.72);
+      const c = mixW(pal[rig.col % 3], 0.3), w = vw * 0.19, ry = vh * 0.62;
+      for (const [lag, al] of WIPE_TRAIL) {
+        const q = px.wipe - lag;
+        if (q < 0) continue;
+        const W = wipeAt(q), f = px.wdir < 0 ? 1 - W.pos : W.pos;
+        const a = 0.2 * (1 - 0.3 * q) * soft * vis * W.alpha * al;
+        if (a < 0.004) continue;
+        ctx.save();
+        ctx.translate(vw * (f * 1.3 - 0.15), vh * 0.12);
+        ctx.scale(1, ry / w);
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, w);
+        for (let s = 0; s < 9; s++) g.addColorStop(s / 8, rgba(c, a * WIPE_BELL[s]));
+        ctx.fillStyle = g;
+        ctx.fillRect(-w, -w, w * 2, w * 2);
+        ctx.restore();
+      }
     }
     // Rock: Lichtwand auf der Eins des Refrains – eine Reihe Blinder, durch dieselbe Blitz-Schranke wie alle Blitze
     const wallNow = (px.wall || 0) > 0.5;
@@ -176,7 +218,7 @@ function createShow(glowSprite, cap) {
     if (rig.wall > 0.03) {
       const r = vh * 0.12;
       ctx.globalAlpha = rig.wall * 0.75 * vis;
-      for (let k = 0; k < 6; k++) ctx.drawImage(glowSprite([255, 240, 215]), vw * (0.12 + 0.152 * k) - r, vh * 0.06 - r, r * 2, r * 2);
+      for (let k = 0; k < 6; k++) ctx.drawImage(spr([255, 240, 215], r),vw * (0.12 + 0.152 * k) - r, vh * 0.06 - r, r * 2, r * 2);
       ctx.globalAlpha = 1;
     }
     // gehaltener Ton: ein warmer Verfolger-Spot von oben auf das Cover (endet am Cover, nicht in der Menge)
@@ -197,21 +239,21 @@ function createShow(glowSprite, cap) {
     if (px.pump > 0.05) {
       const r = vw * 0.55;
       ctx.globalAlpha = clamp(0.1 * px.pump * px.I * (1 - (st.noFlash ? 0.3 : 0.85) * px.kickEnv) * vis, 0, 1);
-      ctx.drawImage(glowSprite(pal[0]), vw / 2 - r, vh * 0.3 - r * 0.6, r * 2, r * 1.2);
+      ctx.drawImage(spr(pal[0], r), vw / 2 - r, vh * 0.3 - r * 0.6, r * 2, r * 1.2);
       ctx.globalAlpha = 1;
     }
     // Trap: jede 808 drückt Licht aus dem Boden
     if (px.boom > 0.03) {
       const r = vh * (0.45 + 0.3 * px.boom);
       ctx.globalAlpha = clamp(0.3 * px.boom * vis, 0, 1);
-      ctx.drawImage(glowSprite(pal[0]), vw / 2 - r * 1.6, vh - r * 0.6, r * 3.2, r * 1.2);
+      ctx.drawImage(spr(pal[0], r), vw / 2 - r * 1.6, vh - r * 0.6, r * 3.2, r * 1.2);
       ctx.globalAlpha = 1;
     }
     // Ballade: warmes Licht von oben, das langsam über zwei Takte atmet
     if (px.swell > 0.03) {
       const r = vw * 0.5;
       ctx.globalAlpha = clamp(0.07 * px.swell * (0.5 + 0.5 * px.I), 0, 1);
-      ctx.drawImage(glowSprite([255, 196, 140]), vw / 2 - r, -r * 0.55, r * 2, r * 1.1);
+      ctx.drawImage(spr([255, 196, 140], r), vw / 2 - r, -r * 0.55, r * 2, r * 1.1);
       ctx.globalAlpha = 1;
     }
   }
@@ -255,7 +297,7 @@ function createShow(glowSprite, cap) {
         }
         const r = vh * 0.14 * (0.6 + L * 0.5);
         ctx.globalAlpha = L * 0.8;
-        ctx.drawImage(glowSprite(gold), ox - r, oy - r, r * 2, r * 2);
+        ctx.drawImage(spr(gold, r), ox - r, oy - r, r * 2, r * 2);
         ctx.globalAlpha = 1;
         if (Math.random() < dt * 40 * L) ins.sparks.push({ x: ox + side * -Math.random() * vw * 0.08, y: oy, vx: -side * vw * (0.05 + Math.random() * 0.08), vy: -vh * (0.3 + Math.random() * 0.4), a: 1, c: gold });
       }
@@ -292,14 +334,18 @@ function createShow(glowSprite, cap) {
         ins.bolts.push({ pts, a: 1 });
       }
       ins.kHit = hitNow;
-      // dazwischen knistert es an der Traverse: kleine blaue Funken
-      for (let k = 0; k < 3; k++) {
-        if (st.noFlash || Math.random() > dt * 18 * I.guitar) continue;
-        const r = (10 + Math.random() * 16) * dpr;
-        ctx.globalAlpha = 0.5 + Math.random() * 0.5;
-        ctx.drawImage(glowSprite([170, 200, 255]), Math.random() * vw - r, vh * 0.035 - r, r * 2, r * 2);
+      // dazwischen knistert es an der Traverse: kleine blaue Funken – fester Zufall je Zeitfenster (1/6 s, versetzt)
+      // mit weicher Hülle statt Math.random in jedem Bild (das flackerte, und je nach Bildrate anders)
+      if (!st.noFlash) {
+        for (let k = 0; k < 3; k++) {
+          const ts = t * 6 + k / 3, slot = Math.floor(ts), id = slot * 3 + k;
+          if (hash(id, 41) > 0.5 * I.guitar) continue;
+          const r = (10 + hash(id, 42) * 16) * dpr;
+          ctx.globalAlpha = (0.5 + hash(id, 43) * 0.5) * Math.sin(Math.PI * (ts - slot));
+          ctx.drawImage(glowSprite([170, 200, 255]), hash(id, 44) * vw - r, vh * 0.035 - r, r * 2, r * 2);
+        }
+        ctx.globalAlpha = 1;
       }
-      ctx.globalAlpha = 1;
     }
     ins.bolts = ins.bolts.filter((b) => (b.a -= dt * 5.5) > 0);
     for (const b of ins.bolts) {
@@ -464,7 +510,8 @@ function createShow(glowSprite, cap) {
       s.x += s.vx * dt;
       s.y += s.vy * dt;
       const r = 6 * dpr;
-      ctx.globalAlpha = s.a;
+      // weich hinein (80 ms statt voll im ersten Bild), dann langsam aus
+      ctx.globalAlpha = s.a * envAR((1 - s.a) / 0.9);
       ctx.drawImage(glowSprite(s.c), s.x - r, s.y - r, r * 2, r * 2);
     }
     ctx.globalAlpha = 1;
