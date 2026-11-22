@@ -113,7 +113,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.29.0" : "dev";
+      VERSION = true ? "1.30.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -5378,59 +5378,129 @@
       LYRICSTYLE_TEXT = {
         en: {
           lyrPlayful: "Playful style",
-          lyrPlayfulHint: "Lyrics play like a lyric video: every line gets its own entrance \u2013 words rise, drop or slide in from both sides, a key word grows huge, letters ripple, shouts slam in as capitals, fast rap types itself in, ballads glow up. Words react to what they mean: fire flickers, rain drips, a heart beats, \u201Cfall\u201D falls, \u201Cboom\u201D bursts (not when negated). With Calm mode or No flashes only size, weight and layout change"
+          lyrPlayfulHint: "Lyrics play like a lyric video: every line gets its own entrance \u2013 words rise, drop or slide in from both sides, a key word grows huge, letters ripple, shouts slam in as capitals, fast rap types itself in, ballads glow up. Words react to what they mean: fire flickers, rain drips, a heart beats, \u201Cfall\u201D falls, \u201Cboom\u201D bursts (not when negated). With Calm mode or No flashes only size, weight and layout change",
+          lyrPlayLevel: "Playful intensity",
+          lyrPlayLevelHint: "Subtle: only size, weight and colour \u2013 no font mix, little motion \xB7 Playful: display fonts, meaning colours and lively entrances \xB7 Wild: everything, and every song gets its own look. Colours always stay readable; Calm mode, No flashes and reduced motion still stop all motion",
+          lyrPlayLevel_subtle: "Subtle",
+          lyrPlayLevel_playful: "Playful",
+          lyrPlayLevel_wild: "Wild"
         },
         de: {
           lyrPlayful: "Verspielter Stil",
-          lyrPlayfulHint: "Der Liedtext spielt wie ein Lyric-Video: jede Zeile hat ihren eigenen Auftritt \u2013 W\xF6rter steigen auf, fallen herein oder kommen von beiden Seiten, ein Schl\xFCsselwort wird riesig, Buchstaben laufen als Welle, Rufe knallen in Gro\xDFbuchstaben herein, schneller Rap tippt sich ein, Balladen glimmen auf. W\xF6rter reagieren auf ihre Bedeutung: Feuer flackert, Regen tropft, das Herz schl\xE4gt, \u201Efallen\u201C f\xE4llt, \u201EBoom\u201C zerspringt (nicht, wenn verneint). Mit \u201ERuhiger Modus\u201C oder \u201EKeine Blitze\u201C \xE4ndern sich nur Gr\xF6\xDFe, St\xE4rke und Satz"
+          lyrPlayfulHint: "Der Liedtext spielt wie ein Lyric-Video: jede Zeile hat ihren eigenen Auftritt \u2013 W\xF6rter steigen auf, fallen herein oder kommen von beiden Seiten, ein Schl\xFCsselwort wird riesig, Buchstaben laufen als Welle, Rufe knallen in Gro\xDFbuchstaben herein, schneller Rap tippt sich ein, Balladen glimmen auf. W\xF6rter reagieren auf ihre Bedeutung: Feuer flackert, Regen tropft, das Herz schl\xE4gt, \u201Efallen\u201C f\xE4llt, \u201EBoom\u201C zerspringt (nicht, wenn verneint). Mit \u201ERuhiger Modus\u201C oder \u201EKeine Blitze\u201C \xE4ndern sich nur Gr\xF6\xDFe, St\xE4rke und Satz",
+          lyrPlayLevel: "Verspieltheit",
+          lyrPlayLevelHint: "Dezent: nur Gr\xF6\xDFe, St\xE4rke und Farbe \u2013 keine Schriftmischung, wenig Bewegung \xB7 Verspielt: Anzeige-Schriften, Farben aus der Bedeutung und lebendige Auftritte \xB7 Wild: alles, und jeder Song bekommt seinen eigenen Look. Farben bleiben immer gut lesbar; \u201ERuhiger Modus\u201C, \u201EKeine Blitze\u201C und weniger Bewegung stellen trotzdem alles still",
+          lyrPlayLevel_subtle: "Dezent",
+          lyrPlayLevel_playful: "Verspielt",
+          lyrPlayLevel_wild: "Wild"
         },
         es: {
           lyrPlayful: "Estilo juguet\xF3n",
-          lyrPlayfulHint: "La letra se mueve como un videoclip de letras: cada verso tiene su propia entrada \u2013 las palabras suben, caen o llegan desde ambos lados, una palabra clave se hace enorme, las letras ondean, los gritos entran en may\xFAsculas, el rap r\xE1pido se teclea, las baladas se encienden poco a poco. Las palabras reaccionan a su significado: el fuego parpadea, la lluvia gotea, el coraz\xF3n late, \xABcaer\xBB cae (no si se niega). Con Modo tranquilo o Sin destellos solo cambian tama\xF1o, grosor y composici\xF3n"
+          lyrPlayfulHint: "La letra se mueve como un videoclip de letras: cada verso tiene su propia entrada \u2013 las palabras suben, caen o llegan desde ambos lados, una palabra clave se hace enorme, las letras ondean, los gritos entran en may\xFAsculas, el rap r\xE1pido se teclea, las baladas se encienden poco a poco. Las palabras reaccionan a su significado: el fuego parpadea, la lluvia gotea, el coraz\xF3n late, \xABcaer\xBB cae (no si se niega). Con Modo tranquilo o Sin destellos solo cambian tama\xF1o, grosor y composici\xF3n",
+          lyrPlayLevel: "Intensidad del juego",
+          lyrPlayLevelHint: "Sutil: solo tama\xF1o, grosor y color \u2013 sin mezcla de fuentes, poco movimiento \xB7 Juguet\xF3n: fuentes llamativas, colores seg\xFAn el significado y entradas animadas \xB7 Salvaje: todo, y cada canci\xF3n tiene su propio estilo. Los colores siempre se leen bien; Modo tranquilo, Sin destellos y movimiento reducido siguen deteniendo todo el movimiento",
+          lyrPlayLevel_subtle: "Sutil",
+          lyrPlayLevel_playful: "Juguet\xF3n",
+          lyrPlayLevel_wild: "Salvaje"
         },
         fr: {
           lyrPlayful: "Style ludique",
-          lyrPlayfulHint: "Les paroles bougent comme un lyric video : chaque ligne a son entr\xE9e \u2013 les mots montent, tombent ou arrivent des deux c\xF4t\xE9s, un mot cl\xE9 devient \xE9norme, les lettres ondulent, les cris claquent en majuscules, le rap rapide se tape, les ballades s'illuminent. Les mots r\xE9agissent \xE0 leur sens : le feu vacille, la pluie goutte, le c\u0153ur bat, \xAB tomber \xBB tombe (pas s'il est ni\xE9). Avec Mode calme ou Pas de flashs, seules la taille, la graisse et la mise en page changent"
+          lyrPlayfulHint: "Les paroles bougent comme un lyric video : chaque ligne a son entr\xE9e \u2013 les mots montent, tombent ou arrivent des deux c\xF4t\xE9s, un mot cl\xE9 devient \xE9norme, les lettres ondulent, les cris claquent en majuscules, le rap rapide se tape, les ballades s'illuminent. Les mots r\xE9agissent \xE0 leur sens : le feu vacille, la pluie goutte, le c\u0153ur bat, \xAB tomber \xBB tombe (pas s'il est ni\xE9). Avec Mode calme ou Pas de flashs, seules la taille, la graisse et la mise en page changent",
+          lyrPlayLevel: "Intensit\xE9 ludique",
+          lyrPlayLevelHint: "Discret : seulement taille, graisse et couleur \u2013 pas de m\xE9lange de polices, peu de mouvement \xB7 Ludique : polices d'affiche, couleurs selon le sens et entr\xE9es vivantes \xB7 D\xE9cha\xEEn\xE9 : tout, et chaque chanson a son propre look. Les couleurs restent toujours lisibles ; Mode calme, Pas de flashs et mouvement r\xE9duit arr\xEAtent toujours tout mouvement",
+          lyrPlayLevel_subtle: "Discret",
+          lyrPlayLevel_playful: "Ludique",
+          lyrPlayLevel_wild: "D\xE9cha\xEEn\xE9"
         },
         it: {
           lyrPlayful: "Stile giocoso",
-          lyrPlayfulHint: "Il testo si muove come un lyric video: ogni riga ha la sua entrata \u2013 le parole salgono, cadono o arrivano dai due lati, una parola chiave diventa enorme, le lettere ondeggiano, le urla entrano in maiuscolo, il rap veloce si digita, le ballate si accendono piano. Le parole reagiscono al loro significato: il fuoco tremola, la pioggia gocciola, il cuore batte, \xABcadere\xBB cade (non se negato). Con Modalit\xE0 calma o Niente lampi cambiano solo dimensione, spessore e impaginazione"
+          lyrPlayfulHint: "Il testo si muove come un lyric video: ogni riga ha la sua entrata \u2013 le parole salgono, cadono o arrivano dai due lati, una parola chiave diventa enorme, le lettere ondeggiano, le urla entrano in maiuscolo, il rap veloce si digita, le ballate si accendono piano. Le parole reagiscono al loro significato: il fuoco tremola, la pioggia gocciola, il cuore batte, \xABcadere\xBB cade (non se negato). Con Modalit\xE0 calma o Niente lampi cambiano solo dimensione, spessore e impaginazione",
+          lyrPlayLevel: "Intensit\xE0 giocosa",
+          lyrPlayLevelHint: "Sobrio: solo dimensione, spessore e colore \u2013 niente mix di font, poco movimento \xB7 Giocoso: font d'effetto, colori dal significato ed entrate vivaci \xB7 Scatenato: tutto, e ogni brano ha il suo look. I colori restano sempre leggibili; Modalit\xE0 calma, Niente lampi e movimento ridotto fermano comunque ogni movimento",
+          lyrPlayLevel_subtle: "Sobrio",
+          lyrPlayLevel_playful: "Giocoso",
+          lyrPlayLevel_wild: "Scatenato"
         },
         ja: {
           lyrPlayful: "\u904A\u3073\u5FC3\u306E\u3042\u308B\u30B9\u30BF\u30A4\u30EB",
-          lyrPlayfulHint: "\u6B4C\u8A5E\u304C\u30EA\u30EA\u30C3\u30AF\u30D3\u30C7\u30AA\u306E\u3088\u3046\u306B\u52D5\u304D\u307E\u3059\uFF1A\u884C\u3054\u3068\u306B\u767B\u5834\u306E\u4ED5\u65B9\u304C\u5909\u308F\u308A\u3001\u8A00\u8449\u304C\u6607\u3063\u305F\u308A\u843D\u3061\u3066\u304D\u305F\u308A\u5DE6\u53F3\u304B\u3089\u5165\u3063\u305F\u308A\u3001\u30AD\u30FC\u30EF\u30FC\u30C9\u304C\u5927\u304D\u304F\u306A\u3063\u305F\u308A\u3001\u6587\u5B57\u304C\u6CE2\u6253\u3063\u305F\u308A\u3001\u53EB\u3073\u306F\u5927\u6587\u5B57\u3067\u6253\u3061\u8FBC\u307E\u308C\u3001\u901F\u3044\u30E9\u30C3\u30D7\u306F\u30BF\u30A4\u30D7\u3055\u308C\u3001\u30D0\u30E9\u30FC\u30C9\u306F\u3086\u3063\u304F\u308A\u706F\u308A\u307E\u3059\u3002\u8A00\u8449\u306F\u610F\u5473\u306B\u53CD\u5FDC\u3057\u307E\u3059\uFF1A\u708E\u306F\u63FA\u3089\u3081\u304D\u3001\u96E8\u306F\u3057\u305F\u305F\u308A\u3001\u30CF\u30FC\u30C8\u306F\u9F13\u52D5\u3057\u3001\u300C\u843D\u3061\u308B\u300D\u306F\u843D\u3061\u307E\u3059\uFF08\u5426\u5B9A\u3055\u308C\u3066\u3044\u308C\u3070\u52D5\u304D\u307E\u305B\u3093\uFF09\u3002\u300C\u7A4F\u3084\u304B\u300D\u3068\u300C\u30D5\u30E9\u30C3\u30B7\u30E5\u306A\u3057\u300D\u3067\u306F\u5927\u304D\u3055\u30FB\u592A\u3055\u30FB\u914D\u7F6E\u3060\u3051\u304C\u5909\u308F\u308A\u307E\u3059"
+          lyrPlayfulHint: "\u6B4C\u8A5E\u304C\u30EA\u30EA\u30C3\u30AF\u30D3\u30C7\u30AA\u306E\u3088\u3046\u306B\u52D5\u304D\u307E\u3059\uFF1A\u884C\u3054\u3068\u306B\u767B\u5834\u306E\u4ED5\u65B9\u304C\u5909\u308F\u308A\u3001\u8A00\u8449\u304C\u6607\u3063\u305F\u308A\u843D\u3061\u3066\u304D\u305F\u308A\u5DE6\u53F3\u304B\u3089\u5165\u3063\u305F\u308A\u3001\u30AD\u30FC\u30EF\u30FC\u30C9\u304C\u5927\u304D\u304F\u306A\u3063\u305F\u308A\u3001\u6587\u5B57\u304C\u6CE2\u6253\u3063\u305F\u308A\u3001\u53EB\u3073\u306F\u5927\u6587\u5B57\u3067\u6253\u3061\u8FBC\u307E\u308C\u3001\u901F\u3044\u30E9\u30C3\u30D7\u306F\u30BF\u30A4\u30D7\u3055\u308C\u3001\u30D0\u30E9\u30FC\u30C9\u306F\u3086\u3063\u304F\u308A\u706F\u308A\u307E\u3059\u3002\u8A00\u8449\u306F\u610F\u5473\u306B\u53CD\u5FDC\u3057\u307E\u3059\uFF1A\u708E\u306F\u63FA\u3089\u3081\u304D\u3001\u96E8\u306F\u3057\u305F\u305F\u308A\u3001\u30CF\u30FC\u30C8\u306F\u9F13\u52D5\u3057\u3001\u300C\u843D\u3061\u308B\u300D\u306F\u843D\u3061\u307E\u3059\uFF08\u5426\u5B9A\u3055\u308C\u3066\u3044\u308C\u3070\u52D5\u304D\u307E\u305B\u3093\uFF09\u3002\u300C\u7A4F\u3084\u304B\u300D\u3068\u300C\u30D5\u30E9\u30C3\u30B7\u30E5\u306A\u3057\u300D\u3067\u306F\u5927\u304D\u3055\u30FB\u592A\u3055\u30FB\u914D\u7F6E\u3060\u3051\u304C\u5909\u308F\u308A\u307E\u3059",
+          lyrPlayLevel: "\u904A\u3073\u5FC3\u306E\u5F37\u3055",
+          lyrPlayLevelHint: "\u63A7\u3048\u3081\uFF1A\u5927\u304D\u3055\u30FB\u592A\u3055\u30FB\u8272\u3060\u3051\uFF08\u30D5\u30A9\u30F3\u30C8\u306E\u5207\u308A\u66FF\u3048\u306A\u3057\u3001\u52D5\u304D\u306F\u5C11\u306A\u3081\uFF09\u30FB\u904A\u3073\u5FC3\uFF1A\u30C7\u30A3\u30B9\u30D7\u30EC\u30A4\u30D5\u30A9\u30F3\u30C8\u3001\u610F\u5473\u306B\u5408\u308F\u305B\u305F\u8272\u3001\u306B\u304E\u3084\u304B\u306A\u767B\u5834\u30FB\u30EF\u30A4\u30EB\u30C9\uFF1A\u3059\u3079\u3066\u3002\u66F2\u3054\u3068\u306B\u898B\u305F\u76EE\u304C\u5909\u308F\u308A\u307E\u3059\u3002\u8272\u306F\u5E38\u306B\u8AAD\u307F\u3084\u3059\u3044\u307E\u307E\u3067\u3059\u3002\u300C\u7A4F\u3084\u304B\u300D\u300C\u30D5\u30E9\u30C3\u30B7\u30E5\u306A\u3057\u300D\u300C\u8996\u5DEE\u52B9\u679C\u3092\u6E1B\u3089\u3059\u300D\u3067\u306F\u3053\u308C\u307E\u3067\u3069\u304A\u308A\u52D5\u304D\u304C\u6B62\u307E\u308A\u307E\u3059",
+          lyrPlayLevel_subtle: "\u63A7\u3048\u3081",
+          lyrPlayLevel_playful: "\u904A\u3073\u5FC3",
+          lyrPlayLevel_wild: "\u30EF\u30A4\u30EB\u30C9"
         },
         ko: {
           lyrPlayful: "\uC7A5\uB09C\uC2A4\uB7EC\uC6B4 \uC2A4\uD0C0\uC77C",
-          lyrPlayfulHint: "\uAC00\uC0AC\uAC00 \uB9AC\uB9AD \uBE44\uB514\uC624\uCC98\uB7FC \uC6C0\uC9C1\uC5EC\uC694: \uC904\uB9C8\uB2E4 \uB4F1\uC7A5 \uBC29\uC2DD\uC774 \uB2EC\uB77C \uB2E8\uC5B4\uAC00 \uB5A0\uC624\uB974\uAC70\uB098 \uB5A8\uC5B4\uC9C0\uAC70\uB098 \uC591\uCABD\uC5D0\uC11C \uB4E4\uC5B4\uC624\uACE0, \uD575\uC2EC \uB2E8\uC5B4\uB294 \uD06C\uAC8C \uCEE4\uC9C0\uACE0, \uAE00\uC790\uAC00 \uBB3C\uACB0\uCE58\uACE0, \uC678\uCE68\uC740 \uB300\uBB38\uC790\uB85C \uAF42\uD788\uACE0, \uBE60\uB978 \uB7A9\uC740 \uD0C0\uC774\uD551\uB418\uB4EF, \uBC1C\uB77C\uB4DC\uB294 \uC740\uC740\uD558\uAC8C \uBE5B\uB098\uC694. \uB2E8\uC5B4\uB294 \uB73B\uC5D0 \uBC18\uC751\uD574\uC694: \uBD88\uC740 \uC77C\uB801\uC774\uACE0, \uBE44\uB294 \uB5A8\uC5B4\uC9C0\uACE0, \uC2EC\uC7A5\uC740 \uB6F0\uACE0, '\uB5A8\uC5B4\uC9C0\uB2E4'\uB294 \uB5A8\uC5B4\uC838\uC694(\uBD80\uC815\uB418\uBA74 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC544\uC694). '\uCC28\uBD84\uD558\uAC8C'\uC640 '\uBC88\uCA4D\uC784 \uC5C6\uC74C'\uC5D0\uC11C\uB294 \uD06C\uAE30\xB7\uAD75\uAE30\xB7\uBC30\uCE58\uB9CC \uBC14\uB00C\uC5B4\uC694"
+          lyrPlayfulHint: "\uAC00\uC0AC\uAC00 \uB9AC\uB9AD \uBE44\uB514\uC624\uCC98\uB7FC \uC6C0\uC9C1\uC5EC\uC694: \uC904\uB9C8\uB2E4 \uB4F1\uC7A5 \uBC29\uC2DD\uC774 \uB2EC\uB77C \uB2E8\uC5B4\uAC00 \uB5A0\uC624\uB974\uAC70\uB098 \uB5A8\uC5B4\uC9C0\uAC70\uB098 \uC591\uCABD\uC5D0\uC11C \uB4E4\uC5B4\uC624\uACE0, \uD575\uC2EC \uB2E8\uC5B4\uB294 \uD06C\uAC8C \uCEE4\uC9C0\uACE0, \uAE00\uC790\uAC00 \uBB3C\uACB0\uCE58\uACE0, \uC678\uCE68\uC740 \uB300\uBB38\uC790\uB85C \uAF42\uD788\uACE0, \uBE60\uB978 \uB7A9\uC740 \uD0C0\uC774\uD551\uB418\uB4EF, \uBC1C\uB77C\uB4DC\uB294 \uC740\uC740\uD558\uAC8C \uBE5B\uB098\uC694. \uB2E8\uC5B4\uB294 \uB73B\uC5D0 \uBC18\uC751\uD574\uC694: \uBD88\uC740 \uC77C\uB801\uC774\uACE0, \uBE44\uB294 \uB5A8\uC5B4\uC9C0\uACE0, \uC2EC\uC7A5\uC740 \uB6F0\uACE0, '\uB5A8\uC5B4\uC9C0\uB2E4'\uB294 \uB5A8\uC5B4\uC838\uC694(\uBD80\uC815\uB418\uBA74 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC544\uC694). '\uCC28\uBD84\uD558\uAC8C'\uC640 '\uBC88\uCA4D\uC784 \uC5C6\uC74C'\uC5D0\uC11C\uB294 \uD06C\uAE30\xB7\uAD75\uAE30\xB7\uBC30\uCE58\uB9CC \uBC14\uB00C\uC5B4\uC694",
+          lyrPlayLevel: "\uC7A5\uB09C\uAE30 \uC815\uB3C4",
+          lyrPlayLevelHint: "\uC740\uC740\uD558\uAC8C: \uD06C\uAE30\xB7\uAD75\uAE30\xB7\uC0C9\uB9CC \uBC14\uB00C\uACE0 \uAE00\uAF34 \uC11E\uAE30 \uC5C6\uC774 \uC6C0\uC9C1\uC784\uC740 \uC801\uAC8C \xB7 \uC7A5\uB09C\uC2A4\uB7FD\uAC8C: \uB514\uC2A4\uD50C\uB808\uC774 \uAE00\uAF34, \uB73B\uC5D0 \uB9DE\uB294 \uC0C9, \uC0DD\uB3D9\uAC10 \uC788\uB294 \uB4F1\uC7A5 \xB7 \uC640\uC77C\uB4DC: \uC804\uBD80, \uACE1\uB9C8\uB2E4 \uACE0\uC720\uD55C \uC2A4\uD0C0\uC77C. \uC0C9\uC740 \uD56D\uC0C1 \uC798 \uC77D\uD600\uC694. '\uCC28\uBD84\uD558\uAC8C', '\uBC88\uCA4D\uC784 \uC5C6\uC74C', \uB3D9\uC791 \uC904\uC774\uAE30\uC5D0\uC11C\uB294 \uC5EC\uC804\uD788 \uBAA8\uB4E0 \uC6C0\uC9C1\uC784\uC774 \uBA48\uCDB0\uC694",
+          lyrPlayLevel_subtle: "\uC740\uC740\uD558\uAC8C",
+          lyrPlayLevel_playful: "\uC7A5\uB09C\uC2A4\uB7FD\uAC8C",
+          lyrPlayLevel_wild: "\uC640\uC77C\uB4DC"
         },
         nl: {
           lyrPlayful: "Speelse stijl",
-          lyrPlayfulHint: "De songtekst speelt als een lyric video: elke regel krijgt een eigen entree \u2013 woorden stijgen op, vallen erin of komen van twee kanten, een sleutelwoord wordt reusachtig, letters golven, uitroepen knallen erin in hoofdletters, snelle rap tikt zich in, ballades gloeien op. Woorden reageren op hun betekenis: vuur flakkert, regen druppelt, het hart klopt, 'vallen' valt (niet als het ontkend wordt). Met Rustige modus of Geen flitsen veranderen alleen grootte, dikte en opmaak"
+          lyrPlayfulHint: "De songtekst speelt als een lyric video: elke regel krijgt een eigen entree \u2013 woorden stijgen op, vallen erin of komen van twee kanten, een sleutelwoord wordt reusachtig, letters golven, uitroepen knallen erin in hoofdletters, snelle rap tikt zich in, ballades gloeien op. Woorden reageren op hun betekenis: vuur flakkert, regen druppelt, het hart klopt, 'vallen' valt (niet als het ontkend wordt). Met Rustige modus of Geen flitsen veranderen alleen grootte, dikte en opmaak",
+          lyrPlayLevel: "Speelsheid",
+          lyrPlayLevelHint: "Subtiel: alleen grootte, dikte en kleur \u2013 geen lettertypemix, weinig beweging \xB7 Speels: opvallende lettertypes, kleuren uit de betekenis en levendige entrees \xB7 Wild: alles, en elk nummer krijgt een eigen look. Kleuren blijven altijd goed leesbaar; Rustige modus, Geen flitsen en minder beweging zetten nog steeds alle beweging stil",
+          lyrPlayLevel_subtle: "Subtiel",
+          lyrPlayLevel_playful: "Speels",
+          lyrPlayLevel_wild: "Wild"
         },
         pl: {
           lyrPlayful: "Zabawny styl",
-          lyrPlayfulHint: "Tekst gra jak lyric video: ka\u017Cda linijka ma w\u0142asne wej\u015Bcie \u2013 s\u0142owa wznosz\u0105 si\u0119, wpadaj\u0105 z g\xF3ry lub z obu stron, kluczowe s\u0142owo ro\u015Bnie, litery faluj\u0105, okrzyki wpadaj\u0105 wielkimi literami, szybki rap si\u0119 wystukuje, ballady powoli rozb\u0142yskuj\u0105. S\u0142owa reaguj\u0105 na znaczenie: ogie\u0144 migocze, deszcz kapie, serce bije, \u201Espada\u0107\u201D spada (nie, gdy zaprzeczone). W \u201ETrybie spokojnym\u201D i przy \u201EBez b\u0142ysk\xF3w\u201D zmienia si\u0119 tylko rozmiar, grubo\u015B\u0107 i uk\u0142ad"
+          lyrPlayfulHint: "Tekst gra jak lyric video: ka\u017Cda linijka ma w\u0142asne wej\u015Bcie \u2013 s\u0142owa wznosz\u0105 si\u0119, wpadaj\u0105 z g\xF3ry lub z obu stron, kluczowe s\u0142owo ro\u015Bnie, litery faluj\u0105, okrzyki wpadaj\u0105 wielkimi literami, szybki rap si\u0119 wystukuje, ballady powoli rozb\u0142yskuj\u0105. S\u0142owa reaguj\u0105 na znaczenie: ogie\u0144 migocze, deszcz kapie, serce bije, \u201Espada\u0107\u201D spada (nie, gdy zaprzeczone). W \u201ETrybie spokojnym\u201D i przy \u201EBez b\u0142ysk\xF3w\u201D zmienia si\u0119 tylko rozmiar, grubo\u015B\u0107 i uk\u0142ad",
+          lyrPlayLevel: "Poziom zabawy",
+          lyrPlayLevelHint: "Subtelny: tylko rozmiar, grubo\u015B\u0107 i kolor \u2013 bez mieszania czcionek, ma\u0142o ruchu \xB7 Zabawny: czcionki ozdobne, kolory ze znaczenia s\u0142\xF3w i \u017Cywe wej\u015Bcia \xB7 Szalony: wszystko, a ka\u017Cda piosenka ma w\u0142asny wygl\u0105d. Kolory zawsze pozostaj\u0105 czytelne; \u201ETryb spokojny\u201D, \u201EBez b\u0142ysk\xF3w\u201D i ograniczony ruch nadal zatrzymuj\u0105 ca\u0142y ruch",
+          lyrPlayLevel_subtle: "Subtelny",
+          lyrPlayLevel_playful: "Zabawny",
+          lyrPlayLevel_wild: "Szalony"
         },
         pt: {
           lyrPlayful: "Estilo divertido",
-          lyrPlayfulHint: "A letra mexe-se como um lyric video: cada linha tem a sua entrada \u2013 as palavras sobem, caem ou chegam dos dois lados, uma palavra-chave fica enorme, as letras ondulam, os gritos entram em mai\xFAsculas, o rap r\xE1pido escreve-se, as baladas acendem devagar. As palavras reagem ao significado: o fogo tremeluz, a chuva pinga, o cora\xE7\xE3o bate, \xABcair\xBB cai (n\xE3o se negado). Com Modo calmo ou Sem flashes s\xF3 mudam tamanho, espessura e disposi\xE7\xE3o"
+          lyrPlayfulHint: "A letra mexe-se como um lyric video: cada linha tem a sua entrada \u2013 as palavras sobem, caem ou chegam dos dois lados, uma palavra-chave fica enorme, as letras ondulam, os gritos entram em mai\xFAsculas, o rap r\xE1pido escreve-se, as baladas acendem devagar. As palavras reagem ao significado: o fogo tremeluz, a chuva pinga, o cora\xE7\xE3o bate, \xABcair\xBB cai (n\xE3o se negado). Com Modo calmo ou Sem flashes s\xF3 mudam tamanho, espessura e disposi\xE7\xE3o",
+          lyrPlayLevel: "Intensidade",
+          lyrPlayLevelHint: "Subtil: s\xF3 tamanho, espessura e cor \u2013 sem mistura de fontes, pouco movimento \xB7 Divertido: fontes de destaque, cores pelo significado e entradas animadas \xB7 Selvagem: tudo, e cada m\xFAsica tem o seu pr\xF3prio visual. As cores ficam sempre leg\xEDveis; Modo calmo, Sem flashes e movimento reduzido continuam a parar todo o movimento",
+          lyrPlayLevel_subtle: "Subtil",
+          lyrPlayLevel_playful: "Divertido",
+          lyrPlayLevel_wild: "Selvagem"
         },
         ru: {
           lyrPlayful: "\u0418\u0433\u0440\u0438\u0432\u044B\u0439 \u0441\u0442\u0438\u043B\u044C",
-          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0434\u0432\u0438\u0436\u0435\u0442\u0441\u044F \u043A\u0430\u043A lyric video: \u0443 \u043A\u0430\u0436\u0434\u043E\u0439 \u0441\u0442\u0440\u043E\u043A\u0438 \u0441\u0432\u043E\u0439 \u0432\u044B\u0445\u043E\u0434 \u2013 \u0441\u043B\u043E\u0432\u0430 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442\u0441\u044F, \u043F\u0430\u0434\u0430\u044E\u0442 \u0441\u0432\u0435\u0440\u0445\u0443 \u0438\u043B\u0438 \u043F\u0440\u0438\u0445\u043E\u0434\u044F\u0442 \u0441 \u0434\u0432\u0443\u0445 \u0441\u0442\u043E\u0440\u043E\u043D, \u043A\u043B\u044E\u0447\u0435\u0432\u043E\u0435 \u0441\u043B\u043E\u0432\u043E \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0441\u044F \u043E\u0433\u0440\u043E\u043C\u043D\u044B\u043C, \u0431\u0443\u043A\u0432\u044B \u0438\u0434\u0443\u0442 \u0432\u043E\u043B\u043D\u043E\u0439, \u043A\u0440\u0438\u043A\u0438 \u0432\u0440\u0435\u0437\u0430\u044E\u0442\u0441\u044F \u043A\u0430\u043F\u0441\u043E\u043C, \u0431\u044B\u0441\u0442\u0440\u044B\u0439 \u0440\u044D\u043F \u043F\u0435\u0447\u0430\u0442\u0430\u0435\u0442\u0441\u044F, \u0431\u0430\u043B\u043B\u0430\u0434\u044B \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u0437\u0430\u0433\u043E\u0440\u0430\u044E\u0442\u0441\u044F. \u0421\u043B\u043E\u0432\u0430 \u0440\u0435\u0430\u0433\u0438\u0440\u0443\u044E\u0442 \u043D\u0430 \u0441\u043C\u044B\u0441\u043B: \u043E\u0433\u043E\u043D\u044C \u043C\u0435\u0440\u0446\u0430\u0435\u0442, \u0434\u043E\u0436\u0434\u044C \u043A\u0430\u043F\u0430\u0435\u0442, \u0441\u0435\u0440\u0434\u0446\u0435 \u0431\u044C\u0451\u0442\u0441\u044F, \xAB\u043F\u0430\u0434\u0430\u0442\u044C\xBB \u043F\u0430\u0434\u0430\u0435\u0442 (\u043D\u043E \u043D\u0435 \u043F\u0440\u0438 \u043E\u0442\u0440\u0438\u0446\u0430\u043D\u0438\u0438). \u0412 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u043E\xBB \u0438 \xAB\u0411\u0435\u0437 \u0432\u0441\u043F\u044B\u0448\u0435\u043A\xBB \u043C\u0435\u043D\u044F\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437\u043C\u0435\u0440, \u043D\u0430\u0441\u044B\u0449\u0435\u043D\u043D\u043E\u0441\u0442\u044C \u0438 \u0440\u0430\u0441\u043A\u043B\u0430\u0434\u043A\u0430"
+          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0434\u0432\u0438\u0436\u0435\u0442\u0441\u044F \u043A\u0430\u043A lyric video: \u0443 \u043A\u0430\u0436\u0434\u043E\u0439 \u0441\u0442\u0440\u043E\u043A\u0438 \u0441\u0432\u043E\u0439 \u0432\u044B\u0445\u043E\u0434 \u2013 \u0441\u043B\u043E\u0432\u0430 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442\u0441\u044F, \u043F\u0430\u0434\u0430\u044E\u0442 \u0441\u0432\u0435\u0440\u0445\u0443 \u0438\u043B\u0438 \u043F\u0440\u0438\u0445\u043E\u0434\u044F\u0442 \u0441 \u0434\u0432\u0443\u0445 \u0441\u0442\u043E\u0440\u043E\u043D, \u043A\u043B\u044E\u0447\u0435\u0432\u043E\u0435 \u0441\u043B\u043E\u0432\u043E \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0441\u044F \u043E\u0433\u0440\u043E\u043C\u043D\u044B\u043C, \u0431\u0443\u043A\u0432\u044B \u0438\u0434\u0443\u0442 \u0432\u043E\u043B\u043D\u043E\u0439, \u043A\u0440\u0438\u043A\u0438 \u0432\u0440\u0435\u0437\u0430\u044E\u0442\u0441\u044F \u043A\u0430\u043F\u0441\u043E\u043C, \u0431\u044B\u0441\u0442\u0440\u044B\u0439 \u0440\u044D\u043F \u043F\u0435\u0447\u0430\u0442\u0430\u0435\u0442\u0441\u044F, \u0431\u0430\u043B\u043B\u0430\u0434\u044B \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u0437\u0430\u0433\u043E\u0440\u0430\u044E\u0442\u0441\u044F. \u0421\u043B\u043E\u0432\u0430 \u0440\u0435\u0430\u0433\u0438\u0440\u0443\u044E\u0442 \u043D\u0430 \u0441\u043C\u044B\u0441\u043B: \u043E\u0433\u043E\u043D\u044C \u043C\u0435\u0440\u0446\u0430\u0435\u0442, \u0434\u043E\u0436\u0434\u044C \u043A\u0430\u043F\u0430\u0435\u0442, \u0441\u0435\u0440\u0434\u0446\u0435 \u0431\u044C\u0451\u0442\u0441\u044F, \xAB\u043F\u0430\u0434\u0430\u0442\u044C\xBB \u043F\u0430\u0434\u0430\u0435\u0442 (\u043D\u043E \u043D\u0435 \u043F\u0440\u0438 \u043E\u0442\u0440\u0438\u0446\u0430\u043D\u0438\u0438). \u0412 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u043E\xBB \u0438 \xAB\u0411\u0435\u0437 \u0432\u0441\u043F\u044B\u0448\u0435\u043A\xBB \u043C\u0435\u043D\u044F\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437\u043C\u0435\u0440, \u043D\u0430\u0441\u044B\u0449\u0435\u043D\u043D\u043E\u0441\u0442\u044C \u0438 \u0440\u0430\u0441\u043A\u043B\u0430\u0434\u043A\u0430",
+          lyrPlayLevel: "\u0421\u0442\u0435\u043F\u0435\u043D\u044C \u0438\u0433\u0440\u0438\u0432\u043E\u0441\u0442\u0438",
+          lyrPlayLevelHint: "\u0421\u0434\u0435\u0440\u0436\u0430\u043D\u043D\u043E: \u0442\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437\u043C\u0435\u0440, \u043D\u0430\u0441\u044B\u0449\u0435\u043D\u043D\u043E\u0441\u0442\u044C \u0438 \u0446\u0432\u0435\u0442 \u2013 \u0431\u0435\u0437 \u0441\u043C\u0435\u043D\u044B \u0448\u0440\u0438\u0444\u0442\u043E\u0432, \u043C\u0430\u043B\u043E \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F \xB7 \u0418\u0433\u0440\u0438\u0432\u043E: \u0430\u043A\u0446\u0438\u0434\u0435\u043D\u0442\u043D\u044B\u0435 \u0448\u0440\u0438\u0444\u0442\u044B, \u0446\u0432\u0435\u0442\u0430 \u043F\u043E \u0441\u043C\u044B\u0441\u043B\u0443 \u0438 \u0436\u0438\u0432\u044B\u0435 \u043F\u043E\u044F\u0432\u043B\u0435\u043D\u0438\u044F \xB7 \u0414\u0438\u043A\u043E: \u0432\u0441\u0451 \u0441\u0440\u0430\u0437\u0443, \u0438 \u0443 \u043A\u0430\u0436\u0434\u043E\u0439 \u043F\u0435\u0441\u043D\u0438 \u0441\u0432\u043E\u0439 \u043E\u0431\u043B\u0438\u043A. \u0426\u0432\u0435\u0442\u0430 \u0432\u0441\u0435\u0433\u0434\u0430 \u043E\u0441\u0442\u0430\u044E\u0442\u0441\u044F \u0447\u0438\u0442\u0430\u0435\u043C\u044B\u043C\u0438; \xAB\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u043E\xBB, \xAB\u0411\u0435\u0437 \u0432\u0441\u043F\u044B\u0448\u0435\u043A\xBB \u0438 \u0443\u043C\u0435\u043D\u044C\u0448\u0435\u043D\u0438\u0435 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F \u043F\u043E-\u043F\u0440\u0435\u0436\u043D\u0435\u043C\u0443 \u043E\u0441\u0442\u0430\u043D\u0430\u0432\u043B\u0438\u0432\u0430\u044E\u0442 \u0432\u0441\u0451 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u0435",
+          lyrPlayLevel_subtle: "\u0421\u0434\u0435\u0440\u0436\u0430\u043D\u043D\u043E",
+          lyrPlayLevel_playful: "\u0418\u0433\u0440\u0438\u0432\u043E",
+          lyrPlayLevel_wild: "\u0414\u0438\u043A\u043E"
         },
         tr: {
           lyrPlayful: "Oyuncu stil",
-          lyrPlayfulHint: "S\xF6zler bir lyric video gibi oynar: her sat\u0131r\u0131n kendi giri\u015Fi var \u2013 kelimeler y\xFCkselir, yukar\u0131dan d\xFC\u015Fer ya da iki yandan gelir, anahtar kelime kocamanla\u015F\u0131r, harfler dalgalan\u0131r, ba\u011F\u0131r\u0131\u015Flar b\xFCy\xFCk harfle \xE7arpar, h\u0131zl\u0131 rap yaz\u0131l\u0131r gibi gelir, baladlar yava\u015F\xE7a parlar. Kelimeler anlam\u0131na tepki verir: ate\u015F titrer, ya\u011Fmur damlar, kalp atar, \u201Ed\xFC\u015Fmek\u201C d\xFC\u015Fer (olumsuzsa de\u011Fil). Sakin ve Fla\u015F yok ile yaln\u0131zca boyut, kal\u0131nl\u0131k ve d\xFCzen de\u011Fi\u015Fir"
+          lyrPlayfulHint: "S\xF6zler bir lyric video gibi oynar: her sat\u0131r\u0131n kendi giri\u015Fi var \u2013 kelimeler y\xFCkselir, yukar\u0131dan d\xFC\u015Fer ya da iki yandan gelir, anahtar kelime kocamanla\u015F\u0131r, harfler dalgalan\u0131r, ba\u011F\u0131r\u0131\u015Flar b\xFCy\xFCk harfle \xE7arpar, h\u0131zl\u0131 rap yaz\u0131l\u0131r gibi gelir, baladlar yava\u015F\xE7a parlar. Kelimeler anlam\u0131na tepki verir: ate\u015F titrer, ya\u011Fmur damlar, kalp atar, \u201Ed\xFC\u015Fmek\u201C d\xFC\u015Fer (olumsuzsa de\u011Fil). Sakin ve Fla\u015F yok ile yaln\u0131zca boyut, kal\u0131nl\u0131k ve d\xFCzen de\u011Fi\u015Fir",
+          lyrPlayLevel: "Oyunculuk d\xFCzeyi",
+          lyrPlayLevelHint: "Sade: yaln\u0131zca boyut, kal\u0131nl\u0131k ve renk \u2013 yaz\u0131 tipi kar\u0131\u015F\u0131m\u0131 yok, az hareket \xB7 Oyuncu: g\xF6steri\u015Fli yaz\u0131 tipleri, anlama g\xF6re renkler ve canl\u0131 giri\u015Fler \xB7 \xC7\u0131lg\u0131n: her \u015Fey, ve her \u015Fark\u0131n\u0131n kendi g\xF6r\xFCn\xFCm\xFC olur. Renkler her zaman okunakl\u0131 kal\u0131r; Sakin, Fla\u015F yok ve azalt\u0131lm\u0131\u015F hareket yine t\xFCm hareketi durdurur",
+          lyrPlayLevel_subtle: "Sade",
+          lyrPlayLevel_playful: "Oyuncu",
+          lyrPlayLevel_wild: "\xC7\u0131lg\u0131n"
         },
         uk: {
           lyrPlayful: "\u0413\u0440\u0430\u0439\u043B\u0438\u0432\u0438\u0439 \u0441\u0442\u0438\u043B\u044C",
-          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0440\u0443\u0445\u0430\u0454\u0442\u044C\u0441\u044F \u044F\u043A lyric video: \u043A\u043E\u0436\u0435\u043D \u0440\u044F\u0434\u043E\u043A \u043C\u0430\u0454 \u0441\u0432\u0456\u0439 \u0432\u0438\u0445\u0456\u0434 \u2013 \u0441\u043B\u043E\u0432\u0430 \u043F\u0456\u0434\u0456\u0439\u043C\u0430\u044E\u0442\u044C\u0441\u044F, \u043F\u0430\u0434\u0430\u044E\u0442\u044C \u0437\u0433\u043E\u0440\u0438 \u0447\u0438 \u043F\u0440\u0438\u0445\u043E\u0434\u044F\u0442\u044C \u0437 \u043E\u0431\u043E\u0445 \u0431\u043E\u043A\u0456\u0432, \u043A\u043B\u044E\u0447\u043E\u0432\u0435 \u0441\u043B\u043E\u0432\u043E \u0441\u0442\u0430\u0454 \u0432\u0435\u043B\u0438\u0447\u0435\u0437\u043D\u0438\u043C, \u043B\u0456\u0442\u0435\u0440\u0438 \u0431\u0456\u0436\u0430\u0442\u044C \u0445\u0432\u0438\u043B\u0435\u044E, \u0432\u0438\u0433\u0443\u043A\u0438 \u0432\u043B\u0456\u0442\u0430\u044E\u0442\u044C \u043A\u0430\u043F\u0441\u043E\u043C, \u0448\u0432\u0438\u0434\u043A\u0438\u0439 \u0440\u0435\u043F \u0434\u0440\u0443\u043A\u0443\u0454\u0442\u044C\u0441\u044F, \u0431\u0430\u043B\u0430\u0434\u0438 \u043F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u0437\u0430\u0441\u0432\u0456\u0447\u0443\u044E\u0442\u044C\u0441\u044F. \u0421\u043B\u043E\u0432\u0430 \u0440\u0435\u0430\u0433\u0443\u044E\u0442\u044C \u043D\u0430 \u0437\u043C\u0456\u0441\u0442: \u0432\u043E\u0433\u043E\u043D\u044C \u043C\u0435\u0440\u0435\u0445\u0442\u0438\u0442\u044C, \u0434\u043E\u0449 \u043A\u0430\u043F\u0430\u0454, \u0441\u0435\u0440\u0446\u0435 \u0431'\u0454\u0442\u044C\u0441\u044F, \xAB\u043F\u0430\u0434\u0430\u0442\u0438\xBB \u043F\u0430\u0434\u0430\u0454 (\u0430\u043B\u0435 \u043D\u0435 \u043F\u0440\u0438 \u0437\u0430\u043F\u0435\u0440\u0435\u0447\u0435\u043D\u043D\u0456). \u0423 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u043E\xBB \u0442\u0430 \xAB\u0411\u0435\u0437 \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432\xBB \u0437\u043C\u0456\u043D\u044E\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u0440\u043E\u0437\u043C\u0456\u0440, \u043D\u0430\u0441\u0438\u0447\u0435\u043D\u0456\u0441\u0442\u044C \u0456 \u0440\u043E\u0437\u043A\u043B\u0430\u0434\u043A\u0430"
+          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0440\u0443\u0445\u0430\u0454\u0442\u044C\u0441\u044F \u044F\u043A lyric video: \u043A\u043E\u0436\u0435\u043D \u0440\u044F\u0434\u043E\u043A \u043C\u0430\u0454 \u0441\u0432\u0456\u0439 \u0432\u0438\u0445\u0456\u0434 \u2013 \u0441\u043B\u043E\u0432\u0430 \u043F\u0456\u0434\u0456\u0439\u043C\u0430\u044E\u0442\u044C\u0441\u044F, \u043F\u0430\u0434\u0430\u044E\u0442\u044C \u0437\u0433\u043E\u0440\u0438 \u0447\u0438 \u043F\u0440\u0438\u0445\u043E\u0434\u044F\u0442\u044C \u0437 \u043E\u0431\u043E\u0445 \u0431\u043E\u043A\u0456\u0432, \u043A\u043B\u044E\u0447\u043E\u0432\u0435 \u0441\u043B\u043E\u0432\u043E \u0441\u0442\u0430\u0454 \u0432\u0435\u043B\u0438\u0447\u0435\u0437\u043D\u0438\u043C, \u043B\u0456\u0442\u0435\u0440\u0438 \u0431\u0456\u0436\u0430\u0442\u044C \u0445\u0432\u0438\u043B\u0435\u044E, \u0432\u0438\u0433\u0443\u043A\u0438 \u0432\u043B\u0456\u0442\u0430\u044E\u0442\u044C \u043A\u0430\u043F\u0441\u043E\u043C, \u0448\u0432\u0438\u0434\u043A\u0438\u0439 \u0440\u0435\u043F \u0434\u0440\u0443\u043A\u0443\u0454\u0442\u044C\u0441\u044F, \u0431\u0430\u043B\u0430\u0434\u0438 \u043F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u0437\u0430\u0441\u0432\u0456\u0447\u0443\u044E\u0442\u044C\u0441\u044F. \u0421\u043B\u043E\u0432\u0430 \u0440\u0435\u0430\u0433\u0443\u044E\u0442\u044C \u043D\u0430 \u0437\u043C\u0456\u0441\u0442: \u0432\u043E\u0433\u043E\u043D\u044C \u043C\u0435\u0440\u0435\u0445\u0442\u0438\u0442\u044C, \u0434\u043E\u0449 \u043A\u0430\u043F\u0430\u0454, \u0441\u0435\u0440\u0446\u0435 \u0431'\u0454\u0442\u044C\u0441\u044F, \xAB\u043F\u0430\u0434\u0430\u0442\u0438\xBB \u043F\u0430\u0434\u0430\u0454 (\u0430\u043B\u0435 \u043D\u0435 \u043F\u0440\u0438 \u0437\u0430\u043F\u0435\u0440\u0435\u0447\u0435\u043D\u043D\u0456). \u0423 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u043E\xBB \u0442\u0430 \xAB\u0411\u0435\u0437 \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432\xBB \u0437\u043C\u0456\u043D\u044E\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u0440\u043E\u0437\u043C\u0456\u0440, \u043D\u0430\u0441\u0438\u0447\u0435\u043D\u0456\u0441\u0442\u044C \u0456 \u0440\u043E\u0437\u043A\u043B\u0430\u0434\u043A\u0430",
+          lyrPlayLevel: "\u0420\u0456\u0432\u0435\u043D\u044C \u0433\u0440\u0430\u0439\u043B\u0438\u0432\u043E\u0441\u0442\u0456",
+          lyrPlayLevelHint: "\u0421\u0442\u0440\u0438\u043C\u0430\u043D\u043E: \u043B\u0438\u0448\u0435 \u0440\u043E\u0437\u043C\u0456\u0440, \u043D\u0430\u0441\u0438\u0447\u0435\u043D\u0456\u0441\u0442\u044C \u0456 \u043A\u043E\u043B\u0456\u0440 \u2013 \u0431\u0435\u0437 \u0437\u043C\u0456\u043D\u0438 \u0448\u0440\u0438\u0444\u0442\u0456\u0432, \u043C\u0430\u043B\u043E \u0440\u0443\u0445\u0443 \xB7 \u0413\u0440\u0430\u0439\u043B\u0438\u0432\u043E: \u0432\u0438\u0440\u0430\u0437\u043D\u0456 \u0448\u0440\u0438\u0444\u0442\u0438, \u043A\u043E\u043B\u044C\u043E\u0440\u0438 \u0437\u0430 \u0437\u043C\u0456\u0441\u0442\u043E\u043C \u0456 \u0436\u0432\u0430\u0432\u0456 \u043F\u043E\u044F\u0432\u0438 \xB7 \u0428\u0430\u043B\u0435\u043D\u043E: \u0443\u0441\u0435 \u0440\u0430\u0437\u043E\u043C, \u0456 \u043A\u043E\u0436\u043D\u0430 \u043F\u0456\u0441\u043D\u044F \u043C\u0430\u0454 \u0432\u043B\u0430\u0441\u043D\u0438\u0439 \u0432\u0438\u0433\u043B\u044F\u0434. \u041A\u043E\u043B\u044C\u043E\u0440\u0438 \u0437\u0430\u0432\u0436\u0434\u0438 \u043B\u0438\u0448\u0430\u044E\u0442\u044C\u0441\u044F \u0447\u0438\u0442\u0430\u0431\u0435\u043B\u044C\u043D\u0438\u043C\u0438; \xAB\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u043E\xBB, \xAB\u0411\u0435\u0437 \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432\xBB \u0456 \u0437\u043C\u0435\u043D\u0448\u0435\u043D\u043D\u044F \u0440\u0443\u0445\u0443 \u0439 \u0434\u0430\u043B\u0456 \u0437\u0443\u043F\u0438\u043D\u044F\u044E\u0442\u044C \u0443\u0432\u0435\u0441\u044C \u0440\u0443\u0445",
+          lyrPlayLevel_subtle: "\u0421\u0442\u0440\u0438\u043C\u0430\u043D\u043E",
+          lyrPlayLevel_playful: "\u0413\u0440\u0430\u0439\u043B\u0438\u0432\u043E",
+          lyrPlayLevel_wild: "\u0428\u0430\u043B\u0435\u043D\u043E"
         },
         zh: {
           lyrPlayful: "\u4FCF\u76AE\u98CE\u683C",
-          lyrPlayfulHint: "\u6B4C\u8BCD\u50CF\u6B4C\u8BCD\u89C6\u9891\u4E00\u6837\u6F14\u51FA\uFF1A\u6BCF\u4E00\u884C\u90FD\u6709\u81EA\u5DF1\u7684\u51FA\u573A\u65B9\u5F0F\u2014\u2014\u5B57\u8BCD\u5347\u8D77\u3001\u843D\u4E0B\u6216\u4ECE\u4E24\u4FA7\u8FDB\u5165\uFF0C\u5173\u952E\u8BCD\u653E\u5927\uFF0C\u5B57\u6BCD\u8D77\u4F0F\u6210\u6CE2\u6D6A\uFF0C\u5450\u558A\u4EE5\u5927\u5199\u7838\u5165\uFF0C\u5FEB\u901F\u8BF4\u5531\u9010\u5B57\u6253\u51FA\uFF0C\u6292\u60C5\u6B4C\u7F13\u7F13\u4EAE\u8D77\u3002\u5B57\u8BCD\u4F1A\u5BF9\u542B\u4E49\u505A\u51FA\u53CD\u5E94\uFF1A\u706B\u7130\u6447\u66F3\u3001\u96E8\u6EF4\u843D\u4E0B\u3001\u5FC3\u5728\u8DF3\u52A8\u3001\u201C\u5760\u843D\u201D\u4F1A\u843D\u4E0B\uFF08\u88AB\u5426\u5B9A\u65F6\u4E0D\u4F1A\uFF09\u3002\u5728\u201C\u5E73\u9759\u201D\u548C\u201C\u65E0\u95EA\u5149\u201D\u4E0B\u53EA\u6539\u53D8\u5927\u5C0F\u3001\u7C97\u7EC6\u548C\u6392\u7248"
+          lyrPlayfulHint: "\u6B4C\u8BCD\u50CF\u6B4C\u8BCD\u89C6\u9891\u4E00\u6837\u6F14\u51FA\uFF1A\u6BCF\u4E00\u884C\u90FD\u6709\u81EA\u5DF1\u7684\u51FA\u573A\u65B9\u5F0F\u2014\u2014\u5B57\u8BCD\u5347\u8D77\u3001\u843D\u4E0B\u6216\u4ECE\u4E24\u4FA7\u8FDB\u5165\uFF0C\u5173\u952E\u8BCD\u653E\u5927\uFF0C\u5B57\u6BCD\u8D77\u4F0F\u6210\u6CE2\u6D6A\uFF0C\u5450\u558A\u4EE5\u5927\u5199\u7838\u5165\uFF0C\u5FEB\u901F\u8BF4\u5531\u9010\u5B57\u6253\u51FA\uFF0C\u6292\u60C5\u6B4C\u7F13\u7F13\u4EAE\u8D77\u3002\u5B57\u8BCD\u4F1A\u5BF9\u542B\u4E49\u505A\u51FA\u53CD\u5E94\uFF1A\u706B\u7130\u6447\u66F3\u3001\u96E8\u6EF4\u843D\u4E0B\u3001\u5FC3\u5728\u8DF3\u52A8\u3001\u201C\u5760\u843D\u201D\u4F1A\u843D\u4E0B\uFF08\u88AB\u5426\u5B9A\u65F6\u4E0D\u4F1A\uFF09\u3002\u5728\u201C\u5E73\u9759\u201D\u548C\u201C\u65E0\u95EA\u5149\u201D\u4E0B\u53EA\u6539\u53D8\u5927\u5C0F\u3001\u7C97\u7EC6\u548C\u6392\u7248",
+          lyrPlayLevel: "\u4FCF\u76AE\u7A0B\u5EA6",
+          lyrPlayLevelHint: "\u4F4E\u8C03\uFF1A\u53EA\u6539\u53D8\u5927\u5C0F\u3001\u7C97\u7EC6\u548C\u989C\u8272\u2014\u2014\u4E0D\u6DF7\u7528\u5B57\u4F53\uFF0C\u52A8\u4F5C\u5F88\u5C11 \xB7 \u4FCF\u76AE\uFF1A\u5C55\u793A\u5B57\u4F53\u3001\u6309\u542B\u4E49\u4E0A\u8272\u3001\u6D3B\u6CFC\u7684\u51FA\u573A \xB7 \u72C2\u91CE\uFF1A\u5168\u90E8\u6548\u679C\uFF0C\u6BCF\u9996\u6B4C\u90FD\u6709\u81EA\u5DF1\u7684\u98CE\u683C\u3002\u989C\u8272\u59CB\u7EC8\u6E05\u6670\u6613\u8BFB\uFF1B\u201C\u5E73\u9759\u201D\u201C\u65E0\u95EA\u5149\u201D\u548C\u51CF\u5C11\u52A8\u6001\u6548\u679C\u4ECD\u4F1A\u505C\u6B62\u6240\u6709\u52A8\u4F5C",
+          lyrPlayLevel_subtle: "\u4F4E\u8C03",
+          lyrPlayLevel_playful: "\u4FCF\u76AE",
+          lyrPlayLevel_wild: "\u72C2\u91CE"
         }
       };
     }
@@ -15581,6 +15651,8 @@
         lyrVoices: true,
         // Verspielter Liedtext-Stil: Betonung, gehaltene Töne, Takt, Wortbilder (lyricstyle.js) – nur auf Wunsch
         lyrPlayful: false,
+        // Stärke des verspielten Stils: "subtle" (nur Größe, Stärke, Farbe, wenig Bewegung) · "playful" · "wild" (alles)
+        lyrPlayLevel: "playful",
         font: "outfit",
         lyricPicks: {},
         // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)
@@ -19061,17 +19133,17 @@
       x += Math.cos(a);
       y += Math.sin(a);
     }
-    const R = Math.hypot(x, y) / on.length;
-    return { R, phase: (Math.atan2(y, x) / (Math.PI * 2) + 1) % 1 * P };
+    const R2 = Math.hypot(x, y) / on.length;
+    return { R: R2, phase: (Math.atan2(y, x) / (Math.PI * 2) + 1) % 1 * P };
   }
   function* onsetSearch(on, hint) {
     let best2 = null, work = 0;
     for (let bpm2 = 60; bpm2 <= 190; bpm2 += 0.5) {
       const P = 60 / bpm2;
-      const { R, phase } = fitGrid(on, P);
+      const { R: R2, phase } = fitGrid(on, P);
       const prior = Math.exp(-(((bpm2 - 118) / 45) ** 2) * 0.5) * (hint ? Math.max(0.35, Math.exp(-(((bpm2 - hint) / 4) ** 2))) : 1);
-      const score = R * (0.6 + 0.4 * prior);
-      if (!best2 || score > best2.score) best2 = { bpm: bpm2, phase, R, score };
+      const score = R2 * (0.6 + 0.4 * prior);
+      if (!best2 || score > best2.score) best2 = { bpm: bpm2, phase, R: R2, score };
       if ((work += on.length) >= CHUNK) {
         work = 0;
         yield;
@@ -19083,16 +19155,16 @@
     const fits2 = [];
     let top2 = 0, work = 0;
     for (let L3 = 1.2; L3 <= 12; L3 += 5e-3) {
-      const { R } = fitGrid(on, L3);
-      fits2.push([L3, R]);
-      top2 = Math.max(top2, R);
+      const { R: R2 } = fitGrid(on, L3);
+      fits2.push([L3, R2]);
+      top2 = Math.max(top2, R2);
       if ((work += on.length) >= CHUNK) {
         work = 0;
         yield;
       }
     }
     if (!top2) return null;
-    const L2 = fits2.filter(([, R]) => R >= top2 * 0.97).pop()[0];
+    const L2 = fits2.filter(([, R2]) => R2 >= top2 * 0.97).pop()[0];
     const family = [8, 4, 16, 2, 32].map((k) => 60 * k / L2).filter((b) => b >= 70 && b <= 170);
     if (!family.length) return null;
     const near = hint && family.find((b) => Math.abs(b / hint - 1) < 0.04);
@@ -20673,11 +20745,11 @@
     return true;
   }
   async function playlists() {
-    const R = S.Platform?.RootlistAPI;
-    if (typeof R?.getContents !== "function") return [];
+    const R2 = S.Platform?.RootlistAPI;
+    if (typeof R2?.getContents !== "function") return [];
     let root3;
     try {
-      root3 = await R.getContents();
+      root3 = await R2.getContents();
     } catch {
       return [];
     }
@@ -21404,10 +21476,10 @@
       return active2;
     } };
   }
-  function pickDropLook(sig, rng, prev) {
+  function pickDropLook(sig, rng2, prev) {
     const pal = DROP_PAL[sig] || DROP_PAL.pop;
     const cand = pal.length > 1 ? pal.filter((x) => x !== prev) : pal;
-    return cand[Math.floor(rng() * cand.length) % cand.length];
+    return cand[Math.floor(rng2() * cand.length) % cand.length];
   }
   var clamp7, FAM, FAMS, C, STAGE, EXPLICIT, EX_SOFT, SOFTEN, SOFT_DROP, PARTYISH, PART_K, LOUD, NUMS, NUM, TOK, DROP_LOOKS, DROP_PAL;
   var init_scenarios = __esm({
@@ -21786,7 +21858,7 @@
       return ((t2 ^ t2 >>> 14) >>> 0) / 4294967296;
     };
   }
-  function pickScene(emo, sig, rng, uses, lastId) {
+  function pickScene(emo, sig, rng2, uses, lastId) {
     const cand = [];
     let tot = 0;
     for (const s2 of SCENES) {
@@ -21806,7 +21878,7 @@
       cand.push([s2, w]);
       tot += w;
     }
-    let r = rng() * tot;
+    let r = rng2() * tot;
     for (const [s2, w] of cand) if ((r -= w) <= 0) return s2;
     return cand.length ? cand[cand.length - 1][0] : SCENES[0];
   }
@@ -21949,7 +22021,7 @@
     return { parts, scenes, beat: beat2, bar, bars, beats, end, sig, emo, holds: M.holds, drops: M.drops, mo: mo2 };
   }
   function planMoments(parts, M, beats, beat2, bar, end, sig, lyrics, seed, segs) {
-    const rng = rngOf((seed ^ 1540483477) >>> 0);
+    const rng2 = rngOf((seed ^ 1540483477) >>> 0);
     const peak = (p) => p.kind === "chorus" || p.kind === "drop";
     const nPeak = parts.filter(peak).length;
     let lastPeak = -1, prevKey = "", prevLook = "";
@@ -21965,7 +22037,7 @@
         const k = p.key + "/" + p.mode;
         p.mod = !!prevKey && p.key >= 0 && k !== prevKey;
         prevKey = k;
-        prevLook = pickDropLook(sig.name, rng, prevLook);
+        prevLook = pickDropLook(sig.name, rng2, prevLook);
         p.dl = DROP_LOOKS.indexOf(prevLook);
       }
       const len = p.t1 - p.t0, inner = sung2(p.t0 + 0.5, p.t1 - 0.5);
@@ -22011,7 +22083,7 @@
     return { stops, echo: echo.length >= 2 ? echo : [], first, tc: bpm2 >= 160 ? 1 : bpm2 <= 80 ? -1 : 0 };
   }
   function planScenes(parts, bars, bar, beat2, sig, seed) {
-    const rng = rngOf(seed), uses = {}, out = [];
+    const rng2 = rngOf(seed), uses = {}, out = [];
     let last2 = null, lastT = -1e9;
     const barIdx = (t2) => {
       let lo = 0, hi = bars.length - 1;
@@ -22023,9 +22095,9 @@
       return lo;
     };
     const add = (t2, p, mid) => {
-      const s2 = pickScene(p.emo, sig, rng, uses, last2?.id);
+      const s2 = pickScene(p.emo, sig, rng2, uses, last2?.id);
       uses[s2.id] = (uses[s2.id] || 0) + 1;
-      const sh = (s2.hue || 0) + Math.round((rng() - 0.5) * 4) * 6;
+      const sh = (s2.hue || 0) + Math.round((rng2() - 0.5) * 4) * 6;
       const wipe = mid ? p.emo.a > 0.3 : p.wipe;
       last2 = { t0: t2, id: s2.id, sc: out.length, spot: s2.spot, rig: s2.rig, sh, spread: s2.spread || 1, borrow: s2.borrow || {}, mid, wipe, fade: mid ? wipe ? beat2 : bar * 2 : Math.max(p.fade, p.drop ? 0 : beat2) };
       out.push(last2);
@@ -22093,8 +22165,8 @@
     const wSc = !o.lite && S2.mid && S2.wipe && xs >= 0 && xs < wipeDur(beat2) ? xs / wipeDur(beat2) : -1;
     const wall = Math.max(sig.wall, lerpB(b0, b1, "wall", sx));
     const g = plan2.g || (plan2.g = {}), gs = q(dev("sat"), 0.02), gc = q(dev("con"), 0.02), gw = q(mix2("warm"), 0.025), gh = q(mix2("hue"), 2);
-    const th = q((Math.atan2(ty, tx) * 180 / Math.PI + 360) % 360, 2), tk = q(Math.hypot(tx, ty), 0.025), lum3 = q(mix2("lum"), 0.01), sh = q(S0.sh + (S2.sh - S0.sh) * sx, 2);
-    if (g.sat !== gs || g.con !== gc || g.warm !== gw || g.hue !== gh || g.th !== th || g.tk !== tk || g.lum !== lum3 || g.sh !== sh) plan2.g = { sat: gs, con: gc, warm: gw, hue: gh, th, tk, lum: lum3, sh };
+    const th = q((Math.atan2(ty, tx) * 180 / Math.PI + 360) % 360, 2), tk = q(Math.hypot(tx, ty), 0.025), lum4 = q(mix2("lum"), 0.01), sh = q(S0.sh + (S2.sh - S0.sh) * sx, 2);
+    if (g.sat !== gs || g.con !== gc || g.warm !== gw || g.hue !== gh || g.th !== th || g.tk !== tk || g.lum !== lum4 || g.sh !== sh) plan2.g = { sat: gs, con: gc, warm: gw, hue: gh, th, tk, lum: lum4, sh };
     const scn = moments(plan2, P, sec, x, bp);
     const dimMo = (1 - 0.7 * scn.stop) * (1 - 0.3 * scn.out) * (1 - 0.3 * scn.acap);
     return {
@@ -24927,20 +24999,20 @@
           const lvl = [0.6, 1, 1.45, 2, 2.7][level2 - 1];
           const talkV = talkGate.step(info2.talk || "", dt);
           const fx2 = !calm() && talkV < 0.97;
-          const R = swap.get(audio.uri === uri ? audio.data : null, info2.key + (cfg.partyDirector ? "" : "|off"), uri, lyrOf(uri));
-          const d = R.d;
+          const R2 = swap.get(audio.uri === uri ? audio.data : null, info2.key + (cfg.partyDirector ? "" : "|off"), uri, lyrOf(uri));
+          const d = R2.d;
           clock += dt;
           const ease4 = (k) => 1 - Math.exp(-dt * k);
           let energy = 0.55, build4 = 0, low3 = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0, keyPc = -1, tempoNow = 0;
           let hit = false, barHit = false, inBar = 0, barIdx = -1, beatEnv = 0, conf = 0.8;
           let beatPhase2 = 0, beatIdx = -1;
           let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone2 = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
-          const plan2 = d && d.segs?.length && cfg.partyDirector ? R.plan : null;
-          const swapped = R !== lastSwap;
-          lastSwap = R;
-          const planJump = plan2 !== lastPlan && (!swapped || R.fade > 0);
+          const plan2 = d && d.segs?.length && cfg.partyDirector ? R2.plan : null;
+          const swapped = R2 !== lastSwap;
+          lastSwap = R2;
+          const planJump = plan2 !== lastPlan && (!swapped || R2.fade > 0);
           const jumped = isJump(sec, lastSec, dt) || planJump;
-          const jumpDur = planJump && swapped ? R.fade : 0.6;
+          const jumpDur = planJump && swapped ? R2.fade : 0.6;
           lastPlan = plan2;
           if (jumped) jumpFade.start(clock, jumpDur);
           const C2 = jumpFade.apply(plan2 && cue(plan2, sec, { noFlash: cfg.noFlash, level: level2, lite: lite() }) || NEUTRAL, clock);
@@ -25256,14 +25328,14 @@
         let moodSec = 0;
         function mood(sec, playing2) {
           if (!audio.data?.segs?.length || !cfg.partyDirector) return null;
-          const R = moodSwap.get(audio.data, audio.uri === uri ? info2.key : "pop", audio.uri, lyrOf(audio.uri));
-          if (!R.plan || !R.map) return null;
+          const R2 = moodSwap.get(audio.data, audio.uri === uri ? info2.key : "pop", audio.uri, lyrOf(audio.uri));
+          if (!R2.plan || !R2.map) return null;
           const wall = performance.now() / 1e3;
           if (isJump(sec, moodSec, 0.1)) moodFade.start(wall);
-          const C2 = cue(R.plan, sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
+          const C2 = cue(R2.plan, sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
           if (!C2) return null;
           Object.assign(C2, moodFade.apply(C2, wall));
-          const M = R.map;
+          const M = R2.map;
           let dropHit = false;
           if (playing2 && sec >= moodSec && sec - moodSec < 0.5) {
             for (const t2 of M.drops) if (t2 > moodSec && t2 <= sec + 0.02) dropHit = true;
@@ -26610,7 +26682,7 @@
       }
     }
     function effect(ctx3, st, f, px, pal, S2) {
-      const t2 = st.t, p = clamp16(f.p, 0, 1), cx = st.cx ?? vw / 2, cy = st.cy ?? vh / 2, R = st.R || vh * 0.15;
+      const t2 = st.t, p = clamp16(f.p, 0, 1), cx = st.cx ?? vw / 2, cy = st.cy ?? vh / 2, R2 = st.R || vh * 0.15;
       const e = slew(env[f.k] ||= { v: 0 }, clamp16(f.e, 0, 1), st.dt) * clamp16(f.s ?? 1, 0, 1);
       const far = Math.hypot(vw, vh), noFlash = !!st.noFlash, bi = Math.max(0, px.beatIdx || 0), ph = px.phase || 0;
       if (e <= 4e-3) return;
@@ -26638,9 +26710,9 @@
         }
         case "impact": {
           const lead = 1 - 0.65 * clamp16((px.scn?.dx || 0) / 0.3, 0, 1);
-          const r = R + p * far * 0.6, c2 = mixW3(pal[0], 0.5);
+          const r = R2 + p * far * 0.6, c2 = mixW3(pal[0], 0.5);
           ellipse(ctx3, c2, cx, cy, r, r, 0.5 * e * (1 - p) * lead, (10 - 7 * p) * S2);
-          if (!noFlash && p < 0.2) glow(ctx3, mixW3(pal[0], 0.3), cx, cy, R * 3, 0.25 * (1 - p / 0.2) * e * lead);
+          if (!noFlash && p < 0.2) glow(ctx3, mixW3(pal[0], 0.3), cx, cy, R2 * 3, 0.25 * (1 - p / 0.2) * e * lead);
           for (let i = 0, n = nOf(10, 26); i < n; i++) glow(ctx3, [210, 200, 190], hash(i, 1) * vw, vh * (0.1 + 0.5 * hash(i, 2) + 0.3 * p), (2 + 2 * hash(i, 3)) * S2, 0.35 * e * (1 - p) * qa(i, 10));
           break;
         }
@@ -26662,10 +26734,10 @@
         case "orchhit": {
           const c2 = [255, 205, 110];
           for (let k = 0; k < 16; k += qf > 0.01 ? 1 : 2) {
-            const a = k / 16 * Math.PI * 2 + 0.2, r0 = R * 1.1, r1 = R * (1.4 + 2.2 * p);
+            const a = k / 16 * Math.PI * 2 + 0.2, r0 = R2 * 1.1, r1 = R2 * (1.4 + 2.2 * p);
             line(ctx3, c2, 0.35 * e * (1 - p) * qp(k), 3 * S2, [[cx + Math.cos(a) * r0, cy + Math.sin(a) * r0], [cx + Math.cos(a) * r1, cy + Math.sin(a) * r1]]);
           }
-          glow(ctx3, c2, cx, cy, R * 2, 0.2 * e * (1 - p));
+          glow(ctx3, c2, cx, cy, R2 * 2, 0.2 * e * (1 - p));
           break;
         }
         case "stop":
@@ -26683,13 +26755,13 @@
           ctx3.fillStyle = `rgba(0,0,0,${(0.4 * e * d).toFixed(3)})`;
           ctx3.fillRect(0, 0, vw, vh);
           ctx3.globalCompositeOperation = "lighter";
-          line(ctx3, [255, 245, 230], 0.25 * e * d, 14 * S2, [[cx, 0], [cx, cy - R]]);
+          line(ctx3, [255, 245, 230], 0.25 * e * d, 14 * S2, [[cx, 0], [cx, cy - R2]]);
           break;
         }
         case "revcym": {
           const n = nOf(12, 28), c2 = [235, 240, 255];
           for (let i = 0; i < n; i++) {
-            const a = hash(i, 8) * Math.PI * 2, r = R + (1 - p) * far * (0.3 + 0.3 * hash(i, 9));
+            const a = hash(i, 8) * Math.PI * 2, r = R2 + (1 - p) * far * (0.3 + 0.3 * hash(i, 9));
             glow(ctx3, c2, cx + Math.cos(a) * r, cy + Math.sin(a) * r, (2 + 3 * p) * S2, 0.6 * e * p * qa(i, 12));
           }
           break;
@@ -26789,7 +26861,7 @@
         case "rewind": {
           const rot = -(1 - (1 - p) ** 2) * Math.PI * 6, n = nOf(10, 22), c2 = mixW3(pal[1], 0.4);
           for (let i = 0; i < n; i++) {
-            const a = rot + i / n * Math.PI * 4, r = R * (1.15 + i / n * 1.2);
+            const a = rot + i / n * Math.PI * 4, r = R2 * (1.15 + i / n * 1.2);
             glow(ctx3, c2, cx + Math.cos(a) * r, cy + Math.sin(a) * r, 4 * S2, 0.55 * e * (1 - p * 0.6));
           }
           break;
@@ -26917,12 +26989,12 @@
     const ifx = createInstFx(glowSprite);
     let wordJump = 0;
     let disco = null, tunnel = [];
-    function drawStage(ctx3, pal, px, rgba7, cx, cy, R, dpr, dt, st, v) {
+    function drawStage(ctx3, pal, px, rgba7, cx, cy, R2, dpr, dt, st, v) {
       const now = px.P.spot, old = px.spot2 || now, sx = px.sx ?? 1;
-      if (sx < 1 && old !== now) drawSpot(old, 1 - sx, ctx3, pal, px, rgba7, cx, cy, R, dpr, dt, st, v);
-      drawSpot(now, old !== now ? sx : 1, ctx3, pal, px, rgba7, cx, cy, R, dpr, dt, st, v);
+      if (sx < 1 && old !== now) drawSpot(old, 1 - sx, ctx3, pal, px, rgba7, cx, cy, R2, dpr, dt, st, v);
+      drawSpot(now, old !== now ? sx : 1, ctx3, pal, px, rgba7, cx, cy, R2, dpr, dt, st, v);
     }
-    function drawSpot(kind, k, ctx3, pal, px, rgba7, cx, cy, R, dpr, dt, st, v) {
+    function drawSpot(kind, k, ctx3, pal, px, rgba7, cx, cy, R2, dpr, dt, st, v) {
       const t2 = px.mt ?? st.t, far = Math.hypot(vw, vh) * 1.1;
       const beat2 = px.accent, vis = k * clamp17(1 - px.low * 0.8, 0.15, 1) * (px.level >= 3 ? 1 : 0.6) * (v?.spot ?? 1);
       if (vis < 0.01) return;
@@ -27028,7 +27100,7 @@
           tunnel = tunnel.filter((f) => (f.a *= Math.exp(-dt * 1.8)) > 0.02 && f.s < 8);
           for (const f of tunnel) {
             f.s *= Math.exp(dt * 1.7);
-            const r = R * f.s, w = (10 + f.s * 6) * dpr;
+            const r = R2 * f.s, w = (10 + f.s * 6) * dpr;
             const g = ctx3.createRadialGradient(cx, cy, Math.max(0, r - w), cx, cy, r + w);
             g.addColorStop(0, rgba7(pal[f.c], 0));
             g.addColorStop(0.5, rgba7(pal[f.c], f.a * vis * 0.5));
@@ -27946,11 +28018,11 @@
         E(0, -4.6, 15.5, 2.3);
         P.roundRect(X(-7.4), Y(-15), 14.8 * S2, 10.6 * S2, [3.6 * S2, 3.6 * S2, 0, 0]);
       } else if (hair === "afro" || hair === "curl") {
-        const R = hair === "afro" ? 12.4 : 9.8, c2 = hair === "afro" ? -3 : -2, k = hair === "afro" ? 11 : 8, br = hair === "afro" ? 3.3 : 2.7;
-        E(0, c2, R, R);
+        const R2 = hair === "afro" ? 12.4 : 9.8, c2 = hair === "afro" ? -3 : -2, k = hair === "afro" ? 11 : 8, br = hair === "afro" ? 3.3 : 2.7;
+        E(0, c2, R2, R2);
         for (let i = 0; i < k; i++) {
           const a = hair === "afro" ? i / k * Math.PI * 2 : Math.PI + i / (k - 1) * Math.PI;
-          E(Math.cos(a) * (R - 1.2), c2 + Math.sin(a) * (R - 1.2), br, br);
+          E(Math.cos(a) * (R2 - 1.2), c2 + Math.sin(a) * (R2 - 1.2), br, br);
         }
       } else if (hair === "spiky") {
         E(0, -1.4, 9, 9.6);
@@ -28777,8 +28849,8 @@
     const segs = d.segs;
     const n = Math.ceil((segs[segs.length - 1].t + 2) / STEP3);
     const B = segs.map((s2) => s2.b), F = segs.map((s2) => s2.f), K = segs.map((s2) => s2.k), L2 = segs.map((s2) => s2.l);
-    const rng = (A) => [pct5(A, 0.1), pct5(A, 0.9)];
-    const [b0, b1] = rng(B), [f0, f1] = rng(F), [k0, k1] = rng(K), [l0, l1] = rng(L2);
+    const rng2 = (A) => [pct5(A, 0.1), pct5(A, 0.9)];
+    const [b0, b1] = rng2(B), [f0, f1] = rng2(F), [k0, k1] = rng2(K), [l0, l1] = rng2(L2);
     const nm = (v, lo, hi) => clamp((v - lo) / (hi - lo || 1), 0, 1);
     const out = { key };
     for (const kind of kinds) out[kind] = new Float32Array(n);
@@ -32082,16 +32154,16 @@
       for (let i = 0; i < Math.min(n, room); i++) parts.push(f(i));
     }
     function start3(spec, st) {
-      const { w, h, cx, cy, R, dpr } = st;
+      const { w, h, cx, cy, R: R2, dpr } = st;
       const pal = st.pal || [[255, 255, 255], [200, 200, 255], [255, 200, 255]];
       const k = (0.7 + 0.15 * clamp20(st.level, 0, 4)) * 0.55;
       const S2 = dpr || 1, T2 = 3.4;
       const pickCol = (col) => Array.isArray(col) ? col : col();
       const fall = (kind, n, col, o = {}) => add(Math.round(n * k), () => ({ kind, x: rnd(0, w), y: rnd(-h * 0.3, -10), vx: rnd(-20, 20) * S2, vy: rnd(60, 140) * S2 * (o.sp || 1), rot: rnd(0, 6.3), vr: rnd(-2, 2), s: rnd(6, 13) * S2 * (o.sz || 1), life: 0, max: rnd(T2, T2 + 1.5), col: pickCol(col) }));
-      const rise = (kind, n, col, o = {}) => add(Math.round(n * k), () => ({ kind, x: o.fromCover ? cx + rnd(-R, R) : rnd(0, w), y: o.fromCover ? cy + rnd(-R * 0.4, R * 0.4) : h + rnd(10, h * 0.2), vx: rnd(-25, 25) * S2, vy: -rnd(50, 130) * S2 * (o.sp || 1), rot: rnd(-0.4, 0.4), vr: rnd(-1, 1), s: rnd(7, 15) * S2 * (o.sz || 1), life: 0, max: rnd(T2 - 0.6, T2 + 1), col: pickCol(col) }));
+      const rise = (kind, n, col, o = {}) => add(Math.round(n * k), () => ({ kind, x: o.fromCover ? cx + rnd(-R2, R2) : rnd(0, w), y: o.fromCover ? cy + rnd(-R2 * 0.4, R2 * 0.4) : h + rnd(10, h * 0.2), vx: rnd(-25, 25) * S2, vy: -rnd(50, 130) * S2 * (o.sp || 1), rot: rnd(-0.4, 0.4), vr: rnd(-1, 1), s: rnd(7, 15) * S2 * (o.sz || 1), life: 0, max: rnd(T2 - 0.6, T2 + 1), col: pickCol(col) }));
       const burst3 = (kind, n, col, o = {}) => add(Math.round(n * k), () => {
         const a = rnd(0, Math.PI * 2), v = rnd(120, 420) * S2 * (o.sp || 1);
-        return { kind, x: cx + Math.cos(a) * R * 0.9, y: cy + Math.sin(a) * R * 0.9, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 1.6, rot: a, vr: rnd(-2, 2), s: rnd(5, 11) * S2 * (o.sz || 1), life: 0, max: rnd(1.6, 2.6), col: pickCol(col) };
+        return { kind, x: cx + Math.cos(a) * R2 * 0.9, y: cy + Math.sin(a) * R2 * 0.9, vx: Math.cos(a) * v, vy: Math.sin(a) * v, drag: 1.6, rot: a, vr: rnd(-2, 2), s: rnd(5, 11) * S2 * (o.sz || 1), life: 0, max: rnd(1.6, 2.6), col: pickCol(col) };
       });
       const palC = () => pal[Math.random() * 3 | 0];
       const fx2 = { name: spec.fx, t: 0, max: T2 + 0.6, col: spec.col, seed: Math.random() };
@@ -32183,7 +32255,7 @@
           fx2.max = 5;
           break;
         case "butterflies":
-          add(Math.round(12 * k), () => ({ kind: "fly", x: cx + rnd(-R, R), y: cy + rnd(-R * 0.3, R * 0.3), vx: rnd(-90, 90) * S2, vy: -rnd(40, 110) * S2, s: rnd(9, 15) * S2, life: 0, max: rnd(3.5, 4.8), col: palC(), ph: rnd(0, 6) }));
+          add(Math.round(12 * k), () => ({ kind: "fly", x: cx + rnd(-R2, R2), y: cy + rnd(-R2 * 0.3, R2 * 0.3), vx: rnd(-90, 90) * S2, vy: -rnd(40, 110) * S2, s: rnd(9, 15) * S2, life: 0, max: rnd(3.5, 4.8), col: palC(), ph: rnd(0, 6) }));
           fx2.max = 4.8;
           break;
         case "petals":
@@ -32245,7 +32317,7 @@
         case "orbit":
         case "galaxy":
           fx2.max = 4.2;
-          if (spec.fx === "galaxy") add(Math.round(70 * k), () => ({ kind: "orb", a: rnd(0, 6.3), r: rnd(R * 1.2, R * 3.2), sp: rnd(0.3, 0.9), x: 0, y: 0, s: rnd(1.5, 3.5) * S2, life: 0, max: 4.2, col: mixW4(palC(), rnd(0.3, 0.8)) }));
+          if (spec.fx === "galaxy") add(Math.round(70 * k), () => ({ kind: "orb", a: rnd(0, 6.3), r: rnd(R2 * 1.2, R2 * 3.2), sp: rnd(0.3, 0.9), x: 0, y: 0, s: rnd(1.5, 3.5) * S2, life: 0, max: 4.2, col: mixW4(palC(), rnd(0.3, 0.8)) }));
           break;
         case "rocket":
           fx2.max = 2.8;
@@ -32265,7 +32337,7 @@
           burst3("spark", 40, [255, 220, 160], { sp: 1.6 });
           break;
         case "magic":
-          add(Math.round(46 * k), (i) => ({ kind: "orb", a: i / 46 * 6.28, r: R * 1.15, sp: 1.4, grow: R * 0.9, x: 0, y: 0, s: rnd(2, 4) * S2, life: 0, max: 3, col: mixW4([200, 150, 255], rnd(0.2, 0.8)) }));
+          add(Math.round(46 * k), (i) => ({ kind: "orb", a: i / 46 * 6.28, r: R2 * 1.15, sp: 1.4, grow: R2 * 0.9, x: 0, y: 0, s: rnd(2, 4) * S2, life: 0, max: 3, col: mixW4([200, 150, 255], rnd(0.2, 0.8)) }));
           burst3("glint", 16, [230, 200, 255], { sp: 0.6 });
           fx2.max = 3;
           break;
@@ -32596,18 +32668,18 @@
       }
     }
     function screen2(ctx3, f, p, env, st, pal, S2) {
-      const { w, h, cx, cy, R } = st, t2 = f.t;
+      const { w, h, cx, cy, R: R2 } = st, t2 = f.t;
       ctx3.globalCompositeOperation = "lighter";
       switch (f.name) {
         case "flames":
         case "hellfire": {
           const hot = f.name === "hellfire" ? [255, 40, 20] : [255, 130, 40];
           const fl = 0.75 + 0.25 * Math.sin(t2 * 11) * Math.sin(t2 * 7.3) + 0.2 * (st.beat || 0);
-          const g = ctx3.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 2.6);
+          const g = ctx3.createRadialGradient(cx, cy, R2 * 0.9, cx, cy, R2 * 2.6);
           g.addColorStop(0, rgba4(hot, 0.32 * env * fl));
           g.addColorStop(1, rgba4(hot, 0));
           ctx3.fillStyle = g;
-          ctx3.fillRect(cx - R * 2.6, cy - R * 2.6, R * 5.2, R * 5.2);
+          ctx3.fillRect(cx - R2 * 2.6, cy - R2 * 2.6, R2 * 5.2, R2 * 5.2);
           break;
         }
         case "rain":
@@ -32716,10 +32788,10 @@
           break;
         }
         case "heartbreak": {
-          const s2 = R * 0.7, split = clamp20((t2 - 0.7) / 1.4, 0, 1), y0 = cy - R * 1.6 + split * split * h * 0.5;
+          const s2 = R2 * 0.7, split = clamp20((t2 - 0.7) / 1.4, 0, 1), y0 = cy - R2 * 1.6 + split * split * h * 0.5;
           for (const sd of [-1, 1]) {
             ctx3.save();
-            ctx3.translate(cx + sd * split * R * 0.9, y0);
+            ctx3.translate(cx + sd * split * R2 * 0.9, y0);
             ctx3.rotate(sd * split * 0.6);
             ctx3.beginPath();
             ctx3.rect(sd < 0 ? -s2 * 1.2 : 0, -s2 * 1.2, s2 * 1.2, s2 * 2.4);
@@ -32734,7 +32806,7 @@
         case "gold":
         case "tint": {
           const c2 = f.col || [255, 255, 255];
-          const g = ctx3.createRadialGradient(cx, cy, R, w / 2, h / 2, Math.max(w, h) * 0.8);
+          const g = ctx3.createRadialGradient(cx, cy, R2, w / 2, h / 2, Math.max(w, h) * 0.8);
           g.addColorStop(0, rgba4(c2, (f.tintA || 0.16) * env));
           g.addColorStop(1, rgba4(c2, (f.tintA || 0.16) * 0.5 * env));
           ctx3.fillStyle = g;
@@ -32742,7 +32814,7 @@
           break;
         }
         case "crown": {
-          const s2 = R * 0.55, y = cy - R * 1.35 + Math.sin(t2 * 2.4) * 6 * S2 - (1 - env) * 30 * S2;
+          const s2 = R2 * 0.55, y = cy - R2 * 1.35 + Math.sin(t2 * 2.4) * 6 * S2 - (1 - env) * 30 * S2;
           ctx3.fillStyle = rgba4([255, 205, 70], 0.9 * env);
           ctx3.beginPath();
           ctx3.moveTo(cx - s2, y + s2 * 0.5);
@@ -32764,12 +32836,12 @@
           break;
         case "rainbow": {
           const cols = [[255, 60, 60], [255, 150, 40], [255, 230, 60], [70, 220, 90], [60, 150, 255], [150, 80, 255]];
-          const r0 = R * 1.6, grow = Math.min(1, t2 / 1.1);
+          const r0 = R2 * 1.6, grow = Math.min(1, t2 / 1.1);
           cols.forEach((c2, i) => {
             ctx3.strokeStyle = rgba4(c2, 0.42 * env);
             ctx3.lineWidth = 9 * S2;
             ctx3.beginPath();
-            ctx3.arc(cx, cy + R * 0.6, r0 + i * 10 * S2, Math.PI, Math.PI + Math.PI * grow);
+            ctx3.arc(cx, cy + R2 * 0.6, r0 + i * 10 * S2, Math.PI, Math.PI + Math.PI * grow);
             ctx3.stroke();
           });
           break;
@@ -32790,7 +32862,7 @@
           const beatIdx = st.beatIdx ?? -1;
           if (beatIdx !== f.lastBeat && (f.name === "jump" || beatIdx % 2 === 0)) {
             f.lastBeat = beatIdx;
-            f.rings.push({ r: R, a: f.name === "jump" ? 0.7 : 0.5 });
+            f.rings.push({ r: R2, a: f.name === "jump" ? 0.7 : 0.5 });
           }
           const dt = st.dt || 0.016;
           for (const g of f.rings) {
@@ -32806,7 +32878,7 @@
           break;
         }
         case "orbit": {
-          const rx2 = R * 2.1, ry = R * 0.6, a = t2 * 1.6, tilt = -0.25;
+          const rx2 = R2 * 2.1, ry = R2 * 0.6, a = t2 * 1.6, tilt = -0.25;
           ctx3.strokeStyle = rgba4(mixW4(pal?.[2] || [200, 220, 255], 0.3), 0.35 * env);
           ctx3.lineWidth = 2 * S2;
           ctx3.beginPath();
@@ -32820,7 +32892,7 @@
           break;
         }
         case "galaxy": {
-          const g = ctx3.createRadialGradient(cx, cy, R, cx, cy, R * 3.4);
+          const g = ctx3.createRadialGradient(cx, cy, R2, cx, cy, R2 * 3.4);
           g.addColorStop(0, rgba4(mixW4(pal?.[1] || [120, 90, 255], 0.2), 0.16 * env));
           g.addColorStop(1, "rgba(0,0,0,0)");
           ctx3.fillStyle = g;
@@ -32842,7 +32914,7 @@
           break;
         }
         case "clock": {
-          const r = R * 1.45;
+          const r = R2 * 1.45;
           for (let i = 0; i < 12; i++) {
             const a = i / 12 * Math.PI * 2 - Math.PI / 2;
             ctx3.strokeStyle = rgba4([255, 255, 255], (i % 3 ? 0.25 : 0.5) * env);
@@ -32862,7 +32934,7 @@
         case "speed":
           for (let i = 0; i < 60; i++) {
             const a = i / 60 * Math.PI * 2 + f.seed * 6, ph = (t2 * 1.6 + i * 37 % 11 / 11) % 1;
-            const r0 = R * 1.3 + ph * Math.max(w, h) * 0.7;
+            const r0 = R2 * 1.3 + ph * Math.max(w, h) * 0.7;
             ctx3.strokeStyle = rgba4([255, 255, 255], 0.22 * env * (1 - ph));
             ctx3.lineWidth = 2 * S2;
             ctx3.beginPath();
@@ -32872,7 +32944,7 @@
           }
           break;
         case "boom": {
-          const r = R + p * Math.max(w, h) * 0.9;
+          const r = R2 + p * Math.max(w, h) * 0.9;
           ctx3.strokeStyle = rgba4([255, 230, 190], 0.6 * (1 - p));
           ctx3.lineWidth = (14 * (1 - p) + 2) * S2;
           ctx3.beginPath();
@@ -32894,9 +32966,9 @@
       ctx3.globalCompositeOperation = "lighter";
     }
     function waves(ctx3, t2, env, w, h, c2, S2) {
-      const { cx, cy, R } = st0;
+      const { cx, cy, R: R2 } = st0;
       for (let k = 0; k < 4; k++) {
-        const ph = (t2 * 0.45 + k / 4) % 1, r = R * (1.15 + ph * 1.9);
+        const ph = (t2 * 0.45 + k / 4) % 1, r = R2 * (1.15 + ph * 1.9);
         ctx3.strokeStyle = rgba4(c2, 0.32 * env * (1 - ph));
         ctx3.lineWidth = 2.5 * S2;
         ctx3.beginPath();
@@ -33947,8 +34019,8 @@
     findDuplicates: () => findDuplicates
   });
   async function loadEditable() {
-    const R = S.Platform?.RootlistAPI;
-    if (typeof R?.getContents !== "function") return;
+    const R2 = S.Platform?.RootlistAPI;
+    if (typeof R2?.getContents !== "function") return;
     editableAt = Date.now();
     try {
       const set = /* @__PURE__ */ new Set();
@@ -33958,7 +34030,7 @@
           else if (x?.type === "playlist" && x.uri && (x.isOwnedBySelf || x.isCollaborative || x.canAdd)) set.add(x.uri);
         }
       };
-      walk((await R.getContents())?.items);
+      walk((await R2.getContents())?.items);
       editable = set;
     } catch {
     }
@@ -37053,17 +37125,17 @@
     return (vals[i] || 0) + ((vals[Math.min(N2 - 1, i + 1)] || 0) - (vals[i] || 0)) * w;
   }
   function drawWavefield(ctx3, o) {
-    const { vw, vh, cx, cy, R, dpr, vals, N: N2, b, tt, dt, pal, glowK, lite, full: full2, mood, soft } = o;
+    const { vw, vh, cx, cy, R: R2, dpr, vals, N: N2, b, tt, dt, pal, glowK, lite, full: full2, mood, soft } = o;
     const L2 = lite ? 13 : full2 ? 28 : 22, S2 = lite ? 34 : 60;
-    const x1 = o.mode === "mix" ? Math.min(vw, cx + R * 3.4) : vw;
-    if (b > wf.lastB + 0.16 && b > 0.42 && wf.ripples.length < 6) wf.ripples.push({ r: R * 0.9, a: 0.45 + 0.55 * b });
-    if (mood?.dropHit) wf.ripples.push({ r: R * 0.9, a: 1.5 });
+    const x1 = o.mode === "mix" ? Math.min(vw, cx + R2 * 3.4) : vw;
+    if (b > wf.lastB + 0.16 && b > 0.42 && wf.ripples.length < 6) wf.ripples.push({ r: R2 * 0.9, a: 0.45 + 0.55 * b });
+    if (mood?.dropHit) wf.ripples.push({ r: R2 * 0.9, a: 1.5 });
     wf.lastB = b;
     const diag = Math.hypot(vw, vh), speed = vw * 0.5;
     wf.ripples = wf.ripples.filter((r) => (r.r += speed * dt) < diag && (r.a *= Math.exp(-dt * 1.4)) > 0.03);
     if (wf.band.length !== S2) wf.band = new Float32Array(S2);
     const half = Math.max(cx, x1 - cx);
-    const gap = vh / L2, wl = Math.max(40 * dpr, R * 0.5);
+    const gap = vh / L2, wl = Math.max(40 * dpr, R2 * 0.5);
     const top2 = vh * 0.13, span = vh - top2;
     const amp = gap * 1.7 * o.height, rest = gap * 0.26;
     ctx3.lineCap = "round";
@@ -37071,7 +37143,7 @@
     for (let i = 0; i < L2; i++) {
       const y0 = top2 + span * ((i + 0.5) / L2);
       const near = Math.exp(-(((y0 - cy) / (vh * 0.42)) ** 2));
-      const under = y0 > cy + R * 1.25 ? clamp22(1 - (y0 - cy - R * 1.25) / (vh * 0.12), 0.28, 1) : 1;
+      const under = y0 > cy + R2 * 1.25 ? clamp22(1 - (y0 - cy - R2 * 1.25) / (vh * 0.12), 0.28, 1) : 1;
       const shift = Math.sin(i * 1.37 + tt * 0.21) * half * 0.12;
       for (let s2 = 0; s2 < S2; s2++) wf.band[s2] = bandAt(vals, N2, Math.abs(s2 / (S2 - 1) * x1 - cx + shift) / half);
       const p = new Path2D();
@@ -37646,6 +37718,523 @@
     }
   });
 
+  // src/lyricdeck.js
+  function hash01(s2) {
+    let h = 2166136261;
+    const t2 = String(s2);
+    for (let i = 0; i < t2.length; i++) h = Math.imul(h ^ t2.charCodeAt(i), 16777619);
+    return (h >>> 0) % 100003 / 100003;
+  }
+  function rng(seed) {
+    let a = Math.floor(hash01(seed) * 4294967295) >>> 0 || 1;
+    return () => {
+      a = a + 1831565813 >>> 0;
+      let t2 = a;
+      t2 = Math.imul(t2 ^ t2 >>> 15, t2 | 1);
+      t2 ^= t2 + Math.imul(t2 ^ t2 >>> 7, t2 | 61);
+      return ((t2 ^ t2 >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function songDeck(seed, level2 = "playful") {
+    const rnd2 = rng("deck|" + seed);
+    const pickN = (list, n) => {
+      const a = [...list];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(rnd2() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a.slice(0, n);
+    };
+    const ok = (t2) => allowed(t2, level2);
+    const byE = ([a, b]) => TREATMENTS.filter((t2) => R[t2].e >= a && R[t2].e <= b && ok(t2) && t2 !== "plain");
+    const famNames = Object.keys(FAMILY).filter((f) => FAMILY[f].some(ok));
+    const motifFam = pickN(famNames.filter((f) => f !== "float" || level2 === "subtle"), 1)[0] || "float";
+    const motif = pickN(FAMILY[motifFam].filter(ok), 3);
+    const easeKeys = Object.keys(EASE);
+    const d = {
+      seed: String(seed),
+      level: level2,
+      verse: pickN(byE(SECT_E.verse), 6),
+      pre: pickN(byE(SECT_E.pre), 3),
+      motifFam,
+      chorus: motif.length ? motif : ["rise"],
+      hit: pickN(HIT.filter(ok), 2),
+      drop: pickN(byE(SECT_E.drop).concat(HIT.filter(ok)), 3),
+      bridge: pickN(BRIDGE.filter(ok), 3),
+      calm: pickN(byE(SECT_E.calm), 3),
+      rap: pickN(RAP.filter(ok), 3),
+      ballad: pickN(BALLAD.filter(ok), 3),
+      shout: pickN(HIT.filter(ok), 2),
+      ease: pickN(easeKeys, 2),
+      // Schrift-Charakter: welche Anzeige-Schriften dieser Song benutzt (zwei bis vier)
+      fonts: pickN(["shout", "round", "serif", "mono", "wide", "marker"], 2 + Math.floor(rnd2() * 3)),
+      // Farbstimmung: Farbton verschieben, Sättigung
+      grade: { hue: Math.round((rnd2() - 0.5) * 30), sat: r2(0.85 + rnd2() * 0.3) },
+      amp: r2(0.85 + rnd2() * 0.3),
+      fx: Math.floor(rnd2() * 1e6)
+    };
+    if (level2 === "subtle") {
+      d.fonts = [];
+      d.amp = 0.55;
+    }
+    for (const k of ["verse", "pre", "drop", "bridge", "calm", "rap", "ballad", "shout", "hit"]) if (!d[k].length) d[k] = ["rise"];
+    d.sig = [d.verse, d.pre, d.chorus, d.hit, d.drop, d.bridge, d.calm, d.rap, d.ballad, d.ease, d.fonts].map((x) => x.join(",")).join("|") + "|" + d.grade.hue + "|" + d.amp;
+    return d;
+  }
+  function allowed(t2, level2) {
+    const r = R[t2];
+    if (!r) return false;
+    if (level2 === "subtle") return r.e <= 1 && !r.L && !r.ln && !r.acc && !["unfold", "accordion", "lean", "zoomin", "peek", "conveyor"].includes(t2);
+    if (level2 === "wild") return true;
+    return !r.wild;
+  }
+  function safe(v, len, amp) {
+    const o = { ...v };
+    const a = amp ?? 1;
+    const L2 = Math.max(1, len || 1);
+    if (o.x) o.x = clamp23(o.x * a, -0.6, 0.6);
+    if (o.y) o.y = clamp23(o.y * a, -0.45, 0.45);
+    if (o.r) {
+      const lim2 = o.s != null && !Array.isArray(o.s) && o.s <= 0.5 || o.o === 0 ? 360 : Math.max(8, Math.asin(Math.min(1, 0.45 / (0.3 * L2))) * 180 / Math.PI);
+      o.r = clamp23(o.r * (Math.abs(o.r) > 100 ? 1 : a), -lim2, lim2);
+    }
+    const grow = (s2) => s2 > 1 ? Math.min(s2, 1 + 2.5 / L2, 2.2) : Math.max(0.05, s2);
+    if (Array.isArray(o.s)) o.s = [grow(o.s[0]), grow(o.s[1])];
+    else if (o.s != null) o.s = grow(o.s);
+    if (o.o != null) o.o = clamp23(o.o, 0, 1);
+    return o;
+  }
+  function poseVars(v) {
+    const out = {};
+    if (!v) return out;
+    if (v.x || v.y) {
+      out["--wx"] = r2(v.x || 0) + "em";
+      out["--wy"] = r2(v.y || 0) + "em";
+    }
+    if (v.r) out["--wr"] = r2(v.r) + "deg";
+    if (Array.isArray(v.s)) out["--ws"] = r2(v.s[0]) + " " + r2(v.s[1]);
+    else if (v.s != null && v.s !== 1) out["--ws"] = String(r2(v.s));
+    if (v.o != null && v.o !== 1) out["--wo"] = String(r2(v.o));
+    const tf = [];
+    if (v.rx) tf.push(`rotateX(${r2(v.rx)}deg)`);
+    if (v.ry) tf.push(`rotateY(${r2(v.ry)}deg)`);
+    if (v.sk) tf.push(`skewX(${r2(v.sk)}deg)`);
+    if (tf.length) out["--wt"] = (v.rx || v.ry ? "perspective(20em) " : "") + tf.join(" ");
+    if (v.og) out["--wog"] = v.og;
+    return out;
+  }
+  function wordPose(t2, c2) {
+    const r = R[t2] || R.plain;
+    const n = Math.max(1, c2.n), mid = (n - 1) / 2;
+    const side = n > 1 ? (c2.k - mid) / Math.max(1, mid) : 0;
+    const ctx3 = { ...c2, side, alt: c2.k % 2 ? 1 : -1, h: hash01(c2.seed + "|" + c2.k) };
+    return safe(r.w(ctx3), c2.len, c2.amp);
+  }
+  function letterOrder(kind, cn, seed) {
+    const idx = [...Array(cn).keys()];
+    if (kind === "rev") return idx.map((i) => cn - 1 - i);
+    if (kind === "center") return idx.map((i) => Math.round(Math.abs(i - (cn - 1) / 2) * 2) >> 1);
+    if (kind === "rand") {
+      const s2 = idx.map((i) => [hash01(seed + ":" + i), i]).sort((a, b) => a[0] - b[0]);
+      const out = [];
+      s2.forEach(([, i], k) => out[i] = k);
+      return out;
+    }
+    return idx;
+  }
+  function letterPoses(t2, text, c2) {
+    const r = R[t2];
+    const chars = [...String(text)];
+    const cn = chars.length;
+    const order = letterOrder(r?.L || "fwd", cn, c2.seed);
+    const steps = Math.max(...order, 0);
+    const lead = c2.lead ?? r?.lead ?? LEAD_DEF;
+    const st = steps ? Math.min(28, Math.floor(lead * 0.5 / steps)) : 0;
+    return chars.map((ch, ci) => {
+      const v = r?.l ? safe(r.l({ ...c2, ci, cn, h: hash01(c2.seed + "|" + c2.k + "|" + ci) }), 1, c2.amp) : {};
+      return { ch, ld: order[ci] * st, vars: poseVars(v) };
+    });
+  }
+  function fxVariant(cue3, concept, deckFx) {
+    const list = FX_VARIANTS[cue3];
+    if (!list) return null;
+    return list[Math.floor(hash01(deckFx + "|" + cue3 + "|" + concept) * list.length)];
+  }
+  function fxVars(v) {
+    const out = {};
+    if (!v || !v.n) return out;
+    out["--pcn"] = v.n;
+    out["--pcd"] = v.d + "s";
+    for (const [k, val] of Object.entries(v.q)) out["--q" + k] = String(val);
+    return out;
+  }
+  function particleVars(kind) {
+    const p = PT[kind];
+    if (!p) return {};
+    return { "--ptw": p.w + "em", "--pth": p.h + "em", "--ptr": p.br, "--ptc": p.c, "--ptx": p.x, "--pty": p.y, "--pts": String(p.s), "--ptd": p.d + "s", "--ptq": p.rot || "0deg" };
+  }
+  var clamp23, r2, EASE, LEAD_MAX, LEAD_DEF, R, RECIPES, TREATMENTS, FAMILY, FAMILIES2, SECT_E, BRIDGE, RAP, BALLAD, HIT, RAP_SET, BALLAD_SET, HIT_SET, BRIDGE_SET, leadOf, ACCENTS, PT, V2, FX_VARIANTS, FX_COUNT;
+  var init_lyricdeck = __esm({
+    "src/lyricdeck.js"() {
+      clamp23 = (v, a, b) => Math.min(b, Math.max(a, v));
+      r2 = (v) => Math.round(v * 100) / 100;
+      EASE = {
+        spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        back: "cubic-bezier(0.2, 1.3, 0.4, 1)",
+        expo: "cubic-bezier(0.16, 1, 0.3, 1)",
+        snap: "cubic-bezier(0.6, 0, 0.1, 1)",
+        smooth: "cubic-bezier(0.45, 0, 0.2, 1)",
+        bounce: "cubic-bezier(0.3, 1.7, 0.55, 1)",
+        quart: "cubic-bezier(0.25, 1, 0.5, 1)"
+      };
+      LEAD_MAX = 180;
+      LEAD_DEF = 160;
+      R = {
+        plain: { e: 0, lead: 140, w: () => ({ y: -0.08 }) },
+        fade: { e: 0, lead: 180, w: () => ({ o: 0.3 }) },
+        drift: { e: 0, lead: 180, w: (c2) => ({ x: 0.2 * c2.dir, y: -0.1, o: 0.5 }) },
+        glow: { e: 0, lead: 180, w: () => ({ o: 0.45, s: 0.96 }) },
+        rise: { e: 1, lead: 170, w: () => ({ y: 0.34, o: 0.7 }) },
+        peek: { e: 1, lead: 170, w: () => ({ y: 0.42, o: 0 }) },
+        type: { e: 1, lead: 90, w: (c2) => ({ o: 0.4, x: -0.06 * c2.dir, s: 1.06 }) },
+        stagger: { e: 1, lead: 170, min: 3, max: 8, w: (c2) => ({ y: c2.alt * 0.16, r: c2.alt * 2.5 }) },
+        stairs: { e: 1, lead: 170, min: 3, max: 8, w: (c2) => ({ y: Math.min(0.42, 0.08 * (c2.k + 1)), o: 0.6 }) },
+        ladder: { e: 1, lead: 170, min: 3, w: (c2) => ({ y: (c2.k % 3 - 1) * 0.26, o: 0.65 }) },
+        wavel: { e: 1, lead: 170, min: 2, w: (c2) => ({ x: -0.45, y: 0.14 * Math.sin(c2.k * 1.4), o: 0.5 }) },
+        waver: { e: 1, lead: 170, min: 2, w: (c2) => ({ x: 0.45, y: 0.14 * Math.sin(c2.k * 1.4), o: 0.5 }) },
+        wavec: { e: 1, lead: 170, min: 3, w: (c2) => ({ x: -c2.side * 0.45, o: 0.5 }) },
+        conveyor: { e: 1, lead: 170, w: (c2) => ({ x: 0.55 * c2.dir, o: 0.3 }) },
+        lean: { e: 1, lead: 160, w: (c2) => ({ sk: 14 * c2.dir, x: 0.15 * c2.dir, o: 0.6 }) },
+        accordion: { e: 1, lead: 170, w: () => ({ s: [0.15, 1], o: 0.4, og: "left center" }) },
+        unfold: { e: 1, lead: 180, w: (c2) => ({ ry: 88 * c2.dir, o: 0.2, og: c2.dir > 0 ? "left center" : "right center" }) },
+        zoomin: { e: 1, lead: 170, w: () => ({ s: 0.25, o: 0 }) },
+        tidal: { e: 1, lead: 180, w: (c2) => ({ y: 0.3 * (0.5 + 0.5 * Math.sin(c2.k)), o: 0.55 }), ln: "tide" },
+        pendulum: { e: 1, lead: 180, w: (c2) => ({ r: -18 * c2.dir, og: "center top", o: 0.6 }), ln: "pend" },
+        tilt: { e: 1, lead: 160, w: (c2) => ({ r: 3 * c2.dir, o: 0.75 }), ln: "tilt" },
+        neon: { e: 1, lead: 180, w: () => ({ o: 0.08 }), acc: "neon" },
+        // Buchstaben
+        curtain: { e: 1, lead: 180, L: "center", w: () => ({}), l: () => ({ o: 0, y: 0.15 }) },
+        write: { e: 1, lead: 170, L: "fwd", w: () => ({}), l: () => ({ o: 0, x: -0.08 }) },
+        typer: { e: 1, lead: 120, L: "fwd", w: () => ({}), l: () => ({ o: 0 }), caret: true },
+        cascade: { e: 2, lead: 180, L: "fwd", w: () => ({}), l: () => ({ y: -0.35, o: 0.3 }) },
+        cascadeup: { e: 2, lead: 180, L: "rev", w: () => ({}), l: () => ({ y: 0.35, o: 0.3 }) },
+        rain: { e: 2, lead: 180, L: "fwd", w: () => ({}), l: () => ({ y: -0.7, o: 0 }) },
+        swirl: { e: 2, lead: 180, L: "center", w: () => ({}), l: (c2) => ({ r: (c2.ci - (c2.cn - 1) / 2) * 25, y: -0.2, o: 0.2 }) },
+        wave: { e: 1, lead: 180, L: "fwd", w: () => ({}), l: (c2) => ({ y: 0.25 * Math.sin(c2.ci * 0.9), o: 0.6 }) },
+        flipl: { e: 2, lead: 180, L: "fwd", w: () => ({}), l: (c2) => ({ ry: 90 * c2.dir, o: 0.2 }) },
+        shatter: { e: 3, lead: 180, L: "rand", wild: true, w: () => ({}), l: (c2) => ({ x: (c2.h - 0.5) * 1, y: (hash01(c2.h + "y") - 0.5) * 0.8, r: (hash01(c2.h + "r") - 0.5) * 120, o: 0 }) },
+        // lebhaft
+        drop: { e: 2, lead: 170, w: (c2) => ({ y: -0.3, r: -5 * c2.dir, o: 0.7 }) },
+        bounce: { e: 2, lead: 180, ease: "bounce", w: () => ({ y: -0.5, o: 0.6 }) },
+        split: { e: 2, lead: 170, min: 4, max: 10, w: (c2) => ({ x: (c2.side < 0 ? -0.55 : 0.55) * c2.dir, o: 0.7 }) },
+        key: { e: 2, lead: 180, keyed: true, w: (c2) => c2.key ? { s: 0.55, o: 0.4 } : { o: 0.7 }, acc: "pop" },
+        flipx: { e: 2, lead: 180, w: (c2) => ({ rx: 85 * c2.dir, o: 0.3 }) },
+        flipy: { e: 2, lead: 180, w: (c2) => ({ ry: -85 * c2.dir, o: 0.3 }) },
+        mirror: { e: 2, lead: 180, w: () => ({ ry: 178, o: 0.5 }) },
+        jelly: { e: 2, lead: 170, w: () => ({ s: [1.3, 0.7], o: 0.6 }), acc: "jelly" },
+        domino: { e: 2, lead: 180, w: (c2) => ({ r: -70 * c2.dir, og: "left bottom", o: 0.4 }) },
+        ricochet: { e: 2, lead: 170, w: (c2) => ({ x: c2.alt * 0.5, y: -0.2, o: 0.6 }) },
+        slot: { e: 2, lead: 180, w: () => ({ y: -0.6, rx: 70, o: 0 }) },
+        hinge: { e: 2, lead: 180, w: (c2) => ({ r: 24 * c2.dir, og: "left top", o: 0.5 }) },
+        bubble: { e: 2, lead: 170, w: () => ({ s: 0.05, o: 0 }), acc: "pop" },
+        magnet: { e: 2, lead: 110, ease: "snap", w: (c2) => ({ x: c2.k ? -0.5 : -0.3, o: 0.6 }) },
+        orbit: { e: 2, lead: 180, w: (c2) => ({ x: 0.4 * Math.cos(c2.k * 1.3), y: 0.3 * Math.sin(c2.k * 1.3), r: 20 * Math.sin(c2.k), o: 0.4 }) },
+        hop: { e: 2, lead: 170, w: () => ({ y: -0.4, o: 0.6 }), acc: "hop" },
+        echo: { e: 2, lead: 170, w: (c2) => ({ x: -0.3 * c2.dir, o: 0.4 }), acc: "echo" },
+        heart: { e: 2, lead: 170, w: () => ({ s: 0.7, o: 0.5 }), acc: "heart" },
+        skew: { e: 2, lead: 160, w: (c2) => ({ x: -0.4 * c2.dir, sk: -20 * c2.dir, o: 0.5 }) },
+        stretch: { e: 2, lead: 170, w: () => ({ s: [1.7, 0.6], o: 0.5 }), acc: "jelly" },
+        squash: { e: 2, lead: 170, w: () => ({ s: [0.6, 1.5], y: 0.1, o: 0.5 }) },
+        punch: { e: 2, lead: 140, w: () => ({ y: -0.08 }), ln: "punch" },
+        // hart
+        caps: { e: 3, lead: 160, w: () => ({ s: 1.32, y: -0.08 }), acc: "impact" },
+        slam: { e: 3, lead: 160, w: () => ({ s: 1.6, o: 0 }), acc: "impact" },
+        stamp: { e: 3, lead: 150, w: (c2) => ({ s: 1.8, o: 0, r: -8 * c2.dir }), acc: "impact" },
+        zoom: { e: 3, lead: 170, w: () => ({ s: 2.2, o: 0 }) },
+        collide: { e: 3, lead: 170, min: 2, max: 8, ease: "snap", w: (c2) => ({ x: c2.side * 0.6, s: 0.9, o: 0.75 }), acc: "impact" },
+        spiral: { e: 3, lead: 180, wild: true, w: (c2) => ({ r: 160 * c2.dir, s: 0.3, o: 0 }) },
+        scatter: { e: 3, lead: 180, wild: true, w: (c2) => ({ x: c2.h - 0.5, y: (hash01(c2.h + "y") - 0.5) * 0.7, r: (hash01(c2.h + "r") - 0.5) * 40, o: 0.2 }) },
+        tumble: { e: 3, lead: 180, wild: true, w: (c2) => ({ r: 90 * c2.dir, y: -0.3, o: 0.2 }) },
+        pinwheel: { e: 3, lead: 180, wild: true, w: (c2) => ({ r: 360 * c2.dir, s: 0.4, o: 0 }) },
+        jitter: { e: 3, lead: 100, wild: true, ease: "snap", w: (c2) => ({ x: c2.alt * 0.12, r: c2.alt * 6 }) },
+        glitch: { e: 3, lead: 120, wild: true, max: 6, ease: "snap", w: (c2) => ({ x: c2.alt * 0.18, sk: c2.alt * 18, o: 0.35 }), acc: "glitch" }
+      };
+      RECIPES = R;
+      TREATMENTS = Object.keys(R);
+      FAMILY = {
+        flip: ["flipx", "flipy", "mirror", "unfold", "flipl"],
+        fall: ["drop", "bounce", "rain", "cascade", "slot"],
+        slide: ["split", "wavel", "waver", "conveyor", "magnet", "ricochet"],
+        grow: ["key", "bubble", "zoomin", "heart", "jelly"],
+        hit: ["slam", "stamp", "zoom", "caps", "collide"],
+        swing: ["hinge", "domino", "pendulum", "tilt", "lean"],
+        float: ["rise", "peek", "stairs", "tidal", "cascadeup"],
+        letters: ["curtain", "write", "swirl", "wave", "flipl", "cascade"],
+        wild: ["spiral", "scatter", "tumble", "pinwheel", "shatter", "orbit"],
+        pop: ["hop", "jelly", "stretch", "squash", "bubble"]
+      };
+      FAMILIES2 = FAMILY;
+      SECT_E = { verse: [0, 2], pre: [1, 2], chorus: [2, 3], drop: [3, 3], bridge: [0, 2], calm: [0, 1] };
+      BRIDGE = ["tilt", "hinge", "pendulum", "mirror", "unfold", "drift", "lean", "swirl", "tidal", "domino"];
+      RAP = ["type", "typer", "write", "magnet", "jitter", "glitch", "ricochet"];
+      BALLAD = ["glow", "fade", "drift", "curtain", "write", "neon", "tidal", "rise"];
+      HIT = ["slam", "stamp", "zoom", "collide", "caps"];
+      RAP_SET = new Set(RAP);
+      BALLAD_SET = new Set(BALLAD);
+      HIT_SET = new Set(HIT);
+      BRIDGE_SET = new Set(BRIDGE);
+      leadOf = (t2) => Math.min(LEAD_MAX, (R[t2] || R.plain).lead ?? LEAD_DEF);
+      ACCENTS = { impact: 360, pop: 420, jelly: 600, hop: 420, heart: 700, neon: 900, echo: 520, glitch: 450, beat: 300, bar: 380 };
+      PT = {
+        ember: { w: 0.1, h: 0.1, br: "50%", c: "255 150 50", x: "0.1em", y: "-0.9em", s: 0.5, d: 1.1 },
+        drop: { w: 0.12, h: 0.17, br: "50% 50% 50% 50% / 62% 62% 38% 38%", c: "150 200 255", x: "0em", y: "0.9em", s: 0.6, d: 1.4 },
+        spark: { w: 0.14, h: 0.14, br: "2px", c: "255 220 120", x: "0.25em", y: "-0.5em", s: 0.2, d: 1, rot: "45deg" },
+        snow: { w: 0.1, h: 0.1, br: "50%", c: "235 245 255", x: "-0.2em", y: "0.8em", s: 0.6, d: 1.8 },
+        bubble: { w: 0.16, h: 0.16, br: "50%", c: "170 220 255", x: "0.1em", y: "-0.8em", s: 0.4, d: 1.6 },
+        petal: { w: 0.18, h: 0.1, br: "60% 0", c: "255 150 190", x: "0.3em", y: "0.7em", s: 0.7, d: 1.7, rot: "160deg" },
+        zap: { w: 0.04, h: 0.3, br: "1px", c: "150 240 255", x: "0.15em", y: "-0.2em", s: 0.8, d: 0.9, rot: "25deg" },
+        star: { w: 0.12, h: 0.12, br: "1px", c: "255 255 255", x: "-0.1em", y: "-0.6em", s: 0.2, d: 1.2, rot: "45deg" },
+        smoke: { w: 0.3, h: 0.3, br: "50%", c: "200 200 220", x: "0.2em", y: "-0.7em", s: 0.4, d: 2.2 },
+        note: { w: 0.09, h: 0.09, br: "50%", c: "255 255 255", x: "0.3em", y: "-0.6em", s: 0.5, d: 1.2 }
+      };
+      V2 = (n, d, q2, pt) => ({ n, d, q: q2 || {}, pt });
+      FX_VARIANTS = {
+        flame: [V2(), V2("m-q-skew", 0.8, { k: "-5deg" }, "ember"), V2("m-q-pulse", 0.7, { s: 1.1 }, "ember"), V2("m-q-stretch", 0.9, { s: 0.94 })],
+        heat: [V2(), V2("m-q-skew", 1.6, { k: "3deg" }), V2("m-q-bob", 1.4, { y: "-0.06em" }, "smoke")],
+        drip: [V2(), V2("m-q-sink", 1.6, { y: "0.1em", r: "0deg" }, "drop"), V2("m-q-bob", 1.3, { y: "0.08em" }, "drop")],
+        wave: [V2(), V2("m-q-sway", 1.6, { r: "4deg" }), V2("m-q-bob", 1.2, { y: "-0.1em" }, "bubble")],
+        jolt: [V2(), V2("m-q-jit", 0.5, { x: "0.05em" }, "zap"), V2("m-q-skew", 0.6, { k: "-8deg" }, "zap")],
+        shiver: [V2(), V2("m-q-jit", 0.3, { x: "0.025em" }, "snow"), V2("m-q-pulse", 1.4, { s: 0.94 }, "snow")],
+        beat: [V2(), V2("m-q-pulse", 0.9, { s: 1.14 }), V2("m-q-stretch", 0.95, { s: 1.08 })],
+        crack: [V2(), V2("m-q-sink", 1.4, { y: "0.12em", r: "-5deg" }), V2("m-q-skew", 1.2, { k: "-9deg" })],
+        float: [V2(), V2("m-q-bob", 2, { y: "-0.25em" }, "bubble"), V2("m-q-orbit", 2.2, { x: "0.08em", y: "-0.15em" })],
+        fall: [V2(), V2("m-q-sink", 1.6, { y: "0.28em", r: "8deg" }), V2("m-q-bob", 1.4, { y: "0.22em" })],
+        burst: [V2(), V2("m-q-pulse", 0.6, { s: 1.2 }, "spark"), V2("m-q-jit", 0.4, { x: "0.06em" }, "spark")],
+        spin: [V2(), V2("m-q-spin", 1.2, { r: "-360deg" }), V2("m-q-sway", 0.8, { r: "12deg" })],
+        glint: [V2(), V2("m-q-pulse", 1.2, { s: 1.08 }, "spark"), V2("m-q-sway", 1.4, { r: "-3deg" }, "star")],
+        dim: [V2(), V2("m-q-flick", 2.4, { o: 0.6 }), V2("m-q-sink", 2, { y: "0.06em", r: "0deg" }, "smoke")],
+        shine: [V2(), V2("m-q-pulse", 1.8, { s: 1.1 }, "star"), V2("m-q-bob", 1.8, { y: "-0.1em" })],
+        shake: [V2(), V2("m-q-jit", 0.3, { x: "0.05em" }), V2("m-q-sway", 0.4, { r: "4deg" })],
+        hush: [V2(), V2("m-q-swell", 2.2, { s: 0.88 }), V2("m-q-flick", 2.4, { o: 0.65 })],
+        bounce: [V2(), V2("m-q-bob", 0.5, { y: "-0.2em" }), V2("m-q-stretch", 0.5, { s: 1.1 }, "note")],
+        halt: [V2(), V2("m-q-jit", 0.25, { x: "0.03em" }), V2("m-q-swell", 0.6, { s: 1.08 })],
+        tick: [V2(), V2("m-q-sway", 1, { r: "8deg" }), V2("m-q-jit", 0.5, { x: "0.02em" })],
+        drift: [V2(), V2("m-q-orbit", 2.6, { x: "0.1em", y: "-0.08em" }, "smoke"), V2("m-q-bob", 2.4, { y: "-0.12em" })],
+        dash: [V2(), V2("m-q-skew", 0.6, { k: "-14deg" }), V2("m-q-jit", 0.4, { x: "0.06em" })],
+        power: [V2(), V2("m-q-swell", 1.2, { s: 1.14 }), V2("m-q-pulse", 1, { s: 1.12 }, "spark")],
+        droop: [V2(), V2("m-q-sink", 2, { y: "0.14em", r: "-3deg" }), V2("m-q-swell", 2, { s: 0.92 })],
+        bloom: [V2(), V2("m-q-pulse", 1.4, { s: 1.1 }, "petal"), V2("m-q-sway", 1.6, { r: "5deg" }, "petal")],
+        sultry: [V2(), V2("m-q-sway", 2.6, { r: "3deg" }), V2("m-q-skew", 2.4, { k: "-4deg" })],
+        neon: [V2(), V2("m-q-flick", 1.6, { o: 0.62 }, "zap"), V2("m-q-pulse", 1.4, { s: 1.05 })],
+        snow: [V2(), V2("m-q-bob", 2, { y: "0.06em" }, "snow"), V2("m-q-jit", 0.35, { x: "0.02em" }, "snow")],
+        star: [V2(), V2("m-q-pulse", 1.3, { s: 1.1 }, "star"), V2("m-q-orbit", 2, { x: "0.05em", y: "-0.06em" }, "spark")]
+      };
+      FX_COUNT = Object.values(FX_VARIANTS).reduce((s2, l) => s2 + l.length, 0);
+    }
+  });
+
+  // src/lyricfont.js
+  function scriptsOf(text) {
+    const out = /* @__PURE__ */ new Set();
+    for (const ch of String(text || "")) {
+      if (!new RegExp("\\p{L}", "u").test(ch)) continue;
+      if (new RegExp("\\p{Script=Latin}", "u").test(ch)) out.add(ch.codePointAt(0) <= 255 || ch === "\u0153" || ch === "\u0152" ? "latin" : "latinext");
+      else if (new RegExp("\\p{Script=Cyrillic}", "u").test(ch)) out.add("cyrillic");
+      else if (new RegExp("\\p{Script=Greek}", "u").test(ch)) out.add("greek");
+      else out.add("other");
+    }
+    return out;
+  }
+  function covers2(role, text) {
+    const f = PFONTS[role];
+    if (!f) return false;
+    const s2 = scriptsOf(text);
+    if (!s2.size) return false;
+    for (const x of s2) if (!f.cov.includes(x)) return false;
+    return true;
+  }
+  function lineRole(f, deckFonts, level2) {
+    if (level2 === "subtle" || !deckFonts?.length) return "";
+    const has2 = (r) => deckFonts.includes(r);
+    const long = f.n > LONG_WORDS || [...String(f.text)].length > LONG_CHARS;
+    const want = [];
+    if (f.rap || ["type", "typer", "magnet", "jitter"].includes(f.t)) want.push("mono");
+    if (f.shout || ["caps", "slam", "stamp", "zoom", "punch"].includes(f.t)) want.push("shout");
+    if (["glow", "fade", "curtain", "write", "neon"].includes(f.t) || f.ballad || f.cues?.has("beat") || f.cues?.has("bloom") || f.cues?.has("sultry")) want.push("serif");
+    if (["bounce", "jelly", "hop", "bubble", "stretch", "squash"].includes(f.t) || f.cues?.has("bounce")) want.push("round");
+    if (f.cues?.has("jolt") || f.cues?.has("neon") || f.cues?.has("float") || f.t === "glitch") want.push("wide");
+    for (const r of want) {
+      if (!has2(r) || !covers2(r, f.text)) continue;
+      if (long && (!CALM_ROLES.has(r) || f.n > 12)) continue;
+      return r;
+    }
+    return "";
+  }
+  function markerOk(text, words2) {
+    return words2 <= 3 && [...String(text)].length <= 18 && covers2("marker", text);
+  }
+  function limitFonts(fonts, { max = 2, share = 0.45 } = {}) {
+    const out = fonts.map((x) => ({ line: x?.line || "", word: x?.word || "" }));
+    const n = out.length;
+    let used = 0;
+    const budget = Math.max(1, Math.floor(n * share));
+    for (let i = 0; i < n; i++) {
+      const cur2 = out[i];
+      if (!cur2.line && !cur2.word) continue;
+      const seen2 = /* @__PURE__ */ new Set();
+      for (let k = Math.max(0, i - 4); k < i; k++) {
+        if (out[k].line) seen2.add(out[k].line);
+        if (out[k].word) seen2.add(out[k].word);
+      }
+      const fits2 = (r) => !r || seen2.has(r) || seen2.size < max;
+      if (!fits2(cur2.line)) cur2.line = "";
+      if (cur2.line) seen2.add(cur2.line);
+      if (!fits2(cur2.word)) cur2.word = "";
+      if ((cur2.line || cur2.word) && used >= budget) cur2.line = cur2.word = "";
+      if (cur2.line || cur2.word) used++;
+    }
+    return out;
+  }
+  var PFONTS, PFONTS_URL, LONG_CHARS, LONG_WORDS, CALM_ROLES;
+  var init_lyricfont = __esm({
+    "src/lyricfont.js"() {
+      PFONTS = {
+        shout: { fam: "Oswald", q: "Oswald:wght@500;700", stack: '"Oswald", "Arial Narrow", "Roboto Condensed", Impact', cov: ["latin", "latinext", "cyrillic"] },
+        round: { fam: "Fredoka", q: "Fredoka:wght@500;700", stack: '"Fredoka", "Nunito", "Varela Round"', cov: ["latin", "latinext"] },
+        serif: { fam: "Playfair Display", q: "Playfair+Display:ital,wght@0,700;0,900;1,700", stack: '"Playfair Display", "DM Serif Display", Georgia, serif', cov: ["latin", "latinext", "cyrillic"] },
+        mono: { fam: "JetBrains Mono", q: "JetBrains+Mono:wght@700;800", stack: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace', cov: ["latin", "latinext", "cyrillic", "greek"] },
+        wide: { fam: "Unbounded", q: "Unbounded:wght@700;900", stack: '"Unbounded", "Segoe UI Black", "Arial Black"', cov: ["latin", "latinext", "cyrillic"] },
+        marker: { fam: "Permanent Marker", q: "Permanent+Marker", stack: '"Permanent Marker", "Segoe Print", "Comic Sans MS", cursive', cov: ["latin"] }
+      };
+      PFONTS_URL = "https://fonts.googleapis.com/css2?" + Object.values(PFONTS).map((f) => "family=" + f.q).join("&") + "&display=swap";
+      LONG_CHARS = 42;
+      LONG_WORDS = 8;
+      CALM_ROLES = /* @__PURE__ */ new Set(["serif", "mono"]);
+    }
+  });
+
+  // src/lyriccolor.js
+  function lyricGrounds(pal) {
+    const [a, b] = pal || [];
+    const out = [LYR_BG2];
+    if (a && b) out.push(LYR_BG2.map((v, i) => v + (a[i] * 0.18 + b[i] * 0.18)));
+    return out.map((c2) => c2.map((v) => clamp24(v, 0, 255)));
+  }
+  function rgb2hsl3([r, g, b]) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+    if (mx === mn) return [0, 0, l];
+    const d = mx - mn, s2 = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    const h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return [h * 60, s2, l];
+  }
+  function hsl2rgb3([h, s2, l]) {
+    h = (h % 360 + 360) % 360 / 360;
+    if (!s2) return [l, l, l].map((v) => Math.round(v * 255));
+    const q2 = l < 0.5 ? l * (1 + s2) : l + s2 - l * s2, p = 2 * l - q2;
+    const f = (t2) => {
+      t2 = (t2 + 1) % 1;
+      return t2 < 1 / 6 ? p + (q2 - p) * 6 * t2 : t2 < 1 / 2 ? q2 : t2 < 2 / 3 ? p + (q2 - p) * (2 / 3 - t2) * 6 : p;
+    };
+    return [f(h + 1 / 3), f(h), f(h - 1 / 3)].map((v) => Math.round(clamp24(v, 0, 1) * 255));
+  }
+  function readable2(hsl, grounds, need = 4.6) {
+    let [h, s2, l] = hsl;
+    for (let k = 0; k < 40; k++) {
+      const c2 = hsl2rgb3([h, s2, l]);
+      if (grounds.every((g) => contrast2(c2, g) >= need)) return c2;
+      l = Math.min(1, l + 0.025);
+      if (l >= 0.97) s2 *= 0.85;
+    }
+    return [245, 243, 255];
+  }
+  function meaningColors(pal, grade2 = { hue: 0, sat: 1 }) {
+    const grounds = lyricGrounds(pal);
+    const A = pal?.[0] ? rgb2hsl3(pal[0]) : [265, 0.6, 0.7];
+    const w = clamp24(A[1], 0, 1) * 0.08;
+    const out = {};
+    for (const [kind, stops] of Object.entries(KINDS3)) {
+      stops.forEach((st, i) => {
+        let hsl;
+        if (kind === "party") hsl = [A[0] + grade2.hue, clamp24(Math.max(A[1], 0.55), 0, 1), 0.68];
+        else hsl = [mixHue(st[0], A[0], w) + grade2.hue * 0.5, clamp24(st[1] * grade2.sat, 0, 1), st[2]];
+        out[kind + (i ? "2" : "")] = readable2(hsl, grounds);
+      });
+    }
+    return out;
+  }
+  function colorVars(cols) {
+    const v = {};
+    for (const [k, c2] of Object.entries(cols)) v["--pc-" + k] = c2.join(" ");
+    return v;
+  }
+  var clamp24, KINDS3, CUE_KIND, LYR_BG2, lum2, contrast2, mixHue;
+  var init_lyriccolor = __esm({
+    "src/lyriccolor.js"() {
+      clamp24 = (v, a, b) => Math.min(b, Math.max(a, v));
+      KINDS3 = {
+        fire: [[24, 0.95, 0.6], [4, 0.9, 0.64]],
+        warm: [[36, 0.9, 0.64]],
+        ice: [[196, 0.85, 0.78]],
+        water: [[206, 0.8, 0.7]],
+        gold: [[45, 0.95, 0.6], [32, 0.9, 0.66]],
+        love: [[335, 0.85, 0.74]],
+        dark: [[265, 0.3, 0.76]],
+        nature: [[128, 0.55, 0.64]],
+        neon: [[182, 1, 0.6], [292, 0.95, 0.74]],
+        sky: [[208, 0.7, 0.8]],
+        light: [[52, 0.9, 0.82]],
+        rage: [[2, 0.85, 0.66]],
+        dream: [[276, 0.6, 0.8]],
+        party: [[0, 0, 0]]
+        // aus der Leitfarbe des Covers
+      };
+      CUE_KIND = {
+        flame: "fire",
+        heat: "warm",
+        burst: "fire",
+        drip: "water",
+        wave: "water",
+        shiver: "ice",
+        snow: "ice",
+        glint: "gold",
+        power: "gold",
+        star: "light",
+        shine: "light",
+        beat: "love",
+        sultry: "love",
+        bloom: "nature",
+        dim: "dark",
+        droop: "dark",
+        crack: "dark",
+        hush: "dream",
+        drift: "dream",
+        jolt: "neon",
+        neon: "neon",
+        float: "sky",
+        shake: "rage",
+        bounce: "party",
+        dash: "party",
+        spin: "party"
+      };
+      LYR_BG2 = [7, 6, 12];
+      lum2 = ([r, g, b]) => {
+        const f = (v) => (v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      contrast2 = (x, y) => {
+        const [hi, lo] = [lum2(x), lum2(y)].sort((p, q2) => q2 - p);
+        return (hi + 0.05) / (lo + 0.05);
+      };
+      mixHue = (a, b, w) => {
+        const d = ((b - a) % 360 + 540) % 360 - 180;
+        return a + d * w;
+      };
+    }
+  });
+
   // src/lyricstyle.js
   function seek3(arr, at3, key) {
     let lo = 0, hi = arr.length - 1, r = -1;
@@ -37658,7 +38247,7 @@
     }
     return r;
   }
-  function hash01(s2) {
+  function hash012(s2) {
     let h = 2166136261;
     for (let i = 0; i < s2.length; i++) h = Math.imul(h ^ s2.charCodeAt(i), 16777619);
     return (h >>> 0) % 10007 / 10007;
@@ -37690,7 +38279,7 @@
     const raw = W2.map((w, k) => {
       let e = 0;
       if (L2[k] != null) e += 0.6 * ((L2[k] - lineMed) / 4) + 0.4 * ((L2[k] - avg) / 6);
-      if (!w.est && w.b > w.a) e += 0.3 * clamp23((w.b - w.a) / dMed - 1, -1, 1.5);
+      if (!w.est && w.b > w.a) e += 0.3 * clamp25((w.b - w.a) / dMed - 1, -1, 1.5);
       const tx = String(w.text || "");
       if (isContent(tx)) e += 0.3 * fb;
       else e -= 0.12 * fb;
@@ -37699,14 +38288,14 @@
       if (isCaps(tx) || /!\s*[)）]?$/.test(tx)) e = Math.max(e, 0.8);
       if (w.bg || BREATH.test(tx)) e = Math.min(e, -0.6);
       if (o.no?.has(k)) e = Math.min(e, 0);
-      return clamp23(e, -1, 1);
+      return clamp25(e, -1, 1);
     });
     const room = Math.max(1, Math.round(W2.length / 3));
     const loudest = raw.map((e, k) => [e, k]).filter(([e]) => e >= 0.45).sort((x, y) => y[0] - x[0]).slice(0, room).map(([, k]) => k);
     return raw.map((e, k) => {
       const loud = loudest.includes(k), soft = e <= -0.45;
       const z = loud ? 1 + 0.3 * e : soft ? 1 + 0.16 * e : 1;
-      return { e: r2(e), cls: loud ? "is-p-loud" : soft ? "is-p-soft" : "", z: r2(clamp23(z, 0.84, 1.3)) };
+      return { e: r22(e), cls: loud ? "is-p-loud" : soft ? "is-p-soft" : "", z: r22(clamp25(z, 0.84, 1.3)) };
     });
   }
   function heldNotes(words2) {
@@ -37827,31 +38416,9 @@
     }
     return out;
   }
-  function scoreTreatments(f) {
-    const chorus = f.kind === "chorus" || f.kind === "drop";
-    const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
-    const E = f.energy, n = f.n;
-    const s2 = {
-      plain: 0.35 + (quiet ? 0.5 : 0) + (f.kind === "verse" ? 0.2 : 0) - (chorus ? 0.6 : 0),
-      rise: 0.9 + (f.kind === "verse" || f.kind === "pre" ? 0.4 : 0) + (f.ballad ? 0.2 : 0) + (f.mood > 0.3 ? 0.2 : 0),
-      drop: 0.7 + (chorus ? 0.5 : 0) + (E > 0.3 ? 0.4 : 0) + (f.mood < -0.3 ? 0.2 : 0),
-      stagger: 0.5 + (n >= 3 && n <= 7 ? 0.5 : -0.6) + (f.kind === "verse" ? 0.3 : 0),
-      key: (f.keyStrength >= 0.55 ? 0.55 + f.keyStrength * 0.6 : -0.4) + (n >= 3 && n <= 9 ? 0.3 : -0.6) + (chorus ? 0.2 : 0),
-      wave: (f.keyLetters ? 0.6 : -2) + (f.ballad ? 0.4 : 0) + (f.mood > 0.2 ? 0.3 : 0) + (f.cueLetters ? 0.6 : 0),
-      split: 0.4 + (n >= 4 && n <= 10 ? 0.6 : -1) + (chorus || f.kind === "pre" ? 0.3 : 0),
-      caps: (f.shout ? 2.2 : -0.6) + (E > 0.5 ? 0.6 : 0) + (n <= 6 ? 0.3 : -0.5),
-      type: (f.rap ? 2.2 : -0.7) + (n >= 8 ? 0.4 : 0) + (f.rate > 4.2 ? 0.5 : 0),
-      glow: (f.ballad ? 1.4 : 0) + (f.mood < -0.2 ? 0.4 : 0) + (quiet ? 0.7 : 0) + (E < -0.2 ? 0.4 : 0) - (chorus && E > 0.3 ? 0.8 : 0),
-      punch: (chorus && f.beats ? 0.8 : -1) + (E > 0.3 ? 0.6 : 0) + (f.rap ? -0.5 : 0),
-      collide: (f.dropIn ? 2.4 : -0.8) + (f.first && chorus && E > 0.4 ? 0.9 : 0) + (n >= 3 && n <= 8 ? 0.2 : -0.6),
-      tilt: (f.kind === "bridge" ? 1.7 : -0.5) + (f.mood < -0.3 ? 0.2 : 0),
-      slam: (f.first && chorus ? 2 : -1.2) + (E > 0.4 ? 0.4 : 0) + (n <= 7 ? 0.2 : -0.5)
-    };
-    if (!f.words) for (const t2 of NEEDS_WORDS) s2[t2] -= 3;
-    if (n > 12) for (const t2 of ["stagger", "split", "collide", "key", "slam"]) s2[t2] -= 1.2;
-    return s2;
-  }
-  function pickTreatments(feats) {
+  function pickTreatments(feats, deck) {
+    const D = deck || songDeck("default");
+    const level2 = D.level || "playful";
     const out = [], count = {}, byKey = /* @__PURE__ */ new Map();
     let n = 0;
     for (let i = 0; i < feats.length; i++) {
@@ -37860,18 +38427,52 @@
         out.push("");
         continue;
       }
-      const s2 = scoreTreatments(f);
+      const chorus = f.kind === "chorus" || f.kind === "drop";
+      const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
+      let pool2;
+      if (!f.words) pool2 = chorus ? ["punch", "caps", "tilt", "plain"] : f.kind === "bridge" ? ["tilt", "plain"] : ["plain", "punch", "tilt"];
+      else if (f.dropIn) pool2 = D.drop;
+      else if (f.first && chorus) pool2 = [...D.hit, ...D.chorus];
+      else if (f.shout) pool2 = [...D.shout, ...D.chorus];
+      else if (f.rap) pool2 = D.rap;
+      else if (chorus) pool2 = [...D.chorus, D.hit[0]];
+      else if (f.kind === "pre") pool2 = D.pre;
+      else if (f.kind === "bridge") pool2 = D.bridge;
+      else if (quiet) pool2 = D.calm;
+      else if (f.ballad) pool2 = [...D.ballad, ...D.verse.slice(0, 2)];
+      else pool2 = D.verse;
+      const fits2 = (t2) => {
+        const r = RECIPES[t2];
+        if (!r || !allowed(t2, level2)) return false;
+        if (!f.words) return WORDLESS.includes(t2);
+        if (r.L && !f.lettersOk) return false;
+        if (r.keyed && !(f.keyStrength >= 0.55)) return false;
+        if (r.min && f.n < r.min) return false;
+        if (r.max && f.n > r.max) return false;
+        if (f.n > 12 && (r.e >= 2 || r.L)) return false;
+        if (f.ballad && r.e >= 3 && !(f.first && chorus)) return false;
+        return true;
+      };
+      const cands = /* @__PURE__ */ new Map();
+      pool2.forEach((t2, k) => fits2(t2) && !cands.has(t2) && cands.set(t2, 1.3 - k * 0.07));
+      if (f.words) {
+        const want = f.dropIn || f.first && chorus ? 3 : chorus ? 2.4 : quiet || f.ballad ? 0.3 : f.kind === "pre" ? 1.6 : f.rap ? 1.2 : 1;
+        for (const t2 of TREATMENTS) if (!cands.has(t2) && fits2(t2)) cands.set(t2, 0.5 - Math.abs(RECIPES[t2].e - want) * 0.2);
+      }
+      if (!cands.size) cands.set("plain", 0);
       const prev = out.filter(Boolean);
       const p1 = prev[prev.length - 1], p2 = prev[prev.length - 2];
       const used = byKey.get(f.key) || [];
       let best2 = "plain", bv = -Infinity;
-      for (const t2 of TREATMENTS) {
-        let v = s2[t2] + hash01(f.key + "|" + t2 + "|" + used.length) * 0.55;
-        if (t2 === p1) v -= 1.8;
-        if (t2 === p2) v -= 0.6;
-        const share = n >= 6 ? (count[t2] || 0) / n : 0;
-        if (share > 0.22) v -= (share - 0.22) * 9;
-        if (used.includes(t2)) v -= 1.3 + 0.4 * used.filter((u) => u === t2).length;
+      for (const [t2, base] of cands) {
+        let v = base + hash012(D.seed + "|" + f.key + "|" + t2 + "|" + used.length) * 0.6;
+        if (t2 === p1) v -= 3;
+        if (t2 === p2) v -= 1;
+        else if (prev.slice(-6).includes(t2)) v -= 0.9;
+        if (p1 && FAMILY_OF2[t2] && FAMILY_OF2[t2] === FAMILY_OF2[p1] && !chorus) v -= 0.3;
+        const share = n >= 5 ? (count[t2] || 0) / n : 0;
+        if (share > 0.1) v -= (share - 0.1) * 14;
+        if (used.includes(t2)) v -= 1.4 + 0.5 * used.filter((u) => u === t2).length;
         if (v > bv) bv = v, best2 = t2;
       }
       out.push(best2);
@@ -37890,7 +38491,7 @@
       let v = em[k].e + (cueAt.has(k) ? 0.7 : 0) + (k === ws.length - 1 ? 0.1 : 0) + Math.min(0.2, len * 0.02);
       if (v > bv) bv = v, best2 = k;
     });
-    return { k: best2, strength: best2 >= 0 ? clamp23(bv, 0, 1.5) : 0 };
+    return { k: best2, strength: best2 >= 0 ? clamp25(bv, 0, 1.5) : 0 };
   }
   function partsOf(d) {
     if (!d?.beats?.length || d.synthetic) return { parts: null, drops: [] };
@@ -37909,7 +38510,10 @@
     const real = d && !d.synthetic;
     const segs = real ? d.segs : null;
     const beats = d?.beats || null;
+    const bars = d?.bars || null;
     const still = !!o.still;
+    const level2 = o.level === "subtle" || o.level === "wild" ? o.level : "playful";
+    const deck = songDeck(o.seed || "lyr:" + hash012(L2.map((l) => l.text).join("\n")), level2);
     const { parts, drops } = o.parts !== void 0 ? { parts: o.parts, drops: o.drops || [] } : partsOf(d);
     const match = o.match || cueMatcher(L2, o.lexicon, { neg: o.neg, explicit: o.explicit || "on" });
     const hitsOf = match.hitsOf || (() => []);
@@ -37970,13 +38574,13 @@
       const rap = rate >= 4.6 && n >= 7 || rate >= 5.4 && n >= 5;
       const ballad = !rap && (rate <= 2.4 || bpm2 && bpm2 < 84);
       let energy = { chorus: 0.4, drop: 0.7, pre: 0.15, verse: 0, bridge: -0.1, intro: -0.4, outro: -0.4, break: -0.5 }[p.kind] ?? 0;
-      if (peaks[i] != null && hi != null && pMed != null && hi > pMed) energy = 0.5 * energy + clamp23((peaks[i] - pMed) / (hi - pMed), -1, 1);
+      if (peaks[i] != null && hi != null && pMed != null && hi > pMed) energy = 0.5 * energy + clamp25((peaks[i] - pMed) / (hi - pMed), -1, 1);
       if (p.shout) energy += 0.4;
       const first = p.kind !== prevKind && prevKind !== null || l.t - prevEnd > 7e3 || prevKind === null;
       prevKind = p.kind;
       prevEnd = Math.max(l.t, b);
       const mood = lineMood(text)?.v ?? 0;
-      return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp23(energy, -1, 1.2), shout: p.shout, first, mood, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, key: lineKey(text) || "#" + i };
+      return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp25(energy, -1, 1.2), shout: p.shout, first, mood, text, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, lettersOk: lettersOk(ws, l.who), key: lineKey(text) || "#" + i };
     });
     const wordInfo = pre.map((p, i) => {
       const ws = p.ws;
@@ -37992,31 +38596,50 @@
       for (const [s0, s1] of explicitSpans(joined, hitsOf)) for (let k = at3(s0); k >= 0 && k <= at3(s1 - 1); k++) no.add(k);
       const lastW = ws[ws.length - 1]?.text, nb = [L2[i - 1], L2[i + 1], L2[i - 2]].map((x) => String(x?.text || "").trim().split(/\s+/).pop());
       const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real, rhyme: nb.some((x) => rhymes(lastW, x)), hook, no });
-      const cues = /* @__PURE__ */ new Map();
-      if (!still) {
-        const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
-        for (const m of ms) {
-          if (cues.size >= 2) break;
-          const k = at3(m.at + m.len - 1);
-          if (k >= 0 && !cues.has(k) && !ws[k].bg) cues.set(k, m.cue);
+      const cues = /* @__PURE__ */ new Map(), concept = /* @__PURE__ */ new Map();
+      const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
+      for (const m of ms) {
+        if (cues.size >= 2) break;
+        const k = at3(m.at + m.len - 1);
+        if (k >= 0 && !cues.has(k) && !ws[k].bg) {
+          cues.set(k, m.cue);
+          concept.set(k, m.c);
         }
       }
       const kw = keyWord(ws, em, cues, no);
-      return { em, cues, kw, no };
+      return { em, cues, concept, kw, no };
     });
     feats.forEach((f, i) => {
       if (!f) return;
       const wi = wordInfo[i];
       f.keyStrength = wi ? wi.kw.strength : 0;
-      f.keyLetters = !!wi && wi.kw.k >= 0 && canSplit(pre[i].ws[wi.kw.k].text) && !L2[i].who;
-      f.cueLetters = !!wi && [...wi.cues.values()].includes("wave");
+      f.cues = new Set(wi ? wi.cues.values() : []);
     });
-    const treat = pickTreatments(feats);
-    return pre.map((p, i) => {
+    const treat = pickTreatments(feats, deck);
+    const fontsRaw = pre.map((p, i) => {
+      const f = feats[i], t2 = treat[i];
+      if (!f || !t2) return null;
+      const line = lineRole({ ...f, t: t2 }, deck.fonts, level2);
+      let word = "";
+      const wi = wordInfo[i];
+      if (deck.fonts.includes("marker") && level2 !== "subtle") {
+        if (level2 === "wild" && f.shout && markerOk(p.text, f.n) && !line) return { line: "marker", word: "" };
+        if (t2 === "key" && wi && wi.kw.k >= 0 && markerOk(p.ws[wi.kw.k].text, 1)) word = "marker";
+      }
+      if (!word && !line && wi && deck.fonts.includes("wide")) {
+        for (const [k, c2] of wi.cues) if ((c2 === "jolt" || c2 === "neon") && covers2("wide", p.ws[k].text)) word = "wide";
+      }
+      return { line, word };
+    });
+    const fonts = limitFonts(fontsRaw, { max: 2, share: level2 === "wild" ? 0.6 : 0.4 });
+    let preRun = 0;
+    const plan2 = pre.map((p, i) => {
       const { l, ws } = p;
       const cls = [], vars = {};
       const t2 = treat[i] || "";
+      const R2 = RECIPES[t2];
       cls.push(sectionStyle(sectionKind(parts, l.t), { repeated: p.repeated }));
+      if (l.text === "\u266A") cls.push("is-p-note");
       if (t2) cls.push("is-t-" + t2);
       if (dropIn.has(i) && !still) cls.push("is-p-drop");
       const side = voiceSide(l.who);
@@ -38033,11 +38656,34 @@
         cls.push("is-p-shout");
         shouts++;
       }
+      const fo = fonts[i] || { line: "", word: "" };
+      if (fo.line) cls.push("is-f-" + fo.line);
+      const f = feats[i];
+      const tint2 = f && !l.who ? f.mood <= -0.5 ? "dark" : f.mood >= 0.6 ? "light" : "" : "";
+      if (tint2) cls.push("is-k-" + tint2);
       const wi = wordInfo[i];
-      if (!wi) return { t: t2, cls, vars, words: [] };
-      const { em, cues, kw } = wi;
+      const kind = p.kind;
+      preRun = kind === "pre" ? preRun + 1 : 0;
+      const dir = hash012(deck.seed + "|dir|" + (f?.key || i) + "|" + i) < 0.5 ? -1 : 1;
+      let amp = deck.amp * (AMP[kind] ?? 1) * (level2 === "wild" ? 1.15 : 1);
+      if (kind === "pre") amp *= 0.8 + Math.min(4, preRun) * 0.1;
+      if (level2 === "subtle") amp = 0.55;
+      const easeKey = R2?.ease || (kind === "chorus" || kind === "drop" ? deck.ease[0] : deck.ease[1]);
+      const v = t2 ? `${t2}:${dir > 0 ? "r" : "l"}:${Math.round(amp * 10)}:${easeKey}` : "";
+      if (t2 && !still) {
+        vars["--pez"] = EASE[easeKey] || EASE.expo;
+        if (R2?.ln) cls.push("is-l-" + R2.ln);
+      }
+      if (!wi) {
+        if (tint2) cls.push("is-pk");
+        return { t: t2, v, cls, vars, font: fo, words: [] };
+      }
+      const { em, cues, concept, kw } = wi;
       const hold = heldNotes(ws);
       const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
+      const lead = still ? 0 : leadOf(t2);
+      let coloured = !!tint2;
+      const wideAt = fo.word === "wide" ? [...cues].find(([, c2]) => c2 === "jolt" || c2 === "neon")?.[0] : -1;
       const words2 = ws.map((w, k) => {
         const wc = [], wv = {};
         if (em[k].cls) wc.push(em[k].cls);
@@ -38045,50 +38691,87 @@
         const isKey = k === kw.k && (t2 === "key" || t2 === "wave");
         if (isKey) {
           wc.push("is-p-key");
-          if (t2 === "key") wv["--pk"] = String(r2(clamp23(2.6 - 0.12 * [...bare(w.text)].length, 1.6, 2.4)));
+          if (t2 === "key") wv["--pk"] = String(r22(clamp25(2.6 - 0.12 * [...bare(w.text)].length, 1.6, 2.4)));
+          wv["--pkn"] = String(Math.max(2, [...String(w.text)].length));
         }
         if (t2 === "split") wc.push(k < half ? "is-p-l" : "is-p-r");
         if (t2 === "stagger" && k % 2 === 1) wc.push("is-p-odd");
-        if (t2 === "collide" && n > 1) wv["--pc"] = String(r2((k - mid) / Math.max(1, mid)));
+        if (t2 === "collide" && n > 1) wv["--pc"] = String(r22((k - mid) / Math.max(1, mid)));
+        if (fo.word === "marker" && k === kw.k || k === wideAt) wc.push("is-f-" + fo.word);
+        const c2 = cues.get(k);
+        const ck = c2 && !l.who ? CUE_KIND[c2] : "";
+        if (ck) {
+          wc.push("is-k", "is-k-" + ck);
+          if (ck === "fire" || ck === "gold" || ck === "neon") wc.push("is-kg");
+          coloured = true;
+        }
         let chars = false, tx = "";
+        const out = { cls: wc, vars: wv, lead };
         if (!still) {
+          const len = [...String(w.text)].length;
+          const useLetters = !!R2?.L && (lettersOk(ws, l.who) || isKey) && canSplit(w.text);
+          if (!useLetters) Object.assign(wv, poseVars(wordPose(t2, { k, n, dir, amp, len, key: isKey, seed: deck.seed + "|" + i })));
+          if (lead) wv["--pl"] = lead + "ms";
           if (hold[k].held) {
             wc.push("is-p-held");
             wv["--hd"] = hold[k].hd + "ms";
           }
           if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
-          const c2 = cues.get(k);
+          if (bars?.length && real && !w.est && onBeat(w.a, bars, 70)) wc.push("is-p-bar");
+          let acc = R2?.acc || "";
           if (c2) {
             wc.push("is-p-cue", "is-c-" + c2);
+            const fv = fxVariant(c2, concept.get(k) || c2, deck.fx);
+            if (fv?.n) Object.assign(wv, fxVars(fv));
+            if (fv?.pt && level2 !== "subtle") {
+              wc.push("is-pt");
+              Object.assign(wv, particleVars(fv.pt));
+            }
             if (GLOWS.has(c2)) {
               wc.push("is-cg");
               tx = String(w.text || "");
             }
-            if (LETTERS.has(c2) && canSplit(w.text) && !l.who) chars = true;
+            if (LETTERS.has(c2) && canSplit(w.text) && !l.who && level2 !== "subtle") chars = true;
           }
           if (isKey && t2 === "wave" && canSplit(w.text) && !l.who) chars = true;
+          if (useLetters) chars = letterPoses(t2, w.text, { k, n, dir, amp, seed: deck.seed + "|" + i, lead });
           if (chars) {
-            if (tx) wc.splice(wc.indexOf("is-cg"), 1), tx = "";
+            if (tx) {
+              wc.splice(wc.indexOf("is-cg"), 1);
+              tx = "";
+            }
             wc.push("is-split");
             wv["--cn"] = String([...String(w.text)].length);
           }
+          if (acc === "echo" && (tx || chars)) acc = "";
+          if (acc === "echo") tx = String(w.text || "");
+          if (!acc && wc.includes("is-p-bar")) acc = "bar";
+          else if (!acc && wc.includes("is-p-beat")) acc = "beat";
+          if (acc && level2 !== "subtle") {
+            wv["--pac"] = "m-a-" + acc;
+            wv["--pad"] = ACCENTS[acc] + "ms";
+            if (acc === "echo") wc.push("is-echo");
+          }
+          if (R2?.caret && !c2) wc.push("is-caret");
         }
-        const out = { cls: wc, vars: wv };
-        if (chars) out.chars = true;
+        if (chars) out.chars = chars;
         if (tx) out.tx = tx;
         return out;
       });
-      return { t: t2, cls, vars, words: words2 };
+      if (coloured) cls.push("is-pk");
+      return { t: t2, v, cls, vars, font: fo, words: words2 };
     });
+    plan2.deck = deck;
+    return plan2;
   }
   function strip2(el4, text) {
     if (!el4) return;
-    for (const c2 of [...el4.classList]) if (c2.startsWith("is-p-") || c2.startsWith("is-t-") || c2.startsWith("is-c-") || c2 === "is-cg" || c2 === "is-split") el4.classList.remove(c2);
+    for (const c2 of [...el4.classList]) if (PCLS.test(c2) || PONE.has(c2)) el4.classList.remove(c2);
     for (const v of PVARS) el4.style.removeProperty(v);
     if (el4.dataset?.tx != null) delete el4.dataset.tx;
     if (text != null && el4.firstElementChild?.classList?.contains("m-ch")) el4.textContent = text;
   }
-  function letters(el4, text) {
+  function letters(el4, text, poses) {
     const doc = el4.ownerDocument;
     if (!doc || el4.firstElementChild) return;
     el4.textContent = "";
@@ -38097,6 +38780,11 @@
       s2.className = "m-ch";
       s2.textContent = ch;
       s2.style.setProperty("--ci", k);
+      const p = Array.isArray(poses) ? poses[k] : null;
+      if (p) {
+        if (p.ld) s2.style.setProperty("--ld", p.ld + "ms");
+        for (const [kk, v] of Object.entries(p.vars)) s2.style.setProperty(kk, v);
+      }
       el4.append(s2);
     });
   }
@@ -38106,21 +38794,40 @@
       const el4 = lineEls[i], p = plan2?.[i];
       strip2(el4);
       const ws = wordLists?.[i] || [];
-      ws.forEach((w) => strip2(w.el, w.text));
+      ws.forEach((w) => {
+        strip2(w.el, w.text);
+        w.lead = 0;
+      });
       if (!p) continue;
       if (p.cls.length) el4.classList.add(...p.cls);
       for (const [k, v] of Object.entries(p.vars)) el4.style.setProperty(k, v);
       p.words.forEach((pw, k) => {
         const wel = ws[k]?.el;
         if (!wel) return;
+        ws[k].lead = pw.lead || 0;
         if (pw.cls.length) wel.classList.add(...pw.cls);
         for (const [kk, v] of Object.entries(pw.vars)) wel.style.setProperty(kk, v);
         if (pw.tx) wel.dataset.tx = pw.tx;
-        if (pw.chars) letters(wel, ws[k].text);
+        if (pw.chars) letters(wel, ws[k].text, pw.chars);
       });
     }
   }
-  var clamp23, r2, median3, CASED, capsOf, isCaps, BREATH, FN, TOKW, bare, isContent, SET, VOW, EFFECTS, CUE, EXTRA2, BROKEN, XIDX, FXPRI, SOFTEN2, GLOWS, LETTERS, TREATMENTS, NEEDS_WORDS, SPLITTABLE, canSplit, planCache, lineKey, PVARS;
+  function barPhase(beats, bars, sec) {
+    const b = beatPhase(beats, sec);
+    if (!b) return null;
+    const bar = 4 * b.p;
+    let start3 = null;
+    if (bars?.length) {
+      const k = seek3(bars, sec, "t");
+      if (k >= 0) start3 = bars[k].t;
+    }
+    if (start3 == null) {
+      const k = seek3(beats, sec, "t");
+      start3 = beats[k - k % 4].t;
+    }
+    return { p: b.p, bar, d: -Math.round((sec - start3) * 1e3 % bar) };
+  }
+  var clamp25, r22, median3, CASED, capsOf, isCaps, BREATH, FN, TOKW, bare, isContent, SET, VOW, EFFECTS, CUE, EXTRA2, BROKEN, XIDX, FXPRI, SOFTEN2, GLOWS, LETTERS, WORDLESS, FAMILY_OF2, SPLITTABLE, canSplit, lettersOk, LEAD_PAD, sungAt, PRE_MS, planCache, lineKey, AMP, PVARS, PCLS, PONE;
   var init_lyricstyle = __esm({
     "src/lyricstyle.js"() {
       init_director();
@@ -38128,8 +38835,11 @@
       init_wordsense();
       init_mood();
       init_lyricvoices();
-      clamp23 = (v, a, b) => Math.min(b, Math.max(a, v));
-      r2 = (v) => Math.round(v * 100) / 100;
+      init_lyricdeck();
+      init_lyricfont();
+      init_lyriccolor();
+      clamp25 = (v, a, b) => Math.min(b, Math.max(a, v));
+      r22 = (v) => Math.round(v * 100) / 100;
       median3 = (arr) => {
         if (!arr.length) return 0;
         const s2 = [...arr].sort((a, b) => a - b);
@@ -38168,8 +38878,10 @@
         // Welle durch die Buchstaben
         jolt: "storm lightning earthquake electric",
         // Ruck mit Lichtblitz
-        shiver: "cold snow fear",
+        shiver: "cold fear",
         // Zittern, frostiger Schein
+        snow: "snow",
+        // Flocken rieseln
         beat: "heart heartbeat love kiss",
         // Herzschlag (doppelt)
         crack: "heartbreak pain goodbye",
@@ -38180,8 +38892,12 @@
         // zerspringt in Buchstaben und fügt sich wieder
         spin: "spin crazy",
         // dreht sich einmal
-        glint: "money gold diamond rich million bling crown sparkle luxury vip star champagne silver mansion flex payday christmas neon laser",
+        glint: "money gold diamond rich million bling crown luxury vip champagne silver mansion flex payday christmas",
         // Glanz
+        star: "star sparkle",
+        // funkelt
+        neon: "neon laser",
+        // Neonröhre glimmt (ohne Flackern im Stroboskop-Takt)
         dim: "dark black midnight blackout lonely lost moon",
         // dunkelt ab (nicht „night“: steht in fast jedem Lied)
         shine: "light sunrise morning wakeup hope alive smile happy",
@@ -38243,17 +38959,110 @@
       BROKEN = /\b(?:br(?:oke|eak|eaks|eaking|oken)|tore|rip(?:ped)?|shatter(?:ed)?) (?:my|your|his|her|our|this) heart\b|(?:brach|brichst|bricht|gebrochen\w*) (?:mein|dein|sein|ihr)\w* herz|herz\w* (?:gebrochen|zerbrochen)/iu;
       XIDX = /* @__PURE__ */ new Map();
       for (const [fx2, byLang] of Object.entries(EXTRA2)) for (const [lang, words2] of Object.entries(byLang)) for (const w of words2.split(" ")) if (!XIDX.has(w)) XIDX.set(w, [fx2, lang]);
-      FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4 };
-      SOFTEN2 = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift" };
-      GLOWS = /* @__PURE__ */ new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift"]);
+      FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4, neon: 4, snow: 4, star: 4 };
+      SOFTEN2 = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift", neon: "shine" };
+      GLOWS = /* @__PURE__ */ new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift", "neon", "star", "snow"]);
       LETTERS = /* @__PURE__ */ new Set(["burst", "wave"]);
-      TREATMENTS = ["plain", "rise", "drop", "stagger", "key", "wave", "split", "caps", "type", "glow", "punch", "collide", "tilt", "slam"];
-      NEEDS_WORDS = /* @__PURE__ */ new Set(["rise", "drop", "stagger", "split", "type", "glow", "collide", "key", "wave"]);
+      WORDLESS = ["plain", "punch", "tilt", "caps"];
+      FAMILY_OF2 = {};
+      for (const [fam, list] of Object.entries(FAMILIES2)) for (const t2 of list) FAMILY_OF2[t2] ??= fam;
       SPLITTABLE = /^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}'’!?.,-]{2,12}$/u;
       canSplit = (s2) => SPLITTABLE.test(String(s2 || "")) && !new RegExp("\\p{M}", "u").test(String(s2 || "").normalize("NFC"));
+      lettersOk = (ws, who2) => !who2 && ws.length > 0 && ws.length <= 4 && ws.reduce((s2, w) => s2 + [...String(w.text)].length, 0) <= 18 && ws.every((w) => canSplit(w.text) || [...String(w.text)].length < 2);
+      LEAD_PAD = 20;
+      sungAt = (w, pos) => pos >= w.a - (w.lead ? w.lead + LEAD_PAD : 0);
+      PRE_MS = 600;
       planCache = /* @__PURE__ */ new WeakMap();
       lineKey = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
-      PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pc", "--cn"];
+      AMP = { chorus: 1.1, drop: 1.15, pre: 1, verse: 0.95, bridge: 0.9, intro: 0.8, outro: 0.8, break: 0.75 };
+      PVARS = [
+        "--pr",
+        "--px",
+        "--pz",
+        "--hd",
+        "--pk",
+        "--pkn",
+        "--pc",
+        "--cn",
+        "--wx",
+        "--wy",
+        "--wr",
+        "--ws",
+        "--wo",
+        "--wt",
+        "--wog",
+        "--pl",
+        "--pac",
+        "--pad",
+        "--pez",
+        "--pcn",
+        "--pcd",
+        "--qk",
+        "--qs",
+        "--qy",
+        "--qr",
+        "--qx",
+        "--qo",
+        "--ptw",
+        "--pth",
+        "--ptr",
+        "--ptc",
+        "--ptx",
+        "--pty",
+        "--pts",
+        "--ptd",
+        "--ptq"
+      ];
+      PCLS = /^(is-p-|is-t-|is-c-|is-f-|is-k|is-l-)/;
+      PONE = /* @__PURE__ */ new Set(["is-cg", "is-split", "is-pt", "is-echo", "is-caret", "is-pk", "is-pnext"]);
+    }
+  });
+
+  // src/fonts.js
+  function load(keys) {
+    const fam = keys.map((k) => FONTS[k]?.[1]).filter((f) => f && !loaded.has(f));
+    if (!fam.length) return;
+    fam.forEach((f) => loaded.add(f));
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?" + fam.map((f) => `family=${f}:wght@400;500;600;700;800`).join("&") + "&display=swap";
+    document.head.append(link);
+  }
+  function applyFont() {
+    const k = FONTS[cfg.font] ? cfg.font : "outfit";
+    load([k]);
+    if (k === "outfit") root.style.removeProperty("--m-font");
+    else root.style.setProperty("--m-font", stackOf(k));
+  }
+  function loadPlayfulFonts() {
+    if (playLoaded) return;
+    playLoaded = true;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = PFONTS_URL;
+    link.dataset.mirage = "playful-fonts";
+    document.head.append(link);
+  }
+  var FONTS, STACK, loaded, stackOf, preloadFonts, playLoaded;
+  var init_fonts = __esm({
+    "src/fonts.js"() {
+      init_core();
+      init_config();
+      init_lyricfont();
+      FONTS = {
+        outfit: ["Outfit", ""],
+        jakarta: ["Plus Jakarta Sans", "Plus+Jakarta+Sans"],
+        manrope: ["Manrope", "Manrope"],
+        sora: ["Sora", "Sora"],
+        lexend: ["Lexend", "Lexend"],
+        nunito: ["Nunito", "Nunito"],
+        system: ["", ""]
+      };
+      STACK = '"Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif';
+      loaded = /* @__PURE__ */ new Set();
+      stackOf = (k) => FONTS[k]?.[0] ? `"${FONTS[k][0]}", ${STACK}` : STACK;
+      preloadFonts = () => load(Object.keys(FONTS));
+      playLoaded = false;
     }
   });
 
@@ -38309,6 +39118,8 @@
       init_albumview();
       init_clockview();
       init_lyricstyle();
+      init_lyriccolor();
+      init_fonts();
       init_fxenv();
       imPalette = () => root.classList.contains("mirage-light") ? darkGround(palette2()) : palette2();
       ICON = {
@@ -39689,19 +40500,56 @@ Probe-FX: ${pfx}`;
         function noLyrFor(uri, got) {
           if (el4) setNoLyr(lyrGate.next(uri, got, el4.classList.contains("is-nolyr")));
         }
-        let playfulKey = null;
+        let playfulKey = null, playGrade = null, playCols = "", playPre = -1;
+        function playColors() {
+          if (!q2.lyrics || !playGrade) return;
+          const pal = imPalette();
+          const key = pal.map((c2) => c2.map((v) => v >> 4).join(".")).join("|");
+          if (key === playCols) return;
+          playCols = key;
+          for (const [k, v] of Object.entries(colorVars(meaningColors(pal, playGrade)))) q2.lyrics.style.setProperty(k, v);
+        }
+        function playMarks(ws, pos) {
+          for (const w of ws || []) {
+            const on = sungAt(w, pos);
+            if (on !== !!w.on) w.el.classList.toggle("is-sung", w.on = on);
+          }
+        }
+        function playTick(i, pos, lines) {
+          if (i >= 0) playMarks(words2[i], pos);
+          const j = i + 1, first = words2[j]?.[0]?.a ?? lyr2.lines[j]?.t;
+          const want = lines[j] && first != null && pos >= first - PRE_MS ? j : -1;
+          if (want !== playPre) {
+            if (playPre >= 0 && playPre !== i) {
+              lines[playPre]?.classList.remove("is-pnext");
+              for (const w of words2[playPre] || []) if (w.on) w.el.classList.remove("is-sung"), w.on = false;
+            }
+            playPre = want;
+            if (want >= 0) lines[want].classList.add("is-pnext");
+          }
+          if (playPre >= 0) playMarks(words2[playPre], pos);
+        }
         function playfulSoon(token, fresh2) {
           if (fresh2) playfulKey = null;
           const run2 = () => {
             if (token !== lyrToken || !q2.lyrics) return;
             const on = !!cfg.lyrPlayful && !!lyr2?.synced && !!lyr2.lines?.length;
+            const level2 = ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful";
             q2.lyrics.classList.toggle("is-playful", on);
+            q2.lyrics.classList.toggle("is-lv-subtle", on && level2 === "subtle");
+            q2.lyrics.classList.toggle("is-lv-wild", on && level2 === "wild");
+            playPre = -1;
             if (!on) return;
+            if (level2 !== "subtle") loadPlayfulFonts();
             const d = audio.uri === lyrUri ? audio.data : null;
             const ex = explicitMode(), still = stillMotion() || !!cfg.noFlash;
-            if (playfulKey?.lyr === lyr2 && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still) return;
-            playfulKey = { lyr: lyr2, d, ex, still };
-            paintPlayful(q2.inner.children, planPlayful(lyr2.lines, words2, d, { lexicon: LEX2, neg: NEG2, explicit: ex, still }), words2);
+            if (playfulKey?.lyr === lyr2 && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still && playfulKey.level === level2) return;
+            playfulKey = { lyr: lyr2, d, ex, still, level: level2 };
+            const plan2 = planPlayful(lyr2.lines, words2, d, { lexicon: LEX2, neg: NEG2, explicit: ex, still, level: level2, seed: lyrUri });
+            paintPlayful(q2.inner.children, plan2, words2);
+            playGrade = plan2.deck?.grade || null;
+            playCols = "";
+            playColors();
             placeSoon("glide");
           };
           if (!cfg.lyrPlayful) return run2();
@@ -39986,9 +40834,17 @@ Probe-FX: ${pfx}`;
             lyrGeo = null;
           }
           if (fresh2 || !lyrRO || !lyrGeo || lyrGeo.mid.length !== lines.length) {
-            lyrGeo = { h: q2.lyrics.clientHeight, mid: Array.from(lines, (ln) => ln.offsetTop + ln.offsetHeight / 2) };
+            const hh = [];
+            lyrGeo = { h: q2.lyrics.clientHeight, hh, mid: Array.from(lines, (ln) => (hh.push(ln.offsetHeight), ln.offsetTop + ln.offsetHeight / 2)) };
           }
-          return lyrGeo.h * 0.42 - lyrGeo.mid[i];
+          let c2 = lyrGeo.h * 0.42;
+          if (q2.lyrics.classList.contains("is-playful") && lyrGeo.hh[i]) {
+            const party2 = el4.dataset.mode === "party";
+            const half = lyrGeo.hh[i] * (party2 ? 1.12 : 1.05) / 2 + lyrGeo.hh[i] * 0.08 + 6;
+            const top2 = lyrGeo.h * (party2 ? 0.18 : 0.16) + half, bot = lyrGeo.h * (party2 ? 0.82 : 0.8) - half;
+            c2 = top2 <= bot ? Math.min(bot, Math.max(top2, c2)) : (top2 + bot) / 2;
+          }
+          return c2 - lyrGeo.mid[i];
         }
         let lyrSnap = null;
         function placeSoon(how, after2) {
@@ -40024,8 +40880,17 @@ Probe-FX: ${pfx}`;
             }
             activeEl = lines[i] || null;
             playOn = !!activeEl && !!cfg.lyrPlayful && q2.lyrics.classList.contains("is-playful");
+            if (playPre === i) {
+              activeEl?.classList.remove("is-pnext");
+              playPre = -1;
+            }
+            if (playOn) playColors();
             const bp = playOn && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1e3) : null;
             if (bp) activeEl.style.setProperty("--pb", bp.p + "ms"), activeEl.style.setProperty("--pbd", bp.d + "ms");
+            if (playOn && activeEl.classList.contains("is-p-note")) {
+              const bb = audio.uri === lyrUri ? barPhase(audio.data?.beats, audio.data?.bars, pos / 1e3) : null;
+              if (bb) activeEl.style.setProperty("--pb", bb.p + "ms"), activeEl.style.setProperty("--pnd", bb.d + "ms");
+            }
             lastBounce = "";
             hypeOn = !!activeEl && cfg.partyHype && el4.dataset.mode === "party" && hype.has(i);
             activeEl?.classList.toggle("is-hype", hypeOn);
@@ -40050,6 +40915,7 @@ Probe-FX: ${pfx}`;
             q2.inner.style.transition = "";
           }
           pend?.after?.();
+          if (cfg.lyrPlayful && q2.lyrics.classList.contains("is-playful")) playTick(i, pos, lines);
           const ws = i >= 0 && words2[i];
           if (ws) {
             for (const w of ws) {
@@ -40057,7 +40923,6 @@ Probe-FX: ${pfx}`;
               if (p !== w.p) {
                 w.p = p;
                 w.el.style.setProperty("--p", p);
-                if (playOn && p > 0 !== !!w.on) w.el.classList.toggle("is-sung", w.on = p > 0);
               }
             }
           }
@@ -40092,20 +40957,20 @@ Probe-FX: ${pfx}`;
           }
           const r = vizRect.r;
           const cx = (r.left + r.width / 2 + shakeX) * dpr, cy = (r.top + r.height / 2 + shakeY) * dpr;
-          const R = r.width / 2 * pulseS * dpr + 16 * dpr;
+          const R2 = r.width / 2 * pulseS * dpr + 16 * dpr;
           const sec = pos / 1e3;
           const playing2 = PLR.isPlaying();
           let b = 0, havePitch = false, loud = 0.5;
           const mode = el4.dataset.mode;
-          const V2 = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
-          if (mode === "mix" && V2.style === "line") V2.style = "wave";
+          const V3 = { style: cfg.vizStyle, mirror: cfg.vizMirror, height: cfg.vizHeight / 100, glow: cfg.vizGlow, rings: cfg.vizRings, spin: cfg.vizSpin, pulse: 0.035, ring: 1 };
+          if (mode === "mix" && V3.style === "line") V3.style = "wave";
           const px = mode === "party" ? party.step(sec, dt, playing2) : null;
-          wfxGeo = px ? { cx, cy, R, dpr, px } : null;
+          wfxGeo = px ? { cx, cy, R: R2, dpr, px } : null;
           if (!px) shakeX = shakeY = 0;
           const mixInst = mode === "mix" && cfg.mixInstruments ? party.step(sec, dt, playing2) : null;
           const mood = px ? null : party.mood(sec, playing2);
-          if (mood) V2.height *= 0.86 + 0.18 * mood.I;
-          if (px) partyExtras(px, now, dt, R, dpr);
+          if (mood) V3.height *= 0.86 + 0.18 * mood.I;
+          if (px) partyExtras(px, now, dt, R2, dpr);
           curInst = px && cfg.partyInstruments && px.fx ? instruments.at(sec, dt, px, lightMode()) : null;
           party.stageFlash = (curInst?.guitar || 0) > 0.3;
           if (sonicDbg) sonicLegend(now);
@@ -40117,14 +40982,14 @@ Probe-FX: ${pfx}`;
           if (px && (ecoOn() || lightMode())) quality.level = Math.min(quality.level, 1);
           if (px) {
             const P = px.P;
-            Object.assign(V2, {
+            Object.assign(V3, {
               mirror: P.mirror,
               spin: P.spin,
               glow: true,
               rings: true,
               ring: P.ring,
               // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll – die Kick drückt ihn raus
-              height: V2.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
+              height: V3.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
               pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I)
             });
           }
@@ -40140,18 +41005,18 @@ Probe-FX: ${pfx}`;
               havePitch = true;
             }
             b = px ? Math.max(px.accent * 0.75, px.kickEnv * (0.6 + 0.4 * px.I)) : mixInst ? Math.max(beat.read(sec), mixInst.kickEnv * 0.7 * (0.4 + 0.6 * mixInst.energy)) : beat.read(sec);
-            if (mixInst?.kickHit && mixInst.energy > 0.5 && V2.rings) rings.push({ r: R, a: 0.45 * mixInst.energy, w: 2 });
+            if (mixInst?.kickHit && mixInst.energy > 0.5 && V3.rings) rings.push({ r: R2, a: 0.45 * mixInst.energy, w: 2 });
             const bi = seek(audio.data.beats, sec, "t");
             if (bi !== lastBeatIdx && bi >= 0 && playing2) {
               lastBeatIdx = bi;
               const c2 = clamp(audio.data.beats[bi].c + 0.3, 0, 1);
               if (px) {
                 const lead = 1 - 0.7 * clamp((px.scn?.dx || 0) / 0.3, 0, 1);
-                if (V2.rings && (px.beat > 0.5 || px.kickHit && px.energy > 0.55) && px.low < 0.6) rings.push({ r: R, a: (0.35 + 0.6 * px.accent) * c2 * lead, w: 2 + 5 * px.accent });
-              } else if (V2.rings && bi % V2.ring === 0) rings.push({ r: R, a: 0.6 * c2, w: 2 });
+                if (V3.rings && (px.beat > 0.5 || px.kickHit && px.energy > 0.55) && px.low < 0.6) rings.push({ r: R2, a: (0.35 + 0.6 * px.accent) * c2 * lead, w: 2 + 5 * px.accent });
+              } else if (V3.rings && bi % V3.ring === 0) rings.push({ r: R2, a: 0.6 * c2, w: 2 });
             }
           }
-          const mirror = V2.mirror;
+          const mirror = V3.mirror;
           const span = mirror ? N2 / 2 : N2;
           const tt = motion((px || mood)?.mt ?? now / 1e3, now);
           if (px) [px.mt, px.mb] = [tt, beatsClock(px.mb ?? (px.beatIdx >= 0 ? px.beatIdx + px.phase : now / 6e4 * (px.tempo || 120)), now)];
@@ -40172,7 +41037,7 @@ Probe-FX: ${pfx}`;
           const k = cfg.vizSmooth;
           const rise = 1 - Math.exp(-dt * (32 - 2.6 * k));
           const fall = 1 - Math.exp(-dt * (16 - 1.3 * k));
-          const wide = V2.style === "wave";
+          const wide = V3.style === "wave";
           for (let i = 0; i < N2; i++) {
             const a = (j) => targets[(i + j + N2) % N2];
             const t2 = wide ? (a(-2) + 2 * a(-1) + 3 * a(0) + 2 * a(1) + a(2)) / 9 : (a(-1) + 2 * a(0) + a(1)) / 4;
@@ -40186,7 +41051,7 @@ Probe-FX: ${pfx}`;
           }
           let pal = px ? vivid(imPalette(), px.minor, px.P.tint, pitchSm.h >= 0 && pitchSm.w > 0.02 ? Math.round(pitchSm.h) : -1, px.keyPc, Math.round(pitchSm.w * 50) / 50) : imPalette();
           pal = grade(pal, (px || mood)?.grade);
-          if (mood?.dropHit && V2.rings) for (let k2 = 0; k2 < 2; k2++) rings.push({ r: R - k2 * 40 * dpr, a: 0.8 - k2 * 0.25, w: 5 - k2 * 2 });
+          if (mood?.dropHit && V3.rings) for (let k2 = 0; k2 < 2; k2++) rings.push({ r: R2 - k2 * 40 * dpr, a: 0.8 - k2 * 0.25, w: 5 - k2 * 2 });
           if (px) pal = party.mixPal(pal);
           if (px?.jump && palShown && !cfg.calm) palFade = { from: palShown, at: now, ms: (px.jumpDur || 0.6) * 1e3 };
           if (palFade) {
@@ -40205,8 +41070,8 @@ Probe-FX: ${pfx}`;
           } else palSm = null;
           palShown = px ? pal : null;
           const rgba7 = (c2, al) => `rgba(${c2[0]},${c2[1]},${c2[2]},${al})`;
-          const maxLen = Math.min(vw, vh) * 0.11 * V2.height * (px ? Math.min(1, R * 0.8 / (Math.min(vw, vh) * 0.11 * V2.height)) : 1);
-          const rot = V2.spin ? tt * (px ? 0.12 : 0.06) : 0;
+          const maxLen = Math.min(vw, vh) * 0.11 * V3.height * (px ? Math.min(1, R2 * 0.8 / (Math.min(vw, vh) * 0.11 * V3.height)) : 1);
+          const rot = V3.spin ? tt * (px ? 0.12 : 0.06) : 0;
           vizBloom = Math.max(vizBloom * Math.exp(-dt * 2.2), mood?.dropHit ? 1 : 0);
           const soft = cfg.noFlash ? 0.4 : 1;
           const glowK = px ? 1 : clamp(0.7 + 0.4 * (mood?.I ?? 0.75) + 0.5 * (mood?.lift || 0) * soft + 0.35 * (mood?.riser || 0) + 0.7 * vizBloom * soft + 0.35 * b * soft, 0.6, 2.2);
@@ -40220,36 +41085,36 @@ Probe-FX: ${pfx}`;
           ctx3.globalCompositeOperation = "lighter";
           ctx3.lineCap = "round";
           ctx3.lineJoin = "round";
-          const glow = ctx3.createRadialGradient(cx, cy, R * 0.8, cx, cy, R + maxLen * 1.2);
+          const glow = ctx3.createRadialGradient(cx, cy, R2 * 0.8, cx, cy, R2 + maxLen * 1.2);
           const g0 = (0.16 + b * 0.22) * (px ? 0.9 + px.I * 0.9 + px.drop : glowK);
           glow.addColorStop(0, rgba7(pal[0], g0));
           glow.addColorStop(0.45, rgba7(pal[0], g0 * 0.4));
           glow.addColorStop(1, "rgba(0,0,0,0)");
           ctx3.fillStyle = glow;
-          const gr = R + maxLen * 1.2;
+          const gr = R2 + maxLen * 1.2;
           ctx3.fillRect(cx - gr, cy - gr, gr * 2, gr * 2);
           const ang = (i) => i / N2 * Math.PI * 2 - Math.PI / 2 + rot;
-          const tip = (i) => R + 4 * dpr + vals[i] * maxLen;
+          const tip = (i) => R2 + 4 * dpr + vals[i] * maxLen;
           const beatLen = 60 / (party.info.bpm || 120);
           const slowFrom = cfg.partyDirector ? beatLen : 0;
           const slow = px && cfg.partySlowmo && px.fx && px.toDrop > slowFrom && px.toDrop < slowFrom + 0.55;
-          if (px) drawParty(ctx3, cx, cy, R, maxLen, N2, pal, dpr, slow ? dt * 0.2 : dt, px, tip, ang);
-          else if (V2.style === "bottom") {
+          if (px) drawParty(ctx3, cx, cy, R2, maxLen, N2, pal, dpr, slow ? dt * 0.2 : dt, px, tip, ang);
+          else if (V3.style === "bottom") {
             const bw = vw / N2, base = vh - 8 * dpr, w2 = bw * 0.62, rr = Math.min(w2 / 2, 4 * dpr);
             for (let gi = 0; gi < 3; gi++) {
-              const g = ctx3.createLinearGradient(0, base - vh * 0.32 * V2.height, 0, base);
+              const g = ctx3.createLinearGradient(0, base - vh * 0.32 * V3.height, 0, base);
               g.addColorStop(0, rgba7(mixRGB(pal[gi], WHITE2, 0.25), 0.95));
               g.addColorStop(1, rgba7(pal[gi], 0.35));
               ctx3.fillStyle = g;
               ctx3.beginPath();
               for (let i = gi; i < N2; i += 3) {
-                const h = 6 * dpr + vals[i] * vh * 0.32 * V2.height;
+                const h = 6 * dpr + vals[i] * vh * 0.32 * V3.height;
                 if (ctx3.roundRect) ctx3.roundRect(i * bw + (bw - w2) / 2, base - h, w2, h, [rr, rr, 0, 0]);
                 else ctx3.rect(i * bw + (bw - w2) / 2, base - h, w2, h);
               }
               ctx3.fill();
             }
-          } else if (V2.style === "line") {
+          } else if (V3.style === "line") {
             const mid = cy, amp = maxLen * 1.6, up = new Path2D(), dn = new Path2D();
             for (const [p, dir] of [[up, -1], [dn, 1]]) {
               let px0 = 0, py0 = mid + dir * vals[0] * amp;
@@ -40278,7 +41143,7 @@ Probe-FX: ${pfx}`;
               area.closePath();
               ctx3.fill(area);
             }
-            if (V2.glow) {
+            if (V3.glow) {
               ctx3.lineWidth = 9 * dpr;
               ctx3.strokeStyle = edge2(clamp(0.12 * glowK, 0, 0.4));
               ctx3.stroke(up);
@@ -40288,7 +41153,7 @@ Probe-FX: ${pfx}`;
             ctx3.strokeStyle = edge2(0.95);
             ctx3.stroke(up);
             ctx3.stroke(dn);
-          } else if (V2.style === "particles") {
+          } else if (V3.style === "particles") {
             for (let i = 0; i < N2; i++) {
               const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
               const r3 = (5.5 + vals[i] * 11) * dpr * (1 + b * 0.25);
@@ -40296,7 +41161,7 @@ Probe-FX: ${pfx}`;
               ctx3.drawImage(vizSprite(pal[i % 3]), cx + Math.cos(a) * e - r3, cy + Math.sin(a) * e - r3, r3 * 2, r3 * 2);
             }
             ctx3.globalAlpha = 1;
-          } else if (V2.style === "tunnel") {
+          } else if (V3.style === "tunnel") {
             if (now - tunnelAt > 200) tunnelAt = now - 45;
             while (now - tunnelAt >= 45) {
               tunnelAt += 45;
@@ -40307,11 +41172,11 @@ Probe-FX: ${pfx}`;
             const life = (1400 - b * 500) / clamp(mood?.speed || 1, 0.5, 1.4), far = Math.hypot(vw, vh) * 0.62;
             tunnel3d = tunnel3d.filter((r3) => now - r3.at < life);
             for (const r3 of tunnel3d) {
-              const z = (now - r3.at) / life, d = R * 1.05 + (far - R) * z * z;
+              const z = (now - r3.at) / life, d = R2 * 1.05 + (far - R2) * z * z;
               ctx3.lineWidth = (1 + z * 5) * dpr;
               ctx3.strokeStyle = rgba7(z < 0.15 ? mixRGB(pal[r3.c], WHITE2, 0.35) : pal[r3.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6)) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
               const pt = (j) => {
-                const a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r3.v[j % 48] * 0.28 * V2.height);
+                const a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r3.v[j % 48] * 0.28 * V3.height);
                 return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr];
               };
               let [x0, y0] = pt(0), [x1, y1] = pt(1);
@@ -40325,23 +41190,23 @@ Probe-FX: ${pfx}`;
               ctx3.closePath();
               ctx3.stroke();
             }
-          } else if (V2.style === "galaxy") {
+          } else if (V3.style === "galaxy") {
             for (let i = 0; i < N2; i++) {
               const arm = i % 3, f = i / N2, a = arm * (Math.PI * 2 / 3) + f * Math.PI * 3 + tt * 0.18;
-              const rr = R * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
+              const rr = R2 * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
               const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r3 = (4.5 + vals[i] * 9 + (1 - f) * 3.5) * dpr;
               ctx3.globalAlpha = clamp((0.25 + vals[i] * 0.75) * (0.6 + 0.4 * Math.sin(tt * 3 + i)), 0, 1);
               ctx3.drawImage(vizSprite(pal[arm]), x - r3, y - r3, r3 * 2, r3 * 2);
             }
             ctx3.globalAlpha = 1;
-          } else if (V2.style === "mountains") {
+          } else if (V3.style === "mountains") {
             const sm = (j) => (vals[(j + N2) % N2] + vals[(j + 1) % N2] + vals[(j + N2 - 1) % N2]) / 3;
             const at3 = (u) => {
               const f = (u % N2 + N2) % N2, i0 = Math.floor(f), w = f - i0, s2 = w * w * (3 - 2 * w);
               return sm(i0) + (sm(i0 + 1) - sm(i0)) * s2;
             };
             for (let k2 = 2; k2 >= 0; k2--) {
-              const base = vh, hMax = vh * (0.22 + k2 * 0.07) * V2.height, shift = tt * (8 + k2 * 6);
+              const base = vh, hMax = vh * (0.22 + k2 * 0.07) * V3.height, shift = tt * (8 + k2 * 6);
               const steps = 64, ridge = new Path2D();
               let px0 = 0, py0 = 0;
               for (let s2 = 0; s2 <= steps; s2++) {
@@ -40365,37 +41230,37 @@ Probe-FX: ${pfx}`;
               ctx3.strokeStyle = rgba7(mixRGB(pal[k2], WHITE2, 0.3), ((0.55 - k2 * 0.15) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
               ctx3.stroke(ridge);
             }
-          } else if (V2.style === "scope") {
+          } else if (V3.style === "scope") {
             const paths = [0, 1, 2].map((k2) => {
               const p = new Path2D();
               for (let s2 = 0; s2 <= 180; s2++) {
                 const a = s2 / 180 * Math.PI * 2;
                 let off = 0;
                 for (let h = 1; h <= 5; h++) off += vals[Math.floor(h / 6 * N2)] * Math.sin(a * (h * 3 + k2) + tt * h * (k2 ? -1 : 1));
-                const rr = R * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
+                const rr = R2 * 1.18 + maxLen * 0.35 + off * maxLen * 0.32;
                 const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
                 s2 ? p.lineTo(x, y) : p.moveTo(x, y);
               }
               p.closePath();
               return p;
             });
-            for (const [w, al] of V2.glow ? [[9, clamp(0.12 * glowK, 0, 0.4)], [2.4, 0.95], [0.9, 0.5]] : [[2.4, 0.95]]) {
+            for (const [w, al] of V3.glow ? [[9, clamp(0.12 * glowK, 0, 0.4)], [2.4, 0.95], [0.9, 0.5]] : [[2.4, 0.95]]) {
               ctx3.lineWidth = w * dpr;
               paths.forEach((p, k2) => {
                 ctx3.strokeStyle = w < 1 ? `rgba(255,255,255,${(al * (k2 ? 0.5 : 1)).toFixed(3)})` : rgba7(pal[k2], (al * (k2 ? 0.65 : 1)).toFixed(3));
                 ctx3.stroke(p);
               });
             }
-          } else if (EXTRA_VIZ.has(V2.style)) {
-            const o = { vw, vh, cx, cy, R, dpr, vals, N: N2, b, tt, dt, pal, glowK, height: V2.height, glow: V2.glow, lite: lightMode(), full: tier() === "full", mood, soft, mode, now };
-            if (V2.style === "wavefield") drawWavefield(ctx3, o);
+          } else if (EXTRA_VIZ.has(V3.style)) {
+            const o = { vw, vh, cx, cy, R: R2, dpr, vals, N: N2, b, tt, dt, pal, glowK, height: V3.height, glow: V3.glow, lite: lightMode(), full: tier() === "full", mood, soft, mode, now };
+            if (V3.style === "wavefield") drawWavefield(ctx3, o);
             else if (vizRect.r) {
               const img = q2.wrap.querySelector("img.is-on");
               drawCoverDust(ctx3, { ...o, img: img?.complete && img.naturalWidth ? img : null, size: vizRect.r.width * dpr * pulseS });
             }
-          } else if (V2.style === "shatter") {
+          } else if (V3.style === "shatter") {
             drawShatter(ctx3, cx, cy, maxLen, dt, b, dpr, tt);
-          } else if (V2.style === "wave") {
+          } else if (V3.style === "wave") {
             const p = new Path2D();
             for (let i = 0; i <= N2; i++) {
               const j = i % N2, nx = (i + 1) % N2;
@@ -40406,13 +41271,13 @@ Probe-FX: ${pfx}`;
               else p.quadraticCurveTo(x0, y0, mx, my);
             }
             p.closePath();
-            const fill = ctx3.createRadialGradient(cx, cy, R * 0.9, cx, cy, R + maxLen * 1.1);
+            const fill = ctx3.createRadialGradient(cx, cy, R2 * 0.9, cx, cy, R2 + maxLen * 1.1);
             fill.addColorStop(0, rgba7(pal[0], 0.3));
             fill.addColorStop(1, rgba7(pal[1], 0.04));
             ctx3.fillStyle = fill;
             ctx3.fill(p);
             const ring = wheel();
-            if (V2.glow) {
+            if (V3.glow) {
               ctx3.lineWidth = 10 * dpr;
               ctx3.globalAlpha = clamp(0.14 * glowK, 0, 0.4);
               ctx3.strokeStyle = ring;
@@ -40428,26 +41293,26 @@ Probe-FX: ${pfx}`;
             ctx3.stroke(p);
             ctx3.globalAlpha = 1;
           } else {
-            const bw = clamp(Math.PI * 2 * R / N2 * 0.5, 1.6 * dpr, 4.5 * dpr);
+            const bw = clamp(Math.PI * 2 * R2 / N2 * 0.5, 1.6 * dpr, 4.5 * dpr);
             const ring = wheel(), body = new Path2D(), tips = new Path2D();
             for (let i = 0; i < N2; i++) {
               const c2 = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-              if (V2.style === "dots") {
+              if (V3.style === "dots") {
                 const r3 = (2.2 + vals[i] * 2.6) * dpr;
                 body.moveTo(cx + c2 * e + r3, cy + sn * e);
                 body.arc(cx + c2 * e, cy + sn * e, r3, 0, Math.PI * 2);
               } else {
-                body.moveTo(cx + c2 * R, cy + sn * R);
+                body.moveTo(cx + c2 * R2, cy + sn * R2);
                 body.lineTo(cx + c2 * e, cy + sn * e);
                 if (vals[i] > 0.18) {
-                  const m = e - (e - R) * 0.3;
+                  const m = e - (e - R2) * 0.3;
                   tips.moveTo(cx + c2 * m, cy + sn * m);
                   tips.lineTo(cx + c2 * e, cy + sn * e);
                 }
               }
             }
-            if (V2.style === "dots") {
-              if (V2.glow) {
+            if (V3.style === "dots") {
+              if (V3.glow) {
                 ctx3.globalAlpha = clamp(0.16 * glowK, 0, 0.45);
                 ctx3.lineWidth = 7 * dpr;
                 ctx3.strokeStyle = ring;
@@ -40458,12 +41323,12 @@ Probe-FX: ${pfx}`;
               ctx3.fill(body);
             } else {
               ctx3.strokeStyle = ring;
-              if (V2.glow) {
+              if (V3.glow) {
                 ctx3.globalAlpha = clamp(0.15 * glowK, 0, 0.45);
                 ctx3.lineWidth = bw * 3.2;
                 ctx3.stroke(body);
               }
-              const tube = ctx3.createRadialGradient(cx, cy, R, cx, cy, R + 4 * dpr + maxLen);
+              const tube = ctx3.createRadialGradient(cx, cy, R2, cx, cy, R2 + 4 * dpr + maxLen);
               tube.addColorStop(0, rgba7(pal[0], 0.45));
               tube.addColorStop(0.45, rgba7(pal[1], 0.9));
               tube.addColorStop(1, rgba7(mixRGB(pal[2], WHITE2, 0.3), 1));
@@ -40489,7 +41354,7 @@ Probe-FX: ${pfx}`;
             ctx3.stroke();
           }
           ctx3.globalCompositeOperation = "source-over";
-          const want = 1 + b * V2.pulse;
+          const want = 1 + b * V3.pulse;
           pulseS += (want - pulseS) * (1 - Math.exp(-dt * (want > pulseS ? 40 : 9)));
           const pulse = pulseS.toFixed(4);
           if (pulse !== lastPulse) q2.wrap.style.scale = lastPulse = pulse;
@@ -40657,7 +41522,7 @@ Probe-FX: ${pfx}`;
           return vividPal;
         }
         let sparks = [];
-        function drawParty(ctx3, cx, cy, R, maxLen, N2, pal, dpr, dt, px, tip, ang) {
+        function drawParty(ctx3, cx, cy, R2, maxLen, N2, pal, dpr, dt, px, tip, ang) {
           const P = px.P;
           const mixC2 = (a, b, f) => [0, 1, 2].map((k) => Math.round(a[k] + (b[k] - a[k]) * f));
           const off = px.scene * 0.37 % 1;
@@ -40675,7 +41540,7 @@ Probe-FX: ${pfx}`;
             pal,
             cx,
             cy,
-            R,
+            R: R2,
             // Publikum: die ruhige Grundfarbe des Songs (Cover), nicht die Lichtfarbe dieses Bildes – die gleitet beim
             // Songwechsel über Sekunden und folgt der Melodie, und jede neue Farbe hieß: alle Körperbilder neu malen
             crowdPal: imPalette(),
@@ -40777,14 +41642,14 @@ Probe-FX: ${pfx}`;
               g.addColorStop(1, rgba7(c2, 0));
               ctx3.fillStyle = g;
               ctx3.beginPath();
-              ctx3.moveTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+              ctx3.moveTo(cx + Math.cos(a) * R2, cy + Math.sin(a) * R2);
               ctx3.lineTo(cx + Math.cos(a - wd) * far, cy + Math.sin(a - wd) * far);
               ctx3.lineTo(cx + Math.cos(a + wd) * far, cy + Math.sin(a + wd) * far);
               ctx3.closePath();
               ctx3.fill();
             }
           }
-          if (cfg.partyMelody && px.fx && px.level >= 2) drawMelody(ctx3, cx, cy, R, dpr, dt, px, rgba7, colAt);
+          if (cfg.partyMelody && px.fx && px.level >= 2) drawMelody(ctx3, cx, cy, R2, dpr, dt, px, rgba7, colAt);
           const STEPS = 12;
           const w = P.thick * dpr * (0.75 + 0.4 * px.I) * (1 + px.drop * 0.3);
           for (const [lw, al] of [[w * 3.2, 0.1 + 0.1 * px.I], [w, 0.95]]) {
@@ -40793,7 +41658,7 @@ Probe-FX: ${pfx}`;
               ctx3.beginPath();
               for (let i = Math.floor(k / STEPS * N2); i < Math.floor((k + 1) / STEPS * N2); i++) {
                 const c2 = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
-                ctx3.moveTo(cx + c2 * (R + 2 * dpr), cy + sn * (R + 2 * dpr));
+                ctx3.moveTo(cx + c2 * (R2 + 2 * dpr), cy + sn * (R2 + 2 * dpr));
                 ctx3.lineTo(cx + c2 * e, cy + sn * e);
               }
               ctx3.strokeStyle = rgba7(colAt((k + 0.5) / STEPS), al);
@@ -40844,17 +41709,17 @@ Probe-FX: ${pfx}`;
                 const a0 = Math.random() * Math.PI * 2;
                 for (let i = 0, k = 3 + Math.round(px.I * 2); i < k; i++) {
                   const a = a0 + i / k * Math.PI * 2;
-                  sparks.push({ hit: 1, a, r: R + maxLen * 0.4, v: (900 + Math.random() * 500) * dpr, life: 1, c: colAt(a / (Math.PI * 2)) });
+                  sparks.push({ hit: 1, a, r: R2 + maxLen * 0.4, v: (900 + Math.random() * 500) * dpr, life: 1, c: colAt(a / (Math.PI * 2)) });
                 }
               }
               n = Math.round(n * 0.4);
             }
             for (let k = 0; k < n; k++) {
               const a = Math.random() * Math.PI * 2;
-              sparks.push({ a, r: R + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
+              sparks.push({ a, r: R2 + maxLen * 0.6, v: (160 + Math.random() * 260) * dpr * (1 + px.drop * 0.8), life: 1, c: colAt(a / (Math.PI * 2)) });
             }
           }
-          if (px.dropHit) for (let k = 0; k < 3; k++) rings.push({ r: R - k * 46 * dpr, a: 0.95 - k * 0.2, w: 7 - k * 2 });
+          if (px.dropHit) for (let k = 0; k < 3; k++) rings.push({ r: R2 - k * 46 * dpr, a: 0.95 - k * 0.2, w: 7 - k * 2 });
           const sdt = dt * clamp(px.speed ?? 1, 0.4, 1.5);
           sparks = sparks.filter((p) => (p.life -= sdt * (p.rain ? 0.3 : p.hit ? 3.2 : 1.15)) > 0 && !(p.rain && p.y > vh * 0.64));
           for (const p of sparks) {
@@ -40887,7 +41752,7 @@ Probe-FX: ${pfx}`;
           drawMotes(ctx3, dt, dpr, pal);
         }
         const melody = { a: 0, trail: [] };
-        function drawMelody(ctx3, cx, cy, R, dpr, dt, px, rgba7, colAt) {
+        function drawMelody(ctx3, cx, cy, R2, dpr, dt, px, rgba7, colAt) {
           const on = px.pitch >= 0 && px.tone > 0.35 && px.low < 0.6;
           const target = on ? px.pitch * 7 % 12 / 11 * 2 - 1 : melody.a * 0.98;
           melody.a += (target - melody.a) * (1 - Math.exp(-dt * 7));
@@ -40902,7 +41767,7 @@ Probe-FX: ${pfx}`;
             for (const side2 of [-1, 1]) {
               const ang = -Math.PI / 2 + side2 * spread;
               const c2 = colAt(0.15 + i * 0.03 + (side2 > 0 ? 0.5 : 0));
-              const x0 = cx + Math.cos(ang) * R, y0 = cy + Math.sin(ang) * R, x1 = cx + Math.cos(ang) * far, y1 = cy + Math.sin(ang) * far;
+              const x0 = cx + Math.cos(ang) * R2, y0 = cy + Math.sin(ang) * R2, x1 = cx + Math.cos(ang) * far, y1 = cy + Math.sin(ang) * far;
               for (const [lw, f] of [[9 * dpr, 0.18], [1.6 * dpr, 1]]) {
                 ctx3.lineWidth = lw;
                 ctx3.strokeStyle = rgba7(i ? c2 : c2.map((v) => (v + 255) / 2), (al * f).toFixed(3));
@@ -41044,7 +41909,7 @@ Probe-FX: ${pfx}`;
           }
         }
         let lastJk = "";
-        function partyExtras(px, now, dt, R, dpr) {
+        function partyExtras(px, now, dt, R2, dpr) {
           tuneQuality(dt);
           if (!q2.jam.hidden) {
             const jk = (px.kickEnv * (0.35 + 0.65 * px.energy) * (1 - px.low * 0.8)).toFixed(2);
@@ -41078,7 +41943,7 @@ Probe-FX: ${pfx}`;
             const d = Math.min(1, Math.abs(2 * f2 - 1) / 0.6);
             px.beamVis *= d * d * (3 - 2 * d);
           }
-          if (px.land && !((px.scn?.dx || 0) > 0.3)) rings.push({ r: R, a: 0.9, w: 6 }, { r: R - 40 * dpr, a: 0.7, w: 4 });
+          if (px.land && !((px.scn?.dx || 0) > 0.3)) rings.push({ r: R2, a: 0.9, w: 6 }, { r: R2 - 40 * dpr, a: 0.7, w: 4 });
           showMoments(px, now);
           if (hypeOn) {
             px.I = Math.min(1.35, px.I + 0.15);
@@ -43757,7 +44622,7 @@ Probe-FX: ${pfx}`;
     inlined = /* @__PURE__ */ new WeakSet();
     document.querySelectorAll(SCOPES).forEach(queue2);
   }
-  var SCOPES, parse, lum2, ratio, PAPER2, INK2, inkFor, inlined, hasText2, checked, queued, pending2;
+  var SCOPES, parse, lum3, ratio, PAPER2, INK2, inkFor, inlined, hasText2, checked, queued, pending2;
   var init_readability = __esm({
     "src/readability.js"() {
       init_selectors();
@@ -43768,12 +44633,12 @@ Probe-FX: ${pfx}`;
         const [r, g, b, a = "1"] = m[1].split(/[\s,/]+/).filter(Boolean);
         return [Number(r), Number(g), Number(b), Number(a)];
       };
-      lum2 = ([r, g, b]) => {
+      lum3 = ([r, g, b]) => {
         const f = (v) => (v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
         return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
       };
       ratio = (x, y) => {
-        const [hi, lo] = [lum2(x), lum2(y)].sort((p, q2) => q2 - p);
+        const [hi, lo] = [lum3(x), lum3(y)].sort((p, q2) => q2 - p);
         return (hi + 0.05) / (lo + 0.05);
       };
       PAPER2 = [245, 243, 255];
@@ -43898,43 +44763,6 @@ Probe-FX: ${pfx}`;
       };
       document.addEventListener("visibilitychange", watch);
       watch();
-    }
-  });
-
-  // src/fonts.js
-  function load(keys) {
-    const fam = keys.map((k) => FONTS[k]?.[1]).filter((f) => f && !loaded.has(f));
-    if (!fam.length) return;
-    fam.forEach((f) => loaded.add(f));
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?" + fam.map((f) => `family=${f}:wght@400;500;600;700;800`).join("&") + "&display=swap";
-    document.head.append(link);
-  }
-  function applyFont() {
-    const k = FONTS[cfg.font] ? cfg.font : "outfit";
-    load([k]);
-    if (k === "outfit") root.style.removeProperty("--m-font");
-    else root.style.setProperty("--m-font", stackOf(k));
-  }
-  var FONTS, STACK, loaded, stackOf, preloadFonts;
-  var init_fonts = __esm({
-    "src/fonts.js"() {
-      init_core();
-      init_config();
-      FONTS = {
-        outfit: ["Outfit", ""],
-        jakarta: ["Plus Jakarta Sans", "Plus+Jakarta+Sans"],
-        manrope: ["Manrope", "Manrope"],
-        sora: ["Sora", "Sora"],
-        lexend: ["Lexend", "Lexend"],
-        nunito: ["Nunito", "Nunito"],
-        system: ["", ""]
-      };
-      STACK = '"Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif';
-      loaded = /* @__PURE__ */ new Set();
-      stackOf = (k) => FONTS[k]?.[0] ? `"${FONTS[k][0]}", ${STACK}` : STACK;
-      preloadFonts = () => load(Object.keys(FONTS));
     }
   });
 
@@ -44245,6 +45073,17 @@ Probe-FX: ${pfx}`;
     };
     row2.append(txt, cb);
     return row2;
+  }
+  function playLevel() {
+    const opts = ["subtle", "playful", "wild"].map((k) => [k, t("lyrPlayLevel_" + k)]);
+    const s2 = seg(opts, ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful", (k) => {
+      cfg.lyrPlayLevel = k;
+      save();
+      immersive.reloadLyrics();
+    });
+    s2.dataset.key = "lyrPlayLevel";
+    s2.setAttribute("aria-label", t("lyrPlayLevel"));
+    return [head2(t("lyrPlayLevel"), t("lyrPlayLevelHint")), s2];
   }
   function wishRules() {
     const box2 = el2("div", "m-wishrules");
@@ -44647,6 +45486,7 @@ Probe-FX: ${pfx}`;
         toggle("lyrVoices", () => immersive.styleLyrics()),
         // i-playful: verspielter Stil (baut den Text neu auf – die Wörter brauchen dann eigene Elemente)
         toggle("lyrPlayful", () => immersive.reloadLyrics()),
+        ...cfg.lyrPlayful ? playLevel() : [],
         range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
         toggle("translate", () => immersive.reloadLyrics()),
         toggle("romanize", () => immersive.reloadLyrics())

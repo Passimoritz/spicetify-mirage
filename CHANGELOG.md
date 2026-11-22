@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.30.0] – 2026-11-22
+
 ### Added
 
 - Party: a volume slider with mute button right under the playback controls; it hides together with the controls when you stop moving the mouse.
