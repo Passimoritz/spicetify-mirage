@@ -10,6 +10,7 @@ import { GENRE_TEXT } from "./i18n-genres.js";
 import { PHOTOS_TEXT } from "./i18n-photos.js";
 import { PERFUI_TEXT } from "./i18n-perfui.js";
 import { ACTIONS_TEXT } from "./i18n-actions.js";
+import { SUBGENRES_TEXT } from "./i18n-subgenres.js";
 
 /* ---------------------------------------------------------------- Sprachen */
 // Fehlt eine Übersetzung, gilt Englisch – so funktioniert das Theme in jeder Sprache.
@@ -2732,6 +2733,7 @@ for (const [l, v] of Object.entries(GENRE_TEXT)) if (I18N[l]) Object.assign(I18N
 for (const [l, v] of Object.entries(PHOTOS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(PERFUI_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 for (const [l, v] of Object.entries(ACTIONS_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
+for (const [l, v] of Object.entries(SUBGENRES_TEXT)) if (I18N[l]) Object.assign(I18N[l], v);
 const LANG = (() => {
   let l = "";
   try { l = S.Locale?.getLocale?.() || ""; } catch {}
