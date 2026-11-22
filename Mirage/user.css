@@ -6104,11 +6104,18 @@ html.mirage-rich #mirage-stage .m-aurora {
   color: transparent;
 }
 /* Die Füllung zeichnet nur, so weit der Hintergrund des Worts reicht. Als inline-block (Hype-Zeile, verspielter
-   Stil) endet der an der Zeilenhöhe: Unterlängen (g, y, p) und die Spitzen kursiver Buchstaben wurden abgeschnitten.
-   Etwas Polster rundum vergrößert die Malfläche, die negativen Ränder heben es für das Layout wieder auf. */
+   Stil) endet der an der Zeilenhöhe: Unterlängen (g, y, p) wurden abgeschnitten. Polster oben und unten vergrößert
+   die Malfläche, die negativen Ränder heben es für das Layout wieder auf.
+   NUR senkrecht: waagrecht verkleinerten negative Ränder die gemessene Breite jedes Worts – ein Block, der sich nach
+   seinem Inhalt richtet (Hintergrundgesang „(hey)“ unter der Zeile, fit-content), wurde zu schmal und das letzte
+   Stück „)“ brach in eine eigene Zeile. Für die Spitzen kursiver Buchstaben gibt es echtes Polster (unten). */
 #mirage-immersive.is-karaoke .m-im-line .m-w {
-  padding: 0.1em 0.14em 0.26em 0.06em;
-  margin: -0.1em -0.14em -0.26em -0.06em;
+  padding-block: 0.1em 0.26em;
+  margin-block: -0.1em -0.26em;
+}
+/* kursiv gesetzte Zeilen: die Spitze des letzten Buchstabens ragt über das Wort hinaus – etwas echter Platz rechts */
+#mirage-immersive.is-karaoke .m-im-lyrics.is-playful .m-im-line:is(.is-p-bridge, .is-t-tilt) .m-w {
+  padding-inline-end: 0.12em;
 }
 
 /* ==========================================================================

@@ -2834,6 +2834,44 @@ async function partyLoadingNote() {
 }
 CASES.push(["party-loading-note", partyLoadingNote]);
 
+// Hintergrundgesang „(hey)“ unter der Zeile: bleibt in EINER Zeile (Karaoke-Wörter dürfen ihre Breite nicht
+// kleinrechnen – negative waagrechte Ränder ließen „)“ in eine eigene Zeile brechen) – in Party, Liedtext,
+// normal und verspielt
+async function lyricsNoWrap() {
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  for (const mode of ["party", "lyrics"]) {
+    await toMode(mode);
+    for (const playful of [false, true]) {
+      const m = await T.js(`(async () => {
+        const im = document.getElementById("mirage-immersive"), box = im.querySelector(".m-im-lyrics");
+        const inner = box.querySelector(".m-im-lyrics-inner") || box;
+        const had = { k: im.classList.contains("is-karaoke"), p: box.classList.contains("is-playful") };
+        im.classList.add("is-karaoke");
+        box.classList.toggle("is-playful", ${playful});
+        const line = document.createElement("div");
+        line.className = "m-im-line is-active e2e-wrap";
+        line.innerHTML = '<span class="m-im-words"><span class="m-w">Are</span> <span class="m-w">you</span> <span class="m-w">feeling</span> <span class="m-w">the</span> <span class="m-w">vibe</span><span class="is-bg m-im-bgl"><span class="m-w is-bg">(hey</span><span class="m-w is-bg">)</span></span></span>';
+        inner.prepend(line);
+        await new Promise((r) => setTimeout(r, 400));
+        const ws = [...line.querySelectorAll(".m-im-bgl .m-w")].map((w) => Math.round(w.getBoundingClientRect().top));
+        const mains = [...line.querySelectorAll(".m-im-words > .m-w")];
+        const neg = [...line.querySelectorAll(".m-w")].some((w) => parseFloat(getComputedStyle(w).marginLeft) < 0 || parseFloat(getComputedStyle(w).marginRight) < 0);
+        const tops = mains.map((w) => Math.round(w.getBoundingClientRect().top));
+        line.remove();
+        im.classList.toggle("is-karaoke", had.k);
+        box.classList.toggle("is-playful", had.p);
+        return { bgl: ws, oneBgLine: Math.max(...ws) - Math.min(...ws) < 4, mainOneLine: Math.max(...tops) - Math.min(...tops) < 4, neg };
+      })()`);
+      const tag = `${mode}${playful ? ", verspielt" : ""}`;
+      ok(m.oneBgLine, `umbruch (${tag}): „(hey)“ bleibt in einer Zeile: ${m.bgl}`);
+      ok(m.mainOneLine, `umbruch (${tag}): die kurze Hauptzeile bleibt in einer Zeile`);
+      ok(!m.neg, `umbruch (${tag}): Karaoke-Wörter ohne negative waagrechte Ränder`);
+    }
+  }
+  await toMode("party");
+}
+CASES.push(["lyrics-no-wrap", lyricsNoWrap]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {

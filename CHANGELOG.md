@@ -10,6 +10,10 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Fixed
+
+- Lyrics: short backing vocals under a line, like "(hey)", no longer break their closing bracket onto a line of its own (karaoke words measured slightly too narrow since 1.29.0).
+
 ## [1.29.0] – 2026-11-22
 
 ### Added
