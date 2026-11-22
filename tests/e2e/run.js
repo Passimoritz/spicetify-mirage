@@ -2260,6 +2260,9 @@ const IM = "#mirage-immersive";
 const storedSettings = () => T.js(`JSON.parse(localStorage.getItem("mirage:settings") || "{}")`);
 async function toMode(m) {
   await big.hover();
+  // im Party-Ruhemodus ist die Kopfzeile ausgeblendet (pointer-events: none) – ein Klick träfe den Verschiebe-Streifen
+  // darunter. Erst klicken, wenn die Bewegung die Steuerung wieder geweckt hat (auf langsamen Rechnern dauert das).
+  await until(() => T.js(`!document.getElementById("mirage-immersive")?.classList.contains("is-idle")`), 2000, "Kopfzeile wach").catch(() => {});
   await T.click(`${IM} .m-im-tabs [data-mode="${m}"]`);
   await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "${m}"`), 2000, `Ansicht „${m}“`);
   await wait(800);
@@ -2558,7 +2561,11 @@ async function playfulLyrics() {
     for (const x of timing) {
       ok(x.op >= 0.95 && x.chOp >= 0.95, `playful Takt: „${x.text}“ (${x.t}) auf dem Einsatz erst ${x.op.toFixed(2)}/${x.chOp.toFixed(2)} deckend`);
       if (!x.acc) {
-        ok(x.tx <= 0.03 && x.ty <= 0.03 && Math.abs(x.sc - 1) <= 0.03 && Math.abs(x.rot) <= 1.5 && (x.tf === "none" || /^matrix\(1, 0, 0, 1, 0, 0\)$/.test(x.tf)), `playful Takt: „${x.text}“ (${x.t}) auf dem Einsatz nicht in Ruhe: ${JSON.stringify(x)}`);
+        // „in Ruhe“ mit Toleranz: auf langsamen Rechnern (CI) liegt der Messpunkt ein, zwei Bilder später – ein Rest von
+        // ~1° Drehung um die Hochachse (matrix3d, Spiegel-/Kipp-Auftritte) sieht man nicht und ist kein Zuspätkommen
+        const flat = (x.tf.match(/matrix(?:3d)?\(([^)]*)\)/)?.[1] || "").split(",").map(Number);
+        const ident = x.tf === "none" || (flat.length === 6 ? [1, 0, 0, 1, 0, 0] : [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]).every((v, i) => i >= 12 || Math.abs((flat[i] ?? v) - v) <= 0.03);
+        ok(x.tx <= 0.03 && x.ty <= 0.03 && Math.abs(x.sc - 1) <= 0.03 && Math.abs(x.rot) <= 1.5 && ident, `playful Takt: „${x.text}“ (${x.t}) auf dem Einsatz nicht in Ruhe: ${JSON.stringify(x)}`);
       }
     }
     console.log(`  playful Takt: ${timing.length} Wörter auf dem Einsatz gelandet (Vorlauf ${[...new Set(timing.map((x) => x.pl))].join("/")} ms, Bild bis ${Math.max(...timing.map((x) => x.late))} ms später gemessen)`);
