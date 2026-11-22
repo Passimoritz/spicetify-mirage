@@ -1198,4 +1198,15 @@ const detectLangs = (texts, lexicon) => {
   return detect(texts.map((text) => ({ text })), "").langs;
 };
 
-export { createWordFx, matchAny, detectLangs, glowOf, FX };
+// Sprachen und Hauptsprache eines Liedtexts (lyricstyle.js: Wortsinn je Zeile über wordsense.js)
+const detectSong = (texts, lexicon) => {
+  if (lexicon && lexicon !== LEX) {
+    LEX = lexicon;
+    IDX = null;
+  }
+  if (!IDX) build();
+  const d = detect(texts.map((text) => ({ text })), "");
+  return { langs: d.langs, main: d.main };
+};
+
+export { createWordFx, matchAny, detectLangs, detectSong, glowOf, FX };

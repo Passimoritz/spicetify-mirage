@@ -1656,9 +1656,11 @@ Probe-FX: ${pfx}`;
       q.lyrics.classList.toggle("is-playful", on);
       if (!on) return;
       const d = audio.uri === lyrUri ? audio.data : null;
-      if (playfulKey?.lyr === lyr && playfulKey.d === d) return;
-      playfulKey = { lyr, d };
-      paintPlayful(q.inner.children, planPlayful(lyr.lines, words, d, { lexicon: LEX }), words);
+      // derbe Wörter wie in Party (Einstellung und Spotifys Filter); ohne Bewegung keine Wortbilder und Buchstaben
+      const ex = explicitMode(), still = stillMotion() || !!cfg.noFlash;
+      if (playfulKey?.lyr === lyr && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still) return;
+      playfulKey = { lyr, d, ex, still };
+      paintPlayful(q.inner.children, planPlayful(lyr.lines, words, d, { lexicon: LEX, neg: NEG, explicit: ex, still }), words);
       placeSoon("glide");
     };
     if (!cfg.lyrPlayful) return run();
@@ -2024,8 +2026,9 @@ Probe-FX: ${pfx}`;
       if (playOn) for (const w of words[was] || []) if (w.on) w.el.classList.remove("is-sung"), (w.on = false);
       activeEl = lines[i] || null;
       playOn = !!activeEl && !!cfg.lyrPlayful && q.lyrics.classList.contains("is-playful");
-      // [playful] Wippen im Takt: Länge und Lage des Schlags einmal je Zeile (CSS-Animation, kein Rechnen im Bild)
-      const bp = playOn && activeEl.classList.contains("is-p-chorus") && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1000) : null;
+      // [playful] Wippen, Schlag-Stoß und hüpfende Wortbilder im Takt: Länge und Lage des Schlags einmal je Zeile
+      // (CSS-Animation, kein Rechnen im Bild)
+      const bp = playOn && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1000) : null;
       if (bp) activeEl.style.setProperty("--pb", bp.p + "ms"), activeEl.style.setProperty("--pbd", bp.d + "ms");
       lastBounce = "";
       hypeOn = !!activeEl && cfg.partyHype && el.dataset.mode === "party" && hype.has(i);
