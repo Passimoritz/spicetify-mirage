@@ -559,8 +559,8 @@ button[class*="chip--"][aria-checked="true"] * {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     0 1px 2px rgba(0, 0, 0, 0.35),
-    0 0 0 4px rgba(var(--m-a-rgb), 0.14),
-    0 6px 18px -6px rgba(var(--m-a-rgb), 0.75) !important;
+    0 0 0 4px color-mix(in srgb, var(--m-a) 14%, transparent),
+    0 6px 18px -6px color-mix(in srgb, var(--m-a) 75%, transparent) !important;
 }
 @keyframes m-spin {
   to {
@@ -577,9 +577,13 @@ button[class*="chip--"][aria-checked="true"] * {
 }
 
 /* Fortschrittsbalken: Lichtfaden mit Kometenkopf */
+/* Leitfarben gleiten (Anmeldung als Farbe: siehe @property --m-a) – nur auf wenigen kleinen Flächen.
+   Der Übergang sitzt an der Spur: Füllung und Griff darin erben die gleitende Farbe, Spotifys eigene
+   Übergänge an Füllung und Griff bleiben unberührt */
 .x-progressBar-progressBarBg {
   border-radius: 99px !important;
   background: rgba(255, 255, 255, 0.1) !important;
+  transition: --m-a 0.9s var(--m-ease), --m-b 0.9s var(--m-ease), --m-c 0.9s var(--m-ease);
 }
 .playback-bar .x-progressBar-progressBarBg {
   height: 5px !important;
@@ -589,16 +593,25 @@ button[class*="chip--"][aria-checked="true"] * {
 }
 .x-progressBar-fillColor {
   background: linear-gradient(90deg, var(--m-b), var(--m-a) 60%, var(--m-c)) !important;
-  box-shadow: 0 0 8px rgba(var(--m-a-rgb), 0.5);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--m-a) 50%, transparent);
   border-radius: 99px !important;
 }
 /* Griff: klarer weißer Punkt mit feinem Ring statt großem Lichthof (der überstrahlte Leiste und Zeiten) */
 .progress-bar__slider {
   background: #fff !important;
   box-shadow:
-    0 0 0 3px rgba(var(--m-c-rgb), 0.28),
+    0 0 0 3px color-mix(in srgb, var(--m-c) 28%, transparent),
     0 1px 3px rgba(0, 0, 0, 0.4),
-    0 0 10px rgba(var(--m-a-rgb), 0.55) !important;
+    0 0 10px color-mix(in srgb, var(--m-a) 55%, transparent) !important;
+}
+
+html.mirage-calm .x-progressBar-progressBarBg {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .x-progressBar-progressBarBg {
+    transition: none;
+  }
 }
 
 /* Cover in der Insel: Vinyl, das sich dreht */
@@ -2681,6 +2694,59 @@ html.mirage-beat #mirage-stage .m-pulse {
 .mirage-settings .m-range.is-idle :is(input, .m-range-scale, .m-range-val) {
   opacity: 0.5;
 }
+/* von einer anderen Einstellung still abgeschaltet (settingsdeps.js): ausgegraut, der Hinweis springt zur Ursache */
+.mirage-settings .m-row.is-blocked {
+  cursor: default;
+}
+.mirage-settings .m-row.is-blocked :is(b, small:not(.m-blocked), input) {
+  opacity: 0.5;
+}
+.mirage-settings .m-row.is-blocked input {
+  cursor: not-allowed;
+}
+.mirage-settings .m-blocked {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 99px;
+  color: var(--spice-text);
+  font: 600 12px var(--m-font);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+.mirage-settings .m-blocked::after {
+  content: "→";
+}
+.mirage-settings .m-blocked:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+html.mirage-light .mirage-settings .m-blocked {
+  border-color: rgba(29, 26, 43, 0.18);
+  background: rgba(29, 26, 43, 0.06);
+}
+/* Ziel eines Sprungs leuchtet kurz auf */
+.mirage-settings .is-jump {
+  animation: m-jump 1.6s var(--m-ease);
+}
+@keyframes m-jump {
+  0%,
+  40% {
+    box-shadow: 0 0 0 2px var(--spice-button);
+  }
+
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mirage-settings .is-jump {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--spice-button);
+  }
+}
 html.mirage-light .mirage-settings .m-range input[type="range"]::-webkit-slider-runnable-track {
   background:
     linear-gradient(90deg, var(--m-c), var(--m-a)) 0 0 / calc(9px + (100% - 18px) * var(--p)) 100% no-repeat,
@@ -3268,11 +3334,12 @@ html[data-m-page="artist"] h2 {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     0 1px 2px rgba(0, 0, 0, 0.3),
-    0 8px 20px -10px rgba(var(--m-a-rgb), 0.8) !important;
+    0 8px 20px -10px color-mix(in srgb, var(--m-a) 80%, transparent) !important;
   transition:
     transform 0.2s var(--m-ease),
     box-shadow 0.2s var(--m-ease),
-    filter 0.2s var(--m-ease) !important;
+    filter 0.2s var(--m-ease),
+    --m-a 0.9s var(--m-ease) !important;
 }
 [data-encore-id="buttonPrimary"]:hover > span:first-child,
 [class*="legacy-button-primary"]:hover > [class*="button-primary__inner"] {
@@ -3381,6 +3448,27 @@ html.mirage-calm [class*="legacy-button-primary"] > [class*="button-primary__inn
    (unlesbar). color-scheme sagt dem System, wie die Seite aussieht; die festen
    Farben darunter gelten für jede Auswahlliste in Spotify, egal unter welchem Namen.
    ========================================================================== */
+/* Leitfarben als echte Farben anmelden: dann können sie gleiten statt beim Songwechsel zu springen (color.js
+   schreibt sie einmal je Song). Gleiten tun sie nur, wo es eine eigene Übergangsregel gibt – Play-Knöpfe,
+   Fortschrittsbalken, Leuchten des Play-Knopfs in der Leiste (siehe „Leitfarben gleiten“). Überall sonst
+   wechseln sie wie bisher in einem Schritt: ein Übergang am ganzen Dokument kostete bei jedem Bild eine
+   Neuberechnung aller Elemente. Die -rgb-Tripel (für rgba(var(--m-a-rgb), x)) sind keine Farben und springen
+   weiter; wo es zählt, nehmen die Regeln darum color-mix() mit der Farbe selbst. */
+@property --m-a {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #b69cff;
+}
+@property --m-b {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #7c5cff;
+}
+@property --m-c {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d4c6ff;
+}
 :root {
   --m-a: var(--spice-button);
   --m-b: var(--spice-notification);

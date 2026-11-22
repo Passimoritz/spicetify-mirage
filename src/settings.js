@@ -1,6 +1,6 @@
 import { S, root, VERSION } from "./core.js";
 import { t, I18N, LANG } from "./i18n.js";
-import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme } from "./config.js";
+import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme, migrateCalm } from "./config.js";
 import { current } from "./color.js";
 import { beat } from "./audio.js";
 import { dust } from "./dust.js";
@@ -8,7 +8,7 @@ import { bridge } from "./bridge.js";
 import { immersive } from "./immersive.js";
 import { onSong, contextUri, albumUri, effectiveScheme } from "./song.js";
 import { currentItem } from "./player.js";
-import { PRESET_KEYS, COST, applyPreset, detectPreset } from "./perf.js";
+import { PRESETS, PRESET_KEYS, COST, applyPreset, detectPreset } from "./perf.js";
 import { recheckAll } from "./readability.js";
 import { diagnostics, reportUrl } from "./selectors.js";
 import { refreshRemote } from "./remote.js";
@@ -18,6 +18,7 @@ import { FAMILIES } from "./party.js";
 import { live } from "./live.js";
 import { bpm } from "./library.js";
 import { GAME as GAME_IC } from "./icons.js";
+import { blockedBy } from "./settingsdeps.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -94,6 +95,30 @@ function bolt() {
   return i;
 }
 const has = (k) => t(k) !== k;
+let blockN = 0;
+// zu einer Einstellung springen (data-key eines Bedienelements oder "preset:<name>"): Suche leeren, falls sie
+// das Ziel versteckt, Gruppe aufklappen, hinscrollen, Fokus hinein und kurz aufleuchten lassen
+function jumpTo(box, target) {
+  if (!box) return;
+  const sel = target.startsWith("preset:") ? `.m-presets [data-preset="${target.slice(7)}"]` : `[data-key="${target}"]`;
+  const x = box.querySelector(sel);
+  if (!x) return;
+  if (x.closest(".m-hide")) {
+    const s = box.querySelector(".m-search");
+    if (s) s.value = "";
+    query = "";
+    applySearch(box);
+  }
+  const d = x.closest("details");
+  if (d) d.open = true;
+  const row = x.closest(".m-row") || x;
+  row.scrollIntoView({ block: "center", behavior: cfg.calm ? "auto" : "smooth" });
+  x.focus({ preventScroll: true });
+  row.classList.remove("is-jump");
+  void row.offsetWidth;
+  row.classList.add("is-jump");
+  setTimeout(() => row.classList.remove("is-jump"), 1600);
+}
 function toggle(key, after) {
   const row = el("label", "m-row");
   const txt = el("span");
@@ -108,6 +133,22 @@ function toggle(key, after) {
   cb.setAttribute("role", "switch");
   cb.dataset.key = key;
   cb.checked = !!cfg[key];
+  // still abgeschaltet von einer anderen Einstellung (settingsdeps.js): ausgegraut, der Hinweis springt zur Ursache
+  const dep = blockedBy(key, cfg);
+  if (dep) {
+    row.classList.add("is-blocked");
+    cb.disabled = true;
+    const why = el("button", "m-blocked", t("offBy").replace("{s}", t(dep.label)));
+    why.type = "button";
+    why.title = t("offByGo");
+    why.id = "m-ob-" + ++blockN;
+    cb.setAttribute("aria-describedby", why.id);
+    why.onclick = (e) => {
+      e.preventDefault();
+      jumpTo(row.closest(".mirage-settings"), dep.jump);
+    };
+    txt.append(why);
+  }
   cb.onchange = () => {
     cfg[key] = cb.checked;
     if (PRESET_KEYS.includes(key)) detectPreset();
@@ -275,6 +316,34 @@ function findable(s, [hint, none], onPick) {
   wrap.append(q, s, note);
   return wrap;
 }
+// Energiesparen in drei Stufen – im Dialog und im Schnellmenü des Immersiv-Modus gleich (Reihenfolge und Namen)
+const ECO = ["auto", "on", "off"];
+function ecoSeg() {
+  const s = seg(ECO.map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => setPerf("eco", k));
+  s.dataset.key = "eco";
+  return s;
+}
+// „Ruhig“ gibt es nur als Preset. Unter „Sicherheit & Komfort“ steht es trotzdem als Schalter – als Abkürzung:
+// an = Preset „Ruhig“, aus = zurück zum Preset davor (cfg.calmFrom). Ein eigenes calm neben dem Preset gibt es nicht.
+function calmSwitch() {
+  const row = el("label", "m-row");
+  const txt = el("span");
+  txt.append(el("b", "", t("preset_calm")), el("small", "", t("calmSwitchHint")));
+  const cb = el("input");
+  cb.type = "checkbox";
+  cb.setAttribute("role", "switch");
+  cb.dataset.calm = "1";
+  cb.checked = !!cfg.calm;
+  cb.onchange = () => {
+    if (cb.checked) {
+      const from = PRESETS[cfg.preset] ? cfg.preset : cfg.presetBase;
+      cfg.calmFrom = PRESETS[from] && from !== "calm" ? from : "balanced";
+      setPreset("calm");
+    } else setPreset(PRESETS[cfg.calmFrom] && cfg.calmFrom !== "calm" ? cfg.calmFrom : "balanced");
+  };
+  row.append(txt, cb);
+  return row;
+}
 // Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
 const rangeZero = (key, max, zero) => range(key, 0, max, 1, "", null, (v) => v || t(zero));
 // Regeln für Songwünsche: nur sichtbar, solange Wünsche an sind (Schalter zeichnet die Einstellungen neu)
@@ -374,8 +443,10 @@ function labelControls(box) {
     c.setAttribute("aria-labelledby", prev.id);
   }
 }
-function group(title, open, ...children) {
+// id: fester Name der Gruppe (openSettings({ group }) springt dorthin, siehe GROUPS unten)
+function group(id, title, open, ...children) {
   const d = el("details", "m-group");
+  d.dataset.group = id;
   d.open = open;
   d.append(el("summary", "", title), ...children.filter(Boolean));
   return d;
@@ -626,23 +697,28 @@ function render(box) {
   say.setAttribute("role", "status");
   kids.push(bar, say, emptyState(box, search));
 
-  // ---- Presets
-  kids.push(head(t("presetTitle"), t("presetHint")));
+  // ---- Aussehen & Leistung: Presets, Energiesparen, Bildrate. Das Schnellmenü im Immersiv-Modus
+  // (immersive.js, perfSection) zeigt dieselben Presets und dieselbe Energiespar-Wahl mit denselben Namen.
+  // Ohne „Bereich zurücksetzen“: ein Preset-Klick ist selbst der Weg zurück.
   const order = Object.keys(COST);
   const presets = seg(order.map((k) => [k, t("preset_" + k)]), cfg.preset, (k) => setPreset(k));
   presets.classList.add("m-presets");
   [...presets.children].forEach((b, i) => presetFill(b, order[i]));
-  kids.push(presets);
-  if (cfg.preset === "custom") kids.push(el("small", "m-note", t("presetCustom")));
-  // Energiesparen und Selbst-Drosseln gehören zur Leistung: direkt unter die Presets statt zu den Animationen
-  kids.push(
+  kids.push(group(
+    "perf",
+    t("presetTitle"),
+    true,
+    head(t("presetPick"), t("presetHint")),
+    presets,
+    cfg.preset === "custom" && el("small", "m-note", t("presetCustom")),
     head(t("eco"), t("ecoHint")),
-    seg(["auto", "on", "off"].map((k) => [k, t("eco_" + k)]), cfg.eco, (k) => {
-      cfg.eco = k;
-      save();
-    }),
-    toggle("autoPerf")
-  );
+    ecoSeg(),
+    head(t("fpsHead")),
+    toggle("autoPerf"),
+    toggle("partyQuietFps", () => {})
+  ));
+  // ---- Sicherheit & Komfort: Blitze und Bewegung – was andere Schalter still abschaltet (settingsdeps.js)
+  kids.push(sectionReset(group("comfort", t("g_comfort"), true, toggle("noFlash"), calmSwitch())));
 
   // ---- Schemata
   kids.push(head(t("scheme"), t("schemeHint")));
@@ -722,9 +798,10 @@ function render(box) {
     applyFont();
   });
   Object.keys(FONTS).forEach((k, i) => (fontSeg.children[i].style.fontFamily = stackOf(k)));
-  kids.push(sectionReset(group(t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg), ["font"], refreshColors));
+  kids.push(sectionReset(group("colours", t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg), ["font"], refreshColors));
   kids.push(sectionReset(
     group(
+      "background",
       t("g_background"),
       false,
       toggle("particles"),
@@ -738,22 +815,14 @@ function render(box) {
       range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
     )
   ));
-  kids.push(sectionReset(group(t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"), toggle("calm"), toggle("noFlash"))));
-  const viz = [
-    ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
-    ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
-    ["galaxy", t("viz_galaxy")], ["mountains", t("viz_mountains")], ["scope", t("viz_scope")], ["shatter", t("viz_shatter")],
-    // 1.27 views
-    ["wavefield", t("viz_wavefield")], ["coverdust", t("viz_coverdust")],
-  ];
+  kids.push(sectionReset(group("motion", t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"))));
   kids.push(sectionReset(
     group(
-      t("g_immersive"),
+      "lyrics",
+      t("g_lyrics"),
       false,
       range("lyrSize", 70, 150, 5, " %", () => immersive.styleLyrics()),
       range("lyrGap", 60, 200, 10, " %", () => immersive.styleLyrics()),
-      toggle("onlineLyrics", () => immersive.reloadLyrics()),
-      toggle("remoteFix", () => refreshRemote(true)),
       toggle("karaoke", () => immersive.reloadLyrics()),
       // [duet 1.27] Duett-Stimmen farbig (nur Farbe, kein Neuaufbau)
       toggle("lyrVoices", () => immersive.styleLyrics()),
@@ -761,13 +830,29 @@ function render(box) {
       toggle("lyrPlayful", () => immersive.reloadLyrics()),
       range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
-      toggle("romanize", () => immersive.reloadLyrics()),
+      toggle("romanize", () => immersive.reloadLyrics())
+    ), null, () => immersive.reloadLyrics()
+  ));
+  const viz = [
+    ["bars", t("viz_bars")], ["wave", t("viz_wave")], ["dots", t("viz_dots")],
+    ["particles", t("viz_particles")], ["line", t("viz_line")], ["bottom", t("viz_bottom")], ["tunnel", t("viz_tunnel")],
+    ["galaxy", t("viz_galaxy")], ["mountains", t("viz_mountains")], ["scope", t("viz_scope")], ["shatter", t("viz_shatter")],
+    // 1.27 views
+    ["wavefield", t("viz_wavefield")], ["coverdust", t("viz_coverdust")],
+  ];
+  const vizSeg = seg(viz, cfg.vizStyle, (k) => {
+    cfg.vizStyle = k;
+    save();
+  });
+  vizSeg.dataset.key = "vizStyle";
+  kids.push(sectionReset(
+    group(
+      "viz",
+      t("g_viz"),
+      false,
       toggle("canvas", () => immersive.refresh()),
       head(t("vizSection"), t("vizSectionHint")),
-      seg(viz, cfg.vizStyle, (k) => {
-        cfg.vizStyle = k;
-        save();
-      }),
+      vizSeg,
       range("vizBars", 48, 180, 12, ""),
       range("vizHeight", 50, 200, 10, " %"),
       range("vizSmooth", 1, 10, 1, ""),
@@ -776,11 +861,12 @@ function render(box) {
       toggle("vizMirror", () => {}),
       toggle("vizSpin", () => {}),
       toggle("mixInstruments", () => {})
-    ), ["vizStyle"], () => (immersive.reloadLyrics(), immersive.refresh(), refreshRemote(true))
+    ), ["vizStyle"], () => immersive.refresh()
   ));
   // ---- Party-Modus: eine eigene Gruppe, darin nach Thema geordnet
   kids.push(sectionReset(
     group(
+      "party",
       t("g_party"),
       false,
       head(t("ps_style"), t("partySectionHint")),
@@ -848,12 +934,11 @@ function render(box) {
         save();
       }),
       livePanel(),
-      toggle("partyScreen", () => immersive.refresh()),
       toggle("partyRecap", () => immersive.refresh()),
+      head(t("ps_screen")),
+      toggle("partyScreen", () => immersive.refresh()),
       toggle("partyEdge", () => {}),
-      toggle("partyOnline", () => immersive.refresh()),
-      toggle("partyIdle", () => {}),
-      toggle("partyQuietFps", () => {})
+      toggle("partyIdle", () => {})
     ), ["partyStyle", "partyLevel", "partyVenue"], () => (immersive.reloadLyrics(), immersive.refresh(), window.dispatchEvent(new Event("mirage:wishes")))
   ));
 
@@ -906,7 +991,7 @@ function render(box) {
       saveScheme(name, d.colors);
     })
   );
-  kids.push(group(t("g_builder"), false, builder, nameIn, bActions, codeIn));
+  kids.push(group("builder", t("g_builder"), false, builder, nameIn, bActions, codeIn));
 
   // ---- Overlay: Status + passender Installer für dieses System
   const os = String(S.Platform?.operatingSystem || navigator.platform || "").toLowerCase();
@@ -918,8 +1003,20 @@ function render(box) {
     button(t("overlayAllDownloads"), () => window.open("https://github.com/Passimoritz/spicetify-mirage/releases/latest", "_blank"))
   );
   // ---- Bibliothek: Tempo/Tonart in Titellisten · Dubletten-Suche sitzt im Rechtsklick-Menü der Playlists
-  kids.push(group(t("g_library"), false, toggle("libBpm", () => bpm.refresh()), el("small", "m-note", t("libDupNote"))));
-  kids.push(group(t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
+  kids.push(group("library", t("g_library"), false, toggle("libBpm", () => bpm.refresh()), el("small", "m-note", t("libDupNote"))));
+  kids.push(group("overlay", t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
+  // ---- System: was Mirage aus dem Netz holt und wie es sich selbst repariert
+  kids.push(sectionReset(
+    group(
+      "system",
+      t("g_system"),
+      false,
+      el("small", "m-note", t("systemNote")),
+      toggle("remoteFix", () => refreshRemote(true)),
+      toggle("onlineLyrics", () => immersive.reloadLyrics()),
+      toggle("partyOnline", () => immersive.refresh())
+    ), null, () => (refreshRemote(true), immersive.reloadLyrics(), immersive.refresh())
+  ));
 
   // ---- Teilen, Sichern, Hilfe
   const foot = el("div", "m-actions");
@@ -938,6 +1035,7 @@ function render(box) {
       const d = decode("MIRAGE-SETTINGS:", dataIn.value);
       if (!d) return notify(t("badCode"), true);
       Object.assign(cfg, d);
+      migrateCalm(cfg, d);
       for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
       save();
       refreshColors();
@@ -964,6 +1062,7 @@ function render(box) {
         } catch {}
         if (!d || typeof d !== "object" || Array.isArray(d)) return notify(t("badCode"), true);
         Object.assign(cfg, d);
+        migrateCalm(cfg, d);
         for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
         save();
         refreshColors();
@@ -988,7 +1087,7 @@ function render(box) {
       render(box);
     }, "is-danger")
   );
-  kids.push(group(t("g_more"), false, foot, dataIn));
+  kids.push(group("more", t("g_more"), false, foot, dataIn));
 
   kids.push(el("small", "m-note", t("tip")), el("small", "m-note m-version", `Mirage ${VERSION}`));
 
@@ -1036,18 +1135,36 @@ function modalFocus(box, from) {
   // Fenster kam nie: nicht ewig lauschen
   setTimeout(() => !dlg && mo.disconnect(), 4000);
 }
-// focus: i18n-Schlüssel einer Gruppe („g_party“) – aus dem Immersiv-Menü „Mehr“ geht sie gleich auf und rückt nach
-// oben. (Spotifys Menüpunkt ruft ohne Schlüssel bzw. mit seinem eigenen Objekt auf.)
-function openSettings(focus) {
+// Gruppen des Dialogs, in dieser Reihenfolge (data-group der <details>). Neue Schalter gehören in genau eine davon:
+//   perf        Aussehen & Leistung: Presets, Energiesparen, Bildrate (offen)
+//   comfort     Sicherheit & Komfort: Keine Blitze, Ruhig (offen)
+//   colours · background · motion   Farben, Hintergrund, Animationen
+//   lyrics      Liedtext im Immersiv-Modus          viz     Visualizer und Canvas-Videos
+//   party       Party-Modus (Stil, Licht, Momente, Publikum, Extras & Teilen, Bildschirm & Bedienung)
+//   builder · library · overlay
+//   system      Selbstreparatur und alles, was online nachschlägt
+//   more        Teilen, Sichern & Hilfe
+const GROUPS = ["perf", "comfort", "colours", "background", "motion", "lyrics", "viz", "party", "builder", "library", "overlay", "system", "more"];
+// Einstellungen öffnen; openSettings({ group: "party" }) klappt die Gruppe auf und scrollt zu ihr
+// (für die Zeile „Alle Einstellungen …“ im Menü „Mehr“ des Immersiv-Modus). Unbekannte Gruppe: wie ohne.
+// Als Menü-Callback bekommt die Funktion Spotifys Menüeintrag – darum nur ein Objekt mit Text in group zählt.
+function openSettings(opts) {
+  const want = opts && typeof opts.group === "string" && GROUPS.includes(opts.group) ? opts.group : null;
   const from = document.activeElement;
   const box = el("div", "mirage-settings");
   render(box);
   S.PopupModal.display({ title: "Mirage", content: box, isLarge: true });
   modalFocus(box, from);
-  const g = typeof focus === "string" && [...box.querySelectorAll("details.m-group")].find((d) => d.querySelector("summary")?.textContent === t(focus));
-  if (!g) return;
-  g.open = true;
-  requestAnimationFrame(() => g.scrollIntoView({ block: "start" }));
+  if (!want) return;
+  const d = box.querySelector(`details[data-group="${want}"]`);
+  if (!d) return;
+  d.open = true;
+  // erst nach dem Einhängen ins Fenster hat die Gruppe eine Lage
+  requestAnimationFrame(() => {
+    if (!d.isConnected) return;
+    d.scrollIntoView({ block: "start" });
+    d.querySelector("summary")?.focus({ preventScroll: true });
+  });
 }
 
 // erster Start: kurz zeigen, wo alles ist
@@ -1210,4 +1327,4 @@ function coach() {
   draw();
 }
 
-export { applySettings, openSettings, welcome, tour, setPreset, setPerf, presetFill };
+export { applySettings, openSettings, welcome, tour, setPreset, setPerf, presetFill, ECO, GROUPS };

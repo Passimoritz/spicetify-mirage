@@ -42,7 +42,7 @@ The theme contacts third parties only with song data, never with personal data:
 - **Party data (can be turned off):** title and artist to Deezer for the tempo and to Apple's iTunes search for the genre; the song's ISRC number to MusicBrainz for instrument credits.
 - **Translation (off by default):** lyric lines go to Google Translate. **Romanization** (off by default) loads a Chinese pinyin dictionary from jsDelivr once.
 - **Repairs after Spotify updates (can be turned off):** a small rules file is loaded from this repository on GitHub at most every six hours.
-- **Live link for phones (off by default):** light colours, tempo, song title, lyrics, game data and guest messages are end-to-end encrypted and pass through a public relay (HiveMQ, with EMQX as fallback). The key exists only in the QR code and never reaches a server. The theme sends only while party mode runs.
+- **Light up phones (live link, off by default):** light colours, tempo, song title, lyrics, game data and guest messages are end-to-end encrypted and pass through a public relay (HiveMQ, with EMQX as fallback). The key exists only in the QR code and never reaches a server. The theme sends only while party mode runs.
 - **Karaoke game:** the recording is scored on the singer's phone and never leaves it; only the scores are sent.
 - **Photo wall (off by default):** photos are stripped of location and metadata on the phone, sent end-to-end encrypted, shown only after the host approves them, kept only in memory and gone when the party ends.
 - Fonts load from Google Fonts.

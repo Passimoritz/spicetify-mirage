@@ -39,7 +39,7 @@ import { dj } from "./dj.js";
 import { UI, GAME, iconEl } from "./icons.js";
 import { games, GAME_LIST, WHEEL_FIELDS, WHEELS, GUEST_COLORS, TOUR_POOL } from "./games.js";
 import { free } from "./lock.js";
-import { setPreset, setPerf, presetFill, openSettings } from "./settings.js";
+import { setPreset, setPerf, presetFill, openSettings, ECO } from "./settings.js";
 import { helpRows } from "./shortcuts.js";
 import { crowdLayers } from "./stagefx.js";
 import { COST, tier } from "./perf.js";
@@ -4393,16 +4393,31 @@ Probe-FX: ${pfx}`;
       seg.append(b);
     }
     body.append(seg);
-    // die zwei Schalter, die man mitten in der Party am ehesten braucht: Akku/Lüfter und Blitze
-    const flag = (label, sub, on, fn, icon) => {
-      const b = sideBtn(body, label, sub, () => perfSet(fn), on, icon);
-      b.removeAttribute("aria-current");
-      b.setAttribute("aria-pressed", String(on));
-      b.classList.add("m-im-perf-flag");
-    };
-    const eco = cfg.eco === "on";
-    flag(t("ecoQuick"), t(eco ? "ecoQuickOn" : cfg.eco === "off" ? "eco_off" : "ecoQuickAuto"), eco, () => setPerf("eco", eco ? "auto" : "on"), UI.leaf);
-    flag(t("noFlash"), "", !!cfg.noFlash, () => setPerf("noFlash", !cfg.noFlash), UI.flashOff);
+    // Energiesparen: dieselben drei Stufen mit denselben Namen wie im Dialog (ECO aus settings.js)
+    const eco = document.createElement("div");
+    eco.className = "m-g-cfg m-im-eco";
+    const ecoL = document.createElement("span");
+    ecoL.textContent = t("eco");
+    const ecoSeg = document.createElement("div");
+    ecoSeg.className = "m-g-seg-row";
+    ecoSeg.setAttribute("role", "group");
+    ecoSeg.setAttribute("aria-label", t("eco"));
+    for (const k of ECO) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = t("eco_" + k);
+      b.setAttribute("aria-pressed", String(cfg.eco === k));
+      b.onclick = () => perfSet(() => setPerf("eco", k));
+      ecoSeg.append(b);
+    }
+    eco.append(ecoL, ecoSeg);
+    body.append(eco);
+    // Sicherheit & Komfort wie im Dialog: „Keine Blitze“ (Ruhig steht oben als Preset)
+    sideHead(body, t("g_comfort"));
+    const nf = sideBtn(body, t("noFlash"), "", () => perfSet(() => setPerf("noFlash", !cfg.noFlash)), !!cfg.noFlash, UI.flashOff);
+    nf.removeAttribute("aria-current");
+    nf.setAttribute("aria-pressed", String(!!cfg.noFlash));
+    nf.classList.add("m-im-perf-flag");
   }
   // umstellen und alles, was die offene Ebene aus cfg liest, gleich nachziehen
   function perfSet(fn) {
@@ -4467,7 +4482,7 @@ Probe-FX: ${pfx}`;
     // 5) Alle Einstellungen: der Mirage-Dialog über der Bühne, gleich bei der passenden Gruppe
     const all = sideBtn(body, t("imAllSettings"), t("imAllSettingsSub").replace("{g}", t(party ? "g_party" : "g_immersive")), () => {
       showSide(null);
-      openSettings(party ? "g_party" : "g_immersive");
+      openSettings({ group: party ? "party" : "lyrics" });
     }, false, UI.gear);
     all.classList.add("m-im-allsettings");
   }
