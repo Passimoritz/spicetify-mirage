@@ -86,6 +86,8 @@ const DEFAULTS = {
   vizMirror: true,
   vizSpin: false,
   partyStyle: "auto",
+  // Party-Stil je Künstler von Hand festgelegt: Künstler-URI oder -ID → Spielart (genres.js); gewinnt vor der Erkennung
+  genreArtist: {},
   partyLevel: 2,
   partyFlash: true,
   partyJam: true,

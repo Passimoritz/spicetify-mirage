@@ -1,11 +1,11 @@
 import { S, clamp, seek, lru } from "./core.js";
-import { cfg } from "./config.js";
+import { cfg, save } from "./config.js";
 import { audio } from "./audio.js";
 import { createFlashCap } from "./flashcap.js";
 import { songMap, at, STEP } from "./songmap.js";
 import { planSong, cue } from "./director.js";
 import { KIN, baseOf } from "./styles.js";
-import { LOOKS, FAMILIES, pickGenre } from "./genres.js";
+import { LOOKS, FAMILIES, pickGenre, manualFor, familyOf } from "./genres.js";
 import { deezer, itunes, previewSound } from "./sources.js";
 import { isJump, createJumpFade } from "./steady.js";
 import { bassTarget, createBassEnv } from "./bass.js";
@@ -161,8 +161,10 @@ for (const k in KIN) PROFILES[k] = like(baseOf(k), LOOKS[k]);
 const PROFILE_KEYS = Object.keys(PROFILES);
 
 const genreCache = lru(100);
+// erster Künstler des Songs („spotify:artist:…“): für die Genres und für die eigene Festlegung je Künstler
+const artistUriOf = (item) => item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
 async function artistGenres(item) {
-  const uri = item?.artists?.[0]?.uri || item?.metadata?.artist_uri || "";
+  const uri = artistUriOf(item);
   const id = uri.split(":")[2];
   if (!id) return [];
   if (genreCache.has(id)) return genreCache.get(id);
@@ -217,7 +219,7 @@ function planFor(d, key, uri) {
 const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1, grade: null, flash: 1, fx: 1, haze: 1, tf: 1, wipe: -1, wdir: 1, riser: 0, pulse: 0, dim: 0, lift: 0, wall: 0, vox: 0, swell: 0, pump: 0, boom: 0, sync: 0, scan: 0,
   mood: "", v: 0, a: 0, soft: 0.2, spread: 1, crowd: 1, fxk: "sparks", sc: -1, spot: "", spot2: "", sx: 1, rig: "" };
 const party = (() => {
-  let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
+  let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0, lastItem = null;
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
   const inst = { k: -1, s: -1, h: -1 };
   let sway = 1, lastSec = 0, dropGlow = 0, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
@@ -248,7 +250,10 @@ const party = (() => {
   const nextOf = () => (S.Queue?.nextTracks || []).map((x) => x?.contextTrack || x).find((x) => x?.uri?.startsWith("spotify:") && x.uri !== "spotify:delimiter" && x.metadata?.hidden !== "true");
   // Genre, Tempo und Lichtfarben des nächsten Songs (sobald alles da ist)
   function guess(nx) {
-    if (!nx.talk && cfg.partyStyle === "auto" && nx.genres)
+    // von Hand für den Künstler festgelegt (cfg.genreArtist): gilt auch für den nächsten Song
+    const own = !nx.talk && manualFor(cfg.genreArtist, artistUriOf(nx.item));
+    if (own) nx.key = own;
+    else if (!nx.talk && cfg.partyStyle === "auto" && nx.genres)
       nx.key = pickGenre({ genres: nx.genres, apple: nx.apple || "", deezer: nx.dz || [], artist: nx.item?.metadata?.artist_name || "", title: nx.item?.metadata?.title || "", bpm: nx.bpm, loud: nx.d?.loud ?? -10, minor: nx.d ? minorShare(nx.d) : 0, sound: nx.d?.sound || null }).key;
     if (nx.colors && !nx.talk) nx.pal = vividOf(nx.colors, PROFILES[nx.key || "pop"]?.tint);
   }
@@ -288,6 +293,17 @@ const party = (() => {
   // Genre aus allen Quellen (genres.js pickGenre): Apple, Deezer, Spotify-Künstler, Namen, zuletzt der Klang
   const choose = (bpm, d) =>
     pickGenre({ genres: info.genres || [], apple: info.apple || "", deezer: info.deezer || [], artist: info.artist, title: info.title, bpm, loud: d?.loud ?? -10, minor: d ? minorShare(d) : 0, sound: d?.sound || info.sound || null });
+  // Ergebnis der Erkennung in info übernehmen. Von Hand je Künstler festgelegt (cfg.genreArtist) gewinnt vor allem,
+  // dann ein fest gewählter Stil, sonst die Erkennung. info.auto behält immer, was die Erkennung allein sagt –
+  // damit ein Menü „Erkannt: …“ auch neben einer eigenen Festlegung zeigen kann.
+  function apply(auto) {
+    const own = manualFor(cfg.genreArtist, info.artistUri);
+    const fixed = cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : "";
+    info.auto = { key: auto.key, why: auto.why, conf: auto.conf, family: auto.family || familyOf(auto.key) };
+    if (own) [info.key, info.why, info.conf, info.manual] = [own, "manual", 1, true];
+    else [info.key, info.why, info.conf, info.manual] = [fixed || auto.key, auto.why, auto.conf, false];
+    info.family = familyOf(info.key);
+  }
   // Gesprochenes statt Musik: Podcast, Hörbuch, Werbung, DJ-Ansage – keine Lichtshow im Takt und keine
   // Genre-Abfrage (der Titel einer Podcast-Folge geht nicht an Deezer/Apple)
   // AI-DJ: Spotify 1.3.10 markiert die Ansage mit „is_narration“ (ältere Versionen „is_dj_narration“); die Songs
@@ -302,7 +318,9 @@ const party = (() => {
   async function prepare(item) {
     const u = item?.uri || "";
     // Song + gewählter Stil: wer in den Einstellungen umstellt, bekommt sofort das neue Profil
-    const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline;
+    // (auch die eigene Festlegung für den Künstler: setArtistGenre wirkt sofort)
+    lastItem = item;
+    const pk = u + "|" + cfg.partyStyle + "|" + cfg.partyOnline + "|" + manualFor(cfg.genreArtist, artistUriOf(item));
     if (pk === picked) {
       // Taktdaten kamen inzwischen (Schätzung, Wiederholung): Tempo gleich nachtragen, sonst zeigt die Anzeige
       // bis zum nächsten Song kein BPM (updateKicker liest info direkt nach prepare)
@@ -330,7 +348,7 @@ const party = (() => {
       // DJ-Ansage: der Look des letzten Songs bleibt (kurze Einwürfe sollen die Bühne nicht umwerfen), die Ruhe
       // kommt über talkGate. Stimme im Kicker, wenn Spotify sie nennt („Party · DJ · Name“).
       const voice = talk === "dj" ? djVoice(item, S.Player?.data?.context) : "";
-      info = { key: talk === "dj" && info.key ? info.key : "chill", why: talk, conf: 1, bpm: 0, genres: [], apple: "", deezer: [], artist: "", title: "", sound: null, src: "", talk,
+      info = { key: talk === "dj" && info.key ? info.key : "chill", why: talk, conf: 1, bpm: 0, genres: [], apple: "", deezer: [], artist: "", title: "", sound: null, src: "", talk, family: "", manual: false, auto: null,
         label: talk === "dj" ? ["Party", t("partyDjTalk"), voice].filter(Boolean).join(" · ") : "" };
       return info;
     }
@@ -340,16 +358,15 @@ const party = (() => {
     if (my !== token) return info;
     const d = audio.uri === u ? audio.data : null;
     const bpm = d?.bpm || 0;
-    info = { key: "pop", why: "", conf: 0, bpm, genres, apple, deezer: dzg, artist: item?.metadata?.artist_name || item?.artists?.[0]?.name || "", title: item?.metadata?.title || item?.name || "", sound: null, src: d?.bpmSrc || "" };
+    info = { key: "pop", why: "", conf: 0, family: "pop", manual: false, auto: null, bpm, genres, apple, deezer: dzg, artist: item?.metadata?.artist_name || item?.artists?.[0]?.name || "", artistUri: artistUriOf(item), title: item?.metadata?.title || item?.name || "", sound: null, src: d?.bpmSrc || "" };
     const auto = choose(bpm, d);
-    [info.key, info.why, info.conf] = [cfg.partyStyle !== "auto" && PROFILES[cfg.partyStyle] ? cfg.partyStyle : auto.key, auto.why, auto.conf];
+    apply(auto);
     // kein Name sagt etwas (oder nur unsicher): die Hörprobe anhören (tempo.js) und danach noch einmal wählen
     if (auto0 && auto.conf < 0.3 && !d?.sound && item?.uri)
       previewSound(item).then((pv) => {
         if (my !== token || !pv?.feats) return;
         info.sound = { ...pv.feats, bpm: pv.bpm, conf: pv.conf };
-        const again = choose(info.bpm, audio.uri === uri ? audio.data : null);
-        [info.key, info.why, info.conf] = [again.key, again.why, again.conf];
+        apply(choose(info.bpm, audio.uri === uri ? audio.data : null));
       });
     return info;
   }
@@ -359,11 +376,23 @@ const party = (() => {
     if (!audio.data || audio.uri !== uri || info.talk) return;
     if (info.bpm !== audio.data.bpm || info.src !== (audio.data.bpmSrc || "")) {
       [info.bpm, info.src] = [audio.data.bpm, audio.data.bpmSrc || ""];
-      if (cfg.partyStyle === "auto") {
-        const r = choose(info.bpm, audio.data);
-        [info.key, info.why, info.conf] = [r.key, r.why, r.conf];
-      }
+      if (cfg.partyStyle === "auto") apply(choose(info.bpm, audio.data));
     }
+  }
+  // Spielart für einen Künstler von Hand festlegen (key = Spielart aus FAMILIES) oder mit "" / null zurück auf
+  // „automatisch“. Speichert in cfg.genreArtist und plant den laufenden Song sofort neu; liefert das neue info.
+  function setArtistGenre(artistUri, key) {
+    const id = String(artistUri || "").split(":").pop();
+    if (!id) return Promise.resolve(info);
+    const map = { ...(cfg.genreArtist || {}) };
+    delete map[artistUri];
+    delete map[id];
+    if (key && PROFILES[key]) map["spotify:artist:" + id] = key;
+    cfg.genreArtist = map;
+    save();
+    picked = "";
+    if (mix.nx) guess(mix.nx);
+    return lastItem ? prepare(lastItem) : Promise.resolve(info);
   }
 
   // Ein neuer Song beginnt: wie kam er? Natürlich am Ende (Mix mit Treffer auf der ersten Eins), übersprungen
@@ -744,7 +773,7 @@ const party = (() => {
   }
 
   // colorsOf(item) → Coverfarben des Songs (setzt song.js; für den Fall, dass sich die Warteschlange ändert)
-  api = { prepare, warm, step, mood, mixPal, lyrics, colorsOf: null, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  api = { prepare, setArtistGenre, warm, step, mood, mixPal, lyrics, colorsOf: null, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
   return api;
 })();
 
