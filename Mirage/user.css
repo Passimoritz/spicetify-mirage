@@ -1842,8 +1842,15 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="party"] :is(.m-im-controls, .m-im-extras) {
   justify-content: center;
 }
-#mirage-immersive[data-mode="party"] .m-im-extras,
 #mirage-immersive[data-mode="party"] .m-im-lyrics-note.is-small {
+  display: none;
+}
+/* Party: von der Extras-Zeile bleibt nur die Lautstärke (Stummschalter + Regler) – direkt unter den Knöpfen, blendet
+   im Ruhe-Modus mit der Steuerung aus. Alles andere (Herz, Song-Menü, Warteschlange …) steht im Menü „Mehr“. */
+#mirage-immersive[data-mode="party"] .m-im-extras {
+  margin-top: 1.2vh;
+}
+#mirage-immersive[data-mode="party"] .m-im-extras > :not(.m-im-vol) {
   display: none;
 }
 #mirage-immersive[data-mode="party"] .m-im-bar {
@@ -1885,7 +1892,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 
 /* Party-Ruhemodus: Maus ruht → Kopfzeile, Knöpfe und Liedtext-Leiste blenden aus,
    Cover, Liedtext und Titel rücken um die frei gewordene Höhe (--m-idle-shift) weich nach unten */
-#mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-controls, .m-im-lyrbar) {
+#mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-controls, .m-im-extras, .m-im-lyrbar) {
   transition:
     opacity 0.5s var(--m-ease),
     transform 0.7s var(--m-ease);
@@ -1900,7 +1907,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="party"].is-idle {
   cursor: none;
 }
-#mirage-immersive[data-mode="party"].is-idle :is(.m-im-top, .m-im-controls, .m-im-lyrbar) {
+#mirage-immersive[data-mode="party"].is-idle :is(.m-im-top, .m-im-controls, .m-im-extras, .m-im-lyrbar) {
   opacity: 0;
   pointer-events: none;
 }
@@ -1916,7 +1923,7 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="party"].is-idle :is(.m-im-cover-wrap, .m-im-lyrics) {
   transform: translateY(calc(var(--m-idle-shift, 80px) / 2));
 }
-html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-controls, .m-im-lyrbar, .m-im-cover-wrap, .m-im-lyrics, .m-im-meta) {
+html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-controls, .m-im-extras, .m-im-lyrbar, .m-im-cover-wrap, .m-im-lyrics, .m-im-meta) {
   transition-duration: 0.01s;
 }
 

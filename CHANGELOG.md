@@ -10,6 +10,10 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Party: a volume slider with mute button right under the playback controls; it hides together with the controls when you stop moving the mouse.
+
 ### Fixed
 
 - Lyrics: short backing vocals under a line, like "(hey)", no longer break their closing bracket onto a line of its own (karaoke words measured slightly too narrow since 1.29.0).

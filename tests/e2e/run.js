@@ -2526,9 +2526,13 @@ async function imPolish() {
   await toMode("cover");
   // Tasten 1–6 so schnell wie möglich: am Ende steht genau die zuletzt gedrückte Ansicht, ohne Reste der Überblendung
   await T.js(`(() => { let i = 0; const t = setInterval(() => { __sp.press("Digit" + ((i * 5) % 6 + 1)); if (++i >= 32) clearInterval(t); }, 45); })(); 1`);
-  await wait(1500 + 32 * 45);
+  await wait(32 * 45);
+  // nicht nach fester Zeit messen: auf einem langsamen Rechner (CI) läuft die letzte Überblendung noch – bis zu 5 s
+  // warten, bis sich alles gesetzt hat. Bleibt ein Geist oder die Markierung hängen, schlägt der Test weiterhin an.
+  const settled = (x) => x.mode === "clock" && x.stored === "clock" && x.sel === "clock" && x.ind && !x.ghosts && x.clock === "visible";
   let s = await st();
-  ok(s.mode === "clock" && s.stored === "clock" && s.sel === "clock" && s.ind && !s.ghosts && s.clock === "visible", "polish: nach 32 schnellen Ansichtswechseln stimmt alles (Uhr): " + JSON.stringify(s));
+  for (const t0 = Date.now(); !settled(s) && Date.now() - t0 < 5000; s = await st()) await wait(150);
+  ok(settled(s), "polish: nach 32 schnellen Ansichtswechseln stimmt alles (Uhr): " + JSON.stringify(s));
   await T.js(`__sp.press("Digit1"); 1`);
   await until(async () => (await st()).mode === "cover", 2000, "polish: Taste 1 → Cover");
   // Ebene schnell auf und zu (ungerade oft: zu), dann wieder auf: Zustand wie vorher
@@ -2871,6 +2875,43 @@ async function lyricsNoWrap() {
   await toMode("party");
 }
 CASES.push(["lyrics-no-wrap", lyricsNoWrap]);
+
+// Party: Lautstärke-Regler in der Steuerung – sichtbar und bedienbar, solange die Steuerung da ist, im Ruhe-Modus mit
+// ihr ausgeblendet; die übrigen Extras (Herz, Song-Menü …) bleiben dort weg
+async function partyVolume() {
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await toMode("party");
+  const st = (idle) => T.js(`(async () => {
+    const im = document.getElementById("mirage-immersive"), was = im.classList.contains("is-idle");
+    im.classList.toggle("is-idle", ${idle});
+    await new Promise((r) => setTimeout(r, 800));
+    const vol = im.querySelector(".m-im-volume"), ex = im.querySelector(".m-im-extras"), cs = getComputedStyle(ex), r = vol.getBoundingClientRect(), c = im.querySelector(".m-im-controls").getBoundingClientRect();
+    const others = [...ex.children].filter((x) => !x.classList.contains("m-im-vol")).some((x) => x.getClientRects().length);
+    // Party dimmt den ganzen Titelblock (Kinder auf 0.6) – der Regler soll so deutlich sein wie die Knöpfe darüber
+    const ctl = +getComputedStyle(im.querySelector(".m-im-controls")).opacity;
+    const out = { shown: r.width > 40 && r.height > 0, opacity: +cs.opacity, ctl, pe: cs.pointerEvents, others, below: r.top >= c.bottom - 2 && r.top - c.bottom < 120 };
+    im.classList.toggle("is-idle", was);
+    return out;
+  })()`);
+  const a = await st(false);
+  ok(a.shown && a.opacity >= a.ctl - 0.05 && a.opacity > 0.3 && a.pe !== "none", "lautstärke: Regler in der Party-Steuerung sichtbar: " + JSON.stringify(a));
+  ok(a.below, "lautstärke: direkt unter den Knöpfen");
+  ok(!a.others, "lautstärke: sonst keine Extras in der Party-Steuerung");
+  const b = await st(true);
+  ok(b.opacity < 0.05 && b.pe === "none", "lautstärke: im Ruhe-Modus mit der Steuerung ausgeblendet: " + JSON.stringify(b));
+  // bedienen: Regler auf 30 % → Spotify-Lautstärke folgt
+  // (danach wieder auf den alten Wert – die Testumgebung prüft am Ende, dass die Lautstärke zurück ist)
+  const v = await T.js(`(async () => {
+    const s = document.querySelector("#mirage-immersive .m-im-volume"), old = Spicetify.Player.getVolume();
+    const set = async (p) => { s.value = p; s.dispatchEvent(new Event("input", { bubbles: true })); s.dispatchEvent(new Event("change", { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); };
+    await set(30);
+    const got = Math.round(Spicetify.Player.getVolume() * 100);
+    await set(Math.round(old * 100));
+    return got;
+  })()`);
+  ok(Math.abs(v - 30) <= 2, "lautstärke: Regler stellt die Lautstärke: " + v);
+}
+CASES.push(["party-volume", partyVolume]);
 
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
