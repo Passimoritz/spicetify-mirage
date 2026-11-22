@@ -2744,6 +2744,46 @@ async function moreMenu() {
 }
 CASES.push(["more-menu", moreMenu]);
 
+// Party ohne Liedtext: „Lädt …“ steht ganz in seiner Zeile (nicht halb über deren Oberkante abgeschnitten) und
+// überlappt weder die Knöpfe noch – im Ruhe-Modus, wenn der Titel nach unten rückt – den Titelblock
+async function partyLoadingNote() {
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await toMode("party");
+  const measure = (idle) => T.js(`(async () => {
+    const im = document.getElementById("mirage-immersive"), box = im.querySelector(".m-im-lyrics");
+    const inner = box.querySelector(".m-im-lyrics-inner") || box;
+    const had = im.classList.contains("is-nolyr"), wasIdle = im.classList.contains("is-idle");
+    im.classList.add("is-nolyr");
+    im.classList.toggle("is-idle", ${idle});
+    // wie beim echten Ladezustand: keine Zeilen, nur die Notiz (die Zeilen kommen danach unverändert zurück)
+    const kept = [...inner.childNodes];
+    inner.replaceChildren();
+    const note = document.createElement("div");
+    note.className = "m-im-lyrics-note e2e-note";
+    note.textContent = "Liedtext wird geladen …";
+    inner.append(note);
+    await new Promise((r) => setTimeout(r, 1300)); // Übergänge (transform 0.9 s) abwarten
+    const r = (e) => e.getBoundingClientRect();
+    const n = r(note), b = r(box), c = r(im.querySelector(".m-im-controls")), t = r(im.querySelector(".m-im-titlerow") || im.querySelector(".m-im-title"));
+    const inside = n.top >= b.top - 1 && n.bottom <= b.bottom + 1;
+    const hitsControls = !${idle} && n.top < c.bottom - 1 && n.bottom > c.top + 1;
+    const hitsTitle = n.top < t.bottom - 1 && n.bottom > t.top + 1;
+    note.remove();
+    inner.replaceChildren(...kept);
+    im.classList.toggle("is-nolyr", had);
+    im.classList.toggle("is-idle", wasIdle);
+    return { inside, hitsControls, hitsTitle, note: [Math.round(n.top), Math.round(n.bottom)], box: [Math.round(b.top), Math.round(b.bottom)] };
+  })()`);
+  for (const idle of [false, true]) {
+    const m = await measure(idle);
+    const tag = idle ? "Ruhe" : "aktiv";
+    ok(m.inside, `lädt (${tag}): ganz in der Liedtext-Zeile: Notiz ${m.note} / Zeile ${m.box}`);
+    ok(!m.hitsControls, `lädt (${tag}): überlappt die Knöpfe nicht`);
+    ok(!m.hitsTitle, `lädt (${tag}): überlappt den Titel nicht`);
+  }
+}
+CASES.push(["party-loading-note", partyLoadingNote]);
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {

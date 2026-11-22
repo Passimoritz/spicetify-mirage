@@ -5910,10 +5910,29 @@ html.mirage-rich #mirage-stage .m-aurora {
   height: clamp(40px, 4.4vw, 60px);
   -webkit-mask-image: none;
   mask-image: none;
+  /* „Lädt …“ mittig im Fluss (siehe unten) und etwas Abstand zu den Knöpfen darüber */
+  display: grid;
+  place-items: center;
+  margin-top: 1.2vh;
+}
+/* „Lädt …“ in dieser Zeile: mittig im Fluss statt absolut. Absolut richtete sich die Notiz an .m-im-lyrics-inner
+   aus – das ist ohne Zeilen 0 px hoch, „mittig“ hieß dort „auf der Oberkante“, und die obere Hälfte der Schrift
+   ragte aus der Liedtext-Fläche (overflow: hidden) und wurde abgeschnitten. Etwas Abstand zu den Knöpfen darüber. */
+/* ohne Zeilen gibt es nichts zu rollen: eine übrig gebliebene Rollposition des vorigen Texts darf „Lädt …“ nicht
+   aus der Zeile schieben */
+#mirage-immersive[data-mode="party"].is-nolyr .m-im-lyrics-inner {
+  width: 100%;
+  transform: none !important;
 }
 #mirage-immersive[data-mode="party"].is-nolyr .m-im-lyrics-note:not(.is-small) {
-  top: 50%;
-  transform: translateY(-50%);
+  position: static;
+  transform: none;
+  line-height: 1.25;
+}
+/* Ruhe-Modus: der Titelblock rückt um --m-idle-shift nach unten, die Liedtext-Fläche sonst nur halb so weit. Ohne
+   Liedtext steht sie UNTER dem Titel – sie muss mitwandern, sonst schiebt sich der Titel über „Lädt …“ */
+#mirage-immersive[data-mode="party"].is-nolyr.is-idle .m-im-lyrics {
+  transform: translateY(var(--m-idle-shift, 80px));
 }
 /* ---------- Immersiv: Quelle / Fassung wählen ---------- */
 /* unten rechts: Übersetzung an/aus und Fassung wählen, nebeneinander */
