@@ -8,7 +8,10 @@ const { load } = require("./load.js");
 const { LOOKS, FAMILIES, RULES, SPECIFIC, GENRES, APPLE, best, pickProfile } = load("genres.js");
 const { KIN, baseOf, kin, kinSet } = load("styles.js");
 const { STYLE } = load("director.js");
-const { GENRE_TEXT } = load("i18n-genres.js");
+const { GENRE_TEXT: GT } = load("i18n-genres.js");
+const { SUBGENRES_TEXT } = load("i18n-subgenres.js");
+// Namen der Spielarten: i18n-genres.js und (für die Untergenres der vollständigen Liste) i18n-subgenres.js
+const GENRE_TEXT = Object.fromEntries(Object.keys(GT).map((l) => [l, { ...GT[l], ...SUBGENRES_TEXT[l] }]));
 const src = (f) => fs.readFileSync(path.join(__dirname, "..", "..", "src", f), "utf8").replace(/\r\n/g, "\n");
 
 // ---- Spotify-Genre (erstes Künstler-Genre) → Spielart
@@ -94,6 +97,12 @@ const SPOTIFY = [
   ["americana", "americana"], ["alt-country", "americana"], ["bluegrass", "bluegrass"], ["old-time", "bluegrass"], ["cajun", "cajun"],
   ["zydeco", "cajun"], ["folk", "folk"], ["contemporary folk", "folk"], ["indie folk", "indiefolk"], ["stomp and holler", "indiefolk"],
   ["acoustic", "acoustic"], ["singer-songwriter", "acoustic"],
+  // Untergenres, die mit der vollständigen Genre-Liste ein eigenes Profil bekamen
+  ["breakcore", "breakcore"], ["raggacore", "breakcore"], ["deep tech", "deeptech"], ["uptempo hardcore", "uptempo"], ["terrorcore", "uptempo"],
+  ["hyphy", "hyphy"], ["bay area hip hop", "hyphy"], ["jerk", "jerk"], ["oi", "streetpunk"], ["street punk", "streetpunk"], ["riot grrrl", "riotgrrrl"],
+  ["slowcore", "slowcore"], ["sadcore", "slowcore"], ["bhojpuri", "bhojpuri"], ["cuarteto", "cuarteto"], ["mambo", "mambo"], ["boogaloo", "mambo"],
+  ["tecnobrega", "tecnobrega"], ["champeta", "champeta"], ["shatta", "shatta"], ["ragga", "ragga"], ["juju", "juju"], ["fuji", "juju"],
+  ["mbalax", "mbalax"], ["dungeon synth", "dungeonsynth"],
   ["jazz", "jazz"], ["dixieland", "dixieland"], ["ragtime", "dixieland"], ["swing", "swing"], ["big band", "swing"], ["bebop", "bebop"],
   ["hard bop", "bebop"], ["cool jazz", "cooljazz"], ["spiritual jazz", "spiritualjazz"], ["free jazz", "freejazz"], ["vocal jazz", "vocaljazz"],
   ["adult standards", "vocaljazz"], ["latin jazz", "latinjazz"], ["gypsy jazz", "gypsyjazz"], ["jazz fusion", "fusion"], ["jazz funk", "fusion"],
@@ -193,7 +202,7 @@ const OLD = [...party.slice(party.indexOf("const PROFILES = {"), party.indexOf("
 assert.equal(OLD.length, 69, "69 Grund-Profile in party.js");
 for (const k of OLD) assert.ok(!(k in KIN), `${k} steht doppelt (party.js und styles.js)`);
 assert.deepEqual([...all].sort(), [...OLD, ...Object.keys(KIN)].sort(), "Familien = alle Profile");
-assert.ok(all.length >= 250 && all.length <= 330, `${all.length} Spielarten`);
+assert.ok(all.length >= 250 && all.length <= 345, `${all.length} Spielarten`);
 // Verwandte stehen vorher (sonst erbt die Abwandlung ins Leere)
 const seen = new Set(OLD);
 for (const k of Object.keys(KIN)) {

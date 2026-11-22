@@ -1,6 +1,7 @@
 /* ---------------------------------------------------------------- Spielarten und Genre-Erkennung */
 // Reine Daten und reine Funktionen (ohne Spotify, ohne Fenster) – so laufen sie auch in den Unit-Tests.
 // Die Verwandtschaft (Ort, Publikum, Effekte) steht in styles.js, die Lichtsprache der Grund-Profile in party.js.
+import { GENRE_MAP } from "./genre-map.js";
 
 // Lichtsprache der weiteren Spielarten: nur, worin sie sich von ihrem Verwandten (styles.js) unterscheiden
 const LOOKS = {
@@ -158,18 +159,32 @@ const LOOKS = {
   kids: { decay: 5, tint: "pink", spot: "pan", spinRate: 0.25, sparks: 26, flashOn: "down" }, disney: { sparks: 26 },
   comedy: { decay: 3, flashOn: "", spot: "top", tint: "warm", spinRate: 0.05, beams: 0.2, sparks: 4 },
   spoken: { decay: 1.5, beams: 0.05, flashOn: "", spot: "soft", spinRate: 0.02, pulse: 0.01, sparks: 0, height: 1 },
+  // Untergenres, die der Test mit 181 echten Spotify-Genres ohne eigenes Profil fand (Breakcore landete bei Rock)
+  breakcore: { decay: 13, accent: [1, 0.7, 1, 0.85], spot: "scan", shake: 8, spinRate: 0.75, sparks: 10 },
+  deeptech: { decay: 6, spot: "floor", tint: "cool", spinRate: 0.25, beams: 0.8 },
+  uptempo: { decay: 14, accent: [1, 1, 1, 1], spot: "cross", shake: 10, spinRate: 0.9 },
+  hyphy: { decay: 8, spot: "pan", tint: "gold", shake: 6, sparks: 14 }, jerk: { decay: 9, tint: "pink", spinRate: 0.5, shake: 4, sparks: 12 },
+  streetpunk: { decay: 10, spot: "top", tint: "hot", shake: 6 }, riotgrrrl: { decay: 10, spot: "cross", tint: "pink", shake: 6, sparks: 14 },
+  slowcore: { decay: 2.5, beams: 0.5, spot: "soft", spinRate: 0.1, sparks: 3 },
+  bhojpuri: { decay: 8, tint: "hot", spinRate: 0.45, sparks: 16 },
+  cuarteto: { decay: 8, spot: "disco", tint: "warm", sparks: 16 }, mambo: { spot: "pan", tint: "gold", sparks: 14 },
+  tecnobrega: { decay: 9, spot: "disco", tint: "pink", spinRate: 0.55, sparks: 18 }, champeta: { spot: "pan", tint: "jungle", sparks: 12 },
+  shatta: { decay: 8, spot: "floor", tint: "hot", shake: 5 }, ragga: { decay: 7, tint: "jungle", shake: 5, bottom: true },
+  juju: { decay: 4, spot: "pan", tint: "gold", spinRate: 0.25 },
+  mbalax: { decay: 10, accent: [1, 0.6, 0.95, 0.7], tint: "warm", spinRate: 0.5, sparks: 14 },
+  dungeonsynth: { decay: 2, beams: 0.4, spot: "aurora", tint: "cool", spinRate: 0.08, sparks: 2 },
 };
 
 // Für die Auswahl in den Einstellungen und die Tabelle im README: nach Musikfamilie geordnet
 const FAMILIES = {
-  electronic: ["rave", "edm", "electrohouse", "progressivehouse", "futurehouse", "house", "deephouse", "tropicalhouse", "techhouse", "basshouse", "acidhouse", "chicagohouse", "frenchhouse", "nudisco", "garage", "jerseyclub", "techno", "minimal", "detroittechno", "dubtechno", "melodictechno", "hardtechno", "ebm", "trance", "progressivetrance", "upliftingtrance", "psytrance", "dnb", "liquiddnb", "neurofunk", "jungle", "breakbeat", "footwork", "electro", "dubstep", "festivaltrap", "futurebass", "moombahton", "hardstyle", "gabber", "happyhardcore", "eurodance", "eurobeat", "handsup", "italodisco", "synthwave", "darksynth", "vaporwave", "hyperpop", "chiptune", "electroswing"],
-  urban: ["bass", "boombap", "gangsta", "gfunk", "southern", "alternativehiphop", "trap", "poprap", "cloudrap", "drill", "phonk", "ukhiphop", "grime", "deutschrap", "frenchrap", "italianrap", "spanishrap", "russianrap", "turkishrap", "arabrap", "brazilianhiphop", "rnb", "altrnb", "newjackswing", "soul", "neosoul", "northernsoul", "funk"],
-  rock: ["rock", "classicrock", "rocknroll", "hardrock", "glamrock", "bluesrock", "southernrock", "psychrock", "stonerrock", "progrock", "krautrock", "surfrock", "garagerock", "alternative", "grunge", "indie", "britpop", "shoegaze", "postpunk", "postrock", "folkrock", "softrock", "deutschrock", "punk", "poppunk", "hardcorepunk", "posthardcore", "emo"],
+  electronic: ["rave", "edm", "electrohouse", "progressivehouse", "futurehouse", "house", "deephouse", "tropicalhouse", "techhouse", "basshouse", "acidhouse", "chicagohouse", "frenchhouse", "nudisco", "garage", "jerseyclub", "techno", "minimal", "detroittechno", "dubtechno", "melodictechno", "hardtechno", "ebm", "trance", "progressivetrance", "upliftingtrance", "psytrance", "dnb", "liquiddnb", "neurofunk", "jungle", "breakbeat", "footwork", "electro", "dubstep", "festivaltrap", "futurebass", "moombahton", "hardstyle", "gabber", "happyhardcore", "eurodance", "eurobeat", "handsup", "italodisco", "synthwave", "darksynth", "vaporwave", "hyperpop", "chiptune", "electroswing", "breakcore", "deeptech", "uptempo"],
+  urban: ["bass", "boombap", "gangsta", "gfunk", "southern", "alternativehiphop", "trap", "poprap", "cloudrap", "drill", "phonk", "ukhiphop", "grime", "deutschrap", "frenchrap", "italianrap", "spanishrap", "russianrap", "turkishrap", "arabrap", "brazilianhiphop", "rnb", "altrnb", "newjackswing", "soul", "neosoul", "northernsoul", "funk", "hyphy", "jerk"],
+  rock: ["rock", "classicrock", "rocknroll", "hardrock", "glamrock", "bluesrock", "southernrock", "psychrock", "stonerrock", "progrock", "krautrock", "surfrock", "garagerock", "alternative", "grunge", "indie", "britpop", "shoegaze", "postpunk", "postrock", "folkrock", "softrock", "deutschrock", "punk", "poppunk", "hardcorepunk", "posthardcore", "emo", "streetpunk", "riotgrrrl", "slowcore"],
   metal: ["metal", "heavymetal", "thrash", "glammetal", "powermetal", "symphonicmetal", "progmetal", "doom", "deathmetal", "blackmetal", "grindcore", "groovemetal", "metalcore", "deathcore", "numetal", "industrialmetal", "folkmetal"],
   pop: ["pop", "dancepop", "electropop", "synthpop", "teenpop", "poprock", "indiepop", "artpop", "disco", "ballad", "musical"],
-  asia: ["kpop", "kindie", "krock", "khiphop", "krnb", "trot", "jpop", "jrock", "jhiphop", "anime", "vocaloid", "citypop", "shibuyakei", "enka", "japantrad", "cpop", "mandopop", "cantopop", "chinesehiphop", "chinesetrad", "tpop", "lukthung", "vpop", "opm", "dangdut", "gamelan", "bollywood", "kollywood", "punjabi", "desihiphop", "hindustani", "carnatic", "qawwali"],
-  latin: ["latin", "latinpop", "reggaeton", "latintrap", "dembow", "bachata", "merengue", "salsa", "son", "bolero", "cumbia", "vallenato", "tango", "mariachi", "regionalmexican", "banda", "norteno", "corridos", "latinrock", "andean", "brazil", "samba", "pagode", "axe", "forro", "sertanejo", "funkcarioca", "mpb", "bossa"],
-  africa: ["afro", "afrobeat", "highlife", "amapiano", "gqom", "afrohouse", "bongo", "soukous", "kuduro", "kizomba", "desertblues", "reggae", "rootsreggae", "dub", "rocksteady", "ska", "dancehall", "soca", "calypso", "zouk", "kompa"],
+  asia: ["kpop", "kindie", "krock", "khiphop", "krnb", "trot", "jpop", "jrock", "jhiphop", "anime", "vocaloid", "citypop", "shibuyakei", "enka", "japantrad", "cpop", "mandopop", "cantopop", "chinesehiphop", "chinesetrad", "tpop", "lukthung", "vpop", "opm", "dangdut", "gamelan", "bollywood", "kollywood", "punjabi", "desihiphop", "hindustani", "carnatic", "qawwali", "bhojpuri"],
+  latin: ["latin", "latinpop", "reggaeton", "latintrap", "dembow", "bachata", "merengue", "salsa", "son", "bolero", "cumbia", "vallenato", "tango", "mariachi", "regionalmexican", "banda", "norteno", "corridos", "latinrock", "andean", "brazil", "samba", "pagode", "axe", "forro", "sertanejo", "funkcarioca", "mpb", "bossa", "cuarteto", "mambo", "tecnobrega", "champeta"],
+  africa: ["afro", "afrobeat", "highlife", "amapiano", "gqom", "afrohouse", "bongo", "soukous", "kuduro", "kizomba", "desertblues", "reggae", "rootsreggae", "dub", "rocksteady", "ska", "dancehall", "soca", "calypso", "zouk", "kompa", "shatta", "ragga", "juju", "mbalax"],
   mideast: ["arabic", "arabicpop", "khaleeji", "tarab", "rai", "gnawa", "dabke", "mahraganat", "turkishpop", "arabesk", "anatolianrock", "persianpop", "persiantrad", "mizrahi"],
   europe: ["schlager", "partyschlager", "volksmusik", "polka", "karneval", "deutschpop", "chanson", "canzone", "europop", "discopolo", "russianpop", "greek", "fado", "flamenco", "balkan", "turbofolk", "klezmer", "celtic", "nordicfolk"],
   country: ["country", "classiccountry", "countrypop", "countryrock", "americana", "bluegrass", "cajun", "folk", "indiefolk", "acoustic"],
@@ -177,7 +192,7 @@ const FAMILIES = {
   spirit: ["gospel", "ccm", "worship", "christianrock", "christianhiphop", "bhajan", "nasheed"],
   classical: ["classical", "baroque", "classicalera", "romantic", "opera", "choral", "chamber", "orchestral", "minimalism", "contemporary", "cinematic", "gamemusic"],
   calm: ["chill", "lofi", "downtempo", "triphop", "easylistening", "ambient", "newage", "meditation", "sleep", "neoclassical"],
-  experimental: ["experimental", "idm", "industrial", "noise", "darkambient"],
+  experimental: ["experimental", "idm", "industrial", "noise", "darkambient", "dungeonsynth"],
   misc: ["christmas", "halloween", "kids", "disney", "comedy", "spoken"],
 };
 
@@ -211,7 +226,7 @@ const RULES = [
   ["electro", /^electro$|electro-funk|electro funk|miami bass|\bfreestyle\b/],
   ["festivaltrap", /festival trap|hybrid trap|edm trap|trap edm/],
   ["moombahton", /moombah(?:ton|core)?/],
-  ["gabber", /hardcore techno|uptempo hardcore|early hardcore|gabber|frenchcore|terrorcore|speedcore/],
+  ["gabber", /hardcore techno|early hardcore|gabber|frenchcore/],
   ["happyhardcore", /happy hardcore|uk hardcore|happy gabber/],
   ["eurobeat", /eurobeat|para ?para/],
   ["handsup", /hands ?up/],
@@ -345,7 +360,7 @@ const RULES = [
   ["corridos", /corridos tumbados|corridos b[eé]licos|sierre[nñ]o|b[eé]licos?|corridos?|requinto/],
   ["latinrock", /alternativo (?:&|y) rock latino|rock en espa[nñ]ol|rock (?:latino|argentino|nacional|mexicano|chileno|colombiano|alternativo|espa[nñ]ol)|(?:mexican|argentine|chilean|colombian|peruvian|spanish) rock|latin alternative|latin rock/],
   ["andean", /folklore argentino|nueva canci[oó]n|musica andina|chacarera|charango|andean|huayno|ra[ií]ces|\bzamba\b|\bcueca\b|(?:chilean|peruvian|bolivian) folk/],
-  ["samba", /escola de samba|samba de roda|samba-enredo|partido alto|batucada|samba/],
+  ["samba", /escola de samba|samba de roda|samba-enredo|partido alto|batucada|\bsamba\b/],
   ["pagode", /pagod[aã]o|pagode/],
   ["axe", /samba-reggae|\bax[eé](?![a-z])|frevo/],
   ["forro", /pisadinha|piseiro|forr[oó]|bai[aã]o|xaxado|\bxote\b/],
@@ -420,7 +435,8 @@ const RULES = [
   ["nordicfolk", /(?:scandinavian|swedish|norwegian|finnish|danish|icelandic) folk|nordic folk|nyckelharpa|hardanger|kantele|joik|yoik/],
   ["nordicfolk", /viking|nordic|norse|\bsami\b/, -10],
   // Country & Folk
-  ["classiccountry", /traditional country|truck-driving|nashville sound|outlaw country|classic country|country gospel|western swing|urban cowboy|honky ?tonk|bakersfield|cowboy|western/],
+  ["classiccountry", /traditional country|truck-driving|nashville sound|outlaw country|classic country|country gospel|western swing|urban cowboy|honky ?tonk|bakersfield|cowboy/],
+  ["classiccountry", /\bwestern\b/, -10],
   ["countrypop", /contemporary country|modern country|country pop|pop country|country dawn|country road|bro-?country/],
   ["countryrock", /southern country|texas country|country rock|outlaw rock|red dirt/],
   ["americana", /alternative country|insurgent country|gothic americana|cosmic country|alt-?country|americana/],
@@ -500,7 +516,7 @@ const RULES = [
   ["classical", /klassik|klassiek|cl[aá]sica|classica|classique|crossover classique|klassische crossover|klassieke crossover|クラシック/],
   ["rave", /elektronisch|elektronik|electr[oó]nica|elettronica|[ée]lectronique|エレクトロニック|電子音樂|电子/],
   ["cinematic", /bandas? sonoras?|colonne sonore|filmmusik|bandes? originales?|サウンドトラック|原聲帶|原声/],
-  ["chill", /strumentale|instrumentale?|instrumentaal|インストゥルメンタル|m[uú]sica tranquila|musique d'ambiance|entspannung/],
+  ["chill", /strumentale|instrumentale?|instrumentaal|インストゥルメンタル|m[uú]sica tranquila|musique d'ambiance|entspannung/, -10],
   ["newage", /ニューエイジ|新世紀/],
   ["jrock", /ロック|オルタナティブ|ヴィジュアル系/],
   ["jpop", /ポップ|歌謡曲|j-?pop/],
@@ -511,7 +527,8 @@ const RULES = [
   ["chinesehiphop", /嘻哈|饒舌|说唱/],
   ["rock", /華語搖滾|獨立搖滾|民謠搖滾|搖滾|摇滚/, -2],
   ["alternative", /alternativ[ao]|alternatief/],
-  ["afro", /afro[- ]?pop|m[uú]sica africana|musique africaine|afrikanisch|\bafrican\b|\bafrica\b/],
+  ["afro", /afro[- ]?pop|m[uú]sica africana|musique africaine|afrikanisch/],
+  ["afro", /\bafrican\b|\bafrica\b/, -10],
   ["afrobeat", /afro-beat/],
   ["kids", /children['’]s music|enfants|bambini|kinderen/],
   ["indiefolk", /alternative folk|folk alternativo/],
@@ -527,6 +544,57 @@ const RULES = [
   ["rai", /north african/],
   ["kids", /kid-friendly/],
   ["progrock", /^progressive$/],
+  // Untergenres aus der vollständigen Genre-Liste (tools/data/genres-all.json), die vorher nichts oder nur die
+  // grobe Familie trafen – Breakcore war über „core“ sogar Rock
+  ["breakcore", /breakcore|raggacore|mashcore|lolicore|breakgore/],
+  ["deeptech", /deep tech\b|deep minimal/],
+  ["uptempo", /uptempo(?: hardcore)?|terrorcore|speedcore|extratone|splittercore/],
+  ["hyphy", /bay area (?:hip[- ]?hop|rap)|\bmob music|hyphy|thizz/],
+  ["jerk", /\bjerk(?:in)?\b|new jerk/],
+  ["southern", /new orleans bounce|sissy bounce|\bbounce\b/, -2],
+  ["electrohouse", /melbourne bounce|dutch bounce/],
+  ["streetpunk", /street punk|skinhead reggae|\boi\b|\boi!/],
+  ["riotgrrrl", /riot grrrl|riot girl|queercore|grrrl/],
+  ["slowcore", /slowcore|sadcore|slow core/],
+  ["bhojpuri", /bhojpuri|chhattisgarhi|maithili|awadhi/],
+  ["cuarteto", /cuarteto|cuartetazo/],
+  ["mambo", /latin boogaloo|latin soul|cha cha cha|boogaloo|bugal[uú]|pachanga|mambo/],
+  ["tecnobrega", /tecno ?brega|tecnomelody|aparelhagem|\bbrega\b/],
+  ["champeta", /terapia criolla|champeta/],
+  ["shatta", /shatta/],
+  ["ragga", /raggamuffin|ragga hip[- ]?hop|\bragga\b/],
+  ["juju", /\bj[uù]j[uú]\b|\bfuji\b|\bapala\b|were music/],
+  ["juju", /yoruba/, -10],
+  ["mbalax", /mbalax|\bsabar\b/],
+  ["mbalax", /senegal(?:ese)?|gambian/, -10],
+  ["dungeonsynth", /dungeon ?synth|winter synth|comfy synth/],
+  ["vaporwave", /slowed (?:and|&|\+) reverb|slowed|reverb/],
+  ["hyperpop", /sigilkore|hyperflip|krushclub|tweakcore/],
+  ["futurebass", /^wave$|wavecore/],
+  ["indie", /hamburger schule/],
+  ["progrock", /zeuhl|rock in opposition/],
+  ["footwork", /ghettotech|ghetto house|booty house|juke house/],
+  ["experimental", /hauntology|onkyokei|\bonkyo\b/],
+  ["ambient", /\blowercase\b/],
+  ["bass", /nederhop|nederrap/],
+  ["salsa", /\bbomba\b|\bplena\b|j[ií]baro/],
+  ["dubstep", /bass music|\buk bass\b/],
+  ["electropop", /new rave|nu rave/],
+  ["europop", /nederpop/],
+  ["metalcore", /electronicore|synthcore/],
+  ["phonk", /(?:brazilian|russian|drift|house|wave|chill|dark) phonk/],
+  ["eurodance", /bubblegum dance/],
+  ["folkrock", /medieval rock/],
+  // reine Regionalwörter, die vorher als „genaue“ Regel galten und so „brazilian metal“, „scottish rock“ oder
+  // „turkish punk“ zu Samba, Celtic und Arabisch machten
+  ["brazil", /brazil(?:ian)?|brasil(?:eir[oa])?/, -10],
+  ["celtic", /irish|scottish/, -10],
+  ["bollywood", /indian/, -10],
+  ["turkishpop", /turkish/, -10],
+  ["arabic", /middle east(?:ern)?/, -10],
+  // Grundwörter ohne eigene Regel: schlagen nur Regionalwörter („romanian rock“ ist Rock, „irish electronic“ elektronisch)
+  ["rock", /\brock\b/, -50],
+  ["rave", /\belectronic[ao]?\b/, -50],
 ];
 // Genaue Spielarten der ersten Versionen – gelten für Spotify- und Apple-Genres gleichermaßen
 const SPECIFIC = [
@@ -554,7 +622,7 @@ const SPECIFIC = [
   ["eurodance", /eurodance|euro ?dance|italo|euro ?house|hands ?up|eurobeat/],
   ["hyperpop", /hyperpop|digicore|glitchcore|nightcore/],
   ["ambient", /ambient|drone|new age|meditation|sleep|healing/],
-  ["brazil", /samba|pagode|forr[oó]|\bax[eé]\b|baile funk|funk carioca|sertanejo|\bmpb\b|bossa|brazil|brasil/],
+  ["brazil", /\bsamba\b|pagode|forr[oó]|\bax[eé]\b|baile funk|funk carioca|sertanejo|\bmpb\b|bossa/],
   ["metal", /metal|metalcore|deathcore|djent|thrash|grindcore/],
   ["hardstyle", /hardstyle|hard dance|gabber|rawstyle|hardcore techno/],
   ["dnb", /drum ?(&|and|n'?) ?bass|\bdnb\b|jungle|liquid funk|neurofunk/],
@@ -577,10 +645,10 @@ const SPECIFIC = [
   ["reggae", /reggae|dancehall|\bdub\b|\bska\b/],
   ["salsa", /salsa|bachata|merengue|cumbia|tropical|vallenato|tango|mariachi|ranchera|banda|norte[nñ]o|corrido|regional mexican/],
   ["flamenco", /flamenco|rumba|spanish guitar|sevillanas/],
-  ["bollywood", /bollywood|filmi|bhangra|desi|punjabi|indian|tamil|telugu|hindi/],
+  ["bollywood", /bollywood|filmi|bhangra|desi|punjabi|tamil|telugu|hindi/],
   ["balkan", /balkan|gypsy|klezmer|turbo ?folk|manele|brass band|polka|čoček|cocek/],
-  ["arabic", /arab|khaleeji|\bra[iï]\b|dabke|turkish|middle east|persian|mizrahi/],
-  ["celtic", /celtic|irish|scottish|shant(y|ies)|bagpipe|folk punk|gaelic/],
+  ["arabic", /arab|khaleeji|\bra[iï]\b|dabke|persian|mizrahi/],
+  ["celtic", /celtic|irish (?:folk|trad\w*|pub song)|scottish (?:gaelic )?folk|shant(y|ies)|bagpipe|folk punk|gaelic/],
   ["musical", /musical|show ?tunes|broadway|cabaret|west end/],
   ["latin", /urbano|latin|moombah/],
   ["lofi", /lo-?fi|chillhop|jazzhop|study beats|bedroom beats/],
@@ -606,18 +674,42 @@ const PRIORITY = { christmas: 100, halloween: 100, spoken: 100, kids: 50 };
 const ALL = [...RULES, ...SPECIFIC];
 // je Genre-Text einmal rechnen: es gibt nur wenige verschiedene, und jeder Song fragt bis zu fünf davon
 const memo = new Map();
-function best(g) {
+// Nachschlagetabelle aus der vollständigen Genre-Liste (Spotify ~6 300, MusicBrainz, Apple, Deezer): nur die Namen,
+// bei denen die Regeln allein nichts oder nur die grobe Familie finden (tools/genres-map.js baut sie).
+// Erst beim ersten Nachschlagen ausgepackt; ein Treffer sieht aus wie eine Regel ohne Muster: [spielart, null]
+let lookup = null;
+const table = () => {
+  if (lookup) return lookup;
+  lookup = new Map();
+  for (const [k, list] of Object.entries(GENRE_MAP)) {
+    const hit = [k, null];
+    for (const n of list.split("|")) lookup.set(n, hit);
+  }
+  return lookup;
+};
+// ohne Akzente („forró“ → „forro“, „música“ → „musica“): MusicBrainz, Apple und Deezer schreiben sie, die Regeln meist nicht
+const fold = (g) => (/[^\x20-\x7e]/.test(g) ? g.normalize("NFD").replace(/[̀-ͯ]/g, "") : g);
+const rules = (g) => byRules(g) || (fold(g) !== g ? byRules(fold(g)) : null);
+function best(g, rulesOnly = false) {
   if (!g) return null;
+  if (rulesOnly) return rules(g);
   if (memo.has(g)) return memo.get(g);
+  const hit = table().get(g) || rules(g);
+  if (memo.size > 2000) memo.clear();
+  memo.set(g, hit);
+  return hit;
+}
+// der längste Treffer aller Regeln (ohne Tabelle – so rechnet auch tools/genres-map.js, was die Tabelle braucht)
+function byRules(g) {
   let hit = null, top = -Infinity;
   for (const r of ALL) {
     const m = r[1].exec(g);
     if (!m) continue;
-    const n = m[0].length + (r[2] || 0) + (PRIORITY[r[0]] || 0);
+    // reine Regionalwörter (−10 und weniger) zählen nur, wenn sonst nichts passt – auch kein Grundwort (−50)
+    const w = r[2] || 0;
+    const n = (w <= -10 ? (w <= -50 ? -50 : -100) : w) + m[0].length + (PRIORITY[r[0]] || 0);
     if (n > top) [hit, top] = [r, n];
   }
-  if (memo.size > 2000) memo.clear();
-  memo.set(g, hit);
   return hit;
 }
 // Reihenfolge zählt: „dance pop“ ist eher Pop als Rave, „pop punk“ eher Rock
@@ -676,7 +768,32 @@ function soundGuess(bpm, loud, s) {
   // ohne Hörprobe: nur sehr leise Mischungen gelten als ruhig
   return loud < -17 || (bpm && bpm < 66) ? ["chill", 0.8] : ["pop", 0.5];
 }
-function pickGenre({ genres = [], apple = "", deezer = [], artist = "", title = "", bpm = 0, loud = -10, minor = 0, sound = null } = {}) {
+// Spielart → Familie („emo“ → „rock“); unbekannt: ""
+const FAMILY_OF = {};
+for (const [f, keys] of Object.entries(FAMILIES)) for (const k of keys) FAMILY_OF[k] = f;
+const familyOf = (key) => FAMILY_OF[key] || "";
+// Von Hand festgelegt (cfg.genreArtist): Künstler-URI („spotify:artist:…“) oder nur die ID → Spielart.
+// Nur bekannte Spielarten zählen – ein Tippfehler oder eine später entfernte Spielart fällt auf die Erkennung zurück
+function manualFor(map, artistUri) {
+  if (!map || !artistUri) return "";
+  const uri = String(artistUri), id = uri.split(":").pop();
+  const k = map[uri] || map[id] || map["spotify:artist:" + id] || "";
+  return FAMILY_OF[k] ? k : "";
+}
+// Ein einzelner Genre-Name einer Quelle → Spielart, nie leer: genaue Regel oder Tabelle, sonst die Familie,
+// zuletzt Pop. src: "spotify" (auch MusicBrainz und Last.fm-Tags), "apple" oder "deezer"
+function genreKey(name, src = "spotify") {
+  const g = String(name || "").toLowerCase().replace(/\s+/g, " ").trim();
+  if (!g) return "pop";
+  if (src === "apple" && APPLE_ONLY[g]) return APPLE_ONLY[g];
+  if (src === "deezer" && DEEZER_ONLY[g]) return DEEZER_ONLY[g];
+  const m = best(g) || (src === "spotify" ? GENRES : APPLE).find(([, re]) => re.test(g)) || (src === "spotify" ? APPLE : GENRES).find(([, re]) => re.test(g));
+  return m ? m[0] : "pop";
+}
+function pickGenre({ genres = [], apple = "", deezer = [], artist = "", title = "", bpm = 0, loud = -10, minor = 0, sound = null, artistUri = "", manual = null } = {}) {
+  // von Hand für diesen Künstler festgelegt: gewinnt immer
+  const own = manualFor(manual, artistUri);
+  if (own) return { key: own, why: "manual", conf: 1, family: familyOf(own) };
   const score = {}, add = (k, n) => k && (score[k] = (score[k] || 0) + n);
   let why = "";
   const g = String(apple || "").toLowerCase().trim();
@@ -738,9 +855,9 @@ function pickGenre({ genres = [], apple = "", deezer = [], artist = "", title = 
     else if (bpm >= 132 && bpm <= 150) key = minor > 0.6 ? "techno" : "trance";
     else if (bpm >= 118 && bpm < 132) key = minor > 0.6 ? "techno" : "house";
   }
-  return { key, why, conf: Math.round(conf * 100) / 100 };
+  return { key, why, conf: Math.round(conf * 100) / 100, family: familyOf(key) };
 }
 // alte Form (Spotify-Genres, Tempo, Lautheit, Apple-Genre, Moll-Anteil) – für Aufrufer ohne die neuen Quellen
 const pickProfile = (genres, bpm, loud, apple = "", minor = 0) => pickGenre({ genres, bpm, loud, apple, minor });
 
-export { LOOKS, FAMILIES, RULES, SPECIFIC, GENRES, APPLE, PRIORITY, best, pickProfile, pickGenre, soundGuess };
+export { LOOKS, FAMILIES, RULES, SPECIFIC, GENRES, APPLE, APPLE_ONLY, DEEZER_ONLY, PRIORITY, best, pickProfile, pickGenre, soundGuess, genreKey, familyOf, manualFor };

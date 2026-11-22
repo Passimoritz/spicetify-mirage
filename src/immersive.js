@@ -4563,13 +4563,8 @@ Probe-FX: ${pfx}`;
     note.textContent = t("imGenreNote").replace("{a}", who);
     body.append(note);
     const pick = (k) => {
-      const all = { ...(cfg.genreArtist || {}) };
-      if (k) all[art] = k;
-      else delete all[art];
-      cfg.genreArtist = all;
-      save();
-      // Party-Plan neu: party.prepare merkt sich den Stil je Song und Künstler-Wahl
-      party.prepare(currentItem()).then(() => {
+      // speichert, leert den Merker je Song und plant den laufenden Song neu (party.js)
+      Promise.resolve(party.setArtistGenre(art, k || "")).then(() => {
         updateKicker();
         if (side === "menu") rebuildMenu();
       });

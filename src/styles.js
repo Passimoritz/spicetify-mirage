@@ -91,6 +91,15 @@ const KIN = {
   // Kinder, Feiertage & Gesprochenes
   halloween: ["cinematic", "forest", "bounce", "c"], kids: ["pop", "home", "clap", "-"], disney: ["musical", "stadium", "clap", "cl"],
   comedy: ["chill", "pub", "clap", "-"], spoken: ["chill", "home", "sway", "q"],
+  // Untergenres, die vorher kein eigenes Profil hatten (genres.js, Ende von LOOKS)
+  breakcore: ["jungle", "warehouse", "jump", "s"], deeptech: ["techhouse", "club", "pump"], uptempo: ["gabber", "warehouse", "jump"],
+  hyphy: ["southern", "club", "bounce"], jerk: ["trap", "club", "jump"],
+  streetpunk: ["punk", "pub", "jump"], riotgrrrl: ["punk", "cellar", "jump"], slowcore: ["indie", "cellar", "sway", "q"],
+  bhojpuri: ["bollywood", "festival", "jump"],
+  cuarteto: ["cumbia", "club", "jump"], mambo: ["salsa", "jazzbar", "bounce"], tecnobrega: ["forro", "club", "jump", "cs"],
+  champeta: ["soukous", "beach", "bounce"], shatta: ["dancehall", "club", "bounce"], ragga: ["dancehall", "", "bounce"],
+  juju: ["highlife", "", "sway"], mbalax: ["afro", "festival", "jump"],
+  dungeonsynth: ["darkambient", "forest", "sway", "q"],
 };
 const baseOf = (k) => (typeof KIN[k] === "string" ? KIN[k] : KIN[k]?.[0]);
 const own = (k, i) => (typeof KIN[k] === "string" ? "" : KIN[k][i] || "");
