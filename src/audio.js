@@ -55,13 +55,17 @@ async function warmAudio(uri) {
 // neue Taktdaten da (echt oder geschätzt): Anzeige und Party nachziehen
 const announce = () => document.dispatchEvent(new Event("mirage:audio"));
 // Spotify hat keine Analyse: Ersatz aus Tempo-Quellen und Liedtext bauen (siehe estimate.js)
+// Erst ein Entwurf ohne Liedtext (sobald das Tempo da ist), dann – falls der zeitgenaue Text noch etwas
+// verbessert – die verfeinerte Schätzung. Party gleitet dabei weich hinüber (planswap.js).
 async function fallback(uri) {
-  const est = await estimateAnalysis(uri).catch(() => null);
-  if (!est || audio.uri !== uri || (audio.data && !audio.data.synthetic)) return;
-  audio.data = est;
-  audioCache.set(uri, est);
-  beat.sync();
-  announce();
+  const use = (est) => {
+    if (!est || est === audio.data || audio.uri !== uri || (audio.data && !audio.data.synthetic)) return;
+    audio.data = est;
+    audioCache.set(uri, est);
+    beat.sync();
+    announce();
+  };
+  use(await estimateAnalysis(uri, use, () => audio.uri === uri).catch(() => null));
 }
 // Spotify liefert die Analyse manchmal nicht (Zeitüberschreitung, Anfragelimit). Früher blieb der Song
 // dann ganz ohne Taktdaten und die Welle lief „ins Blaue“ – jetzt noch dreimal nachfragen, solange er läuft.

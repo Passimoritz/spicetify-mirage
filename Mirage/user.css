@@ -5713,6 +5713,18 @@ html.mirage-rich #mirage-stage .m-aurora {
 #mirage-immersive[data-mode="party"].is-nolyr .m-im-meta {
   margin-top: 3vh;
 }
+/* ohne Liedtext ist die Liedtext-Zeile nur „auto“ hoch (also leer: 0) – „Lädt …“ des nächsten Songs stand dann
+   unsichtbar außerhalb. Eine feste, schmale Zeile unter dem Titel (immer gleich hoch: beim Ein- und Ausblenden
+   rückt nichts), ohne den Verlauf am Rand, der sie sonst halb ausblendet */
+#mirage-immersive[data-mode="party"].is-nolyr .m-im-lyrics {
+  height: clamp(40px, 4.4vw, 60px);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+#mirage-immersive[data-mode="party"].is-nolyr .m-im-lyrics-note:not(.is-small) {
+  top: 50%;
+  transform: translateY(-50%);
+}
 /* ---------- Immersiv: Quelle / Fassung wählen ---------- */
 /* unten rechts: Übersetzung an/aus und Fassung wählen, nebeneinander */
 #mirage-immersive .m-im-lyrbar {

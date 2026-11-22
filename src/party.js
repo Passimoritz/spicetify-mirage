@@ -8,6 +8,8 @@ import { KIN, baseOf } from "./styles.js";
 import { LOOKS, FAMILIES, pickGenre } from "./genres.js";
 import { deezer, itunes, previewSound } from "./sources.js";
 import { isJump, createJumpFade } from "./steady.js";
+import { createPlanSwap } from "./planswap.js";
+import { whenIdle } from "./idlework.js";
 import { bassTarget, createBassEnv } from "./bass.js";
 import { alignFor, alignedOf } from "./sonic.js";
 import { createTalkGate, vividOf, lerpPal, tempoRatio, djVoice, outroWindow } from "./handover.js";
@@ -205,12 +207,18 @@ function minorShare(d) {
 // kommt oft erst nach der Analyse – dann wird einmal neu geplant (lyr = Zähler der Textstände)
 const plans = new WeakMap();
 const lyr = { uri: "", lines: null, n: 0, ver: 0 };
-function planFor(d, key, uri) {
-  const ln = lyr.uri && lyr.uri === uri ? lyr.n : 0;
+const lyrOf = (uri) => (lyr.uri && lyr.uri === uri ? lyr.n : 0);
+function planFor(d, key, ln) {
   let p = plans.get(d);
-  if (!p || p.key !== key || p.ln !== ln) plans.set(d, (p = { key, ln, plan: planSong(d, key, { feat: d.feat, lyrics: ln ? lyr.lines : null }) }));
+  if (!p || p.key !== key || p.ln !== ln) plans.set(d, (p = { key, ln, plan: planSong(d, key, { feat: d.feat, lyrics: ln && ln === lyr.n ? lyr.lines : null }) }));
   return p.plan;
 }
+// Song-Karte und Plan nie im Bild rechnen, sondern in einer Leerlaufzeit (planswap.js); „|off“ = ohne Lichtregie
+const buildPlan = (d, key, ln) => {
+  const map = d.segs?.length ? songMap(d) : null;
+  return { map, plan: map && !key.endsWith("|off") ? planFor(d, key, ln) : null };
+};
+const planSwap = () => createPlanSwap({ build: buildPlan, schedule: (fn) => whenIdle(fn, 100) });
 
 
 // ohne Analyse oder mit ausgeschalteter Lichtregie: alles neutral, wie vorher
@@ -227,7 +235,9 @@ const party = (() => {
   let stageFlash = false;
   // Spulen/Songwechsel: der Look der Regie gleitet in 0,6 s in den neuen Teil, statt hart umzuschalten (steady.js)
   const jumpFade = createJumpFade(0.6), moodFade = createJumpFade(0.6);
-  let lastPlan = null, glowCut = false;
+  // fertig gerechnete Taktdaten + Plan (planswap.js) – je für Party und für die Visualizer-Ansichten
+  const swap = planSwap(), moodSwap = planSwap();
+  let lastPlan = null, lastSwap = null, glowCut = false;
   // tiefe Töne (bass.js): eigenes, gehaltenes Signal neben der kurzen Kick – mit Hörprobe (wie viel Bass, und in ihrem
   // Ausschnitt der gemessene Verlauf) und ihrer Lage im Song (einmal gesucht, nie im Bild)
   const bassEnv = createBassEnv(), bassSong = { uri: "", prof: null, grid: null, busy: false };
@@ -405,7 +415,10 @@ const party = (() => {
     // bei Gesprochenem nur ruhiges Grundlicht (wie „Ruhig“) – erst wenn die Bühne schon abgedimmt ist (talkGate)
     const talkV = talkGate.step(info.talk || "", dt);
     const fx = !calm() && talkV < 0.97;
-    const d = audio.uri === uri ? audio.data : null;
+    // Taktdaten erst, wenn ihre Song-Karte und ihr Plan fertig sind (in einer Leerlaufzeit gerechnet, planswap.js) –
+    // bis dahin bleibt beim selben Song der bisherige Stand
+    const R = swap.get(audio.uri === uri ? audio.data : null, info.key + (cfg.partyDirector ? "" : "|off"), uri, lyrOf(uri));
+    const d = R.d;
     clock += dt;
     const ease = (k) => 1 - Math.exp(-dt * k);
 
@@ -416,10 +429,15 @@ const party = (() => {
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
     // Lichtregie: welcher Teil des Songs gerade läuft und wie er aussehen soll (director.js)
     // auch wenn die Regie neu plant (Taktdaten oder Liedtext kommen nach dem Songwechsel an) oder ganz wegfällt
-    const plan = d && d.segs?.length && cfg.partyDirector ? planFor(d, info.key, uri) : null;
-    const jumped = isJump(sec, lastSec, dt) || plan !== lastPlan;
+    // (neue Taktdaten zum selben Song gleiten in 1,5 s hinüber; Liedtext, der am Look nichts ändert, gar nicht)
+    const plan = d && d.segs?.length && cfg.partyDirector ? R.plan : null;
+    const swapped = R !== lastSwap;
+    lastSwap = R;
+    const planJump = plan !== lastPlan && (!swapped || R.fade > 0);
+    const jumped = isJump(sec, lastSec, dt) || planJump;
+    const jumpDur = planJump && swapped ? R.fade : 0.6;
     lastPlan = plan;
-    if (jumped) jumpFade.start(clock);
+    if (jumped) jumpFade.start(clock, jumpDur);
     const C = jumpFade.apply((plan && cue(plan, sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL, clock);
     if (d && d.segs?.length) {
       const M = songMap(d);
@@ -684,7 +702,7 @@ const party = (() => {
       blackout: !!cfg.partyDirector && ((toDrop > 0.02 && toDrop < (60 / (info.bpm || 120)) * 0.95) || C.dim >= 1),
       finale: !!cfg.partyDirector && songLen > 60 && sec > songLen * 0.72 && smooth.e > 0.7,
       // Sprung im Song in diesem Bild (Spulen, Songwechsel, neue Regie): die Farben gleiten hinüber (immersive.js)
-      jump: jumped,
+      jump: jumped, jumpDur,
       // DJ-Übergabe: Treffer auf der ersten Eins des neuen Songs (Ringe), wie weit der Ausklang ist
       land: landHit && fx, mixE,
       beat: beatEnv, accent, beam: accent, drop: Math.max(dropGlow, clamp((smooth.e - 0.8) * 2.5, 0, 1)), dropHit,
@@ -719,15 +737,17 @@ const party = (() => {
   // Visualizer-Ansichten (ohne Party): dieselbe Regie, nur das Nötige – Teil, Farbkorrektur, Tempo, Drop
   let moodSec = 0;
   function mood(sec, playing) {
-    const d = audio.data;
-    if (!d?.segs?.length || !cfg.partyDirector) return null;
+    if (!audio.data?.segs?.length || !cfg.partyDirector) return null;
+    // Plan und Song-Karte wie in Party nur fertig gerechnet (planswap.js)
+    const R = moodSwap.get(audio.data, audio.uri === uri ? info.key : "pop", audio.uri, lyrOf(audio.uri));
+    if (!R.plan || !R.map) return null;
     // (ohne Party läuft clock nicht weiter: hier zählt die Uhrzeit)
     const wall = performance.now() / 1000;
     if (isJump(sec, moodSec, 0.1)) moodFade.start(wall);
-    const C = cue(planFor(d, audio.uri === uri ? info.key : "pop", audio.uri), sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
+    const C = cue(R.plan, sec, { noFlash: cfg.noFlash, level: 3, lite: lite() });
     if (!C) return null;
     Object.assign(C, moodFade.apply(C, wall));
-    const M = songMap(d);
+    const M = R.map;
     let dropHit = false;
     if (playing && sec >= moodSec && sec - moodSec < 0.5) for (const t of M.drops) if (t > moodSec && t <= sec + 0.02) dropHit = true;
     moodSec = sec;
