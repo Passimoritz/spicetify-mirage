@@ -13,6 +13,8 @@ import { getLyrics, watchLyrics, dropStaleLyrics, lyricVersions, pickLyrics, rej
 import { estimateSync, applySync } from "./lyricsync.js";
 import { parseVoices, bgFlags, bgParts, voiceColors } from "./lyricvoices.js";
 import { lineAt } from "./songtime.js";
+import { takeLyrics, hasText, createLayoutGate } from "./lyrlayout.js";
+import { whenIdle } from "./idlework.js";
 import { LANG } from "./i18n.js";
 import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
@@ -1060,17 +1062,22 @@ Probe-FX: ${pfx}`;
   // Kein Text oder ein Instrumental: nur ein leises Zeichen neben dem Titel (in allen Ansichten),
   // die Erklärung und die nächsten Schritte erscheinen beim Drüberfahren
   let lyrStateToken = 0, lyrStateUri = "";
+  // Wächter für das Layout mit/ohne Liedtext: je Song höchstens ein Wechsel (lyrlayout.js, noLyrFor)
+  const lyrGate = createLayoutGate();
   async function updateLyrState() {
     const item = currentItem(), uri = item?.uri || "", tok = ++lyrStateToken;
     // beim selben Song nichts ausblenden: sonst flackert das Zeichen bei jeder Aktualisierung
     if (uri !== lyrStateUri) q.lyrstate.hidden = true;
     lyrStateUri = uri;
     if (!/^spotify:(track|local):/.test(uri)) return;
-    const got = await getLyrics(uri).catch(() => null);
+    const fin = await getLyrics(uri).catch(() => null);
     if (tok !== lyrStateToken) return;
+    // es zählt, was die Liedtext-Fläche zeigt: ein spätes „Instrumental“ verdrängt keinen gezeigten Text
+    const got = uri === lyrUri && lyr !== undefined && !takeLyrics(lyr, fin) ? lyr : fin;
     const instrumental = !!got?.instrumental;
     // schon hier festlegen: sonst springt beim Wechsel in Liedtext oder Mix erst das Layout um
-    setNoLyr(instrumental || !got?.lines?.length);
+    // (über den Wächter: je Song höchstens ein Wechsel)
+    noLyrFor(uri, got);
     if (!instrumental && got?.lines?.length) return void (q.lyrstate.hidden = true);
     const label = t(instrumental ? "instrTitle" : "emptyTitle");
     const btn = q.lyrstate.querySelector("button");
@@ -1229,6 +1236,7 @@ Probe-FX: ${pfx}`;
     if (!lyr || !uri || !cfg.onlineLyrics || !rejectLyrics(uri, lyr)) return;
     showSide(null);
     lyrUri = "";
+    lyrGate.reset();
     await loadLyrics();
     if (lyrUri !== uri) return;
     const found = !!lyr?.lines?.length || !!lyr?.instrumental;
@@ -1245,6 +1253,7 @@ Probe-FX: ${pfx}`;
     const choose = (id) => {
       pickLyrics(uri, id);
       lyrUri = "";
+      lyrGate.reset();
       loadLyrics();
       showSide(null);
     };
@@ -1283,6 +1292,8 @@ Probe-FX: ${pfx}`;
   // Wort) ersetzt es an Ort und Stelle – ohne „Lädt“, ohne Einblenden, ohne nach oben zu springen.
   // Fertig (Promise erfüllt), wenn das endgültige Ergebnis da ist.
   let lyrLoad = 0, lyrWatch = null, wordPrep = null, lyrFade = null;
+  // Zeilen, die showLyrics sofort baut (ab der aktuellen), und je Häppchen danach
+  const LINES_FIRST = 14, LINES_STEP = 24;
   function loadLyrics() {
     const uri = currentItem()?.uri || "";
     if (uri === lyrUri && lyr !== undefined) return Promise.resolve();
@@ -1297,7 +1308,8 @@ Probe-FX: ${pfx}`;
       lyrWatch = watchLyrics(uri, (got, fin) => {
         if (load !== lyrLoad || !el) return done();
         // gleiches Ergebnis noch einmal (endgültig = zuletzt gezeigtes): nichts neu aufbauen
-        if (lyr === undefined || (got && got !== lyr)) {
+        // (ein spätes „Instrumental“ oder „nichts“ verdrängt nie einen gezeigten Text – lyrlayout.js)
+        if (takeLyrics(lyr, got)) {
           // beim Timing von Hand nichts unter den Fingern austauschen
           if (lyr === undefined || !edit) showLyrics(uri, got, lyr !== undefined && !!lyr);
         }
@@ -1388,15 +1400,16 @@ Probe-FX: ${pfx}`;
     // gemessen wird nur, wenn wirklich gerade eine Gleitfahrt läuft (sonst ist das Ziel die jetzige Lage)
     const from = upgrade && got?.synced ? (q.inner.getAnimations().length ? getComputedStyle(q.inner).transform : q.inner.style.transform) : "";
     if (upgrade) ghostLyrics(450);
+    // kein Text (nichts gefunden, Instrumental): „Lädt …“ blendet erst aus, dann Layout (lyricsGone)
+    if (!hasText(got)) return void lyricsGone(uri, got);
     q.inner.textContent = "";
     if (q.lyrics.classList.contains("is-unsynced")) q.lyrics.scrollTop = 0;
     // neuer Text blendet weich ein – als Web-Animation: das Neustarten einer CSS-Animation erzwang ein Layout
     lyrFade?.cancel();
     if (!matchMedia?.("(prefers-reduced-motion: reduce)").matches) lyrFade = q.inner.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
     showSource(got);
-    setNoLyr(!got || !!got.instrumental || !got.lines?.length);
+    noLyrFor(uri, got);
     updateLyrState();
-    if (!got || got.instrumental) return;
     applyTiming(uri, got);
     // [duet 1.27] Duett-Stimmen und Hintergrundgesang (meist schon in lyrics.js erkannt; wiederholbar)
     parseVoices(got);
@@ -1404,7 +1417,8 @@ Probe-FX: ${pfx}`;
     // Stimmung der Lichtregie: eine kleine Wortliste über die Zeilen (bleibt lokal)
     party.lyrics(uri, got.synced ? got.lines : []);
     // Wort-Effekte (nur Party): Wörterbuch aufbauen und alle Zeilen durchsuchen kostet beim ersten Mal
-    // ~40 ms – außerhalb von Party erst, wenn der Browser Luft hat, statt im Bild, in dem der Text erscheint
+    // ~40 ms – erst, wenn der Browser Luft hat, statt im Bild, in dem der Text erscheint (auch in Party: dort
+    // spätestens nach 0,4 s; bis dahin zeigen die Zeilen einfach noch keine Wort-Effekte)
     wordPrep = () => {
       wordPrep = null;
       if (token !== lyrToken) return;
@@ -1414,9 +1428,7 @@ Probe-FX: ${pfx}`;
         if (wordFx.needsTranslation() && cfg.onlineLyrics) translateLines(uri, got, "en").then((tr) => token === lyrToken && wordFx.addTranslated(uri, tr)).catch(() => {});
       } else wordFx.prepare(uri, [], "");
     };
-    if (el.dataset.mode === "party") wordPrep();
-    else if (window.requestIdleCallback) requestIdleCallback(() => wordPrep?.(), { timeout: 1500 });
-    else setTimeout(() => wordPrep?.(), 300);
+    whenIdle(() => wordPrep?.(), el.dataset.mode === "party" ? 400 : 1500);
     const karaoke = cfg.karaoke && got.synced;
     el.classList.toggle("is-karaoke", karaoke);
     q.lyrics.classList.toggle("is-unsynced", !got.synced);
@@ -1430,7 +1442,7 @@ Probe-FX: ${pfx}`;
     // aktuelle Zeile schon beim Bauen markieren: so hat jede Zeile ihren Endzustand ab dem ersten Stil,
     // egal wer vor dem nächsten Bild Stil oder Layout abfragt (kein Plopp der aktiven Zeile)
     const i0 = got.synced ? lineAt(got.lines, songPos(performance.now()), -2) : -9;
-    got.lines.forEach((l, i) => {
+    const mkLine = (l, i) => {
       const d = document.createElement("div");
       d.className = i === i0 ? "m-im-line is-active" : i < i0 ? "m-im-line is-past" : "m-im-line";
       if (i0 > -9) d.style.setProperty("--d", Math.min(Math.abs(i - Math.max(i0, 0)), 6));
@@ -1465,8 +1477,12 @@ Probe-FX: ${pfx}`;
         words[i] = list;
       } else if (l.bg) d.textContent = l.text;
       else bgSplit(d, l.text, l.who === "all");
-      frag.append(d);
-    });
+      return d;
+    };
+    // Zeilen in Häppchen: sofort nur bis ein Stück hinter die aktuelle Zeile (das Sichtbare), der Rest folgt in
+    // Leerlaufzeiten – ein langer Wort-für-Wort-Text baute sonst alle Zeilen und Wörter im selben Bild
+    const first = Math.min(got.lines.length, Math.max(i0, 0) + LINES_FIRST);
+    for (let i = 0; i < first; i++) frag.append(mkLine(got.lines[i], i));
     // mitten in einer Gleitfahrt: die (noch leere) Fläche bleibt genau dort stehen, wo sie gerade ist
     const glide = from && from !== "none";
     if (glide) snapLyrics(() => (q.inner.style.transform = from));
@@ -1478,9 +1494,47 @@ Probe-FX: ${pfx}`;
     // Klassen also trotzdem vor ihrem ersten Stil.
     if (got.synced) placeSoon(glide ? "glide" : "snap");
     else snapLyrics(() => (q.inner.style.transform = ""));
-    showTrBtn();
-    if (cfg.translate) addTranslations(token);
-    if (cfg.romanize) addRomaji(token);
+    // Übersetzung und Lautschrift erst, wenn alle Zeilen stehen (sie hängen sich an die Zeilen)
+    const extras = () => {
+      showTrBtn();
+      if (cfg.translate) addTranslations(token);
+      if (cfg.romanize) addRomaji(token);
+    };
+    const box = q.inner;
+    const more = (from) => {
+      if (from >= got.lines.length) return extras();
+      whenIdle(() => {
+        // überholt (neuer Song, besseres Ergebnis, neu geladen): nichts mehr anhängen
+        if (token !== lyrToken || lyr !== got || q.inner !== box) return;
+        const part = document.createDocumentFragment(), to = Math.min(got.lines.length, from + LINES_STEP);
+        for (let i = from; i < to; i++) part.append(mkLine(got.lines[i], i));
+        box.append(part);
+        more(to);
+      }, 200);
+    };
+    more(first);
+  }
+  // Kein Text (nichts gefunden, Instrumental): „Lädt …“ blendet aus, statt schlagartig zu verschwinden – erst danach
+  // wird geleert und (höchstens einmal je Song, lyrlayout.js) ins Layout ohne Liedtext gewechselt. Party vergisst
+  // dabei den Text des vorigen Songs (sonst plante die Lichtregie mit dessen Zeilen weiter).
+  function lyricsGone(uri, got) {
+    showSource(got);
+    party.lyrics(uri, []);
+    const finish = () => {
+      // überholt: inzwischen neuer Song oder doch ein Text
+      if (!el || lyr !== got || lyrUri !== uri) return;
+      q.inner.textContent = "";
+      noLyrFor(uri, got);
+      updateLyrState();
+    };
+    const note = q.inner.querySelector(".m-im-lyrics-note");
+    const from = note && !stillMotion() ? Number(getComputedStyle(note).opacity) : 0;
+    if (!(from > 0.02)) return finish();
+    note.animate([{ opacity: from }, { opacity: 0 }], { duration: 260, easing: "ease-out", fill: "forwards" }).finished.then(finish, finish);
+  }
+  // Layout mit/ohne Liedtext über den Wächter (je Song höchstens ein Wechsel, lyrlayout.js)
+  function noLyrFor(uri, got) {
+    if (el) setNoLyr(lyrGate.next(uri, got, el.classList.contains("is-nolyr")));
   }
   // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück – am Zeilenende als
   // kleine Zeile darunter. Etiketten wie „(x2)“ bleiben normaler Text. all: Duett „zusammen“ – der Text steckt
@@ -1985,9 +2039,10 @@ Probe-FX: ${pfx}`;
     if (px) pal = party.mixPal(pal);
     // Sprung im Song (Spulen, Songwechsel, Taktdaten kommen an): die Lichtfarben gleiten in 0,6 s hinüber,
     // statt im selben Bild umzuspringen (Tonart, Moll, Farbkorrektur des Teils hängen an der Songzeit)
-    if (px?.jump && palShown && !cfg.calm) palFade = { from: palShown, at: now };
+    // (genauere Taktdaten zum selben Song: 1,5 s – party.js sagt die Dauer in jumpDur)
+    if (px?.jump && palShown && !cfg.calm) palFade = { from: palShown, at: now, ms: (px.jumpDur || 0.6) * 1000 };
     if (palFade) {
-      const f = (now - palFade.at) / 600;
+      const f = (now - palFade.at) / palFade.ms;
       if (!px || f >= 1 || f < 0) palFade = null;
       else {
         const e = f * f * (3 - 2 * f), from = palFade.from;
@@ -4830,7 +4885,7 @@ Probe-FX: ${pfx}`;
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
-    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
+    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; lyrGate.reset(); el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle?.click(), repeat: () => q.repeat?.click(),
     // 1.27 views: Zustand der Album-Spalte (Tests)
     albumState: () => album.state,
     // 1.27 actions: Taste M (Song-Menü) und A (Zu Playlist hinzufügen); per Tastatur liegt der Fokus gleich auf der ersten Zeile

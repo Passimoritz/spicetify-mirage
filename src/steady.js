@@ -91,16 +91,17 @@ function glideCue(a, b, e) {
 const isJump = (sec, last, dt) => Number.isFinite(last) && (sec < last - 0.25 || sec - last > 0.5 + dt * 2);
 
 // Überblendung nach einem Sprung: start() bei jedem Sprung (auch mitten in einer laufenden), apply() je Bild
+// (start(t, len): eigene Dauer für diese eine Überblendung, z. B. 1,5 s, wenn genauere Taktdaten ankommen)
 function createJumpFade(dur = 0.6) {
-  let from = null, t0 = 0, shown = null;
+  let from = null, t0 = 0, shown = null, len = dur;
   return {
-    start(t) {
-      if (shown) [from, t0] = [shown, t];
+    start(t, d) {
+      if (shown) [from, t0, len] = [shown, t, d > 0 ? d : dur];
     },
     apply(C, t) {
       let out = C;
       if (from) {
-        const f = (t - t0) / dur;
+        const f = (t - t0) / len;
         if (f >= 1 || f < 0) from = null;
         else out = glideCue(from, C, ease(clamp(f, 0, 1)));
       }

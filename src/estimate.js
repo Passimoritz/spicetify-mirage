@@ -3,6 +3,7 @@ import { getLyrics } from "./lyrics.js";
 import { currentItem, PLR } from "./player.js";
 import { deezer, previewSound } from "./sources.js";
 import { foldBpm } from "./tempo.js";
+import { runSync, runIdle } from "./idlework.js";
 
 /* ---------------------------------------------------------------- Ersatz-Taktanalyse */
 // Für viele (gerade neuere) Songs liefert Spotify keine Taktanalyse mehr. Ohne sie hätte der Visualizer
@@ -44,9 +45,13 @@ function fitGrid(on, P) {
   const R = Math.hypot(x, y) / on.length;
   return { R, phase: ((Math.atan2(y, x) / (Math.PI * 2) + 1) % 1) * P };
 }
+// Die Suchen unten sind Generatoren: alle CHUNK Einsatz-Prüfungen geben sie Luft (`yield`). runIdle verteilt sie
+// auf Leerlaufzeiten (früher bis ~2 000 Perioden über alle Zeilen am Stück – ein Ruckler im Party-Bild),
+// runSync rechnet am Stück (Tests).
+const CHUNK = 12000;
 // Tempo aus den Einsätzen: Wörter (genau) oder Zeilenanfänge (gröber, liegen auf Takt oder Halbtakt)
-function tempoFromOnsets(on, hint) {
-  let best = null;
+function* onsetSearch(on, hint) {
+  let best = null, work = 0;
   for (let bpm = 60; bpm <= 190; bpm += 0.5) {
     const P = 60 / bpm;
     const { R, phase } = fitGrid(on, P);
@@ -54,22 +59,31 @@ function tempoFromOnsets(on, hint) {
     const prior = Math.exp(-(((bpm - 118) / 45) ** 2) * 0.5) * (hint ? Math.max(0.35, Math.exp(-(((bpm - hint) / 4) ** 2))) : 1);
     const score = R * (0.6 + 0.4 * prior);
     if (!best || score > best.score) best = { bpm, phase, R, score };
+    if ((work += on.length) >= CHUNK) {
+      work = 0;
+      yield;
+    }
   }
   return best;
 }
+const tempoFromOnsets = (on, hint) => runSync(onsetSearch(on, hint));
 
 // Nur Zeilenanfänge (keine Wortzeiten): Zeilen kommen fast immer im Abstand von 2, 4, 8 oder 16 Schlägen.
 // Erst den Zeilen-Takt L finden, dann nur Tempi aus seiner Zweierpotenz-Familie erlauben (60·2ⁿ/L) – sonst
 // passen auch „schiefe“ Tempi (z. B. 115 statt 92 BPM, weil 10 solcher Schläge auch auf die Zeilen fallen).
-function tempoFromLines(on, hint) {
+function* lineSearch(on, hint) {
   // Teiler des Zeilen-Takts (L/2, L/3 …) passen genauso gut – darum den GRÖSSTEN Abstand nehmen, der
   // fast so gut passt wie der beste
   const fits = [];
-  let top = 0;
+  let top = 0, work = 0;
   for (let L = 1.2; L <= 12; L += 0.005) {
     const { R } = fitGrid(on, L);
     fits.push([L, R]);
     top = Math.max(top, R);
+    if ((work += on.length) >= CHUNK) {
+      work = 0;
+      yield;
+    }
   }
   if (!top) return null;
   const L = fits.filter(([, R]) => R >= top * 0.97).pop()[0];
@@ -83,11 +97,18 @@ function tempoFromLines(on, hint) {
   return { bpm, R: best.R, phase: fitGrid(on, 60 / bpm).phase };
 }
 
-async function estimateAnalysis(uri) {
+// onDraft(est): eine erste Schätzung ohne Liedtext, sobald das Tempo bekannt ist (Merkmale, Deezer, Hörprobe) –
+// früher wartete alles bis zu 9 s auf den Liedtext, und Party lief so lange ohne Schlag. Kommt der zeitgenaue
+// Text danach, verfeinert er die Schätzung (Rückgabewert); sonst ist der Entwurf schon das Ergebnis.
+// alive(): läuft der Song noch? (sonst wird nichts mehr gerechnet)
+async function estimateAnalysis(uri, onDraft, alive) {
   const id = uri.split(":")[2];
   const item = currentItem()?.uri === uri ? currentItem() : null;
   const dur = Number(item?.metadata?.duration || item?.duration?.milliseconds || PLR.getDuration() || 0) / 1000 || 210;
-  const [feat, lyr] = await Promise.all([spotifyFeatures(id), within(getLyrics(uri), 9000)]);
+  // Liedtext gleich mit anfragen (meist vorgeladen), aber nicht darauf warten
+  let lyrNow;
+  const lyrP = within(getLyrics(uri), 30000).then((v) => (lyrNow = v || null));
+  const feat = await spotifyFeatures(id);
   const dz = feat ? null : await within(deezer(item || { uri }), 12000);
   // Deezers Tempo liegt oft eine Oktave daneben (Testlabor, 665 Hits mit Harmonix-Tempo: 26 % doppelt/halb) –
   // auf 75–150 BPM gefaltet stimmen 84 % statt 79 % (mit der Faltung unten auf 70–165)
@@ -100,16 +121,31 @@ async function estimateAnalysis(uri) {
     hint = foldBpm(pv.bpm, 75, 150);
     src = "preview";
   }
+  // gar kein Tempo bekannt: dem Liedtext noch kurz Zeit geben, statt erst „120?“ und gleich danach sein Tempo zu zeigen
+  if (lyrNow === undefined && !hint) await within(lyrP, 2000);
+  // inzwischen übersprungen: nicht mehr rechnen
+  if (alive && !alive()) return null;
+  const base = { dur, feat, dz, pv, hint, src };
+  if (lyrNow !== undefined) return build(base, lyrNow);
+  const draft = await build(base, null);
+  if (draft) onDraft?.(draft);
+  const lyr = await lyrP;
+  if (alive && !alive()) return null;
+  // ohne zeitgenauen Text bringt er nichts Neues: der Entwurf bleibt (dasselbe Objekt – nichts wird neu geplant)
+  if (!lyr?.synced) return draft;
+  return (await build(base, lyr)) || draft;
+}
+async function build({ dur, feat, dz, pv, hint, src }, lyr) {
   // Einsätze aus dem Liedtext: Wortanfänge, sonst Zeilenanfänge
   const lines = lyr?.synced ? lyr.lines.filter((l) => l.text && l.text !== "♪") : [];
   const words = lines.flatMap((l) => (l.words || []).map((w) => w.t / 1000));
   const on = words.length > 30 ? words : lines.map((l) => l.t / 1000);
   let bpm = hint, phase = 0, conf = 0.5, phaseKnown = false;
   if (on.length >= 8 && on !== words) {
-    const fit = tempoFromLines(on, hint);
+    const fit = await runIdle(lineSearch(on, hint));
     if (fit) [bpm, phase, conf, phaseKnown] = [fit.bpm, fit.phase, clamp(fit.R * 1.2, 0.3, 0.9), fit.R > 0.3];
   } else if (on.length >= 8) {
-    const fit = tempoFromOnsets(on, hint);
+    const fit = await runIdle(onsetSearch(on, hint));
     // nur übernehmen, wenn der Text wirklich ein Raster zeigt – sonst lieber das bekannte Tempo
     const use = hint && fit.R < 0.4 ? hint : fit.bpm;
     if (fit.R > 0.25 || !hint) [bpm, phase, conf, phaseKnown] = [use, fitGrid(on, 60 / use).phase, clamp(fit.R * 1.4, 0.3, 0.95), fit.R > 0.25];
@@ -172,4 +208,6 @@ async function estimateAnalysis(uri) {
   };
 }
 
-export { estimateAnalysis, tempoFromOnsets };
+const tempoFromLines = (on, hint) => runSync(lineSearch(on, hint));
+
+export { estimateAnalysis, tempoFromOnsets, tempoFromLines };
