@@ -9,6 +9,7 @@
 import { songMap, at, seek, STEP } from "./songmap.js";
 import { songMood, PROTO } from "./mood.js";
 import { pickDropLook, DROP_LOOKS } from "./scenarios.js";
+import { wipeDur } from "./fxenv.js";
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const KINDS = ["intro", "verse", "pre", "chorus", "drop", "break", "bridge", "outro"];
@@ -558,13 +559,13 @@ function cue(plan, sec, o = {}) {
   const S = SC[j] || NOSCENE, S0 = SC[j - 1] || S, xs = sec - S.t0;
   const sx = S.fade > 0 ? ease(clamp(xs / S.fade, 0, 1)) : 1, b0 = S0.borrow, b1 = S.borrow;
   const drive = mix("drive"), tx = mix("tx"), ty = mix("ty");
-  const wSc = !o.lite && S.mid && S.wipe && xs >= 0 && xs < beat ? xs / beat : -1;
+  const wSc = !o.lite && S.mid && S.wipe && xs >= 0 && xs < wipeDur(beat) ? xs / wipeDur(beat) : -1;
   const wall = Math.max(sig.wall, lerpB(b0, b1, "wall", sx));
-  // Farbkorrektur in groben Stufen: gleitet über die Takte, ohne jedes Bild neue Farben (und Leuchtbilder) zu brauchen.
+  // Farbkorrektur in feinen Stufen (2°, 0,02): gleitet über die Takte, ohne jedes Bild neue Farben (und Leuchtbilder) zu brauchen.
   // th/tk = Farbwelt der Stimmung und ihre Stärke, lum = Pastell/Dunkel, sh = Tönung der Szene.
   // Unverändert → dasselbe Objekt wie im Bild davor (grade() erkennt es dann ohne Vergleich)
-  const g = plan.g || (plan.g = {}), gs = q(dev("sat"), 0.04), gc = q(dev("con"), 0.04), gw = q(mix("warm"), 0.05), gh = q(mix("hue"), 6);
-  const th = q(((Math.atan2(ty, tx) * 180) / Math.PI + 360) % 360, 6), tk = q(Math.hypot(tx, ty), 0.05), lum = q(mix("lum"), 0.02), sh = q(S0.sh + (S.sh - S0.sh) * sx, 6);
+  const g = plan.g || (plan.g = {}), gs = q(dev("sat"), 0.02), gc = q(dev("con"), 0.02), gw = q(mix("warm"), 0.025), gh = q(mix("hue"), 2);
+  const th = q(((Math.atan2(ty, tx) * 180) / Math.PI + 360) % 360, 2), tk = q(Math.hypot(tx, ty), 0.025), lum = q(mix("lum"), 0.01), sh = q(S0.sh + (S.sh - S0.sh) * sx, 2);
   if (g.sat !== gs || g.con !== gc || g.warm !== gw || g.hue !== gh || g.th !== th || g.tk !== tk || g.lum !== lum || g.sh !== sh) plan.g = { sat: gs, con: gc, warm: gw, hue: gh, th, tk, lum, sh };
   const scn = moments(plan, P, sec, x, bp);
   // Stopp: das Licht geht mit der Band aus · Outro: es wird langsam ruhiger · a cappella: nur noch die Stimme
@@ -575,7 +576,7 @@ function cue(plan, sec, o = {}) {
     grade: plan.g,
     flash: o.noFlash ? 0 : m < 0.5 ? Q.look.flash : P.look.flash,
     fx: mix("fx"), haze: mix("haze"), tf: P.tf,
-    wipe: !o.lite && P.wipe && x >= 0 && x < beat ? x / beat : wSc, wdir: (i + S.sc) % 2 ? -1 : 1,
+    wipe: !o.lite && P.wipe && x >= 0 && x < wipeDur(beat) ? x / wipeDur(beat) : wSc, wdir: (i + S.sc) % 2 ? -1 : 1,
     // Wiedereinsatz nach dem Stopp und Tonartwechsel heben an wie der Einsatz eines Refrains
     riser, pulse, dim, lift: Math.max(lift, scn.back * 0.8, scn.mod * 0.7), scn,
     wall: wall && P.kind === "chorus" && !o.noFlash && !o.lite ? wall * Math.exp(-x / (beat * 0.5)) : 0,
@@ -595,7 +596,7 @@ function cue(plan, sec, o = {}) {
 // Ein Objekt je Plan, jedes Bild nur neu befüllt (keine Speicherbelegung je Bild)
 function moments(plan, P, sec, x, bp) {
   const mo = plan.mo, { bar, beat } = plan, len = P.t1 - P.t0;
-  const o = plan.scn || (plan.scn = { fin: 0, mod: 0, stop: 0, back: 0, open: 0, out: 0, solo: 0, acap: 0, echo: 0, eside: 1, dl: -1, dx: 0, tc: 0, bp: 0 });
+  const o = plan.scn || (plan.scn = { fin: 0, mod: 0, stop: 0, back: 0, open: 0, out: 0, solo: 0, acap: 0, echo: 0, eside: 1, dl: -1, dx: 0, da: -1, tc: 0, bp: 0 });
   // weich hinein und heraus über einen Takt (bzw. die halbe Länge kurzer Teile)
   const env = (on) => (on ? clamp(Math.min(x / bar, (len - x) / Math.min(bar, len / 2)), 0, 1) : 0);
   o.fin = env(P.fin);
@@ -605,6 +606,8 @@ function moments(plan, P, sec, x, bp) {
   o.dl = P.dl ?? -1;
   // Drop-Bild: setzt genau auf dem Schlag des Höhepunkts ein und klingt über knapp einen Takt aus
   o.dx = o.dl >= 0 && x >= 0 && x < bar * 3 ? Math.exp(-x / (bar * 0.75)) : 0;
+  // Alter des Drop-Bilds (s): stagefx.js blendet damit den Einsatz weich ein (ohne Blitze über eine Achtelsekunde)
+  o.da = o.dx > 0 ? x : -1;
   o.stop = o.back = o.echo = o.open = 0;
   if (mo) {
     for (const [a, b] of mo.stops) {

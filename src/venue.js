@@ -8,31 +8,86 @@ import { kin, kinSet } from "./styles.js";
 import { createCrowdMind, dance, jumps, armsUp } from "./crowd.js";
 import { createStageFx, createReactFx } from "./stagefx.js";
 import { createInstFx } from "./instfx.js";
+import { addStops } from "./fxenv.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const rgbaF = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(4)})`;
+// Abfall eines Kegels: wie vorher (Mitte ~35 %), nur glatt statt in zwei geraden Stücken
+const coneFall = (u) => (1 - u) ** 1.6;
 
 function createVenue(makeCanvas) {
   let vw = 0, vh = 0;
   // Bühnenlicht: jedes Genre hat seine eigene Lichtsprache. Alles mit „lighter“ – Licht addiert sich wie echtes.
   // Leuchtpunkt-Bild je Farbe, einmal gerendert: 90 Discokugel-Punkte kosten dann nur drawImage
-  const glowSprites = new Map();
-  function glowSprite(c) {
-    // auf 8er-Stufen gerastert: gleitende Lichtfarben erzeugen sonst in jedem Bild neue Leuchtbilder
-    const k = c.map((v) => Math.min(255, Math.round(v / 8) * 8)).join(",");
-    if (!glowSprites.has(k)) {
-      if (glowSprites.size > 24) glowSprites.clear();
-      const cv = makeCanvas(48, 48);
-      cv.width = cv.height = 48;
-      const x = cv.getContext("2d");
-      const g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
-      g.addColorStop(0, "rgba(255,255,255,1)");
-      g.addColorStop(0.22, `rgba(${k},0.75)`);
-      g.addColorStop(1, `rgba(${k},0)`);
-      x.fillStyle = g;
-      x.fillRect(0, 0, 48, 48);
-      glowSprites.set(k, cv);
+  // Zwei Größen: 64 px für kleine Punkte, 256 px für große Scheine (Bodenlicht, Rückwand – bis ~1000 px gestreckt).
+  // Der Abfall wird je Pixel gerechnet (statt 3 Verlaufsstufen, die gestreckt als Ringe sichtbar wurden) und leicht
+  // verrauscht (Dithering): 8-Bit-Deckkraft zeigt bei schwachem Licht sonst Stufen. Die Form entsteht einmal als
+  // weiße Maske, je Farbe wird sie nur eingefärbt (source-in) – ein neues Leuchtbild kostet so fast nichts.
+  // Zuletzt benutzte bleiben (statt den Speicher ab 25 Bildern ganz zu leeren – das traf genau den Szenenwechsel).
+  const glowSmall = new Map(), glowBig = new Map(), masks = {};
+  function glowMask(size, core) {
+    const key = size + (core ? "c" : "");
+    if (masks[key]) return masks[key];
+    const cv = makeCanvas(size, size);
+    cv.width = cv.height = size;
+    const x = cv.getContext("2d"), img = x.createImageData(size, size), d = img.data, h = size / 2;
+    let seed = 12345;
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+    for (let j = 0; j < size; j++) {
+      for (let i = 0; i < size; i++) {
+        const u = Math.min(1, Math.hypot(i + 0.5 - h, j + 0.5 - h) / h);
+        // Schein: weich nach außen, am Rand flach (kein Knick); Kern: weißer Punkt in der Mitte
+        const w = Math.max(0, 1 - u / 0.3), a = core ? w * w * (3 - 2 * w) : Math.min(0.8, 1.15 * (1 - u) * (1 - u * u));
+        const o = (j * size + i) * 4;
+        d[o] = d[o + 1] = d[o + 2] = 255;
+        // Dithering: ±1 Stufe Dreiecksrauschen, nur wo überhaupt Licht ist
+        d[o + 3] = a > 0 ? Math.max(0, Math.min(255, Math.round(a * 255 + rnd() + rnd() - 1))) : 0;
+      }
     }
-    return glowSprites.get(k);
+    x.putImageData(img, 0, 0);
+    return (masks[key] = cv);
+  }
+  function glowSprite(c, big) {
+    // auf 4er-Stufen gerastert (gleitende Farben brauchen sonst in jedem Bild ein neues Leuchtbild)
+    const k = c.map((v) => Math.max(0, Math.min(255, Math.round(v / 4) * 4))).join(",");
+    const map = big ? glowBig : glowSmall, size = big ? 256 : 64;
+    let cv = map.get(k);
+    if (cv) {
+      // zuletzt benutzt ans Ende (voll → das am längsten unbenutzte fliegt zuerst hinaus)
+      map.delete(k);
+      map.set(k, cv);
+      return cv;
+    }
+    // voll: das am längsten unbenutzte Canvas für die neue Farbe wiederverwenden
+    if (map.size >= (big ? 16 : 64)) {
+      const old = map.keys().next().value;
+      cv = map.get(old);
+      map.delete(old);
+    } else {
+      cv = makeCanvas(size, size);
+      cv.width = cv.height = size;
+    }
+    const x = cv.getContext("2d");
+    x.globalCompositeOperation = "copy";
+    x.drawImage(glowMask(size, false), 0, 0);
+    x.globalCompositeOperation = "source-in";
+    x.fillStyle = `rgb(${k})`;
+    x.fillRect(0, 0, size, size);
+    x.globalCompositeOperation = "source-over";
+    x.drawImage(glowMask(size, true), 0, 0);
+    map.set(k, cv);
+    return cv;
+  }
+  // neue Songfarben: die Leuchtbilder der drei Lichtfarben vorab bereitlegen (nicht erst im Szenenwechsel)
+  let warmKey = "";
+  function warmGlows(pal) {
+    const k = pal.map((c) => c.map((v) => Math.round(v / 4)).join(",")).join("|");
+    if (k === warmKey) return;
+    warmKey = k;
+    for (const c of pal) {
+      glowSprite(c);
+      glowSprite(c, true);
+    }
   }
   // Blitz-Schranke der Bühne: Stroboskop, Blinder und Gitarrenblitze zusammen höchstens drei pro Sekunde,
   // auch wenn die Freigabe aus dem Hauptthread (st.flashGo) einmal fehlt oder doppelt ankommt
@@ -66,10 +121,8 @@ function createVenue(makeCanvas) {
     const spread = px.spread ?? 1;
     const cone = (sx, sy, a, wd0, c, al, reach = far) => {
       const wd = wd0 * spread;
-      const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, reach);
-      g.addColorStop(0, rgba(c, al));
-      g.addColorStop(0.5, rgba(c, al * 0.35));
-      g.addColorStop(1, rgba(c, 0));
+      // viele Stufen statt drei: der Abfall bleibt glatt (sonst zeigen breite Kegel Stufen im Licht)
+      const g = addStops(ctx.createRadialGradient(sx, sy, 0, sx, sy, reach), c, al, coneFall, 8, rgbaF);
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.moveTo(sx, sy);
@@ -100,10 +153,12 @@ function createVenue(makeCanvas) {
       case "floor": {
         // Bass: Licht quillt vom Boden hoch, schwer auf 1 und 3, mit langem Nachhall
         const al = (0.12 + kickL * 0.5 + px.drop * 0.2) * (0.5 + px.I * 0.5) * vis;
+        // Farbe gleitet von der ersten zur zweiten Lichtfarbe, Deckkraft fällt in vielen Stufen (keine Ringe)
         const g = ctx.createRadialGradient(vw / 2, vh * 1.05, 0, vw / 2, vh * 1.05, vh * (0.55 + kickL * 0.25));
-        g.addColorStop(0, rgba(pal[0], al));
-        g.addColorStop(0.6, rgba(pal[1], al * 0.35));
-        g.addColorStop(1, rgba(pal[1], 0));
+        for (let i = 0; i < 9; i++) {
+          const u = i / 8, m = Math.min(1, u / 0.6), c = [0, 1, 2].map((j) => pal[0][j] + (pal[1][j] - pal[0][j]) * m);
+          g.addColorStop(u, rgbaF(c, al * (1 - u) ** 1.15));
+        }
         ctx.fillStyle = g;
         ctx.fillRect(0, vh * 0.3, vw, vh * 0.7);
         break;
@@ -811,7 +866,7 @@ function createVenue(makeCanvas) {
       }
       ctx.globalAlpha = life * 0.5;
       const r = vh * 0.3;
-      ctx.drawImage(glowSprite([255, 120, 40]), f.x - r, vh - r, r * 2, r * 2);
+      ctx.drawImage(glowSprite([255, 120, 40], true), f.x - r, vh - r, r * 2, r * 2);
     }
     ctx.globalAlpha = 1;
     // Feuerwerk: Rakete steigt, platzt in Funken der Songfarben, die sinken und verglühen
@@ -1440,7 +1495,7 @@ function createVenue(makeCanvas) {
     for (const b of fogBanks) {
       const x = (((b.x + t * b.sp) % 1.3) - 0.15) * vw, r = b.r * vw, y = vh * (0.86 + 0.03 * Math.sin(t * 0.3 + b.ph));
       ctx.globalAlpha = clamp((0.05 + 0.07 * (px.kickEnv || 0) + 0.05 * (px.drop || 0)) * dens, 0, 0.3);
-      ctx.drawImage(glowSprite(st.pal[b.c]), x - r, y - r * 0.35, r * 2, r * 0.7);
+      ctx.drawImage(glowSprite(st.pal[b.c], true), x - r, y - r * 0.35, r * 2, r * 0.7);
     }
     ctx.globalAlpha = 1;
   }
@@ -1513,6 +1568,7 @@ function createVenue(makeCanvas) {
     }
     lastV = vNext;
     ctx.clearRect(0, 0, vw, vh);
+    if (st.pal) warmGlows(st.pal);
     // Pause: das Publikum blendet weich aus (stillstehend tanzen sähe falsch aus) und kommt mit der Musik zurück
     crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));
     if (!st.stage && crowdA < 0.01) {

@@ -218,7 +218,7 @@ const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1
   mood: "", v: 0, a: 0, soft: 0.2, spread: 1, crowd: 1, fxk: "sparks", sc: -1, spot: "", spot2: "", sx: 1, rig: "" };
 const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0;
-  let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0;
+  let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0, spinTo = 0;
   const inst = { k: -1, s: -1, h: -1 };
   let sway = 1, lastSec = 0, dropGlow = 0, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
   // eine Schranke für Farbfläche, Blinder, Stroboskop und Gitarrenblitze: zusammen nie mehr als 3 pro Sekunde
@@ -411,7 +411,7 @@ const party = (() => {
 
     // --- wo im Song: Energie jetzt, gleich, Aufbau, Break, Drop, Dur/Moll, Helligkeit
     let energy = 0.55, build = 0, low = 0, bright = 0.5, minor = false, dropHit = false, scene = 0, toDrop = 99, songLen = 0, keyPc = -1, tempoNow = 0;
-    let hit = false, barHit = false, inBar = 0, beatEnv = 0, conf = 0.8;
+    let hit = false, barHit = false, inBar = 0, barIdx = -1, beatEnv = 0, conf = 0.8;
     let beatPhase = 0, beatIdx = -1;
     let kickEnv = 0, snareEnv = 0, hatEnv = 0, tone = 0, pitch = -1, snareHit = false, kickHit = false, hatHit = false;
     // Lichtregie: welcher Teil des Songs gerade läuft und wie er aussehen soll (director.js)
@@ -509,6 +509,8 @@ const party = (() => {
         const ba = bars.length ? seek(bars, sec, "t") : -1;
         const barStart = ba >= 0 ? seek(d.beats, bars[ba].t + 0.05, "t") : bi - (bi % 4);
         inBar = (((bi - barStart) % 4) + 4) % 4;
+        // Nummer des Takts in der Song-Karte (Becken alle vier Takte ab der Eins, instfx.js)
+        barIdx = ba;
         // sehr schnelle Songs zählen in halbem Tempo, sonst wird es Flackern statt Groove
         const half = info.bpm > 150;
         const strength = P.accent[half ? (inBar & 2) : inBar] ?? 0.6;
@@ -655,7 +657,11 @@ const party = (() => {
     // im Ausklang drehen die Strahlen schon ins Tempo des nächsten Songs
     const feel = C.speed * (C.tf < 1 ? 0.6 : C.tf > 1 ? 1.5 : 1) * (nx && !nxTalk ? 1 + (tempoRatio(nx.bpm, info.bpm) - 1) * 0.6 * mixE : 1);
     spin += dt * P.spinRate * (0.3 + smooth.e) * (1 + smooth.b * 5) * feel * (fx ? 1 : 0) * (scene % 2 ? -1 : 1);
-    if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spin += 0.6 + Math.random() * 0.6;
+    // Rave: die Strahlen springen pro Takt ein Stück weiter – als schneller, weicher Schwenk (~0,15 s) statt eines Sprungs
+    if (barHit && fx && info.key === "rave" && smooth.e > 0.5) spinTo += 0.6 + Math.random() * 0.6;
+    const spinStep = spinTo * (1 - Math.exp(-dt * 14));
+    spin += spinStep;
+    spinTo -= spinStep;
     const lasers = fx && cfg.partyLasers && level >= 4 && C.beams > 0.5 && talkV < 0.3 ? (level >= 5 ? 12 : 6) : 0;
     // im Break blenden Strahlen aus, im Aufbau ziehen sie sich zusammen
     const beamVis = clamp((smooth.e * 1.25 + dropGlow - smooth.k) * C.beams * (1 - C.dim) * (1 - 0.3 * mixE) * landDim * (1 - talkV), 0, 1.2);
@@ -671,7 +677,7 @@ const party = (() => {
     if (hit && P.sway) sway = -sway;
 
     const out = {
-      P, key: info.key, level, lvl, fx, hit, barHit, inBar, conf,
+      P, key: info.key, level, lvl, fx, hit, barHit, inBar, barIdx, conf,
       energy: smooth.e, build: smooth.b, low: smooth.k, bright: smooth.br, minor, I, scene,
       kickEnv, snareEnv, hatEnv, tone, pitch, kickHit, snareHit, hatHit,
       // tiefe Töne: bass = gehaltener Pegel 0..1 (Glühen, Wiegen), bassPulse = Anschlag eines neuen tiefen Tons

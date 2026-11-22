@@ -59,7 +59,7 @@ function createBeatClock(snap = 4, tau = 0.3, maxRate = 8) {
 // a = gezeigter Zustand vor dem Sprung, b = neuer, e = 0..1. Das Bühnenlicht blendet über (spot2 → spot),
 // Zahlen gleiten, die Farbkorrektur in denselben groben Stufen wie in der Regie (sonst jedes Bild neue Farben).
 const NUM = ["I", "speed", "beams", "sparks", "fx", "haze", "soft", "spread", "crowd", "v", "a", "swell", "pump", "boom", "sync", "scan"];
-const GRADE = { sat: 0.04, con: 0.04, warm: 0.05, hue: 6, th: 6, tk: 0.05, lum: 0.02, sh: 6 };
+const GRADE = { sat: 0.02, con: 0.02, warm: 0.025, hue: 2, th: 2, tk: 0.025, lum: 0.01, sh: 2 };
 let gradeLast = null;
 // ohne Farbkorrektur (null, z. B. noch keine Taktdaten) = neutral: auch dorthin wird geglitten
 const PLAIN = { sat: 1, con: 1, warm: 0, hue: 0, th: 0, tk: 0, lum: 0, sh: 0 };
