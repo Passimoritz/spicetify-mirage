@@ -1,6 +1,6 @@
 import { S, root, VERSION } from "./core.js";
 import { t } from "./i18n.js";
-import { cfg, save } from "./config.js";
+import { cfg, save, CALM_PRESET } from "./config.js";
 
 /* ---------------------------------------------------------------- Leistungs-Stufen */
 // Ein Preset setzt mehrere Schalter auf einmal. Wer danach einen einzelnen Schalter ändert,
@@ -9,7 +9,8 @@ const PRESETS = {
   full: { glass: true, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false },
   balanced: { glass: false, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false },
   light: { glass: false, particles: false, grain: false, beat: true, tilt: false, cascade: true, calm: false, lite: true },
-  calm: { glass: false, particles: false, grain: true, beat: false, tilt: false, cascade: false, calm: true, lite: false },
+  // „Ruhig“ ist die einzige Stelle, an der calm an geht (kein eigener Schalter mehr); Werte in config.js
+  calm: CALM_PRESET,
 };
 const ORDER = ["full", "balanced", "light"];
 // welche Schalter zu den Presets gehören (alles andere bleibt beim Preset-Wechsel unberührt)

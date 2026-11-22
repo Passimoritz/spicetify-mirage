@@ -36,6 +36,9 @@ const schemePalette = () => {
 /* ---------------------------------------------------------------- Einstellungen */
 const KEY = "mirage:settings";
 const schemeIsDynamic = !S.Config?.color_scheme || /mirage/i.test(S.Config.color_scheme);
+const reducedMotion = !!matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+// Werte des Presets „Ruhig“ (perf.js übernimmt sie als PRESETS.calm) – hier, weil DEFAULTS sie schon braucht
+const CALM_PRESET = { glass: false, particles: false, grain: true, beat: false, tilt: false, cascade: false, calm: true, lite: false };
 const DEFAULTS = {
   dynamic: schemeIsDynamic,
   particles: true,
@@ -47,12 +50,15 @@ const DEFAULTS = {
   overlay: true,
   grain: true,
   glass: false,
-  // folgt der Systemeinstellung „Bewegung reduzieren“, bis man selbst schaltet
-  calm: !!matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  // „Ruhig“ gibt es nur als Preset (perf.js): calm gehört zu den Preset-Schaltern und folgt dem Preset.
+  // Bittet das System um weniger Bewegung, startet Mirage gleich mit dem Preset „Ruhig“ (siehe unten).
+  calm: false,
   // „Keine Blitze“ (lichtempfindliche Augen): kein Stroboskop, Blinder, Drop-Blitz, aufblitzender Liedtext –
   // überall, auch auf den Handys. Aus, außer das System bittet um weniger Bewegung
-  noFlash: !!matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  noFlash: reducedMotion,
   preset: "balanced",
+  // Preset vor „Ruhig“: dahin geht der Schalter „Ruhig“ unter „Sicherheit & Komfort“ zurück
+  calmFrom: "balanced",
   autoPerf: true,
   lyrSize: 100,
   lyrGap: 100,
@@ -182,8 +188,29 @@ const DEFAULTS = {
   partyIdle: true,
   // Tempo und Tonart als Pille in Titellisten – kostet je sichtbarem Song eine Anfrage, darum aus
   libBpm: false,
+  // Album-Spalte in der Cover-Ansicht (albumview.js) und Datum unter der Uhr (clockview.js): an, bis man sie ausblendet
+  albumPanel: true,
+  clockDate: true,
+  // zuletzt benutzte Playlists im Menü „Zu Playlist hinzufügen“ (neueste zuerst, höchstens 8)
+  plRecent: [],
   scheme: Object.keys(SCHEMES).find((n) => n.toLowerCase() === String(S.Config?.color_scheme || "").toLowerCase()) || "Mirage",
 };
+// „Bewegung reduzieren“ im System: wie bisher ruhig ab dem ersten Start – jetzt als echtes Preset „Ruhig“
+if (reducedMotion) Object.assign(DEFAULTS, CALM_PRESET, { preset: "calm" });
+// 1.28: „Ruhiger Modus“ war ein eigener Schalter neben dem Preset „Ruhig“. Jetzt gibt es Ruhe nur als Preset:
+// wer den Schalter an hatte, behält seine übrigen Schalter und steht auf „Eigene“ mit „Ruhig“ als Grundlage
+// (Bildrate wie „Ruhig“); calm ohne Preset-Grundlage gibt es danach nicht mehr. Auch für eingelesene
+// Sicherungen aus älteren Versionen (settings.js: Code oder Datei laden).
+function migrateCalm(c, saved) {
+  if (!saved.calmPreset128 && "calm" in saved) {
+    const base = c.preset === "custom" ? c.presetBase : c.preset;
+    if (c.calm && base !== "calm") {
+      c.calmFrom = base && base !== "custom" ? base : "balanced";
+      Object.assign(c, { preset: "custom", presetBase: "calm" });
+    } else if (!c.calm && base === "calm") c.calm = true;
+  }
+  c.calmPreset128 = true;
+}
 let cfg = { ...DEFAULTS };
 try {
   const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
@@ -198,6 +225,7 @@ try {
   if (!saved.zoomOff1155) Object.assign(cfg, { partyZoom: false, zoomOff1155: true });
   // Warteraum: 30 s waren zu kurz, einmalig für alle auf 2 Minuten
   if (!saved.join2min) Object.assign(cfg, { gameJoin: 120, join2min: true });
+  migrateCalm(cfg, saved);
 } catch {}
 // eigene Schemata stehen gleichberechtigt neben den mitgelieferten
 for (const [name, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(name)) SCHEMES[name] = sc;
@@ -230,4 +258,4 @@ function buildScheme({ base, accent, deep, light }) {
   };
 }
 
-export { SCHEMES, BUILT_IN, hexRgb, applyScheme, schemePalette, KEY, DEFAULTS, cfg, save, resetSettings, buildScheme };
+export { SCHEMES, BUILT_IN, hexRgb, applyScheme, schemePalette, KEY, DEFAULTS, CALM_PRESET, migrateCalm, cfg, save, resetSettings, buildScheme };

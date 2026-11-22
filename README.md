@@ -210,7 +210,7 @@ Party mode listens to the whole song **before** it plays. It knows where the cho
 
 Your guests join with their phone. **No app, no account** – Wi-Fi or mobile data both work.
 
-1. In **Mirage settings → Party mode**, switch on **Live link for phones**.
+1. In **Mirage settings → Party mode**, switch on **Light up phones**.
 2. Open party mode (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>, then <kbd>5</kbd>) and click the **QR code** button at the top.
 3. Guests scan the code with their phone camera, pick a **name and a colour**, and they're in.
 

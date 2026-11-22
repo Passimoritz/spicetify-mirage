@@ -1939,9 +1939,11 @@ async function perfMenu() {
   m = await menu();
   ok(m.lite && (await stored()).lite === true, "leistung: „Leicht“ wirkt sofort (mirage-lite)");
   const flashOn = !!before.noFlash;
-  await T.click(".m-im-perf-flag", { index: 1 });
-  await until(async () => (await stored()).noFlash === !flashOn && (await menu()).noflash === !flashOn, 2000, "leistung: „Keine Blitze“ umgeschaltet");
   await T.click(".m-im-perf-flag", { index: 0 });
+  await until(async () => (await stored()).noFlash === !flashOn && (await menu()).noflash === !flashOn, 2000, "leistung: „Keine Blitze“ umgeschaltet");
+  // Energiesparen: dieselben drei Stufen wie im Dialog (Im Akkubetrieb · Immer · Aus)
+  ok((await T.js(`document.querySelectorAll("#mirage-immersive .m-im-eco button").length`)) === 3, "leistung: Energiesparen mit drei Stufen");
+  await T.click(".m-im-eco button", { index: 1 });
   await until(async () => (await stored()).eco === "on", 2000, "leistung: Energiesparen an");
   // derselbe Stand im Einstellungs-Dialog (im Nachbau landet er direkt im body)
   const dlg = () => T.js(`(() => {
@@ -2003,8 +2005,8 @@ async function perfMenu() {
   await big.hover();
   await T.click(".m-im-menubtn");
   await until(async () => (await menu()).open, 2000, "leistung: Menü wieder auf");
-  if (!!(await stored()).noFlash !== flashOn) await T.click(".m-im-perf-flag", { index: 1 });
-  if ((await stored()).eco !== (before.eco || "auto")) await T.click(".m-im-perf-flag", { index: 0 });
+  if (!!(await stored()).noFlash !== flashOn) await T.click(".m-im-perf-flag", { index: 0 });
+  if ((await stored()).eco !== (before.eco || "auto")) await T.click(".m-im-eco button", { index: ["auto", "on", "off"].indexOf(before.eco || "auto") });
   await T.click(`.m-im-perf button[data-preset="${before.preset || "balanced"}"]`);
   await until(async () => (await stored()).preset === (before.preset || "balanced") && !!(await stored()).noFlash === flashOn, 2000, "leistung: alter Stand zurück");
   await T.click(".m-im-side-x");
@@ -2132,6 +2134,49 @@ async function photoWall() {
 
 // Suche in den Einstellungen: filtert live über alle Gruppen (auch mit englischem Wort im deutschen Nachbau),
 // freundlicher Leerzustand, Esc leert und stellt die Gruppen wieder her, Strg + F springt ins Feld
+// Abhängigkeiten im Dialog (settingsdeps.js): „Keine Blitze“ graut die Blitz-Schalter aus, der Hinweis springt
+// zur Ursache; „Ruhig“ unter „Sicherheit & Komfort“ wählt das Preset und führt zurück zum Preset davor
+async function settingsDeps() {
+  const stored = () => T.js(`JSON.parse(localStorage.getItem("mirage:settings") || "{}")`);
+  const before = await stored();
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
+  await until(() => T.js(`!!document.querySelector(".mirage-settings .m-search")`), 2000, "abhängig: Einstellungen gehen auf");
+  const row = (k) => T.js(`(() => { const i = document.querySelector('.mirage-settings input[data-key="${k}"]'), r = i?.closest(".m-row");
+    return i && { disabled: i.disabled, blocked: r.classList.contains("is-blocked"), why: r.querySelector(".m-blocked")?.textContent || "" }; })()`);
+  const click = (sel) => T.js(`(() => { const x = document.querySelector(${JSON.stringify(".mirage-settings " + sel)}); x?.click(); return !!x; })()`);
+  ok((await T.js(`[...document.querySelectorAll(".mirage-settings details.m-group")].map((d) => d.dataset.group).join()`)).startsWith("perf,comfort,"), "abhängig: Aussehen & Leistung und Sicherheit & Komfort zuerst");
+  if (before.noFlash) {
+    await click('input[data-key="noFlash"]');
+    await until(async () => !(await stored()).noFlash, 2000, "abhängig: Blitze erst erlaubt");
+  }
+  let r = await row("partyStrobe");
+  ok(r && !r.disabled && !r.blocked, "abhängig: ohne „Keine Blitze“ ist das Stroboskop frei: " + JSON.stringify(r));
+  await click('input[data-key="noFlash"]');
+  r = await until(async () => { const x = await row("partyStrobe"); return x?.blocked && x; }, 2000, "abhängig: Stroboskop ausgegraut");
+  ok(r.disabled && r.why.length > 3, "abhängig: gesperrt mit Hinweis: " + JSON.stringify(r));
+  for (const k of ["partyFlash", "partyFlashStorm"]) ok((await row(k)).blocked, "abhängig: auch " + k);
+  ok(!(await row("partyLasers")).blocked, "abhängig: Laser bleiben frei");
+  await click('.m-row:has(input[data-key="partyStrobe"]) .m-blocked');
+  const j = await until(() => T.js(`(() => { const a = document.activeElement; return a?.dataset?.key === "noFlash" && a.closest(".m-row").classList.contains("is-jump"); })()`), 2000, "abhängig: Hinweis springt zu „Keine Blitze“");
+  ok(j, "abhängig: Fokus auf „Keine Blitze“");
+  await click('input[data-key="noFlash"]');
+  await until(async () => !(await row("partyStrobe")).blocked, 2000, "abhängig: wieder frei");
+  // Ruhig als Schalter = Preset „Ruhig“
+  const from = before.preset && before.preset !== "custom" && before.preset !== "calm" ? before.preset : "balanced";
+  if ((await stored()).preset !== from) {
+    await click(`.m-presets [data-preset="${from}"]`);
+    await until(async () => (await stored()).preset === from, 2000, "abhängig: Ausgangs-Preset");
+  }
+  await click("input[data-calm]");
+  await until(async () => (await stored()).preset === "calm" && (await stored()).calm === true, 2000, "abhängig: Ruhig-Schalter wählt das Preset");
+  ok((await row("burst")).blocked, "abhängig: Ruhig graut die Herz-Explosion aus");
+  ok(await T.js(`document.querySelector('.mirage-settings .m-presets [data-preset="calm"]').getAttribute("aria-pressed") === "true"`), "abhängig: Preset „Ruhig“ markiert");
+  await click("input[data-calm]");
+  await until(async () => (await stored()).preset === from && (await stored()).calm === false, 2000, "abhängig: aus = zurück zum Preset davor");
+  if (before.noFlash) await click('input[data-key="noFlash"]');
+  if ((before.preset || "balanced") !== from) await click(`.m-presets [data-preset="${before.preset || "balanced"}"]`);
+  await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
+}
 async function settingsSearch() {
   await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
   await until(() => T.js(`!!document.querySelector(".mirage-settings .m-search")`), 2000, "suche: Einstellungen gehen auf");
@@ -2352,7 +2397,7 @@ CASES.push(["perf-menu", perfMenu]);
 CASES.push(["idle-hidden", idleHidden]);
 CASES.push(["soak-lite", soakLite]);
 CASES.push(["photo-wall", photoWall]);
-CASES.push(["settings-search", settingsSearch], ["coach-once", coachOnce]);
+CASES.push(["settings-search", settingsSearch], ["settings-deps", settingsDeps], ["coach-once", coachOnce]);
 
 // Notiz nach einem Spotify-Update (src/updnote.js): nie bei der ersten Installation, genau einmal nach einem
 // Versionswechsel, beim nächsten Start mit derselben Version nicht mehr; fehlt etwas, sagt sie was. Eigenes,
