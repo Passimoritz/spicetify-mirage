@@ -517,6 +517,13 @@ button[class*="chip--"][aria-checked="true"] * {
   opacity: 1 !important;
 }
 
+/* Die Suchvorschläge hängen im Suchfeld, und das ist durch sein Glas (backdrop-filter) eine eigene Stapelebene:
+   ihr z-index galt nur darin, der Hauptbereich (eigenes Glas, später im Aufbau) malte Zeilen und Chips darüber –
+   die Liste wirkte durchsichtig. Darum liegt die ganze Kopfleiste über Seitenleisten und Hauptbereich. */
+.Root__globalNav {
+  position: relative;
+  z-index: 5;
+}
 /* Suchvorschläge unter dem Suchfeld oben: eigene, deckende Glasplatte über allem im Hauptbereich */
 .main-globalNav-searchSection [role="listbox"],
 [role="listbox"]:is(#search-dropdown, [id*="search"][id$="dropdown"], [id*="searches"][id*="dropdown"]) {
@@ -6077,6 +6084,13 @@ html.mirage-rich #mirage-stage .m-aurora {
   background-clip: text;
   color: transparent;
 }
+/* Die Füllung zeichnet nur, so weit der Hintergrund des Worts reicht. Als inline-block (Hype-Zeile, verspielter
+   Stil) endet der an der Zeilenhöhe: Unterlängen (g, y, p) und die Spitzen kursiver Buchstaben wurden abgeschnitten.
+   Etwas Polster rundum vergrößert die Malfläche, die negativen Ränder heben es für das Layout wieder auf. */
+#mirage-immersive.is-karaoke .m-im-line .m-w {
+  padding: 0.1em 0.14em 0.26em 0.06em;
+  margin: -0.1em -0.14em -0.26em -0.06em;
+}
 
 /* ==========================================================================
    BIBLIOTHEK: Tempo/Tonart-Pille und Dubletten-Fenster (library.js)
@@ -8186,6 +8200,19 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   rotate: var(--pr, -3deg);
   translate: 1.2em 0;
   transform-origin: left center;
+}
+/* mittig gesetzte Zeilen (Party, Refrain, gemeinsam gesungen): der Hintergrundgesang darunter steht auch mittig –
+   als Block mit fit-content landete er sonst am linken Rand */
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line .m-im-bgl,
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-p-chorus, .is-p-mid) .m-im-bgl {
+  margin-inline: auto;
+  translate: 0 0;
+  transform-origin: center;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-right .m-im-bgl {
+  margin-left: auto;
+  translate: -1.2em 0;
+  transform-origin: right center;
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line:not(.is-p-adlib) > .is-bg:not(.m-im-bgl),
 #mirage-immersive .m-im-lyrics.is-playful .m-im-words > .is-bg {

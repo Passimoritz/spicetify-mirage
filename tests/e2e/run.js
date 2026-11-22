@@ -2713,7 +2713,8 @@ async function moreMenu() {
   await until(async () => (await storedSettings()).partyCrowd === crowd0, 2000, "mehr: Publikum zurück");
   // 4) Alle Einstellungen: der Dialog geht bei „Party-Modus“ auf
   await T.click(`${SIDE} .m-im-allsettings`);
-  const grp = await until(() => T.js(`(() => { const d = [...document.querySelectorAll(".mirage-settings details.m-group")].find((x) => x.open); return d && d.querySelector("summary").textContent; })()`), 2000, "mehr: Einstellungen offen");
+  // „Aussehen & Leistung“ und „Sicherheit & Komfort“ sind immer offen – gefragt ist, ob die Party-Gruppe aufgeht
+  const grp = await until(() => T.js(`(() => { const d = document.querySelector(".mirage-settings details[data-group='party']"); return d && d.open && d.querySelector("summary").textContent; })()`), 2000, "mehr: Einstellungen offen");
   ok(grp === "Party-Modus", "mehr: Einstellungen bei der Party-Gruppe: " + grp);
   ok(await T.js(`document.querySelector("${SIDE}").hidden`), "mehr: das Menü schließt dafür");
   await T.js(`document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); 1`);
