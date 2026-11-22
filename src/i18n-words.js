@@ -1,4 +1,4 @@
-// Texte der Wort-Reaktionen im Party-Modus (derbe Wörter: Einstellung partyExplicit). Andere Sprachen: Englisch.
+// Texte der Wort-Reaktionen im Party-Modus (derbe Wörter: Einstellung partyExplicit). Fehlt ein Schlüssel: Englisch.
 export const WORDS_TEXT = {
   en: {
     partyExplicit: "Explicit lyrics",
@@ -13,5 +13,89 @@ export const WORDS_TEXT = {
     partyExplicit_on: "Licht & Stimmung",
     partyExplicit_soft: "Nur Farbe",
     partyExplicit_off: "Ignorieren",
+  },
+  es: {
+    partyExplicit: "Letras explícitas",
+    partyExplicitHint: "El sexo, los insultos, las palabrotas y las drogas de la letra nunca se muestran como texto – el escenario solo responde con luz y ambiente. Desactivado mientras el filtro de contenido explícito de Spotify esté activado",
+    partyExplicit_on: "Luz y ambiente",
+    partyExplicit_soft: "Solo color",
+    partyExplicit_off: "Ignorar",
+  },
+  fr: {
+    partyExplicit: "Paroles explicites",
+    partyExplicitHint: "Le sexe, les insultes, les jurons et la drogue dans les paroles ne s'affichent jamais en texte – la scène répond seulement par la lumière et l'ambiance. Désactivé tant que le filtre de contenu explicite de Spotify est activé",
+    partyExplicit_on: "Lumière & ambiance",
+    partyExplicit_soft: "Couleur seulement",
+    partyExplicit_off: "Ignorer",
+  },
+  it: {
+    partyExplicit: "Testi espliciti",
+    partyExplicitHint: "Sesso, insulti, imprecazioni e droghe nel testo non vengono mai mostrati come scritte – il palco risponde solo con luce e atmosfera. Disattivato finché il filtro dei contenuti espliciti di Spotify è attivo",
+    partyExplicit_on: "Luce e atmosfera",
+    partyExplicit_soft: "Solo colore",
+    partyExplicit_off: "Ignora",
+  },
+  ja: {
+    partyExplicit: "不適切な表現を含む歌詞",
+    partyExplicitHint: "歌詞に含まれる性的な表現・侮辱・罵り言葉・薬物は文字として表示されません – ステージは光と雰囲気だけで反応します。Spotify の不適切なコンテンツのフィルターがオンの間はオフ",
+    partyExplicit_on: "光と雰囲気",
+    partyExplicit_soft: "色のみ",
+    partyExplicit_off: "無視",
+  },
+  ko: {
+    partyExplicit: "노골적인 가사",
+    partyExplicitHint: "가사의 성적 표현, 모욕, 욕설, 마약은 절대 텍스트로 표시되지 않습니다 – 무대는 빛과 분위기로만 반응합니다. Spotify의 노골적인 콘텐츠 필터가 켜져 있는 동안은 꺼짐",
+    partyExplicit_on: "빛 & 분위기",
+    partyExplicit_soft: "색만",
+    partyExplicit_off: "무시",
+  },
+  nl: {
+    partyExplicit: "Expliciete teksten",
+    partyExplicitHint: "Seks, beledigingen, vloeken en drugs in de songtekst worden nooit als tekst getoond – het podium reageert alleen met licht en sfeer. Uit zolang het filter voor expliciete content van Spotify aan staat",
+    partyExplicit_on: "Licht & sfeer",
+    partyExplicit_soft: "Alleen kleur",
+    partyExplicit_off: "Negeren",
+  },
+  pl: {
+    partyExplicit: "Treści dla dorosłych",
+    partyExplicitHint: "Seks, obelgi, przekleństwa i narkotyki w tekście nigdy nie są pokazywane jako napisy – scena odpowiada tylko światłem i nastrojem. Wyłączone, gdy w Spotify włączony jest filtr treści dla dorosłych",
+    partyExplicit_on: "Światło i nastrój",
+    partyExplicit_soft: "Tylko kolor",
+    partyExplicit_off: "Ignoruj",
+  },
+  pt: {
+    partyExplicit: "Letras explícitas",
+    partyExplicitHint: "Sexo, insultos, palavrões e drogas na letra nunca aparecem como texto – o palco só responde com luz e clima. Desligado enquanto o filtro de conteúdo explícito do Spotify estiver ligado",
+    partyExplicit_on: "Luz e clima",
+    partyExplicit_soft: "Só cor",
+    partyExplicit_off: "Ignorar",
+  },
+  ru: {
+    partyExplicit: "Откровенные тексты",
+    partyExplicitHint: "Секс, оскорбления, ругательства и наркотики в тексте никогда не показываются словами – сцена отвечает только светом и настроением. Выключено, пока в Spotify включён фильтр откровенного контента",
+    partyExplicit_on: "Свет и настроение",
+    partyExplicit_soft: "Только цвет",
+    partyExplicit_off: "Игнорировать",
+  },
+  tr: {
+    partyExplicit: "Uygunsuz sözler",
+    partyExplicitHint: "Sözlerdeki seks, hakaret, küfür ve uyuşturucu asla yazı olarak gösterilmez – sahne yalnızca ışık ve atmosferle karşılık verir. Spotify'ın uygunsuz içerik filtresi açıkken kapalı",
+    partyExplicit_on: "Işık ve atmosfer",
+    partyExplicit_soft: "Yalnızca renk",
+    partyExplicit_off: "Yok say",
+  },
+  uk: {
+    partyExplicit: "Відверті тексти",
+    partyExplicitHint: "Секс, образи, лайка й наркотики в тексті ніколи не показуються словами – сцена відповідає лише світлом і настроєм. Вимкнено, поки в Spotify увімкнено фільтр відвертого контенту",
+    partyExplicit_on: "Світло й настрій",
+    partyExplicit_soft: "Лише колір",
+    partyExplicit_off: "Ігнорувати",
+  },
+  zh: {
+    partyExplicit: "露骨歌词",
+    partyExplicitHint: "歌词中的性、辱骂、脏话和毒品绝不会以文字显示 – 舞台只用灯光和氛围回应。Spotify 的露骨内容过滤开启时关闭",
+    partyExplicit_on: "灯光与氛围",
+    partyExplicit_soft: "仅颜色",
+    partyExplicit_off: "忽略",
   },
 };

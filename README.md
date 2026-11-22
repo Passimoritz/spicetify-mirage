@@ -115,7 +115,7 @@ spicetify restore
 
 ### A full-screen stage
 
-Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. Switch between five views with <kbd>1</kbd> to <kbd>5</kbd>.
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. Switch between six views with <kbd>1</kbd> to <kbd>6</kbd>.
 
 <table>
   <tr>
@@ -140,11 +140,16 @@ Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. Switch between five views w
   </tr>
 </table>
 
-- **Lyrics for almost every song** – if Spotify has none, Mirage looks in several free lyrics collections at once and lines them up with the singing by itself.
+**6 · Clock** – a calm clock with the current song, for music in the background.
+
+- **Lyrics for almost every song** – Mirage asks Spotify and several free lyrics collections at the same time, so lyrics are there within a few seconds. Spotify keeps priority; "no lyrics" is remembered for a week.
+- **The timing most versions agree on** – when several synced versions exist, Mirage takes the timing most of them share and drops outliers. Spotify's own timing is only replaced when at least two other sources agree and differ by more than a second.
+- **Lined up with the singing** – Mirage shifts lyrics onto the vocals by itself, but carefully: at most about a second, also with spoken or shouted vocals, and you can undo it per song.
 - **Karaoke word by word** – the letters fill exactly as they are sung.
-- **Translation and Latin letters** under the lyrics, if you want them (for example under Korean, Japanese, Chinese, Russian, Greek or Hindi).
-- **Wrong lyrics?** One click on *Not the right lyrics* tries the next best match.
-- **Eleven visualizer styles**, from simple bars to a galaxy or a 3D tunnel.
+- **Playful style** (optional, *Settings → Lyrics*) – the lyrics play along: loud words get bolder, quiet ones thinner, shouted lines turn to capitals, held notes stretch and the chorus is big and bounces on the beat. Backing vocals sit small beside the line, duet voices each get their own side. With *Calm*, *No flashes* or reduced motion only size and weight change.
+- **Translation and Latin letters** under the lyrics, if you want them (for example under Korean, Japanese, Chinese, Russian, Greek or Hindi) – for all songs or only this one.
+- **Lyrics a bit off?** *Earlier* / *Later* in the lyrics bar or the **More** menu moves them by 0.25 s for this song. **Wrong lyrics?** *Choose version* shows where they come from, how many versions agree and whether Mirage shifted them, and offers other versions, *Not the right lyrics*, *Undo automatic shift* and *Search again*.
+- **Thirteen visualizer styles**, from simple bars to a galaxy or a 3D tunnel.
 
 ### A light show that knows the song
 
@@ -171,9 +176,11 @@ Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. Switch between five views w
 Party mode listens to the whole song **before** it plays. It knows where the chorus starts and where the drop hits, and it plans the light for each part.
 
 - **Follows the mood** – a happy drop, a tender break and a sad bridge each get their own colours and pace. The scenes change during the song, always on the beat.
-- **318 music styles** – techno gets laser scanners, house a disco ball, rock hard spots, ballads a sea of phone lights. Mirage picks the style by itself, or you choose it.
+- **336 music styles** – techno gets laser scanners, house a disco ball, rock hard spots, ballads a sea of phone lights. Mirage knows every genre name Spotify, MusicBrainz, Apple Music and Deezer use – about 13,700 – and puts each on its closest style. The **More** menu shows what it detected, and you can pin a style for an artist or choose one yourself.
+- **Reacts to the words** – about 200 kinds of words in 45 languages: nightlife, money, movement, feelings as colour moods, places and times, and shouts the crowd answers. It looks at the context ("no fire", idioms, sad songs, repeated choruses), so it reacts less often but more fittingly. Explicit lyrics are never shown as text, only answered with light and mood; the *Explicit lyrics* setting offers *Light & mood*, *Colour only* or *Ignore* (and is off while Spotify's explicit-content filter is on).
 - **17 places** – club, warehouse, festival, stadium, beach, living room, rooftop, cathedral, jazz bar, forest stage, concert hall, cellar, outer space, neon street, pub, ski hut and desert night.
-- **A crowd that dances along** – jumps on the beat, hands up in the chorus, lighters in ballads.
+- **A crowd that dances along** – jumps on the beat, hands up in the chorus, lighters in ballads. Switch it off with *Show crowd* in the **More** menu; guest reactions then rise from the bottom edge.
+- **Smooth light** – effects fade in instead of starting hard, the light wipe glides over two beats, glows have no bands, and the frame rate follows your screen.
 - **Instruments get a moment** – when the song credits name a trumpet, sax, guitar, piano, strings, choir and a few more, that instrument gets its own effect. Mirage also listens to the song's 30-second preview (analysed, never played): kick, 808, hi-hats, guitars, piano, strings, pads and sound effects like risers, impacts, stops or sirens get their own light – only when Mirage is sure.
 - **Five strengths** from *Soft* to *Insane*. The picture never zooms or moves the camera.
 
@@ -181,18 +188,18 @@ Party mode listens to the whole song **before** it plays. It knows where the cho
 <p align="center"><img src="assets/shots/instruments.jpg" alt="Instrument effects for brass, sax, electric guitar, piano, strings and choir" width="100%"></p>
 
 <details>
-<summary><b>All 318 styles in 17 families</b></summary>
+<summary><b>All 336 styles in 17 families</b></summary>
 
 | Family | Styles |
 |---|---|
-| Electronic (51) | Rave · EDM & Big Room · Electro house · Progressive house · Future & slap house · House · Deep House · Tropical house · Tech House · Bass house · Acid house · Chicago & classic house · French house · Nu-disco · UK Garage · Jersey club · Techno · Minimal & microhouse · Detroit techno · Dub techno · Melodic techno · Hard techno · EBM & industrial dance · Trance · Progressive trance · Uplifting & vocal trance · Psytrance · Drum & Bass · Liquid drum & bass · Neurofunk · Jungle · Breakbeat · Footwork & juke · Electro & Miami bass · Dubstep · Festival trap · Future bass · Moombahton · Hardstyle · Gabber & hardcore · Happy hardcore · Eurodance · Eurobeat · Hands up · Italo disco · Synthwave · Darksynth · Vaporwave · Hyperpop · Chiptune & 8-bit · Electro swing |
-| Hip-Hop & R&B (28) | Hip-Hop · Boom bap · Gangsta & hardcore rap · West Coast & G-funk · Southern hip-hop & crunk · Alternative & underground hip-hop · Trap · Pop rap & melodic rap · Cloud rap · Drill · Phonk · UK rap · Grime · German rap · French rap · Italian rap · Spanish rap · Russian rap · Turkish rap · Arabic & Maghreb rap · Brazilian hip-hop & trap · R&B · Alternative R&B · New jack swing · Soul & Funk · Neo-soul · Northern & classic soul · Funk |
-| Rock (28) | Rock · Classic rock · Rock 'n' roll & rockabilly · Hard rock · Glam rock · Blues rock · Southern rock · Psychedelic rock · Stoner & desert rock · Progressive & art rock · Krautrock · Surf rock · Garage rock · Alternative · Grunge · Indie · Britpop & UK indie · Shoegaze & dream pop · Post-punk & darkwave · Post-rock · Folk rock · Soft rock & yacht rock · German rock · Punk · Pop punk · Hardcore punk · Post-hardcore & screamo · Emo |
+| Electronic (54) | Rave · EDM & Big Room · Electro house · Progressive house · Future & slap house · House · Deep House · Tropical house · Tech House · Bass house · Acid house · Chicago & classic house · French house · Nu-disco · UK Garage · Jersey club · Techno · Minimal & microhouse · Detroit techno · Dub techno · Melodic techno · Hard techno · EBM & industrial dance · Trance · Progressive trance · Uplifting & vocal trance · Psytrance · Drum & Bass · Liquid drum & bass · Neurofunk · Jungle · Breakbeat · Footwork & juke · Electro & Miami bass · Dubstep · Festival trap · Future bass · Moombahton · Hardstyle · Gabber & hardcore · Happy hardcore · Eurodance · Eurobeat · Hands up · Italo disco · Synthwave · Darksynth · Vaporwave · Hyperpop · Chiptune & 8-bit · Electro swing · Breakcore · Deep tech · Uptempo & terrorcore |
+| Hip-Hop & R&B (30) | Hip-Hop · Boom bap · Gangsta & hardcore rap · West Coast & G-funk · Southern hip-hop & crunk · Alternative & underground hip-hop · Trap · Pop rap & melodic rap · Cloud rap · Drill · Phonk · UK rap · Grime · German rap · French rap · Italian rap · Spanish rap · Russian rap · Turkish rap · Arabic & Maghreb rap · Brazilian hip-hop & trap · R&B · Alternative R&B · New jack swing · Soul & Funk · Neo-soul · Northern & classic soul · Funk · Hyphy & Bay Area rap · Jerk |
+| Rock (31) | Rock · Classic rock · Rock 'n' roll & rockabilly · Hard rock · Glam rock · Blues rock · Southern rock · Psychedelic rock · Stoner & desert rock · Progressive & art rock · Krautrock · Surf rock · Garage rock · Alternative · Grunge · Indie · Britpop & UK indie · Shoegaze & dream pop · Post-punk & darkwave · Post-rock · Folk rock · Soft rock & yacht rock · German rock · Punk · Pop punk · Hardcore punk · Post-hardcore & screamo · Emo · Oi! & street punk · Riot grrrl · Slowcore & sadcore |
 | Metal (17) | Metal · Heavy metal & NWOBHM · Thrash metal · Glam & hair metal · Power metal · Symphonic & gothic metal · Progressive metal & djent · Doom & sludge · Death metal · Black metal · Grindcore & powerviolence · Groove & alternative metal · Metalcore · Deathcore · Nu metal & rap metal · Industrial metal & NDH · Folk & viking metal |
 | Pop (11) | Pop · Dance pop · Electropop · Synth-pop & new wave · Teen pop & boy bands · Pop rock & power pop · Indie pop & bedroom pop · Art pop & chamber pop · Disco & Funk · Ballad · Musical |
-| Asia (33) | K-Pop · K-indie · K-rock · K-hip-hop · K-R&B · Trot · J-pop & anime · J-rock & visual kei · J-hip-hop · Anime & anisong · Vocaloid & utaite · City pop · Shibuya-kei · Enka & kayōkyoku · Japanese traditional · C-pop · Mandopop · Cantopop · Chinese hip-hop · Chinese traditional · T-pop · Luk thung & mor lam · V-pop · OPM & P-pop · Dangdut & Indo pop · Gamelan & Southeast Asian traditional · Bollywood · South Indian film · Punjabi & bhangra · Desi hip-hop · Hindustani classical · Carnatic classical · Qawwali & Sufi |
-| Latin America (29) | Latin · Latin pop · Reggaeton · Latin trap · Dembow · Bachata · Merengue · Salsa & Tropical · Son & trova (Cuba) · Bolero & balada · Cumbia · Vallenato · Tango · Mariachi & ranchera · Regional Mexican · Banda · Norteño & Tejano · Corridos & sierreño · Rock en español · Andean & folklore · Brazilian · Samba · Pagode · Axé & frevo · Forró & piseiro · Sertanejo · Funk carioca & baile funk · MPB · Bossa nova |
-| Africa & Caribbean (21) | Afrobeats · Afrobeat & Afro-funk · Highlife & hiplife · Amapiano · Gqom · Afro house · Bongo flava & East African · Soukous & Congolese rumba · Kuduro · Kizomba & semba · Desert blues · Reggae · Roots reggae & lovers rock · Dub · Rocksteady · Ska · Dancehall · Soca · Calypso & steelpan · Zouk · Kompa |
+| Asia (34) | K-Pop · K-indie · K-rock · K-hip-hop · K-R&B · Trot · J-pop & anime · J-rock & visual kei · J-hip-hop · Anime & anisong · Vocaloid & utaite · City pop · Shibuya-kei · Enka & kayōkyoku · Japanese traditional · C-pop · Mandopop · Cantopop · Chinese hip-hop · Chinese traditional · T-pop · Luk thung & mor lam · V-pop · OPM & P-pop · Dangdut & Indo pop · Gamelan & Southeast Asian traditional · Bollywood · South Indian film · Punjabi & bhangra · Desi hip-hop · Hindustani classical · Carnatic classical · Qawwali & Sufi · Bhojpuri |
+| Latin America (33) | Latin · Latin pop · Reggaeton · Latin trap · Dembow · Bachata · Merengue · Salsa & Tropical · Son & trova (Cuba) · Bolero & balada · Cumbia · Vallenato · Tango · Mariachi & ranchera · Regional Mexican · Banda · Norteño & Tejano · Corridos & sierreño · Rock en español · Andean & folklore · Brazilian · Samba · Pagode · Axé & frevo · Forró & piseiro · Sertanejo · Funk carioca & baile funk · MPB · Bossa nova · Cuarteto · Mambo & boogaloo · Tecnobrega · Champeta |
+| Africa & Caribbean (25) | Afrobeats · Afrobeat & Afro-funk · Highlife & hiplife · Amapiano · Gqom · Afro house · Bongo flava & East African · Soukous & Congolese rumba · Kuduro · Kizomba & semba · Desert blues · Reggae · Roots reggae & lovers rock · Dub · Rocksteady · Ska · Dancehall · Soca · Calypso & steelpan · Zouk · Kompa · Shatta · Ragga · Jùjú & fuji · Mbalax |
 | Middle East & North Africa (14) | Arabic · Arabic pop · Khaleeji · Tarab & Arabic classical · Raï · Gnawa & chaabi · Dabke · Mahraganat & shaabi · Turkish pop · Arabesk & Turkish folk · Anatolian rock · Persian pop · Persian classical · Mizrahi & Israeli pop |
 | Europe (19) | Schlager · Après-ski & Ballermann · Volksmusik & alpine · Polka & brass · Carnival & levenslied · German pop & NDW · Chanson & variété · Canzone & Italian pop · Europop & Eurovision · Disco polo · Russian pop & estrada · Greek laïko & rebetiko · Fado · Flamenco · Balkan · Turbo-folk · chalga & manele · Klezmer · Celtic & Irish · Nordic folk |
 | Country & folk (10) | Country & Folk · Classic & outlaw country · Country pop · Country rock & red dirt · Americana & alt-country · Bluegrass & old-time · Cajun & zydeco · Folk · Indie folk & folk pop · Acoustic |
@@ -200,7 +207,7 @@ Party mode listens to the whole song **before** it plays. It knows where the cho
 | Gospel & spiritual (7) | Gospel · Christian pop & CCM · Worship & praise · Christian rock & metal · Christian hip-hop · Bhajan · kirtan & mantra · Nasheed & Islamic |
 | Classical & soundtrack (12) | Classical · Baroque & early music · Classical era · Romantic era · Opera & operetta · Choral & sacred · Chamber music · Orchestral & symphonic · Minimalism · Contemporary classical · Film & Epic · Video game music |
 | Calm & classical (10) | Chill · Lo-fi · Downtempo & chillout · Trip-hop · Easy listening & lounge · Ambient · New age & healing · Meditation & yoga · Sleep & nature sounds · Neoclassical |
-| Experimental (5) | Experimental & avant-garde · IDM & glitch · Industrial & power electronics · Noise & noise rock · Dark ambient & drone |
+| Experimental (6) | Experimental & avant-garde · IDM & glitch · Industrial & power electronics · Noise & noise rock · Dark ambient & drone · Dungeon synth |
 | Kids, holidays & spoken (6) | Christmas · Halloween · Kids' music · Disney & family film · Comedy & novelty · Spoken word & podcast |
 </details>
 
@@ -253,7 +260,7 @@ Quizzes come in easy, normal or hard, can use a decade filter or one of your pla
 **No phones?** Number keys answer, <kbd>Space</kbd> is the buzzer, <kbd>Enter</kbd> starts. After a game you can save the ranking as an image.
 </details>
 
-**More for the party:** a DJ panel that sorts your queue so the mood flows, Spotify Jam guests dancing in the crowd, confetti on <kbd>C</kbd>, and a recap of the night that you can save as a playlist.
+**More for the party:** in the **More** menu (<kbd>O</kbd>) a DJ panel that sorts your queue so the mood flows, Spotify Jam guests dancing in the crowd, confetti on <kbd>C</kbd>, and a recap of the night that you can save as a playlist.
 
 ## 💡 Overlay app
 
@@ -279,12 +286,13 @@ A small free extra app. It shows the current song **above every window**, even w
 
 ## ⚙️ Settings in short
 
-Open your **profile menu → Mirage settings**. Every effect has its own switch, and each section can be reset on its own.
+Open your **profile menu → Mirage settings**, or **All settings…** in the stage's **More** menu – it opens right above the stage at the matching section. The settings come in clear groups – *Look & performance*, *Safety & comfort*, colours, background and animations, *Lyrics*, *Visualizer & videos*, *Party mode* and *System* – and every setting is in exactly one place. Each group can be reset on its own.
 
 - **Look & performance** – one click for *Full*, *Balanced*, *Light* or *Calm*. If your computer struggles, Mirage steps down by itself.
-- **Quick menu** – in the full-screen stage, press <kbd>O</kbd> (or the **⋯** button) to change look and performance without leaving the music.
-- **Energy saving** – on battery, Mirage draws less and saves power.
-- **No flashes** – for sensitive eyes: no strobe, no blinding light, no sudden flashes anywhere, also on guest phones and room lights. It turns on by itself when your computer is set to reduce motion.
+- **Energy saving** – *On battery*, *Always* or *Off*: Mirage draws fewer frames and pixels and saves power.
+- **Safety & comfort** – **No flashes** for sensitive eyes: no strobe, no blinding light, no sudden flashes anywhere, also on guest phones and room lights. It turns on by itself when your computer is set to reduce motion. Next to it, the **Calm** switch is a shortcut to the *Calm* preset (no background motion, bursts, tilt or canvas videos); off goes back to your previous preset.
+- **Greyed-out switches** – a switch that *No flashes* or *Calm* silences says "Off because of …"; one click jumps to the cause.
+- **More menu** – in the full-screen stage, press <kbd>O</kbd> (or the **⋯** button). It has the same groups in every view: *This song* (the song menu), *This view* (canvas video, lyrics timing; in party and clock also queue, volume, devices and sleep timer), *Party* (DJ, crowd, detected style …), *Look & performance* (presets and energy saving) and *All settings…*.
 - **Light and lyrics too early or too late?** Press <kbd>T</kbd> six times on the beat. Mirage measures the delay of your speakers (Bluetooth adds some).
 
 <details>
@@ -312,7 +320,7 @@ Still broken? Right after a big Spotify update, Spicetify sometimes needs a few 
 
 - **No account, no tracking, no ads.** Mirage has no server of its own.
 - **Stays on your computer:** your settings, saved lyrics, and the passwords for your lights (encrypted).
-- **Only song details leave your computer**, never who you are: when Spotify has no lyrics, tempo or style for a song, Mirage sends song details such as title and artist to free music services (LRCLIB, NetEase, Kugou, lyrics.ovh, Deezer, Apple's iTunes search, MusicBrainz). You can switch these lookups off.
+- **Only song details leave your computer**, never who you are: to find and compare lyrics, Mirage asks free lyrics collections (LRCLIB, NetEase, Kugou, lyrics.ovh) at the same time as Spotify; when Spotify has no tempo or style for a song, it asks Deezer, Apple's iTunes search and MusicBrainz. Only song details such as title and artist are sent. You can switch these lookups off.
 - **Translation** (off unless you turn it on) sends lyric lines to Google Translate.
 - **Phones at the party** (off unless you turn it on): everything is end-to-end encrypted – nobody but your guests can read it, not even the relay service that passes it on. The key is only in the QR code. It works only while party mode runs and expires 10 minutes after.
 - **Karaoke:** the singing is scored on the singer's phone. The recording never leaves it.
@@ -336,13 +344,19 @@ That's normal. Follow [Help after a Spotify update](#-help-something-looks-wrong
 <details>
 <summary><b>Party mode picks the wrong music style.</b></summary>
 
-Choose it yourself in **Mirage settings → Party mode → Style**. The list has a search field.
+For one artist: open the **More** menu (<kbd>O</kbd>) in party mode – it shows the detected style – and pick *Always use for this artist …*. For everything: choose it in **Mirage settings → Party mode → Style**. The list has a search field.
+</details>
+
+<details>
+<summary><b>Lyrics out of sync?</b></summary>
+
+Use *Earlier* / *Later* in the lyrics bar or the **More** menu – each click moves the lyrics 0.25 s, only for this song. If Mirage shifted them wrongly, open *Choose version* and click *Undo automatic shift*; *Search again* asks all sources once more. If everything (light and lyrics) is late for every song, press <kbd>T</kbd> six times on the beat to measure your speakers.
 </details>
 
 <details>
 <summary><b>My laptop gets warm or the fan is loud.</b></summary>
 
-Press <kbd>O</kbd> in the full-screen stage and choose *Light* or *Calm*, or switch on energy saving.
+Press <kbd>O</kbd> in the full-screen stage and, under *Look & performance*, choose *Light* or *Calm*, or set energy saving to *Always*.
 </details>
 
 <details>
@@ -362,9 +376,9 @@ Yes. iPhones don't let websites vibrate, so they can play a quiet click on the b
 | Key | What it does |
 |---|---|
 | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> | open or close the full-screen stage |
-| <kbd>1</kbd> … <kbd>5</kbd> | cover · lyrics · visualizer · mix · party |
+| <kbd>1</kbd> … <kbd>6</kbd> | cover · lyrics · visualizer · mix · party · clock |
 | <kbd>Space</kbd> | play / pause |
-| <kbd>O</kbd> | quick menu for look and performance |
+| <kbd>O</kbd> | **More** menu: this song, this view, party, look & performance |
 | <kbd>?</kbd> | show all shortcuts |
 
 <details>
@@ -375,12 +389,16 @@ Yes. iPhones don't let websites vibrate, so they can play a quiet click on the b
 | <kbd>N</kbd> · <kbd>P</kbd> | next · previous song |
 | <kbd>←</kbd> <kbd>→</kbd> | jump 5 seconds |
 | <kbd>↑</kbd> <kbd>↓</kbd> | volume |
-| <kbd>L</kbd> · <kbd>S</kbd> · <kbd>R</kbd> · <kbd>Q</kbd> | like · shuffle · repeat · queue |
+| <kbd>L</kbd> · <kbd>S</kbd> · <kbd>R</kbd> · <kbd>Q</kbd> | like · shuffle · repeat · up next |
 | <kbd>F</kbd> or <kbd>F11</kbd> | full screen |
-| <kbd>C</kbd> | confetti |
+| <kbd>M</kbd>, <kbd>Shift</kbd>+<kbd>F10</kbd>, the menu key or right-click | song menu |
+| <kbd>A</kbd> | add to playlist |
+| <kbd>Home</kbd> · <kbd>End</kbd> | first · last entry in menus and views |
+| <kbd>C</kbd> | confetti (party) |
 | <kbd>T</kbd> (6×, on the beat) | match light and lyrics to your speakers |
-| <kbd>E</kbd>, then <kbd>Enter</kbd> | fix the lyric timing: press Enter when the marked line starts |
-| <kbd>Esc</kbd> | close |
+| <kbd>E</kbd>, then <kbd>Enter</kbd> | fix the lyric timing: press Enter when the marked line starts, <kbd>⌫</kbd> undoes |
+| <kbd>1</kbd> … <kbd>9</kbd> · <kbd>Space</kbd> | in games: answer · buzzer / join |
+| <kbd>Esc</kbd> | closes an open menu first, then leaves full screen, then closes the stage |
 </details>
 
 ## ❤️ Credits & licence

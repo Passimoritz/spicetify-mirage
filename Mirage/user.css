@@ -407,6 +407,29 @@ html.mirage-no-tilt [data-encore-id="card"] {
   border-radius: 8px !important;
 }
 
+/* Hover-Symbole, die das alte Symbol mit einer Fläche verdecken sollen.
+   Spotify legt beim Überfahren ein zweites Symbol über das erste („Bibliothek öffnen/schließen“, Pfeil statt
+   Bibliothekssymbol) und verdeckt das erste mit --background-base. Mirage macht diese Farbe durchsichtig (Glas) –
+   beide Symbole lagen übereinander. Statt einer Fläche, die auf Glas als Kasten auffiele: das erste Symbol beim
+   Überfahren ausblenden. Gilt eingeklappt und ausgeklappt (gleicher Knopf). */
+.main-yourLibraryX-collapseButton button > span:first-child {
+  transition: opacity 0.1s ease-out;
+}
+.main-yourLibraryX-collapseButton button:hover > span:first-child:has(~ span svg) {
+  opacity: 0;
+}
+.main-yourLibraryX-collapseButton button > span:first-child ~ span:has(svg) {
+  background-color: transparent !important;
+}
+/* Weitere Spotify-Flächen, die mit --background-base etwas verdecken und auf Glas durchsichtig wären:
+   Play-Symbol über einem Bild, Schalter-Knopf, Punkt im Auswahlkreis, Strich im halb gesetzten Kästchen */
+.main-actionBar-exploreButtonPlayIconWrapper,
+[class*="form-toggle__indicator"],
+input:checked + [class*="form-radio__label"] [class*="form-radio__indicator"]::before,
+input + label [class*="form-checkbox__indicator"][class*="indeterminate"]::before {
+  --background-base: rgba(var(--spice-rgb-main), 0.96) !important;
+}
+
 /* Chips/Filter */
 /* ohne eigenes Verwischen: sie liegen auf der Glasplatte des Hauptbereichs, die schon verwischt –
    ein zweites Mal sah man nicht, jede Chip war aber eine eigene Rechenfläche */

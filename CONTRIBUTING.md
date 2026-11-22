@@ -38,7 +38,7 @@ spicetify watch -s   # re-applies the theme and reloads Spotify when Mirage/ cha
 |---|---|
 | `npm run lint` | ESLint on `src/`, Stylelint on `Mirage/user.css` |
 | `npm run check` | rebuilds `Mirage/theme.js` and fails if the committed bundle is out of date |
-| `node tests/unit/<name>.test.js` | unit tests (CI runs every file in `tests/unit/`) |
+| `node tests/unit/<name>.test.js` | unit tests (CI runs every file in `tests/unit/`), e.g. `lyricvote`, `lyricsync`, `lyricstyle`, `wordsense` (with a labelled lyric corpus in `tests/unit/fixtures/`), `genres-all`, `noflash`, `settingsui`, `shortcuts` |
 | `npm run test:games` | plays all party games end to end, silently, with a local relay and fake Spotify |
 | `npm run test:phones` | the phone page in Chrome phone emulation and WebKit |
 | `npm run check:contrast` | every accent colour pair against 2,617 synthetic covers |
@@ -61,6 +61,8 @@ spicetify watch -s   # re-applies the theme and reloads Spotify when Mirage/ cha
 | `remote/` | `fixes.json`, repairs loaded by installed themes after Spotify updates ([details](remote/README.md)). |
 | `streamdeck/` | The Stream Deck plugin. |
 | `tests/`, `tools/` | Tests, build script and checks. |
+| `tools/genres-fetch.js` | Fetches every genre name from Spotify (Every Noise), MusicBrainz, Apple Music and Deezer into `tools/data/genres-all.json` (`--only mb,apple` refreshes single sources). |
+| `tools/genres-map.js` | Builds `src/genre-map.js` from that list, so every genre name lands on a party style; exits with code 1 if a name stays unmapped. |
 | `install.ps1`, `install.sh` | One-line installers for Windows and macOS/Linux. |
 | `manifest.json` | Marketplace entry; CI checks that every file it references exists. |
 | `assets/` | Screenshots and illustrations for the README. |

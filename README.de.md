@@ -115,7 +115,7 @@ spicetify restore
 
 ### Eine Vollbild-Bühne
 
-Drück <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd>. Mit <kbd>1</kbd> bis <kbd>5</kbd> wechselst du zwischen fünf Ansichten.
+Drück <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd>. Mit <kbd>1</kbd> bis <kbd>6</kbd> wechselst du zwischen sechs Ansichten.
 
 <table>
   <tr>
@@ -140,11 +140,16 @@ Drück <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd>. Mit <kbd>1</kbd> bis <k
   </tr>
 </table>
 
-- **Liedtext für fast jeden Song** – hat Spotify keinen, sucht Mirage gleichzeitig in mehreren freien Liedtext-Sammlungen und legt ihn von selbst passend auf den Gesang.
+**6 · Uhr** – eine ruhige Uhr mit dem laufenden Song, für Musik im Hintergrund.
+
+- **Liedtext für fast jeden Song** – Mirage fragt Spotify und mehrere freie Liedtext-Sammlungen gleichzeitig, deshalb ist der Text nach wenigen Sekunden da. Spotify hat Vorrang; „kein Liedtext“ merkt sich Mirage eine Woche lang.
+- **Das Timing, auf das sich die meisten einigen** – gibt es mehrere zeitgenaue Fassungen, nimmt Mirage die Zeiten, die die meisten teilen, und lässt Ausreißer weg. Spotifys eigene Zeiten werden nur ersetzt, wenn mindestens zwei andere Quellen übereinstimmen und mehr als eine Sekunde abweichen.
+- **Passend zum Gesang** – Mirage schiebt den Liedtext von selbst auf den Gesang, aber vorsichtig: höchstens etwa eine Sekunde, auch bei gesprochenem oder geschrienem Gesang, und du kannst es je Song zurücknehmen.
 - **Karaoke Wort für Wort** – die Buchstaben füllen sich genau dann, wenn sie gesungen werden.
-- **Übersetzung und lateinische Buchstaben** unter dem Liedtext, wenn du magst (zum Beispiel unter Koreanisch, Japanisch, Chinesisch, Russisch, Griechisch oder Hindi).
-- **Falscher Liedtext?** Ein Klick auf *Nicht der richtige Liedtext* probiert den nächstbesten.
-- **Elf Visualizer-Stile**, von einfachen Balken bis zu Galaxie oder 3D-Tunnel.
+- **Verspielter Stil** (wenn du magst, *Einstellungen → Liedtext*) – der Text spielt mit: laute Wörter werden fetter, leise dünner, geschriene Zeilen stehen in Großbuchstaben, lange Töne ziehen sich und der Refrain ist groß und hüpft im Takt. Backing Vocals stehen klein neben der Zeile, Duett-Stimmen bekommen je eine eigene Seite. Mit *Ruhig*, *Keine Blitze* oder reduzierter Bewegung ändern sich nur Größe und Stärke der Schrift.
+- **Übersetzung und lateinische Buchstaben** unter dem Liedtext, wenn du magst (zum Beispiel unter Koreanisch, Japanisch, Chinesisch, Russisch, Griechisch oder Hindi) – für alle Songs oder nur diesen.
+- **Liedtext etwas daneben?** *Früher* / *Später* in der Liedtext-Leiste oder im Menü **Mehr** verschiebt ihn um 0,25 s für diesen Song. **Falscher Liedtext?** *Fassung wählen* zeigt, woher er kommt, wie viele Fassungen übereinstimmen und ob Mirage ihn verschoben hat, und bietet andere Fassungen, *Nicht der richtige Liedtext*, *Automatische Verschiebung zurücknehmen* und *Neu suchen*.
+- **Dreizehn Visualizer-Stile**, von einfachen Balken bis zu Galaxie oder 3D-Tunnel.
 
 ### Eine Lichtshow, die den Song kennt
 
@@ -171,9 +176,11 @@ Drück <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd>. Mit <kbd>1</kbd> bis <k
 Der Party-Modus hört sich den ganzen Song an, **bevor** er läuft. Er weiß, wo der Refrain beginnt und wo der Drop kommt, und plant das Licht für jeden Teil.
 
 - **Folgt der Stimmung** – ein euphorischer Drop, eine zarte Pause und eine traurige Bridge bekommen jeweils eigene Farben und ein eigenes Tempo. Die Szenen wechseln während des Songs, immer im Takt.
-- **318 Musikstile** – Techno bekommt Laser-Scanner, House eine Discokugel, Rock harte Spots, Balladen ein Lichtermeer aus Handys. Mirage erkennt den Stil selbst, oder du wählst ihn.
+- **336 Musikstile** – Techno bekommt Laser-Scanner, House eine Discokugel, Rock harte Spots, Balladen ein Lichtermeer aus Handys. Mirage kennt jeden Genre-Namen, den Spotify, MusicBrainz, Apple Music und Deezer verwenden – rund 13.700 – und ordnet jeden dem passendsten Stil zu. Das Menü **Mehr** zeigt, was erkannt wurde, und du kannst für einen Künstler einen Stil festlegen oder ihn selbst wählen.
+- **Reagiert auf die Wörter** – auf rund 200 Arten von Wörtern in 45 Sprachen: Nachtleben, Geld, Bewegung, Gefühle als Farbstimmung, Orte und Zeiten und Rufe, auf die das Publikum antwortet. Mirage achtet auf den Zusammenhang („kein Geld“, Redewendungen, traurige Songs, wiederholte Refrains) und reagiert deshalb seltener, aber passender. Derbe Texte erscheinen nie als Text, sie bekommen nur Licht und Stimmung; die Einstellung *Derbe Texte* bietet *Licht & Stimmung*, *Nur Farbe* oder *Ignorieren* (und ist aus, solange Spotifys Filter für explizite Inhalte an ist).
 - **17 Orte** – Club, Lagerhalle, Festival, Stadion, Strand, Wohnzimmer, Dachterrasse, Kathedrale, Jazz-Bar, Waldbühne, Konzertsaal, Gewölbekeller, Weltall, Neon-Straße, Pub, Skihütte und Wüstennacht.
-- **Ein Publikum, das mittanzt** – Sprünge auf dem Schlag, Hände hoch im Refrain, Feuerzeuge bei Balladen.
+- **Ein Publikum, das mittanzt** – Sprünge auf dem Schlag, Hände hoch im Refrain, Feuerzeuge bei Balladen. Ausschalten kannst du es mit *Publikum zeigen* im Menü **Mehr**; die Reaktionen der Gäste steigen dann vom unteren Rand auf.
+- **Weiches Licht** – Effekte blenden ein, statt hart zu starten, der Licht-Wischer gleitet über zwei Schläge, Leuchten zeigen keine Streifen, und die Bildrate richtet sich nach deinem Bildschirm.
 - **Instrumente bekommen ihren Moment** – nennen die Song-Credits Trompete, Saxofon, Gitarre, Klavier, Streicher, Chor und ein paar mehr, bekommt das Instrument einen eigenen Effekt. Außerdem hört Mirage die 30-s-Hörprobe des Songs (nur gerechnet, nie abgespielt): Kick, 808, Hi-Hats, Gitarren, Klavier, Streicher, Flächen und Soundeffekte wie Riser, Einschläge, Stopps oder Sirenen bekommen eigenes Licht – nur wenn Mirage sicher ist.
 - **Fünf Stärken** von *Sanft* bis *Wahnsinn*. Das Bild zoomt nie und keine Kamera fährt.
 
@@ -181,18 +188,18 @@ Der Party-Modus hört sich den ganzen Song an, **bevor** er läuft. Er weiß, wo
 <p align="center"><img src="assets/shots/instruments-de.jpg" alt="Instrument-Effekte für Bläser, Saxofon, E-Gitarre, Klavier, Streicher und Chor" width="100%"></p>
 
 <details>
-<summary><b>Alle 318 Stile in 17 Familien</b></summary>
+<summary><b>Alle 336 Stile in 17 Familien</b></summary>
 
 | Familie | Stile |
 |---|---|
-| Elektronisch (51) | Rave · EDM & Big Room · Electro House · Progressive House · Future & Slap House · House · Deep House · Tropical House · Tech House · Bass House · Acid House · Chicago & Classic House · French House · Nu-Disco · UK Garage · Jersey Club · Techno · Minimal & Microhouse · Detroit Techno · Dub Techno · Melodic Techno · Hard Techno · EBM & Industrial Dance · Trance · Progressive Trance · Uplifting & Vocal Trance · Psytrance · Drum & Bass · Liquid Drum & Bass · Neurofunk · Jungle · Breakbeat · Footwork & Juke · Electro & Miami Bass · Dubstep · Festival Trap · Future Bass · Moombahton · Hardstyle · Gabber & Hardcore · Happy Hardcore · Eurodance · Eurobeat · Hands Up · Italo Disco · Synthwave · Darksynth · Vaporwave · Hyperpop · Chiptune & 8-Bit · Electro Swing |
-| Hip-Hop & R&B (28) | Hip-Hop · Boom Bap · Gangsta- & Hardcore-Rap · West Coast & G-Funk · Southern Hip-Hop & Crunk · Alternativer & Underground-Hip-Hop · Trap · Pop-Rap & Melodic Rap · Cloud Rap · Drill · Phonk · UK-Rap · Grime · Deutschrap · Französischer Rap · Italienischer Rap · Spanischer Rap · Russischer Rap · Türkischer Rap · Arabischer & Maghreb-Rap · Brasilianischer Hip-Hop & Trap · R&B · Alternative R&B · New Jack Swing · Soul & Funk · Neo-Soul · Northern & Classic Soul · Funk |
-| Rock (28) | Rock · Classic Rock · Rock ’n’ Roll & Rockabilly · Hard Rock · Glam Rock · Blues Rock · Southern Rock · Psychedelic Rock · Stoner & Desert Rock · Progressive & Art Rock · Krautrock · Surf Rock · Garage Rock · Alternative · Grunge · Indie · Britpop & UK-Indie · Shoegaze & Dream Pop · Post-Punk & Darkwave · Post-Rock · Folk Rock · Soft Rock & Yacht Rock · Deutschrock · Punk · Pop-Punk · Hardcore Punk · Post-Hardcore & Screamo · Emo |
+| Elektronisch (54) | Rave · EDM & Big Room · Electro House · Progressive House · Future & Slap House · House · Deep House · Tropical House · Tech House · Bass House · Acid House · Chicago & Classic House · French House · Nu-Disco · UK Garage · Jersey Club · Techno · Minimal & Microhouse · Detroit Techno · Dub Techno · Melodic Techno · Hard Techno · EBM & Industrial Dance · Trance · Progressive Trance · Uplifting & Vocal Trance · Psytrance · Drum & Bass · Liquid Drum & Bass · Neurofunk · Jungle · Breakbeat · Footwork & Juke · Electro & Miami Bass · Dubstep · Festival Trap · Future Bass · Moombahton · Hardstyle · Gabber & Hardcore · Happy Hardcore · Eurodance · Eurobeat · Hands Up · Italo Disco · Synthwave · Darksynth · Vaporwave · Hyperpop · Chiptune & 8-Bit · Electro Swing · Breakcore · Deep Tech · Uptempo & Terrorcore |
+| Hip-Hop & R&B (30) | Hip-Hop · Boom Bap · Gangsta- & Hardcore-Rap · West Coast & G-Funk · Southern Hip-Hop & Crunk · Alternativer & Underground-Hip-Hop · Trap · Pop-Rap & Melodic Rap · Cloud Rap · Drill · Phonk · UK-Rap · Grime · Deutschrap · Französischer Rap · Italienischer Rap · Spanischer Rap · Russischer Rap · Türkischer Rap · Arabischer & Maghreb-Rap · Brasilianischer Hip-Hop & Trap · R&B · Alternative R&B · New Jack Swing · Soul & Funk · Neo-Soul · Northern & Classic Soul · Funk · Hyphy & Bay-Area-Rap · Jerk |
+| Rock (31) | Rock · Classic Rock · Rock ’n’ Roll & Rockabilly · Hard Rock · Glam Rock · Blues Rock · Southern Rock · Psychedelic Rock · Stoner & Desert Rock · Progressive & Art Rock · Krautrock · Surf Rock · Garage Rock · Alternative · Grunge · Indie · Britpop & UK-Indie · Shoegaze & Dream Pop · Post-Punk & Darkwave · Post-Rock · Folk Rock · Soft Rock & Yacht Rock · Deutschrock · Punk · Pop-Punk · Hardcore Punk · Post-Hardcore & Screamo · Emo · Oi! & Streetpunk · Riot Grrrl · Slowcore & Sadcore |
 | Metal (17) | Metal · Heavy Metal & NWOBHM · Thrash Metal · Glam & Hair Metal · Power Metal · Symphonic & Gothic Metal · Progressive Metal & Djent · Doom & Sludge · Death Metal · Black Metal · Grindcore & Powerviolence · Groove & Alternative Metal · Metalcore · Deathcore · Nu Metal & Rap Metal · Industrial Metal & NDH · Folk & Viking Metal |
 | Pop (11) | Pop · Dance-Pop · Electropop · Synth-Pop & New Wave · Teenie-Pop & Boybands · Pop-Rock & Power-Pop · Indie-Pop & Bedroom-Pop · Art-Pop & Chamber-Pop · Disco & Funk · Ballade · Musical |
-| Asien (33) | K-Pop · K-Indie · K-Rock · K-Hip-Hop · K-R&B · Trot · J-Pop & Anime · J-Rock & Visual Kei · J-Hip-Hop · Anime & Anisong · Vocaloid & Utaite · City Pop · Shibuya-kei · Enka & Kayōkyoku · Traditionelle japanische Musik · C-Pop · Mandopop · Cantopop · Chinesischer Hip-Hop · Traditionelle chinesische Musik · T-Pop · Luk Thung & Mor Lam · V-Pop · OPM & P-Pop · Dangdut & Indo-Pop · Gamelan & südostasiatische Tradition · Bollywood · Südindische Filmmusik · Punjabi & Bhangra · Desi-Hip-Hop · Hindustanische Klassik · Karnatische Klassik · Qawwali & Sufi |
-| Lateinamerika (29) | Latin · Latin-Pop · Reggaeton · Latin Trap · Dembow · Bachata · Merengue · Salsa & Tropical · Son & Trova (Kuba) · Bolero & Balada · Cumbia · Vallenato · Tango · Mariachi & Ranchera · Regional Mexican · Banda · Norteño & Tejano · Corridos & Sierreño · Rock en Español · Anden-Musik & Folklore · Brasilianisch · Samba · Pagode · Axé & Frevo · Forró & Piseiro · Sertanejo · Funk Carioca & Baile Funk · MPB · Bossa Nova |
-| Afrika & Karibik (21) | Afrobeats · Afrobeat & Afro-Funk · Highlife & Hiplife · Amapiano · Gqom · Afro House · Bongo Flava & Ostafrika · Soukous & kongolesische Rumba · Kuduro · Kizomba & Semba · Desert Blues · Reggae · Roots Reggae & Lovers Rock · Dub · Rocksteady · Ska · Dancehall · Soca · Calypso & Steelpan · Zouk · Kompa |
+| Asien (34) | K-Pop · K-Indie · K-Rock · K-Hip-Hop · K-R&B · Trot · J-Pop & Anime · J-Rock & Visual Kei · J-Hip-Hop · Anime & Anisong · Vocaloid & Utaite · City Pop · Shibuya-kei · Enka & Kayōkyoku · Traditionelle japanische Musik · C-Pop · Mandopop · Cantopop · Chinesischer Hip-Hop · Traditionelle chinesische Musik · T-Pop · Luk Thung & Mor Lam · V-Pop · OPM & P-Pop · Dangdut & Indo-Pop · Gamelan & südostasiatische Tradition · Bollywood · Südindische Filmmusik · Punjabi & Bhangra · Desi-Hip-Hop · Hindustanische Klassik · Karnatische Klassik · Qawwali & Sufi · Bhojpuri |
+| Lateinamerika (33) | Latin · Latin-Pop · Reggaeton · Latin Trap · Dembow · Bachata · Merengue · Salsa & Tropical · Son & Trova (Kuba) · Bolero & Balada · Cumbia · Vallenato · Tango · Mariachi & Ranchera · Regional Mexican · Banda · Norteño & Tejano · Corridos & Sierreño · Rock en Español · Anden-Musik & Folklore · Brasilianisch · Samba · Pagode · Axé & Frevo · Forró & Piseiro · Sertanejo · Funk Carioca & Baile Funk · MPB · Bossa Nova · Cuarteto · Mambo & Boogaloo · Tecnobrega · Champeta |
+| Afrika & Karibik (25) | Afrobeats · Afrobeat & Afro-Funk · Highlife & Hiplife · Amapiano · Gqom · Afro House · Bongo Flava & Ostafrika · Soukous & kongolesische Rumba · Kuduro · Kizomba & Semba · Desert Blues · Reggae · Roots Reggae & Lovers Rock · Dub · Rocksteady · Ska · Dancehall · Soca · Calypso & Steelpan · Zouk · Kompa · Shatta · Ragga · Jùjú & Fuji · Mbalax |
 | Naher Osten & Nordafrika (14) | Arabisch · Arabischer Pop · Khaleeji · Tarab & arabische Klassik · Raï · Gnawa & Chaabi · Dabke · Mahraganat & Shaabi · Türkischer Pop · Arabesk & türkische Volksmusik · Anatolischer Rock · Persischer Pop · Persische Klassik · Mizrahi & israelischer Pop |
 | Europa (19) | Schlager · Après-Ski & Ballermann · Volksmusik & Alpenländisches · Polka & Blasmusik · Karneval & Levenslied · Deutschpop & NDW · Chanson & Variété · Canzone & Italo-Pop · Europop & Eurovision · Disco Polo · Russischer Pop & Estrada · Griechisch: Laïko & Rebetiko · Fado · Flamenco · Balkan · Turbo-Folk · Chalga & Manele · Klezmer · Irisch & keltisch · Nordischer Folk |
 | Country & Folk (10) | Country & Folk · Klassischer & Outlaw-Country · Country-Pop · Country-Rock & Red Dirt · Americana & Alt-Country · Bluegrass & Old-Time · Cajun & Zydeco · Folk · Indie-Folk & Folk-Pop · Akustik |
@@ -200,7 +207,7 @@ Der Party-Modus hört sich den ganzen Song an, **bevor** er läuft. Er weiß, wo
 | Gospel & Spirituelles (7) | Gospel · Christlicher Pop & CCM · Worship & Lobpreis · Christlicher Rock & Metal · Christlicher Hip-Hop · Bhajan · Kirtan & Mantra · Nasheed & islamische Musik |
 | Klassik & Filmmusik (12) | Klassik · Barock & Alte Musik · Wiener Klassik · Romantik · Oper & Operette · Chor & geistliche Musik · Kammermusik · Orchester & Sinfonik · Minimal Music · Neue Musik · Film & Epik · Videospielmusik |
 | Ruhig & klassisch (10) | Chill · Lo-Fi · Downtempo & Chillout · Trip-Hop · Easy Listening & Lounge · Ambient · New Age & Heilmusik · Meditation & Yoga · Schlaf & Naturklänge · Neoklassik |
-| Experimentell (5) | Experimentell & Avantgarde · IDM & Glitch · Industrial & Power Electronics · Noise & Noise-Rock · Dark Ambient & Drone |
+| Experimentell (6) | Experimentell & Avantgarde · IDM & Glitch · Industrial & Power Electronics · Noise & Noise-Rock · Dark Ambient & Drone · Dungeon Synth |
 | Kinder, Feiertage & Gesprochenes (6) | Weihnachten · Halloween · Kindermusik · Disney & Familienfilm · Comedy & Spaßlieder · Wortbeitrag & Podcast |
 </details>
 
@@ -210,7 +217,7 @@ Der Party-Modus hört sich den ganzen Song an, **bevor** er läuft. Er weiß, wo
 
 Deine Gäste machen mit dem Handy mit. **Keine App, kein Konto** – WLAN oder mobile Daten reichen.
 
-1. Schalte unter **Mirage-Einstellungen → Party-Modus** den **Live-Link fürs Handy** ein.
+1. Schalte unter **Mirage-Einstellungen → Party-Modus** **Handys mitleuchten lassen** ein.
 2. Öffne den Party-Modus (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd>, dann <kbd>5</kbd>) und klick oben auf den **QR-Code**-Knopf.
 3. Die Gäste scannen den Code mit der Handykamera, wählen **Namen und Farbe** – fertig.
 
@@ -253,7 +260,7 @@ Quizze gibt es leicht, normal oder schwer, mit Jahrzehnt-Filter oder einer deine
 **Keine Handys?** Zahlentasten antworten, <kbd>Leertaste</kbd> ist der Buzzer, <kbd>Enter</kbd> startet. Nach einem Spiel kannst du die Rangliste als Bild speichern.
 </details>
 
-**Mehr für die Party:** ein DJ-Feld, das deine Warteschlange so sortiert, dass die Stimmung fließt, Gäste aus deinem Spotify Jam tanzen im Publikum, Konfetti auf <kbd>C</kbd>, und ein Rückblick auf den Abend, den du als Playlist speichern kannst.
+**Mehr für die Party:** im Menü **Mehr** (<kbd>O</kbd>) ein DJ-Feld, das deine Warteschlange so sortiert, dass die Stimmung fließt, Gäste aus deinem Spotify Jam tanzen im Publikum, Konfetti auf <kbd>C</kbd>, und ein Rückblick auf den Abend, den du als Playlist speichern kannst.
 
 ## 💡 Overlay-App
 
@@ -279,12 +286,13 @@ Eine kleine kostenlose Zusatz-App. Sie zeigt den laufenden Song **über allen Fe
 
 ## ⚙️ Einstellungen kurz erklärt
 
-Öffne dein **Profilmenü → Mirage-Einstellungen**. Jeder Effekt hat einen eigenen Schalter, und jeder Bereich lässt sich einzeln zurücksetzen.
+Öffne dein **Profilmenü → Mirage-Einstellungen**, oder auf der Bühne im Menü **Mehr** auf **Alle Einstellungen …** – dann öffnen sie sich direkt über der Bühne, gleich beim passenden Bereich. Die Einstellungen sind klar gruppiert – *Aussehen & Leistung*, *Sicherheit & Komfort*, Farben, Hintergrund und Animationen, *Liedtext*, *Visualizer & Videos*, *Party-Modus* und *System* –, und jede Einstellung steht an genau einer Stelle. Jeder Bereich lässt sich einzeln zurücksetzen.
 
 - **Aussehen & Leistung** – ein Klick für *Voll*, *Ausgewogen*, *Leicht* oder *Ruhig*. Kommt dein Computer nicht hinterher, schaltet Mirage selbst eine Stufe runter.
-- **Schnellmenü** – auf der Vollbild-Bühne <kbd>O</kbd> drücken (oder den **⋯**-Knopf), um Aussehen und Leistung zu ändern, ohne die Musik zu verlassen.
-- **Energiesparen** – im Akkubetrieb zeichnet Mirage weniger und spart Strom.
-- **Keine Blitze** – für empfindliche Augen: kein Stroboskop, kein blendendes Licht, keine plötzlichen Blitze, auch nicht auf den Handys der Gäste und bei den Lampen im Raum. Schaltet sich von selbst ein, wenn dein Computer auf „Bewegung reduzieren“ steht.
+- **Energiesparen** – *Im Akkubetrieb*, *Immer* oder *Aus*: Mirage zeichnet weniger Bilder und Pixel und spart Strom.
+- **Sicherheit & Komfort** – **Keine Blitze** für empfindliche Augen: kein Stroboskop, kein blendendes Licht, keine plötzlichen Blitze, auch nicht auf den Handys der Gäste und bei den Lampen im Raum. Schaltet sich von selbst ein, wenn dein Computer auf „Bewegung reduzieren“ steht. Daneben ist der Schalter **Ruhig** eine Abkürzung zum Preset *Ruhig* (keine Bewegung im Hintergrund, keine Funken, kein Kippen, keine Canvas-Videos); aus führt zurück zum Preset davor.
+- **Ausgegraute Schalter** – ein Schalter, den *Keine Blitze* oder *Ruhig* stilllegt, zeigt „Aus wegen …“; ein Klick springt zur Ursache.
+- **Menü „Mehr“** – auf der Vollbild-Bühne <kbd>O</kbd> drücken (oder den **⋯**-Knopf). In jeder Ansicht dieselben Gruppen: *Dieser Song* (das Song-Menü), *Diese Ansicht* (Canvas-Video, Liedtext-Timing; in Party und Uhr auch Warteschlange, Lautstärke, Geräte und Schlaf-Timer), *Party* (DJ, Publikum, erkannter Stil …), *Aussehen & Leistung* (Presets und Energiesparen) und *Alle Einstellungen …*.
 - **Licht und Liedtext zu früh oder zu spät?** Drück sechsmal <kbd>T</kbd> im Takt. Mirage misst die Verzögerung deiner Lautsprecher (Bluetooth bringt etwas mit).
 
 <details>
@@ -312,7 +320,7 @@ Immer noch kaputt? Direkt nach einem großen Spotify-Update braucht Spicetify ma
 
 - **Kein Konto, kein Tracking, keine Werbung.** Mirage hat keinen eigenen Server.
 - **Bleibt auf deinem Computer:** deine Einstellungen, gespeicherte Liedtexte und die Passwörter deiner Lampen (verschlüsselt).
-- **Nur Song-Angaben verlassen deinen Computer**, nie, wer du bist: Hat Spotify für einen Song keinen Liedtext, kein Tempo oder keinen Stil, schickt Mirage Angaben wie Titel und Künstler an freie Musikdienste (LRCLIB, NetEase, Kugou, lyrics.ovh, Deezer, Apples iTunes-Suche, MusicBrainz). Diese Abfragen kannst du abschalten.
+- **Nur Song-Angaben verlassen deinen Computer**, nie, wer du bist: Um Liedtexte zu finden und zu vergleichen, fragt Mirage freie Liedtext-Sammlungen (LRCLIB, NetEase, Kugou, lyrics.ovh) gleichzeitig mit Spotify; hat Spotify für einen Song kein Tempo oder keinen Stil, fragt es Deezer, Apples iTunes-Suche und MusicBrainz. Geschickt werden nur Angaben wie Titel und Künstler. Diese Abfragen kannst du abschalten.
 - **Übersetzung** (aus, bis du sie einschaltest) schickt Liedzeilen an Google Übersetzer.
 - **Handys auf der Party** (aus, bis du es einschaltest): alles ist Ende-zu-Ende verschlüsselt – niemand außer deinen Gästen kann es lesen, nicht einmal der Vermittlungsdienst, der es weiterreicht. Der Schlüssel steckt nur im QR-Code. Es funktioniert nur, solange der Party-Modus läuft, und verfällt 10 Minuten danach.
 - **Karaoke:** der Gesang wird auf dem Handy des Sängers bewertet. Die Aufnahme verlässt es nie.
@@ -336,13 +344,19 @@ Das ist normal. Folge der [Hilfe nach einem Spotify-Update](#-hilfe-nach-einem-s
 <details>
 <summary><b>Der Party-Modus erkennt den falschen Musikstil.</b></summary>
 
-Wähl ihn selbst unter **Mirage-Einstellungen → Party-Modus → Stil**. Die Liste hat ein Suchfeld.
+Für einen Künstler: öffne im Party-Modus das Menü **Mehr** (<kbd>O</kbd>) – dort steht der erkannte Stil – und wähl *Für diesen Künstler immer …*. Für alles: wähl ihn unter **Mirage-Einstellungen → Party-Modus → Stil**. Die Liste hat ein Suchfeld.
+</details>
+
+<details>
+<summary><b>Der Liedtext ist nicht synchron.</b></summary>
+
+Nimm *Früher* / *Später* in der Liedtext-Leiste oder im Menü **Mehr** – jeder Klick verschiebt den Text um 0,25 s, nur für diesen Song. Hat Mirage ihn falsch verschoben, öffne *Fassung wählen* und klick auf *Automatische Verschiebung zurücknehmen*; *Neu suchen* fragt alle Quellen noch einmal. Sind Licht und Liedtext bei jedem Song zu spät, drück sechsmal <kbd>T</kbd> im Takt, um deine Lautsprecher zu messen.
 </details>
 
 <details>
 <summary><b>Mein Laptop wird warm oder der Lüfter ist laut.</b></summary>
 
-Drück auf der Vollbild-Bühne <kbd>O</kbd> und wähl *Leicht* oder *Ruhig*, oder schalte Energiesparen ein.
+Drück auf der Vollbild-Bühne <kbd>O</kbd> und wähl unter *Aussehen & Leistung* *Leicht* oder *Ruhig*, oder stell Energiesparen auf *Immer*.
 </details>
 
 <details>
@@ -362,9 +376,9 @@ Ja. iPhones lassen Websites nicht vibrieren, deshalb gibt es dort auf Wunsch ein
 | Taste | Was sie tut |
 |---|---|
 | <kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>M</kbd> | Vollbild-Bühne öffnen oder schließen |
-| <kbd>1</kbd> … <kbd>5</kbd> | Cover · Liedtext · Visualizer · Mix · Party |
+| <kbd>1</kbd> … <kbd>6</kbd> | Cover · Liedtext · Visualizer · Mix · Party · Uhr |
 | <kbd>Leertaste</kbd> | Abspielen / Pause |
-| <kbd>O</kbd> | Schnellmenü für Aussehen und Leistung |
+| <kbd>O</kbd> | Menü **Mehr**: dieser Song, diese Ansicht, Party, Aussehen & Leistung |
 | <kbd>?</kbd> | alle Tastenkürzel zeigen |
 
 <details>
@@ -375,12 +389,16 @@ Ja. iPhones lassen Websites nicht vibrieren, deshalb gibt es dort auf Wunsch ein
 | <kbd>N</kbd> · <kbd>P</kbd> | nächster · vorheriger Song |
 | <kbd>←</kbd> <kbd>→</kbd> | 5 Sekunden springen |
 | <kbd>↑</kbd> <kbd>↓</kbd> | Lautstärke |
-| <kbd>L</kbd> · <kbd>S</kbd> · <kbd>R</kbd> · <kbd>Q</kbd> | Like · Zufall · Wiederholen · Warteschlange |
+| <kbd>L</kbd> · <kbd>S</kbd> · <kbd>R</kbd> · <kbd>Q</kbd> | Like · Zufall · Wiederholen · Als Nächstes |
 | <kbd>F</kbd> oder <kbd>F11</kbd> | Vollbild |
-| <kbd>C</kbd> | Konfetti |
+| <kbd>M</kbd>, <kbd>Umschalt</kbd>+<kbd>F10</kbd>, die Menütaste oder Rechtsklick | Song-Menü |
+| <kbd>A</kbd> | zu Playlist hinzufügen |
+| <kbd>Pos1</kbd> · <kbd>Ende</kbd> | erster · letzter Eintrag in Menüs und Ansichten |
+| <kbd>C</kbd> | Konfetti (Party) |
 | <kbd>T</kbd> (6×, im Takt) | Licht und Liedtext an deine Lautsprecher anpassen |
-| <kbd>E</kbd>, dann <kbd>Enter</kbd> | Liedtext-Timing korrigieren: Enter drücken, wenn die markierte Zeile beginnt |
-| <kbd>Esc</kbd> | schließen |
+| <kbd>E</kbd>, dann <kbd>Enter</kbd> | Liedtext-Timing korrigieren: Enter drücken, wenn die markierte Zeile beginnt, <kbd>⌫</kbd> nimmt zurück |
+| <kbd>1</kbd> … <kbd>9</kbd> · <kbd>Leertaste</kbd> | in Spielen: antworten · Buzzer / mitspielen |
+| <kbd>Esc</kbd> | schließt zuerst ein offenes Menü, dann das Vollbild, dann die Bühne |
 </details>
 
 ## ❤️ Danke & Lizenz

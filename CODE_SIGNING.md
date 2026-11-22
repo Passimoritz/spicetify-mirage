@@ -38,7 +38,7 @@ Mirage does not collect, store or sell any personal data and has no server of it
 
 The theme contacts third parties only with song data, never with personal data:
 
-- **Lyrics (can be turned off):** when Spotify has no suitable lyrics, title, artist, album and length go to LRCLIB, NetEase, Kugou and lyrics.ovh; word-timed lyrics may be loaded from the AMLL collection on GitHub.
+- **Lyrics (can be turned off):** title, artist, album and length go to LRCLIB, NetEase, Kugou and lyrics.ovh at the same time as Spotify is asked, so that synced versions can be compared; word-timed lyrics may be loaded from the AMLL collection on GitHub. A "no lyrics" result is remembered on this computer for a week.
 - **Party data (can be turned off):** title and artist to Deezer for the tempo and to Apple's iTunes search for the genre; the song's ISRC number to MusicBrainz for instrument credits.
 - **Translation (off by default):** lyric lines go to Google Translate. **Romanization** (off by default) loads a Chinese pinyin dictionary from jsDelivr once.
 - **Repairs after Spotify updates (can be turned off):** a small rules file is loaded from this repository on GitHub at most every six hours.

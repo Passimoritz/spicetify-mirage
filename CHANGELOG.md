@@ -10,6 +10,51 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- "Playful style" for lyrics (Settings → Lyrics, off by default). The lyrics play along with the song: loud words grow bolder, quiet ones thinner, shouted lines turn to capitals, held notes stretch, words land on the beat and the chorus bounces with it. Words come alive where they fit (fire flickers, rain drips, a heart beats, "fly" rises, "fall" falls). Backing vocals sit small and tilted beside the line, and duet voices each get their own side. Verses are compact, the chorus is large and centred, the bridge is set differently, and the first line after a drop makes an entrance. Works in Lyrics, Mix and Party. With "Calm", "No flashes" or reduced motion only size and weight change.
+- Party mode reacts to about 200 kinds of words in 45 languages: nightlife, money and luxury, movement, feelings as colour moods, places and times, and shouts the crowd answers.
+- Explicit lyrics (sex, insults, curses, drugs) are recognised and only ever answered with light and mood, never shown as text. The new "Explicit lyrics" setting offers light & mood, colour only, or ignore, and is off while Spotify's explicit-content filter is on.
+- Party genre detection knows every genre name Spotify, MusicBrainz, Apple Music and Deezer use – about 13,700 names, including localised Apple and German Deezer names. Each lands on its closest style, at worst its family.
+- 18 new party styles: Breakcore, Deep tech, Uptempo, Hyphy, Jerk, Oi! & street punk, Riot grrrl, Slowcore, Bhojpuri, Cuarteto, Mambo & boogaloo, Tecnobrega, Champeta, Shatta, Ragga, Jùjú & fuji, Mbalax and Dungeon synth.
+- Party: the "More" menu shows the detected style ("Detected: Emo (Rock)") and lets you pin a style for an artist; it wins over the automatic detection.
+- Party: "Show crowd" in the "More" menu. Without the crowd, guest reactions rise from the bottom edge.
+- "Choose version" shows where the lyrics come from, how many versions agree and whether Mirage shifted them automatically, with "Undo automatic shift" and "Search again".
+- Lyrics a bit earlier or later per song (±0.25 s) from the lyrics bar and the "More" menu.
+- "All settings…" in the "More" menu opens the Mirage settings right above immersive mode, at the matching section.
+
+### Changed
+
+- The immersive "More" menu has fixed groups in every view: This song, This view, Party, Look & performance, All settings. Sub-pages remember where you came from, so Back goes one step back.
+- Every action has one place: no more duplicate full-screen, share or add-to-playlist buttons; "Not the right lyrics" lives in "Choose version".
+- Party and clock views: queue, volume, devices and sleep timer (with the time left) are in "More" → This view. In party mode a small lyrics bar appears when you move the mouse.
+- Settings have clear groups – Look & performance, Safety & comfort, Lyrics, Visualizer & videos, Party, System – and every setting is in exactly one place. The quick menu and the dialog use the same names.
+- Switches that "No flashes" or the Calm preset silence are greyed out with "Off because of …"; one click jumps to the cause.
+- Calm is now only a preset, with a shortcut switch under Safety & comfort. Old "Calm mode" settings carry over.
+- Energy saving has the same three choices (On battery / Always / Off) in the quick menu and in the settings.
+- Canvas videos are one switch for all views (not in party and clock).
+- Translation says that it applies to all songs and offers "Only this song".
+- Turning on the live link for games is announced with Undo, and Mirage asks after the game whether to keep it on.
+- Keyboard help lists every shortcut, and Esc closes an open menu before leaving full screen.
+- Lyrics are searched in all sources at once (Spotify keeps priority for 1.5 s); an answer is ready within 6 s instead of up to 21 s, and "no lyrics" is remembered for a week.
+- When several synced versions exist, Mirage takes the timing most of them agree on and drops outliers. Spotify's own lyrics are only overruled when at least two other sources agree and differ by more than a second.
+- Automatic alignment to the vocals is more careful: ±1 s range, it recognises spoken and shouted vocals, ignores shifts by whole beats, and can be turned off per song.
+- Word reactions in party mode follow the context: negations ("no fire", "kein Geld"), idioms, sad songs and repeated choruses are taken into account, so the stage reacts less often but more fittingly.
+- Cover colours glide on song change on the play buttons and the progress bar instead of snapping.
+- Consistent names ("Share as image", "Light up phones", "Party on another screen") and up-to-date hints in all languages.
+
+### Fixed
+
+- Library: hovering the collapsed library button showed both icons on top of each other.
+- Party: no more stutter or freezing between the lyrics search and "no lyrics". Songs without Spotify analysis get their beat as soon as a tempo is known, light plans are computed in idle time, and better beat data blends in over 1.5 s.
+- Lyrics: "Loading…" fades out before the layout switches, the layout changes at most once per song, and a late "instrumental" result no longer replaces lyrics that are already shown.
+- Party: the section light wipe glides over two beats with a soft edge and a short trail instead of jumping across the screen; the whoosh has a tapered tail and alternates direction.
+- Party: glows no longer show rings or colour bands – finer glow images with dithering, a new glow under the progress bar in its three colours, and the flash colour fades instead of switching.
+- Party: a more even frame rate – the cap divides the measured refresh rate (144 Hz → 72 fps), the stage thread paces itself, and quiet passages only drop to 30 fps when no effect is running.
+- Party: effects never start hard, the crash follows the downbeat, the stutter the beat grid, 808 rings run their course, wrap-arounds no longer pop, quality changes crossfade, and moving heads pan instead of jumping. At the drop one picture leads instead of five at once.
+- "No flashes" now also calms scratch, siren, stutter, airhorn and drop looks; a test checks there are at most three strong brightness swings per second.
+- Reset and backup now include the album panel, clock date and recent playlists.
+
 ## [1.28.0] – 2026-11-20
 
 ### Added
