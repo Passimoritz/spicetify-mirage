@@ -175,6 +175,8 @@ const DEFAULTS = {
   // Versatz zwischen Bild und Ton in ms (Taste T misst ihn ein); je Song für geschätzte Takte
   syncOffset: 0,
   syncSongs: {},
+  // Songs, bei denen der Liedtext NICHT automatisch auf den Gesang gelegt wird (lyricsync.js, setAutoSync)
+  syncNoAuto: {},
   partyStrobe: true,
   // ab Stufe „Extrem“: Lichtstrahlen und Kamera-Stöße; ruhige Maus blendet die Bedienung aus
   partyLasers: true,

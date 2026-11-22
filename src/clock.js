@@ -3,6 +3,7 @@ import { cfg, save } from "./config.js";
 import { currentItem, PLR } from "./player.js";
 import { audio } from "./audio.js";
 import { freshPos } from "./songtime.js";
+import { songOffsetOf, nudgeSongIn, resetSongIn } from "./songsync.js";
 
 /* ---------------------------------------------------------------- Songuhr */
 // Für alles, was im Takt laufen muss (Party, Visualizer, Karaoke). Spotify meldet die Position in kleinen
@@ -67,4 +68,18 @@ function tapSync(now = performance.now()) {
   return { done: true, ms: -ms };
 }
 
-export { songPos, tapSync };
+// Versatz je Song von Hand (z. B. ±250-ms-Knöpfe am Liedtext): positiv = Zeilen und Licht kommen früher.
+// Gilt sofort (songPos liest cfg.syncSongs bei jedem Bild) und bleibt gespeichert (songsync.js).
+function nudgeSong(uri, deltaMs) {
+  const v = nudgeSongIn(cfg, uri, deltaMs);
+  save();
+  return v;
+}
+function resetSong(uri) {
+  resetSongIn(cfg, uri);
+  save();
+  return 0;
+}
+const songOffset = (uri) => songOffsetOf(cfg, uri);
+
+export { songPos, tapSync, nudgeSong, resetSong, songOffset };

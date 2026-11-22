@@ -3,6 +3,7 @@
 const assert = require("assert");
 const { load } = require("./load.js");
 const { runLyrics } = load("lyricflow.js");
+const { version, versions, OK, EARLY } = require("./fixtures/dogdribble.js");
 
 // alle Zeiten zehnfach gestreckt: unter Last (CI, mehrere Tests parallel) reichen 20 gegen 60 ms nicht
 const K = 10;
@@ -28,12 +29,17 @@ const ES = ["Mira las estrellas", "Mira cómo brillan para ti", "Y todo lo que h
     const r = await runLyrics({ own: later(5, plain("spotify", ES)), online: true, sources: [later(10, synced("lrclib"))] });
     assert.equal(r.source, "spotify");
   }
-  // 3. Spotify zeitgenau, Karaoke aus: niemand sonst wird gefragt
+  // 3. Spotify zeitgenau, Karaoke aus: die Sammlungen laufen gleichzeitig mit (für die Abstimmung), ersetzen
+  //    Spotify aber nicht; nach Wortzeiten wird nicht gefragt
   {
-    let asked = 0;
-    const r = await runLyrics({ own: later(5, synced("spotify")), online: true, karaoke: false, sources: [() => (asked++, null)], words: [() => (asked++, null)] });
+    let asked = 0, words = 0;
+    const r = await runLyrics({ own: later(5, synced("spotify")), online: true, karaoke: false, sources: [() => (asked++, synced("lrclib"))], words: [() => (words++, null)] });
     assert.equal(r.source, "spotify");
-    assert.equal(asked, 0);
+    assert.equal(asked, 1);
+    assert.equal(words, 0);
+    assert.equal(r.diag.candidates, 2);
+    assert.equal(r.diag.cluster, 2);
+    assert.equal(r.diag.spotifyOverruled, false);
   }
   // 4. Spotify zeitgenau ohne Wortzeiten, Karaoke an: NetEase-Wortzeiten zum GLEICHEN Text kommen dazu
   {
@@ -101,6 +107,86 @@ const ES = ["Mira las estrellas", "Mira cómo brillan para ti", "Y todo lo que h
     assert.equal(await p, null);
     assert.equal(seen.length, 0);
     assert.equal(ovh, 0);
+  }
+  // 12. Alle Quellen starten gleichzeitig: Spotify antwortet in der Vorrangzeit → Spotify zuerst, obwohl LRCLIB
+  //     schneller war; die Sammlung wurde trotzdem sofort gefragt (nicht erst nach Spotify)
+  {
+    const seen = [], t0 = Date.now();
+    let startedAt = -1;
+    const r = await runLyrics({
+      own: later(40, plain()), online: true, grace: 100 * K,
+      sources: [() => ((startedAt = Date.now() - t0), later(5, synced("lrclib"))())],
+      emit: (v) => seen.push([v.source, Date.now() - t0]),
+    });
+    assert.ok(startedAt < 20 * K, "LRCLIB gleich zu Beginn gefragt: " + startedAt);
+    assert.deepEqual(seen.map((x) => x[0]), ["spotify", "lrclib"]);
+    assert.ok(seen[0][1] >= 35 * K, "Spotify hatte Vorrang");
+    assert.equal(r.source, "lrclib");
+  }
+  // 13. Spotify zu langsam (nach der Vorrangzeit): die Sammlung erscheint schon nach der Vorrangzeit, Spotifys
+  //     später gleich guter Text tauscht nicht mehr
+  {
+    const seen = [], t0 = Date.now();
+    const r = await runLyrics({
+      own: later(150, synced("spotify")), online: true, grace: 30 * K,
+      sources: [later(5, synced("lrclib"))],
+      emit: (v) => seen.push([v.source, Date.now() - t0]),
+    });
+    assert.deepEqual(seen.map((x) => x[0]), ["lrclib"]);
+    assert.ok(seen[0][1] < 100 * K, "nicht auf Spotify gewartet: " + seen[0][1]);
+    assert.equal(r.source, "lrclib");
+  }
+  // 14. Obergrenze: hängende Quellen und „kein Liedtext“ – spätestens nach cap steht das Ergebnis fest,
+  //     lyrics.ovh wird spätestens zur Hälfte gefragt
+  {
+    const t0 = Date.now();
+    let ovhAt = -1;
+    const r = await runLyrics({
+      own: later(5, null), online: true, cap: 100 * K, grace: 10 * K,
+      sources: [() => new Promise(() => {}), later(900, synced("kugou"))],
+      last: [() => ((ovhAt = Date.now() - t0), null)],
+    });
+    const took = Date.now() - t0;
+    assert.equal(r, null);
+    assert.ok(took >= 95 * K && took < 160 * K, "Obergrenze: " + took);
+    assert.ok(ovhAt > 0 && ovhAt < 75 * K, "lyrics.ovh zur Hälfte: " + ovhAt);
+  }
+  // 15. Abstimmung (Dog Dribble): Spotifys Text liegt 1,75 s früher als vier einige LRCLIB-Fassungen → die Mehrheit
+  //     gewinnt, die Diagnose sagt warum
+  {
+    const vs = versions(), sp = version("sp", EARLY, { source: "spotify" });
+    sp.lang = "en";
+    const lr = { ...vs[0], alts: vs.slice(1) };
+    const seen = [];
+    const r = await runLyrics({ own: later(5, sp), online: true, sources: [later(10, lr)], emit: (v, force) => seen.push([v.source, !!force]) });
+    assert.deepEqual(seen, [["spotify", false], ["lrclib", true]]);
+    assert.equal(r.lrcId, 20150209);
+    assert.equal(r.lines[0].t, OK);
+    assert.equal(r.lang, "en", "Sprache von Spotify");
+    assert.equal(r.alts, undefined, "weitere Fassungen nicht im Ergebnis");
+    assert.deepEqual({ ...r.diag }, { source: "lrclib", id: 20150209, candidates: 6, cluster: 4, spotifyOverruled: true, shifted: 0, auto: null });
+  }
+  // 16. Ohne Spotify: LRCLIBs erste Wahl ist der Ausreißer, die mitgelieferten Fassungen sind sich einig →
+  //     gleich die Mehrheit zeigen (kein Umweg über den Ausreißer)
+  {
+    const vs = versions(), seen = [];
+    const lr = { ...vs[4], alts: vs.slice(0, 4) };
+    const r = await runLyrics({ own: later(5, null), online: true, sources: [later(10, lr)], emit: (v) => seen.push(v.lrcId) });
+    assert.deepEqual(seen, [20150209]);
+    assert.equal(r.diag.cluster, 4);
+    assert.equal(r.diag.candidates, 5);
+    assert.equal(r.diag.spotifyOverruled, false);
+  }
+  // 17. Spotify knapp daneben (0,8 s) oder nur eine Quelle dagegen: Spotify bleibt
+  {
+    const vs = versions();
+    const sp = version("sp", OK - 800, { source: "spotify" });
+    const r = await runLyrics({ own: later(5, sp), online: true, sources: [later(10, { ...vs[0], alts: vs.slice(1, 4) })] });
+    assert.equal(r.source, "spotify");
+    const sp2 = version("sp", EARLY, { source: "spotify" });
+    const r2 = await runLyrics({ own: later(5, sp2), online: true, sources: [later(10, vs[0])] });
+    assert.equal(r2.source, "spotify");
+    assert.equal(r2.diag.cluster, 1);
   }
   console.log("lyricflow: ok");
 })().catch((e) => {

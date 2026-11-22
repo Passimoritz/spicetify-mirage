@@ -51,6 +51,9 @@ const DAY = 864e5;
   assert.equal(isFresh({ v: { synced: false }, at0: 0 }, 13 * DAY), true);
   assert.equal(isFresh({ v: { synced: false }, at0: 0 }, 15 * DAY), false);
   assert.equal(isFresh(null, 0), false);
+  // „kein Liedtext“ gilt eine Woche
+  assert.equal(isFresh({ v: { none: true, synced: false, lines: [] }, at0: 0 }, 6 * DAY), true);
+  assert.equal(isFresh({ v: { none: true, synced: false, lines: [] }, at0: 0 }, 8 * DAY), false);
   assert.deepEqual(surplus(["a", "b", "c", "d"], 3), ["a"]);
   assert.deepEqual(surplus(["a"], 3), []);
 

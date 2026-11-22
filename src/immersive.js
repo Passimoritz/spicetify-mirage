@@ -1723,7 +1723,11 @@ Probe-FX: ${pfx}`;
     const d = audio.data;
     if (!d?.segs?.length || audio.uri !== lyrUri || d.synthetic) return;
     lyr.aligned = true;
-    const r = estimateSync(lyr.lines, d.segs);
+    // je Song abschaltbar (setAutoSync in lyrics.js); Schlagabstand gegen Takt-Raster-Treffer, einige Quellen
+    // (Abstimmung, lyricvote.js) brauchen keinen Abgleich. Ergebnis für die Diagnose in lyr.diag.auto
+    const r = cfg.syncNoAuto?.[lyrUri] ? { apply: false, off: 0, scale: 1, conf: 0, why: "off" } : estimateSync(lyr.lines, d.segs, { beat: d.bpm > 0 ? 60000 / d.bpm : 0, agree: lyr.diag?.cluster || 0 });
+    lyr.diag ||= { source: lyr.source || "", id: null, candidates: 1, cluster: 1, spotifyOverruled: false, shifted: 0, auto: null };
+    lyr.diag.auto = { off: r.off, scale: r.scale, conf: Math.round(r.conf * 100) / 100, applied: !!r.apply, why: r.why };
     if (!r.apply) return;
     applySync(lyr.lines, r);
     lyr.sync = { off: r.off, scale: r.scale };

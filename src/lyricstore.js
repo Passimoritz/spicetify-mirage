@@ -5,9 +5,11 @@
 const MAX = 500, DAY = 864e5;
 // Spotifys eigener zeitgenauer Text ändert sich kaum. Zeitgenaue Texte anderer Quellen gelten einen Monat
 // (vielleicht hat Spotify bis dahin einen eigenen), einfacher Text und „Instrumental“ sind oft nur ein
-// Notbehelf – nach zwei Wochen wird neu gesucht.
-const KEEP_OWN = 180 * DAY, KEEP_SYNCED = 30 * DAY, KEEP_PLAIN = 14 * DAY;
-const isFresh = (e, now) => !!e?.v && now - e.at0 < (!e.v.synced ? KEEP_PLAIN : e.v.source === "spotify" ? KEEP_OWN : KEEP_SYNCED);
+// Notbehelf – nach zwei Wochen wird neu gesucht. „Kein Liedtext“ ({ none: true }) gilt eine Woche: so fragt nicht
+// jedes Abspielen wieder alle Quellen ab (neu suchen geht jederzeit von Hand, researchLyrics in lyrics.js).
+const KEEP_OWN = 180 * DAY, KEEP_SYNCED = 30 * DAY, KEEP_PLAIN = 14 * DAY, KEEP_NONE = 7 * DAY;
+const keepOf = (v) => (v.none ? KEEP_NONE : !v.synced ? KEEP_PLAIN : v.source === "spotify" ? KEEP_OWN : KEEP_SYNCED);
+const isFresh = (e, now) => !!e?.v && now - e.at0 < keepOf(e.v);
 // keys = alle Schlüssel, ältester Zugriff zuerst → die, die über der Grenze liegen
 const surplus = (keys, max = MAX) => keys.slice(0, Math.max(0, keys.length - max));
 
@@ -65,4 +67,4 @@ function createLyricStore(idb, { now = Date.now, max = MAX } = {}) {
   return { get, put, drop, prune };
 }
 
-export { createLyricStore, isFresh, surplus, MAX };
+export { createLyricStore, isFresh, surplus, MAX, KEEP_NONE };

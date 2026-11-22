@@ -6,6 +6,8 @@ import { rankLyrics, baseTitle, instrumentalMeta, instrumentalText, cleanCredits
 import { runLyrics } from "./lyricflow.js";
 import { parseLrc, parseYrc, parseTtml } from "./lyricparse.js";
 import { parseVoices } from "./lyricvoices.js";
+import { undoSync } from "./lyricsync.js";
+import { autoSyncOffIn, setAutoSyncIn } from "./songsync.js";
 
 /* ---------------------------------------------------------------- Liedtext */
 // Je Song EIN Ladevorgang („Auftrag“): fragen Immersiv-Modus, Overlay und Handys gleichzeitig, geht nur eine
@@ -27,9 +29,10 @@ function jobFor(uri) {
     return job;
   }
   job = { uri, key, cur: undefined, subs: new Set(), ctrl: new AbortController(), done: false };
-  // nur Verbesserungen melden: gleich gute Ergebnisse tauschen nie (das würde flackern)
-  job.emit = (v) => {
-    if (job.ctrl.signal.aborted || !v || tierOf(v, cfg.karaoke) <= tierOf(job.cur, cfg.karaoke)) return;
+  // nur Verbesserungen melden: gleich gute Ergebnisse tauschen nie (das würde flackern) – außer die Abstimmung
+  // der Fassungen ersetzt einen Ausreißer (force, lyricflow.js)
+  job.emit = (v, force) => {
+    if (job.ctrl.signal.aborted || !v || (!force && tierOf(v, cfg.karaoke) <= tierOf(job.cur, cfg.karaoke))) return;
     // Duett-Stimmen und Hintergrundgesang erkennen – hier, damit Immersiv, Overlay und Handys denselben Text
     // bekommen (ohne „Name:“ davor). Gefahrlos wiederholbar, ändert ohne Hinweise im Text nichts.
     job.cur = parseVoices(v);
@@ -112,17 +115,24 @@ async function keptLyrics(uri, pick, key, bad, job) {
   // fetchLyrics hält die Song-Daten fest, solange der Song noch läuft – darum zuerst (ohne Warten) starten lassen
   noteMeta(uri);
   const kept = await lyricStore.get(key);
+  // „kein Liedtext“ gemerkt (eine Woche, lyricstore.js): nicht wieder alle Quellen fragen
+  if (kept?.fresh && kept.v.none) return null;
   if (kept?.fresh) {
     job.emit(kept.v);
     return kept.v;
   }
+  const old = kept?.v?.none ? null : kept?.v || null;
   // abgelaufen: den alten Text gleich zeigen, im Hintergrund neu suchen – ersetzt wird er nur durch etwas Besseres
-  if (kept?.v) job.emit(kept.v);
-  const fresh = (await fetchLyrics(uri, pick, new Set(bad), job)) || null;
+  if (old) job.emit(old);
+  const net = { ok: false };
+  const fresh = (await fetchLyrics(uri, pick, new Set(bad), job, net)) || null;
   if (job.ctrl.signal.aborted) return job.cur || null;
-  // nur echte Ergebnisse merken: „nichts gefunden“ kann am fehlenden Netz liegen –
-  // dann lieber den abgelaufenen Text von früher zeigen
-  if (!fresh?.lines?.length && !fresh?.instrumental) return kept?.v || fresh;
+  // „nichts gefunden“ kann am fehlenden Netz liegen – dann lieber den abgelaufenen Text von früher zeigen.
+  // Gemerkt wird es nur, wenn LRCLIB wirklich geantwortet hat (net.ok) und es keinen alten Text gibt.
+  if (!fresh?.lines?.length && !fresh?.instrumental) {
+    if (net.ok && !old && cfg.onlineLyrics) lyricStore.put(key, { none: true, synced: false, source: "", lines: [] });
+    return old || fresh;
+  }
   lyricStore.put(key, snap(fresh));
   // gezeigt bleibt, was schon da ist, solange das Neue nicht besser ist
   return job.cur && tierOf(job.cur, cfg.karaoke) >= tierOf(fresh, cfg.karaoke) ? job.cur : fresh;
@@ -138,31 +148,39 @@ function noteMeta(uri) {
 }
 // no = abgelehnte Ergebnisse („spotify“, „lrclib:123“, „netease:456“, „kugou:789“, „amll:456“, „ovh“):
 // die Suche geht an ihnen vorbei
-async function fetchLyrics(uri, pick, no, job) {
+// net.ok wird true, sobald LRCLIB geantwortet hat (dann heißt „nichts gefunden“ wirklich nichts)
+async function fetchLyrics(uri, pick, no, job, net = {}) {
   const meta = metaCache.get(uri) || noteMeta(uri);
   const signal = job.ctrl.signal, emit = job.emit;
   if (pick && !no.has("lrclib:" + pick)) {
-    const hit = await lrclib("get/" + encodeURIComponent(pick), signal);
+    const hit = await lrclib("get/" + encodeURIComponent(pick), signal, net);
     const got = hit && fromHit(hit);
     if (got) {
+      // von Hand gewählt: keine Abstimmung
+      const n = got.synced ? 1 : 0;
+      got.diag = { source: "lrclib", id: got.lrcId ?? null, candidates: n, cluster: n, spotifyOverruled: false, shifted: 0, auto: null, picked: true };
       emit(got);
       return got;
     }
   }
   const online = !!(cfg.onlineLyrics && meta);
-  // Spotify zuerst; die Sammlungen gleichzeitig (jede höchstens 7 s) und nur, wenn Spotify etwas fehlt –
-  // Ablauf und Regeln in lyricflow.js
+  // NetEase nur einmal fragen, auch wenn es als Sammlung UND als Wortzeiten-Quelle gebraucht wird
+  let ne = null;
+  const neOnce = () => (ne ||= fetchNetease(meta, no, signal));
+  // alle Quellen gleichzeitig, Spotify mit 1,5 s Vorrang, nach 6 s steht das Ergebnis fest; dazu die Abstimmung
+  // der Fassungen – Ablauf und Regeln in lyricflow.js
   return runLyrics({
     own: uri.startsWith("spotify:track:") && !no.has("spotify") ? () => fetchSpotify(uri) : null,
     online,
     karaoke: !!cfg.karaoke,
     signal,
     emit,
-    wait: 7000,
+    grace: 1500,
+    cap: 6000,
     instrumental: online && instrumentalMeta(meta) && !no.has("title"),
     // Karaoke braucht Wortzeiten: hat NetEase (oder die AMLL-Sammlung) den GLEICHEN Text wortgenau, nimmt Mirage diesen
-    words: [() => fetchNetease(meta, no, signal)],
-    sources: online ? [() => fetchLrclib(meta, no, signal), () => fetchNetease(meta, no, signal), () => fetchKugou(meta, no, signal)] : [],
+    words: [neOnce],
+    sources: online ? [() => fetchLrclib(meta, no, signal, net), neOnce, () => fetchKugou(meta, no, signal)] : [],
     last: online ? [() => fetchOvh(meta, no, signal)] : [],
   });
 }
@@ -222,9 +240,11 @@ function songMeta(item) {
 // „Song - Remastered 2011“, „Song (feat. X)“ → „Song“: so stehen die Titel in den Sammlungen
 const cleanTitle = (s) => baseTitle(s) || s;
 const LRCLIB = "https://lrclib.net/api/";
-async function lrclib(path, signal) {
+// net (optional): bekommt ok = true, sobald LRCLIB überhaupt antwortet (auch mit 404 „nicht gefunden“)
+async function lrclib(path, signal, net) {
   try {
     const res = await fetch(LRCLIB + path, { headers: { "Lrclib-Client": "mirage (https://github.com/Passimoritz/spicetify-mirage)" }, signal });
+    if (net && (res.ok || res.status === 404)) net.ok = true;
     return res.ok ? await res.json() : null;
   } catch {
     return null;
@@ -235,22 +255,30 @@ const lrcUsable = (x) => !!x && !!(x.syncedLyrics || x.plainLyrics || x.instrume
 const lrcCand = (x) => ({ id: x.id, title: x.trackName || x.name || "", artist: x.artistName || "", album: x.albumName || "", sec: Math.round(x.duration || 0), synced: !!x.syncedLyrics, hit: x });
 const idsOf = (no, src) => [...(no || [])].filter((s) => s.startsWith(src + ":")).map((s) => s.slice(src.length + 1));
 const qs = (o) => Object.entries(o).filter(([, v]) => v).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
-async function fetchLrclib(meta, no, signal) {
+async function fetchLrclib(meta, no, signal, net) {
   if (!meta.title || !meta.artist) return null;
   const title = cleanTitle(meta.title), bad = idsOf(no, "lrclib");
-  // 1. genauer Treffer (LRCLIB lässt dabei ±2 s Länge zu), 2. Suche. Beides bewertet lyricmatch.js:
+  // 1. genauer Treffer (LRCLIB lässt dabei ±2 s Länge zu), 2. Suche – beide GLEICHZEITIG: die Suche bringt die
+  // anderen zeitgenauen Fassungen gleich mit (für die Abstimmung, lyricvote.js). Bewertet von lyricmatch.js:
   // passende Länge und Fassung zuerst; ein Live-Song bekommt die Zeiten der Studiofassung nicht.
-  const hit = meta.sec ? await lrclib("get?" + qs({ track_name: title, artist_name: meta.artist, album_name: meta.album, duration: meta.sec }), signal) : null;
+  const [hit, list] = await Promise.all([
+    meta.sec ? lrclib("get?" + qs({ track_name: title, artist_name: meta.artist, album_name: meta.album, duration: meta.sec }), signal, net) : null,
+    lrclib("search?" + qs({ track_name: title, artist_name: meta.artist }), signal, net),
+  ]);
+  if (signal?.aborted) return null;
+  const all = rankLyrics(meta, [hit, ...(Array.isArray(list) ? list : [])].filter(lrcUsable).map(lrcCand), bad);
   let ranked = rankLyrics(meta, lrcUsable(hit) ? [lrcCand(hit)] : [], bad);
-  // nur weitersuchen, wenn der genaue Treffer fehlt, abgelehnt ist oder keine brauchbaren Zeiten hat
-  if (!ranked[0] || ranked[0].plainOnly || !(ranked[0].synced || hit?.instrumental)) {
-    if (signal?.aborted) return null;
-    const list = await lrclib("search?" + qs({ track_name: title, artist_name: meta.artist }), signal);
-    ranked = rankLyrics(meta, [hit, ...(Array.isArray(list) ? list : [])].filter(lrcUsable).map(lrcCand), bad);
-  }
+  // der genaue Treffer gilt, wenn er passt und brauchbare Zeiten hat – sonst die ganze Liste
+  if (!ranked[0] || ranked[0].plainOnly || !(ranked[0].synced || hit?.instrumental)) ranked = all;
   for (const c of ranked) {
     const got = fromHit(c.hit, c.plainOnly, meta);
-    if (got) return got;
+    if (!got) continue;
+    // weitere zeitgenaue Fassungen zum Abstimmen (höchstens 8; lyricflow.js nimmt sie nicht ins Ergebnis)
+    if (got.synced) {
+      const alts = all.filter((x) => x.synced && !x.plainOnly && x.id !== got.lrcId).slice(0, 8).map((x) => fromHit(x.hit, false, meta)).filter((x) => x?.synced);
+      if (alts.length) got.alts = alts;
+    }
+    return got;
   }
   return null;
 }
@@ -400,6 +428,37 @@ async function lyricVersions(uri) {
     .slice(0, 12)
     .map((x) => ({ id: x.id, title: x.trackName, artist: x.artistName, album: x.albumName, sec: Math.round(x.duration || 0), synced: !!x.syncedLyrics, instrumental: !!x.instrumental }));
 }
+// Neu suchen (z. B. Knopf „Erneut suchen“ nach „Kein Liedtext“): das gemerkte Ergebnis – auch „kein Liedtext“ –
+// unter dem aktuellen Schlüssel vergessen und frisch fragen. → Promise wie getLyrics. Die Anzeige holt sich das
+// neue Ergebnis danach selbst (immersive: reloadLyrics).
+async function researchLyrics(uri) {
+  if (!uri) return null;
+  await lyricStore.drop(keyOf(uri));
+  forgetSong(uri);
+  return getLyrics(uri);
+}
+// Abgleich mit dem Gesang (lyricsync.js) für diesen Song an/aus – gespeichert in cfg.syncNoAuto[uri].
+// Aus: schon verschobene Zeiten des gezeigten Ergebnisses gehen sofort auf die der Quelle zurück
+// (diag.auto.applied = false, why = "off"). An: beim nächsten Zeichnen wird neu abgeglichen. Danach die Anzeige
+// neu aufbauen (immersive: reloadLyrics), damit die Wortzeiten mitkommen.
+function setAutoSync(uri, on) {
+  if (!uri) return;
+  setAutoSyncIn(cfg, uri, on);
+  save();
+  for (const job of jobs.values()) {
+    const v = job.uri === uri && job.cur;
+    if (!v?.lines) continue;
+    if (!on && v.sync) {
+      undoSync(v.lines, v.sync);
+      delete v.sync;
+    }
+    // aus: nicht wieder abgleichen; an: noch einmal abgleichen dürfen (außer es ist schon abgeglichen)
+    v.aligned = !on || !!v.sync;
+    if (on && v.sync) continue;
+    if (v.diag) v.diag.auto = { ...(v.diag.auto || { off: 0, scale: 1, conf: 0 }), applied: false, why: on ? "pending" : "off" };
+  }
+}
+const autoSyncOff = (uri) => autoSyncOffIn(cfg, uri);
 // gemerkte Ergebnisse dieses Songs vergessen (alle Schlüssel: mit/ohne Karaoke, Wahl, Ablehnungen)
 function forgetSong(uri) {
   for (const [k, job] of jobs) {
@@ -528,4 +587,4 @@ async function canvasBlocked() {
 // Anzeigename der Quelle (Knopf „Fassung wählen“, Overlay)
 const SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", amll: "AMLL", kugou: "Kugou", ovh: "lyrics.ovh" };
 
-export { getLyrics, shownLyrics, watchLyrics, dropStaleLyrics, warmLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, romajiFor, SOURCE_NAME };
+export { getLyrics, researchLyrics, setAutoSync, autoSyncOff, shownLyrics, watchLyrics, dropStaleLyrics, warmLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, romajiFor, SOURCE_NAME };
