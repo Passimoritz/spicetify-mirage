@@ -113,7 +113,7 @@
   var init_core = __esm({
     "src/core.js"() {
       S = window.Spicetify;
-      VERSION = true ? "1.28.0" : "dev";
+      VERSION = true ? "1.29.0" : "dev";
       root = document.documentElement;
       errors = [];
       addEventListener("error", (e) => errors.length < 30 && errors.push(String(e.message) + " @" + (e.lineno || "")));
@@ -5378,59 +5378,59 @@
       LYRICSTYLE_TEXT = {
         en: {
           lyrPlayful: "Playful style",
-          lyrPlayfulHint: "Lyrics play along with the song: loud words grow bolder, quiet ones thinner, held notes stretch, words land on the beat, the chorus bounces, and words like fire, rain or heart move to match. With Calm mode or No flashes only size and weight change"
+          lyrPlayfulHint: "Lyrics play like a lyric video: every line gets its own entrance \u2013 words rise, drop or slide in from both sides, a key word grows huge, letters ripple, shouts slam in as capitals, fast rap types itself in, ballads glow up. Words react to what they mean: fire flickers, rain drips, a heart beats, \u201Cfall\u201D falls, \u201Cboom\u201D bursts (not when negated). With Calm mode or No flashes only size, weight and layout change"
         },
         de: {
           lyrPlayful: "Verspielter Stil",
-          lyrPlayfulHint: "Der Liedtext spielt mit dem Song: laute W\xF6rter werden kr\xE4ftiger, leise d\xFCnner, gehaltene T\xF6ne dehnen sich, W\xF6rter landen auf dem Schlag, der Refrain wippt, und W\xF6rter wie Feuer, Regen oder Herz bewegen sich passend. Mit \u201ERuhiger Modus\u201C oder \u201EKeine Blitze\u201C bleiben nur Gr\xF6\xDFe und St\xE4rke"
+          lyrPlayfulHint: "Der Liedtext spielt wie ein Lyric-Video: jede Zeile hat ihren eigenen Auftritt \u2013 W\xF6rter steigen auf, fallen herein oder kommen von beiden Seiten, ein Schl\xFCsselwort wird riesig, Buchstaben laufen als Welle, Rufe knallen in Gro\xDFbuchstaben herein, schneller Rap tippt sich ein, Balladen glimmen auf. W\xF6rter reagieren auf ihre Bedeutung: Feuer flackert, Regen tropft, das Herz schl\xE4gt, \u201Efallen\u201C f\xE4llt, \u201EBoom\u201C zerspringt (nicht, wenn verneint). Mit \u201ERuhiger Modus\u201C oder \u201EKeine Blitze\u201C \xE4ndern sich nur Gr\xF6\xDFe, St\xE4rke und Satz"
         },
         es: {
           lyrPlayful: "Estilo juguet\xF3n",
-          lyrPlayfulHint: "La letra juega con la canci\xF3n: las palabras fuertes se engrosan, las suaves se afinan, las notas largas se estiran, las palabras caen en el pulso, el estribillo rebota y palabras como fuego, lluvia o coraz\xF3n se mueven a juego. Con Modo tranquilo o Sin destellos solo cambian tama\xF1o y grosor"
+          lyrPlayfulHint: "La letra se mueve como un videoclip de letras: cada verso tiene su propia entrada \u2013 las palabras suben, caen o llegan desde ambos lados, una palabra clave se hace enorme, las letras ondean, los gritos entran en may\xFAsculas, el rap r\xE1pido se teclea, las baladas se encienden poco a poco. Las palabras reaccionan a su significado: el fuego parpadea, la lluvia gotea, el coraz\xF3n late, \xABcaer\xBB cae (no si se niega). Con Modo tranquilo o Sin destellos solo cambian tama\xF1o, grosor y composici\xF3n"
         },
         fr: {
           lyrPlayful: "Style ludique",
-          lyrPlayfulHint: "Les paroles jouent avec le morceau : les mots forts s'\xE9paississent, les doux s'affinent, les notes tenues s'\xE9tirent, les mots tombent sur le temps, le refrain rebondit et des mots comme feu, pluie ou c\u0153ur bougent en accord. Avec Mode calme ou Pas de flashs, seules la taille et la graisse changent"
+          lyrPlayfulHint: "Les paroles bougent comme un lyric video : chaque ligne a son entr\xE9e \u2013 les mots montent, tombent ou arrivent des deux c\xF4t\xE9s, un mot cl\xE9 devient \xE9norme, les lettres ondulent, les cris claquent en majuscules, le rap rapide se tape, les ballades s'illuminent. Les mots r\xE9agissent \xE0 leur sens : le feu vacille, la pluie goutte, le c\u0153ur bat, \xAB tomber \xBB tombe (pas s'il est ni\xE9). Avec Mode calme ou Pas de flashs, seules la taille, la graisse et la mise en page changent"
         },
         it: {
           lyrPlayful: "Stile giocoso",
-          lyrPlayfulHint: "Il testo gioca con la canzone: le parole forti diventano pi\xF9 marcate, quelle piano pi\xF9 sottili, le note tenute si allungano, le parole cadono sul battito, il ritornello rimbalza e parole come fuoco, pioggia o cuore si muovono di conseguenza. Con Modalit\xE0 calma o Niente lampi cambiano solo dimensione e spessore"
+          lyrPlayfulHint: "Il testo si muove come un lyric video: ogni riga ha la sua entrata \u2013 le parole salgono, cadono o arrivano dai due lati, una parola chiave diventa enorme, le lettere ondeggiano, le urla entrano in maiuscolo, il rap veloce si digita, le ballate si accendono piano. Le parole reagiscono al loro significato: il fuoco tremola, la pioggia gocciola, il cuore batte, \xABcadere\xBB cade (non se negato). Con Modalit\xE0 calma o Niente lampi cambiano solo dimensione, spessore e impaginazione"
         },
         ja: {
           lyrPlayful: "\u904A\u3073\u5FC3\u306E\u3042\u308B\u30B9\u30BF\u30A4\u30EB",
-          lyrPlayfulHint: "\u6B4C\u8A5E\u304C\u66F2\u306B\u5408\u308F\u305B\u3066\u52D5\u304D\u307E\u3059\uFF1A\u5F37\u304F\u6B4C\u3046\u8A00\u8449\u306F\u592A\u304F\u3001\u9759\u304B\u306A\u8A00\u8449\u306F\u7D30\u304F\u3001\u4F38\u3070\u3059\u97F3\u306F\u4F38\u3073\u3001\u8A00\u8449\u306F\u30D3\u30FC\u30C8\u306B\u4E57\u308A\u3001\u30B5\u30D3\u306F\u5F3E\u307F\u3001\u708E\u30FB\u96E8\u30FB\u30CF\u30FC\u30C8\u306A\u3069\u306E\u8A00\u8449\u306F\u305D\u308C\u3089\u3057\u304F\u52D5\u304D\u307E\u3059\u3002\u300C\u7A4F\u3084\u304B\u300D\u3068\u300C\u30D5\u30E9\u30C3\u30B7\u30E5\u306A\u3057\u300D\u3067\u306F\u5927\u304D\u3055\u3068\u592A\u3055\u3060\u3051\u304C\u5909\u308F\u308A\u307E\u3059"
+          lyrPlayfulHint: "\u6B4C\u8A5E\u304C\u30EA\u30EA\u30C3\u30AF\u30D3\u30C7\u30AA\u306E\u3088\u3046\u306B\u52D5\u304D\u307E\u3059\uFF1A\u884C\u3054\u3068\u306B\u767B\u5834\u306E\u4ED5\u65B9\u304C\u5909\u308F\u308A\u3001\u8A00\u8449\u304C\u6607\u3063\u305F\u308A\u843D\u3061\u3066\u304D\u305F\u308A\u5DE6\u53F3\u304B\u3089\u5165\u3063\u305F\u308A\u3001\u30AD\u30FC\u30EF\u30FC\u30C9\u304C\u5927\u304D\u304F\u306A\u3063\u305F\u308A\u3001\u6587\u5B57\u304C\u6CE2\u6253\u3063\u305F\u308A\u3001\u53EB\u3073\u306F\u5927\u6587\u5B57\u3067\u6253\u3061\u8FBC\u307E\u308C\u3001\u901F\u3044\u30E9\u30C3\u30D7\u306F\u30BF\u30A4\u30D7\u3055\u308C\u3001\u30D0\u30E9\u30FC\u30C9\u306F\u3086\u3063\u304F\u308A\u706F\u308A\u307E\u3059\u3002\u8A00\u8449\u306F\u610F\u5473\u306B\u53CD\u5FDC\u3057\u307E\u3059\uFF1A\u708E\u306F\u63FA\u3089\u3081\u304D\u3001\u96E8\u306F\u3057\u305F\u305F\u308A\u3001\u30CF\u30FC\u30C8\u306F\u9F13\u52D5\u3057\u3001\u300C\u843D\u3061\u308B\u300D\u306F\u843D\u3061\u307E\u3059\uFF08\u5426\u5B9A\u3055\u308C\u3066\u3044\u308C\u3070\u52D5\u304D\u307E\u305B\u3093\uFF09\u3002\u300C\u7A4F\u3084\u304B\u300D\u3068\u300C\u30D5\u30E9\u30C3\u30B7\u30E5\u306A\u3057\u300D\u3067\u306F\u5927\u304D\u3055\u30FB\u592A\u3055\u30FB\u914D\u7F6E\u3060\u3051\u304C\u5909\u308F\u308A\u307E\u3059"
         },
         ko: {
           lyrPlayful: "\uC7A5\uB09C\uC2A4\uB7EC\uC6B4 \uC2A4\uD0C0\uC77C",
-          lyrPlayfulHint: "\uAC00\uC0AC\uAC00 \uB178\uB798\uC640 \uD568\uAED8 \uB180\uC544\uC694: \uD06C\uAC8C \uBD80\uB974\uB294 \uB2E8\uC5B4\uB294 \uAD75\uAC8C, \uC870\uC6A9\uD55C \uB2E8\uC5B4\uB294 \uAC00\uB298\uAC8C, \uAE38\uAC8C \uB044\uB294 \uC74C\uC740 \uB298\uC5B4\uB098\uACE0, \uB2E8\uC5B4\uB294 \uBC15\uC790\uC5D0 \uB9DE\uCDB0 \uB0B4\uB824\uC549\uACE0, \uD6C4\uB834\uC740 \uD1B5\uD1B5 \uD280\uBA70, \uBD88\xB7\uBE44\xB7\uD558\uD2B8 \uAC19\uC740 \uB2E8\uC5B4\uB294 \uC5B4\uC6B8\uB9AC\uAC8C \uC6C0\uC9C1\uC5EC\uC694. '\uCC28\uBD84\uD558\uAC8C'\uC640 '\uBC88\uCA4D\uC784 \uC5C6\uC74C'\uC5D0\uC11C\uB294 \uD06C\uAE30\uC640 \uAD75\uAE30\uB9CC \uBC14\uB00C\uC5B4\uC694"
+          lyrPlayfulHint: "\uAC00\uC0AC\uAC00 \uB9AC\uB9AD \uBE44\uB514\uC624\uCC98\uB7FC \uC6C0\uC9C1\uC5EC\uC694: \uC904\uB9C8\uB2E4 \uB4F1\uC7A5 \uBC29\uC2DD\uC774 \uB2EC\uB77C \uB2E8\uC5B4\uAC00 \uB5A0\uC624\uB974\uAC70\uB098 \uB5A8\uC5B4\uC9C0\uAC70\uB098 \uC591\uCABD\uC5D0\uC11C \uB4E4\uC5B4\uC624\uACE0, \uD575\uC2EC \uB2E8\uC5B4\uB294 \uD06C\uAC8C \uCEE4\uC9C0\uACE0, \uAE00\uC790\uAC00 \uBB3C\uACB0\uCE58\uACE0, \uC678\uCE68\uC740 \uB300\uBB38\uC790\uB85C \uAF42\uD788\uACE0, \uBE60\uB978 \uB7A9\uC740 \uD0C0\uC774\uD551\uB418\uB4EF, \uBC1C\uB77C\uB4DC\uB294 \uC740\uC740\uD558\uAC8C \uBE5B\uB098\uC694. \uB2E8\uC5B4\uB294 \uB73B\uC5D0 \uBC18\uC751\uD574\uC694: \uBD88\uC740 \uC77C\uB801\uC774\uACE0, \uBE44\uB294 \uB5A8\uC5B4\uC9C0\uACE0, \uC2EC\uC7A5\uC740 \uB6F0\uACE0, '\uB5A8\uC5B4\uC9C0\uB2E4'\uB294 \uB5A8\uC5B4\uC838\uC694(\uBD80\uC815\uB418\uBA74 \uC6C0\uC9C1\uC774\uC9C0 \uC54A\uC544\uC694). '\uCC28\uBD84\uD558\uAC8C'\uC640 '\uBC88\uCA4D\uC784 \uC5C6\uC74C'\uC5D0\uC11C\uB294 \uD06C\uAE30\xB7\uAD75\uAE30\xB7\uBC30\uCE58\uB9CC \uBC14\uB00C\uC5B4\uC694"
         },
         nl: {
           lyrPlayful: "Speelse stijl",
-          lyrPlayfulHint: "De songtekst speelt mee met het nummer: luide woorden worden vetter, zachte dunner, aangehouden noten rekken uit, woorden landen op de tel, het refrein veert mee en woorden als vuur, regen of hart bewegen passend. Met Rustige modus of Geen flitsen veranderen alleen grootte en dikte"
+          lyrPlayfulHint: "De songtekst speelt als een lyric video: elke regel krijgt een eigen entree \u2013 woorden stijgen op, vallen erin of komen van twee kanten, een sleutelwoord wordt reusachtig, letters golven, uitroepen knallen erin in hoofdletters, snelle rap tikt zich in, ballades gloeien op. Woorden reageren op hun betekenis: vuur flakkert, regen druppelt, het hart klopt, 'vallen' valt (niet als het ontkend wordt). Met Rustige modus of Geen flitsen veranderen alleen grootte, dikte en opmaak"
         },
         pl: {
           lyrPlayful: "Zabawny styl",
-          lyrPlayfulHint: "Tekst bawi si\u0119 razem z piosenk\u0105: g\u0142o\u015Bne s\u0142owa s\u0105 grubsze, ciche cie\u0144sze, przeci\u0105gane d\u017Awi\u0119ki si\u0119 rozci\u0105gaj\u0105, s\u0142owa l\u0105duj\u0105 na bicie, refren podskakuje, a s\u0142owa jak ogie\u0144, deszcz czy serce poruszaj\u0105 si\u0119 do nich pasuj\u0105co. W \u201ETrybie spokojnym\u201D i przy \u201EBez b\u0142ysk\xF3w\u201D zmienia si\u0119 tylko rozmiar i grubo\u015B\u0107"
+          lyrPlayfulHint: "Tekst gra jak lyric video: ka\u017Cda linijka ma w\u0142asne wej\u015Bcie \u2013 s\u0142owa wznosz\u0105 si\u0119, wpadaj\u0105 z g\xF3ry lub z obu stron, kluczowe s\u0142owo ro\u015Bnie, litery faluj\u0105, okrzyki wpadaj\u0105 wielkimi literami, szybki rap si\u0119 wystukuje, ballady powoli rozb\u0142yskuj\u0105. S\u0142owa reaguj\u0105 na znaczenie: ogie\u0144 migocze, deszcz kapie, serce bije, \u201Espada\u0107\u201D spada (nie, gdy zaprzeczone). W \u201ETrybie spokojnym\u201D i przy \u201EBez b\u0142ysk\xF3w\u201D zmienia si\u0119 tylko rozmiar, grubo\u015B\u0107 i uk\u0142ad"
         },
         pt: {
           lyrPlayful: "Estilo divertido",
-          lyrPlayfulHint: "A letra brinca com a m\xFAsica: palavras fortes ficam mais grossas, as suaves mais finas, notas longas esticam, as palavras caem no tempo, o refr\xE3o balan\xE7a e palavras como fogo, chuva ou cora\xE7\xE3o mexem-se a condizer. Com Modo calmo ou Sem flashes s\xF3 mudam tamanho e espessura"
+          lyrPlayfulHint: "A letra mexe-se como um lyric video: cada linha tem a sua entrada \u2013 as palavras sobem, caem ou chegam dos dois lados, uma palavra-chave fica enorme, as letras ondulam, os gritos entram em mai\xFAsculas, o rap r\xE1pido escreve-se, as baladas acendem devagar. As palavras reagem ao significado: o fogo tremeluz, a chuva pinga, o cora\xE7\xE3o bate, \xABcair\xBB cai (n\xE3o se negado). Com Modo calmo ou Sem flashes s\xF3 mudam tamanho, espessura e disposi\xE7\xE3o"
         },
         ru: {
           lyrPlayful: "\u0418\u0433\u0440\u0438\u0432\u044B\u0439 \u0441\u0442\u0438\u043B\u044C",
-          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0438\u0433\u0440\u0430\u0435\u0442 \u0432\u043C\u0435\u0441\u0442\u0435 \u0441 \u043F\u0435\u0441\u043D\u0435\u0439: \u0433\u0440\u043E\u043C\u043A\u0438\u0435 \u0441\u043B\u043E\u0432\u0430 \u0441\u0442\u0430\u043D\u043E\u0432\u044F\u0442\u0441\u044F \u0436\u0438\u0440\u043D\u0435\u0435, \u0442\u0438\u0445\u0438\u0435 \u2013 \u0442\u043E\u043D\u044C\u0448\u0435, \u043F\u0440\u043E\u0442\u044F\u0436\u043D\u044B\u0435 \u043D\u043E\u0442\u044B \u0440\u0430\u0441\u0442\u044F\u0433\u0438\u0432\u0430\u044E\u0442\u0441\u044F, \u0441\u043B\u043E\u0432\u0430 \u043B\u043E\u0436\u0430\u0442\u0441\u044F \u0432 \u0434\u043E\u043B\u044E, \u043F\u0440\u0438\u043F\u0435\u0432 \u043F\u0440\u0443\u0436\u0438\u043D\u0438\u0442, \u0430 \u0441\u043B\u043E\u0432\u0430 \u0432\u0440\u043E\u0434\u0435 \xAB\u043E\u0433\u043E\u043D\u044C\xBB, \xAB\u0434\u043E\u0436\u0434\u044C\xBB \u0438\u043B\u0438 \xAB\u0441\u0435\u0440\u0434\u0446\u0435\xBB \u0434\u0432\u0438\u0433\u0430\u044E\u0442\u0441\u044F \u043F\u043E\u0434 \u0441\u0442\u0430\u0442\u044C. \u0412 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u043E\xBB \u0438 \xAB\u0411\u0435\u0437 \u0432\u0441\u043F\u044B\u0448\u0435\u043A\xBB \u043C\u0435\u043D\u044F\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437\u043C\u0435\u0440 \u0438 \u043D\u0430\u0441\u044B\u0449\u0435\u043D\u043D\u043E\u0441\u0442\u044C"
+          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0434\u0432\u0438\u0436\u0435\u0442\u0441\u044F \u043A\u0430\u043A lyric video: \u0443 \u043A\u0430\u0436\u0434\u043E\u0439 \u0441\u0442\u0440\u043E\u043A\u0438 \u0441\u0432\u043E\u0439 \u0432\u044B\u0445\u043E\u0434 \u2013 \u0441\u043B\u043E\u0432\u0430 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442\u0441\u044F, \u043F\u0430\u0434\u0430\u044E\u0442 \u0441\u0432\u0435\u0440\u0445\u0443 \u0438\u043B\u0438 \u043F\u0440\u0438\u0445\u043E\u0434\u044F\u0442 \u0441 \u0434\u0432\u0443\u0445 \u0441\u0442\u043E\u0440\u043E\u043D, \u043A\u043B\u044E\u0447\u0435\u0432\u043E\u0435 \u0441\u043B\u043E\u0432\u043E \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0441\u044F \u043E\u0433\u0440\u043E\u043C\u043D\u044B\u043C, \u0431\u0443\u043A\u0432\u044B \u0438\u0434\u0443\u0442 \u0432\u043E\u043B\u043D\u043E\u0439, \u043A\u0440\u0438\u043A\u0438 \u0432\u0440\u0435\u0437\u0430\u044E\u0442\u0441\u044F \u043A\u0430\u043F\u0441\u043E\u043C, \u0431\u044B\u0441\u0442\u0440\u044B\u0439 \u0440\u044D\u043F \u043F\u0435\u0447\u0430\u0442\u0430\u0435\u0442\u0441\u044F, \u0431\u0430\u043B\u043B\u0430\u0434\u044B \u043C\u0435\u0434\u043B\u0435\u043D\u043D\u043E \u0437\u0430\u0433\u043E\u0440\u0430\u044E\u0442\u0441\u044F. \u0421\u043B\u043E\u0432\u0430 \u0440\u0435\u0430\u0433\u0438\u0440\u0443\u044E\u0442 \u043D\u0430 \u0441\u043C\u044B\u0441\u043B: \u043E\u0433\u043E\u043D\u044C \u043C\u0435\u0440\u0446\u0430\u0435\u0442, \u0434\u043E\u0436\u0434\u044C \u043A\u0430\u043F\u0430\u0435\u0442, \u0441\u0435\u0440\u0434\u0446\u0435 \u0431\u044C\u0451\u0442\u0441\u044F, \xAB\u043F\u0430\u0434\u0430\u0442\u044C\xBB \u043F\u0430\u0434\u0430\u0435\u0442 (\u043D\u043E \u043D\u0435 \u043F\u0440\u0438 \u043E\u0442\u0440\u0438\u0446\u0430\u043D\u0438\u0438). \u0412 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u043E\u0439\u043D\u043E\xBB \u0438 \xAB\u0411\u0435\u0437 \u0432\u0441\u043F\u044B\u0448\u0435\u043A\xBB \u043C\u0435\u043D\u044F\u044E\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u0440\u0430\u0437\u043C\u0435\u0440, \u043D\u0430\u0441\u044B\u0449\u0435\u043D\u043D\u043E\u0441\u0442\u044C \u0438 \u0440\u0430\u0441\u043A\u043B\u0430\u0434\u043A\u0430"
         },
         tr: {
           lyrPlayful: "Oyuncu stil",
-          lyrPlayfulHint: "S\xF6zler \u015Fark\u0131yla birlikte oynar: y\xFCksek sesli kelimeler kal\u0131nla\u015F\u0131r, sessizler incelir, uzat\u0131lan notalar uzar, kelimeler vuru\u015Fa oturur, nakarat z\u0131plar ve ate\u015F, ya\u011Fmur ya da kalp gibi kelimeler uygun \u015Fekilde hareket eder. Sakin ve Fla\u015F yok ile yaln\u0131zca boyut ve kal\u0131nl\u0131k de\u011Fi\u015Fir"
+          lyrPlayfulHint: "S\xF6zler bir lyric video gibi oynar: her sat\u0131r\u0131n kendi giri\u015Fi var \u2013 kelimeler y\xFCkselir, yukar\u0131dan d\xFC\u015Fer ya da iki yandan gelir, anahtar kelime kocamanla\u015F\u0131r, harfler dalgalan\u0131r, ba\u011F\u0131r\u0131\u015Flar b\xFCy\xFCk harfle \xE7arpar, h\u0131zl\u0131 rap yaz\u0131l\u0131r gibi gelir, baladlar yava\u015F\xE7a parlar. Kelimeler anlam\u0131na tepki verir: ate\u015F titrer, ya\u011Fmur damlar, kalp atar, \u201Ed\xFC\u015Fmek\u201C d\xFC\u015Fer (olumsuzsa de\u011Fil). Sakin ve Fla\u015F yok ile yaln\u0131zca boyut, kal\u0131nl\u0131k ve d\xFCzen de\u011Fi\u015Fir"
         },
         uk: {
           lyrPlayful: "\u0413\u0440\u0430\u0439\u043B\u0438\u0432\u0438\u0439 \u0441\u0442\u0438\u043B\u044C",
-          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0433\u0440\u0430\u0454 \u0440\u0430\u0437\u043E\u043C \u0456\u0437 \u043F\u0456\u0441\u043D\u0435\u044E: \u0433\u0443\u0447\u043D\u0456 \u0441\u043B\u043E\u0432\u0430 \u0441\u0442\u0430\u044E\u0442\u044C \u0436\u0438\u0440\u043D\u0456\u0448\u0438\u043C\u0438, \u0442\u0438\u0445\u0456 \u2013 \u0442\u043E\u043D\u0448\u0438\u043C\u0438, \u043F\u0440\u043E\u0442\u044F\u0436\u043D\u0456 \u043D\u043E\u0442\u0438 \u0440\u043E\u0437\u0442\u044F\u0433\u0443\u044E\u0442\u044C\u0441\u044F, \u0441\u043B\u043E\u0432\u0430 \u043B\u044F\u0433\u0430\u044E\u0442\u044C \u0443 \u0434\u043E\u043B\u044E, \u043F\u0440\u0438\u0441\u043F\u0456\u0432 \u043F\u0440\u0443\u0436\u0438\u043D\u0438\u0442\u044C, \u0430 \u0441\u043B\u043E\u0432\u0430 \u043D\u0430 \u043A\u0448\u0442\u0430\u043B\u0442 \xAB\u0432\u043E\u0433\u043E\u043D\u044C\xBB, \xAB\u0434\u043E\u0449\xBB \u0447\u0438 \xAB\u0441\u0435\u0440\u0446\u0435\xBB \u0440\u0443\u0445\u0430\u044E\u0442\u044C\u0441\u044F \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u043D\u043E. \u0423 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u043E\xBB \u0442\u0430 \xAB\u0411\u0435\u0437 \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432\xBB \u0437\u043C\u0456\u043D\u044E\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u0440\u043E\u0437\u043C\u0456\u0440 \u0456 \u043D\u0430\u0441\u0438\u0447\u0435\u043D\u0456\u0441\u0442\u044C"
+          lyrPlayfulHint: "\u0422\u0435\u043A\u0441\u0442 \u0440\u0443\u0445\u0430\u0454\u0442\u044C\u0441\u044F \u044F\u043A lyric video: \u043A\u043E\u0436\u0435\u043D \u0440\u044F\u0434\u043E\u043A \u043C\u0430\u0454 \u0441\u0432\u0456\u0439 \u0432\u0438\u0445\u0456\u0434 \u2013 \u0441\u043B\u043E\u0432\u0430 \u043F\u0456\u0434\u0456\u0439\u043C\u0430\u044E\u0442\u044C\u0441\u044F, \u043F\u0430\u0434\u0430\u044E\u0442\u044C \u0437\u0433\u043E\u0440\u0438 \u0447\u0438 \u043F\u0440\u0438\u0445\u043E\u0434\u044F\u0442\u044C \u0437 \u043E\u0431\u043E\u0445 \u0431\u043E\u043A\u0456\u0432, \u043A\u043B\u044E\u0447\u043E\u0432\u0435 \u0441\u043B\u043E\u0432\u043E \u0441\u0442\u0430\u0454 \u0432\u0435\u043B\u0438\u0447\u0435\u0437\u043D\u0438\u043C, \u043B\u0456\u0442\u0435\u0440\u0438 \u0431\u0456\u0436\u0430\u0442\u044C \u0445\u0432\u0438\u043B\u0435\u044E, \u0432\u0438\u0433\u0443\u043A\u0438 \u0432\u043B\u0456\u0442\u0430\u044E\u0442\u044C \u043A\u0430\u043F\u0441\u043E\u043C, \u0448\u0432\u0438\u0434\u043A\u0438\u0439 \u0440\u0435\u043F \u0434\u0440\u0443\u043A\u0443\u0454\u0442\u044C\u0441\u044F, \u0431\u0430\u043B\u0430\u0434\u0438 \u043F\u043E\u0432\u0456\u043B\u044C\u043D\u043E \u0437\u0430\u0441\u0432\u0456\u0447\u0443\u044E\u0442\u044C\u0441\u044F. \u0421\u043B\u043E\u0432\u0430 \u0440\u0435\u0430\u0433\u0443\u044E\u0442\u044C \u043D\u0430 \u0437\u043C\u0456\u0441\u0442: \u0432\u043E\u0433\u043E\u043D\u044C \u043C\u0435\u0440\u0435\u0445\u0442\u0438\u0442\u044C, \u0434\u043E\u0449 \u043A\u0430\u043F\u0430\u0454, \u0441\u0435\u0440\u0446\u0435 \u0431'\u0454\u0442\u044C\u0441\u044F, \xAB\u043F\u0430\u0434\u0430\u0442\u0438\xBB \u043F\u0430\u0434\u0430\u0454 (\u0430\u043B\u0435 \u043D\u0435 \u043F\u0440\u0438 \u0437\u0430\u043F\u0435\u0440\u0435\u0447\u0435\u043D\u043D\u0456). \u0423 \u0440\u0435\u0436\u0438\u043C\u0430\u0445 \xAB\u0421\u043F\u043E\u043A\u0456\u0439\u043D\u043E\xBB \u0442\u0430 \xAB\u0411\u0435\u0437 \u0441\u043F\u0430\u043B\u0430\u0445\u0456\u0432\xBB \u0437\u043C\u0456\u043D\u044E\u044E\u0442\u044C\u0441\u044F \u043B\u0438\u0448\u0435 \u0440\u043E\u0437\u043C\u0456\u0440, \u043D\u0430\u0441\u0438\u0447\u0435\u043D\u0456\u0441\u0442\u044C \u0456 \u0440\u043E\u0437\u043A\u043B\u0430\u0434\u043A\u0430"
         },
         zh: {
           lyrPlayful: "\u4FCF\u76AE\u98CE\u683C",
-          lyrPlayfulHint: "\u6B4C\u8BCD\u968F\u6B4C\u66F2\u8D77\u821E\uFF1A\u5531\u5F97\u54CD\u7684\u8BCD\u66F4\u7C97\uFF0C\u8F7B\u58F0\u7684\u8BCD\u66F4\u7EC6\uFF0C\u957F\u97F3\u4F1A\u62C9\u4F38\uFF0C\u5B57\u8BCD\u843D\u5728\u8282\u62CD\u4E0A\uFF0C\u526F\u6B4C\u968F\u62CD\u8DF3\u52A8\uFF0C\u201C\u706B\u201D\u201C\u96E8\u201D\u201C\u5FC3\u201D\u7B49\u8BCD\u4F1A\u505A\u51FA\u76F8\u5E94\u7684\u5C0F\u52A8\u4F5C\u3002\u5728\u201C\u5E73\u9759\u201D\u548C\u201C\u65E0\u95EA\u5149\u201D\u4E0B\u53EA\u6539\u53D8\u5927\u5C0F\u548C\u7C97\u7EC6"
+          lyrPlayfulHint: "\u6B4C\u8BCD\u50CF\u6B4C\u8BCD\u89C6\u9891\u4E00\u6837\u6F14\u51FA\uFF1A\u6BCF\u4E00\u884C\u90FD\u6709\u81EA\u5DF1\u7684\u51FA\u573A\u65B9\u5F0F\u2014\u2014\u5B57\u8BCD\u5347\u8D77\u3001\u843D\u4E0B\u6216\u4ECE\u4E24\u4FA7\u8FDB\u5165\uFF0C\u5173\u952E\u8BCD\u653E\u5927\uFF0C\u5B57\u6BCD\u8D77\u4F0F\u6210\u6CE2\u6D6A\uFF0C\u5450\u558A\u4EE5\u5927\u5199\u7838\u5165\uFF0C\u5FEB\u901F\u8BF4\u5531\u9010\u5B57\u6253\u51FA\uFF0C\u6292\u60C5\u6B4C\u7F13\u7F13\u4EAE\u8D77\u3002\u5B57\u8BCD\u4F1A\u5BF9\u542B\u4E49\u505A\u51FA\u53CD\u5E94\uFF1A\u706B\u7130\u6447\u66F3\u3001\u96E8\u6EF4\u843D\u4E0B\u3001\u5FC3\u5728\u8DF3\u52A8\u3001\u201C\u5760\u843D\u201D\u4F1A\u843D\u4E0B\uFF08\u88AB\u5426\u5B9A\u65F6\u4E0D\u4F1A\uFF09\u3002\u5728\u201C\u5E73\u9759\u201D\u548C\u201C\u65E0\u95EA\u5149\u201D\u4E0B\u53EA\u6539\u53D8\u5927\u5C0F\u3001\u7C97\u7EC6\u548C\u6392\u7248"
         }
       };
     }
@@ -27390,8 +27390,8 @@
         for (const x of [vw * 0.25, vw * 0.75]) {
           ctx3.globalAlpha = clamp17(0.5 + px.energy * 0.3, 0, 1);
           for (let k = 0; k < 8; k++) {
-            const a = k / 8 * Math.PI * 2, r2 = (9 + Math.sin(t2 * 3 + k) * 1.5) * dpr;
-            ctx3.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r2, vh * 0.12 + Math.sin(a) * 8 * dpr - r2, r2 * 2, r2 * 2);
+            const a = k / 8 * Math.PI * 2, r3 = (9 + Math.sin(t2 * 3 + k) * 1.5) * dpr;
+            ctx3.drawImage(glowSprite([255, 235, 200]), x + Math.cos(a) * 26 * dpr - r3, vh * 0.12 + Math.sin(a) * 8 * dpr - r3, r3 * 2, r3 * 2);
           }
           const r = (60 + beat2 * 30) * dpr;
           ctx3.globalAlpha = clamp17(0.25 + beat2 * 0.2, 0, 1);
@@ -27676,9 +27676,9 @@
         const life = 1 - f.t / 0.9, h = vh * 0.5 * Math.min(1, f.t / 0.12) * (0.7 + 0.3 * life);
         for (let k = 0; k < 9; k++) {
           const n1 = Math.sin(f.t * 23 + k * 1.7 + f.x * 0.01), n2 = Math.sin(f.t * 15 + k * 2.9);
-          const y = vh - h * k / 8, r2 = (58 - k * 4.5) * dpr * (1 + 0.2 * n1);
+          const y = vh - h * k / 8, r3 = (58 - k * 4.5) * dpr * (1 + 0.2 * n1);
           ctx3.globalAlpha = clamp17(life * (0.9 - k * 0.07), 0, 1);
-          ctx3.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r2 + n2 * (3 + k) * dpr, y - r2, r2 * 2, r2 * 2);
+          ctx3.drawImage(glowSprite(k < 3 ? [255, 210, 120] : k < 6 ? [255, 130, 40] : [220, 60, 20]), f.x - r3 + n2 * (3 + k) * dpr, y - r3, r3 * 2, r3 * 2);
         }
         ctx3.globalAlpha = life * 0.5;
         const r = vh * 0.3;
@@ -32955,7 +32955,7 @@
       return uriNow;
     } };
   }
-  var LEX, clamp20, rnd, rgba4, mixW4, NOSPACE, TOKEN, ELIDE, strip, low, SCRIPTS, FX, GLOW, IDX, matchAny, detectLangs;
+  var LEX, clamp20, rnd, rgba4, mixW4, NOSPACE, TOKEN, ELIDE, strip, low, SCRIPTS, FX, GLOW, IDX, matchAny, detectSong;
   var init_words = __esm({
     "src/words.js"() {
       init_scenarios();
@@ -33229,13 +33229,14 @@
         }
         return matchLine(text, langs || Object.keys(IDX || build2()));
       };
-      detectLangs = (texts, lexicon) => {
+      detectSong = (texts, lexicon) => {
         if (lexicon && lexicon !== LEX) {
           LEX = lexicon;
           IDX = null;
         }
         if (!IDX) build2();
-        return detect(texts.map((text) => ({ text })), "").langs;
+        const d = detect(texts.map((text) => ({ text })), "");
+        return { langs: d.langs, main: d.main };
       };
     }
   });
@@ -37657,12 +37658,23 @@
     }
     return r;
   }
+  function hash01(s2) {
+    let h = 2166136261;
+    for (let i = 0; i < s2.length; i++) h = Math.imul(h ^ s2.charCodeAt(i), 16777619);
+    return (h >>> 0) % 10007 / 10007;
+  }
   function wordLoud(segs, a, b) {
     if (!segs?.length || !Number.isFinite(a)) return null;
     const k0 = seek3(segs, a / 1e3, "t");
     let m = null;
     for (let k = k0 >= 0 && segs[k0].t * 1e3 >= a - 20 ? k0 : k0 + 1; k < segs.length && segs[k].t * 1e3 < b; k++) m = Math.max(m ?? -99, segs[k].l);
     return m ?? (k0 >= 0 ? segs[k0].l : null);
+  }
+  function rhymes(a, b) {
+    const x = bare(a), y = bare(b);
+    if (!x || !y || x === y || x.length < 3 || y.length < 3) return false;
+    const n = x.length >= 5 && y.length >= 5 ? 3 : 2;
+    return x.slice(-n) === y.slice(-n);
   }
   function emphasis(words2, o = {}) {
     const W2 = words2 || [];
@@ -37673,21 +37685,28 @@
     const lineMed = median3(known3), avg = Number.isFinite(o.avg) ? o.avg : lineMed;
     const timed = W2.filter((w) => !w.est && w.b > w.a);
     const dMed = median3(timed.map((w) => w.b - w.a)) || 1;
+    const fb = known3.length ? 0.5 : 1;
+    const last2 = W2.length - 1;
     const raw = W2.map((w, k) => {
       let e = 0;
       if (L2[k] != null) e += 0.6 * ((L2[k] - lineMed) / 4) + 0.4 * ((L2[k] - avg) / 6);
-      if (!w.est && w.b > w.a) e += 0.25 * clamp23((w.b - w.a) / dMed - 1, -1, 1.5);
+      if (!w.est && w.b > w.a) e += 0.3 * clamp23((w.b - w.a) / dMed - 1, -1, 1.5);
       const tx = String(w.text || "");
+      if (isContent(tx)) e += 0.3 * fb;
+      else e -= 0.12 * fb;
+      if (k === last2 && W2.length >= 3 && isContent(tx)) e += (o.rhyme ? 0.36 : 0.2) * fb;
+      if (o.hook?.has(bare(tx))) e += 0.24 * fb;
       if (isCaps(tx) || /!\s*[)）]?$/.test(tx)) e = Math.max(e, 0.8);
       if (w.bg || BREATH.test(tx)) e = Math.min(e, -0.6);
+      if (o.no?.has(k)) e = Math.min(e, 0);
       return clamp23(e, -1, 1);
     });
     const room = Math.max(1, Math.round(W2.length / 3));
     const loudest = raw.map((e, k) => [e, k]).filter(([e]) => e >= 0.45).sort((x, y) => y[0] - x[0]).slice(0, room).map(([, k]) => k);
     return raw.map((e, k) => {
       const loud = loudest.includes(k), soft = e <= -0.45;
-      const z = loud ? 1 + 0.16 * e : soft ? 1 + 0.12 * e : 1;
-      return { e: Math.round(e * 100) / 100, cls: loud ? "is-p-loud" : soft ? "is-p-soft" : "", z: Math.round(clamp23(z, 0.88, 1.16) * 100) / 100 };
+      const z = loud ? 1 + 0.3 * e : soft ? 1 + 0.16 * e : 1;
+      return { e: r2(e), cls: loud ? "is-p-loud" : soft ? "is-p-soft" : "", z: r2(clamp23(z, 0.84, 1.3)) };
     });
   }
   function heldNotes(words2) {
@@ -37743,25 +37762,135 @@
     if (!(p >= 250 && p <= 1500)) return null;
     return { p: Math.round(p), d: -Math.round((sec - beats[k].t) * 1e3) };
   }
-  function cueMatcher(lines, lexicon) {
-    let langs = null;
-    return (text) => {
-      const s2 = String(text || "");
-      const out = [];
+  function syllables(text) {
+    let n = 0;
+    for (const m of String(text || "").matchAll(TOKW)) {
+      const w = m[0];
+      if (/[\p{Script=Latin}]/u.test(w)) n += Math.max(1, (w.match(VOW) || []).length - (/[^aeiou]e$/i.test(w) && w.length > 3 ? 1 : 0));
+      else if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(w)) n += [...w].length;
+      else n += Math.max(1, Math.round([...w].length / 2.5));
+    }
+    return n;
+  }
+  function extraHits(text) {
+    const out = [];
+    let ti = 0;
+    for (const m of String(text || "").matchAll(TOKW)) {
+      const w = m[0].toLocaleLowerCase().replace(/[’']/g, "'").replace(/'$/, "");
+      const x = XIDX.get(w);
+      if (x) out.push({ c: "x:" + x[0], at: m.index, len: m[0].length, raw: m[0], how: "exact", lang: x[1], ti, tn: 1 });
+      ti++;
+    }
+    return out;
+  }
+  function cueMatcher(lines, lexicon, o = {}) {
+    let song = null;
+    const texts = (lines || []).map((l) => String(l?.text || ""));
+    const hitsOf = (s2) => {
+      let hits = [];
       if (lexicon) {
         try {
-          langs ??= detectLangs((lines || []).map((l) => String(l?.text || "")), lexicon);
-          for (const m of matchAny(s2, langs, lexicon)) if (CUE[m.c]) out.push({ at: m.at, len: m.len, cue: CUE[m.c] });
+          song ??= detectSong(texts, lexicon);
+          hits = matchAny(s2, song.langs, lexicon);
         } catch {
         }
       }
-      for (const m of s2.matchAll(TOKW)) {
-        if (out.some((o) => m.index < o.at + o.len && m.index + m[0].length > o.at)) continue;
-        const hit = EXTRA2.find(([re]) => re.test(m[0]));
-        if (hit) out.push({ at: m.index, len: m[0].length, cue: hit[1] });
-      }
-      return out.sort((x, y) => x.at - y.at);
+      return hits.concat(extraHits(s2));
     };
+    const fn2 = (text, soft = false) => {
+      const s2 = String(text || "");
+      let cands = [];
+      try {
+        cands = senseLine(s2, hitsOf(s2), { neg: o.neg, main: song?.main });
+      } catch {
+      }
+      const out = [];
+      for (const x of cands) {
+        let cue3 = x.c.startsWith("x:") ? x.c.slice(2) : CUE[x.c];
+        if (x.c === "heart" && BROKEN.test(s2)) cue3 = "crack";
+        if (EXPLICIT2.has(x.c)) cue3 = x.c === "sexy" && o.explicit === "on" ? "sultry" : "";
+        if (!cue3) continue;
+        if (soft && SOFTEN2[cue3]) cue3 = SOFTEN2[cue3];
+        out.push({ at: x.at, len: x.len, cue: cue3, c: x.c, conf: x.conf });
+      }
+      return out.sort((a, b) => a.at - b.at);
+    };
+    fn2.hitsOf = hitsOf;
+    fn2.song = () => song;
+    return fn2;
+  }
+  function explicitSpans(text, hitsOf) {
+    const out = [];
+    try {
+      for (const h of hitsOf(text)) if (EXPLICIT2.has(h.c)) out.push([h.at, h.at + h.len]);
+    } catch {
+    }
+    return out;
+  }
+  function scoreTreatments(f) {
+    const chorus = f.kind === "chorus" || f.kind === "drop";
+    const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
+    const E = f.energy, n = f.n;
+    const s2 = {
+      plain: 0.35 + (quiet ? 0.5 : 0) + (f.kind === "verse" ? 0.2 : 0) - (chorus ? 0.6 : 0),
+      rise: 0.9 + (f.kind === "verse" || f.kind === "pre" ? 0.4 : 0) + (f.ballad ? 0.2 : 0) + (f.mood > 0.3 ? 0.2 : 0),
+      drop: 0.7 + (chorus ? 0.5 : 0) + (E > 0.3 ? 0.4 : 0) + (f.mood < -0.3 ? 0.2 : 0),
+      stagger: 0.5 + (n >= 3 && n <= 7 ? 0.5 : -0.6) + (f.kind === "verse" ? 0.3 : 0),
+      key: (f.keyStrength >= 0.55 ? 0.55 + f.keyStrength * 0.6 : -0.4) + (n >= 3 && n <= 9 ? 0.3 : -0.6) + (chorus ? 0.2 : 0),
+      wave: (f.keyLetters ? 0.6 : -2) + (f.ballad ? 0.4 : 0) + (f.mood > 0.2 ? 0.3 : 0) + (f.cueLetters ? 0.6 : 0),
+      split: 0.4 + (n >= 4 && n <= 10 ? 0.6 : -1) + (chorus || f.kind === "pre" ? 0.3 : 0),
+      caps: (f.shout ? 2.2 : -0.6) + (E > 0.5 ? 0.6 : 0) + (n <= 6 ? 0.3 : -0.5),
+      type: (f.rap ? 2.2 : -0.7) + (n >= 8 ? 0.4 : 0) + (f.rate > 4.2 ? 0.5 : 0),
+      glow: (f.ballad ? 1.4 : 0) + (f.mood < -0.2 ? 0.4 : 0) + (quiet ? 0.7 : 0) + (E < -0.2 ? 0.4 : 0) - (chorus && E > 0.3 ? 0.8 : 0),
+      punch: (chorus && f.beats ? 0.8 : -1) + (E > 0.3 ? 0.6 : 0) + (f.rap ? -0.5 : 0),
+      collide: (f.dropIn ? 2.4 : -0.8) + (f.first && chorus && E > 0.4 ? 0.9 : 0) + (n >= 3 && n <= 8 ? 0.2 : -0.6),
+      tilt: (f.kind === "bridge" ? 1.7 : -0.5) + (f.mood < -0.3 ? 0.2 : 0),
+      slam: (f.first && chorus ? 2 : -1.2) + (E > 0.4 ? 0.4 : 0) + (n <= 7 ? 0.2 : -0.5)
+    };
+    if (!f.words) for (const t2 of NEEDS_WORDS) s2[t2] -= 3;
+    if (n > 12) for (const t2 of ["stagger", "split", "collide", "key", "slam"]) s2[t2] -= 1.2;
+    return s2;
+  }
+  function pickTreatments(feats) {
+    const out = [], count = {}, byKey = /* @__PURE__ */ new Map();
+    let n = 0;
+    for (let i = 0; i < feats.length; i++) {
+      const f = feats[i];
+      if (!f) {
+        out.push("");
+        continue;
+      }
+      const s2 = scoreTreatments(f);
+      const prev = out.filter(Boolean);
+      const p1 = prev[prev.length - 1], p2 = prev[prev.length - 2];
+      const used = byKey.get(f.key) || [];
+      let best2 = "plain", bv = -Infinity;
+      for (const t2 of TREATMENTS) {
+        let v = s2[t2] + hash01(f.key + "|" + t2 + "|" + used.length) * 0.55;
+        if (t2 === p1) v -= 1.8;
+        if (t2 === p2) v -= 0.6;
+        const share = n >= 6 ? (count[t2] || 0) / n : 0;
+        if (share > 0.22) v -= (share - 0.22) * 9;
+        if (used.includes(t2)) v -= 1.3 + 0.4 * used.filter((u) => u === t2).length;
+        if (v > bv) bv = v, best2 = t2;
+      }
+      out.push(best2);
+      count[best2] = (count[best2] || 0) + 1;
+      n++;
+      byKey.set(f.key, [...used, best2]);
+    }
+    return out;
+  }
+  function keyWord(ws, em, cueAt, no) {
+    let best2 = -1, bv = -Infinity;
+    ws.forEach((w, k) => {
+      if (w.bg || no.has(k) || !isContent(w.text)) return;
+      const len = [...bare(w.text)].length;
+      if (len > 12) return;
+      let v = em[k].e + (cueAt.has(k) ? 0.7 : 0) + (k === ws.length - 1 ? 0.1 : 0) + Math.min(0.2, len * 0.02);
+      if (v > bv) bv = v, best2 = k;
+    });
+    return { k: best2, strength: best2 >= 0 ? clamp23(bv, 0, 1.5) : 0 };
   }
   function partsOf(d) {
     if (!d?.beats?.length || d.synthetic) return { parts: null, drops: [] };
@@ -37780,11 +37909,18 @@
     const real = d && !d.synthetic;
     const segs = real ? d.segs : null;
     const beats = d?.beats || null;
+    const still = !!o.still;
     const { parts, drops } = o.parts !== void 0 ? { parts: o.parts, drops: o.drops || [] } : partsOf(d);
-    const match = o.match || cueMatcher(L2, o.lexicon);
-    const key = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+    const match = o.match || cueMatcher(L2, o.lexicon, { neg: o.neg, explicit: o.explicit || "on" });
+    const hitsOf = match.hitsOf || (() => []);
     const seen2 = /* @__PURE__ */ new Map();
-    for (const l of L2) if (key(l.text).length > 6) seen2.set(key(l.text), (seen2.get(key(l.text)) || 0) + 1);
+    for (const l of L2) if (lineKey(l.text).length > 6) seen2.set(lineKey(l.text), (seen2.get(lineKey(l.text)) || 0) + 1);
+    const freq = /* @__PURE__ */ new Map();
+    for (const l of L2) {
+      if (!(seen2.get(lineKey(l.text)) >= 2)) continue;
+      for (const m of String(l.text || "").matchAll(TOKW)) if (isContent(m[0])) freq.set(bare(m[0]), (freq.get(bare(m[0])) || 0) + 1);
+    }
+    const hook = new Set([...freq].filter(([, c2]) => c2 >= 3).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([w]) => w));
     const peaks = L2.map((l, i) => {
       const ws = wordLists?.[i];
       if (!segs?.length || !ws?.length) return null;
@@ -37792,6 +37928,17 @@
     });
     const known3 = peaks.filter((v) => v != null).sort((a, b) => a - b);
     const hi = known3.length >= 8 ? Math.max(known3[Math.floor(known3.length * 0.92)], (d?.avg ?? -12) + 4) : null;
+    const pMed = known3.length ? known3[known3.length >> 1] : null;
+    const bp = beats?.length > 8 ? median3(beats.slice(1, 200).map((b, k) => b.t - beats[k].t).filter((x) => x > 0.25 && x < 1.5)) : 0;
+    const bpm2 = bp ? 60 / bp : 0;
+    let soft = [];
+    try {
+      if (o.lexicon && !o.match) {
+        const sp = planSong2(L2.map((l) => ({ text: String(l.text || "") })), L2.map((l) => hitsOf(String(l.text || ""))), { neg: o.neg, main: match.song?.()?.main });
+        soft = sp.map((p) => !!p?.soft);
+      }
+    } catch {
+    }
     const maxShout = Math.max(1, Math.round(L2.length / 8));
     let shouts = 0, adl = 0;
     const dropIn = /* @__PURE__ */ new Set();
@@ -37799,62 +37946,159 @@
       const k = L2.findIndex((l) => l.t >= dt * 1e3 - 150 && String(l.text || "").trim() && l.text !== "\u266A");
       if (k >= 0 && L2[k].t - dt * 1e3 < 4e3) dropIn.add(k);
     }
-    return L2.map((l, i) => {
-      const cls = [], vars = {};
+    let prevKind = null, prevEnd = -1e9;
+    const pre = L2.map((l, i) => {
       const ws = wordLists?.[i] || [];
-      const kind = sectionKind(parts, l.t);
-      cls.push(sectionStyle(kind, { repeated: seen2.get(key(l.text)) >= 2 }));
-      if (dropIn.has(i)) cls.push("is-p-drop");
-      const side = voiceSide(l.who);
-      if (side) cls.push(side);
-      const texts = ws.length ? ws.map((w) => w.text) : String(l.text || "").split(/\s+/).filter(Boolean);
-      if (l.bg || texts.length && isAdlib(texts)) {
-        const p = adlibPose(adl++);
-        cls.push("is-p-adlib");
-        vars["--pr"] = p.rot + "deg";
-        vars["--px"] = p.dx + "em";
-      } else if (ws.some((w) => w.bg)) {
-        vars["--pr"] = adlibPose(adl++).rot + "deg";
-      }
-      if (shouts < maxShout && !l.bg && isShout(l.text, peaks[i], hi)) {
-        cls.push("is-p-shout");
-        shouts++;
-      }
-      if (!ws.length) return { cls, vars, words: [] };
-      const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real });
-      const hold = heldNotes(ws);
+      const text = String(l.text || "");
+      const texts = ws.length ? ws.map((w) => w.text) : text.split(/\s+/).filter(Boolean);
+      const adlib = !!l.bg || texts.length > 0 && isAdlib(texts);
+      const repeated = seen2.get(lineKey(text)) >= 2;
+      let kind = sectionKind(parts, l.t);
+      if (!kind) kind = repeated ? "chorus" : "verse";
+      else if ((kind === "verse" || kind === "pre") && repeated) kind = "chorus";
+      const shout = !l.bg && isShout(text, peaks[i], hi);
+      return { l, i, ws, text, texts, adlib, repeated, kind, shout };
+    });
+    const feats = pre.map((p) => {
+      const { l, i, ws, text, texts } = p;
+      if (p.adlib || !text.trim() || text === "\u266A") return null;
+      const next = L2[i + 1]?.t;
+      const a = ws.length ? ws[0].a : l.t, b = ws.length ? ws[ws.length - 1].b : Math.min(next ?? l.t + 4e3, l.t + 6e3);
+      const secs2 = Math.max(0.4, (b - a) / 1e3);
+      const rate = syllables(text) / secs2;
+      const n = texts.length;
+      const rap = rate >= 4.6 && n >= 7 || rate >= 5.4 && n >= 5;
+      const ballad = !rap && (rate <= 2.4 || bpm2 && bpm2 < 84);
+      let energy = { chorus: 0.4, drop: 0.7, pre: 0.15, verse: 0, bridge: -0.1, intro: -0.4, outro: -0.4, break: -0.5 }[p.kind] ?? 0;
+      if (peaks[i] != null && hi != null && pMed != null && hi > pMed) energy = 0.5 * energy + clamp23((peaks[i] - pMed) / (hi - pMed), -1, 1);
+      if (p.shout) energy += 0.4;
+      const first = p.kind !== prevKind && prevKind !== null || l.t - prevEnd > 7e3 || prevKind === null;
+      prevKind = p.kind;
+      prevEnd = Math.max(l.t, b);
+      const mood = lineMood(text)?.v ?? 0;
+      return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp23(energy, -1, 1.2), shout: p.shout, first, mood, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, key: lineKey(text) || "#" + i };
+    });
+    const wordInfo = pre.map((p, i) => {
+      const ws = p.ws;
+      if (!ws.length) return null;
       const starts = [];
       let joined = "";
       for (const w of ws) {
         starts.push(joined.length);
         joined += String(w.text || "") + " ";
       }
+      const at3 = (pos) => seek3(starts.map((x) => ({ at: x })), pos, "at");
+      const no = /* @__PURE__ */ new Set();
+      for (const [s0, s1] of explicitSpans(joined, hitsOf)) for (let k = at3(s0); k >= 0 && k <= at3(s1 - 1); k++) no.add(k);
+      const lastW = ws[ws.length - 1]?.text, nb = [L2[i - 1], L2[i + 1], L2[i - 2]].map((x) => String(x?.text || "").trim().split(/\s+/).pop());
+      const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real, rhyme: nb.some((x) => rhymes(lastW, x)), hook, no });
       const cues = /* @__PURE__ */ new Map();
-      for (const m of match(joined)) {
-        if (cues.size >= 2) break;
-        const k = seek3(starts.map((at3) => ({ at: at3 })), m.at + m.len - 1, "at");
-        if (k >= 0 && !cues.has(k) && !ws[k].bg) cues.set(k, m.cue);
+      if (!still) {
+        const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
+        for (const m of ms) {
+          if (cues.size >= 2) break;
+          const k = at3(m.at + m.len - 1);
+          if (k >= 0 && !cues.has(k) && !ws[k].bg) cues.set(k, m.cue);
+        }
       }
+      const kw = keyWord(ws, em, cues, no);
+      return { em, cues, kw, no };
+    });
+    feats.forEach((f, i) => {
+      if (!f) return;
+      const wi = wordInfo[i];
+      f.keyStrength = wi ? wi.kw.strength : 0;
+      f.keyLetters = !!wi && wi.kw.k >= 0 && canSplit(pre[i].ws[wi.kw.k].text) && !L2[i].who;
+      f.cueLetters = !!wi && [...wi.cues.values()].includes("wave");
+    });
+    const treat = pickTreatments(feats);
+    return pre.map((p, i) => {
+      const { l, ws } = p;
+      const cls = [], vars = {};
+      const t2 = treat[i] || "";
+      cls.push(sectionStyle(sectionKind(parts, l.t), { repeated: p.repeated }));
+      if (t2) cls.push("is-t-" + t2);
+      if (dropIn.has(i) && !still) cls.push("is-p-drop");
+      const side = voiceSide(l.who);
+      if (side) cls.push(side);
+      if (p.adlib) {
+        const pose = adlibPose(adl++);
+        cls.push("is-p-adlib");
+        vars["--pr"] = pose.rot + "deg";
+        vars["--px"] = pose.dx + "em";
+      } else if (ws.some((w) => w.bg)) {
+        vars["--pr"] = adlibPose(adl++).rot + "deg";
+      }
+      if (shouts < maxShout && p.shout) {
+        cls.push("is-p-shout");
+        shouts++;
+      }
+      const wi = wordInfo[i];
+      if (!wi) return { t: t2, cls, vars, words: [] };
+      const { em, cues, kw } = wi;
+      const hold = heldNotes(ws);
+      const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
       const words2 = ws.map((w, k) => {
         const wc = [], wv = {};
         if (em[k].cls) wc.push(em[k].cls);
         if (em[k].z !== 1) wv["--pz"] = String(em[k].z);
-        if (hold[k].held) {
-          wc.push("is-p-held");
-          wv["--hd"] = hold[k].hd + "ms";
+        const isKey = k === kw.k && (t2 === "key" || t2 === "wave");
+        if (isKey) {
+          wc.push("is-p-key");
+          if (t2 === "key") wv["--pk"] = String(r2(clamp23(2.6 - 0.12 * [...bare(w.text)].length, 1.6, 2.4)));
         }
-        if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
-        const c2 = cues.get(k);
-        if (c2) wc.push("is-p-cue", "is-p-" + c2);
-        return { cls: wc, vars: wv };
+        if (t2 === "split") wc.push(k < half ? "is-p-l" : "is-p-r");
+        if (t2 === "stagger" && k % 2 === 1) wc.push("is-p-odd");
+        if (t2 === "collide" && n > 1) wv["--pc"] = String(r2((k - mid) / Math.max(1, mid)));
+        let chars = false, tx = "";
+        if (!still) {
+          if (hold[k].held) {
+            wc.push("is-p-held");
+            wv["--hd"] = hold[k].hd + "ms";
+          }
+          if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
+          const c2 = cues.get(k);
+          if (c2) {
+            wc.push("is-p-cue", "is-c-" + c2);
+            if (GLOWS.has(c2)) {
+              wc.push("is-cg");
+              tx = String(w.text || "");
+            }
+            if (LETTERS.has(c2) && canSplit(w.text) && !l.who) chars = true;
+          }
+          if (isKey && t2 === "wave" && canSplit(w.text) && !l.who) chars = true;
+          if (chars) {
+            if (tx) wc.splice(wc.indexOf("is-cg"), 1), tx = "";
+            wc.push("is-split");
+            wv["--cn"] = String([...String(w.text)].length);
+          }
+        }
+        const out = { cls: wc, vars: wv };
+        if (chars) out.chars = true;
+        if (tx) out.tx = tx;
+        return out;
       });
-      return { cls, vars, words: words2 };
+      return { t: t2, cls, vars, words: words2 };
     });
   }
-  function strip2(el4) {
+  function strip2(el4, text) {
     if (!el4) return;
-    for (const c2 of [...el4.classList]) if (c2.startsWith("is-p-")) el4.classList.remove(c2);
+    for (const c2 of [...el4.classList]) if (c2.startsWith("is-p-") || c2.startsWith("is-t-") || c2.startsWith("is-c-") || c2 === "is-cg" || c2 === "is-split") el4.classList.remove(c2);
     for (const v of PVARS) el4.style.removeProperty(v);
+    if (el4.dataset?.tx != null) delete el4.dataset.tx;
+    if (text != null && el4.firstElementChild?.classList?.contains("m-ch")) el4.textContent = text;
+  }
+  function letters(el4, text) {
+    const doc = el4.ownerDocument;
+    if (!doc || el4.firstElementChild) return;
+    el4.textContent = "";
+    [...String(text)].forEach((ch, k) => {
+      const s2 = doc.createElement("span");
+      s2.className = "m-ch";
+      s2.textContent = ch;
+      s2.style.setProperty("--ci", k);
+      el4.append(s2);
+    });
   }
   function paintPlayful(lineEls, plan2, wordLists) {
     const n = lineEls?.length || 0;
@@ -37862,7 +38106,7 @@
       const el4 = lineEls[i], p = plan2?.[i];
       strip2(el4);
       const ws = wordLists?.[i] || [];
-      ws.forEach((w) => strip2(w.el));
+      ws.forEach((w) => strip2(w.el, w.text));
       if (!p) continue;
       if (p.cls.length) el4.classList.add(...p.cls);
       for (const [k, v] of Object.entries(p.vars)) el4.style.setProperty(k, v);
@@ -37871,16 +38115,21 @@
         if (!wel) return;
         if (pw.cls.length) wel.classList.add(...pw.cls);
         for (const [kk, v] of Object.entries(pw.vars)) wel.style.setProperty(kk, v);
+        if (pw.tx) wel.dataset.tx = pw.tx;
+        if (pw.chars) letters(wel, ws[k].text);
       });
     }
   }
-  var clamp23, median3, CASED, capsOf, isCaps, BREATH, SET, CUE, EXTRA2, TOKW, planCache, PVARS;
+  var clamp23, r2, median3, CASED, capsOf, isCaps, BREATH, FN, TOKW, bare, isContent, SET, VOW, EFFECTS, CUE, EXTRA2, BROKEN, XIDX, FXPRI, SOFTEN2, GLOWS, LETTERS, TREATMENTS, NEEDS_WORDS, SPLITTABLE, canSplit, planCache, lineKey, PVARS;
   var init_lyricstyle = __esm({
     "src/lyricstyle.js"() {
       init_director();
       init_words();
+      init_wordsense();
+      init_mood();
       init_lyricvoices();
       clamp23 = (v, a, b) => Math.min(b, Math.max(a, v));
+      r2 = (v) => Math.round(v * 100) / 100;
       median3 = (arr) => {
         if (!arr.length) return 0;
         const s2 = [...arr].sort((a, b) => a - b);
@@ -37897,39 +38146,114 @@
         return n >= 2 && up === n;
       };
       BREATH = /^[(（]?(?:m+|h?m+|a+h+|o+h+|o+|u+h+|ha+|hah|shh+|sh+)[)）,.…]*$/i;
-      SET = { chorus: "is-p-chorus", drop: "is-p-chorus", verse: "is-p-verse", pre: "is-p-verse", bridge: "is-p-bridge", intro: "is-p-calm", outro: "is-p-calm", break: "is-p-calm" };
-      CUE = {
-        fire: "flicker",
-        devil: "flicker",
-        rain: "drip",
-        tears: "drip",
-        storm: "drip",
-        heart: "pulse",
-        love: "pulse",
-        kiss: "pulse",
-        heartbreak: "pulse",
-        fly: "rise",
-        bird: "rise",
-        butterfly: "rise",
-        angel: "rise",
-        heaven: "rise",
-        sky: "rise",
-        rocket: "rise",
-        space: "rise",
-        star: "twinkle",
-        diamond: "twinkle",
-        gold: "twinkle",
-        magic: "twinkle",
-        cold: "shiver",
-        snow: "shiver"
+      FN = new Set(
+        "i me my mine you your you're we us our they them he she it it's its a an the and or but so to of in on at for with from is are am was were be been do don't does did can can't will won't would just like that this these those what when where i'm i'll i've gonna wanna gotta got get oh yeah ya na la no not all up down out if as by now then there here ich du er sie es wir ihr mich dich mir dir mein dein und oder aber so zu von in im an am auf f\xFCr mit ist bin bist sind war der die das den dem des ein eine einen nicht kein noch nur wie was wenn wo da ja yo tu \xE9l ella nosotros me te se mi tu y o pero que de en a el la los las un una es soy eres por para con no lo le je tu il elle nous vous me te moi toi mon ma mes et ou mais que de du des le la les un une est suis pas en au io tu lui lei noi mi ti il lo gli le e o ma che di da in con non \xE8 sono un una per eu voc\xEA ele ela n\xF3s o os um uma \xE9 n\xE3o com".split(" ")
+      );
+      TOKW = /[\p{L}\p{M}\p{N}'’]+/gu;
+      bare = (s2) => String(s2 || "").toLocaleLowerCase().replace(/[^\p{L}\p{M}\p{N}'’]+/gu, "").replace(/’/g, "'");
+      isContent = (s2) => {
+        const w = bare(s2);
+        return [...w].length >= 3 && !FN.has(w) && !BREATH.test(w);
       };
-      EXTRA2 = [
-        [/^(?:fall|falls|falling|fallin'?|fell|fallen|sink|sinking|drown|drowning|falle|fällt|fiel|fielen|sinke|sinken|caer|caigo|cae|caes|caída|tomber|tombe|tombé|cadere|cado|cair|caio)$/iu, "fall"],
-        [/^(?:high|higher|highest|rise|rising|risin'?|hoch|höher|steigen|steig|alto|alta|arriba|haut|subir)$/iu, "rise"]
-      ];
-      TOKW = /[\p{L}\p{M}'’]+/gu;
+      SET = { chorus: "is-p-chorus", drop: "is-p-chorus", verse: "is-p-verse", pre: "is-p-verse", bridge: "is-p-bridge", intro: "is-p-calm", outro: "is-p-calm", break: "is-p-calm" };
+      VOW = /[aeiouyäöüáéíóúàèìòùâêîôûãõœæøåëïÿ]+/giu;
+      EFFECTS = {
+        flame: "fire devil dragon candle",
+        // Flackern mit warmem Schein
+        heat: "sun summer desert beach tropical sweat island",
+        // Hitzeflimmern
+        drip: "rain tears water",
+        // eintauchen, ein Tropfen löst sich
+        wave: "ocean sail yacht sing music sway rainbow guitar bells",
+        // Welle durch die Buchstaben
+        jolt: "storm lightning earthquake electric",
+        // Ruck mit Lichtblitz
+        shiver: "cold snow fear",
+        // Zittern, frostiger Schein
+        beat: "heart heartbeat love kiss",
+        // Herzschlag (doppelt)
+        crack: "heartbreak pain goodbye",
+        // knickt ein und rutscht ab
+        float: "fly bird butterfly angel heaven sky rocket space jet freedom rise hallelujah pray",
+        // hebt ab
+        burst: "boom bass fireworks drums",
+        // zerspringt in Buchstaben und fügt sich wieder
+        spin: "spin crazy",
+        // dreht sich einmal
+        glint: "money gold diamond rich million bling crown sparkle luxury vip star champagne silver mansion flex payday christmas neon laser",
+        // Glanz
+        dim: "dark black midnight blackout lonely lost moon",
+        // dunkelt ab (nicht „night“: steht in fast jedem Lied)
+        shine: "light sunrise morning wakeup hope alive smile happy",
+        // hellt auf
+        shake: "shake anger wild war beast monster hype",
+        // bebt (auch die Rufe an die Menge: „scream“, „make some noise“)
+        hush: "silence breathe sleep",
+        // wird klein und leise
+        bounce: "dance move jump bounce hips party clap stomp getup handsup turnup dancefloor club weekend birthday",
+        // hüpft im Takt
+        tick: "time",
+        // tickt wie ein Zeiger
+        drift: "dream magic smoke fog ghost wind memory longing",
+        // schwebt träge
+        dash: "drive run highway supercar train",
+        // schießt schräg herein
+        power: "strong hero legend victory pride boss",
+        // wächst und steht
+        droop: "sad",
+        // sackt ab
+        bloom: "flower rose spring wedding",
+        // blüht auf
+        sultry: "sexy touch body"
+        // langsames, laszives Wiegen
+      };
+      CUE = {};
+      for (const [fx2, list] of Object.entries(EFFECTS)) for (const c2 of list.split(" ")) CUE[c2] = fx2;
+      EXTRA2 = {
+        fall: {
+          en: "fall falls falling fallin fell fallen sink sinking sank drown drowning",
+          de: "fallen falle f\xE4llt fiel fielen sinken sinke sinkt versinken ertrinken",
+          es: "caer caigo cae caes ca\xEDda caemos hundo hundirme",
+          fr: "tomber tombe tomb\xE9 tombes tombent chute coule couler",
+          it: "cadere cado cade caduta affondo",
+          pt: "cair caio cai caindo queda afundar"
+        },
+        float: { en: "high higher highest rise rising risin", de: "hoch h\xF6her steigen steig empor", es: "alto arriba subir", fr: "haut monter", it: "salire", pt: "subir" },
+        shake: {
+          en: "scream screaming screamin shout shouting yell yelling loud louder",
+          de: "schrei schreien schreie laut lauter br\xFCll br\xFCllen",
+          es: "grita gritar grito",
+          fr: "crier crie cri hurler hurle",
+          it: "urlare urlo gridare grido",
+          pt: "gritar grito grita"
+        },
+        hush: {
+          en: "whisper whispers whispering quiet quietly softly hush",
+          de: "fl\xFCster fl\xFCstern fl\xFCstere leise",
+          es: "susurro susurrar susurra",
+          fr: "murmure murmurer chuchote",
+          it: "sussurro sussurrare",
+          pt: "sussurro sussurrar"
+        },
+        halt: { en: "stop stopped stopping freeze frozen", de: "stopp anhalten erstarrt", es: "detente parar", fr: "arr\xEAte arr\xEAter", it: "fermati fermare", pt: "pare parar" },
+        tick: { en: "clock clocks tick tock ticking", de: "uhr ticken tick tack", es: "reloj", fr: "horloge", it: "orologio", pt: "rel\xF3gio" },
+        burst: { en: "explode exploding explodes bang", de: "explodieren explodiert knall knallt", es: "explota explotar", fr: "explose exploser", it: "esplodere esplode", pt: "explodir explode" },
+        spin: { en: "round spinning circles", de: "dreh drehen dreht kreisen", es: "vueltas girar", fr: "tourne tourner", it: "girare gira", pt: "girar gira" }
+      };
+      BROKEN = /\b(?:br(?:oke|eak|eaks|eaking|oken)|tore|rip(?:ped)?|shatter(?:ed)?) (?:my|your|his|her|our|this) heart\b|(?:brach|brichst|bricht|gebrochen\w*) (?:mein|dein|sein|ihr)\w* herz|herz\w* (?:gebrochen|zerbrochen)/iu;
+      XIDX = /* @__PURE__ */ new Map();
+      for (const [fx2, byLang] of Object.entries(EXTRA2)) for (const [lang, words2] of Object.entries(byLang)) for (const w of words2.split(" ")) if (!XIDX.has(w)) XIDX.set(w, [fx2, lang]);
+      FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4 };
+      SOFTEN2 = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift" };
+      GLOWS = /* @__PURE__ */ new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift"]);
+      LETTERS = /* @__PURE__ */ new Set(["burst", "wave"]);
+      TREATMENTS = ["plain", "rise", "drop", "stagger", "key", "wave", "split", "caps", "type", "glow", "punch", "collide", "tilt", "slam"];
+      NEEDS_WORDS = /* @__PURE__ */ new Set(["rise", "drop", "stagger", "split", "type", "glow", "collide", "key", "wave"]);
+      SPLITTABLE = /^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}'’!?.,-]{2,12}$/u;
+      canSplit = (s2) => SPLITTABLE.test(String(s2 || "")) && !new RegExp("\\p{M}", "u").test(String(s2 || "").normalize("NFC"));
       planCache = /* @__PURE__ */ new WeakMap();
-      PVARS = ["--pr", "--px", "--pz", "--hd"];
+      lineKey = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+      PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pc", "--cn"];
     }
   });
 
@@ -38977,7 +39301,7 @@ Probe-FX: ${pfx}`;
         }
         const VOWELS = /[aeiouyäöüáéíóúàèìòùâêîôûãõåæøœıаеёиоуыэюяіїє]+/g;
         const CJK = /[぀-ヿ㐀-鿿가-힯]/;
-        const syllables = (w) => CJK.test(w) ? [...w].length : Math.max(1, (w.toLowerCase().match(VOWELS) || []).length);
+        const syllables2 = (w) => CJK.test(w) ? [...w].length : Math.max(1, (w.toLowerCase().match(VOWELS) || []).length);
         function snapWords(list, t0, t1) {
           list.snapped = true;
           const segs = audio.data?.segs;
@@ -38988,7 +39312,7 @@ Probe-FX: ${pfx}`;
           }
           const sy = [];
           list.forEach((w, wi) => {
-            const n = syllables(w.text || "");
+            const n = syllables2(w.text || "");
             for (let j2 = 0; j2 < n; j2++) sy.push({ wi, j: j2, n, e: w.a + (w.b - w.a) * j2 / n });
           });
           const S2 = sy.length, O = on.length;
@@ -39374,9 +39698,10 @@ Probe-FX: ${pfx}`;
             q2.lyrics.classList.toggle("is-playful", on);
             if (!on) return;
             const d = audio.uri === lyrUri ? audio.data : null;
-            if (playfulKey?.lyr === lyr2 && playfulKey.d === d) return;
-            playfulKey = { lyr: lyr2, d };
-            paintPlayful(q2.inner.children, planPlayful(lyr2.lines, words2, d, { lexicon: LEX2 }), words2);
+            const ex = explicitMode(), still = stillMotion() || !!cfg.noFlash;
+            if (playfulKey?.lyr === lyr2 && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still) return;
+            playfulKey = { lyr: lyr2, d, ex, still };
+            paintPlayful(q2.inner.children, planPlayful(lyr2.lines, words2, d, { lexicon: LEX2, neg: NEG2, explicit: ex, still }), words2);
             placeSoon("glide");
           };
           if (!cfg.lyrPlayful) return run2();
@@ -39699,7 +40024,7 @@ Probe-FX: ${pfx}`;
             }
             activeEl = lines[i] || null;
             playOn = !!activeEl && !!cfg.lyrPlayful && q2.lyrics.classList.contains("is-playful");
-            const bp = playOn && activeEl.classList.contains("is-p-chorus") && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1e3) : null;
+            const bp = playOn && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1e3) : null;
             if (bp) activeEl.style.setProperty("--pb", bp.p + "ms"), activeEl.style.setProperty("--pbd", bp.d + "ms");
             lastBounce = "";
             hypeOn = !!activeEl && cfg.partyHype && el4.dataset.mode === "party" && hype.has(i);
@@ -39966,9 +40291,9 @@ Probe-FX: ${pfx}`;
           } else if (V2.style === "particles") {
             for (let i = 0; i < N2; i++) {
               const a = ang(i) + tt * 0.15 * (i % 2 ? 1 : -1), e = tip(i) + Math.sin(tt * 2 + i) * 6 * dpr;
-              const r2 = (5.5 + vals[i] * 11) * dpr * (1 + b * 0.25);
+              const r3 = (5.5 + vals[i] * 11) * dpr * (1 + b * 0.25);
               ctx3.globalAlpha = clamp(0.3 + vals[i] * 0.7, 0, 1);
-              ctx3.drawImage(vizSprite(pal[i % 3]), cx + Math.cos(a) * e - r2, cy + Math.sin(a) * e - r2, r2 * 2, r2 * 2);
+              ctx3.drawImage(vizSprite(pal[i % 3]), cx + Math.cos(a) * e - r3, cy + Math.sin(a) * e - r3, r3 * 2, r3 * 2);
             }
             ctx3.globalAlpha = 1;
           } else if (V2.style === "tunnel") {
@@ -39980,13 +40305,13 @@ Probe-FX: ${pfx}`;
               tunnel3d.push({ at: tunnelAt, v: ring, c: tunnel3d.length % 3 });
             }
             const life = (1400 - b * 500) / clamp(mood?.speed || 1, 0.5, 1.4), far = Math.hypot(vw, vh) * 0.62;
-            tunnel3d = tunnel3d.filter((r2) => now - r2.at < life);
-            for (const r2 of tunnel3d) {
-              const z = (now - r2.at) / life, d = R * 1.05 + (far - R) * z * z;
+            tunnel3d = tunnel3d.filter((r3) => now - r3.at < life);
+            for (const r3 of tunnel3d) {
+              const z = (now - r3.at) / life, d = R * 1.05 + (far - R) * z * z;
               ctx3.lineWidth = (1 + z * 5) * dpr;
-              ctx3.strokeStyle = rgba7(z < 0.15 ? mixRGB(pal[r2.c], WHITE2, 0.35) : pal[r2.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6)) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
+              ctx3.strokeStyle = rgba7(z < 0.15 ? mixRGB(pal[r3.c], WHITE2, 0.35) : pal[r3.c], (0.75 * (1 - z) * (0.5 + 0.5 * Math.min(1, z * 6)) * Math.min(1.2, 0.8 + 0.25 * glowK)).toFixed(3));
               const pt = (j) => {
-                const a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r2.v[j % 48] * 0.28 * V2.height);
+                const a = j / 48 * Math.PI * 2 - Math.PI / 2 + rot, rr = d * (1 + r3.v[j % 48] * 0.28 * V2.height);
                 return [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr];
               };
               let [x0, y0] = pt(0), [x1, y1] = pt(1);
@@ -40004,9 +40329,9 @@ Probe-FX: ${pfx}`;
             for (let i = 0; i < N2; i++) {
               const arm = i % 3, f = i / N2, a = arm * (Math.PI * 2 / 3) + f * Math.PI * 3 + tt * 0.18;
               const rr = R * 1.08 + f * maxLen * 2.6 + vals[i] * maxLen * 0.9;
-              const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r2 = (4.5 + vals[i] * 9 + (1 - f) * 3.5) * dpr;
+              const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr, r3 = (4.5 + vals[i] * 9 + (1 - f) * 3.5) * dpr;
               ctx3.globalAlpha = clamp((0.25 + vals[i] * 0.75) * (0.6 + 0.4 * Math.sin(tt * 3 + i)), 0, 1);
-              ctx3.drawImage(vizSprite(pal[arm]), x - r2, y - r2, r2 * 2, r2 * 2);
+              ctx3.drawImage(vizSprite(pal[arm]), x - r3, y - r3, r3 * 2, r3 * 2);
             }
             ctx3.globalAlpha = 1;
           } else if (V2.style === "mountains") {
@@ -40108,9 +40433,9 @@ Probe-FX: ${pfx}`;
             for (let i = 0; i < N2; i++) {
               const c2 = Math.cos(ang(i)), sn = Math.sin(ang(i)), e = tip(i);
               if (V2.style === "dots") {
-                const r2 = (2.2 + vals[i] * 2.6) * dpr;
-                body.moveTo(cx + c2 * e + r2, cy + sn * e);
-                body.arc(cx + c2 * e, cy + sn * e, r2, 0, Math.PI * 2);
+                const r3 = (2.2 + vals[i] * 2.6) * dpr;
+                body.moveTo(cx + c2 * e + r3, cy + sn * e);
+                body.arc(cx + c2 * e, cy + sn * e, r3, 0, Math.PI * 2);
               } else {
                 body.moveTo(cx + c2 * R, cy + sn * R);
                 body.lineTo(cx + c2 * e, cy + sn * e);

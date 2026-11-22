@@ -10,9 +10,11 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.29.0] – 2026-11-22
+
 ### Added
 
-- "Playful style" for lyrics (Settings → Lyrics, off by default). The lyrics play along with the song: loud words grow bolder, quiet ones thinner, shouted lines turn to capitals, held notes stretch, words land on the beat and the chorus bounces with it. Words come alive where they fit (fire flickers, rain drips, a heart beats, "fly" rises, "fall" falls). Backing vocals sit small and tilted beside the line, and duet voices each get their own side. Verses are compact, the chorus is large and centred, the bridge is set differently, and the first line after a drop makes an entrance. Works in Lyrics, Mix and Party. With "Calm", "No flashes" or reduced motion only size and weight change.
+- "Playful style" for lyrics (Settings → Lyrics, off by default): kinetic typography that plays along with the song. Each line picks one of 14 entrances – rise, drop, split, a blown-up key word, letter wave, caps stomp, rap typewriter, ballad glow, beat punch, drop collision, tilted bridge, chorus slam and more – from section, energy, tempo, mood and repetition, so repeated choruses look different each time. Words react to their meaning in 45 languages (fire flickers, rain drips, cold shivers, hearts beat, "fall" falls, "boom" bursts, money glints), never when negated; insults and curses are never enlarged. Backing vocals sit small and tilted beside the line, duet voices get their own side. Works in Lyrics, Mix and Party; it only animates position, size and opacity, and with "Calm", "No flashes" or reduced motion it stays still.
 - Party mode reacts to about 200 kinds of words in 45 languages: nightlife, money and luxury, movement, feelings as colour moods, places and times, and shouts the crowd answers.
 - Explicit lyrics (sex, insults, curses, drugs) are recognised and only ever answered with light and mood, never shown as text. The new "Explicit lyrics" setting offers light & mood, colour only, or ignore, and is off while Spotify's explicit-content filter is on.
 - Party genre detection knows every genre name Spotify, MusicBrainz, Apple Music and Deezer use – about 13,700 names, including localised Apple and German Deezer names. Each lands on its closest style, at worst its family.
@@ -45,6 +47,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 ### Fixed
 
+- Search: the suggestions under the search field (recent searches, results) were covered by the page behind them and looked see-through. The top bar now sits above the page.
+- Party without lyrics: "Loading lyrics…" was cut in half and could slide under the title when the controls hid. It now sits fully in its own row under the controls and moves along with the title.
 - Library: hovering the collapsed library button showed both icons on top of each other.
 - Party: no more stutter or freezing between the lyrics search and "no lyrics". Songs without Spotify analysis get their beat as soon as a tempo is known, light plans are computed in idle time, and better beat data blends in over 1.5 s.
 - Lyrics: "Loading…" fades out before the layout switches, the layout changes at most once per song, and a late "instrumental" result no longer replaces lyrics that are already shown.
