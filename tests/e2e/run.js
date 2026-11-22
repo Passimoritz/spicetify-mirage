@@ -2460,6 +2460,56 @@ CASES.push(["update-note", updateNote]);
 // 1.27 views
 CASES.push(["viz-styles", vizStyles], ["album-view", albumView], ["clock-view", clockView]);
 
+/* ---- Verspielter Liedtext-Stil: Inszenierungen und Wortbilder im echten Aufbau, Bewegung nur transform/opacity */
+async function playfulLyrics() {
+  const setKey = async (k, on) => {
+    await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
+    await until(() => T.js(`!!document.querySelector('.mirage-settings input[data-key="${k}"]')`), 2000, `playful: Schalter ${k}`);
+    const was = await T.js(`document.querySelector('.mirage-settings input[data-key="${k}"]').checked`);
+    if (was !== on) await T.js(`document.querySelector('.mirage-settings input[data-key="${k}"]').click(); 1`);
+    await T.js(`document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); 1`);
+    return was;
+  };
+  const state = () => T.js(`(() => {
+    const box = document.querySelector("${IM} .m-im-lyrics"), lines = [...box.querySelectorAll(".m-im-line")];
+    const t = {}, cues = {};
+    for (const l of lines) { const c = [...l.classList].find((x) => x.startsWith("is-t-")); if (c) t[c.slice(5)] = (t[c.slice(5)] || 0) + 1; }
+    for (const w of box.querySelectorAll(".m-w")) for (const c of w.classList) if (c.startsWith("is-c-")) cues[c.slice(5)] = (cues[c.slice(5)] || 0) + 1;
+    // laufende Animationen im Liedtext und welche Eigenschaften sie bewegen (Überblendungen nur an Wörtern und
+    // Buchstaben – die Farb-Überblendung der Zeilen gehört zum Grund-Liedtext, nicht zum Stil)
+    const anims = document.getAnimations().filter((a) => a.playState === "running" && box.contains(a.effect?.target) && (a.animationName || a.effect.target.matches?.(".m-w, .m-ch")));
+    const props = new Set();
+    for (const a of anims) for (const k of a.effect.getKeyframes()) for (const p of Object.keys(k)) if (!["offset", "easing", "composite", "computedOffset"].includes(p)) props.add(p);
+    return { on: box.classList.contains("is-playful"), n: lines.length, t, cues, running: anims.length, props: [...props], letters: box.querySelectorAll(".m-ch").length };
+  })()`);
+  const kar = await setKey("karaoke", true);
+  await setKey("lyrPlayful", true);
+  try {
+    for (const m of ["lyrics", "party"]) {
+      await toMode(m);
+      const s = await until(async () => { const x = await state(); return x.on && Object.keys(x.t).length >= 4 && x; }, 8000 * SLOW, `playful ${m}: Stil mit Inszenierungen`);
+      ok(Object.keys(s.cues).length >= 2, `playful ${m}: Wortbilder im Fake-Liedtext (Feuer, Regen, Herz …): ${JSON.stringify(s.cues)}`);
+      // ein paar Sekunden zusehen: nie mehr als eine Handvoll gleichzeitiger Animationen, nur erlaubte Eigenschaften
+      let most = 0;
+      for (let k = 0; k < 8; k++) {
+        const x = await state();
+        most = Math.max(most, x.running);
+        for (const p of x.props) ok(["transform", "translate", "scale", "rotate", "opacity"].includes(p), `playful ${m}: bewegt „${p}“`);
+        if (SHOTS) await T.shot(path.join(SHOTS, `playful-${m}-${k}.png`));
+        await wait(400);
+      }
+      ok(most <= 40, `playful ${m}: ${most} Animationen gleichzeitig`);
+      console.log(`  playful ${m}: ${s.n} Zeilen, Inszenierungen ${JSON.stringify(s.t)}, Wortbilder ${JSON.stringify(s.cues)}, Buchstaben ${s.letters}, höchstens ${most} Animationen`);
+      await T.shot(path.join(OUT, `playful-${m}.png`));
+      if (SHOTS) await T.shot(path.join(SHOTS, `playful-${m}.png`));
+    }
+  } finally {
+    await setKey("lyrPlayful", false);
+    await setKey("karaoke", kar);
+  }
+}
+CASES.push(["playful", playfulLyrics]);
+
 /* ---- 1.27 polish: Ansichten hämmern, Ebene hämmern, Kopfzeile in kleinen Fenstern */
 async function imPolish() {
   const st = () => T.js(`(() => {

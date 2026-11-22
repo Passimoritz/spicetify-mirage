@@ -1,19 +1,28 @@
 /* ---------------------------------------------------------------- Verspielter Liedtext-Stil */
-// Option „Verspielter Stil“ (cfg.lyrPlayful, Standard aus): der Liedtext spielt mit dem Song. Laute, betonte Wörter
-// werden größer und kräftiger, leise und gehauchte dünner und blasser; gerufene Zeilen stehen in Großbuchstaben;
-// ein gehaltener Ton dehnt sein Wort, solange er klingt; Wörter landen auf dem Schlag, der Refrain wippt im Takt;
-// Wortbilder bekommen eine kleine Bewegung (Feuer flackert, Regen tropft, das Herz pocht …); Hintergrundgesang steht
-// klein und schräg daneben, Duett-Stimmen auf ihrer Seite.
+// Option „Verspielter Stil“ (cfg.lyrPlayful, Standard aus): der Liedtext spielt mit dem Song wie in einem guten
+// Lyric-Video. Jede Zeile bekommt eine bewusst gewählte Inszenierung („Treatment“) aus einem großen Satz – Wörter
+// steigen einzeln auf, fallen herein, kommen von beiden Seiten, prallen beim Drop zusammen, ein Schlüsselwort steht
+// riesig zwischen kleinen, Buchstaben laufen als Welle, Rufe stehen eng in Großbuchstaben, schneller Rap tippt sich
+// herein, Balladen-Zeilen glimmen langsam auf … Gewählt wird aus Teil des Songs, Energie, Tempo und Silbendichte,
+// Zeilenlänge, Stimmung, Stelle im Teil (die erste Refrain-Zeile trifft am härtesten) und Wiederholung (eine
+// wiederholte Zeile wechselt ihre Inszenierung) – mit Rhythmus, damit nicht zwei Zeilen hintereinander gleich spielen.
+// Was gesungen wird, zählt: der Wortsinn (wordsense.js – Verneinung, Redewendungen, Stimmung, Sicherheit) über das
+// Wörterbuch (lexicon.js, rund 200 Begriffe in 45 Sprachen) gibt Wörtern eine passende Bewegung (Feuer flackert,
+// Regen tropft, Kälte zittert, das Herz schlägt, „fly“ hebt ab, „fall“ fällt, „boom“ zerspringt in Buchstaben …).
+// Betonung: Lautheit der Analyse, sonst Dauer, Inhaltswörter, Zeilenende, Reime und Hook-Wörter.
 //
 // Hier steht nur die Entscheidung – einmal je Song (und noch einmal, wenn die Analyse nachkommt), nie im Bild:
-// planPlayful() rechnet aus Wortzeiten, Lautheit (Spotify-Segmente: loudness_max) und Takt Klassen und CSS-Variablen,
-// paintPlayful() setzt sie an die Zeilen. Bewegt wird ausschließlich per CSS (transform/opacity, Mirage/user.css);
-// „Ruhig“, „Keine Blitze“, „Leicht“ und „weniger Bewegung“ regelt das Stylesheet. Testbar: tests/unit/lyricstyle.test.js.
-import { planSong } from "./director.js";
-import { matchAny, detectLangs } from "./words.js";
+// planPlayful() rechnet Klassen und CSS-Variablen, paintPlayful() setzt sie an Zeilen und Wörter. Bewegt wird
+// ausschließlich per CSS (transform/opacity, Mirage/user.css, Block „i-playful“); „Ruhig“, „Keine Blitze“, „Leicht“
+// und „weniger Bewegung“ regelt das Stylesheet. Testbar: tests/unit/lyricstyle.test.js.
+import { planSong as planParts } from "./director.js";
+import { matchAny, detectSong } from "./words.js";
+import { senseLine, planSong as planSense, EXPLICIT } from "./wordsense.js";
+import { lineMood } from "./mood.js";
 import { bgFlags } from "./lyricvoices.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const r2 = (v) => Math.round(v * 100) / 100;
 const median = (arr) => {
   if (!arr.length) return 0;
   const s = [...arr].sort((a, b) => a - b);
@@ -30,6 +39,12 @@ function seek(arr, at, key) {
     } else hi = m - 1;
   }
   return r;
+}
+// fester Zufall aus dem Text: dieselbe Zeile bekommt bei jedem Aufbau dieselbe Wahl (0 … 1)
+function hash01(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return ((h >>> 0) % 10007) / 10007;
 }
 
 /* ---- Lautheit eines Worts: das Lauteste der Analyse zwischen Anfang und Ende (Millisekunden) */
@@ -57,9 +72,35 @@ const isCaps = (s) => {
 };
 // gehaucht/geflüstert: Füllsilben ohne Inhalt („mm“, „ah“, „ooh“) sind leise Ausschmückung
 const BREATH = /^[(（]?(?:m+|h?m+|a+h+|o+h+|o+|u+h+|ha+|hah|shh+|sh+)[)）,.…]*$/i;
+// Funktionswörter der häufigsten Liedsprachen: tragen nie die Betonung (ohne Analyse die wichtigste Regel)
+const FN = new Set(
+  ("i me my mine you your you're we us our they them he she it it's its a an the and or but so to of in on at for with from " +
+    "is are am was were be been do don't does did can can't will won't would just like that this these those what when where " +
+    "i'm i'll i've gonna wanna gotta got get oh yeah ya na la no not all up down out if as by now then there here " +
+    "ich du er sie es wir ihr mich dich mir dir mein dein und oder aber so zu von in im an am auf für mit ist bin bist sind war " +
+    "der die das den dem des ein eine einen nicht kein noch nur wie was wenn wo da ja " +
+    "yo tu él ella nosotros me te se mi tu y o pero que de en a el la los las un una es soy eres por para con no lo le " +
+    "je tu il elle nous vous me te moi toi mon ma mes et ou mais que de du des le la les un une est suis pas en au " +
+    "io tu lui lei noi mi ti il lo gli le e o ma che di da in con non è sono un una per eu você ele ela nós o os um uma é não com")
+    .split(" "),
+);
+const TOKW = /[\p{L}\p{M}\p{N}'’]+/gu;
+const bare = (s) => String(s || "").toLocaleLowerCase().replace(/[^\p{L}\p{M}\p{N}'’]+/gu, "").replace(/’/g, "'");
+const isContent = (s) => {
+  const w = bare(s);
+  return [...w].length >= 3 && !FN.has(w) && !BREATH.test(w);
+};
+// Reim am Zeilenende: die letzten zwei, drei Buchstaben gleich (ohne das Wort selbst)
+export function rhymes(a, b) {
+  const x = bare(a), y = bare(b);
+  if (!x || !y || x === y || x.length < 3 || y.length < 3) return false;
+  const n = x.length >= 5 && y.length >= 5 ? 3 : 2;
+  return x.slice(-n) === y.slice(-n);
+}
 
-// words: [{ text, a, b, est?, bg? }] einer Zeile. o.segs/o.avg aus der Analyse (fehlen sie: nur Schreibweise und Dauer).
-// → [{ e: -1..1 (leise … laut), cls: "is-p-loud" | "is-p-soft" | "", z: Größe 0.88..1.16 }]
+// words: [{ text, a, b, est?, bg? }] einer Zeile. o.segs/o.avg aus der Analyse; fehlen sie, betonen Dauer,
+// Inhaltswörter, Zeilenende (o.rhyme: das letzte Wort reimt sich), Hook-Wörter (o.hook: Set) und Schreibweise.
+// o.no: Set von Wortstellen, die nie wachsen (derbe Wörter). → [{ e: -1..1 (leise … laut), cls, z: Größe 0.84..1.3 }]
 export function emphasis(words, o = {}) {
   const W = words || [];
   if (!W.length) return [];
@@ -69,14 +110,22 @@ export function emphasis(words, o = {}) {
   const lineMed = median(known), avg = Number.isFinite(o.avg) ? o.avg : lineMed;
   const timed = W.filter((w) => !w.est && w.b > w.a);
   const dMed = median(timed.map((w) => w.b - w.a)) || 1;
+  // ohne Lautheit tragen die Faustregeln mehr Gewicht
+  const fb = known.length ? 0.5 : 1;
+  const last = W.length - 1;
   const raw = W.map((w, k) => {
     let e = 0;
     if (L[k] != null) e += 0.6 * ((L[k] - lineMed) / 4) + 0.4 * ((L[k] - avg) / 6);
     // betonte Silben werden länger gesungen
-    if (!w.est && w.b > w.a) e += 0.25 * clamp((w.b - w.a) / dMed - 1, -1, 1.5);
+    if (!w.est && w.b > w.a) e += 0.3 * clamp((w.b - w.a) / dMed - 1, -1, 1.5);
     const tx = String(w.text || "");
+    if (isContent(tx)) e += 0.3 * fb;
+    else e -= 0.12 * fb;
+    if (k === last && W.length >= 3 && isContent(tx)) e += (o.rhyme ? 0.36 : 0.2) * fb;
+    if (o.hook?.has(bare(tx))) e += 0.24 * fb;
     if (isCaps(tx) || /!\s*[)）]?$/.test(tx)) e = Math.max(e, 0.8);
     if (w.bg || BREATH.test(tx)) e = Math.min(e, -0.6);
+    if (o.no?.has(k)) e = Math.min(e, 0);
     return clamp(e, -1, 1);
   });
   // höchstens ein Drittel einer Zeile ist „laut“ (sonst ist nichts mehr betont) – die stärksten bleiben
@@ -84,8 +133,8 @@ export function emphasis(words, o = {}) {
   const loudest = raw.map((e, k) => [e, k]).filter(([e]) => e >= 0.45).sort((x, y) => y[0] - x[0]).slice(0, room).map(([, k]) => k);
   return raw.map((e, k) => {
     const loud = loudest.includes(k), soft = e <= -0.45;
-    const z = loud ? 1 + 0.16 * e : soft ? 1 + 0.12 * e : 1;
-    return { e: Math.round(e * 100) / 100, cls: loud ? "is-p-loud" : soft ? "is-p-soft" : "", z: Math.round(clamp(z, 0.88, 1.16) * 100) / 100 };
+    const z = loud ? 1 + 0.3 * e : soft ? 1 + 0.16 * e : 1;
+    return { e: r2(e), cls: loud ? "is-p-loud" : soft ? "is-p-soft" : "", z: r2(clamp(z, 0.84, 1.3)) };
   });
 }
 
@@ -154,7 +203,7 @@ export function onBeat(a, beats, tol = 90) {
   const near = [beats[k], beats[k + 1]].filter(Boolean).map((b) => Math.abs(b.t * 1000 - a));
   return near.length > 0 && Math.min(...near) <= tol;
 }
-// Für das Wippen per CSS-Animation: Länge eines Schlags und wie weit der jetzige schon zurückliegt.
+// Für Wippen und Schlag-Stoß per CSS-Animation: Länge eines Schlags und wie weit der jetzige schon zurückliegt.
 // Einmal je Zeilenwechsel gesetzt (animation-duration/-delay) – kein Rechnen im Bild.
 export function beatPhase(beats, sec) {
   if (!beats?.length) return null;
@@ -165,73 +214,286 @@ export function beatPhase(beats, sec) {
   return { p: Math.round(p), d: -Math.round((sec - beats[k].t) * 1000) };
 }
 
-/* ---- Wortbilder: Begriff (words.js/lexicon) → kleine Bewegung */
-const CUE = {
-  fire: "flicker", devil: "flicker",
-  rain: "drip", tears: "drip", storm: "drip",
-  heart: "pulse", love: "pulse", kiss: "pulse", heartbreak: "pulse",
-  fly: "rise", bird: "rise", butterfly: "rise", angel: "rise", heaven: "rise", sky: "rise", rocket: "rise", space: "rise",
-  star: "twinkle", diamond: "twinkle", gold: "twinkle", magic: "twinkle",
-  cold: "shiver", snow: "shiver",
-};
-// Was das Wörterbuch (noch) nicht kennt: Fallen und Steigen in den häufigsten Sprachen
-const EXTRA = [
-  [/^(?:fall|falls|falling|fallin'?|fell|fallen|sink|sinking|drown|drowning|falle|fällt|fiel|fielen|sinke|sinken|caer|caigo|cae|caes|caída|tomber|tombe|tombé|cadere|cado|cair|caio)$/iu, "fall"],
-  [/^(?:high|higher|highest|rise|rising|risin'?|hoch|höher|steigen|steig|alto|alta|arriba|haut|subir)$/iu, "rise"],
-];
-export const cueOf = (concept) => CUE[concept] || "";
-const TOKW = /[\p{L}\p{M}'’]+/gu;
+/* ---- Silben: grob aus Vokalgruppen (Schriften ohne Vokalzeichen: je Zeichen eine) */
+const VOW = /[aeiouyäöüáéíóúàèìòùâêîôûãõœæøåëïÿ]+/giu;
+export function syllables(text) {
+  let n = 0;
+  for (const m of String(text || "").matchAll(TOKW)) {
+    const w = m[0];
+    if (/[\p{Script=Latin}]/u.test(w)) n += Math.max(1, (w.match(VOW) || []).length - (/[^aeiou]e$/i.test(w) && w.length > 3 ? 1 : 0));
+    else if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(w)) n += [...w].length;
+    else n += Math.max(1, Math.round([...w].length / 2.5));
+  }
+  return n;
+}
 
-// Die eine Stelle, an der Wortbedeutung gesucht wird: nutzt die Treffer von words.js (Wörterbuch, Sprache aus dem
-// Text) – verbessert jemand dort das Erkennen (Verneinung, Zusammenhang), kommt es hier von selbst an.
-// → (text) => [{ at, len, cue }]
-export function cueMatcher(lines, lexicon) {
-  let langs = null;
-  return (text) => {
-    const s = String(text || "");
-    const out = [];
+/* ---- Wortbilder: Begriff (wordsense.js über lexicon.js) → Bewegung des Worts (CSS-Klasse is-c-<name>) */
+// Je Bewegung die Begriffe, die sie auslösen. Begriffe ohne Eintrag bleiben still (lieber nichts als falsch).
+const EFFECTS = {
+  flame: "fire devil dragon candle", // Flackern mit warmem Schein
+  heat: "sun summer desert beach tropical sweat island", // Hitzeflimmern
+  drip: "rain tears water", // eintauchen, ein Tropfen löst sich
+  wave: "ocean sail yacht sing music sway rainbow guitar bells", // Welle durch die Buchstaben
+  jolt: "storm lightning earthquake electric", // Ruck mit Lichtblitz
+  shiver: "cold snow fear", // Zittern, frostiger Schein
+  beat: "heart heartbeat love kiss", // Herzschlag (doppelt)
+  crack: "heartbreak pain goodbye", // knickt ein und rutscht ab
+  float: "fly bird butterfly angel heaven sky rocket space jet freedom rise hallelujah pray", // hebt ab
+  burst: "boom bass fireworks drums", // zerspringt in Buchstaben und fügt sich wieder
+  spin: "spin crazy", // dreht sich einmal
+  glint: "money gold diamond rich million bling crown sparkle luxury vip star champagne silver mansion flex payday christmas neon laser", // Glanz
+  dim: "dark black midnight blackout lonely lost moon", // dunkelt ab (nicht „night“: steht in fast jedem Lied)
+  shine: "light sunrise morning wakeup hope alive smile happy", // hellt auf
+  shake: "shake anger wild war beast monster hype", // bebt (auch die Rufe an die Menge: „scream“, „make some noise“)
+  hush: "silence breathe sleep", // wird klein und leise
+  bounce: "dance move jump bounce hips party clap stomp getup handsup turnup dancefloor club weekend birthday", // hüpft im Takt
+  tick: "time", // tickt wie ein Zeiger
+  drift: "dream magic smoke fog ghost wind memory longing", // schwebt träge
+  dash: "drive run highway supercar train", // schießt schräg herein
+  power: "strong hero legend victory pride boss", // wächst und steht
+  droop: "sad", // sackt ab
+  bloom: "flower rose spring wedding", // blüht auf
+  sultry: "sexy touch body", // langsames, laszives Wiegen
+};
+const CUE = {};
+for (const [fx, list] of Object.entries(EFFECTS)) for (const c of list.split(" ")) CUE[c] = fx;
+// Was das Wörterbuch nicht kennt: Fallen, Steigen, Schreien, Flüstern, Anhalten, Uhr, Explodieren, Drehen –
+// als Wortlisten je Sprache. Sie laufen durch denselben Wortsinn (Verneinung: „don't stop“ hält nicht an).
+const EXTRA = {
+  fall: {
+    en: "fall falls falling fallin fell fallen sink sinking sank drown drowning",
+    de: "fallen falle fällt fiel fielen sinken sinke sinkt versinken ertrinken",
+    es: "caer caigo cae caes caída caemos hundo hundirme",
+    fr: "tomber tombe tombé tombes tombent chute coule couler",
+    it: "cadere cado cade caduta affondo",
+    pt: "cair caio cai caindo queda afundar",
+  },
+  float: { en: "high higher highest rise rising risin", de: "hoch höher steigen steig empor", es: "alto arriba subir", fr: "haut monter", it: "salire", pt: "subir" },
+  shake: {
+    en: "scream screaming screamin shout shouting yell yelling loud louder",
+    de: "schrei schreien schreie laut lauter brüll brüllen",
+    es: "grita gritar grito",
+    fr: "crier crie cri hurler hurle",
+    it: "urlare urlo gridare grido",
+    pt: "gritar grito grita",
+  },
+  hush: {
+    en: "whisper whispers whispering quiet quietly softly hush",
+    de: "flüster flüstern flüstere leise",
+    es: "susurro susurrar susurra",
+    fr: "murmure murmurer chuchote",
+    it: "sussurro sussurrare",
+    pt: "sussurro sussurrar",
+  },
+  halt: { en: "stop stopped stopping freeze frozen", de: "stopp anhalten erstarrt", es: "detente parar", fr: "arrête arrêter", it: "fermati fermare", pt: "pare parar" },
+  tick: { en: "clock clocks tick tock ticking", de: "uhr ticken tick tack", es: "reloj", fr: "horloge", it: "orologio", pt: "relógio" },
+  burst: { en: "explode exploding explodes bang", de: "explodieren explodiert knall knallt", es: "explota explotar", fr: "explose exploser", it: "esplodere esplode", pt: "explodir explode" },
+  spin: { en: "round spinning circles", de: "dreh drehen dreht kreisen", es: "vueltas girar", fr: "tourne tourner", it: "girare gira", pt: "girar gira" },
+};
+// gebrochenes Herz als Wortgruppe, die das Wörterbuch nur als „heart“ kennt: knickt ein statt zu schlagen
+const BROKEN = /\b(?:br(?:oke|eak|eaks|eaking|oken)|tore|rip(?:ped)?|shatter(?:ed)?) (?:my|your|his|her|our|this) heart\b|(?:brach|brichst|bricht|gebrochen\w*) (?:mein|dein|sein|ihr)\w* herz|herz\w* (?:gebrochen|zerbrochen)/iu;
+const XIDX = new Map();
+for (const [fx, byLang] of Object.entries(EXTRA)) for (const [lang, words] of Object.entries(byLang)) for (const w of words.split(" ")) if (!XIDX.has(w)) XIDX.set(w, [fx, lang]);
+// Wichtigkeit, wenn eine Zeile mehrere Treffer hat (zwei Bilder je Zeile höchstens)
+const FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4 };
+// laute Bewegungen in einem traurigen Lied / an einer leisen Stelle: die sanfte Schwester
+const SOFTEN = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift" };
+// Bewegungen mit Schein (Pseudo-Element mit Deckkraft – nie text-shadow im Bild)
+const GLOWS = new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift"]);
+// Bewegungen, die das Wort in Buchstaben zerlegen
+const LETTERS = new Set(["burst", "wave"]);
+export const cueOf = (concept) => CUE[concept] || "";
+
+// Treffer einer Zeile aus den Zusatzlisten im Format von words.js (für senseLine)
+function extraHits(text) {
+  const out = [];
+  let ti = 0;
+  for (const m of String(text || "").matchAll(TOKW)) {
+    const w = m[0].toLocaleLowerCase().replace(/[’']/g, "'").replace(/'$/, "");
+    const x = XIDX.get(w);
+    if (x) out.push({ c: "x:" + x[0], at: m.index, len: m[0].length, raw: m[0], how: "exact", lang: x[1], ti, tn: 1 });
+    ti++;
+  }
+  return out;
+}
+
+// Die eine Stelle, an der Wortbedeutung gesucht wird: Wörterbuch-Treffer (words.js, Sprache aus dem ganzen Text)
+// plus Zusatzlisten, gesiebt vom Wortsinn (wordsense.js: Verneinung, Redewendungen, Sicherheit).
+// o: { neg (lexicon.js), explicit: "on" | "soft" | "off" }. → (text, soft?) => [{ at, len, cue, c, conf }]
+export function cueMatcher(lines, lexicon, o = {}) {
+  let song = null;
+  const texts = (lines || []).map((l) => String(l?.text || ""));
+  const hitsOf = (s) => {
+    let hits = [];
     if (lexicon) {
       try {
-        langs ??= detectLangs((lines || []).map((l) => String(l?.text || "")), lexicon);
-        for (const m of matchAny(s, langs, lexicon)) if (CUE[m.c]) out.push({ at: m.at, len: m.len, cue: CUE[m.c] });
+        song ??= detectSong(texts, lexicon);
+        hits = matchAny(s, song.langs, lexicon);
       } catch {}
     }
-    for (const m of s.matchAll(TOKW)) {
-      if (out.some((o) => m.index < o.at + o.len && m.index + m[0].length > o.at)) continue;
-      const hit = EXTRA.find(([re]) => re.test(m[0]));
-      if (hit) out.push({ at: m.index, len: m[0].length, cue: hit[1] });
-    }
-    return out.sort((x, y) => x.at - y.at);
+    return hits.concat(extraHits(s));
   };
+  const fn = (text, soft = false) => {
+    const s = String(text || "");
+    let cands = [];
+    try {
+      cands = senseLine(s, hitsOf(s), { neg: o.neg, main: song?.main });
+    } catch {}
+    const out = [];
+    for (const x of cands) {
+      let cue = x.c.startsWith("x:") ? x.c.slice(2) : CUE[x.c];
+      if (x.c === "heart" && BROKEN.test(s)) cue = "crack";
+      if (EXPLICIT.has(x.c)) cue = x.c === "sexy" && o.explicit === "on" ? "sultry" : "";
+      if (!cue) continue;
+      if (soft && SOFTEN[cue]) cue = SOFTEN[cue];
+      out.push({ at: x.at, len: x.len, cue, c: x.c, conf: x.conf });
+    }
+    return out.sort((a, b) => a.at - b.at);
+  };
+  fn.hitsOf = hitsOf;
+  fn.song = () => song;
+  return fn;
 }
+// derbe Treffer einer Zeile (Stellen), auch wenn sie keine Bewegung bekommen: sie wachsen nie
+function explicitSpans(text, hitsOf) {
+  const out = [];
+  try {
+    for (const h of hitsOf(text)) if (EXPLICIT.has(h.c)) out.push([h.at, h.at + h.len]);
+  } catch {}
+  return out;
+}
+
+/* ---- Inszenierungen je Zeile */
+// plain   ruhig, nur Betonung (Atempause zwischen den großen Auftritten)
+// rise    Wörter steigen einzeln von unten auf, genau auf ihrem Einsatz
+// drop    Wörter fallen von oben herein und federn nach
+// stagger Wörter treppauf/treppab versetzt und gekippt, rasten beim Singen ein
+// key     ein Schlüsselwort 1,6–2,4× groß, der Rest klein
+// wave    das Schlüsselwort läuft als Welle durch seine Buchstaben
+// split   erste Hälfte kommt von links, zweite von rechts
+// caps    Ruf: eng gesetzte Großbuchstaben, jedes Wort ein Stoß
+// type    schneller Rap: Wörter tippen sich hart herein
+// glow    Ballade: Wörter glimmen langsam auf
+// punch   die Zeile stößt auf jedem Schlag
+// collide Wörter weit auseinander, prallen beim Einsatz zusammen (Drop)
+// tilt    Bridge: die Zeile steht schräg, die Wörter wiegen sich
+// slam    die Zeile knallt groß herein (erste Zeile eines Refrains)
+export const TREATMENTS = ["plain", "rise", "drop", "stagger", "key", "wave", "split", "caps", "type", "glow", "punch", "collide", "tilt", "slam"];
+// Bewegung auch ohne Wortzeiten sichtbar? (Inszenierungen, die nur auf .is-sung reagieren, brauchen Wörter)
+const NEEDS_WORDS = new Set(["rise", "drop", "stagger", "split", "type", "glow", "collide", "key", "wave"]);
+
+// Merkmale → Punkte je Inszenierung (ohne Verlauf). f: siehe planPlayful
+function scoreTreatments(f) {
+  const chorus = f.kind === "chorus" || f.kind === "drop";
+  const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
+  const E = f.energy, n = f.n;
+  const s = {
+    plain: 0.35 + (quiet ? 0.5 : 0) + (f.kind === "verse" ? 0.2 : 0) - (chorus ? 0.6 : 0),
+    rise: 0.9 + (f.kind === "verse" || f.kind === "pre" ? 0.4 : 0) + (f.ballad ? 0.2 : 0) + (f.mood > 0.3 ? 0.2 : 0),
+    drop: 0.7 + (chorus ? 0.5 : 0) + (E > 0.3 ? 0.4 : 0) + (f.mood < -0.3 ? 0.2 : 0),
+    stagger: 0.5 + (n >= 3 && n <= 7 ? 0.5 : -0.6) + (f.kind === "verse" ? 0.3 : 0),
+    key: (f.keyStrength >= 0.55 ? 0.55 + f.keyStrength * 0.6 : -0.4) + (n >= 3 && n <= 9 ? 0.3 : -0.6) + (chorus ? 0.2 : 0),
+    wave: (f.keyLetters ? 0.6 : -2) + (f.ballad ? 0.4 : 0) + (f.mood > 0.2 ? 0.3 : 0) + (f.cueLetters ? 0.6 : 0),
+    split: 0.4 + (n >= 4 && n <= 10 ? 0.6 : -1) + (chorus || f.kind === "pre" ? 0.3 : 0),
+    caps: (f.shout ? 2.2 : -0.6) + (E > 0.5 ? 0.6 : 0) + (n <= 6 ? 0.3 : -0.5),
+    type: (f.rap ? 2.2 : -0.7) + (n >= 8 ? 0.4 : 0) + (f.rate > 4.2 ? 0.5 : 0),
+    glow: (f.ballad ? 1.4 : 0) + (f.mood < -0.2 ? 0.4 : 0) + (quiet ? 0.7 : 0) + (E < -0.2 ? 0.4 : 0) - (chorus && E > 0.3 ? 0.8 : 0),
+    punch: (chorus && f.beats ? 0.8 : -1) + (E > 0.3 ? 0.6 : 0) + (f.rap ? -0.5 : 0),
+    collide: (f.dropIn ? 2.4 : -0.8) + (f.first && chorus && E > 0.4 ? 0.9 : 0) + (n >= 3 && n <= 8 ? 0.2 : -0.6),
+    tilt: (f.kind === "bridge" ? 1.7 : -0.5) + (f.mood < -0.3 ? 0.2 : 0),
+    slam: (f.first && chorus ? 2.0 : -1.2) + (E > 0.4 ? 0.4 : 0) + (n <= 7 ? 0.2 : -0.5),
+  };
+  if (!f.words) for (const t of NEEDS_WORDS) s[t] -= 3;
+  // sehr lange Zeilen: lieber ruhig setzen als zappeln
+  if (n > 12) for (const t of ["stagger", "split", "collide", "key", "slam"]) s[t] -= 1.2;
+  return s;
+}
+// Verlauf: keine zwei gleichen hintereinander, keine Inszenierung über ~30 % des Songs, eine wiederholte Zeile
+// wechselt (die erste Refrain-Zeile trifft trotzdem jedes Mal hart – nur nicht jedes Mal gleich)
+export function pickTreatments(feats) {
+  const out = [], count = {}, byKey = new Map();
+  let n = 0;
+  for (let i = 0; i < feats.length; i++) {
+    const f = feats[i];
+    if (!f) {
+      out.push("");
+      continue;
+    }
+    const s = scoreTreatments(f);
+    const prev = out.filter(Boolean);
+    const p1 = prev[prev.length - 1], p2 = prev[prev.length - 2];
+    const used = byKey.get(f.key) || [];
+    let best = "plain", bv = -Infinity;
+    for (const t of TREATMENTS) {
+      let v = s[t] + hash01(f.key + "|" + t + "|" + used.length) * 0.55;
+      if (t === p1) v -= 1.8;
+      if (t === p2) v -= 0.6;
+      const share = n >= 6 ? (count[t] || 0) / n : 0;
+      if (share > 0.22) v -= (share - 0.22) * 9;
+      if (used.includes(t)) v -= 1.3 + 0.4 * used.filter((u) => u === t).length;
+      if (v > bv) (bv = v), (best = t);
+    }
+    out.push(best);
+    count[best] = (count[best] || 0) + 1;
+    n++;
+    byKey.set(f.key, [...used, best]);
+  }
+  return out;
+}
+
+/* ---- Schlüsselwort der Zeile: Wortbild > Betonung > Inhaltswort am Ende; nie derb, nie Hintergrund */
+function keyWord(ws, em, cueAt, no) {
+  let best = -1, bv = -Infinity;
+  ws.forEach((w, k) => {
+    if (w.bg || no.has(k) || !isContent(w.text)) return;
+    const len = [...bare(w.text)].length;
+    if (len > 12) return;
+    let v = em[k].e + (cueAt.has(k) ? 0.7 : 0) + (k === ws.length - 1 ? 0.1 : 0) + Math.min(0.2, len * 0.02);
+    if (v > bv) (bv = v), (best = k);
+  });
+  return { k: best, strength: best >= 0 ? clamp(bv, 0, 1.5) : 0 };
+}
+// Buchstaben-Zerlegung nur für einfache Schrift (keine Zeichen, die sich verbinden), höchstens 12 Zeichen
+const SPLITTABLE = /^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}'’!?.,-]{2,12}$/u;
+const canSplit = (s) => SPLITTABLE.test(String(s || "")) && !/\p{M}/u.test(String(s || "").normalize("NFC"));
 
 /* ---- Alles zusammen: einmal je Song */
 // lines: Zeilen ({ t, text, who?, bg? }), wordLists[i]: Wörter der Zeile i ({ text, a, b, est?, bg?, el? }) oder leer,
-// d: Analyse aus audio.js (oder null), o.lexicon: Wörterbuch (lexicon.js), o.parts: Teile (sonst aus planSong),
-// o.match: eigener Treffer-Sucher (Tests). → je Zeile { cls: [], vars: {}, words: [{ cls: [], vars: {} }] }
+// d: Analyse aus audio.js (oder null). o: { lexicon, neg (lexicon.js), explicit ("on"|"soft"|"off"), still (ohne
+// Bewegung: nur Größe, Stärke, Satz), parts/drops (statt aus der Regie), match (eigener Treffer-Sucher, Tests) }
+// → je Zeile { t: Inszenierung, cls: [], vars: {}, words: [{ cls: [], vars: {}, chars?, tx? }] }
 const planCache = new WeakMap();
 function partsOf(d) {
   if (!d?.beats?.length || d.synthetic) return { parts: null, drops: [] };
   if (planCache.has(d)) return planCache.get(d);
   let r = { parts: null, drops: [] };
   try {
-    const p = planSong(d, "pop", {});
+    const p = planParts(d, "pop", {});
     if (p) r = { parts: p.parts, drops: p.drops || [] };
   } catch {}
   planCache.set(d, r);
   return r;
 }
+const lineKey = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
 export function planPlayful(lines, wordLists, d, o = {}) {
   const L = lines || [];
   const real = d && !d.synthetic;
   const segs = real ? d.segs : null;
   const beats = d?.beats || null;
+  const still = !!o.still;
   const { parts, drops } = o.parts !== undefined ? { parts: o.parts, drops: o.drops || [] } : partsOf(d);
-  const match = o.match || cueMatcher(L, o.lexicon);
+  const match = o.match || cueMatcher(L, o.lexicon, { neg: o.neg, explicit: o.explicit || "on" });
+  const hitsOf = match.hitsOf || (() => []);
   // Wiederholungen (Refrain ohne Analyse) – wie die Hype-Zeilen in immersive.js
-  const key = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
   const seen = new Map();
-  for (const l of L) if (key(l.text).length > 6) seen.set(key(l.text), (seen.get(key(l.text)) || 0) + 1);
+  for (const l of L) if (lineKey(l.text).length > 6) seen.set(lineKey(l.text), (seen.get(lineKey(l.text)) || 0) + 1);
+  // Hook-Wörter: Inhaltswörter, die in wiederholten Zeilen oft stehen
+  const freq = new Map();
+  for (const l of L) {
+    if (!(seen.get(lineKey(l.text)) >= 2)) continue;
+    for (const m of String(l.text || "").matchAll(TOKW)) if (isContent(m[0])) freq.set(bare(m[0]), (freq.get(bare(m[0])) || 0) + 1);
+  }
+  const hook = new Set([...freq].filter(([, c]) => c >= 3).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([w]) => w));
   // Lautheits-Spitzen: ab dem 92. Perzentil der Zeilen-Spitzen „schreit“ der Song
   const peaks = L.map((l, i) => {
     const ws = wordLists?.[i];
@@ -240,6 +502,18 @@ export function planPlayful(lines, wordLists, d, o = {}) {
   });
   const known = peaks.filter((v) => v != null).sort((a, b) => a - b);
   const hi = known.length >= 8 ? Math.max(known[Math.floor(known.length * 0.92)], (d?.avg ?? -12) + 4) : null;
+  const pMed = known.length ? known[known.length >> 1] : null;
+  // Tempo aus dem Takt (für „Ballade“)
+  const bp = beats?.length > 8 ? median(beats.slice(1, 200).map((b, k) => b.t - beats[k].t).filter((x) => x > 0.25 && x < 1.5)) : 0;
+  const bpm = bp ? 60 / bp : 0;
+  // Stimmung und ruhige Stellen aus dem Wortsinn (wordsense.planSong: trauriges Lied → sanfte Antworten)
+  let soft = [];
+  try {
+    if (o.lexicon && !o.match) {
+      const sp = planSense(L.map((l) => ({ text: String(l.text || "") })), L.map((l) => hitsOf(String(l.text || ""))), { neg: o.neg, main: match.song?.()?.main });
+      soft = sp.map((p) => !!p?.soft);
+    }
+  } catch {}
   // gerufene Zeilen höchstens jede achte – sonst ist es kein Rufen mehr
   const maxShout = Math.max(1, Math.round(L.length / 8));
   let shouts = 0, adl = 0;
@@ -249,68 +523,190 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     const k = L.findIndex((l) => l.t >= dt * 1000 - 150 && String(l.text || "").trim() && l.text !== "♪");
     if (k >= 0 && L[k].t - dt * 1000 < 4000) dropIn.add(k);
   }
-  return L.map((l, i) => {
-    const cls = [], vars = {};
+
+  // 1. Merkmale je Zeile
+  let prevKind = null, prevEnd = -1e9;
+  const pre = L.map((l, i) => {
     const ws = wordLists?.[i] || [];
-    const kind = sectionKind(parts, l.t);
-    cls.push(sectionStyle(kind, { repeated: seen.get(key(l.text)) >= 2 }));
-    if (dropIn.has(i)) cls.push("is-p-drop");
-    const side = voiceSide(l.who);
-    if (side) cls.push(side);
-    const texts = ws.length ? ws.map((w) => w.text) : String(l.text || "").split(/\s+/).filter(Boolean);
-    if (l.bg || (texts.length && isAdlib(texts))) {
-      const p = adlibPose(adl++);
-      cls.push("is-p-adlib");
-      vars["--pr"] = p.rot + "deg";
-      vars["--px"] = p.dx + "em";
-    } else if (ws.some((w) => w.bg)) {
-      // Hintergrund mitten in der Zeile: nur die Neigung (die Wörter selbst tragen .is-bg)
-      vars["--pr"] = adlibPose(adl++).rot + "deg";
-    }
-    if (shouts < maxShout && !l.bg && isShout(l.text, peaks[i], hi)) {
-      cls.push("is-p-shout");
-      shouts++;
-    }
-    if (!ws.length) return { cls, vars, words: [] };
-    const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real });
-    const hold = heldNotes(ws);
-    // Wortbilder: die Zeile als Text, Treffer auf die Wörter zurückgelegt; höchstens zwei je Zeile
+    const text = String(l.text || "");
+    const texts = ws.length ? ws.map((w) => w.text) : text.split(/\s+/).filter(Boolean);
+    const adlib = !!l.bg || (texts.length > 0 && isAdlib(texts));
+    const repeated = seen.get(lineKey(text)) >= 2;
+    let kind = sectionKind(parts, l.t);
+    if (!kind) kind = repeated ? "chorus" : "verse";
+    else if ((kind === "verse" || kind === "pre") && repeated) kind = "chorus";
+    const shout = !l.bg && isShout(text, peaks[i], hi);
+    return { l, i, ws, text, texts, adlib, repeated, kind, shout };
+  });
+  const feats = pre.map((p) => {
+    const { l, i, ws, text, texts } = p;
+    if (p.adlib || !text.trim() || text === "♪") return null;
+    const next = L[i + 1]?.t;
+    const a = ws.length ? ws[0].a : l.t, b = ws.length ? ws[ws.length - 1].b : Math.min(next ?? l.t + 4000, l.t + 6000);
+    const secs = Math.max(0.4, (b - a) / 1000);
+    const rate = syllables(text) / secs;
+    const n = texts.length;
+    const rap = (rate >= 4.6 && n >= 7) || (rate >= 5.4 && n >= 5);
+    const ballad = !rap && (rate <= 2.4 || (bpm && bpm < 84));
+    let energy = { chorus: 0.4, drop: 0.7, pre: 0.15, verse: 0, bridge: -0.1, intro: -0.4, outro: -0.4, break: -0.5 }[p.kind] ?? 0;
+    if (peaks[i] != null && hi != null && pMed != null && hi > pMed) energy = 0.5 * energy + clamp((peaks[i] - pMed) / (hi - pMed), -1, 1);
+    if (p.shout) energy += 0.4;
+    const first = (p.kind !== prevKind && prevKind !== null) || l.t - prevEnd > 7000 || prevKind === null;
+    prevKind = p.kind;
+    prevEnd = Math.max(l.t, b);
+    const mood = lineMood(text)?.v ?? 0;
+    return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp(energy, -1, 1.2), shout: p.shout, first, mood, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, key: lineKey(text) || "#" + i };
+  });
+
+  // 2. Wörter: Betonung, Wortbilder, Schlüsselwort (vor der Wahl der Inszenierung: „key“/„wave“ brauchen sie)
+  const wordInfo = pre.map((p, i) => {
+    const ws = p.ws;
+    if (!ws.length) return null;
     const starts = [];
     let joined = "";
     for (const w of ws) {
       starts.push(joined.length);
       joined += String(w.text || "") + " ";
     }
+    const at = (pos) => seek(starts.map((x) => ({ at: x })), pos, "at");
+    // derbe Wörter wachsen nie (auch ohne eigene Bewegung)
+    const no = new Set();
+    for (const [s0, s1] of explicitSpans(joined, hitsOf)) for (let k = at(s0); k >= 0 && k <= at(s1 - 1); k++) no.add(k);
+    const lastW = ws[ws.length - 1]?.text, nb = [L[i - 1], L[i + 1], L[i - 2]].map((x) => String(x?.text || "").trim().split(/\s+/).pop());
+    const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real, rhyme: nb.some((x) => rhymes(lastW, x)), hook, no });
+    // Wortbilder: die Zeile als Text, Treffer auf die Wörter zurückgelegt; höchstens zwei je Zeile, die wichtigsten
     const cues = new Map();
-    for (const m of match(joined)) {
-      if (cues.size >= 2) break;
-      // Wortgruppen („on fire“, „broken heart“) bewegen ihr letztes Wort – das trägt die Bedeutung
-      const k = seek(starts.map((at) => ({ at })), m.at + m.len - 1, "at");
-      if (k >= 0 && !cues.has(k) && !ws[k].bg) cues.set(k, m.cue);
+    if (!still) {
+      const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
+      for (const m of ms) {
+        if (cues.size >= 2) break;
+        // Wortgruppen („on fire“, „broken heart“) bewegen ihr letztes Wort – das trägt die Bedeutung
+        const k = at(m.at + m.len - 1);
+        if (k >= 0 && !cues.has(k) && !ws[k].bg) cues.set(k, m.cue);
+      }
     }
+    const kw = keyWord(ws, em, cues, no);
+    return { em, cues, kw, no };
+  });
+  feats.forEach((f, i) => {
+    if (!f) return;
+    const wi = wordInfo[i];
+    f.keyStrength = wi ? wi.kw.strength : 0;
+    f.keyLetters = !!wi && wi.kw.k >= 0 && canSplit(pre[i].ws[wi.kw.k].text) && !L[i].who;
+    f.cueLetters = !!wi && [...wi.cues.values()].includes("wave");
+  });
+  const treat = pickTreatments(feats);
+
+  // 3. Klassen und Variablen
+  return pre.map((p, i) => {
+    const { l, ws } = p;
+    const cls = [], vars = {};
+    const t = treat[i] || "";
+    cls.push(sectionStyle(sectionKind(parts, l.t), { repeated: p.repeated }));
+    if (t) cls.push("is-t-" + t);
+    if (dropIn.has(i) && !still) cls.push("is-p-drop");
+    const side = voiceSide(l.who);
+    if (side) cls.push(side);
+    if (p.adlib) {
+      const pose = adlibPose(adl++);
+      cls.push("is-p-adlib");
+      vars["--pr"] = pose.rot + "deg";
+      vars["--px"] = pose.dx + "em";
+    } else if (ws.some((w) => w.bg)) {
+      // Hintergrund mitten in der Zeile: nur die Neigung (die Wörter selbst tragen .is-bg)
+      vars["--pr"] = adlibPose(adl++).rot + "deg";
+    }
+    if (shouts < maxShout && p.shout) {
+      cls.push("is-p-shout");
+      shouts++;
+    }
+    const wi = wordInfo[i];
+    if (!wi) return { t, cls, vars, words: [] };
+    const { em, cues, kw } = wi;
+    const hold = heldNotes(ws);
+    const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
     const words = ws.map((w, k) => {
       const wc = [], wv = {};
       if (em[k].cls) wc.push(em[k].cls);
       if (em[k].z !== 1) wv["--pz"] = String(em[k].z);
-      if (hold[k].held) {
-        wc.push("is-p-held");
-        wv["--hd"] = hold[k].hd + "ms";
+      const isKey = k === kw.k && (t === "key" || t === "wave");
+      if (isKey) {
+        wc.push("is-p-key");
+        // je länger das Wort, desto weniger wächst es (passt in die Spalte)
+        if (t === "key") wv["--pk"] = String(r2(clamp(2.6 - 0.12 * [...bare(w.text)].length, 1.6, 2.4)));
       }
-      if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
-      const c = cues.get(k);
-      if (c) wc.push("is-p-cue", "is-p-" + c);
-      return { cls: wc, vars: wv };
+      if (t === "split") wc.push(k < half ? "is-p-l" : "is-p-r");
+      if (t === "stagger" && k % 2 === 1) wc.push("is-p-odd");
+      if (t === "collide" && n > 1) wv["--pc"] = String(r2((k - mid) / Math.max(1, mid)));
+      let chars = false, tx = "";
+      if (!still) {
+        if (hold[k].held) {
+          wc.push("is-p-held");
+          wv["--hd"] = hold[k].hd + "ms";
+        }
+        if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
+        const c = cues.get(k);
+        if (c) {
+          wc.push("is-p-cue", "is-c-" + c);
+          if (GLOWS.has(c)) {
+            wc.push("is-cg");
+            tx = String(w.text || "");
+          }
+          if (LETTERS.has(c) && canSplit(w.text) && !l.who) chars = true;
+        }
+        if (isKey && t === "wave" && canSplit(w.text) && !l.who) chars = true;
+        if (chars) {
+          // bewegte Buchstaben und eine stille Kopie des ganzen Worts passen nicht übereinander: kein Schein
+          if (tx) wc.splice(wc.indexOf("is-cg"), 1), (tx = "");
+          wc.push("is-split");
+          wv["--cn"] = String([...String(w.text)].length);
+        }
+      }
+      const out = { cls: wc, vars: wv };
+      if (chars) out.chars = true;
+      if (tx) out.tx = tx;
+      return out;
     });
-    return { cls, vars, words };
+    return { t, cls, vars, words };
   });
 }
 
+/* ---- Last: wie viele Elemente einer Zeile höchstens gleichzeitig animiert sind (Wörter + Buchstaben) */
+// Für den Leistungs-Test: die Bewegung bleibt auf die aktive Zeile beschränkt, also zählt je Zeile.
+export function motionLoad(linePlan) {
+  if (!linePlan) return 0;
+  let n = ["punch", "slam", "collide", "tilt"].includes(linePlan.t) ? 1 : 0;
+  for (const w of linePlan.words || []) {
+    const moving = w.cls.some((c) => c.startsWith("is-c-") || c === "is-p-held" || c === "is-p-beat") || NEEDS_WORDS.has(linePlan.t) || linePlan.t === "caps";
+    if (moving) n++;
+    if (w.chars) n += Number(w.vars["--cn"]) || 0;
+    if (w.cls.includes("is-cg")) n++;
+  }
+  return n;
+}
+
 /* ---- An die Zeilen setzen (DOM) – nur beim Aufbau und wenn die Analyse nachkommt */
-const PVARS = ["--pr", "--px", "--pz", "--hd"];
-function strip(el) {
+const PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pc", "--cn"];
+function strip(el, text) {
   if (!el) return;
-  for (const c of [...el.classList]) if (c.startsWith("is-p-")) el.classList.remove(c);
+  for (const c of [...el.classList]) if (c.startsWith("is-p-") || c.startsWith("is-t-") || c.startsWith("is-c-") || c === "is-cg" || c === "is-split") el.classList.remove(c);
   for (const v of PVARS) el.style.removeProperty(v);
+  if (el.dataset?.tx != null) delete el.dataset.tx;
+  // in Buchstaben zerlegt: wieder ein Text
+  if (text != null && el.firstElementChild?.classList?.contains("m-ch")) el.textContent = text;
+}
+// Wort in Buchstaben (je .m-ch mit --ci); die Karaoke-Füllung rechnet daraus je Buchstabe ihren Stand
+function letters(el, text) {
+  const doc = el.ownerDocument;
+  if (!doc || el.firstElementChild) return;
+  el.textContent = "";
+  [...String(text)].forEach((ch, k) => {
+    const s = doc.createElement("span");
+    s.className = "m-ch";
+    s.textContent = ch;
+    s.style.setProperty("--ci", k);
+    el.append(s);
+  });
 }
 // lineEls: die Zeilen-Elemente (gleiche Reihenfolge wie lines), wordLists[i][k].el: das Wort-Element.
 // plan = null: alles wieder entfernen (Option aus)
@@ -320,7 +716,7 @@ export function paintPlayful(lineEls, plan, wordLists) {
     const el = lineEls[i], p = plan?.[i];
     strip(el);
     const ws = wordLists?.[i] || [];
-    ws.forEach((w) => strip(w.el));
+    ws.forEach((w) => strip(w.el, w.text));
     if (!p) continue;
     if (p.cls.length) el.classList.add(...p.cls);
     for (const [k, v] of Object.entries(p.vars)) el.style.setProperty(k, v);
@@ -329,6 +725,8 @@ export function paintPlayful(lineEls, plan, wordLists) {
       if (!wel) return;
       if (pw.cls.length) wel.classList.add(...pw.cls);
       for (const [kk, v] of Object.entries(pw.vars)) wel.style.setProperty(kk, v);
+      if (pw.tx) wel.dataset.tx = pw.tx;
+      if (pw.chars) letters(wel, ws[k].text);
     });
   }
 }
