@@ -152,7 +152,8 @@ async function runLyrics(o) {
   await until(all, left());
   if (signal?.aborted) return null;
   // Urteil über Spotifys zeitgenauen Text: gleich (die Sammlungen liefen mit) oder später im Hintergrund
-  const verdict = () => o.onVerdict?.(base === ownR && !diag.shifted, best);
+  // (überstimmt = die Abstimmung hat Spotifys Zeiten verworfen; Wortzeiten zum selben Text mit Karaoke zählen nicht dagegen)
+  const verdict = () => o.onVerdict?.(!diag.spotifyOverruled, best);
   if (ownR?.synced && ownPrio) {
     if (srcP) verdict();
     else if (o.verdict !== true && votable(ownR)) (o.idle || ((fn) => setTimeout(fn, 0)))(() => recheck(verdict));
@@ -167,7 +168,7 @@ async function runLyrics(o) {
       const r = await within(list[i], cap, signal);
       if (signal?.aborted) return;
       consider(r, 1 + i);
-      if (base !== ownR) break;
+      if (diag.spotifyOverruled) break;
       // Vorsprung der Gruppe um Spotify (cluster) vor allen anderen Fassungen größer als die noch offenen Quellen
       const mine = diag.cluster, rest = diag.candidates - mine;
       if (mine - rest > list.length - 1 - i) break;

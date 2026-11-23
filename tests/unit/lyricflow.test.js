@@ -316,6 +316,14 @@ const ES = ["Mira las estrellas", "Mira cómo brillan para ti", "Y todo lo que h
     r = await askLrclib(meta, ask([entry(2), entry(3, { duration: 271 })]), ["2"]);
     assert.equal(r.lrcId, 3);
   }
+  // 27. Karaoke: Wortzeiten zum selben Text ersetzen Spotifys Anzeige – das ist kein Überstimmen, das Urteil bleibt „stimmt“
+  {
+    const idle = idleQueue(), verdicts = [];
+    const r = await runLyrics({ own: later(5, synced("spotify")), online: true, karaoke: true, lazy: true, idle, onVerdict: (k) => verdicts.push(k), words: [later(5, worded("netease"))], sources: [later(5, synced("lrclib"))] });
+    assert.equal(r.source, "netease");
+    await idle.run();
+    assert.deepEqual(verdicts, [true]);
+  }
   console.log("lyricflow: ok");
 })().catch((e) => {
   console.error(e);
