@@ -26,6 +26,7 @@ import { bgFlags } from "./lyricvoices.js";
 import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars, exitOf } from "./lyricdeck.js";
 import { lineRole, markerOk, limitFonts, covers } from "./lyricfont.js";
 import { CUE_KIND } from "./lyriccolor.js";
+import { runSync } from "./idlework.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -299,19 +300,81 @@ const EXTRA = {
   tick: { en: "clock clocks tick tock ticking", de: "uhr ticken tick tack", es: "reloj", fr: "horloge", it: "orologio", pt: "relógio" },
   burst: { en: "explode exploding explodes bang", de: "explodieren explodiert knall knallt", es: "explota explotar", fr: "explose exploser", it: "esplodere esplode", pt: "explodir explode" },
   spin: { en: "round spinning circles", de: "dreh drehen dreht kreisen", es: "vueltas girar", fr: "tourne tourner", it: "girare gira", pt: "girar gira" },
+  // Ersatzlisten für Begriffe, die das Wörterbuch (noch) nicht kennt – Schlüssel = Begriff, Bewegung über seine
+  // Kategorie (CATEGORY_FX). Mehrdeutiges bleibt draußen („die“, „war“ sind Deutsch, „sang“, „tire“, „lame“ Englisch)
+  gun: { en: "gun guns pistol pistols glock revolver rifle rifles shotgun trigger bullet bullets", de: "pistole pistolen gewehr gewehre knarre revolver kugel kugeln", es: "pistola pistolas rifle bala balas", fr: "pistolet flingue fusil balle balles", it: "pistola fucile proiettile proiettili", pt: "pistola fuzil bala balas" },
+  shoot: { en: "shoot shoots shooting shootin shot shots", de: "schießen schieß schießt schoss schuss schüsse abdrücken", es: "disparar disparo disparos dispara", fr: "tirer tiré tirs", it: "sparare sparo spari spara", pt: "atirar tiro tiros atira" },
+  machinegun: { en: "machinegun machineguns uzi ratatat ratatata", de: "maschinengewehr maschinengewehre salve salven", es: "metralleta ametralladora", fr: "mitraillette mitrailleuse", it: "mitra mitragliatrice", pt: "metralhadora" },
+  blade: { en: "axe axes knife knives blade blades sword swords machete razor", de: "axt äxte messer klinge klingen schwert schwerter", es: "hacha cuchillo cuchillos espada navaja", fr: "hache couteau couteaux épée", it: "ascia coltello coltelli spada", pt: "machado faca facas espada" },
+  kill: { en: "kill kills killed killing killin murder murdered dies died dying dead death", de: "töten tötet getötet töte mord ermordet sterben stirbt starb tod", es: "matar mata mató muerte muerto morir", fr: "tuer tue tué mort mourir meurtre", it: "uccidere uccide morte morto morire", pt: "matar mata morte morto morrer" },
+  battle: { en: "wars warfare battle battles battlefield soldier soldiers army blood bloody bleed bleeding", de: "krieg kriege schlacht soldat soldaten armee blut blutig bluten", es: "guerra batalla soldado soldados sangre", fr: "guerre bataille soldat soldats", it: "guerra battaglia soldato sangue", pt: "guerra batalha soldado sangue" },
+  bomb: { en: "bomb bombs grenade grenades dynamite", de: "bombe bomben granate dynamit", es: "bomba bombas granada", fr: "bombe bombes grenade", it: "bomba bombe granata", pt: "bomba bombas granada" },
+  siren: { en: "siren sirens police cops sheriff", de: "sirene sirenen polizei bullen", es: "sirena policía", fr: "sirène sirènes police flics", it: "sirena polizia", pt: "sirene polícia" },
+  car: { en: "car cars motorbike motorcycle truck plane airplane helicopter boat lambo ferrari porsche", de: "auto autos motorrad flugzeug hubschrauber boot", es: "coche carro moto avión barco", fr: "voiture moto avion bateau", it: "macchina moto aereo barca", pt: "carro moto avião barco" },
+  animal: { en: "dog dogs cat cats lion lions tiger tigers wolf wolves snake snakes shark sharks bear bears eagle horse horses", de: "hund hunde katze katzen löwe löwen wolf wölfe schlange haie bär adler pferd pferde", es: "perro gato león tigre lobo serpiente tiburón oso águila caballo", fr: "chien chat lion tigre loup serpent requin ours aigle cheval", it: "cane gatto leone tigre lupo serpente squalo orso aquila cavallo", pt: "cachorro gato leão tigre lobo cobra tubarão urso águia cavalo" },
+  food: { en: "pizza burger candy sugar honey cake cherry cherries chocolate", de: "zucker honig kuchen kirsche kirschen schokolade", es: "azúcar miel pastel cereza chocolate", fr: "sucre miel gâteau cerise chocolat", it: "zucchero miele torta ciliegia cioccolato", pt: "açúcar mel bolo cereja chocolate" },
+  drink: { en: "wine beer whiskey tequila vodka", de: "wein bier wodka", es: "vino cerveza", fr: "vin bière", it: "vino birra", pt: "vinho cerveja" },
+  tech: { en: "phone robot robots computer screen wifi digital matrix glitch virus", de: "handy roboter computer bildschirm", es: "teléfono robot pantalla", fr: "téléphone robot écran", it: "telefono robot schermo", pt: "telefone robô tela" },
+  sport: { en: "ball goal goals champion champions trophy", de: "ball tor tore meister pokal", es: "balón gol campeón trofeo", fr: "ballon but champion trophée", it: "pallone gol campione trofeo", pt: "bola gol campeão troféu" },
+  myth: { en: "god gods goddess phoenix unicorn zeus", de: "gott götter göttin phönix einhorn", es: "dios diosa fénix unicornio", fr: "dieu déesse phénix licorne", it: "dio dea fenice unicorno", pt: "deus deusa fênix unicórnio" },
 };
+// Wortgruppen, die das letzte Wort zu einem anderen Begriff machen („tommy gun“, „machine gun“ → Maschinengewehr)
+const PHRASES = [[/\b(?:tommy|machine|sub-?machine)[ -]guns?\b/giu, "machinegun"]];
+
+/* ---- Kategorien: neue Begriffe (das Wörterbuch wächst, wordsense.js liefert je Begriff eine Kategorie) bekommen über
+   ihre Kategorie automatisch eine passende Bewegung. Eigene Bewegung eines Begriffs (EFFECTS) geht vor. */
+export const CATEGORY_FX = {
+  weapon: "shot", gunfire: "rapid", blade: "slash", death: "shatter", explosion: "burst", war: "war", violence: "war",
+  siren: "siren", police: "siren", vehicle: "zoomby", transport: "zoomby", animal: "prowl", weather: "drift", food: "savor",
+  drink: "savor", tech: "glitchy", sport: "kick", celebration: "bounce", party: "bounce", dance: "bounce", myth: "glint",
+  religion: "float", space: "float", nature: "bloom", love: "beat", money: "glint", luxury: "glint", happy: "shine",
+  sad: "droop", fear: "shiver", anger: "shake", time: "tick", music: "wave", night: "dim", light: "shine", fire: "flame",
+  water: "drip", cold: "shiver", travel: "dash", city: "neon",
+};
+// Gewalt: richtet sich nach der Einstellung für derbe Inhalte (wie in Party) – aus: keine Bewegung, „sanft“: nur Farbe
+export const VIOLENT_CATS = new Set(["weapon", "gunfire", "blade", "death", "explosion", "war", "violence"]);
+// Ersatz-Zuordnung Begriff → Kategorie (bis das Wörterbuch sie selbst liefert; auch die Schlüssel der Ersatzlisten)
+const CONCEPT_CAT = {
+  gun: "weapon", pistol: "weapon", rifle: "weapon", shoot: "weapon", shot: "weapon", bullet: "weapon", weapon: "weapon",
+  machinegun: "gunfire", tommygun: "gunfire", axe: "blade", knife: "blade", sword: "blade", blade: "blade",
+  kill: "death", murder: "death", death: "death", dead: "death", battle: "war", war: "war", soldier: "war", army: "war", blood: "war",
+  bomb: "explosion", grenade: "explosion", siren: "siren", police: "police", car: "vehicle", motorbike: "vehicle", plane: "vehicle",
+  helicopter: "vehicle", boat: "vehicle", truck: "vehicle", animal: "animal", dog: "animal", cat: "animal", lion: "animal",
+  tiger: "animal", wolf: "animal", snake: "animal", shark: "animal", bear: "animal", horse: "animal", eagle: "animal",
+  food: "food", sweet: "food", pizza: "food", candy: "food", sugar: "food", honey: "food", cake: "food", cherry: "food", chocolate: "food",
+  drink: "drink", wine: "drink", beer: "drink", whiskey: "drink", tequila: "drink", vodka: "drink", tech: "tech", phone: "tech",
+  robot: "tech", computer: "tech", internet: "tech", sport: "sport", ball: "sport", goal: "sport", champion: "sport",
+  trophy: "sport", myth: "myth", god: "myth", goddess: "myth", phoenix: "myth", unicorn: "myth",
+};
+export const categoryOf = (concept, cat) => cat || CONCEPT_CAT[concept] || "";
+export const cueFor = (concept, cat) => CUE[concept] || CATEGORY_FX[categoryOf(concept, cat)] || "";
+// Redewendungen ohne Gewalt: „killing it“, „a shot of tequila“, „photo shoot“, „shoot your shot“, „you're the bomb“ …
+const NOT_VIOLENT = [
+  /\bkill(?:s|ing|in'?|ed)? it\b/giu, /\bdressed to kill\b/giu, /\bshots? of\b/giu, /\bphoto ?shoots?\b/giu, /\bfotoshooting\w*/giu,
+  /\b(?:take|took|taking|takin'?|give|gave|shoot|shootin'?|shooting) (?:a|my|your|his|her|our|their|the|one|another) shot\b/giu,
+  /\bshoot(?:s|ing|in'?)? (?:a|the|my|our|this) (?:video|film|movie|scene|photo|clip)s?\b/giu, /\b(?:the|da) bomb\b/giu,
+  /\bkiller (?:queen|smile|look|body|style|vibe|heels|beat)\w*/giu, /\bto die for\b/giu, /\bdying to\b/giu, /\bdead (?:tired|serious)\b/giu,
+  /\bdrop[- ]dead\b/giu, /\b(?:ein|einen|nen) schuss (?:tequila|wodka|vodka|rum|liebe)\b/giu, /\bbomb(?:e|en)? ?stimmung\b/giu,
+];
+function peaceSpans(s) {
+  const out = [];
+  for (const re of NOT_VIOLENT) for (const m of s.matchAll(re)) out.push([m.index, m.index + m[0].length]);
+  return out;
+}
 // gebrochenes Herz als Wortgruppe, die das Wörterbuch nur als „heart“ kennt: knickt ein statt zu schlagen
 const BROKEN = /\b(?:br(?:oke|eak|eaks|eaking|oken)|tore|rip(?:ped)?|shatter(?:ed)?) (?:my|your|his|her|our|this) heart\b|(?:brach|brichst|bricht|gebrochen\w*) (?:mein|dein|sein|ihr)\w* herz|herz\w* (?:gebrochen|zerbrochen)/iu;
 const XIDX = new Map();
 for (const [fx, byLang] of Object.entries(EXTRA)) for (const [lang, words] of Object.entries(byLang)) for (const w of words.split(" ")) if (!XIDX.has(w)) XIDX.set(w, [fx, lang]);
 // Wichtigkeit, wenn eine Zeile mehrere Treffer hat (zwei Bilder je Zeile höchstens)
-const FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4, neon: 4, snow: 4, star: 4 };
+const FXPRI = { burst: 5, flame: 5, jolt: 5, fall: 5, crack: 5, halt: 5, shot: 5, rapid: 5, slash: 5, shatter: 5, siren: 4, war: 4, float: 4, beat: 4, glint: 4, shiver: 4, drip: 4, spin: 4, shake: 4, hush: 4, neon: 4, snow: 4, star: 4 };
 // laute Bewegungen in einem traurigen Lied / an einer leisen Stelle: die sanfte Schwester
-const SOFTEN = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift", neon: "shine" };
+const SOFTEN = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver", dash: "drift", spin: "drift", neon: "shine", shot: "crack", rapid: "shiver", slash: "crack", shatter: "droop", zoomby: "drift", kick: "drift", glitchy: "shiver" };
 // Bewegungen mit Schein (Pseudo-Element mit Deckkraft – nie text-shadow im Bild)
-const GLOWS = new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift", "neon", "star", "snow"]);
+const GLOWS = new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift", "neon", "star", "snow", "siren"]);
 // Bewegungen, die das Wort in Buchstaben zerlegen
-const LETTERS = new Set(["burst", "wave"]);
+const LETTERS = new Set(["burst", "wave", "rapid", "slash", "shatter"]);
+// die alten Ersatzlisten heißen wie ihre Bewegung; die neuen wie ihr Begriff
+const XCUE = new Set(["fall", "float", "shake", "hush", "halt", "tick", "burst", "spin"]);
 export const cueOf = (concept) => CUE[concept] || "";
 
 // Treffer einer Zeile aus den Zusatzlisten im Format von words.js (für senseLine)
@@ -323,6 +386,14 @@ function extraHits(text) {
     const x = XIDX.get(w);
     if (x) out.push({ c: "x:" + x[0], at: m.index, len: m[0].length, raw: m[0], how: "exact", lang: x[1], ti, tn: 1 });
     ti++;
+  }
+  // Wortgruppen: der Treffer des letzten Worts bekommt den Begriff der Gruppe
+  for (const [re, c] of PHRASES) {
+    for (const m of String(text || "").matchAll(re)) {
+      const end = m.index + m[0].length;
+      const h = out.find((x) => x.at < end && x.at + x.len >= end - 1);
+      if (h) h.c = "x:" + c;
+    }
   }
   return out;
 }
@@ -350,13 +421,27 @@ export function cueMatcher(lines, lexicon, o = {}) {
       cands = senseLine(s, hitsOf(s), { neg: o.neg, main: song?.main });
     } catch {}
     const out = [];
+    let peace = null;
     for (const x of cands) {
-      let cue = x.c.startsWith("x:") ? x.c.slice(2) : CUE[x.c];
+      // Begriff: aus dem Wörterbuch oder aus einer Ersatzliste (x:…); Bewegung über eigene Zuordnung oder die Kategorie
+      const xk = x.c.startsWith("x:") ? x.c.slice(2) : "";
+      const concept = xk || x.c;
+      const cat = xk && XCUE.has(xk) ? "" : categoryOf(concept, o.categoryOf?.(concept));
+      let cue = xk && XCUE.has(xk) ? xk : cueFor(concept, cat);
       if (x.c === "heart" && BROKEN.test(s)) cue = "crack";
       if (EXPLICIT.has(x.c)) cue = x.c === "sexy" && o.explicit === "on" ? "sultry" : "";
       if (!cue) continue;
+      // Gewalt: Redewendungen („killing it“, „shot of tequila“) zählen nicht; Einstellung derbe Inhalte: aus → nichts,
+      // sanft → nur die Farbe
+      let calm = false;
+      if (VIOLENT_CATS.has(cat)) {
+        peace ??= peaceSpans(s);
+        if (peace.some(([a, b]) => x.at < b && x.at + x.len > a)) continue;
+        if (o.explicit === "off") continue;
+        calm = o.explicit === "soft";
+      }
       if (soft && SOFTEN[cue]) cue = SOFTEN[cue];
-      out.push({ at: x.at, len: x.len, cue, c: x.c, conf: x.conf });
+      out.push({ at: x.at, len: x.len, cue, c: x.c, conf: x.conf, ...(calm ? { calm } : {}) });
     }
     return out.sort((a, b) => a.at - b.at);
   };
@@ -523,7 +608,10 @@ function answers(a, b) {
   const cb = wb.filter(isContent).map(bare);
   return wb.length <= 5 && cb.length >= 1 && cb.every((w) => tail.has(w));
 }
-export function planPlayful(lines, wordLists, d, o = {}) {
+// Als Generator: yield gibt zwischen Zeilen-Häppchen Luft (immersive.js verteilt sie auf Leerlaufzeiten –
+// am Stück waren es beim Songwechsel 40–60 ms in einer Aufgabe). planPlayful rechnet am Stück (Tests, Node).
+export const planPlayful = (lines, wordLists, d, o) => runSync(planSteps(lines, wordLists, d, o));
+export function* planSteps(lines, wordLists, d, o = {}) {
   const L = lines || [];
   const real = d && !d.synthetic;
   const segs = real ? d.segs : null;
@@ -559,12 +647,21 @@ export function planPlayful(lines, wordLists, d, o = {}) {
   const bpm = bp ? 60 / bp : 0;
   // Stimmung und ruhige Stellen aus dem Wortsinn (wordsense.planSong: trauriges Lied → sanfte Antworten)
   let soft = [];
-  try {
-    if (o.lexicon && !o.match) {
-      const sp = planSense(L.map((l) => ({ text: String(l.text || "") })), L.map((l) => hitsOf(String(l.text || ""))), { neg: o.neg, main: match.song?.()?.main });
-      soft = sp.map((p) => !!p?.soft);
+  if (o.lexicon && !o.match) {
+    const hits = [];
+    for (let i = 0; i < L.length; i++) {
+      try {
+        hits.push(hitsOf(String(L[i].text || "")));
+      } catch {
+        hits.push([]);
+      }
+      if (i % 8 === 7) yield;
     }
-  } catch {}
+    try {
+      soft = planSense(L.map((l) => ({ text: String(l.text || "") })), hits, { neg: o.neg, main: match.song?.()?.main }).map((p) => !!p?.soft);
+    } catch {}
+    yield;
+  }
   // gerufene Zeilen höchstens jede achte – sonst ist es kein Rufen mehr
   const maxShout = Math.max(1, Math.round(L.length / 8));
   let shouts = 0, adl = 0;
@@ -647,7 +744,7 @@ export function planPlayful(lines, wordLists, d, o = {}) {
   }
 
   // 2. Wörter: Betonung, Wortbilder, Schlüsselwort (vor der Wahl der Inszenierung: „key“ braucht sie)
-  const wordInfo = pre.map((p, i) => {
+  const infoOf = (p, i) => {
     const ws = p.ws;
     if (!ws.length) return null;
     const starts = [];
@@ -664,7 +761,7 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     const em = emphasis(ws, { segs, avg: d?.avg, synthetic: !real, rhyme: nb.some((x) => rhymes(lastW, x)), hook, no });
     // Wortbilder: die Zeile als Text, Treffer auf die Wörter zurückgelegt; höchstens zwei je Zeile, die wichtigsten.
     // Auch ohne Bewegung gesucht: die Farbe gehört zum ruhenden Satz
-    const cues = new Map(), concept = new Map();
+    const cues = new Map(), concept = new Map(), calmAt = new Set();
     const ms = match(joined, !!soft[i]).sort((x, y) => (FXPRI[y.cue] ?? 3) * (y.conf ?? 1) - (FXPRI[x.cue] ?? 3) * (x.conf ?? 1));
     for (const m of ms) {
       if (cues.size >= 2) break;
@@ -672,12 +769,18 @@ export function planPlayful(lines, wordLists, d, o = {}) {
       const k = at(m.at + m.len - 1);
       if (k >= 0 && !cues.has(k) && !ws[k].bg) {
         cues.set(k, m.cue);
+        if (m.calm) calmAt.add(k);
         concept.set(k, m.c);
       }
     }
     const kw = keyWord(ws, em, cues, no);
-    return { em, cues, concept, kw, no };
-  });
+    return { em, cues, concept, kw, no, calmAt };
+  };
+  const wordInfo = [];
+  for (let i = 0; i < pre.length; i++) {
+    wordInfo.push(infoOf(pre[i], i));
+    if (i % 6 === 5) yield;
+  }
   feats.forEach((f, i) => {
     if (!f) return;
     const wi = wordInfo[i];
@@ -704,7 +807,7 @@ export function planPlayful(lines, wordLists, d, o = {}) {
   const fonts = limitFonts(fontsRaw, { max: 2, share: level === "wild" ? 0.6 : 0.4 });
 
   // 4. Klassen und Variablen
-  const plan = pre.map((p, i) => {
+  const lineOf = (p, i) => {
     const { l, ws } = p;
     const cls = [], vars = {};
     const t = treat[i] || "";
@@ -775,7 +878,7 @@ export function planPlayful(lines, wordLists, d, o = {}) {
       if (tint) cls.push("is-pk");
       return { t, v, cls, vars, font: fo, words: [] };
     }
-    const { em, cues, concept, kw } = wi;
+    const { em, cues, concept, kw, calmAt } = wi;
     const hold = heldNotes(ws);
     const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
     // Aufbau: je weiter im Pre-Chorus, desto kürzer (schneller) die Landungen – bis zu 30 %, nie unter 90 ms
@@ -799,7 +902,13 @@ export function planPlayful(lines, wordLists, d, o = {}) {
       if (t === "stagger" && k % 2 === 1) wc.push("is-p-odd");
       if (t === "collide" && n > 1) wv["--pc"] = String(r2((k - mid) / Math.max(1, mid)));
       if ((fo.word === "marker" && k === kw.k) || k === wideAt) wc.push("is-f-" + fo.word);
-      if (k === hookAt) wc.push("is-p-hook", "is-p-hm-" + deck.hookMark);
+      if (k === hookAt) {
+        wc.push("is-p-hook", "is-p-hm-" + deck.hookMark);
+        // zweite Schrift, die das Hook-Wort auf der Eins jedes zweiten Takts annimmt (immersive.js): nur kurze Zeilen, nur
+        // Schriften dieses Songs, die das Wort können und etwa so breit sind wie die Liedtext-Schrift
+        const alt = !still && level !== "subtle" && n <= 6 ? deck.fonts.find((r) => ["shout", "round", "serif", "marker"].includes(r) && r !== fo.line && r !== fo.word && covers(r, w.text)) : "";
+        if (alt) wv["--phf"] = "var(--pf-" + alt + ")";
+      }
       // Farbe aus der Bedeutung (auch ohne Bewegung; Duett-Farben haben Vorrang)
       const c = cues.get(k);
       const ck = c && !l.who ? CUE_KIND[c] : "";
@@ -823,7 +932,7 @@ export function planPlayful(lines, wordLists, d, o = {}) {
         if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
         if (bars?.length && real && !w.est && onBeat(w.a, bars, 70)) wc.push("is-p-bar");
         let acc = R?.acc || "";
-        if (c) {
+        if (c && !calmAt.has(k)) {
           wc.push("is-p-cue", "is-c-" + c);
           // Spielart des Wortbilds: je Begriff und Song eine andere
           const fv = fxVariant(c, concept.get(k) || c, deck.fx);
@@ -871,7 +980,6 @@ export function planPlayful(lines, wordLists, d, o = {}) {
           wv["--pad"] = (pad || ACCENTS[acc]) + "ms";
           if (acc === "echo") wc.push("is-echo");
         } else delete wv["--pai"];
-        if (vars["--pxo"]) wv["--wi"] = String(k);
         if (R?.caret && !c) wc.push("is-caret");
       }
       if (chars) out.chars = chars;
@@ -880,7 +988,12 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     });
     if (coloured) cls.push("is-pk");
     return { t, v, cls, vars, font: fo, words };
-  });
+  };
+  const plan = [];
+  for (let i = 0; i < pre.length; i++) {
+    plan.push(lineOf(pre[i], i));
+    if (i % 6 === 5) yield;
+  }
   plan.deck = deck;
   return plan;
 }
@@ -904,17 +1017,36 @@ export function motionLoad(linePlan) {
 }
 
 /* ---- An die Zeilen setzen (DOM) – nur beim Aufbau und wenn die Analyse nachkommt */
-const PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pkn", "--pc", "--cn", "--wx", "--wy", "--wr", "--ws", "--wo", "--wt", "--wog", "--pl", "--pac", "--pad", "--pez",
-  "--pai", "--wi", "--pxo", "--pxd", "--prd", "--pbu", "--pcn", "--pcd", "--qk", "--qs", "--qy", "--qr", "--qx", "--qo", "--ptw", "--pth", "--ptr", "--ptc", "--ptx", "--pty", "--pts", "--ptd", "--ptq"];
 const PCLS = /^(is-p-|is-t-|is-c-|is-f-|is-k|is-l-)/;
-const PONE = new Set(["is-cg", "is-split", "is-pt", "is-echo", "is-caret", "is-pk", "is-pnext"]);
-function strip(el, text) {
+const PONE = new Set(["is-cg", "is-split", "is-pt", "is-echo", "is-caret", "is-pk", "is-pnext", "is-pcar"]);
+const mine = (c) => PCLS.test(c) || PONE.has(c);
+// Ein Element auf seinen Soll-Stand bringen – nur die Unterschiede (Klassen, Variablen, Buchstaben, Kopie): ein
+// zweites Malen (die Analyse kommt nach, Umschalten) lässt so alles Unveränderte in Ruhe, statt jede Zeile und jedes
+// Wort neu berechnen zu lassen. Welche Variablen gesetzt sind, merkt sich das Element (__pv).
+function sync(el, cls, vars, text, chars, tx) {
   if (!el) return;
-  for (const c of [...el.classList]) if (PCLS.test(c) || PONE.has(c)) el.classList.remove(c);
-  for (const v of PVARS) el.style.removeProperty(v);
-  if (el.dataset?.tx != null) delete el.dataset.tx;
-  // in Buchstaben zerlegt: wieder ein Text
-  if (text != null && el.firstElementChild?.classList?.contains("m-ch")) el.textContent = text;
+  const want = new Set(cls || []);
+  const drop = [];
+  for (const c of el.classList) if (mine(c) && !want.has(c)) drop.push(c);
+  if (drop.length) el.classList.remove(...drop);
+  const add = [...want].filter((c) => !el.classList.contains(c));
+  if (add.length) el.classList.add(...add);
+  const had = el.__pv || {}, now = vars || {};
+  for (const k of Object.keys(had)) if (!(k in now)) el.style.removeProperty(k);
+  for (const [k, v] of Object.entries(now)) if (had[k] !== v) el.style.setProperty(k, v);
+  el.__pv = { ...now };
+  if ((tx || null) !== (el.dataset?.tx ?? null)) {
+    if (tx) el.dataset.tx = tx;
+    else delete el.dataset.tx;
+  }
+  if (text == null) return;
+  // in Buchstaben zerlegt: nur neu, wenn sich die Zerlegung ändert; sonst wieder ein Text
+  const key = chars ? JSON.stringify(chars) : "";
+  const split = !!el.firstElementChild?.classList?.contains("m-ch");
+  if (split && el.__pch === key) return;
+  if (split) el.textContent = text;
+  el.__pch = key;
+  if (chars) letters(el, text, chars);
 }
 // Wort in Buchstaben (je .m-ch mit --ci); die Karaoke-Füllung rechnet daraus je Buchstabe ihren Stand.
 // poses: je Buchstabe Wartezustand und Staffelung (--ld) aus dem Rezept
@@ -935,32 +1067,34 @@ function letters(el, text, poses) {
     el.append(s);
   });
 }
+function paintLine(el, p, ws) {
+  if (!el) return;
+  el.__hook = undefined;
+  sync(el, p?.cls, p?.vars);
+  ws.cAt = -1;
+  ws.caret = false;
+  ws.forEach((w, k) => {
+    const pw = p?.words?.[k];
+    w.lead = pw?.lead || 0;
+    if (pw?.cls.includes("is-caret")) ws.caret = true;
+    sync(w.el, pw?.cls, pw?.vars, w.text, pw?.chars || false, pw?.tx || "");
+  });
+}
 // lineEls: die Zeilen-Elemente (gleiche Reihenfolge wie lines), wordLists[i][k].el: das Wort-Element.
 // plan = null: alles wieder entfernen (Option aus). Merkt sich den Vorlauf je Wort (wordLists[i][k].lead).
-export function paintPlayful(lineEls, plan, wordLists) {
+// Als Generator: zuerst die Zeilen um at (die aktive), dann nach außen – je Häppchen ein paar Zeilen
+export function* paintSteps(lineEls, plan, wordLists, at = 0) {
   const n = lineEls?.length || 0;
-  for (let i = 0; i < n; i++) {
-    const el = lineEls[i], p = plan?.[i];
-    strip(el);
-    const ws = wordLists?.[i] || [];
-    ws.forEach((w) => {
-      strip(w.el, w.text);
-      w.lead = 0;
-    });
-    if (!p) continue;
-    if (p.cls.length) el.classList.add(...p.cls);
-    for (const [k, v] of Object.entries(p.vars)) el.style.setProperty(k, v);
-    p.words.forEach((pw, k) => {
-      const wel = ws[k]?.el;
-      if (!wel) return;
-      ws[k].lead = pw.lead || 0;
-      if (pw.cls.length) wel.classList.add(...pw.cls);
-      for (const [kk, v] of Object.entries(pw.vars)) wel.style.setProperty(kk, v);
-      if (pw.tx) wel.dataset.tx = pw.tx;
-      if (pw.chars) letters(wel, ws[k].text, pw.chars);
-    });
+  const c = Math.max(0, Math.min(n - 1, at | 0));
+  for (let r = 0, done = 0; done < n; r++) {
+    for (const i of r ? [c - r, c + r] : [c]) {
+      if (i < 0 || i >= n) continue;
+      paintLine(lineEls[i], plan?.[i], wordLists?.[i] || []);
+      if (++done % 4 === 0) yield;
+    }
   }
 }
+export const paintPlayful = (lineEls, plan, wordLists, at) => runSync(paintSteps(lineEls, plan, wordLists, at));
 
 /* ---- ♪ (Instrumental-Lücke): wippt im Takt, auf der Eins stärker. Lage im Takt (vier Schläge) beim Zeilenwechsel */
 // → { p: Schlaglänge, bar: Taktlänge, d: Verzögerung (negativ: so weit ist der Takt schon) } oder null
@@ -978,4 +1112,46 @@ export function barPhase(beats, bars, sec) {
     start = beats[k - (k % 4)].t;
   }
   return { p: b.p, bar, d: -Math.round(((sec - start) * 1000) % bar) };
+}
+
+/* ---- ♪ im Takt, Bild für Bild aus der Songuhr (statt einer frei laufenden CSS-Schleife, die abdriftete und beim
+   Neustart sprang). Jeder Schlag ist ein Hügel cos²(π·φ) (φ = Lage im Schlag 0 … 1): Spitze genau auf dem Schlag,
+   null in der Mitte zwischen zwei Schlägen – dort wechseln Seite und Stärke, Wert und Steigung sind dort beide null,
+   der Lauf ist also ohne Knick (C1). Auf der Eins des Takts der große Ausschlag. amp: Stärke der Stufe.
+   → { y (em), r (Grad), s (Größe), beat, down } oder null */
+const isDown = (beats, bars, k) => (bars?.length ? onBeat(beats[k].t * 1000, bars, 70) : k % 4 === 0);
+export function notePose(beats, bars, sec, amp = 1) {
+  if (!beats?.length) return null;
+  const k = seek(beats, sec, "t");
+  if (k < 0 || k + 1 >= beats.length) return null;
+  const p = beats[k + 1].t - beats[k].t;
+  if (!(p >= 0.25 && p <= 1.5)) return null;
+  const ph = clamp((sec - beats[k].t) / p, 0, 1);
+  const near = ph < 0.5 ? k : k + 1;
+  const g = Math.cos(Math.PI * ph) ** 2;
+  const down = isDown(beats, bars, near);
+  const a = (down ? 1 : 0.45) * amp;
+  return { y: -0.2 * a * g, r: (near % 2 ? 1 : -1) * 15 * a * g, s: 1 + 0.1 * a * g, beat: near, down };
+}
+// Farbe des ♪: fließt im Takt durch die Leitfarben des Covers (ring: lesbare Farben, je Takt die nächste, weich
+// übergeblendet – ohne Sprung an den Taktgrenzen). → [r, g, b]
+export function noteColor(ring, beats, bars, sec) {
+  if (!ring?.length) return null;
+  let i0 = 0, u = 0;
+  if (bars?.length >= 2) {
+    const k = seek(bars, sec, "t");
+    if (k >= 0 && k + 1 < bars.length) {
+      i0 = k;
+      u = (sec - bars[k].t) / (bars[k + 1].t - bars[k].t);
+    }
+  } else if (beats?.length >= 2) {
+    const k = seek(beats, sec, "t");
+    if (k >= 0 && k + 1 < beats.length) {
+      i0 = Math.floor(k / 4);
+      u = ((k % 4) + (sec - beats[k].t) / (beats[k + 1].t - beats[k].t)) / 4;
+    }
+  }
+  const x = clamp(u, 0, 1), w = x * x * (3 - 2 * x);
+  const a = ring[i0 % ring.length], b = ring[(i0 + 1) % ring.length];
+  return a.map((v, j) => Math.round(v + (b[j] - v) * w));
 }
