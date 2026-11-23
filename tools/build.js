@@ -4,27 +4,26 @@ const esbuild = require("esbuild");
 const path = require("path");
 const { version } = require("../package.json");
 
-// JSON-Dateien (das Wörterbuch der Wortbilder, ~20 000 Wortformen) als JSON.parse('…') einbetten statt als
-// Objekt-Literal: ein langer String ist für V8 beim Start viel billiger als ein riesiges Literal zu parsen und
-// zu kompilieren (gemessen: Skriptzeit beim Start ~4 ms weniger), JSON.parse selbst kostet unter 1 ms
-const jsonAsString = {
-  name: "json-as-string",
-  setup(build) {
-    build.onLoad({ filter: /\.json$/ }, (args) => {
-      const json = JSON.stringify(JSON.parse(require("fs").readFileSync(args.path, "utf8")));
-      return { contents: `export default JSON.parse(${JSON.stringify(json)});`, loader: "js" };
-    });
-  },
-};
+const { lazyData } = require("./lazydata.js");
+
+// Größe und Startzeit (Spotify lädt und übersetzt theme.js bei jedem Start, auch ohne Party):
+//  - lazyData: Wörterbuch (lexicon/*.json) und Genre-Tabelle gepackt, ausgepackt erst beim ersten Zugriff
+//    (tools/lazydata.js, src/lazydata.js) – ein langer Text ist für V8 fast umsonst, ein riesiges Literal nicht
+//  - charset utf8: Umlaute, Kyrillisch, CJK … der Übersetzungen bleiben UTF-8 statt \uXXXX (ein Zeichen statt sechs)
+//  - ohne Leerraum und mit kürzerer Syntax, aber mit den echten Namen: Fehlermeldungen in Diagnosen bleiben lesbar
+const compact = { charset: "utf8", minifyWhitespace: true, minifySyntax: true };
 
 const options = {
   entryPoints: [path.join(__dirname, "..", "src", "main.js")],
-  plugins: [jsonAsString],
+  plugins: [lazyData],
   outfile: path.join(__dirname, "..", "Mirage", "theme.js"),
   bundle: true,
   format: "iife",
   target: "chrome120",
   legalComments: "none",
+  ...compact,
+  // Byte-Order-Mark: legt UTF-8 fest, auch wenn eine Seite das Skript ohne Zeichensatz ausliefert
+  banner: { js: "\uFEFF" },
   define: { __MIRAGE_VERSION__: JSON.stringify(version) },
   logLevel: "info",
 };
@@ -39,6 +38,7 @@ function workerSource() {
     target: "chrome120",
     write: false,
     legalComments: "none",
+    ...compact,
   });
   return r.outputFiles[0].text;
 }
