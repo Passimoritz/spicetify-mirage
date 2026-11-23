@@ -14,9 +14,12 @@ import S from "./lexicon/lex-scen.json";
 import M from "./lexicon/lex-more.json";
 import X from "./lexicon/lex-explicit.json";
 import N from "./lexicon/lex-neg.json";
+// lex-ext.json: rund 200 weitere Begriffe der Szenarien (Konfetti, Nordlicht, Disko, Skyline, Glitch, Lob-Wörter …)
+// und Zusatzformen bestehender Begriffe – nur Formen, die es in der Sprache noch nicht gab, darum einfach angehängt
+import E from "./lexicon/lex-ext.json";
 
 const LEX = { ...A, ...B, ...C };
-for (const [lang, d] of Object.entries(S)) {
+for (const [lang, d] of [...Object.entries(S), ...Object.entries(E)]) {
   const base = LEX[lang] ? { ...LEX[lang], c: { ...LEX[lang].c } } : { stop: "", c: {} };
   for (const [k, forms] of Object.entries(d.c)) base.c[k] = base.c[k] ? base.c[k] + "|" + forms : forms;
   LEX[lang] = base;

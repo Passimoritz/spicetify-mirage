@@ -106,6 +106,33 @@ const FX = {
   // Derbes (lex-explicit.json): nie als Text oder Bild, nur Licht und Stimmung (scenarios.js, Einstellung partyExplicit)
   sexy: { fx: null, pri: 3, ex: true }, insult: { fx: null, pri: 2, ex: true }, curse: { fx: null, pri: 1, ex: true }, drugs: { fx: null, pri: 3, ex: true },
 };
+// Weitere Begriffe der Szenarien (lex-ext.json): meist nur die Bühne (scenefx.js), einige mit Bild über dem Cover.
+// Format je Gruppe: „begriff:bild:wichtigkeit“ (Bild leer = keins)
+for (const s of [
+  "confetti:confetti:5 balloon:balloons:5 toast:champagne:4 festival:confetti:4 carnival:confetti:4 disco::4 fame::3 stage::3 lighter::4 phone::3",
+  "mexwave::4 mic::4 vinyl::4 rave::4 radio::3 piano:notes:3 orchestra:notes:3 choir:notes:3 concert::4 crowd::3 singalong:notes:4",
+  "coins:money:5 bank:money:3 jackpot:money:5 shopping::3 gift:balloons:3 royal:crown:4 jewels:diamond:4 treasure:gold:4",
+  "blizzard:snow:5 arctic:frost:4 leaves:petals:4 blossom:petals:4 aurora::5 heatwave:sun:4 river:wave:3 surf:wave:4 flood:wave:4",
+  "underwater:bubbles:4 fish:bubbles:4 bubble:bubbles:4 volcano:flames:5 campfire:flames:4 firefly::4 drizzle:rain:4 planet:orbit:4",
+  "comet:stars:5 eclipse:moon:5 astronaut:galaxy:4 wish:stars:3 destiny::2 infinity::2 valentine:hearts:5 romance:love:3 hug::3 promise::2",
+  "shatter::4 haunted:ghosts:4 halloween:ghosts:5 mystery::3 church::3 god::2 miracle::3 faith::2 truth::2 lies::3 ambulance::4 jail::3 escape::3",
+  "skyline:city:4 car:speed:3 headlights:speed:4 motorbike:speed:4 plane::3 newyear:fireworks:6 digital::3 matrix::4 videogame::4 screen::2",
+  "retro::3 future::2 hypnotic::4 dizzy::3 mirror::3 illusion::3 psychedelic::4 spell:magic:4 masquerade::4 rockstar:notes:4 speakers:boom:4",
+  "sax:notes:4 rhythm::3 echo::3 wings:feathers:4 eagle:birds:4 owl::3 spider::3 snake::3 unicorn:rainbow:5 phoenix:flames:5 safari:sun:3",
+  "bee::3 cowboy::4 truck::3 farm::2 pyramid::4 castle::3 fairy:magic:4 doll::3 pool:bubbles:3 shower:rain:3 lantern::4 lighthouse::4",
+  "explode:boom:5 flare:flames:4 flag::3 circus::4 cake::4 fruit::2 cocktail::3 bar::2 ibiza:beach:4 ski:snow:4 skate::3 dancestyle::3",
+  "prom::4 cheer::3 fun::2 youth::2 family::2 friends::2 fashion::3 beautiful::2 passion::3 obsession::3 danger::3 rebel::3 haters::3",
+  "karma::3 nostalgia::2 regret::2 brave::2 boxing::3 workout::3 zen::3 race:speed:3 goal:confetti:4 dice::3 crystal:diamond:3 tunnel::3",
+  "horizon::2 toxic::3 magnetic::2 shades::2 tattoo::3 sneakers::2 coffee::2 harbor::3 easter:petals:4 holi:rainbow:5 diwali::5",
+  "funeral::4 anxiety::3 bored::2 confused::2 blush::3 grateful::2 excited::3 chill::2 insomnia::3 hangover::3 soul::2 paint:rainbow:3",
+  "movie::3 work::2 adventure::2 summit::3 skydive::4 jazz:notes:4 rap::3 headphones::3 repeat::2 sunbeam:rays:3 closeeyes::2 letgo::3",
+  "timetravel::4 sin::3 goat:crown:4 slay::3 vibes::2 velvet::3 perfume::3 zodiac:stars:3 fortune:magic:3 kite::3 praise::4",
+]) {
+  for (const e of s.split(" ")) {
+    const [c, fx, pri] = e.split(":");
+    FX[c] ||= { fx: fx || null, pri: +pri };
+  }
+}
 // Farbe, in der das gesungene Wort aufleuchtet
 const GLOW = {
   flames: [255, 140, 40], hellfire: [255, 50, 30], rain: [120, 180, 255], storm: [170, 190, 255], lightning: [220, 230, 255], snow: [220, 240, 255],
