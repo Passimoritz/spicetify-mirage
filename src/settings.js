@@ -80,11 +80,36 @@ const el = (tag, cls, text) => {
   if (text != null) e.textContent = text;
   return e;
 };
+// Hinweis unter einem Namen: höchstens zwei Zeilen, längere bekommen „mehr“ (clampHints misst, sobald er sichtbar ist)
+const hintEl = (text, cls) => el("small", cls ? "m-hint " + cls : "m-hint", text);
 function head(title, hint) {
   const h = el("div", "m-schemes-head");
   h.append(el("b", "", title));
-  if (hint) h.append(el("small", "", hint));
+  if (hint) h.append(hintEl(hint));
   return h;
+}
+// Eine Zeile mit Beschriftung oben und Bedienelement darunter (Knopfreihen, Auswahllisten, Schema-Karten):
+// dieselbe Karte wie ein Schalter, damit alle Einstellungen im selben Raster stehen
+function field(title, hint, ...controls) {
+  const f = el("div", "m-row m-field");
+  f.append(head(title, hint), ...controls.filter(Boolean));
+  return f;
+}
+// Zwischentitel innerhalb einer Gruppe (Licht & Effekte, Momente …): klein und leise, beim Suchen ausgeblendet
+const subhead = (title) => el("h3", "m-subhead", title);
+// Unter-Einstellungen: eingerückt mit Führungslinie unter ihrem Schalter. Ist der Schalter aus, bleiben sie
+// sichtbar, aber gesperrt – mit dem Hinweis, wovon sie abhängen. Der Schalter zeichnet den Dialog neu (toggle).
+function sub(parentKey, ...kids) {
+  const on = !!cfg[parentKey];
+  const box = el("div", on ? "m-sub" : "m-sub is-off");
+  box.dataset.parent = parentKey;
+  if (!on) box.append(el("small", "m-sub-off", t("needsParent").replace("{s}", t(parentKey))));
+  box.append(...kids.flat().filter(Boolean));
+  if (!on) {
+    box.setAttribute("aria-disabled", "true");
+    for (const c of box.querySelectorAll("input, select, button, textarea")) c.disabled = true;
+  }
+  return box;
 }
 function bolt() {
   const i = el("i", "m-cost");
@@ -126,7 +151,7 @@ function toggle(key, after) {
   if (COSTLY.has(key)) b.append(" ", bolt());
   txt.append(b);
   const hint = t(key + "Hint");
-  if (hint !== key + "Hint") txt.append(el("small", "", hint));
+  if (hint !== key + "Hint") txt.append(hintEl(hint));
   const cb = el("input");
   cb.type = "checkbox";
   // sieht aus wie ein Schalter – Screenreader sagen dann „Schalter, an/aus“ statt „Kontrollkästchen“
@@ -196,7 +221,7 @@ function range(key, min, max, step, unit, after, fmt = (v) => v + unit) {
   row.classList.toggle("is-idle", idle);
   const hk = idle ? "blurOff" : has(key + "Cost") ? key + "Cost" : FREE_RANGE.has(key) ? "costFree" : has(key + "Hint") ? key + "Hint" : "";
   if (hk) {
-    const hint = el("small", "m-range-hint" + (hk.endsWith("Cost") ? " is-cost" : hk === "costFree" ? " is-free" : ""), t(hk));
+    const hint = hintEl(t(hk), "m-range-hint" + (hk.endsWith("Cost") ? " is-cost" : hk === "costFree" ? " is-free" : ""));
     hint.id = "m-rh-" + ++rangeN;
     r.setAttribute("aria-describedby", hint.id);
     row.append(hint);
@@ -328,7 +353,7 @@ function ecoSeg() {
 function calmSwitch() {
   const row = el("label", "m-row");
   const txt = el("span");
-  txt.append(el("b", "", t("preset_calm")), el("small", "", t("calmSwitchHint")));
+  txt.append(el("b", "", t("preset_calm")), hintEl(t("calmSwitchHint")));
   const cb = el("input");
   cb.type = "checkbox";
   cb.setAttribute("role", "switch");
@@ -355,15 +380,13 @@ function playLevel() {
   });
   s.dataset.key = "lyrPlayLevel";
   s.setAttribute("aria-label", t("lyrPlayLevel"));
-  return [head(t("lyrPlayLevel"), t("lyrPlayLevelHint")), s];
+  return field(t("lyrPlayLevel"), t("lyrPlayLevelHint"), s);
 }
 // Zahl mit eigenem Wort bei 0 („aus“, „beliebig viele“)
 const rangeZero = (key, max, zero) => range(key, 0, max, 1, "", null, (v) => v || t(zero));
-// Regeln für Songwünsche: nur sichtbar, solange Wünsche an sind (Schalter zeichnet die Einstellungen neu)
+// Regeln für Songwünsche: Unter-Einstellungen von „Songwünsche“ – gesperrt, solange Wünsche aus sind
 function wishRules() {
-  const box = el("div", "m-wishrules");
-  box.hidden = !cfg.partyWishes;
-  const row = el("label", "m-row");
+  const row = el("label", "m-row m-row-text");
   const txt = el("span");
   txt.append(el("b", "", t("wishBlock")));
   const inp = el("input", "m-text");
@@ -374,8 +397,7 @@ function wishRules() {
     save();
   };
   row.append(txt, inp);
-  box.append(head(t("wishRules"), t("wishRulesHint")), rangeZero("wishMax", 5, "wishNoLimit"), row, toggle("wishClean", () => {}), rangeZero("wishAuto", 10, "wishOff"));
-  return box;
+  return sub("partyWishes", head(t("wishRules"), t("wishRulesHint")), rangeZero("wishMax", 5, "wishNoLimit"), row, toggle("wishClean", () => {}), rangeZero("wishAuto", 10, "wishOff"));
 }
 // Fernbedienung: eigener QR-Code nur für dich, nur auf Knopfdruck und nach zwei Minuten wieder weg
 // (wer ihn abfotografiert, steuert deine Musik)
@@ -507,7 +529,9 @@ const decode = (prefix, text) => {
 // mehrere Wörter müssen alle passen. Treffer leuchten über die CSS-Highlight-API auf (ohne das DOM anzufassen).
 let query = "";
 const LABEL = ".m-row, .m-schemes-head, .m-note";
-const SKIP = "summary, .m-search-bar, .m-search-none, .m-version, .m-sr, .m-section-reset";
+// Unter-Einstellungen (.m-sub) und Zwischentitel sind keine eigene Einheit: ihre Zeilen werden einzeln gesucht,
+// der Kasten verschwindet per CSS, wenn nichts in ihm passt; Zwischentitel blendet die Suche ganz aus
+const SKIP = "summary, .m-search-bar, .m-search-none, .m-version, .m-sr, .m-section-reset, .m-sub, .m-sub-off, .m-subhead";
 const plain = (x) => String(x).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
 // übersetzter Text → englischer Text (nur einmal gebaut, nur wenn nicht ohnehin Englisch)
 let toEn = null;
@@ -576,11 +600,14 @@ let openBefore = null;
 function applySearch(box) {
   const q = query.trim(), ws = words(q);
   const units = [];
-  for (const parent of [box, ...box.querySelectorAll("details.m-group")]) {
+  for (const parent of [box, ...box.querySelectorAll("details.m-group, .m-sub")]) {
     let unit = null;
+    // Treffer zählen für die Gruppe, auch wenn sie in einer Unter-Einstellung liegen
+    const grp = parent.closest("details.m-group") || parent;
     for (const c of parent.children) {
-      if (c.matches(SKIP)) continue;
-      if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent }));
+      // oben im Dialog: die Gruppen selbst sind keine Zeilen (sonst hingen sie an der Einheit davor)
+      if (c.matches(SKIP) || (parent === box && c.matches("details"))) continue;
+      if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent: grp }));
       unit.els.push(c);
     }
   }
@@ -606,7 +633,7 @@ function applySearch(box) {
     // passt nur der Gruppenname: die ganze Gruppe zeigen
     const whole = !!q && !hit.has(d) && matches(textOf([d.querySelector("summary")]), ws);
     if (whole) {
-      for (const c of d.children) if (!c.matches("summary, .m-section-reset")) c.classList.remove("m-hide");
+      for (const c of d.querySelectorAll(".m-hide")) if (!c.matches(".m-section-reset")) c.classList.remove("m-hide");
       found++;
     }
     d.classList.toggle("m-hide", !!q && !hit.has(d) && !whole);
@@ -626,10 +653,58 @@ function applySearch(box) {
   const say = box.querySelector(".m-search-say");
   const msg = !q ? "" : found ? t("searchCount").replace("{n}", found) : t("searchNone");
   if (say && say.textContent !== msg) say.textContent = msg;
+  if (!q) clampHints(box);
+}
+// Lange Hinweise: zwei Zeilen (CSS line-clamp), darunter „mehr“ – nur wo der Text wirklich abgeschnitten ist.
+// Gemessen wird nur, was sichtbar ist (zugeklappte Gruppen haben kein Layout): nach dem Aufbau, beim Aufklappen
+// einer Gruppe und wenn sich die Breite ändert. Beim Suchen steht jeder Hinweis ganz da (CSS), gemessen wird dann nicht.
+function clampHints(box) {
+  if (box.classList.contains("is-searching")) return;
+  const todo = [...box.querySelectorAll(".m-hint:not(.is-measured)")].filter((h) => h.getClientRects().length);
+  // erst alles lesen, dann schreiben: ein Layout für alle Hinweise statt eines je Hinweis
+  const long = todo.map((h) => h.scrollHeight > h.clientHeight + 2);
+  todo.forEach((h, i) => {
+    h.classList.add("is-measured");
+    if (!long[i] || h.nextElementSibling?.classList.contains("m-more")) return;
+    const more = el("button", "m-more");
+    more.type = "button";
+    // Text nur über CSS (data-label): so landet „mehr“ weder in der Suche noch im Vorlesetext des Hinweises
+    more.dataset.label = t("hintMore");
+    more.setAttribute("aria-label", t("hintMore"));
+    more.setAttribute("aria-expanded", "false");
+    more.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const open = h.classList.toggle("is-open");
+      more.dataset.label = more.ariaLabel = t(open ? "hintLess" : "hintMore");
+      more.setAttribute("aria-expanded", String(open));
+    };
+    h.after(more);
+  });
+}
+function watchHints(box) {
+  box.addEventListener("toggle", () => clampHints(box), true);
+  let w = 0, raf = 0;
+  const ro = new ResizeObserver(([e]) => {
+    const nw = Math.round(e.contentRect.width);
+    if (!box.isConnected) return ro.disconnect();
+    if (nw === w || raf) return;
+    w = nw;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      // neue Breite: neu messen (offen gelassene Hinweise bleiben offen)
+      for (const h of box.querySelectorAll(".m-hint.is-measured:not(.is-open)")) {
+        h.classList.remove("is-measured");
+        if (h.nextElementSibling?.classList.contains("m-more")) h.nextElementSibling.remove();
+      }
+      clampHints(box);
+    });
+  });
+  ro.observe(box);
 }
 const SEARCH_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5"/></svg>';
 // erstes Bedienelement im ersten Treffer (Enter / Pfeil runter im Suchfeld springt dorthin)
-const firstHit = (box) => [...box.querySelectorAll("input:not(.m-search), select, button, summary")].find((x) => !x.closest(".m-hide, .m-search-bar, .m-search-none, .m-section-reset") && shown(x));
+const firstHit = (box) => [...box.querySelectorAll("input:not(.m-search), select, button:not(.m-more), summary")].find((x) => !x.disabled && !x.closest(".m-hide, .m-search-bar, .m-search-none, .m-section-reset") && shown(x));
 function searchBar(box) {
   const bar = el("div", "m-search-bar");
   const ic = el("span", "m-search-ic");
@@ -721,12 +796,9 @@ function render(box) {
     "perf",
     t("presetTitle"),
     true,
-    head(t("presetPick"), t("presetHint")),
-    presets,
-    cfg.preset === "custom" && el("small", "m-note", t("presetCustom")),
-    head(t("eco"), t("ecoHint")),
-    ecoSeg(),
-    head(t("fpsHead")),
+    field(t("presetPick"), t("presetHint"), presets, cfg.preset === "custom" && el("small", "m-note", t("presetCustom"))),
+    field(t("eco"), t("ecoHint"), ecoSeg()),
+    subhead(t("fpsHead")),
     toggle("autoPerf"),
     toggle("partyQuietFps", () => {})
   ));
@@ -734,7 +806,7 @@ function render(box) {
   kids.push(sectionReset(group("comfort", t("g_comfort"), true, toggle("noFlash"), calmSwitch())));
 
   // ---- Schemata
-  kids.push(head(t("scheme"), t("schemeHint")));
+  // ---- Schemata: oben in der Gruppe „Farben“ (früher frei zwischen den Gruppen)
   const pick = el("div", "m-schemes");
   pick.setAttribute("role", "group");
   for (const [name, sc] of Object.entries(SCHEMES)) {
@@ -745,6 +817,8 @@ function render(box) {
     b.style.setProperty("--s-a", "#" + sc.button);
     b.style.setProperty("--s-b", "#" + sc.notification);
     b.style.setProperty("--s-c", "#" + sc["button-active"]);
+    // Name in der Schriftfarbe des Schemas: auf seiner eigenen Fläche immer lesbar (hell wie dunkel)
+    b.style.setProperty("--s-text", "#" + sc.text);
     b.innerHTML = `<span class="m-sw${name === "Mirage" ? " is-live" : ""}"><i></i><i></i><i></i></span><span></span>`;
     b.lastChild.textContent = name;
     b.onclick = () => {
@@ -771,7 +845,6 @@ function render(box) {
     }
     pick.append(b);
   }
-  kids.push(pick);
 
   // ---- Farben dieses Songs / dieser Playlist
   const item = currentItem();
@@ -801,7 +874,7 @@ function render(box) {
       })
     );
   }
-  if (tools.childElementCount) kids.push(tools);
+  const schemeField = field(t("scheme"), t("schemeHint"), pick, tools.childElementCount && tools);
 
   // ---- Gruppen
   preloadFonts();
@@ -811,7 +884,7 @@ function render(box) {
     applyFont();
   });
   Object.keys(FONTS).forEach((k, i) => (fontSeg.children[i].style.fontFamily = stackOf(k)));
-  kids.push(sectionReset(group("colours", t("g_colours"), false, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), head(t("font"), t("fontHint")), fontSeg), ["font"], refreshColors));
+  kids.push(sectionReset(group("colours", t("g_colours"), true, schemeField, toggle("dynamic", refreshColors), toggle("freeze", refreshColors), field(t("font"), t("fontHint"), fontSeg)), ["font"], refreshColors));
   kids.push(sectionReset(
     group(
       "background",
@@ -820,12 +893,13 @@ function render(box) {
       toggle("particles"),
       toggle("beat"),
       toggle("grain"),
-      toggle("glass"),
       range("bright", 40, 160, 1, " %", () => {
         root.style.setProperty("--m-bright", String(cfg.bright / 100));
         root.classList.toggle("mirage-bright-adjust", cfg.bright !== 100);
       }),
-      range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px"))
+      toggle("glass"),
+      // die Unschärfe wirkt nur mit echtem Glas: darunter eingerückt, ohne Glas gesperrt
+      sub("glass", range("blur", 0, 60, 1, " px", () => root.style.setProperty("--m-blur", cfg.blur + "px")))
     )
   ));
   kids.push(sectionReset(group("motion", t("g_motion"), false, toggle("cascade"), toggle("vinyl"), toggle("tilt"), toggle("burst"))));
@@ -842,7 +916,7 @@ function render(box) {
       // i-playful: verspielter Stil (baut den Text neu auf – die Wörter brauchen dann eigene Elemente)
       toggle("lyrPlayful", () => immersive.reloadLyrics()),
       // Stärke des verspielten Stils – nur sichtbar, solange er an ist (der Schalter zeichnet die Einstellungen neu)
-      ...(cfg.lyrPlayful ? playLevel() : []),
+      sub("lyrPlayful", playLevel()),
       range("syncOffset", -400, 400, 10, " ms", null, (v) => (v > 0 ? "+" : "") + v + " ms"),
       toggle("translate", () => immersive.reloadLyrics()),
       toggle("romanize", () => immersive.reloadLyrics())
@@ -866,8 +940,7 @@ function render(box) {
       t("g_viz"),
       false,
       toggle("canvas", () => immersive.refresh()),
-      head(t("vizSection"), t("vizSectionHint")),
-      vizSeg,
+      field(t("vizSection"), t("vizSectionHint"), vizSeg),
       range("vizBars", 48, 180, 12, ""),
       range("vizHeight", 50, 200, 10, " %"),
       range("vizSmooth", 1, 10, 1, ""),
@@ -884,8 +957,7 @@ function render(box) {
       "party",
       t("g_party"),
       false,
-      head(t("ps_style"), t("partySectionHint")),
-      select(
+      field(t("ps_style"), t("partySectionHint"), select(
         [["", [["auto", t("party_auto")]]], ...Object.entries(FAMILIES).map(([f, keys]) => [t("fam_" + f), keys.map((k) => [k, t("party_" + k)])])],
         cfg.partyStyle,
         (k) => {
@@ -894,21 +966,20 @@ function render(box) {
           immersive.refresh();
         },
         [t("partyFind"), t("partyFindNone")]
-      ),
-      head(t("partyLevel"), t("partyLevelHint")),
-      seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
+      )),
+      field(t("partyLevel"), t("partyLevelHint"), seg([1, 2, 3, 4, 5].map((n) => [n, t("partyLevel" + n)]), cfg.partyLevel, (k) => {
         cfg.partyLevel = k;
         save();
-      }),
-      el("small", "m-note", t("partyVenue")),
-      seg(["auto", "club", "warehouse", "cellar", "jazzbar", "pub", "neon", "rooftop", "festival", "forest", "desert", "stadium", "beach", "skihut", "space", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
+      })),
+      field(t("partyVenue"), null, seg(["auto", "club", "warehouse", "cellar", "jazzbar", "pub", "neon", "rooftop", "festival", "forest", "desert", "stadium", "beach", "skihut", "space", "cathedral", "hall", "home"].map((k) => [k, t("venue_" + k)]), cfg.partyVenue, (k) => {
         cfg.partyVenue = k;
         save();
-      }),
-      head(t("ps_light")),
+      })),
+      subhead(t("ps_light")),
       toggle("partyRig", () => {}),
       toggle("partyInstruments", () => {}),
-      toggle("instrSound", () => {}),
+      // am Klang erkennen ergänzt die Instrument-Erkennung: nur mit ihr
+      sub("partyInstruments", toggle("instrSound", () => {})),
       toggle("partyFlash", () => {}),
       toggle("partyLasers", () => {}),
       toggle("partyMelody", () => {}),
@@ -916,41 +987,43 @@ function render(box) {
       toggle("partyStrobe", () => {}),
       toggle("partyZoom", () => {}),
       toggle("partyBlend", () => {}),
-      head(t("ps_moments")),
+      subhead(t("ps_moments")),
       toggle("partyDirector", () => {}),
       toggle("partySlowmo", () => {}),
       toggle("partyDJ", () => {}),
       toggle("partyHype", () => immersive.reloadLyrics()),
       toggle("partyWords", () => immersive.reloadLyrics()),
-      head(t("partyExplicit"), t("partyExplicitHint")),
-      seg(["on", "soft", "off"].map((k) => [k, t("partyExplicit_" + k)]), cfg.partyExplicit || "on", (k) => {
+      field(t("partyExplicit"), t("partyExplicitHint"), seg(["on", "soft", "off"].map((k) => [k, t("partyExplicit_" + k)]), cfg.partyExplicit || "on", (k) => {
         cfg.partyExplicit = k;
         save();
-      }),
+      })),
       toggle("partyHandsUp", () => {}),
       toggle("partyFlashStorm", () => {}),
       toggle("partyFog", () => {}),
       toggle("partyDrones", () => {}),
       toggle("partyShatter", () => {}),
-      head(t("ps_crowd")),
+      subhead(t("ps_crowd")),
       toggle("partyCrowd", () => {}),
       toggle("partyJamLight", () => {}),
       toggle("partyJam", () => {}),
-      head(t("ps_extras")),
+      subhead(t("ps_extras")),
       toggle("partyLive", () => cfg.partyLive && live.prepare()),
-      toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
-      wishRules(),
-      toggle("partyReacts", () => {}),
-      // ausgeschaltet: wartende und gezeigte Fotos sofort vergessen
-      toggle("partyPhotos", () => cfg.partyPhotos || live.clearPhotos()),
-      head(t("partyWave"), t("partyWaveHint")),
-      seg([[0, t("waveOff")], [1, t("waveSeq")], [2, t("waveGroups")]], cfg.partyWave || 0, (k) => {
-        cfg.partyWave = k;
-        save();
-      }),
-      livePanel(),
+      // alles, was über die Handys läuft (Wünsche, Reaktionen, Fotos, Lichtwelle), gibt es nur mit dem Live-Link
+      sub(
+        "partyLive",
+        livePanel(),
+        toggle("partyWishes", () => window.dispatchEvent(new Event("mirage:wishes"))),
+        wishRules(),
+        toggle("partyReacts", () => {}),
+        // ausgeschaltet: wartende und gezeigte Fotos sofort vergessen
+        toggle("partyPhotos", () => cfg.partyPhotos || live.clearPhotos()),
+        field(t("partyWave"), t("partyWaveHint"), seg([[0, t("waveOff")], [1, t("waveSeq")], [2, t("waveGroups")]], cfg.partyWave || 0, (k) => {
+          cfg.partyWave = k;
+          save();
+        }))
+      ),
       toggle("partyRecap", () => immersive.refresh()),
-      head(t("ps_screen")),
+      subhead(t("ps_screen")),
       toggle("partyScreen", () => immersive.refresh()),
       toggle("partyEdge", () => {}),
       toggle("partyIdle", () => {})
@@ -988,8 +1061,11 @@ function render(box) {
     render(box);
   };
   const colorsNow = () => Object.fromEntries(Object.entries(picks).map(([k, i]) => [k, i.value.slice(1).toUpperCase()]));
-  const bActions = el("div", "m-actions");
+  // Name mit Speichern und Weitergeben in einer Zeile, darunter der Code eines anderen Schemas mit Laden
+  const bActions = el("div", "m-inline");
+  const bImport = el("div", "m-inline");
   bActions.append(
+    nameIn,
     button(t("schemeSave"), () => {
       const name = nameIn.value.trim().slice(0, 24);
       if (!name || BUILT_IN.includes(name)) return notify(t("schemeNameTaken"), true);
@@ -998,7 +1074,10 @@ function render(box) {
     button(t("schemeCopy"), async () => {
       const code = encode("MIRAGE-SCHEME:", { name: nameIn.value.trim() || "My scheme", colors: colorsNow() });
       try { await navigator.clipboard.writeText(code); notify(t("copied")); } catch { codeIn.value = code; }
-    }),
+    })
+  );
+  bImport.append(
+    codeIn,
     button(t("schemeImport"), () => {
       const d = decode("MIRAGE-SCHEME:", codeIn.value);
       if (!d?.colors?.accent) return notify(t("badCode"), true);
@@ -1006,12 +1085,13 @@ function render(box) {
       saveScheme(name, d.colors);
     })
   );
-  kids.push(group("builder", t("g_builder"), false, builder, nameIn, bActions, codeIn));
+  kids.push(group("builder", t("g_builder"), false, builder, bActions, bImport));
 
   // ---- Overlay: Status + passender Installer für dieses System
   const os = String(S.Platform?.operatingSystem || navigator.platform || "").toLowerCase();
   const file = /win/.test(os) ? "Mirage-Overlay-Setup.exe" : /mac|osx|darwin/.test(os) ? "Mirage-Overlay.dmg" : "Mirage-Overlay.AppImage";
-  const ovState = el("small", "m-note", t(bridge.connected() ? "overlayConnected" : "overlayMissing"));
+  const ovOn = bridge.connected();
+  const ovState = el("small", "m-status " + (ovOn ? "is-on" : "is-off"), t(ovOn ? "overlayConnected" : "overlayMissing"));
   const ovRow = el("div", "m-actions");
   ovRow.append(
     button(t("overlayDownload"), () => window.open(`https://github.com/Passimoritz/spicetify-mirage/releases/latest/download/${file}`, "_blank"), "is-primary"),
@@ -1019,14 +1099,16 @@ function render(box) {
   );
   // ---- Bibliothek: Tempo/Tonart in Titellisten · Dubletten-Suche sitzt im Rechtsklick-Menü der Playlists
   kids.push(group("library", t("g_library"), false, toggle("libBpm", () => bpm.refresh()), el("small", "m-note", t("libDupNote"))));
-  kids.push(group("overlay", t("g_overlay"), false, toggle("overlay"), ovState, ovRow));
+  const ovBox = el("div", "m-row m-field");
+  ovBox.append(ovState, ovRow);
+  kids.push(group("overlay", t("g_overlay"), false, toggle("overlay"), ovBox));
   // ---- System: was Mirage aus dem Netz holt und wie es sich selbst repariert
   kids.push(sectionReset(
     group(
       "system",
       t("g_system"),
       false,
-      el("small", "m-note", t("systemNote")),
+      el("small", "m-note m-intro", t("systemNote")),
       toggle("remoteFix", () => refreshRemote(true)),
       toggle("onlineLyrics", () => immersive.reloadLyrics()),
       toggle("partyOnline", () => immersive.refresh())
@@ -1102,7 +1184,22 @@ function render(box) {
       render(box);
     }, "is-danger")
   );
-  kids.push(group("more", t("g_more"), false, foot, dataIn));
+  // statt einer Wand aus elf Knöpfen: Teilen · Sichern (mit dem Code-Feld) · Hilfe, Zurücksetzen allein am Ende
+  const fb = [...foot.children];
+  const rowOf = (from, to, cls = "m-actions") => {
+    const r = el("div", cls);
+    r.append(...fb.slice(from, to));
+    return r;
+  };
+  kids.push(group(
+    "more",
+    t("g_more"),
+    false,
+    field(t("moreShare"), null, rowOf(0, 3)),
+    field(t("moreBackup"), null, rowOf(3, 7), dataIn),
+    field(t("moreHelp"), null, rowOf(7, 10)),
+    rowOf(10, 11, "m-actions m-danger")
+  ));
 
   kids.push(el("small", "m-note", t("tip")), el("small", "m-note m-version", `Mirage ${VERSION}`));
 
@@ -1168,6 +1265,7 @@ function openSettings(opts) {
   const from = document.activeElement;
   const box = el("div", "mirage-settings");
   render(box);
+  watchHints(box);
   S.PopupModal.display({ title: "Mirage", content: box, isLarge: true });
   modalFocus(box, from);
   if (!want) return;

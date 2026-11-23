@@ -2562,40 +2562,105 @@ html.mirage-beat #mirage-stage .m-pulse {
 /* ==========================================================================
    EINSTELLUNGEN (Popup)
    ========================================================================== */
+/* Ein Raster für alle Einstellungen (1.32): jede Einstellung ist eine Zeile (.m-row) – Name und Hinweis links,
+   Bedienelement rechts (Schalter) oder darunter (.m-field: Knopfreihen, Listen, Karten). Gleiche Innenabstände,
+   gleiche Höhen der Bedienelemente, Hinweise höchstens zwei Zeilen („mehr“ klappt sie auf, settings.js clampHints).
+   Unter-Einstellungen (.m-sub) stehen eingerückt mit Führungslinie unter ihrem Schalter und sind gesperrt, solange
+   er aus ist. Farben kommen aus wenigen Variablen, das helle Schema setzt nur diese neu. */
 .mirage-settings {
+  --ms-gap: 8px;
+  --ms-radius: 14px;
+  --ms-row: rgba(255, 255, 255, 0.045);
+  --ms-row-hover: rgba(255, 255, 255, 0.075);
+  --ms-ctl: rgba(255, 255, 255, 0.06);
+  --ms-ctl-line: var(--m-line-strong);
+  --ms-ctl-h: 36px;
+  --ms-off: rgba(255, 255, 255, 0.18);
+
   display: grid;
-  gap: 6px;
-  min-width: 400px;
+  gap: 10px;
+  min-width: min(400px, 100%);
   font-family: var(--m-font);
 }
 .mirage-settings .m-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  gap: 10px 16px;
+  box-sizing: border-box;
+  min-height: 58px;
+  padding: 12px 14px 12px 16px;
+  border-radius: var(--ms-radius);
+  background: var(--ms-row);
+  cursor: pointer;
+  transition: background 0.2s var(--m-ease);
+}
+.mirage-settings label.m-row:not(.is-blocked):hover {
+  background: var(--ms-row-hover);
+}
+/* Name und Hinweis untereinander, mit festem Abstand */
+.mirage-settings .m-row:not(.m-range) > span:first-child,
+.mirage-settings .m-schemes-head {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.mirage-settings .m-row b,
+.mirage-settings .m-schemes-head b {
+  display: block;
+  font: 600 14px / 1.35 var(--m-font);
+  color: var(--spice-text);
+  overflow-wrap: anywhere;
+}
+.mirage-settings .m-hint {
+  display: -webkit-box;
+  overflow: hidden;
+  font: 400 12.5px / 1.45 var(--m-font);
+  color: var(--spice-subtext);
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.mirage-settings .m-hint.is-open,
+.mirage-settings.is-searching .m-hint {
+  display: block;
+}
+/* „mehr“ / „weniger“: Text aus data-label (nicht in der Suche, nicht doppelt vorgelesen) */
+.mirage-settings .m-more {
+  justify-self: start;
+  margin: -1px 0 0;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--spice-text);
+  font: 600 12px / 1.4 var(--m-font);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--m-a-rgb), 0.7);
+  text-underline-offset: 3px;
   cursor: pointer;
 }
-.mirage-settings .m-row b {
-  display: block;
-  font-weight: 600;
-  color: var(--spice-text);
+.mirage-settings .m-more::after {
+  content: attr(data-label);
 }
-.mirage-settings .m-row small {
-  color: var(--spice-subtext);
+.mirage-settings.is-searching .m-more {
+  display: none;
 }
 .mirage-settings input[type="checkbox"] {
   appearance: none;
+  justify-self: end;
   width: 44px;
   height: 24px;
+  margin: 0;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--ms-off);
   position: relative;
   cursor: pointer;
   flex: none;
   transition: background 0.3s var(--m-ease);
+}
+.mirage-settings input[type="checkbox"]:focus-visible {
+  outline-offset: 3px;
 }
 .mirage-settings input[type="checkbox"]::after {
   content: "";
@@ -2617,6 +2682,65 @@ html.mirage-beat #mirage-stage .m-pulse {
 .mirage-settings input[type="range"] {
   accent-color: var(--m-a);
   width: 150px;
+}
+/* Zeilen mit Bedienelement darunter: Knopfreihen, Auswahllisten, Karten, Knöpfe */
+.mirage-settings .m-row.m-field {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  cursor: default;
+}
+.mirage-settings .m-field > :is(.m-seg, .m-actions, .m-schemes, .m-select-find, .m-text) {
+  margin: 0;
+}
+/* Beschriftung links, Textfeld rechts (Sperrliste) */
+.mirage-settings .m-row.m-row-text {
+  grid-template-columns: auto minmax(0, 1fr);
+  cursor: default;
+}
+/* Zwischentitel in einer Gruppe: leise, klein, mit Luft nach oben; beim Suchen unnötig */
+.mirage-settings .m-group > .m-subhead {
+  margin: 18px 6px 0;
+  font: 700 11px / 1.3 var(--m-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--spice-subtext);
+}
+.mirage-settings.is-searching .m-subhead {
+  display: none;
+}
+/* Unter-Einstellungen: eingerückt, Führungslinie in der Akzentfarbe; gesperrt blass mit „Nur mit …“ */
+.mirage-settings .m-sub {
+  display: grid;
+  gap: var(--ms-gap);
+  margin-left: 14px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(var(--m-a-rgb), 0.45);
+}
+.mirage-settings .m-sub > .m-schemes-head {
+  padding: 4px 4px 0;
+}
+.mirage-settings .m-sub.is-off {
+  border-left-color: var(--m-line-strong);
+}
+.mirage-settings .m-sub.is-off > :not(.m-sub-off) {
+  opacity: 0.5;
+}
+.mirage-settings .m-sub.is-off .m-row {
+  cursor: default;
+}
+.mirage-settings .m-sub.is-off label.m-row:hover {
+  background: var(--ms-row);
+}
+.mirage-settings .m-sub-off {
+  padding: 2px 4px 0;
+  font: 600 12px / 1.4 var(--m-font);
+  color: var(--spice-subtext);
+}
+.mirage-settings :is(input, select, button):disabled {
+  cursor: not-allowed;
+}
+.mirage-settings input[type="checkbox"]:disabled {
+  opacity: 0.6;
 }
 /* Regler (settings.js range): Name und Wert oben, Spur mit Füllung in der Akzentfarbe, Striche, Enden, Kosten.
    Beim Ziehen ändert sich nur --p am Regler selbst: kein Neu-Layout der Zeile, nur der Regler wird neu gemalt. */
@@ -2712,7 +2836,7 @@ html.mirage-beat #mirage-stage .m-pulse {
   content: attr(data-hi);
 }
 .mirage-settings .m-range .m-range-hint {
-  font-size: 12px;
+  margin-top: 2px;
 }
 /* Blitz als Linienzeichnung (wie die Symbole in icons.js) statt Emoji */
 .mirage-settings .m-range-hint.is-cost::before {
@@ -3573,22 +3697,11 @@ input:-webkit-autofill {
 /* ==========================================================================
    FARBSCHEMA-AUSWAHL in den Mirage-Einstellungen
    ========================================================================== */
-.mirage-settings .m-schemes-head {
-  padding: 4px 4px 0;
-}
-.mirage-settings .m-schemes-head b {
-  display: block;
-  font-weight: 600;
-  color: var(--spice-text);
-}
-.mirage-settings .m-schemes-head small {
-  color: var(--spice-subtext);
-}
+/* Schema-Karten: so viele je Reihe, wie hineinpassen (sechs im normalen Fenster), Name in der Schriftfarbe des Schemas */
 .mirage-settings .m-schemes {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
   gap: 8px;
-  margin: 6px 0 10px;
 }
 .mirage-settings .m-scheme {
   display: grid;
@@ -3596,9 +3709,9 @@ input:-webkit-autofill {
   justify-items: center;
   padding: 10px 6px 8px;
   border: 1px solid var(--m-line);
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--s-main);
-  color: var(--spice-subtext);
+  color: var(--s-text, var(--spice-text));
   font: 600 12px var(--m-font);
   cursor: pointer;
   transition: transform 0.35s var(--m-spring), border-color 0.3s, box-shadow 0.3s;
@@ -3607,7 +3720,6 @@ input:-webkit-autofill {
   transform: translateY(-2px);
 }
 .mirage-settings .m-scheme[aria-pressed="true"] {
-  color: #fff;
   border-color: var(--s-a);
   box-shadow: 0 10px 26px -12px var(--s-a), inset 0 0 0 1px var(--s-a);
 }
@@ -3723,43 +3835,54 @@ html.mirage-calm .Root *::after {
 }
 
 /* Visualizer-Stilwahl in den Mirage-Einstellungen */
+/* Knopfreihen: wenige Wahlmöglichkeiten nebeneinander (bricht bei schmalem Fenster um, jeder Knopf gleich hoch),
+   viele (is-wrap: Visualizer, Location) als gleichmäßiges Raster über die ganze Breite */
 .mirage-settings .m-seg {
-  display: inline-flex;
-  gap: 2px;
-  padding: 4px;
-  margin: 6px 0 4px;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 3px;
+  margin: 0;
+  border-radius: 12px;
+  background: var(--ms-ctl);
   border: 1px solid var(--m-line);
   width: fit-content;
 }
 .mirage-settings .m-seg.is-wrap {
-  flex-wrap: wrap;
-  max-width: 100%;
-  border-radius: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  width: 100%;
 }
 .mirage-settings .m-seg button {
+  min-height: 32px;
   border: 0;
   background: none;
   color: var(--spice-subtext);
-  font: 600 13px var(--m-font);
-  padding: 8px 16px;
-  border-radius: 99px;
+  font: 600 13px / 1.2 var(--m-font);
+  padding: 6px 14px;
+  border-radius: 9px;
   cursor: pointer;
-  transition: color 0.3s, background 0.3s;
+  text-wrap: balance;
+  transition: color 0.2s, background 0.2s;
 }
 .mirage-settings .m-seg button[aria-pressed="true"] {
   color: #0b0a12;
   background: var(--m-a);
 }
-.mirage-settings .m-seg button:not([aria-pressed="true"]):hover {
-  background: rgba(var(--m-a-rgb), 0.12);
+.mirage-settings .m-seg button:not([aria-pressed="true"]):hover:not(:disabled) {
+  color: var(--spice-text);
+  background: rgba(var(--m-a-rgb), 0.14);
+}
+.mirage-settings .m-seg button:disabled {
+  opacity: 0.6;
 }
 /* Presets als Karten: Name, Leistungsbalken oben rechts, kurze Zeile darunter */
 .mirage-settings .m-seg.m-presets {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 8px;
   width: 100%;
   padding: 0;
   border: 0;
@@ -3772,11 +3895,12 @@ html.mirage-calm .Root *::after {
   align-content: start;
   justify-items: start;
   gap: 3px;
+  min-height: 64px;
   padding: 10px 12px;
   border: 1px solid var(--m-line);
-  border-radius: 14px;
+  border-radius: 12px;
   text-align: left;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--ms-ctl);
 }
 .mirage-settings .m-presets button[aria-pressed="true"] {
   border-color: transparent;
@@ -3864,12 +3988,16 @@ html.mirage-light #mirage-stage .m-aurora {
 html.mirage-light #mirage-stage .m-vignette {
   opacity: 0.2;
 }
-html.mirage-light .mirage-settings .m-row,
-html.mirage-light .mirage-settings .m-seg {
-  background: rgba(29, 26, 43, 0.045);
+/* Einstellungen im hellen Schema: dieselben Flächen, dunkel statt hell getönt. Ein eingeschalteter Schalter ist
+   voll in der Akzentfarbe (vorher überschrieb die Regel für „aus“ auch „an“: beide sahen grau aus). */
+html.mirage-light .mirage-settings {
+  --ms-row: rgba(29, 26, 43, 0.05);
+  --ms-row-hover: rgba(29, 26, 43, 0.08);
+  --ms-ctl: rgba(29, 26, 43, 0.045);
+  --ms-off: rgba(29, 26, 43, 0.24);
 }
-html.mirage-light .mirage-settings input[type="checkbox"] {
-  background: rgba(29, 26, 43, 0.2);
+html.mirage-light .mirage-settings input[type="checkbox"]:checked {
+  background: var(--m-a);
 }
 html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
   color: #fff;
@@ -3877,8 +4005,9 @@ html.mirage-light .mirage-settings .m-seg button[aria-pressed="true"] {
 html.mirage-light .mirage-settings .m-seg.m-presets {
   background: none;
 }
-html.mirage-light .mirage-settings .m-presets button:not([aria-pressed="true"]) {
-  background: rgba(29, 26, 43, 0.045);
+/* Fokusring in der Schriftfarbe: die helle Leitfarbe des Rings verschwindet auf hellem Grund */
+html.mirage-light .mirage-settings :focus-visible {
+  outline-color: var(--spice-text) !important;
 }
 /* Der Immersiv-Modus bleibt auch im hellen Schema dunkel: er bekommt die Leitfarben für dunklen Grund
    (color.js/config.js schreiben sie als --m-ia/--m-ib/--m-ic) und die dunkle Schrift darauf zurück */
