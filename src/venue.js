@@ -15,8 +15,19 @@ const rgbaF = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 
 // Abfall eines Kegels: wie vorher (Mitte ~35 %), nur glatt statt in zwei geraden Stücken
 const coneFall = (u) => (1 - u) ** 1.6;
 
-function createVenue(makeCanvas) {
+// Messung (tools/party-perf.js): Zeit je Ebene, neue Leuchtbilder, Körperbilder und Canvas – nur mit st.prof,
+// sonst kostet sie nichts (ein Vergleich je Ebene)
+const PROF = ["stage", "rig", "decor", "inst", "fx", "sfx", "fog", "drones", "crowd", "reacts", "fade"];
+function createVenue(mkCanvas) {
   let vw = 0, vh = 0;
+  const prof = { on: false, ms: new Float64Array(PROF.length), n: 0, glowMiss: 0, bodyMiss: 0, canvases: 0, t: 0 };
+  const makeCanvas = (w, h) => (prof.canvases++, mkCanvas(w, h));
+  const lap = (k) => {
+    if (!prof.on) return;
+    const n = performance.now();
+    prof.ms[k] += n - prof.t;
+    prof.t = n;
+  };
   // Bühnenlicht: jedes Genre hat seine eigene Lichtsprache. Alles mit „lighter“ – Licht addiert sich wie echtes.
   // Leuchtpunkt-Bild je Farbe, einmal gerendert: 90 Discokugel-Punkte kosten dann nur drawImage
   // Zwei Größen: 64 px für kleine Punkte, 256 px für große Scheine (Bodenlicht, Rückwand – bis ~1000 px gestreckt).
@@ -58,6 +69,7 @@ function createVenue(makeCanvas) {
       map.set(k, cv);
       return cv;
     }
+    prof.glowMiss++;
     // voll: das am längsten unbenutzte Canvas für die neue Farbe wiederverwenden
     if (map.size >= (big ? 16 : 64)) {
       const old = map.keys().next().value;
@@ -78,11 +90,16 @@ function createVenue(makeCanvas) {
     map.set(k, cv);
     return cv;
   }
-  // neue Songfarben: die Leuchtbilder der drei Lichtfarben vorab bereitlegen (nicht erst im Szenenwechsel)
-  let warmKey = "";
-  function warmGlows(pal) {
-    const k = pal.map((c) => c.map((v) => Math.round(v / 4)).join(",")).join("|");
+  // neue Songfarben: die Leuchtbilder der drei Lichtfarben vorab bereitlegen (nicht erst im Szenenwechsel) – aber erst,
+  // wenn die Farben eine halbe Sekunde stehen: gleiten sie (Melodie, Übergänge), wären die meisten vorab gemalten
+  // Bilder (sechs je neuer Farbe, drei davon 256 px) schon veraltet, bevor sie jemand braucht (tools/party-perf.js)
+  let warmKey = "", warmSeen = "", warmAt = 0;
+  function warmGlows(pal, t) {
+    const p0 = pal[0], p1 = pal[1], p2 = pal[2];
+    const k = (p0[0] >> 2) + "," + (p0[1] >> 2) + "," + (p0[2] >> 2) + "|" + (p1[0] >> 2) + "," + (p1[1] >> 2) + "," + (p1[2] >> 2) + "|" + (p2[0] >> 2) + "," + (p2[1] >> 2) + "," + (p2[2] >> 2);
     if (k === warmKey) return;
+    if (k !== warmSeen) [warmSeen, warmAt] = [k, t];
+    if (t - warmAt < 0.5) return;
     warmKey = k;
     for (const c of pal) {
       glowSprite(c);
@@ -979,8 +996,10 @@ function createVenue(makeCanvas) {
   const SEA = new Set(["ballad", "gospel", "soul", "rnb", "blues", "country", "cinematic", "chill", "classical", "acoustic", "christmas", "postrock", "musical"]);
   kinSet(SEA, "l");
   const sea = { a: 0 };
-  function seaLevel(px, dt, st) {
-    const on = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp((px.energy - 0.32) * 2.2, 0, 1) : 0;
+  // (dazu jeder langsame, leise Song im Refrain, in der Bridge und im Outro – crowd.js dance().sea)
+  function seaLevel(px, dt, st, D) {
+    const genre = SEA.has(px.key) && (st.bpm || 120) < 120 && px.energy > 0.32 && !px.blackout ? clamp((px.energy - 0.32) * 2.2, 0, 1) : 0;
+    const on = Math.max(genre, (D?.sea || 0) * clamp((px.energy - 0.18) * 3, 0, 1));
     sea.a += (on - sea.a) * (1 - Math.exp(-dt * (on > sea.a ? 0.8 : 0.5)));
     return sea.a;
   }
@@ -1178,6 +1197,7 @@ function createVenue(makeCanvas) {
     if (sp) return sp;
     // Palettenwechsel: höchstens ein paar Dutzend neue Bilder je Bild – wer noch keins hat, behält kurz das alte
     if (spriteBudget-- <= 0) return null;
+    prof.bodyMiss++;
     if (bodySprites.size >= 200) bodySprites.delete(bodySprites.keys().next().value);
     const S = p.sc * 1.14 * u, W = BUILD[p.wd], pad = 2;
     const bwU = Math.max(46 * W, seated ? 52 : 0);
@@ -1244,10 +1264,11 @@ function createVenue(makeCanvas) {
     // Vorher bekam die Menge jede Zwischenfarbe der Licht-Überblendung – beim Songwechsel malte sie so zwei
     // Sekunden lang in jedem Bild Dutzende Körperbilder neu, und die Bildrate halbierte sich.
     const src = st.crowdPal || pal;
-    if (!crowd.palC || src.some((c, i) => c.some((x, k) => Math.abs(x - (crowd.palC[i]?.[k] ?? -99)) > 18))) crowd.palC = src.map((c) => c.map((x) => Math.round(x / 6) * 6));
+    if (!crowd.palC || src.some((c, i) => c.some((x, k) => Math.abs(x - (crowd.palC[i]?.[k] ?? -99)) > 18))) [crowd.palC, crowd.palU] = [src.map((c) => c.map((x) => Math.round(x / 6) * 6)), -1];
     const cp = crowd.palC;
-    palKey = `${cp[0].join()}|${cp[1].join()}|${cp[2].join()}`;
-    const pk = `${palKey}|${u.toFixed(2)}`;
+    // Schlüssel nur neu bauen, wenn sich Farben oder Größe ändern (sonst zwei neue Zeichenketten je Bild)
+    if (crowd.palU !== u) [crowd.palU, palKey, crowd.pkNow] = [u, `${cp[0].join()}|${cp[1].join()}|${cp[2].join()}`, `${cp[0].join()}|${cp[1].join()}|${cp[2].join()}|${u.toFixed(2)}`];
+    const pk = crowd.pkNow;
     if (crowd.pk !== pk) {
       crowd.pk = pk;
       crowd.T = v.rows.map((_, lv) => tones(v.rows.length > 1 ? lv / (v.rows.length - 1) : 1, cp));
@@ -1257,8 +1278,8 @@ function createVenue(makeCanvas) {
     spriteBudget = 4;
     firstBudget = 12;
     const X = mind.mood(px, dt, st.hype), t = st.t;
-    const D = dance(px, X, v.seated), style = D.style;
-    const SEAa = seaLevel(px, dt, st);
+    const D = dance(px, X, v.seated, st.bpm), style = D.style;
+    const SEAa = seaLevel(px, dt, st, D);
     // Schlagphase (0 = Schlag): schnelle Songs bewegen sich im halben Tempo
     const half = st.bpm > 150;
     const beatN = px.beatIdx >= 0 ? px.beatIdx : Math.floor(t * (st.bpm / 60));
@@ -1421,14 +1442,16 @@ function createVenue(makeCanvas) {
       const inSea = SEAa > 0.05 && hash(p.id, 7) < 0.15 + 0.65 * SEAa;
       const gadget = inSea ? p.gadget || (hash(p.id, 9) < 0.55 ? "phone" : "lighter") : p.gadget;
       // „Hands up“: im Refrain gehen (fast) alle Hände gleichzeitig hoch – beide Arme, als großes V
-      const allUp = !v.seated && (st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92;
+      // (dazu im Refrain ein Teil der Menge von selbst – wer, steht je Person fest: crowd.js dance().hands)
+      const allUp = !v.seated && (((st.handsUp || 0) > 0.05 && hash(p.id, 11) < 0.92) || (D.hands > 0 && me > 0.4 && hash(p.id, 13) < D.hands));
       const au = armsUp(D, me, p.up);
       let wantUp = allUp ? 1 : v.seated && !inSea ? 0 : lifted || inWave || au === 1 ? 1 : inSea ? 0.9 : p.gadget && me < 0.5 ? 0.8 : au;
       if (!v.seated && build > 0.2 && me > 0.4 && p.up < 0.6) wantUp = Math.max(wantUp, 0.55 * build);
       p.arm += (wantUp - p.arm) * (1 - Math.exp(-dt * 5));
       const clapOn = style === "clap" && (inBar === 1 || inBar === 3) ? down : 0;
       const Wb = BUILD[p.wd];
-      for (const side of [-1, 1]) {
+      // (Zählschleife statt „of [-1, 1]“: kein neues Feld je Person und Bild)
+      for (let side = -1; side <= 1; side += 2) {
         // der zweite Arm geht nur ganz mit hoch (halb gehobene Arme sähen wie Zeigen aus)
         const a = side === p.hand || allUp || me > 0.6 || style === "clap" || lifted ? p.arm : 0;
         // hängende Arme gehören zur Silhouette des Körperbilds – erst gehobene Arme werden einzeln gezeichnet
@@ -1552,6 +1575,8 @@ function createVenue(makeCanvas) {
   function draw(ctx, st) {
     vw = st.vw;
     vh = st.vh;
+    prof.on = !!st.prof;
+    if (prof.on) [prof.t, prof.n] = [performance.now(), prof.n + 1];
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1;
     const vNext = VENUES[st.venue] || VENUES[AUTO_VENUE[st.px.key] || "stadium"];
@@ -1568,7 +1593,7 @@ function createVenue(makeCanvas) {
     }
     lastV = vNext;
     ctx.clearRect(0, 0, vw, vh);
-    if (st.pal) warmGlows(st.pal);
+    if (st.pal) warmGlows(st.pal, st.t);
     // Pause: das Publikum blendet weich aus (stillstehend tanzen sähe falsch aus) und kommt mit der Musik zurück
     crowdA += ((st.crowd && !st.paused ? 1 : 0) - crowdA) * (1 - Math.exp(-(st.dt || 0.016) * (st.paused ? 3 : 2)));
     if (!st.stage && crowdA < 0.01) {
@@ -1585,14 +1610,19 @@ function createVenue(makeCanvas) {
     stageCam(ctx, st);
     if (st.stage) {
       drawStage(ctx, st.pal, st.px, rgba, st.cx, st.cy, st.R, st.dpr, st.dt, st, v);
+      lap(0);
       show.drawRig(ctx, st, v, st.px, st.pal, st.dpr);
+      lap(1);
       drawDecor(ctx, v, st.px, st.pal, rgba, st.dpr, st);
+      lap(2);
     }
     if (st.inst) {
       show.drawInst(ctx, st, st.px, st.pal, st.dpr);
       ifx.draw(ctx, st);
+      lap(3);
     }
     drawFx(ctx, st, v, st.px, st.pal, st.dpr);
+    lap(4);
     wordJump = 0;
     if (st.stage && (st.px.scn || st.cues?.length)) {
       hv = v;
@@ -1601,11 +1631,16 @@ function createVenue(makeCanvas) {
       wordJump = cr.jump;
       if (cr.hands > (st.handsUp || 0)) st.handsUp = cr.hands;
     }
+    lap(5);
     if (st.stage && st.fog) drawFog(ctx, st, v);
+    lap(6);
     if (st.stage && v.open) drawDrones(ctx, st);
+    lap(7);
     if (crowdA > 0.01) drawCrowd(ctx, st.px, st.pal, st.dpr, rgba, st.dt, st, v, crowdA);
+    lap(8);
     // Reaktionen der Gäste: vor der Menge, im unteren Viertel
     rfx.draw(ctx, st);
+    lap(9);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     if (vT && vSnap) {
       const f = clamp((st.t - vT) / V_FADE, 0, 1), e = f * f * (3 - 2 * f);
@@ -1622,9 +1657,19 @@ function createVenue(makeCanvas) {
       }
     }
     ctx.globalCompositeOperation = "source-over";
+    lap(10);
+  }
+  // Messwerte seit dem letzten Abruf (und zurücksetzen): Millisekunden je Ebene, neue Bilder, Größe der Speicher
+  function stats() {
+    const ms = {};
+    PROF.forEach((k, i) => (ms[k] = Math.round(prof.ms[i] * 100) / 100));
+    const out = { n: prof.n, ms, glowMiss: prof.glowMiss, bodyMiss: prof.bodyMiss, canvases: prof.canvases, glows: glowSmall.size + glowBig.size, bodies: bodySprites.size, people: crowd?.people.length || 0 };
+    prof.ms.fill(0);
+    prof.n = prof.glowMiss = prof.bodyMiss = prof.canvases = 0;
+    return out;
   }
 
-  return { draw, glowSprite };
+  return { draw, glowSprite, stats };
 }
 
 export { createVenue };

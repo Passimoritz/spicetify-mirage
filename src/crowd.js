@@ -28,6 +28,8 @@ const VERSE = { jump: "bounce", pump: "pump", bounce: "bounce", bang: "bang", cl
 // Springen: Anteil der Leute, die überhaupt springen dürfen, je Bewegung (im Refrain/Drop)
 const JUMP = { jump: 1, pump: 1, bounce: 1, bang: 0.45, clap: 0.45, skank: 0.25, wave: 0.6, nod: 0, sway: 0 };
 const CALM = new Set(["intro", "outro", "break"]);
+// leise Gefühle (mood.js): in langsamen Songs gehen dazu Feuerzeuge und Handys hoch statt der Fäuste
+const SOFT_MOOD = new Set(["tender", "sad", "melancholic", "dreamy", "calm"]);
 
 // Stimmung der Menge 0..1: träge (schnell hoch, langsam runter), beim Drop sofort oben
 function createCrowdMind() {
@@ -43,8 +45,10 @@ function createCrowdMind() {
 }
 
 // Tanz für dieses Bild: Bewegung, Sprung-Anteil (jump), ab welcher Stimmung Hände hochgehen (upAt),
-// Mitklatschen im Aufbau (clap 0..1) und In-die-Knie-Gehen vor dem Drop (crouch 0..1)
-function dance(px, X, seated) {
+// Mitklatschen im Aufbau (clap 0..1), In-die-Knie-Gehen vor dem Drop (crouch 0..1), Anteil mit beiden Händen oben
+// (hands 0..1: im Refrain, im Finale fast alle) und Lichtermeer (sea 0..1: Feuerzeuge und Handys in langsamen,
+// leisen Songs – im Refrain am meisten). bpm = Tempo (langsam: bis 100)
+function dance(px, X, seated, bpm = 120) {
   const base = seated ? "sway" : MOVES[px.key] || "clap";
   const kind = px.kind || "";
   let style = base, jump = JUMP[base] ?? 0, upAt = 0.55, clap = 0;
@@ -72,7 +76,15 @@ function dance(px, X, seated) {
   }
   // in Spannung vor dem Drop in die Knie, auf dem dunklen letzten Schlag ganz unten
   const crouch = clamp(Math.max(px.build || 0, px.tension || 0) + (px.blackout ? 0.4 : 0), 0, 1);
-  return { style, base, jump, upAt, clap, crouch };
+  // Refrain: Hände hoch (wer tanzt, je mehr Stimmung, desto mehr) – im Drop springen sie lieber, im Finale fast alle
+  const calmBase = base === "sway" || base === "nod";
+  let hands = kind === "chorus" ? (calmBase ? 0.12 : 0.25 + 0.4 * clamp((X - 0.45) / 0.4, 0, 1)) : kind === "drop" ? 0.2 : 0;
+  if (px.finale && (kind === "chorus" || kind === "drop")) hands = Math.max(hands, 0.6);
+  // langsam und leise: Feuerzeuge und Handys statt Fäuste
+  const soft = SOFT_MOOD.has(px.mood) || base === "sway";
+  const sea = !seated && !px.blackout && (bpm || 120) <= 100 && soft && (kind === "chorus" || kind === "bridge" || kind === "outro") ? (kind === "chorus" ? 0.85 : 0.5) : 0;
+  if (sea) hands = Math.min(hands, 0.1);
+  return { style, base, jump, upAt, clap, crouch, hands: seated ? 0 : hands, sea };
 }
 
 // Springt diese Person in diesem Sprung? me = ihre Stimmung, h = ihr fester Zufall je Takt (0..1)

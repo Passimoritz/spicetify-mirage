@@ -3,11 +3,12 @@ import { cfg, save } from "./config.js";
 import { audio } from "./audio.js";
 import { createFlashCap } from "./flashcap.js";
 import { songMap, at, STEP } from "./songmap.js";
-import { planSong, cue } from "./director.js";
+import { planSong, cue, avoidOf } from "./director.js";
 import { KIN, baseOf } from "./styles.js";
 import { LOOKS, FAMILIES, pickGenre, manualFor, familyOf } from "./genres.js";
 import { deezer, itunes, previewSound } from "./sources.js";
 import { isJump, createJumpFade } from "./steady.js";
+import { wipeDur } from "./fxenv.js";
 import { createPlanSwap } from "./planswap.js";
 import { whenIdle } from "./idlework.js";
 import { bassTarget, createBassEnv } from "./bass.js";
@@ -210,22 +211,43 @@ function minorShare(d) {
 const plans = new WeakMap();
 const lyr = { uri: "", lines: null, n: 0, ver: 0 };
 const lyrOf = (uri) => (lyr.uri && lyr.uri === uri ? lyr.n : 0);
-function planFor(d, key, ln) {
+// Setliste des Abends: die Fingerabdrücke (Drop-Bilder, Lichtprogramme, Szenen der Höhepunkte) der zuletzt gezeigten
+// Songs – der nächste Song meidet, was die letzten drei schon hatten (director.js avoidOf). Geplant wird je Song einmal:
+// wer zurückspult oder denselben Song noch einmal hört, sieht dieselbe Show.
+const setlist = [];
+function planFor(d, key, ln, uri = "") {
   let p = plans.get(d);
-  if (!p || p.key !== key || p.ln !== ln) plans.set(d, (p = { key, ln, plan: planSong(d, key, { feat: d.feat, lyrics: ln && ln === lyr.n ? lyr.lines : null }) }));
+  if (!p || p.key !== key || p.ln !== ln || (uri && p.uri !== uri)) {
+    const avoid = uri ? avoidOf(setlist, uri) : null;
+    plans.set(d, (p = { key, ln, uri, plan: planSong(d, key, { feat: d.feat, lyrics: ln && ln === lyr.n ? lyr.lines : null, avoid }) }));
+  }
   return p.plan;
 }
+// ein Song zeigt seine Show: in die Setliste (einmal je Song in Folge, höchstens die letzten acht)
+function noteShown(uri, plan) {
+  if (!uri || !plan?.mark) return;
+  const last = setlist[setlist.length - 1];
+  if (last?.uri === uri) return void (last.mark = plan.mark);
+  setlist.push({ uri, mark: plan.mark });
+  if (setlist.length > 8) setlist.shift();
+}
 // Song-Karte und Plan nie im Bild rechnen, sondern in einer Leerlaufzeit (planswap.js); „|off“ = ohne Lichtregie
-const buildPlan = (d, key, ln) => {
+// (uri: für die Setliste – der Visualizer ohne Party plant ohne sie)
+const buildPlan = (d, key, ln, uri) => {
+  // Messung (tools/party-perf.js): Dauer von Song-Karte und Plan
+  const perf = typeof window !== "undefined" && window.__miragePerf, t0 = perf ? performance.now() : 0;
   const map = d.segs?.length ? songMap(d) : null;
-  return { map, plan: map && !key.endsWith("|off") ? planFor(d, key, ln) : null };
+  const t1 = perf ? performance.now() : 0;
+  const plan = map && !key.endsWith("|off") ? planFor(d, key, ln, uri) : null;
+  if (perf) perf.plan?.(t1 - t0, performance.now() - t1, d.segs?.length || 0);
+  return { map, plan };
 };
-const planSwap = () => createPlanSwap({ build: buildPlan, schedule: (fn) => whenIdle(fn, 100) });
+const planSwap = (set) => createPlanSwap({ build: set ? buildPlan : (d, key, ln) => buildPlan(d, key, ln, ""), schedule: (fn) => whenIdle(fn, 100) });
 
 
 // ohne Analyse oder mit ausgeschalteter Lichtregie: alles neutral, wie vorher
 const NEUTRAL = { i: -1, sect: -1, kind: "", I: 1, speed: 1, beams: 1, sparks: 1, grade: null, flash: 1, fx: 1, haze: 1, tf: 1, wipe: -1, wdir: 1, riser: 0, pulse: 0, dim: 0, lift: 0, wall: 0, vox: 0, swell: 0, pump: 0, boom: 0, sync: 0, scan: 0,
-  mood: "", v: 0, a: 0, soft: 0.2, spread: 1, crowd: 1, fxk: "sparks", sc: -1, spot: "", spot2: "", sx: 1, rig: "" };
+  mood: "", v: 0, a: 0, soft: 0.2, spread: 1, crowd: 1, fxk: "sparks", sc: -1, spot: "", spot2: "", sx: 1, rig: "", rigP: "", colP: "", conv: 0, lead: 0, ramp: 0 };
 const party = (() => {
   let uri = "", picked = "", info = { key: "pop", why: "", bpm: 0 }, token = 0, lastItem = null;
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0, spinTo = 0;
@@ -238,8 +260,8 @@ const party = (() => {
   // Spulen/Songwechsel: der Look der Regie gleitet in 0,6 s in den neuen Teil, statt hart umzuschalten (steady.js)
   const jumpFade = createJumpFade(0.6), moodFade = createJumpFade(0.6);
   // fertig gerechnete Taktdaten + Plan (planswap.js) – je für Party und für die Visualizer-Ansichten
-  const swap = planSwap(), moodSwap = planSwap();
-  let lastPlan = null, lastSwap = null, glowCut = false;
+  const swap = planSwap(true), moodSwap = planSwap(false);
+  let lastPlan = null, lastSwap = null, glowCut = false, lastShown = null;
   // tiefe Töne (bass.js): eigenes, gehaltenes Signal neben der kurzen Kick – mit Hörprobe (wie viel Bass, und in ihrem
   // Ausschnitt der gemessene Verlauf) und ihrer Lage im Song (einmal gesucht, nie im Bild)
   const bassEnv = createBassEnv(), bassSong = { uri: "", prof: null, grid: null, busy: false };
@@ -467,6 +489,11 @@ const party = (() => {
     const jumped = isJump(sec, lastSec, dt) || planJump;
     const jumpDur = planJump && swapped ? R.fade : 0.6;
     lastPlan = plan;
+    // (die Show dieses Songs läuft: in die Setliste, damit die nächsten Songs andere Höhepunkte zeigen)
+    if (plan && plan !== lastShown) {
+      lastShown = plan;
+      noteShown(uri, plan);
+    }
     if (jumped) jumpFade.start(clock, jumpDur);
     const C = jumpFade.apply((plan && cue(plan, sec, { noFlash: cfg.noFlash, level, lite: lite() })) || NEUTRAL, clock);
     if (d && d.segs?.length) {
@@ -641,6 +668,11 @@ const party = (() => {
       if (k >= 1) mix.land = null;
     }
     if (landHit && fx) [dropGlow, glowCut] = [Math.max(dropGlow, cfg.noFlash ? 0.35 : 0.6), false];
+    // Ankunft mit Mix: ein Lichtwisch in den Farben des neuen Songs zieht über die Bühne (gleitet ≥ 0,8 s, auch ohne Blitze)
+    const landWipe = L?.mode === "mix" && L.hit && !lite() ? (clock - L.hitAt) / wipeDur(beatLen) : -1;
+    // Übergabe 0..1: im Ausklang wachsend, bis zur ersten Eins des neuen Songs gehalten (show.js richtet die Köpfe zur
+    // Mitte und lässt sie auf der Landung auseinanderspringen)
+    const hand = cfg.partyDJ && !nxTalk ? (L?.mode === "mix" && !L.hit ? 1 : mixE) : 0;
 
     // --- Gesamtintensität: Energie, Drop-Nachglühen, Break dämpft; Aufbau steigert schrittweise
     if (dropHit) [dropGlow, glowCut] = [1, false];
@@ -746,7 +778,10 @@ const party = (() => {
       // Lichtregie für Bühne, Location und Visualizer: Teil, Farbkorrektur, Bewegungsuhren (mt in Sekunden,
       // mb in Schlägen), Lichtwisch beim Wechsel, Riser, Einsatz, Lichtwand, Spot auf gehaltenen Tönen, Atmen,
       // Pumpen und 808 – ohne Blitze wird alles Pulsende zu ruhigem Glühen
-      sect: C.sect, kind: C.kind, grade: C.grade, speed: C.speed, tf: C.tf, mt: C.mt, mb: C.mb, wipe: fx ? C.wipe : -1, wdir: C.wdir,
+      sect: C.sect, kind: C.kind, grade: C.grade, speed: C.speed, tf: C.tf, mt: C.mt, mb: C.mb,
+      wipe: fx ? (C.wipe >= 0 ? C.wipe : landWipe >= 0 && landWipe < 1 ? landWipe : -1) : -1, wdir: C.wdir,
+      // Lichtprogramme (director.js) und DJ-Übergabe fürs Lichtrig (show.js)
+      rigP: C.rigP, colP: C.colP, conv: fx ? C.conv : 0, lead: fx ? C.lead : 0, ramp: fx ? C.ramp * handDim : 0, hand: fx ? hand : 0,
       riser: C.riser, pulse: fx ? C.pulse : 0, lift: C.lift, wall: fx ? C.wall : 0, vox: fx ? C.vox : 0, swell: C.swell, haze: C.haze,
       pump: fx ? C.pump : 0, boom: fx ? (cfg.noFlash ? boom * 0.35 : boom) : 0, scan: C.scan, sparkMul: C.sparks, fxMul: C.fx,
       glow: fx && C.pump ? C.pump * (cfg.noFlash ? 0.03 : 0.08) * (1 - kickEnv) * I : 0,

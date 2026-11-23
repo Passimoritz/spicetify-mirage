@@ -4,8 +4,9 @@
 // (halbes Tempo im Trap-Break, doppeltes im Drum-&-Bass-Drop) – und nimmt „Keine Blitze“ alles Blitzende heraus?
 const assert = require("assert");
 const { load } = require("./load.js");
-const { planSong, cue, grade, STYLE, LOOK } = load("director.js");
+const { planSong, cue, grade, avoidOf, STYLE, LOOK, RIG_P, COL_P } = load("director.js");
 const { songMap } = load("songmap.js");
+const { DROP_PAL } = load("scenarios.js");
 const { createShow } = load("show.js");
 const { createFlashCap } = load("flashcap.js");
 const { shaped } = require("./songshapes.js");
@@ -152,6 +153,78 @@ for (const [name, key] of SONGS) {
   assert.ok(plan.parts.length >= 5, "Teile aus der Energiekurve");
   for (const p of plan.parts.slice(1)) assert.ok(p.drop || bars.some((b) => near(b, p.t0)), "Wechsel auf der Eins");
   assert.ok(kinds(plan).includes("chorus") && kinds(plan).includes("verse"));
+}
+
+// ---- Lichtprogramme nach dem Aufbau des Songs: ruhige Teile stehen oder wiegen, Höhepunkte gehen weit auf und sehen
+// anders aus als der Aufbau davor; gleiche Teile bekommen dasselbe Programm (der zweite Refrain erkennt man wieder)
+const CALM_P = new Set(["still", "wave", "mirror", "point"]), BIG_P = new Set(["fan", "ballyhoo", "cross", "tilt", "wave"]);
+for (const [name, key] of SONGS) {
+  const plan = planSong(shaped(name), key);
+  for (const p of plan.parts) {
+    assert.ok(RIG_P[p.kind].includes(p.rigP) && COL_P[p.kind].includes(p.colP), `${name}: ${p.kind} hat Programm ${p.rigP}/${p.colP}`);
+    if (["intro", "break", "outro"].includes(p.kind)) assert.ok(CALM_P.has(p.rigP), `${name}: ${p.kind} ruhig (${p.rigP})`);
+    if (p.kind === "drop" || p.kind === "chorus") assert.ok(BIG_P.has(p.rigP), `${name}: Höhepunkt weit (${p.rigP})`);
+  }
+  for (const k of new Set(kinds(plan))) assert.equal(new Set(plan.parts.filter((p) => p.kind === k).map((p) => p.rigP + p.colP)).size, 1, `${name}: alle ${k} gleich`);
+  const pre = plan.parts.find((p) => p.kind === "pre"), peak = plan.parts.find((p) => p.kind === "drop") || plan.parts.find((p) => p.kind === "chorus");
+  if (pre) assert.notEqual(pre.rigP, peak.rigP, `${name}: Höhepunkt anders als der Aufbau`);
+  // ruhige Stile: keine schnellen Programme
+  if (key === "ballad") for (const p of plan.parts) assert.ok(!["chase", "ballyhoo", "cross"].includes(p.rigP), "Ballade: kein " + p.rigP);
+}
+
+// ---- Aufbau → Drop: die Köpfe ziehen sich stetig zusammen, die Lichtrampe steigt, auf dem Drop EIN Leitbild
+{
+  const plan = planSong(shaped("edm"), "edm"), drop = partAt(plan, "drop"), pre = plan.parts[plan.parts.indexOf(drop) - 1];
+  let last = -1;
+  for (let t = pre.t0; t < pre.t1 - plan.beat; t += 0.05) {
+    const c = cue(plan, t, {});
+    assert.ok(c.conv >= last - 1e-9, "Zusammenziehen nur steigend");
+    assert.ok(c.ramp <= c.conv + 1e-9 && c.ramp >= 0, "Rampe folgt dem Aufbau");
+    last = c.conv;
+  }
+  assert.ok(last > 0.85, "am Ende des Aufbaus fast ganz zusammen: " + last);
+  assert.equal(cue(plan, drop.t0 - plan.beat * 0.5, {}).ramp, 0, "auf dem dunklen Schlag keine Rampe");
+  const on = cue(plan, drop.t0 + 0.01, {}), later = cue(plan, drop.t0 + plan.bar * 1.5, {}), mid2 = cue(plan, mid(drop), {});
+  assert.ok(on.lead > 0.95 && on.conv > 0.9, "Drop: Leitbild voll, die Köpfe noch in der Mitte");
+  assert.ok(cue(plan, drop.t0 + plan.beat * 2, {}).conv === 0, "nach anderthalb Schlägen ganz auseinander");
+  assert.ok(cue(plan, drop.t0 + plan.beat * 2, { noFlash: true }).conv > 0.3, "ohne Blitze gleiten sie langsamer auseinander");
+  assert.ok(later.lead < 0.1 && mid2.lead === 0 && mid2.conv === 0 && mid2.ramp === 0, "danach trägt das Programm des Drops");
+  assert.equal(mid2.rigP, drop.rigP);
+  assert.ok(cue(plan, mid(partAt(plan, "break", 1)), {}).lead === 0, "Break ohne Leitbild");
+  assert.equal(cue(plan, pre.t1 - plan.bar, { lite: true }).ramp, cue(plan, pre.t1 - plan.bar, {}).ramp * 0.5, "„Leicht“: halbe Rampe");
+}
+
+// ---- ein Abend mit vielen Songs: Höhepunkte wiederholen weder Drop-Bild noch Lichtprogramm der letzten drei Songs
+{
+  const set = [];
+  const keys = ["house", "house", "house", "house", "edm", "edm", "edm", "techno", "techno", "house", "pop", "pop"];
+  const names = { house: "edm", edm: "edm", techno: "dnb", pop: "rock" };
+  keys.forEach((key, i) => {
+    const d = shaped(names[key]);
+    // jeder Song etwas anders (sonst wäre es derselbe Song mit demselben festen Zufall)
+    d.segs = d.segs.map((x, k) => (k === 3 ? { ...x, l: x.l + i * 0.37 } : x));
+    const uri = "spotify:track:" + i;
+    const plan = planSong(d, key, { avoid: avoidOf(set, uri) });
+    // nie dasselbe wie der Song davor …
+    const prev = set[set.length - 1];
+    if (prev) {
+      for (const dl of plan.mark.dl) assert.ok(!prev.mark.dl.includes(dl), `Song ${i} (${key}): Drop-Bild ${dl} wie im Song davor`);
+      for (const r of plan.mark.rig) assert.ok(!prev.mark.rig.includes(r), `Song ${i} (${key}): Programm ${r} wie im Song davor`);
+    }
+    // … und über drei Songs nur dann etwas doppelt, wenn die Palette des Stils schon ganz gezeigt wurde
+    const win = [...set.slice(-2).map((x) => x.mark), plan.mark];
+    for (const k of ["dl", "rig"]) {
+      const all = win.flatMap((m) => m[k]), uniq = new Set(all).size;
+      const room = k === "dl" ? DROP_PAL[plan.sig.name].length : new Set([...RIG_P.chorus, ...RIG_P.drop]).size - 1;
+      assert.ok(uniq === all.length || uniq >= room - 1, `Song ${i} (${key}): ${k} in drei Songs ${all.join(",")} – Palette hat ${room}`);
+    }
+    set.push({ uri, mark: plan.mark });
+  });
+  // ohne Setliste: derselbe Song plant immer gleich (fester Zufall aus der Analyse)
+  const a = planSong(shaped("edm"), "edm"), b = planSong(shaped("edm"), "edm");
+  assert.deepEqual(a.mark, b.mark);
+  // derselbe Song noch einmal: die Setliste zählt ihn selbst nicht
+  assert.deepEqual(avoidOf([{ uri: "x", mark: a.mark }], "x"), { dl: [], rig: [], scene: [] });
 }
 
 // ---- jede Spielart hat eine Signatur, jeder Teil einen Look

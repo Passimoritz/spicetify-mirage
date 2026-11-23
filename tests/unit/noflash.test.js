@@ -199,6 +199,50 @@ for (let dl = 0; dl < DROP_LOOKS.length; dl++) {
   assert.ok(r.worst <= 3, `Keine Blitze: Lichtrig wechselt ${r.worst}× pro Sekunde bei ${r.where}`);
 }
 
+// ---- Lichtprogramme der Regie (director.js → show.js): jedes Muster mit jedem Farbprogramm (House: ohne die Laserfläche,
+// deren dünne Linien die Messung ohnehin kaum sieht – hier zählt das Rig)
+const { RIG_P, COL_P } = load("director.js");
+const PROGS = [...new Set(Object.values(RIG_P).flat())], COLS = [...new Set(Object.values(COL_P).flat())];
+for (const rigP of PROGS) {
+  for (const colP of COLS) {
+    const show = createShow((c) => String(c), createFlashCap());
+    const r = run((ctx, t) => {
+      show.drawRig(ctx, base(t, { rig: true, flash: false, flashGo: false }), { decor: "club" }, { ...pxAt(t), key: "house", low: 0, I: 1, build: 0, drop: 0, wipe: -1, wdir: 1, mb: t / BEAT, spread: 1, rigP, colP }, pal, 1);
+    }, 3);
+    assert.ok(r.worst <= 3, `Keine Blitze: Programm ${rigP}/${colP} wechselt ${r.worst}× pro Sekunde bei ${r.where}`);
+  }
+}
+// ---- Aufbau → dunkler Schlag → Drop mit Leitbild, so wie die Regie es für einen echten Song plant (EDM-Form): die
+// Köpfe ziehen sich zusammen, die Lichtrampe steigt (ohne Pulsen), ein Schlag dunkel, dann gleiten die Köpfe
+// auseinander (lead) und das Drop-Programm trägt – je um beide Drops, in voller und in halber Qualität
+const { planSong, cue } = load("director.js");
+const { shaped } = require("./songshapes.js");
+{
+  const plan = planSong(shaped("edm"), "edm");
+  for (const drop of plan.parts.filter((p) => p.kind === "drop")) {
+    for (const quality of [2, 1]) {
+      const show = createShow((c) => String(c), createFlashCap());
+      const r = run((ctx, t, age) => {
+        const sec = drop.t0 - 3 + age, C = cue(plan, sec, { noFlash: true });
+        show.drawRig(ctx, base(t, { rig: true, flash: false, flashGo: false, quality }), { decor: "stands" }, {
+          ...pxAt(sec), key: "house", low: 0, I: C.I, build: 0, drop: C.kind === "drop" ? 0.9 : 0, blackout: C.dim >= 1, wipe: C.wipe, wdir: C.wdir, mb: C.mb, spread: C.spread,
+          rigP: C.rigP, colP: C.colP, conv: C.conv, lead: C.lead, ramp: C.ramp, pulse: C.pulse, lift: C.lift, dropHit: Math.abs(sec - drop.t0) < 0.5 / FPS,
+        }, pal, 1);
+      }, 6);
+      assert.ok(r.worst <= 3, `Keine Blitze: Aufbau und Drop bei ${drop.t0.toFixed(1)} s (Qualität ${quality}) wechseln ${r.worst}× pro Sekunde bei ${r.where}`);
+    }
+  }
+}
+// ---- DJ-Übergabe: die Köpfe stehen zur Mitte, auf der ersten Eins des neuen Songs springen sie auseinander
+{
+  const show = createShow((c) => String(c), createFlashCap());
+  const r = run((ctx, t, age) => {
+    const hand = age < 3 ? Math.min(1, age / 2) : 0, land = age >= 3 && age < 3 + 1 / FPS;
+    show.drawRig(ctx, base(t, { rig: true, flash: false, flashGo: false }), { decor: "club" }, { ...pxAt(t), key: "house", low: 0, I: 1, build: 0, drop: 0, wipe: age > 3 && age < 4 ? age - 3 : -1, wdir: 1, mb: t / BEAT, spread: 1, rigP: "wave", colP: "mono", hand, land }, pal, 1);
+  }, 5);
+  assert.ok(r.worst <= 3, `Keine Blitze: Übergabe und Landung wechseln ${r.worst}× pro Sekunde bei ${r.where}`);
+}
+
 // ---- Gegenprobe: die Messung zählt richtig – eine Fläche, die mit 5 Hz bzw. 2 Hz an und aus geht
 // (Grenze der Messung: dünne Linien, die in einem Bild weiter springen als der Abstand der Messpunkte, sieht sie kaum)
 for (const [hz, over] of [[5, true], [2, false]]) {

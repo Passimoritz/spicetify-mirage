@@ -1053,6 +1053,9 @@ Probe-FX: ${pfx}`;
       if (cfg.partyJamLight) {
         const c = (vividPal || imPalette())[i % 3];
         f.style.setProperty("--jc", `rgb(${c.join(",")})`);
+        // Klasse statt [style*="--jc"] im CSS: ein Attribut-Selektor auf „style“ mit Nachfahren ließ jede Stiländerung
+        // im Vollbild (Puls, Fortschritt, Karaoke – jedes Bild) alle Bilder und Spans darunter neu berechnen
+        f.classList.add("has-jc");
       }
       const pic = document.createElement(m.img ? "img" : "span");
       if (m.img) {
@@ -2861,7 +2864,7 @@ Probe-FX: ${pfx}`;
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Bühnenlicht, Dekor und Publikum zeichnet die Location (eigenes Canvas darunter, möglichst eigener Thread)
     venueFrame({
-      t: performance.now() / 1000, dt, vw, vh, dpr, pal, cx, cy, R,
+      t: performance.now() / 1000, dt, vw, vh, dpr, pal: venuePalOf(pal), cx, cy, R,
       // Publikum: die ruhige Grundfarbe des Songs (Cover), nicht die Lichtfarbe dieses Bildes – die gleitet beim
       // Songwechsel über Sekunden und folgt der Melodie, und jede neue Farbe hieß: alle Körperbilder neu malen
       crowdPal: imPalette(),
@@ -2875,6 +2878,10 @@ Probe-FX: ${pfx}`;
         // Lichtregie (director.js)
         mt: px.mt, mb: px.mb, wipe: px.wipe, wdir: px.wdir, pulse: px.pulse, lift: px.lift, wall: px.wall, vox: px.vox, swell: px.swell,
         haze: px.haze, pump: px.pump, boom: px.boom, scan: px.scan, fxMul: px.fxMul,
+        // Lichtprogramme des Teils, Zusammenziehen im Aufbau, Leitbild des Höhepunkts, Lichtrampe, DJ-Übergabe und Landung
+        rigP: px.rigP || "", colP: px.colP || "", conv: px.conv || 0, lead: px.lead || 0, ramp: px.ramp || 0, hand: px.hand || 0, land: !!px.land,
+        // Gefühl des Teils (crowd.js: Feuerzeuge und Handys in langsamen, leisen Songs)
+        mood: px.mood || "",
         // Publikum (crowd.js): Teil des Songs und Spannung vor dem Drop
         kind: px.kind, tension: px.tension,
         // Momente der Musik (director.js): Finale, Tonartwechsel, Stopp, Solo, Drop-Bild …
@@ -3073,6 +3080,14 @@ Probe-FX: ${pfx}`;
     });
   }
 
+  // Lichtfarben für die Location: erst ab einer sichtbaren Änderung (6 Stufen in einem Kanal) neue. Die Farben gleiten
+  // sonst fast jedes Bild ein wenig (Melodie, Tonart, Übergänge) – und jede neue Farbe hieß neue Leuchtbilder im Thread
+  // (gemessen: ~17 je Sekunde, tools/party-perf.js). Leuchtende Flächen zeigen 6 Stufen nicht.
+  let venuePal = null;
+  function venuePalOf(pal) {
+    if (venuePal && venuePal.every((c, i) => Math.abs(c[0] - pal[i][0]) < 6 && Math.abs(c[1] - pal[i][1]) < 6 && Math.abs(c[2] - pal[i][2]) < 6)) return venuePal;
+    return (venuePal = pal.map((c) => [c[0], c[1], c[2]]));
+  }
   /* ---- Party-Location: im Hintergrund-Thread (OffscreenCanvas), sonst hier im Fenster */
   // erst bei Bedarf gebaut und beim Freigeben verworfen: hält im Ersatzfall (ohne Thread) die Körperbilder
   let venueLocal = null;
@@ -3111,7 +3126,11 @@ Probe-FX: ${pfx}`;
         w.postMessage({ type: "init", canvas: off }, [off]);
         w.onerror = () => venueFallback();
         w.onmessage = (e) => {
-          if (e.data?.type === "done") [venueBusy, venueDoneAt] = [false, performance.now()];
+          if (e.data?.type === "done") {
+            [venueBusy, venueDoneAt] = [false, performance.now()];
+            // Messung (tools/party-perf.js): Zeichenzeit und Werte je Ebene aus dem Thread
+            if (e.data.ms != null) window.__miragePerf?.venue?.(e.data);
+          }
           else if (e.data?.type === "ready") [venuePaced, venueDoneAt] = [!!e.data.paced, performance.now()];
         };
         venueWorker = w;
@@ -3162,6 +3181,8 @@ Probe-FX: ${pfx}`;
     clearTimeout(venueDrop);
     venueInit();
     venueOn = true;
+    // Messung (tools/party-perf.js): nur, wenn das Messwerkzeug zuhört
+    if (window.__miragePerf) st.prof = true;
     // Der Thread zeichnet noch? Dann dieses Bild auslassen und die Zeit fürs nächste aufheben –
     // ein Rückstau ließe Publikum und Licht hinterherhinken und ruckweise aufholen
     venueDt = Math.min(0.1, venueDt + st.dt);
@@ -3190,7 +3211,9 @@ Probe-FX: ${pfx}`;
     venueHold.dropHit = venueHold.hit = venueFlashGo = false;
     if (venueCtx) {
       if (q.venueEl.width !== st.vw || q.venueEl.height !== st.vh) [q.venueEl.width, q.venueEl.height] = [st.vw, st.vh];
+      const t0 = st.prof ? performance.now() : 0;
       local().draw(venueCtx, st);
+      if (st.prof) window.__miragePerf?.venue?.({ ms: performance.now() - t0, w: st.vw, h: st.vh, local: true, stats: local().stats() });
     }
   }
   function venueClear() {
@@ -3487,7 +3510,9 @@ Probe-FX: ${pfx}`;
     const pos = songPos(now);
     const dur = PLR.getDuration() || 0;
     // scaleX statt width: kein Neu-Layout in jedem Bild
-    const fillV = dur ? clamp(pos / dur, 0, 1) : 0, fill = `scaleX(${fillV.toFixed(4)})`;
+    // (in 1/2000-Schritten – unter einem Pixel der Leiste: in vier Nachkommastellen änderte sie sich fast jedes Bild,
+    // und jede Änderung hieß eine Stil-Neuberechnung im Hauptthread, tools/party-perf.js)
+    const fillV = dur ? clamp(pos / dur, 0, 1) : 0, fill = `scaleX(${(Math.round(fillV * 2000) / 2000).toFixed(4)})`;
     const mode = el.dataset.mode;
     // seltener zeichnen nur in der Cover-Ansicht, Feder in Ruhe, Maus seit 1,5 s still, keine Blende vom Visualizer
     const sparse = mode === "cover" && tilt.rest && now - depth.at > 1500 && !(vw && now < vizFadeUntil);
@@ -3509,7 +3534,10 @@ Probe-FX: ${pfx}`;
     }
     const shatterOn = VIZ.has(mode) && mode !== "party" && OWN_COVER.has(cfg.vizStyle) && !cfg.calm;
     if (el.classList.contains("is-shatter") !== shatterOn) el.classList.toggle("is-shatter", shatterOn);
+    // Messung (tools/party-perf.js): Zeit für Liedtext und Bild in diesem Aufruf
+    const perf = window.__miragePerf, tp0 = perf ? performance.now() : 0;
     if (LYR.has(mode)) drawLyrics(pos);
+    const tp1 = perf ? performance.now() : 0;
     if (VIZ.has(mode) || (vw && now < vizFadeUntil)) {
       // ein Fehler in einem Bild darf den Visualizer nicht dauerhaft lahmlegen: Zustand zurücksetzen,
       // das nächste Bild fängt sauber neu an
@@ -3528,6 +3556,7 @@ Probe-FX: ${pfx}`;
         if (!vizErr) console.warn("[Mirage] Visualizer:", (vizErr = e));
       }
     }
+    if (perf) perf.main?.(tp1 - tp0, performance.now() - tp1, vw, vh);
     // Jam-Leute alle 3 s nachsehen (wer kommt, wer geht) – nur im Party-Modus
     if (mode === "party" && now - lastJam > 3000) {
       lastJam = now;

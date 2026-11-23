@@ -33,7 +33,7 @@ function createPlanSwap({ build, schedule, look = lookOf }) {
     if (!w || is(ready, w.d, w.key, w.uri, w.ln)) return;
     let out = null;
     try {
-      out = build(w.d, w.key, w.ln);
+      out = build(w.d, w.key, w.ln, w.uri);
     } catch {}
     const next = { ...w, plan: out?.plan ?? null, map: out?.map ?? null };
     next.fade = fadeFor(ready, next, look);
