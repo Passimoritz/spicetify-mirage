@@ -173,8 +173,8 @@ async function fetchLyrics(uri, pick, no, job, net = {}, old = null) {
   // keinen zeitgenauen Text hat (oder nach 0,6 s noch nicht geantwortet hat); sonst stimmt es EINMAL je Song im
   // Hintergrund ab, ob Spotifys Zeiten stimmen, und merkt sich das Urteil eine Woche – Ablauf in lyricflow.js
   const own = uri.startsWith("spotify:track:") && !no.has("spotify");
-  const vote = own && online ? await lyricStore.get(voteKey(uri)) : null;
-  if (signal.aborted) return null;
+  // das gemerkte Urteil kommt aus dem Speicher – parallel, Spotify wird deshalb nicht später gefragt
+  const vote = own && online ? lyricStore.get(voteKey(uri)).then((v) => (v?.fresh ? !!v.v.keep : undefined)) : undefined;
   // Urteil der Abstimmung eintragen: bleibt Spotifys Text, nur das Urteil; sonst auch das neue Ergebnis
   const onVerdict = (keep, best) => {
     lyricStore.put(voteKey(uri), { vote: true, keep });
@@ -199,7 +199,7 @@ async function fetchLyrics(uri, pick, no, job, net = {}, old = null) {
     cap: 6000,
     lazy: true,
     head: old && old.source !== "spotify" ? 0 : 600,
-    verdict: vote?.fresh ? !!vote.v.keep : undefined,
+    verdict: vote,
     idle,
     onVerdict,
     instrumental: online && instrumentalMeta(meta) && !no.has("title"),

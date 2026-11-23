@@ -44,7 +44,8 @@ const idOf = (x) => x?.lrcId ?? x?.neId ?? x?.kgId ?? null;
 //   emit(lyr, force): jedes neue, bessere Ergebnis (force: nicht besser, aber per Abstimmung ersetzt) ·
 //   grace: so lange hat Spotify Vorrang · cap: Obergrenze für alles (`wait` gilt als alter Name dafür) ·
 //   lazy: Sammlungen erst fragen, wenn Spotify keinen zeitgenauen Text hat (oder nach `head` ms noch schweigt) ·
-//   verdict: gemerktes Urteil der Abstimmung (true = Spotifys Text bleibt, false = wurde ersetzt, sonst unbekannt) ·
+//   verdict: gemerktes Urteil der Abstimmung (true = Spotifys Text bleibt, false = wurde ersetzt, sonst unbekannt;
+//   auch als Promise – die Anzeige wartet nicht darauf) ·
 //   idle(fn): führt die Abstimmung im Hintergrund aus (ohne: gleich danach) · onVerdict(keep, best): ihr Urteil
 //   (keep = Spotifys Text bleibt; sonst ist best das neue Ergebnis, schon per emit gemeldet)
 // Abstimmung im Hintergrund: die Sammlungen nacheinander; sobald das Urteil feststeht, wird nicht weiter gefragt
@@ -116,10 +117,24 @@ async function runLyrics(o) {
     return signal?.aborted ? null : best;
   }
   // die Sammlungen (höchstens einmal) losschicken – gezeigt wird ihr Ergebnis erst nach Spotifys Vorrangzeit
-  let srcP = null;
-  const start = () => (srcP ||= (o.sources || []).map((src) => within(src, left(), signal)));
-  // Spotifys Text wurde schon einmal überstimmt (verdict false): dann gleich alle wie früher
-  const lazy = !!o.lazy && o.verdict !== false;
+  // Ergebnisse der Sammlungen zählen erst ab Spotifys Vorrangzeit (live); eine spät gestartete Sammlung hängt sich dann
+  // gleich an
+  let srcP = null, live = false;
+  const pend = [];
+  const hook = () => srcP.forEach((p, i) => pend.push(p.then((r) => consider(r, 1 + i))));
+  const start = () => {
+    if (srcP || signal?.aborted) return;
+    srcP = (o.sources || []).map((src) => within(src, left(), signal));
+    if (live) hook();
+  };
+  // gemerktes Urteil: darf ein Promise sein (Speicher) – die Anzeige wartet nie darauf. Spotifys Text wurde schon
+  // einmal überstimmt (false): dann gleich alle wie früher
+  let verdictV = typeof o.verdict?.then === "function" ? undefined : o.verdict;
+  Promise.resolve(o.verdict).then((v) => {
+    verdictV = v;
+    if (v === false && o.lazy) start();
+  }, () => {});
+  const lazy = !!o.lazy && verdictV !== false;
   if (!lazy) start();
   else {
     await until(ownP, Math.min(o.head ?? 600, grace));
@@ -127,7 +142,6 @@ async function runLyrics(o) {
   }
   await until(ownP, grace - (Date.now() - t0));
   if (signal?.aborted) return null;
-  const pend = [];
   if (ownKnown) {
     ownPrio = !!ownR;
     consider(ownR, 0);
@@ -140,23 +154,30 @@ async function runLyrics(o) {
     start();
     pend.push(ownP.then((r) => consider(r, 0)));
   }
-  srcP?.forEach((p, i) => pend.push(p.then((r) => consider(r, 1 + i))));
-  const all = Promise.all(pend);
+  live = true;
+  if (srcP) hook();
+  // alles bisher Gestartete (auch, was sich noch anhängt)
+  const all = async () => {
+    for (let n = -1; n !== pend.length; ) {
+      n = pend.length;
+      await Promise.all(pend);
+    }
+  };
   // einfacher Text zuletzt und nur, wenn bis dahin gar nichts da ist – spätestens zur Hälfte der Zeit fragen
-  await until(all, left() / 2);
+  await until(all(), left() / 2);
   for (const src of o.last || []) {
     if (best || signal?.aborted || left() <= 0) break;
     const r = await within(src, left(), signal);
     if (!best) consider(r, 90);
   }
-  await until(all, left());
+  await until(all(), left());
   if (signal?.aborted) return null;
   // Urteil über Spotifys zeitgenauen Text: gleich (die Sammlungen liefen mit) oder später im Hintergrund
   // (überstimmt = die Abstimmung hat Spotifys Zeiten verworfen; Wortzeiten zum selben Text mit Karaoke zählen nicht dagegen)
   const verdict = () => o.onVerdict?.(!diag.spotifyOverruled, best);
   if (ownR?.synced && ownPrio) {
     if (srcP) verdict();
-    else if (o.verdict !== true && votable(ownR)) (o.idle || ((fn) => setTimeout(fn, 0)))(() => recheck(verdict));
+    else if (verdictV !== true && votable(ownR)) (o.idle || ((fn) => setTimeout(fn, 0)))(() => recheck(verdict));
   }
   return best;
 

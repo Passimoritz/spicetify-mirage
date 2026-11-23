@@ -324,6 +324,21 @@ const ES = ["Mira las estrellas", "Mira cómo brillan para ti", "Y todo lo que h
     await idle.run();
     assert.deepEqual(verdicts, [true]);
   }
+  // 28. Urteil aus dem Speicher als Promise: Spotify wird nicht später gefragt; „ersetzt“ startet die Sammlungen sofort,
+  //     „stimmt“ spart die Abstimmung
+  {
+    const t0 = Date.now();
+    let ownAt = -1, srcAt = -1;
+    const slowStore = (v) => new Promise((ok) => setTimeout(() => ok(v), 10 * K));
+    const r = await runLyrics({ own: () => ((ownAt = Date.now() - t0), later(40, synced("spotify"))()), online: true, lazy: true, verdict: slowStore(false), sources: [() => ((srcAt = Date.now() - t0), null)] });
+    assert.equal(r.source, "spotify");
+    assert.ok(ownAt < 5 * K, "Spotify sofort gefragt: " + ownAt);
+    assert.ok(srcAt >= 5 * K && srcAt < 30 * K, "Sammlungen gleich nach dem Urteil, nicht erst nach Spotify: " + srcAt);
+    const idle = idleQueue(), n = { c: 0 };
+    await runLyrics({ own: later(20, synced("spotify")), online: true, lazy: true, idle, verdict: slowStore(true), sources: [counted(n, later(5, null))] });
+    assert.equal(idle.q.length, 0);
+    assert.equal(n.c, 0);
+  }
   console.log("lyricflow: ok");
 })().catch((e) => {
   console.error(e);
