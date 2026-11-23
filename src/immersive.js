@@ -49,8 +49,8 @@ import { drawWavefield, drawCoverDust, resetVizExtra } from "./vizextra.js";
 import { createAlbumView } from "./albumview.js";
 import { createClockView } from "./clockview.js";
 // i-playful: verspielter Liedtext-Stil (Entscheidung in lyricstyle.js, Bewegung in user.css)
-import { planPlayful, paintPlayful, beatPhase, barPhase, sungAt, leadPad, PRE_MS } from "./lyricstyle.js";
-import { meaningColors, colorVars } from "./lyriccolor.js";
+import { planSteps, paintSteps, beatPhase, sungAt, leadPad, PRE_MS, notePose, noteColor } from "./lyricstyle.js";
+import { meaningColors, colorVars, noteRing } from "./lyriccolor.js";
 import { loadPlayfulFonts } from "./fonts.js";
 import { lowpass, lowpassHue, fpsDivisor, refreshFrom } from "./fxenv.js";
 
@@ -1595,7 +1595,10 @@ Probe-FX: ${pfx}`;
     };
     // Zeilen in Häppchen: sofort nur bis ein Stück hinter die aktuelle Zeile (das Sichtbare), der Rest folgt in
     // Leerlaufzeiten – ein langer Wort-für-Wort-Text baute sonst alle Zeilen und Wörter im selben Bild
-    const first = Math.min(got.lines.length, Math.max(i0, 0) + LINES_FIRST);
+    // [playful] Zeilen mit einzeln gesetzten Wörtern sind im Layout teurer (Party-Messung: 24 Zeilen am Stück ~46 ms):
+    // kleinere Häppchen
+    const playLines = !!cfg.lyrPlayful && got.synced, stepN = playLines ? 6 : LINES_STEP;
+    const first = Math.min(got.lines.length, Math.max(i0, 0) + (playLines ? 8 : LINES_FIRST));
     for (let i = 0; i < first; i++) frag.append(mkLine(got.lines[i], i));
     // mitten in einer Gleitfahrt: die (noch leere) Fläche bleibt genau dort stehen, wo sie gerade ist
     const glide = from && from !== "none";
@@ -1621,7 +1624,7 @@ Probe-FX: ${pfx}`;
       whenIdle(() => {
         // überholt (neuer Song, besseres Ergebnis, neu geladen): nichts mehr anhängen
         if (token !== lyrToken || lyr !== got || q.inner !== box) return;
-        const part = document.createDocumentFragment(), to = Math.min(got.lines.length, from + LINES_STEP);
+        const part = document.createDocumentFragment(), to = Math.min(got.lines.length, from + stepN);
         for (let i = from; i < to; i++) part.append(mkLine(got.lines[i], i));
         box.append(part);
         more(to);
@@ -1653,7 +1656,7 @@ Probe-FX: ${pfx}`;
   }
   // [playful] Verspielter Stil: Klassen und Variablen einmal je Song (und noch einmal, wenn die Analyse nachkommt) –
   // im Leerlauf, weil das Wörterbuch beim ersten Mal aufgebaut wird. Danach gleitet der Text an seine neue Lage.
-  let playfulKey = null, playGrade = null, playCols = "", playPre = -1;
+  let playfulKey = null, playGrade = null, playCols = "", playPre = -1, playOut = null;
   // [playful] Farben aus der Bedeutung: aus den Leitfarben des Covers neu, sobald die sich ändern (je Zeilenwechsel
   // geprüft, grob gerundet – das Überblenden der Palette löst nicht bei jedem Schritt aus). Alle ≥ 4,5 : 1 (lyriccolor.js)
   function playColors() {
@@ -1663,6 +1666,50 @@ Probe-FX: ${pfx}`;
     if (key === playCols) return;
     playCols = key;
     for (const [k, v] of Object.entries(colorVars(meaningColors(pal, playGrade)))) q.lyrics.style.setProperty(k, v);
+    playRing = noteRing(pal);
+  }
+  // [playful] Im Takt, Bild für Bild aus derselben Songuhr wie die Karaoke (pos inkl. Versatz und Abgleich):
+  // · ♪ in der Instrumental-Lücke wippt – Spitze genau auf jedem Schlag, ohne Knick zwischen den Schlägen, auf der Eins
+  //   groß (lyricstyle.notePose) – und fließt im Takt durch die Leitfarben des Covers (noteColor, alle ≥ 4,5 : 1)
+  // · ein Hook-Wort mit zweiter Schrift (--phf) wechselt sie auf der Eins jedes Takts (höchstens ein Wechsel je Takt)
+  // Still bei Ruhig / Keine Blitze / weniger Bewegung (auch, wenn die Klasse am Dokument gesetzt ist)
+  let playRing = null, playBar = -1;
+  const playStill = () => stillMotion() || !!cfg.noFlash || document.documentElement.classList.contains("mirage-calm") || document.documentElement.classList.contains("mirage-noflash");
+  function playBeat(ln, pos) {
+    const d = audio.uri === lyrUri ? audio.data : null;
+    const still = playStill(), lv = cfg.lyrPlayLevel;
+    if (ln.classList.contains("is-p-note")) {
+      const P = !still && d ? notePose(d.beats, d.bars, pos / 1000, lv === "subtle" ? 0.45 : lv === "wild" ? 1.25 : 1) : null;
+      ln.style.translate = P ? `0 ${P.y.toFixed(3)}em` : "";
+      ln.style.rotate = P ? P.r.toFixed(2) + "deg" : "";
+      const c = !still && d && lv !== "subtle" ? noteColor(playRing, d.beats, d.bars, pos / 1000) : null;
+      if (c) ln.style.setProperty("--pnc", c.join(" "));
+      else ln.style.removeProperty("--pnc");
+      return;
+    }
+    const hw = ln.__hook === undefined ? (ln.__hook = ln.querySelector(".m-w.is-p-hook[style*='--phf']")) : ln.__hook;
+    if (!hw || still || !d?.beats?.length) return;
+    const sec = pos / 1000;
+    let bar = -1;
+    if (d.bars?.length) {
+      let lo = 0, hi = d.bars.length - 1;
+      while (lo <= hi) {
+        const m = (lo + hi) >> 1;
+        if (d.bars[m].t <= sec) (bar = m), (lo = m + 1);
+        else hi = m - 1;
+      }
+    } else {
+      let lo = 0, hi = d.beats.length - 1, k = -1;
+      while (lo <= hi) {
+        const m = (lo + hi) >> 1;
+        if (d.beats[m].t <= sec) (k = m), (lo = m + 1);
+        else hi = m - 1;
+      }
+      bar = k >= 0 ? k >> 2 : -1;
+    }
+    if (bar === playBar) return;
+    playBar = bar;
+    hw.classList.toggle("is-p-hsw", bar >= 0 && bar % 2 === 1);
   }
   // [playful] Takt: Wörter setzen mit Vorlauf ein (genau auf dem Einsatz gelandet), die nächste Zeile nimmt kurz vor
   // ihrem ersten Wort ihre Wartestellung ein. Nur Klassenwechsel beim Überschreiten der Schwellen – dieselbe Uhr wie die
@@ -1670,9 +1717,21 @@ Probe-FX: ${pfx}`;
   // (Vorlauf-Zuschlag = ein Bild der gemessenen Bildschirmrate: 60 Hz ~17 ms, 144 Hz ~7 ms – lyricstyle.leadPad)
   function playMarks(ws, pos) {
     const pad = leadPad(hzNow);
+    let ch = false;
     for (const w of ws || []) {
       const on = sungAt(w, pos, pad);
-      if (on !== !!w.on) w.el.classList.toggle("is-sung", (w.on = on));
+      if (on !== !!w.on) w.el.classList.toggle("is-sung", (w.on = on)), (ch = true);
+    }
+    // Schreibmarke hinter dem zuletzt gesungenen Wort (.is-pcar statt :has() im Stylesheet)
+    if (ch && ws.caret) {
+      let k = -1;
+      for (let j = 0; j < ws.length; j++) if (ws[j].on) k = j;
+      const c = k >= 0 && k < ws.length - 1 ? k : -1;
+      if (c !== ws.cAt) {
+        ws[ws.cAt]?.el.classList.remove("is-pcar");
+        ws.cAt = c;
+        if (c >= 0) ws[c].el.classList.add("is-pcar");
+      }
     }
   }
   function playTick(i, pos, lines) {
@@ -1689,6 +1748,25 @@ Probe-FX: ${pfx}`;
     }
     if (playPre >= 0) playMarks(words[playPre], pos);
   }
+  // Häppchen eines Generators in Leerlaufzeiten, je Aufruf höchstens ~6 ms (so lange der Browser Luft meldet)
+  let playGen = 0;
+  // perFrame (Malen): je Bild höchstens ein Häppchen – das Layout der frisch gesetzten Zeilen (Schriften, Buchstaben)
+  // fällt sonst gesammelt in ein Bild (Party-Messung: 4 Zeilen auf einmal ~56 ms Layout)
+  function playSlices(g, ok, done, perFrame) {
+    const later = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 120 }) : setTimeout(fn, 16));
+    const step = (dl) => {
+      if (!ok()) return;
+      const t0 = performance.now();
+      let r;
+      do r = g.next();
+      while (!perFrame && !r.done && performance.now() - t0 < 6 && (!dl || dl.timeRemaining() > 1));
+      if (r.done) done(r.value);
+      else if (perFrame) requestAnimationFrame(() => later(step));
+      else later(step);
+    };
+    if (perFrame) requestAnimationFrame(() => later(step));
+    else step(null);
+  }
   function playfulSoon(token, fresh) {
     // frisch aufgebaute Zeilen (auch derselbe Text nach dem Umschalten) brauchen ihre Klassen neu
     if (fresh) playfulKey = null;
@@ -1697,6 +1775,7 @@ Probe-FX: ${pfx}`;
       const on = !!cfg.lyrPlayful && !!lyr?.synced && !!lyr.lines?.length;
       const level = ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful";
       q.lyrics.classList.toggle("is-playful", on);
+      el.classList.toggle("is-plyr", on);
       q.lyrics.classList.toggle("is-lv-subtle", on && level === "subtle");
       q.lyrics.classList.toggle("is-lv-wild", on && level === "wild");
       playPre = -1;
@@ -1708,12 +1787,15 @@ Probe-FX: ${pfx}`;
       const ex = explicitMode(), still = stillMotion() || !!cfg.noFlash;
       if (playfulKey?.lyr === lyr && playfulKey.d === d && playfulKey.ex === ex && playfulKey.still === still && playfulKey.level === level) return;
       playfulKey = { lyr, d, ex, still, level };
-      const plan = planPlayful(lyr.lines, words, d, { lexicon: LEX, neg: NEG, explicit: ex, still, level, seed: lyrUri });
-      paintPlayful(q.inner.children, plan, words);
-      playGrade = plan.deck?.grade || null;
-      playCols = "";
-      playColors();
-      placeSoon("glide");
+      // in Häppchen: erst planen, dann malen – die Zeilen um die aktive zuerst. Am Ende (im Leerlauf, wenn das
+      // Layout schon steht) an die neue Lage gleiten: kein erzwungenes Layout des ganzen Texts mitten im Bild
+      const gen = ++playGen, box = q.inner, ok = () => gen === playGen && token === lyrToken && q.inner === box;
+      playSlices(planSteps(lyr.lines, words, d, { lexicon: LEX, neg: NEG, explicit: ex, still, level, seed: lyrUri }), ok, (plan) => {
+        playGrade = plan.deck?.grade || null;
+        playCols = "";
+        playColors();
+        playSlices(paintSteps(box.children, plan, words, active >= 0 ? active : lineAt(lyr.lines, songPos(performance.now()), -2)), ok, () => whenIdle(() => ok() && placeSoon("glide"), 300), true);
+      });
     };
     if (!cfg.lyrPlayful) return run();
     if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 400 });
@@ -2093,6 +2175,10 @@ Probe-FX: ${pfx}`;
       active = i;
       // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben
       if (activeEl) activeEl.style.scale = "";
+      // [playful] der alte ♪ steht wieder still, das alte Hook-Wort kehrt zu seiner Schrift zurück
+      if (activeEl?.classList.contains("is-p-note")) (activeEl.style.translate = activeEl.style.rotate = ""), activeEl.style.removeProperty("--pnc");
+      activeEl?.querySelector(".is-p-hsw")?.classList.remove("is-p-hsw");
+      playBar = -1;
       activeEl?.classList.remove("is-hype");
       // [playful] die alte Zeile gibt ihre gesungenen Wörter frei (kommt man zurück, landen sie wieder)
       if (playOn) for (const w of words[was] || []) if (w.on) w.el.classList.remove("is-sung"), (w.on = false);
@@ -2103,16 +2189,15 @@ Probe-FX: ${pfx}`;
         activeEl?.classList.remove("is-pnext");
         playPre = -1;
       }
+      // [playful] Abgang: die eben gesungene Zeile (direkt vor der neuen) – Klasse statt :has(+ .is-active)
+      playOut?.classList.remove("is-pout");
+      playOut = playOn && i > 0 && was === i - 1 ? lines[was] : null;
+      playOut?.classList.add("is-pout");
       if (playOn) playColors();
       // [playful] Wippen, Schlag-Stoß und hüpfende Wortbilder im Takt: Länge und Lage des Schlags einmal je Zeile
       // (CSS-Animation, kein Rechnen im Bild)
       const bp = playOn && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1000) : null;
       if (bp) activeEl.style.setProperty("--pb", bp.p + "ms"), activeEl.style.setProperty("--pbd", bp.d + "ms");
-      // [playful] ♪ in der Instrumental-Lücke: wippt im Takt, auf der Eins stärker (Lage im Takt)
-      if (playOn && activeEl.classList.contains("is-p-note")) {
-        const bb = audio.uri === lyrUri ? barPhase(audio.data?.beats, audio.data?.bars, pos / 1000) : null;
-        if (bb) activeEl.style.setProperty("--pb", bb.p + "ms"), activeEl.style.setProperty("--pnd", bb.d + "ms");
-      }
       lastBounce = "";
       hypeOn = !!activeEl && cfg.partyHype && el.dataset.mode === "party" && hype.has(i);
       activeEl?.classList.toggle("is-hype", hypeOn);
@@ -2143,7 +2228,10 @@ Probe-FX: ${pfx}`;
     }
     pend?.after?.();
     // [playful] Einsätze mit Vorlauf und die vorbereitete nächste Zeile
-    if (cfg.lyrPlayful && q.lyrics.classList.contains("is-playful")) playTick(i, pos, lines);
+    if (cfg.lyrPlayful && q.lyrics.classList.contains("is-playful")) {
+      playTick(i, pos, lines);
+      if (activeEl) playBeat(activeEl, pos);
+    }
     // Karaoke: nur die Wörter der aktuellen Zeile, und nur wenn sich ihr Stand sichtbar ändert
     const ws = i >= 0 && words[i];
     if (ws) {

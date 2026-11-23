@@ -13,7 +13,7 @@ const { load } = require("./load.js");
 const {
   wordLoud, emphasis, heldNotes, isShout, sectionKind, sectionStyle, adlibPose, isAdlib, voiceSide,
   onBeat, beatPhase, cueOf, cueMatcher, planPlayful, paintPlayful, pickTreatments, syllables, rhymes,
-  motionLoad, TREATMENTS, sungAt, PRE_MS, barPhase, leadPad, LEAD_PAD,
+  motionLoad, TREATMENTS, sungAt, PRE_MS, barPhase, leadPad, LEAD_PAD, planSteps, paintSteps,
 } = load("lyricstyle.js");
 const { RECIPES, songDeck, allowed, wordPose, letterPoses, leadOf, LEAD_MAX, RAP_SET, BALLAD_SET, BRIDGE_SET, ACCENTS, FX_VARIANTS, FX_COUNT, fxVariant, EXITS, HOOKS, exitOf } = load("lyricdeck.js");
 const { PFONTS, PFONTS_URL, scriptsOf, covers, windowFonts, LONG_WORDS, LONG_CHARS } = load("lyricfont.js");
@@ -455,7 +455,10 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   }
   for (const r of media[0].kids) {
     assert.ok(/html:not\(\.mirage-calm, \.mirage-noflash/.test(r.sel), "ohne Ruhig/Keine-Blitze-Schutz: " + r.sel);
-    assert.ok(/\.is-active/.test(r.sel), "Bewegung außerhalb der aktiven Zeile: " + r.sel);
+    // aktive Zeile, oder .is-pout: die Zeile direkt vor ihr (setzt immersive.js beim Zeilenwechsel)
+    assert.ok(/\.is-active|\.is-past\.is-pout/.test(r.sel), "Bewegung außerhalb der aktiven Zeile: " + r.sel);
+    // kein :has() im Bewegungs-Block: es ließ bei jedem Einsatz und Zeilenwechsel Nachbarn neu prüfen (Party-Messung)
+    assert.ok(!r.sel.includes(":has("), ":has() im Bewegungs-Block: " + r.sel);
     for (const [prop, val] of decls(r.body)) {
       if (prop === "transition") {
         for (const part of val.split(/,(?![^(]*\))/)) assert.ok(ALLOWED.has(part.trim().split(/\s+/)[0]), `${r.sel}: Überblendung von „${part.trim()}“`);
@@ -486,7 +489,7 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
     assert.ok(effects.has(cue), "Wortbild ohne CSS: " + cue);
     for (const v of list) if (v.n) assert.ok(names.has(v.n), `Spielart von ${cue}: Schleife ${v.n} fehlt`);
   }
-  for (const n of ["m-l-tide", "m-l-pend", "m-t-punch", "m-p-note", "m-q-pt", "m-p-caret"]) assert.ok(names.has(n), n);
+  for (const n of ["m-l-tide", "m-l-pend", "m-t-punch", "m-q-pt", "m-p-caret"]) assert.ok(names.has(n), n);
   // Helligkeit: kräftige Wechsel (Deckkraft-Sprung ≥ 0,4) nur in bekannten Bewegungen, und die laufen langsam genug
   // für höchstens drei je Sekunde (m-c-glow: Durchgang ≥ 1,4 s; Schreibmarke 1,1 s – je zwei Wechsel)
   const strong = [];
@@ -496,16 +499,17 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
     for (let k = 1; k < ops.length; k++) if (Math.abs(ops[k] - ops[k - 1]) >= 0.4) ch++;
     if (ch) strong.push([fr.sel.replace("@keyframes", "").trim(), ch]);
   }
-  const SLOW = { "m-c-glow": 1.4, "m-p-caret": 1.1, "m-p-drop": 1.5, "m-q-pt": 0.9, "m-a-echo": 0.6, "m-p-drop-in": 0.18 };
+  const SLOW = { "m-c-glow": 1.4, "m-p-caret": 1.1, "m-p-drop": 1.5, "m-q-pt": 0.9, "m-a-echo": 0.6, "m-p-drop-in": 0.18, "m-c-sirena": 1.6, "m-c-sirenb": 1.6 };
   for (const [n, ch] of strong) {
     assert.ok(n in SLOW, "kräftiger Helligkeitswechsel in " + n);
     // Teilchen, Tropfen, Echo und der Drop-Auftritt sind kleine, einmalige Ein-/Ausblendungen – kein Blinken der Schrift
-    if (["m-c-glow", "m-p-caret"].includes(n)) assert.ok((ch * 2) / SLOW[n] <= 3, `${n}: ${ch} Wechsel je ${SLOW[n]} s`);
+    if (["m-c-glow", "m-p-caret", "m-c-sirena", "m-c-sirenb"].includes(n)) assert.ok((ch * 2) / SLOW[n] <= 3, `${n}: ${ch} Wechsel je ${SLOW[n]} s`);
   }
   assert.ok(/animation: m-c-glow max\(var\(--pcd, 1s\), 1\.4s\)/.test(block), "Schein ohne Mindestdauer");
   assert.ok(/animation: m-p-caret 1\.1s/.test(block), "Schreibmarke zu schnell");
   // ♪ wippt nur im Bewegungs-Block (Ruhig/Keine Blitze/weniger Bewegung: still)
-  assert.ok(media[0].kids.some((r) => /\.is-p-note\.is-active/.test(r.sel) && /m-p-note/.test(r.body)), "♪ wippt nicht");
+  // ♪: keine frei laufende CSS-Schleife mehr (die driftete ab) – Bewegung Bild für Bild aus der Songuhr, Farbe im Bewegungs-Block
+  assert.ok(!names.has("m-p-note") && media[0].kids.some((r) => /\.is-p-note\.is-active/.test(r.sel) && /--pnc/.test(r.body)), "♪ ohne Farbe im Takt");
 }
 
 /* ---- An die Zeilen setzen: Klassen, Variablen, Buchstaben – und alles wieder weg */
@@ -684,10 +688,10 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
       const p = wordPose(t, { k, n: 6, dir, amp, len, key: k === 2, seed: "s" });
       assert.ok(Math.abs(p.x || 0) <= 0.6 && Math.abs(p.y || 0) <= 0.45, `${t}: Versatz ${p.x}/${p.y}`);
       const sc = Array.isArray(p.s) ? Math.max(...p.s) : p.s ?? 1;
-      assert.ok(sc <= Math.max(1, Math.min(2.2, 1 + 2.5 / len)) + 1e-9, `${t}: wächst auf ${sc} bei ${len} Zeichen`);
-      // sichtbar gedreht (deckend und nicht winzig): ragt höchstens ~0,45 em über die Zeile
+      assert.ok(sc <= Math.max(1, Math.min(1.3, 1 + 2.5 / len)) + 1e-9, `${t}: wächst auf ${sc} bei ${len} Zeichen`);
+      // sichtbar gedreht (deckend und nicht winzig): ragt höchstens ~0,25 em über die Zeile (nie in die Nachbarzeile)
       const visible = (p.o ?? 1) > 0 && !(sc <= 0.5);
-      if (visible && p.r) assert.ok(Math.sin((Math.min(90, Math.abs(p.r)) * Math.PI) / 180) * 0.3 * len <= 0.46 || Math.abs(p.r) <= 8, `${t}: ${p.r}° bei ${len} Zeichen`);
+      if (visible && p.r) assert.ok(Math.sin((Math.min(90, Math.abs(p.r)) * Math.PI) / 180) * 0.3 * len <= 0.26 || Math.abs(p.r) <= 8, `${t}: ${p.r}° bei ${len} Zeichen`);
     }
   }
 }
@@ -907,7 +911,6 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
     for (const p of plan) if (p.t) {
       assert.equal(p.vars["--pxo"], exitOf(p.t));
       assert.ok(Object.values(EXITS).includes(p.vars["--pxo"]));
-      p.words.forEach((w, k) => assert.equal(w.vars["--wi"], String(k)));
     }
   }
   // ohne Bewegung: der ruhende Satz bleibt (Aufbau, groß, Antwort) – keine Bewegungs-Klassen
@@ -920,7 +923,9 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   // jedes Abgangs-Zeichen gibt es als @keyframes (der Wächter oben prüft die Eigenschaften)
   const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
   for (const n of [...new Set(Object.values(EXITS)), "m-l-moment", "m-l-riser"]) assert.ok(css.includes("@keyframes " + n + " {"), n);
-  assert.ok(/\.m-im-line\.is-past:has\(\+ \.m-im-line\.is-active\) \.m-w \{/.test(css), "Abgang nicht auf die Zeile direkt vor der aktiven beschränkt");
+  assert.ok(/\.m-im-line\.is-past\.is-pout \.m-w \{/.test(css), "Abgang nicht auf die Zeile vor der aktiven beschränkt");
+  const imSrc = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8");
+  assert.ok(/classList\.add\("is-pout"\)/.test(imSrc) && /classList\.add\("is-pcar"\)/.test(imSrc), "immersive.js setzt is-pout/is-pcar nicht");
 }
 
 /* ---- schneller Rap: Silben-Stöße über die gesungene Dauer (Zahl = Silben, Dauer = Silbenabstand) */
@@ -995,6 +1000,185 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   assert.ok(/reducedMotion\.addEventListener\?\.\("change", playfulRestyle\)/.test(im), "weniger Bewegung wirkt erst beim nächsten Song");
   const st = fs.readFileSync(path.join(__dirname, "..", "..", "src", "settings.js"), "utf8");
   assert.ok(/cfg\.lyrPlayLevel = k;[\s\S]{0,160}immersive\.styleLyrics\(\)/.test(st), "Stärke lädt den Liedtext neu");
+}
+
+/* ---- Häppchen (Party-Messung: Planen + Malen am Stück 40–60 ms beim Songwechsel): planSteps gibt zwischen den
+   Zeilen Luft und kommt zum selben Plan; paintSteps malt die Zeilen um die aktive zuerst; ein zweites Malen mit
+   demselben Plan ändert nichts (keine Neuberechnung unveränderter Zeilen) */
+{
+  const s = build("party");
+  const o = { lexicon: LEX, neg: NEG, parts: s.parts, seed: "chunk" };
+  const g = planSteps(s.lines, s.words, null, o);
+  let r = g.next(), steps = 0;
+  while (!r.done) (steps++, (r = g.next()));
+  assert.ok(steps >= 8, "planSteps gibt zu selten Luft: " + steps);
+  assert.deepEqual(JSON.parse(JSON.stringify(r.value)), JSON.parse(JSON.stringify(planPlayful(s.lines, s.words, null, o))));
+  // winziges DOM, zählt Änderungen
+  let muts = 0;
+  const mk = (doc) => {
+    const el = {
+      ownerDocument: doc, children: [], _text: "", dataset: {},
+      classList: {
+        s: new Set(),
+        add(...c) { muts++; c.forEach((x) => this.s.add(x)); },
+        remove(...c) { muts++; c.forEach((x) => this.s.delete(x)); },
+        contains(c) { return this.s.has(c); },
+        [Symbol.iterator]() { return this.s[Symbol.iterator](); },
+      },
+      style: { v: {}, setProperty(k, v) { muts++; this.v[k] = String(v); }, removeProperty(k) { muts++; delete this.v[k]; } },
+      append(...k) { this.children.push(...k); },
+      get firstElementChild() { return this.children[0] || null; },
+      get textContent() { return this.children.length ? this.children.map((c) => c.textContent).join("") : this._text; },
+      set textContent(v) { muts++; this.children = []; this._text = v; },
+    };
+    Object.defineProperty(el, "className", { set(v) { v.split(" ").forEach((c) => el.classList.s.add(c)); } });
+    return el;
+  };
+  const doc = { createElement: () => mk(doc) };
+  const wl = s.words.map((ws) => ws.map((w) => ({ ...w, el: Object.assign(mk(doc), { _text: w.text }) })));
+  const els = s.lines.map(() => mk(doc));
+  const plan = r.value;
+  const at = 20, order = [];
+  const pg = paintSteps(els, plan, wl, at);
+  const painted = () => els.map((e, i) => (e.classList.s.size ? i : -1)).filter((i) => i >= 0);
+  pg.next();
+  order.push(...painted());
+  assert.ok(order.length <= 4 && order.every((i) => Math.abs(i - at) <= 2), "zuerst die Zeilen um die aktive: " + order);
+  while (!pg.next().done);
+  assert.equal(painted().length, plan.filter((p) => p.cls.length).length);
+  muts = 0;
+  paintPlayful(els, plan, wl, at);
+  assert.equal(muts, 0, "zweites Malen mit demselben Plan ändert " + muts + "×");
+  // Analyse kommt nach: nur, was sich ändert
+  const plan2 = planPlayful(s.lines, s.words, null, { ...o, level: "wild" });
+  paintPlayful(els, plan2, wl, at);
+  assert.ok(muts > 0);
+}
+
+/* ---- ♪ im Takt mit einer falschen Uhr (60 Bilder/s): Spitze auf jedem Schlag (±1 Bild), kein Sprung zwischen den
+   Schlägen und Takten, auf der Eins größer; Farbe fließt ohne Sprung durch lesbare Cover-Farben */
+{
+  const { notePose, noteColor } = load("lyricstyle.js");
+  const { noteRing, lyricGrounds } = load("lyriccolor.js");
+  // 120 BPM mit leichtem Wackeln, Takte alle vier Schläge (ab dem zweiten Schlag: Auftakt)
+  const beats = [], bars = [];
+  for (let k = 0, t = 1; k < 64; k++, t += 0.5 + (k % 3 === 0 ? 0.004 : -0.002)) {
+    beats.push({ t });
+    if (k % 4 === 1) bars.push({ t });
+  }
+  const fr = 1 / 60;
+  const P = [];
+  for (let s = beats[0].t; s < beats[60].t; s += fr) P.push([s, notePose(beats, bars, s)]);
+  let jump = 0;
+  for (let k = 1; k < P.length; k++) jump = Math.max(jump, Math.abs(P[k][1].y - P[k - 1][1].y), Math.abs(P[k][1].r - P[k - 1][1].r) / 75);
+  // größter Schritt je Bild: Steigung des Hügels (≤ π·Ausschlag/Schlag) – kein Sprung beim Wechsel von Schlag/Takt
+  assert.ok(jump <= (Math.PI * 0.2 * fr) / 0.5 + 0.002, "♪ springt: " + jump.toFixed(4));
+  for (let k = 2; k < 58; k++) {
+    // Spitze des Hügels: das Bild mit dem größten Ausschlag rund um den Schlag
+    const near = P.filter(([s]) => Math.abs(s - beats[k].t) < 0.2);
+    const top = near.reduce((m, x) => (Math.abs(x[1].y) > Math.abs(m[1].y) ? x : m));
+    assert.ok(Math.abs(top[0] - beats[k].t) <= fr + 1e-9, `Schlag ${k}: Spitze ${((top[0] - beats[k].t) * 1000).toFixed(1)} ms daneben`);
+    const down = bars.some((b) => Math.abs(b.t - beats[k].t) < 0.01);
+    assert.equal(top[1].down, down, "Eins erkannt");
+    if (down) assert.ok(Math.abs(top[1].y) > 0.15, "Eins groß");
+    else assert.ok(Math.abs(top[1].y) < 0.1, "andere Schläge klein");
+  }
+  assert.equal(notePose(null, null, 3), null);
+  // Farbe: lesbar (auch die Mischungen), ohne Sprung an den Taktgrenzen
+  const pals = [[[255, 40, 40], [40, 40, 255], [250, 250, 80]], [[20, 20, 30], [60, 60, 70], [90, 90, 100]], [[255, 255, 255], [200, 255, 200], [255, 200, 255]]];
+  for (const pal of pals) {
+    const ring = noteRing(pal), grounds = lyricGrounds(pal);
+    let prev = null, worst = 99, step = 0;
+    for (let s = bars[0].t; s < bars[10].t; s += fr) {
+      const c = noteColor(ring, beats, bars, s);
+      for (const g of grounds) worst = Math.min(worst, contrast(c, g));
+      if (prev) step = Math.max(step, ...c.map((v, j) => Math.abs(v - prev[j])));
+      prev = c;
+    }
+    assert.ok(worst >= 4.5, "♪-Farbe unter 4,5 : 1: " + worst.toFixed(2));
+    assert.ok(step <= 8, "♪-Farbe springt: " + step);
+  }
+}
+
+/* ---- Hook-Wort wechselt auf der Eins die Schrift: nur kurze Zeilen, nur Schriften des Songs, die das Wort können */
+{
+  const s = build("party");
+  let alt = 0;
+  for (const seed of ["h1", "h2", "h3", "h4", "h5", "h6"]) {
+    for (const [level, still] of [["playful", false], ["wild", false], ["subtle", false], ["wild", true]]) {
+      const plan = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, level, still, seed });
+      plan.forEach((p, i) => p.words.forEach((w, k) => {
+        if (!w.vars["--phf"]) return;
+        assert.ok(level !== "subtle" && !still, "Schriftwechsel bei " + level + (still ? " still" : ""));
+        assert.ok(w.cls.includes("is-p-hook") && s.words[i].length <= 6, "Schriftwechsel auf langer Zeile");
+        const role = w.vars["--phf"].match(/--pf-(\w+)/)[1];
+        assert.ok(plan.deck.fonts.includes(role) && covers(role, s.words[i][k].text) && !["wide", "mono"].includes(role));
+        alt++;
+      }));
+    }
+  }
+  assert.ok(alt > 0, "kein Hook-Wort wechselt je die Schrift");
+}
+
+/* ---- Kategorien: neue Begriffe bekommen über ihre Kategorie eine Bewegung; Gewalt folgt der Einstellung für derbe
+   Inhalte (aus: nichts, sanft: nur Farbe) und erkennt Redewendungen („killing it“, „shot of tequila“, „photo shoot“) */
+{
+  const { CATEGORY_FX, VIOLENT_CATS, categoryOf, cueFor } = load("lyricstyle.js");
+  const cuesOf = (text, explicit = "on", extra = {}) => cueMatcher([{ text }], LEX, { neg: NEG, explicit, ...extra })(text).map((x) => x.cue + (x.calm ? ":calm" : ""));
+  assert.deepEqual(cuesOf("he pulls out a gun"), ["shot"]);
+  assert.deepEqual(cuesOf("ich hab ne Pistole dabei"), ["shot"]);
+  assert.ok(cuesOf("rat-a-tat with the tommy gun").includes("rapid"), "Tommy Gun");
+  assert.ok(cuesOf("Maschinengewehr in der Nacht").includes("rapid"));
+  assert.ok(cuesOf("swing the axe tonight").includes("slash"));
+  assert.ok(cuesOf("they want to kill me").includes("shatter"));
+  assert.ok(cuesOf("blood on the dancefloor").includes("war"));
+  assert.ok(cuesOf("a grenade in his hand").includes("burst"));
+  assert.ok(cuesOf("hear the police sirens").includes("siren"));
+  // Redewendungen: keine Gewalt
+  for (const t of ["we are killing it tonight", "pour a shot of tequila", "photo shoot in the morning", "shoot your shot baby", "ein Schuss Tequila"]) {
+    assert.ok(!cuesOf(t).some((c) => /^(shot|rapid|slash|shatter|war)/.test(c)), "Gewalt in Redewendung: " + t + " → " + cuesOf(t));
+  }
+  // Verneinung über den Wortsinn
+  assert.deepEqual(cuesOf("don't shoot"), [], "verneint");
+  // derbe Inhalte: aus → keine Bewegung, sanft → nur Farbe
+  assert.deepEqual(cuesOf("he pulls out a gun", "off"), []);
+  assert.deepEqual(cuesOf("he pulls out a gun", "soft"), ["shot:calm"]);
+  const plan = planPlayful([{ t: 0, text: "he pulls out a gun" }], [WS("he pulls out a gun", 0)], null, { lexicon: LEX, neg: NEG, explicit: "soft" });
+  const gw = plan[0].words[4];
+  assert.ok(gw.cls.includes("is-k-rage") && !gw.cls.some((c) => c.startsWith("is-c-")) && !gw.chars, "sanft: nur Farbe " + gw.cls);
+  // nicht gewaltsame Kategorien: Fahrzeug, Tier, Essen, Technik, Sport
+  assert.ok(cuesOf("helicopter over the city").includes("zoomby"));
+  assert.ok(cuesOf("a wolf in the night").includes("prowl"));
+  assert.ok(cuesOf("sweet like chocolate").includes("savor"));
+  assert.ok(cuesOf("dancing like a robot").includes("glitchy"));
+  assert.ok(cuesOf("kick the ball").includes("kick"));
+  // Kategorie aus dem Wortsinn (künftige Begriffe aus dem Wörterbuch): unbekannter Begriff → Bewegung über die Kategorie
+  assert.equal(cueFor("rocketlauncher", "weapon"), "shot");
+  assert.equal(cueFor("fire", "weapon"), "flame", "eigene Bewegung geht vor");
+  assert.equal(categoryOf("knife"), "blade");
+  assert.ok(VIOLENT_CATS.has(categoryOf("machinegun")));
+  for (const fx of new Set(Object.values(CATEGORY_FX))) assert.ok(FX_VARIANTS[fx] || ["drift", "bounce", "glint", "float", "bloom", "beat", "shine", "droop", "shiver", "shake", "tick", "wave", "dim", "flame", "drip", "dash", "neon", "burst"].includes(fx), "Kategorie ohne Bewegung: " + fx);
+  // Farben der Kategorien lesbar (Blut, Stahl) – geprüft im Farben-Block über KINDS
+  assert.ok(KINDS.blood && KINDS.steel && CUE_KIND.war === "blood" && CUE_KIND.slash === "steel");
+}
+
+/* ---- jeder Begriff des Wörterbuchs (src/concepts.js) bekommt eine Bewegung: eigene, sonst die seiner Kategorie;
+   Gewalt-Begriffe sind als Gewalt erkannt (folgen der Einstellung für derbe Inhalte) */
+{
+  const { CATEGORIES, GROUPS } = load("concepts.js");
+  const { CATEGORY_FX, VIOLENT_CATS, categoryOf, cueFor } = load("lyricstyle.js");
+  for (const cat of CATEGORIES) if (cat !== "explicit") assert.ok(CATEGORY_FX[cat], "Kategorie ohne Bewegung: " + cat);
+  let n = 0, none = [];
+  for (const [cat, list] of Object.entries(GROUPS)) {
+    if (cat === "explicit") continue;
+    for (const c of list.split(" ")) {
+      n++;
+      if (!cueFor(c)) none.push(c);
+      if (cat === "violence") assert.ok(VIOLENT_CATS.has(categoryOf(c)), "Gewalt nicht erkannt: " + c);
+    }
+  }
+  assert.ok(none.length <= 20, `${none.length} von ${n} Begriffen ohne Bewegung: ${none.join(" ")}`);
+  console.log(`  Kategorien: ${n - none.length}/${n} Begriffe mit Bewegung (ohne: Allerweltswörter ${none.length})`);
 }
 
 console.log("lyricstyle: ok");

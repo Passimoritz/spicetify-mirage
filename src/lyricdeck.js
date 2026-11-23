@@ -90,7 +90,7 @@ const R = {
   // lebhaft
   drop: { e: 2, lead: 170, w: (c) => ({ y: -0.3, r: -5 * c.dir, o: 0.7 }) },
   bounce: { e: 2, lead: 180, ease: "bounce", w: () => ({ y: -0.5, o: 0.6 }) },
-  split: { e: 2, lead: 170, min: 4, max: 10, w: (c) => ({ x: (c.side < 0 ? -0.55 : 0.55) * c.dir, o: 0.7 }) },
+  split: { e: 2, lead: 170, min: 4, max: 10, w: (c) => ({ x: (c.side < 0 ? -0.35 : 0.35) * c.dir, o: 0.4 }) },
   key: { e: 2, lead: 180, keyed: true, w: (c) => (c.key ? { s: 0.55, o: 0.4 } : { o: 0.7 }), acc: "pop" },
   flipx: { e: 2, lead: 180, w: (c) => ({ rx: 85 * c.dir, o: 0.3 }) },
   flipy: { e: 2, lead: 180, w: (c) => ({ ry: -85 * c.dir, o: 0.3 }) },
@@ -221,11 +221,14 @@ function safe(v, len, amp) {
   if (o.y) o.y = clamp(o.y * a, -0.45, 0.45);
   // Drehung: das gedrehte Wort darf höchstens ~0,45 em über seine Zeile hinausragen (halbe Breite ≈ 0,3 em je Zeichen)
   if (o.r) {
-    const lim = (o.s != null && !Array.isArray(o.s) && o.s <= 0.5) || o.o === 0 ? 360 : Math.max(8, (Math.asin(Math.min(1, 0.45 / (0.3 * L))) * 180) / Math.PI);
+    // (ganze Drehungen nur für kurze Wörter, die unsichtbar oder winzig beginnen – ein langes Wort, das sich beim
+    // Auftauchen dreht, fegte über die Nachbarzeilen)
+    const lim = ((o.s != null && !Array.isArray(o.s) && o.s <= 0.5) || o.o === 0) && L <= 3 ? 360 : Math.max(2, (Math.asin(Math.min(1, 0.18 / (0.3 * L))) * 180) / Math.PI);
     o.r = clamp(o.r * (Math.abs(o.r) > 100 ? 1 : a), -lim, lim);
   }
   // Wachsen: höchstens 1 + 2,5/Länge (ein langes Wort wächst kaum), nie unter 5 %
-  const grow = (s) => (s > 1 ? Math.min(s, 1 + 2.5 / L, 2.2) : Math.max(0.05, s));
+  // (höchstens 1,3: größer ragte ein Wort beim Landen über die Zeilen darüber und darunter)
+  const grow = (s) => (s > 1 ? Math.min(s, 1 + 2.5 / L, 1.3) : Math.max(0.05, s));
   if (Array.isArray(o.s)) o.s = [grow(o.s[0]), grow(o.s[1])];
   else if (o.s != null) o.s = grow(o.s);
   if (o.o != null) o.o = clamp(o.o, 0, 1);
@@ -328,16 +331,16 @@ export const FX_VARIANTS = {
   shiver: [V(), V("m-q-jit", 0.3, { x: "0.025em" }, "snow"), V("m-q-pulse", 1.4, { s: 0.94 }, "snow")],
   beat: [V(), V("m-q-pulse", 0.9, { s: 1.14 }), V("m-q-stretch", 0.95, { s: 1.08 })],
   crack: [V(), V("m-q-sink", 1.4, { y: "0.12em", r: "-5deg" }), V("m-q-skew", 1.2, { k: "-9deg" })],
-  float: [V(), V("m-q-bob", 2, { y: "-0.25em" }, "bubble"), V("m-q-orbit", 2.2, { x: "0.08em", y: "-0.15em" })],
-  fall: [V(), V("m-q-sink", 1.6, { y: "0.28em", r: "8deg" }), V("m-q-bob", 1.4, { y: "0.22em" })],
+  float: [V(), V("m-q-bob", 2, { y: "-0.12em" }, "bubble"), V("m-q-orbit", 2.2, { x: "0.08em", y: "-0.1em" })],
+  fall: [V(), V("m-q-sink", 1.6, { y: "0.12em", r: "8deg" }), V("m-q-bob", 1.4, { y: "0.12em" })],
   burst: [V(), V("m-q-pulse", 0.6, { s: 1.2 }, "spark"), V("m-q-jit", 0.4, { x: "0.06em" }, "spark")],
-  spin: [V(), V("m-q-spin", 1.2, { r: "-360deg" }), V("m-q-sway", 0.8, { r: "12deg" })],
+  spin: [V(), V("m-q-sway", 1.2, { r: "-6deg" }), V("m-q-sway", 0.8, { r: "12deg" })],
   glint: [V(), V("m-q-pulse", 1.2, { s: 1.08 }, "spark"), V("m-q-sway", 1.4, { r: "-3deg" }, "star")],
   dim: [V(), V("m-q-flick", 2.4, { o: 0.6 }), V("m-q-sink", 2, { y: "0.06em", r: "0deg" }, "smoke")],
   shine: [V(), V("m-q-pulse", 1.8, { s: 1.1 }, "star"), V("m-q-bob", 1.8, { y: "-0.1em" })],
   shake: [V(), V("m-q-jit", 0.3, { x: "0.05em" }), V("m-q-sway", 0.4, { r: "4deg" })],
   hush: [V(), V("m-q-swell", 2.2, { s: 0.88 }), V("m-q-flick", 2.4, { o: 0.65 })],
-  bounce: [V(), V("m-q-bob", 0.5, { y: "-0.2em" }), V("m-q-stretch", 0.5, { s: 1.1 }, "note")],
+  bounce: [V(), V("m-q-bob", 0.5, { y: "-0.12em" }), V("m-q-stretch", 0.5, { s: 1.1 }, "note")],
   halt: [V(), V("m-q-jit", 0.25, { x: "0.03em" }), V("m-q-swell", 0.6, { s: 1.08 })],
   tick: [V(), V("m-q-sway", 1, { r: "8deg" }), V("m-q-jit", 0.5, { x: "0.02em" })],
   drift: [V(), V("m-q-orbit", 2.6, { x: "0.1em", y: "-0.08em" }, "smoke"), V("m-q-bob", 2.4, { y: "-0.12em" })],
@@ -349,6 +352,18 @@ export const FX_VARIANTS = {
   neon: [V(), V("m-q-flick", 1.6, { o: 0.62 }, "zap"), V("m-q-pulse", 1.4, { s: 1.05 })],
   snow: [V(), V("m-q-bob", 2, { y: "0.06em" }, "snow"), V("m-q-jit", 0.35, { x: "0.02em" }, "snow")],
   star: [V(), V("m-q-pulse", 1.3, { s: 1.1 }, "star"), V("m-q-orbit", 2, { x: "0.05em", y: "-0.06em" }, "spark")],
+  // Kategorien (lyricstyle.js, CATEGORY_FX)
+  shot: [V(), V("m-q-jit", 0.35, { x: "0.05em" }, "spark")],
+  rapid: [V()],
+  slash: [V()],
+  shatter: [V()],
+  war: [V(), V("m-q-swell", 1.6, { s: 1.06 }, "smoke")],
+  siren: [V()],
+  zoomby: [V(), V("m-q-skew", 0.5, { k: "-16deg" })],
+  prowl: [V(), V("m-q-sway", 1.8, { r: "3deg" })],
+  savor: [V(), V("m-q-pulse", 1.2, { s: 1.08 }, "bubble")],
+  glitchy: [V(), V("m-q-jit", 0.3, { x: "0.04em" }, "zap")],
+  kick: [V(), V("m-q-bob", 0.5, { y: "-0.1em" })],
 };
 // Spielart je Begriff und Song: gleicher Song, gleiches Bild; anderer Song, andere Spielart
 export function fxVariant(cue, concept, deckFx) {

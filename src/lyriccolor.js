@@ -22,6 +22,10 @@ export const KINDS = {
   light: [[52, 0.9, 0.82]],
   rage: [[2, 0.85, 0.66]],
   dream: [[276, 0.6, 0.8]],
+  // Krieg, Blut: dunkles Rot – lesbar aufgehellt wie alle (kein Splatter, nur die Farbe)
+  blood: [[352, 0.82, 0.6]],
+  // Klinge: Stahl, kühles Grau
+  steel: [[210, 0.18, 0.8]],
   party: [[0, 0, 0]], // aus der Leitfarbe des Covers
 };
 // Wortbild → Farbe
@@ -30,6 +34,9 @@ export const CUE_KIND = {
   glint: "gold", power: "gold", star: "light", shine: "light", beat: "love", sultry: "love", bloom: "nature",
   dim: "dark", droop: "dark", crack: "dark", hush: "dream", drift: "dream", jolt: "neon", neon: "neon",
   float: "sky", shake: "rage", bounce: "party", dash: "party", spin: "party",
+  // Kategorien (lyricstyle.js, CATEGORY_FX): Gewalt nur in Farbe und Bewegung, nie drastisch
+  war: "blood", shatter: "blood", shot: "rage", rapid: "rage", slash: "steel", zoomby: "party", prowl: "nature", savor: "warm",
+  glitchy: "neon", kick: "party",
 };
 // Liedtext-Grund: Immersiv-Grund (#07060c) und derselbe, vom Cover aufgehellt (Leitfarben A/B zu je 18 %)
 export const LYR_BG = [7, 6, 12];
@@ -85,7 +92,17 @@ export function readable(hsl, grounds, need = 4.6) {
   }
   return [245, 243, 255];
 }
-// Alle Farben einer Palette: { fire: [r,g,b], fire2: …, … }. pal: Leitfarben [[r,g,b] ×3], grade: { hue, sat } aus
+// Farbkreis des ♪: die Leitfarben des Covers, kräftig und lesbar (≥ 5 : 1, damit auch die Mischung zweier Nachbarn
+// über 4,5 bleibt). Graue Cover bekommen einen Hauch Farbe aus der ersten Leitfarbe
+export function noteRing(pal) {
+  const grounds = lyricGrounds(pal);
+  const src = pal?.length ? pal : [[124, 92, 255]];
+  return src.map((c) => {
+    const [h, s, l] = rgb2hsl(c);
+    return readable([h, Math.max(0.55, s), clamp(l, 0.6, 0.8)], grounds, 5);
+  });
+}
+// Alle Farben einer Palette:{ fire: [r,g,b], fire2: …, … }. pal: Leitfarben [[r,g,b] ×3], grade: { hue, sat } aus
 // dem Deck. Mischung zur Leitfarbe: höchstens 8 % (je bunter das Cover, desto mehr) – Feuer bleibt orange, Gold bleibt gold
 export function meaningColors(pal, grade = { hue: 0, sat: 1 }) {
   const grounds = lyricGrounds(pal);
