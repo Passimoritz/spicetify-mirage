@@ -12,6 +12,9 @@
 // i18n.js – fehlt dort eine Sprache, sähe sie den veralteten Text. In src/i18n.js zählt ein Schlüssel als vorhanden,
 // wenn ihn i18n.js selbst oder eine Zusatzdatei für diese Sprache hat.
 // Namen einzelner Party-Stile (party_* in i18n-genres.js) sind meist Eigennamen: dort fehlende gelten als optional.
+// Bleibt ein Name in einer Sprache bewusst international, steht er in der Liste GENRE_INTL derselben Datei (ein
+// Export „…_INTL“: je Sprache die Schlüssel ohne „party_“) – er gilt dann als vorhanden. Ein Name in dieser Liste,
+// den es im Englischen nicht gibt (Tippfehler, gestrichener Stil), ist ein Fehler.
 const fs = require("fs"), path = require("path"), vm = require("vm");
 
 const repo = path.join(__dirname, "..");
@@ -76,13 +79,20 @@ const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
 
 const sources = [];
 const main = LOAD("src/i18n.js");
-const sats = fs.readdirSync(path.join(repo, "src")).filter((f) => /^i18n-.+\.js$/.test(f)).sort().map((f) => ({ file: "src/" + f, dict: LOAD("src/" + f) })).filter((s) => s.dict);
+// bewusst internationale Namen: Export „…_INTL“ = { sprache: "name name …" } (Schlüssel ohne „party_“)
+const intlOf = (rel) => {
+  const mod = loadModule(read(rel), rel), k = Object.keys(mod).find((n) => /_INTL$/.test(n));
+  return Object.fromEntries(Object.entries((k && mod[k]) || {}).map(([l, v]) => [l, new Set(String(v).split(/\s+/).filter(Boolean).map((x) => "party_" + x))]));
+};
+const sats = fs.readdirSync(path.join(repo, "src")).filter((f) => /^i18n-.+\.js$/.test(f)).sort().map((f) => ({ file: "src/" + f, dict: LOAD("src/" + f), intl: intlOf("src/" + f) })).filter((s) => s.dict);
 sources.push({
   file: "src/i18n.js",
   dict: main,
   has: (l, k) => (main[l] && k in main[l]) || sats.some((s) => s.dict[l] && k in s.dict[l]),
 });
 for (const s of sats) sources.push({ ...s, optional: s.file.endsWith("i18n-genres.js") ? (k) => k.startsWith("party_") : null });
+// Einträge der Liste ohne englischen Namen
+const strayIntl = sats.flatMap((s) => Object.entries(s.intl).flatMap(([l, set]) => [...set].filter((k) => !(k in (s.dict.en || {}))).map((k) => `${s.file} ${l}: ${k.slice(6)}`)));
 sources.push({ file: "docs/live/index.html", dict: LOAD("docs/live/index.html") });
 if (fs.existsSync(path.join(repo, "overlay", "i18n.js"))) sources.push({ file: "overlay/i18n.js", dict: LOAD("overlay/i18n.js") });
 const since = arg("since");
@@ -95,7 +105,7 @@ for (const src of sources) {
   const before = since ? LOAD(src.file, since) : null;
   for (const l of only) {
     const dict = src.dict[l] || {};
-    const has = src.has ? (k) => src.has(l, k) : (k) => k in dict;
+    const has = src.has ? (k) => src.has(l, k) : (k) => k in dict || !!src.intl?.[l]?.has(k);
     for (const k of Object.keys(en)) {
       if (!has(k)) {
         const opt = src.optional?.(k);
@@ -123,6 +133,7 @@ for (const src of sources) {
 }
 
 if (rows.length) console.log(rows.join("\n"));
+if (strayIntl.length) console.log("Bewusst international, aber ohne englischen Namen:\n  " + strayIntl.join("\n  "));
 if (argv.includes("--keys")) {
   for (const [f, byL] of Object.entries(out)) for (const [l, keys] of Object.entries(byL)) console.log(`\n${f} ${l}: ${Object.keys(keys).join(", ")}`);
   for (const [f, byL] of Object.entries(bad)) for (const [l, keys] of Object.entries(byL)) for (const [k, v] of Object.entries(keys)) console.log(`\n${f} ${l} ${k}\n  en: ${JSON.stringify(v.en)}\n  ${l}: ${JSON.stringify(v[l])}`);
@@ -134,4 +145,4 @@ if (json != null) {
   console.log("JSON: " + file);
 }
 console.log(`\n${missing} fehlende Schlüssel, ${mism} mit abweichenden Platzhaltern/Tags` + (since ? `, ${old} veraltet seit ${since}` : "") + (optional ? ` (${optional} optionale Stilnamen fehlen, --optional zeigt sie)` : "") + ` – Sprachen: ${only.join(", ")}`);
-process.exit(missing || mism || old ? 1 : 0);
+process.exit(missing || mism || old || strayIntl.length ? 1 : 0);
