@@ -337,6 +337,8 @@ export const CATEGORY_FX = {
 };
 // Begriffe des Wörterbuchs mit eigener Bewegung (vor allem Gewalt: die Kategorie allein sagt nicht, ob Schuss oder Hieb)
 const CONCEPT_FX = {
+  // Asche ist grau und Rauch (dunkel), kein Feuer
+  ashes: "dim", smoke: "drift",
   gun: "shot", shoot: "shot", heist: "shot", machinegun: "rapid", blade: "slash", axe: "slash", kill: "shatter", death: "shatter",
   reaper: "shatter", grenade: "burst", battle: "war", war: "war", blood: "war", gangster: "war", police: "siren", ambulance: "siren",
   shatter: "shatter", whisper: "hush", melt: "droop", hide: "hush", forget: "drift", toxic: "glitchy", magnetic: "jolt",
@@ -380,6 +382,8 @@ const NOT_VIOLENT = [
   /\bkiller (?:queen|smile|look|body|style|vibe|heels|beat)\w*/giu, /\bto die for\b/giu, /\bdying to\b/giu, /\bdead (?:tired|serious)\b/giu,
   /\bdrop[- ]dead\b/giu, /\b(?:ein|einen|nen) schuss (?:tequila|wodka|vodka|rum|liebe)\b/giu, /\bbomb(?:e|en)? ?stimmung\b/giu,
 ];
+// groß geschrieben, aber kein Name
+const NAME_OK = new Set(["god", "lord", "jesus", "heaven", "hell", "christmas", "halloween", "valentine", "paradise"]);
 function peaceSpans(s) {
   const out = [];
   for (const re of NOT_VIOLENT) for (const m of s.matchAll(re)) out.push([m.index, m.index + m[0].length]);
@@ -396,7 +400,7 @@ const SOFTEN = { burst: "shine", bounce: "drift", shake: "crack", jolt: "shiver"
 // Bewegungen mit Schein (Pseudo-Element mit Deckkraft – nie text-shadow im Bild)
 const GLOWS = new Set(["flame", "heat", "jolt", "shiver", "beat", "glint", "shine", "drift", "neon", "star", "snow", "siren"]);
 // Bewegungen, die das Wort in Buchstaben zerlegen
-const LETTERS = new Set(["burst", "wave", "rapid", "slash", "shatter"]);
+const LETTERS = new Set(["burst", "wave", "slash", "shatter"]);
 // die alten Ersatzlisten heißen wie ihre Bewegung; die neuen wie ihr Begriff
 const XCUE = new Set(["fall", "float", "shake", "hush", "halt", "tick", "burst", "spin"]);
 export const cueOf = (concept) => CUE[concept] || "";
@@ -446,7 +450,21 @@ export function cueMatcher(lines, lexicon, o = {}) {
     } catch {}
     const out = [];
     let peace = null;
+    // Namen: ein groß geschriebenes Wort mitten in der Zeile („… from the sky Ash“, „I love you Grace“) ist meist ein
+    // Name, kein Begriff – außer am Satzanfang, in Zeilen in Großbuchstaben/Titel-Schreibweise und in Sprachen, die
+    // Hauptwörter groß schreiben (Deutsch)
+    const words = s.match(/\p{L}[\p{L}\p{M}'’]*/gu) || [];
+    const capShare = words.length ? words.filter((w) => /^\p{Lu}/u.test(w)).length / words.length : 0;
+    const nouns = song?.main === "de" || (song?.langs || []).includes("de") || /\b(?:der|die|das|und|ich|nicht|mein|dein)\b/iu.test(s);
+    const isName = (x) => {
+      if (nouns || capShare > 0.5) return false;
+      const raw = s.slice(x.at, x.at + x.len);
+      if (!/^\p{Lu}\p{Ll}/u.test(raw) || NAME_OK.has(raw.toLowerCase())) return false;
+      const before = s.slice(0, x.at);
+      return /\p{L}/u.test(before) && !/[.!?…:"“„(]\s*$/u.test(before);
+    };
     for (const x of cands) {
+      if (isName(x)) continue;
       // Begriff: aus dem Wörterbuch oder aus einer Ersatzliste (x:…); Bewegung über eigene Zuordnung oder die Kategorie
       const xk = x.c.startsWith("x:") ? x.c.slice(2) : "";
       const concept = xk || x.c;
@@ -637,6 +655,12 @@ function answers(a, b) {
 // Als Generator: yield gibt zwischen Zeilen-Häppchen Luft (immersive.js verteilt sie auf Leerlaufzeiten –
 // am Stück waren es beim Songwechsel 40–60 ms in einer Aufgabe). planPlayful rechnet am Stück (Tests, Node).
 export const planPlayful = (lines, wordLists, d, o) => runSync(planSteps(lines, wordLists, d, o));
+// Länge der Zeile für die Größe in Party (Reihen bei voller Größe, grob aus den Zeichen): kurze Zeilen dürfen so groß
+// werden wie im normalen Stil
+export const lenClass = (text) => {
+  const n = [...String(text || "").trim()].length;
+  return !n ? "" : n <= 22 ? "is-p-len1" : n <= 40 ? "is-p-len2" : "";
+};
 export function* planSteps(lines, wordLists, d, o = {}) {
   const L = lines || [];
   const real = d && !d.synthetic;
@@ -839,6 +863,8 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     const t = treat[i] || "";
     const R = RECIPES[t];
     cls.push(sectionStyle(sectionKind(parts, l.t), { repeated: p.repeated }));
+    const lc = lenClass(p.text);
+    if (lc) cls.push(lc);
     if (l.text === "♪") cls.push("is-p-note");
     if (t) cls.push("is-t-" + t);
     if (dropIn.has(i) && !still) cls.push("is-p-drop");

@@ -1679,12 +1679,36 @@ Probe-FX: ${pfx}`;
     const d = audio.uri === lyrUri ? audio.data : null;
     const still = playStill(), lv = cfg.lyrPlayLevel;
     if (ln.classList.contains("is-p-note")) {
-      const P = !still && d ? notePose(d.beats, d.bars, pos / 1000, lv === "subtle" ? 0.45 : lv === "wild" ? 1.25 : 1) : null;
-      ln.style.translate = P ? `0 ${P.y.toFixed(3)}em` : "";
-      ln.style.rotate = P ? P.r.toFixed(2) + "deg" : "";
-      const c = !still && d && lv !== "subtle" ? noteColor(playRing, d.beats, d.bars, pos / 1000) : null;
-      if (c) ln.style.setProperty("--pnc", c.join(" "));
-      else ln.style.removeProperty("--pnc");
+      // je Schlag eine Web-Animation über genau diesen Schlag (Lagen aus notePose, aus der Songuhr neu gestellt): der
+      // Browser spielt sie ohne Arbeit je Bild (Bewegung auf der Grafikkarte), und jeder Schlag rastet neu ein
+      const sec = pos / 1000, B = d?.beats;
+      if (still || !B?.length) {
+        ln.__na?.cancel();
+        ln.__na = null;
+        ln.__nb = -1;
+        return;
+      }
+      let lo = 0, hi = B.length - 1, k = -1;
+      while (lo <= hi) {
+        const m = (lo + hi) >> 1;
+        if (B[m].t <= sec) (k = m), (lo = m + 1);
+        else hi = m - 1;
+      }
+      if (k < 0 || k + 1 >= B.length || k === ln.__nb) return;
+      ln.__nb = k;
+      const t1 = B[k + 1].t, dur = (t1 - sec) * 1000;
+      if (!(dur > 30 && dur < 1600)) return;
+      const amp = lv === "subtle" ? 0.45 : lv === "wild" ? 1.25 : 1, N = 12, frames = [];
+      for (let j = 0; j <= N; j++) {
+        const at = sec + ((t1 - sec) * j) / N - (j === N ? 1e-4 : 0), P = notePose(B, d.bars, at, amp);
+        if (!P) return;
+        const f = { translate: `0 ${P.y.toFixed(3)}em`, rotate: P.r.toFixed(2) + "deg" };
+        const c = lv !== "subtle" ? noteColor(playRing, B, d.bars, at) : null;
+        if (c) f.color = `rgb(${c.join(" ")})`;
+        frames.push(f);
+      }
+      ln.__na?.cancel();
+      ln.__na = ln.animate(frames, { duration: dur, easing: "linear", fill: "forwards" });
       return;
     }
     const hw = ln.__hook === undefined ? (ln.__hook = ln.querySelector(".m-w.is-p-hook[style*='--phf']")) : ln.__hook;
@@ -2176,7 +2200,7 @@ Probe-FX: ${pfx}`;
       // Party lässt die aktive Zeile im Takt hüpfen (style.scale) – die alte Zeile wieder freigeben
       if (activeEl) activeEl.style.scale = "";
       // [playful] der alte ♪ steht wieder still, das alte Hook-Wort kehrt zu seiner Schrift zurück
-      if (activeEl?.classList.contains("is-p-note")) (activeEl.style.translate = activeEl.style.rotate = ""), activeEl.style.removeProperty("--pnc");
+      if (activeEl?.__na) (activeEl.__na.cancel(), (activeEl.__na = null), (activeEl.__nb = -1));
       activeEl?.querySelector(".is-p-hsw")?.classList.remove("is-p-hsw");
       playBar = -1;
       activeEl?.classList.remove("is-hype");

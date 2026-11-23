@@ -1181,4 +1181,25 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   console.log(`  Kategorien: ${n - none.length}/${n} Begriffe mit Bewegung (ohne: Allerweltswörter ${none.length})`);
 }
 
+/* ---- Namen sind keine Begriffe: „… from the sky Ash“ färbt nicht (und Asche ist grau, nicht rot); am Satzanfang, in
+   Großbuchstaben-Zeilen und im Deutschen (Hauptwörter groß) zählen sie weiter */
+{
+  const m = (text) => cueMatcher([{ text }], LEX, { neg: NEG, explicit: "on" })(text).map((x) => s(text, x));
+  const s = (text, x) => text.slice(x.at, x.at + x.len).toLowerCase() + ":" + x.cue;
+  const names = { Ash: "Money falling down from the sky Ash", Rose: "I wrote this song for Rose", Hope: "Dancing all night with Hope", Grace: "I love you Grace",
+    Storm: "Call me tonight Storm", Angel: "Come back to me Angel", Summer: "Driving to the coast with Summer", River: "Waiting by the door for River", Sky: "Hold my hand Sky" };
+  for (const [name, text] of Object.entries(names)) assert.ok(!m(text).some((x) => x.startsWith(name.toLowerCase() + ":")), `Name „${name}“ als Begriff: ${m(text)}`);
+  // klein geschrieben, am Zeilenanfang, nach Satzende, in Großbuchstaben: Begriff
+  assert.ok(m("the rose is red").some((x) => x.startsWith("rose:")));
+  assert.ok(m("Rose petals everywhere").some((x) => x.startsWith("rose:")));
+  assert.ok(m("I said goodbye. Rain is falling").some((x) => x.startsWith("rain:")));
+  assert.ok(m("FIRE IN THE SKY").some((x) => x.startsWith("sky:")));
+  const de = ["Ich sehe den Regen fallen", "Und das Feuer brennt in mir", "Ich bin nicht allein heute Nacht", "Mein Herz schlägt nur für dich"].map((text) => ({ text }));
+  const dm = cueMatcher(de, LEX, { neg: NEG })(de[0].text).map((x) => s(de[0].text, x));
+  assert.ok(dm.some((x) => /^regen:/.test(x)), "Deutsch: Hauptwörter sind groß, kein Name: " + dm);
+  // Asche: grau (Dunkel), nicht Feuer-Rot
+  assert.ok(m("only ashes left behind").includes("ashes:dim"), "Asche: " + m("only ashes left behind"));
+  assert.equal(CUE_KIND.dim, "dark");
+}
+
 console.log("lyricstyle: ok");

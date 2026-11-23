@@ -8140,7 +8140,8 @@ body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overl
 /* Container: Obergrenzen aus der Spaltenbreite (cqi) – ein riesiges Schlüsselwort passt immer in die Textfläche */
 #mirage-immersive .m-im-lyrics.is-playful {
   container-type: inline-size;
-  --pci: 3;
+  /* Durchgänge der Wortbild-Schleifen (weniger laufende Animationen je Sekunde: Party-Messung) */
+  --pci: 2;
   --pbn: m-p-bounce;
   --ppn: m-t-punch;
   --pf-shout: "Oswald", "Arial Narrow", "Roboto Condensed", impact;
@@ -8165,7 +8166,16 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
    wird höchstens so groß, dass sie (zwei Reihen, aktiv vergrößert, mit Reserve fürs Kippen) im deckenden Bereich
    der Maske Platz hat – Container-Einheiten der Höhe (cqh) statt Abschneiden */
 #mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line {
-  font-size: min(calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1) * var(--pfs, 1)), calc(17cqh * var(--pfs, 1)));
+  font-size: min(calc(clamp(28px, 3.4vw, 58px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * max(1, var(--m-ps, 1)) * var(--pfs, 1)), calc(var(--pcap, 17cqh) * var(--pfs, 1)));
+}
+/* … und so groß wie im normalen Stil, wo die Zeile kurz genug ist: die Obergrenze aus der Höhe richtet sich nach der
+   Länge (is-p-len1: eine Reihe, is-p-len2: höchstens zwei – lyricstyle.js schätzt sie aus den Zeichen). Lange Zeilen
+   bleiben bei 17 % der Höhe (drei Reihen passen in den deckenden Bereich) */
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-p-len1 {
+  --pcap: 40cqh;
+}
+#mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-p-len2 {
+  --pcap: 25cqh;
 }
 /* Party: schmalere Ausblend-Ränder – die aktive Zeile (mit Kippen und großen Schlüsselwörtern) steht nie darin;
    immersive.js hält sie zwischen 18 % und 82 % der Höhe */
@@ -8278,11 +8288,11 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   rotate: var(--pr, -3deg);
   translate: 0 -0.12em;
 }
-/* Wörter: einzeln setzbar; Betonung über Größe (--pz 0,84 … 1,3) und Stärke. Als eigener Block (inline-block, nötig für
-   transform) nur in den Zeilen, die sich bewegen (aktiv, die nächste, die abgehende): jedes Wort als eigener Block
-   kostete beim Aufbau jeder Zeile ein Vielfaches an Layout (Party-Messung: 30–46 ms beim Songwechsel) */
+/* Wörter: einzeln setzbar (inline-block, nötig für transform); Betonung über Größe (--pz 0,84 … 1,3) und Stärke.
+   (Nur in bewegten Zeilen inline-block zu setzen sparte Layout beim Aufbau, änderte aber bei jedem Zeilenwechsel die
+   Höhe der Zeilen – der Merkzettel der Lagen musste dann jedes Mal neu gemessen werden: Party-Messung 24 ms je Wechsel) */
 #mirage-immersive .m-im-lyrics.is-playful .m-w {
-  display: inline;
+  display: inline-block;
   max-width: 100%;
   font-size: calc(1em * var(--pz, 1) * var(--pfw, 1));
   transform-origin: center 70%;
@@ -8400,11 +8410,8 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   text-decoration-skip-ink: none;
 }
 /* Buchstaben eines zerlegten Worts: eigene Wartestellung nur, wenn sie selbst eine haben (die des Worts erben sie nicht) */
-#mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext, .is-pout) :is(.m-w, .m-ch) {
-  display: inline-block;
-}
 #mirage-immersive .m-im-lyrics.is-playful .m-ch {
-  display: inline;
+  display: inline-block;
   --wx: 0em;
   --wy: 0em;
   --wr: 0deg;
@@ -8943,9 +8950,10 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     opacity: 0;
     animation: m-c-pop 0.4s ease-out calc(var(--pl, 0ms) + 20ms) both;
   }
-  /* Maschinengewehr: die Buchstaben rattern als Garbe (versetzt), eine Leuchtspur zieht zweimal durchs Wort */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-rapid.is-sung .m-ch {
-    animation: m-c-rapid 0.1s steps(2, end) calc(var(--pl, 0ms) + var(--ci, 0) * 25ms) 7;
+  /* Maschinengewehr: das Wort rattert als Garbe (ein Element statt jedes Buchstabens – weniger Arbeit je Bild), eine
+     Leuchtspur zieht zweimal durchs Wort */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-rapid.is-sung {
+    --pq: m-c-rapid 0.1s steps(2, end) calc(var(--pl, 0ms) + 60ms) 7;
   }
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-rapid.is-sung::after {
     content: "";
@@ -9052,7 +9060,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   --pna: 0.45;
 }
 #mirage-immersive .m-im-lyrics.is-playful.is-lv-wild {
-  --pci: 5;
+  --pci: 3;
   --pna: 1.25;
 }
 @keyframes m-p-hold {

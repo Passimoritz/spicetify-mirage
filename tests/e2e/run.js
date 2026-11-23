@@ -2541,9 +2541,10 @@ CASES.push(["viz-styles", vizStyles], ["album-view", albumView], ["clock-view", 
 /* ---- Verspielter Liedtext-Stil: Inszenierungen und Wortbilder im echten Aufbau, Bewegung nur transform/opacity,
    Schriften erst mit dem Stil, Landung genau auf dem Einsatz, ♪ wippt, nichts wird von der Textfläche abgeschnitten */
 // Wartezustände der Rezepte für die Beschnitt-Prüfung: dieselben Daten wie im Theme (src/lyricdeck.js, gebündelt)
-let DECK = null;
+let DECK = null, STYLE = null;
 async function playfulLyrics() {
   DECK ||= require(path.join(ROOT, "tests", "unit", "load.js")).load("lyricdeck.js");
+  STYLE ||= require(path.join(ROOT, "tests", "unit", "load.js")).load("lyricstyle.js");
   const setKey = async (k, on) => {
     await T.js(`document.querySelector(".mirage-settings")?.remove(); __menu.brightness(); 1`);
     await until(() => T.js(`!!document.querySelector('.mirage-settings input[data-key="${k}"]')`), 2000, `playful: Schalter ${k}`);
@@ -2716,17 +2717,24 @@ async function playfulLyrics() {
     console.log(`  playful Takt: ${timing.length} Wörter auf dem Einsatz gelandet (Vorlauf ${[...new Set(timing.map((x) => x.pl))].join("/")} ms, Bild bis ${Math.max(...timing.map((x) => x.late))} ms später gemessen)`);
 
     // ♪ in der Instrumental-Lücke wippt im Takt – mit „Ruhig“ steht es still
+    // (an den Anfang einer langen Zeile springen: sonst wechselte während der Messung die Zeile – der ♪ war dann
+    // nicht mehr die aktive Zeile und stand still; daran scheiterte der Test gelegentlich)
     const note = await T.js(`(async () => {
-      const line = document.querySelector("${IM} .m-im-line.is-active");
+      const lines = [...document.querySelectorAll("${IM} .m-im-line")];
+      const k = lines.findIndex((l, i) => i > 1 && lines[i + 1] && Number(lines[i + 1].dataset.t) - Number(l.dataset.t) >= 2500);
+      Spicetify.Player.seek(Number(lines[k].dataset.t) + 80);
+      for (let w = 0; w < 40 && !lines[k].classList.contains("is-active"); w++) await new Promise((r) => setTimeout(r, 50));
+      const line = lines[k];
       const had = line.className, txt = line.innerHTML;
       line.className = "m-im-line is-active is-p-note";
       line.textContent = "♪";
-      await new Promise((r) => setTimeout(r, 300));
-      // Bild für Bild aus der Songuhr gesetzt (translate/rotate): über eine halbe Sekunde mehrere verschiedene Lagen
+      await new Promise((r) => setTimeout(r, 250));
+      // im Takt gesetzt (Web-Animation je Schlag, aus der Songuhr): über 0,6 s mehrere verschiedene Lagen
       const run = async () => {
         const seen = new Set();
-        for (let k = 0; k < 12; k++) {
-          seen.add(line.style.rotate + "|" + line.style.translate);
+        for (let k = 0; k < 14; k++) {
+          const cs = getComputedStyle(line);
+          seen.add(cs.rotate + "|" + cs.translate);
           await new Promise((r) => setTimeout(r, 45));
         }
         return seen.size > 3;
@@ -2742,6 +2750,36 @@ async function playfulLyrics() {
     })()`);
     ok(note.moving, "playful: ♪ wippt nicht im Takt");
     ok(!note.calm, "playful: ♪ wippt trotz „Ruhig“");
+
+    // Größe in Party: die aktive Zeile ist im verspielten Stil mindestens so groß wie im normalen (kurze Zeile, wie
+    // eine echte – dieselbe Zeile, nur die Klasse des Stils umgeschaltet)
+    for (const [w, h] of [[1600, 900], [820, 620]]) {
+      T.win.setContentSize(w, h);
+      await toMode("party");
+      await wait(600);
+      const sz = await T.js(`(async () => {
+        const im = document.getElementById("mirage-immersive"), box = im.querySelector(".m-im-lyrics");
+        const ln = box.querySelector(".m-im-line.is-active") || box.querySelector(".m-im-line");
+        const had = { cls: ln.className, html: ln.innerHTML };
+        ln.className = "m-im-line is-active is-p-verse is-t-rise " + ${JSON.stringify(STYLE.lenClass("Hold me close tonight"))};
+        ln.innerHTML = '<span class="m-im-words"><span class="m-w">Hold</span> <span class="m-w">me</span> <span class="m-w">close</span> <span class="m-w">tonight</span></span>';
+        const meas = async (on) => {
+          box.classList.toggle("is-playful", on);
+          im.classList.toggle("is-plyr", on);
+          await new Promise((r) => setTimeout(r, 400));
+          return { fs: parseFloat(getComputedStyle(ln).fontSize), w: Math.round([...ln.querySelectorAll(".m-w")].reduce((a, x) => a + x.getBoundingClientRect().width, 0)) };
+        };
+        const p = await meas(true), n = await meas(false);
+        await meas(true);
+        ln.className = had.cls;
+        ln.innerHTML = had.html;
+        return { p, n };
+      })()`);
+      console.log(`  playful Größe Party ${w}×${h}: verspielt ${sz.p.fs} px (${sz.p.w} px breit), normal ${sz.n.fs} px (${sz.n.w} px)`);
+      ok(sz.p.fs >= 0.95 * sz.n.fs, `playful: Party ${w}×${h} kleiner als normal: ${sz.p.fs} gegen ${sz.n.fs} px`);
+    }
+    T.win.setContentSize(1280, 800);
+    await wait(400);
 
     // Nie abgeschnitten: jedes Rezept (Stärke „Wild“) mit kurzen, langen, riesigen und kursiven Zeilen in Liedtext, Mix
     // und Party bei schmalem und breitem Fenster. Die Zeile wird in die übernächste Zeile geschrieben und angesprungen
@@ -2780,7 +2818,7 @@ async function playfulLyrics() {
       });
       const sect = ["is-p-chorus", "is-p-verse", "is-p-bridge"][k % 3];
       const font = FONTS[k % FONTS.length];
-      const cls = (extra ? ["m-im-line", "is-t-" + t, extra, R.ln ? "is-l-" + R.ln : ""] : ["m-im-line", "is-t-" + t, sect, R.ln ? "is-l-" + R.ln : "", font ? "is-f-" + font : "", k % 5 === 0 ? "is-p-shout" : ""]).filter(Boolean).join(" ");
+      const cls = (extra ? ["m-im-line", "is-t-" + t, extra, R.ln ? "is-l-" + R.ln : "", STYLE.lenClass(texts.join(" "))] : [STYLE.lenClass(texts.join(" ")), "m-im-line", "is-t-" + t, sect, R.ln ? "is-l-" + R.ln : "", font ? "is-f-" + font : "", k % 5 === 0 ? "is-p-shout" : ""]).filter(Boolean).join(" ");
       return { cls, html: `<span class="m-im-words">${ws.join(" ")}</span>`, style: extra ? "--pbu:1;--prd:700ms;--pxo:m-x-up" : "" };
     };
     const fails = [];
