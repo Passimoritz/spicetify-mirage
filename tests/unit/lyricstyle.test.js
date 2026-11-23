@@ -989,8 +989,8 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   paintPlayful(els, planPlayful(lines, wl, null, { ...opts, level: "subtle" }), wl);
   assert.equal(snapshot().letters, 0);
   // immersive.js: Einstellungen (applySettings → styleLyrics) und weniger Bewegung (matchMedia) malen neu, die Stärke
-  // ohne den Liedtext neu zu laden
-  const im = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8");
+  // ohne den Liedtext neu zu laden (Windows-Checkout hat CRLF: Wagenrückläufe entfernen)
+  const im = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8").split(String.fromCharCode(13)).join("");
   assert.ok(/function styleLyrics\(\) \{[\s\S]*?playfulRestyle\(\);\n {2}\}/.test(im), "styleLyrics malt den Stil nicht neu");
   assert.ok(/reducedMotion\.addEventListener\?\.\("change", playfulRestyle\)/.test(im), "weniger Bewegung wirkt erst beim nächsten Song");
   const st = fs.readFileSync(path.join(__dirname, "..", "..", "src", "settings.js"), "utf8");
