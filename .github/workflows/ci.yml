@@ -86,7 +86,7 @@ jobs:
 
   games:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -106,6 +106,21 @@ jobs:
         run: xvfb-run -a npm run test:games
         env:
           ELECTRON_DISABLE_SANDBOX: "1"
+
+      # Fälle, die erst im zweiten Versuch bestanden (run.js wiederholt jeden Fehlschlag einmal), sichtbar machen
+      - name: Flaky cases in the summary
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs"), f = "tests/e2e/out/report.json";
+            if (!fs.existsSync(f)) process.exit(0);
+            const r = JSON.parse(fs.readFileSync(f, "utf8"));
+            const flaky = r.report.filter((x) => x.flaky), bad = r.report.filter((x) => !x.ok);
+            const out = ["## Games", "", `${r.report.length - bad.length} of ${r.report.length} passed, time limits × ${r.slow}`, ""];
+            for (const x of flaky) out.push(`- flaky: passed on retry – **${x.game}**: ${String(x.first).split("\n")[0]}`);
+            for (const x of bad) out.push(`- failed twice – **${x.game}**: ${String(x.error).split("\n")[0]}`);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out.join("\n") + "\n");
+          '
 
       - name: Keep screenshots of failed games
         if: failure()
