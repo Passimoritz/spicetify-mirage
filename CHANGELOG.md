@@ -10,6 +10,33 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.31.0] – 2026-11-23
+
+### Added
+
+- Party: the stage reacts to around 570 sung concepts in 45 languages with 84 looks – confetti cannons, fireworks, laser grids and tunnels, a disco ball, money rain, northern lights, thunderstorms, skylines, lighters and phones in the crowd, glitch, spirals and many more. Each song gets its own variants, and the same look never repeats within 30 seconds.
+- Party: weapons and fights in lyrics (shots, machine guns, axes, knives …) answer with stylised light only – muzzle flashes through the flash limiter, tracers, slashes – never as text, and follow the "Explicit lyrics" setting. Idioms like "killing it" or "shot of tequila" are recognised.
+- Party: the light rig plays like a concert lighting desk. Each song part gets its own moving-head and colour program; builds draw the heads together under a rising light ramp, the drop has one clear lead visual and breakdowns go calm. Drop looks and programs don't repeat within three songs of a set.
+- Party: DJ handovers point the heads at the centre and burst them apart on the next song's first beat with a light sweep. The crowd raises its hands in choruses and holds up lighters and phones in slow songs.
+- Playful lyrics: a song arc – the pre-chorus builds up, the first and final chorus hit as big moments, call-and-response lines answer from the other side, recurring hook words get a signature motif and change font on the bar, fast rap ticks on each syllable, and each line exits with a move matching its entrance.
+- Playful lyrics: hundreds of word effects by category (vehicles, animals, food, tech, sport …); weapon and fight words get their own effects (recoil, rattle, slash, shatter) that follow the explicit setting.
+- Playful lyrics: the ♪ in instrumental breaks is locked to the beat and flows through the cover colours.
+
+### Changed
+
+- Mirage starts faster: theme.js is about a quarter smaller (4.1 MB → 3.1 MB despite three times as many words); the word lists and genre table are packed inside the theme and only unpacked when needed.
+- Lyrics: Spotify's synced lyrics no longer trigger every other source. The cross-check runs once per song in the background and is remembered for a week, and LRCLIB gets one request instead of two (typically 2 requests per song instead of 7).
+- Smarter word reactions: bigger looks in the chorus and drop, genre-aware choices, crowd-free fallbacks, and slang read in context ("geil", "krass", "sick", "lit" as praise).
+- Party style names are translated into all languages.
+- Playful lyrics: display fonts take about the same space as the normal lyric font, and in party mode playful lyrics are as large as the normal ones.
+
+### Fixed
+
+- Playful lyrics: no more stutter at song changes, words no longer overlap during entrances and exits, and none are cut off with the real display fonts.
+- Playful lyrics: Calm, No flashes, reduced motion and the playful intensity take effect immediately mid-song, and words land on the onset on 120/144 Hz screens too.
+- Playful lyrics: names in the middle of a line ("Ash", "Rose", "Hope") no longer trigger word effects.
+- Party mode: less style recalculation and half as many glow rebuilds.
+
 ## [1.30.0] – 2026-11-22
 
 ### Added
