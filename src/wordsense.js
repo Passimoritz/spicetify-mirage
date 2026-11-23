@@ -31,13 +31,150 @@ const CW = {
   victory: 0.75, everybody: 0.8, yeah: 0.65, hey: 0.7, strong: 0.78, pain: 0.8, happy: 0.8, sad: 0.85, goodbye: 0.8, sleep: 0.78,
   silence: 0.75, peace: 0.8, black: 0.75, white: 0.75, red: 0.8, blue: 0.75, green: 0.8, crown: 0.85, shake: 0.85, boss: 0.85,
   journey: 0.8, morning: 0.8, wild: 0.85, fear: 0.82, sexy: 0.92,
+  // neue Begriffe (lex-ext.json), die in vielen Liedern nebenbei stehen
+  god: 0.62, soul: 0.62, beautiful: 0.62, friends: 0.68, family: 0.7, truth: 0.66, faith: 0.72, promise: 0.7, regret: 0.72, lies: 0.75,
+  fun: 0.72, danger: 0.78, work: 0.68, car: 0.78, phone: 0.56, lighter: 0.55, shopping: 0.58, waiting: 0.55, school: 0.58, tired: 0.58, forget: 0.55, eyes: 0.55, voice: 0.58,
+  fall: 0.6, hair: 0.58, feet: 0.6, wall: 0.6, hide: 0.62, stranger: 0.62, reality: 0.62, success: 0.68, respect: 0.68, broke: 0.62, calm: 0.62,
+  gentle: 0.66, numb: 0.68, doubt: 0.66, nature: 0.66, stone: 0.62, dust: 0.62, ticket: 0.66, social: 0.66, message: 0.62, crash: 0.68,
+  knock: 0.66, buzz: 0.62, engine: 0.68, float: 0.66, book: 0.6, partner: 0.68, death: 0.7, kill: 0.78, shoot: 0.8, grow: 0.62, park: 0.62, screen: 0.72, stage: 0.8, crowd: 0.8, wish: 0.72, destiny: 0.78,
+  infinity: 0.72, passion: 0.78, chill: 0.68, excited: 0.78, mystery: 0.75, escape: 0.72, praise: 0.9, vibes: 0.75, shatter: 0.78,
+  echo: 0.75, rhythm: 0.75, tunnel: 0.78, goal: 0.72, race: 0.75, dice: 0.72,
 };
+
+/* ---- Lob-Wörter („f-words“): dasselbe Wort lobt („das ist geil“, „that beat is sick“, „c'est le feu“) oder meint
+   es wörtlich („geil auf dich“, „sick of you“, „il fait chaud“). Je Sprache und Wort:
+   d = Begriff ohne Hinweise (null = keine Antwort), lit = [Muster, Begriff] für die wörtliche Bedeutung (null = keine
+   Antwort), sex = Begriff bei sinnlichem Zusammenhang, pr = Muster, das sicher Lob ist. Reihenfolge: wörtlich,
+   sinnlich, Lob (eigenes Muster oder Lob-Umfeld der Sprache), sonst d. Lob → Begriff „praise“ (Energie). */
+const PRAISE_CTX = {
+  en: /\b(?:beat|beats|track|song|tune|party|club|crowd|vibe|vibes|flow|bars|verse|show|banger|tonight|dj|drop|bass|this shit|that shit)\b/,
+  de: /\b(?:party|beat|song|track|abend|nacht|show|stimmung|vibe|bass|feier|konzert|leute|alter|digga|bro|musik|sound|einfach|voll|richtig|so|wie|mega|echt|ist das|war das)\b/,
+  es: /\b(?:fiesta|rumba|party|ritmo|canción|cancion|noche|perreo|beat|flow|música|musica|ambiente|disco|pista)\b/,
+  fr: /\b(?:soirée|soiree|son|morceau|fête|fete|teuf|beat|flow|ambiance|musique|boîte|boite|c'est|cest)\b/,
+  it: /\b(?:festa|serata|pezzo|canzone|beat|flow|discoteca|musica|notte|è|e')\b/,
+  pt: /\b(?:festa|baile|rolê|role|música|musica|batida|beat|noite|show|balada|é|tá)\b/,
+  nl: /\b(?:feest|feestje|party|beat|nummer|plaat|avond|muziek|sfeer|echt|zo|super)\b/,
+  pl: /\b(?:impreza|imprezka|bit|beat|kawałek|kawalek|numer|noc|melanż|melanz|muza|muzyka|to)\b/,
+  tr: /\b(?:parti|şarkı|sarki|beat|gece|ortam|müzik|muzik)\b/,
+};
+const SEX_CTX = {
+  en: /\b(?:body|bodies|naked|skin|lips|bed|sheets|kiss|touch|sexy|baby|babe|girl|boy|you're|youre|you are|lookin'?|looking|she's|he's|curves)\b/,
+  de: /\b(?:auf dich|auf mich|nackt\w*|körper\w*|bett\w*|haut|sex\w*|lust|küss\w*|scharf|macht mich|machst mich|bin so geil|bin geil|geil auf|dein arsch|deine lippen|stöhn\w*|baby|nacht mit dir|mit dir allein|nur wir zwei)\b/,
+  es: /\b(?:cuerpo|piel|cama|besos?|labios|desnud\w*|bebé|bebe|mami|papi|baby|sexy)\b/,
+  fr: /\b(?:corps|peau|lit|baiser|lèvres|nue?s?|bébé|bebe|sexy|t'es|elle est)\b/,
+  it: /\b(?:corpo|pelle|letto|baci|labbra|nud\w*|baby|sexy|sei)\b/,
+  pt: /\b(?:corpo|pele|cama|beijo|lábios|nua|nu|gostosa|gostoso|novinha|baby|bebê)\b/,
+  nl: /\b(?:lichaam|lijf|huid|bed|naakt|kus|lippen|op jou|op je|schatje|baby)\b/,
+  pl: /\b(?:ciało|cialo|skóra|łóżko|lozko|nag\w*|usta|pocałun\w*|mała|mala)\b/,
+  tr: /\b(?:vücud\w*|ten|yatak|dudak\w*|çıplak|ciplak|öp\w*|bebeğim|bebegim)\b/,
+};
+const SLANG = {
+  en: {
+    hot: { d: "fire", pr: /\b(?:track|song|beat|tune|record|single|verse)\b.*\bhot\b|\bhot (?:track|song|beat|right now)\b/, lit: [/\b(?:summer|sun|weather|degrees|outside|coffee|tea|sauce|stove|in here|heat|fire|burn\w*)\b/, "fire"], sex: "sexy" },
+    sick: { d: null, lit: [/\bsick (?:of|and tired|in bed)\b|\b(?:feel|feeling|feelin'?|get|got|getting|make me|makes me|i'm|im) (?:so )?sick\b|lovesick|homesick|\bsick (?:to my|inside)\b/, null], pr: /\b(?:that's|thats|it's|its|is|was|so|real|pretty|mad|straight|this) sick\b(?! of)|\bsick (?:beat|track|flow|bars|drop|verse|song|party|show|tune|ride|whip|night)\b/ },
+    lit: { d: "praise", lit: [/\blit (?:up|the|a|my|your|me|candles?|cigarettes?|it up)\b|\b(?:candles?|cigarettes?|lamps?|match|matches)\b/, null] },
+    dope: { d: "praise", lit: [/\b(?:smok\w*|sell\w*|deal\w*|shoot\w*|need|score[ds]?|cop(?:ped)?|bag of|on) (?:some |the |that )?dope\b|\bdope (?:fiend|dealer|boy|house|sick)\b/, "drugs"] },
+    killer: { d: "praise", lit: [/\b(?:serial|cold[- ]blooded|stone[- ]cold|the|a) killer\b|\bkiller (?:on the loose|instinct)\b|\b(?:murder\w*|knife|gun|blood|victim|police)\b/, null] },
+    crazy: { d: "crazy", lit: [/\bcrazy (?:in love|about you|for you|'bout you|bout you|over you)\b/, "love"] },
+    insane: { d: "crazy", pr: /\b(?:that's|thats|it's|its|is|was|so) insane\b|\binsane (?:beat|track|night|party|show|crowd|drop)\b/ },
+    wild: { d: "wild", lit: [/\bwild (?:horses?|animals?|flowers?|west|life|card|cats?|thing)\b|\binto the wild\b|wildflowers?/, null] },
+  },
+  de: {
+    geil: { d: "praise", sex: "sexy" },
+    geile: { d: "praise", sex: "sexy" },
+    geiles: { d: "praise", sex: "sexy" },
+    geilen: { d: "praise", sex: "sexy" },
+    geiler: { d: "praise", sex: "sexy" },
+    krass: { d: "praise", lit: [/\bkrass\w* (?:unterschied|gegensatz|fehler|lüge)\b/, null] },
+    krasse: { d: "praise" },
+    krasser: { d: "praise" },
+    heftig: { d: "praise", lit: [/\bheftig\w* (?:regen|sturm|wind|streit|schmerz\w*|schlag|kopfschmerz\w*|gewitter|kritik|fieber)\b|\b(?:regnet|stürmt|schneit|blutet|weh) \w* ?heftig\b/, null] },
+    heftige: { d: "praise", lit: [/\bheftige (?:regen|sturm|wind|streit|schmerz\w*|gewitter|kritik)\b/, null] },
+    fett: { d: "praise", lit: [/\b(?:zu fett|fett werden|fett geworden|fettes? essen|bauch\w*|dick und fett|fettig\w*|fett im|fett ab|speck)\b/, null] },
+    fette: { d: "praise", lit: [/\bfette (?:wampe|sau|kuh|katze)\b/, null] },
+    heiß: { d: "fire", sex: "sexy" },
+    heiss: { d: "fire", sex: "sexy" },
+  },
+  es: {
+    caliente: { d: "fire", sex: "sexy", pr: /\b(?:la fiesta|el party|la pista|el ambiente|la noche) (?:está|esta) (?:bien |muy )?caliente\b/ },
+    brutal: { d: "praise", lit: [/\b(?:accidente|golpe|violencia|guerra|asesin\w*|crimen)\b/, null] },
+    loco: { d: "crazy", lit: [/\bloc[oa]s? (?:por ti|de amor|por tu amor)\b|me vuelves loc[oa]/, "love"] },
+    loca: { d: "crazy", lit: [/\bloc[oa]s? (?:por ti|de amor|por tu amor)\b|me vuelves loc[oa]/, "love"] },
+    bomba: { d: "boom", pr: /\b(?:es|está|esta|qué|que) (?:una |la )?bomba\b/ },
+  },
+  fr: {
+    chaud: { d: "fire", lit: [/\bil fait (?:trop |très |tres )?chaud\b|\bchaud dehors\b/, "fire"], sex: "sexy", pr: /\bc'est (?:trop |super |vraiment )?chaud\b|\bça va être chaud\b/ },
+    bombe: { d: "boom", sex: "sexy", lit: [/\b(?:t'es|tu es|elle est|cette fille|quelle) une bombe\b/, "sexy"], pr: /\bc'est (?:de la |une )?bombe\b/ },
+    fou: { d: "crazy", lit: [/\bfou (?:de toi|amoureux|d'amour)\b/, "love"], pr: /\bc'est (?:trop |complètement |vraiment )?fou\b/ },
+    folle: { d: "crazy", lit: [/\bfolle (?:de toi|amoureuse|d'amour)\b/, "love"], pr: /\bsoirée (?:de )?folle\b/ },
+    dingue: { d: "crazy", lit: [/\bdingue de toi\b/, "love"], pr: /\bc'est (?:trop |complètement )?dingue\b|\bsoirée dingue\b/ },
+    feu: { d: "fire" },
+  },
+  it: {
+    caldo: { d: "fire", sex: "sexy" },
+    calda: { d: "fire", sex: "sexy" },
+    bomba: { d: "boom", pr: /\b(?:è|e'|che|una) (?:una )?bomba\b/ },
+    pazzo: { d: "crazy", lit: [/\bpazz[oa] (?:di te|d'amore|per te)\b/, "love"] },
+    pazza: { d: "crazy", lit: [/\bpazz[oa] (?:di te|d'amore|per te)\b/, "love"] },
+  },
+  pt: {
+    quente: { d: "fire", sex: "sexy" },
+    foda: { d: "curse", pr: /\b(?:é|e|muito|mó|mo|tá|ta|que|mais) foda\b|\bfoda demais\b/ },
+    louco: { d: "crazy", lit: [/\blouc[oa] (?:por você|por voce|por ti|de amor)\b/, "love"] },
+    louca: { d: "crazy", lit: [/\blouc[oa] (?:por você|por voce|por ti|de amor)\b/, "love"] },
+    bomba: { d: "boom", pr: /\b(?:é|e|tá|ta) (?:uma )?bomba\b/ },
+  },
+  nl: {
+    geil: { d: "praise", sex: "sexy" },
+    geile: { d: "praise", sex: "sexy" },
+    vet: { d: "praise", lit: [/\b(?:vet eten|te vet|vetrol\w*|dik en vet|vet van|vet in)\b/, null] },
+    vette: { d: "praise", lit: [/\bvette (?:hap|snack|frieten?)\b/, null] },
+    ziek: { d: null, lit: [/\b(?:ben|was|word|werd|voel me|zo) ziek(?: van)?\b|\bziek (?:van|in bed|thuis)\b|\bziekenhuis\b/, null], pr: /\b(?:echt|super|zo) ziek\b(?! van)|\bziek (?:feest|nummer|beat)\b/ },
+    zieke: { d: "praise" },
+    gek: { d: "crazy", lit: [/\bgek (?:op jou|op je|van jou|van je|op mij)\b/, "love"] },
+  },
+  pl: {
+    ogień: { d: "fire", pr: /\bto (?:jest )?ogień\b|\bogień na\b/ },
+    bomba: { d: "boom", pr: /\b(?:to|jest) (?:jest )?bomba\b/ },
+    petarda: { d: "praise", lit: [/\bpetard\w* (?:wybuch\w*|huk)\b|\b(?:rzucił\w*|odpalił\w*) petard\w*/, "boom"] },
+    szalony: { d: "crazy", lit: [/\bszalon\w* (?:za tobą|z miłości)\b|\bszaleję za tobą\b/, "love"] },
+  },
+  tr: {
+    efsane: { d: "praise" },
+    ateş: { d: "fire", pr: /\bateş gibi (?:bir )?(?:parti|gece|şarkı|ortam)\b/ },
+    bomba: { d: "boom", pr: /\bbomba gibi\b|\bbomba (?:oldu|parça|şarkı|gibisin)\b/ },
+    deli: { d: "crazy", lit: [/\bdeli(?:ler)? gibi (?:sev\w*|aşık\w*)\b|\bsana deli\w*\b/, "love"] },
+    çılgın: { d: "crazy", pr: /\bçılgın (?:gece|parti|bir gece|ortam)\b/ },
+  },
+};
+// \b gilt in JavaScript nur für ASCII-Buchstaben („está“, „çılgın“, „heiß“): Wortgrenzen für alle Schriften
+const WB = "(?:(?<![\\p{L}\\p{N}])(?=[\\p{L}\\p{N}])|(?<=[\\p{L}\\p{N}])(?![\\p{L}\\p{N}]))";
+const uni = (re) => new RegExp(re.source.replace(/\\b/g, WB), "u");
+for (const T of [PRAISE_CTX, SEX_CTX]) for (const k of Object.keys(T)) T[k] = uni(T[k]);
+for (const words of Object.values(SLANG)) {
+  for (const r of Object.values(words)) {
+    if (r.lit) r.lit[0] = uni(r.lit[0]);
+    if (r.pr) r.pr = uni(r.pr);
+  }
+}
+// ein Lob-Wort in seiner Zeile deuten: Begriff oder null (keine Antwort); undefined = kein Lob-Wort
+function slang(lang, raw, lt) {
+  const r = SLANG[lang]?.[low(raw)];
+  if (!r) return undefined;
+  if (r.lit && r.lit[0].test(lt)) return r.lit[1];
+  if (r.sex && SEX_CTX[lang]?.test(lt)) return r.sex;
+  if (r.pr?.test(lt)) return "praise";
+  if (r.d !== "praise" && r.d !== null && !r.pr && PRAISE_CTX[lang]?.test(lt) && (r.d === "crazy" || r.d === "wild")) return "praise";
+  if (r.d === null && PRAISE_CTX[lang]?.test(lt)) return "praise";
+  return r.d;
+}
 // Rufe und Zählen: eine Verneinung davor ändert nichts („no, no, yeah!“)
 const NONEG = new Set(["hey", "yeah", "woo", "ole", "everybody", "comeon", "onemore", "hallelujah", "hype", "count", "handsup", "curse", "insult"]);
 // Verneint → Gegenstimmung (sonst nichts)
 const OPP = { love: "heartbreak", happy: "sad", lonely: "together", fear: "strong" };
 // Derbe Begriffe: nie als Text, nur Licht und Stimmung
-const EXPLICIT = new Set(["sexy", "insult", "curse", "drugs"]);
+// … und Gewalt (Waffen, Töten, Krieg): ebenso nie als Text
+const EXPLICIT = new Set(["sexy", "insult", "curse", "drugs", "gun", "machinegun", "shoot", "blade", "axe", "kill", "death", "grenade", "battle", "gangster", "heist", "reaper", "war", "blood"]);
 // Begriffe, die in einem ruhigen/traurigen Song höchstens als Farbe kommen (Party, Rufe, Bewegung)
 const LOUDC = new Set([
   "party", "fireworks", "boom", "bass", "handsup", "hype", "jump", "dance", "crazy", "club", "turnup", "weekend", "dancefloor", "dj",
@@ -65,7 +202,24 @@ const SENSE = [
   ["en", /\bfeel(?:ing|in')? (?:so )?blue\b/, "blue", "sad", 0.05],
   ["en", /\bwhat the (?:hell|heck)\b/, "devil", "curse", 0],
   ["en", /\b(?:all the|every|any|some|by the|in|on|no|last|first|next|this) time\b/, "time", null, 0],
-  ["en", /\b(?:cold feet|cold shoulder)\b/, "cold", null, 0],
+  ["en", /\b(?:cold feet|cold shoulder)\b/, "*", null, 0],
+  ["en", /\bsick and tired\b/, "tired", null, 0],
+  // Waffen-Wörter, die gar keine Gewalt meinen
+  ["en", /\b(?:killing|killin'?|killed|kill|kills) (?:it|the game|this|that beat)\b/, "*", "praise", 0.05],
+  ["en", /\bkill(?:ing)? the (?:lights|music|engine|vibe)\b/, "kill", "blackout", 0],
+  ["en", /\b(?:shots? of|tequila shots?|vodka shots?|whiskey shots?|a shot (?:of|for)|take (?:a|another) shot|do (?:a|some) shots?)\b/, "*", "shots", 0.05],
+  ["en", /\bshoot(?:ing)? (?:your|my|his|her|our|their) shot\b|\bshoot for the (?:stars|moon|sky)\b|\b(?:photo ?shoot|video shoot|shooting (?:a|the) (?:video|movie|film))\b/, "shoot", null, 0],
+  ["en", /\b(?:big shot|shot caller|call(?:ing)? the shots)\b/, "*", "boss", 0],
+  ["en", /\b(?:phone|battery|batteries|cell) (?:is |was |'s |went )?dead\b|\bdead (?:tired|serious|end|ass|inside|silence|weight|beat)\b|\bi'?m dead\b|\bdeadline\b/, "death", null, 0],
+  ["en", /\b(?:i'?d|i would|i could|i'll|i will|i'm gonna) die for you\b|\bto die for\b|\bdying to (?:see|meet|kiss|hold|know)\b/, "death", "love", 0],
+  ["en", /\b(?:a|total|absolute) knockout\b|\bdressed to kill\b|\bdrop dead gorgeous\b/, "*", "beautiful", 0],
+  ["en", /\bbullet train\b/, "shoot", "train", 0],
+  ["de", /\b(?:zum sterben (?:schön|gern|verliebt))\b/, "death", "beautiful", 0],
+  ["de", /\b(?:akku|handy) (?:ist |war )?(?:tot|leer)\b|\btoter winkel\b|\btotlachen\b/, "death", null, 0],
+  ["es", /\b(?:me matas|me mata|me muero por (?:ti|vos|verte)|muero por (?:ti|vos)|me muero de amor)\b/, "*", "love", 0],
+  ["pt", /\bmatar a saudade\b|\bmorrer de saudade\b/, "*", "longing", 0.05],
+  ["fr", /\btu me tues\b|\bà mourir\b/, "*", "love", 0],
+  ["it", /\bda morire\b/, "*", null, 0],
   ["en", /\b(?:free (?:of charge|for|ride|shipping)|for free)\b/, "freedom", null, 0],
   ["en", /\b(?:fight for|fighting for) (?:you|love|us|this)\b/, "war", "strong", 0],
   ["en", /\b(?:killing it|kill it)\b/, "*", null, 0],
@@ -179,6 +333,13 @@ function senseLine(text, hits, o = {}) {
     if (o.main && o.main !== "en" && h.lang === "en" && h.how !== "phrase") conf *= enLine ? 0.88 : 0.55;
     // Zusammensetzung („Feuerwehr“ über den Stamm „feuer*“): deutlich weniger sicher
     if (h.how === "pre" && COMPOUND.has(h.lang) && [...(h.raw || "")].length > 11) conf *= 0.7;
+    // Lob-Wörter („geil“, „sick“, „krass“, „c'est chaud“): Lob, wörtlich oder sinnlich – nach den Nachbarn
+    const sl = h.how === "phrase" ? undefined : slang(h.lang, h.raw, lt);
+    if (sl === null) continue;
+    if (sl !== undefined && sl !== c) {
+      c = sl;
+      conf = Math.max(conf, 0.75);
+    }
     // Wortsinn: Redewendungen umdeuten oder streichen
     for (const [lang, re, from, to, plus] of SENSE) {
       if (lang !== "*" && lang !== h.lang) continue;

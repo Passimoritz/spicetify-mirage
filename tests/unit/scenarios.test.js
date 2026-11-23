@@ -49,13 +49,23 @@ const base = { energy: 0.8, kind: "chorus", level: 3, lite: false, calm: false, 
 {
   const s = createScenarios();
   const a = s.word("fire", { ...base, t: 10 });
-  assert.deepStrictEqual(a.map((x) => x.f), ["pyro", "wash"], "Feuer: Flammen und warmer Schein");
+  // im Refrain mit Energie: die großen Bilder zuerst (Flammen der Location und Feuerwand)
+  assert.deepStrictEqual(a.map((x) => x.f), ["pyro", "firewall"], "Feuer im Refrain: Flammen und Feuerwand");
   assert.strictEqual(s.word("rain", { ...base, t: 10.5 }).length, 0, "unter 1,2 s nach dem letzten Wort: nichts");
-  assert.strictEqual(s.word("fire", { ...base, t: 14 }).length, 0, "Flammen erst nach ihrer Abklingzeit wieder");
+  assert.ok(!s.word("fire", { ...base, t: 14 }).some((x) => x.f === "pyro" || x.f === "firewall"), "Flammen erst nach ihrer Abklingzeit wieder");
   assert.strictEqual(s.word("devil", { ...base, t: 15 }).filter((x) => x.f === "pyro").length, 0, "Pyro auch über einen anderen Begriff erst nach der Abklingzeit");
-  assert.ok(s.word("fire", { ...base, t: 21 }).some((x) => x.f === "pyro"), "nach 10 s wieder");
+  // nach der Abklingzeit, aber binnen 30 s: ein anderes Bild statt derselben Flammen
+  const s2 = createScenarios();
+  s2.word("fire", { ...base, t: 10 });
+  const again = s2.word("fire", { ...base, t: 22 });
+  assert.deepStrictEqual(again.map((x) => x.f), ["wash"], "binnen 30 s nicht dieselben Flammen, sondern der Schein: " + again.map((x) => x.f));
+  // läuft alles schon binnen 30 s, kommt (nach der Abklingzeit) trotzdem etwas
+  assert.ok(s2.word("fire", { ...base, t: 33 }).length, "lieber eine Wiederholung als gar nichts");
+  assert.ok(s.word("fire", { ...base, t: 45 }).some((x) => x.f === "pyro"), "nach 30 s wieder Flammen");
   // zurückgespult: Abklingzeiten neu
   assert.ok(s.word("fire", { ...base, t: 2 }).some((x) => x.f === "pyro"));
+  // Strophe, mittlere Energie: erst das ruhige Bild
+  assert.strictEqual(createScenarios().word("fire", { ...base, t: 5, kind: "verse", energy: 0.5 })[0].f, "wash", "Strophe: erst der Schein");
 }
 {
   // nie mehr als drei gleichzeitig, nie zwei derselben Familie
@@ -72,7 +82,7 @@ const base = { energy: 0.8, kind: "chorus", level: 3, lite: false, calm: false, 
   assert.deepStrictEqual(quiet.map((x) => x.f), ["wash"]);
   assert.ok(quiet[0].k < 0.6, "im leisen Intro schwächer: " + quiet[0].k);
   const lite = createScenarios().word("money", { ...base, t: 5, lite: true });
-  assert.strictEqual(lite.length, 0, "Gold-Glitzer gibt es bei Leicht nicht");
+  assert.ok(!lite.some((x) => x.f === "gold" || x.f === "coins"), "Gold-Glitzer und Münzregen gibt es bei Leicht nicht (dafür goldene Sterne)");
   assert.ok(createScenarios().word("star", { ...base, t: 5, lite: true }).length, "Sterne sind billig genug für Leicht");
   assert.strictEqual(createScenarios().word("fire", { ...base, t: 5, calm: true }).length, 0, "Ruhig: keine Bühnen-Antwort");
   // Blitz ohne Blitze: weich
@@ -180,6 +190,92 @@ for (const noFlash of [false, true]) {
     // (scn ist je Plan ein Objekt, das jedes Bild neu befüllt: Werte sofort lesen)
     const c0 = cue(p, peaks[0].t0 + 0.01, {}).scn.dx, c1 = cue(p, peaks[0].t0 + p.bar * 2, {}).scn.dx;
     assert.ok(c0 > 0.9 && c1 < 0.15, `${name}: Drop-Bild ${c0} → ${c1}`);
+  }
+}
+
+/* ---- neue Bühnenbilder: Vielfalt, Leicht, Spielarten, Publikum, Spielart der Musik */
+{
+  const { SCENE_FAMS, GENRE_SWAP, REPEAT, responses } = load("scenarios.js");
+  const { createSceneFx } = load("scenefx.js");
+  const sc = createSceneFx(() => ({}), createFlashCap());
+  // jedes neue Bild ist gezeichnet; mindestens 60 verschiedene Bilder sind über Begriffe erreichbar
+  for (const f of SCENE_FAMS) assert.ok(sc.has(f), `scenefx.js zeichnet ${f} nicht`);
+  const reach = new Set();
+  for (const list of Object.values(STAGE)) for (const [f] of list) reach.add(f);
+  for (const sw of Object.values(GENRE_SWAP)) for (const [from, to] of Object.entries(sw)) {
+    assert.ok(FAM[from] && FAM[to], `Spielart-Tausch ${from} → ${to}: unbekannte Familie`);
+    if (reach.has(from)) reach.add(to);
+  }
+  for (const f of [...reach]) if (FAM[f].alt) reach.add(FAM[f].alt);
+  assert.ok(reach.size >= 60, `nur ${reach.size} verschiedene Bilder erreichbar`);
+  for (const f of SCENE_FAMS) assert.ok(reach.has(f), `Bild ${f} wird von keinem Begriff ausgelöst`);
+  // jedes Bild hat ein Verhalten bei „Leicht“ (günstig genug oder eine günstige Schwester) …
+  for (const f of SCENE_FAMS) {
+    const F = FAM[f];
+    assert.ok(F.lite === true || (Array.isArray(F.la) && FAM[F.la[0]]?.lite), `${f}: kein Verhalten bei „Leicht“`);
+    if (F.crowd) assert.ok(FAM[F.alt] && !FAM[F.alt].crowd, `${f}: kein Bühnenbild ohne Publikum`);
+  }
+  // … und bei „Leicht“ kommt nie ein teures Bild
+  for (const c of Object.keys(STAGE)) {
+    const out = createScenarios().word(c, { ...base, t: 5, lite: true });
+    for (const x of out) assert.ok(FAM[x.f].lite, `${c}: ${x.f} bei „Leicht“`);
+  }
+  assert.deepStrictEqual(createScenarios().word("fireworks", { ...base, t: 5, lite: true }).map((x) => x.f), ["stars", "fwring"], "Feuerwerk bei „Leicht“: Sterne statt Kugelbombe, dazu der günstige Ring");
+  // Blitz im Gewitter: ohne Blitze weich
+  assert.strictEqual(createScenarios().word("storm", { ...base, t: 5, noFlash: true })[0].soft, true);
+
+  // Publikum aus: Bilder der Menge werden Bilder der Bühne
+  for (const c of ["lighter", "phone", "crowd", "concert", "handsup", "clap", "everybody", "singalong", "praise", "insult", "music"]) {
+    const off = responses(c, { ...base, crowd: false }) || [];
+    for (const [f] of off) assert.ok(!FAM[f].crowd, `${c} ohne Publikum: ${f}`);
+    const cues = createScenarios().word(c, { ...base, t: 5, crowd: false });
+    assert.ok(cues.length, `${c} ohne Publikum: gar nichts`);
+  }
+  assert.deepStrictEqual(responses("lighter", { ...base, crowd: false }).map((r) => r[0]), ["candles"]);
+  assert.deepStrictEqual(responses("lighter", { ...base }).map((r) => r[0]), ["lighters"]);
+
+  // Spielart der Musik: Techno bekommt Laser statt Kerzen, Country Lagerfeuer statt Laser, Klassik Kerzen statt Pyro
+  assert.ok(responses("candle", { ...base, genre: "electronic" }).some((r) => r[0] === "lasertunnel"), "Techno: Laser statt Kerzen");
+  assert.ok(responses("rave", { ...base, genre: "country" }).some((r) => r[0] === "headlights"), "Country: Scheinwerfer statt Laser");
+  assert.ok(responses("fire", { ...base, genre: "classical" }).some((r) => r[0] === "candles"), "Klassik: Kerzen statt Pyro");
+  assert.ok(!responses("fire", { ...base, genre: "country" }).some((r) => r[0] === "pyro"), "Country: kein Pyro, sondern Feuerwand");
+
+  // Spielarten: fest je Song, bei jeder Wiederholung eine andere, je Song verschieden
+  const runSong = (song) => {
+    const s = createScenarios(), vs = [];
+    for (let i = 0; i < 6; i++) for (const x of s.word("party", { ...base, t: 5 + i * 40, song })) if (x.f === "cannon") vs.push(x.v);
+    return vs;
+  };
+  const v1 = runSong("spotify:track:a"), v1b = runSong("spotify:track:a");
+  assert.ok(v1.length >= 3, "Konfettikanone mehrmals: " + v1.length);
+  assert.deepStrictEqual(v1, v1b, "gleicher Song, gleiche Spielarten");
+  for (let i = 1; i < v1.length; i++) assert.notStrictEqual(v1[i], v1[i - 1], "Wiederholung: andere Spielart");
+  const songs = ["a", "b", "c", "d", "e", "f"].map((x) => runSong("spotify:track:" + x)[0] + "," + createScenarios().word("party", { ...base, t: 5, song: "s" + x }).find((c) => c.f === "cannon")?.dir);
+  assert.ok(new Set(songs).size >= 2, "verschiedene Songs, verschiedene Spielarten: " + songs);
+
+  // kein Bild zweimal binnen 30 s, solange es Alternativen gibt (ein Song mit vielen Bildwörtern alle 5 s)
+  {
+    const s = createScenarios(), seen = new Map(), words = ["fire", "party", "star", "rain", "love", "money", "club", "night", "dance", "sun", "heart", "fireworks"];
+    let rep = 0, n = 0;
+    for (let t = 2, i = 0; t < 240; t += 5, i++) {
+      for (const x of s.word(words[i % words.length], { ...base, t })) {
+        const k = x.f + (x.col ? x.col.join() : "");
+        if (t - (seen.get(k) ?? -1e9) < REPEAT) rep++;
+        seen.set(k, t);
+        n++;
+      }
+    }
+    assert.ok(n >= 15 && rep <= n * 0.25, `zu viele Wiederholungen binnen 30 s: ${rep}/${n}`);
+  }
+  // ruhiges Lied: keine großen Bilder
+  for (const c of ["party", "fireworks", "confetti", "explode", "rave", "excited"]) {
+    for (const [f] of responses(c, { ...base, soft: true, energy: 0.5 }) || []) assert.ok(!FAM[f].big && !FAM[f].venue, `${c} im ruhigen Lied: ${f}`);
+  }
+  // Abklingzeiten der neuen Bilder gelten
+  {
+    const s = createScenarios();
+    assert.ok(s.word("confetti", { ...base, t: 5 }).some((x) => x.f === "cannon"));
+    assert.ok(!s.word("party", { ...base, t: 8 }).some((x) => x.f === "cannon"), "Konfettikanone erst nach ihrer Abklingzeit");
   }
 }
 

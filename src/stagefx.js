@@ -8,6 +8,8 @@
 // mit Blitzen an, durch die gemeinsame Blitz-Schranke (höchstens 3/s). Sonst wird er ein ruhiges Glühen.
 import { DROP_LOOKS, FAMS } from "./scenarios.js";
 import { envAR } from "./fxenv.js";
+// Szenarien: neue Bühnenbilder (Konfettikanone, Nordlicht, Skyline, Glitch …) in scenefx.js
+import { createSceneFx } from "./scenefx.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (x) => {
@@ -35,6 +37,8 @@ function createStageFx(glowSprite, flashCap) {
   let vw = 0, vh = 0;
   // Einmal-Auslöser je Antwort (seq): Blitz ja/nein, Bühneneffekt der Location gezündet ja/nein
   const bolts = new Map(), venueOk = new Map();
+  // Szenarien: neue Bühnenbilder (scenefx.js)
+  const scene = createSceneFx(glowSprite, flashCap);
   const glow = (ctx, col, x, y, r, a) => {
     if (a <= 0.004 || r <= 0) return;
     ctx.globalAlpha = clamp(a, 0, 1);
@@ -434,6 +438,8 @@ function createStageFx(glowSprite, flashCap) {
           }
           case "jump": crowdOut.jump = Math.max(crowdOut.jump, k * e); break;
           case "hands": crowdOut.hands = Math.max(crowdOut.hands, e); break;
+          // Szenarien: alle neuen Bilder zeichnet scenefx.js
+          default: scene.draw(ctx, f, c, age, e, st, S, crowdOut);
         }
       }
     }

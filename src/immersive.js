@@ -168,6 +168,8 @@ Probe-FX: ${pfx}`;
       t: performance.now() / 1000, energy: px.energy, kind: px.kind, level: px.level, lite: lightMode(), calm: cfg.calm || reducedMotion.matches,
       noFlash: !!cfg.noFlash, flash: !!(cfg.partyFlash && px.fx), beat: 60 / (px.tempo || 120), phase: px.phase, col: WORD_FX[c]?.col,
       k: o?.k, also: o?.also, soft: o?.soft, valence: px.valence, arousal: px.arousal, explicit: explicitMode(),
+      // Szenarien: Publikum an/aus, Spielart der Musik, Song (Spielarten der Bilder fest je Song)
+      crowd: cfg.partyCrowd !== false, genre: party.info?.family || "", song: currentItem()?.uri || "",
     });
   }
   // Derbe Wörter: Einstellung „on“ / „soft“ (nur Farbe) / „off“ – hat Spotify den Filter für explizite Inhalte

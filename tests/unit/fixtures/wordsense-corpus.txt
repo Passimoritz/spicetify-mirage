@@ -455,3 +455,162 @@ fr|insult|Connard, va-t'en
 fr|-|Il fait beau aujourd'hui
 fr|-|Je prends le métro
 fr|longing|Tu me manques, mon amour
+# --- Lob-Wörter („f-words“): Lob → praise, wörtlich → anderer Begriff oder nichts. „!x“ = alles außer x (auch nichts).
+# Deutsch: „geil“ meint meist „super“, nur im sinnlichen Zusammenhang sexy; krass, heftig, fett
+de|praise|Die Party ist so geil heute
+de|praise|Wie geil ist das denn
+de|praise|Einfach geil, dieser Beat
+de|praise|Geiler Song, dreh lauter
+de|praise|Das war ein geiles Konzert
+de|!sexy|Alles ist geil, wenn wir zusammen sind
+de|sexy|Ich bin so geil auf dich
+de|sexy|Du machst mich geil mit deinem Körper
+de|sexy|Geil auf deine Haut im Bett
+de|praise|Krass, wie die Leute abgehen
+de|praise|Das ist richtig krass, Digga
+de|-|Ein krasser Unterschied zu gestern
+de|praise|Der Bass ist heftig heute Nacht
+de|praise|Heftig, was hier abgeht
+de|rain|Heftiger Regen fällt auf die Stadt
+de|!praise|Heftige Schmerzen in der Brust
+de|praise|Fette Beats und gute Laune
+de|praise|Das klingt so fett, Alter
+de|-|Ich bin zu fett für die Hose
+de|praise|Der Abend war der Hammer
+de|praise|Läuft bei dir, Bruder
+# Englisch: hot, sick, fire, lit, dope, killer, bomb, insane, crazy, wild
+en|praise|This beat is sick, turn it up
+en|praise|That's sick, bro
+en|praise|Sick flow, sick bars, all night
+en|-|I'm sick and tired of your games
+en|-|I'm so sick of this
+en|-|Feeling sick without you here
+en|praise/turnup|It's lit tonight in the club
+en|praise|This party is lit
+en|!praise|She lit a cigarette and walked away
+en|!praise|I lit the candles one by one
+en|praise|That track is dope, play it again
+en|praise|Dope beat, dope vibe
+en|drugs|Smoking dope in the back of the car
+en|praise|This song is a banger
+en|praise|This beat goes hard
+en|praise|The drop is fire, the crowd goes wild
+en|praise|That's fire, that's fire
+en|fire|We set the city on fire
+en|fire|Burning in the fire tonight
+en|sexy|You're so hot, baby, come closer
+en|sexy|Hot body in the moonlight
+en|praise|This track is hot right now
+en|fire|It's getting hot in here
+en|fire|Hot summer sun on my skin
+en|praise|This party is insane
+en|crazy|Drive me crazy, you drive me insane
+en|love|Crazy in love with you
+en|love|I'm crazy about you
+en|praise|Crazy party, crazy night tonight
+en|!praise|Wild horses couldn't drag me away
+en|praise|Killer track, the crowd goes up
+en|-|Watch out, a serial killer on the loose
+en|praise|This song is awesome
+en|praise|Amazing night, amazing crowd
+en|praise|The beat is the bomb
+# Spanisch
+es|praise|La fiesta está brutal esta noche
+es|praise|Qué chimba de canción
+es|praise|Este ritmo está chido
+es|!praise|Un accidente brutal en la autopista
+es|sexy|Tu cuerpo está caliente, mami
+es|praise|La pista está bien caliente
+es|love|Estoy loco por ti
+es|praise|La fiesta es una bomba
+es|praise|Esta canción es genial
+# Französisch
+fr|praise|C'est le feu ce soir
+fr|praise|Cette soirée est de ouf
+fr|praise|Ce son est mortel
+fr|praise|C'est chaud, c'est chaud, ça bouge
+fr|fire|Il fait chaud dehors en été
+fr|sexy/beautiful|T'es une bombe, bébé
+fr|love|Je suis fou de toi
+fr|praise|C'est complètement dingue, la fête
+fr|praise|Ce morceau est une tuerie
+# Italienisch
+it|praise|Questa festa è una figata
+it|praise|Il pezzo è pazzesco
+it|praise/party|Questa serata spacca
+it|praise|È una bomba questa canzone
+it|love|Sono pazzo di te
+# Portugiesisch
+pt|praise|Esse baile tá muito foda
+pt|praise|A festa tá irada
+pt|praise|Que som brabo
+pt|sexy|Teu corpo quente na cama
+pt|love|Estou louco por você
+pt|praise|Essa música é demais
+# Niederländisch
+nl|praise|Dit feest is echt vet
+nl|praise|Wat een gaaf nummer
+nl|praise|Die beat is echt ziek
+nl|-|Ik ben ziek en lig in bed
+nl|sexy|Ik ben zo geil op jou
+nl|praise|Geil feest vanavond
+nl|love|Ik ben gek op jou
+nl|-|Te vet eten is niet goed
+# Polnisch
+pl|praise|Ta impreza to sztos
+pl|praise|To jest ogień, wszyscy w górę
+pl|praise|Ten kawałek to petarda
+pl|praise|Czad, ale melanż
+pl|love|Jestem szalony za tobą
+# Türkisch
+tr|praise|Bu parti efsane
+tr|praise|Bu şarkı bomba gibi
+tr|praise|Harika bir gece
+tr|love|Sana deli gibi aşığım
+tr|praise|Çılgın bir gece bu
+# --- Waffen und Gewalt (nur Licht, nie Text) – und Redewendungen, die keine Gewalt meinen
+en|gun|Got a glock in my pocket
+en|gun/shoot|Pull the trigger, bullets flying
+en|machinegun|Tommy gun rattling through the night
+en|machinegun/shoot|Machine gun, rapid fire, take cover
+en|shoot|Shots fired on the block
+en|blade|Knife in the dark, cold steel blade
+en|axe|Swinging the axe through the door
+en|kill|Murder on the dancefloor
+en|kill|They wanna kill me, I'm still alive
+en|death|Six feet under, dead and gone
+en|grenade|Throw the grenade and run
+en|gangster|Gangsta life, mafia ties
+en|heist|It's a robbery, stick up, hands in the air
+en|!kill|We're killing it tonight
+en|!kill|Kill it on the dancefloor, baby
+en|shots|Give me a shot of tequila
+en|!shoot|Shoot your shot, don't be shy
+en|!shoot|We had a photo shoot in Paris
+en|!death|My phone is dead, can't call you back
+en|!death|I'm dead tired after the show
+en|love|I would die for you
+en|!kill|Dressed to kill, she owns the room
+en|!gun|She's a total knockout
+de|gun|Die Knarre liegt im Handschuhfach
+de|gun/shoot|Er drückt ab, Kugeln fliegen
+de|machinegun|Maschinengewehr und Kalaschnikow
+de|blade|Mit dem Messer in der Hand
+de|axe|Die Axt schlägt ins Holz
+de|kill|Ich will dich töten, sagt der Mörder
+de|death|Wir sterben alle irgendwann
+de|!death|Zum Sterben schön bist du
+de|!death|Mein Akku ist tot
+es|gun|Saca la pistola, carga la fusca
+es|shoot|Balacera en el barrio
+es|love|Me matas con esa mirada
+es|love|Me muero por ti
+fr|gun|Le flingue dans la boîte à gants
+fr|machinegun|Rafale de kalash dans la nuit
+fr|love|Tu me tues quand tu souris
+pt|longing|Vim matar a saudade
+pt|gun|Oitão na cintura
+it|!death|Bella da morire
+tr|gun|Silahı belinde taşıyor
+tr|blade|Bıçak cebinde
+pl|gun|Spluwa w kieszeni
