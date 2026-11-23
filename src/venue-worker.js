@@ -10,7 +10,7 @@ import { createVenue } from "./venue.js";
 // Ohne requestAnimationFrame im Thread: zeichnen, sobald ein Zustand ankommt (wie bisher).
 const venue = createVenue((w, h) => new OffscreenCanvas(w, h));
 const paced = typeof self.requestAnimationFrame === "function";
-let canvas = null, ctx = null, pending = null, queued = false;
+let canvas = null, ctx = null, pending = null, queued = false, profN = 0;
 function draw() {
   queued = false;
   const st = pending;
@@ -20,9 +20,12 @@ function draw() {
     canvas.width = st.vw;
     canvas.height = st.vh;
   }
+  // Messung (tools/party-perf.js, st.prof): Zeichenzeit dieses Bilds und alle 30 Bilder die Werte je Ebene
+  const t0 = st.prof ? performance.now() : 0;
   venue.draw(ctx, st);
   // fertig: das Hauptfenster weiß damit, dass der Thread mitkommt
-  self.postMessage({ type: "done" });
+  if (!st.prof) return void self.postMessage({ type: "done" });
+  self.postMessage({ type: "done", ms: performance.now() - t0, w: canvas.width, h: canvas.height, stats: ++profN % 30 ? null : venue.stats() });
 }
 self.onmessage = (e) => {
   const m = e.data;

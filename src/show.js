@@ -41,7 +41,11 @@ const WIPE_BELL = Array.from({ length: 9 }, (_, s) => Math.pow(0.5 + 0.5 * Math.
 function createShow(glowSprite, cap) {
   let vw = 0, vh = 0;
   // prev/pt: Muster vor dem letzten Wechsel und wann er war – die Köpfe schwenken in 0,4 s hinüber statt zu springen
-  const rig = { blk: -1, pat: "", prev: "", pt: -9, col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false };
+  const rig = { blk: -1, pat: "", prev: "", pt: -9, col: 0, drop: 0, blind: 0, sn: false, sheet: 0, wall: 0, wallOn: false, hand: 0, land: 0, landL: 0 };
+  // Farbe eines Kopfes im Farbprogramm (colProg): Mischung zweier Lichtfarben – ein Speicher für alle Köpfe (keine
+  // neuen Felder je Bild); cA/cB = die beiden Farben, cF = Anteil der zweiten, cBuf = die Mischung
+  let cA = 0, cB = 0, cF = 0;
+  const cBuf = [0, 0, 0], rampC = [0, 0, 0];
   // großes Leuchtbild (256 px) für alles, was weit gestreckt wird – sonst zeigt der Schein Ringe
   const spr = (c, r) => glowSprite(c, r > 48);
   // Winkel eines Kopfes in einem Muster (ohne die Ausrichtung im Aufbau)
@@ -52,7 +56,36 @@ function createShow(glowSprite, cap) {
     else if (pat === "cross") a += (i % 2 ? 1 : -1) * (0.3 + 0.28 * Math.sin((mb * Math.PI) / 4));
     else if (pat === "chase") a += u * 0.6;
     else if (pat === "point") a = toCover;
+    // Ballyhoo: weite, versetzte Achten über die ganze Halle (der tragende Look nach dem Drop)
+    else if (pat === "ballyhoo") a += u * 0.9 * Math.sin((mb * Math.PI) / 4 + i * 0.55) + 0.32 * Math.sin((mb * Math.PI) / 2 + i * 1.1);
+    // Tilt: alle Köpfe öffnen und schließen den Fächer gemeinsam, einmal in zwei Takten
+    else if (pat === "tilt") a += u * (0.25 + 0.95 * (0.5 - 0.5 * Math.cos((mb * Math.PI) / 4)));
+    // Spiegel: links und rechts gegengleich – ein V, das sich mit dem Takt öffnet und schließt
+    else if (pat === "mirror") a -= Math.sign(u) * (0.15 + 0.4 * (0.5 - 0.5 * Math.cos((mb * Math.PI) / 2))) * Math.min(1, Math.abs(u) * 2.4);
+    // Stand: die Köpfe stehen fast still und atmen nur (Intro, Break, Outro)
+    else if (pat === "still") a += u * 0.4 + 0.05 * Math.sin(mb * 0.4 + i);
     return a;
+  }
+  // Farbprogramm: setzt cA, cB, cF für Kopf i von n (mb = Schlag-Uhr der Regie)
+  function colProg(prog, i, n, mb) {
+    if (prog === "mono") {
+      // alle in einer Farbe; im letzten Viertel jedes Takts gleitet sie zur nächsten
+      const b = Math.floor(mb / 4), f = mb / 4 - b;
+      cA = (b + rig.col) % 3;
+      cF = smooth((f - 0.75) / 0.25);
+    } else if (prog === "split") {
+      cA = ((i & 1) + rig.col) % 3;
+      cF = 0;
+    } else if (prog === "chase") {
+      // eine Farbwelle wandert über die Traverse, ein Durchlauf in vier Takten
+      const w = (i / n) * 3 + mb / 16 * 3, b = Math.floor(w);
+      cA = (((b + rig.col) % 3) + 3) % 3;
+      cF = w - b;
+    } else {
+      cA = (i + rig.col) % 3;
+      cF = 0;
+    }
+    cB = (cA + 1) % 3;
   }
   const beatPos = (st, px) => (px.beatIdx >= 0 ? px.beatIdx : st.t * (st.bpm / 60)) + (px.phase || 0);
 
@@ -68,15 +101,33 @@ function createShow(glowSprite, cap) {
     // der Drop reißt die Strahlen ins Weiße – ohne Blitze bleiben sie in ihrer Farbe
     if (px.dropHit && !st.noFlash) rig.drop = 1;
     rig.drop *= Math.exp(-dt * 3);
+    // DJ-Übergabe (party.js hand 0..1, geglättet: beim Songwechsel fällt sie auf 0) und Landung auf der ersten Eins des
+    // neuen Songs: die Köpfe stehen zur Mitte gerichtet und springen dann auseinander
+    rig.hand += ((px.hand || 0) - rig.hand) * (1 - Math.exp(-dt * 3));
+    if (px.land && rig.hand > 0.05) [rig.land, rig.landL, rig.hand] = [rig.hand * 0.55, 1, 0];
+    rig.land = rig.land > 0.01 ? rig.land * Math.exp(-dt * 4) : 0;
+    rig.landL = rig.landL > 0.01 ? rig.landL * Math.exp(-dt * 2.5) : 0;
+    // Lichtrampe des Aufbaus: hinter der Bühne steigt ein weiches Licht (stetig, kein Pulsen) – nur in voller Qualität
+    if ((px.ramp || 0) > 0.01 && st.rig && vis > 0 && (st.quality ?? 2) >= 2) {
+      const r = vw * 0.6;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = clamp((st.noFlash ? 0.1 : 0.16) * px.ramp * vis, 0, 1);
+      // (Farbe in einem festen Speicher, in 16er-Stufen: keine neuen Felder je Bild, wenige Leuchtbilder)
+      for (let k2 = 0; k2 < 3; k2++) rampC[k2] = st.noFlash ? pal[1][k2] : (pal[1][k2] + (255 - pal[1][k2]) * 0.6) & ~15;
+      ctx.drawImage(spr(rampC, r), vw / 2 - r, vh * 0.25 - r * 0.5, r * 2, r);
+      ctx.globalAlpha = 1;
+    }
     const n = v.decor === "towers" || v.decor === "stands" ? 10 : v.decor === "club" ? 7 : v.decor === "beach" ? 6 : v.decor === "warehouse" ? 5 : 0;
     // Muster der Szene (Lichtregie) – auch ruhige Stile bekommen Moving Heads, wenn ihre Szene welche mitbringt
     const pats = RIG[key] || (px.rig ? [px.rig] : null);
     ctx.globalCompositeOperation = "lighter";
     if (n && pats && st.rig) {
       const blk = Math.floor(bp / 32);
-      // die Szene wechselt auf einer Eins: ihr Muster gilt sofort, sonst alle 32 Schläge das nächste des Genres
-      if (blk !== rig.blk || (px.rig && px.rig !== rig.pat)) {
-        const next = px.rig || pats[(blk + (px.scene || 0)) % pats.length];
+      // Programm des Teils (Regie: Intro steht, Strophe läuft, Drop geht weit auf), sonst das Muster der Szene, sonst alle
+      // 32 Schläge das nächste des Genres. In der DJ-Übergabe stehen die Köpfe und zeigen zur Mitte (siehe conv unten).
+      const want = rig.hand > 0.6 ? "still" : px.rigP || px.rig;
+      if (blk !== rig.blk || (want && want !== rig.pat)) {
+        const next = want || pats[(blk + (px.scene || 0)) % pats.length];
         if (next !== rig.pat) [rig.prev, rig.pt] = [rig.pat, t];
         rig.blk = blk;
         rig.pat = next;
@@ -84,8 +135,17 @@ function createShow(glowSprite, cap) {
       }
       // Schwenk ins neue Muster (0,4 s, weich) – kein Sprung aller Köpfe auf einmal
       const swing = rig.prev && t - rig.pt >= 0 && t - rig.pt < 0.4 ? easeInOut((t - rig.pt) / 0.4) : 1;
-      // Riser: die Köpfe pulsen im Aufbau immer dichter; der Einsatz eines Refrains/Drops hebt kurz an
-      const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (0.6 + 0.4 * px.kickEnv) * (1 + 0.45 * (px.pulse || 0) + 0.4 * (px.lift || 0));
+      // Riser: die Köpfe pulsen im Aufbau immer dichter; der Einsatz eines Refrains/Drops hebt kurz an (lead: das Leitbild
+      // des Höhepunkts, die Köpfe springen dabei aus der Mitte auseinander – conv der Regie)
+      const ld = Math.max(px.lead || 0, rig.landL);
+      // zur Mitte: Aufbau (build, conv der Regie), DJ-Übergabe (hand), Landung im neuen Song (land – springt auseinander)
+      const conv = Math.max(px.build * 0.8, px.conv || 0, rig.hand * 0.55, rig.land);
+      // Treffen sich die Strahlen in der Mitte, addiert sich dort ihr Licht: jeder einzelne wird dann schwächer, und ohne
+      // Blitze pulsen sie dort nicht mehr mit der Kick (zehn Strahlen im selben Takt wären an der Stelle ein Blinken)
+      const kp = st.noFlash ? 0.4 * (1 - conv) : 0.4;
+      const y = vh * 0.035, base = vis * (0.05 + 0.15 * px.I) * (1 - kp + kp * px.kickEnv) * (1 + 0.45 * (px.pulse || 0) + 0.4 * (px.lift || 0) + 0.5 * ld) * (1 - 0.4 * conv);
+      // Lichtrampe im Aufbau: die Köpfe werden weißer (ohne Blitze nicht – dort wird nur der Riser ruhig heller)
+      const wR = st.noFlash ? 0 : 0.5 * (px.ramp || 0);
       // Traverse
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = "rgba(8,6,16,0.7)";
@@ -101,7 +161,7 @@ function createShow(glowSprite, cap) {
           const a0 = headAngle(rig.prev, i, u, mb, toCover);
           a = a0 + (a - a0) * swing;
         }
-        a += (toCover - a) * px.build * 0.8; // im Aufbau richten sich alle auf die Mitte
+        a += (toCover - a) * conv; // im Aufbau richten sich alle auf die Mitte
         // Helligkeit je Muster (beim Schwenk zwischen altem und neuem überblendet); das Lauflicht als weiche Kuppe
         const kOf = (pat) => {
           if (pat === "chase") {
@@ -113,15 +173,22 @@ function createShow(glowSprite, cap) {
         let k = base * (CALM.has(key) ? 0.5 : 1);
         k *= swing < 1 ? kOf(rig.prev) + (kOf(rig.pat) - kOf(rig.prev)) * swing : kOf(rig.pat);
         if (k < 0.004) continue;
-        // Drop: die Strahlen werden weiß und klingen stetig in ihre Farbe zurück (vorher ein Sprung bei 0,3)
-        const c = mixW(pal[(i + rig.col) % 3], rig.drop * 0.8);
-        const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1);
+        // Farbe nach dem Farbprogramm des Teils; Drop: die Strahlen werden weiß und klingen stetig in ihre Farbe zurück
+        colProg(px.colP, i, n, mb);
+        const pa = pal[cA], pb = pal[cB];
+        for (let k2 = 0; k2 < 3; k2++) cBuf[k2] = pa[k2] + (pb[k2] - pa[k2]) * cF;
+        const wht = Math.max(rig.drop * 0.8, wR);
+        const c = mixW(cBuf, wht);
+        // (ohne Blitze: breitere, schwächere Kegel – ein weicher Lichtfächer statt scharfer Strahlen, die beim Schwenken über
+        // eine Stelle dort jedes Mal hell und wieder dunkel machen; zusammen mit dem fehlenden hellen Kern, siehe unten)
+        const nf = st.noFlash ? 0.55 : 1;
+        const len = vh * 1.2, wd = (0.03 + px.energy * 0.015 + rig.drop * 0.02) * (px.spread ?? 1) * (1 + 0.4 * ld) / nf ** 0.9;
         // Kegel mit weichem Rand: ein breiter, schwacher Lichthof (nur in voller Qualität), der Kegel selbst und
         // ein heller, schmaler Kern – wirkt wie ein Strahl im Dunst statt wie ein flaches Dreieck
         const cone = (w, al, col) => {
           const g = ctx.createRadialGradient(x, y, 0, x, y, len);
-          g.addColorStop(0, rgba(col, k * 1.6 * al));
-          g.addColorStop(0.4, rgba(col, k * 0.5 * al));
+          g.addColorStop(0, rgba(col, k * 1.6 * al * nf));
+          g.addColorStop(0.4, rgba(col, k * 0.5 * al * nf));
           g.addColorStop(1, rgba(col, 0));
           ctx.fillStyle = g;
           ctx.beginPath();
@@ -133,11 +200,12 @@ function createShow(glowSprite, cap) {
         };
         if ((st.quality ?? 2) >= 2) cone(wd * 2.2, 0.28, c);
         cone(wd, 1, c);
-        cone(wd * 0.3, 0.55, mixW(c, 0.5));
+        // (ohne Blitze ohne den hellen Kern: ein Strahl, der über eine Stelle zieht, wird dort sonst zu einem harten Hell-dunkel)
+        if (!st.noFlash) cone(wd * 0.3, 0.55, mixW(c, 0.5));
         const r = (8 + k * 70) * dpr;
         ctx.globalAlpha = clamp(k * 5, 0, 1);
         // Leuchtbild in 1/16-Stufen des Weißanteils (sonst bräuchte jedes Bild des Abklingens neue Leuchtbilder)
-        ctx.drawImage(spr(mixW(pal[(i + rig.col) % 3], Math.round(rig.drop * 12.8) / 16).map((q) => q | 0), r), x - r, y - r, r * 2, r * 2);
+        ctx.drawImage(spr(mixW(cF < 0.5 ? pa : pb, Math.round(wht * 16) / 16).map((q) => q | 0), r), x - r, y - r, r * 2, r * 2);
         ctx.globalAlpha = 1;
       }
     }

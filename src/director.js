@@ -8,7 +8,7 @@
 // Die Stile unterscheiden sich nur über eine kurze Signatur (SIG) – keine Sonderfälle im Zeichencode.
 import { songMap, at, seek, STEP } from "./songmap.js";
 import { songMood, PROTO } from "./mood.js";
-import { pickDropLook, DROP_LOOKS } from "./scenarios.js";
+import { pickDropLook, DROP_LOOKS, DROP_PAL } from "./scenarios.js";
 import { wipeDur } from "./fxenv.js";
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -194,7 +194,7 @@ function rngOf(seed) {
 }
 // Szene wählen: passt zur Stimmung (und zum Stil – fremde nur, wenn das Gefühl passt), nie dieselbe wie eben,
 // selten gezeigte bevorzugt (so wechselt die Regie durch statt immer dieselben zwei)
-function pickScene(emo, sig, rng, uses, lastId) {
+function pickScene(emo, sig, rng, uses, lastId, avoid) {
   const cand = [];
   let tot = 0;
   for (const s of SCENES) {
@@ -211,7 +211,8 @@ function pickScene(emo, sig, rng, uses, lastId) {
     }
     if (!mf) continue;
     // hoch drei: gut Passendes klar vorn, Abwechslung nur unter dem, was wirklich passt
-    const w = (mf * sf) ** 3 / (1 + 1.5 * (uses[s.id] || 0));
+    // (Szenen der letzten Songs im Set kommen seltener – ein Abend soll nicht aus denselben drei Bildern bestehen)
+    const w = ((mf * sf) ** 3 / (1 + 1.5 * (uses[s.id] || 0))) * (avoid?.scene?.includes(s.id) && s.id !== "own" ? 0.25 : 1);
     cand.push([s, w]);
     tot += w;
   }
@@ -376,9 +377,11 @@ function planSong(d, key, o = {}) {
     mb += (beatPos(beats, p.t1, beat) - p.b0) * p.tf;
     p.kindIdx = KINDS.indexOf(p.kind);
   });
-  const scenes = planScenes(parts, bars, bar, beat, sig, seedOf(d));
-  const mo = planMoments(parts, M, beats, beat, bar, end, sig, o.lyrics, seedOf(d), d.segs);
-  return { parts, scenes, beat, bar, bars, beats, end, sig, emo, holds: M.holds, drops: M.drops, mo };
+  const avoid = o.avoid || null;
+  const scenes = planScenes(parts, bars, bar, beat, sig, seedOf(d), avoid);
+  const mo = planMoments(parts, M, beats, beat, bar, end, sig, o.lyrics, seedOf(d), d.segs, avoid);
+  planPrograms(parts, scenes, sig, seedOf(d), avoid);
+  return { parts, scenes, beat, bar, bars, beats, end, sig, emo, holds: M.holds, drops: M.drops, mo, mark: markOf(parts, scenes) };
 }
 
 /* ---- Momente der Musik (Szenarien): einmal pro Song, gezeichnet in stagefx.js */
@@ -387,7 +390,7 @@ function planSong(d, key, o = {}) {
 // hintereinander dasselbe) · solo = lauter Teil ohne Gesang mitten im Song (Gitarren-, Saxofon-Solo …) ·
 // acap = Gesang über fast stiller Musik · stops = Stopps (die Band setzt mitten im Song kurz aus) · echo = Zeilen mit
 // Antwort in Klammern (Ruf und Antwort) · first = erster richtiger Schlag · tc = sehr langsam (-1) / sehr schnell (1)
-function planMoments(parts, M, beats, beat, bar, end, sig, lyrics, seed, segs) {
+function planMoments(parts, M, beats, beat, bar, end, sig, lyrics, seed, segs, avoid) {
   const rng = rngOf((seed ^ 0x5bd1e995) >>> 0);
   const peak = (p) => p.kind === "chorus" || p.kind === "drop";
   const nPeak = parts.filter(peak).length;
@@ -404,7 +407,7 @@ function planMoments(parts, M, beats, beat, bar, end, sig, lyrics, seed, segs) {
       const k = p.key + "/" + p.mode;
       p.mod = !!prevKey && p.key >= 0 && k !== prevKey;
       prevKey = k;
-      prevLook = pickDropLook(sig.name, rng, prevLook);
+      prevLook = dropLookFor(sig.name, rng, prevLook, avoid?.dl);
       p.dl = DROP_LOOKS.indexOf(prevLook);
     }
     // Solo/a cappella nur mit Liedtext (sonst weiß niemand, wo gesungen wird) – und nicht bei Drop-Dramaturgie:
@@ -463,7 +466,7 @@ function planMoments(parts, M, beats, beat, bar, end, sig, lyrics, seed, segs) {
 // darf immer) und innerhalb langer Teile an Phrasengrenzen: alle 8 Takte, wenn es aufgedreht ist, sonst alle 16.
 // Jede Grenze ist eine Eins aus der Taktliste (ein Drop sein Schlag). Wechsel in der Mitte eines Teils: aufgedreht
 // mit Lichtwisch auf der Eins, ruhig als Überblendung über zwei Takte.
-function planScenes(parts, bars, bar, beat, sig, seed) {
+function planScenes(parts, bars, bar, beat, sig, seed, avoid) {
   const rng = rngOf(seed), uses = {}, out = [];
   let last = null, lastT = -1e9;
   const barIdx = (t) => {
@@ -476,7 +479,7 @@ function planScenes(parts, bars, bar, beat, sig, seed) {
     return lo;
   };
   const add = (t, p, mid) => {
-    const s = pickScene(p.emo, sig, rng, uses, last?.id);
+    const s = pickScene(p.emo, sig, rng, uses, last?.id, avoid);
     uses[s.id] = (uses[s.id] || 0) + 1;
     // jede Szene etwas anders getönt (±12°, in 6°-Stufen), damit zwei Songs mit denselben Szenen nicht gleich aussehen
     const sh = (s.hue || 0) + Math.round((rng() - 0.5) * 4) * 6;
@@ -498,6 +501,90 @@ function planScenes(parts, bars, bar, beat, sig, seed) {
       if (t - lastT >= bar * 8 - 0.05) add(t, p, true);
     }
   });
+  return out;
+}
+
+/* ---- Auswahl mit Gedächtnis: am liebsten etwas, das die letzten Songs nicht hatten; hatten sie schon alles, das, was
+   am längsten her ist (recent: ältestes zuerst). Sonst sah jeder dritte Drop eines House-Abends gleich aus */
+function freshest(cand, recent, rng) {
+  if (!recent?.length || cand.length < 2) return cand[Math.floor(rng() * cand.length) % cand.length];
+  let best = Infinity;
+  for (const c of cand) best = Math.min(best, recent.lastIndexOf(c));
+  const pool = cand.filter((c) => recent.lastIndexOf(c) === best);
+  return pool[Math.floor(rng() * pool.length) % pool.length];
+}
+// Drop-Bild: wie scenarios.js pickDropLook (aus der Palette des Stils, nie zweimal hintereinander), dazu das Set
+function dropLookFor(sigName, rng, prev, recent) {
+  if (!recent?.length) return pickDropLook(sigName, rng, prev);
+  const pal = DROP_PAL[sigName] || DROP_PAL.pop;
+  return freshest(pal.length > 1 ? pal.filter((x) => x !== prev) : pal, recent, rng);
+}
+
+/* ---- Lichtprogramme je Teil: Muster der Moving Heads (rigP) und Farbprogramm (colP) */
+// Wie ein Lichtpult mit Cue-Listen: ruhige Teile stehen fast (still) oder wiegen (wave, mirror), die Strophe läuft
+// (chase, tilt), der Aufbau zieht sich zusammen (conv in cue()), Refrain und Drop gehen weit auf (fan, ballyhoo,
+// cross). Farbprogramme: mono = alle Köpfe in einer Farbe, die je Takt weitergleitet · split = zwei Farben im
+// Wechsel · rainbow = jede Farbe reihum · chase = eine Farbwelle wandert über die Traverse.
+// Dieselbe Art im selben Song bekommt dasselbe Programm (Wiedererkennen: der zweite Refrain sieht aus wie der erste);
+// Höhepunkte meiden die Programme der letzten Songs im Set (avoid.rig) und das des anderen Höhepunkts.
+const RIG_P = {
+  intro: ["still", "wave", "mirror"], verse: ["wave", "chase", "tilt", "mirror"], pre: ["chase", "tilt"], chorus: ["fan", "ballyhoo", "cross", "wave"],
+  drop: ["ballyhoo", "fan", "cross", "tilt"], break: ["still", "mirror", "wave"], bridge: ["mirror", "point", "wave"], outro: ["still", "wave"],
+};
+const COL_P = {
+  intro: ["mono"], verse: ["split", "rainbow"], pre: ["chase", "split"], chorus: ["rainbow", "split", "chase"], drop: ["chase", "rainbow", "split"],
+  break: ["mono"], bridge: ["split", "mono"], outro: ["mono"],
+};
+// ruhige Stile: keine schnellen Programme (ein Lauflicht in der Ballade wirkt hektisch)
+const CALM_SIG = new Set(["ballad", "calm", "folk", "orchestral"]);
+const FAST_P = new Set(["chase", "ballyhoo", "cross"]);
+function planPrograms(parts, scenes, sig, seed, avoid) {
+  const rng = rngOf((seed ^ 0x2c1b3c6d) >>> 0), byKind = {}, used = new Set();
+  const sceneAt = (t) => {
+    let s = null;
+    for (const x of scenes) if (x.t0 <= t + 0.01) s = x;
+    return s;
+  };
+  for (const p of parts) {
+    let pr = byKind[p.kind];
+    if (!pr) {
+      const peak = p.kind === "chorus" || p.kind === "drop";
+      let cand = RIG_P[p.kind].filter((x) => !(CALM_SIG.has(sig.name) && FAST_P.has(x)));
+      if (!cand.length) cand = ["wave"];
+      // Höhepunkte: nicht das Programm des Aufbaus davor (der Höhepunkt soll anders aussehen als das Warten auf ihn), nicht
+      // das des anderen Höhepunkts – und von den übrigen am liebsten eins, das die letzten Songs nicht hatten
+      let rig;
+      if (peak) {
+        const own = cand.filter((x) => !used.has(x) && x !== byKind.pre?.rig);
+        rig = freshest(own.length ? own : cand, avoid?.rig, rng);
+      } else {
+        // das Muster der Szene bevorzugen, wenn es passt (die Szene bringt es mit)
+        const sc = sceneAt(p.t0)?.rig;
+        rig = sc && cand.includes(sc) && rng() < 0.5 ? sc : cand[Math.floor(rng() * cand.length) % cand.length];
+      }
+      const cc = COL_P[p.kind];
+      pr = byKind[p.kind] = { rig, col: cc[Math.floor(rng() * cc.length) % cc.length] };
+      if (peak) used.add(rig);
+    }
+    p.rigP = pr.rig;
+    p.colP = pr.col;
+  }
+}
+// Fingerabdruck eines Songs fürs Set (party.js merkt sich die letzten drei): Drop-Bilder, Programme und Szenen der Höhepunkte
+function markOf(parts, scenes) {
+  const peaks = parts.filter((p) => p.kind === "chorus" || p.kind === "drop");
+  const uniq = (a) => [...new Set(a.filter(Boolean))];
+  const sceneAt = (t) => {
+    let s = null;
+    for (const x of scenes) if (x.t0 <= t + 0.01) s = x;
+    return s?.id;
+  };
+  return { dl: uniq(peaks.map((p) => DROP_LOOKS[p.dl])), rig: uniq(peaks.map((p) => p.rigP)), scene: uniq(peaks.map((p) => sceneAt(p.t0))) };
+}
+// Setliste [{ uri, mark }]: was die Höhepunkte der letzten n Songs (ohne den Song selbst) schon gezeigt haben
+function avoidOf(recent, uri, n = 3) {
+  const out = { dl: [], rig: [], scene: [] };
+  for (const r of recent.filter((x) => x.uri !== uri).slice(-n)) for (const k of ["dl", "rig", "scene"]) out[k].push(...(r.mark?.[k] || []));
   return out;
 }
 
@@ -532,6 +619,16 @@ function cue(plan, sec, o = {}) {
     pulse = o.noFlash ? riser : riser * Math.exp(-((((bp * rate) % 1) + 1) % 1) * 3.5);
   }
   const toEnd = P.t1 - sec, dim = P.dim && toEnd > 0.02 && toEnd < beat * 0.95 ? P.dim : 0;
+  // Aufbau: die Köpfe ziehen sich zur Mitte zusammen (conv) und eine Lichtrampe steigt (ramp) – stetig, ohne Pulsen,
+  // bis zum dunklen Schlag vor dem Drop
+  const conv0 = P.riser ? clamp(x / (P.t1 - P.t0), 0, 1) ** 1.2 : 0;
+  // Einsatz des Höhepunkts: EIN klares Leitbild – nach einem Aufbau springen die Köpfe aus der Mitte auseinander
+  // (lead klingt über knapp einen Takt aus), danach trägt das Programm des Teils
+  const lead = P.n && (P.kind === "drop" || P.n === 1 || P.fin) && x >= 0 && x < bar * 2 ? (P.kind === "drop" ? 1 : 0.6) * Math.exp(-x / (bar * 0.5)) : 0;
+  // (ohne Blitze gleiten sie über einen ganzen Takt auseinander statt über anderthalb Schläge: schnell über eine Stelle
+  // ziehende Strahlen sind dort ein Hell-dunkel-Wechsel)
+  const burst = lead && Q.riser ? 1 - clamp(x / (o.noFlash ? bar : beat * 1.5), 0, 1) : 0;
+  const conv = Math.max(conv0, burst * burst * (3 - 2 * burst));
   // Einsatz eines Höhepunkts: der erste Refrain hebt am stärksten an, jeder weitere etwas weniger
   const lift = P.n ? (P.n === 1 ? 1 : 0.6) * Math.exp(-x / bar) : 0;
   // Verfolger-Spot: ein gehaltener Ton (ab 0,3 s anschwellend, nach dem Ende 0,5 s ausklingend)
@@ -590,6 +687,9 @@ function cue(plan, sec, o = {}) {
     soft: mix("soft"), spread: mix("spread") * (S0.spread + (S.spread - S0.spread) * sx), crowd: mix("crowd"), fxk: P.fxk,
     // „Leicht“: nur billige Bühnenlichter, kein Überblenden zweier Lichter
     sc: S.sc, scene: S.id, spot: spotOf(S, o.lite), spot2: spotOf(o.lite ? S : S0, o.lite), sx: o.lite ? 1 : sx, rig: S.rig || "",
+    // Lichtprogramme des Teils (show.js), Zusammenziehen/Auseinanderspringen, Leitbild des Einsatzes, Lichtrampe im Aufbau
+    // („Leicht“: halbe Rampe – die große Fläche dahinter zeichnet show.js dann nicht)
+    rigP: P.rigP || "", colP: P.colP || "", conv, lead, ramp: P.riser ? (o.lite ? 0.5 : 1) * conv0 * conv0 * (1 - dim) : 0,
   };
 }
 // Momente zur Songzeit (alles Hüllkurven 0..1, rein aus der Zeit – Springen im Song bringt nichts durcheinander).
@@ -676,4 +776,4 @@ function grade(pal, g) {
   return gradeOut;
 }
 
-export { planSong, cue, grade, sigOf, KINDS, LOOK, SIG, STYLE, MOOD, SCENES };
+export { planSong, cue, grade, sigOf, avoidOf, KINDS, LOOK, SIG, STYLE, MOOD, SCENES, RIG_P, COL_P };

@@ -21,7 +21,9 @@
     "ui:shots": "electron tools/ui-harness/run.js",
     "check:i18n": "node tools/i18n-missing.js",
     "icons": "node tools/build-icons.js",
-    "check:emoji": "node tools/check-emoji.js"
+    "check:emoji": "node tools/check-emoji.js",
+    "perf:party": "electron tools/party-perf.js",
+    "test:perf": "electron tools/party-perf.js --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

@@ -2076,7 +2076,8 @@ html.mirage-calm #mirage-immersive[data-mode="party"] :is(.m-im-top, .m-im-contr
   color: rgba(255, 255, 255, 0.7);
 }
 /* Jam-Licht: jede Person trägt eine eigene Farbe; wer den laufenden Song gewünscht hat, legt gerade auf */
-#mirage-immersive .m-jam-p[style*="--jc"] :is(img, span) {
+/* (Klasse statt [style*="--jc"]: ein Attribut-Selektor auf „style“ mit Nachfahren macht jede Stiländerung im Vollbild teuer) */
+#mirage-immersive .m-jam-p.has-jc :is(img, span) {
   box-shadow:
     0 0 0 2px var(--jc),
     0 6px 18px -6px rgba(0, 0, 0, 0.8),
