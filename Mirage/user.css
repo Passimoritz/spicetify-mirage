@@ -8144,10 +8144,10 @@ body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overl
   --ppn: m-t-punch;
   --pf-shout: "Oswald", "Arial Narrow", "Roboto Condensed", impact;
   --pf-round: "Fredoka", "Nunito", "Varela Round";
-  --pf-serif: "Playfair Display", "DM Serif Display", georgia, serif;
-  --pf-mono: "JetBrains Mono", "Cascadia Mono", consolas, monospace;
-  --pf-wide: "Unbounded", "Segoe UI Black", "Arial Black";
-  --pf-marker: "Permanent Marker", "Segoe Print", "Comic Sans MS", cursive;
+  --pf-serif: "Playfair Display", "DM Serif Display", "Mirage PF Serif Georgia", georgia, serif;
+  --pf-mono: "JetBrains Mono", "Cascadia Mono", "Mirage PF Mono Consolas", consolas, monospace;
+  --pf-wide: "Unbounded", "Mirage PF Wide Segoe", "Mirage PF Wide Arial";
+  --pf-marker: "Permanent Marker", "Segoe Print", "Mirage PF Marker Comic", cursive;
 }
 /* „Leicht“: Wortbilder nur einmal, kein Wippen und kein Schlag-Stoß der Zeile */
 html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
@@ -8291,6 +8291,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-loud {
   font-weight: 900;
+  --psa: 1.8;
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-soft {
   font-weight: 500;
@@ -8322,17 +8323,17 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   font-size: max(0.72em, calc(0.8em * var(--pz, 1)));
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-key .m-w.is-p-key {
-  font-size: min(calc(1em * var(--pk, 2)), calc(80cqi / (var(--pkn, 6) * 0.64)));
+  font-size: calc(min(calc(1em * var(--pk, 2)), calc(80cqi / (var(--pkn, 6) * 0.64))) * var(--pfw, 1));
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.045em;
 }
 /* Party: das Schlüsselwort auch nach der Höhe der Textfläche begrenzen (mit Vergrößerung und Akzent im deckenden Bereich) */
 #mirage-immersive[data-mode="party"] .m-im-lyrics.is-playful .m-im-line.is-t-key .m-w.is-p-key {
-  font-size: min(calc(1em * var(--pk, 2)), calc(80cqi / (var(--pkn, 6) * 0.64)), 34cqh);
+  font-size: calc(min(calc(1em * var(--pk, 2)), calc(80cqi / (var(--pkn, 6) * 0.64)), 34cqh) * var(--pfw, 1));
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-wave .m-w.is-p-key {
-  font-size: min(calc(1.3em * var(--pz, 1)), calc(80cqi / (var(--pkn, 6) * 0.64)));
+  font-size: calc(min(calc(1.3em * var(--pz, 1)), calc(80cqi / (var(--pkn, 6) * 0.64))) * var(--pfw, 1));
   font-weight: 900;
 }
 /* Ruf: enge Großbuchstaben */
@@ -8357,6 +8358,37 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 /* Bridge: die ganze Zeile steht schräg */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-tilt {
   rotate: -1.6deg;
+}
+/* Bogen des Songs (lyricstyle.js, planPlayful 1b) – der ruhende Satz, gilt auch ohne Bewegung:
+   Pre-Chorus baut auf (--pbu 0 … 1): die Zeilen wachsen von Strophen- auf Refraingröße zu und rücken enger zusammen */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-build {
+  --m-ps: calc(0.94 + 0.1 * var(--pbu, 0));
+  letter-spacing: calc(-0.03em - 0.025em * var(--pbu, 0));
+}
+/* der große Moment (erste Zeile des ersten und des letzten Refrains, nur kurze Zeilen): deutlich größer */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-big {
+  --m-ps: 1.26;
+  font-weight: 900;
+}
+/* Antwort auf einen Ruf: steht auf der anderen Seite (Liedtext/Mix; Party und Refrain stehen mittig) */
+#mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-resp:not(.is-p-chorus, .is-p-mid, .is-p-adlib) {
+  text-align: right;
+  transform-origin: right center;
+  padding-left: calc((var(--m-act) - 1) * 140%);
+  padding-right: 0;
+}
+/* Hook-Wort: das Erkennungszeichen des Songs – gesperrt (immer, damit nichts umbricht, wenn die Zeile dran ist) oder
+   unterstrichen in der Akzentfarbe (nur in der aktiven Zeile, ändert kein Maß) */
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-p-hook.is-p-hm-wide {
+  letter-spacing: 0.03em;
+  font-weight: 900;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-hook.is-p-hm-under {
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+  text-decoration-color: rgba(var(--m-a-rgb, 255, 255, 255), 0.9);
+  text-decoration-skip-ink: none;
 }
 /* Buchstaben eines zerlegten Worts: eigene Wartestellung nur, wenn sie selbst eine haben (die des Worts erben sie nicht) */
 #mirage-immersive .m-im-lyrics.is-playful .m-ch {
@@ -8394,13 +8426,71 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   margin-block: -0.1em -0.26em;
 }
 
-/* ---- Anzeige-Schriften (lyricfont.js; geladen erst mit dem Stil, fonts.js). Ausweich-Listen, falls Google Fonts
-   nicht erreichbar ist (--pf-*, oben an der Textfläche); am Ende immer die normale Liedtext-Schrift. --pfs/--pfw
-   gleichen breite Schriften aus (nie unter 0,86 – Hauptzeilen bleiben weit über 70 % groß) */
+/* ---- Anzeige-Schriften (lyricfont.js; geladen erst mit dem Stil, fonts.js). Jede Rolle nimmt ungefähr den Platz
+   der normalen Liedtext-Schrift (Outfit 700) ein – so bricht eine Zeile nicht plötzlich anders um, wenn die echte
+   Schrift nachlädt. Gemessen (Breite gegenüber Outfit 700, je mit der Laufweite ihrer Regel, echte Schriften):
+   Oswald 0,97 · Fredoka 1,04 · Playfair 1,09 · JetBrains Mono 1,27 · Unbounded 500 1,29 · Permanent Marker 1,22.
+   Ausgleich über die Größe (--pfs an der Zeile, --pfw am Wort; nie unter 0,86 – Hauptzeilen bleiben gut lesbar) und
+   die Laufweite: danach 0,94 … 1,11 (vorher bis 1,23). Die Ausweich-Schriften (--pf-*) sind über eigene @font-face-Namen mit src: local(…) auf das
+   Maß der echten Schrift gebracht (size-adjust, ascent-/descent-override): vor und nach dem Nachladen gleich groß.
+   Am Ende immer die normale Liedtext-Schrift. */
+@font-face {
+  font-family: "Mirage PF Serif Georgia";
+  src: local("Georgia Bold"), local("Georgia-Bold");
+  font-weight: 600 900;
+  size-adjust: 89%;
+  ascent-override: 121%;
+  descent-override: 28%;
+}
+@font-face {
+  font-family: "Mirage PF Serif Georgia";
+  src: local("Georgia Bold Italic"), local("Georgia-BoldItalic");
+  font-weight: 600 900;
+  font-style: italic;
+  size-adjust: 88%;
+  ascent-override: 123%;
+  descent-override: 28%;
+}
+@font-face {
+  font-family: "Mirage PF Mono Consolas";
+  src: local("Consolas Bold"), local("Consolas-Bold");
+  font-weight: 600 900;
+  size-adjust: 109%;
+  ascent-override: 94%;
+  descent-override: 28%;
+}
+@font-face {
+  font-family: "Mirage PF Wide Segoe";
+  src: local("Segoe UI Black"), local("SegoeUI-Black");
+  font-weight: 100 900;
+  size-adjust: 121%;
+  ascent-override: 83%;
+  descent-override: 20%;
+}
+@font-face {
+  font-family: "Mirage PF Wide Arial";
+  src: local("Arial Black"), local("Arial-Black");
+  font-weight: 100 900;
+  size-adjust: 109%;
+  ascent-override: 92%;
+  descent-override: 23%;
+}
+@font-face {
+  font-family: "Mirage PF Marker Comic";
+  src: local("Comic Sans MS Bold"), local("ComicSansMS-Bold"), local("Comic Sans MS"), local("ComicSansMS");
+  font-weight: 100 900;
+  size-adjust: 103%;
+  ascent-override: 108%;
+  descent-override: 31%;
+}
 #mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-shout, .m-w.is-f-shout) {
   font-family: var(--pf-shout), var(--m-font);
   font-weight: 700;
   letter-spacing: 0.005em;
+}
+/* Oswald ist schmal, aber höher (Versalhöhe 0,81 statt 0,71 em): etwas kleiner, damit die Zeile nicht höher wirkt */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-shout {
+  --pfs: 0.97;
 }
 #mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-round, .m-w.is-f-round) {
   font-family: var(--pf-round), var(--m-font);
@@ -8412,27 +8502,37 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   font-weight: 700;
   letter-spacing: 0;
 }
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-serif {
+  --pfs: 0.94;
+}
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-mono {
   font-family: var(--pf-mono), var(--m-font);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  --pfs: 0.9;
+  letter-spacing: -0.05em;
+  --pfs: 0.86;
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-wide {
   font-family: var(--pf-wide), var(--m-font);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: -0.05em;
   --pfs: 0.86;
 }
 #mirage-immersive .m-im-lyrics.is-playful .m-w.is-f-wide {
   font-family: var(--pf-wide), var(--m-font);
-  letter-spacing: -0.02em;
-  --pfw: 0.88;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  --pfw: 0.86;
 }
 #mirage-immersive .m-im-lyrics.is-playful :is(.m-im-line.is-f-marker, .m-w.is-f-marker) {
   font-family: var(--pf-marker), var(--m-font);
   font-weight: 400;
   letter-spacing: 0.01em;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-f-marker {
+  --pfs: 0.86;
+}
+#mirage-immersive .m-im-lyrics.is-playful .m-w.is-f-marker {
+  --pfw: 0.86;
 }
 
 /* ---- Farben aus der Bedeutung (lyriccolor.js setzt --pc-<art> an die Textfläche: alle ≥ 4,5 : 1 auf dem Liedtext-
@@ -8674,7 +8774,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     animation: var(--pe, none), var(--ph, none), var(--pq, none);
   }
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line:is(.is-active, .is-pnext) .m-w.is-sung {
-    --pe: var(--pac, none) var(--pad, 400ms) ease-out var(--pl, 0ms);
+    --pe: var(--pac, none) var(--pad, 400ms) ease-out var(--pl, 0ms) var(--pai, 1);
   }
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-p-held.is-sung {
     --ph: m-p-hold var(--hd, 1s) cubic-bezier(0.2, 0.6, 0.3, 1) var(--pl, 0ms) forwards;
@@ -8759,18 +8859,18 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
 
   /* Zeile: Refrain wippt im Takt (Länge und Lage des Schlags setzt immersive.js je Zeile); Party wippt schon selbst */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib, .is-l-punch, .is-l-tide, .is-l-pend, .is-p-note) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib, .is-l-punch, .is-l-tide, .is-l-pend, .is-p-note, .is-p-moment, .is-p-riser) {
     animation: var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) infinite;
   }
   /* punch: die Zeile stößt auf jedem Schlag (Party: dort hüpft die Zeile schon selbst) */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-l-punch.is-active:not(.is-p-adlib) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-l-punch.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) {
     animation: var(--ppn, none) var(--pb, 500ms) cubic-bezier(0.2, 0.8, 0.3, 1) var(--pbd, 0ms) infinite;
   }
   /* Gezeiten: die Zeile hebt und senkt sich über vier Schläge; Pendel: schwingt über zwei Schläge */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-tide.is-active:not(.is-p-adlib) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-tide.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) {
     animation: var(--ptn, m-l-tide) calc(var(--pb, 500ms) * 4) ease-in-out var(--pbd, 0ms) infinite;
   }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-pend.is-active:not(.is-p-adlib) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-pend.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) {
     animation: var(--ptn, m-l-pend) calc(var(--pb, 500ms) * 2) ease-in-out var(--pbd, 0ms) infinite;
   }
   /* ♪ wippt im Takt: vier Schläge je Durchgang, auf der Eins ein großer Ausschlag (Lage im Takt: --pnd) */
@@ -8778,8 +8878,22 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     animation: var(--pnn, m-p-note) calc(var(--pb, 500ms) * 4) linear var(--pnd, 0ms) infinite;
   }
   /* Auftritt nach dem Drop */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-drop.is-active:not(.is-p-note) {
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-drop.is-active:not(.is-p-note, .is-p-moment) {
     animation: m-p-drop-in 0.18s var(--m-spring) both;
+  }
+  /* der große Moment: die Zeile schlägt ein (klein → über das Ziel → Ruhe), ohne kräftigen Helligkeitswechsel */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-moment.is-active:not(.is-p-note, .is-p-adlib) {
+    animation: m-l-moment 0.85s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  }
+  /* Steigerung: die letzte Zeile vor dem Refrain wächst über ihre ganze Dauer (--prd) langsam an – Spannung */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-riser.is-active:not(.is-p-note, .is-p-adlib, .is-p-moment) {
+    animation: m-l-riser var(--prd, 2s) linear;
+  }
+  /* Übergabe: die Zeile, die eben dran war (direkt vor der aktiven), geht mit einer Bewegung ab, die zu ihrem
+     Auftritt passt (--pxo: hoch, runter, zur Seite --pxd, kippen, drücken, ploppen) – Wort für Wort gestaffelt,
+     Ausschlag und zurück in den Ruhezustand */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-past:has(+ .m-im-line.is-active) .m-w {
+    animation: var(--pxo, none) 0.5s cubic-bezier(0.3, 0.6, 0.35, 1) calc(min(var(--wi, 0), 8) * 26ms);
   }
 }
 /* Stufen: „Dezent“ – Wortbilder nur einmal, kein Wippen, kleiner Ausschlag des ♪; „Wild“ – Wortbilder öfter.
@@ -8909,6 +9023,114 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     rotate: -0.8deg;
   }
 }
+/* großer Moment: schlägt ein (Deckkraft nur 0,62 → 1, kein kräftiger Helligkeitswechsel) */
+@keyframes m-l-moment {
+  0% {
+    scale: 0.84;
+    opacity: 0.62;
+  }
+  42% {
+    scale: 1.04;
+    opacity: 1;
+  }
+  70% {
+    scale: 0.99;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+}
+/* Steigerung: wächst langsam an und holt kurz vor dem Refrain Luft (endet im Ruhezustand – kein Sprung beim Wechsel) */
+@keyframes m-l-riser {
+  0% {
+    scale: 1;
+    translate: 0 0;
+  }
+  82% {
+    scale: 1.04;
+    translate: 0 -0.03em;
+  }
+  100% {
+    scale: 1;
+    translate: 0 0;
+  }
+}
+/* Übergabe: Ausschlag in Richtung des Abgangs und zurück */
+@keyframes m-x-up {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  40% {
+    translate: 0 -0.16em;
+    opacity: 0.72;
+  }
+}
+@keyframes m-x-down {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  40% {
+    translate: 0 0.14em;
+    opacity: 0.72;
+  }
+}
+@keyframes m-x-side {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  40% {
+    translate: calc(var(--pxd, 1) * 0.2em) 0;
+    opacity: 0.72;
+  }
+}
+@keyframes m-x-flip {
+  0%,
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+  40% {
+    transform: perspective(20em) rotateX(45deg);
+    opacity: 0.72;
+  }
+}
+@keyframes m-x-push {
+  0%,
+  100% {
+    scale: 1;
+  }
+  35% {
+    scale: 0.88;
+  }
+}
+@keyframes m-x-tilt {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  40% {
+    rotate: calc(var(--pxd, 1) * 5deg);
+  }
+}
+@keyframes m-x-pop {
+  0%,
+  100% {
+    scale: 1;
+  }
+  30% {
+    scale: 1.08;
+  }
+  65% {
+    scale: 0.97;
+  }
+}
 /* Akzente auf dem Einsatz: beginnen und enden im Ruhezustand (das Wort steht auf dem Einsatz still) */
 @keyframes m-a-impact {
   0%,
@@ -9018,6 +9240,68 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
   20% {
     scale: 1.08;
+  }
+}
+/* Rap: je Silbe ein kurzer Stoß (Dauer = Silbenabstand, Zahl = Silben); laute Wörter stoßen kräftiger */
+@keyframes m-a-syl {
+  0%,
+  100% {
+    scale: 1;
+    translate: 0 0;
+  }
+  22% {
+    scale: calc(1 + 0.05 * var(--psa, 1));
+    translate: 0 calc(-0.035em * var(--psa, 1));
+  }
+}
+/* Erkennungszeichen der Hook-Wörter (je Song eins) */
+@keyframes m-a-hstamp {
+  0%,
+  100% {
+    scale: 1;
+  }
+  18% {
+    scale: 1.24;
+  }
+  40% {
+    scale: 0.96;
+  }
+}
+@keyframes m-a-htwist {
+  0%,
+  100% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  25% {
+    rotate: -7deg;
+    scale: 1.12;
+  }
+  55% {
+    rotate: 3deg;
+  }
+}
+@keyframes m-a-hlift {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+  35% {
+    translate: 0 -0.2em;
+    scale: 1.1;
+  }
+}
+@keyframes m-a-hflare {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  25% {
+    scale: 1.22 0.9;
+  }
+  55% {
+    scale: 0.97 1.04;
   }
 }
 @keyframes m-a-bar {

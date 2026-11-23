@@ -49,7 +49,7 @@ import { drawWavefield, drawCoverDust, resetVizExtra } from "./vizextra.js";
 import { createAlbumView } from "./albumview.js";
 import { createClockView } from "./clockview.js";
 // i-playful: verspielter Liedtext-Stil (Entscheidung in lyricstyle.js, Bewegung in user.css)
-import { planPlayful, paintPlayful, beatPhase, barPhase, sungAt, PRE_MS } from "./lyricstyle.js";
+import { planPlayful, paintPlayful, beatPhase, barPhase, sungAt, leadPad, PRE_MS } from "./lyricstyle.js";
 import { meaningColors, colorVars } from "./lyriccolor.js";
 import { loadPlayfulFonts } from "./fonts.js";
 import { lowpass, lowpassHue, fpsDivisor, refreshFrom } from "./fxenv.js";
@@ -1662,9 +1662,11 @@ Probe-FX: ${pfx}`;
   // [playful] Takt: Wörter setzen mit Vorlauf ein (genau auf dem Einsatz gelandet), die nächste Zeile nimmt kurz vor
   // ihrem ersten Wort ihre Wartestellung ein. Nur Klassenwechsel beim Überschreiten der Schwellen – dieselbe Uhr wie die
   // Karaoke-Füllung (pos inkl. Versatz, je-Song-Korrektur, Tipp-Abgleich), keine Zeitgeber.
+  // (Vorlauf-Zuschlag = ein Bild der gemessenen Bildschirmrate: 60 Hz ~17 ms, 144 Hz ~7 ms – lyricstyle.leadPad)
   function playMarks(ws, pos) {
+    const pad = leadPad(hzNow);
     for (const w of ws || []) {
-      const on = sungAt(w, pos);
+      const on = sungAt(w, pos, pad);
       if (on !== !!w.on) w.el.classList.toggle("is-sung", (w.on = on));
     }
   }
@@ -1712,6 +1714,16 @@ Probe-FX: ${pfx}`;
     if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 400 });
     else setTimeout(run, 120);
   }
+  // [playful] „Ruhig“, „Keine Blitze“, weniger Bewegung oder die Stärke mitten im Song umgestellt: sofort neu planen und
+  // malen (Buchstaben und Wortbilder weg bzw. wieder da, Vorlauf 0 bzw. wieder an) – playfulSoon tut nichts, wenn sich
+  // nichts geändert hat (Schlüssel aus Liedtext, Analyse, Stufe, Stillstand)
+  function playfulRestyle() {
+    if (!el || !cfg.lyrPlayful || !lyr?.synced || !playfulKey) return;
+    const level = ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful";
+    if (playfulKey.still === (stillMotion() || !!cfg.noFlash) && playfulKey.level === level && playfulKey.ex === explicitMode()) return;
+    playfulSoon(lyrToken);
+  }
+  reducedMotion.addEventListener?.("change", playfulRestyle);
   // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück – am Zeilenende als
   // kleine Zeile darunter. Etiketten wie „(x2)“ bleiben normaler Text. all: Duett „zusammen“ – der Text steckt
   // in einem eigenen Stück, damit der Farbverlauf aus beiden Stimmen nur so breit wie der Text ist.
@@ -3675,6 +3687,8 @@ Probe-FX: ${pfx}`;
     el.style.setProperty("--m-lyr-gap", String(cfg.lyrGap / 100));
     // [duet 1.27] „Stimmen farbig“: nur Farben – Größen und Abstände hängen nicht daran, Umschalten springt nie
     q.lyrics?.classList.toggle("is-voices", cfg.lyrVoices !== false);
+    // [playful] Einstellungen geändert (applySettings → hier): Stil sofort an Ruhig/Keine Blitze/Stärke anpassen
+    playfulRestyle();
   }
 
   // Seitenleiste: Als Nächstes · Geräte · Schlaf-Timer

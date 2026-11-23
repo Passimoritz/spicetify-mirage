@@ -2503,6 +2503,20 @@ async function playfulLyrics() {
     // Schriften: erst jetzt, eine Anfrage an Google Fonts mit display=swap
     const links = await until(async () => { const l = await fontLink(); return l.length && l; }, 4000, "playful: Anzeige-Schriften werden geladen");
     ok(links.length === 1 && /^https:\/\/fonts\.googleapis\.com\/css2\?.*family=Oswald.*display=swap$/.test(links[0]), "playful: Schrift-Adresse " + links[0]);
+    // Google Fonts ist im Test gesperrt: die echten Schriften (Outfit und die sechs Anzeige-Schriften, OFL/Apache, Latein,
+    // Latein erweitert, Kyrillisch) liegen in tests/e2e/fonts und kommen als data:-Adressen dazu – so misst die
+    // Beschnitt-Prüfung unten mit den echten Maßen statt mit Ausweich-Schriften
+    const fontCss = fs.readFileSync(path.join(__dirname, "fonts", "fonts.css"), "utf8").replace(/url\(\/__fonts\/([^)]+)\)/g, (_, f) => `url(data:font/woff2;base64,${fs.readFileSync(path.join(__dirname, "fonts", f)).toString("base64")})`);
+    const loaded = await T.js(`(async () => {
+      const st = document.createElement("style");
+      st.id = "e2e-fonts";
+      st.textContent = ${JSON.stringify(fontCss)};
+      document.head.append(st);
+      const want = [["700", "Outfit"], ["700", "Oswald"], ["700", "Fredoka"], ["700", "Playfair Display"], ["italic 700", "Playfair Display"], ["700", "JetBrains Mono"], ["500", "Unbounded"], ["400", "Permanent Marker"]];
+      await Promise.all(want.map(([w, f]) => document.fonts.load(w + ' 40px "' + f + '"', "AaЯ").catch(() => [])));
+      return want.filter(([w, f]) => !document.fonts.check(w + ' 40px "' + f + '"', "Aa")).map(([, f]) => f);
+    })()`);
+    ok(!loaded.length, "playful: Schriften nicht geladen: " + loaded);
     for (const m of ["lyrics", "party"]) {
       await toMode(m);
       const s = await until(async () => { const x = await state(); return x.on && Object.keys(x.t).length >= 4 && x; }, 8000 * SLOW, `playful ${m}: Stil mit Inszenierungen`);
@@ -2520,6 +2534,61 @@ async function playfulLyrics() {
       console.log(`  playful ${m}: ${s.n} Zeilen, Inszenierungen ${JSON.stringify(s.t)}, Wortbilder ${JSON.stringify(s.cues)}, Buchstaben ${s.letters}, höchstens ${most} Animationen`);
       await T.shot(path.join(OUT, `playful-${m}.png`));
       if (SHOTS) await T.shot(path.join(SHOTS, `playful-${m}.png`));
+      if (m !== "lyrics") continue;
+      // Anzeige-Schriften nehmen ungefähr den Platz der Liedtext-Schrift ein (echte Schriften, Regeln des Stils): eine
+      // Zeile bricht nicht anders um, wenn die Schrift nachlädt. Zeile mit Rolle gegen dieselbe Zeile ohne
+      const widths = await T.js(`(() => {
+        const box = document.querySelector("${IM} .m-im-lyrics");
+        const TX = ["Fire in the night we are dancing", "Burning love tonight HEARTBREAK", "Ça brûle, señor, über alles"];
+        const meas = (cls, wcls) => {
+          let sum = 0;
+          for (const tx of TX) {
+            const ln = document.createElement("div");
+            ln.className = "m-im-line " + cls;
+            ln.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;width:auto;padding:0";
+            ln.innerHTML = '<span class="m-im-words">' + tx.split(" ").map((w) => '<span class="m-w ' + wcls + '">' + w + "</span>").join(" ") + "</span>";
+            box.append(ln);
+            sum += ln.getBoundingClientRect().width;
+            ln.remove();
+          }
+          return sum;
+        };
+        const base = meas("is-p-verse", ""), out = {};
+        for (const r of ["shout", "round", "serif", "mono", "wide", "marker"]) out[r] = Math.round((meas("is-p-verse is-f-" + r, "") / base) * 1000) / 1000;
+        for (const r of ["wide", "marker"]) out[r + "-word"] = Math.round((meas("is-p-verse", "is-f-" + r) / base) * 1000) / 1000;
+        return out;
+      })()`);
+      console.log(`  playful Schriftbreite gegenüber der Liedtext-Schrift: ${JSON.stringify(widths)}`);
+      for (const [r, v] of Object.entries(widths)) ok(v >= 0.86 && v <= 1.12, `playful: Schrift ${r} nimmt ${v}× den Platz der Liedtext-Schrift ein`);
+    }
+
+    // Umschalten mitten im Song: „Keine Blitze“ (wie „Ruhig“ und weniger Bewegung) nimmt Buchstaben, Wortbilder und
+    // Vorlauf sofort weg und gibt sie beim Ausschalten zurück – ohne den Liedtext neu zu laden; ebenso die Stärke
+    {
+      const live = () => T.js(`(() => {
+        const box = document.querySelector("${IM} .m-im-lyrics"), ws = [...box.querySelectorAll(".m-w")];
+        return { letters: box.querySelectorAll(".m-ch").length, cues: ws.filter((w) => [...w.classList].some((c) => c.startsWith("is-c-"))).length,
+          pl: ws.filter((w) => w.style.getPropertyValue("--pl")).length, exits: [...box.querySelectorAll(".m-im-line")].filter((l) => l.style.getPropertyValue("--pxo")).length,
+          keep: box.querySelector(".m-im-line[data-e2e-keep]") ? 1 : 0, subtle: box.classList.contains("is-lv-subtle") };
+      })()`);
+      await T.js(`document.querySelector("${IM} .m-im-lyrics .m-im-line").dataset.e2eKeep = "1"; 1`);
+      const on = await live();
+      ok(on.cues > 0 && on.pl > 0 && on.exits > 0, "playful umschalten: vorher bewegt " + JSON.stringify(on));
+      const t0 = Date.now();
+      const flash = await setKey("noFlash", true);
+      const still = await until(async () => { const x = await live(); return !x.letters && !x.cues && !x.pl && !x.exits && x; }, 3000, "playful: „Keine Blitze“ stellt den Stil nicht sofort still");
+      const dt = Date.now() - t0;
+      ok(still.keep === 1, "playful: „Keine Blitze“ lädt den Liedtext neu statt ihn neu zu malen");
+      await setKey("noFlash", flash);
+      const back = await until(async () => { const x = await live(); return x.cues > 0 && x.pl > 0 && x; }, 3000, "playful: nach „Keine Blitze“ aus kommt die Bewegung nicht zurück");
+      ok(back.letters === on.letters && back.cues === on.cues && back.keep === 1, "playful: nach dem Umschalten anders als vorher " + JSON.stringify([on, back]));
+      await setLevel("subtle");
+      const sub = await until(async () => { const x = await live(); return x.subtle && !x.letters && !x.exits && x; }, 3000, "playful: Stärke „Dezent“ wirkt nicht sofort");
+      ok(sub.keep === 1, "playful: die Stärke lädt den Liedtext neu");
+      await setLevel("playful");
+      await until(async () => { const x = await live(); return !x.subtle && x.exits > 0 && x; }, 3000, "playful: zurück auf „Verspielt“");
+      console.log(`  playful umschalten: „Keine Blitze“ an → still nach ≤ ${dt + 0} ms (Buchstaben ${on.letters} → 0, Wortbilder ${on.cues} → 0), aus → wieder bewegt, Stärke ohne Neuladen`);
+      await T.js(`delete document.querySelector("${IM} .m-im-lyrics .m-im-line[data-e2e-keep]")?.dataset.e2eKeep; 1`);
     }
 
     // Landung genau auf dem Einsatz: an einigen Wörtern messen, wann .is-sung kommt (= Einsatz − Vorlauf --pl) und wie
@@ -2601,12 +2670,14 @@ async function playfulLyrics() {
       ["set", "my", "HEARTBREAKING", "soul"],
       ["jiggly", "gypsy", "quay", "glyphs"],
       ["Fly", "away", "now"],
+      ["We", "set", "the", "night", "on", "fire"],
     ];
     const FONTS = ["", "shout", "serif", "mono", "wide", "marker", "round"];
     const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-    const lineHtml = (t, k) => {
+    // extra: Bogen des Songs (großer Moment, Steigerung, Antwort) statt Teil und Schrift aus k
+    const lineHtml = (t, k, extra) => {
       const R = DECK.RECIPES[t];
-      let texts = R.L ? TEXTS[4] : t === "key" ? TEXTS[2] : TEXTS[k % 4];
+      let texts = R.L ? TEXTS[4] : t === "key" ? TEXTS[2] : extra ? TEXTS[5] : TEXTS[k % 4];
       const lead = DECK.leadOf(t), n = texts.length, keyAt = t === "key" ? 2 : -1;
       const ws = texts.map((tx, i) => {
         const cls = ["m-w"], v = { "--pl": lead + "ms" };
@@ -2623,8 +2694,8 @@ async function playfulLyrics() {
       });
       const sect = ["is-p-chorus", "is-p-verse", "is-p-bridge"][k % 3];
       const font = FONTS[k % FONTS.length];
-      const cls = ["m-im-line", "is-t-" + t, sect, R.ln ? "is-l-" + R.ln : "", font ? "is-f-" + font : "", k % 5 === 0 ? "is-p-shout" : ""].filter(Boolean).join(" ");
-      return { cls, html: `<span class="m-im-words">${ws.join(" ")}</span>` };
+      const cls = (extra ? ["m-im-line", "is-t-" + t, extra, R.ln ? "is-l-" + R.ln : ""] : ["m-im-line", "is-t-" + t, sect, R.ln ? "is-l-" + R.ln : "", font ? "is-f-" + font : "", k % 5 === 0 ? "is-p-shout" : ""]).filter(Boolean).join(" ");
+      return { cls, html: `<span class="m-im-words">${ws.join(" ")}</span>`, style: extra ? "--pbu:1;--prd:700ms;--pxo:m-x-up" : "" };
     };
     const fails = [];
     let checked = 0;
@@ -2635,8 +2706,12 @@ async function playfulLyrics() {
       await wait(500);
       for (const m of (process.env.E2E_CLIP || "lyrics,mix,party").split(",")) {
         await toMode(m);
-        for (let k = 0; k < DECK.TREATMENTS.length; k++) {
-          const t = DECK.TREATMENTS[k], spec = lineHtml(t, k);
+        const SPECS = DECK.TREATMENTS.map((t, k) => [t, k, ""]).concat([
+          ["slam", 0, "is-p-chorus is-p-big is-p-moment"], ["stamp", 1, "is-p-chorus is-p-big is-p-moment is-f-shout"], ["zoom", 2, "is-p-chorus is-p-big is-p-moment is-f-wide"],
+          ["rise", 3, "is-p-verse is-p-build is-p-riser"], ["conveyor", 4, "is-p-verse is-p-resp"], ["hop", 5, "is-p-verse is-p-resp is-f-marker"],
+        ]);
+        for (const [t, k, extra] of SPECS) {
+          const spec = lineHtml(t, k, extra);
           // übernächste Zeile umschreiben und anspringen
           const at = await T.js(`(() => {
             const lines = [...document.querySelectorAll("${IM} .m-im-line")];
@@ -2644,6 +2719,7 @@ async function playfulLyrics() {
             if (i < 0 || i + 2 >= lines.length - 2) i = 2;
             const ln = lines[i + 2];
             ln.className = ${JSON.stringify(spec.cls)};
+            if (${JSON.stringify(spec.style)}) ln.style.cssText += ";" + ${JSON.stringify(spec.style)};
             ln.innerHTML = ${JSON.stringify(spec.html)};
             ln.dataset.e2eClip = "1";
             Spicetify.Player.seek(Number(ln.dataset.t) + 250);
@@ -2675,7 +2751,7 @@ async function playfulLyrics() {
             return [...new Set(bad)];
           })()`);
           checked++;
-          if (r.length) fails.push(`${w}×${h} ${m} ${t}: ${r.slice(0, 2).join("; ")}`);
+          if (r.length) fails.push(`${w}×${h} ${m} ${t}${extra ? " (" + extra + ")" : ""}: ${r.slice(0, 2).join("; ")}`);
         }
         console.log(`  playful Beschnitt ${w}×${h} ${m}: ${fails.length} Funde bisher`);
       }
@@ -2683,11 +2759,12 @@ async function playfulLyrics() {
     await T.js(`document.getElementById("e2e-noglide")?.remove(); 1`);
     T.win.setContentSize(1280, 800);
     await wait(400);
-    console.log(`  playful Beschnitt: ${checked} Zeilen (${DECK.TREATMENTS.length} Rezepte × Liedtext/Mix/Party × 820/1600 px), ${fails.length} abgeschnitten`);
+    console.log(`  playful Beschnitt: ${checked} Zeilen (${DECK.TREATMENTS.length} Rezepte + 6 Bogen-Zeilen × Liedtext/Mix/Party × 820/1600 px), ${fails.length} abgeschnitten`);
     if (fails.length) console.log("    " + fails.join("\n    "));
     ok(!fails.length, "playful: abgeschnitten:\n    " + fails.slice(0, 12).join("\n    "));
   } finally {
     T.win.setContentSize(1280, 800);
+    await T.js(`document.getElementById("e2e-fonts")?.remove(); 1`).catch(() => {});
     await setLevel("playful").catch(() => {});
     await setKey("lyrPlayful", false);
     await setKey("karaoke", kar);

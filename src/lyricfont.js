@@ -14,7 +14,7 @@ export const PFONTS = {
   round: { fam: "Fredoka", q: "Fredoka:wght@500;700", stack: '"Fredoka", "Nunito", "Varela Round"', cov: ["latin", "latinext"] },
   serif: { fam: "Playfair Display", q: "Playfair+Display:ital,wght@0,700;0,900;1,700", stack: '"Playfair Display", "DM Serif Display", Georgia, serif', cov: ["latin", "latinext", "cyrillic"] },
   mono: { fam: "JetBrains Mono", q: "JetBrains+Mono:wght@700;800", stack: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace', cov: ["latin", "latinext", "cyrillic", "greek"] },
-  wide: { fam: "Unbounded", q: "Unbounded:wght@700;900", stack: '"Unbounded", "Segoe UI Black", "Arial Black"', cov: ["latin", "latinext", "cyrillic"] },
+  wide: { fam: "Unbounded", q: "Unbounded:wght@500;700;900", stack: '"Unbounded", "Segoe UI Black", "Arial Black"', cov: ["latin", "latinext", "cyrillic"] },
   marker: { fam: "Permanent Marker", q: "Permanent+Marker", stack: '"Permanent Marker", "Segoe Print", "Comic Sans MS", cursive', cov: ["latin"] },
 };
 // Adresse für Google Fonts (eine Anfrage, display=swap: bis die Schrift da ist, steht die normale da)

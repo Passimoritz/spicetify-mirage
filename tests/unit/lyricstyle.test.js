@@ -13,15 +13,16 @@ const { load } = require("./load.js");
 const {
   wordLoud, emphasis, heldNotes, isShout, sectionKind, sectionStyle, adlibPose, isAdlib, voiceSide,
   onBeat, beatPhase, cueOf, cueMatcher, planPlayful, paintPlayful, pickTreatments, syllables, rhymes,
-  motionLoad, TREATMENTS, sungAt, PRE_MS, barPhase,
+  motionLoad, TREATMENTS, sungAt, PRE_MS, barPhase, leadPad, LEAD_PAD,
 } = load("lyricstyle.js");
-const { RECIPES, songDeck, allowed, wordPose, letterPoses, leadOf, LEAD_MAX, RAP_SET, BALLAD_SET, BRIDGE_SET, ACCENTS, FX_VARIANTS, FX_COUNT, fxVariant } = load("lyricdeck.js");
+const { RECIPES, songDeck, allowed, wordPose, letterPoses, leadOf, LEAD_MAX, RAP_SET, BALLAD_SET, BRIDGE_SET, ACCENTS, FX_VARIANTS, FX_COUNT, fxVariant, EXITS, HOOKS, exitOf } = load("lyricdeck.js");
 const { PFONTS, PFONTS_URL, scriptsOf, covers, windowFonts, LONG_WORDS, LONG_CHARS } = load("lyricfont.js");
 const { meaningColors, lyricGrounds, contrast, KINDS, CUE_KIND } = load("lyriccolor.js");
 const { LEX, NEG } = load("lexicon.js");
 const { shaped } = require("./songshapes.js");
 const { SONGS, build } = require("./fixtures/playful-songs.js");
 
+const bare = (x) => String(x).toLowerCase().replace(/[^\p{L}\p{N}']+/gu, "");
 // Wörter einer Zeile: [Text, Anfang ms, Dauer ms]
 const W = (spec) => spec.map(([text, a, d]) => ({ text, a, b: a + d }));
 // Wörter aus einem Satz, gleichmäßig
@@ -387,13 +388,15 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   const s = build("party");
   const still = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, still: true });
   const moving = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts });
-  const MOTION = /^(is-c-|is-p-held$|is-p-beat$|is-p-drop$|is-p-cue$|is-cg$|is-split$)/;
+  const MOTION = /^(is-c-|is-p-held$|is-p-beat$|is-p-drop$|is-p-cue$|is-cg$|is-split$|is-p-moment$|is-p-riser$)/;
   for (const p of still) {
     assert.ok(!p.cls.some((c) => MOTION.test(c)), "Zeile: " + p.cls);
     for (const w of p.words) {
       assert.ok(!w.cls.some((c) => MOTION.test(c)) && !w.chars && !w.tx, "Wort: " + w.cls);
       assert.ok(!("--hd" in w.vars), "kein Halten ohne Bewegung");
+      assert.ok(!("--pac" in w.vars) && !("--wi" in w.vars), "kein Akzent, kein Abgang ohne Bewegung");
     }
+    assert.ok(!("--pxo" in p.vars) && !("--prd" in p.vars), "Zeile geht ohne Bewegung nicht ab: " + JSON.stringify(p.vars));
   }
   // der ruhende Satz (Größen) bleibt gleich: der Text springt nicht, wenn „Ruhig“ umschaltet
   still.forEach((p, i) => p.words.forEach((w, k) => assert.equal(w.vars["--pz"], moving[i].words[k].vars["--pz"])));
@@ -476,7 +479,7 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   }
   // Auftritte laufen über die eine Überblendung mit --pl (Vorlauf = Landedauer), Akzente beginnen mit --pl Verzögerung
   assert.ok(/transition:\s*translate calc\(var\(--pl, 160ms\) - var\(--ld, 0ms\)\)/.test(block), "Auftritt nicht über --pl");
-  assert.ok(/--pe: var\(--pac, none\) var\(--pad, 400ms\) ease-out var\(--pl, 0ms\);/.test(block), "Akzent beginnt nicht auf dem Einsatz");
+  assert.ok(/--pe: var\(--pac, none\) var\(--pad, 400ms\) ease-out var\(--pl, 0ms\) var\(--pai, 1\);/.test(block), "Akzent beginnt nicht auf dem Einsatz");
   // jede Bewegung, auf die die Daten zeigen, gibt es als @keyframes
   for (const a of Object.keys(ACCENTS)) assert.ok(names.has("m-a-" + a), "Akzent ohne Keyframes: " + a);
   for (const [cue, list] of Object.entries(FX_VARIANTS)) {
@@ -813,6 +816,185 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   const bars = [{ t: 0.5 }, { t: 2.5 }];
   assert.equal(barPhase(beats, bars, 3.25).d, -750, "mit Takten der Analyse");
   assert.equal(barPhase(null, null, 3), null);
+}
+
+/* ---- Vorlauf-Zuschlag aus der gemessenen Bildschirmrate: ein Bild (60 Hz ~17 ms, 144 Hz ~7 ms), 6 … 34 ms */
+{
+  assert.equal(leadPad(60), 16.7);
+  assert.equal(leadPad(144), 6.9);
+  assert.equal(leadPad(30), 33.3);
+  assert.equal(leadPad(24), 34, "höchstens 34 ms");
+  assert.equal(leadPad(360), 6, "mindestens 6 ms");
+  assert.equal(leadPad(0), LEAD_PAD, "ungemessen: 60 Hz");
+  // Spiel-Uhr mit falschen 60 und 144 Hz: Klassenwechsel im ersten Bild ab der Schwelle, die Überblendung startet im
+  // nächsten Bild und dauert --pl – gelandet höchstens ein Bild neben dem Einsatz (mit festen 20 ms lag die Landung bei
+  // 144 Hz im Mittel ~13 ms zu früh)
+  for (const hz of [60, 144]) {
+    const fr = 1000 / hz;
+    let worst = 0, sum = 0, n = 0, sumOld = 0;
+    for (let a = 5000; a < 5200; a += 3.7) for (const lead of [90, 140, 180]) {
+      const w = { a, lead };
+      let f = 0;
+      while (!sungAt(w, f * fr, leadPad(hz))) f++;
+      const land = (f + 1) * fr + lead;
+      let g = 0;
+      while (!sungAt(w, g * fr, 20)) g++;
+      worst = Math.max(worst, Math.abs(land - a));
+      sum += land - a;
+      sumOld += (g + 1) * fr + lead - a;
+      n++;
+    }
+    assert.ok(worst <= fr + 0.5, `${hz} Hz: bis ${worst.toFixed(1)} ms neben dem Einsatz`);
+    assert.ok(Math.abs(sum / n) <= fr / 2 + 0.5, `${hz} Hz: im Mittel ${(sum / n).toFixed(1)} ms neben dem Einsatz`);
+    if (hz === 144) assert.ok(Math.abs(sum / n) < Math.abs(sumOld / n), "nicht besser als fest 20 ms");
+    console.log(`  Vorlauf ${hz} Hz: Zuschlag ${leadPad(hz)} ms, Landung im Mittel ${(sum / n).toFixed(1)} ms (fest 20 ms: ${(sumOld / n).toFixed(1)} ms), höchstens ${worst.toFixed(1)} ms daneben`);
+  }
+}
+
+/* ---- Bogen des Songs: Aufbau im Pre-Chorus, Steigerung, große Momente, Ruf und Antwort, Hook-Zeichen, Abgang */
+{
+  const lines = [], words = [], parts = [];
+  let t = 2000;
+  const sec = (kind, ls) => {
+    parts.push({ t0: t / 1000 - 0.2, kind });
+    for (const x of ls) {
+      const [text, who] = Array.isArray(x) ? x : [x];
+      lines.push(who ? { t, text, who } : { t, text });
+      words.push(WS(text, t, 260));
+      t += 3000;
+    }
+    t += 1500;
+  };
+  const CH = ["Fire in my heart tonight", "We are the fire, burning bright", "Feel the fire take control", "Fire burning in my soul"];
+  sec("verse", ["Do you remember where we met?", "Under neon lights in the rain", "Walking slowly through the city", "Every window full of stories"]);
+  sec("pre", ["Can you feel it coming now", "Every heartbeat, every vow", "Standing at the edge of time"]);
+  sec("chorus", CH);
+  sec("verse", [["I was waiting at the station", "1"], ["I was running for the train", "2"], ["Looking for a destination", "1"], ["Never looking back again", "2"]]);
+  sec("pre", ["Can you feel it coming now", "Every heartbeat, every vow", "Standing at the edge of time"]);
+  sec("chorus", CH);
+  sec("chorus", CH);
+  for (const level of ["playful", "wild"]) for (const seed of ["s1", "s2", "s3"]) {
+    const plan = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, level, seed });
+    // Aufbau: Fortschritt wächst, Landungen werden kürzer, die letzte Zeile vor dem Refrain steigt
+    const pre = [4, 5, 6].map((i) => plan[i]);
+    const bu = pre.map((p) => Number(p.vars["--pbu"]));
+    assert.ok(pre.every((p) => p.cls.includes("is-p-build")) && bu[0] < bu[1] && bu[1] < bu[2] && bu[2] === 1, "Aufbau: " + bu);
+    pre.forEach((p) => p.words.forEach((w) => assert.ok(w.lead <= leadOf(p.t) && w.lead >= 90, `Aufbau ${p.t}: Vorlauf ${w.lead}`)));
+    assert.ok(pre[2].words.every((w) => w.lead <= Math.round(leadOf(pre[2].t) * 0.7) || w.lead === 90), "letzte Aufbau-Zeile landet nicht schneller");
+    assert.ok(plan[6].cls.includes("is-p-riser") && parseFloat(plan[6].vars["--prd"]) >= 800, "keine Steigerung vor dem Refrain");
+    assert.ok(!plan[5].cls.includes("is-p-riser"));
+    // große Momente: erster und letzter Refrain, sonst keiner
+    const moments = plan.map((p, i) => (p.cls.includes("is-p-moment") ? i : -1)).filter((i) => i >= 0);
+    // (die letzten beiden Refrains folgen direkt aufeinander: ein Block, der Moment an seinem Anfang)
+    assert.deepEqual(moments, [7, 18], "Momente: " + moments);
+    assert.ok(plan[7].cls.includes("is-p-big"), "erster Refrain nicht groß");
+    // Ruf und Antwort: Frage → Antwort, Duett-Stimmen im Wechsel – die Antwort kommt von der anderen Seite und spielt
+    // dieselbe Inszenierung, wenn sie passt
+    assert.ok(plan[0].v.includes(":l:") && plan[1].v.includes(":r:") && plan[1].cls.includes("is-p-resp"), "Frage/Antwort: " + plan[0].v + " / " + plan[1].v);
+    assert.ok(plan[11].v.includes(":l:") && plan[12].v.includes(":r:") && !plan[12].cls.includes("is-p-resp"), "Duett: Seiten über die Stimmen, Richtung gespiegelt");
+    const mirrored = [[0, 1], [11, 12], [13, 14]].filter(([a, b]) => plan[a].t === plan[b].t).length;
+    assert.ok(mirrored >= 2, "Antworten spielen kaum dieselbe Inszenierung: " + mirrored);
+    // Hook-Zeichen: „fire“ kehrt wieder – jedes Mal dasselbe Zeichen dieses Songs
+    const marks = new Set();
+    plan.forEach((p, i) => p.words.forEach((w, k) => {
+      if (!w.cls.includes("is-p-hook")) return;
+      assert.equal(bare(words[i][k].text), "fire");
+      marks.add(w.vars["--pac"] + "|" + w.cls.find((c) => c.startsWith("is-p-hm-")));
+    }));
+    assert.equal(marks.size, 1, "Hook-Zeichen wechselt im Song: " + [...marks]);
+    assert.ok(HOOKS.some((h) => [...marks][0].startsWith("m-a-" + h + "|")));
+    // Abgang passend zum Auftritt, Wörter gestaffelt
+    for (const p of plan) if (p.t) {
+      assert.equal(p.vars["--pxo"], exitOf(p.t));
+      assert.ok(Object.values(EXITS).includes(p.vars["--pxo"]));
+      p.words.forEach((w, k) => assert.equal(w.vars["--wi"], String(k)));
+    }
+  }
+  // ohne Bewegung: der ruhende Satz bleibt (Aufbau, groß, Antwort) – keine Bewegungs-Klassen
+  const still = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, still: true, seed: "s1" });
+  assert.ok(still[4].cls.includes("is-p-build") && still[7].cls.includes("is-p-big") && still[1].cls.includes("is-p-resp"));
+  assert.ok(still.every((p) => !p.cls.includes("is-p-moment") && !p.cls.includes("is-p-riser")));
+  // Dezent: keine Hook-Akzente, kein Abgang
+  const sub = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, level: "subtle", seed: "s1" });
+  assert.ok(sub.every((p) => !p.vars["--pxo"] && p.words.every((w) => !w.cls.includes("is-p-hook"))));
+  // jedes Abgangs-Zeichen gibt es als @keyframes (der Wächter oben prüft die Eigenschaften)
+  const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
+  for (const n of [...new Set(Object.values(EXITS)), "m-l-moment", "m-l-riser"]) assert.ok(css.includes("@keyframes " + n + " {"), n);
+  assert.ok(/\.m-im-line\.is-past:has\(\+ \.m-im-line\.is-active\) \.m-w \{/.test(css), "Abgang nicht auf die Zeile direkt vor der aktiven beschränkt");
+}
+
+/* ---- schneller Rap: Silben-Stöße über die gesungene Dauer (Zahl = Silben, Dauer = Silbenabstand) */
+{
+  const s = build("rap");
+  const plan = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, seed: "rap" });
+  let syl = 0, multi = 0;
+  plan.forEach((p, i) => p.words.forEach((w, k) => {
+    if (w.vars["--pac"] !== "m-a-syl") return;
+    syl++;
+    const n = Number(w.vars["--pai"] || 1), d = parseFloat(w.vars["--pad"]), ww = s.words[i][k];
+    if (n > 1) multi++;
+    assert.ok(n >= 1 && n <= 4 && d >= 70 && d <= 260, `Silben-Stoß ${ww.text}: ${n} × ${d} ms`);
+    assert.ok(n * d <= ww.b - ww.a + 4, `Silben-Stöße länger als das Wort ${ww.text}`);
+  }));
+  assert.ok(syl >= 20 && multi >= 5, `Rap: ${syl} Silben-Stöße, ${multi} mehrsilbig`);
+  // Ballade: keine Silben-Stöße
+  const b = build("ballad");
+  assert.ok(planPlayful(b.lines, b.words, null, { lexicon: LEX, neg: NEG, parts: b.parts }).every((p) => p.words.every((w) => w.vars["--pac"] !== "m-a-syl")));
+}
+
+/* ---- Umschalten mitten im Song (Ruhig / Keine Blitze / weniger Bewegung / Stärke): neu planen und malen –
+   Buchstaben, Wortbilder und Vorlauf gehen sofort weg und kommen wieder (immersive.js ruft dafür paintPlayful) */
+{
+  const mk = (doc) => {
+    const el = {
+      ownerDocument: doc, children: [], _text: "", dataset: {},
+      classList: {
+        s: new Set(),
+        add(...c) { c.forEach((x) => this.s.add(x)); },
+        remove(...c) { c.forEach((x) => this.s.delete(x)); },
+        contains(c) { return this.s.has(c); },
+        [Symbol.iterator]() { return this.s[Symbol.iterator](); },
+      },
+      style: { v: {}, setProperty(k, v) { this.v[k] = String(v); }, removeProperty(k) { delete this.v[k]; } },
+      append(...k) { this.children.push(...k); },
+      get firstElementChild() { return this.children[0] || null; },
+      get textContent() { return this.children.length ? this.children.map((c) => c.textContent).join("") : this._text; },
+      set textContent(v) { this.children = []; this._text = v; },
+    };
+    Object.defineProperty(el, "className", { set(v) { v.split(" ").forEach((c) => el.classList.add(c)); } });
+    return el;
+  };
+  const doc = { createElement: () => mk(doc) };
+  const lines = [{ t: 1000, text: "Boom boom" }, { t: 4000, text: "We set the night on fire" }, { t: 7000, text: "Boom boom" }];
+  const wl = lines.map((l) => WS(l.text, l.t).map((w) => ({ ...w, el: Object.assign(mk(doc), { _text: w.text }) })));
+  const els = lines.map(() => mk(doc));
+  const opts = { lexicon: LEX, neg: NEG, level: "wild", seed: "toggle" };
+  const snapshot = () => ({
+    letters: wl.flat().reduce((n, w) => n + w.el.children.length, 0),
+    cues: wl.flat().filter((w) => [...w.el.classList].some((c) => c.startsWith("is-c-"))).length,
+    leads: wl.flat().filter((w) => w.lead > 0).length,
+    motion: els.filter((e) => [...e.classList].some((c) => /^is-p-(moment|riser)$/.test(c)) || "--pxo" in e.style.v).length,
+    text: wl.flat().map((w) => w.el.textContent).join(" "),
+  });
+  paintPlayful(els, planPlayful(lines, wl, null, opts), wl);
+  const on = snapshot();
+  assert.ok(on.letters > 0 && on.cues > 0 && on.leads > 0 && on.motion > 0, "bewegt: " + JSON.stringify(on));
+  paintPlayful(els, planPlayful(lines, wl, null, { ...opts, still: true }), wl);
+  const off = snapshot();
+  assert.deepEqual([off.letters, off.cues, off.leads, off.motion], [0, 0, 0, 0], "still: " + JSON.stringify(off));
+  assert.equal(off.text, on.text, "Text bleibt derselbe");
+  paintPlayful(els, planPlayful(lines, wl, null, opts), wl);
+  assert.deepEqual(snapshot(), on, "wieder bewegt wie vorher");
+  // Stärke „Dezent“ mitten im Song: keine Buchstaben, keine Akzente
+  paintPlayful(els, planPlayful(lines, wl, null, { ...opts, level: "subtle" }), wl);
+  assert.equal(snapshot().letters, 0);
+  // immersive.js: Einstellungen (applySettings → styleLyrics) und weniger Bewegung (matchMedia) malen neu, die Stärke
+  // ohne den Liedtext neu zu laden
+  const im = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8");
+  assert.ok(/function styleLyrics\(\) \{[\s\S]*?playfulRestyle\(\);\n {2}\}/.test(im), "styleLyrics malt den Stil nicht neu");
+  assert.ok(/reducedMotion\.addEventListener\?\.\("change", playfulRestyle\)/.test(im), "weniger Bewegung wirkt erst beim nächsten Song");
+  const st = fs.readFileSync(path.join(__dirname, "..", "..", "src", "settings.js"), "utf8");
+  assert.ok(/cfg\.lyrPlayLevel = k;[\s\S]{0,160}immersive\.styleLyrics\(\)/.test(st), "Stärke lädt den Liedtext neu");
 }
 
 console.log("lyricstyle: ok");

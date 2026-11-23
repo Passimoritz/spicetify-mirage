@@ -140,7 +140,8 @@ const FAMILY = {
 };
 export const FAMILIES = FAMILY;
 // Teile → Energie, aus der das Deck zieht
-const SECT_E = { verse: [0, 2], pre: [1, 2], chorus: [2, 3], drop: [3, 3], bridge: [0, 2], calm: [0, 1] };
+// (Strophe ohne die ganz stillen Rezepte – die bleiben Balladen und ruhigen Stellen; sonst wirkt eine Strophe wie Standbild)
+const SECT_E = { verse: [1, 2], pre: [1, 2], chorus: [2, 3], drop: [3, 3], bridge: [0, 2], calm: [0, 1] };
 const BRIDGE = ["tilt", "hinge", "pendulum", "mirror", "unfold", "drift", "lean", "swirl", "tidal", "domino"];
 const RAP = ["type", "typer", "write", "magnet", "jitter", "glitch", "ricochet"];
 const BALLAD = ["glow", "fade", "drift", "curtain", "write", "neon", "tidal", "rise"];
@@ -186,6 +187,10 @@ export function songDeck(seed, level = "playful") {
     grade: { hue: Math.round((rnd() - 0.5) * 30), sat: r2(0.85 + rnd() * 0.3) },
     amp: r2(0.85 + rnd() * 0.3),
     fx: Math.floor(rnd() * 1e6),
+    // Erkennungszeichen der Hook-Wörter: jedes Mal, wenn ein Hook-Wort des Songs fällt, derselbe Akzent und dieselbe
+    // Auszeichnung (unterstrichen oder gesperrt) – das Motiv, an dem man den Refrain wiedererkennt
+    hook: HOOKS[Math.floor(rnd() * HOOKS.length)],
+    hookMark: rnd() < 0.5 ? "under" : "wide",
   };
   // ruhige Stufe: nur sanfte Rezepte, keine Schriften
   if (level === "subtle") {
@@ -193,7 +198,7 @@ export function songDeck(seed, level = "playful") {
     d.amp = 0.55;
   }
   for (const k of ["verse", "pre", "drop", "bridge", "calm", "rap", "ballad", "shout", "hit"]) if (!d[k].length) d[k] = ["rise"];
-  d.sig = [d.verse, d.pre, d.chorus, d.hit, d.drop, d.bridge, d.calm, d.rap, d.ballad, d.ease, d.fonts].map((x) => x.join(",")).join("|") + "|" + d.grade.hue + "|" + d.amp;
+  d.sig = [d.verse, d.pre, d.chorus, d.hit, d.drop, d.bridge, d.calm, d.rap, d.ballad, d.ease, d.fonts].map((x) => x.join(",")).join("|") + "|" + d.grade.hue + "|" + d.amp + "|" + d.hook + d.hookMark;
   return d;
 }
 // Was eine Stufe zeigt: „Dezent“ nur sanfte Wort-Bewegungen ohne Buchstaben, „Verspielt“ alles außer den wilden
@@ -284,7 +289,18 @@ export function letterPoses(t, text, c) {
 export const leadOf = (t) => Math.min(LEAD_MAX, (R[t] || R.plain).lead ?? LEAD_DEF);
 
 /* ---- Akzente auf dem Einsatz (CSS-Keyframes m-a-*, beginnen und enden im Ruhezustand) */
-export const ACCENTS = { impact: 360, pop: 420, jelly: 600, hop: 420, heart: 700, neon: 900, echo: 520, glitch: 450, beat: 300, bar: 380 };
+// syl: Silben-Tick im schnellen Rap (je Silbe ein kurzer Stoß – Dauer und Zahl je Wort, --pad/--pai);
+// hstamp/htwist/hlift/hflare: Erkennungszeichen der Hook-Wörter (je Song eins, siehe songDeck().hook)
+export const ACCENTS = { impact: 360, pop: 420, jelly: 600, hop: 420, heart: 700, neon: 900, echo: 520, glitch: 450, beat: 300, bar: 380, syl: 140, hstamp: 460, htwist: 520, hlift: 480, hflare: 500 };
+export const HOOKS = ["hstamp", "htwist", "hlift", "hflare"];
+
+/* ---- Übergabe: die alte Zeile geht mit einer Bewegung ab, die zu ihrem Auftritt passt (Familie des Rezepts).
+   Kurzer Ausschlag in die Richtung und zurück in den Ruhezustand (die vergangene Zeile steht danach still) */
+export const EXITS = { float: "m-x-up", letters: "m-x-up", fall: "m-x-down", slide: "m-x-side", flip: "m-x-flip", hit: "m-x-push", swing: "m-x-tilt", wild: "m-x-tilt", pop: "m-x-pop", grow: "m-x-pop" };
+export function exitOf(t) {
+  for (const [fam, list] of Object.entries(FAMILY)) if (list.includes(t)) return EXITS[fam];
+  return RAP.includes(t) ? "m-x-side" : "m-x-up";
+}
 
 /* ---- Wortbilder in Spielarten: je Begriff (Feuer, Kerze …) und Song eine andere Ausprägung.
    Spielart 0 ist die feste aus dem Stylesheet (Klasse is-c-…); die anderen setzen ihre Bewegung über Variablen:

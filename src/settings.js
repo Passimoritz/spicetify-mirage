@@ -350,7 +350,8 @@ function playLevel() {
   const s = seg(opts, ["subtle", "wild"].includes(cfg.lyrPlayLevel) ? cfg.lyrPlayLevel : "playful", (k) => {
     cfg.lyrPlayLevel = k;
     save();
-    immersive.reloadLyrics();
+    // sofort im laufenden Song (neu planen und malen, ohne den Liedtext neu zu laden)
+    immersive.styleLyrics();
   });
   s.dataset.key = "lyrPlayLevel";
   s.setAttribute("aria-label", t("lyrPlayLevel"));

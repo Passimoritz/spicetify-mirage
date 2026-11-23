@@ -10,6 +10,9 @@
 // Wörterbuch (lexicon.js, rund 200 Begriffe in 45 Sprachen) gibt Wörtern eine passende Bewegung (Feuer flackert,
 // Regen tropft, Kälte zittert, das Herz schlägt, „fly“ hebt ab, „fall“ fällt, „boom“ zerspringt in Buchstaben …).
 // Betonung: Lautheit der Analyse, sonst Dauer, Inhaltswörter, Zeilenende, Reime und Hook-Wörter.
+// Bogen des Songs: der Pre-Chorus baut auf (enger, schneller, die letzte Zeile steigt), der erste und der letzte
+// Refrain schlagen als großer Moment ein, Ruf und Antwort spielen dieselbe Inszenierung von zwei Seiten, die Hook-Wörter
+// tragen je Song ein Erkennungszeichen, schneller Rap stößt je Silbe, und jede Zeile geht passend zu ihrem Auftritt ab.
 //
 // Hier steht nur die Entscheidung – einmal je Song (und noch einmal, wenn die Analyse nachkommt), nie im Bild:
 // planPlayful() rechnet Klassen und CSS-Variablen, paintPlayful() setzt sie an Zeilen und Wörter. Bewegt wird
@@ -20,7 +23,7 @@ import { matchAny, detectSong } from "./words.js";
 import { senseLine, planSong as planSense, EXPLICIT } from "./wordsense.js";
 import { lineMood } from "./mood.js";
 import { bgFlags } from "./lyricvoices.js";
-import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars } from "./lyricdeck.js";
+import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars, exitOf } from "./lyricdeck.js";
 import { lineRole, markerOk, limitFonts, covers } from "./lyricfont.js";
 import { CUE_KIND } from "./lyriccolor.js";
 
@@ -177,8 +180,9 @@ const SET = { chorus: "is-p-chorus", drop: "is-p-chorus", verse: "is-p-verse", p
 export function sectionStyle(kind, { repeated = false } = {}) {
   // ohne Analyse: Zeilen, die sich wiederholen, sind Refrain – der Rest Strophe
   if (!kind) return repeated ? "is-p-chorus" : "is-p-verse";
-  // die Regie ordnet ohne Liedtext ein; eine wiederholte Zeile mitten in Strophe/Pre ist meist die Hook
-  if ((kind === "verse" || kind === "pre") && repeated) return "is-p-chorus";
+  // die Regie ordnet ohne Liedtext ein; eine wiederholte Zeile mitten in der Strophe ist meist die Hook (ein Pre-Chorus
+  // wiederholt sich dagegen fast immer – er bleibt Aufbau)
+  if (kind === "verse" && repeated) return "is-p-chorus";
   return SET[kind] || "is-p-verse";
 }
 
@@ -431,10 +435,13 @@ export function pickTreatments(feats, deck) {
     const prev = out.filter(Boolean);
     const p1 = prev[prev.length - 1], p2 = prev[prev.length - 2];
     const used = byKey.get(f.key) || [];
+    // Antwort auf einen Ruf: dieselbe Inszenierung gespiegelt (Richtung setzt planPlayful) – sichtbar die Antwort
+    const mirror = f.resp >= 0 && f.resp < i ? out[f.resp] : "";
     let best = "plain", bv = -Infinity;
     for (const [t, base] of cands) {
       let v = base + hash01(D.seed + "|" + f.key + "|" + t + "|" + used.length) * 0.6;
-      if (t === p1) v -= 3;
+      if (t === mirror) v += 3.2;
+      else if (t === p1) v -= 3;
       if (t === p2) v -= 1;
       // was in den letzten sechs Zeilen schon lief, tritt zurück (sonst kreist ein Refrain durch dieselben vier)
       else if (prev.slice(-6).includes(t)) v -= 0.9;
@@ -472,10 +479,12 @@ const lettersOk = (ws, who) => !who && ws.length > 0 && ws.length <= 4 && ws.red
 
 // Wort setzt ein (.is-sung): Vorlauf vor dem Einsatz, damit es genau auf dem Einsatz gelandet ist. Dieselbe Uhr wie
 // die Karaoke-Füllung (pos = Songposition inkl. Versatz, je-Song-Korrektur und Tipp-Abgleich). LEAD_PAD: Chromium
-// startet eine Überblendung erst mit dem nächsten Bild der Grafikkarte (bei 60 Hz ~16 ms nach dem Klassenwechsel) –
-// so viel früher auslösen, dann liegt die Landung auch in echt auf dem Einsatz.
-export const LEAD_PAD = 20;
-export const sungAt = (w, pos) => pos >= w.a - (w.lead ? w.lead + LEAD_PAD : 0);
+// startet eine Überblendung erst mit dem nächsten Bild der Grafikkarte – genau ein Bild des Bildschirms nach dem
+// Klassenwechsel. So viel früher auslösen, dann liegt die Landung auch in echt auf dem Einsatz. Ein Bild = 1000 / Hz
+// (gemessene Bildschirmrate, fxenv.refreshFrom in der Bildschleife), begrenzt auf 6 … 34 ms; ungemessen: 60 Hz.
+export const leadPad = (hz) => (hz > 0 ? Math.round(clamp(1000 / hz, 6, 34) * 10) / 10 : LEAD_PAD);
+export const LEAD_PAD = 16.7;
+export const sungAt = (w, pos, pad = LEAD_PAD) => pos >= w.a - (w.lead ? w.lead + pad : 0);
 // Vorlauf der nächsten Zeile: so lange vor ihrem ersten Wort nimmt sie ihre Wartestellung ein (.is-pnext)
 export const PRE_MS = 600;
 
@@ -499,8 +508,21 @@ function partsOf(d) {
   return r;
 }
 const lineKey = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
-// Stärke je Teil: Pre-Chorus baut auf, Refrain kräftig, ruhige Stellen leise
-const AMP = { chorus: 1.1, drop: 1.15, pre: 1, verse: 0.95, bridge: 0.9, intro: 0.8, outro: 0.8, break: 0.75 };
+// Stärke je Teil: Strophe zurückgenommen, Pre-Chorus baut auf (siehe unten), Refrain und Drop klar größer – der
+// Unterschied zwischen den Teilen ist das, was man spürt (vorher lagen Strophe und Refrain nur 15 % auseinander)
+const AMP = { chorus: 1.28, drop: 1.38, pre: 0.95, verse: 0.85, bridge: 0.9, intro: 0.75, outro: 0.75, break: 0.7 };
+// Ruf und Antwort: die nächste Zeile antwortet (andere Duett-Stimme, Frage → Antwort, Echo der letzten Wörter)
+const QUESTION = /[?¿？]\s*["”»)）]?\s*$/;
+function answers(a, b) {
+  if (!a || !b || lineKey(a.text) === lineKey(b.text)) return false;
+  if (a.who && b.who && a.who !== b.who && a.who !== "all" && b.who !== "all") return true;
+  if (QUESTION.test(String(a.text || ""))) return true;
+  // Echo: die (höchstens fünf) Inhaltswörter der zweiten Zeile stehen am Ende der ersten
+  const wb = String(b.text || "").match(TOKW) || [];
+  const tail = new Set((String(a.text || "").match(TOKW) || []).slice(-4).map(bare));
+  const cb = wb.filter(isContent).map(bare);
+  return wb.length <= 5 && cb.length >= 1 && cb.every((w) => tail.has(w));
+}
 export function planPlayful(lines, wordLists, d, o = {}) {
   const L = lines || [];
   const real = d && !d.synthetic;
@@ -563,10 +585,17 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     const repeated = seen.get(lineKey(text)) >= 2;
     let kind = sectionKind(parts, l.t);
     if (!kind) kind = repeated ? "chorus" : "verse";
-    else if ((kind === "verse" || kind === "pre") && repeated) kind = "chorus";
+    else if (kind === "verse" && repeated) kind = "chorus";
     const shout = !l.bg && isShout(text, peaks[i], hi);
     return { l, i, ws, text, texts, adlib, repeated, kind, shout };
   });
+  // Erkennungszeichen: die ein, zwei Inhaltswörter, die im Refrain am häufigsten fallen (mindestens dreimal)
+  const sfreq = new Map();
+  for (const p of pre) {
+    if (p.adlib || (p.kind !== "chorus" && p.kind !== "drop")) continue;
+    for (const m of p.text.matchAll(TOKW)) if (isContent(m[0])) sfreq.set(bare(m[0]), (sfreq.get(bare(m[0])) || 0) + 1);
+  }
+  const sigWords = new Set([...sfreq].filter(([, c]) => c >= 3).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, 2).map(([w]) => w));
   const feats = pre.map((p) => {
     const { l, i, ws, text, texts } = p;
     if (p.adlib || !text.trim() || text === "♪") return null;
@@ -586,6 +615,36 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     const mood = lineMood(text)?.v ?? 0;
     return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp(energy, -1, 1.2), shout: p.shout, first, mood, text, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, lettersOk: lettersOk(ws, l.who), key: lineKey(text) || "#" + i };
   });
+
+  // 1b. Bogen des Songs. Pre-Chorus: Fortschritt im Block (build 0 … 1 – der Satz wird enger, die Auftritte kürzer und
+  // kräftiger), die letzte Zeile vor dem Refrain steigt (riser). Große Momente: die erste Zeile des ersten und des
+  // letzten Refrains. Ruf und Antwort: die antwortende Zeile spielt dieselbe Inszenierung von der anderen Seite.
+  const arc = L.map(() => ({ build: 0, riser: 0, moment: false, call: false, resp: -1 }));
+  for (let i = 0; i < feats.length; ) {
+    if (feats[i]?.kind !== "pre") {
+      i++;
+      continue;
+    }
+    const idx = [];
+    let j = i;
+    for (; j < feats.length && (!feats[j] || feats[j].kind === "pre"); j++) if (feats[j]) idx.push(j);
+    idx.forEach((k, m) => (arc[k].build = r2((m + 1) / idx.length)));
+    const last = idx[idx.length - 1], nx = feats.slice(last + 1).find(Boolean);
+    if (nx && (nx.kind === "chorus" || nx.kind === "drop")) arc[last].riser = clamp(Math.round(L[nx.i].t - L[last].t), 800, 8000);
+    i = j;
+  }
+  const chorusStarts = feats.filter((f) => f && f.words && f.first && (f.kind === "chorus" || f.kind === "drop")).map((f) => f.i);
+  if (chorusStarts.length) {
+    arc[chorusStarts[0]].moment = true;
+    if (chorusStarts.length > 1) arc[chorusStarts[chorusStarts.length - 1]].moment = true;
+  }
+  for (let i = 0; i + 1 < L.length; i++) {
+    const f = feats[i], g = feats[i + 1];
+    if (!f || !g || arc[i].resp >= 0 || !answers(L[i], L[i + 1])) continue;
+    arc[i].call = true;
+    arc[i + 1].resp = i;
+    g.resp = i;
+  }
 
   // 2. Wörter: Betonung, Wortbilder, Schlüsselwort (vor der Wahl der Inszenierung: „key“ braucht sie)
   const wordInfo = pre.map((p, i) => {
@@ -645,7 +704,6 @@ export function planPlayful(lines, wordLists, d, o = {}) {
   const fonts = limitFonts(fontsRaw, { max: 2, share: level === "wild" ? 0.6 : 0.4 });
 
   // 4. Klassen und Variablen
-  let preRun = 0;
   const plan = pre.map((p, i) => {
     const { l, ws } = p;
     const cls = [], vars = {};
@@ -679,11 +737,34 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     const wi = wordInfo[i];
     // Spielart: Richtung, Stärke, Kurve – aus Deck, Teil und Wiederholung
     const kind = p.kind;
-    preRun = kind === "pre" ? preRun + 1 : 0;
-    const dir = hash01(deck.seed + "|dir|" + (f?.key || i) + "|" + i) < 0.5 ? -1 : 1;
+    const A = arc[i];
+    // Ruf von links, Antwort von rechts (sonst fester Zufall je Zeile)
+    const dir = A.call ? -1 : A.resp >= 0 ? 1 : hash01(deck.seed + "|dir|" + (f?.key || i) + "|" + i) < 0.5 ? -1 : 1;
     let amp = deck.amp * (AMP[kind] ?? 1) * (level === "wild" ? 1.15 : 1);
-    if (kind === "pre") amp *= 0.8 + Math.min(4, preRun) * 0.1;
+    if (kind === "pre") amp *= 0.85 + 0.45 * A.build;
+    if (A.moment) amp *= 1.15;
     if (level === "subtle") amp = 0.55;
+    if (f) {
+      // ruhender Satz (gilt auch ohne Bewegung): Aufbau wird enger, der große Moment größer (nur kurze Zeilen)
+      if (A.build) {
+        cls.push("is-p-build");
+        vars["--pbu"] = String(A.build);
+      }
+      if (A.moment && f.n <= 6 && [...p.text].length <= 32) cls.push("is-p-big");
+      if (A.resp >= 0 && !l.who) cls.push("is-p-resp");
+      if (!still) {
+        if (A.moment) cls.push("is-p-moment");
+        if (A.riser) {
+          cls.push("is-p-riser");
+          vars["--prd"] = A.riser + "ms";
+        }
+        // Übergabe: so geht die Zeile ab, wenn die nächste dran ist (passend zu ihrem Auftritt)
+        if (t && level !== "subtle") {
+          vars["--pxo"] = exitOf(t);
+          vars["--pxd"] = String(dir);
+        }
+      }
+    }
     const easeKey = R?.ease || (kind === "chorus" || kind === "drop" ? deck.ease[0] : deck.ease[1]);
     const v = t ? `${t}:${dir > 0 ? "r" : "l"}:${Math.round(amp * 10)}:${easeKey}` : "";
     if (t && !still) {
@@ -697,7 +778,10 @@ export function planPlayful(lines, wordLists, d, o = {}) {
     const { em, cues, concept, kw } = wi;
     const hold = heldNotes(ws);
     const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
-    const lead = still ? 0 : leadOf(t);
+    // Aufbau: je weiter im Pre-Chorus, desto kürzer (schneller) die Landungen – bis zu 30 %, nie unter 90 ms
+    const lead = still ? 0 : Math.max(90, Math.round(leadOf(t) * (1 - 0.3 * A.build)));
+    // Hook-Wort der Zeile (höchstens eins): das Erkennungszeichen des Songs
+    const hookAt = level === "subtle" ? -1 : ws.findIndex((w, k) => !w.bg && !wi.no.has(k) && sigWords.has(bare(w.text)));
     let coloured = !!tint;
     const wideAt = fo.word === "wide" ? [...cues].find(([, c]) => c === "jolt" || c === "neon")?.[0] : -1;
     const words = ws.map((w, k) => {
@@ -715,6 +799,7 @@ export function planPlayful(lines, wordLists, d, o = {}) {
       if (t === "stagger" && k % 2 === 1) wc.push("is-p-odd");
       if (t === "collide" && n > 1) wv["--pc"] = String(r2((k - mid) / Math.max(1, mid)));
       if ((fo.word === "marker" && k === kw.k) || k === wideAt) wc.push("is-f-" + fo.word);
+      if (k === hookAt) wc.push("is-p-hook", "is-p-hm-" + deck.hookMark);
       // Farbe aus der Bedeutung (auch ohne Bewegung; Duett-Farben haben Vorrang)
       const c = cues.get(k);
       const ck = c && !l.who ? CUE_KIND[c] : "";
@@ -764,16 +849,29 @@ export function planPlayful(lines, wordLists, d, o = {}) {
           wc.push("is-split");
           wv["--cn"] = String([...String(w.text)].length);
         }
+        // Hook-Wort: immer dasselbe Zeichen (statt des Akzents des Rezepts)
+        if (k === hookAt) acc = deck.hook;
         // Echo braucht die Kopie (::before) für sich
         if (acc === "echo" && (tx || chars)) acc = "";
         if (acc === "echo") tx = String(w.text || "");
+        // schneller Rap: je Silbe ein kurzer Stoß, über die gesungene Dauer des Worts verteilt (Silben grob, höchstens vier)
+        let pad = ACCENTS[acc] || 0;
+        if (!acc && f?.rap && !w.est && !chars && w.b - w.a >= 120) {
+          const sy = clamp(syllables(w.text), 1, 4), per = Math.round((w.b - w.a) / sy);
+          if (per >= 70) {
+            acc = "syl";
+            pad = Math.min(260, per);
+            if (sy > 1) wv["--pai"] = String(sy);
+          }
+        }
         if (!acc && wc.includes("is-p-bar")) acc = "bar";
         else if (!acc && wc.includes("is-p-beat")) acc = "beat";
         if (acc && level !== "subtle") {
           wv["--pac"] = "m-a-" + acc;
-          wv["--pad"] = ACCENTS[acc] + "ms";
+          wv["--pad"] = (pad || ACCENTS[acc]) + "ms";
           if (acc === "echo") wc.push("is-echo");
-        }
+        } else delete wv["--pai"];
+        if (vars["--pxo"]) wv["--wi"] = String(k);
         if (R?.caret && !c) wc.push("is-caret");
       }
       if (chars) out.chars = chars;
@@ -807,7 +905,7 @@ export function motionLoad(linePlan) {
 
 /* ---- An die Zeilen setzen (DOM) – nur beim Aufbau und wenn die Analyse nachkommt */
 const PVARS = ["--pr", "--px", "--pz", "--hd", "--pk", "--pkn", "--pc", "--cn", "--wx", "--wy", "--wr", "--ws", "--wo", "--wt", "--wog", "--pl", "--pac", "--pad", "--pez",
-  "--pcn", "--pcd", "--qk", "--qs", "--qy", "--qr", "--qx", "--qo", "--ptw", "--pth", "--ptr", "--ptc", "--ptx", "--pty", "--pts", "--ptd", "--ptq"];
+  "--pai", "--wi", "--pxo", "--pxd", "--prd", "--pbu", "--pcn", "--pcd", "--qk", "--qs", "--qy", "--qr", "--qx", "--qo", "--ptw", "--pth", "--ptr", "--ptc", "--ptx", "--pty", "--pts", "--ptd", "--ptq"];
 const PCLS = /^(is-p-|is-t-|is-c-|is-f-|is-k|is-l-)/;
 const PONE = new Set(["is-cg", "is-split", "is-pt", "is-echo", "is-caret", "is-pk", "is-pnext"]);
 function strip(el, text) {
