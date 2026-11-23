@@ -7,7 +7,7 @@ const dgram = require("dgram");
 const { createLights } = require("../../overlay/lights.js");
 const { parseSsdp, parseProps, PROPS, line } = require("../../overlay/yeelight.js");
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clock = require("./lights-clock.js").install(), sleep = clock.sleep;
 const PAL = [[255, 0, 0], [0, 255, 0], [0, 0, 255]];
 
 /* ---- 1) Formate */
@@ -106,7 +106,7 @@ function perMinuteOk(times, max) {
     });
     await new Promise((r) => ssdp.bind(0, "127.0.0.1", r));
     const lights = createLights(() => ({}), () => {}, { yeelightSsdp: { host: "127.0.0.1", port: ssdp.address().port } });
-    const r = await lights.yeelightScan(200);
+    const r = await clock.wait(lights.yeelightScan(200));
     assert.deepStrictEqual(r, { list: [{ ip: A.addr, name: "Sofa" }] });
     assert.ok(/^M-SEARCH \* HTTP\/1\.1\r\nHOST: 239\.255\.255\.250:1982\r\nMAN: "ssdp:discover"\r\nST: wifi_bulb\r\n/.test(asked[0]));
     ssdp.close();
@@ -172,7 +172,7 @@ function perMinuteOk(times, max) {
   assert.ok(A.musicLines.some((x) => x.method === "set_scene"), "nach dem Wiederverbinden kein Musikmodus");
 
   /* ---- 6) Party vorbei: Musikmodus aus, Farbe/Weiß, Helligkeit, an/aus wie vorher */
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   assert.deepStrictEqual([A.props.power, A.props.bright, A.props.rgb, A.props.color_mode], ["off", "30", "65280", "1"]);
   assert.ok(A.ctrl.some((x) => x.method === "set_music" && x.params[0] === 0));
   assert.deepStrictEqual([B.props.power, B.props.bright, B.props.ct, B.props.color_mode], ["on", "80", "2700", "2"]);
@@ -191,8 +191,8 @@ function perMinuteOk(times, max) {
   lights.sync();
   for (let i = 0; i < 3; i++) await beat(false);
   assert.ok(logs.some((l) => l.includes(`${deadAddr} offline`)));
-  await lights.stopAll();
-  assert.deepStrictEqual(await createLights(() => ({ yeelightIps: "8.8.8.8" }), () => {}).test("yeelight"), { error: "setup" });
+  await clock.wait(lights.stopAll());
+  assert.deepStrictEqual(await clock.wait(createLights(() => ({ yeelightIps: "8.8.8.8" }), () => {}).test("yeelight")), { error: "setup" });
 
   A.srv.close();
   B.srv.close();

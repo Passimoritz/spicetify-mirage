@@ -6,7 +6,7 @@ const http = require("http");
 const dgram = require("dgram");
 const { createLights } = require("../../overlay/lights.js");
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clock = require("./lights-clock.js").install(), sleep = clock.sleep;
 const HUE_USER = "testuser-1234567890abcdef", HA_TOKEN = "ha-test-token-0123456789abcdef";
 
 // kleiner HTTP-Server: handler(method, path, body, headers) → Antwortobjekt
@@ -169,7 +169,7 @@ function fakeHa() {
 
   /* ---- Party vorbei (oder App wird beendet): alles zurück */
   const n = hueDev.puts.length;
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   assert.strictEqual(lights.active(), false);
   for (const id of ["1", "2", "3"]) {
     const now = hueDev.lights[id].state, was = before[id].state;
@@ -185,7 +185,7 @@ function fakeHa() {
 
   // zweites Beenden: nichts mehr zu tun, keine weiteren Befehle
   const total = hueDev.puts.length + wledDev.posts.length + haDev.calls.length;
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   assert.strictEqual(hueDev.puts.length + wledDev.posts.length + haDev.calls.length, total);
 
   // Zugangsdaten tauchen in keinem Protokolltext auf
@@ -195,7 +195,7 @@ function fakeHa() {
   cfg.wledOn = cfg.haOn = false;
   cfg.hueGroup = "0";
   cfg.hueExclude = "g1";
-  const listed = await lights.hueLights();
+  const listed = await clock.wait(lights.hueLights());
   assert.deepStrictEqual(listed.rooms, [{ id: "1", name: "Wohnzimmer" }, { id: "2", name: "Küche" }]);
   assert.deepStrictEqual(listed.lights.map((l) => l.name), ["Sofa", "Regal", "Flur", "Küche"]);
   hueDev.puts.length = 0;
@@ -206,7 +206,7 @@ function fakeHa() {
     await sleep(360); // über 0,34 s: schneller lässt die Blitz-Schranke keine Schläge durch
   }
   assert.deepStrictEqual([...new Set(hueDev.puts.map((p) => p.id))], ["4"]);
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   assert.deepStrictEqual(hueDev.lights[4].state.xy, before[4].state.xy);
 
   for (const s of [hueSrv, wledSrv, haSrv]) s.close();

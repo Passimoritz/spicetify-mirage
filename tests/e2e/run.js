@@ -39,9 +39,48 @@ app.commandLine.appendSwitch("use-file-for-fake-audio-capture", MIC_WAV + "%nolo
 function ok(cond, msg) {
   if (!cond) throw new Error(msg);
 }
-// GitHub-Rechner sind deutlich langsamer als ein Desktop: dort alle Wartezeiten doppelt so lang (E2E_SLOW setzt den
-// Faktor selbst). Mit 1,5 liefen seit 1.27 (56 Fälle, mehr Handy-Verkehr) einzelne Fälle knapp ins Zeitlimit.
-const SLOW = Number(process.env.E2E_SLOW) || (process.env.CI ? 2 : 1);
+// Tempo des Rechners: alle Zeitlimits von until() (und das Warten auf klickbare Ziele) werden mit SLOW gestreckt.
+// GitHub-Rechner sind deutlich langsamer als ein Desktop und schwanken: darum misst der Lauf beim Start, wie lange
+// eine feste Rechenaufgabe in Node und im großen Fenster dauert (measureSpeed), und nimmt das Verhältnis zu einem
+// schnellen Desktop als Faktor – auf CI mindestens 2 (früherer fester Wert), höchstens 5. E2E_SLOW setzt ihn fest.
+// E2E_RETRY=0 schaltet den zweiten Versuch je Fall ab.
+const SLOW_FIXED = Number(process.env.E2E_SLOW) || 0;
+let SLOW = SLOW_FIXED || (process.env.CI ? 2 : 1);
+const RETRY = process.env.E2E_RETRY !== "0";
+// Bezug: Dauer der Aufgaben auf einem Desktop, auf dem die Fälle zuverlässig laufen (Windows 11, 2026; ms)
+const SPEED_REF = { node: 110, page: 80 };
+async function measureSpeed() {
+  const cpu = () => {
+    const t = process.hrtime.bigint();
+    let x = 0;
+    for (let i = 0; i < 3e7; i++) x = (x * 31 + i) | 0;
+    return Number(process.hrtime.bigint() - t) / 1e6 + (x & 0);
+  };
+  // im großen Fenster: Rechnen, Layout und Stil-Berechnung – wie die Seite selbst arbeitet
+  const page = () => T.js(`(() => {
+    const t = performance.now();
+    let x = 0;
+    for (let i = 0; i < 1e7; i++) x = (x * 31 + i) | 0;
+    const box = document.createElement("div");
+    box.style.cssText = "position:absolute;left:-9999px;top:0;width:400px";
+    document.body.append(box);
+    for (let i = 0; i < 400; i++) {
+      const d = document.createElement("div");
+      d.textContent = "Zeile " + i + " " + x;
+      d.style.cssText = "display:inline-block;padding:" + (i % 7) + "px;font-size:" + (10 + (i % 9)) + "px";
+      box.append(d);
+      if (i % 20 === 0) void box.offsetHeight;
+    }
+    box.remove();
+    return performance.now() - t;
+  })()`);
+  const node = Math.min(cpu(), cpu(), cpu());
+  let pg = Infinity;
+  for (let i = 0; i < 3; i++) pg = Math.min(pg, await page());
+  const f = Math.max(node / SPEED_REF.node, pg / SPEED_REF.page);
+  if (!SLOW_FIXED) SLOW = Math.round(Math.min(5, Math.max(process.env.CI ? 2 : 1, f)) * 10) / 10;
+  console.log(`Tempo: Node ${node.toFixed(0)} ms, Seite ${pg.toFixed(0)} ms → Faktor ${f.toFixed(2)}, Zeitlimits × ${SLOW}${SLOW_FIXED ? " (E2E_SLOW)" : ""}`);
+}
 async function until(fn, ms, what) {
   const t0 = Date.now(), lim = ms * SLOW;
   let last;
@@ -50,7 +89,18 @@ async function until(fn, ms, what) {
     if (last) return last;
     await wait(80);
   }
-  throw new Error(`Zeitüberschreitung (${ms} ms): ${what}`);
+  throw new Error(`Zeitüberschreitung (${ms} ms${SLOW !== 1 ? " × " + SLOW : ""}): ${what}`);
+}
+
+// Zustand lesen, bis er passt (oder die Zeit um ist): liefert den letzten Stand – die Prüfung danach meldet ihn
+async function settle(read, good, ms) {
+  const end = Date.now() + ms * SLOW;
+  let s = await read();
+  while (!good(s) && Date.now() < end) {
+    await wait(100);
+    s = await read();
+  }
+  return s;
 }
 
 class Win {
@@ -65,10 +115,17 @@ class Win {
     });
     this.wc.on("render-process-gone", (_e, d) => this.errors.push("Renderer weg: " + d.reason));
   }
+  // Skript in der Seite; antwortet die Seite nicht (Renderer hängt, Seite wurde mitten im Aufruf ersetzt: „Render frame
+  // was disposed“), schlägt der Aufruf nach 20 s × SLOW fehl, statt den ganzen Lauf bis zum Gesamt-Zeitlimit zu blockieren
   js(code) {
-    return this.wc.executeJavaScript(code);
+    let t;
+    const limit = new Promise((_, no) => (t = setTimeout(() => no(new Error(`${this.name}: Seite antwortet nicht (Skript-Aufruf nach ${Math.round(20 * SLOW)} s abgebrochen)`)), 20000 * SLOW)));
+    return Promise.race([this.wc.executeJavaScript(code), limit]).finally(() => clearTimeout(t));
   }
-  // Echter Klick: das Element muss an dieser Stelle wirklich oben liegen
+  // Echter Klick: das Element muss an dieser Stelle wirklich oben liegen. Wie ein Mensch wartet der Klick, bis das
+  // Ziel bedienbar ist (sichtbar, still, nicht verdeckt) – höchstens 3 s × SLOW, dann schlägt er mit dem letzten
+  // Grund fehl. Im großen Bild weckt eine Mausbewegung über dem Ziel die ausgeblendete Steuerung (Party-Ruhemodus:
+  // die Kopfzeile ist dann unsichtbar und ein Verschiebe-Streifen liegt darüber).
   async click(sel, opts = {}) {
     const spec = JSON.stringify({ sel, ...opts });
     const look = () => this.js(`(() => {
@@ -86,19 +143,25 @@ class Win {
       const r = el.getBoundingClientRect(), x = Math.round(r.left + r.width / 2), y = Math.round(r.top + r.height / 2);
       const hit = document.elementFromPoint(x, y);
       const name = (e) => e ? (e.tagName + "." + String(e.className).slice(0, 60)) : "nichts";
-      return { x, y, on: !!hit && (hit === el || el.contains(hit)), hit: name(hit), off: x < 0 || y < 0 || x > innerWidth || y > innerHeight };
+      const idle = !!document.getElementById("mirage-immersive")?.classList.contains("is-idle");
+      return { x, y, on: !!hit && (hit === el || el.contains(hit)), hit: name(hit), off: x < 0 || y < 0 || x > innerWidth || y > innerHeight, idle };
     })()`);
-    let p = await look();
-    for (let n = 0; n < 20 && p.moving; n++) {
-      await wait(50);
-      p = await look();
-    }
-    // während eines Ansichtswechsels (View Transition) liegt kurz nichts Klickbares oben
-    for (let n = 0; n < 15 && !p.miss && !p.on && p.hit.startsWith("HTML"); n++) {
-      await wait(100);
+    const until0 = Date.now() + 3000 * SLOW;
+    let p = await look(), woke = 0;
+    // bedienbar: sichtbar, im Bild, still und oben – oder die Zeit ist um
+    while (!(!p.miss && !p.moving && !p.off && p.on) && Date.now() < until0) {
+      if (!p.miss && !p.moving && !p.on && this.name === "Big" && (p.idle || /m-im-drag/.test(p.hit)) && woke < 30) {
+        // Steuerung wecken: echte Mausbewegung genau über dem Ziel (zweimal, damit es als Bewegung zählt)
+        woke++;
+        this.wc.sendInputEvent({ type: "mouseMove", x: p.x + (woke % 2 ? 1 : -1), y: p.y });
+        await wait(30);
+        this.wc.sendInputEvent({ type: "mouseMove", x: p.x, y: p.y });
+      }
+      await wait(p.moving ? 50 : 100);
       p = await look();
     }
     ok(!p.miss, `${this.name}: „${sel}${opts.text ? " " + opts.text : ""}“ nicht sichtbar`);
+    ok(!p.moving, `${this.name}: „${sel}“ kommt nicht zur Ruhe`);
     ok(!p.off, `${this.name}: „${sel}“ liegt außerhalb des Bildes`);
     ok(p.on, `${this.name}: „${sel}“ ist verdeckt von ${p.hit}`);
     this.wc.sendInputEvent({ type: "mouseMove", x: p.x, y: p.y });
@@ -189,9 +252,10 @@ async function connectPhones() {
   await Promise.all(P.map(async (ph) => {
     await ph.win.loadURL(PAGE + hash);
     await ph.js(`localStorage.setItem("mlName", ${JSON.stringify(ph.name)}); localStorage.setItem("mlSfx", "0"); 1`);
-    await ph.wc.executeJavaScript("location.reload(); 1").catch(() => {});
+    await ph.wc.executeJavaScript("window.__e2eOld = 1; location.reload(); 1").catch(() => {});
   }));
-  await wait(800);
+  // statt fester 800 ms: bis alle Handyseiten wirklich neu geladen sind (die alte Seite trug __e2eOld)
+  await until(async () => (await Promise.all(P.map((ph) => ph.js(`!window.__e2eOld && document.readyState === "complete" && !!document.getElementById("game")`).catch(() => false)))).every(Boolean), 8000, "Handyseiten neu geladen");
 }
 async function close() {
   await big.hover();
@@ -565,7 +629,7 @@ async function muteButton() {
   // der Knopf sitzt in der Leiste der anderen Ansichten
   await big.hover();
   await T.click('#mirage-immersive [data-mode="lyrics"]');
-  await wait(500);
+  await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "lyrics" && !!document.querySelector(".m-im-mute")`), 3000, "Liedtext-Ansicht mit Stumm-Knopf");
   // die Leiste blendet nach dem Ansichtswechsel erst ein: ein Klick kann ins Leere gehen, darum bis zu dreimal
   const press = async (want, what) => {
     for (let i = 0; i < 3; i++) {
@@ -585,7 +649,8 @@ async function muteButton() {
   await press(0.7, "Stumm-Knopf stellt die Lautstärke wieder her");
   await big.hover();
   await T.click('#mirage-immersive [data-mode="party"]');
-  await wait(1500);
+  await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "party"`), 3000, "zurück in der Party-Ansicht");
+  await wait(500);
 }
 // Medientaste mitten in der Frage: Pause läuft weiter, Sprung startet dieselbe Runde mit dem neuen Song
 async function mediaKeys() {
@@ -651,7 +716,8 @@ async function offline() {
   await joinAll("never");
   await allPhones((s) => s.k === "never" && s.st === "ask" && s.round === "1/2", 8000, "offline: Frage 1");
   await P[0].click(...tile(0));
-  await wait(700);
+  // erst ins Funkloch, wenn Alphas Antwort auf dem großen Bild angekommen ist (statt fester 700 ms)
+  await until(() => T.js(`[...document.querySelectorAll("#mirage-immersive .m-g-chip.is-on")].some((c) => /Alpha/.test(c.textContent))`), 4000, "offline: Alphas Antwort ist vor dem Funkloch angekommen");
   let n = await net();
   ok(!n.lost && !n.text, `offline: verbunden zeigt keinen Hinweis: ${JSON.stringify(n)}`);
   await P[0].js(`__e2eNet.cut(5000); 1`);
@@ -1556,15 +1622,21 @@ async function karaokeGame() {
   const b0 = await big.state();
   ok(b0.lock && b0.playing && b0.vol === 0.7, `karaoke: Musik läuft normal und ist gesperrt (${JSON.stringify({ lock: b0.lock, playing: b0.playing, vol: b0.vol })})`);
   // die Datei passend zur Stelle, ab dem Klick gerechnet (PC-Uhr wie das Handy sie kennt)
+  // die Stelle (Einsätze, Tonhöhen) kommt mit dem „ready“-Stand; unter Last (CI) einen Moment später – erst danach
+  // lesen, sonst singt die Testdatei nach einem halbfertigen Stand
+  await until(() => S.js(`!!(kPart?.d?.ch?.length && kPart.d.on?.length >= 3)`), 4000, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
   const info = await S.js(`({ at: cur.g.at, kp: kPart.d, pc: Date.now() - skew })`);
   ok(info.at - info.pc > 4000 && info.at - info.pc < 13000, `karaoke: Vorlauf vor der Stelle reicht fürs Mikro und den Grundpegel (${info.at - info.pc} ms)`);
-  // die Stelle (Einsätze, Tonhöhen) kommt mit dem „ready“-Stand; unter Last (CI) einen Moment später
-  await until(() => S.js(`!!(kPart?.d?.ch?.length && kPart.d.on?.length >= 3)`), 4000, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
+  console.log(`    karaoke: Song ${await T.js(`__sp.now().i`)}, Stelle ${info.kp.ln.length} Zeilen (${info.kp.ln.map((l) => l[0] + "–" + l[1]).join(", ")}), ${info.kp.on.length} Einsätze, Länge ${info.kp.len} ms`);
   const open = info.pc + 120;
   writeWav(MIC_WAV, 48000, (info.at + info.kp.len + 1500 - open) / 1000, karaokeVoice(info.kp, info.at, open));
   await S.click("#game .gkmic");
   const rec = await until(() => S.js(`kRec && kRec.t0 ? { t0: kRec.t0, worklet: !!kRec.node?.port } : null`), 5000, "karaoke: Mikro ist an");
   console.log(`    karaoke: Mikro liest ab ${Math.round(rec.t0 - open)} ms nach der angenommenen Zeit, AudioWorklet: ${rec.worklet}`);
+  // Sonst liegt das fast immer bei 0–50 ms. Öffnet das Mikro unter Last viel später, ist die ganze Stimme in der Datei
+  // gegen den Song verschoben und die Wertung sagt nichts über Mirage (einmal auf CI: 894 ms → Töne 31). Dann lieber
+  // ehrlich abbrechen: der zweite Versuch des Falls (run.js, unten) singt mit frisch geöffnetem Mikro.
+  ok(rec.t0 - open < 400, `karaoke: Mikro öffnete ${Math.round(rec.t0 - open)} ms zu spät – die Testdatei passt nicht mehr zur Stelle`);
   await until(async () => /Mikro an/.test((await big.state()).text), 4000, "karaoke: das große Bild zeigt, dass das Mikro an ist");
   await until(async () => (await big.state()).st === "go", 16000, "karaoke: die Stelle beginnt");
   const g1 = await big.state();
@@ -1686,7 +1758,8 @@ async function wishRules() {
   await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
   // Suche: der gesperrte (Cinder) und der „Explicit“-Song (Blue Lake) erscheinen gar nicht
   for (const ph of [A, B]) await ph.click("#bWish");
-  await wait(700);
+  // statt fester 700 ms: bis bei beiden die Wunschliste offen ist
+  await until(async () => (await Promise.all([A, B].map((ph) => ph.js(`document.body.classList.contains("wish") && !!document.getElementById("wSong")`)))).every(Boolean), 3000, "regeln: Wunschliste offen");
   await type(A, "song");
   const list = await until(async () => (await hits(A)) || "", 9000, "regeln: Treffer");
   ok(list === "Song of Aurora", "regeln: nur der erlaubte Song steht in der Liste: " + list);
@@ -1822,6 +1895,8 @@ async function remoteControl() {
   await until(() => H.js(`rcS?.vn === "beach"`), 5000, "fernbedienung: Location kommt am PC an");
   // zurück: Stärke 2, Location automatisch, Lautstärke wie vorher, wieder als Gast
   await H.click("#rcBody .rclv button", { index: 1 });
+  // ein Befehl nach dem anderen: erst wenn die Stärke am PC angekommen ist, die Location zurückstellen
+  await until(() => H.js(`rcS?.lv === 2`), 5000, "fernbedienung: Stärke 2 kommt am PC an");
   await H.js(`(() => { const s = document.querySelector("#rcBody .rcsel"); s.value = "auto"; s.dispatchEvent(new Event("change")); })(); 1`);
   await until(() => H.js(`rcS?.vn === "auto" && rcS?.lv === 2`), 5000, "fernbedienung: zurückgestellt");
   await T.js(`__sp.reset(); 1`);
@@ -2792,31 +2867,29 @@ async function imPolish() {
   // nicht nach fester Zeit messen: auf einem langsamen Rechner (CI) läuft die letzte Überblendung noch – bis zu 5 s
   // warten, bis sich alles gesetzt hat. Bleibt ein Geist oder die Markierung hängen, schlägt der Test weiterhin an.
   const settled = (x) => x.mode === "clock" && x.stored === "clock" && x.sel === "clock" && x.ind && !x.ghosts && x.clock === "visible";
-  let s = await st();
-  for (const t0 = Date.now(); !settled(s) && Date.now() - t0 < 5000; s = await st()) await wait(150);
+  let s = await settle(st, settled, 5000);
   ok(settled(s), "polish: nach 32 schnellen Ansichtswechseln stimmt alles (Uhr): " + JSON.stringify(s));
   await T.js(`__sp.press("Digit1"); 1`);
   await until(async () => (await st()).mode === "cover", 2000, "polish: Taste 1 → Cover");
   // Ebene schnell auf und zu (ungerade oft: zu), dann wieder auf: Zustand wie vorher
   await T.js(`(() => { let i = 0; const t = setInterval(() => { __sp.press("KeyM", { ctrlKey: true, shiftKey: true }); if (++i >= 9) clearInterval(t); }, 60); })(); 1`);
-  await wait(9 * 60 + 1200);
-  s = await st();
+  await wait(9 * 60);
+  s = await settle(st, (x) => !x.open, 1200);
   ok(!s.open, "polish: nach neunmal Auf/Zu ist die Ebene zu: " + JSON.stringify(s));
   await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
-  await wait(1200);
-  s = await st();
+  s = await settle(st, (x) => x.open && x.mode === "cover" && x.sel === "cover" && x.ind && !x.ghosts && x.clock === "hidden", 2500);
   ok(s.open && s.mode === "cover" && s.sel === "cover" && s.ind && !s.ghosts && s.clock === "hidden", "polish: wieder offen, Cover, Reiter stimmen: " + JSON.stringify(s));
   // kleine Fenster: Zurück, Ansichten und Knöpfe oben überdecken sich nicht (in jeder Ansicht)
   const [w0, h0] = T.win.getContentSize();
   try {
     for (const [w, h] of [[1100, 700], [1000, 640], [800, 560]]) {
       T.win.setContentSize(w, h);
-      await wait(500);
+      await until(() => T.js(`innerWidth === ${w}`), 2000, `polish: Fenster ${w}×${h}`);
       for (const m of ["cover", "lyrics", "clock"]) {
         await T.js(`__sp.press("Digit${{ cover: 1, lyrics: 2, clock: 6 }[m]}"); 1`);
         await until(async () => (await st()).mode === m, 2000, `polish: ${m} bei ${w}×${h}`);
-        await wait(800);
-        s = await st();
+        // bis die Überblendung durch ist (keine Geister, Markierung unter dem Reiter) – höchstens 2 s × SLOW
+        s = await settle(st, (x) => !x.ghosts && x.ind && !x.overlap && x.right <= x.W, 2000);
         ok(!s.overlap && s.right <= s.W && s.ind, `polish: Kopfzeile ${w}×${h} ${m} ohne Überdeckung: ` + JSON.stringify(s));
       }
     }
@@ -3199,6 +3272,13 @@ async function playfulRoom() {
 }
 CASES.push(["playful-room", playfulRoom]);
 
+// Selbsttest des zweiten Versuchs: E2E_SELFTEST=1 E2E_ONLY=selftest-flaky,selftest-fail npm run test:games
+// (erwartet: selftest-flaky „[flaky: passed on retry]“, selftest-fail FEHLER, Ende mit Code 1)
+if (process.env.E2E_SELFTEST) {
+  let n = 0;
+  CASES.push(["selftest-flaky", async () => ok(n++ > 0, "selftest: wackelt beim ersten Mal")], ["selftest-fail", async () => ok(false, "selftest: schlägt jedes Mal fehl")]);
+}
+
 /* ---------------------------------------------------------------- Start */
 let PAGE = "";
 process.on("unhandledRejection", (e) => {
@@ -3261,14 +3341,21 @@ app.whenReady().then(async () => {
   };
   T = make("Big", 1280, 800, "e2e-theme");
   P = ["Alpha", "Beta", "Gamma"].map((n, i) => make(n, PHONE_W, PHONE_H, "e2e-p" + i));
-  await T.win.loadURL(base + "__theme");
+  // großes Bild laden und in die Party-Ansicht gehen – beim Start und vor dem zweiten Versuch eines Falls, der nur auf
+  // einer frischen Seite wiederholbar ist (FRESH_RETRY)
+  const openParty = async () => {
+    await T.win.loadURL(base + "__theme");
+    // statt fester Pausen: Theme geladen (Tastenkürzel greifen), Ebene offen, Party-Ansicht aktiv
+    await until(() => T.js(`document.readyState === "complete" && typeof __sp === "object" && !!document.body`), 6000, "Theme geladen");
+    await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+    await until(() => T.js(`!!document.querySelector('#mirage-immersive [data-mode="party"]') && document.getElementById("mirage-immersive").classList.contains("is-on")`), 4000, "Immersive geht auf");
+    await T.click('#mirage-immersive [data-mode="party"]');
+    await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "party" && !!document.querySelector("#mirage-immersive .m-im-gamebtn")`), 6000, "Party-Ansicht steht");
+    await wait(500);
+  };
   await Promise.all(P.map((ph) => ph.win.loadURL(base)));
-  await wait(1500);
-  await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
-  await until(() => T.js(`!!document.querySelector('#mirage-immersive [data-mode="party"]')`), 4000, "Immersive geht auf");
-  await wait(600);
-  await T.click('#mirage-immersive [data-mode="party"]');
-  await wait(2000);
+  await openParty();
+  await measureSpeed();
 
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
@@ -3278,37 +3365,75 @@ app.whenReady().then(async () => {
   const hard = setTimeout(() => {
     console.log("Gesamt-Zeitlimit erreicht");
     process.exit(2);
-  }, 40 * 60e3);
-  for (const [name, run] of list) {
-    const t0 = Date.now();
-    let error = "";
+  }, 70 * 60e3);
+  // ein Versuch eines Falls: "" = bestanden, sonst die Fehlermeldung (Bilder unter out/, danach aufgeräumt)
+  // höchstens so lange je Versuch: ein hängender Fall darf nicht alle folgenden mitreißen
+  const CASE_LIMIT = 8 * 60e3;
+  const attempt = async (name, run, tag) => {
+    let t;
     try {
-      await run();
+      await Promise.race([run(), new Promise((_, no) => (t = setTimeout(() => no(new Error(`${name}: Fall hängt (über ${Math.round((CASE_LIMIT * SLOW) / 60e3)} min)`)), CASE_LIMIT * SLOW)))]).finally(() => clearTimeout(t));
       const k = name in ICON ? name : "Fall";
       await afterGame(k);
+      return "";
     } catch (e) {
-      error = e.message;
-      const safe = name.replace(/\W/g, "_");
+      let error = e.message;
+      const safe = name.replace(/\W/g, "_") + tag;
       await T.shot(path.join(OUT, safe + "-big.png"));
       await Promise.all(P.map((ph) => ph.shot(path.join(OUT, `${safe}-${ph.name}.png`))));
       const stateNow = await big.state().catch(() => ({}));
       const phonesNow = await Promise.all(P.map((p) => phoneState(p).catch(() => ({}))));
       error += `\n    groß: ${JSON.stringify({ st: stateNow.st, k: stateNow.k, text: stateNow.text })}\n    handy: ${JSON.stringify(phonesNow[0]).slice(0, 300)}`;
-      // aufräumen, damit der nächste Fall sauber beginnt
-      await T.js(`document.querySelector(".m-g-x")?.click(); if (!document.querySelector(".m-im-side").hidden) document.querySelector(".m-im-side-x").click(); document.querySelector('#mirage-immersive [data-mode="party"]').click(); __sp.resetArtists(); __sp.reset(); __sp.log.notes.length = 0; 1`).catch(() => {});
-      // offene Fenster auf den Handys (Spielleitung, Profil, Fernbedienung) schließen: sie verdecken sonst im nächsten Fall die Knöpfe
-      await Promise.all(P.map((ph) => ph.js(`document.querySelectorAll(".prof:not([hidden]), #rc:not([hidden])").forEach((x) => (x.hidden = true)); if (document.body.classList.contains("wish")) document.getElementById("wClose").click(); 1`).catch(() => {})));
-      [T, ...P].forEach((w) => (w.errors.length = 0));
-      await wait(1500);
+      await cleanup();
+      return error;
+    }
+  };
+  // aufräumen, damit der nächste Fall (oder der zweite Versuch) sauber beginnt
+  const cleanup = async () => {
+    await T.js(`document.querySelector(".m-g-x")?.click(); if (!document.querySelector(".m-im-side").hidden) document.querySelector(".m-im-side-x").click(); document.querySelectorAll(".mirage-settings").forEach((x) => x.remove()); document.querySelector('#mirage-immersive [data-mode="party"]').click(); __sp.resetArtists(); __sp.reset(); __sp.log.notes.length = 0; 1`).catch(() => {});
+    // offene Fenster auf den Handys (Spielleitung, Profil, Fernbedienung) schließen: sie verdecken sonst im nächsten Fall die Knöpfe
+    await Promise.all(P.map((ph) => ph.js(`document.querySelectorAll(".prof:not([hidden]), #rc:not([hidden])").forEach((x) => (x.hidden = true)); if (document.body.classList.contains("wish")) document.getElementById("wClose").click(); 1`).catch(() => {})));
+    // statt fester 1,5 s: bis das Spiel zu ist, die Seitenleiste zu, die Party-Ansicht steht und die Handys kein Spiel zeigen
+    await until(async () => {
+      const s = await big.state().catch(() => null);
+      const side = await T.js(`document.querySelector(".m-im-side").hidden && document.getElementById("mirage-immersive").dataset.mode === "party"`).catch(() => false);
+      const ph = await Promise.all(P.map((p) => phoneState(p).then((x) => x.hidden, () => true)));
+      return s && !s.open && !s.lock && side && ph.every(Boolean);
+    }, 6000, "aufräumen").catch(() => {});
+    await wait(300);
+    [T, ...P].forEach((w) => (w.errors.length = 0));
+  };
+  const flaky = [];
+  const FRESH_RETRY = new Set(["playful", "playful-room"]);
+  for (const [name, run] of list) {
+    const t0 = Date.now();
+    let error = await attempt(name, run, "");
+    let first = "";
+    // ein zweiter Versuch: ein Fehler, der dann nicht wieder auftritt, war Wackeln (Zeit, Rechnerlast) – er wird
+    // gemeldet („flaky: passed on retry“), lässt den Lauf aber bestehen. Schlägt auch der zweite Versuch fehl, zählt
+    // der Fall als Fehler.
+    if (error && RETRY) {
+      first = error;
+      console.log(`  ${name}: erster Versuch fehlgeschlagen, zweiter Versuch …\n    ${first.split("\n")[0]}`);
+      // Fälle, die einmal pro Seite etwas laden (playful: Schriften), nur auf frisch geladenem großen Bild wiederholen;
+      // die Handys verbinden sich dann im nächsten Spiel mit Warteraum neu
+      if (FRESH_RETRY.has(name)) {
+        await openParty().catch((e) => console.log("    neu laden: " + e.message));
+        hash = "";
+      }
+      error = await attempt(name, run, "-try2");
+      if (!error) flaky.push(name);
     }
     const ms = Date.now() - t0;
-    report.push({ game: name, ok: !error, ms, error });
-    console.log(`${error ? "FEHLER" : "ok    "} ${name.padEnd(14)} ${(ms / 1000).toFixed(1).padStart(6)} s${error ? "\n    " + error : ""}`);
+    report.push({ game: name, ok: !error, ms, error, flaky: !!first && !error, first: first || undefined });
+    const tagged = first && !error ? "  [flaky: passed on retry]" : "";
+    console.log(`${error ? "FEHLER" : "ok    "} ${name.padEnd(14)} ${(ms / 1000).toFixed(1).padStart(6)} s${tagged}${error ? "\n    " + error : ""}`);
+    if (tagged && process.env.GITHUB_ACTIONS) console.log(`::warning title=flaky e2e case ${name}::passed on retry; first attempt: ${first.split("\n")[0].replace(/[\r\n%]/g, " ")}`);
   }
   clearTimeout(hard);
   const bad = report.filter((x) => !x.ok).length;
-  fs.writeFileSync(path.join(OUT, "report.json"), JSON.stringify({ report, brokers: brokers.map((b) => b.stats) }, null, 1));
-  console.log(`\n${report.length - bad} von ${report.length} bestanden` + (brokers.length ? ` · Relay: ${JSON.stringify(brokers.map((b) => b.stats))}` : ""));
+  fs.writeFileSync(path.join(OUT, "report.json"), JSON.stringify({ slow: SLOW, report, brokers: brokers.map((b) => b.stats) }, null, 1));
+  console.log(`\n${report.length - bad} von ${report.length} bestanden` + (flaky.length ? ` · flaky (passed on retry): ${flaky.join(", ")}` : "") + ` · Zeitlimits × ${SLOW}` + (brokers.length ? ` · Relay: ${JSON.stringify(brokers.map((b) => b.stats))}` : ""));
   srv.close();
   brokers.forEach((b) => b.close());
   app.exit(bad ? 1 : 0);

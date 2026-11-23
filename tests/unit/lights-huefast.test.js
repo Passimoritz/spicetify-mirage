@@ -13,7 +13,7 @@ const EventEmitter = require("events");
 const { createLights } = require("../../overlay/lights.js");
 const { createHueV2 } = require("../../overlay/hue-stream.js");
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clock = require("./lights-clock.js").install(), sleep = clock.sleep;
 const USER = "fastuser-0123456789abcdef", CKEY = "00112233445566778899AABBCCDDEEFF", APPID = "11111111-2222-4333-8444-555555555555";
 const AREA = "1a8d99cc-967b-44f2-9202-43f976c0fa6b";
 
@@ -125,8 +125,8 @@ async function party(lights, ms, extra = {}) {
     // 50 Bilder pro Sekunde (Toleranz für Zeitgeber), Format HueStream mit Bereichs-ID und zwei Kanälen
     const f = dt.frames, span = (f.at(-1).t - f[0].t) / 1000;
     const rate = (f.length - 1) / span;
-    // Soll 50/s; unter Last (CI, parallele Tests) kommen Zeitgeber zu spät, darum großzügig nach unten
-    assert.ok(rate > 25 && rate < 60, `Bildrate ${rate.toFixed(1)}/s`);
+    // Soll 50/s; mit der virtuellen Uhr (lights-clock.js) exakt, unabhängig von der Last auf dem Rechner
+    assert.ok(rate > 48 && rate < 52, `Bildrate ${rate.toFixed(1)}/s`);
     for (const { buf } of f) {
       assert.strictEqual(buf.subarray(0, 9).toString(), "HueStream");
       assert.strictEqual(buf.subarray(16, 52).toString(), AREA);
@@ -136,7 +136,7 @@ async function party(lights, ms, extra = {}) {
     const last = f.at(-1).buf;
     assert.notDeepStrictEqual(last.subarray(53, 59), last.subarray(60, 66));
     // Party vorbei: erst Stream zu und Streamen aus, dann REST-Wiederherstellen für alle gemerkten Lampen
-    await lights.stopAll();
+    await clock.wait(lights.stopAll());
     const stopAt = bridge.log.find((x) => x.what === "stop").t;
     assert.ok(f.closedAt <= stopAt, "DTLS erst nach dem Ausschalten geschlossen");
     const restores = bridge.log.filter((x) => x.what === "put" && x.body.transitiontime === 10);
@@ -168,7 +168,7 @@ async function party(lights, ms, extra = {}) {
     const ids = new Set(bridge.log.filter((x) => x.what === "put").map((x) => x.id));
     assert.ok(ids.has("1") || ids.has("2"), "REST übernimmt die Bereichslampen nicht");
     assert.ok(logs.some((l) => /hue fast: back to REST \(dtls timeout\)/.test(l)), logs.join("|"));
-    await lights.stopAll();
+    await clock.wait(lights.stopAll());
   }
 
   /* ---- C) Verbindung reißt mitten in der Party ab */
@@ -187,7 +187,7 @@ async function party(lights, ms, extra = {}) {
     assert.ok(bridge.log.some((x) => x.what === "stop"), "Streamen nicht ausgeschaltet");
     const after = bridge.log.filter((x) => x.what === "put" && x.t > bridge.log.find((y) => y.what === "stop").t);
     assert.ok(after.some((x) => x.id === "1" || x.id === "2"), "REST übernimmt nach dem Abbruch nicht");
-    await lights.stopAll();
+    await clock.wait(lights.stopAll());
   }
 
   /* ---- D) ohne Client-Schlüssel (vor dieser Version gekoppelt) oder ausgeschaltet: nie DTLS, REST wie immer */
@@ -199,8 +199,8 @@ async function party(lights, ms, extra = {}) {
     assert.strictEqual(dt.calls.length, 0);
     assert.ok(!bridge.log.some((x) => x.what === "start"));
     assert.ok(bridge.log.some((x) => x.what === "put" && (x.id === "1" || x.id === "2")));
-    assert.deepStrictEqual(await lights.hueAreas(), over.hueFast === false ? { areas: [{ id: AREA, name: "Party", n: 2 }] } : { error: "clientkey" });
-    await lights.stopAll();
+    assert.deepStrictEqual(await clock.wait(lights.hueAreas()), over.hueFast === false ? { areas: [{ id: AREA, name: "Party", n: 2 }] } : { error: "clientkey" });
+    await clock.wait(lights.stopAll());
   }
 
   /* ---- E) „Keine Blitze“: auch im Stream kein Weiß, und die Helligkeit springt nicht */
@@ -219,7 +219,7 @@ async function party(lights, ms, extra = {}) {
       if (prev !== null) assert.ok(Math.abs(m - prev) < 65535 * 0.12, "nf: Helligkeit springt");
       prev = m;
     }
-    await lights.stopAll();
+    await clock.wait(lights.stopAll());
   }
   bridge.srv.close();
 
@@ -239,19 +239,19 @@ async function party(lights, ms, extra = {}) {
     // erstes Mal: CN muss die Bridge-ID sein (Groß/klein egal), dann wird der Fingerabdruck gemerkt
     const pins = [];
     const v2 = createHueV2({ base: b, key: USER, bridgeId: "001788FFFE4A5B6C", onPin: (x) => pins.push(x) });
-    assert.strictEqual(await v2.appId(), APPID);
+    assert.strictEqual(await clock.wait(v2.appId()), APPID);
     assert.deepStrictEqual(pins, [fp]);
-    assert.strictEqual(await v2.appId(), APPID, "zweite Anfrage mit gemerktem Fingerabdruck");
+    assert.strictEqual(await clock.wait(v2.appId()), APPID, "zweite Anfrage mit gemerktem Fingerabdruck");
     assert.strictEqual(pins.length, 1);
     assert.deepStrictEqual(seen, [USER, USER]);
     // falsche Bridge-ID, falscher Fingerabdruck, gar nichts: der Schlüssel geht nicht raus
     for (const o of [{ bridgeId: "001788fffe000000" }, { pin: fp.replace(/^../, "00") }, {}]) {
       const bad = createHueV2({ base: b, key: USER, timeout: 1500, ...o });
-      assert.strictEqual(await bad.appId(), "", JSON.stringify(o));
+      assert.strictEqual(await clock.wait(bad.appId()), "", JSON.stringify(o));
     }
     assert.strictEqual(seen.length, 2, "Schlüssel ging an eine nicht bestätigte Gegenstelle");
     // gemerkter Fingerabdruck passt
-    assert.strictEqual(await createHueV2({ base: b, key: USER, pin: fp }).appId(), APPID);
+    assert.strictEqual(await clock.wait(createHueV2({ base: b, key: USER, pin: fp }).appId()), APPID);
     srv.close();
   }
   console.log("lights-huefast: ok");

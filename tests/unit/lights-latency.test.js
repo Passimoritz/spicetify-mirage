@@ -5,7 +5,7 @@ const http = require("http");
 const dgram = require("dgram");
 const { createLights, createBeatView, latOf, latPatch, LAT_MAX } = require("../../overlay/lights.js");
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clock = require("./lights-clock.js").install(), sleep = clock.sleep;
 
 /* ---- 1) Werte je Gerät, Hue je Bridge, Grenzen */
 {
@@ -127,12 +127,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     puts.length = 0;
     const beats = [];
     let ended = false;
-    assert.strictEqual(await lights.calibrate("hue", (bright) => (bright === null ? (ended = true) : beats.push({ at: Date.now(), bright })), PERIOD), true);
+    assert.strictEqual(await clock.wait(lights.calibrate("hue", (bright) => (bright === null ? (ended = true) : beats.push({ at: Date.now(), bright })), PERIOD)), true);
     assert.strictEqual(lights.calibrating(), true);
     // Party-Daten vom Theme zählen währenddessen nicht
     lights.feed({ k: 1, a: 1, e: 1, d: 1 });
     await sleep(200 + 12.5 * PERIOD);
-    await lights.stopAll();
+    await clock.wait(lights.stopAll());
     assert.strictEqual(ended, true, "Ende des Einmessens wurde nicht gemeldet");
     assert.strictEqual(lights.calibrating(), false);
     assert.ok(beats.length >= 11, `zu wenige Schläge: ${beats.length}`);
@@ -164,14 +164,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   assert.strictEqual(wledFrames, 0, "WLED hat beim Einmessen von Hue Daten bekommen");
 
   // unbekanntes Gerät: kein Einmessen
-  assert.strictEqual(await lights.calibrate("toaster", () => {}), false);
+  assert.strictEqual(await clock.wait(lights.calibrate("toaster", () => {})), false);
   assert.strictEqual(lights.calibrating(), false);
   // WLED einmessen: jetzt bekommt der Streifen Bilder, abwechselnd hell und dunkel, alles weiß
   const frames = [];
   udp.on("message", (b) => frames.push(Buffer.from(b)));
-  await lights.calibrate("wled", () => {}, PERIOD);
+  await clock.wait(lights.calibrate("wled", () => {}, PERIOD));
   await sleep(200 + 4.5 * PERIOD);
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   const mids = new Set(frames.map((f) => (f[2 + 6] > 128 ? "hell" : "dunkel")));
   assert.deepStrictEqual([...mids].sort(), ["dunkel", "hell"]);
   assert.ok(frames.every((f) => f[2] === f[3] && f[3] === f[4]), "Einmessen sollte weiß blinken");

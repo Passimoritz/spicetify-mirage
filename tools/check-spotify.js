@@ -2,7 +2,12 @@
 // Liest nur Dateien. Nach einem Spotify-Update ausführen: npm run check:spotify
 //   node tools/check-spotify.js --xpui <Ordner>   ein frisch entpackter Client ohne Spicetify (nächtliche Prüfung auf GitHub):
 //                                                 dann nur die Prüfungen am Client, die am Spicetify-Wrapper entfallen
-const fs = require("fs"), path = require("path");
+//   node tools/check-spotify.js --port 9222       Port der Live-Prüfung (Spotify mit --remote-debugging-port gestartet)
+// Dazu ein Bericht ohne Einfluss auf das Ergebnis: welche Schlüssel des Produktzustands
+// (Spicetify.Platform.ProductStateAPI.getValues()) zum Filter für explizite Inhalte gehören könnten – im Client
+// (alle Schlüssel mit „explicit“, die neben dem Produktzustand stehen) und, wenn Spotify mit offenem Debug-Port
+// läuft, live aus getValues() selbst.
+const fs = require("fs"), path = require("path"), http = require("http");
 
 const arg = (name) => {
   const i = process.argv.indexOf("--" + name);
@@ -74,4 +79,83 @@ for (const [label, test] of CHECKS) {
   console.log(`${pass ? "ok    " : "ANDERS"} ${name}`);
 }
 console.log(bad ? `\n${bad} Abweichung(en): tests/e2e/fake-spotify.js und die Spiele prüfen.` : "\nDer Nachbau passt zu dieser Version.");
-process.exit(bad ? 1 : 0);
+
+/* ---- Filter für explizite Inhalte: Schlüssel im Produktzustand (nur Bericht, ändert das Ergebnis nicht) */
+// Im Client: Zeichenketten mit „explicit“, die wie ein Schlüssel aussehen (keine Übersetzungs-Schlüssel mit Punkt)
+// und neben dem Produktzustand stehen (productState, ProductState, getValues, „static identifier=“ der Einstellungen)
+const PS_NEAR = /productState|ProductState|product_state|getValues|static identifier=/;
+function explicitInClient() {
+  const keys = new Map();
+  for (const f of files.filter((x) => x.endsWith(".js"))) {
+    const text = read(f);
+    for (const m of text.matchAll(/["']([a-z0-9_-]*explicit[a-z0-9_-]*)["']/gi)) {
+      const k = m[1];
+      if (k.toLowerCase() === "explicit") continue;
+      const near = PS_NEAR.test(text.slice(Math.max(0, m.index - 200), m.index + 200));
+      const e = keys.get(k) || { n: 0, near: false };
+      keys.set(k, { n: e.n + 1, near: e.near || near });
+    }
+  }
+  return keys;
+}
+// Live: Spotify mit --remote-debugging-port, getValues() über das DevTools-Protokoll (nur lesen)
+function getJson(url, ms) {
+  return new Promise((ok) => {
+    const req = http.get(url, { timeout: ms }, (res) => {
+      let s = "";
+      res.on("data", (d) => (s += d));
+      res.on("end", () => {
+        try {
+          ok(JSON.parse(s));
+        } catch {
+          ok(null);
+        }
+      });
+    });
+    req.on("timeout", () => req.destroy());
+    req.on("error", () => ok(null));
+  });
+}
+async function explicitLive(port) {
+  const pages = await getJson(`http://127.0.0.1:${port}/json`, 800);
+  const page = (pages || []).find((p) => p.type === "page" && /xpui/.test(p.url || "") && p.webSocketDebuggerUrl);
+  if (!page) return null;
+  const WS = globalThis.WebSocket || require("ws");
+  const ws = new WS(page.webSocketDebuggerUrl);
+  const expr = `(async () => {
+    const api = window.Spicetify?.Platform?.ProductStateAPI;
+    if (!api?.getValues) return { missing: true };
+    const v = (await api.getValues()) || {};
+    return { total: Object.keys(v).length, hits: Object.fromEntries(Object.entries(v).filter(([k]) => /explicit/i.test(k))) };
+  })()`;
+  return new Promise((ok) => {
+    const t = setTimeout(() => (ws.close(), ok({ error: "keine Antwort" })), 5000);
+    ws.onopen = () => ws.send(JSON.stringify({ id: 1, method: "Runtime.evaluate", params: { expression: expr, awaitPromise: true, returnByValue: true } }));
+    ws.onerror = () => (clearTimeout(t), ok({ error: "Verbindung fehlgeschlagen" }));
+    ws.onmessage = (ev) => {
+      const msg = JSON.parse(String(ev.data));
+      if (msg.id !== 1) return;
+      clearTimeout(t);
+      ws.close();
+      ok(msg.result?.exceptionDetails ? { error: msg.result.exceptionDetails.text } : msg.result?.result?.value || { error: "leer" });
+    };
+  });
+}
+(async () => {
+  console.log("\nFilter für explizite Inhalte (ProductStateAPI.getValues()) – nur Bericht:");
+  const found = [...explicitInClient()].sort((a, b) => b[1].near - a[1].near || a[0].localeCompare(b[0]));
+  const near = found.filter(([, e]) => e.near);
+  console.log(near.length ? `  im Client neben dem Produktzustand: ${near.map(([k]) => k).join(", ")}` : "  im Client: KEIN Schlüssel mit „explicit“ neben dem Produktzustand");
+  const other = found.filter(([, e]) => !e.near).map(([k]) => k);
+  if (other.length) console.log(`  weitere Kandidaten mit „explicit“: ${other.join(", ")}`);
+  if (arg("xpui")) return;
+  const port = Number(arg("port")) || 9222;
+  const live = await explicitLive(port);
+  if (!live) console.log(`  live: nicht geprüft (Spotify mit --remote-debugging-port=${port} starten)`);
+  else if (live.error) console.log(`  live: nicht geprüft (${live.error})`);
+  else if (live.missing) console.log("  live: Spicetify.Platform.ProductStateAPI.getValues fehlt");
+  else {
+    const hits = Object.entries(live.hits);
+    console.log(hits.length ? `  live in getValues() (${live.total} Schlüssel): ${hits.map(([k, v]) => `${k} = ${JSON.stringify(v)}`).join(", ")}` : `  live: getValues() (${live.total} Schlüssel) hat KEINEN Schlüssel mit „explicit“`);
+  }
+})().finally(() => process.exit(bad ? 1 : 0));

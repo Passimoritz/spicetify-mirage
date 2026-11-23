@@ -7,7 +7,7 @@ const dgram = require("dgram");
 const { createFlashCap, createPartyGuard, FLASH_GAP, CALM_GAP } = require("../../overlay/flashcap.js");
 const { createLights, toXy } = require("../../overlay/lights.js");
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clock = require("./lights-clock.js").install(), sleep = clock.sleep;
 let seed = 11;
 const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 // in jedem Fenster von 1 s höchstens max Zeitpunkte
@@ -166,7 +166,7 @@ function fakeHue(user) {
   await sleep(300);
   perSecond(hue.puts.map((p) => p.at / 1000), 3, "Hue ohne nf");
   assert.ok(hue.puts.length >= 2, "Hue hat nichts bekommen");
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
 
   // b) nf: Drop und harte Kicks – nie Weiß, langes Überblenden, WLED ohne Weiß-Anteil und ohne harte Sprünge
   hue.puts.length = 0;
@@ -191,7 +191,7 @@ function fakeHue(user) {
   // Helligkeit von Bild zu Bild: keine Sprünge (max. Kanal der mittleren LED)
   const mid = frames.map(({ b }) => Math.max(b[2 + 3 * 3], b[3 + 3 * 3], b[4 + 3 * 3]));
   for (let i = 1; i < mid.length; i++) assert.ok(Math.abs(mid[i] - mid[i - 1]) <= 40, `WLED springt: ${mid[i - 1]} → ${mid[i]}`);
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
 
   hue.srv.close();
   wledHttp.close();

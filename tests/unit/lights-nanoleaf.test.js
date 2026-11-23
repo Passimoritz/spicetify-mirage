@@ -7,7 +7,7 @@ const dgram = require("dgram");
 const { createLights } = require("../../overlay/lights.js");
 const { encodeFrame, parseLayout, parseSsdp, snapshot } = require("../../overlay/nanoleaf.js");
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clock = require("./lights-clock.js").install(), sleep = clock.sleep;
 const TOKEN = "AbCdEf0123456789AbCdEf0123456789";
 const PAL = [[255, 0, 0], [0, 255, 0], [0, 0, 255]];
 
@@ -98,17 +98,17 @@ function readFrame(b) {
   /* ---- 2) Koppeln */
   {
     const lights = createLights(() => ({}), () => {});
-    assert.deepStrictEqual(await lights.nanoleafPair("8.8.8.8"), { error: "ip" }, "nur Heimnetz");
-    assert.deepStrictEqual(await lights.nanoleafPair("nanoleaf.example.com"), { error: "ip" });
-    assert.deepStrictEqual(await lights.nanoleafPair(ip), { error: "button" }, "nicht im Kopplungsmodus → 403");
+    assert.deepStrictEqual(await clock.wait(lights.nanoleafPair("8.8.8.8")), { error: "ip" }, "nur Heimnetz");
+    assert.deepStrictEqual(await clock.wait(lights.nanoleafPair("nanoleaf.example.com")), { error: "ip" });
+    assert.deepStrictEqual(await clock.wait(lights.nanoleafPair(ip)), { error: "button" }, "nicht im Kopplungsmodus → 403");
     dev.pairing = true;
-    assert.deepStrictEqual(await lights.nanoleafPair(ip), { token: TOKEN });
+    assert.deepStrictEqual(await clock.wait(lights.nanoleafPair(ip)), { token: TOKEN });
     // niemand da
     const dead = http.createServer();
     await new Promise((r) => dead.listen(0, "127.0.0.1", r));
     const deadPort = dead.address().port;
     dead.close();
-    assert.deepStrictEqual(await lights.nanoleafPair(`127.0.0.1:${deadPort}`), { error: "unreachable" });
+    assert.deepStrictEqual(await clock.wait(lights.nanoleafPair(`127.0.0.1:${deadPort}`)), { error: "unreachable" });
   }
 
   /* ---- 3) Suche: mDNS (nachgebautes bonjour-service) und SSDP (Antwort von 127.0.0.1) */
@@ -136,7 +136,7 @@ function readFrame(b) {
       destroy() { log.push("destroy"); }
     } };
     const lights = createLights(() => ({}), () => {}, { bonjour, ssdp: { host: "127.0.0.1", port: ssdp.address().port } });
-    const list = await lights.nanoleafFind(250);
+    const list = await clock.wait(lights.nanoleafFind(250));
     assert.deepStrictEqual(list.sort((a, b) => a.ip.localeCompare(b.ip)), [{ ip: "192.168.1.62", name: "Panels" }, { ip: "192.168.1.63", name: "Canvas" }]);
     assert.deepStrictEqual(log, ["nanoleafapi", "stop", "destroy"]);
     assert.ok(asked.length >= 3 && asked.every((q) => /^M-SEARCH \* HTTP\/1\.1\r\n/.test(q) && /ST: nanoleaf/.test(q)));
@@ -197,7 +197,7 @@ function readFrame(b) {
   assert.ok(dev.gets > gets);
 
   /* ---- 7) Party vorbei: Effekt, Helligkeit und „aus“ zurück */
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   assert.strictEqual(dev.effect, "Northern Lights");
   assert.strictEqual(dev.state.brightness.value, 40);
   assert.strictEqual(dev.state.on.value, false);
@@ -216,7 +216,7 @@ function readFrame(b) {
   assert.ok(rest.length >= 3, "REST bekommt nichts");
   for (let i = 1; i < rest.length; i++) assert.ok(rest[i].at - rest[i - 1].at >= 480, "REST zu schnell");
   for (const r of rest) assert.ok(r.body.brightness.value <= 60);
-  await lights.stopAll();
+  await clock.wait(lights.stopAll());
   assert.deepStrictEqual([dev.state.hue.value, dev.state.sat.value, dev.state.brightness.value, dev.state.on.value], [200, 50, 70, true]);
 
   /* ---- 9) falscher Schlüssel / Adresse außerhalb des Heimnetzes: nichts wird gesendet */
@@ -228,8 +228,8 @@ function readFrame(b) {
   assert.strictEqual(dev.puts.length + dev.frames.length, 0);
   cfg.nanoleafIp = "8.8.8.8";
   cfg.nanoleafToken = TOKEN;
-  assert.deepStrictEqual(await lights.test("nanoleaf"), { error: "setup" });
-  await lights.stopAll();
+  assert.deepStrictEqual(await clock.wait(lights.test("nanoleaf")), { error: "setup" });
+  await clock.wait(lights.stopAll());
 
   dev.http.close();
   dev.udp.close();

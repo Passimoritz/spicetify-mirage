@@ -7,8 +7,12 @@ const MAX = 500, DAY = 864e5;
 // (vielleicht hat Spotify bis dahin einen eigenen), einfacher Text und „Instrumental“ sind oft nur ein
 // Notbehelf – nach zwei Wochen wird neu gesucht. „Kein Liedtext“ ({ none: true }) gilt eine Woche: so fragt nicht
 // jedes Abspielen wieder alle Quellen ab (neu suchen geht jederzeit von Hand, researchLyrics in lyrics.js).
-const KEEP_OWN = 180 * DAY, KEEP_SYNCED = 30 * DAY, KEEP_PLAIN = 14 * DAY, KEEP_NONE = 7 * DAY;
-const keepOf = (v) => (v.none ? KEEP_NONE : !v.synced ? KEEP_PLAIN : v.source === "spotify" ? KEEP_OWN : KEEP_SYNCED);
+// Das Urteil der Abstimmung über Spotifys zeitgenauen Text ({ vote: true, keep }, Schlüssel voteKey) gilt
+// ebenfalls eine Woche: so lange fragt ein neuer Ladevorgang desselben Songs die Sammlungen nicht noch einmal.
+const KEEP_OWN = 180 * DAY, KEEP_SYNCED = 30 * DAY, KEEP_PLAIN = 14 * DAY, KEEP_NONE = 7 * DAY, KEEP_VOTE = 7 * DAY;
+const keepOf = (v) => (v.vote ? KEEP_VOTE : v.none ? KEEP_NONE : !v.synced ? KEEP_PLAIN : v.source === "spotify" ? KEEP_OWN : KEEP_SYNCED);
+// je Song EIN Urteil – unabhängig von Karaoke, gewählter Fassung und Ablehnungen
+const voteKey = (uri) => "vote|" + uri;
 const isFresh = (e, now) => !!e?.v && now - e.at0 < keepOf(e.v);
 // keys = alle Schlüssel, ältester Zugriff zuerst → die, die über der Grenze liegen
 const surplus = (keys, max = MAX) => keys.slice(0, Math.max(0, keys.length - max));
@@ -67,4 +71,4 @@ function createLyricStore(idb, { now = Date.now, max = MAX } = {}) {
   return { get, put, drop, prune };
 }
 
-export { createLyricStore, isFresh, surplus, MAX, KEEP_NONE };
+export { createLyricStore, isFresh, surplus, voteKey, MAX, KEEP_NONE, KEEP_VOTE };

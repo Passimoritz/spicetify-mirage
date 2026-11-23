@@ -3,13 +3,17 @@
 // ohne Fenster: die Quellen kommen als Funktionen herein – darum einzeln testbar (tests/unit/lyricflow.test.js).
 //
 // Grundsätze: ALLE Quellen starten gleichzeitig (Spotify und die Sammlungen). Spotify hat Vorrang, wenn es
-// innerhalb von `grace` ms (1,5 s) antwortet – so lange wartet die Anzeige auf Spotify. Danach erscheint das
+// innerhalb von `grace` ms (1,5 s) antwortet – so lange wartet die Anzeige auf Spotify. Mit `lazy` (lyrics.js)
+// warten die Sammlungen kurz (`head`, 0,6 s) auf Spotify: hat Spotify einen zeitgenauen Text, fragt Mirage die
+// Sammlungen gar nicht erst – die Abstimmung läuft dann EINMAL je Song in einer ruhigen Minute im Hintergrund
+// (`idle`), und ihr Urteil (`verdict`, `onVerdict`) merkt sich lyrics.js eine Woche. Danach erscheint das
 // erste brauchbare Ergebnis sofort; später kommt nur noch etwas, wenn es eine Stufe besser ist (Text →
 // zeitgenau → Wort für Wort). Gleich gute Ergebnisse tauschen nie (das würde flackern) – außer die Abstimmung
 // (lyricvote.js) zeigt, dass das Gezeigte ein Ausreißer gegen eine klare Mehrheit ist. Spätestens nach `cap` ms
 // (6 s) steht das Ergebnis fest; „kein Liedtext“ dauert damit nicht mehr 14–21 s.
-import { tierOf, sameLyrics } from "./lyricmatch.js";
+import { tierOf, sameLyrics, rankLyrics, baseTitle, fold, cleanCredits, instrumentalText } from "./lyricmatch.js";
 import { judgeLyrics, votable } from "./lyricvote.js";
+import { parseLrc } from "./lyricparse.js";
 
 // Quelle hängt oder die Anfrage ist überholt (Song übersprungen)? Dann null statt ewig warten
 function within(p, ms, signal) {
@@ -38,7 +42,14 @@ const idOf = (x) => x?.lrcId ?? x?.neId ?? x?.kgId ?? null;
 //   words: [(own) => Ergebnis] Quellen mit Wortzeiten für Spotifys eigenen Text · last: [() => Ergebnis] nur
 //   einfacher Text, nur wenn sonst nichts kam · instrumental: der Titel sagt schon „Instrumental“ ·
 //   emit(lyr, force): jedes neue, bessere Ergebnis (force: nicht besser, aber per Abstimmung ersetzt) ·
-//   grace: so lange hat Spotify Vorrang · cap: Obergrenze für alles (`wait` gilt als alter Name dafür)
+//   grace: so lange hat Spotify Vorrang · cap: Obergrenze für alles (`wait` gilt als alter Name dafür) ·
+//   lazy: Sammlungen erst fragen, wenn Spotify keinen zeitgenauen Text hat (oder nach `head` ms noch schweigt) ·
+//   verdict: gemerktes Urteil der Abstimmung (true = Spotifys Text bleibt, false = wurde ersetzt, sonst unbekannt;
+//   auch als Promise – die Anzeige wartet nicht darauf) ·
+//   idle(fn): führt die Abstimmung im Hintergrund aus (ohne: gleich danach) · onVerdict(keep, best): ihr Urteil
+//   (keep = Spotifys Text bleibt; sonst ist best das neue Ergebnis, schon per emit gemeldet)
+// Abstimmung im Hintergrund: die Sammlungen nacheinander; sobald das Urteil feststeht, wird nicht weiter gefragt
+// (jede weitere Sammlung bringt höchstens EINE Fassung – nur die erste darf `alts` mitbringen, wie LRCLIB).
 // Jedes gemeldete Ergebnis trägt `diag` – dasselbe Objekt für den ganzen Lauf, es wird beim Weiterlaufen ergänzt:
 //   { source, id, candidates, cluster, spotifyOverruled, shifted, auto }
 //   source/id = gezeigte Quelle und ihr Eintrag (lrcId/neId/kgId, sonst null) · candidates = zeitgenaue
@@ -105,11 +116,32 @@ async function runLyrics(o) {
     if (o.online && !own && !signal?.aborted) consider({ lang: "", source: "title", synced: false, instrumental: true, lines: [] }, 1);
     return signal?.aborted ? null : best;
   }
-  // alle Sammlungen sofort los – gezeigt wird ihr Ergebnis erst nach Spotifys Vorrangzeit
-  const srcP = (o.sources || []).map((src) => within(src, cap, signal));
-  await until(ownP, grace);
-  if (signal?.aborted) return null;
+  // die Sammlungen (höchstens einmal) losschicken – gezeigt wird ihr Ergebnis erst nach Spotifys Vorrangzeit
+  // Ergebnisse der Sammlungen zählen erst ab Spotifys Vorrangzeit (live); eine spät gestartete Sammlung hängt sich dann
+  // gleich an
+  let srcP = null, live = false;
   const pend = [];
+  const hook = () => srcP.forEach((p, i) => pend.push(p.then((r) => consider(r, 1 + i))));
+  const start = () => {
+    if (srcP || signal?.aborted) return;
+    srcP = (o.sources || []).map((src) => within(src, left(), signal));
+    if (live) hook();
+  };
+  // gemerktes Urteil: darf ein Promise sein (Speicher) – die Anzeige wartet nie darauf. Spotifys Text wurde schon
+  // einmal überstimmt (false): dann gleich alle wie früher
+  let verdictV = typeof o.verdict?.then === "function" ? undefined : o.verdict;
+  Promise.resolve(o.verdict).then((v) => {
+    verdictV = v;
+    if (v === false && o.lazy) start();
+  }, () => {});
+  const lazy = !!o.lazy && verdictV !== false;
+  if (!lazy) start();
+  else {
+    await until(ownP, Math.min(o.head ?? 600, grace));
+    if (!(ownKnown && ownR?.synced)) start();
+  }
+  await until(ownP, grace - (Date.now() - t0));
+  if (signal?.aborted) return null;
   if (ownKnown) {
     ownPrio = !!ownR;
     consider(ownR, 0);
@@ -119,19 +151,111 @@ async function runLyrics(o) {
     }
   } else {
     // Spotify zu langsam: kein Vorrang mehr, es zählt wie jede andere Quelle
+    start();
     pend.push(ownP.then((r) => consider(r, 0)));
   }
-  srcP.forEach((p, i) => pend.push(p.then((r) => consider(r, 1 + i))));
-  const all = Promise.all(pend);
+  live = true;
+  if (srcP) hook();
+  // alles bisher Gestartete (auch, was sich noch anhängt)
+  const all = async () => {
+    for (let n = -1; n !== pend.length; ) {
+      n = pend.length;
+      await Promise.all(pend);
+    }
+  };
   // einfacher Text zuletzt und nur, wenn bis dahin gar nichts da ist – spätestens zur Hälfte der Zeit fragen
-  await until(all, left() / 2);
+  await until(all(), left() / 2);
   for (const src of o.last || []) {
     if (best || signal?.aborted || left() <= 0) break;
     const r = await within(src, left(), signal);
     if (!best) consider(r, 90);
   }
-  await until(all, left());
-  return signal?.aborted ? null : best;
+  await until(all(), left());
+  if (signal?.aborted) return null;
+  // Urteil über Spotifys zeitgenauen Text: gleich (die Sammlungen liefen mit) oder später im Hintergrund
+  // (überstimmt = die Abstimmung hat Spotifys Zeiten verworfen; Wortzeiten zum selben Text mit Karaoke zählen nicht dagegen)
+  const verdict = () => o.onVerdict?.(!diag.spotifyOverruled, best);
+  if (ownR?.synced && ownPrio) {
+    if (srcP) verdict();
+    else if (verdictV !== true && votable(ownR)) (o.idle || ((fn) => setTimeout(fn, 0)))(() => recheck(verdict));
+  }
+  return best;
+
+  // Abstimmung im Hintergrund: eine Sammlung nach der anderen, bis keine weitere das Urteil mehr kippen kann
+  async function recheck(done) {
+    const list = o.sources || [];
+    for (let i = 0; i < list.length; i++) {
+      if (signal?.aborted) return;
+      const r = await within(list[i], cap, signal);
+      if (signal?.aborted) return;
+      consider(r, 1 + i);
+      if (diag.spotifyOverruled) break;
+      // Vorsprung der Gruppe um Spotify (cluster) vor allen anderen Fassungen größer als die noch offenen Quellen
+      const mine = diag.cluster, rest = diag.candidates - mine;
+      if (mine - rest > list.length - 1 - i) break;
+    }
+    if (!signal?.aborted) done();
+  }
 }
 
-export { runLyrics, within };
+/* ---- LRCLIB: eine Anfrage je Song */
+// Früher zwei gleichzeitig (genauer Treffer „get“ und Suche „search“). Die Suche liefert den genauen Treffer fast
+// immer mit – er wird hier selbst herausgesucht (wie bei LRCLIB: Titel, Künstler, Album, Länge ±2 s). Nur wenn die
+// Suche scheitert oder nichts Brauchbares bringt, folgt der genaue Abruf (LRCLIB sucht dabei auch außerhalb der
+// eigenen Sammlung). ask(pfad) → Antwort (JSON) oder null; bad = abgelehnte LRCLIB-Einträge.
+const lrcUsable = (x) => !!x && !!(x.syncedLyrics || x.plainLyrics || x.instrumental);
+const lrcCand = (x) => ({ id: x.id, title: x.trackName || x.name || "", artist: x.artistName || "", album: x.albumName || "", sec: Math.round(x.duration || 0), synced: !!x.syncedLyrics, hit: x });
+const lrcQuery = (o) => Object.entries(o).filter(([, v]) => v).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+// der Eintrag, den LRCLIBs „get“ geliefert hätte (zeitgenau zuerst, dann die nächste Länge)
+function lrcExact(meta, title, list) {
+  const same = (a, b) => fold(a) === fold(b);
+  const gap = (x) => Math.abs((x.duration || 0) - meta.sec);
+  const fit = list.filter((x) => same(x.trackName || x.name, title) && same(x.artistName, meta.artist) && (!meta.album || same(x.albumName, meta.album)) && gap(x) <= 2);
+  fit.sort((a, b) => !!b.syncedLyrics - !!a.syncedLyrics || gap(a) - gap(b));
+  return fit[0] || null;
+}
+async function askLrclib(meta, ask, bad = [], signal) {
+  if (!meta?.title || !meta.artist) return null;
+  const title = baseTitle(meta.title) || meta.title;
+  const list = await ask("search?" + lrcQuery({ track_name: title, artist_name: meta.artist }));
+  if (signal?.aborted) return null;
+  const found = (Array.isArray(list) ? list : []).filter(lrcUsable);
+  let hit = meta.sec ? lrcExact(meta, title, found) : null;
+  if (!found.length && meta.sec) {
+    hit = await ask("get?" + lrcQuery({ track_name: title, artist_name: meta.artist, album_name: meta.album, duration: meta.sec }));
+    if (signal?.aborted) return null;
+  }
+  // bewertet von lyricmatch.js: passende Länge und Fassung zuerst; ein Live-Song bekommt die Zeiten der Studiofassung nicht
+  const all = rankLyrics(meta, [hit, ...found.filter((x) => x !== hit)].filter(lrcUsable).map(lrcCand), bad);
+  let ranked = rankLyrics(meta, lrcUsable(hit) ? [lrcCand(hit)] : [], bad);
+  // der genaue Treffer gilt, wenn er passt und brauchbare Zeiten hat – sonst die ganze Liste
+  if (!ranked[0] || ranked[0].plainOnly || !(ranked[0].synced || hit?.instrumental)) ranked = all;
+  for (const c of ranked) {
+    const got = fromHit(c.hit, c.plainOnly, meta);
+    if (!got) continue;
+    // weitere zeitgenaue Fassungen zum Abstimmen (höchstens 8; runLyrics nimmt sie nicht ins Ergebnis)
+    if (got.synced) {
+      const alts = all.filter((x) => x.synced && !x.plainOnly && x.id !== got.lrcId).slice(0, 8).map((x) => fromHit(x.hit, false, meta)).filter((x) => x?.synced);
+      if (alts.length) got.alts = alts;
+    }
+    return got;
+  }
+  return null;
+}
+// plainOnly: der Text passt, die Zeiten nicht (andere Fassung, andere Länge) → als einfacher Text zeigen
+function fromHit(hit, plainOnly, meta) {
+  const base = { lang: "", source: "lrclib", lrcId: hit.id };
+  const instr = { ...base, synced: false, instrumental: true, lines: [] };
+  if (hit.instrumental) return instr;
+  const synced = cleanCredits(parseLrc(hit.syncedLyrics || ""), meta);
+  // „[Instrumental]“ statt eines Textes
+  if (instrumentalText(synced)) return instr;
+  if (synced.length && !plainOnly) return { ...base, synced: true, lines: synced };
+  if (synced.length && !hit.plainLyrics) return { ...base, synced: false, lines: synced.map((l) => ({ t: 0, text: l.text })) };
+  const plain = (hit.plainLyrics || "").split(/\r?\n/).map((x) => x.trim());
+  while (plain.length && !plain[plain.length - 1]) plain.pop();
+  if (instrumentalText(plain.map((text) => ({ text })))) return instr;
+  return plain.length ? { ...base, synced: false, lines: plain.map((text) => ({ t: 0, text: text || "♪" })) } : null;
+}
+
+export { runLyrics, within, askLrclib, fromHit, lrcUsable, lrcCand, lrcQuery };
