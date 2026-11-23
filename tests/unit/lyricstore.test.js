@@ -1,7 +1,7 @@
 // node tests/unit/lyricstore.test.js
 const assert = require("assert");
 const { load } = require("./load.js");
-const { createLyricStore, isFresh, surplus } = load("lyricstore.js");
+const { createLyricStore, isFresh, surplus, voteKey } = load("lyricstore.js");
 
 // Winzige IndexedDB-Attrappe: nur was der Speicher benutzt (open, ein Store mit Index „at“, get/put/delete/getAllKeys)
 function fakeIdb() {
@@ -54,6 +54,10 @@ const DAY = 864e5;
   // „kein Liedtext“ gilt eine Woche
   assert.equal(isFresh({ v: { none: true, synced: false, lines: [] }, at0: 0 }, 6 * DAY), true);
   assert.equal(isFresh({ v: { none: true, synced: false, lines: [] }, at0: 0 }, 8 * DAY), false);
+  // Urteil der Abstimmung über Spotifys Text: eine Woche, je Song ein Schlüssel
+  assert.equal(isFresh({ v: { vote: true, keep: true }, at0: 0 }, 6 * DAY), true);
+  assert.equal(isFresh({ v: { vote: true, keep: false }, at0: 0 }, 8 * DAY), false);
+  assert.equal(voteKey("spotify:track:x"), "vote|spotify:track:x");
   assert.deepEqual(surplus(["a", "b", "c", "d"], 3), ["a"]);
   assert.deepEqual(surplus(["a"], 3), []);
 

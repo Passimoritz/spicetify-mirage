@@ -2,7 +2,7 @@
 // Ablauf der Liedtext-Suche mit erfundenen Quellen: was erscheint wann, was ersetzt was
 const assert = require("assert");
 const { load } = require("./load.js");
-const { runLyrics } = load("lyricflow.js");
+const { runLyrics, askLrclib } = load("lyricflow.js");
 const { version, versions, OK, EARLY } = require("./fixtures/dogdribble.js");
 
 // alle Zeiten zehnfach gestreckt: unter Last (CI, mehrere Tests parallel) reichen 20 gegen 60 ms nicht
@@ -187,6 +187,134 @@ const ES = ["Mira las estrellas", "Mira cómo brillan para ti", "Y todo lo que h
     const r2 = await runLyrics({ own: later(5, sp2), online: true, sources: [later(10, vs[0])] });
     assert.equal(r2.source, "spotify");
     assert.equal(r2.diag.cluster, 1);
+  }
+  // ---- Weniger Anfragen je Song (lazy, wie in lyrics.js)
+  // Anfragen je Quelle zählen; LRCLIB bringt die einigen Fassungen als `alts` mit
+  const counted = (n, fn) => (...a) => (n.c++, fn(...a));
+  const idleQueue = () => {
+    const q = [];
+    const idle = (fn) => q.push(fn);
+    idle.run = async () => {
+      while (q.length) await q.shift()();
+    };
+    idle.q = q;
+    return idle;
+  };
+  // 18. Spotify zeitgenau und rechtzeitig: KEINE Sammlung bis zum Ergebnis; die Abstimmung läuft danach EINMAL im
+  //     Hintergrund und hört auf, sobald die Mehrheit feststeht (LRCLIB allein reicht: 1 statt 3 Sammlungen)
+  {
+    const vs = versions(), sp = version("sp", OK, { source: "spotify" });
+    const lr = { c: 0 }, ne = { c: 0 }, kg = { c: 0 }, idle = idleQueue(), verdicts = [];
+    const r = await runLyrics({
+      own: later(5, sp), online: true, lazy: true, idle, onVerdict: (keep) => verdicts.push(keep),
+      sources: [counted(lr, later(5, { ...vs[0], alts: vs.slice(1, 4) })), counted(ne, later(5, null)), counted(kg, later(5, null))],
+    });
+    assert.equal(r.source, "spotify");
+    assert.equal(lr.c + ne.c + kg.c, 0, "keine Sammlung vor dem Ergebnis");
+    assert.equal(idle.q.length, 1, "eine Abstimmung im Hintergrund");
+    await idle.run();
+    assert.deepEqual([lr.c, ne.c, kg.c], [1, 0, 0], "nach LRCLIB steht die Mehrheit fest");
+    assert.deepEqual(verdicts, [true]);
+  }
+  // 19. Gemerktes Urteil „Spotify stimmt“: gar keine Sammlung, keine Abstimmung
+  {
+    const n = { c: 0 }, idle = idleQueue(), verdicts = [];
+    const r = await runLyrics({ own: later(5, synced("spotify")), online: true, lazy: true, verdict: true, idle, onVerdict: (k) => verdicts.push(k), sources: [counted(n, later(5, synced("lrclib"))), counted(n, later(5, null))] });
+    assert.equal(r.source, "spotify");
+    assert.equal(idle.q.length, 0);
+    assert.equal(n.c, 0);
+    assert.deepEqual(verdicts, []);
+  }
+  // 20. Dog Dribble im Hintergrund: Spotify 1,75 s zu früh → die Mehrheit ersetzt es nachträglich (force), das Urteil
+  //     „ersetzt“ kommt mit dem neuen Ergebnis
+  {
+    const vs = versions(), sp = version("sp", EARLY, { source: "spotify" }), seen = [], verdicts = [], idle = idleQueue();
+    const n = { c: 0 };
+    const r = await runLyrics({
+      own: later(5, sp), online: true, lazy: true, idle, emit: (v, force) => seen.push([v.source, !!force]), onVerdict: (keep, best) => verdicts.push([keep, best?.lrcId]),
+      sources: [counted(n, later(5, { ...vs[0], alts: vs.slice(1) })), counted(n, later(5, null))],
+    });
+    assert.equal(r.source, "spotify");
+    await idle.run();
+    assert.deepEqual(seen, [["spotify", false], ["lrclib", true]]);
+    assert.deepEqual(verdicts, [[false, 20150209]]);
+    assert.equal(n.c, 1, "nach dem Wechsel nicht weiter gefragt");
+  }
+  // 21. Nichts bei Spotify: alle Sammlungen je einmal, sobald Spotify „nichts“ sagt (nicht erst nach der Vorrangzeit);
+  //     keine Abstimmung im Hintergrund
+  {
+    const t0 = Date.now(), at = [], idle = idleQueue();
+    const src = (name, v) => () => (at.push([name, Date.now() - t0]), later(5, v)());
+    const r = await runLyrics({ own: later(10, null), online: true, lazy: true, idle, grace: 100 * K, sources: [src("lrclib", synced("lrclib")), src("netease", null), src("kugou", null)] });
+    assert.equal(r.source, "lrclib");
+    assert.deepEqual(at.map((x) => x[0]), ["lrclib", "netease", "kugou"]);
+    assert.ok(at.every((x) => x[1] < 60 * K), "gleich nach Spotifys Antwort gefragt: " + JSON.stringify(at));
+    assert.equal(idle.q.length, 0);
+  }
+  // 22. Spotify antwortet nicht innerhalb von head: die Sammlungen starten dann (wie früher, nur etwas später);
+  //     kommt Spotify doch noch zeitgenau in der Vorrangzeit, entscheidet die Abstimmung gleich (Urteil sofort)
+  {
+    const t0 = Date.now(), at = [], verdicts = [];
+    const r = await runLyrics({
+      own: later(60, synced("spotify")), online: true, lazy: true, head: 20 * K, grace: 100 * K, onVerdict: (k) => verdicts.push(k),
+      sources: [() => (at.push(Date.now() - t0), later(5, synced("lrclib"))())],
+    });
+    assert.equal(r.source, "spotify");
+    assert.ok(at[0] >= 15 * K && at[0] < 55 * K, "nach head gefragt: " + at[0]);
+    assert.deepEqual(verdicts, [true]);
+  }
+  // 23. Gemerktes Urteil „ersetzt“: wieder alle gleichzeitig ab Beginn (wie ohne lazy)
+  {
+    const t0 = Date.now(), at = [];
+    await runLyrics({ own: later(30, synced("spotify")), online: true, lazy: true, verdict: false, sources: [() => (at.push(Date.now() - t0), null)] });
+    assert.ok(at[0] < 15 * K, "sofort gefragt: " + at[0]);
+  }
+  // 24. Abgebrochen, bevor die Abstimmung im Hintergrund läuft: keine Anfrage, kein Urteil
+  {
+    const ctrl = new AbortController(), n = { c: 0 }, idle = idleQueue(), verdicts = [];
+    await runLyrics({ own: later(5, synced("spotify")), online: true, lazy: true, signal: ctrl.signal, idle, onVerdict: (k) => verdicts.push(k), sources: [counted(n, later(5, synced("lrclib")))] });
+    ctrl.abort();
+    await idle.run();
+    assert.equal(n.c, 0);
+    assert.deepEqual(verdicts, []);
+  }
+  // 25. Anfragen je Song, alle Quellen wie in lyrics.js (Spotify 1, LRCLIB früher 2 / jetzt 1, NetEase 2, Kugou 2):
+  //     Spotify zeitgenau, einig mit LRCLIB → vorher 7, jetzt 2 (erstes Mal), 1 mit gemerktem Urteil
+  {
+    const vs = versions(), sp = version("sp", OK, { source: "spotify" });
+    const run = async (opt) => {
+      const req = { n: 0 }, idle = idleQueue();
+      const cost = (k, v) => () => ((req.n += k), later(5, v)());
+      await runLyrics({ own: cost(1, sp), online: true, ...opt, idle, sources: [cost(opt.lazy ? 1 : 2, { ...vs[0], alts: vs.slice(1, 4) }), cost(2, null), cost(2, null)] });
+      await idle.run();
+      return req.n;
+    };
+    assert.equal(await run({}), 7, "früher: alle Quellen, LRCLIB doppelt");
+    assert.equal(await run({ lazy: true }), 2, "jetzt: Spotify und einmal LRCLIB");
+    assert.equal(await run({ lazy: true, verdict: true }), 1, "mit gemerktem Urteil: nur Spotify");
+  }
+  // 26. LRCLIB mit einer Anfrage: der genaue Treffer kommt aus der Suche; nur wenn die Suche nichts bringt, folgt „get“
+  {
+    const meta = { title: "Yellow", artist: "Coldplay", album: "Parachutes", sec: 269 };
+    const lrc = T.map((t, i) => `[00:${String(10 + i * 3).padStart(2, "0")}.00]${t}`).join("\n");
+    const entry = (id, extra) => ({ id, trackName: "Yellow", artistName: "Coldplay", albumName: "Parachutes", duration: 269, syncedLyrics: lrc, plainLyrics: T.join("\n"), ...extra });
+    const asks = [];
+    const ask = (list, got) => async (path) => (asks.push(path.split("?")[0]), path.startsWith("search") ? list : got);
+    // genauer Treffer (gleiches Album, Länge ±2 s) in der Suche: eine Anfrage, und er gewinnt vor anderen Fassungen
+    let r = await askLrclib(meta, ask([entry(1, { albumName: "Live", duration: 280 }), entry(2, { duration: 270 }), entry(3, { duration: 268 })]));
+    assert.deepEqual(asks.splice(0), ["search"]);
+    assert.equal(r.lrcId, 2);
+    assert.ok(r.alts.some((x) => x.lrcId === 3), "andere Fassungen zum Abstimmen");
+    // Suche leer oder gescheitert → genauer Abruf
+    r = await askLrclib(meta, ask([], entry(9)));
+    assert.deepEqual(asks.splice(0), ["search", "get"]);
+    assert.equal(r.lrcId, 9);
+    r = await askLrclib(meta, ask(null, null));
+    assert.deepEqual(asks.splice(0), ["search", "get"]);
+    assert.equal(r, null);
+    // abgelehnter Eintrag wird übergangen
+    r = await askLrclib(meta, ask([entry(2), entry(3, { duration: 271 })]), ["2"]);
+    assert.equal(r.lrcId, 3);
   }
   console.log("lyricflow: ok");
 })().catch((e) => {
