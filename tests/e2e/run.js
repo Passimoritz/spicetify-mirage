@@ -3258,16 +3258,21 @@ app.whenReady().then(async () => {
   };
   T = make("Big", 1280, 800, "e2e-theme");
   P = ["Alpha", "Beta", "Gamma"].map((n, i) => make(n, PHONE_W, PHONE_H, "e2e-p" + i));
-  await T.win.loadURL(base + "__theme");
+  // großes Bild laden und in die Party-Ansicht gehen – beim Start und vor dem zweiten Versuch eines Falls, der nur auf
+  // einer frischen Seite wiederholbar ist (FRESH_RETRY)
+  const openParty = async () => {
+    await T.win.loadURL(base + "__theme");
+    // statt fester Pausen: Theme geladen (Tastenkürzel greifen), Ebene offen, Party-Ansicht aktiv
+    await until(() => T.js(`document.readyState === "complete" && typeof __sp === "object" && !!document.body`), 6000, "Theme geladen");
+    await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+    await until(() => T.js(`!!document.querySelector('#mirage-immersive [data-mode="party"]') && document.getElementById("mirage-immersive").classList.contains("is-on")`), 4000, "Immersive geht auf");
+    await T.click('#mirage-immersive [data-mode="party"]');
+    await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "party" && !!document.querySelector("#mirage-immersive .m-im-gamebtn")`), 6000, "Party-Ansicht steht");
+    await wait(500);
+  };
   await Promise.all(P.map((ph) => ph.win.loadURL(base)));
+  await openParty();
   await measureSpeed();
-  // statt fester Pausen: Theme geladen (Tastenkürzel greifen), Ebene offen, Party-Ansicht aktiv
-  await until(() => T.js(`document.readyState === "complete" && typeof __sp === "object" && !!document.body`), 6000, "Theme geladen");
-  await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
-  await until(() => T.js(`!!document.querySelector('#mirage-immersive [data-mode="party"]') && document.getElementById("mirage-immersive").classList.contains("is-on")`), 4000, "Immersive geht auf");
-  await T.click('#mirage-immersive [data-mode="party"]');
-  await until(() => T.js(`document.getElementById("mirage-immersive").dataset.mode === "party" && !!document.querySelector("#mirage-immersive .m-im-gamebtn")`), 6000, "Party-Ansicht steht");
-  await wait(500);
 
   const report = [];
   let list = CASES.filter(([n]) => !ONLY.length || ONLY.includes(n));
@@ -3313,6 +3318,7 @@ app.whenReady().then(async () => {
     [T, ...P].forEach((w) => (w.errors.length = 0));
   };
   const flaky = [];
+  const FRESH_RETRY = new Set(["playful", "playful-room"]);
   for (const [name, run] of list) {
     const t0 = Date.now();
     let error = await attempt(name, run, "");
@@ -3323,6 +3329,12 @@ app.whenReady().then(async () => {
     if (error && RETRY) {
       first = error;
       console.log(`  ${name}: erster Versuch fehlgeschlagen, zweiter Versuch …\n    ${first.split("\n")[0]}`);
+      // Fälle, die einmal pro Seite etwas laden (playful: Schriften), nur auf frisch geladenem großen Bild wiederholen;
+      // die Handys verbinden sich dann im nächsten Spiel mit Warteraum neu
+      if (FRESH_RETRY.has(name)) {
+        await openParty().catch((e) => console.log("    neu laden: " + e.message));
+        hash = "";
+      }
       error = await attempt(name, run, "-try2");
       if (!error) flaky.push(name);
     }
