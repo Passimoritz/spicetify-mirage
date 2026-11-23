@@ -487,7 +487,7 @@ en|-|I'm so sick of this
 en|-|Feeling sick without you here
 en|praise/turnup|It's lit tonight in the club
 en|praise|This party is lit
-en|-|She lit a cigarette and walked away
+en|!praise|She lit a cigarette and walked away
 en|!praise|I lit the candles one by one
 en|praise|That track is dope, play it again
 en|praise|Dope beat, dope vibe
@@ -530,7 +530,7 @@ fr|praise|Cette soirée est de ouf
 fr|praise|Ce son est mortel
 fr|praise|C'est chaud, c'est chaud, ça bouge
 fr|fire|Il fait chaud dehors en été
-fr|sexy|T'es une bombe, bébé
+fr|sexy/beautiful|T'es une bombe, bébé
 fr|love|Je suis fou de toi
 fr|praise|C'est complètement dingue, la fête
 fr|praise|Ce morceau est une tuerie
@@ -568,3 +568,49 @@ tr|praise|Bu şarkı bomba gibi
 tr|praise|Harika bir gece
 tr|love|Sana deli gibi aşığım
 tr|praise|Çılgın bir gece bu
+# --- Waffen und Gewalt (nur Licht, nie Text) – und Redewendungen, die keine Gewalt meinen
+en|gun|Got a glock in my pocket
+en|gun/shoot|Pull the trigger, bullets flying
+en|machinegun|Tommy gun rattling through the night
+en|machinegun/shoot|Machine gun, rapid fire, take cover
+en|shoot|Shots fired on the block
+en|blade|Knife in the dark, cold steel blade
+en|axe|Swinging the axe through the door
+en|kill|Murder on the dancefloor
+en|kill|They wanna kill me, I'm still alive
+en|death|Six feet under, dead and gone
+en|grenade|Throw the grenade and run
+en|gangster|Gangsta life, mafia ties
+en|heist|It's a robbery, stick up, hands in the air
+en|!kill|We're killing it tonight
+en|!kill|Kill it on the dancefloor, baby
+en|shots|Give me a shot of tequila
+en|!shoot|Shoot your shot, don't be shy
+en|!shoot|We had a photo shoot in Paris
+en|!death|My phone is dead, can't call you back
+en|!death|I'm dead tired after the show
+en|love|I would die for you
+en|!kill|Dressed to kill, she owns the room
+en|!gun|She's a total knockout
+de|gun|Die Knarre liegt im Handschuhfach
+de|gun/shoot|Er drückt ab, Kugeln fliegen
+de|machinegun|Maschinengewehr und Kalaschnikow
+de|blade|Mit dem Messer in der Hand
+de|axe|Die Axt schlägt ins Holz
+de|kill|Ich will dich töten, sagt der Mörder
+de|death|Wir sterben alle irgendwann
+de|!death|Zum Sterben schön bist du
+de|!death|Mein Akku ist tot
+es|gun|Saca la pistola, carga la fusca
+es|shoot|Balacera en el barrio
+es|love|Me matas con esa mirada
+es|love|Me muero por ti
+fr|gun|Le flingue dans la boîte à gants
+fr|machinegun|Rafale de kalash dans la nuit
+fr|love|Tu me tues quand tu souris
+pt|longing|Vim matar a saudade
+pt|gun|Oitão na cintura
+it|!death|Bella da morire
+tr|gun|Silahı belinde taşıyor
+tr|blade|Bıçak cebinde
+pl|gun|Spluwa w kieszeni

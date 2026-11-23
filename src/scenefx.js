@@ -82,6 +82,9 @@ const VC = {
   spiral: [[200, 120, 255], [80, 220, 255]],
   kaleido: [[255, 90, 200], [90, 200, 255], [255, 210, 80]],
   flock: [[230, 235, 245], [255, 220, 200]],
+  muzzle: [[255, 200, 110], [255, 235, 180]],
+  tracer: [[255, 190, 90], [255, 120, 70]],
+  slash: [[235, 240, 255], [255, 210, 220]],
 };
 const CONFETTI = [[255, 80, 120], [80, 200, 255], [255, 210, 70], [120, 255, 150], [200, 120, 255]];
 const RAINBOW = [[255, 60, 60], [255, 150, 40], [255, 230, 60], [60, 220, 90], [60, 140, 255], [160, 80, 255]];
@@ -955,6 +958,80 @@ function createSceneFx(glowSprite, flashCap) {
       }
       ctx.stroke();
     },
+  };
+
+  // Waffen (stilisiert, nie blutig): Mündungsfeuer an wechselnden Stellen der Bühne, dazu Hülsen, die golden
+  // glänzend fallen. Hell aufblitzen darf ein Schuss nur mit Blitzen an und durch die Blitz-Schranke (höchstens 3/s);
+  // sonst – und immer mit „Keine Blitze“ – ein kurzes, schwaches Glimmen. „rapid“: eine Salve (Maschinengewehr).
+  L.muzzle = function muzzle(ctx, c, a, age, st, nf) {
+    const col = colOf(c, "muzzle", st.pal), rapid = c.from === "rapid", n = rapid ? 9 : 3, gap = rapid ? 0.14 : 0.38;
+    for (let i = 0; i < n; i++) {
+      const d = age - i * gap;
+      if (d < 0 || d > 0.9) continue;
+      const side = (i + (c.v || 0)) % 2 ? 1 : -1, x = vw * (0.5 + side * (0.18 + 0.22 * hash(i, c.seq))), y = vh * (0.55 + 0.25 * hash(i, c.seq + 1)), key = c.seq * 16 + i;
+      if (!flashes.has(key)) {
+        if (flashes.size > 32) flashes.delete(flashes.keys().next().value);
+        flashes.set(key, !c.soft && !nf && !!st.flash && flashCap.take(st.t));
+      }
+      const hard = flashes.get(key);
+      if (hard) {
+        const p = Math.exp(-d * 16);
+        glow(ctx, [255, 245, 220], x, y, 70 * S, a * 0.85 * p);
+        stroke(ctx, col, a * 0.8 * p, 2 * S);
+        ctx.beginPath();
+        for (let k = 0; k < 6; k++) {
+          const an = (k / 6) * TAU + hash(k, key), r0 = 10 * S, r1 = (30 + 30 * hash(k, key + 1)) * S;
+          ctx.moveTo(x + Math.cos(an) * r0, y + Math.sin(an) * r0);
+          ctx.lineTo(x + Math.cos(an) * r1, y + Math.sin(an) * r1);
+        }
+        ctx.stroke();
+      } else glow(ctx, col, x, y, 34 * S, a * (nf ? 0.07 : 0.3) * Math.sin(Math.PI * clamp(d / 0.3, 0, 1)));
+      // Hülse: fällt glänzend zur Seite
+      glow(ctx, [255, 215, 120], x - side * d * 90 * S, y - 40 * S * d + 260 * S * d * d, 3.5 * S, a * (nf ? 0.08 : 0.6) * (1 - d / 0.9) * Math.max(0, Math.sin(d * 30)));
+    }
+  };
+  // Leuchtspuren: schnelle Striche quer über die Bühne, am Ende Querschläger-Funken
+  L.tracer = function tracer(ctx, c, a, age, st, nf) {
+    const col = colOf(c, "tracer", st.pal), n = nOf(5, st);
+    for (let i = 0; i < n; i++) {
+      const q = (age - i * 0.18) / 0.3;
+      if (q < 0 || q > 2) continue;
+      const dir = (i + (c.v || 0)) % 2 ? -1 : 1, y0 = vh * (0.25 + 0.45 * hash(i, c.seq)), y1 = y0 + (hash(i, c.seq + 2) - 0.5) * vh * 0.2;
+      const x0 = dir > 0 ? -vw * 0.05 : vw * 1.05, x1 = dir > 0 ? vw * 1.05 : -vw * 0.05;
+      if (q <= 1) {
+        const hx = x0 + (x1 - x0) * q, hy = y0 + (y1 - y0) * q, tl = 0.15;
+        stroke(ctx, col, a * (nf ? 0.08 : 0.75), 2.2 * S);
+        ctx.beginPath();
+        ctx.moveTo(hx, hy);
+        ctx.lineTo(hx - (x1 - x0) * tl, hy - (y1 - y0) * tl);
+        ctx.stroke();
+        glow(ctx, col, hx, hy, 8 * S, a * (nf ? 0.08 : 0.7));
+      } else {
+        // Querschläger: ein paar Funken am Rand
+        const d = q - 1, ex = dir > 0 ? vw * 0.98 : vw * 0.02;
+        for (let k = 0; k < 4; k++) glow(ctx, [255, 230, 170], ex - dir * d * (20 + 40 * hash(k, i)) * S, y1 + (hash(k, i + 3) - 0.5) * 60 * S * d, 3 * S, a * (nf ? 0.08 : 0.6) * (1 - d));
+      }
+    }
+  };
+  // Klingen-Hieb: ein heller Bogen fährt schräg über die Bühne und verglimmt („heavy“: Axt – zwei Hiebe, breiter)
+  L.slash = function slash(ctx, c, a, age, st, nf) {
+    const col = colOf(c, "slash", st.pal), heavy = c.from === "heavy", n = heavy ? 2 : 1;
+    for (let j = 0; j < n; j++) {
+      const d = age - j * 0.3;
+      if (d < 0) continue;
+      const g = smooth(d / (nf ? 0.35 : 0.12)), fade = clamp(1 - (d - 0.15) / 0.8, 0, 1), dir = (j + (c.v || 0)) % 2 ? -1 : 1;
+      const x0 = vw * (0.5 - dir * 0.38), y0 = vh * (0.15 + 0.1 * j), x1 = vw * (0.5 + dir * 0.38), y1 = vh * (0.8 - 0.1 * j);
+      const mx = vw / 2 + dir * vw * 0.08, my = vh * 0.42, steps = 14, upto = Math.max(1, Math.round(steps * g));
+      for (const [lw, al] of [[heavy ? 16 : 10, 0.15], [heavy ? 5 : 3.5, 0.5], [1.4, 0.9]]) {
+        stroke(ctx, col, a * al * fade * (nf ? 0.5 : 1), lw * S);
+        ctx.beginPath();
+        for (let s = 0; s <= upto; s++) {
+          const u = s / steps, x = (1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * mx + u * u * x1, y = (1 - u) * (1 - u) * y0 + 2 * (1 - u) * u * my + u * u * y1;
+          s ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
   };
 
   /* ---- Lichtfinger: von (ox, oy) in Richtung an, Länge len, halbe Öffnung w (rad) */

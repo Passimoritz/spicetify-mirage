@@ -33,7 +33,10 @@ const CW = {
   journey: 0.8, morning: 0.8, wild: 0.85, fear: 0.82, sexy: 0.92,
   // neue Begriffe (lex-ext.json), die in vielen Liedern nebenbei stehen
   god: 0.62, soul: 0.62, beautiful: 0.62, friends: 0.68, family: 0.7, truth: 0.66, faith: 0.72, promise: 0.7, regret: 0.72, lies: 0.75,
-  fun: 0.72, danger: 0.78, work: 0.68, car: 0.78, phone: 0.56, lighter: 0.58, shopping: 0.58, screen: 0.72, stage: 0.8, crowd: 0.8, wish: 0.72, destiny: 0.78,
+  fun: 0.72, danger: 0.78, work: 0.68, car: 0.78, phone: 0.56, lighter: 0.55, shopping: 0.58, waiting: 0.55, school: 0.58, tired: 0.58, forget: 0.55, eyes: 0.55, voice: 0.58,
+  fall: 0.6, hair: 0.58, feet: 0.6, wall: 0.6, hide: 0.62, stranger: 0.62, reality: 0.62, success: 0.68, respect: 0.68, broke: 0.62, calm: 0.62,
+  gentle: 0.66, numb: 0.68, doubt: 0.66, nature: 0.66, stone: 0.62, dust: 0.62, ticket: 0.66, social: 0.66, message: 0.62, crash: 0.68,
+  knock: 0.66, buzz: 0.62, engine: 0.68, float: 0.66, book: 0.6, partner: 0.68, death: 0.7, kill: 0.78, shoot: 0.8, grow: 0.62, park: 0.62, screen: 0.72, stage: 0.8, crowd: 0.8, wish: 0.72, destiny: 0.78,
   infinity: 0.72, passion: 0.78, chill: 0.68, excited: 0.78, mystery: 0.75, escape: 0.72, praise: 0.9, vibes: 0.75, shatter: 0.78,
   echo: 0.75, rhythm: 0.75, tunnel: 0.78, goal: 0.72, race: 0.75, dice: 0.72,
 };
@@ -170,7 +173,8 @@ const NONEG = new Set(["hey", "yeah", "woo", "ole", "everybody", "comeon", "onem
 // Verneint → Gegenstimmung (sonst nichts)
 const OPP = { love: "heartbreak", happy: "sad", lonely: "together", fear: "strong" };
 // Derbe Begriffe: nie als Text, nur Licht und Stimmung
-const EXPLICIT = new Set(["sexy", "insult", "curse", "drugs"]);
+// … und Gewalt (Waffen, Töten, Krieg): ebenso nie als Text
+const EXPLICIT = new Set(["sexy", "insult", "curse", "drugs", "gun", "machinegun", "shoot", "blade", "axe", "kill", "death", "grenade", "battle", "gangster", "heist", "reaper", "war", "blood"]);
 // Begriffe, die in einem ruhigen/traurigen Song höchstens als Farbe kommen (Party, Rufe, Bewegung)
 const LOUDC = new Set([
   "party", "fireworks", "boom", "bass", "handsup", "hype", "jump", "dance", "crazy", "club", "turnup", "weekend", "dancefloor", "dj",
@@ -198,7 +202,24 @@ const SENSE = [
   ["en", /\bfeel(?:ing|in')? (?:so )?blue\b/, "blue", "sad", 0.05],
   ["en", /\bwhat the (?:hell|heck)\b/, "devil", "curse", 0],
   ["en", /\b(?:all the|every|any|some|by the|in|on|no|last|first|next|this) time\b/, "time", null, 0],
-  ["en", /\b(?:cold feet|cold shoulder)\b/, "cold", null, 0],
+  ["en", /\b(?:cold feet|cold shoulder)\b/, "*", null, 0],
+  ["en", /\bsick and tired\b/, "tired", null, 0],
+  // Waffen-Wörter, die gar keine Gewalt meinen
+  ["en", /\b(?:killing|killin'?|killed|kill|kills) (?:it|the game|this|that beat)\b/, "*", "praise", 0.05],
+  ["en", /\bkill(?:ing)? the (?:lights|music|engine|vibe)\b/, "kill", "blackout", 0],
+  ["en", /\b(?:shots? of|tequila shots?|vodka shots?|whiskey shots?|a shot (?:of|for)|take (?:a|another) shot|do (?:a|some) shots?)\b/, "*", "shots", 0.05],
+  ["en", /\bshoot(?:ing)? (?:your|my|his|her|our|their) shot\b|\bshoot for the (?:stars|moon|sky)\b|\b(?:photo ?shoot|video shoot|shooting (?:a|the) (?:video|movie|film))\b/, "shoot", null, 0],
+  ["en", /\b(?:big shot|shot caller|call(?:ing)? the shots)\b/, "*", "boss", 0],
+  ["en", /\b(?:phone|battery|batteries|cell) (?:is |was |'s |went )?dead\b|\bdead (?:tired|serious|end|ass|inside|silence|weight|beat)\b|\bi'?m dead\b|\bdeadline\b/, "death", null, 0],
+  ["en", /\b(?:i'?d|i would|i could|i'll|i will|i'm gonna) die for you\b|\bto die for\b|\bdying to (?:see|meet|kiss|hold|know)\b/, "death", "love", 0],
+  ["en", /\b(?:a|total|absolute) knockout\b|\bdressed to kill\b|\bdrop dead gorgeous\b/, "*", "beautiful", 0],
+  ["en", /\bbullet train\b/, "shoot", "train", 0],
+  ["de", /\b(?:zum sterben (?:schön|gern|verliebt))\b/, "death", "beautiful", 0],
+  ["de", /\b(?:akku|handy) (?:ist |war )?(?:tot|leer)\b|\btoter winkel\b|\btotlachen\b/, "death", null, 0],
+  ["es", /\b(?:me matas|me mata|me muero por (?:ti|vos|verte)|muero por (?:ti|vos)|me muero de amor)\b/, "*", "love", 0],
+  ["pt", /\bmatar a saudade\b|\bmorrer de saudade\b/, "*", "longing", 0.05],
+  ["fr", /\btu me tues\b|\bà mourir\b/, "*", "love", 0],
+  ["it", /\bda morire\b/, "*", null, 0],
   ["en", /\b(?:free (?:of charge|for|ride|shipping)|for free)\b/, "freedom", null, 0],
   ["en", /\b(?:fight for|fighting for) (?:you|love|us|this)\b/, "war", "strong", 0],
   ["en", /\b(?:killing it|kill it)\b/, "*", null, 0],

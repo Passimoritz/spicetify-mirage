@@ -133,6 +133,31 @@ for (const s of [
     FX[c] ||= { fx: fx || null, pri: +pri };
   }
 }
+// Noch mehr Begriffe (lex-ext2.json). Waffen und Gewalt: nie als Text oder Bild, nur Licht (wie derbe Wörter)
+for (const c of "gun machinegun shoot blade axe kill death grenade battle gangster heist reaper".split(" ")) FX[c] ||= { fx: null, pri: c === "machinegun" || c === "gun" ? 5 : 4, ex: true };
+for (const s of [
+  "helicopter::3 bicycle::2 vehicle:speed:3 cat::2 dog::2 bear::2 monkey::2 fox::2 rabbit::2 parrot::3 deer::2 dinosaur::3 frog::2 insect::2 bull::4 swan::3",
+  "drought:sun:3 downpour:rain:5 breeze::2 snowman:snow:4 darkclouds::3 eyes::1 fist::3 hair::1 skull:ghosts:3 feet::1 chills::3 voice::1 muscle::2",
+  "bittersweet::2 guilt::2 calm::2 despair::3 relief::2 curious::2 numb::2 doubt::2 grief::3 betrayal::3 gentle::2 melancholy::3 rage::4 hunger::2 thirst::2 tired::2",
+  "healing::2 fragile::2 loyalty::2 respect::2 partner::2 ex::3 grandparents::2 fastfood::2 chocolate::3 tea::2 milkshake::2 apple::2 lemon::2 peach::2 spicy:flames:3",
+  "juice::2 soda:bubbles:2 energydrink::3 cookie::2 drone::3 battery::2 social::2 message::2 vr::3 radar::3 loading::2 crypto::3 glowdark::4 synth::3 accordion:notes:3",
+  "flute:notes:3 harp:notes:3 banjo:notes:3 percussion::3 autotune::3 rhyme::2 lovesong:hearts:3 stone::2 mud::2 grow::2 nature::2 ashes::3 steam:smoke:3 fountain:bubbles:3",
+  "swamp::3 fireball:flames:5 firedancer:flames:5 park::2 martialarts::3 target::3 whistle::3 anniversary:hearts:4 feast::3 reunion::3 nationalday:fireworks:5",
+  "dayofthedead::5 pinata:confetti:5 bachelor:confetti:4 sleepover::3 bible::2 cross::2 baptism::3 priest::2 sacrifice::3 goddess::3 titan::4 myth:lightning:4 goblin::3 genie:magic:4",
+  "kraken::4 nonstop::2 countup::3 knock::3 buzz::2 beep::2 crash:boom:4 whoosh::3 roar::4 engine:speed:3 stranger::2 villain::3 school::2 makeup::2 maze::3 chess::2 cage::3",
+  "wall::2 dust::2 metropolis:city:3 stairs::2 noon:sun:2 umbrella:rain:4 cigarette:smoke:2 armor::3 ticket::3 broke::2 fairylights::4 vortex::4 portal::4 hunt::3 cooking::2",
+  "book::2 diary::2 headache::2 crossroads::2 nowhere::2 chaos::3 justice::2 reality::2 defeat::2 success:confetti:4 bikini:beach:3 fall::1 hide::2 melt::3 whisper::2 float::2 waiting::1 forget::2",
+]) {
+  for (const e of s.split(" ")) {
+    const [c, fx, pri] = e.split(":");
+    FX[c] ||= { fx: fx || null, pri: +pri };
+  }
+}
+// weitere Farb-Wörter: Schleier in ihrer Farbe
+Object.assign(FX, {
+  brown: { fx: "tint", col: [160, 100, 50], pri: 1 }, gray: { fx: "tint", col: [160, 165, 175], pri: 1 }, lime: { fx: "tint", col: [170, 255, 60], pri: 1 },
+  indigo: { fx: "tint", col: [80, 40, 220], pri: 1 }, magenta: { fx: "tint", col: [255, 30, 200], pri: 1 }, crimson: { fx: "tint", col: [200, 10, 50], pri: 1 },
+});
 // Farbe, in der das gesungene Wort aufleuchtet
 const GLOW = {
   flames: [255, 140, 40], hellfire: [255, 50, 30], rain: [120, 180, 255], storm: [170, 190, 255], lightning: [220, 230, 255], snow: [220, 240, 255],

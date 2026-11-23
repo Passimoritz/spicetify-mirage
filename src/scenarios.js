@@ -126,6 +126,11 @@ const FAM = {
   spiral: { cd: 12, dur: 5, lite: true, nv: 2 }, // hypnotische Spirale (langsam, ohne Flackern)
   kaleido: { cd: 12, dur: 5, lite: false, la: ["psy"], nv: 3 }, // Kaleidoskop
   flock: { cd: 10, dur: 5, lite: true, nv: 2 }, // Vogelschwarm zieht vorbei
+  // Waffen und Kampf (Rap, Rock, Metal) – stilisiert, nie blutig: Mündungsfeuer (hart nur durch die Blitz-Schranke,
+  // „rapid“: Salve), Leuchtspuren mit Querschläger-Funken, ein Klingen-Hieb quer über die Bühne („heavy“: Axt, doppelt)
+  muzzle: { cd: 8, dur: 1.6, lite: true, flash: true, nv: 2, loud: 0.3 },
+  tracer: { cd: 8, dur: 1.4, lite: true, nv: 2, loud: 0.3 },
+  slash: { cd: 8, dur: 1.1, lite: true, nv: 2 },
 };
 const FAMS = Object.keys(FAM);
 // Bilder, die scenefx.js zeichnet (alles nach „neon“)
@@ -271,7 +276,71 @@ const STAGE = {
   crystal: [["diamond"], ["kaleido"]],
   // Lob (f-words: „geil“, „sick“, „krass“, „brutal“, „de ouf“ … – wordsense.js deutet sie nach Zusammenhang)
   praise: [["clappulse"], ["guitarspark"], ["hands"]],
+
+  /* ---- noch mehr Begriffe (lex-ext2.json) */
+  // Waffen und Gewalt (nur Licht, nie Text; partyExplicit wie bei derben Wörtern) – stilisiert, kein Blut
+  gun: [["muzzle"], ["tracer"], ["mood", [140, 0, 15]]], machinegun: [["muzzle", null, "rapid"], ["tracer"]], shoot: [["muzzle"], ["tracer"]],
+  blade: [["slash"], ["mood", [150, 0, 20]]], axe: [["slash", null, "heavy"], ["crack", [230, 220, 230]]], kill: [["mood", [130, 0, 15]], ["slash"]],
+  death: [["mood", [30, 10, 30]], ["ghosts", [140, 140, 170]]], grenade: [["bassdrop"], ["co2"], ["shock"]], battle: [["tracer"], ["bassdrop"], ["mood", [170, 30, 20]]],
+  gangster: [["beacon"], ["tracer"]], heist: [["spothunt"], ["beacon"]], reaper: [["ghosts", [120, 120, 150]], ["mood", [20, 10, 30]]],
+  // Fahrzeuge, Tiere
+  helicopter: [["spothunt"], ["sweep"]], bicycle: [["headlights"], ["sweep"]], vehicle: [["headlights"]],
+  cat: [["fireflies", [200, 255, 150]], ["stars"]], dog: [["mood", [255, 190, 120]], ["jump"]], bear: [["mood", [180, 120, 70]], ["jungle"]], monkey: [["jungle"], ["jump"]],
+  fox: [["leaves", [230, 120, 40]], ["fireflies", [255, 150, 60]]], rabbit: [["leaves", [255, 200, 220]], ["jump"]], parrot: [["jungle"], ["rainbow"]], deer: [["fireflies"], ["jungle"]],
+  dinosaur: [["bassdrop"], ["jungle"]], frog: [["drops"], ["jungle"]], insect: [["fireflies"]], bull: [["firewall", [255, 40, 30]], ["bassdrop"]], swan: [["flock", [255, 255, 255]], ["drops"]],
+  // Wetter
+  drought: [["haze"], ["sun", [255, 150, 60]]], downpour: [["thunder"], ["drops"]], breeze: [["leaves", [180, 240, 180]], ["sweep"]], snowman: [["blizzard"], ["balloons", [230, 240, 255]]],
+  darkclouds: [["ghosts", [110, 115, 140], "clouds"], ["mood", [70, 80, 110]]],
+  // Körper
+  eyes: [["follow"], ["mood", [200, 200, 255]]], fist: [["bassdrop"], ["hands"]], hair: [["sway"], ["sweep"]], skull: [["ghosts", [200, 200, 210]], ["candles"]],
+  feet: [["clappulse"], ["jump"]], chills: [["ice"], ["ekg", [180, 220, 255]]], voice: [["follow"], ["ekg"]], muscle: [["follow"], ["bassdrop"]],
+  // Gefühle
+  bittersweet: [["mood", [200, 140, 170]], ["leaves", [230, 150, 120]]], guilt: [["mood", [110, 70, 90]], ["spothunt"]], calm: [["aurora"], ["mood", [150, 200, 230]]],
+  despair: [["mood", [40, 40, 90]], ["drops"]], relief: [["dawn"], ["mood", [180, 230, 200]]], curious: [["fireflies"], ["spothunt"]], numb: [["mood", [100, 100, 120]], ["ice"]],
+  doubt: [["mood", [120, 110, 150]], ["ghosts"]], grief: [["candles"], ["mood", [60, 60, 100]]], betrayal: [["crack"], ["mood", [150, 20, 40]]], gentle: [["fireflies"], ["mood", [255, 200, 190]]],
+  melancholy: [["drops"], ["mood", [90, 110, 170]]], rage: [["firewall", [255, 30, 20]], ["mood", [220, 10, 10]]], hunger: [["mood", [255, 140, 60]]], thirst: [["haze"], ["drops"]],
+  tired: [["mood", [60, 60, 110]], ["fireflies"]], healing: [["aurora"], ["rays"]], fragile: [["crack", [230, 230, 255]], ["mood", [200, 200, 230]]], loyalty: [["lighters"], ["hands"]],
+  respect: [["follow"], ["hands"]], partner: [["hearts"], ["mood", [255, 150, 170]]], ex: [["crack"], ["mood", [120, 90, 140]]], grandparents: [["candles"], ["mood", [255, 200, 150]]],
+  // Essen und Trinken
+  fastfood: [["neon"], ["balloons"]], chocolate: [["mood", [150, 90, 50]], ["hearts", [180, 100, 60]]], tea: [["ghosts", [235, 240, 230]], ["mood", [200, 220, 150]]],
+  milkshake: [["bubbles", [255, 200, 230]], ["balloons", [255, 200, 230]]], apple: [["balloons", [230, 40, 40]]], lemon: [["balloons", [255, 230, 60]], ["wash", [255, 240, 80], "top"]],
+  peach: [["balloons", [255, 170, 130]], ["hearts", [255, 170, 130]]], spicy: [["firewall", [255, 60, 20]], ["haze"]], juice: [["bubbles", [255, 170, 60]]],
+  soda: [["bubbles"], ["champspray", [200, 120, 60]]], energydrink: [["bassdrop"], ["guitarspark"]], cookie: [["balloons"], ["candles"]],
+  // Technik
+  drone: [["comet"], ["spothunt"]], battery: [["ekg", [80, 255, 120]], ["glitch"]], social: [["phones"], ["glitch"]], message: [["phones"], ["ekg"]], vr: [["lasergrid"], ["matrix"]],
+  radar: [["drops", [80, 255, 150]], ["clock"]], loading: [["clock"], ["ekg"]], crypto: [["matrix"], ["coins"]], glowdark: [["neon"], ["fireflies", [120, 255, 180]]],
+  // Instrumente und Musik
+  synth: [["lasergrid"], ["neon"]], accordion: [["follow"], ["streamers"]], flute: [["fireflies"], ["follow"]], harp: [["rays"], ["fireflies"]], banjo: [["dawn", null, "dusk"], ["clappulse"]],
+  percussion: [["clappulse"], ["bassdrop"]], autotune: [["glitch"], ["ekg"]], rhyme: [["micdrop"], ["follow"]], lovesong: [["candles"], ["hearts"]],
+  // Natur
+  stone: [["bassdrop"], ["crack", [200, 200, 190]]], mud: [["mood", [120, 90, 60]], ["drops", [150, 120, 90]]], grow: [["leaves", [120, 220, 120]], ["dawn"]], nature: [["jungle"], ["fireflies"]],
+  ashes: [["ghosts", [150, 150, 150]], ["fireflies", [255, 140, 60]]], steam: [["ghosts", [235, 240, 245]]], fountain: [["champspray", [200, 230, 255]], ["bubbles"]],
+  swamp: [["fireflies"], ["ghosts", [120, 160, 110]]], fireball: [["comet", [255, 120, 40]], ["firewall"]], firedancer: [["firewall"], ["follow"]], park: [["leaves", [120, 220, 120]], ["fireflies"]],
+  // Sport, Feste, Glaube, Mythen
+  martialarts: [["slash", [255, 240, 220]], ["follow"]], target: [["drops", [255, 60, 60]], ["follow"]], whistle: [["clappulse"], ["sweep"]],
+  anniversary: [["candles"], ["hearts"], ["fwring", null, "heart"]], feast: [["candles"], ["streamers"]], reunion: [["lighters"], ["hearts"]], nationalday: [["fwpeony"], ["streamers"]],
+  dayofthedead: [["candles", [255, 150, 40]], ["ghosts"], ["leaves", [255, 140, 30]]], pinata: [["cannon"], ["streamers"]], bachelor: [["discoball"], ["cannon"]], sleepover: [["fireflies"], ["balloons"]],
+  bible: [["rays"], ["candles"]], cross: [["rays"], ["candles"]], baptism: [["drops"], ["rays"]], priest: [["candles"], ["rays"]], sacrifice: [["firewall", [255, 80, 30]], ["mood", [150, 20, 20]]],
+  goddess: [["rays"], ["diamond"]], titan: [["bassdrop"], ["thunder"]], myth: [["thunder"], ["rays"]], goblin: [["fireflies", [150, 255, 120]], ["ghosts", null, "toxic"]], genie: [["kaleido"], ["fireflies"]],
+  kraken: [["bubbles"], ["ghosts", [80, 140, 160]]],
+  // Zahlen und Klänge
+  nonstop: [["clock"], ["lasergrid"]], countup: [["clappulse"]], knock: [["clappulse"], ["bassdrop"]], buzz: [["glitch"], ["fireflies", [255, 220, 80]]], beep: [["ekg"], ["glitch"]],
+  crash: [["crack"], ["bassdrop"]], whoosh: [["comet"], ["sweep"]], roar: [["bassdrop"], ["firewall"]], engine: [["headlights"], ["bassdrop"]],
+  // Leute, Dinge, Orte
+  stranger: [["ghosts"], ["spothunt"]], villain: [["beacon"], ["mood", [120, 0, 40]]], school: [["clock"]], makeup: [["diamond"], ["follow"]], maze: [["spiral"], ["lasergrid"]],
+  chess: [["follow"], ["clock"]], cage: [["spothunt"], ["beacon"]], wall: [["crack"], ["bassdrop"]], dust: [["ghosts", [220, 200, 170]], ["fireflies", [255, 230, 190]]],
+  metropolis: [["skyline"], ["headlights"]], stairs: [["rays"], ["launch"]], noon: [["sun", [255, 250, 220]], ["haze"]], umbrella: [["drops"], ["wash", C.rain, "top"]],
+  cigarette: [["ghosts", [200, 200, 210]], ["fireflies", [255, 120, 40]]], armor: [["diamond", [220, 230, 240]], ["follow"]], ticket: [["streamers"], ["searchlight"]],
+  broke: [["mood", [110, 110, 120]]], fairylights: [["fireflies", [255, 220, 150]], ["skyline", [255, 220, 150]]], vortex: [["spiral"], ["warp"]], portal: [["warp"], ["spiral"]],
+  hunt: [["spothunt"], ["jungle"]], cooking: [["firewall", [255, 150, 60], "low"], ["ghosts", [235, 235, 235]]], book: [["follow"], ["candles"]], diary: [["candles"], ["fireflies"]],
+  headache: [["ekg", [255, 120, 120]], ["spiral"]], crossroads: [["headlights"], ["searchlight"]], nowhere: [["haze"], ["stars"]], chaos: [["spiral"], ["glitch"], ["chaos"]],
+  justice: [["follow"], ["beacon"]], reality: [["glitch"], ["matrix"]], defeat: [["crack"], ["mood", [90, 80, 110]]], success: [["cannon"], ["coins"]], bikini: [["sun", [255, 200, 120]], ["foam"]],
+  // Bewegung
+  fall: [["leaves"], ["comet"]], hide: [["spothunt"], ["mood", [40, 40, 70]]], melt: [["lava"], ["drops"]], whisper: [["fireflies"], ["mood", [150, 140, 200]]], float: [["balloons"], ["bubbles"]],
+  waiting: [["clock"]], forget: [["ghosts"], ["mood", [110, 110, 140]]],
 };
+// Waffen und Gewalt: wie derbe Wörter von partyExplicit abhängig („Ignorieren“ → nichts, „Nur Farbe“ → dunkles Rot)
+const VIOLENCE = new Set(["gun", "machinegun", "shoot", "blade", "axe", "kill", "death", "grenade", "battle", "gangster", "heist", "reaper", "war", "blood"]);
 // Derbe Begriffe und was davon bei „Nur Farbe“ (partyExplicit: "soft") bleibt
 const EXPLICIT = new Set(["sexy", "insult", "curse", "drugs"]);
 const EX_SOFT = { sexy: [["mood", [255, 40, 120]]], insult: [["mood", [190, 20, 40]]], curse: [["mood", [255, 110, 40]]], drugs: [["mood", [150, 80, 255]]] };
@@ -281,7 +350,7 @@ const SOFTEN = {
   firewall: ["wash", C.warm, "floor"], thunder: ["drops"], fwpeony: ["stars"], fwwillow: ["stars"], lasertunnel: ["aurora"], warp: ["stars"],
   launch: ["comet"], guitarspark: ["wash", [255, 200, 120], "floor"], bassdrop: ["drops"],
 };
-const SOFT_DROP = new Set(["confetti", "jump", "co2", "chaos", "shock", "hands", "accent", "cannon", "streamers", "clappulse", "mexwave"]);
+const SOFT_DROP = new Set(["confetti", "jump", "co2", "chaos", "shock", "hands", "accent", "cannon", "streamers", "clappulse", "mexwave", "muzzle", "tracer"]);
 // … und Party-Wörter, von denen dann wenigstens die Farbe bleibt
 const PARTYISH = new Set(["party", "club", "turnup", "weekend", "dancefloor", "fireworks", "hype", "dance", "birthday", "victory", "onemore", "wild", "crazy", "confetti", "festival", "rave", "praise"]);
 // Wie stark eine Antwort im jeweiligen Teil des Songs ausfällt (Intro und Outro leise, Refrain und Drop voll)
@@ -357,10 +426,10 @@ const mixHash = (h, n) => {
 function responses(c, ctx) {
   let list = STAGE[c] || (ctx.col ? [["wash", ctx.col, "top"]] : null);
   if (!list) return null;
-  if (EXPLICIT.has(c)) {
+  if (EXPLICIT.has(c) || VIOLENCE.has(c)) {
     const mode = ctx.explicit || "on";
     if (mode === "off") return null;
-    if (mode === "soft") list = EX_SOFT[c];
+    if (mode === "soft") list = EX_SOFT[c] || [["mood", [140, 0, 20]]];
   }
   const e = clamp(ctx.energy ?? 0.5, 0, 1);
   // Spielart: andere Bilder für dieselbe Antwort; ohne Publikum: Bilder der Menge → Bilder der Bühne
@@ -515,4 +584,4 @@ function pickDropLook(sig, rng, prev) {
   return cand[Math.floor(rng() * cand.length) % cand.length];
 }
 
-export { createScenarios, responses, isCountdown, pickDropLook, STAGE, FAM, FAMS, SCENE_FAMS, GENRE_SWAP, REPEAT, DROP_LOOKS, DROP_PAL, PART_K, EXPLICIT };
+export { createScenarios, responses, isCountdown, pickDropLook, STAGE, FAM, FAMS, SCENE_FAMS, GENRE_SWAP, REPEAT, VIOLENCE, DROP_LOOKS, DROP_PAL, PART_K, EXPLICIT };
