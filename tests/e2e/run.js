@@ -115,8 +115,12 @@ class Win {
     });
     this.wc.on("render-process-gone", (_e, d) => this.errors.push("Renderer weg: " + d.reason));
   }
+  // Skript in der Seite; antwortet die Seite nicht (Renderer hängt, Seite wurde mitten im Aufruf ersetzt: „Render frame
+  // was disposed“), schlägt der Aufruf nach 20 s × SLOW fehl, statt den ganzen Lauf bis zum Gesamt-Zeitlimit zu blockieren
   js(code) {
-    return this.wc.executeJavaScript(code);
+    let t;
+    const limit = new Promise((_, no) => (t = setTimeout(() => no(new Error(`${this.name}: Seite antwortet nicht (Skript-Aufruf nach ${Math.round(20 * SLOW)} s abgebrochen)`)), 20000 * SLOW)));
+    return Promise.race([this.wc.executeJavaScript(code), limit]).finally(() => clearTimeout(t));
   }
   // Echter Klick: das Element muss an dieser Stelle wirklich oben liegen. Wie ein Mensch wartet der Klick, bis das
   // Ziel bedienbar ist (sichtbar, still, nicht verdeckt) – höchstens 3 s × SLOW, dann schlägt er mit dem letzten
@@ -1618,10 +1622,12 @@ async function karaokeGame() {
   const b0 = await big.state();
   ok(b0.lock && b0.playing && b0.vol === 0.7, `karaoke: Musik läuft normal und ist gesperrt (${JSON.stringify({ lock: b0.lock, playing: b0.playing, vol: b0.vol })})`);
   // die Datei passend zur Stelle, ab dem Klick gerechnet (PC-Uhr wie das Handy sie kennt)
+  // die Stelle (Einsätze, Tonhöhen) kommt mit dem „ready“-Stand; unter Last (CI) einen Moment später – erst danach
+  // lesen, sonst singt die Testdatei nach einem halbfertigen Stand
+  await until(() => S.js(`!!(kPart?.d?.ch?.length && kPart.d.on?.length >= 3)`), 4000, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
   const info = await S.js(`({ at: cur.g.at, kp: kPart.d, pc: Date.now() - skew })`);
   ok(info.at - info.pc > 4000 && info.at - info.pc < 13000, `karaoke: Vorlauf vor der Stelle reicht fürs Mikro und den Grundpegel (${info.at - info.pc} ms)`);
-  // die Stelle (Einsätze, Tonhöhen) kommt mit dem „ready“-Stand; unter Last (CI) einen Moment später
-  await until(() => S.js(`!!(kPart?.d?.ch?.length && kPart.d.on?.length >= 3)`), 4000, "karaoke: das Handy hat Einsätze und Tonhöhen der Stelle");
+  console.log(`    karaoke: Song ${await T.js(`__sp.now().i`)}, Stelle ${info.kp.ln.length} Zeilen (${info.kp.ln.map((l) => l[0] + "–" + l[1]).join(", ")}), ${info.kp.on.length} Einsätze, Länge ${info.kp.len} ms`);
   const open = info.pc + 120;
   writeWav(MIC_WAV, 48000, (info.at + info.kp.len + 1500 - open) / 1000, karaokeVoice(info.kp, info.at, open));
   await S.click("#game .gkmic");
@@ -3284,9 +3290,12 @@ app.whenReady().then(async () => {
     process.exit(2);
   }, 70 * 60e3);
   // ein Versuch eines Falls: "" = bestanden, sonst die Fehlermeldung (Bilder unter out/, danach aufgeräumt)
+  // höchstens so lange je Versuch: ein hängender Fall darf nicht alle folgenden mitreißen
+  const CASE_LIMIT = 8 * 60e3;
   const attempt = async (name, run, tag) => {
+    let t;
     try {
-      await run();
+      await Promise.race([run(), new Promise((_, no) => (t = setTimeout(() => no(new Error(`${name}: Fall hängt (über ${Math.round((CASE_LIMIT * SLOW) / 60e3)} min)`)), CASE_LIMIT * SLOW)))]).finally(() => clearTimeout(t));
       const k = name in ICON ? name : "Fall";
       await afterGame(k);
       return "";
