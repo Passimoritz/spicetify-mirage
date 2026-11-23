@@ -26,6 +26,7 @@ import { bgFlags } from "./lyricvoices.js";
 import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars, exitOf } from "./lyricdeck.js";
 import { lineRole, markerOk, limitFonts, covers } from "./lyricfont.js";
 import { CUE_KIND } from "./lyriccolor.js";
+import { categoryOf as conceptCategory } from "./concepts.js";
 import { runSync } from "./idlework.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -330,6 +331,17 @@ export const CATEGORY_FX = {
   religion: "float", space: "float", nature: "bloom", love: "beat", money: "glint", luxury: "glint", happy: "shine",
   sad: "droop", fear: "shiver", anger: "shake", time: "tick", music: "wave", night: "dim", light: "shine", fire: "flame",
   water: "drip", cold: "shiver", travel: "dash", city: "neon",
+  // Kategorien des Wörterbuchs (src/concepts.js, CATEGORIES) – jede bekommt eine Bewegung, so hat jeder Begriff eine
+  nightlife: "neon", crowd: "bounce", praise: "power", sky: "float", emotion: "shine", body: "bounce", digital: "glitchy",
+  mystic: "drift", faith: "float", sound: "burst", people: "power", color: "shine", misc: "drift",
+};
+// Begriffe des Wörterbuchs mit eigener Bewegung (vor allem Gewalt: die Kategorie allein sagt nicht, ob Schuss oder Hieb)
+const CONCEPT_FX = {
+  gun: "shot", shoot: "shot", heist: "shot", machinegun: "rapid", blade: "slash", axe: "slash", kill: "shatter", death: "shatter",
+  reaper: "shatter", grenade: "burst", battle: "war", war: "war", blood: "war", gangster: "war", police: "siren", ambulance: "siren",
+  shatter: "shatter", whisper: "hush", melt: "droop", hide: "hush", forget: "drift", toxic: "glitchy", magnetic: "jolt",
+  infinity: "spin", paint: "bloom", train: "zoomby", car: "zoomby", motorbike: "zoomby", plane: "zoomby", helicopter: "zoomby",
+  bicycle: "zoomby", engine: "zoomby", race: "zoomby", boxing: "kick", workout: "kick", martialarts: "kick", explode: "burst",
 };
 // Gewalt: richtet sich nach der Einstellung für derbe Inhalte (wie in Party) – aus: keine Bewegung, „sanft“: nur Farbe
 export const VIOLENT_CATS = new Set(["weapon", "gunfire", "blade", "death", "explosion", "war", "violence"]);
@@ -346,8 +358,20 @@ const CONCEPT_CAT = {
   robot: "tech", computer: "tech", internet: "tech", sport: "sport", ball: "sport", goal: "sport", champion: "sport",
   trophy: "sport", myth: "myth", god: "myth", goddess: "myth", phoenix: "myth", unicorn: "myth",
 };
-export const categoryOf = (concept, cat) => cat || CONCEPT_CAT[concept] || "";
-export const cueFor = (concept, cat) => CUE[concept] || CATEGORY_FX[categoryOf(concept, cat)] || "";
+// Kategorie eines Begriffs: eigene Zuordnung (feiner, z. B. Schuss/Hieb), sonst die des Wörterbuchs (concepts.js)
+export const categoryOf = (concept, cat) => {
+  if (cat) return cat;
+  if (CONCEPT_CAT[concept]) return CONCEPT_CAT[concept];
+  try {
+    const c = conceptCategory(concept);
+    return c && c !== "misc" ? c : CUE[concept] ? "" : c || "";
+  } catch {
+    return "";
+  }
+};
+// Allerweltsbegriffe, die fast jedes Lied hat: nur mit eigener Bewegung, nicht über die Kategorie (sonst zappelt alles)
+const COMMON = new Set(["night", "world", "home", "yeah", "hey", "everybody", "together", "friends", "woo", "comeon", "light", "dark", "move", "time", "red", "blue", "black", "white"]);
+export const cueFor = (concept, cat) => CUE[concept] || CONCEPT_FX[concept] || (COMMON.has(concept) ? "" : CATEGORY_FX[categoryOf(concept, cat)] || "");
 // Redewendungen ohne Gewalt: „killing it“, „a shot of tequila“, „photo shoot“, „shoot your shot“, „you're the bomb“ …
 const NOT_VIOLENT = [
   /\bkill(?:s|ing|in'?|ed)? it\b/giu, /\bdressed to kill\b/giu, /\bshots? of\b/giu, /\bphoto ?shoots?\b/giu, /\bfotoshooting\w*/giu,
@@ -429,12 +453,14 @@ export function cueMatcher(lines, lexicon, o = {}) {
       const cat = xk && XCUE.has(xk) ? "" : categoryOf(concept, o.categoryOf?.(concept));
       let cue = xk && XCUE.has(xk) ? xk : cueFor(concept, cat);
       if (x.c === "heart" && BROKEN.test(s)) cue = "crack";
-      if (EXPLICIT.has(x.c)) cue = x.c === "sexy" && o.explicit === "on" ? "sultry" : "";
+      const violent = VIOLENT_CATS.has(cat);
+      // derb (nicht Gewalt): wie bisher – nur „sexy“ wiegt sich, und nur mit „derbe Inhalte: an“
+      if (EXPLICIT.has(x.c) && !violent) cue = x.c === "sexy" && o.explicit === "on" ? "sultry" : "";
       if (!cue) continue;
       // Gewalt: Redewendungen („killing it“, „shot of tequila“) zählen nicht; Einstellung derbe Inhalte: aus → nichts,
       // sanft → nur die Farbe
       let calm = false;
-      if (VIOLENT_CATS.has(cat)) {
+      if (violent) {
         peace ??= peaceSpans(s);
         if (peace.some(([a, b]) => x.at < b && x.at + x.len > a)) continue;
         if (o.explicit === "off") continue;
@@ -932,6 +958,8 @@ export function* planSteps(lines, wordLists, d, o = {}) {
         if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
         if (bars?.length && real && !w.est && onBeat(w.a, bars, 70)) wc.push("is-p-bar");
         let acc = R?.acc || "";
+        // das riesige Schlüsselwort ist selbst der Akzent: kein Stoß hinterher (er schob es über seine Nachbarn)
+        if (isKey && acc === "pop") acc = "";
         if (c && !calmAt.has(k)) {
           wc.push("is-p-cue", "is-c-" + c);
           // Spielart des Wortbilds: je Begriff und Song eine andere
@@ -1090,7 +1118,7 @@ export function* paintSteps(lineEls, plan, wordLists, at = 0) {
     for (const i of r ? [c - r, c + r] : [c]) {
       if (i < 0 || i >= n) continue;
       paintLine(lineEls[i], plan?.[i], wordLists?.[i] || []);
-      if (++done % 4 === 0) yield;
+      if (++done % 2 === 0) yield;
     }
   }
 }

@@ -168,6 +168,8 @@ Probe-FX: ${pfx}`;
       t: performance.now() / 1000, energy: px.energy, kind: px.kind, level: px.level, lite: lightMode(), calm: cfg.calm || reducedMotion.matches,
       noFlash: !!cfg.noFlash, flash: !!(cfg.partyFlash && px.fx), beat: 60 / (px.tempo || 120), phase: px.phase, col: WORD_FX[c]?.col,
       k: o?.k, also: o?.also, soft: o?.soft, valence: px.valence, arousal: px.arousal, explicit: explicitMode(),
+      // Szenarien: Publikum an/aus, Spielart der Musik, Song (Spielarten der Bilder fest je Song)
+      crowd: cfg.partyCrowd !== false, genre: party.info?.family || "", song: currentItem()?.uri || "",
     });
   }
   // Derbe Wörter: Einstellung „on“ / „soft“ (nur Farbe) / „off“ – hat Spotify den Filter für explizite Inhalte
@@ -1748,18 +1750,22 @@ Probe-FX: ${pfx}`;
   }
   // Häppchen eines Generators in Leerlaufzeiten, je Aufruf höchstens ~6 ms (so lange der Browser Luft meldet)
   let playGen = 0;
-  function playSlices(g, ok, done) {
+  // perFrame (Malen): je Bild höchstens ein Häppchen – das Layout der frisch gesetzten Zeilen (Schriften, Buchstaben)
+  // fällt sonst gesammelt in ein Bild (Party-Messung: 4 Zeilen auf einmal ~56 ms Layout)
+  function playSlices(g, ok, done, perFrame) {
+    const later = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 120 }) : setTimeout(fn, 16));
     const step = (dl) => {
       if (!ok()) return;
       const t0 = performance.now();
       let r;
       do r = g.next();
-      while (!r.done && performance.now() - t0 < 6 && (!dl || dl.timeRemaining() > 1));
+      while (!perFrame && !r.done && performance.now() - t0 < 6 && (!dl || dl.timeRemaining() > 1));
       if (r.done) done(r.value);
-      else if (window.requestIdleCallback) requestIdleCallback(step, { timeout: 120 });
-      else setTimeout(step, 16);
+      else if (perFrame) requestAnimationFrame(() => later(step));
+      else later(step);
     };
-    step(null);
+    if (perFrame) requestAnimationFrame(() => later(step));
+    else step(null);
   }
   function playfulSoon(token, fresh) {
     // frisch aufgebaute Zeilen (auch derselbe Text nach dem Umschalten) brauchen ihre Klassen neu
@@ -1788,7 +1794,7 @@ Probe-FX: ${pfx}`;
         playGrade = plan.deck?.grade || null;
         playCols = "";
         playColors();
-        playSlices(paintSteps(box.children, plan, words, active >= 0 ? active : lineAt(lyr.lines, songPos(performance.now()), -2)), ok, () => whenIdle(() => ok() && placeSoon("glide"), 300));
+        playSlices(paintSteps(box.children, plan, words, active >= 0 ? active : lineAt(lyr.lines, songPos(performance.now()), -2)), ok, () => whenIdle(() => ok() && placeSoon("glide"), 300), true);
       });
     };
     if (!cfg.lyrPlayful) return run();

@@ -90,7 +90,7 @@ const R = {
   // lebhaft
   drop: { e: 2, lead: 170, w: (c) => ({ y: -0.3, r: -5 * c.dir, o: 0.7 }) },
   bounce: { e: 2, lead: 180, ease: "bounce", w: () => ({ y: -0.5, o: 0.6 }) },
-  split: { e: 2, lead: 170, min: 4, max: 10, w: (c) => ({ x: (c.side < 0 ? -0.55 : 0.55) * c.dir, o: 0.7 }) },
+  split: { e: 2, lead: 170, min: 4, max: 10, w: (c) => ({ x: (c.side < 0 ? -0.35 : 0.35) * c.dir, o: 0.4 }) },
   key: { e: 2, lead: 180, keyed: true, w: (c) => (c.key ? { s: 0.55, o: 0.4 } : { o: 0.7 }), acc: "pop" },
   flipx: { e: 2, lead: 180, w: (c) => ({ rx: 85 * c.dir, o: 0.3 }) },
   flipy: { e: 2, lead: 180, w: (c) => ({ ry: -85 * c.dir, o: 0.3 }) },
@@ -223,12 +223,12 @@ function safe(v, len, amp) {
   if (o.r) {
     // (ganze Drehungen nur für kurze Wörter, die unsichtbar oder winzig beginnen – ein langes Wort, das sich beim
     // Auftauchen dreht, fegte über die Nachbarzeilen)
-    const lim = ((o.s != null && !Array.isArray(o.s) && o.s <= 0.5) || o.o === 0) && L <= 5 ? 360 : Math.max(2, (Math.asin(Math.min(1, 0.25 / (0.3 * L))) * 180) / Math.PI);
+    const lim = ((o.s != null && !Array.isArray(o.s) && o.s <= 0.5) || o.o === 0) && L <= 3 ? 360 : Math.max(2, (Math.asin(Math.min(1, 0.18 / (0.3 * L))) * 180) / Math.PI);
     o.r = clamp(o.r * (Math.abs(o.r) > 100 ? 1 : a), -lim, lim);
   }
   // Wachsen: höchstens 1 + 2,5/Länge (ein langes Wort wächst kaum), nie unter 5 %
-  // (höchstens 1,4: größer ragte ein Wort beim Landen über die Zeilen darüber und darunter)
-  const grow = (s) => (s > 1 ? Math.min(s, 1 + 2.5 / L, 1.4) : Math.max(0.05, s));
+  // (höchstens 1,3: größer ragte ein Wort beim Landen über die Zeilen darüber und darunter)
+  const grow = (s) => (s > 1 ? Math.min(s, 1 + 2.5 / L, 1.3) : Math.max(0.05, s));
   if (Array.isArray(o.s)) o.s = [grow(o.s[0]), grow(o.s[1])];
   else if (o.s != null) o.s = grow(o.s);
   if (o.o != null) o.o = clamp(o.o, 0, 1);

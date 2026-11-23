@@ -688,7 +688,7 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
       const p = wordPose(t, { k, n: 6, dir, amp, len, key: k === 2, seed: "s" });
       assert.ok(Math.abs(p.x || 0) <= 0.6 && Math.abs(p.y || 0) <= 0.45, `${t}: Versatz ${p.x}/${p.y}`);
       const sc = Array.isArray(p.s) ? Math.max(...p.s) : p.s ?? 1;
-      assert.ok(sc <= Math.max(1, Math.min(1.4, 1 + 2.5 / len)) + 1e-9, `${t}: wächst auf ${sc} bei ${len} Zeichen`);
+      assert.ok(sc <= Math.max(1, Math.min(1.3, 1 + 2.5 / len)) + 1e-9, `${t}: wächst auf ${sc} bei ${len} Zeichen`);
       // sichtbar gedreht (deckend und nicht winzig): ragt höchstens ~0,25 em über die Zeile (nie in die Nachbarzeile)
       const visible = (p.o ?? 1) > 0 && !(sc <= 0.5);
       if (visible && p.r) assert.ok(Math.sin((Math.min(90, Math.abs(p.r)) * Math.PI) / 180) * 0.3 * len <= 0.26 || Math.abs(p.r) <= 8, `${t}: ${p.r}° bei ${len} Zeichen`);
@@ -994,9 +994,9 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   paintPlayful(els, planPlayful(lines, wl, null, { ...opts, level: "subtle" }), wl);
   assert.equal(snapshot().letters, 0);
   // immersive.js: Einstellungen (applySettings → styleLyrics) und weniger Bewegung (matchMedia) malen neu, die Stärke
-  // ohne den Liedtext neu zu laden
-  const im = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8");
-  assert.ok(/function styleLyrics\(\) \{[\s\S]*?playfulRestyle\(\);\r?\n {2}\}/.test(im), "styleLyrics malt den Stil nicht neu");
+  // ohne den Liedtext neu zu laden (Windows-Checkout hat CRLF: Wagenrückläufe entfernen)
+  const im = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8").split(String.fromCharCode(13)).join("");
+  assert.ok(/function styleLyrics\(\) \{[\s\S]*?playfulRestyle\(\);\n {2}\}/.test(im), "styleLyrics malt den Stil nicht neu");
   assert.ok(/reducedMotion\.addEventListener\?\.\("change", playfulRestyle\)/.test(im), "weniger Bewegung wirkt erst beim nächsten Song");
   const st = fs.readFileSync(path.join(__dirname, "..", "..", "src", "settings.js"), "utf8");
   assert.ok(/cfg\.lyrPlayLevel = k;[\s\S]{0,160}immersive\.styleLyrics\(\)/.test(st), "Stärke lädt den Liedtext neu");
@@ -1132,7 +1132,7 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   assert.ok(cuesOf("swing the axe tonight").includes("slash"));
   assert.ok(cuesOf("they want to kill me").includes("shatter"));
   assert.ok(cuesOf("blood on the dancefloor").includes("war"));
-  assert.ok(cuesOf("drop the bomb on them").includes("burst"));
+  assert.ok(cuesOf("a grenade in his hand").includes("burst"));
   assert.ok(cuesOf("hear the police sirens").includes("siren"));
   // Redewendungen: keine Gewalt
   for (const t of ["we are killing it tonight", "pour a shot of tequila", "photo shoot in the morning", "shoot your shot baby", "ein Schuss Tequila"]) {
@@ -1150,7 +1150,7 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   assert.ok(cuesOf("helicopter over the city").includes("zoomby"));
   assert.ok(cuesOf("a wolf in the night").includes("prowl"));
   assert.ok(cuesOf("sweet like chocolate").includes("savor"));
-  assert.ok(cuesOf("call me on the phone").includes("glitchy"));
+  assert.ok(cuesOf("dancing like a robot").includes("glitchy"));
   assert.ok(cuesOf("kick the ball").includes("kick"));
   // Kategorie aus dem Wortsinn (künftige Begriffe aus dem Wörterbuch): unbekannter Begriff → Bewegung über die Kategorie
   assert.equal(cueFor("rocketlauncher", "weapon"), "shot");
@@ -1160,6 +1160,25 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   for (const fx of new Set(Object.values(CATEGORY_FX))) assert.ok(FX_VARIANTS[fx] || ["drift", "bounce", "glint", "float", "bloom", "beat", "shine", "droop", "shiver", "shake", "tick", "wave", "dim", "flame", "drip", "dash", "neon", "burst"].includes(fx), "Kategorie ohne Bewegung: " + fx);
   // Farben der Kategorien lesbar (Blut, Stahl) – geprüft im Farben-Block über KINDS
   assert.ok(KINDS.blood && KINDS.steel && CUE_KIND.war === "blood" && CUE_KIND.slash === "steel");
+}
+
+/* ---- jeder Begriff des Wörterbuchs (src/concepts.js) bekommt eine Bewegung: eigene, sonst die seiner Kategorie;
+   Gewalt-Begriffe sind als Gewalt erkannt (folgen der Einstellung für derbe Inhalte) */
+{
+  const { CATEGORIES, GROUPS } = load("concepts.js");
+  const { CATEGORY_FX, VIOLENT_CATS, categoryOf, cueFor } = load("lyricstyle.js");
+  for (const cat of CATEGORIES) if (cat !== "explicit") assert.ok(CATEGORY_FX[cat], "Kategorie ohne Bewegung: " + cat);
+  let n = 0, none = [];
+  for (const [cat, list] of Object.entries(GROUPS)) {
+    if (cat === "explicit") continue;
+    for (const c of list.split(" ")) {
+      n++;
+      if (!cueFor(c)) none.push(c);
+      if (cat === "violence") assert.ok(VIOLENT_CATS.has(categoryOf(c)), "Gewalt nicht erkannt: " + c);
+    }
+  }
+  assert.ok(none.length <= 20, `${none.length} von ${n} Begriffen ohne Bewegung: ${none.join(" ")}`);
+  console.log(`  Kategorien: ${n - none.length}/${n} Begriffe mit Bewegung (ohne: Allerweltswörter ${none.length})`);
 }
 
 console.log("lyricstyle: ok");

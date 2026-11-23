@@ -2690,7 +2690,9 @@ async function playfulLyrics() {
       const lead = DECK.leadOf(t), n = texts.length, keyAt = t === "key" ? 2 : -1;
       const ws = texts.map((tx, i) => {
         const cls = ["m-w"], v = { "--pl": lead + "ms" };
-        if (R.acc) (v["--pac"] = "m-a-" + R.acc), (v["--pad"] = DECK.ACCENTS[R.acc] + "ms");
+        // (wie planPlayful: das riesige Schlüsselwort stößt nicht nach)
+        const acc = i === keyAt && R.acc === "pop" ? "" : R.acc;
+        if (acc) (v["--pac"] = "m-a-" + acc), (v["--pad"] = DECK.ACCENTS[acc] + "ms");
         if (i === keyAt) cls.push("is-p-key"), (v["--pk"] = "2.4"), (v["--pkn"] = String(tx.length));
         if (i === n - 1 && !R.L) cls.push("is-p-cue", ["is-c-float", "is-c-fall", "is-c-spin", "is-c-shake"][k % 4]);
         let inner = esc(tx);
@@ -2796,8 +2798,8 @@ async function playfulLyrics() {
           let n = 0;
           const op = (e) => { let o = 1; for (let x = e; x && x !== ln.parentElement; x = x.parentElement) o *= Number(getComputedStyle(x).opacity); return o; };
           const hit = (a, b) => { const x = Math.min(a.right, b.right) - Math.max(a.left, b.left), y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top); return x > 3 && y > 3 ? x * y : 0; };
-          // Glyphen-Fläche ohne Karaoke-Polster (0,1 em oben, 0,26 em unten)
-          const box = (w) => { const q = w.getBoundingClientRect(), f = parseFloat(getComputedStyle(w).fontSize) || 16; return { left: q.left, right: q.right, top: q.top + 0.12 * f, bottom: q.bottom - 0.3 * f }; };
+          // Glyphen-Fläche: ohne Karaoke-Polster (0,1 em oben, 0,26 em unten) und ohne den leeren Raum über den Versalien
+          const box = (w) => { const q = w.getBoundingClientRect(), f = parseFloat(getComputedStyle(w).fontSize) || 16; return { left: q.left, right: q.right, top: q.top + 0.3 * f, bottom: q.bottom - 0.28 * f }; };
           const step = () => {
             const now = performance.now() - t0;
             ws.forEach((w, k) => { if (now >= k * 110 && !sungAt.has(w)) { w.classList.add("is-sung"); sungAt.set(w, now); } });

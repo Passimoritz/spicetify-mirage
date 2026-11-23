@@ -26,13 +26,21 @@ const rows = fs.readFileSync(path.join(__dirname, "fixtures", "wordsense-corpus.
     return { lang, want, text: rest.join("|") };
   });
 assert.ok(rows.length >= 300, "Korpus zu klein: " + rows.length);
-let ok = 0, fp = 0, fn = 0, wrong = 0;
+// Lob-Wörter („f-words“, eigener Abschnitt am Ende des Korpus): eigene Trefferquote
+let ok = 0, fp = 0, fn = 0, wrong = 0, fwN = 0, fwOk = 0;
 const miss = [];
+const FW = new Set(fs.readFileSync(path.join(__dirname, "fixtures", "wordsense-corpus.txt"), "utf8").split(/# --- Lob-Wörter/)[1]?.split(/\r?\n/).filter((l) => l.trim() && !l.startsWith("#")) || []);
 for (const r of rows) {
   const got = judge(r.lang, r.text);
-  const want = r.want === "-" ? null : r.want.split("/");
+  // „!x“: alles außer x (auch keine Antwort) – für Lob-Wörter, die nicht derb gedeutet werden dürfen
+  const not = r.want.startsWith("!") ? r.want.slice(1) : null;
+  const want = r.want === "-" || not ? null : r.want.split("/");
   // mehrere Begriffe in der Zeile: der erwartete darf Teil der kombinierten Antwort sein
-  const good = want ? !!got && (want.includes(got.c) || want.some((w) => got.also?.includes(w))) : !got;
+  const good = not ? !got || (got.c !== not && !got.also?.includes(not)) : want ? !!got && (want.includes(got.c) || want.some((w) => got.also?.includes(w))) : !got;
+  if (FW.has(`${r.lang}|${r.want}|${r.text}`)) {
+    fwN++;
+    if (good) fwOk++;
+  }
   if (good) ok++;
   else {
     if (!want) fp++;
@@ -44,9 +52,12 @@ for (const r of rows) {
 const acc = ok / rows.length;
 if (process.env.VERBOSE) console.log(miss.join("\n"));
 // erreichter Stand (bei Änderungen am Wörterbuch oder an wordsense.js nur nach oben anpassen)
-const MIN_ACC = 0.97, MAX_FP = 6;
+const MIN_ACC = 0.985, MAX_FP = 6;
 assert.ok(acc >= MIN_ACC, `Trefferquote ${(acc * 100).toFixed(1)} % < ${MIN_ACC * 100} %\n${miss.join("\n")}`);
 assert.ok(fp <= MAX_FP, `${fp} Fehlalarme (Zeilen ohne Grund zur Reaktion) > ${MAX_FP}\n${miss.join("\n")}`);
+// Lob- und Gewalt-Wörter (Abschnitte am Ende des Korpus): mindestens 80 Zeilen, fast alle richtig gedeutet
+assert.ok(fwN >= 80, "zu wenige Zeilen mit Lob-Wörtern: " + fwN);
+assert.ok(fwOk / fwN >= 0.95, `Lob-Wörter: ${fwOk}/${fwN} richtig\n${miss.join("\n")}`);
 
 /* ---- Verneinung, Wortsinn (einzeln, damit klar ist, was kaputt ist) */
 const c = (lang, text) => judge(lang, text)?.c ?? null;
@@ -122,6 +133,31 @@ const base = { energy: 0.8, kind: "chorus", level: 3, lite: false, calm: false, 
   assert.ok(comb[0].k > createScenarios().word("money", { ...base, t: 5 })[0].k, "Kombination stärker");
 }
 
+/* ---- Schnittstelle für Bühne und Liedtext (concepts.js): Begriff und Kategorie eines Worts im Zusammenhang */
+{
+  const { CATEGORIES, categoryOf, conceptOf, conceptsOfLine } = load("concepts.js");
+  for (const c of Object.keys(FX)) assert.ok(CATEGORIES.includes(categoryOf(c)), `${c} ohne Kategorie`);
+  const unlisted = Object.keys(FX).filter((c) => categoryOf(c) === "misc" && !load("concepts.js").GROUPS.misc.split(" ").includes(c));
+  assert.deepStrictEqual(unlisted, [], "Begriffe ohne eigene Kategorie: " + unlisted);
+  assert.strictEqual(categoryOf("gun"), "violence");
+  assert.strictEqual(conceptOf("geil", { lang: "de", line: "Die Party ist so geil" }), "praise");
+  assert.strictEqual(conceptOf("geil", { lang: "de", line: "Ich bin so geil auf dich" }), "sexy");
+  assert.strictEqual(conceptOf("killing", { line: "We're killing it tonight" }), "praise");
+  assert.strictEqual(conceptOf("glock", { line: "Got a glock in my pocket" }), "gun");
+  assert.strictEqual(conceptOf("rain"), "rain");
+  assert.strictEqual(conceptOf("table"), null);
+  const all = conceptsOfLine("Fire in the rain, shots fired", { lang: "en" });
+  assert.ok(all.some((x) => x.c === "shoot" && x.cat === "violence" && x.ex), "Gewalt: nie als Text (ex)");
+}
+// Gewalt auf der Bühne: wie derbe Wörter von partyExplicit abhängig, stilisiert (Mündungsfeuer, Hieb)
+{
+  const fam = (c, ctx) => (responses(c, { ...base, ...ctx }) || []).map((r) => r[0]);
+  assert.deepStrictEqual(fam("gun", { explicit: "off" }), [], "aus: keine Reaktion auf Waffen");
+  assert.deepStrictEqual(fam("gun", { explicit: "soft" }), ["mood"], "nur Farbe: dunkles Rot");
+  assert.ok(fam("gun", {}).includes("muzzle") && fam("axe", {}).includes("slash"));
+  assert.ok(!fam("machinegun", { soft: true, energy: 0.5 }).some((f) => f === "muzzle" || f === "tracer"), "ruhiges Lied: keine Schüsse");
+}
+
 /* ---- jede Sprache: Verneinungen vorhanden, jeder neue Begriff in mehreren Sprachen */
 const NEWC = ["club", "drink", "rich", "sweat", "anger", "freedom", "desert", "sunset", "hey", "sexy", "insult", "curse", "drugs"];
 for (const k of NEWC) {
@@ -131,4 +167,4 @@ for (const k of NEWC) {
 for (const l of ["de", "en", "es", "fr", "it", "pt", "tr", "pl", "nl"]) for (const k of ["sexy", "insult", "curse", "drugs"]) assert.ok(LEX[l].c[k], `${l}: ${k} fehlt`);
 assert.ok(Object.keys(NEG).length >= 40, "Verneinungen für fast alle Sprachen");
 
-console.log(`wordsense: ok (Korpus ${rows.length} Zeilen, ${(acc * 100).toFixed(1)} % richtig, ${fp} Fehlalarme, ${fn} verpasst, ${wrong} falscher Begriff)`);
+console.log(`wordsense: ok (Korpus ${rows.length} Zeilen, ${(acc * 100).toFixed(1)} % richtig, ${fp} Fehlalarme, ${fn} verpasst, ${wrong} falscher Begriff; Lob-/Gewalt-Wörter ${fwOk}/${fwN})`);

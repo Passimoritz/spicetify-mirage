@@ -14,32 +14,59 @@ import S from "./lexicon/lex-scen.json";
 import M from "./lexicon/lex-more.json";
 import X from "./lexicon/lex-explicit.json";
 import N from "./lexicon/lex-neg.json";
+// lex-ext.json: rund 200 weitere Begriffe der Szenarien (Konfetti, Nordlicht, Disko, Skyline, Glitch, Lob-Wörter …)
+// und Zusatzformen bestehender Begriffe – nur Formen, die es in der Sprache noch nicht gab, darum einfach angehängt
+import E from "./lexicon/lex-ext.json";
+// lex-ext2.json: noch einmal rund 180 Begriffe (Waffen und Gewalt aus Rap/Rock/Metal – nur Licht, nie Text –,
+// Tiere, Essen, Körper, Gefühle, Klänge, Technik, Mythen, Farben …), ebenso nur neue Formen
+import E2 from "./lexicon/lex-ext2.json";
+import { lazy } from "./lazydata.js";
 
-const LEX = { ...A, ...B, ...C };
-for (const [lang, d] of Object.entries(S)) {
-  const base = LEX[lang] ? { ...LEX[lang], c: { ...LEX[lang].c } } : { stop: "", c: {} };
-  for (const [k, forms] of Object.entries(d.c)) base.c[k] = base.c[k] ? base.c[k] + "|" + forms : forms;
-  LEX[lang] = base;
-}
-// neue Begriffe: übernommene Formen aus den alten Begriffen derselben Sprache streichen
-for (const src of [M, X]) {
-  for (const [lang, d] of Object.entries(src)) {
+// Zusammengesetzt erst beim ersten Zugriff (Wortbilder, verspielte Liedtexte): die Listen liegen im Theme gepackt
+// (tools/lazydata.js) und werden dann erst ausgepackt – Spotify startet ohne diese Arbeit
+const LEX = lazy(() => {
+  const LEX = { ...A, ...B, ...C };
+  for (const [lang, d] of [...Object.entries(S), ...Object.entries(E), ...Object.entries(E2)]) {
     const base = LEX[lang] ? { ...LEX[lang], c: { ...LEX[lang].c } } : { stop: "", c: {} };
-    const taken = new Set();
-    for (const forms of Object.values(d.c)) for (const f of forms.split("|")) taken.add(f);
-    for (const [k, forms] of Object.entries(base.c)) {
-      const keep = forms.split("|").filter((f) => !taken.has(f));
-      base.c[k] = keep.join("|");
-    }
     for (const [k, forms] of Object.entries(d.c)) base.c[k] = base.c[k] ? base.c[k] + "|" + forms : forms;
     LEX[lang] = base;
   }
-}
+  // neue Begriffe: übernommene Formen aus den alten Begriffen derselben Sprache streichen
+  for (const src of [M, X]) {
+    for (const [lang, d] of Object.entries(src)) {
+      const base = LEX[lang] ? { ...LEX[lang], c: { ...LEX[lang].c } } : { stop: "", c: {} };
+      const taken = new Set();
+      for (const forms of Object.values(d.c)) for (const f of forms.split("|")) taken.add(f);
+      for (const [k, forms] of Object.entries(base.c)) {
+        const keep = forms.split("|").filter((f) => !taken.has(f));
+        base.c[k] = keep.join("|");
+      }
+      for (const [k, forms] of Object.entries(d.c)) base.c[k] = base.c[k] ? base.c[k] + "|" + forms : forms;
+      LEX[lang] = base;
+    }
+  }
+  return LEX;
+});
 // Verneinungen je Sprache: { neg: Set (davor), post: Set (danach) }
-const NEG = {};
-for (const [lang, d] of Object.entries(N)) {
-  const sp = (s) => new Set(String(s || "").split("|").map((w) => w.trim().toLocaleLowerCase()).filter(Boolean));
-  NEG[lang] = { neg: sp(d.neg), post: sp(d.negPost) };
+const NEG = lazy(() => {
+  const NEG = {};
+  for (const [lang, d] of Object.entries(N)) {
+    const sp = (s) => new Set(String(s || "").split("|").map((w) => w.trim().toLocaleLowerCase()).filter(Boolean));
+    NEG[lang] = { neg: sp(d.neg), post: sp(d.negPost) };
+  }
+  return NEG;
+});
+// Vorwärmen: einige Sekunden nach dem Start in Leerlaufzeiten auspacken und zusammensetzen, ein Häppchen je Liste –
+// so trifft weder der Start noch das erste Wortbild auf die ganze Arbeit am Stück (nur im Browser, nicht in Tests)
+if (typeof requestIdleCallback === "function") {
+  const steps = [A, B, C, S, E, E2, M, X, N, LEX, NEG];
+  const step = () => {
+    const t = steps.shift();
+    if (!t) return;
+    Object.keys(t);
+    requestIdleCallback(step, { timeout: 5000 });
+  };
+  setTimeout(() => requestIdleCallback(step, { timeout: 5000 }), 10000);
 }
 
 export { LEX, NEG };
