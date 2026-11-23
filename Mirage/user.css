@@ -8372,6 +8372,11 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-t-tilt {
   rotate: -1.6deg;
 }
+/* kurze Zeile (lyricstyle.js, unter FAST_LINE): Farbe, Deckkraft und Größe wechseln in 80 % ihrer Dauer (--plt) statt
+   0,5–0,7 s – sonst hinkte der Text in schnellen Stellen dem Gesang hinterher */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-fast {
+  transition-duration: var(--plt, 0.5s);
+}
 /* Lagen: die aktive Zeile liegt über der abgehenden und der nächsten (nichts schiebt sich beim Auf- und Abtritt
    über die gesungene Zeile) */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active {
@@ -9036,7 +9041,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   }
   /* der große Moment: die Zeile schlägt ein (klein → über das Ziel → Ruhe), ohne kräftigen Helligkeitswechsel */
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-moment.is-active:not(.is-p-note, .is-p-adlib) {
-    animation: m-l-moment 0.85s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+    animation: m-l-moment var(--pmd, 0.85s) cubic-bezier(0.2, 0.9, 0.3, 1) both;
   }
   /* Steigerung: die letzte Zeile vor dem Refrain wächst über ihre ganze Dauer (--prd) langsam an – Spannung */
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-riser.is-active:not(.is-p-note, .is-p-adlib, .is-p-moment) {
@@ -9047,7 +9052,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
      Ausschlag und zurück in den Ruhezustand. .is-pout setzt immersive.js beim Zeilenwechsel an die Zeile direkt vor der
      aktiven (statt :has(+ .is-active): das prüfte bei jeder Klassen-Änderung einer Zeile ihre Nachbarn) */
   html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-past.is-pout .m-w {
-    animation: var(--pxo, none) 0.5s cubic-bezier(0.3, 0.6, 0.35, 1) calc(min(var(--wi, 0), 8) * 26ms);
+    animation: var(--pxo, none) var(--pxt, 0.5s) cubic-bezier(0.3, 0.6, 0.35, 1) calc(min(var(--wi, 0), 8) * var(--pxs, 26ms));
   }
 }
 /* Stufen: „Dezent“ – Wortbilder nur einmal, kein Wippen, kleiner Ausschlag des ♪; „Wild“ – Wortbilder öfter.

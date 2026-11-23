@@ -1791,7 +1791,13 @@ Probe-FX: ${pfx}`;
     if (perFrame) requestAnimationFrame(() => later(step));
     else step(null);
   }
-  function playfulSoon(token, fresh) {
+  // Dauer der Gleitfahrt (nur am Element selbst: erbt nichts, kein Neuberechnen der Zeilen); "" = die normale 0,8 s
+  function playFast(ln) {
+    if (!q.inner) return;
+    const d = ln?.classList.contains("is-p-fast") ? ln.style.getPropertyValue("--plt") : "";
+    if (q.inner.style.transitionDuration !== d) q.inner.style.transitionDuration = d;
+  }
+  function playfulSoon(token, fresh, after) {
     // frisch aufgebaute Zeilen (auch derselbe Text nach dem Umschalten) brauchen ihre Klassen neu
     if (fresh) playfulKey = null;
     const run = () => {
@@ -1803,6 +1809,7 @@ Probe-FX: ${pfx}`;
       q.lyrics.classList.toggle("is-lv-subtle", on && level === "subtle");
       q.lyrics.classList.toggle("is-lv-wild", on && level === "wild");
       playPre = -1;
+      after?.();
       if (!on) return;
       // Anzeige-Schriften erst jetzt (und nie bei „Dezent“: dort keine Schriftmischung)
       if (level !== "subtle") loadPlayfulFonts();
@@ -1835,6 +1842,31 @@ Probe-FX: ${pfx}`;
     playfulSoon(lyrToken);
   }
   reducedMotion.addEventListener?.("change", playfulRestyle);
+  // [playful] Taste V und Zeile im Menü „Mehr“: den Stil live umschalten, ohne den Liedtext neu zu laden. Stehen die
+  // Wörter schon einzeln (Karaoke oder Stil war an), reicht Klasse an/aus – die Klassen der Zeilen bleiben gemalt und
+  // wirken nur unter .is-playful, ein zweites Einschalten ist also sofort da. Sonst wird der vorhandene Text einmal mit
+  // einzelnen Wörtern neu aufgebaut (derselbe Text, kein neues Laden). → neuer Zustand
+  function togglePlayful() {
+    cfg.lyrPlayful = !cfg.lyrPlayful;
+    save();
+    if (!el || !isOpen() || !lyr?.synced || !LYR.has(el.dataset.mode)) return cfg.lyrPlayful;
+    if (!cfg.lyrPlayful) {
+      // ♪ und Hook-Wort stehen still, die Zeilen bekommen ihre normale Dauer zurück
+      if (activeEl?.__na) (activeEl.__na.cancel(), (activeEl.__na = null), (activeEl.__nb = -1));
+      activeEl?.querySelector(".is-p-hsw")?.classList.remove("is-p-hsw");
+      playOut?.classList.remove("is-pout");
+      playOut = null;
+      if (playPre >= 0) q.inner.children[playPre]?.classList.remove("is-pnext");
+      playFast(null);
+    }
+    if (cfg.lyrPlayful && !words.some(Boolean)) {
+      showLyrics(lyrUri, lyr, true);
+      return true;
+    }
+    // sobald die Klasse sitzt: neue Größen – Lagen neu messen und an die richtige Stelle gleiten (auch playOn usw. neu)
+    playfulSoon(lyrToken, false, () => placeSoon("glide"));
+    return cfg.lyrPlayful;
+  }
   // Zeile ohne Karaoke: Teile in Klammern (Hintergrundgesang) als eigenes, leiseres Stück – am Zeilenende als
   // kleine Zeile darunter. Etiketten wie „(x2)“ bleiben normaler Text. all: Duett „zusammen“ – der Text steckt
   // in einem eigenen Stück, damit der Farbverlauf aus beiden Stimmen nur so breit wie der Text ist.
@@ -2218,6 +2250,8 @@ Probe-FX: ${pfx}`;
       playOut = playOn && i > 0 && was === i - 1 ? lines[was] : null;
       playOut?.classList.add("is-pout");
       if (playOn) playColors();
+      // [playful] kurze Zeile: die Gleitfahrt des Texts so lang wie ihr Farbwechsel (--plt aus lyricstyle.js)
+      playFast(playOn ? activeEl : null);
       // [playful] Wippen, Schlag-Stoß und hüpfende Wortbilder im Takt: Länge und Lage des Schlags einmal je Zeile
       // (CSS-Animation, kein Rechnen im Bild)
       const bp = playOn && audio.uri === lyrUri ? beatPhase(audio.data?.beats, pos / 1000) : null;
@@ -4728,6 +4762,8 @@ Probe-FX: ${pfx}`;
       if (canTranslate()) stateRow(body, t("trToggle"), trOn(lyrUri) ? t(typeof cfg.translateSongs?.[lyrUri] === "boolean" ? "trSongOnShort" : "trAllOnShort") : onOff(false), trOn(lyrUri), toggleTranslate, TR_LINE);
       if (cfg.onlineLyrics && /^spotify:(track|local):/.test(lyrUri)) sideBtn(body, t("lyrPick"), SOURCE_NAME[lyr.source] || "Spotify", () => pushSide("versions"), false, UI.music, true);
     }
+    // [playful] verspielter Stil an/aus (wie Taste V) – in allen Ansichten mit zeitgenauem Text, ohne Neuladen
+    if (lyrView && lyr?.synced) stateRow(body, t("lyrPlayful"), onOff(cfg.lyrPlayful) + " · V", !!cfg.lyrPlayful, () => { togglePlayful(); rebuildMenu(); }, UI.title).classList.add("m-im-playrow");
     // Liedtext früher / später (je Song) – in allen Ansichten mit zeitgenauem Text
     if (lyrView && synced && canNudge()) nudgeRow(body);
     // Party und Uhr zeigen die Knopfreihe unter dem Titel nicht: Warteschlange, Lautstärke, Geräte, Timer hier
@@ -5596,7 +5632,7 @@ Probe-FX: ${pfx}`;
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
     open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
-    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; lyrGate.reset(); el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle && !q.shuffle.hidden && q.shuffle.click(), repeat: () => q.repeat && !q.repeat.hidden && q.repeat.click(),
+    seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; lyrGate.reset(); el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, togglePlayful, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle && !q.shuffle.hidden && q.shuffle.click(), repeat: () => q.repeat && !q.repeat.hidden && q.repeat.click(),
     // 1.27 views: Zustand der Album-Spalte (Tests)
     albumState: () => album.state,
     // 1.27 actions: Taste M (Song-Menü) und A (Zu Playlist hinzufügen); per Tastatur liegt der Fokus gleich auf der ersten Zeile

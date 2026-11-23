@@ -616,6 +616,15 @@ export const LEAD_PAD = 16.7;
 export const sungAt = (w, pos, pad = LEAD_PAD) => pos >= w.a - (w.lead ? w.lead + pad : 0);
 // Vorlauf der nächsten Zeile: so lange vor ihrem ersten Wort nimmt sie ihre Wartestellung ein (.is-pnext)
 export const PRE_MS = 600;
+// Tempo des Gesangs: alle Dauern richten sich nach der Zeit, die bis zum nächsten Einsatz bleibt – in schnellen
+// Stellen (Rap, kurze Zeilen) lief sonst Bewegung über den nächsten Einsatz hinaus, und der Text wirkte langsamer als
+// der Gesang. Landung höchstens 90 % des Abstands zum vorigen Einsatz (nie unter LEAD_MIN), Akzente und gehaltene Töne
+// enden vor dem ersten Einsatz der nächsten Zeile, Wortbild-Schleifen (Zierde) erst ab FX_ROOM ms bis dahin, kurze
+// Zeilen (unter FAST_LINE) wechseln Farbe, Größe und Lage in 80 % ihrer Dauer, der Abgang passt in die nächste Zeile.
+export const LEAD_MIN = 60;
+export const FX_ROOM = 450;
+export const FAST_LINE = 900;
+export const ACC_MIN = 120;
 
 /* ---- Alles zusammen: einmal je Song */
 // lines: Zeilen ({ t, text, who?, bg? }), wordLists[i]: Wörter der Zeile i ({ text, a, b, est?, bg?, el? }) oder leer,
@@ -857,8 +866,16 @@ export function* planSteps(lines, wordLists, d, o = {}) {
   const fonts = limitFonts(fontsRaw, { max: 2, share: level === "wild" ? 0.6 : 0.4 });
 
   // 4. Klassen und Variablen
+  // erster Einsatz einer Zeile (Wortzeiten, sonst ihr Anfang) und Dauer einer Zeile bis zur nächsten
+  const firstA = (j) => (j < 0 || j >= L.length ? (j < 0 ? -Infinity : Infinity) : Number.isFinite(wordLists?.[j]?.[0]?.a) ? wordLists[j][0].a : L[j].t);
+  const lastA = (j) => {
+    const w = wordLists?.[j];
+    return w?.length && Number.isFinite(w[w.length - 1].a) ? w[w.length - 1].a : j >= 0 && j < L.length ? L[j].t : -Infinity;
+  };
+  const dur = (j) => (j + 1 < L.length && j < L.length ? L[j + 1].t - L[j].t : Infinity);
   const lineOf = (p, i) => {
     const { l, ws } = p;
+    const lineDur = dur(i), nextA = firstA(i + 1);
     const cls = [], vars = {};
     const t = treat[i] || "";
     const R = RECIPES[t];
@@ -915,10 +932,26 @@ export function* planSteps(lines, wordLists, d, o = {}) {
         }
         // Übergabe: so geht die Zeile ab, wenn die nächste dran ist (passend zu ihrem Auftritt)
         if (t && level !== "subtle") {
-          vars["--pxo"] = exitOf(t);
-          vars["--pxd"] = String(dir);
+          // der Abgang läuft, während die nächste Zeile dran ist: höchstens gut die Hälfte ihrer Dauer (sonst keiner)
+          const nd = dur(i + 1);
+          const xt = nd < FAST_LINE ? Math.round(clamp(0.55 * nd, 0, 500)) : 500;
+          if (xt >= 150) {
+            vars["--pxo"] = exitOf(t);
+            vars["--pxd"] = String(dir);
+            if (xt < 500) {
+              vars["--pxt"] = xt + "ms";
+              vars["--pxs"] = Math.round((26 * xt) / 500) + "ms";
+            }
+          }
         }
+        // großer Moment: der Einschlag ist vorbei, bevor die nächste Zeile kommt
+        if (A.moment && lineDur < 950) vars["--pmd"] = Math.round(clamp(0.9 * lineDur, 250, 850)) + "ms";
       }
+    }
+    // kurze Zeile: Farbe, Größe und Lage (auch die Gleitfahrt des Texts, immersive.js) in 80 % ihrer Dauer statt 0,5–0,8 s
+    if (lineDur < FAST_LINE && String(l.text || "").trim()) {
+      cls.push("is-p-fast");
+      vars["--plt"] = Math.round(clamp(0.8 * lineDur, 150, 700)) + "ms";
     }
     const easeKey = R?.ease || (kind === "chorus" || kind === "drop" ? deck.ease[0] : deck.ease[1]);
     const v = t ? `${t}:${dir > 0 ? "r" : "l"}:${Math.round(amp * 10)}:${easeKey}` : "";
@@ -970,23 +1003,32 @@ export function* planSteps(lines, wordLists, d, o = {}) {
         coloured = true;
       }
       let chars = false, tx = "";
-      const out = { cls: wc, vars: wv, lead };
+      // Zeit bis zum nächsten Einsatz (Wort) und bis zum ersten der nächsten Zeile; Abstand zum vorigen Einsatz
+      const a = Number.isFinite(w.a) ? w.a : l.t;
+      const room = nextA - a, roomNext = (k + 1 < n && Number.isFinite(ws[k + 1].a) ? ws[k + 1].a : nextA) - a;
+      const gapIn = a - (k > 0 && Number.isFinite(ws[k - 1].a) ? ws[k - 1].a : lastA(i - 1));
+      const wl = lead ? Math.round(clamp(Math.min(lead, 0.9 * gapIn), LEAD_MIN, lead)) : 0;
+      const out = { cls: wc, vars: wv, lead: wl };
       if (!still) {
         // Wartezustand (wo das Wort vor seinem Einsatz steht) und Vorlauf
         const len = [...String(w.text)].length;
         const useLetters = !!R?.L && (lettersOk(ws, l.who) || isKey) && canSplit(w.text);
         if (!useLetters) Object.assign(wv, poseVars(wordPose(t, { k, n, dir, amp, len, key: isKey, seed: deck.seed + "|" + i })));
-        if (lead) wv["--pl"] = lead + "ms";
-        if (hold[k].held) {
+        if (wl) wv["--pl"] = wl + "ms";
+        // gehaltener Ton: dehnt sich nur, solange die Zeile dran ist
+        const hd = Math.min(hold[k].hd, Math.round(0.95 * room));
+        if (hold[k].held && hd >= 200) {
           wc.push("is-p-held");
-          wv["--hd"] = hold[k].hd + "ms";
+          wv["--hd"] = hd + "ms";
         }
         if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
         if (bars?.length && real && !w.est && onBeat(w.a, bars, 70)) wc.push("is-p-bar");
         let acc = R?.acc || "";
         // das riesige Schlüsselwort ist selbst der Akzent: kein Stoß hinterher (er schob es über seine Nachbarn)
         if (isKey && acc === "pop") acc = "";
-        if (c && !calmAt.has(k)) {
+        // Wortbild-Bewegung ist Zierde: nur, wenn bis zur nächsten Zeile Zeit dafür bleibt (die Farbe bleibt immer)
+        const fxOk = room >= FX_ROOM;
+        if (c && !calmAt.has(k) && fxOk) {
           wc.push("is-p-cue", "is-c-" + c);
           // Spielart des Wortbilds: je Begriff und Song eine andere
           const fv = fxVariant(c, concept.get(k) || c, deck.fx);
@@ -1001,8 +1043,8 @@ export function* planSteps(lines, wordLists, d, o = {}) {
           }
           if (LETTERS.has(c) && canSplit(w.text) && !l.who && level !== "subtle") chars = true;
         }
-        if (isKey && t === "wave" && canSplit(w.text) && !l.who) chars = true;
-        if (useLetters) chars = letterPoses(t, w.text, { k, n, dir, amp, seed: deck.seed + "|" + i, lead });
+        if (isKey && t === "wave" && canSplit(w.text) && !l.who && fxOk) chars = true;
+        if (useLetters) chars = letterPoses(t, w.text, { k, n, dir, amp, seed: deck.seed + "|" + i, lead: wl });
         if (chars) {
           // bewegte Buchstaben und eine stille Kopie des ganzen Worts passen nicht übereinander: kein Schein
           if (tx) {
@@ -1029,11 +1071,22 @@ export function* planSteps(lines, wordLists, d, o = {}) {
         }
         if (!acc && wc.includes("is-p-bar")) acc = "bar";
         else if (!acc && wc.includes("is-p-beat")) acc = "beat";
+        // Akzent (alle Durchgänge) endet vor dem ersten Einsatz der nächsten Zeile und höchstens 2,5 Wortabstände
+        // nach dem eigenen – zu kurz für einen sichtbaren Stoß: keiner
+        let ad = pad || ACCENTS[acc] || 0;
+        if (acc) {
+          const cnt = Number(wv["--pai"]) || 1, cap = Math.min(0.9 * room, Math.max(180, 2.5 * roomNext));
+          if (ad * cnt > cap) ad = Math.floor(cap / cnt);
+          if (ad < (acc === "syl" ? 70 : ACC_MIN)) acc = "";
+        }
         if (acc && level !== "subtle") {
           wv["--pac"] = "m-a-" + acc;
-          wv["--pad"] = (pad || ACCENTS[acc]) + "ms";
+          wv["--pad"] = ad + "ms";
           if (acc === "echo") wc.push("is-echo");
-        } else delete wv["--pai"];
+        } else {
+          delete wv["--pai"];
+          if (tx && !wc.includes("is-cg")) tx = "";
+        }
         if (R?.caret && !c) wc.push("is-caret");
       }
       if (chars) out.chars = chars;

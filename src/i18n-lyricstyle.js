@@ -8,6 +8,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Subtle",
     lyrPlayLevel_playful: "Playful",
     lyrPlayLevel_wild: "Wild",
+    k_playful: "Playful lyrics on/off",
+    playfulOn: "Playful style on",
+    playfulOff: "Playful style off",
   },
   de: {
     lyrPlayful: "Verspielter Stil",
@@ -17,6 +20,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Dezent",
     lyrPlayLevel_playful: "Verspielt",
     lyrPlayLevel_wild: "Wild",
+    k_playful: "Verspielter Liedtext an/aus",
+    playfulOn: "Verspielter Stil an",
+    playfulOff: "Verspielter Stil aus",
   },
   es: {
     lyrPlayful: "Estilo juguetón",
@@ -26,6 +32,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Sutil",
     lyrPlayLevel_playful: "Juguetón",
     lyrPlayLevel_wild: "Salvaje",
+    k_playful: "Letra juguetona sí/no",
+    playfulOn: "Estilo juguetón activado",
+    playfulOff: "Estilo juguetón desactivado",
   },
   fr: {
     lyrPlayful: "Style ludique",
@@ -35,6 +44,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Discret",
     lyrPlayLevel_playful: "Ludique",
     lyrPlayLevel_wild: "Déchaîné",
+    k_playful: "Paroles ludiques oui/non",
+    playfulOn: "Style ludique activé",
+    playfulOff: "Style ludique désactivé",
   },
   it: {
     lyrPlayful: "Stile giocoso",
@@ -44,6 +56,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Sobrio",
     lyrPlayLevel_playful: "Giocoso",
     lyrPlayLevel_wild: "Scatenato",
+    k_playful: "Testo giocoso sì/no",
+    playfulOn: "Stile giocoso attivo",
+    playfulOff: "Stile giocoso disattivato",
   },
   ja: {
     lyrPlayful: "遊び心のあるスタイル",
@@ -53,6 +68,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "控えめ",
     lyrPlayLevel_playful: "遊び心",
     lyrPlayLevel_wild: "ワイルド",
+    k_playful: "遊び心のある歌詞 オン/オフ",
+    playfulOn: "遊び心のあるスタイル：オン",
+    playfulOff: "遊び心のあるスタイル：オフ",
   },
   ko: {
     lyrPlayful: "장난스러운 스타일",
@@ -62,6 +80,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "은은하게",
     lyrPlayLevel_playful: "장난스럽게",
     lyrPlayLevel_wild: "와일드",
+    k_playful: "장난스러운 가사 켜기/끄기",
+    playfulOn: "장난스러운 스타일 켜짐",
+    playfulOff: "장난스러운 스타일 꺼짐",
   },
   nl: {
     lyrPlayful: "Speelse stijl",
@@ -71,6 +92,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Subtiel",
     lyrPlayLevel_playful: "Speels",
     lyrPlayLevel_wild: "Wild",
+    k_playful: "Speelse songtekst aan/uit",
+    playfulOn: "Speelse stijl aan",
+    playfulOff: "Speelse stijl uit",
   },
   pl: {
     lyrPlayful: "Zabawny styl",
@@ -80,6 +104,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Subtelny",
     lyrPlayLevel_playful: "Zabawny",
     lyrPlayLevel_wild: "Szalony",
+    k_playful: "Zabawny tekst wł./wył.",
+    playfulOn: "Zabawny styl włączony",
+    playfulOff: "Zabawny styl wyłączony",
   },
   pt: {
     lyrPlayful: "Estilo divertido",
@@ -89,6 +116,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Subtil",
     lyrPlayLevel_playful: "Divertido",
     lyrPlayLevel_wild: "Selvagem",
+    k_playful: "Letra divertida ligar/desligar",
+    playfulOn: "Estilo divertido ligado",
+    playfulOff: "Estilo divertido desligado",
   },
   ru: {
     lyrPlayful: "Игривый стиль",
@@ -98,6 +128,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Сдержанно",
     lyrPlayLevel_playful: "Игриво",
     lyrPlayLevel_wild: "Дико",
+    k_playful: "Игривый текст вкл/выкл",
+    playfulOn: "Игривый стиль включён",
+    playfulOff: "Игривый стиль выключен",
   },
   tr: {
     lyrPlayful: "Oyuncu stil",
@@ -107,6 +140,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Sade",
     lyrPlayLevel_playful: "Oyuncu",
     lyrPlayLevel_wild: "Çılgın",
+    k_playful: "Oyuncu sözler aç/kapat",
+    playfulOn: "Oyuncu stil açık",
+    playfulOff: "Oyuncu stil kapalı",
   },
   uk: {
     lyrPlayful: "Грайливий стиль",
@@ -116,6 +152,9 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "Стримано",
     lyrPlayLevel_playful: "Грайливо",
     lyrPlayLevel_wild: "Шалено",
+    k_playful: "Грайливий текст увімк./вимк.",
+    playfulOn: "Грайливий стиль увімкнено",
+    playfulOff: "Грайливий стиль вимкнено",
   },
   zh: {
     lyrPlayful: "俏皮风格",
@@ -125,5 +164,8 @@ export const LYRICSTYLE_TEXT = {
     lyrPlayLevel_subtle: "低调",
     lyrPlayLevel_playful: "俏皮",
     lyrPlayLevel_wild: "狂野",
+    k_playful: "俏皮歌词 开/关",
+    playfulOn: "俏皮风格：开",
+    playfulOff: "俏皮风格：关",
   },
 };

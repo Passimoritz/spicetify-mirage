@@ -37,6 +37,13 @@ const ACTIONS = {
   next: () => free() && PLR.next(),
   prev: () => free() && PLR.back(),
   timing: () => immersive.toggleTiming(),
+  // verspielter Stil an/aus, sofort und ohne Neuladen – mit kurzer Meldung
+  playful: () => {
+    const on = immersive.togglePlayful();
+    try {
+      S.showNotification?.(t(on ? "playfulOn" : "playfulOff"), false, 1600);
+    } catch {}
+  },
   confetti: () => immersive.confetti(true),
   // Menü „Mehr“ (darin Aussehen & Leistung), ohne die Einstellungen zu öffnen
   more: () => immersive.perfMenu(),

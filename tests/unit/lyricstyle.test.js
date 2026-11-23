@@ -268,7 +268,8 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   assert.ok(plan[2].vars["--pr"].endsWith("deg"));
   const fire = plan[1].words[4];
   assert.ok(fire.cls.includes("is-p-held"), "gehaltenes „fire“");
-  assert.equal(fire.vars["--hd"], "1800ms");
+  // gehalten 1,8 s, aber die nächste Zeile (Hintergrundgesang) kommt nach 1,25 s: die Dehnung endet davor (95 %)
+  assert.equal(fire.vars["--hd"], "1188ms");
   assert.ok(fire.cls.includes("is-c-flame"), "Feuer flackert");
   assert.ok(fire.cls.includes("is-cg") && fire.tx === "fire", "Feuer mit Schein-Ebene");
   assert.ok(plan[1].words[2].cls.includes("is-c-beat"), "Herz schlägt");
