@@ -2402,7 +2402,9 @@ Probe-FX: ${pfx}`;
     if (px) {
       const P = px.P;
       Object.assign(V, {
-        mirror: P.mirror, spin: P.spin, glow: true, rings: true, ring: P.ring,
+        // Visualizer-Einstellungen gelten auch hier: Schein, Ringe und Spiegeln schaltet man selbst ab; Drehen kommt
+        // vom Song-Profil oder aus der Einstellung (früher überschrieb das Profil alle vier)
+        mirror: cfg.vizMirror !== false && P.mirror !== false, spin: !!(P.spin || cfg.vizSpin), glow: cfg.vizGlow !== false, rings: cfg.vizRings !== false, ring: P.ring,
         // Kranz und Puls folgen der Energie des Songs: im Break klein und ruhig, im Drop voll – die Kick drückt ihn raus
         height: V.height * P.height * (0.7 + 0.35 * px.I + px.drop * 0.2 + 0.22 * px.kickEnv * px.energy),
         pulse: P.pulse * px.lvl * (0.55 + 0.6 * px.I),
