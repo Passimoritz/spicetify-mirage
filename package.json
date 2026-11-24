@@ -23,7 +23,8 @@
     "icons": "node tools/build-icons.js",
     "check:emoji": "node tools/check-emoji.js",
     "perf:party": "electron tools/party-perf.js",
-    "test:perf": "electron tools/party-perf.js --check"
+    "test:perf": "electron tools/party-perf.js --check",
+    "perf:theme": "electron tools/theme-perf.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

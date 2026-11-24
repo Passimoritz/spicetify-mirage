@@ -71,7 +71,7 @@ body {
 .main-view-container__scroll-node,
 .main-view-container__scroll-node-child,
 :is(.Root__nav-bar, #Desktop_LeftSidebar_Id),
-:is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)),
+:is(.Root__right-sidebar, [data-m-rsb]),
 .Root__now-playing-bar,
 .Root__globalNav,
 .main-globalNav-searchSection {
@@ -83,8 +83,8 @@ body {
 :is(.Root__nav-bar, #Desktop_LeftSidebar_Id) > nav,
 :is(.Root__nav-bar, #Desktop_LeftSidebar_Id) > div,
 :is(.Root__main-view, #main-view),
-:is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)) > div:not(.LayoutResizer__resize-bar),
-:is(.Root__right-sidebar, .Root__top-container > div:has(> .LayoutResizer__inline-start)) > aside {
+:is(.Root__right-sidebar, [data-m-rsb]) > div:not(.LayoutResizer__resize-bar),
+:is(.Root__right-sidebar, [data-m-rsb]) > aside {
   background: var(--m-glass) !important;
   backdrop-filter: blur(var(--m-blur)) saturate(1.5);
   -webkit-backdrop-filter: blur(var(--m-blur)) saturate(1.5);
@@ -5677,18 +5677,24 @@ html.mirage-calm #mirage-immersive .m-im-livecard.is-out {
    außerhalb der Bühne anhalten (Naht der Leiste, Play-Halo, Ken-Burns, schwebendes
    Cover, Farbstrom der spielenden Zeile). Vorher liefen sie pausiert endlos weiter.
    ========================================================================== */
-html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-bar"]::before,
-html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="background-image"],
-html:is(:not(.mirage-playing), .mirage-hidden) [data-testid="now-playing-view"] [data-testid="cover-art-image"],
-html:is(:not(.mirage-playing), .mirage-hidden) .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU,
-html.mirage-hidden [data-testid="CoverSlotCollapsed__container"] img,
-html.mirage-hidden .main-coverSlotCollapsed-container img {
+/* mirage-rest (rest.js): Spotify sichtbar, aber nicht das aktive Fenster oder lange keine Eingabe – dann ruht die
+   Zierde ebenso (stehen bleiben, wo sie gerade ist; bei der nächsten Bewegung läuft sie weiter). Jedes Bild des
+   Hintergrunds zog sie sonst durch Stil und Zeichnen, das Vinyl allein ~17 ms je Sekunde (tools/theme-perf.js). */
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) [data-testid="now-playing-bar"]::before,
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) [data-testid="background-image"],
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) [data-testid="now-playing-view"] [data-testid="cover-art-image"],
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) .main-nowPlayingView-coverArtContainer img,
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) .main-trackList-trackListRow.Q_VN_DjnfmJnnbShT4rU,
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) .main-trackList-trackListRow:has(.main-trackList-playingIcon),
+html:is(.mirage-hidden, .mirage-rest) .main-nowPlayingWidget-coverArt img,
+html:is(.mirage-hidden, .mirage-rest) [data-testid="CoverSlotCollapsed__container"] img,
+html:is(.mirage-hidden, .mirage-rest) .main-coverSlotCollapsed-container img {
   animation-play-state: paused !important;
 }
 /* Der Immersiv-Knopf oben schimmerte auch bei pausierter Musik ununterbrochen weiter: im Leerlauf ruht er
    (ohne Animation liegt der Lichtstreif außerhalb der Kugel), unter der Maus lebt er wie gewohnt. */
-html:is(:not(.mirage-playing), .mirage-hidden) .m-orb-btn:not(:hover) .m-orb-shine::before,
-html:is(:not(.mirage-playing), .mirage-hidden) .m-orb-btn:not(:hover)::after {
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) .m-orb-btn:not(:hover) .m-orb-shine::before,
+html:is(:not(.mirage-playing), .mirage-hidden, .mirage-rest) .m-orb-btn:not(:hover)::after {
   animation: none;
 }
 html:not(.mirage-playing) #mirage-immersive .m-jam-p {
@@ -5823,8 +5829,11 @@ html.mirage-rich #mirage-stage .m-aurora {
   inset: auto 0 -12px;
   height: 12px;
 }
+/* Tastatur: Fokus auf dem Knopf (direkt vor dem Fenster) oder in den Knöpfen des Fensters – statt :has(:focus-visible),
+   das bei jeder Änderung im Liedtext-Bereich neu geprüft wurde */
 #mirage-immersive .m-im-lyrstate:hover .m-im-lyrstate-pop,
-#mirage-immersive .m-im-lyrstate:has(:focus-visible) .m-im-lyrstate-pop {
+#mirage-immersive .m-im-lyrstate-btn:focus-visible + .m-im-lyrstate-pop,
+#mirage-immersive .m-im-lyrstate-pop:focus-within {
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, 0);
@@ -8124,7 +8133,9 @@ html.mirage-calm #mirage-immersive .m-im-toast {
   animation: none;
 }
 /* Mirage-Einstellungen aus „Mehr“ → Alle Einstellungen: über der Immersiv-Ebene statt dahinter */
-body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overlay):has(.mirage-settings) {
+/* html.mirage-im-open statt body:has(#mirage-immersive.is-on): ein :has() am <body> ließ jede Änderung irgendwo
+   im Dokument (Liedtext-Zeilen, Spielzeit) bis hinauf neu prüfen – im Immersiv-Modus dutzende Male je Sekunde */
+html.mirage-im-open :is(.GenericModal__overlay, .ReactModal__Overlay):has(.mirage-settings) {
   z-index: 10000 !important;
 }
 /* === i-playful === */

@@ -130,6 +130,36 @@ document.addEventListener("mirage:im-close", resume);
   } catch {}
 })();
 
+/* ---------------------------------------------------------------- rechte Seitenleiste markieren */
+// Die Hülle der rechten Seitenleiste (ohne eigene feste Klasse) erkannte user.css früher über
+// „.Root__top-container > div:has(> .LayoutResizer__inline-start)“. Gemessen (tools/theme-perf.js): dieses :has()
+// ließ JEDE Textänderung irgendwo in Spotify – die Spielzeit unten jede Sekunde – den Stil bis hinauf zu <body>
+// neu prüfen, danach lief ein Layout der ganzen Seite (40–65 ms je Sekunde, im Leerlauf). Jetzt setzt theme.js
+// ein data-Attribut (React überschreibt className, data-m-* lässt es stehen) und beobachtet nur die direkten
+// Kinder des Containers – Spotify baut die Leiste beim Ein- und Ausklappen neu.
+const RSB = "data-m-rsb";
+function markSidebar(top) {
+  for (const d of top.children) {
+    const is = d.tagName === "DIV" && !!d.querySelector(":scope > .LayoutResizer__inline-start");
+    if (is !== d.hasAttribute(RSB)) d.toggleAttribute(RSB, is);
+  }
+}
+(function watchSidebar() {
+  const top = document.querySelector(".Root__top-container");
+  if (!top) return setTimeout(watchSidebar, 500);
+  // beobachtet werden nur zwei Ebenen ohne subtree: die Kinder des Containers (Hüllen kommen und gehen) und die
+  // direkten Kinder jeder Hülle (der Griff kann nachträglich in eine bestehende Hülle kommen) – die Listen und
+  // Texte darin lösen nichts aus
+  const inner = new MutationObserver(() => markSidebar(top));
+  const watch = () => {
+    inner.disconnect();
+    for (const d of top.children) inner.observe(d, { childList: true });
+    markSidebar(top);
+  };
+  new MutationObserver(watch).observe(top, { childList: true });
+  watch();
+})();
+
 /* ---------------------------------------------------------------- angehefteter Spaltenkopf */
 // Spotify vergibt dem angehefteten Kopf („# Titel Album …“) neue Klassennamen, die Spicetifys
 // Klassen-Liste nicht kennt – die CSS-Regel greift dann nie und die Titel laufen sichtbar durch.
@@ -166,7 +196,9 @@ document.addEventListener(
     stickySettle = setTimeout(markSticky, 160);
     if (stickyQueued) return;
     stickyQueued = true;
-    requestAnimationFrame(markSticky);
+    // erst NACH dem Bild messen (rAF → Aufgabe danach): im rAF selbst war das Layout nach Spotifys Umbau der Liste
+    // noch offen, getBoundingClientRect erzwang es vorzeitig (beim Scrollen der größte Einzelposten des Themes)
+    requestAnimationFrame(() => setTimeout(markSticky, 0));
   },
   { capture: true, passive: true },
 );

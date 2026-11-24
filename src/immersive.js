@@ -660,6 +660,14 @@ Probe-FX: ${pfx}`;
     }
   }
 
+  // Symbol/Text eines Knopfs nur bei einer Änderung neu setzen: syncState läuft alle 250 ms, und jedes innerHTML
+  // tauschte das SVG aus (Stil + Layout der Knöpfe, mehrmals je Sekunde in jeder Ansicht – tools/theme-perf.js)
+  const setIcon = (b, key, html) => {
+    if (!b || b.dataset.icon === key) return;
+    b.dataset.icon = key;
+    b.innerHTML = html;
+  };
+  const setAttr = (b, name, v) => b && b.getAttribute(name) !== v && b.setAttribute(name, v);
   // Schalterzustände aus Spotify lesen (Zufall, Wiederholen, Like, Lautstärke)
   function syncState() {
     if (!el) return;
@@ -675,18 +683,24 @@ Probe-FX: ${pfx}`;
     }
     q.timerBtn?.classList.toggle("is-on", !!ctl.sleepState());
     // Zustand auch für Screenreader und für das CSS (aria-pressed)
-    for (const b of [q.shuffle, q.repeat, q.like, q.timerBtn]) b?.setAttribute("aria-pressed", String(b.classList.contains("is-on")));
     const rep = P.getRepeat?.() || 0;
     q.repeat.classList.toggle("is-on", rep > 0);
-    q.repeat.innerHTML = rep === 2 ? ICON.repeatOne : ICON.repeat;
+    setIcon(q.repeat, "r" + rep, rep === 2 ? ICON.repeatOne : ICON.repeat);
     const liked = !!P.getHeart?.();
     q.like.classList.toggle("is-on", liked);
-    q.like.innerHTML = liked ? ICON.heartOn : ICON.heart;
+    setIcon(q.like, liked ? "on" : "off", liked ? ICON.heartOn : ICON.heart);
+    for (const b of [q.shuffle, q.repeat, q.like, q.timerBtn]) setAttr(b, "aria-pressed", String(!!b?.classList.contains("is-on")));
     const muted = !!P.getMute?.();
-    q.mute.innerHTML = muted ? ICON.mute : ICON.vol;
-    q.mute.title = q.mute.ariaLabel = t(muted ? "c_unmute" : "c_mute");
-    if (document.activeElement !== q.volume) q.volume.value = Math.round((muted ? 0 : P.getVolume?.() ?? 1) * 100);
-    q.volume.style.setProperty("--v", q.volume.value + "%");
+    if (q.mute.dataset.icon !== (muted ? "m" : "v")) {
+      setIcon(q.mute, muted ? "m" : "v", muted ? ICON.mute : ICON.vol);
+      q.mute.title = q.mute.ariaLabel = t(muted ? "c_unmute" : "c_mute");
+    }
+    if (document.activeElement !== q.volume) {
+      const v = String(Math.round((muted ? 0 : P.getVolume?.() ?? 1) * 100));
+      if (q.volume.value !== v) q.volume.value = v;
+    }
+    const vv = q.volume.value + "%";
+    if (q.volume.style.getPropertyValue("--v") !== vv) q.volume.style.setProperty("--v", vv);
     syncFull();
   }
   // Vollbild wie Spotify selbst: das Immersiv-Fenster SELBST wird Vollbild – ohne Spotifys Kopfleiste darüber
@@ -708,10 +722,11 @@ Probe-FX: ${pfx}`;
     if (!el) return;
     const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
     for (const b of [q.fs]) {
-      b.innerHTML = on ? ICON.fullOff : ICON.full;
+      if (b.dataset.icon === (on ? "off" : "on")) continue;
+      setIcon(b, on ? "off" : "on", on ? ICON.fullOff : ICON.full);
       b.title = b.ariaLabel = t(on ? "fullOff" : "c_full");
     }
-    el.classList.toggle("is-full", on);
+    if (el.classList.contains("is-full") !== on) el.classList.toggle("is-full", on);
   }
   // Ruhender Hintergrund aus dem Cover – ersetzt das teure Live-Verwischen der ganzen Seite
   let hazeSrc = "";

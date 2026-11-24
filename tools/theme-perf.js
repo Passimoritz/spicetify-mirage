@@ -3,7 +3,8 @@
 // Stylesheets (%APPDATA%\Spotify\Apps\xpui, nur gelesen – fehlen sie, ohne) und dem Test-Spotify aus tests/e2e.
 // Szenarien (je eine Chromium-Timeline, ausgewertet wie in party-perf.js):
 //   startup  Laden bis 8 s danach: Übersetzen/Ausführen von theme.js, lange Aufgaben, Stil/Layout
-//   idle     30 s auf einer Playlist, Musik läuft, keine Eingabe (Hintergrund, Fortschrittsbalken, Zeitgeber)
+//   idle     30 s auf einer Playlist, Musik läuft, Fenster aktiv, keine Eingabe (Hintergrund, Spielzeit, Zeitgeber)
+//   rest     dasselbe, aber Spotify ist nicht das aktive Fenster (Musik im Hintergrund, man arbeitet woanders)
 //   scroll   lange Titelliste (200 Zeilen, wie Spotify virtualisiert) mit dem Mausrad runter und wieder hoch
 //   hover    Maus über Titelzeilen und Karten (Startseite)
 //   song     drei Songwechsel (Farbwechsel, Cover, Analyse)
@@ -14,12 +15,13 @@
 //   npm run perf:theme                            alles, Bericht in tests/e2e/out/theme-perf.json
 //   npm run perf:theme -- --only idle,scroll      nur diese Szenarien
 //   npm run perf:theme -- --check                 zusätzlich das Budget prüfen (Exit-Code 1, wenn gerissen)
-//   npm run perf:theme -- --selectors             je Szenario die teuersten CSS-Selektoren (Chromiums Selektor-Statistik)
+//   npm run perf:theme -- --trace                 Timelines behalten (tests/e2e/out/theme-perf-<Szenario>.json, für DevTools)
+//   PERF_CATS=disabled-by-default-devtools.timeline.invalidationTracking   dazu: wer Stil/Layout auslöst
 //   PERF_EXTRA_CSS=pfad.css (zusätzliche Regeln nach user.css, für Versuche) PERF_BARE=1 (ohne Mirage)
 //   PERF_THEME=pfad/theme.js PERF_CSS=pfad/user.css PERF_SET='{"preset":"full",...}' PERF_IM_SECS=20 PERF_IDLE_SECS=30
 // Budget (--check): relativ zu einer Eichmessung im selben Lauf (fester Stil-/Layout-Durchgang in einem eigenen
 // Rahmen ohne Mirage), damit ein langsamer Rechner nicht durchfällt und ein schneller keinen Rückschritt versteckt.
-const { app, BrowserWindow, protocol, session, contentTracing } = require("electron");
+const { app, BrowserWindow, protocol, session, contentTracing, net } = require("electron");
 const fs = require("fs"), path = require("path");
 
 const ROOT = path.join(__dirname, ".."), OUT = path.join(ROOT, "tests", "e2e", "out");
@@ -27,11 +29,10 @@ const arg = (n, d) => {
   const i = process.argv.indexOf("--" + n);
   return i > 0 ? process.argv[i + 1] : d;
 };
-const ALL = ["startup", "idle", "scroll", "hover", "song", "nav", "cover", "lyrics", "viz", "mix", "party", "clock"];
+const ALL = ["startup", "idle", "rest", "scroll", "hover", "song", "nav", "cover", "lyrics", "viz", "mix", "party", "clock"];
 const ONLY = (arg("only", "") || "").split(",").filter(Boolean);
 const RUN = new Set(ONLY.length ? ONLY : ALL);
 const CHECK = process.argv.includes("--check");
-const SELSTATS = process.argv.includes("--selectors");
 const KEEP_TRACE = process.argv.includes("--trace");
 const IM_SECS = Number(process.env.PERF_IM_SECS) || 20;
 const IDLE_SECS = Number(process.env.PERF_IDLE_SECS) || 30;
@@ -43,21 +44,26 @@ const CSS = process.env.PERF_CSS || path.join(ROOT, "Mirage", "user.css");
 // Preset „Ausgewogen“ wie nach der Installation; autoPerf aus, damit die Stufe nicht mitten im Lauf wechselt
 const SETTINGS = { preset: "balanced", presetBase: "balanced", autoPerf: false, partyOnline: false, onlineLyrics: false, remoteFix: false, libBpm: false, ...JSON.parse(process.env.PERF_SET || "{}") };
 
-// Budget: Vielfache der Eichung (ms je Durchgang) bzw. feste Grenzen. Gemessen auf einem Desktop mit Grafikkarte
-// (Eichung ~4–6 ms), mit gut doppelt so viel Luft wie nach den Verbesserungen in 1.32 gemessen – siehe BUDGET.md-
-// freie Erklärung im Bericht: report.budget listet Grenze und Wert je Prüfung.
+// Budget (--check): busy/style/layout/script als Vielfache der Eichung (ms je s geteilt durch ms des Eich-Durchgangs),
+// long als feste Zahl langer Aufgaben (> 50 ms). Gemessen nach den Verbesserungen in 1.32 (Eichung ~2,3 ms, Desktop
+// mit Grafikkarte): idle 58 ms/s, rest 21, cover 95, lyrics 56, clock 23, Layout im Leerlauf ~3 ms/s. Die Grenzen
+// lassen gut 1,5- bis 2-fache Luft, fangen aber die Rückschritte, für die es sie gibt: ein :has() am Gerüst ließ
+// jede Sekunde die ganze Seite neu layouten (Layout ~45 ms/s, eine lange Aufgabe je Sekunde), Dauer-Animationen
+// im Hintergrund kosteten ruhend ~90 ms/s. Szenario scroll/hover/nav messen vor allem den Spotify-Nachbau
+// (ohne Mirage: scroll ~530, hover ~115 ms/s) – dort nur grobe Grenzen gegen Ausreißer.
 const BUDGET = {
-  idle: { busy: 4, style: 1.5 },
-  scroll: { busy: 60, style: 20, p95: 34 },
-  hover: { busy: 40, style: 12 },
-  song: { busy: 40, long: 1 },
-  nav: { busy: 80, long: 1 },
-  cover: { busy: 12, style: 3 },
-  lyrics: { busy: 30, style: 10 },
-  viz: { busy: 30, style: 3 },
-  mix: { busy: 40, style: 10 },
-  clock: { busy: 10, style: 3 },
-  party: { busy: 80, style: 20 },
+  idle: { busy: 35, style: 6, layout: 5, long: 0 },
+  rest: { busy: 20, style: 2, layout: 5, long: 0 },
+  scroll: { script: 80 },
+  hover: { busy: 220 },
+  song: { busy: 100, long: 2 },
+  nav: { busy: 300, long: 8 },
+  cover: { busy: 70, layout: 5, long: 0 },
+  lyrics: { busy: 50, layout: 5, long: 0 },
+  viz: { busy: 110, layout: 5, long: 1 },
+  mix: { busy: 110, layout: 5, long: 1 },
+  party: { busy: 140, layout: 5, long: 1 },
+  clock: { busy: 20, layout: 5, long: 1 },
 };
 
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
@@ -67,7 +73,12 @@ app.commandLine.appendSwitch("js-flags", "--expose-gc");
 if (process.env.PERF_SW) app.commandLine.appendSwitch("disable-gpu");
 protocol.registerSchemesAsPrivileged([{ scheme: "mui", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
 for (const ev of ["uncaughtException", "unhandledRejection"]) process.on(ev, (e) => { console.error(e); app.exit(2); });
+// hängt ein Schritt (Seite antwortet nicht), nicht ewig weiterlaufen: ein verwaistes Fenster verfälscht sonst die
+// Messungen danach
+setTimeout(() => { console.log("Messung abgebrochen: Zeitüberschreitung"); app.exit(2); }, 20 * 60 * 1000).unref?.();
 
+// PERF_DEBUG=1: jeden Schritt melden (hängt ein Lauf, sieht man wo)
+const step = process.env.PERF_DEBUG ? (m) => console.log("· " + m) : () => {};
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const r2 = (v) => Math.round(v * 100) / 100;
 const q = (arr, p) => {
@@ -91,12 +102,52 @@ function colorsCss() {
   const vars = [...sec.matchAll(/^\s*([\w-]+)\s*=\s*([0-9a-fA-F]{6})/gm)].map(([, k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${[0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16)).join(",")};`).join("");
   return `:root{${vars}}`;
 }
-// Cover vom „Bildserver“: je Bild-ID andere Farben (drei Flächen, wie ein Foto mit Hauptfarbe und Akzent)
-function coverSvg(id) {
+// Cover vom „Bildserver“: je Bild-ID andere Farben (drei Flächen und ein Kreis, wie ein Foto mit Hauptfarbe und Akzent),
+// als echtes PNG wie Spotifys JPEGs (ein SVG-Cover würde Chromium bei jeder Drehung neu zeichnen – das maß sonst
+// den Nachbau statt Mirage)
+const zlib = require("zlib");
+const CRC = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+const crc32 = (b) => {
+  let c = 0xffffffff;
+  for (const x of b) c = CRC[(c ^ x) & 255] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+};
+const chunk = (type, data) => {
+  const len = Buffer.alloc(4), crc = Buffer.alloc(4), td = Buffer.concat([Buffer.from(type), data]);
+  len.writeUInt32BE(data.length);
+  crc.writeUInt32BE(crc32(td));
+  return Buffer.concat([len, td, crc]);
+};
+const hsl = (h, s, l) => {
+  const k = (n) => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
+  return [0, 8, 4].map((n) => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)))));
+};
+const covers = new Map();
+function coverPng(id) {
+  if (covers.has(id)) return covers.get(id);
   let h = 0;
   for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  const a = h % 360, b = (a + 40 + (h >> 9) % 120) % 360;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="hsl(${a},75%,48%)"/><rect y="30" width="64" height="20" fill="hsl(${b},80%,55%)"/><rect y="50" width="64" height="14" fill="hsl(${a},50%,16%)"/><circle cx="44" cy="20" r="10" fill="hsl(${(a + 180) % 360},60%,70%)"/></svg>`;
+  const a = h % 360, b = (a + 40 + ((h >> 9) % 120)) % 360;
+  const A = hsl(a, 0.75, 0.48), B = hsl(b, 0.8, 0.55), C = hsl(a, 0.5, 0.16), D = hsl((a + 180) % 360, 0.6, 0.7);
+  const N = 64, raw = Buffer.alloc(N * (N * 3 + 1));
+  for (let y = 0; y < N; y++) {
+    raw[y * (N * 3 + 1)] = 0;
+    for (let x = 0; x < N; x++) {
+      const c = (x - 44) ** 2 + (y - 20) ** 2 < 100 ? D : y < 30 ? A : y < 50 ? B : C;
+      raw.set(c, y * (N * 3 + 1) + 1 + x * 3);
+    }
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(N, 0);
+  ihdr.writeUInt32BE(N, 4);
+  ihdr.set([8, 2, 0, 0, 0], 8);
+  const png = Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", ihdr), chunk("IDAT", zlib.deflateSync(raw)), chunk("IEND", Buffer.alloc(0))]);
+  covers.set(id, png);
+  return png;
 }
 const IMG = (n) => `https://i.scdn.co/image/ab67616d00004851${String(n).padStart(24, "0")}`;
 const icon = (d = "<circle cx='12' cy='12' r='9'/>") => `<svg data-encore-id="icon" role="img" aria-hidden="true" class="${E}-icon" viewBox="0 0 24 24" style="--encore-icon-height:var(--encore-graphic-size-decorative-base);--encore-icon-width:var(--encore-graphic-size-decorative-base)">${d}</svg>`;
@@ -151,8 +202,8 @@ const shell = () => `<div id="main"><div class="Root global-nav centered-layout"
   <div class="main-topBar-container" style="--top-bar-opacity:0"><div class="main-topBar-background" style="background-color:rgb(72,56,104);opacity:0"></div><div class="main-topBar-topbarContentWrapper"><div class="main-topBar-topbarContent" style="opacity:0">${playBtn("medium")}<span class="${E}-text-title-medium">Mirage Mix</span></div></div></div>
   <div class="main-view-container__scroll-node" data-overlayscrollbars-initialize=""><div data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="overflow:hidden scroll;height:100%">
    <div class="main-view-container__scroll-node-child"><main aria-label="Spotify" style="display:block" id="m-perf-page"></main><div class="main-view-container__mh-footer-container" style="height:200px"></div></div></div></div></div></div>
- <aside class="Root__right-sidebar" aria-label="Now playing view" style="grid-area:right-sidebar;width:320px"><div class="main-nowPlayingView-section" style="padding:16px"><div class="main-nowPlayingView-coverArtContainer"><img class="main-image-image" src="${IMG(1)}" alt="" style="width:100%;aspect-ratio:1;border-radius:8px"></div>
-  <div class="main-nowPlayingView-contextItemInfo"><div class="${E}-text-title-medium" data-encore-id="text">Song of Aurora</div><div class="${E}-text-body-medium encore-internal-color-text-subdued" data-encore-id="text">Aurora</div></div></div></aside>
+ <div style="grid-area:right-sidebar;width:320px;position:relative;display:flex"><div class="LayoutResizer__resize-bar LayoutResizer__inline-start" style="position:absolute;inset:0 auto 0 0;width:4px"></div><aside aria-label="Now playing view" data-testid="now-playing-view" style="flex:1"><div class="main-nowPlayingView-section" style="padding:16px"><div class="main-nowPlayingView-coverArtContainer"><img class="main-image-image" data-testid="cover-art-image" src="${IMG(1)}" alt="" style="width:100%;aspect-ratio:1;border-radius:8px"></div>
+  <div class="main-nowPlayingView-contextItemInfo"><div class="${E}-text-title-medium" data-encore-id="text">Song of Aurora</div><div class="${E}-text-body-medium encore-internal-color-text-subdued" data-encore-id="text">Aurora</div></div></div></aside></div>
  <div class="Root__now-playing-bar" style="grid-area:now-playing-bar"><footer data-testid="now-playing-bar" aria-label="Now playing bar" style="height:72px;display:flex;align-items:center;gap:16px;padding:0 16px">
   <div data-testid="now-playing-widget" class="main-nowPlayingWidget-nowPlaying" style="display:flex;align-items:center;gap:12px;width:30%"><div class="main-nowPlayingWidget-coverArt"><div data-testid="CoverSlotCollapsed__container" class="main-coverSlotCollapsed-container"><img class="main-image-image cover-art-image" src="${IMG(1)}" alt="" width="56" height="56"></div></div>
    <div class="main-nowPlayingWidget-trackInfo"><div class="${E}-text-body-small-bold" data-encore-id="text" id="m-perf-title">Song of Aurora</div><div class="${E}-text-marginal encore-internal-color-text-subdued" data-encore-id="text">Aurora</div></div></div>
@@ -234,7 +285,7 @@ const SHELL_JS = `(() => {
       const m = Spicetify.Player.data.item.metadata;
       document.getElementById("m-perf-title").textContent = m.title;
       const src = (m.image_url || "").replace("spotify:image:", "https://i.scdn.co/image/");
-      document.querySelectorAll(".cover-art-image, .Root__right-sidebar img").forEach((i) => (i.src = src));
+      document.querySelectorAll(".cover-art-image, [data-testid=now-playing-view] img").forEach((i) => (i.src = src));
       // die laufende Zeile in der Liste wandert mit
       active = (active + 1) % Math.max(1, n);
       if (rowsEl) { first = last = -1; rowsEl.replaceChildren(); virt(); }
@@ -308,21 +359,11 @@ function readTrace(file) {
   const inWin = (ts) => ts >= t0 && ts <= t1;
   const sum = {}, cnt = {}, tasks = [], other = { raster: 0, compositor: 0, gpu: 0 };
   let elems = 0, scriptEval = 0, compile = 0;
-  const sel = {};
   // verschachtelte RunTask-Ereignisse (ThreadControllerImpl::RunTask um RunTask) nur einmal zählen
   let mainEnd = 0;
   const mainEv = [];
   list.sort((a, b) => (a.ts || 0) - (b.ts || 0) || (b.dur || 0) - (a.dur || 0));
   for (const e of list) {
-    if (e.name === "SelectorStats" && e.args?.selector_stats && inWin(e.ts / 1000)) {
-      for (const s of e.args.selector_stats.selector_timings || []) {
-        const x = (sel[s.selector] ||= { us: 0, attempts: 0, matches: 0 });
-        x.us += s["elapsed (us)"] || 0;
-        x.attempts += s.match_attempts || 0;
-        x.matches += s.match_count || 0;
-      }
-      continue;
-    }
     if (e.ph !== "X" || !e.dur) continue;
     const ts = e.ts / 1000;
     if (!inWin(ts)) continue;
@@ -366,15 +407,15 @@ function readTrace(file) {
     // was in den längsten Aufgaben steckte (Ereignisse über 2 ms darin)
     worst: tasks.slice().sort((a, b) => b[1] - a[1]).slice(0, 4).map(([at, d]) => ({ at: r2(at / 1000), ms: r2(d), parts: mainEv.filter(([ts]) => ts >= at + t0 && ts <= at + t0 + d).slice(0, 12).map(([, dd, n, u]) => `${n}${u ? "(" + String(u).slice(-40) + ")" : ""} ${r2(dd)}`) })),
     scriptEval: r2(scriptEval), compile: r2(compile),
-    selectors: Object.entries(sel).sort((a, b) => b[1].us - a[1].us).slice(0, 25).map(([s, x]) => ({ selector: s.slice(0, 160), ms: r2(x.us / 1000), attempts: x.attempts, matches: x.matches })),
   };
 }
 
 /* ---------------------------------------------------------------- Lauf */
 let T, win, dbg;
 const report = {};
-const cats = ["devtools.timeline", "toplevel", "v8", "disabled-by-default-devtools.timeline", ...(SELSTATS ? ["disabled-by-default-blink.debug"] : []), ...(process.env.PERF_CATS || "").split(",").filter(Boolean)];
+const cats = ["devtools.timeline", "toplevel", "v8", "disabled-by-default-devtools.timeline", ...(process.env.PERF_CATS || "").split(",").filter(Boolean)];
 async function traced(name, body, frames = false) {
+  step("Szenario " + name);
   const file = path.join(OUT, `theme-perf-${name}.json`);
   await contentTracing.startRecording({ included_categories: cats, excluded_categories: ["*"] });
   await wait(200);
@@ -423,10 +464,14 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
     if (p.startsWith("/xpui/")) return serve(path.join(XPUI, path.normalize(p.slice(6)).replace(/^(\.\.[\\/])+/, "")));
     return new Response("", { status: 404 });
   });
-  // kein Netz: Cover vom „Bildserver“ (mit CORS, Mirage liest die Farben aus), Spotify-Schriften aus xpui/fonts, sonst 404
+  // kein Netz: Cover vom „Bildserver“ (mit CORS, Mirage liest die Farben aus), Spotify-Schriften aus xpui/fonts,
+  // Mirages Schriften von Google Fonts (wie beim Nutzer), sonst 404
   ses.protocol.handle("https", (req) => {
     const u = new URL(req.url);
-    if (u.host === "i.scdn.co") return new Response(coverSvg(u.pathname), { headers: { "content-type": "image/svg+xml", "access-control-allow-origin": "*" } });
+    if (u.host === "i.scdn.co") return new Response(coverPng(u.pathname), { headers: { "content-type": "image/png", "access-control-allow-origin": "*" } });
+    // Mirages Schriften (Outfit, JetBrains Mono) wie beim Nutzer: ohne sie sucht Chromium für jeden Text eine Ersatzschrift,
+    // das kostete im Layout mehr als Mirage selbst. Einmal geladen, danach aus dem Zwischenspeicher der Sitzung
+    if (u.host === "fonts.googleapis.com" || u.host === "fonts.gstatic.com") return net.fetch(req, { bypassCustomProtocolHandlers: true });
     if (u.host === "encore.scdn.co" && HAS_XPUI) return serve(path.join(XPUI, "fonts", path.basename(u.pathname).replace(/-[0-9a-f]{32}(?=\.woff2?$)/, "")));
     return new Response("", { status: 404 });
   });
@@ -438,9 +483,14 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
   report.bare = BARE;
   const errors = [];
   win.webContents.on("console-message", (_e, level, msg) => level >= 3 && !/Failed to load resource|net::ERR/.test(msg) && errors.push(msg.slice(0, 300)));
-  T = (code) => win.webContents.executeJavaScript(code);
+  T = (code) => (step(code.slice(0, 70).replace(/\s+/g, " ")), win.webContents.executeJavaScript(code));
   dbg = win.webContents.debugger;
   dbg.attach("1.3");
+  // das kopflose Fenster hat nie den Fokus (auch Emulation.setFocusEmulationEnabled ändert document.hasFocus() hier
+  // nicht): für „Spotify ist das aktive Fenster“ meldet die Seite Fokus, für rest keinen – wie beim echten Wechsel
+  // mit focus/blur-Ereignis
+  const setFocus = (on) => T(`window.__focus = ${on}; document.hasFocus = () => window.__focus; dispatchEvent(new Event(${on ? '"focus"' : '"blur"'})); 1`);
+  const focusOn = () => setFocus(true);
   Object.assign(report, { when: new Date().toISOString(), size: [W, H], xpui: HAS_XPUI, settings: SETTINGS, scenarios: {} });
 
   // Start: Timeline schon vor dem Laden an
@@ -449,6 +499,7 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
     await contentTracing.startRecording({ included_categories: cats, excluded_categories: ["*"] });
     await wait(200);
     await win.loadURL("mui://app/index.html");
+    await focusOn();
     await T(`console.timeStamp("perf:start"); 1`);
     await wait(8000);
     await T(`console.timeStamp("perf:end"); 1`);
@@ -465,14 +516,13 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
     report.scenarios.startup = tr;
   } else {
     await win.loadURL("mui://app/index.html");
+    await focusOn();
     await wait(8000);
   }
   // Spotify fertig aufgebaut, Theme läuft: einschwingen lassen (Gesundheits-Check nach 8 s, erste Farben, Analyse)
   await wait(3000);
   const calib0 = await T(CALIB);
   report.memStart = await memory();
-  const at = (s) => T(`document.elementFromPoint(${s[0]}, ${s[1]}) ? 1 : 0`);
-  void at;
 
   // laufende Animationen (CSS und Web Animations) auf der Playlist: was davon nicht allein auf dem Compositor läuft,
   // kostet jedes Bild Stil + Zeichnen im Hauptthread
@@ -482,7 +532,17 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
     return (t ? t.tagName.toLowerCase() + (t.id ? "#" + t.id : "") + "." + String(t.className?.baseVal ?? t.className).split(" ").slice(0, 2).join(".") : "?") + (a.effect?.pseudoElement || "") + " " + (a.animationName || a.id || "") + " [" + props.join(",") + "]";
   })`);
   console.log("laufende Animationen: " + report.animations.join(" · "));
+  report.focus = await T(`({ focus: document.hasFocus(), rest: document.documentElement.classList.contains("mirage-rest"), outfit: document.fonts.check("14px Outfit") })`);
+  console.log("Fenster aktiv: " + JSON.stringify(report.focus));
   if (RUN.has("idle")) report.scenarios.idle = await traced("idle", () => wait(IDLE_SECS * 1000));
+  if (RUN.has("rest")) {
+    await setFocus(false);
+    await wait(500);
+    const on = await T(`document.documentElement.classList.contains("mirage-rest")`);
+    report.scenarios.rest = { ...(await traced("rest", () => wait(IDLE_SECS * 1000))), restClass: on };
+    await focusOn();
+    await wait(500);
+  }
   if (RUN.has("scroll")) {
     report.scenarios.scroll = await traced("scroll", async () => {
       await wheel(900, 500, 120, 180);
@@ -547,7 +607,6 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
   }
   if (report.scenarios.startup) console.log(`Start: theme.js übersetzen ${report.scenarios.startup.compile} ms, ausführen ${report.scenarios.startup.scriptEval} ms`);
   console.log(`Speicher: Start ${JSON.stringify(report.memStart)} · Ende ${JSON.stringify(report.memEnd)}`);
-  if (SELSTATS) for (const [k, s] of Object.entries(report.scenarios)) if (s.selectors.length) console.log(`teuerste Selektoren (${k}): ` + s.selectors.slice(0, 8).map((x) => `${x.ms}ms ${x.selector}`).join(" | "));
   if (errors.length) console.log("Fehler im Fenster: " + errors.slice(0, 3).join(" | "));
   let bad = 0;
   if (CHECK) {
@@ -556,10 +615,10 @@ ${spotifyCss.map((f) => `<link rel="stylesheet" href="/xpui/${f}">`).join("")}
       const s = report.scenarios[k];
       if (!s) continue;
       const checks = [];
-      if (b.busy) checks.push(["Hauptthread ms/s", s.msPerSec.busy, r2(b.busy * calib)]);
-      if (b.style) checks.push(["Stil ms/s", s.msPerSec.style, r2(b.style * calib)]);
-      if (b.p95) checks.push(["Bildabstand p95 ms", s.frames.p95, b.p95]);
-      checks.push(["lange Aufgaben", s.long.length, b.long ?? 0]);
+      for (const [key, name] of [["busy", "Hauptthread ms/s"], ["style", "Stil ms/s"], ["layout", "Layout ms/s"], ["script", "Skript ms/s"]]) {
+        if (b[key] != null) checks.push([name, s.msPerSec[key], r2(b[key] * calib)]);
+      }
+      if (b.long != null) checks.push(["lange Aufgaben", s.long.length, b.long]);
       for (const [name, v, max] of checks) {
         const ok = v <= max;
         if (!ok) bad++;
