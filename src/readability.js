@@ -76,7 +76,7 @@ function check(deadline) {
     if (!root.isConnected || checked.has(root) || root.closest("#mirage-immersive, #mirage-stage")) continue;
     checkOne(root);
     // Kinder hinten anhängen statt rekursiv: so lässt sich jederzeit unterbrechen
-    for (let c = root.firstElementChild; c; c = c.nextElementSibling) if (!checked.has(c)) pending.push(c);
+    for (let c = root.firstElementChild; c; c = c.nextElementSibling) if (!checked.has(c) && !c.matches(ROW)) pending.push(c);
   }
   if (pending.length) schedule();
 }
@@ -85,8 +85,13 @@ function schedule() {
   queued = true;
   (window.requestIdleCallback || setTimeout)(check, { timeout: 1500 });
 }
+// Titelzeilen (Listen im Hauptbereich, Bibliothek links) färbt user.css selbst – und Spotify baut sie beim Scrollen
+// laufend neu (nur die sichtbaren stehen im DOM). Jede neue Zeile hieß bisher ~30 Elemente mit getComputedStyle bis
+// hinauf prüfen, beim Scrollen gemessen rund ein Zehntel der Theme-Arbeit (tools/theme-perf.js). Zeilen auslassen.
+const ROW = '[role="row"]';
 function queue(node) {
   if (node?.nodeType !== 1 || checked.has(node)) return;
+  if (node.matches(ROW) || node.closest(ROW)) return;
   if (!node.closest(SCOPES)) {
     // ein neuer Container, in dem ein Menü/Dialog steckt
     const inner = node.querySelector?.(SCOPES);

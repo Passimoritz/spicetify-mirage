@@ -1,6 +1,7 @@
 import { S, root, VERSION } from "./core.js";
 import { t } from "./i18n.js";
 import { cfg, save, CALM_PRESET } from "./config.js";
+import { startRest } from "./rest.js";
 
 /* ---------------------------------------------------------------- Leistungs-Stufen */
 // Ein Preset setzt mehrere Schalter auf einmal. Wer danach einen einzelnen Schalter ändert,
@@ -126,5 +127,7 @@ function measure(onDone, wait = 4000) {
 const syncHidden = () => root.classList.toggle("mirage-hidden", document.hidden);
 document.addEventListener("visibilitychange", syncHidden);
 syncHidden();
+// sichtbar, aber niemand sieht hin (anderes Fenster aktiv, lange keine Eingabe): Zierde ruht (rest.js)
+startRest(root);
 
 export { PRESETS, PRESET_KEYS, COST, applyPreset, detectPreset, measure, tier };
