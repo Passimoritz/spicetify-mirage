@@ -3853,6 +3853,8 @@ html.mirage-calm .Root *::after {
 .mirage-settings .m-seg.is-wrap {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  /* alle Reihen gleich hoch, auch wenn ein langer Name umbricht */
+  grid-auto-rows: 1fr;
   width: 100%;
 }
 .mirage-settings .m-seg button {
@@ -3905,6 +3907,10 @@ html.mirage-calm .Root *::after {
 .mirage-settings .m-presets button[aria-pressed="true"] {
   border-color: transparent;
   box-shadow: 0 6px 18px -8px rgba(var(--m-a-rgb), 0.8);
+}
+/* Name im Preset-Knopf in der Farbe des Knopfs (gewählt: dunkel auf Akzent), nicht in der Zeilen-Schriftfarbe */
+.mirage-settings .m-seg button b {
+  color: inherit;
 }
 .mirage-settings .m-presets button b {
   padding-right: 22px;
@@ -4215,33 +4221,62 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 /* ==========================================================================
    EINSTELLUNGEN: Gruppen, Knöpfe, Schema-Baukasten
    ========================================================================== */
-/* stylelint-disable-next-line no-duplicate-selectors -- bewusst: überschreibt die Regel weiter oben erst an dieser Stelle der Kaskade */
-.mirage-settings {
-  min-width: min(560px, 80vw);
+/* Das Fenster selbst (Spicetify PopupModal, isLarge): auf großen Bildschirmen breiter, nie breiter als das Fenster.
+   Nur das Einstellungs-Fenster – andere Spicetify-Dialoge behalten ihre 664 px. */
+:is(.spicetify-popup-container-large, .main-embedWidgetGenerator-container):has(.mirage-settings) {
+  width: min(720px, calc(100vw - 64px));
+  max-width: calc(100vw - 32px);
 }
+@media (min-width: 1700px) {
+  :is(.spicetify-popup-container-large, .main-embedWidgetGenerator-container):has(.mirage-settings) {
+    width: 800px;
+  }
+}
+/* Gruppen: Karte mit Kopfzeile (Pfeil als Linienzeichnung, dreht sich beim Aufklappen), darin die Zeilen im
+   festen Abstand --ms-gap */
 .mirage-settings .m-group {
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid var(--m-line);
-  padding: 4px 10px 8px;
+  padding: 0 8px 8px;
+}
+.mirage-settings .m-group:not([open]) {
+  padding-bottom: 0;
 }
 .mirage-settings .m-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 8px;
   cursor: pointer;
-  padding: 10px 4px;
-  font: 700 15px var(--m-font);
+  font: 700 15px / 1.3 var(--m-font);
   color: var(--spice-text);
   list-style: none;
 }
+.mirage-settings .m-group > summary::-webkit-details-marker {
+  display: none;
+}
 .mirage-settings .m-group > summary::before {
-  content: "›";
-  display: inline-block;
-  width: 1.1em;
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: currentcolor;
+  opacity: 0.7;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
   transition: transform 0.25s var(--m-ease);
 }
 .mirage-settings .m-group[open] > summary::before {
   transform: rotate(90deg);
 }
+.mirage-settings .m-group > summary:hover::before {
+  opacity: 1;
+}
 .mirage-settings .m-group > :not(summary) {
-  margin-top: 6px;
+  margin-top: var(--ms-gap);
+}
+.mirage-settings .m-group > summary + * {
+  margin-top: 0;
 }
 .mirage-settings .m-cost {
   display: inline-flex;
@@ -4255,7 +4290,8 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 .mirage-settings .m-note {
   display: block;
   color: var(--spice-subtext);
-  padding: 2px 4px;
+  padding: 2px 6px;
+  font: 400 12.5px / 1.45 var(--m-font);
 }
 /* „Kein Stil gefunden“ und Co. erst bei Bedarf (display: block oben schlug sonst das hidden-Attribut) */
 .mirage-settings .m-note[hidden] {
@@ -4297,26 +4333,64 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
 .mirage-settings .m-btn.is-danger {
   color: var(--spice-notification-error);
 }
-.mirage-settings .m-text {
+/* eine Höhe für Knöpfe, Textfelder und Listen im Dialog (--ms-ctl-h), eine Rundung (10 px) */
+.mirage-settings .m-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: var(--ms-ctl-h);
+  padding: 6px 16px;
+  border-radius: 10px;
+  line-height: 1.2;
+}
+.mirage-settings .m-text,
+.mirage-settings .m-select {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--m-line-strong);
-  background: rgba(255, 255, 255, 0.05);
+  min-height: var(--ms-ctl-h);
+  padding: 0 12px;
+  /* die allgemeine Regel für Felder in Dialogen setzt 14 px mit !important */
+  border-radius: 10px !important;
+  border: 1px solid var(--ms-ctl-line);
+  background: var(--ms-ctl);
   color: var(--spice-text);
   font: 500 13px var(--m-font);
 }
 .mirage-settings .m-select {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--m-line-strong);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--spice-text);
-  font: 600 13px var(--m-font);
+  font-weight: 600;
   cursor: pointer;
+}
+/* Textfeld mit Knöpfen in einer Zeile (Schema-Baukasten); bricht im schmalen Fenster um */
+.mirage-settings .m-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.mirage-settings .m-inline > .m-text {
+  flex: 1 1 220px;
+  width: auto;
+}
+/* Zurücksetzen allein am Ende von „Teilen, sichern & Hilfe“ */
+.mirage-settings .m-actions.m-danger {
+  justify-content: flex-end;
+}
+.mirage-settings .m-btn.is-danger:is(:hover, :focus-visible) {
+  background: color-mix(in srgb, var(--spice-notification-error) 14%, transparent);
+  border-color: color-mix(in srgb, var(--spice-notification-error) 55%, transparent);
+}
+/* Zustand des Overlays: ● verbunden in der Akzentfarbe, ○ fehlt leise */
+.mirage-settings .m-status {
+  font: 600 13px / 1.4 var(--m-font);
+  color: var(--spice-subtext);
+}
+.mirage-settings .m-status.is-on {
+  color: var(--spice-text);
+}
+/* kurze Einleitung oben in einer Gruppe (System) */
+.mirage-settings .m-note.m-intro {
+  padding-bottom: 2px;
 }
 .mirage-settings .m-select option,
 .mirage-settings .m-select optgroup {
@@ -4475,7 +4549,7 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   padding: 0 14px;
   border-radius: 12px;
   border: 1px solid var(--m-line-strong);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--ms-ctl);
   color: var(--spice-text);
   font: inherit;
 }
@@ -4498,8 +4572,21 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   margin-top: 10px;
 }
 .mirage-settings .m-section-reset .m-btn {
+  min-height: 30px;
+  padding: 4px 12px;
   opacity: 0.75;
   font-size: 12px;
+}
+/* weniger Bewegung: Schalter, Pfeile und Flächen springen, statt zu gleiten */
+@media (prefers-reduced-motion: reduce) {
+  .mirage-settings :is(.m-row, .m-seg button, .m-btn, .m-scheme, input[type="checkbox"]),
+  .mirage-settings input[type="checkbox"]::after,
+  .mirage-settings .m-group > summary::before {
+    transition: none;
+  }
+  .mirage-settings .m-scheme:hover {
+    transform: none;
+  }
 }
 .mirage-settings .m-section-reset .m-btn:is(:hover, :focus-visible) {
   opacity: 1;
@@ -6297,13 +6384,20 @@ html.mirage-rich #mirage-stage .m-aurora {
   align-content: start;
 }
 /* Suche in den Einstellungen: bleibt beim Scrollen oben stehen, Lupe links, Trefferzahl und „/“-Hinweis rechts */
+/* Bildlauf-Bereich des Fensters: feste Innenabstände (die Suchleiste reicht über sie hinaus) und ein fester Platz
+   für die Bildlaufleiste – sonst springt der Inhalt seitlich, wenn die Suche ihn kürzer macht */
+:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection):has(.mirage-settings) {
+  padding: 0 24px 24px;
+  scrollbar-gutter: stable;
+}
+/* über die ganze Breite des Fensters, mit weichem Auslauf nach unten statt eines Kastens mit harter Kante */
 .mirage-settings .m-search-bar {
   position: sticky;
   top: 0;
-  z-index: 2;
-  margin: 0 0 8px;
-  padding: 4px 0 6px;
-  background: rgba(var(--spice-rgb-main), 0.96);
+  z-index: 3;
+  margin: 0 -24px -6px;
+  padding: 2px 24px 14px;
+  background: linear-gradient(rgba(var(--spice-rgb-main), 0.94) calc(100% - 14px), rgba(var(--spice-rgb-main), 0));
 }
 .mirage-settings .m-search-bar .m-search {
   margin: 0;
@@ -6330,8 +6424,8 @@ html.mirage-rich #mirage-stage .m-aurora {
 }
 .mirage-settings .m-search-bar > .m-search-ic {
   position: absolute;
-  top: 15px;
-  left: 13px;
+  top: 13px;
+  left: 37px;
 }
 .mirage-settings .m-search-bar:focus-within > .m-search-ic {
   color: var(--m-a);
@@ -6339,18 +6433,18 @@ html.mirage-rich #mirage-stage .m-aurora {
 .mirage-settings .m-search-count,
 .mirage-settings .m-search-kbd {
   position: absolute;
-  top: 50%;
+  top: 22px;
   translate: 0 -50%;
   pointer-events: none;
   font: 600 11px var(--m-mono);
   color: var(--spice-subtext);
 }
 .mirage-settings .m-search-count {
-  right: 38px;
+  right: 62px;
   font-variant-numeric: tabular-nums;
 }
 .mirage-settings .m-search-kbd {
-  right: 12px;
+  right: 36px;
   min-width: 20px;
   padding: 2px 6px;
   border: 1px solid var(--m-line-strong);

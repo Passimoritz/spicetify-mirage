@@ -72,8 +72,9 @@ const AUDIT = `(() => {
   const br = box.getBoundingClientRect();
   const vis = (e) => e.getClientRects().length && !e.closest(".m-hide, [hidden]") && getComputedStyle(e).visibility !== "hidden";
   const name = (e) => (e.dataset?.key || e.closest("[data-key]")?.dataset.key || e.closest(".m-row")?.querySelector("b")?.textContent || e.className || e.tagName).toString().slice(0, 40);
+  // die Suchleiste reicht absichtlich über die Innenabstände des Fensters (volle Breite): nur sie nicht prüfen
   for (const e of box.querySelectorAll("*")) {
-    if (!vis(e)) continue;
+    if (!vis(e) || e.closest(".m-search-bar")) continue;
     const r = e.getBoundingClientRect();
     if (r.width && (r.right > br.right + 1 || r.left < br.left - 1)) out.push("ragt aus dem Dialog: " + name(e) + " " + Math.round(r.left - br.left) + ".." + Math.round(r.right - br.left) + " / " + Math.round(br.width));
   }

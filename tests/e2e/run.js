@@ -2295,6 +2295,134 @@ async function settingsSearch() {
   await until(async () => (await state()).focus, 2000, "suche: Strg + F setzt den Fokus ins Suchfeld");
   await T.js(`document.querySelector(".mirage-settings")?.remove(); 1`);
 }
+// Aufbau des Einstellungs-Dialogs im kleinen Fenster (820 × 620) im echten Spicetify-Fenster (PopupModal wie in
+// spicetifyWrapper.js, isLarge): in keiner Gruppe ein waagrechter Überlauf, jedes Bedienelement innerhalb seiner Zeile,
+// Unter-Einstellungen gesperrt, solange ihr Schalter aus ist, sichtbarer Fokus mit der Tastatur
+async function settingsLayout() {
+  const [w0, h0] = T.win.getContentSize();
+  T.win.setContentSize(820, 620);
+  // Spicetifys Fenster-Aufbau und Grundstile (nur für diesen Fall; danach wieder der einfache Nachbau)
+  await T.js(`(() => {
+    const css = document.createElement("style");
+    css.id = "e2e-popup";
+    css.textContent = "generic-modal .GenericModal__overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(0,0,0,.7);z-index:100}" +
+      "generic-modal .spicetify-popup{display:flex;max-height:calc(100vh - 64px);border-radius:8px;overflow:hidden}" +
+      "generic-modal :where(.spicetify-popup-container){display:flex;flex-direction:column;width:524px;max-width:100%;min-height:0}" +
+      "generic-modal .spicetify-popup-container-large{width:664px;min-width:0;max-width:calc(100vw - 64px);max-height:calc(100vh - 64px)}" +
+      "generic-modal .spicetify-popup-header{display:flex;align-items:center;justify-content:space-between;padding:24px}" +
+      "generic-modal :where(.spicetify-popup-content){flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 24px 24px}";
+    document.head.append(css);
+    window.__e2ePopup = Spicetify.PopupModal.display;
+    Spicetify.PopupModal.display = ({ title, content }) => {
+      document.querySelector("generic-modal")?.remove();
+      const m = document.createElement("generic-modal");
+      m.innerHTML = '<div class="GenericModal__overlay"><div class="GenericModal spicetify-popup" role="dialog" aria-modal="true"><div class="spicetify-popup-container spicetify-popup-container-large main-embedWidgetGenerator-container"><div class="spicetify-popup-header"><h1></h1><button aria-label="Close">×</button></div><div class="spicetify-popup-content main-trackCreditsModal-mainSection"><main></main></div></div></div></div>';
+      m.querySelector("h1").textContent = title;
+      m.querySelector("main").append(content);
+      document.body.append(m);
+    };
+    return 1;
+  })()`);
+  const stored = () => T.js(`JSON.parse(localStorage.getItem("mirage:settings") || "{}")`);
+  const open = async () => {
+    await T.js(`document.querySelectorAll(".mirage-settings, generic-modal").forEach((x) => x.remove()); __menu.brightness(); 1`);
+    await until(() => T.js(`!!document.querySelector("generic-modal .mirage-settings .m-search")`), 2000, "aufbau: Einstellungen gehen im Spicetify-Fenster auf");
+  };
+  try {
+    await open();
+    // jede Gruppe einzeln aufgeklappt messen (so sieht man, in welcher es klemmt)
+    const groups = await T.js(`[...document.querySelectorAll(".mirage-settings details.m-group")].map((d) => d.dataset.group)`);
+    ok(groups.length >= 12, "aufbau: alle Gruppen da: " + groups.join());
+    for (const g of groups) {
+      const bad = await T.js(`(() => {
+        const box = document.querySelector(".mirage-settings"), sc = box.closest(".spicetify-popup-content");
+        box.querySelectorAll("details.m-group").forEach((d) => (d.open = d.dataset.group === ${JSON.stringify(g)}));
+        const d = box.querySelector('details[data-group=${JSON.stringify(g)}]');
+        d.scrollIntoView({ block: "start" });
+        const out = [], br = box.getBoundingClientRect();
+        if (sc.scrollWidth > sc.clientWidth + 1) out.push("Überlauf " + sc.scrollWidth + " > " + sc.clientWidth);
+        if (document.documentElement.scrollWidth > innerWidth + 1) out.push("Seite breiter als das Fenster");
+        const vis = (e) => e.getClientRects().length && !e.closest(".m-hide, [hidden]");
+        const name = (e) => (e.dataset?.key || e.closest("[data-key]")?.dataset.key || e.closest(".m-row")?.querySelector("b")?.textContent || e.className || e.tagName).toString().slice(0, 40);
+        for (const e of d.querySelectorAll("*")) {
+          if (!vis(e)) continue;
+          const r = e.getBoundingClientRect();
+          if (r.width && (r.right > br.right + 1 || r.left < br.left - 1)) out.push("ragt heraus: " + name(e));
+        }
+        for (const row of d.querySelectorAll(".m-row")) {
+          if (!vis(row)) continue;
+          const rr = row.getBoundingClientRect();
+          for (const c of row.querySelectorAll("input, select, button, .m-seg")) {
+            if (!vis(c)) continue;
+            const r = c.getBoundingClientRect();
+            if (r.right > rr.right + 1 || r.left < rr.left - 1 || r.bottom > rr.bottom + 1 || r.top < rr.top - 1) out.push("außerhalb der Zeile: " + name(c));
+          }
+        }
+        return [...new Set(out)].slice(0, 6);
+      })()`);
+      ok(!bad.length, `aufbau: Gruppe „${g}“ bei 820 px: ${bad.join(" | ")}`);
+    }
+    // Unter-Einstellung „Verspieltheit“: gesperrt, solange „Verspielter Stil“ aus ist – und frei, sobald er an ist
+    const before = !!(await stored()).lyrPlayful;
+    const subState = () => T.js(`(() => { const s = document.querySelector('.mirage-settings .m-sub[data-parent="lyrPlayful"]'), bs = [...(s?.querySelectorAll('[data-key="lyrPlayLevel"] button') || [])];
+      return s && { off: s.classList.contains("is-off"), aria: s.getAttribute("aria-disabled"), dis: bs.length && bs.every((b) => b.disabled), on: bs.length && bs.every((b) => !b.disabled), note: !!s.querySelector(".m-sub-off") }; })()`);
+    const flip = () => T.js(`document.querySelector('.mirage-settings input[data-key="lyrPlayful"]').click(); 1`);
+    if (before) {
+      await flip();
+      await until(async () => (await stored()).lyrPlayful === false, 2000, "aufbau: verspielter Stil aus");
+    }
+    let s = await until(subState, 2000, "aufbau: Unter-Einstellung da");
+    ok(s.off && s.aria === "true" && s.dis && s.note, "aufbau: bei ausgeschaltetem Stil gesperrt mit Hinweis: " + JSON.stringify(s));
+    await flip();
+    s = await until(async () => { const x = await subState(); return x && !x.off && x; }, 2000, "aufbau: Unter-Einstellung frei");
+    ok(s.on && !s.note, "aufbau: bei eingeschaltetem Stil bedienbar: " + JSON.stringify(s));
+    if (!before) await flip();
+    await until(async () => !!(await stored()).lyrPlayful === before, 2000, "aufbau: verspielter Stil wie vorher");
+    // Unter-Einstellungen sitzen eingerückt unter ihrem Schalter
+    const indent = await T.js(`(() => { const s = document.querySelector('.mirage-settings .m-sub[data-parent="lyrPlayful"]'), p = document.querySelector('.mirage-settings input[data-key="lyrPlayful"]').closest(".m-row");
+      s.closest("details").open = true; return Math.round(s.querySelector(".m-row").getBoundingClientRect().left - p.getBoundingClientRect().left); })()`);
+    ok(indent >= 12, "aufbau: Unter-Einstellung eingerückt: " + indent + " px");
+    // lange Hinweise: zwei Zeilen und „mehr“; ein Klick klappt auf
+    const more = await T.js(`(() => { const m = [...document.querySelectorAll(".mirage-settings .m-more")].find((x) => x.getClientRects().length); if (!m) return null;
+      const h = m.previousElementSibling, lh = parseFloat(getComputedStyle(h).lineHeight), before = h.clientHeight; m.click();
+      return { two: before <= lh * 2 + 2, grew: h.clientHeight > before, exp: m.getAttribute("aria-expanded") }; })()`);
+    ok(more && more.two && more.grew && more.exp === "true", "aufbau: langer Hinweis mit „mehr“: " + JSON.stringify(more));
+    // sichtbarer Fokus: mit Tab vom Suchfeld aus landet der Fokus auf dem ersten Gruppenkopf, mit Ring
+    await T.js(`document.querySelector(".mirage-settings .m-search").focus(); 1`);
+    T.wc.sendInputEvent({ type: "keyDown", keyCode: "Tab" });
+    T.wc.sendInputEvent({ type: "keyUp", keyCode: "Tab" });
+    const tag = await until(() => T.js(`(() => { const a = document.activeElement; return a && a.closest(".mirage-settings") && !a.classList.contains("m-search") && a.tagName; })()`), 2000, "aufbau: Tab verlässt das Suchfeld");
+    // das unsichtbare Testfenster hat nie den Fenster-Fokus, :focus-visible greift dort nicht von selbst: der Zustand
+    // wird über die DevTools erzwungen (wie im Oberflächen-Prüfstand) und dann der Ring gemessen –
+    // Gruppenkopf, Schalter, Knopfreihe, Knopf, Suchfeld
+    const SEL = ["summary", 'input[data-key="autoPerf"]', '[data-key="eco"] button', ".m-section-reset .m-btn", ".m-search"];
+    const dbg = T.wc.debugger, mine = !dbg.isAttached();
+    if (mine) dbg.attach("1.3");
+    const forced = [];
+    try {
+      await dbg.sendCommand("DOM.enable");
+      await dbg.sendCommand("CSS.enable");
+      const { root } = await dbg.sendCommand("DOM.getDocument", { depth: 0 });
+      for (const sel of SEL) {
+        const { nodeId } = await dbg.sendCommand("DOM.querySelector", { nodeId: root.nodeId, selector: ".mirage-settings " + sel });
+        ok(nodeId, "aufbau: Element für den Fokus-Test: " + sel);
+        await dbg.sendCommand("CSS.forcePseudoState", { nodeId, forcedPseudoClasses: ["focus", "focus-visible"] });
+        forced.push(nodeId);
+      }
+      const rings = await T.js(`${JSON.stringify(SEL)}.map((sel) => {
+        const cs = getComputedStyle(document.querySelector(".mirage-settings " + sel));
+        return { sel, ring: (cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) >= 2) || cs.boxShadow !== "none" };
+      })`);
+      ok(tag && rings.every((r) => r.ring), "aufbau: Fokus überall sichtbar: " + tag + " " + JSON.stringify(rings));
+    } finally {
+      for (const nodeId of forced) await dbg.sendCommand("CSS.forcePseudoState", { nodeId, forcedPseudoClasses: [] }).catch(() => {});
+      if (mine) dbg.detach();
+    }
+  } finally {
+    await T.js(`document.querySelectorAll(".mirage-settings, generic-modal, #e2e-popup").forEach((x) => x.remove()); if (window.__e2ePopup) Spicetify.PopupModal.display = window.__e2ePopup; 1`);
+    T.win.setContentSize(w0, h0);
+  }
+}
 // Wegweiser nach der Einführung: erscheint einmal (erst wenn der Immersiv-Modus zu ist), überspringen geht, danach nie wieder
 async function coachOnce() {
   const coach = () => T.js(`(() => { const c = document.querySelector(".mirage-coach"); return c ? { kick: c.querySelector(".m-kick").textContent, b: c.querySelector("b").textContent } : null; })()`);
@@ -2475,7 +2603,7 @@ CASES.push(["perf-menu", perfMenu]);
 CASES.push(["idle-hidden", idleHidden]);
 CASES.push(["soak-lite", soakLite]);
 CASES.push(["photo-wall", photoWall]);
-CASES.push(["settings-search", settingsSearch], ["settings-deps", settingsDeps], ["coach-once", coachOnce]);
+CASES.push(["settings-search", settingsSearch], ["settings-deps", settingsDeps], ["settings-layout", settingsLayout], ["coach-once", coachOnce]);
 
 // Notiz nach einem Spotify-Update (src/updnote.js): nie bei der ersten Installation, genau einmal nach einem
 // Versionswechsel, beim nächsten Start mit derselben Version nicht mehr; fehlt etwas, sagt sie was. Eigenes,

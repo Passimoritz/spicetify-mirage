@@ -639,6 +639,10 @@ function applySearch(box) {
     d.classList.toggle("m-hide", !!q && !hit.has(d) && !whole);
     if (q && (hit.has(d) || whole)) d.open = true;
   }
+  // Unter-Einstellungen ohne Treffer ganz weg (innere zuerst: ein leerer innerer Kasten zählt nicht als Treffer)
+  for (const s of [...box.querySelectorAll(".m-sub")].reverse()) {
+    s.classList.toggle("m-hide", !!q && ![...s.children].some((c) => !c.matches(".m-sub-off, .m-hide, .m-live")));
+  }
   if (!q && openBefore) {
     for (const d of groups) d.open = openBefore.has(d.querySelector("summary").textContent);
     openBefore = null;

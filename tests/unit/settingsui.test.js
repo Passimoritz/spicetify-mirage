@@ -130,4 +130,42 @@ assert.ok(/calm: false,/.test(cfgSrc.slice(cfgSrc.indexOf("const DEFAULTS = {"))
   assert.deepStrictEqual([rm.preset, rm.calm, rm.particles, rm.noFlash], ["calm", true, false, true]);
 }
 
+// ---- Raster des Dialogs (1.32): Unter-Einstellungen, Felder, lange Hinweise
+{
+  const { DEFAULTS } = load("config.js");
+  // jede Unter-Einstellung hängt an einem Schalter, den es gibt (sonst wäre sie immer gesperrt)
+  const subs = [...st.matchAll(/\bsub\(\s*"(\w+)"/g)].map((m) => m[1]);
+  assert.deepStrictEqual([...subs].sort(), ["glass", "lyrPlayful", "partyInstruments", "partyLive", "partyWishes"], "Unter-Einstellungen: " + subs.join());
+  for (const k of subs) {
+    assert.strictEqual(typeof DEFAULTS[k], "boolean", `Unter-Einstellung unter „${k}“: ein Schalter in DEFAULTS`);
+    assert.ok(keys.includes(k), `${k} ist selbst ein Schalter im Dialog`);
+    // der Schalter steht vor seinen Unter-Einstellungen
+    // (die Wunsch-Regeln baut wishRules() außerhalb von render(), gleich hinter dem Schalter)
+    const at = body.search(new RegExp(`\\bsub\\(\\s*"${k}"`));
+    assert.ok(k === "partyWishes" || (at > 0 && body.indexOf(`toggle("${k}"`) < at), `${k}: Schalter vor seinen Unter-Einstellungen`);
+  }
+  // was nur über die Handys geht, hängt am Live-Link; die Stärke am verspielten Stil; die Unschärfe am Glas
+  const subBody = (k) => body.slice(body.search(new RegExp(`\\bsub\\(\\s*"${k}"`))).slice(0, 900);
+  for (const k of ["partyWishes", "partyReacts", "partyPhotos", "partyWave"]) assert.ok(subBody("partyLive").includes(k), `${k} unter dem Live-Link`);
+  assert.ok(/sub\("lyrPlayful", playLevel\(\)\)/.test(body), "Verspieltheit unter dem verspielten Stil");
+  assert.ok(/sub\("glass", range\("blur"/.test(body), "Unschärfe unter Echtes Glas");
+  assert.ok(!/cfg\.lyrPlayful \? playLevel/.test(st), "Verspieltheit wird nicht mehr versteckt, sondern gesperrt");
+  // gesperrt heißt: Bedienelemente disabled, Kasten aria-disabled, Hinweis „Nur mit …“
+  const subFn = st.slice(st.indexOf("function sub("), st.indexOf("function bolt("));
+  assert.ok(/c\.disabled = true/.test(subFn) && /aria-disabled/.test(subFn) && /needsParent/.test(subFn), "sub() sperrt und sagt, wovon es abhängt");
+  // „mehr“ steht nur im CSS (data-label), nicht im Text: sonst fände die Suche „mehr“ in jeder langen Zeile
+  const clamp = st.slice(st.indexOf("function clampHints("), st.indexOf("function watchHints("));
+  assert.ok(/dataset\.label = t\("hintMore"\)/.test(clamp) && !/el\("button", "m-more", t\(/.test(clamp), "„mehr“ ohne Textinhalt");
+  assert.ok(/is-searching/.test(clamp), "beim Suchen wird nicht gemessen");
+  // neue Texte in allen Sprachen
+  for (const l of LANGS) {
+    for (const k of ["hintMore", "hintLess", "needsParent", "moreShare", "moreBackup", "moreHelp"]) assert.ok(I18N[l][k], `${l}.${k}`);
+    assert.ok(I18N[l].needsParent.includes("{s}"), `${l}.needsParent hat {s}`);
+  }
+  // Schemata stehen in der Gruppe „Farben“ (früher frei zwischen den Gruppen)
+  assert.ok(/group\("colours", t\("g_colours"\), true, schemeField/.test(body), "Farbschema oben in „Farben“");
+  // Suche: die Gruppen hängen nicht an der Einheit davor, Unter-Einstellungen werden zeilenweise gesucht
+  assert.ok(/parent === box && c\.matches\("details"\)/.test(st) && /details\.m-group, \.m-sub/.test(st), "Suche: Gruppen und Unter-Einstellungen richtig zerlegt");
+}
+
 console.log(`settingsui: ${LANGS.length} Sprachen, ${keys.length} Einstellungen, ${GROUPS.length} Gruppen, ok`);
