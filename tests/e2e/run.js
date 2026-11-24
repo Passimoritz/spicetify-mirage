@@ -2673,6 +2673,72 @@ CASES.push(["update-note", updateNote]);
 // 1.27 views
 CASES.push(["viz-styles", vizStyles], ["album-view", albumView], ["clock-view", clockView]);
 
+// Party: der gewählte Visualizer-Stil ersetzt den Party-Kranz (Bühne, Licht und Funken bleiben). Funken und Licht
+// sind zufällig – statt eines Pixel-Abdrucks zählt der Test die Zeichenbefehle je Bild (Canvas und Path2D) und
+// vergleicht sie mit den Balken; das Rauschen zweier Balken-Messungen setzt die Schwelle.
+async function vizParty() {
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  await toMode("party");
+  await T.js(`(() => {
+    const ow = console.warn;
+    window.__vizWarn = [];
+    console.warn = (...a) => (String(a[0]).includes("Visualizer") && window.__vizWarn.push(String(a[1]?.stack || a[1])), ow.apply(console, a));
+    1;
+  })()`);
+  const OPS = ["drawImage", "lineTo", "moveTo", "quadraticCurveTo", "arc", "roundRect", "rect", "stroke", "fill", "closePath", "clip"];
+  // Zeichenbefehle je Bild über 1,2 s (Bilder = clearRect des Visualizer-Canvas)
+  const measure = () => T.js(`new Promise((done) => {
+    const ops = ${JSON.stringify(OPS)}, x = document.querySelector("${IM} .m-im-viz").getContext("2d"), n = {}, P = Path2D.prototype, keep = [];
+    const hook = (o, m, proto) => {
+      const f = o[m];
+      if (typeof f !== "function") return;
+      keep.push([o, m, proto ? f : null]);
+      o[m] = function (...a) { n[m] = (n[m] || 0) + 1; return f.apply(this, a); };
+    };
+    ops.forEach((m) => { hook(x, m, false); hook(P, m, true); });
+    hook(x, "clearRect", false);
+    setTimeout(() => {
+      for (const [o, m, f] of keep) f ? (o[m] = f) : delete o[m];
+      const fr = n.clearRect || 0, out = { frames: fr };
+      for (const m of ops) out[m] = fr ? Math.round((n[m] || 0) / fr) : 0;
+      done(out);
+    }, 1200);
+  })`);
+  const dist = (a, b) => Math.max(...OPS.map((m) => Math.abs(a[m] - b[m])));
+  const STYLES = [["wave", "Welle"], ["dots", "Punkte"], ["particles", "Partikel"], ["line", "Linie"], ["bottom", "Balken unten"], ["tunnel", "3D-Tunnel"], ["galaxy", "Galaxie"], ["mountains", "Gebirge"], ["scope", "Oszilloskop"], ["shatter", "Zersplittertes Cover"], ["wavefield", "Wellenfeld"], ["coverdust", "Cover-Partikel"]];
+  try {
+    await pickViz("Balken");
+    await until(async () => (await storedSettings()).vizStyle === "bars", 2000, "viz-party: Balken gewählt");
+    await wait(600);
+    const b1 = await measure(), b2 = await measure();
+    ok(b1.frames > 5 && b2.frames > 5, "viz-party: der Party-Visualizer zeichnet: " + JSON.stringify(b1));
+    const noise = dist(b1, b2), need = Math.max(24, noise * 2.5);
+    console.log(`  balken: ${JSON.stringify(b1)} · rauschen ${noise} → schwelle ${need}`);
+    for (const [key, label] of STYLES) {
+      await pickViz(label);
+      await until(async () => (await storedSettings()).vizStyle === key, 2000, `viz-party: „${label}“ gewählt`);
+      await wait(700);
+      ok((await T.js(`document.getElementById("mirage-immersive").dataset.mode`)) === "party", `viz-party ${key}: noch im Party-Modus`);
+      const p = await measure();
+      const d = dist(p, b1);
+      console.log(`  ${key}: ${JSON.stringify(p)} · abstand ${d}`);
+      ok(p.frames > 5, `viz-party ${key}: es kommen Bilder (${p.frames})`);
+      ok(d > need, `viz-party ${key}: zeichnet anders als der Party-Kranz (Abstand ${d}, Schwelle ${need}): ${JSON.stringify(p)}`);
+      const own = await T.js(`document.getElementById("mirage-immersive").classList.contains("is-shatter")`);
+      ok(own === (key === "shatter" || key === "coverdust"), `viz-party ${key}: Cover-Stile zeichnen das Cover selbst (is-shatter: ${own})`);
+    }
+    const warns = await T.js(`window.__vizWarn`);
+    ok(!warns.length, "viz-party: Fehler im Visualizer:\n  " + warns.slice(0, 3).join("\n  "));
+    ok(!T.errors.length, "viz-party: Fehler in der Konsole:\n  " + T.errors.slice(0, 5).join("\n  "));
+  } finally {
+    await pickViz("Balken").catch(() => {});
+    await until(async () => (await storedSettings()).vizStyle === "bars", 2000, "viz-party: zurück auf Balken").catch(() => {});
+  }
+  // (die Klasse folgt im nächsten Bild)
+  await until(() => T.js(`!document.getElementById("mirage-immersive").classList.contains("is-shatter")`), 2000, "viz-party: Balken – das echte Cover ist wieder da");
+}
+CASES.push(["viz-party", vizParty]);
+
 /* ---- Verspielter Liedtext-Stil: Inszenierungen und Wortbilder im echten Aufbau, Bewegung nur transform/opacity,
    Schriften erst mit dem Stil, Landung genau auf dem Einsatz, ♪ wippt, nichts wird von der Textfläche abgeschnitten */
 // Wartezustände der Rezepte für die Beschnitt-Prüfung: dieselben Daten wie im Theme (src/lyricdeck.js, gebündelt)
