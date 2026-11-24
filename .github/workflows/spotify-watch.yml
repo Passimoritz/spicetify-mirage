@@ -25,9 +25,9 @@ jobs:
       code: ${{ steps.check.outputs.code }}
       fake: ${{ steps.check.outputs.fake }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
 
@@ -76,7 +76,7 @@ jobs:
           if [ "$fake" != "0" ]; then echo "::warning::Spotify ${{ steps.unpack.outputs.version }} (Linux) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
           exit 0
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: report-linux
@@ -104,9 +104,9 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
 
@@ -223,7 +223,7 @@ jobs:
           if [ "$fake" != "0" ]; then echo "::warning::Spotify ${{ steps.unpack.outputs.version }} (Windows) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
           exit 0
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: report-windows
@@ -240,7 +240,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           path: reports
