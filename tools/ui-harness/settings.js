@@ -68,7 +68,10 @@ const AUDIT = `(() => {
   const box = document.querySelector(".mirage-settings"), out = [];
   if (!box) return ["kein Dialog"];
   const sc = box.closest(".spicetify-popup-content") || box;
-  if (sc.scrollWidth > sc.clientWidth + 1) out.push("waagrechter Überlauf im Fenster: " + sc.scrollWidth + " > " + sc.clientWidth);
+  for (const s of [sc, box.querySelector(".m-scroll")].filter(Boolean)) if (s.scrollWidth > s.clientWidth + 1) out.push("waagrechter Überlauf: " + s.className + " " + s.scrollWidth + " > " + s.clientWidth);
+  // Suchfeld bündig mit den Gruppen darunter
+  const pill = box.querySelector(".m-search")?.getBoundingClientRect(), g1 = box.querySelector("details.m-group")?.getBoundingClientRect();
+  if (pill && g1 && (Math.abs(pill.left - g1.left) > 2 || Math.abs(pill.right - g1.right) > 2)) out.push("Suchfeld nicht bündig: " + [pill.left, pill.right, g1.left, g1.right].map(Math.round).join("/"));
   const br = box.getBoundingClientRect();
   const vis = (e) => e.getClientRects().length && !e.closest(".m-hide, [hidden]") && getComputedStyle(e).visibility !== "hidden";
   const name = (e) => (e.dataset?.key || e.closest("[data-key]")?.dataset.key || e.closest(".m-row")?.querySelector("b")?.textContent || e.className || e.tagName).toString().slice(0, 40);
@@ -186,8 +189,9 @@ app.whenReady().then(async () => {
         report[id] = await wc.executeJavaScript(AUDIT);
         if (!QUICK && w <= 1280) {
           // lange Bilder: das Fenster so hoch wie der ganze Dialog, in Kacheln über die Dialog-Fläche
-          const full = await wc.executeJavaScript(`(() => { const c = document.querySelector(".spicetify-popup-content"); c.scrollTop = 0; return c.scrollHeight; })()`);
-          win.setContentSize(w, Math.min(full + 200, 15000));
+          // der Dialog läuft in seinem eigenen Bildlauf-Bereich (.m-scroll): das Fenster um dessen versteckten Teil höher
+          const full = await wc.executeJavaScript(`(() => { const c = document.querySelector(".mirage-settings .m-scroll") || document.querySelector(".spicetify-popup-content"); c.scrollTop = 0; return innerHeight + c.scrollHeight - c.clientHeight; })()`);
+          win.setContentSize(w, Math.min(full + 40, 15000));
           await wait(700);
           const r = await wc.executeJavaScript(`(() => { const r = document.querySelector(".spicetify-popup-container").getBoundingClientRect(); return { x: Math.floor(r.x), y: Math.floor(r.y), w: Math.ceil(r.width), h: Math.ceil(r.height) }; })()`);
           const tile = 1400;

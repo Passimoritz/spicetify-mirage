@@ -165,7 +165,13 @@ assert.ok(/calm: false,/.test(cfgSrc.slice(cfgSrc.indexOf("const DEFAULTS = {"))
   // Schemata stehen in der Gruppe „Farben“ (früher frei zwischen den Gruppen)
   assert.ok(/group\("colours", t\("g_colours"\), true, schemeField/.test(body), "Farbschema oben in „Farben“");
   // Suche: die Gruppen hängen nicht an der Einheit davor, Unter-Einstellungen werden zeilenweise gesucht
-  assert.ok(/parent === box && c\.matches\("details"\)/.test(st) && /details\.m-group, \.m-sub/.test(st), "Suche: Gruppen und Unter-Einstellungen richtig zerlegt");
+  assert.ok(/parent === top && c\.matches\("details"\)/.test(st) && /details\.m-group, \.m-sub/.test(st), "Suche: Gruppen und Unter-Einstellungen richtig zerlegt");
+  // Suchleiste über einem eigenen Bildlauf-Bereich (keine klebende Leiste mit eigener Fläche); die Bildlauf-Stelle
+  // überlebt den Neuaufbau nach jedem Schalter
+  assert.ok(/:scope > \.m-scroll/.test(body) && /box\.replaceChildren\(barEl, sayEl, scroll\)/.test(body) && /scroll\.scrollTop = at/.test(body), "Suchleiste fest, Inhalt in .m-scroll");
+  const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
+  const barRules = [...css.matchAll(/([^{}]*\.m-search-bar)\s*\{([^}]*)\}/g)].map((m) => m[2]).join("");
+  assert.ok(!/background|position:\s*sticky/.test(barRules), "die Suchleiste malt keine eigene Fläche und klebt nicht");
 }
 
 console.log(`settingsui: ${LANGS.length} Sprachen, ${keys.length} Einstellungen, ${GROUPS.length} Gruppen, ok`);

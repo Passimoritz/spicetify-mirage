@@ -600,13 +600,15 @@ let openBefore = null;
 function applySearch(box) {
   const q = query.trim(), ws = words(q);
   const units = [];
-  for (const parent of [box, ...box.querySelectorAll("details.m-group, .m-sub")]) {
+  // die oberste Ebene ist der Bildlauf-Bereich unter der Suchleiste (render: .m-scroll)
+  const top = box.querySelector(":scope > .m-scroll") || box;
+  for (const parent of [top, ...box.querySelectorAll("details.m-group, .m-sub")]) {
     let unit = null;
     // Treffer zählen für die Gruppe, auch wenn sie in einer Unter-Einstellung liegen
     const grp = parent.closest("details.m-group") || parent;
     for (const c of parent.children) {
       // oben im Dialog: die Gruppen selbst sind keine Zeilen (sonst hingen sie an der Einheit davor)
-      if (c.matches(SKIP) || (parent === box && c.matches("details"))) continue;
+      if (c.matches(SKIP) || (parent === top && c.matches("details"))) continue;
       if (c.matches(LABEL) || !unit) units.push((unit = { els: [], parent: grp }));
       unit.els.push(c);
     }
@@ -1210,12 +1212,20 @@ function render(box) {
   // offene Gruppen merken, damit ein Neuaufbau nicht alles zuklappt
   const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
   const hadFocus = document.activeElement?.classList.contains("m-search");
-  box.replaceChildren(...kids);
+  // Suchleiste fest oben, alles andere in einem eigenen Bildlauf-Bereich darunter: so braucht die Leiste keine
+  // eigene Fläche (früher ein Kasten mit harten Ecken über dem getönten Fenster-Hintergrund). Der Bereich bleibt
+  // über Neuaufbauten derselbe, und die Bildlauf-Stelle bleibt erhalten (ein Schalter baut alles neu).
+  const scroll = box.querySelector(":scope > .m-scroll") || el("div", "m-scroll");
+  const at = scroll.scrollTop;
+  const [barEl, sayEl, ...rest] = kids;
+  scroll.replaceChildren(...rest);
+  box.replaceChildren(barEl, sayEl, scroll);
   bindFind(box);
   labelControls(box);
   applySearch(box);
   if (hadFocus) search.focus();
   box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
+  if (at) scroll.scrollTop = at;
 }
 
 // Fokus im Fenster halten und beim Schließen dorthin zurückgeben, wo er vorher war. Spotifys Fenster macht das

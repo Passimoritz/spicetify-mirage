@@ -2338,9 +2338,16 @@ async function settingsLayout() {
         const box = document.querySelector(".mirage-settings"), sc = box.closest(".spicetify-popup-content");
         box.querySelectorAll("details.m-group").forEach((d) => (d.open = d.dataset.group === ${JSON.stringify(g)}));
         const d = box.querySelector('details[data-group=${JSON.stringify(g)}]');
+        const barTop0 = box.querySelector(".m-search").getBoundingClientRect().top;
         d.scrollIntoView({ block: "start" });
         const out = [], br = box.getBoundingClientRect();
-        if (sc.scrollWidth > sc.clientWidth + 1) out.push("Überlauf " + sc.scrollWidth + " > " + sc.clientWidth);
+        for (const s of [sc, box.querySelector(".m-scroll")]) if (s.scrollWidth > s.clientWidth + 1) out.push("Überlauf " + s.className + " " + s.scrollWidth + " > " + s.clientWidth);
+        // die Suchleiste malt keine eigene Fläche (kein Kasten mit Ecken über dem Fenster-Hintergrund) und ist bündig
+        const bar = box.querySelector(".m-search-bar"), bs = getComputedStyle(bar), pill = bar.querySelector(".m-search").getBoundingClientRect(), gr = d.getBoundingClientRect();
+        if (bs.backgroundImage !== "none" || !/rgba\\(0, 0, 0, 0\\)|transparent/.test(bs.backgroundColor)) out.push("Suchleiste mit eigener Fläche: " + bs.backgroundColor + " " + bs.backgroundImage.slice(0, 40));
+        if (Math.abs(pill.left - gr.left) > 2 || Math.abs(pill.right - gr.right) > 2) out.push("Suchfeld nicht bündig mit den Gruppen");
+        // die Suchleiste bleibt beim Bildlauf stehen
+        if (Math.abs(pill.top - barTop0) > 1) out.push("Suchleiste läuft mit: " + Math.round(barTop0) + " → " + Math.round(pill.top));
         if (document.documentElement.scrollWidth > innerWidth + 1) out.push("Seite breiter als das Fenster");
         const vis = (e) => e.getClientRects().length && !e.closest(".m-hide, [hidden]");
         const name = (e) => (e.dataset?.key || e.closest("[data-key]")?.dataset.key || e.closest(".m-row")?.querySelector("b")?.textContent || e.className || e.tagName).toString().slice(0, 40);

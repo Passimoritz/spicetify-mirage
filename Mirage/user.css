@@ -6384,20 +6384,58 @@ html.mirage-rich #mirage-stage .m-aurora {
   align-content: start;
 }
 /* Suche in den Einstellungen: bleibt beim Scrollen oben stehen, Lupe links, Trefferzahl und „/“-Hinweis rechts */
-/* Bildlauf-Bereich des Fensters: feste Innenabstände (die Suchleiste reicht über sie hinaus) und ein fester Platz
-   für die Bildlaufleiste – sonst springt der Inhalt seitlich, wenn die Suche ihn kürzer macht */
-:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection):has(.mirage-settings) {
-  padding: 0 24px 24px;
-  scrollbar-gutter: stable;
+/* Im Spicetify-Fenster: die Suchleiste steht fest über einem eigenen Bildlauf-Bereich (.m-scroll, settings.js render)
+   statt mit eigener Fläche über dem Inhalt zu kleben. So malt sie nichts – kein Kasten mit harten Ecken über dem
+   getönten Fenster-Hintergrund, in keinem Schema. Was nach oben unter ihr verschwindet, blendet die Maske des
+   Bildlauf-Bereichs weich aus. Fester Platz für die Bildlaufleiste: der Inhalt springt nicht, wenn die Suche ihn
+   kürzer macht. Ohne diesen Fenster-Aufbau (andere Spicetify-Versionen) läuft alles wie eine normale Seite. */
+:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection):has(> main > .mirage-settings) {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
 }
-/* über die ganze Breite des Fensters, mit weichem Auslauf nach unten statt eines Kastens mit harter Kante */
+:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection) > main:has(> .mirage-settings) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection) > main > .mirage-settings {
+  --ms-edge: 24px;
+
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+}
+:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection) > main > .mirage-settings > .m-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 8px var(--ms-edge) 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  mask-image: linear-gradient(transparent, #000 12px);
+}
+.mirage-settings .m-scroll {
+  display: grid;
+  gap: 10px;
+}
+.mirage-settings.is-searching .m-scroll {
+  align-content: start;
+}
 .mirage-settings .m-search-bar {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  margin: 0 -24px -6px;
-  padding: 2px 24px 14px;
-  background: linear-gradient(rgba(var(--spice-rgb-main), 0.94) calc(100% - 14px), rgba(var(--spice-rgb-main), 0));
+  position: relative;
+  flex: none;
+  margin: 0;
+  padding: 4px var(--ms-edge, 0);
+}
+/* dieselbe Rinne für die Bildlaufleiste wie der Bereich darunter: das Suchfeld ist so breit wie die Gruppen */
+:is(.spicetify-popup-content, .main-trackCreditsModal-mainSection) > main > .mirage-settings > .m-search-bar {
+  overflow: hidden;
+  scrollbar-gutter: stable;
 }
 .mirage-settings .m-search-bar .m-search {
   margin: 0;
@@ -6424,8 +6462,8 @@ html.mirage-rich #mirage-stage .m-aurora {
 }
 .mirage-settings .m-search-bar > .m-search-ic {
   position: absolute;
-  top: 13px;
-  left: 37px;
+  top: 15px;
+  left: calc(var(--ms-edge, 0px) + 13px);
 }
 .mirage-settings .m-search-bar:focus-within > .m-search-ic {
   color: var(--m-a);
@@ -6433,18 +6471,18 @@ html.mirage-rich #mirage-stage .m-aurora {
 .mirage-settings .m-search-count,
 .mirage-settings .m-search-kbd {
   position: absolute;
-  top: 22px;
+  top: 24px;
   translate: 0 -50%;
   pointer-events: none;
   font: 600 11px var(--m-mono);
   color: var(--spice-subtext);
 }
 .mirage-settings .m-search-count {
-  right: 62px;
+  right: calc(var(--ms-edge, 0px) + 38px);
   font-variant-numeric: tabular-nums;
 }
 .mirage-settings .m-search-kbd {
-  right: 36px;
+  right: calc(var(--ms-edge, 0px) + 12px);
   min-width: 20px;
   padding: 2px 6px;
   border: 1px solid var(--m-line-strong);
