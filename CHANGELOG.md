@@ -10,6 +10,26 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.32.0] – 2026-11-24
+
+### Added
+
+- Immersive mode: press V (or use the new row in the More menu under "This view") to switch the playful lyrics style on and off instantly, without reloading the lyrics.
+
+### Changed
+
+- Party: the visualizer style from the settings now shapes the ring around the cover – galaxy, tunnel, particles, wave, scope and the others swell with the party energy in the party colours, while the stage, crowd, light show and drop effects stay. "Line" becomes "Wave" as in Mix, bottom bars and mountains sit lower over the crowd, and the wave field and cover styles react to drops.
+- Settings: redesigned dialog – every setting is one row card, sub-settings sit indented under their switch and stay locked while it is off, long hints fold after two lines, colour schemes moved into Colours, a wider dialog on large screens and readable switches and focus rings in light schemes.
+- Mirage is lighter while idle: the per-second full-page layout is gone (main thread about 100 → 60 ms/s on a playlist page, no more long tasks), and endless decorations (vinyl cover, orb glow, seams) pause while Spotify is in the background or untouched for 90 seconds. Every immersive view does less work, the lyrics view about half.
+- Playful lyrics are much lighter on the CPU (lyrics view style work down from about 3.6× to about 1.6× of normal): line colours switch instantly, bounces stop after a few beats, and word effects play once (three times in Wild).
+
+### Fixed
+
+- Playful lyrics no longer fall behind the singing in fast passages: landings, accents, line changes and scrolling fit the time to the next word, echo words are no longer half transparent when sung, and words of the next line no longer land twice. The two short stutters at song changes are gone.
+- Party: the glow, rings, mirror and spin switches of the visualizer now apply in party mode as well.
+- Settings: the search bar no longer draws a square box beside it; it stays fixed above the list and lines up with the groups.
+- Playful hints name the "Calm" preset instead of the old "Calm mode" in all languages.
+
 ## [1.31.0] – 2026-11-23
 
 ### Added
