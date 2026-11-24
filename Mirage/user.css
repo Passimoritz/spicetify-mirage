@@ -8140,8 +8140,12 @@ body:has(#mirage-immersive.is-on) :is(.GenericModal__overlay, .ReactModal__Overl
 /* Container: Obergrenzen aus der Spaltenbreite (cqi) – ein riesiges Schlüsselwort passt immer in die Textfläche */
 #mirage-immersive .m-im-lyrics.is-playful {
   container-type: inline-size;
-  /* Durchgänge der Wortbild-Schleifen (weniger laufende Animationen je Sekunde: Party-Messung) */
-  --pci: 2;
+  /* Durchgänge der Wortbild-Schleifen (weniger laufende Animationen je Sekunde: Party-Messung) – „Wild“: 3 */
+  --pci: 1;
+  /* Schläge, die eine Zeile wippt, stößt, schwingt (Wippen, Stoß, Gezeiten, Pendel): die ersten vier nach dem Auftritt,
+     dann steht sie still – eine Schleife über die ganze Zeile ließ den Block der Wörter in jedem Bild neu berechnen
+     (Liedtext-Messung: der größte Einzelposten der Stilrechnung). „Wild“: acht */
+  --pli: 4;
   --pbn: m-p-bounce;
   --ppn: m-t-punch;
   --pf-shout: "Oswald", "Arial Narrow", "Roboto Condensed", impact;
@@ -8157,10 +8161,18 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   --pbn: none;
   --ppn: none;
 }
-/* Satz der Teile: --m-ps skaliert die Zeile (Strophe kompakt, Refrain groß, Rand ruhig – nie unter 90 %) */
+/* Satz der Teile: --m-ps skaliert die Zeile (Strophe kompakt, Refrain groß, Rand ruhig – nie unter 90 %).
+   Leistung: im verspielten Stil wechselt die Farbe der Zeile ohne Überblendung (die Wörter haben ihren eigenen Auftritt).
+   Die Farbe erbt jedes Wort, jeder Buchstabe und jede Schein-Kopie: 0,5 s Überblendung ließen bei jedem Zeilenwechsel
+   alle Elemente der alten und der neuen Zeile Bild für Bild neu berechnen (Liedtext-Messung: ~25 % der Stilrechnung).
+   Deckkraft und Größe gleiten weiter – sie erbt niemand. (Einzeln gesetzt statt „transition“: Überblendungen stehen
+   sonst nur im Bewegungs-Block.) */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line {
   font-size: calc(clamp(24px, 3vw, 48px) * var(--m-lyr-size, 1) * var(--m-uk, 1) * var(--m-ps, 1) * var(--pfs, 1));
   font-weight: 700;
+  transition-property: opacity, transform;
+  transition-duration: 0.7s;
+  transition-timing-function: var(--m-ease), var(--m-spring);
 }
 /* Party: die Textfläche liegt zwischen Cover und Titel und ist in kleinen Fenstern nur wenige Zeilen hoch. Die Zeile
    wird höchstens so groß, dass sie (zwei Reihen, aktiv vergrößert, mit Reserve fürs Kippen) im deckenden Bereich
@@ -8376,6 +8388,11 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
    0,5–0,7 s – sonst hinkte der Text in schnellen Stellen dem Gesang hinterher */
 #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-p-fast {
   transition-duration: var(--plt, 0.5s);
+}
+/* Wörter der Zeile als ein Block: Wippen, Stoß, Gezeiten, Pendel und Abgang bewegen ihn als Ganzes (ein Element statt
+   der Zeile mit ihrer Vergrößerung oder jedes einzelnen Worts) */
+#mirage-immersive .m-im-lyrics.is-playful .m-im-line > .m-im-words {
+  display: block;
 }
 /* Lagen: die aktive Zeile liegt über der abgehenden und der nächsten (nichts schiebt sich beim Auf- und Abtritt
    über die gesungene Zeile) */
@@ -8899,7 +8916,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    animation: m-a-echo 0.6s ease-out var(--pl, 0ms);
+    animation: m-a-echo var(--pad, 0.6s) ease-out var(--pl, 0ms);
   }
   /* Regen: ein Tropfen löst sich vom Wort (nicht bei „Leicht“) */
   html:not(.mirage-calm, .mirage-noflash, .mirage-lite) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-active .m-w.is-c-drip.is-sung::after {
@@ -9009,20 +9026,22 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     opacity: 0;
     animation: m-c-sirenb 1.6s ease-in-out calc(var(--pl, 0ms) + 860ms) var(--pci, 3) both;
   }
-  /* Zeile: Refrain wippt im Takt (Länge und Lage des Schlags setzt immersive.js je Zeile); Party wippt schon selbst */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib, .is-l-punch, .is-l-tide, .is-l-pend, .is-p-note, .is-p-moment, .is-p-riser) {
-    animation: var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) infinite;
+  /* Zeile: Refrain wippt im Takt (Länge und Lage des Schlags setzt immersive.js je Zeile); Party wippt schon selbst.
+     Bewegt wird der Block der Wörter (.m-im-words), nicht die Zeile: deren Größe gleitet daneben, und ein Element im
+     Takt kostet weniger als die ganze Zeile (Liedtext-Messung) */
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-p-chorus.is-active:not(.is-p-adlib, .is-l-punch, .is-l-tide, .is-l-pend, .is-p-note, .is-p-moment, .is-p-riser) > .m-im-words {
+    animation: var(--pbn, none) var(--pb, 500ms) cubic-bezier(0.3, 0, 0.3, 1) var(--pbd, 0ms) var(--pli, 4);
   }
   /* punch: die Zeile stößt auf jedem Schlag (Party: dort hüpft die Zeile schon selbst) */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-l-punch.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) {
-    animation: var(--ppn, none) var(--pb, 500ms) cubic-bezier(0.2, 0.8, 0.3, 1) var(--pbd, 0ms) infinite;
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive:not([data-mode="party"]) .m-im-lyrics.is-playful .m-im-line.is-l-punch.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) > .m-im-words {
+    animation: var(--ppn, none) var(--pb, 500ms) cubic-bezier(0.2, 0.8, 0.3, 1) var(--pbd, 0ms) var(--pli, 4);
   }
   /* Gezeiten: die Zeile hebt und senkt sich über vier Schläge; Pendel: schwingt über zwei Schläge */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-tide.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) {
-    animation: var(--ptn, m-l-tide) calc(var(--pb, 500ms) * 4) ease-in-out var(--pbd, 0ms) infinite;
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-tide.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) > .m-im-words {
+    animation: var(--ptn, m-l-tide) calc(var(--pb, 500ms) * 4) ease-in-out var(--pbd, 0ms) calc(var(--pli, 4) / 4);
   }
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-pend.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) {
-    animation: var(--ptn, m-l-pend) calc(var(--pb, 500ms) * 2) ease-in-out var(--pbd, 0ms) infinite;
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-l-pend.is-active:not(.is-p-adlib, .is-p-moment, .is-p-riser) > .m-im-words {
+    animation: var(--ptn, m-l-pend) calc(var(--pb, 500ms) * 2) ease-in-out var(--pbd, 0ms) calc(var(--pli, 4) / 2);
   }
   /* ♪ wippt im Takt: immersive.js setzt translate/rotate Bild für Bild aus der Songuhr (lyricstyle.notePose – Spitze
      genau auf dem Schlag, ohne Knick, auf der Eins groß; keine CSS-Schleife, die abdriftet und beim Neustart springt)
@@ -9048,11 +9067,12 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
     animation: m-l-riser var(--prd, 2s) linear;
   }
   /* Übergabe: die Zeile, die eben dran war (direkt vor der aktiven), geht mit einer Bewegung ab, die zu ihrem
-     Auftritt passt (--pxo: hoch, runter, zur Seite --pxd, kippen, drücken, ploppen) – Wort für Wort gestaffelt,
+     Auftritt passt (--pxo: hoch, runter, zur Seite --pxd, kippen, drücken, ploppen) – als ein Block (früher Wort für Wort
+     gestaffelt: so viele Animationen wie Wörter),
      Ausschlag und zurück in den Ruhezustand. .is-pout setzt immersive.js beim Zeilenwechsel an die Zeile direkt vor der
      aktiven (statt :has(+ .is-active): das prüfte bei jeder Klassen-Änderung einer Zeile ihre Nachbarn) */
-  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-past.is-pout .m-w {
-    animation: var(--pxo, none) var(--pxt, 0.5s) cubic-bezier(0.3, 0.6, 0.35, 1) calc(min(var(--wi, 0), 8) * var(--pxs, 26ms));
+  html:not(.mirage-calm, .mirage-noflash) #mirage-immersive .m-im-lyrics.is-playful .m-im-line.is-past.is-pout > .m-im-words {
+    animation: var(--pxo, none) var(--pxt, 0.5s) cubic-bezier(0.3, 0.6, 0.35, 1);
   }
 }
 /* Stufen: „Dezent“ – Wortbilder nur einmal, kein Wippen, kleiner Ausschlag des ♪; „Wild“ – Wortbilder öfter.
@@ -9066,6 +9086,7 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
 }
 #mirage-immersive .m-im-lyrics.is-playful.is-lv-wild {
   --pci: 3;
+  --pli: 8;
   --pna: 1.25;
 }
 @keyframes m-p-hold {

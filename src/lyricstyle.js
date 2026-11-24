@@ -938,10 +938,7 @@ export function* planSteps(lines, wordLists, d, o = {}) {
           if (xt >= 150) {
             vars["--pxo"] = exitOf(t);
             vars["--pxd"] = String(dir);
-            if (xt < 500) {
-              vars["--pxt"] = xt + "ms";
-              vars["--pxs"] = Math.round((26 * xt) / 500) + "ms";
-            }
+            if (xt < 500) vars["--pxt"] = xt + "ms";
           }
         }
         // großer Moment: der Einschlag ist vorbei, bevor die nächste Zeile kommt
@@ -1007,7 +1004,7 @@ export function* planSteps(lines, wordLists, d, o = {}) {
       const a = Number.isFinite(w.a) ? w.a : l.t;
       const room = nextA - a, roomNext = (k + 1 < n && Number.isFinite(ws[k + 1].a) ? ws[k + 1].a : nextA) - a;
       const gapIn = a - (k > 0 && Number.isFinite(ws[k - 1].a) ? ws[k - 1].a : lastA(i - 1));
-      const wl = lead ? Math.round(clamp(Math.min(lead, 0.9 * gapIn), LEAD_MIN, lead)) : 0;
+      const wl = lead ? Math.floor(clamp(Math.min(lead, 0.9 * gapIn), LEAD_MIN, lead)) : 0;
       const out = { cls: wc, vars: wv, lead: wl };
       if (!still) {
         // Wartezustand (wo das Wort vor seinem Einsatz steht) und Vorlauf
@@ -1080,7 +1077,9 @@ export function* planSteps(lines, wordLists, d, o = {}) {
           if (ad < (acc === "syl" ? 70 : ACC_MIN)) acc = "";
         }
         if (acc && level !== "subtle") {
-          wv["--pac"] = "m-a-" + acc;
+          // Echo: nur die blasse Kopie (::before) zieht nach – das Wort selbst bekam vorher dieselbe Ausblendung als
+          // Akzent und war auf dem Einsatz halb durchsichtig (e2e „playful schnell“)
+          if (acc !== "echo") wv["--pac"] = "m-a-" + acc;
           wv["--pad"] = ad + "ms";
           if (acc === "echo") wc.push("is-echo");
         } else {

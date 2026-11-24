@@ -2948,6 +2948,89 @@ async function playfulLyrics() {
     console.log(`  playful Beschnitt: ${checked} Zeilen (${DECK.TREATMENTS.length} Rezepte + 6 Bogen-Zeilen × Liedtext/Mix/Party × 820/1600 px), ${fails.length} abgeschnitten`);
     if (fails.length) console.log("    " + fails.join("\n    "));
     ok(!fails.length, "playful: abgeschnitten:\n    " + fails.slice(0, 12).join("\n    "));
+
+    // Taste V: schaltet den Stil live um – derselbe Liedtext bleibt stehen (keine Zeile neu gebaut), mit Meldung,
+    // und zurück sind die gemalten Inszenierungen sofort wieder da
+    await toMode("lyrics");
+    {
+      const look = () => T.js(`(() => {
+        const box = document.querySelector("${IM} .m-im-lyrics");
+        return { on: box.classList.contains("is-playful"), keep: box.querySelector(".m-im-line[data-e2e-keep]") ? 1 : 0, t: box.querySelectorAll('.m-im-line[class*="is-t-"]').length };
+      })()`);
+      await T.js(`document.querySelector("${IM} .m-im-lyrics .m-im-line").dataset.e2eKeep = "1"; window.__e2eToasts = []; const sn = Spicetify.showNotification; Spicetify.showNotification = (m, ...r) => (__e2eToasts.push(m), sn?.(m, ...r)); 1`);
+      // gemalt wird in Häppchen: warten, bis alle Zeilen ihre Inszenierung haben (zweimal gleich gezählt)
+      let before = await look();
+      for (let k = 0; k < 20; k++) {
+        await wait(400);
+        const x = await look();
+        if (x.t === before.t && x.t > 0) break;
+        before = x;
+      }
+      ok(before.on && before.t > 0, "playful V: vorher an " + JSON.stringify(before));
+      await T.js(`__sp.press("KeyV"); 1`);
+      const off = await until(async () => { const x = await look(); return !x.on && x; }, 2000, "playful: Taste V schaltet den Stil nicht aus");
+      ok(off.keep === 1, "playful: Taste V lädt den Liedtext neu");
+      await T.js(`__sp.press("KeyV"); 1`);
+      const on = await until(async () => { const x = await look(); return x.on && x; }, 3000, "playful: Taste V schaltet den Stil nicht wieder an");
+      ok(on.keep === 1 && on.t === before.t, "playful: nach V an/aus anders als vorher " + JSON.stringify([before, on]));
+      const toasts = await T.js(`__e2eToasts.slice()`);
+      ok(toasts.length === 2 && toasts[0] !== toasts[1], "playful: Taste V ohne Meldung " + JSON.stringify(toasts));
+      // die Tastenhilfe nennt V
+      await T.js(`document.dispatchEvent(new KeyboardEvent("keydown", { key: "?", bubbles: true })); 1`);
+      const help = await until(() => T.js(`[...document.querySelectorAll("${IM} .m-im-keys-box kbd")].map((k) => k.textContent)`).then((k) => k.length && k), 2000, "playful: Tastenhilfe");
+      ok(help.includes("V"), "playful: Tastenhilfe ohne V");
+      await T.js(`document.dispatchEvent(new KeyboardEvent("keydown", { key: "?", bubbles: true })); delete document.querySelector("${IM} .m-im-line[data-e2e-keep]")?.dataset.e2eKeep; 1`);
+      console.log(`  playful Taste V: aus → an ohne Neuladen (${before.t} Zeilen mit Inszenierung), Meldungen ${JSON.stringify(toasts)}`);
+    }
+
+    // schnelle Stelle (Zeilen alle 450 ms): jedes Wort auf seinem Einsatz voll deckend, und wenn die nächste Zeile
+    // dran ist, läuft an der eben gesungenen keine Bewegung mehr (außer ihrem kurzen Abgang)
+    await T.js(`__sp.playSpecial("fast"); 1`);
+    await until(() => T.js(`(() => { const l = document.querySelectorAll("${IM} .m-im-lyrics.is-playful .m-im-line[class*='is-t-']"); return l.length > 40; })()`), 8000 * SLOW, "playful schnell: Liedtext mit Stil");
+    await T.js(`Spicetify.Player.seek(9000); 1`);
+    await wait(900);
+    const fast = await T.js(`new Promise((done) => {
+      const box = document.querySelector("${IM} .m-im-lyrics"), words = [], lines = [];
+      let prev = null;
+      const mo = new MutationObserver((recs) => {
+        for (const r of recs) {
+          const n = r.target;
+          if (n.classList?.contains("m-im-line") && n.classList.contains("is-active") && n !== prev) {
+            // die Zeile davor: welche Bewegungen laufen noch, wenn diese dran ist (eine Bildrate später)
+            const was = prev;
+            prev = n;
+            if (was) requestAnimationFrame(() => {
+              const left = was.getAnimations({ subtree: true }).filter((a) => a.playState === "running" && !/^m-x-/.test(a.animationName || "") && a.effect?.target !== was && !(a instanceof CSSTransition && !a.effect?.target?.matches?.(".m-w, .m-ch")));
+              // Farbwechsel der Zeile und Gleitfahrt des Texts: nicht länger als die Zeile (450 ms)
+              const maxDur = (el) => Math.max(...getComputedStyle(el).transitionDuration.split(",").map((x) => parseFloat(x) * (/ms/.test(x) ? 1 : 1000)));
+              lines.push({ text: was.textContent.trim(), left: left.map((a) => a.animationName || a.transitionProperty || "anim"), line: maxDur(n), glide: maxDur(box.querySelector(".m-im-lyrics-inner")) });
+            });
+          }
+          if (!n.classList?.contains("m-w") || !n.classList.contains("is-sung") || n.dataset.e2eSeen) continue;
+          n.dataset.e2eSeen = "1";
+          const t0 = performance.now(), pl = parseFloat(getComputedStyle(n).getPropertyValue("--pl")) || 0;
+          const step = () => {
+            if (!n.isConnected) return;
+            if (performance.now() - t0 < pl) return requestAnimationFrame(step);
+            if (!step.once) return (step.once = true), requestAnimationFrame(step);
+            const chOp = Math.min(1, ...[...n.querySelectorAll(".m-ch")].map((c) => Number(getComputedStyle(c).opacity)));
+            const ln = n.closest(".m-im-line");
+            words.push({ text: n.textContent, pl, op: Number(getComputedStyle(n).opacity), chOp, sung: n.classList.contains("is-sung"), line: (ln?.className.match(/is-(active|pnext|past|t-[a-z]+)/g) || []).join(" "), anims: n.getAnimations().map((x) => (x.animationName || x.transitionProperty) + ":" + x.playState) });
+          };
+          requestAnimationFrame(step);
+        }
+      });
+      mo.observe(box, { subtree: true, attributes: true, attributeFilter: ["class"] });
+      setTimeout(() => { mo.disconnect(); box.querySelectorAll("[data-e2e-seen]").forEach((x) => delete x.dataset.e2eSeen); done({ words, lines }); }, 5000);
+    })`);
+    const lateW = fast.words.filter((x) => !(x.op >= 0.95 && x.chOp >= 0.95));
+    const busy = fast.lines.filter((l) => l.left.length || l.line > 450 || l.glide > 450);
+    console.log(`  playful schnell: ${fast.words.length} Wörter (Zeilen alle 450 ms), ${lateW.length} zu spät deckend, ${busy.length}/${fast.lines.length} Zeilen mit Bewegung über den Wechsel hinaus`);
+    ok(fast.words.length >= 15, "playful schnell: zu wenige Wörter gemessen: " + fast.words.length);
+    ok(!lateW.length, "playful schnell: auf dem Einsatz nicht deckend: " + JSON.stringify(lateW.slice(0, 5)));
+    ok(fast.lines.length >= 6 && !busy.length, "playful schnell: Bewegung läuft in die nächste Zeile: " + JSON.stringify(busy.slice(0, 4)));
+    await T.js(`__sp.resetArtists(); 1`);
+    await wait(1500);
   } finally {
     T.win.setContentSize(1280, 800);
     await T.js(`document.getElementById("e2e-fonts")?.remove(); 1`).catch(() => {});

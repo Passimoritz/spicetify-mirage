@@ -125,3 +125,10 @@ export function colorVars(cols) {
   for (const [k, c] of Object.entries(cols)) v["--pc-" + k] = c.join(" ");
   return v;
 }
+// Dieselben Variablen als Stilregel nur für die Elemente, die sie lesen (Zeilen mit Farbe .is-pk, Wörter mit Farbe .is-k).
+// Leistung: an der Textfläche gesetzt, ließ jeder Palettenwechsel (Songwechsel) den ganzen Liedtext neu berechnen
+// (Liedtext-Messung: 2 200 Elemente, ~40 ms in einem Bild); eine geänderte Regel trifft nur die farbigen Zeilen und Wörter.
+export function colorRule(cols, scope = "#mirage-immersive .m-im-lyrics") {
+  const decl = Object.entries(colorVars(cols)).map(([k, v]) => `${k}: ${v};`).join(" ");
+  return `${scope} .m-im-line.is-pk, ${scope} .m-w.is-k { ${decl} }`;
+}

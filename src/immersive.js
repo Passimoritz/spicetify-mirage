@@ -50,7 +50,7 @@ import { createAlbumView } from "./albumview.js";
 import { createClockView } from "./clockview.js";
 // i-playful: verspielter Liedtext-Stil (Entscheidung in lyricstyle.js, Bewegung in user.css)
 import { planSteps, paintSteps, beatPhase, sungAt, leadPad, PRE_MS, notePose, noteColor } from "./lyricstyle.js";
-import { meaningColors, colorVars, noteRing } from "./lyriccolor.js";
+import { meaningColors, colorRule, noteRing } from "./lyriccolor.js";
 import { loadPlayfulFonts } from "./fonts.js";
 import { lowpass, lowpassHue, fpsDivisor, refreshFrom } from "./fxenv.js";
 
@@ -1166,7 +1166,8 @@ Probe-FX: ${pfx}`;
       });
     }
     // geschätzt: im Gesangstempo (≈ 75 ms je Zeichen) statt über die ganze Pause bis zur nächsten Zeile;
-    // beim Aktivwerden legt snapWords die Wortanfänge zusätzlich auf die Ton-Einsätze der Analyse
+    // beim Aktivwerden (im verspielten Stil schon als vorbereitete nächste Zeile) legt snapWords die Wortanfänge
+    // zusätzlich auf die Ton-Einsätze der Analyse
     const chars = parts.reduce((n, w) => n + w.length + 2, 0);
     const span = Math.max(300, Math.min(next - l.t - 150, Math.max(900, chars * 75)));
     let at = l.t;
@@ -1656,7 +1657,7 @@ Probe-FX: ${pfx}`;
   }
   // [playful] Verspielter Stil: Klassen und Variablen einmal je Song (und noch einmal, wenn die Analyse nachkommt) –
   // im Leerlauf, weil das Wörterbuch beim ersten Mal aufgebaut wird. Danach gleitet der Text an seine neue Lage.
-  let playfulKey = null, playGrade = null, playCols = "", playPre = -1, playOut = null;
+  let playfulKey = null, playGrade = null, playCols = "", playPre = -1, playOut = null, playSheet = null;
   // [playful] Farben aus der Bedeutung: aus den Leitfarben des Covers neu, sobald die sich ändern (je Zeilenwechsel
   // geprüft, grob gerundet – das Überblenden der Palette löst nicht bei jedem Schritt aus). Alle ≥ 4,5 : 1 (lyriccolor.js)
   function playColors() {
@@ -1665,7 +1666,13 @@ Probe-FX: ${pfx}`;
     const key = pal.map((c) => c.map((v) => v >> 4).join(".")).join("|");
     if (key === playCols) return;
     playCols = key;
-    for (const [k, v] of Object.entries(colorVars(meaningColors(pal, playGrade)))) q.lyrics.style.setProperty(k, v);
+    // als eigene Stilregel (lyriccolor.colorRule): trifft nur farbige Zeilen und Wörter, nicht den ganzen Liedtext
+    if (!playSheet?.isConnected) {
+      playSheet = document.createElement("style");
+      playSheet.id = "mirage-playful-colors";
+      document.head.append(playSheet);
+    }
+    playSheet.textContent = colorRule(meaningColors(pal, playGrade));
     playRing = noteRing(pal);
   }
   // [playful] Im Takt, Bild für Bild aus derselben Songuhr wie die Karaoke (pos inkl. Versatz und Abgleich):
@@ -1768,6 +1775,10 @@ Probe-FX: ${pfx}`;
         for (const w of words[playPre] || []) if (w.on) w.el.classList.remove("is-sung"), (w.on = false);
       }
       playPre = want;
+      // geschätzte Wörter schon jetzt auf die Ton-Einsätze legen (sonst erst beim Aktivwerden): die vorbereitete Zeile
+      // setzt ihre ersten Wörter schon ein – rückte das Legen sie danach später, sprangen sie in die Wartestellung
+      // zurück und landeten ein zweites Mal (in schnellen Stellen sichtbar zu spät)
+      if (want >= 0 && words[want]?.est && !words[want].snapped) snapWords(words[want], lyr.lines[want].t, lyr.lines[want + 1]?.t ?? lyr.lines[want].t + 6000);
       if (want >= 0) lines[want].classList.add("is-pnext");
     }
     if (playPre >= 0) playMarks(words[playPre], pos);

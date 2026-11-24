@@ -39,6 +39,9 @@
     return out;
   };
 
+  // schnelle Stelle (verspielter Stil, Test „playful“): kurze Zeilen alle 450 ms – nur der Song SPECIAL.fast hat sie
+  const FAST = ["fire up now", "burn it down", "heart beat fast", "boom go the drums", "jump up high", "rain on me", "go go go", "shine on bright"];
+  const fastLines = () => Array.from({ length: 80 }, (_, n) => ({ startTimeMs: String(3000 + n * 450), words: FAST[n % FAST.length] }));
   const log = { next: 0, seek: [], dropped: 0, pause: 0, play: 0, audible: {}, notes: [], volume: [], queued: [], yearCalls: 0,
     // 1.27 actions: Song-Menü
     nav: [], added: [], created: [], clip: [], removedQ: [], skipTo: [], played: [], speed: [], taste: [], liked: [] };
@@ -360,6 +363,7 @@
       get: async (url) => {
         const m = /color-lyrics\/v2\/track\/([A-Za-z0-9]+)/.exec(url);
         if (m) {
+          if (SPECIAL.fast.uri.endsWith(m[1])) return { lyrics: { syncType: "LINE_SYNCED", lines: fastLines(), language: "en" } };
           const i = tracks.findIndex((x) => x.uri.endsWith(m[1]));
           if (i < 0 || noLyrics(i)) throw new Error("404");
           return { lyrics: { syncType: "LINE_SYNCED", lines: lyricLines(i), language: "en" } };
@@ -462,6 +466,8 @@
     allAnalysis: (on) => (allAna = !!on),
   };
   const SPECIAL = {
+    // Song mit schneller Stelle (Zeilen alle 450 ms, siehe fastLines)
+    fast: { uri: "spotify:track:f000000000000000000fast", uid: "f1", name: "Tempo", duration: { milliseconds: 200000 }, metadata: { title: "Tempo", artist_name: "Rap Test", album_title: "Tempo", duration: "200000", image_url: "spotify:image:ab67616d00004851" + hex(3), image_large_url: "spotify:image:ab67616d0000b273" + hex(3) } },
     // Podcast-Folge (auch Video-Podcasts: gleiche URI-Art, das Bild kommt aus Spotifys Videofläche)
     episode: { uri: "spotify:episode:e0000000000000000000001", uid: "e1", name: "Folge 12: Glas", metadata: { title: "Folge 12: Glas", album_title: "Glas-Funk", artist_name: "Glas-Funk", image_url: "spotify:image:ab6765630000ba8a" + hex(7), media_type: "audio", "is_podcast": "true" } },
     video: { uri: "spotify:episode:e0000000000000000000002", uid: "e2", name: "Folge 13 (Video)", metadata: { title: "Folge 13 (Video)", album_title: "Glas-Funk", image_url: "spotify:image:ab6765630000ba8a" + hex(8), media_type: "video", "is_podcast": "true" } },
