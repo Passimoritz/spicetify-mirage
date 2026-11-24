@@ -268,7 +268,8 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   assert.ok(plan[2].vars["--pr"].endsWith("deg"));
   const fire = plan[1].words[4];
   assert.ok(fire.cls.includes("is-p-held"), "gehaltenes „fire“");
-  assert.equal(fire.vars["--hd"], "1800ms");
+  // gehalten 1,8 s, aber die nächste Zeile (Hintergrundgesang) kommt nach 1,25 s: die Dehnung endet davor (95 %)
+  assert.equal(fire.vars["--hd"], "1188ms");
   assert.ok(fire.cls.includes("is-c-flame"), "Feuer flackert");
   assert.ok(fire.cls.includes("is-cg") && fire.tx === "fire", "Feuer mit Schein-Ebene");
   assert.ok(plan[1].words[2].cls.includes("is-c-beat"), "Herz schlägt");
@@ -923,7 +924,7 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   // jedes Abgangs-Zeichen gibt es als @keyframes (der Wächter oben prüft die Eigenschaften)
   const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
   for (const n of [...new Set(Object.values(EXITS)), "m-l-moment", "m-l-riser"]) assert.ok(css.includes("@keyframes " + n + " {"), n);
-  assert.ok(/\.m-im-line\.is-past\.is-pout \.m-w \{/.test(css), "Abgang nicht auf die Zeile vor der aktiven beschränkt");
+  assert.ok(/\.m-im-line\.is-past\.is-pout > \.m-im-words \{/.test(css), "Abgang nicht auf die Zeile vor der aktiven beschränkt");
   const imSrc = fs.readFileSync(path.join(__dirname, "..", "..", "src", "immersive.js"), "utf8");
   assert.ok(/classList\.add\("is-pout"\)/.test(imSrc) && /classList\.add\("is-pcar"\)/.test(imSrc), "immersive.js setzt is-pout/is-pcar nicht");
 }
@@ -1200,6 +1201,38 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   // Asche: grau (Dunkel), nicht Feuer-Rot
   assert.ok(m("only ashes left behind").includes("ashes:dim"), "Asche: " + m("only ashes left behind"));
   assert.equal(CUE_KIND.dim, "dark");
+}
+
+/* ---- Schnelle Stellen (Rap 8 Wörter/s, Zeilen von 0,4 s): mit Spiel-Uhr (60 und 144 Hz) ist jedes Wort auf seinem
+   Einsatz lesbar (± ein Bild), und keine Bewegung einer Zeile läuft noch, wenn das erste Wort der nächsten landet –
+   Akzente, gehaltene Töne, Farbwechsel, Abgang und großer Moment passen in die Zeit (vorher hinkte der Text hinterher) */
+{
+  const { fastSong, lateReport } = require("./fixtures/fast-lines.js");
+  const { LEAD_MIN } = load("lyricstyle.js");
+  const s = fastSong();
+  let words = 0, accents = 0, fast = 0;
+  for (const level of ["subtle", "playful", "wild"]) {
+    for (const seed of ["a", "b", "c", "d", "e", "f"]) {
+      const plan = planPlayful(s.lines, s.words, s.d, { lexicon: LEX, neg: NEG, parts: s.parts, drops: [], level, seed: "fast" + seed });
+      for (const hz of [60, 144]) {
+        const late = lateReport(plan, s, sungAt, { fr: 1000 / hz, pad: leadPad(hz) });
+        assert.deepEqual(late, [], `${level}/${seed} ${hz} Hz: zu spät:\n  ` + late.slice(0, 8).join("\n  "));
+      }
+      plan.forEach((p, i) => p.words.forEach((pw, k) => {
+        words++;
+        if (pw.vars["--pac"]) accents++;
+        // Echo blendet nur die Kopie aus, nie das Wort selbst
+        assert.notEqual(pw.vars["--pac"], "m-a-echo", "Wort blendet sich als Echo selbst aus");
+        // Landung nie länger als 90 % des Abstands zum vorigen Einsatz (aber nie unter LEAD_MIN)
+        const gap = k ? s.words[i][k].a - s.words[i][k - 1].a : Infinity;
+        if (pw.lead) assert.ok(pw.lead <= Math.max(LEAD_MIN, 0.9 * gap), `Landung ${pw.lead} ms bei ${gap} ms Abstand`);
+      }));
+      fast += plan.filter((p) => p.cls.includes("is-p-fast")).length;
+    }
+  }
+  assert.ok(accents > 0, "schnelle Stellen ganz ohne Akzente");
+  assert.ok(fast >= 8 * 18, "kurze Zeilen ohne is-p-fast: " + fast);
+  console.log(`  schnelle Stellen: ${words} Wörter (Rap 8/s, Zeilen 0,4 s) rechtzeitig, ${accents} Akzente passen in die Zeit`);
 }
 
 console.log("lyricstyle: ok");

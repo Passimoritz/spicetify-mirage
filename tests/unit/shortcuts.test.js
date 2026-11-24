@@ -36,6 +36,18 @@ const { crowdLayers } = load("stagefx.js");
   assert.equal(shortcutFor("F11", false)?.id, "full");
   assert.equal(shortcutFor("KeyC", false)?.id, "confetti");
   assert.equal(shortcutFor("KeyZ", false), null);
+  // V wie „verspielt“: schaltet den verspielten Stil um – auch mit Umschalt, in der Hilfe unter „Liedtext“
+  assert.equal(shortcutFor("KeyV", false)?.id, "playful");
+  assert.equal(shortcutFor("KeyV", true)?.id, "playful");
+  const v = helpRows(6).find((r) => r.id === "playful");
+  assert.ok(v && v.kbd === "V" && v.group === "lyrics" && v.label === "k_playful", "Tastenhilfe ohne V");
+  // Spiele belegen 1–9, Leertaste und Enter: V kollidiert mit keiner Spieltaste
+  const games = fs.readFileSync(path.join(__dirname, "..", "..", "src", "games.js"), "utf8");
+  assert.ok(!/KeyV/.test(games), "V ist in den Spielen belegt");
+  // Text der Hilfe und der Meldungen in allen Sprachen
+  const { LYRICSTYLE_TEXT } = load("i18n-lyricstyle.js");
+  for (const [lang, tx] of Object.entries(LYRICSTYLE_TEXT)) for (const k of ["k_playful", "playfulOn", "playfulOff"]) assert.ok(tx[k], `${lang}: ${k} fehlt`);
+  assert.equal(Object.keys(LYRICSTYLE_TEXT).length, 14);
 }
 
 // Tastenhilfe: nennt die bisher fehlenden Tasten (C, F11, Umschalt+F10, Rechtsklick, Strg+Umschalt+M, Pos1/Ende,

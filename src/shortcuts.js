@@ -26,6 +26,8 @@ const SHORTCUTS = [
   { kbd: "Home / End", label: "k_homeEnd", group: "menu" },
   { id: "tap", codes: ["KeyT"], kbd: "T", label: "k_tap", group: "lyrics" },
   { id: "timing", codes: ["KeyE"], kbd: "E", label: "k_timing", group: "lyrics" },
+  // V wie „verspielt“: den verspielten Stil live an/aus (ohne den Liedtext neu zu laden)
+  { id: "playful", codes: ["KeyV"], kbd: "V", label: "k_playful", group: "lyrics" },
   { kbd: "Enter / ⌫", label: "k_editKeys", group: "lyrics" },
   { id: "confetti", codes: ["KeyC"], kbd: "C", label: "k_confetti", group: "party" },
   { kbd: "1 – 9 · Space", label: "k_gameKeys", group: "party" },

@@ -6,6 +6,7 @@
 //   npm run perf:party                      messen, Bericht in tests/e2e/out/party-perf.json
 //   npm run perf:party -- --check           zusätzlich das Budget prüfen (Exit-Code 1, wenn gerissen)
 //   PERF_SECS=90 PERF_LEVEL=4 PERF_THEME=pfad/theme.js PERF_CSS=pfad/user.css npm run perf:party
+//   PERF_VIEW=lyrics npm run perf:party      dieselbe Messung in der Ansicht Liedtext (statt Party)
 // Budget (--check): relativ zu einer Eichmessung im selben Lauf (feste Canvas- und Rechenarbeit im selben Fenster),
 // damit ein langsamer Rechner nicht durchfällt und ein schneller keinen Rückschritt versteckt – siehe BUDGET unten.
 const { app, BrowserWindow, session, contentTracing } = require("electron");
@@ -17,6 +18,8 @@ const SECS = Number(process.env.PERF_SECS) || 60;
 const LEVEL = Number(process.env.PERF_LEVEL) || 3;
 const CHECK = process.argv.includes("--check");
 const KEEP_TRACE = process.argv.includes("--trace");
+// Ansicht: Party (Standard) oder Liedtext/Mix – der verspielte Stil läuft in allen dreien
+const VIEW = ["lyrics", "mix"].includes(process.env.PERF_VIEW) ? process.env.PERF_VIEW : "party";
 const W = 1600, H = 900;
 // Budget: Vielfache der Eichmessung (Median eines festen Bilds aus Verläufen, Leuchtbildern und Pfaden)
 // (gemessen auf einem Desktop mit Grafikkarte: Eichung ~30–45 ms, Hauptthread p95 ~1,2 ms, Thread p95 ~2,5 ms,
@@ -25,7 +28,7 @@ const BUDGET = { mainP95: 0.08, workerP95: 0.12, mainBusy: 10, longTask: 50 };
 const SETTINGS = {
   preset: "full", presetBase: "full", glass: true, particles: true, grain: true, beat: true, tilt: true, cascade: true, calm: false, lite: false,
   noFlash: false, partyCrowd: true, lyrPlayful: true, lyrPlayLevel: "playful", partyLevel: LEVEL, partyLive: false, partyWishes: false,
-  partyDirector: true, partyDJ: true, partyBlend: true, partyOnline: false, imMode: "party",
+  partyDirector: true, partyDJ: true, partyBlend: true, partyOnline: false, imMode: VIEW,
   // Vergleiche: PERF_SET='{"lyrPlayful":false}' schaltet einzelne Einstellungen um
   ...JSON.parse(process.env.PERF_SET || "{}"),
 };
@@ -178,12 +181,12 @@ app.whenReady().then(async () => {
   const calib0 = await T(CALIB);
   await T(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
   await wait(1200);
-  await T(`document.querySelector('#mirage-immersive [data-mode="party"]')?.click(); 1`);
+  await T(`document.querySelector('#mirage-immersive [data-mode="${VIEW}"]')?.click(); 1`);
   // Song 0 von vorn, dann in den Aufbau vor dem ersten Drop springen (Liedtext, Analyse, Plan sind dann da)
   await T(`__sp.resetArtists(); 1`);
   await wait(4000);
   const mode = await T(`document.getElementById("mirage-immersive")?.dataset.mode`);
-  if (mode !== "party") throw new Error("Party-Modus ging nicht auf: " + mode);
+  if (mode !== VIEW) throw new Error("Ansicht ging nicht auf: " + mode + " (statt " + VIEW + ")");
   await T(`Spicetify.Player.seek(45000); 1`);
   await wait(2500);
   const traceFile = path.join(OUT, "party-perf-trace.json");
@@ -253,7 +256,7 @@ app.whenReady().then(async () => {
   for (const k in layers) layers[k] = r2(layers[k] / Math.max(1, vn));
   const mainTh = trace.threads.find((t) => t.name === "CrRendererMain"), workTh = trace.threads.find((t) => /Worker/.test(t.name));
   const report = {
-    when: new Date().toISOString(), secs: SECS, level: LEVEL, size: [W, H], calibMs: r2(calib),
+    when: new Date().toISOString(), view: VIEW, secs: SECS, level: LEVEL, size: [W, H], calibMs: r2(calib),
     marks: { seekAt: jumpAt, changeAt: r2(changeAt) },
     frames: { interval: dist(raf), over25: raf.filter((d) => d > 25).length, fps: r2(1000 / (q(raf, 0.5) || 16.7)) },
     main: { lyricsMs: dist(mainWork.map((x) => x[1])), vizMs: dist(mainWork.map((x) => x[2])), frameMs: dist(mainWork.map((x) => x[1] + x[2])),
@@ -267,11 +270,11 @@ app.whenReady().then(async () => {
     trace,
     errors: errors.slice(0, 10),
   };
-  const file = path.join(OUT, "party-perf.json");
+  const file = path.join(OUT, VIEW === "party" ? "party-perf.json" : "party-perf-" + VIEW + ".json");
   fs.writeFileSync(file, JSON.stringify(report, null, 1));
   // kurzer Bericht
   const f = (o) => `p50 ${o.p50} · p95 ${o.p95} · p99 ${o.p99} · max ${o.max} ms`;
-  console.log(`Party-Messung ${SECS} s, Stufe ${LEVEL}, ${W}×${H}, Eichung ${r2(calib)} ms (verspielt: ${rec.playful})`);
+  console.log(`${VIEW === "party" ? "Party" : "Ansicht " + VIEW}-Messung ${SECS} s, Stufe ${LEVEL}, ${W}×${H}, Eichung ${r2(calib)} ms (verspielt: ${rec.playful})`);
   console.log(`  Bildabstand        ${f(report.frames.interval)} · über 25 ms: ${report.frames.over25}`);
   console.log(`  Hauptthread Bild   ${f(report.main.frameMs)} (Liedtext ${report.main.lyricsMs.p95}, Bild ${report.main.vizMs.p95} p95)`);
   console.log(`  Thread Location    ${f(report.worker.drawMs)}`);
