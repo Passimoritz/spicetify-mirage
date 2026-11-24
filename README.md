@@ -292,7 +292,7 @@ Open your **profile menu → Mirage settings**, or **All settings…** in the st
 - **Energy saving** – *On battery*, *Always* or *Off*: Mirage draws fewer frames and pixels and saves power.
 - **Safety & comfort** – **No flashes** for sensitive eyes: no strobe, no blinding light, no sudden flashes anywhere, also on guest phones and room lights. It turns on by itself when your computer is set to reduce motion. Next to it, the **Calm** switch is a shortcut to the *Calm* preset (no background motion, bursts, tilt or canvas videos); off goes back to your previous preset.
 - **Greyed-out switches** – a switch that *No flashes* or *Calm* silences says "Off because of …"; one click jumps to the cause.
-- **More menu** – in the full-screen stage, press <kbd>O</kbd> (or the **⋯** button). It has the same groups in every view: *This song* (the song menu), *This view* (canvas video, lyrics timing; in party and clock also queue, volume, devices and sleep timer), *Party* (DJ, crowd, detected style …), *Look & performance* (presets and energy saving) and *All settings…*.
+- **More menu** – the **⋯** button in the full-screen stage. At the top, quick switches as tiles (canvas video, crowd, confetti, translation, playful style, clock date – whatever fits the view), then *This song* (the song menu, lyrics version and timing), *Party* (DJ, poll, other screen, detected style), *Playback* in party and clock (volume, queue, devices, sleep timer), *Look & performance* (presets, energy saving, no flashes – <kbd>O</kbd> opens it directly) and *All settings…*.
 - **Light and lyrics too early or too late?** Press <kbd>T</kbd> six times on the beat. Mirage measures the delay of your speakers (Bluetooth adds some).
 
 <details>

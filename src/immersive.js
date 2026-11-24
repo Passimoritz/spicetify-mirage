@@ -9,7 +9,7 @@ import { lastHaze } from "./stage.js";
 import { audio, beat } from "./audio.js";
 import { dust } from "./dust.js";
 import { burst } from "./burst.js";
-import { getLyrics, watchLyrics, dropStaleLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, SOURCE_NAME, romajiFor } from "./lyrics.js";
+import { getLyrics, watchLyrics, dropStaleLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, enableSpotifyCanvas, canvasAfterEnable, canvasFresh, SOURCE_NAME, romajiFor } from "./lyrics.js";
 import { estimateSync, applySync } from "./lyricsync.js";
 import { parseVoices, bgFlags, bgParts, voiceColors } from "./lyricvoices.js";
 import { lineAt } from "./songtime.js";
@@ -27,6 +27,7 @@ import { songPos } from "./clock.js";
 // Liedtext-Diagnose und -Timing je Song (lyrics.js: setAutoSync, autoSyncOff, researchLyrics · clock.js: nudgeSong,
 // resetSong, songOffset) – über den Namensraum, damit die Bedienung auch ohne diese Funktionen läuft (Zeilen fehlen dann)
 import * as lyricsApi from "./lyrics.js";
+import { focusCanvas, resetFocus } from "./canvasfocus.js";
 import * as clockApi from "./clock.js";
 import { instruments } from "./instruments.js";
 import { live } from "./live.js";
@@ -797,7 +798,7 @@ Probe-FX: ${pfx}`;
   // sonst verschwand er schlagartig bzw. blendete als eingefrorenes Bild aus
   let vizFadeUntil = 0;
   const vizLive = () => VIZ.has(el?.dataset.mode) || performance.now() < vizFadeUntil;
-  const sizeKeyNow = () => `${tier()}|${cfg.lite}|${cfg.eco}|${vizLive()}`;
+  const sizeKeyNow = () => `${tier()}|${cfg.lite}|${cfg.eco}|${vizLive()}|${el?.dataset.mode === "party"}`;
   let sizeKey = "";
   function sizeCanvas() {
     if (!q.canvas) return;
@@ -811,7 +812,11 @@ Probe-FX: ${pfx}`;
     // Vielfaches davon – jedes Bild neu zeichnen ruckelt dann. Die leuchtenden Linien bleiben trotzdem scharf genug.
     // je leichter das Preset, desto weniger Pixel: Leicht/Energiesparen ~1,2 Mio., Ausgewogen ~2 Mio.
     // „Ruhig“ wie Ausgewogen (scharf genug für langsame Bewegung)
-    const [pixels, cap] = lightMode() ? [1.2e6, 1] : tier() === "full" ? [3e6, 1.5] : [2e6, 1.25];
+    const [px0, cap] = lightMode() ? [1.2e6, 1] : tier() === "full" ? [3e6, 1.5] : [2e6, 1.25];
+    // 1.33 Party: zwei solche Flächen (Ring/Visualizer hier, Bühne und Publikum im Thread – gleiche Größe) plus
+    // Canvas-Video füllten die Grafikkarte zu ~75 %. Lichtkegel, Dunst und Leuchtpunkte sind weich – 65 % der Pixel
+    // sieht man nicht, die GPU-Last sinkt spürbar (gemessen, siehe CHANGELOG 1.33)
+    const pixels = el?.dataset.mode === "party" ? px0 * 0.65 : px0;
     const budget = Math.sqrt(pixels / Math.max(1, innerWidth * innerHeight));
     const dpr = Math.max(0.5, Math.min(devicePixelRatio || 1, cap, budget));
     sizeKey = sizeKeyNow();
@@ -2211,9 +2216,10 @@ Probe-FX: ${pfx}`;
     }
     let c = lyrGeo.h * 0.42;
     // [playful] die aktive Zeile steht nie im Ausblend-Rand der Textfläche (Masken in user.css: Liedtext/Mix 16 %/80 %,
-    // Party im verspielten Stil 18 %/82 %) – mit Reserve für Vergrößerung, Kippen und große Schlüsselwörter
-    if (q.lyrics.classList.contains("is-playful") && lyrGeo.hh[i]) {
-      const party = el.dataset.mode === "party";
+    // Party 16 %/86 %, im verspielten Stil 18 %/82 %) – mit Reserve für Vergrößerung, Kippen und große Schlüsselwörter.
+    // 1.33: in der Party auch im normalen Stil (dort ist die Fläche niedrig: eine zweireihige Zeile lief sonst hinein)
+    const party = el.dataset.mode === "party";
+    if ((party || q.lyrics.classList.contains("is-playful")) && lyrGeo.hh[i]) {
       const half = (lyrGeo.hh[i] * (party ? 1.12 : 1.05)) / 2 + lyrGeo.hh[i] * 0.08 + 6;
       const top = lyrGeo.h * (party ? 0.18 : 0.16) + half, bot = lyrGeo.h * (party ? 0.82 : 0.8) - half;
       c = top <= bot ? Math.min(bot, Math.max(top, c)) : (top + bot) / 2;
@@ -2305,6 +2311,19 @@ Probe-FX: ${pfx}`;
         ln.style.setProperty("--d", Math.min(Math.abs(k - Math.max(i, 0)), 6));
       }
       if (cur) q.inner.style.transform = `translateY(${y}px)`;
+      // 1.33: die Lage oben kommt aus der Höhe der Zeile, BEVOR sie aktiv wurde. In der Party (und im verspielten Stil)
+      // ist die aktive Zeile größer gesetzt und bricht oft in eine Reihe mehr um – dann ragte sie in den Ausblendrand
+      // (oben/unten „verschwommen“). Im nächsten Bild – das Layout ist dann frisch, Lesen kostet nichts – mit der echten
+      // Höhe nachmessen und, falls nötig, nachrücken (gleitet mit). Einmal je Zeilenwechsel.
+      if (cur && i >= 0 && (el.dataset.mode === "party" || q.lyrics.classList.contains("is-playful"))) {
+        const want = i;
+        requestAnimationFrame(() => {
+          if (active !== want || !cur.isConnected) return;
+          // wuchs die Zeile, hat der ResizeObserver den Merkzettel schon verworfen: frisch messen (Layout ist sauber)
+          const y2 = lyrScrollY(lines, want, !lyrGeo || Math.abs(cur.offsetHeight - (lyrGeo.hh[want] || 0)) > 1);
+          if (Math.abs(y2 - y) > 1) q.inner.style.transform = `translateY(${y2}px)`;
+        });
+      }
     }
     if (snap) {
       void getComputedStyle(q.inner).opacity; // nur Stil auflösen (Deckkraft braucht kein Layout)
@@ -3772,29 +3791,63 @@ Probe-FX: ${pfx}`;
   }
 
   // Canvas (Spotifys kurze Video-Loops): EIN Schalter für alle Ansichten (Film-Knopf oben oder „Mehr“ → Diese
-  // Ansicht), anfangs aus. Cover und Visualizer zeigen es IM Cover, Mix im runden Cover, der Liedtext gedämpft im
-  // Hintergrund. Party und Uhr haben kein Canvas (dort steht die Bühne bzw. Ruhe im Vordergrund).
-  // Gespielt wird nur, was zu sehen ist.
-  const CV_MODES = new Set(["cover", "lyrics", "viz", "mix"]);
-  const CV_HOW = { cover: "imCvCover", viz: "imCvCover", mix: "imCvMix", lyrics: "imCvLyrics" };
+  // Ansicht), anfangs aus. Cover und Visualizer zeigen es IM Cover, Mix und Party im runden Cover (in der Party
+  // bleibt der Ring drumherum), der Liedtext gedämpft im Hintergrund. Die Uhr hat kein Canvas (dort steht Ruhe
+  // im Vordergrund). Gespielt wird nur, was zu sehen ist.
+  // Einschalten in Mirage schaltet Canvas auch in Spotify ein (lyrics.js enableSpotifyCanvas) – sonst liefert
+  // Spotify für jeden Song „kein Canvas“.
+  const CV_MODES = new Set(["cover", "lyrics", "viz", "mix", "party"]);
+  const CV_HOW = { cover: "imCvCover", viz: "imCvCover", mix: "imCvMix", party: "imCvMix", lyrics: "imCvLyrics" };
   const canvasHint = (mode) => t(CV_HOW[mode] || "imCvCover");
+  // Spotify-Canvas einschalten (falls aus) und den laufenden Song neu fragen; true: ist jetzt an
+  async function spotifyCanvasOn() {
+    if (!(await enableSpotifyCanvas())) return false;
+    imToast(t("imCvSpotifyOn"));
+    await setCanvas(currentItem());
+    return true;
+  }
   async function toggleCanvas() {
-    // ohne Canvas erklärt der Knopf, warum: im Spotify-Konto ausgeschaltet oder der Song hat einfach keins
-    if (!canvasUrl) return S.showNotification?.(t((await canvasBlocked()) ? "canvasBlocked" : "canvasNone"), false, 6000);
+    if (!canvasUrl) {
+      // ohne Canvas: ist es in Spotify aus, gleich mit einschalten; sonst erklärt der Knopf, warum es keins gibt
+      if (await spotifyCanvasOn()) {
+        if (canvasUrl && !cfg.canvasShow) {
+          cfg.canvasShow = true;
+          save();
+          applyCanvas();
+        }
+        if (side === "menu") rebuildMenu();
+        if (canvasUrl) return;
+        // Spotify ist jetzt an, nur dieser Song hat keins: der Schalter bleibt für die nächsten Songs an
+        if (!cfg.canvasShow) {
+          cfg.canvasShow = true;
+          save();
+        }
+      }
+      return imToast(t((await canvasBlocked()) ? "canvasBlocked" : "canvasNone"), [], 6000);
+    }
     cfg.canvasShow = !cfg.canvasShow;
     save();
     applyCanvas();
     if (side === "menu") rebuildMenu();
   }
-  let canvasToken = 0, canvasUrl = null;
+  let canvasToken = 0, canvasUrl = null, canvasAsked = null;
   async function setCanvas(item) {
     const token = ++canvasToken;
     canvasUrl = null;
     applyCanvas();
-    const url = cfg.canvas && !cfg.calm ? await getCanvas(item?.uri) : null;
+    const want = cfg.canvas && !cfg.calm;
+    // AV1-Fassung: im leichten Modus die kleinere (spart Decoder und Speicher)
+    const maxW = lightMode() ? 480 : 720;
+    let url = want ? await getCanvas(item?.uri, maxW) : null;
+    // schon länger eingeschaltet, aber Spotify hat Canvas aus: einmal je Sitzung mit einschalten
+    // (alle Abrufe warten auf dasselbe Einschalten – sonst prüft ein späterer, bevor es fertig ist, und gewinnt)
+    if (!url && want && cfg.canvasShow) await (canvasAsked ||= enableSpotifyCanvas());
+    // gerade eingeschaltet (hier, im Menü oder in den Einstellungen): Spotify braucht einen Moment
+    if (!url && want && canvasFresh()) url = await canvasAfterEnable(item?.uri, maxW);
     if (token !== canvasToken) return;
     canvasUrl = url;
     applyCanvas();
+    if (side === "menu") rebuildMenu();
   }
   function playIn(v, on) {
     if (!v) return;
@@ -3804,7 +3857,14 @@ Probe-FX: ${pfx}`;
       return;
     }
     if (v.getAttribute("src") !== canvasUrl) v.src = canvasUrl;
-    v.play().then(() => v.classList.add("is-on")).catch(() => v.classList.remove("is-on"));
+    v.play()
+      .then(() => {
+        v.classList.add("is-on");
+        // Einstellung „Canvas aufs Motiv ausrichten“ (Standard aus): Ausschnitt einmal je Video, Zoom nur im Cover
+        if (cfg.canvasFocus) focusCanvas(v, v === q.cvid);
+        else resetFocus(v);
+      })
+      .catch(() => v.classList.remove("is-on"));
   }
   // Kopfzeile: überlappen die Knöpfe rechts die mittigen Ansichten, rücken die Ansichten nach links
   // 1.27 polish: ohne die Klasse kurz abzunehmen und neu zu messen (kostete ein Layout); geprüft wird, wo die Reiter
@@ -3824,7 +3884,7 @@ Probe-FX: ${pfx}`;
     // blass und sagt beim Klick, warum. So springt die Leiste auch nicht bei jedem Songwechsel.
     const mode = el.dataset.mode, show = cfg.canvas && !cfg.calm && CV_MODES.has(mode), can = show && !!canvasUrl;
     const on = can && !!cfg.canvasShow;
-    // in Party und Uhr gibt es kein Canvas – dort auch keinen Knopf
+    // in der Uhr gibt es kein Canvas – dort auch keinen Knopf
     q.cvbtn.hidden = !show;
     q.cvbtn.classList.toggle("is-none", show && !canvasUrl);
     q.cvbtn.setAttribute("aria-pressed", String(on));
@@ -3920,7 +3980,7 @@ Probe-FX: ${pfx}`;
   // (Knopf, Taste) beginnt einen neuen Stapel, eine Zeile, die weiterführt, legt ihre Seite oben drauf (push),
   // der Neuaufbau derselben Seite (Timer gewählt, Song gewechselt) lässt ihn, wie er ist.
   let side = null, stack = [];
-  const SIDE_TITLE = { queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle", genre: "imGenreTitle" };
+  const SIDE_TITLE = { queue: "c_queue", devices: "c_devices", timer: "c_timer", versions: "lyrPick", playlists: "c_addTo", wishes: "wishTitle", photos: "photoTitle", screens: "toScreen", poll: "pollBtn", recap: "recapBtn", dj: "djTitle", games: "gTitle", menu: "pmTitle", genre: "imGenreTitle", perf: "perfQuick", lyricopts: "tabLyrics" };
   const sideTitle = (kind) => t(kind === "song" ? (ctl.isEpisode(currentItem()) ? "smTitleEp" : "smTitle") : SIDE_TITLE[kind] || kind);
   const pushSide = (kind) => showSide(kind, true);
   function sideBack() {
@@ -3993,6 +4053,8 @@ Probe-FX: ${pfx}`;
     if (kind === "poll") return pollPanel(body);
     if (kind === "recap") return recapPanel(body);
     if (kind === "genre") return genrePanel(body);
+    if (kind === "perf") return perfSection(body);
+    if (kind === "lyricopts") return lyricOptsPanel(body);
     if (kind === "queue") {
       queuePanel(body, item);
     } else if (kind === "devices") {
@@ -4685,7 +4747,10 @@ Probe-FX: ${pfx}`;
   // Nach jedem Klick baut sich das Menü neu auf; der Fokus bleibt dabei an derselben Stelle (sideFocus).
   function perfSection(body) {
     // „Eigene“ (einzelne Schalter geändert) steht statt des Hinweises unter der Überschrift
-    sideHead(body, t("perfQuick"), t(cfg.preset === "custom" ? "presetCustom" : "perfQuickHint"));
+    const hint = document.createElement("p");
+    hint.className = "m-im-side-note";
+    hint.textContent = t(cfg.preset === "custom" ? "presetCustom" : "perfQuickHint");
+    body.append(hint);
     q.menuParty = el.dataset.mode === "party";
     const seg = document.createElement("div");
     seg.className = "m-g-seg-row is-wrap m-im-perf";
@@ -4733,17 +4798,18 @@ Probe-FX: ${pfx}`;
     applyCanvas();
     styleLyrics();
     showExtras();
-    if (side === "menu") {
+    if (side === "perf" || side === "menu") {
       const top = q.sideBody.scrollTop;
-      showSide("menu");
+      showSide(side, true);
       q.sideBody.scrollTop = top;
     }
   }
   // Taste O: Menü auf, Fokus auf das gewählte Preset (noch einmal O schließt es)
   function perfMenu() {
     if (!el || !isOpen()) return;
-    if (side === "menu") return showSide(null);
+    if (side === "perf") return showSide(null);
     showSide("menu");
+    pushSide("perf");
     queueMicrotask(() => (q.sideBody.querySelector('.m-im-perf [aria-pressed="true"]') || q.sideBody.querySelector(".m-im-perf button"))?.focus());
   }
   // Menü „Mehr“: feste Gruppen in fester Reihenfolge, in jeder Ansicht dieselben – nur „Diese Ansicht“ und
@@ -4751,17 +4817,10 @@ Probe-FX: ${pfx}`;
   // → Aussehen & Leistung → Alle Einstellungen. Jede Aktion hat genau einen Ort: Song-Aktionen im Song-Menü,
   // Ansicht und Leistung hier, Vollbild und Tastenhilfe oben.
   function rebuildMenu() {
+    if (!side) return;
     const top = q.sideBody.scrollTop;
-    showSide("menu", true);
+    showSide(side, true);
     q.sideBody.scrollTop = top;
-  }
-  // Zeile mit Zustand: kleiner Punkt bei „an“, der Zustand als Unterzeile („noch 23 min“, Gerätename, „An“)
-  function stateRow(body, label, sub, on, fn, icon, nav) {
-    const b = sideBtn(body, label, sub, fn, false, icon, nav);
-    b.classList.add("has-state");
-    b.classList.toggle("is-active", !!on);
-    if (!nav && fn) b.setAttribute("aria-pressed", String(!!on));
-    return b;
   }
   const onOff = (v) => t(v ? "imOn" : "imOff");
   // Übersetzen als Linien-Symbol (wie icons.js) – ICON.translate ist gefüllt und bliebe in der Menü-Kachel leer
@@ -4770,56 +4829,129 @@ Probe-FX: ${pfx}`;
     const now = ctl.sleepState();
     return !now ? t("timerOff") : now === "track" ? t("timerTrack") : t("timerLeft").replace("{m}", now);
   }
+  // Menü „Mehr“ (1.33 aufgeräumt): oben Schnellschalter als Kacheln (ein Klick, Zustand auf einen Blick), darunter
+  // wenige Zeilen, die weiterführen. Was selten gebraucht wird, liegt eine Ebene tiefer: Liedtext-Optionen (Fassung,
+  // Timing) und „Aussehen & Leistung“ (Presets, Energiesparen, Blitze). Reihenfolge fest: Kacheln → Dieser Song →
+  // Party (nur in der Party) → Wiedergabe (Party, Uhr) → Aussehen & Leistung → Alle Einstellungen.
   function menuPanel(body) {
     const mode = el.dataset.mode, party = mode === "party";
     q.menuMode = mode;
-    // 1) Dieser Song: das Song-Menü (Playlist, Warteschlange, Radio, Teilen …) – mit dem Zurück-Pfeil hierher
+    quickTiles(body, mode);
+    // Dieser Song: Song-Menü (Playlist, Warteschlange, Radio, Teilen …), Liedtext-Optionen, Album-Reise
     sideHead(body, t("imThisSong"));
     sideBtn(body, t("smOpen"), titleOf(currentItem()), () => pushSide("song"), false, UI.music, true).classList.add("m-im-tosong");
-    // 2) Diese Ansicht
-    sideHead(body, t("imThisView"), t(MODES.find(([k]) => k === mode)?.[1] || "tabCover"));
-    viewRows(body, mode);
-    // 3) Party: eigene Gruppe, nur in der Party
+    if (lyricOpts(mode).length) sideBtn(body, t("tabLyrics"), lyricOptsSub(mode), () => pushSide("lyricopts"), false, UI.mic, true).classList.add("m-im-tolyrics");
+    if (album.canToggle(mode)) sideBtn(body, album.label, album.albumName, () => { showSide(null); album.toggle(); }, false, UI.album).classList.add("m-im-albtoggle");
     if (party) {
       sideHead(body, t("imParty"));
       partyRows(body);
     }
-    // 4) Aussehen & Leistung (Presets, Energie, Blitze)
-    perfSection(body);
-    // 5) Alle Einstellungen: der Mirage-Dialog über der Bühne, gleich bei der passenden Gruppe
-    const all = sideBtn(body, t("imAllSettings"), t("imAllSettingsSub").replace("{g}", t(party ? "g_party" : "g_immersive")), () => {
+    // Party und Uhr zeigen die Knopfreihe unter dem Titel nicht: Lautstärke, Warteschlange, Geräte, Timer hier
+    if (party || mode === "clock") {
+      sideHead(body, t("imPlayback"));
+      volRow(body);
+      playChips(body);
+    }
+    // Aussehen & Leistung: eine Zeile, die Auswahl liegt eine Ebene tiefer (Taste O öffnet sie direkt)
+    sideHead(body, t("perfQuick"));
+    const pre = cfg.preset === "custom" ? t("presetCustom").split(" – ")[0] : t("preset_" + cfg.preset);
+    const extra = [cfg.eco === "on" ? t("eco") : "", cfg.noFlash ? t("noFlash") : ""].filter(Boolean).join(" · ");
+    sideBtn(body, pre || t("perfQuick"), extra, () => pushSide("perf"), false, UI.speed, true).classList.add("m-im-toperf");
+    // Alle Einstellungen: der Mirage-Dialog über der Bühne, gleich bei der passenden Gruppe
+    const all = sideBtn(body, t("imAllSettings"), "", () => {
       showSide(null);
       openSettings({ group: party ? "party" : "lyrics" });
     }, false, UI.gear);
+    all.title = t("imAllSettingsSub").replace("{g}", t(party ? "g_party" : "g_immersive"));
     all.classList.add("m-im-allsettings");
   }
-  function viewRows(body, mode) {
-    const lyrView = LYR.has(mode), synced = !!lyr?.synced && /^spotify:(track|local):/.test(lyrUri);
-    // Canvas: ein Schalter für alle Ansichten, die Unterzeile sagt, wie es HIER erscheint
+  // Schnellschalter: Kacheln mit Symbol, Name und Zustand; an = leuchtet in der Leitfarbe
+  function quickTiles(body, mode) {
+    const lyrView = LYR.has(mode), party = mode === "party";
+    const grid = document.createElement("div");
+    grid.className = "m-im-quick";
+    grid.setAttribute("role", "group");
+    grid.setAttribute("aria-label", t("imThisView"));
+    const tile = (label, state, on, fn, icon, cls) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "m-im-tile" + (cls ? " " + cls : "");
+      if (on != null) b.setAttribute("aria-pressed", String(!!on));
+      b.append(iconEl(icon, "m-ic m-im-tile-ic"));
+      const l = document.createElement("b");
+      l.textContent = label;
+      b.append(l);
+      if (state) {
+        const sm = document.createElement("small");
+        sm.textContent = state;
+        b.append(sm);
+      }
+      b.title = state ? label + " · " + state : label;
+      b.onclick = fn;
+      grid.append(b);
+      return b;
+    };
+    // Canvas: ein Schalter für alle Ansichten; der Zustand sagt, wie es HIER erscheint (oder dass es keins gibt)
     if (cfg.canvas && !cfg.calm && CV_MODES.has(mode)) {
       const on = !!cfg.canvasShow && !!canvasUrl;
-      stateRow(body, t("imCanvasRow"), canvasUrl ? `${onOff(on)} · ${canvasHint(mode)}` : t("canvasNone"), on, () => toggleCanvas(), UI.film).classList.add("m-im-cvrow");
+      tile(t("imCanvasRow"), canvasUrl ? (on ? canvasHint(mode) : onOff(false)) : t("imCvNone"), on, () => toggleCanvas(), UI.film, "m-im-cvrow" + (canvasUrl ? "" : " is-none"));
     }
-    // 1.27 views: Album-Reise ein/aus (Cover-Ansicht, nur wenn ein Album läuft)
-    if (album.canToggle(mode)) sideBtn(body, album.label, album.albumName, () => { showSide(null); album.toggle(); }, false, UI.album).classList.add("m-im-albtoggle");
+    if (party) {
+      tile(t("imCrowd"), onOff(cfg.partyCrowd), !!cfg.partyCrowd, () => {
+        cfg.partyCrowd = !cfg.partyCrowd;
+        save();
+        kick();
+        rebuildMenu();
+      }, UI.user, "m-im-crowdrow");
+      if (!cfg.calm) tile(t("confetti").replace(/\s*\(.*\)$/, ""), "C", null, () => { confetti(); showSide(null); }, UI.confetti, "m-im-confettirow");
+    }
+    // Übersetzung (Party: die Liedtext-Leiste fehlt dort) und verspielter Stil (wie Taste V)
+    if (party && lyr?.lines?.length && canTranslate()) tile(t("trToggle"), trOn(lyrUri) ? t(typeof cfg.translateSongs?.[lyrUri] === "boolean" ? "trSongOnShort" : "trAllOnShort") : onOff(false), trOn(lyrUri), toggleTranslate, TR_LINE, "m-im-trrow");
+    if (lyrView && lyr?.synced) tile(t("lyrPlayful"), onOff(cfg.lyrPlayful) + " · V", !!cfg.lyrPlayful, () => { togglePlayful(); rebuildMenu(); }, GAME.title, "m-im-playrow");
     // Uhr: Datum ein/aus (auch ein Klick auf die Uhrzeit)
-    if (mode === "clock") stateRow(body, t("imClockDate"), `${onOff(cfg.clockDate !== false)} · ${t("imClockDateSub")}`, cfg.clockDate !== false, () => { clockView.toggleDate(); rebuildMenu(); }, UI.clock).classList.add("m-im-ckdate");
-    // Liedtext: in der Party fehlt die Leiste unten (nur kurz bei Mausbewegung) – Übersetzung und Fassung auch hier
-    if (mode === "party" && lyr?.lines?.length) {
-      if (canTranslate()) stateRow(body, t("trToggle"), trOn(lyrUri) ? t(typeof cfg.translateSongs?.[lyrUri] === "boolean" ? "trSongOnShort" : "trAllOnShort") : onOff(false), trOn(lyrUri), toggleTranslate, TR_LINE);
-      if (cfg.onlineLyrics && /^spotify:(track|local):/.test(lyrUri)) sideBtn(body, t("lyrPick"), SOURCE_NAME[lyr.source] || "Spotify", () => pushSide("versions"), false, UI.music, true);
-    }
-    // [playful] verspielter Stil an/aus (wie Taste V) – in allen Ansichten mit zeitgenauem Text, ohne Neuladen
-    if (lyrView && lyr?.synced) stateRow(body, t("lyrPlayful"), onOff(cfg.lyrPlayful) + " · V", !!cfg.lyrPlayful, () => { togglePlayful(); rebuildMenu(); }, UI.title).classList.add("m-im-playrow");
-    // Liedtext früher / später (je Song) – in allen Ansichten mit zeitgenauem Text
-    if (lyrView && synced && canNudge()) nudgeRow(body);
-    // Party und Uhr zeigen die Knopfreihe unter dem Titel nicht: Warteschlange, Lautstärke, Geräte, Timer hier
-    if (mode === "party" || mode === "clock") {
-      sideBtn(body, t("k_queue"), "", () => pushSide("queue"), false, UI.queue, true);
-      volRow(body);
-      if (ctl.canConnect()) stateRow(body, t("c_devices"), ctl.devices().find((d) => d.active)?.name || "", false, () => pushSide("devices"), UI.devices, true);
-      stateRow(body, t("c_timer"), timerText(), !!ctl.sleepState(), () => pushSide("timer"), UI.timer, true);
-    }
+    if (mode === "clock") tile(t("imClockDate"), onOff(cfg.clockDate !== false), cfg.clockDate !== false, () => { clockView.toggleDate(); rebuildMenu(); }, UI.clock, "m-im-ckdate");
+    if (grid.children.length) body.append(grid);
+  }
+  // Liedtext-Optionen eine Ebene tiefer: Fassung wählen (Party: die Leiste unten fehlt dort) und früher/später
+  function lyricOpts(mode) {
+    const out = [], lyrView = LYR.has(mode), synced = !!lyr?.synced && /^spotify:(track|local):/.test(lyrUri);
+    if (mode === "party" && lyr?.lines?.length && cfg.onlineLyrics && /^spotify:(track|local):/.test(lyrUri)) out.push("versions");
+    if (lyrView && synced && canNudge()) out.push("nudge");
+    return out;
+  }
+  function lyricOptsSub(mode) {
+    const o = lyricOpts(mode), v = songOffset(lyrUri), parts = [];
+    if (o.includes("versions")) parts.push(SOURCE_NAME[lyr.source] || "Spotify");
+    if (o.includes("nudge")) parts.push(v ? signed(v / 1000) + " s" : t("syRow").split(" (")[0]);
+    return parts.join(" · ");
+  }
+  function lyricOptsPanel(body) {
+    const o = lyricOpts(el.dataset.mode);
+    if (o.includes("versions")) sideBtn(body, t("lyrPick"), SOURCE_NAME[lyr.source] || "Spotify", () => pushSide("versions"), false, UI.music, true);
+    if (o.includes("nudge")) nudgeRow(body);
+    if (!o.length) sideBtn(body, t("smNone"));
+  }
+  // Warteschlange, Geräte, Timer: drei Knöpfe in einer Reihe statt drei Zeilen
+  function playChips(body) {
+    const seg = document.createElement("div");
+    seg.className = "m-im-chips";
+    const chip = (label, sub, icon, kind, on) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "m-im-chip" + (on ? " is-active" : "");
+      b.append(iconEl(icon, "m-ic"));
+      const l = document.createElement("span");
+      l.textContent = label;
+      b.append(l);
+      b.title = sub ? label + " · " + sub : label;
+      b.onclick = () => pushSide(kind);
+      seg.append(b);
+    };
+    chip(t("k_queue"), "", UI.queue, "queue");
+    if (ctl.canConnect()) chip(t("c_devices"), ctl.devices().find((d) => d.active)?.name || "", UI.devices, "devices");
+    const tm = ctl.sleepState();
+    chip(tm ? timerText() : t("c_timer"), tm ? t("c_timer") : "", UI.timer, "timer", !!tm);
+    body.append(seg);
   }
   function nudgeRow(body) {
     const v = songOffset(lyrUri);
@@ -4865,20 +4997,13 @@ Probe-FX: ${pfx}`;
     r.append(l, v);
     body.append(r);
   }
-  // Party-Gruppe: DJ, Abstimmung, Rückblick, Konfetti, anderer Bildschirm, Publikum, erkannter Stil
+  // Party-Gruppe: DJ, Abstimmung, Rückblick, anderer Bildschirm, erkannter Stil (Publikum und Konfetti sind Kacheln)
   function partyRows(body) {
     const row = (label, icon, fn, nav, sub) => sideBtn(body, label, sub || "", fn, false, icon, nav);
     row(t("djTitle"), UI.dj, () => pushSide("dj"), true);
     if (cfg.partyLive) row(t("pollBtn"), UI.poll, () => pushSide("poll"), true);
     if (cfg.partyRecap && recap.songs.length >= 3) row(t("recapBtn"), UI.recap, () => pushSide("recap"), true);
-    if (!cfg.calm) row(t("confetti"), UI.confetti, () => { confetti(); showSide(null); });
     if (cfg.partyScreen) row(t("toScreen"), UI.screen, () => pushSide("screens"), true);
-    stateRow(body, t("imCrowd"), t(cfg.partyCrowd ? "imCrowdOn" : "imCrowdOff"), !!cfg.partyCrowd, () => {
-      cfg.partyCrowd = !cfg.partyCrowd;
-      save();
-      kick();
-      rebuildMenu();
-    }, UI.user).classList.add("m-im-crowdrow");
     genreRow(body);
   }
   /* ---- Party: erkannter Stil und „Für diesen Künstler immer …“ (cfg.genreArtist) */
@@ -4894,8 +5019,10 @@ Probe-FX: ${pfx}`;
     const fixed = !!art && cfg.genreArtist?.[art] === key;
     const name = fam ? t("imGenreFam").replace("{g}", styleName(key)).replace("{f}", famName(fam)) : styleName(key);
     const sub = fixed ? t("imGenreFixed") : info.conf > 0 ? t("imGenreSure").replace("{p}", Math.round(info.conf <= 1 ? info.conf * 100 : info.conf)) : "";
-    sideBtn(body, t("imGenre").replace("{g}", name), sub, null, false, UI.music).classList.add("m-im-genre");
-    if (art) sideBtn(body, t("imGenrePick"), fixed ? styleName(key) : t("imGenreAuto"), () => pushSide("genre"), false, UI.gear, true).classList.add("m-im-genrepick");
+    // eine Zeile: erkannter Stil, darunter wie sicher bzw. „immer so“ – führt zu „Für diesen Künstler immer …“
+    const b = sideBtn(body, t("imGenre").replace("{g}", name), sub, art ? () => pushSide("genre") : null, false, UI.music, !!art);
+    b.classList.add("m-im-genre");
+    if (art) b.classList.add("m-im-genrepick");
   }
   function genrePanel(body) {
     const it = currentItem(), art = ctl.artistUriOf(it), cur = cfg.genreArtist?.[art] || "", who = artistOf(it).split(", ")[0] || "";

@@ -135,7 +135,7 @@ assert.ok(/calm: false,/.test(cfgSrc.slice(cfgSrc.indexOf("const DEFAULTS = {"))
   const { DEFAULTS } = load("config.js");
   // jede Unter-Einstellung hängt an einem Schalter, den es gibt (sonst wäre sie immer gesperrt)
   const subs = [...st.matchAll(/\bsub\(\s*"(\w+)"/g)].map((m) => m[1]);
-  assert.deepStrictEqual([...subs].sort(), ["glass", "lyrPlayful", "partyInstruments", "partyLive", "partyWishes"], "Unter-Einstellungen: " + subs.join());
+  assert.deepStrictEqual([...subs].sort(), ["canvas", "glass", "lyrPlayful", "partyInstruments", "partyLive", "partyWishes"], "Unter-Einstellungen: " + subs.join());
   for (const k of subs) {
     assert.strictEqual(typeof DEFAULTS[k], "boolean", `Unter-Einstellung unter „${k}“: ein Schalter in DEFAULTS`);
     assert.ok(keys.includes(k), `${k} ist selbst ein Schalter im Dialog`);

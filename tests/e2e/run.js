@@ -1995,14 +1995,16 @@ async function perfMenu() {
   const menu = () => T.js(`(() => {
     const s = document.querySelector("#mirage-immersive .m-im-side");
     const on = (sel) => [...s.querySelectorAll(sel)].filter((b) => b.getAttribute("aria-pressed") === "true");
-    return { open: !s.hidden && s.dataset.kind === "menu", presets: s.querySelectorAll(".m-im-perf button").length,
+    return { open: !s.hidden && s.dataset.kind === "perf", presets: s.querySelectorAll(".m-im-perf button").length,
       preset: on(".m-im-perf button").map((b) => b.dataset.preset).join(), flags: on(".m-im-perf-flag").map((b) => b.querySelector("b").textContent),
       focus: document.activeElement?.dataset?.preset || "", lite: document.documentElement.classList.contains("mirage-lite"), noflash: document.documentElement.classList.contains("mirage-noflash") };
   })()`);
   const before = await stored();
   await big.hover();
   await T.click(".m-im-menubtn");
-  await until(async () => (await menu()).open, 2000, "leistung: Menü „Mehr“ geht auf");
+  // 1.33: „Aussehen & Leistung“ ist eine Unterseite von „Mehr“ (Taste O öffnet sie direkt)
+  await T.click(".m-im-toperf");
+  await until(async () => (await menu()).open, 2000, "leistung: Menü „Mehr“ → Aussehen & Leistung geht auf");
   let m = await menu();
   ok(m.presets === 4, "leistung: vier Presets im Menü: " + m.presets);
   // jede Preset-Karte zeigt ihren Leistungsbedarf (Balken) und sagt ihn auch vor
@@ -2079,6 +2081,7 @@ async function perfMenu() {
   // zurück auf den Stand von vorher, damit die folgenden Fälle unverändert laufen
   await big.hover();
   await T.click(".m-im-menubtn");
+  await T.click(".m-im-toperf");
   await until(async () => (await menu()).open, 2000, "leistung: Menü wieder auf");
   if (!!(await stored()).noFlash !== flashOn) await T.click(".m-im-perf-flag", { index: 0 });
   if ((await stored()).eco !== (before.eco || "auto")) await T.click(".m-im-eco button", { index: ["auto", "on", "off"].indexOf(before.eco || "auto") });
@@ -3467,10 +3470,12 @@ async function moreMenu() {
     return until(async () => { const x = await st(); return x.open && x.kind === "menu" && x; }, 2000, "mehr: Menü offen");
   };
   if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await press("KeyM", { ctrlKey: true, shiftKey: true });
-  // 1) Party: feste Reihenfolge Dieser Song → Diese Ansicht → Party → Aussehen & Leistung → Alle Einstellungen
+  // 1) Party: Schnellschalter-Kacheln, dann feste Reihenfolge Dieser Song → Party → Wiedergabe → Aussehen & Leistung
+  //    → Alle Einstellungen (1.33 aufgeräumt)
   await toMode("party");
   let s = await openMore();
-  const order = ["Dieser Song", "Diese Ansicht", "Party"];
+  const order = ["Dieser Song", "Party", "Wiedergabe", "Aussehen & Leistung"];
+  ok(await T.js(`document.querySelectorAll("${SIDE} .m-im-quick .m-im-tile").length >= 2`), "mehr: Schnellschalter als Kacheln oben");
   ok(order.every((h, i) => s.heads[i] === h) && s.heads.length >= 4, "mehr: Gruppen in fester Reihenfolge: " + s.heads.join(" / "));
   ok(s.last === "Alle Einstellungen …", "mehr: zuletzt „Alle Einstellungen“: " + s.last);
   for (const want of ["Song-Menü", "Lautstärke (↑ ↓)", "Schlaf-Timer", "Publikum zeigen"]) ok(s.rows.includes(want) || s.rows.some((r) => r?.startsWith(want)) || (await T.js(`document.querySelector("${SIDE}").innerText.includes(${JSON.stringify(want)})`)), `mehr: Party-Menü ohne „${want}“: ${s.rows.join(" / ")}`);
@@ -3505,7 +3510,7 @@ async function moreMenu() {
   // 5) Cover: keine Party-Gruppe, Taste C sagt, warum nichts passiert
   await toMode("cover");
   s = await openMore();
-  ok(!s.heads.includes("Party") && s.heads[0] === "Dieser Song" && s.heads[1] === "Diese Ansicht", "mehr: Cover ohne Party-Gruppe: " + s.heads.join(" / "));
+  ok(!s.heads.includes("Party") && s.heads[0] === "Dieser Song" && s.heads[1] === "Aussehen & Leistung", "mehr: Cover ohne Party-Gruppe: " + s.heads.join(" / "));
   await shot("more-cover");
   await press("Escape");
   await until(async () => !(await st()).open, 2000, "mehr: Esc schließt");
@@ -3515,7 +3520,8 @@ async function moreMenu() {
   // 6) Uhr: Datum, Geräte/Timer im Menü (die Knopfreihe ist dort unsichtbar)
   await toMode("clock");
   s = await openMore();
-  ok(s.rows.includes("Datum") && s.rows.includes("Schlaf-Timer"), "mehr: Uhr mit Datum und Timer: " + s.rows.join(" / "));
+  // Datum ist eine Kachel, der Timer ein Knopf in der Wiedergabe-Reihe
+  ok((await T.js(`!!document.querySelector("${SIDE} .m-im-tile.m-im-ckdate") && document.querySelector("${SIDE}").innerText.includes("Schlaf-Timer")`)), "mehr: Uhr mit Datum und Timer: " + s.rows.join(" / "));
   await shot("more-clock");
   await press("Escape");
   // 7) Tastenhilfe: aus der gemeinsamen Tabelle – mit C, F11, Rechtsklick, Strg+Umschalt+M

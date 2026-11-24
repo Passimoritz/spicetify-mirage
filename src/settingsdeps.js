@@ -16,7 +16,7 @@ const DEPENDS = [
   {
     id: "calm",
     // was die Ruhe in burst.js, cards.js, pages.js, audio.js, immersive.js und party.js ausbremst
-    keys: ["burst", "tilt", "cascade", "beat", "canvas", "partyWords", "partyBlend"],
+    keys: ["burst", "tilt", "cascade", "beat", "canvas", "canvasFocus", "partyWords", "partyBlend"],
     on: (cfg) => !!cfg.calm,
     label: "preset_calm",
     jump: "preset:calm",

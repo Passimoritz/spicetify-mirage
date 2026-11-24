@@ -532,40 +532,142 @@ async function translateLines(uri, lyr, target) {
 /* ---------------------------------------------------------------- Canvas-Videos */
 // Die kurzen Spotify-Loops hinter manchen Songs. Spotify liefert sie über eine interne Abfrage;
 // fehlt sie in einer Spotify-Version, bleibt es einfach beim Cover.
-const canvasCache = lru(60);
-async function getCanvas(uri) {
-  if (!uri?.startsWith("spotify:track:")) return null;
-  if (canvasCache.has(uri)) return canvasCache.get(uri);
-  let url = null;
+// Die Abfrage nennt eine MP4-Datei in H.264 – die kann Spotifys eigenes Chromium aber NICHT abspielen (keine
+// proprietären Codecs: das Video lädt ewig, ohne Fehler). Spotify selbst spielt Canvas über ein Video-Manifest mit
+// mehreren Fassungen, darunter AV1 bzw. VP9. Diese Fassung holen wir: Init- und Mediensegmente (fragmentiertes MP4)
+// hintereinander ergeben eine abspielbare Datei, als Blob-URL fürs <video>. Kann der Browser H.264 doch
+// (andere Umgebungen, Tests), nehmen wir die Datei direkt.
+const canvasCache = lru(60); // uri → { url, fileId } | null
+const canvasPending = new Map();
+const canvasBlobs = new Map(); // fileId → Blob-URL (nur die letzten paar: je ~1–2 MB)
+const BLOBS_MAX = 4;
+const h264 = () => {
   try {
-    const G = S.GraphQL;
-    const def = G?.Definitions?.canvas;
-    if (def && G.Request) {
-      // Spotify hat die Variable umbenannt (uri → trackUri): beide mitschicken, dann passt es für alte und neue Versionen
-      const r = await G.Request(def, { trackUri: uri, uri });
-      url = r?.data?.trackUnion?.canvas?.url || null;
-      if (url && !/\.mp4(\?|$)/.test(url)) url = null; // Bild-Canvas: das Cover reicht
-    }
+    return !!document.createElement("video").canPlayType('video/mp4; codecs="avc1.4d401f"');
+  } catch {
+    return false;
+  }
+};
+async function canvasMeta(uri) {
+  if (canvasCache.has(uri)) return canvasCache.get(uri);
+  if (canvasPending.has(uri)) return canvasPending.get(uri);
+  const p = (async () => {
+    let meta = null;
+    try {
+      const G = S.GraphQL;
+      const def = G?.Definitions?.canvas;
+      if (def && G.Request) {
+        // Spotify hat die Variable umbenannt (uri → trackUri): beide mitschicken, dann passt es für alte und neue Versionen
+        const r = await G.Request(def, { trackUri: uri, uri });
+        const c = r?.data?.trackUnion?.canvas;
+        // Bild-Canvas (kein Video): das Cover reicht
+        if (c?.url && /\.mp4(\?|$)/.test(c.url)) meta = { url: c.url, fileId: c.fileId || "" };
+      }
+    } catch {}
+    canvasCache.set(uri, meta);
+    canvasPending.delete(uri);
+    return meta;
+  })();
+  canvasPending.set(uri, p);
+  return p;
+}
+async function manifest(fileId) {
+  const url = `https://spclient.wg.spotify.com/manifests/v9/json/sources/${fileId}/options/supports_drm`;
+  try {
+    if (S.CosmosAsync?.get) return await S.CosmosAsync.get(url);
   } catch {}
-  canvasCache.set(uri, url);
-  return url;
+  const tok = S.Platform?.AuthorizationAPI?.getState?.()?.token?.accessToken;
+  if (!tok) return null;
+  const r = await fetch(url, { headers: { authorization: "Bearer " + tok } });
+  return r.ok ? r.json() : null;
+}
+// maxW: breiteste Fassung, die wir laden (Canvas sind Hochformat 9:16; 720 reicht fürs große Cover)
+async function canvasFile(fileId, maxW) {
+  const key = fileId + "|" + maxW;
+  if (canvasBlobs.has(key)) return canvasBlobs.get(key);
+  const m = await manifest(fileId);
+  const c = m?.contents?.[0], base = m?.base_urls?.[0];
+  if (!c || !base || !m.initialization_template || !m.segment_template) return null;
+  // je nach Canvas gibt es AV1 (MP4) oder VP9 (WebM) – beides kann Spotify; bei gleicher Größe AV1 (kleiner).
+  // Segmente aneinandergehängt spielen in beiden Formaten als Datei, auch in Schleife (gemessen).
+  const ok = (p) => (p.file_type === "mp4" || p.file_type === "webm") && (window.MediaSource?.isTypeSupported?.(`${p.mime_type}; codecs="${p.video_codec}"`) ?? false);
+  const rank = (p) => p.video_width * 10 + (/^av01/.test(p.video_codec) ? 2 : /^vp/.test(p.video_codec) ? 1 : 0);
+  const usable = (c.profiles || []).filter(ok).sort((a, b) => rank(b) - rank(a));
+  const p = usable.find((x) => x.video_width <= maxW) || usable[usable.length - 1];
+  if (!p) return null;
+  const fill = (tpl, ts) => base + tpl.replace("{{profile_id}}", p.id).replace("{{file_type}}", p.file_type).replace("{{segment_timestamp}}", ts);
+  const len = c.segment_length || 4, end = (c.end_time_millis || 0) / 1000, start = (c.start_time_millis || 0) / 1000;
+  const n = Math.max(1, Math.min(8, Math.ceil((end - start) / len)));
+  const urls = [fill(m.initialization_template, 0)];
+  for (let i = 0; i < n; i++) urls.push(fill(m.segment_template, Math.round(start + i * len)));
+  const parts = await Promise.all(urls.map((u) => fetch(u).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))));
+  const blob = URL.createObjectURL(new Blob(parts, { type: p.mime_type || "video/mp4" }));
+  canvasBlobs.set(key, blob);
+  // älteste freigeben (das laufende Video ist immer das neueste)
+  while (canvasBlobs.size > BLOBS_MAX) {
+    const [k, v] = canvasBlobs.entries().next().value;
+    canvasBlobs.delete(k);
+    URL.revokeObjectURL(v);
+  }
+  return blob;
+}
+const filePending = new Map();
+async function getCanvas(uri, maxW = 720) {
+  if (!uri?.startsWith("spotify:track:")) return null;
+  const meta = await canvasMeta(uri);
+  if (!meta) return null;
+  if (h264() || !meta.fileId) return meta.url;
+  const key = meta.fileId + "|" + maxW;
+  if (!filePending.has(key)) filePending.set(key, canvasFile(meta.fileId, maxW).catch(() => null).finally(() => filePending.delete(key)));
+  return filePending.get(key);
 }
 
-// Hat das Spotify-Konto Canvas ausgeschaltet (Schalter „Canvas“ in der Spotify-Handy-App, gilt fürs ganze Konto),
-// liefert Spotify für jeden Song „kein Canvas“. Das erkennen wir, damit der Knopf erklären kann, woran es liegt.
-let canvasOff = null;
-async function canvasBlocked() {
-  if (canvasOff !== null) return canvasOff;
+// Canvas ist in Spotify ausgeschaltet (Spotify-Einstellungen → Anzeige → Canvas, gilt fürs ganze Konto):
+// dann liefert Spotify für jeden Song „kein Canvas“. Wer es in Mirage einschaltet, will es sehen – darum schaltet
+// enableSpotifyCanvas() es in Spotify mit ein (wie Spotifys eigener Schalter). Gesperrt (Kinder-/Familienkonto)
+// geht das nicht; dann erklärt der Knopf, woran es liegt.
+async function canvasState() {
   try {
     const v = await S.Platform?.ProductStateAPI?.getValues?.();
-    canvasOff = v?.["canvas-disabled"] === "1";
+    return { off: v?.["canvas-disabled"] === "1", locked: v?.["lock-canvas-disabled"] === "1" };
   } catch {
-    canvasOff = false;
+    return { off: false, locked: false };
   }
-  return canvasOff;
 }
+// gesperrt: Mirage kann es nicht einschalten (der Knopf erklärt das statt „kein Canvas“)
+async function canvasBlocked() {
+  const s = await canvasState();
+  return s.off && s.locked;
+}
+// Direkt nach dem Einschalten liefert Spotify noch kurz „kein Canvas“ (gemessen: die erste Abfrage gleich danach
+// kommt leer zurück). Darum ein paar Mal nachfragen, ohne das leere Ergebnis zu behalten.
+async function canvasAfterEnable(uri, maxW) {
+  for (const ms of [500, 1500, 3000]) {
+    await new Promise((r) => setTimeout(r, ms));
+    canvasCache.delete(uri);
+    const url = await getCanvas(uri, maxW);
+    if (url) return url;
+  }
+  return null;
+}
+// true: war aus und ist jetzt an (Ergebnisse von vorher waren „kein Canvas“ und werden vergessen)
+async function enableSpotifyCanvas() {
+  const s = await canvasState();
+  if (!s.off || s.locked) return false;
+  try {
+    await S.Platform.ProductStateAPI.setValues({ "canvas-disabled": "0" });
+  } catch {
+    return false;
+  }
+  canvasCache.clear();
+  enabledAt = Date.now();
+  return true;
+}
+let enabledAt = 0;
+// gerade eben in Spotify eingeschaltet: „kein Canvas“ ist dann noch nicht verlässlich
+const canvasFresh = () => Date.now() - enabledAt < 6000;
 
 // Anzeigename der Quelle (Knopf „Fassung wählen“, Overlay)
 const SOURCE_NAME = { spotify: "Spotify", lrclib: "LRCLIB", netease: "NetEase", amll: "AMLL", kugou: "Kugou", ovh: "lyrics.ovh" };
 
-export { getLyrics, researchLyrics, setAutoSync, autoSyncOff, shownLyrics, watchLyrics, dropStaleLyrics, warmLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, romajiFor, SOURCE_NAME };
+export { getLyrics, researchLyrics, setAutoSync, autoSyncOff, shownLyrics, watchLyrics, dropStaleLyrics, warmLyrics, lyricVersions, pickLyrics, rejectLyrics, rejectedCount, translateLines, getCanvas, canvasBlocked, enableSpotifyCanvas, canvasAfterEnable, canvasFresh, romajiFor, SOURCE_NAME };

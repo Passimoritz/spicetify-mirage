@@ -10,6 +10,23 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Party: canvas videos now play in party mode too – inside the round cover, with the party ring around it (film button at the top or the canvas tile in More).
+- Switching canvas on in Mirage also switches it on in Spotify when it was off there (unless it is locked for the account).
+- New optional setting "Focus canvas on the subject" (under Canvas videos, off by default): Mirage looks for the striking part of the video – a person, a face, an object – and centres the round cover on it, with a slight zoom for compact subjects. The analysis runs once per video on your PC; nothing is sent.
+
+### Changed
+
+- More menu (three dots) cleaned up: quick switches as tiles at the top (canvas, crowd, confetti, translation, playful style, clock date), queue/devices/timer as one row, lyrics options (version, timing) and Look & performance on their own pages. In party mode it went from 25 entries that had to scroll to 12 that fit; key O still opens Look & performance directly.
+- Party mode is much smoother: while immersive mode covers the screen, Spotify underneath is no longer drawn, and the stage and ring canvases use 35 % fewer pixels in party (soft light – no visible difference). Measured in party at 2560 × 1440: compositing layers 760 → 30, main thread about 740 → 400 ms/s, GPU about 650 → 300–580 ms/s, frames over 20 ms 169 → 0 per 8 s.
+
+### Fixed
+
+- Canvas videos never played: Spotify's built-in browser cannot decode the H.264 file Spotify links to. Mirage now loads the AV1/VP9 version from Spotify's video manifest instead (as Spotify itself does).
+- The playful-style row in the More menu had no icon.
+- Party: lyrics no longer look blurred or cut off at the top and bottom. The lyrics area was only about 190 px high, so a sung line over two rows ran into the fade-out edges; it now reaches up into the free space under the ring, the edges are narrower, and the sung line is kept fully inside the sharp part even when it grows and wraps.
+
 ## [1.32.0] – 2026-11-24
 
 ### Added

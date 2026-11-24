@@ -19,6 +19,7 @@ import { live } from "./live.js";
 import { bpm } from "./library.js";
 import { GAME as GAME_IC } from "./icons.js";
 import { blockedBy } from "./settingsdeps.js";
+import { enableSpotifyCanvas } from "./lyrics.js";
 
 function applySettings() {
   applyScheme(effectiveScheme());
@@ -945,7 +946,10 @@ function render(box) {
       "viz",
       t("g_viz"),
       false,
-      toggle("canvas", () => immersive.refresh()),
+      // einschalten schaltet Canvas auch in Spotify ein (sonst liefert Spotify für jeden Song „kein Canvas“)
+      toggle("canvas", () => (cfg.canvas ? enableSpotifyCanvas().finally(() => immersive.refresh()) : immersive.refresh())),
+      // Ausschnitt aufs Motiv (Standard aus; Bildanalyse bleibt am Rechner) – eingerückt unter „Canvas-Videos“
+      sub("canvas", toggle("canvasFocus", () => immersive.refresh())),
       field(t("vizSection"), t("vizSectionHint"), vizSeg),
       range("vizBars", 48, 180, 12, ""),
       range("vizHeight", 50, 200, 10, " %"),

@@ -20,6 +20,8 @@ export function lru(max) {
       if (m.size > max) m.delete(m.keys().next().value);
     },
     has: (k) => m.has(k),
+    delete: (k) => m.delete(k),
+    clear: () => m.clear(),
   };
 }
 

@@ -1794,10 +1794,17 @@ html.mirage-vinyl.mirage-playing .main-coverSlotCollapsed-container img {
 #mirage-immersive[data-mode="party"] .m-im-lyrics {
   width: auto;
   justify-self: stretch;
-  margin: 0;
+  /* 1.33: die Fläche war zwischen Cover-Zeile und Titelblock nur ~190 px hoch (bei 1440p) – eine aktive Zeile über
+     zwei Reihen (~200 px) passte nicht hinein und lief oben und unten in die 30-%-Ausblendränder (sah verschwommen
+     und abgeschnitten aus). Jetzt reicht sie nach oben in den leeren Rand unter dem Ring (der Abstand des Covers,
+     --w × 0,45, bleibt im Raster), die Ränder sind schmal, und immersive.js hält die aktive Zeile im deckenden Teil */
+  margin: calc(min(17vw, 23vh) * -0.3) 0 0;
+  /* gestreckt statt height: 100% – nur so wächst die Fläche um den negativen Rand (100 % wäre die Rasterzeile) */
+  height: auto;
+  align-self: stretch;
   padding: 0 max(var(--m-bleed), calc((100% - min(1100px, 86vw)) / 2));
-  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
-  mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+  -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 86%, transparent);
+  mask-image: linear-gradient(transparent, #000 16%, #000 86%, transparent);
 }
 #mirage-immersive[data-mode="party"] .m-im-line {
   --m-act: 1.12;
@@ -3069,6 +3076,17 @@ html:not(.mirage-glass) *::after {
 html.mirage-im-open #mirage-stage {
   visibility: hidden;
 }
+/* … und Spotify selbst auch: die Ebene deckt alles, aber Spotify darunter wurde weiter gezeichnet. Gemessen in der
+   Party (2560 × 1440): 760 Compositing-Ebenen (Suche, Seitenleisten, Listen), deren Aufteilung (Layerize) jedes Bild
+   ~8 ms kostete – fast die Hälfte des Bildbudgets. Unsichtbar bleiben Layout und Scrollposition erhalten (anders als
+   display: none oder content-visibility, das Spotifys Timer zu 200-ms-Layouts zwang); gesetzt erst, wenn die Ebene
+   ganz deckt, und vor dem Ausblenden wieder entfernt (immersive.js open/close). Spotifys Hinweise bleiben sichtbar. */
+html.mirage-im-open .Root {
+  visibility: hidden;
+}
+html.mirage-im-open .Root .notistack-SnackbarContainer {
+  visibility: visible;
+}
 html.mirage-im-open #mirage-stage *,
 html.mirage-im-open .Root * {
   animation-play-state: paused !important;
@@ -4094,10 +4112,27 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1.2s var(--m-ease);
+  /* Einstellung „Canvas aufs Motiv ausrichten“ (canvasfocus.js): der Ausschnitt gleitet weich dorthin */
+  transition:
+    opacity 1.2s var(--m-ease),
+    object-position 1.4s var(--m-ease);
 }
 #mirage-immersive .m-im-canvas.is-on {
   opacity: 0.42;
+}
+/* ohne Video: keine eigene Vollbild-Ebene vorhalten (erst nach dem Ausblenden unsichtbar) */
+#mirage-immersive .m-im-canvas:not(.is-on),
+#mirage-immersive .m-im-cvid:not(.is-on) {
+  visibility: hidden;
+  transition:
+    opacity 0.9s var(--m-ease),
+    object-position 1.4s var(--m-ease),
+    scale 1.4s var(--m-ease),
+    visibility 0s linear 0.9s;
+}
+/* zersplittertes Cover: die Kacheln zeichnet der Canvas – das Video tritt mit dem Cover zurück */
+#mirage-immersive.is-shatter .m-im-cvid {
+  opacity: 0 !important;
 }
 /* Liedtext mit Canvas: das Video liegt gedämpft hinter dem Text, ein Verlauf hält die Zeilen lesbar */
 #mirage-immersive.has-canvas[data-mode="lyrics"] .m-im-bg::after {
@@ -4114,7 +4149,10 @@ html.mirage-light :is(.Root__main-view, #main-view) :is([data-encore-id="buttonT
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.9s var(--m-ease);
+  transition:
+    opacity 0.9s var(--m-ease),
+    object-position 1.4s var(--m-ease),
+    scale 1.4s var(--m-ease);
   pointer-events: none;
 }
 #mirage-immersive .m-im-cvid.is-on {
@@ -10367,3 +10405,105 @@ html.mirage-lite #mirage-immersive .m-im-lyrics.is-playful {
   margin-top: 0.8vh;
 }
 /* === end i-playful === */
+/* === 1.33 menu === */
+/* Menü „Mehr“: Schnellschalter als Kacheln (immersive.js quickTiles) – Symbol, Name, Zustand; an = Leitfarbe.
+   Darunter Wiedergabe als drei Knöpfe in einer Reihe (playChips). */
+#mirage-immersive .m-im-quick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
+  padding: 4px 0 2px;
+}
+#mirage-immersive .m-im-tile {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 2px;
+  min-height: 78px;
+  padding: 10px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.05);
+  color: inherit;
+  text-align: left;
+  font: 600 13px / 1.2 var(--m-font);
+  cursor: pointer;
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    transform 0.16s var(--m-pop-spring);
+}
+#mirage-immersive .m-im-tile:hover {
+  background: rgb(255 255 255 / 0.09);
+}
+#mirage-immersive .m-im-tile:active {
+  transform: scale(0.97);
+}
+#mirage-immersive .m-im-tile .m-im-tile-ic {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+#mirage-immersive .m-im-tile small {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: 500;
+  opacity: 0.66;
+}
+#mirage-immersive .m-im-tile[aria-pressed="true"] {
+  border-color: rgba(var(--m-c-rgb), 0.55);
+  background: rgba(var(--m-c-rgb), 0.2);
+}
+#mirage-immersive .m-im-tile[aria-pressed="true"] .m-im-tile-ic {
+  color: rgb(var(--m-c-rgb));
+  opacity: 1;
+}
+#mirage-immersive .m-im-tile.is-none {
+  opacity: 0.55;
+}
+#mirage-immersive .m-im-chips {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 6px;
+  padding: 2px 0 4px;
+}
+#mirage-immersive .m-im-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 54px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.06);
+  color: inherit;
+  font: 600 12.5px var(--m-font);
+  cursor: pointer;
+  min-width: 0;
+  transition: background 0.16s;
+}
+#mirage-immersive .m-im-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#mirage-immersive .m-im-chip .m-ic {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+#mirage-immersive .m-im-chip:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+#mirage-immersive .m-im-chip.is-active {
+  background: rgba(var(--m-c-rgb), 0.2);
+  color: rgb(var(--m-c-rgb));
+}
+/* === end 1.33 menu === */

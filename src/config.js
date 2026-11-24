@@ -78,8 +78,10 @@ const DEFAULTS = {
   // „Nicht der richtige Liedtext“: je Song die abgelehnten Ergebnisse (Quelle oder Quelle:Kennung)
   lyricBad: {},
   canvas: true,
-  // Canvas: ein Schalter für alle Ansichten (Film-Knopf oben, „Mehr“ → Diese Ansicht); nicht in Party und Uhr
+  // Canvas: ein Schalter für alle Ansichten (Film-Knopf oben, „Mehr“ → Diese Ansicht); nicht in der Uhr (Party: im runden Cover)
   canvasShow: false,
+  // Canvas-Ausschnitt aufs Motiv ausrichten (canvasfocus.js, Bildanalyse am Rechner) – nur auf Wunsch
+  canvasFocus: false,
   // Übersetzung je Song abweichend vom Schalter für alle (uri → true/false) · Party-Stil je Künstler fest (artistUri → Stil)
   translateSongs: {},
   genreArtist: {},
