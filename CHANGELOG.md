@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.33.0] – 2026-11-25
+
 ### Added
 
 - Party: canvas videos now play in party mode too – inside the round cover, with the party ring around it (film button at the top or the canvas tile in More).
