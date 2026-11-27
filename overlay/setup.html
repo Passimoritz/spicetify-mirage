@@ -159,7 +159,7 @@
         <div class="seg" data-key="display"><button data-v="primary" data-t="primary"></button><button data-v="cursor" data-t="cursor"></button></div>
         <div class="screens" id="screens"></div>
       </div>
-      <div><span class="lbl" data-t="position"></span><div class="grid9" id="grid9"></div></div>
+      <div><span class="lbl" id="posLbl" data-t="position"></span><div class="grid9" id="grid9" role="group" aria-labelledby="posLbl"></div></div>
     </div>
   </section>
 
@@ -200,7 +200,7 @@
       </div>
       <div class="dev">
         <label class="opt"><b>Home Assistant</b><input type="checkbox" class="toggle" data-key="haOn"></label>
-        <div class="tools"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false" aria-label="Home Assistant URL"><input type="password" id="haToken" autocomplete="off" spellcheck="false" aria-label="Token"><button type="button" class="btn sm" id="haConnect" data-t="haTest"></button><button type="button" class="btn sm ghost" data-test="ha" data-t="wzTest"></button></div>
+        <div class="tools"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false" aria-label="Home Assistant URL"><input type="password" id="haToken" autocomplete="off" spellcheck="false" data-al="haToken"><button type="button" class="btn sm" id="haConnect" data-t="haTest"></button><button type="button" class="btn sm ghost" data-test="ha" data-t="wzTest"></button></div>
         <small class="state" id="haState" role="status" aria-live="polite" data-t="haHint"></small>
       </div>
       <div class="dev">
@@ -238,7 +238,11 @@
 
   function translate() {
     document.documentElement.lang = t.lang;
-    $$("[data-t]").forEach((el) => (el.textContent = t(el.dataset.t)));
+    // Statuszeilen, in denen gerade ein Stand steht (data-live, siehe say), behalten ihn
+    $$("[data-t]").forEach((el) => { if (!el.dataset.live) el.textContent = t(el.dataset.t); });
+    // Namen für Vorleseprogramme: Felder mit eigenem Namen (data-al) und das Positions-Raster („oben links“)
+    $$("[data-al]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.al)));
+    $$("#grid9 button").forEach((b) => b.setAttribute("aria-label", b.dataset.v.split("-").map((p) => t("pos" + p[0].toUpperCase() + p.slice(1))).join(" ")));
     $$(".screen").forEach((el) => (el.title = `${t("screenN")} ${el.dataset.n}`));
     showStep();
   }
@@ -274,6 +278,8 @@
       s.classList.toggle("on", n === step);
       s.classList.toggle("past", n < step);
       s.setAttribute("aria-hidden", String(n !== step));
+      // unsichtbare Schritte auch aus der Tab-Reihenfolge: sonst schaltet die Leertaste Schalter um, die niemand sieht
+      s.inert = n !== step;
     });
     $$("#dots i").forEach((d, i) => d.classList.toggle("on", i < step));
     $("#stepText").textContent = t("wzStep").replace("{n}", step);
@@ -324,7 +330,6 @@
   for (const v of ["top", "middle", "bottom"]) for (const h of ["left", "center", "right"]) {
     const b = document.createElement("button");
     b.dataset.v = `${v}-${h}`;
-    b.setAttribute("aria-label", `${v} ${h}`);
     b.onclick = () => set({ anchor: b.dataset.v });
     $("#grid9").append(b);
   }
@@ -334,7 +339,12 @@
 
   // Licht: suchen, koppeln, verbinden, testen. Adressen mit Schlüssel (Hue, Home Assistant) setzt der
   // Hauptprozess nur zusammen mit dem neuen Schlüssel (huePair / haConnect) – ein „set“ von hier nähme er nicht an.
-  const say = (id, key, n) => ($("#" + id).textContent = t(key).replace("{n}", n ?? ""));
+  // die Zeile merkt sich, dass sie einen Stand zeigt (data-live): ein Sprachwechsel setzt sie dann nicht auf ihren
+  // Hinweis zurück
+  const say = (id, key, n) => {
+    $("#" + id).dataset.live = "1";
+    $("#" + id).textContent = t(key).replace("{n}", n ?? "");
+  };
   $("#hueFind").onclick = async () => {
     say("hueState", "hueSearching");
     const ips = await mirage.invoke("hueFind");

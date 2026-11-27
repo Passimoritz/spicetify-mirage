@@ -20,6 +20,7 @@ import { nowPlayingCard, partyRecapCard, planPartySave } from "./share.js";
 import * as ctl from "./controls.js";
 import { currentItem, covers, titleOf, artistOf, toggleMute, PLR } from "./player.js";
 import { party } from "./party.js";
+import { createCueFlash } from "./flashcap.js";
 import { grade as gradePal } from "./director.js";
 import { jamMembers } from "./jam.js";
 import { createVenue } from "./venue.js";
@@ -123,6 +124,8 @@ const immersive = (() => {
   const wordFx = createWordFx(LEX, { neg: NEG, sense: { planSong, senseLine, pickLine }, onFire: (c, w, o) => (o?.img && live.fx(c, w), stageWord(c, o)) });
   // Szenarien: die Bühne antwortet auf gesungene Wörter (scenarios.js entscheidet, stagefx.js in der Location zeichnet)
   const scen = createScenarios();
+  // Blitze der Bühnenbilder (Gewitter, Schüsse, Blitz) bitten zu ihrem Zeitpunkt um Freigabe aus dem Blitz-Budget
+  const cueFlash = createCueFlash();
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   // Fehlersuche (localStorage „mirage:debug“ = 1): eine Bühnen-Antwort von Hand auslösen, z. B. __mirageStageWord("fire")
   // … und ein Instrument oder einen Soundeffekt der Klang-Detektoren, z. B. __mirageSonic("riser"); dazu eine kleine
@@ -848,8 +851,12 @@ Probe-FX: ${pfx}`;
     if (cfg.partyIdle && el.dataset.mode === "party" && isOpen()) idleT = setTimeout(goIdle, 2600);
   }
   function goIdle() {
+    // per Tastatur auf einem Knopf: die Bedienung bleibt sichtbar, sonst löste Enter etwas Unsichtbares aus. Der
+    // Wiedergabe-Knopf zählt nicht – dort liegt der Fokus nach dem Öffnen von selbst (Fernseher: soll ausblenden).
+    const fe = document.activeElement;
+    const keyFocus = !!fe && fe !== q.play && fe.matches?.(":focus-visible") && !!fe.closest(".m-im-meta, .m-im-top, .m-im-lyrbar");
     // nicht, solange eine Seitenleiste oder die Tastenhilfe offen ist oder die Maus auf der Bedienung ruht
-    if (!isOpen() || el.dataset.mode !== "party" || openMenu() || el.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
+    if (!isOpen() || el.dataset.mode !== "party" || openMenu() || keyFocus || el.querySelector(".m-im-meta:hover, .m-im-top:hover, .m-im-lyrbar:hover")) {
       idleT = setTimeout(goIdle, 2600);
       return;
     }
@@ -901,7 +908,7 @@ Probe-FX: ${pfx}`;
     const apply = () => {
       // aus Visualizer, Mix oder Party heraus: der Visualizer läuft weiter, bis er ausgeblendet ist
       const from = el.dataset.mode;
-      vizFadeUntil = VIZ.has(from) && !VIZ.has(mode) && !cfg.calm && isOpen() ? performance.now() + 550 : 0;
+      vizFadeUntil = VIZ.has(from) && !VIZ.has(mode) && !stillMotion() && isOpen() ? performance.now() + 550 : 0;
       cfg.imMode = mode;
       save();
       el.dataset.mode = mode;
@@ -1336,7 +1343,18 @@ Probe-FX: ${pfx}`;
   };
   function syncDiag(body, item) {
     const s0 = syncInfo();
-    if (!s0) return;
+    // neu suchen: vergisst das gemerkte Ergebnis (auch „kein Liedtext“) und fragt alle Quellen noch einmal.
+    // Steht auch ohne Liedtext da – gerade dann wird es gebraucht („kein Liedtext“ bleibt sonst eine Woche gemerkt).
+    const research = () => {
+      if (typeof lyricsApi.researchLyrics !== "function") return;
+      item(t("dgSearch"), t("dgSearchHint"), null, async () => {
+        const uri = currentItem()?.uri || "";
+        showSide(null);
+        await lyricsApi.researchLyrics(uri).catch(() => {});
+        reloadLyr();
+      });
+    };
+    if (!s0) return research();
     const info = (text, sub) => {
       item(text, sub || "", null, null);
       q.sideBody.lastElementChild.classList.add("m-im-diag");
@@ -1363,14 +1381,7 @@ Probe-FX: ${pfx}`;
       info(t("dgAutoOff"));
       if (typeof setAuto === "function") item(t("dgRedo"), t("dgRedoHint"), null, () => flip(true));
     } else info(t("dgNoAuto"));
-    // neu suchen: vergisst das gemerkte Ergebnis (auch „kein Liedtext“) und fragt alle Quellen noch einmal
-    if (typeof lyricsApi.researchLyrics === "function") {
-      item(t("dgSearch"), t("dgSearchHint"), null, async () => {
-        showSide(null);
-        await lyricsApi.researchLyrics(uri).catch(() => {});
-        reloadLyr();
-      });
-    }
+    research();
   }
 
   /* ---- Liedtext früher / später je Song (clock.js: nudgeSong/resetSong/songOffset – Liedtext UND Licht/Bild) */
@@ -1405,7 +1416,7 @@ Probe-FX: ${pfx}`;
   function setNoLyr(on) {
     if (!el || el.classList.contains("is-nolyr") === on) return;
     const parts = [q.wrap, q.meta, q.lyrics].filter(Boolean);
-    const glide = LYR.has(el.dataset.mode) && !cfg.calm && el.isConnected;
+    const glide = LYR.has(el.dataset.mode) && !stillMotion() && el.isConnected;
     const before = glide ? parts.map((p) => p.getBoundingClientRect()) : null;
     el.classList.toggle("is-nolyr", on);
     vizRect.r = null;
@@ -1579,6 +1590,8 @@ Probe-FX: ${pfx}`;
     const i0 = got.synced ? lineAt(got.lines, songPos(performance.now()), -2) : -9;
     const mkLine = (l, i) => {
       const d = document.createElement("div");
+      // Arabisch, Hebräisch …: Schreibrichtung je Zeile aus dem Text
+      d.dir = "auto";
       d.className = i === i0 ? "m-im-line is-active" : i < i0 ? "m-im-line is-past" : "m-im-line";
       if (i0 > -9) d.style.setProperty("--d", Math.min(Math.abs(i - Math.max(i0, 0)), 6));
       d.dataset.t = l.t;
@@ -2025,7 +2038,7 @@ Probe-FX: ${pfx}`;
   function timingKey(code) {
     if (!edit) return false;
     if (code === "Enter" || code === "NumpadEnter") {
-      const l = lyr.lines[edit.i];
+      const l = lyr?.lines?.[edit.i];
       if (!l) return finishTiming(true), true;
       // Enter kommt mit der Reaktionszeit (~150 ms) nach dem gehörten Einsatz
       const d = Math.round(songPos() - 150) - l.t;
@@ -2060,6 +2073,7 @@ Probe-FX: ${pfx}`;
     el.querySelector(".m-im-timing")?.remove();
     markEdit();
     if (!keep || !changed) return;
+    if (!lyrUri || !lyr?.lines?.length) return;
     const all = timings();
     all[lyrUri] = { n: lyr.lines.length, t: lyr.lines.map((l) => l.t) };
     // höchstens 150 Songs merken
@@ -2380,6 +2394,8 @@ Probe-FX: ${pfx}`;
       const [sx = 0, sy = 0] = (q.wrap.style.translate || "").split(" ").map(parseFloat);
       const mx = b0.left + b0.width / 2 - (sx || 0), my = b0.top + b0.height / 2 - (sy || 0);
       vizRect.r = { left: mx - w0 / 2, top: my - h0 / 2, width: w0, height: h0 };
+      // Unterkante der Kopfleiste (Reiter, Knöpfe): bis dorthin darf der Kranz reichen, nicht hinein
+      vizRect.head = el.querySelector(".m-im-tabs")?.getBoundingClientRect().bottom || 0;
       // Kamera-Stoß zoomt den Canvas um die Cover-Mitte, nicht um die Bildschirmmitte
       const o = `${Math.round(vizRect.r.left + vizRect.r.width / 2)}px ${Math.round(vizRect.r.top + vizRect.r.height / 2)}px`;
       if (q.canvas.style.transformOrigin !== o) q.canvas.style.transformOrigin = o;
@@ -2531,7 +2547,10 @@ Probe-FX: ${pfx}`;
     palShown = px ? pal : null;
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Party: Kranz höchstens so lang wie 0,8 × Cover-Radius – sonst reicht er in Liedtext und Leiste
-    const maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
+    let maxLen = Math.min(vw, vh) * 0.11 * V.height * (px ? Math.min(1, (R * 0.8) / (Math.min(vw, vh) * 0.11 * V.height)) : 1);
+    // Visualizer und Mix: der Kranz endet 10 px unter der Kopfleiste. Vorher ragten laute Stellen in die Reiter
+    // (die Länge hing nur an der Fenstergröße, nicht am Platz über dem Cover). Nie kürzer als 40 % – er bleibt ein Kranz.
+    if (!px && vizRect.head) maxLen = Math.max(maxLen * 0.4, Math.min(maxLen, cy - (vizRect.head + 10) * dpr - R - 4 * dpr));
     const rot = V.spin ? tt * (px ? 0.12 : 0.06) : 0;
     // Leuchtkraft der Visualizer-Ansichten nach der Lichtregie: Energie des Teils, Anheben beim Refrain-Einsatz,
     // Anschwellen im Aufbau, ein Aufleuchten beim Drop, das weich abklingt („Keine Blitze“: nur ein Hauch davon)
@@ -3071,8 +3090,11 @@ Probe-FX: ${pfx}`;
     };
     const rgba = (c, al) => `rgba(${c[0]},${c[1]},${c[2]},${al})`;
     // Bühnenlicht, Dekor und Publikum zeichnet die Location (eigenes Canvas darunter, möglichst eigener Thread)
+    // (eine Zeit für Bild und Antworten: die Bühne rechnet das Alter der Antworten daraus, wie hier die Freigabe)
+    const vt = performance.now() / 1000, cues = cfg.partyWords && !cfg.calm ? scen.frame(vt) : null;
+    const flashOn = !!(cfg.partyFlash && px.fx && !cfg.noFlash);
     venueFrame({
-      t: performance.now() / 1000, dt, vw, vh, dpr, pal: venuePalOf(pal), cx, cy, R,
+      t: vt, dt, vw, vh, dpr, pal: venuePalOf(pal), cx, cy, R,
       // Publikum: die ruhige Grundfarbe des Songs (Cover), nicht die Lichtfarbe dieses Bildes – die gleitet beim
       // Songwechsel über Sekunden und folgt der Melodie, und jede neue Farbe hieß: alle Körperbilder neu malen
       crowdPal: imPalette(),
@@ -3096,15 +3118,16 @@ Probe-FX: ${pfx}`;
         scn: px.scn || null,
       },
       // Antworten der Bühne auf gesungene Wörter (scenarios.js)
-      cues: cfg.partyWords && !cfg.calm ? scen.frame(performance.now() / 1000) : null,
+      cues,
       // Bühneneffekte (CO2, Pyro, Feuerwerk) und Stroboskop – Stroboskop nur ab „Extrem“ und mit Blitzen an
       fx: cfg.partyFx && px.fx && px.level >= 2 && !lightMode(),
       rig: cfg.partyRig && px.fx && px.level >= 2 && !lightMode(),
-      flash: cfg.partyFlash && px.fx && !cfg.noFlash,
+      flash: flashOn,
       inst: curInst,
       strobe: cfg.partyStrobe && cfg.partyFlash && px.fx && px.level >= 4 && !cfg.noFlash,
       // „Keine Blitze“ für alles Übrige der Bühne (Gitarrenblitze, Handy-Blitze, weißer Drop) · Freigabe der Blitz-Schranke
-      noFlash: !!cfg.noFlash, flashGo: !!px.flashGo,
+      // (dazu die Freigabe für Blitze der Bühnenbilder, deren Zeitpunkt in diesem Bild erreicht ist)
+      noFlash: !!cfg.noFlash, flashGo: (flashOn && cueFlash(cues, vt, party.takeFlash)) || !!px.flashGo,
       cam: { s: cam.s, x: cam.x, y: cam.y }, dep: { x: depth.x, y: depth.y, on: !!depth.key },
       quality: quality.level, qf: Math.round(quality.f1 * 50) / 50, hype: hypeOn, bpm: px.tempo || party.info.bpm || 120,
       stage: px.fx && cfg.partyLasers && px.level >= 2, crowd: cfg.partyCrowd && px.fx, paused: !PLR.isPlaying(),
@@ -3763,6 +3786,8 @@ Probe-FX: ${pfx}`;
           wordFx.draw(vctx, {
             pos, now, dt: dtw, w: vw, h: vh, dpr: g.dpr, cx: g.cx, cy: g.cy, R: g.R, pal: vividPal || imPalette(),
             level: cfg.partyLevel ?? 2, beat: g.px.accent || 0, beatIdx: g.px.beatIdx, playing: PLR.isPlaying(), noFlash: !!cfg.noFlash,
+            // Blitze der Wortbilder: aus dem Blitz-Budget des Party-Modus (party.js)
+            takeFlash: party.takeFlash,
           });
         }
       } catch (e) {
@@ -4348,6 +4373,9 @@ Probe-FX: ${pfx}`;
     // „Energie halten“: passt der nächste Song gar nicht, zieht Mirage einen passenderen vor
     if (item?.uri && el.dataset.mode === "party") dj.onSong(item.uri).then((m) => m && S.showNotification?.(t("djMoved").replace("{t}", m.title), false, 4000));
     updateKicker();
+    // Zeiten setzen (Taste E) lief noch, als der Song wechselte: jetzt abschließen, solange Text und Adresse noch
+    // die des alten Songs sind – sonst landeten dessen Zeiten beim Bestätigen unter dem neuen Song
+    if (edit && (item?.uri || "") !== lyrUri) finishTiming(true);
     if (LYR.has(el.dataset.mode)) loadLyrics();
     if (el.dataset.mode === "party") {
       // Übergang (Ausklang, Treffer auf der ersten Eins, Überblendung beim Überspringen): party.js
@@ -5758,7 +5786,8 @@ Probe-FX: ${pfx}`;
       cancelAnimationFrame(raf);
       raf = 0;
     }
-    kick();
+    // wake statt kick: direkt in die Party geöffnet (ohne Mausbewegung) startet so auch der Wecker fürs Ausblenden
+    wake();
     q.play.focus();
     // die Ebene wird erst mit dem nächsten Bild sichtbar – vorher nimmt der Knopf den Fokus nicht an
     setTimeout(() => isOpen() && !el.contains(document.activeElement) && q.play.focus(), 80);
@@ -5805,7 +5834,8 @@ Probe-FX: ${pfx}`;
   const seekBy = (ms) => PLR.seek(clamp((PLR.getProgress() || 0) + ms, 2, PLR.getDuration() || 2));
   const volBy = (d) => { S.Player.setVolume(clamp((S.Player.getVolume?.() ?? 1) + d, 0, 1)); setTimeout(syncState, 80); };
   return {
-    open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh, setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
+    // von außen (Einstellungen) nur bei offener Ebene: sonst startete z. B. das Canvas-Video unsichtbar und liefe weiter
+    open, close, toggle: () => (isOpen() ? close() : open()), isOpen, refresh: () => isOpen() && refresh(), setMode, playState, updateKicker, setHaze, prebake: (src) => src && bake(src),
     seekBy, volBy, toggleFull, toggleKeys, dismiss, confetti, perfMenu, toggleQueue: () => el && showSide(side === "queue" ? null : "queue"), styleLyrics: () => el && styleLyrics(), reloadLyrics: () => { lyrUri = ""; lyrGate.reset(); el && LYR.has(el.dataset.mode) && loadLyrics(); }, toggleTiming, togglePlayful, timingKey, like: () => q.like?.click(), shuffle: () => q.shuffle && !q.shuffle.hidden && q.shuffle.click(), repeat: () => q.repeat && !q.repeat.hidden && q.repeat.click(),
     // 1.27 views: Zustand der Album-Spalte (Tests)
     albumState: () => album.state,

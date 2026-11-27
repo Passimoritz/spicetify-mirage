@@ -7,17 +7,22 @@
 // (ws://127.0.0.1:47324/control), die ihn an das Mirage-Theme in Spotify weitergibt. Läuft die App nicht,
 // zeigt die Taste ein Warndreieck.
 const CONTROL = "ws://127.0.0.1:47324/control";
-let sd = null, mirage = null, ready = false;
+let sd = null, mirage = null, ready = false, retry = 0;
 function connectMirage() {
   try {
     mirage = new WebSocket(CONTROL);
   } catch {
-    return setTimeout(connectMirage, 5000);
+    clearTimeout(retry);
+    return (retry = setTimeout(connectMirage, 5000));
   }
   mirage.onopen = () => (ready = true);
-  mirage.onclose = mirage.onerror = () => {
+  // nur bei "close" neu verbinden, mit genau einem Wecker: ein Fehlschlag meldet erst "error", dann "close" –
+  // beide zusammen hätten die Zahl der Versuche alle 5 s verdoppelt, solange die Overlay-App nicht läuft
+  mirage.onerror = () => {};
+  mirage.onclose = () => {
     ready = false;
-    setTimeout(connectMirage, 5000);
+    clearTimeout(retry);
+    retry = setTimeout(connectMirage, 5000);
   };
 }
 // Einstieg, den Stream Deck selbst aufruft

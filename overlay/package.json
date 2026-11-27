@@ -20,8 +20,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
+    "electron": "^45.5.0",
+    "electron-builder": "^26.18.0"
   },
   "homepage": "https://github.com/Passimoritz/spicetify-mirage",
   "author": {
@@ -95,7 +95,8 @@
       "artifactName": "Mirage-Overlay.${ext}",
       "identity": null,
       "extendInfo": {
-        "LSUIElement": true
+        "LSUIElement": true,
+        "NSAudioCaptureUsageDescription": "Mirage Overlay can include the computer's sound when it shows the party on a TV."
       }
     },
     "linux": {
@@ -114,6 +115,9 @@
         }
       ],
       "icon": "build/icon.png",
+      "executableArgs": [
+        "--ozone-platform=x11"
+      ],
       "category": "AudioVideo",
       "artifactName": "Mirage-Overlay.${ext}",
       "maintainer": "Passimoritz <passimoritz@users.noreply.github.com>",

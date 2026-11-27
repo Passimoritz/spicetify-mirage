@@ -10,6 +10,7 @@ import { DROP_LOOKS, FAMS } from "./scenarios.js";
 import { envAR } from "./fxenv.js";
 // Szenarien: neue Bühnenbilder (Konfettikanone, Nordlicht, Skyline, Glitch …) in scenefx.js
 import { createSceneFx } from "./scenefx.js";
+import { FLASH_WAIT } from "./flashcap.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (x) => {
@@ -341,12 +342,19 @@ function createStageFx(glowSprite, flashCap) {
             }
             break;
           case "bolt": {
-            // nur das erste Bild entscheidet, ob es blitzen darf (Schranke, Blitze an); sonst ruhiges Glühen von oben
+            // der Anfang entscheidet, ob es blitzen darf: Blitze an, Freigabe des Hauptthreads (st.flashGo – fehlt sie
+            // ganz, etwa im Test, gilt die Schranke allein) und die Schranke der Bühne. Die Freigabe kann ein paar Bilder
+            // später ankommen: so lange (FLASH_WAIT) bleibt es offen; sonst ruhiges Glühen von oben
+            // (nach 0,3 s wäre vom Blitz nichts mehr zu sehen: dann fragt er die Schranke nicht mehr)
             if (!bolts.has(c.seq)) {
-              if (bolts.size > 8) bolts.delete(bolts.keys().next().value);
-              bolts.set(c.seq, !c.soft && !noFlash && !!st.flash && flashCap.take(t));
+              const can = !c.soft && !noFlash && !!st.flash, ok = can && age < 0.3 && st.flashGo !== false && flashCap.take(t);
+              if (ok || !can || age >= FLASH_WAIT) {
+                if (bolts.size > 8) bolts.delete(bolts.keys().next().value);
+                bolts.set(c.seq, ok);
+              }
             }
-            const hard = bolts.get(c.seq), d = age;
+            // („Keine Blitze“ gilt auch für schon freigegebene)
+            const hard = bolts.get(c.seq) === true && !noFlash, d = age;
             if (hard && d < 0.3) {
               ctx.globalAlpha = 1;
               ctx.fillStyle = `rgba(215,225,255,${(0.16 * k * Math.exp(-d * 12)).toFixed(3)})`;

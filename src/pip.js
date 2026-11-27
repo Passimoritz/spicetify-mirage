@@ -107,7 +107,9 @@ function attach(win) {
     for (const c of CLASSES) html.classList.toggle(c, root.classList.contains(c));
   };
   const later = () => {
-    if (!frame) frame = requestAnimationFrame(sync);
+    // Takt des Mini-Fensters, nicht des Hauptfensters: ist Spotify minimiert, läuft dessen requestAnimationFrame
+    // nicht – der Mini-Player bliebe dann bei den Farben des vorigen Songs stehen
+    if (!frame) frame = win.requestAnimationFrame(sync);
   };
   sync();
   // Farben ändern sich über #mirage-vars/#mirage-scheme (Inhalt), Schema/Schrift/Zustand über <html>
@@ -121,7 +123,7 @@ function attach(win) {
     "pagehide",
     () => {
       mo.disconnect();
-      if (frame) cancelAnimationFrame(frame);
+      if (frame) win.cancelAnimationFrame(frame);
       frame = 0;
     },
     { once: true },

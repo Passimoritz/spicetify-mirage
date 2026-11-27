@@ -9,6 +9,22 @@ SCHEMES.Pearl = {"text":"1D1A2B","subtext":"5D5873","main":"F4F1FA","main-elevat
 const BUILT_IN = Object.keys(SCHEMES);
 const LIGHT = new Set(["Pearl"]);
 const hexRgb = (h) => [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+// Farben kommen auch von außen (Schema-Code, Sicherung, localStorage) und landen in einem Stylesheet:
+// nur sechsstellige Hex-Werte, sonst ließe sich über einen geteilten Code beliebiges CSS einschleusen
+const HEX = /^[0-9a-f]{6}$/i;
+const isHex = (v) => typeof v === "string" && HEX.test(v);
+const NEEDED = ["text", "subtext", "main", "button", "button-active", "notification"];
+const validScheme = (sc) =>
+  !!sc && typeof sc === "object" && !Array.isArray(sc) &&
+  NEEDED.every((k) => isHex(sc[k])) &&
+  Object.entries(sc).every(([k, v]) => (k === "light" ? typeof v === "boolean" : isHex(v)));
+// nur brauchbare eigene Schemata behalten (Name höchstens 24 Zeichen wie im Baukasten)
+function cleanSchemes(list) {
+  const out = {};
+  if (!list || typeof list !== "object" || Array.isArray(list)) return out;
+  for (const [name, sc] of Object.entries(list)) if (name && name.length <= 24 && validScheme(sc)) out[name] = sc;
+  return out;
+}
 const schemeSheet = document.createElement("style");
 schemeSheet.id = "mirage-scheme";
 document.head.append(schemeSheet);
@@ -21,7 +37,7 @@ function applyScheme(name) {
   // helles Schema ohne Coverfarben: der Immersiv-Modus bleibt dunkel und bekommt helle Leitfarben aus dem Schema
   const im = sc && light ? immersiveVars([sc.button, sc.notification, sc["button-active"]].map(hexRgb)) : "";
   const css = sc
-    ? "html:root{" + Object.entries(sc).filter(([k]) => k !== "light").map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + im + "}"
+    ? "html:root{" + Object.entries(sc).filter(([k, v]) => k !== "light" && isHex(v)).map(([k, v]) => `--spice-${k}:#${v};--spice-rgb-${k}:${hexRgb(v).join(",")};`).join("") + im + "}"
     : "";
   // nur schreiben, wenn sich etwas ändert – jedes Neuschreiben berechnet ganz Spotify neu
   if (schemeSheet.textContent !== css) schemeSheet.textContent = css;
@@ -36,7 +52,11 @@ const schemePalette = () => {
 /* ---------------------------------------------------------------- Einstellungen */
 const KEY = "mirage:settings";
 const schemeIsDynamic = !S.Config?.color_scheme || /mirage/i.test(S.Config.color_scheme);
-const reducedMotion = !!matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+const motionMq = matchMedia?.("(prefers-reduced-motion: reduce)") || null;
+const reducedMotion = !!motionMq?.matches;
+// „Ruhig“ ODER das System bittet gerade um weniger Bewegung: die Systemeinstellung gilt auch, wenn sie erst nach dem
+// ersten Start eingeschaltet wurde (als Standardwert wirkt sie nur beim allerersten Laden)
+const calmNow = () => !!cfg.calm || !!motionMq?.matches;
 // Werte des Presets „Ruhig“ (perf.js übernimmt sie als PRESETS.calm) – hier, weil DEFAULTS sie schon braucht
 const CALM_PRESET = { glass: false, particles: false, grain: true, beat: false, tilt: false, cascade: false, calm: true, lite: false };
 const DEFAULTS = {
@@ -224,9 +244,25 @@ function migrateCalm(c, saved) {
   }
   c.calmPreset128 = true;
 }
+// Eingelesene Einstellungen (Code, Datei, localStorage): bekannte Schlüssel nur mit passender Art – ein Objekt
+// bleibt ein Objekt, eine Liste eine Liste, ein einfacher Wert ein einfacher Wert. Sonst bricht z. B. "pinned": null
+// den Einstellungsdialog bei jedem Öffnen, und das bliebe gespeichert. Unbekannte Schlüssel (Merker älterer und
+// neuerer Versionen) bleiben, wie sie sind.
+const kind = (v) => (v === null ? "null" : Array.isArray(v) ? "array" : typeof v === "object" ? "object" : "plain");
+function cleanSettings(d) {
+  if (kind(d) !== "object") return null;
+  const out = {};
+  for (const [k, v] of Object.entries(d)) {
+    if (k === "__proto__" || typeof v === "function" || v === undefined) continue;
+    if (k in DEFAULTS && kind(v) !== kind(DEFAULTS[k])) continue;
+    out[k] = v;
+  }
+  if ("customSchemes" in out) out.customSchemes = cleanSchemes(out.customSchemes);
+  return out;
+}
 let cfg = { ...DEFAULTS };
 try {
-  const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+  const saved = cleanSettings(JSON.parse(localStorage.getItem(KEY) || "{}")) || {};
   if ("scheme" in saved && saved.schemeCfg !== (S.Config?.color_scheme || "")) {
     delete saved.scheme;
     delete saved.dynamic;
@@ -259,7 +295,8 @@ function resetSettings() {
 }
 
 // Ganzes Schema (18 Farben) aus vier Grundfarben ableiten – für den Schema-Baukasten
-function buildScheme({ base, accent, deep, light }) {
+function buildScheme({ base, accent, deep, light } = {}) {
+  if (![base, accent, deep, light].every(isHex)) return null;
   const mix = (a, b, f) => hexRgb(a).map((v, i) => Math.round(v + (hexRgb(b)[i] - v) * f));
   const hex = (rgb) => rgb.map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase();
   const isLight = hexRgb(base).reduce((s, v) => s + v, 0) / 3 > 140;
@@ -274,4 +311,4 @@ function buildScheme({ base, accent, deep, light }) {
   };
 }
 
-export { SCHEMES, BUILT_IN, hexRgb, applyScheme, schemePalette, KEY, DEFAULTS, CALM_PRESET, migrateCalm, cfg, save, resetSettings, buildScheme };
+export { calmNow, motionMq, SCHEMES, BUILT_IN, hexRgb, isHex, validScheme, cleanSchemes, cleanSettings, applyScheme, schemePalette, KEY, DEFAULTS, CALM_PRESET, migrateCalm, cfg, save, resetSettings, buildScheme };

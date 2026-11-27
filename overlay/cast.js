@@ -14,6 +14,8 @@ const crypto = require("crypto");
 const { BrowserWindow, desktopCapturer, session, ipcMain } = require("electron");
 
 const PORT = 47330;
+// so viel darf sich für einen Fernseher stauen, der nicht mitliest (bei 6 Mbit/s rund 10 s Bild)
+const MAX_BACKLOG = 8 * 1024 * 1024;
 
 function createCast({ log = () => {}, track = () => null } = {}) {
   let bonjour = null, server = null, capWin = null, capReady = null, stream = null, token = "";
@@ -114,9 +116,17 @@ function createCast({ log = () => {}, track = () => null } = {}) {
   async function spotifySource() {
     const src = await desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 0, height: 0 } });
     const tr = track();
-    const title = String(tr?.title || "").toLowerCase();
-    // Spotify heißt beim Abspielen „Künstler – Titel“, sonst „Spotify Premium“ / „Spotify“
-    return src.find((s) => title && s.name.toLowerCase().includes(title)) || src.find((s) => /^spotify/i.test(s.name)) || null;
+    const title = String(tr?.title || "").toLowerCase().trim();
+    const artist = String(tr?.artist || "").toLowerCase().trim();
+    // Spotify heißt beim Abspielen „Künstler - Titel“, sonst „Spotify Premium“ / „Spotify“. Nie nur „enthält den
+    // Titel“: bei „Home“ oder „Mail“ ginge sonst ein fremdes Fenster unverschlüsselt an den Fernseher.
+    const name = (s) => s.name.toLowerCase().trim();
+    return (
+      src.find((s) => title && artist && name(s) === `${artist} - ${title}`) ||
+      src.find((s) => title.length >= 3 && name(s).endsWith(" - " + title)) ||
+      src.find((s) => /^spotify( premium| free)?$/i.test(s.name.trim())) ||
+      null
+    );
   }
   function captureWindow() {
     if (capWin && !capWin.isDestroyed()) return capReady;
@@ -136,16 +146,31 @@ function createCast({ log = () => {}, track = () => null } = {}) {
     capWin.on("closed", () => (capWin = null));
     return capReady;
   }
-  ipcMain.on("castChunk", (_e, buf) => {
-    if (stream && !stream.destroyed) stream.write(Buffer.from(buf));
+  // Videostücke und Fehler nimmt der Hauptprozess nur vom Aufnahme-Fenster an – die Kanäle sind für alle Fenster
+  // dieselben, und was hier ankommt, geht unverschlüsselt an den Fernseher
+  const fromCap = (e) => !!capWin && !capWin.isDestroyed() && e?.sender === capWin.webContents;
+  const toCap = (ch, data) => {
+    if (capWin && !capWin.isDestroyed()) capWin.webContents.send(ch, data);
+  };
+  ipcMain.on("castChunk", (e, buf) => {
+    if (!fromCap(e) || !stream || stream.destroyed) return;
+    if (!(buf instanceof ArrayBuffer) && !ArrayBuffer.isView(buf)) return;
+    // Der Fernseher liest nicht mehr mit (WLAN weg, Wiedergabe angehalten), die Verbindung steht aber noch: statt den
+    // Rückstau im Speicher wachsen zu lassen, diese Verbindung trennen. „close“ hält dann auch die Aufnahme an.
+    if (stream.writableLength > MAX_BACKLOG) {
+      log("cast backlog " + stream.writableLength);
+      return void stream.destroy();
+    }
+    stream.write(ArrayBuffer.isView(buf) ? Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength) : Buffer.from(buf));
   });
-  ipcMain.on("castError", (_e, msg) => {
-    log("cast capture " + msg);
+  ipcMain.on("castError", (e, msg) => {
+    if (!fromCap(e)) return;
+    log("cast capture " + String(msg).slice(0, 200));
     stream?.end();
   });
   function serve() {
     if (server) return;
-    server = http.createServer(async (req, res) => {
+    const srv = (server = http.createServer(async (req, res) => {
       const m = /^\/m\/([\w-]+)\.(webm|mkv)$/.exec(req.url || "");
       if (!m || m[1] !== token) {
         res.writeHead(404);
@@ -158,18 +183,57 @@ function createCast({ log = () => {}, track = () => null } = {}) {
       // ein Zuschauer zur Zeit: neue Anfrage → Aufnahme neu starten (Video muss mit einem Kopf beginnen)
       try { stream?.end(); } catch {}
       stream = res;
-      res.writeHead(200, { "content-type": m[2] === "mkv" ? "video/x-matroska" : "video/webm", "cache-control": "no-store", "accept-ranges": "none", "transferMode.dlna.org": "Streaming" });
-      await captureWindow();
-      capWin?.webContents.send("castStart", { mime: m[2] === "mkv" ? "video/x-matroska" : "video/webm", audio: want.audio });
+      // Zuhörer vor dem ersten await: bricht der Fernseher sofort wieder ab, käme „close“ sonst zu früh – und die
+      // Aufnahme liefe ohne Zuschauer weiter
       res.on("close", () => {
         if (stream === res) {
           stream = null;
-          capWin?.webContents.send("castStop");
+          toCap("castStop");
         }
       });
+      res.on("error", () => {});
+      res.writeHead(200, { "content-type": m[2] === "mkv" ? "video/x-matroska" : "video/webm", "cache-control": "no-store", "accept-ranges": "none", "transferMode.dlna.org": "Streaming" });
+      try {
+        await captureWindow();
+      } catch (e) {
+        log("cast capture window " + e);
+        return void res.destroy();
+      }
+      // inzwischen abgebrochen oder von einer neueren Anfrage abgelöst: für diese nicht mehr starten
+      if (stream !== res) return;
+      toCap("castStart", { mime: m[2] === "mkv" ? "video/x-matroska" : "video/webm", audio: want.audio });
+    }));
+    // Port belegt o. Ä.: den Server vergessen, damit der nächste Start es neu versucht
+    srv.on("error", (e) => {
+      log("cast server " + e);
+      if (server === srv) server = null;
     });
-    server.on("error", (e) => log("cast server " + e));
-    server.listen(PORT, "0.0.0.0");
+    srv.listen(PORT, "0.0.0.0");
+  }
+  // Der Server lauscht im ganzen Heimnetz – also nur, solange wirklich etwas übertragen wird
+  function closeServer() {
+    const srv = server;
+    server = null;
+    if (!srv) return;
+    try {
+      srv.close();
+      srv.closeAllConnections?.();
+    } catch {}
+  }
+  // Niemand schaut mehr zu: Aufnahme anhalten, die Adresse des Streams entwerten, Server schließen (keep: gleich
+  // geht es mit einem anderen Gerät weiter – dann bleibt er offen)
+  function idle(keep) {
+    try { stream?.end(); } catch {}
+    stream = null;
+    toCap("castStop");
+    token = "";
+    if (!keep) closeServer();
+  }
+  // Übertragung von selbst zu Ende (Fernseher aus, anderes Programm gewählt, Verbindungsfehler)
+  function gone(id, ctl) {
+    if (active.get(id) !== ctl) return;
+    active.delete(id);
+    if (!active.size) idle();
   }
 
   /* ---- Übertragung starten / beenden */
@@ -177,17 +241,27 @@ function createCast({ log = () => {}, track = () => null } = {}) {
     const d = found.get(id);
     if (!d) return { error: "gone" };
     if (!(await spotifySource())) return { error: "nowindow" };
-    for (const k of [...active.keys()]) stop(k);
-    want = { audio: !!audio };
-    token = crypto.randomBytes(12).toString("hex");
-    serve();
+    for (const k of [...active.keys()]) stop(k, true);
+    idle(true);
     const ip = lanIp(d.host);
-    if (!ip) return { error: "network" };
+    if (!ip) {
+      closeServer();
+      return { error: "network" };
+    }
+    want = { audio: !!audio };
+    const mine = (token = crypto.randomBytes(12).toString("hex"));
+    serve();
     // Chromecast: WebM (VP8) · DLNA-Fernseher: H.264 im MKV-Container (läuft fortlaufend, fast jeder Smart-TV kann H.264)
     const ext = d.kind === "dlna" ? "mkv" : "webm";
     const url = `http://${ip}:${PORT}/m/${token}.${ext}`;
     const r = d.kind === "cast" ? await startCast(d, url) : await startDlna(d, url);
+    // inzwischen wurde etwas anderes gestartet: dessen Stream nicht anfassen
+    if (token !== mine) {
+      if (r.ok) try { r.ctl.stop(); } catch {}
+      return { error: "gone" };
+    }
     if (r.ok) active.set(id, r.ctl);
+    else if (!active.size) idle();
     return r.ok ? { ok: true } : r;
   }
   function startCast(d, url) {
@@ -199,7 +273,8 @@ function createCast({ log = () => {}, track = () => null } = {}) {
         return resolve({ error: "lib" });
       }
       const client = new cast.Client();
-      let done = false;
+      let done = false, player = null;
+      const ctl = { stop: () => (player ? client.stop(player, () => { try { client.close(); } catch {} }) : client.close()) };
       const finish = (r) => {
         if (done) return;
         done = true;
@@ -212,12 +287,13 @@ function createCast({ log = () => {}, track = () => null } = {}) {
       }, 15000);
       client.on("error", (e) => {
         log("cast error " + e);
-        active.delete(d.id);
+        gone(d.id, ctl);
         try { client.close(); } catch {}
         finish({ error: "unreachable" });
       });
       client.connect({ host: d.host, port: d.port || 8009 }, () => {
-        client.launch(cast.DefaultMediaReceiver, (err, player) => {
+        client.launch(cast.DefaultMediaReceiver, (err, p) => {
+          player = p;
           if (err || !player) {
             try { client.close(); } catch {}
             return finish({ error: "launch" });
@@ -228,8 +304,8 @@ function createCast({ log = () => {}, track = () => null } = {}) {
               try { client.close(); } catch {}
               return finish({ error: "load" });
             }
-            player.on("close", () => active.delete(d.id));
-            finish({ ok: true, ctl: { stop: () => client.stop(player, () => { try { client.close(); } catch {} }) } });
+            player.on("close", () => gone(d.id, ctl));
+            finish({ ok: true, ctl });
           });
         });
       });
@@ -257,22 +333,16 @@ function createCast({ log = () => {}, track = () => null } = {}) {
     if (!play) return { error: "load" };
     return { ok: true, ctl: { stop: () => soap(d.control, "Stop", "") } };
   }
-  function stop(id) {
+  function stop(id, keep) {
     const a = active.get(id);
     active.delete(id);
     try { a?.stop(); } catch {}
-    if (!active.size) {
-      try { stream?.end(); } catch {}
-      stream = null;
-      capWin?.webContents.send("castStop");
-      token = "";
-    }
+    if (!active.size) idle(keep);
     return !!a;
   }
   function stopAll() {
     for (const k of [...active.keys()]) stop(k);
-    try { server?.close(); } catch {}
-    server = null;
+    closeServer();
     try { bonjour?.destroy(); } catch {}
     bonjour = null;
     if (capWin && !capWin.isDestroyed()) capWin.destroy();

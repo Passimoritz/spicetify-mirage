@@ -248,6 +248,8 @@ async function connectPhones() {
     return jsQR(x.getImageData(0, 0, 640, 640).data, 640, 640)?.data || "";
   })()`);
   ok(url.includes("#c=") && url.includes("&k="), "QR-Code enthält keinen Mirage-Link: " + url.slice(0, 80));
+  // der Schlüssel, mit dem die Handys die Unterschrift des PCs prüfen (33 Bytes, gepackt)
+  ok(/&p=[\w-]{44}(&|$)/.test(url), "QR-Code ohne Schlüssel für die Unterschrift des PCs: " + url.slice(0, 160));
   hash = url.slice(url.indexOf("#"));
   await Promise.all(P.map(async (ph) => {
     await ph.win.loadURL(PAGE + hash);
@@ -401,16 +403,40 @@ async function beatGame() {
   await close();
 }
 
+// Laufzeit über den Relay nachstellen: das Handy tippt auf den Knopf des alten Bilds („Musik läuft“ / „bereit“) genau
+// in dem Moment, in dem der neue Stand („stop“ / „go“) bei ihm ankommt – am PC ist der Wechsel da schon geschehen.
+// So tippt, wer auf die Stille oder das Horn im Raum reagiert, bevor sein Handy das neue Bild zeigt.
+const lagTap = (ph, k, st, tag) => ph.js(`(() => {
+  const d0 = drawGame;
+  drawGame = (g) => {
+    if (g && g.k === "${k}" && g.st === "${st}" && !window.${tag}) {
+      const b = document.querySelector("#game button.calm:not(.dead)");
+      window.${tag} = b ? 2 : 1;
+      b?.click();
+    }
+    return d0(g);
+  };
+  return 1;
+})()`);
+
 /* ---- Musik-Stopp */
 async function stopGame() {
   await openGame("stop");
   await joinAll("stop");
+  // Alpha tippt im Bild „Musik läuft“, gleich nachdem der PC angehalten hat: das zählt als gültiger, schneller Tipp
+  await allPhones((s) => s.k === "stop" && s.st === "play", 8000, "stop: Musik läuft");
+  await lagTap(P[0], "stop", "stop", "__lagStop");
   await allPhones((s) => s.k === "stop" && s.st === "stop", 26000, "stop: Musik stoppt");
   await until(async () => !(await big.state()).playing, 1500, "stop: Musik ist wirklich aus");
-  await P[0].click("#game button.hot");
+  ok((await P[0].js("window.__lagStop")) === 2, "stop: Alpha hat im alten Bild getippt");
+  ok(await P[0].js(`!!document.querySelector("#game button.safe")`), "stop: Alphas Tipp im alten Bild gilt – sein Handy zeigt „geschafft“, nicht „raus“: " + (await phoneState(P[0])).text);
+  // alle drei haben getippt: die Langsamste fliegt raus – das ist Gamma, nicht Alpha (dessen Zeit zählt ab dem Anhalten am PC)
   await P[1].click("#game button.hot");
+  await wait(900);
+  await P[2].click("#game button.hot");
   const r1 = await allPhones((s) => s.st === "res", 7000, "stop: Ergebnis Runde 1");
-  ok(/Gamma/.test((await big.state()).text), "stop: Gamma hat nicht getippt und fliegt raus");
+  ok(/Gamma/.test((await big.state()).text), "stop: Gamma tippt als Letzte und fliegt raus: " + (await big.state()).text);
+  ok(r1[0].h2 === (await P[0].js("T.gSafe")) && r1[1].h2 === r1[0].h2, `stop: Alpha und Beta sind weiter: ${r1[0].text} / ${r1[1].text}`);
   ok(r1[2].big === "#i-moon" && r1[2].h2 === (await P[2].js("T.gOut")), `stop: Gamma sieht, dass Gamma raus ist: ${r1[2].text} ${r1[2].big}`);
   await allPhones((s) => s.st === "play", 6000, "stop: nächste Runde");
   await until(async () => (await big.state()).playing, 1500, "stop: Musik läuft wieder");
@@ -432,11 +458,20 @@ async function fastGame() {
   ok(/Beta.*Alpha/.test(b.text), `fast: Beta vor Alpha: ${b.text}`);
   await allPhones((s) => s.st === "ready" && s.round === "2/2", 9000, "fast: Runde 2 bereit");
   await P[2].click("#game button.calm");
+  // der PC meldet es, das Handy zeigt es (nicht umgekehrt)
+  await until(async () => (await phoneState(P[2])).h2 === (await P[2].js("T.gFastEarly")), 3000, "fast: Gammas Handy zeigt „zu früh“, sobald der PC es meldet");
+  // Beta tippt im Bild „bereit“, gleich nachdem das Signal am PC gefallen ist: das zählt als gültiger Tipp
+  await lagTap(P[1], "fast", "go", "__lagFast");
   await allPhones((s) => s.st === "go" && s.round === "2/2", 14000, "fast: Signal Runde 2");
+  ok((await P[1].js("window.__lagFast")) === 2, "fast: Beta hat im alten Bild getippt");
+  await wait(1000);
   await P[0].click("#game button.hot");
+  ok(await P[1].js(`!!document.querySelector("#game button.safe")`), "fast: Betas Tipp im alten Bild gilt – sein Handy zeigt ihn als gewertet: " + (await phoneState(P[1])).text);
   await allPhones((s) => s.st === "res" && s.round === "2/2", 7000, "fast: Ergebnis Runde 2");
   b = await big.state();
-  ok(/Alpha/.test(b.text) && !/Gamma/.test(b.text), `fast: Gamma tippte zu früh und zählt nicht: ${b.text}`);
+  ok(/Beta.*Alpha/.test(b.text) && !/Gamma/.test(b.text), `fast: Beta (im alten Bild, direkt nach dem Signal) vor Alpha, Gamma tippte zu früh und zählt nicht: ${b.text}`);
+  const ms = Number(/Beta\D*(\d+) ms/.exec(b.text)?.[1]);
+  ok(ms >= 80 && ms <= 800, `fast: Betas Zeit zählt ab dem Signal am PC (80–800 ms): ${ms} – ${b.text}`);
   await allPhones((s) => s.st === "end", 9000, "fast: Siegerehrung");
   await close();
 }
@@ -3023,7 +3058,7 @@ async function playfulLyrics() {
       const sect = ["is-p-chorus", "is-p-verse", "is-p-bridge"][k % 3];
       const font = FONTS[k % FONTS.length];
       const cls = (extra ? ["m-im-line", "is-t-" + t, extra, R.ln ? "is-l-" + R.ln : "", STYLE.lenClass(texts.join(" "))] : [STYLE.lenClass(texts.join(" ")), "m-im-line", "is-t-" + t, sect, R.ln ? "is-l-" + R.ln : "", font ? "is-f-" + font : "", k % 5 === 0 ? "is-p-shout" : ""]).filter(Boolean).join(" ");
-      return { cls, html: `<span class="m-im-words">${ws.join(" ")}</span>`, style: extra ? "--pbu:1;--prd:700ms;--pxo:m-x-up" : "" };
+      return { cls, html: `<span class="m-im-words">${ws.join(" ")}</span>`, style: extra ? "--pbu:1;--prd:700ms;--pxo:m-x-up" + (/is-p-rep/.test(extra) ? ";--prz:1.1" : "") : "" };
     };
     const fails = [];
     let checked = 0;
@@ -3032,11 +3067,15 @@ async function playfulLyrics() {
     for (const [w, h] of [[820, 620], [1600, 900]]) {
       T.win.setContentSize(w, h);
       await wait(500);
-      for (const m of (process.env.E2E_CLIP || "lyrics,mix,party").split(",")) {
+      // (Mix nur im schmalen Fenster: im breiten hat es dieselbe Spalte wie Liedtext – mit den neuen Rezepten lief der
+      // Fall sonst über sein Zeitlimit)
+      for (const m of (process.env.E2E_CLIP || (w < 1000 ? "lyrics,mix,party" : "lyrics,party")).split(",")) {
         await toMode(m);
         const SPECS = DECK.TREATMENTS.map((t, k) => [t, k, ""]).concat([
           ["slam", 0, "is-p-chorus is-p-big is-p-moment"], ["stamp", 1, "is-p-chorus is-p-big is-p-moment is-f-shout"], ["zoom", 2, "is-p-chorus is-p-big is-p-moment is-f-wide"],
           ["rise", 3, "is-p-verse is-p-build is-p-riser"], ["conveyor", 4, "is-p-verse is-p-resp"], ["hop", 5, "is-p-verse is-p-resp is-f-marker"],
+          // letzter Refrain (größer gesetzt) und direkt wiederholte Zeile auf ihrer größten Stufe – auch beides zusammen
+          ["bars", 6, "is-p-chorus is-p-last"], ["stamp", 7, "is-p-chorus is-p-last is-p-rep is-f-shout"], ["fan", 8, "is-p-verse is-p-rep"],
         ]);
         for (const [t, k, extra] of SPECS) {
           const spec = lineHtml(t, k, extra);
@@ -3065,10 +3104,13 @@ async function playfulLyrics() {
               const b = box.getBoundingClientRect();
               const fadeTop = b.top + b.height * (party ? 0.18 : 0.16), fadeBot = b.top + b.height * (party ? 0.82 : 0.8);
               let top = Infinity, bot = -Infinity;
+              const pad0 = parseFloat(getComputedStyle(ln.querySelector(".m-w")).fontSize) * 0.26;
               for (const w of ln.querySelectorAll(".m-w")) {
                 const q = w.getBoundingClientRect();
                 top = Math.min(top, q.top);
-                bot = Math.max(bot, q.bottom);
+                // (Karaoke-Polster unten je Wort in seiner eigenen Größe: das riesige Schlüsselwort hat ein größeres – stand es
+                // auf der letzten Reihe, zählte sonst ein Teil seines leeren Polsters als Glyphe)
+                bot = Math.max(bot, q.bottom - parseFloat(getComputedStyle(w).fontSize) * 0.26 + pad0);
                 if (q.left < b.left - 1 || q.right > b.right + 1 || q.top < b.top - 1 || q.bottom > b.bottom + 1) bad.push("Textfläche „" + w.textContent + "“ " + [q.left, q.top, q.right, q.bottom].map(Math.round) + " / " + [b.left, b.top, b.right, b.bottom].map(Math.round));
                 if (q.left < -1 || q.top < -1 || q.right > innerWidth + 1 || q.bottom > innerHeight + 1) bad.push("Fenster „" + w.textContent + "“");
               }
@@ -3079,6 +3121,8 @@ async function playfulLyrics() {
             return [...new Set(bad)];
           })()`);
           checked++;
+          // Sichtprüfung der neueren Rezepte und Bogen-Zeilen (gelandet, mitten im Akzent)
+          if (SHOTS && w === 1600 && m !== "mix" && (extra ? /is-p-last|is-p-rep/.test(extra) : ["fan", "bars", "volley", "count", "aside", "track", "zip"].includes(t))) await T.shot(path.join(SHOTS, `playful-${m}-${t}${extra ? "-arc" + k : ""}.png`));
           if (r.length) fails.push(`${w}×${h} ${m} ${t}${extra ? " (" + extra + ")" : ""}: ${r.slice(0, 2).join("; ")}`);
         }
         console.log(`  playful Beschnitt ${w}×${h} ${m}: ${fails.length} Funde bisher`);
@@ -3149,7 +3193,7 @@ async function playfulLyrics() {
     await T.js(`document.getElementById("e2e-noglide")?.remove(); 1`);
     T.win.setContentSize(1280, 800);
     await wait(400);
-    console.log(`  playful Beschnitt: ${checked} Zeilen (${DECK.TREATMENTS.length} Rezepte + 6 Bogen-Zeilen × Liedtext/Mix/Party × 820/1600 px), ${fails.length} abgeschnitten`);
+    console.log(`  playful Beschnitt: ${checked} Zeilen (${DECK.TREATMENTS.length} Rezepte + 9 Bogen-Zeilen × Liedtext/Mix/Party bei 820 px, Liedtext/Party bei 1600 px), ${fails.length} abgeschnitten`);
     if (fails.length) console.log("    " + fails.join("\n    "));
     ok(!fails.length, "playful: abgeschnitten:\n    " + fails.slice(0, 12).join("\n    "));
 
@@ -3676,6 +3720,243 @@ async function playfulRoom() {
   ok(String(n.zoom) === "1", "platz: normaler Stil unverändert (zoom " + n.zoom + ")");
 }
 CASES.push(["playful-room", playfulRoom]);
+
+/* ---- Zeilen überdecken sich nie: die Tinte (Glyphen-Fläche je Wort, nach allen Verschiebungen, Drehungen und
+   Größen) zweier benachbarter Liedtext-Zeilen schneidet sich nicht – verspielt (Dezent/Verspielt/Wild) und im normalen
+   Stil (dort mit Umschrift- und Übersetzungs-Zeile), in Liedtext, Mix und Party, bei 820×620, 1600×900 und 2560×1400.
+   Die Zeilen kommen aus dem echten Plan (lyricstyle.planPlayful) über Beispiel-Songs und fixtures/ink-lines.js
+   (Hintergrundgesang in Klammern direkt vor einer Zeile in engen Großbuchstaben, lange umbrechende Zeilen …) und
+   stehen in einer eigenen Textfläche neben der echten; jede Zeile ist einmal die aktive (vergrößert, alle Wörter
+   gelandet). Gemessen wird der Ruhezustand (Überblendungen und Animationen aus).
+   E2E_SHOTS=<Ordner>: Bilder der Stellen mit Hintergrundgesang; E2E_INK=report: Funde nur melden statt scheitern */
+async function playfulInk() {
+  DECK ||= require(path.join(ROOT, "tests", "unit", "load.js")).load("lyricdeck.js");
+  STYLE ||= require(path.join(ROOT, "tests", "unit", "load.js")).load("lyricstyle.js");
+  const { bgFlags } = require(path.join(ROOT, "tests", "unit", "load.js")).load("lyricvoices.js");
+  const { LEX, NEG } = require(path.join(ROOT, "tests", "unit", "load.js")).load("lexicon.js");
+  const { inkSong } = require(path.join(ROOT, "tests", "unit", "fixtures", "ink-lines.js"));
+  const { build } = require(path.join(ROOT, "tests", "unit", "fixtures", "playful-songs.js"));
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const css = (v) => esc(Object.entries(v || {}).map(([a, b]) => a + ":" + b).join(";"));
+  // Zeilen eines Songs wie immersive.js sie baut (Wörter einzeln, Klammern am Zeilenende als kleine Zeile darunter),
+  // mit den Klassen und Variablen des Plans
+  const specs = (song, level, seed) => {
+    const words = song.words.map((ws, i) => {
+      const bgs = song.lines[i].bg ? [] : bgFlags(ws.map((w) => w.text));
+      return ws.map((w, k) => ({ ...w, bg: !!bgs[k] }));
+    });
+    const plan = STYLE.planPlayful(song.lines, words, null, { lexicon: LEX, neg: NEG, parts: song.parts, level, seed });
+    return song.lines.map((l, i) => {
+      const ws = words[i], p = plan[i];
+      let tail = ws.length;
+      while (tail > 0 && ws[tail - 1].bg) tail--;
+      const under = tail > 0 && tail < ws.length;
+      const span = (w, k) => {
+        const pw = p.words[k] || { cls: [], vars: {} };
+        const inner = Array.isArray(pw.chars) ? pw.chars.map((c, ci) => `<span class="m-ch" style="--ci:${ci};${css(c.vars)}">${esc(c.ch)}</span>`).join("") : esc(w.text);
+        return `<span class="${["m-w", w.bg ? "is-bg" : "", ...pw.cls].filter(Boolean).join(" ")}" style="${css(pw.vars)}"${pw.tx ? ` data-tx="${esc(pw.tx)}"` : ""}>${inner}</span>`;
+      };
+      const main = ws.slice(0, under ? tail : ws.length).map(span).join(" ");
+      const sub = under ? `<span class="m-im-bgl">${ws.slice(tail).map((w, k) => span(w, tail + k)).join(" ")}</span>` : "";
+      return { cls: ["m-im-line", l.bg ? "is-bgline" : "", ...p.cls].filter(Boolean).join(" "), style: css(p.vars), html: `<span class="m-im-words">${main}${sub}</span>`, text: l.text };
+    });
+  };
+  // „inkbg“: dieselben Zeilen, der Hintergrundgesang aber als eigene Zeile der Quelle (l.bg, ohne Klammern – kleiner
+  // gesetzt und im normalen Stil dicht unter die Zeile davor gerückt)
+  const inkBg = inkSong();
+  inkBg.lines = inkBg.lines.map((l, i) => {
+    if (!(l.text.startsWith("(") && l.text.endsWith(")"))) return l;
+    const text = l.text.slice(1, -1);
+    inkBg.words[i] = inkBg.words[i].map((w, k, a) => ({ ...w, text: w.text.slice(k ? 0 : 1, k === a.length - 1 ? -1 : undefined) }));
+    return { ...l, text, bg: true };
+  });
+  const songs = [["ink", inkSong()], ["inkbg", inkBg], ["party", build("party")], ["ballad", build("ballad")], ["club", build("club")], ["rap", build("rap")]];
+  if (!(await T.js(`!!document.getElementById("mirage-immersive")?.classList.contains("is-on")`))) await T.js(`__sp.press("KeyM", { ctrlKey: true, shiftKey: true }); 1`);
+  // die echten Schriften (wie im Fall „playful“): Outfit und die sechs Anzeige-Schriften als data:-Adressen
+  const fontCss = fs.readFileSync(path.join(__dirname, "fonts", "fonts.css"), "utf8").replace(/url\(\/__fonts\/([^)]+)\)/g, (_, f) => `url(data:font/woff2;base64,${fs.readFileSync(path.join(__dirname, "fonts", f)).toString("base64")})`);
+  await T.js(`(async () => {
+    const st = document.createElement("style");
+    st.id = "e2e-ink";
+    st.textContent = ${JSON.stringify(fontCss)} + "#mirage-immersive .m-im-lyrics-inner.e2e-ink, #mirage-immersive .m-im-lyrics-inner.e2e-ink * { transition: none !important; animation: none !important } #mirage-immersive .m-im-lyrics.e2e-inkon > .m-im-lyrics-inner:not(.e2e-ink) { display: none }";
+    document.head.append(st);
+    const want = [["700", "Outfit"], ["700", "Oswald"], ["700", "Fredoka"], ["700", "Playfair Display"], ["italic 700", "Playfair Display"], ["700", "JetBrains Mono"], ["500", "Unbounded"], ["400", "Permanent Marker"]];
+    await Promise.all(want.map(([w, f]) => document.fonts.load(w + ' 40px "' + f + '"', "AaЯ").catch(() => [])));
+    return 1;
+  })()`);
+  // im Bild: eigene Textfläche füllen, jede Zeile einmal aktiv, Tinte der Nachbarn vergleichen
+  const measure = (list, level, shot) => T.js(`(async () => {
+    const im = document.getElementById("mirage-immersive"), box = im.querySelector(".m-im-lyrics");
+    const had = { p: box.classList.contains("is-playful"), q: im.classList.contains("is-plyr"), s: box.classList.contains("is-lv-subtle"), w: box.classList.contains("is-lv-wild") };
+    const level = ${JSON.stringify(level)}, playful = level !== "normal";
+    box.classList.toggle("is-playful", playful);
+    im.classList.toggle("is-plyr", playful);
+    box.classList.toggle("is-lv-subtle", level === "subtle");
+    box.classList.toggle("is-lv-wild", level === "wild");
+    box.classList.add("e2e-inkon");
+    const inner = document.createElement("div");
+    inner.className = "m-im-lyrics-inner e2e-ink";
+    const LIST = ${JSON.stringify(list)};
+    const els = LIST.map((s, i) => {
+      const d = document.createElement("div");
+      d.className = s.cls;
+      d.dir = "auto";
+      d.style.cssText = s.style;
+      d.innerHTML = s.html;
+      // normaler Stil: Umschrift und Übersetzung als Unterzeilen (jede dritte Zeile)
+      if (!playful && i % 3 === 0) {
+        const r = document.createElement("div"), t = document.createElement("div");
+        r.className = "m-im-rom";
+        r.textContent = "romanisation of " + s.text;
+        t.className = "m-im-tr";
+        t.textContent = "translation of " + s.text;
+        d.append(r, t);
+      }
+      inner.append(d);
+      return d;
+    });
+    box.append(inner);
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    // Tinte einer Zeile: je Textstück die Fläche nach allen Verschiebungen (Range), oben und unten auf die wirklich
+    // gezeichneten Glyphen gekürzt (Leinwand-Messung des Textes in seiner Schrift: Umlaute, Unterlängen, Klammern,
+    // Großbuchstaben zählen, der leere Raum der Schrift darüber und darunter nicht)
+    const cx = document.createElement("canvas").getContext("2d");
+    const ink = (ln) => {
+      const out = [], tw = document.createTreeWalker(ln, NodeFilter.SHOW_TEXT);
+      for (let n; (n = tw.nextNode()); ) {
+        if (!n.data.trim()) continue;
+        const pe = n.parentElement, cs = getComputedStyle(pe), fs = parseFloat(cs.fontSize) || 16;
+        cx.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
+        const tx = cs.textTransform === "uppercase" ? n.data.trim().toUpperCase() : n.data.trim();
+        const m = cx.measureText(tx), full = m.fontBoundingBoxAscent + m.fontBoundingBoxDescent;
+        const r = document.createRange();
+        r.selectNodeContents(n);
+        for (const q of r.getClientRects()) {
+          if (q.width < 1) continue;
+          const k = full > 0 ? q.height / full : 1;
+          out.push({ l: q.left, r: q.right, t: q.top + Math.max(0, m.fontBoundingBoxAscent - m.actualBoundingBoxAscent) * k, b: q.bottom - Math.max(0, m.fontBoundingBoxDescent - m.actualBoundingBoxDescent) * k, fs, tx: tx.slice(0, 14) });
+        }
+      }
+      return out;
+    };
+    const bad = new Map();
+    let pairs = 0, shotAt = -1;
+    for (let i = 0; i < els.length; i++) {
+      els.forEach((e, k) => {
+        e.classList.toggle("is-active", k === i);
+        e.classList.toggle("is-past", k < i);
+        e.style.setProperty("--d", Math.min(Math.abs(k - i), 6));
+      });
+      els[i].querySelectorAll(".m-w").forEach((w) => w.classList.add("is-sung"));
+      const near = [i - 2, i - 1, i, i + 1, i + 2].filter((k) => k >= 0 && k < els.length).map((k) => [k, ink(els[k])]);
+      // Reihen derselben Zeile (umbrochen, Schlüsselwort auf eigener Reihe, kleine Zeile in Klammern darunter)
+      {
+        const A = near.find(([k]) => k === i)[1];
+        pairs++;
+        let worst = 0, what = "";
+        for (const x of A) for (const y of A) {
+          if ((y.t + y.b) / 2 - (x.t + x.b) / 2 < 0.45 * Math.min(x.fs, y.fs)) continue;
+          const w = Math.min(x.r, y.r) - Math.max(x.l, y.l), h = Math.min(x.b, y.b) - Math.max(x.t, y.t);
+          if (w > 1 && h > 1 && h > worst) (worst = h), (what = "„" + x.tx + "“ / „" + y.tx + "“");
+        }
+        if (worst) {
+          const key = i + "|" + i;
+          if (!bad.has(key) || bad.get(key).px < worst) bad.set(key, { px: Math.round(worst * 10) / 10, what, a: LIST[i].text.slice(0, 40), b: "(Reihen derselben Zeile)", active: i, ta: (els[i].className.match(/is-t-[a-z]+/) || [""])[0], tb: (els[i].className.match(/is-f-[a-z]+/) || [""])[0] });
+        }
+      }
+      for (let a = 0; a + 1 < near.length; a++) {
+        const [ka, A] = near[a], [kb, B] = near[a + 1];
+        pairs++;
+        let worst = 0, what = "";
+        for (const x of A) for (const y of B) {
+          // zwischen zwei Zeilen bleibt Luft: mindestens 5 % der kleineren Schriftgröße (sonst „kleben“ sie aneinander)
+          const air = 0.05 * Math.min(x.fs, y.fs);
+          const w = Math.min(x.r, y.r) - Math.max(x.l, y.l), h = Math.min(x.b, y.b) - Math.max(x.t, y.t) + air;
+          if (w > 1 && h > 1 && h > worst) (worst = h), (what = "„" + x.tx + "“ / „" + y.tx + "“");
+        }
+        if (worst) {
+          const key = ka + "|" + kb;
+          if (!bad.has(key) || bad.get(key).px < worst) bad.set(key, { px: Math.round(worst * 10) / 10, what, a: LIST[ka].text.slice(0, 40), b: LIST[kb].text.slice(0, 40), active: i, ta: (els[ka].className.match(/is-t-[a-z]+/) || [""])[0], tb: (els[kb].className.match(/is-t-[a-z]+/) || [""])[0] });
+        }
+      }
+      els[i].querySelectorAll(".m-w").forEach((w) => w.classList.remove("is-sung"));
+    }
+    // fürs Bild: die Zeile nach dem langen Hintergrundgesang aktiv, in die Mitte der Fläche geschoben
+    if (${JSON.stringify(!!shot)}) {
+      shotAt = LIST.findIndex((s) => s.text.startsWith("IHRE MINIBAR"));
+      if (shotAt >= 0) {
+        els.forEach((e, k) => {
+          e.classList.toggle("is-active", k === shotAt);
+          e.classList.toggle("is-past", k < shotAt);
+          e.style.setProperty("--d", Math.min(Math.abs(k - shotAt), 6));
+        });
+        els[shotAt].querySelectorAll(".m-w").forEach((w) => w.classList.add("is-sung"));
+        inner.style.transform = "translateY(" + Math.round(box.clientHeight * 0.5 - els[shotAt].offsetTop - els[shotAt].offsetHeight / 2) + "px)";
+        window.__e2eInk = { inner, had };
+        return { bad: [...bad.values()], pairs, n: els.length, shot: true };
+      }
+    }
+    inner.remove();
+    box.classList.remove("e2e-inkon");
+    box.classList.toggle("is-playful", had.p);
+    im.classList.toggle("is-plyr", had.q);
+    box.classList.toggle("is-lv-subtle", had.s);
+    box.classList.toggle("is-lv-wild", had.w);
+    return { bad: [...bad.values()], pairs, n: els.length };
+  })()`);
+  const unshot = () => T.js(`(() => {
+    const x = window.__e2eInk;
+    if (!x) return 0;
+    const im = document.getElementById("mirage-immersive"), box = im.querySelector(".m-im-lyrics");
+    x.inner.remove();
+    box.classList.remove("e2e-inkon");
+    box.classList.toggle("is-playful", x.had.p);
+    im.classList.toggle("is-plyr", x.had.q);
+    box.classList.toggle("is-lv-subtle", x.had.s);
+    box.classList.toggle("is-lv-wild", x.had.w);
+    delete window.__e2eInk;
+    return 1;
+  })()`);
+  const fails = [];
+  let pairs = 0;
+  try {
+    for (const [w, h] of (process.env.E2E_INK_SIZES || "820x620,1600x900,2560x1400").split(",").map((x) => x.split("x").map(Number))) {
+      T.win.setContentSize(w, h);
+      await wait(500);
+      for (const m of ["lyrics", "mix", "party"]) {
+        await toMode(m);
+        await wait(300);
+        let found = 0;
+        for (const level of ["normal", "subtle", "playful", "wild"]) {
+          for (const seed of level === "normal" ? ["a"] : ["a", "b", "c"]) {
+            for (const [name, song] of songs) {
+              const list = specs(song, level === "normal" ? "playful" : level, name + seed);
+              const shot = SHOTS && name === "ink" && seed === "a";
+              const r = await measure(list, level, shot);
+              if (r.shot) {
+                await wait(150);
+                await T.shot(path.join(SHOTS, `ink-${m}-${w}x${h}-${level}.png`));
+                await unshot();
+              }
+              pairs += r.pairs;
+              found += r.bad.length;
+              for (const b of r.bad) fails.push(`${w}×${h} ${m} ${level}/${name}${seed}: ${b.px} px ${b.what} – „${b.a}“ ${b.ta} / „${b.b}“ ${b.tb}`);
+            }
+          }
+        }
+        console.log(`  tinte ${w}×${h} ${m}: ${found} Funde`);
+      }
+    }
+  } finally {
+    await unshot().catch(() => {});
+    await T.js(`document.getElementById("e2e-ink")?.remove(); 1`).catch(() => {});
+    T.win.setContentSize(1280, 800);
+    await wait(300);
+  }
+  console.log(`  tinte: ${pairs} Zeilenpaare (6 Songs × Normal/Dezent/Verspielt/Wild × Liedtext/Mix/Party × 3 Fenstergrößen), ${fails.length} Überdeckungen`);
+  if (fails.length) console.log("    " + fails.slice(0, process.env.E2E_INK === "report" ? 3000 : 60).join("\n    "));
+  if (process.env.E2E_INK !== "report") ok(!fails.length, "tinte: Zeilen überdecken sich:\n    " + fails.slice(0, 12).join("\n    "));
+}
+CASES.push(["playful-ink", playfulInk]);
 
 // Selbsttest des zweiten Versuchs: E2E_SELFTEST=1 E2E_ONLY=selftest-flaky,selftest-fail npm run test:games
 // (erwartet: selftest-flaky „[flaky: passed on retry]“, selftest-fail FEHLER, Ende mit Code 1)

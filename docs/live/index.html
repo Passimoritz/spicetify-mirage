@@ -57,7 +57,7 @@
   .hbody .rcrow button { font-size: 20px; }
   .hbody .rclv button { padding: 8px 2px; font-size: 13px; }
   .hbody .rcrow button[aria-pressed="true"] { background: rgb(var(--c)); color: #0b0a12; border-color: transparent; }
-  .rcsel { height: 46px; padding: 0 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.07); color: #fff; font: inherit; font-size: 15px; }
+  .rcsel { height: 46px; padding: 0 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.07); color: #fff; font: inherit; font-size: 16px; }
   .rcsel option { color: #0b0a12; }
   /* oben verankert statt mittig: kommt ein Gast in die Liste, rutschen sonst die Knöpfe unter dem Finger weg */
   .host { align-items: start; }
@@ -137,17 +137,18 @@
   .sheet { position: fixed; left: 0; right: 0; bottom: var(--kb, 0px); max-height: calc(var(--vvh, 100dvh) - max(24px, env(safe-area-inset-top))); overflow: auto; overscroll-behavior: contain;
     padding: 0 16px max(18px, env(safe-area-inset-bottom)); border-radius: 26px 26px 0 0;
     background: rgba(14, 12, 24, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.45); transform: translateY(105%); transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1), bottom 0.2s; }
+    box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.45); transform: translateY(105%); visibility: hidden; transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.2, 1), bottom 0.2s, visibility 0s 0.45s; }
   .sheet .top2 { position: sticky; top: 0; z-index: 1; padding: 10px 0 10px; background: linear-gradient(rgba(14, 12, 24, 1) 85%, rgba(14, 12, 24, 0)); }
   .sheet .grab { width: 40px; height: 4px; margin: 0 auto 12px; border-radius: 99px; background: rgba(255, 255, 255, 0.25); }
   .sheet .shead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .sheet .x { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; color: #fff; font: inherit; font-size: 15px; background: rgba(255, 255, 255, 0.1); }
+  .sheet .x { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; color: #fff; font: inherit; font-size: 15px; background: rgba(255, 255, 255, 0.1); }
   .sheet .field { position: relative; margin-top: 12px; }
   .sheet .field svg { position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); fill: rgba(255, 255, 255, 0.6); pointer-events: none; }
   .sheet .field input { padding-left: 42px; margin-bottom: 0; }
   .sheet .name { margin-top: 14px; }
-  .sheet .name input { height: 40px; font-size: 15px; background: transparent; }
-  body.wish .sheet { transform: none; }
+  .sheet .name input { height: 44px; font-size: 16px; background: transparent; }
+  /* zu: unsichtbar auch für Tastatur und Vorlesen (visibility), erst nach dem Hinausgleiten */
+  body.wish .sheet { transform: none; visibility: visible; transition-delay: 0s; }
   .sheet { z-index: 5; }
   body.wish .card, body.wish .tools, body.wish .lyr { opacity: 0 !important; pointer-events: none; }
   .sheet h2 { font-size: 20px; letter-spacing: -0.01em; }
@@ -254,7 +255,8 @@
   .tile i { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; font-style: normal; font-weight: 800; background: rgba(0, 0, 0, 0.24); }
   .tile span { flex: 1; min-width: 0; }
   .tile b { flex: none; padding: 2px 9px; border-radius: 99px; background: rgba(0, 0, 0, 0.24); font-size: 13px; }
-  .tile.t0 { background: #d8415a; } .tile.t1 { background: #2f83d6; } .tile.t2 { background: #cf9320; } .tile.t3 { background: #2fa86a; } .tile.t4 { background: #8a5fd6; } .tile.t5 { background: #d4692f; }
+  /* weiße Schrift auf jeder Kachel mit mindestens 4,5 : 1 (dieselben Farben wie am großen Bild, user.css) */
+  .tile.t0 { background: #cf3550; } .tile.t1 { background: #2674c4; } .tile.t2 { background: #9c6a0e; } .tile.t3 { background: #1f8552; } .tile.t4 { background: #8157d0; } .tile.t5 { background: #bd5521; }
   .game .tile.dim { opacity: 0.32; }
   .game .tile.pick { outline: 3px solid #fff; outline-offset: -3px; }
   .game .tile.right { outline: 3px solid #fff; outline-offset: -3px; animation: gpop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
@@ -300,7 +302,7 @@
   .scan { display: grid; gap: 10px; width: min(300px, 80vw); pointer-events: auto; }
   .scan[hidden], body.on .scan { display: none; }
   .scan button { min-height: 52px; border: 0; border-radius: 16px; background: rgb(var(--c)); color: #0b0a12; font: inherit; font-size: 16px; font-weight: 700; }
-  .scan input { height: 44px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 14px; background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit; font-size: 15px; -webkit-user-select: text; user-select: text; text-align: center; }
+  .scan input { height: 44px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 14px; background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit; font-size: 16px; -webkit-user-select: text; user-select: text; text-align: center; }
   .scanmsg { min-height: 1.4em; font-size: 13px; line-height: 1.4; opacity: 0.85; }
   .scanview { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; background: #000; }
   .scanview[hidden] { display: none; }
@@ -370,7 +372,7 @@
 <div class="prof host" id="pho" hidden role="dialog" aria-modal="true" aria-labelledby="phTitle"><div class="pbox"><div class="shead"><h2 id="phTitle"></h2><button type="button" class="x" id="phClose">✕</button></div><p id="phHint"></p><label class="phpick go" id="phCamL"><input type="file" id="phCam" accept="image/*" capture="environment"><span></span></label><label class="phpick" id="phFileL"><input type="file" id="phFile" accept="image/*"><span></span></label><img class="phprev" id="phPrev" alt="" hidden><div class="phbar" id="phBar" hidden><b></b></div><p class="phmsg" id="phMsg" role="status" aria-live="polite"></p></div></div>
 <div class="prof host" id="host" hidden role="dialog" aria-modal="true" aria-labelledby="hTitle"><div class="pbox"><div class="shead"><h2 id="hTitle"></h2><button type="button" class="x" id="hClose">✕</button></div><div class="hbody" id="hBody"></div></div></div>
 <div class="prof" id="prof" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"><div class="pbox"><h2 id="pTitle"></h2><p id="pHint"></p><input id="pName" maxlength="20" autocomplete="nickname"><div class="sw" id="pSw"></div><p id="pSlotHint" hidden></p><div class="sw" id="pSlot" hidden></div><button type="button" class="peco" id="pEco" aria-pressed="false"></button><button type="button" class="go" id="pOk"></button></div></div>
-<div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p><div class="scan" id="scan" hidden><button type="button" id="scanBtn"></button><input id="scanLink" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url"><div class="scanmsg" id="scanMsg" role="status"></div></div></div>
+<div class="state"><div class="orb"></div><b id="sTitle"></b><p id="sText"></p><div class="scan" id="scan" hidden><button type="button" id="scanBtn"></button><input id="scanLink" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url" enterkeyhint="go"><div class="scanmsg" id="scanMsg" role="status"></div></div></div>
 <div class="scanview" id="scanView" hidden><video id="scanVid" playsinline muted></video><div class="scanframe"></div><p id="scanTip"></p><button type="button" id="scanX" aria-label="✕">✕</button></div>
 <div class="tap" id="tap"></div>
 <div class="lyr" id="lyr" aria-live="polite"><b id="ly"></b><span id="lyn"></span></div>
@@ -432,7 +434,11 @@ function mqttOpen(url, { onReady, onMessage, onClose }) {
       if (type === 2 && body[1] === 0) {
         ping = setInterval(() => ws.readyState === 1 && ws.send(new Uint8Array([0xc0, 0])), 30000);
         onReady?.(api);
-      } else if (type === 3) onMessage?.(body.slice(2 + ((body[0] << 8) | body[1])), retained);
+      } else if (type === 3) {
+        // mit dem Thema: die Unterschrift des PCs gilt nur für das Thema, auf dem er gesendet hat
+        const tl = (body[0] << 8) | body[1];
+        onMessage?.(body.slice(2 + tl), retained, new TextDecoder().decode(body.slice(2, 2 + tl)));
+      }
     }
   };
   ws.onclose = ws.onerror = () => {
@@ -577,22 +583,69 @@ say(T.start);
 const APP = navigator.standalone === true || matchMedia("(display-mode: fullscreen), (display-mode: standalone)").matches;
 try {
   const last = JSON.parse(localStorage.getItem("mlLast") || "null");
-  if (APP && location.hash.length < 2 && last && Date.now() - last.at < 12 * 3600e3 && /^#c=[\w-]+&k=[\w-]+$/.test(last.h)) history.replaceState(null, "", last.h);
+  if (APP && location.hash.length < 2 && last && Date.now() - last.at < 12 * 3600e3 && /^#c=[\w-]+&k=[\w-]+(&p=[\w-]+)?$/.test(last.h)) history.replaceState(null, "", last.h);
 } catch {}
 const p = new URLSearchParams(location.hash.slice(1));
 const fromB64 = (s) => Uint8Array.from(atob(String(s || "").replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+/* ---- sign:begin (Gegenstück in src/live.js; tests/unit/livesign.test.js führt beide Teile zusammen aus) */
+// Unterschrift des PCs unter allem, was er an die Handys sendet (ECDSA P-256). Den Kanalschlüssel kennt jeder Gast,
+// den privaten Schlüssel nur das Theme; der öffentliche steht als „p“ im Party-Link. Unterschrieben ist „Thema,
+// Zeilenumbruch, JSON-Text“ – das Thema enthält den Kanal und bei Antworten die Kennung des Handys: eine Antwort an
+// ein Handy gilt darum weder als Lichtzustand noch für ein anderes Handy. Die Unterschrift steht als erstes Feld
+// „sg“ im selben JSON-Text (ältere Seiten lesen einfach ein Feld mehr); geprüft wird der Text, wie er ankam.
+const SG_ALG = { name: "ECDSA", hash: "SHA-256" }, SG_KEY = { name: "ECDSA", namedCurve: "P-256" }, SG_HEAD = '{"sg":"', SG_LEN = 86;
+const sgBytes = (s) => Uint8Array.from(atob(String(s).replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+const sgData = (topic, body) => new TextEncoder().encode(topic + "\n" + body);
+// → der unterschriebene JSON-Text, sonst null. Ohne Schlüssel (Party eines älteren Themes) gilt der Text, wie er ist.
+async function sgOpen(key, topic, text) {
+  if (!key) return text;
+  const at = SG_HEAD.length + SG_LEN;
+  if (!text.startsWith(SG_HEAD) || text.slice(at, at + 2) !== '",') return null;
+  const body = "{" + text.slice(at + 2);
+  try {
+    return (await crypto.subtle.verify(SG_ALG, key, sgBytes(text.slice(SG_HEAD.length, at)), sgData(topic, body))) ? body : null;
+  } catch {
+    return null;
+  }
+}
+// Der Schlüssel im Link ist gepackt (33 statt 65 Bytes: x und das Vorzeichen von y), damit der QR-Code klein bleibt.
+// y² = x³ − 3x + b; weil P ≡ 3 (mod 4) ist, ist die Wurzel rhs^((P+1)/4).
+function sgUnpack(c) {
+  if (c.length !== 33 || (c[0] !== 2 && c[0] !== 3)) throw new Error("key");
+  const hex = [...c.subarray(1)].map((v) => v.toString(16).padStart(2, "0")).join("");
+  const P = BigInt("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff"), B = BigInt("0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b");
+  const one = BigInt(1), x = BigInt("0x" + hex);
+  if (x >= P) throw new Error("key");
+  const rhs = (((x * x) % P) * x + BigInt(3) * (P - x) + B) % P;
+  let y = one, sq = rhs;
+  for (let e = (P + one) / BigInt(4); e > BigInt(0); e >>= one) {
+    if (e & one) y = (y * sq) % P;
+    sq = (sq * sq) % P;
+  }
+  if ((y * y) % P !== rhs) throw new Error("key");
+  if (Number(y & one) !== (c[0] & 1)) y = P - y;
+  return Uint8Array.from(("04" + hex + y.toString(16).padStart(64, "0")).match(/../g).map((h) => parseInt(h, 16)));
+}
+const sgImport = async (s) => crypto.subtle.importKey("raw", sgUnpack(sgBytes(s)), SG_KEY, false, ["verify"]);
+/* ---- sign:end */
 let skew = 0, lags = [];
 // Vorlauf: keiner extra – das Theme läuft schon 40 ms vor (Bildschirm), das reicht auch für den Vibrationsmotor
 const LEAD = 0;
 let key = null, topic = "", cur = null, recvAt = 0, ended = false, pal = [[155, 107, 240], [34, 73, 231], [217, 188, 241]];
+// Schlüssel zum Prüfen der Unterschrift des PCs (null: Party eines älteren Themes, das nicht unterschreibt) und die
+// neueste Sendezeit, die mit gültiger Unterschrift ankam
+let hostPub = null, topS = 0;
 async function start() {
   try {
-    const raw = fromB64(p.get("k")), ch = p.get("c") || "";
+    const raw = fromB64(p.get("k")), ch = p.get("c") || "", pk = p.get("p") || "";
     if (raw.length !== 16 || !/^[\w-]{16,}$/.test(ch)) throw 0;
+    // steht „p“ im Link, muss er stimmen: ein kaputter Schlüssel heißt „Link unvollständig“, nie „ungeprüft weiter“
+    // (darum vor dem Kanalschlüssel: ohne den verbindet sich die Seite gar nicht erst)
+    if (pk) hostPub = await sgImport(pk);
     key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt", "encrypt"]);
     topic = "mirage-live/" + ch;
     try {
-      localStorage.setItem("mlLast", JSON.stringify({ h: "#c=" + ch + "&k=" + p.get("k"), at: Date.now() }));
+      localStorage.setItem("mlLast", JSON.stringify({ h: "#c=" + ch + "&k=" + p.get("k") + (pk ? "&p=" + pk : ""), at: Date.now() }));
     } catch {}
   } catch {
     // ohne Link: kein Fehler, sondern der normale Weg über den Scanner
@@ -764,14 +817,22 @@ function open(url) {
 // vor dem Spiel gesendet) und würde verdeckte Songs kurz zeigen: Sie zählt erst, wenn eine Weile nichts Frisches kam.
 const HOLD_MS = 1500;
 let heldMsg = null, holdT = 0, hadLive = false;
-async function receive(m, retained) {
+async function receive(m, retained, from) {
   if (m.length < 29) return;
+  // Antwort nur an dieses Handy (Thema „…/r/<Kennung>“) oder Stand für alle
+  const own = from !== topic;
   let s;
   try {
-    s = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: m.slice(0, 12) }, key, m.slice(12))));
+    // mit „p“ im Link zählt nur, was der PC unterschrieben hat – für genau dieses Thema. Alles andere (jeder Gast
+    // kennt den Kanalschlüssel und könnte hier senden) fällt still weg.
+    const text = await sgOpen(hostPub, from, new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: m.slice(0, 12) }, key, m.slice(12))));
+    if (text === null) return;
+    s = JSON.parse(text);
   } catch {
     return; // nicht mit unserem Schlüssel verschlüsselt – ignorieren
   }
+  // unterschriebene Antwort: nicht noch einmal abspielbar, wenn sie deutlich älter ist als der neueste Stand
+  if (hostPub && own && !(s && s.s >= topS - 30000)) return;
   // Stand für die Fernbedienung (nur mit deinem eigenen Link)
   if (s.rcs) {
     rcS = rcClean(s.rcs);
@@ -792,6 +853,8 @@ async function receive(m, retained) {
     return;
   }
   if (Array.isArray(s.res)) return showResults(s); // Treffer unserer Suche
+  // ein Lichtzustand kommt nur über das Thema für alle
+  if (hostPub && own) return;
   if (retained) {
     if (hadLive) return;
     if (!heldMsg || s.s > heldMsg.s) heldMsg = s;
@@ -824,7 +887,16 @@ function tintChrome() {
   $("chrome").content = css;
 }
 function apply(s) {
-  if (cur && s.s < cur.s) return; // ältere Nachricht über den zweiten Relay
+  if (!s || typeof s !== "object" || !Number.isFinite(s.s)) return;
+  // ältere Nachricht über den zweiten Relay. Nur solange der gemerkte Stand selbst noch frisch ist: eine einzelne
+  // Nachricht mit einer Sendezeit weit in der Zukunft sperrte sonst alle echten aus, bis man die Seite neu lädt
+  if (cur && s.s < cur.s && performance.now() - recvAt < 4000) return;
+  // mit Unterschrift kann nur der PC eine Sendezeit setzen: dann gilt streng „nie älter als das Neueste“. So lässt
+  // sich ein mitgeschnittener, echter Stand (etwa „Party beendet“ von vorhin) nicht später noch einmal einspielen.
+  if (hostPub) {
+    if (s.s < topS) return;
+    topS = s.s;
+  }
   if (s.v > PROTO) {
     // das Theme ist neuer als diese Seite: einmal frisch laden, hilft das nicht, klar sagen
     let tried = false;
@@ -853,7 +925,7 @@ function apply(s) {
   lags.push([at, lag]);
   while (lags.length && at - lags[0][0] > 20000) lags.shift();
   skew = Math.min(...lags.map((x) => x[1]));
-  if (Array.isArray(s.pal) && s.pal.length === 3) {
+  if (Array.isArray(s.pal) && s.pal.length === 3 && s.pal.every((c) => Array.isArray(c) && c.length === 3 && c.every((x) => Number.isFinite(x) && x >= 0 && x <= 255))) {
     pal = s.pal;
     s.pal.forEach((c, i) => document.documentElement.style.setProperty(["--a", "--b", "--c"][i], c.join(",")));
     tintChrome();
@@ -1387,6 +1459,9 @@ $("wHint").textContent = T.wHint;
 $("wSong").placeholder = T.wSong;
 $("wNow").textContent = T.wNow;
 $("wClose").title = $("wClose").ariaLabel = T.wClose;
+for (const id of ["rcClose", "phClose", "hClose", "scanX"]) $(id).title = $(id).ariaLabel = T.wClose;
+$("wSong").ariaLabel = T.wSong;
+$("wName").ariaLabel = T.wName;
 $("wName").placeholder = T.wName + " (" + T.opt + ")";
 // Tastatur: Höhe der Tastatur und sichtbare Höhe messen – das Wunsch-Blatt bleibt immer darüber
 const vv = window.visualViewport;
@@ -1569,6 +1644,8 @@ navigator.getBattery?.().then((b) => {
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
 const lerp = (a, b, f) => a + (b - a) * f;
 const show = { lit: 0, e: 0, kick: 0, drop: 0, flash: 0, beat: -1, rings: [], eq: [0, 0, 0], wave: 1, wk: 1 };
+// „Bewegung reduzieren“ an diesem Handy: kein weißer Blitz, keine Ringe im Takt – auch wenn am PC Blitze an sind
+const CALM_SYS = !!window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Lichtwelle: ist dieses Handy auf diesem Schlag dran? (1: Platz für Platz, 2: drei Farbgruppen im Wechsel)
 function waveTurn(beat, c) {
   if (c.wv === 1) {
@@ -1605,14 +1682,16 @@ function frame(now) {
     show.wave = !cur.wv ? 1 : turn ? Math.exp(-f * 1.5) : 0;
     if (beat !== show.beat) {
       // in der Lichtwelle Ring und Vibration nur, wenn dieses Handy dran ist
-      if (show.beat >= 0 && turn) show.rings.push({ r: 0, a: 0.5 + cur.e * 0.4, c: pal[beat % 3], w: beat % 4 === 0 ? 2.4 : 1.4 });
+      if (show.beat >= 0 && turn && !CALM_SYS) show.rings.push({ r: 0, a: 0.5 + cur.e * 0.4, c: pal[beat % 3], w: beat % 4 === 0 ? 2.4 : 1.4 });
       // Vibration im Takt (Stärke und Muster je Musikteil, siehe beatParts)
       if (show.beat >= 0 && turn) hapticBeat(beat, cur);
       show.beat = beat;
     }
     const d = Math.max(0, cur.d - age * 0.6);
     // „Keine Blitze“ am PC (nf): kein weißer Blitz, kein Schockring, keine lange Vibration
-    if (d > 0.85 && show.drop < 0.5 && !cur.nf) {
+    const nowF = performance.now();
+    if (d > 0.85 && show.drop < 0.5 && !cur.nf && !CALM_SYS && nowF - (show.flashAt || -1e9) >= 340) {
+      show.flashAt = nowF;
       show.flash = 1;
       // Drop: von sanft zu voll anschwellen, dann lang (Android; iPhones lassen Websites nicht vibrieren)
       haptic([[0.45, 45], [0.7, 45], [0.9, 45], [1, 260]]);
@@ -2054,7 +2133,7 @@ function drawGame(g) {
   box.hidden = false;
   const isH = g.h === me;
   const late = gLobby(g.k) && g.st !== "join" && g.st !== "end" && !gIn(g);
-  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.word || "", late ? "late" : "", g.tms?.[me] ?? ""].join("|");
+  const key = [g.id, g.k, g.st, g.r, g.att || 0, g.line || "", g.q || "", isH ? g.x : "", gOut ? "o" : "", g.ea?.includes?.(me) ? "e" : "", g.word || "", late ? "late" : "", g.tms?.[me] ?? ""].join("|");
   if (key === gKey) return gLive(g, box);
   gKey = key;
   gTapped = false;
@@ -2087,10 +2166,12 @@ function drawGame(g) {
   snd.append(ic(psOn ? "speaker" : "speakerOff"));
   snd.type = "button";
   snd.setAttribute("aria-label", "Sound");
+  snd.setAttribute("aria-pressed", String(!!psOn));
   snd.onclick = gTap(() => {
     psOn = !psOn;
     store("mlSfx", psOn ? "1" : "0");
     snd.replaceChildren(ic(psOn ? "speaker" : "speakerOff"));
+    snd.setAttribute("aria-pressed", String(psOn));
     if (psOn) pSfx.tap();
   });
   head.append(snd);
@@ -2283,21 +2364,34 @@ function gBuild(g, box, isH) {
     if (g.st === "play" || g.st === "stop") {
       if (gOut) return void box.append(gBig("moon"), gEl("h2", T.gOut));
       gSeen = performance.now();
+      const round = g.id + "." + g.r;
       const b = gEl("button", g.st === "stop" ? T.gStopNow : T.gStopPlay, g.st === "stop" ? "hot" : "calm");
+      const safe = () => {
+        b.textContent = "✓ " + T.gSafe;
+        b.className = "safe";
+      };
+      // in dieser Runde schon getippt, als hier noch „Musik läuft“ stand, und der PC hat mich nicht rausgeworfen:
+      // der Tipp zählt (die Musik war am PC schon aus, nur dieses Bild kam später an)
+      if (gEarly === round) {
+        gTapped = true;
+        if (g.st === "stop") safe();
+        else {
+          b.textContent = T.gOut;
+          b.className = "calm dead";
+        }
+      }
       b.onclick = gTap(() => {
         if (gTapped) return;
         gTapped = true;
         haptic([[1, 60]]);
-        gSure({ a: "tap", r: g.r, ms: Math.round(performance.now() - gSeen) });
-        // zu früh getippt
+        // „v“ sagt dem PC, in welchem Bild getippt wurde (0: Musik läuft noch, 1: Stopp). Ob das zu früh war,
+        // entscheidet der PC – er weiß, wann er die Musik angehalten hat. Dieses Handy zeigt dann, was er meldet.
+        gSure({ a: "tap", r: g.r, ms: Math.round(performance.now() - gSeen), v: g.st === "stop" ? 1 : 0 });
         if (g.st === "play") {
-          gOut = true;
-          gKey = "";
-          if (cur?.g) drawGame(cur.g);
-        } else {
-          b.textContent = "✓ " + T.gSafe;
-          b.className = "safe";
-        }
+          gEarly = round;
+          b.textContent = T.gOut;
+          b.className = "calm dead";
+        } else safe();
       });
       box.append(b);
       if (g.st === "stop") {
@@ -2311,10 +2405,20 @@ function gBuild(g, box, isH) {
   }
   if (g.k === "fast") {
     if (g.st === "ready" || g.st === "go") {
-      const early = gEarly === g.id + "." + g.r;
+      // zu früh getippt? Das sagt der PC („ea“: wer in dieser Runde zu früh war) – er weiß, wann das Signal fiel.
+      // Ältere Themes senden „ea“ nicht: dann gilt wie bisher, was dieses Handy sich gemerkt hat.
+      const mine = gEarly === g.id + "." + g.r;
+      const early = Array.isArray(g.ea) ? g.ea.includes(me) : mine;
       gSeen = performance.now();
       if (early) return void box.append(gBig("g-never"), gEl("h2", T.gFastEarly));
       const b = gEl("button", g.st === "go" ? T.gFastGo : T.gFastReady, g.st === "go" ? "hot" : "calm");
+      // schon getippt, als hier noch „bereit“ stand, aber der PC wertet es nicht als zu früh: das Signal war am PC
+      // schon gefallen, der Tipp zählt
+      if (mine) {
+        gTapped = true;
+        b.textContent = g.st === "go" ? "✓" : T.gFastEarly;
+        b.className = g.st === "go" ? "safe" : "calm dead";
+      }
       b.onclick = gTap(() => {
         if (gTapped) return;
         gTapped = true;

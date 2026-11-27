@@ -106,8 +106,9 @@ function createVenue(mkCanvas) {
       glowSprite(c, true);
     }
   }
-  // Blitz-Schranke der Bühne: Stroboskop, Blinder und Gitarrenblitze zusammen höchstens drei pro Sekunde,
-  // auch wenn die Freigabe aus dem Hauptthread (st.flashGo) einmal fehlt oder doppelt ankommt
+  // Blitz-Schranke der Bühne (zweite Sicherung neben dem Budget des Hauptthreads, flashcap.js): Stroboskop, Blinder,
+  // Gitarrenblitze und die Blitze der Bühnenbilder zünden nur mit Freigabe (st.flashGo) UND durch diese Schranke –
+  // zusammen höchstens drei pro Sekunde, auch wenn eine Freigabe einmal doppelt ankommt
   const flashCap = createFlashCap();
   const show = createShow(glowSprite, flashCap);
   // Szenarien (scenarios.js → stagefx.js): Bühnenbilder auf gesungene Wörter und Momente der Musik

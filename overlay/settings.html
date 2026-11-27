@@ -46,6 +46,7 @@
   .row > div:first-child { min-width: 0; }
   .row b { display: block; font-weight: 600; }
   .row small { color: var(--sub); }
+  .row .tap { cursor: pointer; }
 
   .seg { display: inline-flex; flex-wrap: wrap; padding: 4px; gap: 2px; border-radius: 99px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
   .seg button { border: 0; background: none; color: var(--sub); font: 600 13px var(--font); padding: 8px 14px; border-radius: 99px; cursor: pointer; transition: all .35s var(--spring); }
@@ -186,8 +187,8 @@
     <div class="row"><div><b data-t="position"></b></div><div class="grid9" id="grid9"></div></div>
     <div class="row"><div><b data-t="offset"></b></div>
       <div style="display:grid;gap:6px">
-        <div>↔ <input type="range" min="-400" max="400" step="2" data-key="offsetX"><span class="val" data-unit="px" data-for="offsetX"></span></div>
-        <div>↕ <input type="range" min="0" max="400" step="2" data-key="offsetY"><span class="val" data-unit="px" data-for="offsetY"></span></div>
+        <div><span aria-hidden="true">↔</span> <input type="range" min="-400" max="400" step="2" data-key="offsetX" data-al="axisX"><span class="val" data-unit="px" data-for="offsetX"></span></div>
+        <div><span aria-hidden="true">↕</span> <input type="range" min="0" max="400" step="2" data-key="offsetY" data-al="axisY"><span class="val" data-unit="px" data-for="offsetY"></span></div>
       </div></div>
   </section>
 
@@ -234,7 +235,7 @@
     <p class="lhint" id="secretsPlain" data-t="secretsPlain" role="note" hidden></p>
     <div class="row"><div><b data-t="lightBright"></b></div><input type="range" min="20" max="100" step="5" id="lightBright"></div>
     <div class="row"><div><b data-t="lightMax"></b><small data-t="lightMaxHint"></small></div><input type="range" min="10" max="100" step="5" id="lightMax"></div>
-    <div class="row"><div><b>Philips Hue</b><small id="hueState"></small></div><input type="checkbox" class="toggle" data-key="hueOn"></div>
+    <div class="row"><div><b>Philips Hue</b><small id="hueState" role="status" aria-live="polite"></small></div><input type="checkbox" class="toggle" data-key="hueOn"></div>
     <div class="row lrow"><input type="text" id="hueIp" placeholder="192.168.1.20" inputmode="decimal" autocomplete="off"><button type="button" class="btn" id="hueFind" data-t="hueFind"></button><button type="button" class="btn" id="huePair" data-t="huePair"></button></div>
     <div class="row lrow" id="hueGroupRow" hidden><div><b data-t="hueRoom"></b></div><select id="hueGroup"></select></div>
     <div class="row lrow" id="huePartRow" hidden><div><b data-t="lightsPart"></b></div><div class="chips" id="hueLights"></div></div>
@@ -242,7 +243,7 @@
     <div class="row lrow" id="hueAreaRow" hidden><div><b data-t="hueArea"></b></div><select id="hueArea"></select></div>
     <div class="row"><div><b>WLED</b><small data-t="wledHint"></small></div><input type="checkbox" class="toggle" data-key="wledOn"></div>
     <div class="row lrow"><input type="text" id="wledIp" placeholder="192.168.1.40" autocomplete="off"><input type="number" id="wledLeds" min="1" max="490" step="1"><small data-t="wledLeds"></small></div>
-    <div class="row"><div><b>Govee</b><small id="goveeState" data-t="goveeHint"></small></div><input type="checkbox" class="toggle" data-key="goveeOn"></div>
+    <div class="row"><div><b>Govee</b><small id="goveeState" role="status" aria-live="polite" data-t="goveeHint"></small></div><input type="checkbox" class="toggle" data-key="goveeOn"></div>
     <div class="row lrow"><input type="text" id="goveeIps" placeholder="192.168.1.50, 192.168.1.51" autocomplete="off"><button type="button" class="btn" id="goveeScan" data-t="goveeScan"></button></div>
     <!-- Nanoleaf: die Adresse zählt erst mit dem Schlüssel vom Koppeln; LIFX und Yeelight: Adressen im Heimnetz -->
     <div class="row"><div><b>Nanoleaf</b><small id="nanoleafState" role="status" aria-live="polite" data-t="nanoleafHint"></small></div><input type="checkbox" class="toggle" data-key="nanoleafOn"></div>
@@ -251,16 +252,16 @@
     <div class="row lrow"><input type="text" id="lifxIps" placeholder="192.168.1.70, 192.168.1.71" autocomplete="off" spellcheck="false" aria-label="LIFX IP"><button type="button" class="btn" id="lifxScan" data-t="wzFind"></button></div>
     <div class="row"><div><b>Yeelight</b><small id="yeelightState" role="status" aria-live="polite" data-t="yeelightHint"></small></div><input type="checkbox" class="toggle" data-key="yeelightOn"></div>
     <div class="row lrow"><input type="text" id="yeelightIps" placeholder="192.168.1.80, 192.168.1.81" autocomplete="off" spellcheck="false" aria-label="Yeelight IP"><button type="button" class="btn" id="yeelightScan" data-t="wzFind"></button></div>
-    <div class="row"><div><b>Home Assistant</b><small id="haState" data-t="haHint"></small></div><input type="checkbox" class="toggle" data-key="haOn"></div>
-    <div class="row lrow"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false"><input type="password" id="haToken" autocomplete="off" spellcheck="false"><button type="button" class="btn" id="haTest" data-t="haTest"></button></div>
-    <div class="row lrow"><input type="text" id="haEntities" autocomplete="off" spellcheck="false"></div>
+    <div class="row"><div><b>Home Assistant</b><small id="haState" role="status" aria-live="polite" data-t="haHint"></small></div><input type="checkbox" class="toggle" data-key="haOn"></div>
+    <div class="row lrow"><input type="text" id="haUrl" placeholder="http://homeassistant.local:8123" autocomplete="off" spellcheck="false"><input type="password" id="haToken" autocomplete="off" spellcheck="false" data-al="haToken"><button type="button" class="btn" id="haTest" data-t="haTest"></button></div>
+    <div class="row lrow"><input type="text" id="haEntities" autocomplete="off" spellcheck="false" data-al="haEntities"></div>
     <div class="row lrow" id="haPartRow" hidden><div><b data-t="lightsPart"></b></div><div class="chips" id="haLights"></div></div>
     <div class="row"><div><b>OpenRGB</b><small data-t="orgbHint"></small></div><input type="checkbox" class="toggle" data-key="orgbOn"></div>
-    <div class="row lrow"><input type="text" id="orgbExclude" autocomplete="off" spellcheck="false"></div>
+    <div class="row lrow"><input type="text" id="orgbExclude" autocomplete="off" spellcheck="false" data-al="orgbExclude"></div>
     <div class="row"><div><b>Razer Chroma</b><small data-t="chromaHint"></small></div><input type="checkbox" class="toggle" data-key="chromaOn"></div>
     <p class="lhint" data-t="lightsRestore"></p>
-    <div class="row"><div><b data-t="latTitle"></b><small data-t="latHint"></small></div><select id="latDev" aria-label="Device"></select></div>
-    <div class="row lrow"><span class="calDot" id="calDot" aria-hidden="true"></span><button type="button" class="btn" id="latMinus">−25</button><input type="number" id="latMs" min="-1000" max="1000" step="5" aria-label="ms"><small>ms</small><button type="button" class="btn" id="latPlus">+25</button><button type="button" class="btn" id="calBtn" data-t="calStart"></button></div>
+    <div class="row"><div><b data-t="latTitle"></b><small data-t="latHint"></small></div><select id="latDev"></select></div>
+    <div class="row lrow"><span class="calDot" id="calDot" aria-hidden="true"></span><button type="button" class="btn" id="latMinus">−25</button><input type="number" id="latMs" min="-1000" max="1000" step="5"><small>ms</small><button type="button" class="btn" id="latPlus">+25</button><button type="button" class="btn" id="calBtn" data-t="calStart"></button></div>
   </section>
 
   <section id="histSec" hidden>
@@ -295,8 +296,73 @@
 
   function translate() {
     document.documentElement.lang = t.lang;
-    $$("[data-t]").forEach((el) => (el.textContent = t(el.dataset.t)));
+    // Statuszeilen, in denen gerade ein Stand steht (data-live, siehe say), behalten ihn
+    $$("[data-t]").forEach((el) => { if (!el.dataset.live) el.textContent = t(el.dataset.t); });
+    // Namen für Vorleseprogramme: Felder mit eigenem Namen (data-al) und das Positions-Raster („oben links“)
+    $$("[data-al]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.al)));
+    $$("#grid9 button").forEach((b) => b.setAttribute("aria-label", b.dataset.v.split("-").map((p) => t("pos" + p[0].toUpperCase() + p.slice(1))).join(" ")));
+    titleScreens();
+    // der Knopf „Test starten“ heißt während des Einmessens „Test beenden“
+    drawCal();
+  }
+  // die Bildschirmkarte wird bei jeder Größenänderung neu gezeichnet – ihre Knöpfe brauchen dann wieder ihren Namen
+  function titleScreens() {
     $$(".screen").forEach((el) => (el.title = `${t("screenN")} ${el.dataset.n}`));
+  }
+  // Statuszeile beschreiben. Manche tragen einen Hinweis (data-t), den translate() bei jedem Sprachwechsel neu
+  // setzt: ein Stand wie „12 Lampen gefunden“ wäre dann wieder weg. Deshalb merkt sich die Zeile, dass sie einen
+  // Stand zeigt (data-live); ein leerer Text gibt sie wieder frei und holt den Hinweis zurück.
+  function say(el, text) {
+    if (typeof el === "string") el = $(el);
+    if (text) {
+      el.dataset.live = "1";
+      el.textContent = text;
+    } else {
+      delete el.dataset.live;
+      el.textContent = el.dataset.t ? t(el.dataset.t) : "";
+    }
+  }
+
+  /* ---- Namen für Vorleseprogramme. Eine Zeile ist „<b>Name</b><small>Hinweis</small> … Feld“ ohne Verbindung
+     zwischen Text und Feld: Schalter, Regler und Auswahlfelder hatten für einen Screenreader keinen Namen. Einmal
+     beim Start bekommt jedes Feld ohne eigenen Namen den Text seiner Zeile als Namen (aria-labelledby) und den
+     Hinweis als Beschreibung (aria-describedby). Zeilen ohne eigene Überschrift (das Adressfeld unter „Philips
+     Hue“) gehören zur Überschrift darüber. Ein kurzer Text direkt am Feld („von“, „LEDs“, „ms“) oder ein eigener
+     Name (data-al) kommt dazu, damit zwei Felder einer Zeile nicht gleich heißen. Und ein Klick auf den Text
+     schaltet den einen Schalter der Zeile um, wie bei einem <label>. */
+  function labelRows(root) {
+    let n = 0, head = null;
+    const id = (el) => el.id || (el.id = "lb" + ++n);
+    for (const row of root.querySelectorAll(".row")) {
+      const own = row.querySelector("b");
+      if (own) head = own;
+      else if (head && head.closest("section") !== row.closest("section")) head = null;
+      const title = own || head;
+      if (!title) continue;
+      const hint = own ? own.parentElement.querySelector("small") : null;
+      for (const g of row.querySelectorAll(".seg, .grid9")) {
+        g.setAttribute("role", "group");
+        g.setAttribute("aria-labelledby", id(title));
+      }
+      // Häkchen in einem <label> (Lampenliste) haben ihren Namen schon
+      const fields = [...row.querySelectorAll("input, select, textarea")].filter((f) => !f.closest("label"));
+      for (const f of fields) {
+        if (f.hasAttribute("aria-labelledby") || (f.hasAttribute("aria-label") && !f.dataset.al)) continue;
+        const near = [f.previousElementSibling, f.nextElementSibling].find((x) => x && ((x.tagName === "SPAN" && x.dataset.t) || x.tagName === "SMALL"));
+        // mit data-al nennt das Feld sich selbst mit: „Abstand zum Rand waagerecht“
+        f.setAttribute("aria-labelledby", [title, f.dataset.al ? f : near].filter(Boolean).map(id).join(" "));
+        if (hint) f.setAttribute("aria-describedby", id(hint));
+      }
+      const boxes = fields.filter((f) => f.type === "checkbox");
+      if (!own || boxes.length !== 1) continue;
+      const text = own.parentElement;
+      text.classList.add("tap");
+      text.addEventListener("click", (e) => {
+        // nicht beim Markieren von Text und nicht für Knöpfe oder Links im Text
+        if (e.target.closest("a, button, input, select, textarea") || String(getSelection())) return;
+        if (!boxes[0].disabled) boxes[0].click();
+      });
+    }
   }
 
   function set(patch, preview = true) {
@@ -328,7 +394,7 @@
     $("#obsPartyRow").hidden = !cfg.obs;
     for (const [id, key] of [["hueIp", "hueIp"], ["wledIp", "wledIp"], ["wledLeds", "wledLeds"], ["lightBright", "lightBright"], ["lightMax", "lightMax"], ["goveeIps", "goveeIps"], ["lifxIps", "lifxIps"], ["yeelightIps", "yeelightIps"], ["haUrl", "haUrl"], ["haEntities", "haEntities"], ["orgbExclude", "orgbExclude"]]) if (document.activeElement?.id !== id) $("#" + id).value = cfg[key] ?? "";
     if (cfg.hueUser && !$("#hueState").textContent) $("#hueState").textContent = t("huePaired");
-    if (cfg.nanoleafToken && !nanoleafSaid) $("#nanoleafState").textContent = t("huePaired");
+    if (cfg.nanoleafToken && !nanoleafSaid) say("#nanoleafState", t("huePaired"));
     // gekoppelte Adresse zeigen, eine gerade gefundene oder getippte aber nicht überschreiben
     if (!$("#nanoleafIp").value && document.activeElement?.id !== "nanoleafIp") $("#nanoleafIp").value = cfg.nanoleafIp || "";
     // Hue schnell: nur gekoppelt; ohne Client-Schlüssel (vor dieser Version gekoppelt) erst neu koppeln
@@ -400,7 +466,6 @@
   for (const v of ["top", "middle", "bottom"]) for (const h of ["left", "center", "right"]) {
     const b = document.createElement("button");
     b.dataset.v = `${v}-${h}`;
-    b.setAttribute("aria-label", `${v} ${h}`);
     b.onclick = () => set({ anchor: b.dataset.v });
     $("#grid9").append(b);
   }
@@ -453,7 +518,7 @@
   let nanoleafSaid = false;
   const sayDev = (id, key, n) => {
     if (id === "nanoleafState") nanoleafSaid = true;
-    $("#" + id).textContent = t(key).replace("{n}", n ?? "");
+    say("#" + id, t(key).replace("{n}", n ?? ""));
   };
   $("#nanoleafFind").onclick = async () => {
     sayDev("nanoleafState", "hueSearching");
@@ -535,18 +600,18 @@
   });
   mirage.invoke("lightLat").then((r) => { lat = r || {}; showLat(); });
   $("#goveeScan").onclick = async () => {
-    $("#goveeState").textContent = t("goveeSearching");
+    say("#goveeState", t("goveeSearching"));
     const r = await mirage.invoke("goveeScan");
-    $("#goveeState").textContent = r?.list?.length ? t("goveeFound").replace("{n}", r.list.length) : r?.error === "port" ? t("goveePort") : t("goveeNone");
+    say("#goveeState", r?.list?.length ? t("goveeFound").replace("{n}", r.list.length) : r?.error === "port" ? t("goveePort") : t("goveeNone"));
   };
   $("#haTest").onclick = async () => {
-    $("#haState").textContent = t("haTesting");
+    say("#haState", t("haTesting"));
     const r = await mirage.invoke("haTest");
     if (r?.lights) {
-      $("#haState").textContent = t("haOk").replace("{n}", r.lights.length);
+      say("#haState", t("haOk").replace("{n}", r.lights.length));
       if (!$("#haEntities").value.trim()) $("#haEntities").placeholder = r.lights.slice(0, 6).map((l) => l.id).join(", ") + (r.lights.length > 6 ? ", …" : "");
       drawPart("#haLights", "#haPartRow", "haExclude", r.lights.map((l) => ({ token: l.id, name: l.name })));
-    } else $("#haState").textContent = t({ url: "haBadUrl", token: "haBadToken" }[r?.error] || "haFail");
+    } else say("#haState", t({ url: "haBadUrl", token: "haBadToken" }[r?.error] || "haFail"));
   };
   $("#lightBright").oninput = () => mirage.send("set", { lightBright: Number($("#lightBright").value) });
   $("#lightMax").oninput = () => mirage.send("set", { lightMax: Number($("#lightMax").value) });
@@ -609,7 +674,7 @@
     // die Datei nennt eine andere Bridge / ein anderes Home Assistant: Schlüssel bzw. Token wurden gelöscht
     const cleared = Array.isArray(r.cleared) ? r.cleared : [];
     if (cleared.includes("hue")) $("#hueState").textContent = t("moveRepairHue");
-    if (cleared.includes("ha")) $("#haState").textContent = t("moveRepairHa");
+    if (cleared.includes("ha")) say("#haState", t("moveRepairHa"));
     if (cleared.includes("nanoleaf")) sayDev("nanoleafState", "moveRepairNanoleaf");
     const repair = { hue: "moveRepairHue", ha: "moveRepairHa", nanoleaf: "moveRepairNanoleaf" };
     if (cleared.length) text += " · " + cleared.filter((x) => repair[x]).map((x) => t(repair[x])).join(" · ");
@@ -644,9 +709,12 @@
     if (s.cfg?.hueUser) loadGroups();
     buildScreens(s.displays);
     translate();
+    labelRows(document);
     render();
     showStatus(s.status);
-    addEventListener("resize", () => { buildScreens(s.displays); translate(); render(); });
+    // Größe geändert: nur die Bildschirmkarte neu zeichnen (und benennen). Früher lief hier translate() – das setzte
+    // jede Statuszeile auf ihren Hinweis zurück.
+    addEventListener("resize", () => { buildScreens(s.displays); titleScreens(); render(); });
   });
 </script>
 </body>

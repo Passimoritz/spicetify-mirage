@@ -85,7 +85,9 @@ function show(bad) {
   x.innerHTML = UI.close;
   // der dünne Balken unten läuft ab und blendet die Notiz dann aus; beim Überfahren oder Fokus hält er an (CSS)
   const bar = el("i", "m-updnote-time");
-  bar.style.animationDuration = (bad.length ? 25 : 8) + "s";
+  // mit „important“: bei „weniger Bewegung“ kürzt user.css jede Animation auf 0,001 ms – die Notiz wäre sofort wieder
+  // weg, bevor sie jemand lesen kann. Der Balken ist hier die Uhr, keine Zierde.
+  bar.style.setProperty("animation-duration", (bad.length ? 25 : 8) + "s", "important");
   box.append(icon, body, x, bar);
   let gone = false;
   const hide = () => {

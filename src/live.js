@@ -9,8 +9,23 @@ import { PHOTO, createAssembler, createLimiter } from "./photos.js";
 // Über jedes Netz (WLAN, mobile Daten) und ohne Overlay-App: das Theme schickt den Lichtzustand an einen
 // öffentlichen Relay (MQTT über WebSocket), Ende-zu-Ende verschlüsselt (AES-GCM). Kanal und Schlüssel sind
 // zufällig und stehen nur im QR-Link hinter dem „#“ – dieser Teil verlässt das Handy nie (auch GitHub Pages
-// sieht ihn nicht); ohne QR-Code kein Zugang, und weil GCM jede Nachricht prüft, kann auch niemand etwas
-// unterschieben. Gesendet wird nur, solange der Party-Modus läuft; 10 Minuten danach verfällt der Schlüssel.
+// sieht ihn nicht). Gesendet wird nur, solange der Party-Modus läuft; 10 Minuten danach verfällt der Schlüssel.
+//
+// Was das garantiert – und was nicht:
+//  - Lesen kann jeder, der den QR-Code hat (alle Gäste teilen sich den einen Kanalschlüssel), sonst niemand:
+//    weder der Relay noch jemand ohne Link. Auch die Antworten an ein einzelnes Handy (Suchtreffer) kann jeder
+//    Gast mitlesen, der es darauf anlegt.
+//  - Als PC senden kann nur dieses Theme: der Relay hat keine Zugriffsregeln, und GCM allein hält nur Fremde ohne
+//    Schlüssel ab, nicht die Gäste. Darum unterschreibt das Theme alles, was es an die Handys sendet (Lichtzustand,
+//    „Party beendet“, jede Antwort), mit einem Schlüsselpaar, das je Party neu entsteht (ECDSA P-256). Der private
+//    Schlüssel bleibt hier im Speicher und lässt sich nicht auslesen, der öffentliche steht als „p“ im Link. Die
+//    Handyseite verwirft alles ohne gültige Unterschrift. Die Unterschrift gilt für genau ein Thema (Kanal, bei
+//    Antworten samt Kennung des Handys); ältere, mitgeschnittene Stände nimmt die Seite nicht mehr an.
+//  - Ein Gast kann weiterhin: Gast-Nachrichten unter jeder selbst gewählten Kennung senden (Wünsche, Stimmen,
+//    Reaktionen, Spielantworten – also auch im Namen eines anderen Gastes oder vieler erfundener), den Relay mit
+//    Unsinn fluten und die dort aufbewahrte letzte Nachricht überschreiben (neue Gäste warten dann, bis der nächste
+//    echte Stand kommt). Befehle der Spielleitung und der Fernbedienung kann er nicht fälschen (eigene Schlüssel).
+//  - Wer einen Link ohne „p“ weitergibt (oder ein älteres Theme benutzt), bekommt eine Seite, die nicht prüft.
 
 // Kleinstmöglicher MQTT-3.1.1-Client über WebSocket: verbinden, veröffentlichen, abonnieren, Ping.
 // Mehrere öffentliche Relays: wer zuerst antwortet, wird benutzt; fällt einer aus, der nächste.
@@ -92,6 +107,26 @@ const PAGE = "https://passimoritz.github.io/spicetify-mirage/live/";
 
 const GRACE = 10 * 60e3, RATE = 125;
 const b64u = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+/* ---- sign:begin (Gegenstück in docs/live/index.html; tests/unit/livesign.test.js führt beide Teile zusammen aus) */
+// Unterschrift unter allem, was an die Handys geht. Unterschrieben wird „Thema, Zeilenumbruch, JSON-Text“; die
+// Unterschrift (64 Bytes, 86 Zeichen) steht als erstes Feld „sg“ im selben JSON-Text. So bleibt die Nachricht für
+// Handyseiten lesbar, die noch nichts davon wissen (ein Feld mehr), und die neue Seite prüft den Text, wie er ankam,
+// statt ihn neu zusammenzusetzen.
+const SG_ALG = { name: "ECDSA", hash: "SHA-256" }, SG_KEY = { name: "ECDSA", namedCurve: "P-256" }, SG_HEAD = '{"sg":"';
+const sgB64 = (u8) => btoa(String.fromCharCode(...u8)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const sgData = (topic, body) => new TextEncoder().encode(topic + "\n" + body);
+async function sgSign(key, topic, body) {
+  const sig = new Uint8Array(await crypto.subtle.sign(SG_ALG, key, sgData(topic, body)));
+  return SG_HEAD + sgB64(sig) + '",' + body.slice(1);
+}
+// öffentlicher Schlüssel für den Link, gepackt: 33 statt 65 Bytes (x und das Vorzeichen von y) – der QR-Code bleibt klein
+const sgPack = (raw) => Uint8Array.of(2 + (raw[64] & 1), ...raw.subarray(1, 33));
+// neues Schlüsselpaar: der private Teil lässt sich nicht auslesen (extractable: false)
+async function sgNew() {
+  const pair = await crypto.subtle.generateKey(SG_KEY, false, ["sign", "verify"]);
+  return { key: pair.privateKey, pub: sgB64(sgPack(new Uint8Array(await crypto.subtle.exportKey("raw", pair.publicKey)))) };
+}
+/* ---- sign:end */
 let ses = null, client = null, brokerIx = 0, status = "off", lastSend = 0, lastFeed = 0, offAt = 0, sending = false, stopT = 0, expireT = 0, wanted = false;
 const emit = () => window.dispatchEvent(new Event("mirage:live"));
 const setStatus = (s) => {
@@ -142,7 +177,10 @@ async function prepare() {
   retire(ses);
   const raw = crypto.getRandomValues(new Uint8Array(16)), ch = crypto.getRandomValues(new Uint8Array(16));
   const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
-  const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}`;
+  // Schlüsselpaar dieser Party: nur wer den privaten Teil hat (dieses Theme), kann als PC senden. Der öffentliche
+  // steht als „p“ in jedem Link (Gäste, Spielleitung, Fernbedienung); ältere Handyseiten übergehen ihn.
+  const sign = await sgNew();
+  const url = `${PAGE}#c=${b64u(ch)}&k=${b64u(raw)}&p=${sign.pub}`;
   // Spielleitung: ein zweiter Zufallsschlüssel, nur im eigenen Link der Spielleitung. Er wird nie gesendet,
   // das Handy unterschreibt damit seine Befehle (HMAC), und nur passend unterschriebene gelten.
   const hraw = crypto.getRandomValues(new Uint8Array(16));
@@ -151,8 +189,16 @@ async function prepare() {
   // wer nur den Spiel-Link hat, kann die Musik nicht steuern
   const rraw = crypto.getRandomValues(new Uint8Array(16));
   const rcKey = await crypto.subtle.importKey("raw", rraw, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-  ses = { topic: "mirage-live/" + b64u(ch), key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "", rcKey, rcUrl: `${url}&h=${b64u(hraw)}&r=${b64u(rraw)}`, rcQr: "" };
+  ses = { topic: "mirage-live/" + b64u(ch), key, sign: sign.key, url, qr: await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" }), hostKey, hostUrl: `${url}&h=${b64u(hraw)}`, hostQr: "", rcKey, rcUrl: `${url}&h=${b64u(hraw)}&r=${b64u(rraw)}`, rcQr: "" };
   hostSeen.clear();
+  // neue Party, neuer Code: Rangliste, Sperren und die Abstimmung der letzten Party gehören nicht dazu
+  guests.clear();
+  seen.clear();
+  refused.clear();
+  lastGame.clear();
+  lastRc.clear();
+  lastReact.clear();
+  poll = null;
   offAt = 0;
   wishes = [];
   emitWishes();
@@ -183,12 +229,8 @@ async function send(state, retain) {
   if (!client || status !== "on" || !ses || sending) return;
   sending = true;
   try {
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ses.key, te.encode(JSON.stringify(state))));
-    const out = new Uint8Array(12 + ct.length);
-    out.set(iv);
-    out.set(ct, 12);
-    client.publish(ses.topic, out, retain);
+    const s = ses;
+    client?.publish(s.topic, await seal(s, s.topic, state), retain);
   } catch {}
   sending = false;
 }
@@ -285,9 +327,10 @@ function remember(tr) {
   if (tracks.size > 300) tracks.delete(tracks.keys().next().value);
   return x;
 }
-async function seal(obj) {
+// unterschreiben (für genau dieses Thema), dann verschlüsseln: 12 Byte IV, danach der AES-GCM-Text
+async function seal(s, topic, obj) {
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, ses.key, te.encode(JSON.stringify(obj))));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, s.key, te.encode(await sgSign(s.sign, topic, JSON.stringify(obj)))));
   const out = new Uint8Array(12 + ct.length);
   out.set(iv);
   out.set(ct, 12);
@@ -297,7 +340,10 @@ const emitWishes = () => setTimeout(() => window.dispatchEvent(new Event("mirage
 // Antwort nur an ein Handy. Immer mit „res“: ältere Seiten behandeln sie dann als (fremde) Suchantwort
 // und ignorieren sie, statt sie für einen Lichtzustand ohne „on“ zu halten (= „Party beendet“)
 async function reply(id, obj) {
-  if (client && status === "on" && ses) client.publish(`${ses.topic}/r/${id}`, await seal({ v: 1, s: Date.now(), res: [], ...obj }), false);
+  const s = ses;
+  if (!client || status !== "on" || !s) return;
+  const topic = `${s.topic}/r/${id}`, out = await seal(s, topic, { v: 1, s: Date.now(), res: [], ...obj });
+  client?.publish(topic, out, false);
 }
 /* ---- Regeln für Songwünsche (Einstellungen im Party-Modus) */
 // Sperrliste: Künstler oder Wörter, mit Komma oder Zeilenumbruch getrennt, ohne Groß/klein
@@ -444,7 +490,7 @@ async function inbound(m) {
     return;
   }
   const id = clean(msg?.id, 24);
-  if (!/^[\w-]{6,24}$/.test(id) || Math.abs(Date.now() - Number(msg.s)) > 600e3 || msg.on != null) return;
+  if (!/^[\w-]{6,24}$/.test(id) || !(Math.abs(Date.now() - Number(msg.s)) <= 600e3) || msg.on != null) return;
   // Spiele: Antworten und Tipps der Handys (höchstens 10 je Sekunde und Handy)
   if (msg.k === "gm") {
     if (Date.now() - (lastGame.get(id) || 0) < 100) return;
@@ -482,7 +528,8 @@ async function inbound(m) {
   if (msg.k === "pvote") {
     if (!poll || poll.id !== msg.p || Date.now() > poll.end || poll.by.has(id)) return;
     const o = Number(msg.o);
-    if (!(o >= 0 && o < poll.o.length)) return;
+    // nur ganze Zahlen: 0.5 hätte das Handy als „hat gestimmt“ gemerkt, die Stimme aber nirgends gezählt
+    if (!Number.isInteger(o) || !(o >= 0 && o < poll.o.length)) return;
     poll.by.add(id);
     poll.v[o]++;
     guest(id).votes++;
@@ -521,7 +568,12 @@ async function inbound(m) {
     }
     return;
   }
-  if (Date.now() - (seen.get(id) || 0) < 45e3) return;
+  const before = seen.get(id) || 0;
+  if (Date.now() - before < 45e3) return;
+  // die Sperre gilt ab jetzt, nicht erst nach der Nachfrage bei Spotify: sonst kämen mehrere Wünsche desselben
+  // Handys durch, solange die erste Nachfrage noch läuft. Wird nichts daraus, gilt wieder der alte Stand.
+  seen.set(id, Date.now());
+  const undo = () => (before ? seen.set(id, before) : seen.delete(id));
   // nur echte Spotify-Songs: aus der Suche von eben, sonst noch einmal bei Spotify nachgesehen
   let tr = tracks.get(tid);
   if (!tr) {
@@ -529,12 +581,11 @@ async function inbound(m) {
       tr = remember(await trackById(tid));
     } catch {}
   }
-  if (!tr) return;
+  if (!tr) return void undo();
   const have = wishes.find((x) => x.uri === tr.uri);
   // Regeln: gesperrt oder „Explicit“ (die Suche zeigt solche Songs gar nicht erst, ein Link schon)
   const why = ruleOut(tr);
-  if (why) return void reply(id, { r: -1, wr: why });
-  seen.set(id, Date.now());
+  if (why) return void (undo(), reply(id, { r: -1, wr: why }));
   if (have) {
     have.v.add(id);
     autoAdd(have);

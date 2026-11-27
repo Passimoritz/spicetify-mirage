@@ -17,8 +17,15 @@
   // Übersetzen und Starten der Module waren zusammen eine lange Aufgabe von 40–55 ms, jetzt sind es zwei kurze,
   // und Spotify kommt dazwischen zum Zeichnen und für Eingaben dran
   setTimeout(() => {
-    import("./app.js").then(() => import("./updnote.js").catch(() => {}));
+    // Start fehlgeschlagen (etwa nach einem Spotify-Update): nicht stumm halb gestylt bleiben, sondern es sagen
+    const failed = (e) => {
+      console.error("[Mirage]", e);
+      try {
+        S.showNotification?.("Mirage could not start: " + (e?.message || e), true, 10000);
+      } catch {}
+    };
+    import("./app.js").then(() => import("./updnote.js").catch(() => {}), failed);
     // Mini-Player-Fenster (Bild im Bild) bekommt Mirages Regeln und Farben
-    import("./pip.js");
+    import("./pip.js").catch((e) => console.error("[Mirage]", e));
   }, 0);
 })();

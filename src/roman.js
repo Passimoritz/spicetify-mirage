@@ -86,18 +86,49 @@ function kana(s) {
   return out;
 }
 
-/* ---- Chinesisch: pinyin-pro erst bei Bedarf laden (Version fest, nur einmal) */
-const PINYIN = "https://cdn.jsdelivr.net/npm/pinyin-pro@3.29.5/+esm";
-let pinyinLib = null;
-async function pinyinLines(texts) {
-  try {
-    pinyinLib ||= import(/* webpackIgnore: true */ PINYIN);
-    const { pinyin } = await pinyinLib;
-    return texts.map((s) => (HAN.test(s) ? pinyin(s, { toneType: "symbol", type: "string", nonZh: "consecutive" }) : ""));
-  } catch {
-    pinyinLib = null;
-    return null;
+/* ---- Chinesisch: pinyin-pro (MIT) liegt dem Theme bei und läuft in einem eigenen Thread */
+// Früher kam die Bibliothek zur Laufzeit von einem CDN und lief mitten in Spotifys Seite – ohne Prüfung des Inhalts,
+// mit Zugriff auf alles, was die Seite kann. Jetzt bündelt tools/build.js sie als Text (wie den Thread der
+// Party-Location); gestartet wird sie erst beim ersten chinesischen Liedtext, als Blob-Thread ohne Zugriff auf die
+// Seite und ohne Netz. Der Thread beendet sich nach einer Minute ohne Arbeit selbst (das Wörterbuch braucht Speicher).
+let pyWorker = null, pyUrl = "", pySeq = 0, pyIdle = 0;
+const pyWait = new Map();
+function pyStop(fail) {
+  clearTimeout(pyIdle);
+  pyWorker?.terminate();
+  pyWorker = null;
+  if (fail) {
+    for (const done of pyWait.values()) done(null);
+    pyWait.clear();
   }
+}
+function pinyinLines(texts) {
+  return new Promise((done) => {
+    try {
+      if (typeof __PINYIN_WORKER__ !== "string" || !window.Worker) return done(null);
+      if (!pyWorker) {
+        pyUrl ||= URL.createObjectURL(new Blob([__PINYIN_WORKER__], { type: "text/javascript" }));
+        pyWorker = new Worker(pyUrl);
+        pyWorker.onmessage = (e) => {
+          const cb = pyWait.get(e.data?.id);
+          pyWait.delete(e.data?.id);
+          cb?.(Array.isArray(e.data?.out) ? e.data.out : null);
+        };
+        pyWorker.onerror = () => pyStop(true);
+      }
+      const id = ++pySeq;
+      // hängt der Thread, wartet der Liedtext nicht ewig auf die Umschrift
+      const limit = setTimeout(() => pyWait.has(id) && (pyWait.delete(id), done(null)), 15000);
+      pyWait.set(id, (out) => (clearTimeout(limit), done(out)));
+      // nur Zeilen mit chinesischen Zeichen gehen hinüber, die übrigen bleiben leer
+      pyWorker.postMessage({ id, texts: texts.map((s) => (HAN.test(s) ? String(s) : "")) });
+      clearTimeout(pyIdle);
+      pyIdle = setTimeout(() => !pyWait.size && pyStop(false), 60000);
+    } catch {
+      pyStop(true);
+      done(null);
+    }
+  });
 }
 
 export { scriptOf, hangul, kana, pinyinLines };

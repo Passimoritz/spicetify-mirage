@@ -44,6 +44,31 @@ function workerSource() {
 }
 options.define.__VENUE_WORKER__ = JSON.stringify(workerSource());
 
+// Umschrift für chinesischen Liedtext (pinyin-pro, MIT): als eigener Thread gebündelt und als Text eingebettet –
+// nichts wird zur Laufzeit aus dem Netz nachgeladen (src/roman.js startet ihn erst beim ersten chinesischen Text)
+function pinyinSource() {
+  const r = esbuild.buildSync({
+    stdin: {
+      contents:
+        'import { pinyin } from "pinyin-pro";\n' +
+        'self.onmessage = (e) => {\n' +
+        '  let out = null;\n' +
+        '  try { out = e.data.texts.map((s) => (s ? pinyin(s, { toneType: "symbol", type: "string", nonZh: "consecutive" }) : "")); } catch {}\n' +
+        '  self.postMessage({ id: e.data.id, out });\n' +
+        '};',
+      resolveDir: path.join(__dirname, ".."),
+    },
+    bundle: true,
+    format: "iife",
+    target: "chrome120",
+    write: false,
+    legalComments: "none",
+    ...compact,
+  });
+  return r.outputFiles[0].text;
+}
+options.define.__PINYIN_WORKER__ = JSON.stringify(pinyinSource());
+
 // Wortbilder für die Live-Seite der Handys (GitHub Pages): eigene kleine Datei ohne Wörterbuch
 function buildTvFx() {
   return esbuild.build({
@@ -88,7 +113,28 @@ function buildKaraoke() {
 }
 
 if (process.argv.includes("--watch")) {
-  esbuild.context(options).then((ctx) => ctx.watch());
+  // die Party-Location steckt als fertiger Text im Bündel: ohne das hier liefe im Thread weiter der Stand vom Start
+  // von „npm run watch“, während der Rest schon neu ist. Bei jeder Änderung an src/ neu aufsetzen.
+  const fs = require("fs");
+  let ctx = null, again = 0, busy = false;
+  const rebuild = async () => {
+    if (busy) return void (again = 1);
+    busy = true;
+    try {
+      await ctx?.dispose();
+      options.define.__VENUE_WORKER__ = JSON.stringify(workerSource());
+      ctx = await esbuild.context(options);
+      await ctx.rebuild();
+    } catch {}
+    busy = false;
+    if (again) (again = 0), rebuild();
+  };
+  let timer = 0;
+  fs.watch(path.join(__dirname, "..", "src"), { recursive: true }, () => {
+    clearTimeout(timer);
+    timer = setTimeout(rebuild, 120);
+  });
+  rebuild();
 } else {
   Promise.all([esbuild.build(options), buildTvFx(), buildQrReader(), buildKaraoke()]).catch(() => process.exit(1));
 }

@@ -99,7 +99,8 @@ function createShow(glowSprite, cap) {
     const mb = px.mb ?? bp;
     const vis = px.blackout ? 0 : clamp(1 - px.low * 0.85, 0.1, 1);
     // der Drop reißt die Strahlen ins Weiße – ohne Blitze bleiben sie in ihrer Farbe
-    if (px.dropHit && !st.noFlash) rig.drop = 1;
+    // nur in einem Bild, das die Blitz-Schranke freigibt (party.js nimmt sie für den Drop): höchstens 3 pro Sekunde
+    if (px.dropHit && !st.noFlash && st.flashGo) rig.drop = 1;
     rig.drop *= Math.exp(-dt * 3);
     // DJ-Übergabe (party.js hand 0..1, geglättet: beim Songwechsel fällt sie auf 0) und Landung auf der ersten Eins des
     // neuen Songs: die Köpfe stehen zur Mitte gerichtet und springen dann auseinander

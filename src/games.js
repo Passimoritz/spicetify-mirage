@@ -253,6 +253,8 @@ function publish() {
   // das Cover beim Rätsel bleibt auf dem großen Bild
   const pub = { ...G.view };
   delete pub.cov;
+  // Schnellster Finger: wer in dieser Runde zu früh getippt hat (das Handy zeigt es an, statt selbst zu urteilen)
+  if (G.k === "fast") pub.ea = all().filter((p) => p.early).slice(0, 40).map((p) => short(p.id));
   // Teams: Stand je Team und wer in welchem ist
   if (G.teams) {
     pub.tm = teamTop();
@@ -965,7 +967,22 @@ function alarmGo(tries) {
   }, 200);
 }
 
-/* ---- Musik-Stopp */
+/* ---- Musik-Stopp und Schnellster Finger: faire Zeiten trotz Laufzeit über den Relay */
+// Der PC wechselt („Stopp“, „Los“), aber die Handys erfahren es erst mit dem nächsten Live-Bild (bis 125 ms) plus
+// Laufzeit über den Relay (meist 50–300 ms, im Mobilfunk bis etwa 500 ms); der Tipp braucht denselben Weg zurück.
+// Wer auf die Stille oder das Horn im Raum reagiert, tippt also oft, während sein Handy noch das alte Bild zeigt.
+// TAP_GRACE: so lange nach dem Wechsel gilt ein solcher Tipp als gültig (125 + ~300 hin + ~300 zurück, mit etwas
+// Luft: 800 ms). Länger nicht – sonst lohnte sich blindes Tippen kurz vor dem Wechsel (die Musik läuft 8–20 s, das
+// Signal kommt nach 2,5–8,5 s; ein 800-ms-Fenster trifft man blind nur selten, und daneben heißt raus).
+// TAP_MIN: schneller reagiert kein Mensch. TAP_LAT: so viel Laufzeit (hin, zurück, samt der Wiederholungen des
+// Handys nach 0,45 und 0,9 s) darf die gemeldete Zeit höchstens unter der am PC gemessenen liegen.
+const TAP_GRACE = 800, TAP_MIN = 80, TAP_LAT = 1500;
+// Reaktionszeit, wie das Handy sie meldet, in den Grenzen dessen, was nach der Uhr am PC möglich ist: nie länger
+// als seit dem Wechsel vergangen ist, höchstens TAP_LAT kürzer, nie unter TAP_MIN. Fehlt sie, zählt die Zeit am PC.
+function tapMs(ms, since) {
+  const hi = Math.max(TAP_MIN, Math.min(5000, since)), lo = Math.max(TAP_MIN, hi - TAP_LAT), v = Number(ms);
+  return Math.round(Math.max(lo, Math.min(hi, Number.isFinite(v) ? v : hi)));
+}
 function stopPlay() {
   G.r++;
   const left = alive();
@@ -979,6 +996,7 @@ function stopPlay() {
   show({ st: "play", r: G.r, left: left.length });
   after(8000 + Math.random() * 12000, () => {
     PLR.pause();
+    G.swAt = Date.now();
     show({ st: "stop", r: G.r, left: left.length, end: Date.now() + 4000 });
     after(4000, () => {
       // wer nicht getippt hat, fliegt raus; haben alle getippt, der Langsamste
@@ -1005,6 +1023,7 @@ function fastRound() {
     // das Signal fällt auf den nächsten Schlag des Songs
     const beats = audio.data?.beats, p = ctx.pos() / 1000, nb = beats?.find((b) => b.t > p + 0.02);
     const fire = () => {
+      G.swAt = Date.now();
       show({ st: "go", r: G.r, of: rounds(), at: Date.now(), end: Date.now() + 3500 });
       after(3500, () => {
         const list = all().filter((x) => x.ans && !x.early).sort((a, b) => a.ans.ms - b.ans.ms);
@@ -1648,10 +1667,13 @@ function bingoClaim(p, v) {
 }
 
 /* ---- Antworten der Handys */
+const MAX_PLAYERS = 80;
 window.addEventListener("mirage:game", (e) => {
   if (!G) return;
   const m = e.detail, v = G.view;
   if (!m?.id || !v) return;
+  // Obergrenze: Kennungen vergibt das Handy selbst – ohne sie ließe sich die Liste beliebig füllen
+  if (!G.players.has(m.id) && G.players.size >= MAX_PLAYERS) return;
   const fresh = !G.players.has(m.id), p = player(m.id, m.n, m.c);
   if (fresh && v.st === "join") sfx.pop();
   if (fresh && v.st !== "join") {
@@ -1682,17 +1704,30 @@ window.addEventListener("mirage:game", (e) => {
   }
   if (G.k === "stop") {
     if (m.a !== "tap" || m.r !== v.r || p.out) return;
-    // zu früh getippt (Musik läuft noch): raus
+    // zu früh getippt (Musik läuft am PC noch): raus – und gleich melden, das Handy zeigt, was der PC sagt
     if (v.st === "play") {
-      if (!p.out) sfx.buzz();
+      sfx.buzz();
       p.out = true;
+      publish();
+    } else if (v.st === "stop" && !p.ans) {
+      // „v: 0“: das Handy zeigte beim Tippen noch „Musik läuft“. Kurz nach dem Anhalten ist das kein Frühstart,
+      // sondern ein Bild, das noch unterwegs war: es zählt die Zeit seit dem Anhalten am PC.
+      const since = Date.now() - G.swAt;
+      p.ans = { ms: m.v === 0 && since <= TAP_GRACE ? Math.max(TAP_MIN, since) : tapMs(m.ms, since) };
     }
-    else if (v.st === "stop" && !p.ans) p.ans = { ms: Math.max(0, Math.min(5000, Number(m.ms) || 5000)) };
     return;
   }
   if (G.k === "fast" && m.r === v.r) {
-    if (m.a === "early" && !p.ans) p.early = true;
-    else if (m.a === "tap" && v.st === "go" && !p.ans && !p.early) p.ans = { ms: Math.max(0, Math.min(5000, Number(m.ms) || 5000)) };
+    const since = Date.now() - G.swAt;
+    if (m.a === "early" && !p.ans && !p.early) {
+      // „early“: das Handy zeigte beim Tippen noch „bereit“. Ist das Signal am PC gerade erst gefallen, war nur
+      // das Bild noch unterwegs: ein gültiger Tipp. Sonst (noch kein Signal, oder längst vorbei) wie bisher zu früh.
+      if (v.st === "go" && since <= TAP_GRACE) p.ans = { ms: Math.max(TAP_MIN, since) };
+      else if (v.st === "ready" || v.st === "go") {
+        p.early = true;
+        publish();
+      }
+    } else if (m.a === "tap" && v.st === "go" && !p.ans && !p.early) p.ans = { ms: tapMs(m.ms, since) };
     return;
   }
   if (G.k === "bingo" && m.a === "bingo" && v.st === "go") return bingoClaim(p, m.v);

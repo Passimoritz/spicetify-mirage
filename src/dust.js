@@ -1,5 +1,5 @@
 import { root } from "./core.js";
-import { schemePalette, cfg } from "./config.js";
+import { schemePalette, cfg, calmNow, motionMq } from "./config.js";
 import { current } from "./color.js";
 import { stage, onHaze } from "./stage.js";
 import { beat, audio } from "./audio.js";
@@ -97,10 +97,14 @@ const dust = (() => {
     x.fillStyle = l;
     x.fillRect(0, 0, W, H);
   }
+  // true = Größe hat sich geändert. Gleiche Größe nicht neu setzen: jede Zuweisung leert die Fläche (schwarz).
   function resize() {
-    W = cv.width = Math.max(160, Math.round(innerWidth * SCALE));
-    H = cv.height = Math.max(90, Math.round(innerHeight * SCALE));
+    const w = Math.max(160, Math.round(innerWidth * SCALE)), h = Math.max(90, Math.round(innerHeight * SCALE));
+    if (w === W && h === H && cv.width === w && cv.height === h) return false;
+    W = cv.width = w;
+    H = cv.height = h;
     buildVignette();
+    return true;
   }
   function spawn(p, anywhere) {
     p.x = Math.random() * W;
@@ -195,7 +199,7 @@ const dust = (() => {
   /* ---- ein Bild */
   function draw(now) {
     const playing = root.classList.contains("mirage-playing");
-    const moving = playing && !cfg.calm;
+    const moving = playing && !calmNow();
     // bis 100 ms zählen voll: bei 12 Bildern/s (83 ms) lief die Bewegung sonst gebremst und ungleichmäßig
     const dt = lastT ? Math.min(6, (now - lastT) / 16.7) : 0;
     lastT = now;
@@ -228,7 +232,7 @@ const dust = (() => {
       haze(cur, (bright - 1) * 0.6, 70, 1, W / 2, H / 2, "lighter");
     }
     if (!cfg.lite) aurora(light);
-    pulse(playing && !cfg.calm, lvl);
+    pulse(playing && !calmNow(), lvl);
     particles(moving ? dt : 0, lvl);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = light ? 0.2 : 1;
@@ -239,7 +243,7 @@ const dust = (() => {
   /* ---- Takt */
   function active() {
     if (!running || paused || document.hidden) return false;
-    const moving = root.classList.contains("mirage-playing") && !cfg.calm;
+    const moving = root.classList.contains("mirage-playing") && !calmNow();
     return moving || performance.now() < aliveUntil;
   }
   // Gleichmäßiger Takt: der Wecker klingelt kurz vor dem gewünschten Bild, gezeichnet wird im nächsten
@@ -316,10 +320,15 @@ const dust = (() => {
   }
   addEventListener("resize", () => {
     if (!running) return;
-    resize();
+    // gleiche Größe: nichts zu tun. Sonst gleich neu zeichnen – die neue Größe hat die Fläche geleert, und bis zum
+    // nächsten Bild im Raster (bis zu 100 ms) stünde der Hintergrund beim Ziehen am Fensterrand schwarz da
+    if (!resize()) return;
+    if (!document.hidden) draw(performance.now());
     aliveUntil = performance.now() + 50;
     wake();
   });
+  // „Bewegung reduzieren“ im System umgeschaltet: gleich neu zeichnen, damit das Treiben sofort steht oder weiterläuft
+  motionMq?.addEventListener?.("change", () => running && ((aliveUntil = performance.now() + 50), wake()));
   return { start, stop, recolor, pause, wake };
 })();
 

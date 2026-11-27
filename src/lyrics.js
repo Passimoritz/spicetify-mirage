@@ -131,7 +131,7 @@ async function keptLyrics(uri, pick, key, bad, job) {
   // „nichts gefunden“ kann am fehlenden Netz liegen – dann lieber den abgelaufenen Text von früher zeigen.
   // Gemerkt wird es nur, wenn LRCLIB wirklich geantwortet hat (net.ok) und es keinen alten Text gibt.
   if (!fresh?.lines?.length && !fresh?.instrumental) {
-    if (net.ok && !old && cfg.onlineLyrics) lyricStore.put(key, { none: true, synced: false, source: "", lines: [] });
+    if (net.ok && !net.ownFailed && !old && cfg.onlineLyrics) lyricStore.put(key, { none: true, synced: false, source: "", lines: [] });
     return old || fresh;
   }
   lyricStore.put(key, snap(fresh));
@@ -190,7 +190,7 @@ async function fetchLyrics(uri, pick, no, job, net = {}, old = null) {
     }, 2500);
   };
   return runLyrics({
-    own: own ? () => fetchSpotify(uri) : null,
+    own: own ? () => fetchSpotify(uri, net) : null,
     online,
     karaoke: !!cfg.karaoke,
     signal,
@@ -220,14 +220,21 @@ function warmLyrics(item) {
   if (!metaCache.has(item.uri)) metaCache.set(item.uri, songMeta(item));
   getLyrics(item.uri).catch(() => {});
 }
-async function fetchSpotify(uri) {
+// net.ownFailed: Spotifys eigene Anfrage ist gescheitert (Netz, Token, 5xx) – „nichts gefunden“ ist dann nicht sicher
+// und wird nicht für eine Woche gemerkt. Ein klares 404 („diesen Text gibt es nicht“) zählt als Antwort.
+const notFound = (e) => Number(e?.status ?? e?.code ?? e?.response?.status) === 404 || /\b404\b/.test(String(e?.message || ""));
+async function fetchSpotify(uri, net) {
   const id = uri.split(":")[2];
   const url = `https://spclient.wg.spotify.com/color-lyrics/v2/track/${id}?format=json&vocalRemoval=false&market=from_token`;
   let body = null;
   try {
     body = await S.CosmosAsync.get(url, null, { "app-platform": "WebPlayer" });
   } catch {
-    try { body = await S.CosmosAsync.get(url); } catch {}
+    try {
+      body = await S.CosmosAsync.get(url);
+    } catch (e) {
+      if (net && !notFound(e)) net.ownFailed = true;
+    }
   }
   const L = body?.lyrics;
   return L?.lines?.length
@@ -518,13 +525,17 @@ async function translateLines(uri, lyr, target) {
     const res = await fetch(
       `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(target)}&dt=t&q=${encodeURIComponent(text)}`
     );
+    if (!res.ok) return null;
     const data = await res.json();
     // data[2] = erkannte Quellsprache; gleich der Zielsprache → nichts anzeigen
     if (data?.[2] !== target) {
       const lines = (data?.[0] || []).map((p) => p[0]).join("").split("\n");
       out = lyr.lines.map((l, i) => (l.text === "♪" ? "" : (lines[i] || "").trim()));
     }
-  } catch {}
+  } catch {
+    // Netzfehler oder Drosselung: nicht merken, beim nächsten Mal wieder versuchen
+    return null;
+  }
   trCache.set(key, out);
   return out;
 }

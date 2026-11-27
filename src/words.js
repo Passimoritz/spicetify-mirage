@@ -306,8 +306,11 @@ function createWordFx(lexicon, { onFire, neg, sense } = {}) {
   let off = null;
   let plan = [], queue = [], fxs = [], parts = [], lastFire = -1e9, langs = ["en"], sureLang = true, uriNow = "", st0 = {};
   const cool = new Map();
-  // eigene Blitz-Schranke der Wortbilder (Blitz bei „storm“/„lightning“): nie mehr als 3 pro Sekunde
+  // Blitze der Wortbilder (Blitz bei „storm“/„lightning“, Knall, Flackern der Funken) fragen das Budget des
+  // Party-Modus (st.takeFlash aus party.js: ein Budget für alle Blitze, höchstens 3 pro Sekunde). Ohne Party
+  // (TV-Ansicht, Tests) gilt die eigene Schranke.
   const cap = createFlashCap();
+  const flashOk = (st) => !st.noFlash && (st.takeFlash ? !!st.takeFlash() : cap.take(st.now / 1000));
   let glowSpr = null;
   // weicher Lichtpunkt, einmal gerendert
   function glow() {
@@ -1147,14 +1150,17 @@ function createWordFx(lexicon, { onFire, neg, sense } = {}) {
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, 6.3);
         ctx.stroke();
-        if (t < 0.15 && !st.noFlash) {
+        // das Aufhellen ist ein Blitz: einmal fragen, wenn der Knall beginnt
+        if (t < 0.15 && f.fl === undefined) f.fl = flashOk(st);
+        if (t < 0.15 && f.fl && !st.noFlash) {
           ctx.fillStyle = `rgba(255,240,220,${(0.16 * (1 - t / 0.15)).toFixed(3)})`;
           ctx.fillRect(0, 0, w, h);
         }
         break;
       }
       case "sparks":
-        if (f.flicker && !st.noFlash && Math.random() < 0.18) {
+        // jedes Flackern hellt das ganze Bild auf: nur durch das Budget
+        if (f.flicker && Math.random() < 0.18 && flashOk(st)) {
           ctx.fillStyle = `rgba(160,210,255,${(0.12 * env).toFixed(3)})`;
           ctx.fillRect(0, 0, w, h);
         }
@@ -1187,9 +1193,11 @@ function createWordFx(lexicon, { onFire, neg, sense } = {}) {
       if (d < 0 || d > 0.35) continue;
       // Aufhellen des ganzen Bilds ist ein Blitz: nur mit Blitzen an und durch die Blitz-Schranke (höchstens 3/s).
       // Ohne Blitze erscheint nur die Linie, weich eingeblendet und gedämpft
-      if (f["fl" + i] === undefined) f["fl" + i] = !st.noFlash && cap.take(st.now / 1000);
-      const a = f["fl" + i] ? 1 - d / 0.35 : 0.45 * Math.min(1, d / 0.1) * (1 - d / 0.35);
-      if (f["fl" + i]) {
+      if (f["fl" + i] === undefined) f["fl" + i] = flashOk(st);
+      // („Keine Blitze“ gilt auch für schon freigegebene – mitten im Bild eingeschaltet)
+      const hard = f["fl" + i] && !st.noFlash;
+      const a = hard ? 1 - d / 0.35 : 0.45 * Math.min(1, d / 0.1) * (1 - d / 0.35);
+      if (hard) {
         ctx.fillStyle = `rgba(220,230,255,${(0.14 * a).toFixed(3)})`;
         ctx.fillRect(0, 0, w, h);
       }

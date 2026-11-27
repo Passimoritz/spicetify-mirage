@@ -16,6 +16,11 @@ const arg = (name) => {
 const wrapperPath = path.join(process.env.LOCALAPPDATA || "", "spicetify", "jsHelper", "spicetifyWrapper.js");
 const xpuiDir = arg("xpui") || path.join(process.env.APPDATA || "", "Spotify", "Apps", "xpui");
 const hasWrapper = !arg("xpui") && fs.existsSync(wrapperPath);
+if (arg("xpui") && !fs.existsSync(xpuiDir)) {
+  // ausdrücklich genannter Ordner fehlt: das ist ein Fehler (CI), kein „nichts zu prüfen“
+  console.error("Ordner aus --xpui nicht gefunden: " + xpuiDir);
+  process.exit(2);
+}
 if (!fs.existsSync(xpuiDir) || (!arg("xpui") && !hasWrapper)) {
   console.log("Spotify oder Spicetify nicht gefunden, nichts zu prüfen.");
   process.exit(0);

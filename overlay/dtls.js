@@ -254,6 +254,9 @@ class DtlsClient extends EventEmitter {
         body = gcmOpen(this.k.sKey, this.k.sIv, body.subarray(0, 8), aadOf(1, r.seq, r.type, body.length - 24), body.subarray(8));
         if (!body) continue;
       } else if (r.epoch !== 0) continue;
+      // steht die Verbindung, zählt nur noch Verschlüsseltes: ein Gerät, das die Adresse der Bridge fälscht, könnte
+      // sie sonst mit einem Klartext-Alarm beenden oder mit erfundenen Handshake-Stücken Speicher anfordern
+      else if (this.state === "open") continue;
       if (r.type === CT.alert) this._alert(body);
       else if (r.type === CT.ccs) {
         if (this.state === "finished" && body.length === 1 && body[0] === 1) this.peerCcs = true;
@@ -279,6 +282,8 @@ class DtlsClient extends EventEmitter {
       }
       // Stücke sammeln, bis die Nachricht vollständig ist (große Nachrichten kann die Gegenseite aufteilen)
       let m = this.frags.get(mseq);
+      // die Länge steht ungeprüft im Paket: ein Handshake der Bridge bleibt weit unter 4 KB
+      if (!m && (len > 4096 || this.frags.size >= 8)) continue;
       if (!m) this.frags.set(mseq, (m = { type, len, data: Buffer.alloc(len), have: new Uint8Array(len), epoch }));
       if (m.type !== type || m.len !== len) continue;
       frag.copy(m.data, off);

@@ -1,5 +1,5 @@
 import { SEL } from "./selectors.js";
-import { cfg } from "./config.js";
+import { cfg, calmNow } from "./config.js";
 import { palette } from "./color.js";
 import { UI } from "./icons.js";
 
@@ -33,7 +33,7 @@ function burst(x, y) {
 document.addEventListener(
   "click",
   (e) => {
-    if (!cfg.burst || cfg.calm) return;
+    if (!cfg.burst || calmNow()) return;
     const b = e.target.closest?.(SEL.likeButton);
     if (!b) return;
     const { clientX: x, clientY: y } = e;

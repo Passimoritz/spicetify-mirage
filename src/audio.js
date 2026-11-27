@@ -1,5 +1,5 @@
 import { S, root, clamp, seek, lru } from "./core.js";
-import { cfg } from "./config.js";
+import { cfg, calmNow, motionMq } from "./config.js";
 import { estimateAnalysis } from "./estimate.js";
 import { PLR } from "./player.js";
 import { analysisDb } from "./analysis-db.js";
@@ -28,7 +28,8 @@ async function loadAudio(uri) {
     beat.sync();
     // keine Spotify-Analyse möglich (neueres Spicetify ohne getAudioData, lokale Datei): sofort schätzen –
     // früher blieb der Song dann ganz ohne Takt und Tempo („BPM fehlt“)
-    if (!audio.data) fallback(uri);
+    // Podcast-Folgen und Werbung haben keinen Takt: nicht für Stunden ein geratenes Raster bauen
+    if (!audio.data && !/^spotify:(episode|ad|show):/.test(uri)) fallback(uri);
     return;
   }
   await fetchAnalysis(uri, audio.data ? RETRY.length : 0);
@@ -154,10 +155,12 @@ const beat = (() => {
   }
   const now = () => (PLR.getProgress() || 0) / 1000;
   function sync() {
-    on = cfg.beat && !cfg.calm && !!audio.data && root.classList.contains("mirage-playing");
+    on = cfg.beat && !calmNow() && !!audio.data && root.classList.contains("mirage-playing");
     root.classList.toggle("mirage-beat", on);
   }
   return { sync, read, get level() { return on ? read(now()) : 0; } };
 })();
+// „Bewegung reduzieren“ im System umgeschaltet: der Puls im Takt folgt sofort
+motionMq?.addEventListener?.("change", () => beat.sync());
 
 export { audio, loadAudio, warmAudio, beat, bands, shape };

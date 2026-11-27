@@ -1,7 +1,7 @@
 import { S, clamp, seek, lru } from "./core.js";
 import { cfg, save } from "./config.js";
 import { audio } from "./audio.js";
-import { createFlashCap } from "./flashcap.js";
+import { createFlashBudget } from "./flashcap.js";
 import { songMap, at, STEP } from "./songmap.js";
 import { planSong, cue, avoidOf } from "./director.js";
 import { KIN, baseOf } from "./styles.js";
@@ -253,8 +253,9 @@ const party = (() => {
   let lastBeat = -1, lastBar = -1, flash = 0, flashCol = 0, shake = 0, kick = 0, spin = 0, spinTo = 0;
   const inst = { k: -1, s: -1, h: -1 };
   let sway = 1, lastSec = 0, dropGlow = 0, clock = 0, smooth = { e: 0, b: 0, k: 0, br: 0 };
-  // eine Schranke für Farbfläche, Blinder, Stroboskop und Gitarrenblitze: zusammen nie mehr als 3 pro Sekunde
-  const flashCap = createFlashCap(), hot = { k: false, s: false };
+  // ein Budget für alle Blitze des Party-Modus (flashcap.js): Farbfläche, Bühne (Blinder, Stroboskop, Gitarrenblitze),
+  // Blitze der Bühnenbilder und Wortbilder – zusammen nie mehr als 3 pro Sekunde
+  const flashCap = createFlashBudget(), hot = { k: false, s: false };
   // die E-Gitarre blitzt auch in leisen Stellen: immersive.js meldet, ob sie gerade spielt
   let stageFlash = false;
   // Spulen/Songwechsel: der Look der Regie gleitet in 0,6 s in den neuen Teil, statt hart umzuschalten (steady.js)
@@ -472,6 +473,7 @@ const party = (() => {
     const R = swap.get(audio.uri === uri ? audio.data : null, info.key + (cfg.partyDirector ? "" : "|off"), uri, lyrOf(uri));
     const d = R.d;
     clock += dt;
+    flashCap.frame();
     const ease = (k) => 1 - Math.exp(-dt * k);
 
     // --- wo im Song: Energie jetzt, gleich, Aufbau, Break, Drop, Dur/Moll, Helligkeit
@@ -827,6 +829,10 @@ const party = (() => {
     return C;
   }
 
+  // Blitze außerhalb von step (Wortbilder, Blitze der Bühnenbilder) fragen dasselbe Budget. Hat dieses Bild schon
+  // eine Freigabe, ist es derselbe Blitz. Ohne laufende Party (clock steht) gibt es keine weiteren Freigaben.
+  const takeFlash = () => !cfg.noFlash && flashCap.take(clock);
+
   // Liedtext des Songs (synchronisierte Zeilen, t in ms) – nur für die Stimmung, nichts geht hinaus
   function lyrics(u, lines) {
     const ls = (lines || []).filter((l) => l.text && l.text !== "♪").map((l) => ({ t: l.t / 1000, text: l.text }));
@@ -835,7 +841,7 @@ const party = (() => {
   }
 
   // colorsOf(item) → Coverfarben des Songs (setzt song.js; für den Fall, dass sich die Warteschlange ändert)
-  api = { prepare, setArtistGenre, warm, step, mood, mixPal, lyrics, colorsOf: null, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
+  api = { prepare, setArtistGenre, warm, step, mood, mixPal, lyrics, takeFlash, colorsOf: null, get info() { return info; }, set stageFlash(v) { stageFlash = !!v; }, PROFILES, PROFILE_KEYS, FAMILIES };
   return api;
 })();
 

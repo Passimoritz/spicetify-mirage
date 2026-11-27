@@ -8,6 +8,7 @@
 // „Keine Blitze“: nichts springt; was sich schnell bewegt oder pulsiert, bleibt dann so schwach, dass keine Stelle
 // des Bilds mehr als dreimal pro Sekunde kräftig hell und dunkel wird. Einzig das Wetterleuchten des Gewitters darf
 // hart sein – nur mit Blitzen an und durch die gemeinsame Blitz-Schranke (höchstens 3/s).
+import { FLASH_AT, FLASH_WAIT } from "./flashcap.js";
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (x) => {
@@ -93,6 +94,16 @@ function createSceneFx(glowSprite, flashCap) {
   let vw = 0, vh = 0, S = 1;
   // Farbe je Antwort einmal bestimmen (seq), Farb-Zeichenketten einmal bauen
   const base = new Map(), strs = new Map(), flashes = new Map();
+  // Blitz-Zeitpunkt (d s alt) entscheiden: hart nur ohne „weich“, mit Blitzen an, mit Freigabe des Hauptthreads
+  // (st.flashGo – fehlt sie ganz, etwa im Test, gilt die Schranke allein) und durch die Schranke der Bühne.
+  // Die Freigabe kann ein paar Bilder später ankommen: so lange (FLASH_WAIT) bleibt der Zeitpunkt offen, danach weich.
+  // Wer erst nach 0,25 s gefragt wird (Merker verdrängt), blitzt nicht mehr – und nimmt der Schranke keinen Platz.
+  const decide = (key, max, c, st, nf, d) => {
+    const can = !c.soft && !nf && !!st.flash, ok = can && d < 0.25 && st.flashGo !== false && flashCap.take(st.t);
+    if (!ok && can && d < FLASH_WAIT) return;
+    if (flashes.size > max) flashes.delete(flashes.keys().next().value);
+    flashes.set(key, ok);
+  };
   const rgb = (c) => {
     const k = ((c[0] | 0) << 16) | ((c[1] | 0) << 8) | (c[2] | 0);
     let s = strs.get(k);
@@ -376,13 +387,10 @@ function createSceneFx(glowSprite, flashCap) {
       ctx.stroke();
       // Wetterleuchten bei 0,5 s und 2,2 s
       for (let k = 0; k < 2; k++) {
-        const d = age - (k ? 2.2 : 0.5), key = c.seq * 4 + k;
+        const d = age - FLASH_AT.thunder[k], key = "t" + c.seq + ":" + k;
         if (d < 0) continue;
-        if (!flashes.has(key)) {
-          if (flashes.size > 16) flashes.delete(flashes.keys().next().value);
-          flashes.set(key, !c.soft && !nf && !!st.flash && flashCap.take(st.t));
-        }
-        if (flashes.get(key) && d < 0.25) {
+        if (!flashes.has(key)) decide(key, 16, c, st, nf, d);
+        if (flashes.get(key) && !nf && d < 0.25) {
           ctx.globalAlpha = 1;
           ctx.fillStyle = `rgba(200,215,255,${(0.12 * a * Math.exp(-d * 14)).toFixed(3)})`;
           ctx.fillRect(0, 0, vw, vh);
@@ -964,16 +972,14 @@ function createSceneFx(glowSprite, flashCap) {
   // glänzend fallen. Hell aufblitzen darf ein Schuss nur mit Blitzen an und durch die Blitz-Schranke (höchstens 3/s);
   // sonst – und immer mit „Keine Blitze“ – ein kurzes, schwaches Glimmen. „rapid“: eine Salve (Maschinengewehr).
   L.muzzle = function muzzle(ctx, c, a, age, st, nf) {
-    const col = colOf(c, "muzzle", st.pal), rapid = c.from === "rapid", n = rapid ? 9 : 3, gap = rapid ? 0.14 : 0.38;
-    for (let i = 0; i < n; i++) {
-      const d = age - i * gap;
+    const col = colOf(c, "muzzle", st.pal), T = c.from === "rapid" ? FLASH_AT.rapid : FLASH_AT.muzzle;
+    for (let i = 0; i < T.length; i++) {
+      const d = age - T[i];
       if (d < 0 || d > 0.9) continue;
-      const side = (i + (c.v || 0)) % 2 ? 1 : -1, x = vw * (0.5 + side * (0.18 + 0.22 * hash(i, c.seq))), y = vh * (0.55 + 0.25 * hash(i, c.seq + 1)), key = c.seq * 16 + i;
-      if (!flashes.has(key)) {
-        if (flashes.size > 32) flashes.delete(flashes.keys().next().value);
-        flashes.set(key, !c.soft && !nf && !!st.flash && flashCap.take(st.t));
-      }
-      const hard = flashes.get(key);
+      const side = (i + (c.v || 0)) % 2 ? 1 : -1, x = vw * (0.5 + side * (0.18 + 0.22 * hash(i, c.seq))), y = vh * (0.55 + 0.25 * hash(i, c.seq + 1)), key = "m" + c.seq + ":" + i;
+      if (!flashes.has(key)) decide(key, 32, c, st, nf, d);
+      // „Keine Blitze“ gilt auch für schon freigegebene (mitten im Bild eingeschaltet)
+      const hard = flashes.get(key) && !nf;
       if (hard) {
         const p = Math.exp(-d * 16);
         glow(ctx, [255, 245, 220], x, y, 70 * S, a * 0.85 * p);

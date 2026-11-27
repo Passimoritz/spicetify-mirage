@@ -342,4 +342,130 @@ async function photoCheck(browser, env, o, check) {
   check(`${o.device.name} · Foto-Wand: Knopf nur mit Freigabe am PC, Foto gedreht, klein, ohne Metadaten, in Stücken`, problems);
 }
 
-module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck, ecoCheck, photoCheck, MAKE_PHOTO };
+// Schlüsselpaar wie im Theme (ECDSA P-256): der öffentliche Teil gepackt für den Link (33 Bytes), dazu ein
+// Unterschreiber – „Thema, Zeilenumbruch, JSON-Text“, die Unterschrift als erstes Feld „sg“ im selben Text
+function hostKeys() {
+  const { privateKey, publicKey } = crypto.generateKeyPairSync("ec", { namedCurve: "prime256v1" });
+  const jwk = publicKey.export({ format: "jwk" }), y = Buffer.from(jwk.y, "base64url");
+  const pub = Buffer.concat([Buffer.from([2 + (y[31] & 1)]), Buffer.from(jwk.x, "base64url")]).toString("base64url");
+  const sign = (topic, obj) => {
+    const body = JSON.stringify(obj);
+    const sig = crypto.sign("sha256", Buffer.from(topic + "\n" + body), { key: privateKey, dsaEncoding: "ieee-p1363" });
+    return `{"sg":"${sig.toString("base64url")}",${body.slice(1)}`;
+  };
+  return { pub, sign };
+}
+// fertigen Text (unterschrieben oder nicht) mit dem Kanalschlüssel verschlüsseln, wie es jeder Gast könnte
+function sealText(key, text) {
+  const iv = crypto.randomBytes(12), c = crypto.createCipheriv("aes-128-gcm", key, iv);
+  return Buffer.concat([iv, c.update(text), c.final(), c.getAuthTag()]);
+}
+
+// Unterschrift des PCs: steht „p“ im Link, zählt nur, was der PC unterschrieben hat. Jeder Gast kennt den
+// Kanalschlüssel und kann auf dem Relay senden – ein so gefälschtes „Party beendet“ darf nichts bewirken.
+// Ohne „p“ (Party eines älteren Themes) bleibt alles wie bisher.
+async function signCheck(browser, env, o, check) {
+  const problems = [];
+  const topic = "mirage-live/" + o.channel;
+  const host = hostKeys(), stranger = hostKeys();
+  const pub = (t, text) => env.broker.publish(t, sealText(o.key, text));
+  const look = (page) => page.eval(`({ on: document.body.classList.contains("on"), ended, title: document.getElementById("title").textContent, head: document.getElementById("sTitle").textContent, over: T.over[0], bad: T.bad[0], wmsg: document.getElementById("wMsg").textContent, last: (() => { try { return JSON.parse(localStorage.getItem("mlLast") || "null")?.h || ""; } catch { return "?"; } })() })`);
+  const page = await browser.open({ url: `${o.url}&p=${host.pub}`, width: o.device.width, height: o.device.height, dpr: o.device.dpr, ua: o.device.ua, lang: o.lang, initScript: o.initScript });
+  try {
+    // ohne Unterschrift (wie ein Gast mit dem Kanalschlüssel): die Seite bleibt dunkel
+    for (let i = 0; i < 8; i++) {
+      pub(topic, JSON.stringify(state({ t: "Gefälscht" })));
+      await sleep(125);
+    }
+    let s = await look(page);
+    if (s.on || s.title === "Gefälscht") problems.push("ein Lichtzustand ohne Unterschrift wurde angenommen");
+    // mit der Unterschrift des PCs: die Party läuft
+    const live = async (extra, ms = 1000) => {
+      for (const t0 = Date.now(); Date.now() - t0 < ms; await sleep(125)) pub(topic, host.sign(topic, state({ t: "Echt", ...extra })));
+    };
+    for (let i = 0; i < 40 && !(await look(page)).on; i++) await live({}, 250);
+    s = await look(page);
+    if (!s.on || s.title !== "Echt") problems.push(`der unterschriebene Lichtzustand kam nicht an (an: ${s.on}, Titel „${s.title}“)`);
+    if (s.last !== `#c=${o.channel}&k=${o.key.toString("base64url")}&p=${host.pub}`) problems.push("„Party von eben“ merkt sich den Schlüssel des PCs nicht: " + s.last);
+    const me = await page.eval("myId");
+    // gefälscht, jeweils mit Sendezeit „jetzt“: ohne Unterschrift, mit fremder Unterschrift, mit einer echten für ein
+    // anderes Thema (Antwort an dieses Handy als Stand für alle und umgekehrt, Stand für alle eines anderen Kanals)
+    const off = () => ({ v: 1, on: 0, s: Date.now() + 50 });
+    const fakes = [
+      ["ohne Unterschrift", topic, () => JSON.stringify(off())],
+      ["Unterschrift eines fremden Schlüssels", topic, () => stranger.sign(topic, off())],
+      ["Unterschrift für die Antwort an ein Handy", topic, () => host.sign(`${topic}/r/${me}`, off())],
+      ["Unterschrift für alle, gesendet als Antwort", `${topic}/r/${me}`, () => host.sign(topic, off())],
+      ["echte Antwort ohne „res“ auf dem Antwort-Thema", `${topic}/r/${me}`, () => host.sign(`${topic}/r/${me}`, off())],
+      ["Unterschrift für einen anderen Kanal", topic, () => host.sign(topic + "x", off())],
+      ["veränderter Inhalt", topic, () => host.sign(topic, { ...off(), on: 1 }).replace('"on":1', '"on":0')],
+    ];
+    for (const [label, t, make] of fakes) {
+      pub(t, make());
+      await sleep(350);
+      s = await look(page);
+      if (s.ended || !s.on || s.head === s.over) problems.push(`gefälschtes „Party beendet“ wirkt (${label})`);
+      await live({}, 250);
+    }
+    // gefälschte Antwort an dieses Handy („Wunsch abgelehnt“) ohne Unterschrift: nichts erscheint; die echte schon
+    pub(`${topic}/r/${me}`, JSON.stringify({ v: 1, s: Date.now(), res: [], r: -1, wr: "block" }));
+    await sleep(350);
+    if ((await look(page)).wmsg) problems.push("eine Antwort ohne Unterschrift wurde angenommen");
+    pub(`${topic}/r/${me}`, host.sign(`${topic}/r/${me}`, { v: 1, s: Date.now(), res: [], r: -1, wr: "block" }));
+    await sleep(350);
+    if (!(await look(page)).wmsg) problems.push("die unterschriebene Antwort des PCs kam nicht an");
+    // ein mitgeschnittener, echter Stand von vorhin (hier: „Party beendet“ mit älterer Sendezeit) gilt nicht mehr
+    const stale = host.sign(topic, { v: 1, on: 0, s: Date.now() - 8000 });
+    await sleep(4300);
+    pub(topic, stale);
+    await sleep(350);
+    s = await look(page);
+    if (s.ended) problems.push("ein älterer, echter Stand ließ sich noch einmal einspielen");
+    // das echte Ende vom PC gilt
+    pub(topic, host.sign(topic, { v: 1, on: 0, s: Date.now() }));
+    await sleep(400);
+    s = await look(page);
+    if (!s.ended || s.on || s.head !== s.over) problems.push(`das unterschriebene „Party beendet“ kam nicht an (Titel „${s.head}“)`);
+    if (page.errors.length) problems.push(...page.errors.map((e) => "Fehler in der Konsole: " + e));
+  } finally {
+    await page.close();
+  }
+  // kaputtes „p“: „Link unvollständig“, und die Seite verbindet sich nicht (nie „ungeprüft weiter“)
+  const subs0 = env.broker.stats.subs.length;
+  const broken = await browser.open({ url: `${o.url}&p=AAAA`, width: o.device.width, height: o.device.height, dpr: o.device.dpr, ua: o.device.ua, lang: o.lang, initScript: o.initScript });
+  try {
+    let s = null;
+    for (let i = 0; i < 40; i++) {
+      s = await look(broken).catch(() => null);
+      if (s?.head === s?.bad) break;
+      await sleep(100);
+    }
+    await sleep(400);
+    if (!s || s.head !== s.bad) problems.push(`kaputtes „p“: Titel „${s?.head}“ statt „${s?.bad}“`);
+    if (env.broker.stats.subs.length !== subs0) problems.push("kaputtes „p“: die Seite hat sich trotzdem verbunden");
+  } finally {
+    await broken.close();
+  }
+  // Link ohne „p“ (älteres Theme): dieselbe Nachricht ohne Unterschrift beendet die Party wie bisher
+  const p = await party(browser, env, o);
+  try {
+    let s = await look(p.page);
+    if (!s.on) problems.push("ohne „p“: Seite leuchtet nicht");
+    if (s.last !== `#c=${o.channel}&k=${o.key.toString("base64url")}`) problems.push("ohne „p“: gemerkter Link " + s.last);
+    // ein neues Theme unterschreibt immer: ohne „p“ im Link (weitergegebener, gekürzter Link) bleibt es lesbar
+    pub(topic, host.sign(topic, state({ t: "Mit sg" })));
+    await sleep(350);
+    s = await look(p.page);
+    if (!s.on || s.title !== "Mit sg") problems.push(`ohne „p“: unterschriebene Nachricht nicht gelesen (Titel „${s.title}“)`);
+    pub(topic, JSON.stringify({ v: 1, on: 0, s: Date.now() }));
+    await sleep(400);
+    s = await look(p.page);
+    if (!s.ended || s.on || s.head !== s.over) problems.push(`ohne „p“: „Party beendet“ ohne Unterschrift kam nicht an (Titel „${s.head}“)`);
+    if (p.page.errors.length) problems.push(...p.page.errors.map((e) => "Fehler in der Konsole: " + e));
+  } finally {
+    await p.page.close();
+  }
+  check(`${o.device.name} · Unterschrift des PCs: mit „p“ im Link wirkt nichts Gefälschtes, ohne „p“ alles wie bisher`, problems);
+}
+
+module.exports = { party, state, sleep, noFlashCheck, tickCheck, waveCheck, ecoCheck, photoCheck, signCheck, MAKE_PHOTO };

@@ -17,6 +17,18 @@ const WIN = process.platform === "win32";
 const MAC = process.platform === "darwin";
 const LINUX = process.platform === "linux";
 
+// LINUX: seit Electron 38 läuft die App in einer Wayland-Sitzung als echtes Wayland-Programm. Dort darf ein Fenster
+// weder seinen Platz selbst bestimmen noch über allem liegen, und die Mausposition ist nicht abfragbar – das Overlay
+// säße irgendwo. Deshalb wie bisher über XWayland: der Schalter zählt nur auf der Kommandozeile (Chromium wählt die
+// Plattform, bevor dieses Skript läuft), also einmal mit ihm neu starten. MIRAGE_WAYLAND=1 lässt es bei Wayland.
+if (LINUX && (process.env.XDG_SESSION_TYPE === "wayland" || process.env.WAYLAND_DISPLAY) && process.env.DISPLAY &&
+    !process.env.MIRAGE_WAYLAND && !process.env.MIRAGE_X11_TRIED && !process.argv.some((a) => a.startsWith("--ozone-platform"))) {
+  // Merker in der Umgebung: der Neustart erbt ihn – so bleibt es bei genau einem Versuch
+  process.env.MIRAGE_X11_TRIED = "1";
+  app.relaunch({ ...(process.env.APPIMAGE ? { execPath: process.env.APPIMAGE } : {}), args: [...process.argv.slice(1), "--ozone-platform=x11"] });
+  app.exit(0);
+}
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
@@ -95,6 +107,9 @@ const DEFAULTS = {
 };
 // welche Zusatzdaten ein Stil vom Theme braucht (Protokoll: cmd "subscribe")
 const STYLE_TOPICS = { lyrics: ["lyric"], visualizer: ["level"] };
+// LINUX: seit Electron 43 bekommen rahmenlose Fenster dort runde Ecken (und damit einen Rand vom Fenstermanager) –
+// Overlay, Lautstärke und Kantenlicht sind durchsichtige Flächen ohne eigene Form
+const FLAT = LINUX ? { roundedCorners: false } : {};
 // Auswahlfelder mit festen Werten: ein Import darf nur diese übernehmen, sonst zerfiele z. B. die Lage
 const CHOICES = {
   mode: ["song", "always", "off"],
@@ -208,7 +223,8 @@ function payload(reason, sample) {
   return {
     track, cfg: publicCfg(cfg), reason,
     lyric: sample ? SAMPLE_LYRIC : lyric && lyric.uri === track?.uri ? lyric : null,
-    text: { nowPlaying: t("nowPlaying"), paused: t("paused"), resumed: t("resumed") },
+    // prev/toggle/next: Namen der drei Knöpfe für Vorleseprogramme (das Overlay lädt die Texte nicht selbst)
+    text: { nowPlaying: t("nowPlaying"), paused: t("paused"), resumed: t("resumed"), prev: t("ctlPrev"), toggle: t("ctlToggle"), next: t("ctlNext") },
   };
 }
 function announce(reason, force, sample) {
@@ -301,11 +317,28 @@ function startServer() {
     ws.send(JSON.stringify({ type: "cmd", cmd: "report" }));
     // Liedtext/Pegel nur anfordern, wenn der gewählte Stil sie anzeigt
     if (topics().length) ws.send(JSON.stringify({ type: "cmd", cmd: "subscribe", topics: topics() }));
+    // zu große oder kaputte Nachrichten meldet ws als "error" an der Verbindung: ohne Zuhörer bricht das den Hauptprozess ab
+    ws.on("error", () => {});
     ws.on("message", (raw) => {
       // Party-Lichtzustand kommt 30× pro Sekunde – nicht ins Protokoll
       if (!String(raw).startsWith('{"type":"party"')) dlog(`${String(raw).length} ${String(raw).slice(0, 160)}`);
       let m;
       try { m = JSON.parse(raw); } catch { return; }
+      if (!m || typeof m !== "object") return;
+      try {
+        onMessage(ws, m);
+      } catch (e) {
+        dlog(`message failed: ${e?.message || e}`);
+      }
+    });
+    ws.on("close", () => {
+      clients.delete(ws);
+      themePresence();
+      settingsWin?.webContents.send("status", status());
+    });
+  });
+  function onMessage(ws, m) {
+    {
       if (m.type === "track") onTrack(m);
       else if (m.type === "lyric") onLyric(m);
       else if (m.type === "level") onLevel(m);
@@ -318,20 +351,18 @@ function startServer() {
         ws.send(JSON.stringify({ type: "cast", list: castApi?.list() || [] }));
       } else if (m.type === "castMiracast") cast().miracast();
       // eine neuere Mirage Overlay will den Port: diese (ältere) Kopie macht Platz
-      else if (m.type === "yield" && newer(String(m.version || ""), app.getVersion())) app.exit(0);
+      // (app.quit statt app.exit: so laufen die Aufräumarbeiten, und die Lampen bekommen ihren alten Zustand zurück)
+      else if (m.type === "yield" && newer(String(m.version || ""), app.getVersion())) app.quit();
       // Diagnosebericht des Themes (Seitenaufbau, Fehler) lokal ablegen
       else if (m.type === "debug") {
+        // der Name der Phase landet im Dateinamen: nur Buchstaben, Ziffern, Bindestrich – sonst ließe sich über
+        // "/../" jede .json-Datei des Benutzers überschreiben (auch die eigenen Einstellungen)
         try {
-          fs.writeFileSync(path.join(app.getPath("userData"), `dom-report${m.phase ? "-" + m.phase : ""}.json`), JSON.stringify(m, null, 1));
+          fs.writeFileSync(path.join(app.getPath("userData"), `dom-report${reportPhase(m.phase)}.json`), JSON.stringify(m, null, 1));
         } catch {}
       }
-    });
-    ws.on("close", () => {
-      clients.delete(ws);
-      themePresence();
-      settingsWin?.webContents.send("status", status());
-    });
-  });
+    }
+  }
   wss.on("listening", () => (portTries = 0));
   wss.on("error", (e) => {
     if (e?.code === "EADDRINUSE") portBusy();
@@ -427,6 +458,7 @@ function createOverlay() {
     backgroundColor: "#00000000",
     // MAC: als Panel schwebt das Fenster auch über Apps im Vollbild
     ...(MAC ? { type: "panel" } : {}),
+    ...FLAT,
     webPreferences: { preload: path.join(__dirname, "preload.js") },
   });
   overlay.setIgnoreMouseEvents(true, { forward: true });
@@ -776,7 +808,7 @@ function showVolume(m) {
     volWin = new BrowserWindow({
       width: VOL_W + 2 * VOL_M, height: VOL_H + 2 * VOL_M, show: false, frame: false, transparent: true,
       resizable: false, movable: false, focusable: false, skipTaskbar: true, hasShadow: false, alwaysOnTop: true,
-      backgroundColor: "#00000000", ...(MAC ? { type: "panel" } : {}),
+      backgroundColor: "#00000000", ...(MAC ? { type: "panel" } : {}), ...FLAT,
       webPreferences: { preload: path.join(__dirname, "preload.js") },
     });
     volWin.setIgnoreMouseEvents(true);
@@ -816,7 +848,7 @@ function makeEdges() {
   edges = Object.entries(rects).map(([side, r]) => {
     const w = new BrowserWindow({
       ...r, show: false, frame: false, transparent: true, resizable: false, movable: false, focusable: false,
-      skipTaskbar: true, hasShadow: false, alwaysOnTop: true, backgroundColor: "#00000000", ...(MAC ? { type: "panel" } : {}),
+      skipTaskbar: true, hasShadow: false, alwaysOnTop: true, backgroundColor: "#00000000", ...(MAC ? { type: "panel" } : {}), ...FLAT,
       webPreferences: { preload: path.join(__dirname, "preload.js"), backgroundThrottling: false },
     });
     w.setIgnoreMouseEvents(true);
@@ -913,6 +945,10 @@ function watchFullscreen() {
         if (busyProc !== proc) return;
         busyProc = null;
         setBusy(false);
+      });
+      // PowerShell fehlt oder ist gesperrt (AppLocker): kommt als Ereignis, nicht als Ausnahme
+      proc.on("error", () => {
+        if (busyProc === proc) busyProc = null;
       });
     } catch {
       busyProc = null;
@@ -1028,6 +1064,7 @@ function startObs() {
     verifyClient: ({ origin }) => !origin || origin === `http://127.0.0.1:${OBS_PORT}` || origin === `http://localhost:${OBS_PORT}`,
   });
   wss.on("connection", (ws, req) => {
+    ws.on("error", () => {});
     obsClients.add(ws);
     if (/[?&]party=1/.test(req.url || "")) {
       obsParty.add(ws);
@@ -1066,6 +1103,7 @@ const obsUrl = () => `http://127.0.0.1:${OBS_PORT}/`;
 // Nur auf diesem Rechner (127.0.0.1) und nur ohne Herkunft einer Webseite – Browser-Seiten senden immer
 // ihre Adresse mit und kommen deshalb nicht hinein.
 const CONTROL_PORT = Number(process.env.MIRAGE_CONTROL_PORT) || 47324;
+const reportPhase = (p) => (typeof p === "string" && /^[\w-]{1,32}$/.test(p) ? "-" + p : "");
 const CONTROL_CMDS = new Set(["toggle", "next", "prev", "like", "immersive", "party"]);
 let controlServer = null;
 function startControl() {
@@ -1082,6 +1120,8 @@ function startControl() {
   });
   wss.on("connection", (ws) => {
     ws.send(JSON.stringify({ type: "hello", track: track ? { title: track.title, artist: track.artist, playing: track.playing } : null }));
+    // mehr als 256 Byte meldet ws als "error" an der Verbindung – ohne Zuhörer bräche das den Hauptprozess ab
+    ws.on("error", () => {});
     ws.on("message", (raw) => {
       let m;
       try { m = JSON.parse(raw); } catch { return; }
@@ -1181,8 +1221,10 @@ async function askRestart() {
     } catch {
       return shell.openExternal(upd.page);
     }
+    // app.quit statt app.exit: so läuft „before-quit“ und die Lampen bekommen ihren alten Zustand zurück. Der
+    // Neustart ist da schon vorgemerkt und wartet nur, bis dieser Prozess wirklich weg ist (höchstens 3 s später).
     app.relaunch({ execPath: target, args: process.argv.slice(1) });
-    app.exit(0);
+    app.quit();
   }
 }
 function scheduleUpdates() {
@@ -1197,6 +1239,7 @@ function update(patch) {
   cfg = { ...cfg, ...patch };
   save();
   if ("autostart" in patch) setAutostart(!!cfg.autostart);
+  if ("display" in patch) dropEdges();
   if ("mode" in patch) buildTray();
   if ("style" in patch || "mode" in patch) resubscribe();
   if ("fullscreenQuiet" in patch || "mode" in patch) watchFullscreen();
@@ -1252,6 +1295,8 @@ async function exportCfg(win) {
 async function importCfg(win) {
   const { canceled, filePaths } = await dialog.showOpenDialog(win, {
     title: t("moveImport"),
+    // dort, wo der Export sie ablegt (ohne Angabe öffnet Electron seit Version 43 immer „Downloads“)
+    defaultPath: app.getPath("documents"),
     properties: ["openFile"],
     filters: [{ name: "JSON", extensions: ["json"] }],
   });
@@ -1327,10 +1372,12 @@ ipcMain.on("set", (e, patch) => {
   if (dropped.length) dlog(`set: address change refused (${dropped.join(", ")})`);
   if (Object.keys(p).length) update(p);
 });
-ipcMain.on("preview", preview);
-ipcMain.on("openCss", openCss);
-ipcMain.on("checkUpdate", () => (upd.state === "available" || upd.state === "ready" ? installUpdate() : checkUpdate(true)));
-ipcMain.on("cmd", (_e, c) => command(c));
+// Vorschau zeigen Einstellungen und Assistent; die CSS-Datei öffnen und ein Update laden/installieren darf nur das
+// Einstellungsfenster – nicht Overlay, Lautstärke oder Kantenlicht, die dieselbe Brücke (preload.js) haben
+ipcMain.on("preview", (e) => fromUi(e) && preview());
+ipcMain.on("openCss", (e) => fromSettings(e) && openCss());
+ipcMain.on("checkUpdate", (e) => fromSettings(e) && (upd.state === "available" || upd.state === "ready" ? installUpdate() : checkUpdate(true)));
+ipcMain.on("cmd", (_e, c) => CONTROL_CMDS.has(c) && command(c));
 ipcMain.on("openUri", (_e, uri) => openUri(String(uri || "")));
 // Hue einrichten
 ipcMain.handle("hueFind", uiOnly(() => lights.hueFind()));
@@ -1440,8 +1487,10 @@ app.whenReady().then(() => {
     try { setAutostart(true); } catch {}
   }
   logStart();
-  screen.on("display-removed", () => overlay?.isVisible() && position());
-  screen.on("display-metrics-changed", () => overlay?.isVisible() && position());
+  // Randlichter stehen an festen Koordinaten: bei anderem Bildschirm oder anderer Auflösung weg damit, das nächste
+  // Party-Bild baut sie am richtigen Ort neu
+  screen.on("display-removed", () => (dropEdges(), overlay?.isVisible() && position()));
+  screen.on("display-metrics-changed", () => (dropEdges(), overlay?.isVisible() && position()));
   // Beim allerersten Start der Assistent, sonst (ohne Autostart-Aufruf) gleich die Einstellungen
   if (!cfg.setupDone) openSetup();
   else if (!startedHidden()) openSettings();

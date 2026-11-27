@@ -23,7 +23,7 @@ import { matchAny, detectSong } from "./words.js";
 import { senseLine, planSong as planSense, EXPLICIT } from "./wordsense.js";
 import { lineMood } from "./mood.js";
 import { bgFlags } from "./lyricvoices.js";
-import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars, exitOf } from "./lyricdeck.js";
+import { RECIPES, TREATMENTS, FAMILIES, EASE, songDeck, allowed, wordPose, poseVars, letterPoses, leadOf, ACCENTS, fxVariant, fxVars, particleVars, exitOf, balladOk } from "./lyricdeck.js";
 import { lineRole, markerOk, limitFonts, covers } from "./lyricfont.js";
 import { CUE_KIND } from "./lyriccolor.js";
 import { categoryOf as conceptCategory } from "./concepts.js";
@@ -193,6 +193,12 @@ export function adlibPose(k) {
   const odd = k % 2 === 1;
   return { rot: odd ? 2.5 : -3.5, dx: odd ? 1.6 : 2.4 };
 }
+// Größter Winkel (Grad), mit dem ein Textstück aus chars Zeichen gekippt werden darf, ohne dass sein Ende mehr als
+// sweep em aus seiner Zeile schwenkt. per: Hebel je Zeichen in em – 0,26 bei Drehung um die Mitte (halbe Breite, ein
+// Zeichen ~0,52 em), 0,52 bei Drehung um den Rand. Bricht das Stück um, ist es schmaler: die Grenze gilt erst recht.
+export function tiltCap(chars, sweep = 0.2, per = 0.26) {
+  return (Math.asin(Math.min(1, sweep / (per * Math.max(1, chars)))) * 180) / Math.PI;
+}
 // Ganze Zeile Hintergrundgesang? (Wörter in Klammern, „(x2)“ und „(Chorus)“ zählen nicht)
 export function isAdlib(texts) {
   const f = bgFlags(texts || []);
@@ -234,6 +240,85 @@ export function syllables(text) {
     else n += Math.max(1, Math.round([...w].length / 2.5));
   }
   return n;
+}
+
+/* ---- Zählen: „one, two, three, four“, „drei, zwei, eins“, „1 2 3“ – mindestens drei Zahlen in Folge (auf- oder
+   abwärts, je Schritt eins), alle aus einer Sprache; zwischen zwei Zahlen höchstens zwei andere Wörter („and a one,
+   and a two …“). Zahlwörter 0 … 10 der häufigsten Liedsprachen, dazu Ziffern. → Wortstellen der Zahlen oder null */
+const NUMS = {
+  en: "zero one two three four five six seven eight nine ten",
+  de: "null eins zwei drei vier fünf sechs sieben acht neun zehn",
+  es: "cero uno dos tres cuatro cinco seis siete ocho nueve diez",
+  fr: "zéro un deux trois quatre cinq six sept huit neuf dix",
+  it: "zero uno due tre quattro cinque sei sette otto nove dieci",
+  pt: "zero um dois três quatro cinco seis sete oito nove dez",
+  nl: "nul een twee drie vier vijf zes zeven acht negen tien",
+  sv: "noll ett två tre fyra fem sex sju åtta nio tio",
+  pl: "zero jeden dwa trzy cztery pięć sześć siedem osiem dziewięć dziesięć",
+  tr: "sıfır bir iki üç dört beş altı yedi sekiz dokuz on",
+  ru: "ноль один два три четыре пять шесть семь восемь девять десять",
+  ja: "零 一 二 三 四 五 六 七 八 九 十",
+  ko: "영 하나 둘 셋 넷 다섯 여섯 일곱 여덟 아홉 열",
+};
+const NUM_OF = Object.entries(NUMS).map(([, list]) => new Map(list.split(" ").map((w, v) => [w, v])));
+export function countRun(texts) {
+  const T = (texts || []).map(bare);
+  if (T.length < 3) return null;
+  let best = null;
+  // je Sprache (und zuletzt nur Ziffern): die längste Kette
+  for (const map of [...NUM_OF, null]) {
+    const val = T.map((w) => (/^\d{1,2}$/.test(w) ? Number(w) : map?.get(w) ?? null));
+    let run = [], step = 0;
+    const done = () => {
+      if (run.length >= 3 && (!best || run.length > best.length)) best = run;
+    };
+    for (let k = 0; k < T.length; k++) {
+      if (val[k] == null) continue;
+      const p = run[run.length - 1];
+      const d = p == null ? 0 : val[k] - val[p];
+      if (p != null && k - p <= 3 && Math.abs(d) === 1 && (!step || d === step)) {
+        run.push(k);
+        step = d;
+      } else {
+        done();
+        run = [k];
+        step = 0;
+      }
+    }
+    done();
+  }
+  return best ? new Set(best) : null;
+}
+/* ---- Aufzählung: Teile der Zeile zwischen Kommas („Clock is ticking, time is money, money never sleeping“).
+   → je Wort die Nummer seines Teils (0, 0, 0, 1, 1, 1, 2 …); .n = Zahl der Teile */
+const SEG_END = /[,;:、，；]["”»)）]?$/u;
+export function segments(texts) {
+  let g = 0;
+  const T = texts || [];
+  const out = T.map((tx, k) => {
+    const at = g;
+    if (k < T.length - 1 && SEG_END.test(String(tx || ""))) g++;
+    return at;
+  });
+  out.n = T.length ? g + 1 : 0;
+  return out;
+}
+/* ---- Wort-Wiederholung in der Zeile: „boom boom boom“, „higher and higher“, „shake it, shake it, shake it now“ –
+   jede Wiederholung steht eine Stufe größer (die Zeile steigert sich, wie man sie singt). Inhaltswörter zählen, wenn
+   das vorige Mal höchstens drei Wörter zurückliegt; Funktionswörter („up, up“, „no no no“) nur direkt hintereinander;
+   gehauchte Füllsilben („oh oh oh“) nie. → je Wort die wievielte Wiederholung (0 = erstes Mal, höchstens 3) */
+export function wordRepeats(texts) {
+  const T = (texts || []).map(bare);
+  const lastAt = new Map(), nth = new Map();
+  return T.map((w, k) => {
+    if ([...w].length < 2 || BREATH.test(w)) return 0;
+    const p = lastAt.get(w);
+    lastAt.set(w, k);
+    const near = p != null && (FN.has(w) ? k - p === 1 : k - p <= 3);
+    const j = near ? (nth.get(w) || 0) + 1 : 0;
+    nth.set(w, j);
+    return Math.min(3, j);
+  });
 }
 
 /* ---- Wortbilder: Begriff (wordsense.js über lexicon.js) → Bewegung des Worts (CSS-Klasse is-c-<name>) */
@@ -526,13 +611,22 @@ export function pickTreatments(feats, deck) {
     }
     const chorus = f.kind === "chorus" || f.kind === "drop";
     const quiet = f.kind === "intro" || f.kind === "outro" || f.kind === "break";
+    // Zähl-Zeile: die Zahlen klappen wie auf einer Fallblatt-Anzeige herunter (auch zwei Zähl-Zeilen hintereinander –
+    // „one, two, three, four“ / „five, six, seven, eight“ ist eine Geste)
+    if (f.count && f.words && allowed("count", level)) {
+      out.push("count");
+      count.count = (count.count || 0) + 1;
+      n++;
+      continue;
+    }
     let pool;
     if (!f.words) pool = chorus ? ["punch", "caps", "tilt", "plain"] : f.kind === "bridge" ? ["tilt", "plain"] : ["plain", "punch", "tilt"];
     else if (f.dropIn) pool = D.drop;
     else if (f.first && chorus) pool = [...D.hit, ...D.chorus];
     else if (f.shout) pool = [...D.shout, ...D.chorus];
     else if (f.rap) pool = D.rap;
-    else if (chorus) pool = [...D.chorus, D.hit[0]];
+    // Refrain: das Motiv des Songs; in der Ballade mit ihren ruhigen Rezepten, im letzten Refrain mit allen Einschlägen
+    else if (chorus) pool = f.ballad ? [...D.chorus, ...D.ballad] : f.last ? [...D.chorus, ...D.hit] : [...D.chorus, D.hit[0]];
     else if (f.kind === "pre") pool = D.pre;
     else if (f.kind === "bridge") pool = D.bridge;
     else if (quiet) pool = D.calm;
@@ -540,9 +634,13 @@ export function pickTreatments(feats, deck) {
     else pool = D.verse;
     const fits = (t) => {
       const r = RECIPES[t];
-      if (!r || !allowed(t, level)) return false;
+      if (!r || !allowed(t, level) || r.only) return false;
       if (!f.words) return WORDLESS.includes(t);
       if (r.L && !f.lettersOk) return false;
+      // Aufzählung: nur, wo die Zeile aus so vielen Teilen besteht
+      if (r.segs && !(f.segs >= r.segs)) return false;
+      // Ballade bleibt im Ton: nichts, was hüpft, prallt, schnappt oder zuckt (der eine Einschlag zum Refrain: unten)
+      if (f.ballad && r.e < 3 && !balladOk(t)) return false;
       if (r.keyed && !(f.keyStrength >= 0.55)) return false;
       if (r.min && f.n < r.min) return false;
       if (r.max && f.n > r.max) return false;
@@ -557,7 +655,7 @@ export function pickTreatments(feats, deck) {
     // alles Übrige, was passt, mit wenig Gewicht (passend zur Energie des Teils): über viele Songs taucht so jedes
     // Rezept auf, im Song bleibt das Deck tonangebend
     if (f.words) {
-      const want = f.dropIn || (f.first && chorus) ? 3 : chorus ? 2.4 : quiet || f.ballad ? 0.3 : f.kind === "pre" ? 1.6 : f.rap ? 1.2 : 1;
+      const want = f.ballad && !(f.first && chorus) ? (chorus ? 1.4 : 0.3) : f.dropIn || (f.first && chorus) || f.last ? 3 : chorus ? 2.4 : quiet ? 0.3 : f.kind === "pre" ? 1.6 : f.rap ? 1.2 : 1;
       for (const t of TREATMENTS) if (!cands.has(t) && fits(t)) cands.set(t, 0.5 - Math.abs(RECIPES[t].e - want) * 0.2);
     }
     if (!cands.size) cands.set("plain", 0);
@@ -569,6 +667,8 @@ export function pickTreatments(feats, deck) {
     let best = "plain", bv = -Infinity;
     for (const [t, base] of cands) {
       let v = base + hash01(D.seed + "|" + f.key + "|" + t + "|" + used.length) * 0.6;
+      // drei und mehr Teile zwischen Kommas: die Aufzählung im Wechsel der Seiten liegt nahe
+      if (t === "volley") v += f.segs >= 3 ? 1.6 : 0.2;
       if (t === mirror) v += 3.2;
       else if (t === p1) v -= 3;
       if (t === p2) v -= 1;
@@ -625,6 +725,8 @@ export const LEAD_MIN = 60;
 export const FX_ROOM = 450;
 export const FAST_LINE = 900;
 export const ACC_MIN = 120;
+// gehaltener Ton mit Vibrato ab dieser Dauer (ms)
+export const VIB_MIN = 1400;
 
 /* ---- Alles zusammen: einmal je Song */
 // lines: Zeilen ({ t, text, who?, bg? }), wordLists[i]: Wörter der Zeile i ({ text, a, b, est?, bg?, el? }) oder leer,
@@ -650,7 +752,7 @@ const lineKey = (x) => String(x || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu,
 // Unterschied zwischen den Teilen ist das, was man spürt (vorher lagen Strophe und Refrain nur 15 % auseinander)
 const AMP = { chorus: 1.28, drop: 1.38, pre: 0.95, verse: 0.85, bridge: 0.9, intro: 0.75, outro: 0.75, break: 0.7 };
 // Ruf und Antwort: die nächste Zeile antwortet (andere Duett-Stimme, Frage → Antwort, Echo der letzten Wörter)
-const QUESTION = /[?¿？]\s*["”»)）]?\s*$/;
+const QUESTION = /[?¿？؟]\s*["”»)）]?\s*$/;
 function answers(a, b) {
   if (!a || !b || lineKey(a.text) === lineKey(b.text)) return false;
   if (a.who && b.who && a.who !== b.who && a.who !== "all" && b.who !== "all") return true;
@@ -761,7 +863,8 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     const rate = syllables(text) / secs;
     const n = texts.length;
     const rap = (rate >= 4.6 && n >= 7) || (rate >= 5.4 && n >= 5);
-    const ballad = !rap && (rate <= 2.4 || (bpm && bpm < 84));
+    // (ein Drop und ein Ruf sind nie Ballade – auch wenn dort wenige Silben je Sekunde fallen: „JUMP!“, „Shake it, shake it“)
+    const ballad = !rap && !p.shout && p.kind !== "drop" && (rate <= 2.4 || (bpm && bpm < 84));
     let energy = { chorus: 0.4, drop: 0.7, pre: 0.15, verse: 0, bridge: -0.1, intro: -0.4, outro: -0.4, break: -0.5 }[p.kind] ?? 0;
     if (peaks[i] != null && hi != null && pMed != null && hi > pMed) energy = 0.5 * energy + clamp((peaks[i] - pMed) / (hi - pMed), -1, 1);
     if (p.shout) energy += 0.4;
@@ -769,13 +872,19 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     prevKind = p.kind;
     prevEnd = Math.max(l.t, b);
     const mood = lineMood(text)?.v ?? 0;
-    return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp(energy, -1, 1.2), shout: p.shout, first, mood, text, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, lettersOk: lettersOk(ws, l.who), key: lineKey(text) || "#" + i };
+    // Zähl-Zeile (Wortstellen der Zahlen) und Aufzählung (Teile zwischen Kommas)
+    p.nums = countRun(texts);
+    p.seg = segments(texts);
+    return { i, kind: p.kind, n, rate, rap, ballad, energy: clamp(energy, -1, 1.2), shout: p.shout, first, mood, text, dropIn: dropIn.has(i), beats: !!(beats && real), words: ws.length > 0, lettersOk: lettersOk(ws, l.who), key: lineKey(text) || "#" + i, count: !!p.nums, segs: p.seg.n };
   });
 
   // 1b. Bogen des Songs. Pre-Chorus: Fortschritt im Block (build 0 … 1 – der Satz wird enger, die Auftritte kürzer und
   // kräftiger), die letzte Zeile vor dem Refrain steigt (riser). Große Momente: die erste Zeile des ersten und des
   // letzten Refrains. Ruf und Antwort: die antwortende Zeile spielt dieselbe Inszenierung von der anderen Seite.
-  const arc = L.map(() => ({ build: 0, riser: 0, moment: false, call: false, resp: -1 }));
+  // Refrains steigern sich: rise 0 … 1 vom ersten zum letzten Refrain (Ausschlag wächst), der letzte (last) ist der
+  // größte – größer gesetzt, mit allen Einschlägen im Vorrat. Dieselbe Zeile mehrmals direkt hintereinander (rep: Stufe
+  // 0 … 1 in der Folge) wächst von Mal zu Mal – am Ende des Songs und an ruhigen Stellen (fade) klingt sie aus.
+  const arc = L.map(() => ({ build: 0, riser: 0, moment: false, call: false, resp: -1, rise: 0, last: false, rep: 0, fade: false }));
   for (let i = 0; i < feats.length; ) {
     if (feats[i]?.kind !== "pre") {
       i++;
@@ -793,6 +902,45 @@ export function* planSteps(lines, wordLists, d, o = {}) {
   if (chorusStarts.length) {
     arc[chorusStarts[0]].moment = true;
     if (chorusStarts.length > 1) arc[chorusStarts[chorusStarts.length - 1]].moment = true;
+    // Nummer des Refrain-Blocks je Refrain-Zeile (ein Block beginnt, wo der Refrain neu einsetzt)
+    const blocks = chorusStarts.length;
+    let b = -1;
+    for (const f of feats) {
+      if (!f || (f.kind !== "chorus" && f.kind !== "drop")) continue;
+      if (chorusStarts.includes(f.i)) b++;
+      if (b < 0 || blocks < 2) continue;
+      arc[f.i].rise = r2(b / (blocks - 1));
+      arc[f.i].last = f.last = b === blocks - 1;
+    }
+  }
+  // dieselbe Zeile direkt hintereinander (Hintergrundgesang dazwischen zählt nicht, eine Lücke mit ♪ trennt)
+  const lastText = feats.reduce((m, f) => (f ? f.i : m), -1);
+  for (let i = 0; i < feats.length; ) {
+    const f = feats[i];
+    if (!f) {
+      i++;
+      continue;
+    }
+    const idx = [i];
+    let j = i + 1;
+    for (; j < feats.length; j++) {
+      if (!feats[j]) {
+        if (pre[j].adlib) continue;
+        break;
+      }
+      if (feats[j].key !== f.key) break;
+      idx.push(j);
+    }
+    if (idx.length >= 2) {
+      const tail = idx[idx.length - 1];
+      const loud = f.kind === "chorus" || f.kind === "drop";
+      const fade = f.kind === "intro" || f.kind === "outro" || f.kind === "break" || (tail === lastText && !loud);
+      idx.forEach((k, m) => {
+        arc[k].rep = r2(m / (idx.length - 1));
+        arc[k].fade = fade;
+      });
+    }
+    i = idx[idx.length - 1] + 1;
   }
   for (let i = 0; i + 1 < L.length; i++) {
     const f = feats[i], g = feats[i + 1];
@@ -864,6 +1012,26 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     return { line, word };
   });
   const fonts = limitFonts(fontsRaw, { max: 2, share: level === "wild" ? 0.6 : 0.4 });
+  // Je Teil eine Anzeige-Schrift für ganze Zeilen: die erste, die im Teil fällt, bleibt – andere Zeilen des Teils stehen
+  // in der normalen Liedtext-Schrift (vorher wechselten zwei Schriften Zeile um Zeile, das Bild flackerte typografisch).
+  // „Teil“ ist, was man sieht: der Satz der Zeile (Strophe, Refrain, Bridge, ruhig). Ein Teil ohne Wechsel (Songs ohne
+  // Analyse) gilt nach acht Zeilen als neuer Teil; einzelne Wörter mit eigener Schrift (Pinsel, breit) bleiben.
+  {
+    let own = "", kindNow = null, run = 0;
+    fonts.forEach((fo, i) => {
+      if (!feats[i]) return;
+      const set = sectionStyle(sectionKind(parts, pre[i].l.t), { repeated: pre[i].repeated });
+      if (set !== kindNow || run >= 8) {
+        kindNow = set;
+        own = "";
+        run = 0;
+      }
+      run++;
+      if (!fo.line) return;
+      if (!own) own = fo.line;
+      else if (fo.line !== own) fo.line = "";
+    });
+  }
 
   // 4. Klassen und Variablen
   // erster Einsatz einer Zeile (Wortzeiten, sonst ihr Anfang) und Dauer einer Zeile bis zur nächsten
@@ -887,15 +1055,21 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     if (dropIn.has(i) && !still) cls.push("is-p-drop");
     const side = voiceSide(l.who);
     if (side) cls.push(side);
+    // Neigungen ganzer Zeilen und Zeilenstücke richten sich nach der Länge (tiltCap): ein langes Stück kippt kaum –
+    // sein Ende schwenkte sonst in die Nachbarzeile (eine lange Klammer-Zeile lag auf der Zeile darunter)
+    const nch = [...p.text].length;
     if (p.adlib) {
       const pose = adlibPose(adl++);
       cls.push("is-p-adlib");
-      vars["--pr"] = pose.rot + "deg";
+      vars["--pr"] = r2(Math.sign(pose.rot) * Math.min(Math.abs(pose.rot), tiltCap(nch))) + "deg";
       vars["--px"] = pose.dx + "em";
     } else if (ws.some((w) => w.bg)) {
       // Hintergrund mitten in der Zeile: nur die Neigung (die Wörter selbst tragen .is-bg)
-      vars["--pr"] = adlibPose(adl++).rot + "deg";
+      const rot = adlibPose(adl++).rot, bgch = ws.reduce((s, w) => s + (w.bg ? [...String(w.text)].length + 1 : 0), 0);
+      vars["--pr"] = r2(Math.sign(rot) * Math.min(Math.abs(rot), tiltCap(bgch))) + "deg";
     }
+    // schräg gesetzte Zeile (tilt): dreht um ihren linken Rand – der Winkel so, dass ihr Ende höchstens 0,22 em steigt
+    if (t === "tilt") vars["--ptl"] = -r2(Math.min(1.6, tiltCap(nch, 0.22, 0.52))) + "deg";
     if (shouts < maxShout && p.shout) {
       cls.push("is-p-shout");
       shouts++;
@@ -915,6 +1089,9 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     let amp = deck.amp * (AMP[kind] ?? 1) * (level === "wild" ? 1.15 : 1);
     if (kind === "pre") amp *= 0.85 + 0.45 * A.build;
     if (A.moment) amp *= 1.15;
+    // Refrains steigern sich bis zum letzten; eine direkt wiederholte Zeile schlägt von Mal zu Mal weiter aus
+    if (A.rise) amp *= 1 + 0.12 * A.rise;
+    if (A.rep && !A.fade) amp *= 1 + 0.2 * A.rep;
     if (level === "subtle") amp = 0.55;
     if (f) {
       // ruhender Satz (gilt auch ohne Bewegung): Aufbau wird enger, der große Moment größer (nur kurze Zeilen)
@@ -922,7 +1099,18 @@ export function* planSteps(lines, wordLists, d, o = {}) {
         cls.push("is-p-build");
         vars["--pbu"] = String(A.build);
       }
-      if (A.moment && f.n <= 6 && [...p.text].length <= 32) cls.push("is-p-big");
+      const big = A.moment && f.n <= 6 && [...p.text].length <= 32;
+      if (big) cls.push("is-p-big");
+      // der letzte Refrain steht größer als die davor (nur Zeilen, die dafür kurz genug sind)
+      if (A.last && !big && lc) cls.push("is-p-last");
+      // dieselbe Zeile direkt hintereinander: wächst von Mal zu Mal (--prz, bis 10 %) – oder klingt aus (bis −10 %, leichter)
+      if (A.rep && A.fade) {
+        cls.push("is-p-rep", "is-p-fade");
+        vars["--prz"] = String(r2(1 - 0.1 * A.rep));
+      } else if (A.rep && lc && !big) {
+        cls.push("is-p-rep");
+        vars["--prz"] = String(r2(1 + (level === "subtle" ? 0.06 : 0.1) * A.rep));
+      }
       if (A.resp >= 0 && !l.who) cls.push("is-p-resp");
       if (!still) {
         if (A.moment) cls.push("is-p-moment");
@@ -938,6 +1126,8 @@ export function* planSteps(lines, wordLists, d, o = {}) {
           if (xt >= 150) {
             vars["--pxo"] = exitOf(t);
             vars["--pxd"] = String(dir);
+            // Abgang mit Kippen: der Winkel nach der Länge (eine lange Zeile schwenkte mit 5° in die neue aktive)
+            if (vars["--pxo"] === "m-x-tilt") vars["--pxa"] = r2(Math.min(5, tiltCap(nch, 0.22))) + "deg";
             if (xt < 500) vars["--pxt"] = xt + "ms";
           }
         }
@@ -964,7 +1154,12 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     const hold = heldNotes(ws);
     const n = ws.length, mid = (n - 1) / 2, half = Math.ceil(n / 2);
     // Aufbau: je weiter im Pre-Chorus, desto kürzer (schneller) die Landungen – bis zu 30 %, nie unter 90 ms
-    const lead = still ? 0 : Math.max(90, Math.round(leadOf(t) * (1 - 0.3 * A.build)));
+    const lead = still ? 0 : Math.max(90, Math.round(leadOf(p.adlib ? "aside" : t) * (1 - 0.3 * A.build)));
+    // Zählen, Aufzählung, Wort-Wiederholung, Frage
+    const nums = p.nums, numAt = nums ? [...nums].sort((x, y) => x - y) : [];
+    const seg = p.seg || [], again = wordRepeats(ws.map((w) => w.text)), zFirst = new Map();
+    let askAt = -1;
+    if (QUESTION.test(p.text)) for (let k = n - 1; k >= 0 && askAt < 0; k--) if (!ws[k].bg) askAt = k;
     // Hook-Wort der Zeile (höchstens eins): das Erkennungszeichen des Songs
     const hookAt = level === "subtle" ? -1 : ws.findIndex((w, k) => !w.bg && !wi.no.has(k) && sigWords.has(bare(w.text)));
     let coloured = !!tint;
@@ -972,7 +1167,17 @@ export function* planSteps(lines, wordLists, d, o = {}) {
     const words = ws.map((w, k) => {
       const wc = [], wv = {};
       if (em[k].cls) wc.push(em[k].cls);
-      if (em[k].z !== 1) wv["--pz"] = String(em[k].z);
+      // Größe: Betonung – dazu steigen die Zahlen einer Zähl-Zeile bis zur letzten an (bis 1,24), und ein Wort, das
+      // sich in der Zeile wiederholt, steht jedes Mal eine Stufe größer (ruhender Satz: gilt auch ohne Bewegung)
+      let z = em[k].z;
+      if (nums?.has(k)) {
+        // (nur die Treppe, ohne Betonung: die Größe der Zahl ist ihr Platz in der Reihe)
+        wc.push("is-p-num");
+        z = 1 + (0.24 * numAt.indexOf(k)) / (numAt.length - 1);
+      } else if (again[k] && !w.bg && !wi.no.has(k)) z = Math.max(z, (zFirst.get(bare(w.text)) ?? 1) + (level === "subtle" ? 0.05 : 0.09) * again[k]);
+      else zFirst.set(bare(w.text), z);
+      z = r2(clamp(z, 0.84, 1.3));
+      if (z !== 1) wv["--pz"] = String(z);
       const isKey = k === kw.k && (t === "key" || t === "wave");
       if (isKey) {
         wc.push("is-p-key");
@@ -1010,19 +1215,28 @@ export function* planSteps(lines, wordLists, d, o = {}) {
         // Wartezustand (wo das Wort vor seinem Einsatz steht) und Vorlauf
         const len = [...String(w.text)].length;
         const useLetters = !!R?.L && (lettersOk(ws, l.who) || isKey) && canSplit(w.text);
-        if (!useLetters) Object.assign(wv, poseVars(wordPose(t, { k, n, dir, amp, len, key: isKey, seed: deck.seed + "|" + i })));
+        // Hintergrundgesang (ganze Zeile oder Wörter in Klammern) kommt leise von der Seite – nie mit dem Auftritt der
+        // Hauptzeile; galt: Seite des Teils zwischen zwei Kommas, on: Zahl einer Zähl-Zeile
+        const pt = p.adlib || w.bg ? "aside" : t;
+        if (!useLetters) Object.assign(wv, poseVars(wordPose(pt, { k, n, dir, amp, len, key: isKey, seed: deck.seed + "|" + i, galt: seg[k] % 2 ? 1 : -1, ...(nums ? { on: nums.has(k) } : {}) })));
         if (wl) wv["--pl"] = wl + "ms";
         // gehaltener Ton: dehnt sich nur, solange die Zeile dran ist
         const hd = Math.min(hold[k].hd, Math.round(0.95 * room));
         if (hold[k].held && hd >= 200) {
           wc.push("is-p-held");
           wv["--hd"] = hd + "ms";
+          // lang gehalten (ab 1,4 s): nach dem Dehnen schwingt das Wort wie ein Vibrato nach, statt nur gedehnt zu stehen
+          if (hd >= VIB_MIN && level !== "subtle") wv["--phn"] = "m-p-vib";
         }
         if (beats && real && !w.est && onBeat(w.a, beats)) wc.push("is-p-beat");
         if (bars?.length && real && !w.est && onBeat(w.a, bars, 70)) wc.push("is-p-bar");
         let acc = R?.acc || "";
         // das riesige Schlüsselwort ist selbst der Akzent: kein Stoß hinterher (er schob es über seine Nachbarn)
         if (isKey && acc === "pop") acc = "";
+        // Zähl-Zeile: nur die Zahlen rasten ein; Wörter in Klammern stoßen nie mit dem Akzent der Hauptzeile
+        if ((t === "count" && !nums?.has(k)) || w.bg) acc = "";
+        // Frage: das letzte Wort hebt sich wie die Stimme am Satzende
+        if (k === askAt && !chars) acc = "ask";
         // Wortbild-Bewegung ist Zierde: nur, wenn bis zur nächsten Zeile Zeit dafür bleibt (die Farbe bleibt immer)
         const fxOk = room >= FX_ROOM;
         if (c && !calmAt.has(k) && fxOk) {

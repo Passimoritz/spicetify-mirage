@@ -13,6 +13,11 @@ const arg = (name) => {
 const repo = path.join(__dirname, "..");
 const xpui = arg("xpui") || path.join(process.env.APPDATA || "", "Spotify", "Apps", "xpui");
 if (!fs.existsSync(xpui)) {
+  // ausdrücklich genannter Ordner fehlt: das ist ein Fehler (CI), kein „nichts zu prüfen“
+  if (arg("xpui")) {
+    console.error("Ordner aus --xpui nicht gefunden: " + xpui);
+    process.exit(2);
+  }
   console.log("Spotify nicht gefunden (" + xpui + "), nichts zu prüfen.");
   process.exit(0);
 }

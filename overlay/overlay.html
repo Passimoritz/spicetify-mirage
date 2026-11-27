@@ -227,9 +227,9 @@
     <div class="side">
       <div class="eq"><i></i><i></i><i></i><i></i></div>
       <div class="ctl">
-        <button data-c="prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg></button>
-        <button data-c="toggle" class="pp" aria-label="Play/Pause"><svg viewBox="0 0 24 24" id="ppi"><path d="M7 4v16l13-8z"/></svg></button>
-        <button data-c="next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg></button>
+        <button data-c="prev"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L20 5v14z"/></svg></button>
+        <button data-c="toggle" class="pp"><svg viewBox="0 0 24 24" id="ppi"><path d="M7 4v16l13-8z"/></svg></button>
+        <button data-c="next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5l10.5 7L4 19z"/></svg></button>
       </div>
     </div>
     <div class="pg"><b id="pgb"></b></div>
@@ -383,8 +383,10 @@
     }
   }
 
-  mirage.on("show", ({ track: t, cfg: c, reason, text, lyric }) => { applyCfg(c); setTrack(t); applyLyric(lyric); open(reason, text); });
-  mirage.on("update", ({ track: t, cfg: c, lyric }) => { applyCfg(c); setTrack(t); applyLyric(lyric); });
+  // Namen der drei Knöpfe für Vorleseprogramme: kommen übersetzt vom Hauptprozess (text.prev / toggle / next)
+  const nameButtons = (text) => ov.querySelectorAll(".ctl button").forEach((b) => text?.[b.dataset.c] && b.setAttribute("aria-label", text[b.dataset.c]));
+  mirage.on("show", ({ track: t, cfg: c, reason, text, lyric }) => { applyCfg(c); setTrack(t); applyLyric(lyric); nameButtons(text); open(reason, text); });
+  mirage.on("update", ({ track: t, cfg: c, text, lyric }) => { applyCfg(c); setTrack(t); applyLyric(lyric); nameButtons(text); });
   mirage.on("config", (c) => { applyCfg(c); if (visible) schedule(); });
   mirage.on("hideNow", () => visible && close());
   mirage.on("lyric", applyLyric);

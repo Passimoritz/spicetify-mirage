@@ -76,6 +76,11 @@ const R = {
   pendulum: { e: 1, lead: 180, w: (c) => ({ r: -18 * c.dir, og: "center top", o: 0.6 }), ln: "pend" },
   tilt: { e: 1, lead: 160, w: (c) => ({ r: 3 * c.dir, o: 0.75 }), ln: "tilt" },
   neon: { e: 1, lead: 180, w: () => ({ o: 0.08 }), acc: "neon" },
+  // Fächer: die Wörter stehen wie ein Kartenfächer gespreizt (außen stärker gekippt) und richten sich auf
+  fan: { e: 1, lead: 180, min: 3, max: 9, ease: "back", w: (c) => ({ r: 14 * c.side * c.dir, y: 0.1 * Math.abs(c.side), og: "center bottom", o: 0.55 }) },
+  // Hintergrundgesang und Wörter in Klammern: kommen leise von der Seite dazu (nie mit dem Auftritt der Hauptzeile).
+  // only: steht in keinem Deck – lyricstyle.js setzt es gezielt
+  aside: { e: 0, lead: 180, only: true, ease: "smooth", w: (c) => ({ x: 0.18 * c.dir, s: 0.9, o: 0.25 }) },
   // Buchstaben
   curtain: { e: 1, lead: 180, L: "center", w: () => ({}), l: () => ({ o: 0, y: 0.15 }) },
   write: { e: 1, lead: 170, L: "fwd", w: () => ({}), l: () => ({ o: 0, x: -0.08 }) },
@@ -86,6 +91,10 @@ const R = {
   swirl: { e: 2, lead: 180, L: "center", w: () => ({}), l: (c) => ({ r: (c.ci - (c.cn - 1) / 2) * 25, y: -0.2, o: 0.2 }) },
   wave: { e: 1, lead: 180, L: "fwd", w: () => ({}), l: (c) => ({ y: 0.25 * Math.sin(c.ci * 0.9), o: 0.6 }) },
   flipl: { e: 2, lead: 180, L: "fwd", w: () => ({}), l: (c) => ({ ry: 90 * c.dir, o: 0.2 }) },
+  // Sperren: die Buchstaben stehen in der Wortmitte übereinander und laufen auseinander (Laufweite öffnet sich)
+  track: { e: 1, lead: 180, L: "center", w: () => ({}), l: (c) => ({ x: ((c.cn - 1) / 2 - c.ci) * 0.22, o: 0 }) },
+  // Reißverschluss: die Buchstaben kommen abwechselnd von oben und unten und greifen ineinander
+  zip: { e: 2, lead: 180, L: "fwd", w: () => ({}), l: (c) => ({ y: c.ci % 2 ? 0.3 : -0.3, o: 0.2 }) },
   shatter: { e: 3, lead: 180, L: "rand", wild: true, w: () => ({}), l: (c) => ({ x: (c.h - 0.5) * 1, y: (hash01(c.h + "y") - 0.5) * 0.8, r: (hash01(c.h + "r") - 0.5) * 120, o: 0 }) },
   // lebhaft
   drop: { e: 2, lead: 170, w: (c) => ({ y: -0.3, r: -5 * c.dir, o: 0.7 }) },
@@ -101,7 +110,9 @@ const R = {
   slot: { e: 2, lead: 180, w: () => ({ y: -0.6, rx: 70, o: 0 }) },
   hinge: { e: 2, lead: 180, w: (c) => ({ r: 24 * c.dir, og: "left top", o: 0.5 }) },
   bubble: { e: 2, lead: 170, w: () => ({ s: 0.05, o: 0 }), acc: "pop" },
-  magnet: { e: 2, lead: 110, ease: "snap", w: (c) => ({ x: c.k ? -0.5 : -0.3, o: 0.6 }) },
+  // (wartend blass: das Wort steht bis zum Einsatz ein Stück über seinem Vorgänger – mitten in einer Reihe lag es sonst
+  // gut sichtbar auf dem eben gelandeten Wort)
+  magnet: { e: 2, lead: 110, ease: "snap", w: (c) => ({ x: c.k ? -0.4 : -0.3, o: 0.45 }) },
   orbit: { e: 2, lead: 180, w: (c) => ({ x: 0.4 * Math.cos(c.k * 1.3), y: 0.3 * Math.sin(c.k * 1.3), r: 20 * Math.sin(c.k), o: 0.4 }) },
   hop: { e: 2, lead: 170, w: () => ({ y: -0.4, o: 0.6 }), acc: "hop" },
   echo: { e: 2, lead: 170, w: (c) => ({ x: -0.3 * c.dir, o: 0.4 }), acc: "echo" },
@@ -110,8 +121,16 @@ const R = {
   stretch: { e: 2, lead: 170, w: () => ({ s: [1.7, 0.6], o: 0.5 }), acc: "jelly" },
   squash: { e: 2, lead: 170, w: () => ({ s: [0.6, 1.5], y: 0.1, o: 0.5 }) },
   punch: { e: 2, lead: 140, w: () => ({ y: -0.08 }), ln: "punch" },
+  // Pegel: jedes Wort wächst wie ein Balken einer Pegelanzeige von der Grundlinie hoch (verschieden hoch gestartet)
+  bars: { e: 2, lead: 170, ease: "back", w: (c) => ({ s: [1, 0.12 + 0.3 * c.h], og: "center bottom", o: 0.55 }), acc: "beat" },
+  // Aufzählung: die Teile zwischen den Kommas kommen im Wechsel von links und rechts (segs: braucht so viele Teile)
+  volley: { e: 2, lead: 170, segs: 2, min: 4, ease: "back", w: (c) => ({ x: 0.45 * c.galt * c.dir, r: -2 * c.galt * c.dir, o: 0.35 }) },
+  // Zählen: jede Zahl klappt wie auf einer Fallblatt-Anzeige herunter und rastet ein; die übrigen Wörter kommen schlicht.
+  // only: nur für Zähl-Zeilen (lyricstyle.js, countRun)
+  count: { e: 2, lead: 150, only: true, ease: "snap", w: (c) => (c.on ? { rx: -88, og: "center top", o: 0.15 } : { y: -0.08, o: 0.7 }), acc: "tick" },
   // hart
-  caps: { e: 3, lead: 160, w: () => ({ s: 1.32, y: -0.08 }), acc: "impact" },
+  // (wartend halb deckend und nur 1,22-fach: voll deckend und größer ragte ein Wort der zweiten Reihe in die erste)
+  caps: { e: 3, lead: 160, w: () => ({ s: 1.22, y: -0.08, o: 0.5 }), acc: "impact" },
   slam: { e: 3, lead: 160, w: () => ({ s: 1.6, o: 0 }), acc: "impact" },
   stamp: { e: 3, lead: 150, w: (c) => ({ s: 1.8, o: 0, r: -8 * c.dir }), acc: "impact" },
   zoom: { e: 3, lead: 170, w: () => ({ s: 2.2, o: 0 }) },
@@ -129,22 +148,28 @@ export const TREATMENTS = Object.keys(R);
 const FAMILY = {
   flip: ["flipx", "flipy", "mirror", "unfold", "flipl"],
   fall: ["drop", "bounce", "rain", "cascade", "slot"],
-  slide: ["split", "wavel", "waver", "conveyor", "magnet", "ricochet"],
+  slide: ["split", "wavel", "waver", "conveyor", "magnet", "ricochet", "volley"],
   grow: ["key", "bubble", "zoomin", "heart", "jelly"],
   hit: ["slam", "stamp", "zoom", "caps", "collide"],
-  swing: ["hinge", "domino", "pendulum", "tilt", "lean"],
+  swing: ["hinge", "domino", "pendulum", "tilt", "lean", "fan"],
   float: ["rise", "peek", "stairs", "tidal", "cascadeup"],
-  letters: ["curtain", "write", "swirl", "wave", "flipl", "cascade"],
+  letters: ["curtain", "write", "swirl", "wave", "flipl", "cascade", "track", "zip"],
   wild: ["spiral", "scatter", "tumble", "pinwheel", "shatter", "orbit"],
-  pop: ["hop", "jelly", "stretch", "squash", "bubble"],
+  pop: ["hop", "jelly", "stretch", "squash", "bubble", "bars"],
 };
 export const FAMILIES = FAMILY;
 // Teile → Energie, aus der das Deck zieht
 // (Strophe ohne die ganz stillen Rezepte – die bleiben Balladen und ruhigen Stellen; sonst wirkt eine Strophe wie Standbild)
 const SECT_E = { verse: [1, 2], pre: [1, 2], chorus: [2, 3], drop: [3, 3], bridge: [0, 2], calm: [0, 1] };
-const BRIDGE = ["tilt", "hinge", "pendulum", "mirror", "unfold", "drift", "lean", "swirl", "tidal", "domino"];
+const BRIDGE = ["tilt", "hinge", "pendulum", "mirror", "unfold", "drift", "lean", "swirl", "tidal", "domino", "fan"];
 const RAP = ["type", "typer", "write", "magnet", "jitter", "glitch", "ricochet"];
-const BALLAD = ["glow", "fade", "drift", "curtain", "write", "neon", "tidal", "rise"];
+const BALLAD = ["glow", "fade", "drift", "curtain", "write", "neon", "tidal", "rise", "track"];
+// Ballade: was dort (außer den ruhigen Rezepten bis Energie 1) noch passt – Klappen, Wachsen, Buchstaben; nichts, was
+// hüpft, prallt, schnappt oder zuckt (in der Ballade wirkte ein Abpraller oder Quetschen wie ein Witz an falscher Stelle)
+const GENTLE = ["key", "flipx", "flipy", "mirror", "heart", "cascade", "cascadeup", "rain", "swirl", "flipl", "zip"];
+// … und die ruhigen, die trotzdem nicht passen (Schnappen, Zucken, Fließband)
+const NOT_BALLAD = ["type", "typer", "conveyor", "accordion", "zoomin", "stagger", "ladder"];
+export const balladOk = (t) => !!R[t] && !NOT_BALLAD.includes(t) && R[t].ease !== "snap" && R[t].ease !== "bounce" && (R[t].e <= 1 || GENTLE.includes(t));
 const HIT = ["slam", "stamp", "zoom", "collide", "caps"];
 
 /* ---- Deck eines Songs: aus der Kennung (Spotify-URI) bzw. dem Liedtext */
@@ -161,10 +186,11 @@ export function songDeck(seed, level = "playful") {
     return a.slice(0, n);
   };
   const ok = (t) => allowed(t, level);
-  const byE = ([a, b]) => TREATMENTS.filter((t) => R[t].e >= a && R[t].e <= b && ok(t) && t !== "plain");
+  const byE = ([a, b]) => TREATMENTS.filter((t) => R[t].e >= a && R[t].e <= b && ok(t) && t !== "plain" && !R[t].only);
   const famNames = Object.keys(FAMILY).filter((f) => FAMILY[f].some(ok));
   const motifFam = pickN(famNames.filter((f) => f !== "float" || level === "subtle"), 1)[0] || "float";
-  const motif = pickN(FAMILY[motifFam].filter(ok), 3);
+  // (ohne Rezepte, die nur auf besondere Zeilen passen – Aufzählung, Zählen: sie taugen nicht als Motiv)
+  const motif = pickN(FAMILY[motifFam].filter((t) => ok(t) && !R[t].only && !R[t].segs), 3);
   const easeKeys = Object.keys(EASE);
   const d = {
     seed: String(seed),
@@ -232,6 +258,11 @@ function safe(v, len, amp) {
   if (Array.isArray(o.s)) o.s = [grow(o.s[0]), grow(o.s[1])];
   else if (o.s != null) o.s = grow(o.s);
   if (o.o != null) o.o = clamp(o.o, 0, 1);
+  // stark verzerrt wartend (gespiegelt oder auf weniger als zwei Drittel gestaucht): kaum sichtbar statt halb deckend –
+  // die noch nicht gesungenen Wörter der aktiven Zeile standen sonst sekundenlang als Zerrbild da (Party: „squash“ sah
+  // aus wie eine fremde, schmale Schrift, „mirror“ zeigte Spiegelschrift)
+  const sq = Array.isArray(o.s) ? Math.min(o.s[0], o.s[1]) / Math.max(o.s[0], o.s[1]) : 1;
+  if ((sq < 0.67 || Math.abs(o.ry || 0) > 95 || Math.abs(o.rx || 0) > 95) && (o.o ?? 1) > 0.3) o.o = 0.3;
   return o;
 }
 export function poseVars(v) {
@@ -258,7 +289,10 @@ export function wordPose(t, c) {
   const r = R[t] || R.plain;
   const n = Math.max(1, c.n), mid = (n - 1) / 2;
   const side = n > 1 ? (c.k - mid) / Math.max(1, mid) : 0;
-  const ctx = { ...c, side, alt: c.k % 2 ? 1 : -1, h: hash01(c.seed + "|" + c.k) };
+  // galt: Seite des Teils zwischen zwei Kommas (Aufzählung), on: das Wort ist das besondere der Zeile (Zahl beim Zählen)
+  // – ohne Angabe wechseln beide von Wort zu Wort
+  const alt = c.k % 2 ? 1 : -1;
+  const ctx = { ...c, side, alt, galt: c.galt ?? alt, on: c.on ?? c.k % 2 === 0, h: hash01(c.seed + "|" + c.k) };
   return safe(r.w(ctx), c.len, c.amp);
 }
 // Reihenfolge der Buchstaben (für die Staffelung): vorwärts, rückwärts, von der Mitte, gewürfelt
@@ -294,7 +328,8 @@ export const leadOf = (t) => Math.min(LEAD_MAX, (R[t] || R.plain).lead ?? LEAD_D
 /* ---- Akzente auf dem Einsatz (CSS-Keyframes m-a-*, beginnen und enden im Ruhezustand) */
 // syl: Silben-Tick im schnellen Rap (je Silbe ein kurzer Stoß – Dauer und Zahl je Wort, --pad/--pai);
 // hstamp/htwist/hlift/hflare: Erkennungszeichen der Hook-Wörter (je Song eins, siehe songDeck().hook)
-export const ACCENTS = { impact: 360, pop: 420, jelly: 600, hop: 420, heart: 700, neon: 900, echo: 520, glitch: 450, beat: 300, bar: 380, syl: 140, hstamp: 460, htwist: 520, hlift: 480, hflare: 500 };
+// tick: eine Zahl rastet ein (Zähl-Zeilen) · ask: das letzte Wort einer Frage hebt sich wie die Stimme
+export const ACCENTS = { impact: 360, pop: 420, jelly: 600, hop: 420, heart: 700, neon: 900, echo: 520, glitch: 450, beat: 300, bar: 380, syl: 140, hstamp: 460, htwist: 520, hlift: 480, hflare: 500, tick: 260, ask: 520 };
 export const HOOKS = ["hstamp", "htwist", "hlift", "hflare"];
 
 /* ---- Übergabe: die alte Zeile geht mit einer Bewegung ab, die zu ihrem Auftritt passt (Familie des Rezepts).

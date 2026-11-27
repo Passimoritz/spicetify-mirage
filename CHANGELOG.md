@@ -10,6 +10,59 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+### Added
+
+- Playful lyrics: new stagings – fan (words spread like a hand of cards), level meter (words rise like bars), zipper and letter-spacing entrances, a split-flap count for counting lines ("one, two, three, four"), and lists whose parts come in from alternating sides.
+- Playful lyrics follow the song's arc: choruses grow from the first to the last (the last one is the biggest), a line repeated back to back grows each time or fades out at the end, ballads keep to calm stagings, a long held note swings like a vibrato, the last word of a question lifts, and backing vocals in brackets come in quietly from the side.
+
+### Security
+
+- A shared scheme code or settings backup can no longer inject CSS: only six-digit hex colours reach the stylesheet, and imported settings keep the type of each known setting (a broken backup could make the settings window unusable until the storage was cleared).
+- The remote repair file's CSS filter also rejects escaped names, `image-set()`, `src()`, `@font-face` and `@namespace`.
+- Overlay app: the diagnostics report can no longer be written outside its folder (path in the report name), oversized or malformed WebSocket messages no longer crash the app, and windows can only send the known playback commands.
+- Overlay app, Hue streaming: once the connection is open, unencrypted packets are ignored, and a packet can no longer make the app reserve memory for a made-up message length.
+- Cast to TV picks the Spotify window by its exact title instead of "contains the song title" (a song called "Home" or "Mail" could capture another window).
+- Phone page: at most three white flashes per second whatever arrives, colours are validated, and one message with a far-future time can no longer lock out the real party state.
+
+- Chinese romanisation (pinyin) no longer loads a library from a CDN at runtime: it ships with the theme and runs in its own thread, started with the first Chinese lyric.
+- Party flashes share one budget: colour flash, stage flashes, stage pictures (thunder, shots, bolt) and lyric bolts together never exceed three per second.
+- Overlay app: moved to a supported Electron release; preview, custom CSS and update checks are only accepted from the settings windows, cast data only from the capture window.
+
+- Party: the host now signs everything it sends to the phones (a key pair per party, public key in the QR code). A guest can no longer pretend to be the host – no forged "party over", games, polls or light commands. Parties started by older versions keep working unsigned.
+
+### Fixed
+
+- Lyrics: lines no longer run into each other. Tilted lines and bracketed lines now tilt by their length (a long one barely tilts), line heights fit the taller display fonts, and waiting words no longer sit on the row above. One display font per song part instead of two alternating line by line.
+- Right sidebar: showing or hiding it (friends, song details, queue) made the window hang noticeably longer with Mirage than without. Rules that the browser had to try on every element of the page are rewritten (about two thirds less time in Mirage's selectors per style pass).
+- Immersive mode: in Visualizer and Mix the ring no longer runs into the tab bar at loud moments or touches the label above the title; in Party the tabs and buttons stay readable over beams and streamers; menus at the top right are as tall as their content instead of a window-high, mostly empty panel; the key help is fully opaque over bright covers.
+- Party games "Music stop" and "Fastest finger": a tap made at the right moment no longer counts as too early or slow just because the phone learned of the switch a moment later, and an impossibly short reaction time reported by a phone no longer wins.
+- Search suggestions: in windows 1200 px high or taller the lower entries hung over the page without their background plate.
+- Settings: switches, sliders and colour pickers in Mirage's windows kept losing their own look on hover and focus (a switched-on switch looked off; the immersive volume slider lost its fill).
+- Settings: keyboard focus stays on the control after flipping a switch, and groups you collapsed stay collapsed.
+- The note after a Spotify update vanished at once with "reduce motion" switched on in the system.
+- Light scheme (Pearl): Spotify's lyrics page was white text on light glass; hover surfaces and the progress bar track were invisible.
+- Timing lyrics by hand (key E): a song change no longer saves the old song's times under the new song.
+- "Search again" is now offered when a song has no lyrics, and "no lyrics" is only remembered for a week when Spotify's own request actually answered. A failed translation request is retried instead of being remembered for the session.
+- Party flashes: a remembered flash of one stage picture could be reused by a later one and ignore "No flashes"; the white beam burst on a drop now goes through the flash limit.
+- Sleep timer: seeking back during the fade-out restores the volume instead of playing the rest of the song quietly.
+- Mini player: colours follow the song while Spotify is minimised.
+- The ambient background no longer flickers black while the window is resized.
+- Party: ranking, wish limits and the poll of the last party no longer carry over into the next one; a burst of wishes from one phone no longer slips past the 45-second limit; fractional poll votes are rejected; at most 80 players per game.
+- Phone page: fields no longer make iOS zoom in, the closed wish sheet is out of the tab order, close buttons have names, and the answer tiles have readable contrast (same colours on the big screen).
+- Overlay app: a response that stalls after its headers no longer leaves Hue, Home Assistant and the light test hanging; OpenRGB quitting mid-party no longer crashes the app; edge lights follow a changed display; the setup wizard's hidden steps are out of the tab order; lamps are restored when a newer copy takes over.
+- Stream Deck plugin: reconnect attempts no longer double every five seconds while the Overlay app is not running.
+- Immersive mode: controls stay visible while a button has keyboard focus in party mode, the key help covers the cards beneath it, and a failed start of Mirage now shows a notification instead of nothing.
+
+### Changed
+
+- Support for Windows contrast themes (`forced-colors`) and "reduce transparency" in Mirage's own controls.
+- "Reduce motion" in the system now also calms the ambient background, the beat pulse and the like burst when it is switched on after the first start.
+- Deleting one of your own colour schemes asks first, and its × has a proper click area.
+- Overlay settings: every switch, slider and field has a name for screen readers, clicking a row's text flips its switch, and a status such as "12 lights found" survives resizing the window.
+- Cards over the visualizer (game, poll, hints) no longer blur what is behind them, and pages no longer blur in on navigation – both cost frames for little effect. Unused stage styles removed.
+- `npm run check` also covers the built files of the phone page; `npm run watch` rebuilds the embedded party thread.
+- `check:selectors`, `check:spotify` and `check:i18n --since` now fail when the folder or revision they were given does not exist.
+
 ## [1.33.0] – 2026-11-25
 
 ### Added

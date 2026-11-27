@@ -117,7 +117,10 @@ function fadeStep() {
     left = (PLR.getDuration() || 0) - (PLR.getProgress() || 0);
     span = 20000;
   } else return;
-  if (!PLR.isPlaying() || left > span || left <= 0) return;
+  // zurückgespult oder Timer verlängert: wieder außerhalb des Ausblendens – alte Lautstärke zurück, sonst
+  // liefe der Rest leise weiter
+  if (left > span) return restoreVolume();
+  if (!PLR.isPlaying() || left <= 0) return;
   if (fadeFrom == null) fadeFrom = S.Player.getVolume?.() ?? 1;
   try { S.Player.setVolume(Math.max(0.02, fadeFrom * (left / span))); } catch {}
 }

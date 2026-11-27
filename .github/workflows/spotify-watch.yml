@@ -61,6 +61,9 @@ jobs:
 
       - name: Check selectors and player code
         id: check
+        # values from other steps go in through the environment, never pasted into the script text
+        env:
+          SPOTIFY_VERSION: ${{ steps.unpack.outputs.version }}
         run: |
           set +e
           node tools/check-selectors.js --xpui xpui --cssmap css-map.json | tee report.txt
@@ -68,12 +71,12 @@ jobs:
           echo "code=$code" >> "$GITHUB_OUTPUT"
           # 3: Spicetify's name list belongs to another Spotify version (often the Linux package lags behind),
           # so the result says nothing; note it in the run instead of opening an issue
-          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify ${{ steps.unpack.outputs.version }} (Linux); nothing checked."; fi
+          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify $SPOTIFY_VERSION (Linux); nothing checked."; fi
           # the player code the test fake copies (volume, queue …): a difference is a warning, not an issue
           node tools/check-spotify.js --xpui xpui | tee fake.txt
           fake=${PIPESTATUS[0]}
           echo "fake=$fake" >> "$GITHUB_OUTPUT"
-          if [ "$fake" != "0" ]; then echo "::warning::Spotify ${{ steps.unpack.outputs.version }} (Linux) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
+          if [ "$fake" != "0" ]; then echo "::warning::Spotify $SPOTIFY_VERSION (Linux) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
           exit 0
 
       - uses: actions/upload-artifact@v7
@@ -139,18 +142,23 @@ jobs:
 
       - name: Download the installer
         id: download
+        # values from other steps go in through the environment, never pasted into the script text
+        env:
+          FOUND_URL: ${{ steps.find.outputs.url }}
+          FOUND_SUM: ${{ steps.find.outputs.sum }}
+          FOUND_VERSION: ${{ steps.find.outputs.version }}
         run: |
-          if ! curl -fsSL --retry 3 --max-time 600 -o SpotifyFullSetupX64.exe "${{ steps.find.outputs.url }}"; then
+          if ! curl -fsSL --retry 3 --max-time 600 -o SpotifyFullSetupX64.exe "$FOUND_URL"; then
             echo "::warning::The Windows installer could not be downloaded – only the Linux client was checked tonight."
             exit 0
           fi
           echo "Installer: $(stat -c %s SpotifyFullSetupX64.exe) bytes"
-          SUM="${{ steps.find.outputs.sum }}"
+          SUM="$FOUND_SUM"
           GOT=$(sha256sum SpotifyFullSetupX64.exe | cut -d' ' -f1)
           # the address never changes, the file behind it does: a different checksum usually means an even newer
           # version than winget knows yet – check it anyway, its version is read from the client itself
           if [ -n "$SUM" ] && [ "${GOT,,}" != "${SUM,,}" ]; then
-            echo "::warning::The Windows installer differs from the winget manifest (${{ steps.find.outputs.version }}); probably newer. Checking it anyway."
+            echo "::warning::The Windows installer differs from the winget manifest ($FOUND_VERSION); probably newer. Checking it anyway."
           fi
           echo "ok=1" >> "$GITHUB_OUTPUT"
 
@@ -184,6 +192,9 @@ jobs:
       - name: Unpack the client
         id: unpack
         if: steps.download.outputs.ok == '1'
+        # values from other steps go in through the environment, never pasted into the script text
+        env:
+          FOUND_VERSION: ${{ steps.find.outputs.version }}
         run: |
           SPA="$APPDATA/Spotify/Apps/xpui.spa"
           if [ ! -f "$SPA" ]; then
@@ -200,7 +211,7 @@ jobs:
           fi
           # the exact version is in the client itself; winget's version as a fallback
           VERSION=$(grep -h -o -E 'clientVersion:"[0-9.]+\.g[0-9a-f]+"' xpui/*.js 2>/dev/null | head -n 1 | cut -d'"' -f2)
-          VERSION="${VERSION:-${{ steps.find.outputs.version }}}"
+          VERSION="${VERSION:-$FOUND_VERSION}"
           echo "version=${VERSION:-unknown}" >> "$GITHUB_OUTPUT"
           echo "Checking Spotify ${VERSION:-unknown} from the Windows installer: $(ls xpui | wc -l) files"
 
@@ -211,16 +222,19 @@ jobs:
       - name: Check selectors and player code
         id: check
         if: steps.unpack.outputs.version != ''
+        # values from other steps go in through the environment, never pasted into the script text
+        env:
+          SPOTIFY_VERSION: ${{ steps.unpack.outputs.version }}
         run: |
           set +e
           node tools/check-selectors.js --xpui xpui --cssmap css-map.json | tee report.txt
           code=${PIPESTATUS[0]}
           echo "code=$code" >> "$GITHUB_OUTPUT"
-          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify ${{ steps.unpack.outputs.version }} (Windows) yet; nothing checked."; fi
+          if [ "$code" = "3" ]; then echo "::notice::Spicetify's name list does not fit Spotify $SPOTIFY_VERSION (Windows) yet; nothing checked."; fi
           node tools/check-spotify.js --xpui xpui | tee fake.txt
           fake=${PIPESTATUS[0]}
           echo "fake=$fake" >> "$GITHUB_OUTPUT"
-          if [ "$fake" != "0" ]; then echo "::warning::Spotify ${{ steps.unpack.outputs.version }} (Windows) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
+          if [ "$fake" != "0" ]; then echo "::warning::Spotify $SPOTIFY_VERSION (Windows) behaves differently from tests/e2e/fake-spotify.js – see the log."; fi
           exit 0
 
       - uses: actions/upload-artifact@v7

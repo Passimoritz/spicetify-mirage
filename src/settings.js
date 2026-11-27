@@ -1,6 +1,6 @@
 import { S, root, VERSION } from "./core.js";
 import { t, I18N, LANG } from "./i18n.js";
-import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme, migrateCalm } from "./config.js";
+import { SCHEMES, BUILT_IN, DEFAULTS, applyScheme, cfg, save, resetSettings, buildScheme, migrateCalm, isHex, cleanSettings } from "./config.js";
 import { current } from "./color.js";
 import { beat } from "./audio.js";
 import { dust } from "./dust.js";
@@ -427,7 +427,7 @@ function remoteButton() {
       btn.textContent = t("rcHide");
       btn.setAttribute("aria-expanded", "true");
       hideT = setTimeout(hide, 120e3);
-    });
+    }).catch((e) => notify(String(e?.message || e), true));
   };
   wrap.append(btn);
   return wrap;
@@ -455,7 +455,8 @@ function livePanel() {
     code.setAttribute("role", "button");
     code.tabIndex = 0;
     code.onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), code.click());
-    code.onclick = () => navigator.clipboard?.writeText(info.url).catch(() => {});
+    // Rückmeldung in beiden Fällen: kopiert – oder die Adresse zum Abtippen, wenn die Zwischenablage gesperrt ist
+    code.onclick = () => Promise.resolve().then(() => navigator.clipboard.writeText(info.url)).then(() => notify(t("copied")), () => notify(info.url));
     const txt = el("div");
     txt.append(el("b", "", t("liveTitle")), el("small", "", t("liveHint")), code, el("small", "m-dim", t("liveRelay")), remoteButton());
     box.append(img, txt);
@@ -836,11 +837,13 @@ function render(box) {
       const x = el("span", "m-scheme-del", "×");
       x.title = t("schemeDelete");
       x.setAttribute("aria-hidden", "true");
-      b.setAttribute("aria-label", t("schemeDeleteKey").replace("{s}", name));
+      b.setAttribute("aria-label", t("schemeDeleteKey").replace("{s}", () => name));
       b.setAttribute("aria-keyshortcuts", "Delete");
       b.onkeydown = (e) => e.key === "Delete" && x.click();
       x.onclick = (e) => {
         e.stopPropagation();
+        // löschen lässt sich nicht zurücknehmen, und das kleine × liegt mitten im Schema-Knopf: einmal nachfragen
+        if (!confirm(t("schemeDelete") + ": " + name + "?")) return;
         delete cfg.customSchemes[name];
         delete SCHEMES[name];
         if (cfg.scheme === name) cfg.scheme = "Mirage";
@@ -872,7 +875,7 @@ function render(box) {
   if (ctx) {
     const own = cfg.playlistSchemes[ctx];
     tools.append(
-      button(own ? t("playlistSchemeOff").replace("{s}", own) : t("playlistSchemeOn").replace("{s}", cfg.scheme), () => {
+      button(own ? t("playlistSchemeOff").replace("{s}", () => own) : t("playlistSchemeOn").replace("{s}", () => cfg.scheme), () => {
         if (own) delete cfg.playlistSchemes[ctx];
         else cfg.playlistSchemes[ctx] = cfg.scheme;
         save();
@@ -1062,6 +1065,7 @@ function render(box) {
   codeIn.setAttribute("aria-label", codeIn.placeholder);
   const saveScheme = (name, colors) => {
     const sc = buildScheme(colors);
+    if (!sc) return notify(t("badCode"), true);
     SCHEMES[name] = sc;
     cfg.customSchemes[name] = sc;
     cfg.scheme = name;
@@ -1082,7 +1086,7 @@ function render(box) {
       saveScheme(name, colorsNow());
     }, "is-primary"),
     button(t("schemeCopy"), async () => {
-      const code = encode("MIRAGE-SCHEME:", { name: nameIn.value.trim() || "My scheme", colors: colorsNow() });
+      const code = encode("MIRAGE-SCHEME:", { name: nameIn.value.trim() || nameIn.placeholder, colors: colorsNow() });
       try { await navigator.clipboard.writeText(code); notify(t("copied")); } catch { codeIn.value = code; }
     })
   );
@@ -1090,8 +1094,10 @@ function render(box) {
     codeIn,
     button(t("schemeImport"), () => {
       const d = decode("MIRAGE-SCHEME:", codeIn.value);
-      if (!d?.colors?.accent) return notify(t("badCode"), true);
-      const name = BUILT_IN.includes(d.name) ? d.name + " 2" : String(d.name).slice(0, 24);
+      // nur vollständige Codes mit echten Hex-Farben: die Werte landen in einem Stylesheet (config.js, applyScheme)
+      if (!d || typeof d !== "object" || !["base", "accent", "deep", "light"].every((k) => isHex(d.colors?.[k]))) return notify(t("badCode"), true);
+      const given = (typeof d.name === "string" ? d.name.trim() : "") || nameIn.placeholder;
+      const name = (BUILT_IN.includes(given) ? given.slice(0, 22) + " 2" : given).slice(0, 24);
       saveScheme(name, d.colors);
     })
   );
@@ -1139,7 +1145,7 @@ function render(box) {
       try { await navigator.clipboard.writeText(code); notify(t("copied")); } catch { dataIn.value = code; }
     }),
     button(t("importSettings"), () => {
-      const d = decode("MIRAGE-SETTINGS:", dataIn.value);
+      const d = cleanSettings(decode("MIRAGE-SETTINGS:", dataIn.value));
       if (!d) return notify(t("badCode"), true);
       Object.assign(cfg, d);
       migrateCalm(cfg, d);
@@ -1165,9 +1171,9 @@ function render(box) {
       f.onchange = async () => {
         let d = null;
         try {
-          d = JSON.parse(await f.files[0].text())?.settings;
+          d = cleanSettings(JSON.parse(await f.files[0].text())?.settings);
         } catch {}
-        if (!d || typeof d !== "object" || Array.isArray(d)) return notify(t("badCode"), true);
+        if (!d) return notify(t("badCode"), true);
         Object.assign(cfg, d);
         migrateCalm(cfg, d);
         for (const [n, sc] of Object.entries(cfg.customSchemes || {})) if (!BUILT_IN.includes(n)) SCHEMES[n] = sc;
@@ -1216,6 +1222,14 @@ function render(box) {
   // offene Gruppen merken, damit ein Neuaufbau nicht alles zuklappt
   const openNow = [...box.querySelectorAll("details[open] > summary")].map((s) => s.textContent);
   const hadFocus = document.activeElement?.classList.contains("m-search");
+  // Tastaturfokus merken: ein Schalter baut alles neu, das fokussierte Element verschwindet dabei. Ohne das fiele
+  // der Fokus auf <body> – hinter das Fenster, und nach jedem Umschalten ginge es mit Tab wieder von vorn los.
+  const FOCUSABLE = "input, select, button, summary, textarea, a[href]";
+  const act = document.activeElement;
+  const refocus = !hadFocus && act && box.contains(act)
+    ? { key: act.dataset.key, preset: act.dataset.preset, calm: act.dataset.calm, i: [...box.querySelectorAll(FOCUSABLE)].indexOf(act) }
+    : null;
+  const rebuilt = !!box.querySelector("details");
   // Suchleiste fest oben, alles andere in einem eigenen Bildlauf-Bereich darunter: so braucht die Leiste keine
   // eigene Fläche (früher ein Kasten mit harten Ecken über dem getönten Fenster-Hintergrund). Der Bereich bleibt
   // über Neuaufbauten derselbe, und die Bildlauf-Stelle bleibt erhalten (ein Schalter baut alles neu).
@@ -1228,7 +1242,24 @@ function render(box) {
   labelControls(box);
   applySearch(box);
   if (hadFocus) search.focus();
-  box.querySelectorAll("details > summary").forEach((s) => openNow.includes(s.textContent) && (s.parentElement.open = true));
+  // Neuaufbau: Gruppen genau so wie vorher – auch die von Haus aus offenen bleiben zu, wenn man sie zugeklappt hat
+  box.querySelectorAll("details > summary").forEach((s) => {
+    const was = openNow.includes(s.textContent);
+    if (rebuilt) s.parentElement.open = was;
+    else if (was) s.parentElement.open = true;
+  });
+  if (refocus) {
+    const pick = (sel) => {
+      const x = sel && box.querySelector(sel);
+      return x?.matches(FOCUSABLE) && !x.disabled ? x : null;
+    };
+    const again =
+      pick(refocus.key && `[data-key="${CSS.escape(refocus.key)}"]`) ||
+      pick(refocus.preset && `[data-preset="${CSS.escape(refocus.preset)}"]`) ||
+      pick(refocus.calm && "[data-calm]") ||
+      box.querySelectorAll(FOCUSABLE)[refocus.i];
+    again?.focus({ preventScroll: true });
+  }
   if (at) scroll.scrollTop = at;
 }
 

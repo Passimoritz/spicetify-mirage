@@ -1235,4 +1235,284 @@ assert.equal(cueOf("insult"), "", "derbe Wörter haben keine eigene Bewegung");
   console.log(`  schnelle Stellen: ${words} Wörter (Rap 8/s, Zeilen 0,4 s) rechtzeitig, ${accents} Akzente passen in die Zeit`);
 }
 
+/* ---- Ausbau: Zählen, Aufzählung, Wort-Wiederholung, Frage, lang gehaltene Töne, Hintergrundgesang, Steigerung der
+   Refrains, direkt wiederholte Zeilen, Ballade im Ton, eine Schrift je Teil, neue Rezepte */
+{
+  const { countRun, segments, wordRepeats, VIB_MIN } = load("lyricstyle.js");
+  const { balladOk } = load("lyricdeck.js");
+  const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
+  const sp = (s) => s.split(" ");
+  // Zählen: mindestens drei Zahlen in Folge (auf- oder abwärts), eine Sprache, Ziffern, Wörter dazwischen
+  assert.deepEqual([...countRun(sp("one, two, three, four"))], [0, 1, 2, 3]);
+  assert.deepEqual([...countRun(sp("Drei, zwei, eins – los!"))], [0, 1, 2], "abwärts, Deutsch");
+  assert.deepEqual([...countRun(sp("uno dos tres"))], [0, 1, 2]);
+  assert.deepEqual([...countRun(sp("un, deux, trois, quatre"))], [0, 1, 2, 3]);
+  assert.deepEqual([...countRun(sp("раз один два три"))], [1, 2, 3], "Russisch");
+  assert.deepEqual([...countRun(sp("5 6 7 8"))], [0, 1, 2, 3], "Ziffern");
+  assert.deepEqual([...countRun(sp("and a one, and a two, and a three"))], [2, 5, 8], "Wörter zwischen den Zahlen");
+  assert.deepEqual([...countRun(sp("we count 1, two, 3 and go"))], [2, 3, 4], "Ziffern und Wörter gemischt");
+  for (const tx of ["you are the one I love", "one two", "one, three, five", "two two two", "one zwei tres", "one more time for two of us three"]) assert.equal(countRun(sp(tx)), null, tx);
+  // Aufzählung: Teile zwischen Kommas
+  const sg = segments(sp("Clock is ticking, time is money, money never sleeping"));
+  assert.deepEqual([...sg], [0, 0, 0, 1, 1, 1, 2, 2, 2]);
+  assert.equal(sg.n, 3);
+  assert.equal(segments(sp("no commas in this line,")).n, 1, "Komma am Zeilenende trennt nichts");
+  // Wort-Wiederholung: Inhaltswörter nah beieinander, Funktionswörter nur direkt, Füllsilben nie
+  assert.deepEqual(wordRepeats(sp("Boom boom boom here we come")), [0, 1, 2, 0, 0, 0]);
+  assert.deepEqual(wordRepeats(sp("Dancing higher and higher")), [0, 0, 0, 1]);
+  assert.deepEqual(wordRepeats(sp("Shake it, shake it, shake it now")), [0, 0, 1, 0, 2, 0, 0], "„it“ steht nie direkt hintereinander");
+  assert.deepEqual(wordRepeats(sp("We go up, up, never coming down")), [0, 0, 0, 1, 0, 0, 0]);
+  assert.deepEqual(wordRepeats(sp("oh oh oh my love")), [0, 0, 0, 0, 0]);
+  assert.deepEqual(wordRepeats(sp("I see the sky and I see the sea")), [0, 0, 0, 0, 0, 0, 0, 0, 0], "weit auseinander: keine Steigerung");
+
+  // ein Song mit allem: drei Refrains (getrennt), Zähl-Zeile, Aufzählung, Frage, Hintergrundgesang, Wiederholungen
+  const lines = [], words = [], parts = [];
+  let t = 2000;
+  const sec = (kind, ls) => {
+    parts.push({ t0: t / 1000 - 0.2, kind });
+    for (const text of ls) {
+      lines.push({ t, text });
+      words.push(WS(text, t, 260));
+      t += 3200;
+    }
+    t += 1500;
+  };
+  const CH = ["Fire in my heart tonight", "We are the fire, burning bright", "Boom boom boom we go", "Higher and higher up"];
+  sec("verse", ["One, two, three, four", "Clock is ticking, time is money, money never sleeping", "Do you remember where we met?", "Walking through the city (city lights)"]);
+  sec("chorus", CH);
+  sec("verse", ["Every window full of stories", "Tell me, tell me, tell me now", "Is this the way it ends?", "(oh yeah)"]);
+  sec("chorus", CH);
+  sec("bridge", ["Slowly fading into blue", "Everything I knew was you"]);
+  sec("chorus", [...CH, "Let it burn", "Let it burn", "Let it burn"]);
+  sec("outro", ["Fade away", "Fade away", "Fade away"]);
+  const at = (text, nth = 0) => lines.map((l, i) => (l.text === text ? i : -1)).filter((i) => i >= 0)[nth];
+  const ampOf = (p) => Number(p.v.split(":")[2]);
+  for (const level of ["playful", "wild"]) for (const seed of ["n1", "n2", "n3", "n4"]) {
+    const plan = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, level, seed });
+    // Zählen: eigenes Rezept, die Zahlen rasten ein und steigen bis zur letzten an
+    const c = plan[0];
+    assert.equal(c.t, "count", "Zähl-Zeile: " + c.t);
+    assert.ok(c.words.every((w) => w.cls.includes("is-p-num") && w.vars["--pac"] === "m-a-tick"), "Zahlen ohne Einrasten");
+    assert.deepEqual(c.words.map((w) => Number(w.vars["--pz"] || 1)), [1, 1.08, 1.16, 1.24], "Zahlen steigen nicht an");
+    assert.ok(c.words.every((w) => /rotateX\(-88deg\)/.test(w.vars["--wt"] || "")), "Zahlen klappen nicht herunter");
+    // Frage: das letzte Wort hebt sich
+    for (const q of ["Do you remember where we met?", "Is this the way it ends?"]) {
+      const p = plan[at(q)];
+      assert.equal(p.words[p.words.length - 1].vars["--pac"], "m-a-ask", `${q}: ${p.words[p.words.length - 1].vars["--pac"]}`);
+      assert.ok(p.words.slice(0, -1).every((w) => w.vars["--pac"] !== "m-a-ask"));
+    }
+    // Wort-Wiederholung in der Zeile: jede Wiederholung eine Stufe größer
+    const boom = plan[at("Boom boom boom we go")].words.map((w) => Number(w.vars["--pz"] || 1));
+    assert.ok(boom[1] > boom[0] && boom[2] > boom[1] && boom[2] <= 1.3, "boom boom boom: " + boom);
+    const hi = plan[at("Higher and higher up")].words.map((w) => Number(w.vars["--pz"] || 1));
+    assert.ok(hi[2] > hi[0] && hi[2] >= 1.09, "higher and higher: " + hi);
+    // Hintergrundgesang: ganze Zeile und Wörter in Klammern kommen leise von der Seite, ohne Akzent des Rezepts
+    const ad = plan[at("(oh yeah)")];
+    assert.ok(ad.cls.includes("is-p-adlib") && ad.t === "" && ad.words.every((w) => w.vars["--wo"] === "0.25" && w.vars["--ws"] === "0.9"), "Hintergrundgesang: " + JSON.stringify(ad.words.map((w) => w.vars)));
+    // Refrains steigern sich: der letzte ist als einziger größer gesetzt, der Ausschlag wächst von Block zu Block
+    const c1 = at(CH[1], 0), c2 = at(CH[1], 1), c3 = at(CH[1], 2);
+    assert.ok(!plan[c1].cls.includes("is-p-last") && !plan[c2].cls.includes("is-p-last") && plan[c3].cls.includes("is-p-last"), "letzter Refrain");
+    assert.ok(ampOf(plan[c1]) <= ampOf(plan[c2]) && ampOf(plan[c2]) <= ampOf(plan[c3]) && ampOf(plan[c1]) < ampOf(plan[c3]), `Ausschlag: ${ampOf(plan[c1])}/${ampOf(plan[c2])}/${ampOf(plan[c3])}`);
+    assert.ok(plan.every((p, i) => !p.cls.includes("is-p-last") || (p.cls.includes("is-p-chorus") && !p.cls.includes("is-p-big") && i >= at(CH[0], 2))), "is-p-last außerhalb des letzten Refrains");
+    // dieselbe Zeile direkt hintereinander: im Refrain wächst sie, im Outro klingt sie aus – und spielt nie zweimal gleich
+    const burn = [0, 1, 2].map((k) => plan[at("Let it burn", k)]), fade = [0, 1, 2].map((k) => plan[at("Fade away", k)]);
+    assert.deepEqual(burn.map((p) => p.vars["--prz"]), [undefined, "1.05", "1.1"], "wächst nicht");
+    assert.ok(burn.slice(1).every((p) => p.cls.includes("is-p-rep") && !p.cls.includes("is-p-fade")));
+    assert.deepEqual(fade.map((p) => p.vars["--prz"]), [undefined, "0.95", "0.9"], "klingt nicht aus");
+    assert.ok(fade.slice(1).every((p) => p.cls.includes("is-p-rep") && p.cls.includes("is-p-fade")));
+    for (const run of [burn, fade]) assert.ok(run[0].t !== run[1].t && run[1].t !== run[2].t, "Wiederholung spielt zweimal gleich: " + run.map((p) => p.t));
+    // Rezepte nur für besondere Zeilen bleiben dort: Zählen nur in der Zähl-Zeile, „aside“ nie als Zeilen-Rezept,
+    // die Aufzählung nur in Zeilen mit Komma
+    plan.forEach((p, i) => {
+      assert.ok(p.t !== "aside" && (p.t !== "count" || i === 0), `Zeile ${i}: ${p.t}`);
+      if (p.t === "volley") assert.ok(/,/.test(lines[i].text.replace(/,\s*$/, "")), "Aufzählung ohne Komma: " + lines[i].text);
+    });
+  }
+  // Aufzählung mit drei Teilen: über viele Songs meist im Wechsel der Seiten – die Teile, nicht die Wörter, wechseln
+  let vol = 0;
+  for (let s = 0; s < 20; s++) {
+    const plan = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, seed: "vol" + s });
+    const p = plan[at("Tell me, tell me, tell me now")];
+    if (p.t !== "volley") continue;
+    vol++;
+    const x = p.words.map((w) => Math.sign(parseFloat(w.vars["--wx"])));
+    assert.ok(x[0] === x[1] && x[2] === x[3] && x[4] === x[5] && x[0] === -x[2] && x[2] === -x[4], "Teile wechseln nicht die Seite: " + x);
+  }
+  assert.ok(vol >= 10, "Aufzählung selten im Wechsel der Seiten: " + vol + " von 20");
+  // Wörter in Klammern mitten in der Zeile: leise von der Seite, nie mit dem Akzent der Hauptzeile
+  {
+    const ws = WS("Walking through the city (city lights)", 0, 260);
+    ws[4].bg = ws[5].bg = true;
+    for (const seed of ["b1", "b2", "b3", "b4", "b5", "b6"]) {
+      const p = planPlayful([{ t: 0, text: "Walking through the city (city lights)" }, { t: 4000, text: "And the night goes on" }], [ws, WS("And the night goes on", 4000)], null, { match: () => [], level: "wild", seed })[0];
+      for (const k of [4, 5]) {
+        assert.ok(p.words[k].vars["--wo"] === "0.25" && p.words[k].vars["--ws"] === "0.9", "Klammer-Wort mit dem Auftritt der Zeile: " + JSON.stringify(p.words[k].vars));
+        const acc = RECIPES[p.t].acc;
+        if (acc) assert.notEqual(p.words[k].vars["--pac"], "m-a-" + acc, "Klammer-Wort stößt mit dem Akzent der Zeile");
+      }
+    }
+  }
+  // Dezent: Zahlen und Wiederholungen nur über die Größe (kleinere Stufen), kein eigenes Rezept, kein Akzent
+  const sub = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, level: "subtle", seed: "n1" });
+  assert.ok(sub[0].t !== "count" && sub[0].words.every((w) => w.cls.includes("is-p-num") && !("--pac" in w.vars)), "Dezent: Zähl-Zeile " + sub[0].t);
+  assert.ok(Number(sub[0].words[3].vars["--pz"]) >= 1.2);
+  assert.equal(sub[at("Let it burn", 2)].vars["--prz"], "1.06", "Dezent: Wiederholung wächst weniger");
+  assert.ok(sub.every((p) => p.words.every((w) => !("--phn" in w.vars) && w.vars["--pac"] !== "m-a-ask")));
+  // ohne Bewegung: der ruhende Satz bleibt (Zahlen, Stufen, letzter Refrain, Wachsen/Ausklingen) – ohne Akzent
+  const still = planPlayful(lines, words, null, { lexicon: LEX, neg: NEG, parts, still: true, seed: "n1" });
+  assert.ok(still[0].words.every((w) => w.cls.includes("is-p-num") && !("--pac" in w.vars) && !("--wt" in w.vars)));
+  assert.ok(still[at(CH[1], 2)].cls.includes("is-p-last") && still[at("Let it burn", 2)].vars["--prz"] === "1.1" && still[at("Fade away", 2)].cls.includes("is-p-fade"));
+  assert.ok(Number(still[at("Boom boom boom we go")].words[2].vars["--pz"]) > 1.1);
+
+  // lang gehaltener Ton (ab VIB_MIN): schwingt nach; kurz gehalten: dehnt sich nur
+  {
+    const mk = (hold) => {
+      const ws = W([["set", 0, 250], ["my", 300, 250], ["heart", 600, 300], ["on", 950, 250], ["fire", 1250, hold]]);
+      return planPlayful([{ t: 0, text: "set my heart on fire" }, { t: 6000, text: "and we go again now" }], [ws, WS("and we go again now", 6000)], null, { match: () => [], seed: "h" })[0].words[4];
+    };
+    const long = mk(2200), short = mk(900);
+    assert.ok(long.cls.includes("is-p-held") && long.vars["--phn"] === "m-p-vib" && parseFloat(long.vars["--hd"]) >= VIB_MIN, JSON.stringify(long.vars));
+    assert.ok(short.cls.includes("is-p-held") && !("--phn" in short.vars), "kurz gehalten schwingt");
+    assert.ok(css.includes("@keyframes m-p-vib {") && /--ph: var\(--phn, m-p-hold\) var\(--hd, 1s\)/.test(css), "Vibrato fehlt im Stylesheet");
+  }
+
+  // Ballade bleibt im Ton: nichts, was hüpft, prallt, schnappt oder zuckt – außer dem einen Einschlag zum Refrain
+  const bal = build("ballad");
+  for (const level of ["playful", "wild"]) for (const seed of ["a", "b", "c", "d", "e", "f", "g", "h"]) {
+    const plan = planPlayful(bal.lines, bal.words, null, { lexicon: LEX, neg: NEG, parts: bal.parts, level, seed: "bal" + seed });
+    plan.forEach((p, i) => p.t && assert.ok(balladOk(p.t) || RECIPES[p.t].e >= 3, `Ballade ${level}/${seed}: „${bal.lines[i].text}“ spielt ${p.t}`));
+  }
+  for (const t of ["ricochet", "squash", "stretch", "hop", "magnet", "domino", "bounce", "jitter", "type", "conveyor", "bars", "volley", "count"]) assert.ok(!balladOk(t), "passt nicht in eine Ballade: " + t);
+  for (const t of ["glow", "fade", "rise", "unfold", "key", "flipx", "heart", "track", "fan", "tidal"]) assert.ok(balladOk(t), "fehlt der Ballade: " + t);
+  // ein Drop und ein Ruf sind nie Ballade (auch mit wenigen Silben je Sekunde): „JUMP!“ darf knallen
+  {
+    const club = build("club");
+    let hard = 0, all = 0;
+    for (const seed of ["c1", "c2", "c3", "c4"]) {
+      const plan = planPlayful(club.lines, club.words, null, { lexicon: LEX, neg: NEG, parts: club.parts, seed });
+      plan.forEach((p, i) => {
+        if (club.lines[i].text !== "JUMP!") return;
+        all++;
+        if (RECIPES[p.t].e >= 2) hard++;
+      });
+    }
+    assert.ok(hard >= 0.7 * all, `Drop-Rufe zahm: ${hard} von ${all} kräftig`);
+  }
+
+  // eine Anzeige-Schrift je Teil (gleicher Satz der Zeilen, höchstens acht am Stück): nie zwei verschiedene
+  // Zeilen-Schriften im Wechsel
+  for (const level of ["playful", "wild"]) for (const name of Object.keys(SONGS)) for (const seed of ["1", "2", "3", "4", "5", "6"]) {
+    const s = build(name);
+    const plan = planPlayful(s.lines, s.words, null, { lexicon: LEX, neg: NEG, parts: s.parts, level, seed: name + seed });
+    let kind = null, own = "", run = 0;
+    plan.forEach((p) => {
+      if (!p.t) return;
+      const set = p.cls.find((c) => ["is-p-verse", "is-p-chorus", "is-p-bridge", "is-p-calm"].includes(c));
+      if (set !== kind || run >= 8) (kind = set), (own = ""), (run = 0);
+      run++;
+      const f = p.font?.line || "";
+      if (!f) return;
+      assert.ok(!own || own === f, `${name}/${seed}: ${own} und ${f} im selben Teil (${kind})`);
+      own = f;
+    });
+  }
+
+  // neue Rezepte: es gibt sie, sie stehen in ihrer Stufe, die besonderen in keinem Deck
+  for (const t of ["fan", "bars", "volley", "count", "aside", "track", "zip"]) assert.ok(TREATMENTS.includes(t), "Rezept fehlt: " + t);
+  assert.ok(allowed("fan", "subtle") && !allowed("bars", "subtle") && !allowed("count", "subtle") && !allowed("zip", "subtle") && !allowed("volley", "subtle"));
+  assert.ok(RECIPES.track.L && RECIPES.zip.L && RECIPES.count.only && RECIPES.aside.only && RECIPES.volley.segs === 2);
+  for (let s = 0; s < 60; s++) for (const level of ["subtle", "playful", "wild"]) {
+    const d = songDeck("deck" + s, level);
+    for (const k of ["verse", "pre", "chorus", "hit", "drop", "bridge", "calm", "rap", "ballad", "shout"]) for (const t of d[k]) assert.ok(!RECIPES[t].only, `Deck ${k}: ${t}`);
+    assert.ok(!d.chorus.includes("volley"), "Aufzählung als Refrain-Motiv");
+  }
+  // Fächer: außen stärker gekippt, die Mitte steht; Pegel: jedes Wort wächst von der Grundlinie; Sperren und
+  // Reißverschluss: Buchstaben aus der Wortmitte bzw. abwechselnd von oben und unten
+  const fanP = [0, 2, 4].map((k) => wordPose("fan", { k, n: 5, dir: 1, amp: 1, len: 3, seed: "s" }));
+  assert.ok(fanP[0].r < 0 && !fanP[1].r && fanP[2].r > 0 && fanP[0].og === "center bottom", JSON.stringify(fanP));
+  const barP = wordPose("bars", { k: 1, n: 5, dir: 1, amp: 1, len: 5, seed: "s" });
+  assert.ok(Array.isArray(barP.s) && barP.s[0] === 1 && barP.s[1] < 0.45 && barP.og === "center bottom");
+  const trk = letterPoses("track", "fire", { k: 0, n: 1, dir: 1, amp: 1, seed: "s", lead: 180 }).map((c) => parseFloat(c.vars["--wx"]));
+  assert.ok(trk[0] > 0 && trk[3] < 0 && Math.abs(trk[0] + trk[3]) < 1e-9, "Sperren: " + trk);
+  const zp = letterPoses("zip", "fire", { k: 0, n: 1, dir: 1, amp: 1, seed: "s", lead: 180 }).map((c) => Math.sign(parseFloat(c.vars["--wy"])));
+  assert.deepEqual(zp, [-1, 1, -1, 1], "Reißverschluss");
+  // stark verzerrt wartend (gestaucht, gespiegelt): höchstens 30 % deckend – kein Zerrbild in der aktiven Zeile
+  for (const t of TREATMENTS) for (let k = 0; k < 6; k++) {
+    const p = wordPose(t, { k, n: 6, dir: 1, amp: 1, len: 5, key: false, seed: "s" });
+    const sq = Array.isArray(p.s) ? Math.min(...p.s) / Math.max(...p.s) : 1;
+    if (sq < 0.67 || Math.abs(p.ry || 0) > 95 || Math.abs(p.rx || 0) > 95) assert.ok((p.o ?? 1) <= 0.3, `${t}: verzerrt und ${p.o} deckend`);
+  }
+  // Stylesheet: die Stufe der Wiederholung steht in der Schriftgröße der Zeile (Liedtext und Party), der letzte Refrain
+  // und die Zahlen haben ihre Regeln
+  assert.ok((css.match(/var\(--pfs, 1\) \* var\(--prz, 1\)/g) || []).length === 2, "--prz fehlt in der Schriftgröße");
+  assert.ok(/\.m-im-line\.is-p-last:not\(\.is-p-big\) \{\s*--m-ps: 1\.17;/.test(css) && /\.m-w\.is-p-num \{/.test(css) && /\.m-im-line\.is-p-rep\.is-p-fade \{/.test(css));
+  console.log("  Ausbau: Zählen, Aufzählung, Wort-Wiederholung, Frage, Vibrato, Hintergrundgesang, Refrain-Steigerung, Wachsen/Ausklingen, Ballade, Schrift je Teil");
+}
+
+/* ---- Zeilen überdecken sich nie (der Platz steht im Layout): gekippte Zeilen und Zeilenstücke schwenken höchstens
+   0,2 em – der Winkel richtet sich nach ihrer Länge –, und das Stylesheet hält dafür Abstand. Gemessen wird im echten
+   Bild (e2e „playful-ink“: Tinte benachbarter Zeilen und Reihen bei drei Fenstergrößen); hier die Rechnung dahinter */
+{
+  const { tiltCap } = load("lyricstyle.js");
+  const { inkSong } = require("./fixtures/ink-lines.js");
+  const css = fs.readFileSync(path.join(__dirname, "..", "..", "Mirage", "user.css"), "utf8");
+  const deg = (v) => parseFloat(v);
+  const sweep = (chars, d, per = 0.26) => per * chars * Math.sin((Math.abs(d) * Math.PI) / 180);
+  assert.ok(tiltCap(9) > 3.5 && tiltCap(58) < 1 && tiltCap(58) > 0.5, "Grenze: kurz kippt frei, lang kaum");
+  for (const n of [3, 10, 25, 60, 120]) assert.ok(sweep(n, tiltCap(n)) <= 0.2 + 1e-9 && sweep(n, tiltCap(n, 0.22, 0.52), 0.52) <= 0.22 + 1e-9);
+  const s = inkSong();
+  let adl = 0, tilts = 0, exits = 0, inner = 0;
+  for (const level of ["subtle", "playful", "wild"]) for (let k = 0; k < 40; k++) {
+    // Klammern wie immersive.js sie markiert (Wörter in Klammern am Zeilenende)
+    const words = s.words.map((ws, i) => {
+      const open = ws.findIndex((w) => w.text.startsWith("("));
+      return ws.map((w, j) => ({ ...w, bg: open > 0 && j >= open && !s.lines[i].text.startsWith("(") }));
+    });
+    const plan = planPlayful(s.lines, words, null, { lexicon: LEX, neg: NEG, parts: s.parts, level, seed: "ink" + k });
+    plan.forEach((p, i) => {
+      const n = [...s.lines[i].text].length;
+      if (p.cls.includes("is-p-adlib")) {
+        adl++;
+        assert.ok(sweep(n, deg(p.vars["--pr"])) <= 0.2 + 0.01 && Math.abs(deg(p.vars["--pr"])) <= 3.5, `Hintergrundgesang „${s.lines[i].text}“ kippt ${p.vars["--pr"]}`);
+      } else if (words[i].some((w) => w.bg)) {
+        inner++;
+        const bg = words[i].reduce((a, w) => a + (w.bg ? [...w.text].length + 1 : 0), 0);
+        assert.ok(sweep(bg, deg(p.vars["--pr"])) <= 0.2 + 0.01, `Klammer am Zeilenende kippt ${p.vars["--pr"]}`);
+      }
+      if (p.t === "tilt") {
+        tilts++;
+        assert.ok(deg(p.vars["--ptl"]) < 0 && deg(p.vars["--ptl"]) >= -1.6 && sweep(n, deg(p.vars["--ptl"]), 0.52) <= 0.22 + 0.01, `schräge Zeile „${s.lines[i].text}“: ${p.vars["--ptl"]}`);
+      }
+      if (p.vars["--pxo"] === "m-x-tilt") {
+        exits++;
+        assert.ok(deg(p.vars["--pxa"]) > 0 && deg(p.vars["--pxa"]) <= 5 && sweep(n, deg(p.vars["--pxa"])) <= 0.22 + 0.01, `Abgang mit Kippen „${s.lines[i].text}“: ${p.vars["--pxa"]}`);
+      }
+    });
+  }
+  assert.ok(adl > 100 && inner > 50 && tilts > 5 && exits > 20, `zu wenig geprüft: ${adl} Hintergrund-Zeilen, ${inner} Klammern, ${tilts} schräge Zeilen, ${exits} Abgänge`);
+  // der lange Hintergrundgesang kippt kaum noch (vorher feste 2,5°/3,5°: sein Ende lag auf der Nachbarzeile)
+  const long = planPlayful(s.lines, s.words, null, { match: () => [], parts: s.parts, seed: "x" })[3];
+  assert.ok(long.cls.includes("is-p-adlib") && Math.abs(deg(long.vars["--pr"])) < 1, "langer Hintergrundgesang: " + long.vars["--pr"]);
+  // Stylesheet: der Platz steht im Layout
+  const rule = (sel) => {
+    const a = css.indexOf(sel + " {");
+    assert.ok(a >= 0, "Regel fehlt: " + sel);
+    return css.slice(a, css.indexOf("}", a));
+  };
+  const P = "#mirage-immersive .m-im-lyrics.is-playful";
+  const ad = rule(P + " .m-im-line.is-p-adlib");
+  assert.ok(/max-width: calc\(100% - var\(--px, 2em\)\)/.test(ad) && /transform-origin: center/.test(ad) && /padding-top: 0\.22em/.test(ad) && /margin-bottom: calc\(0\.5em \* var\(--m-lyr-gap, 1\) \+ 0\.22em\)/.test(ad), "Hintergrundgesang ohne Platz im Layout");
+  assert.ok(/margin-top: 0;/.test(rule(P + " .m-im-line.is-bgline")), "Hintergrund-Zeile unter die Zeile davor gezogen");
+  const bgl = rule(P + " .m-im-line .m-im-bgl");
+  assert.ok(/max-width: calc\(100% - 1\.2em\)/.test(bgl) && /transform-origin: center/.test(bgl) && /margin-top: 0\.3em/.test(bgl), "kleine Zeile in Klammern ohne Abstand");
+  assert.ok(/rotate: var\(--ptl, -0\.6deg\)/.test(rule(P + " .m-im-line.is-t-tilt")), "schräge Zeile mit festem Winkel");
+  assert.ok(/rotate: calc\(var\(--pxd, 1\) \* var\(--pxa, 1\.5deg\)\)/.test(css), "Abgang kippt mit festem Winkel");
+  assert.ok(/text-wrap: balance/.test(rule(P + " .m-im-line")), "umbrochene Zeilen nicht ausgeglichen");
+  // Zeilenhöhe: keine Regel des Stils drückt sie unter die des normalen Liedtexts (1,2); hohe Schriften bekommen mehr
+  assert.ok(/font: 800 clamp\(24px, 3vw, 48px\)\/1\.2 var\(--m-font\)/.test(css), "Zeilenhöhe des normalen Liedtexts");
+  const a = css.indexOf("/* === i-playful === */"), b = css.indexOf("/* === end i-playful === */");
+  for (const m of css.slice(a, b).matchAll(/line-height: ([\d.]+)/g)) assert.ok(Number(m[1]) >= 1.06, "Zeilenhöhe im verspielten Stil zu eng: " + m[1]);
+  console.log(`  Überdeckung: ${adl} Hintergrund-Zeilen, ${inner} Klammern, ${tilts} schräge Zeilen, ${exits} Abgänge schwenken höchstens 0,22 em`);
+}
+
 console.log("lyricstyle: ok");

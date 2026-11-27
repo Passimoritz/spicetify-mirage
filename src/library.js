@@ -127,9 +127,15 @@ async function removeItems(uri, picked) {
   if (typeof P?.remove !== "function") return 0;
   let done = 0;
   // in Päckchen: sehr lange Listen auf einmal lehnt Spotify gelegentlich ab
+  // scheitert ein späteres Päckchen, sind die früheren schon weg: die Zahl melden statt „fehlgeschlagen“
   for (let i = 0; i < picked.length; i += 100) {
     const part = picked.slice(i, i + 100).map((x) => ({ uri: x.it.uri, uid: x.it.uid }));
-    await P.remove(uri, part);
+    try {
+      await P.remove(uri, part);
+    } catch (e) {
+      if (!done) throw e;
+      break;
+    }
     done += part.length;
   }
   return done;
@@ -173,7 +179,7 @@ function showDuplicates(uri, name, found) {
   label();
   go.onclick = async () => {
     const picked = picks.filter((p) => p.cb.checked && !p.cb.disabled).map((p) => p.x);
-    if (!picked.length || !confirm(t("dupConfirm").replace("{n}", picked.length).replace("{p}", name || "Playlist"))) return;
+    if (!picked.length || !confirm(t("dupConfirm").replace("{n}", picked.length).replace("{p}", () => name || "Playlist"))) return;
     go.disabled = true;
     try {
       const n = await removeItems(uri, picked);

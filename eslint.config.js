@@ -17,6 +17,7 @@ module.exports = [
         ...globals.browser,
         Spicetify: "readonly",
         __VENUE_WORKER__: "readonly",
+        __PINYIN_WORKER__: "readonly",
       },
     },
     rules: {

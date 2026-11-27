@@ -45,6 +45,10 @@ function call(method, url, body, timeout = 2500, headers = {}) {
             resolve(null);
           }
         });
+        // Antwort bricht nach den Kopfzeilen ab (WLAN weg, Bridge startet neu): das meldet Node an res, nicht an req.
+        // Ohne das bliebe der Aufruf für immer offen – Hue reagierte nicht mehr, der Lampentest hinge fest.
+        res.on("error", () => resolve(null));
+        res.on("close", () => resolve(null));
       }
     );
     req.on("timeout", () => req.destroy());
@@ -406,6 +410,8 @@ function createLights(getCfg, log = () => {}, opts = {}) {
           this.devices.push({ id: i, leds: d?.colors?.length || d?.leds?.length || 0, name: String(d?.name || "").toLowerCase(), saved });
         }
         c.on?.("disconnect", () => this.stop(true));
+        // OpenRGB mitten in der Party beendet: das SDK meldet den Socket-Fehler als "error" – ohne Zuhörer ein Absturz
+        c.on?.("error", () => this.stop(true));
         this.client = c;
       } catch {
         this.retryAt = Date.now() + 15000; // OpenRGB läuft nicht: in 15 s noch einmal

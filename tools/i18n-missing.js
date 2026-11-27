@@ -96,6 +96,15 @@ const strayIntl = sats.flatMap((s) => Object.entries(s.intl).flatMap(([l, set]) 
 sources.push({ file: "docs/live/index.html", dict: LOAD("docs/live/index.html") });
 if (fs.existsSync(path.join(repo, "overlay", "i18n.js"))) sources.push({ file: "overlay/i18n.js", dict: LOAD("overlay/i18n.js") });
 const since = arg("since");
+// den Stand einmal prüfen: ein Tippfehler oder ein flacher Klon meldete sonst still „0 veraltet“
+if (since) {
+  try {
+    execFileSync("git", ["rev-parse", "--verify", "--quiet", `${since}^{commit}`], { cwd: repo, stdio: "ignore" });
+  } catch {
+    console.error(`--since: Stand "${since}" gibt es in diesem Repository nicht.`);
+    process.exit(2);
+  }
+}
 
 const out = {}, bad = {}, stale = {};
 let missing = 0, optional = 0, mism = 0, old = 0;

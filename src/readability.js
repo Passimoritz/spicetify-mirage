@@ -5,7 +5,9 @@ import { SEL } from "./selectors.js";
 // nachzuziehen, misst Mirage dort den echten Kontrast zwischen Schrift und dem Hintergrund
 // dahinter. Liegt er unter 3 : 1, bekommt das Element eine lesbare Farbe (Klasse m-readable).
 // Läuft nur in Leerlaufzeit, nur auf neuen Elementen und höchstens 400 Elemente pro Durchgang.
-const SCOPES = `[role="menu"], [role="listbox"], [role="dialog"], [role="tooltip"], .x-settings-container, ${SEL.mainView}`;
+// als Funktion: eine Reparatur aus dem Netz (remote.js) tauscht SEL.mainView erst nach dem Laden dieses Moduls aus
+const scopes = () => `[role="menu"], [role="listbox"], [role="dialog"], [role="tooltip"], .x-settings-container, ${SEL.mainView}`;
+const OWN = "#mirage-immersive, #mirage-stage";
 
 const parse = (c) => {
   const m = /rgba?\(([^)]+)\)/.exec(c || "");
@@ -73,7 +75,7 @@ function check(deadline) {
   const until = performance.now() + Math.min(4, deadline?.timeRemaining?.() ?? 4);
   while (pending.length && performance.now() < until) {
     const root = pending.pop();
-    if (!root.isConnected || checked.has(root) || root.closest("#mirage-immersive, #mirage-stage")) continue;
+    if (!root.isConnected || checked.has(root) || root.closest(OWN)) continue;
     checkOne(root);
     // Kinder hinten anhängen statt rekursiv: so lässt sich jederzeit unterbrechen
     for (let c = root.firstElementChild; c; c = c.nextElementSibling) if (!checked.has(c) && !c.matches(ROW)) pending.push(c);
@@ -92,6 +94,9 @@ const ROW = '[role="row"]';
 function queue(node) {
   if (node?.nodeType !== 1 || checked.has(node)) return;
   if (node.matches(ROW) || node.closest(ROW)) return;
+  // Mirages eigene Bühne prüft check() ohnehin nie – gar nicht erst einreihen (Liedtext und Party bauen ständig um)
+  if (node.closest(OWN)) return;
+  const SCOPES = scopes();
   if (!node.closest(SCOPES)) {
     // ein neuer Container, in dem ein Menü/Dialog steckt
     const inner = node.querySelector?.(SCOPES);
@@ -112,7 +117,7 @@ function recheckAll() {
   });
   checked = new WeakSet();
   inlined = new WeakSet();
-  document.querySelectorAll(SCOPES).forEach(queue);
+  document.querySelectorAll(scopes()).forEach(queue);
 }
 setTimeout(recheckAll, 3000);
 

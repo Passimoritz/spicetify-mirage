@@ -116,6 +116,10 @@ function createHueV2({ base, key, ca, servername, timeout = 3000, pin = "", brid
           } catch {}
           resolve({ status: res.statusCode || 0, headers: res.headers, json });
         });
+        // Abbruch nach den Kopfzeilen kommt an res an, nicht an req (siehe lights.js, call)
+        const gone = () => resolve({ status: 0, headers: {}, json: null });
+        res.on("error", gone);
+        res.on("close", gone);
       });
       req.on("timeout", () => req.destroy());
       req.on("error", () => resolve({ status: 0, headers: {}, json: null }));

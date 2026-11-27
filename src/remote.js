@@ -20,8 +20,12 @@ const cmp = (a, b) => {
   }
   return 0;
 };
-// nur reine Regeln: nichts, das etwas nachlädt oder aus dem Stylesheet ausbricht
-const okCss = (c) => typeof c === "string" && c.length <= 20000 && !/@import|url\s*\(|expression\s*\(|<\/|javascript:|behavior\s*:/i.test(c);
+// nur reine Regeln: nichts, das etwas nachlädt oder aus dem Stylesheet ausbricht. Kein Rückstrich: CSS erlaubt
+// maskierte Namen ("@\69mport", "\75rl("), an denen jede Prüfung auf dem rohen Text vorbeiginge. image-set() und
+// src() laden wie url(), @font-face und @namespace haben in einer Reparatur nichts zu suchen.
+const okCss = (c) =>
+  typeof c === "string" && c.length <= 20000 &&
+  !/\\|@import|@font-face|@namespace|url\s*\(|image-set\s*\(|src\s*\(|expression\s*\(|<\/|javascript:|behavior\s*:/i.test(c);
 const okSel = (s) => {
   if (typeof s !== "string" || !s || s.length > 600) return false;
   try {
@@ -98,4 +102,4 @@ function watch() {
 document.addEventListener("visibilitychange", watch);
 watch();
 
-export { refreshRemote };
+export { refreshRemote, okCss };
