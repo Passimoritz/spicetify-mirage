@@ -10,6 +10,8 @@ Release notes on GitHub are generated from the matching section of this file whe
 
 <!-- Filled in by the theme author: add Added / Changed / Fixed / Removed entries here before tagging the next release. -->
 
+## [1.34.0] – 2026-11-27
+
 ### Added
 
 - Playful lyrics: new stagings – fan (words spread like a hand of cards), level meter (words rise like bars), zipper and letter-spacing entrances, a split-flap count for counting lines ("one, two, three, four"), and lists whose parts come in from alternating sides.
